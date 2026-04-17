@@ -499,7 +499,12 @@ def run_exit_comparison(
             "composite_score":  cscore,
         })
 
-    df = pd.DataFrame(results).sort_values("composite_score", ascending=False)
+    df = pd.DataFrame(results)
+    if df.empty:
+        return df
+    if "composite_score" not in df.columns:
+        df["composite_score"] = 0.0
+    df = df.sort_values("composite_score", ascending=False)
     if not df.empty:
         df["recommended"] = df.index == df["composite_score"].idxmax()
     return df
