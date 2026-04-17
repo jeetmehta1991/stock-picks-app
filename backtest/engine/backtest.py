@@ -339,15 +339,51 @@ class BacktestEngine:
     def save_all_outputs(self):
         from backtest.results.writer import write_all_outputs
         from backtest.results.metrics import compute_all_metrics
+        from backtest.engine.exit_strategies import run_exit_comparison
         df_trades = self.get_trade_log()
         if df_trades.empty:
             logger.warning("No closed trades — nothing to write")
             return
         metrics = compute_all_metrics(df_trades)
+
+        # Build exit comparison across all 12 exit methods per strategy
+        exit_frames = []
+        for strategy in df_trades["strategy"].unique():
+            strat_df = df_trades[df_trades["strategy"] == strategy]
+            trades_data = []
+            for _, row in strat_df.iterrows():
+                ticker  = row["ticker"]
+                df_full = self.ohlcv_dict.get(ticker)
+                if df_full is None:
+                    continue
+                entry_date = row["entry_date"]
+                if isinstance(entry_date, str):
+                    from datetime import datetime as _dt
+                    entry_date = _dt.strptime(entry_date[:10], "%Y-%m-%d").date()
+                sig = row.get("signals_at_entry", {})
+                atr = sig.get("atr", row["entry_price"] * 0.02) \
+                      if isinstance(sig, dict) else row["entry_price"] * 0.02
+                trades_data.append({
+                    "df":          df_full,
+                    "entry_date":  entry_date,
+                    "entry_price": row["entry_price"],
+                    "direction":   row["direction"],
+                    "atr":         atr,
+                    "signals":     sig if isinstance(sig, dict) else {},
+                })
+            if trades_data:
+                ec = run_exit_comparison(strategy, trades_data)
+                if not ec.empty:
+                    exit_frames.append(ec)
+
+        exit_compare = pd.concat(exit_frames, ignore_index=True) \
+                       if exit_frames else pd.DataFrame()
+
         write_all_outputs(
             df_trades=df_trades,
             metrics=metrics,
             skipped=self.skipped_trades,
             cb_log=self.circuit_breaker_log,
+            exit_compare=exit_compare,
             output_dir=self.output_dir,
         )
