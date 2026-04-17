@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Backtest Report — 2026-04-17 14:28 UTC</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0d1117; color: #c9d1d9; padding: 2rem 1rem; }
+    h1 { font-size: 1.8rem; color: #f0f6fc; margin-bottom: 0.5rem; }
+    h2 { font-size: 1.1rem; color: #58a6ff; margin: 2rem 0 0.75rem; border-bottom: 1px solid #21262d; padding-bottom: 0.4rem; }
+    p  { font-size: 0.85rem; color: #8b949e; margin-bottom: 0.3rem; }
+    .stats { display: flex; gap: 1.5rem; margin: 1.5rem 0; flex-wrap: wrap; }
+    .stat-card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 1rem 1.5rem; min-width: 150px; }
+    .stat-card .val { font-size: 2rem; font-weight: 700; color: #f0f6fc; }
+    .stat-card .lbl { font-size: 0.75rem; color: #8b949e; margin-top: 0.25rem; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.82rem; margin-bottom: 2rem; }
+    th { background: #161b22; color: #8b949e; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.6rem 0.8rem; text-align: left; border-bottom: 1px solid #21262d; }
+    td { padding: 0.55rem 0.8rem; border-bottom: 1px solid #21262d; }
+    tr:hover td { background: #1c2128; }
+    .strat { color: #58a6ff; font-weight: 600; }
+    .positive { color: #3fb950; }
+    .negative { color: #f85149; }
+    .neutral  { color: #e3b341; }
+    .wr { font-weight: 700; }
+    footer { text-align: center; margin-top: 3rem; font-size: 0.75rem; color: #484f58; }
+  </style>
+</head>
+<body>
+  <h1>📊 Backtesting Report</h1>
+  <p>Stage 2: Strategy Validation &mdash; Phase 1A</p>
+  <p>Generated: 2026-04-17 14:28 UTC</p>
+
+  <div class="stats">
+    <div class="stat-card"><div class="val">2,720</div><div class="lbl">Total Trades Simulated</div></div>
+    <div class="stat-card"><div class="val">50</div><div class="lbl">Strategies Tested</div></div>
+    <div class="stat-card"><div class="val" style="color:#3fb950">2</div><div class="lbl">Strategies Passing (55%+)</div></div>
+  </div>
+
+  <h2>Strategy Performance Summary</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Strategy</th><th>Hold</th><th>Trades</th><th>Win Rate</th>
+        <th>Avg P&amp;L</th><th>Max Loss</th><th>Regimes</th><th>Pass</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td class="strat">squeeze_breakout</td>
+          <td>5d</td>
+          <td>173</td>
+          <td class="wr positive">61.3% ✓</td>
+          <td class="positive">1.61%</td>
+          <td class="negative">-9.20%</td>
+          <td>1</td>
+          <td>✅</td>
+        </tr>
+        <tr>
+          <td class="strat">squeeze_breakout</td>
+          <td>3d</td>
+          <td>173</td>
+          <td class="wr positive">58.4% ✓</td>
+          <td class="positive">1.09%</td>
+          <td class="negative">-6.68%</td>
+          <td>1</td>
+          <td>✅</td>
+        </tr>
+        <tr>
+          <td class="strat">bollinger_lower_bounce</td>
+          <td>5d</td>
+          <td>2</td>
+          <td class="wr positive">100.0% ✓</td>
+          <td class="positive">5.36%</td>
+          <td class="negative">3.77%</td>
+          <td>0</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td class="strat">bollinger_lower_bounce</td>
+          <td>10d</td>
+          <td>2</td>
+          <td class="wr positive">100.0% ✓</td>
+          <td class="positive">4.90%</td>
+          <td class="negative">2.08%</td>
+          <td>0</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td class="strat">bollinger_lower_bounce</td>
+          <td>15d</td>
+          <td>2</td>
+          <td class="wr positive">100.0% ✓</td>
+          <td class="positive">9.36%</td>
+          <td class="negative">9.15%</td>
+          <td>0</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td class="strat">bollinger_lower_bounce</td>
+          <td>20d</td>
+          <td>2</td>
+          <td class="wr positive">100.0% ✓</td>
+          <td class="positive">9.46%</td>
+          <td class="negative">9.36%</td>
+          <td>0</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td class="strat">fibonacci_bounce</td>
+          <td>5d</td>
+          <td>2</td>
+          <td class="wr positive">100.0% ✓</td>
+          <td class="positive">3.25%</td>
+          <td class="negative">1.58%</td>
+          <td>0</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td class="strat">fibonacci_bounce</td>
+          <td>10d</td>
+          <td>2</td>
+          <td class="wr positive">100.0% ✓</td>
+          <td class="positive">6.63%</td>
+          <td class="negative">5.20%</td>
+          <td>0</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td class="strat">fibonacci_bounce</td>
+          <td>15d</td>
+          <td>2</td>
+          <td class="wr positive">100.0% ✓</td>
+          <td class="positive">6.63%</td>
+          <td class="negative">5.20%</td>
+          <td>0</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td class="strat">fibonacci_bounce</td>
+          <td>20d</td>
+          <td>2</td>
+          <td class="wr positive">100.0% ✓</td>
+          <td class="positive">6.63%</td>
+          <td class="negative">5.20%</td>
+          <td>0</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td class="strat">macd_crossover</td>
+          <td>5d</td>
+          <td>7</td>
+          <td class="wr positive">100.0% ✓</td>
+          <td class="positive">5.80%</td>
+          <td class="negative">0.39%</td>
+          <td>1</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td class="strat">macd_crossover</td>
+          <td>10d</td>
+          <td>7</td>
+          <td class="wr positive">100.0% ✓</td>
+          <td class="positive">8.16%</td>
+          <td class="negative">4.94%</td>
+          <td>1</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td class="strat">macd_crossover</td>
+          <td>15d</td>
+          <td>7</td>
+          <td class="wr positive">100.0% ✓</td>
+          <td class="positive">8.16%</td>
+          <td class="negative">4.94%</td>
+          <td>1</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td class="strat">macd_crossover</td>
+          <td>20d</td>
+          <td>7</td>
+          <td class="wr positive">100.0% ✓</td>
+          <td class="positive">8.16%</td>
+          <td class="negative">4.94%</td>
+          <td>1</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td class="strat">stoch_oversold_ema_cross</td>
+          <td>3d</td>
+          <td>1</td>
+          <td class="wr positive">100.0% ✓</td>
+          <td class="positive">3.80%</td>
+          <td class="negative">3.80%</td>
+          <td>0</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td class="strat">stoch_oversold_ema_cross</td>
+          <td>5d</td>
+          <td>1</td>
+          <td class="wr positive">100.0% ✓</td>
+          <td class="positive">3.74%</td>
+          <td class="negative">3.74%</td>
+          <td>0</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td class="strat">stoch_oversold_ema_cross</td>
+          <td>10d</td>
+          <td>1</td>
+          <td class="wr positive">100.0% ✓</td>
+          <td class="positive">5.30%</td>
+          <td class="negative">5.30%</td>
+          <td>0</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td class="strat">stoch_oversold_ema_cross</td>
+          <td>15d</td>
+          <td>1</td>
+          <td class="wr positive">100.0% ✓</td>
+          <td class="positive">5.30%</td>
+          <td class="negative">5.30%</td>
+          <td>0</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td class="strat">stoch_oversold_ema_cross</td>
+          <td>20d</td>
+          <td>1</td>
+          <td class="wr positive">100.0% ✓</td>
+          <td class="positive">5.30%</td>
+          <td class="negative">5.30%</td>
+          <td>0</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td class="strat">macd_crossover</td>
+          <td>3d</td>
+          <td>7</td>
+          <td class="wr positive">85.7% ✓</td>
+          <td class="positive">3.71%</td>
+          <td class="negative">-0.39%</td>
+          <td>1</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td class="strat">hull_ma_plus_rsi</td>
+          <td>5d</td>
+          <td>97</td>
+          <td class="wr positive">75.3% ✓</td>
+          <td class="positive">2.29%</td>
+          <td class="negative">-9.20%</td>
+          <td>1</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td class="strat">hull_ma_plus_rsi</td>
+          <td>10d</td>
+          <td>97</td>
+          <td class="wr positive">74.2% ✓</td>
+          <td class="positive">3.41%</td>
+          <td class="negative">-9.20%</td>
+          <td>1</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td class="strat">hull_ma_plus_rsi</td>
+          <td>3d</td>
+          <td>97</td>
+          <td class="wr positive">63.9% ✓</td>
+          <td class="positive">1.16%</td>
+          <td class="negative">-6.33%</td>
+          <td>1</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td class="strat">hull_ma_plus_rsi</td>
+          <td>15d</td>
+          <td>97</td>
+          <td class="wr positive">63.9% ✓</td>
+          <td class="positive">3.46%</td>
+          <td class="negative">-9.20%</td>
+          <td>1</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td class="strat">hull_ma_plus_rsi</td>
+          <td>20d</td>
+          <td>97</td>
+          <td class="wr positive">59.8% ✓</td>
+          <td class="positive">3.27%</td>
+          <td class="negative">-9.20%</td>
+          <td>1</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td class="strat">supertrend_plus_macd</td>
+          <td>3d</td>
+          <td>157</td>
+          <td class="wr neutral">54.1%</td>
+          <td class="positive">0.89%</td>
+          <td class="negative">-6.68%</td>
+          <td>0</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td class="strat">supertrend_plus_macd</td>
+          <td>5d</td>
+          <td>157</td>
+          <td class="wr neutral">54.1%</td>
+          <td class="positive">1.18%</td>
+          <td class="negative">-9.20%</td>
+          <td>0</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td class="strat">squeeze_breakout</td>
+          <td>10d</td>
+          <td>173</td>
+          <td class="wr neutral">52.6%</td>
+          <td class="positive">1.90%</td>
+          <td class="negative">-9.20%</td>
+          <td>0</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td class="strat">ichimoku_cloud_breakout</td>
+          <td>3d</td>
+          <td>102</td>
+          <td class="wr neutral">51.0%</td>
+          <td class="positive">0.61%</td>
+          <td class="negative">-6.68%</td>
+          <td>0</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td class="strat">bollinger_lower_bounce</td>
+          <td>3d</td>
+          <td>2</td>
+          <td class="wr neutral">50.0%</td>
+          <td class="positive">1.29%</td>
+          <td class="negative">-0.04%</td>
+          <td>0</td>
+          <td></td>
+        </tr></tbody>
+  </table>
+
+  <h2>Performance by Market Regime</h2>
+  <table>
+    <thead>
+      <tr><th>Strategy</th><th>Hold</th><th>Regime</th><th>Trades</th><th>Win Rate</th><th>Avg P&amp;L</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td class="strat">supertrend_plus_macd</td>
+          <td>20d</td>
+          <td>rate_rising_2022_2023</td>
+          <td>157</td>
+          <td class="wr negative">35.0%</td>
+          <td class="positive">0.82%</td>
+        </tr>
+        <tr>
+          <td class="strat">supertrend_plus_macd</td>
+          <td>20d</td>
+          <td>strong_bull_2023</td>
+          <td>157</td>
+          <td class="wr negative">35.0%</td>
+          <td class="positive">0.82%</td>
+        </tr>
+        <tr>
+          <td class="strat">supertrend_plus_macd</td>
+          <td>15d</td>
+          <td>rate_rising_2022_2023</td>
+          <td>157</td>
+          <td class="wr negative">36.9%</td>
+          <td class="positive">0.90%</td>
+        </tr>
+        <tr>
+          <td class="strat">supertrend_plus_macd</td>
+          <td>15d</td>
+          <td>strong_bull_2023</td>
+          <td>157</td>
+          <td class="wr negative">36.9%</td>
+          <td class="positive">0.90%</td>
+        </tr>
+        <tr>
+          <td class="strat">supertrend_plus_macd</td>
+          <td>10d</td>
+          <td>rate_rising_2022_2023</td>
+          <td>157</td>
+          <td class="wr negative">43.3%</td>
+          <td class="positive">1.09%</td>
+        </tr>
+        <tr>
+          <td class="strat">supertrend_plus_macd</td>
+          <td>10d</td>
+          <td>strong_bull_2023</td>
+          <td>157</td>
+          <td class="wr negative">43.3%</td>
+          <td class="positive">1.09%</td>
+        </tr>
+        <tr>
+          <td class="strat">supertrend_plus_macd</td>
+          <td>5d</td>
+          <td>rate_rising_2022_2023</td>
+          <td>157</td>
+          <td class="wr neutral">54.1%</td>
+          <td class="positive">1.18%</td>
+        </tr>
+        <tr>
+          <td class="strat">supertrend_plus_macd</td>
+          <td>5d</td>
+          <td>strong_bull_2023</td>
+          <td>157</td>
+          <td class="wr neutral">54.1%</td>
+          <td class="positive">1.18%</td>
+        </tr>
+        <tr>
+          <td class="strat">supertrend_plus_macd</td>
+          <td>3d</td>
+          <td>rate_rising_2022_2023</td>
+          <td>157</td>
+          <td class="wr neutral">54.1%</td>
+          <td class="positive">0.89%</td>
+        </tr>
+        <tr>
+          <td class="strat">supertrend_plus_macd</td>
+          <td>3d</td>
+          <td>strong_bull_2023</td>
+          <td>157</td>
+          <td class="wr neutral">54.1%</td>
+          <td class="positive">0.89%</td>
+        </tr>
+        <tr>
+          <td class="strat">squeeze_breakout</td>
+          <td>20d</td>
+          <td>rate_rising_2022_2023</td>
+          <td>173</td>
+          <td class="wr negative">44.5%</td>
+          <td class="positive">1.85%</td>
+        </tr>
+        <tr>
+          <td class="strat">squeeze_breakout</td>
+          <td>20d</td>
+          <td>strong_bull_2023</td>
+          <td>173</td>
+          <td class="wr negative">44.5%</td>
+          <td class="positive">1.85%</td>
+        </tr>
+        <tr>
+          <td class="strat">squeeze_breakout</td>
+          <td>15d</td>
+          <td>rate_rising_2022_2023</td>
+          <td>173</td>
+          <td class="wr neutral">46.8%</td>
+          <td class="positive">1.97%</td>
+        </tr>
+        <tr>
+          <td class="strat">squeeze_breakout</td>
+          <td>15d</td>
+          <td>strong_bull_2023</td>
+          <td>173</td>
+          <td class="wr neutral">46.8%</td>
+          <td class="positive">1.97%</td>
+        </tr>
+        <tr>
+          <td class="strat">squeeze_breakout</td>
+          <td>10d</td>
+          <td>rate_rising_2022_2023</td>
+          <td>173</td>
+          <td class="wr neutral">52.6%</td>
+          <td class="positive">1.90%</td>
+        </tr>
+        <tr>
+          <td class="strat">squeeze_breakout</td>
+          <td>10d</td>
+          <td>strong_bull_2023</td>
+          <td>173</td>
+          <td class="wr neutral">52.6%</td>
+          <td class="positive">1.90%</td>
+        </tr>
+        <tr>
+          <td class="strat">squeeze_breakout</td>
+          <td>5d</td>
+          <td>rate_rising_2022_2023</td>
+          <td>173</td>
+          <td class="wr positive">61.3% ✓</td>
+          <td class="positive">1.61%</td>
+        </tr>
+        <tr>
+          <td class="strat">squeeze_breakout</td>
+          <td>5d</td>
+          <td>strong_bull_2023</td>
+          <td>173</td>
+          <td class="wr positive">61.3% ✓</td>
+          <td class="positive">1.61%</td>
+        </tr>
+        <tr>
+          <td class="strat">squeeze_breakout</td>
+          <td>3d</td>
+          <td>rate_rising_2022_2023</td>
+          <td>173</td>
+          <td class="wr positive">58.4% ✓</td>
+          <td class="positive">1.09%</td>
+        </tr>
+        <tr>
+          <td class="strat">squeeze_breakout</td>
+          <td>3d</td>
+          <td>strong_bull_2023</td>
+          <td>173</td>
+          <td class="wr positive">58.4% ✓</td>
+          <td class="positive">1.09%</td>
+        </tr>
+        <tr>
+          <td class="strat">macd_crossover</td>
+          <td>20d</td>
+          <td>rate_rising_2022_2023</td>
+          <td>7</td>
+          <td class="wr positive">100.0% ✓</td>
+          <td class="positive">8.16%</td>
+        </tr>
+        <tr>
+          <td class="strat">macd_crossover</td>
+          <td>20d</td>
+          <td>strong_bull_2023</td>
+          <td>7</td>
+          <td class="wr positive">100.0% ✓</td>
+          <td class="positive">8.16%</td>
+        </tr>
+        <tr>
+          <td class="strat">macd_crossover</td>
+          <td>15d</td>
+          <td>rate_rising_2022_2023</td>
+          <td>7</td>
+          <td class="wr positive">100.0% ✓</td>
+          <td class="positive">8.16%</td>
+        </tr>
+        <tr>
+          <td class="strat">macd_crossover</td>
+          <td>15d</td>
+          <td>strong_bull_2023</td>
+          <td>7</td>
+          <td class="wr positive">100.0% ✓</td>
+          <td class="positive">8.16%</td>
+        </tr>
+        <tr>
+          <td class="strat">macd_crossover</td>
+          <td>10d</td>
+          <td>rate_rising_2022_2023</td>
+          <td>7</td>
+          <td class="wr positive">100.0% ✓</td>
+          <td class="positive">8.16%</td>
+        </tr>
+        <tr>
+          <td class="strat">macd_crossover</td>
+          <td>10d</td>
+          <td>strong_bull_2023</td>
+          <td>7</td>
+          <td class="wr positive">100.0% ✓</td>
+          <td class="positive">8.16%</td>
+        </tr>
+        <tr>
+          <td class="strat">macd_crossover</td>
+          <td>5d</td>
+          <td>rate_rising_2022_2023</td>
+          <td>7</td>
+          <td class="wr positive">100.0% ✓</td>
+          <td class="positive">5.80%</td>
+        </tr>
+        <tr>
+          <td class="strat">macd_crossover</td>
+          <td>5d</td>
+          <td>strong_bull_2023</td>
+          <td>7</td>
+          <td class="wr positive">100.0% ✓</td>
+          <td class="positive">5.80%</td>
+        </tr>
+        <tr>
+          <td class="strat">macd_crossover</td>
+          <td>3d</td>
+          <td>rate_rising_2022_2023</td>
+          <td>7</td>
+          <td class="wr positive">85.7% ✓</td>
+          <td class="positive">3.71%</td>
+        </tr>
+        <tr>
+          <td class="strat">macd_crossover</td>
+          <td>3d</td>
+          <td>strong_bull_2023</td>
+          <td>7</td>
+          <td class="wr positive">85.7% ✓</td>
+          <td class="positive">3.71%</td>
+        </tr>
+        <tr>
+          <td class="strat">ichimoku_cloud_breakout</td>
+          <td>20d</td>
+          <td>rate_rising_2022_2023</td>
+          <td>102</td>
+          <td class="wr negative">29.4%</td>
+          <td class="positive">0.32%</td>
+        </tr>
+        <tr>
+          <td class="strat">ichimoku_cloud_breakout</td>
+          <td>20d</td>
+          <td>strong_bull_2023</td>
+          <td>102</td>
+          <td class="wr negative">29.4%</td>
+          <td class="positive">0.32%</td>
+        </tr>
+        <tr>
+          <td class="strat">ichimoku_cloud_breakout</td>
+          <td>15d</td>
+          <td>rate_rising_2022_2023</td>
+          <td>102</td>
+          <td class="wr negative">30.4%</td>
+          <td class="positive">0.36%</td>
+        </tr>
+        <tr>
+          <td class="strat">ichimoku_cloud_breakout</td>
+          <td>15d</td>
+          <td>strong_bull_2023</td>
+          <td>102</td>
+          <td class="wr negative">30.4%</td>
+          <td class="positive">0.36%</td>
+        </tr>
+        <tr>
+          <td class="strat">ichimoku_cloud_breakout</td>
+          <td>10d</td>
+          <td>rate_rising_2022_2023</td>
+          <td>102</td>
+          <td class="wr negative">35.3%</td>
+          <td class="positive">0.33%</td>
+        </tr>
+        <tr>
+          <td class="strat">ichimoku_cloud_breakout</td>
+          <td>10d</td>
+          <td>strong_bull_2023</td>
+          <td>102</td>
+          <td class="wr negative">35.3%</td>
+          <td class="positive">0.33%</td>
+        </tr>
+        <tr>
+          <td class="strat">ichimoku_cloud_breakout</td>
+          <td>5d</td>
+          <td>rate_rising_2022_2023</td>
+          <td>102</td>
+          <td class="wr neutral">50.0%</td>
+          <td class="positive">0.65%</td>
+        </tr>
+        <tr>
+          <td class="strat">ichimoku_cloud_breakout</td>
+          <td>5d</td>
+          <td>strong_bull_2023</td>
+          <td>102</td>
+          <td class="wr neutral">50.0%</td>
+          <td class="positive">0.65%</td>
+        </tr>
+        <tr>
+          <td class="strat">ichimoku_cloud_breakout</td>
+          <td>3d</td>
+          <td>rate_rising_2022_2023</td>
+          <td>102</td>
+          <td class="wr neutral">51.0%</td>
+          <td class="positive">0.61%</td>
+        </tr>
+        <tr>
+          <td class="strat">ichimoku_cloud_breakout</td>
+          <td>3d</td>
+          <td>strong_bull_2023</td>
+          <td>102</td>
+          <td class="wr neutral">51.0%</td>
+          <td class="positive">0.61%</td>
+        </tr>
+        <tr>
+          <td class="strat">hull_ma_plus_rsi</td>
+          <td>20d</td>
+          <td>rate_rising_2022_2023</td>
+          <td>97</td>
+          <td class="wr positive">59.8% ✓</td>
+          <td class="positive">3.27%</td>
+        </tr>
+        <tr>
+          <td class="strat">hull_ma_plus_rsi</td>
+          <td>20d</td>
+          <td>strong_bull_2023</td>
+          <td>97</td>
+          <td class="wr positive">59.8% ✓</td>
+          <td class="positive">3.27%</td>
+        </tr>
+        <tr>
+          <td class="strat">hull_ma_plus_rsi</td>
+          <td>15d</td>
+          <td>rate_rising_2022_2023</td>
+          <td>97</td>
+          <td class="wr positive">63.9% ✓</td>
+          <td class="positive">3.46%</td>
+        </tr>
+        <tr>
+          <td class="strat">hull_ma_plus_rsi</td>
+          <td>15d</td>
+          <td>strong_bull_2023</td>
+          <td>97</td>
+          <td class="wr positive">63.9% ✓</td>
+          <td class="positive">3.46%</td>
+        </tr>
+        <tr>
+          <td class="strat">hull_ma_plus_rsi</td>
+          <td>10d</td>
+          <td>rate_rising_2022_2023</td>
+          <td>97</td>
+          <td class="wr positive">74.2% ✓</td>
+          <td class="positive">3.41%</td>
+        </tr>
+        <tr>
+          <td class="strat">hull_ma_plus_rsi</td>
+          <td>10d</td>
+          <td>strong_bull_2023</td>
+          <td>97</td>
+          <td class="wr positive">74.2% ✓</td>
+          <td class="positive">3.41%</td>
+        </tr>
+        <tr>
+          <td class="strat">hull_ma_plus_rsi</td>
+          <td>5d</td>
+          <td>rate_rising_2022_2023</td>
+          <td>97</td>
+          <td class="wr positive">75.3% ✓</td>
+          <td class="positive">2.29%</td>
+        </tr>
+        <tr>
+          <td class="strat">hull_ma_plus_rsi</td>
+          <td>5d</td>
+          <td>strong_bull_2023</td>
+          <td>97</td>
+          <td class="wr positive">75.3% ✓</td>
+          <td class="positive">2.29%</td>
+        </tr>
+        <tr>
+          <td class="strat">hull_ma_plus_rsi</td>
+          <td>3d</td>
+          <td>rate_rising_2022_2023</td>
+          <td>97</td>
+          <td class="wr positive">63.9% ✓</td>
+          <td class="positive">1.16%</td>
+        </tr>
+        <tr>
+          <td class="strat">hull_ma_plus_rsi</td>
+          <td>3d</td>
+          <td>strong_bull_2023</td>
+          <td>97</td>
+          <td class="wr positive">63.9% ✓</td>
+          <td class="positive">1.16%</td>
+        </tr></tbody>
+  </table>
+
+  <footer>
+    <p>Stock Picks &amp; Automated Trading System — Stage 2 Backtesting Engine</p>
+    <p>All data point-in-time enforced. No look-ahead bias. Minimum 100 trades per strategy required.</p>
+  </footer>
+</body>
+</html>

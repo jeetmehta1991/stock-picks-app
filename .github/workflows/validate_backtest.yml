@@ -1,0 +1,95 @@
+name: Validate Backtest
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "backtest/**"
+  workflow_run:
+    workflows: ["Sync from Claude"]
+    types: [completed]
+
+jobs:
+  validate:
+    name: Validate backtest pipeline
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install yfinance pandas-ta requests --quiet
+
+      - name: Run import validation
+        run: |
+          python -c "
+          import sys, numpy as np, pandas as pd
+          sys.path.insert(0, '.')
+
+          # Config
+          from backtest.config import UNIVERSE, PASSING_CRITERIA, EXIT_STRATEGIES_LIST
+          assert len(UNIVERSE) == 67, f'Expected 67 instruments, got {len(UNIVERSE)}'
+          assert PASSING_CRITERIA['min_profit_factor'] == 1.2
+          print(f'Config OK: {len(UNIVERSE)} instruments, PF threshold={PASSING_CRITERIA[\"min_profit_factor\"]}')
+
+          # Technical signals
+          from backtest.signals.technical import compute_all_signals
+          np.random.seed(42)
+          df = pd.DataFrame({
+              'open':   100+np.random.randn(80).cumsum(),
+              'high':   102+np.random.randn(80).cumsum(),
+              'low':    98+np.random.randn(80).cumsum(),
+              'close':  101+np.random.randn(80).cumsum(),
+              'volume': (600000+np.random.randint(0,200000,80)).astype(float),
+          }, index=pd.date_range('2022-01-01', periods=80, freq='B'))
+          df['high'] = df[['open','high','close']].max(axis=1)+0.5
+          df['low']  = df[['open','low','close']].min(axis=1)-0.5
+          sigs = compute_all_signals(df)
+          assert len(sigs) >= 200, f'Expected 200+ signals, got {len(sigs)}'
+          print(f'Signals OK: {len(sigs)} fields')
+
+          # Strategies
+          from backtest.signals.screener import ALL_STRATEGIES
+          assert len(ALL_STRATEGIES) == 60, f'Expected 60 strategies, got {len(ALL_STRATEGIES)}'
+          print(f'Strategies OK: {len(ALL_STRATEGIES)}')
+
+          # Exit strategies
+          from backtest.engine.exit_strategies import EXIT_STRATEGIES
+          assert len(EXIT_STRATEGIES) == 12, f'Expected 12 exit strategies, got {len(EXIT_STRATEGIES)}'
+          print(f'Exit strategies OK: {len(EXIT_STRATEGIES)}')
+
+          # Trailing stop logic
+          from backtest.engine.exit_manager import OpenTrade, update_trailing_stop
+          from datetime import date
+          t = OpenTrade('TEST', date(2023,1,1), 100.0, 'long', 'test', 'momentum',
+                        90.0, 90.0, 100.0, 'bull')
+          t = update_trailing_stop(t, 110.0)
+          assert abs(t.trailing_stop - 99.0) < 0.01, f'Trailing stop wrong: {t.trailing_stop}'
+          t = update_trailing_stop(t, 105.0)
+          assert abs(t.trailing_stop - 99.0) < 0.01, 'Trailing stop moved down — bug'
+          print('Trailing stop logic OK')
+
+          # Regime filter
+          from backtest.engine.regime_filter import classify_regime
+          assert classify_regime(15.0, True)  == 'bull'
+          assert classify_regime(35.0, False) == 'bear'
+          assert classify_regime(42.0, False) == 'crisis'
+          assert classify_regime(25.0, None)  == 'neutral'
+          print('Regime filter OK')
+
+          print()
+          print('ALL VALIDATIONS PASSED')
+          " 2>&1
+
+      - name: Post validation summary
+        if: always()
+        run: |
+          echo "### Validation result" >> $GITHUB_STEP_SUMMARY
+          echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Time:** $(date +%Y-%m-%d' '%H:%M' UTC')" >> $GITHUB_STEP_SUMMARY

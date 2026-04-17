@@ -1,0 +1,112 @@
+2026-04-17 14:25:07,773 [INFO] backtest.engine: Loading OHLCV data for 10 instruments (2023-01-01 to 2023-02-28)...
+2026-04-17 14:25:12,397 [INFO] backtest.data.fetcher: fetch_ohlcv_bulk: loaded 10/10 tickers
+2026-04-17 14:25:12,397 [INFO] backtest.engine: Loaded OHLCV for 10/10 tickers
+2026-04-17 14:25:12,398 [INFO] backtest.engine: Loading company info...
+2026-04-17 14:25:13,757 [INFO] backtest.engine: Starting backtest: 42 trading days, phase=phase_1a
+2026-04-17 14:25:13,758 [INFO] backtest.engine: Progress: 0/42 [2023-01-02]
+2026-04-17 14:25:18,884 [INFO] backtest.signals.screener: screen_universe [2023-01-02]: 3/10 passed (min_strategies=1)
+2026-04-17 14:25:19,231 [INFO] backtest.signals.screener: screen_universe [2023-01-03]: 2/10 passed (min_strategies=1)
+2026-04-17 14:25:19,629 [INFO] backtest.signals.screener: screen_universe [2023-01-04]: 3/10 passed (min_strategies=1)
+2026-04-17 14:25:20,082 [INFO] backtest.signals.screener: screen_universe [2023-01-05]: 3/10 passed (min_strategies=1)
+2026-04-17 14:25:20,464 [INFO] backtest.signals.screener: screen_universe [2023-01-06]: 4/10 passed (min_strategies=1)
+2026-04-17 14:25:20,885 [INFO] backtest.signals.screener: screen_universe [2023-01-09]: 6/10 passed (min_strategies=1)
+2026-04-17 14:25:21,277 [INFO] backtest.signals.screener: screen_universe [2023-01-10]: 7/10 passed (min_strategies=1)
+2026-04-17 14:25:21,713 [INFO] backtest.signals.screener: screen_universe [2023-01-11]: 9/10 passed (min_strategies=1)
+2026-04-17 14:25:22,137 [INFO] backtest.signals.screener: screen_universe [2023-01-12]: 10/10 passed (min_strategies=1)
+2026-04-17 14:25:22,515 [INFO] backtest.signals.screener: screen_universe [2023-01-13]: 10/10 passed (min_strategies=1)
+2026-04-17 14:25:23,001 [INFO] backtest.signals.screener: screen_universe [2023-01-16]: 10/10 passed (min_strategies=1)
+2026-04-17 14:25:23,400 [INFO] backtest.signals.screener: screen_universe [2023-01-17]: 10/10 passed (min_strategies=1)
+2026-04-17 14:25:23,795 [INFO] backtest.signals.screener: screen_universe [2023-01-18]: 9/10 passed (min_strategies=1)
+2026-04-17 14:25:24,191 [INFO] backtest.signals.screener: screen_universe [2023-01-19]: 8/10 passed (min_strategies=1)
+2026-04-17 14:25:24,581 [INFO] backtest.signals.screener: screen_universe [2023-01-20]: 10/10 passed (min_strategies=1)
+2026-04-17 14:25:25,042 [INFO] backtest.signals.screener: screen_universe [2023-01-23]: 10/10 passed (min_strategies=1)
+2026-04-17 14:25:25,471 [INFO] backtest.signals.screener: screen_universe [2023-01-24]: 10/10 passed (min_strategies=1)
+2026-04-17 14:25:25,954 [INFO] backtest.signals.screener: screen_universe [2023-01-25]: 10/10 passed (min_strategies=1)
+2026-04-17 14:25:26,408 [INFO] backtest.signals.screener: screen_universe [2023-01-26]: 10/10 passed (min_strategies=1)
+2026-04-17 14:25:26,908 [INFO] backtest.signals.screener: screen_universe [2023-01-27]: 10/10 passed (min_strategies=1)
+2026-04-17 14:25:26,984 [INFO] backtest.engine: Progress: 20/42 [2023-01-30]
+2026-04-17 14:25:27,383 [INFO] backtest.signals.screener: screen_universe [2023-01-30]: 10/10 passed (min_strategies=1)
+2026-04-17 14:25:27,843 [INFO] backtest.signals.screener: screen_universe [2023-01-31]: 10/10 passed (min_strategies=1)
+2026-04-17 14:25:28,245 [INFO] backtest.signals.screener: screen_universe [2023-02-01]: 10/10 passed (min_strategies=1)
+2026-04-17 14:25:28,666 [INFO] backtest.signals.screener: screen_universe [2023-02-02]: 10/10 passed (min_strategies=1)
+2026-04-17 14:25:29,159 [INFO] backtest.signals.screener: screen_universe [2023-02-03]: 10/10 passed (min_strategies=1)
+2026-04-17 14:25:29,606 [INFO] backtest.signals.screener: screen_universe [2023-02-06]: 10/10 passed (min_strategies=1)
+2026-04-17 14:25:30,100 [INFO] backtest.signals.screener: screen_universe [2023-02-07]: 9/10 passed (min_strategies=1)
+2026-04-17 14:25:30,651 [INFO] backtest.signals.screener: screen_universe [2023-02-08]: 10/10 passed (min_strategies=1)
+2026-04-17 14:25:31,152 [INFO] backtest.signals.screener: screen_universe [2023-02-09]: 9/10 passed (min_strategies=1)
+2026-04-17 14:25:31,590 [INFO] backtest.signals.screener: screen_universe [2023-02-10]: 9/10 passed (min_strategies=1)
+2026-04-17 14:25:32,020 [INFO] backtest.signals.screener: screen_universe [2023-02-13]: 8/10 passed (min_strategies=1)
+2026-04-17 14:25:32,440 [INFO] backtest.signals.screener: screen_universe [2023-02-14]: 8/10 passed (min_strategies=1)
+2026-04-17 14:25:33,073 [INFO] backtest.signals.screener: screen_universe [2023-02-15]: 9/10 passed (min_strategies=1)
+2026-04-17 14:25:33,485 [INFO] backtest.signals.screener: screen_universe [2023-02-16]: 8/10 passed (min_strategies=1)
+2026-04-17 14:25:33,897 [INFO] backtest.signals.screener: screen_universe [2023-02-17]: 7/10 passed (min_strategies=1)
+2026-04-17 14:25:34,307 [INFO] backtest.signals.screener: screen_universe [2023-02-20]: 7/10 passed (min_strategies=1)
+2026-04-17 14:25:34,708 [INFO] backtest.signals.screener: screen_universe [2023-02-21]: 7/10 passed (min_strategies=1)
+2026-04-17 14:25:35,149 [INFO] backtest.signals.screener: screen_universe [2023-02-22]: 6/10 passed (min_strategies=1)
+2026-04-17 14:25:35,572 [INFO] backtest.signals.screener: screen_universe [2023-02-23]: 6/10 passed (min_strategies=1)
+2026-04-17 14:25:35,984 [INFO] backtest.signals.screener: screen_universe [2023-02-24]: 4/10 passed (min_strategies=1)
+2026-04-17 14:25:36,004 [INFO] backtest.engine: Progress: 40/42 [2023-02-27]
+2026-04-17 14:25:36,397 [INFO] backtest.signals.screener: screen_universe [2023-02-27]: 4/10 passed (min_strategies=1)
+2026-04-17 14:25:36,769 [INFO] backtest.signals.screener: screen_universe [2023-02-28]: 5/10 passed (min_strategies=1)
+2026-04-17 14:25:36,779 [INFO] backtest.engine: Backtest complete. 330 signals, 2720 trades recorded.
+2026-04-17 14:27:39,515 [INFO] backtest.engine: Loading OHLCV data for 10 instruments (2023-01-01 to 2023-02-28)...
+2026-04-17 14:27:43,262 [INFO] backtest.data.fetcher: fetch_ohlcv_bulk: loaded 10/10 tickers
+2026-04-17 14:27:43,263 [INFO] backtest.engine: Loaded OHLCV for 10/10 tickers
+2026-04-17 14:27:43,263 [INFO] backtest.engine: Loading company info...
+2026-04-17 14:27:44,609 [INFO] backtest.engine: Starting backtest: 42 trading days, phase=phase_1a
+2026-04-17 14:27:44,609 [INFO] backtest.engine: Progress: 0/42 [2023-01-02]
+2026-04-17 14:27:45,146 [INFO] backtest.signals.screener: screen_universe [2023-01-02]: 3/10 passed (min_strategies=1)
+2026-04-17 14:27:45,529 [INFO] backtest.signals.screener: screen_universe [2023-01-03]: 2/10 passed (min_strategies=1)
+2026-04-17 14:27:46,080 [INFO] backtest.signals.screener: screen_universe [2023-01-04]: 3/10 passed (min_strategies=1)
+2026-04-17 14:27:46,510 [INFO] backtest.signals.screener: screen_universe [2023-01-05]: 3/10 passed (min_strategies=1)
+2026-04-17 14:27:46,888 [INFO] backtest.signals.screener: screen_universe [2023-01-06]: 4/10 passed (min_strategies=1)
+2026-04-17 14:27:47,281 [INFO] backtest.signals.screener: screen_universe [2023-01-09]: 6/10 passed (min_strategies=1)
+2026-04-17 14:27:47,690 [INFO] backtest.signals.screener: screen_universe [2023-01-10]: 7/10 passed (min_strategies=1)
+2026-04-17 14:27:48,140 [INFO] backtest.signals.screener: screen_universe [2023-01-11]: 9/10 passed (min_strategies=1)
+2026-04-17 14:27:48,576 [INFO] backtest.signals.screener: screen_universe [2023-01-12]: 10/10 passed (min_strategies=1)
+2026-04-17 14:27:48,993 [INFO] backtest.signals.screener: screen_universe [2023-01-13]: 10/10 passed (min_strategies=1)
+2026-04-17 14:27:49,430 [INFO] backtest.signals.screener: screen_universe [2023-01-16]: 10/10 passed (min_strategies=1)
+2026-04-17 14:27:49,905 [INFO] backtest.signals.screener: screen_universe [2023-01-17]: 10/10 passed (min_strategies=1)
+2026-04-17 14:27:50,290 [INFO] backtest.signals.screener: screen_universe [2023-01-18]: 9/10 passed (min_strategies=1)
+2026-04-17 14:27:50,684 [INFO] backtest.signals.screener: screen_universe [2023-01-19]: 8/10 passed (min_strategies=1)
+2026-04-17 14:27:51,119 [INFO] backtest.signals.screener: screen_universe [2023-01-20]: 10/10 passed (min_strategies=1)
+2026-04-17 14:27:51,522 [INFO] backtest.signals.screener: screen_universe [2023-01-23]: 10/10 passed (min_strategies=1)
+2026-04-17 14:27:51,915 [INFO] backtest.signals.screener: screen_universe [2023-01-24]: 10/10 passed (min_strategies=1)
+2026-04-17 14:27:52,494 [INFO] backtest.signals.screener: screen_universe [2023-01-25]: 10/10 passed (min_strategies=1)
+2026-04-17 14:27:52,889 [INFO] backtest.signals.screener: screen_universe [2023-01-26]: 10/10 passed (min_strategies=1)
+2026-04-17 14:27:53,349 [INFO] backtest.signals.screener: screen_universe [2023-01-27]: 10/10 passed (min_strategies=1)
+2026-04-17 14:27:53,405 [INFO] backtest.engine: Progress: 20/42 [2023-01-30]
+2026-04-17 14:27:53,754 [INFO] backtest.signals.screener: screen_universe [2023-01-30]: 10/10 passed (min_strategies=1)
+2026-04-17 14:27:54,164 [INFO] backtest.signals.screener: screen_universe [2023-01-31]: 10/10 passed (min_strategies=1)
+2026-04-17 14:27:54,787 [INFO] backtest.signals.screener: screen_universe [2023-02-01]: 10/10 passed (min_strategies=1)
+2026-04-17 14:27:55,286 [INFO] backtest.signals.screener: screen_universe [2023-02-02]: 10/10 passed (min_strategies=1)
+2026-04-17 14:27:55,715 [INFO] backtest.signals.screener: screen_universe [2023-02-03]: 10/10 passed (min_strategies=1)
+2026-04-17 14:27:56,168 [INFO] backtest.signals.screener: screen_universe [2023-02-06]: 10/10 passed (min_strategies=1)
+2026-04-17 14:27:56,627 [INFO] backtest.signals.screener: screen_universe [2023-02-07]: 9/10 passed (min_strategies=1)
+2026-04-17 14:27:57,050 [INFO] backtest.signals.screener: screen_universe [2023-02-08]: 10/10 passed (min_strategies=1)
+2026-04-17 14:27:57,543 [INFO] backtest.signals.screener: screen_universe [2023-02-09]: 9/10 passed (min_strategies=1)
+2026-04-17 14:27:57,962 [INFO] backtest.signals.screener: screen_universe [2023-02-10]: 9/10 passed (min_strategies=1)
+2026-04-17 14:27:58,448 [INFO] backtest.signals.screener: screen_universe [2023-02-13]: 8/10 passed (min_strategies=1)
+2026-04-17 14:27:59,025 [INFO] backtest.signals.screener: screen_universe [2023-02-14]: 8/10 passed (min_strategies=1)
+2026-04-17 14:27:59,725 [INFO] backtest.signals.screener: screen_universe [2023-02-15]: 9/10 passed (min_strategies=1)
+2026-04-17 14:28:00,386 [INFO] backtest.signals.screener: screen_universe [2023-02-16]: 8/10 passed (min_strategies=1)
+2026-04-17 14:28:00,850 [INFO] backtest.signals.screener: screen_universe [2023-02-17]: 7/10 passed (min_strategies=1)
+2026-04-17 14:28:01,591 [INFO] backtest.signals.screener: screen_universe [2023-02-20]: 7/10 passed (min_strategies=1)
+2026-04-17 14:28:01,996 [INFO] backtest.signals.screener: screen_universe [2023-02-21]: 7/10 passed (min_strategies=1)
+2026-04-17 14:28:02,379 [INFO] backtest.signals.screener: screen_universe [2023-02-22]: 6/10 passed (min_strategies=1)
+2026-04-17 14:28:02,912 [INFO] backtest.signals.screener: screen_universe [2023-02-23]: 6/10 passed (min_strategies=1)
+2026-04-17 14:28:03,354 [INFO] backtest.signals.screener: screen_universe [2023-02-24]: 4/10 passed (min_strategies=1)
+2026-04-17 14:28:03,373 [INFO] backtest.engine: Progress: 40/42 [2023-02-27]
+2026-04-17 14:28:03,768 [INFO] backtest.signals.screener: screen_universe [2023-02-27]: 4/10 passed (min_strategies=1)
+2026-04-17 14:28:04,130 [INFO] backtest.signals.screener: screen_universe [2023-02-28]: 5/10 passed (min_strategies=1)
+2026-04-17 14:28:04,145 [INFO] backtest.engine: Backtest complete. 330 signals, 2720 trades recorded.
+2026-04-17 14:28:04,279 [INFO] backtest.results.writer: Wrote backtest_results.csv (50 rows)
+2026-04-17 14:28:04,281 [INFO] backtest.results.writer: Wrote winning_strategies.json (2 winning strategies)
+2026-04-17 14:28:04,282 [INFO] backtest.results.writer: Wrote regime_performance.csv
+2026-04-17 14:28:04,283 [INFO] backtest.results.writer: Wrote congressional_correlation.csv
+2026-04-17 14:28:04,284 [INFO] backtest.results.writer: Wrote insider_correlation.csv
+2026-04-17 14:28:04,285 [INFO] backtest.results.writer: Wrote smart_money_combined.csv
+2026-04-17 14:28:04,285 [INFO] backtest.results.writer: Wrote agent_performance.csv
+2026-04-17 14:28:04,292 [INFO] backtest.results.writer: Wrote backtest_report.html
+2026-04-17 14:28:04,320 [INFO] backtest.results.writer: All outputs written to output
+2026-04-17 14:28:04,366 [INFO] phase1a: Phase 1A check: 50 strategies, 2 passing threshold, 2720 total trades

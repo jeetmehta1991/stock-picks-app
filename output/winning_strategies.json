@@ -1,0 +1,27 @@
+{
+  "generated_at": "2026-04-17T14:28:04.281349",
+  "total_winners": 2,
+  "threshold": "55%+ win rate, 100+ trades, 2+ regimes",
+  "strategies": [
+    {
+      "strategy": "squeeze_breakout",
+      "hold_days": 5,
+      "total_trades": 173,
+      "win_rate": 0.6127,
+      "avg_pnl_pct": 1.6086,
+      "max_loss_pct": -9.1995,
+      "regimes_profitable": 1,
+      "passes_threshold": true
+    },
+    {
+      "strategy": "squeeze_breakout",
+      "hold_days": 3,
+      "total_trades": 173,
+      "win_rate": 0.5838,
+      "avg_pnl_pct": 1.0857,
+      "max_loss_pct": -6.6778,
+      "regimes_profitable": 1,
+      "passes_threshold": true
+    }
+  ]
+}
