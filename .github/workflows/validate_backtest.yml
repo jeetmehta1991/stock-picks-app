@@ -33,7 +33,7 @@ jobs:
           sys.path.insert(0, '.')
 
           # Config
-          from backtest.config import UNIVERSE, PASSING_CRITERIA, EXIT_STRATEGIES_LIST
+          from backtest.config import UNIVERSE, PASSING_CRITERIA
           assert len(UNIVERSE) == 67, f'Expected 67 instruments, got {len(UNIVERSE)}'
           assert PASSING_CRITERIA['min_profit_factor'] == 1.2
           print(f'Config OK: {len(UNIVERSE)} instruments, PF threshold={PASSING_CRITERIA[\"min_profit_factor\"]}')
