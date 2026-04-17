@@ -18,13 +18,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Python 3.11
+      - name: Set up Python 3.12
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"
 
       - name: Install dependencies
-        run: pip install yfinance pandas-ta requests --quiet
+        run: |
+          pip install yfinance requests --quiet
+          pip install pandas-ta --quiet || pip install ta --quiet || echo "pandas-ta unavailable — manual fallbacks will be used"
 
       - name: Run import validation
         run: |
