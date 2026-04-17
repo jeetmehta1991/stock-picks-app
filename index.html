@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Top Stock Picks — 2026-04-17 00:59</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: #0d1117;
+      color: #c9d1d9;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    header h1 {
+      font-size: 1.9rem;
+      font-weight: 700;
+      color: #f0f6fc;
+      letter-spacing: 0.5px;
+    }
+
+    header p {
+      margin-top: 0.4rem;
+      font-size: 0.85rem;
+      color: #8b949e;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      padding: 0.2rem 0.7rem;
+      margin-top: 0.6rem;
+      color: #58a6ff;
+    }
+
+    .error-banner {
+      max-width: 900px;
+      margin: 0 auto 1.5rem;
+      background: #1a0a0a;
+      border: 1px solid #6e2020;
+      border-radius: 8px;
+      padding: 0.9rem 1.25rem;
+      font-size: 0.8rem;
+      color: #f85149;
+    }
+
+    .error-banner ul {
+      margin-top: 0.4rem;
+      padding-left: 1.2rem;
+      color: #8b949e;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 1.5rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid #30363d;
+    }
+
+    .card-header .flag {
+      font-size: 1.4rem;
+      line-height: 1;
+    }
+
+    .card-header h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #f0f6fc;
+    }
+
+    .card-header .sub {
+      font-size: 0.75rem;
+      color: #8b949e;
+      margin-left: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 0.65rem 1.25rem;
+      font-size: 0.875rem;
+      text-align: right;
+    }
+
+    th {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #8b949e;
+      border-bottom: 1px solid #21262d;
+    }
+
+    th:first-child, td:first-child {
+      text-align: left;
+    }
+
+    tr:not(:last-child) td {
+      border-bottom: 1px solid #21262d;
+    }
+
+    tr:hover td {
+      background: #1c2128;
+    }
+
+    .ticker {
+      font-weight: 700;
+      color: #58a6ff;
+      font-size: 0.9rem;
+    }
+
+    .price {
+      color: #f0f6fc;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .positive { color: #3fb950; }
+    .negative { color: #f85149; }
+    .neutral  { color: #8b949e; }
+
+    .change, .pct {
+      font-variant-numeric: tabular-nums;
+    }
+
+    .empty {
+      text-align: center !important;
+      color: #484f58;
+      font-style: italic;
+      padding: 1.2rem !important;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 2.5rem;
+      font-size: 0.75rem;
+      color: #484f58;
+    }
+
+    footer a {
+      color: #58a6ff;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Top Performing Stocks</h1>
+    <p>Today's top 5 gainers by exchange</p>
+    <span class="badge">Updated 2026-04-17 00:59 UTC</span>
+  </header>
+
+  <div class="grid">
+    <div class="card">
+      <div class="card-header">
+        <span class="flag">🇺🇸</span>
+        <h2>US Markets</h2>
+        <span class="sub">NYSE · NASDAQ</span>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Ticker</th>
+            <th>Price</th>
+            <th>Change</th>
+            <th>% Change</th>
+          </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td class="ticker">BIRD</td>
+          <td class="price">$16.99</td>
+          <td class="change positive">▲ +14.50</td>
+          <td class="pct positive">+582.3293%</td>
+        </tr>
+        <tr>
+          <td class="ticker">SRTAW</td>
+          <td class="price">$0.02</td>
+          <td class="change positive">▲ +0.01</td>
+          <td class="pct positive">+158.0645%</td>
+        </tr>
+        <tr>
+          <td class="ticker">HUBC</td>
+          <td class="price">$0.26</td>
+          <td class="change positive">▲ +0.13</td>
+          <td class="pct positive">+104.7244%</td>
+        </tr>
+        <tr>
+          <td class="ticker">ONFOW</td>
+          <td class="price">$0.09</td>
+          <td class="change positive">▲ +0.04</td>
+          <td class="pct positive">+91.2017%</td>
+        </tr>
+        <tr>
+          <td class="ticker">EUDAW</td>
+          <td class="price">$0.04</td>
+          <td class="change positive">▲ +0.02</td>
+          <td class="pct positive">+91.1111%</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="flag">🇨🇦</span>
+        <h2>TSX Canada</h2>
+        <span class="sub">Toronto Stock Exchange</span>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Ticker</th>
+            <th>Price</th>
+            <th>Change</th>
+            <th>% Change</th>
+          </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td class="ticker">SU.TO</td>
+          <td class="price">$87.37</td>
+          <td class="change positive">▲ +1.06</td>
+          <td class="pct positive">+1.2281%</td>
+        </tr>
+        <tr>
+          <td class="ticker">CNQ.TO</td>
+          <td class="price">$63.47</td>
+          <td class="change positive">▲ +0.56</td>
+          <td class="pct positive">+0.8902%</td>
+        </tr>
+        <tr>
+          <td class="ticker">TD.TO</td>
+          <td class="price">$142.48</td>
+          <td class="change negative">▼ -0.29</td>
+          <td class="pct negative">-0.2031%</td>
+        </tr>
+        <tr>
+          <td class="ticker">RY.TO</td>
+          <td class="price">$241.10</td>
+          <td class="change negative">▼ -0.64</td>
+          <td class="pct negative">-0.2647%</td>
+        </tr>
+        <tr>
+          <td class="ticker">BMO.TO</td>
+          <td class="price">$204.68</td>
+          <td class="change negative">▼ -0.69</td>
+          <td class="pct negative">-0.3360%</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <footer>
+    <p>Data sourced from <a href="https://www.alphavantage.co" target="_blank" rel="noopener">Alpha Vantage</a> &mdash; updated daily at 06:00 UTC</p>
+  </footer>
+</body>
+</html>
