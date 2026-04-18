@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Backtest Analysis Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0d1117;--surface:#161b22;--border:#21262d;--border2:#30363d;--text:#c9d1d9;--text2:#8b949e;--text3:#484f58;--blue:#58a6ff;--green:#3fb950;--red:#f85149;--amber:#e3b341;--purple:#bc8cff}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.header{background:var(--surface);border-bottom:1px solid var(--border);padding:1.25rem 2rem;display:flex;align-items:center;justify-content:space-between}
+.header h1{font-size:1.3rem;font-weight:600;color:#f0f6fc}
+.header .sub{font-size:.8rem;color:var(--text2);margin-top:.2rem}
+.badge{background:var(--border2);border-radius:20px;padding:.2rem .7rem;font-size:.72rem;color:var(--blue)}
+.upload-zone{background:var(--surface);border:2px dashed var(--border2);border-radius:12px;padding:3rem 2rem;text-align:center;margin:2rem;cursor:pointer}
+.upload-zone h2{font-size:1.1rem;color:#f0f6fc;margin-bottom:.5rem}
+.upload-zone p{font-size:.85rem;color:var(--text2);margin-bottom:1rem}
+.upload-btn{background:var(--blue);color:#0d1117;border:none;padding:.6rem 1.5rem;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer}
+.tabs{display:flex;gap:2px;background:var(--surface);border-bottom:1px solid var(--border);padding:0 2rem;overflow-x:auto}
+.tab{padding:.75rem 1.25rem;font-size:.82rem;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap}
+.tab.active{color:var(--blue);border-bottom-color:var(--blue)}
+.content{padding:1.5rem 2rem;display:none}
+.content.active{display:block}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;margin-bottom:1.5rem}
+.grid4{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.75rem;margin-bottom:1.5rem}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.25rem}
+.card h3{font-size:.8rem;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:1rem;font-weight:400}
+.metric-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem}
+.metric-card .val{font-size:1.8rem;font-weight:700;color:#f0f6fc}
+.metric-card .lbl{font-size:.72rem;color:var(--text2);margin-top:.2rem}
+.metric-card .sub{font-size:.75rem;margin-top:.3rem}
+.green{color:var(--green)}.red{color:var(--red)}.amber{color:var(--amber)}.blue{color:var(--blue)}
+table{width:100%;border-collapse:collapse;font-size:.8rem}
+th{background:var(--surface);color:var(--text2);font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;padding:.55rem .75rem;text-align:left;border-bottom:1px solid var(--border);font-weight:400;white-space:nowrap}
+td{padding:.55rem .75rem;border-bottom:1px solid var(--border);vertical-align:middle}
+tr:hover td{background:rgba(255,255,255,.02)}
+.tbl-wrap{border:1px solid var(--border);border-radius:10px;overflow:hidden;overflow-x:auto}
+.wr-bar{height:5px;border-radius:3px;background:var(--border2);width:80px;display:inline-block;vertical-align:middle;margin-right:6px;overflow:hidden}
+.wr-fill{height:100%;border-radius:3px}
+.pass-badge{font-size:.68rem;padding:.2rem .5rem;border-radius:4px;font-weight:500}
+.pass-yes{background:rgba(63,185,80,.15);color:var(--green)}
+.pass-no{background:rgba(255,255,255,.05);color:var(--text3)}
+.pass-warn{background:rgba(227,179,65,.15);color:var(--amber)}
+.chart-wrap{position:relative;height:280px}
+.chart-wrap-lg{position:relative;height:360px}
+.equity-wrap{position:relative;height:300px}
+.section-title{font-size:.75rem;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;margin:1.5rem 0 .75rem;font-weight:400}
+.filter-row{display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap;align-items:center}
+.filter-btn{padding:.35rem .9rem;font-size:.75rem;border:1px solid var(--border2);border-radius:6px;cursor:pointer;background:transparent;color:var(--text2)}
+.filter-btn.on{background:var(--border2);color:var(--text);border-color:var(--border)}
+.search-box{padding:.4rem .8rem;font-size:.8rem;border:1px solid var(--border2);border-radius:6px;background:var(--surface);color:var(--text);width:220px}
+.search-box::placeholder{color:var(--text3)}
+.heatmap-cell{width:44px;height:32px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:500;cursor:pointer}
+.heatmap-wrap{overflow-x:auto}
+.alert{padding:.75rem 1rem;border-radius:8px;font-size:.8rem;margin-bottom:1rem}
+.alert-info{background:rgba(88,166,255,.1);border:1px solid rgba(88,166,255,.3);color:var(--blue)}
+.no-data{text-align:center;padding:3rem;color:var(--text3);font-size:.85rem}
+select{padding:.35rem .7rem;font-size:.78rem;border:1px solid var(--border2);border-radius:6px;background:var(--surface);color:var(--text);cursor:pointer}
+</style>
+</head>
+<body>
+<div class="header">
+  <div><h1>Backtest Analysis Dashboard</h1><div class="sub">Stock Picks &amp; Automated Trading System — Stage 2</div></div>
+  <div style="display:flex;gap:.5rem;align-items:center">
+    <span class="badge" id="trade-count-badge">No data loaded</span>
+    <button class="upload-btn" onclick="document.getElementById('file-input').click()" style="font-size:.75rem;padding:.35rem 1rem">Load Results</button>
+    <input type="file" id="file-input" multiple accept=".csv,.json" style="display:none" onchange="loadFiles(event)"/>
+  </div>
+</div>
+
+<div id="upload-prompt" class="upload-zone" onclick="document.getElementById('file-input').click()">
+  <h2>Load your backtest results</h2>
+  <p>Select files from your <code>output_v2/</code> folder<br>Required: <strong>trade_log.csv</strong> &nbsp;·&nbsp; Optional: backtest_results.csv, exit_strategy_comparison.csv</p>
+  <button class="upload-btn">Choose files</button>
+  <p style="margin-top:1rem;font-size:.75rem;color:var(--text3)">Files processed locally — nothing uploaded anywhere</p>
+</div>
+
+<div id="dashboard" style="display:none">
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('overview')">Overview</div>
+    <div class="tab" onclick="showTab('strategies')">Strategy analysis</div>
+    <div class="tab" onclick="showTab('exits')">Exit comparison</div>
+    <div class="tab" onclick="showTab('trades')">Trade browser</div>
+    <div class="tab" onclick="showTab('regime')">Regime &amp; macro</div>
+    <div class="tab" onclick="showTab('risk')">Risk analysis</div>
+    <div class="tab" onclick="showTab('smartmoney')">Smart money</div>
+    <div class="tab" onclick="showTab('portfolio')">Portfolio sim</div>
+  </div>
+
+  <div id="tab-overview" class="content active">
+    <div class="grid4" id="overview-metrics"></div>
+    <div class="grid2">
+      <div class="card"><h3>Win rate by strategy</h3><div class="chart-wrap"><canvas id="wr-chart"></canvas></div></div>
+      <div class="card"><h3>Total ROI by strategy</h3><div class="chart-wrap"><canvas id="roi-chart"></canvas></div></div>
+    </div>
+    <div class="grid2">
+      <div class="card"><h3>Trade outcomes</h3><div class="chart-wrap"><canvas id="outcome-chart"></canvas></div></div>
+      <div class="card"><h3>Long vs short performance</h3><div class="chart-wrap"><canvas id="ls-chart"></canvas></div></div>
+    </div>
+    <div class="card"><h3>Equity curve — cumulative ROI over time</h3><div class="equity-wrap"><canvas id="equity-chart"></canvas></div></div>
+  </div>
+
+  <div id="tab-strategies" class="content">
+    <div class="filter-row">
+      <input class="search-box" placeholder="Search strategy..." oninput="stratSearch=this.value;renderStratTable()"/>
+      <button class="filter-btn on" onclick="filterStratCat('all',this)">All</button>
+      <button class="filter-btn" onclick="filterStratCat('momentum',this)">Momentum</button>
+      <button class="filter-btn" onclick="filterStratCat('trend',this)">Trend</button>
+      <button class="filter-btn" onclick="filterStratCat('mean_reversion',this)">Mean reversion</button>
+      <button class="filter-btn" onclick="filterStratCat('breakout',this)">Breakout</button>
+      <button class="filter-btn" onclick="filterStratCat('pivot',this)">Pivot</button>
+      <button class="filter-btn" onclick="filterStratCat('candle',this)">Candle</button>
+      <button class="filter-btn" onclick="filterStratCat('confluence',this)">Confluence</button>
+      <select onchange="stratSort=this.value;renderStratTable()">
+        <option value="win_rate">Sort: win rate</option>
+        <option value="profit_factor">Sort: profit factor</option>
+        <option value="total_roi">Sort: total ROI</option>
+        <option value="n">Sort: trade count</option>
+        <option value="mdd">Sort: drawdown</option>
+        <option value="sh">Sort: Sharpe ratio</option>
+      </select>
+    </div>
+    <div class="tbl-wrap">
+      <table><thead><tr>
+        <th>Strategy</th><th>Cat</th><th>Dir</th><th>Trades</th><th>Win rate</th>
+        <th>Profit factor</th><th>Avg win</th><th>Avg loss</th><th>W/L ratio</th>
+        <th>Total ROI</th><th>Max DD</th><th>Sharpe</th><th>Regimes</th><th>Exp value</th><th>Status</th>
+      </tr></thead><tbody id="strat-tbody"></tbody></table>
+    </div>
+    <div class="section-title" style="margin-top:1.5rem">Signals in winning trades</div>
+    <div class="card"><h3>Which signals appear most often in winning trades</h3><div class="chart-wrap-lg"><canvas id="signal-chart"></canvas></div></div>
+  </div>
+
+  <div id="tab-exits" class="content">
+    <div class="alert alert-info">Composite score = 40% ROI + 30% profit factor + 30% lowest drawdown. Higher = better exit method for that strategy.</div>
+    <div class="section-title">Exit method heatmap — composite score per strategy</div>
+    <div class="card"><div class="heatmap-wrap" id="heatmap-wrap"><div class="no-data">Load exit_strategy_comparison.csv to see heatmap</div></div></div>
+    <div class="section-title" style="margin-top:1.5rem">Best exit per strategy</div>
+    <div class="tbl-wrap"><table><thead><tr>
+      <th>Strategy</th><th>Best exit</th><th>Trades</th><th>Win rate</th><th>Profit factor</th><th>Total ROI</th><th>Max DD</th><th>Avg hold</th><th>Score</th>
+    </tr></thead><tbody id="exit-tbody"></tbody></table></div>
+    <div class="section-title" style="margin-top:1.5rem">All exit methods — average composite score</div>
+    <div class="card"><div class="chart-wrap-lg"><canvas id="exit-chart"></canvas></div></div>
+  </div>
+
+  <div id="tab-trades" class="content">
+    <div class="filter-row">
+      <input class="search-box" placeholder="Search ticker or strategy..." oninput="tradeSearch=this.value;tradePage=0;renderTrades()"/>
+      <select onchange="tradeDir=this.value;tradePage=0;renderTrades()"><option value="all">All directions</option><option value="long">Long only</option><option value="short">Short only</option></select>
+      <select onchange="tradeOutcome=this.value;tradePage=0;renderTrades()"><option value="all">All outcomes</option><option value="win">Wins only</option><option value="loss">Losses only</option></select>
+      <select onchange="tradeRegime=this.value;tradePage=0;renderTrades()" id="regime-select"><option value="all">All regimes</option></select>
+    </div>
+    <div style="font-size:.78rem;color:var(--text2);margin-bottom:.75rem" id="trade-count-label"></div>
+    <div class="tbl-wrap"><table><thead><tr>
+      <th>Date</th><th>Ticker</th><th>Direction</th><th>Strategy</th><th>Entry</th><th>Exit</th>
+      <th>P&amp;L %</th><th>Hold</th><th>Exit reason</th><th>Regime</th><th>Confidence</th>
+    </tr></thead><tbody id="trade-tbody"></tbody></table></div>
+    <div id="pagination" style="display:flex;gap:.5rem;justify-content:center;margin-top:1rem;font-size:.8rem"></div>
+  </div>
+
+  <div id="tab-regime" class="content">
+    <div class="grid4" id="regime-metrics"></div>
+    <div class="grid2">
+      <div class="card"><h3>Win rate by regime</h3><div class="chart-wrap"><canvas id="regime-chart"></canvas></div></div>
+      <div class="card"><h3>Trade count by regime</h3><div class="chart-wrap"><canvas id="regime-trades-chart"></canvas></div></div>
+    </div>
+    <div class="card"><h3>Strategy × regime heatmap — win rate</h3><div class="heatmap-wrap" id="regime-heatmap"><div class="no-data">Need 5+ trades per regime per strategy</div></div></div>
+    <div class="card" style="margin-top:1rem"><h3>ROI by regime</h3><div class="chart-wrap-lg"><canvas id="regime-roi-chart"></canvas></div></div>
+  </div>
+
+  <div id="tab-risk" class="content">
+    <div class="grid4" id="risk-metrics"></div>
+    <div class="card" style="margin-bottom:1rem"><h3>Drawdown analysis — equity curve with peak-to-trough drawdowns</h3><div class="equity-wrap"><canvas id="drawdown-chart"></canvas></div></div>
+    <div class="grid2">
+      <div class="card"><h3>Max adverse excursion — how far against before exit</h3><div class="chart-wrap"><canvas id="mae-chart"></canvas></div></div>
+      <div class="card"><h3>Max favourable excursion — how far in favour before exit</h3><div class="chart-wrap"><canvas id="mfe-chart"></canvas></div></div>
+    </div>
+    <div class="grid2">
+      <div class="card"><h3>Consecutive loss streaks by strategy</h3><div class="chart-wrap"><canvas id="streak-chart"></canvas></div></div>
+      <div class="card"><h3>Trade duration distribution</h3><div class="chart-wrap"><canvas id="duration-chart"></canvas></div></div>
+    </div>
+    <div class="card"><h3>Monthly P&amp;L calendar</h3><div id="monthly-cal"></div></div>
+  </div>
+
+  <div id="tab-smartmoney" class="content">
+    <div class="alert alert-info">Smart money data requires QUIVER_API_KEY. Without it, smart_money_score will be 0 — charts show baseline only.</div>
+    <div class="grid2">
+      <div class="card"><h3>Win rate with vs without smart money signal</h3><div class="chart-wrap"><canvas id="sm-lift-chart"></canvas></div></div>
+      <div class="card"><h3>ROI by smart money score tier</h3><div class="chart-wrap"><canvas id="sm-roi-chart"></canvas></div></div>
+    </div>
+    <div class="card"><h3>Confidence tier performance — does EXCEPTIONAL beat HIGH?</h3><div class="chart-wrap-lg"><canvas id="tier-chart"></canvas></div></div>
+  </div>
+
+  <div id="tab-portfolio" class="content">
+    <div class="grid4" id="portfolio-metrics"></div>
+    <div class="card" style="margin-bottom:1rem"><h3>Portfolio equity curve — 1% vs 2% position sizing on $10,000 capital</h3><div class="equity-wrap"><canvas id="portfolio-chart"></canvas></div></div>
+    <div class="grid2">
+      <div class="card"><h3>Monthly P&amp;L — which months are consistently profitable</h3><div class="chart-wrap-lg"><canvas id="monthly-chart"></canvas></div></div>
+      <div class="card"><h3>Position sizing impact — final portfolio value</h3><div class="chart-wrap"><canvas id="sizing-chart"></canvas></div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+let TRADES=[],METRICS=[],EXIT_CMP=[];
+let tradePage=0,tradePageSize=50;
+let stratFilter='all',stratSort='win_rate',stratSearch='';
+let tradeSearch='',tradeDir='all',tradeOutcome='all',tradeRegime='all';
+
+function loadFiles(e){
+  const files=Array.from(e.target.files);
+  let loaded=0;
+  files.forEach(f=>{
+    const name=f.name.toLowerCase();
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      if(name.includes('trade_log')) TRADES=Papa.parse(ev.target.result,{header:true,dynamicTyping:true,skipEmptyLines:true}).data;
+      else if(name.includes('backtest_results')) METRICS=Papa.parse(ev.target.result,{header:true,dynamicTyping:true,skipEmptyLines:true}).data;
+      else if(name.includes('exit_strategy')) EXIT_CMP=Papa.parse(ev.target.result,{header:true,dynamicTyping:true,skipEmptyLines:true}).data;
+      loaded++;
+      if(loaded===files.length) initDashboard();
+    };
+    reader.readAsText(f);
+  });
+}
+
+function initDashboard(){
+  if(!TRADES.length) return;
+  document.getElementById('upload-prompt').style.display='none';
+  document.getElementById('dashboard').style.display='block';
+  document.getElementById('trade-count-badge').textContent=`${TRADES.length.toLocaleString()} trades loaded`;
+  populateRegimeFilter();
+  buildOverview();buildStrategies();buildExits();buildTrades();buildRegime();buildRisk();buildSmartMoney();buildPortfolio();
+}
+
+function showTab(id){
+  document.querySelectorAll('.tab').forEach((t,i)=>{const ids=['overview','strategies','exits','trades','regime','risk','smartmoney','portfolio'];t.classList.toggle('active',ids[i]===id);});
+  document.querySelectorAll('.content').forEach(c=>c.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+}
+
+const r2=v=>Math.round(v*100)/100;
+const pct=v=>`${(v*100).toFixed(1)}%`;
+const clr=v=>v>0?'var(--green)':v<0?'var(--red)':'var(--text2)';
+const wrClr=v=>v>=0.55?'var(--green)':v>=0.45?'var(--amber)':'var(--red)';
+const pfClr=v=>v>=1.2?'var(--green)':v>=1.0?'var(--amber)':'var(--red)';
+
+function groupBy(arr,key){return arr.reduce((a,r)=>{const k=r[key]||'unknown';if(!a[k])a[k]=[];a[k].push(r);return a;},{});}
+function winRate(a){return a.length?a.filter(t=>t.pnl_pct>0).length/a.length:0;}
+function avgPnl(a){return a.length?a.reduce((s,t)=>s+(t.pnl_pct||0),0)/a.length:0;}
+function totalRoi(a){return r2(a.reduce((s,t)=>s+(t.pnl_pct||0),0));}
+function profitFactor(a){const w=a.filter(t=>t.pnl_pct>0).reduce((s,t)=>s+t.pnl_pct,0);const l=Math.abs(a.filter(t=>t.pnl_pct<=0).reduce((s,t)=>s+t.pnl_pct,0));return l>0?r2(w/l):w>0?999:0;}
+function maxDD(a){let c=0,p=0,d=0;a.forEach(t=>{c+=t.pnl_pct||0;if(c>p)p=c;if(p-c>d)d=p-c;});return r2(-d);}
+function sharpe(a){if(!a.length)return 0;const m=avgPnl(a);const sd=Math.sqrt(a.reduce((s,t)=>s+Math.pow((t.pnl_pct||0)-m,2),0)/a.length);return sd>0?r2(m/sd*Math.sqrt(252)):0;}
+function mCard(val,lbl,sub,color){return `<div class="metric-card"><div class="val" style="color:${color||'#f0f6fc'}">${val}</div><div class="lbl">${lbl}</div>${sub?`<div class="sub" style="color:var(--text2)">${sub}</div>`:''}</div>`;}
+
+function mkChart(id,type,labels,datasets,opts={}){
+  const c=document.getElementById(id);if(!c)return;
+  if(c._ch)c._ch.destroy();
+  c._ch=new Chart(c,{type,data:{labels,datasets},options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:opts.legend!==false,labels:{color:'#8b949e',font:{size:11},boxWidth:12}}},
+    scales:type==='pie'||type==='doughnut'?{}:{
+      x:{ticks:{color:'#8b949e',font:{size:10},maxRotation:45},grid:{color:'#21262d'}},
+      y:{ticks:{color:'#8b949e',font:{size:10},callback:opts.yFmt||(v=>v)},grid:{color:'#21262d'}}
+    }}});
+}
+
+function buildOverview(){
+  const t=TRADES;
+  const wr=winRate(t),pf=profitFactor(t),roi=totalRoi(t),mdd=maxDD(t),sh=sharpe(t);
+  const L=t.filter(x=>x.direction==='long'),S=t.filter(x=>x.direction==='short');
+  const strats=[...new Set(t.map(x=>x.strategy))].length;
+  document.getElementById('overview-metrics').innerHTML=[
+    mCard(t.length.toLocaleString(),'Total trades',`${L.length}L / ${S.length}S`),
+    mCard(pct(wr),'Overall win rate',wr>=0.55?'Above threshold':'Below threshold',wrClr(wr)),
+    mCard(pf,'Profit factor',pf>=1.2?'Passes (>1.2)':'Fails (<1.2)',pfClr(pf)),
+    mCard(`${roi>0?'+':''}${roi}%`,'Total ROI','All trades combined',clr(roi)),
+    mCard(`${mdd}%`,'Max drawdown',mdd>-20?'Within 20% limit':'Exceeds 20%',mdd>-10?'var(--green)':'var(--red)'),
+    mCard(sh,'Sharpe ratio',sh>=1?'Good (>1)':sh>=0.5?'Acceptable':'Low',sh>=1?'var(--green)':sh>=0.5?'var(--amber)':'var(--red)'),
+    mCard(strats,'Strategies tested',`${METRICS.filter(m=>m.passes_all).length} passing all`,'var(--blue)'),
+    mCard([...new Set(t.map(x=>x.ticker))].length,'Instruments','Unique tickers'),
+  ].join('');
+  const byS=groupBy(t,'strategy');const sL=Object.keys(byS).slice(0,15);
+  const sWR=sL.map(s=>r2(winRate(byS[s])*100));
+  mkChart('wr-chart','bar',sL,[{label:'Win rate %',data:sWR,backgroundColor:sWR.map(v=>v>=55?'rgba(63,185,80,.7)':v>=45?'rgba(227,179,65,.7)':'rgba(248,81,73,.7)')}],{yFmt:v=>v+'%',legend:false});
+  const sROI=sL.map(s=>totalRoi(byS[s]));
+  mkChart('roi-chart','bar',sL,[{label:'Total ROI %',data:sROI,backgroundColor:sROI.map(v=>v>0?'rgba(63,185,80,.7)':'rgba(248,81,73,.7)')}],{yFmt:v=>v+'%',legend:false});
+  const wins=t.filter(x=>x.pnl_pct>0).length;
+  mkChart('outcome-chart','doughnut',['Wins','Losses'],[{data:[wins,t.length-wins],backgroundColor:['rgba(63,185,80,.8)','rgba(248,81,73,.8)'],borderWidth:0}],{legend:true});
+  mkChart('ls-chart','bar',['Long','Short'],[
+    {label:'Win rate %',data:[r2(winRate(L)*100),r2(winRate(S)*100)],backgroundColor:'rgba(88,166,255,.7)'},
+    {label:'Total ROI %',data:[totalRoi(L),totalRoi(S)],backgroundColor:'rgba(63,185,80,.7)'},
+  ],{yFmt:v=>v+'%'});
+  const sorted=[...t].sort((a,b)=>new Date(a.entry_date)-new Date(b.entry_date));
+  let cum=0;const eL=[],eD=[];
+  sorted.forEach(tr=>{cum+=tr.pnl_pct||0;eL.push((tr.entry_date||'').slice(0,10));eD.push(r2(cum));});
+  mkChart('equity-chart','line',eL,[{label:'Cumulative ROI %',data:eD,borderColor:'#58a6ff',backgroundColor:'rgba(88,166,255,.1)',fill:true,pointRadius:0,borderWidth:1.5}],{yFmt:v=>v+'%',legend:false});
+}
+
+function buildStrategies(){renderStratTable();buildSignalChart();}
+
+function renderStratTable(){
+  const byS=groupBy(TRADES,'strategy');
+  let rows=Object.entries(byS).map(([name,arr])=>{
+    const wr=winRate(arr),pf=profitFactor(arr),roi=totalRoi(arr),mdd=maxDD(arr),sh=sharpe(arr);
+    const W=arr.filter(t=>t.pnl_pct>0),L=arr.filter(t=>t.pnl_pct<=0);
+    const aW=W.length?r2(avgPnl(W)):0,aL=L.length?r2(avgPnl(L)):0;
+    const wlr=aL<0?r2(Math.abs(aW/aL)):'∞';
+    const ev=r2(wr*aW+(1-wr)*aL);
+    const reg=[...new Set(arr.map(t=>t.regime||'').filter(Boolean))].length;
+    const cat=arr[0]?.category||'';
+    const dirs=arr.filter(t=>t.direction==='long').length+'L/'+arr.filter(t=>t.direction==='short').length+'S';
+    const passes=wr>=0.55&&pf>=1.2&&arr.length>=100&&roi>0&&mdd>-20;
+    const audit=wr>0.75||pf>1.5;
+    return {name,cat,dirs,n:arr.length,wr,pf,aW,aL,wlr,roi,mdd,sh,reg,ev,passes,audit};
+  });
+  if(stratFilter!=='all') rows=rows.filter(r=>r.cat===stratFilter);
+  if(stratSearch) rows=rows.filter(r=>r.name.includes(stratSearch));
+  rows.sort((a,b)=>b[stratSort]-a[stratSort]);
+  document.getElementById('strat-tbody').innerHTML=rows.map(r=>`<tr>
+    <td style="color:var(--blue);font-weight:500">${r.name.replace(/_/g,' ')}</td>
+    <td style="color:var(--text2)">${r.cat}</td><td>${r.dirs}</td><td>${r.n.toLocaleString()}</td>
+    <td><div class="wr-bar"><div class="wr-fill" style="width:${Math.min(r.wr*100,100)}%;background:${wrClr(r.wr)}"></div></div><span style="color:${wrClr(r.wr)};font-weight:500">${pct(r.wr)}</span></td>
+    <td style="color:${pfClr(r.pf)}">${r.pf}</td>
+    <td style="color:var(--green)">${r.aW>0?'+':''}${r.aW}%</td>
+    <td style="color:var(--red)">${r.aL}%</td><td>${r.wlr}</td>
+    <td style="color:${clr(r.roi)}">${r.roi>0?'+':''}${r.roi}%</td>
+    <td style="color:${r.mdd<-10?'var(--red)':'var(--amber)'}">${r.mdd}%</td>
+    <td style="color:${r.sh>=1?'var(--green)':r.sh>=0.5?'var(--amber)':'var(--red)'}">${r.sh}</td>
+    <td>${r.reg}</td><td style="color:${clr(r.ev)}">${r.ev>0?'+':''}${r.ev}%</td>
+    <td>${r.passes?'<span class="pass-badge pass-yes">✓ Pass</span>':r.audit?'<span class="pass-badge pass-warn">⚠ Audit</span>':'<span class="pass-badge pass-no">More data</span>'}</td>
+  </tr>`).join('')||'<tr><td colspan="15" class="no-data">No strategies found</td></tr>';
+}
+
+function filterStratCat(cat,btn){stratFilter=cat;document.querySelectorAll('#tab-strategies .filter-btn').forEach(b=>b.classList.remove('on'));btn.classList.add('on');renderStratTable();}
+
+function buildSignalChart(){
+  const counts={};
+  TRADES.filter(t=>t.pnl_pct>0).forEach(t=>{
+    if(typeof t.signals_at_entry==='object'&&t.signals_at_entry){
+      Object.entries(t.signals_at_entry).forEach(([k,v])=>{if(v===true)counts[k]=(counts[k]||0)+1;});
+    }
+  });
+  const top=Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,20);
+  if(!top.length)return;
+  mkChart('signal-chart','bar',top.map(x=>x[0].replace(/_/g,' ')),[{label:'Count in wins',data:top.map(x=>x[1]),backgroundColor:'rgba(88,166,255,.7)'}],{legend:false});
+}
+
+function buildExits(){
+  if(!EXIT_CMP.length){document.getElementById('exit-tbody').innerHTML='<tr><td colspan="9" class="no-data">Load exit_strategy_comparison.csv</td></tr>';return;}
+  const best={};
+  EXIT_CMP.forEach(r=>{if(r.recommended===true||r.recommended==='True'||r.recommended==='true')best[r.strategy]=r;});
+  document.getElementById('exit-tbody').innerHTML=Object.values(best).map(r=>{
+    const sc=parseFloat(r.composite_score)||0;
+    return `<tr>
+      <td style="color:var(--blue);font-weight:500">${(r.strategy||'').replace(/_/g,' ')}</td>
+      <td style="color:#f0f6fc;font-weight:500">${(r.exit_method||'').replace(/_/g,' ')}</td>
+      <td>${parseInt(r.trades)||0}</td>
+      <td style="color:${wrClr(parseFloat(r.win_rate)||0)};font-weight:500">${pct(parseFloat(r.win_rate)||0)}</td>
+      <td style="color:${pfClr(parseFloat(r.profit_factor)||0)}">${r2(parseFloat(r.profit_factor)||0)}</td>
+      <td style="color:${clr(parseFloat(r.total_roi_pct)||0)}">${r2(parseFloat(r.total_roi_pct)||0)}%</td>
+      <td style="color:var(--red)">${r2(parseFloat(r.max_drawdown_pct)||0)}%</td>
+      <td>${r2(parseFloat(r.avg_hold_days)||0)}d</td>
+      <td style="color:${sc>=60?'var(--green)':sc>=40?'var(--amber)':'var(--red)'};font-weight:600">${r2(sc)}</td>
+    </tr>`;
+  }).join('')||'<tr><td colspan="9" class="no-data">No recommended exits found</td></tr>';
+  buildExitHeatmap();
+  const byM=groupBy(EXIT_CMP,'exit_method');
+  const methods=Object.keys(byM);
+  const avg=methods.map(m=>r2(byM[m].reduce((s,r)=>s+(parseFloat(r.composite_score)||0),0)/byM[m].length));
+  mkChart('exit-chart','bar',methods.map(m=>m.replace(/_/g,' ')),[{label:'Avg composite score',data:avg,backgroundColor:avg.map(v=>v>=60?'rgba(63,185,80,.7)':v>=40?'rgba(227,179,65,.7)':'rgba(248,81,73,.7)')}],{legend:false});
+}
+
+function buildExitHeatmap(){
+  const strats=[...new Set(EXIT_CMP.map(r=>r.strategy))].slice(0,18);
+  const methods=[...new Set(EXIT_CMP.map(r=>r.exit_method))];
+  const map={};EXIT_CMP.forEach(r=>{map[`${r.strategy}__${r.exit_method}`]=parseFloat(r.composite_score)||0;});
+  const max=Math.max(...Object.values(map),1);
+  let html='<table style="border-collapse:separate;border-spacing:3px"><thead><tr><th style="font-size:.65rem;color:var(--text2);min-width:120px"></th>';
+  methods.forEach(m=>html+=`<th style="font-size:.62rem;color:var(--text2);padding:.2rem .4rem;white-space:nowrap">${m.replace(/_/g,' ')}</th>`);
+  html+='</tr></thead><tbody>';
+  strats.forEach(s=>{
+    html+=`<tr><td style="font-size:.68rem;color:var(--text2);padding:.2rem .5rem;white-space:nowrap">${s.replace(/_/g,' ')}</td>`;
+    methods.forEach(m=>{
+      const v=map[`${s}__${m}`]||0;
+      const bg=v>0?`rgba(${Math.round(63+(88-63)*(v/max))},${Math.round(185*(v/max))},${Math.round(80*(v/max))},.${Math.round(3+(v/max)*6)})`:'rgba(255,255,255,.03)';
+      html+=`<td><div class="heatmap-cell" style="background:${bg};color:${v>40?'#f0f6fc':v>0?'var(--text2)':'var(--text3)'}" title="${s}·${m}:${r2(v)}">${v>0?r2(v):''}</div></td>`;
+    });
+    html+='</tr>';
+  });
+  document.getElementById('heatmap-wrap').innerHTML=html+'</tbody></table>';
+}
+
+function populateRegimeFilter(){
+  const regimes=[...new Set(TRADES.map(t=>t.regime||'').filter(Boolean))];
+  const sel=document.getElementById('regime-select');
+  regimes.forEach(r=>{const o=document.createElement('option');o.value=r;o.textContent=r;sel.appendChild(o);});
+}
+
+function buildTrades(){renderTrades();}
+
+function renderTrades(){
+  const f=TRADES.filter(t=>{
+    if(tradeDir!=='all'&&t.direction!==tradeDir)return false;
+    if(tradeOutcome==='win'&&t.pnl_pct<=0)return false;
+    if(tradeOutcome==='loss'&&t.pnl_pct>0)return false;
+    if(tradeRegime!=='all'&&t.regime!==tradeRegime)return false;
+    if(tradeSearch&&!`${t.ticker} ${t.strategy}`.toLowerCase().includes(tradeSearch.toLowerCase()))return false;
+    return true;
+  });
+  document.getElementById('trade-count-label').textContent=`${f.length.toLocaleString()} trades matching filters`;
+  const page=f.slice(tradePage*tradePageSize,(tradePage+1)*tradePageSize);
+  document.getElementById('trade-tbody').innerHTML=page.map(t=>`<tr>
+    <td style="color:var(--text2)">${(t.entry_date||'').slice(0,10)}</td>
+    <td style="color:var(--blue);font-weight:500">${t.ticker||''}</td>
+    <td style="color:${t.direction==='long'?'var(--green)':'var(--red)'}">${(t.direction||'').toUpperCase()}</td>
+    <td style="color:var(--text2)">${(t.strategy||'').replace(/_/g,' ')}</td>
+    <td>$${r2(t.entry_price||0)}</td><td>$${r2(t.exit_price||0)}</td>
+    <td style="color:${clr(t.pnl_pct||0)};font-weight:500">${t.pnl_pct>0?'+':''}${r2(t.pnl_pct||0)}%</td>
+    <td>${t.hold_days||0}d</td>
+    <td style="color:var(--text2)">${(t.exit_reason||'').replace(/_/g,' ')}</td>
+    <td style="color:var(--text2);font-size:.7rem">${(t.regime||'').replace(/_/g,' ')}</td>
+    <td><span class="pass-badge ${t.confidence_tier==='EXCEPTIONAL'||t.confidence_tier==='VERY_HIGH'?'pass-yes':t.confidence_tier?'pass-warn':'pass-no'}">${t.confidence_tier||'—'}</span></td>
+  </tr>`).join('');
+  const pages=Math.ceil(f.length/tradePageSize);
+  const pag=document.getElementById('pagination');pag.innerHTML='';
+  if(pages>1)for(let i=0;i<Math.min(pages,10);i++){const btn=document.createElement('button');btn.className='filter-btn'+(i===tradePage?' on':'');btn.textContent=i+1;btn.onclick=(p=>()=>{tradePage=p;renderTrades();})(i);pag.appendChild(btn);}
+}
+
+function buildRegime(){
+  const byR=groupBy(TRADES,'regime');const regs=Object.keys(byR);
+  document.getElementById('regime-metrics').innerHTML=regs.map(r=>mCard(pct(winRate(byR[r])),r.replace(/_/g,' '),`${byR[r].length} trades · ROI ${totalRoi(byR[r])>0?'+':''}${totalRoi(byR[r])}%`,wrClr(winRate(byR[r])))).join('');
+  const cols=['rgba(88,166,255,.7)','rgba(63,185,80,.7)','rgba(227,179,65,.7)','rgba(248,81,73,.7)','rgba(188,140,255,.7)'];
+  mkChart('regime-chart','bar',regs.map(r=>r.replace(/_/g,' ')),[{label:'Win rate %',data:regs.map(r=>r2(winRate(byR[r])*100)),backgroundColor:regs.map(r=>winRate(byR[r])>=0.55?'rgba(63,185,80,.7)':'rgba(248,81,73,.7)')}],{yFmt:v=>v+'%',legend:false});
+  mkChart('regime-trades-chart','bar',regs.map(r=>r.replace(/_/g,' ')),[{label:'Trades',data:regs.map(r=>byR[r].length),backgroundColor:cols}],{legend:false});
+  mkChart('regime-roi-chart','bar',regs.map(r=>r.replace(/_/g,' ')),[{label:'ROI %',data:regs.map(r=>totalRoi(byR[r])),backgroundColor:regs.map(r=>totalRoi(byR[r])>0?'rgba(63,185,80,.7)':'rgba(248,81,73,.7)')}],{yFmt:v=>v+'%',legend:false});
+  // Regime heatmap
+  const strats=[...new Set(TRADES.map(t=>t.strategy))].slice(0,15);
+  let html='<table style="border-collapse:separate;border-spacing:3px;font-size:.68rem"><thead><tr><th style="min-width:120px"></th>';
+  regs.forEach(r=>html+=`<th style="color:var(--text2);padding:.2rem .4rem;white-space:nowrap">${r.replace(/_/g,' ')}</th>`);
+  html+='</tr></thead><tbody>';
+  strats.forEach(s=>{
+    html+=`<tr><td style="color:var(--text2);padding:.2rem .5rem;white-space:nowrap">${s.replace(/_/g,' ')}</td>`;
+    regs.forEach(r=>{
+      const arr=(byR[r]||[]).filter(t=>t.strategy===s);
+      if(arr.length<3){html+='<td><div class="heatmap-cell" style="background:rgba(255,255,255,.02);color:var(--text3)">—</div></td>';return;}
+      const wr=winRate(arr);
+      const bg=wr>=0.55?'rgba(63,185,80,.6)':wr>=0.4?'rgba(227,179,65,.5)':'rgba(248,81,73,.5)';
+      html+=`<td><div class="heatmap-cell" style="background:${bg};color:#f0f6fc" title="${arr.length} trades">${pct(wr)}</div></td>`;
+    });
+    html+='</tr>';
+  });
+  document.getElementById('regime-heatmap').innerHTML=html+'</tbody></table>';
+}
+
+function buildRisk(){
+  const t=TRADES;
+  const mdd=maxDD(t),sh=sharpe(t),wr=winRate(t);
+  const W=t.filter(x=>x.pnl_pct>0),L=t.filter(x=>x.pnl_pct<=0);
+  const aW=W.length?r2(avgPnl(W)):0,aL=L.length?r2(avgPnl(L)):0;
+  document.getElementById('risk-metrics').innerHTML=[
+    mCard(`${mdd}%`,'Max drawdown',mdd>-20?'Within limit':'Exceeds 20%',mdd>-10?'var(--green)':'var(--red)'),
+    mCard(sh,'Sharpe ratio',sh>=1?'Good':'Needs work',sh>=1?'var(--green)':sh>=0.5?'var(--amber)':'var(--red)'),
+    mCard(`${aW>0?'+':''}${aW}%`,'Avg winning trade','','var(--green)'),
+    mCard(`${aL}%`,'Avg losing trade','','var(--red)'),
+    mCard(r2(aL<0?Math.abs(aW/aL):0),'Win/loss ratio','>1.0 target',Math.abs(aW/(aL||1))>=1?'var(--green)':'var(--red)'),
+    mCard(`${r2(wr*100)}%`,'Hit rate','% trades profitable',wrClr(wr)),
+  ].join('');
+  const sorted=[...t].sort((a,b)=>new Date(a.entry_date)-new Date(b.entry_date));
+  let cum=0,peak=0;const eqD=[],ddD=[],lbs=[];
+  sorted.forEach(tr=>{cum+=tr.pnl_pct||0;if(cum>peak)peak=cum;eqD.push(r2(cum));ddD.push(r2(cum-peak));lbs.push((tr.entry_date||'').slice(0,10));});
+  const dc=document.getElementById('drawdown-chart');
+  if(dc){if(dc._ch)dc._ch.destroy();dc._ch=new Chart(dc,{type:'line',data:{labels:lbs,datasets:[
+    {label:'Equity %',data:eqD,borderColor:'#58a6ff',backgroundColor:'rgba(88,166,255,.1)',fill:true,pointRadius:0,borderWidth:1.5,yAxisID:'y'},
+    {label:'Drawdown %',data:ddD,borderColor:'#f85149',backgroundColor:'rgba(248,81,73,.15)',fill:true,pointRadius:0,borderWidth:1,yAxisID:'y1'},
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#8b949e',font:{size:11}}}},
+    scales:{x:{ticks:{color:'#8b949e',font:{size:9}},grid:{color:'#21262d'}},
+    y:{ticks:{color:'#8b949e',font:{size:10},callback:v=>v+'%'},grid:{color:'#21262d'},position:'left'},
+    y1:{ticks:{color:'#f85149',font:{size:10},callback:v=>v+'%'},grid:{display:false},position:'right'}}}});}
+  const maB=new Array(10).fill(0),mfB=new Array(10).fill(0);
+  t.forEach(tr=>{maB[Math.min(Math.floor(Math.abs(tr.max_adverse_excursion||0)/2),9)]++;mfB[Math.min(Math.floor(Math.abs(tr.max_favourable_excursion||0)/5),9)]++;});
+  mkChart('mae-chart','bar',['0-2%','2-4%','4-6%','6-8%','8-10%','10-12%','12-14%','14-16%','16-18%','>18%'],[{label:'Trades',data:maB,backgroundColor:'rgba(248,81,73,.6)'}],{legend:false});
+  mkChart('mfe-chart','bar',['0-5%','5-10%','10-15%','15-20%','20-25%','25-30%','30-35%','35-40%','40-45%','>45%'],[{label:'Trades',data:mfB,backgroundColor:'rgba(63,185,80,.6)'}],{legend:false});
+  const byS=groupBy(t,'strategy');
+  const streaks=Object.entries(byS).map(([s,arr])=>{let m=0,c=0;arr.sort((a,b)=>new Date(a.entry_date)-new Date(b.entry_date)).forEach(tr=>{if(tr.pnl_pct<=0){c++;m=Math.max(m,c);}else c=0;});return {s,m};}).sort((a,b)=>b.m-a.m).slice(0,12);
+  mkChart('streak-chart','bar',streaks.map(x=>x.s.replace(/_/g,' ')),[{label:'Max consecutive losses',data:streaks.map(x=>x.m),backgroundColor:'rgba(248,81,73,.6)'}],{legend:false});
+  const dB=new Array(8).fill(0);t.forEach(tr=>dB[Math.min(Math.floor((tr.hold_days||0)/3),7)]++);
+  mkChart('duration-chart','bar',['1-3d','4-6d','7-9d','10-12d','13-15d','16-18d','19-21d','>21d'],[{label:'Trades',data:dB,backgroundColor:'rgba(88,166,255,.6)'}],{legend:false});
+  buildMonthlyCalendar();
+}
+
+function buildMonthlyCalendar(){
+  const byM={};TRADES.forEach(t=>{const m=(t.entry_date||'').slice(0,7);if(m){if(!byM[m])byM[m]=[];byM[m].push(t);}});
+  const months=Object.keys(byM).sort();
+  document.getElementById('monthly-cal').innerHTML=months.length?'<div style="display:flex;flex-wrap:wrap;gap:.4rem;padding:1rem">'+
+    months.map(m=>{const arr=byM[m];const roi=totalRoi(arr);const wr=r2(winRate(arr)*100);
+    const bg=roi>5?'rgba(63,185,80,.2)':roi>0?'rgba(63,185,80,.1)':roi>-5?'rgba(248,81,73,.1)':'rgba(248,81,73,.2)';
+    const tc=roi>0?'var(--green)':'var(--red)';
+    return `<div style="background:${bg};border:1px solid ${roi>0?'rgba(63,185,80,.3)':'rgba(248,81,73,.3)'};border-radius:8px;padding:.6rem .9rem;min-width:100px;text-align:center">
+      <div style="font-size:.7rem;color:var(--text2)">${m}</div>
+      <div style="font-size:1.1rem;font-weight:600;color:${tc}">${roi>0?'+':''}${roi}%</div>
+      <div style="font-size:.68rem;color:var(--text2)">${arr.length} trades · ${wr}% wr</div></div>`;
+  }).join('')+'</div>':'<div class="no-data">No data</div>';
+}
+
+function buildSmartMoney(){
+  const wSM=TRADES.filter(t=>(t.smart_money_score||0)>=2),noSM=TRADES.filter(t=>(t.smart_money_score||0)<2);
+  mkChart('sm-lift-chart','bar',['With smart money (≥2)','Without smart money'],[{label:'Win rate %',data:[r2(winRate(wSM)*100),r2(winRate(noSM)*100)],backgroundColor:['rgba(63,185,80,.7)','rgba(88,166,255,.5)']}],{yFmt:v=>v+'%',legend:false});
+  const smT=[0,1,2,3,4,5,6,7,8,9,10];
+  mkChart('sm-roi-chart','bar',smT.map(v=>'Score '+v),[{label:'Total ROI %',data:smT.map(v=>totalRoi(TRADES.filter(t=>(t.smart_money_score||0)===v))),backgroundColor:smT.map(v=>totalRoi(TRADES.filter(t=>(t.smart_money_score||0)===v))>0?'rgba(63,185,80,.7)':'rgba(248,81,73,.7)')}],{yFmt:v=>v+'%',legend:false});
+  const tiers=['EXCEPTIONAL','VERY_HIGH','HIGH','MEDIUM_HIGH','MEDIUM','LOW'];
+  mkChart('tier-chart','bar',tiers,[
+    {label:'Win rate %',data:tiers.map(tier=>r2(winRate(TRADES.filter(t=>t.confidence_tier===tier))*100)),backgroundColor:'rgba(88,166,255,.7)'},
+    {label:'Total ROI %',data:tiers.map(tier=>totalRoi(TRADES.filter(t=>t.confidence_tier===tier))),backgroundColor:'rgba(63,185,80,.7)'},
+  ],{yFmt:v=>v+'%'});
+}
+
+function buildPortfolio(){
+  const cap=10000;
+  const sorted=[...TRADES].sort((a,b)=>new Date(a.entry_date)-new Date(b.entry_date));
+  let e1=cap,e2=cap;const lbs=[],d1=[],d2=[];
+  sorted.forEach(t=>{const p=t.pnl_pct||0;e1*=(1+p/100*0.02);e2*=(1+p/100*0.01);lbs.push((t.entry_date||'').slice(0,10));d1.push(r2(e1));d2.push(r2(e2));});
+  const r1=r2((e1-cap)/cap*100),r2v=r2((e2-cap)/cap*100);
+  document.getElementById('portfolio-metrics').innerHTML=[
+    mCard(`$${Math.round(e1).toLocaleString()}`,'Value (2% sizing)',`+${r1}% return`,clr(r1)),
+    mCard(`${r1>0?'+':''}${r1}%`,'Return (2% sizing)','On $10k capital',clr(r1)),
+    mCard(`$${Math.round(e2).toLocaleString()}`,'Value (1% sizing)',`${r2v>0?'+':''}${r2v}% return`,clr(r2v)),
+    mCard(`${r2v>0?'+':''}${r2v}%`,'Return (1% sizing)','On $10k capital',clr(r2v)),
+  ].join('');
+  mkChart('portfolio-chart','line',lbs,[
+    {label:'2% per trade',data:d1,borderColor:'#58a6ff',backgroundColor:'rgba(88,166,255,.1)',fill:true,pointRadius:0,borderWidth:1.5},
+    {label:'1% per trade',data:d2,borderColor:'#3fb950',backgroundColor:'rgba(63,185,80,.08)',fill:true,pointRadius:0,borderWidth:1.5},
+  ],{yFmt:v=>'$'+v.toLocaleString(),legend:true});
+  const byM={};TRADES.forEach(t=>{const m=(t.entry_date||'').slice(0,7);if(m){if(!byM[m])byM[m]=[];byM[m].push(t);}});
+  const months=Object.keys(byM).sort();const mROI=months.map(m=>totalRoi(byM[m]));
+  mkChart('monthly-chart','bar',months,[{label:'Monthly ROI %',data:mROI,backgroundColor:mROI.map(v=>v>0?'rgba(63,185,80,.7)':'rgba(248,81,73,.7)')}],{yFmt:v=>v+'%',legend:false});
+  mkChart('sizing-chart','bar',['2% per trade','1% per trade'],[{label:'Final value $',data:[Math.round(e1),Math.round(e2)],backgroundColor:['rgba(88,166,255,.7)','rgba(63,185,80,.7)']}],{yFmt:v=>'$'+v.toLocaleString(),legend:false});
+}
+</script>
+</body>
+</html>
