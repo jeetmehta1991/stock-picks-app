@@ -1,207 +1,113 @@
 # Stock Picks & Automated Trading System
+**Stage:** 2 — Strategy Validation | **Phase:** 1A rerun in progress
+**Repo:** jeetmehta1991/stock-picks-app | **Full plan:** `PROJECT_PLAN.md`
 
-## Project Vision
-Build a validated algorithmic swing trading system evolving from a daily stock picks webpage to a fully automated trading engine covering US markets (S&P 200 + ETFs). Every stage must be proven before progressing. No real money risked until strategies are validated through rigorous backtesting across multiple market regimes and confirmed through paper trading.
+---
 
-## Five Stage Roadmap
-- Stage 1: Proof of Concept — webpage live — COMPLETE
-- Stage 2: Strategy Validation — backtest all signals, 55%+ win rate across regimes — NEXT
-- Stage 3: Paper Trading — validate live with fake money — NOT STARTED
-- Stage 4: Live Trading Small — $500-1000 CAD, human approval — NOT STARTED
-- Stage 5: Full Automation — autonomous trading with risk management — NOT STARTED
+## Critical Rules — Read First
 
-## Current Files
-- fetch_stocks.py — fetches top 5 US stocks via Alpha Vantage, writes index.html
-- .github/workflows/update_stocks.yml — runs daily at 6am UTC
-- index.html — live dark-themed webpage
-- CLAUDE.md — this file
+- **NEVER change any rule, filter, threshold, or strategy parameter without explicit owner approval.** Present recommendations only. Owner decides. Then build.
+- Point-in-time data enforcement is non-negotiable — no future data ever used in backtest
+- All strategy/rule decisions are logged in `PROJECT_PLAN.md` section 8 with approval status
+- Push all changes to `claude-updates` branch only — never directly to `main`
+- Sync to main via GitHub Actions → Sync from Claude workflow
 
-## Stage 2: Backtesting Engine
+---
 
-### Stock Universe
-- S&P 200 (top 200 S&P 500 stocks by market cap)
-- ETFs: SPY, QQQ, IWM, DIA, VTI, XLK, XLF, XLE, XLV, XLI, XLY, XLP, XLU, XLB, XLRE, VXX, UVXY, TLT, HYG, LQD, GLD, SLV, USO, GDX, TQQQ, SQQQ, SPXL, EEM, EFA
-- Total: ~235 instruments
-- TSX excluded — add in future phase after US strategies validated
+## Repo Structure
 
-### Market Regimes To Cover (Non-Negotiable)
-- Strong bull market (2023-2024)
-- Bear market / correction (2022)
-- High volatility / crisis (March 2020)
-- Rate rising environment (2022-2023)
-- Rate falling environment (2019, 2024)
-- All regimes must be represented in backtest
+```
+stock-picks-app/
+├── backtest/
+│   ├── config.py              # universe, regimes, thresholds, position sizing
+│   ├── run_phase1a.py         # entry point — python -m backtest.run_phase1a
+│   ├── data/
+│   │   ├── cache.py           # Parquet cache — fetch once, load from disk
+│   │   ├── universe.py        # S&P 500 universe + liquidity filter
+│   │   ├── fetcher.py         # yfinance OHLCV + fundamentals
+│   │   ├── macro.py           # FRED yield curve, VIX, DXY
+│   │   ├── sentiment.py       # AAII, CNN Fear & Greed
+│   │   └── smart_money.py     # congressional, insider, 13F, analyst
+│   ├── signals/
+│   │   ├── technical.py       # 274 signal fields
+│   │   └── screener.py        # 60 strategies, 7 categories
+│   ├── engine/
+│   │   ├── backtest.py        # main loop
+│   │   ├── exit_manager.py    # trailing stop + 5 circuit breakers
+│   │   ├── exit_strategies.py # 12 exit methods, composite scoring
+│   │   ├── regime_filter.py   # VIX + SPY 200 EMA classification
+│   │   └── improvements.py    # transaction costs, walk-forward, slippage
+│   ├── agents/pipeline.py     # 6 TradingAgents (Haiku/Sonnet)
+│   └── results/
+│       ├── metrics.py         # 10 passing criteria per strategy
+│       ├── writer.py          # 13 output files
+│       └── site_generator.py  # daily site_picks JSON
+├── output_v2/                 # Phase 1A results
+├── PROJECT_PLAN.md            # full project plan — read for all context
+├── analysis_dashboard.html    # 9-tab interactive dashboard
+├── launcher.html              # navigation page
+└── index.html                 # daily top stocks webpage
+```
 
-### Three Pool Approach
-- Pool 1: Backtesting Universe — 235 instruments, 3 years historical data
-- Pool 2: Daily Screening — same 235 instruments scanned daily with liquidity filters
-- Pool 3: Active Candidates — 50-200 instruments passing strategy filters per day
+---
 
-### Minimum Liquidity Filters
-- Price above $5
-- Average daily volume above 500,000 shares
-- Listed minimum 1 year
-- Market cap above $100M
+## Current Phase Status
 
-### Complete Signal Universe
+**Phase 1A v3 — running with approved rule changes**
 
-#### Category 1: Technical Indicators
-Pivot & Price Levels: CPR (daily/weekly/monthly), Standard Pivots (R1/R2/R3, S1/S2/S3), Camarilla, Woodie's, Fibonacci Retracement (23.6/38.2/50/61.8/78.6%), Fibonacci Extensions, VWAP + deviation bands, Previous Day High/Low/Close
-Momentum: RSI (9/14/21), Stochastic (fast/slow), Stochastic RSI, Williams %R, ROC, MACD (12/26/9 and 8/21/5), PPO, Awesome Oscillator, Ultimate Oscillator
-Trend: EMA crossovers (9/21, 20/50, 50/200), SMA same, ADX, Parabolic SAR, Ichimoku Cloud (all 5), Supertrend, Hull MA, DEMA/TEMA
-Volatility/Bands: Bollinger Bands (20,2 and 20,1.5 and 10,2), Keltner Channels, Donchian Channels, ATR + ATR stops, Squeeze Momentum (BB inside KC), Std dev bands, Envelope channels
-Volume: OBV, Volume spike (2x/3x avg), VWAP deviation, A/D Line, Chaikin Money Flow, MFI, Force Index
-Patterns: Inside/outside bar, Engulfing candles, Pin bars/hammer/shooting star, Morning/evening star, Cup and handle, Flag/pennant, Doji
+Run command:
+```bash
+pip install pyarrow --break-system-packages -q
+find backtest -name "*.pyc" -delete && find backtest -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null
+python -m backtest.run_phase1a --no-agents --output-dir output_v2
+```
 
-#### Category 2: Smart Money Signals
-Congressional Trades (STOCK Act): Quiver Quantitative free — 45-day disclosure, Senate stronger than House, defense/finance committee correlation, cluster buys strongest signal
-Insider Trades (Form 4): OpenInsider + SEC EDGAR + Quiver free — 2-day disclosure, CEO discretionary buy strongest signal, cluster buying (3+ insiders 30 days) very strong, ignore options exercises and 10b5-1 plan sales
-Institutional/Hedge Fund (13F/13D/13G): WhaleWisdom + SEC EDGAR + Quiver free — quarterly 13F filings, 13D activist crossing 5% very strong, multiple funds initiating same position strong
-Short Interest: FINRA free — high short + positive catalyst = squeeze setup, declining short = bullish
+After run completes:
+```bash
+git add output_v2/ backtest/data/cache/ && git commit -m "Phase 1A v3 results" && git push origin main
+```
 
-#### Category 3: Options Intelligence
-Put/Call ratio (CBOE free), IV rank for earnings strategy selection
+**Phase 1A v1 results (previous — superseded):**
+198 trades, 17 strategies fired, 0 short trades, 0 passing. Pipeline confirmed clean.
 
-#### Category 4: Macro Filters
-Yield curve 2yr/10yr (FRED free), DXY (yfinance), VIX regime (yfinance), Economic calendar — avoid CPI/NFP/FOMC entries (FRED free), Fed rate direction
+---
 
-#### Category 5: Sentiment Signals
-AAII sentiment survey (AAII.com free), CNN Fear & Greed (CNN free), COT report (CFTC.gov free), Reddit mentions (Quiver free)
+## Approved Rule Changes (Phase 1A v3)
 
-#### Category 6: Company Signals
-Analyst estimate revisions (Quiver free), analyst rating changes (Quiver free), share buybacks (SEC EDGAR free), dividend changes (yfinance)
+All owner-approved. Do not revert without approval.
 
-### TradingAgents Integration — Combined Pipeline
-Static indicators and agents work together — NOT separately.
-Step 1: Technical indicators scan full universe — fast and free
-Step 2: Smart money signals checked for flagged instruments
-Step 3: Macro filters applied — yield curve, VIX, economic calendar
-Step 4: Sentiment signals checked
-Step 5: 50-100 candidates pass to TradingAgents
-Step 6: TradingAgents deep analysis:
-  - Technical Agent: confirms all indicators at exact historical date
-  - Fundamental Agent: earnings risk, buybacks, analyst revisions, insider trades, 13F activity
-  - Sentiment Agent: news, congressional trades, AAII, Fear/Greed, social
-  - Risk Agent: yield curve, VIX, DXY, short interest, economic calendar
-  - Bull/Bear Agents: debate full signal set
-  - Decision Agent: final combined confidence score
-Step 7: Final score = technical + smart money + macro + sentiment + agent confidence
-Step 8: Highest scores published to webpage
+| Rule | Value |
+|---|---|
+| Open position cap | Removed from backtest |
+| Daily loss limit | Removed from backtest |
+| Correlation filter | Removed from backtest |
+| Regime position sizing | Removed from backtest |
+| Regime direction hard block | Removed — all directions allowed, crisis flagged |
+| One trade per ticker per day | Removed — all strategies fire independently |
+| Crisis regime longs | Allowed — flagged as `regime=crisis_CRISIS_FLAG` |
+| Max candidates per day | 10 |
+| Mean reversion ATR multiplier | 1.0× |
+| Liquidity filter | Once at load time only |
+| Position sizing | EXCEPTIONAL 5%, VERY HIGH 4%, HIGH 3%, MEDIUM-HIGH 1.5% |
+| Short RSI (rsi_overbought_short) | 68 |
+| Short candle conditions | Original strict — wait for Phase 1B volume |
+| Pyramiding | Out of scope — flagged for Stage 4 + backtest later |
 
-### Agent-To-API Mapping
-Technical Agent: yfinance + pandas-ta + Alpha Vantage free
-Fundamental Agent: yfinance + OpenInsider + SEC EDGAR + WhaleWisdom + Quiver free
-Sentiment Agent: Quiver free + Alpha Vantage News + AAII.com + CNN Markets
-Risk Agent: FRED API + yfinance (DXY/VIX) + CBOE + FINRA + CFTC.gov
-All APIs: $0 cost
+---
 
-### Complete Free API Stack
-- yfinance: price, volume, fundamentals, dividends, splits (free, unlimited)
-- pandas-ta: all technical indicator calculations
-- Alpha Vantage free: real-time prices, earnings, news (25 calls/day)
-- Quiver Quantitative free: congressional, insider, 13F, analyst revisions, Reddit
-- SEC EDGAR: Form 4, 13D/13G, buyback filings
-- OpenInsider: insider trades structured
-- WhaleWisdom: 13F hedge fund filings
-- Federal Reserve FRED API: yield curve, economic data
-- CBOE website: put/call ratio
-- FINRA: short interest
-- AAII.com: weekly sentiment survey
-- CNN Markets: Fear & Greed Index
-- CFTC.gov: COT report
-Total cost: $0
+## Key Design Decisions
 
-### Strategy Alignment Logic
-Each instrument evaluated against ALL strategies independently.
-Flagged when it aligns with ANY validated strategy.
-Different stocks suit different strategies — no instrument must pass all strategies.
-Confidence scoring:
-- 3+ strategies + congressional + insider cluster buy + agents agree = EXCEPTIONAL
-- 2+ strategies + congressional OR insider buy + agents agree = VERY HIGH
-- 3+ strategies + no smart money = HIGH
-- 2 strategies + no smart money = MEDIUM-HIGH
-- 1 strategy + any smart money buy = MEDIUM
-- 1 strategy only = LOW — watch list only
-- Any + congressional sell + insider cluster sell = STRONG NEGATIVE — avoid
+- 60 strategies, 7 categories — see PROJECT_PLAN.md section 5
+- 12 exit methods via composite score (40% ROI + 30% PF + 30% DD)
+- Trailing stop primary exit: 10% below highest close, never reverses
+- Risk profile: medium-high risk, high return. Buy dips including in crisis.
+- Email (not Telegram) for all trade approvals in Stage 4
+- Intraday trading: completely separate future project — out of scope
 
-### AI Model Strategy
-Haiku: ~$0.021/analysis — fast, good for volume scanning — Phases 1A and 1B
-Sonnet: ~$0.08/analysis — significantly smarter, catches nuance — Phases 1C and 1D only
+---
 
-### Optimized Cost Model ($300 CAD budget)
-Phase 1A: S&P 50 + 20 ETFs, FULL 3 years, Haiku — ~$30 CAD — pipeline validation across all regimes
-Phase 1B: Full S&P 200 + all ETFs, 3 years, Haiku, batched by sector — ~$116 CAD — full universe backtest
-Phase 1C: Top 20% strategies from 1B, 3 years, Sonnet — ~$102 CAD — quality validation
-Phase 1D: Top 5 final strategies, extended to 5 years, Sonnet — ~$38 CAD — maximum regime coverage
-Buffer: reruns and fixes — ~$20 CAD
-Total: ~$306 CAD
+## Next Steps
 
-IMPORTANT: Phase 1A uses FULL 3 YEARS on small universe — NOT 1 year. Single year = single market regime = invalid results.
-
-### Phase 1B Sector Batching
-Batch 1: Technology (~$15 CAD) → review → Batch 2: Financials (~$15) → review → Batch 3: Healthcare/Energy/Consumer (~$25) → review → Batch 4: ETFs (~$15) → review → Batch 5: Remaining S&P 200 (~$46)
-
-### Phase Quality Gates
-1A pass: zero look-ahead bias, point-in-time data confirmed, 100+ trades per strategy, pipeline clean
-1B pass: 3+ strategies at 55%+ win rate, works across 2+ regimes, smart money shows measurable lift
-1C pass: Sonnet confirms 2+ strategies, no hidden risks found
-1D pass: top 5 maintain 55%+ over 5 years across all regimes — advance to Stage 3
-
-### Data Integrity Rules — NON-NEGOTIABLE
-POINT-IN-TIME ENFORCEMENT: Every API call during backtesting retrieves data as it existed on exact backtest date only. Never use any information not publicly available at that moment.
-- Technical data: only OHLCV available at market close on backtest date
-- Form 4 filings: only filings submitted on or before backtest date
-- Congressional trades: only disclosures published on or before backtest date
-- 13F filings: only filings available on backtest date — not future quarters
-- All API calls must include strict date ceiling parameter
-
-LOOK-AHEAD BIAS PREVENTION:
-- Never use future information to make past decisions
-- Example violation: using June 13F filing to make March trade decision
-- Automated date ceiling check built into every API wrapper function
-- Any backtest showing unusually high win rates must be audited for look-ahead bias first
-
-### Backtesting Output Files
-- backtest_results.csv — all strategies ranked by win rate, return, drawdown
-- backtest_report.html — visual summary with charts per strategy and regime
-- winning_strategies.json — strategies passing all criteria, ready for Stage 3
-- congressional_correlation.csv — congressional signal analysis by chamber and committee
-- insider_correlation.csv — insider signal analysis by type, size, cluster
-- smart_money_combined.csv — win rate when multiple smart money signals align
-- agent_performance.csv — win rate contribution by each TradingAgent
-- regime_performance.csv — strategy performance by market regime
-
-## Risk Management Rules (Stage 4+)
-- Maximum 2% of capital per trade
-- Maximum 5% daily loss limit — stop trading if hit
-- Stop loss mandatory on every trade
-- No more than 5 open positions at once
-- Reduce position size after 3 consecutive losses
-- Congressional and insider signals checked before every trade
-
-## API Upgrade Path
-- Stage 1-2: All free APIs listed above — $0
-- Stage 3: Add Polygon.io + Finnhub — $78 USD/month
-- Stage 4: Add Alpaca live + Interactive Brokers Canada — $88 USD/month
-- Stage 5: Add Quiver API + Unusual Whales + Ortex + Twilio — $263 USD/month
-
-## Coding Standards
-- Python only
-- All API keys in environment variables — never in code
-- Every script must have error handling and fallback messages
-- Point-in-time date ceiling enforced in every API wrapper
-- All strategies backtested before going live
-- Never skip paper trading before real money
-
-## Non-Negotiable Rules
-- Never skip paper trading before real money
-- 3 years backtesting non-negotiable
-- Phase 1A uses full 3 years even on small universe
-- Point-in-time data enforcement — no future data ever used in backtesting decisions
-- Maximum 2% capital per trade always
-- Stop loss mandatory on every trade from Stage 4 onwards
-- Each stage must earn the right to advance to the next
-- Never use a single year for backtesting — always minimum 3 years
-- Sector batch Phase 1B to preserve budget if early results are disappointing
-- Smart money signals must align before maximum position size is deployed
-- Congressional and insider signals checked before every live trade in Stage 4 and beyond
+1. Phase 1A v3 completes → push results + cache → Claude analyses
+2. Review results → confirm before Phase 1B spend (~$116 CAD)
+3. Phase 1B → 1C → 1D before any paper trading begins
