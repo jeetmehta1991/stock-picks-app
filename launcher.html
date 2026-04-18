@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<title>Stock Picks App — Launcher</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d9;
+     display:flex;align-items:center;justify-content:center;min-height:100vh}
+.wrap{text-align:center;max-width:500px;padding:2rem}
+h1{color:#f0f6fc;font-size:1.6rem;margin-bottom:.5rem}
+p{color:#8b949e;font-size:.9rem;margin-bottom:2rem}
+.btn{display:block;background:#161b22;border:1px solid #30363d;border-radius:10px;
+     padding:1.25rem 2rem;margin-bottom:.75rem;text-decoration:none;color:#c9d1d9}
+.btn:hover{border-color:#58a6ff}
+.btn .title{font-size:1rem;font-weight:600;color:#f0f6fc;margin-bottom:.3rem}
+.btn .sub{font-size:.8rem;color:#8b949e}
+.blue{border-left:3px solid #58a6ff}
+.green{border-left:3px solid #3fb950}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Stock Picks App</h1>
+  <p>Choose which page to open</p>
+  <a href="/analysis_dashboard.html" class="btn blue">
+    <div class="title">Analysis Dashboard</div>
+    <div class="sub">Backtest results — 9 analytical tabs</div>
+  </a>
+  <a href="/index.html" class="btn green">
+    <div class="title">Top Performing Stocks</div>
+    <div class="sub">Daily picks — updated every morning</div>
+  </a>
+  <a href="/output_v2/backtest_report.html" class="btn">
+    <div class="title">Backtest Report</div>
+    <div class="sub">Strategy performance HTML report</div>
+  </a>
+</div>
+</body>
+</html>
