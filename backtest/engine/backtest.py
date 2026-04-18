@@ -218,27 +218,27 @@ class BacktestEngine:
         active_signals = {c["ticker"]: c for c in candidates}
         sent           = sentiment_snapshot(as_of)
 
-        # ── 6. Open new trades — no position cap, no correlation filter ──
-        already_open = {t.ticker for t in self.open_trades}
+        # ── 6. Open new trades — no position cap, no correlation filter,
+        #         no per-ticker limit, no direction hard block ──
+        # Track open ticker+strategy combos to avoid exact duplicates only
+        open_combos = {(t.ticker, t.strategy) for t in self.open_trades}
 
         for cand in candidates[:self.max_cands]:
             ticker = cand["ticker"]
-            if ticker in already_open:
-                continue
-
-            atr   = cand.get("atr", 0.0) or cand["last_close"] * 0.01
-            close = cand["last_close"]
+            atr    = cand.get("atr", 0.0) or cand["last_close"] * 0.01
+            close  = cand["last_close"]
 
             for strat_entry in cand.get("strategies", []):
                 direction = strat_entry["direction"]
                 category  = strat_entry["category"]
 
-                # Direction gating — only block in crisis (no longs) or if direction
-                # completely disallowed. No sizing penalty.
-                if direction == "long" and not regime_ctx["long_allowed"]:
+                # Skip only exact duplicate — same ticker AND same strategy already open
+                if (ticker, strat_entry["strategy"]) in open_combos:
                     continue
-                if direction == "short" and not regime_ctx["short_allowed"]:
-                    continue
+
+                # Regime flag — no hard block on any direction
+                # Crisis regime is flagged on the trade for analysis, not blocked
+                crisis_flag = regime == "crisis"
 
                 # Entry zone gap filter
                 next_bar = self._get_next_open(ticker, as_of)
@@ -305,7 +305,7 @@ class BacktestEngine:
                     initial_stop=round(init_stop, 4),
                     trailing_stop=round(init_stop, 4),
                     highest_close=entry_price,
-                    regime_at_entry=regime,
+                    regime_at_entry=f"{regime}{'_CRISIS_FLAG' if crisis_flag else ''}",
                     signals_at_entry={k: v for k, v in cand["signals"].items()
                                       if isinstance(v, (bool, int, float))},
                     context_bullets=strat_entry["context_bullets"],
@@ -317,8 +317,7 @@ class BacktestEngine:
                     days_to_earnings=earn_days,
                 )
                 self.open_trades.append(trade)
-                already_open.add(ticker)
-                break  # one strategy per ticker per day
+                open_combos.add((ticker, strat_entry["strategy"]))
 
     # ──────────────────────────────────────────────────────────────────────
     # HELPERS
