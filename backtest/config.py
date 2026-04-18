@@ -118,7 +118,7 @@ ENTRY_GAP_ATR_MULT = {
     "confluence":    1.5,   # high conviction — worth paying up slightly
     "pivot":         1.0,   # entry level matters — large gap invalidates level
     "candle":        1.0,   # pattern entry level matters
-    "mean_reversion": 0.5,  # oversold level invalidated by large gap-up
+    "mean_reversion": 1.0,  # raised from 0.5× — backtest needs sufficient trades
 }
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -212,7 +212,7 @@ CONFIDENCE_TIERS = {
         "tech_strategies_min": 3,
         "smart_money": "congressional+insider_cluster",
         "site_label": "Exceptional",
-        "position_pct": 0.02,       # 2% of capital
+        "position_pct": 0.05,       # 5% of capital
         "published": True,
         "section": "active_picks",
     },
@@ -220,7 +220,7 @@ CONFIDENCE_TIERS = {
         "tech_strategies_min": 2,
         "smart_money": "congressional_or_insider",
         "site_label": "Very High",
-        "position_pct": 0.02,
+        "position_pct": 0.04,       # 4% of capital
         "published": True,
         "section": "active_picks",
     },
@@ -228,7 +228,7 @@ CONFIDENCE_TIERS = {
         "tech_strategies_min": 3,
         "smart_money": None,
         "site_label": "High",
-        "position_pct": 0.015,
+        "position_pct": 0.03,       # 3% of capital
         "published": True,
         "section": "watchlist",
     },
@@ -236,7 +236,7 @@ CONFIDENCE_TIERS = {
         "tech_strategies_min": 2,
         "smart_money": None,
         "site_label": "Medium-High",
-        "position_pct": 0.01,
+        "position_pct": 0.015,      # 1.5% of capital
         "published": True,
         "section": "watchlist",
     },

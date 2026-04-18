@@ -1,27 +1,20 @@
 """
 engine/backtest.py — Main backtest orchestrator.
 
-Daily loop:
-  1.  Slice OHLCV to point-in-time (as_of date)
-  2.  Classify regime (VIX + SPY) with confidence score
-  3.  Compute correlation matrix for open position filter
-  4.  Fetch macro + sentiment snapshots
-  5.  Screen universe → candidates
-  6.  Apply correlation filter — skip if correlated to open position
-  7.  Validate entry zones (gap filter)
-  8.  Apply slippage model to entry price
-  9.  Fetch smart money signals for top candidates
-  10. Run TradingAgents (optional)
-  11. Open new trades with trailing stop
-  12. Process exits on existing open trades
-  13. Log everything
-
-On save_all_outputs:
-  - Apply transaction cost model
-  - Run walk-forward validation
-  - Run exit comparison
-  - Apply survivorship bias haircut
-  - Write all 15 output files
+Backtest-mode operating rules (approved April 2026):
+  - No open position cap — uncapped for statistical validity
+  - No daily loss limit — removed for backtest, will apply in live trading
+  - No correlation filter — removed for backtest, sector sizing in live trading
+  - No regime position multiplier — full size in all regimes for backtest
+  - No regime confidence scaling — full size always for backtest
+  - Liquidity filter applied once at load_data, not daily
+  - Max candidates: 10 per day
+  - Mean reversion entry zone: 1.0× ATR (raised from 0.5×)
+  - Position sizing: EXCEPTIONAL 5%, VERY HIGH 4%, HIGH 3%, MEDIUM-HIGH 1.5%
+  - Short strategies: strict original conditions, Phase 1B for statistical volume
+  - All 5 circuit breakers active
+  - Slippage and transaction costs applied to all trades
+  - Walk-forward validation on all results
 """
 
 import logging
@@ -35,21 +28,21 @@ import pandas as pd
 
 from backtest.config import (
     BACKTEST_START, BACKTEST_END, UNIVERSE, OUTPUT_DIR,
-    TRAILING_STOP, AI_MODELS, DATA_LOAD_START,
+    TRAILING_STOP, AI_MODELS, DATA_LOAD_START, LIQUIDITY,
 )
 from backtest.data.cache import get_ohlcv_bulk as cached_ohlcv_bulk
-from backtest.data.universe import fetch_info_bulk, get_correlation_matrix, get_sector_map
+from backtest.data.universe import fetch_info_bulk, get_sector_map
 from backtest.data.macro import macro_snapshot
 from backtest.data.sentiment import sentiment_snapshot
 from backtest.data.smart_money import smart_money_score
 from backtest.engine.regime_filter import get_regime_context, get_spy_ema200
 from backtest.engine.exit_manager import (
-    OpenTrade, ClosedTrade, process_day_exits, close_trade,
+    OpenTrade, ClosedTrade, process_day_exits,
 )
 from backtest.engine.improvements import (
     apply_transaction_costs, run_walk_forward, walk_forward_to_df,
-    correlation_filter, apply_slippage, regime_confidence,
-    bonferroni_adjusted_threshold, apply_survivorship_haircut,
+    apply_slippage, apply_survivorship_haircut,
+    bonferroni_adjusted_threshold,
 )
 from backtest.signals.screener import screen_universe, validate_entry_zone
 
@@ -70,7 +63,6 @@ class BacktestEngine:
         use_cache:              bool  = True,
         apply_costs:            bool  = True,
         apply_slippage_model:   bool  = True,
-        apply_corr_filter:      bool  = True,
         walk_forward:           bool  = True,
     ):
         self.universe             = universe or UNIVERSE
@@ -83,7 +75,6 @@ class BacktestEngine:
         self.use_cache            = use_cache
         self.apply_costs          = apply_costs
         self.apply_slippage_model = apply_slippage_model
-        self.apply_corr_filter    = apply_corr_filter
         self.walk_forward         = walk_forward
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -93,15 +84,14 @@ class BacktestEngine:
         self.sector_map:  dict[str, str]           = {}
         self.spy_df:      Optional[pd.DataFrame]   = None
 
+        # Liquidity-filtered universe — computed once at load time
+        self.liquid_universe: list[str] = []
+
         # Trade stores
         self.open_trades:         list[OpenTrade]   = []
         self.closed_trades:       list[ClosedTrade] = []
         self.skipped_trades:      list[dict]        = []
         self.circuit_breaker_log: list[dict]        = []
-
-        # Daily rolling correlation matrix (updated every 5 days)
-        self._corr_matrix:        pd.DataFrame      = pd.DataFrame()
-        self._corr_last_updated:  Optional[date]    = None
 
     # ──────────────────────────────────────────────────────────────────────
     # DATA LOADING
@@ -126,6 +116,33 @@ class BacktestEngine:
         self.sector_map = get_sector_map(self.universe, self.info_dict)
         self.spy_df     = self.ohlcv_dict.get("SPY")
 
+        # ── Apply liquidity filter ONCE at load time ──
+        # Not daily — if instrument passes at start it stays for full backtest
+        self.liquid_universe = self._build_liquid_universe()
+        logger.info("Liquid universe: %d/%d instruments after one-time filter",
+                    len(self.liquid_universe), len(self.ohlcv_dict))
+
+    def _build_liquid_universe(self) -> list[str]:
+        """Apply liquidity filter once. Returns list of passing tickers."""
+        passing = []
+        ref_date = self.start  # use backtest start as reference date
+        for ticker, df in self.ohlcv_dict.items():
+            sliced = df[df.index.date <= ref_date]
+            if len(sliced) < 30:
+                continue
+            last_close = float(sliced["close"].iloc[-1])
+            if last_close < LIQUIDITY["min_price"]:
+                continue
+            avg_vol = float(sliced["volume"].tail(20).mean())
+            if avg_vol < LIQUIDITY["min_avg_volume"]:
+                continue
+            # Market cap — skip check if unavailable (rate limit graceful fallback)
+            mkt_cap_m = (self.info_dict.get(ticker, {}).get("market_cap", 0) or 0) / 1_000_000
+            if mkt_cap_m > 0 and mkt_cap_m < LIQUIDITY["min_market_cap_m"]:
+                continue
+            passing.append(ticker)
+        return passing
+
     # ──────────────────────────────────────────────────────────────────────
     # MAIN LOOP
     # ──────────────────────────────────────────────────────────────────────
@@ -137,9 +154,10 @@ class BacktestEngine:
         trading_days = self._trading_days()
         logger.info(
             "Starting backtest: %d days | phase=%s | agents=%s | "
-            "costs=%s | slippage=%s | corr_filter=%s",
+            "costs=%s | slippage=%s | instruments=%d",
             len(trading_days), self.phase, self.run_agents,
-            self.apply_costs, self.apply_slippage_model, self.apply_corr_filter,
+            self.apply_costs, self.apply_slippage_model,
+            len(self.liquid_universe),
         )
 
         for i, as_of in enumerate(trading_days):
@@ -165,45 +183,29 @@ class BacktestEngine:
         return days
 
     def _process_day(self, as_of: date):
-        # ── 1. Slice OHLCV to point-in-time ──
+        # ── 1. Slice OHLCV to point-in-time using liquid universe only ──
         ohlcv_pit = {}
-        for t, df in self.ohlcv_dict.items():
+        for t in self.liquid_universe:
+            df = self.ohlcv_dict.get(t)
+            if df is None:
+                continue
             sliced = df[df.index.date <= as_of]
             if len(sliced) >= 30:
                 ohlcv_pit[t] = sliced
 
-        # ── 2. Regime + confidence ──
+        # ── 2. Regime classification — direction gating only, no sizing ──
         macro     = macro_snapshot(as_of)
         vix       = macro.get("vix_value")
         spy_close = float(ohlcv_pit["SPY"]["close"].iloc[-1]) if "SPY" in ohlcv_pit else None
         spy_ema   = get_spy_ema200(self.spy_df, as_of) if self.spy_df is not None else None
         regime_ctx = get_regime_context(vix, spy_close, spy_ema)
         regime     = regime_ctx["regime"]
+        # Note: regime_ctx used for direction gating only — no position sizing in backtest
 
-        # Regime confidence score — scales position sizes
-        vix_hist = pd.Series(dtype=float)
-        spy_pct_above = pd.Series(dtype=float)
-        if "SPY" in ohlcv_pit and spy_ema:
-            spy_close_hist = ohlcv_pit["SPY"]["close"].tail(30)
-            spy_pct_above  = (spy_close_hist - spy_ema) / spy_ema * 100
-        if vix:
-            # Approximate VIX history from macro (use current value as proxy if no history)
-            vix_hist = pd.Series([vix])
-        reg_conf = regime_confidence(vix_hist, spy_pct_above)
-        position_mult = reg_conf["position_mult"] * regime_ctx.get(
-            "long_size_mult" if regime_ctx["long_allowed"] else "short_size_mult", 1.0)
-
-        # ── 3. Update correlation matrix every 5 trading days ──
-        if (self.apply_corr_filter and
-                (self._corr_last_updated is None or
-                 (as_of - self._corr_last_updated).days >= 5)):
-            self._corr_matrix      = get_correlation_matrix(ohlcv_pit, as_of)
-            self._corr_last_updated = as_of
-
-        # ── 4. Build today's bar dict for exit manager ──
+        # ── 3. Build today's bars for exit manager ──
         ticker_bars = self._build_today_bars(as_of, ohlcv_pit)
 
-        # ── 5. Process exits ──
+        # ── 4. Process exits ──
         active_signals = {}
         closed_today, self.open_trades = process_day_exits(
             self.open_trades, ticker_bars, as_of,
@@ -211,12 +213,12 @@ class BacktestEngine:
         )
         self.closed_trades.extend(closed_today)
 
-        # ── 6. Screen universe ──
-        candidates    = screen_universe(ohlcv_pit, self.info_dict, as_of, regime)
+        # ── 5. Screen universe — no daily liquidity filter ──
+        candidates     = screen_universe(ohlcv_pit, self.info_dict, as_of, regime)
         active_signals = {c["ticker"]: c for c in candidates}
-        sent          = sentiment_snapshot(as_of)
+        sent           = sentiment_snapshot(as_of)
 
-        # ── 7. Open new trades ──
+        # ── 6. Open new trades — no position cap, no correlation filter ──
         already_open = {t.ticker for t in self.open_trades}
 
         for cand in candidates[:self.max_cands]:
@@ -231,26 +233,12 @@ class BacktestEngine:
                 direction = strat_entry["direction"]
                 category  = strat_entry["category"]
 
-                # Direction gating
+                # Direction gating — only block in crisis (no longs) or if direction
+                # completely disallowed. No sizing penalty.
                 if direction == "long" and not regime_ctx["long_allowed"]:
                     continue
                 if direction == "short" and not regime_ctx["short_allowed"]:
                     continue
-
-                # Correlation filter
-                if self.apply_corr_filter and self.open_trades:
-                    allowed, corr_reason = correlation_filter(
-                        ticker, self.open_trades,
-                        self._corr_matrix,
-                        sector_map=self.sector_map,
-                    )
-                    if not allowed:
-                        self.skipped_trades.append({
-                            "ticker": ticker, "date": as_of,
-                            "strategy": strat_entry["strategy"],
-                            "reason": corr_reason,
-                        })
-                        continue
 
                 # Entry zone gap filter
                 next_bar = self._get_next_open(ticker, as_of)
@@ -330,7 +318,7 @@ class BacktestEngine:
                 )
                 self.open_trades.append(trade)
                 already_open.add(ticker)
-                break  # one trade per ticker per day
+                break  # one strategy per ticker per day
 
     # ──────────────────────────────────────────────────────────────────────
     # HELPERS
@@ -342,8 +330,8 @@ class BacktestEngine:
             today_rows = df[df.index.date == as_of]
             if today_rows.empty:
                 continue
-            row   = today_rows.iloc[-1]
-            prev  = df[df.index.date < as_of]
+            row  = today_rows.iloc[-1]
+            prev = df[df.index.date < as_of]
             prev_close = float(prev["close"].iloc[-1]) if not prev.empty else float(row["open"])
             ep = 0
             for t in self.open_trades:
@@ -418,39 +406,36 @@ class BacktestEngine:
             logger.warning("No closed trades — nothing to write")
             return
 
-        # ── 1. Apply transaction costs ──
+        # Apply transaction costs
         if self.apply_costs:
             df_trades = apply_transaction_costs(df_trades, self.info_dict)
             logger.info("Transaction costs applied — net ROI = %.1f%%",
                         df_trades["pnl_pct"].sum())
 
-        # ── 2. Apply survivorship bias haircut ──
+        # Survivorship bias haircut
         years = (self.end - self.start).days / 365.25
         gross_roi = df_trades["pnl_pct"].sum()
         adj_roi, haircut = apply_survivorship_haircut(gross_roi, years)
-        logger.info(
-            "Survivorship haircut: %.1f%% applied over %.1f years → %.1f%% adjusted ROI",
-            haircut, years, adj_roi,
-        )
+        logger.info("Survivorship haircut: %.1f%% → adjusted ROI %.1f%%",
+                    haircut, adj_roi)
 
-        # ── 3. Compute metrics ──
+        # Metrics
         metrics = compute_all_metrics(df_trades)
 
-        # ── 4. Walk-forward validation ──
-        wf_results = None
-        wf_df      = pd.DataFrame()
+        # Walk-forward validation
+        wf_df = pd.DataFrame()
         if self.walk_forward and len(df_trades) >= 20:
             wf_results = run_walk_forward(df_trades)
             wf_df      = walk_forward_to_df(wf_results)
 
-        # ── 5. Bonferroni correction info ──
+        # Bonferroni info
         bonferroni = bonferroni_adjusted_threshold(60)
         logger.info("Bonferroni: %s", bonferroni["recommendation"])
 
-        # ── 6. Exit comparison ──
+        # Exit comparison
         exit_frames = []
         for strategy in df_trades["strategy"].unique():
-            strat_df   = df_trades[df_trades["strategy"] == strategy]
+            strat_df    = df_trades[df_trades["strategy"] == strategy]
             trades_data = []
             for _, row in strat_df.iterrows():
                 ticker  = row["ticker"]
@@ -480,7 +465,6 @@ class BacktestEngine:
         exit_compare = (pd.concat(exit_frames, ignore_index=True)
                         if exit_frames else pd.DataFrame())
 
-        # ── 7. Write all outputs ──
         write_all_outputs(
             df_trades=df_trades,
             metrics=metrics,
@@ -489,10 +473,10 @@ class BacktestEngine:
             exit_compare=exit_compare,
             walk_forward=wf_df,
             survivorship_info={
-                "gross_roi":        round(gross_roi, 3),
-                "adjusted_roi":     round(adj_roi, 3),
-                "haircut_pct":      round(haircut, 3),
-                "years":            round(years, 2),
+                "gross_roi":    round(gross_roi, 3),
+                "adjusted_roi": round(adj_roi, 3),
+                "haircut_pct":  round(haircut, 3),
+                "years":        round(years, 2),
             },
             bonferroni=bonferroni,
             output_dir=self.output_dir,

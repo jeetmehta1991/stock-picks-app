@@ -447,14 +447,13 @@ def strat_bollinger_tight(s):
 
 def strat_bollinger_upper_short(s):
     fires = (s.get("bb_20_20_touch_upper") and
-             s.get("rsi_14", 50) > 65 and
-             (s.get("shooting_star") or s.get("bearish_engulfing") or
-              not s.get("rsi_14_rising", True)))
+             s.get("rsi_14", 50) > 70 and
+             s.get("shooting_star"))
     return _strat(fires, "short", "mean_reversion",
-        ["bb_20_20_touch_upper","rsi_14>65","bearish_candle_or_momentum"],
+        ["bb_20_20_touch_upper","rsi_14>70","shooting_star"],
         [f"Price at upper Bollinger Band (20,2) — overbought extreme",
-         f"RSI-14 at {s.get('rsi_14',0):.1f} — overbought above 65",
-         "Bearish candle or fading momentum — sellers at the band"])
+         f"RSI-14 at {s.get('rsi_14',0):.1f} — overbought above 70",
+         "Shooting star candle — sellers rejecting the high"])
 
 
 def strat_keltner_lower(s):
@@ -594,15 +593,14 @@ def strat_three_white_soldiers(s):
 
 def strat_shooting_star_short(s):
     fires = (s.get("shooting_star") and
-             s.get("rsi_14", 50) > 60 and
              (s.get("near_r1") or s.get("near_r2") or
-              s.get("bb_20_20_touch_upper") or
-              not s.get("price_above_sma_50")))
+              s.get("bb_20_20_touch_upper")) and
+             s.get("rsi_14", 50) > 65)
     return _strat(fires, "short", "candle",
-        ["shooting_star","rsi_14>60","at_resistance_or_downtrend"],
-        ["Shooting star — long upper wick, sellers rejecting higher prices",
-         f"RSI-14 at {s.get('rsi_14',0):.1f} — elevated momentum",
-         "At resistance or below 50 SMA — bearish context confirmed"])
+        ["shooting_star","at_resistance","rsi_14>65"],
+        ["Shooting star at resistance level — bearish reversal",
+         "Long upper wick shows sellers rejecting higher prices",
+         f"RSI-14 at {s.get('rsi_14',0):.1f} — overbought at resistance"])
 
 
 def strat_evening_star_short(s):
