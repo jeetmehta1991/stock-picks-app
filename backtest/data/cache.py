@@ -1,0 +1,249 @@
+"""
+data/cache.py — Local Parquet cache for OHLCV data.
+
+Eliminates repeated yfinance API calls across runs.
+First run: fetches from yfinance, saves to Parquet.
+Subsequent runs: loads from disk in seconds.
+Adding new instruments: fetches only the new ones.
+Extending date range: fetches only missing dates.
+
+Cache location: data/cache/ohlcv/{ticker}.parquet
+Cache index:    data/cache/index.json  (tracks what is cached and up to what date)
+
+GitHub Actions cache key: backtest-ohlcv-{hash of universe list}
+"""
+
+import json
+import logging
+import time
+from datetime import date, timedelta
+from pathlib import Path
+from typing import Optional
+
+import pandas as pd
+import yfinance as yf
+
+logger = logging.getLogger(__name__)
+
+CACHE_DIR = Path(__file__).parent.parent / "data" / "cache" / "ohlcv"
+INDEX_FILE = Path(__file__).parent.parent / "data" / "cache" / "index.json"
+
+
+def _load_index() -> dict:
+    if INDEX_FILE.exists():
+        try:
+            return json.loads(INDEX_FILE.read_text())
+        except Exception:
+            return {}
+    return {}
+
+
+def _save_index(index: dict):
+    INDEX_FILE.parent.mkdir(parents=True, exist_ok=True)
+    INDEX_FILE.write_text(json.dumps(index, default=str, indent=2))
+
+
+def _cache_path(ticker: str) -> Path:
+    return CACHE_DIR / f"{ticker.replace('-', '_').replace('.', '_')}.parquet"
+
+
+def _fetch_from_yfinance(
+    ticker: str,
+    start: date,
+    end: date,
+    delay: float = 0.3,
+) -> pd.DataFrame:
+    """Fetch OHLCV from yfinance with retry on rate limit."""
+    for attempt in range(3):
+        try:
+            time.sleep(delay * (attempt + 1))
+            obj = yf.Ticker(ticker)
+            df = obj.history(
+                start=start.isoformat(),
+                end=(end + timedelta(days=1)).isoformat(),
+                auto_adjust=True,
+                actions=False,
+            )
+            if df.empty:
+                return pd.DataFrame()
+            df.index = pd.to_datetime(df.index).tz_localize(None)
+            df.columns = [c.lower() for c in df.columns]
+            df = df[["open", "high", "low", "close", "volume"]].copy()
+            df = df[df["volume"] > 0]
+            return df
+        except Exception as exc:
+            if "rate" in str(exc).lower() or "429" in str(exc):
+                wait = 30 * (attempt + 1)
+                logger.warning("Rate limited fetching %s — waiting %ds", ticker, wait)
+                time.sleep(wait)
+            else:
+                logger.error("fetch %s attempt %d: %s", ticker, attempt + 1, exc)
+    return pd.DataFrame()
+
+
+def get_ohlcv(
+    ticker: str,
+    start: date,
+    end: date,
+    force_refresh: bool = False,
+) -> pd.DataFrame:
+    """
+    Get OHLCV for ticker from cache if available, else fetch and cache.
+
+    On first call: fetches from yfinance, saves to Parquet.
+    On subsequent calls: loads from Parquet in milliseconds.
+    If cache exists but doesn't cover full range: fetches only missing dates.
+    """
+    CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    index = _load_index()
+    cache_file = _cache_path(ticker)
+    cached_end_str = index.get(ticker, {}).get("end")
+    cached_start_str = index.get(ticker, {}).get("start")
+
+    # Load from cache if available and covers the range
+    if (not force_refresh and cache_file.exists() and cached_end_str and cached_start_str):
+        cached_start = date.fromisoformat(cached_start_str)
+        cached_end   = date.fromisoformat(cached_end_str)
+
+        if cached_start <= start and cached_end >= end:
+            # Full cache hit
+            try:
+                df = pd.read_parquet(cache_file)
+                df.index = pd.to_datetime(df.index).tz_localize(None)
+                mask = (df.index.date >= start) & (df.index.date <= end)
+                logger.debug("Cache hit: %s (%d rows)", ticker, mask.sum())
+                return df[mask]
+            except Exception as exc:
+                logger.warning("Cache read failed for %s: %s — refetching", ticker, exc)
+
+        # Partial cache — fetch missing tail
+        if cached_end < end:
+            fetch_start = cached_end + timedelta(days=1)
+            new_df = _fetch_from_yfinance(ticker, fetch_start, end)
+            if not new_df.empty:
+                try:
+                    existing = pd.read_parquet(cache_file)
+                    existing.index = pd.to_datetime(existing.index).tz_localize(None)
+                    combined = pd.concat([existing, new_df]).sort_index()
+                    combined = combined[~combined.index.duplicated(keep="last")]
+                    combined.to_parquet(cache_file)
+                    index[ticker] = {
+                        "start": str(combined.index[0].date()),
+                        "end":   str(combined.index[-1].date()),
+                        "rows":  len(combined),
+                    }
+                    _save_index(index)
+                    mask = (combined.index.date >= start) & (combined.index.date <= end)
+                    return combined[mask]
+                except Exception as exc:
+                    logger.warning("Cache append failed for %s: %s", ticker, exc)
+
+    # Full fetch
+    logger.info("Fetching %s from yfinance (%s → %s)", ticker, start, end)
+    df = _fetch_from_yfinance(ticker, start, end)
+    if df.empty:
+        return df
+
+    # Save to cache
+    try:
+        df.to_parquet(cache_file)
+        index[ticker] = {
+            "start": str(df.index[0].date()),
+            "end":   str(df.index[-1].date()),
+            "rows":  len(df),
+        }
+        _save_index(index)
+    except Exception as exc:
+        logger.warning("Cache write failed for %s: %s", ticker, exc)
+
+    mask = (df.index.date >= start) & (df.index.date <= end)
+    return df[mask]
+
+
+def get_ohlcv_bulk(
+    tickers: list[str],
+    start: date,
+    end: date,
+    force_refresh: bool = False,
+    delay: float = 0.3,
+) -> dict[str, pd.DataFrame]:
+    """
+    Fetch OHLCV for multiple tickers using cache.
+    Only makes API calls for tickers not already cached.
+    """
+    index = _load_index()
+    results = {}
+    to_fetch = []
+
+    # Separate cached from uncached
+    for ticker in tickers:
+        cache_file = _cache_path(ticker)
+        cached = index.get(ticker, {})
+        if (not force_refresh and cache_file.exists() and
+                cached.get("end") and
+                date.fromisoformat(cached["end"]) >= end and
+                cached.get("start") and
+                date.fromisoformat(cached["start"]) <= start):
+            try:
+                df = pd.read_parquet(cache_file)
+                df.index = pd.to_datetime(df.index).tz_localize(None)
+                mask = (df.index.date >= start) & (df.index.date <= end)
+                if mask.sum() >= 20:
+                    results[ticker] = df[mask]
+                    continue
+            except Exception:
+                pass
+        to_fetch.append(ticker)
+
+    cached_count = len(results)
+    if cached_count:
+        logger.info("Cache: loaded %d/%d tickers from disk", cached_count, len(tickers))
+
+    # Fetch uncached tickers
+    if to_fetch:
+        logger.info("Fetching %d tickers from yfinance...", len(to_fetch))
+        for i, ticker in enumerate(to_fetch):
+            if i > 0 and i % 10 == 0:
+                logger.info("  Progress: %d/%d fetched", i, len(to_fetch))
+                time.sleep(2)  # extra pause every 10 tickers
+            df = get_ohlcv(ticker, start, end, force_refresh=force_refresh)
+            if not df.empty:
+                results[ticker] = df
+            time.sleep(delay)
+
+    logger.info("get_ohlcv_bulk: %d/%d tickers available", len(results), len(tickers))
+    return results
+
+
+def cache_status() -> dict:
+    """Return cache statistics."""
+    index = _load_index()
+    total_size = sum(
+        _cache_path(t).stat().st_size
+        for t in index
+        if _cache_path(t).exists()
+    )
+    return {
+        "tickers_cached": len(index),
+        "total_size_mb":  round(total_size / 1_000_000, 1),
+        "cache_dir":      str(CACHE_DIR),
+        "tickers":        list(index.keys()),
+    }
+
+
+def append_universe(
+    new_tickers: list[str],
+    start: date,
+    end: date,
+) -> dict[str, pd.DataFrame]:
+    """
+    Add new tickers to the cache without re-fetching existing ones.
+    Used when expanding from S&P 200 to S&P 500.
+    """
+    index = _load_index()
+    truly_new = [t for t in new_tickers if t not in index]
+    if not truly_new:
+        logger.info("All %d tickers already cached", len(new_tickers))
+        return {}
+    logger.info("Appending %d new tickers to cache", len(truly_new))
+    return get_ohlcv_bulk(truly_new, start, end)
