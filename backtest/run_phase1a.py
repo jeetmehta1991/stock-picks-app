@@ -122,7 +122,7 @@ def main():
     p.add_argument("--no-agents",  action="store_true")
     p.add_argument("--start",      type=str)
     p.add_argument("--end",        type=str)
-    p.add_argument("--max-cands",  type=int, default=5)
+    p.add_argument("--max-cands",  type=int, default=10)
     p.add_argument("--output-dir", type=str, default="output_v2")
     args = p.parse_args()
 
