@@ -1,0 +1,11 @@
+{
+  "name": "Stock Picks App",
+  "postCreateCommand": "pip install -r requirements.txt --break-system-packages -q",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ritwickdey.LiveServer"
+      ]
+    }
+  }
+}
