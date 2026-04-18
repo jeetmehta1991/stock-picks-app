@@ -87,6 +87,7 @@ select{padding:.35rem .7rem;font-size:.78rem;border:1px solid var(--border2);bor
     <div class="tab" onclick="showTab('risk')">Risk analysis</div>
     <div class="tab" onclick="showTab('smartmoney')">Smart money</div>
     <div class="tab" onclick="showTab('portfolio')">Portfolio sim</div>
+    <div class="tab" onclick="showTab('criteria')">Testing criteria</div>
   </div>
 
   <div id="tab-overview" class="content active">
@@ -201,6 +202,110 @@ select{padding:.35rem .7rem;font-size:.78rem;border:1px solid var(--border2);bor
       <div class="card"><h3>Position sizing impact — final portfolio value</h3><div class="chart-wrap"><canvas id="sizing-chart"></canvas></div></div>
     </div>
   </div>
+
+  <div id="tab-criteria" class="content">
+    <div style="max-width:900px">
+      <div class="alert alert-info" style="margin-bottom:1.5rem">These are the exact criteria every strategy must pass before advancing to Phase 1B and live trading. All 10 must pass simultaneously — not just win rate alone.</div>
+
+      <div class="section-title">Phase 1A — 10 passing criteria (all required)</div>
+      <div class="tbl-wrap" style="margin-bottom:1.5rem">
+        <table><thead><tr><th>#</th><th>Metric</th><th>Threshold</th><th>Why it matters</th><th>Audit flag</th></tr></thead><tbody>
+          <tr><td style="color:var(--blue);font-weight:600">1</td><td>Win rate</td><td style="color:var(--green);font-weight:500">≥ 55%</td><td>Minimum hit rate for a profitable strategy after costs</td><td style="color:var(--amber)">Flag if &gt; 75% — likely overfit</td></tr>
+          <tr><td style="color:var(--blue);font-weight:600">2</td><td>Profit factor</td><td style="color:var(--green);font-weight:500">&gt; 1.2</td><td>Total wins ÷ total losses. 1.2 = for every $1 lost, make $1.20. Professional standard for diversified systems. Above 1.5 flagged for look-ahead bias audit.</td><td style="color:var(--amber)">Flag if &gt; 1.5</td></tr>
+          <tr><td style="color:var(--blue);font-weight:600">3</td><td>Expected value per trade</td><td style="color:var(--green);font-weight:500">&gt; 0</td><td>(Win rate × avg win) + (loss rate × avg loss) must be positive. A strategy can have 60% win rate and still lose money if losses are much bigger than wins.</td><td>—</td></tr>
+          <tr><td style="color:var(--blue);font-weight:600">4</td><td>Win/loss ratio</td><td style="color:var(--green);font-weight:500">&gt; 1.0</td><td>Average winning trade must be larger than average losing trade. Ensures a single large loss cannot wipe out multiple small wins.</td><td>—</td></tr>
+          <tr><td style="color:var(--blue);font-weight:600">5</td><td>Max drawdown</td><td style="color:var(--green);font-weight:500">&lt; 20%</td><td>Worst peak-to-trough loss on the equity curve. Beyond 20% most traders psychologically abandon the strategy before it recovers.</td><td>—</td></tr>
+          <tr><td style="color:var(--blue);font-weight:600">6</td><td>Total ROI</td><td style="color:var(--green);font-weight:500">&gt; 0%</td><td>The strategy must be net profitable over the full 3-year backtest period. Positive win rate with negative total ROI means something is wrong.</td><td>—</td></tr>
+          <tr><td style="color:var(--blue);font-weight:600">7</td><td>Smart money lift</td><td style="color:var(--green);font-weight:500">Measurable improvement</td><td>Win rate must be higher when congressional + insider signals align vs when they don't. Validates that smart money data adds predictive value.</td><td>—</td></tr>
+          <tr><td style="color:var(--blue);font-weight:600">8</td><td>Macro correlation</td><td style="color:var(--green);font-weight:500">Measurable improvement</td><td>Win rate must be higher in favourable macro regimes (VIX low, yield curve normal) vs unfavourable. Validates the regime filter is working.</td><td>—</td></tr>
+          <tr><td style="color:var(--blue);font-weight:600">9</td><td>Minimum trades</td><td style="color:var(--green);font-weight:500">≥ 100</td><td>Statistical validity threshold. Below 100 trades, win rate is too noisy to be meaningful. A coin flip can show 70% win rate over 10 flips.</td><td>—</td></tr>
+          <tr><td style="color:var(--blue);font-weight:600">10</td><td>Regime coverage</td><td style="color:var(--green);font-weight:500">Profitable in ≥ 2 of 5 regimes</td><td>A strategy that only works in bull markets cannot be trusted with real money. Must prove robustness across at least 2 different market conditions.</td><td>—</td></tr>
+        </tbody></table>
+      </div>
+
+      <div class="section-title">Market regimes tested</div>
+      <div class="tbl-wrap" style="margin-bottom:1.5rem">
+        <table><thead><tr><th>Regime</th><th>Period</th><th>Market condition</th><th>Why it must be tested</th></tr></thead><tbody>
+          <tr><td style="color:var(--red);font-weight:500">Bear correction</td><td>2022</td><td>S&amp;P −19.4%, VIX avg 25+</td><td>Tests defensive signals and short setups. Strategies that only work in bull markets fail here.</td></tr>
+          <tr><td style="color:var(--amber);font-weight:500">Rate rising</td><td>Mar 2022 – Jul 2023</td><td>Fed 0.25% → 5.50%</td><td>Tests sensitivity to macro conditions. Growth stocks underperform. Value and energy outperform.</td></tr>
+          <tr><td style="color:var(--green);font-weight:500">Strong bull</td><td>2023</td><td>S&amp;P +24.2% recovery</td><td>Tests momentum and trend-following strategies. Most strategies should perform well here.</td></tr>
+          <tr><td style="color:var(--blue);font-weight:500">Rate falling</td><td>2024</td><td>Fed cuts begin Sep 2024</td><td>Tests growth and speculative setups. Different sectors lead vs rate rising environment.</td></tr>
+          <tr><td style="color:var(--purple);font-weight:500">AI sector bull</td><td>2024</td><td>Tech/AI driven market</td><td>Tests sector rotation signals. Broad market up but leadership concentrated in specific stocks.</td></tr>
+        </tbody></table>
+      </div>
+
+      <div class="section-title">60 strategies across 7 categories</div>
+      <div class="tbl-wrap" style="margin-bottom:1.5rem">
+        <table><thead><tr><th>Category</th><th>Count</th><th>Direction</th><th>Core logic</th></tr></thead><tbody>
+          <tr><td style="color:var(--blue);font-weight:500">Pivot-based</td><td>10</td><td>Long</td><td>S1/S2/S3 bounces, R1/R2 breakouts, CPR bias, Camarilla S3/R3, prev day high/low</td></tr>
+          <tr><td style="color:var(--green);font-weight:500">Momentum</td><td>9</td><td>Long</td><td>MACD (2 sets), Hull+RSI, Williams%R, ROC, Awesome Oscillator, StochRSI, PPO, Ultimate Oscillator</td></tr>
+          <tr><td style="color:var(--purple);font-weight:500">Trend following</td><td>9</td><td>Long</td><td>Golden cross (3 pairs), Parabolic SAR, TEMA/DEMA, Ichimoku TK/cloud, ADX initiation, Supertrend+MACD</td></tr>
+          <tr><td style="color:var(--amber);font-weight:500">Mean reversion</td><td>11</td><td>Long + <span style="color:var(--red)">Short</span></td><td>RSI oversold (3 variants), RSI overbought short, MFI, CMF flip, Bollinger (2), Bollinger upper short, Keltner, Stochastic</td></tr>
+          <tr><td style="color:var(--blue);font-weight:500">Breakout</td><td>6</td><td>Long</td><td>Squeeze, Volume spike, 52-week high, Inside bar, Force Index, Donchian 10-day</td></tr>
+          <tr><td style="color:var(--amber);font-weight:500">Candle pattern</td><td>6</td><td>Long + <span style="color:var(--red)">Short</span></td><td>Morning star, Bullish engulfing at support, Doji at support, Three white soldiers, Shooting star short, Evening star short</td></tr>
+          <tr><td style="color:var(--green);font-weight:500">Confluence</td><td>9</td><td>Long</td><td>RSI+volume+200EMA, MACD+Ichimoku, BB squeeze+volume, Pivot+Fib, Golden cross+volume, CPR+momentum, Camarilla+RSI+OBV, Supertrend+Ichimoku+ADX, Williams+Stoch dual oversold</td></tr>
+        </tbody></table>
+      </div>
+
+      <div class="section-title">12 exit strategies compared</div>
+      <div class="tbl-wrap" style="margin-bottom:1.5rem">
+        <table><thead><tr><th>Exit method</th><th>Logic</th><th>Best for</th></tr></thead><tbody>
+          <tr><td style="color:var(--green);font-weight:500">Trailing 10%</td><td>Stop at 10% below highest close. Primary confirmed exit.</td><td>All strategies — confirmed primary</td></tr>
+          <tr><td>Trailing 5%</td><td>Tighter trail — exits faster, captures less</td><td>Short trades, high-volatility stocks</td></tr>
+          <tr><td>Trailing 15%</td><td>Looser trail — stays in longer</td><td>Strong trending stocks</td></tr>
+          <tr><td>ATR trail 1×</td><td>Stop trails at 1× ATR — adapts to volatility</td><td>Normalised across price levels</td></tr>
+          <tr><td>ATR trail 2×</td><td>Stop trails at 2× ATR — more room</td><td>Trend following strategies</td></tr>
+          <tr><td>Fixed 3:1 target</td><td>3× ATR profit target / 2× ATR stop</td><td>Mean reversion strategies</td></tr>
+          <tr><td>Next pivot target</td><td>Exit at next R1/R2/R3 above entry</td><td>Pivot-based strategies</td></tr>
+          <tr><td>MA exit EMA-9</td><td>Exit when price crosses below EMA-9</td><td>Trend following strategies</td></tr>
+          <tr><td>Time stop 10d</td><td>Force exit at close of day 10</td><td>Baseline comparison</td></tr>
+          <tr><td>Time stop 20d</td><td>Force exit at close of day 20</td><td>Baseline comparison</td></tr>
+          <tr><td>Breakeven + trail</td><td>Move stop to breakeven at 1× ATR profit, then trail 10%</td><td>Capital protection focused</td></tr>
+          <tr><td>Hybrid 50% target</td><td>Take 50% off at 3× ATR, trail remainder at 10%</td><td>Balanced profit capture</td></tr>
+        </tbody></table>
+      </div>
+
+      <div class="section-title">Confidence tiers and position sizing</div>
+      <div class="tbl-wrap" style="margin-bottom:1.5rem">
+        <table><thead><tr><th>Tier</th><th>Conditions required</th><th>Position size</th><th>Site card</th></tr></thead><tbody>
+          <tr><td><span class="pass-badge pass-yes">EXCEPTIONAL</span></td><td>3+ strategies + congressional + insider cluster buy</td><td style="color:var(--green);font-weight:500">2% of capital (full)</td><td>Active picks</td></tr>
+          <tr><td><span class="pass-badge pass-yes">VERY HIGH</span></td><td>2+ strategies + congressional OR insider buy</td><td style="color:var(--green);font-weight:500">2% of capital (full)</td><td>Active picks</td></tr>
+          <tr><td><span class="pass-badge pass-warn">HIGH</span></td><td>3+ strategies, no smart money</td><td>1.5% of capital</td><td>Watchlist</td></tr>
+          <tr><td><span class="pass-badge pass-warn">MEDIUM-HIGH</span></td><td>2 strategies, no smart money</td><td>1% of capital</td><td>Watchlist</td></tr>
+          <tr><td><span class="pass-badge pass-no">MEDIUM</span></td><td>1 strategy + any smart money buy</td><td>0% — watch only</td><td>Not published</td></tr>
+          <tr><td><span class="pass-badge pass-no">LOW</span></td><td>1 strategy only</td><td>0% — watch only</td><td>Not published</td></tr>
+          <tr><td><span class="pass-badge" style="background:rgba(248,81,73,.15);color:var(--red)">AVOID</span></td><td>Congressional sell + insider cluster sell</td><td>0% — avoid entirely</td><td>Not published</td></tr>
+        </tbody></table>
+      </div>
+
+      <div class="section-title">Phase advancement gates</div>
+      <div class="tbl-wrap">
+        <table><thead><tr><th>Phase</th><th>Scope</th><th>Model</th><th>Pass condition</th><th>Fail action</th></tr></thead><tbody>
+          <tr><td style="color:var(--blue);font-weight:500">1A</td><td>S&amp;P 50 + 20 ETFs, 3 years</td><td>Haiku</td><td>Zero look-ahead bias. Pipeline clean. 100+ trades per strategy.</td><td>Fix bugs before spending 1B budget</td></tr>
+          <tr><td style="color:var(--blue);font-weight:500">1B</td><td>Full S&amp;P 200 + all ETFs, 3 years</td><td>Haiku</td><td>3+ strategies at 55%+ win rate across 2+ regimes. Smart money shows measurable lift.</td><td>Re-examine signal universe before 1C</td></tr>
+          <tr><td style="color:var(--blue);font-weight:500">1C</td><td>Top 20% strategies from 1B, 3 years</td><td>Sonnet</td><td>Sonnet confirms 2+ strategies. No hidden risks found.</td><td>Return to 1B with revised parameters</td></tr>
+          <tr><td style="color:var(--blue);font-weight:500">1D</td><td>Top 5 strategies, extended 5 years</td><td>Sonnet</td><td>55%+ over 5 years across all regimes including COVID 2020.</td><td>Extend paper trading before Stage 4</td></tr>
+        </tbody></table>
+      </div>
+
+      <div class="section-title" style="margin-top:1.5rem">Non-negotiable rules</div>
+      <div class="card">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;font-size:.82rem">
+          <div style="padding:.5rem;border-left:2px solid var(--red);padding-left:.75rem">Never skip paper trading before real money</div>
+          <div style="padding:.5rem;border-left:2px solid var(--red);padding-left:.75rem">3 years backtesting minimum — no exceptions</div>
+          <div style="padding:.5rem;border-left:2px solid var(--red);padding-left:.75rem">Maximum 2% of capital per trade at all times</div>
+          <div style="padding:.5rem;border-left:2px solid var(--red);padding-left:.75rem">Stop loss mandatory on every live trade</div>
+          <div style="padding:.5rem;border-left:2px solid var(--red);padding-left:.75rem">Point-in-time data enforcement — no future data ever</div>
+          <div style="padding:.5rem;border-left:2px solid var(--red);padding-left:.75rem">Any win rate &gt;75% must be audited for look-ahead bias first</div>
+          <div style="padding:.5rem;border-left:2px solid var(--red);padding-left:.75rem">Congressional + insider signals checked before every live trade</div>
+          <div style="padding:.5rem;border-left:2px solid var(--red);padding-left:.75rem">Each stage must earn the right to advance to the next</div>
+          <div style="padding:.5rem;border-left:2px solid var(--red);padding-left:.75rem">No leveraged ETFs in universe — volatility decay invalidates results</div>
+          <div style="padding:.5rem;border-left:2px solid var(--red);padding-left:.75rem">Smart money must align before maximum position size deployed</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -236,7 +341,7 @@ function initDashboard(){
 }
 
 function showTab(id){
-  document.querySelectorAll('.tab').forEach((t,i)=>{const ids=['overview','strategies','exits','trades','regime','risk','smartmoney','portfolio'];t.classList.toggle('active',ids[i]===id);});
+  document.querySelectorAll('.tab').forEach((t,i)=>{const ids=['overview','strategies','exits','trades','regime','risk','smartmoney','portfolio','criteria'];t.classList.toggle('active',ids[i]===id);});
   document.querySelectorAll('.content').forEach(c=>c.classList.remove('active'));
   document.getElementById('tab-'+id).classList.add('active');
 }
