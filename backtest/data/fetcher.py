@@ -309,9 +309,9 @@ def passes_liquidity_filter(
     if vol_20d < 500_000:
         return False, f"avg_vol_{int(vol_20d):,}_below_500k"
 
-    # Market cap filter
+    # Market cap filter — skip if data unavailable (e.g. rate limited or ETF)
     market_cap_m = (info.get("market_cap") or 0) / 1_000_000
-    if market_cap_m < 100:
+    if market_cap_m > 0 and market_cap_m < 100:
         return False, f"mkt_cap_${market_cap_m:.0f}M_below_$100M"
 
     # Listing age filter — IPO date from yfinance info
