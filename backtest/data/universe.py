@@ -16,6 +16,7 @@ Universe tiers:
 import logging
 import time
 from datetime import date, timedelta
+from pathlib import Path
 from typing import Optional
 
 import pandas as pd
@@ -45,23 +46,23 @@ ETFS_FULL = [
 
 def get_sp500_constituents(max_tickers: int = 500) -> list[str]:
     """
-    Fetch S&P 500 constituent list from Wikipedia.
-    Returns tickers in approximate market-cap order (Wikipedia order).
+    Load S&P 500 constituent list from the committed CSV file.
+
+    Uses backtest/data/sp500_tickers.csv — a maintained static file.
+    No network calls, no rate limiting, works in all environments.
+    Update sp500_tickers.csv manually when index membership changes
+    (typically 10-20 changes per year).
     """
+    csv_path = Path(__file__).parent / "sp500_tickers.csv"
     try:
-        tables = pd.read_html(
-            "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies",
-            attrs={"id": "constituents"},
-        )
-        sp500 = tables[0]
-        tickers = (sp500["Symbol"]
-                   .str.replace(".", "-", regex=False)
-                   .tolist())
-        logger.info("Loaded %d S&P 500 constituents from Wikipedia", len(tickers))
+        df = pd.read_csv(csv_path)
+        # Remove duplicates (companies with two share classes)
+        tickers = df["Symbol"].drop_duplicates().tolist()
+        logger.info("Loaded %d S&P 500 constituents from sp500_tickers.csv", len(tickers))
         return tickers[:max_tickers]
     except Exception as exc:
-        logger.error("Could not fetch S&P 500 list: %s — using SP50 fallback", exc)
-        return SP50
+        logger.error("Could not read sp500_tickers.csv: %s", exc)
+        return []
 
 
 def apply_liquidity_filter(
