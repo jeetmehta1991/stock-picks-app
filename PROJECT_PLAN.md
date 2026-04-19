@@ -421,3 +421,190 @@ Determine which of 60 strategies, across which market regimes, using which exit 
 ---
 
 *This document is the single source of truth for the project. Updated directly on GitHub — no Word documents needed.*
+
+---
+
+## 18. All 60 Strategies — Plain English
+
+Each strategy fires when ALL listed conditions are true simultaneously. Direction is either Long (buy) or Short (sell). Entry is always at next day's open price.
+
+### Category 1 — Pivot Based (10 strategies)
+
+| # | Strategy | Direction | Conditions | What it means |
+|---|---|---|---|---|
+| 1 | pivot_s1_bounce | Long | Price near S1 support AND (hammer or pin bar candle) AND OBV rising | Stock at key daily support, buyers stepping in with volume confirmation |
+| 2 | pivot_s2_bounce | Long | Price near S2 support AND RSI-14 < 40 AND (hammer or bullish engulfing) | Deeper support level with oversold momentum and bullish candle |
+| 3 | pivot_s3_capitulation | Long | Price near S3 support AND RSI-14 < 30 AND volume spike 2× average | Extreme panic selling at deepest support — high reversal probability |
+| 4 | pivot_r1_breakout | Long | Price above R1 resistance AND volume 1.5× AND MACD histogram positive | Resistance breakout with institutional volume and momentum confirmation |
+| 5 | pivot_r2_continuation | Long | Price above R2 AND ADX > 25 (trending) AND EMA-50 above EMA-200 | Strong trend continuation — broke major resistance with trend structure intact |
+| 6 | cpr_narrow_bullish | Long | CPR range is narrow AND price above CPR AND RSI-14 > 50 | Narrow CPR = directional day likely. Price already above = bullish bias |
+| 7 | camarilla_s3_bounce | Long | Price near Camarilla S3 AND RSI-14 < 35 AND OBV rising | Primary Camarilla support with oversold RSI and accumulation volume |
+| 8 | camarilla_r3_breakout | Long | Price above Camarilla R3 AND volume spike 2× | Breakout above Camarilla R3 = momentum likely to continue to R4 |
+| 9 | prev_day_high_break | Long | Price above previous day high AND volume 1.5× AND above VWAP | Yesterday's high broken with volume and VWAP control — buyers in charge |
+| 10 | prev_day_low_bounce | Long | Price near previous day low AND hammer candle AND CMF positive | Previous day low holding as support with buying pressure confirmed by money flow |
+
+### Category 2 — Momentum (9 strategies)
+
+| # | Strategy | Direction | Conditions | What it means |
+|---|---|---|---|---|
+| 11 | macd_crossover | Long | MACD 12/26/9 histogram crossed above zero | Standard MACD crossover — short-term momentum overtook long-term |
+| 12 | macd_fast_crossover | Long | Fast MACD 8/21/5 histogram crossed above zero | Earlier version of MACD — catches momentum shift sooner, more trades |
+| 13 | hull_rsi | Long | Hull MA rising AND price above Hull MA AND RSI-9 > 50 | Fast moving average bullish with momentum above midpoint |
+| 14 | williams_r_oversold | Long | Williams %R < -80 (oversold) AND price above EMA-200 AND CMF positive | Short-term oversold in long-term uptrend with positive money flow |
+| 15 | roc_burst | Long | ROC-12 flipped positive AND volume 1.5× | Rate of change turning up with participation — early momentum shift |
+| 16 | awesome_oscillator | Long | AO crossed above zero AND price above EMA-20 | Bill Williams momentum signal turning positive within uptrend |
+| 17 | stochrsi_oversold | Long | StochRSI < 20 (oversold) AND StochRSI K crossed above D AND RSI-14 < 55 | Highly sensitive oscillator oversold and turning with RSI context |
+| 18 | ppo_crossover | Long | PPO crossed above signal line AND ADX > 25 | Percentage-normalised MACD crossover — works across all price levels |
+| 19 | ultimate_oscillator | Long | Ultimate Oscillator < 30 AND price above SMA-200 | Triple-timeframe oscillator oversold — fewer false signals than single period |
+
+### Category 3 — Trend Following (9 strategies)
+
+| # | Strategy | Direction | Conditions | What it means |
+|---|---|---|---|---|
+| 20 | golden_cross_50_200 | Long | EMA-50 crossed above EMA-200 | Classic golden cross — structural shift from bearish to bullish |
+| 21 | golden_cross_9_21 | Long | EMA-9 crossed above EMA-21 AND price above SMA-50 | Fast golden cross — earlier signal, more trades, uptrend context required |
+| 22 | golden_cross_20_50 | Long | EMA-20 crossed above EMA-50 AND price above EMA-200 | Medium-term golden cross — between fast (9/21) and slow (50/200) |
+| 23 | parabolic_sar_flip | Long | Parabolic SAR flipped from above price to below AND ADX > 25 | Unambiguous trend reversal signal with trend strength confirmed |
+| 24 | tema_dema | Long | TEMA crossed above DEMA AND price above TEMA | Fast MA system catching trends earlier than standard EMAs |
+| 25 | ichimoku_tk_cross | Long | Tenkan crossed above Kijun AND price not below cloud | Early Ichimoku signal — before full cloud breakout, not in bearish structure |
+| 26 | ichimoku_cloud_breakout | Long | Price above Ichimoku cloud AND Tenkan above Kijun AND ADX trending | Full bullish Ichimoku structure — cloud, momentum, and trend all aligned |
+| 27 | adx_initiation | Long | ADX crossed above 25 AND DI+ above DI- | Trend initiating from flat — catching the start of a new directional move |
+| 28 | supertrend_macd | Long | Supertrend bullish AND MACD positive AND ADX > 20 | Two trend systems aligned with baseline trend strength |
+
+### Category 4 — Mean Reversion (11 strategies)
+
+| # | Strategy | Direction | Conditions | What it means |
+|---|---|---|---|---|
+| 29 | rsi_oversold | Long | RSI-14 < 35 AND price above SMA-50 | Classic oversold RSI in uptrend — buying the dip |
+| 30 | rsi9_extreme | Long | RSI-9 < 20 AND price above EMA-200 AND RSI-9 rising | Extreme fast RSI oversold in long-term uptrend and already recovering |
+| 31 | rsi21_slow | Long | RSI-21 < 35 AND price above SMA-50 | Slower RSI — higher quality signal, fewer false positives |
+| 32 | rsi_overbought_short | **Short** | RSI-14 > 68 AND price below SMA-50 AND (bearish engulfing OR RSI falling) | Overbought rally in downtrend with bearish confirmation — fade the bounce |
+| 33 | mfi_oversold | Long | MFI oversold AND near S1 or S2 AND OBV rising | Volume-weighted RSI oversold at pivot support with accumulation |
+| 34 | cmf_flip | Long | CMF crossed above zero AND RSI-14 < 50 | Money flow turning positive — institutional buying starting, not overbought |
+| 35 | bollinger_lower | Long | Price at lower Bollinger Band (20,2) AND RSI-14 < 40 AND ADX < 30 | Statistically extreme low with oversold RSI and no strong downtrend |
+| 36 | bollinger_tight | Long | Price at lower Bollinger Band (20,2 or 20,1.5) AND RSI-14 < 45 | Tighter band version — slightly more frequent signal |
+| 37 | bollinger_upper_short | **Short** | Price at upper Bollinger Band (20,2) AND RSI-14 > 70 AND shooting star candle | Overbought extreme with bearish candle — sellers rejecting the high |
+| 38 | keltner_lower | Long | Price at lower Keltner Channel AND hammer candle AND OBV rising | ATR-based support with buyers defending and volume confirmed |
+| 39 | stoch_oversold | Long | Stochastic < 20 AND K crossed above D AND price above EMA-20 | Classic stochastic oversold and turning within short-term uptrend |
+
+### Category 5 — Breakout (6 strategies)
+
+| # | Strategy | Direction | Conditions | What it means |
+|---|---|---|---|---|
+| 40 | squeeze_breakout | Long | BB squeeze released with positive momentum | Bollinger Bands were inside Keltner — coiling energy. Released upward. |
+| 41 | volume_spike_breakout | Long | Broke 20-day Donchian high AND volume 2× AND above VWAP | 20-day high broken with institutional volume and intraday control |
+| 42 | 52w_high_breakout | Long | Broke 52-week high AND volume 2× | New highs attract buyers. Most studied momentum signal. Volume confirms. |
+| 43 | inside_bar_breakout | Long | Inside bar formed AND ADX trending AND above VWAP | Pre-breakout compression with trend and intraday bias bullish |
+| 44 | force_index_breakout | Long | Force Index crossed above zero AND price above EMA-20 | Price × volume momentum turning positive within uptrend |
+| 45 | donchian_10_breakout | Long | Broke 10-day Donchian high AND volume 1.5× AND MACD positive | Faster Donchian version — more trades, momentum confirmed |
+
+### Category 6 — Candle Patterns (6 strategies)
+
+| # | Strategy | Direction | Conditions | What it means |
+|---|---|---|---|---|
+| 46 | morning_star | Long | Morning star 3-bar pattern AND RSI-14 < 45 AND EMA-50 above EMA-200 | Classic 3-day reversal pattern in uptrend context while still oversold |
+| 47 | bullish_engulfing_support | Long | Bullish engulfing candle AND at S1/S2/Fibonacci AND OBV rising | Engulfing at key level with volume — two systems confirming the same level |
+| 48 | doji_at_support | Long | Doji candle AND at S1/S2/Fibonacci AND volume spike 1.5× | Indecision after downmove at support with volume — reversal often follows |
+| 49 | three_white_soldiers | Long | Three consecutive bullish candles AND RSI-14 < 60 | Sustained 3-day buying pressure with room to run before overbought |
+| 50 | shooting_star_short | **Short** | Shooting star candle AND at R1/R2 or upper Bollinger AND RSI-14 > 65 | Long upper wick at resistance with overbought momentum — sellers rejecting high |
+| 51 | evening_star_short | **Short** | Evening star 3-bar pattern AND RSI-14 > 55 AND price below SMA-50 | 3-day bearish reversal in downtrend context — buyers exhausted |
+
+### Category 7 — Confluence (9 strategies)
+
+| # | Strategy | Direction | Conditions | What it means |
+|---|---|---|---|---|
+| 52 | rsi_volume_200ema | Long | RSI-14 < 35 AND volume 2× AND price above EMA-200 | Three independent systems: oversold + institutional buying + long-term uptrend |
+| 53 | macd_ichimoku | Long | MACD crossover up AND price above Ichimoku cloud | Momentum signal confirmed by trend structure signal simultaneously |
+| 54 | bb_squeeze_volume | Long | BB squeeze releasing AND volume 2× AND above VWAP | Compressed energy releasing with institutional participation |
+| 55 | pivot_fib_confluence | Long | At S1 or S2 AND at key Fibonacci level AND bullish candle | Two independent price systems pointing to same level with candle confirmation |
+| 56 | golden_cross_volume | Long | EMA-50 crossed above EMA-200 AND volume 2× on cross day | Golden cross with institutional participation on the exact cross day |
+| 57 | cpr_narrow_momentum | Long | Narrow CPR AND above CPR AND RSI-14 > 50 AND MACD positive | Four signals confirming bullish bias — professional directional setup |
+| 58 | camarilla_rsi_obv | Long | Near Camarilla S3 AND RSI-14 < 35 AND OBV rising AND CMF positive | Four independent signals at strongest Camarilla support — highest conviction |
+| 59 | supertrend_ichimoku_adx | Long | Supertrend bullish AND above Ichimoku cloud AND ADX strong | Three trend systems all simultaneously bullish — very strong trend |
+| 60 | williams_stoch_dual | Long | Williams %R oversold AND Stochastic oversold AND at S1/S2/Camarilla S3 | Two momentum oscillators both oversold at pivot support — rare confluence |
+
+---
+
+## 19. All Rules and Filters — Plain English
+
+### Entry Rules
+
+| Rule | Current value | Rationale |
+|---|---|---|
+| Max candidates per day | 10 | How many instruments can generate new trades on any single day |
+| Trades per ticker per day | No limit — all strategies fire independently | Multiple strategies on same ticker open separate positions. Removed to capture all valid signals |
+| Entry price | Next day open (D+1) | Signal fires at market close. Entry at next morning's open. Simulates real execution. |
+| Entry zone — breakout/momentum | Gap must be ≤ 2× ATR from signal close | Prevents entering too far above signal level — chasing |
+| Entry zone — trend/confluence | Gap must be ≤ 1.5× ATR | Tighter — trend entries need to be closer to signal level |
+| Entry zone — pivot/candle | Gap must be ≤ 1.0× ATR | Tightest — pivot level entries must be precise |
+| Entry zone — mean reversion | Gap must be ≤ 1.0× ATR | Raised from 0.5× — captures more mean reversion trades |
+| Slippage | 0.03% ETF / 0.08% large-cap / 0.15% high-vol | Applied at entry — realistic fill price vs official open |
+| Minimum price history | 30 trading days | Instrument must have 30 days of data before signals are computed |
+
+### Portfolio Rules (Backtest Mode)
+
+| Rule | Current value | Rationale |
+|---|---|---|
+| Open position cap | None — uncapped | Statistical validity. All signals fire freely. |
+| Daily loss limit | None | Removed for backtest. Will be decided at Stage 4 with live data. |
+| Correlation filter | None | Removed. Sectors trend together — targeting trending sectors is the strategy. |
+| Sector concentration | None | Removed with correlation filter. |
+| Regime position sizing | None — full size in all regimes | Backtest needs data from all conditions, not reduced samples. |
+| Crisis regime direction | Allowed — flagged as crisis_CRISIS_FLAG | Best entry prices are often in crisis. Trailing stop manages downside. |
+| Liquidity filter | Applied once at load time | Price > $5, avg volume > 500k, market cap > $100M. Not re-checked daily. |
+
+### Position Sizing by Confidence Tier
+
+| Tier | Requirements | Size |
+|---|---|---|
+| EXCEPTIONAL | 3+ strategies + congressional buy + insider cluster buy | 5% of capital |
+| VERY HIGH | 2+ strategies + congressional OR insider buy | 4% of capital |
+| HIGH | 3+ strategies, no smart money | 3% of capital |
+| MEDIUM-HIGH | 2 strategies, no smart money | 1.5% of capital |
+| MEDIUM | 1 strategy + any smart money buy | 0% — watch only |
+| LOW | 1 strategy only | 0% — watch only |
+| AVOID | Congressional sell + insider cluster sell | 0% — avoid entirely |
+
+### Exit Rules — Priority Order
+
+| Priority | Rule | Trigger | Rationale |
+|---|---|---|---|
+| 1 — highest | Circuit breaker 1 | Overnight gap > 12% wrong direction → exit at open | Gap-down opens can blow through trailing stops |
+| 2 | Circuit breaker 2 | Earnings gap > 8% wrong direction → exit at open | Earnings are binary events — can't be managed |
+| 3 | Circuit breaker 3 | Intraday halt + down > 15% from entry → exit on resume | Halts often precede further decline |
+| 4 | Circuit breaker 4 | S&P 500 market-wide halt → no new trades, flag all | Systemic risk — do not add exposure |
+| 5 | Circuit breaker 5 | VIX > 40 → tighten all stops to 5%, no new longs | Crisis mode — protect capital |
+| 6 — default | Trailing stop | 10% below highest closing price. Moves up, never reverses. | Primary exit for all strategies. Lets winners run. |
+
+### Data Integrity Rules
+
+| Rule | Value | Why non-negotiable |
+|---|---|---|
+| Point-in-time OHLCV | Every fetch sliced to as_of date only | Any future data = fictional results |
+| Congressional trade lag | 45 days enforced | Real disclosure timeline |
+| Insider trade lag | 2 business days | Real Form 4 filing timeline |
+| 13F institutional lag | 45 days after quarter end | Real filing deadline |
+| Analyst data | Live only — NOT used in backtest metrics | Cannot get historical analyst consensus from yfinance |
+| Look-ahead bias guard | Automated check on every data fetch | Catches errors before they affect trades |
+| Audit flag | Win rate > 75% or profit factor > 1.5 → manual review | Statistically unlikely without look-ahead bias |
+
+### Improvements Applied to All Results
+
+| Improvement | Value | Effect |
+|---|---|---|
+| Transaction costs | 0.08% ETF / 0.10% large-cap / 0.15% mid-cap round-trip | Reduces net ROI vs gross ROI |
+| Survivorship bias haircut | 2% annual | Phase 1A: 6% total haircut over 3 years |
+| Walk-forward validation | In-sample 2022-23 / Out-of-sample 2024 | ROBUST = real edge. OVERFIT = do not trade. |
+| Bonferroni correction | 60 strategies → 500 trades minimum required | Prevents false positives from multiple testing |
+| Slippage model | Spread + gap penalty at entry | Realistic fill prices |
+
+### Pending Decisions — To Be Made at Stage 4
+
+| Decision | Status |
+|---|---|
+| Daily loss limit value | To be determined from paper trading data |
+| Maximum open positions for live trading | To be determined — Stage 3 cap 20, Stage 4 cap 10 |
+| Pyramiding — adding to winning positions | Flagged for Stage 4 and separate backtesting |
+| Sector concentration for live trading | To be determined |
+| Multiple strategies on same ticker — separate positions or combined | **OPEN — needs owner decision before Phase 1A v3 run** |
+
