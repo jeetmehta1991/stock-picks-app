@@ -1,0 +1,333 @@
+"""
+config.py — Complete system configuration for Stage 2 backtesting engine v2.
+
+Single source of truth for:
+  - Universe definitions
+  - Market regime windows
+  - Entry zone ATR multipliers by strategy type
+  - Trailing stop parameters
+  - Circuit breaker thresholds
+  - Passing criteria (all 10 metrics)
+  - Confidence tier definitions
+  - Site card parameters
+  - Output file names
+  - AI model selection
+"""
+
+from datetime import date
+
+# ─────────────────────────────────────────────────────────────────────────────
+# BACKTEST WINDOW
+# ─────────────────────────────────────────────────────────────────────────────
+BACKTEST_START  = date(2022, 1, 1)
+BACKTEST_END    = date(2024, 12, 31)
+PHASE_1D_START  = date(2020, 1, 1)   # extended window for top-5 final validation
+DATA_LOAD_START = date(2021, 1, 1)   # extra year loaded for indicator warmup
+
+# ─────────────────────────────────────────────────────────────────────────────
+# UNIVERSE — Phase 1A (S&P 50 + 17 ETFs = 67 instruments)
+# ─────────────────────────────────────────────────────────────────────────────
+SP50 = [
+    # Mega-cap tech
+    "AAPL", "MSFT", "NVDA", "AMZN", "GOOGL", "META", "TSLA", "AVGO", "ORCL", "AMD",
+    # Financials
+    "BRK-B", "JPM", "V", "MA", "BAC", "WFC", "GS", "MS", "BLK", "SCHW",
+    # Healthcare
+    "LLY", "UNH", "JNJ", "ABBV", "MRK", "PFE", "TMO", "ABT", "DHR", "ISRG",
+    # Energy / Industrials
+    "XOM", "CVX", "COP", "NEE", "CAT", "HON", "UPS", "RTX", "GE", "LMT",
+    # Consumer / Other
+    "WMT", "COST", "HD", "NKE", "SBUX", "MCD", "PG", "KO", "PEP", "DIS",
+]
+
+ETFS = [
+    # Broad market
+    "SPY", "QQQ", "IWM", "DIA", "VTI",
+    # Sector
+    "XLK", "XLF", "XLE", "XLV", "XLI",
+    # Volatility (VXX only — no leveraged)
+    "VXX",
+    # Bonds
+    "TLT", "HYG", "LQD",
+    # Commodities
+    "GLD", "SLV", "GDX",
+]
+
+UNIVERSE = SP50 + ETFS   # 67 instruments total
+
+# No leveraged ETFs anywhere in the system — TQQQ, SQQQ, SPXL, UVXY, SOXL excluded.
+# Reason: volatility decay makes backtested win rates non-transferable to live trading.
+
+# ─────────────────────────────────────────────────────────────────────────────
+# MARKET REGIMES
+# Strategies must be profitable in 2+ regimes to advance.
+# ─────────────────────────────────────────────────────────────────────────────
+MARKET_REGIMES = {
+    "bear_correction_2022": {
+        "start": date(2022, 1, 1), "end": date(2022, 12, 31),
+        "description": "Bear market — S&P -19.4%",
+        "bias": "short",
+    },
+    "rate_rising_2022_2023": {
+        "start": date(2022, 3, 1), "end": date(2023, 7, 31),
+        "description": "Fed rate cycle 0.25% → 5.50%",
+        "bias": "neutral",
+    },
+    "strong_bull_2023": {
+        "start": date(2023, 1, 1), "end": date(2023, 12, 31),
+        "description": "Bull recovery — S&P +24.2%",
+        "bias": "long",
+    },
+    "rate_falling_2024": {
+        "start": date(2024, 1, 1), "end": date(2024, 12, 31),
+        "description": "Fed cutting cycle begins",
+        "bias": "long",
+    },
+    "ai_sector_bull_2024": {
+        "start": date(2024, 1, 1), "end": date(2024, 12, 31),
+        "description": "AI / tech sector bull",
+        "bias": "long",
+    },
+    # Phase 1D only
+    "covid_crisis_2020": {
+        "start": date(2020, 2, 1), "end": date(2020, 6, 30),
+        "description": "COVID crash — VIX peak 82",
+        "bias": "short",
+    },
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# LIQUIDITY FILTERS — applied before all strategy screening
+# ─────────────────────────────────────────────────────────────────────────────
+LIQUIDITY = {
+    "min_price":        5.0,      # eliminates penny stocks
+    "min_avg_volume":   500_000,  # 20-day average shares/day
+    "min_listed_years": 1.0,      # must be listed at least 1 year
+    "min_market_cap_m": 100,      # USD millions
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ENTRY ZONE — ATR multiplier by strategy category
+# Upper bound = next day open + (multiplier × ATR)
+# If open exceeds upper bound → trade skipped, logged as entry_skipped_gap_exceeded
+# ─────────────────────────────────────────────────────────────────────────────
+ENTRY_GAP_ATR_MULT = {
+    "breakout":      2.0,   # gap-up confirms the breakout thesis
+    "momentum":      2.0,   # momentum entries tolerate larger gaps
+    "trend":         1.5,   # moderate gap tolerance
+    "confluence":    1.5,   # high conviction — worth paying up slightly
+    "pivot":         1.0,   # entry level matters — large gap invalidates level
+    "candle":        1.0,   # pattern entry level matters
+    "mean_reversion": 1.0,  # raised from 0.5× — backtest needs sufficient trades
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# EXIT LOGIC — trailing stop system
+# ─────────────────────────────────────────────────────────────────────────────
+TRAILING_STOP = {
+    "initial_pct":       0.10,   # 10% below entry price (long) / above (short)
+    "trail_pct":         0.10,   # trails at 10% below highest close (long)
+    "reset_on":          "close", # trailing stop resets on closing price only
+    # Stop only moves in favour of trade — never reverses
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# CIRCUIT BREAKERS — checked before trailing stop, in priority order
+# ─────────────────────────────────────────────────────────────────────────────
+CIRCUIT_BREAKERS = {
+    "level_1_gap_pct":         0.12,  # overnight gap > 12% wrong direction → exit at open
+    "level_2_earnings_gap_pct": 0.08, # earnings gap > 8% wrong direction → exit at open
+    "level_3_halt_loss_pct":   0.15,  # intraday halt + down > 15% from entry → exit on resume
+    "level_4_market_halt_pct": 0.07,  # S&P 500 market-wide circuit breaker → flag all, no new trades
+    "level_5_vix_crisis":      40,    # VIX > 40 → tighten stops to 5%, no new longs
+    "level_5_tightened_pct":   0.05,  # tightened trailing stop when VIX > 40
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# REGIME FILTER — Option B: VIX + SPY based
+# Controls which directions are allowed in each regime
+# ─────────────────────────────────────────────────────────────────────────────
+REGIME_FILTER = {
+    "bull": {
+        "vix_max": 20, "spy_above_200ema": True,
+        "long": "full", "short": "reduced",
+    },
+    "neutral": {
+        "vix_range": (20, 30), "spy_above_200ema": None,
+        "long": "full", "short": "full",
+    },
+    "bear": {
+        "vix_min": 30, "spy_above_200ema": False,
+        "long": "reduced", "short": "full",
+    },
+    "crisis": {
+        "vix_min": 40,
+        "long": "none", "short": "cautious",
+    },
+}
+
+# Position size multipliers per regime
+POSITION_SIZE_MULT = {
+    "full":     1.0,
+    "reduced":  0.5,
+    "cautious": 0.25,
+    "none":     0.0,
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SHORT-TO-LONG CONVERSION
+# Only in bull market (VIX < 20, SPY above 200 EMA)
+# Bear market: exit only, no conversion
+# ─────────────────────────────────────────────────────────────────────────────
+CONVERSION = {
+    "enabled_regimes": ["bull"],          # only convert in bull market
+    "requires_long_signal": True,         # long signal must be firing at conversion point
+    "flag_as_conversion_pair": True,      # both trades flagged in trade log
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# PASSING CRITERIA — all 10 metrics, strategy must pass ALL to advance
+# ─────────────────────────────────────────────────────────────────────────────
+PASSING_CRITERIA = {
+    "min_win_rate":            0.55,   # 55%+ win rate
+    "min_profit_factor":       1.2,    # total wins / total losses > 1.2
+    "min_expected_value":      0.0,    # (win_rate × avg_win) + (loss_rate × avg_loss) > 0
+    "min_win_loss_ratio":      1.0,    # avg win / avg loss > 1.0
+    "max_drawdown":            0.20,   # max peak-to-trough loss < 20%
+    "min_total_roi":           0.0,    # positive total ROI over backtest period
+    "smart_money_lift":        True,   # must show measurable improvement with smart money
+    "macro_correlation":       True,   # must show higher win rate in favourable regime
+    "min_trades":              100,    # minimum 100 trades for statistical validity
+    "min_regimes_profitable":  2,      # profitable in 2+ of 5 regimes
+    # Audit flag: anything above these thresholds gets look-ahead bias audit
+    "audit_win_rate_above":    0.75,
+    "audit_profit_factor_above": 1.5,
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# CONFIDENCE TIERS — maps to site card label and position sizing
+# ─────────────────────────────────────────────────────────────────────────────
+CONFIDENCE_TIERS = {
+    "EXCEPTIONAL": {
+        "tech_strategies_min": 3,
+        "smart_money": "congressional+insider_cluster",
+        "site_label": "Exceptional",
+        "position_pct": 0.05,       # 5% of capital
+        "published": True,
+        "section": "active_picks",
+    },
+    "VERY_HIGH": {
+        "tech_strategies_min": 2,
+        "smart_money": "congressional_or_insider",
+        "site_label": "Very High",
+        "position_pct": 0.04,       # 4% of capital
+        "published": True,
+        "section": "active_picks",
+    },
+    "HIGH": {
+        "tech_strategies_min": 3,
+        "smart_money": None,
+        "site_label": "High",
+        "position_pct": 0.03,       # 3% of capital
+        "published": True,
+        "section": "watchlist",
+    },
+    "MEDIUM_HIGH": {
+        "tech_strategies_min": 2,
+        "smart_money": None,
+        "site_label": "Medium-High",
+        "position_pct": 0.015,      # 1.5% of capital
+        "published": True,
+        "section": "watchlist",
+    },
+    "MEDIUM": {
+        "tech_strategies_min": 1,
+        "smart_money": "any_buy",
+        "site_label": "Medium",
+        "position_pct": 0.0,
+        "published": False,
+        "section": None,
+    },
+    "LOW": {
+        "tech_strategies_min": 1,
+        "smart_money": None,
+        "site_label": "Low",
+        "position_pct": 0.0,
+        "published": False,
+        "section": None,
+    },
+    "AVOID": {
+        "smart_money": "congressional_sell+insider_cluster_sell",
+        "site_label": "Avoid",
+        "position_pct": 0.0,
+        "published": False,
+        "section": None,
+    },
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SITE OUTPUT
+# ─────────────────────────────────────────────────────────────────────────────
+SITE = {
+    "max_active_picks":    10,    # top 10 per day total
+    "active_picks_tiers":  ["EXCEPTIONAL", "VERY_HIGH"],
+    "watchlist_tiers":     ["HIGH", "MEDIUM_HIGH"],
+    "card_format":         "both",   # bullets + paragraph
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# AI MODELS
+# ─────────────────────────────────────────────────────────────────────────────
+AI_MODELS = {
+    "phase_1a": "claude-haiku-4-5-20251001",
+    "phase_1b": "claude-haiku-4-5-20251001",
+    "phase_1c": "claude-sonnet-4-6",
+    "phase_1d": "claude-sonnet-4-6",
+    "live":     "claude-sonnet-4-6",
+}
+
+ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# TECHNICAL INDICATOR PARAMETERS
+# ─────────────────────────────────────────────────────────────────────────────
+INDICATORS = {
+    "rsi_periods":       [9, 14, 21],
+    "macd_params":       [(12, 26, 9), (8, 21, 5)],
+    "ema_pairs":         [(9, 21), (20, 50), (50, 200)],
+    "sma_pairs":         [(9, 21), (20, 50), (50, 200)],
+    "bb_params":         [(20, 2.0), (20, 1.5), (10, 2.0)],
+    "atr_period":        14,
+    "adx_period":        14,
+    "stoch_params":      (14, 3, 3),
+    "williams_period":   14,
+    "roc_period":        12,
+    "mfi_period":        14,
+    "cmf_period":        20,
+    "hull_period":       20,
+    "donchian_periods":  [10, 20],
+    "fib_levels":        [0.236, 0.382, 0.500, 0.618, 0.786],
+    "pivot_near_pct":    0.003,     # within 0.3% = "near" a pivot level
+    "fib_near_pct":      0.005,     # within 0.5% = "near" a Fibonacci level
+    "volume_spike_x":    [1.5, 2.0, 3.0],
+    "yearly_high_bars":  252,       # ~1 trading year for 52-week high
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# OUTPUT FILES
+# ─────────────────────────────────────────────────────────────────────────────
+OUTPUT_DIR = "output"
+OUTPUT_FILES = {
+    "trade_log":               "trade_log.csv",
+    "backtest_results":        "backtest_results.csv",
+    "backtest_report":         "backtest_report.html",
+    "winning_strategies":      "winning_strategies.json",
+    "regime_performance":      "regime_performance.csv",
+    "smart_money_combined":    "smart_money_combined.csv",
+    "agent_performance":       "agent_performance.csv",
+    "congressional_corr":      "congressional_correlation.csv",
+    "insider_corr":            "insider_correlation.csv",
+    "skipped_trades":          "skipped_trades.csv",
+    "circuit_breaker_log":     "circuit_breaker_log.csv",
+    "site_picks":              "site_picks_{date}.json",
+}

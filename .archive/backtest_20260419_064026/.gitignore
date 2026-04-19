@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+*.pyo
+# Do NOT ignore cache — we want it committed so it survives Codespace restarts
+# data/cache/ is intentionally tracked
