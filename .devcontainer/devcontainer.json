@@ -1,10 +1,12 @@
 {
   "name": "Stock Picks App",
-  "postCreateCommand": "pip install -r requirements.txt --break-system-packages -q",
+  "postCreateCommand": "pip install -r requirements.txt --break-system-packages -q && echo 'All packages installed'",
   "customizations": {
     "vscode": {
       "extensions": [
-        "ritwickdey.LiveServer"
+        "ritwickdey.LiveServer",
+        "yzhang.markdown-all-in-one",
+        "ms-python.python"
       ]
     }
   }
