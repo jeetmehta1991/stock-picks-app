@@ -5,8 +5,9 @@
 set -e
 
 echo "=== Cache Download Script ==="
-echo "Pulling latest code..."
-git pull origin main
+echo "Syncing latest code..."
+git fetch origin
+git reset --hard origin/main
 
 echo "Installing dependencies..."
 pip install -r requirements.txt --break-system-packages -q
