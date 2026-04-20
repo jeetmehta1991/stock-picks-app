@@ -6,6 +6,13 @@
 
 ## Critical Rules — Read First
 
+**Standard of work:**
+- Think through every action completely before suggesting it — anticipate edge cases, environment constraints, and downstream effects
+- Never jump ahead of the current phase or task
+- Present the full plan before executing anything
+- One instruction at a time — confirm it worked before the next step
+- If something can go wrong, flag it proactively — do not wait to be asked
+
 - **ALL decisions require explicit owner approval before implementation. No exceptions.** Rules, filters, thresholds, strategies, architecture, infrastructure — everything. Claude presents recommendations with reasoning. Owner decides. Claude builds only what is explicitly approved.
 - **NEVER change any rule, filter, threshold, or strategy parameter without explicit owner approval.** Present recommendations only. Owner decides. Then build.
 - Point-in-time data enforcement is non-negotiable — no future data ever used in backtest
