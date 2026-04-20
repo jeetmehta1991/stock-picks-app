@@ -55,17 +55,24 @@ stock-picks-app/
 
 **Phase 1A v3 — running with approved rule changes**
 
+**Sync Codespace before anything:**
+```bash
+git fetch origin ; git reset --hard origin/main
+```
+
 Run command:
 ```bash
-pip install pyarrow --break-system-packages -q
-find backtest -name "*.pyc" -delete && find backtest -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null
+pip install -r requirements.txt --break-system-packages -q
+find backtest -name "*.pyc" -delete ; find backtest -name "__pycache__" -type d -exec rm -rf {} +
 python -m backtest.run_phase1a --no-agents --output-dir output_v2
 ```
 
 After run completes:
 ```bash
-git add output_v2/ backtest/data/cache/ && git commit -m "Phase 1A v3 results" && git push origin main
+git add output_v2/ backtest/data/cache/ ; git commit -m "Phase 1A v3 results" ; git push origin main
 ```
+
+**Never use `git pull` — always use `git fetch origin ; git reset --hard origin/main`**
 
 **Phase 1A v1 results (previous — superseded):**
 198 trades, 17 strategies fired, 0 short trades, 0 passing. Pipeline confirmed clean.
