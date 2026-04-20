@@ -1,6 +1,7 @@
 {
   "name": "Stock Picks App",
   "postCreateCommand": "pip install -r requirements.txt --break-system-packages -q && echo 'All packages installed'",
+  "postStopCommand": "cd /workspaces/stock-picks-app && git add backtest/data/cache/ output_v2/ 2>/dev/null; git diff --cached --quiet || git commit -m 'Auto-save on Codespace stop' && git push origin main 2>/dev/null || true",
   "customizations": {
     "vscode": {
       "extensions": [
