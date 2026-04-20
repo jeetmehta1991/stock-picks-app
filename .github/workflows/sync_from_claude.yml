@@ -4,28 +4,18 @@ on:
   workflow_dispatch:
     inputs:
       description:
-        description: "What changed in this sync (e.g. 'added analyst consensus to site card')"
+        description: "What changed in this sync"
         required: true
-        type: string
-      milestone:
-        description: "Is this a milestone release? (creates a git tag)"
-        required: false
-        type: boolean
-        default: false
-      milestone_tag:
-        description: "Tag name if milestone (e.g. v2.0-phase1a-complete)"
-        required: false
         type: string
 
 jobs:
   sync:
-    name: Sync backtest files from claude-updates branch
+    name: Sync files from claude-updates branch
     runs-on: ubuntu-latest
     permissions:
       contents: write
 
     steps:
-      # ── Step 1: Checkout main branch ──
       - name: Checkout main
         uses: actions/checkout@v4
         with:
@@ -33,107 +23,31 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      # ── Step 2: Configure git identity ──
       - name: Configure git
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      # ── Step 3: Archive current backtest/ as dated snapshot ──
-      - name: Archive current version
-        run: |
-          if [ -d "backtest" ]; then
-            SNAPSHOT_DATE=$(date +%Y%m%d_%H%M%S)
-            SNAPSHOT_DIR=".archive/backtest_${SNAPSHOT_DATE}"
-            mkdir -p "$SNAPSHOT_DIR"
-            cp -r backtest/. "$SNAPSHOT_DIR/"
-            echo "Archived current backtest/ to $SNAPSHOT_DIR"
-          else
-            echo "No existing backtest/ to archive"
-          fi
-
-      # ── Step 4: Pull updated files from claude-updates branch ──
-      - name: Fetch claude-updates branch
+      - name: Fetch and merge claude-updates
         run: |
           git fetch origin claude-updates
-          echo "Fetched claude-updates branch"
+          git merge origin/claude-updates --strategy-option=theirs -m "Claude sync $(date +%Y-%m-%d) — ${{ github.event.inputs.description }}"
+          git push origin main
+          echo "Synced claude-updates to main"
 
-      # ── Step 5: Copy files from claude-updates to main ──
-      - name: Copy updated backtest files
+      - name: Validate imports
         run: |
-          # Extract backtest/ folder from claude-updates branch
-          git checkout origin/claude-updates -- backtest/
-          echo "Copied backtest/ from claude-updates"
-          echo "Files updated:"
-          git diff --name-only HEAD backtest/ || true
-
-      # ── Step 6: Install dependencies ──
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Install dependencies
-        run: |
-          pip install yfinance requests --quiet
-          pip install pandas-ta --quiet || pip install ta --quiet || echo "pandas-ta unavailable — manual fallbacks will be used"
-
-      # ── Step 7: Validate imports ──
-      - name: Validate backtest imports
-        run: |
-          cd $GITHUB_WORKSPACE
+          pip install yfinance pandas-ta pyarrow requests --quiet
           python -c "
-          import sys
-          sys.path.insert(0, '.')
+          import sys; sys.path.insert(0, '.')
           from backtest.config import UNIVERSE, PASSING_CRITERIA
-          print(f'Config OK: {len(UNIVERSE)} instruments')
-          from backtest.signals.technical import compute_all_signals
-          import pandas as pd, numpy as np
-          np.random.seed(42)
-          df = pd.DataFrame({
-              'open':   100 + np.random.randn(80).cumsum(),
-              'high':   102 + np.random.randn(80).cumsum(),
-              'low':    98  + np.random.randn(80).cumsum(),
-              'close':  101 + np.random.randn(80).cumsum(),
-              'volume': (600000 + np.random.randint(0,200000,80)).astype(float),
-          }, index=pd.date_range('2022-01-01', periods=80, freq='B'))
-          df['high'] = df[['open','high','close']].max(axis=1) + 0.5
-          df['low']  = df[['open','low','close']].min(axis=1) - 0.5
-          sigs = compute_all_signals(df)
-          print(f'Signals OK: {len(sigs)} fields')
           from backtest.signals.screener import ALL_STRATEGIES
-          print(f'Strategies OK: {len(ALL_STRATEGIES)} registered')
           from backtest.engine.exit_strategies import EXIT_STRATEGIES
-          print(f'Exit strategies OK: {len(EXIT_STRATEGIES)} registered')
-          print('All imports validated successfully')
+          print(f'OK: {len(UNIVERSE)} instruments, {len(ALL_STRATEGIES)} strategies, {len(EXIT_STRATEGIES)} exits')
           "
 
-      # ── Step 8: Commit archive + updated files to main ──
-      - name: Commit to main
-        run: |
-          git add backtest/ .archive/ || true
-          git diff --cached --quiet && echo "No changes to commit" && exit 0
-          COMMIT_MSG="Claude sync $(date +%Y-%m-%d) — ${{ github.event.inputs.description }}"
-          git commit -m "$COMMIT_MSG"
-          git push origin main
-          echo "Committed and pushed to main"
-
-      # ── Step 9: Create milestone tag if requested ──
-      - name: Create milestone tag
-        if: ${{ github.event.inputs.milestone == 'true' && github.event.inputs.milestone_tag != '' }}
-        run: |
-          TAG="${{ github.event.inputs.milestone_tag }}"
-          git tag -a "$TAG" -m "Milestone: ${{ github.event.inputs.description }}"
-          git push origin "$TAG"
-          echo "Created tag: $TAG"
-
-      # ── Step 10: Summary ──
-      - name: Sync summary
+      - name: Summary
         run: |
           echo "### Sync complete" >> $GITHUB_STEP_SUMMARY
           echo "**Description:** ${{ github.event.inputs.description }}" >> $GITHUB_STEP_SUMMARY
           echo "**Date:** $(date +%Y-%m-%d' '%H:%M' UTC')" >> $GITHUB_STEP_SUMMARY
-          echo "**Files updated:** backtest/" >> $GITHUB_STEP_SUMMARY
-          if [ "${{ github.event.inputs.milestone }}" == "true" ]; then
-            echo "**Milestone tag:** ${{ github.event.inputs.milestone_tag }}" >> $GITHUB_STEP_SUMMARY
-          fi
