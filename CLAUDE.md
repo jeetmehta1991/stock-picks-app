@@ -6,6 +6,7 @@
 
 ## Critical Rules — Read First
 
+- **ALL decisions require explicit owner approval before implementation. No exceptions.** Rules, filters, thresholds, strategies, architecture, infrastructure — everything. Claude presents recommendations with reasoning. Owner decides. Claude builds only what is explicitly approved.
 - **NEVER change any rule, filter, threshold, or strategy parameter without explicit owner approval.** Present recommendations only. Owner decides. Then build.
 - Point-in-time data enforcement is non-negotiable — no future data ever used in backtest
 - All strategy/rule decisions are logged in `PROJECT_PLAN.md` section 8 with approval status
