@@ -125,6 +125,7 @@ All owner-approved. Do not revert without approval.
 - Risk profile: medium-high risk, high return. Buy dips including in crisis.
 - Email (not Telegram) for all trade approvals in Stage 4
 - Intraday trading: completely separate future project — out of scope
+- TradingAgents 6-agent pipeline is core to the product — runs Phase 1B+ (Haiku) and Phase 1C+ (Sonnet). See PROJECT_PLAN.md section 20.
 
 ---
 

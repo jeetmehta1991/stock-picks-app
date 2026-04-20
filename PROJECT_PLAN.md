@@ -608,3 +608,60 @@ Each strategy fires when ALL listed conditions are true simultaneously. Directio
 | Sector concentration for live trading | To be determined |
 | Multiple strategies on same ticker — separate positions or combined | **OPEN — needs owner decision before Phase 1A v3 run** |
 
+
+---
+
+## 20. TradingAgents Integration
+
+### What it is
+TradingAgents is a multi-agent AI framework integrated into our backtesting and live trading pipeline. Every candidate instrument passes through a 6-agent pipeline before receiving a confidence score and being published to the site card. It is not optional — it is the core intelligence layer that separates this system from a simple technical indicator screener.
+
+The agents run in sequence, each analysing a different dimension of the trade. The Decision Agent synthesises all outputs into a final confidence score, position size recommendation, and plain-English site card paragraph.
+
+### The 6-Agent Pipeline
+
+| Agent | Model | Data sources | Output |
+|---|---|---|---|
+| Technical Agent | Haiku/Sonnet | yfinance OHLCV → 274 signals | Confirms all signals firing at exact historical date. Flags divergence. |
+| Fundamental Agent | Haiku/Sonnet | Quiver (earnings, buybacks), Finnhub (news, SEC filings), yfinance (analyst consensus, EPS, price targets, revision direction) | Earnings risk, analyst sentiment, fundamental backdrop |
+| Sentiment Agent | Haiku/Sonnet | Quiver (congressional), Unusual Whales (options flow, dark pool), AAII, CNN Fear & Greed, Finnhub (news sentiment) | Market and stock-specific sentiment score |
+| Risk Agent | Haiku/Sonnet | FRED (yield curve), yfinance (VIX), Ortex (short interest), economic calendar | Macro regime score, short squeeze risk, earnings proximity, event risk |
+| Bull Agent | Haiku/Sonnet | All of the above | Best case argument for the trade |
+| Bear Agent | Haiku/Sonnet | All of the above | Worst case argument against the trade |
+| Decision Agent | Haiku/Sonnet | All agent outputs | Final confidence score, position size, site card paragraph, optimal exit method |
+
+### When Agents Run
+
+| Phase | Agents | Model | Purpose |
+|---|---|---|---|
+| Phase 1A | No agents ( flag) | None | Pipeline validation only — zero cost |
+| Phase 1B | Yes | Haiku (~/bin/sh.021/analysis) | Full universe backtest with agent confidence scoring |
+| Phase 1C | Yes | Sonnet (~/bin/sh.08/analysis) | Higher quality validation — eliminates Haiku false positives |
+| Phase 1D | Yes | Sonnet | Maximum conviction — top 5 strategies over 5 years |
+| Stage 3 paper trading | Yes | Sonnet | Daily signal generation for paper trades |
+| Stage 4+ live trading | Yes | Sonnet | Daily signal generation for live trades |
+
+### The  Flag
+Running with  skips the 6-agent pipeline entirely and uses rule-based confidence scoring instead. Used in Phase 1A to validate the pipeline at zero cost before spending on agents in Phase 1B.
+
+### How Agent Output Feeds Into Confidence Tiers
+
+The Decision Agent output directly determines the confidence tier assigned to each trade:
+
+| Tier | Agent requirements |
+|---|---|
+| EXCEPTIONAL | 3+ technical strategies + congressional + insider cluster + agents agree |
+| VERY HIGH | 2+ strategies + congressional OR insider + agents agree |
+| HIGH | 3+ strategies, no smart money, agents positive |
+| MEDIUM-HIGH | 2 strategies, agents neutral or positive |
+| AVOID | Congressional sell + insider cluster sell regardless of agent output |
+
+### Cost Per Analysis
+
+| Model | Cost per analysis | Phase |
+|---|---|---|
+| Haiku | ~/bin/sh.021 | Phase 1B |
+| Sonnet | ~/bin/sh.08 | Phase 1C, 1D, Stage 3+ |
+
+Phase 1B cost estimate: 400 instruments × 782 days × 10 candidates × /bin/sh.021 = ~16 CAD
+Phase 1C cost estimate: top 20% strategies × same universe × /bin/sh.08 = ~02 CAD
