@@ -64,17 +64,15 @@ select{padding:.35rem .7rem;font-size:.78rem;border:1px solid var(--border2);bor
 <div class="header">
   <div><h1>Backtest Analysis Dashboard</h1><div class="sub">Stock Picks &amp; Automated Trading System — Stage 2</div></div>
   <div style="display:flex;gap:.5rem;align-items:center">
-    <span class="badge" id="trade-count-badge">No data loaded</span>
-    <button class="upload-btn" onclick="document.getElementById('file-input').click()" style="font-size:.75rem;padding:.35rem 1rem">Load Results</button>
-    <input type="file" id="file-input" multiple accept=".csv,.json" style="display:none" onchange="loadFiles(event)"/>
+    <span class="badge" id="trade-count-badge">Loading...</span>
+    <button class="upload-btn" onclick="autoLoad()" style="font-size:.75rem;padding:.35rem 1rem">↻ Refresh</button>
   </div>
 </div>
 
-<div id="upload-prompt" class="upload-zone" onclick="document.getElementById('file-input').click()">
-  <h2>Load your backtest results</h2>
-  <p>Select files from your <code>output_v2/</code> folder<br>Required: <strong>trade_log.csv</strong> &nbsp;·&nbsp; Optional: backtest_results.csv, exit_strategy_comparison.csv</p>
-  <button class="upload-btn">Choose files</button>
-  <p style="margin-top:1rem;font-size:.75rem;color:var(--text3)">Files processed locally — nothing uploaded anywhere</p>
+<div id="upload-prompt" class="upload-zone" style="display:none">
+  <h2>No results found</h2>
+  <p>Run Phase 1A v3 first, then click Refresh</p>
+  <button class="upload-btn" onclick="autoLoad()">↻ Refresh</button>
 </div>
 
 <div id="dashboard" style="display:none">
@@ -314,22 +312,36 @@ let tradePage=0,tradePageSize=50;
 let stratFilter='all',stratSort='win_rate',stratSearch='';
 let tradeSearch='',tradeDir='all',tradeOutcome='all',tradeRegime='all';
 
-function loadFiles(e){
-  const files=Array.from(e.target.files);
-  let loaded=0;
-  files.forEach(f=>{
-    const name=f.name.toLowerCase();
-    const reader=new FileReader();
-    reader.onload=ev=>{
-      if(name.includes('trade_log')) TRADES=Papa.parse(ev.target.result,{header:true,dynamicTyping:true,skipEmptyLines:true}).data;
-      else if(name.includes('backtest_results')) METRICS=Papa.parse(ev.target.result,{header:true,dynamicTyping:true,skipEmptyLines:true}).data;
-      else if(name.includes('exit_strategy')) EXIT_CMP=Papa.parse(ev.target.result,{header:true,dynamicTyping:true,skipEmptyLines:true}).data;
-      loaded++;
-      if(loaded===files.length) initDashboard();
-    };
-    reader.readAsText(f);
-  });
+async function fetchCSV(path){
+  try{
+    const r=await fetch(path);
+    if(!r.ok) return null;
+    const text=await r.text();
+    return Papa.parse(text,{header:true,dynamicTyping:true,skipEmptyLines:true}).data;
+  }catch(e){return null;}
 }
+
+async function autoLoad(){
+  document.getElementById('trade-count-badge').textContent='Loading...';
+  const [trades,metrics,exits]=await Promise.all([
+    fetchCSV('output_v2/trade_log.csv'),
+    fetchCSV('output_v2/backtest_results.csv'),
+    fetchCSV('output_v2/exit_strategy_comparison.csv'),
+  ]);
+  TRADES=trades||[];
+  METRICS=metrics||[];
+  EXIT_CMP=exits||[];
+  if(!TRADES.length){
+    document.getElementById('upload-prompt').style.display='block';
+    document.getElementById('dashboard').style.display='none';
+    document.getElementById('trade-count-badge').textContent='No data';
+    return;
+  }
+  initDashboard();
+}
+
+// Auto-load on page open
+window.addEventListener('DOMContentLoaded', autoLoad);
 
 function initDashboard(){
   if(!TRADES.length) return;
