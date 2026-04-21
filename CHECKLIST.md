@@ -10,3 +10,4 @@ Run this before every suggestion or execution — no exceptions.
 6. If modifying CLAUDE.md — have I shown the exact before/after diff and received explicit written approval?
 7. If pushing code — am I pushing to `claude-updates` only, never directly to `main`?
 8. Is this a decision that requires owner approval before I proceed?
+9. Chain commands where logical — commit and push should always be combined. Only split commands when each step needs independent verification first.

@@ -82,7 +82,7 @@ find backtest -name "*.pyc" -delete ; find backtest -name "__pycache__" -type d 
 python -m backtest.run_phase1a --no-agents --output-dir output_v2
 ```
 
-**After run completes:**
+**After run completes — commit and push together:**
 ```bash
 git add output_v2/ ; git commit -m "Phase 1A v3 results" ; git push origin main
 ```
