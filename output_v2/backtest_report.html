@@ -1,0 +1,802 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Backtest Report — 2026-04-22 16:34 UTC</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d9;padding:2rem 1rem}
+h1{font-size:1.7rem;color:#f0f6fc;margin-bottom:.4rem}
+h2{font-size:1rem;color:#58a6ff;margin:2.5rem 0 .75rem;border-bottom:1px solid #21262d;padding-bottom:.4rem}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:1.5rem 0}
+.stat{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:1rem 1.2rem}
+.stat .v{font-size:2rem;font-weight:700;color:#f0f6fc} .stat .l{font-size:.75rem;color:#8b949e;margin-top:3px}
+.note{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:.9rem 1.2rem;
+       font-size:.82rem;color:#8b949e;margin-bottom:1.5rem}
+.note strong{color:#c9d1d9}
+.improvements{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.75rem;margin-bottom:1.5rem}
+.imp-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:.9rem 1.1rem}
+.imp-card .title{font-size:.7rem;color:#8b949e;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.4rem}
+.imp-card .val{font-size:1.1rem;font-weight:600;color:#f0f6fc}
+.imp-card .sub{font-size:.72rem;color:#8b949e;margin-top:.2rem}
+table{width:100%;border-collapse:collapse;font-size:.8rem;margin-bottom:1rem}
+th{background:#161b22;color:#8b949e;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;
+    padding:.55rem .8rem;text-align:left;border-bottom:1px solid #21262d}
+td{padding:.55rem .8rem;border-bottom:1px solid #21262d}
+tr:hover td{background:#1c2128}
+footer{text-align:center;margin-top:3rem;font-size:.75rem;color:#484f58;
+        padding-top:1rem;border-top:1px solid #21262d}
+</style></head><body>
+<h1>Backtest Report — Stage 2</h1>
+<p style="color:#8b949e;font-size:.85rem">Generated 2026-04-22 16:34 UTC &nbsp;|&nbsp; 60 strategies &nbsp;|&nbsp; 12 exit methods &nbsp;|&nbsp; 5 improvements applied</p>
+
+<div class="stats">
+  <div class="stat"><div class="v">6,942</div><div class="l">Trades simulated</div></div>
+  <div class="stat"><div class="v">50</div><div class="l">Strategies tested</div></div>
+  <div class="stat"><div class="v" style="color:#3fb950">0</div><div class="l">Passing all criteria</div></div>
+  <div class="stat"><div class="v">6,794</div><div class="l">Long trades</div></div>
+  <div class="stat"><div class="v">148</div><div class="l">Short trades</div></div>
+  <div class="stat"><div class="v" style="color:#3fb950">19685.5%</div><div class="l">Gross ROI</div></div>
+  <div class="stat"><div class="v" style="color:#3fb950">18348.6%</div><div class="l">Net ROI (after costs)</div></div>
+  <div class="stat"><div class="v" style="color:#f85149">-1336.9%</div><div class="l">Transaction costs</div></div>
+</div>
+
+<h2>Improvements applied</h2>
+<div class="improvements">
+  <div class="imp-card"><div class="title">Transaction costs</div>
+    <div class="val">-1336.88% total</div>
+    <div class="sub">0.08% ETF · 0.10% large-cap · 0.15% mid-cap round-trip</div></div>
+  <div class="imp-card"><div class="title">Survivorship bias haircut</div>
+    <div class="val">-6.0% applied</div>
+    <div class="sub">2% annual over 3.0 years — gross 18348.6% → adjusted 18342.6%</div></div>
+  <div class="imp-card"><div class="title">Walk-forward validation</div>
+    <div class="val">In-sample 2022-23 · OOS 2024</div>
+    <div class="sub">ROBUST = passes both · OVERFIT = fails out-of-sample</div></div>
+  <div class="imp-card"><div class="title">Correlation filter</div>
+    <div class="val">Max 0.70 correlation</div>
+    <div class="sub">Max 3 positions per sector · prevents concentrated drawdowns</div></div>
+  <div class="imp-card"><div class="title">Slippage model</div>
+    <div class="val">Applied at entry</div>
+    <div class="sub">Spread + gap penalty · 0.03% ETF · 0.08% large-cap · 0.15% high-vol</div></div>
+  <div class="imp-card"><div class="title">Bonferroni correction</div>
+    <div class="val">500+ trades required</div>
+    <div class="sub">60 strategies tested · adjusted p=0.00083</div></div>
+</div>
+
+<h2>Strategy performance (net of transaction costs)</h2>
+<div class="note"><strong>Pass criteria:</strong> 55%+ win rate · profit factor &gt;1.2 · 500+ trades · 2+ regimes · positive net ROI · max drawdown &lt;20%
+&nbsp;·&nbsp; ⚠️ = flagged for look-ahead bias audit</div>
+<table><thead><tr><th>Strategy</th><th>Category</th><th>L/S</th><th>Trades</th>
+<th>Win rate</th><th>Profit factor</th><th>Net ROI</th><th>Max DD</th><th>Regimes</th><th>Walk-forward</th><th>Pass</th>
+</tr></thead><tbody><tr>
+              <td style="color:#58a6ff;font-weight:600">camarilla_s3_bounce</td>
+              <td style="color:#8b949e">pivot</td>
+              <td>2L/0S</td>
+              <td>2</td>
+              <td style="color:#3fb950;font-weight:500">100.0%  ✓</td>
+              <td>inf</td>
+              <td style="color:#3fb950">9.3%</td>
+              <td style="color:#e3b341">0.0%</td>
+              <td>0</td>
+              <td style="color:#e3b341;font-weight:500">—</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">pivot_s3_capitulation</td>
+              <td style="color:#8b949e">pivot</td>
+              <td>1L/0S</td>
+              <td>1</td>
+              <td style="color:#3fb950;font-weight:500">100.0%  ✓</td>
+              <td>inf</td>
+              <td style="color:#3fb950">13.2%</td>
+              <td style="color:#e3b341">0.0%</td>
+              <td>0</td>
+              <td style="color:#e3b341;font-weight:500">—</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">volume_spike_breakout</td>
+              <td style="color:#8b949e">breakout</td>
+              <td>27L/0S</td>
+              <td>27</td>
+              <td style="color:#e3b341;font-weight:500">51.8%</td>
+              <td>2.36</td>
+              <td style="color:#3fb950">107.8%</td>
+              <td style="color:#f85149">-45.8%</td>
+              <td>0</td>
+              <td style="color:#e3b341;font-weight:500">WEAK</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">roc_burst</td>
+              <td style="color:#8b949e">momentum</td>
+              <td>125L/0S</td>
+              <td>125</td>
+              <td style="color:#e3b341;font-weight:500">51.2%</td>
+              <td>2.98</td>
+              <td style="color:#3fb950">733.9%</td>
+              <td style="color:#f85149">-99.1%</td>
+              <td>0</td>
+              <td style="color:#e3b341;font-weight:500">FAILS_BOTH</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">camarilla_r3_breakout</td>
+              <td style="color:#8b949e">pivot</td>
+              <td>162L/0S</td>
+              <td>162</td>
+              <td style="color:#e3b341;font-weight:500">49.4%</td>
+              <td>2.62</td>
+              <td style="color:#3fb950">831.6%</td>
+              <td style="color:#f85149">-143.7%</td>
+              <td>0</td>
+              <td style="color:#e3b341;font-weight:500">FAILS_BOTH</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">morning_star</td>
+              <td style="color:#8b949e">candle</td>
+              <td>123L/0S</td>
+              <td>123</td>
+              <td style="color:#e3b341;font-weight:500">47.1%</td>
+              <td>2.05</td>
+              <td style="color:#3fb950">452.9%</td>
+              <td style="color:#f85149">-214.4%</td>
+              <td>0</td>
+              <td style="color:#e3b341;font-weight:500">FAILS_BOTH</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">ultimate_oscillator</td>
+              <td style="color:#8b949e">momentum</td>
+              <td>26L/0S</td>
+              <td>26</td>
+              <td style="color:#e3b341;font-weight:500">46.2%</td>
+              <td>2.12</td>
+              <td style="color:#3fb950">91.6%</td>
+              <td style="color:#f85149">-29.2%</td>
+              <td>0</td>
+              <td style="color:#e3b341;font-weight:500">FAILS_BOTH</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">bollinger_lower</td>
+              <td style="color:#8b949e">mean_reversion</td>
+              <td>190L/0S</td>
+              <td>190</td>
+              <td style="color:#f85149;font-weight:500">44.7%</td>
+              <td>2.20</td>
+              <td style="color:#3fb950">830.2%</td>
+              <td style="color:#f85149">-396.8%</td>
+              <td>0</td>
+              <td style="color:#e3b341;font-weight:500">WEAK</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">pivot_s2_bounce</td>
+              <td style="color:#8b949e">pivot</td>
+              <td>9L/0S</td>
+              <td>9</td>
+              <td style="color:#f85149;font-weight:500">44.4%</td>
+              <td>1.22</td>
+              <td style="color:#3fb950">7.8%</td>
+              <td style="color:#f85149">-16.4%</td>
+              <td>0</td>
+              <td style="color:#e3b341;font-weight:500">FAILS_BOTH</td>
+              <td></td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">donchian_10_breakout</td>
+              <td style="color:#8b949e">breakout</td>
+              <td>77L/0S</td>
+              <td>77</td>
+              <td style="color:#f85149;font-weight:500">44.2%</td>
+              <td>2.28</td>
+              <td style="color:#3fb950">359.6%</td>
+              <td style="color:#f85149">-98.7%</td>
+              <td>0</td>
+              <td style="color:#e3b341;font-weight:500">FAILS_BOTH</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">stochrsi_oversold</td>
+              <td style="color:#8b949e">momentum</td>
+              <td>219L/0S</td>
+              <td>219</td>
+              <td style="color:#f85149;font-weight:500">43.8%</td>
+              <td>1.77</td>
+              <td style="color:#3fb950">634.8%</td>
+              <td style="color:#f85149">-366.2%</td>
+              <td>0</td>
+              <td style="color:#e3b341;font-weight:500">FAILS_BOTH</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">bollinger_tight</td>
+              <td style="color:#8b949e">mean_reversion</td>
+              <td>268L/0S</td>
+              <td>268</td>
+              <td style="color:#f85149;font-weight:500">43.3%</td>
+              <td>1.84</td>
+              <td style="color:#3fb950">828.5%</td>
+              <td style="color:#f85149">-450.4%</td>
+              <td>0</td>
+              <td style="color:#e3b341;font-weight:500">FAILS_BOTH</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">pivot_s1_bounce</td>
+              <td style="color:#8b949e">pivot</td>
+              <td>44L/0S</td>
+              <td>44</td>
+              <td style="color:#f85149;font-weight:500">43.2%</td>
+              <td>2.37</td>
+              <td style="color:#3fb950">247.2%</td>
+              <td style="color:#f85149">-74.0%</td>
+              <td>0</td>
+              <td style="color:#e3b341;font-weight:500">FAILS_BOTH</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">ichimoku_tk_cross</td>
+              <td style="color:#8b949e">trend</td>
+              <td>196L/0S</td>
+              <td>196</td>
+              <td style="color:#f85149;font-weight:500">42.9%</td>
+              <td>1.88</td>
+              <td style="color:#3fb950">653.9%</td>
+              <td style="color:#f85149">-124.5%</td>
+              <td>0</td>
+              <td style="color:#e3b341;font-weight:500">FAILS_BOTH</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">golden_cross_20_50</td>
+              <td style="color:#8b949e">trend</td>
+              <td>126L/0S</td>
+              <td>126</td>
+              <td style="color:#f85149;font-weight:500">42.9%</td>
+              <td>1.44</td>
+              <td style="color:#3fb950">207.1%</td>
+              <td style="color:#f85149">-199.4%</td>
+              <td>0</td>
+              <td style="color:#e3b341;font-weight:500">WEAK</td>
+              <td></td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">mfi_oversold</td>
+              <td style="color:#8b949e">mean_reversion</td>
+              <td>124L/0S</td>
+              <td>124</td>
+              <td style="color:#f85149;font-weight:500">42.7%</td>
+              <td>1.94</td>
+              <td style="color:#3fb950">430.5%</td>
+              <td style="color:#f85149">-170.9%</td>
+              <td>0</td>
+              <td style="color:#e3b341;font-weight:500">FAILS_BOTH</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">macd_crossover</td>
+              <td style="color:#8b949e">momentum</td>
+              <td>206L/0S</td>
+              <td>206</td>
+              <td style="color:#f85149;font-weight:500">42.7%</td>
+              <td>1.84</td>
+              <td style="color:#3fb950">644.6%</td>
+              <td style="color:#f85149">-290.7%</td>
+              <td>0</td>
+              <td style="color:#e3b341;font-weight:500">FAILS_BOTH</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">supertrend_ichimoku_adx</td>
+              <td style="color:#8b949e">confluence</td>
+              <td>101L/0S</td>
+              <td>101</td>
+              <td style="color:#f85149;font-weight:500">42.6%</td>
+              <td>2.23</td>
+              <td style="color:#3fb950">468.4%</td>
+              <td style="color:#f85149">-135.3%</td>
+              <td>0</td>
+              <td style="color:#e3b341;font-weight:500">FAILS_BOTH</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">prev_day_high_break</td>
+              <td style="color:#8b949e">pivot</td>
+              <td>205L/0S</td>
+              <td>205</td>
+              <td style="color:#f85149;font-weight:500">42.4%</td>
+              <td>1.94</td>
+              <td style="color:#3fb950">694.0%</td>
+              <td style="color:#f85149">-146.4%</td>
+              <td>0</td>
+              <td style="color:#e3b341;font-weight:500">FAILS_BOTH</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">williams_r_oversold</td>
+              <td style="color:#8b949e">momentum</td>
+              <td>123L/0S</td>
+              <td>123</td>
+              <td style="color:#f85149;font-weight:500">42.3%</td>
+              <td>1.58</td>
+              <td style="color:#3fb950">276.4%</td>
+              <td style="color:#f85149">-263.9%</td>
+              <td>0</td>
+              <td style="color:#e3b341;font-weight:500">FAILS_BOTH</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">tema_dema</td>
+              <td style="color:#8b949e">trend</td>
+              <td>209L/0S</td>
+              <td>209</td>
+              <td style="color:#f85149;font-weight:500">41.6%</td>
+              <td>1.84</td>
+              <td style="color:#3fb950">671.4%</td>
+              <td style="color:#f85149">-171.2%</td>
+              <td>0</td>
+              <td style="color:#e3b341;font-weight:500">FAILS_BOTH</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">golden_cross_9_21</td>
+              <td style="color:#8b949e">trend</td>
+              <td>191L/0S</td>
+              <td>191</td>
+              <td style="color:#f85149;font-weight:500">41.4%</td>
+              <td>1.65</td>
+              <td style="color:#3fb950">465.0%</td>
+              <td style="color:#f85149">-239.5%</td>
+              <td>0</td>
+              <td style="color:#e3b341;font-weight:500">WEAK</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">williams_stoch_dual</td>
+              <td style="color:#8b949e">confluence</td>
+              <td>208L/0S</td>
+              <td>208</td>
+              <td style="color:#f85149;font-weight:500">41.3%</td>
+              <td>1.67</td>
+              <td style="color:#3fb950">534.6%</td>
+              <td style="color:#f85149">-368.5%</td>
+              <td>0</td>
+              <td style="color:#e3b341;font-weight:500">FAILS_BOTH</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">inside_bar_breakout</td>
+              <td style="color:#8b949e">breakout</td>
+              <td>168L/0S</td>
+              <td>168</td>
+              <td style="color:#f85149;font-weight:500">41.1%</td>
+              <td>1.56</td>
+              <td style="color:#3fb950">374.1%</td>
+              <td style="color:#f85149">-224.7%</td>
+              <td>0</td>
+              <td style="color:#e3b341;font-weight:500">FAILS_BOTH</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">macd_ichimoku</td>
+              <td style="color:#8b949e">confluence</td>
+              <td>173L/0S</td>
+              <td>173</td>
+              <td style="color:#f85149;font-weight:500">41.0%</td>
+              <td>1.91</td>
+              <td style="color:#3fb950">603.9%</td>
+              <td style="color:#f85149">-206.6%</td>
+              <td>0</td>
+              <td style="color:#e3b341;font-weight:500">FAILS_BOTH</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">cmf_flip</td>
+              <td style="color:#8b949e">mean_reversion</td>
+              <td>86L/0S</td>
+              <td>86</td>
+              <td style="color:#f85149;font-weight:500">40.7%</td>
+              <td>1.33</td>
+              <td style="color:#3fb950">98.1%</td>
+              <td style="color:#f85149">-150.2%</td>
+              <td>0</td>
+              <td style="color:#e3b341;font-weight:500">FAILS_BOTH</td>
+              <td></td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">pivot_r1_breakout</td>
+              <td style="color:#8b949e">pivot</td>
+              <td>197L/0S</td>
+              <td>197</td>
+              <td style="color:#f85149;font-weight:500">40.6%</td>
+              <td>1.94</td>
+              <td style="color:#3fb950">707.9%</td>
+              <td style="color:#f85149">-255.6%</td>
+              <td>0</td>
+              <td style="color:#e3b341;font-weight:500">FAILS_BOTH</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">awesome_oscillator</td>
+              <td style="color:#8b949e">momentum</td>
+              <td>225L/0S</td>
+              <td>225</td>
+              <td style="color:#f85149;font-weight:500">40.0%</td>
+              <td>1.72</td>
+              <td style="color:#3fb950">621.1%</td>
+              <td style="color:#f85149">-293.5%</td>
+              <td>0</td>
+              <td style="color:#e3b341;font-weight:500">FAILS_BOTH</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">doji_at_support</td>
+              <td style="color:#8b949e">candle</td>
+              <td>5L/0S</td>
+              <td>5</td>
+              <td style="color:#f85149;font-weight:500">40.0%</td>
+              <td>0.36</td>
+              <td style="color:#f85149">-17.5%</td>
+              <td style="color:#f85149">-17.5%</td>
+              <td>0</td>
+              <td style="color:#e3b341;font-weight:500">FAILS_BOTH</td>
+              <td></td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">force_index_breakout</td>
+              <td style="color:#8b949e">breakout</td>
+              <td>286L/0S</td>
+              <td>286</td>
+              <td style="color:#f85149;font-weight:500">39.9%</td>
+              <td>1.61</td>
+              <td style="color:#3fb950">662.8%</td>
+              <td style="color:#f85149">-289.1%</td>
+              <td>0</td>
+              <td style="color:#e3b341;font-weight:500">FAILS_BOTH</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">hull_rsi</td>
+              <td style="color:#8b949e">momentum</td>
+              <td>426L/0S</td>
+              <td>426</td>
+              <td style="color:#f85149;font-weight:500">39.4%</td>
+              <td>1.64</td>
+              <td style="color:#3fb950">1086.6%</td>
+              <td style="color:#f85149">-611.5%</td>
+              <td>0</td>
+              <td style="color:#e3b341;font-weight:500">FAILS_BOTH</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">ichimoku_cloud_breakout</td>
+              <td style="color:#8b949e">trend</td>
+              <td>252L/0S</td>
+              <td>252</td>
+              <td style="color:#f85149;font-weight:500">38.9%</td>
+              <td>1.44</td>
+              <td style="color:#3fb950">488.8%</td>
+              <td style="color:#f85149">-443.7%</td>
+              <td>0</td>
+              <td style="color:#e3b341;font-weight:500">FAILS_BOTH</td>
+              <td></td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">supertrend_macd</td>
+              <td style="color:#8b949e">trend</td>
+              <td>343L/0S</td>
+              <td>343</td>
+              <td style="color:#f85149;font-weight:500">38.8%</td>
+              <td>1.42</td>
+              <td style="color:#3fb950">637.7%</td>
+              <td style="color:#f85149">-597.2%</td>
+              <td>0</td>
+              <td style="color:#e3b341;font-weight:500">FAILS_BOTH</td>
+              <td></td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">cpr_narrow_bullish</td>
+              <td style="color:#8b949e">pivot</td>
+              <td>442L/0S</td>
+              <td>442</td>
+              <td style="color:#f85149;font-weight:500">38.5%</td>
+              <td>1.61</td>
+              <td style="color:#3fb950">1093.9%</td>
+              <td style="color:#f85149">-658.1%</td>
+              <td>0</td>
+              <td style="color:#e3b341;font-weight:500">FAILS_BOTH</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">cpr_narrow_momentum</td>
+              <td style="color:#8b949e">confluence</td>
+              <td>365L/0S</td>
+              <td>365</td>
+              <td style="color:#f85149;font-weight:500">38.4%</td>
+              <td>1.52</td>
+              <td style="color:#3fb950">772.1%</td>
+              <td style="color:#f85149">-596.8%</td>
+              <td>0</td>
+              <td style="color:#e3b341;font-weight:500">FAILS_BOTH</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">three_white_soldiers</td>
+              <td style="color:#8b949e">candle</td>
+              <td>168L/0S</td>
+              <td>168</td>
+              <td style="color:#f85149;font-weight:500">37.5%</td>
+              <td>1.79</td>
+              <td style="color:#3fb950">508.1%</td>
+              <td style="color:#f85149">-286.2%</td>
+              <td>0</td>
+              <td style="color:#e3b341;font-weight:500">FAILS_BOTH</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">ppo_crossover</td>
+              <td style="color:#8b949e">momentum</td>
+              <td>113L/0S</td>
+              <td>113</td>
+              <td style="color:#f85149;font-weight:500">37.2%</td>
+              <td>1.61</td>
+              <td style="color:#3fb950">290.5%</td>
+              <td style="color:#f85149">-144.3%</td>
+              <td>0</td>
+              <td style="color:#e3b341;font-weight:500">FAILS_BOTH</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">macd_fast_crossover</td>
+              <td style="color:#8b949e">momentum</td>
+              <td>190L/0S</td>
+              <td>190</td>
+              <td style="color:#f85149;font-weight:500">36.3%</td>
+              <td>1.48</td>
+              <td style="color:#3fb950">360.5%</td>
+              <td style="color:#f85149">-262.9%</td>
+              <td>0</td>
+              <td style="color:#e3b341;font-weight:500">FAILS_BOTH</td>
+              <td></td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">adx_initiation</td>
+              <td style="color:#8b949e">trend</td>
+              <td>14L/0S</td>
+              <td>14</td>
+              <td style="color:#f85149;font-weight:500">35.7%</td>
+              <td>2.85</td>
+              <td style="color:#3fb950">112.0%</td>
+              <td style="color:#f85149">-45.3%</td>
+              <td>0</td>
+              <td style="color:#e3b341;font-weight:500">FAILS_BOTH</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">pivot_r2_continuation</td>
+              <td style="color:#8b949e">pivot</td>
+              <td>194L/0S</td>
+              <td>194</td>
+              <td style="color:#f85149;font-weight:500">35.6%</td>
+              <td>1.35</td>
+              <td style="color:#3fb950">292.5%</td>
+              <td style="color:#f85149">-315.3%</td>
+              <td>0</td>
+              <td style="color:#e3b341;font-weight:500">FAILS_BOTH</td>
+              <td></td>
+            </tr></tbody></table>
+
+<h2>Walk-forward validation — in-sample (2022-23) vs out-of-sample (2024)</h2>
+<div class="note"><strong>ROBUST</strong> = strategy passes both periods — real edge &nbsp;·&nbsp;
+<strong>OVERFIT</strong> = passes in-sample, fails 2024 — curve-fitted to training data, do not trade &nbsp;·&nbsp;
+Win rate degradation &gt;5% is a red flag</div>
+<table><thead><tr><th>Strategy</th><th>Verdict</th><th>IS trades</th><th>IS win rate</th>
+<th>OOS trades</th><th>OOS win rate</th><th>WR degradation</th></tr></thead><tbody>
+<tr>
+              <td style="color:#58a6ff">cpr_narrow_bullish</td>
+              <td style="color:#e3b341;font-weight:600">FAILS_BOTH</td>
+              <td>363</td>
+              <td style="color:#f85149">37.5%</td>
+              <td>79</td>
+              <td style="color:#f85149">43.0%</td>
+              <td style="color:#8b949e">5.6%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">hull_rsi</td>
+              <td style="color:#e3b341;font-weight:600">FAILS_BOTH</td>
+              <td>353</td>
+              <td style="color:#f85149">38.5%</td>
+              <td>73</td>
+              <td style="color:#f85149">43.8%</td>
+              <td style="color:#8b949e">5.3%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">supertrend_macd</td>
+              <td style="color:#e3b341;font-weight:600">FAILS_BOTH</td>
+              <td>281</td>
+              <td style="color:#f85149">38.8%</td>
+              <td>62</td>
+              <td style="color:#f85149">38.7%</td>
+              <td style="color:#8b949e">-0.1%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">force_index_breakout</td>
+              <td style="color:#e3b341;font-weight:600">FAILS_BOTH</td>
+              <td>228</td>
+              <td style="color:#f85149">39.9%</td>
+              <td>58</td>
+              <td style="color:#f85149">39.7%</td>
+              <td style="color:#8b949e">-0.2%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">cpr_narrow_momentum</td>
+              <td style="color:#e3b341;font-weight:600">FAILS_BOTH</td>
+              <td>296</td>
+              <td style="color:#f85149">37.8%</td>
+              <td>69</td>
+              <td style="color:#f85149">40.6%</td>
+              <td style="color:#8b949e">2.7%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">macd_crossover</td>
+              <td style="color:#e3b341;font-weight:600">FAILS_BOTH</td>
+              <td>172</td>
+              <td style="color:#f85149">43.6%</td>
+              <td>34</td>
+              <td style="color:#f85149">38.2%</td>
+              <td style="color:#f85149">-5.4%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">macd_ichimoku</td>
+              <td style="color:#e3b341;font-weight:600">FAILS_BOTH</td>
+              <td>138</td>
+              <td style="color:#f85149">42.8%</td>
+              <td>35</td>
+              <td style="color:#f85149">34.3%</td>
+              <td style="color:#f85149">-8.5%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">ichimoku_tk_cross</td>
+              <td style="color:#e3b341;font-weight:600">FAILS_BOTH</td>
+              <td>153</td>
+              <td style="color:#f85149">42.5%</td>
+              <td>43</td>
+              <td style="color:#f85149">44.2%</td>
+              <td style="color:#8b949e">1.7%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">ichimoku_cloud_breakout</td>
+              <td style="color:#e3b341;font-weight:600">FAILS_BOTH</td>
+              <td>195</td>
+              <td style="color:#f85149">36.4%</td>
+              <td>57</td>
+              <td style="color:#f85149">47.4%</td>
+              <td style="color:#8b949e">11.0%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">inside_bar_breakout</td>
+              <td style="color:#e3b341;font-weight:600">FAILS_BOTH</td>
+              <td>117</td>
+              <td style="color:#f85149">42.7%</td>
+              <td>51</td>
+              <td style="color:#f85149">37.2%</td>
+              <td style="color:#f85149">-5.5%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">macd_fast_crossover</td>
+              <td style="color:#e3b341;font-weight:600">FAILS_BOTH</td>
+              <td>157</td>
+              <td style="color:#f85149">35.0%</td>
+              <td>33</td>
+              <td style="color:#f85149">42.4%</td>
+              <td style="color:#8b949e">7.4%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">pivot_r2_continuation</td>
+              <td style="color:#e3b341;font-weight:600">FAILS_BOTH</td>
+              <td>136</td>
+              <td style="color:#f85149">34.6%</td>
+              <td>58</td>
+              <td style="color:#f85149">37.9%</td>
+              <td style="color:#8b949e">3.4%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">supertrend_ichimoku_adx</td>
+              <td style="color:#e3b341;font-weight:600">FAILS_BOTH</td>
+              <td>66</td>
+              <td style="color:#f85149">40.9%</td>
+              <td>35</td>
+              <td style="color:#f85149">45.7%</td>
+              <td style="color:#8b949e">4.8%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">shooting_star_short</td>
+              <td style="color:#e3b341;font-weight:600">FAILS_BOTH</td>
+              <td>56</td>
+              <td style="color:#f85149">35.7%</td>
+              <td>34</td>
+              <td style="color:#f85149">11.8%</td>
+              <td style="color:#f85149">-23.9%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">camarilla_r3_breakout</td>
+              <td style="color:#e3b341;font-weight:600">FAILS_BOTH</td>
+              <td>119</td>
+              <td style="color:#f85149">47.9%</td>
+              <td>43</td>
+              <td style="color:#f85149">53.5%</td>
+              <td style="color:#8b949e">5.6%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">roc_burst</td>
+              <td style="color:#e3b341;font-weight:600">FAILS_BOTH</td>
+              <td>90</td>
+              <td style="color:#f85149">51.1%</td>
+              <td>35</td>
+              <td style="color:#f85149">51.4%</td>
+              <td style="color:#8b949e">0.3%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">pivot_r1_breakout</td>
+              <td style="color:#e3b341;font-weight:600">FAILS_BOTH</td>
+              <td>146</td>
+              <td style="color:#f85149">38.4%</td>
+              <td>51</td>
+              <td style="color:#f85149">47.1%</td>
+              <td style="color:#8b949e">8.7%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">prev_day_high_break</td>
+              <td style="color:#e3b341;font-weight:600">FAILS_BOTH</td>
+              <td>151</td>
+              <td style="color:#f85149">41.1%</td>
+              <td>54</td>
+              <td style="color:#f85149">46.3%</td>
+              <td style="color:#8b949e">5.2%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">golden_cross_50_200</td>
+              <td style="color:#e3b341;font-weight:600">FAILS_BOTH</td>
+              <td>70</td>
+              <td style="color:#f85149">30.0%</td>
+              <td>11</td>
+              <td style="color:#f85149">45.5%</td>
+              <td style="color:#8b949e">15.4%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">awesome_oscillator</td>
+              <td style="color:#e3b341;font-weight:600">FAILS_BOTH</td>
+              <td>185</td>
+              <td style="color:#f85149">38.9%</td>
+              <td>40</td>
+              <td style="color:#f85149">45.0%</td>
+              <td style="color:#8b949e">6.1%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">williams_r_oversold</td>
+              <td style="color:#e3b341;font-weight:600">FAILS_BOTH</td>
+              <td>99</td>
+              <td style="color:#f85149">39.4%</td>
+              <td>24</td>
+              <td style="color:#f85149">54.2%</td>
+              <td style="color:#8b949e">14.8%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">williams_stoch_dual</td>
+              <td style="color:#e3b341;font-weight:600">FAILS_BOTH</td>
+              <td>190</td>
+              <td style="color:#f85149">40.5%</td>
+              <td>18</td>
+              <td style="color:#f85149">50.0%</td>
+              <td style="color:#8b949e">9.5%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">stochrsi_oversold</td>
+              <td style="color:#e3b341;font-weight:600">FAILS_BOTH</td>
+              <td>187</td>
+              <td style="color:#f85149">42.2%</td>
+              <td>32</td>
+              <td style="color:#f85149">53.1%</td>
+              <td style="color:#8b949e">10.9%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">adx_initiation</td>
+              <td style="color:#e3b341;font-weight:600">FAILS_BOTH</td>
+              <td>12</td>
+              <td style="color:#f85149">25.0%</td>
+              <td>0</td>
+              <td style="color:#f85149">0.0%</td>
+              <td style="color:#8b949e">nan%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">bollinger_tight</td>
+              <td style="color:#e3b341;font-weight:600">FAILS_BOTH</td>
+              <td>242</td>
+              <td style="color:#f85149">43.0%</td>
+              <td>26</td>
+              <td style="color:#f85149">46.2%</td>
+              <td style="color:#8b949e">3.2%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">morning_star</td>
+              <td style="color:#e3b341;font-weight:600">FAILS_BOTH</td>
+              <td>109</td>
+              <td style="color:#f85149">47.7%</td>
+              <td>14</td>
+              <td style="color:#f85149">42.9%</td>
+              <td style="color:#8b949e">-4.9%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">tema_dema</td>
+              <td style="color:#e3b341;font-weight:600">FAILS_BOTH</td>
+              <td>156</td>
+              <td style="color:#f85149">41.7%</td>
+              <td>53</td>
+              <td style="color:#f85149">41.5%</td>
+              <td style="color:#8b949e">-0.2%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">three_white_soldiers</td>
+              <td style="color:#e3b341;font-weight:600">FAILS_BOTH</td>
+              <td>140</td>
+              <td style="color:#f85149">35.0%</td>
+              <td>28</td>
+              <td style="color:#f85149">50.0%</td>
+              <td style="color:#8b949e">15.0%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">mfi_oversold</td>
+              <td style="color:#e3b341;font-weight:600">FAILS_BOTH</td>
+              <td>108</td>
+              <td style="color:#f85149">43.5%</td>
+              <td>16</td>
+              <td style="color:#f85149">37.5%</td>
+              <td style="color:#f85149">-6.0%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">ultimate_oscillator</td>
+              <td style="color:#e3b341;font-weight:600">FAILS_BOTH</td>
+              <td>20</td>
+              <td style="color:#f85149">45.0%</td>
+              <td>6</td>
+              <td style="color:#f85149">50.0%</td>
+              <td style="color:#8b949e">5.0%</td>
+            </tr>
+</tbody></table>
+
+<footer><p>Stock Picks &amp; Automated Trading System — Stage 2 &nbsp;·&nbsp; All improvements applied</p>
+<p>Point-in-time data · No look-ahead bias · 60 strategies · 12 exits · 5 regimes · 5 improvements</p></footer>
+</body></html>
