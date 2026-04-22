@@ -1,0 +1,538 @@
+{
+  "AAPL": {
+    "name": "Apple Inc.",
+    "sector": "Technology",
+    "industry": "Consumer Electronics",
+    "market_cap": 4013268402176,
+    "exchange": "NMS",
+    "ipo_date": null
+  },
+  "MSFT": {
+    "name": "Microsoft Corporation",
+    "sector": "Technology",
+    "industry": "Software - Infrastructure",
+    "market_cap": 3107254173696,
+    "exchange": "NMS",
+    "ipo_date": null
+  },
+  "NVDA": {
+    "name": "NVIDIA Corporation",
+    "sector": "Technology",
+    "industry": "Semiconductors",
+    "market_cap": 4911068086272,
+    "exchange": "NMS",
+    "ipo_date": null
+  },
+  "AMZN": {
+    "name": "Amazon.com, Inc.",
+    "sector": "Consumer Cyclical",
+    "industry": "Internet Retail",
+    "market_cap": 2670065614848,
+    "exchange": "NMS",
+    "ipo_date": null
+  },
+  "GOOGL": {
+    "name": "Alphabet Inc.",
+    "sector": "Communication Services",
+    "industry": "Internet Content & Information",
+    "market_cap": 4081770037248,
+    "exchange": "NMS",
+    "ipo_date": null
+  },
+  "META": {
+    "name": "Meta Platforms, Inc.",
+    "sector": "Communication Services",
+    "industry": "Internet Content & Information",
+    "market_cap": 1703053492224,
+    "exchange": "NMS",
+    "ipo_date": null
+  },
+  "TSLA": {
+    "name": "Tesla, Inc.",
+    "sector": "Consumer Cyclical",
+    "industry": "Auto Manufacturers",
+    "market_cap": 1472829456384,
+    "exchange": "NMS",
+    "ipo_date": null
+  },
+  "AVGO": {
+    "name": "Broadcom Inc.",
+    "sector": "Technology",
+    "industry": "Semiconductors",
+    "market_cap": 1894755205120,
+    "exchange": "NMS",
+    "ipo_date": null
+  },
+  "ORCL": {
+    "name": "Oracle Corporation",
+    "sector": "Technology",
+    "industry": "Software - Infrastructure",
+    "market_cap": 510728273920,
+    "exchange": "NYQ",
+    "ipo_date": null
+  },
+  "AMD": {
+    "name": "Advanced Micro Devices, Inc.",
+    "sector": "Technology",
+    "industry": "Semiconductors",
+    "market_cap": 448281477120,
+    "exchange": "NMS",
+    "ipo_date": null
+  },
+  "BRK-B": {
+    "name": "Berkshire Hathaway Inc.",
+    "sector": "Financial Services",
+    "industry": "Insurance - Diversified",
+    "market_cap": 1018215596032,
+    "exchange": "NYQ",
+    "ipo_date": null
+  },
+  "JPM": {
+    "name": "JPMorgan Chase & Co.",
+    "sector": "Financial Services",
+    "industry": "Banks - Diversified",
+    "market_cap": 854932258816,
+    "exchange": "NYQ",
+    "ipo_date": null
+  },
+  "V": {
+    "name": "Visa Inc.",
+    "sector": "Financial Services",
+    "industry": "Credit Services",
+    "market_cap": 605288726528,
+    "exchange": "NYQ",
+    "ipo_date": null
+  },
+  "MA": {
+    "name": "Mastercard Incorporated",
+    "sector": "Financial Services",
+    "industry": "Credit Services",
+    "market_cap": 461077970944,
+    "exchange": "NYQ",
+    "ipo_date": null
+  },
+  "BAC": {
+    "name": "Bank of America Corporation",
+    "sector": "Financial Services",
+    "industry": "Banks - Diversified",
+    "market_cap": 385510998016,
+    "exchange": "NYQ",
+    "ipo_date": null
+  },
+  "WFC": {
+    "name": "Wells Fargo & Company",
+    "sector": "Financial Services",
+    "industry": "Banks - Diversified",
+    "market_cap": 252054044672,
+    "exchange": "NYQ",
+    "ipo_date": null
+  },
+  "GS": {
+    "name": "The Goldman Sachs Group, Inc.",
+    "sector": "Financial Services",
+    "industry": "Capital Markets",
+    "market_cap": 279464083456,
+    "exchange": "NYQ",
+    "ipo_date": null
+  },
+  "MS": {
+    "name": "Morgan Stanley",
+    "sector": "Financial Services",
+    "industry": "Capital Markets",
+    "market_cap": 302804926464,
+    "exchange": "NYQ",
+    "ipo_date": null
+  },
+  "BLK": {
+    "name": "BlackRock, Inc.",
+    "sector": "Financial Services",
+    "industry": "Asset Management",
+    "market_cap": 163072868352,
+    "exchange": "NYQ",
+    "ipo_date": null
+  },
+  "SCHW": {
+    "name": "The Charles Schwab Corporation",
+    "sector": "Financial Services",
+    "industry": "Capital Markets",
+    "market_cap": 163218407424,
+    "exchange": "NYQ",
+    "ipo_date": null
+  },
+  "LLY": {
+    "name": "Eli Lilly and Company",
+    "sector": "Healthcare",
+    "industry": "Drug Manufacturers - General",
+    "market_cap": 823327784960,
+    "exchange": "NYQ",
+    "ipo_date": null
+  },
+  "UNH": {
+    "name": "UnitedHealth Group Incorporated",
+    "sector": "Healthcare",
+    "industry": "Healthcare Plans",
+    "market_cap": 293614977024,
+    "exchange": "NYQ",
+    "ipo_date": null
+  },
+  "JNJ": {
+    "name": "Johnson & Johnson",
+    "sector": "Healthcare",
+    "industry": "Drug Manufacturers - General",
+    "market_cap": 555939594240,
+    "exchange": "NYQ",
+    "ipo_date": null
+  },
+  "ABBV": {
+    "name": "AbbVie Inc.",
+    "sector": "Healthcare",
+    "industry": "Drug Manufacturers - General",
+    "market_cap": 360314601472,
+    "exchange": "NYQ",
+    "ipo_date": null
+  },
+  "MRK": {
+    "name": "Merck & Co., Inc.",
+    "sector": "Healthcare",
+    "industry": "Drug Manufacturers - General",
+    "market_cap": 289517076480,
+    "exchange": "NYQ",
+    "ipo_date": null
+  },
+  "PFE": {
+    "name": "Pfizer Inc.",
+    "sector": "Healthcare",
+    "industry": "Drug Manufacturers - General",
+    "market_cap": 156543565824,
+    "exchange": "NYQ",
+    "ipo_date": null
+  },
+  "TMO": {
+    "name": "Thermo Fisher Scientific Inc.",
+    "sector": "Healthcare",
+    "industry": "Diagnostics & Research",
+    "market_cap": 195480289280,
+    "exchange": "NYQ",
+    "ipo_date": null
+  },
+  "ABT": {
+    "name": "Abbott Laboratories",
+    "sector": "Healthcare",
+    "industry": "Medical Devices",
+    "market_cap": 166817562624,
+    "exchange": "NYQ",
+    "ipo_date": null
+  },
+  "DHR": {
+    "name": "Danaher Corporation",
+    "sector": "Healthcare",
+    "industry": "Diagnostics & Research",
+    "market_cap": 138355228672,
+    "exchange": "NYQ",
+    "ipo_date": null
+  },
+  "ISRG": {
+    "name": "Intuitive Surgical, Inc.",
+    "sector": "Healthcare",
+    "industry": "Medical Instruments & Supplies",
+    "market_cap": 165367005184,
+    "exchange": "NMS",
+    "ipo_date": null
+  },
+  "XOM": {
+    "name": "Exxon Mobil Corporation",
+    "sector": "Energy",
+    "industry": "Oil & Gas Integrated",
+    "market_cap": 613840650240,
+    "exchange": "NYQ",
+    "ipo_date": null
+  },
+  "CVX": {
+    "name": "Chevron Corporation",
+    "sector": "Energy",
+    "industry": "Oil & Gas Integrated",
+    "market_cap": 365015433216,
+    "exchange": "NYQ",
+    "ipo_date": null
+  },
+  "COP": {
+    "name": "ConocoPhillips",
+    "sector": "Energy",
+    "industry": "Oil & Gas E&P",
+    "market_cap": 142341390336,
+    "exchange": "NYQ",
+    "ipo_date": null
+  },
+  "NEE": {
+    "name": "NextEra Energy, Inc.",
+    "sector": "Utilities",
+    "industry": "Utilities - Regulated Electric",
+    "market_cap": 191868731392,
+    "exchange": "NYQ",
+    "ipo_date": null
+  },
+  "CAT": {
+    "name": "Caterpillar Inc.",
+    "sector": "Industrials",
+    "industry": "Farm & Heavy Construction Machinery",
+    "market_cap": 373634924544,
+    "exchange": "NYQ",
+    "ipo_date": null
+  },
+  "HON": {
+    "name": "Honeywell International Inc.",
+    "sector": "Industrials",
+    "industry": "Conglomerates",
+    "market_cap": 145575477248,
+    "exchange": "NMS",
+    "ipo_date": null
+  },
+  "UPS": {
+    "name": "United Parcel Service, Inc.",
+    "sector": "Industrials",
+    "industry": "Integrated Freight & Logistics",
+    "market_cap": 91008466944,
+    "exchange": "NYQ",
+    "ipo_date": null
+  },
+  "RTX": {
+    "name": "RTX Corporation",
+    "sector": "Industrials",
+    "industry": "Aerospace & Defense",
+    "market_cap": 263528300544,
+    "exchange": "NYQ",
+    "ipo_date": null
+  },
+  "GE": {
+    "name": "GE Aerospace",
+    "sector": "Industrials",
+    "industry": "Aerospace & Defense",
+    "market_cap": 320241500160,
+    "exchange": "NYQ",
+    "ipo_date": null
+  },
+  "LMT": {
+    "name": "Lockheed Martin Corporation",
+    "sector": "Industrials",
+    "industry": "Aerospace & Defense",
+    "market_cap": 133963022336,
+    "exchange": "NYQ",
+    "ipo_date": null
+  },
+  "WMT": {
+    "name": "Walmart Inc.",
+    "sector": "Consumer Defensive",
+    "industry": "Discount Stores",
+    "market_cap": 1019829747712,
+    "exchange": "NMS",
+    "ipo_date": null
+  },
+  "COST": {
+    "name": "Costco Wholesale Corporation",
+    "sector": "Consumer Defensive",
+    "industry": "Discount Stores",
+    "market_cap": 442910670848,
+    "exchange": "NMS",
+    "ipo_date": null
+  },
+  "HD": {
+    "name": "The Home Depot, Inc.",
+    "sector": "Consumer Cyclical",
+    "industry": "Home Improvement Retail",
+    "market_cap": 349595729920,
+    "exchange": "NYQ",
+    "ipo_date": null
+  },
+  "NKE": {
+    "name": "NIKE, Inc.",
+    "sector": "Consumer Cyclical",
+    "industry": "Footwear & Accessories",
+    "market_cap": 68831625216,
+    "exchange": "NYQ",
+    "ipo_date": null
+  },
+  "SBUX": {
+    "name": "Starbucks Corporation",
+    "sector": "Consumer Cyclical",
+    "industry": "Restaurants",
+    "market_cap": 112733724672,
+    "exchange": "NMS",
+    "ipo_date": null
+  },
+  "MCD": {
+    "name": "McDonald's Corporation",
+    "sector": "Consumer Cyclical",
+    "industry": "Restaurants",
+    "market_cap": 218181435392,
+    "exchange": "NYQ",
+    "ipo_date": null
+  },
+  "PG": {
+    "name": "The Procter & Gamble Company",
+    "sector": "Consumer Defensive",
+    "industry": "Household & Personal Products",
+    "market_cap": 337634623488,
+    "exchange": "NYQ",
+    "ipo_date": null
+  },
+  "KO": {
+    "name": "The Coca-Cola Company",
+    "sector": "Consumer Defensive",
+    "industry": "Beverages - Non-Alcoholic",
+    "market_cap": 324877484032,
+    "exchange": "NYQ",
+    "ipo_date": null
+  },
+  "PEP": {
+    "name": "PepsiCo, Inc.",
+    "sector": "Consumer Defensive",
+    "industry": "Beverages - Non-Alcoholic",
+    "market_cap": 214596059136,
+    "exchange": "NMS",
+    "ipo_date": null
+  },
+  "DIS": {
+    "name": "The Walt Disney Company",
+    "sector": "Communication Services",
+    "industry": "Entertainment",
+    "market_cap": 188511043584,
+    "exchange": "NYQ",
+    "ipo_date": null
+  },
+  "SPY": {
+    "name": "State Street SPDR S&P 500 ETF Trust",
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 650450436096,
+    "exchange": "PCX",
+    "ipo_date": null
+  },
+  "QQQ": {
+    "name": "Invesco QQQ Trust",
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 254253137920,
+    "exchange": "NGM",
+    "ipo_date": null
+  },
+  "IWM": {
+    "name": "iShares Russell 2000 ETF",
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 77949214720,
+    "exchange": "PCX",
+    "ipo_date": null
+  },
+  "DIA": {
+    "name": "State Street SPDR Dow Jones Industrial Average ETF Trust",
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 40160800768,
+    "exchange": "PCX",
+    "ipo_date": null
+  },
+  "VTI": {
+    "name": "Vanguard Total Stock Market Index Fund ETF Shares",
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 726237511680,
+    "exchange": "PCX",
+    "ipo_date": null
+  },
+  "XLK": {
+    "name": "State Street Technology Select Sector SPDR ETF",
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 42048974848,
+    "exchange": "PCX",
+    "ipo_date": null
+  },
+  "XLF": {
+    "name": "State Street Financial Select Sector SPDR ETF",
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 46495711232,
+    "exchange": "PCX",
+    "ipo_date": null
+  },
+  "XLE": {
+    "name": "State Street Energy Select Sector SPDR ETF",
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 10266370048,
+    "exchange": "PCX",
+    "ipo_date": null
+  },
+  "XLV": {
+    "name": "State Street Health Care Select Sector SPDR ETF",
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 29102919680,
+    "exchange": "PCX",
+    "ipo_date": null
+  },
+  "XLI": {
+    "name": "State Street Industrial Select Sector SPDR ETF",
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 23759259648,
+    "exchange": "PCX",
+    "ipo_date": null
+  },
+  "VXX": {
+    "name": "iPath Series B S&P 500 VIX Short-Term Futures ETN",
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "BTS",
+    "ipo_date": null
+  },
+  "TLT": {
+    "name": "iShares 20+ Year Treasury Bond ETF",
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 9549385728,
+    "exchange": "NGM",
+    "ipo_date": null
+  },
+  "HYG": {
+    "name": "iShares iBoxx $ High Yield Corporate Bond ETF",
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 15761447936,
+    "exchange": "PCX",
+    "ipo_date": null
+  },
+  "LQD": {
+    "name": "iShares iBoxx $ Investment Grade Corporate Bond ETF",
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 32293804032,
+    "exchange": "PCX",
+    "ipo_date": null
+  },
+  "GLD": {
+    "name": "SPDR Gold Shares",
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 115076022272,
+    "exchange": "PCX",
+    "ipo_date": null
+  },
+  "SLV": {
+    "name": "iShares Silver Trust",
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 24635617280,
+    "exchange": "PCX",
+    "ipo_date": null
+  },
+  "GDX": {
+    "name": "VanEck Gold Miners ETF",
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "PCX",
+    "ipo_date": null
+  }
+}
