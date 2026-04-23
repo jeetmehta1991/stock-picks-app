@@ -1,6 +1,12 @@
 #!/bin/bash
 # Download full S&P 500 + ETF cache and commit to main
-# Run with: bash scripts/download_cache.sh
+#
+# IMPORTANT — run this way to prevent Codespace timeout killing it:
+#   nohup bash scripts/download_cache.sh > download.log 2>&1 &
+#   tail -f download.log   # check progress anytime
+#
+# Direct run (only if you can keep terminal open):
+#   bash scripts/download_cache.sh
 
 set -e
 

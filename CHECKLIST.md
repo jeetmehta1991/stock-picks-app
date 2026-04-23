@@ -11,3 +11,6 @@ Run this before every suggestion or execution — no exceptions.
 7. If pushing code — am I pushing to `claude-updates` only, never directly to `main`?
 8. Is this a decision that requires owner approval before I proceed?
 9. Chain commands where logical — commit and push should always be combined. Only split commands when each step needs independent verification first.
+10. For any command running longer than 5 minutes, always use nohup to prevent terminal closure killing it:
+    nohup bash scripts/download_cache.sh > download.log 2>&1 &
+    tail -f download.log
