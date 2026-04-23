@@ -56,6 +56,14 @@ def get_analyst_data(ticker: str, as_of: date) -> dict:
     """
     Fetch analyst consensus, price targets, EPS estimates, and recent revisions.
 
+    IMPORTANT — LIVE-ONLY DATA WARNING:
+    Fields from yfinance t.info (recommendationMean, targetMeanPrice, eps estimates)
+    always return CURRENT values, not historical values as-of the backtest date.
+    These fields are used for site card display only — they do NOT affect confidence
+    tier calculations, strategy pass/fail criteria, or backtest metrics.
+    Point-in-time enforcement applies to recommendations history and upgrades/downgrades
+    only (filtered by as_of date below).
+
     Returns dict with:
       consensus          — Strong Buy / Buy / Hold / Sell / Strong Sell
       buy_count          — number of Buy + Strong Buy ratings

@@ -120,14 +120,17 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument("--dry-run",    action="store_true")
     p.add_argument("--no-agents",  action="store_true")
+    p.add_argument("--phase",      type=str, default="1a", choices=["1a","1b","1c","1d"])
     p.add_argument("--start",      type=str)
     p.add_argument("--end",        type=str)
     p.add_argument("--max-cands",  type=int, default=10)
     p.add_argument("--output-dir", type=str, default="output_v2")
     args = p.parse_args()
 
+    phase_key = f"phase_{args.phase}"
+
     print("="*70)
-    print("STAGE 2 BACKTESTING ENGINE v2 — Phase 1A")
+    print(f"STAGE 2 BACKTESTING ENGINE v2 — Phase {args.phase.upper()}")
     print(f"Started: {datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')}")
     print("60 strategies | Trailing stop exits | Circuit breakers | Long + Short")
     print("="*70)
@@ -144,22 +147,32 @@ def main():
         agents   = False
         print(f"\nDRY RUN: {start} → {end} | {len(universe)} instruments | no agents\n")
     else:
-        start    = date.fromisoformat(args.start) if args.start else BACKTEST_START
-        end      = date.fromisoformat(args.end)   if args.end   else BACKTEST_END
-        universe = UNIVERSE
-        agents   = not args.no_agents
-        print(f"\nFull Phase 1A: {start} → {end} | {len(universe)} instruments")
+        start  = date.fromisoformat(args.start) if args.start else BACKTEST_START
+        end    = date.fromisoformat(args.end)   if args.end   else BACKTEST_END
+        agents = not args.no_agents
+
+        # Phase 1B+ uses full S&P 500 + ETFs universe
+        if args.phase in ("1b", "1c", "1d"):
+            from backtest.data.universe import get_sp500_constituents, ETFS_FULL
+            sp500    = get_sp500_constituents(500)
+            universe = list(dict.fromkeys(sp500 + ETFS_FULL))
+            print(f"\nPhase {args.phase.upper()}: {start} → {end} | {len(universe)} instruments (full S&P 500 + ETFs)")
+        else:
+            universe = UNIVERSE
+            print(f"\nPhase 1A: {start} → {end} | {len(universe)} instruments")
+
         print(f"Agents: {'Haiku' if agents else 'DISABLED'} | Max cands/day: {args.max_cands}\n")
         if agents:
             days = sum(1 for i in range((end-start).days+1)
                        if (start+__import__('datetime').timedelta(days=i)).weekday()<5)
-            print(f"Estimated cost: ~${days*args.max_cands*0.021/10:.1f} USD (Haiku)")
+            est_cost = days * args.max_cands * 0.021 / 10
+            print(f"Estimated cost: ~${est_cost:.1f} USD (Haiku)")
             if input("Proceed? [y/N]: ").strip().lower() != "y":
                 sys.exit(0)
 
     engine = BacktestEngine(
         universe=universe, start=start, end=end,
-        phase="phase_1a", max_candidates_per_day=args.max_cands,
+        phase=phase_key, max_candidates_per_day=args.max_cands,
         run_agents=agents, output_dir=args.output_dir,
     )
     engine.load_data()

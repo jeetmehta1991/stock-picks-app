@@ -128,6 +128,7 @@ TRAILING_STOP = {
     "initial_pct":       0.10,   # 10% below entry price (long) / above (short)
     "trail_pct":         0.10,   # trails at 10% below highest close (long)
     "reset_on":          "close", # trailing stop resets on closing price only
+    "primary_exit":      "atr_trail_1x",  # Phase 1A results: atr_trail_1x wins 20/29 strategies
     # Stop only moves in favour of trade — never reverses
 }
 
