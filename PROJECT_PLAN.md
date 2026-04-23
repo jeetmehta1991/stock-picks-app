@@ -182,7 +182,7 @@ Determine which of 60 strategies, across which market regimes, using which exit 
 | Breakeven + trail | Move to breakeven at 1× ATR profit, then trail 10% |
 | Hybrid 50% target | Take 50% off at 3× ATR, trail remainder |
 
-**Stop simulation:** Daily Low is checked against the trailing stop each day. If Low breaches the stop, trade exits that day. On days where both a new High and stop breach occur, stop is assumed hit first (conservative). Results are slightly pessimistic — real performance would be marginally better.
+**Stop simulation:** Daily Low is checked against the trailing stop each day. If Low breaches the stop, trade exits at the stop price. Known limitation: on gap-down opens where the stock opens below the stop, the real fill would be at open price (worse than stop price). Circuit breaker 1 handles gaps >12% but gaps between 1-12% are not adjusted. Net effect: exit prices are slightly optimistic — real performance would be marginally worse on gap-down days.
 
 **5 circuit breakers** override trailing stop (in priority order):
 1. Overnight gap >12% wrong direction → exit at open
