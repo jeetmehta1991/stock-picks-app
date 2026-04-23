@@ -396,6 +396,41 @@ Return JSON only:
     }
 
 
+import hashlib
+from pathlib import Path
+
+AGENT_CACHE_DIR = Path(__file__).parent / "cache"
+
+
+def _agent_cache_key(ticker: str, as_of: date, strategies: list, phase: str) -> str:
+    """Generate a unique cache key for this agent run."""
+    strat_str = "_".join(sorted(strategies)) if strategies else "none"
+    raw = f"{ticker}_{as_of}_{strat_str}_{phase}"
+    return hashlib.md5(raw.encode()).hexdigest()
+
+
+def _load_agent_cache(cache_key: str) -> Optional[dict]:
+    """Load cached agent result if it exists."""
+    AGENT_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    cache_file = AGENT_CACHE_DIR / f"{cache_key}.json"
+    if cache_file.exists():
+        try:
+            return json.loads(cache_file.read_text())
+        except Exception:
+            return None
+    return None
+
+
+def _save_agent_cache(cache_key: str, result: dict):
+    """Save agent result to cache."""
+    try:
+        AGENT_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+        cache_file = AGENT_CACHE_DIR / f"{cache_key}.json"
+        cache_file.write_text(json.dumps(result, default=str))
+    except Exception as exc:
+        logger.warning("Agent cache write failed: %s", exc)
+
+
 # ---------------------------------------------------------------------------
 # FULL PIPELINE ORCHESTRATOR
 # ---------------------------------------------------------------------------
@@ -414,6 +449,10 @@ def run_full_agent_pipeline(
     """
     Run all six agents for a single candidate instrument.
 
+    Results are cached to backtest/agents/cache/ — if a run crashes and restarts,
+    already-computed agent analyses are loaded from cache instead of re-calling the API.
+    This prevents losing API spend on partial runs.
+
     Parameters:
       candidate:        output of screener.screen_instrument (contains signals)
       smart_money_data: dict with keys congressional_sig, insider_sig, institutional_sig,
@@ -429,6 +468,13 @@ def run_full_agent_pipeline(
     model = AI_MODELS.get(phase, AI_MODELS["phase_1a"])
     signals = candidate.get("signals", {})
     strategies = candidate.get("strategies_triggered", [])
+
+    # Check cache first — avoid re-calling API on rerun
+    cache_key = _agent_cache_key(ticker, as_of, strategies, phase)
+    cached = _load_agent_cache(cache_key)
+    if cached:
+        logger.debug("Agent cache hit: %s [%s]", ticker, as_of)
+        return cached
 
     logger.info("Running agent pipeline: %s [%s] model=%s", ticker, as_of, model)
 
@@ -472,7 +518,7 @@ def run_full_agent_pipeline(
         model,
     )
 
-    return {
+    result = {
         "ticker":      ticker,
         "as_of":       str(as_of),
         "phase":       phase,
@@ -494,3 +540,7 @@ def run_full_agent_pipeline(
         "entry_rationale":  decision.get("entry_rationale", ""),
         "primary_risk":     decision.get("primary_risk", ""),
     }
+
+    # Save to cache — protects against losing API spend if run crashes
+    _save_agent_cache(cache_key, result)
+    return result
