@@ -177,3 +177,28 @@ Maintained to prevent repeating the same errors and to document why decisions we
 **Mistake:** Sector information was in `sp500_tickers.csv` from the beginning but never passed into the backtest engine, dataclasses, or agent pipeline. Required late-stage changes to OpenTrade, ClosedTrade, backtest.py, and pipeline.py.
 **Learning:** Think through all data fields needed at design time. Retrofitting fields into dataclasses causes cascading changes across multiple files.
 **Fix:** Sector now flows through the entire pipeline. Sector ETF halo effect passed to Technical Agent.
+
+### L29 — Wrong runtime and cost estimates
+**Mistake:** Estimated Phase 1B at 3-4 hours and ~$16 USD. Actual pace was 35 seconds per agent call — 40+ hours and ~$115 USD. Gave confident estimates without validating against actual timing.
+**Learning:** Never give cost or runtime estimates without first measuring one actual call and extrapolating. Always show the calculation: `X calls × Y seconds × Z cost = total`. Flag when estimates are unvalidated.
+**Fix:** Before any paid run, time one agent call, multiply by total candidates, present to owner before proceeding.
+
+### L30 — CLAUDE.md reduction claimed wrong token savings
+**Mistake:** Recommended reducing CLAUDE.md from 128 to 62 lines claiming it would reduce token usage. Did not think through which environment loads CLAUDE.md — Claude Code on laptop loads it every session. Removing content costs tokens in Claude Code, not saves them.
+**Learning:** Always identify which environment a change affects before claiming a benefit. Token savings in one chat session ≠ token savings across all sessions and environments.
+**Fix:** Restored CLAUDE.md. Rule added: never modify without showing exact diff and receiving approval.
+
+### L31 — git reset --hard wiped uncommitted Quiver data
+**Mistake:** Instructed owner to run `git fetch origin ; git reset --hard origin/main` which wiped locally completed Quiver data (institutional, gov_contracts, lobbying, wikipedia, wallstreetbets) that hadn't been committed yet. All 5 data types lost.
+**Learning:** Before any `git reset --hard`, always check for uncommitted changes first with `git status`. If uncommitted work exists, commit it before resetting. The sync command should be: `git status` → commit if needed → then reset.
+**Fix:** Add `git status` check before `git reset --hard` in all sync instructions going forward.
+
+### L32 — Phase 1B cost formula was wrong
+**Mistake:** Used formula `days × max_cands × $0.021 / 10` — the `/10` divisor was incorrect and produced an estimate of $16 USD instead of the correct ~$115 USD.
+**Learning:** Always validate cost formulas before presenting them. Show the full formula with units: `782 days × 10 candidates/day × 6 agents × $0.00035/call = $X`. Never use an unexplained divisor.
+**Fix:** Corrected formula in run script output. Always show full breakdown.
+
+### L33 — Used && in commands on Windows PowerShell
+**Mistake:** Repeatedly gave commands using `&&` as a command separator. PowerShell does not support `&&` — it only supports `;`. Commands failed repeatedly on the owner's Windows laptop.
+**Learning:** Always identify the terminal environment before giving commands. Windows PowerShell uses `;`. Bash/Codespaces uses `;` or `&&`. Git Bash on Windows supports both. Never assume `&&` works everywhere.
+**Fix:** All commands now use `;` which works in both PowerShell and bash.
