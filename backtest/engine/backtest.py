@@ -271,7 +271,9 @@ class BacktestEngine:
                     entry_price, slippage_pct = next_open, 0.0
 
                 # Smart money
-                sm = {"composite_signal": "none", "score": 0}
+                sm = {"composite_signal": "none", "score": 0,
+                      "congressional_signal": "none", "insider_signal": "none",
+                      "institutional_signal": "none"}
                 if os.environ.get("QUIVER_API_KEY"):
                     sm = smart_money_score(ticker, as_of)
 
@@ -315,6 +317,15 @@ class BacktestEngine:
                     macro_score=macro.get("macro_score", 0),
                     sentiment_score=sent.get("sentiment_score", 0),
                     days_to_earnings=earn_days,
+                    # Raw granular signals
+                    congressional_signal=sm.get("congressional_signal", "none"),
+                    insider_signal=sm.get("insider_signal", "none"),
+                    institutional_signal=sm.get("institutional_signal", "none"),
+                    aaii_bullish=float(sent.get("aaii", {}).get("bullish_pct", 0) or 0),
+                    aaii_bearish=float(sent.get("aaii", {}).get("bearish_pct", 0) or 0),
+                    aaii_signal=str(sent.get("aaii", {}).get("signal", "neutral")),
+                    cnn_fg_score=float(sent.get("fear_greed", {}).get("score", 50) or 50),
+                    cnn_fg_label=str(sent.get("fear_greed", {}).get("label", "Neutral")),
                 )
                 self.open_trades.append(trade)
                 open_combos.add((ticker, strat_entry["strategy"]))

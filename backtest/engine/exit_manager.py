@@ -52,6 +52,15 @@ class OpenTrade:
     macro_score:        int = 0
     sentiment_score:    int = 0
     days_to_earnings:   Optional[int] = None
+    # Raw granular signals at entry
+    congressional_signal: str = "none"
+    insider_signal:       str = "none"
+    institutional_signal: str = "none"
+    aaii_bullish:         float = 0.0
+    aaii_bearish:         float = 0.0
+    aaii_signal:          str = "neutral"
+    cnn_fg_score:         float = 50.0
+    cnn_fg_label:         str = "Neutral"
 
 
 @dataclass
@@ -93,11 +102,76 @@ class ClosedTrade:
     context_paragraph:  str
     fail_reason:        str
 
-    # Smart money / macro
-    smart_money_score:  int
-    macro_score:        int
-    sentiment_score:    int
-    days_to_earnings:   Optional[int]
+    # Smart money / macro / sentiment scores
+    smart_money_score:  int = 0
+    macro_score:        int = 0
+    sentiment_score:    int = 0
+    days_to_earnings:   Optional[int] = None
+    # Raw granular signals at entry — for audit and re-analysis
+    congressional_signal: str = "none"   # strong_buy|buy|neutral|sell|none
+    insider_signal:       str = "none"   # cluster_buy|buy|neutral|sell|none
+    institutional_signal: str = "none"   # accumulating|neutral|reducing|none
+    aaii_bullish:         float = 0.0    # AAII bullish % at entry date
+    aaii_bearish:         float = 0.0    # AAII bearish % at entry date
+    aaii_signal:          str = "neutral" # AAII signal at entry date
+    cnn_fg_score:         float = 50.0   # CNN Fear & Greed score at entry date
+    cnn_fg_label:         str = "Neutral" # CNN F&G label at entry date
+
+
+@dataclass
+class ClosedTrade:
+    """A completed trade with full performance record."""
+    # Identity
+    ticker:             str
+    entry_date:         date
+    exit_date:          date
+    direction:          str
+    strategy:           str
+    category:           str
+    confidence_tier:    str
+    regime:             str
+    exit_reason:        str
+
+    # Prices
+    entry_price:        float
+    exit_price:         float
+    initial_stop:       float
+    highest_close:      float
+    trailing_stop_at_exit: float
+
+    # Performance
+    pnl_pct:            float
+    pnl_dollar:         float
+    win:                bool
+    hold_days:          int
+    max_adverse_excursion:   float
+    max_favourable_excursion: float
+
+    # Context
+    signals_at_entry:   dict
+    context_bullets:    list
+    context_paragraph:  str
+    fail_reason:        str
+
+    # Smart money / macro / sentiment scores
+    smart_money_score:  int = 0
+    macro_score:        int = 0
+    sentiment_score:    int = 0
+
+    # Optional fields
+    conversion_pair_id:    Optional[str] = None
+    circuit_breaker_level: Optional[int] = None
+    days_to_earnings:      Optional[int] = None
+
+    # Raw granular signals at entry — for audit and re-analysis
+    congressional_signal: str = "none"
+    insider_signal:       str = "none"
+    institutional_signal: str = "none"
+    aaii_bullish:         float = 0.0
+    aaii_bearish:         float = 0.0
+    aaii_signal:          str = "neutral"
+    cnn_fg_score:         float = 50.0
+    cnn_fg_label:         str = "Neutral"
 
 
 def _pnl(entry, exit_p, direction):
@@ -233,6 +307,15 @@ def close_trade(
         macro_score=trade.macro_score,
         sentiment_score=trade.sentiment_score,
         days_to_earnings=trade.days_to_earnings,
+        # Raw granular signals — passed through from OpenTrade
+        congressional_signal=trade.congressional_signal,
+        insider_signal=trade.insider_signal,
+        institutional_signal=trade.institutional_signal,
+        aaii_bullish=trade.aaii_bullish,
+        aaii_bearish=trade.aaii_bearish,
+        aaii_signal=trade.aaii_signal,
+        cnn_fg_score=trade.cnn_fg_score,
+        cnn_fg_label=trade.cnn_fg_label,
     )
 
 
