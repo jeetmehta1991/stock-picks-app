@@ -109,11 +109,11 @@ def write_all_outputs(
                     robust, overfit)
 
     # ── IS/OOS granular trade splits ──
-    # In-sample: 2022-01-01 to 2023-12-31 | Out-of-sample: 2024-01-01 to 2024-12-31
+    # In-sample: 2022-01-01 to 2024-12-31 | Out-of-sample: 2025-01-01 to 2026-03-31
     if "entry_date" in df_trades.columns:
         df_trades["entry_date"] = pd.to_datetime(df_trades["entry_date"])
-        is_trades  = df_trades[df_trades["entry_date"] < "2024-01-01"]
-        oos_trades = df_trades[df_trades["entry_date"] >= "2024-01-01"]
+        is_trades  = df_trades[df_trades["entry_date"] < "2025-01-01"]
+        oos_trades = df_trades[df_trades["entry_date"] >= "2025-01-01"]
         is_trades.to_csv(output_dir / "trade_log_in_sample.csv", index=False)
         oos_trades.to_csv(output_dir / "trade_log_out_of_sample.csv", index=False)
         logger.info("Wrote IS trade log: %d trades | OOS trade log: %d trades",

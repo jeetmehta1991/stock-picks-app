@@ -41,7 +41,7 @@ HEADERS = {"Authorization": f"Token {QUIVER_TOKEN}"}
 CACHE_DIR = Path("backtest/data/cache/quiver")
 CHECKPOINT_FILE = Path("backtest/data/cache/quiver_checkpoint.json")
 DATE_START = date(2020, 1, 1)
-DATE_END = date(2024, 12, 31)
+DATE_END = date(2026, 3, 31)
 RATE_LIMIT_SLEEP = 1.2  # seconds between calls
 COMMIT_EVERY = 50       # commit to git every N tickers
 
@@ -56,7 +56,7 @@ ENDPOINTS = {
 }
 
 DATE_FIELDS = {
-    "congressional": "Date",
+    "congressional": "TransactionDate",
     "insider":       "Date",
     "institutional": "Date",
     "gov_contracts": "Date",

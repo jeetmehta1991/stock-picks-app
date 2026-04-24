@@ -31,7 +31,7 @@ if not FRED_KEY:
 
 CACHE_DIR = Path("backtest/data/cache/macro")
 DATE_START = "2020-01-01"
-DATE_END = "2024-12-31"
+DATE_END = "2026-03-31"
 
 SERIES = {
     "yield_curve":    "T10Y2Y",    # 10Y-2Y spread — inversion = recession risk

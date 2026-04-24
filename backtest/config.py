@@ -20,7 +20,7 @@ from datetime import date
 # BACKTEST WINDOW
 # ─────────────────────────────────────────────────────────────────────────────
 BACKTEST_START  = date(2022, 1, 1)
-BACKTEST_END    = date(2024, 12, 31)
+BACKTEST_END    = date(2026, 3, 31)
 PHASE_1D_START  = date(2020, 1, 1)   # extended window for top-5 final validation
 DATA_LOAD_START = date(2021, 1, 1)   # extra year loaded for indicator warmup
 
