@@ -135,8 +135,23 @@ def git_commit(message: str):
 
 
 def main():
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--batch', type=int, default=0,
+        help='Batch 1-5 for GitHub Actions (0=all, default)')
+    args = parser.parse_args()
+
     sp500 = get_sp500_constituents(500)
     universe = list(dict.fromkeys(sp500 + ETFS_FULL))
+
+    # Split into 5 batches for GitHub Actions 6-hour limit
+    if args.batch > 0:
+        batch_size = len(universe) // 5 + 1
+        start = (args.batch - 1) * batch_size
+        end = min(args.batch * batch_size, len(universe))
+        universe = universe[start:end]
+        print(f"Batch {args.batch}/5: tickers {start+1}-{end} ({len(universe)} tickers)")
+
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
     done = load_checkpoint()

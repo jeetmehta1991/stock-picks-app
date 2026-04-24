@@ -1,0 +1,42 @@
+name: Prefetch Quiver Data
+
+on:
+  workflow_dispatch:
+
+jobs:
+  prefetch:
+    name: Download Quiver smart money data
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests pandas pyarrow yfinance -q
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Run Quiver pre-fetch
+        env:
+          QUIVER_API_KEY: ${{ secrets.QUIVER_API_KEY }}
+        run: python scripts/prefetch_quiver.py
+
+      - name: Final commit if anything remaining
+        run: |
+          git add backtest/data/cache/quiver/ backtest/data/cache/quiver_checkpoint.json 2>/dev/null || true
+          git diff --staged --quiet || git commit -m "Quiver pre-fetch: final commit from GitHub Actions"
+          git push origin main || true

@@ -1,0 +1,48 @@
+name: Prefetch Finnhub News
+
+on:
+  workflow_dispatch:
+    inputs:
+      batch:
+        description: 'Batch number (1-5)'
+        required: true
+        type: choice
+        options: ['1','2','3','4','5']
+
+jobs:
+  prefetch:
+    name: Download Finnhub news sentiment batch ${{ github.event.inputs.batch }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests pandas pyarrow yfinance -q
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Run Finnhub pre-fetch batch ${{ github.event.inputs.batch }}
+        env:
+          FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
+        run: python scripts/prefetch_finnhub_news.py --batch ${{ github.event.inputs.batch }}
+
+      - name: Final commit
+        run: |
+          git add backtest/data/cache/finnhub_news/ backtest/data/cache/finnhub_news_checkpoint.json 2>/dev/null || true
+          git diff --staged --quiet || git commit -m "Finnhub news batch ${{ github.event.inputs.batch }}: complete"
+          git push origin main || true
