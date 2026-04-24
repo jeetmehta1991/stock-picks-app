@@ -277,8 +277,8 @@ class BacktestEngine:
                 if os.environ.get("QUIVER_API_KEY"):
                     sm = smart_money_score(ticker, as_of)
 
-                # Confidence tier
-                tier = self._assign_confidence_tier(
+                # Stage 1 — rule-based preliminary tier
+                preliminary_tier = self._assign_confidence_tier(
                     len(cand["strategies"]), sm, macro, sent)
 
                 # Earnings risk flag
@@ -291,11 +291,16 @@ class BacktestEngine:
                 else:
                     init_stop = entry_price * (1 + TRAILING_STOP["initial_pct"])
 
-                # Agent context
+                # Stage 2 — agent quality assessment adjusts tier ±1 level
                 context_para = ""
+                agent_score = 50
+                agent_result = {}
                 if self.run_agents:
-                    context_para = self._run_agent_context(
+                    context_para, agent_score, agent_result = self._run_agent_context(
                         ticker, as_of, cand, strat_entry, macro, sent, sm, earn_days)
+                    tier = self._adjust_tier_by_agent(preliminary_tier, agent_score)
+                else:
+                    tier = preliminary_tier
 
                 # Get sector ETF return for halo effect context
                 sector = self.sector_map.get(ticker, "Unknown")
@@ -393,6 +398,7 @@ class BacktestEngine:
         return {"open": float(future.iloc[0]["open"]), "date": future.index[0].date()}
 
     def _assign_confidence_tier(self, strategy_count, sm, macro, sent) -> str:
+        """Stage 1 — rule-based preliminary tier before agents run."""
         sm_sig = sm.get("composite_signal", "none")
         if sm_sig == "congressional+insider_cluster" and strategy_count >= 3:
             return "EXCEPTIONAL"
@@ -406,21 +412,43 @@ class BacktestEngine:
             return "MEDIUM"
         return "LOW"
 
+    def _adjust_tier_by_agent(self, preliminary_tier: str, agent_score: int) -> str:
+        """Stage 2 — agent score adjusts tier ±1 level based on quality assessment."""
+        from backtest.config import AGENT_TIER_UPGRADE_THRESHOLD, AGENT_TIER_DOWNGRADE_THRESHOLD
+        tier_order = ["LOW", "MEDIUM", "MEDIUM_HIGH", "HIGH", "VERY_HIGH", "EXCEPTIONAL"]
+        if preliminary_tier == "AVOID":
+            return "AVOID"
+        try:
+            idx = tier_order.index(preliminary_tier)
+        except ValueError:
+            return preliminary_tier
+        if agent_score >= AGENT_TIER_UPGRADE_THRESHOLD and idx < len(tier_order) - 1:
+            return tier_order[idx + 1]
+        if agent_score <= AGENT_TIER_DOWNGRADE_THRESHOLD and idx > 0:
+            return tier_order[idx - 1]
+        return preliminary_tier
+
     def _run_agent_context(self, ticker, as_of, cand, strat_entry,
-                            macro, sent, sm, earn_days) -> str:
+                            macro, sent, sm, earn_days) -> tuple:
+        """Run agents and return (context_paragraph, agent_final_score, adjusted_tier, preliminary_tier)."""
         try:
             from backtest.agents.pipeline import run_full_agent_pipeline
+            sector = self.sector_map.get(ticker, "Unknown")
             result = run_full_agent_pipeline(
                 ticker=ticker, as_of=as_of, candidate=cand,
                 smart_money_data=sm, macro_snap=macro,
-                sentiment_snap=sent,
-                sector=self.info_dict.get(ticker, {}).get("sector", ""),
+                sentiment_snap=sent, sector=sector,
                 earnings_days=earn_days, phase=self.phase,
             )
-            return result.get("context_paragraph", "")
+            agent_score = result.get("final_score", 50)
+            return (
+                result.get("context_paragraph", ""),
+                agent_score,
+                result,
+            )
         except Exception as exc:
             logger.debug("Agent context failed for %s: %s", ticker, exc)
-            return ""
+            return ("", 50, {})
 
     # ──────────────────────────────────────────────────────────────────────
     # RESULTS

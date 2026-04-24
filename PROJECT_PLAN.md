@@ -10,7 +10,7 @@
 | Stage 1 — Proof of Concept | ✅ Complete | Daily picks webpage live |
 | Stage 2 Phase 1A | 🔜 Running | 67 instruments, 3 years, rules finalised |
 | Stage 2 Phase 1B | ⏳ Pending | ~400 instruments, awaiting 1A results |
-| Stage 2 Phase 1C | ⏳ Pending | Top 20% strategies, Sonnet agents |
+| Stage 2 Phase 1C | ⏳ Pending | All strategies passing Phase 1B, Sonnet agents (max 30) |
 | Stage 2 Phase 1D | ⏳ Pending | Top 5 strategies, 5-year extended |
 | Stage 3 — Paper Trading | ⏳ Pending | 3-6 months minimum |
 | Stage 4 — Live Small | ⏳ Pending | $500-1000 CAD |
@@ -65,8 +65,8 @@ Determine which of 60 strategies, across which market regimes, using which exit 
 |---|---|---|
 | 1A | SP50 + 17 ETFs = 67 | $0 |
 | 1B | Filtered S&P 500 + all ETFs ≈ 400 | ~$116 CAD (Haiku agents) |
-| 1C | Top 20% from 1B | ~$102 CAD (Sonnet) |
-| 1D | Top 5 strategies, 5 years (incl. COVID 2020) | ~$38 CAD (Sonnet) |
+| 1C | All strategies passing Phase 1B criteria (max 30) | ~$102 CAD (Sonnet) |
+| 1D | All strategies passing Phase 1C criteria, 5 years (incl. COVID 2020) | ~$38 CAD (Sonnet) |
 
 #### 5 Market Regimes Tested
 | Regime | Period | Condition |

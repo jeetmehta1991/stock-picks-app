@@ -246,6 +246,17 @@ def get_sector_criteria(sector: str) -> dict:
 # ─────────────────────────────────────────────────────────────────────────────
 # CONFIDENCE TIERS — maps to site card label and position sizing
 # ─────────────────────────────────────────────────────────────────────────────
+# ─────────────────────────────────────────────────────────────────────────────
+# TWO-STAGE CONFIDENCE TIERING
+# Stage 1: Rule-based preliminary tier (before agents run)
+# Stage 2: Agent-adjusted final tier (agents can move ±1 level based on quality)
+# This prevents agents being gated by the same data they are evaluating.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Agent score thresholds for tier adjustment
+AGENT_TIER_UPGRADE_THRESHOLD   = 75   # agent final_score above this → upgrade one tier
+AGENT_TIER_DOWNGRADE_THRESHOLD = 40   # agent final_score below this → downgrade one tier
+
 CONFIDENCE_TIERS = {
     "EXCEPTIONAL": {
         "tech_strategies_min": 3,
