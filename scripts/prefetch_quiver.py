@@ -47,8 +47,8 @@ COMMIT_EVERY = 50       # commit to git every N tickers
 
 ENDPOINTS = {
     "congressional": f"{BASE_URL}/historical/congresstrading/{{ticker}}",
-    "insider":       f"{BASE_URL}/historical/insidertrading/{{ticker}}",
-    "institutional": f"{BASE_URL}/historical/institutional/{{ticker}}",
+    "insider":       f"{BASE_URL}/live/insiders?ticker={{ticker}}",
+    "institutional": f"{BASE_URL}/live/sec13f?ticker={{ticker}}",
     "gov_contracts": f"{BASE_URL}/historical/govcontracts/{{ticker}}",
     "lobbying":      f"{BASE_URL}/historical/lobbying/{{ticker}}",
     "wikipedia":     f"{BASE_URL}/historical/wikipedia/{{ticker}}",
@@ -152,8 +152,16 @@ def main():
     checkpoint = load_checkpoint()
     total_done = 0
 
+    # Congressional already complete — skip if all 509 done
+    if len(checkpoint.get("congressional", [])) >= 509:
+        print("Congressional: already complete — skipping")
+
     for data_type, url_template in ENDPOINTS.items():
         done_tickers = set(checkpoint.get(data_type, []))
+        if len(done_tickers) >= 509:
+            print(f"Skipping {data_type} — already complete ({len(done_tickers)} tickers)")
+            continue
+
         remaining = [t for t in universe if t not in done_tickers]
 
         print(f"\n{'='*60}")
