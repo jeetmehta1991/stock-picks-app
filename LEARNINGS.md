@@ -202,3 +202,13 @@ Maintained to prevent repeating the same errors and to document why decisions we
 **Mistake:** Repeatedly gave commands using `&&` as a command separator. PowerShell does not support `&&` — it only supports `;`. Commands failed repeatedly on the owner's Windows laptop.
 **Learning:** Always identify the terminal environment before giving commands. Windows PowerShell uses `;`. Bash/Codespaces uses `;` or `&&`. Git Bash on Windows supports both. Never assume `&&` works everywhere.
 **Fix:** All commands now use `;` which works in both PowerShell and bash.
+
+### L34 — Built solution for wrong environment
+**Mistake:** Created a PowerShell script for Quiver pre-fetch despite knowing from multiple earlier failures that the user works in Git Bash on Windows. PowerShell lacks git on PATH, does not support `&&`, and blocks script execution by default. Made 3 consecutive errors before admitting the script was wrong.
+**Learning:** Always identify the exact working environment before building any script or command. The user had switched to Git Bash multiple times — that was the signal. Never build for an environment that has repeatedly failed.
+**Fix:** Use Git Bash commands always. The simplest solution was one line: `export QUIVER_API_KEY="key" ; python scripts/prefetch_quiver.py`
+
+### L35 — Checklist not enforced in practice
+**Mistake:** CHECKLIST.md created, documented in CLAUDE.md, referenced repeatedly — but not actually run before actions. 33+ documented mistakes occurred after the checklist existed.
+**Learning:** A checklist only works if it is a visible gate before every action. Going forward: explicitly state checklist compliance before executing anything. Make it auditable — owner can see whether it was run.
+**Fix:** Before every action, state: "Checklist: ✅ thought through, ✅ plan shown, ✅ within phase, ✅ helps the ask, ✅ risks flagged, ✅ approval received". Owner prompt "Did you run the checklist?" enforces this.

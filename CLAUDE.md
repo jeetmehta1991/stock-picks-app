@@ -17,7 +17,7 @@
 - **Update PROGRESS.md at end of every working session.**
 - **Never use `git pull` — always: `git fetch origin ; git reset --hard origin/main`**
 - **CLAUDE.md is the owner's document. Never modify it without showing the exact before/after diff and receiving explicit written approval.**
-- **Run CHECKLIST.md before every suggestion or execution.**
+- **Run CHECKLIST.md before every suggestion or execution. State compliance visibly: "Checklist: ✅ thought through, ✅ plan shown, ✅ within phase, ✅ helps the ask, ✅ risks flagged, ✅ approval received"**
 - For every proposed change, always provide a recommendation with clear reasoning and tradeoffs before waiting for approval. Never stay silent on something that could be improved.
 
 ---
