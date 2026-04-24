@@ -170,24 +170,34 @@ def main():
 
         batch_count = 0
         for i, ticker in enumerate(remaining):
-            url = url_template.format(ticker=ticker)
-            records = fetch_with_retry(url)
-            save_ticker_data(ticker, data_type, records)
-            checkpoint[data_type].append(ticker)
-            save_checkpoint(checkpoint)
-            batch_count += 1
-            total_done += 1
+            try:
+                url = url_template.format(ticker=ticker)
+                records = fetch_with_retry(url)
+                save_ticker_data(ticker, data_type, records)
+                checkpoint[data_type].append(ticker)
+                save_checkpoint(checkpoint)
+                batch_count += 1
+                total_done += 1
 
-            status = f"✓ {records if isinstance(records, int) else len(records) if records else 0} records"
-            print(f"  [{i+1}/{len(remaining)}] {ticker}: {status}")
+                n = len(records) if isinstance(records, list) else 0
+                print(f"  [{i+1}/{len(remaining)}] {ticker}: ✓ {n} records")
 
-            # Commit every COMMIT_EVERY tickers
-            if batch_count % COMMIT_EVERY == 0:
-                print(f"\n  Committing {batch_count} tickers...")
-                git_commit(f"Quiver pre-fetch: {data_type} batch ({batch_count} tickers)")
-                print(f"  Committed.\n")
+                # Commit every COMMIT_EVERY tickers
+                if batch_count % COMMIT_EVERY == 0:
+                    print(f"\n  Committing {batch_count} tickers...")
+                    git_commit(f"Quiver pre-fetch: {data_type} batch {batch_count//COMMIT_EVERY}")
+                    print(f"  Committed.\n")
 
-            time.sleep(RATE_LIMIT_SLEEP)
+                time.sleep(RATE_LIMIT_SLEEP)
+
+            except KeyboardInterrupt:
+                print(f"\nInterrupted at {ticker} — saving checkpoint and committing...")
+                git_commit(f"Quiver pre-fetch: {data_type} interrupted at {ticker}")
+                raise
+            except Exception as e:
+                print(f"  ERROR on {ticker}: {e} — skipping and continuing")
+                time.sleep(5)
+                continue
 
         # Final commit for this data type
         print(f"\nCompleted {data_type} — committing...")
