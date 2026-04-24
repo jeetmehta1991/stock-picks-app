@@ -613,7 +613,30 @@ Each strategy fires when ALL listed conditions are true simultaneously. Directio
 
 ---
 
-## 20. TradingAgents Integration
+## 20. Phase 1B Pre-Run Checklist
+
+All items must be complete before Phase 1B runs. No exceptions.
+
+| # | Item | Required |
+|---|---|---|
+| 1 | Quiver congressional | 509/509 tickers |
+| 2 | Quiver insider | 509/509 tickers |
+| 3 | Quiver institutional 13F | 509/509 tickers |
+| 4 | Quiver gov_contracts | 509/509 tickers |
+| 5 | Quiver lobbying | 509/509 tickers |
+| 6 | Quiver wikipedia | 509/509 tickers |
+| 7 | Quiver wallstreetbets | 509/509 tickers |
+| 8 | Finnhub news sentiment | 509/509 tickers |
+| 9 | FRED macro | Extended to March 2026 |
+| 10 | OHLCV cache | Extended to March 2026 |
+| 11 | AAII sentiment | Extended to March 2026 |
+| 12 | CNN Fear & Greed | Extended to March 2026 |
+| 13 | 25-ticker batch test | Agent outputs reviewed and approved |
+| 14 | Sector ETF context | Passed to Technical Agent |
+
+---
+
+## 21. TradingAgents Integration
 
 ### What it is
 TradingAgents is a multi-agent AI framework integrated into our backtesting and live trading pipeline. Every candidate instrument passes through a 6-agent pipeline before receiving a confidence score and being published to the site card. It is not optional — it is the core intelligence layer that separates this system from a simple technical indicator screener.
