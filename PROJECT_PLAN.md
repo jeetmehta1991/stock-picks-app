@@ -667,3 +667,160 @@ The Decision Agent output directly determines the confidence tier assigned to ea
 
 Phase 1B cost estimate: 400 instruments × 782 days × 10 candidates × /bin/sh.021 = ~16 CAD
 Phase 1C cost estimate: top 20% strategies × same universe × /bin/sh.08 = ~02 CAD
+
+---
+
+## 21. Website Design & Delivery
+
+### What the website shows at each stage
+
+| Stage | Website content |
+|---|---|
+| Stage 1 (current) | Daily top gainers from Alpha Vantage — simple HTML page |
+| Stage 2 | Analysis dashboards (Phase 1A, 1B) — local only, not public |
+| Stage 3 paper trading | Live screener candidates, confidence tiers, agent analysis, paper trade tracking |
+| Stage 4 live trading | Full trade management — active positions, exits, P&L, historical performance |
+| Stage 5 | Full institutional-grade dashboard with all signals and portfolio analytics |
+
+### Stage 3 website — detailed design
+
+The website will be a static HTML/JS site updated daily via GitHub Actions. No server or database needed.
+
+**Daily workflow:**
+1. GitHub Actions cron job runs at 6am UTC (market open)
+2. Screener runs on 509 instruments with all cached signals
+3. Top candidates pass through 6-agent pipeline (Sonnet)
+4. Results written to `site_picks/YYYY-MM-DD.json`
+5. Website reads latest JSON and renders cards
+
+**Site card per candidate shows:**
+- Ticker, company, sector, price
+- Confidence tier (EXCEPTIONAL / VERY HIGH / HIGH)
+- Strategies fired (e.g. "RSI oversold + Bollinger lower + Congressional buy")
+- Entry price, position size %, stop level
+- Days to earnings — flagged if < 7 days
+- CNN Fear & Greed context
+- Bull agent argument (2-3 sentences)
+- Bear agent argument (2-3 sentences)
+- Decision agent recommendation
+
+**Paper trading tracker shows:**
+- Open paper positions with current P&L
+- Trailing stop level per position
+- Circuit breaker status
+- Closed trades with outcome
+
+**Email approval workflow (Stage 3+):**
+- Candidates above VERY HIGH tier trigger email to owner
+- Owner replies APPROVE or SKIP
+- Approved trades logged to paper trading ledger
+- No manual login required
+
+### Website delivery timeline
+
+| Milestone | When |
+|---|---|
+| Analysis dashboards (1A, 1B) | ✅ Built — local use only |
+| Stage 3 screening website | After Phase 1D validates top strategies |
+| Stage 3 paper trading tracker | Start of Stage 3 (3-6 months paper trading) |
+| Stage 4 live trading dashboard | After Stage 3 proves profitability |
+
+---
+
+## 22. API Role & Workflow Per Stage
+
+### Stage 1 — Daily stock picks
+| API | Role | Cost |
+|---|---|---|
+| Alpha Vantage | Top gainers + TSX quotes | Free tier |
+| GitHub Actions | Daily 6am UTC cron job | Free |
+
+### Stage 2 — Backtesting (current)
+| API | Role | Cost |
+|---|---|---|
+| yfinance | OHLCV historical data — pre-fetched to Parquet | Free |
+| Quiver Trader | Congressional + insider + 13F + contracts — pre-fetched | $75/mo (cancel after Phase 1B) |
+| FRED | Macro series — pre-fetched to Parquet | Free |
+| Finnhub free | News sentiment — pre-fetched to Parquet | Free |
+| Anthropic Haiku | Phase 1B agent pipeline | ~$116 CAD |
+| Anthropic Sonnet | Phase 1C/1D agent pipeline | ~$140 CAD |
+
+### Stage 3 — Paper trading
+| API | Role | Cost |
+|---|---|---|
+| yfinance | Daily OHLCV for live screener | Free |
+| Quiver Trader | Live congressional + insider signals | $75/mo |
+| FRED | Live macro snapshot | Free |
+| Finnhub free | Live news sentiment | Free |
+| Unusual Whales | Options flow — adds to confidence tier | ~$50/mo |
+| Anthropic Sonnet | Daily 6-agent pipeline for all candidates | ~$25/mo |
+| Alpaca paper | Paper trade execution + tracking | Free |
+| Gmail SMTP | Trade approval emails | Free |
+
+### Stage 4 — Live trading
+| API | Role | Cost |
+|---|---|---|
+| All Stage 3 APIs | Same role | Same cost |
+| Ortex | Short interest — squeeze risk detection | ~$40/mo |
+| Alpaca live | Real trade execution | Commission per trade |
+| **Total Stage 4** | | **~$190/mo** |
+
+---
+
+## 23. Strategy Decay & Continuous Optimization
+
+### The problem
+A strategy validated on 2022-2026 data may stop working in 2028. Market microstructure changes, institutional behaviour evolves, retail participation shifts. A strategy isn't permanently valid — it has a shelf life.
+
+### How we handle it
+
+**Phase structure is designed for this:**
+- Phase 1D extends backtest to 5 years — longer validation reduces false positives
+- Walk-forward validation (IS/OOS) specifically tests whether strategies hold on new data
+- OOS period is always the most recent data — closest to live trading conditions
+
+**Live trading monitoring:**
+- Monthly performance review — compare live results vs backtest expectations
+- Strategy retirement threshold — if win rate drops >10pp below backtest for 3 consecutive months, retire the strategy
+- Regime detection — if market regime shifts significantly (e.g. from low-vol bull to high-vol bear), re-evaluate strategy selection
+- Annual re-backtest — run full Phase 1B-1D pipeline on extended data including new year
+
+**Re-validation trigger events:**
+- New market regime detected (VIX sustained above 30 for 30+ days)
+- Any strategy underperforms backtest by >15pp for 2+ months
+- Major structural market change (new asset class, regulation, circuit breaker rule change)
+- Annual scheduled review regardless of performance
+
+**Agent pipeline role in decay detection:**
+- Agents flag when macro/sentiment context diverges significantly from backtest period
+- Risk agent explicitly flags "current regime differs from validation period"
+- This surfaces potential strategy decay before it shows up in P&L
+
+---
+
+## 24. Best Practices & Open Source References
+
+### Industry best practices followed
+- **Point-in-time data enforcement** — no future data in any backtest calculation
+- **Walk-forward validation** — separate IS and OOS periods, never optimise on OOS
+- **Transaction cost modelling** — realistic spread + slippage per instrument class
+- **Survivorship bias correction** — 2% annual haircut applied
+- **Bonferroni correction** — 500 trade minimum per strategy to avoid multiple testing false positives
+- **Out-of-sample period = most recent data** — OOS is 2025-2026, not a random split
+- **Granular data before aggregates** — per-trade exit detail, raw signals in trade log
+- **Pre-fetch architecture** — no live API calls during backtest loop
+
+### Open source systems evaluated
+- **TradingAgents** — integrated as core 6-agent pipeline
+- **NautilusTrader** — evaluated for execution layer (Stage 4+), Rust-native high performance
+- **Backtrader** — evaluated but replaced with custom engine for better agent integration
+- **QuantConnect** — evaluated but proprietary, limited agent integration
+- **Zipline** — considered but unmaintained
+
+### Known limitations vs institutional systems
+- Daily bar data only — intraday stop precision limited
+- Gap-down exits slightly optimistic (acknowledged)
+- No tick data — slippage model approximate
+- Earnings surprise direction not modelled
+- Sector contagion effects not modelled (AMD rallies when INTC beats)
+- These are acceptable for swing trading validation; addressed in Stage 4+
