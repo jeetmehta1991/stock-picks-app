@@ -205,6 +205,44 @@ PASSING_CRITERIA = {
     "audit_profit_factor_above": 1.5,
 }
 
+# Sector-adjusted passing criteria — some sectors are inherently more volatile
+# High volatility sectors get wider drawdown tolerance and lower win rate requirement
+SECTOR_PASSING_CRITERIA = {
+    "high_volatility": {
+        "sectors": ["Energy", "Information Technology", "Health Care",
+                    "Communication Services"],
+        "min_win_rate":   0.50,   # lower — these sectors have wider swings
+        "max_drawdown":   0.25,   # wider — drawdowns are larger in volatile sectors
+        "min_profit_factor": 1.2,
+    },
+    "medium_volatility": {
+        "sectors": ["Financials", "Industrials", "Consumer Discretionary",
+                    "Materials", "Broad Market", "Small Cap"],
+        "min_win_rate":   0.55,   # standard
+        "max_drawdown":   0.20,   # standard
+        "min_profit_factor": 1.3,
+    },
+    "low_volatility": {
+        "sectors": ["Consumer Staples", "Utilities", "Real Estate",
+                    "Fixed Income", "Commodities"],
+        "min_win_rate":   0.58,   # higher — these sectors should be more predictable
+        "max_drawdown":   0.15,   # tighter — large drawdowns are anomalous here
+        "min_profit_factor": 1.4,
+    },
+}
+
+
+def get_sector_criteria(sector: str) -> dict:
+    """Return passing criteria adjusted for sector volatility profile."""
+    for profile, config in SECTOR_PASSING_CRITERIA.items():
+        if sector in config["sectors"]:
+            criteria = dict(PASSING_CRITERIA)
+            criteria["min_win_rate"]     = config["min_win_rate"]
+            criteria["max_drawdown"]     = config["max_drawdown"]
+            criteria["min_profit_factor"] = config["min_profit_factor"]
+            return criteria
+    return PASSING_CRITERIA  # default for Unknown sector
+
 # ─────────────────────────────────────────────────────────────────────────────
 # CONFIDENCE TIERS — maps to site card label and position sizing
 # ─────────────────────────────────────────────────────────────────────────────

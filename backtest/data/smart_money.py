@@ -540,3 +540,133 @@ def get_news_sentiment(ticker: str, as_of: date, lookback_days: int = 7) -> dict
     except Exception as exc:
         logger.debug("get_news_sentiment(%s): %s", ticker, exc)
         return result
+
+
+def get_gov_contracts(ticker: str, as_of: date, lookback_days: int = 365) -> dict:
+    """
+    Return government contract activity for ticker in lookback window.
+    Reads from pre-fetched Quiver gov_contracts cache.
+    Point-in-time enforced via Date column.
+
+    Returns dict:
+        total_amount: float — total contract value in window
+        contract_count: int
+        recent_win: bool — contract won in last 90 days
+        trend: growing | stable | declining
+        signal: bullish | neutral | no_data
+    """
+    result = {"total_amount": 0.0, "contract_count": 0,
+              "recent_win": False, "trend": "stable", "signal": "no_data"}
+    df = _load_prefetch("gov_contracts", ticker)
+    if df is None or df.empty:
+        return result
+    try:
+        date_col = next((c for c in df.columns if "date" in c.lower()), None)
+        if not date_col:
+            return result
+        df[date_col] = pd.to_datetime(df[date_col])
+        window = df[df[date_col] <= pd.Timestamp(as_of)]
+        recent = window[window[date_col] >= pd.Timestamp(as_of) - pd.Timedelta(days=lookback_days)]
+        if recent.empty:
+            return result
+        amount_col = next((c for c in df.columns if "amount" in c.lower()), None)
+        total = float(recent[amount_col].sum()) if amount_col else 0.0
+        recent_90 = window[window[date_col] >= pd.Timestamp(as_of) - pd.Timedelta(days=90)]
+        older = window[
+            (window[date_col] >= pd.Timestamp(as_of) - pd.Timedelta(days=365)) &
+            (window[date_col] < pd.Timestamp(as_of) - pd.Timedelta(days=90))
+        ]
+        trend = "growing" if len(recent_90) > len(older) / 3 else "stable"
+        return {
+            "total_amount": round(total, 2),
+            "contract_count": len(recent),
+            "recent_win": len(recent_90) > 0,
+            "trend": trend,
+            "signal": "bullish" if total > 0 else "neutral",
+        }
+    except Exception as exc:
+        logger.debug("get_gov_contracts(%s): %s", ticker, exc)
+        return result
+
+
+def get_lobbying(ticker: str, as_of: date, lookback_days: int = 365) -> dict:
+    """
+    Return lobbying spend activity for ticker.
+    Reads from pre-fetched Quiver lobbying cache.
+
+    Returns dict:
+        total_spend: float — total lobbying spend in window
+        filing_count: int
+        issues: list — lobbying issue areas
+        signal: high_spend | moderate | low | no_data
+    """
+    result = {"total_spend": 0.0, "filing_count": 0,
+              "issues": [], "signal": "no_data"}
+    df = _load_prefetch("lobbying", ticker)
+    if df is None or df.empty:
+        return result
+    try:
+        date_col = next((c for c in df.columns if "date" in c.lower()), None)
+        if not date_col:
+            return result
+        df[date_col] = pd.to_datetime(df[date_col])
+        window = df[
+            (df[date_col] <= pd.Timestamp(as_of)) &
+            (df[date_col] >= pd.Timestamp(as_of) - pd.Timedelta(days=lookback_days))
+        ]
+        if window.empty:
+            return result
+        amount_col = next((c for c in df.columns if "amount" in c.lower()), None)
+        total = float(window[amount_col].sum()) if amount_col else 0.0
+        issue_col = next((c for c in df.columns if "issue" in c.lower()), None)
+        issues = list(window[issue_col].dropna().unique()[:5]) if issue_col else []
+        signal = "high_spend" if total > 1_000_000 else "moderate" if total > 100_000 else "low"
+        return {
+            "total_spend": round(total, 2),
+            "filing_count": len(window),
+            "issues": issues,
+            "signal": signal,
+        }
+    except Exception as exc:
+        logger.debug("get_lobbying(%s): %s", ticker, exc)
+        return result
+
+
+def get_congressional_detail(ticker: str, as_of: date, top_n: int = 3) -> list:
+    """
+    Return top N most recent congressional trades with full detail.
+    Used by Sentiment Agent for richer context vs composite signal only.
+    Point-in-time enforced: only trades disclosed before as_of with 45-day lag.
+
+    Returns list of dicts with: representative, transaction, amount_range,
+    transaction_date, party, house
+    """
+    df = _load_prefetch("congressional", ticker)
+    if df is None or df.empty:
+        return []
+    try:
+        df["TransactionDate"] = pd.to_datetime(df["TransactionDate"], errors="coerce")
+        df["ReportDate"] = pd.to_datetime(df.get("ReportDate", df["TransactionDate"]),
+                                           errors="coerce")
+        cutoff = pd.Timestamp(as_of) - pd.Timedelta(days=45)
+        available = df[df["ReportDate"] <= cutoff].copy()
+        if available.empty:
+            return []
+        available = available.sort_values("TransactionDate", ascending=False)
+        top = available.head(top_n)
+        return [
+            {
+                "representative": row.get("Representative", "Unknown"),
+                "party": row.get("Party", ""),
+                "house": row.get("House", ""),
+                "transaction": row.get("Transaction", ""),
+                "amount_range": row.get("Range", row.get("Amount", "")),
+                "transaction_date": str(row.get("TransactionDate", ""))[:10],
+                "days_ago": (pd.Timestamp(as_of) - row.get("TransactionDate",
+                             pd.Timestamp(as_of))).days,
+            }
+            for _, row in top.iterrows()
+        ]
+    except Exception as exc:
+        logger.debug("get_congressional_detail(%s): %s", ticker, exc)
+        return []

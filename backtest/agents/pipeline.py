@@ -212,23 +212,35 @@ def run_fundamental_agent(
     insider_sig: dict,
     institutional_sig: dict,
     earnings_days: Optional[int],
+    gov_contracts: dict,
+    lobbying: dict,
     model: str,
 ) -> dict:
     """
-    Fundamental Agent: earnings risk, insider/13F, WallStreetBets, Wikipedia.
-    Returns: fundamental_score (0-10), earnings_risk, smart_money_alignment, summary
+    Fundamental Agent: earnings risk, insider/13F, gov contracts, lobbying, social.
     """
     social = _load_social_data(ticker, as_of)
+
+    earnings_context = (
+        f"{earnings_days} days away — heightened volatility risk"
+        if earnings_days and earnings_days < 14
+        else f"{earnings_days} days away" if earnings_days
+        else "unknown"
+    )
 
     prompt = f"""Analyse fundamental and smart money signals for {ticker} as of {as_of}.
 
 Insider signal: {json.dumps(insider_sig, default=str)}
 Institutional (13F) signal: {json.dumps(institutional_sig, default=str)}
-Days to next earnings: {earnings_days if earnings_days else "unknown"}
+Next earnings: {earnings_context}
+Government contracts (last 12 months): {json.dumps(gov_contracts, default=str)}
+Lobbying activity (last 12 months): {json.dumps(lobbying, default=str)}
 Social activity (last 30 days): {json.dumps(social, default=str)}
 
-Evaluate: insider buying conviction, institutional accumulation, earnings timing risk,
-and retail investor interest trends.
+Evaluate: insider buying conviction, institutional accumulation, government contract momentum
+(a company winning large contracts signals revenue visibility), lobbying spend direction
+(rising spend may indicate regulatory risk or opportunity), and retail interest trends.
+Note: earnings proximity increases risk but does NOT block the trade — agents assess accordingly.
 
 Return JSON only:
 {{
@@ -236,7 +248,8 @@ Return JSON only:
   "earnings_risk": "<high|medium|low>",
   "smart_money_alignment": "<strong|moderate|weak|negative>",
   "insider_conviction": "<high|medium|low|none>",
-  "avoid_earnings": <true/false — true if earnings within 7 days>,
+  "gov_contract_signal": "<bullish|neutral|no_data>",
+  "lobbying_signal": "<high_activity|moderate|low|no_data>",
   "retail_interest": "<high|normal|low>",
   "summary": "<one sentence>"
 }}"""
@@ -284,29 +297,32 @@ def run_sentiment_agent(
     ticker: str,
     as_of: date,
     congressional_sig: dict,
+    congressional_detail: list,
     sentiment_snap: dict,
     model: str,
 ) -> dict:
-    """
-    Sentiment Agent: congressional trades, AAII, Fear/Greed, news sentiment.
-    Returns: sentiment_score (0-10), contrarian_signal, congressional_strength, summary
-    """
+    """Sentiment Agent: congressional trades with detail, AAII, Fear/Greed, news."""
     news = _load_news_sentiment(ticker, as_of)
 
     prompt = f"""Analyse sentiment signals for {ticker} as of {as_of}.
 
-Congressional trading signal: {json.dumps(congressional_sig, default=str)}
-Market sentiment snapshot: {json.dumps(sentiment_snap, default=str)}
+Congressional trading signal (composite): {json.dumps(congressional_sig, default=str)}
+Recent congressional trades (most recent 3):
+{json.dumps(congressional_detail, indent=2, default=str)}
+
+Market sentiment: {json.dumps(sentiment_snap, default=str)}
 News sentiment (last 30 days): {json.dumps(news, default=str)}
 
-Evaluate: Is broad market sentiment a tailwind or headwind? Are congressional signals
-confirming or contradicting technical setup? Does recent news sentiment support the trade?
+Evaluate: Are influential politicians (large amounts, senior members) buying or selling?
+Is broad market fear/greed context a contrarian opportunity or a warning?
+Does recent news sentiment confirm or contradict the technical setup?
 
 Return JSON only:
 {{
   "sentiment_score": <integer 0-10>,
   "contrarian_signal": "<extreme_buy|buy|neutral|sell|extreme_sell>",
   "congressional_strength": "<strong_buy|buy|neutral|sell|none>",
+  "congressional_conviction": "<high — large amount senior member|medium|low — small amount junior member|none>",
   "fear_greed_context": "<fear_zone_opportunity|neutral|greed_zone_caution>",
   "news_sentiment": "<positive|neutral|negative|not_available>",
   "summary": "<one sentence>"
@@ -331,26 +347,38 @@ def run_risk_agent(
     as_of: date,
     macro_snap: dict,
     sector: str,
+    earnings_days: Optional[int],
     model: str,
 ) -> dict:
-    """
-    Risk Agent: yield curve, VIX, DXY, economic calendar, sector risk.
-    Returns: risk_score (0-10, 10=lowest risk), macro_environment, trade_blocked, summary
-    """
+    """Risk Agent: yield curve, VIX, DXY, earnings proximity, sector risk."""
+    earnings_context = (
+        f"CRITICAL: earnings in {earnings_days} days — binary event risk is high"
+        if earnings_days and earnings_days <= 7
+        else f"earnings in {earnings_days} days — moderate event risk"
+        if earnings_days and earnings_days <= 14
+        else f"earnings in {earnings_days} days" if earnings_days
+        else "earnings date unknown"
+    )
+
     prompt = f"""Assess macro and risk environment for {ticker} (sector: {sector}) as of {as_of}.
 
 Macro snapshot: {json.dumps(macro_snap, default=str)}
+Earnings proximity: {earnings_context}
 
-Evaluate: Is the macro environment favourable for a new swing trade entry?
-Consider: yield curve regime, VIX level, DXY trend, proximity to major events.
+Evaluate: Is the macro environment favourable? Consider yield curve regime (inversion = recession risk),
+VIX level (>30 = high fear, >40 = crisis), DXY trend (strong dollar = headwind for multinationals),
+corporate spread (BAA10Y — rising = credit stress), and earnings binary event risk.
+Note: earnings proximity increases risk but does NOT block the trade.
 
 Return JSON only:
 {{
-  "risk_score": <integer 0-10, where 10 = best/safest macro environment>,
+  "risk_score": <integer 0-10, where 10 = best/safest>,
   "macro_environment": "<favourable|neutral|unfavourable>",
-  "trade_blocked": <true/false — true if near major event OR VIX crisis>,
-  "vix_concern": "<none|moderate|high>",
-  "yield_curve_concern": "<none|moderate|high>",
+  "earnings_risk": "<critical — within 7 days|high — within 14|moderate|low>",
+  "vix_concern": "<none|moderate|high|crisis>",
+  "yield_curve_concern": "<none|moderate|high — inverted>",
+  "credit_spread_concern": "<none|moderate|high>",
+  "dxy_impact": "<headwind|neutral|tailwind>",
   "summary": "<one sentence>"
 }}"""
 
@@ -375,17 +403,18 @@ def run_bull_bear_debate(
     fundamental_result: dict,
     sentiment_result: dict,
     risk_result: dict,
+    price_context: dict,
+    strategies_triggered: list,
     model: str,
 ) -> dict:
-    """
-    Bull and Bear agents debate the full signal set.
-    Returns: bull_score, bear_score, debate_winner, key_bull_argument, key_bear_argument
-    """
+    """Bull and Bear agents debate the full signal set with price context."""
     combined_context = {
         "technical":    tech_result,
         "fundamental":  fundamental_result,
         "sentiment":    sentiment_result,
         "risk":         risk_result,
+        "price_context": price_context,
+        "strategies_triggered": strategies_triggered,
     }
 
     prompt = f"""You are running a bull/bear debate for {ticker} swing trade entry as of {as_of}.
@@ -393,8 +422,14 @@ def run_bull_bear_debate(
 Full signal context:
 {json.dumps(combined_context, indent=2, default=str)}
 
-Argue BOTH sides objectively. Bull case: why this trade should be taken.
-Bear case: why it should be avoided. Then decide which is stronger.
+Price context: stock is {price_context.get('pct_from_52w_high', 0):+.1f}% from 52-week high,
+{price_context.get('pct_from_52w_low', 0):+.1f}% from 52-week low.
+Nearest support: {price_context.get('nearest_support', 'unknown')},
+nearest resistance: {price_context.get('nearest_resistance', 'unknown')}.
+
+Argue BOTH sides objectively. Consider price positioning relative to support/resistance.
+Bull case: why this trade should be taken now.
+Bear case: why it should be avoided or waited on. Then decide which is stronger.
 
 Return JSON only:
 {{
@@ -403,7 +438,8 @@ Return JSON only:
   "debate_winner": "<bull|bear|neutral>",
   "key_bull_argument": "<one sentence>",
   "key_bear_argument": "<one sentence>",
-  "confidence_in_winner": "<high|medium|low>"
+  "confidence_in_winner": "<high|medium|low>",
+  "price_positioning": "<at_support — strong entry|middle_of_range|near_resistance — weak entry>"
 }}"""
 
     resp = _call_claude(prompt, model, SYSTEM_ANALYST, max_tokens=600)
@@ -424,37 +460,46 @@ def run_decision_agent(
     as_of: date,
     all_agent_results: dict,
     smart_money_score: dict,
+    earnings_days: Optional[int],
+    sector: str,
     model: str,
 ) -> dict:
-    """
-    Decision Agent: synthesises all agent outputs into final trade recommendation.
-    Returns: final_score (0-100), confidence_tier, action, stop_loss_atr, take_profit_atr
-    """
+    """Decision Agent: synthesises all agent outputs into final recommendation."""
+    sector_volatility = {
+        "Energy": "high", "Information Technology": "high",
+        "Health Care": "high", "Communication Services": "medium",
+        "Financials": "medium", "Industrials": "medium",
+        "Consumer Discretionary": "medium", "Materials": "medium",
+        "Consumer Staples": "low", "Utilities": "low", "Real Estate": "low",
+    }.get(sector, "medium")
+
     prompt = f"""Make final trade decision for {ticker} swing trade as of {as_of}.
+
+Sector: {sector} (volatility: {sector_volatility})
+Earnings proximity: {f'{earnings_days} days' if earnings_days else 'unknown'} — factor into sizing, NOT go/no-go.
+Smart money composite: {json.dumps(smart_money_score, default=str)}
 
 All agent outputs:
 {json.dumps(all_agent_results, indent=2, default=str)}
 
-Smart money composite: {json.dumps(smart_money_score, default=str)}
-
-Synthesise all signals. Apply the confidence matrix:
-- EXCEPTIONAL (score 85+): 3+ tech strategies + congressional + insider cluster buy
-- VERY HIGH (70-84): 2+ tech strategies + congressional OR insider buy
+Confidence matrix:
+- EXCEPTIONAL (85+): 3+ strategies + congressional + insider cluster buy
+- VERY_HIGH (70-84): 2+ strategies + congressional OR insider buy
 - HIGH (60-69): 3+ strategies, no smart money
-- MEDIUM-HIGH (50-59): 2 strategies, no smart money
+- MEDIUM_HIGH (50-59): 2 strategies, no smart money
 - MEDIUM (40-49): 1 strategy + any smart money buy
 - LOW (<40): 1 strategy only
-- AVOID: any STRONG_NEGATIVE smart money signal
+- AVOID: strong negative smart money regardless of technical
 
 Return JSON only:
 {{
   "final_score": <integer 0-100>,
   "confidence_tier": "<EXCEPTIONAL|VERY_HIGH|HIGH|MEDIUM_HIGH|MEDIUM|LOW|AVOID>",
-  "action": "<TAKE_TRADE|WATCHLIST|SKIP|AVOID>",
-  "entry_rationale": "<one sentence>",
+  "action": "<ENTER|WATCH|SKIP|AVOID>",
+  "position_size_modifier": "<full|reduced_earnings|reduced_volatility|minimal>",
+  "entry_rationale": "<two sentences>",
   "primary_risk": "<one sentence>",
-  "stop_loss_atr_multiple": 2.0,
-  "take_profit_atr_multiple": 3.0
+  "recommended_exit": "<atr_trail_1x|trailing_15pct|hybrid_50pct_target|next_pivot_target>"
 }}"""
 
     resp = _call_claude(prompt, model, SYSTEM_ANALYST, max_tokens=500)
@@ -517,30 +562,12 @@ def run_full_agent_pipeline(
     earnings_days: Optional[int],
     phase: str = "phase_1a",
 ) -> dict:
-    """
-    Run all six agents for a single candidate instrument.
-
-    Results are cached to backtest/agents/cache/ — if a run crashes and restarts,
-    already-computed agent analyses are loaded from cache instead of re-calling the API.
-    This prevents losing API spend on partial runs.
-
-    Parameters:
-      candidate:        output of screener.screen_instrument (contains signals)
-      smart_money_data: dict with keys congressional_sig, insider_sig, institutional_sig,
-                        smart_money_composite
-      macro_snap:       output of macro.macro_snapshot
-      sentiment_snap:   output of sentiment.sentiment_snapshot
-      sector:           company sector string
-      earnings_days:    days to next earnings (None if unknown)
-      phase:            which phase (determines model)
-
-    Returns: full dict of all agent outputs + final decision
-    """
+    """Run all six agents for a single candidate instrument."""
     model = AI_MODELS.get(phase, AI_MODELS["phase_1a"])
     signals = candidate.get("signals", {})
     strategies = candidate.get("strategies_triggered", [])
 
-    # Check cache first — avoid re-calling API on rerun
+    # Check cache first
     cache_key = _agent_cache_key(ticker, as_of, strategies, phase)
     cached = _load_agent_cache(cache_key)
     if cached:
@@ -549,31 +576,65 @@ def run_full_agent_pipeline(
 
     logger.info("Running agent pipeline: %s [%s] model=%s", ticker, as_of, model)
 
+    # Load additional Quiver data not in smart_money_data
+    from backtest.data.smart_money import (
+        get_gov_contracts, get_lobbying, get_congressional_detail
+    )
+    gov_contracts  = get_gov_contracts(ticker, as_of)
+    lobbying       = get_lobbying(ticker, as_of)
+    cong_detail    = get_congressional_detail(ticker, as_of, top_n=3)
+
+    # Price context for agents
+    price = signals.get("close", 0)
+    high_52w = signals.get("high_52w", price)
+    low_52w  = signals.get("low_52w", price)
+    pct_from_52w_high = round((price / high_52w - 1) * 100, 1) if high_52w else 0
+    pct_from_52w_low  = round((price / low_52w - 1) * 100, 1) if low_52w else 0
+    nearest_support = signals.get("s1", signals.get("cam_s3", 0))
+    nearest_resist  = signals.get("r1", signals.get("cam_r3", 0))
+    price_context = {
+        "price": price,
+        "pct_from_52w_high": pct_from_52w_high,
+        "pct_from_52w_low": pct_from_52w_low,
+        "nearest_support": nearest_support,
+        "nearest_resistance": nearest_resist,
+        "above_200ema": signals.get("above_200ema", False),
+        "above_50sma": signals.get("above_50sma", False),
+    }
+
     # Agent 1: Technical
     tech = run_technical_agent(ticker, as_of, signals, strategies, model)
 
-    # Agent 2: Fundamental
+    # Agent 2: Fundamental — now includes gov_contracts + lobbying
     fund = run_fundamental_agent(
         ticker, as_of,
         smart_money_data.get("insider_sig", {}),
         smart_money_data.get("institutional_sig", {}),
         earnings_days,
+        gov_contracts,
+        lobbying,
         model,
     )
 
-    # Agent 3: Sentiment
+    # Agent 3: Sentiment — now includes congressional detail
     sent = run_sentiment_agent(
         ticker, as_of,
         smart_money_data.get("congressional_sig", {}),
+        cong_detail,
         sentiment_snap,
         model,
     )
 
-    # Agent 4: Risk
-    risk = run_risk_agent(ticker, as_of, macro_snap, sector, model)
+    # Agent 4: Risk — now includes earnings_days + DXY
+    risk = run_risk_agent(
+        ticker, as_of, macro_snap, sector, earnings_days, model
+    )
 
-    # Agents 5: Bull/Bear debate
-    debate = run_bull_bear_debate(ticker, as_of, tech, fund, sent, risk, model)
+    # Agents 5: Bull/Bear debate — now includes price context
+    debate = run_bull_bear_debate(
+        ticker, as_of, tech, fund, sent, risk,
+        price_context, strategies, model
+    )
 
     # Agent 6: Decision
     all_results = {
@@ -586,7 +647,7 @@ def run_full_agent_pipeline(
     decision = run_decision_agent(
         ticker, as_of, all_results,
         smart_money_data.get("smart_money_composite", {}),
-        model,
+        earnings_days, sector, model
     )
 
     result = {
