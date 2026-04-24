@@ -166,9 +166,7 @@ def main():
             days = sum(1 for i in range((end-start).days+1)
                        if (start+__import__('datetime').timedelta(days=i)).weekday()<5)
             est_cost = days * args.max_cands * 0.021 / 10
-            print(f"Estimated cost: ~${est_cost:.1f} USD (Haiku)")
-            if input("Proceed? [y/N]: ").strip().lower() != "y":
-                sys.exit(0)
+            print(f"Estimated cost: ~${est_cost:.1f} USD (Haiku) — proceeding automatically")
 
     engine = BacktestEngine(
         universe=universe, start=start, end=end,
