@@ -45,4 +45,5 @@ jobs:
         run: |
           git add backtest/data/cache/finnhub_news/ backtest/data/cache/finnhub_news_checkpoint.json 2>/dev/null || true
           git diff --staged --quiet || git commit -m "Finnhub news batch ${{ github.event.inputs.batch }}: complete"
+          git pull --rebase origin main || true
           git push origin main || true

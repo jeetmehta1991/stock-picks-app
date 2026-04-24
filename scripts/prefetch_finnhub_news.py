@@ -114,15 +114,29 @@ def process_ticker(ticker: str) -> pd.DataFrame:
     return daily
 
 
-def load_checkpoint() -> list:
+def load_checkpoint(batch: int = 0) -> list:
+    key = f"batch_{batch}" if batch > 0 else "all"
     if CHECKPOINT_FILE.exists():
-        return json.loads(CHECKPOINT_FILE.read_text())
+        data = json.loads(CHECKPOINT_FILE.read_text())
+        if isinstance(data, dict):
+            return data.get(key, [])
+        return data  # legacy format
     return []
 
 
-def save_checkpoint(done: list):
+def save_checkpoint(done: list, batch: int = 0):
+    key = f"batch_{batch}" if batch > 0 else "all"
+    existing = {}
+    if CHECKPOINT_FILE.exists():
+        try:
+            existing = json.loads(CHECKPOINT_FILE.read_text())
+            if not isinstance(existing, dict):
+                existing = {"all": existing}
+        except:
+            existing = {}
+    existing[key] = done
     CHECKPOINT_FILE.parent.mkdir(parents=True, exist_ok=True)
-    CHECKPOINT_FILE.write_text(json.dumps(done))
+    CHECKPOINT_FILE.write_text(json.dumps(existing))
 
 
 def git_commit(message: str):
@@ -131,6 +145,7 @@ def git_commit(message: str):
                     "backtest/data/cache/finnhub_news_checkpoint.json"],
                    capture_output=True)
     subprocess.run(["git", "commit", "-m", message], capture_output=True)
+    subprocess.run(["git", "pull", "--rebase", "origin", "main"], capture_output=True)
     subprocess.run(["git", "push", "origin", "main"], capture_output=True)
 
 
@@ -154,7 +169,7 @@ def main():
 
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
-    done = load_checkpoint()
+    done = load_checkpoint(args.batch)
     remaining = [t for t in universe if t not in done]
 
     print(f"Finnhub news pre-fetch")
@@ -172,7 +187,7 @@ def main():
             df.to_parquet(out_file, index=False)
 
         done.append(ticker)
-        save_checkpoint(done)
+        save_checkpoint(done, args.batch)
         batch_count += 1
 
         n = len(df) if not df.empty else 0
@@ -183,7 +198,7 @@ def main():
             git_commit(f"Finnhub news pre-fetch: batch {batch_count//COMMIT_EVERY}")
             print(f"  Committed.\n")
 
-    git_commit(f"Finnhub news pre-fetch: complete ({len(universe)} tickers)")
+    git_commit(f"Finnhub news batch {args.batch}: complete ({len(universe)} tickers)")
     print("\nFinnhub news pre-fetch complete.")
 
 
