@@ -142,3 +142,38 @@ Maintained to prevent repeating the same errors and to document why decisions we
 | O11 | IS/OOS trade log splits | Granular walk-forward analysis |
 | O12 | Backtest extended to March 2026 | More data, better OOS validation |
 | O13 | AAII/CNN full CSVs | Sentiment agent has real data not placeholders |
+
+### L22 — Parallel GitHub Actions batches with git push conflicts
+**Mistake:** Designed 5 Finnhub batches to run in parallel on GitHub Actions. Each batch pushed to main simultaneously — only one succeeds, others rejected. Required 3+ reruns to complete what should have been one clean run.
+**Learning:** Never run parallel workflows that all push to the same branch. Sequential is slower but reliable. Parallel git pushes always conflict.
+**Fix:** Run batches sequentially. Added rebase-before-push as partial mitigation but sequential is the correct solution.
+
+### L23 — Insider endpoint run against 509 tickers before verifying
+**Mistake:** Built and ran full 509-ticker download script for insider data before verifying the endpoint worked on Hobbyist tier. All 509 returned 0 records. Wasted ~10 minutes of download time and rate limit quota.
+**Learning:** CHECKLIST item 12 — always test one call per endpoint before building the full script. This applies to every data type, not just the first one.
+**Fix:** Verified all endpoints before re-running. Upgraded to Trader tier.
+
+### L24 — Phase 1B partial run started without complete data
+**Mistake:** Started Phase 1B agents with AAII at 15 hardcoded points, no Finnhub news, no pre-fetched smart money data. Spent ~$3 CAD on agent calls that produced low-quality outputs.
+**Learning:** Never start a paid agent run without verifying all data sources are complete and correct. The pre-run checklist (PROJECT_PLAN.md section 20) must be verified before every run.
+**Fix:** Stopped run, rebuilt pre-fetch architecture, added hard blockers to CLAUDE.md.
+
+### L25 — input() prompt broke nohup execution
+**Mistake:** Run script had an interactive `input("Proceed? [y/N]: ")` prompt. When run with nohup, there is no terminal attached — the prompt crashes with `OSError: Bad file descriptor`. Discovered only after starting the run.
+**Learning:** Any script that runs with nohup must never use interactive prompts. Test every script with nohup before recommending it to the owner.
+**Fix:** Removed interactive prompt. Script now prints cost estimate and proceeds automatically.
+
+### L26 — Checklist existed but wasn't being followed
+**Mistake:** CHECKLIST.md was created and added to CLAUDE.md but repeatedly not consulted before taking actions. Multiple mistakes that the checklist would have caught still occurred after it was created.
+**Learning:** A checklist only works if it is explicitly run before every action. Having it documented is not the same as using it. The checklist must be the first thing consulted, not an afterthought.
+**Fix:** No code fix — behavioural discipline required. Checklist items added for each mistake type.
+
+### L27 — Backtest mirroring principle not documented early enough
+**Mistake:** Finnhub news sentiment was planned for live trading but initially excluded from backtesting. Discovered late that the backtest would not reflect live conditions.
+**Learning:** From day one, every data source and signal used in live trading must be in the backtest. Document this as a core principle before building, not after.
+**Fix:** Added to CLAUDE.md: "Backtests must mirror live trading scenarios as closely as possible."
+
+### L28 — Sector tags not included from the start
+**Mistake:** Sector information was in `sp500_tickers.csv` from the beginning but never passed into the backtest engine, dataclasses, or agent pipeline. Required late-stage changes to OpenTrade, ClosedTrade, backtest.py, and pipeline.py.
+**Learning:** Think through all data fields needed at design time. Retrofitting fields into dataclasses causes cascading changes across multiple files.
+**Fix:** Sector now flows through the entire pipeline. Sector ETF halo effect passed to Technical Agent.
