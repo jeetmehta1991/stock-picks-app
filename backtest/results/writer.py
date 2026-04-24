@@ -20,6 +20,7 @@ def write_all_outputs(
     skipped:            list,
     cb_log:             list,
     exit_compare:       pd.DataFrame,
+    trade_exit_detail:  pd.DataFrame  = None,
     walk_forward:       pd.DataFrame  = None,
     survivorship_info:  dict          = None,
     bonferroni:         dict          = None,
@@ -90,6 +91,12 @@ def write_all_outputs(
     if not exit_compare.empty:
         exit_compare.to_csv(output_dir / "exit_strategy_comparison.csv", index=False)
         best = exit_compare[exit_compare.get("recommended", False) == True].copy()
+
+    if trade_exit_detail is not None and not trade_exit_detail.empty:
+        trade_exit_detail.to_csv(output_dir / "trade_exit_detail.csv", index=False)
+        logger.info("Wrote trade_exit_detail.csv — %d rows (%d trades × exits)",
+                    len(trade_exit_detail),
+                    trade_exit_detail["ticker"].count() if "ticker" in trade_exit_detail.columns else 0)
         best.to_csv(output_dir / "exit_strategy_best.csv", index=False)
         logger.info("Wrote exit_strategy_comparison.csv + exit_strategy_best.csv")
 

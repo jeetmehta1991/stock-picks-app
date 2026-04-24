@@ -88,6 +88,7 @@ canvas{max-height:280px}
   <div class="tab" onclick="showTab('regime')">Regime Analysis</div>
   <div class="tab" onclick="showTab('walkforward')">Walk-Forward</div>
   <div class="tab" onclick="showTab('trades')">Trade Log</div>
+  <div class="tab" onclick="showTab('dataquality')">Data Quality</div>
 </div>
 
 <!-- TAB 1: STRATEGY PERFORMANCE -->
@@ -127,6 +128,7 @@ canvas{max-height:280px}
       <th onclick="sortStrategy('max_drawdown_pct')">Max DD</th>
       <th onclick="sortStrategy('smart_money_lift')">SM Lift</th>
       <th onclick="sortStrategy('regimes_profitable')">Regimes</th>
+      <th>Best Exit</th>
       <th>Pass</th>
     </tr></thead>
     <tbody id="tbody-strategy"></tbody>
@@ -159,7 +161,7 @@ canvas{max-height:280px}
     <div class="chart-wrap"><h3>ROI by Confidence Tier</h3><canvas id="chart-tier-roi"></canvas></div>
   </div>
   <div class="tbl-wrap"><table>
-    <thead><tr><th>Tier</th><th>Trades</th><th>Win Rate</th><th>Avg ROI</th><th>Total ROI</th><th>Avg Hold</th></tr></thead>
+    <thead><tr><th>Tier</th><th>Trades</th><th>Win Rate</th><th>Avg ROI</th><th>Total ROI</th><th>Avg Hold</th><th>Best Exit</th></tr></thead>
     <tbody id="tbody-tiers"></tbody>
   </table></div>
 </div>
@@ -200,7 +202,7 @@ canvas{max-height:280px}
 <div class="pane" id="pane-regime">
   <div class="chart-wrap"><h3>Win Rate by Regime</h3><canvas id="chart-regime"></canvas></div>
   <div class="tbl-wrap"><table>
-    <thead><tr><th>Regime</th><th>Trades</th><th>Win Rate</th><th>Avg ROI</th><th>Total ROI</th><th>Crisis Flag</th></tr></thead>
+    <thead><tr><th>Regime</th><th>Trades</th><th>Win Rate</th><th>Avg ROI</th><th>Total ROI</th><th>Crisis Flag</th><th>Best Exit</th></tr></thead>
     <tbody id="tbody-regime"></tbody>
   </table></div>
 </div>
@@ -241,14 +243,48 @@ canvas{max-height:280px}
     <thead><tr>
       <th>Ticker</th><th>Strategy</th><th>Direction</th><th>Tier</th>
       <th>Entry</th><th>Exit</th><th>Hold</th><th>ROI</th><th>Win</th>
-      <th>Regime</th><th>SM Score</th><th>Exit Reason</th>
+      <th>Regime</th><th>SM Score</th><th>Exit Reason</th><th>Exit Detail</th>
     </tr></thead>
     <tbody id="tbody-trades"></tbody>
   </table></div>
 </div>
 
+<!-- EXIT DETAIL MODAL -->
+<div id="exit-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);z-index:1000;align-items:center;justify-content:center">
+  <div style="background:#161b22;border:1px solid #30363d;border-radius:12px;padding:1.5rem;max-width:700px;width:90%;max-height:80vh;overflow-y:auto">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+      <h3 id="modal-title" style="font-size:.9rem;color:#f0f6fc"></h3>
+      <button onclick="document.getElementById('exit-modal').style.display='none'" style="background:none;border:none;color:#8b949e;font-size:1.2rem;cursor:pointer">✕</button>
+    </div>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<!-- TAB 9: DATA QUALITY -->
+<div class="pane" id="pane-dataquality">
+  <div class="stats" id="stats-dq"></div>
+  <div class="grid2">
+    <div class="chart-wrap">
+      <h3>Sentiment Data Coverage</h3>
+      <div id="dq-sentiment"></div>
+    </div>
+    <div class="chart-wrap">
+      <h3>Macro Data Coverage</h3>
+      <div id="dq-macro"></div>
+    </div>
+  </div>
+  <div class="chart-wrap">
+    <h3>Agent Cache Status</h3>
+    <div id="dq-agents"></div>
+  </div>
+  <div class="chart-wrap">
+    <h3>Data Sources Summary</h3>
+    <div id="dq-sources"></div>
+  </div>
+</div>
+
 <script>
-let TRADES=[], METRICS=[], EXIT_CMP=[], WF=[], REGIME=[];
+let TRADES=[], METRICS=[], EXIT_CMP=[], WF=[], REGIME=[], TRADE_EXIT_DETAIL=[];
 let stratSort='profit_factor', stratSortDir=-1;
 
 async function fetchCSV(path){
@@ -262,14 +298,16 @@ async function fetchCSV(path){
 
 async function autoLoad(){
   document.getElementById('status-txt').textContent='Loading...';
-  const [tr,me,ex,wf,rg]=await Promise.all([
+  const [tr,me,ex,wf,rg,ted]=await Promise.all([
     fetchCSV('output_v2_1b/trade_log.csv'),
     fetchCSV('output_v2_1b/backtest_results.csv'),
     fetchCSV('output_v2_1b/exit_strategy_comparison.csv'),
     fetchCSV('output_v2_1b/walk_forward_validation.csv'),
     fetchCSV('output_v2_1b/regime_performance.csv'),
+    fetchCSV('output_v2_1b/trade_exit_detail.csv'),
   ]);
   TRADES=tr||[]; METRICS=me||[]; EXIT_CMP=ex||[]; WF=wf||[]; REGIME=rg||[];
+  TRADE_EXIT_DETAIL=ted||[];
   if(!TRADES.length){
     document.getElementById('status-txt').textContent='No Phase 1B data yet — run in progress';
     return;
@@ -282,7 +320,7 @@ async function autoLoad(){
 function renderAll(){
   renderStrategy(); renderExit(); renderTiers();
   renderSmartMoney(); renderAgents(); renderRegime();
-  renderWF(); renderTrades();
+  renderWF(); renderTrades(); renderDataQuality();
 }
 
 function showTab(t){
@@ -290,6 +328,12 @@ function showTab(t){
   document.querySelectorAll('.pane').forEach(el=>el.classList.remove('active'));
   event.target.classList.add('active');
   document.getElementById('pane-'+t).classList.add('active');
+}
+
+// Get best exit for a strategy from EXIT_CMP
+function getBestExit(strategy){
+  const rows=EXIT_CMP.filter(r=>r.strategy===strategy&&r.recommended);
+  return rows.length?rows[0].exit_method:'—';
 }
 
 function pct(v,d=1){return v!=null?`${(v*100).toFixed(d)}%`:'—'}
@@ -338,6 +382,7 @@ function renderStrategy(){
     <td style="color:${(r.max_drawdown_pct||0)<-15?'#f85149':'#e3b341'}">${(r.max_drawdown_pct||0).toFixed(1)}%</td>
     <td style="color:${(r.smart_money_lift||0)>0?'#3fb950':'#8b949e'}">${r.smart_money_lift!=null?(r.smart_money_lift*100).toFixed(1)+'pp':'—'}</td>
     <td>${r.regimes_profitable||0}/5</td>
+    <td style="font-size:.7rem;color:#58a6ff">${getBestExit(r.strategy)}</td>
     <td>${r.passes_all?'✅':''}${(r.audit_flags&&r.audit_flags.length>2)?'⚠️':''}</td>
   </tr>`).join('');
 }
@@ -415,14 +460,27 @@ function renderTiers(){
   renderChart('chart-tier-wr','bar',labels,wrVals,'Win Rate %',bgColors);
   renderChart('chart-tier-roi','bar',labels,roiVals,'Total ROI %',bgColors);
 
-  document.getElementById('tbody-tiers').innerHTML=data.map(d=>`<tr>
-    <td>${tierBadge(d.tier)}</td>
-    <td>${d.trades.toLocaleString()}</td>
-    <td>${wr(d.wr)}</td>
-    <td>${roi(d.avgRoi)}</td>
-    <td>${roi(d.totalRoi)}</td>
-    <td>${d.avgHold.toFixed(1)}d</td>
-  </tr>`).join('');
+  document.getElementById('tbody-tiers').innerHTML=data.map(d=>{
+    // Find best exit for trades in this tier
+    const tierTrades=TRADES.filter(t=>t.confidence_tier===d.tier);
+    const tierStrategies=[...new Set(tierTrades.map(t=>t.strategy))];
+    const exitScores={};
+    EXIT_CMP.filter(r=>tierStrategies.includes(r.strategy)).forEach(r=>{
+      if(!exitScores[r.exit_method])exitScores[r.exit_method]={score:0,count:0};
+      exitScores[r.exit_method].score+=r.composite_score||0;
+      exitScores[r.exit_method].count++;
+    });
+    const bestExit=Object.entries(exitScores).sort((a,b)=>b[1].score-a[1].score)[0];
+    return `<tr>
+      <td>${tierBadge(d.tier)}</td>
+      <td>${d.trades.toLocaleString()}</td>
+      <td>${wr(d.wr)}</td>
+      <td>${roi(d.avgRoi)}</td>
+      <td>${roi(d.totalRoi)}</td>
+      <td>${d.avgHold.toFixed(1)}d</td>
+      <td style="color:#58a6ff;font-size:.72rem">${bestExit?bestExit[0]:'—'}</td>
+    </tr>`;
+  }).join('');
 }
 
 // ── TAB 4: SMART MONEY ──
@@ -538,14 +596,26 @@ function renderRegime(){
     data.map(d=>+(d.wr*100).toFixed(1)),
     'Win Rate %',data.map(d=>d.crisis?'#e3b341aa':'#58a6ffaa'));
 
-  document.getElementById('tbody-regime').innerHTML=data.map(d=>`<tr>
-    <td style="color:${d.crisis?'#e3b341':'#c9d1d9'}">${d.regime}</td>
-    <td>${d.trades}</td>
-    <td>${wr(d.wr)}</td>
-    <td>${roi(d.avgRoi)}</td>
-    <td>${roi(d.totalRoi)}</td>
-    <td>${d.crisis?'⚡ Yes':'—'}</td>
-  </tr>`).join('');
+  document.getElementById('tbody-regime').innerHTML=data.map(d=>{
+    const regimeTrades=TRADES.filter(t=>t.regime===d.regime);
+    const regimeStrategies=[...new Set(regimeTrades.map(t=>t.strategy))];
+    const exitScores={};
+    EXIT_CMP.filter(r=>regimeStrategies.includes(r.strategy)).forEach(r=>{
+      if(!exitScores[r.exit_method])exitScores[r.exit_method]={score:0,count:0};
+      exitScores[r.exit_method].score+=r.composite_score||0;
+      exitScores[r.exit_method].count++;
+    });
+    const bestExit=Object.entries(exitScores).sort((a,b)=>b[1].score-a[1].score)[0];
+    return `<tr>
+      <td style="color:${d.crisis?'#e3b341':'#c9d1d9'}">${d.regime}</td>
+      <td>${d.trades}</td>
+      <td>${wr(d.wr)}</td>
+      <td>${roi(d.avgRoi)}</td>
+      <td>${roi(d.totalRoi)}</td>
+      <td>${d.crisis?'⚡ Yes':'—'}</td>
+      <td style="color:#58a6ff;font-size:.72rem">${bestExit?bestExit[0]:'—'}</td>
+    </tr>`;
+  }).join('');
 }
 
 // ── TAB 7: WALK-FORWARD ──
@@ -580,6 +650,45 @@ function renderWF(){
 }
 
 // ── TAB 8: TRADE LOG ──
+function showExitDetail(ticker, entryDate, strategy){
+  const modal=document.getElementById('exit-modal');
+  const rows=TRADE_EXIT_DETAIL.filter(r=>
+    r.ticker===ticker && r.entry_date===entryDate && r.strategy===strategy
+  ).sort((a,b)=>(b.pnl_pct||0)-(a.pnl_pct||0));
+
+  document.getElementById('modal-title').textContent=
+    `Exit comparison: ${ticker} | ${strategy} | Entry ${entryDate}`;
+
+  if(!rows.length){
+    document.getElementById('modal-content').innerHTML=
+      '<p style="color:#8b949e;font-size:.8rem">No exit detail data — will appear after Phase 1B run completes</p>';
+  } else {
+    const best=rows[0].exit_method;
+    document.getElementById('modal-content').innerHTML=`
+      <table style="width:100%;border-collapse:collapse;font-size:.78rem">
+        <thead><tr>
+          <th style="text-align:left;color:#8b949e;padding:.4rem;border-bottom:1px solid #21262d">Exit Method</th>
+          <th style="text-align:right;color:#8b949e;padding:.4rem;border-bottom:1px solid #21262d">ROI</th>
+          <th style="text-align:right;color:#8b949e;padding:.4rem;border-bottom:1px solid #21262d">Win</th>
+          <th style="text-align:right;color:#8b949e;padding:.4rem;border-bottom:1px solid #21262d">Hold Days</th>
+          <th style="text-align:right;color:#8b949e;padding:.4rem;border-bottom:1px solid #21262d">Exit Price</th>
+        </tr></thead>
+        <tbody>${rows.map(r=>`<tr style="background:${r.exit_method===best?'#1a2e1a':''}">
+          <td style="padding:.4rem;border-bottom:1px solid #21262d;color:${r.exit_method===best?'#3fb950':'#c9d1d9'}">
+            ${r.exit_method===best?'🏆 ':''} ${r.exit_method}
+          </td>
+          <td style="text-align:right;padding:.4rem;border-bottom:1px solid #21262d;color:${(r.pnl_pct||0)>0?'#3fb950':'#f85149'}">
+            ${(r.pnl_pct||0).toFixed(2)}%
+          </td>
+          <td style="text-align:right;padding:.4rem;border-bottom:1px solid #21262d">${r.win?'✅':'❌'}</td>
+          <td style="text-align:right;padding:.4rem;border-bottom:1px solid #21262d;color:#8b949e">${r.hold_days||0}d</td>
+          <td style="text-align:right;padding:.4rem;border-bottom:1px solid #21262d;color:#8b949e">$${(r.exit_price||0).toFixed(2)}</td>
+        </tr>`).join('')}</tbody>
+      </table>`;
+  }
+  modal.style.display='flex';
+}
+
 function renderTrades(){
   const search=(document.getElementById('trade-search').value||'').toLowerCase();
   const dir=document.getElementById('trade-dir').value;
@@ -611,7 +720,91 @@ function renderTrades(){
     <td style="font-size:.68rem;color:${(t.regime||'').includes('CRISIS')?'#e3b341':'#8b949e'}">${(t.regime||'').replace('_CRISIS_FLAG','⚡')}</td>
     <td style="color:${(t.smart_money_score||0)>0?'#3fb950':'#8b949e'}">${t.smart_money_score||0}</td>
     <td style="font-size:.68rem;color:#8b949e">${t.exit_reason||''}</td>
+    <td><button onclick="showExitDetail('${t.ticker}','${t.entry_date}','${t.strategy}')"
+        style="background:#21262d;border:1px solid #30363d;color:#58a6ff;padding:.2rem .5rem;border-radius:4px;font-size:.65rem;cursor:pointer">
+        12 exits</button></td>
   </tr>`).join('');
+}
+
+// ── TAB 9: DATA QUALITY ──
+function renderDataQuality(){
+  const totalTrades = TRADES.length;
+  const agentCached = TRADES.filter(t=>t.confidence_tier&&t.confidence_tier!=='MEDIUM').length;
+  const withSM = TRADES.filter(t=>(t.smart_money_score||0)>0).length;
+  const withMacro = TRADES.filter(t=>(t.macro_score||0)!==0).length;
+  const withSentiment = TRADES.filter(t=>(t.sentiment_score||0)!==0).length;
+  const tradeExitRows = TRADE_EXIT_DETAIL.length;
+
+  document.getElementById('stats-dq').innerHTML=`
+    <div class="stat"><div class="v">${totalTrades.toLocaleString()}</div><div class="l">Total trades</div></div>
+    <div class="stat"><div class="v green">${agentCached.toLocaleString()}</div><div class="l">Agent-scored trades</div></div>
+    <div class="stat"><div class="v">${withSM.toLocaleString()}</div><div class="l">Trades with SM data</div></div>
+    <div class="stat"><div class="v">${withMacro.toLocaleString()}</div><div class="l">Trades with macro data</div></div>
+    <div class="stat"><div class="v">${withSentiment.toLocaleString()}</div><div class="l">Trades with sentiment</div></div>
+    <div class="stat"><div class="v blue">${tradeExitRows.toLocaleString()}</div><div class="l">Exit detail rows</div></div>
+  `;
+
+  document.getElementById('dq-sentiment').innerHTML=`
+    <div style="font-size:.78rem;line-height:2">
+      <div>✅ <strong>AAII Sentiment:</strong> 260 weekly readings | 2020-01-02 → 2024-12-26</div>
+      <div>✅ <strong>CNN Fear & Greed:</strong> 1,305 daily readings | 2020-01-01 → 2024-12-31</div>
+      <div style="color:#8b949e;font-size:.7rem;margin-top:.4rem">Previously: 15 hardcoded points. Now: full historical coverage.</div>
+    </div>
+  `;
+
+  document.getElementById('dq-macro').innerHTML=`
+    <div style="font-size:.78rem;line-height:2">
+      <div>✅ <strong>Yield Curve T10Y2Y:</strong> 1,251 observations</div>
+      <div>✅ <strong>10Y Treasury DGS10:</strong> 1,251 observations</div>
+      <div>✅ <strong>Corp Spread BAA10Y:</strong> 1,248 observations</div>
+      <div>✅ <strong>Inflation Exp T10YIE:</strong> 1,251 observations</div>
+      <div>✅ <strong>Fed Funds FEDFUNDS:</strong> 60 monthly observations</div>
+      <div>✅ <strong>Unemployment UNRATE:</strong> 60 monthly observations</div>
+      <div>✅ <strong>CPI CPIAUCSL:</strong> 60 monthly observations</div>
+    </div>
+  `;
+
+  document.getElementById('dq-agents').innerHTML=`
+    <div style="font-size:.78rem;line-height:2">
+      <div>✅ <strong>Agent output cache:</strong> JSON per ticker/date/strategy — prevents re-running on restart</div>
+      <div>✅ <strong>Pre-fetch architecture:</strong> Quiver + FRED + Finnhub read from disk — no live API calls during backtest</div>
+      <div>✅ <strong>News sentiment:</strong> Finnhub per ticker — 30-day rolling window fed to Sentiment Agent</div>
+      <div>✅ <strong>WallStreetBets + Wikipedia:</strong> Quiver Tier 1 — fed to Fundamental Agent</div>
+      <div style="color:#8b949e;font-size:.7rem;margin-top:.4rem">Agents: Technical + Fundamental + Sentiment + Risk + Bull/Bear + Decision</div>
+    </div>
+  `;
+
+  document.getElementById('dq-sources').innerHTML=`
+    <table style="width:100%;border-collapse:collapse;font-size:.75rem">
+      <thead><tr>
+        <th style="text-align:left;color:#8b949e;padding:.4rem;border-bottom:1px solid #21262d">Data Source</th>
+        <th style="text-align:left;color:#8b949e;padding:.4rem;border-bottom:1px solid #21262d">Data Type</th>
+        <th style="text-align:left;color:#8b949e;padding:.4rem;border-bottom:1px solid #21262d">Coverage</th>
+        <th style="text-align:left;color:#8b949e;padding:.4rem;border-bottom:1px solid #21262d">Status</th>
+      </tr></thead>
+      <tbody>
+        ${[
+          ['yfinance','OHLCV price data','494 tickers, 2020-2024','✅ Parquet cache'],
+          ['Quiver Quantitative','Congressional trades','509 tickers, 2020-2024','✅ Pre-fetched'],
+          ['Quiver Quantitative','Insider trades','509 tickers, 2020-2024','✅ Pre-fetched'],
+          ['Quiver Quantitative','13F institutional','509 tickers, 2020-2024','✅ Pre-fetched'],
+          ['Quiver Quantitative','Govt contracts','509 tickers, 2020-2024','✅ Pre-fetched'],
+          ['Quiver Quantitative','WallStreetBets','509 tickers, 2020-2024','✅ Pre-fetched'],
+          ['Quiver Quantitative','Wikipedia views','509 tickers, 2020-2024','✅ Pre-fetched'],
+          ['FRED','Yield curve + macro','7 series, daily 2020-2024','✅ Pre-fetched'],
+          ['AAII','Investor sentiment','260 weekly, 2020-2024','✅ CSV committed'],
+          ['CNN','Fear & Greed Index','1,305 daily, 2020-2024','✅ CSV committed'],
+          ['Finnhub','News sentiment','509 tickers, annual batches','🔄 Pre-fetching'],
+          ['Anthropic Haiku','6-agent pipeline','Per candidate per day','✅ JSON cache'],
+        ].map(([src,type,cov,status])=>`<tr>
+          <td style="padding:.4rem;border-bottom:1px solid #21262d;color:#58a6ff">${src}</td>
+          <td style="padding:.4rem;border-bottom:1px solid #21262d">${type}</td>
+          <td style="padding:.4rem;border-bottom:1px solid #21262d;color:#8b949e;font-size:.7rem">${cov}</td>
+          <td style="padding:.4rem;border-bottom:1px solid #21262d">${status}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+  `;
 }
 
 // ── CHART HELPER ──

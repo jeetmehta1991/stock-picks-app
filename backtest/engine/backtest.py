@@ -433,6 +433,7 @@ class BacktestEngine:
 
         # Exit comparison
         exit_frames = []
+        trade_detail_frames = []
         for strategy in df_trades["strategy"].unique():
             strat_df    = df_trades[df_trades["strategy"] == strategy]
             trades_data = []
@@ -449,6 +450,7 @@ class BacktestEngine:
                 atr = (sig.get("atr", row["entry_price"] * 0.02)
                        if isinstance(sig, dict) else row["entry_price"] * 0.02)
                 trades_data.append({
+                    "ticker":      ticker,
                     "df":          df_full,
                     "entry_date":  entry_date,
                     "entry_price": row["entry_price"],
@@ -457,12 +459,16 @@ class BacktestEngine:
                     "signals":     sig if isinstance(sig, dict) else {},
                 })
             if trades_data:
-                ec = run_exit_comparison(strategy, trades_data)
+                ec, td = run_exit_comparison(strategy, trades_data)
                 if not ec.empty:
                     exit_frames.append(ec)
+                if not td.empty:
+                    trade_detail_frames.append(td)
 
         exit_compare = (pd.concat(exit_frames, ignore_index=True)
                         if exit_frames else pd.DataFrame())
+        trade_exit_detail = (pd.concat(trade_detail_frames, ignore_index=True)
+                             if trade_detail_frames else pd.DataFrame())
 
         write_all_outputs(
             df_trades=df_trades,
@@ -470,6 +476,7 @@ class BacktestEngine:
             skipped=self.skipped_trades,
             cb_log=self.circuit_breaker_log,
             exit_compare=exit_compare,
+            trade_exit_detail=trade_exit_detail,
             walk_forward=wf_df,
             survivorship_info={
                 "gross_roi":    round(gross_roi, 3),

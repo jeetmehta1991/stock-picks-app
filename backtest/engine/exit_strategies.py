@@ -443,13 +443,16 @@ def composite_score(win_rate: float, profit_factor: float,
 
 def run_exit_comparison(
     strategy_name: str,
-    trades_data: list,           # list of dicts: {entry_date, entry_price, direction, atr, signals, df}
-) -> pd.DataFrame:
+    trades_data: list,           # list of dicts: {entry_date, entry_price, direction, atr, signals, df, ticker}
+) -> tuple:
     """
     Run all 12 exit strategies against a list of trade setups.
-    Returns DataFrame with one row per exit strategy with full metrics.
+    Returns:
+      - DataFrame with one row per exit strategy (strategy-level summary)
+      - DataFrame with one row per trade × exit method (trade-level detail)
     """
     results = []
+    trade_detail_rows = []
 
     for exit_name, exit_fn in EXIT_STRATEGIES.items():
         pnl_list  = []
@@ -465,6 +468,21 @@ def run_exit_comparison(
                 pnl_list.append(r["pnl_pct"])
                 win_list.append(r["win"])
                 hold_list.append(r["hold_days"])
+
+                # Per-trade detail row
+                trade_detail_rows.append({
+                    "ticker":       t.get("ticker", ""),
+                    "strategy":     strategy_name,
+                    "entry_date":   str(t["entry_date"]),
+                    "direction":    t["direction"],
+                    "entry_price":  t["entry_price"],
+                    "exit_method":  exit_name,
+                    "pnl_pct":      round(r["pnl_pct"], 4),
+                    "win":          r["win"],
+                    "hold_days":    r["hold_days"],
+                    "exit_price":   round(r.get("exit_price", t["entry_price"]), 4),
+                    "exit_date":    str(r.get("exit_date", "")),
+                })
             except Exception as exc:
                 logger.debug("Exit %s on %s: %s", exit_name, strategy_name, exc)
 
@@ -501,10 +519,12 @@ def run_exit_comparison(
 
     df = pd.DataFrame(results)
     if df.empty:
-        return df
+        return df, pd.DataFrame()
     if "composite_score" not in df.columns:
         df["composite_score"] = 0.0
     df = df.sort_values("composite_score", ascending=False)
     if not df.empty:
         df["recommended"] = df.index == df["composite_score"].idxmax()
-    return df
+
+    trade_detail_df = pd.DataFrame(trade_detail_rows)
+    return df, trade_detail_df
