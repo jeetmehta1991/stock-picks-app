@@ -15,4 +15,5 @@ Run this before every suggestion or execution — no exceptions.
     nohup bash scripts/download_cache.sh > download.log 2>&1 &
     tail -f download.log
 11. Always capture granular data before aggregating. Granular = can always re-aggregate. Aggregate only = cannot re-derive. Applies to data, outputs, cache, and API calls.
-12. Before building any integration with an external API or service, verify exact tier/plan access for every endpoint needed. Test one call per endpoint before building the full script. Granular = can always re-aggregate. Aggregate only = cannot re-derive. Applies to data, outputs, cache, and API calls.
+12. Before building any integration with an external API or service, verify exact tier/plan access for every endpoint needed. Test one call per endpoint before building the full script.
+13. Always run a small batch test (25 tickers, 1 month) before scaling to full universe. Verify agent outputs, confidence tiers, and granular outputs are correct before spending on full run. Granular = can always re-aggregate. Aggregate only = cannot re-derive. Applies to data, outputs, cache, and API calls.
