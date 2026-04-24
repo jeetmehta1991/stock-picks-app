@@ -297,6 +297,26 @@ class BacktestEngine:
                     context_para = self._run_agent_context(
                         ticker, as_of, cand, strat_entry, macro, sent, sm, earn_days)
 
+                # Get sector ETF return for halo effect context
+                sector = self.sector_map.get(ticker, "Unknown")
+                sector_etf_map = {
+                    "Information Technology": "XLK", "Financials": "XLF",
+                    "Energy": "XLE", "Health Care": "XLV", "Industrials": "XLI",
+                    "Consumer Discretionary": "XLY", "Consumer Staples": "XLP",
+                    "Utilities": "XLU", "Materials": "XLB", "Real Estate": "XLRE",
+                    "Communication Services": "XLK",
+                }
+                sector_etf = sector_etf_map.get(sector, "SPY")
+                sector_etf_df = self.ohlcv_dict.get(sector_etf)
+                sector_etf_return = 0.0
+                if sector_etf_df is not None:
+                    etf_today = sector_etf_df[sector_etf_df.index.date == as_of]
+                    etf_prev  = sector_etf_df[sector_etf_df.index.date < as_of]
+                    if not etf_today.empty and not etf_prev.empty:
+                        sector_etf_return = round(
+                            (float(etf_today["close"].iloc[-1]) /
+                             float(etf_prev["close"].iloc[-1]) - 1) * 100, 3)
+
                 trade = OpenTrade(
                     ticker=ticker,
                     entry_date=as_of,
@@ -304,12 +324,18 @@ class BacktestEngine:
                     direction=direction,
                     strategy=strat_entry["strategy"],
                     category=category,
+                    sector=sector,
                     initial_stop=round(init_stop, 4),
                     trailing_stop=round(init_stop, 4),
                     highest_close=entry_price,
                     regime_at_entry=f"{regime}{'_CRISIS_FLAG' if crisis_flag else ''}",
-                    signals_at_entry={k: v for k, v in cand["signals"].items()
-                                      if isinstance(v, (bool, int, float))},
+                    signals_at_entry={
+                        **{k: v for k, v in cand["signals"].items()
+                           if isinstance(v, (bool, int, float))},
+                        "sector_etf": sector_etf,
+                        "sector_etf_return_pct": sector_etf_return,
+                        "sector": sector,
+                    },
                     context_bullets=strat_entry["context_bullets"],
                     context_paragraph=context_para,
                     confidence_tier=tier,
@@ -317,7 +343,6 @@ class BacktestEngine:
                     macro_score=macro.get("macro_score", 0),
                     sentiment_score=sent.get("sentiment_score", 0),
                     days_to_earnings=earn_days,
-                    # Raw granular signals
                     congressional_signal=sm.get("congressional_signal", "none"),
                     insider_signal=sm.get("insider_signal", "none"),
                     institutional_signal=sm.get("institutional_signal", "none"),

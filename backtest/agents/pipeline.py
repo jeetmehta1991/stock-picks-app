@@ -138,20 +138,30 @@ def run_technical_agent(
         ]
     }
 
-    prompt = f"""Analyse technical signals for {ticker} as of {as_of}.
+    # Sector halo effect context
+    sector = signals.get("sector", "Unknown")
+    sector_etf = signals.get("sector_etf", "SPY")
+    sector_etf_return = signals.get("sector_etf_return_pct", 0.0)
+    sector_context = f"{sector_etf} (sector ETF) returned {sector_etf_return:+.2f}% today"
+    halo = "tailwind" if sector_etf_return > 1.0 else "headwind" if sector_etf_return < -1.0 else "neutral"
+
+    prompt = f"""Analyse technical signals for {ticker} ({sector}) as of {as_of}.
 
 Strategies triggered: {strategies_triggered}
+
+Sector context: {sector_context} — sector momentum is {halo} for this trade.
 
 Key signals:
 {json.dumps(key_signals, indent=2, default=str)}
 
-Evaluate: signal quality, confluence strength, and whether this is a high-probability swing entry.
+Evaluate: signal quality, confluence strength, sector momentum alignment, and whether this is a high-probability swing entry.
 
 Return JSON only:
 {{
   "tech_score": <integer 0-10>,
   "strongest_signals": [<list of top 3 signal names>],
   "concerns": [<list of any conflicting or weak signals>],
+  "sector_alignment": "<tailwind|neutral|headwind>",
   "entry_quality": "<strong|moderate|weak>",
   "summary": "<one sentence>"
 }}"""

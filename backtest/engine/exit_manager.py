@@ -38,6 +38,7 @@ class OpenTrade:
     direction:          str           # 'long' or 'short'
     strategy:           str
     category:           str
+    sector:             str           # from sp500_tickers.csv
     initial_stop:       float         # 10% from entry
     trailing_stop:      float         # current trailing stop (moves in favour)
     highest_close:      float         # highest close seen (long) / lowest (short)
@@ -128,6 +129,7 @@ class ClosedTrade:
     direction:          str
     strategy:           str
     category:           str
+    sector:             str
     confidence_tier:    str
     regime:             str
     exit_reason:        str
@@ -288,6 +290,7 @@ def close_trade(
     return ClosedTrade(
         ticker=trade.ticker, entry_date=trade.entry_date, exit_date=exit_date,
         direction=trade.direction, strategy=trade.strategy, category=trade.category,
+        sector=trade.sector,
         confidence_tier=trade.confidence_tier, regime=trade.regime_at_entry,
         conversion_pair_id=trade.conversion_pair_id,
         entry_price=trade.entry_price, exit_price=round(exit_price,4),

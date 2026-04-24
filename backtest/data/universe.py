@@ -128,12 +128,47 @@ def apply_liquidity_filter(
     return passing, failing
 
 
-def get_sector_map(tickers: list[str], info_dict: dict[str, dict]) -> dict[str, str]:
-    """Return {ticker: sector} mapping from cached info."""
-    return {
-        t: info_dict.get(t, {}).get("sector", "Unknown")
-        for t in tickers
+def get_sector_map(tickers: list[str], info_dict: dict[str, dict] = None) -> dict[str, str]:
+    """
+    Return {ticker: sector} mapping.
+    Reads from sp500_tickers.csv first (fast, no network).
+    Falls back to info_dict if ticker not in CSV (e.g. ETFs).
+    """
+    csv_path = Path(__file__).parent / "sp500_tickers.csv"
+    sector_map = {}
+
+    # Load from CSV
+    try:
+        df = pd.read_csv(csv_path)
+        df = df.drop_duplicates(subset=["Symbol"])
+        sector_map = dict(zip(df["Symbol"], df["Sector"]))
+    except Exception:
+        pass
+
+    # ETF sector labels
+    etf_sectors = {
+        "SPY": "Broad Market", "QQQ": "Technology", "IWM": "Small Cap",
+        "DIA": "Broad Market", "VTI": "Broad Market", "XLK": "Information Technology",
+        "XLF": "Financials", "XLE": "Energy", "XLV": "Health Care",
+        "XLI": "Industrials", "XLY": "Consumer Discretionary", "XLP": "Consumer Staples",
+        "XLU": "Utilities", "XLB": "Materials", "XLRE": "Real Estate",
+        "VXX": "Volatility", "TLT": "Fixed Income", "HYG": "Fixed Income",
+        "LQD": "Fixed Income", "GLD": "Commodities", "SLV": "Commodities",
+        "GDX": "Commodities", "USO": "Commodities", "EEM": "Emerging Markets",
+        "EFA": "International",
     }
+    sector_map.update(etf_sectors)
+
+    # Fill remaining from info_dict if provided
+    result = {}
+    for t in tickers:
+        if t in sector_map:
+            result[t] = sector_map[t]
+        elif info_dict and t in info_dict:
+            result[t] = info_dict[t].get("sector", "Unknown")
+        else:
+            result[t] = "Unknown"
+    return result
 
 
 def get_correlation_matrix(
