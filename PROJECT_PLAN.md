@@ -1,6 +1,6 @@
 # Stock Picks & Automated Trading System
 ### Project Plan & Technical Roadmap — Living Document
-**Last updated:** April 2026 | **Version:** 5.1 | **Repo:** `jeetmehta1991/stock-picks-app`
+**Last updated:** April 2026 | **Version:** 6.0 | **Repo:** `jeetmehta1991/stock-picks-app`
 
 ---
 
@@ -8,13 +8,18 @@
 | Stage | Status | Notes |
 |---|---|---|
 | Stage 1 — Proof of Concept | ✅ Complete | Daily picks webpage live |
-| Stage 2 Phase 1A | 🔜 Running | 67 instruments, 3 years, rules finalised |
-| Stage 2 Phase 1B | ⏳ Pending | ~400 instruments, awaiting 1A results |
-| Stage 2 Phase 1C | ⏳ Pending | All strategies passing Phase 1B, Sonnet agents (max 30) |
-| Stage 2 Phase 1D | ⏳ Pending | Top 5 strategies, 5-year extended |
-| Stage 3 — Paper Trading | ⏳ Pending | 3-6 months minimum |
-| Stage 4 — Live Small | ⏳ Pending | $500-1000 CAD |
-| Stage 5 — Full Automation | ⏳ Pending | Full API stack |
+| Stage 2 Phase 1A | ✅ Complete | 67 instruments, Jan 2022–Mar 2026, 6,942 trades, 50/60 strategies fired |
+| Stage 2 Phase 1B | 🔄 Pre-fetch running | 509 instruments, Jan 2022–Mar 2026, all data downloading |
+| Stage 2 Phase 1C | ⏳ Pending | All strategies passing Phase 1B (max 30), Sonnet agents |
+| Stage 2 Phase 1D | ⏳ Pending | All strategies passing Phase 1C, 5-year test incl. COVID 2020 |
+| Stage 3 — Paper Trading | ⏳ Pending | Fully automated — 3-6 months minimum |
+| Stage 4 — Live Small | ⏳ Pending | $500-1000 CAD, email approval every trade |
+| Stage 5 — Full Automation | ⏳ Pending | Full API stack, no approval needed |
+
+**Backtest period:** Jan 1 2022 — Mar 31 2026
+**IS period:** Jan 2022 — Dec 2024 (3 years)
+**OOS period:** Jan 2025 — Mar 2026 (15 months)
+**Universe:** 509 instruments (482 S&P 500 + 27 sector/macro ETFs)
 
 ---
 
@@ -22,7 +27,7 @@
 
 Build a validated algorithmic swing trading system that evolves from a daily stock picks webpage into a fully automated trading engine covering US markets. Every stage must be proven before progressing. No real money is risked until strategies are validated through rigorous backtesting across multiple market regimes and confirmed through paper trading.
 
-> **Intraday trading is a completely separate future project.** Nothing in this plan applies to it.
+> **Intraday trading is a completely separate future project. Nothing in this plan applies to it.**
 
 ---
 
@@ -35,14 +40,20 @@ Build a validated algorithmic swing trading system that evolves from a daily sto
 - Each stage must earn the right to advance to the next
 - Any win rate >75% or profit factor >1.5 must be audited for look-ahead bias first
 - No leveraged ETFs anywhere in the universe
-- **Every rule, filter, threshold change requires explicit owner approval before implementation**
-- Human email approval required for every live trade in Stage 4
+- Every rule, filter, threshold change requires explicit owner approval before implementation
+- Human email approval required for every live trade in Stage 4 only. Stage 3 is fully automated paper trading.
+- Backtests must mirror live trading scenarios as closely as possible. Every data source, signal, and API used in live trading must also be used in backtesting. If it is not backtested, it is not validated.
+- Never run Phase 1B without complete data (all Quiver types 509/509, Finnhub 509/509, FRED to March 2026)
+- Always run 25-ticker batch test and review agent outputs before full Phase 1B run
+- Granular data before aggregates — always capture lowest-level data first
 
 ---
 
 ## 3. Risk Profile
 
 **Medium-high risk, high return focus.** Drawdowns are accepted as part of the strategy. ROI over time is the goal, not minimising short-term volatility. The system buys dips including in volatile and crisis markets — the trailing stop system manages downside without needing to predict the bottom.
+
+**On VIX spikes:** High-VIX environments (VIX > 40) represent the best entry opportunities, not reasons to stop trading. Position size is reduced but entries are not blocked. Tightening stops during high volatility causes whipsawing — stops are not tightened.
 
 ---
 
@@ -60,74 +71,108 @@ Daily stock picks webpage. Top gainers for US (NYSE/NASDAQ) and Canadian (TSX) m
 #### Objective
 Determine which of 60 strategies, across which market regimes, using which exit method, produce statistically valid trading edges. Zero money at risk.
 
-#### Universe
-| Phase | Instruments | Cost |
-|---|---|---|
-| 1A | SP50 + 17 ETFs = 67 | $0 |
-| 1B | Filtered S&P 500 + all ETFs ≈ 400 | ~$116 CAD (Haiku agents) |
-| 1C | All strategies passing Phase 1B criteria (max 30) | ~$102 CAD (Sonnet) |
-| 1D | All strategies passing Phase 1C criteria, 5 years (incl. COVID 2020) | ~$38 CAD (Sonnet) |
+#### Phase Universe and Cost
+| Phase | Instruments | Period | Agents | Est. Cost |
+|---|---|---|---|---|
+| 1A | SP50 + 17 ETFs = 67 | Jan 2022–Mar 2026 | None (no-agents flag) | $0 |
+| 1B | 509 instruments | Jan 2022–Mar 2026 | Haiku | ~$116 CAD |
+| 1C | All passing Phase 1B (max 30) | Jan 2022–Mar 2026 | Sonnet | ~$102 CAD |
+| 1D | All passing Phase 1C | Jan 2020–Mar 2026 (5 years) | Sonnet | ~$38 CAD |
 
-#### 5 Market Regimes Tested
+**Phase 1C/1D note:** All strategies passing criteria advance — not an arbitrary top 20% or top 5. The max 30 cap is a cost control measure only.
+
+#### Walk-Forward Validation
+| Period | Role | Dates |
+|---|---|---|
+| In-sample (IS) | Strategy development and validation | Jan 2022 — Dec 2024 |
+| Out-of-sample (OOS) | Unseen data test — confirms edge is real | Jan 2025 — Mar 2026 |
+
+**Two-window walk-forward (Phase 1B):**
+- Window 1: IS = 2022-2023, OOS = 2024
+- Window 2: IS = 2022-2024, OOS = 2025-Mar 2026
+- ROBUST = passes BOTH windows. WEAK = passes one. OVERFIT = passes neither.
+- Minimum 30 OOS trades required for ROBUST verdict. Below this: "INSUFFICIENT OOS DATA."
+
+#### 7 Market Regimes Tested
 | Regime | Period | Condition |
 |---|---|---|
-| Bear correction | 2022 | S&P −19.4%, VIX 25+ |
-| Rate rising | Mar 2022 – Jul 2023 | Fed 0.25% → 5.50% |
-| Strong bull | 2023 | S&P +24.2% |
-| Rate falling | 2024 | Fed cuts begin |
-| AI sector bull | 2024 | Tech/AI driven |
+| Bear correction | Jan–Dec 2022 | S&P −19.4%, VIX 25+ |
+| Rate rising | Mar 2022–Jul 2023 | Fed 0.25% → 5.50% |
+| Strong bull | Jan–Dec 2023 | S&P +24.2% |
+| Rate falling | Jan–Dec 2024 | Fed cuts begin |
+| AI sector bull | Jan–Dec 2024 | Tech/AI driven outperformance |
+| Tariff/policy shock | Jan–Jun 2025 | Trump tariff uncertainty, VIX spikes |
+| AI divergence | Jul 2025–Mar 2026 | NVDA +100% vs broad market flat |
 
 #### 10 Passing Criteria (ALL required simultaneously)
-| # | Metric | Threshold |
-|---|---|---|
-| 1 | Win rate | ≥ 55% |
-| 2 | Profit factor | > 1.2 (flag if > 1.5) |
-| 3 | Expected value | > 0 |
-| 4 | Win/loss ratio | > 1.0 |
-| 5 | Max drawdown | < 20% |
-| 6 | Total ROI | > 0% |
-| 7 | Smart money lift | Measurable improvement |
-| 8 | Macro correlation | Higher win rate in favourable regime |
-| 9 | Minimum trades | ≥ 100 (1A) / 500 Bonferroni-corrected (1B) |
-| 10 | Regime coverage | Profitable in ≥ 2 of 5 regimes |
+All thresholds are sector-adjusted (see Section 7). Values below are for medium-volatility sectors.
+
+| # | Metric | Medium-vol threshold | Notes |
+|---|---|---|---|
+| 1 | Win rate | ≥ 55% | Sector-adjusted — see Section 7 |
+| 2 | Profit factor | > 1.3 | Flag if > 1.5 — look-ahead audit required |
+| 3 | Expected value | > 0 | (win_rate × avg_win) + (loss_rate × avg_loss) |
+| 4 | Win/loss ratio | > 1.0 | avg_win / avg_loss |
+| 5 | Max drawdown | < 20% | Sector-adjusted — see Section 7 |
+| 6 | Total ROI | > 0% | Positive total return over full period |
+| 7 | Smart money lift | ≥ 3pp win rate improvement | Trades with SM signal vs without, min 30 in each bucket |
+| 8 | Macro correlation | ≥ 5pp win rate diff | Favourable vs unfavourable regime, min 20 trades per regime |
+| 9 | Minimum trades | ≥ 500 | Statistical validity across 60 strategies |
+| 10 | Regime coverage | Profitable in ≥ 2 of 7 regimes | Now 7 regimes since extending to Mar 2026 |
+
+**OOS minimum:** 30 trades in OOS period. Below this = "INSUFFICIENT OOS DATA" — not ROBUST.
+
+**Confidence intervals:** Win rates reported with 95% binomial confidence intervals. Strategies where lower CI bound < 50% are flagged — may not be statistically distinguishable from random.
 
 #### Stage 2 Success Criteria
 - Minimum 3 strategies pass all 10 criteria in Phase 1B
-- Walk-forward shows ROBUST on at least 2 strategies (passes 2022-23 AND 2024)
+- Walk-forward shows ROBUST on BOTH windows for at least 2 strategies
 - At least 1 short strategy fires and passes during 2022 bear market
-- Smart money lift measurable — strategies with congressional + insider outperform by ≥3pp
+- Smart money lift ≥ 3pp measurable on at least 3 strategies
 - No win rate >75% or PF >1.5 without clean look-ahead bias audit
-- All 13 output files written cleanly
+- All 13+ output files written cleanly including trade_exit_detail.csv
 
 ---
 
-### Stage 3 — Paper Trading
-**Duration:** 3-6 months minimum  
-**Capital at risk:** Zero  
+### Stage 3 — Paper Trading (Fully Automated)
+**Duration:** 3-6 months minimum
+**Capital at risk:** Zero
 **Broker:** Alpaca paper trading (free)
+**Execution:** Fully automated — no email approval. Candidates above VERY HIGH tier automatically paper traded via Alpaca.
+
+#### Automated Workflow
+1. Daily GitHub Actions cron job runs at 6am UTC
+2. Screener runs on 509 instruments
+3. Candidates pass through 6-agent pipeline (Sonnet)
+4. Candidates above VERY HIGH: automatically paper traded via Alpaca API
+5. Exit monitoring runs daily — trailing stops managed automatically
+6. Results written to site JSON for website display
+7. Weekly performance review email generated automatically
 
 #### Success Criteria
 - Live win rate within 10pp of backtest win rate
 - Live profit factor within 0.2 of backtest
 - System runs reliably for 3+ months without crashes
-- Email approval workflow confirmed working
-- Minimum 50 paper trades completed
+- Alpaca API reliability confirmed — zero missed executions
+- Minimum 50 paper trades completed across all tiers
+- All tiers tracked (not just published picks) for full distribution analysis
 
 **Monthly cost:** ~$6 CAD (VPS only)
 
 ---
 
 ### Stage 4 — Live Trading Small
-**Starting capital:** $500-1000 CAD maximum  
-**Human approval:** Email approval required for every single trade
+**Starting capital:** $500-1000 CAD maximum
+**Human approval:** Email approval required for every single trade (retained from original design)
 
 #### Risk Management Rules (Stage 4)
-- Maximum position size: tiered by confidence (see below)
+- Maximum position size: tiered by confidence (see Section 7)
 - Maximum 10 open positions simultaneously
 - Reduce position size 50% after 3 consecutive losses
 - Congressional and insider signals checked before every trade
 - All 5 circuit breakers active at all times
-- Daily loss limit: TBD (to be decided at Stage 4 based on paper trading data)
+- Daily loss limit: TBD — to be calibrated from Stage 3 paper trading data
+- Portfolio drawdown rules: at >10% drawdown, reduce all positions 25%. At >20%, reduce 50%. At >30%, suspend new entries.
 
 #### Success Criteria
 - 6 months live with at least 50 real trades
@@ -159,20 +204,24 @@ Determine which of 60 strategies, across which market regimes, using which exit 
 | Candle pattern | 6 | Long + Short | Morning star, Bullish engulfing, Doji, Three white soldiers, Shooting star short, Evening star short |
 | Confluence | 9 | Long | Multi-signal combinations requiring ≥2 independent signals simultaneously |
 
+**Short strategy gap:** Only 5 of 60 strategies are short. In bull markets these rarely fire. Phase 1B will validate which short strategies generated adequate trades during the 2022 bear. Strategies with insufficient short data will be noted as untested for bear markets.
+
 ---
 
 ## 6. Exit System — 12 Methods Compared
 
-**Primary exit:** Trailing stop at 10% below highest closing price. Moves up with price, never reverses.
+**Primary exit (Phase 1A confirmed):** `atr_trail_1x` — trailing stop at 1× ATR below highest closing price. ATR-adaptive — adjusts to each stock's volatility. Confirmed as best exit method on 20/29 strategies in Phase 1A v3.
+
+**Why ATR trailing not fixed %:** A fixed 10% trailing stop behaves differently across instruments. NVDA with 3-4% daily range hits a 10% stop in 2-3 days of normal movement. KO with 0.5% daily range needs 20 days of adverse movement. ATR normalises this — each stock gets a stop proportional to its actual volatility.
 
 **12 exit methods tested simultaneously** via composite score (40% ROI + 30% profit factor + 30% lowest drawdown):
 
 | Exit | Logic |
 |---|---|
-| Trailing 10% | Primary confirmed exit |
+| ATR trail 1× | **Primary confirmed exit** — 1× ATR below highest close |
+| Trailing 10% | Fixed 10% below highest close |
 | Trailing 5% | Tighter — faster exit |
 | Trailing 15% | Looser — stays in longer |
-| ATR trail 1× | Adapts to each stock's volatility |
 | ATR trail 2× | More room on trending stocks |
 | Fixed 3:1 target | 3× ATR profit / 2× ATR stop |
 | Next pivot target | Exit at next R1/R2/R3 above entry |
@@ -182,68 +231,138 @@ Determine which of 60 strategies, across which market regimes, using which exit 
 | Breakeven + trail | Move to breakeven at 1× ATR profit, then trail 10% |
 | Hybrid 50% target | Take 50% off at 3× ATR, trail remainder |
 
-**Stop simulation:** Daily Low is checked against the trailing stop each day. If Low breaches the stop, trade exits at the stop price. Known limitation: on gap-down opens where the stock opens below the stop, the real fill would be at open price (worse than stop price). Circuit breaker 1 handles gaps >12% but gaps between 1-12% are not adjusted. Net effect: exit prices are slightly optimistic — real performance would be marginally worse on gap-down days.
+**Time stop backstop:** All trades also subject to 40-day maximum hold (2 months). If no meaningful price movement (< 5% in either direction from entry) by day 40, exit. Prevents capital being locked in sideways trades indefinitely.
 
-**5 circuit breakers** override trailing stop (in priority order):
+**Exit slippage:** Entry slippage applied at entry AND exit. Circuit breaker exits apply 2× slippage to reflect gap scenarios.
+
+**Stop simulation known limitation:** Daily Low checked against trailing stop each day. On gap-down opens where stock opens below stop, real fill is at open (worse). Circuit breaker 1 handles gaps >12%. Gaps 1-12% are not adjusted. Estimated impact: 0.1-0.3% optimism on affected trades (~15% of all stops triggered).
+
+**5 circuit breakers** (priority order):
 1. Overnight gap >12% wrong direction → exit at open
 2. Earnings gap >8% wrong direction → exit at open
 3. Intraday halt + down >15% from entry → exit on resume
 4. S&P 500 market-wide halt → flag all, no new trades
-5. VIX >40 → tighten stops to 5%, crisis flag added to trade
+5. VIX >40 → reduce NEW position sizes 50%, require VERY HIGH minimum tier. Do NOT tighten existing stops (causes whipsawing). VIX >50 → suspend new entries, manage existing only.
+
+**Circuit breaker 5 rationale:** VIX >40 environments (March 2020, October 2022) contain the best entry opportunities for mean reversion and crisis buy strategies. Blocking entries contradicts the buy-the-dip philosophy in Section 3. Position size reduction manages risk without eliminating opportunity.
 
 ---
 
-## 7. Confidence Tiers & Position Sizing
+## 7. Confidence Tiers, Position Sizing & Sector-Adjusted Criteria
 
-| Tier | Conditions | Position size | Published |
-|---|---|---|---|
-| EXCEPTIONAL | 3+ strategies + congressional + insider cluster | 5% of capital | Active picks |
-| VERY HIGH | 2+ strategies + congressional OR insider | 4% of capital | Active picks |
-| HIGH | 3+ strategies, no smart money | 3% of capital | Watchlist |
-| MEDIUM-HIGH | 2 strategies, no smart money | 1.5% of capital | Watchlist |
-| MEDIUM | 1 strategy + any smart money buy | 0% — watch only | Not published |
-| LOW | 1 strategy only | 0% — watch only | Not published |
-| AVOID | Congressional sell + insider cluster sell | 0% — avoid | Not published |
+### Two-Stage Confidence Tiering
+
+**Stage 1 — Rule-based preliminary tier (before agents run):**
+Raw signal count determines preliminary tier. This prevents agents being gated by the same data they evaluate.
+
+**Stage 2 — Agent-adjusted final tier:**
+Agent final score adjusts preliminary tier ±1 level:
+- Agent score ≥ 75 → upgrade one tier (e.g. VERY HIGH → EXCEPTIONAL)
+- Agent score ≤ 40 → downgrade one tier (e.g. HIGH → MEDIUM_HIGH)
+- AVOID tier never upgrades regardless of agent score
+
+### Confidence Tiers
+
+| Tier | Preliminary conditions (Stage 1) | Position size | Published | AVOID as short opportunity |
+|---|---|---|---|---|
+| EXCEPTIONAL | 3+ strategies + congressional + insider cluster (both) | 5% of capital | Active picks | — |
+| VERY HIGH | 2+ strategies + congressional OR insider buy | 4% of capital | Active picks | — |
+| HIGH | 3+ strategies, no smart money | 3% of capital | Watchlist | — |
+| MEDIUM-HIGH | 2 strategies, no smart money | 1.5% of capital | Watchlist | — |
+| MEDIUM | 1 strategy + any smart money buy | 0.75% of capital | Not published | — |
+| LOW | 1 strategy only | 0% — watch only | Not published | — |
+| AVOID | Congressional sell + insider cluster sell | 0% long — evaluate short | Not published | ✅ See below |
+
+**MEDIUM tier note:** Previously 0% — changed to 0.75%. Congressional or insider buy signal is present. This is validated smart money data. Taking a small position is justified even with only 1 technical strategy.
+
+**AVOID → Short opportunity:**
+An AVOID signal means congressional sell AND insider cluster sell are both present. This is the highest-conviction informed selling signal available. It should be treated as a potential short setup:
+- AVOID signal fires → check if any short strategy also triggers
+- AVOID + short strategy signal = highest conviction short entry (EXCEPTIONAL short tier)
+- AVOID alone (no short strategy) = do not take long, watch for short setup developing
+- Never auto-short on AVOID alone — technical confirmation required
+- This converts the strongest "don't buy" signal into a potential "sell short" signal, maximising use of smart money intelligence
+
+### Sector-Adjusted Passing Criteria
+
+Different sectors have inherently different volatility profiles. The same drawdown or win rate means different things in Energy vs Consumer Staples.
+
+| Sector group | Sectors | Min win rate | Max drawdown | Min profit factor |
+|---|---|---|---|---|
+| High volatility | Energy, Information Technology, Health Care, Communication Services | 50% | 25% | 1.2 |
+| Medium volatility | Financials, Industrials, Consumer Discretionary, Materials | 55% | 20% | 1.3 |
+| Low volatility | Consumer Staples, Utilities, Real Estate | 58% | 15% | 1.4 |
+| ETFs/Unknown | Broad Market, Commodities, Fixed Income | 55% | 20% | 1.3 |
+
+### Position Sizing with Drawdown Scaling
+
+Base sizes above apply at normal portfolio state. Scaling rules:
+- Portfolio drawdown > 10% → reduce all position sizes 25%
+- Portfolio drawdown > 20% → reduce all position sizes 50%
+- Portfolio drawdown > 30% → suspend new entries, manage exits only
+
+**Kelly Criterion check (post-Phase 1B):**
+After Phase 1B results, calculate ¼ Kelly for each passing strategy. If Kelly suggests our tier size is >2× too large, flag for review. If Kelly suggests we're significantly undersizing, flag as opportunity.
 
 ---
 
 ## 8. Engine Operating Rules (Backtest Mode)
 
-### Approved rules — backtest only
+### Approved Rules — Backtest Only
 | Rule | Value | Rationale |
 |---|---|---|
 | Open position cap | None — uncapped | Statistical validity requires all signals to fire |
-| Trades per ticker per day | No limit — all strategies fire independently | Multiple signals on same ticker = multiple positions |
-| Daily loss limit | None in backtest | Removed — to be decided at Stage 4 |
+| Trades per ticker per day | No limit — all strategies fire independently | Multiple signals on same ticker = multiple separate positions |
+| Daily loss limit | None in backtest | Removed — calibrated from Stage 3 paper trading data |
 | Correlation filter | None in backtest | Sectors trend — targeting trending sectors is the strategy |
 | Regime position sizing | None — full size in all regimes | Backtest needs data across all conditions |
-| Regime direction hard block | None — all directions allowed in all regimes | Crisis = best entry prices. Flagged not blocked. |
-| Crisis regime trades | Allowed. Flagged as `regime=crisis_CRISIS_FLAG` | Buy dips in volatile markets — trailing stop manages downside |
-| Regime confidence scaling | None in backtest | Full size always |
+| Regime direction block | None — all directions allowed | Crisis = best entry prices. Flagged not blocked. |
+| Crisis regime trades | Allowed. Flagged as `regime=CRISIS_FLAG` | Buy dips in volatile markets — trailing stop manages downside |
 | Max candidates per day | 10 | Enough signals per strategy for statistical validity |
-| Entry zone ATR — mean reversion | 1.0× | Raised from 0.5× to capture more trades |
-| Liquidity filter | Applied once at universe load | Not daily — stable universe for full 3-year run |
+| Entry zone ATR — mean reversion | 1.0× | Raised from 0.5× — to be compared in Phase 1B analysis |
+| Liquidity filter | Applied annually at Jan 1 of each year | Price > $5, avg volume > 500k, market cap > $100M. Re-checked annually not just at load. |
+| Sector concentration | Unfiltered but logged | Track % portfolio per sector per day in trade log for Phase 1B analysis |
+| Maximum hold period | 40 trading days | Time stop backstop — prevents capital locked in sideways trades |
 
-### Rules that remain active in all modes
+### Rules That Remain Active in All Modes
 | Rule | Value |
 |---|---|
 | Point-in-time data enforcement | Always — no future data ever |
-| Entry zone ATR — breakout/momentum | 2.0× |
-| Entry zone ATR — trend/confluence | 1.5× |
-| Entry zone ATR — pivot/candle | 1.0× |
-| Entry price | Next day open (D+1) |
-| Slippage model | 0.03% ETF, 0.08% large-cap, 0.15% high-vol |
-| Transaction costs | 0.08% ETF, 0.10% large-cap, 0.15% mid-cap round-trip |
-| Survivorship bias haircut | 2% annual |
-| Walk-forward validation | In-sample 2022-23, out-of-sample 2024 |
-| Bonferroni correction | 60 strategies → 500 trade minimum |
-| Look-ahead bias audit | Win rate >75% or PF >1.5 → flagged |
+| Primary exit | atr_trail_1x — ATR-adaptive trailing stop (Phase 1A confirmed) |
+| Entry price | Next day open (D+1) + slippage |
+| Slippage model — entry | 0.03% ETF, 0.08% large-cap, 0.15% high-vol |
+| Slippage model — exit | Same as entry. Circuit breaker exits: 2× entry slippage |
+| Transaction costs | 0.08% ETF, 0.10% large-cap, 0.15% mid-cap round trip. Min $1 per trade. |
+| Survivorship bias haircut | Hold-adjusted: < 7d = 0.5%/yr, 7-14d = 1%/yr, 14-30d = 2%/yr, > 30d = 3%/yr |
+| Walk-forward validation | Two windows — IS 2022-23/OOS 2024 AND IS 2022-24/OOS 2025-Mar26 |
+| Minimum OOS trades | 30 — below this = INSUFFICIENT OOS DATA not ROBUST |
+| Minimum total trades | 500 per strategy (statistical validity) |
+| Look-ahead bias audit | Win rate >75% or PF >1.5 → flagged automatically |
+| Smart money lift threshold | ≥ 3pp win rate improvement, min 30 trades per bucket |
+| Macro correlation threshold | ≥ 5pp win rate diff favourable vs unfavourable, min 20 trades per regime |
+| Confidence intervals | 95% binomial CI on all win rates. Flag if lower bound < 50%. |
+| Congressional signal age | < 30 days: full weight. 30-60 days: 50% weight. > 60 days: not used. |
+| Two-stage tiering | Rule-based prelim → agent adjusts ±1 level (score ≥75 upgrade, ≤40 downgrade) |
+| Earnings proximity | Context and risk factor for agents — NOT a trade blocker |
+| AVOID + short strategy | Evaluate as potential short entry — AVOID alone does not trigger short |
 
-### Pending decisions (to be made at Stage 4 with live data)
-- Daily loss limit value
-- Maximum open positions for live trading
-- Pyramiding rules (adding to winning positions)
-- Sector concentration limits for live trading
+### Resolved Decisions
+| Decision | Resolution |
+|---|---|
+| Multiple strategies on same ticker | Separate independent positions — all fire |
+| Primary exit method | atr_trail_1x confirmed Phase 1A |
+| Stage 3 execution | Fully automated paper trading — no email approval |
+| Stage 4 execution | Email approval every trade — retained |
+| AVOID signal | Do not go long. Evaluate short if short strategy also triggers. |
+| Earnings proximity | Context not blocker — agents assess and may reduce size |
+
+### Pending Decisions — Stage 4
+| Decision | Status |
+|---|---|
+| Daily loss limit value | Calibrate from Stage 3 paper trading data |
+| Maximum open positions live | TBD — Stage 3 paper trading will inform. Target 10. |
+| Pyramiding rules | Flagged for Stage 4 and separate backtesting |
+| Sector concentration limit live | TBD — informed by Phase 1B sector concentration analysis |
 
 ---
 
@@ -257,114 +376,167 @@ Determine which of 60 strategies, across which market regimes, using which exit 
 | Volatility | Bollinger Bands (3 sets), Keltner, Donchian (10+20d), ATR, Squeeze Momentum |
 | Volume | OBV, Volume Spike (1.5×/2×/3×), VWAP deviation, A/D Line, CMF, MFI, Force Index, 52-week high |
 | Candle | Inside/Outside bar, Engulfing, Pin bar, Hammer, Shooting Star, Morning/Evening Star, Doji, Three White Soldiers, Three Black Crows |
+| Context | Sector ETF daily return, price vs 52w high/low, nearest support/resistance, above 200EMA flag |
 
 ---
 
 ## 10. Smart Money & Data Sources
 
-| Source | Data | Cost | Key required |
-|---|---|---|---|
-| yfinance | OHLCV, analyst consensus, price targets, EPS estimates | $0 | No |
-| FRED | Yield curve (T10Y2Y) | $0 | Optional free |
-| yfinance ^VIX | VIX daily | $0 | No |
-| Quiver Quantitative | Congressional trades, insider trades, 13F holdings, analyst revisions | $0 free tier | Yes — free |
-| SEC EDGAR | Form 4, 13F backup | $0 | No |
-| OpenInsider | Insider trades backup | $0 | No |
-| AAII | Investor sentiment | $0 scraped | No |
-| CNN Fear & Greed | Market sentiment | $0 scraped | No |
+| Source | Data | Cost | Tier | Point-in-time lag |
+|---|---|---|---|---|
+| yfinance | OHLCV, earnings dates, VIX | $0 | Free | None — historical |
+| FRED | Yield curve, fed funds, CPI, unemployment, inflation expectations, treasury yields, corporate spread | $0 | Free | Monthly/weekly |
+| Quiver Quantitative | Congressional trades, insider trades (Form 4), 13F institutional, government contracts, lobbying, Wikipedia page views, WallStreetBets mentions | $75/mo Trader | Trader | 45d congressional/13F, 2d insider |
+| Finnhub | News sentiment per ticker | $0 | Free | Same day |
+| AAII | Investor sentiment (weekly) | $0 | Free (CSV) | Weekly Thursday |
+| CNN Fear & Greed | Market sentiment (daily) | $0 | Free (CSV) | Daily |
 
-**Analyst data (yfinance):** Buy/hold/sell counts, avg price target, % upside, target range, EPS estimate next quarter, recent upgrades/downgrades, revision direction. **Informational only — does not affect confidence tier.**
-
-**Smart money data lags enforced:**
-- Congressional trades: 45-day disclosure lag
+**Data lags enforced:**
+- Congressional trades: 45-day disclosure lag (ReportDate used, not TransactionDate)
+- Congressional signal age weighting: < 30 days = full, 30-60 days = 50%, > 60 days = not used
 - Insider trades (Form 4): 2 business days
 - 13F institutional: 45 days after quarter-end
+- AAII: published Thursday — used from Friday onwards
+
+**Data pre-fetched to Parquet cache — no live API calls during backtest:**
+- All Quiver data: pre-fetched for all 509 tickers, 2020-Mar 2026
+- FRED macro: all 7 series, 2020-Mar 2026
+- AAII: 325 weekly readings, 2020-Mar 2026
+- CNN Fear & Greed: 1,630 daily readings, 2020-Mar 2026
+- Finnhub news: all 509 tickers, 3-year annual batches
 
 ---
 
 ## 11. API Stack by Stage
 
-| Stage | APIs added | Monthly CAD |
+### Stage 1 — Daily stock picks
+| API | Role | Cost |
 |---|---|---|
-| 1-2 (now) | yfinance, Alpha Vantage free, Quiver free, FRED, CBOE, FINRA, AAII, CNN | $0 |
-| 3 (paper) | + Alpaca paper, Gmail SMTP, Anthropic Sonnet | ~$25 |
-| 4 (live small) | + Alpaca live, Questrade/IBKR Canada | ~$85-120 |
-| 5 (full) | + Quiver paid, Unusual Whales, Ortex, Finnhub, Polygon.io | ~$300-360 |
+| Alpha Vantage | Top gainers + TSX quotes | Free |
+| GitHub Actions | Daily 6am UTC cron job | Free |
 
-### Stage 5 Full API Stack
-| API | Purpose | USD/month |
+### Stage 2 — Backtesting (current)
+| API | Role | Cost |
 |---|---|---|
-| Quiver Quantitative paid | Congressional, insider, 13F, analyst revisions, govt contracts | $50 |
-| Unusual Whales | Options flow, dark pool, additional congressional tracking | $30 |
-| Ortex | Short interest, days-to-cover, squeeze risk | $35 |
-| Finnhub | Real-time news sentiment, earnings surprises, SEC filing alerts | $50 |
-| Polygon.io | Tick-level prices, after-hours data | $29 |
-| Anthropic Sonnet | Daily 6-agent pipeline for all candidates | ~$75 |
-| Hetzner VPS | Application server 24/7 | $7 |
-| PostgreSQL managed | Trade database with backups | $15 |
-| Backblaze B2 | Backup storage | $1 |
-| **Total** | | **~$292 USD (~$400 CAD)** |
+| yfinance | OHLCV historical data — pre-fetched to Parquet | Free |
+| Quiver Trader | Congressional + insider + 13F + gov_contracts + lobbying + wikipedia + wsb | $75/mo — cancel after Phase 1B, re-subscribe Stage 3 |
+| FRED | Macro series — pre-fetched to Parquet | Free |
+| Finnhub free | News sentiment — pre-fetched to Parquet | Free |
+| Anthropic Haiku | Phase 1B agent pipeline | ~$116 CAD |
+| Anthropic Sonnet | Phase 1C/1D agent pipeline | ~$140 CAD total |
+
+**Phase 1B cost calculation:** 509 instruments × ~8 candidates/day average × 782 days × $0.00035/Haiku call × 6 agents = ~$116 CAD. Note: only candidates passing screener receive agents — not all instruments every day.
+
+### Stage 3 — Paper trading (automated)
+| API | Role | Cost |
+|---|---|---|
+| yfinance | Daily OHLCV for live screener | Free |
+| Quiver Trader | Live congressional + insider + 13F signals | $75/mo |
+| FRED | Live macro snapshot | Free |
+| Finnhub free | Live news sentiment | Free |
+| Unusual Whales | Options flow — Phase 1C validation + Stage 3 live | ~$50/mo |
+| Anthropic Sonnet | Daily 6-agent pipeline for all candidates | ~$25/mo |
+| Alpaca paper | Paper trade execution + tracking | Free |
+
+### Stage 4 — Live trading
+| API | Role | Cost |
+|---|---|---|
+| All Stage 3 APIs | Same role | Same cost |
+| Ortex | Short interest — squeeze risk detection | ~$40/mo |
+| Alpaca live | Real trade execution | Commission per trade |
+| **Total Stage 4** | | **~$190/mo** |
+
+### Phase 1C Addition
+Unusual Whales (options flow) and Ortex (short interest) are added in Phase 1C. This validates their contribution before live use — consistent with the principle that backtests must mirror live trading.
 
 ---
 
 ## 12. How APIs Feed Into Confidence Tiers
 
-| Tier | APIs contributing |
-|---|---|
-| EXCEPTIONAL | yfinance (technical) + Quiver (congressional buy) + Quiver/Unusual Whales (insider cluster buy) + Ortex (short interest check) |
-| VERY HIGH | yfinance (technical) + Quiver (congressional OR insider buy) |
-| HIGH | yfinance only |
-| MEDIUM-HIGH | yfinance only |
-| AVOID | Quiver (congressional sell) + Quiver/Unusual Whales (insider cluster sell) |
+Two-stage tiering: rule-based prelim → agent-adjusted final.
+
+| Tier | Stage 1 — Raw signal conditions | Stage 2 — Agent adjustment |
+|---|---|---|
+| EXCEPTIONAL | 3+ strategies + congressional buy + insider cluster buy | Agent score ≥ 75 from VERY HIGH → upgrades to EXCEPTIONAL |
+| VERY HIGH | 2+ strategies + congressional OR insider buy | Agent score ≥ 75 from HIGH → upgrades |
+| HIGH | 3+ strategies, no smart money | Agent score ≤ 40 → downgrades to MEDIUM_HIGH |
+| MEDIUM-HIGH | 2 strategies, no smart money | Agent score ≥ 75 → upgrades to HIGH |
+| MEDIUM | 1 strategy + any smart money buy | 0.75% position |
+| LOW | 1 strategy only | Agent score ≤ 40 from MEDIUM → downgrades to LOW |
+| AVOID | Congressional sell + insider cluster sell | Never upgrades. Evaluate as short if short strategy fires. |
 
 ---
 
 ## 13. How APIs Feed Into the 6-Agent Pipeline
 
-| Agent | Data sources | Output |
+### What Each Agent Receives (as of Phase 1B)
+
+| Agent | Data sources | Key additions vs original |
 |---|---|---|
-| Technical | yfinance OHLCV → 274 signals | Confirms all signals at exact historical date |
-| Fundamental | Quiver (earnings, buybacks), Finnhub (news, SEC), yfinance (analyst consensus, EPS, price targets) | Earnings risk, analyst sentiment, fundamental backdrop |
-| Sentiment | Quiver (congressional), Unusual Whales (options flow, dark pool), AAII, CNN Fear & Greed, Finnhub (news sentiment) | Market and stock-specific sentiment score |
-| Risk | FRED (yield curve), yfinance (VIX), Ortex (short interest), economic calendar | Macro regime, short squeeze risk, event risk |
-| Bull/Bear | All of the above | Structured debate — best and worst case for the trade |
-| Decision | All agent outputs | Final confidence score, site card paragraph, optimal exit method |
+| Technical | 274 signals + strategy-specific signals + sector ETF daily return + price vs 52w range + nearest support/resistance | Sector halo effect, price positioning |
+| Fundamental | Quiver insider + 13F + government contracts + lobbying spend + WallStreetBets + Wikipedia + earnings proximity | Gov contracts and lobbying now wired in |
+| Sentiment | Quiver congressional detail (name, amount, party, top 3 trades) + AAII + CNN Fear & Greed + Finnhub news | Congressional detail not just composite score |
+| Risk | FRED macro (7 series) + VIX + earnings proximity + DXY + corporate spread + sector volatility | Earnings and DXY now passed |
+| Bull/Bear | All agent outputs + price vs support/resistance + strategies triggered | Price positioning context |
+| Decision | All agent outputs + earnings days + sector volatility tier + position size modifier | Earnings and sector volatility context |
+
+### Agent Quality Validation (Required Before Phase 1B Full Run)
+Before scaling to full 509 instruments, manually review 10 batch test trades:
+- EXCEPTIONAL tier trades: do they look like genuinely high-conviction setups?
+- LOW tier trades: do they look like trades you'd avoid?
+- Agent reasoning: is it specific and coherent, or generic boilerplate?
+- Congressional detail: is the agent actually using name/amount in its reasoning?
+
+### When Agents Run
+| Phase | Agents | Model |
+|---|---|---|
+| Phase 1A | No (--no-agents flag) | None — pipeline validation only |
+| Phase 1B | Yes | Haiku |
+| Phase 1C | Yes | Sonnet |
+| Phase 1D | Yes | Sonnet |
+| Stage 3 paper | Yes | Sonnet |
+| Stage 4+ live | Yes | Sonnet |
+
+### Agent Cache Management
+Agent results cached as JSON (ticker + date + strategies + phase). Cache must be invalidated when:
+- Agent prompts change materially
+- New data sources added to agents
+- Phase changes (Haiku → Sonnet)
+
+The 108 agent cache files from partial Phase 1B run were generated with old agents (no gov_contracts, lobbying, congressional detail, DXY). These must be cleared before Phase 1B restart.
 
 ---
 
 ## 14. Workflow — Making Changes
 
-### GitHub sync workflow
-1. Claude pushes changes to `claude-updates` branch
-2. Owner triggers **GitHub → Actions → Sync from Claude → Run workflow**
-3. Types description of what changed
-4. Clicks Run (takes ~2 minutes)
-5. In Codespace terminal: `git pull origin main`
+### Rule for Changes
+No rule, filter, threshold, or strategy parameter is ever changed without explicit owner approval. Claude presents recommendations with reasoning and tradeoffs. Owner decides. Claude builds what is approved.
 
-### Rule for changes
-**No rule, filter, threshold, or strategy parameter is ever changed without explicit owner approval.** Claude presents recommendations with reasoning and tradeoffs. Owner decides. Claude builds what is approved.
+### GitHub Sync
+1. Claude pushes changes to `claude-updates` branch
+2. Owner triggers GitHub Actions → Sync from Claude → Run workflow
+3. In Codespace: `git fetch origin ; git reset --hard origin/main`
 
 ---
 
 ## 15. Infrastructure
 
 ### Current (Stage 2)
-- GitHub Codespaces — development environment
-- GitHub Actions — daily stock fetch + sync workflow
+- GitHub Codespaces — development and backtest execution
+- GitHub Actions — daily stock fetch, sync workflow, data pre-fetch (Finnhub, Quiver)
 - GitHub Pages — static website hosting
 - All free
 
 ### Stage 3 onwards
 - Hetzner CX11 VPS ($6 USD/month) — always-on process runner
-- PostgreSQL on VPS — trade persistence across restarts
-- Gmail SMTP — email approval workflow
-- devcontainer.json — auto-installs all dependencies on Codespace start
-- Parquet cache — OHLCV data persists across sessions (committed to repo)
+- PostgreSQL on VPS — trade persistence
+- Gmail SMTP — performance alert emails (not approval — Stage 3 is automated)
+- Alpaca paper API — automated paper trade execution
 
-### Future (Stage 4+)
+### Stage 4+
 - Email approval: every live trade requires reply APPROVE or REJECT within 30 minutes
 - No auto-execution without approval in Stage 4
-- Stage 5: automated execution with email alerts for unusual position sizes only
+- Stage 5: automated execution, email alerts for unusual position sizes only
 
 ---
 
@@ -372,63 +544,51 @@ Determine which of 60 strategies, across which market regimes, using which exit 
 
 | File | Contents |
 |---|---|
-| `trade_log.csv` | Every trade with 40+ fields |
-| `backtest_results.csv` | All strategies ranked by all 10 metrics |
+| `trade_log.csv` | Every trade with 50+ fields including sector, raw SM signals, AAII/CNN readings at entry |
+| `trade_log_in_sample.csv` | IS trades only (2022-2024) — for walk-forward window 1 analysis |
+| `trade_log_out_of_sample.csv` | OOS trades only (2025-Mar 2026) — for walk-forward window 2 analysis |
+| `trade_exit_detail.csv` | Every trade × every exit method — per-trade exit comparison |
+| `backtest_results.csv` | All 60 strategies ranked by all 10 metrics with confidence intervals |
 | `backtest_report.html` | Dark-themed visual report |
 | `winning_strategies.json` | Passing strategies with optimal exit method |
 | `exit_strategy_comparison.csv` | All 12 exits × all strategies with composite scores |
 | `exit_strategy_best.csv` | Best exit per strategy |
-| `regime_performance.csv` | Win rate + ROI per strategy per regime |
-| `walk_forward_validation.csv` | ROBUST / OVERFIT / WEAK / FAILS_BOTH per strategy |
+| `regime_performance.csv` | Win rate + ROI per strategy per regime (7 regimes) |
+| `walk_forward_validation.csv` | ROBUST/OVERFIT/WEAK/FAILS_BOTH/INSUFFICIENT_OOS per strategy, both windows |
 | `improvements_summary.json` | Transaction costs, survivorship, walk-forward summary |
-| `smart_money_combined.csv` | Win rate lift at each smart money score tier |
-| `agent_performance.csv` | Win rate by confidence tier |
+| `smart_money_combined.csv` | Win rate lift at each SM score tier, with confidence intervals |
+| `agent_performance.csv` | Win rate by confidence tier — preliminary vs agent-adjusted |
 | `skipped_trades.csv` | All skipped entries with reason |
 | `circuit_breaker_log.csv` | All circuit breaker triggers |
-| `analysis_dashboard.html` | Interactive 9-tab analysis dashboard |
+| `analysis_dashboard_1a.html` | Phase 1A interactive 9-tab dashboard |
+| `analysis_dashboard_1b.html` | Phase 1B interactive 9-tab dashboard including agent analysis tab |
 
 ---
 
-## 17. Current Phase 1A Results (April 18, 2026 — v1 run)
+## 17. Phase 1A Results — v3 (Final)
 
 | Metric | Value | Notes |
 |---|---|---|
-| Trading days | 782 | Jan 2022 – Dec 2024 |
-| Instruments | 66/67 | DIS data issue — non-critical |
-| Trades closed | 198 | All long — no shorts fired |
-| Strategies fired | 17/60 | 43 didn't fire with old 5-cand/day cap |
-| Skipped trades | 9,974 | Gap filter + old correlation filter |
-| Gross ROI | 780% | Before transaction costs |
-| Net ROI | 742% | After 38.5% total transaction costs |
-| Adjusted ROI | 736% | After 6% survivorship haircut |
-| Passing all criteria | 0 | Expected — 100 trade minimum not met |
+| Trading days | 1,108 | Jan 2022 – Mar 2026 |
+| Instruments | 67 | SP50 + 17 ETFs |
+| Trades closed | 6,942 | Long and short |
+| Strategies fired | 50/60 | 10 didn't fire on 67 instruments |
+| Gross ROI | 19,685% | Before transaction costs |
+| Net ROI | 18,349% | After transaction costs |
+| Passing all criteria | 0 | Expected — 500 trade minimum not met on 67 instruments |
+| Best exit method | atr_trail_1x | Wins 20/29 strategies — confirmed as primary |
+| WEAK strategies (OOS 2024 only) | 4 | golden_cross_9_21, golden_cross_20_50, bollinger_lower, volume_spike_breakout |
 
 **Key findings:**
-- Zero short trades — correct, short conditions are strict and 67 instruments is too few
-- cpr_narrow_bullish fired 99 times — closest to 100-trade minimum
-- Pipeline clean — all 13 output files written, no look-ahead bias detected
-
-**Changes made before rerun (all owner-approved):**
-- Removed open position cap
-- Removed daily loss limit from backtest
-- Removed correlation filter from backtest
-- Removed regime position sizing from backtest
-- Removed regime direction hard blocks — crisis trades flagged not blocked
-- Removed one-trade-per-ticker-per-day limit
-- Increased max candidates 5 → 10
-- Mean reversion ATR multiplier 0.5× → 1.0×
-- Liquidity filter applied once at load, not daily
-- Position sizing: EXCEPTIONAL 5%, VERY HIGH 4%, HIGH 3%, MEDIUM-HIGH 1.5%
-
----
-
-*This document is the single source of truth for the project. Updated directly on GitHub — no Word documents needed.*
+- Pipeline clean — all output files written, no look-ahead bias detected
+- atr_trail_1x confirmed as primary exit — switched from fixed 10% trailing
+- Short strategies fired — validation in full 509-instrument Phase 1B expected
 
 ---
 
 ## 18. All 60 Strategies — Plain English
 
-Each strategy fires when ALL listed conditions are true simultaneously. Direction is either Long (buy) or Short (sell). Entry is always at next day's open price.
+Each strategy fires when ALL listed conditions are true simultaneously. Entry at next day open (D+1).
 
 ### Category 1 — Pivot Based (10 strategies)
 
@@ -533,317 +693,281 @@ Each strategy fires when ALL listed conditions are true simultaneously. Directio
 
 | Rule | Current value | Rationale |
 |---|---|---|
-| Max candidates per day | 10 | How many instruments can generate new trades on any single day |
-| Trades per ticker per day | No limit — all strategies fire independently | Multiple strategies on same ticker open separate positions. Removed to capture all valid signals |
-| Entry price | Next day open (D+1) | Signal fires at market close. Entry at next morning's open. Simulates real execution. |
-| Entry zone — breakout/momentum | Gap must be ≤ 2× ATR from signal close | Prevents entering too far above signal level — chasing |
-| Entry zone — trend/confluence | Gap must be ≤ 1.5× ATR | Tighter — trend entries need to be closer to signal level |
-| Entry zone — pivot/candle | Gap must be ≤ 1.0× ATR | Tightest — pivot level entries must be precise |
-| Entry zone — mean reversion | Gap must be ≤ 1.0× ATR | Raised from 0.5× — captures more mean reversion trades |
-| Slippage | 0.03% ETF / 0.08% large-cap / 0.15% high-vol | Applied at entry — realistic fill price vs official open |
-| Minimum price history | 30 trading days | Instrument must have 30 days of data before signals are computed |
+| Max candidates per day | 10 | Statistical validity |
+| Trades per ticker per day | No limit — all strategies fire independently | Multiple strategies open separate positions |
+| Entry price | Next day open (D+1) + slippage | Signal fires at close. Entry simulates real execution. |
+| Entry zone — breakout/momentum | Gap ≤ 2× ATR from signal close | Prevents chasing |
+| Entry zone — trend/confluence | Gap ≤ 1.5× ATR | Tighter — trend entries must be close |
+| Entry zone — pivot/candle | Gap ≤ 1.0× ATR | Tightest — pivot level entries must be precise |
+| Entry zone — mean reversion | Gap ≤ 1.0× ATR | Raised from 0.5× — Phase 1B will compare vs original |
+| Slippage | 0.03% ETF / 0.08% large-cap / 0.15% high-vol | Entry AND exit. 2× on circuit breaker exits. |
+| Minimum price history | 30 trading days | Need 30 days before computing signals |
+| Earnings proximity | Context for agents — NOT a blocker | Agents assess risk and may reduce position size |
+| Liquidity filter | Annual re-check each Jan 1 | Price > $5, avg volume > 500k, market cap > $100M |
+| Maximum hold period | 40 trading days | Time stop backstop — exits sideways trades |
 
 ### Portfolio Rules (Backtest Mode)
 
 | Rule | Current value | Rationale |
 |---|---|---|
-| Open position cap | None — uncapped | Statistical validity. All signals fire freely. |
-| Daily loss limit | None | Removed for backtest. Will be decided at Stage 4 with live data. |
-| Correlation filter | None | Removed. Sectors trend together — targeting trending sectors is the strategy. |
-| Sector concentration | None | Removed with correlation filter. |
-| Regime position sizing | None — full size in all regimes | Backtest needs data from all conditions, not reduced samples. |
-| Crisis regime direction | Allowed — flagged as crisis_CRISIS_FLAG | Best entry prices are often in crisis. Trailing stop manages downside. |
-| Liquidity filter | Applied once at load time | Price > $5, avg volume > 500k, market cap > $100M. Not re-checked daily. |
+| Open position cap | None — uncapped | Statistical validity |
+| Daily loss limit | None | Calibrated from Stage 3 data |
+| Correlation filter | None | Sectors trend — concentration logged for analysis |
+| Sector concentration | Unfiltered — logged | Track for Phase 1B post-analysis |
+| Regime position sizing | None — full size | Backtest needs data from all conditions |
+| Crisis regime direction | Allowed — flagged | Best entries are in crisis |
+| Liquidity filter | Annual re-check | Not just at load |
 
 ### Position Sizing by Confidence Tier
 
-| Tier | Requirements | Size |
-|---|---|---|
-| EXCEPTIONAL | 3+ strategies + congressional buy + insider cluster buy | 5% of capital |
-| VERY HIGH | 2+ strategies + congressional OR insider buy | 4% of capital |
-| HIGH | 3+ strategies, no smart money | 3% of capital |
-| MEDIUM-HIGH | 2 strategies, no smart money | 1.5% of capital |
-| MEDIUM | 1 strategy + any smart money buy | 0% — watch only |
-| LOW | 1 strategy only | 0% — watch only |
-| AVOID | Congressional sell + insider cluster sell | 0% — avoid entirely |
+| Tier | Requirements | Size | Notes |
+|---|---|---|---|
+| EXCEPTIONAL | 3+ strategies + congressional buy + insider cluster buy | 5% | Both SM signals required |
+| VERY HIGH | 2+ strategies + congressional OR insider buy | 4% | One SM signal |
+| HIGH | 3+ strategies, no smart money | 3% | Technical only |
+| MEDIUM-HIGH | 2 strategies, no smart money | 1.5% | Technical only |
+| MEDIUM | 1 strategy + any smart money buy | 0.75% | Small size — SM present |
+| LOW | 1 strategy only | 0% — watch only | No position |
+| AVOID | Congressional sell + insider cluster sell | 0% long. Evaluate short if short strategy fires. | See AVOID → short logic |
+
+All sizes subject to drawdown scaling (Section 7).
 
 ### Exit Rules — Priority Order
 
-| Priority | Rule | Trigger | Rationale |
-|---|---|---|---|
-| 1 — highest | Circuit breaker 1 | Overnight gap > 12% wrong direction → exit at open | Gap-down opens can blow through trailing stops |
-| 2 | Circuit breaker 2 | Earnings gap > 8% wrong direction → exit at open | Earnings are binary events — can't be managed |
-| 3 | Circuit breaker 3 | Intraday halt + down > 15% from entry → exit on resume | Halts often precede further decline |
-| 4 | Circuit breaker 4 | S&P 500 market-wide halt → no new trades, flag all | Systemic risk — do not add exposure |
-| 5 | Circuit breaker 5 | VIX > 40 → tighten all stops to 5%, no new longs | Crisis mode — protect capital |
-| 6 — default | Trailing stop | 10% below highest closing price. Moves up, never reverses. | Primary exit for all strategies. Lets winners run. |
+| Priority | Rule | Trigger |
+|---|---|---|
+| 1 | Circuit breaker 1 | Overnight gap > 12% wrong direction → exit at open |
+| 2 | Circuit breaker 2 | Earnings gap > 8% wrong direction → exit at open |
+| 3 | Circuit breaker 3 | Intraday halt + down > 15% from entry → exit on resume |
+| 4 | Circuit breaker 4 | S&P 500 market-wide halt → no new trades, flag all |
+| 5 | Circuit breaker 5 | VIX > 40 → reduce NEW position sizes 50%, VERY HIGH min. Do NOT tighten stops. VIX > 50 → suspend new entries. |
+| 6 | Time stop | 40 trading days — exit if < 5% movement from entry |
+| 7 (default) | ATR trailing stop | 1× ATR below highest closing price. Primary exit confirmed Phase 1A. |
 
 ### Data Integrity Rules
 
-| Rule | Value | Why non-negotiable |
-|---|---|---|
-| Point-in-time OHLCV | Every fetch sliced to as_of date only | Any future data = fictional results |
-| Congressional trade lag | 45 days enforced | Real disclosure timeline |
-| Insider trade lag | 2 business days | Real Form 4 filing timeline |
-| 13F institutional lag | 45 days after quarter end | Real filing deadline |
-| Analyst data | Live only — NOT used in backtest metrics | Cannot get historical analyst consensus from yfinance |
-| Look-ahead bias guard | Automated check on every data fetch | Catches errors before they affect trades |
-| Audit flag | Win rate > 75% or profit factor > 1.5 → manual review | Statistically unlikely without look-ahead bias |
+| Rule | Value |
+|---|---|
+| Point-in-time OHLCV | Every fetch sliced to as_of date only |
+| Congressional trade lag | 45 days. ReportDate used, not TransactionDate. Age-weighted. |
+| Insider trade lag | 2 business days |
+| 13F institutional lag | 45 days after quarter end |
+| Analyst data | Live only — NOT used in backtest |
+| Look-ahead bias guard | Automated check on every data fetch |
+| Audit flag | Win rate > 75% or profit factor > 1.5 → manual review |
+| Agent cache invalidation | Clear cache when agents upgraded. Version tag in cache key. |
+
+### Statistical Validity Rules
+
+| Rule | Value |
+|---|---|
+| Minimum trades per strategy | 500 |
+| Minimum OOS trades | 30 — below this = INSUFFICIENT OOS DATA |
+| Walk-forward windows | Two windows required — both must show ROBUST |
+| Smart money lift threshold | ≥ 3pp win rate improvement, min 30 trades per bucket |
+| Macro correlation threshold | ≥ 5pp win rate diff, min 20 trades per regime |
+| Confidence intervals | 95% binomial CI on all win rates |
+| Flag for review | Lower CI bound < 50% |
 
 ### Improvements Applied to All Results
 
 | Improvement | Value | Effect |
 |---|---|---|
-| Transaction costs | 0.08% ETF / 0.10% large-cap / 0.15% mid-cap round-trip | Reduces net ROI vs gross ROI |
-| Survivorship bias haircut | 2% annual | Phase 1A: 6% total haircut over 3 years |
-| Walk-forward validation | In-sample 2022-23 / Out-of-sample 2024 | ROBUST = real edge. OVERFIT = do not trade. |
-| Bonferroni correction | 60 strategies → 500 trades minimum required | Prevents false positives from multiple testing |
-| Slippage model | Spread + gap penalty at entry | Realistic fill prices |
+| Transaction costs | 0.08-0.15% per leg. Min $1/trade. | Reduces net ROI vs gross |
+| Survivorship bias | Hold-adjusted: <7d=0.5%/yr, 7-14d=1%/yr, 14-30d=2%/yr, >30d=3%/yr | Realistic — proportional to exposure |
+| Walk-forward | Two windows — both must pass for ROBUST | Eliminates single-window false positives |
+| Bonferroni minimum | 500 trades (statistical validity — correctly labelled) | Not true Bonferroni but valid threshold |
+| Slippage | Applied entry AND exit | Realistic fills |
+| Kelly sanity check | ¼ Kelly computed post-Phase 1B | Validates tier position sizes |
 
-### Pending Decisions — To Be Made at Stage 4
+### Pending Decisions — Stage 4
 
 | Decision | Status |
 |---|---|
-| Daily loss limit value | To be determined from paper trading data |
-| Maximum open positions for live trading | To be determined — Stage 3 cap 20, Stage 4 cap 10 |
-| Pyramiding — adding to winning positions | Flagged for Stage 4 and separate backtesting |
-| Sector concentration for live trading | To be determined |
-| Multiple strategies on same ticker — separate positions or combined | **OPEN — needs owner decision before Phase 1A v3 run** |
-
+| Daily loss limit value | Calibrate from Stage 3 paper trading data |
+| Maximum open positions live | Target 10 — Stage 3 will inform |
+| Pyramiding rules | Stage 4 backtesting required |
+| Sector concentration limit live | Informed by Phase 1B concentration analysis |
 
 ---
 
 ## 20. Phase 1B Pre-Run Checklist
 
-All items must be complete before Phase 1B runs. No exceptions.
+All items must be ✅ before Phase 1B runs. No exceptions.
 
 | # | Item | Required |
 |---|---|---|
-| 1 | Quiver congressional | 509/509 tickers |
-| 2 | Quiver insider | 509/509 tickers |
+| 1 | Quiver congressional | 509/509 tickers ✅ |
+| 2 | Quiver insider | 509/509 tickers ✅ |
 | 3 | Quiver institutional 13F | 509/509 tickers |
 | 4 | Quiver gov_contracts | 509/509 tickers |
 | 5 | Quiver lobbying | 509/509 tickers |
 | 6 | Quiver wikipedia | 509/509 tickers |
 | 7 | Quiver wallstreetbets | 509/509 tickers |
-| 8 | Finnhub news sentiment | 509/509 tickers |
+| 8 | Finnhub news sentiment | 509/509 tickers ✅ |
 | 9 | FRED macro | Extended to March 2026 |
-| 10 | OHLCV cache | Extended to March 2026 |
-| 11 | AAII sentiment | Extended to March 2026 |
-| 12 | CNN Fear & Greed | Extended to March 2026 |
-| 13 | 25-ticker batch test | Agent outputs reviewed and approved |
-| 14 | Sector ETF context | Passed to Technical Agent |
-
----
-
-## 21. TradingAgents Integration
-
-### What it is
-TradingAgents is a multi-agent AI framework integrated into our backtesting and live trading pipeline. Every candidate instrument passes through a 6-agent pipeline before receiving a confidence score and being published to the site card. It is not optional — it is the core intelligence layer that separates this system from a simple technical indicator screener.
-
-The agents run in sequence, each analysing a different dimension of the trade. The Decision Agent synthesises all outputs into a final confidence score, position size recommendation, and plain-English site card paragraph.
-
-### The 6-Agent Pipeline
-
-| Agent | Model | Data sources | Output |
-|---|---|---|---|
-| Technical Agent | Haiku/Sonnet | yfinance OHLCV → 274 signals | Confirms all signals firing at exact historical date. Flags divergence. |
-| Fundamental Agent | Haiku/Sonnet | Quiver (earnings, buybacks), Finnhub (news, SEC filings), yfinance (analyst consensus, EPS, price targets, revision direction) | Earnings risk, analyst sentiment, fundamental backdrop |
-| Sentiment Agent | Haiku/Sonnet | Quiver (congressional), Unusual Whales (options flow, dark pool), AAII, CNN Fear & Greed, Finnhub (news sentiment) | Market and stock-specific sentiment score |
-| Risk Agent | Haiku/Sonnet | FRED (yield curve), yfinance (VIX), Ortex (short interest), economic calendar | Macro regime score, short squeeze risk, earnings proximity, event risk |
-| Bull Agent | Haiku/Sonnet | All of the above | Best case argument for the trade |
-| Bear Agent | Haiku/Sonnet | All of the above | Worst case argument against the trade |
-| Decision Agent | Haiku/Sonnet | All agent outputs | Final confidence score, position size, site card paragraph, optimal exit method |
-
-### When Agents Run
-
-| Phase | Agents | Model | Purpose |
-|---|---|---|---|
-| Phase 1A | No agents ( flag) | None | Pipeline validation only — zero cost |
-| Phase 1B | Yes | Haiku (~/bin/sh.021/analysis) | Full universe backtest with agent confidence scoring |
-| Phase 1C | Yes | Sonnet (~/bin/sh.08/analysis) | Higher quality validation — eliminates Haiku false positives |
-| Phase 1D | Yes | Sonnet | Maximum conviction — top 5 strategies over 5 years |
-| Stage 3 paper trading | Yes | Sonnet | Daily signal generation for paper trades |
-| Stage 4+ live trading | Yes | Sonnet | Daily signal generation for live trades |
-
-### The  Flag
-Running with  skips the 6-agent pipeline entirely and uses rule-based confidence scoring instead. Used in Phase 1A to validate the pipeline at zero cost before spending on agents in Phase 1B.
-
-### How Agent Output Feeds Into Confidence Tiers
-
-The Decision Agent output directly determines the confidence tier assigned to each trade:
-
-| Tier | Agent requirements |
-|---|---|
-| EXCEPTIONAL | 3+ technical strategies + congressional + insider cluster + agents agree |
-| VERY HIGH | 2+ strategies + congressional OR insider + agents agree |
-| HIGH | 3+ strategies, no smart money, agents positive |
-| MEDIUM-HIGH | 2 strategies, agents neutral or positive |
-| AVOID | Congressional sell + insider cluster sell regardless of agent output |
-
-### Cost Per Analysis
-
-| Model | Cost per analysis | Phase |
-|---|---|---|
-| Haiku | ~/bin/sh.021 | Phase 1B |
-| Sonnet | ~/bin/sh.08 | Phase 1C, 1D, Stage 3+ |
-
-Phase 1B cost estimate: 400 instruments × 782 days × 10 candidates × /bin/sh.021 = ~16 CAD
-Phase 1C cost estimate: top 20% strategies × same universe × /bin/sh.08 = ~02 CAD
+| 10 | OHLCV cache | Extended to March 2026 ✅ |
+| 11 | AAII sentiment | Extended to March 2026 ✅ |
+| 12 | CNN Fear & Greed | Extended to March 2026 ✅ |
+| 13 | Agent cache cleared | Old 108 analyses with stale agents deleted |
+| 14 | 25-ticker batch test | Agent outputs reviewed — qualitative + quantitative |
+| 15 | Two-stage tiering validated | Confirm preliminary vs adjusted tier distribution |
+| 16 | Sector ETF context | Passed to Technical Agent ✅ |
 
 ---
 
 ## 21. Website Design & Delivery
 
-### What the website shows at each stage
+### What the Website Shows at Each Stage
 
 | Stage | Website content |
 |---|---|
-| Stage 1 (current) | Daily top gainers from Alpha Vantage — simple HTML page |
-| Stage 2 | Analysis dashboards (Phase 1A, 1B) — local only, not public |
-| Stage 3 paper trading | Live screener candidates, confidence tiers, agent analysis, paper trade tracking |
+| Stage 1 (current) | Daily top gainers from Alpha Vantage |
+| Stage 2 | Analysis dashboards — local only |
+| Stage 3 paper trading | Live screener candidates, confidence tiers, agent analysis, paper trade P&L |
 | Stage 4 live trading | Full trade management — active positions, exits, P&L, historical performance |
-| Stage 5 | Full institutional-grade dashboard with all signals and portfolio analytics |
+| Stage 5 | Full institutional-grade dashboard |
 
-### Stage 3 website — detailed design
+### Stage 3 Website — Detailed Design
 
-The website will be a static HTML/JS site updated daily via GitHub Actions. No server or database needed.
+Static HTML/JS site updated daily via GitHub Actions. No server needed.
 
 **Daily workflow:**
-1. GitHub Actions cron job runs at 6am UTC (market open)
-2. Screener runs on 509 instruments with all cached signals
-3. Top candidates pass through 6-agent pipeline (Sonnet)
+1. GitHub Actions cron job runs at 6am UTC
+2. Screener runs on 509 instruments
+3. Top candidates through 6-agent pipeline (Sonnet)
 4. Results written to `site_picks/YYYY-MM-DD.json`
 5. Website reads latest JSON and renders cards
 
-**Site card per candidate shows:**
+**Site card per candidate:**
 - Ticker, company, sector, price
-- Confidence tier (EXCEPTIONAL / VERY HIGH / HIGH)
-- Strategies fired (e.g. "RSI oversold + Bollinger lower + Congressional buy")
+- Confidence tier
+- Strategies fired
 - Entry price, position size %, stop level
-- Days to earnings — flagged if < 7 days
-- CNN Fear & Greed context
+- Days to earnings — flagged if < 14 days
+- CNN Fear & Greed score
 - Bull agent argument (2-3 sentences)
 - Bear agent argument (2-3 sentences)
 - Decision agent recommendation
 
-**Paper trading tracker shows:**
-- Open paper positions with current P&L
-- Trailing stop level per position
+**Paper trading tracker:**
+- Open paper positions with P&L
+- Trailing stop level
 - Circuit breaker status
-- Closed trades with outcome
+- All tiers tracked internally (not just published)
 
-**Email approval workflow (Stage 3+):**
-- Candidates above VERY HIGH tier trigger email to owner
-- Owner replies APPROVE or SKIP
-- Approved trades logged to paper trading ledger
-- No manual login required
+**Stage 3 — No email approval.** Fully automated. VERY HIGH and EXCEPTIONAL tiers auto-executed via Alpaca paper.
 
-### Website delivery timeline
+**Stage 4 email approval:** Every live trade requires APPROVE/REJECT reply within 30 minutes.
+
+### Website Delivery Timeline
 
 | Milestone | When |
 |---|---|
-| Analysis dashboards (1A, 1B) | ✅ Built — local use only |
+| Analysis dashboards (1A, 1B) | ✅ Built — local use |
 | Stage 3 screening website | After Phase 1D validates top strategies |
-| Stage 3 paper trading tracker | Start of Stage 3 (3-6 months paper trading) |
+| Stage 3 paper trading tracker | Start of Stage 3 |
 | Stage 4 live trading dashboard | After Stage 3 proves profitability |
 
 ---
 
 ## 22. API Role & Workflow Per Stage
 
-### Stage 1 — Daily stock picks
+### Stage 2 — Backtesting
 | API | Role | Cost |
 |---|---|---|
-| Alpha Vantage | Top gainers + TSX quotes | Free tier |
-| GitHub Actions | Daily 6am UTC cron job | Free |
+| yfinance | OHLCV historical — pre-fetched Parquet | Free |
+| Quiver Trader | Congressional + insider + 13F + gov_contracts + lobbying + wikipedia + wsb | $75/mo |
+| FRED | Macro series — pre-fetched | Free |
+| Finnhub free | News sentiment — pre-fetched | Free |
+| Anthropic Haiku | Phase 1B agents | ~$116 CAD |
+| Anthropic Sonnet | Phase 1C/1D agents | ~$140 CAD |
 
-### Stage 2 — Backtesting (current)
-| API | Role | Cost |
-|---|---|---|
-| yfinance | OHLCV historical data — pre-fetched to Parquet | Free |
-| Quiver Trader | Congressional + insider + 13F + contracts — pre-fetched | $75/mo (cancel after Phase 1B) |
-| FRED | Macro series — pre-fetched to Parquet | Free |
-| Finnhub free | News sentiment — pre-fetched to Parquet | Free |
-| Anthropic Haiku | Phase 1B agent pipeline | ~$116 CAD |
-| Anthropic Sonnet | Phase 1C/1D agent pipeline | ~$140 CAD |
+**Unusual Whales + Ortex added in Phase 1C** — validates their contribution before live use.
 
-### Stage 3 — Paper trading
+### Stage 3 — Paper Trading
 | API | Role | Cost |
 |---|---|---|
-| yfinance | Daily OHLCV for live screener | Free |
-| Quiver Trader | Live congressional + insider signals | $75/mo |
-| FRED | Live macro snapshot | Free |
-| Finnhub free | Live news sentiment | Free |
-| Unusual Whales | Options flow — adds to confidence tier | ~$50/mo |
-| Anthropic Sonnet | Daily 6-agent pipeline for all candidates | ~$25/mo |
-| Alpaca paper | Paper trade execution + tracking | Free |
-| Gmail SMTP | Trade approval emails | Free |
+| yfinance | Daily OHLCV | Free |
+| Quiver Trader | Live SM signals | $75/mo |
+| FRED | Live macro | Free |
+| Finnhub free | Live news | Free |
+| Unusual Whales | Options flow | ~$50/mo |
+| Anthropic Sonnet | Daily agent pipeline | ~$25/mo |
+| Alpaca paper | Auto execution | Free |
 
-### Stage 4 — Live trading
-| API | Role | Cost |
-|---|---|---|
-| All Stage 3 APIs | Same role | Same cost |
-| Ortex | Short interest — squeeze risk detection | ~$40/mo |
-| Alpaca live | Real trade execution | Commission per trade |
-| **Total Stage 4** | | **~$190/mo** |
+### Stage 4 — Live Trading
+All Stage 3 APIs + Ortex ($40/mo) + Alpaca live. Total ~$190/mo.
 
 ---
 
 ## 23. Strategy Decay & Continuous Optimization
 
-### The problem
-A strategy validated on 2022-2026 data may stop working in 2028. Market microstructure changes, institutional behaviour evolves, retail participation shifts. A strategy isn't permanently valid — it has a shelf life.
+### The Problem
+A strategy validated on 2022-2026 data may stop working in 2028.
 
-### How we handle it
+### How We Handle It
 
-**Phase structure is designed for this:**
-- Phase 1D extends backtest to 5 years — longer validation reduces false positives
-- Walk-forward validation (IS/OOS) specifically tests whether strategies hold on new data
-- OOS period is always the most recent data — closest to live trading conditions
+**Phase structure:** Phase 1D validates on 5 years including COVID 2020. Walk-forward uses most recent data as OOS.
 
 **Live trading monitoring:**
-- Monthly performance review — compare live results vs backtest expectations
-- Strategy retirement threshold — if win rate drops >10pp below backtest for 3 consecutive months, retire the strategy
-- Regime detection — if market regime shifts significantly (e.g. from low-vol bull to high-vol bear), re-evaluate strategy selection
-- Annual re-backtest — run full Phase 1B-1D pipeline on extended data including new year
+- Monthly performance review vs backtest expectations
+- Strategy retirement: win rate drops >10pp below backtest for 3 consecutive months → retire
+- Regime detection: VIX sustained >30 for 30+ days → re-evaluate strategy selection
+- Annual re-backtest: run full Phase 1B-1D on extended data
 
-**Re-validation trigger events:**
-- New market regime detected (VIX sustained above 30 for 30+ days)
-- Any strategy underperforms backtest by >15pp for 2+ months
-- Major structural market change (new asset class, regulation, circuit breaker rule change)
-- Annual scheduled review regardless of performance
+**Re-validation triggers:**
+- New market regime (VIX sustained >30 for 30+ days)
+- Strategy underperforms backtest by >15pp for 2+ months
+- Major market structure change
+- Annual scheduled review
 
-**Agent pipeline role in decay detection:**
-- Agents flag when macro/sentiment context diverges significantly from backtest period
-- Risk agent explicitly flags "current regime differs from validation period"
-- This surfaces potential strategy decay before it shows up in P&L
+**Agent role in decay detection:**
+- Risk agent explicitly flags when current regime differs from validation period
+- Surfaces potential strategy decay before it shows in P&L
 
 ---
 
 ## 24. Best Practices & Open Source References
 
-### Industry best practices followed
-- **Point-in-time data enforcement** — no future data in any backtest calculation
-- **Walk-forward validation** — separate IS and OOS periods, never optimise on OOS
-- **Transaction cost modelling** — realistic spread + slippage per instrument class
-- **Survivorship bias correction** — 2% annual haircut applied
-- **Bonferroni correction** — 500 trade minimum per strategy to avoid multiple testing false positives
-- **Out-of-sample period = most recent data** — OOS is 2025-2026, not a random split
-- **Granular data before aggregates** — per-trade exit detail, raw signals in trade log
-- **Pre-fetch architecture** — no live API calls during backtest loop
+### Industry Best Practices Followed
+- Point-in-time data enforcement
+- Two-window walk-forward validation
+- Hold-adjusted survivorship bias correction
+- Realistic transaction cost modelling with minimum
+- Entry AND exit slippage modelled
+- Minimum OOS trade count (30) for ROBUST verdict
+- Smart money lift with defined threshold (≥ 3pp)
+- Macro correlation with defined threshold (≥ 5pp)
+- 95% binomial confidence intervals on win rates
+- Kelly criterion sanity check post-Phase 1B
+- Sector-adjusted passing criteria
+- Agent cache versioning — invalidate on prompt changes
+- Batch test before scaling
+- Backtests mirror live trading scenarios
 
-### Open source systems evaluated
-- **TradingAgents** — integrated as core 6-agent pipeline
-- **NautilusTrader** — evaluated for execution layer (Stage 4+), Rust-native high performance
-- **Backtrader** — evaluated but replaced with custom engine for better agent integration
-- **QuantConnect** — evaluated but proprietary, limited agent integration
-- **Zipline** — considered but unmaintained
-
-### Known limitations vs institutional systems
+### Known Limitations vs Institutional Systems
 - Daily bar data only — intraday stop precision limited
-- Gap-down exits slightly optimistic (acknowledged)
+- Gap-down exits slightly optimistic (~0.1-0.3% on affected trades)
 - No tick data — slippage model approximate
 - Earnings surprise direction not modelled
-- Sector contagion effects not modelled (AMD rallies when INTC beats)
-- These are acceptable for swing trading validation; addressed in Stage 4+
+- Sector contagion effects not modelled
+- Regime detection is coincident/lagging — VIX spikes after market drops
+- 2020 Phase 1D data lacks smart money context — flagged as limitation
+- Congressional signal 60+ days old excluded — recency weighting applied
+
+### Open Source Systems Evaluated
+- **TradingAgents** — integrated as core 6-agent pipeline
+- **NautilusTrader** — evaluated for Stage 4+ execution layer
+- **Backtrader** — evaluated, replaced with custom engine for agent integration
+- **QuantConnect** — evaluated, proprietary
+- **Zipline** — considered, unmaintained
+
+### Design Gaps — Post-Phase 1B Analysis
+These are known gaps to be addressed with Phase 1B data:
+- Kelly criterion vs current tier sizes
+- Optimal VIX threshold for regime classification (let data determine, not round numbers)
+- ATR 1.0× vs 0.5× entry zone comparison
+- Sector concentration frequency and impact analysis
+- EXCEPTIONAL tier trade count — if < 1%, tier needs redesign
+- Short strategy validation for 2022 bear market
