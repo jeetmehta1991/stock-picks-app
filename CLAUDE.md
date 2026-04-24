@@ -125,6 +125,7 @@ All owner-approved. Do not revert without approval.
 - Risk profile: medium-high risk, high return. Buy dips including in crisis.
 - Email (not Telegram) for all trade approvals in Stage 4
 - Intraday trading: completely separate future project — out of scope
+- Granular before aggregate: always store lowest-level data first. Aggregates can be recomputed; raw data cannot be recovered. Examples: per-trade exit detail not just strategy summary, pre-fetched API cache not live calls, OHLCV Parquet not computed signals.
 - TradingAgents 6-agent pipeline is core to the product — runs Phase 1B+ (Haiku) and Phase 1C+ (Sonnet). See PROJECT_PLAN.md section 20.
 
 ---

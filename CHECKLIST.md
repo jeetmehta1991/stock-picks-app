@@ -14,3 +14,4 @@ Run this before every suggestion or execution — no exceptions.
 10. For any command running longer than 5 minutes, always use nohup to prevent terminal closure killing it:
     nohup bash scripts/download_cache.sh > download.log 2>&1 &
     tail -f download.log
+11. Always capture granular data before aggregating. Granular = can always re-aggregate. Aggregate only = cannot re-derive. Applies to data, outputs, cache, and API calls.
