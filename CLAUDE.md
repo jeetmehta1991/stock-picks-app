@@ -66,9 +66,18 @@ stock-picks-app/
 
 ## Current Phase: 1A v3
 
-**Blocked on two owner decisions:**
-1. Multiple strategies on same ticker — separate positions or one combined?
-2. Review + confirm PROJECT_PLAN.md sections 18 & 19 (strategies + rules)
+**Status:** Pre-fetching all data before Phase 1B run
+- Quiver: congressional ✅ insider ✅ institutional 🔄 running on laptop
+- Finnhub news: batch 1 ✅ batches 2-5 🔄 running on GitHub Actions
+- FRED macro: needs re-fetch to March 2026 (run from Codespaces)
+- OHLCV: needs extend to March 2026 (run from Codespaces)
+- AAII ✅ CNN ✅
+
+**Decisions confirmed:**
+1. Separate positions per strategy ✅
+2. Strategies + rules confirmed ✅
+3. Backtest period extended to March 2026 ✅
+4. IS = 2022-2024, OOS = 2025-Mar 2026 ✅
 
 **Sync Codespace before anything:**
 ```bash
