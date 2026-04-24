@@ -14,6 +14,7 @@ import os
 import logging
 import io
 from datetime import date, timedelta
+from pathlib import Path
 from typing import Optional
 
 import requests
@@ -24,8 +25,46 @@ logger = logging.getLogger(__name__)
 
 FRED_KEY  = os.environ.get("FRED_API_KEY", "")
 FRED_BASE = "https://api.stlouisfed.org/fred/series/observations"
+MACRO_CACHE = Path(__file__).parent / "cache" / "macro"
+
+SERIES_MAP = {
+    "T10Y2Y":   "yield_curve",
+    "FEDFUNDS": "fed_funds",
+    "UNRATE":   "unemployment",
+    "CPIAUCSL": "cpi",
+    "T10YIE":   "inflation_exp",
+    "DGS10":    "treasury_10y",
+    "BAA10Y":   "corp_spread",
+}
+
+_MACRO_COMBINED: Optional[pd.DataFrame] = None
+
+
+def _load_macro_combined() -> Optional[pd.DataFrame]:
+    """Load pre-fetched combined macro Parquet — fastest path."""
+    global _MACRO_COMBINED
+    if _MACRO_COMBINED is not None:
+        return _MACRO_COMBINED
+    path = MACRO_CACHE / "macro_combined.parquet"
+    if path.exists():
+        _MACRO_COMBINED = pd.read_parquet(path)
+        _MACRO_COMBINED["date"] = pd.to_datetime(_MACRO_COMBINED["date"])
+        logger.info("Macro: loaded pre-fetched combined cache (%d rows)", len(_MACRO_COMBINED))
+    return _MACRO_COMBINED
+
 
 def _fred_series(series_id: str, start: date, end: date) -> pd.Series:
+    # Try pre-fetched Parquet cache first
+    name = SERIES_MAP.get(series_id)
+    if name:
+        combined = _load_macro_combined()
+        if combined is not None and name in combined.columns:
+            mask = (combined["date"] >= pd.Timestamp(start)) & \
+                   (combined["date"] <= pd.Timestamp(end))
+            s = combined.loc[mask, ["date", name]].set_index("date")[name]
+            s.name = series_id
+            return s
+
     if FRED_KEY:
         try:
             resp = requests.get(

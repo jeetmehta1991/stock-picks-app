@@ -17,6 +17,7 @@ import time
 import logging
 import requests
 from datetime import date, timedelta
+from pathlib import Path
 from typing import Optional
 
 import pandas as pd
@@ -27,6 +28,22 @@ logger = logging.getLogger(__name__)
 QUIVER_KEY  = os.environ.get("QUIVER_API_KEY", "")
 QUIVER_BASE = "https://api.quiverquant.com/beta"
 _DELAY      = 1.5
+
+# Pre-fetch cache directory — populated by scripts/prefetch_quiver.py
+PREFETCH_DIR = Path(__file__).parent / "cache" / "quiver"
+
+
+def _load_prefetch(dataset: str, ticker: str) -> Optional[pd.DataFrame]:
+    """Load pre-fetched Quiver data from Parquet cache. Returns None if not cached."""
+    path = PREFETCH_DIR / dataset / f"{ticker.replace('-','_')}.parquet"
+    if not path.exists():
+        return None
+    try:
+        df = pd.read_parquet(path)
+        return df if not df.empty else pd.DataFrame()
+    except Exception as exc:
+        logger.debug("prefetch load %s/%s: %s", dataset, ticker, exc)
+        return None
 
 
 def _quiver_get(endpoint: str) -> Optional[list]:
@@ -46,6 +63,20 @@ def _quiver_get(endpoint: str) -> Optional[list]:
     except Exception as exc:
         logger.debug("Quiver %s: %s", endpoint, exc)
         return None
+
+
+def _get_quiver_data(dataset: str, endpoint_path: str, ticker: str) -> Optional[list]:
+    """
+    Load Quiver data — tries pre-fetch cache first, falls back to live API.
+    Pre-fetch cache is populated by scripts/prefetch_quiver.py.
+    """
+    cached = _load_prefetch(dataset, ticker)
+    if cached is not None:
+        logger.debug("Prefetch cache hit: %s/%s (%d rows)", dataset, ticker, len(cached))
+        return cached.to_dict("records") if not cached.empty else []
+    # Fallback to live API (slower — pre-fetch not run yet)
+    logger.debug("Prefetch cache miss: %s/%s — calling live API", dataset, ticker)
+    return _quiver_get(endpoint_path)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -282,10 +313,9 @@ def analyst_bullets(analyst: dict, current_price: Optional[float] = None) -> lis
 # ─────────────────────────────────────────────────────────────────────────────
 
 def congressional_signal(ticker: str, as_of: date, lookback_days: int = 45) -> dict:
-    data = _quiver_get(f"historical/congresstrading/{ticker}")
+    data = _get_quiver_data("congressional", f"historical/congresstrading/{ticker}", ticker)
     if not data:
         return {"signal": "none", "buy_count": 0, "sell_count": 0}
-    time.sleep(_DELAY)
     try:
         df = pd.DataFrame(data)
         if df.empty:
@@ -320,10 +350,9 @@ def congressional_signal(ticker: str, as_of: date, lookback_days: int = 45) -> d
 # ─────────────────────────────────────────────────────────────────────────────
 
 def insider_signal(ticker: str, as_of: date, lookback_days: int = 30) -> dict:
-    data = _quiver_get(f"historical/insiders/{ticker}")
+    data = _get_quiver_data("insider", f"historical/insidertrading/{ticker}", ticker)
     if not data:
         return {"signal": "none", "buy_count": 0, "sell_count": 0}
-    time.sleep(_DELAY)
     try:
         df = pd.DataFrame(data)
         if df.empty:
@@ -368,10 +397,9 @@ def insider_signal(ticker: str, as_of: date, lookback_days: int = 30) -> dict:
 # ─────────────────────────────────────────────────────────────────────────────
 
 def institutional_signal(ticker: str, as_of: date) -> dict:
-    data = _quiver_get(f"historical/institutionalholdings/{ticker}")
+    data = _get_quiver_data("institutional", f"historical/institutionalholdings/{ticker}", ticker)
     if not data:
         return {"signal": "none"}
-    time.sleep(_DELAY)
     try:
         df = pd.DataFrame(data)
         if df.empty:
@@ -451,3 +479,64 @@ def smart_money_score(
 
     return {"composite_signal": composite, "score": score,
             "details": {"congressional": cs, "insider": iss, "institutional": ints}}
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# FINNHUB NEWS SENTIMENT
+# Read from pre-fetched cache (scripts/prefetch_finnhub_news.py)
+# Falls back to neutral if cache not available.
+# ─────────────────────────────────────────────────────────────────────────────
+
+NEWS_DIR = Path(__file__).parent / "prefetch" / "news"
+
+
+def get_news_sentiment(ticker: str, as_of: date, lookback_days: int = 7) -> dict:
+    """
+    Return news sentiment for ticker in the lookback window before as_of.
+    Reads from pre-fetched Finnhub news cache (annual Parquet files per ticker).
+
+    Returns dict:
+        sentiment_score: float (-1 to 1), positive = bullish news
+        article_count: int — number of articles in window
+        signal: bullish | bearish | neutral
+    """
+    year = as_of.year
+    safe_ticker = ticker.replace("-", "_")
+    path = NEWS_DIR / f"{safe_ticker}_{year}.parquet"
+
+    result = {"sentiment_score": 0.0, "article_count": 0, "signal": "neutral"}
+
+    if not path.exists():
+        return result
+
+    try:
+        df = pd.read_parquet(path)
+        if df.empty or "date" not in df.columns:
+            return result
+
+        df["date"] = pd.to_datetime(df["date"])
+        window_start = pd.Timestamp(as_of - timedelta(days=lookback_days))
+        window_end   = pd.Timestamp(as_of)
+        window = df[(df["date"] >= window_start) & (df["date"] <= window_end)]
+
+        if window.empty:
+            return result
+
+        avg_score     = window["sentiment_score"].mean()
+        article_count = int(window["article_count"].sum())
+
+        if avg_score >= 0.15:
+            signal = "bullish"
+        elif avg_score <= -0.15:
+            signal = "bearish"
+        else:
+            signal = "neutral"
+
+        return {
+            "sentiment_score": round(float(avg_score), 3),
+            "article_count":   article_count,
+            "signal":          signal,
+        }
+    except Exception as exc:
+        logger.debug("get_news_sentiment(%s): %s", ticker, exc)
+        return result

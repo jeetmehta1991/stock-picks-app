@@ -169,6 +169,33 @@ Return JSON only:
 # AGENT 2: FUNDAMENTAL AGENT
 # ---------------------------------------------------------------------------
 
+def _load_social_data(ticker: str, as_of: date) -> dict:
+    """Load pre-fetched WallStreetBets + Wikipedia data."""
+    quiver_dir = Path(__file__).parent.parent / "data" / "cache" / "quiver"
+    result = {"wsb_mentions": 0, "wsb_trend": "none", "wiki_views": 0}
+
+    for data_type, key in [("wallstreetbets", "wsb"), ("wikipedia", "wiki")]:
+        path = quiver_dir / data_type / f"{ticker.replace('-','_')}.parquet"
+        if not path.exists():
+            continue
+        try:
+            df = pd.read_parquet(path)
+            if df.empty:
+                continue
+            df["Date"] = pd.to_datetime(df["Date"])
+            window = df[df["Date"] <= pd.Timestamp(as_of)].tail(30)
+            if key == "wsb" and "Mentions" in df.columns:
+                result["wsb_mentions"] = int(window["Mentions"].sum())
+                recent = window.tail(7)["Mentions"].mean()
+                older = window.head(23)["Mentions"].mean() if len(window) > 7 else recent
+                result["wsb_trend"] = "rising" if recent > older * 1.2 else "falling" if recent < older * 0.8 else "stable"
+            elif key == "wiki" and "Views" in df.columns:
+                result["wiki_views"] = int(window["Views"].mean())
+        except Exception:
+            pass
+    return result
+
+
 def run_fundamental_agent(
     ticker: str,
     as_of: date,
@@ -178,16 +205,20 @@ def run_fundamental_agent(
     model: str,
 ) -> dict:
     """
-    Fundamental Agent: earnings risk, buybacks, analyst revisions, insider/13F.
+    Fundamental Agent: earnings risk, insider/13F, WallStreetBets, Wikipedia.
     Returns: fundamental_score (0-10), earnings_risk, smart_money_alignment, summary
     """
+    social = _load_social_data(ticker, as_of)
+
     prompt = f"""Analyse fundamental and smart money signals for {ticker} as of {as_of}.
 
 Insider signal: {json.dumps(insider_sig, default=str)}
 Institutional (13F) signal: {json.dumps(institutional_sig, default=str)}
 Days to next earnings: {earnings_days if earnings_days else "unknown"}
+Social activity (last 30 days): {json.dumps(social, default=str)}
 
-Evaluate: insider buying conviction, institutional accumulation, and earnings timing risk.
+Evaluate: insider buying conviction, institutional accumulation, earnings timing risk,
+and retail investor interest trends.
 
 Return JSON only:
 {{
@@ -196,6 +227,7 @@ Return JSON only:
   "smart_money_alignment": "<strong|moderate|weak|negative>",
   "insider_conviction": "<high|medium|low|none>",
   "avoid_earnings": <true/false — true if earnings within 7 days>,
+  "retail_interest": "<high|normal|low>",
   "summary": "<one sentence>"
 }}"""
 
@@ -213,6 +245,31 @@ Return JSON only:
 # AGENT 3: SENTIMENT AGENT
 # ---------------------------------------------------------------------------
 
+def _load_news_sentiment(ticker: str, as_of: date, lookback_days: int = 30) -> dict:
+    """Load pre-fetched Finnhub news sentiment for ticker around as_of date."""
+    cache_dir = Path(__file__).parent.parent / "data" / "cache" / "finnhub_news"
+    path = cache_dir / f"{ticker.replace('-','_')}.parquet"
+    if not path.exists():
+        return {"available": False, "avg_sentiment": 0, "article_count": 0}
+    try:
+        df = pd.read_parquet(path)
+        if df.empty:
+            return {"available": False, "avg_sentiment": 0, "article_count": 0}
+        df["date"] = pd.to_datetime(df["date"])
+        start = pd.Timestamp(as_of) - pd.Timedelta(days=lookback_days)
+        window = df[(df["date"] >= start) & (df["date"] <= pd.Timestamp(as_of))]
+        if window.empty:
+            return {"available": True, "avg_sentiment": 0, "article_count": 0}
+        return {
+            "available": True,
+            "avg_sentiment": round(float(window["sentiment_mean"].mean()), 3),
+            "article_count": int(window["article_count"].sum()),
+            "lookback_days": lookback_days,
+        }
+    except Exception:
+        return {"available": False, "avg_sentiment": 0, "article_count": 0}
+
+
 def run_sentiment_agent(
     ticker: str,
     as_of: date,
@@ -221,16 +278,19 @@ def run_sentiment_agent(
     model: str,
 ) -> dict:
     """
-    Sentiment Agent: congressional trades, AAII, Fear/Greed, social.
+    Sentiment Agent: congressional trades, AAII, Fear/Greed, news sentiment.
     Returns: sentiment_score (0-10), contrarian_signal, congressional_strength, summary
     """
+    news = _load_news_sentiment(ticker, as_of)
+
     prompt = f"""Analyse sentiment signals for {ticker} as of {as_of}.
 
 Congressional trading signal: {json.dumps(congressional_sig, default=str)}
 Market sentiment snapshot: {json.dumps(sentiment_snap, default=str)}
+News sentiment (last 30 days): {json.dumps(news, default=str)}
 
 Evaluate: Is broad market sentiment a tailwind or headwind? Are congressional signals
-confirming or contradicting technical setup?
+confirming or contradicting technical setup? Does recent news sentiment support the trade?
 
 Return JSON only:
 {{
@@ -238,6 +298,7 @@ Return JSON only:
   "contrarian_signal": "<extreme_buy|buy|neutral|sell|extreme_sell>",
   "congressional_strength": "<strong_buy|buy|neutral|sell|none>",
   "fear_greed_context": "<fear_zone_opportunity|neutral|greed_zone_caution>",
+  "news_sentiment": "<positive|neutral|negative|not_available>",
   "summary": "<one sentence>"
 }}"""
 
