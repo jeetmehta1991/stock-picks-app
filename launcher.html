@@ -2,38 +2,56 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<title>Stock Picks App — Launcher</title>
+<title>Stock Picks App</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d9;
      display:flex;align-items:center;justify-content:center;min-height:100vh}
-.wrap{text-align:center;max-width:500px;padding:2rem}
-h1{color:#f0f6fc;font-size:1.6rem;margin-bottom:.5rem}
-p{color:#8b949e;font-size:.9rem;margin-bottom:2rem}
+.wrap{text-align:center;max-width:520px;padding:2rem;width:100%}
+h1{color:#f0f6fc;font-size:1.6rem;margin-bottom:.4rem}
+p{color:#8b949e;font-size:.85rem;margin-bottom:2rem}
 .btn{display:block;background:#161b22;border:1px solid #30363d;border-radius:10px;
-     padding:1.25rem 2rem;margin-bottom:.75rem;text-decoration:none;color:#c9d1d9}
+     padding:1.1rem 1.5rem;margin-bottom:.75rem;text-decoration:none;color:#c9d1d9;transition:border-color .2s}
 .btn:hover{border-color:#58a6ff}
-.btn .title{font-size:1rem;font-weight:600;color:#f0f6fc;margin-bottom:.3rem}
-.btn .sub{font-size:.8rem;color:#8b949e}
+.btn .title{font-size:.95rem;font-weight:600;color:#f0f6fc;margin-bottom:.25rem}
+.btn .sub{font-size:.78rem;color:#8b949e}
+.badge{display:inline-block;font-size:.62rem;padding:.1rem .45rem;border-radius:999px;
+       font-weight:600;vertical-align:middle;margin-left:.4rem}
+.b1a{background:#1a472a;color:#3fb950}
+.b1b{background:#0d419d;color:#79c0ff}
 .blue{border-left:3px solid #58a6ff}
 .green{border-left:3px solid #3fb950}
+.gold{border-left:3px solid #e3b341}
 </style>
 </head>
 <body>
 <div class="wrap">
   <h1>Stock Picks App</h1>
-  <p>Choose which page to open</p>
-  <a href="/analysis_dashboard.html" class="btn blue">
-    <div class="title">Analysis Dashboard</div>
-    <div class="sub">Backtest results — 9 analytical tabs</div>
+  <p>Select a page</p>
+
+  <a href="/analysis_dashboard_1b.html" class="btn blue">
+    <div class="title">Phase 1B Dashboard <span class="badge b1b">1B</span></div>
+    <div class="sub">8 tabs — strategies, exits, confidence tiers, smart money lift, agents, regimes, walk-forward, trades</div>
   </a>
-  <a href="/index.html" class="btn green">
-    <div class="title">Top Performing Stocks</div>
-    <div class="sub">Daily picks — updated every morning</div>
+
+  <a href="/analysis_dashboard.html" class="btn green">
+    <div class="title">Phase 1A Dashboard <span class="badge b1a">1A</span></div>
+    <div class="sub">67 instruments · 6,942 trades · pipeline validation results</div>
   </a>
+
+  <a href="/output_v2_1b/backtest_report.html" class="btn">
+    <div class="title">Phase 1B HTML Report</div>
+    <div class="sub">Strategy performance report — auto-generated</div>
+  </a>
+
   <a href="/output_v2/backtest_report.html" class="btn">
-    <div class="title">Backtest Report</div>
-    <div class="sub">Strategy performance HTML report</div>
+    <div class="title">Phase 1A HTML Report</div>
+    <div class="sub">Strategy performance report — Phase 1A</div>
+  </a>
+
+  <a href="/index.html" class="btn gold">
+    <div class="title">Top Performing Stocks</div>
+    <div class="sub">Daily picks — updated every morning at 6am UTC</div>
   </a>
 </div>
 </body>

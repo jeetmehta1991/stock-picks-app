@@ -1,6 +1,5 @@
 {
   "liveServer.settings.root": "/",
-  "liveServer.settings.file": "",
-  "liveServer.settings.donotShowInfoMsg": true,
-  "liveServer.settings.port": 5501
+  "liveServer.settings.file": "launcher.html",
+  "liveServer.settings.donotShowInfoMsg": true
 }

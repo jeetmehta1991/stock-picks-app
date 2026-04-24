@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Phase 1B Analysis Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d9;min-height:100vh}
+.header{background:#161b22;border-bottom:1px solid #30363d;padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between}
+.header h1{font-size:1.2rem;color:#f0f6fc}
+.header .phase-badge{background:#1f6feb;color:#fff;font-size:.7rem;padding:.2rem .6rem;border-radius:999px;font-weight:600}
+.status{font-size:.75rem;color:#8b949e}
+.tabs{display:flex;gap:0;background:#161b22;border-bottom:1px solid #30363d;overflow-x:auto}
+.tab{padding:.65rem 1.1rem;font-size:.78rem;cursor:pointer;color:#8b949e;border-bottom:2px solid transparent;white-space:nowrap}
+.tab.active{color:#58a6ff;border-bottom-color:#58a6ff}
+.tab:hover{color:#c9d1d9}
+.pane{display:none;padding:1.2rem}
+.pane.active{display:block}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.6rem;margin-bottom:1.2rem}
+.stat{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:.8rem 1rem}
+.stat .v{font-size:1.6rem;font-weight:700;color:#f0f6fc}
+.stat .l{font-size:.7rem;color:#8b949e;margin-top:2px}
+table{width:100%;border-collapse:collapse;font-size:.78rem}
+th{background:#161b22;color:#8b949e;font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;padding:.5rem .7rem;text-align:left;border-bottom:1px solid #21262d;position:sticky;top:0;cursor:pointer}
+th:hover{color:#c9d1d9}
+td{padding:.5rem .7rem;border-bottom:1px solid #21262d}
+tr:hover td{background:#1c2128}
+.tbl-wrap{max-height:520px;overflow-y:auto;border:1px solid #21262d;border-radius:6px}
+.badge{display:inline-block;font-size:.65rem;padding:.15rem .5rem;border-radius:999px;font-weight:600}
+.badge-exc{background:#1a472a;color:#3fb950}
+.badge-vh{background:#0d419d;color:#79c0ff}
+.badge-hi{background:#2d333b;color:#c9d1d9}
+.badge-mh{background:#161b22;color:#8b949e}
+.badge-avoid{background:#4a0f0f;color:#f85149}
+.green{color:#3fb950}.red{color:#f85149}.yellow{color:#e3b341}.blue{color:#58a6ff}
+.filters{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.8rem}
+.filters select,.filters input{background:#161b22;border:1px solid #30363d;color:#c9d1d9;padding:.35rem .6rem;border-radius:6px;font-size:.75rem}
+.chart-wrap{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:1rem;margin-bottom:1rem}
+.chart-wrap h3{font-size:.8rem;color:#8b949e;margin-bottom:.8rem;text-transform:uppercase;letter-spacing:.05em}
+canvas{max-height:280px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+@media(max-width:700px){.grid2{grid-template-columns:1fr}}
+.loading{text-align:center;padding:3rem;color:#8b949e}
+.no-data{text-align:center;padding:2rem;color:#484f58;font-size:.85rem}
+.search{background:#161b22;border:1px solid #30363d;color:#c9d1d9;padding:.4rem .8rem;border-radius:6px;font-size:.78rem;width:100%;margin-bottom:.8rem}
+.tier-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.6rem;margin-bottom:1rem}
+.tier-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:.8rem}
+.tier-card .name{font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:#8b949e;margin-bottom:.4rem}
+.tier-card .val{font-size:1.3rem;font-weight:700}
+.tier-card .sub{font-size:.7rem;color:#8b949e;margin-top:.2rem}
+.exit-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.5rem}
+.exit-card{background:#161b22;border:1px solid #30363d;border-radius:6px;padding:.7rem}
+.exit-card.winner{border-color:#3fb950}
+.exit-card .exit-name{font-size:.75rem;font-weight:600;color:#f0f6fc;margin-bottom:.3rem}
+.exit-card .exit-score{font-size:1.1rem;font-weight:700}
+.exit-card .exit-stats{font-size:.68rem;color:#8b949e;margin-top:.2rem}
+.sm-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+.sm-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:1rem}
+.sm-card h4{font-size:.75rem;color:#8b949e;margin-bottom:.6rem;text-transform:uppercase}
+.lift-bar{height:24px;background:#21262d;border-radius:4px;margin:.3rem 0;position:relative;overflow:hidden}
+.lift-bar .fill{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:.5rem;font-size:.7rem;font-weight:600}
+.refresh-btn{background:#21262d;border:1px solid #30363d;color:#c9d1d9;padding:.35rem .8rem;border-radius:6px;font-size:.75rem;cursor:pointer}
+.refresh-btn:hover{border-color:#58a6ff}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div style="display:flex;align-items:center;gap:.8rem">
+    <h1>Analysis Dashboard</h1>
+    <span class="phase-badge">PHASE 1B</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:.8rem">
+    <span class="status" id="status-txt">Loading...</span>
+    <button class="refresh-btn" onclick="autoLoad()">↻ Refresh</button>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab('strategy')">Strategy Performance</div>
+  <div class="tab" onclick="showTab('exit')">Exit Analysis</div>
+  <div class="tab" onclick="showTab('tiers')">Confidence Tiers</div>
+  <div class="tab" onclick="showTab('smartmoney')">Smart Money Lift</div>
+  <div class="tab" onclick="showTab('agents')">Agent Analysis</div>
+  <div class="tab" onclick="showTab('regime')">Regime Analysis</div>
+  <div class="tab" onclick="showTab('walkforward')">Walk-Forward</div>
+  <div class="tab" onclick="showTab('trades')">Trade Log</div>
+</div>
+
+<!-- TAB 1: STRATEGY PERFORMANCE -->
+<div class="pane active" id="pane-strategy">
+  <div class="stats" id="stats-strategy"></div>
+  <div class="filters">
+    <select id="filt-cat" onchange="renderStrategy()">
+      <option value="all">All categories</option>
+      <option value="pivot">Pivot</option>
+      <option value="momentum">Momentum</option>
+      <option value="trend">Trend</option>
+      <option value="mean_reversion">Mean Reversion</option>
+      <option value="breakout">Breakout</option>
+      <option value="candle">Candle</option>
+      <option value="confluence">Confluence</option>
+    </select>
+    <select id="filt-pass" onchange="renderStrategy()">
+      <option value="all">All strategies</option>
+      <option value="pass">Passing only</option>
+      <option value="audit">Audit flagged</option>
+    </select>
+    <select id="filt-sort" onchange="renderStrategy()">
+      <option value="profit_factor">Sort: Profit Factor</option>
+      <option value="win_rate">Sort: Win Rate</option>
+      <option value="total_roi_pct">Sort: ROI</option>
+      <option value="total_trades">Sort: Trade Count</option>
+    </select>
+  </div>
+  <div class="tbl-wrap"><table id="tbl-strategy">
+    <thead><tr>
+      <th onclick="sortStrategy('strategy')">Strategy</th>
+      <th onclick="sortStrategy('category')">Category</th>
+      <th onclick="sortStrategy('total_trades')">Trades</th>
+      <th onclick="sortStrategy('win_rate')">Win Rate</th>
+      <th onclick="sortStrategy('profit_factor')">Profit Factor</th>
+      <th onclick="sortStrategy('total_roi_pct')">Net ROI</th>
+      <th onclick="sortStrategy('max_drawdown_pct')">Max DD</th>
+      <th onclick="sortStrategy('smart_money_lift')">SM Lift</th>
+      <th onclick="sortStrategy('regimes_profitable')">Regimes</th>
+      <th>Pass</th>
+    </tr></thead>
+    <tbody id="tbody-strategy"></tbody>
+  </table></div>
+</div>
+
+<!-- TAB 2: EXIT ANALYSIS -->
+<div class="pane" id="pane-exit">
+  <div class="filters">
+    <select id="exit-strat-filter" onchange="renderExit()">
+      <option value="all">All strategies</option>
+    </select>
+  </div>
+  <div id="exit-cards"></div>
+  <div class="tbl-wrap" style="margin-top:1rem"><table>
+    <thead><tr>
+      <th>Strategy</th><th>Exit Method</th><th>Trades</th>
+      <th>Win Rate</th><th>Profit Factor</th><th>ROI</th>
+      <th>Max DD</th><th>Avg Hold</th><th>Score</th><th>Best</th>
+    </tr></thead>
+    <tbody id="tbody-exit"></tbody>
+  </table></div>
+</div>
+
+<!-- TAB 3: CONFIDENCE TIERS -->
+<div class="pane" id="pane-tiers">
+  <div class="tier-grid" id="tier-cards"></div>
+  <div class="grid2">
+    <div class="chart-wrap"><h3>Win Rate by Confidence Tier</h3><canvas id="chart-tier-wr"></canvas></div>
+    <div class="chart-wrap"><h3>ROI by Confidence Tier</h3><canvas id="chart-tier-roi"></canvas></div>
+  </div>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Tier</th><th>Trades</th><th>Win Rate</th><th>Avg ROI</th><th>Total ROI</th><th>Avg Hold</th></tr></thead>
+    <tbody id="tbody-tiers"></tbody>
+  </table></div>
+</div>
+
+<!-- TAB 4: SMART MONEY LIFT -->
+<div class="pane" id="pane-smartmoney">
+  <div class="sm-grid">
+    <div class="sm-card">
+      <h4>Congressional Signal Lift</h4>
+      <div id="cong-lift"></div>
+    </div>
+    <div class="sm-card">
+      <h4>Smart Money Score Lift</h4>
+      <div id="sm-score-lift"></div>
+    </div>
+  </div>
+  <div class="chart-wrap"><h3>Win Rate by Smart Money Score</h3><canvas id="chart-sm"></canvas></div>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>SM Score</th><th>Trades</th><th>Win Rate</th><th>Avg ROI</th><th>Total ROI</th></tr></thead>
+    <tbody id="tbody-sm"></tbody>
+  </table></div>
+</div>
+
+<!-- TAB 5: AGENT ANALYSIS -->
+<div class="pane" id="pane-agents">
+  <div class="stats" id="stats-agents"></div>
+  <div class="grid2">
+    <div class="chart-wrap"><h3>Win Rate by Confidence Tier (Agent Assigned)</h3><canvas id="chart-agent-tier"></canvas></div>
+    <div class="chart-wrap"><h3>Trade Distribution by Tier</h3><canvas id="chart-agent-dist"></canvas></div>
+  </div>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Confidence Tier</th><th>Trades</th><th>Win Rate</th><th>Avg ROI</th><th>Profit Factor</th><th>Total ROI</th></tr></thead>
+    <tbody id="tbody-agents"></tbody>
+  </table></div>
+</div>
+
+<!-- TAB 6: REGIME ANALYSIS -->
+<div class="pane" id="pane-regime">
+  <div class="chart-wrap"><h3>Win Rate by Regime</h3><canvas id="chart-regime"></canvas></div>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Regime</th><th>Trades</th><th>Win Rate</th><th>Avg ROI</th><th>Total ROI</th><th>Crisis Flag</th></tr></thead>
+    <tbody id="tbody-regime"></tbody>
+  </table></div>
+</div>
+
+<!-- TAB 7: WALK-FORWARD -->
+<div class="pane" id="pane-walkforward">
+  <div class="stats" id="stats-wf"></div>
+  <div class="filters">
+    <select id="wf-filter" onchange="renderWF()">
+      <option value="all">All verdicts</option>
+      <option value="ROBUST">ROBUST only</option>
+      <option value="OVERFIT">OVERFIT only</option>
+      <option value="WEAK">WEAK only</option>
+    </select>
+  </div>
+  <div class="tbl-wrap"><table>
+    <thead><tr>
+      <th>Strategy</th><th>Verdict</th>
+      <th>IS Trades</th><th>IS Win Rate</th><th>IS PF</th>
+      <th>OOS Trades</th><th>OOS Win Rate</th><th>OOS PF</th>
+      <th>WR Degradation</th>
+    </tr></thead>
+    <tbody id="tbody-wf"></tbody>
+  </table></div>
+</div>
+
+<!-- TAB 8: TRADE LOG -->
+<div class="pane" id="pane-trades">
+  <div class="filters">
+    <input class="search" id="trade-search" placeholder="Search ticker or strategy..." oninput="renderTrades()">
+    <select id="trade-dir" onchange="renderTrades()"><option value="all">All directions</option><option value="long">Long</option><option value="short">Short</option></select>
+    <select id="trade-outcome" onchange="renderTrades()"><option value="all">All outcomes</option><option value="win">Wins</option><option value="loss">Losses</option></select>
+    <select id="trade-tier" onchange="renderTrades()"><option value="all">All tiers</option><option value="EXCEPTIONAL">EXCEPTIONAL</option><option value="VERY_HIGH">VERY HIGH</option><option value="HIGH">HIGH</option><option value="MEDIUM_HIGH">MEDIUM HIGH</option></select>
+    <select id="trade-crisis" onchange="renderTrades()"><option value="all">All regimes</option><option value="crisis">Crisis only</option></select>
+  </div>
+  <div class="status" id="trade-count-label" style="margin-bottom:.5rem"></div>
+  <div class="tbl-wrap"><table>
+    <thead><tr>
+      <th>Ticker</th><th>Strategy</th><th>Direction</th><th>Tier</th>
+      <th>Entry</th><th>Exit</th><th>Hold</th><th>ROI</th><th>Win</th>
+      <th>Regime</th><th>SM Score</th><th>Exit Reason</th>
+    </tr></thead>
+    <tbody id="tbody-trades"></tbody>
+  </table></div>
+</div>
+
+<script>
+let TRADES=[], METRICS=[], EXIT_CMP=[], WF=[], REGIME=[];
+let stratSort='profit_factor', stratSortDir=-1;
+
+async function fetchCSV(path){
+  try{
+    const r=await fetch(path);
+    if(!r.ok)return null;
+    const t=await r.text();
+    return Papa.parse(t,{header:true,dynamicTyping:true,skipEmptyLines:true}).data;
+  }catch(e){return null;}
+}
+
+async function autoLoad(){
+  document.getElementById('status-txt').textContent='Loading...';
+  const [tr,me,ex,wf,rg]=await Promise.all([
+    fetchCSV('output_v2_1b/trade_log.csv'),
+    fetchCSV('output_v2_1b/backtest_results.csv'),
+    fetchCSV('output_v2_1b/exit_strategy_comparison.csv'),
+    fetchCSV('output_v2_1b/walk_forward_validation.csv'),
+    fetchCSV('output_v2_1b/regime_performance.csv'),
+  ]);
+  TRADES=tr||[]; METRICS=me||[]; EXIT_CMP=ex||[]; WF=wf||[]; REGIME=rg||[];
+  if(!TRADES.length){
+    document.getElementById('status-txt').textContent='No Phase 1B data yet — run in progress';
+    return;
+  }
+  document.getElementById('status-txt').textContent=`${TRADES.length.toLocaleString()} trades loaded`;
+  populateExitFilter();
+  renderAll();
+}
+
+function renderAll(){
+  renderStrategy(); renderExit(); renderTiers();
+  renderSmartMoney(); renderAgents(); renderRegime();
+  renderWF(); renderTrades();
+}
+
+function showTab(t){
+  document.querySelectorAll('.tab').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.pane').forEach(el=>el.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('pane-'+t).classList.add('active');
+}
+
+function pct(v,d=1){return v!=null?`${(v*100).toFixed(d)}%`:'—'}
+function roi(v){if(v==null)return'—';const c=v>0?'green':'red';return`<span class="${c}">${v.toFixed(1)}%</span>`}
+function wr(v){if(v==null)return'—';const c=v>=0.55?'green':v>=0.45?'yellow':'red';return`<span class="${c}">${(v*100).toFixed(1)}%</span>`}
+function pf(v){if(v==null)return'—';const c=v>1.2?'green':v>1?'yellow':'red';return`<span class="${c}">${v.toFixed(2)}</span>`}
+
+function tierBadge(t){
+  const m={'EXCEPTIONAL':'badge-exc','VERY_HIGH':'badge-vh','HIGH':'badge-hi','MEDIUM_HIGH':'badge-mh','AVOID':'badge-avoid'};
+  return`<span class="badge ${m[t]||'badge-hi'}">${(t||'').replace('_',' ')}</span>`;
+}
+
+// ── TAB 1: STRATEGY ──
+function renderStrategy(){
+  const cat=document.getElementById('filt-cat').value;
+  const pass=document.getElementById('filt-pass').value;
+  stratSort=document.getElementById('filt-sort').value;
+  let data=[...METRICS];
+  if(cat!=='all')data=data.filter(r=>r.category===cat);
+  if(pass==='pass')data=data.filter(r=>r.passes_all);
+  if(pass==='audit')data=data.filter(r=>r.audit_flags&&r.audit_flags.length>2);
+  data.sort((a,b)=>(b[stratSort]||0)-(a[stratSort]||0));
+
+  const wins=TRADES.filter(t=>t.win).length;
+  const total=TRADES.length;
+  const grossRoi=TRADES.reduce((s,t)=>s+(t.pnl_pct_gross||t.pnl_pct||0),0);
+  const netRoi=TRADES.reduce((s,t)=>s+(t.pnl_pct||0),0);
+  const passing=METRICS.filter(r=>r.passes_all).length;
+
+  document.getElementById('stats-strategy').innerHTML=`
+    <div class="stat"><div class="v">${total.toLocaleString()}</div><div class="l">Total trades</div></div>
+    <div class="stat"><div class="v">${(wins/total*100).toFixed(1)}%</div><div class="l">Overall win rate</div></div>
+    <div class="stat"><div class="v green">${grossRoi.toFixed(0)}%</div><div class="l">Gross ROI</div></div>
+    <div class="stat"><div class="v green">${netRoi.toFixed(0)}%</div><div class="l">Net ROI</div></div>
+    <div class="stat"><div class="v">${METRICS.length}</div><div class="l">Strategies tested</div></div>
+    <div class="stat"><div class="v green">${passing}</div><div class="l">Passing all criteria</div></div>
+  `;
+
+  document.getElementById('tbody-strategy').innerHTML=data.map(r=>`<tr>
+    <td class="blue">${r.strategy}</td>
+    <td style="color:#8b949e">${r.category||''}</td>
+    <td>${(r.total_trades||0).toLocaleString()}</td>
+    <td>${wr(r.win_rate)}</td>
+    <td>${pf(r.profit_factor)}</td>
+    <td>${roi(r.total_roi_pct)}</td>
+    <td style="color:${(r.max_drawdown_pct||0)<-15?'#f85149':'#e3b341'}">${(r.max_drawdown_pct||0).toFixed(1)}%</td>
+    <td style="color:${(r.smart_money_lift||0)>0?'#3fb950':'#8b949e'}">${r.smart_money_lift!=null?(r.smart_money_lift*100).toFixed(1)+'pp':'—'}</td>
+    <td>${r.regimes_profitable||0}/5</td>
+    <td>${r.passes_all?'✅':''}${(r.audit_flags&&r.audit_flags.length>2)?'⚠️':''}</td>
+  </tr>`).join('');
+}
+
+function sortStrategy(col){stratSort=col;renderStrategy();}
+
+// ── TAB 2: EXIT ANALYSIS ──
+function populateExitFilter(){
+  const sel=document.getElementById('exit-strat-filter');
+  const strats=[...new Set(EXIT_CMP.map(r=>r.strategy))].sort();
+  sel.innerHTML='<option value="all">All strategies</option>'+strats.map(s=>`<option value="${s}">${s}</option>`).join('');
+}
+
+function renderExit(){
+  const strat=document.getElementById('exit-strat-filter').value;
+  let data=[...EXIT_CMP];
+  if(strat!=='all')data=data.filter(r=>r.strategy===strat);
+
+  // Winner cards
+  if(strat!=='all'){
+    const sorted=[...data].sort((a,b)=>(b.composite_score||0)-(a.composite_score||0));
+    document.getElementById('exit-cards').innerHTML=`<div class="exit-grid">${
+      sorted.map((r,i)=>`<div class="exit-card ${i===0?'winner':''}">
+        <div class="exit-name">${i===0?'🏆 ':''} ${r.exit_method}</div>
+        <div class="exit-score ${i===0?'green':''}">${(r.composite_score||0).toFixed(1)}</div>
+        <div class="exit-stats">WR: ${(r.win_rate*100||0).toFixed(1)}% | PF: ${(r.profit_factor||0).toFixed(2)} | ROI: ${(r.total_roi_pct||0).toFixed(1)}%</div>
+      </div>`).join('')
+    }</div>`;
+  } else {
+    document.getElementById('exit-cards').innerHTML='';
+  }
+
+  document.getElementById('tbody-exit').innerHTML=data.map(r=>`<tr>
+    <td class="blue">${r.strategy}</td>
+    <td style="font-weight:${r.recommended?'600':'400'};color:${r.recommended?'#3fb950':'#c9d1d9'}">${r.exit_method}${r.recommended?' ✓':''}</td>
+    <td>${r.trades||0}</td>
+    <td>${wr(r.win_rate)}</td>
+    <td>${pf(r.profit_factor)}</td>
+    <td>${roi(r.total_roi_pct)}</td>
+    <td>${(r.max_drawdown_pct||0).toFixed(1)}%</td>
+    <td>${(r.avg_hold_days||0).toFixed(1)}d</td>
+    <td style="color:#58a6ff;font-weight:600">${(r.composite_score||0).toFixed(1)}</td>
+    <td>${r.recommended?'✅':''}</td>
+  </tr>`).join('');
+}
+
+// ── TAB 3: CONFIDENCE TIERS ──
+function renderTiers(){
+  const tiers=['EXCEPTIONAL','VERY_HIGH','HIGH','MEDIUM_HIGH','MEDIUM','LOW'];
+  const colors={'EXCEPTIONAL':'#3fb950','VERY_HIGH':'#58a6ff','HIGH':'#c9d1d9','MEDIUM_HIGH':'#8b949e','MEDIUM':'#484f58','LOW':'#30363d'};
+  const data=tiers.map(tier=>{
+    const t=TRADES.filter(r=>r.confidence_tier===tier);
+    if(!t.length)return{tier,trades:0,wr:0,avgRoi:0,totalRoi:0,avgHold:0};
+    const wins=t.filter(r=>r.win).length;
+    return{
+      tier, trades:t.length,
+      wr:wins/t.length,
+      avgRoi:t.reduce((s,r)=>s+(r.pnl_pct||0),0)/t.length,
+      totalRoi:t.reduce((s,r)=>s+(r.pnl_pct||0),0),
+      avgHold:t.reduce((s,r)=>s+(r.hold_days||0),0)/t.length,
+    };
+  }).filter(d=>d.trades>0);
+
+  document.getElementById('tier-cards').innerHTML=data.map(d=>`<div class="tier-card">
+    <div class="name">${d.tier.replace('_',' ')}</div>
+    <div class="val" style="color:${colors[d.tier]}">${(d.wr*100).toFixed(1)}%</div>
+    <div class="sub">${d.trades} trades · ${d.totalRoi.toFixed(0)}% total ROI</div>
+  </div>`).join('');
+
+  const labels=data.map(d=>d.tier.replace('_',' '));
+  const wrVals=data.map(d=>+(d.wr*100).toFixed(1));
+  const roiVals=data.map(d=>+d.totalRoi.toFixed(1));
+  const bgColors=data.map(d=>colors[d.tier]+'aa');
+
+  renderChart('chart-tier-wr','bar',labels,wrVals,'Win Rate %',bgColors);
+  renderChart('chart-tier-roi','bar',labels,roiVals,'Total ROI %',bgColors);
+
+  document.getElementById('tbody-tiers').innerHTML=data.map(d=>`<tr>
+    <td>${tierBadge(d.tier)}</td>
+    <td>${d.trades.toLocaleString()}</td>
+    <td>${wr(d.wr)}</td>
+    <td>${roi(d.avgRoi)}</td>
+    <td>${roi(d.totalRoi)}</td>
+    <td>${d.avgHold.toFixed(1)}d</td>
+  </tr>`).join('');
+}
+
+// ── TAB 4: SMART MONEY ──
+function renderSmartMoney(){
+  const withSM=TRADES.filter(t=>(t.smart_money_score||0)>0);
+  const noSM=TRADES.filter(t=>(t.smart_money_score||0)===0);
+  const wrWithSM=withSM.length?withSM.filter(t=>t.win).length/withSM.length:0;
+  const wrNoSM=noSM.length?noSM.filter(t=>t.win).length/noSM.length:0;
+  const lift=wrWithSM-wrNoSM;
+
+  document.getElementById('cong-lift').innerHTML=`
+    <div style="margin:.4rem 0">
+      <div style="font-size:.72rem;color:#8b949e;margin-bottom:.2rem">With smart money signal</div>
+      <div class="lift-bar"><div class="fill" style="width:${wrWithSM*100}%;background:#3fb950;color:#fff">${(wrWithSM*100).toFixed(1)}%</div></div>
+    </div>
+    <div style="margin:.4rem 0">
+      <div style="font-size:.72rem;color:#8b949e;margin-bottom:.2rem">Without smart money</div>
+      <div class="lift-bar"><div class="fill" style="width:${wrNoSM*100}%;background:#58a6ff;color:#fff">${(wrNoSM*100).toFixed(1)}%</div></div>
+    </div>
+    <div style="font-size:.8rem;margin-top:.6rem;color:${lift>0?'#3fb950':'#f85149'}">
+      Lift: ${lift>0?'+':''}${(lift*100).toFixed(1)}pp from smart money signals
+    </div>
+  `;
+
+  const scores=[0,1,2,3,4,5,6,7,8];
+  const smData=scores.map(s=>{
+    const t=TRADES.filter(r=>(r.smart_money_score||0)>=s);
+    if(t.length<5)return null;
+    return{score:s,trades:t.length,wr:t.filter(r=>r.win).length/t.length,
+           avgRoi:t.reduce((a,r)=>a+(r.pnl_pct||0),0)/t.length};
+  }).filter(Boolean);
+
+  document.getElementById('sm-score-lift').innerHTML=smData.map(d=>`
+    <div style="margin:.3rem 0;font-size:.72rem">
+      <span style="color:#8b949e">Score ≥${d.score}:</span>
+      <span style="color:${d.wr>=0.55?'#3fb950':'#e3b341'};margin-left:.4rem">${(d.wr*100).toFixed(1)}% WR</span>
+      <span style="color:#8b949e;margin-left:.4rem">(${d.trades} trades)</span>
+    </div>`).join('');
+
+  renderChart('chart-sm','line',
+    smData.map(d=>`Score ≥${d.score}`),
+    smData.map(d=>+(d.wr*100).toFixed(1)),
+    'Win Rate %',['#58a6ff']);
+
+  document.getElementById('tbody-sm').innerHTML=smData.map(d=>`<tr>
+    <td>≥ ${d.score}</td><td>${d.trades}</td>
+    <td>${wr(d.wr)}</td><td>${roi(d.avgRoi)}</td>
+    <td>${roi(d.trades*d.avgRoi)}</td>
+  </tr>`).join('');
+}
+
+// ── TAB 5: AGENTS ──
+function renderAgents(){
+  const tiers=['EXCEPTIONAL','VERY_HIGH','HIGH','MEDIUM_HIGH','MEDIUM','LOW'];
+  const data=tiers.map(tier=>{
+    const t=TRADES.filter(r=>r.confidence_tier===tier);
+    if(!t.length)return null;
+    const wins=t.filter(r=>r.win).length;
+    const pnls=t.map(r=>r.pnl_pct||0);
+    const gains=pnls.filter(p=>p>0);
+    const losses=pnls.filter(p=>p<0);
+    const pf=losses.length?gains.reduce((a,b)=>a+b,0)/Math.abs(losses.reduce((a,b)=>a+b,0)):999;
+    return{tier,trades:t.length,wr:wins/t.length,
+           avgRoi:pnls.reduce((a,b)=>a+b,0)/t.length,
+           totalRoi:pnls.reduce((a,b)=>a+b,0),pf};
+  }).filter(Boolean);
+
+  const exc=data.find(d=>d.tier==='EXCEPTIONAL');
+  const low=data.find(d=>d.tier==='LOW');
+  const lift=exc&&low?(exc.wr-low.wr):0;
+
+  document.getElementById('stats-agents').innerHTML=`
+    <div class="stat"><div class="v green">${exc?(exc.wr*100).toFixed(1)+'%':'—'}</div><div class="l">EXCEPTIONAL win rate</div></div>
+    <div class="stat"><div class="v">${low?(low.wr*100).toFixed(1)+'%':'—'}</div><div class="l">LOW tier win rate</div></div>
+    <div class="stat"><div class="v ${lift>0?'green':'red'}">${lift>0?'+':''}${(lift*100).toFixed(1)}pp</div><div class="l">Tier lift (EXC vs LOW)</div></div>
+    <div class="stat"><div class="v">${TRADES.filter(t=>t.confidence_tier==='EXCEPTIONAL').length}</div><div class="l">EXCEPTIONAL trades</div></div>
+  `;
+
+  renderChart('chart-agent-tier','bar',
+    data.map(d=>d.tier.replace('_',' ')),
+    data.map(d=>+(d.wr*100).toFixed(1)),
+    'Win Rate %',data.map(d=>d.tier==='EXCEPTIONAL'?'#3fb950aa':d.tier==='VERY_HIGH'?'#58a6ffaa':'#8b949eaa'));
+
+  renderChart('chart-agent-dist','doughnut',
+    data.map(d=>d.tier.replace('_',' ')),
+    data.map(d=>d.trades),
+    'Trades',['#3fb950','#58a6ff','#c9d1d9','#8b949e','#484f58','#30363d']);
+
+  document.getElementById('tbody-agents').innerHTML=data.map(d=>`<tr>
+    <td>${tierBadge(d.tier)}</td>
+    <td>${d.trades.toLocaleString()}</td>
+    <td>${wr(d.wr)}</td>
+    <td>${roi(d.avgRoi)}</td>
+    <td>${pf(d.pf)}</td>
+    <td>${roi(d.totalRoi)}</td>
+  </tr>`).join('');
+}
+
+// ── TAB 6: REGIME ──
+function renderRegime(){
+  const regimes=[...new Set(TRADES.map(t=>t.regime||'unknown'))];
+  const data=regimes.map(r=>{
+    const t=TRADES.filter(tr=>tr.regime===r);
+    const wins=t.filter(tr=>tr.win).length;
+    const crisis=r.includes('CRISIS');
+    return{regime:r,trades:t.length,wr:wins/t.length,
+           avgRoi:t.reduce((s,tr)=>s+(tr.pnl_pct||0),0)/t.length,
+           totalRoi:t.reduce((s,tr)=>s+(tr.pnl_pct||0),0),crisis};
+  }).sort((a,b)=>b.trades-a.trades);
+
+  renderChart('chart-regime','bar',
+    data.map(d=>d.regime.replace('_CRISIS_FLAG','⚡')),
+    data.map(d=>+(d.wr*100).toFixed(1)),
+    'Win Rate %',data.map(d=>d.crisis?'#e3b341aa':'#58a6ffaa'));
+
+  document.getElementById('tbody-regime').innerHTML=data.map(d=>`<tr>
+    <td style="color:${d.crisis?'#e3b341':'#c9d1d9'}">${d.regime}</td>
+    <td>${d.trades}</td>
+    <td>${wr(d.wr)}</td>
+    <td>${roi(d.avgRoi)}</td>
+    <td>${roi(d.totalRoi)}</td>
+    <td>${d.crisis?'⚡ Yes':'—'}</td>
+  </tr>`).join('');
+}
+
+// ── TAB 7: WALK-FORWARD ──
+function renderWF(){
+  const filt=document.getElementById('wf-filter').value;
+  let data=[...WF];
+  if(filt!=='all')data=data.filter(r=>r.verdict===filt);
+
+  const robust=WF.filter(r=>r.verdict==='ROBUST').length;
+  const overfit=WF.filter(r=>r.verdict==='OVERFIT').length;
+  const weak=WF.filter(r=>r.verdict==='WEAK').length;
+
+  document.getElementById('stats-wf').innerHTML=`
+    <div class="stat"><div class="v green">${robust}</div><div class="l">ROBUST strategies</div></div>
+    <div class="stat"><div class="v red">${overfit}</div><div class="l">OVERFIT — do not trade</div></div>
+    <div class="stat"><div class="v yellow">${weak}</div><div class="l">WEAK — OOS only</div></div>
+    <div class="stat"><div class="v">${WF.length}</div><div class="l">Total tested</div></div>
+  `;
+
+  const vColors={'ROBUST':'#3fb950','OVERFIT':'#f85149','WEAK':'#e3b341','FAILS_BOTH':'#484f58'};
+  document.getElementById('tbody-wf').innerHTML=data.map(r=>`<tr>
+    <td class="blue">${r.strategy}</td>
+    <td style="color:${vColors[r.verdict]||'#8b949e'};font-weight:600">${r.verdict}</td>
+    <td>${r.is_trades||0}</td>
+    <td>${wr(r.is_win_rate)}</td>
+    <td>${pf(r.is_profit_factor)}</td>
+    <td>${r.oos_trades||0}</td>
+    <td>${wr(r.oos_win_rate)}</td>
+    <td>${pf(r.oos_profit_factor)}</td>
+    <td style="color:${(r.wr_degradation||0)<-0.05?'#f85149':'#8b949e'}">${r.wr_degradation!=null?((r.wr_degradation)*100).toFixed(1)+'pp':'—'}</td>
+  </tr>`).join('');
+}
+
+// ── TAB 8: TRADE LOG ──
+function renderTrades(){
+  const search=(document.getElementById('trade-search').value||'').toLowerCase();
+  const dir=document.getElementById('trade-dir').value;
+  const outcome=document.getElementById('trade-outcome').value;
+  const tier=document.getElementById('trade-tier').value;
+  const crisis=document.getElementById('trade-crisis').value;
+
+  let data=TRADES.filter(t=>{
+    if(search&&!`${t.ticker} ${t.strategy}`.toLowerCase().includes(search))return false;
+    if(dir!=='all'&&t.direction!==dir)return false;
+    if(outcome==='win'&&!t.win)return false;
+    if(outcome==='loss'&&t.win)return false;
+    if(tier!=='all'&&t.confidence_tier!==tier)return false;
+    if(crisis==='crisis'&&!(t.regime||'').includes('CRISIS'))return false;
+    return true;
+  }).slice(0,200);
+
+  document.getElementById('trade-count-label').textContent=`Showing ${data.length} of ${TRADES.length} trades`;
+  document.getElementById('tbody-trades').innerHTML=data.map(t=>`<tr>
+    <td class="blue">${t.ticker}</td>
+    <td style="color:#8b949e;font-size:.72rem">${t.strategy}</td>
+    <td style="color:${t.direction==='long'?'#3fb950':'#f85149'}">${t.direction}</td>
+    <td>${tierBadge(t.confidence_tier)}</td>
+    <td style="font-size:.72rem">${t.entry_date}</td>
+    <td style="font-size:.72rem">${t.exit_date}</td>
+    <td>${t.hold_days||0}d</td>
+    <td>${roi(t.pnl_pct)}</td>
+    <td>${t.win?'✅':'❌'}</td>
+    <td style="font-size:.68rem;color:${(t.regime||'').includes('CRISIS')?'#e3b341':'#8b949e'}">${(t.regime||'').replace('_CRISIS_FLAG','⚡')}</td>
+    <td style="color:${(t.smart_money_score||0)>0?'#3fb950':'#8b949e'}">${t.smart_money_score||0}</td>
+    <td style="font-size:.68rem;color:#8b949e">${t.exit_reason||''}</td>
+  </tr>`).join('');
+}
+
+// ── CHART HELPER ──
+const chartInstances={};
+function renderChart(id,type,labels,data,label,colors){
+  if(chartInstances[id])chartInstances[id].destroy();
+  const ctx=document.getElementById(id);
+  if(!ctx)return;
+  chartInstances[id]=new Chart(ctx,{
+    type,
+    data:{labels,datasets:[{label,data,
+      backgroundColor:Array.isArray(colors)?colors:colors+'aa',
+      borderColor:Array.isArray(colors)?colors:colors,
+      borderWidth:1,tension:.3,fill:false}]},
+    options:{responsive:true,plugins:{legend:{display:false}},
+      scales:type==='doughnut'?{}:{
+        x:{ticks:{color:'#8b949e',font:{size:10}}},
+        y:{ticks:{color:'#8b949e',font:{size:10}}}
+      }}
+  });
+}
+
+window.addEventListener('DOMContentLoaded', autoLoad);
+</script>
+</body>
+</html>
