@@ -257,3 +257,31 @@ Maintained to prevent repeating the same errors and to document why decisions we
 **Mistake:** The `smart_money_score()` function returned keys `composite_signal`, `score`, `details` but the agent pipeline looked for `congressional_sig`, `insider_sig`, `institutional_sig`, `smart_money_composite`. These are completely different key names. Every agent call received empty dicts `{}` for all smart money signals. Congressional, insider, and institutional data were downloaded and cached correctly but never actually reached the agents.
 **Learning:** Key name coherency between producer functions and consumer code must be explicitly validated. A function can return data correctly but be completely invisible to its consumers due to key name mismatch. This should be caught by an integration test.
 **Fix:** Updated `smart_money_score()` to return all keys expected by both the backtest engine AND the agent pipeline. Added validation test confirming all required keys present.
+
+### L45 — Audits were conversational not executable — critical bugs survived three reviews
+**Mistake:** Three comprehensive audits were conducted by reading code and reasoning about it. The L44 bug (smart_money_score returning wrong keys — all agent SM context empty) would have been caught in 30 seconds by running a single validation script. Instead it survived audits 1, 2, and 3. Other bugs (AVOID tier never returned, MAE/MFE single-day only, walk-forward hardcoded dates) were similarly invisible to reading but obvious when run.
+**Root causes:**
+1. Never traced data end-to-end in code — verified functions existed but not that keys matched between producer and consumer
+2. Never ran the engine loop — would have caught AVOID tier, MAE/MFE, import-in-loop immediately
+3. Audited documentation against documentation — not documentation against actual running code
+4. Each audit was independent — no test suite built after audit 1 to prevent regressions
+5. Treated "reading the code looks correct" as equivalent to "the code works correctly"
+
+**The key learning:** After every audit, every flagged item must be validated by running code — not by reading it. A data flow is only verified when a test asserts it end-to-end.
+
+**Fix:** Integration tests created (7 tests, all passing). These now catch regressions permanently. Going forward: every audit finding gets a test, not just a code fix.
+
+### L46 — No systematic data flow tracing — producer/consumer key coherency never verified
+**Mistake:** smart_money_score() was the producer. pipeline.py was the consumer. Three audits examined both files independently and concluded the integration was correct. No one ran: "does the output of smart_money_score() contain the keys that pipeline.py expects?" The answer was no — and this invalidated all agent smart money analysis.
+**Learning:** For every data handoff between functions (producer → consumer), explicitly verify: (1) what keys does the producer return, (2) what keys does the consumer expect, (3) do they match. This must be done in running code, not by reading.
+**Fix:** Integration test `test_smart_money_score_keys()` now permanently validates this. Pattern to follow: every inter-module data handoff should have a test.
+
+### L47 — Walk-forward was documented as two-window but implemented as one
+**Mistake:** PROJECT_PLAN.md correctly documented two walk-forward windows (IS=2022-23/OOS=2024 AND IS=2022-24/OOS=2025-Mar2026). The code implemented one. This discrepancy survived three audits because each audit checked the plan and the code separately — never comparing them directly.
+**Learning:** Documentation and code must be compared line by line, not audited separately. A project plan that says "two windows" while the code does one is worse than no documentation — it creates false confidence.
+**Fix:** Walk-forward now runs two windows with ROBUST requiring both to pass. Test added.
+
+### L48 — MAE/MFE computed for one day — full trade duration never tracked
+**Mistake:** max_adverse_excursion and max_favourable_excursion were documented as "worst/best % during the hold period." The code computed them from a single day's bar. Three audits missed this because reading `max_adverse_excursion` in the dataclass looks correct — only running the backtest reveals it's reset every day.
+**Learning:** Field names that describe time-series accumulation (max, min, worst, best over a period) require explicit verification that the code actually accumulates across the period, not just computes for the current step.
+**Fix:** MAE/MFE now accumulated on the OpenTrade object across every day of the hold period.

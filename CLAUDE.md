@@ -134,7 +134,10 @@ All owner-approved. Do not revert without approval.
 - Risk profile: medium-high risk, high return. Buy dips including in crisis.
 - Email (not Telegram) for all trade approvals in Stage 4
 - Intraday trading: completely separate future project — out of scope
-- Backtests must mirror live trading scenarios as closely as possible. Every data source, signal, and API used in live trading must also be used in backtesting. If it is not backtested, it is not validated.
+- Backtests must mirror live trading scenarios as closely as possible.
+- After every audit, every flagged item must be validated by RUNNING CODE — not by reading it. A data flow is only verified when a test asserts it end-to-end. Reading code that looks correct is not the same as code that works correctly.
+- For every data handoff between functions, explicitly verify in code: what keys does the producer return, what keys does the consumer expect, do they match.
+- Run backtest/tests/test_integration.py before every Phase 1B run and after every significant code change. Every data source, signal, and API used in live trading must also be used in backtesting. If it is not backtested, it is not validated.
 - Granular before aggregate: always store lowest-level data first. Aggregates can be recomputed; raw data cannot be recovered. Examples: per-trade exit detail not just strategy summary, pre-fetched API cache not live calls, OHLCV Parquet not computed signals.
 - TradingAgents 6-agent pipeline is core to the product — runs Phase 1B+ (Haiku) and Phase 1C+ (Sonnet). See PROJECT_PLAN.md section 20.
 
