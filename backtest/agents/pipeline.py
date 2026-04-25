@@ -682,6 +682,16 @@ def run_full_agent_pipeline(
         earnings_days, sector, model
     )
 
+    # Map final_score to tier in code — agent no longer returns tier directly
+    final_score = int(decision.get("final_score", 0) or 0)
+    if final_score >= 85:   tier_from_score = "EXCEPTIONAL"
+    elif final_score >= 70: tier_from_score = "VERY_HIGH"
+    elif final_score >= 60: tier_from_score = "HIGH"
+    elif final_score >= 50: tier_from_score = "MEDIUM_HIGH"
+    elif final_score >= 40: tier_from_score = "MEDIUM"
+    elif final_score >= 20: tier_from_score = "LOW"
+    else:                   tier_from_score = "AVOID"
+
     result = {
         "ticker":      ticker,
         "as_of":       str(as_of),
@@ -689,7 +699,6 @@ def run_full_agent_pipeline(
         "model":       model,
         "strategies_triggered": strategies,
         "strategy_count": candidate.get("strategy_count", 0),
-        "tech_signal_count": candidate.get("tech_signal_count", 0),
         "agents": {
             "technical":   tech,
             "fundamental": fund,
@@ -698,11 +707,18 @@ def run_full_agent_pipeline(
             "debate":      debate,
             "decision":    decision,
         },
-        "final_score":      decision.get("final_score", 0),
-        "confidence_tier":  decision.get("confidence_tier", "LOW"),
+        "final_score":      final_score,
+        "tier_from_score":  tier_from_score,
         "action":           decision.get("action", "SKIP"),
         "entry_rationale":  decision.get("entry_rationale", ""),
         "primary_risk":     decision.get("primary_risk", ""),
+        "agent_agreement":  decision.get("agent_agreement", "unknown"),
+        # Context paragraph built from decision output — stored on trade
+        "context_paragraph": (
+            f"{decision.get('entry_rationale', '')} "
+            f"Risk: {decision.get('primary_risk', '')} "
+            f"Agent agreement: {decision.get('agent_agreement', 'unknown')}"
+        ).strip(),
     }
 
     # Save to cache — protects against losing API spend if run crashes

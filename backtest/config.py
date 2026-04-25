@@ -21,7 +21,7 @@ from datetime import date
 # ─────────────────────────────────────────────────────────────────────────────
 BACKTEST_START  = date(2022, 1, 1)
 BACKTEST_END    = date(2026, 3, 31)
-PHASE_1D_START  = date(2020, 1, 1)   # extended window for top-5 final validation
+PHASE_1D_START  = date(2020, 1, 1)   # extended window — all strategies passing Phase 1C
 DATA_LOAD_START = date(2021, 1, 1)   # extra year loaded for indicator warmup
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -86,6 +86,16 @@ MARKET_REGIMES = {
     "ai_sector_bull_2024": {
         "start": date(2024, 1, 1), "end": date(2024, 12, 31),
         "description": "AI / tech sector bull",
+        "bias": "long",
+    },
+    "tariff_shock_2025": {
+        "start": date(2025, 1, 1), "end": date(2025, 6, 30),
+        "description": "Trump tariff uncertainty — VIX spikes, policy volatility",
+        "bias": "neutral",
+    },
+    "ai_divergence_2025_2026": {
+        "start": date(2025, 7, 1), "end": date(2026, 3, 31),
+        "description": "AI sector divergence — NVDA +100% vs broad market flat",
         "bias": "long",
     },
     # Phase 1D only

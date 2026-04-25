@@ -1,0 +1,163 @@
+"""
+Integration tests — catch key wiring and data coherency bugs.
+Run before every Phase 1B run: python -m pytest backtest/tests/ -v
+
+These tests specifically target bugs found in audits:
+- L44: smart_money_score key mismatch
+- Trailing stop direction
+- Sector map loading
+- Walk-forward two-window structure
+- Agent pipeline key coherency
+"""
+
+import sys
+from datetime import date
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+
+
+def test_smart_money_score_keys():
+    """L44 regression: smart_money_score must return all keys used by pipeline and engine."""
+    from backtest.data.smart_money import smart_money_score
+    result = smart_money_score("AAPL", date(2024, 1, 15))
+
+    # Pipeline keys
+    pipeline_keys = ["institutional_sig", "insider_sig",
+                     "congressional_sig", "smart_money_composite"]
+    for k in pipeline_keys:
+        assert k in result, f"Pipeline key missing: {k}"
+        assert isinstance(result[k], dict), f"{k} should be dict, got {type(result[k])}"
+
+    # Engine keys
+    engine_keys = ["composite_signal", "score",
+                   "congressional_signal", "insider_signal", "institutional_signal"]
+    for k in engine_keys:
+        assert k in result, f"Engine key missing: {k}"
+
+    print("✅ smart_money_score keys correct")
+
+
+def test_trailing_stop_uses_low_not_close():
+    """D5 regression: trailing stop must trigger on intraday low, not close."""
+    from backtest.engine.exit_manager import check_trailing_stop_hit, OpenTrade
+    from dataclasses import field
+
+    trade = OpenTrade(
+        ticker="TEST", entry_date=date(2022,1,1), entry_price=100.0,
+        direction="long", strategy="test", category="test", sector="Unknown",
+        initial_stop=90.0, trailing_stop=95.0, highest_close=105.0,
+        regime_at_entry="bull",
+    )
+
+    # Low dips below stop, close above stop — should EXIT
+    result = check_trailing_stop_hit(trade, today_low=94.0, today_high=101.0, today_close=97.0)
+    assert result == 95.0, f"Expected exit at 95.0, got {result}"
+
+    # Low above stop — should NOT exit
+    result2 = check_trailing_stop_hit(trade, today_low=96.0, today_high=101.0, today_close=99.0)
+    assert result2 is None, f"Expected None, got {result2}"
+
+    print("✅ Trailing stop uses intraday low correctly")
+
+
+def test_avoid_tier_returned():
+    """A9 regression: AVOID tier must be returned when SM signals negative."""
+    from backtest.engine.backtest import BacktestEngine
+    engine = BacktestEngine.__new__(BacktestEngine)
+    engine.sector_map = {}
+
+    sm_avoid = {"composite_signal": "congressional_sell+insider_cluster_sell", "score": -5}
+    tier = engine._assign_confidence_tier(3, sm_avoid, {}, {})
+    assert tier == "AVOID", f"Expected AVOID, got {tier}"
+
+    sm_except = {"composite_signal": "congressional+insider_cluster", "score": 6}
+    tier2 = engine._assign_confidence_tier(3, sm_except, {}, {})
+    assert tier2 == "EXCEPTIONAL", f"Expected EXCEPTIONAL, got {tier2}"
+
+    print("✅ Confidence tier AVOID returned correctly")
+
+
+def test_sector_map_loads_from_csv():
+    """Sector map must load from CSV without network calls."""
+    from backtest.data.universe import get_sector_map
+    sm = get_sector_map(["AAPL", "XOM", "KO", "SPY", "UNKNOWN_TICKER"])
+    assert sm["AAPL"] == "Information Technology"
+    assert sm["XOM"] == "Energy"
+    assert sm["KO"] == "Consumer Staples"
+    assert sm["SPY"] == "Broad Market"
+    assert sm["UNKNOWN_TICKER"] == "Unknown"
+    print("✅ Sector map loads from CSV")
+
+
+def test_walk_forward_two_windows():
+    """B1 regression: walk-forward must compute two windows."""
+    import pandas as pd
+    import numpy as np
+    from backtest.engine.improvements import run_walk_forward
+
+    # Create synthetic trade log spanning 2022-2026
+    n = 500
+    dates = pd.date_range("2022-01-01", periods=n, freq="5B")
+    df = pd.DataFrame({
+        "strategy":   ["test_strat"] * n,
+        "entry_date": [d.date() for d in dates],
+        "pnl_pct":    np.random.normal(0.8, 3, n),
+        "direction":  ["long"] * n,
+        "sector":     ["Information Technology"] * n,
+    })
+    df["win"] = df["pnl_pct"] > 0
+
+    result = run_walk_forward(df)
+    assert "strategy_results" in result
+    strat = result["strategy_results"].get("test_strat", {})
+    assert "windows" in strat, "windows key missing"
+    assert "window_1" in strat["windows"], "window_1 missing"
+    assert "window_2" in strat["windows"], "window_2 missing"
+    assert "verdict" in strat
+    assert strat["verdict"] in ["ROBUST", "WEAK", "OVERFIT",
+                                 "FAILS_BOTH", "INSUFFICIENT_OOS_DATA"]
+    print("✅ Walk-forward computes two windows")
+
+
+def test_confidence_intervals():
+    """A30 regression: confidence intervals must be computed correctly."""
+    from backtest.results.metrics import _confidence_interval_95
+    lo, hi = _confidence_interval_95(0.55, 200)
+    assert 0.48 < lo < 0.55, f"Lower CI bound {lo} unexpected"
+    assert 0.55 < hi < 0.62, f"Upper CI bound {hi} unexpected"
+
+    # Low trade count should give wide CI
+    lo2, hi2 = _confidence_interval_95(0.55, 30)
+    assert hi2 - lo2 > hi - lo, "Low count should give wider CI"
+    print("✅ Confidence intervals computed correctly")
+
+
+def test_sector_adjusted_criteria():
+    """Sector-adjusted criteria must differ by sector."""
+    from backtest.config import get_sector_criteria
+    energy = get_sector_criteria("Energy")
+    staples = get_sector_criteria("Consumer Staples")
+    assert energy["min_win_rate"] < staples["min_win_rate"]
+    assert energy["max_drawdown"] > staples["max_drawdown"]
+    print("✅ Sector-adjusted criteria differ correctly")
+
+
+if __name__ == "__main__":
+    tests = [
+        test_smart_money_score_keys,
+        test_trailing_stop_uses_low_not_close,
+        test_avoid_tier_returned,
+        test_sector_map_loads_from_csv,
+        test_walk_forward_two_windows,
+        test_confidence_intervals,
+        test_sector_adjusted_criteria,
+    ]
+    passed = 0
+    for t in tests:
+        try:
+            t()
+            passed += 1
+        except Exception as e:
+            print(f"❌ {t.__name__}: {e}")
+    print(f"\n{passed}/{len(tests)} tests passed")

@@ -38,7 +38,7 @@ if not AV_KEY:
 CACHE_DIR    = Path("backtest/data/cache/av_news")
 CHECKPOINT_F = Path("backtest/data/cache/av_news_checkpoint.json")
 COMMIT_EVERY = 25       # commit every 25 tickers — smaller batches for reliability
-RATE_SLEEP   = 13.0     # 25 calls/min = 1 per 2.4s — use 13s for safety (5/min)
+RATE_SLEEP   = 3.0      # 25 calls/min = 1 per 2.4s — use 3s (20/min, safe buffer)
 
 # Annual date ranges to fetch
 ANNUAL_BATCHES = [

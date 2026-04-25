@@ -35,7 +35,7 @@ DATA_DIR = Path(__file__).parent
 # Extreme bearishness (>50% bears) = contrarian buy signal.
 # Extreme bullishness (>50% bulls) = contrarian sell warning.
 #
-# Loaded from aaii_sentiment.csv — full 2020-2024 weekly history (260 readings).
+# Loaded from aaii_sentiment.csv — full 2020-2026 weekly history (325 readings).
 # ---------------------------------------------------------------------------
 
 _AAII_DF: Optional[pd.DataFrame] = None
@@ -102,7 +102,7 @@ def get_aaii_sentiment(as_of: date) -> dict:
 # ---------------------------------------------------------------------------
 # CNN FEAR & GREED INDEX
 # 0 = Extreme Fear (buy), 100 = Extreme Greed (sell warning)
-# Loaded from cnn_fear_greed.csv — 1,305 daily readings 2020-2024.
+# Loaded from cnn_fear_greed.csv — 1,630 daily readings 2020-2026.
 # Built from CNN archives and interpolated between key readings.
 # For Stage 3+ live trading: scrape CNN directly.
 # ---------------------------------------------------------------------------
@@ -170,33 +170,13 @@ def get_fear_and_greed(as_of: date) -> dict:
 
 def get_cot_report(as_of: date) -> dict:
     """
-    Return COT positioning summary for S&P 500 futures on or before `as_of`.
-    In production this scrapes CFTC.gov; for backtesting uses sampled data.
-
-    Returns dict: report_date, commercial_net, speculator_net, signal
+    COT (Commitment of Traders) positioning.
+    REMOVED: previous implementation used 9 fabricated hardcoded sample points.
+    Real CFTC COT data: https://www.cftc.gov/MarketReports/CommitmentsofTraders/
+    Phase 1C+: integrate real CFTC COT via their free weekly data files.
+    Returns neutral — does not influence sentiment score.
     """
-    # Sampled COT net positioning (commercial long - short, in contracts)
-    # Positive = net long, Negative = net short
-    _COT_SAMPLE = [
-        ("2022-01-04",  -50000, "neutral"),
-        ("2022-06-14",   80000, "commercial_long_buy"),    # commercials loaded long near lows
-        ("2022-09-27",   70000, "commercial_long_buy"),
-        ("2022-12-13",   30000, "slight_long"),
-        ("2023-06-13",  -20000, "neutral"),
-        ("2023-12-19",  -60000, "commercial_short_caution"),  # commercials hedging at highs
-        ("2024-03-19",  -70000, "commercial_short_caution"),
-        ("2024-09-17",   10000, "neutral"),
-        ("2024-12-17",  -40000, "slight_short"),
-    ]
-
-    for row_date, commercial_net, signal_hint in reversed(_COT_SAMPLE):
-        if date.fromisoformat(row_date) <= as_of:
-            return {
-                "report_date":    date.fromisoformat(row_date),
-                "commercial_net": commercial_net,
-                "signal":         signal_hint,
-            }
-    return {"signal": "unknown", "commercial_net": None}
+    return {"signal": "not_available", "commercial_net": None}
 
 
 # ---------------------------------------------------------------------------
@@ -230,10 +210,8 @@ def sentiment_snapshot(as_of: date) -> dict:
     elif fg_sig == "extreme_greed_sell_warning": score -= 2
     elif fg_sig == "greed_caution":       score -= 1
 
-    # COT scoring
-    cot_sig = cot.get("signal", "neutral")
-    if "commercial_long_buy" in cot_sig: score += 2
-    elif "commercial_short_caution" in cot_sig: score -= 1
+    # COT — not available (removed fabricated data)
+    # Will be re-enabled in Phase 1C with real CFTC data
 
     return {
         "aaii":             aaii,

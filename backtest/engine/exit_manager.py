@@ -49,10 +49,15 @@ class OpenTrade:
     context_bullets:    list = field(default_factory=list)
     context_paragraph:  str = ""
     confidence_tier:    str = "MEDIUM"
+    preliminary_tier:   str = "MEDIUM"    # Stage 1 rule-based tier before agent adjustment
+    agent_reasoning:    dict = field(default_factory=dict)  # full agent pipeline output
     smart_money_score:  int = 0
     macro_score:        int = 0
     sentiment_score:    int = 0
     days_to_earnings:   Optional[int] = None
+    # MAE/MFE tracked across full trade duration — updated daily
+    max_adverse_excursion:    float = 0.0  # worst % against trade seen during hold
+    max_favourable_excursion: float = 0.0  # best % in favour seen during hold
     # Raw granular signals at entry
     congressional_signal: str = "none"
     insider_signal:       str = "none"
@@ -164,6 +169,8 @@ class ClosedTrade:
     conversion_pair_id:    Optional[str] = None
     circuit_breaker_level: Optional[int] = None
     days_to_earnings:      Optional[int] = None
+    preliminary_tier:      str = "MEDIUM"   # before agent adjustment
+    agent_reasoning:       dict = field(default_factory=dict)  # full agent output
 
     # Raw granular signals at entry — for audit and re-analysis
     congressional_signal: str = "none"
@@ -307,8 +314,9 @@ def close_trade(
         exit_reason=exit_reason,
         pnl_pct=round(pnl,4), pnl_dollar=round(pnl/100*10000,2),
         win=win, hold_days=days,
-        max_adverse_excursion=round(max_adverse,4),
-        max_favourable_excursion=round(max_favourable,4),
+        # Use trade-level MAE/MFE (accumulated over full hold period, not just today)
+        max_adverse_excursion=round(trade.max_adverse_excursion, 4),
+        max_favourable_excursion=round(trade.max_favourable_excursion, 4),
         signals_at_entry=trade.signals_at_entry,
         context_bullets=trade.context_bullets,
         context_paragraph=trade.context_paragraph,
@@ -317,6 +325,8 @@ def close_trade(
         macro_score=trade.macro_score,
         sentiment_score=trade.sentiment_score,
         days_to_earnings=trade.days_to_earnings,
+        preliminary_tier=trade.preliminary_tier,
+        agent_reasoning=trade.agent_reasoning,
         # Raw granular signals — passed through from OpenTrade
         congressional_signal=trade.congressional_signal,
         insider_signal=trade.insider_signal,
@@ -357,8 +367,18 @@ def process_day_exits(
         today_close = bar["close"]
         prev_close  = bar.get("prev_close", today_open)
 
-        max_adv = bar.get("max_adverse", 0.0)
-        max_fav = bar.get("max_favourable", 0.0)
+        # ── Update MAE/MFE across full trade duration ──
+        # Accumulate worst adverse and best favourable excursion seen so far
+        ep = trade.entry_price
+        if ep > 0:
+            if trade.direction == "long":
+                today_adv = (today_low  - ep) / ep * 100   # negative = adverse
+                today_fav = (today_high - ep) / ep * 100   # positive = favourable
+            else:
+                today_adv = (ep - today_high) / ep * 100   # short: high is adverse
+                today_fav = (ep - today_low)  / ep * 100   # short: low is favourable
+            trade.max_adverse_excursion    = min(trade.max_adverse_excursion,    today_adv)
+            trade.max_favourable_excursion = max(trade.max_favourable_excursion, today_fav)
 
         # ── Step 1: Circuit breaker check ──
         cb_result = check_circuit_breakers(trade, today_open, prev_close, vix_value)
@@ -368,7 +388,7 @@ def process_day_exits(
             closed.append(close_trade(
                 trade, today_open, today_date,
                 f"circuit_breaker_{cb_result['level']}",
-                max_adv, max_fav,
+                0.0, 0.0,  # MAE/MFE now on trade object
                 fail_reason=cb_result["reason"],
             ))
             circuit_breaker_log.append({
@@ -381,12 +401,10 @@ def process_day_exits(
             if (regime == "bull" and trade.direction == "short"):
                 long_signal = active_signals.get(trade.ticker)
                 if long_signal and long_signal.get("long_count", 0) > 0:
-                    # Will be opened as new long trade by engine
                     closed[-1].conversion_pair_id = f"convert_{trade.ticker}_{today_date}"
             continue
 
         if cb_result and cb_result["action"] == "tighten_stop":
-            # VIX crisis — tighten stop but don't close
             new_pct = cb_result["new_pct"]
             if trade.direction == "long":
                 trade.trailing_stop = max(trade.trailing_stop,
@@ -398,13 +416,13 @@ def process_day_exits(
         # ── Step 2: Update trailing stop from today's close ──
         trade = update_trailing_stop(trade, today_close, vix_value)
 
-        # ── Step 3: Check if trailing stop was hit ──
+        # ── Step 3: Check if trailing stop was hit (uses intraday low/high) ──
         exit_price = check_trailing_stop_hit(trade, today_low, today_high, today_close)
 
         if exit_price is not None:
             closed.append(close_trade(
                 trade, exit_price, today_date, "trailing_stop",
-                max_adv, max_fav,
+                0.0, 0.0,  # MAE/MFE now on trade object
             ))
 
             # ── Conversion check after trailing stop exit ──

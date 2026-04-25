@@ -2,8 +2,8 @@
 engine/improvements.py — Five critical improvements to backtest realism.
 
 1. Transaction cost model  — subtracts slippage + commission from every trade
-2. Walk-forward validation — in-sample optimise, out-of-sample evaluate
-3. Correlation filter      — prevents over-concentrated correlated positions
+2. Walk-forward validation — two-window IS/OOS evaluation
+3. Correlation filter      — built but NOT active in backtest (approved). Available for Stage 3+.
 4. Slippage model          — realistic fill prices based on volatility
 5. Regime confidence score — probability-based regime classification
 
@@ -104,127 +104,164 @@ def apply_transaction_costs(
 # 2. WALK-FORWARD VALIDATION
 # ─────────────────────────────────────────────────────────────────────────────
 
-def run_walk_forward(
-    df_trades: pd.DataFrame,
-    in_sample_end: date = date(2023, 12, 31),
-    out_of_sample_start: date = date(2024, 1, 1),
-) -> dict:
+def run_walk_forward(df_trades: pd.DataFrame) -> dict:
     """
-    Split trade log into in-sample and out-of-sample periods.
-    Evaluates whether strategies that pass in-sample also pass out-of-sample.
+    Two-window walk-forward validation (both required for ROBUST verdict).
 
-    In-sample:       2022-01-01 → 2023-12-31 (optimise on this)
-    Out-of-sample:   2024-01-01 → 2024-12-31 (validate on this, untouched)
+    Window 1: IS=2022-2023, OOS=2024
+    Window 2: IS=2022-2024, OOS=2025-Mar2026
 
-    A strategy that passes in-sample but fails out-of-sample is overfit.
-    A strategy that passes both is robust.
+    ROBUST     = passes BOTH OOS windows
+    WEAK       = passes one OOS window only
+    OVERFIT    = passes IS but neither OOS
+    FAILS_BOTH = fails IS and OOS
+    INSUFFICIENT_OOS_DATA = < 30 OOS trades (not a failure, just insufficient)
     """
+    from backtest.config import get_sector_criteria
+
     df_trades = df_trades.copy()
     df_trades["entry_date"] = pd.to_datetime(df_trades["entry_date"]).dt.date
 
-    in_sample  = df_trades[df_trades["entry_date"] <= in_sample_end]
-    out_sample = df_trades[df_trades["entry_date"] >= out_of_sample_start]
+    # Two walk-forward windows
+    windows = [
+        {
+            "name":     "window_1",
+            "is_end":   date(2023, 12, 31),
+            "oos_start": date(2024, 1, 1),
+            "oos_end":   date(2024, 12, 31),
+        },
+        {
+            "name":     "window_2",
+            "is_end":   date(2024, 12, 31),
+            "oos_start": date(2025, 1, 1),
+            "oos_end":   date(2026, 3, 31),
+        },
+    ]
 
-    results = {}
+    MIN_OOS_TRADES = 30
 
-    for strategy in df_trades["strategy"].unique():
-        is_trades  = in_sample[in_sample["strategy"] == strategy]
-        oos_trades = out_sample[out_sample["strategy"] == strategy]
-
-        def metrics(t):
-            if len(t) < 5:
-                return None
-            wins = t["pnl_pct"] > 0
-            pnl  = t["pnl_pct"]
-            wr   = wins.mean()
-            pf_w = pnl[wins].sum()
-            pf_l = abs(pnl[~wins].sum())
-            pf   = round(pf_w / pf_l, 3) if pf_l > 0 else 999
-            return {
-                "trades":        len(t),
-                "win_rate":      round(wr, 4),
-                "profit_factor": pf,
-                "total_roi":     round(pnl.sum(), 3),
-                "avg_pnl":       round(pnl.mean(), 4),
-            }
-
-        is_m  = metrics(is_trades)
-        oos_m = metrics(oos_trades)
-
-        if is_m is None:
-            continue
-
-        is_pass  = (is_m["win_rate"] >= 0.55 and is_m["profit_factor"] >= 1.2
-                    and is_m["total_roi"] > 0 and is_m["trades"] >= 50)
-        oos_pass = (oos_m is not None and oos_m["win_rate"] >= 0.55
-                    and oos_m["profit_factor"] >= 1.2
-                    and oos_m["total_roi"] > 0) if oos_m else False
-
-        verdict = (
-            "ROBUST"     if is_pass and oos_pass  else
-            "OVERFIT"    if is_pass and not oos_pass else
-            "WEAK"       if not is_pass and oos_pass else
-            "FAILS_BOTH"
-        )
-
-        # Degradation — how much did performance drop out-of-sample?
-        wr_degradation = None
-        if oos_m and is_m:
-            wr_degradation = round(oos_m["win_rate"] - is_m["win_rate"], 4)
-
-        results[strategy] = {
-            "in_sample":        is_m,
-            "out_of_sample":    oos_m,
-            "in_sample_pass":   is_pass,
-            "oos_pass":         oos_pass,
-            "verdict":          verdict,
-            "wr_degradation":   wr_degradation,
+    def _metrics(t, sector="Unknown"):
+        if len(t) < 5:
+            return None
+        pc   = get_sector_criteria(sector)
+        wins = t["pnl_pct"] > 0
+        pnl  = t["pnl_pct"]
+        wr   = float(wins.mean())
+        pf_w = float(pnl[wins].sum())
+        pf_l = float(abs(pnl[~wins].sum()))
+        pf   = round(pf_w / pf_l, 3) if pf_l > 0 else 999
+        passes = (wr >= pc["min_win_rate"] and
+                  pf >= pc["min_profit_factor"] and
+                  pnl.sum() > 0 and
+                  len(t) >= 30)
+        return {
+            "trades":        len(t),
+            "win_rate":      round(wr, 4),
+            "profit_factor": pf,
+            "total_roi":     round(float(pnl.sum()), 3),
+            "passes":        passes,
         }
 
-    # Summary
+    results = {}
+    for strategy in df_trades["strategy"].unique():
+        g = df_trades[df_trades["strategy"] == strategy]
+        sector = g["sector"].iloc[0] if "sector" in g.columns and not g.empty else "Unknown"
+
+        window_results = {}
+        passes_count = 0
+        insufficient_count = 0
+
+        for w in windows:
+            is_df  = g[g["entry_date"] <= w["is_end"]]
+            oos_df = g[(g["entry_date"] >= w["oos_start"]) &
+                       (g["entry_date"] <= w["oos_end"])]
+
+            is_m  = _metrics(is_df, sector)
+            oos_m = _metrics(oos_df, sector)
+
+            oos_sufficient = len(oos_df) >= MIN_OOS_TRADES
+            oos_pass = (oos_m is not None and oos_m["passes"] and oos_sufficient)
+            is_pass  = is_m is not None and is_m["passes"]
+
+            if not oos_sufficient:
+                insufficient_count += 1
+
+            if oos_pass:
+                passes_count += 1
+
+            wr_deg = None
+            if oos_m and is_m:
+                wr_deg = round(oos_m["win_rate"] - is_m["win_rate"], 4)
+
+            window_results[w["name"]] = {
+                "in_sample":       is_m,
+                "out_of_sample":   oos_m,
+                "is_pass":         is_pass,
+                "oos_pass":        oos_pass,
+                "oos_sufficient":  oos_sufficient,
+                "oos_trades":      len(oos_df),
+                "wr_degradation":  wr_deg,
+            }
+
+        # Overall verdict
+        if insufficient_count == 2:
+            verdict = "INSUFFICIENT_OOS_DATA"
+        elif passes_count == 2:
+            verdict = "ROBUST"
+        elif passes_count == 1:
+            verdict = "WEAK"
+        elif insufficient_count == 1 and passes_count == 1:
+            verdict = "WEAK"
+        else:
+            # Check if IS passes at all
+            is_any_pass = any(w["is_pass"] for w in window_results.values())
+            verdict = "OVERFIT" if is_any_pass else "FAILS_BOTH"
+
+        results[strategy] = {
+            "windows":    window_results,
+            "verdict":    verdict,
+            "sector":     sector,
+        }
+
     total    = len(results)
     robust   = sum(1 for r in results.values() if r["verdict"] == "ROBUST")
     overfit  = sum(1 for r in results.values() if r["verdict"] == "OVERFIT")
     weak     = sum(1 for r in results.values() if r["verdict"] == "WEAK")
+    insuff   = sum(1 for r in results.values() if r["verdict"] == "INSUFFICIENT_OOS_DATA")
 
     logger.info(
-        "Walk-forward: %d strategies | ROBUST=%d | OVERFIT=%d | WEAK=%d",
-        total, robust, overfit, weak,
+        "Walk-forward (2 windows): %d strategies | ROBUST=%d | OVERFIT=%d | WEAK=%d | INSUFF=%d",
+        total, robust, overfit, weak, insuff,
     )
     return {
         "strategy_results": results,
         "summary": {
-            "total":   total,
-            "robust":  robust,
-            "overfit": overfit,
-            "weak":    weak,
-            "in_sample_period":      f"2022-01-01 → {in_sample_end}",
-            "out_of_sample_period":  f"{out_of_sample_start} → 2024-12-31",
+            "total": total, "robust": robust, "overfit": overfit,
+            "weak": weak, "insufficient_oos_data": insuff,
+            "window_1": "IS=2022-2023, OOS=2024",
+            "window_2": "IS=2022-2024, OOS=2025-Mar2026",
+            "min_oos_trades": MIN_OOS_TRADES,
         },
     }
 
 
 def walk_forward_to_df(wf_results: dict) -> pd.DataFrame:
-    """Convert walk-forward results dict to a flat DataFrame for CSV export."""
+    """Convert walk-forward results to flat DataFrame for CSV export."""
     rows = []
     for strategy, r in wf_results.get("strategy_results", {}).items():
-        is_m  = r.get("in_sample") or {}
-        oos_m = r.get("out_of_sample") or {}
-        rows.append({
-            "strategy":             strategy,
-            "verdict":              r["verdict"],
-            "is_trades":            is_m.get("trades", 0),
-            "is_win_rate":          is_m.get("win_rate", 0),
-            "is_profit_factor":     is_m.get("profit_factor", 0),
-            "is_total_roi":         is_m.get("total_roi", 0),
-            "oos_trades":           oos_m.get("trades", 0),
-            "oos_win_rate":         oos_m.get("win_rate", 0),
-            "oos_profit_factor":    oos_m.get("profit_factor", 0),
-            "oos_total_roi":        oos_m.get("total_roi", 0),
-            "wr_degradation":       r.get("wr_degradation"),
-            "in_sample_pass":       r["in_sample_pass"],
-            "oos_pass":             r["oos_pass"],
-        })
+        row = {"strategy": strategy, "verdict": r["verdict"], "sector": r.get("sector","Unknown")}
+        for wname, w in r.get("windows", {}).items():
+            is_m  = w.get("in_sample") or {}
+            oos_m = w.get("out_of_sample") or {}
+            row[f"{wname}_is_trades"]      = is_m.get("trades", 0)
+            row[f"{wname}_is_win_rate"]    = is_m.get("win_rate", 0)
+            row[f"{wname}_is_pf"]          = is_m.get("profit_factor", 0)
+            row[f"{wname}_oos_trades"]     = oos_m.get("trades", 0)
+            row[f"{wname}_oos_win_rate"]   = oos_m.get("win_rate", 0)
+            row[f"{wname}_oos_pf"]         = oos_m.get("profit_factor", 0)
+            row[f"{wname}_oos_sufficient"] = w.get("oos_sufficient", False)
+            row[f"{wname}_wr_degradation"] = w.get("wr_degradation")
+        rows.append(row)
     return pd.DataFrame(rows).sort_values("verdict")
 
 
@@ -485,19 +522,41 @@ def bonferroni_adjusted_threshold(
 # SURVIVORSHIP BIAS HAIRCUT
 # ─────────────────────────────────────────────────────────────────────────────
 
-SURVIVORSHIP_BIAS_HAIRCUT = 0.02   # 2% annual ROI haircut
-
 def apply_survivorship_haircut(
-    total_roi: float,
+    df_trades: pd.DataFrame,
     years: float = 3.0,
-) -> tuple[float, float]:
+) -> tuple[pd.DataFrame, float]:
     """
-    Apply survivorship bias haircut to total ROI.
-    Studies show 1-3% annual inflation from survivorship bias on large-cap backtests.
-    We use 2% as conservative middle estimate.
+    Apply hold-adjusted survivorship bias haircut per trade.
+    Proportional to hold time — shorter holds have less survivorship exposure.
 
-    Returns (adjusted_roi, haircut_applied).
+    Hold-adjusted annual rates:
+      < 7 days:   0.5% / year
+      7-14 days:  1.0% / year
+      14-30 days: 2.0% / year
+      > 30 days:  3.0% / year
+
+    Returns (adjusted_df, total_haircut_pct).
     """
-    haircut = SURVIVORSHIP_BIAS_HAIRCUT * years * 100  # as percentage
-    adjusted = total_roi - haircut
-    return round(adjusted, 3), round(haircut, 3)
+    df = df_trades.copy()
+    annual_rates = {7: 0.005, 14: 0.010, 30: 0.020, 999: 0.030}
+
+    haircuts = []
+    for _, row in df.iterrows():
+        hold = row.get("hold_days", 10)
+        rate = 0.030  # default > 30 days
+        for threshold, r in sorted(annual_rates.items()):
+            if hold <= threshold:
+                rate = r
+                break
+        haircut = rate * (hold / 252) * 100  # as percentage
+        haircuts.append(haircut)
+
+    df["survivorship_haircut"] = haircuts
+    df["pnl_pct"] = df["pnl_pct"] - df["survivorship_haircut"]
+    df["win"]     = df["pnl_pct"] > 0
+
+    total_haircut = sum(haircuts)
+    logger.info("Hold-adjusted survivorship haircut: total=%.1f%% over %.1f years",
+                total_haircut, years)
+    return df, round(total_haircut, 3)

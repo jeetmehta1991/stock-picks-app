@@ -45,6 +45,7 @@ from backtest.engine.improvements import (
     bonferroni_adjusted_threshold,
 )
 from backtest.signals.screener import screen_universe, validate_entry_zone
+from backtest.data.fetcher import days_to_next_earnings
 
 logger = logging.getLogger(__name__)
 
@@ -123,25 +124,58 @@ class BacktestEngine:
                     len(self.liquid_universe), len(self.ohlcv_dict))
 
     def _build_liquid_universe(self) -> list[str]:
-        """Apply liquidity filter once. Returns list of passing tickers."""
-        passing = []
-        ref_date = self.start  # use backtest start as reference date
-        for ticker, df in self.ohlcv_dict.items():
-            sliced = df[df.index.date <= ref_date]
-            if len(sliced) < 30:
-                continue
-            last_close = float(sliced["close"].iloc[-1])
-            if last_close < LIQUIDITY["min_price"]:
-                continue
-            avg_vol = float(sliced["volume"].tail(20).mean())
-            if avg_vol < LIQUIDITY["min_avg_volume"]:
-                continue
-            # Market cap — skip check if unavailable (rate limit graceful fallback)
-            mkt_cap_m = (self.info_dict.get(ticker, {}).get("market_cap", 0) or 0) / 1_000_000
-            if mkt_cap_m > 0 and mkt_cap_m < LIQUIDITY["min_market_cap_m"]:
-                continue
-            passing.append(ticker)
-        return passing
+        """
+        Apply liquidity filter. Returns list of passing tickers.
+        Re-checks annually at Jan 1 of each year — a stock liquid in 2022
+        may become illiquid by 2024 and should be removed.
+        Returns the union of tickers passing at ANY annual check.
+        Individual year filtering applied at screening time via _is_liquid_on_date.
+        """
+        passing = set()
+        check_dates = []
+        y = self.start.year
+        while y <= self.end.year:
+            check_dates.append(date(y, 1, 1))
+            y += 1
+
+        for ref_date in check_dates:
+            for ticker, df in self.ohlcv_dict.items():
+                sliced = df[df.index.date <= ref_date]
+                if len(sliced) < 30:
+                    continue
+                last_close = float(sliced["close"].iloc[-1])
+                if last_close < LIQUIDITY["min_price"]:
+                    continue
+                avg_vol = float(sliced["volume"].tail(20).mean())
+                if avg_vol < LIQUIDITY["min_avg_volume"]:
+                    continue
+                mkt_cap_m = (self.info_dict.get(ticker, {}).get("market_cap", 0) or 0) / 1_000_000
+                if mkt_cap_m > 0 and mkt_cap_m < LIQUIDITY["min_market_cap_m"]:
+                    continue
+                passing.add(ticker)
+
+        # Build per-year liquid set for daily screening
+        self._annual_liquid: dict[int, set] = {}
+        for ref_date in check_dates:
+            year_set = set()
+            for ticker, df in self.ohlcv_dict.items():
+                sliced = df[df.index.date <= ref_date]
+                if len(sliced) < 30:
+                    continue
+                if float(sliced["close"].iloc[-1]) < LIQUIDITY["min_price"]:
+                    continue
+                if float(sliced["volume"].tail(20).mean()) < LIQUIDITY["min_avg_volume"]:
+                    continue
+                year_set.add(ticker)
+            self._annual_liquid[ref_date.year] = year_set
+
+        return list(passing)
+
+    def _get_liquid_universe_for_date(self, as_of: date) -> set:
+        """Return the liquid universe for the year of as_of."""
+        if hasattr(self, "_annual_liquid"):
+            return self._annual_liquid.get(as_of.year, set(self.liquid_universe))
+        return set(self.liquid_universe)
 
     # ──────────────────────────────────────────────────────────────────────
     # MAIN LOOP
@@ -183,9 +217,10 @@ class BacktestEngine:
         return days
 
     def _process_day(self, as_of: date):
-        # ── 1. Slice OHLCV to point-in-time using liquid universe only ──
+        # ── 1. Slice OHLCV to point-in-time using year-appropriate liquid universe ──
+        liquid_this_year = self._get_liquid_universe_for_date(as_of)
         ohlcv_pit = {}
-        for t in self.liquid_universe:
+        for t in liquid_this_year:
             df = self.ohlcv_dict.get(t)
             if df is None:
                 continue
@@ -281,8 +316,7 @@ class BacktestEngine:
                 preliminary_tier = self._assign_confidence_tier(
                     len(cand["strategies"]), sm, macro, sent)
 
-                # Earnings risk flag
-                from backtest.data.fetcher import days_to_next_earnings
+                # Earnings proximity — context for agents, not a blocker
                 earn_days = days_to_next_earnings(ticker, as_of)
 
                 # Trailing stop
@@ -301,6 +335,15 @@ class BacktestEngine:
                     tier = self._adjust_tier_by_agent(preliminary_tier, agent_score)
                 else:
                     tier = preliminary_tier
+
+                # Skip AVOID tier long trades (may be evaluated as short setup separately)
+                if tier == "AVOID" and direction == "long":
+                    self.skipped_trades.append({
+                        "ticker": ticker, "date": as_of,
+                        "strategy": strat_entry["strategy"],
+                        "reason": "avoid_tier_long_blocked",
+                    })
+                    continue
 
                 # Get sector ETF return for halo effect context
                 sector = self.sector_map.get(ticker, "Unknown")
@@ -344,6 +387,8 @@ class BacktestEngine:
                     context_bullets=strat_entry["context_bullets"],
                     context_paragraph=context_para,
                     confidence_tier=tier,
+                    preliminary_tier=preliminary_tier,
+                    agent_reasoning=agent_result,
                     smart_money_score=sm.get("score", 0),
                     macro_score=macro.get("macro_score", 0),
                     sentiment_score=sent.get("sentiment_score", 0),
@@ -400,6 +445,9 @@ class BacktestEngine:
     def _assign_confidence_tier(self, strategy_count, sm, macro, sent) -> str:
         """Stage 1 — rule-based preliminary tier before agents run."""
         sm_sig = sm.get("composite_signal", "none")
+        # AVOID — strong negative smart money regardless of technical signals
+        if sm_sig == "congressional_sell+insider_cluster_sell":
+            return "AVOID"
         if sm_sig == "congressional+insider_cluster" and strategy_count >= 3:
             return "EXCEPTIONAL"
         if sm_sig == "congressional_or_insider" and strategy_count >= 2:
@@ -475,11 +523,12 @@ class BacktestEngine:
             logger.info("Transaction costs applied — net ROI = %.1f%%",
                         df_trades["pnl_pct"].sum())
 
-        # Survivorship bias haircut
+        # Survivorship bias haircut — hold-adjusted per trade
         years = (self.end - self.start).days / 365.25
         gross_roi = df_trades["pnl_pct"].sum()
-        adj_roi, haircut = apply_survivorship_haircut(gross_roi, years)
-        logger.info("Survivorship haircut: %.1f%% → adjusted ROI %.1f%%",
+        df_trades, haircut = apply_survivorship_haircut(df_trades, years)
+        adj_roi = df_trades["pnl_pct"].sum()
+        logger.info("Hold-adjusted survivorship haircut: %.1f%% → adjusted ROI %.1f%%",
                     haircut, adj_roi)
 
         # SPY benchmark return

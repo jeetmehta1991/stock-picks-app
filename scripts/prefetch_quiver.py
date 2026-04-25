@@ -125,18 +125,26 @@ def save_checkpoint(checkpoint: dict):
 
 
 def git_commit(message: str):
-    """Commit and push current cache state."""
+    """Commit and push current cache state with rebase to prevent rejections."""
     import subprocess
-    cmds = [
-        ["git", "add", "backtest/data/cache/quiver/"],
-        ["git", "add", "backtest/data/cache/quiver_checkpoint.json"],
-        ["git", "commit", "-m", message],
-        ["git", "push", "origin", "main"],
-    ]
-    for cmd in cmds:
-        result = subprocess.run(cmd, capture_output=True, text=True)
-        if result.returncode != 0 and "nothing to commit" not in result.stdout:
-            print(f"  Git warning: {result.stderr[:100]}")
+    # Add and commit
+    subprocess.run(["git", "add",
+                    "backtest/data/cache/quiver/",
+                    "backtest/data/cache/quiver_checkpoint.json"],
+                   capture_output=True)
+    result = subprocess.run(["git", "commit", "-m", message],
+                            capture_output=True, text=True)
+    if "nothing to commit" in result.stdout:
+        return
+    # Rebase before push to avoid rejection from parallel runs
+    rebase = subprocess.run(["git", "pull", "--rebase", "origin", "main"],
+                            capture_output=True, text=True)
+    if rebase.returncode != 0:
+        print(f"  Git rebase warning: {rebase.stderr[:100]}")
+    push = subprocess.run(["git", "push", "origin", "main"],
+                          capture_output=True, text=True)
+    if push.returncode != 0:
+        print(f"  Git push warning: {push.stderr[:100]}")
 
 
 def main():

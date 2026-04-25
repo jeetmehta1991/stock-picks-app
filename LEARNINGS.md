@@ -252,3 +252,8 @@ Maintained to prevent repeating the same errors and to document why decisions we
 **Mistake:** Planned and partially implemented Finnhub for news sentiment without first checking if Alpha Vantage (already in use for Stage 1) also provides news with sentiment scores. Alpha Vantage provides AI-powered sentiment scores, full 2022-2026 historical coverage, and is free on the existing key.
 **Learning:** Always check existing API providers for additional endpoints before adding new providers. Alpha Vantage has been in the project since Stage 1 — its full feature set should have been reviewed before adding Finnhub.
 **Fix:** Replaced Finnhub news with Alpha Vantage NEWS_SENTIMENT endpoint. Superior AI scores, no additional cost, full historical coverage.
+
+### L44 — smart_money_score returned wrong key names — all agent SM context was empty
+**Mistake:** The `smart_money_score()` function returned keys `composite_signal`, `score`, `details` but the agent pipeline looked for `congressional_sig`, `insider_sig`, `institutional_sig`, `smart_money_composite`. These are completely different key names. Every agent call received empty dicts `{}` for all smart money signals. Congressional, insider, and institutional data were downloaded and cached correctly but never actually reached the agents.
+**Learning:** Key name coherency between producer functions and consumer code must be explicitly validated. A function can return data correctly but be completely invisible to its consumers due to key name mismatch. This should be caught by an integration test.
+**Fix:** Updated `smart_money_score()` to return all keys expected by both the backtest engine AND the agent pipeline. Added validation test confirming all required keys present.
