@@ -252,15 +252,22 @@ def check_trailing_stop_hit(trade: OpenTrade, today_low: float, today_high: floa
                               today_close: float) -> Optional[float]:
     """
     Check if trailing stop was breached during the day.
-    Returns exit price if hit, else None.
-    We use closing price as proxy (daily data only).
+    Uses daily Low (long) or daily High (short) — the intraday extreme.
+    This correctly reflects that a real stop order triggers if price TRADES through
+    the stop at any point during the day, not just at close.
+
+    Exit price = trailing stop level (not the low/high — stop is a limit price).
+    If stock gaps through stop entirely (low < stop by large margin), the
+    gap-down circuit breaker handles the extreme case separately.
+
+    More conservative than close-based: ~2-4pp lower win rate expected but realistic.
     """
     if trade.direction == "long":
-        if today_close <= trade.trailing_stop:
-            return trade.trailing_stop
+        if today_low <= trade.trailing_stop:
+            return trade.trailing_stop  # exit at stop price, not at low
     else:
-        if today_close >= trade.trailing_stop:
-            return trade.trailing_stop
+        if today_high >= trade.trailing_stop:
+            return trade.trailing_stop  # exit at stop price, not at high
     return None
 
 
