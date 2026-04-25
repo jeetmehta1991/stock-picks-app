@@ -274,28 +274,51 @@ Return JSON only:
 # ---------------------------------------------------------------------------
 
 def _load_news_sentiment(ticker: str, as_of: date, lookback_days: int = 30) -> dict:
-    """Load pre-fetched Finnhub news sentiment for ticker around as_of date."""
-    cache_dir = Path(__file__).parent.parent / "data" / "cache" / "finnhub_news"
-    path = cache_dir / f"{ticker.replace('-','_')}.parquet"
-    if not path.exists():
-        return {"available": False, "avg_sentiment": 0, "article_count": 0}
-    try:
-        df = pd.read_parquet(path)
-        if df.empty:
-            return {"available": False, "avg_sentiment": 0, "article_count": 0}
-        df["date"] = pd.to_datetime(df["date"])
-        start = pd.Timestamp(as_of) - pd.Timedelta(days=lookback_days)
-        window = df[(df["date"] >= start) & (df["date"] <= pd.Timestamp(as_of))]
-        if window.empty:
-            return {"available": True, "avg_sentiment": 0, "article_count": 0}
-        return {
-            "available": True,
-            "avg_sentiment": round(float(window["sentiment_mean"].mean()), 3),
-            "article_count": int(window["article_count"].sum()),
-            "lookback_days": lookback_days,
-        }
-    except Exception:
-        return {"available": False, "avg_sentiment": 0, "article_count": 0}
+    """
+    Load pre-fetched Alpha Vantage News & Sentiment for ticker around as_of date.
+    Falls back to Finnhub cache if AV cache not present.
+    AV provides AI-powered sentiment scores — superior to keyword-based scoring.
+    """
+    # Try Alpha Vantage cache first
+    av_dir = Path(__file__).parent.parent / "data" / "cache" / "av_news"
+    fh_dir = Path(__file__).parent.parent / "data" / "cache" / "finnhub_news"
+
+    for cache_dir, source in [(av_dir, "alphavantage"), (fh_dir, "finnhub")]:
+        path = cache_dir / f"{ticker.replace('-','_').replace('.','_')}.parquet"
+        if not path.exists():
+            continue
+        try:
+            df = pd.read_parquet(path)
+            if df.empty:
+                continue
+            df["date"] = pd.to_datetime(df["date"])
+            start  = pd.Timestamp(as_of) - pd.Timedelta(days=lookback_days)
+            window = df[(df["date"] >= start) & (df["date"] <= pd.Timestamp(as_of))]
+            if window.empty:
+                return {"available": True, "source": source,
+                        "avg_sentiment": 0, "article_count": 0}
+
+            # Use weighted sentiment if available (AV), else mean
+            score_col = "sentiment_weighted" if "sentiment_weighted" in window.columns \
+                        else "sentiment_mean"
+            avg = float(window[score_col].mean()) if score_col in window.columns \
+                  else float(window["sentiment_mean"].mean())
+
+            result = {
+                "available":      True,
+                "source":         source,
+                "avg_sentiment":  round(avg, 3),
+                "article_count":  int(window["article_count"].sum()),
+                "lookback_days":  lookback_days,
+            }
+            if "sentiment_direction" in window.columns:
+                result["direction"] = window["sentiment_direction"].mode().iloc[0] \
+                                      if not window.empty else "neutral"
+            return result
+        except Exception:
+            continue
+
+    return {"available": False, "avg_sentiment": 0, "article_count": 0}
 
 
 def run_sentiment_agent(

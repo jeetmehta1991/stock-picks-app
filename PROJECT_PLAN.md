@@ -403,7 +403,7 @@ After Phase 1B results, calculate ¼ Kelly for each passing strategy. If Kelly s
 - FRED macro: all 7 series, 2020-Mar 2026
 - AAII: 325 weekly readings, 2020-Mar 2026
 - CNN Fear & Greed: 1,630 daily readings, 2020-Mar 2026
-- Finnhub news: all 509 tickers, 2025-2026 only (free tier 1-year lookback). 2022-2024 news unavailable on free tier. Upgrade to Finnhub paid ($50/mo) for full coverage in Phase 1C.
+- Alpha Vantage news: all 509 tickers, 2022-2026 full coverage. AI-powered sentiment scores. Free tier (existing key). Replaces Finnhub which had 1-year lookback limitation.
 
 ---
 
@@ -421,7 +421,7 @@ After Phase 1B results, calculate ¼ Kelly for each passing strategy. If Kelly s
 | yfinance | OHLCV historical data — pre-fetched to Parquet | Free |
 | Quiver Trader | Congressional + insider + 13F + gov_contracts + lobbying + wikipedia + wsb | $75/mo — cancel after Phase 1B, re-subscribe Stage 3 |
 | FRED | Macro series — pre-fetched to Parquet | Free |
-| Finnhub free | News sentiment — pre-fetched to Parquet | Free |
+| Alpha Vantage | News sentiment — pre-fetched to Parquet (replaces Finnhub — same key, better AI scores, full 2022-2026 coverage) | Free |
 | Anthropic Haiku | Phase 1B agent pipeline | ~$116 CAD |
 | Anthropic Sonnet | Phase 1C/1D agent pipeline | ~$140 CAD total |
 
@@ -433,7 +433,7 @@ After Phase 1B results, calculate ¼ Kelly for each passing strategy. If Kelly s
 | yfinance | Daily OHLCV for live screener | Free |
 | Quiver Trader | Live congressional + insider + 13F signals | $75/mo |
 | FRED | Live macro snapshot | Free |
-| Finnhub free | Live news sentiment | Free |
+| Alpha Vantage | Live news sentiment (same key as Stage 1) | Free |
 | Unusual Whales | Options flow — Phase 1C validation + Stage 3 live | ~$50/mo |
 | Anthropic Sonnet | Daily 6-agent pipeline for all candidates | ~$25/mo |
 | Alpaca paper | Paper trade execution + tracking | Free |

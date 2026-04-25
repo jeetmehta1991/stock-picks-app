@@ -1,0 +1,49 @@
+name: Prefetch Alpha Vantage News
+
+on:
+  workflow_dispatch:
+    inputs:
+      batch:
+        description: 'Batch number (1-4)'
+        required: true
+        type: choice
+        options: ['1','2','3','4']
+
+jobs:
+  prefetch:
+    name: AV News batch ${{ github.event.inputs.batch }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests pandas pyarrow yfinance -q
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Run AV news pre-fetch batch ${{ github.event.inputs.batch }}
+        env:
+          ALPHAVANTAGE_API_KEY: ${{ secrets.ALPHAVANTAGE_API_KEY }}
+        run: python scripts/prefetch_alphavantage_news.py --batch ${{ github.event.inputs.batch }}
+
+      - name: Final commit
+        run: |
+          git add backtest/data/cache/av_news/ backtest/data/cache/av_news_checkpoint.json 2>/dev/null || true
+          git diff --staged --quiet || git commit -m "AV news batch ${{ github.event.inputs.batch }}: complete"
+          git pull --rebase origin main || true
+          git push origin main || true

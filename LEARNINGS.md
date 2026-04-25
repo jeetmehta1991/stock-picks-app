@@ -247,3 +247,8 @@ Maintained to prevent repeating the same errors and to document why decisions we
 **Mistake:** Listed Alpaca as Stage 4 broker throughout the project plan without checking Canadian availability. Alpaca serves US accounts only. A Canadian investor trading US equities cannot use Alpaca for live trading.
 **Learning:** Always verify broker geographic availability before including in the plan. This should have been checked at Stage 1.
 **Fix:** Updated broker to IBKR Canada (Interactive Brokers Canada) — lowest commissions for active traders in Canada ($0.005/share, $1 minimum).
+
+### L43 — Alpha Vantage already provides news sentiment — Finnhub was unnecessary
+**Mistake:** Planned and partially implemented Finnhub for news sentiment without first checking if Alpha Vantage (already in use for Stage 1) also provides news with sentiment scores. Alpha Vantage provides AI-powered sentiment scores, full 2022-2026 historical coverage, and is free on the existing key.
+**Learning:** Always check existing API providers for additional endpoints before adding new providers. Alpha Vantage has been in the project since Stage 1 — its full feature set should have been reviewed before adding Finnhub.
+**Fix:** Replaced Finnhub news with Alpha Vantage NEWS_SENTIMENT endpoint. Superior AI scores, no additional cost, full historical coverage.
