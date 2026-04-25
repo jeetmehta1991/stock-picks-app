@@ -444,46 +444,65 @@ def smart_money_score(
     ins:  Optional[dict] = None,
     inst: Optional[dict] = None,
 ) -> dict:
+    """
+    Compute composite smart money score and return all keys expected by:
+    - backtest engine: composite_signal, score, congressional_signal,
+                       insider_signal, institutional_signal
+    - agent pipeline: congressional_sig, insider_sig, institutional_sig,
+                      smart_money_composite
+    """
     if cong is None: cong = congressional_signal(ticker, as_of)
     if ins  is None: ins  = insider_signal(ticker, as_of)
     if inst is None: inst = institutional_signal(ticker, as_of)
 
-    cs, iss, ints = (cong.get("signal","none"),
-                     ins.get("signal","none"),
-                     inst.get("signal","none"))
+    cs   = cong.get("signal", "none")
+    iss  = ins.get("signal", "none")
+    ints = inst.get("signal", "none")
 
     if cs == "sell" and iss == "cluster_sell":
-        return {"composite_signal": "congressional_sell+insider_cluster_sell",
-                "score": -5,
-                "details": {"congressional": cs, "insider": iss, "institutional": ints}}
+        composite = "congressional_sell+insider_cluster_sell"
+        score = -5
+    else:
+        score = 0
+        if cs  == "strong_buy":   score += 4
+        elif cs == "buy":          score += 2
+        elif cs == "sell":         score -= 3
+        if iss == "strong_buy":   score += 4
+        elif iss == "buy":         score += 2
+        elif iss == "weak_buy":    score += 1
+        elif iss == "cluster_sell": score -= 3
+        if ints == "strong_buy":  score += 2
+        elif ints == "buy":        score += 1
+        elif ints == "negative":   score -= 1
 
-    score = 0
-    if cs  == "strong_buy":  score += 4
-    elif cs == "buy":         score += 2
-    elif cs == "sell":        score -= 3
-    if iss == "strong_buy":  score += 4
-    elif iss == "buy":        score += 2
-    elif iss == "weak_buy":   score += 1
-    elif iss == "cluster_sell": score -= 3
-    if ints == "strong_buy": score += 2
-    elif ints == "buy":       score += 1
-    elif ints == "negative":  score -= 1
+        if score >= 6:    composite = "congressional+insider_cluster"
+        elif score >= 4:  composite = "congressional_or_insider"
+        elif score >= 2:  composite = "any_buy"
+        elif score >= 1:  composite = "weak_buy"
+        elif score <= -4: composite = "congressional_sell+insider_cluster_sell"
+        elif score < 0:   composite = "negative"
+        else:             composite = "none"
 
-    if score >= 6:   composite = "congressional+insider_cluster"
-    elif score >= 4: composite = "congressional_or_insider"
-    elif score >= 2: composite = "any_buy"
-    elif score >= 1: composite = "weak_buy"
-    elif score <= -4: composite = "congressional_sell+insider_cluster_sell"
-    elif score < 0:  composite = "negative"
-    else:            composite = "none"
-
-    return {"composite_signal": composite, "score": score,
-            "details": {"congressional": cs, "insider": iss, "institutional": ints}}
+    return {
+        # Tier assignment keys (backtest engine)
+        "composite_signal":      composite,
+        "score":                 score,
+        "congressional_signal":  cs,
+        "insider_signal":        iss,
+        "institutional_signal":  ints,
+        # Agent pipeline keys
+        "congressional_sig":     cong,
+        "insider_sig":           ins,
+        "institutional_sig":     inst,
+        "smart_money_composite": {"composite": composite, "score": score},
+        # Detail breakdown
+        "details": {"congressional": cs, "insider": iss, "institutional": ints},
+    }
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# FINNHUB NEWS SENTIMENT
-# Read from pre-fetched cache (scripts/prefetch_finnhub_news.py)
+# ALPHA VANTAGE NEWS SENTIMENT
+# Read from pre-fetched cache (scripts/prefetch_alphavantage_news.py)
 # Falls back to neutral if cache not available.
 # ─────────────────────────────────────────────────────────────────────────────
 
