@@ -1,238 +1,167 @@
-# Project Learnings — Stock Picks & Automated Trading System
-**Project:** jeetmehta1991/stock-picks-app
-**Period:** March–April 2026
-**Purpose:** Every mistake made in this project, with root cause and fix. Reference before making any change.
+# Engineering Learnings — Universal Principles
+**Author:** Jeet Mehta
+**Compiled:** April 2026 — Stock Picks & Automated Trading System
+**Purpose:** Universal engineering principles from real mistakes. Apply to all future projects.
+
+Tags: [testing] [data] [api] [process] [architecture] [git] [cost] [agents] [infrastructure]
 
 ---
 
-## Infrastructure & Environment
+## PART 1 — TESTING & VERIFICATION
 
-### L1 — Codespace network restrictions
-**Mistake:** Assumed all external APIs accessible from Codespaces. Wikipedia, Quiver, Finnhub all failed silently.
-**Fix:** Pre-fetch scripts run from laptop or GitHub Actions. Codespaces only used for computation on cached data. Test every new API endpoint from Codespaces before building integrations.
+### L45 — Audits must be executable, not conversational [testing]
+Three comprehensive code audits were conducted by reading code. The most critical bug (all agent smart money context being empty dicts — L44) survived all three because it was invisible to reading but caught in 30 seconds by running a single print statement. **Reading code that looks correct is not the same as code that works correctly.** After every audit, write a test for every flagged item. A data flow is only verified when a test asserts it end-to-end.
 
-### L2 — pyarrow not installed on Codespace restart
-**Mistake:** Cache layer built but pyarrow missing after restart — multiple runs produced no cache files.
-**Fix:** Added pyarrow + all dependencies to devcontainer.json. Auto-installs on every start.
+### L46 — Producer/consumer key coherency must be tested in code [testing]
+Function A returned `{composite_signal, score, details}`. Function B expected `{congressional_sig, insider_sig, institutional_sig}`. Three audits examined both files and concluded the integration was correct. It wasn't. **For every data handoff between functions, verify in running code: what keys does the producer return, what keys does the consumer expect, do they match.** Every inter-module data handoff gets an integration test.
 
-### L3 — Cache not committed = lost on restart
-**Mistake:** Downloaded 67 instruments, Codespace restarted, lost everything. Repeated 3+ times.
-**Fix:** Immediate commit after every download. Chunk-commit every 25-50 tickers during long downloads.
+### L47 — Documentation and code must be compared directly [testing]
+PROJECT_PLAN.md correctly documented two walk-forward windows. The code implemented one. Survived three audits because each checked the plan and the code separately — never comparing them. **A project plan that says one thing while the code does another is worse than no documentation — it creates false confidence.** For every documented behaviour, have a test that asserts it.
 
-### L4 — git pull causing divergent branch conflicts
-**Mistake:** Used `git pull` repeatedly causing merge conflicts on Windows PowerShell.
-**Fix:** Always use `git fetch origin ; git reset --hard origin/main` to sync. Check for uncommitted changes first.
+### L48 — Time-series accumulation fields require explicit verification [testing]
+`max_adverse_excursion` was documented as "worst % during the hold period." The code computed it from a single day's bar. **Field names that imply accumulation (max, min, worst, best over a period) require a test verifying accumulation across multiple time steps.** Not just a single computation.
 
-### L5 — Direct pushes to main causing conflicts
-**Mistake:** Pushed directly to main from sandbox, causing conflicts on laptop and Codespace.
-**Fix:** All changes go through claude-updates branch. Rule enforced in CLAUDE.md.
+### L26 — Checklist existed but wasn't being followed [process]
+CHECKLIST.md was created and added to CLAUDE.md but repeatedly not consulted before taking actions. Multiple mistakes that the checklist would have caught still occurred. **A checklist only works if it is explicitly run before every action. Having it documented is not the same as using it.** Make checklist compliance visible and auditable.
 
-### L31 — git reset --hard wiped uncommitted Quiver data
-**Mistake:** Instructed `git reset --hard origin/main` which wiped locally completed Quiver data not yet committed.
-**Fix:** Before any `git reset --hard`, always run `git status` first. If uncommitted work exists, commit it before resetting.
-
-### L33 — Used && in commands on Windows PowerShell
-**Mistake:** Repeatedly gave commands using `&&` as separator. PowerShell uses `;` not `&&`.
-**Fix:** All commands now use `;`. Always identify terminal environment before giving commands.
-
-### L34 — Built solution for wrong environment
-**Mistake:** Created a PowerShell script despite knowing the user worked in Git Bash. Made 3 consecutive errors.
-**Fix:** The correct solution was always one Git Bash line: `export QUIVER_API_KEY="key" ; python scripts/prefetch_quiver.py`
+### L35 — Checklist not enforced — no visible compliance statement [process]
+Same as L26 but deeper: the checklist needs to be stated visibly before every significant action so it's auditable. "Checklist: ✅ thought through, ✅ plan shown, ✅ within phase, ✅ helps ask, ✅ risks flagged, ✅ approval received."
 
 ---
 
-## Data & APIs
+## PART 2 — DATA & APIs
 
-### L6 — Wikipedia as S&P 500 source
-**Mistake:** Used Wikipedia for S&P 500 list — blocked by Codespaces network allowlist.
-**Fix:** `sp500_tickers.csv` committed to repo. No network calls needed for universe.
+### L9 — API tier not verified before building [api]
+Built a full 509-ticker download script for insider data before verifying the endpoint worked on the current plan. All 509 returned 0 records. Wasted download time and API quota. **Always test one call per endpoint before writing any code. Verify tier access explicitly.** This is CHECKLIST item 12.
 
-### L7 — AAII sentiment — only 15 hardcoded data points
-**Mistake:** Built sentiment agent with 15 hardcoded AAII readings for 782 trading days.
-**Fix:** Full 325 weekly readings downloaded from AAII, committed as CSV. Covers 2020-2026.
+### L10 — Wrong API endpoint URLs [api]
+Used `/historical/insidertrading/` — returned 404. Correct endpoint was `/live/insiders?ticker=`. **Always find endpoint URLs from the official package source or documentation, not assumed paths.** Test one call before building.
 
-### L8 — CNN Fear & Greed — same problem as L7
-**Mistake:** 16 hardcoded points for 782 days.
-**Fix:** 1,630 daily readings built from CNN archives. Covers 2020-March 2026.
+### L11 — Agents calling live APIs during backtest loop [api]
+Started Phase 1B with agents calling Quiver, FRED, and sentiment APIs live on every candidate every day. Each call took 35 seconds. Estimated 40-60 hours runtime. **Never call external APIs inside a backtest loop. Pre-fetch all data first, read from disk during backtest.** Pre-fetch architecture reduced agent runtime from 35s to ~2s per candidate.
 
-### L9 — Quiver API tier not verified before building
-**Mistake:** Built full 509-ticker download for insider data on Hobbyist tier. All returned 0 records.
-**Fix:** Verified all endpoints before re-running. Upgraded to Trader tier ($75/month). Cost: $45 extra + wasted time.
+### L37 — API free tier lookback not verified before downloading [api]
+Built and ran Finnhub pre-fetch for 2022-2024 data. Free tier only returns ~1 year of historical news. All 509 tickers downloaded "successfully" but all files were empty. Discovered only after 5 GitHub Actions batch runs completed. **Always test the API with a date range call before building the full pre-fetch. Check: does a 2022 date range return data or empty?** CHECKLIST item 12 applies to every data type.
 
-### L10 — Wrong Quiver endpoint URLs
-**Mistake:** Used `/historical/insidertrading/` — returned 404. Correct is `/live/insiders?ticker=`.
-**Fix:** Installed quiverquant package, extracted URLs from source code before building.
+### L43 — Existing APIs checked last, new APIs added first [api]
+Planned and partially implemented Finnhub for news sentiment without first checking if Alpha Vantage (already in use for Stage 1) also provided news with sentiment scores. It did — with better AI-powered scores, full historical coverage, and for free. **Always check existing API providers for additional endpoints before adding new providers.** The full feature set of every active API should be reviewed before adding a new one.
 
-### L11 — Agents calling live APIs during backtest loop
-**Mistake:** Started Phase 1B with agents calling Quiver/FRED live on every candidate. Estimated 40-60 hours runtime.
-**Fix:** Built complete pre-fetch architecture. Agents now read from Parquet cache — ~2 seconds per candidate.
+### L7/L8 — Hardcoded sample data instead of real data [data]
+AAII sentiment had 15 hardcoded readings for 782 trading days. CNN Fear & Greed had 16. Agents were nearly blind. **Always verify data coverage before building any system around it. 15 points for 3 years is a placeholder, not a dataset.** Build for full coverage from the start.
 
-### L12 — Backtest period too short
-**Mistake:** Set BACKTEST_END = 2024-12-31. Excluded all 2025 data — the most recent and relevant period.
-**Fix:** Extended to March 2026. IS = 2022-2024, OOS = 2025-March 2026.
+### L6 — Web scraping for core data [data]
+Used Wikipedia for S&P 500 list — blocked by Codespaces network allowlist. **Never rely on web scraping for core data used by the production system. Use committed static files or verified API endpoints.** Data sources must work in all deployment environments.
 
-### L13 — Parallel GitHub Actions batches with git push conflicts
-**Mistake:** Ran 5 Finnhub batches simultaneously. All tried to push to main — only one succeeded.
-**Fix:** Never run parallel workflows that all push to the same branch. Sequential is slower but reliable.
-
-### L22 — Parallel GitHub Actions batches (same lesson, repeated)
-**Mistake:** Made the same parallel push mistake again despite L13 being documented.
-**Fix:** git pull --rebase before push added as partial mitigation. Sequential batches enforced.
-
-### L23 — Insider endpoint run against 509 tickers before verifying
-**Mistake:** Built and ran full 509-ticker download before verifying the endpoint worked on our tier.
-**Fix:** Test one call per endpoint before building any script. This is CHECKLIST item 12.
-
-### L37 — Finnhub free tier 1-year lookback not verified before downloading
-**Mistake:** Built and ran Finnhub pre-fetch for 2022-2024 data. Free tier only returns ~1 year. All 509 files empty.
-**Fix:** Test the date range before building. `r = requests.get(url, params={..., "from": "2022-01-01"})` — check `len(data)` first.
-
-### L43 — Alpha Vantage already provides news sentiment — Finnhub was unnecessary
-**Mistake:** Added Finnhub for news sentiment without checking if Alpha Vantage (already in use) also provides it.
-**Fix:** Always check existing API providers for additional endpoints before adding new ones. AV provides AI sentiment, free, full 2022-2026 coverage.
+### L44 — Producer/consumer key mismatch — all SM context was empty [data]
+`smart_money_score()` returned `{composite_signal, score, details}` but the agent pipeline expected `{congressional_sig, insider_sig, institutional_sig, smart_money_composite}`. Congressional, insider, and institutional data were downloaded and cached correctly but never reached the agents. **Verify producer output keys match consumer expected keys in running code — not by reading both files separately.**
 
 ---
 
-## Engine & Strategy Design
+## PART 3 — ARCHITECTURE & DESIGN
 
-### L14 — Aggregate exit comparison, no per-trade detail
-**Mistake:** Exit comparison only saved strategy-level aggregates. Impossible to audit individual trades.
-**Fix:** Added `trade_exit_detail.csv` — one row per trade × exit method.
+### L27 — Backtest mirroring principle not established early [architecture]
+News sentiment was planned for live trading but initially excluded from backtesting. Discovered late that the backtest wouldn't reflect live conditions. **From day one: every data source, signal, and API used in live trading must be in the backtest. If it is not backtested, it is not validated.**
 
-### L15 — Raw smart money signals not in trade log
-**Mistake:** Only saved composite smart money score. Couldn't audit why a trade got EXCEPTIONAL vs HIGH tier.
-**Fix:** Added congressional_signal, insider_signal, institutional_signal, aaii_bullish, cnn_fg_score to trade log.
+### L28 — Key fields not designed upfront [architecture]
+Sector information was in the CSV from the beginning but never passed into the engine, dataclasses, or agents. Required late-stage changes to OpenTrade, ClosedTrade, backtest.py, and pipeline.py. **Think through all data fields needed at design time. Retrofitting fields into dataclasses causes cascading changes across multiple files.** Design the data model before building.
 
-### L16 — Phase 1B universe not switching from 67 instruments
-**Mistake:** `--phase 1b` flag existed but didn't change the universe from 67 to 509 instruments.
-**Fix:** `run_phase1a.py` now loads full 509-instrument universe when `--phase 1b` is passed.
+### L38 — Agent given the rules it's supposed to derive [agents]
+The Decision Agent prompt included the explicit confidence tier matrix. The agent wasn't reasoning — it was pattern-matching to rules we gave it. **Agents should derive scores independently. Giving an agent the mapping rules it's supposed to derive defeats the purpose.** The tier mapping should happen in code after the agent returns a raw score.
 
-### L17 — Stop simulation described incorrectly
-**Mistake:** Claimed results were pessimistic. Actually slightly optimistic — gap-down opens fill at open price.
-**Fix:** Corrected in PROJECT_PLAN.md. Think through simulation logic before documenting.
+### L39 — Agent temperature not set — non-deterministic backtest [agents]
+Agent API calls didn't set `temperature` parameter. Default is 1.0 (stochastic). Same inputs could produce different confidence tiers on different runs. **Set temperature=0 for all backtest agent calls. Backtest results must be reproducible — same inputs must produce same outputs.**
 
-### L36 — Trailing stop used closing price not intraday low
-**Mistake:** `check_trailing_stop_hit` checked `today_close <= trailing_stop`. Real stops trigger on intraday low.
-**Fix:** Changed to `today_low <= trailing_stop` for longs, `today_high >= trailing_stop` for shorts. ~2-4pp lower win rates but realistic.
+### L40 — Thresholds undefined — any value passes [architecture]
+Smart money lift passing criterion had no numeric threshold. A strategy showing 0.1pp lift would pass the same as one showing 8pp. **Every passing criterion must have a specific numeric threshold that is statistically meaningful. "Measurable improvement" is not a threshold.**
 
-### L44 — smart_money_score returned wrong key names — all agent SM context was empty
-**Mistake:** `smart_money_score()` returned `{composite_signal, score, details}`. Agent pipeline expected `{congressional_sig, insider_sig, institutional_sig, smart_money_composite}`. All agent SM context was empty dicts for the entire backtest.
-**Fix:** Updated `smart_money_score()` to return all keys expected by both engine AND pipeline. Added integration test.
-
-### L47 — Walk-forward documented as two-window but implemented as one
-**Mistake:** PROJECT_PLAN.md said two walk-forward windows. Code had one with hardcoded dates.
-**Fix:** Walk-forward now runs two windows. ROBUST = passes both.
-
-### L48 — MAE/MFE computed for one day not full trade duration
-**Mistake:** `max_adverse_excursion` was documented as "worst % during hold period" but computed from a single bar.
-**Fix:** MAE/MFE now accumulated on OpenTrade across every day of the hold period.
+### L36 — Stop simulation used close not intraday low [architecture]
+Trailing stop checked `today_close <= trailing_stop`. A stock dipping below stop intraday and recovering would not be stopped out. Real stop orders trigger when price trades through the stop at any point during the day. **Always use daily low/high for stop trigger checks. Using close produces optimistic bias (~2-4pp higher win rate than realistic).**
 
 ---
 
-## Agent Pipeline Design
+## PART 4 — PROCESS & WORKFLOW
 
-### L38 — Decision Agent was given the tier rules it was supposed to derive
-**Mistake:** Gave the Decision Agent the confidence tier matrix in its prompt. Agent pattern-matched rules instead of reasoning independently.
-**Fix:** Removed tier rules from prompt. Agent returns `final_score` (0-100). Tier mapping happens in code.
+### L21 — Jumped ahead of current phase [process]
+Downloaded full S&P 500 cache for Phase 1B before Phase 1A results were reviewed. **Never jump ahead of the current phase. Each phase requires explicit owner approval. The phases exist precisely to validate before scaling.**
 
-### L39 — Agent temperature not set — non-deterministic backtest results
-**Mistake:** API calls did not set `temperature`. Default is 1.0 (stochastic). Same inputs could produce different outputs on different runs.
-**Fix:** Added `temperature=0.0` to all backtest agent calls. `temperature=0.3` for live trading.
+### L20 — Modified owner document without approval [process]
+Rewrote CLAUDE.md from 128 to 62 lines without showing diff or getting approval. Removed useful context. **CLAUDE.md is the owner's document. Never modify without showing exact before/after diff and receiving explicit approval.** Applies to all governance documents.
 
----
+### L29 — Wrong cost and runtime estimates [process]
+Estimated Phase 1B at 3-4 hours and ~$16 USD. Actual was 40+ hours and ~$115 USD. Gave confident estimates without validating against actual timing. **Never give cost or runtime estimates without first measuring one actual call and extrapolating. Always show the full calculation with units.**
 
-## Process & Workflow
+### L32 — Cost formula had unexplained divisor [process]
+Used `days × max_cands × $0.021 / 10` — the `/10` was incorrect and produced a 10× underestimate. **Always validate cost formulas before presenting them. Show the full breakdown: calls × cost_per_call × 6_agents = total. Never use an unexplained divisor.**
 
-### L18 — No batch testing before full Phase 1B run
-**Mistake:** Attempted to run full Phase 1B on 509 instruments without first testing on 25 tickers.
-**Fix:** Added to CHECKLIST item 13. Phase 1B will run 25-ticker test first and review agent outputs.
+### L18 — No batch testing before full Phase 1B run [process]
+Attempted to run full Phase 1B on 509 instruments without first testing on 25 tickers for 1 month. **Always validate the full pipeline on a small sample before scaling. Catch bugs and bad agent outputs cheaply before spending $100+ on a full run.**
 
-### L19 — Commands not chained
-**Mistake:** Gave separate commands for run, commit, push. Codespace timed out between commands, losing results.
-**Fix:** Chain dependent commands. Commit+push always together. Long runs always use nohup.
-
-### L20 — CLAUDE.md modified without approval
-**Mistake:** Rewrote CLAUDE.md from 128 to 62 lines without showing diff or getting approval.
-**Fix:** CLAUDE.md is the owner's document. Never modify without showing exact before/after diff.
-
-### L21 — Jumped ahead to Phase 1B download without approval
-**Mistake:** Downloaded full S&P 500 cache for Phase 1B before Phase 1A results were reviewed.
-**Fix:** Never jump ahead of the current phase. Each phase requires explicit owner approval.
-
-### L24 — Phase 1B partial run started without complete data
-**Mistake:** Started Phase 1B agents with AAII at 15 hardcoded points, no news, no pre-fetched SM data. ~$3 CAD wasted.
-**Fix:** Never start a paid agent run without verifying all data sources are complete. Pre-run checklist must be verified.
-
-### L25 — input() prompt broke nohup execution
-**Mistake:** Run script had an interactive `input()` prompt. nohup has no terminal attached — crashes.
-**Fix:** Removed interactive prompt. Script now prints cost estimate and proceeds automatically.
-
-### L26 — Checklist existed but wasn't being followed
-**Mistake:** CHECKLIST.md was created but repeatedly not consulted before taking actions.
-**Fix:** Behavioural discipline required. Checklist must be the first thing consulted, not an afterthought.
-
-### L35 — Checklist not enforced in practice (same as L26, repeated)
-**Mistake:** Made 33+ documented mistakes after the checklist existed.
-**Fix:** Visibly state checklist compliance before every action. Owner prompt "Did you run the checklist?" enforces this.
+### L24 — Paid run started without complete data [process]
+Started Phase 1B agents with AAII at 15 hardcoded points, no news sentiment, no pre-fetched smart money data. Spent ~$3 CAD on agent calls that produced low-quality outputs. **Never start a paid agent run without verifying all data sources are complete and correct. Run the pre-run validation script first.**
 
 ---
 
-## Cost & Estimation
+## PART 5 — INFRASTRUCTURE & GIT
 
-### L29 — Wrong runtime and cost estimates
-**Mistake:** Estimated Phase 1B at 3-4 hours and ~$16 USD. Actual: 40+ hours and ~$115 USD.
-**Fix:** Never give cost/runtime estimates without measuring one actual call first. Always show the calculation.
+### L1 — Deployment environment network restrictions not checked [infrastructure]
+Assumed all external APIs accessible from Codespaces. Wikipedia and several API endpoints were blocked by the Codespaces allowlist. **Always test every new API endpoint from the actual deployment environment before building integrations.** Don't assume network access.
 
-### L30 — CLAUDE.md reduction claimed wrong token savings
-**Mistake:** Recommended reducing CLAUDE.md claiming token savings. Claude Code loads it every session — removing content costs tokens not saves them.
-**Fix:** Always identify which environment a change affects before claiming a benefit.
+### L2 — Dependencies not persisted across environment restarts [infrastructure]
+Codespace loses all pip installs on restart unless in devcontainer.json. Multiple runs produced no cache files because pyarrow was missing. **Pin all dependencies in devcontainer.json or requirements.txt. Dependencies not pinned are dependencies that will break on the next restart.**
 
-### L32 — Phase 1B cost formula was wrong
-**Mistake:** Used `days × max_cands × $0.021 / 10` — the `/10` divisor was incorrect.
-**Fix:** Corrected formula: `days × avg_passing × 6 agents × $0.00035`. Always validate cost formulas before presenting.
+### L3 — Cache not committed = lost on restart [infrastructure]
+Downloaded 67 instruments, Codespace restarted, lost everything. Repeated 3+ times. **Any file not committed to git is lost when a cloud environment restarts. Commit immediately after every download. Never assume local files survive restarts.**
 
----
+### L13/L22 — Parallel git pushes always conflict [git]
+Ran parallel GitHub Actions batches that all tried to push to main simultaneously. Only one succeeds; others get rejected. Required multiple reruns. **Never run parallel workflows that all push to the same branch. Sequential is slower but reliable. Always use `git pull --rebase` before push.**
 
-## Metrics & Analysis Design
+### L31 — git reset --hard wiped uncommitted data [git]
+Instructed owner to run `git fetch origin ; git reset --hard origin/main` which wiped locally completed Quiver data that hadn't been committed. **Before any `git reset --hard`, always run `git status` first. If uncommitted work exists, commit it before resetting. The sync command is: `git status` → commit if needed → then reset.**
 
-### L40 — Smart money lift threshold was undefined
-**Mistake:** Passing criterion "smart money lift" had no numeric threshold. Any lift, even 0.1pp, passed.
-**Fix:** Smart money lift now requires ≥ 3pp win rate improvement with minimum 30 trades per bucket.
+### L34 — Built solution for wrong environment [infrastructure]
+Created a PowerShell script for a user who consistently uses Git Bash on Windows. PowerShell lacks git on PATH, doesn't support `&&`, and blocks script execution. Made 3 consecutive errors. **Always identify the exact working environment before building any script or command. Test in the target environment, not assumed.**
 
-### L41 — No benchmark comparison or risk-adjusted metrics
-**Mistake:** All strategy performance reported in absolute terms. No SPY comparison, no Sharpe, no Calmar.
-**Fix:** Added SPY benchmark comparison, beats_benchmark flag, Calmar ratio, and 95% CIs to all strategy metrics.
+### L33 — Wrong command separator for shell environment [infrastructure]
+Repeatedly used `&&` in commands for a Windows PowerShell user. PowerShell uses `;` not `&&`. **Always identify the terminal environment before giving commands. Use `;` which works in both PowerShell and bash when in doubt.**
 
 ---
 
-## Testing
+## PART 6 — COST & SCOPE MANAGEMENT
 
-### L45 — Audits were conversational not executable — critical bugs survived three reviews
-**Mistake:** Three comprehensive audits conducted by reading code. L44 (all SM context empty) survived all three. Would have been caught in 30 seconds by running a single print statement.
-**Fix:** After every audit, every flagged item must be validated by running code. Integration tests created (7 tests). Unit tests created (29 tests). E2E smoke test created. Run `python backtest/tests/run_all_tests.py` before every Phase 1B.
+### L42 — Broker not checked for geographic availability [architecture]
+Listed Alpaca as Stage 4 broker throughout the project plan without checking Canadian availability. Alpaca serves US accounts only. **Always verify broker geographic availability, regulatory requirements, and commission structure before including in any plan.** For Canadian investors trading US equities: IBKR Canada.
 
-### L46 — No systematic data flow tracing — producer/consumer key coherency never verified
-**Mistake:** smart_money_score() and pipeline.py both looked correct when read independently. Never tested that output keys matched expected input keys.
-**Fix:** Every inter-module data handoff gets an integration test. Pattern: `result = producer(); assert 'expected_key' in result`.
+### L30 — Token savings claimed for wrong environment [process]
+Recommended reducing CLAUDE.md claiming it would reduce token usage without thinking through which environment loads it. Claude Code on laptop loads CLAUDE.md every session — removing content costs tokens there. **Always identify which environment a change affects before claiming a benefit. A saving in one context may be a cost in another.**
 
----
-
-## Broker & Infrastructure (Stage 4+)
-
-### L42 — Alpaca not available in Canada
-**Mistake:** Listed Alpaca as Stage 4 broker throughout the project plan without checking Canadian availability.
-**Fix:** Updated broker to IBKR Canada (Interactive Brokers Canada) — lowest commissions for active Canadian traders.
+### L41 — No benchmark comparison in initial design [architecture]
+All strategy performance reported in absolute terms with no comparison to SPY buy-and-hold, no Sharpe ratio, no Calmar ratio. A strategy returning 20% over 4 years looks good until SPY returned 50%. **Every strategy backtest must be benchmarked against buy-and-hold and include risk-adjusted metrics. These are industry standard requirements, not optional.**
 
 ---
 
-## Summary Statistics
-- Total mistakes documented: 48
-- Infrastructure mistakes: 8
-- Data/API mistakes: 10
-- Engine/strategy mistakes: 8
-- Agent pipeline mistakes: 2
-- Process/workflow mistakes: 8
-- Cost/estimation mistakes: 3
-- Metrics/analysis mistakes: 2
-- Testing mistakes: 2
-- Broker/infrastructure mistakes: 1
+## PART 7 — RECURRING THEMES (most important lessons)
+
+**Theme 1 — Running code beats reading code**
+The most expensive bugs in this project (L44, L47, L48) were invisible when reading but obvious when run. Every integration point needs a test. Audits without executable validation are incomplete.
+
+**Theme 2 — Test one before building for all**
+Applies to every API endpoint, every data download, every new integration. One test call costs seconds; building the wrong thing costs days. CHECKLIST item 12 exists for this reason.
+
+**Theme 3 — Commit early, commit often**
+Cloud environments don't persist local state. Every download, every result, every cache file must be committed to git immediately. The "commit and push" habit eliminates an entire class of data loss bugs.
+
+**Theme 4 — Pre-fetch everything, query nothing during computation**
+No external API calls inside computation loops. Pre-fetch all data to disk, read from disk during computation. This makes computation fast, deterministic, and resilient to network failures.
+
+**Theme 5 — Document decisions at decision time**
+Decisions made in conversation but not written down get re-debated or forgotten. Every architectural decision, threshold value, or design choice belongs in PROJECT_PLAN.md or config.py at the moment it's made.
+
+---
+
+## QUICK REFERENCE — Before Every Session
+
+1. Run `python backtest/tests/run_all_tests.py` — all tests must pass
+2. Run `python scripts/validate_phase1b_data.py` — before any backtest run
+3. Check `git status` before any sync operation
+4. Verify API access with one test call before building any integration
+5. State checklist compliance before every significant action
