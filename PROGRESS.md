@@ -1,94 +1,96 @@
-# Project Progress & Status Log
-**Project:** Stock Picks & Automated Trading System
-**Repo:** jeetmehta1991/stock-picks-app
-**Updated:** April 25, 2026 — End of day
+# Project Progress
+**Updated:** April 25, 2026 — End of Day
 
 ---
 
-## Current Status
-**Stage:** 2 — Strategy Validation
-**Phase:** 1B — Data pre-fetch in progress
-**Blocker:** Quiver API full outage (500 errors) — retry tomorrow
+## Current Blocker
+Quiver API returning 500 errors on all endpoints since ~3pm EST. Retry tomorrow morning.
 
 ---
 
-## Cache Status on main
-| Data | Status | Notes |
-|---|---|---|
-| OHLCV 509 tickers | ✅ Complete | Extended to March 2026 |
-| Quiver congressional | ✅ 509/509 | Complete |
-| Quiver insider | ✅ 509/509 | Complete |
-| Quiver institutional 13F | ⚠️ 51/509 | API outage — 500 errors for all tickers |
-| Quiver gov_contracts | ❌ 0/509 | API outage — not started |
-| Quiver lobbying | ❌ 0/509 | API outage — not started |
-| Quiver wikipedia | ❌ 0/509 | API outage — not started |
-| Quiver wallstreetbets | ❌ 0/509 | API outage — not started |
-| Alpha Vantage news | ❌ 0/509 | GitHub Actions batches pending (add secret first) |
-| FRED macro | ✅ Extended to March 2026 | Needs push from Codespaces |
-| AAII sentiment | ✅ 325 readings | Covers 2020-March 2026 |
-| CNN Fear & Greed | ✅ 1630 readings | Covers 2020-March 2026 |
+## Data Status
+
+| Data | Status |
+|---|---|
+| OHLCV 509 tickers to March 2026 | ✅ |
+| Quiver congressional | ✅ 509/509 |
+| Quiver insider | ✅ 509/509 |
+| Quiver institutional 13F | ⚠️ 51/509 — API outage |
+| Quiver gov_contracts | ❌ 0/509 — API outage |
+| Quiver lobbying | ❌ 0/509 — API outage |
+| Quiver wikipedia | ❌ 0/509 — API outage |
+| Quiver wallstreetbets | ❌ 0/509 — API outage |
+| Alpha Vantage news | 🔄 4 batches running on GitHub Actions |
+| FRED macro to March 2026 | ✅ |
+| AAII sentiment | ✅ 325 readings |
+| CNN Fear & Greed | ✅ 1,630 readings |
 
 ---
 
-## Major Changes This Session
+## What Was Done Today (April 25)
 
-### Code Changes
-- Trailing stop: switched from close-based to low/high-based — more realistic, ~2-4pp lower win rate
-- Agent temperature = 0 — deterministic backtest results
-- PROMPT_VERSION = "v2.0" — auto-invalidates stale agent cache
-- Decision Agent: removed tier rules from prompt — now scores independently
-- Calmar ratio, 95% CI on all win rates added to metrics
-- Smart money lift threshold: ≥ 3pp required (was undefined)
-- Macro correlation threshold: ≥ 5pp required (was undefined)
-- SPY benchmark comparison added to all strategy metrics
-- Sector-adjusted passing criteria in metrics
-- Borrow cost for short strategies added
-- LIVE_TRADING_RULES config: IBKR Canada, 1 position per ticker
-- Alpha Vantage NEWS_SENTIMENT replaces Finnhub (better scores, free, full history)
-- VWAP approximation documented in technical.py
+### Major Code Fixes (5 comprehensive audits)
+- Fixed CRITICAL bug: smart_money_score returned wrong keys — all agent SM context was empty
+- Fixed trailing stop to use intraday low/high (not close) — more realistic
+- Fixed walk-forward: now two windows, sector-adjusted, INSUFFICIENT_OOS_DATA verdict
+- Fixed survivorship bias: now hold-adjusted per trade
+- Fixed crisis regime: now allows longs at 50% size (was blocking all — contradicted buy-the-dip)
+- Fixed exit strategies (12 methods): all now use intraday low/high
+- Fixed VIX/DXY: now reads from OHLCV cache, not live yfinance during backtest
+- Fixed economic calendar: extended to March 2026
+- Fixed Quiver live API fallback: disabled during backtest (prevents rate limit exhaustion)
+- Added congressional age weighting: <30d full, 30-60d 50%, >60d excluded
+- Added portfolio context to Decision Agent: sees open positions, sector concentration
+- Added Kelly criterion to all strategy metrics
+- Fixed Sharpe ratio: per-trade annualisation (not sqrt(252) which is for daily returns)
+- Added sector concentration logging output
+- Added portfolio compounding return with tier-based position sizing
+- Added strategy-specific signals to Technical Agent (not just generic 10)
+- Removed 40-day max hold period (illogical forced exit)
+- Added AVOID tier correctly returned by confidence tier function
+- Added preliminary_tier and agent_reasoning stored on every trade
+- MAE/MFE now accumulated across full trade duration (was single day)
+- Two-stage tiering fully implemented and tested
+- Replaced Finnhub with Alpha Vantage news (better AI scores, full history, free)
 
-### Data Decisions
-- Finnhub replaced by Alpha Vantage news (AI sentiment, full 2022-2026, free)
-- Quiver Trader tier ($75/mo) — institutional endpoint returning 500s (API outage)
-- Broker changed from Alpaca to IBKR Canada
+### Tests
+- 7/7 integration tests passing
+- 29/29 unit tests passing
+- End-to-end smoke test framework created
 
 ### Documentation
-- PROJECT_PLAN.md v6.0 — 982 lines, 45 flags fixed, all design gaps addressed
-- LEARNINGS.md — 43 mistakes documented
-- CHECKLIST.md — 13 items
-
----
-
-## Pending Before Phase 1B
-
-| # | Item | Status |
-|---|---|---|
-| 1 | Quiver institutional 13F | ⏳ API outage — retry tomorrow |
-| 2 | Quiver gov_contracts | ⏳ API outage — retry tomorrow |
-| 3 | Quiver lobbying | ⏳ API outage — retry tomorrow |
-| 4 | Quiver wikipedia | ⏳ API outage — retry tomorrow |
-| 5 | Quiver wallstreetbets | ⏳ API outage — retry tomorrow |
-| 6 | Alpha Vantage news | ⏳ Add ALPHAVANTAGE_API_KEY secret, trigger 4 batches |
-| 7 | FRED macro push | ⏳ Run python scripts/prefetch_macro.py from Codespaces |
-| 8 | 25-ticker batch test | ⏳ After all data complete |
+- PROJECT_PLAN.md: complete rewrite as flowing narrative for non-technical reader
+- LEARNINGS.md: restructured as universal principles for all future projects
 
 ---
 
 ## Tomorrow Morning Actions
 
-**Laptop Git Bash:**
+**Laptop (Git Bash) — check Quiver first:**
+```bash
+python -c "
+import os, requests
+token = os.environ.get('QUIVER_API_KEY','')
+r = requests.get('https://api.quiverquant.com/beta/historical/congresstrading/AAPL',
+    headers={'Authorization': f'Token {token}'}, timeout=10)
+print(r.status_code, r.text[:60])
+"
+```
+
+If 200 → run:
 ```bash
 export QUIVER_API_KEY="your-key" ; python scripts/prefetch_quiver.py
 ```
 
-**Codespaces:**
+**Check Alpha Vantage news batches on GitHub Actions** — all 4 should be green.
+
+**After all data complete → run pre-run validation:**
 ```bash
-git fetch origin ; git reset --hard origin/main ; python scripts/prefetch_macro.py
+python scripts/validate_phase1b_data.py
 ```
 
-**GitHub Actions:**
-- Add secret: ALPHAVANTAGE_API_KEY = H1TXLB810KEATNBG
-- Trigger: Prefetch Alpha Vantage News → batches 1, 2, 3, 4
-
----
-*Updated: April 25, 2026*
+**Then 25-ticker batch test:**
+```bash
+nohup python backtest/run_phase1a.py --phase 1b --output-dir output_1b_test --start 2022-01-01 --end 2022-01-31 > batch_test.log 2>&1 &
+tail -f batch_test.log
+```
