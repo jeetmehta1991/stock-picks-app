@@ -35,15 +35,19 @@ ANTHROPIC_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
 _API_DELAY_SEC = 1.5
 
 
+PROMPT_VERSION = "v2.0"  # Increment when agent prompts change materially
+
 def _call_claude(
     prompt: str,
     model: str,
     system: str = "",
     max_tokens: int = 800,
+    temperature: float = 0.0,  # 0 = deterministic for backtest reproducibility
 ) -> Optional[str]:
     """
     Call Anthropic API and return the text response.
     Returns None on failure.
+    temperature=0.0 for backtest (reproducible), 0.3 for live trading (some variation).
     """
     if not ANTHROPIC_KEY:
         logger.error("ANTHROPIC_API_KEY not set — agents unavailable")
@@ -55,9 +59,10 @@ def _call_claude(
         "content-type":      "application/json",
     }
     payload = {
-        "model":      model,
-        "max_tokens": max_tokens,
-        "messages":   [{"role": "user", "content": prompt}],
+        "model":       model,
+        "max_tokens":  max_tokens,
+        "temperature": temperature,
+        "messages":    [{"role": "user", "content": prompt}],
     }
     if system:
         payload["system"] = system
@@ -482,24 +487,26 @@ Smart money composite: {json.dumps(smart_money_score, default=str)}
 All agent outputs:
 {json.dumps(all_agent_results, indent=2, default=str)}
 
-Confidence matrix:
-- EXCEPTIONAL (85+): 3+ strategies + congressional + insider cluster buy
-- VERY_HIGH (70-84): 2+ strategies + congressional OR insider buy
-- HIGH (60-69): 3+ strategies, no smart money
-- MEDIUM_HIGH (50-59): 2 strategies, no smart money
-- MEDIUM (40-49): 1 strategy + any smart money buy
-- LOW (<40): 1 strategy only
-- AVOID: strong negative smart money regardless of technical
+Synthesise all agent scores and reasoning. Assess:
+1. Technical quality — how strong and confluent are the signals?
+2. Fundamental alignment — do smart money signals confirm the technical setup?
+3. Sentiment context — is the market environment supportive?
+4. Risk profile — what is the macro and event risk?
+5. Bull vs bear balance — which case is stronger?
+
+Produce an independent conviction score 0-100 based purely on signal quality.
+High volatility sectors warrant wider stops and potentially smaller position size.
+Earnings proximity reduces recommended size but does not block the trade.
 
 Return JSON only:
 {{
-  "final_score": <integer 0-100>,
-  "confidence_tier": "<EXCEPTIONAL|VERY_HIGH|HIGH|MEDIUM_HIGH|MEDIUM|LOW|AVOID>",
+  "final_score": <integer 0-100 — your independent conviction score>,
   "action": "<ENTER|WATCH|SKIP|AVOID>",
   "position_size_modifier": "<full|reduced_earnings|reduced_volatility|minimal>",
-  "entry_rationale": "<two sentences>",
-  "primary_risk": "<one sentence>",
-  "recommended_exit": "<atr_trail_1x|trailing_15pct|hybrid_50pct_target|next_pivot_target>"
+  "entry_rationale": "<two sentences — why enter now>",
+  "primary_risk": "<one sentence — biggest risk to this trade>",
+  "recommended_exit": "<atr_trail_1x|trailing_15pct|hybrid_50pct_target|next_pivot_target>",
+  "agent_agreement": "<strong — all agents aligned|moderate — mostly aligned|weak — agents disagree>"
 }}"""
 
     resp = _call_claude(prompt, model, SYSTEM_ANALYST, max_tokens=500)
@@ -519,9 +526,11 @@ AGENT_CACHE_DIR = Path(__file__).parent / "cache"
 
 
 def _agent_cache_key(ticker: str, as_of: date, strategies: list, phase: str) -> str:
-    """Generate a unique cache key for this agent run."""
+    """Generate a unique cache key for this agent run.
+    Includes PROMPT_VERSION — changing version automatically invalidates old cache.
+    """
     strat_str = "_".join(sorted(strategies)) if strategies else "none"
-    raw = f"{ticker}_{as_of}_{strat_str}_{phase}"
+    raw = f"{ticker}_{as_of}_{strat_str}_{phase}_{PROMPT_VERSION}"
     return hashlib.md5(raw.encode()).hexdigest()
 
 

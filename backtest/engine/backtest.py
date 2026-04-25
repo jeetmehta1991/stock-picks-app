@@ -482,8 +482,21 @@ class BacktestEngine:
         logger.info("Survivorship haircut: %.1f%% → adjusted ROI %.1f%%",
                     haircut, adj_roi)
 
+        # SPY benchmark return
+        spy_benchmark = None
+        if self.spy_df is not None:
+            try:
+                spy_s = self.spy_df[self.spy_df.index.date >= self.start]
+                spy_e = self.spy_df[self.spy_df.index.date <= self.end]
+                if not spy_s.empty and not spy_e.empty:
+                    spy_benchmark = round((float(spy_e["close"].iloc[-1]) /
+                                           float(spy_s["close"].iloc[0]) - 1) * 100, 2)
+                    logger.info("SPY benchmark return: %.1f%%", spy_benchmark)
+            except Exception as e:
+                logger.debug("SPY benchmark calc failed: %s", e)
+
         # Metrics
-        metrics = compute_all_metrics(df_trades)
+        metrics = compute_all_metrics(df_trades, spy_total_return=spy_benchmark)
 
         # Walk-forward validation
         wf_df = pd.DataFrame()

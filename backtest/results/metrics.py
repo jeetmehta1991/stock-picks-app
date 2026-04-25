@@ -45,6 +45,32 @@ def _max_drawdown(pnl_series: pd.Series) -> float:
     return round(float(drawdown.min()), 4)
 
 
+def _calmar(pnl_series: pd.Series, hold_days_series: pd.Series) -> float:
+    """Calmar ratio: annualised return / max drawdown magnitude."""
+    mdd = abs(_max_drawdown(pnl_series))
+    if mdd == 0:
+        return 0.0
+    # Annualise: assume average 252 trading days/year
+    avg_hold = float(hold_days_series.mean()) if len(hold_days_series) > 0 else 10
+    n_trades_per_year = 252 / max(avg_hold, 1)
+    annual_return = float(pnl_series.mean()) * n_trades_per_year
+    return round(annual_return / mdd, 3)
+
+
+def _confidence_interval_95(win_rate: float, n: int) -> tuple:
+    """95% Wilson confidence interval for win rate."""
+    if n == 0:
+        return (0.0, 0.0)
+    z = 1.96
+    p = win_rate
+    denom = 1 + z**2 / n
+    centre = (p + z**2 / (2*n)) / denom
+    margin = (z * (p*(1-p)/n + z**2/(4*n**2))**0.5) / denom
+    lo = max(0.0, round(centre - margin, 4))
+    hi = min(1.0, round(centre + margin, 4))
+    return (lo, hi)
+
+
 def _sharpe(pnl_series: pd.Series) -> float:
     if pnl_series.std() == 0:
         return 0.0
@@ -72,6 +98,9 @@ def compute_strategy_metrics(df: pd.DataFrame, strategy: str) -> dict:
     mdd   = _max_drawdown(pnl)
     roi   = round(float(pnl.sum()), 4)
     sharpe = _sharpe(pnl)
+    calmar = _calmar(pnl, g["hold_days"] if "hold_days" in g else pd.Series([10]))
+    ci_lo, ci_hi = _confidence_interval_95(win_rate, n)
+    statistically_random = ci_lo < 0.50  # lower CI bound below 50% = may be random
 
     # Regime breakdown — count profitable regimes
     regimes_profitable = 0
@@ -88,24 +117,31 @@ def compute_strategy_metrics(df: pd.DataFrame, strategy: str) -> dict:
             if r_wr >= PASSING_CRITERIA["min_win_rate"]:
                 regimes_profitable += 1
 
-    # Smart money lift
-    has_sm    = g[g["smart_money_score"] >= 2]
-    no_sm     = g[g["smart_money_score"] < 2]
-    sm_lift   = (float(has_sm["win"].mean()) - float(no_sm["win"].mean())
-                 if len(has_sm) >= 5 and len(no_sm) >= 5 else None)
+    # Smart money lift — within-strategy comparison (correct method)
+    # Isolate SM contribution by holding strategy constant
+    has_sm = g[g["smart_money_score"] >= 2]
+    no_sm  = g[g["smart_money_score"] < 2]
+    sm_lift = None
+    if len(has_sm) >= 30 and len(no_sm) >= 30:
+        sm_lift = round(float(has_sm["win"].mean()) - float(no_sm["win"].mean()), 4)
 
-    # Macro correlation
-    fav_macro  = g[g["macro_score"] >= 2]
+    # Macro correlation — defined threshold
+    fav_macro   = g[g["macro_score"] >= 2]
     unfav_macro = g[g["macro_score"] < 0]
-    macro_corr = (float(fav_macro["win"].mean()) - float(unfav_macro["win"].mean())
-                  if len(fav_macro) >= 5 and len(unfav_macro) >= 5 else None)
+    macro_corr = None
+    if len(fav_macro) >= 20 and len(unfav_macro) >= 20:
+        macro_corr = round(float(fav_macro["win"].mean()) - float(unfav_macro["win"].mean()), 4)
 
+    # Sector-adjusted passing criteria
+    from backtest.config import get_sector_criteria
+    sector = g["sector"].iloc[0] if "sector" in g.columns and not g["sector"].empty else "Unknown"
+    pc = get_sector_criteria(sector)
     # Direction split
     long_df  = g[g["direction"] == "long"]
     short_df = g[g["direction"] == "short"]
 
-    # Passing criteria evaluation
-    pc    = PASSING_CRITERIA
+    SM_LIFT_THRESHOLD    = 0.03   # >= 3pp win rate improvement required
+    MACRO_CORR_THRESHOLD = 0.05   # >= 5pp win rate diff required
     passes = {
         "win_rate":           win_rate >= pc["min_win_rate"],
         "profit_factor":      pf >= pc["min_profit_factor"],
@@ -113,8 +149,8 @@ def compute_strategy_metrics(df: pd.DataFrame, strategy: str) -> dict:
         "win_loss_ratio":     wl_r >= pc["min_win_loss_ratio"],
         "max_drawdown":       mdd >= -pc["max_drawdown"],
         "total_roi":          roi > pc["min_total_roi"],
-        "smart_money_lift":   (sm_lift is None) or (sm_lift >= 0),
-        "macro_correlation":  (macro_corr is None) or (macro_corr >= 0),
+        "smart_money_lift":   (sm_lift is None) or (sm_lift >= SM_LIFT_THRESHOLD),
+        "macro_correlation":  (macro_corr is None) or (macro_corr >= MACRO_CORR_THRESHOLD),
         "trade_count":        n >= pc["min_trades"],
         "regimes_profitable": regimes_profitable >= pc["min_regimes_profitable"],
     }
@@ -126,36 +162,48 @@ def compute_strategy_metrics(df: pd.DataFrame, strategy: str) -> dict:
         audit_flags.append(f"win_rate_{win_rate*100:.1f}pct_exceeds_audit_threshold")
     if pf > pc["audit_profit_factor_above"]:
         audit_flags.append(f"profit_factor_{pf:.2f}_exceeds_audit_threshold")
+    if statistically_random:
+        audit_flags.append(f"ci_lower_{ci_lo*100:.1f}pct_may_be_random")
 
     return {
-        "strategy":           strategy,
-        "direction_mix":      f"{len(long_df)}L/{len(short_df)}S",
-        "total_trades":       n,
-        "win_rate":           round(win_rate, 4),
-        "profit_factor":      round(pf, 4),
-        "expected_value":     round(ev, 4),
-        "win_loss_ratio":     round(wl_r, 4) if wl_r != float("inf") else 999,
-        "avg_win_pct":        round(avg_win, 4),
-        "avg_loss_pct":       round(avg_loss, 4),
-        "max_drawdown_pct":   round(mdd, 4),
-        "total_roi_pct":      round(roi, 4),
-        "sharpe_ratio":       sharpe,
-        "avg_hold_days":      round(float(g["hold_days"].mean()), 1) if "hold_days" in g else 0,
-        "best_trade_pct":     round(float(pnl.max()), 4),
-        "worst_trade_pct":    round(float(pnl.min()), 4),
-        "smart_money_lift":   round(sm_lift, 4) if sm_lift is not None else None,
-        "macro_correlation":  round(macro_corr, 4) if macro_corr is not None else None,
-        "regimes_profitable": regimes_profitable,
-        "regime_details":     regime_details,
-        "passes":             passes,
-        "passes_all":         passes_all,
-        "audit_flags":        audit_flags,
-        "category":           g["category"].iloc[0] if "category" in g else "",
+        "strategy":              strategy,
+        "sector":                sector,
+        "sector_criteria":       pc.get("_label", "medium_volatility"),
+        "direction_mix":         f"{len(long_df)}L/{len(short_df)}S",
+        "total_trades":          n,
+        "win_rate":              round(win_rate, 4),
+        "win_rate_ci_low":       ci_lo,
+        "win_rate_ci_high":      ci_hi,
+        "statistically_random":  statistically_random,
+        "profit_factor":         round(pf, 4),
+        "expected_value":        round(ev, 4),
+        "win_loss_ratio":        round(wl_r, 4) if wl_r != float("inf") else 999,
+        "avg_win_pct":           round(avg_win, 4),
+        "avg_loss_pct":          round(avg_loss, 4),
+        "max_drawdown_pct":      round(mdd, 4),
+        "total_roi_pct":         round(roi, 4),
+        "sharpe_ratio":          sharpe,
+        "calmar_ratio":          calmar,
+        "avg_hold_days":         round(float(g["hold_days"].mean()), 1) if "hold_days" in g else 0,
+        "best_trade_pct":        round(float(pnl.max()), 4),
+        "worst_trade_pct":       round(float(pnl.min()), 4),
+        "smart_money_lift":      sm_lift,
+        "macro_correlation":     macro_corr,
+        "regimes_profitable":    regimes_profitable,
+        "regime_details":        regime_details,
+        "passes":                passes,
+        "passes_all":            passes_all,
+        "audit_flags":           audit_flags,
+        "category":              g["category"].iloc[0] if "category" in g else "",
     }
 
 
-def compute_all_metrics(df: pd.DataFrame) -> pd.DataFrame:
-    """Compute metrics for all strategies. Returns sorted DataFrame."""
+def compute_all_metrics(df: pd.DataFrame, spy_total_return: float = None) -> pd.DataFrame:
+    """Compute metrics for all strategies. Returns sorted DataFrame.
+    
+    spy_total_return: SPY buy-and-hold total return over same period (for benchmark comparison).
+    If None, benchmark comparison columns are omitted.
+    """
     if df.empty:
         return pd.DataFrame()
     strategies = df["strategy"].unique()
@@ -163,6 +211,10 @@ def compute_all_metrics(df: pd.DataFrame) -> pd.DataFrame:
     for s in strategies:
         m = compute_strategy_metrics(df, s)
         if m:
+            if spy_total_return is not None:
+                m["spy_benchmark_return"] = round(spy_total_return, 4)
+                m["vs_benchmark"]         = round(m["total_roi_pct"] - spy_total_return, 4)
+                m["beats_benchmark"]      = m["total_roi_pct"] > spy_total_return
             rows.append(m)
 
     result = pd.DataFrame(rows)
@@ -176,6 +228,9 @@ def compute_all_metrics(df: pd.DataFrame) -> pd.DataFrame:
 
     logger.info("Metrics computed: %d strategies, %d pass all criteria",
                 len(result), result["passes_all"].sum())
+    if spy_total_return is not None:
+        beats = result["beats_benchmark"].sum() if "beats_benchmark" in result else 0
+        logger.info("Strategies beating SPY benchmark: %d/%d", beats, len(result))
     return result
 
 

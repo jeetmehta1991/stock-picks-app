@@ -154,8 +154,21 @@ def write_all_outputs(
     # ── Confidence tier performance ──
     if "confidence_tier" in df_trades:
         from backtest.results.metrics import compute_confidence_tier_metrics
-        compute_confidence_tier_metrics(df_trades).to_csv(
-            output_dir / "agent_performance.csv", index=False)
+        tier_metrics = compute_confidence_tier_metrics(df_trades)
+        tier_metrics.to_csv(output_dir / "agent_performance.csv", index=False)
+
+        # Preliminary vs agent-adjusted tier comparison
+        if "preliminary_tier" in df_trades.columns:
+            tier_compare = df_trades.groupby(["preliminary_tier", "confidence_tier"]).agg(
+                trades=("win", "count"),
+                win_rate=("win", "mean"),
+            ).reset_index()
+            tier_compare["upgraded"]   = tier_compare.apply(
+                lambda r: r["confidence_tier"] > r["preliminary_tier"], axis=1)
+            tier_compare["downgraded"] = tier_compare.apply(
+                lambda r: r["confidence_tier"] < r["preliminary_tier"], axis=1)
+            tier_compare.to_csv(output_dir / "tier_adjustment_analysis.csv", index=False)
+            logger.info("Wrote tier_adjustment_analysis.csv — agent upgrade/downgrade rates")
 
     # ── Placeholder CSVs ──
     for fname in ["congressional_correlation.csv", "insider_correlation.csv"]:

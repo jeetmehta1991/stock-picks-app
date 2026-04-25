@@ -237,11 +237,14 @@ def get_sector_criteria(sector: str) -> dict:
     for profile, config in SECTOR_PASSING_CRITERIA.items():
         if sector in config["sectors"]:
             criteria = dict(PASSING_CRITERIA)
-            criteria["min_win_rate"]     = config["min_win_rate"]
-            criteria["max_drawdown"]     = config["max_drawdown"]
+            criteria["min_win_rate"]      = config["min_win_rate"]
+            criteria["max_drawdown"]      = config["max_drawdown"]
             criteria["min_profit_factor"] = config["min_profit_factor"]
+            criteria["_label"]            = profile
             return criteria
-    return PASSING_CRITERIA  # default for Unknown sector
+    result = dict(PASSING_CRITERIA)
+    result["_label"] = "medium_volatility"
+    return result
 
 # ─────────────────────────────────────────────────────────────────────────────
 # CONFIDENCE TIERS — maps to site card label and position sizing
