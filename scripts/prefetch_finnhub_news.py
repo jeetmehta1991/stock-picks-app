@@ -34,10 +34,12 @@ RATE_LIMIT_SLEEP = 1.1   # 60 calls/min = 1 per second, use 1.1 for safety
 COMMIT_EVERY = 50
 
 # Annual batches — free tier handles ~1 year per call
+# Finnhub free tier: ~1 year lookback from today (April 2026)
+# 2022-2024 returns empty results on free tier — only fetch recent data
+# This covers our OOS period (2025-Mar 2026) which is most critical
 BATCHES = [
-    ("2022-01-01", "2022-12-31"),
-    ("2023-01-01", "2023-12-31"),
-    ("2024-01-01", "2024-12-31"),
+    ("2025-01-01", "2025-12-31"),
+    ("2026-01-01", "2026-03-31"),
 ]
 
 
@@ -63,8 +65,23 @@ def fetch_news(ticker: str, from_date: str, to_date: str) -> list:
     return []
 
 
-def score_sentiment(headline: str, summary: str) -> float:
-    """Simple keyword sentiment scorer — returns -1 (negative) to +1 (positive)."""
+def score_sentiment(article: dict) -> float:
+    """
+    Use Finnhub native sentiment score if available (superior NLP model).
+    Falls back to keyword scoring only if Finnhub sentiment not present.
+    Finnhub returns: sentiment field with score (-1 to 1) and magnitude.
+    """
+    # Prefer Finnhub native sentiment
+    if "sentiment" in article and article["sentiment"] is not None:
+        s = article["sentiment"]
+        if isinstance(s, dict) and "score" in s:
+            return float(s["score"])
+        if isinstance(s, (int, float)):
+            return float(s)
+
+    # Keyword fallback
+    headline = article.get("headline", "")
+    summary = article.get("summary", "")
     text = f"{headline} {summary}".lower()
     positive = ["beat", "exceed", "strong", "growth", "record", "surge",
                 "upgrade", "outperform", "buy", "bullish", "profit", "gain",
@@ -97,7 +114,7 @@ def process_ticker(ticker: str) -> pd.DataFrame:
         if not ts:
             continue
         dt = pd.Timestamp(ts, unit="s").date()
-        score = score_sentiment(a.get("headline",""), a.get("summary",""))
+        score = score_sentiment(a)
         rows.append({"date": dt, "sentiment": score, "headline": a.get("headline","")[:100]})
 
     if not rows:
@@ -113,6 +130,9 @@ def process_ticker(ticker: str) -> pd.DataFrame:
     ).reset_index()
     return daily
 
+
+# NOTE: If BATCHES dates changed, delete checkpoint file to force re-download
+# rm backtest/data/cache/finnhub_news_checkpoint.json
 
 def load_checkpoint(batch: int = 0) -> list:
     key = f"batch_{batch}" if batch > 0 else "all"

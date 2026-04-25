@@ -212,3 +212,38 @@ Maintained to prevent repeating the same errors and to document why decisions we
 **Mistake:** CHECKLIST.md created, documented in CLAUDE.md, referenced repeatedly — but not actually run before actions. 33+ documented mistakes occurred after the checklist existed.
 **Learning:** A checklist only works if it is a visible gate before every action. Going forward: explicitly state checklist compliance before executing anything. Make it auditable — owner can see whether it was run.
 **Fix:** Before every action, state: "Checklist: ✅ thought through, ✅ plan shown, ✅ within phase, ✅ helps the ask, ✅ risks flagged, ✅ approval received". Owner prompt "Did you run the checklist?" enforces this.
+
+### L36 — Trailing stop used closing price not intraday low
+**Mistake:** The `check_trailing_stop_hit` function checked `today_close <= trailing_stop` — a stock dipping below the stop intraday and recovering would not be stopped out. This is not how real stop orders work.
+**Learning:** Real stop-loss orders trigger when price TRADES through the stop at any point during the day, not just at close. Using close produces optimistic bias (~2-4pp higher win rate than realistic).
+**Fix:** Changed to `today_low <= trailing_stop` for longs and `today_high >= trailing_stop` for shorts. Exit price remains at stop level (not the low). Impact: ~2-4pp lower win rates, shorter average hold times — more realistic.
+
+### L37 — Finnhub free tier 1-year lookback not verified before downloading
+**Mistake:** Built and ran the Finnhub pre-fetch for 2022-2024 data. Free tier only returns ~1 year of historical news. All 509 tickers downloaded successfully but all files were empty (~1012 bytes each — empty Parquet). Discovered only after 5 GitHub Actions batch runs completed.
+**Learning:** Always test API with a date range call before building the full pre-fetch. Check: does a 2022 date range return data or empty? This is CHECKLIST item 12 — verify API tier access before building.
+**Fix:** Updated BATCHES to 2025-2026 (within free tier lookback). Re-run required.
+
+### L38 — Decision Agent was given the tier rules it was supposed to derive
+**Mistake:** The Decision Agent prompt included the explicit confidence tier matrix (EXCEPTIONAL = 85+, VERY HIGH = 70-84 etc.). This means the agent wasn't reasoning — it was pattern-matching to rules we gave it. The agent would output EXCEPTIONAL whenever it saw 3+ strategies + congressional, not because it independently assessed conviction.
+**Learning:** Agents should derive scores independently. Giving an agent the mapping rules it's supposed to derive defeats the purpose of using an agent. The tier mapping should happen in code after the agent returns a raw score.
+**Fix:** Removed tier rules from Decision Agent prompt. Agent now returns `final_score` (0-100) independently. Code applies tier mapping after.
+
+### L39 — Agent temperature not set — non-deterministic backtest results
+**Mistake:** Agent API calls did not set `temperature` parameter. Default is 1.0 (fully stochastic). Same inputs could produce different confidence tiers on different runs, making Phase 1B results non-reproducible.
+**Learning:** Backtest agents must be deterministic. `temperature=0` for all backtest calls. `temperature=0.3` for live trading where some variation is acceptable.
+**Fix:** Added `temperature=0.0` default to `_call_claude()`. PROMPT_VERSION added to cache key for automatic invalidation when prompts change.
+
+### L40 — Smart money lift threshold was undefined — any lift passed
+**Mistake:** Passing criterion 7 (smart money lift) had no numeric threshold. A strategy showing 0.1pp lift would pass the same as one showing 8pp lift. The criterion was meaningless.
+**Learning:** Every passing criterion must have a specific numeric threshold that is statistically meaningful. "Measurable improvement" is not a threshold.
+**Fix:** Smart money lift now requires ≥ 3pp win rate improvement with minimum 30 trades per bucket. Macro correlation now requires ≥ 5pp with minimum 20 trades per regime.
+
+### L41 — No benchmark comparison or risk-adjusted metrics
+**Mistake:** All strategy performance reported in absolute terms (win rate, ROI, drawdown). No comparison to SPY buy-and-hold. No Sharpe ratio properly used. No Calmar ratio. A strategy with 20% ROI over 4 years looks good until you realise SPY returned 50%.
+**Learning:** Every strategy backtest must be benchmarked against buy-and-hold and include risk-adjusted metrics. These are industry standard requirements.
+**Fix:** Added SPY benchmark comparison, beats_benchmark flag, Calmar ratio, and 95% confidence intervals to all strategy metrics.
+
+### L42 — Alpaca not available in Canada
+**Mistake:** Listed Alpaca as Stage 4 broker throughout the project plan without checking Canadian availability. Alpaca serves US accounts only. A Canadian investor trading US equities cannot use Alpaca for live trading.
+**Learning:** Always verify broker geographic availability before including in the plan. This should have been checked at Stage 1.
+**Fix:** Updated broker to IBKR Canada (Interactive Brokers Canada) — lowest commissions for active traders in Canada ($0.005/share, $1 minimum).

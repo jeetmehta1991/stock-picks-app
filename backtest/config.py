@@ -250,6 +250,23 @@ def get_sector_criteria(sector: str) -> dict:
 # CONFIDENCE TIERS — maps to site card label and position sizing
 # ─────────────────────────────────────────────────────────────────────────────
 # ─────────────────────────────────────────────────────────────────────────────
+# LIVE TRADING OVERRIDES
+# These differ from backtest rules — applied only in Stage 3+ live trading
+# ─────────────────────────────────────────────────────────────────────────────
+
+LIVE_TRADING_RULES = {
+    "max_positions_per_ticker": 1,      # backtest: unlimited. live: 1 position per ticker max
+    "max_open_positions":       10,     # total simultaneous positions
+    "drawdown_25pct_threshold": 0.10,   # portfolio drawdown > 10% → reduce sizes 25%
+    "drawdown_50pct_threshold": 0.20,   # portfolio drawdown > 20% → reduce sizes 50%
+    "drawdown_suspend_threshold": 0.30, # portfolio drawdown > 30% → suspend new entries
+    "position_staleness_pct":   0.01,   # cancel if entry price moved >1% since signal
+    "broker":                   "IBKR_Canada",  # Interactive Brokers Canada (not Alpaca — Canada only)
+    "base_currency":            "CAD",  # portfolio denominated in CAD
+    "trade_currency":           "USD",  # US equity trades in USD — currency risk exists
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
 # TWO-STAGE CONFIDENCE TIERING
 # Stage 1: Rule-based preliminary tier (before agents run)
 # Stage 2: Agent-adjusted final tier (agents can move ±1 level based on quality)

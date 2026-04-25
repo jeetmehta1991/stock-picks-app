@@ -60,10 +60,13 @@ def apply_transaction_costs(
     Subtracts one-way cost on entry + one-way cost on exit.
     Updates pnl_pct, win, and adds cost_pct column.
 
-    This is the single most important realism improvement.
-    A strategy with 1.21 profit factor before costs may fall below 1.2 after.
+    Short trades incur additional securities lending (borrow) cost:
+    - Easy-to-borrow large caps (most S&P 500): ~0.5% annually
+    - Applied proportionally: 0.5% / 252 * hold_days
     """
     df = df_trades.copy()
+
+    ANNUAL_BORROW_RATE = 0.005   # 0.5% per year for easy-to-borrow large caps
 
     costs = []
     for _, row in df.iterrows():
@@ -72,12 +75,19 @@ def apply_transaction_costs(
         cost = get_transaction_cost(ticker, mkt_cap_m)
         # Round trip = entry cost + exit cost
         round_trip = cost * 2
+
+        # Short trade: add securities lending (borrow) cost
+        if row.get("direction") == "short":
+            hold_days = row.get("hold_days", 10)
+            borrow_cost = ANNUAL_BORROW_RATE * (hold_days / 252)
+            round_trip += borrow_cost
+
         costs.append(round_trip * 100)  # as percentage
 
-    df["cost_pct"]   = costs
+    df["cost_pct"]      = costs
     df["pnl_pct_gross"] = df["pnl_pct"].copy()
-    df["pnl_pct"]    = df["pnl_pct"] - df["cost_pct"]
-    df["win"]        = df["pnl_pct"] > 0
+    df["pnl_pct"]       = df["pnl_pct"] - df["cost_pct"]
+    df["win"]           = df["pnl_pct"] > 0
 
     total_cost = df["cost_pct"].sum()
     gross_roi  = df["pnl_pct_gross"].sum()

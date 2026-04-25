@@ -36,6 +36,9 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
+      - name: Clear stale checkpoint (dates changed to 2025-2026)
+        run: rm -f backtest/data/cache/finnhub_news_checkpoint.json
+
       - name: Run Finnhub pre-fetch batch ${{ github.event.inputs.batch }}
         env:
           FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}

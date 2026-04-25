@@ -403,7 +403,7 @@ After Phase 1B results, calculate ¼ Kelly for each passing strategy. If Kelly s
 - FRED macro: all 7 series, 2020-Mar 2026
 - AAII: 325 weekly readings, 2020-Mar 2026
 - CNN Fear & Greed: 1,630 daily readings, 2020-Mar 2026
-- Finnhub news: all 509 tickers, 3-year annual batches
+- Finnhub news: all 509 tickers, 2025-2026 only (free tier 1-year lookback). 2022-2024 news unavailable on free tier. Upgrade to Finnhub paid ($50/mo) for full coverage in Phase 1C.
 
 ---
 
@@ -443,7 +443,7 @@ After Phase 1B results, calculate ¼ Kelly for each passing strategy. If Kelly s
 |---|---|---|
 | All Stage 3 APIs | Same role | Same cost |
 | Ortex | Short interest — squeeze risk detection | ~$40/mo |
-| Alpaca live | Real trade execution | Commission per trade |
+| IBKR Canada | Real trade execution | $0.005/share, $1 min commission |
 | **Total Stage 4** | | **~$190/mo** |
 
 ### Phase 1C Addition
@@ -945,6 +945,15 @@ A strategy validated on 2022-2026 data may stop working in 2028.
 - Agent cache versioning — invalidate on prompt changes
 - Batch test before scaling
 - Backtests mirror live trading scenarios
+
+### Currency Risk
+All backtest and live trading returns are in USD. Portfolio is denominated in CAD.
+USD/CAD exchange rate fluctuations affect actual CAD returns:
+- USD strengthens 5% while holding US stock returning 10% → actual CAD return ~15%
+- CAD strengthens 5% → actual CAD return ~5%
+
+Phase 1B results are in USD. Stage 3+ performance tracked in both USD and CAD.
+Currency hedging not implemented — documented as known exposure.
 
 ### Known Limitations vs Institutional Systems
 - Daily bar data only — intraday stop precision limited

@@ -507,6 +507,16 @@ def compute_parabolic_sar(df: pd.DataFrame) -> dict:
     }
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# NOTE ON VWAP APPROXIMATION
+# True VWAP is an intraday metric that resets every day. On daily bars we
+# approximate it as (High + Low + Close) / 3. This differs from real intraday
+# VWAP that traders see on screens. The 7 strategies using VWAP conditions
+# (prev_day_high_break, prev_day_low_bounce, squeeze_breakout, volume_spike_breakout,
+# bb_squeeze_volume, inside_bar_breakout, cpr_narrow_momentum) use this
+# approximation. In live trading, real intraday VWAP should be used.
+# ─────────────────────────────────────────────────────────────────────────────
+
 def compute_ichimoku(df: pd.DataFrame) -> dict:
     if len(df) < 52:
         return {}
