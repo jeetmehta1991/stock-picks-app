@@ -70,7 +70,7 @@ def get_regime_context(
             "bull":    "VIX < 20, SPY above 200 EMA — risk-on, favour longs",
             "neutral": "Mixed conditions — both directions allowed at full size",
             "bear":    "VIX > 30, SPY below 200 EMA — favour shorts",
-            "crisis":  "VIX > 40 — no new longs, tighten all stops to 5%",
+            "crisis":  "VIX > 40 — reduce long size to 50%, require VERY HIGH min tier. Do NOT tighten stops (causes whipsawing).",
         }.get(regime, ""),
     }
 

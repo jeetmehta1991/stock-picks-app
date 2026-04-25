@@ -173,16 +173,17 @@ REGIME_FILTER = {
     },
     "crisis": {
         "vix_min": 40,
-        "long": "none", "short": "cautious",
+        "long": "reduced",   # 50% size — buy dips in crisis, don't block
+        "short": "cautious",
     },
 }
 
 # Position size multipliers per regime
 POSITION_SIZE_MULT = {
-    "full":     1.0,
-    "reduced":  0.5,
-    "cautious": 0.25,
-    "none":     0.0,
+    "full":     1.0,   # normal position size
+    "reduced":  0.5,   # 50% — bear/crisis regime
+    "cautious": 0.25,  # 25% — cautious regime (crisis shorts)
+    "none":     0.0,   # blocked — not used for crisis longs (buy-the-dip)
 }
 
 # ─────────────────────────────────────────────────────────────────────────────

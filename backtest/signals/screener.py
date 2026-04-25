@@ -843,10 +843,11 @@ def screen_instrument(
     Run single instrument through full pipeline.
     Returns candidate dict with all strategies triggered, signals, and bullets.
     """
-    passes, fail_reason = passes_liquidity_filter(ticker, df, info, as_of)
-    if not passes:
+    # Liquidity already checked at universe load time (annually)
+    # Light check: price > 0 and sufficient history only
+    if df is None or len(df) < 30:
         return {"ticker": ticker, "as_of": as_of, "liquidity_ok": False,
-                "fail_reason": fail_reason, "strategies": []}
+                "fail_reason": "insufficient_history", "strategies": []}
 
     signals = compute_all_signals(df)
     if not signals:
@@ -862,11 +863,9 @@ def screen_instrument(
             if not result["fires"]:
                 continue
             direction = result["direction"]
-            # Regime filter — check if direction is allowed
-            if direction == "long" and regime == "crisis":
-                continue
-            if direction == "short" and regime == "bull":
-                result["direction"] = "long_only"  # mark as reduced
+            # Regime context — no hard direction blocks (buy-the-dip philosophy)
+            # Crisis regime: long trades flagged, position size reduced in engine
+            # Bull regime: short trades allowed but at reduced size
             entry = {
                 "strategy":        name,
                 "direction":       direction,

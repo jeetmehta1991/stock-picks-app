@@ -71,23 +71,23 @@ def exit_trailing_pct(df_full, entry_date, entry_price, direction, atr,
              else entry_price * (1 + trail_pct)
 
     for i, (idx, row) in enumerate(future.iterrows()):
-        if i >= max_days:
-            return _base_result(entry_price, float(row["close"]), entry_date,
-                                idx.date(), "max_days", direction)
+        # No max_days force exit — only trailing stop and circuit breakers exit trades
         close = float(row["close"])
+        low   = float(row.get("low",  close))
+        high  = float(row.get("high", close))
         # Update trailing stop
         if direction == "long":
             if close > best:
                 best = close
                 stop = max(stop, best * (1 - trail_pct))
-            if close <= stop:
+            if low <= stop:
                 return _base_result(entry_price, stop, entry_date,
                                     idx.date(), "trailing_stop", direction)
         else:
             if close < best:
                 best = close
                 stop = min(stop, best * (1 + trail_pct))
-            if close >= stop:
+            if high >= stop:
                 return _base_result(entry_price, stop, entry_date,
                                     idx.date(), "trailing_stop", direction)
 
@@ -107,22 +107,22 @@ def exit_atr_trail(df_full, entry_date, entry_price, direction, atr,
             else (entry_price + atr_mult * atr)
 
     for i, (idx, row) in enumerate(future.iterrows()):
-        if i >= max_days:
-            return _base_result(entry_price, float(row["close"]), entry_date,
-                                idx.date(), "max_days", direction)
+        # No max_days force exit — only trailing stop and circuit breakers exit trades
         close = float(row["close"])
+        low   = float(row.get("low",  close))
+        high  = float(row.get("high", close))
         if direction == "long":
             if close > best:
                 best = close
                 stop = max(stop, best - atr_mult * atr)
-            if close <= stop:
+            if low <= stop:
                 return _base_result(entry_price, stop, entry_date,
                                     idx.date(), "atr_trailing_stop", direction)
         else:
             if close < best:
                 best = close
                 stop = min(stop, best + atr_mult * atr)
-            if close >= stop:
+            if high >= stop:
                 return _base_result(entry_price, stop, entry_date,
                                     idx.date(), "atr_trailing_stop", direction)
 
@@ -146,9 +146,7 @@ def exit_fixed_target(df_full, entry_date, entry_price, direction, atr,
                             entry_date, "no_data", direction)
 
     for i, (idx, row) in enumerate(future.iterrows()):
-        if i >= max_days:
-            return _base_result(entry_price, float(row["close"]), entry_date,
-                                idx.date(), "max_days", direction)
+        # No max_days force exit — only trailing stop and circuit breakers exit trades
         h, l = float(row["high"]), float(row["low"])
         # Stop checked first (conservative)
         if direction == "long":
@@ -203,9 +201,7 @@ def exit_next_pivot(df_full, entry_date, entry_price, direction, atr,
                             entry_date, "no_data", direction)
 
     for i, (idx, row) in enumerate(future.iterrows()):
-        if i >= max_days:
-            return _base_result(entry_price, float(row["close"]), entry_date,
-                                idx.date(), "max_days", direction)
+        # No max_days force exit — only trailing stop and circuit breakers exit trades
         h, l = float(row["high"]), float(row["low"])
         if direction == "long":
             if l <= stop:
@@ -237,10 +233,10 @@ def exit_ma_cross(df_full, entry_date, entry_price, direction, atr,
                             entry_date, "no_data", direction)
 
     for i, (idx, row) in enumerate(future.iterrows()):
-        if i >= max_days:
-            return _base_result(entry_price, float(row["close"]), entry_date,
-                                idx.date(), "max_days", direction)
+        # No max_days force exit — only trailing stop and circuit breakers exit trades
         close = float(row["close"])
+        low   = float(row.get("low",  close))
+        high  = float(row.get("high", close))
         # Compute EMA on data up to this point
         hist = df_full[df_full.index <= idx]["close"]
         if len(hist) >= ma_period:
@@ -249,14 +245,14 @@ def exit_ma_cross(df_full, entry_date, entry_price, direction, atr,
             ema = close
         # Hard stop
         if direction == "long":
-            if close <= stop:
+            if low <= stop:
                 return _base_result(entry_price, stop, entry_date,
                                     idx.date(), "hard_stop", direction)
             if close < ema:
                 return _base_result(entry_price, close, entry_date,
                                     idx.date(), "ma_cross", direction)
         else:
-            if close >= stop:
+            if high >= stop:
                 return _base_result(entry_price, stop, entry_date,
                                     idx.date(), "hard_stop", direction)
             if close > ema:
@@ -297,10 +293,10 @@ def exit_breakeven_trail(df_full, entry_date, entry_price, direction, atr,
                             entry_date, "no_data", direction)
 
     for i, (idx, row) in enumerate(future.iterrows()):
-        if i >= max_days:
-            return _base_result(entry_price, float(row["close"]), entry_date,
-                                idx.date(), "max_days", direction)
+        # No max_days force exit — only trailing stop and circuit breakers exit trades
         close = float(row["close"])
+        low   = float(row.get("low",  close))
+        high  = float(row.get("high", close))
         # Activate breakeven
         if not breakeven_hit:
             if direction == "long" and close >= be_trigger:
@@ -353,6 +349,8 @@ def exit_hybrid_50pct(df_full, entry_date, entry_price, direction, atr,
     for i, (idx, row) in enumerate(future.iterrows()):
         if i >= max_days:
             close = float(row["close"])
+        low   = float(row.get("low",  close))
+        high  = float(row.get("high", close))
             full_pnl = _pnl(entry_price, close, direction)
             pnl = (blended_pnl * 0.5 + full_pnl * 0.5) if half_taken else full_pnl
             return {"exit_price": round(close, 4), "exit_date": idx.date(),
@@ -385,7 +383,7 @@ def exit_hybrid_50pct(df_full, entry_date, entry_price, direction, atr,
                 if close > best:
                     best = close
                     stop = max(stop, best * (1 - trail_pct))
-                if close <= stop:
+                if low <= stop:
                     full_pnl = _pnl(entry_price, stop, direction)
                     pnl = blended_pnl * 0.5 + full_pnl * 0.5
                     return {"exit_price": round(stop, 4), "exit_date": idx.date(),

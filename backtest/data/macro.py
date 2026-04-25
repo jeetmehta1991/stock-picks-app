@@ -130,8 +130,55 @@ def yield_curve_regime(as_of: date, lookback_days: int = 30) -> str:
     return "normal"
 
 
+# VIX and DXY pre-loaded at module level from OHLCV cache — avoids live calls during backtest
+_VIX_CACHE: Optional[pd.DataFrame] = None
+_DXY_CACHE: Optional[pd.DataFrame] = None
+
+
+def _load_vix_from_ohlcv_cache() -> Optional[pd.DataFrame]:
+    """Load VIX from pre-fetched OHLCV Parquet cache. No live calls."""
+    global _VIX_CACHE
+    if _VIX_CACHE is not None:
+        return _VIX_CACHE
+    from backtest.data.cache import get_ohlcv_bulk as cached_ohlcv_bulk
+    from datetime import date as _date
+    vix_dict = cached_ohlcv_bulk(["VXX", "^VIX"], start=_date(2020,1,1), end=_date(2026,12,31))
+    for key in ["VXX", "^VIX"]:
+        if key in vix_dict and not vix_dict[key].empty:
+            df = vix_dict[key][["close"]].rename(columns={"close": "vix"})
+            _VIX_CACHE = df
+            logger.info("VIX loaded from OHLCV cache: %d rows", len(df))
+            return _VIX_CACHE
+    return None
+
+
+def _load_dxy_from_ohlcv_cache() -> Optional[pd.DataFrame]:
+    """Load DXY from pre-fetched OHLCV Parquet cache. No live calls."""
+    global _DXY_CACHE
+    if _DXY_CACHE is not None:
+        return _DXY_CACHE
+    from backtest.data.cache import get_ohlcv_bulk as cached_ohlcv_bulk
+    from datetime import date as _date
+    dxy_dict = cached_ohlcv_bulk(["UUP"], start=_date(2020,1,1), end=_date(2026,12,31))
+    if "UUP" in dxy_dict and not dxy_dict["UUP"].empty:
+        df = dxy_dict["UUP"][["close"]].rename(columns={"close": "dxy"})
+        _DXY_CACHE = df
+        logger.info("DXY proxy (UUP) loaded from OHLCV cache: %d rows", len(df))
+        return _DXY_CACHE
+    return None
+
+
 def get_vix(start: date, end: date, as_of: Optional[date] = None) -> pd.DataFrame:
+    """Return VIX data — reads from OHLCV cache first, falls back to yfinance."""
     effective_end = min(end, as_of) if as_of else end
+
+    # Try OHLCV cache first — no network call
+    cached = _load_vix_from_ohlcv_cache()
+    if cached is not None:
+        mask = (cached.index.date >= start) & (cached.index.date <= effective_end)
+        return cached[mask]
+
+    # Fallback to yfinance (live — Stage 3+ only)
     try:
         df = yf.download("^VIX", start=start.isoformat(),
                          end=(effective_end + timedelta(days=1)).isoformat(),
@@ -144,7 +191,7 @@ def get_vix(start: date, end: date, as_of: Optional[date] = None) -> pd.DataFram
         result = df[["Close"]].rename(columns={"Close": "vix"})
         return result[result.index.date <= effective_end]
     except Exception as exc:
-        logger.error("get_vix: %s", exc)
+        logger.error("get_vix fallback failed: %s", exc)
         return pd.DataFrame()
 
 
@@ -161,7 +208,14 @@ def vix_regime(as_of: date, lookback_days: int = 5) -> str:
 
 
 def get_dxy(start: date, end: date, as_of: Optional[date] = None) -> pd.DataFrame:
+    """Return DXY data — reads from OHLCV cache first (UUP proxy), falls back to yfinance."""
     effective_end = min(end, as_of) if as_of else end
+
+    cached = _load_dxy_from_ohlcv_cache()
+    if cached is not None:
+        mask = (cached.index.date >= start) & (cached.index.date <= effective_end)
+        return cached[mask]
+
     try:
         df = yf.download("DX-Y.NYB", start=start.isoformat(),
                          end=(effective_end + timedelta(days=1)).isoformat(),
@@ -174,7 +228,7 @@ def get_dxy(start: date, end: date, as_of: Optional[date] = None) -> pd.DataFram
         result = df[["Close"]].rename(columns={"Close": "dxy"})
         return result[result.index.date <= effective_end]
     except Exception as exc:
-        logger.error("get_dxy: %s", exc)
+        logger.error("get_dxy fallback failed: %s", exc)
         return pd.DataFrame()
 
 
@@ -189,7 +243,7 @@ def dxy_trend(as_of: date, lookback_days: int = 20) -> str:
     return "flat"
 
 
-# Economic calendar — CPI, NFP, FOMC dates 2022-2024
+# Economic calendar — CPI, NFP, FOMC dates 2022-2026
 CPI_DATES = [
     date(2022,1,12),date(2022,2,10),date(2022,3,10),date(2022,4,12),
     date(2022,5,11),date(2022,6,10),date(2022,7,13),date(2022,8,10),
@@ -200,6 +254,12 @@ CPI_DATES = [
     date(2024,1,11),date(2024,2,13),date(2024,3,12),date(2024,4,10),
     date(2024,5,15),date(2024,6,12),date(2024,7,11),date(2024,8,14),
     date(2024,9,11),date(2024,10,10),date(2024,11,13),date(2024,12,11),
+    # 2025
+    date(2025,1,15),date(2025,2,12),date(2025,3,12),date(2025,4,10),
+    date(2025,5,13),date(2025,6,11),date(2025,7,11),date(2025,8,13),
+    date(2025,9,10),date(2025,10,15),date(2025,11,13),date(2025,12,10),
+    # 2026 Q1
+    date(2026,1,15),date(2026,2,12),date(2026,3,12),
 ]
 NFP_DATES = [
     date(2022,1,7),date(2022,2,4),date(2022,3,4),date(2022,4,1),
@@ -211,6 +271,12 @@ NFP_DATES = [
     date(2024,1,5),date(2024,2,2),date(2024,3,8),date(2024,4,5),
     date(2024,5,3),date(2024,6,7),date(2024,7,5),date(2024,8,2),
     date(2024,9,6),date(2024,10,4),date(2024,11,1),date(2024,12,6),
+    # 2025
+    date(2025,1,10),date(2025,2,7),date(2025,3,7),date(2025,4,4),
+    date(2025,5,2),date(2025,6,6),date(2025,7,3),date(2025,8,1),
+    date(2025,9,5),date(2025,10,3),date(2025,11,7),date(2025,12,5),
+    # 2026 Q1
+    date(2026,1,9),date(2026,2,6),date(2026,3,6),
 ]
 FOMC_DATES = [
     date(2022,1,26),date(2022,3,16),date(2022,5,4),date(2022,6,15),
@@ -219,6 +285,11 @@ FOMC_DATES = [
     date(2023,7,26),date(2023,9,20),date(2023,11,1),date(2023,12,13),
     date(2024,1,31),date(2024,3,20),date(2024,5,1),date(2024,6,12),
     date(2024,7,31),date(2024,9,18),date(2024,11,7),date(2024,12,18),
+    # 2025
+    date(2025,1,29),date(2025,3,19),date(2025,5,7),date(2025,6,18),
+    date(2025,7,30),date(2025,9,17),date(2025,11,5),date(2025,12,17),
+    # 2026 Q1
+    date(2026,1,28),date(2026,3,18),
 ]
 ALL_HIGH_IMPACT = sorted(set(CPI_DATES + NFP_DATES + FOMC_DATES))
 

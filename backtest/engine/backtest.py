@@ -117,6 +117,10 @@ class BacktestEngine:
         self.sector_map = get_sector_map(self.universe, self.info_dict)
         self.spy_df     = self.ohlcv_dict.get("SPY")
 
+        # ── Pre-load macro Parquet once — avoids 782× disk reads during backtest ──
+        from backtest.data.macro import _load_macro_combined
+        _load_macro_combined()  # loads and caches in module-level variable
+
         # ── Apply liquidity filter ONCE at load time ──
         # Not daily — if instrument passes at start it stays for full backtest
         self.liquid_universe = self._build_liquid_universe()
@@ -462,7 +466,8 @@ class BacktestEngine:
 
     def _adjust_tier_by_agent(self, preliminary_tier: str, agent_score: int) -> str:
         """Stage 2 — agent score adjusts tier ±1 level based on quality assessment."""
-        from backtest.config import AGENT_TIER_UPGRADE_THRESHOLD, AGENT_TIER_DOWNGRADE_THRESHOLD
+        from backtest.config import (AGENT_TIER_UPGRADE_THRESHOLD, AGENT_TIER_DOWNGRADE_THRESHOLD,
+                              CONFIDENCE_TIERS)
         tier_order = ["LOW", "MEDIUM", "MEDIUM_HIGH", "HIGH", "VERY_HIGH", "EXCEPTIONAL"]
         if preliminary_tier == "AVOID":
             return "AVOID"
@@ -482,11 +487,23 @@ class BacktestEngine:
         try:
             from backtest.agents.pipeline import run_full_agent_pipeline
             sector = self.sector_map.get(ticker, "Unknown")
+            # Build portfolio context for Decision Agent
+            portfolio_context = {
+                "open_positions": len(self.open_trades),
+                "sector_concentration": {
+                    s: sum(1 for t in self.open_trades if t.sector == s)
+                    for s in set(t.sector for t in self.open_trades)
+                },
+                "existing_position_in_ticker": any(
+                    t.ticker == ticker for t in self.open_trades),
+                "portfolio_drawdown_pct": 0.0,  # simplified for backtest
+            }
             result = run_full_agent_pipeline(
                 ticker=ticker, as_of=as_of, candidate=cand,
                 smart_money_data=sm, macro_snap=macro,
                 sentiment_snap=sent, sector=sector,
                 earnings_days=earn_days, phase=self.phase,
+                portfolio_context=portfolio_context,
             )
             agent_score = result.get("final_score", 50)
             return (

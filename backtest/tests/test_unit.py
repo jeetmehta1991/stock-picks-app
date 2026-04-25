@@ -248,18 +248,28 @@ def test_walk_forward_robust_requires_both_windows():
     from backtest.engine.improvements import run_walk_forward
     # Create trades across both IS and OOS periods with good performance
     rows = []
-    # Window 1 IS: 2022-2023
-    for _ in range(100):
-        rows.append({"strategy": "s1", "entry_date": date(2022, 6, 1),
-                     "pnl_pct": 3.0, "win": True, "direction": "long", "sector": "Unknown"})
-    # Window 1 OOS: 2024
-    for _ in range(50):
-        rows.append({"strategy": "s1", "entry_date": date(2024, 6, 1),
-                     "pnl_pct": 3.0, "win": True, "direction": "long", "sector": "Unknown"})
-    # Window 2 OOS: 2025
-    for _ in range(50):
-        rows.append({"strategy": "s1", "entry_date": date(2025, 6, 1),
-                     "pnl_pct": 3.0, "win": True, "direction": "long", "sector": "Unknown"})
+    import datetime
+    # Window 1+2 IS: 2022-2024 — 200 trades spread across dates, 65% win rate
+    base = date(2022,1,1)
+    for i in range(200):
+        d   = base + datetime.timedelta(days=i*4)
+        pnl = 3.0 if i % 3 != 0 else -1.5  # ~67% win rate, PF ~3.0
+        rows.append({"strategy":"s1","entry_date":d,"pnl_pct":pnl,
+                     "win":pnl>0,"direction":"long","sector":"Unknown"})
+    # Window 1 OOS: 2024 — 50 trades
+    base2 = date(2024,1,1)
+    for i in range(50):
+        d   = base2 + datetime.timedelta(days=i*5)
+        pnl = 3.0 if i % 3 != 0 else -1.5
+        rows.append({"strategy":"s1","entry_date":d,"pnl_pct":pnl,
+                     "win":pnl>0,"direction":"long","sector":"Unknown"})
+    # Window 2 OOS: 2025 — 50 trades
+    base3 = date(2025,1,1)
+    for i in range(50):
+        d   = base3 + datetime.timedelta(days=i*5)
+        pnl = 3.0 if i % 3 != 0 else -1.5
+        rows.append({"strategy":"s1","entry_date":d,"pnl_pct":pnl,
+                     "win":pnl>0,"direction":"long","sector":"Unknown"})
     df = pd.DataFrame(rows)
     result = run_walk_forward(df)
     verdict = result["strategy_results"]["s1"]["verdict"]

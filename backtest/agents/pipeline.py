@@ -491,45 +491,61 @@ def run_decision_agent(
     earnings_days: Optional[int],
     sector: str,
     model: str,
+    portfolio_context: Optional[dict] = None,
 ) -> dict:
-    """Decision Agent: synthesises all agent outputs into final recommendation."""
+    """Decision Agent: synthesises all agent outputs into final recommendation.
+    
+    portfolio_context: current open positions, sector concentration, existing
+    position in this ticker — allows portfolio-aware conviction scoring.
+    """
     sector_volatility = {
         "Energy": "high", "Information Technology": "high",
         "Health Care": "high", "Communication Services": "medium",
         "Financials": "medium", "Industrials": "medium",
         "Consumer Discretionary": "medium", "Materials": "medium",
-        "Consumer Staples": "low", "Utilities": "low", "Real Estate": "low",
+        "Consumer Staples": "low", "Utilities": "low",
+        "Real Estate": "low",
     }.get(sector, "medium")
+
+    # Portfolio context summary for agent
+    portfolio_summary = ""
+    if portfolio_context:
+        open_pos   = portfolio_context.get("open_positions", 0)
+        sector_exp = portfolio_context.get("sector_concentration", {}).get(sector, 0)
+        has_ticker = portfolio_context.get("existing_position_in_ticker", False)
+        drawdown   = portfolio_context.get("portfolio_drawdown_pct", 0)
+        portfolio_summary = f"""
+Portfolio context (important for sizing decision):
+- Total open positions: {open_pos}
+- Already open in {sector}: {sector_exp} position(s)
+- Existing position in {ticker}: {has_ticker}
+- Portfolio drawdown: {drawdown:.1f}%
+Note: existing positions in same ticker or sector should reduce conviction.
+Portfolio drawdown > 10% should reduce recommended position size."""
 
     prompt = f"""Make final trade decision for {ticker} swing trade as of {as_of}.
 
 Sector: {sector} (volatility: {sector_volatility})
 Earnings proximity: {f'{earnings_days} days' if earnings_days else 'unknown'} — factor into sizing, NOT go/no-go.
 Smart money composite: {json.dumps(smart_money_score, default=str)}
+{portfolio_summary}
 
 All agent outputs:
 {json.dumps(all_agent_results, indent=2, default=str)}
 
-Synthesise all agent scores and reasoning. Assess:
-1. Technical quality — how strong and confluent are the signals?
-2. Fundamental alignment — do smart money signals confirm the technical setup?
-3. Sentiment context — is the market environment supportive?
-4. Risk profile — what is the macro and event risk?
-5. Bull vs bear balance — which case is stronger?
-
-Produce an independent conviction score 0-100 based purely on signal quality.
-High volatility sectors warrant wider stops and potentially smaller position size.
-Earnings proximity reduces recommended size but does not block the trade.
+Synthesise all signals. Consider portfolio context — if already heavily exposed
+to this sector or ticker, reduce conviction accordingly.
 
 Return JSON only:
 {{
   "final_score": <integer 0-100 — your independent conviction score>,
   "action": "<ENTER|WATCH|SKIP|AVOID>",
-  "position_size_modifier": "<full|reduced_earnings|reduced_volatility|minimal>",
+  "position_size_modifier": "<full|reduced_earnings|reduced_volatility|reduced_concentration|minimal>",
   "entry_rationale": "<two sentences — why enter now>",
   "primary_risk": "<one sentence — biggest risk to this trade>",
   "recommended_exit": "<atr_trail_1x|trailing_15pct|hybrid_50pct_target|next_pivot_target>",
-  "agent_agreement": "<strong — all agents aligned|moderate — mostly aligned|weak — agents disagree>"
+  "agent_agreement": "<strong — all agents aligned|moderate — mostly aligned|weak — agents disagree>",
+  "portfolio_note": "<one sentence on portfolio context impact if relevant, else empty string>"
 }}"""
 
     resp = _call_claude(prompt, model, SYSTEM_ANALYST, max_tokens=500)
@@ -593,8 +609,14 @@ def run_full_agent_pipeline(
     sector: str,
     earnings_days: Optional[int],
     phase: str = "phase_1a",
+    portfolio_context: Optional[dict] = None,
 ) -> dict:
-    """Run all six agents for a single candidate instrument."""
+    """Run all six agents for a single candidate instrument.
+    
+    portfolio_context: dict with open_positions, sector_concentration,
+                       existing_position_in_ticker, portfolio_drawdown_pct.
+                       Passed to Decision Agent for portfolio-aware scoring.
+    """
     model = AI_MODELS.get(phase, AI_MODELS["phase_1a"])
     signals = candidate.get("signals", {})
     strategies = candidate.get("strategies_triggered", [])
@@ -668,7 +690,7 @@ def run_full_agent_pipeline(
         price_context, strategies, model
     )
 
-    # Agent 6: Decision
+    # Agent 6: Decision — receives portfolio context for position-aware scoring
     all_results = {
         "technical":   tech,
         "fundamental": fund,
@@ -679,7 +701,8 @@ def run_full_agent_pipeline(
     decision = run_decision_agent(
         ticker, as_of, all_results,
         smart_money_data.get("smart_money_composite", {}),
-        earnings_days, sector, model
+        earnings_days, sector, model,
+        portfolio_context=portfolio_context or {},
     )
 
     # Map final_score to tier in code — agent no longer returns tier directly

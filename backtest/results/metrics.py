@@ -71,10 +71,37 @@ def _confidence_interval_95(win_rate: float, n: int) -> tuple:
     return (lo, hi)
 
 
-def _sharpe(pnl_series: pd.Series) -> float:
+def _sharpe(pnl_series: pd.Series, hold_days_series: pd.Series = None) -> float:
+    """
+    Sharpe ratio for per-trade returns — annualised by trades/year not sqrt(252).
+    sqrt(252) is for daily returns. Per-trade returns use average hold period.
+    """
     if pnl_series.std() == 0:
         return 0.0
-    return round(float(pnl_series.mean() / pnl_series.std() * np.sqrt(252)), 3)
+    avg_hold = float(hold_days_series.mean()) if hold_days_series is not None and len(hold_days_series) > 0 else 10
+    trades_per_year = max(1, 252 / avg_hold)
+    return round(float(pnl_series.mean() / pnl_series.std() * np.sqrt(trades_per_year)), 3)
+
+
+def _kelly_criterion(win_rate: float, avg_win: float, avg_loss: float) -> dict:
+    """
+    Kelly criterion: theoretically optimal position size.
+    Quarter Kelly is industry standard — reduces ruin risk.
+    """
+    if avg_loss == 0 or avg_win == 0:
+        return {"full_kelly_pct": 0.0, "quarter_kelly_pct": 0.0, "note": "insufficient_data"}
+    wl_ratio     = abs(avg_win / avg_loss)
+    full_kelly   = win_rate - ((1 - win_rate) / wl_ratio)
+    quarter_kelly = max(0.0, full_kelly / 4)
+    if full_kelly < 0:     note = "negative_edge"
+    elif quarter_kelly > 0.08: note = "tier_may_be_undersizing"
+    elif quarter_kelly < 0.005: note = "tiny_edge"
+    else:                  note = "reasonable"
+    return {
+        "full_kelly_pct":    round(full_kelly * 100, 2),
+        "quarter_kelly_pct": round(quarter_kelly * 100, 2),
+        "note": note,
+    }
 
 
 def compute_strategy_metrics(df: pd.DataFrame, strategy: str) -> dict:
@@ -97,8 +124,9 @@ def compute_strategy_metrics(df: pd.DataFrame, strategy: str) -> dict:
     wl_r  = abs(avg_win / avg_loss) if avg_loss != 0 else float("inf")
     mdd   = _max_drawdown(pnl)
     roi   = round(float(pnl.sum()), 4)
-    sharpe = _sharpe(pnl)
-    calmar = _calmar(pnl, g["hold_days"] if "hold_days" in g else pd.Series([10]))
+    hold_s = g["hold_days"] if "hold_days" in g.columns else pd.Series([10]*len(g))
+    sharpe = _sharpe(pnl, hold_s)
+    calmar = _calmar(pnl, hold_s)
     ci_lo, ci_hi = _confidence_interval_95(win_rate, n)
     statistically_random = ci_lo < 0.50  # lower CI bound below 50% = may be random
 
@@ -184,6 +212,7 @@ def compute_strategy_metrics(df: pd.DataFrame, strategy: str) -> dict:
         "total_roi_pct":         round(roi, 4),
         "sharpe_ratio":          sharpe,
         "calmar_ratio":          calmar,
+        "kelly":                 _kelly_criterion(win_rate, avg_win, abs(avg_loss)),
         "avg_hold_days":         round(float(g["hold_days"].mean()), 1) if "hold_days" in g else 0,
         "best_trade_pct":        round(float(pnl.max()), 4),
         "worst_trade_pct":       round(float(pnl.min()), 4),

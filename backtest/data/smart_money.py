@@ -74,9 +74,11 @@ def _get_quiver_data(dataset: str, endpoint_path: str, ticker: str) -> Optional[
     if cached is not None:
         logger.debug("Prefetch cache hit: %s/%s (%d rows)", dataset, ticker, len(cached))
         return cached.to_dict("records") if not cached.empty else []
-    # Fallback to live API (slower — pre-fetch not run yet)
-    logger.debug("Prefetch cache miss: %s/%s — calling live API", dataset, ticker)
-    return _quiver_get(endpoint_path)
+    # Cache miss — return empty (do NOT fallback to live API during backtest)
+    # Live API fallback would exhaust rate limits and violate point-in-time.
+    # Run scripts/prefetch_quiver.py to populate cache before Phase 1B.
+    logger.debug("Prefetch cache miss: %s/%s — returning empty (pre-fetch required)", dataset, ticker)
+    return []
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -324,7 +326,12 @@ def congressional_signal(ticker: str, as_of: date, lookback_days: int = 45) -> d
             df.get("Date", df.get("date", ""))).dt.date
         df = df[df["disclosure_date"] <= as_of]
         window_start = as_of - timedelta(days=lookback_days)
-        recent = df[df["disclosure_date"] >= window_start]
+        recent = df[df["disclosure_date"] >= window_start].copy()
+        # Age-weight: <30 days = full, 30-60 days = 0.5x, >60 days = excluded
+        recent["age_days"] = (pd.Timestamp(as_of) - pd.to_datetime(recent["disclosure_date"])).dt.days
+        recent["weight"]   = recent["age_days"].apply(
+            lambda d: 1.0 if d < 30 else 0.5 if d < 60 else 0.0)
+        recent = recent[recent["weight"] > 0]  # exclude >60 days
         buys   = recent[recent.get("Transaction","transaction").str.contains(
             "Purchase|Buy", case=False, na=False)]
         sells  = recent[recent.get("Transaction","transaction").str.contains(

@@ -150,10 +150,12 @@ def run_walk_forward(df_trades: pd.DataFrame) -> dict:
         pf_w = float(pnl[wins].sum())
         pf_l = float(abs(pnl[~wins].sum()))
         pf   = round(pf_w / pf_l, 3) if pf_l > 0 else 999
+        is_min   = 100   # IS needs 100+ trades
+        oos_min  = 30    # OOS minimum is 30 — sufficient for validation
         passes = (wr >= pc["min_win_rate"] and
                   pf >= pc["min_profit_factor"] and
                   pnl.sum() > 0 and
-                  len(t) >= 30)
+                  len(t) >= oos_min)  # OOS threshold — IS caller checks IS minimum separately
         return {
             "trades":        len(t),
             "win_rate":      round(wr, 4),
@@ -181,7 +183,7 @@ def run_walk_forward(df_trades: pd.DataFrame) -> dict:
 
             oos_sufficient = len(oos_df) >= MIN_OOS_TRADES
             oos_pass = (oos_m is not None and oos_m["passes"] and oos_sufficient)
-            is_pass  = is_m is not None and is_m["passes"]
+            is_pass  = (is_m is not None and is_m["passes"] and is_m.get("trades",0) >= 100)
 
             if not oos_sufficient:
                 insufficient_count += 1

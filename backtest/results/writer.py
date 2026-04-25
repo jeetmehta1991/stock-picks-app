@@ -101,6 +101,20 @@ def write_all_outputs(
         logger.info("Wrote exit_strategy_comparison.csv + exit_strategy_best.csv")
 
     # ── Walk-forward validation ──
+    # Sector concentration analysis — how often were we concentrated in one sector?
+    if "sector" in df_trades.columns and "entry_date" in df_trades.columns:
+        try:
+            df_trades["entry_date"] = pd.to_datetime(df_trades["entry_date"])
+            sector_daily = df_trades.groupby(["entry_date", "sector"]).size().reset_index(name="trades")
+            total_daily  = df_trades.groupby("entry_date").size().reset_index(name="total_trades")
+            sector_conc  = sector_daily.merge(total_daily, on="entry_date")
+            sector_conc["sector_pct"] = sector_conc["trades"] / sector_conc["total_trades"] * 100
+            high_conc = sector_conc[sector_conc["sector_pct"] >= 50]
+            sector_conc.to_csv(output_dir / "sector_concentration.csv", index=False)
+            logger.info("Sector concentration: %d days with >=50%% in one sector", len(high_conc))
+        except Exception as e:
+            logger.debug("Sector concentration calc failed: %s", e)
+
     if walk_forward is not None and not walk_forward.empty:
         walk_forward.to_csv(output_dir / "walk_forward_validation.csv", index=False)
         robust  = (walk_forward["verdict"] == "ROBUST").sum()
