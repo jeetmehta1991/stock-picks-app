@@ -281,3 +281,60 @@ def compute_confidence_tier_metrics(df: pd.DataFrame) -> pd.DataFrame:
             "total_roi":    round(g["pnl_pct"].sum(), 4),
         })
     return pd.DataFrame(rows)
+
+
+def compute_portfolio_summary(
+    df_trades: pd.DataFrame,
+    reference_capital: float = 100_000.0,
+    tier_sizes: dict = None,
+) -> dict:
+    """
+    Compute portfolio-level metrics applying tier-based position sizing.
+    
+    All backtest P&L metrics are per-strategy averages. This function
+    computes what a real portfolio would have returned if position sizes
+    matched confidence tiers.
+    
+    reference_capital: starting capital in CAD (default $100k)
+    tier_sizes: % allocation per tier {EXCEPTIONAL:0.05, VERY_HIGH:0.04, ...}
+    """
+    if tier_sizes is None:
+        tier_sizes = {
+            "EXCEPTIONAL": 0.05, "VERY_HIGH": 0.04, "HIGH": 0.03,
+            "MEDIUM_HIGH": 0.015, "MEDIUM": 0.0075, "LOW": 0.0,
+        }
+    if df_trades.empty:
+        return {}
+
+    df = df_trades.copy()
+    df["position_size_pct"] = df["confidence_tier"].map(
+        lambda t: tier_sizes.get(t, 0.01))
+    df["position_dollar"]   = df["position_size_pct"] * reference_capital
+    df["pnl_dollar_sized"]  = df["pnl_pct"] / 100 * df["position_dollar"]
+
+    total_pnl   = df["pnl_dollar_sized"].sum()
+    portfolio_return_pct = total_pnl / reference_capital * 100
+
+    # Portfolio heat: max simultaneous open risk
+    # Approximate: sum of position sizes for all trades open on busiest day
+    if "entry_date" in df.columns and "exit_date" in df.columns:
+        df["entry_date"] = pd.to_datetime(df["entry_date"])
+        df["exit_date"]  = pd.to_datetime(df["exit_date"])
+        # Count simultaneous open trades per day
+        all_dates = pd.date_range(df["entry_date"].min(), df["exit_date"].max(), freq="B")
+        max_heat = 0
+        for d in all_dates:
+            open_on_day = df[(df["entry_date"] <= d) & (df["exit_date"] >= d)]
+            heat = open_on_day["position_size_pct"].sum() * 100
+            max_heat = max(max_heat, heat)
+    else:
+        max_heat = 0
+
+    return {
+        "reference_capital_cad": reference_capital,
+        "total_pnl_dollar":      round(total_pnl, 2),
+        "portfolio_return_pct":  round(portfolio_return_pct, 2),
+        "max_portfolio_heat_pct": round(max_heat, 1),
+        "avg_position_size_pct": round(float(df["position_size_pct"].mean()) * 100, 2),
+        "note": "Portfolio return applies tier-based position sizing to all trades",
+    }

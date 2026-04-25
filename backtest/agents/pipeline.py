@@ -133,15 +133,29 @@ def run_technical_agent(
     Technical Agent: confirms all indicator signals at exact historical date.
     Returns: tech_score (0-10), confirmations, warnings, summary
     """
-    # Select most relevant signals to keep prompt concise (cost control)
-    key_signals = {
+    # Extract signals that actually triggered the strategies — most relevant to agent
+    # Each strategy lists its signals_used — pull those values from the full signal dict
+    strategy_signals = {}
+    for strat in strategies_triggered:
+        if isinstance(strat, dict):
+            for sig_name in strat.get("signals_used", []):
+                if sig_name in signals:
+                    strategy_signals[sig_name] = signals[sig_name]
+
+    # Add key technical context signals
+    context_signals = {
         k: v for k, v in signals.items()
-        if isinstance(v, bool) or k in [
-            "rsi_14", "rsi_9", "adx", "macd_12_26_9_hist",
-            "stoch_k", "vix", "vol_ratio_20d", "cmf",
-            "bb_20_20_bandwidth", "atr",
-        ]
+        if k in ["rsi_14", "rsi_9", "adx", "macd_12_26_9_hist",
+                 "stoch_k", "vol_ratio_20d", "cmf", "bb_20_20_bandwidth",
+                 "atr", "above_200ema", "above_50sma",
+                 "high_52w", "low_52w", "close"]
     }
+    # Merge: strategy-specific signals take precedence, context fills the rest
+    key_signals = {**context_signals, **strategy_signals}
+    # Add boolean signals (all strategy condition flags)
+    bool_signals = {k: v for k, v in signals.items()
+                    if isinstance(v, bool) and k not in key_signals}
+    key_signals.update(bool_signals)
 
     # Sector halo effect context
     sector = signals.get("sector", "Unknown")

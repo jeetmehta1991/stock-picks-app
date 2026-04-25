@@ -101,6 +101,19 @@ def write_all_outputs(
         logger.info("Wrote exit_strategy_comparison.csv + exit_strategy_best.csv")
 
     # ── Walk-forward validation ──
+    # Portfolio-level summary with tier-based position sizing
+    try:
+        from backtest.results.metrics import compute_portfolio_summary
+        port_summary = compute_portfolio_summary(df_trades)
+        if port_summary:
+            import json
+            (output_dir / "portfolio_summary.json").write_text(json.dumps(port_summary, indent=2))
+            logger.info("Portfolio return (tier-sized): %.1f%% | Max heat: %.1f%%",
+                        port_summary.get("portfolio_return_pct", 0),
+                        port_summary.get("max_portfolio_heat_pct", 0))
+    except Exception as e:
+        logger.debug("Portfolio summary failed: %s", e)
+
     # Sector concentration analysis — how often were we concentrated in one sector?
     if "sector" in df_trades.columns and "entry_date" in df_trades.columns:
         try:
