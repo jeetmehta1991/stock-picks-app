@@ -17,5 +17,5 @@ Run this before every suggestion or execution — no exceptions.
 11. Always capture granular data before aggregating. Granular = can always re-aggregate. Aggregate only = cannot re-derive. Applies to data, outputs, cache, and API calls.
 12. Before building any integration with an external API or service, verify exact tier/plan access for every endpoint needed. Test one call per endpoint before building the full script.
 13. Always run a small batch test (25 tickers, 1 month) before scaling to full universe. Verify agent outputs, confidence tiers, and granular outputs are correct before spending on full run.
-14. After every audit or code change: run backtest/tests/test_integration.py — all 7 tests must pass before proceeding. Reading code is not verification. Running code is.
+14. After every audit or code change: run python backtest/tests/run_all_tests.py — ALL tests must pass before proceeding. Reading code is not verification. Running code is. Reading code is not verification. Running code is.
 15. For every data handoff between modules, verify producer keys match consumer expectations by running code — not by reading it. Verify agent outputs, confidence tiers, and granular outputs are correct before spending on full run. Granular = can always re-aggregate. Aggregate only = cannot re-derive. Applies to data, outputs, cache, and API calls.
