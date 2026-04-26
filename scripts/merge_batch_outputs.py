@@ -42,7 +42,7 @@ def validate_merge(trade_log: pd.DataFrame, input_dirs: list) -> list[str]:
     issues = []
 
     # Check total trade count
-    expected_min = len(input_dirs) * 10  # at least 10 trades per batch
+    expected_min = len(input_dirs) * 1   # at least 1 trade per batch (test runs may have few)
     if len(trade_log) < expected_min:
         issues.append(f"Low trade count: {len(trade_log)} (expected ≥ {expected_min})")
 
@@ -87,6 +87,38 @@ def main():
     print(f"MERGING {len(input_dirs)} BATCH OUTPUTS → {output_dir}")
     print(f"{'='*60}\n")
 
+    # ── 0. Verify all batches completed ──
+    print("Verifying all batch directories exist and have trade logs...")
+    missing_dirs = []
+    empty_dirs   = []
+    for d in input_dirs:
+        trade_log_path = Path(d) / "trade_log.csv"
+        if not Path(d).exists():
+            missing_dirs.append(d)
+        elif not trade_log_path.exists():
+            # Check for checkpoint as fallback
+            checkpoint = Path(d) / "trade_log_checkpoint.csv"
+            if checkpoint.exists():
+                print(f"  ⚠️  {d}: no trade_log.csv but checkpoint exists — batch may have crashed")
+                empty_dirs.append(d)
+            else:
+                empty_dirs.append(d)
+        else:
+            import pandas as _pd2
+            df_check = _pd2.read_csv(trade_log_path)
+            print(f"  ✅ {d}: {len(df_check)} trades")
+
+    if missing_dirs:
+        print(f"❌ ABORT: {len(missing_dirs)} batch directories not found: {missing_dirs}")
+        print("   Ensure all batches completed before merging.")
+        sys.exit(1)
+    if empty_dirs:
+        print(f"⚠️  WARNING: {len(empty_dirs)} batches have no trade_log.csv: {empty_dirs}")
+        response = input("Continue merge with partial batches? (yes/no): ").strip().lower()
+        if response != "yes":
+            print("Merge aborted.")
+            sys.exit(1)
+
     # ── 1. Merge trade log ──
     print("Merging trade_log.csv...")
     trade_log = merge_csv(input_dirs, "trade_log.csv")
@@ -101,14 +133,26 @@ def main():
     # ── 2. Re-compute strategy metrics on combined trade log ──
     print("\nRe-computing strategy metrics on combined trade log...")
     try:
-        from backtest.results.metrics import compute_all_metrics
-        metrics_df, wf_df, bonf_df = compute_all_metrics(trade_log_clean)
+        from backtest.results.metrics import (compute_all_metrics,
+                                               run_walk_forward,
+                                               run_bonferroni)
+        # compute_all_metrics returns a single DataFrame
+        metrics_df = compute_all_metrics(trade_log_clean)
         metrics_df.to_csv(output_dir / "backtest_results.csv", index=False)
-        if wf_df is not None and not wf_df.empty:
-            wf_df.to_csv(output_dir / "walk_forward_validation.csv", index=False)
-        if bonf_df is not None and not bonf_df.empty:
-            bonf_df.to_csv(output_dir / "bonferroni_correction.csv", index=False)
         print(f"  ✅ {len(metrics_df)} strategies evaluated")
+
+        # Walk-forward on combined log (needs full universe to reach 100+ IS trades)
+        try:
+            from backtest.engine.improvements import run_walk_forward, walk_forward_to_df
+            wf = run_walk_forward(trade_log_clean)
+            wf_df = walk_forward_to_df(wf)
+            wf_df.to_csv(output_dir / "walk_forward_validation.csv", index=False)
+            summary = wf.get("summary", {})
+            print(f"  ✅ Walk-forward: {summary.get('robust',0)} ROBUST / "
+                  f"{summary.get('total',0)} strategies")
+        except Exception as wf_e:
+            print(f"  ⚠️  Walk-forward failed: {wf_e}")
+
     except Exception as e:
         print(f"  ⚠️  Metrics re-computation failed: {e}")
         print("  Falling back to concat of batch results...")

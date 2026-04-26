@@ -205,6 +205,16 @@ class BacktestEngine:
                 logger.info("Progress: %d/%d [%s] open=%d closed=%d",
                             i, len(trading_days), as_of,
                             len(self.open_trades), len(self.closed_trades))
+            # Incremental checkpoint every 100 days — trade log survives crashes
+            if i > 0 and i % 100 == 0 and self.closed_trades:
+                try:
+                    import pandas as _pd
+                    checkpoint_path = self.output_dir / "trade_log_checkpoint.csv"
+                    _pd.DataFrame([vars(t) for t in self.closed_trades]).to_csv(
+                        checkpoint_path, index=False)
+                    logger.debug("Checkpoint: %d trades → %s", len(self.closed_trades), checkpoint_path)
+                except Exception:
+                    pass
             try:
                 self._process_day(as_of)
             except Exception as exc:

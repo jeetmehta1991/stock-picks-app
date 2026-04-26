@@ -27,3 +27,15 @@ State compliance visibly: "Checklist: ✅ [each item]"
 15. For every data handoff between modules, verify producer keys match consumer expectations by running code — not by reading it.
 16. After every download or computation: run git status before any git command. NEVER run git reset --hard without confirming clean working tree first.
 17. After any git push that matters: verify push landed — git log -1 origin/main must match git log -1. Never report done until push is confirmed.
+18. PARALLEL BATCH RUN — commit sequence after all 5 batches complete:
+    a. git status                        ← confirm clean before anything
+    b. git add backtest/agents/cache/    ← shared agent cache
+    c. git add output_1b_batch1/ output_1b_batch2/ output_1b_batch3/ output_1b_batch4/ output_1b_batch5/
+    d. git commit -m "Phase 1B: all 5 batches complete"
+    e. git pull --rebase origin main
+    f. git push origin main
+    g. git log -1 origin/main            ← verify push landed (must match git log -1)
+    h. python scripts/merge_batch_outputs.py --input-dirs output_1b_batch1 ... --output-dir output_1b_final
+    i. git add output_1b_final/ && git commit -m "Phase 1B: merged final results"
+    j. git pull --rebase origin main && git push origin main
+    NEVER run git reset --hard at any point in this sequence.

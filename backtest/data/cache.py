@@ -40,7 +40,14 @@ def _load_index() -> dict:
 
 def _save_index(index: dict):
     INDEX_FILE.parent.mkdir(parents=True, exist_ok=True)
-    INDEX_FILE.write_text(json.dumps(index, default=str, indent=2))
+    lock_path = str(INDEX_FILE) + ".lock"
+    try:
+        import filelock
+        with filelock.FileLock(lock_path, timeout=30):
+            INDEX_FILE.write_text(json.dumps(index, default=str, indent=2))
+    except Exception:
+        # filelock unavailable or timeout — fall back to direct write
+        INDEX_FILE.write_text(json.dumps(index, default=str, indent=2))
 
 
 def _cache_path(ticker: str) -> Path:

@@ -187,7 +187,16 @@ def main():
         phase=phase_key, max_candidates_per_day=args.max_cands,
         run_agents=agents, output_dir=args.output_dir,
         disable_news=args.no_news,
+        walk_forward=not args.no_git,  # suppress per-batch WF — run on merged result only
     )
+    if args.no_git:
+        import os
+        os.environ["BACKTEST_NO_GIT"] = "1"
+        print("⚠️  --no-git: parallel batch mode")
+        print("   - Git operations suppressed — commit manually when all batches complete")
+        print("   - Per-batch walk-forward suppressed — run on merged result only")
+        print("   Command: git status → git add [dirs] → git commit → git pull --rebase → git push")
+
     if args.no_news:
         print("⚠️  News sentiment DISABLED — A/B comparison mode")
     engine.load_data()
