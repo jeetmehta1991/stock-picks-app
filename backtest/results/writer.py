@@ -106,7 +106,6 @@ def write_all_outputs(
         from backtest.results.metrics import compute_portfolio_summary
         port_summary = compute_portfolio_summary(df_trades)
         if port_summary:
-            import json
             (output_dir / "portfolio_summary.json").write_text(json.dumps(port_summary, indent=2))
             logger.info("Portfolio return (tier-sized): %.1f%% | Max heat: %.1f%%",
                         port_summary.get("portfolio_return_pct", 0),
