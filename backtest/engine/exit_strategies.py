@@ -348,9 +348,9 @@ def exit_hybrid_50pct(df_full, entry_date, entry_price, direction, atr,
 
     for i, (idx, row) in enumerate(future.iterrows()):
         if i >= max_days:
-            close = float(row["close"])
-        low   = float(row.get("low",  close))
-        high  = float(row.get("high", close))
+            close    = float(row["close"])
+            low      = float(row.get("low",  close))
+            high     = float(row.get("high", close))
             full_pnl = _pnl(entry_price, close, direction)
             pnl = (blended_pnl * 0.5 + full_pnl * 0.5) if half_taken else full_pnl
             return {"exit_price": round(close, 4), "exit_date": idx.date(),
