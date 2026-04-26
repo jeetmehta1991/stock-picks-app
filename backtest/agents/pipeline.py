@@ -346,9 +346,10 @@ def run_sentiment_agent(
     congressional_detail: list,
     sentiment_snap: dict,
     model: str,
+    disable_news: bool = False,
 ) -> dict:
     """Sentiment Agent: congressional trades with detail, AAII, Fear/Greed, news."""
-    news = _load_news_sentiment(ticker, as_of)
+    news = _load_news_sentiment(ticker, as_of, disable_news=disable_news)
 
     prompt = f"""Analyse sentiment signals for {ticker} as of {as_of}.
 
@@ -628,6 +629,7 @@ def run_full_agent_pipeline(
     earnings_days: Optional[int],
     phase: str = "phase_1a",
     portfolio_context: Optional[dict] = None,
+    disable_news: bool = False,
 ) -> dict:
     """Run all six agents for a single candidate instrument.
     
@@ -695,6 +697,7 @@ def run_full_agent_pipeline(
         cong_detail,
         sentiment_snap,
         model,
+        disable_news=disable_news,
     )
 
     # Agent 4: Risk — now includes earnings_days + DXY

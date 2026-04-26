@@ -59,12 +59,13 @@ class BacktestEngine:
         end:                    date  = BACKTEST_END,
         phase:                  str   = "phase_1a",
         max_candidates_per_day: int   = 10,
-        run_agents:             bool  = False,
+        run_agents:             bool  = True,
         output_dir:             str   = OUTPUT_DIR,
         use_cache:              bool  = True,
         apply_costs:            bool  = True,
         apply_slippage_model:   bool  = True,
         walk_forward:           bool  = True,
+        disable_news:           bool  = False,
     ):
         self.universe             = universe or UNIVERSE
         self.start                = start
@@ -77,6 +78,7 @@ class BacktestEngine:
         self.apply_costs          = apply_costs
         self.apply_slippage_model = apply_slippage_model
         self.walk_forward         = walk_forward
+        self.disable_news         = disable_news
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
         # Data stores
@@ -504,6 +506,7 @@ class BacktestEngine:
                 sentiment_snap=sent, sector=sector,
                 earnings_days=earn_days, phase=self.phase,
                 portfolio_context=portfolio_context,
+                disable_news=self.disable_news,
             )
             agent_score = result.get("final_score", 50)
             return (
