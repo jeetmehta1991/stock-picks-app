@@ -1,392 +1,291 @@
-# Engineering Learnings — Universal Principles
+# Universal Engineering Learnings
 **Author:** Jeet Mehta
 **Compiled:** April 2026 — Stock Picks & Automated Trading System
-**Purpose:** Universal engineering principles from real mistakes. Apply to all future projects.
+**Purpose:** Universal principles derived from real mistakes. Apply to every future project regardless of domain.
 
-Tags: [testing] [data] [api] [process] [architecture] [git] [cost] [agents] [infrastructure]
-
----
-
-## PART 1 — TESTING & VERIFICATION
-
-### L45 — Audits must be executable, not conversational [testing]
-Three comprehensive code audits were conducted by reading code. The most critical bug (all agent smart money context being empty dicts — L44) survived all three because it was invisible to reading but caught in 30 seconds by running a single print statement. **Reading code that looks correct is not the same as code that works correctly.** After every audit, write a test for every flagged item. A data flow is only verified when a test asserts it end-to-end.
-
-### L46 — Producer/consumer key coherency must be tested in code [testing]
-Function A returned `{composite_signal, score, details}`. Function B expected `{congressional_sig, insider_sig, institutional_sig}`. Three audits examined both files and concluded the integration was correct. It wasn't. **For every data handoff between functions, verify in running code: what keys does the producer return, what keys does the consumer expect, do they match.** Every inter-module data handoff gets an integration test.
-
-### L47 — Documentation and code must be compared directly [testing]
-PROJECT_PLAN.md correctly documented two walk-forward windows. The code implemented one. Survived three audits because each checked the plan and the code separately — never comparing them. **A project plan that says one thing while the code does another is worse than no documentation — it creates false confidence.** For every documented behaviour, have a test that asserts it.
-
-### L48 — Time-series accumulation fields require explicit verification [testing]
-`max_adverse_excursion` was documented as "worst % during the hold period." The code computed it from a single day's bar. **Field names that imply accumulation (max, min, worst, best over a period) require a test verifying accumulation across multiple time steps.** Not just a single computation.
-
-### L26 — Checklist existed but wasn't being followed [process]
-CHECKLIST.md was created and added to CLAUDE.md but repeatedly not consulted before taking actions. Multiple mistakes that the checklist would have caught still occurred. **A checklist only works if it is explicitly run before every action. Having it documented is not the same as using it.** Make checklist compliance visible and auditable.
-
-### L35 — Checklist not enforced — no visible compliance statement [process]
-Same as L26 but deeper: the checklist needs to be stated visibly before every significant action so it's auditable. "Checklist: ✅ thought through, ✅ plan shown, ✅ within phase, ✅ helps ask, ✅ risks flagged, ✅ approval received."
+Each lesson states: what went wrong, the universal principle it teaches, and the rule to follow going forward.
 
 ---
 
-## PART 2 — DATA & APIs
+## 1. TESTING & VERIFICATION
 
-### L9 — API tier not verified before building [api]
-Built a full 509-ticker download script for insider data before verifying the endpoint worked on the current plan. All 509 returned 0 records. Wasted download time and API quota. **Always test one call per endpoint before writing any code. Verify tier access explicitly.** This is CHECKLIST item 12.
+**The single biggest source of bugs in this project was the assumption that reading correct-looking code means the code works correctly. Every critical bug was invisible when reading and obvious when run.**
 
-### L10 — Wrong API endpoint URLs [api]
-Used `/historical/insidertrading/` — returned 404. Correct endpoint was `/live/insiders?ticker=`. **Always find endpoint URLs from the official package source or documentation, not assumed paths.** Test one call before building.
+### Read code to understand. Run code to verify.
+Three comprehensive audits missed a bug where all agent smart money context was empty dicts. The bug was caught in 30 seconds by running one print statement. Audits conducted by reading code are incomplete audits. Every integration point needs an executable test. A data flow is only verified when a test asserts it end-to-end.
+**Rule:** After every audit, write a test for every flagged item. "It looks right" is not verification.
 
-### L11 — Agents calling live APIs during backtest loop [api]
-Started Phase 1B with agents calling Quiver, FRED, and sentiment APIs live on every candidate every day. Each call took 35 seconds. Estimated 40-60 hours runtime. **Never call external APIs inside a backtest loop. Pre-fetch all data first, read from disk during backtest.** Pre-fetch architecture reduced agent runtime from 35s to ~2s per candidate.
+### Test producer/consumer interfaces explicitly in code.
+Function A returned keys `{composite_signal, score, details}`. Function B expected `{congressional_sig, insider_sig, institutional_sig}`. Three audits examined both files and concluded the integration was correct. It wasn't. The mismatch was only caught by running: `assert all(k in result for k in expected_keys)`.
+**Rule:** For every data handoff between functions, write a test: what does the producer return, what does the consumer expect, do they match.
 
-### L37 — API free tier lookback not verified before downloading [api]
-Built and ran Finnhub pre-fetch for 2022-2024 data. Free tier only returns ~1 year of historical news. All 509 tickers downloaded "successfully" but all files were empty. Discovered only after 5 GitHub Actions batch runs completed. **Always test the API with a date range call before building the full pre-fetch. Check: does a 2022 date range return data or empty?** CHECKLIST item 12 applies to every data type.
+### Compare documentation against code directly, not separately.
+The project plan correctly documented two walk-forward windows. The code implemented one. Survived three audits because each audit checked the plan and the code separately. A plan that says one thing while the code does another is worse than no plan — it creates false confidence.
+**Rule:** For every documented behaviour, have a test that asserts it. Documentation without a test is a claim, not a guarantee.
 
-### L43 — Existing APIs checked last, new APIs added first [api]
-Planned and partially implemented Finnhub for news sentiment without first checking if Alpha Vantage (already in use for Stage 1) also provided news with sentiment scores. It did — with better AI-powered scores, full historical coverage, and for free. **Always check existing API providers for additional endpoints before adding new providers.** The full feature set of every active API should be reviewed before adding a new one.
+### Time-series accumulation requires multi-step tests.
+`max_adverse_excursion` was documented as "worst % during the hold period." The code computed it from a single day's bar. Only running the backtest across multiple days would reveal this. Field names implying accumulation (max, min, worst, best) require tests across multiple time steps.
+**Rule:** Any field computed over time must be tested with at least 2 time periods to verify accumulation works.
 
-### L7/L8 — Hardcoded sample data instead of real data [data]
-AAII sentiment had 15 hardcoded readings for 782 trading days. CNN Fear & Greed had 16. Agents were nearly blind. **Always verify data coverage before building any system around it. 15 points for 3 years is a placeholder, not a dataset.** Build for full coverage from the start.
+### Validate that cached results actually contain data.
+A pre-fetch process ran successfully for 509 tickers with no errors. All resulting files were ~1012 bytes — empty DataFrames. The download appeared to succeed. Empty response ≠ failed call. Successful process exit ≠ successful data retrieval.
+**Rule:** After every pre-fetch, spot-check: open 3-5 random output files and verify they contain rows. Assert minimum row count in the pre-fetch completion check.
 
-### L6 — Web scraping for core data [data]
-Used Wikipedia for S&P 500 list — blocked by Codespaces network allowlist. **Never rely on web scraping for core data used by the production system. Use committed static files or verified API endpoints.** Data sources must work in all deployment environments.
+### Test the complete workflow at small scale before building for all.
+Alpha Vantage appeared to allow 25 calls/minute. Built a 509-ticker pre-fetch assuming this rate limit. The actual limit was 25 calls/day. Discovered only after building the complete pipeline and attempting to run it.
+**Rule:** Before building any pipeline, run the complete workflow end-to-end for 5-10 units. Measure: time per unit, quota consumed, data quality. Then extrapolate to full scale. Never extrapolate from documentation alone.
 
-### L44 — Producer/consumer key mismatch — all SM context was empty [data]
-`smart_money_score()` returned `{composite_signal, score, details}` but the agent pipeline expected `{congressional_sig, insider_sig, institutional_sig, smart_money_composite}`. Congressional, insider, and institutional data were downloaded and cached correctly but never reached the agents. **Verify producer output keys match consumer expected keys in running code — not by reading both files separately.**
-
----
-
-## PART 3 — ARCHITECTURE & DESIGN
-
-### L27 — Backtest mirroring principle not established early [architecture]
-News sentiment was planned for live trading but initially excluded from backtesting. Discovered late that the backtest wouldn't reflect live conditions. **From day one: every data source, signal, and API used in live trading must be in the backtest. If it is not backtested, it is not validated.**
-
-### L28 — Key fields not designed upfront [architecture]
-Sector information was in the CSV from the beginning but never passed into the engine, dataclasses, or agents. Required late-stage changes to OpenTrade, ClosedTrade, backtest.py, and pipeline.py. **Think through all data fields needed at design time. Retrofitting fields into dataclasses causes cascading changes across multiple files.** Design the data model before building.
-
-### L38 — Agent given the rules it's supposed to derive [agents]
-The Decision Agent prompt included the explicit confidence tier matrix. The agent wasn't reasoning — it was pattern-matching to rules we gave it. **Agents should derive scores independently. Giving an agent the mapping rules it's supposed to derive defeats the purpose.** The tier mapping should happen in code after the agent returns a raw score.
-
-### L39 — Agent temperature not set — non-deterministic backtest [agents]
-Agent API calls didn't set `temperature` parameter. Default is 1.0 (stochastic). Same inputs could produce different confidence tiers on different runs. **Set temperature=0 for all backtest agent calls. Backtest results must be reproducible — same inputs must produce same outputs.**
-
-### L40 — Thresholds undefined — any value passes [architecture]
-Smart money lift passing criterion had no numeric threshold. A strategy showing 0.1pp lift would pass the same as one showing 8pp. **Every passing criterion must have a specific numeric threshold that is statistically meaningful. "Measurable improvement" is not a threshold.**
-
-### L36 — Stop simulation used close not intraday low [architecture]
-Trailing stop checked `today_close <= trailing_stop`. A stock dipping below stop intraday and recovering would not be stopped out. Real stop orders trigger when price trades through the stop at any point during the day. **Always use daily low/high for stop trigger checks. Using close produces optimistic bias (~2-4pp higher win rate than realistic).**
+### Run integration tests before every significant operation.
+A master test runner (`run_all_tests.py`) must pass before every backtest run, after every code change, and after every data download. Tests that existed but weren't run before the Phase 1B partial run would have caught 3 of the 4 critical bugs found.
+**Rule:** Tests only work if they are run. Make running tests the first step of every session, not an optional final step.
 
 ---
 
-## PART 4 — PROCESS & WORKFLOW
+## 2. DATA PIPELINES & APIs
 
-### L21 — Jumped ahead of current phase [process]
-Downloaded full S&P 500 cache for Phase 1B before Phase 1A results were reviewed. **Never jump ahead of the current phase. Each phase requires explicit owner approval. The phases exist precisely to validate before scaling.**
+**The pattern that caused the most wasted time: building complete pipelines before validating that the underlying API or data source actually provides what was assumed.**
 
-### L20 — Modified owner document without approval [process]
-Rewrote CLAUDE.md from 128 to 62 lines without showing diff or getting approval. Removed useful context. **CLAUDE.md is the owner's document. Never modify without showing exact before/after diff and receiving explicit approval.** Applies to all governance documents.
+### Pre-fetch everything. Never call APIs inside computation loops.
+The initial design called external APIs live inside the backtest loop — one call per candidate per day. With 509 instruments × 782 days × 10 candidates × 6 agents, this was millions of API calls. Each took ~35 seconds. Estimated runtime: 40-60 hours. Pre-fetch architecture reduced this to ~2 seconds per candidate.
+**Rule:** If a function calls an external API and is called inside a loop, refactor immediately: extract the call, pre-fetch to disk, read from disk inside the loop. Zero network calls during computation.
 
-### L29 — Wrong cost and runtime estimates [process]
-Estimated Phase 1B at 3-4 hours and ~$16 USD. Actual was 40+ hours and ~$115 USD. Gave confident estimates without validating against actual timing. **Never give cost or runtime estimates without first measuring one actual call and extrapolating. Always show the full calculation with units.**
+### Download granular data. Aggregate on demand.
+Initially stored composite signals (`congressional_signal: "buy"`) instead of raw records (which representative, how much, when, party). When age-weighting and Senate/House distinction were later needed, full re-downloads were required.
+**Rule:** Store the most granular data available. Aggregates can always be computed from granular data. Granular data cannot be recovered from aggregates.
 
-### L32 — Cost formula had unexplained divisor [process]
-Used `days × max_cands × $0.021 / 10` — the `/10` was incorrect and produced a 10× underestimate. **Always validate cost formulas before presenting them. Show the full breakdown: calls × cost_per_call × 6_agents = total. Never use an unexplained divisor.**
+### Verify the API tier before building, not after.
+Built a complete 509-ticker insider download script, ran it, and got 0 records for all tickers. The Hobbyist tier didn't include insider data. Discovered only after the full run.
+**Rule:** Before writing any integration code: make one real API call per endpoint per tier, verify it returns the expected data, then build.
 
-### L18 — No batch testing before full Phase 1B run [process]
-Attempted to run full Phase 1B on 509 instruments without first testing on 25 tickers for 1 month. **Always validate the full pipeline on a small sample before scaling. Catch bugs and bad agent outputs cheaply before spending $100+ on a full run.**
+### Verify ALL dimensions of API limits — not just rate limits.
+Alpha Vantage free tier: "25 calls/minute." Built pipeline with 13-second sleeps between calls. Actual limit: 25 calls/day total. Quota exhausted after 4 tickers. One limit being acceptable doesn't mean all limits are acceptable.
+**Rule:** For any API, verify: calls per minute, calls per day, calls per month, data lookback window, records per call, geographic restrictions, tier-specific endpoint access.
 
-### L24 — Paid run started without complete data [process]
-Started Phase 1B agents with AAII at 15 hardcoded points, no news sentiment, no pre-fetched smart money data. Spent ~$3 CAD on agent calls that produced low-quality outputs. **Never start a paid agent run without verifying all data sources are complete and correct. Run the pre-run validation script first.**
+### Verify API data structure before building the consumer.
+Built complete Quiver integration before verifying column names in the API response. Discovered column name mismatches between documentation and actual response only during pipeline testing.
+**Rule:** `print(response.json())` — one real call, print the full response — before writing any code that consumes it.
 
----
+### Use existing integrations before adding new ones.
+Built a complete Finnhub news sentiment pipeline before checking whether Alpha Vantage (already integrated for Stage 1) provided news sentiment. It did — with better AI scores and full historical coverage, for free.
+**Rule:** Before adding any new external dependency, audit every existing integration for additional capabilities. Maintain a capability inventory of every active API.
 
-## PART 5 — INFRASTRUCTURE & GIT
+### Static committed files beat live API calls for stable reference data.
+Multiple attempts to fetch the S&P 500 constituent list dynamically failed in different environments. Committing `sp500_tickers.csv` as a static file took 5 minutes and worked everywhere.
+**Rule:** If data changes less than monthly, use a committed static file. It works offline, in all environments, is version-controlled, and is instant to read.
 
-### L1 — Deployment environment network restrictions not checked [infrastructure]
-Assumed all external APIs accessible from Codespaces. Wikipedia and several API endpoints were blocked by the Codespaces allowlist. **Always test every new API endpoint from the actual deployment environment before building integrations.** Don't assume network access.
+### Never assume data quality. Verify every source.
+Every data source in this project had issues: yfinance adjusted prices differ from on-screen prices; Quiver had inconsistent column names; AAII initially had only 15 hardcoded sample points; economic calendar was missing 2 years of events; COT data was fabricated.
+**Rule:** For every data source: (1) check for missing dates, (2) check for NaN values, (3) verify date coverage, (4) verify column names match documentation, (5) spot-check 3-5 values against a known reference.
 
-### L2 — Dependencies not persisted across environment restarts [infrastructure]
-Codespace loses all pip installs on restart unless in devcontainer.json. Multiple runs produced no cache files because pyarrow was missing. **Pin all dependencies in devcontainer.json or requirements.txt. Dependencies not pinned are dependencies that will break on the next restart.**
-
-### L3 — Cache not committed = lost on restart [infrastructure]
-Downloaded 67 instruments, Codespace restarted, lost everything. Repeated 3+ times. **Any file not committed to git is lost when a cloud environment restarts. Commit immediately after every download. Never assume local files survive restarts.**
-
-### L13/L22 — Parallel git pushes always conflict [git]
-Ran parallel GitHub Actions batches that all tried to push to main simultaneously. Only one succeeds; others get rejected. Required multiple reruns. **Never run parallel workflows that all push to the same branch. Sequential is slower but reliable. Always use `git pull --rebase` before push.**
-
-### L31 — git reset --hard wiped uncommitted data [git]
-Instructed owner to run `git fetch origin ; git reset --hard origin/main` which wiped locally completed Quiver data that hadn't been committed. **Before any `git reset --hard`, always run `git status` first. If uncommitted work exists, commit it before resetting. The sync command is: `git status` → commit if needed → then reset.**
-
-### L34 — Built solution for wrong environment [infrastructure]
-Created a PowerShell script for a user who consistently uses Git Bash on Windows. PowerShell lacks git on PATH, doesn't support `&&`, and blocks script execution. Made 3 consecutive errors. **Always identify the exact working environment before building any script or command. Test in the target environment, not assumed.**
-
-### L33 — Wrong command separator for shell environment [infrastructure]
-Repeatedly used `&&` in commands for a Windows PowerShell user. PowerShell uses `;` not `&&`. **Always identify the terminal environment before giving commands. Use `;` which works in both PowerShell and bash when in doubt.**
+### Point-in-time violations are invisible to reading — test them explicitly.
+Multiple point-in-time violations (using future data in backtests) survived several code reviews. They require explicit tests: given a specific historical date, assert that no returned data has a date after the query date.
+**Rule:** For every data source used in backtesting, write a point-in-time test with a known historical date. Run it as part of the standard test suite.
 
 ---
 
-## PART 6 — COST & SCOPE MANAGEMENT
+## 3. ARCHITECTURE & SYSTEM DESIGN
 
-### L42 — Broker not checked for geographic availability [architecture]
-Listed Alpaca as Stage 4 broker throughout the project plan without checking Canadian availability. Alpaca serves US accounts only. **Always verify broker geographic availability, regulatory requirements, and commission structure before including in any plan.** For Canadian investors trading US equities: IBKR Canada.
+**The pattern here: architectural decisions made under time pressure, without thinking through downstream consequences, created cascading rework weeks later.**
 
-### L30 — Token savings claimed for wrong environment [process]
-Recommended reducing CLAUDE.md claiming it would reduce token usage without thinking through which environment loads it. Claude Code on laptop loads CLAUDE.md every session — removing content costs tokens there. **Always identify which environment a change affects before claiming a benefit. A saving in one context may be a cost in another.**
+### Design the data model before building any pipeline.
+Sector information existed in the CSV from the start but was never included in the engine, dataclasses, or agents. Adding it later required changes to OpenTrade, ClosedTrade, backtest.py, and pipeline.py — four files that all had to change together.
+**Rule:** Before writing any code, define all fields in every data structure. Ask: what data will downstream consumers need? Design the schema first, implement second.
 
-### L41 — No benchmark comparison in initial design [architecture]
-All strategy performance reported in absolute terms with no comparison to SPY buy-and-hold, no Sharpe ratio, no Calmar ratio. A strategy returning 20% over 4 years looks good until SPY returned 50%. **Every strategy backtest must be benchmarked against buy-and-hold and include risk-adjusted metrics. These are industry standard requirements, not optional.**
+### Every passing criterion must have a specific numeric threshold.
+Smart money lift was defined as "measurable improvement." Any positive value passed — including 0.1pp on 3 trades. The criterion was meaningless until redefined as "≥ 3pp with minimum 30 trades per bucket."
+**Rule:** Every criterion in a validation system must be a specific number with a minimum sample size. "Better" is not a criterion. "≥ X% improvement with minimum N samples" is.
+
+### Check every rule for consistency with every other rule.
+The project philosophy was "buy dips in crisis markets." A circuit breaker blocked all new longs when VIX > 40. These rules directly contradicted each other and coexisted undetected through multiple audits.
+**Rule:** For every new rule, explicitly check: does this contradict any existing rule? Maintain a brief rules consistency summary. Document the resolution when a contradiction is found.
+
+### Every rule must have a clear logical justification.
+A 40-day forced exit was added without a logical justification. If a trailing stop hasn't triggered, the trade is working or neutral. There's no logical reason to exit. The rule was removed when this was identified.
+**Rule:** Before adding any rule: state its logical trigger. "What market condition does this rule respond to?" If the answer is "nothing — it's just a limit," reconsider the rule.
+
+### Measure position-weighted returns, not equal-weighted returns.
+All backtest trades were computed with equal dollar weight. EXCEPTIONAL tier (5% of capital) and MEDIUM-HIGH tier (1.5%) contributed equally to reported ROI. The "total ROI" figure was meaningless as a portfolio metric.
+**Rule:** Define reference capital at the start. Apply real position sizes to all P&L calculations. Report both per-trade metrics and portfolio-level weighted metrics.
+
+### Verify that the right statistical formula is used for the right data frequency.
+Sharpe ratio used `sqrt(252)` for annualisation — correct for daily returns. Our returns were per-trade with variable hold periods. The correct annualisation for per-trade returns uses `sqrt(trades_per_year)`.
+**Rule:** Before using any statistical formula, verify: what data frequency does this formula assume? Per-trade, daily, weekly, and monthly series each require different treatment.
+
+### A backtesting system must be fully deterministic and offline.
+VIX and DXY were fetched via live yfinance calls inside macro_snapshot(), which was called 782 times during the backtest. Any network failure would break the run mid-way. Different runs could return slightly different data.
+**Rule:** Before starting any backtest run, verify zero network calls will be made during execution. Pre-load all data at startup. The backtest loop must be pure computation on local data.
+
+### Universe filters must be applied at the relevant point in time.
+The liquidity filter (price > $5, volume > 500k) was applied once at January 2022. A stock that became illiquid by 2024 was still traded through 2026.
+**Rule:** Any filter that defines what's eligible must be re-applied at the frequency of change. For annual rebalancing: re-check annually. Time-varying eligibility requires time-varying filtering.
+
+### In multi-stage pipelines, each stage must be independent of others.
+The confidence tier required "congressional + insider" signals to reach EXCEPTIONAL. Agents received those same signals as evaluation inputs. The gating logic and the evaluator used identical data — the tier constrained the agents; the agents were supposed to be independent evaluators.
+**Rule:** Map all data dependencies in a multi-stage pipeline. If stage N uses the same data to both gate and evaluate stage N+1, redesign one of the stages.
+
+### Fabricated data must never feed into any scoring system.
+Nine hardcoded COT sample readings were used as if they were real CFTC institutional positioning data. These fed into sentiment scores which fed into agents. The system was partly making decisions based on invented data.
+**Rule:** All data in any decision system must be traceable to its actual source. If real data is unavailable, return "not_available" and exclude it from scoring. Never substitute fabricated values.
+
+### Backtests must mirror live trading scenarios exactly.
+News sentiment was planned for live trading but excluded from the initial backtest. The backtest didn't reflect what live trading would actually do. Discovered late — required re-downloading all news data.
+**Rule:** From day one: every data source, signal, and API used in live trading must be used in backtesting. If it is not backtested, it is not validated.
 
 ---
 
-## PART 7 — RECURRING THEMES (most important lessons)
+## 4. PROCESS & DECISIONS
 
-**Theme 1 — Running code beats reading code**
-The most expensive bugs in this project (L44, L47, L48) were invisible when reading but obvious when run. Every integration point needs a test. Audits without executable validation are incomplete.
+**The pattern: good decisions made, then not immediately documented, then partially forgotten or contradicted. Good checklists created, then not consulted.**
 
-**Theme 2 — Test one before building for all**
-Applies to every API endpoint, every data download, every new integration. One test call costs seconds; building the wrong thing costs days. CHECKLIST item 12 exists for this reason.
+### Document decisions immediately — not later.
+Multiple design decisions (remove correlation filter, remove position caps, AVOID tier behaviour, ATR multiplier change) were approved in conversation but written to PROJECT_PLAN.md sessions later. During the gap, the decision existed only in conversation history.
+**Rule:** Decision → document → commit. All in the same response. Never let more than one exchange pass between approval and documentation.
 
-**Theme 3 — Commit early, commit often**
-Cloud environments don't persist local state. Every download, every result, every cache file must be committed to git immediately. The "commit and push" habit eliminates an entire class of data loss bugs.
+### A checklist only works if it is visibly executed before every action.
+CHECKLIST.md was created with 13 items. Multiple mistakes that the checklist would have caught still occurred afterward. The checklist was documented but not consulted. Making the execution visible ("Checklist: ✅ item 1 ✅ item 2...") forces the habit.
+**Rule:** State checklist compliance explicitly before every significant action. This takes 10 seconds and prevents hours of rework.
 
-**Theme 4 — Pre-fetch everything, query nothing during computation**
-No external API calls inside computation loops. Pre-fetch all data to disk, read from disk during computation. This makes computation fast, deterministic, and resilient to network failures.
+### One logical change per commit. Never batch unrelated changes.
+Multiple sessions made 5-8 changes in one commit. When something broke, it was impossible to identify which change caused it. Each commit should be independently reversible.
+**Rule:** One concept per commit. If a session produces 5 fixes, make 5 commits. The overhead is seconds; the debugging savings can be hours.
 
-**Theme 5 — Document decisions at decision time**
-Decisions made in conversation but not written down get re-debated or forgotten. Every architectural decision, threshold value, or design choice belongs in PROJECT_PLAN.md or config.py at the moment it's made.
+### Never give cost or time estimates without measuring first.
+Estimated Phase 1B at "$16 CAD, 3-4 hours." Actual: $116 CAD, 40+ hours. The estimate was given confidently based on a formula with an unexplained divisor, without measuring one actual agent call.
+**Rule:** Format every estimate: "One unit = X time / $Y cost. Total = N units × X = Z time / N × $Y = $Z. Assumptions: [list]." If you can't show this calculation, you don't have an estimate — you have a guess.
+
+### Verify tool availability before recommending it.
+Recommended PowerShell scripts without verifying git was on PATH. Recommended Alpaca as the broker without verifying Canadian availability. Both required correction after the user attempted to use them.
+**Rule:** Before any recommendation: (1) does it work in the user's OS and environment, (2) is it available in their country, (3) are there simpler existing alternatives.
+
+### Every leap ahead of the current phase is a risk.
+Downloaded full S&P 500 cache for Phase 1B before Phase 1A results were reviewed. Phases exist precisely to validate before scaling. Jumping ahead skips validation and creates work that may need to be redone.
+**Rule:** Never advance to the next phase without explicit approval. Every phase must earn the right to proceed.
+
+### Living documents need periodic end-to-end review, not just incremental updates.
+The project plan accumulated 45 documented flags across 4 audits — stale dates, wrong broker, contradictory rules, missing data sources. Incremental updates don't catch contradictions between sections written at different times.
+**Rule:** After every batch of 3+ design decisions, re-read all affected sections end-to-end and check for contradictions with the new decisions.
+
+### Update docstrings in the same commit as the code they describe.
+After changing survivorship bias from flat to hold-adjusted, the docstring still said "2% annual haircut." After removing COT data, the function docstring still described COT inputs. Stale docstrings are worse than no docstrings — they actively mislead.
+**Rule:** Every commit that changes function behaviour must update the corresponding docstring. No exceptions.
+
+---
+
+## 5. GIT & VERSION CONTROL
+
+**Three separate incidents of the same mistake: git reset --hard destroying hours of downloaded data. This class of mistake is preventable with one habit.**
+
+### git status before any destructive git command. Always.
+`git reset --hard origin/main` was given three times after downloads completed, each time destroying uncommitted data. The command appeared twice in the learnings document before the third occurrence.
+**Rule:** `git reset --hard` is permanently destructive. It is banned from any instruction unless `git status` was run immediately before and confirmed "nothing to commit, working tree clean." No exceptions.
+
+### Verify push success — exit code 0 doesn't mean the push landed.
+The prefetch script printed "All data committed" after the download, but the final git push had been silently rejected. The script reported success when the push had failed.
+**Rule:** After any critical git push, verify: `git log -1 origin/main` must match `git log -1`. If they differ, the push failed. Never report "done" until push is confirmed.
+
+### Parallel workflows that share a git branch always conflict.
+Parallel GitHub Actions batches all tried to push to main simultaneously. Only one succeeds; others are rejected. Required 3+ reruns. Sequential execution that takes 4 hours is better than parallel execution that takes 6 hours due to reruns.
+**Rule:** For workflows that must share a git branch, use sequential execution. Parallelism is only safe when outputs are completely independent.
+
+### Always use rebase before push, never merge.
+`git pull --rebase origin main` before every push prevents the diverged-branch rejections that caused multiple failed pushes throughout this project.
+**Rule:** The correct sync sequence: `git add` → `git commit` → `git pull --rebase origin main` → `git push`. Never `git pull` (creates merge commits). Never `git push` without rebase first.
+
+### Commit immediately after every download. Never rely on local state.
+Downloaded 67 instruments, Codespace restarted, lost everything. Repeated multiple times. Cloud environments don't persist local state. Any file not committed to git is a file that can disappear.
+**Rule:** Commit every 50 records during long downloads. Commit immediately when a download completes. Never assume local files survive a session end.
+
+---
+
+## 6. INFRASTRUCTURE & ENVIRONMENTS
+
+**The pattern: assuming the development environment has the same capabilities as the target environment. It never does.**
+
+### Test in the target environment before building for it.
+Assumed all APIs were accessible from Codespaces. Wikipedia scraping and several API endpoints were blocked by the Codespaces allowlist. Built integrations that worked locally but failed in the actual execution environment.
+**Rule:** Before building any integration, test the specific network call from the actual execution environment (Codespaces, GitHub Actions, VPS) — not from a local machine.
+
+### Pin all dependency versions. Unpinned dependencies will break.
+Codespace lost all pip installs on restart unless in devcontainer.json. Multiple runs produced no cache files because pyarrow was missing. Even with devcontainer.json, unpinned versions can break when a new version is released.
+**Rule:** Pin all dependency versions (`pyarrow==14.0.0` not `pyarrow`). This prevents unexpected version upgrades from breaking the environment.
+
+### Build for the user's actual environment, not the assumed one.
+Created a PowerShell script for a user who consistently used Git Bash. PowerShell doesn't have git on PATH, doesn't support `&&`, and blocks script execution by default. Made 3 consecutive errors before admitting the script was wrong.
+**Rule:** Identify the exact terminal environment before writing any script or command. Ask if unsure. The simplest correct solution (one Git Bash command) beats an elaborate wrong solution (PowerShell script).
+
+### Verify broker/service geographic availability before recommending.
+Listed Alpaca as the broker throughout the project plan. Alpaca doesn't support Canadian accounts. Discovered only during Stage 4 planning.
+**Rule:** For any service recommendation: check geographic availability, regulatory requirements, and commission structure for the user's specific country before recommending.
+
+---
+
+## 7. AGENTS & AI SYSTEMS
+
+**Specific lessons for systems that use LLMs as decision-making components.**
+
+### Agents must score independently — don't give them the rules they're scoring against.
+The Decision Agent prompt included the explicit confidence tier matrix (EXCEPTIONAL = 85+, VERY HIGH = 70-84...). The agent pattern-matched to the rules rather than independently evaluating signal quality.
+**Rule:** Agents derive scores independently. Tier mappings happen in code after the agent returns a raw score. Never include the scoring rubric in the agent prompt.
+
+### Set temperature=0 for backtest agents. Results must be reproducible.
+Agent API calls didn't set the temperature parameter. Default is 1.0 (stochastic). The same inputs could produce different confidence tiers on different runs, making Phase 1B results non-reproducible.
+**Rule:** temperature=0 for all backtest and batch processing agent calls. temperature>0 only for live trading where some variation is acceptable.
+
+### Include prompt version in cache keys. Invalidate when prompts change.
+The agent cache key was `hash(ticker + date + strategies + phase)`. When agent prompts changed substantially, the cache key didn't change — stale cached results from old prompts were served with the new code.
+**Rule:** Include `PROMPT_VERSION` in every cache key. Increment the version whenever any agent prompt changes materially. The prompt is part of the computation.
+
+### Agents need portfolio context to make portfolio-aware decisions.
+Each agent call was completely independent. An agent evaluating a new NVDA long had no knowledge of existing NVDA positions, sector concentration, or portfolio drawdown. In a portfolio system, each trade decision is marginal — it depends on current exposure.
+**Rule:** Pass portfolio context (open positions, sector concentration, existing position in ticker, current drawdown) to any agent making trade entry decisions.
+
+### A "debate" between two agents requires two independent API calls.
+The Bull/Bear debate was implemented as one API call asking the model to argue both sides. One model cannot genuinely argue against itself — it will have a bias toward the overall signal direction.
+**Rule:** Genuine independent perspectives require independent API calls with independent context. Two calls, each primed differently, produce real debate. One call playing both sides produces the appearance of debate.
+
+---
+
+## 8. STATISTICS & VALIDATION
+
+**Lessons specific to backtesting and statistical validation of trading systems.**
+
+### Single walk-forward window is insufficient — use at least two.
+Walk-forward with one IS/OOS split allows a strategy to appear ROBUST due to luck. Two windows requiring both to pass is the minimum for credible validation.
+**Rule:** Minimum two walk-forward windows. ROBUST = passes both. Passing one = WEAK. Document the IS and OOS periods for each window.
+
+### Measure isolated effects — control for confounders.
+Smart money lift was computed as win rate of HIGH tier minus LOW tier trades. But high-tier trades also have more strategies firing. The lift measured strategy quality + smart money quality combined — not smart money quality in isolation.
+**Rule:** To measure the effect of variable X, compare groups that differ only in X. Hold all other variables constant.
+
+### Minimum sample sizes must be defined and applied consistently.
+Three different minimum trade counts appeared in the codebase: 30, 100, and 500 — set at different times without a coherent framework. Applied inconsistently: IS period had 30 (too low), OOS had 500 (too high).
+**Rule:** Define minimum sample sizes from a statistical framework: minimum N to detect effect size E at significance level α with power β. Apply consistently across all evaluations.
+
+### Report confidence intervals, not just point estimates.
+Win rates were reported as single numbers (55.3%) without confidence intervals. On 100 trades, the 95% CI is (45%, 65%). The true win rate could easily be below 50% — indistinguishable from random chance.
+**Rule:** Always report win rates with 95% confidence intervals. Flag any strategy where the lower CI bound is below 50%.
 
 ---
 
 ## QUICK REFERENCE — Before Every Session
 
-1. Run `python backtest/tests/run_all_tests.py` — all tests must pass
-2. Run `python scripts/validate_phase1b_data.py` — before any backtest run
-3. Check `git status` before any sync operation
-4. Verify API access with one test call before building any integration
-5. State checklist compliance before every significant action
-
-### L49 — git reset --hard destroyed downloaded data twice [git]
-**Mistake:** After Quiver gov_contracts/lobbying/wikipedia/wallstreetbets finished downloading (several hours of work), instructed owner to run `git fetch origin ; git reset --hard origin/main` before verifying the push had succeeded. The reset wiped all locally downloaded data. This exact mistake had already happened once and was documented as L31. It happened again.
-**Root causes:**
-1. The prefetch script's final push was silently failing (rejection due to diverged branches)
-2. I gave `git reset --hard` without first checking `git status`
-3. L31 existed in LEARNINGS.md but was not consulted before giving the command
-**Rule:** NEVER give `git reset --hard` after any download or computation. The sequence is always: `git status` → if anything present, commit it first → then pull --rebase → then push. `git reset --hard` is only safe on a clean working tree with nothing to lose.
-**Fix:** prefetch_quiver.py now verifies push succeeded after each data type and explicitly warns against `git reset --hard` if push failed.
+1. **Run tests:** `python backtest/tests/run_all_tests.py` — all must pass
+2. **Validate data:** `python scripts/validate_phase1b_data.py` — before any backtest
+3. **Check git:** `git status` — before any git command, especially before reset
+4. **State checklist:** "Checklist: ✅ thought through ✅ plan shown ✅ approved ✅ risks flagged ✅ no destructive ops without safety check"
+5. **One call first:** test any API endpoint with one real call before building the pipeline
+6. **Measure before estimating:** time one unit, multiply, show the calculation
 
 ---
 
-## PART 8 — MISSING LESSONS (added April 25)
+## THE FIVE MOST EXPENSIVE MISTAKES IN THIS PROJECT
 
-### L50 — Never call external APIs inside computation loops — pre-fetch everything [data] [api]
-**Mistake:** The initial backtest design called Quiver, FRED, and sentiment APIs live inside the backtest loop — one call per candidate per day. With 509 instruments × 782 days × up to 10 candidates/day × 6 agents, this would have been millions of API calls. Each call took ~35 seconds. Estimated runtime: 40-60 hours.
-**Principle:** Any data used repeatedly in computation must be downloaded once to disk before computation begins. During computation, read from disk only — never make network calls. This applies to backtesting, ML training, data pipelines, and any batch processing system.
-**Rule:** If a function calls an external API and is called inside a loop, it must be refactored: extract the API call, pre-fetch to disk, then read from disk inside the loop.
-**Impact here:** Pre-fetch architecture reduced agent runtime from ~35s to ~2s per candidate.
+1. **L49/L77 — git reset --hard destroyed downloaded data twice.** Several hours of Quiver downloads lost. Fix: git status before any reset.
 
-### L51 — Download granular data, not aggregates — you can always aggregate later [data]
-**Mistake:** Initially stored only composite signals (e.g. `congressional_signal: "buy"`) rather than the raw underlying data (which representative, how much, when, what party). When we later needed to add congressional age-weighting, Senate vs House distinction, and amount-based weighting, we had to re-download everything.
-**Principle:** Always download and store the most granular data available. Aggregates can be computed from granular data at query time. Granular data cannot be reconstructed from aggregates.
-**Rule:** For every API response, store the complete raw record — not a summary. Add summary fields as computed columns on top of the raw data.
-**Applies to:** Congressional trades (store each trade individually), insider filings (each Form 4), news articles (each article with sentiment score), earnings data (each estimate and revision).
+2. **L44 — Producer/consumer key mismatch — all agent SM context was empty for entire development period.** Congressional, insider, institutional data was downloaded and cached correctly but never reached the agents. Fix: integration tests on every data handoff.
 
-### L52 — Validate API data structure before building the full pipeline [api]
-**Mistake:** Built complete Quiver integration (checkpoint logic, parallel batches, commit logic) before verifying what the API actually returns in terms of column names, date formats, and data types. Discovered column name mismatches (`_get_quiver_data` vs `_load_prefetch` key differences) only during Phase 1B preparation.
-**Principle:** Before building any data pipeline, make one real API call, print the full response, and verify every field you plan to use actually exists with the expected name and type.
-**Rule:** `print(response.json())` before writing any code that consumes the response.
+3. **L11 — Live API calls inside backtest loop.** Would have made Phase 1B take 40-60 hours and cost 5× more. Fix: pre-fetch everything before computation starts.
 
-### L53 — Cache hits must be verified — empty cache is not the same as missing cache [data]
-**Mistake:** Finnhub pre-fetch ran successfully (no errors, all 509 tickers "completed") but all resulting Parquet files were ~1012 bytes — empty DataFrames. The download appeared to succeed. Alpha Vantage pre-fetch showed the same pattern — 25 calls/day free tier exhausted after 4-5 tickers, rest returned empty with no error.
-**Principle:** A successful API call that returns an empty response is not the same as a failed call. Always verify that downloaded files contain actual data, not just that the download process completed without errors.
-**Rule:** After every pre-fetch, spot-check: open 3-5 random files and verify they contain rows. Add a validation step: `assert len(df) > 0, f"{ticker} cache is empty"`.
+4. **L45 — Three audits conducted by reading code — all missed the same critical bugs.** Fix: every audit finding gets an executable test.
 
-### L54 — Free API tier limits apply to the full project, not per-call [api]
-**Mistake:** Alpha Vantage free tier says "25 calls/minute." We interpreted this as a rate limit and added 13-second sleeps between calls. The actual limit was 25 calls/day total. We exhausted the daily quota after 4-5 tickers (5 annual batches × ~5 tickers = ~25 calls).
-**Principle:** For any API, verify ALL limit dimensions before building: calls per minute, calls per day, calls per month, data lookback window, records per call. One limit being acceptable doesn't mean the others are.
-**Rule:** Test the complete workflow (not just one call) at small scale before building the full pipeline. Run 10 tickers first to estimate actual daily quota consumption.
-
-### L55 — Static committed files beat network scraping for stable reference data [infrastructure]
-**Mistake:** Multiple attempts to fetch the S&P 500 constituent list dynamically (Wikipedia scraping, yfinance, various APIs). Each failed in different deployment environments. The fix — committing `sp500_tickers.csv` as a static file — took 5 minutes and worked everywhere.
-**Principle:** For data that changes infrequently (stock universe, sector classifications, exchange holidays, economic calendar dates), a committed static file is more reliable than any live API. It works offline, works in all environments, is version-controlled, and is instant to read.
-**Rule:** If data changes less than once per month, consider a committed static file over a live API call.
-
-### L56 — Point-in-time data violations are invisible until explicitly tested [data]
-**Mistake:** Multiple point-in-time violations existed in the codebase (COT data using future data, economic calendar missing 2025 dates, survivorship bias not hold-adjusted) and survived multiple code reviews because they looked correct when reading the code.
-**Principle:** Point-in-time violations — using data that wasn't available at the signal date — are the most damaging form of backtest bias and the hardest to spot by reading. They require explicit tests with known historical dates.
-**Rule:** For every data source, write a test: given a specific historical date, assert that the returned data contains nothing from after that date. Run this test for dates both within and near the boundaries of the data coverage.
-
-### L57 — Vague success criteria enable false positives [architecture]
-**Mistake:** Smart money lift was defined as "measurable improvement" with no numeric threshold. Macro correlation was defined as "higher win rate in favourable regime" with no minimum. Any positive value would pass. A strategy showing 0.1pp improvement on 5 trades would pass the same as one showing 8pp on 200 trades.
-**Principle:** Every criterion must have a specific numeric threshold AND a minimum sample size. "Better" is not a criterion. "≥ 3pp improvement with minimum 30 trades per bucket" is a criterion.
-**Rule:** Before building any validation system, define every passing threshold in numbers. If you can't state the threshold as a number, the criterion is not defined.
-
-### L58 — Designing for the happy path — no defensive validation [architecture]
-**Mistake:** The initial backtest engine assumed all data was present and correct. When a Parquet file was empty, signals defaulted to zero. When an API returned nothing, the composite score defaulted to neutral. These silent defaults masked data quality issues that should have caused loud failures.
-**Principle:** Build for data failures, not data success. Every data load should validate what it received. Silent defaults that hide missing data are more dangerous than loud crashes that expose them.
-**Rule:** After every data load, assert minimum requirements: minimum row count, expected columns present, date range covers the backtest period, no all-NaN columns. Raise a clear error with the ticker and data type if validation fails.
-
-### L59 — Reusing existing infrastructure beats building new [architecture]
-**Mistake:** Built a complete Finnhub news sentiment pipeline (pre-fetch script, GitHub Actions workflow, checkpoint logic, Parquet storage, pipeline integration) before checking whether Alpha Vantage — already integrated for Stage 1 — provided the same capability. It did, with better AI-powered scores.
-**Principle:** Before adding any new external dependency, audit every existing integration for additional capabilities. The cost of a new integration (API key management, rate limit handling, data format normalisation, failure modes) is rarely worth it if an existing provider covers the need.
-**Rule:** Maintain a capability inventory of every active API. Check it before evaluating new providers.
-
-### L60 — Assumptions about data quality are always wrong [data]
-**Mistake:** Assumed yfinance adjusted prices were equivalent to point-in-time screen prices. Assumed Quiver congressional data had consistent column names across all endpoints. Assumed AAII survey data was complete. Each assumption was partially wrong.
-**Principle:** Never assume data quality. Verify it. Every data source has its own quirks: missing dates, inconsistent column names, different handling of corporate actions, timezone issues, survivorship bias, look-ahead in adjustments.
-**Rule:** For every new data source: (1) check for missing dates, (2) check for NaN values, (3) verify date coverage matches expectations, (4) verify column names match documentation, (5) spot-check 3-5 specific values against a known reference.
-
----
-
-## PART 9 — COMPREHENSIVE MISTAKE AUDIT (April 25, 2026)
-
-This section documents every mistake made in this project that is not already covered above. Organized by category.
-
----
-
-### DESIGN MISTAKES
-
-### L61 — Confidence tier design had circular dependency — agents gated by data they evaluated [agents] [architecture]
-**Mistake:** The confidence tier required "3 strategies + congressional + insider" to reach EXCEPTIONAL. Agents received congressional and insider data as inputs. So agents were being asked to evaluate the quality of signals that simultaneously determined whether those agents would be consulted at a high tier. The tier constrained the agents; the agents were supposed to be independent evaluators.
-**Principle:** In any scoring system with multiple stages, each stage must be independent of the others. A gatekeeper and an evaluator cannot use the same inputs.
-**Rule:** Map out every data dependency in a multi-stage pipeline. If stage N uses the same data to both gate and evaluate stage N+1, redesign the gating logic.
-
-### L62 — Walk-forward had only one window — critical statistical gap [architecture]
-**Mistake:** The walk-forward validation was documented as requiring two windows in the project plan but implemented with only one (IS=2022-2023, OOS=2024). A strategy could be ROBUST on one window due to luck. Two windows requiring both to pass is the minimum for credible walk-forward validation.
-**Principle:** Single-window walk-forward is insufficient. The test period must be truly unseen and the number of passing windows must exceed what's achievable by chance.
-**Rule:** Minimum two walk-forward windows for any trading system. ROBUST = passes both. Passing one = WEAK, not ROBUST.
-
-### L63 — COT data was fabricated and treated as real [data] [architecture]
-**Mistake:** Nine hardcoded sample COT readings were used as if they were real CFTC data. These fed into the sentiment score which fed into agents. The system was making decisions partly based on invented data presented as real institutional positioning.
-**Principle:** Every data source used in a production system must be traceable to its actual source. Hardcoded sample data must be clearly labeled as a placeholder and must never feed into any scoring or decision system.
-**Rule:** All data in production pipelines must have a documented source. If real data is unavailable, the system must return "not_available" and exclude it from scoring — not substitute fabricated values.
-
-### L64 — Position sizing not applied in backtest P&L [architecture]
-**Mistake:** All backtest trades were computed with equal dollar weight regardless of confidence tier. EXCEPTIONAL tier (5% of capital) and MEDIUM-HIGH tier (1.5%) contributed equally to reported ROI. The reported "total ROI" was meaningless as a portfolio metric.
-**Principle:** Backtest P&L must reflect the actual position sizes that would be used in live trading. A system that sizes positions by conviction must also measure performance by conviction-weighted returns.
-**Rule:** Define reference capital at the start of backtest design. Apply tier-based position sizing to all P&L calculations from day one.
-
-### L65 — Sharpe ratio computed incorrectly for per-trade returns [architecture]
-**Mistake:** Used `sqrt(252)` to annualise Sharpe ratio. This is correct for daily returns. Our returns are per-trade with variable hold periods (3-40 days). Annualising per-trade returns requires `sqrt(trades_per_year)` not `sqrt(252)`.
-**Principle:** Statistical formulas have specific assumptions about the data they receive. Applying a daily-return formula to per-trade returns produces wrong results without any error signal.
-**Rule:** Before using any financial metric formula, verify what data frequency it assumes. Per-trade, daily, weekly, and monthly return series each require different annualisation factors.
-
-### L66 — Liquidity filter applied once at start — stale by end of backtest [architecture]
-**Mistake:** Stocks were checked for liquidity (price > $5, volume > 500k, market cap > $100M) only at January 2022. A stock that became illiquid or was delisted in 2024 would still be traded through 2026.
-**Principle:** Filters that define the investment universe must be applied at the relevant point in time, not once at the start. A stock's eligibility in 2024 depends on its 2024 characteristics, not its 2022 characteristics.
-**Rule:** Re-apply universe filters at least annually. For backtests spanning multiple years, filter annually at each year's start.
-
-### L67 — Max holding period of 40 days was illogical [architecture]
-**Mistake:** A forced exit after 40 days was designed without thinking through the logic. If a trailing stop hasn't triggered, the trade is either working or neutral — there's no reason to exit. Forced time exits would close profitable trending trades arbitrarily.
-**Principle:** Every exit rule must have a clear logical justification. "Time is up" is not a logical reason to exit a trade that has a trailing stop protecting the downside.
-**Rule:** Every rule in a trading system must answer: what market condition does this rule respond to? If the answer is "none — it's just a time limit," reconsider the rule.
-
-### L68 — Circuit breaker 5 blocked all longs in crisis — contradicted core philosophy [architecture]
-**Mistake:** The circuit breaker (VIX > 40) blocked all new long trades. Section 3 of the project plan explicitly states "the system buys dips including in volatile and crisis markets." These two rules directly contradicted each other and coexisted undetected through multiple audits.
-**Principle:** Every rule in a system must be checked for consistency with every other rule. Contradictions between rules are often impossible to detect by reading any single rule — they only appear when rules are compared against each other.
-**Rule:** Maintain a rules consistency matrix. For every new rule, explicitly check: does this contradict any existing rule? Document the resolution when a contradiction is found.
-
-### L69 — VIX/DXY fetched via live yfinance inside backtest loop [architecture]
-**Mistake:** macro_snapshot() called get_vix() and get_dxy() which made live yfinance network calls on every invocation. With 782 trading days of backtest, these were called 782 times during what should have been a fully offline computation.
-**Principle:** A backtesting system must be fully deterministic and offline. Any live network call inside a backtest violates both properties: it can fail due to network issues and it may return different data on different runs.
-**Rule:** Before starting any backtest run, verify that zero network calls will be made during execution. All external data must be pre-loaded at startup.
-
----
-
-### PROCESS MISTAKES
-
-### L70 — Design decisions made in conversation but not immediately documented [process]
-**Mistake:** Multiple design decisions (remove correlation filter, remove position caps, raise ATR multiplier, AVOID tier behaviour) were approved in conversation but not written to PROJECT_PLAN.md or config.py until much later. During this gap, the approved decision existed only in conversation history and could be forgotten or contradicted.
-**Principle:** Any decision approved in conversation must be written to the appropriate document immediately — in the same response that confirms approval. A decision that exists only in conversation is not a decision — it's a memory.
-**Rule:** Decision → immediate documentation → commit. Never let more than one exchange pass between approval and documentation.
-
-### L71 — Multiple simultaneous changes made it impossible to isolate what broke [process]
-**Mistake:** In several sessions, multiple code changes were made simultaneously (e.g., trailing stop fix + sector tags + two-stage tiering + agent prompts in one commit). When something broke, it was impossible to identify which change caused it.
-**Principle:** Each commit should contain one logical change. This makes every change reversible and every bug bisectable.
-**Rule:** One concept per commit. If a session produces 5 fixes, make 5 commits. The overhead is seconds; the debugging savings can be hours.
-
-### L72 — Cost estimates given without measuring first [process]
-**Mistake:** Estimated Phase 1B at "$16 CAD" based on a formula with an unexplained /10 divisor. Actual cost was ~$116 CAD. Gave the estimate confidently without measuring one actual agent call first.
-**Principle:** Never give a cost or time estimate without either (1) measuring a single unit and extrapolating, or (2) showing the full calculation with all assumptions explicit.
-**Rule:** Format: "One agent call = X seconds / $Y. Total = N calls × X seconds = Z hours / N calls × $Y = $Z total." Show the math. Flag all assumptions.
-
-### L73 — Recommended tools without checking availability in target environment [process]
-**Mistake:** Recommended PowerShell scripts for a Windows user without verifying git was on PATH in PowerShell. Recommended Alpaca as the broker without verifying Canadian availability. Both required correction after the user attempted to use them.
-**Principle:** Before recommending any tool, library, broker, or service, verify it works in the user's specific environment and jurisdiction.
-**Rule:** Checklist for any recommendation: (1) does it work in the user's OS/environment, (2) is it available in their country, (3) does it require any special setup not mentioned, (4) is there a simpler existing alternative.
-
-### L74 — Checklist items added but not enforced in subsequent actions [process]
-**Mistake:** After creating CHECKLIST.md with 13 items, continued making the same categories of mistakes (wrong environment, missing approval, git reset without checking). The checklist was created but not consulted. A checklist that isn't consulted is documentation, not a process.
-**Principle:** A checklist only works if it is visibly executed before every action. The execution must be auditable — the owner must be able to verify it was done.
-**Rule:** Before every significant action: state "Checklist: ✅ [each item]" explicitly. This takes 10 seconds and prevents hours of rework.
-
----
-
-### INFRASTRUCTURE MISTAKES
-
-### L75 — Parallel batch design chosen for speed — caused more total time due to conflicts [git] [infrastructure]
-**Mistake:** Designed Finnhub and initially Quiver downloads as parallel GitHub Actions batches to save time. Parallel batches conflict on git push, requiring reruns. Three reruns of a 2-hour batch takes 6 hours — longer than a sequential 4-hour run would have.
-**Principle:** Parallelism that requires shared state coordination (git branches, shared checkpoints) is usually not worth the complexity. The coordination overhead often exceeds the parallelism benefit.
-**Rule:** For workflows that must share a git branch, use sequential execution. Parallelism is only safe when outputs are completely independent.
-
-### L76 — No validation that push succeeded before considering download complete [git]
-**Mistake:** The prefetch_quiver.py script printed "All Quiver data pre-fetched and committed" after the download — but the final git push had failed silently. The script reported success when the push had been rejected.
-**Principle:** In any workflow that depends on a git push, verify the push succeeded by checking that remote HEAD matches local HEAD after the push command. A non-zero exit code from git push is not always surfaced to the calling script.
-**Rule:** After any git push that matters, verify: `git log -1 origin/main` must match `git log -1`. If they differ, the push failed. Retry before reporting success.
-
-### L77 — Destructive git commands given without safety verification [git]
-**Mistake:** `git reset --hard origin/main` was given three times in sequences where locally uncommitted data existed. Each time it destroyed hours of downloaded data. The command appeared twice in LEARNINGS.md before the third occurrence.
-**Principle:** `git reset --hard` is permanently destructive. It should never appear in any instruction without being preceded by `git status` and an explicit confirmation that the working tree is clean.
-**Rule:** `git reset --hard` is banned from any instruction sequence unless `git status` was run immediately before and confirmed "nothing to commit, working tree clean."
-
-### L78 — Script named run_phase1a.py runs all phases — misleading [infrastructure]
-**Mistake:** The entry point script handles `--phase 1b`, `--phase 1c`, `--phase 1d` but is named `run_phase1a.py`. Anyone reading the codebase would assume this script is phase-specific.
-**Principle:** File names must accurately describe what the file does. A script that runs all phases should be named accordingly. Misleading names cause confusion when returning to the codebase after time away.
-**Rule:** When the scope of a file changes significantly, rename it. Technical debt in naming is paid every time someone reads the filename.
-
----
-
-### AGENT DESIGN MISTAKES
-
-### L79 — Bull/Bear debate is a single API call, not two independent agents [agents]
-**Mistake:** The "Bull Agent" and "Bear Agent" are described as separate perspectives but implemented as a single API call asking one model to argue both sides. One model cannot genuinely argue against itself. It will have a bias toward the direction the overall signals suggest.
-**Principle:** A genuine debate requires independent agents with independent contexts. A single model playing both sides produces the appearance of debate without the substance.
-**Rule:** For Phase 1C: split Bull/Bear into two separate API calls — one with a bullish prior, one with a bearish prior. Cost: ~$0.004 extra per trade. Value: genuine independent perspectives.
-
-### L80 — Agent cache key didn't include prompt version — stale analyses silently served [agents]
-**Mistake:** The agent cache key was `hash(ticker + date + strategies + phase)`. When agent prompts changed substantially (adding gov_contracts, lobbying, congressional detail, price context), the cache key didn't change — stale cached results were served with the new code.
-**Principle:** Any cached result must be invalidated when the computation that produced it changes. If the prompt changes, the cached result of the old prompt is wrong.
-**Rule:** Include a `PROMPT_VERSION` string in every cache key. Increment the version whenever any agent prompt changes materially. Treat the prompt as part of the computation, not separate from it.
-
-### L81 — Agents had no awareness of portfolio state [agents]
-**Mistake:** Each agent call was completely independent. An agent evaluating a new NVDA long had no knowledge that we already had 4 open NVDA positions and 80% of the portfolio in tech. In live trading, this is critical context.
-**Principle:** In a portfolio context, each trade decision is not independent — it's a marginal decision given existing exposure. An agent that ignores portfolio state will recommend trades that increase concentration risk.
-**Rule:** Pass portfolio context (open positions, sector concentration, existing position in ticker, current drawdown) to the Decision Agent. Let it factor concentration risk into the final score.
-
----
-
-### STATISTICAL MISTAKES
-
-### L82 — Smart money lift computed cross-tier, not within-strategy [statistics]
-**Mistake:** Smart money lift was computed as win rate of HIGH/EXCEPTIONAL tier trades minus LOW tier trades. But HIGH/EXCEPTIONAL trades also have more strategies firing — so the lift was conflating signal quality with smart money quality.
-**Principle:** When measuring the isolated effect of one variable, hold all other variables constant. To measure smart money lift, compare the same strategy's win rate with vs without smart money signals.
-**Rule:** To measure the effect of variable X, use pairs that differ only in X. Comparing groups that differ in multiple variables measures confounded effects, not isolated effects.
-
-### L83 — Minimum trade counts inconsistent across the codebase [statistics]
-**Mistake:** Three different minimum trade counts appeared: 100 (CHECKLIST), 500 (passing criteria), 30 (OOS minimum). These were set at different times without a coherent framework. In one version of the walk-forward, IS required 30 trades — statistically insufficient for 2 years of training data.
-**Principle:** All statistical thresholds in a system must be derived from the same framework and documented with their rationale. Thresholds set at different times drift apart.
-**Rule:** Define a single statistical validity framework: minimum trades = f(effect size to detect, significance level, test power). Apply consistently. Document the derivation.
-
----
-
-### DOCUMENTATION MISTAKES
-
-### L84 — Project plan had 45 stale or contradictory entries after 6 months [process]
-**Mistake:** The project plan accumulated 45 documented flags across 4 audits — stale walk-forward dates, wrong broker, old passing criteria, missing data sources, contradictory rules. The plan was updated incrementally without periodic comprehensive review.
-**Principle:** A living document that's updated incrementally without periodic comprehensive review accumulates inconsistencies. After every major decision batch, the entire document should be re-read end-to-end.
-**Rule:** After every session with >3 design decisions, re-read the relevant sections of PROJECT_PLAN.md top-to-bottom and check for contradictions with the new decisions.
-
-### L85 — Docstrings described old behaviour after code was changed [process]
-**Mistake:** After changing survivorship bias from flat to hold-adjusted, the docstring still said "2% annual haircut." After changing from single to two-window walk-forward, the docstring still described one window. After removing COT data, the function docstring still described COT inputs.
-**Principle:** A docstring that describes wrong behaviour is worse than no docstring — it actively misleads. Docstrings must be updated in the same commit as the code they describe.
-**Rule:** Every PR/commit that changes function behaviour must update the corresponding docstring. Docstring staleness = documentation debt = future confusion.
+5. **L68 — Circuit breaker blocked all longs in crisis — directly contradicted the core buy-the-dip philosophy.** The most important market regime (crisis) was completely excluded from long trades. Fix: rules consistency check whenever a new rule is added.
