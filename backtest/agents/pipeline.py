@@ -583,12 +583,14 @@ from pathlib import Path
 AGENT_CACHE_DIR = Path(__file__).parent / "cache"
 
 
-def _agent_cache_key(ticker: str, as_of: date, strategies: list, phase: str) -> str:
+def _agent_cache_key(ticker: str, as_of: date, strategies: list, phase: str,
+                     disable_news: bool = False) -> str:
     """Generate a unique cache key for this agent run.
-    Includes PROMPT_VERSION — changing version automatically invalidates old cache.
+    Includes PROMPT_VERSION and disable_news — with/without news runs cache separately.
     """
-    strat_str = "_".join(sorted(strategies)) if strategies else "none"
-    raw = f"{ticker}_{as_of}_{strat_str}_{phase}_{PROMPT_VERSION}"
+    strat_str  = "_".join(sorted(strategies)) if strategies else "none"
+    news_flag  = "_nonews" if disable_news else ""
+    raw = f"{ticker}_{as_of}_{strat_str}_{phase}_{PROMPT_VERSION}{news_flag}"
     return hashlib.md5(raw.encode()).hexdigest()
 
 
@@ -642,7 +644,7 @@ def run_full_agent_pipeline(
     strategies = candidate.get("strategies_triggered", [])
 
     # Check cache first
-    cache_key = _agent_cache_key(ticker, as_of, strategies, phase)
+    cache_key = _agent_cache_key(ticker, as_of, strategies, phase, disable_news=disable_news)
     cached = _load_agent_cache(cache_key)
     if cached:
         logger.debug("Agent cache hit: %s [%s]", ticker, as_of)
