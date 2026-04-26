@@ -1,7 +1,7 @@
 # Stock Picks & Automated Trading System
-**Stage:** 2 — Strategy Validation | **Phase:** 1A v3 pending run
+**Stage:** 2 — Strategy Validation | **Phase:** 1B — Full backtest in progress
 **Repo:** jeetmehta1991/stock-picks-app
-**Docs:** `PROJECT_PLAN.md` (full detail) | `PROGRESS.md` (daily status) | `CHECKLIST.md` (pre-action)
+**Docs:** `PROJECT_PLAN.md` (full detail) | `CHECKLIST.md` (pre-action) | `LEARNINGS.md` (lessons)
 
 ---
 
@@ -13,151 +13,170 @@
 - Never jump ahead of the current phase. One instruction at a time.
 - If something can go wrong, flag it proactively.
 - Point-in-time data enforcement is non-negotiable.
-- Push to `claude-updates` branch only — never directly to `main`.
-- **Update PROGRESS.md at end of every working session.**
-- **Never use `git pull` — always: `git fetch origin ; git reset --hard origin/main`**
-- **CLAUDE.md is the owner's document. Never modify it without showing the exact before/after diff and receiving explicit written approval.**
-- **Run CHECKLIST.md before every suggestion or execution. State compliance visibly: "Checklist: ✅ thought through, ✅ plan shown, ✅ within phase, ✅ helps the ask, ✅ risks flagged, ✅ approval received"**
-- For every proposed change, always provide a recommendation with clear reasoning and tradeoffs before waiting for approval. Never stay silent on something that could be improved.
+- **Never use `git reset --hard` without running `git status` first. This has destroyed data twice (L49, L77).**
+- **Run CHECKLIST.md before every suggestion or execution.**
+- For every proposed change, always provide a recommendation with clear reasoning and tradeoffs before waiting for approval.
+- After every audit, validate by RUNNING CODE — not reading it.
+- Run `backtest/tests/test_integration.py` and `backtest/tests/test_unit.py` before every phase run and after every significant code change (36/36 must pass).
+
+---
+
+## Current Status (April 2026)
+
+**Phase 1B with-news batch test: COMPLETE**
+- 5 tickers (MMM, AOS, ABT, ABBV, ACN), Jan–Oct 2022, 577 trades, committed to main
+- Agent reasoning: coherent and specific ✅
+- News sentiment: `not_available` for all trades — Alpha Vantage free tier insufficient
+- **Decision: proceed Phase 1B without news.** News adds no value at free tier. Revisit in Phase 1C with Unusual Whales.
+
+**No-news batch test: NOT NEEDED** — news_sentiment = 'not_available' in both runs. A/B comparison would show identical results. Decision already made.
+
+**Next actions (priority order):**
+1. Sync laptop: `git pull --rebase origin main`
+2. Run quarterly S&P 500 universe refresh (CHECKLIST item 19) — CSV is stale
+3. Run 1-ticker-per-batch test (5 terminals, Jan 2022) before full Phase 1B
+4. Owner approves test outputs → scale to full 509-ticker Phase 1B
+
+---
+
+## Phase 1B Parallel Batch Architecture
+
+Full Phase 1B runs 5 parallel batches on LAPTOP (not Codespaces — no timeout risk).
+- **Laptop required.** Disable sleep before starting. Set 3 API keys in each terminal.
+- **5 terminals simultaneously.** Each batch ~101 tickers, ~3 hours, ~15 hours total.
+- **Cost:** ~$116 CAD total.
+
+**Before starting:**
+```bash
+python scripts/prepopulate_cache_index.py
+python scripts/generate_batch_splits.py   # prints exact commands
+```
+
+**Test run first (1 ticker per batch, Jan 2022):**
+See `scripts/generate_batch_splits.py` output for exact commands.
+
+**After all batches complete — commit sequence (CHECKLIST item 18):**
+```
+git status → git add → git commit → git pull --rebase → git push → verify → merge
+```
+
+**NEVER run git reset --hard at any point.**
 
 ---
 
 ## Repo Structure
 
 ```
-stock-picks-app/
-├── backtest/
-│   ├── config.py              # universe, regimes, thresholds, position sizing
-│   ├── run_phase1a.py         # entry point — python -m backtest.run_phase1a
-│   ├── data/
-│   │   ├── cache.py           # Parquet cache — fetch once, load from disk
-│   │   ├── universe.py        # S&P 500 universe + liquidity filter
-│   │   ├── sp500_tickers.csv  # S&P 500 static list — no web fetch needed
-│   │   ├── fetcher.py         # yfinance OHLCV + fundamentals
-│   │   ├── macro.py           # FRED yield curve, VIX, DXY
-│   │   ├── sentiment.py       # AAII, CNN Fear & Greed
-│   │   └── smart_money.py     # congressional, insider, 13F, analyst
-│   ├── signals/
-│   │   ├── technical.py       # 274 signal fields
-│   │   └── screener.py        # 60 strategies, 7 categories
-│   ├── engine/
-│   │   ├── backtest.py        # main loop, all approved rules applied
-│   │   ├── exit_manager.py    # trailing stop + 5 circuit breakers
-│   │   ├── exit_strategies.py # 12 exit methods, composite scoring
-│   │   ├── regime_filter.py   # VIX + SPY 200 EMA classification
-│   │   └── improvements.py    # transaction costs, walk-forward, slippage
-│   ├── agents/pipeline.py     # 6 TradingAgents (Haiku/Sonnet)
-│   └── results/
-│       ├── metrics.py         # 10 passing criteria per strategy
-│       ├── writer.py          # 13 output files
-│       └── site_generator.py  # daily site_picks JSON
-├── output_v2/                 # Phase 1A results
-├── scripts/
-│   └── download_cache.sh      # run to download/refresh full cache
-├── PROJECT_PLAN.md            # full project plan — read for all context
-├── PROGRESS.md                # daily status log — update end of every session
-├── CHECKLIST.md               # pre-action checklist
-├── analysis_dashboard.html    # 9-tab interactive dashboard
-├── launcher.html              # navigation page
-└── index.html                 # daily top stocks webpage
+backtest/
+  config.py              # universe, regimes, thresholds, position sizing
+  run_phase1a.py         # entry point — --phase, --tickers, --no-news, --no-git flags
+  data/
+    cache.py             # Parquet cache + filelock for parallel writes
+    universe.py          # 3-tier universe: get_sp500_constituents, get_extended_universe, get_full_live_universe
+    sp500_tickers.csv    # Tier 1 — quarterly refresh via scripts/refresh_sp500_universe.py
+    extended_universe.csv # Tier 2 — monthly refresh (Stage 3+)
+    momentum_watchlist.csv # Tier 3 — monthly refresh (Stage 3+)
+    fetcher.py           # yfinance OHLCV + fundamentals (Wikipedia REMOVED — L88)
+    macro.py             # FRED yield curve, VIX (from OHLCV cache), DXY (UUP proxy)
+    sentiment.py         # AAII, CNN Fear & Greed
+    smart_money.py       # congressional, insider, 13F
+  signals/
+    technical.py         # 274 signal fields
+    screener.py          # 60 strategies, 7 categories
+  engine/
+    backtest.py          # main loop, incremental checkpoints every 100 days
+    exit_manager.py      # trailing stop + 5 circuit breakers
+    exit_strategies.py   # 12 exit methods
+    regime_filter.py     # classify_regime: bull/neutral/bear/crisis
+    improvements.py      # walk-forward, transaction costs, slippage, survivorship
+  agents/pipeline.py     # 6-agent pipeline (Haiku Phase 1B, Sonnet Phase 1C+)
+  results/
+    metrics.py           # 9 passing criteria + per-regime verdict matrix
+    writer.py            # trade_log, backtest_results, strategy_regime_matrix.json
+    site_generator.py    # daily site_picks JSON
+scripts/
+  generate_batch_splits.py     # prints 5-batch commands + 1-ticker test commands
+  merge_batch_outputs.py       # merge 5 outputs, re-compute metrics, validate
+  prepopulate_cache_index.py   # pre-fill index.json before parallel runs
+  refresh_sp500_universe.py    # quarterly S&P 500 refresh (laptop only, slickcharts.com)
+  refresh_extended_universe.py # monthly Tier 2 refresh (laptop only)
+  build_momentum_watchlist.py  # monthly Tier 3 refresh (laptop only)
+  validate_phase1b_data.py     # pre-run data completeness check
+PROJECT_PLAN.md   # comprehensive reference — read first
+CHECKLIST.md      # pre-action checklist — 21 items including universe refresh
+LEARNINGS.md      # 89 lessons — L88: no Wikipedia, L89: universe staleness
 ```
 
 ---
 
-## Current Phase: 1A v3
+## Passing Criteria (9 overall + per-regime verdict)
 
-**Status:** Pre-fetching all data before Phase 1B run
-- Quiver: congressional ✅ insider ✅ institutional 🔄 running on laptop
-- Finnhub news: batch 1 ✅ batches 2-5 🔄 running on GitHub Actions
-- FRED macro: needs re-fetch to March 2026 (run from Codespaces)
-- OHLCV: needs extend to March 2026 (run from Codespaces)
-- AAII ✅ CNN ✅
+All 9 must pass overall for a strategy to advance. Additionally, each strategy gets a per-regime verdict (PASS/FAIL/INSUFFICIENT_DATA) for each of the 7 historical regimes. A strategy valid in crisis but not bull is deployed only during crisis — this is intentional.
 
-**Decisions confirmed:**
-1. Separate positions per strategy ✅
-2. Strategies + rules confirmed ✅
-3. Backtest period extended to March 2026 ✅
-4. IS = 2022-2024, OOS = 2025-Mar 2026 ✅
-
-**Sync Codespace before anything:**
-```bash
-git fetch origin ; git reset --hard origin/main
-```
-
-**Run command (after decisions confirmed):**
-```bash
-pip install -r requirements.txt --break-system-packages -q
-find backtest -name "*.pyc" -delete ; find backtest -name "__pycache__" -type d -exec rm -rf {} +
-python -m backtest.run_phase1a --no-agents --output-dir output_v2
-```
-
-**After run completes — commit and push together:**
-```bash
-git add output_v2/ ; git commit -m "Phase 1A v3 results" ; git push origin main
-```
-
-**Never use `git pull` — always use `git fetch origin ; git reset --hard origin/main`**
-
-**Phase 1A v1 results (previous — superseded):**
-198 trades, 17 strategies fired, 0 short trades, 0 passing. Pipeline confirmed clean.
+| # | Criterion | Threshold |
+|---|---|---|
+| 1 | Win rate | ≥55% (high-vol sectors: ≥50%) |
+| 2 | Profit factor | >1.3 (high-vol: >1.2) |
+| 3 | Expected value | >0 |
+| 4 | Win/loss ratio | >1.0 |
+| 5 | Max drawdown | <20 pct-points (high-vol: <25) |
+| 6 | Total ROI | >0% |
+| 7 | Smart money lift | ≥3pp win rate improvement |
+| 8 | Macro correlation | ≥5pp win rate diff |
+| 9 | Min trades | ≥100 overall, ≥30 per regime |
+| 10 | Per-regime verdict | PASS in ≥1 regime (not universal pass required) |
 
 ---
 
-## Approved Rules (Phase 1A v3)
+## Key Design Decisions
 
-All owner-approved. Do not revert without approval.
+- **Risk profile:** medium-high risk, high return. Buy dips including in crisis.
+- **Regime classification (real-time):** bull/neutral/bear/crisis via 20-day realised vol + SPY vs 200 EMA
+- **Per-regime strategy library:** different strategies for different regimes — not universal strategies
+- **Position sizing:** EXCEPTIONAL 5%, VERY HIGH 4%, HIGH 3%, MEDIUM-HIGH 1.5%, MEDIUM 0.75%, LOW skip
+- **Exit:** atr_trail_1x (1× ATR trailing stop, checked against intraday low) — won 20/29 in Phase 1A
+- **Email** (not Telegram) for all trade approvals in Stage 4
+- **Intraday trading:** completely separate future project — out of scope
+- **Agent pipeline:** 6 agents (Technical, Fundamental, Sentiment, Risk, Bull/Bear Debate, Decision) at temperature=0. Haiku for Phase 1B (~$116 CAD). Sonnet for Phase 1C+.
+- **News sentiment:** not_available at free tier. Proceed Phase 1B without news. Add Unusual Whales in Phase 1C instead.
+
+---
+
+## Approved Rules
 
 | Rule | Value |
 |---|---|
 | Open position cap | Removed from backtest |
 | Daily loss limit | Removed from backtest |
 | Correlation filter | Removed from backtest |
-| Regime position sizing | Removed from backtest |
-| Regime direction hard block | Removed — all directions allowed, crisis flagged |
-| One trade per ticker per day | Removed — all strategies fire independently |
-| Crisis regime longs | Allowed — flagged as `regime=crisis_CRISIS_FLAG` |
-| Max candidates per day | 10 |
-| Mean reversion ATR multiplier | 1.0× |
-| Liquidity filter | Once at load time only |
-| Position sizing | EXCEPTIONAL 5%, VERY HIGH 4%, HIGH 3%, MEDIUM-HIGH 1.5% |
-| Short RSI (rsi_overbought_short) | 68 |
-| Short candle conditions | Original strict — wait for Phase 1B volume |
-| Pyramiding | Out of scope — flagged for Stage 4 + backtest later |
+| Regime hard blocks | Removed — crisis flagged but longs allowed (buy-the-dip) |
+| One trade per ticker | Removed — all strategies fire independently |
+| Crisis regime longs | Allowed at 50% size — flagged as `regime=crisis_CRISIS_FLAG` |
+| Max candidates/day | 10 |
+| Position sizing | Tiered: 5/4/3/1.5/0.75% by confidence tier |
+| Agent tier upgrade | score ≥75 upgrades one tier |
+| Agent tier downgrade | score ≤40 downgrades one tier |
 
 ---
-
-## Key Design Decisions
-
-- 60 strategies, 7 categories — see PROJECT_PLAN.md section 18
-- 12 exit methods via composite score (40% ROI + 30% PF + 30% DD)
-- Trailing stop primary exit: 10% below highest close, never reverses
-- Risk profile: medium-high risk, high return. Buy dips including in crisis.
-- Email (not Telegram) for all trade approvals in Stage 4
-- Intraday trading: completely separate future project — out of scope
-- Backtests must mirror live trading scenarios as closely as possible.
-- After every audit, every flagged item must be validated by RUNNING CODE — not by reading it. A data flow is only verified when a test asserts it end-to-end. Reading code that looks correct is not the same as code that works correctly.
-- For every data handoff between functions, explicitly verify in code: what keys does the producer return, what keys does the consumer expect, do they match.
-- Run backtest/tests/test_integration.py before every Phase 1B run and after every significant code change. Every data source, signal, and API used in live trading must also be used in backtesting. If it is not backtested, it is not validated.
-- Granular before aggregate: always store lowest-level data first. Aggregates can be recomputed; raw data cannot be recovered. Examples: per-trade exit detail not just strategy summary, pre-fetched API cache not live calls, OHLCV Parquet not computed signals.
-- TradingAgents 6-agent pipeline is core to the product — runs Phase 1B+ (Haiku) and Phase 1C+ (Sonnet). See PROJECT_PLAN.md section 20.
-
----
-
-## Next Steps
-
-1. Owner confirms two decisions above
-2. Run Phase 1A v3 → push results → Claude analyses
-3. Review results → confirm before Phase 1B spend (~$116 CAD)
-4. Phase 1B → 1C → 1D before any paper trading begins
 
 ## HARD RULES — Never Violate
 
+### Git Safety
+- **NEVER run `git reset --hard` without `git status` first.** Has destroyed data twice (L49, L77).
+- **NEVER run any git destructive command during or after parallel batch runs without checking status.**
+- All code goes to `claude-updates` branch, merged to main via push.
+
 ### Data Sources
-- **NEVER use Wikipedia as a data source.** It is blocked in Codespaces (HTTP 403), has no API, is not point-in-time, and is not a primary source. It has been proposed and failed multiple times (L88).
-  - S&P 500 constituents → use `backtest/data/sp500_tickers.csv` (quarterly refresh via slickcharts.com)
+- **NEVER use Wikipedia.** Blocked in Codespaces, not point-in-time, fragile (L88).
+  - S&P 500 → `backtest/data/sp500_tickers.csv` refreshed quarterly via `scripts/refresh_sp500_universe.py` on LAPTOP using slickcharts.com
   - Never propose `pd.read_html('https://en.wikipedia.org/...')` for any purpose.
 
 ### Universe Management
-- `sp500_tickers.csv` is a static file that MUST be refreshed quarterly. If the last git commit on that file is >90 days old, flag it before running any backtest or live screen.
-- Three-tier universe architecture (Stage 3+): Tier 1 = S&P 500 (quarterly), Tier 2 = extended/spinoffs (monthly live), Tier 3 = momentum watchlist (monthly live).
-- New spinoffs above $10B market cap must be added to Tier 2 immediately — do not wait for S&P 500 inclusion (SNDK waited 9 months — L89).
+- `sp500_tickers.csv` must be refreshed quarterly (CHECKLIST item 19). If last commit >90 days old, flag before any run.
+- New spinoffs above $10B market cap → add to Tier 2 immediately, don't wait for S&P 500 inclusion (SNDK waited 9 months — L89).
+- Tier 2 (extended universe): monthly refresh in live trading.
+- Tier 3 (momentum watchlist): monthly refresh in live trading, static for backtesting.
+
+### Strategy Changes
+- No strategy or rule changes without explicit owner approval. Every threshold, filter, and parameter change requires sign-off.
+- The per-regime verdict system means a strategy that fails in one regime is NOT discarded — it is tagged for the regimes where it passes.

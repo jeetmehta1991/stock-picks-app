@@ -20,7 +20,7 @@ This project builds an automated swing trading system for US equities from scrat
 |---|---|---|
 | Stage 1 — Daily stock picks | ✅ Complete | Live website showing top US and Canadian gainers |
 | Stage 2 Phase 1A — Proof of concept | ✅ Complete | Tested 67 instruments across 4 years. Pipeline works. |
-| Stage 2 Phase 1B — Full validation | 🔄 Data downloading | Testing all 509 instruments. Waiting on data. |
+| Stage 2 Phase 1B — Full validation | 🔄 Batch test complete, full run pending | 5-ticker batch test done (577 trades). Full 509-ticker run ready to start on laptop. |
 | Stage 2 Phase 1C — Sonnet refinement | ⏳ Pending | Deeper AI analysis on strategies that passed 1B |
 | Stage 2 Phase 1D — 5-year test | ⏳ Pending | Extended validation including COVID 2020 |
 | Stage 3 — Paper trading | ⏳ Pending | Automated paper trading for 3-6 months |
@@ -170,6 +170,8 @@ For a strategy to advance to Phase 1C, it must pass all 10 of these simultaneous
 8. **Macro correlation ≥ 5pp** — win rate is at least 5pp higher in favourable macro regimes vs unfavourable (min 20 trades per regime)
 9. **Minimum 500 trades** — statistical validity threshold
 10. **Per-regime verdict** — each strategy evaluated independently within each regime. A strategy passes for a specific regime if it meets all 9 other criteria within that regime (minimum 30 trades required). The output is a strategy-regime matrix, not a universal pass/fail. A strategy may be excellent in crisis and irrelevant in bull — both are valid outcomes. In live trading the screener activates only strategies validated for the current regime.
+
+**Output:** `strategy_regime_matrix.json` — maps each strategy to its passing regimes. Format: `{strategy: {best_regimes: [...], regime_verdicts: {regime: PASS/FAIL/INSUFFICIENT_DATA}, overall_win_rate, total_trades}}`. This is the primary artifact used by the Stage 3 live screener to activate only regime-appropriate strategies.
 
 Statistical validity note: All win rates are reported with 95% confidence intervals. If the lower confidence bound falls below 50%, the strategy is flagged as potentially indistinguishable from random chance, regardless of the point estimate.
 
@@ -404,8 +406,17 @@ The Risk Agent explicitly flags when the current macro regime differs significan
 
 ## Outstanding Items and Future Roadmap
 
-### Before Phase 1B Runs (Blockers)
-All Quiver data types must be complete (currently blocked by API outage — retry when recovered). Alpha Vantage news batches must complete (running overnight). 25-ticker batch test must be reviewed and agent outputs approved before scaling to 509 instruments.
+### Before Phase 1B Full Run (Checklist)
+1. Sync laptop: `git pull --rebase origin main`
+2. Disable laptop sleep (Settings → Power → Sleep → Never while plugged in)
+3. Set 3 API keys in each terminal (ANTHROPIC_API_KEY, QUIVER_API_KEY, FRED_API_KEY)
+4. Run quarterly S&P 500 refresh: `python scripts/refresh_sp500_universe.py --write` (CHECKLIST item 19)
+5. Run: `python scripts/prepopulate_cache_index.py`
+6. Run 1-ticker-per-batch test (5 terminals, Jan 2022 only) — see `scripts/generate_batch_splits.py`
+7. Owner reviews test outputs and approves before scaling
+8. Scale to full 509 tickers across 5 parallel batches (~$116 CAD, ~15 hours)
+
+**News decision:** Proceeding Phase 1B WITHOUT news sentiment. Alpha Vantage free tier returns `not_available` for all tickers — the A/B comparison would be identical. News will be revisited in Phase 1C with Unusual Whales options flow data, which is far richer.
 
 ### Phase 1C Additions
 Unusual Whales options flow and Ortex short interest data are added in Phase 1C. Additionally, two correlation-factor additions are planned (see Market-Level and Correlation-Factor Strategies section for full detail):
