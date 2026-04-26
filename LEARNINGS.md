@@ -174,3 +174,64 @@ Decisions made in conversation but not written down get re-debated or forgotten.
 3. L31 existed in LEARNINGS.md but was not consulted before giving the command
 **Rule:** NEVER give `git reset --hard` after any download or computation. The sequence is always: `git status` → if anything present, commit it first → then pull --rebase → then push. `git reset --hard` is only safe on a clean working tree with nothing to lose.
 **Fix:** prefetch_quiver.py now verifies push succeeded after each data type and explicitly warns against `git reset --hard` if push failed.
+
+---
+
+## PART 8 — MISSING LESSONS (added April 25)
+
+### L50 — Never call external APIs inside computation loops — pre-fetch everything [data] [api]
+**Mistake:** The initial backtest design called Quiver, FRED, and sentiment APIs live inside the backtest loop — one call per candidate per day. With 509 instruments × 782 days × up to 10 candidates/day × 6 agents, this would have been millions of API calls. Each call took ~35 seconds. Estimated runtime: 40-60 hours.
+**Principle:** Any data used repeatedly in computation must be downloaded once to disk before computation begins. During computation, read from disk only — never make network calls. This applies to backtesting, ML training, data pipelines, and any batch processing system.
+**Rule:** If a function calls an external API and is called inside a loop, it must be refactored: extract the API call, pre-fetch to disk, then read from disk inside the loop.
+**Impact here:** Pre-fetch architecture reduced agent runtime from ~35s to ~2s per candidate.
+
+### L51 — Download granular data, not aggregates — you can always aggregate later [data]
+**Mistake:** Initially stored only composite signals (e.g. `congressional_signal: "buy"`) rather than the raw underlying data (which representative, how much, when, what party). When we later needed to add congressional age-weighting, Senate vs House distinction, and amount-based weighting, we had to re-download everything.
+**Principle:** Always download and store the most granular data available. Aggregates can be computed from granular data at query time. Granular data cannot be reconstructed from aggregates.
+**Rule:** For every API response, store the complete raw record — not a summary. Add summary fields as computed columns on top of the raw data.
+**Applies to:** Congressional trades (store each trade individually), insider filings (each Form 4), news articles (each article with sentiment score), earnings data (each estimate and revision).
+
+### L52 — Validate API data structure before building the full pipeline [api]
+**Mistake:** Built complete Quiver integration (checkpoint logic, parallel batches, commit logic) before verifying what the API actually returns in terms of column names, date formats, and data types. Discovered column name mismatches (`_get_quiver_data` vs `_load_prefetch` key differences) only during Phase 1B preparation.
+**Principle:** Before building any data pipeline, make one real API call, print the full response, and verify every field you plan to use actually exists with the expected name and type.
+**Rule:** `print(response.json())` before writing any code that consumes the response.
+
+### L53 — Cache hits must be verified — empty cache is not the same as missing cache [data]
+**Mistake:** Finnhub pre-fetch ran successfully (no errors, all 509 tickers "completed") but all resulting Parquet files were ~1012 bytes — empty DataFrames. The download appeared to succeed. Alpha Vantage pre-fetch showed the same pattern — 25 calls/day free tier exhausted after 4-5 tickers, rest returned empty with no error.
+**Principle:** A successful API call that returns an empty response is not the same as a failed call. Always verify that downloaded files contain actual data, not just that the download process completed without errors.
+**Rule:** After every pre-fetch, spot-check: open 3-5 random files and verify they contain rows. Add a validation step: `assert len(df) > 0, f"{ticker} cache is empty"`.
+
+### L54 — Free API tier limits apply to the full project, not per-call [api]
+**Mistake:** Alpha Vantage free tier says "25 calls/minute." We interpreted this as a rate limit and added 13-second sleeps between calls. The actual limit was 25 calls/day total. We exhausted the daily quota after 4-5 tickers (5 annual batches × ~5 tickers = ~25 calls).
+**Principle:** For any API, verify ALL limit dimensions before building: calls per minute, calls per day, calls per month, data lookback window, records per call. One limit being acceptable doesn't mean the others are.
+**Rule:** Test the complete workflow (not just one call) at small scale before building the full pipeline. Run 10 tickers first to estimate actual daily quota consumption.
+
+### L55 — Static committed files beat network scraping for stable reference data [infrastructure]
+**Mistake:** Multiple attempts to fetch the S&P 500 constituent list dynamically (Wikipedia scraping, yfinance, various APIs). Each failed in different deployment environments. The fix — committing `sp500_tickers.csv` as a static file — took 5 minutes and worked everywhere.
+**Principle:** For data that changes infrequently (stock universe, sector classifications, exchange holidays, economic calendar dates), a committed static file is more reliable than any live API. It works offline, works in all environments, is version-controlled, and is instant to read.
+**Rule:** If data changes less than once per month, consider a committed static file over a live API call.
+
+### L56 — Point-in-time data violations are invisible until explicitly tested [data]
+**Mistake:** Multiple point-in-time violations existed in the codebase (COT data using future data, economic calendar missing 2025 dates, survivorship bias not hold-adjusted) and survived multiple code reviews because they looked correct when reading the code.
+**Principle:** Point-in-time violations — using data that wasn't available at the signal date — are the most damaging form of backtest bias and the hardest to spot by reading. They require explicit tests with known historical dates.
+**Rule:** For every data source, write a test: given a specific historical date, assert that the returned data contains nothing from after that date. Run this test for dates both within and near the boundaries of the data coverage.
+
+### L57 — Vague success criteria enable false positives [architecture]
+**Mistake:** Smart money lift was defined as "measurable improvement" with no numeric threshold. Macro correlation was defined as "higher win rate in favourable regime" with no minimum. Any positive value would pass. A strategy showing 0.1pp improvement on 5 trades would pass the same as one showing 8pp on 200 trades.
+**Principle:** Every criterion must have a specific numeric threshold AND a minimum sample size. "Better" is not a criterion. "≥ 3pp improvement with minimum 30 trades per bucket" is a criterion.
+**Rule:** Before building any validation system, define every passing threshold in numbers. If you can't state the threshold as a number, the criterion is not defined.
+
+### L58 — Designing for the happy path — no defensive validation [architecture]
+**Mistake:** The initial backtest engine assumed all data was present and correct. When a Parquet file was empty, signals defaulted to zero. When an API returned nothing, the composite score defaulted to neutral. These silent defaults masked data quality issues that should have caused loud failures.
+**Principle:** Build for data failures, not data success. Every data load should validate what it received. Silent defaults that hide missing data are more dangerous than loud crashes that expose them.
+**Rule:** After every data load, assert minimum requirements: minimum row count, expected columns present, date range covers the backtest period, no all-NaN columns. Raise a clear error with the ticker and data type if validation fails.
+
+### L59 — Reusing existing infrastructure beats building new [architecture]
+**Mistake:** Built a complete Finnhub news sentiment pipeline (pre-fetch script, GitHub Actions workflow, checkpoint logic, Parquet storage, pipeline integration) before checking whether Alpha Vantage — already integrated for Stage 1 — provided the same capability. It did, with better AI-powered scores.
+**Principle:** Before adding any new external dependency, audit every existing integration for additional capabilities. The cost of a new integration (API key management, rate limit handling, data format normalisation, failure modes) is rarely worth it if an existing provider covers the need.
+**Rule:** Maintain a capability inventory of every active API. Check it before evaluating new providers.
+
+### L60 — Assumptions about data quality are always wrong [data]
+**Mistake:** Assumed yfinance adjusted prices were equivalent to point-in-time screen prices. Assumed Quiver congressional data had consistent column names across all endpoints. Assumed AAII survey data was complete. Each assumption was partially wrong.
+**Principle:** Never assume data quality. Verify it. Every data source has its own quirks: missing dates, inconsistent column names, different handling of corporate actions, timezone issues, survivorship bias, look-ahead in adjustments.
+**Rule:** For every new data source: (1) check for missing dates, (2) check for NaN values, (3) verify date coverage matches expectations, (4) verify column names match documentation, (5) spot-check 3-5 specific values against a known reference.
