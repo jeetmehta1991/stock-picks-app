@@ -408,13 +408,26 @@ The Risk Agent explicitly flags when the current macro regime differs significan
 All Quiver data types must be complete (currently blocked by API outage — retry when recovered). Alpha Vantage news batches must complete (running overnight). 25-ticker batch test must be reviewed and agent outputs approved before scaling to 509 instruments.
 
 ### Phase 1C Additions
-Unusual Whales options flow and Ortex short interest data are added in Phase 1C. This is intentional — we test their contribution in Phase 1C before committing to them in live trading.
+Unusual Whales options flow and Ortex short interest data are added in Phase 1C. Additionally, two correlation-factor additions are planned (see Market-Level and Correlation-Factor Strategies section for full detail):
+- Relative strength precondition added to all 6 existing breakout strategies (requires stock to outperform its sector ETF over prior 20 days)
+- One new strategy (strategy 61): sector ETF crosses above 50-day EMA + stock shows momentum signal
+- Intermarket signals (TLT, GLD, DXY trends) added as Risk Agent context with tier adjustment logic
+
+Total strategies in Phase 1C: approximately 62. All additions are backtested against the same 10 passing criteria as Phase 1B strategies.
 
 ### Stage 3 Design (When Phase 1D Completes)
 - IBKR Canada paper trading account setup (Alpaca for US users; IBKR for Canadian)
 - Daily screening cron job implementation
 - Position persistence mechanism (PostgreSQL)
 - Website with live paper trade tracking
+- Hybrid regime classifier: daily vol for speed (crisis detection) + weekly BMSB confirmation for structural shifts
+- Live market breadth dashboard (PCT_ABOVE_50EMA, PCT_ABOVE_200EMA, new high/low ratio)
+- IWM/SPY ratio filter as live small-cap conviction modifier
+- Approximate factor bucket classification (value/growth/quality/momentum) using current fundamentals
+- Rate-cycle rotation strategy using TLT vs SPY as entry trigger (intermarket signal as live strategy)
+- Post-earnings drift as priority paper trading candidate (validate before committing to Phase 1D results)
+
+See Market-Level and Correlation-Factor Strategies section for full detail on each item.
 
 ### Stage 4 Design (When Stage 3 Proves Profitable)
 - Email approval workflow implementation
@@ -430,13 +443,243 @@ Unusual Whales options flow and Ortex short interest data are added in Phase 1C.
 - Strategy return correlation matrix (identify redundant strategies)
 - VIX threshold empirical validation (let data determine optimal regime thresholds)
 
+---
+
+## Market-Level and Correlation-Factor Strategies — A Critical Gap
+
+### Why this gap exists and why it matters
+
+Every one of the 60 strategies in Phase 1B evaluates a single stock in isolation. The only market-level input currently in any strategy is the sector ETF return for the day passed as context to the Technical Agent. This means the screener can simultaneously be buying NVDA on a technical signal while the semiconductor sector is breaking down, IWM (small caps) is signalling risk-off, TLT is surging (flight to safety), and market breadth is deteriorating. The agent partially compensates through narrative context, but no entry strategy is structured to use these correlation factors as triggers or blockers.
+
+This is a known architectural limitation. It does not invalidate Phase 1B — the agent pipeline partially compensates and the "profitable in ≥2 of 7 regimes" criterion catches strategies that only work in one environment. But it represents a systematic blind spot that must be addressed in later phases to build a truly robust system.
+
+The eight missing strategy categories are documented below with a specific implementation plan for each stage. No changes are made to Phase 1B. Categories are sequenced by implementation complexity and data availability.
+
+---
+
+### Category 1 — Sector Rotation (Phase 1C)
+
+**The concept:** Capital rotates between sectors based on the economic cycle. Early recovery favours Financials and Consumer Discretionary. Mid-cycle favours Industrials and Materials. Late cycle favours Energy and Staples. Recession favours Healthcare and Utilities. Identifying which sector is receiving institutional inflows — and buying the leading stocks within that sector — is a well-documented edge.
+
+**What's missing today:** All 60 strategies apply identically regardless of whether a stock's sector ETF is in an uptrend or downtrend. A stock can trigger `rsi_volume_200ema` while XLF is in a 3-month downtrend and the system won't care.
+
+**Proposed implementation — Phase 1C:**
+Two additions. First, a relative strength precondition added to all 6 existing breakout strategies: require that the stock has outperformed its sector ETF over the prior 20 trading days (stock return minus sector ETF return > 0). This is not a new strategy — it is a filter on existing ones. Implementation is approximately 15 lines of code and requires no new data sources. Second, one new strategy (strategy 61): sector ETF crosses above its 50-day EMA AND has outperformed SPY by >2% over 20 days AND individual stock in that sector shows any momentum signal → enter with MEDIUM-HIGH minimum tier. This is sector rotation implemented directly as a strategy.
+
+**Data required:** Already cached. All sector ETFs (XLK, XLF, XLE, XLV, XLI, XLY, XLP, XLU, XLB, XLRE) are in the OHLCV cache.
+
+**Statistical validity concern:** Each sector ETF crossing its 50-day EMA is a rare event — roughly 8-15 times per year per sector. Over 4 years across 11 sectors, this generates perhaps 400-600 sector-rotation entry opportunities, which when filtered to individual stock signals may yield 150-250 trades. Borderline for the 500-trade minimum. Sector rotation strategy may need Phase 1D's 5-year window to reach statistical validity.
+
+---
+
+### Category 2 — Relative Strength vs Sector and Market (Phase 1C)
+
+**The concept:** Mansfield Relative Strength measures how a stock performs relative to its sector ETF over 52 weeks. A stock with RS > 1.0 is outperforming. The highest-conviction setups occur when a stock with RS > 1.0 is in a sector with RS > 1.0 vs SPY. A breakout on a sector leader in a leading sector is categorically different in quality from the same breakout on a laggard.
+
+**What's missing today:** `52w_high_breakout` fires on any stock hitting a 52-week high regardless of whether that stock is leading or lagging its sector. This produces many low-quality signals.
+
+**Proposed implementation — Phase 1C:**
+Add a Mansfield RS score (stock 52-week return / sector ETF 52-week return) as a computed signal available to all strategies. Require RS > 1.0 as a precondition for all breakout strategies. Additionally add RS as a context input to the Technical Agent — the agent already receives sector ETF return for the day but has no visibility into the stock's relative performance over prior months.
+
+**Data required:** Already cached. OHLCV for all stocks and sector ETFs.
+
+**Expected impact:** Reduces false signals on breakout strategies by an estimated 20-30%. The relative strength filter is one of the most consistently validated edges in the academic literature on technical analysis.
+
+---
+
+### Category 3 — Intermarket Signals: Bonds, Gold, Dollar (Phase 1C, enhanced in Stage 3)
+
+**The concept:** Asset classes are interconnected. When TLT (20-year bonds) rises sharply, falling rate expectations historically benefit growth stocks and hurt banks. When GLD outperforms SPY over 20 days, it signals institutional risk-off positioning — cyclical stocks underperform. When DXY falls >2% over 20 days, multinationals and commodity exporters benefit. These cross-asset relationships are systematic and have multi-decade academic backing (John Murphy's "Intermarket Analysis" is the canonical reference).
+
+**What's missing today:** DXY trend is computed in `macro.py` and passed to the Risk Agent as a text string ("rising" / "falling" / "flat"). TLT and GLD are in the OHLCV cache as part of the ETF universe (TLT, GLD are included). But no strategy uses these as entry triggers or hard filters.
+
+**Proposed implementation — Phase 1C:**
+Three intermarket signals added as context to the Risk Agent with specific threshold logic:
+
+- **Bond signal:** TLT 20-day return vs SPY 20-day return. If TLT is outperforming SPY by >3% (risk-off bond rally), downgrade all new long entries in cyclical sectors (XLY, XLF, XLI, XLE) by one tier. If TLT is underperforming by >3% (risk-on bond selloff), upgrade momentum long entries in growth sectors (XLK, XLV) by one tier.
+
+- **Gold signal:** GLD 20-day return vs SPY. If GLD outperforms by >5%, apply a 0.5x size multiplier to all new long entries (systemic risk-off signal). If GLD underperforms (risk appetite high), no adjustment.
+
+- **Dollar signal:** Already computed. DXY rising >2% in 20 days → reduce conviction on multinationals and commodity names. DXY falling >2% → increase conviction on same names. Requires mapping each ticker to its USD sensitivity bucket (multinationals, domestic, commodity-linked) — this can be estimated from sector membership.
+
+**Data required:** TLT and GLD already in OHLCV cache. USD sensitivity mapping requires a one-time lookup table.
+
+**Phase 1C scope:** Intermarket signals as Risk Agent context upgrades/downgrades only — not standalone strategies. The agent already handles the final decision.
+
+**Stage 3 enhancement:** Dedicated intermarket strategy: TLT crosses below 50-day EMA (rates rising, bond bears confirmed) AND financial sector stock shows any momentum signal → VERY HIGH minimum tier for the Financials entry. This is the rate-cycle rotation trade implemented explicitly. Requires live daily data from the OHLCV feed — already available.
+
+---
+
+### Category 4 — Market Breadth (Phase 1D, live in Stage 3)
+
+**The concept:** Breadth measures participation. When SPY rises but only 30% of S&P 500 stocks are above their 50-day EMAs, the rally is being driven by a handful of mega-caps (typically the "Magnificent 7" in 2023-2024) and is fragile. When >70% of stocks are above their 50-day EMAs, the rally is broad and institutions are buying across the board — this is the highest-conviction environment for swing long entries. The Advance-Decline Line, McClellan Oscillator, and "percentage of S&P 500 above 200 EMA" are the three most widely watched breadth indicators.
+
+**What's missing today:** The system has no concept of breadth. A narrow rally driven by 5 mega-caps and a broad rally with 400 participating stocks look identical to the screener and agents.
+
+**Why not Phase 1C:** Computing breadth requires daily calculation across all 500+ stocks in the universe — a non-trivial infrastructure addition. Phase 1C is focused on strategy quality improvements, not new infrastructure.
+
+**Proposed implementation — Phase 1D:**
+Compute three breadth metrics daily across the full 509-ticker universe as a post-processing step during the backtest:
+- **PCT_ABOVE_50EMA:** percentage of S&P 500 stocks above their 50-day EMA (bullish when >60%, bearish when <40%)
+- **PCT_ABOVE_200EMA:** percentage above 200-day EMA (structural bull/bear indicator)
+- **NEW_HIGH_NEW_LOW_RATIO:** daily new 52-week highs divided by (highs + lows). Readings above 70% are strongly bullish.
+
+These metrics are stored as daily time series and used as filters: new long entries are blocked when PCT_ABOVE_50EMA < 35% (narrow deteriorating market). New short entries are blocked when PCT_ABOVE_50EMA > 65% (healthy bull market — shorts have poor odds). These are portfolio-level filters applied before any individual stock evaluation.
+
+**Stage 3 implementation:** The same breadth metrics are computed daily in the live screening job using the prior day's closes. Cost: zero (computed from already-available OHLCV data). A breadth dashboard is added to the website showing the daily readings and their historical percentile.
+
+**Stage 4/5 enhancement:** Breadth divergence alert — when SPY makes a new high but PCT_ABOVE_200EMA is declining, this is a classic distribution warning. Email alert is sent automatically. No position changes are made automatically, but the email draws attention to the regime risk.
+
+---
+
+### Category 5 — Large-Cap vs Small-Cap Rotation (Phase 1D)
+
+**The concept:** The ratio of IWM (Russell 2000) to SPY measures risk appetite at the institutional level. When small caps outperform, institutional money is reaching for higher-beta names — a risk-on signal. When large caps outperform, institutions are defensively hiding in mega-caps — a risk-off signal. This ratio is a powerful conditioning variable: small-cap individual stock picks dramatically underperform when IWM is losing ground to SPY regardless of individual technical signals.
+
+**What's missing today:** IWM is in the OHLCV cache and universe but its relative performance vs SPY is never computed or used as a filter.
+
+**Proposed implementation — Phase 1D:**
+Compute a daily IWM/SPY ratio trend (20-day rolling). When IWM underperforms SPY by >5% over 20 days (risk-off rotation), apply a 0.75x position size multiplier to all small and mid-cap stock entries (market cap < $10B). When IWM outperforms SPY by >5% (risk-on), apply a 1.1x multiplier to the same names (capped so total size stays within tier limits).
+
+Additionally, a new strategy (strategy 62): IWM crosses above its 50-day EMA AND has outperformed SPY by >3% over 20 days AND individual small/mid-cap stock shows any momentum or breakout signal → enter with a one-tier upgrade from the preliminary tier. This is the small-cap rotation trade.
+
+**Data required:** Already cached. IWM, SPY OHLCV available.
+
+---
+
+### Category 6 — Post-Earnings Drift (Phase 1D)
+
+**The concept:** Post-earnings announcement drift (PEAD) is one of the most replicated anomalies in academic finance (documented since Ball & Brown 1968). When a company reports earnings that significantly beat expectations, the stock tends to continue drifting higher for 3-20 trading days — not all in one session. This occurs because institutional investors take multiple sessions to fully build positions following a surprise. The same drift occurs in the negative direction after a miss.
+
+**What's missing today:** The system treats earnings proximity purely as a risk factor (a circuit breaker and a Risk Agent warning). It never explicitly enters a trade to capture post-earnings drift.
+
+**Proposed implementation — Phase 1D:**
+New strategy (strategy 63): Stock reports earnings with >5% gap-up on earnings day AND closes in the top 20% of its daily range (not a reversal day) AND volume is >2× the 20-day average → enter the next morning at open, target the post-earnings drift for 5-15 days, trail with 1.5× ATR (wider than standard — post-earnings volatility is elevated).
+
+This requires knowing historical earnings dates with point-in-time accuracy. Currently earnings dates come from yfinance and are not always historically accurate. A dedicated earnings calendar source may be required for this strategy. Flag as needing data validation before implementation.
+
+**Stage 3 enhancement:** Post-earnings drift is one of the few strategies that works better in live trading than backtesting (because real fills at next-day open capture the actual drift, whereas backtests use close-to-close). Priority candidate for Stage 3 paper trading validation.
+
+---
+
+### Category 7 — Sector-Level Mean Reversion (Phase 1D)
+
+**The concept:** When an entire sector is deeply oversold (XLE down 20% in 60 days, XLF down 15%), the best stocks in that sector become the highest-conviction recovery plays. Sector-level capitulation followed by the first signs of sector stabilisation (sector ETF closes above prior day high for 3 consecutive days after a sustained decline) is a distinct entry trigger. This is different from buying any oversold individual stock — it is specifically timing the sector recovery.
+
+**What's missing today:** Mean reversion strategies (`rsi_oversold`, `bollinger_lower`, etc.) fire on any oversold stock regardless of sector context. A stock can be oversold while its sector continues falling — the worst type of falling knife.
+
+**Proposed implementation — Phase 1D:**
+Two additions. First, a sector oversold context added to existing mean reversion strategies: if the stock's sector ETF is in a confirmed downtrend (below 50-day EMA and declining), require a higher tier minimum (VERY HIGH instead of HIGH) for mean reversion entries. This filters out the "falling knife" problem. Second, new strategy (strategy 64): sector ETF has declined >15% from its 60-day high AND closes above prior session high for 3 consecutive days (stabilisation signal) AND individual stock in sector is above its own 50-day EMA (a relative strength leader in the beaten sector) → enter with HIGH minimum tier. This is sector capitulation recovery.
+
+**Data required:** Already cached. Sector ETF OHLCV.
+
+---
+
+### Category 8 — Factor Rotation: Value, Growth, Momentum, Quality (Stage 3)
+
+**The concept:** Factor exposures rotate in and out of favour based on macro conditions. Rising rates environments favour value (low P/E, high dividends) over growth (high P/E, no dividends). Falling rates favour growth. High inflation favours commodities and real assets. Post-crisis recovery favours high-beta momentum names. Quality (low debt, stable earnings, high ROE) outperforms in uncertain environments. In 2022, value and dividends dominated. In 2023-2024, momentum and growth dominated. In 2025 tariff uncertainty, quality dominated.
+
+**What's missing today:** The system applies identical logic to a pure growth stock trading at 40× sales and a deep value stock trading at 8× earnings. Factor context is absent from both the screener and agent prompts.
+
+**Why this is a Stage 3 addition, not Phase 1C/1D:** Factor data (P/E ratios, debt/equity, ROE, dividend yield) requires a separate data source from what is currently cached. Fundamental data for all 509 tickers is available through yfinance's `info` endpoint, but point-in-time historical fundamental data is not available through free sources. Using today's fundamentals for trades made in 2022 introduces look-ahead bias — a stock trading at 40× sales today may have been trading at 80× sales in 2022. Valid historical factor data requires Compustat or a similar institutional source, which is cost-prohibitive until Stage 5.
+
+**Stage 3 approach (approximate, no look-ahead):** Use current factor buckets as a static classification. At Stage 3, the backtest period is only 3-6 months prior to live trading — the look-ahead bias from using current fundamentals is minimal for a 6-month window. Classify each stock as value/growth/quality/momentum based on current fundamentals and apply factor-aware position sizing: reduce size on growth stocks when the macro regime suggests rates are rising, increase size on quality stocks when CNN Fear & Greed is below 30 (uncertainty regime).
+
+**Stage 5 approach (full implementation):** Subscribe to a historical fundamental data source. Add factor rotation as a conditioning variable on all confidence tier assignments. This is the most powerful long-term enhancement but requires the most infrastructure.
+
+---
+
+### Category 9 — Regime Change as a Strategy (Phase 1D)
+
+**The concept:** When `classify_regime()` transitions from bear → neutral or neutral → bull after 10+ consecutive days in the prior regime, the stocks that held up best during the downturn (relative strength leaders) tend to be the first and strongest movers in the recovery. This is a distinct edge: the entry trigger is the regime transition itself, not an individual stock's technical signal. It is the market-level analogue of buying a stock's first higher high after a downtrend.
+
+**Why this matters:** Every one of the current 60 strategies can fire during any regime. None of them explicitly time regime transitions as the primary entry trigger. This means the system misses the highest-conviction window — the first few days after a regime improvement — when the risk/reward is most favourable.
+
+**What makes this valid:** From the chart, the 2022 bear → neutral transition (October 2022) produced one of the strongest rallies in recent history. The late 2023 neutral → bull transition preceded the 2024 bull run. These are not random — they reflect genuine shifts in institutional positioning.
+
+**Why Phase 1D, not Phase 1C:** With 8-10 regime transitions over 4 years (as seen in the regime chart), this strategy generates approximately 40-80 candidate entries across the full universe. This is well below the 500-trade minimum for Phase 1B/1C validation. The 5-year Phase 1D window (adding 2020-2021 with COVID recovery as a major regime transition) provides 2-3 additional transitions and pushes the trade count closer to statistical validity.
+
+**Proposed implementation — Phase 1D:**
+New strategy (strategy 65): `classify_regime()` returns a regime that differs from the prior 10 consecutive days' regime AND the new regime is less restrictive (bear → neutral, neutral → bull, crisis → bear) AND individual stock has 20-day relative strength > 1.0 vs its sector ETF → enter with HIGH minimum tier, targeting the regime recovery drift.
+
+**Confirmation buffer requirement:** Same 3-day confirmation buffer proposed for live trading applies here — regime change is only flagged as confirmed after the new regime persists for 3 consecutive trading days. This prevents whipsawing during choppy regime transitions.
+
+---
+
+### Hybrid Regime Classifier: Daily + Weekly Confirmation (Stage 3)
+
+**The problem with the current classifier:** Our 20-day realised vol + SPY vs 200 EMA approach detects regime changes faster than Bull Market Support Band (BMSB uses 20-week SMA + 21-week EMA on weekly closes). But faster also means noisier — a single volatile week can temporarily flip our daily vol calculation into bear territory during an otherwise healthy bull market, producing a false regime change that adjusts position sizing unnecessarily.
+
+**The hybrid approach:** Use our daily classifier for speed — specifically for crisis detection (where waiting 5 months for BMSB to confirm is unacceptable) and for the alert layer. Use BMSB for sustained regime confirmation before changing the structural bias. The logic is:
+
+**For crisis (VIX proxy > 35%):** Our daily classifier triggers immediately. No weekly confirmation required. Crisis requires speed — the March 2020 crash moved from normal to crisis in 5 trading days. Waiting for a weekly close confirmation would have meant entering crisis regime after the worst moves were already done.
+
+**For bear regime (VIX proxy > 25%, SPY below 200 EMA):** Our daily classifier raises an alert. BMSB confirmation (SPY closes below both 20-week SMA and 21-week EMA on a weekly close) is required before structural bias shifts. Until BMSB confirms, the system applies a 0.75x size multiplier to new longs as a precaution but does not change the regime label.
+
+**For bull regime (VIX proxy < 15%, SPY above 200 EMA):** Our daily classifier raises a recovery alert. Require 3 consecutive daily bull readings before calling the regime bull. BMSB (SPY above both 20-week SMA and 21-week EMA) provides additional confirmation that can upgrade the confidence on regime-change strategy entries.
+
+**What this solves:** False positives during healthy bull markets where one volatile week temporarily pushes daily vol above 15%. False negatives during crashes where waiting for weekly confirmation is too slow. The hybrid gets the best of both: daily speed for crisis, weekly confirmation for structural shifts.
+
+**Implementation stage:** Stage 3 — live trading requires a real-time regime classifier, and this is the appropriate time to build the two-layer system. Phase 1B/1C/1D use the existing daily classifier. The hybrid is built and tested during Stage 3 paper trading against the daily classifier to measure false positive reduction before committing to it in Stage 4.
+
+---
+
+### Implementation Roadmap Summary
+
+| Category | Phase 1B | Phase 1C | Phase 1D | Stage 3 | Stage 4/5 |
+|---|---|---|---|---|---|
+| 1 — Sector rotation | ❌ No change | ✅ RS filter on breakouts + 1 new strategy | ✅ Validate with 5yr data | ✅ Live sector momentum signal | ✅ Enhanced with institutional flow |
+| 2 — Relative strength vs sector | ❌ No change | ✅ RS precondition on all breakouts | ✅ Validate | ✅ RS in live screener | ✅ Full Mansfield RS scoring |
+| 3 — Intermarket (bonds/gold/dollar) | ❌ No change | ✅ As Risk Agent context upgrades | ✅ Validate | ✅ As dedicated strategy (rate-cycle rotation) | ✅ Full cross-asset correlation scoring |
+| 4 — Market breadth | ❌ No change | ❌ No change | ✅ As portfolio-level entry filter | ✅ Daily breadth dashboard + live filter | ✅ Breadth divergence alert system |
+| 5 — Large/small cap rotation | ❌ No change | ❌ No change | ✅ IWM/SPY ratio as size modifier + 1 new strategy | ✅ Live IWM/SPY filter | ✅ Full factor rotation |
+| 6 — Post-earnings drift | ❌ No change | ❌ No change | ✅ 1 new strategy (data validation required) | ✅ Priority paper trading candidate | ✅ With accurate earnings calendar |
+| 7 — Sector mean reversion | ❌ No change | ❌ No change | ✅ Sector oversold filter + 1 new strategy | ✅ Live sector ETF context | ✅ Enhanced |
+| 8 — Factor rotation | ❌ No change | ❌ No change | ❌ Look-ahead bias risk | ✅ Approximate static factor buckets | ✅ Historical fundamental data source |
+| 9 — Regime change strategy | ❌ No change | ❌ No change | ✅ 1 new strategy (needs 5yr for trade count) | ✅ With live regime detection | ✅ Full implementation |
+| Hybrid regime classifier | ❌ No change | ❌ No change | ❌ No change | ✅ Build and validate vs daily classifier | ✅ Deploy if Stage 3 validates it |
+
+**Phase 1C adds:** 2 new strategies (sector rotation, RS filter on breakouts), intermarket signals as agent context. Total strategies: ~62.
+
+**Phase 1D adds:** 4 new strategies (IWM rotation, post-earnings drift, sector mean reversion, regime change). Breadth and IWM/SPY as portfolio filters. Total strategies: ~66.
+
+**Stage 3 adds:** Hybrid regime classifier, live breadth dashboard, factor bucket classification, real-time intermarket signals. No new strategy count — these are live infrastructure.
+
+**Stage 4/5 adds:** Full factor rotation with historical fundamental data. Enhanced cross-asset correlation scoring. Breadth divergence alerts.
+
+### Known limitations of this gap (updated)
+
+The original Known Limitations section listed "Sector contagion effects not explicitly modelled." This section replaces and expands that item. The complete list of correlation-factor limitations in Phase 1B is:
+
+- No sector rotation signal — strategy fires regardless of sector ETF trend direction
+- No relative strength filter — a sector laggard and a sector leader trigger identically
+- No intermarket conditioning — bond rally, gold surge, DXY spike do not block individual stock entries
+- No market breadth filter — narrow 5-stock rally and broad 400-stock rally look identical
+- No large/small cap rotation signal — IWM underperformance does not reduce small-cap conviction
+- No post-earnings drift strategy — earnings proximity is only a risk flag, never an entry trigger
+- No sector-level mean reversion — sector capitulation and recovery not used as entry filter
+- No factor awareness — value, growth, quality, momentum exposures ignored
+- No regime change strategy — regime transitions not used as primary entry triggers
+- Regime classifier is daily-only — no weekly confirmation layer (proposed hybrid not yet built)
+
+These limitations are accepted for Phase 1B and will be addressed in later phases per the roadmap above.
+
+---
+
 ### Known Limitations
+
+**Data and infrastructure limitations:**
 - Daily bar data only — intraday stop precision limited
 - Gap-down exits slightly optimistic (estimated 0.1-0.3% on affected trades)
 - Earnings dates from yfinance not always point-in-time historical
-- Sector contagion effects not explicitly modelled (AMD rallying when Intel beats)
-- Regime detection is coincident/lagging — VIX spikes after market drops
 - 2020 Phase 1D data lacks smart money context (Quiver history may not extend to 2020)
+
+**Correlation and market-level limitations (see dedicated section above for full detail and remediation roadmap):**
+- No sector rotation signal, no relative strength filter, no intermarket conditioning
+- No market breadth filter, no large/small cap rotation signal
+- No post-earnings drift strategy, no sector-level mean reversion
+- No factor awareness (value/growth/quality/momentum), no regime change strategy
+- Regime classifier is daily-only with no weekly confirmation layer
 
 ---
 
