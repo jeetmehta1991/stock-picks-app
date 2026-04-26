@@ -207,12 +207,35 @@ def main():
                 time.sleep(5)
                 continue
 
-        # Final commit for this data type
+        # Final commit for this data type — retry push up to 3 times
         print(f"\nCompleted {data_type} — committing...")
-        git_commit(f"Quiver pre-fetch: {data_type} complete ({len(universe)} tickers)")
+        for attempt in range(3):
+            git_commit(f"Quiver pre-fetch: {data_type} complete ({len(universe)} tickers)")
+            # Verify push succeeded
+            import subprocess
+            check = subprocess.run(
+                ["git", "log", "--oneline", "-1", "origin/main"],
+                capture_output=True, text=True
+            )
+            local = subprocess.run(
+                ["git", "log", "--oneline", "-1"],
+                capture_output=True, text=True
+            )
+            if check.stdout.strip() == local.stdout.strip():
+                print(f"  ✅ Push confirmed on origin/main")
+                break
+            else:
+                print(f"  ⚠️  Push may have failed (attempt {attempt+1}/3) — retrying...")
+                import time as _t; _t.sleep(5)
+        else:
+            print(f"\n  ❌ PUSH FAILED after 3 attempts for {data_type}")
+            print(f"  DO NOT RUN git reset --hard")
+            print(f"  Run manually: git add backtest/data/cache/quiver/ && git commit -m 'manual push' && git pull --rebase origin main && git push origin main")
 
     print(f"\nAll Quiver data pre-fetched and committed.")
     print(f"Cache location: {CACHE_DIR}/")
+    print(f"\n⚠️  IMPORTANT: Run 'git status' before any git reset --hard")
+    print(f"   If files show as modified/untracked, commit them first!")
 
 
 if __name__ == "__main__":
