@@ -495,3 +495,90 @@ Two detection layers are planned: a confirmation layer (3-day persistence before
 ### Known limitations
 
 The regime classifier itself is not backtested for accuracy in Phase 1B — thresholds are literature-based. Per-regime metrics (win rate, profit factor per regime) are computed in Phase 1B results to validate whether regime filtering is working. Portfolio heat is computed per batch in parallel runs, not across all simultaneous positions — documented as known limitation in CHECKLIST item 18.
+---
+
+## Glossary of Technical Terms
+
+**ATR (Average True Range):** A measure of a stock's daily price volatility. Calculated as the average of (high minus low) over the past 14 days, accounting for overnight gaps. A stock with ATR of $5 typically moves $5 in a normal day. Used to set stop-loss distances proportional to each stock's volatility.
+
+**Bollinger Bands:** Price envelope plotted 2 standard deviations above and below a 20-day moving average. When price touches the lower band it is statistically "oversold" relative to recent history. Used in mean-reversion strategies.
+
+**Camarilla Pivots:** Intraday support and resistance levels calculated from the prior day's high, low, and close using fixed mathematical ratios. S3 and S4 are strong support levels; R3 and R4 are strong resistance levels. The Camarilla system produces tighter, more precise levels than standard pivots.
+
+**EMA (Exponential Moving Average):** A moving average that weights recent prices more heavily than older prices. The 200-day EMA is the most widely-watched long-term trend indicator used by institutional traders.
+
+**MACD (Moving Average Convergence Divergence):** A momentum indicator calculated as the difference between a 12-day and 26-day EMA, with a 9-day signal line. A MACD line crossing above its signal line suggests momentum is turning positive.
+
+**OBV (On-Balance Volume):** A running cumulative sum of volume — volume is added on up-days and subtracted on down-days. Rising OBV alongside price confirms that buyers are genuinely driving the move.
+
+**Pivot Points:** Daily support and resistance levels calculated from the prior day's high, low, and close. S1 (support 1) is the first support below the pivot; R1 (resistance 1) is the first resistance above. Used as reference points by professional traders.
+
+**Profit Factor:** Total gross winning trades divided by total gross losing trades. A profit factor of 1.5 means the system makes $1.50 for every $1.00 it loses. Anything above 1.0 is profitable; above 1.3 is considered a meaningful edge.
+
+**RSI (Relative Strength Index):** A 0-100 oscillator measuring the speed and change of price movements. Below 30 is traditionally "oversold" (used for long entries in mean-reversion strategies). Above 70 is "overbought" (used for short entries).
+
+**Walk-Forward Validation:** A test methodology that prevents overfitting by testing strategy performance on data that was completely excluded from the optimisation period. See the IS/OOS section for a full explanation.
+
+---
+
+## Worked Example: A Trade Through the Full Pipeline
+
+This example illustrates how a single trade candidate flows through the system, using MMM (3M Company) as a hypothetical example.
+
+**Day 0 — Signal fires:** The `confluence_rsi_obv` strategy fires on MMM. RSI is at 31 (oversold), OBV has turned positive after three down-days, and price is near the daily S1 pivot support. Three independent systems agree.
+
+**Preliminary tier (Stage 1 — rule-based):** One strategy fired. No smart money signals found (no recent congressional trades, no insider cluster buy). Preliminary tier = LOW. A LOW tier means the position will not be opened regardless of what agents say — this is a watch-only signal.
+
+**With smart money added:** Suppose congressional data shows Senator X disclosed a $50,000 MMM purchase 12 days ago. Now: one strategy + congressional buy within 30 days = MEDIUM preliminary tier. Position size = 0.75% of capital.
+
+**Agent pipeline (Stage 2 — AI-adjusted):** Six agents evaluate MMM. Technical agent finds the S1 support is a historically significant level. Fundamental agent notes the congressional trade but no insider cluster buy. Sentiment agent finds AAII sentiment is at extreme bearishness (contrarian bullish). Risk agent notes the yield curve is inverted (headwind) and CPI is due in 3 days (risk event). Bull/Bear debate: bull argues oversold bounce at support with smart money backing; bear argues earnings are in 11 days and macro headwinds are significant. Decision agent scores the trade 62 out of 100.
+
+**Tier adjustment:** Score 62 is between 40 and 75 — no adjustment. Final tier stays at MEDIUM.
+
+**Entry:** Next day's open. Position size = 0.75% × $10,000 = $75. At MMM price of $100, this is 0 shares (rounds to zero — position too small at this capital level). This illustrates why $10,000 minimum capital is required for the math to work, and why LOW and MEDIUM tiers are primarily educational at small capital.
+
+**Exit:** ATR trailing stop set at 1× ATR below the highest closing price since entry. If ATR = $3, stop is $3 below the high. As price rises from $100 to $108, the stop rises to $105. If price falls from $108 to $104.50, the stop (checked against intraday low) triggers and the position is closed.
+
+---
+
+## Phase 1B Parallel Batch Architecture
+
+Phase 1B runs 509 tickers across 4 years with AI agents evaluating each candidate. Running this sequentially would take 48-72 hours. The parallel batch approach reduces this to 12-15 hours.
+
+**How it works:** The 509-ticker universe is split into 5 non-overlapping batches of ~101 tickers each. All 5 batches run simultaneously in separate terminal windows on a local laptop (not Codespaces — laptops don't time out). Each batch writes to its own output directory. The agent cache (one JSON file per analysis) is shared across all batches on disk — if two batches analyse the same ticker-date-strategy combination (they won't, since tickers don't overlap), the second would use the cached result.
+
+**Race condition protection:** Two shared files can be written by multiple processes simultaneously — `index.json` (OHLCV cache index) and `info_cache.json` (company info). Both are protected with file locks (`filelock` library) to prevent corruption. Additionally, `scripts/prepopulate_cache_index.py` pre-fills both files for all 509 tickers before any batch starts, minimising live writes during the run.
+
+**Crash recovery:** Every 100 trading days during a batch run, the in-memory trade log is written to `trade_log_checkpoint.csv`. If the process crashes, restarting the same batch will skip all already-cached agent analyses and rebuild the trade log from scratch — but the expensive API calls are not repeated.
+
+**Merge process:** After all 5 batches complete, `scripts/merge_batch_outputs.py` concatenates all 5 trade logs and re-computes all strategy metrics on the combined dataset. Strategy metrics are never averaged across batches — they are always recomputed on the full combined trade log, because averaging metrics (e.g. averaging win rates) is statistically incorrect.
+
+**Walk-forward in batch mode:** Per-batch walk-forward is suppressed (`--no-git` flag). Individual batches of 101 tickers rarely have 100+ trades per strategy in the IS period — the minimum required for statistical validity. Walk-forward is only run on the merged final result after all 5 batches complete.
+
+---
+
+## What Happens to Strategies That Fail Phase 1B
+
+Strategies that fail Phase 1B criteria are not tuned or retested with adjusted parameters. This is a deliberate anti-overfitting rule.
+
+**Why no parameter tuning:** If we test a strategy, see it fails with threshold X, adjust threshold X to make it pass, and report it as a success — this is data-mining and will produce strategies that look good on historical data but fail in live trading. The 10 passing criteria are set before the backtest runs and are not adjusted based on results.
+
+**What "fail" means in practice:** A strategy that passes 8 of 10 criteria is still a fail. There is no partial credit. The criteria are pass/fail gates, not a scoring system.
+
+**Failed strategies are retained for reference.** The results CSV includes all strategies, including failures, with their exact metrics. This is valuable because: (1) a strategy that fails statistical minimum but shows strong win rates may reappear with more data in Phase 1D, (2) understanding why strategies fail informs the design of better strategies in future iterations.
+
+**The exception — INSUFFICIENT_OOS_DATA:** A strategy with fewer than 30 OOS trades receives no pass/fail verdict. It is retested in Phase 1D with 5 years of data to see if the trade count becomes sufficient.
+
+---
+
+## Open Decision: News Sentiment (Alpha Vantage)
+
+Alpha Vantage provides AI-powered news sentiment scores for all 509 tickers. The free tier provides only 25 API calls per day — insufficient to cover 509 tickers. The premium tier costs approximately $50 USD/month.
+
+**The question:** Does news sentiment meaningfully improve agent confidence tier accuracy? Or do the existing signals (congressional trading, insider filings, technical signals, macro data) already capture enough context?
+
+**How we're answering this:** A controlled A/B test on 5 tickers (MMM, AOS, ABT, ABBV, ACN) from January 2022 to October 2022. One run includes news sentiment in the Sentiment Agent context; the other run suppresses it entirely. We compare: how often does the news signal change the final confidence tier? Are the tier changes in the correct direction (did the news-influenced tier produce better outcomes)?
+
+**Decision criteria:** If news changes tier assignments on >10% of candidates and those changes correlate positively with outcomes → pay for premium. If news rarely changes tiers or changes them in the wrong direction → proceed with Phase 1B without news, saving $50/month.
+
+**Current status:** Both runs have completed and the agent cache is committed. Analysis pending.
