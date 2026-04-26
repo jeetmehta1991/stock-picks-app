@@ -1,2 +1,2 @@
 ticker,date,strategy,reason,close,next_open,atr
-AAPL,2022-01-27,rsi9_extreme,gap_up_4.1pct_exceeds_1.0x_atr_limit,155.8028,162.15350702087153,4.5785
+AAPL,2022-01-27,rsi9_extreme,gap_up_4.1pct_exceeds_1.0x_atr_limit,155.8028,162.15349217595866,4.5785

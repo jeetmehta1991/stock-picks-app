@@ -19,7 +19,7 @@ NVDA,bollinger_tight,2022-01-20,long,23.5579,trailing_15pct,3.7331,True,11,24.43
 NVDA,bollinger_tight,2022-01-24,long,22.6024,trailing_15pct,8.1183,True,7,24.4373,2022-01-31
 NVDA,bollinger_tight,2022-01-05,long,27.63,atr_trail_1x,-3.6974,False,5,26.6084,2022-01-10
 NVDA,bollinger_tight,2022-01-10,long,27.3173,atr_trail_1x,-3.2604,False,4,26.4267,2022-01-14
-NVDA,bollinger_tight,2022-01-13,long,26.3143,atr_trail_1x,-3.5043,False,6,25.3922,2022-01-19
+NVDA,bollinger_tight,2022-01-13,long,26.3143,atr_trail_1x,-3.5044,False,6,25.3922,2022-01-19
 NVDA,bollinger_tight,2022-01-19,long,25.3155,atr_trail_1x,-5.6985,False,2,23.8729,2022-01-21
 NVDA,bollinger_tight,2022-01-20,long,23.5579,atr_trail_1x,-6.1402,False,4,22.1114,2022-01-24
 NVDA,bollinger_tight,2022-01-24,long,22.6024,atr_trail_1x,-5.9108,False,4,21.2664,2022-01-28
@@ -53,7 +53,7 @@ NVDA,bollinger_tight,2022-01-13,long,26.3143,time_stop_10d,-13.3756,False,15,22.
 NVDA,bollinger_tight,2022-01-19,long,25.3155,time_stop_10d,-3.4689,False,12,24.4373,2022-01-31
 NVDA,bollinger_tight,2022-01-20,long,23.5579,time_stop_10d,3.7331,True,11,24.4373,2022-01-31
 NVDA,bollinger_tight,2022-01-24,long,22.6024,time_stop_10d,8.1183,True,7,24.4373,2022-01-31
-NVDA,bollinger_tight,2022-01-05,long,27.63,time_stop_20d,-11.555,False,26,24.4373,2022-01-31
+NVDA,bollinger_tight,2022-01-05,long,27.63,time_stop_20d,-11.5551,False,26,24.4373,2022-01-31
 NVDA,bollinger_tight,2022-01-10,long,27.3173,time_stop_20d,-10.5426,False,21,24.4373,2022-01-31
 NVDA,bollinger_tight,2022-01-13,long,26.3143,time_stop_20d,-7.1329,False,18,24.4373,2022-01-31
 NVDA,bollinger_tight,2022-01-19,long,25.3155,time_stop_20d,-3.4689,False,12,24.4373,2022-01-31

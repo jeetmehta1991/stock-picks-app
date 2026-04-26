@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-04-26T22:52:49.788384",
+  "generated_at": "2026-04-26T23:22:13.111121",
   "transaction_costs": {
     "applied": true,
-    "gross_total_roi": -65.448,
+    "gross_total_roi": -65.449,
     "net_total_roi": -69.087,
     "total_cost": 3.2
   },
   "survivorship_bias": {
-    "gross_roi": -68.648,
+    "gross_roi": -68.649,
     "adjusted_roi": -69.087,
     "haircut_pct": 0.438,
     "years": 0.08

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-26T22:52:49.681294",
+  "generated_at": "2026-04-26T23:22:13.035583",
   "total_winners": 0,
   "passing_criteria": {
     "min_win_rate": "0.55",
@@ -13,7 +13,7 @@
     "min_trades": "100"
   },
   "survivorship_info": {
-    "gross_roi": -68.648,
+    "gross_roi": -68.649,
     "adjusted_roi": -69.087,
     "haircut_pct": 0.438,
     "years": 0.08
