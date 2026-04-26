@@ -303,3 +303,15 @@ Win rates were reported as single numbers (55.3%) without confidence intervals. 
 **Mistake:** We had AV news data for 5 tickers. Rather than designing a controlled A/B test (run 5 tickers with news, run same 5 without news, compare agent outputs systematically), the news data was treated as a binary — either complete or skip.
 **Principle:** When you have partial data coverage, use it to design a controlled comparison. Partial coverage is an opportunity to isolate the contribution of each data source before scaling.
 **Rule:** When any data source is partially available, run the batch test both with and without that source. Document the difference in agent outputs and confidence tiers. This validates the data source's contribution before committing to full download costs.
+
+### L88 — NEVER USE WIKIPEDIA AS A DATA SOURCE [infrastructure]
+**Mistake:** Wikipedia was used (and proposed multiple times) as the source for S&P 500 constituent lists.
+**Why it fails:** Blocked in Codespaces (HTTP 403). No API — HTML scraping breaks on page restructuring. Not a primary source — Wikipedia itself copies from S&P press releases. No historical point-in-time data. Rate limited with no SLA.
+**Fix:** Use slickcharts.com (free, stable, no auth), S&P official press releases (authoritative, free), or a paid provider (Quiver, Polygon) for production. The static committed CSV (`sp500_tickers.csv`) refreshed quarterly via slickcharts.com is the correct pattern.
+**Rule:** Wikipedia is never a valid data source for any production pipeline. Document in CLAUDE.md and refuse any future proposal that uses Wikipedia for data.
+
+### L89 — Universe staleness is a systematic blind spot, not a one-time fix [architecture]
+**Mistake:** After replacing Wikipedia with a static CSV, no refresh schedule or process was attached to it. The CSV went stale immediately — SNDK missed 9 months, GEV missed 12+ months, SMCI, VST, GDDY, ERIE all missing.
+**Principle:** A static universe list without a refresh process is a time bomb. Every static list goes stale. The question is not whether but when.
+**Fix:** Three-tier architecture with defined refresh frequencies: Tier 1 (S&P 500) quarterly, Tier 2 (extended/spinoffs) monthly for live trading, Tier 3 (momentum watchlist) monthly for live trading. Scripts, GitHub Actions workflows, and CHECKLIST items attached to each tier.
+**Rule:** Never commit a universe list without a refresh script and a scheduled review process documented in CHECKLIST.md.

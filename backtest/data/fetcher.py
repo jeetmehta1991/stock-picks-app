@@ -69,25 +69,17 @@ def _assert_no_lookahead(df: pd.DataFrame, as_of: date, label: str) -> pd.DataFr
 
 def get_sp500_constituents() -> list[str]:
     """
-    Fetch current S&P 500 constituent list from Wikipedia.
-    Used to build the full S&P 200 universe for Phase 1B.
-    Returns tickers sorted by market cap (Wikipedia order approximates this).
+    Load S&P 500 constituents from the committed CSV file.
+    NEVER use Wikipedia — blocked in Codespaces, not point-in-time, fragile (L88).
+    Refresh backtest/data/sp500_tickers.csv quarterly via scripts/refresh_sp500_universe.py.
     """
-    try:
-        tables = pd.read_html("https://en.wikipedia.org/wiki/List_of_S%26P_500_companies")
-        sp500 = tables[0]
-        tickers = sp500["Symbol"].str.replace(".", "-", regex=False).tolist()
-        logger.info("Loaded %d S&P 500 constituents from Wikipedia", len(tickers))
-        return tickers
-    except Exception as exc:
-        logger.error("Could not fetch S&P 500 list: %s — falling back to Phase 1A universe", exc)
-        from backtest.config import SP50; return SP50
+    from backtest.data.universe import get_sp500_constituents as _get
+    return _get()
 
 
 def get_sp200() -> list[str]:
     """Return top 200 S&P 500 tickers by approximate market cap."""
-    all_tickers = get_sp500_constituents()
-    return all_tickers[:200]
+    return get_sp500_constituents()[:200]
 
 
 # ---------------------------------------------------------------------------

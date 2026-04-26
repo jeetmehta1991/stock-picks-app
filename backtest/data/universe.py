@@ -194,6 +194,72 @@ def get_correlation_matrix(
     return ret_df.corr()
 
 
+
+
+def get_extended_universe() -> list[str]:
+    """
+    Load Tier 2 extended universe — spinoffs, large non-S&P stocks.
+    Refreshed monthly via scripts/refresh_extended_universe.py (Stage 3+ only).
+    Empty CSV = Tier 2 not yet populated (Phase 1B/1C/1D use Tier 1 only).
+    """
+    csv_path = Path(__file__).parent / "extended_universe.csv"
+    try:
+        df = pd.read_csv(csv_path)
+        if df.empty:
+            return []
+        tickers = df["Symbol"].drop_duplicates().tolist()
+        logger.info("Loaded %d Tier 2 extended universe tickers", len(tickers))
+        return tickers
+    except Exception as exc:
+        logger.debug("extended_universe.csv not found or empty: %s", exc)
+        return []
+
+
+def get_momentum_watchlist() -> list[str]:
+    """
+    Load Tier 3 momentum watchlist — top non-S&P momentum names.
+    Refreshed monthly via scripts/build_momentum_watchlist.py (Stage 3+ only).
+    For backtesting: fixed at run start (static, no look-ahead).
+    For live: recomputed monthly, updated at month-end.
+    Empty CSV = Tier 3 not yet populated.
+    """
+    csv_path = Path(__file__).parent / "momentum_watchlist.csv"
+    try:
+        df = pd.read_csv(csv_path)
+        if df.empty:
+            return []
+        tickers = df["Symbol"].drop_duplicates().tolist()
+        logger.info("Loaded %d Tier 3 momentum watchlist tickers", len(tickers))
+        return tickers
+    except Exception as exc:
+        logger.debug("momentum_watchlist.csv not found or empty: %s", exc)
+        return []
+
+
+def get_full_live_universe() -> list[str]:
+    """
+    Build full live universe for Stage 3+: Tier 1 + Tier 2 + Tier 3 + ETFs.
+    For backtesting (Phase 1B/1C/1D): use build_phase1b_universe() instead.
+    
+    Universe tiers:
+      Tier 1 — S&P 500 (~500 tickers, quarterly refresh)
+      Tier 2 — Extended: spinoffs, large non-S&P (~50-100 tickers, monthly refresh)
+      Tier 3 — Momentum watchlist: top non-S&P momentum (~50 tickers, monthly refresh)
+      ETFs   — Sector, bond, commodity, volatility ETFs (~25 tickers, static)
+    """
+    tier1  = get_sp500_constituents(500)
+    tier2  = get_extended_universe()
+    tier3  = get_momentum_watchlist()
+    etfs   = ETFS_FULL
+
+    # Deduplicate, preserve tier priority order
+    full = list(dict.fromkeys(tier1 + tier2 + tier3 + etfs))
+    logger.info(
+        "Full live universe: %d tickers (T1=%d T2=%d T3=%d ETF=%d)",
+        len(full), len(tier1), len(tier2), len(tier3), len(etfs)
+    )
+    return full
+
 def build_phase1b_universe(
     ohlcv_dict: dict[str, pd.DataFrame],
     info_dict:  dict[str, dict],

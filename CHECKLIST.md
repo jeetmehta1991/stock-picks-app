@@ -39,3 +39,24 @@ State compliance visibly: "Checklist: ✅ [each item]"
     i. git add output_1b_final/ && git commit -m "Phase 1B: merged final results"
     j. git pull --rebase origin main && git push origin main
     NEVER run git reset --hard at any point in this sequence.
+19. QUARTERLY — S&P 500 universe refresh (run on laptop, NOT Codespaces):
+    a. python scripts/refresh_sp500_universe.py               # review diff
+    b. python scripts/refresh_sp500_universe.py --write       # apply
+    c. git diff backtest/data/sp500_tickers.csv               # verify changes
+    d. git add backtest/data/sp500_tickers.csv
+    e. git commit -m "Universe refresh: QX YYYY S&P 500 update"
+    f. git push origin main
+    Source: slickcharts.com (NEVER Wikipedia — blocked, fragile, not point-in-time — L88)
+    Schedule: January, April, July, October. Add to calendar.
+    Immediate spinoff: python scripts/refresh_extended_universe.py --add TICKER --reason spinoff_from_PARENT --write
+
+20. MONTHLY (live Stage 3+) — Tier 2 extended universe refresh:
+    python scripts/refresh_extended_universe.py --write
+    git add backtest/data/extended_universe.csv && git commit && git push
+    Run immediately after any major spinoff announcement (>$5B market cap).
+
+21. MONTHLY (live Stage 3+) — Tier 3 momentum watchlist refresh:
+    python scripts/build_momentum_watchlist.py --write
+    git add backtest/data/momentum_watchlist.csv && git commit && git push
+    Out-of-cycle (stock >50% in 30 days): --out-of-cycle --write flag.
+    NEVER run momentum watchlist for backtesting — use static snapshot from run start.

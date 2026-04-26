@@ -666,6 +666,69 @@ These limitations are accepted for Phase 1B and will be addressed in later phase
 
 ---
 
+---
+
+## Universe Architecture — Three Tiers
+
+### Why a single static list is insufficient
+
+A static S&P 500 CSV committed once and never updated is a time bomb. The index changes 10-20 times per year. Major spinoffs (SNDK, GEV) go undiscovered for months. High-momentum non-S&P stocks (VST, SMCI) are never screened. The SanDisk case study is the definitive example: spun off February 2025, S&P 500 addition November 2025 — 9 months invisible to a static-universe system. The stock returned 1,200%+ in that period.
+
+The fix is architecture: three tiers with defined refresh frequencies, refresh scripts, and CHECKLIST items attached to each.
+
+### Tier 1 — S&P 500 Core
+
+**File:** `backtest/data/sp500_tickers.csv` (~484-505 tickers)
+**Refresh frequency:** Quarterly (January, April, July, October) — CHECKLIST item 19
+**Refresh method:** `python scripts/refresh_sp500_universe.py --write` on laptop
+**Source:** slickcharts.com — free, stable, updated same day as S&P announcements. NEVER Wikipedia (blocked in Codespaces, not point-in-time, fragile — L88).
+**Used by:** Phase 1B/1C/1D backtesting and Stage 3+ live screening
+**Covers:** All S&P 500 constituents after passing a liquidity filter (price >$5, avg volume >300K)
+
+### Tier 2 — Extended Universe (spinoffs, large non-S&P)
+
+**File:** `backtest/data/extended_universe.csv` (~50-100 tickers)
+**Refresh frequency:** Monthly for live trading (Stage 3+). Run immediately on any major spinoff above $5B market cap — do not wait for the monthly cycle.
+**Refresh method:** `python scripts/refresh_extended_universe.py --write` on laptop
+**Used by:** Stage 3+ live screening only. NOT used in Phase 1B/1C/1D backtesting.
+**Covers:**
+- Recent spinoffs (within 12 months of listing, above $5B market cap)
+- Nasdaq 100 non-S&P members above $10B market cap
+- Any name manually curated as strategically important
+
+**Why monthly not quarterly:** SNDK would still have been missed for 3-6 months with quarterly Tier 2 refresh. Monthly catches spinoffs within 0-4 weeks. Immediate-add capability (`--add TICKER --reason spinoff`) handles urgent cases within hours.
+
+### Tier 3 — Momentum Watchlist
+
+**File:** `backtest/data/momentum_watchlist.csv` (~50 tickers)
+**Refresh frequency:**
+- **Live trading (Stage 3+):** Monthly — recomputed at start of each month, fixed for the entire month. Out-of-cycle addition for any stock with >50% single-month move via `--out-of-cycle` flag.
+- **Backtesting:** Static — computed once at the start of the backtest run, never changes during the run. Prevents look-ahead bias from using future momentum data.
+**Refresh method:** `python scripts/build_momentum_watchlist.py --write` on laptop
+**Used by:** Stage 3+ live screening only. NOT used in Phase 1B/1C/1D backtesting.
+**Covers:** Top 50 non-S&P stocks by 3-month momentum passing liquidity filter (price >$10, avg volume >500K, market cap >$2B)
+
+**Why monthly not weekly:** Weekly is too noisy — high turnover causes excessive churn in the screening universe. Monthly aligns with institutional rebalancing cycles. A genuinely breakout stock that appears mid-month can be added via the out-of-cycle flag.
+
+### Live universe construction (Stage 3+)
+
+```python
+from backtest.data.universe import get_full_live_universe
+universe = get_full_live_universe()
+# Returns Tier 1 + Tier 2 + Tier 3 + ETFs, deduplicated
+# Typical size: 600-650 tickers
+```
+
+### Universe history and look-ahead bias (Phase 1D)
+
+For Phase 1D (5-year backtest including 2020-2021), using today's S&P 500 membership for 2020 trades is a subtle form of look-ahead bias — stocks that joined in 2022-2024 are screened for 2020 signals they wouldn't have generated at the time. A `universe_history.csv` file tracking entry/exit dates for each ticker is planned for Phase 1D to address this. Not in scope for Phase 1B/1C.
+
+### Known gaps accepted for Phase 1B
+
+The current Phase 1B backtest uses the static CSV. These stocks are missing and their returns are not captured: SNDK, GEV, SMCI, VST, GDDY, ERIE. The stale removals (HSIC, WBA — confirmed removed from S&P 500) are still in the CSV and will generate minor noise. These are accepted limitations for Phase 1B and addressed from Phase 1C onwards.
+
+---
+
 ### Known Limitations
 
 **Data and infrastructure limitations:**

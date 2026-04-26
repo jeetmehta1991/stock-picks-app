@@ -149,3 +149,15 @@ All owner-approved. Do not revert without approval.
 2. Run Phase 1A v3 → push results → Claude analyses
 3. Review results → confirm before Phase 1B spend (~$116 CAD)
 4. Phase 1B → 1C → 1D before any paper trading begins
+
+## HARD RULES — Never Violate
+
+### Data Sources
+- **NEVER use Wikipedia as a data source.** It is blocked in Codespaces (HTTP 403), has no API, is not point-in-time, and is not a primary source. It has been proposed and failed multiple times (L88).
+  - S&P 500 constituents → use `backtest/data/sp500_tickers.csv` (quarterly refresh via slickcharts.com)
+  - Never propose `pd.read_html('https://en.wikipedia.org/...')` for any purpose.
+
+### Universe Management
+- `sp500_tickers.csv` is a static file that MUST be refreshed quarterly. If the last git commit on that file is >90 days old, flag it before running any backtest or live screen.
+- Three-tier universe architecture (Stage 3+): Tier 1 = S&P 500 (quarterly), Tier 2 = extended/spinoffs (monthly live), Tier 3 = momentum watchlist (monthly live).
+- New spinoffs above $10B market cap must be added to Tier 2 immediately — do not wait for S&P 500 inclusion (SNDK waited 9 months — L89).
