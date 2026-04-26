@@ -534,5 +534,29 @@
     "market_cap": 0,
     "exchange": "PCX",
     "ipo_date": null
+  },
+  "MMM": {
+    "name": "3M Company",
+    "sector": "Industrials",
+    "industry": "Conglomerates",
+    "market_cap": 76143607808,
+    "exchange": "NYQ",
+    "ipo_date": null
+  },
+  "AOS": {
+    "name": "A. O. Smith Corporation",
+    "sector": "Industrials",
+    "industry": "Specialty Industrial Machinery",
+    "market_cap": 8899878912,
+    "exchange": "NYQ",
+    "ipo_date": null
+  },
+  "ACN": {
+    "name": "Accenture plc",
+    "sector": "Technology",
+    "industry": "Information Technology Services",
+    "market_cap": 109769015296,
+    "exchange": "NYQ",
+    "ipo_date": null
   }
 }
