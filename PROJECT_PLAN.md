@@ -455,3 +455,43 @@ Unusual Whales options flow and Ortex short interest data are added in Phase 1C.
 | Hetzner VPS | — | ~$8 CAD | Stage 3 onwards |
 | **Total Stage 4** | | ~$250 CAD/mo | All APIs + VPS |
 
+---
+
+## Regime Classification
+
+### Two systems — different purposes
+
+The system uses two separate regime frameworks that serve different purposes and must not be confused.
+
+**System 1 — Real-time regime detection (engine, runs every trading day)**
+
+Classifies the current market environment into one of 4 regimes using only data available at the time of signal evaluation:
+
+- **Bull:** 20-day realised vol < 15% AND SPY above 200-day EMA. Full size, long favoured.
+- **Neutral:** Neither bull nor bear conditions met. Full size, both directions.
+- **Bear:** 20-day realised vol > 25% AND SPY below 200-day EMA. Full size, short favoured.
+- **Crisis:** 20-day realised vol > 35%. Long size reduced to 50%, VERY HIGH tier required for longs.
+
+Note: 20-day realised volatility is used as a VIX proxy because ^VIX is blocked in the Codespace environment. In live trading this will be replaced by actual VIX. Crisis regime deliberately allows long entries at 50% size — this is the buy-the-dip thesis for high-conviction setups during dislocations.
+
+**System 2 — Historical backtest regimes (IS/OOS labelling only)**
+
+Eight named historical periods used to label the backtest study window and define walk-forward validation splits. These are hardcoded date ranges, not computed dynamically. They exist only for analysis labelling, not for trade decisions.
+
+The eight regimes are: bear_correction_2022, rate_rising_2022_2023, strong_bull_2023, rate_falling_2024, ai_sector_bull_2024, tariff_shock_2025, ai_divergence_2025_2026, covid_crisis_2020.
+
+### How regime affects trades (System 1 only)
+
+Every signal evaluation calls classify_regime() before candidate assessment. The result affects: (1) whether a direction is allowed, (2) minimum confidence tier in crisis (VERY HIGH for longs), (3) long position size in crisis (0.5x). Regime does not block entries outright except shorts require VERY HIGH tier in bull regime.
+
+### Regime distribution 2022-2026
+
+Based on 20-day realised vol and SPY vs 200 EMA across the full backtest period: Bull 58%, Neutral 32%, Bear 10%, Crisis 2%. The 2022 bear/crisis period is the primary stress test — realised vol peaked at 54% in June 2022.
+
+### Live trading regime change detection (Stage 3 — not yet built)
+
+Two detection layers are planned: a confirmation layer (3-day persistence before regime change is applied, preventing whipsawing) and an alert layer (fast signals: VXX single-day spike >15%, SPY first close below 200 EMA, CNN Fear & Greed below 25 — two simultaneous alerts trigger immediate position size reduction). Crisis detection bypasses the 3-day buffer — a single-day VXX threshold breach triggers crisis immediately.
+
+### Known limitations
+
+The regime classifier itself is not backtested for accuracy in Phase 1B — thresholds are literature-based. Per-regime metrics (win rate, profit factor per regime) are computed in Phase 1B results to validate whether regime filtering is working. Portfolio heat is computed per batch in parallel runs, not across all simultaneous positions — documented as known limitation in CHECKLIST item 18.
