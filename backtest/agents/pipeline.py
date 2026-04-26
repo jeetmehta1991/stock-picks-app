@@ -287,12 +287,16 @@ Return JSON only:
 # AGENT 3: SENTIMENT AGENT
 # ---------------------------------------------------------------------------
 
-def _load_news_sentiment(ticker: str, as_of: date, lookback_days: int = 30) -> dict:
+def _load_news_sentiment(ticker: str, as_of: date, lookback_days: int = 30,
+                         disable_news: bool = False) -> dict:
     """
     Load pre-fetched Alpha Vantage News & Sentiment for ticker around as_of date.
+    Pass disable_news=True to skip news loading (for A/B comparison testing).
     Falls back to Finnhub cache if AV cache not present.
     AV provides AI-powered sentiment scores — superior to keyword-based scoring.
     """
+    if disable_news:
+        return {"available": False, "avg_sentiment": 0, "article_count": 0, "source": "disabled"}
     # Try Alpha Vantage cache first
     av_dir = Path(__file__).parent.parent / "data" / "cache" / "av_news"
     fh_dir = Path(__file__).parent.parent / "data" / "cache" / "finnhub_news"

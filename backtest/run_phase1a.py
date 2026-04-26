@@ -120,6 +120,8 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument("--dry-run",    action="store_true")
     p.add_argument("--no-agents",  action="store_true")
+    p.add_argument("--no-news",    action="store_true",  help="Disable news sentiment (for A/B comparison)")
+    p.add_argument("--tickers",    type=str, default=None, help="Comma-separated list of tickers for batch test")
     p.add_argument("--phase",      type=str, default="1a", choices=["1a","1b","1c","1d"])
     p.add_argument("--start",      type=str)
     p.add_argument("--end",        type=str)
@@ -151,8 +153,12 @@ def main():
         end    = date.fromisoformat(args.end)   if args.end   else BACKTEST_END
         agents = not args.no_agents
 
+        # --tickers flag: override universe with specific tickers (for batch tests)
+        if args.tickers:
+            universe = [t.strip() for t in args.tickers.split(",")]
+            print(f"\nBATCH TEST MODE: {start} → {end} | {len(universe)} tickers: {universe}")
         # Phase 1B+ uses full S&P 500 + ETFs universe
-        if args.phase in ("1b", "1c", "1d"):
+        elif args.phase in ("1b", "1c", "1d"):
             from backtest.data.universe import get_sp500_constituents, ETFS_FULL
             sp500    = get_sp500_constituents(500)
             universe = list(dict.fromkeys(sp500 + ETFS_FULL))
@@ -176,7 +182,10 @@ def main():
         universe=universe, start=start, end=end,
         phase=phase_key, max_candidates_per_day=args.max_cands,
         run_agents=agents, output_dir=args.output_dir,
+        disable_news=args.no_news,
     )
+    if args.no_news:
+        print("⚠️  News sentiment DISABLED — A/B comparison mode")
     engine.load_data()
     engine.run()
     print_results(engine)
