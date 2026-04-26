@@ -1,6 +1,7 @@
 # Pre-Action Checklist
 
 Run this before every suggestion or execution — no exceptions.
+State compliance visibly: "Checklist: ✅ [each item]"
 
 1. Have I thought through this completely, including edge cases and environment constraints?
 2. Have I shown the full plan and waited for explicit approval?
@@ -10,12 +11,19 @@ Run this before every suggestion or execution — no exceptions.
 6. If modifying CLAUDE.md — have I shown the exact before/after diff and received explicit written approval?
 7. If pushing code — am I pushing to `claude-updates` only, never directly to `main`?
 8. Is this a decision that requires owner approval before I proceed?
-9. Chain commands where logical — commit and push should always be combined. Only split commands when each step needs independent verification first.
-10. For any command running longer than 5 minutes, always use nohup to prevent terminal closure killing it:
-    nohup bash scripts/download_cache.sh > download.log 2>&1 &
-    tail -f download.log
-11. Always capture granular data before aggregating. Granular = can always re-aggregate. Aggregate only = cannot re-derive. Applies to data, outputs, cache, and API calls.
-12. Before building any integration with an external API or service, verify exact tier/plan access for every endpoint needed. Test one call per endpoint before building the full script.
-13. Always run a small batch test (25 tickers, 1 month) before scaling to full universe. Verify agent outputs, confidence tiers, and granular outputs are correct before spending on full run.
-14. After every audit or code change: run python backtest/tests/run_all_tests.py — ALL tests must pass before proceeding. Reading code is not verification. Running code is. Reading code is not verification. Running code is.
-15. For every data handoff between modules, verify producer keys match consumer expectations by running code — not by reading it. Verify agent outputs, confidence tiers, and granular outputs are correct before spending on full run. Granular = can always re-aggregate. Aggregate only = cannot re-derive. Applies to data, outputs, cache, and API calls.
+9. Chain commands where logical — commit and push always combined. Only split when each step needs independent verification.
+10. For any command running longer than 5 minutes, always use nohup to prevent terminal closure killing it.
+11. Always capture granular data before aggregating. Granular = can always re-aggregate. Aggregate only = cannot re-derive.
+12. Before building any integration with an external API or service, verify exact tier/plan access for every endpoint. Test one call per endpoint before building the full script.
+13. MANDATORY BATCH TEST SEQUENCE — never skip any step:
+    a. Run validate_phase1b_data.py — all blockers must be resolved
+    b. Run 5-ticker controlled test WITH all data variants (e.g. with news, without news)
+    c. Manually review ALL agent outputs for those 5 tickers — are they coherent, specific, sensible?
+    d. Compare results across variants — understand what each data source contributes
+    e. Get EXPLICIT owner approval on agent output quality before scaling
+    f. Only then scale to full universe
+    NEVER jump from data-ready to full run. The batch test is not optional.
+14. After every audit or code change: run python backtest/tests/run_all_tests.py — ALL tests must pass before proceeding. Reading code is not verification. Running code is.
+15. For every data handoff between modules, verify producer keys match consumer expectations by running code — not by reading it.
+16. After every download or computation: run git status before any git command. NEVER run git reset --hard without confirming clean working tree first.
+17. After any git push that matters: verify push landed — git log -1 origin/main must match git log -1. Never report done until push is confirmed.

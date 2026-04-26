@@ -289,3 +289,17 @@ Win rates were reported as single numbers (55.3%) without confidence intervals. 
 4. **L45 — Three audits conducted by reading code — all missed the same critical bugs.** Fix: every audit finding gets an executable test.
 
 5. **L68 — Circuit breaker blocked all longs in crisis — directly contradicted the core buy-the-dip philosophy.** The most important market regime (crisis) was completely excluded from long trades. Fix: rules consistency check whenever a new rule is added.
+
+---
+
+## ADDENDUM — Process Mistakes Caught in Real Time
+
+### L86 — Jumped from data-ready to full run without batch test [process]
+**Mistake:** After confirming all Quiver data was downloaded and validation passed, immediately moved to instructions for running Phase 1B at full scale. Skipped the mandatory batch test step entirely — the step that exists specifically to catch agent quality issues cheaply before spending $116 CAD.
+**Principle:** "Data is ready" does not mean "ready to run." The batch test is not a formality — it is the only way to verify that agents produce coherent, specific, useful output before paying for 509 instruments × 782 days of agent calls.
+**Rule:** The sequence is always: validate data → 5-ticker controlled test → manual agent review → owner approval → scale. Never jump from validate to scale. Checklist item 13 was added specifically for this.
+
+### L87 — Controlled comparison test not designed upfront [process]
+**Mistake:** We had AV news data for 5 tickers. Rather than designing a controlled A/B test (run 5 tickers with news, run same 5 without news, compare agent outputs systematically), the news data was treated as a binary — either complete or skip.
+**Principle:** When you have partial data coverage, use it to design a controlled comparison. Partial coverage is an opportunity to isolate the contribution of each data source before scaling.
+**Rule:** When any data source is partially available, run the batch test both with and without that source. Document the difference in agent outputs and confidence tiers. This validates the data source's contribution before committing to full download costs.
