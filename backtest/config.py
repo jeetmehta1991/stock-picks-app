@@ -60,7 +60,10 @@ UNIVERSE = SP50 + ETFS   # 67 instruments total
 
 # ─────────────────────────────────────────────────────────────────────────────
 # MARKET REGIMES
-# Strategies must be profitable in 2+ regimes to advance.
+# Each strategy is evaluated per-regime independently.
+# A strategy passes if it meets criteria within at least one regime (min 30 trades).
+# In live trading the screener activates only strategies validated for the current regime.
+MIN_REGIME_TRADES = 30   # minimum trades per regime for a statistically valid verdict
 # ─────────────────────────────────────────────────────────────────────────────
 MARKET_REGIMES = {
     "bear_correction_2022": {
@@ -205,12 +208,11 @@ PASSING_CRITERIA = {
     "min_profit_factor":       1.2,    # total wins / total losses > 1.2
     "min_expected_value":      0.0,    # (win_rate × avg_win) + (loss_rate × avg_loss) > 0
     "min_win_loss_ratio":      1.0,    # avg win / avg loss > 1.0
-    "max_drawdown":            0.20,   # max peak-to-trough loss < 20%
+    "max_drawdown":            20.0,   # max peak-to-trough cumulative loss < 20 pct points
     "min_total_roi":           0.0,    # positive total ROI over backtest period
     "smart_money_lift":        True,   # must show measurable improvement with smart money
     "macro_correlation":       True,   # must show higher win rate in favourable regime
     "min_trades":              100,    # minimum 100 trades for statistical validity
-    "min_regimes_profitable":  2,      # profitable in 2+ of 5 regimes
     # Audit flag: anything above these thresholds gets look-ahead bias audit
     "audit_win_rate_above":    0.75,
     "audit_profit_factor_above": 1.5,
@@ -223,21 +225,21 @@ SECTOR_PASSING_CRITERIA = {
         "sectors": ["Energy", "Information Technology", "Health Care",
                     "Communication Services"],
         "min_win_rate":   0.50,   # lower — these sectors have wider swings
-        "max_drawdown":   0.25,   # wider — drawdowns are larger in volatile sectors
+        "max_drawdown":   25.0,   # wider — drawdowns are larger in volatile sectors
         "min_profit_factor": 1.2,
     },
     "medium_volatility": {
         "sectors": ["Financials", "Industrials", "Consumer Discretionary",
                     "Materials", "Broad Market", "Small Cap"],
         "min_win_rate":   0.55,   # standard
-        "max_drawdown":   0.20,   # standard
+        "max_drawdown":   20.0,   # standard
         "min_profit_factor": 1.3,
     },
     "low_volatility": {
         "sectors": ["Consumer Staples", "Utilities", "Real Estate",
                     "Fixed Income", "Commodities"],
         "min_win_rate":   0.58,   # higher — these sectors should be more predictable
-        "max_drawdown":   0.15,   # tighter — large drawdowns are anomalous here
+        "max_drawdown":   15.0,   # tighter — large drawdowns are anomalous here
         "min_profit_factor": 1.4,
     },
 }

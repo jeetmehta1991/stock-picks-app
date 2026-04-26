@@ -169,7 +169,7 @@ For a strategy to advance to Phase 1C, it must pass all 10 of these simultaneous
 7. **Smart money lift ≥ 3pp** — win rate is at least 3 percentage points higher when SM signals are present vs absent (min 30 trades in each bucket)
 8. **Macro correlation ≥ 5pp** — win rate is at least 5pp higher in favourable macro regimes vs unfavourable (min 20 trades per regime)
 9. **Minimum 500 trades** — statistical validity threshold
-10. **Profitable in ≥ 2 of 7 regimes** — must work across multiple market conditions
+10. **Per-regime verdict** — each strategy evaluated independently within each regime. A strategy passes for a specific regime if it meets all 9 other criteria within that regime (minimum 30 trades required). The output is a strategy-regime matrix, not a universal pass/fail. A strategy may be excellent in crisis and irrelevant in bull — both are valid outcomes. In live trading the screener activates only strategies validated for the current regime.
 
 Statistical validity note: All win rates are reported with 95% confidence intervals. If the lower confidence bound falls below 50%, the strategy is flagged as potentially indistinguishable from random chance, regardless of the point estimate.
 
@@ -451,7 +451,7 @@ See Market-Level and Correlation-Factor Strategies section for full detail on ea
 
 Every one of the 60 strategies in Phase 1B evaluates a single stock in isolation. The only market-level input currently in any strategy is the sector ETF return for the day passed as context to the Technical Agent. This means the screener can simultaneously be buying NVDA on a technical signal while the semiconductor sector is breaking down, IWM (small caps) is signalling risk-off, TLT is surging (flight to safety), and market breadth is deteriorating. The agent partially compensates through narrative context, but no entry strategy is structured to use these correlation factors as triggers or blockers.
 
-This is a known architectural limitation. It does not invalidate Phase 1B — the agent pipeline partially compensates and the "profitable in ≥2 of 7 regimes" criterion catches strategies that only work in one environment. But it represents a systematic blind spot that must be addressed in later phases to build a truly robust system.
+This is a known architectural limitation. It does not invalidate Phase 1B — the agent pipeline partially compensates and the the per-regime verdict matrix identifies which strategies work in which environments. But it represents a systematic blind spot that must be addressed in later phases to build a truly robust system.
 
 The eight missing strategy categories are documented below with a specific implementation plan for each stage. No changes are made to Phase 1B. Categories are sequenced by implementation complexity and data availability.
 
@@ -869,7 +869,7 @@ Strategies that fail Phase 1B criteria are not tuned or retested with adjusted p
 
 **Why no parameter tuning:** If we test a strategy, see it fails with threshold X, adjust threshold X to make it pass, and report it as a success — this is data-mining and will produce strategies that look good on historical data but fail in live trading. The 10 passing criteria are set before the backtest runs and are not adjusted based on results.
 
-**What "fail" means in practice:** A strategy that passes 8 of 10 criteria is still a fail. There is no partial credit. The criteria are pass/fail gates, not a scoring system.
+**What "fail" means in practice:** For the 9 overall criteria (win rate, profit factor, etc.), pass/fail is binary — 8 of 9 is still a fail overall. For the per-regime criterion (criterion 10), failure is regime-specific. A strategy that fails in bull but passes in crisis is not discarded — it is tagged as a crisis-only strategy and deployed only when the regime classifier detects crisis. This is intentional: different regimes reward different strategies.
 
 **Failed strategies are retained for reference.** The results CSV includes all strategies, including failures, with their exact metrics. This is valuable because: (1) a strategy that fails statistical minimum but shows strong win rates may reappear with more data in Phase 1D, (2) understanding why strategies fail informs the design of better strategies in future iterations.
 

@@ -130,20 +130,76 @@ def compute_strategy_metrics(df: pd.DataFrame, strategy: str) -> dict:
     ci_lo, ci_hi = _confidence_interval_95(win_rate, n)
     statistically_random = ci_lo < 0.50  # lower CI bound below 50% = may be random
 
-    # Regime breakdown — count profitable regimes
-    regimes_profitable = 0
-    regime_details     = {}
+    # Sector-adjusted passing criteria — computed once, applied per-regime too
+    from backtest.config import get_sector_criteria
+    sector = g["sector"].iloc[0] if "sector" in g.columns and not g["sector"].empty else "Unknown"
+    pc = get_sector_criteria(sector)
+
+    # Per-regime evaluation — each regime assessed independently on all criteria
+    # A strategy is valid for a regime if it passes all 9 criteria within that regime.
+    # Minimum MIN_REGIME_TRADES trades required for a statistically valid verdict.
+    from backtest.config import MIN_REGIME_TRADES
+    regime_details  = {}
+    regime_verdicts = {}   # {regime_name: "PASS"/"FAIL"/"INSUFFICIENT_DATA"}
+    best_regimes    = []   # regimes where strategy passes all criteria
+
     for regime_name in MARKET_REGIMES:
         r_grp = g[g["regime"].str.contains(regime_name, na=False)]
-        if len(r_grp) >= 5:
-            r_wr = r_grp["win"].mean()
-            regime_details[regime_name] = {
-                "trades": len(r_grp), "win_rate": round(r_wr, 4),
-                "avg_pnl": round(float(r_grp["pnl_pct"].mean()), 4),
-                "profitable": r_wr >= PASSING_CRITERIA["min_win_rate"],
-            }
-            if r_wr >= PASSING_CRITERIA["min_win_rate"]:
-                regimes_profitable += 1
+        n_r   = len(r_grp)
+
+        if n_r < MIN_REGIME_TRADES:
+            regime_details[regime_name]  = {"trades": n_r, "verdict": "INSUFFICIENT_DATA"}
+            regime_verdicts[regime_name] = "INSUFFICIENT_DATA"
+            continue
+
+        r_wins  = r_grp[r_grp["win"] == True]
+        r_loss  = r_grp[r_grp["win"] == False]
+        r_wr    = float(r_grp["win"].mean())
+        r_pnl   = r_grp["pnl_pct"]
+        r_pf    = _profit_factor(r_pnl)
+        r_ev    = (r_wr * float(r_wins["pnl_pct"].mean() if len(r_wins) else 0)) +                   ((1 - r_wr) * float(r_loss["pnl_pct"].mean() if len(r_loss) else 0))
+        r_avg_w = float(r_wins["pnl_pct"].mean()) if len(r_wins) else 0
+        r_avg_l = float(r_loss["pnl_pct"].mean()) if len(r_loss) else 0
+        r_wl_r  = abs(r_avg_w / r_avg_l) if r_avg_l != 0 else float("inf")
+        r_mdd   = _max_drawdown(r_pnl)
+        r_roi   = round(float(r_pnl.sum()), 4)
+        r_hold  = r_grp["hold_days"] if "hold_days" in r_grp.columns else pd.Series([10]*n_r)
+        r_ci_lo, _ = _confidence_interval_95(r_wr, n_r)
+
+        # Evaluate all 9 criteria (same sector-adjusted thresholds as overall)
+        r_passes = {
+            "win_rate":       r_wr >= pc["min_win_rate"],
+            "profit_factor":  r_pf >= pc["min_profit_factor"],
+            "expected_value": r_ev > pc["min_expected_value"],
+            "win_loss_ratio": r_wl_r >= pc["min_win_loss_ratio"],
+            "max_drawdown":   r_mdd >= -pc["max_drawdown"],
+            "total_roi":      r_roi > pc["min_total_roi"],
+            "trade_count":    n_r >= MIN_REGIME_TRADES,
+            "smart_money_lift":  True,   # SM lift computed at strategy level, not per-regime
+            "macro_correlation": True,   # macro corr computed at strategy level, not per-regime
+        }
+        # Also require CI lower bound above 40% to avoid purely statistical noise
+        if r_ci_lo < 0.40:
+            r_passes["win_rate"] = False
+
+        verdict = "PASS" if all(r_passes.values()) else "FAIL"
+        if verdict == "PASS":
+            best_regimes.append(regime_name)
+
+        regime_verdicts[regime_name] = verdict
+        regime_details[regime_name]  = {
+            "trades":       n_r,
+            "win_rate":     round(r_wr, 4),
+            "profit_factor": round(r_pf, 4),
+            "avg_pnl":      round(float(r_pnl.mean()), 4),
+            "total_roi":    r_roi,
+            "max_drawdown": round(r_mdd, 4),
+            "verdict":      verdict,
+            "passes":       r_passes,
+        }
+
+    # Legacy count for backward compatibility (number of PASS regimes)
+    regimes_profitable = len(best_regimes)
 
     # Smart money lift — within-strategy comparison (correct method)
     # Isolate SM contribution by holding strategy constant
@@ -160,10 +216,7 @@ def compute_strategy_metrics(df: pd.DataFrame, strategy: str) -> dict:
     if len(fav_macro) >= 20 and len(unfav_macro) >= 20:
         macro_corr = round(float(fav_macro["win"].mean()) - float(unfav_macro["win"].mean()), 4)
 
-    # Sector-adjusted passing criteria
-    from backtest.config import get_sector_criteria
-    sector = g["sector"].iloc[0] if "sector" in g.columns and not g["sector"].empty else "Unknown"
-    pc = get_sector_criteria(sector)
+
     # Direction split
     long_df  = g[g["direction"] == "long"]
     short_df = g[g["direction"] == "short"]
@@ -180,7 +233,7 @@ def compute_strategy_metrics(df: pd.DataFrame, strategy: str) -> dict:
         "smart_money_lift":   (sm_lift is None) or (sm_lift >= SM_LIFT_THRESHOLD),
         "macro_correlation":  (macro_corr is None) or (macro_corr >= MACRO_CORR_THRESHOLD),
         "trade_count":        n >= pc["min_trades"],
-        "regimes_profitable": regimes_profitable >= pc["min_regimes_profitable"],
+        # regime_verdicts replaces per-regime count — see regime_verdicts and best_regimes
     }
     passes_all = all(passes.values())
 
@@ -219,6 +272,8 @@ def compute_strategy_metrics(df: pd.DataFrame, strategy: str) -> dict:
         "smart_money_lift":      sm_lift,
         "macro_correlation":     macro_corr,
         "regimes_profitable":    regimes_profitable,
+        "regime_verdicts":       regime_verdicts,
+        "best_regimes":          best_regimes,
         "regime_details":        regime_details,
         "passes":                passes,
         "passes_all":            passes_all,
@@ -249,6 +304,14 @@ def compute_all_metrics(df: pd.DataFrame, spy_total_return: float = None) -> pd.
     result = pd.DataFrame(rows)
     if result.empty:
         return result
+
+    # Flatten regime_verdicts into individual columns for easy CSV analysis
+    from backtest.config import MARKET_REGIMES
+    for regime_name in MARKET_REGIMES:
+        col = f"regime_{regime_name}"
+        result[col] = result["regime_verdicts"].apply(
+            lambda rv: rv.get(regime_name, "INSUFFICIENT_DATA") if isinstance(rv, dict) else "INSUFFICIENT_DATA"
+        )
 
     result = result.sort_values(
         ["passes_all", "win_rate", "profit_factor"],

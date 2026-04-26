@@ -39,8 +39,10 @@ def write_all_outputs(
         csv_m.to_csv(output_dir / "backtest_results.csv", index=False)
         logger.info("Wrote backtest_results.csv (%d strategies)", len(metrics))
 
-        winners = metrics[metrics.get("passes_all", False) == True].copy() \
-                  if "passes_all" in metrics else pd.DataFrame()
+        # passes_all: strategy passes 9 criteria overall (legacy check)
+        # For per-regime analysis, use strategy_regime_matrix.json
+        winners = metrics[metrics["passes_all"] == True].copy() \
+                  if "passes_all" in metrics.columns else pd.DataFrame()
 
         # Attach optimal exit + walk-forward verdict to winners
         if not exit_compare.empty and not winners.empty:
@@ -55,6 +57,28 @@ def write_all_outputs(
         if walk_forward is not None and not walk_forward.empty and not winners.empty:
             wf_map = walk_forward.set_index("strategy")["verdict"].to_dict()
             winners["walk_forward_verdict"] = winners["strategy"].map(wf_map)
+
+        # Strategy-regime matrix — the primary output for the new per-regime approach
+        try:
+            if "regime_verdicts" in metrics.columns:
+                from backtest.config import MARKET_REGIMES
+                matrix = {}
+                for _, row in metrics.iterrows():
+                    strat = row["strategy"]
+                    verdicts = row.get("regime_verdicts") or {}
+                    best     = row.get("best_regimes") or []
+                    matrix[strat] = {
+                        "best_regimes":    best,
+                        "regime_verdicts": verdicts if isinstance(verdicts, dict) else {},
+                        "overall_win_rate": row.get("win_rate", 0),
+                        "total_trades":     row.get("total_trades", 0),
+                        "passes_all":       bool(row.get("passes_all", False)),
+                    }
+                with open(output_dir / "strategy_regime_matrix.json", "w") as f:
+                    json.dump(matrix, f, indent=2, default=str)
+                logger.info("Wrote strategy_regime_matrix.json (%d strategies)", len(matrix))
+        except Exception as e:
+            logger.debug("strategy_regime_matrix.json failed: %s", e)
 
         with open(output_dir / "winning_strategies.json", "w") as f:
             json.dump({
@@ -250,7 +274,7 @@ def _write_html(df, metrics, exit_compare, walk_forward,
               <td>{r.get('profit_factor',0):.2f}</td>
               <td style="color:{pc}">{r.get('total_roi_pct',0):.1f}%</td>
               <td style="color:{mc}">{r.get('max_drawdown_pct',0):.1f}%</td>
-              <td>{int(r.get('regimes_profitable',0))}</td>
+              <td style="font-size:11px">{", ".join(r.get('best_regimes',[]) or []) or "—"}</td>
               <td style="color:{wf_col};font-weight:500">{wfv}</td>
               <td>{'✅' if r.get('passes_all') else ''}{'⚠️' if r.get('audit_flags') else ''}</td>
             </tr>"""

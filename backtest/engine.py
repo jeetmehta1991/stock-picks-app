@@ -369,7 +369,7 @@ class BacktestEngine:
             max_dd   = grp["pnl_pct"].min()
 
             # Count regimes where win rate >= 55%
-            regime_passes = 0
+            regime_passes = 0  # legacy count — superseded by per-regime verdict matrix
             for regime_str, r_grp in grp.groupby("regime"):
                 if len(r_grp) >= 5:  # need at least 5 trades per regime
                     r_wr = r_grp["win"].mean()
