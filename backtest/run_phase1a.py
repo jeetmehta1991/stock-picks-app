@@ -14,6 +14,9 @@ import sys
 from datetime import date, datetime
 from pathlib import Path
 
+# Ensure repo root is on path regardless of where script is invoked from
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
