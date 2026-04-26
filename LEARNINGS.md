@@ -165,3 +165,12 @@ Decisions made in conversation but not written down get re-debated or forgotten.
 3. Check `git status` before any sync operation
 4. Verify API access with one test call before building any integration
 5. State checklist compliance before every significant action
+
+### L49 — git reset --hard destroyed downloaded data twice [git]
+**Mistake:** After Quiver gov_contracts/lobbying/wikipedia/wallstreetbets finished downloading (several hours of work), instructed owner to run `git fetch origin ; git reset --hard origin/main` before verifying the push had succeeded. The reset wiped all locally downloaded data. This exact mistake had already happened once and was documented as L31. It happened again.
+**Root causes:**
+1. The prefetch script's final push was silently failing (rejection due to diverged branches)
+2. I gave `git reset --hard` without first checking `git status`
+3. L31 existed in LEARNINGS.md but was not consulted before giving the command
+**Rule:** NEVER give `git reset --hard` after any download or computation. The sequence is always: `git status` → if anything present, commit it first → then pull --rebase → then push. `git reset --hard` is only safe on a clean working tree with nothing to lose.
+**Fix:** prefetch_quiver.py now verifies push succeeded after each data type and explicitly warns against `git reset --hard` if push failed.
