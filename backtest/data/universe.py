@@ -259,7 +259,22 @@ def fetch_info_bulk(
 
     # Save updated cache
     try:
-        cache_path.write_text(json.dumps(cached, default=str, indent=2))
+        # File lock prevents race conditions in parallel batch runs
+        import filelock
+        lock_path = str(cache_path) + ".lock"
+        try:
+            with filelock.FileLock(lock_path, timeout=30):
+                # Re-read before writing to merge any updates from other batches
+                existing = {}
+                if cache_path.exists():
+                    try:
+                        existing = json.loads(cache_path.read_text())
+                    except Exception:
+                        existing = {}
+                existing.update(cached)
+                cache_path.write_text(json.dumps(existing, default=str, indent=2))
+        except Exception:
+            cache_path.write_text(json.dumps(cached, default=str, indent=2))
     except Exception as exc:
         logger.warning("Info cache write failed: %s", exc)
 

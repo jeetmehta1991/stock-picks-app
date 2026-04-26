@@ -123,6 +123,7 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument("--dry-run",    action="store_true")
     p.add_argument("--no-agents",  action="store_true")
+    p.add_argument("--no-git",     action="store_true",  help="Suppress git commits during run (for parallel batches — commit manually at end)")
     p.add_argument("--no-news",    action="store_true",  help="Disable news sentiment (for A/B comparison)")
     p.add_argument("--tickers",    type=str, default=None, help="Comma-separated list of tickers for batch test")
     p.add_argument("--phase",      type=str, default="1a", choices=["1a","1b","1c","1d"])
