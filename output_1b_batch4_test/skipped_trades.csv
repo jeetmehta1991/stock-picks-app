@@ -1,0 +1,3 @@
+ticker,date,strategy,reason
+NVDA,2022-01-31,pivot_r2_continuation,no_next_bar
+NVDA,2022-01-31,macd_fast_crossover,no_next_bar

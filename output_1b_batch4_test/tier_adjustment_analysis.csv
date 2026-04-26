@@ -1,0 +1,4 @@
+preliminary_tier,confidence_tier,trades,win_rate,upgraded,downgraded
+HIGH,MEDIUM_HIGH,7,0.0,True,False
+LOW,LOW,5,0.0,False,False
+MEDIUM_HIGH,MEDIUM,6,0.0,False,True

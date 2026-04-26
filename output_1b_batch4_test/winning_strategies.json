@@ -1,0 +1,32 @@
+{
+  "generated_at": "2026-04-26T22:54:02.345194",
+  "total_winners": 0,
+  "passing_criteria": {
+    "min_win_rate": "0.55",
+    "min_profit_factor": "1.2",
+    "min_expected_value": "0.0",
+    "min_win_loss_ratio": "1.0",
+    "max_drawdown": "20.0",
+    "min_total_roi": "0.0",
+    "smart_money_lift": "True",
+    "macro_correlation": "True",
+    "min_trades": "100"
+  },
+  "survivorship_info": {
+    "gross_roi": -78.067,
+    "adjusted_roi": -78.163,
+    "haircut_pct": 0.095,
+    "years": 0.08
+  },
+  "bonferroni": {
+    "n_strategies": 60,
+    "base_significance": 0.05,
+    "adjusted_significance": 0.000833,
+    "min_win_rate": 0.55,
+    "min_trades_required": 500,
+    "false_positive_prob_uncorrected": 0.954,
+    "false_positive_prob_corrected": 0.05,
+    "recommendation": "With 60 strategies tested, require at least 500 trades per strategy for statistical validity (Bonferroni-corrected at p=0.0008)"
+  },
+  "strategies": []
+}

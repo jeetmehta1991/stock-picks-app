@@ -1,0 +1,2 @@
+strategy,exit_method,trades,win_rate,profit_factor,avg_pnl_pct,total_roi_pct,max_drawdown_pct,avg_hold_days,composite_score,recommended
+bollinger_tight,ma_exit_ema9,6,0.5,0.7764,-0.2683,-1.6098,-7.1993,1.0,39.2,True

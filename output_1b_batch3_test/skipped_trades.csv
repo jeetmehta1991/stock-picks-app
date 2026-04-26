@@ -1,0 +1,3 @@
+ticker,date,strategy,reason
+JPM,2022-01-31,macd_fast_crossover,no_next_bar
+JPM,2022-01-31,stochrsi_oversold,no_next_bar
