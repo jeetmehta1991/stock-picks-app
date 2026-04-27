@@ -1,4 +1,4 @@
-# keepalive.ps1 — prevents Windows sleep while backtest is running
+# keepalive.ps1 - prevents Windows sleep while backtest is running
 # Moves mouse 1 pixel every 4 minutes
 # Run in a separate PowerShell window while backtest is running
 
@@ -16,7 +16,7 @@ while ($true) {
     
     $i++
     if ($i % 15 -eq 0) {
-        Write-Host "$(Get-Date -Format 'HH:mm:ss') — Keep-alive active ($($i * 4) min elapsed)"
+        Write-Host "$(Get-Date -Format 'HH:mm:ss') - Keep-alive active ($($i * 4) min elapsed)"
     }
     
     Start-Sleep -Seconds 239
