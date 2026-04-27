@@ -315,3 +315,8 @@ Win rates were reported as single numbers (55.3%) without confidence intervals. 
 **Principle:** A static universe list without a refresh process is a time bomb. Every static list goes stale. The question is not whether but when.
 **Fix:** Three-tier architecture with defined refresh frequencies: Tier 1 (S&P 500) quarterly, Tier 2 (extended/spinoffs) monthly for live trading, Tier 3 (momentum watchlist) monthly for live trading. Scripts, GitHub Actions workflows, and CHECKLIST items attached to each tier.
 **Rule:** Never commit a universe list without a refresh script and a scheduled review process documented in CHECKLIST.md.
+
+### L93 — NEVER suggest git checkout -- . or git clean without first checking untracked files [critical/infrastructure]
+**Mistake:** Claude told the owner to run `git checkout -- .` to resolve unstaged changes, without first checking what untracked files existed on the laptop. This command would have deleted the entire full Phase 1B run output (output_1b_batch1 through output_1b_batch5 and all log files) since they were untracked — destroying hours of compute and API spend with no recovery path.
+**Fix:** Before suggesting ANY destructive git command (checkout --, clean, reset --hard, stash), Claude must first ask the owner to run `git status` and share the output, then audit every untracked file before proceeding.
+**Rule:** If a full run is in progress or recently completed, assume output folders are untracked until proven otherwise. Never suggest destructive git commands without explicit confirmation of what will be affected.
