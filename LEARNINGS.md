@@ -320,3 +320,8 @@ Win rates were reported as single numbers (55.3%) without confidence intervals. 
 **Mistake:** Claude told the owner to run `git checkout -- .` to resolve unstaged changes, without first checking what untracked files existed on the laptop. This command would have deleted the entire full Phase 1B run output (output_1b_batch1 through output_1b_batch5 and all log files) since they were untracked — destroying hours of compute and API spend with no recovery path.
 **Fix:** Before suggesting ANY destructive git command (checkout --, clean, reset --hard, stash), Claude must first ask the owner to run `git status` and share the output, then audit every untracked file before proceeding.
 **Rule:** If a full run is in progress or recently completed, assume output folders are untracked until proven otherwise. Never suggest destructive git commands without explicit confirmation of what will be affected.
+
+### L94 — PROJECT_PLAN.md is append-only without explicit permission [critical/documentation]
+**Mistake:** Commit 38e7ee2 did a "complete rewrite" of PROJECT_PLAN.md removing 789 lines — all 60 strategy descriptions, full API stack tables, signal universe (274 fields), confidence tier logic, website design, stage roadmaps, rules tables, and 24 numbered sections. This was done without owner permission.
+**Fix:** All removed content restored in April 2026 by appending pre-rewrite sections back to current file.
+**Rule:** PROJECT_PLAN.md is APPEND-ONLY. Claude may only add new content or update existing content. Removing or rewriting any section requires explicit owner permission. If a rewrite is needed, propose the specific changes and wait for approval before touching the file.
