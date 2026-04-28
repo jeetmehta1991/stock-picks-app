@@ -227,6 +227,7 @@ def compute_stochrsi(df: pd.DataFrame, period: int = 14) -> dict:
         "stochrsi_oversold":  k < 20,
         "stochrsi_overbought": k > 80,
         "stochrsi_cross_up":  k > d and k < 80,
+        "stochrsi_cross_dn":  k < d and k > 20,
     }
 
 
@@ -305,6 +306,7 @@ def compute_ppo(df: pd.DataFrame, fast: int = 12, slow: int = 26, sig: int = 9) 
         "ppo_hist":         round(h,4),
         "ppo_bullish":      h > 0,
         "ppo_crossover_up": h > 0 and ph <= 0,
+        "ppo_crossover_dn": h < 0 and ph >= 0,
     }
 
 
@@ -333,6 +335,7 @@ def compute_roc(df: pd.DataFrame, period: int = 12) -> dict:
         "roc_12":          round(v,3),
         "roc_positive":    v > 0,
         "roc_turning_up":  v > 0 and pv <= 0,
+        "roc_turning_dn":  v < 0 and pv >= 0,
     }
 
 
@@ -416,6 +419,7 @@ def compute_dema_tema(df: pd.DataFrame, period: int = 20) -> dict:
         "dema":            round(dv,4), "tema": round(tv,4),
         "tema_above_dema": tv > dv,
         "tema_cross_up":   tv > dv and tp <= dp,
+        "tema_cross_dn":   tv < dv and tp >= dp,
         "price_above_tema": close > tv,
         "price_above_dema": close > dv,
     }
@@ -504,6 +508,7 @@ def compute_parabolic_sar(df: pd.DataFrame) -> dict:
         "psar_bullish": bullish,
         "psar_value":   round(psar_long, 4),
         "psar_flip_up": bullish and not (pclose > psar_long),
+        "psar_flip_dn": not bullish and (pclose > psar_long),
     }
 
 
@@ -538,6 +543,8 @@ def compute_ichimoku(df: pd.DataFrame) -> dict:
         "ichi_above_cloud": above_cloud, "ichi_below_cloud": below_cloud,
         "ichi_tk_bullish":  t > k,
         "ichi_tk_cross_up": t > k and pt <= pk,
+        "ichi_tk_bearish":  t < k,
+        "ichi_tk_cross_dn": t < k and pt >= pk,
         "ichi_cloud_thick": abs(sa-sb) > abs(sa)*0.01 if sa else False,
     }
 
@@ -584,6 +591,7 @@ def compute_hull_ma(df: pd.DataFrame, period: int = 20) -> dict:
         "hull_ma":          round(v,4),
         "hull_bullish":     v > pv,
         "hull_flip_up":     v > pv and _safe_float(hull.iloc[-3] if len(hull)>2 else v) >= pv,
+        "hull_flip_dn":     v < pv and _safe_float(hull.iloc[-3] if len(hull)>2 else v) <= pv,
         "price_above_hull": close > v,
     }
 
@@ -631,6 +639,7 @@ def compute_keltner(df: pd.DataFrame, period: int = 20, mult: float = 2.0) -> di
         "kc_mid":      round(_safe_float(ema.iloc[-1]),4),
         "inside_kc":   _safe_float(lower.iloc[-1]) < close < _safe_float(upper.iloc[-1]),
         "kc_touch_lower": close <= _safe_float(lower.iloc[-1])*1.005,
+        "kc_touch_upper": close >= _safe_float(upper.iloc[-1])*0.995,
     }
 
 
@@ -689,6 +698,7 @@ def compute_squeeze(df: pd.DataFrame) -> dict:
         "squeeze_momentum": round(mom, 4),
         "squeeze_positive": mom > 0,
         "squeeze_fire_up":  not in_squeeze and mom > 0 and pmom <= 0,
+        "squeeze_fire_dn":  not in_squeeze and mom < 0 and pmom >= 0,
     }
 
 
@@ -733,6 +743,7 @@ def compute_volume(df: pd.DataFrame) -> dict:
     result["cmf"]          = round(cmf_v,4)
     result["cmf_positive"] = cmf_v > 0
     result["cmf_cross_up"] = cmf_v > 0 and pcmf_v <= 0
+    result["cmf_cross_dn"] = cmf_v < 0 and pcmf_v >= 0
 
     # MFI (14-period)
     if len(df) >= 15:
@@ -754,13 +765,18 @@ def compute_volume(df: pd.DataFrame) -> dict:
     pfi_v = _safe_float(fi13.iloc[-2])
     result["force_index_positive"] = fi_v > 0
     result["force_index_cross_up"] = fi_v > 0 and pfi_v <= 0
+    result["force_index_cross_dn"] = fi_v < 0 and pfi_v >= 0
 
-    # 52-week high
+    # 52-week high/low
     lookback = min(252, len(df))
     year_high = df["high"].tail(lookback).max()
+    year_low  = df["low"].tail(lookback).min()
     result["near_52w_high"]   = _safe_float(c.iloc[-1]) >= year_high*0.98
     result["break_52w_high"]  = _safe_float(c.iloc[-1]) >= year_high
     result["year_high"]       = round(year_high,4)
+    result["near_52w_low"]    = _safe_float(c.iloc[-1]) <= year_low*1.02
+    result["break_52w_low"]   = _safe_float(c.iloc[-1]) <= year_low
+    result["year_low"]        = round(year_low,4)
 
     return result
 
