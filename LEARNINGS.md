@@ -325,3 +325,27 @@ Win rates were reported as single numbers (55.3%) without confidence intervals. 
 **Mistake:** Commit 38e7ee2 did a "complete rewrite" of PROJECT_PLAN.md removing 789 lines — all 60 strategy descriptions, full API stack tables, signal universe (274 fields), confidence tier logic, website design, stage roadmaps, rules tables, and 24 numbered sections. This was done without owner permission.
 **Fix:** All removed content restored in April 2026 by appending pre-rewrite sections back to current file.
 **Rule:** PROJECT_PLAN.md is APPEND-ONLY. Claude may only add new content or update existing content. Removing or rewriting any section requires explicit owner permission. If a rewrite is needed, propose the specific changes and wait for approval before touching the file.
+
+### L95 — Always compute cost estimate before any run. No exceptions. [critical/cost]
+**Mistake:** Full Phase 1B run launched without validating actual screener pass rate against cost estimate. PROJECT_PLAN.md estimated 8 candidates/day but crisis regime passed 28/day — a 3.5x multiplier that was never checked. Result: $150 spent on an incomplete run.
+**Fix:** Before any run involving API calls, compute: screener_pass_rate × trading_days × batches × agents × token_cost = total_cost. Show the math. Get explicit owner approval with that number visible.
+**Rule:** No run starts without a written cost estimate approved by the owner. This is non-negotiable regardless of how confident Claude is in the estimate.
+
+### L96 — Verify all processes are dead before moving on. Show proof. [critical/infrastructure]
+**Mistake:** Told owner processes were killed, moved on without verifying. Processes continued running, accruing API charges for hours after the supposed kill.
+**Fix:** After any kill command, always run `ps aux | grep python` and paste the output. Only confirm processes are dead when the output is empty. Never report done until proof is shown.
+**Rule:** Process kill must be verified with empty ps output before any subsequent action. No exceptions.
+
+### L97 — Risk Agent locked to floor in sustained crisis — zero variance, zero value [agent/design]
+**Finding:** In a sustained crisis regime (Jan-Oct 2022), the Risk Agent scored exactly 2/10 on every single trade across 34,727 trades. Zero variance. It detected "high VIX = crisis" and applied a floor uniformly with no differentiation between individual trade quality.
+**Implication:** In crisis regime, the Risk Agent adds cost but no signal. It cannot differentiate good crisis trades from bad ones.
+**Phase 1C fix:** Risk Agent should score relative to crisis baseline — "is this trade better or worse than the average crisis-regime entry?" not "is this a good trade in absolute terms?" Add a regime-relative scoring mode.
+
+### L98 — Agent upgrade threshold (75) was never reachable in crisis regime [agent/design]
+**Finding:** Maximum agent score observed across 34,727 trades was 42. The upgrade threshold is 75. No trade ever came close to being upgraded. 99.9% of trades were downgraded.
+**Implication:** Phase 1B agent calls in crisis regime produced near-zero differentiation at significant cost.
+**Phase 1C fix:** Calibrate agent score thresholds against observed score distributions before deployment. If max observed score is 42, an upgrade threshold of 75 means agents will never upgrade anything — the threshold is miscalibrated.
+
+### L99 — Trade inflation 3.5x — 500-trade minimum is effectively 143 independent positions [data/design]
+**Finding:** 34,727 total trades = only ~9,900 unique ticker+date decisions. Multiple strategies fire on the same ticker+date, creating 3.5x row inflation. The 500-trade minimum per strategy in PROJECT_PLAN assumes independent trades — but 500 rows may represent only ~143 genuinely independent positions.
+**Phase 1C fix:** Either (a) deduplicate to one position per ticker per day before evaluating strategy criteria, or (b) recalibrate the minimum to 1,750 rows (equivalent to 500 independent positions at 3.5x inflation factor). Both require owner approval before implementation.

@@ -32,10 +32,16 @@
 **No-news batch test: NOT NEEDED** — news_sentiment = 'not_available' in both runs. A/B comparison would show identical results. Decision already made.
 
 **Next actions (priority order):**
-1. Sync laptop: `git pull --rebase origin main`
-2. Run quarterly S&P 500 universe refresh (CHECKLIST item 19) — CSV is stale
-3. Run 1-ticker-per-batch test (5 terminals, Jan 2022) before full Phase 1B
-4. Owner approves test outputs → scale to full 509-ticker Phase 1B
+1. ✅ Phase 1B partial run complete — 34,727 trades committed (Jan 2022–Jan 2023, 442 tickers)
+2. ✅ Agent analysis complete — see LEARNINGS L95-L99 and dashboard in repo
+3. Decide: run Phase 1B without agents ($0, laptop only) OR resume with agents (cost estimate required first)
+4. Owner approves approach → implement approved fixes → re-run
+
+**CRITICAL RULES ADDED (never skip):**
+- Always compute API cost estimate before any run. Show math. Get explicit approval. No exceptions.
+- Always deploy in small batches. Test → approve → scale. Never jump to full run.
+- After any kill command, verify with `ps aux | grep python` — empty output required before moving on.
+- Before any git command that could be destructive, run `git status` first and share output.
 
 ---
 

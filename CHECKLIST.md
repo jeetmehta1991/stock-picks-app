@@ -60,3 +60,24 @@ State compliance visibly: "Checklist: ✅ [each item]"
     git add backtest/data/momentum_watchlist.csv && git commit && git push
     Out-of-cycle (stock >50% in 30 days): --out-of-cycle --write flag.
     NEVER run momentum watchlist for backtesting — use static snapshot from run start.
+
+22. MANDATORY COST ESTIMATE before any API run:
+    a. Compute: screener_pass_rate × trading_days × tickers × agents × token_cost = total_cost
+    b. Show the math explicitly — do not estimate from PROJECT_PLAN without validating against actual data
+    c. Get explicit owner approval with that number visible before launching any run
+    d. If actual pass rate differs from estimate by >2x, stop and re-estimate before continuing
+    NEVER launch a run with API calls without a written, approved cost estimate.
+
+23. SMALL BATCH POLICY — no exceptions:
+    a. Test batch (1 ticker per batch, 1 month) → owner reviews → approve
+    b. Mid batch (5 tickers per batch, 3 months) → owner reviews cost and quality → approve  
+    c. Full run only after both prior steps approved
+    d. Each step must have a cost estimate approved before running
+    NEVER jump from test to full run. The intermediate step is not optional.
+
+24. PROCESS KILL VERIFICATION — after any kill command:
+    a. Run: ps aux | grep python
+    b. Output must be empty before reporting done
+    c. Never move to next step until confirmed dead
+    d. If processes still show, use: taskkill /F /IM python.exe (Windows) or kill -9 <pid>
+    NEVER report processes dead without showing empty ps output as proof.
