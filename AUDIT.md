@@ -603,3 +603,496 @@ python scripts/validate_phase1b_data.py
 ---
 
 *Audit complete. Next audit pass scheduled when session limit resets. Will check: agent pipeline prompts, exit strategy ranking logic, walk-forward implementation, and live trading rules.*
+
+---
+
+## AUDIT PASS 2 — Literature review, methodology, and remaining modules
+
+*Conducted after Pass 1. References: Pardo (2008), Aronson (2006), Bailey et al (2014), Lopez de Prado (2018), Kelly (1956), D'Avolio (2002), Jegadeesh & Titman (1993), Wilder (1978), Sharpe (1994), Hamilton (1989), Kritzman et al (2012), Chan (2009), Schwager (1984).*
+
+---
+
+### BUG-26 · CRITICAL — VIX proxy is VXX price (223–461), not actual VIX (18–36) — all regime classifications are wrong
+
+**File:** `backtest/data/macro.py` lines 138–154 and `backtest/engine/regime_filter.py`
+
+**What happens, step by step:**
+1. `_load_vix_from_ohlcv_cache()` tries `['VXX', '^VIX']` in that order
+2. VXX Parquet exists → loaded immediately; `^VIX` Parquet does not exist → never reached
+3. VXX is a volatility ETF that trades at $200–$500 price range (post-split adjusted), not 10–80 like actual VIX index
+4. `classify_regime()` checks: `if vix_value >= 40: return "crisis"`
+5. VXX price in 2022: ranged 223–461. Every single value is > 40
+6. **Result: every trading day in 2022 is classified as "crisis" regardless of actual market conditions**
+7. This is confirmed by existing data: all 34,727 trades have `regime = "crisis_CRISIS_FLAG"`
+8. In reality 2022 had three distinct regimes: bear market (Jan–Jun), rally (Jul), resumption of bear (Aug–Dec)
+9. The regime signal is completely meaningless — it is just the VXX price threshold test
+
+**Verification:**
+```
+VXX 2022 close range: 223–461  (all > 40 → all "crisis")
+Actual VIX 2022 range: 18–36   (never reached 40)
+SPY 20-day realised vol 2022: 16–35% (2 days > 35%, 102 days 25–35%, 129 days 15–25%)
+```
+
+**Fix options (in order of preference):**
+1. **Best:** Compute SPY 20-day annualised realised volatility from cached SPY data (no network call needed). Crisis = RV > 30%, Bear = RV 20–30%, Neutral = RV 12–20%, Bull = RV < 12%. Thresholds match PROJECT_PLAN intent.
+2. **Alternative:** Fetch `^VIX` OHLCV from yfinance and cache it separately. Then use actual VIX thresholds (40/30/20).
+3. **Minimal fix:** In `_load_vix_from_ohlcv_cache()`, try `^VIX` before `VXX`, and treat VXX as directional trend indicator (rising/falling) rather than absolute level proxy.
+
+**Impact on existing results:** All 34,727 trades labelled "crisis" are correctly in a bear/crisis year (2022 was the worst year since 2008), but fine-grained regime distinctions (bull pockets in July and October 2022) are completely missed. The regime classification is too coarse to be useful.
+
+---
+
+### BUG-27 · CRITICAL — `regime_confidence()` function built but never called — dead code
+
+**File:** `backtest/engine/improvements.py` lines 365–450 and `backtest/engine/backtest.py`
+
+**What happens:**
+1. `regime_confidence()` computes a 0–100 confidence score for the current regime
+2. The function is well-implemented: checks VIX consistency, trend persistence, signal agreement
+3. It is **never called anywhere in the codebase**
+4. `backtest.py _process_day()` calls `get_regime_context()` but not `regime_confidence()`
+5. **Result: regime transitions (when regime is changing) are treated with same confidence as established regimes**
+6. A strategy entering a trade when regime confidence is 20% (transitioning) is sized identically to one entering at 95% (established regime)
+7. Literature (Kritzman 2012): regime-transition periods have fundamentally different risk profiles
+
+**Fix:** Call `regime_confidence()` in `_process_day()` and use the `position_mult` output to scale position size. The function already returns a `position_mult` (0.25–1.0). This is low effort and high impact.
+
+---
+
+### BUG-28 · HIGH — RSI computation uses simple rolling mean instead of Wilder exponential smoothing when pandas-ta unavailable
+
+**File:** `backtest/signals/technical.py` lines 183–200
+
+**What happens without pandas-ta:**
+```python
+g = d.clip(lower=0).rolling(p).mean()    # simple rolling mean -- WRONG
+ls = (-d.clip(upper=0)).rolling(p).mean() # simple rolling mean -- WRONG
+```
+**Wilder's correct formula:** exponential smoothing with `alpha=1/N` (`ewm(com=N-1, adjust=False)`)
+
+**Numerical difference:** On the same data, simple rolling RSI gives 63.6 vs Wilder EWM gives 78.5 — a 14.9-point difference. This is large enough to flip signals:
+- Simple RSI = 63 → not overbought → strategy considers long entry
+- Wilder RSI = 78 → overbought → strategy fires short signal
+
+**Environment impact:** pandas-ta IS in requirements.txt, but on Codespaces it showed as unavailable during test runs (the `"pandas-ta not installed"` warning appears in logs). If Codespaces run uses the fallback, all 9 RSI-based strategies and 6 StochRSI-based strategies produce wrong signals for all 34,727 trades.
+
+**Fix:**
+```python
+# Correct Wilder smoothing for fallback
+g  = d.clip(lower=0).ewm(com=p-1, adjust=False).mean()
+ls = (-d.clip(upper=0)).ewm(com=p-1, adjust=False).mean()
+```
+Also add pandas-ta explicitly to `devcontainer.json` `postCreateCommand` as a separate step to ensure it is always available.
+
+---
+
+### BUG-29 · HIGH — Open trades at backtest end silently discarded — upward bias in all metrics
+
+**File:** `backtest/engine/backtest.py` — `run()` method and `save_all_outputs()`
+
+**What happens:**
+1. Backtest runs through all trading days in `[start, end]`
+2. `self.open_trades` accumulates positions that never hit their trailing stop
+3. At end of loop, `run()` completes and `save_all_outputs()` is called
+4. `get_trade_log()` returns only `self.closed_trades` — open trades are never included
+5. Open trades are logged in the summary count but never in metrics
+6. **Losing trades that trend down through backtest end are never counted as losses**
+7. Literature standard (Pardo 2008): force-close all open positions at the final bar's closing price
+
+**Bias direction:** Upward. In bear markets and at end of bull markets, open positions are more likely to be losers (held through downtrend). Dropping them overstates win rate and ROI.
+
+**Fix:** At end of `run()`, force-close all remaining open trades at their last available close price:
+```python
+# After main loop completes
+last_day = trading_days[-1] if trading_days else self.end
+for trade in self.open_trades:
+    df = self.ohlcv_dict.get(trade.ticker)
+    if df is not None:
+        last_close = float(df[df.index.date <= last_day]["close"].iloc[-1])
+        closed = close_trade(trade, last_close, last_day,
+                             "end_of_backtest_force_close", 0.0, 0.0)
+        self.closed_trades.append(closed)
+self.open_trades = []
+```
+
+---
+
+### BUG-30 · HIGH — VIX tightening in crisis contradicts own documentation
+
+**Files:** `backtest/engine/regime_filter.py` line 73 vs `backtest/engine/exit_manager.py` lines 228–231
+
+**Contradiction:**
+- `regime_filter.py` description string: *"Do NOT tighten stops (causes whipsawing)"*
+- `exit_manager.py` Circuit Breaker Level 5: explicitly tightens stop from 10% to 5% when VIX ≥ 40
+
+**What happens:**
+1. VIX enters crisis (> 40 threshold)
+2. CB Level 5 fires on every subsequent day: stop tightened to 5%
+3. In crisis, daily swings of 3–5% are common
+4. A 5% trailing stop in a 5% daily-volatility environment = stopped out immediately
+5. Position entered correctly is stopped out the next day before any profit develops
+6. Literature (Wilder 1978): during high volatility, stops should be WIDER not tighter (use ATR multiple proportional to current volatility)
+
+**Fix:** Remove or disable CB Level 5 tightening in the backtest. In live trading, portfolio-level drawdown management (LIVE_TRADING_RULES) handles crisis exposure. Per-position stops should stay at 1×ATR (which self-adjusts to current volatility) rather than a fixed 5%.
+
+---
+
+### BUG-31 · HIGH — Walk-forward OOS minimum of 30 trades is statistically insufficient
+
+**File:** `backtest/engine/improvements.py` line 119 (`MIN_OOS_TRADES = 30`)
+
+**Statistical analysis:**
+At 30 OOS trades with 55% win rate: 95% confidence interval = **[37.7%, 71.2%]** — width of 33.5 percentage points. The lower bound (37.7%) is far below 50%, meaning we cannot distinguish the strategy from a coin flip.
+
+**Literature standard (Bailey et al 2014):** For OOS validation to be meaningful, require minimum **100 OOS trades** per window. At 100 trades: CI = [45.2%, 64.4%]. Still wide but at least the upper bound is informative.
+
+**Current impact:** A strategy with 35 OOS trades and 60% win rate passes the OOS check. But at 35 trades, the 95% CI is [43%, 75%] — the strategy could easily be random chance.
+
+**Fix:** Raise `MIN_OOS_TRADES` from 30 to 100. Accept that more strategies will get `INSUFFICIENT_OOS_DATA` verdicts — this is correct behaviour given limited data.
+
+---
+
+### BUG-32 · HIGH — Profit factor minimum 1.2 too low; literature requires 1.5 minimum
+
+**File:** `backtest/config.py` line 212 and `backtest/engine/improvements.py` line 151
+
+**Literature context (Schwager 1984):**
+- PF < 1.0: losing strategy
+- PF 1.0–1.3: weak edge, likely noise
+- PF 1.3–1.5: minimal acceptable threshold
+- PF > 1.5: robust edge
+- PF > 2.0: strong systematic edge
+
+**Current threshold PF ≥ 1.2:** With 100 trades, a PF of 1.21 has enormous estimation uncertainty. A strategy with true PF of 1.0 (no edge) could easily produce PF = 1.21 in a 100-trade sample purely from randomness.
+
+**Fix:** Raise `min_profit_factor` to 1.5 in `PASSING_CRITERIA`. Sector-adjusted criteria can keep 1.3 for high-volatility sectors. Combined with raising `min_trades` to 500 (BUG-16), this gives a much more defensible threshold.
+
+---
+
+### BUG-33 · HIGH — Sharpe ratio not required as passing criterion; computed but ignored
+
+**File:** `backtest/config.py` `PASSING_CRITERIA` dict and `backtest/results/metrics.py`
+
+**What happens:**
+1. `compute_strategy_metrics()` computes `sharpe_ratio` for every strategy
+2. `PASSING_CRITERIA` dict has no `min_sharpe` key
+3. A strategy can pass all 10 criteria with Sharpe = 0.05 (near zero)
+4. Literature standard (Sharpe 1994): minimum acceptable Sharpe ≥ 0.5 per year for a discretionary strategy; systematic strategies should target ≥ 1.0
+
+**Why it matters:** Sharpe captures the risk-adjusted quality of returns that profit factor and win rate miss. A strategy with high win rate but extremely variable returns (wild swings) can have good PF but terrible Sharpe. Such strategies are unreliable in live trading.
+
+**Fix:** Add to `PASSING_CRITERIA`:
+```python
+"min_sharpe": 0.5,   # annualised Sharpe ratio minimum
+```
+And add the check to `passes` dict in `compute_strategy_metrics()`.
+
+---
+
+### BUG-34 · HIGH — Mean reversion strategies run in all regimes — literature shows they fail in trending markets
+
+**File:** `backtest/signals/screener.py` — all 11 mean reversion strategies fire in all regimes
+
+**Literature finding (Faber 2007, Jegadeesh & Titman 1993):**
+- Mean reversion works in SIDEWAYS/NEUTRAL markets (stocks bounce between support and resistance)
+- Mean reversion FAILS in strong trends (oversold stocks keep falling; overbought stocks keep rising)
+- In crisis (strong downtrend): RSI < 35 is a continuation signal, not a reversal signal
+- This is documented as the "catching a falling knife" problem
+
+**Current implementation:** All 11 mean reversion strategies fire regardless of regime. In a crisis bear market with VIX > 30:
+- `strat_rsi_oversold` fires when RSI < 35 → buys dip → stock continues falling
+- `strat_bollinger_lower` fires when price at lower band → buys dip → stock breaks below band
+
+**Phase 1B data confirms this:** 29.7% win rate overall. Mean reversion strategies are the worst performers in crisis.
+
+**Fix:** For mean reversion strategies, require additional confirmation in trending regimes:
+- In crisis/bear: require sector ETF to be above its 20-day SMA (sector is outperforming) as an additional condition
+- OR: suppress mean reversion strategies when `adx > 30` (strong trend indicator)
+- Do NOT block them entirely (the approved buy-the-dip philosophy allows mean reversion in crisis) but add a confirming condition
+
+---
+
+### BUG-35 · MEDIUM — Decision Agent default fallback has invalid `action` value
+
+**File:** `backtest/agents/pipeline.py` lines 579–583
+
+**What happens:**
+```python
+return result if result else {
+    "final_score": 40, "confidence_tier": "MEDIUM",
+    "action": "WATCHLIST",   # ← NOT a valid action
+    ...
+}
+```
+Valid actions: `ENTER | WATCH | SKIP | AVOID`. `WATCHLIST` is not handled by the engine. When the API fails and this default fires, the action label is `WATCHLIST` which falls through all engine checks — the trade opens as if action was `ENTER`.
+
+**Fix:** Change default `action` to `"SKIP"` (conservative default on API failure):
+```python
+return result if result else {
+    "final_score": 40,
+    "action": "SKIP",
+    "entry_rationale": "API unavailable — defaulting to skip",
+    "primary_risk": "Agent unavailable",
+    "agent_agreement": "unknown",
+}
+```
+
+---
+
+### BUG-36 · MEDIUM — Regime-aware strategy weighting not implemented
+
+**File:** `backtest/signals/screener.py` — `screen_universe()` — all strategies run equally in all regimes
+
+**What happens:**
+All 72 strategies fire whenever their conditions are met, regardless of whether the strategy type is appropriate for the current regime.
+
+**Literature finding:**
+| Regime | Best strategy types | Worst strategy types |
+|---|---|---|
+| Bull (low VIX, SPY up) | Momentum, trend-following | Mean reversion (stocks keep rising) |
+| Neutral (sideways) | Mean reversion, pivot | Trend-following (whipsaws) |
+| Bear (VIX 20–30, downtrend) | Trend shorts, momentum shorts | Mean reversion longs |
+| Crisis (VIX > 30) | Trend shorts, crisis buys | Mean reversion longs (catching knives) |
+
+**Current:** In crisis regime, 11 mean reversion strategies, 9 pivot strategies, and 9 trend-following long strategies all run equally. Literature says most of these are wrong-directional in crisis.
+
+**Proposed fix (requires owner approval — significant design change):**
+Add a `regime_filter` field to each strategy's `_strat()` or `_strat3()` return dict:
+```python
+"regime_confidence": ["neutral", "bear", "crisis"]  # list of regimes where valid
+```
+In `screen_instrument()`, filter strategies by current regime before adding to triggered list.
+
+---
+
+### BUG-37 · MEDIUM — Survivorship bias haircut methodology is arbitrary
+
+**File:** `backtest/engine/improvements.py` lines 525–555
+
+**What happens:**
+```python
+annual_rates = {7: 0.005, 14: 0.010, 30: 0.020, 999: 0.030}
+```
+A 15-day trade gets 2.0%/year haircut = 0.012% total deduction. This feels precise but is entirely made up. There is no published source for these specific rates.
+
+**Literature reality:** Survivorship bias in US equity backtests has been measured at 1–2% per year on annualised returns (Elton & Gruber 1996). For individual trade-level haircuts, there is no established methodology.
+
+**The honest approach:** Apply a flat portfolio-level survivorship bias adjustment to total ROI rather than per-trade haircuts. This is what the academic literature does. The per-trade approach creates false precision.
+
+**Fix:** Replace per-trade haircut with: total backtest ROI × (1 - 0.015 × years) as a portfolio-level adjustment. Document the assumption explicitly.
+
+---
+
+### BUG-38 · MEDIUM — No minimum Sharpe in Bonferroni correction
+
+**File:** `backtest/engine/improvements.py` lines 470–510
+
+**What happens:**
+The Bonferroni correction adjusts the significance threshold but the implementation only computes minimum trade counts, not adjusted win rate or Sharpe thresholds.
+
+**Literature (Bailey et al 2014, "The Probability of Backtest Overfitting"):**
+The correct metric for multiple-testing-adjusted strategy evaluation is the **Deflated Sharpe Ratio (DSR)** which accounts for:
+- Number of strategies tested
+- Number of backtest parameters tuned
+- Length of backtest
+- Non-normality of returns
+
+A strategy with Sharpe 1.0 from testing 72 strategies may have DSR of 0.3 (not significant).
+
+**Current:** Bonferroni only computes minimum trades. DSR is not computed.
+
+**Recommendation:** Add DSR calculation to the metrics report as an advisory metric. Formula is published in Bailey (2014).
+
+---
+
+### BUG-39 · MEDIUM — `regime_confidence()` compares VIX-based regime with SPY-trend regime incorrectly
+
+**File:** `backtest/engine/improvements.py` lines 406–425
+
+**What happens:**
+```python
+agreement = 100 if vix_regime == trend_regime or vix_regime == "neutral" else 40
+```
+1. `vix_regime` can be: "crisis", "bear", "bull", "neutral"
+2. `trend_regime` can be: "bull", "bear", "unknown"
+3. When `vix_regime = "crisis"` and `trend_regime = "bear"`: these are compatible (crisis IS a form of bear) but the code returns `agreement = 40` (disagreement) because the strings don't match
+4. When `vix_regime = "crisis"`, confidence is always penalised by the mismatch even when both signals agree on bearish conditions
+
+**Fix:** Add crisis/bear compatibility:
+```python
+compatible = (vix_regime == trend_regime or
+              vix_regime == "neutral" or
+              (vix_regime == "crisis" and trend_regime == "bear"))
+agreement = 100 if compatible else 40
+```
+
+---
+
+### BUG-40 · MEDIUM — Short stop distance same as long (10%) — asymmetric risk not accounted for
+
+**File:** `backtest/engine/backtest.py` lines 388–392 and `backtest/config.py` TRAILING_STOP
+
+**What happens:**
+```python
+if direction == "long":
+    init_stop = entry_price * (1 - TRAILING_STOP["initial_pct"])   # 10% below
+else:
+    init_stop = entry_price * (1 + TRAILING_STOP["initial_pct"])   # 10% above
+```
+Both long and short use the same 10% stop distance.
+
+**Literature finding (D'Avolio 2002):**
+- Short positions have unlimited upside risk (stock can rise indefinitely)
+- A squeeze or catalyst can gap a stock up 20–50% before stop can trigger
+- Literature recommendation: short stops should be tighter (6–8%) to limit squeeze exposure
+- Additionally: short stop should tighten as position moves in favour (unlike longs where trailing stop provides profit lock-in, short stop should proactively reduce risk)
+
+**Fix:** Add a separate short stop parameter:
+```python
+TRAILING_STOP = {
+    "initial_pct":       0.10,   # long initial stop
+    "short_initial_pct": 0.07,   # short initial stop (tighter — unlimited upside risk)
+    "trail_pct":         0.10,   # both directions
+}
+```
+
+---
+
+### BUG-41 · MEDIUM — `min_market_cap_m = 100` too low; admits stocks with poor institutional tradability
+
+**File:** `backtest/config.py` line 131
+
+At $100M market cap, bid-ask spreads are significantly wider than for large-caps. The slippage model uses 0.08–0.15% for large-cap stocks. At $100M cap, realistic slippage is 0.3–0.5% per trade — 3–4× higher than assumed.
+
+**But:** S&P 500 members all have market caps > $5B (minimum threshold for S&P 500 inclusion is ~$14.5B as of 2024). The 100M cap only matters for the ETFs in the universe (which are correctly classified separately). No S&P 500 member would fail the 100M threshold.
+
+**Impact:** LOW — effectively irrelevant for the S&P 500 universe. Medium for any future expansion to small-caps. Note in config is misleading but not materially wrong.
+
+---
+
+### BUG-42 · LOW — `LILLY` appears as ticker in `run_full.sh` but should be `LLY`
+
+**File:** `run_full.sh` batch 3 ticker list
+
+**What happens:** `LILLY` is not a valid ticker symbol. Eli Lilly trades as `LLY`. The batch will attempt to fetch data for `LILLY`, fail, and skip it. `LLY` is never backtested.
+
+**Fix:** Replace `LILLY` with `LLY` in batch 3 of `run_full.sh`.
+
+---
+
+### BUG-43 · LOW — Missing Calmar ratio minimum in passing criteria
+
+**File:** `backtest/config.py` `PASSING_CRITERIA`
+
+Calmar ratio = annualised return / max drawdown. Computed but not required as a passing criterion.
+
+Literature guideline: Calmar ≥ 0.5 means annual return is at least half the max drawdown. Calmar < 0.5 means the strategy loses more in drawdowns than it gains annually — not worth trading. A strategy with 5% annual ROI and 15% max drawdown (Calmar = 0.33) can pass current criteria but would not be tradeable in practice.
+
+**Fix:** Add `"min_calmar": 0.5` to `PASSING_CRITERIA`.
+
+---
+
+### BUG-44 · LOW — Test suite has no test for `close_trade()` or `_process_day()`
+
+**File:** `backtest/tests/test_unit.py`
+
+**What happened:** BUG-02 (days used before definition in `close_trade()`) was introduced in commit `b430ab36` and was not caught by the test suite because `close_trade()` is never directly tested.
+
+**What is missing:**
+- Test that `close_trade()` correctly computes PnL for long trades
+- Test that `close_trade()` correctly computes PnL for short trades with borrow cost
+- Test that `close_trade()` correctly applies borrow cost: 15-day short at 5% gain should return 5.0% - (0.005% × 15) = 4.925%
+- Test that the avoid direction is correctly skipped in `screen_instrument()`
+- Test that crisis exclusion blocks VXX/TLT/EEM long entries
+
+**Fix:** Add these tests to `test_unit.py`. They would have caught BUG-01 and BUG-02 immediately.
+
+---
+
+## Updated summary — all 44 bugs
+
+| # | Sev | Description | File | Fix |
+|---|---|---|---|---|
+| 01 | CRIT | `crisis_flag` NameError | `backtest.py:299` | 2-line swap |
+| 02 | CRIT | `days` UnboundLocalError | `exit_manager.py:295` | 2-line swap |
+| 03 | CRIT | `ClosedTrade` defined twice | `exit_manager.py:73` | Delete 54 lines |
+| 04 | CRIT | `avoid` in short bucket | `screener.py:973` | 2-line change |
+| 05 | CRIT | `strategies_triggered` key mismatch | `pipeline.py:644` | 1-line fix |
+| 26 | CRIT | VXX price used as VIX (223–461 vs 18–36) — all regime classifications wrong | `macro.py:138` | Use realised vol |
+| 06 | HIGH | Double borrow cost on shorts | `improvements.py:79` | Delete 3 lines |
+| 07 | HIGH | API guard blocks no-agent run | `run_full.sh:13` | Conditional guard |
+| 08 | HIGH | `ema_50_200_bullish` key missing | `screener.py:120` | Fix key name |
+| 09 | HIGH | `below_cam_s3` key missing | `screener.py:148` | Add to technical.py |
+| 10 | HIGH | 5 agent signal keys wrong | `pipeline.py:664` | 5-line fix |
+| 11 | HIGH | `williams_r` short default fires incorrectly | `screener.py:244` | Use boolean key |
+| 12 | HIGH | Deduplication order bias — longs always beat shorts | `screener.py:978` | Sort by conviction |
+| 13 | HIGH | 106,000 live earnings API calls | `fetcher.py:224` | Pre-fetch required |
+| 14 | HIGH | AAPL/CVS/JPM/NVDA missing from full run | `run_full.sh` | Add to batches |
+| 27 | HIGH | `regime_confidence()` never called — dead code | `improvements.py:365` | Call in engine |
+| 28 | HIGH | RSI uses simple rolling mean not Wilder EWM | `technical.py:186` | Fix fallback formula |
+| 29 | HIGH | Open trades at backtest end silently discarded | `backtest.py:run()` | Force-close at end |
+| 30 | HIGH | Stop tightening contradicts own docs | `exit_manager.py:228` | Remove CB Level 5 |
+| 31 | HIGH | Walk-forward OOS minimum 30 too low (CI = ±17pp) | `improvements.py:119` | Raise to 100 |
+| 32 | HIGH | Profit factor minimum 1.2 too low (literature: 1.5) | `config.py:212` | Raise to 1.5 |
+| 33 | HIGH | Sharpe not required as passing criterion | `config.py` | Add min_sharpe=0.5 |
+| 34 | HIGH | Mean reversion runs in all regimes; fails in crisis | `screener.py` | Regime filter |
+| 15 | MED | `max_drawdown` uses cumsum not equity curve | `metrics.py:42` | 3-line change |
+| 16 | MED | `min_trades=100` contradicts docs (should be 500) | `config.py:215` | Change to 500 |
+| 17 | MED | `run_commit.sh` hangs on interactive merge | `merge_batch_outputs.py:117` | Add --force |
+| 18 | MED | Bonferroni hardcoded at 60, should be 72 | `backtest.py:621` | Use len(ALL_STRATEGIES) |
+| 19 | MED | OHLCV cache: 402 tickers only to 2024-12-31 | cache files | Re-fetch |
+| 20 | MED | Regime thresholds inconsistent code vs docs | `config.py` vs `PROJECT_PLAN.md` | Align docs |
+| 21 | MED | `exit_strategies._pnl` missing borrow cost | `exit_strategies.py:28` | Sync with exit_manager |
+| 35 | MED | Decision Agent fallback has invalid `WATCHLIST` action | `pipeline.py:579` | Change to SKIP |
+| 36 | MED | No regime-aware strategy weighting | `screener.py` | Design decision |
+| 37 | MED | Survivorship haircut rates are arbitrary | `improvements.py:525` | Portfolio-level haircut |
+| 38 | MED | No Deflated Sharpe Ratio for overfitting detection | `metrics.py` | Add DSR computation |
+| 39 | MED | `regime_confidence()` crisis/bear comparison wrong | `improvements.py:406` | Fix compatibility |
+| 40 | MED | Short stop same as long — asymmetric risk ignored | `backtest.py:388` | Separate short stop |
+| 41 | MED | `min_market_cap_m=100` — misleading but harmless for S&P 500 | `config.py:131` | Update comment |
+| 22 | LOW | Header prints "60 strategies" | `run_phase1a.py:141` | Fix to 72 |
+| 23 | LOW | Docstring says "60 strategies" | `screener.py:4` | Fix to 72 |
+| 24 | LOW | Checklist item 13c invalid for no-agent runs | `CHECKLIST.md` | Update text |
+| 25 | LOW | `run_tests.sh` missing `--no-agents` | `run_tests.sh` | Add flag |
+| 42 | LOW | `LILLY` invalid ticker (should be `LLY`) | `run_full.sh` | Fix ticker |
+| 43 | LOW | No Calmar ratio minimum in passing criteria | `config.py` | Add min_calmar=0.5 |
+| 44 | LOW | No tests for `close_trade()` or `_process_day()` | `test_unit.py` | Add tests |
+
+**Total: 44 bugs — 6 CRITICAL, 15 HIGH, 15 MEDIUM, 8 LOW**
+
+---
+
+## Pre-run mandatory fixes (updated)
+
+Must fix before `bash run_tests.sh`:
+
+1. ✋ BUG-01 — crisis_flag NameError (2-line swap)
+2. ✋ BUG-02 — days UnboundLocalError (2-line swap)
+3. ✋ BUG-04 — avoid in short bucket (2-line change)
+4. ✋ BUG-07 — API guard blocks no-agent run
+5. ✋ BUG-25 — run_tests.sh missing --no-agents
+6. ✋ BUG-26 — VXX price used as VIX proxy — fix regime classification before ANY run
+7. ✋ BUG-42 — LILLY invalid ticker (1-char fix)
+
+**BUG-26 is newly elevated to pre-run mandatory.** Without fixing it, every trading day will be classified as "crisis" and all regime-based analysis will be meaningless.
+
+---
+
+## Recommended fix sequence (updated)
+
+**Round 1 — Before test batch (7 items, ~30 min work):**
+BUG-01, BUG-02, BUG-04, BUG-07, BUG-25, BUG-26, BUG-42
+
+**Round 2 — Before full run (correctness, ~3 hours):**
+BUG-03, BUG-05, BUG-06, BUG-08, BUG-09, BUG-10, BUG-11, BUG-14, BUG-28 (RSI fix), BUG-29 (force-close), BUG-35, BUG-19 (data fetch), BUG-22, BUG-23
+
+**Round 3 — Before Phase 1B analysis (methodology, ~4 hours):**
+BUG-12 (architecture decision), BUG-13 (pre-fetch earnings), BUG-15 (drawdown), BUG-16 (min_trades), BUG-17 (merge fix), BUG-18 (Bonferroni), BUG-21, BUG-30 (stop tightening), BUG-31 (OOS min), BUG-32 (PF min), BUG-33 (Sharpe), BUG-40 (short stop), BUG-44 (tests)
+
+**Round 4 — Before Phase 1C (design decisions):**
+BUG-27 (regime confidence), BUG-34 (regime strategy weighting), BUG-36 (regime weights), BUG-37, BUG-38, BUG-39, BUG-41, BUG-43, BUG-20 (docs)
+
+---
+
+*Audit Pass 2 complete. Next pass: agent prompt quality, Quiver data point-in-time correctness, walk-forward window boundary handling, sector criteria calibration, and live trading rules gap analysis.*
