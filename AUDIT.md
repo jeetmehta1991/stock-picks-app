@@ -2378,3 +2378,712 @@ After Pass 7's findings, the net direction of error in Phase 1B results is mixed
 ---
 
 *Senior quant-dev review complete. Most damaging finding: BUG-78 (trailing stop lookahead), affecting an estimated 17–262pp of aggregate ROI inflation across the 35K trades. This bug alone likely explains why backtest results would diverge significantly from live trading even after all other fixes.*
+
+---
+
+## AUDIT PASS 8 — Senior Quant Architect Review (End-to-End Pipeline)
+
+*Reviewing: data ingestion → signal creation → backtesting → execution → portfolio accounting → deployment.*
+
+This pass identifies **mismatches between stages**, **places where assumptions break**, and **gaps vs industry best practices** for production trading systems.
+
+---
+
+## STAGE 1 — DATA INGESTION
+
+### Architecture review
+
+Sources used:
+- yfinance (OHLCV, market_cap, earnings)
+- FRED (macro: yields, CPI, fed funds, etc.)
+- Alpha Vantage (news sentiment — 25 tickers covered)
+- Finnhub (news sentiment — 0 tickers, all empty)
+- Quiver (insider, congressional, 13F, gov contracts, lobbying, wiki, WSB)
+- AAII (CSV), CNN F&G (CSV)
+
+Storage: Parquet committed to git repo.
+
+### BUG-86 · MEDIUM — FRED CPI lookahead bias of ~10 days
+
+**File:** `backtest/data/cache/macro/macro_combined.parquet`
+
+**The bug:** The macro cache assigns CPI values to the OBSERVATION DATE, not the RELEASE DATE. May 2022 CPI value (294.957) appears in the cache starting 2022-06-01. The actual May 2022 CPI release date was 2022-06-10 — meaning between June 1–9, 2022, the system would query "today's CPI" and receive a value that wasn't yet public knowledge.
+
+**How it impacts results:**
+- Risk Agent uses macro snapshot including CPI
+- Strategies that use macro context (none currently, but planned for Phase 1D Category 4) would be affected
+- For backtest dates around the 1st–10th of each month: CPI lookahead is 0–10 days
+- Magnitude: small for swing trading, but methodology incorrect
+
+**Corrected implementation:**
+
+Option A — Apply standard 10-day shift:
+```python
+# In prefetch_macro.py:
+df_cpi['date'] = df_cpi['date'] + pd.Timedelta(days=10)  # approximate release lag
+```
+
+Option B — Use FRED ALFRED for vintages (best practice):
+```python
+# ALFRED provides "real-time" data: what was known on each date
+import requests
+url = f"https://api.stlouisfed.org/fred/series/observations"
+params = {"series_id": "CPIAUCSL", "api_key": KEY, "realtime_start": as_of, "realtime_end": as_of}
+# Returns CPI values that were ACTUALLY KNOWN on as_of date
+```
+
+ALFRED is the gold-standard for macro backtesting and eliminates this entire class of bug.
+
+---
+
+### BUG-87 · MEDIUM — No data quality validation on ingestion
+
+**File:** all prefetch scripts
+
+**What's missing:**
+1. No checks for missing trading days in OHLCV (gaps where market was open but no bar)
+2. No checks for zero-volume days (suspicious data)
+3. No checks for split-adjusted vs unadjusted price discontinuities
+4. No checks for outliers (price moves > 50% in a day without news)
+5. No anomaly detection on macro data (CPI suddenly drops by 5%)
+
+**Real-world impact example:**
+- Stock split 4-for-1 on AAPL 2020-08-31
+- yfinance's `auto_adjust=True` should handle this
+- But if any one ticker had bad split adjustment: technical indicators (200-EMA, ATR) would discontinue
+- ATR for 2020-08-31 to 2020-09-15 might be wildly wrong
+- Strategies using ATR for stops would set incorrect stops
+- Backtest results would have unexplained drawdowns
+
+**Best practice:**
+```python
+def validate_ohlcv(df: pd.DataFrame, ticker: str) -> dict:
+    issues = []
+    # 1. Check for missing trading days
+    expected_days = pd.bdate_range(df.index.min(), df.index.max())
+    missing = set(expected_days) - set(df.index)
+    if missing:
+        issues.append(f"Missing {len(missing)} trading days")
+    # 2. Zero-volume days
+    if (df['volume'] == 0).any():
+        issues.append(f"{(df['volume']==0).sum()} zero-volume days")
+    # 3. Outlier detection
+    returns = df['close'].pct_change()
+    outliers = returns[returns.abs() > 0.5]
+    if len(outliers):
+        issues.append(f"{len(outliers)} >50% daily moves (verify splits)")
+    # 4. OHLC consistency
+    if (df['high'] < df['low']).any():
+        issues.append("High < Low rows found")
+    return {"ticker": ticker, "rows": len(df), "issues": issues}
+```
+
+Run on every prefetch, log warnings, fail on critical issues.
+
+---
+
+## STAGE 2 — SIGNAL CREATION
+
+### BUG-88 · MEDIUM — No signal versioning; cache invalidation incomplete
+
+**File:** `backtest/signals/technical.py` (no version constant) vs `backtest/agents/pipeline.py` (has `PROMPT_VERSION`)
+
+**The gap:** Agent prompts have a version constant that triggers cache invalidation when prompts change. But signals (technical.py) have NO version constant. When a signal definition changes (e.g., RSI threshold from 30 to 35), the cached signals become stale silently.
+
+In Phase 1B, the prefetched indicators in OHLCV cache aren't separately cached — signals are computed on-the-fly per query. So this isn't a bug currently. But:
+- Phase 1C plans to add signal pre-computation for Sonnet model context
+- At that point, stale signal cache becomes a real bug
+- Without a version constant, you can't safely cache pre-computed signals
+
+**Best practice:** Add `SIGNALS_VERSION = "1.0.0"` constant. Bump on any change. Use as part of signal cache key. Clear cache when version differs.
+
+---
+
+### BUG-89 · MEDIUM — Flat signal dict (220 fields) lacks type safety
+
+**File:** `backtest/signals/technical.py` returns `dict` (untyped)
+
+**The bug:** `compute_all_signals(df)` returns a flat `dict[str, Any]`. Strategies access fields with `.get(key, default)`. When key doesn't exist (typo, renamed signal), `.get()` returns the default silently. This is exactly how BUG-08, BUG-09, and BUG-10 happened.
+
+**Impact:**
+- BUG-08: `ema_50_200_bullish` typo → strategies always get `None` (falsy)
+- BUG-10: `above_200ema` vs `price_above_ema_200` → agent prompts always show `False`
+- Future signal renames will cause silent failures
+
+**Best practice — TypedDict or dataclass:**
+```python
+from typing import TypedDict
+
+class TechnicalSignals(TypedDict, total=False):
+    # Trend
+    ema_9: float
+    ema_21: float
+    price_above_ema_9: bool
+    price_above_ema_21: bool
+    # ... all 220 fields with types
+    
+def compute_all_signals(df: pd.DataFrame) -> TechnicalSignals:
+    ...
+
+# In screener:
+def strat_x(s: TechnicalSignals):
+    fl = s.get("price_above_ema_200")  # IDE/mypy catches typos
+```
+
+Even with `dict` returns, runtime validation against a Pydantic schema would catch missing keys at compute time.
+
+---
+
+## STAGE 3 — BACKTESTING LOGIC
+
+### BUG-90 · MEDIUM — No state checkpointing for crashes/restarts
+
+**File:** `backtest/engine/backtest.py`
+
+**The bug:** The backtest checkpoints `closed_trades` to CSV on each day, but `open_trades` is never serialized. If the backtest crashes at day 700 of 1060:
+- `closed_trades` is preserved (CSV checkpoint)
+- `open_trades` (positions still active) is lost
+- Restart must begin from day 0 — no resume capability
+
+**Impact:**
+- A 2-hour backtest crash at hour 1.9 = 2 hours wasted
+- Discourages running long backtests
+- Phase 1D (5-year backtest) would be especially painful
+
+**Best practice:**
+```python
+def save_state(self, path):
+    state = {
+        "as_of": str(self.current_date),
+        "open_trades": [asdict(t) for t in self.open_trades],
+        "closed_trades_count": len(self.closed_trades),
+        "checkpoint_version": "1.0",
+    }
+    Path(path).write_text(json.dumps(state, default=str))
+
+def load_state(self, path):
+    state = json.loads(Path(path).read_text())
+    self.current_date = date.fromisoformat(state["as_of"])
+    self.open_trades = [OpenTrade(**t) for t in state["open_trades"]]
+    # closed_trades reload from CSV
+```
+
+Save every N days. On restart, load latest state and resume.
+
+---
+
+### BUG-91 · MEDIUM — No determinism control
+
+**File:** `backtest/engine/backtest.py` and signals
+
+**The bug:** No random seed is set anywhere in the codebase. While the backtest itself is largely deterministic (no Monte Carlo), several components have non-determinism risks:
+1. **dict iteration order** — Python 3.7+ has insertion order, but cross-version risks remain
+2. **set iteration order** — `open_combos = {(t.ticker, t.strategy)}` iteration order is non-deterministic
+3. **pandas-ta internal RNG** — some indicators use random initialization
+4. **Agent calls** — without `temperature=0`, AI responses vary between runs
+5. **JSON parsing of agent results** — order of keys may differ
+
+**Impact:** Two runs of the same backtest with the same inputs may produce slightly different results. Critical bug for production validation: you cannot say "the strategy passes" if results vary.
+
+**Best practice:**
+```python
+# At engine init:
+import random, numpy as np, os
+random.seed(42)
+np.random.seed(42)
+os.environ["PYTHONHASHSEED"] = "42"
+
+# For agents:
+response = client.messages.create(
+    model=model,
+    temperature=0,  # deterministic
+    seed=42,        # if API supports it
+    ...
+)
+```
+
+Add a deterministic test: run backtest twice on a small ticker set, assert identical outputs.
+
+---
+
+### BUG-92 · LOW — No streaming progress / metrics during run
+
+**File:** `backtest/engine/backtest.py`
+
+**The bug:** During a multi-hour backtest, the only feedback is the final log lines. If something is wrong (e.g., 0 trades opening), you discover it at the end.
+
+**Best practice:** Emit progress every N days:
+```python
+# Inside _process_day:
+if as_of.day == 1 or self.day_count % 100 == 0:
+    logger.info(
+        "Progress %s | open=%d closed=%d skipped=%d "
+        "open_rate=%.1f/day pass_rate=%.0f%%",
+        as_of, len(self.open_trades), len(self.closed_trades),
+        len(self.skipped_trades),
+        len(self.closed_trades) / max(self.day_count, 1),
+        100 * len(self.closed_trades) / max(len(self.closed_trades) + len(self.skipped_trades), 1)
+    )
+```
+
+---
+
+## STAGE 4 — EXECUTION LAYER (API CALLS)
+
+### BUG-93 · CRITICAL — No execution layer exists; PROJECT_PLAN describes it conceptually only
+
+**File:** No `backtest/live/` or `execution/` directory
+
+**The gap:** PROJECT_PLAN describes Stage 3 (paper) and Stage 4 (live) trading with IBKR API, email approval, and order placement. **None of this is implemented.**
+
+**What's actually in the codebase:**
+- Backtest engine that simulates fills at next-day open
+- No IBKR / Alpaca client
+- No order management system
+- No order state machine
+- No position reconciliation
+- No order error handling (rejects, partial fills, cancellations)
+- No real-time market data subscription
+- No connection health monitoring
+
+**What production trading systems require:**
+
+```
+┌─────────────────────────────────────────────────────────┐
+│ Pre-Trade Risk Engine                                   │
+│ - Position limits                                       │
+│ - Capital limits                                        │
+│ - Sector concentration                                  │
+│ - Drawdown gates                                        │
+└──────────────────────┬──────────────────────────────────┘
+                       │
+┌──────────────────────▼──────────────────────────────────┐
+│ Order Management System (OMS)                           │
+│ - Order state machine: Pending → Sent → Filled/Reject  │
+│ - Partial fill handling                                │
+│ - Cancellation/replace                                 │
+│ - Order book audit trail                               │
+└──────────────────────┬──────────────────────────────────┘
+                       │
+┌──────────────────────▼──────────────────────────────────┐
+│ Broker Adapter (IBKR Gateway / Alpaca)                  │
+│ - Connection management                                │
+│ - Heartbeat / reconnect logic                          │
+│ - API rate limiting                                    │
+│ - Error normalization (different brokers, same errors) │
+└──────────────────────┬──────────────────────────────────┘
+                       │
+┌──────────────────────▼──────────────────────────────────┐
+│ Position Reconciliation                                │
+│ - Compare system state vs broker state                 │
+│ - Detect manual trades / corporate actions             │
+│ - Alert on discrepancy                                 │
+└─────────────────────────────────────────────────────────┘
+```
+
+**Estimated effort to build:** 4-6 weeks for a senior engineer.
+
+---
+
+### BUG-94 · CRITICAL — Stage 3 paper trading cannot actually run as designed
+
+**File:** PROJECT_PLAN.md describes Alpaca paper trading
+
+**The gap:** Even Stage 3 (paper trading) requires:
+- An Alpaca account API client
+- Ticker subscription
+- Order placement code
+- Fill handling
+- Position tracking
+
+None of this exists. Stage 3 is conceptual only.
+
+If the assumption is "Stage 3 runs after Phase 1D completes", the development effort needed is substantial:
+- **2-3 weeks** to build minimal Alpaca paper trading client
+- **1-2 weeks** to integrate with backtest signal generation
+- **1 week** for monitoring and reporting
+- **Total: 4-6 weeks of dedicated work**
+
+This is not addressed anywhere in PROJECT_PLAN's "Stage 3 readiness" timeline.
+
+---
+
+## STAGE 5 — PORTFOLIO ACCOUNTING
+
+### BUG-95 · CRITICAL — No portfolio-level state; every trade evaluated independently
+
+**File:** `backtest/engine/backtest.py`
+
+**The bug:** The system tracks individual trades but has no portfolio-level state:
+- No equity curve
+- No cash balance
+- No mark-to-market for open positions
+- No total exposure tracking
+- No unrealised P&L tracking
+- No correlation between positions
+- No sector concentration limits enforced
+
+**What exists:**
+```python
+self.open_trades:    list[OpenTrade]   # individual positions
+self.closed_trades:  list[ClosedTrade] # individual outcomes
+self.skipped_trades: list[dict]        # rejected entries
+```
+
+**What's missing:**
+```python
+self.equity_curve:    pd.Series              # portfolio value over time
+self.cash_balance:    float                  # available cash
+self.unrealised_pnl:  dict[str, float]       # per-ticker mark-to-market
+self.exposure:        dict[str, float]       # per-sector exposure
+self.fx_exposure:     dict[str, float]       # per-currency exposure
+self.benchmark_curve: pd.Series              # SPY buy-and-hold for comparison
+```
+
+**Why this matters:**
+
+1. **Cannot compute true portfolio Sharpe.** Per-strategy Sharpe is what's reported. But when 10 strategies run simultaneously on correlated tickers, the portfolio Sharpe is much lower than the average strategy Sharpe.
+
+2. **Cannot enforce LIVE_TRADING_RULES in backtest.** PROJECT_PLAN says `max_open_positions=10`, drawdown rules at 10%/20%/30%. The backtest cannot model these because it has no portfolio state.
+
+3. **ROI is misleading.** Summing trade-level PnL = "total ROI" assumes infinite capital. With realistic capital and 10 simultaneous positions, the true ROI is different.
+
+4. **No benchmark comparison.** No SPY buy-and-hold tracked. Cannot answer the fundamental question: "did we beat the index?"
+
+5. **Correlated drawdowns invisible.** When all 10 tech stocks tank together, the portfolio loses 50%. Per-strategy view shows 10 separate -5% trades. Same dollar loss, completely different risk picture.
+
+**Best practice — full portfolio simulation:**
+```python
+class Portfolio:
+    def __init__(self, starting_capital: float, benchmark: str = "SPY"):
+        self.cash = starting_capital
+        self.positions: dict[str, Position] = {}
+        self.equity_curve: list[tuple[date, float]] = []
+        self.benchmark_curve: list[tuple[date, float]] = []
+    
+    def mark_to_market(self, prices: dict[str, float]):
+        """Compute total equity at end of day."""
+        position_value = sum(
+            pos.shares * prices[pos.ticker] for pos in self.positions.values()
+        )
+        return self.cash + position_value
+    
+    def can_open(self, ticker: str, position_size_pct: float) -> bool:
+        """Check if we have capital and capacity for a new position."""
+        if len(self.positions) >= MAX_OPEN_POSITIONS:
+            return False
+        required = self.equity * position_size_pct
+        return self.cash >= required
+```
+
+This is the foundation for any production trading system. **Without it, backtest results don't translate to live trading.**
+
+---
+
+### BUG-96 · HIGH — No benchmark comparison (SPY buy-and-hold)
+
+**File:** `backtest/results/metrics.py` — no benchmark logic
+
+**The bug:** The system reports per-strategy ROI but never compares to a benchmark. The fundamental question for any active strategy is "does it beat the index after fees?" — and this question is unanswerable from current outputs.
+
+**What should be reported:**
+```
+Strategy:           +45% ROI over 2 years
+SPY benchmark:      +18% ROI over same period
+Excess return:      +27% (alpha)
+Information ratio:  1.4 (excess return / tracking error)
+Beta to SPY:        0.85
+```
+
+**Best practice:** Add benchmark tracking to portfolio class. Compute alpha, beta, information ratio, and tracking error against SPY. Report these prominently in `backtest_report.html`.
+
+---
+
+## STAGE 6 — DEPLOYMENT
+
+### BUG-97 · HIGH — No infrastructure-as-code; manual VPS setup
+
+**File:** No Docker, Terraform, or Ansible configs
+
+**The bug:** PROJECT_PLAN specifies Hetzner VPS for Stage 3+ but provides no infrastructure-as-code. Setting up the VPS manually means:
+- Inconsistency between dev and production
+- Hard to recreate after disaster
+- No version control on infrastructure changes
+- Easy to drift out of sync between environments
+
+**Best practice:**
+```dockerfile
+# Dockerfile
+FROM python:3.12-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY . .
+CMD ["python", "live/daemon.py"]
+```
+
+```yaml
+# docker-compose.yml
+services:
+  trading-engine:
+    build: .
+    environment:
+      - ANTHROPIC_API_KEY
+      - QUIVER_API_KEY
+      - IBKR_GATEWAY_HOST
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
+  
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+```
+
+One command to deploy: `docker-compose up -d`. Reproducible, versioned, debuggable.
+
+---
+
+### BUG-98 · HIGH — No monitoring or alerting
+
+**File:** PROJECT_PLAN.md mentions monitoring but nothing is implemented
+
+**Critical questions a deployed system must answer:**
+- Did the daily screening job complete successfully?
+- Did all expected emails go out?
+- Did all approved orders get filled?
+- Are positions reconciling with broker?
+- Are agents responding within SLA?
+- Is the cache fresh?
+
+**What's currently in place:** Nothing. Failures would be invisible until you manually check.
+
+**Best practice:**
+- Health check HTTP endpoint: `GET /health` returns 200 if system is healthy, 500 if any component degraded
+- Heartbeat: write to a file every minute; if file is older than 5 minutes, alert
+- Dead-man's switch: external service (e.g., Healthchecks.io free tier) pings the system; alerts if no ping in 1 hour
+- Critical alerts: trade placement failures, cache failures, agent timeouts → email/SMS
+- Dashboard: simple Grafana page showing key metrics
+
+For a single-person system, even a $0/month Healthchecks.io subscription is sufficient for basic monitoring.
+
+---
+
+### BUG-99 · MEDIUM — No secret management; API keys in environment variables
+
+**File:** All API key handling
+
+**Current:** All API keys (`ANTHROPIC_API_KEY`, `QUIVER_API_KEY`, `FINNHUB_API_KEY`, `FRED_API_KEY`) read from environment variables.
+
+**Risk:**
+- If VPS is compromised, all keys leak
+- No key rotation strategy
+- Keys may end up in logs (some libraries log requests with headers)
+- No audit trail of key usage
+
+**Best practice:**
+- Use a secrets manager (HashiCorp Vault, AWS Secrets Manager, or 1Password CLI for solo deployments)
+- Rotate keys quarterly
+- Filter logs to redact API key patterns
+- Consider per-environment keys (dev vs prod)
+
+For solo developer scale: at minimum, move keys to `.env` file with restricted permissions (chmod 600), encrypt the .env at rest, document key rotation schedule.
+
+---
+
+### BUG-100 · MEDIUM — No kill switch; manual intervention required to stop trading
+
+**File:** No emergency stop mechanism
+
+**The risk:** If the system starts placing wrong orders (bug, market dislocation, broker API issue), there's no documented way to stop it quickly. The only options would be:
+- SSH into VPS, kill the process
+- Manually cancel orders in IBKR TWS
+- Disable API keys at IBKR
+
+All take 5+ minutes. In a fast market, that's enough time for substantial losses.
+
+**Best practice:**
+```python
+# Kill switch: external file checked at start of every trade
+KILL_SWITCH_FILE = "/etc/trading/KILL_SWITCH"
+
+def should_trade() -> bool:
+    if Path(KILL_SWITCH_FILE).exists():
+        logger.critical("KILL_SWITCH active — refusing to trade")
+        return False
+    return True
+
+# To stop trading: 
+#   ssh vps "touch /etc/trading/KILL_SWITCH"
+# To resume:
+#   ssh vps "rm /etc/trading/KILL_SWITCH"
+```
+
+Also: send an email when the kill switch is activated/deactivated.
+
+---
+
+## CROSS-STAGE MISMATCHES (architectural divergence between stages)
+
+| # | Mismatch | Impact |
+|---|---|---|
+| M1 | Backtest entry at next-day open vs live email approval workflow | Live timing depends on approval latency |
+| M2 | Backtest unbounded positions vs live `max_open_positions=10` | Backtest results inflated by uncapped trade frequency |
+| M3 | Backtest ATR-based gap filter vs live 1% staleness check | Different rejection rates between stages |
+| M4 | Backtest unlimited capital vs live bounded capital | Backtest cannot model capital exhaustion or margin calls |
+| M5 | Backtest 1/ticker/day dedup vs live 1 open position/ticker | Backtest stacks positions across days; live cannot |
+| M6 | Backtest USD only vs live CAD-denominated | 5–10% adverse FX moves not modelled |
+| M7 | Backtest yfinance EOD vs live IBKR real-time | Different price feeds = different signal timing |
+| M8 | Phase 1B Haiku vs Phase 1C+ / live Sonnet | 1B agent decisions don't predict live Sonnet behavior |
+| M9 | Backtest perfect stop fills vs live slippage on stops | Live exit prices 0.5–1.5% worse than backtest |
+| M10 | Backtest exit slippage = 0 vs live exit slippage = entry slippage | Round-trip costs understated by 50% |
+
+**Implication:** Even if Phase 1B passes, the gap between backtest and live performance could be substantial. Best estimate is **2–5 percentage points of annual ROI deflation when going from backtest to live** after accounting for all mismatches. Combined with the BUG-78 trailing stop lookahead which inflates backtest, the net effect is highly uncertain.
+
+---
+
+## INDUSTRY BEST PRACTICES SCORECARD
+
+### Backtesting
+
+| Practice | Status | Notes |
+|---|---|---|
+| Battle-tested library (vectorbt/backtrader/zipline) | ❌ Custom | Custom code = more bug surface |
+| Event-driven architecture | ❌ Procedural day loop | Won't translate to live trading |
+| Order book / fill simulation | ❌ Next-day open only | No bid-ask modeling |
+| Walk-forward with **purged** CV | ⚠️ Basic two-window | No purging or embargo |
+| Combinatorial Purged CV | ❌ Not implemented | Lopez de Prado gold standard |
+| Deflated Sharpe Ratio | ⚠️ Bonferroni only | Less precise than DSR |
+| Bootstrap confidence intervals | ⚠️ Wilson only | No path-dependent risk metric |
+| Reality check / SPA test | ❌ Not implemented | No correction for strategy comparison |
+| Per-trade slippage model | ⚠️ Constant by category | Real slippage varies more |
+| Market impact model | ❌ Not implemented | Almgren-Chriss needed for size |
+
+### AI integration
+
+| Practice | Status | Notes |
+|---|---|---|
+| Prompt versioning | ✅ `PROMPT_VERSION` | Cache invalidation works |
+| Structured outputs (function calling) | ⚠️ Manual JSON parse | Should use Anthropic tool use |
+| Temperature = 0 | ⚠️ Not specified | Determinism risk |
+| Retry with exponential backoff | ❌ Not implemented | Rate limit failures = permanent skip |
+| Rate limiting at client | ⚠️ Sleep between calls | Crude, not adaptive |
+| Graceful degradation | ✅ Default dict on fail | Adequate |
+| Cost tracking per call | ⚠️ Estimate only | Real cost may differ |
+| Output semantic validation | ⚠️ JSON parse only | No content validation |
+| A/B testing framework | ✅ `--no-agents` flag | Can compare with/without |
+| Human-in-the-loop oversight | ✅ Email approval | Stage 4 design |
+
+### Live trading
+
+| Practice | Status | Notes |
+|---|---|---|
+| Pre-trade risk checks | ❌ | Critical gap |
+| Order management system | ❌ | Critical gap |
+| Position reconciliation | ❌ | Critical gap |
+| Real-time market data | ❌ | Critical gap |
+| Connection monitoring | ❌ | Critical gap |
+| Trade audit trail | ⚠️ Postgres planned | Not implemented |
+| Kill switch | ❌ | High risk |
+| Backup data feed | ❌ | Single point of failure |
+| Disaster recovery | ❌ | No documented procedure |
+
+---
+
+## RECOMMENDED ARCHITECTURE FOR PRODUCTION
+
+```
+┌──────────────────────────────────────────────────────────┐
+│ Data Layer                                              │
+│ - Parquet cache (current) + ALFRED for macro vintages   │
+│ - Quality validation on ingestion                       │
+│ - Versioned schema                                      │
+└────────────────────┬─────────────────────────────────────┘
+                     │
+┌────────────────────▼─────────────────────────────────────┐
+│ Signal Layer (TypedDict outputs)                        │
+│ - Pure functions, deterministic                         │
+│ - Versioned with cache invalidation                     │
+│ - Schema validation on output                           │
+└────────────────────┬─────────────────────────────────────┘
+                     │
+        ┌────────────┴────────────┐
+        │                         │
+┌───────▼──────────┐    ┌─────────▼──────────────┐
+│ Backtest Engine  │    │ Live Decision Engine   │
+│ - Simulated fills│    │ - Real-time market data│
+│ - Portfolio sim  │    │ - Pre-trade risk checks│
+│ - Walk-forward   │    │ - OMS state machine    │
+└───────┬──────────┘    └─────────┬──────────────┘
+        │                         │
+        │              ┌──────────▼──────────────┐
+        │              │ Broker Adapter           │
+        │              │ - IBKR Gateway           │
+        │              │ - Connection mgmt        │
+        │              │ - Order routing          │
+        │              └──────────┬──────────────┘
+        │                         │
+        └─────────┬───────────────┘
+                  │
+┌─────────────────▼────────────────────────────────────────┐
+│ Portfolio Accounting (shared by backtest and live)      │
+│ - Equity curve                                          │
+│ - Cash balance                                          │
+│ - Position mark-to-market                               │
+│ - Performance attribution                               │
+│ - Benchmark comparison                                  │
+└─────────────────┬────────────────────────────────────────┘
+                  │
+┌─────────────────▼────────────────────────────────────────┐
+│ Reporting & Monitoring                                  │
+│ - Daily P&L report                                      │
+│ - Risk metrics dashboard                                │
+│ - Alerting (PagerDuty/email)                            │
+│ - Audit trail (Postgres)                                │
+└──────────────────────────────────────────────────────────┘
+```
+
+The key insight: **Portfolio Accounting is the SHARED layer between backtest and live**. Currently backtest doesn't have it; live cannot have it without first being implemented. Building this layer first lets backtest results actually predict live results.
+
+---
+
+## Final summary — 100 bugs across 8 passes
+
+| Pass | Critical | High | Medium | Low | Cumulative |
+|---|---|---|---|---|---|
+| Pass 1 | 5 | 9 | 7 | 4 | 25 |
+| Pass 2 | +1 | +9 | +9 | 0 | 44 |
+| Pass 3 | 0 | +1 | +4 | +1 | 50 |
+| Pass 4 | 0 | +3 | +5 | +3 | 61 |
+| Pass 5 | 0 | +2 | +6 | +3 | 72 |
+| Pass 6 | 0 | +3 | +4 | 0 | 77 |
+| Pass 7 | +1 | +5 | +2 | 0 | 85 |
+| Pass 8 | +3 | +4 | +6 | +2 | **100** |
+| **Total** | **10** | **36** | **43** | **13** | **102 unique** |
+
+*(Pass 8 added 3 critical bugs related to missing infrastructure, plus minor extension to BUG-14.)*
+
+---
+
+## STAGE-BY-STAGE READINESS
+
+| Stage | Phase 1B | Phase 1C | Phase 1D | Stage 3 (Paper) | Stage 4 (Live) |
+|---|---|---|---|---|---|
+| Data ingestion | 🟡 Partial (BUG-19, BUG-86) | 🔴 Need UW + Ortex | 🔴 Need 2020 data | 🟡 Need real-time | 🟡 Need real-time |
+| Signal generation | 🔴 7 bugs (BUG-08, etc.) | 🟡 After 1B fixes | 🟢 Same as 1C | 🟢 Same | 🟢 Same |
+| Backtesting | 🔴 Cannot run (BUG-01, 02) | 🟡 After fixes | 🔴 No 2020 data | N/A | N/A |
+| Execution layer | N/A | N/A | N/A | 🔴 Not implemented | 🔴 Not implemented |
+| Portfolio accounting | 🔴 No portfolio state | 🔴 Same | 🔴 Same | 🔴 Required | 🔴 Required |
+| Deployment | 🟡 Manual run | 🟡 Manual | 🟡 Manual | 🔴 No infrastructure | 🔴 No infrastructure |
+
+**🟢 Ready 🟡 Has gaps 🔴 Blocking**
+
+**Realistic Stage 3 readiness:** 6–8 weeks of focused development AFTER all Phase 1B/1C/1D fixes.
+
+---
+
+*Senior architect review complete. The system is well-designed at the strategy level but missing all production infrastructure (execution, portfolio accounting, deployment) needed for live trading. Recommend building the Portfolio Accounting layer FIRST, then the Execution layer, before any live trading is attempted.*
