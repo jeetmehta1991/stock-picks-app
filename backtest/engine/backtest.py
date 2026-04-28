@@ -273,6 +273,8 @@ class BacktestEngine:
         #         no per-ticker limit, no direction hard block ──
         # Track open ticker+strategy combos to avoid exact duplicates only
         open_combos = {(t.ticker, t.strategy) for t in self.open_trades}
+        # Deduplication: track tickers already opened today (one position per ticker per day)
+        opened_today: set[str] = set()
 
         for cand in candidates[:self.max_cands]:
             ticker = cand["ticker"]
@@ -283,8 +285,39 @@ class BacktestEngine:
                 direction = strat_entry["direction"]
                 category  = strat_entry["category"]
 
+                # Skip avoid direction — conflicting signals, log as skipped
+                if direction == "avoid":
+                    self.skipped_trades.append({
+                        "ticker": ticker, "date": as_of,
+                        "strategy": strat_entry["strategy"],
+                        "reason": "avoid_conflicting_signals",
+                    })
+                    continue
+
+                # Crisis long exclusions — block long entries on specific tickers
+                # that are data-confirmed wrong-directional in crisis regime
+                if direction == "long" and crisis_flag:
+                    from backtest.config import CRISIS_LONG_EXCLUSIONS
+                    if ticker in CRISIS_LONG_EXCLUSIONS:
+                        self.skipped_trades.append({
+                            "ticker": ticker, "date": as_of,
+                            "strategy": strat_entry["strategy"],
+                            "reason": f"crisis_long_excluded_{ticker}",
+                        })
+                        continue
+
                 # Skip only exact duplicate — same ticker AND same strategy already open
                 if (ticker, strat_entry["strategy"]) in open_combos:
+                    continue
+
+                # Deduplication — one position per ticker per day (highest strategy count wins)
+                # Candidates are sorted by strategy_count desc, so first to fire wins
+                if ticker in opened_today:
+                    self.skipped_trades.append({
+                        "ticker": ticker, "date": as_of,
+                        "strategy": strat_entry["strategy"],
+                        "reason": "dedup_one_position_per_ticker_per_day",
+                    })
                     continue
 
                 # Regime flag — no hard block on any direction
@@ -420,6 +453,7 @@ class BacktestEngine:
                 )
                 self.open_trades.append(trade)
                 open_combos.add((ticker, strat_entry["strategy"]))
+                opened_today.add(ticker)
 
     # ──────────────────────────────────────────────────────────────────────
     # HELPERS

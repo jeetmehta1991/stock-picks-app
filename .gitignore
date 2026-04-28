@@ -29,3 +29,8 @@ Thumbs.db
 .env
 .venv/
 venv/
+
+# Large checkpoint files — committed manually only when needed
+output_1b_batch*/trade_log_checkpoint.csv
+output_1b_batch*_test/trade_log_checkpoint.csv
+*.log

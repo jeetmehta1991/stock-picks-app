@@ -183,10 +183,14 @@ class ClosedTrade:
     cnn_fg_label:         str = "Neutral"
 
 
-def _pnl(entry, exit_p, direction):
+def _pnl(entry, exit_p, direction, hold_days=0):
     if direction == "long":
         return (exit_p - entry) / entry * 100
-    return (entry - exit_p) / entry * 100
+    # Short PnL minus daily borrow cost
+    from backtest.config import SHORT_BORROW_COST_PER_DAY
+    raw = (entry - exit_p) / entry * 100
+    borrow_cost = SHORT_BORROW_COST_PER_DAY * max(hold_days, 1)
+    return raw - borrow_cost
 
 
 def check_circuit_breakers(
@@ -288,7 +292,7 @@ def close_trade(
     fail_reason: str = "",
 ) -> ClosedTrade:
     """Convert an OpenTrade to a ClosedTrade with full performance metrics."""
-    pnl   = _pnl(trade.entry_price, exit_price, trade.direction)
+    pnl   = _pnl(trade.entry_price, exit_price, trade.direction, days)
     win   = pnl > 0
     days  = (exit_date - trade.entry_date).days
 

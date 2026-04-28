@@ -414,3 +414,21 @@ OUTPUT_FILES = {
     "circuit_breaker_log":     "circuit_breaker_log.csv",
     "site_picks":              "site_picks_{date}.json",
 }
+
+# ─────────────────────────────────────────────────────────────────────────────
+# CRISIS LONG EXCLUSIONS — tickers blocked from long entries in crisis regime
+# Data-confirmed: 0–17% win rates in crisis. Short entries still allowed.
+# ─────────────────────────────────────────────────────────────────────────────
+CRISIS_LONG_EXCLUSIONS = {
+    "VXX",   # Volatility ETF — buying volatility long in crisis is wrong-directional
+    "TLT",   # Long-term Treasury ETF — falling in rate-hike crisis
+    "EEM",   # Emerging Markets ETF — first to sell off in crisis
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SHORT BORROW COST
+# Daily cost deducted from short trade PnL to simulate borrow fees.
+# S&P 500 large caps: ~0.25-1% annualised = 0.001–0.004% per day.
+# Using 0.005% per day (~1.8% annualised) as conservative estimate.
+# ─────────────────────────────────────────────────────────────────────────────
+SHORT_BORROW_COST_PER_DAY = 0.005   # percent per day deducted from short PnL
