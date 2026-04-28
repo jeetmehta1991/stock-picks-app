@@ -10,7 +10,11 @@ This project builds an automated swing trading system for US equities from scrat
 
 **Swing trading** means holding positions for days to weeks — not intraday. We buy when a stock shows multiple signals of strength and sell when the trailing stop triggers or the setup breaks down. We are not day traders.
 
-**The core philosophy:** Find edges that have worked consistently across multiple market conditions. Validate them rigorously. Deploy them with strict risk management. Accept that drawdowns will happen and manage them, rather than trying to avoid them entirely.
+**The core philosophy:** Buy the dip, sell the rip — profit from both oversold bounces and overbought reversals across all market regimes. Find edges that have worked consistently across multiple market conditions. Validate them rigorously. Deploy them with strict risk management. Accept that drawdowns will happen and manage them, rather than trying to avoid them entirely.
+
+**Long and short:** Every strategy evaluates three states — long (buy), short (sell), or avoid (conflicting signals). In a crisis, when everything is falling, the system looks for short opportunities. In a rally, it looks for longs. When signals conflict, it does nothing. This is how professional traders operate across all market conditions.
+
+**Broker note:** Short selling requires a broker that supports it. Wealthsimple Canada does not support short selling as of 2026. Backtesting includes shorts. For live trading of short strategies, switch to IBKR Canada (planned for Stage 4). Wealthsimple remains viable for long-only live trading.
 
 ---
 
