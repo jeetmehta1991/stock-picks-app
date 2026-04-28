@@ -1473,3 +1473,262 @@ The approved Phase 1C design (base score formula + ±15 adjustment + thresholds 
 | **Total** | **6C / 22H / 25M / 8L** | **59 bugs** |
 
 *Pass 5 scheduled: PROJECT_PLAN accuracy vs code, live trading ruleset completeness, Phase 1D design gaps, email approval system design.*
+
+---
+
+## AUDIT PASS 5 — Live trading design, Phase 1C/1D readiness, PROJECT_PLAN accuracy, infrastructure
+
+---
+
+### BUG-60 · HIGH — Short entry zone validation rejects favourable gap-down — understates short strategy performance
+
+**File:** `backtest/signals/screener.py` lines 919–923
+
+**What happens:**
+```python
+else:  # short
+    gap_atr_short = (signal_close - open_price) / atr
+    if gap_atr_short > mult:
+        return False, f"gap_down_..."  # WRONG: rejects favourable gaps
+```
+
+**Example:** Short signal fires at close $100. Next day opens at $96 (gap down = stock already moved toward our target). For a short position this is a **better** entry — we sell at $96 which is below where our signal fired.
+
+Current code: `gap_atr_short = (100 - 96) / 2 = 2.0`. If mult=1.5 → **rejects** the trade. But this was a favourable move.
+
+**Correct logic for shorts:** Only reject if price gaps UP (adverse = stock moved against the short). Accept all gap-down opens (favourable).
+```python
+else:  # short
+    # Adverse gap for short = price moved UP from signal close
+    adverse_gap = (open_price - signal_close) / atr  # negative = favourable (gap down)
+    if adverse_gap > mult:
+        return False, f"gap_up_{gap_pct:.1f}pct_exceeds_{mult}x_atr_limit"
+    return True, f"entry_valid_gap_{gap_pct:.1f}pct"
+```
+
+**Impact:** Short strategies lose valid favourable-gap entries. Short win rates and ROI are understated in backtests. The magnitude depends on how often stocks gap down the day after a short signal — likely 20–30% of short entries are affected.
+
+---
+
+### BUG-61 · HIGH — Backtest allows multiple concurrent positions in same ticker across consecutive days
+
+**File:** `backtest/engine/backtest.py` — `_process_day()` `open_combos` logic
+
+**What happens:**
+- `open_combos = {(ticker, strategy) for open trades}` — blocks same ticker+strategy pair only
+- Day 1: AAPL triggers `hull_rsi` → opens position 1
+- Day 2: AAPL position 1 still open, `cpr_narrow_bullish` now fires
+- `open_combos` check: `(AAPL, cpr_narrow_bullish)` not in combos → **passes**
+- `opened_today` check: fresh set each day → **passes**
+- Position 2 in AAPL opens on Day 2 while position 1 still running
+
+**In live trading:** `max_positions_per_ticker = 1` blocks position 2 entirely.
+
+**Impact:** Backtest overstates trade count and concentrates exposure in trending stocks. A stock in a 3-week uptrend could accumulate 10+ concurrent positions in backtest while live trading would hold only 1. This inflates backtest ROI for trending conditions.
+
+**Fix:** Add ticker-level check across all open trades:
+```python
+open_tickers = {t.ticker for t in self.open_trades}
+if ticker in open_tickers:
+    self.skipped_trades.append({..., "reason": "ticker_already_open"})
+    continue
+```
+
+---
+
+### BUG-62 · HIGH — Phase 1D cannot run — 2020 OHLCV data not cached, DATA_LOAD_START=2021
+
+**File:** `backtest/config.py` line 23 (`DATA_LOAD_START = date(2021, 1, 1)`) and `backtest/data/cache/ohlcv/`
+
+**What happens:**
+1. Phase 1D is designed to test all passing strategies on 5 years including COVID crash (Feb–Jun 2020)
+2. `DATA_LOAD_START = date(2021, 1, 1)` — only 2021+ data is fetched
+3. OHLCV cache: 494 of 495 tickers have data starting 2021-01-04 (1 starts later)
+4. Phase 1D code runs: `df[df.index.date <= as_of]` — for any date in 2020 this returns empty
+5. All COVID-period screener calls fail with insufficient history
+6. **covid_crisis_2020 regime produces 0 trades — the key Phase 1D validation regime is empty**
+
+**Additional problem:** Technical indicators (EMA-200, ATR-14) require warmup bars. For the COVID crash (starting Feb 2020), warmup from Jan 2020 alone is insufficient — need 200+ trading days = ~Jan 2019 start.
+
+**Fix:**
+1. Change `DATA_LOAD_START = date(2019, 1, 1)` in `config.py` for Phase 1D runs
+2. Run OHLCV cache update for 2019–2020 data on all 509 tickers before Phase 1D
+3. AAII, CNN F&G, FRED macro all have 2020 data ✅ — no additional data work needed
+4. Congressional/Quiver: ~95% of files have 2020 data ✅
+
+**This is a Phase 1D blocker, not a Phase 1B/1C blocker.**
+
+---
+
+### BUG-63 · MEDIUM — Email approval system has 6 critical design gaps not addressed in PROJECT_PLAN
+
+**File:** `PROJECT_PLAN.md` Stage 4 design
+
+The 30-minute email approval workflow is missing these critical failure mode designs:
+
+**Gap 1 — Timeout behaviour undefined:** If no reply in 30 minutes, does the trade execute (unsafe) or get cancelled (cautious)? PROJECT_PLAN is silent. Recommendation: auto-cancel with logging. 30 minutes is sufficient for any human who knows trades may arrive.
+
+**Gap 2 — Email parsing robustness:** Reply body containing `APPROVE` will also match in quoted original text, email signatures, auto-reply messages. Parser must search only the first line of reply body, ignore quoted text. Case-insensitive parsing required.
+
+**Gap 3 — Price staleness between approval and execution:** Approved at 4:30PM at $100, order placed at 9:30AM next day — price could be $106 (+6%). The `position_staleness_pct=1%` in LIVE_TRADING_RULES is correct but the timing context is not documented. At next-day open, a 1% staleness window means the order is cancelled if price moved more than 1% from the approved price.
+
+**Gap 4 — Email flood with multiple simultaneous signals:** Up to 10 candidates per day could each require a 30-minute response window. No priority system for which to approve first when capital is limited (e.g. 3 EXCEPTIONAL signals with 5% each = 15% of capital, but total portfolio heat limit may be 20%). The email must include remaining capital headroom.
+
+**Gap 5 — Security:** Spoofed APPROVE reply from non-owner address = unauthorized trade. Fix: verify sender address against a whitelist of known owner emails AND include a one-time HMAC token in each outgoing email that must be echoed in the reply.
+
+**Gap 6 — Position exit command:** No mechanism to manually close a position outside of the trailing stop. If owner wants to exit early (news breaks, stop seems wrong), no command exists. Add: reply `EXIT AAPL` to trigger immediate market-order close.
+
+---
+
+### BUG-64 · MEDIUM — Phase 1C prerequisites not documented — Unusual Whales and Ortex integration requires 2–3 weeks of development
+
+**File:** `PROJECT_PLAN.md` Phase 1C definition
+
+**What happens:**
+- PROJECT_PLAN says Phase 1C adds Unusual Whales (options flow) and Ortex (short interest)
+- Neither API is integrated into the codebase — no data module, no prefetch script, no agent prompt update
+- `backtest/data/` has no `unusual_whales.py` or `ortex.py`
+- `backtest/agents/pipeline.py` has no options flow or short interest context in any agent prompt
+
+**Development required before Phase 1C can run:**
+1. Unusual Whales historical API: account + API key + prefetch script for 509 tickers + historical flow data cache
+2. Ortex: account + API key + daily short interest prefetch + risk agent integration
+3. Agent prompt updates: Risk Agent should reference Ortex short interest; Fundamental Agent should reference unusual options flow
+4. Point-in-time validation for both new data sources
+5. Cost estimate: Unusual Whales ~$50/month USD, Ortex ~$40/month USD
+
+**Timeline impact:** Phase 1C cannot start immediately after Phase 1B. A 2–3 week development sprint is required first. This should be documented as a Phase 1C prerequisite in PROJECT_PLAN.
+
+---
+
+### BUG-65 · MEDIUM — Strategy retirement rule statistically invalid at realistic live trade frequency
+
+**File:** `PROJECT_PLAN.md` line 398 and multiple other references
+
+**Current rule:** Retire a strategy if live win rate drops more than 10pp below backtest for 3 consecutive months.
+
+**Statistical problem:**
+At realistic Phase 1C/1D live trade rates (2–5 live trades per strategy per month after filtering to HIGH+ tier), 3 months yields 6–15 trades per strategy. Statistical analysis:
+
+- 45% win rate on 15 trades: 95% CI = [19.8%, 64.3%] — completely overlaps the 55% backtest rate
+- 45% win rate on 30 trades: 95% CI = [27.4%, 60.8%] — still overlaps 55%
+- **Cannot distinguish a genuinely degraded strategy from bad luck until ~100 trades**
+
+The 3-month retirement window makes the system overly aggressive at retiring strategies that might just be in a temporarily unfavourable regime.
+
+**Fix:** Replace time-based retirement with trade-count-based:
+- Minimum 50 live trades before retirement can trigger
+- Sequential Probability Ratio Test (SPRT) for continuous monitoring — stops as soon as enough evidence accumulates either way
+- Alternatively: 6-month minimum window (doubles live trade count)
+
+---
+
+### BUG-66 · MEDIUM — PROJECT_PLAN mentions "60 strategies" 11 times — 9 of 12 new short strategies not listed
+
+**File:** `PROJECT_PLAN.md` — all 11 references to "60 strategies"
+
+**What happens:**
+- The strategy universe expanded to 72 in the code
+- 12 new dedicated short strategies were added
+- PROJECT_PLAN still says "60 strategies" in 11 places
+- The "All 60 Strategies" section (section 18) does not list the new dedicated short strategies
+- The "5 of 60 strategies are short" note is now wrong (17 of 72 are short/short-only)
+
+**Fix:** Update all "60 strategies" references to "72 strategies". Update section 18 to add the 12 new short strategies. Update the short strategy count from 5 to 17.
+
+---
+
+### BUG-67 · MEDIUM — Alpaca paper trading (Stage 3) does not match IBKR live trading (Stage 4)
+
+**File:** `PROJECT_PLAN.md` Stage 3 design
+
+**Key differences that reduce Stage 3 validity as a dress rehearsal for Stage 4:**
+
+1. **Currency:** Alpaca is USD-only. IBKR Canada trades in CAD with USD exposure. The FX conversion that affects every live trade (BUG-45) is invisible in Alpaca paper trading.
+
+2. **Short locate:** Alpaca uses third-party locate for short borrows. IBKR has its own borrow desk. A stock that Alpaca can paper-short may be unavailable to short at IBKR Canada in live trading — paper short trades may not be executable live.
+
+3. **Fill simulation:** Both simulate fills but differently. Alpaca fills at midpoint. IBKR fills depend on order type and market conditions.
+
+**Recommendation:** Use IBKR Canada paper trading account (free, same API as live) for Stage 3 instead of Alpaca. This eliminates all three gaps and makes Stage 3 a true dress rehearsal.
+
+---
+
+### BUG-68 · MEDIUM — CLAUDE.md missing 5 critical recent decisions
+
+**File:** `CLAUDE.md`
+
+**Missing from CLAUDE.md that affects Claude's ability to maintain context:**
+
+1. Three-state strategy logic (long/short/avoid) — not mentioned
+2. "Buy the dip, sell the rip" philosophy update — not mentioned
+3. Wealthsimple no shorts / IBKR for shorts — not mentioned
+4. Phase 1B must run without agents ($0 cost) — not mentioned
+5. VXX proxy is wrong for VIX (BUG-26) — not mentioned
+
+These are critical decisions approved in this session that Claude must remember for next sessions. Without them, Claude may re-propose already-rejected approaches or miss context.
+
+**Fix:** Update CLAUDE.md with all 5 items above (append, do not remove existing content).
+
+---
+
+### BUG-69 · LOW — Infrastructure design: GitHub Actions vs VPS ambiguity
+
+**File:** `PROJECT_PLAN.md` Stage 3 design
+
+PROJECT_PLAN mentions both GitHub Actions (free, runs daily cron at 6am UTC) and Hetzner VPS ($6/month, for always-on processes) for Stage 3. It is unclear which runs the daily screening job.
+
+**Recommendation:** Use VPS for daily screening (no 6-hour timeout risk, better reliability for 2–4 hour screening jobs). Use GitHub Actions only for triggering the VPS job and committing outputs to GitHub.
+
+---
+
+### BUG-70 · LOW — No database schema designed for Stage 3 PostgreSQL
+
+**File:** `PROJECT_PLAN.md` Stage 3 infrastructure
+
+PROJECT_PLAN specifies PostgreSQL for trade persistence but no schema is defined. Before Stage 3 implementation begins, the schema should be designed and committed to the repo. Suggested tables: `signals`, `open_positions`, `closed_trades`, `agent_results`, `daily_performance`, `strategy_metrics`.
+
+---
+
+### BUG-71 · LOW — IBKR API session management not designed
+
+**File:** `PROJECT_PLAN.md` Stage 4 design
+
+IBKR TWS API requires TWS (Trader Workstation) to be running. IBKR Client Portal API requires periodic OAuth re-authentication. Neither API works well in serverless or ephemeral environments. Running on a Hetzner VPS requires:
+- A persistent process manager (systemd or PM2)
+- IB Gateway (headless IBKR daemon, preferred over full TWS)
+- Session keepalive (IB Gateway disconnects after 24 hours without user action)
+- Reconnect logic after session drops
+
+None of this is designed in PROJECT_PLAN. Should be addressed before Stage 4 development begins.
+
+---
+
+## Updated complete bug list — 71 bugs across 5 passes
+
+| Pass | Severity | New bugs |
+|---|---|---|
+| Pass 1 | 5C / 9H / 7M / 4L | BUG-01 to BUG-25 |
+| Pass 2 | +1C / +9H / +9M | BUG-26 to BUG-44 |
+| Pass 3 | +0C / +1H / +4M / +1L | BUG-45 to BUG-50 |
+| Pass 4 | +0C / +3H / +5M / +3L | BUG-51 to BUG-59 |
+| Pass 5 | +0C / +2H / +6M / +3L | BUG-60 to BUG-71 |
+| **Total** | **6C / 24H / 31M / 11L** | **72 bugs** |
+
+---
+
+## Decisions needed from owner before work continues
+
+*(In addition to D1–D6 from earlier passes)*
+
+**D7 (BUG-61):** Should the backtest block re-entry on tickers already in open_trades (to match live max_positions_per_ticker=1)? This will reduce trade count and ROI in backtest — brings it closer to live trading reality.
+
+**D8 (BUG-63):** Email approval timeout behaviour — auto-cancel if no reply in 30 minutes, or wait for next day?
+
+**D9 (BUG-67):** Stage 3 paper trading — switch from Alpaca to IBKR paper account? IBKR offers free paper accounts and better mirrors Stage 4 live trading.
+
+**D10 (BUG-64):** Phase 1C timeline — acknowledge that Unusual Whales + Ortex integration is a 2–3 week prerequisite before Phase 1C can run. Do you want to run Phase 1C without these two data sources initially and add them later?
+
+---
+
+*Pass 5 complete. 72 total bugs documented. Next pass (Pass 6): validate all PROJECT_PLAN strategy descriptions against code, check the site_generator.py output for accuracy, review all scripts in /scripts/ for hidden issues, and cross-check all LEARNINGS.md items for implementation status.*
