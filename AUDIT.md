@@ -1096,3 +1096,145 @@ BUG-27 (regime confidence), BUG-34 (regime strategy weighting), BUG-36 (regime w
 ---
 
 *Audit Pass 2 complete. Next pass: agent prompt quality, Quiver data point-in-time correctness, walk-forward window boundary handling, sector criteria calibration, and live trading rules gap analysis.*
+
+---
+
+## AUDIT PASS 3 — Integration, live trading gaps, signal accuracy, point-in-time
+
+*Continued from Pass 2. References: Pardo (2008), D'Avolio (2002), SEC disclosure rules.*
+
+---
+
+### BUG-45 · MEDIUM — FX currency risk not modelled
+
+**Files:** `backtest/config.py` LIVE_TRADING_RULES, no FX module exists
+
+**What happens:**
+- Portfolio is CAD-denominated (Wealthsimple / IBKR Canada)
+- All trades are in USD (US equities)
+- CAD/USD moved from 0.79 → 0.72 in 2022 (−8.9% adverse for CAD investor)
+- A 5% gain on a US stock in 2022 becomes 5% − 8.9% FX effect = −3.9% in CAD terms
+- Backtest treats all PnL as if there is no currency conversion
+- **Result: all backtest returns are overstated for a CAD-based account in years when USD strengthens**
+
+**Quantification:** In 2022 alone, FX drag was ~8.9%. A strategy showing +5% backtest ROI in 2022 actually returned approximately −3.9% in CAD. In 2023-2024 the drag reversed slightly. Over the full backtest period the net FX impact depends on the period.
+
+**Fix (low effort):** Multiply all PnL by the CAD/USD rate change over the hold period. Cache CAD/USD historical data (available via yfinance `CADUSD=X`). Apply at close_trade time:
+```python
+fx_return = cadusd_at_exit / cadusd_at_entry  # e.g. 0.72/0.79 = 0.911
+pnl_cad = pnl_usd * fx_return
+```
+
+---
+
+### BUG-46 · MEDIUM — `fetch_info_bulk` info cache uses current market_cap, not historical
+
+**File:** `backtest/data/universe.py` lines 185–230 and `data/cache/info_cache.json`
+
+**What happens:**
+- `info_cache.json` stores current (April 2026) market_cap for 70 tickers
+- Only 70 of 509 tickers are in cache; remaining 439 return `market_cap=0`
+- `get_transaction_cost()` uses `market_cap=0` → falls to `default` cost (0.001) which equals `large_cap`
+- For stocks that were mid-cap in 2022 (market_cap $2-10B), transaction costs are understated
+- Current NVDA market_cap = $4.9T (large_cap); 2022 NVDA = ~$300B (still large_cap → no issue)
+- But smaller S&P 500 members: e.g. stock at $3B in 2022 (mid_cap, 0.0015 cost), now at $12B (large_cap, 0.001 cost) → cost understated
+
+**Impact:** LOW for most S&P 500 stocks (all are large-cap by 2026). MEDIUM for names that graduated from mid-cap to large-cap during the backtest period.
+
+**Fix:** Either (a) accept the simplification and document it, or (b) populate the full 509-ticker info cache before the backtest run.
+
+---
+
+### BUG-47 · MEDIUM — VXX in universe creates self-referencing regime paradox
+
+**File:** `backtest/config.py` ETFS list and CRISIS_LONG_EXCLUSIONS
+
+**What happens:**
+1. VXX is in the trading universe (it's included in ETFS and run_full.sh)
+2. VXX close price is used as the VIX proxy for regime classification (BUG-26)
+3. VXX strategies can fire (e.g. `death_cross_50_200_volume` short on VXX)
+4. **Result: the same instrument that defines the regime also generates trade signals in that regime — circular dependency**
+
+More fundamentally: VXX is a volatility ETP with severe roll decay. It loses ~5–10% per year in normal markets from futures roll costs. Backtesting VXX with the same strategy logic as equities is invalid — it behaves differently from stocks.
+
+**Fix:** Remove VXX from the strategy universe entirely. Keep it only as the VIX proxy (once BUG-26 is fixed to use realised vol, VXX proxy is no longer needed at all). VXX is already in CRISIS_LONG_EXCLUSIONS for longs — add it to a short exclusion list too.
+
+---
+
+### BUG-48 · MEDIUM — Sector `Volatility` and `Emerging Markets` not in sector criteria profiles
+
+**File:** `backtest/config.py` SECTOR_PASSING_CRITERIA
+
+VXX is classified as "Volatility" sector, EEM as "Emerging Markets". Neither appears in any sector criteria profile. Both fall through to `medium_volatility` defaults (55% WR, 20% DD, 1.3 PF).
+
+VXX: annualised volatility ~50–60% — should use `high_volatility` criteria (50% WR, 25% DD)
+EEM: annualised volatility ~25–30%, emerging market risk — should use `high_volatility` criteria
+
+**Fix:** Add both to the `high_volatility` sector list in SECTOR_PASSING_CRITERIA.
+
+---
+
+### BUG-49 · LOW — FX risk not mentioned in EXPLANATION.md or PROJECT_PLAN.md
+
+**Files:** `EXPLANATION.md`, `PROJECT_PLAN.md`
+
+The plain-English guide and project plan make no mention of currency risk for a CAD-based investor trading US equities. This is a meaningful risk that affects actual live trading returns.
+
+**Fix:** Add a "Currency Risk" section to EXPLANATION.md and note in PROJECT_PLAN.md.
+
+---
+
+### BUG-50 · LOW — `position_staleness_pct=1%` in live rules has no backtest equivalent
+
+**File:** `backtest/config.py` LIVE_TRADING_RULES
+
+In live trading, if entry price moved >1% since signal generation (end-of-day to next day's order placement), the order is cancelled. In the backtest, the entry gap filter (`validate_entry_zone`) handles this partially via ATR multiples — but the 1% staleness check is not enforced.
+
+**Impact:** Negligible for swing trading (1% moves are common and acceptable at next-day open). More relevant for strategies where exact entry price matters (pivot-based).
+
+---
+
+### End-to-end simulation confirmation
+
+With current code on `main` (commit `b430ab36`), a full backtest run will:
+
+1. Load data correctly ✅
+2. Classify ALL days as "crisis" (VXX price >> 40) ❌
+3. Screen universe correctly ✅
+4. Crash on first long trade candidate with `NameError: crisis_flag` ❌
+5. Catch the exception and log the day as failed (no trades open) ❌
+6. Even if BUG-01 fixed: crash on every trade close with `UnboundLocalError: days` ❌
+7. Produce an empty trade log after processing all 1,060 trading days ❌
+
+**The system is completely non-functional for trade generation as of the last commit.**
+
+---
+
+## Final summary — all 50 bugs
+
+**6 CRITICAL:** BUG-01, 02, 03, 04, 05, 26
+**15 HIGH:** BUG-06, 07, 08, 09, 10, 11, 12, 13, 14, 27, 28, 29, 30, 31, 32, 33, 34 *(note: 17 items, numbered non-consecutively)*
+**19 MEDIUM:** BUG-15, 16, 17, 18, 19, 20, 21, 35, 36, 37, 38, 39, 40, 41, 45, 46, 47, 48
+**10 LOW:** BUG-22, 23, 24, 25, 42, 43, 44, 49, 50
+
+---
+
+## What needs owner decisions (not just code fixes)
+
+These are architectural or strategic decisions requiring explicit approval before implementation:
+
+**D1 (BUG-26):** VIX proxy — use SPY 20-day realised vol OR fetch actual ^VIX. **Choose one.**
+
+**D2 (BUG-36):** Regime-aware strategy weighting — do you want mean reversion strategies suppressed in trending markets? This changes which strategies fire and requires adding regime filters to screener.
+
+**D3 (BUG-34):** Mean reversion in crisis — currently allowed (buy-the-dip philosophy). Literature says these fail in crisis. **Keep as-is per approved philosophy, or add extra confirmation conditions?**
+
+**D4 (BUG-40):** Short stop distance — currently same 10% as longs. Literature recommends 7% for shorts. **Change or keep?**
+
+**D5 (BUG-45):** FX modelling — model CAD/USD impact on returns or treat backtest as USD-denominated for simplicity?
+
+**D6 (BUG-47):** VXX in universe — remove from strategy universe entirely, or keep as a tradeable instrument?
+
+---
+
+*Audit Pass 3 complete. 50 total bugs documented. Next scheduled pass: automated on session reset.*
