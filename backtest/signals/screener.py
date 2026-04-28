@@ -659,7 +659,145 @@ def strat_williams_stoch_dual(s):
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# STRATEGY REGISTRY — all 60 strategies
+# CATEGORY 8: DEDICATED SHORT STRATEGIES (12 new — sell the rip)
+# ─────────────────────────────────────────────────────────────────────────────
+
+# --- Trend-following shorts (4) ---
+
+def strat_death_cross_50_200_volume(s):
+    fires = (s.get("ema_50_200_death_cross") and s.get("vol_spike_2x"))
+    return _strat(fires, "short", "trend",
+        ["ema_50_200_death_cross", "vol_spike_2x"],
+        ["EMA-50 crossed below EMA-200 — death cross",
+         "Volume 2× confirms institutional selling on the cross",
+         "Structural shift to bearish — strong follow-through expected"])
+
+
+def strat_supertrend_macd_short(s):
+    fires = (not s.get("supertrend_bullish") and
+             not s.get("macd_12_26_9_bullish") and
+             s.get("adx", 0) > 20)
+    return _strat(fires, "short", "trend",
+        ["supertrend_bearish", "macd_bearish", "adx>20"],
+        ["Supertrend indicator bearish — trend confirmed downward",
+         "MACD histogram negative — momentum aligned bearish",
+         "ADX above 20 — trend has real strength, not a sideways drift"])
+
+
+def strat_ichimoku_cloud_breakdown(s):
+    fires = (s.get("ichi_below_cloud") and
+             s.get("ichi_tk_cross_dn") and
+             s.get("adx_trending"))
+    return _strat(fires, "short", "trend",
+        ["ichi_below_cloud", "ichi_tk_cross_dn", "adx_trending"],
+        ["Price broke below Ichimoku Cloud — full bearish structure",
+         "Tenkan crossed below Kijun — short-term momentum confirming",
+         "ADX trending — downtrend has strength"])
+
+
+def strat_parabolic_sar_flip_short(s):
+    fires = (s.get("psar_flip_dn") and s.get("adx_trending"))
+    return _strat(fires, "short", "trend",
+        ["psar_flip_dn", "adx_trending"],
+        ["Parabolic SAR flipped above price — trend reversed downward",
+         "Clean unambiguous signal — SAR is now resistance",
+         "ADX trending — reversal has follow-through potential"])
+
+
+# --- Momentum shorts (3) ---
+
+def strat_macd_crossover_short(s):
+    fires = s.get("macd_12_26_9_crossover_dn")
+    return _strat(fires, "short", "momentum",
+        ["macd_12_26_9_crossover_dn"],
+        ["MACD 12/26/9 histogram crossed below zero",
+         "Momentum turned negative — trend shift to downside",
+         "High-probability momentum entry — catching the shift early"])
+
+
+def strat_hull_rsi_short(s):
+    fires = (not s.get("hull_bullish") and
+             not s.get("price_above_hull") and
+             s.get("rsi_9", 50) < 50)
+    return _strat(fires, "short", "momentum",
+        ["hull_bearish", "price_below_hull", "rsi_9<50"],
+        ["Hull MA falling — fast trend confirmed bearish",
+         "Price below Hull MA — momentum aligned downward",
+         "RSI-9 below 50 — below midpoint, no upside momentum"])
+
+
+def strat_stochrsi_overbought_short(s):
+    fires = (s.get("stochrsi_overbought") and
+             s.get("stochrsi_cross_dn") and
+             s.get("rsi_14", 50) > 45)
+    return _strat(fires, "short", "momentum",
+        ["stochrsi_overbought", "stochrsi_cross_dn", "rsi_14>45"],
+        ["StochRSI above 80 — momentum exhausted at overbought",
+         "K crossed below D — momentum turning down",
+         "RSI-14 not oversold — room to fall"])
+
+
+# --- Breakdown shorts (3 — no long equivalent) ---
+
+def strat_donchian_breakdown_short(s):
+    fires = (s.get("dc10_breakout_dn") and
+             s.get("vol_spike_15x") and
+             not s.get("macd_12_26_9_bullish"))
+    return _strat(fires, "short", "breakout",
+        ["dc10_breakout_dn", "vol_spike_1.5x", "macd_bearish"],
+        ["Price broke 10-day Donchian low — downside breakout",
+         "Volume 1.5× confirms institutional selling pressure",
+         "MACD negative — momentum confirms the breakdown"])
+
+
+def strat_52w_low_breakdown(s):
+    fires = (s.get("break_52w_low") and s.get("vol_spike_2x"))
+    return _strat(fires, "short", "breakout",
+        ["break_52w_low", "vol_spike_2x"],
+        [f"Price broke 52-week low — serious capitulation signal",
+         "Volume 2× confirms institutional distribution",
+         "Stocks at new 52-week lows tend to continue lower"])
+
+
+def strat_prev_day_low_breakdown(s):
+    fires = (s.get("below_prev_low") and
+             s.get("vol_spike_15x") and
+             not s.get("above_vwap"))
+    return _strat(fires, "short", "breakout",
+        ["below_prev_low", "vol_spike_1.5x", "below_vwap"],
+        ["Price broke below previous day's low — failed to hold support",
+         "Volume confirms sellers in control",
+         "Below VWAP — intraday sellers dominating"])
+
+
+# --- Confluence shorts (2) ---
+
+def strat_camarilla_rsi_obv_short(s):
+    fires = (s.get("near_cam_r3") and
+             s.get("rsi_14", 50) > 65 and
+             not s.get("obv_bullish") and
+             not s.get("cmf_positive"))
+    return _strat(fires, "short", "confluence",
+        ["near_cam_r3", "rsi_14>65", "obv_falling", "cmf_negative"],
+        ["Camarilla R3 — strongest institutional resistance",
+         "RSI-14 overbought above 65",
+         "OBV falling and CMF negative — four systems confirming short"])
+
+
+def strat_cpr_narrow_momentum_short(s):
+    fires = (s.get("cpr_narrow") and
+             s.get("below_cpr") and
+             s.get("rsi_14", 50) < 50 and
+             not s.get("macd_12_26_9_bullish"))
+    return _strat(fires, "short", "confluence",
+        ["cpr_narrow", "below_cpr", "rsi_14<50", "macd_bearish"],
+        ["Narrow CPR — directional day expected",
+         "Price below CPR — bearish professional bias",
+         "RSI<50 and MACD bearish — four signals confirming bearish day"])
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# STRATEGY REGISTRY — all 72 strategies
 # ─────────────────────────────────────────────────────────────────────────────
 
 ALL_STRATEGIES = {
@@ -730,6 +868,22 @@ ALL_STRATEGIES = {
     "camarilla_rsi_obv":        strat_camarilla_rsi_obv,
     "supertrend_ichimoku_adx":  strat_supertrend_ichimoku_adx,
     "williams_stoch_dual":      strat_williams_stoch_dual,
+    # Dedicated shorts — Trend (4)
+    "death_cross_50_200_volume":    strat_death_cross_50_200_volume,
+    "supertrend_macd_short":        strat_supertrend_macd_short,
+    "ichimoku_cloud_breakdown":     strat_ichimoku_cloud_breakdown,
+    "parabolic_sar_flip_short":     strat_parabolic_sar_flip_short,
+    # Dedicated shorts — Momentum (3)
+    "macd_crossover_short":         strat_macd_crossover_short,
+    "hull_rsi_short":               strat_hull_rsi_short,
+    "stochrsi_overbought_short":    strat_stochrsi_overbought_short,
+    # Dedicated shorts — Breakdown (3)
+    "donchian_breakdown_short":     strat_donchian_breakdown_short,
+    "52w_low_breakdown":            strat_52w_low_breakdown,
+    "prev_day_low_breakdown":       strat_prev_day_low_breakdown,
+    # Dedicated shorts — Confluence (2)
+    "camarilla_rsi_obv_short":      strat_camarilla_rsi_obv_short,
+    "cpr_narrow_momentum_short":    strat_cpr_narrow_momentum_short,
 }
 
 STRATEGY_CATEGORIES = {
