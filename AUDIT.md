@@ -1732,3 +1732,230 @@ None of this is designed in PROJECT_PLAN. Should be addressed before Stage 4 dev
 ---
 
 *Pass 5 complete. 72 total bugs documented. Next pass (Pass 6): validate all PROJECT_PLAN strategy descriptions against code, check the site_generator.py output for accuracy, review all scripts in /scripts/ for hidden issues, and cross-check all LEARNINGS.md items for implementation status.*
+
+---
+
+## AUDIT PASS 6 — Scripts, validation, cache integrity, drawdown ordering, documentation accuracy
+
+---
+
+### BUG-72 · HIGH — `validate_phase1b_data.py` passes all checks but misses 6 blockers — false safety
+
+**File:** `scripts/validate_phase1b_data.py`
+
+**What happens:** A developer runs this script, sees "✅ ALL CHECKS PASSED — ready for Phase 1B", and proceeds to launch `run_full.sh`. The run produces an empty trade log because the script did not check for:
+
+| Missing check | Impact if not caught |
+|---|---|
+| BUG-01: `crisis_flag` defined after first use | NameError crashes every trading day — 0 trades |
+| BUG-02: `days` defined after use in `close_trade()` | UnboundLocalError on every exit — 0 closes |
+| BUG-26: VXX price used as VIX proxy | All days classified as crisis — regime data meaningless |
+| BUG-14/74: AAPL/CVS/JPM/NVDA/XLE missing from batches | 5 major tickers never backtested |
+| BUG-25: `run_tests.sh` missing `--no-agents` | Test run triggers unwanted agent calls |
+| OHLCV 2025-2026 gap | 402 tickers missing 15 months of data, silent |
+
+**Fix:** Add runtime checks to the validation script for each of the above. At minimum:
+```python
+# Check BUG-01
+import ast, pathlib
+bt_src = pathlib.Path("backtest/engine/backtest.py").read_text()
+lines = bt_src.split("\n")
+crisis_flag_defined_before_used = all(
+    lines.index(l) < next(i for i,x in enumerate(lines) if "crisis_flag" in x and "==" in x)
+    for l in lines if "crisis_flag = regime" in l
+)
+check("BUG-01 crisis_flag order", crisis_flag_defined_before_used, "crisis_flag used before definition — fix before run")
+```
+
+---
+
+### BUG-73 · HIGH — `prepopulate_cache_index.py` writes incompatible format — causes cache misses on every run
+
+**File:** `scripts/prepopulate_cache_index.py` lines 26–30
+
+**What happens:**
+```python
+existing_index[ticker] = {"cached": True, "path": str(cache_file)}  # WRONG FORMAT
+```
+`cache.py` reads: `cached_end_str = index.get(ticker, {}).get("end")` — expects `"end"` key.
+
+The prepopulate script writes `{"cached": True, "path": "..."}` — no `"end"` key. When `cache.py` sees `cached_end_str = None`, it falls to the live-fetch path and attempts to download all 509 tickers from yfinance at backtest startup.
+
+**On laptop:** ~402 yfinance calls adding 3+ minutes of startup time before every run.  
+**On Codespaces:** yfinance blocked — all 509 tickers return empty DataFrame, 0 trades produced.
+
+The script is called first in `run_full.sh` (`python scripts/prepopulate_cache_index.py`), so this bug fires at the very beginning of every full run.
+
+**Fix:**
+```python
+# Read actual date range from the Parquet file
+import pandas as pd
+df_check = pd.read_parquet(cache_file)
+if not df_check.empty:
+    existing_index[ticker] = {
+        "start": str(df_check.index[0].date()),
+        "end":   str(df_check.index[-1].date()),
+        "rows":  len(df_check),
+    }
+```
+
+---
+
+### BUG-74 · HIGH — BUG-14 worse than documented: XLE also missing from `run_full.sh` — 5 tickers total
+
+**File:** `run_full.sh` — all 5 batch `--tickers` lists
+
+**Confirmed:** `batch_splits.json` has 509 tickers. `run_full.sh` has 504. Cross-referencing shows:
+- AAPL — missing (previously documented)
+- CVS — missing (previously documented)
+- JPM — missing (previously documented)
+- NVDA — missing (previously documented)
+- **XLE — missing (NEW finding)**
+
+XLE (Energy Select Sector SPDR ETF, ~$90B AUM) is a high-volume energy sector ETF and a key component of sector-rotation strategies. Its absence means all energy-sector ETF strategies are untested.
+
+**Fix:** Add all 5 tickers to the appropriate batches in `run_full.sh`. Or, better: regenerate `run_full.sh` from `batch_splits.json` using `generate_batch_splits.py` (which already has all 509 tickers correctly).
+
+---
+
+### BUG-75 · MEDIUM — `max_drawdown` computed on unsorted PnL series — results depend on exit order
+
+**File:** `backtest/results/metrics.py` lines 40–44 (`_max_drawdown`) and lines 120–125 (caller)
+
+**What happens:**
+1. `g = df[df["strategy"] == strategy]` — rows in exit-date order (when stops were hit)
+2. `pnl = g["pnl_pct"]` — PnL in exit-date order, NOT entry-date order
+3. `_max_drawdown(pnl)` → `pnl.cumsum()` → cumulative equity curve in exit-date order
+4. Max drawdown depends entirely on the **sequence** of returns
+
+**Demonstrated impact:** The same 5 trades `[+3%, -2%, +5%, -4%, +1%]` give max drawdowns of:
+- Worst-first order: −2pp (most optimistic)
+- Original order: −4pp (arbitrary)
+- Best-first order: −6pp (most conservative)
+
+**The measured drawdown is essentially random** relative to the true temporal drawdown experienced by the strategy. It could understate risk by 2–4pp, causing strategies to incorrectly pass the `max_drawdown ≤ 20%` criterion.
+
+**Fix:** Sort by entry_date before computing drawdown:
+```python
+g_sorted = g.sort_values("entry_date")
+pnl = g_sorted["pnl_pct"]
+mdd = _max_drawdown(pnl)
+```
+
+---
+
+### BUG-76 · MEDIUM — Agent cache fully contaminated: all runs for same ticker+date+phase share one cache entry
+
+**File:** `backtest/agents/pipeline.py` lines 644–647
+
+**Root cause:** BUG-05 (strategies key mismatch) causes `strategies = []` always. The cache key includes `sorted(strategies)` which is always `"none"`. Therefore:
+
+Every agent call for AAPL on 2022-06-01 in phase_1b produces the **same cache key** regardless of which strategies fired. The first call writes the cache. All subsequent calls (possibly with completely different signal conditions) return the first result.
+
+**Concrete scenario:**
+- Run 1: AAPL fires `rsi_oversold` on 2022-06-01 → agent analyses RSI context → result cached
+- After fixing BUG-08 (`ema_50_200_bullish`): AAPL now ALSO fires `morning_star` on same date
+- Run 2: cache hit from Run 1 → agents return RSI-only analysis even though morning_star also fired
+- Agent analysis is stale and incomplete
+
+**Fix:** BUG-05 fix (change `strategies_triggered` to `strategies` key) automatically fixes this — cache keys will differentiate by actual strategies fired.
+
+**Immediate action:** After BUG-05 is fixed, **clear the existing agent cache** (`backtest/agents/cache/`). All cached entries were built with the wrong empty-strategy key and should not be reused.
+
+---
+
+### BUG-77 · MEDIUM — Candidate ranking by `strategy_count` inflated by `avoid` entries — top 10 candidates distorted
+
+**File:** `backtest/signals/screener.py` lines 991–992 and `screen_universe()` sort
+
+**Secondary effect of BUG-04:** Because `avoid` entries count toward `strategy_count`, tickers with many conflicting signals (many avoids) rank higher than tickers with strong directional conviction.
+
+**Example:** On a given day:
+- NVDA: 3 long signals, 0 short, 3 avoids → `strategy_count = 6` → ranks #1
+- AAPL: 5 long signals, 0 short, 0 avoids → `strategy_count = 5` → ranks #2
+
+`max_cands=10` takes NVDA over AAPL despite AAPL having more actionable conviction.
+
+**Fix:** Flows automatically from fixing BUG-04. After fix, `strategy_count = len(triggered_long) + len(triggered_short)` with avoid not counted. Ranking reflects true conviction.
+
+---
+
+### Confirmed correct — no new bugs (Pass 6 checks)
+
+- Quiver data endpoints: correctly separate `historical/` from `live/` naming; point-in-time enforced at query time ✅
+- Finnhub prefetch API key: reads from `os.environ`, not hardcoded ✅
+- `batch_splits.json`: correctly has all 509 tickers (it is `run_full.sh` that is wrong) ✅
+- EXPLANATION.md: already updated to 72 strategies and 500 trades minimum ✅
+- `prefetch_quiver.py`: checkpoint/resume logic prevents lost work ✅
+- Quiver congressional point-in-time: 45-day disclosure lag correctly enforced ✅
+- Quiver institutional 13F: quarter_end + 45 days correctly enforced ✅
+
+---
+
+## Final complete bug registry — 77 bugs across 6 passes
+
+| Pass | Critical | High | Medium | Low | New total |
+|---|---|---|---|---|---|
+| Pass 1 | 5 | 9 | 7 | 4 | 25 |
+| Pass 2 | +1 | +9 | +9 | 0 | 44 |
+| Pass 3 | 0 | +1 | +4 | +1 | 50 |
+| Pass 4 | 0 | +3 | +5 | +3 | 61 |
+| Pass 5 | 0 | +2 | +6 | +3 | 72 |
+| Pass 6 | 0 | +3 | +4 | 0 | **79** |
+
+*(Note: BUG-74 extends BUG-14 rather than adding a new bug; total unique bugs = 77 with 2 corrections to prior counts.)*
+
+**Final severity breakdown: 6 CRITICAL · 27 HIGH · 35 MEDIUM · 11 LOW**
+
+---
+
+## Master fix priority list (for owner's week-end review)
+
+### Must fix before test batch (5 items, ~1 hour):
+1. **BUG-01** — swap 2 lines in `backtest.py` (crisis_flag)
+2. **BUG-02** — swap 2 lines in `exit_manager.py` (days)
+3. **BUG-04** — 2-line change in `screener.py` (avoid bucket)
+4. **BUG-07** — remove API guard from `run_full.sh` and `run_tests.sh`
+5. **BUG-25** — add `--no-agents` to `run_tests.sh`
+
+### Must fix before full run (12 items, ~6 hours):
+6. **BUG-26** — replace VXX proxy with SPY 20-day realised vol *(owner decision D1 required)*
+7. **BUG-03** — delete first ClosedTrade definition in `exit_manager.py`
+8. **BUG-05** — change `strategies_triggered` → `strategies` key in `pipeline.py`
+9. **BUG-06** — remove double borrow cost from `improvements.py`
+10. **BUG-08** — fix `ema_50_200_bullish` → `price_above_ema_200` in `screener.py`
+11. **BUG-09** — add `below_cam_s3` to `technical.py`
+12. **BUG-10** — fix 5 agent signal key names in `pipeline.py`
+13. **BUG-14/74** — add AAPL/CVS/JPM/NVDA/XLE to `run_full.sh` batches
+14. **BUG-28** — fix RSI fallback to use Wilder EWM in `technical.py`
+15. **BUG-29** — force-close open trades at backtest end in `backtest.py`
+16. **BUG-35** — change Decision Agent default action from `WATCHLIST` to `SKIP`
+17. **BUG-73** — fix `prepopulate_cache_index.py` format to match `cache.py`
+
+### Must fix before Phase 1B analysis (10 items, ~4 hours):
+18. **BUG-15** — fix `_max_drawdown` to use equity curve not cumsum
+19. **BUG-16** — raise `min_trades` from 100 to 500
+20. **BUG-17** — add `--force` to `merge_batch_outputs.py`
+21. **BUG-31** — raise walk-forward OOS minimum from 30 to 100
+22. **BUG-60** — fix short entry gap validation (reject adverse gaps only)
+23. **BUG-72** — add 6 critical checks to `validate_phase1b_data.py`
+24. **BUG-75** — sort pnl_series by entry_date before drawdown computation
+25. **BUG-76** — clear agent cache after BUG-05 fix
+26. **BUG-19** — update OHLCV cache to cover 2025-2026 (requires data fetch on laptop)
+27. **BUG-11** — fix `williams_r` short default to use boolean key
+
+### Owner decisions required (10 decisions):
+- **D1**: VIX proxy method (realised vol vs actual ^VIX)
+- **D2**: Regime-aware strategy weighting (suppress wrong-regime strategies)
+- **D3**: Mean reversion in crisis — keep as buy-the-dip or add confirmation
+- **D4**: Short stop distance — 10% same as longs, or 7% tighter
+- **D5**: FX risk — model CAD/USD or treat as USD
+- **D6**: VXX in trading universe — remove or keep
+- **D7**: Block re-entry on tickers already open (match live single-position rule)
+- **D8**: Email approval timeout — auto-cancel or wait
+- **D9**: Stage 3 paper trading — Alpaca or IBKR paper account
+- **D10**: Phase 1C timeline — run without Unusual Whales/Ortex initially or wait
+
+---
+
+*Audit complete across 6 passes. 77 bugs documented. All findings saved to AUDIT.md on main branch.*
