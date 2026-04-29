@@ -3484,3 +3484,718 @@ These 7 fixes alone would change the trade outcomes substantially. Comparing pos
 ---
 
 *Adversarial review complete. Total bugs documented: 108. Critical: 13. The backtesting engine produces results, but those results are not yet trustworthy.*
+
+---
+
+# AUDIT PASS 10 — Phase 1B Retrospective and Forward Plan
+
+This pass synthesises everything from passes 1-9 into:
+1. A concrete trade lifecycle showing every stage and which bugs intervened
+2. A review of every API used and every gap identified
+3. A review of every AI agent and what went wrong
+4. A complete set of process changes to prevent these classes of bugs going forward
+5. Concrete strategy improvements grounded in real-world trading systems
+
+---
+
+## PART 1 — A real trade lifecycle walkthrough
+
+To understand what went wrong in Phase 1B, here is one trade traced from input data to PnL, with every bug that intervened called out.
+
+**Trade selected:** BKR (Baker Hughes), `cpr_narrow_bullish`, entry 2022-01-03, exit 2022-01-14, hold 11 days, +2.56% PnL.
+
+### STEP 1 — Data ingestion (signal date: 2021-12-31, EOD)
+
+The engine slices OHLCV to `df.index.date <= 2021-12-31`. For BKR this gives ~250 days of history through end of 2021.
+
+**Recorded signals at trade time:**
+- `rsi_14` = 54.23
+- `cpr_width` = 0.0362 (narrow, ~0.17% of price)
+- `close` = $21.76 (above pivot $21.69)
+- `atr_14` = $0.67
+
+**Bug active in this step — silent data drift:**
+
+Re-querying the same `BKR.parquet` cache today gives `rsi_14 = 48.71` for the same date. The recorded value (54.23) differs from the current value (48.71) because yfinance's `auto_adjust=True` applies dividend adjustments to the *entire historical* series each time data is refetched.
+
+> **Implication:** The 34,727 existing trades cannot be exactly reproduced. The same code on the same date will give different signals depending on when the cache was refreshed. Any future "validation run" will produce different trades than the original 34,727.
+
+This is **a new bug** I'll formalise as **BUG-109 — Auto-adjust data drift**:
+
+```python
+# In data fetcher:
+yf.download(ticker, auto_adjust=True)   # WRONG - retroactively shifts history
+# Should be:
+yf.download(ticker, auto_adjust=False)  # then track adjustments separately
+# Or use Polygon/Tiingo with stable adjustment policy
+```
+
+### STEP 2 — Strategy evaluation
+
+`strat_cpr_narrow_bullish` checks: `cpr_narrow AND above_cpr AND rsi_14 > 50`. All true → fires long.
+
+**Bug active:** `strategy_count` increments by 1, but if any other strategies on BKR also fire, all are recorded as separate trades (BUG-102). For BKR on this date, 5 other strategies also fired.
+
+### STEP 3 — Preliminary tier assignment
+
+`strategy_count = 6` (5 long + 1 short across all strategies fired)
+`smart_money_score = 0` ← **BUG-103**: the engine has `if os.environ.get("QUIVER_API_KEY"): sm = smart_money_score(...)`. Without the env var set, the cached Quiver data (committed to git, ~500MB) is silently bypassed. All 7 prefetched datasets (insider, congressional, 13F, gov contracts, lobbying, wiki, WSB) ignored.
+
+`macro_score` = -6 (computed from VXX-as-VIX = 220 on this date, all NEGATIVE)
+
+Preliminary tier: **HIGH** (based on signal count + scores)
+
+### STEP 4 — Entry gap validation (the bug that should have caught this)
+
+Signal close: $21.76. Next day open: $23.00. Gap up: 5.7% = **1.85× ATR**.
+
+For pivot-category strategies, `ENTRY_GAP_ATR_MULT = 1.0` — gaps over 1.0× ATR should reject the entry. **1.85× exceeds this. Trade should have been rejected.**
+
+But the trade was opened anyway. Either `validate_entry_zone` wasn't called, or the gap was rounded, or this category mapping was wrong at the time. Either way, **BUG-110 — Entry gap filter not enforced**:
+
+```python
+# Missing call somewhere in _process_day:
+gap_pct = (next_open - signal_close) / signal_close
+gap_atr = abs(next_open - signal_close) / atr
+if direction == "long" and gap_atr > ENTRY_GAP_ATR_MULT[category]:
+    skipped_trades.append({"reason": f"gap_up_{gap_pct*100:.1f}pct_exceeds_{mult}x"})
+    continue   # <-- this continue is what's missing
+```
+
+### STEP 5 — AI agent pipeline (6 agents, sequential)
+
+**Technical Agent:** received `context_signals` built with wrong key names (`above_200ema` instead of `price_above_ema_200`), so the signals dict appears to have all `False` boolean fields. Agent reasons on degraded data. Score: 7/10 (anyway, because RSI was real).
+
+**Fundamental Agent:** earnings date returned None (yfinance fallback often fails inside backtest). Score: 5/10.
+
+**Sentiment Agent:** received:
+- `news_sentiment.available = False` (BKR not in 25-ticker AV cache)
+- `congressional_signal = "none"` ← **BUG-103** (Quiver gate)
+- `congressional_detail = []` ← **BUG-83** (inverted point-in-time filter)
+- AAII bull/bear ratio: real
+- CNN F&G: real
+
+Score: 3/10. Mostly mediocre because 95% of context is missing.
+
+**Risk Agent:** received `vix_value = 219.4` (VXX close, not actual VIX). The prompt says "VIX > 40 = crisis". Agent correctly classifies as severe crisis. **Score: 2/10 (floor).**
+
+This is **BUG-26 + BUG-52 working together**: data is wrong, agent reasons correctly on wrong data, output is determined entirely by the wrong input.
+
+**Bull/Bear Debate:** receives `price_context` built from wrong keys → debates as if BKR is "0.0% from 52-week high" and "0.0% from 52-week low" simultaneously. **BUG-51**.
+
+**Decision Agent:** combines all scores. Risk agent floor + sentiment gap → applies -15 adjustment. Tier downgrades HIGH → MEDIUM_HIGH.
+
+> **The agent stack added zero value to this trade.** Six API calls (~$0.002 cost in Haiku), a downgrade by exactly one tier, and the trade outcome was identical (BUG-104: position size doesn't depend on tier).
+
+### STEP 6 — Order placement (simulated)
+
+Entry: $23.00 (next-day open) with 0.08% slippage = effective entry $23.018.
+Initial stop: $23.018 × 0.90 = **$20.72** (10% trailing).
+Position size: **$10,000 fixed** ← BUG-104 (no tier-based sizing applied).
+
+In live trading this would be:
+- Email sent to owner with tier MEDIUM_HIGH = 3% position
+- $300,000 account × 3% = $9,000 position
+- Owner replies APPROVE within 30 minutes
+- IBKR market order at next day open
+- But all of this Stage 4 infrastructure doesn't exist (BUG-93)
+
+### STEP 7 — Hold period (11 days)
+
+Daily, the engine:
+1. **Updates trailing stop** using today's close ← **BUG-78**: lookahead. Stop moves UP based on EOD close.
+2. **Checks if stop hit** using today's intraday low against the just-updated stop.
+
+This sequence creates the lookahead. Live trading would check the *yesterday* stop level all day, then update at EOD.
+
+Highest close reached during BKR's hold: ~$24.83 on Jan 7. New trailing stop: $24.83 × 0.95 (with circuit breaker tightening) = $23.59. On Jan 14, today's low touched $23.59 → exit triggered.
+
+### STEP 8 — Exit (perfect fill assumed)
+
+Exit price: **$23.59 (exactly the stop level)** ← BUG-79: zero slippage, perfect fill assumption.
+
+In live trading on a stop-market order in a stock moving down:
+- Stop $23.59 triggered
+- Next print at $23.42 (5 cents lower bid) → fill at $23.42
+- Real PnL: (23.42 - 23.018) / 23.018 = +1.75% (not 2.56%)
+
+That's a 0.81% backtest inflation on this single trade. Across 35K trades, this compounds to 25-75pp aggregate ROI inflation (BUG-79).
+
+### STEP 9 — PnL recorded
+
+```
+pnl_pct = (23.59 - 23.00) / 23.00 × 100 = 2.56%
+pnl_dollar = 2.56 × 100 = $256.00
+```
+
+Position size of $10,000 hardcoded. **No application of confidence tier** (4% for HIGH would mean $12,000; MEDIUM_HIGH 3% would mean $9,000). The downgrade by the agents was meaningless.
+
+Trade logged as 1 of 6 rows for (BKR, 2022-01-03). Each row has:
+- Same entry price, same exit price, same PnL
+- Different `strategy` field
+- 5 of these 6 will dedupe to one position in live trading
+
+### LIFECYCLE SUMMARY
+
+For one $256 win, the engine:
+- Used data that has since drifted (BUG-109)
+- Bypassed the entry gap filter that should have rejected it (BUG-110)
+- Treated 5 simultaneous-strategy fires as 5 independent trades (BUG-102)
+- Ignored ~$500MB of prefetched smart-money data (BUG-103)
+- Fed all 6 AI agents wrong data via wrong keys (BUG-10, BUG-51)
+- Reasoned on VXX as VIX, generating a guaranteed crisis classification (BUG-26)
+- Made 6 agent API calls for a tier change that didn't affect outcomes (BUG-104)
+- Used trailing-stop logic that updated before checking — favourable lookahead (BUG-78)
+- Assumed perfect fill at the stop price (BUG-79)
+- Charged entry slippage but no exit slippage (BUG-80)
+
+**Of these 10 issues, NONE produced an error or warning.** All silent.
+
+---
+
+## PART 2 — APIs used: comprehensive review and gaps
+
+### Live data APIs (queried during prefetch, not at backtest runtime)
+
+| API | What it provides | Issues found |
+|---|---|---|
+| **yfinance** | OHLCV, market_cap, earnings | • `auto_adjust=True` causes data drift (BUG-109)<br>• Earnings calls live during backtest, not pre-fetched (BUG-13)<br>• Missing 2020 data for Phase 1D (BUG-62)<br>• 2025-2026 gap for 402 tickers (BUG-19)<br>• market_cap snapshot for only 70 tickers (BUG-46)<br>• Codespaces blocks yfinance — silent fallback to live calls fails (BUG-19) |
+| **FRED (St. Louis Fed)** | Macro: yields, CPI, fed funds, etc. | • CPI dated by observation, not release — 10-day lookahead (BUG-86)<br>• No use of FRED ALFRED for true point-in-time vintages |
+| **Alpha Vantage** | News sentiment | • Free tier rate limit caps coverage at 25 tickers<br>• No Phase 1B coverage for 484/509 tickers<br>• Sentiment Agent operates on `available=False` for 95% of trades |
+| **Finnhub** | News sentiment fallback | • All 509 cached files are EMPTY (BUG-53)<br>• Prefetch script likely failed silently<br>• API key in URL but reads from os.environ correctly |
+| **Quiver** | Insider, congressional, 13F, gov contracts, lobbying, wiki, WSB | • Cache prefetched correctly ✅<br>• But silently bypassed at runtime (BUG-103: env var gate)<br>• `congressional_detail` filter inverted (BUG-83)<br>• "Live" vs "historical" endpoint naming confusing — both return historical, OK |
+| **Anthropic API** | Claude AI agents | • No retry/backoff (would fail on rate limits)<br>• No `temperature=0` set (non-deterministic)<br>• No structured outputs (manual JSON parse)<br>• Cache key collision from BUG-05 (all keys identical) |
+
+### Static data sources (CSV)
+
+| Source | What it provides | Issues |
+|---|---|---|
+| **AAII sentiment CSV** | Weekly bull/bear/neutral % | Properly point-in-time, point-in-time enforced ✅ |
+| **CNN Fear & Greed CSV** | Daily sentiment 0-100 | Properly point-in-time ✅ |
+| **S&P 500 tickers CSV** | Static universe (482 tickers) | Replacement for blocked Wikipedia scraping ✅ |
+
+### APIs needed but not built
+
+| API | Stage required | Status |
+|---|---|---|
+| **Unusual Whales** | Phase 1C | Not integrated |
+| **Ortex** | Phase 1C | Not integrated |
+| **IBKR TWS API** | Stage 4 live | Not integrated |
+| **Alpaca paper API** | Stage 3 paper | Not integrated |
+| **CAD/USD FX feed** | All stages (live) | Not modelled (BUG-45) |
+| **Real-time market data** | Stage 4 live | Not integrated |
+| **Email send/receive** | Stage 4 approval | Not integrated |
+
+### CRITICAL API ARCHITECTURAL GAPS
+
+1. **No abstraction layer.** Each API's prefetch script is bespoke. There's no `DataProvider` interface that swappable providers (yfinance vs Polygon vs Tiingo) implement. This makes it hard to switch providers when one fails.
+
+2. **No data quality gates.** Every prefetch script writes to cache without validation. A failed download (truncated, wrong dates, all NaN) silently corrupts the cache.
+
+3. **No rate limiting infrastructure.** Each script implements its own sleep loop. Some have retries, some don't. Should be a shared `RateLimiter` class.
+
+4. **No vintage tracking.** When was AAPL's 2022-06-15 close last refreshed? Was it 2022-06-15 (correct) or 2026-04-29 (after splits/dividends)? No metadata.
+
+5. **No API health monitoring.** When Finnhub returns 0 articles for all 509 tickers, the system doesn't detect that the API integration is broken.
+
+---
+
+## PART 3 — AI Agent review: where each agent failed
+
+### 6 agents, 6 distinct failure modes
+
+#### 1. Technical Agent — degraded data, useless output
+
+**What it should do:** Score the technical setup (trend, momentum, support/resistance) on a 1-10 scale.
+
+**What went wrong:**
+- BUG-10: `context_signals` built with wrong key names. Agent receives all-False booleans for trend signals.
+- BUG-51: Compounded by Bull/Bear which uses similar wrong keys.
+- Output: Score based primarily on `strategies_triggered: []` (BUG-05) — empty list.
+
+**Best practice fix:**
+```python
+# Use Pydantic or TypedDict for context — fail loudly on missing keys
+class TechnicalContext(BaseModel):
+    rsi_14: float
+    macd_bullish: bool
+    price_above_ema_200: bool
+    # ... typed fields
+    
+    class Config:
+        extra = "forbid"  # raises if extra keys
+        
+ctx = TechnicalContext(**signals)  # ValidationError if any missing
+```
+
+#### 2. Fundamental Agent — earnings calls fail, agent flying blind
+
+**What it should do:** Assess earnings proximity, valuation, growth.
+
+**What went wrong:**
+- `days_to_next_earnings()` calls yfinance live during backtest
+- yfinance often returns None for older dates (data gaps)
+- Result: agent receives `earnings_days: unknown` for ~70% of trades
+- Cannot meaningfully assess earnings risk
+
+**Best practice fix:**
+- Pre-fetch earnings dates for entire universe at start of backtest
+- Use Finnhub /earnings endpoint or Polygon /earnings/calendar (both reliable)
+- Cache to Parquet, query point-in-time
+
+#### 3. Sentiment Agent — 95% missing news, contradictory point-in-time
+
+**What it should do:** Combine news, congressional, AAII, CNN F&G into a sentiment score.
+
+**What went wrong:**
+- BUG-53: 509 Finnhub files all empty → news available for 25 of 509 tickers
+- BUG-83: `congressional_detail` filter inverted (excludes most recent 45 days)
+- BUG-83: `congressional_signal` correct but uses different filter than detail
+- Agent shown contradictory pictures for same data
+
+**Best practice fix:**
+- Single point-in-time accessor for all smart money data:
+```python
+def get_smart_money_pit(ticker: str, as_of: date) -> SmartMoneyView:
+    """Single source of truth — same filter for signal and detail."""
+    cong = load_congressional(ticker)
+    available = cong[cong["filing_date"] <= as_of]  # ONE filter
+    return SmartMoneyView(
+        congressional_signal=compute_signal(available),
+        congressional_detail=available.tail(10).to_dict("records"),
+    )
+```
+
+#### 4. Risk Agent — completely miscalibrated due to VXX-as-VIX
+
+**What it should do:** Score macro risk based on VIX, yield curve, credit spreads, etc.
+
+**What went wrong:**
+- BUG-26: VXX price (~220-460) used as VIX (10-80 range)
+- Agent prompt: `"VIX > 40 = crisis"`
+- Every single 2022 day: vix_value > 200 → "crisis" → score floors at 2/10
+- BUG-52: Agent reasoning is correct, input data is wrong
+
+**Best practice fix:**
+- Use realised volatility from SPY (no VIX needed):
+```python
+def compute_realised_vol_pit(spy_df, as_of, window=20):
+    """Annualised realised vol from SPY returns."""
+    sliced = spy_df[spy_df.index.date <= as_of]
+    rets = sliced["close"].pct_change().dropna()
+    if len(rets) < window:
+        return None
+    return rets.tail(window).std() * (252 ** 0.5) * 100  # %
+```
+
+Or fetch actual `^VIX` ticker from yfinance (free, just not in current cache).
+
+#### 5. Bull/Bear Debate Agent — debates a stock at 0.0% from highs and 0.0% from lows simultaneously
+
+**What it should do:** Devil's advocate analysis of long and short cases.
+
+**What went wrong:**
+- BUG-51: Same wrong-key issue as Technical Agent
+- price_context shows `pct_from_52w_high: 0.0%, pct_from_52w_low: 0.0%`
+- Logically impossible — either at the highs OR at the lows, not both
+- Agent debates without any meaningful price context
+
+**Best practice fix:**
+- Same TypedDict/Pydantic approach as Technical Agent
+- Explicitly verify all keys present before agent invocation
+
+#### 6. Decision Agent — combines garbage into garbage
+
+**What it should do:** Final tier assignment combining all 5 prior agents.
+
+**What went wrong:**
+- Receives floor-scored Risk Agent (2/10) for every trade
+- Compounds to systematic -15 adjustment
+- 99.9% of trades downgraded by exactly 1 tier
+- BUG-35: default fallback action is `"WATCHLIST"` (invalid in engine)
+- Tier change has no PnL impact anyway (BUG-104)
+
+**Best practice fix:** Don't run the agent stack until upstream data quality is verified. Add a pre-flight check:
+
+```python
+def preflight_data_quality_check(ticker, as_of, ctx):
+    """Refuse to run agents if data is broken."""
+    if ctx["vix_value"] > 100:
+        raise DataQualityError(f"VIX={ctx['vix_value']} suspicious — likely VXX proxy bug")
+    if ctx["smart_money_score"] is None:
+        raise DataQualityError("Smart money data unavailable — gate may be wrong")
+    if not ctx.get("price_context", {}).get("nearest_resistance"):
+        raise DataQualityError("price_context missing — likely key mismatch")
+```
+
+### AI integration: what real-world systems do
+
+Comparing this implementation to production AI-trading systems:
+
+| Practice | Current | Production benchmark |
+|---|---|---|
+| **Structured outputs** | Manual JSON parse, regex fallbacks | Use Anthropic `tool_use` API with strict schema |
+| **Determinism** | Default temperature | Always `temperature=0` for production trading |
+| **Prompt evaluation** | None — prompts written once | A/B test prompts on holdout set, measure decision agreement with human reviewer |
+| **Cost monitoring** | Estimated via line counts | Real cost tracked per call; alert on cost spikes |
+| **Output validation** | Parse JSON, that's it | Validate score ranges, verify required fields, sanity check (e.g., upgrades only when underlying scores warrant) |
+| **Retry strategy** | None | Exponential backoff on rate limits, 429s, 5xx |
+| **Caching** | File-per-call | Redis with TTL + version + content-hash key |
+| **Fallback behaviour** | Default dict | Human review queue for failed agent calls |
+| **Drift monitoring** | None | Track agent score distributions weekly; alert on shifts |
+
+---
+
+## PART 4 — Process changes to prevent recurrence
+
+The 108 bugs found across 9 passes share a few root causes. Each cause needs a process change, not just a code fix.
+
+### Root cause 1: Silent failures via `.get(default)`
+
+**Bugs caused:** BUG-08, 09, 10, 51, 105, 108
+
+**Fix:** Mandate typed contexts everywhere. Add to coding standards:
+
+```python
+# CHANGE - make this style a hard rule:
+from pydantic import BaseModel
+
+class TechnicalContext(BaseModel):
+    rsi_14: float
+    macd_bullish: bool
+    
+    class Config:
+        extra = "forbid"
+
+# Always use validation, never raw .get():
+ctx = TechnicalContext.model_validate(raw_signals)  # crashes loudly on missing
+```
+
+**Process change:** Pre-commit hook that flags `dict.get(key, default)` patterns in agent context construction. Reject PRs that introduce them.
+
+### Root cause 2: No verification scripts before runs
+
+**Bugs caused:** BUG-72, every "ran but produced empty results" bug
+
+**Fix:** Pre-run CI that exercises critical paths.
+
+```python
+# scripts/preflight_check.py — must pass before any run
+
+def test_engine_can_open_a_trade():
+    """Smoke test: feed a known-good signal, verify trade opens."""
+    ...
+
+def test_close_trade_long_short():
+    """Test that close_trade computes correct PnL for both directions."""
+    ...
+
+def test_regime_classifier_distinguishes_crisis_from_bear():
+    """Test with realistic VIX values 15, 25, 35, 45 — verify all 4 regimes."""
+    ...
+
+def test_smart_money_score_returns_nonzero_when_cache_present():
+    """Sanity: with cached Quiver data, score should not be 0."""
+    ...
+```
+
+**Process change:** GitHub Actions runs preflight on every push. No manual run allowed if preflight failing.
+
+### Root cause 3: No reproducibility test
+
+**Bugs caused:** BUG-91, BUG-109
+
+**Fix:** Add reproducibility CI:
+```python
+# tests/test_reproducibility.py
+def test_two_runs_same_seed_identical_output():
+    out1 = run_backtest(tickers=["SPY"], dates=("2022-01-01", "2022-03-31"), seed=42)
+    out2 = run_backtest(tickers=["SPY"], dates=("2022-01-01", "2022-03-31"), seed=42)
+    pd.testing.assert_frame_equal(out1.trades, out2.trades)
+```
+
+**Process change:** Set random seeds at engine init. Use `auto_adjust=False` for cached OHLCV. Snapshot data for tests.
+
+### Root cause 4: No portfolio-level testing
+
+**Bugs caused:** BUG-95, BUG-96, BUG-101, BUG-104
+
+**Fix:** Build a `Portfolio` class first. Force backtest to operate through it.
+
+```python
+# Portfolio is the SINGLE source of truth
+class Portfolio:
+    def __init__(self, capital_usd: float, max_positions: int = 10):
+        self.cash = capital_usd
+        self.positions: dict[str, Position] = {}
+        self.max_positions = max_positions
+    
+    def can_open(self, ticker: str, position_size_pct: float) -> tuple[bool, str]:
+        if len(self.positions) >= self.max_positions:
+            return False, "max_positions_reached"
+        if ticker in self.positions:
+            return False, "ticker_already_open"
+        required = self.equity * position_size_pct
+        if required > self.cash:
+            return False, "insufficient_cash"
+        return True, "ok"
+```
+
+**Process change:** No PR may bypass the Portfolio class. Every order placement must call `portfolio.can_open()` first.
+
+### Root cause 5: Documentation drift from code
+
+**Bugs caused:** BUG-22, 23, 24, 49, 66, 68
+
+**Fix:** Documentation is generated from code, not maintained separately.
+
+```python
+# Generate "60 strategies" section from code:
+def generate_strategy_doc():
+    out = []
+    for strat in ALL_STRATEGIES:
+        out.append(f"## {strat.name} ({strat.category})\n{strat.description}\n")
+    return "\n".join(out)
+
+# Run on commit; fail if PROJECT_PLAN.md out of sync
+```
+
+**Process change:** All counts, lists, parameters in docs are auto-generated. Reviewer rejects PRs that hand-edit auto-generated sections.
+
+### Root cause 6: Bug-finding happens after large runs, not during development
+
+**Fix:** Adopt an "always validatable" principle. Any change must include:
+- A unit test that fails without the change
+- A regression test for any bug fixed (using the bug's number as the test name)
+
+```python
+# tests/regression/
+def test_BUG_01_crisis_flag_defined_before_use():
+    ...
+
+def test_BUG_26_vix_proxy_uses_real_vix():
+    ...
+```
+
+**Process change:** PR template requires "Bug fix? Add `test_BUG_NNN_*` regression test" checkbox.
+
+---
+
+## PART 5 — Strategy improvements grounded in real-world systems
+
+The current strategy universe is mostly classical TA (RSI, MACD, pivot, Bollinger). Real-world quant funds and prop shops use these as a foundation but layer on much more. Here's what to consider.
+
+### Strategy improvement 1: Replace overlapping technical strategies with orthogonal factors
+
+**The problem:** Many of the 72 strategies fire on the same days for the same reasons. They're not 72 independent strategies — they're 72 noisy versions of "stock is trending" or "stock is oversold." This is why 88% of trades are overlapping (BUG-101).
+
+**Real-world approach:** Build a factor model. Identify orthogonal signals:
+- **Momentum factor:** 12-1 momentum (12-month return excluding most recent month, classic Asness)
+- **Mean reversion factor:** 5-day reversal (5-day return inverted)
+- **Quality factor:** ROE, ROA, accruals, debt
+- **Value factor:** P/E, P/B, EV/EBITDA
+- **Low-volatility factor:** Inverse trailing volatility
+- **Sentiment factor:** News + insider + congressional aggregate
+- **Macro factor:** Yield curve regime, credit spreads
+
+Each factor produces a per-stock score. Combine via weighted sum. This is what AQR, Two Sigma, and most multi-factor funds do.
+
+The 72 technical strategies become ONE input (technical factor) in this model. Drastically reduces overlap.
+
+### Strategy improvement 2: Position sizing based on confidence AND risk
+
+**Current:** Fixed $10K per trade.
+
+**Real-world (Kelly criterion):**
+```
+position_size = (edge - cost) / variance
+```
+
+For each strategy, compute:
+- `edge`: expected return given the signal fired (from backtest)
+- `cost`: transaction cost (slippage + commission)
+- `variance`: variance of return given signal fired
+
+Strategies with high edge + low variance get higher allocation. Pure Kelly is too aggressive — use **half-Kelly** (industry standard).
+
+### Strategy improvement 3: Volatility-targeted position sizing
+
+**Current:** % of capital regardless of stock volatility.
+
+**Real-world:** Equal risk contribution. A volatile stock gets a smaller position so risk is constant across positions.
+
+```python
+def position_size_vol_targeted(ticker, ohlcv, target_daily_vol_pct=0.5):
+    """Size position so daily portfolio vol from this position = target."""
+    daily_returns = ohlcv["close"].pct_change().tail(60)
+    stock_daily_vol = daily_returns.std()
+    target_dollar_vol = target_daily_vol_pct / 100 * portfolio.equity
+    position_size = target_dollar_vol / stock_daily_vol
+    return min(position_size, portfolio.equity * 0.10)  # cap at 10% notional
+```
+
+### Strategy improvement 4: Regime-conditional strategy weighting
+
+**Current:** All 72 strategies fire equally in all regimes (BUG-34, BUG-36).
+
+**Real-world:** Each strategy has documented "regime fitness." E.g.:
+- Mean reversion: works in neutral/sideways, fails in trends
+- Momentum: works in trends, fails in sideways
+- Quality factor: works in bear/crisis, less effective in late-cycle bull
+
+Map each strategy to regimes where it has historical edge. Apply higher weight in those regimes, lower in others.
+
+```python
+STRATEGY_REGIME_WEIGHTS = {
+    "rsi_oversold": {"bull": 1.0, "neutral": 0.7, "bear": 0.3, "crisis": 0.1},
+    "momentum_breakout": {"bull": 1.0, "neutral": 0.5, "bear": 0.2, "crisis": 0.0},
+    "ttm_squeeze": {"bull": 0.8, "neutral": 1.0, "bear": 0.6, "crisis": 0.4},
+    # ...
+}
+```
+
+### Strategy improvement 5: Use AI agents for what they're actually good at
+
+**Current:** Agents score every trade on 1-10 scales, then a Decision Agent combines them. 99.9% of trades treated identically.
+
+**Better use:** Let agents add value where rules can't.
+
+| Use case | Why an LLM helps |
+|---|---|
+| **Earnings call analysis** | Read transcripts, extract sentiment shifts |
+| **News context** | Distinguish "stock down on company-specific bad news" from "stock down on market beta" |
+| **Sector narrative shifts** | Detect when an industry's narrative changes (e.g., AI rotation in 2023) |
+| **Anomaly explanation** | When a strategy fires unusually often, agent explains why |
+| **Risk scenario analysis** | "What if Fed pivots? Is this position more or less exposed?" |
+
+**Bad uses:**
+- Numerical scoring on 1-10 scales (use formulas)
+- Combining 5 sub-scores into a final score (use weights)
+- Yes/no trade approval (use rules with explicit thresholds)
+
+The current pipeline uses agents for the bad uses. Restructure: rules make the trade decision, agents add narrative context for human review and edge cases.
+
+### Strategy improvement 6: Better backtest validation methodology
+
+Real production trading uses these techniques the current system doesn't:
+
+- **Combinatorial Purged Cross-Validation (Lopez de Prado):** N-fold CV with purge buffer between train and test, no leak
+- **Deflated Sharpe Ratio:** Adjusts for multiple-testing in strategy selection
+- **Bootstrap path simulation:** Generate 10,000 alternative paths via bootstrap resampling, check robustness
+- **Stress testing:** Replay 2008, 2020 crash scenarios; require strategies to survive
+- **Out-of-sample monitoring:** Track live-vs-backtest performance ratios continuously
+- **Change-point detection:** Detect when a strategy's edge has degraded; auto-retire
+
+### Strategy improvement 7: Implement portfolio constraints
+
+The current backtest had **1,500+ concurrent positions**. Production trading has hard limits.
+
+```python
+# Real production portfolio constraints:
+PORTFOLIO_CONSTRAINTS = {
+    "max_positions": 10,                    # absolute count
+    "max_sector_concentration": 0.30,       # 30% per sector  
+    "max_single_position": 0.05,            # 5% per stock
+    "min_position_size_usd": 1000,          # min trade size
+    "max_correlation": 0.70,                # block adding high-correlation positions
+    "max_daily_loss_usd": 0.02 * equity,    # 2% daily loss limit (kill switch)
+    "min_cash_reserve_pct": 0.10,           # always keep 10% cash
+    "max_leverage": 1.0,                    # no leverage in Stage 1-3
+    "country_concentration": {"USA": 0.95}, # max US exposure
+}
+```
+
+### Strategy improvement 8: Project plan revisions
+
+Based on findings, here's what should change in PROJECT_PLAN.md:
+
+1. **Phase 1B's 60-strategy validation is structurally compromised.** The existing 34,727 trades aren't usable. After fixes, re-run is needed before declaring any strategy validated.
+
+2. **Phase 1C should NOT add Unusual Whales + Ortex yet.** First fix Phase 1B and verify the existing data plumbing works. Adding more APIs to a system with 100+ bugs compounds the problem.
+
+3. **Stage 3 paper trading needs explicit pre-work.** PROJECT_PLAN treats it as a deployment milestone, but the entire infrastructure (OMS, broker adapter, portfolio class) doesn't exist. **Estimated 6-8 weeks of dedicated development before Stage 3 can begin.**
+
+4. **Single-person maintainability matters.** This is a solo project. Adding 7 APIs, 6 AI agents, 72 strategies, 5 phases produces a system that exceeds single-person debugging capacity. Simplify or accept that you need help.
+
+5. **Add an explicit "Phase 0" called Foundation:**
+   - Build Portfolio class
+   - Build Order Management System (paper-only first)
+   - Build data quality validation
+   - Build deterministic test harness
+   - **THEN** validate strategies (Phase 1)
+
+The current ordering — strategies first, infrastructure later — is backward. Real production teams build infrastructure first.
+
+---
+
+## PART 6 — Forward-looking checklist
+
+Before you run anything else, complete this checklist:
+
+### Critical fixes (no run is meaningful without these)
+- [ ] BUG-01 — `crisis_flag` order
+- [ ] BUG-02 — `days` order  
+- [ ] BUG-26 — VXX proxy → realised vol or real VIX
+- [ ] BUG-78 — Trailing stop sequence (check before update)
+- [ ] BUG-101 — Cross-day ticker dedup
+- [ ] BUG-103 — Smart money gate
+- [ ] BUG-110 — Entry gap filter enforcement
+
+### Process changes (prevent recurrence)
+- [ ] Add Pydantic schema validation for all agent contexts
+- [ ] Set random seed in engine init
+- [ ] Use `auto_adjust=False` for cached OHLCV
+- [ ] Add preflight check script run by CI
+- [ ] Add regression test per fixed bug
+- [ ] Auto-generate strategy docs from code
+
+### Architecture changes (build before more strategies)
+- [ ] Implement `Portfolio` class with capital tracking
+- [ ] Implement order state machine (Pending → Sent → Filled)
+- [ ] Implement position reconciliation
+- [ ] Build broker adapter interface (Alpaca/IBKR)
+- [ ] Add monitoring + kill switch
+
+### Strategy improvements (after fixes verified)
+- [ ] Reduce 72 strategies to ~5-7 orthogonal factors
+- [ ] Implement Kelly-based position sizing
+- [ ] Add regime-conditional weights
+- [ ] Restructure agents to focus on narrative analysis
+- [ ] Add Combinatorial Purged Cross-Validation
+
+---
+
+## PART 7 — The honest summary
+
+The Phase 1B run that produced 34,727 trades was a **simulation of a system that doesn't reflect how the live trading would work**. It:
+
+- Used the wrong data for VIX (VXX price)
+- Bypassed all smart money signals (env var gate)
+- Never enforced position limits (1,500+ concurrent)
+- Never enforced position sizing (fixed $10K per trade)
+- Never enforced entry gap filters (tested example exceeded limit)
+- Allowed multiple strategies on same ticker as separate trades (3.5× duplicates)
+- Allowed cross-day stacking on same ticker (88% overlapping)
+- Used trailing-stop logic with intraday lookahead
+- Assumed perfect stop fills (zero slippage on triggers)
+- Had silent exception handling that hides errors
+- Used data that has since drifted (no longer reproducible)
+
+**Of these issues, none produced a single error or warning during the run.** The engine ran to completion, generated outputs, populated the website, and "succeeded." This is the most concerning finding: **the system has no observability for its own correctness.**
+
+The path forward isn't to fix bugs faster. It's to add the structural pieces (Portfolio, Order Management, data validation, schema enforcement, deterministic tests) that **prevent this class of bug from existing**. The current 108 bugs are symptoms of those structural absences.
+
+---
+
+## Final bug count after Pass 10
+
+| Pass | New | Cumulative |
+|---|---|---|
+| Pass 1-9 | 108 | 108 |
+| Pass 10 | +2 (BUG-109 data drift, BUG-110 gap filter) | **110** |
+
+**Severity breakdown: 14 CRITICAL · 39 HIGH · 45 MEDIUM · 12 LOW**
+
+---
+
+*Phase 1B retrospective complete. The audit phase is fully exhausted. The system needs structural rework before another run is meaningful.*
