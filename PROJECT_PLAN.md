@@ -33,6 +33,332 @@ This project builds an automated swing trading system for US equities from scrat
 
 ---
 
+## REVISED PLAN FOR LIMITED-FUNDS LIVE TRADING (April 2026)
+
+**This section supersedes the original 5-Stage Roadmap for the realistic case: backtest the strategies, deploy live with $10K-50K of real money, accept that institutional-quality validation is not the goal — getting to live trading safely is.**
+
+The original plan (Sections 4-23) was designed for a more ambitious target: 5 phases with $263 CAD/month operating cost, full agent stack at every phase, 6-8 weeks of dedicated infrastructure development before Stage 3. After the audit findings (110 bugs, 14 CRITICAL), that plan needs to be simplified for the limited-funds use case.
+
+### The actual goal
+
+**Run real money on this system. $10,000-$50,000 CAD. Accept some losses. Iterate.**
+
+You are not building a hedge fund. You are building a personal algo trading system. The validation bar is "does it not blow up?" not "does it match institutional Sharpe ratios?"
+
+### What the audit means for your goal
+
+The audit found 110 bugs but **most don't block your goal**. Here's the reality check:
+
+**Bugs that genuinely block you:**
+- BUG-01, 02 (system crashes) — must fix before any run
+- BUG-26 (VXX as VIX) — must fix; ~3 lines of code
+- BUG-78 (trailing stop lookahead) — must fix; reorder 2 calls
+- BUG-101 (88% trade overlap) — must fix; add ticker check
+
+**Bugs that matter for live trading but you can defer:**
+- BUG-93/94/95 (no execution layer, no portfolio class, no paper layer) — these are the 6-8 weeks of infrastructure work; the work is real but you can do it in parallel with validation
+- BUG-103 (smart money gate) — fix is 1 line; smart money signals are nice-to-have not blocker
+- BUG-104 (position sizing not applied) — only matters once Portfolio class exists
+
+**Bugs that are nice to have but not critical for limited-funds:**
+- All Pass 5-8 architecture concerns (data drift, observability, testing discipline) — these matter at scale, not at $10K
+- Pass 11 strategy improvements (orthogonal factors, half-Kelly) — these are sophistication, not survival
+
+### Revised stages (replaces original 5-stage roadmap)
+
+```
+STAGE A — Statistical edge audit (1-2 days, $0)
+   ↓
+STAGE B — Critical bug fixes (1 week, $0)
+   ↓
+STAGE C — Re-run Phase 1B with fixes ($0)
+   ↓
+STAGE D — Build minimal Phase 0 Foundation (4-6 weeks, $0)
+   ↓
+STAGE E — IBKR paper trading (3 months, $0)
+   ↓
+STAGE F — Live trading $10K CAD with email approval (ongoing)
+```
+
+**No more Phase 1C (with agents) or Phase 1D (5-year backtest).** Those were premature complexity. Run them later if Stage F succeeds for 6+ months.
+
+---
+
+### STAGE A — Statistical edge audit (NEW, replaces Phase 1B continuation)
+
+**Time:** 1-2 days. **Cost:** $0. **Code changes:** None.
+
+**What it does:** Tests whether the strategies have any signal at all in the existing 34,727 trades. Compares against:
+- Random entry baseline (same exit logic, random entries)
+- SPY buy-and-hold benchmark
+- t-test on mean PnL per trade
+
+**Why this comes first:** The existing trades have mean PnL of -0.98%. If random entries produce similar PnL, the strategies have no edge. **No amount of bug-fixing will create profitability if the underlying signal is noise.** This must be checked before any infrastructure investment.
+
+**Deliverable:** A short report (10-20 pages) saying:
+- The strategies show statistically significant edge (continue to Stage B), OR
+- The strategies show no edge over random (rethink strategy universe)
+
+**Success criteria:** Mean PnL per trade significantly different from zero at p<0.05 with t-statistic >2.0.
+
+---
+
+### STAGE B — Critical bug fixes (replaces Phase 1B re-run)
+
+**Time:** 1 week. **Cost:** $0. **Code changes:** ~50 lines across 6 files.
+
+Fix only these 7 critical bugs (skip the rest):
+
+1. **BUG-01** crisis_flag (2-line swap)
+2. **BUG-02** days variable (2-line swap)
+3. **BUG-03** ClosedTrade duplicate (delete 54 lines)
+4. **BUG-26** VXX→VIX (replace with SPY 20-day realised vol — 5 lines)
+5. **BUG-78** trailing stop sequence (reorder 2 calls — 4 lines)
+6. **BUG-101** ticker dedup across days (add 4-line check)
+7. **BUG-103** Quiver gate (delete 1-line env var check)
+
+**Skip these for now** (they're real bugs but not critical for limited-funds path):
+- BUG-04, 05 (tier-related; tier doesn't affect PnL until Portfolio class exists)
+- BUG-79, 80 (slippage on stops; minor in $10K account)
+- BUG-83, 86 (point-in-time issues; minor for swing trading)
+- All MEDIUM and LOW bugs
+
+**Validation:** All 7 bugs have unit tests added. CI must pass before Stage C.
+
+---
+
+### STAGE C — Re-run Phase 1B with fixes (replaces full Phase 1C/1D)
+
+**Time:** 2-3 weeks (engineering + run + analysis). **Cost:** $0.
+
+**What changes from original Phase 1B:**
+- No agents (Phase 1B was always supposed to be agent-free per current plan)
+- Smart money cache now consulted (BUG-103 fixed)
+- All trades use realised volatility regime, not VXX-as-VIX
+- Trailing stops actually work (BUG-78)
+- Same ticker can't have multiple concurrent positions (BUG-101)
+
+**Success criteria:** From the strategies that pass:
+- Win rate > 50% (relaxed from 55% — more realistic for noisy signals)
+- Profit factor > 1.3 (relaxed from 1.5)
+- At least 100 OOS trades per strategy (firm — statistical significance)
+- Beat SPY buy-and-hold by ≥3pp annualised
+
+If 5+ strategies pass: continue to Stage D.
+If 0-4 pass: pause and reconsider strategy universe (the Pass 11 factor model rebuild becomes attractive).
+
+---
+
+### STAGE D — Build minimal Phase 0 Foundation (NEW)
+
+**Time:** 4-6 weeks. **Cost:** $0 (just engineering time).
+
+**What gets built (priority order):**
+
+#### D.1 — Portfolio class (1 week)
+```python
+class Portfolio:
+    def __init__(self, capital_cad: float, max_positions: int = 10):
+        self.capital_cad = capital_cad
+        self.cash_usd = capital_cad * 0.74  # convert at deployment FX
+        self.positions = {}
+    
+    def can_open(self, ticker: str, position_pct: float) -> bool:
+        if len(self.positions) >= 10: return False
+        if ticker in self.positions: return False
+        required = self.equity_usd * position_pct
+        if required > self.cash_usd: return False
+        return True
+```
+
+#### D.2 — IBKR paper trading client (2 weeks)
+- IB Gateway running on local machine (free, no VPS yet)
+- `ib_insync` Python library for orders
+- Order state machine: Pending → Sent → Filled/Rejected
+- Position reconciliation against IBKR every hour during market hours
+
+**Note:** Use IBKR paper account, not Alpaca. IBKR Canada is the planned live broker; using IBKR paper is a true dress rehearsal. Alpaca paper trading was in original plan but doesn't translate (different fills, no CAD support).
+
+#### D.3 — Email approval system (1 week)
+- Send email at 4:30pm ET with trade signal
+- Parse reply for "APPROVE [ticker]" or "REJECT [ticker]"
+- Auto-cancel after 30 minutes if no reply
+- Verify reply sender against whitelist
+- Include HMAC token in email; reply must echo it
+
+#### D.4 — Daily run + monitoring (1 week)
+- GitHub Actions cron at 5pm ET daily
+- Runs screener on existing OHLCV cache
+- Generates trade signals
+- Sends emails for approved-tier trades
+- Logs everything to local SQLite (no Postgres needed at this scale)
+- Sends summary email at 5:30pm ET ("X trades signalled, Y approved, Z filled")
+
+#### D.5 — Kill switch (1 day)
+- File-based: if `/etc/trading/KILL_SWITCH` exists, refuse all trades
+- Email alert when activated/deactivated
+
+**What does NOT get built** (versus original plan):
+- Hetzner VPS deployment (run on local machine for now)
+- PostgreSQL (use SQLite)
+- Disaster recovery (tolerable at $10K scale)
+- Multi-broker abstraction (just IBKR)
+- Sophisticated portfolio analytics (just the basics)
+
+These can be added later if Stage F succeeds.
+
+---
+
+### STAGE E — IBKR paper trading
+
+**Time:** 3 months minimum. **Cost:** $0 (paper account is free).
+
+Run the system live but with paper money. Every approved-tier signal is auto-traded in paper. Track:
+- Daily P&L
+- Win rate vs Stage C backtest expectation
+- Slippage (real vs assumed)
+- Order fail rate
+- System uptime
+
+**Stop conditions (rollback to Stage D):**
+- Daily P&L correlation with backtest < 0.5 (system is doing something different)
+- Win rate diverges by >15pp from backtest expectation
+- Any system outage > 2 trading days
+
+**Success criteria for advancing to Stage F:**
+- Minimum 30 trades completed in paper
+- Win rate within 10pp of Stage C backtest
+- Slippage average < 0.20% per trade
+- Zero unplanned system outages in final 30 days
+
+---
+
+### STAGE F — Live trading with limited funds
+
+**Time:** Indefinite. **Capital:** $10,000-50,000 CAD. **Cost:** ~$50/month operating (no agents yet).
+
+**What changes from Stage E:**
+- Real money instead of paper
+- **Email approval REQUIRED** (this is the critical risk control)
+- Position size capped at 5% per trade (max $500 on $10K, $2500 on $50K)
+- Max 10 positions concurrent
+- Drawdown >20% → suspend new entries until recovery
+
+**Hard limits (kill switches):**
+- Daily loss > 3% of equity → pause for 24 hours
+- Weekly loss > 8% → pause for 1 week  
+- Monthly loss > 15% → manual review required before resume
+- Any 3 consecutive losses → reduce position size to 50% for next 5 trades
+
+**These are MORE conservative than the original plan because $10K cannot tolerate the same drawdown as a $1M+ account.**
+
+---
+
+### Questions answered
+
+#### "Should Phase 1B run without agents and Phase 1C add them?"
+
+**Short answer: yes, but reframe what each phase is for.**
+
+- Phase 1B = strategy validation (rules-only, $0 cost). This is correct.
+- Phase 1C = adding agents = **new, different system** that requires new validation.
+
+You can't validate Phase 1B and then deploy Phase 1C without re-validation. The original plan assumed Phase 1C would be straightforward addition; the audit shows it isn't.
+
+**Revised path: Skip Phase 1C entirely for live trading.** Live trade with rules-only system (post-Stage C). Add agents LATER as a research project once you have 6+ months of live data showing the rules-only system works.
+
+#### "Does the tiering system make sense for limited-funds live trading?"
+
+**Short answer: simplify it dramatically.**
+
+The 6-tier system (EXCEPTIONAL/VERY_HIGH/HIGH/MEDIUM_HIGH/MEDIUM/LOW) makes sense for institutional position sizing, but for a $10K account:
+
+**Replace with 3 tiers:**
+- TRADE — 3-5 strategies fire AND no major risk flag → 3% position
+- WATCH — 1-2 strategies fire OR risk flag → no trade, log for review  
+- BLOCK — strong negative signal (insider cluster sell, breakdown) → no trade
+
+That's it. Simpler. No agent adjustment needed in initial deployment.
+
+**Why simpler:** Each tier change creates implementation complexity. With 3 tiers, the system has 1 decision: trade or don't. Position sizing is fixed. No tier-based size table needed.
+
+When you have 6 months of live data, revisit tiering. By then you'll have real data on which signal combinations actually predict outcomes.
+
+#### "Do I need agents at all?"
+
+**Short answer: not yet.**
+
+The audit shows agents added zero value in Phase 1B (99.9% downgrades, all driven by the broken VIX). Even with all bugs fixed, agents add complexity, cost ($263 CAD/month), and another failure surface.
+
+**Recommendation:**
+1. Live trade rules-only first.
+2. After 3 months live, if results are reasonable, ADD agents as A/B test.
+3. Compare: agent-influenced decisions vs rules-only decisions. Same data, different filtering.
+4. Only deploy agents to production if they demonstrably improve outcomes.
+
+This inverts the original plan order: agents become the LAST addition, not the first deployment feature.
+
+---
+
+### Cost comparison
+
+**Original 5-stage plan:**
+- Stage 1B: $116 CAD (Haiku agents)
+- Stage 1C: $102 CAD (Sonnet agents) 
+- Stage 1D: $38 CAD
+- Stage 3-5: $150-360 CAD/month
+- **Total to live: $256 CAD one-time + $360 CAD/month**
+
+**Revised limited-funds plan:**
+- Stage A-E: $0 (no agents)
+- Stage F: ~$50/month (data feeds, IBKR commissions, no agents yet)
+- **Total to live: $0 one-time + $50 CAD/month**
+
+The revised plan is **~85% cheaper** because agents are deferred to post-deployment optimization rather than pre-deployment requirement.
+
+---
+
+### Risks and mitigations
+
+**Risk 1: Statistical edge audit shows no edge.**
+Mitigation: Stage A is cheap; finding this out early saves all subsequent investment. If no edge: rebuild with factor model approach (Pass 11 strategy improvements).
+
+**Risk 2: Live performance diverges from backtest.**
+Mitigation: Stage E paper trading catches this before real money is at risk. Hard rollback if divergence >15pp.
+
+**Risk 3: Email approval system fails or you miss emails.**
+Mitigation: 30-minute timeout = trade auto-cancels. No "trade goes through anyway." Loss prevention >> opportunity cost.
+
+**Risk 4: System outage during market hours.**
+Mitigation: Kill switch defaults to "block" if system is unhealthy. Paper trading exposes outage frequency before going live.
+
+**Risk 5: Tax classification (Canadian active trader = business income, ~50% tax).**
+Mitigation: Document trades as TFSA-equivalent investing, not active trading. Stay below ~50 trades/month per CRA practical thresholds. Consult CPA before Stage F.
+
+**Risk 6: Concentration in single sector during a sector-wide drawdown.**
+Mitigation: Max 3 positions per sector enforced by Portfolio class. Hard limit.
+
+---
+
+### Bottom line
+
+**You can live-trade this system in 12-15 weeks** if Stage A confirms statistical edge:
+- Week 1-2: Stage A (statistical edge audit)
+- Week 3-4: Stage B (critical bug fixes)
+- Week 5-7: Stage C (re-run Phase 1B)  
+- Week 8-13: Stage D (build minimal Phase 0)
+- Week 14-26: Stage E (paper trading)
+- Week 26+: Stage F (live with $10K)
+
+**Without agents, without Phase 1D 5-year backtest, without 6-tier complexity.**
+
+If Stage A shows no edge, stop the project at week 2 and re-evaluate. Don't sink 6+ months into infrastructure for a system without a proven signal.
+
+---
+
+
+---
+
 ## The Five Stages — What Happens in Each
 
 ### Stage 1: Proof of Concept (Complete)
@@ -910,6 +1236,7 @@ Alpha Vantage provides AI-powered news sentiment scores for all 509 tickers. The
 *The following sections were removed in commit 38e7ee2 and have been fully restored. These are the original detailed specifications.*
 
 ---
+
 
 ## 1. Vision
 
