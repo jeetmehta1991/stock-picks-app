@@ -6,6 +6,265 @@
 
 ---
 
+
+## EXECUTIVE SUMMARY (read this first)
+
+This document captures **12 audit passes** examining a swing-trading backtest system. The system has produced 34,727 simulated trades over 2022, but those results are not actionable due to systemic issues found in the audit.
+
+### The headline numbers
+
+- **110 bugs documented** across 12 passes
+- **14 CRITICAL** (system cannot run correctly)
+- **38 HIGH** (silent wrong results, large impact)
+- **43 MEDIUM** (methodology gaps, edge cases)
+- **15 LOW** (documentation, minor)
+
+### The single most important finding
+
+**The existing 34,727 trades are not validation data.** They exhibit:
+- 7.5× trade count inflation (88% are overlapping re-entries on same ticker)
+- 99.9% of trades downgraded by exactly 1 tier (agents added zero differentiation)
+- All trades labelled "crisis" because VXX price (~380) was used as VIX (10-80 range)
+- Smart money cache silently bypassed (env var gate)
+- Position sizing rules never applied to PnL (fixed $10K)
+- Mean PnL -0.98% — likely no statistical edge over random entries
+
+### What to do next (Monday-morning decision tree)
+
+```
+                  Has Pass 12 verified statistical edge yet?
+                       │
+            ┌──────────┴──────────┐
+            NO                    YES
+            │                     │
+   Run statistical edge      Edge exists?
+   audit FIRST on existing       │
+   34,727 trades.        ┌───────┴───────┐
+   No code changes.      YES             NO
+   ~1 day of work.       │               │
+                  Fix 14 CRITICAL    Stop. Rethink
+                  bugs. Re-run      strategy universe.
+                  Phase 1B.         5-7 orthogonal
+                  ~2 weeks.         factors instead.
+                       │
+                  Phase 1B passes?
+                  ┌────┴────┐
+                  YES       NO
+                  │         │
+            Build Phase    Loop:
+            0 (Portfolio,  fix bugs,
+            OMS, paper).   re-run.
+            ~6 weeks.
+                  │
+            Stage 3 paper
+            trading 3 months.
+                  │
+            Stage 4 live
+            with $10K CAD.
+            Email approval.
+```
+
+### The 14 CRITICAL bugs by category
+
+**3 bugs from one bad commit (10 minutes to fix):**
+- BUG-01 `crisis_flag` undefined — NameError crashes every crisis day
+- BUG-02 `days` undefined — every trade close crashes
+- BUG-03 `ClosedTrade` defined twice — dead code
+
+**5 bugs from systemic data/logic issues (1-day each):**
+- BUG-04 `avoid` direction in wrong bucket — inflates tier count
+- BUG-05 strategies_triggered key mismatch — agent cache always wrong
+- BUG-26 VXX price used as VIX — every regime "crisis"
+- BUG-78 trailing stop lookahead — exit prices artificially better
+- BUG-103 Quiver gate bypasses cached data
+
+**6 bugs from missing infrastructure (6-8 weeks total):**
+- BUG-93 No execution layer
+- BUG-94 No paper trading layer
+- BUG-95 No portfolio accounting
+- BUG-101 88% trade overlap (cross-day stacking)
+- BUG-102 3.5× same-day duplicate inflation
+- BUG-104 Position sizing not applied
+
+### Where the audit is in the process
+
+**Done (Passes 1-12):**
+- Comprehensive bug discovery
+- Lifecycle walkthrough on a real trade
+- Adversarial review of existing data
+- Senior quant-dev and architect reviews
+- Phase 1B/1C critique
+- Tiering audit vs professional desks
+- Coverage and consistency verification
+
+**Not done yet:**
+- Pass 13 — statistical edge audit (recommended priority)
+- Pass 14-20 (performance, security, tax, etc.) outlined but not executed
+- Building any of the recommended Phase 0 infrastructure
+- Re-running Phase 1B with critical fixes applied
+
+### How to read the rest of this document
+
+The document is organised by audit pass (1 through 12), each pass progressively going deeper. **You don't need to read all 12 passes sequentially.** Use the Bug Index below for lookup, or jump to specific passes:
+
+- **Bug Index** (next section) — lookup table for any specific bug
+- **Pass 1-9** — bug discovery (read selectively when investigating a topic)
+- **Pass 10** — Phase 1B retrospective with full lifecycle walkthrough
+- **Pass 11** — Phase 1B/1C critique and tiering audit (read for strategy decisions)
+- **Pass 12** — coverage verification and consistency reconciliation (this section)
+
+---
+
+## BUG INDEX (sorted by severity, then number)
+
+For each bug: severity, number, one-line description. Use Ctrl+F to find by number.
+
+### CRITICAL (14 bugs — system-breaking or silent corruption)
+
+- **BUG-001** — `crisis_flag` used before definition → NameError crash
+- **BUG-002** — `days` variable used before definition → UnboundLocalError on every trade close
+- **BUG-003** — `ClosedTrade` dataclass defined twice — dead code, maintenance risk
+- **BUG-004** — `avoid` direction falls into `triggered_short` bucket — inflates confidence tier
+- **BUG-005** — `strategies_triggered` key mismatch — agent cache is always wrong
+- **BUG-026** — VIX proxy is VXX price (223–461), not actual VIX (18–36) — all regime classifications are wrong
+- **BUG-027** — `regime_confidence()` function built but never called — dead code
+- **BUG-078** — Trailing stop lookahead bias: stop updated using today's close BEFORE being checked against today...
+- **BUG-093** — No execution layer exists; PROJECT_PLAN describes it conceptually only
+- **BUG-094** — Stage 3 paper trading cannot actually run as designed
+- **BUG-095** — No portfolio-level state; every trade evaluated independently
+- **BUG-101** — 88.1% of trades are overlapping re-entries on the same ticker — backtest is essentially "what if ...
+- **BUG-102** — 3.5× same-day duplicate inflation: 9,921 unique decisions logged as 34,727 trades
+- **BUG-103** — Smart money data prefetched for 7 categories × 509 tickers but never consulted at runtime
+
+### HIGH (38 bugs — silent wrong results)
+
+- **BUG-006** — Double borrow cost on short trades
+- **BUG-007** — API key guard blocks no-agent Phase 1B run
+- **BUG-008** — `ema_50_200_bullish` signal key does not exist
+- **BUG-009** — `below_cam_s3` signal key does not exist
+- **BUG-010** — Agent signal keys wrong — agents always see `False` for key price context
+- **BUG-011** — `williams_r` short default fires incorrectly
+- **BUG-012** — Deduplication order bias — shorts never fire when long strategy fires first
+- **BUG-013** — `days_to_next_earnings` makes ~106,000 live yfinance calls during backtest
+- **BUG-014** — AAPL, CVS, JPM, NVDA missing from `run_full.sh` batch ticker lists
+- **BUG-028** — RSI computation uses simple rolling mean instead of Wilder exponential smoothing when pandas-ta u...
+- **BUG-029** — Open trades at backtest end silently discarded — upward bias in all metrics
+- **BUG-030** — VIX tightening in crisis contradicts own documentation
+- **BUG-031** — Walk-forward OOS minimum of 30 trades is statistically insufficient
+- **BUG-032** — Profit factor minimum 1.2 too low; literature requires 1.5 minimum
+- **BUG-033** — Sharpe ratio not required as passing criterion; computed but ignored
+- **BUG-034** — Mean reversion strategies run in all regimes — literature shows they fail in trending markets
+- **BUG-051** — All 5 agents receive wrong or zero price context due to BUG-10 compounding
+- **BUG-052** — Risk Agent's VIX floor behavior now fully explained by BUG-26
+- **BUG-053** — Finnhub news cache: all 509 files are empty — Sentiment Agent has no news data
+- **BUG-060** — Short entry zone validation rejects favourable gap-down — understates short strategy performance
+- **BUG-061** — Backtest allows multiple concurrent positions in same ticker across consecutive days
+- **BUG-062** — Phase 1D cannot run — 2020 OHLCV data not cached, DATA_LOAD_START=2021
+- **BUG-072** — `validate_phase1b_data.py` passes all checks but misses 6 blockers — false safety
+- **BUG-073** — `prepopulate_cache_index.py` writes incompatible format — causes cache misses on every run
+- **BUG-074** — BUG-14 worse than documented: XLE also missing from `run_full.sh` — 5 tickers total
+- **BUG-079** — Stop fills assumed at the stop price; gap-through is not modelled (slippage understated)
+- **BUG-080** — Exit slippage never applied; only entry slippage charged. Round-trip slippage understated by 50%
+- **BUG-081** — `SHORT_BORROW_COST_PER_DAY = 0.005` is 2.5× the documented intent
+- **BUG-082** — Slippage and transaction-cost double-charging — total cost 2× literature for liquid large-caps
+- **BUG-083** — `get_congressional_detail()` filters with INVERTED point-in-time logic
+- **BUG-096** — No benchmark comparison (SPY buy-and-hold)
+- **BUG-097** — No infrastructure-as-code; manual VPS setup
+- **BUG-098** — No monitoring or alerting
+- **BUG-104** — Position sizing rules from config never applied to PnL — backtest assumes fixed $10,000 per trade...
+- **BUG-105** — Agent downgrade cascade: 99.9% of trades downgraded by exactly 1 tier — agents added zero differe...
+- **BUG-106** — Perfect stop fills in trade log: every trailing-stop exit fills at exactly the stop price (slippa...
+- **BUG-109** — yfinance auto_adjust causes data drift; backtest results not reproducible
+- **BUG-110** — Entry gap filter not enforced; trades opened despite exceeding ATR limit
+
+### MEDIUM (43 bugs — methodology / edge cases)
+
+- **BUG-015** — `max_drawdown` uses `cumsum()` instead of compounded equity curve
+- **BUG-016** — `PASSING_CRITERIA min_trades = 100` contradicts all documentation
+- **BUG-017** — `run_commit.sh` full mode hangs on interactive `input()` in merge script
+- **BUG-018** — Bonferroni correction hardcoded to 60 strategies, should be 72
+- **BUG-019** — OHLCV cache incomplete — 402 of 495 tickers only cover to 2024-12-31
+- **BUG-020** — Regime thresholds inconsistent between PROJECT_PLAN and config.py
+- **BUG-021** — `exit_strategies.py` own `_pnl` has no borrow cost — short comparison optimistic
+- **BUG-035** — Decision Agent default fallback has invalid `action` value
+- **BUG-036** — Regime-aware strategy weighting not implemented
+- **BUG-037** — Survivorship bias haircut methodology is arbitrary
+- **BUG-038** — No minimum Sharpe in Bonferroni correction
+- **BUG-039** — `regime_confidence()` compares VIX-based regime with SPY-trend regime incorrectly
+- **BUG-040** — Short stop distance same as long (10%) — asymmetric risk not accounted for
+- **BUG-041** — `min_market_cap_m = 100` too low; admits stocks with poor institutional tradability
+- **BUG-045** — FX currency risk not modelled
+- **BUG-046** — `fetch_info_bulk` info cache uses current market_cap, not historical
+- **BUG-047** — VXX in universe creates self-referencing regime paradox
+- **BUG-048** — Sector `Volatility` and `Emerging Markets` not in sector criteria profiles
+- **BUG-054** — Hull Moving Average uses simple rolling mean instead of WMA — signal timing wrong
+- **BUG-055** — PSAR flip detection uses approximation that may fire on wrong day
+- **BUG-056** — Phase 1C base score can exceed [0, 100] — Decision Agent adjustment not clamped
+- **BUG-057** — Integration tests missing 15 critical scenarios — 5 bugs would have been caught
+- **BUG-063** — Email approval system has 6 critical design gaps not addressed in PROJECT_PLAN
+- **BUG-064** — Phase 1C prerequisites not documented — Unusual Whales and Ortex integration requires 2–3 weeks o...
+- **BUG-065** — Strategy retirement rule statistically invalid at realistic live trade frequency
+- **BUG-066** — PROJECT_PLAN mentions "60 strategies" 11 times — 9 of 12 new short strategies not listed
+- **BUG-067** — Alpaca paper trading (Stage 3) does not match IBKR live trading (Stage 4)
+- **BUG-068** — CLAUDE.md missing 5 critical recent decisions
+- **BUG-075** — `max_drawdown` computed on unsorted PnL series — results depend on exit order
+- **BUG-076** — Agent cache fully contaminated: all runs for same ticker+date+phase share one cache entry
+- **BUG-077** — Candidate ranking by `strategy_count` inflated by `avoid` entries — top 10 candidates distorted
+- **BUG-084** — IS/OOS walk-forward boundary leakage on multi-day swing trades
+- **BUG-085** — `regime_at_entry` includes the regime label but no transition tracking
+- **BUG-086** — FRED CPI lookahead bias of ~10 days
+- **BUG-087** — No data quality validation on ingestion
+- **BUG-088** — No signal versioning; cache invalidation incomplete
+- **BUG-089** — Flat signal dict (220 fields) lacks type safety
+- **BUG-090** — No state checkpointing for crashes/restarts
+- **BUG-091** — No determinism control
+- **BUG-099** — No secret management; API keys in environment variables
+- **BUG-100** — No kill switch; manual intervention required to stop trading
+- **BUG-107** — Silent exception swallowing: `except Exception: pass` masks checkpoint failures
+- **BUG-108** — Agent context built with `.get(key, default)` masks missing data; agents reason on silent defaults
+
+### LOW (15 bugs — documentation, minor)
+
+- **BUG-022** — `run_phase1a.py` header prints "60 strategies"
+- **BUG-023** — `screener.py` docstring says "60 strategies across 7 categories"
+- **BUG-024** — CHECKLIST item 13c says "review ALL agent outputs" — not applicable for no-agent runs
+- **BUG-025** — `run_tests.sh` does not pass `--no-agents` flag
+- **BUG-042** — `LILLY` appears as ticker in `run_full.sh` but should be `LLY`
+- **BUG-043** — Missing Calmar ratio minimum in passing criteria
+- **BUG-044** — Test suite has no test for `close_trade()` or `_process_day()`
+- **BUG-049** — FX risk not mentioned in EXPLANATION.md or PROJECT_PLAN.md
+- **BUG-050** — `position_staleness_pct=1%` in live rules has no backtest equivalent
+- **BUG-058** — StochRSI cross-up fires in mid-range, not just oversold zone
+- **BUG-059** — CPR top/bottom labels are reversed vs industry convention
+- **BUG-069** — Infrastructure design: GitHub Actions vs VPS ambiguity
+- **BUG-070** — No database schema designed for Stage 3 PostgreSQL
+- **BUG-071** — IBKR API session management not designed
+- **BUG-092** — No streaming progress / metrics during run
+
+
+---
+
+## TABLE OF CONTENTS
+
+| Section | Purpose |
+|---|---|
+| Executive Summary (above) | Headline findings, decision tree |
+| Bug Index (above) | Lookup all 110 bugs by severity |
+| **Pass 1** — Initial Bug Discovery | First 25 bugs (BUG-01 to BUG-25) |
+| **Pass 2** — Literature Review | 19 more bugs (BUG-26 to BUG-44), VXX bug discovered |
+| **Pass 3** — Integration Gaps | 6 more bugs, FX risk, VXX self-reference |
+| **Pass 4** — Agent Prompt Quality | 9 more bugs, signal computation accuracy |
+| **Pass 5** — Live Trading Design | 12 more bugs, email approval, Phase 1D blocker |
+| **Pass 6** — Scripts and Cache | 6 more bugs, false safety in validation |
+| **Pass 7** — Senior Quant-Dev Review | 8 more bugs, **trailing stop lookahead found** |
+| **Pass 8** — Senior Architect Review | 15 more bugs, infrastructure gaps |
+| **Pass 9** — Adversarial Review | 8 more bugs, **88% trade overlap quantified** |
+| **Pass 10** — Phase 1B Retrospective | Full lifecycle walkthrough, process changes |
+| **Pass 11** — Tiering Audit | Phase 1B/1C critique, 18 unaudited areas |
+| **Pass 12** — Coverage Verification | This pass — consistency check, formal totals |
+
+---
+
 ## How to read this document
 
 Each finding has:
