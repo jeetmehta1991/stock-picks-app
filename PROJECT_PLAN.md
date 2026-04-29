@@ -444,6 +444,50 @@ Total strategies in Phase 1C: approximately 62. All additions are backtested aga
 
 See Market-Level and Correlation-Factor Strategies section for full detail on each item.
 
+### Stage 3 Paper Trading A/B Test (Added April 2026)
+
+Stage 3 paper trading was originally specified as agent-driven only. This addition adds a parallel rules-only branch to definitively answer "do agents add value at decision time?"
+
+**Why this exists:** The Phase 1B audit showed that agents in the previous run added zero differentiation (99.9% downgraded by exactly 1 tier, all driven by the broken VXX-as-VIX bug). Even after Phase 1B/1C bug fixes, we will not know whether agents add real value until we compare both branches with real prices and real fills.
+
+**Structure:**
+
+**Branch A (with agents):** Full agent stack as designed. Agent-influenced tier decisions drive position sizing.
+
+**Branch B (without agents):** Rules-only. Same strategy selection as Branch A, but tier comes from preliminary tier alone (no agent adjustment).
+
+Both branches:
+- See the SAME daily candidate set (same screener output)
+- Have identical position sizing rules per tier
+- Have identical entry/exit logic
+- Run in parallel paper accounts (e.g., 2 separate IBKR paper accounts)
+
+The ONLY difference is whether agents adjust the confidence tier.
+
+**Duration:** 3 months minimum, 6 months target. Need ~50-100 trades per branch for statistical significance.
+
+**Comparison metrics:**
+- Win rate (with vs without agents)
+- Profit factor
+- Sharpe ratio
+- Maximum drawdown
+- Per-tier breakdown (do agents help more on certain signal types?)
+
+**Statistical test:** Two-sample t-test on per-trade PnL. Significant at p<0.05?
+
+**Decision rule for Stage 4 deployment:**
+- If Branch A statistically beats Branch B by ≥3pp annualised return: deploy WITH agents
+- If branches are statistically indistinguishable: deploy WITHOUT agents (save $263 CAD/month)
+- If Branch B beats Branch A: investigate why agents are hurting; do not deploy agents until understood
+
+**Agent cost during paper trading:** ~$50-100/month for Branch A only (Sonnet model, real-time signals). Branch B costs $0.
+
+**Safety nets during A/B test:**
+- Hard daily loss cap per branch: 3% of paper account (auto-pause if hit)
+- Weekly review by owner of trade quality
+- If any branch shows obviously broken behaviour (e.g., 100% of trades same direction, runaway position count), pause and diagnose
+
+
 ### Stage 4 Design (When Stage 3 Proves Profitable)
 - Email approval workflow implementation
 - IBKR live account setup
@@ -877,6 +921,462 @@ Phase 1B runs 509 tickers across 4 years with AI agents evaluating each candidat
 **Walk-forward in batch mode:** Per-batch walk-forward is suppressed (`--no-git` flag). Individual batches of 101 tickers rarely have 100+ trades per strategy in the IS period — the minimum required for statistical validity. Walk-forward is only run on the merged final result after all 5 batches complete.
 
 ---
+
+## Phase 1B Execution Plan (Five-Gate Validation, April 2026)
+
+This section is the operational plan for re-running Phase 1B safely after the audit findings. It supersedes the high-level "Before Phase 1B Full Run" checklist for actual execution and explicitly avoids the failure modes that caused the previous $160 wasted run.
+
+### Why this exists
+
+The previous Phase 1B run produced 34,727 trades that the audit revealed are structurally invalid: all labelled "crisis" (VXX-as-VIX bug), 88% overlapping re-entries, 99.9% downgraded by exactly one tier, smart money cache silently bypassed, position sizing not applied. The small-batch validation that ran before the full run did NOT catch any of this — it only asked "does the engine complete without crashing?" That question got "yes" and the full run proceeded.
+
+This plan ensures we don't repeat that. Every gate has explicit assertions on outputs, not just "it ran."
+
+### Goal of Phase 1B (unchanged)
+
+Validate which of the strategies have edge using the FULL agent stack (rules + 6 AI agents). Phase 1C and 1D remain in the roadmap unchanged. This is the "with agents" backtest because the live system will use agents — we are validating the system we will deploy.
+
+Cost target: ~$116 CAD for full Phase 1B run (Haiku agents, ~509 tickers, 2022-2026 data). Same as original budget.
+
+### The five-gate execution plan
+
+```
+GATE 1 — Critical bug fixes        →  ~1 week, $0
+GATE 2 — Static validation tests   →  ~2 days, $0
+GATE 3 — Single-ticker smoke run   →  ~30 minutes, ~$0.50
+GATE 4 — Small-batch validation    →  ~2 hours, ~$3
+GATE 5 — Full Phase 1B run         →  ~15 hours, ~$116
+```
+
+Each gate has explicit pass/fail criteria. Failure at any gate stops progression until resolved. **No gate is bypassable.**
+
+### GATE 1 — Critical bug fixes (audit prerequisites)
+
+Before any test runs, fix the 14 CRITICAL bugs from AUDIT.md. Reference: AUDIT.md "BUG INDEX → CRITICAL" section.
+
+**Required fixes (all 14 CRITICAL bugs):**
+- BUG-01 crisis_flag definition order
+- BUG-02 days variable definition order
+- BUG-03 ClosedTrade duplicate dataclass removal
+- BUG-04 avoid direction bucket fix
+- BUG-05 strategies_triggered key alignment
+- BUG-26 VXX→realised vol or actual ^VIX
+- BUG-78 trailing stop sequence (check before update)
+- BUG-101 ticker-level dedup across days
+- BUG-102 (resolved by BUG-101 fix)
+- BUG-103 Quiver gate removal (1-line)
+- BUG-104 position sizing applied to PnL — partial fix sufficient for backtest (apply tier multiplier to PnL calculation), full Portfolio class deferred to Phase 0
+
+The 3 infrastructure bugs (BUG-93 execution layer, BUG-94 paper trading, BUG-95 portfolio accounting) are NOT prerequisites for Phase 1B backtest. They become prerequisites for Stage 3.
+
+**GATE 1 sub-tasks:**
+
+1. Each fix has a unit test added to `tests/regression/test_BUG_NNN.py`
+2. CI passes on full test suite before any other work
+3. PROJECT_PLAN strategy count corrected from "60 strategies" to actual count (BUG-66) — auto-generated from `ALL_STRATEGIES` registry
+4. Owner reviews each fix commit before merge to main
+
+**GATE 1 pass criteria:**
+- All 14 regression tests pass
+- Static analysis (mypy, ruff) passes
+- No new CRITICAL or HIGH bugs introduced (re-audit not needed but spot-check the changed files)
+
+### GATE 2 — Static validation tests (no run yet)
+
+Before any backtest run, validate the data layer and signal computation in isolation. These are unit/integration tests, not full backtest runs.
+
+**Test 2.1 — Macro data sanity**
+Load `macro_combined.parquet`. Assert:
+- VIX values for any 2022 date are in range [10, 50] (real VIX range)
+- VXX values, if present, are in range [10, 600] (real VXX range)
+- VIX and VXX columns are clearly distinguishable
+- The Risk Agent's `vix_value` field reads from VIX column, not VXX
+
+**Test 2.2 — Smart money cache loads**
+For 5 random tickers from S&P 500:
+- Call `smart_money_score(ticker, date)` with QUIVER_API_KEY UNSET
+- Assert returned score is non-zero for at least 2 of 5 tickers
+- Assert cache is being read (not silently returning all-zero defaults)
+
+**Test 2.3 — Agent context construction**
+Build agent context for 1 known ticker (e.g., COST on 2024-01-15):
+- Assert all expected keys are present (typed dict validation)
+- Assert `price_above_ema_200` exists (not `above_200ema` typo)
+- Assert `strategies_triggered` is populated when strategies fire
+- Assert `pct_from_52w_high` is non-zero unless price is exactly at high
+
+**Test 2.4 — Position sizing applied**
+For a synthetic trade with `confidence_tier="HIGH"`:
+- Assert position_size_pct = config.POSITION_SIZE_MULT["HIGH"] (e.g., 0.04)
+- Assert pnl_dollar = position_size_dollar × pnl_pct/100
+- Verify HIGH tier produces 2.67× the dollar PnL of MEDIUM_HIGH (4% / 1.5%)
+
+**Test 2.5 — Entry gap filter enforced**
+Construct OHLCV with a known 3× ATR gap up. Run through `_process_day`:
+- Assert candidate is NOT in trade log
+- Assert `skipped_trades` contains entry with reason "gap_exceeds_limit"
+
+**Test 2.6 — News cache coverage check**
+For all 25 AV news files, count actual content rows. Assert at least 5 tickers have non-empty news data. (Audit found 20 of 25 are empty; this catches news prefetch regression.)
+
+**Test 2.7 — Auto-adjust off**
+Re-fetch OHLCV for one ticker, save with timestamp suffix. Compare to existing cache. Assert dividend-ex dates do not retroactively shift historical close prices (BUG-109 regression check).
+
+**GATE 2 pass criteria:**
+- All 7 tests pass
+- Test runtime < 5 minutes (fast feedback)
+- Each test fails informatively if data is wrong
+
+### GATE 3 — Single-ticker smoke run
+
+Run the actual engine end-to-end on ONE ticker for a short date range, with agents enabled. Goal: prove the pipeline works, agents return real responses, and no crashes occur.
+
+**Configuration:**
+- Ticker: COST (well-behaved, full data including news, full Quiver coverage)
+- Date range: 2024-01-01 to 2024-03-31 (calm period, low VIX, includes earnings season)
+- Agents: enabled (Haiku model — same as Phase 1B production)
+- Output dir: `output_smoke_test/`
+
+**Cost estimate:** ~$0.50 (≈100 candidate days × 6 agents × ~$0.001 per call)
+
+**Validation assertions on the output:**
+
+1. Engine ran to completion (no exceptions in log)
+2. trade_log.csv exists and has at least 1 trade (COST in Q1 2024 had tradeable signals)
+3. For all trades: `regime` field is one of {bull, neutral, bear, crisis} — NOT "crisis_CRISIS_FLAG" or any string with `_FLAG` suffix
+4. For all trades: `vix_value` in agent_reasoning is in [10, 35] (Q1 2024 had VIX 12-15 typically)
+5. For all trades: `confidence_tier` distribution is not 99% identical (this was the agent downgrade pattern from previous run)
+6. For all trades: `pnl_dollar` ≠ `pnl_pct × 100` for ALL trades (BUG-104 regression check — if all trades have $10K position, this would be true)
+7. For all trades: at least one trade has `smart_money_score` ≠ 0 (BUG-103 regression check)
+8. For all trades: no entry has gap > category ATR limit (BUG-110)
+9. No two trades have overlapping date ranges on COST (BUG-101 regression check, single-ticker scope)
+10. Agent cache files: `strategies_triggered` field is non-empty, not `[]` (BUG-05 regression)
+11. News context populated: at least 50% of agent calls have non-empty news_sentiment (COST has 508 days of news data)
+
+**GATE 3 pass criteria:**
+- All 11 assertions pass
+- Owner manually inspects 5 random trades from output and confirms results look reasonable (entry/exit prices match prior context, agent reasoning makes sense)
+- Owner approves before proceeding to Gate 4
+
+### GATE 4 — Small-batch validation (the gate that previous run failed)
+
+This is the gate that the previous Phase 1B run effectively skipped. 5 tickers, full date range, full agent stack. Goal: catch issues that only surface across multiple tickers, multiple regimes, and the full date range.
+
+**Ticker selection rationale:**
+
+Previous run picked tickers by liquidity intuition. This selection picks by **API coverage diversity** — these 5 tickers exercise every data path the full run will hit.
+
+| Ticker | OHLCV | Insider | Congress | 13F | AV News | Why this ticker |
+|---|---|---|---|---|---|---|
+| **CRWD** | ✓ | 1,064 | 81 | 9,369 | 459 | High-vol tech, full data coverage including news — exercises agent news path |
+| **COST** | ✓ | 386 | 299 | 8,438 | 508 | Defensive consumer staples, full data, well-known stable behaviour |
+| **CCI** | ✓ | 213 | 136 | 9,762 | 303 | Real estate sector, REIT — different asset behaviour than equities |
+| **DVN** | ✓ | 254 | 177 | 9,668 | 0 | Energy — was overweighted in previous run, NO news (tests news-absence path) |
+| **SPY** | ✓ | 0 | 108 | 8,189 | 0 | Benchmark, ETF — tests SPY-handling code paths, regime classifier consumer |
+
+These five exercise: news-present and news-absent paths, high vol and defensive, sector diversity (tech, staples, REIT, energy, ETF), the previous run's hot ticker (DVN), full smart-money signal stack (CRWD/COST/CCI all have complete data).
+
+**Configuration:**
+- Tickers: CRWD, COST, CCI, DVN, SPY
+- Date range: 2022-01-01 to 2026-01-31 (FULL Phase 1B period — same as full run)
+- Agents: enabled
+- Output dir: `output_batch_validation/`
+
+**Cost estimate:** ~$3 CAD
+- ~1000 trading days × 5 tickers × 6 agents × $0.0001/call = ~$3
+- 1.5-2 hours runtime
+
+**Validation assertions on the output:**
+
+All Gate 3 assertions PLUS:
+
+12. **Regime diversity:** All four regimes (bull, neutral, bear, crisis) appear in the trade log. If only "crisis" appears, VXX bug regressed.
+13. **Tier diversity:** Confidence tier distribution shows variation — at least 3 of 6 tiers represented across 5 tickers × 4 years. Not 99% MEDIUM_HIGH like previous run.
+14. **No ticker-level overlap:** For each of 5 tickers, no trade entry falls between another trade's entry and exit on same ticker (BUG-101 regression check).
+15. **Same-day deduplication:** For each (ticker, entry_date) combination, at most ONE trade exists in trade log (BUG-102 regression check).
+16. **Position sizing variance:** `pnl_dollar` values show variance proportional to confidence_tier — HIGH trades have higher $ PnL than MEDIUM_HIGH trades on similar % moves.
+17. **Smart money signals real:** At least 5 trades across the batch have non-zero smart_money_score and meaningful congressional/insider signals.
+18. **Long/short balance:** Both long and short trades exist (previous run was 97% long even in 2022 bear market — directional bias check).
+19. **Stop hits realistic:** At least 1 trade exits via initial_stop (not just trailing_stop). Mix of exit reasons indicates exit logic working.
+20. **Cost tracking:** Actual $ spent on agent API calls is logged and matches estimate within 25%. If 10× higher, runaway loop is happening.
+21. **Reproducibility:** Re-running Gate 4 with same seed produces BIT-IDENTICAL trade log (BUG-91/109 regression check).
+
+**Owner manual review (after assertions pass):**
+- Pull 10 random trades from each ticker (50 total)
+- For each: read agent_reasoning field — does it make sense given the regime, ticker, date?
+- Compute summary stats: win rate, mean PnL, profit factor PER TICKER
+- Compare to a simple SPY buy-and-hold over same period — does the strategy produce different results?
+- Check the cost: actual agent spend should be < $5 CAD. If higher, diagnose before scaling 100×.
+
+**GATE 4 pass criteria:**
+- All 21 assertions pass (11 inherited + 10 new)
+- Manual review of 50 trades shows reasonable agent reasoning
+- Cost was within 25% of estimate
+- Re-run produces identical results
+- Owner explicitly approves before proceeding to Gate 5
+
+**GATE 4 fail handling:**
+If any assertion fails, STOP. Diagnose the specific failure. Add it to AUDIT.md as a new bug. Fix it. Re-run Gate 4 from scratch. Do not proceed to Gate 5 until Gate 4 passes cleanly. The cost of re-running Gate 4 is ~$3 — far cheaper than re-running Gate 5 ($116) on a buggy build.
+
+### GATE 5 — Full Phase 1B run
+
+Only after Gate 4 passes cleanly. This is the actual validation run.
+
+**Configuration:**
+- Tickers: full S&P 500 universe (~509 tickers, current membership snapshot)
+- Date range: 2022-01-01 to 2026-01-31
+- Agents: enabled (Haiku model)
+- Run in 5 parallel batches (~100 tickers each) for runtime
+- Output dirs: `output_1b_batch{1..5}/`
+
+**Cost estimate:** ~$116 CAD (per original Phase 1B budget)
+
+**Hard cost caps and auto-pause triggers (early-stop):**
+
+- **Per-batch cost cap: $30 CAD.** If exceeded, batch auto-stops.
+- **Aggregate cost cap: $150 CAD.** Sum of all batches. If approached, all batches pause for owner decision.
+- **Regime cliff trigger:** If regime distribution shifts to >50% "crisis" within first 50 trading days of any batch, auto-pause and alert owner (catches VXX regression almost immediately).
+- **Trade count anomaly trigger:** If trade count exceeds 2,000 within first 1,000 trading days of any batch, auto-pause (catches BUG-101 regression — previous run averaged 7,000/batch over 1,060 days).
+- **Tier diversity trigger:** By trading day 100 of any batch, if confidence_tier distribution shows >95% of trades in a single tier, auto-pause (catches BUG-105 agent downgrade cascade).
+- **Cost rate trigger:** If actual agent cost in first 100 trading days projects to >2× the $30 batch budget, auto-pause (catches runaway agent calls before $30 spent).
+
+These thresholds intentionally stop early. Cost of re-running a small portion of Gate 5 to diagnose is negligible vs cost of running 15 hours then discovering a bug.
+
+**Pre-run setup:**
+- Each batch tracks its own cost in real time
+- Daily progress emails sent to owner with cost-to-date, trades-to-date, and the four trigger metrics
+
+**During-run monitoring:**
+- Every 100 trading days processed: emit progress log with key metrics (trades opened, regime distribution, average tier, agent cost)
+
+**Post-run validation:**
+- Run all 21 Gate 4 assertions on full output (now scaled to 509 tickers)
+- Compute per-strategy win rate, profit factor, Sharpe — these are the outputs Phase 1B is meant to produce
+- Per-strategy assertion: any strategy with <100 trades is flagged insufficient data (raised from <30 per BUG-31 fix)
+
+**Acceptance criteria for Phase 1B (which strategies advance to Phase 1C):**
+Per current PROJECT_PLAN "10 Passing Criteria" section, unchanged. The criteria themselves are not what failed last time — the data feeding them was wrong.
+
+### Why this gating works (vs why previous run failed)
+
+| Previous run | This plan |
+|---|---|
+| Small batch was 1 ticker, 1 month | Gate 4 is 5 tickers, 4 years |
+| Test asked "does it run?" | Each gate has 7-21 explicit assertions |
+| VXX wasn't validated against expected range | Gate 2 asserts VIX in [10, 50] |
+| Smart money not checked | Gate 3 asserts non-zero scores |
+| Position sizing not checked | Gate 2 asserts pnl_dollar formula |
+| Tier distribution not checked | Gate 4 asserts tier diversity |
+| Overlap not checked | Gate 4 asserts no ticker-level overlap |
+| News cache emptiness silent | Gate 2 asserts ≥5 tickers have news data |
+| No cost cap | Hard cost caps + 4 auto-pause triggers |
+| No early stop | Triggers fire within first 50-100 days, not after $30 spent |
+| Owner approval was implicit | Explicit owner approval at Gate 3 and 4 |
+
+### Cost summary
+
+| Gate | Cost | Cumulative |
+|---|---|---|
+| Gate 1 | $0 | $0 |
+| Gate 2 | $0 | $0 |
+| Gate 3 | $0.50 | $0.50 |
+| Gate 4 | $3 | $3.50 |
+| Gate 5 | $116 | $119.50 |
+
+If we catch a critical issue at Gate 3 or 4, total wasted is < $4 (vs $160 last time).
+
+### Decision log
+
+- **2026-04-29:** Phase 1B small-batch was 1-ticker / 1-month. Did not catch VXX, did not catch crisis-flag, did not catch position sizing, did not catch tier degeneracy. Cost: $160 wasted on 34,727 invalid trades.
+- **2026-04-29:** Decision to add 5-gate execution plan with explicit assertions and cost caps. Per owner: "We will need to run 1B in batches and test extensively before deploying."
+- **2026-04-29:** Owner approved 5-gate structure, ticker selection by API coverage diversity (CRWD/COST/CCI/DVN/SPY), unified cost caps ($30/batch × 5 = $150 aggregate), early-stop triggers within first 50-100 days, A/B test added to Stage 3.
+
+
+## Phase 1C Execution Plan (Five-Gate Validation, April 2026)
+
+This section adapts the Phase 1B 5-gate approach to Phase 1C. Phase 1C adds Unusual Whales options flow, Ortex short interest, Sonnet model upgrade (from Haiku), and the Phase 1C strategy additions documented above. The same gating discipline applies: don't repeat the $160 mistake.
+
+### What's different in Phase 1C vs 1B
+
+| Component | Phase 1B | Phase 1C |
+|---|---|---|
+| AI model | Haiku (fast, cheap) | Sonnet (slower, ~10× cost, more capable) |
+| New API: Unusual Whales | not used | used for options flow context |
+| New API: Ortex | not used | used for short interest context |
+| New strategies | 0 | 2 (rel-strength precondition + sector ETF momentum) |
+| Intermarket signals | not used | TLT/GLD/DXY trend context for Risk Agent |
+| Cost target | ~$116 CAD | ~$102 CAD additional (Phase 1C only the new spend) |
+| Risk profile | unproven (1st time real run) | unproven (new APIs, new model, new strategies) |
+
+The risk profile of Phase 1C is just as high as Phase 1B because the components are new, even though the engine itself is now battle-tested from Phase 1B.
+
+### Phase 1C goal (unchanged from original plan)
+
+Validate which Phase 1B-passing strategies still pass with the Phase 1C additions, and validate the new Phase 1C strategies independently.
+
+### The five-gate execution plan for Phase 1C
+
+```
+GATE 1C-1 — API integration tests       →  ~3 days, $0 (just API health)
+GATE 1C-2 — Static validation tests     →  ~2 days, $0
+GATE 1C-3 — Single-ticker smoke run     →  ~30 minutes, ~$5 (Sonnet 10× Haiku)
+GATE 1C-4 — Small-batch validation      →  ~3 hours, ~$30 (Sonnet)
+GATE 1C-5 — Full Phase 1C run            →  ~20 hours, ~$102
+```
+
+### GATE 1C-1 — API integration tests (NEW for Phase 1C)
+
+Phase 1B used APIs that already existed in the codebase. Phase 1C adds 2 brand-new APIs (Unusual Whales, Ortex). These need integration tests before any backtest run.
+
+**Test 1C-1.1 — Unusual Whales connectivity**
+- Make 1 authenticated API call for a known ticker (e.g., AAPL options flow yesterday)
+- Assert response is valid JSON, non-empty
+- Assert key fields present (call_volume, put_volume, premium_total)
+- Document the rate limit and budget per backtest day
+
+**Test 1C-1.2 — Ortex connectivity**
+- Make 1 authenticated API call for a known ticker (e.g., GME short interest today)
+- Assert response valid, non-empty
+- Assert key fields present (short_interest, days_to_cover, utilization)
+
+**Test 1C-1.3 — Prefetch script runs to completion**
+- Run `prefetch_unusual_whales.py --tickers SPY,COST --dates 2024-01-01,2024-01-31`
+- Assert cache files written
+- Assert files have content (not 0-byte files like Finnhub disaster)
+- Same for Ortex
+
+**Test 1C-1.4 — Point-in-time semantics**
+- For Unusual Whales: assert options flow for "as of 2024-01-15" returns ONLY data dated ≤2024-01-15 (no lookahead)
+- For Ortex: assert short interest for "as of 2024-01-15" reflects only data publicly available by that date (typically 2-week lag for SI reports)
+
+**GATE 1C-1 pass criteria:**
+- All 4 tests pass
+- Documented per-call cost for both APIs
+- Cache prefetch verified non-empty for sample tickers
+
+### GATE 1C-2 — Static validation tests
+
+Same structure as Phase 1B Gate 2 but extended for new APIs:
+
+**Test 1C-2.1 through 2.7 — same as Phase 1B Gate 2**
+
+**Test 1C-2.8 — Unusual Whales cache loads**
+- Sample 5 random tickers, assert cached options flow data loads
+- Assert not silently returning empty defaults
+
+**Test 1C-2.9 — Ortex cache loads**
+- Sample 5 random tickers, assert short interest data loads
+
+**Test 1C-2.10 — Sonnet vs Haiku tier distribution**
+- Run 50 candidate evaluations through both models
+- Assert tier distributions are not identical (Sonnet should produce different tier mix than Haiku, otherwise the upgrade is wasted spend)
+- This catches the case where Sonnet is producing the same answers as Haiku — meaning the model upgrade adds no value
+
+**GATE 1C-2 pass criteria:**
+- All 10 tests pass
+- Documented evidence Sonnet behaves differently than Haiku on identical inputs
+
+### GATE 1C-3 — Single-ticker smoke run
+
+Same approach as Phase 1B Gate 3, but with Sonnet model.
+
+**Configuration:**
+- Ticker: COST (same as Phase 1B Gate 3 — comparison baseline)
+- Date range: 2024-01-01 to 2024-03-31
+- Agents: Sonnet
+- Output dir: `output_1c_smoke_test/`
+
+**Cost estimate:** ~$5 (Sonnet ~10× Haiku per call)
+
+**Why this comparison matters:** by using same ticker and dates as Phase 1B Gate 3, we can directly compare:
+- Did Sonnet produce different tier assignments?
+- Did Sonnet add useful Unusual Whales / Ortex context?
+- Are Sonnet's reasoning notes meaningfully better than Haiku's?
+
+**Validation assertions:**
+
+All Phase 1B Gate 3 assertions (1-11) PLUS:
+
+12. **Sonnet differentiation:** Compare tier assignments for trades that fired in BOTH Gate 3 (Haiku) and Gate 1C-3 (Sonnet). Assert at least 20% of trades got different tier between models.
+13. **Unusual Whales context populated:** At least 50% of agent calls have non-empty UW context fields
+14. **Ortex context populated:** At least 50% of agent calls have non-empty Ortex context fields
+15. **Sonnet reasoning length:** Average agent reasoning text is ≥2× longer than Haiku output (Sonnet should produce more substantive analysis to justify the cost)
+
+**GATE 1C-3 pass criteria:**
+- All 15 assertions pass
+- Owner manually inspects 5 trades and confirms Sonnet reasoning is meaningfully better than Haiku reasoning
+- Owner approves before proceeding to Gate 1C-4
+
+### GATE 1C-4 — Small-batch validation
+
+Same 5 tickers as Phase 1B Gate 4 (CRWD, COST, CCI, DVN, SPY) for direct comparability. Plus Sonnet model and new API integration.
+
+**Configuration:**
+- Tickers: CRWD, COST, CCI, DVN, SPY (same as Phase 1B Gate 4)
+- Date range: 2022-01-01 to 2026-01-31
+- Agents: Sonnet
+- New APIs: Unusual Whales, Ortex
+- Output dir: `output_1c_batch_validation/`
+
+**Cost estimate:** ~$30 CAD
+- ~1000 days × 5 tickers × 6 agents × $0.001/Sonnet call = ~$30
+- 2-3 hours runtime
+
+**Validation assertions:**
+
+All Phase 1B Gate 4 assertions (1-21) PLUS:
+
+22. **Strategy 61 fires at least once:** New sector-ETF-momentum strategy must trigger at least 5 times across the batch (otherwise it's defined but never firing)
+23. **Relative-strength precondition active:** Original 6 breakout strategies fire FEWER trades than they did in Phase 1B Gate 4 (rel-strength filter should reduce candidates)
+24. **Intermarket signal context appears:** TLT/GLD/DXY context shows up in at least 50% of Risk Agent calls
+25. **Cost per trade is roughly constant:** Cost per trade closes / cost per trade in Phase 1B Gate 4 should be ~10× (Sonnet vs Haiku ratio). If higher, runaway loop.
+
+**Hard cost caps and auto-pause triggers (Phase 1C tuned):**
+- **Gate 1C-4 cost cap: $40 CAD.** Hard stop.
+- **Sonnet cost rate trigger:** If first 100 trading days projects to >$60 for the gate, auto-pause.
+- **Strategy 61 silence trigger:** If by trading day 200 strategy 61 has fired 0 times, auto-pause to investigate why.
+- **All Phase 1B Gate 5 triggers also active:** regime cliff, trade count anomaly, tier diversity.
+
+**GATE 1C-4 pass criteria:**
+- All 25 assertions pass
+- Cost within 25% of $30 estimate
+- Owner approves before proceeding to Gate 1C-5
+
+### GATE 1C-5 — Full Phase 1C run
+
+Only after Gate 1C-4 passes cleanly.
+
+**Configuration:**
+- Tickers: full S&P 500 universe
+- Date range: 2022-01-01 to 2026-01-31
+- Agents: Sonnet
+- New APIs: Unusual Whales, Ortex
+- Run in 5 parallel batches (~100 tickers each)
+- Output dirs: `output_1c_batch{1..5}/`
+
+**Cost estimate:** ~$102 CAD (original Phase 1C budget)
+
+**Hard cost caps and auto-pause triggers:**
+- **Per-batch cost cap: $25 CAD** (5 batches × $25 = $125 envelope; original budget $102 with safety margin)
+- **Aggregate cost cap: $125 CAD**
+- All Phase 1B Gate 5 triggers active (regime cliff, trade count anomaly, tier diversity, cost rate)
+- **NEW: Sonnet quality regression trigger.** If first 200 days of any batch produces >50% trades where Sonnet reasoning is identical-string to Haiku reasoning from Gate 1C-3 baseline, auto-pause (suggests Sonnet is degrading to Haiku-like outputs)
+
+**Acceptance criteria for Phase 1C (which strategies advance to Phase 1D):**
+Per current PROJECT_PLAN — same 10 passing criteria as Phase 1B.
+
+### Cost summary for Phase 1C
+
+| Gate | Cost | Cumulative (1B + 1C) |
+|---|---|---|
+| Gate 1C-1 | $0 | $119.50 |
+| Gate 1C-2 | $0 | $119.50 |
+| Gate 1C-3 | $5 | $124.50 |
+| Gate 1C-4 | $30 | $154.50 |
+| Gate 1C-5 | $102 | $256.50 |
+
+**Combined Phase 1B + 1C: ~$256 CAD if everything passes first time. ~$8 wasted at most if a critical issue surfaces in 1C-3 or 1C-4.**
+
 
 ## What Happens to Strategies That Fail Phase 1B
 
