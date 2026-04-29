@@ -4199,3 +4199,548 @@ The path forward isn't to fix bugs faster. It's to add the structural pieces (Po
 ---
 
 *Phase 1B retrospective complete. The audit phase is fully exhausted. The system needs structural rework before another run is meaningful.*
+
+---
+
+# AUDIT PASS 11 — Phase 1B/1C Separation Critique, Tiering Audit, Audit Gap Inventory
+
+This pass adversarially critiques the decision to separate Phase 1B (no agents) from Phase 1C (with agents), audits the entire tiering system against professional trading practice, and identifies what 10 passes have not yet covered.
+
+---
+
+## PART 1 — Is "Phase 1B without agents, Phase 1C with agents" actually logical?
+
+### The case FOR the separation
+
+Reasons that genuinely support the split:
+
+1. **Cost discipline.** Phase 1C agents were estimated at $263 CAD/month. Running 1B at $0 lets you iterate on bugs without burning budget on broken runs.
+2. **Debugging clarity.** With agents in the loop, it's hard to tell whether a bad result is from broken signals, broken agent prompts, or both. Removing agents isolates the rule-based system.
+3. **Speed.** Without 6 agents per candidate, runtime is ~10× faster.
+4. **Complexity reduction.** During heavy bug-fixing, fewer moving parts = fewer suspects.
+
+These reasons are valid for **debugging**, but they don't make 1B a meaningful **validation** of anything you'll actually trade.
+
+### The case AGAINST the separation (adversarial)
+
+#### Critique 1: Phase 1B and Phase 1C+live are different trading systems
+
+The tiering pipeline has two stages:
+1. **Preliminary tier:** rule-based, from `strategy_count` + `smart_money` signals
+2. **Adjusted tier:** agent score adjusts ±1 tier
+
+In Phase 1B, only stage 1 runs. In Phase 1C and live, both stages run. **This is not "the same system minus the optional agent layer" — it's two different systems.**
+
+A strategy that passes 1B (rules-only) might fail 1C (rules + agents, because agents systematically downgrade). A strategy that fails 1B might pass 1C (because agents recover trades that rules miss).
+
+You're proposing to validate System A and then **deploy System B**, expecting the validation to transfer. That doesn't work.
+
+**What professional firms do:** A/B test. Run BOTH systems in parallel on the same data. Compare. The current approach validates one and deploys the other.
+
+#### Critique 2: Without agents, the tiering system is degenerate
+
+In Phase 1B-without-agents:
+- `smart_money_score` = 0 for every trade (BUG-103 — env var gate)
+- Therefore: no trades hit `EXCEPTIONAL`, `VERY_HIGH`, or `MEDIUM` tiers
+- Every tradeable trade is either `HIGH` (3+ strategies) or `MEDIUM_HIGH` (2 strategies)
+- 99%+ of trades end up in just 2 tiers
+
+The 6-tier system collapses to 2 effective tiers in Phase 1B. You can't validate which tier produces best results because tier essentially doesn't vary.
+
+**Even the BUG-103 fix doesn't help much.** Smart money signals are rare events (cluster insiders + congressional buys aligned). Most days have no signal. Without agents, the system has very little tier differentiation.
+
+#### Critique 3: Tier doesn't affect PnL in backtest (BUG-104)
+
+This is the killer. Backtest uses fixed $10K notional regardless of tier. Tier rules drive position sizing in *concept*, but backtest doesn't apply them. So even if tiering worked perfectly:
+
+- HIGH trade: backtest gets $10K position, +5% PnL = $500
+- MEDIUM_HIGH trade: backtest gets $10K position, +5% PnL = $500
+- Same dollar PnL regardless of tier
+
+In Phase 1B, the tier only matters for the **website cards** ("Active Picks" vs "Watchlist"). It does NOT affect strategy validation metrics. **You're validating something the tiering system doesn't actually influence.**
+
+#### Critique 4: Phase 1B validates ~5% of what live trading does
+
+Phase 1B tests:
+- Strategies fire on point-in-time data ✅
+- Trailing stops work ✅
+- Walk-forward validation ✅
+
+Phase 1B does NOT test:
+- Position sizing applied to PnL ❌ (BUG-104)
+- Portfolio constraints (10 max positions) ❌ (BUG-95)
+- Capital limits (1500+ concurrent allowed) ❌ (BUG-101)
+- Realistic stop fills ❌ (BUG-79)
+- Exit slippage ❌ (BUG-80)
+- Currency conversion ❌ (BUG-45)
+- Order placement ❌ (BUG-93)
+- Email approval ❌ (BUG-63)
+- Reconciliation ❌ (BUG-93)
+
+Phase 1B passing means you've checked one corner of one floor of a 10-floor building. **It is not evidence that the building won't fall over.**
+
+### The honest verdict on the separation
+
+**The 1B/1C split is a debugging convenience, not a validation strategy.** It made sense for cost reasons during heavy iteration. But:
+
+- A strategy passing Phase 1B without agents tells you very little about live performance
+- The tiering system is degenerate in 1B (only 2 effective tiers)
+- Position sizing is not applied so tier validation is irrelevant
+- The agents add a completely different system in 1C — passing 1B doesn't transfer
+
+**Better framing:** Phase 1B is a **smoke test** for the rules-based system, not a validation. Don't promote any strategy from 1B to "ready to use." Phase 1C is where actual validation begins — and it requires the portfolio infrastructure that doesn't exist yet.
+
+---
+
+## PART 2 — Tiering audit: how does this compare to professional trading desks?
+
+### What the system has
+
+```
+Tier            Strategies   Smart Money              Position
+EXCEPTIONAL     3+           congressional+insider    5%
+VERY_HIGH       2+           congressional or insider 4%
+HIGH            3+           any/none                 3%
+MEDIUM_HIGH     2+           any/none                 1.5%
+MEDIUM          1+           score >= 2               0% (watchlist)
+LOW             1            no smart money           0%
+AVOID           any          strong negative SM       0% (block)
+```
+
+Plus an agent score that adjusts ±1 tier.
+
+### Professional benchmarks
+
+#### Quant funds (Renaissance, Two Sigma, AQR, DE Shaw)
+- **No tiers.** Continuous score from a multi-factor model.
+- Score = weighted sum of orthogonal factors (momentum, value, quality, low-vol, sentiment, macro)
+- Each factor weight calibrated from historical Sharpe contribution
+- Position size = score-weighted (proportional to score), not bucketed
+- Validation: decile analysis (top decile vs bottom decile, must be monotonic by score)
+
+#### Multi-manager hedge funds (Citadel, Millennium, Point72)
+- **Tiers exist** but are HUMAN judgements, not algorithmic
+- Each PM rates conviction 1-5 based on their own analysis
+- Position size = `(conviction × expected_return) / VaR_contribution`
+- Each PM's calibration tracked over time (do they hit their conviction targets?)
+- No automated agent scoring — agents support analysis, humans decide
+
+#### Prop trading firms (Jane Street, Optiver, IMC)
+- **No tiers.** Discrete signals → standard size based on liquidity.
+- Confidence is HUMAN-driven for non-systematic trades
+- Risk limits are HARD numerical constraints (no soft tiering)
+- For systematic strategies: signal × edge / variance, fully continuous
+
+#### Retail algo platforms (QuantConnect, Alpaca templates)
+- **No tiers** in standard templates
+- Equal-weight or score-weighted portfolios
+- Risk parity for sizing
+- Discrete bucketing is not industry standard
+
+### Where tiers ARE used in finance
+
+Tiers exist in:
+- **Sell-side analyst ratings** (BUY/HOLD/SELL) — 3 tiers, communication to humans
+- **Credit ratings** (AAA/AA/A/BBB/BB/B) — 6 tiers, regulatory/communication purpose
+- **Insurance underwriting** (5-10 tiers) — premium pricing brackets
+- **Loan grading** (e.g., LendingClub A1-G5) — 35 grades for risk-based pricing
+
+**Common feature:** all are HUMAN-OUTPUT tiers communicated to humans or used for regulatory pricing. None drive automated trading position sizing.
+
+### Adversarial criticisms of the tiering system
+
+**Criticism 1: Strategy count is correlated, not orthogonal**
+
+`HIGH` requires 3+ strategies firing. But the 72 strategies are massively correlated (BUG-101 showed 88% trade overlap). On a trend-day in tech, 5-10 strategies fire **on the same underlying trend signal**. That's not 5 confirmations — that's 1 signal reported 5 times.
+
+A real factor model would use orthogonal inputs: momentum, value, quality, sentiment, etc. **Five different factors aligning IS five independent confirmations.** Five overlapping technical strategies firing IS one event observed five times.
+
+The tier system treats correlated signals as independent confirmations. This systematically mis-calibrates confidence — "EXCEPTIONAL" trades aren't actually exceptional, they're just trending.
+
+**Criticism 2: Smart money "binary gates" oversimplify continuous data**
+
+`AVOID` requires the exact string `"congressional_sell+insider_cluster_sell"`. `EXCEPTIONAL` requires `"congressional+insider_cluster"`.
+
+Real congressional/insider data is noisy:
+- 50%+ of insider sells are pre-planned 10b5-1 trades (zero information content)
+- Congressional disclosures are 45-day lagged (often stale)
+- Insider rank matters: a CEO buying $10M >> a Director buying $50K
+- Cluster is binary (3+ insiders) but signal varies continuously
+
+Professional approach (e.g., Smart Insider Inc., InsiderScore):
+- Continuous strength score 0-100 based on (insider seniority, $ amount, recent track record, vs. industry peers)
+- No binary gates — continuous influence on conviction
+
+The binary gates either fire (rare) or don't (most of the time). 95%+ of trades get NO smart money input. This wastes most of the data signal.
+
+**Criticism 3: Position sizing jumps are arbitrary**
+
+```
+EXCEPTIONAL: 5%
+VERY_HIGH:   4%  (-1pp)
+HIGH:        3%  (-1pp)
+MEDIUM_HIGH: 1.5% (-1.5pp)
+```
+
+Why these numbers? Where's the math?
+
+Half-Kelly says: `f = (edge - cost) / variance / 2`. To use Kelly, you need:
+- Expected return per signal type (we don't have this — backtest is contaminated)
+- Variance per signal type (also unmeasured)
+- Transaction cost per trade (overstated by 2-3× per BUG-82)
+
+The 5% / 4% / 3% / 1.5% is **"sounds reasonable" sizing**, not derived from edge or risk metrics. There is no validation that EXCEPTIONAL trades have 5/4 = 1.25× the edge of HIGH trades, which is what the sizing implies.
+
+**Criticism 4: Agent thresholds are ungrounded**
+
+`AGENT_TIER_UPGRADE_THRESHOLD = 75` (above this → upgrade)
+`AGENT_TIER_DOWNGRADE_THRESHOLD = 40` (below this → downgrade)
+
+Why 75? Why 40? **There is no evidence that score=75 trades outperform score=74 trades.**
+
+Professional ML systems calibrate thresholds against actual outcomes:
+- ROC curve to find optimal cutoff
+- Verify monotonicity (higher score must mean better outcome)
+- Cross-validate threshold across walk-forward windows
+
+Current system: thresholds picked once, never validated. The agent score is **uncalibrated** — we don't know what a "75" means in terms of expected outcome difference vs a "70."
+
+**Criticism 5: The agent adjustment direction is wrong-way around**
+
+The agent score adjusts the tier ±1 level. But:
+- Final tier drives position size
+- Position size in backtest is fixed $10K (BUG-104)
+- So agent adjustment changes tier label but not actual outcome
+
+**The agent is an expensive label generator, not a position sizing input.** In backtest, agents are 100% decoration.
+
+In live trading (assuming BUG-104 fixed), the agent would matter, but:
+- The agent context is built with wrong keys (BUG-10)
+- The Risk Agent reasons on wrong VIX (BUG-26)
+- Decision Agent default action is invalid (`WATCHLIST`, BUG-35)
+
+So even if BUG-104 is fixed, the agents aren't ready to drive sizing.
+
+**Criticism 6: Tier system creates discontinuities**
+
+Tiers create non-monotonic position sizing as score varies:
+- Trade A: agent score 76 → upgrade → 4% size
+- Trade B: agent score 74 → no change → 3% size
+- Trade C: agent score 73 → no change → 3% size
+- Trade D: agent score 39 → downgrade → 1.5% size
+
+A 2-point difference in agent score (76 vs 74) creates a 33% difference in position size (4% vs 3%). A 1-point difference (40 vs 39) creates a 50% difference (3% vs 1.5%).
+
+**This is enormous sensitivity to a noisy score.** Real systems use continuous functions to avoid this:
+
+```python
+# Continuous sizing (recommended)
+position_pct = MIN_SIZE + (MAX_SIZE - MIN_SIZE) * sigmoid((score - 50) / 15)
+# Smooth, no cliffs
+```
+
+### Where the tiering system DOES make sense
+
+In its defense:
+- Communicating to humans (website "Active Picks" vs "Watchlist") — tiers ARE useful for this
+- Hard regulatory limits (AVOID = block) — discrete buckets are appropriate
+- Capital reservation logic — easier to reason about with fixed buckets
+
+But for driving algorithmic position sizing in production, continuous scoring is the industry standard. **Discrete tiers with arbitrary thresholds are below professional standard.**
+
+---
+
+## PART 3 — What 10 audit passes have NOT covered
+
+These areas haven't been systematically reviewed. Each could be its own audit pass.
+
+### Area 1: Performance and scalability
+
+Not yet audited:
+- Runtime per ticker (1B run took how long?)
+- Memory profile (loading 509 OHLCV files = how much RAM?)
+- IO bottlenecks (Parquet reads vs signal compute)
+- Parallelization opportunities (currently single-process per batch)
+- Disk usage of caches (cumulative across all data sources)
+- Scaling projections (5 years × 1000 tickers × intraday data — feasible?)
+
+### Area 2: Observability and debuggability
+
+Not yet audited:
+- Log levels across modules (some debug, some error, inconsistent)
+- Structured logging vs free-text strings
+- Trace IDs for tracking a specific trade through the pipeline
+- Metrics emission (no counters, no histograms, no gauges)
+- Error categorization (transient retry vs permanent vs config)
+- Dead-letter handling for failed agent calls
+
+### Area 3: Data lineage and provenance
+
+Not yet audited:
+- Can you trace a trade back to source data version?
+- When was each cache file last refreshed (no metadata)?
+- Which version of pandas-ta computed the signals (no version pin)?
+- What was the codebase commit at run time (no commit hash in outputs)?
+- Are runs reproducible from git history? **No** — caches drift independently of code.
+
+### Area 4: Edge cases in market structure
+
+Not yet audited:
+- Trading halts: what if a stock is halted at signal time?
+- Listing changes: stock moved exchanges mid-period
+- Symbol changes: FB → META, TWTR delisted
+- Mergers and acquisitions: held position has acquirer takeover
+- Stock splits during holding period: stop levels invalidated
+- Special dividends: cumulative return calc affected
+- Earnings gaps: position held through earnings, gaps 15%
+- SPAC redemptions and other suspensions
+- Class A vs Class B shares (GOOGL vs GOOG)
+- Dark pool fills (not relevant for retail but worth noting)
+
+### Area 5: Concurrency and race conditions
+
+Not yet audited:
+- 5 batches running in parallel: cache writes collide?
+- Two agents calling APIs simultaneously: rate limit shared?
+- File system locking on Parquet writes
+- JSON cache file corruption from concurrent writes
+- Database connection pool exhaustion (Stage 3+)
+- Idempotency of order placement (if retry, do we double-trade?)
+
+### Area 6: Testing discipline
+
+Not yet audited:
+- Test coverage % across modules
+- Test isolation (do tests depend on each other?)
+- Mocking strategy for external APIs
+- Property-based tests vs unit tests
+- Integration test suite completeness
+- End-to-end smoke test (one trade, full lifecycle)
+- Performance regression tests
+
+### Area 7: Config management
+
+Not yet audited:
+- Config in `config.py` (Python module) requires git push to change
+- No environment-specific config (dev vs prod vs CI)
+- No secret rotation procedures
+- No config validation on startup
+- No detection if config changed between runs but cache stale
+- Hardcoded thresholds throughout codebase
+
+### Area 8: Tax and regulatory considerations
+
+Not yet audited:
+- **Wash sale rules** (selling at loss, rebuying within 30 days — IRS disallows the loss)
+- **Pattern Day Trader rule** (4 day trades in 5 days requires $25K minimum)
+- **Short selling regulations** (Reg SHO locate requirement, threshold securities)
+- **Cross-border tax** (Canadian holding US stocks: 15% withholding on dividends, T1135 form for foreign assets >$100K CAD)
+- **Capital gains** (short-term <1 year vs long-term, different treatment in CA and US)
+- **1099 reporting** (US brokers issue, Canadian brokers don't)
+- **SEC large position reporting** (>5% threshold triggers 13D/G filing)
+- **Day trader classification** in Canada (CRA can reclassify trading income from capital gains to business income — much higher tax rate)
+
+This is a real concern: a Canadian swing trader with frequent trades may be deemed a business by CRA. **Tax rate goes from 25-50% on capital gains to 50-54% marginal on business income.** Not modelled anywhere.
+
+### Area 9: Drawdown behavioral analysis
+
+Not yet audited:
+- How long would the worst drawdown have lasted (calendar days)?
+- What is the recovery time pattern?
+- Distribution of consecutive losing trades
+- Correlation of losing trades with market regimes
+- Behavioral feasibility: can the trader stomach this?
+- Worst-case scenarios that would cause the trader to abandon the system?
+
+A backtest can show "passes criteria" but if the worst drawdown takes 18 months to recover from, real human trader will quit at month 6.
+
+### Area 10: Meta-learning and strategy degradation
+
+Not yet audited:
+- Do strategies degrade over time (alpha decay)?
+- When was each strategy designed (relevant for survivorship)?
+- Do crowded strategies underperform (mean reversion was popular → now degraded)?
+- Continuous monitoring infrastructure for live performance vs backtest
+- Strategy retirement criteria validated statistically (BUG-65)
+- New strategy onboarding process
+
+### Area 11: Infrastructure failure modes
+
+Not yet audited:
+- What happens if Anthropic API is down for 24 hours?
+- What if FRED is down on a CPI release day?
+- What if yfinance is rate-limited (current Codespace issue)?
+- What if VPS rebooted mid-trading hours?
+- Partial fills: what if 50% of order fills, market closes?
+- Order rejection: what error categories exist?
+- DNS resolution failures
+- TLS certificate expiry
+- Disk full on cache writes
+
+### Area 12: Security
+
+Not yet audited:
+- SSH access controls on VPS
+- API key rotation policy
+- GitHub Actions secrets scope
+- Database access patterns (least privilege)
+- Network egress controls
+- Backup/recovery procedures
+- 2FA on broker account
+- Code signing for deployed scripts
+- Dependency supply chain (do we audit pandas-ta updates?)
+
+### Area 13: The signal vs noise problem (statistical edge)
+
+Not yet audited:
+- What is the actual edge of these strategies vs random?
+- Have we computed Information Ratio?
+- Have we tested vs random entries (null hypothesis)?
+- Have we tested vs SPY buy-and-hold benchmark?
+- What is the t-statistic of mean PnL per trade?
+- Is the "edge" real or just data mining?
+
+The existing 34,727 trades with -0.98% mean PnL suggests **NO edge in the rules-only system.** A bear market in 2022 would crush long-biased strategies regardless of which technical indicator they use. The system might just be "long bias" with extra steps.
+
+### Area 14: AI agent quality monitoring
+
+Not yet audited (beyond what we've found):
+- Agent prompt evaluation framework (do prompts produce useful outputs?)
+- Inter-agent agreement analysis (do 6 agents converge on same answer for similar setups?)
+- Calibration of agent scores (does score=80 actually outperform score=70?)
+- Drift monitoring (agent behavior changes with model updates)
+- Hallucination detection (does the agent invent signals not in context?)
+- Cost-per-decision tracking
+
+### Area 15: Survivorship bias in the universe itself
+
+Not yet audited:
+- The S&P 500 universe of "509 tickers" is the CURRENT membership
+- In 2022, the membership was different (delistings, additions)
+- A stock that crashed and got removed is missing from history
+- A stock that became a star and got added is over-represented
+- Backtest is biased toward "stocks that are still in S&P 500 today"
+
+This is a subtle but important point. Historical S&P 500 in 2022:
+- Had different members than current
+- Included names that have since been removed
+- Excluded names that have since been added
+
+Using current S&P 500 to backtest 2022 has survivorship bias. Real backtests use the as-of-date membership.
+
+### Area 16: Multi-asset and correlation dynamics
+
+Not yet audited:
+- All trades are individual stocks — no portfolio-level correlation analysis
+- 10 trades all in tech sector during AI boom: highly correlated, looks diversified
+- Effective number of bets (vs sum of positions) not computed
+- Maximum drawdown could be much higher than backtest suggests in correlated periods
+
+### Area 17: Code maintenance and tech debt
+
+Not yet audited:
+- Cyclomatic complexity of key functions
+- Duplicate code patterns (signal compute logic repeated)
+- Dead code (unused functions, imports)
+- TODO/FIXME comment density
+- Code documentation coverage
+- Legacy code from earlier phases not yet refactored
+
+### Area 18: User experience for the operator
+
+Not yet audited:
+- Alert fatigue: how many emails per day in live mode?
+- Cognitive load: 6 tier names + 4 regimes + 5 phases = lots to remember
+- Mistake recovery: what if Jeet types wrong APPROVE reply?
+- Vacation mode: how to pause trading for 2 weeks?
+- Tax season: how to export trade history for filing?
+- Personal life integration: can this run during day job?
+
+This isn't trivial. Solo traders abandon systems that demand constant attention.
+
+---
+
+## PART 4 — Recommended next audit passes (in priority order)
+
+Based on the gap analysis, here's what should be audited next:
+
+### Pass 12: Statistical edge audit (HIGHEST PRIORITY)
+Test the null hypothesis that the strategies have no edge:
+- Random entry baseline: same exit logic, random entries — is win rate similar?
+- SPY buy-and-hold benchmark: did the strategies beat passive?
+- t-test on mean PnL per trade
+- Sharpe ratio with proper computation (not annualized from per-trade)
+- Information Ratio vs market benchmark
+
+If the strategies don't beat random + buy-and-hold, **all other concerns are moot**.
+
+### Pass 13: Survivorship bias quantification
+- Get historical S&P 500 membership lists from 2020-2026
+- Identify tickers that were delisted/removed during backtest period
+- Re-run on the as-of-date universe vs current universe
+- Quantify impact on results
+
+### Pass 14: Edge case handling
+- Trading halts, splits, mergers, ticker changes
+- Test the engine against these scenarios
+- Document expected behavior for each edge case
+
+### Pass 15: Performance and scalability
+- Profile the engine
+- Identify bottlenecks
+- Memory analysis
+- Project costs at 5-year + intraday scale
+
+### Pass 16: Observability and debuggability
+- Audit logging
+- Add structured logging
+- Trace IDs for trade lifecycle
+- Metrics emission
+
+### Pass 17: Tax and regulatory
+- CRA business income rules for active traders
+- Wash sale detection
+- Cross-border withholding modeling
+- Day trader classification risk
+
+### Pass 18: Drawdown behavioral analysis
+- Calendar duration of worst drawdowns
+- Recovery time distribution
+- Behavioral feasibility assessment
+
+### Pass 19: AI agent quality (deep dive)
+- Calibration testing
+- Inter-agent agreement
+- Hallucination detection
+- Cost-per-decision tracking
+
+### Pass 20: Live trading readiness gap
+- Compare to a real algo trading system (Alpaca, IBKR Gateway examples)
+- Document what's missing for paper trading
+- Document what's missing for live trading
+- Estimate effort to close each gap
+
+---
+
+## PART 5 — Final adversarial verdict
+
+**Phase 1B without agents** is a debugging convenience. It's NOT validation of the live trading system. The strategies that pass 1B will not necessarily pass 1C, and even if they do, the gap to live trading is enormous.
+
+**The tiering system** is below professional standard:
+- Discrete buckets where industry uses continuous scoring
+- Strategy count as confidence (correlated signals counted as independent)
+- Binary smart money gates (oversimplifies continuous data)
+- Arbitrary position sizing (5/4/3/1.5% with no derivation)
+- Ungrounded agent thresholds (75/40 picked without calibration)
+- Tier doesn't actually drive PnL in backtest (BUG-104)
+
+**The real question** is whether the strategies have any edge at all. We have 110 bugs documented, but we don't have a single statistical test showing the strategies beat random entries. Every other audit finding is academic until that's confirmed.
+
+**Recommended priority shift:** Stop adding features (Phase 1C, 1D, agents). Run **Pass 12 — Statistical edge audit** to determine if these strategies have any signal in the data. If they don't, no amount of bug-fixing will create profitability.
+
+If Pass 12 confirms an edge: continue with structural fixes (BUG-78, BUG-101, BUG-103, etc.) before scaling.
+If Pass 12 shows no edge: rethink the strategy universe entirely. Use orthogonal factor models instead of 72 correlated technical indicators.
+
+---
+
+*Pass 11 complete. Audit gaps inventoried. Recommend Pass 12 (Statistical Edge Audit) as immediate next priority.*
