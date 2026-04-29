@@ -3087,3 +3087,400 @@ The key insight: **Portfolio Accounting is the SHARED layer between backtest and
 ---
 
 *Senior architect review complete. The system is well-designed at the strategy level but missing all production infrastructure (execution, portfolio accounting, deployment) needed for live trading. Recommend building the Portfolio Accounting layer FIRST, then the Execution layer, before any live trading is attempted.*
+
+---
+
+## AUDIT PASS 9 — Adversarial Review
+
+*Operating assumption: every result, every metric, every passing test is suspicious until proven otherwise. Hunt for hidden inflation, silent failures, untested assumptions.*
+
+This pass forensically examines the existing 34,727 trades from output_1b_batch1-5 to find what the engine is silently doing wrong. Every finding is traced back to specific code or data evidence.
+
+---
+
+### BUG-101 · CRITICAL — 88.1% of trades are overlapping re-entries on the same ticker — backtest is essentially "what if you could hold 2,683 simultaneous positions"
+
+**Evidence:** Quantified directly from existing trade log.
+
+**The numbers, exactly:**
+- 34,727 total trades in trade_log_checkpoint
+- 30,595 trades (88.1%) opened while a prior position on the same ticker was still open
+- Only 4,132 trades (11.9%) are truly "first-entry" positions
+
+**Average concurrent open positions:** 1,539
+**Maximum concurrent open positions:** 2,683
+**Live trading limit (per LIVE_TRADING_RULES):** 10
+
+**The backtest is operating at 150–270× the live capacity.**
+
+**Why this happens:**
+- Code blocks `(ticker, strategy)` tuples from re-entering — but allows different strategies to all enter the same ticker
+- Code resets `opened_today` daily — but doesn't track tickers across days
+- Result: AAPL with 5 different strategies firing daily for 10 days = 50 concurrent AAPL positions, all stacked
+
+**Asymmetric inflation favours winners:**
+| Trade type | Count | Win rate | Mean PnL |
+|---|---|---|---|
+| Truly independent | 450 | 16.0% | -2.19% |
+| Overlapping (stacked) | 34,277 | 29.9% | -0.97% |
+
+**Overlapping trades show 1.9× the win rate of independent trades.** This is because:
+- Winning setups attract more strategies firing → more recorded "wins" stacked on the same favourable move
+- Losing setups stop out fast → only one recorded "loss" per setup
+- The backtest accumulates wins disproportionately to losses
+
+**Capital implications:**
+- Backtest implicit notional: ~$15M concurrent ($10K × 1,500 positions)
+- Realistic capital: $10K–$100K
+- Backtest assumes 150–1,500× available capital
+
+**Corrected implementation:**
+```python
+# In _process_day, add ticker-level check:
+already_open_tickers = {t.ticker for t in self.open_trades}
+if ticker in already_open_tickers:
+    self.skipped_trades.append({
+        "ticker": ticker, "as_of": as_of,
+        "reason": "ticker_already_open"
+    })
+    continue
+```
+
+After this fix: 34,727 trades collapse to ~4,621 truly independent positions. The "min_trades = 500" threshold becomes ~64 independent decisions per strategy — far below statistical significance threshold.
+
+---
+
+### BUG-102 · CRITICAL — 3.5× same-day duplicate inflation: 9,921 unique decisions logged as 34,727 trades
+
+**Evidence:** Direct row-level analysis of trade log.
+
+**The numbers:**
+- 34,727 trade-log rows
+- 9,921 unique `(ticker, entry_date)` combinations
+- Inflation factor: 3.50×
+
+**Distribution of duplicate rows per (ticker, date):**
+| Strategies firing | Count of (ticker, date) | % |
+|---|---|---|
+| 1 | 2,241 | 22.6% |
+| 2 | 1,390 | 14.0% |
+| 3 | 1,609 | 16.2% |
+| 4 | 1,634 | 16.5% |
+| 5+ | 3,047 | 30.7% |
+| **16** | 1 | 0.01% |
+
+**Why duplicates have identical PnL:** 7,285 of 7,680 multi-strategy groups (94.9%) show **zero variance** in PnL across rows. They share entry price, stop level, exit logic — they're recording the same position N times, where N is the number of strategies that fired.
+
+**Combined with BUG-101 (cross-day overlap):** True independent positions = 4,621. Reported = 34,727. **Overall trade-count inflation: 7.5×.**
+
+**Statistical significance impact:**
+- Reported per-strategy trade count: 34,727 / 72 = **482 trades/strategy** (passes "min 500" approximately)
+- True independent per-strategy: 4,621 / 72 = **64 trades/strategy** (fails by 8×)
+- 95% Wilson CI for 55% win rate at n=64: [42.5%, 67.0%] — completely overlaps null hypothesis
+- **Cannot statistically distinguish any strategy from random chance.**
+
+**Note:** This bug was supposed to be fixed by the `opened_today` deduplication added in commit `b430ab36`. But that commit also introduced BUG-01 (NameError) which prevents any new backtests from completing. So the fix is in place but unverified, and existing trade data predates it.
+
+---
+
+### BUG-103 · CRITICAL — Smart money data prefetched for 7 categories × 509 tickers but never consulted at runtime
+
+**Evidence:** All 34,727 trades have these field values:
+- `smart_money_score`: 0 (unique=1)
+- `congressional_signal`: "none" (unique=1)
+- `insider_signal`: "none" (unique=1)
+- `institutional_signal`: "none" (unique=1)
+
+**The bug:** `backtest/engine/backtest.py` line 361:
+```python
+sm = {"composite_signal": "none", "score": 0,
+      "congressional_signal": "none", "insider_signal": "none",
+      "institutional_signal": "none"}
+if os.environ.get("QUIVER_API_KEY"):     # <-- THE GATE
+    sm = smart_money_score(ticker, as_of)
+```
+
+**The gate is wrong.** `smart_money_score()` reads from local Parquet cache (verified by inspecting the function — no API calls made). The QUIVER_API_KEY env var is only needed by the **prefetch script** (`prefetch_quiver.py`). At backtest runtime, the cached data is read locally with no API needed.
+
+**Result:** Anyone running Phase 1B without setting QUIVER_API_KEY (which most engineers won't, because no API calls happen at runtime) silently skips ALL smart money signal computation:
+- All 7 prefetched datasets (insider, congressional, 13F, gov contracts, lobbying, wiki, WSB): unused
+- Confidence tier assignment: never receives smart money input
+- Decision Agent context: receives `score=0, signal="none"` for every trade
+- **Hours of prefetching, ~500MB of git LFS data, never consulted**
+
+**Corrected implementation:**
+```python
+# Just call it — the function handles missing cache gracefully
+sm = smart_money_score(ticker, as_of)
+```
+
+Or, better, gate on cache availability rather than API key:
+```python
+quiver_cache_dir = Path("backtest/data/cache/quiver")
+if quiver_cache_dir.exists() and any(quiver_cache_dir.iterdir()):
+    sm = smart_money_score(ticker, as_of)
+```
+
+---
+
+### BUG-104 · HIGH — Position sizing rules from config never applied to PnL — backtest assumes fixed $10,000 per trade regardless of confidence tier
+
+**Evidence:** `pnl_dollar = pnl_pct × 100` exactly across all 34,727 trades (max diff = 4.5e-13).
+
+**What this means:**
+- Position size is hardcoded to $10,000 per trade
+- Config defines tiered position sizing: EXCEPTIONAL=5%, HIGH=4%, MEDIUM_HIGH=3%, MEDIUM=1.5%
+- These percentages are **never applied** to trade PnL
+- Confidence tier has zero effect on backtest outcomes
+
+**Implication:** Even when BUG-04 (`avoid` inflating strategy_count) shifts the confidence tier, the trade outcome is identical. The agents downgrading 99.9% of trades from HIGH to MEDIUM_HIGH (BUG-105) has zero impact on results.
+
+**This invalidates an entire class of analysis:**
+- "Should we use 5% for EXCEPTIONAL or 4%?" — cannot answer from backtest
+- "Does smaller position size in MEDIUM trades reduce drawdown?" — cannot answer
+- "Is the tier system improving risk-adjusted returns?" — cannot answer
+
+**Corrected implementation:** Apply position size to dollar PnL:
+```python
+# In close_trade or save_outputs:
+position_size_pct = POSITION_SIZE_BY_TIER[trade.confidence_tier]  # e.g. 0.04 for HIGH
+position_size_dollar = self.starting_capital * position_size_pct
+trade.pnl_dollar = position_size_dollar * (trade.pnl_pct / 100)
+```
+
+This requires implementing portfolio-level capital tracking (BUG-95 infrastructure).
+
+---
+
+### BUG-105 · HIGH — Agent downgrade cascade: 99.9% of trades downgraded by exactly 1 tier — agents added zero differentiation
+
+**Evidence:** Confidence tier transitions across 34,727 trades:
+| Preliminary tier | Final tier | Count | % |
+|---|---|---|---|
+| HIGH | HIGH | 29 | 0.08% |
+| HIGH | MEDIUM_HIGH | 34,551 | 99.50% |
+| MEDIUM_HIGH | MEDIUM | 147 | 0.42% |
+| HIGH | EXCEPTIONAL | 0 | 0% |
+
+**No upgrades. No EXCEPTIONAL. 99.5% downgraded by exactly one tier.**
+
+**Root cause cascade:**
+1. BUG-26: VXX price (~380) used as VIX value
+2. Risk Agent prompt: `"VIX > 40 = crisis"`
+3. Risk Agent reads vix_value=380 → correctly assesses "crisis" → scores risk at floor (2/10)
+4. Decision Agent sees uniform low risk score → applies -15 adjustment
+5. Tier drops one level for almost every trade
+
+**Cost:** ~207,480 agent calls × ~$0.00035 = **$73 of API spend** that produced literally no differentiation between trades. Every trade got the same downgrade.
+
+**The agents were mechanically functional** — they parsed prompts, called APIs, returned valid JSON. They were just acting on garbage VIX input. Fix BUG-26 and the agent variance returns automatically.
+
+**The audit trail is also misleading:** `agent_reasoning` field shows `'strategies_triggered': []` for every trade — confirming BUG-05 cache key collision. Every cached agent decision was made on an empty strategies list.
+
+---
+
+### BUG-106 · HIGH — Perfect stop fills in trade log: every trailing-stop exit fills at exactly the stop price (slippage = 0)
+
+**Evidence:** For all 34,650 trailing-stop exits:
+- `(exit_price - trailing_stop_at_exit).abs().max()` = **5.0e-5** (rounding noise only)
+- `(exit_price - trailing_stop_at_exit).abs().mean()` = 5.4e-7
+
+**The assumption that's hidden:** Stops fill at the stop price, perfectly, every time. This is unrealistic in any of:
+- Stop-market orders fill at the next available print after trigger (always worse than stop)
+- Stop-limit orders may not fill at all if price moves through quickly
+- Overnight gaps through the stop fill at the open, not the stop
+
+**Concrete check from the same data:** 380 long trades (1.1% of longs) had `max_adverse_excursion < -10%` — meaning the price went DEEPER than the initial stop level. These trades should have triggered the stop at -10% but instead show smaller losses (e.g. -5%, -0.16%) because the stop kept moving up via the lookahead bug (BUG-78) before the deepest point was reached.
+
+This is two independent bugs reinforcing each other:
+- BUG-78 lookahead: stop moves up before being checked against today's low
+- BUG-79 perfect fills: when stop is hit, fills at exact stop price
+
+The combined effect: backtest exits trades at much better prices than live trading would achieve. **Aggregate ROI inflation estimated at 25–250pp across 35K trades.**
+
+---
+
+### BUG-107 · MEDIUM — Silent exception swallowing: `except Exception: pass` masks checkpoint failures
+
+**File:** `backtest/engine/backtest.py` line 216–217
+
+```python
+try:
+    import pandas as _pd
+    checkpoint_path = self.output_dir / "trade_log_checkpoint.csv"
+    _pd.DataFrame([vars(t) for t in self.closed_trades]).to_csv(
+        checkpoint_path, index=False)
+except Exception:
+    pass            # <-- silent failure
+```
+
+**The risk:** If the checkpoint write fails (disk full, permission error, dataframe construction error), the bug is silently ignored. The backtest continues but no checkpoint is being saved. If the backtest crashes later, ALL closed_trades are lost.
+
+A second silent failure at line 220:
+```python
+try:
+    self._process_day(as_of)
+except Exception as exc:
+    logger.error("Day %s failed: %s", as_of, exc, exc_info=True)
+```
+
+This logs but continues. When BUG-01 (`crisis_flag` NameError) fires, every "crisis" day produces a logged error but execution continues to the next day. Trades on that day are lost; existing positions don't have their exits checked.
+
+**Why this matters for adversarial analysis:** The 34,727 existing trades likely represent **incomplete coverage** of 2022. Some days had errors that were silently swallowed. We have no metric for "days with errors vs days successfully processed" — the run logs would have it but they're not in the repo.
+
+**Corrected implementation:**
+```python
+try:
+    _pd.DataFrame([vars(t) for t in self.closed_trades]).to_csv(checkpoint_path, index=False)
+except Exception as exc:
+    logger.error("Checkpoint failed at day %s: %s", as_of, exc, exc_info=True)
+    self.checkpoint_failures += 1
+    if self.checkpoint_failures > 3:
+        raise RuntimeError(f"Too many checkpoint failures (>{self.checkpoint_failures})")
+```
+
+Track and alert on consecutive failures. Don't pretend nothing happened.
+
+---
+
+### BUG-108 · MEDIUM — Agent context built with `.get(key, default)` masks missing data; agents reason on silent defaults
+
+**File:** `backtest/agents/pipeline.py` — 37 `.get()` calls with defaults
+
+**The pattern:** Every key access uses `.get()` with a default. When a key is missing (typo, renamed, never populated), agents receive the default and reason as if the data is just "absent" or "neutral":
+```python
+price_context.get('pct_from_52w_high', 0)        # missing → 0% (looks like "at the top")
+price_context.get('nearest_support', 'unknown')  # missing → 'unknown' (no warning)
+macro_snap.get('vix_value', 25)                  # missing → 25 (looks normal)
+```
+
+**Why this is adversarial:**
+- BUG-08, BUG-09, BUG-10 were silent failures that this pattern enabled
+- Agents have NO WAY to distinguish "this signal is genuinely 0%" from "this key was never populated"
+- A developer who renames a signal field can break all agent analysis without any error
+- Cache hits compound the problem: stale agent results from before the rename remain in cache
+
+**Corrected pattern:**
+```python
+# Use a strict accessor that distinguishes missing from default
+def strict_get(d: dict, key: str, expected_type: type, default=None):
+    if key not in d:
+        logger.warning(f"Missing key '{key}' in agent context — using default")
+        return default
+    return d[key]
+
+# Or use TypedDict + Pydantic validation:
+class AgentContext(BaseModel):
+    pct_from_52w_high: float
+    nearest_support: float | None
+    vix_value: float
+# At construction: ValidationError if key missing
+```
+
+A schema-validated context dict would catch every BUG-08, BUG-09, BUG-10-style bug at construction time, not silently in agent output.
+
+---
+
+## ADVERSARIAL SUMMARY: Where could results be inflated?
+
+After 9 audit passes, here's the comprehensive inventory of all known inflation mechanisms in the existing trade data:
+
+| # | Mechanism | Direction | Estimated Magnitude |
+|---|---|---|---|
+| BUG-101 | 88% trade overlap (cross-day stacking on same ticker) | ↑ | 7.5× trade count, +14pp win rate on stacked trades |
+| BUG-102 | 3.5× same-day duplicate rows (same trade logged N times) | → | Statistical significance overstated 3.5× |
+| BUG-78 | Trailing stop lookahead (stop updates before being checked) | ↑ | 17–262pp aggregate ROI |
+| BUG-79 | Perfect stop fills (no slippage on triggered stops) | ↑ | 25–75pp aggregate ROI |
+| BUG-80 | No exit slippage (only entry charged) | ↑ | 30–50pp aggregate ROI |
+| BUG-81 | Borrow cost 2.5× too high | ↓ | -20–30pp on shorts only |
+| BUG-82 | Slippage + transaction cost double-charged | ↓ | -500–1000pp aggregate (largest negative) |
+| BUG-86 | CPI lookahead (~10 days early) | ↑ | Marginal — agents only |
+| BUG-104 | Fixed $10K position size (no tiering applied) | → | Doesn't change PnL but invalidates tier analysis |
+| BUG-105 | Agents downgrade 99.9% identically | → | Zero differentiation, ~$73 wasted |
+
+**Net direction is genuinely ambiguous** until BUG-78 and BUG-82 are both fixed and the backtest is re-run. They cancel out roughly:
+- Inflators: BUG-78 + BUG-79 + BUG-80 = +72–387pp
+- Deflators: BUG-82 alone = -500–1000pp
+- Borrow cost (shorts only): -20–30pp
+
+**But trade COUNT inflation is unambiguous:** the existing 34,727 trades represent at most 4,621 independent decisions. Per-strategy stats are inflated 7.5× in count, which directly inflates the apparent statistical significance.
+
+---
+
+## Hidden assumptions enumerated
+
+These are assumptions baked into the code that were not explicit in PROJECT_PLAN:
+
+1. **Capital is unlimited.** Position sizing rules exist in config but aren't applied. Every trade gets $10,000 notional. With 1,500+ concurrent positions, the implied capital is $15M.
+
+2. **Stops fill perfectly at the stop price.** No slippage modelled on stop triggers. No gap-through scenarios (only the rare 12%+ overnight gap caught by Circuit Breaker Level 1).
+
+3. **Multiple strategies on the same ticker = multiple positions.** Live trading would block these via `max_positions_per_ticker=1`, but backtest treats them as independent.
+
+4. **Quiver data is integrated.** Hours of prefetching produced cached data that is silently ignored unless QUIVER_API_KEY env var is set (even though no API call needed).
+
+5. **Agent decisions affect outcomes.** Tier assignment changes, but tier doesn't change position size in backtest, so trade outcomes are identical regardless of agent decision.
+
+6. **Macro data is point-in-time.** CPI release dates not respected — May CPI available June 1 instead of June 10.
+
+7. **VIX is between 10-80.** Code uses VXX price (~380) when it expects VIX (10-80) — every regime classification wrong.
+
+8. **The trade log is complete.** Silent exception swallowing means days with errors are missing from the log, but no metric tracks them.
+
+9. **Signals are typed.** Flat dict with `.get(default)` access means typos, renames, and missing data fail silently.
+
+10. **Stop check happens once per day at EOD.** In reality, live stops trigger intraday continuously — at the OLD stop level, not the post-update level.
+
+---
+
+## Master bug registry — final count
+
+After 9 passes:
+
+| Pass | Critical | High | Medium | Low | Cumulative |
+|---|---|---|---|---|---|
+| Pass 1 | 5 | 9 | 7 | 4 | 25 |
+| Pass 2 | +1 | +9 | +9 | 0 | 44 |
+| Pass 3 | 0 | +1 | +4 | +1 | 50 |
+| Pass 4 | 0 | +3 | +5 | +3 | 61 |
+| Pass 5 | 0 | +2 | +6 | +3 | 72 |
+| Pass 6 | 0 | +3 | +4 | 0 | 77 |
+| Pass 7 | +1 | +5 | +2 | 0 | 85 |
+| Pass 8 | +3 | +4 | +6 | +2 | 100 |
+| Pass 9 | +3 | +3 | +2 | 0 | **108** |
+| **Total** | **13** | **39** | **45** | **13** | **108 unique bugs** |
+
+---
+
+## Final adversarial verdict
+
+**The existing 34,727 trades are not actionable analytical data.** They exhibit:
+
+- 7.5× trade count inflation from overlap and duplication
+- Zero smart money signal usage (data ignored)
+- Uniform agent downgrade (no differentiation achieved)
+- Wrong regime labels (VXX = 380 = "crisis")
+- Inflated win rate from stacking-asymmetry (29.9% vs 16.0% true)
+- Position sizing not applied (tiers irrelevant to outcomes)
+- Capital constraints not modelled (1,500 concurrent positions)
+- Likely incomplete coverage from silently-swallowed exceptions
+
+**The trades cannot be used to validate any strategy's edge.** Any apparent strategy performance is dominated by:
+1. Sector trends in 2022 (energy stocks captured ~50% of trade activity)
+2. Stacking effects (winners accumulate trades, losers stop out)
+3. Look-ahead bias from trailing stop update sequence
+
+**Recommendation:** Discard the existing 34,727 trades. After fixing all CRITICAL bugs, re-run with:
+- BUG-01 fix (crisis_flag)
+- BUG-02 fix (days)
+- BUG-04 fix (avoid bucket)
+- BUG-26 fix (VIX proxy)
+- BUG-78 fix (trailing stop sequence)
+- BUG-101 fix (cross-day ticker dedup)
+- BUG-103 fix (smart money gate)
+
+These 7 fixes alone would change the trade outcomes substantially. Comparing post-fix results to current data to estimate "improvement" is meaningless — they're measuring different systems.
+
+---
+
+*Adversarial review complete. Total bugs documented: 108. Critical: 13. The backtesting engine produces results, but those results are not yet trustworthy.*
