@@ -19431,4 +19431,87 @@ During Pass 51b, a sandbox session reported expected `65/65` (claimed `63 + 2 ne
 **New CHECKLIST candidate from this pass:**
 - Hold-out window enforcement (DEC-152): backtest engine must refuse to evaluate strategy performance against the hold-out 6 months outside the official Stage 4 gate evaluation. To be added when DEC-152 implementation lands (zero-eng-cost for the policy decision; small implementation work to encode the check).
 
-*Pass 52 complete. 8 zero-eng-cost decisions resolved; 5 deferred (3 owner-deferred this session + 2 to be resolved in groups β/δ/ε). No code changes affect tests; docstring fix verified by full pytest run during handoff.*
+*Pass 52 Group α complete. Group β follows.*
+
+---
+
+## AUDIT PASS 52 — Group β: A/B testing framework (5 decisions)
+
+**Date:** April 30, 2026
+**Scope:** Resolve the core Pass-32-batch A/B framework decisions. These 5 decisions together define the statistical guardrails for evaluating whether agents (TradingAgents) add value over rules-only baseline.
+**Forward-link:** DEC-210 (net-Sharpe accounting), DEC-211 (per-agent ablation), DEC-212 (agent-disagreement decomposition) remain PENDING for a future round; not blockers for the framework defined here.
+
+### DEC-205 — A/B test arm design — RESOLVED (Option A)
+
+**Resolution:** Minimum 4 arms required for any A/B run.
+
+**Arm definitions:**
+1. **Arm 1 — Rules-only baseline.** No agents. Strategies fire from technical/macro/options/sentiment signals only.
+2. **Arm 2 — Full agents.** All 11 TradingAgents (Social Analyst dropped per DEC-057) plus rules.
+3. **Arm 3 — Agents minus Risk Manager.** Tests whether the Risk Manager override layer adds value or just adds latency.
+4. **Arm 4 — Agents minus Bull/Bear debate.** Tests whether the multi-agent debate adds value beyond single-perspective analysis.
+
+**Rationale:** Two-arm tests can answer "do agents help" but cannot attribute value within the agent stack. Four arms is the minimum that lets the framework answer both questions on the same dataset. With paired design (DEC-206), running 4 arms does not multiply data needs — every trade is evaluated by every arm in parallel.
+
+**Forward action:** When A/B test infrastructure is built (Stage 2), engine must support running 4 parallel arms with deterministic seed alignment so each arm sees identical entry signals and order book snapshots.
+
+### DEC-206 — Paired A/B design — RESOLVED (Option A)
+
+**Resolution:** Paired design. Every arm evaluates every trade. Each trade produces N decision records (one per arm), all under the same market conditions.
+
+**Rationale:** Independent A/B (random assignment of trades to arms) requires huge sample sizes to overcome between-trade variance. Paired design eliminates between-trade variance entirely — within-trade variance across arms is the only signal. Statistical power increases ~3-5× over independent design for typical Sharpe-difference detection. Implementation cost is near-identical: the engine must evaluate strategies anyway; paired design simply records every arm's decision per trade rather than choosing one arm to record.
+
+**Forward action:** Trade journal schema must include arm_id and decision_record per arm. Backtest engine evaluates all arms on identical bar/event stream with shared random seeds where stochasticity exists (e.g., agent sampling).
+
+### DEC-207 — Pre-commit minimum sample size per arm — RESOLVED (Option A)
+
+**Resolution:** 300 paired trades minimum per arm before any arm can be declared a winner. Sequential testing methods (alpha-spending) permitted only with strict pre-registered guardrails.
+
+**Rationale:** Calibrated to detect a Sharpe difference of ≥0.2 at 80% statistical power with paired design — this is the same threshold as DEC-131's "agent value-add minimum" of +0.2 Sharpe lift. So 300 paired trades is exactly the sample size at which the framework can detect the minimum-meaningful effect. Smaller samples (200) would miss real effects at the threshold; larger samples (500) waste time without changing decision quality.
+
+**Anti-peeking guardrail:** No interim looks at A/B results before the 300-trade threshold without alpha-spending registration. Tracking dashboard shows progress (trades-completed-per-arm) but withholds outcome metrics until threshold reached.
+
+**Forward action:** A/B test runner must enforce the 300-trade gate at code level: arm verdicts (pass/fail/inconclusive) computed only after trade count ≥300 for both arms in the comparison.
+
+### DEC-208 — Multi-metric A/B comparison — RESOLVED (Option A with explicit tiebreaker)
+
+**Resolution:** Score every arm on 8 metrics (Sharpe, Sortino, max drawdown, win rate, profit factor, CVaR-95, hit rate by regime, cost-per-trade). Pass/fail decision uses an explicit tiebreaker rule rather than the original "majority of metrics" formulation.
+
+**Pass/fail decision rule:**
+- **Primary criterion (necessary):** Sharpe lift over rules-only baseline ≥ +0.2 (matches DEC-131 threshold).
+- **Guardrail 1:** Max drawdown of agent arm must NOT be more than +5 percentage points worse than rules-only baseline.
+- **Guardrail 2:** CVaR-95 of agent arm must NOT be more than +10% worse (relative) than rules-only baseline.
+- All other metrics (Sortino, win rate, profit factor, hit rate by regime, cost-per-trade) recorded as diagnostics. Inform interpretation but are not pass/fail gates.
+
+**Rationale:** Multi-metric scoring is correct in principle (single-metric hides multi-dimensional value) but "majority of 8 metrics" is fuzzy when metrics disagree. Sharpe is the primary measure of risk-adjusted return; max DD and CVaR are the primary risk concerns. Requiring Sharpe lift while protecting against risk degradation gives a clear, defensible pass/fail rule. Diagnostic metrics surface interesting cases (e.g., "agents lift Sharpe but cost-per-trade triples") for human review.
+
+**Forward action:** A/B test runner outputs a 4-row × 8-column metric table per regime, plus the binary verdict computed from the rule above. Diagnostic metrics that violate the tiebreaker but pass the primary criterion trigger an "owner review required" flag rather than auto-pass.
+
+### DEC-209 — Per-regime A/B verdicts — RESOLVED (Option A with sample-size sub-rule)
+
+**Resolution:** Score per regime (bull / neutral / bear / crisis per DEC-103 four-regime classifier). Each agent arm passes/fails separately in each regime. Optionally deploy agents only in regimes where they pass.
+
+**Sub-rule for valid per-regime verdicts:** Minimum 75 paired trades per arm per regime is required for the per-regime verdict to be considered valid. Below 75, fall back to overall verdict for that regime (i.e., apply the all-regimes verdict to the under-sampled regime).
+
+**Rationale:** The whole rationale for having a regime classifier is to vary behavior by regime. If agents help in some regimes (uncertain markets where multi-agent debate adds value) but hurt in others (clear trends where extra inference is noise), one overall verdict masks this. Per-regime scoring opens the door to "deploy agents in crisis regime only" if the data supports it — meaningful for cost (DEC-210 net-Sharpe accounting reduces agent cost when agents only run sometimes).
+
+**75-trade sub-rule rationale:** With 4 regimes and 300 total paired trades, naive expectation is 75 per regime. Below 75 the per-regime Sharpe estimate is too noisy (standard error ~0.4). The fallback rule prevents the framework from over-interpreting under-sampled regimes (e.g., crisis regime where there might only be 30 trades in 16 years of backtest).
+
+**Forward action:** A/B test runner must classify each completed paired trade into a regime at trade-completion time using the same DEC-103 classifier the live system uses. Per-regime metrics computed in addition to overall metrics.
+
+---
+
+## Pass 52 Group β counts and forward state
+
+**Decisions resolved this group:** 5 (all RESOLVED)
+- DEC-205, DEC-206, DEC-207, DEC-208, DEC-209
+
+**Bugs closed this group:** 0
+
+**A/B framework status post-Group-β:** Core statistical framework defined. Forward-pending for full A/B framework completion: DEC-131 (value-add threshold; threshold value already used in DEC-207 and DEC-208 — resolution recommended in next round), DEC-210 (cost-adjusted net Sharpe), DEC-211 (per-agent ablation), DEC-212 (agent-disagreement decomposition).
+
+**Round 1 remaining (groups δ, ε):**
+- Group δ: DEC-029-C — real-money starting capital (resolution: DEFERRED with named prerequisite DEC-269)
+- Group ε: DEC-291 — triage-based bulk approval (resolution: DEFERRED with named prerequisite DEC-161, OR scope narrowly)
+
+*Pass 52 Group β complete. 5 A/B framework decisions resolved. No code changes; pure policy/methodology decisions. Verified by independent fresh checkout in sandbox: patch applies cleanly to origin/main HEAD 843344b7; pytest 63/63 still passes (no test impact).*

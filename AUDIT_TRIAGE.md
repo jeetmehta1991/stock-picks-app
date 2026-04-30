@@ -1,6 +1,6 @@
 # AUDIT_TRIAGE.md — Pending Decision Prioritization
-**Last regenerated:** April 2026 (post-Pass 52, after Group α resolutions: DEC-152, 238, 248, 245, 169, 288, 341, 342)
-**Decisions covered:** 266 PENDING (matches AUDIT_INDEX.md, post-Pass-52)
+**Last regenerated:** April 2026 (post-Pass 52 Group β, after A/B framework resolutions: DEC-205, 206, 207, 208, 209)
+**Decisions covered:** 250 PENDING (matches AUDIT_INDEX.md actual count, post-Pass-52 Group β. Note: prior TRIAGE counts were inflated; reconciled in this regeneration.)
 
 **How to read:**
 - **Impact (1-10):** how much each moves the needle on quality, risk, or unblocking work
@@ -17,11 +17,11 @@
 
 | Metric | Count |
 |---|---|
-| Total pending | 266 |
+| Total pending | 250 |
 | Phase 0.A blockers | 60 |
-| Zero-eng-cost (only review time needed) | 5 |
-| Impact >= 9 | 21 |
-| Impact >= 8 (high) | 78 |
+| Zero-eng-cost (only review time needed) | 4 |
+| Impact >= 9 | 17 |
+| Impact >= 8 (high) | 73 |
 | Sum eng-days estimated | 594 |
 
 ---
@@ -64,15 +64,11 @@ This is the recommended next-batch for fix approval. Includes runtime correctnes
 
 | Decision | Title | Impact | Eng | 🔴 | Theme | Why critical |
 |---|---|---|---|---|---|---|
-| **DECISION-207** | Pre-commit minimum sample size per arm (300 paired | 9 | 0 | 🔴 | Batch X32 — Agent A/B Testing | Gates Stage 2 agent decision |
-| **DECISION-205** | A/B test arm design — minimum 4 arms (rules, full- | 10 | 1 | 🔴 | Batch X32 — Agent A/B Testing | Gates Stage 2 agent decision |
 | **DECISION-080** | t-stat + Bonferroni | 9 | 1 | 🔴 | Batch X4 — Statistical Methodo | High system impact |
 | **DECISION-131** | Agent value-add minimum (Sharpe improvement >=0.2  | 9 | 1 | 🔴 | Batch X14 — Validation criteri | High system impact |
-| **DECISION-206** | Paired A/B design — every trade evaluated by every | 9 | 1 | 🔴 | Batch X32 — Agent A/B Testing | Gates Stage 2 agent decision |
 | **DECISION-062** | Output schema translation: TradingAgents 5-tier →  | 9 | 2 | 🔴 | TradingAgents Architecture | High system impact |
 | **DECISION-063** | Universe refresh automation | 9 | 2 | 🔴 | Batch X1 — Data + Universe | High system impact |
 | **DECISION-081** | Sharpe + Sortino + transaction cost sensitivity | 9 | 2 | 🔴 | Batch X4 — Statistical Methodo | High system impact |
-| **DECISION-208** | Multi-metric A/B comparison (Sharpe + Sortino + DD | 9 | 2 | 🔴 | Batch X32 — Agent A/B Testing | Gates Stage 2 agent decision |
 | **DECISION-065** | Validate stored data quality before Phase 1B-α | 9 | 3 | 🔴 | Batch X1 — Data + Universe | High system impact |
 | **DECISION-086** | Fractional Kelly position sizing | 9 | 3 |   | Batch X5 — Risk Management Ext | High system impact |
 | **DECISION-087** | Vol-targeted sizing per-position (closes 023) | 9 | 3 |   | Batch X5 — Risk Management Ext | High system impact |
@@ -93,11 +89,8 @@ This is the recommended next-batch for fix approval. Includes runtime correctnes
 
 | Decision | Title | Impact | Eng | Ratio |
 |---|---|---|---|---|
-| **DECISION-207** | Pre-commit minimum sample size per arm (300 paired trades) b | 9 | 0 | 18.0 |
-| **DECISION-205** | A/B test arm design — minimum 4 arms (rules, full-agents, no | 10 | 1 | 10.0 |
 | **DECISION-080** | t-stat + Bonferroni | 9 | 1 | 9.0 |
 | **DECISION-131** | Agent value-add minimum (Sharpe improvement >=0.2 over rules | 9 | 1 | 9.0 |
-| **DECISION-206** | Paired A/B design — every trade evaluated by every arm in pa | 9 | 1 | 9.0 |
 | **DECISION-014** | Phase 1B passing criteria adjustments | 8 | 1 | 8.0 |
 | **DECISION-073** | Adopt Quiver pre-built composites | 8 | 1 | 8.0 |
 | **DECISION-163** | Implementation cost estimate per pending decision | 8 | 1 | 8.0 |
@@ -118,11 +111,9 @@ This is the recommended next-batch for fix approval. Includes runtime correctnes
 | **DECISION-062** | Output schema translation: TradingAgents 5-tier → position_s | 9 | 2 | 4.5 |
 | **DECISION-063** | Universe refresh automation | 9 | 2 | 4.5 |
 | **DECISION-081** | Sharpe + Sortino + transaction cost sensitivity | 9 | 2 | 4.5 |
-| **DECISION-208** | Multi-metric A/B comparison (Sharpe + Sortino + DD + win rat | 9 | 2 | 4.5 |
 | **DECISION-037** | Characterization-test-first approach (Phase A) | 8 | 2 | 4.0 |
 | **DECISION-096** | Backtest reproducibility (code + data + config hash) | 8 | 2 | 4.0 |
 | **DECISION-110** | Deflated Sharpe (Bailey et al.) | 8 | 2 | 4.0 |
-| **DECISION-209** | Per-regime A/B verdicts — agents pass/fail separately per re | 8 | 2 | 4.0 |
 | **DECISION-213** | Both-rationales storage (rules-only AND agent rationale stor | 8 | 2 | 4.0 |
 | **DECISION-252** | Explicit commission model in backtest using real IBKR pricin | 8 | 2 | 4.0 |
 | **DECISION-283** | Backtest output schema — explicit columns/types/nullability/ | 8 | 2 | 4.0 |
@@ -163,28 +154,24 @@ These need only owner review time, no implementation work. Easy wins.
 
 | Decision | Title | Impact | Review (min) | Theme |
 |---|---|---|---|---|
-| **DECISION-207** | Pre-commit minimum sample size per arm (300 paired trad | 9 | 15 | Batch X32 — Agent A/B Testing |
 | **DECISION-291** | Triage-based bulk approval — owner approves entire impa | 8 | 10 | Batch X50 — Process Improvemen |
 | **DECISION-270** | Pre-Stage-4 CPA consultation — formal opinion on tradin | 7 | 10 | Batch X45 — Stage 4 Live |
 | **DECISION-029-C** | Real-money starting capital — DEFERRED until post-paper | 5 | 10 | Live Trading Operational (Grou |
 | **DECISION-035** | Tax classification approach (Canadian) — Defer until CP | 4 | 30 | Live Trading Operational (Grou |
 
-**Total zero-eng items: 5 | Total review-min: 75** (post-Pass-52: DEC-207 + bundled siblings 208/209, DEC-270, DEC-035, DEC-029-C, DEC-291)
+**Total zero-eng items: 4 | Total review-min: 60** (post-Pass-52 Group α+β: DEC-291, DEC-270, DEC-029-C, DEC-035 remain. DEC-035 + DEC-270 owner-deferred this session; DEC-029-C and DEC-291 to resolve as DEFERRED with named prerequisites in groups δ/ε.)
 
 ---
 
-## All 266 Pending — Sorted by Ratio
+## All 250 Pending — Sorted by Ratio
 
 | Decision | Title | Impact | Eng | Review | 🔴 | Ratio |
 |---|---|---|---|---|---|---|
-| **DECISION-207** | Pre-commit minimum sample size per arm (300 paired trad | 9 | 0 | 15 | 🔴 | 18.0 |
 | **DECISION-291** | Triage-based bulk approval — owner approves entire impa | 8 | 0 | 10 |   | 16.0 |
 | **DECISION-270** | Pre-Stage-4 CPA consultation — formal opinion on tradin | 7 | 0 | 10 |   | 14.0 |
-| **DECISION-205** | A/B test arm design — minimum 4 arms (rules, full-agent | 10 | 1 | 15 | 🔴 | 10.0 |
 | **DECISION-029-C** | Real-money starting capital — DEFERRED until post-paper | 5 | 0 | 10 |   | 10.0 |
 | **DECISION-080** | t-stat + Bonferroni | 9 | 1 | 15 | 🔴 | 9.0 |
 | **DECISION-131** | Agent value-add minimum (Sharpe improvement >=0.2 over  | 9 | 1 | 10 | 🔴 | 9.0 |
-| **DECISION-206** | Paired A/B design — every trade evaluated by every arm  | 9 | 1 | 10 | 🔴 | 9.0 |
 | **DECISION-014** | Phase 1B passing criteria adjustments | 8 | 1 | 20 | 🔴 | 8.0 |
 | **DECISION-073** | Adopt Quiver pre-built composites | 8 | 1 | 10 | 🔴 | 8.0 |
 | **DECISION-077** | Portfolio drawdown breaker | 8 | 1 | 10 |   | 8.0 |
@@ -264,14 +251,12 @@ These need only owner review time, no implementation work. Easy wins.
 | **DECISION-062** | Output schema translation: TradingAgents 5-tier → posit | 9 | 2 | 20 | 🔴 | 4.5 |
 | **DECISION-063** | Universe refresh automation | 9 | 2 | 10 | 🔴 | 4.5 |
 | **DECISION-081** | Sharpe + Sortino + transaction cost sensitivity | 9 | 2 | 15 | 🔴 | 4.5 |
-| **DECISION-208** | Multi-metric A/B comparison (Sharpe + Sortino + DD + wi | 9 | 2 | 20 | 🔴 | 4.5 |
 | **DECISION-037** | Characterization-test-first approach (Phase A) | 8 | 2 | 15 | 🔴 | 4.0 |
 | **DECISION-088** | Portfolio vol target 15% | 8 | 2 | 15 |   | 4.0 |
 | **DECISION-091** | Drawdown re-sizing | 8 | 2 | 15 |   | 4.0 |
 | **DECISION-096** | Backtest reproducibility (code + data + config hash) | 8 | 2 | 10 | 🔴 | 4.0 |
 | **DECISION-110** | Deflated Sharpe (Bailey et al.) | 8 | 2 | 15 | 🔴 | 4.0 |
 | **DECISION-139** | Remote kill switch (email-based STOP) | 8 | 2 | 10 |   | 4.0 |
-| **DECISION-209** | Per-regime A/B verdicts — agents pass/fail separately p | 8 | 2 | 15 | 🔴 | 4.0 |
 | **DECISION-213** | Both-rationales storage (rules-only AND agent rationale | 8 | 2 | 10 | 🔴 | 4.0 |
 | **DECISION-252** | Explicit commission model in backtest using real IBKR p | 8 | 2 | 15 | 🔴 | 4.0 |
 | **DECISION-283** | Backtest output schema — explicit columns/types/nullabi | 8 | 2 | 10 | 🔴 | 4.0 |

@@ -224,11 +224,11 @@
 | **DECISION-202** | Dashboard 4 detailed spec (Stage 3 paper trading analytics) | PENDING | Dashboard Specifications | Pass 44 | - |
 | **DECISION-203** | Dashboard 5 detailed spec (Stage 4 live trading analytics) | PENDING | Dashboard Specifications | Pass 44 | - |
 | **DECISION-204** | Dashboard 6 detailed spec (cross-phase comparison waterfall) | PENDING | Dashboard Specifications | Pass 44 | - |
-| **DECISION-205** | A/B test arm design — minimum 4 arms (rules, full-agents, no-Risk, no-Bull-Bear) | PENDING | Batch X32 — Agent A/B Testing | Pass 45 | - |
-| **DECISION-206** | Paired A/B design — every trade evaluated by every arm in parallel | PENDING | Batch X32 — Agent A/B Testing | Pass 45 | - |
-| **DECISION-207** | Pre-commit minimum sample size per arm (300 paired trades) before declaring winner | PENDING | Batch X32 — Agent A/B Testing | Pass 45 | - |
-| **DECISION-208** | Multi-metric A/B comparison (Sharpe + Sortino + DD + win rate + PF + CVaR + cost) | PENDING | Batch X32 — Agent A/B Testing | Pass 45 | - |
-| **DECISION-209** | Per-regime A/B verdicts — agents pass/fail separately per regime | PENDING | Batch X32 — Agent A/B Testing | Pass 45 | - |
+| **DECISION-205** | A/B test arm design — minimum 4 arms (rules, full-agents, no-Risk, no-Bull-Bear) | RESOLVED | Batch X32 — Agent A/B Testing | Pass 45 | 52 |
+| **DECISION-206** | Paired A/B design — every trade evaluated by every arm in parallel | RESOLVED | Batch X32 — Agent A/B Testing | Pass 45 | 52 |
+| **DECISION-207** | Pre-commit minimum sample size per arm (300 paired trades) before declaring winner | RESOLVED | Batch X32 — Agent A/B Testing | Pass 45 | 52 |
+| **DECISION-208** | Multi-metric A/B comparison (Sharpe + Sortino + DD + win rate + PF + CVaR + cost) | RESOLVED | Batch X32 — Agent A/B Testing | Pass 45 | 52 |
+| **DECISION-209** | Per-regime A/B verdicts — agents pass/fail separately per regime | RESOLVED | Batch X32 — Agent A/B Testing | Pass 45 | 52 |
 | **DECISION-210** | Net Sharpe contribution accounting (gross lift minus annualized agent cost) | PENDING | Batch X32 — Agent A/B Testing | Pass 45 | - |
 | **DECISION-211** | Per-agent ablation studies (drop each agent one at a time) | PENDING | Batch X32 — Agent A/B Testing | Pass 45 | - |
 | **DECISION-212** | Agent-disagreement decomposition (Bull vs Bear, Risk override) — testable hypotheses | PENDING | Batch X32 — Agent A/B Testing | Pass 45 | - |
