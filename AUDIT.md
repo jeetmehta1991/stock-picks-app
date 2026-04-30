@@ -7096,3 +7096,322 @@ The next message will contain the proposed PROJECT_PLAN changes (Phase 0 expansi
 ---
 
 *Pass 16 complete. 39 new bugs documented (BUG-139 to BUG-177). Total 177 bugs across 16 passes. ICT/SMC formally specified as upfront integration. Modern systematic trading capabilities catalogued. PROJECT_PLAN changes drafted in next message for owner review.*
+
+---
+
+# AUDIT PASS 17 — Prefetching Architecture Audit (Live API Calls During Backtest)
+
+The user asked: "We need to pre-fetch all API data and not fetch it live. Has that been considered across all project phases?"
+
+The honest answer is **partially**. The architecture intends prefetching but has gaps. Some data is prefetched cleanly, some uses prefetch-with-live-fallback, some is fetched live during backtest with no prefetch path. This pass inventories every API call and classifies it. Then specifies what needs to change to make the system iteration-friendly (run repeatedly without burning API budget).
+
+---
+
+## PART 1 — What's prefetched vs what's live, by API
+
+### 1.1 OHLCV (yfinance) — PARTIALLY PREFETCHED
+
+**Status:** OHLCV uses `cache.py` which reads from local Parquet first, falls back to yfinance live.
+
+**Files:** `backtest/data/cache/ohlcv/{TICKER}.parquet` exists for ~509 tickers.
+
+**Live-call path:** `_fetch_from_yfinance()` in `cache.py` line 57. Triggered when:
+- Cache file doesn't exist
+- Cached date range doesn't cover requested range (auto-extends)
+- Manual cache invalidation
+
+**During backtest:** if cache is complete and dates are in range, **zero live calls**. ✓
+
+**Risk:** `auto_adjust=True` causes data drift across re-runs (BUG-109). Even with cache, dividend ex-dates shift past values.
+
+**Fix needed:** Set `auto_adjust=False` in cache.py (BUG-109 fix). Then prefetch becomes truly stable.
+
+### 1.2 yfinance .info (sector, market cap, IPO date) — LIVE DURING BACKTEST
+
+**Status:** `fetch_info_bulk()` in `fetcher.py` is called from engine's universe load. Uses `yf.Ticker(ticker).info` directly.
+
+**Live-call path:** Always live. No Parquet cache for this data.
+
+**During backtest:** Each universe load = ~509 live yfinance .info calls. Slow and rate-limited.
+
+**Risk:** 
+- yfinance .info is point-in-time (returns CURRENT info, not historical) — survivorship bias
+- Rate limits: 2000 calls/hour for yfinance, easy to hit
+- Codespaces network restrictions sometimes block these calls
+- Different invocations may return different data
+
+**Fix needed:** Add prefetch script that builds `info_snapshot.parquet` with sector, market_cap, IPO date, exchange, etc. for all tickers as of a snapshot date. Engine reads from snapshot.
+
+### 1.3 yfinance .earnings_dates — LIVE DURING BACKTEST
+
+**Status:** `days_to_next_earnings()` in `fetcher.py` calls `yf.Ticker(ticker).earnings_dates` LIVE on every invocation.
+
+**Live-call path:** Always live. Called from engine for every candidate evaluation.
+
+**During backtest:** Hundreds-to-thousands of live yfinance calls per backtest run. Slowest part of backtest.
+
+**Risk:**
+- Rate limits hit easily
+- Returns most recent + future dates only (yfinance limits historical visibility)
+- Different invocations may return slightly different data
+- Codespaces blocks may cause silent fallback to None (Risk Agent then sees "earnings_days: unknown")
+
+**Fix needed:** Prefetch script `prefetch_earnings_dates.py` that builds `earnings_dates.parquet` with historical AND future earnings for all tickers covering the full backtest period. Engine reads from this.
+
+### 1.4 FRED macro data — PROPERLY PREFETCHED
+
+**Status:** `prefetch_macro.py` exists. Builds `macro_combined.parquet` with yield curve, fed funds, CPI, unemployment, etc.
+
+**Live-call path:** `macro.py` has `requests.get(FRED_BASE)` but only used in prefetch script, not in backtest engine path.
+
+**During backtest:** zero FRED API calls if cache complete. ✓
+
+**Risk:**
+- BUG-86: CPI lookahead (uses observation date, not release date)
+- VIX is NOT in macro_combined.parquet (audit just confirmed). Engine reads VXX OHLCV cache and uses it as VIX proxy — root cause of BUG-26.
+- DXY similarly relies on UUP proxy from OHLCV cache
+
+**Fix needed:** 
+- Add `^VIX` and `DX-Y.NYB` to OHLCV prefetch list explicitly
+- Or add VIX/DXY columns to macro_combined.parquet via FRED's VIXCLS series
+- Adjust CPI dates by 10 days for release lag (BUG-86 fix)
+
+### 1.5 Alpha Vantage news sentiment — PARTIALLY PREFETCHED
+
+**Status:** `prefetch_alphavantage_news.py` exists. Outputs to `av_news/{TICKER}.parquet`.
+
+**Coverage:** 25 tickers attempted, only 5 have actual content (CCI, CSGP, COST, CRWD, CTRA per Pass 11 verification). Rest are 0-row Parquets.
+
+**Live-call path:** None during backtest. AV requires API key and has 25 calls/day rate limit on free tier.
+
+**During backtest:** zero AV calls. ✓ (when cache present)
+
+**Risk:**
+- Most tickers have NO news data (95% of S&P 500)
+- 25-ticker limit imposed by AV free tier rate limit
+- Sentiment Agent receives `news_sentiment: not_available` for 95% of trades
+
+**Fix needed:** 
+- Either upgrade AV to paid tier ($50/month) for 1200 calls/day → could cover all 509 tickers
+- Or switch to alternative news API: Polygon News (~$30/month, full coverage), Tiingo News (free tier), or Marketaux (paid)
+- Whatever the source, prefetch must produce non-empty parquet for ≥80% of tickers
+
+### 1.6 Finnhub news — PREFETCH BROKEN
+
+**Status:** `prefetch_finnhub_news.py` exists. Outputs to `finnhub_news/{TICKER}.parquet`. **All 509 files are 1012 bytes each — empty parquets.**
+
+**Risk:** Prefetch ran but produced no data. Likely API endpoint issue, rate limit, or auth failure that wasn't caught.
+
+**Fix needed:** Diagnose why prefetch produced empty files. Either fix or remove this entire data source.
+
+### 1.7 Quiver (insider, congressional, 13F, gov contracts, lobbying, wiki, WSB) — PROPERLY PREFETCHED
+
+**Status:** `prefetch_quiver.py` exists. 7 datasets × ~509 tickers = ~3500 parquet files. Confirmed non-empty per Pass 14.
+
+**Live-call path:** `smart_money.py` has `requests.get(QUIVER_BASE)` but only in prefetch path. Backtest reads from cache.
+
+**During backtest:** zero Quiver calls if cache complete. ✓
+
+**Risk:**
+- BUG-103: Engine had QUIVER_API_KEY env var gate that bypasses cache when var unset (FIX REQUIRED)
+- BUG-83: congressional_detail filter inverted
+
+### 1.8 AAII sentiment, CNN F&G — PROPERLY PREFETCHED (CSV)
+
+**Status:** Both are committed CSV files. No API. ✓
+
+### 1.9 Anthropic API (agent calls) — CACHED BUT NOT PREFETCHED
+
+This is the user's primary concern. Agents are EXPENSIVE ($73 spent in previous run). They are called LIVE during backtest BUT cached.
+
+**Status:** Agent cache exists at `backtest/agents/cache/{hash}.json`. 12,304 cached agent decisions on disk from previous run.
+
+**Cache logic (line 624-635 of pipeline.py):**
+```python
+cache_key = _agent_cache_key(ticker, as_of, strategies, phase, disable_news)
+cached = _load_agent_cache(cache_key)
+if cached:
+    logger.debug("Agent cache hit: %s [%s]", ticker, as_of)
+    return cached  # No API call
+
+# Cache miss → live API call
+... [makes 6 API calls per candidate]
+... [writes result to cache]
+```
+
+**Behaviour during re-runs:**
+- If cache hit: zero API cost ✓
+- If cache miss: 6 API calls per candidate (~$0.001 Haiku, ~$0.01 Sonnet)
+
+**Cache key formula:** hash of (ticker, as_of, sorted strategies, phase, disable_news flag)
+
+**Critical issue 1 — BUG-05 affects cache:** strategies_triggered key mismatch means cached decisions were made on EMPTY strategies lists. After fixing BUG-05, ALL existing 12,304 cached agent decisions become invalid. New runs will be cache-misses, requiring full re-spend.
+
+**Critical issue 2 — Iteration discipline:** Cache persists across runs but re-running with different code can invalidate it (e.g., changing strategy definitions changes which strategies fire, which changes the cache key). Need explicit cache versioning (PROMPT_VERSION exists in pipeline.py line 35).
+
+**Critical issue 3 — Pre-validation:** Agent cache cannot be "pre-fetched" in the strict sense because each call depends on the day-specific candidate context. But the SUPPORTING data (signals, smart money, macro, sentiment) can be prefetched so that agent calls only happen for legitimate candidates.
+
+---
+
+## PART 2 — Prefetching gap inventory (consolidated)
+
+| Data | Prefetched? | Live during backtest? | Fix needed |
+|---|---|---|---|
+| OHLCV | YES | No (with cache hit) | BUG-109: auto_adjust=False |
+| Company info (sector, mcap, IPO) | NO | YES — every backtest | NEW prefetch script |
+| Earnings dates | NO | YES — every candidate | NEW prefetch script (HIGH priority) |
+| FRED macro | YES | No | BUG-86 CPI lag, add VIX/DXY |
+| VIX | NO (uses VXX proxy) | No (cached as OHLCV) | BUG-26: prefetch ^VIX explicitly |
+| DXY | NO (uses UUP proxy) | No | Prefetch DX-Y.NYB explicitly |
+| AV news | PARTIAL (25/509) | No | Upgrade tier OR switch to Polygon/Tiingo |
+| Finnhub news | BROKEN (all empty) | No | Fix prefetch OR remove |
+| Quiver (7 datasets) | YES | No | BUG-103: remove env var gate |
+| AAII | YES (CSV) | No | None |
+| CNN F&G | YES (CSV) | No | None |
+| Anthropic agents | CACHED | YES on cache miss | Cache versioning, no prefetch possible |
+| Unusual Whales (Phase 1C) | NOT IMPLEMENTED | Will be live | NEW prefetch script |
+| Ortex (Phase 1C) | NOT IMPLEMENTED | Will be live | NEW prefetch script |
+
+**Conclusion:** Prefetching IS the design philosophy but **3 critical gaps** make backtest currently slow and non-iterative:
+
+1. **Earnings dates fetched live every candidate** — slowest single bottleneck
+2. **yfinance .info fetched live every universe load** — survivorship-biased AND slow
+3. **Agent cache invalidated by code changes** — every bug fix burns the cache
+
+---
+
+## PART 3 — What this means for ICT/SMC and modern signals
+
+The user requested ICT/SMC and modern signals integrated upfront. Each of those introduces NEW prefetching requirements:
+
+### 3.1 ICT/SMC signals — pure compute, NO new prefetch
+
+Order blocks, FVG, liquidity sweeps, displacement, breakers, premium/discount zones, OTE, market structure — all derived from OHLCV. Once OHLCV is properly cached (already is), ICT signals are pure computation. **No API calls.**
+
+This is good news. ICT/SMC integration adds zero API budget concern.
+
+### 3.2 Modern signals — mostly pure compute, some new prefetch
+
+| Signal | New API needed? | Prefetch impact |
+|---|---|---|
+| Anchored VWAP (5 anchors) | NO | Pure compute from OHLCV |
+| Volume Profile (POC, VAH, VAL) | NO | Pure compute from OHLCV |
+| CVD (Cumulative Volume Delta) | NO | Pure compute from OHLCV |
+| Relative Strength | NO | Compute from OHLCV (requires sector ETF cache, already present) |
+| Volatility regime per ticker | NO | Pure compute from OHLCV |
+| PEAD (post-earnings drift) | YES | Requires full historical earnings data (BUG-156) — needs prefetch |
+| Calendar effects | NO | Pure date math |
+| News headlines as text | YES | Requires news source upgrade (BUG-177) |
+| Implied Vol / VRP (Phase 1C) | YES | Requires options data via Unusual Whales |
+
+**Summary:** Of all the modern signals, only PEAD and news-text have NEW data dependencies. PEAD reuses the same earnings dates fix as Phase 0. News-text reuses the same news API upgrade.
+
+### 3.3 Implication for Phase 0
+
+Phase 0 must include:
+- All NEW prefetch scripts (earnings, info, VIX, DXY)
+- Fixes to existing prefetch (auto_adjust, AV upgrade, Finnhub diagnosis)
+- Cache versioning for agents
+
+**Estimated effort:** 1-2 weeks of dedicated prefetch work, separate from strategy implementation.
+
+---
+
+## PART 4 — New bugs documented
+
+### BUG-178 · HIGH — Earnings dates fetched live during backtest, no prefetch path
+
+**File:** `backtest/data/fetcher.py` `days_to_next_earnings()` line 200
+
+`yf.Ticker(ticker).earnings_dates` called LIVE for every candidate evaluation. Slowest single bottleneck in backtest. Rate-limited. Returns inconsistent data across runs.
+
+**Fix:** Add `prefetch_earnings_dates.py` building `earnings_dates.parquet` with full historical + 90-day forward window. Modify `days_to_next_earnings()` to read from cache.
+
+### BUG-179 · HIGH — yfinance .info fetched live during backtest universe load
+
+**File:** `backtest/data/fetcher.py` `fetch_info_bulk()` line 170
+
+Each universe load = ~509 live `yf.Ticker.info` calls. Returns CURRENT info (survivorship bias). Rate-limited. Codespaces sometimes blocks.
+
+**Fix:** Add `prefetch_company_info.py` building `info_snapshot.parquet` with sector, market_cap, IPO date, exchange, currency. Engine reads from snapshot.
+
+### BUG-180 · HIGH — VIX not explicitly prefetched; VXX used as proxy is cause of BUG-26
+
+**File:** `backtest/data/macro.py` and prefetch_macro.py
+
+The macro_combined.parquet has yield_curve, CPI, fed_funds, etc. but does NOT have VIX. Engine falls back to VXX OHLCV, which has different magnitude (~380 vs VIX ~20-40). This is the root cause of BUG-26.
+
+**Fix:** Add `^VIX` to OHLCV prefetch list explicitly, OR add VIX column to macro_combined.parquet via FRED's VIXCLS series. Either fix kills BUG-26 at the source.
+
+### BUG-181 · MEDIUM — Finnhub news prefetch silently produces empty files
+
+**File:** `prefetch_finnhub_news.py`
+
+All 509 finnhub_news/*.parquet files are 1012 bytes (empty schema only). The prefetch script ran but produced no data. Likely auth or API endpoint issue.
+
+**Fix:** Either diagnose and repair, OR remove finnhub from the data sources entirely. Currently it's cargo-cult code.
+
+### BUG-182 · MEDIUM — Agent cache invalidated by every code change with no versioning gate
+
+**File:** `backtest/agents/pipeline.py`
+
+PROMPT_VERSION constant exists but cache key formula doesn't include the strategies module's version, signal computation version, or smart money signal version. Code changes to any of these silently invalidate cached agent decisions without bumping cache key.
+
+**Fix:** Add `SIGNALS_VERSION`, `STRATEGIES_VERSION`, `SMART_MONEY_VERSION` constants. Include in cache key. Bump on any change.
+
+### BUG-183 · LOW — No prefetch validation step
+
+**File:** missing
+
+After every prefetch run, no automated check confirms files have content. Empty Finnhub files (BUG-181) and 20/25 empty AV news files (audit Pass 11) went undetected.
+
+**Fix:** Add `validate_prefetch.py` script that checks min row count per file, fails CI if regression.
+
+---
+
+## PART 5 — Updated bug count
+
+| Category | Count |
+|---|---|
+| **Total bugs documented** | **183** |
+| Critical | 14 |
+| High | 63 |
+| Medium | 81 |
+| Low | 25 |
+
+---
+
+## PART 6 — Recommendation for Phase 0 prefetching
+
+The Phase 0 work needs an explicit "Prefetching Foundation" sub-phase. Specific scope:
+
+**Phase 0.A — Prefetch repair and expansion (2 weeks)**
+1. Add `prefetch_earnings_dates.py` (BUG-178)
+2. Add `prefetch_company_info.py` (BUG-179)
+3. Add `^VIX` and `DX-Y.NYB` to OHLCV prefetch list (BUG-180/26)
+4. Diagnose and fix or remove Finnhub prefetch (BUG-181)
+5. Decide on news API: upgrade AV ($50/mo) or switch to Polygon/Tiingo
+6. Add `validate_prefetch.py` with empty-file detection (BUG-183)
+7. Set `auto_adjust=False` in OHLCV prefetch (BUG-109)
+8. Adjust CPI dates by 10 days for release lag (BUG-86)
+9. Implement cache versioning for agents (BUG-182)
+
+**Phase 0.B — Stub for new APIs (1 week)**
+1. Stub `prefetch_unusual_whales.py` with API integration (used in Phase 1C, prefetched in Phase 0 to enable iterative testing)
+2. Stub `prefetch_ortex.py` similarly
+
+**Phase 0.C — Prefetch CI gate**
+- Pre-run script that asserts every prefetch produced non-empty data
+- Fails Gate 2 if any prefetch is empty/stale/missing
+
+After Phase 0.A completes, **a backtest run can be repeated dozens of times with zero new API spend**. The only new spend comes from agent cache misses, which only happen when:
+- Strategy code changes (which signals fire on a given day)
+- Agent prompts change (PROMPT_VERSION bump)
+- New tickers added
+- New date range tested
+
+**This is what enables iterative testing.** User's intuition is correct.
+
+---
+
+*Pass 17 complete. 6 new bugs documented (BUG-178 to BUG-183). Total 183 bugs. Prefetching gaps inventoried. Phase 0.A specified for inclusion in PROJECT_PLAN restructure.*
