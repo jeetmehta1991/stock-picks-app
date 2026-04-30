@@ -19301,3 +19301,35 @@ TOTAL: 61 of 61 ran tests pass.
 - DEC-298 cache adjusted-close PIT (5 eng-days; biggest remaining CRITICAL)
 
 *Pass 51 complete. Tier-2 implemented as approved. 9 regression tests prevent recurrence.*
+
+---
+
+# AUDIT PASS 51b — Hybrid Trail Latent Bugs (Owner-Approved Hotfix)
+
+## Patches applied
+
+- **BUG-270a** (CRITICAL, exit_strategies.py:408): `if low <= stop:` referenced undefined `low`; loop unpacks to `l`. NameError on every long hybrid trade that hit target then trailed. One-char fix.
+- **BUG-270b** (CRITICAL, exit_strategies.py:381): `if half_taken:` trail block had a long branch but no `else: # short` mirror. Short hybrid trades that hit target then reversed never trail-stopped — rode to `end_of_data`. Added mirrored short branch.
+
+## Regression tests added (2 new in test_unit.py)
+
+- `test_hybrid_long_trail_after_target_hit` — asserts no NameError; exit_reason ∈ {hybrid_trail, stop_loss, end_of_data}.
+- `test_hybrid_short_trail_after_target_hit` — asserts exit_reason ∈ {hybrid_trail, stop_loss}; explicitly NOT end_of_data (the pre-fix bug behavior).
+
+## Test results post-51b
+
+`pytest backtest/tests/test_unit.py backtest/tests/test_integration.py` → **63/63 passed** (56 unit + 7 integration).
+
+## Process finding — test count drift between sandbox sessions and real repo
+
+During Pass 51b, a sandbox session reported expected `65/65` (claimed `63 + 2 new`), but pytest collection on the real laptop repo showed only `38/38` initially because the laptop's `main` branch was 5+ commits behind origin (Passes 49, 50, 51 missing). After `git pull --rebase`, real count was 61 baseline + 2 new = **63/63**.
+
+**Lesson:** Sandbox-reported test counts are advisory only. Truth lives on the laptop or Codespace after `git pull`. Before any future commit, verify local main is current with origin via `git log origin/main..main` and `git log main..origin/main` — both should be empty. Do not trust pre-pull pytest counts as a baseline.
+
+## Counts post-Pass-51b
+
+- Bugs: 271 (17 RESOLVED total — adds BUG-270a + BUG-270b)
+- Audit passes: 51 + 1b
+- Unit tests: 56 (was 54 + 2 new)
+
+*Pass 51b complete. Hybrid trail latent bugs fixed; 63/63 tests pass.*
