@@ -422,3 +422,16 @@ Common pattern: Claude defaults to "implement what's stated" without questioning
 **Why this matters:** Future redo-and-flag-new audits require comparing against complete history. Without archive, "net-new" findings become guesses. With archive, the comparison is mechanical and reliable.
 **Implementation:** AUDIT.md preserves all 41 audit passes immutably. AUDIT_INDEX.md provides single-lookup catalog. PROJECT_PLAN_ARCHIVE.md preserves pre-rewrite detail. LEARNINGS.md never deletes entries (109 and counting). CHECKLIST.md never deletes items (32 and counting). Standing exception in CHECKLIST #32g allows process-discipline files to grow without per-change approval.
 **Rule:** Nothing is ever deleted from these archive files. Updates supersede but don't replace. The archive is the project's institutional memory. Treat it accordingly.
+
+### L110 — Website/UX/notifications is first-class architecture, not peripheral [critical/process/audit-scope]
+**Owner-identified miss (April 2026):** Across 42 audit passes, the website/UX/notifications layer was never adversarially audited despite being in scope from Day 1 (Stage 1 daily-picks site already deployed). Decisions like public-vs-private, trade rationale depth, push alert events, authentication, hosting platform were invented mid-conversation in Pass 43 instead of being surfaced as registry decisions in earlier passes.
+**Pattern:** Audit scope defaulted to "the algo" (strategies, signals, agents, data, risk, statistical methodology) and treated UX/website/notifications as peripheral. They are not — for a system you monitor via mobile and where notifications drive your awareness, the UI IS the system from your perspective.
+**Fix:** All future audit passes must include explicit sections covering:
+1. Website / UI / dashboard architecture and changes
+2. Notification layer (email, Telegram, SMS, push)
+3. Mobile UX
+4. Public-vs-private site separation
+5. Authentication / authorization
+6. Trade rationale presentation depth
+7. Owner monitoring workflow
+**Rule:** When an audit pass lists "architecture" as a section, UX/website/notifications must be a sub-section, not assumed-out-of-scope. Review all 42 prior passes retroactively for items missed and add them as decisions where applicable.

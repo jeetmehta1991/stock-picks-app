@@ -17571,3 +17571,101 @@ Top-5 by impact/cost ratio:
 - CHECKLIST: 32
 
 *Pass 42 complete. Two decisions resolved. Triage deliverable built. AUDIT_INDEX needs regeneration to update statuses.*
+
+---
+
+# AUDIT PASS 43 — Strategic Pivot: Notification-Based, Website-First Architecture
+
+Owner directives this turn:
+1. Algo decisions NOT paused — paper trading must mirror live algo exactly
+2. Capital sizing for real-money DEFERRED until post-paper-trading evaluation
+3. Email APPROVAL replaced with email NOTIFICATIONS + summaries
+4. Two web properties: public recommendations site + private paper-trading analytics dashboard
+5. Mobile-first
+6. Push alerts via Telegram for 6 critical events
+7. No auth needed on paper-trading dashboard
+8. **Owner-flagged: website/UX/notifications layer was missed across Pass 1-42 audits.**
+
+## Owner audit miss acknowledged
+
+The website was in scope from Day 1 (Stage 1 daily-picks site already built). Across 42 prior audit passes, I covered architecture (Section 8 of multiple passes), strategies, data, agents, risk, regimes, statistical methodology — but NEVER adversarially audited the website/UX/notification layer. Decisions like public-vs-private, rationale depth, push alerts, hosting should have been in the registry as DEC-XXX with full options/tradeoffs since Pass 19 or earlier.
+
+This is captured as **NEW LEARNING L110** (website/UI/notifications is first-class architecture, not peripheral) — applied retroactively per CHECKLIST #28.
+
+## Decisions resolved this pass
+
+**DEC-029 SPLIT** into three:
+- 029-A: $5K CAD paper notional (small-account drag realism) — RESOLVED
+- 029-B: $50K CAD paper notional (AUM target scale) — RESOLVED
+- 029-C: Real-money starting capital — PENDING, evaluated post-paper
+
+**DEC-033 CHANGED:** Email approval gateway → email notifications + summaries. System trades autonomously in paper, owner monitors via website + push alerts. No human-in-the-loop gate.
+
+**Website architecture (12 new decisions, 187-198):**
+
+- DEC-187: Two-property architecture (public site + private dashboard)
+- DEC-188: Public site card-based layout (Today's recommendations + Yesterday's results)
+- DEC-189: 10-point trade rationale depth standard (trigger/strategy/setup/smart-money/macro/agent/risk/historical/sizing/exit)
+- DEC-190: Mobile-first priority both sites
+- DEC-191: Publish timing — pre-market + post-close
+- DEC-192: Site shows actual paper trades w/ slippage, not theoretical recs
+- DEC-193: Open positions on results page with mark-to-market P&L
+- DEC-194: Push alert events (stops, breakers, halts, daily P&L breach, divergence, data feed)
+- DEC-195: Telegram bot for alerts
+- DEC-196: No auth during paper trading; revisit before live
+- DEC-197: Vercel hosting for web properties
+- DEC-198: Paper-mirrors-live as project axiom
+
+## Trade rationale 10-point standard (DEC-189)
+
+Each trade card on public site exposes:
+1. Trigger (exact signal values: RSI=28, not "oversold")
+2. Strategy (name + description)
+3. Setup (chart pattern / context)
+4. Smart money context (insider/congressional/13F with names)
+5. Macro/regime fit
+6. Agent reasoning (Bull case, Bear case, who won)
+7. Risk assessment (gap, earnings proximity, sector)
+8. Similar historical trades ("won 14 of 22 in similar setups")
+9. Position sizing rationale
+10. Exit plan (stop, target, time stop, abort conditions)
+
+Mobile default: points 1-3 visible; tap to expand 4-10.
+
+## Push alert events (DEC-194)
+
+Via Telegram bot:
+- Stop-out fired on any position
+- Circuit breaker triggered (any of 5 levels)
+- Position halted intraday
+- Daily P&L breach (-2% warning, -5% critical)
+- Backtest-vs-paper divergence > threshold (paper Sharpe drops 0.5+ below backtest)
+- Data feed failure (any vendor)
+
+NOT alerting on: earnings beats/misses (too noisy across many tickers).
+
+## Counts post-Pass-43
+
+- Decisions: 185 → 185 (renumbered 029 + 12 new + 3 sub-IDs = 197 total entries; net status change: 31 RESOLVED + 13 newly RESOLVED = 44 RESOLVED)
+- Bugs: 203 unchanged
+- LEARNINGS: 109 → 110 (L110 added)
+- CHECKLIST: 32 unchanged
+
+## Strategic implications
+
+The notification-only model SIMPLIFIES the live trading architecture meaningfully — we no longer need:
+- Email approval workflow infrastructure
+- Approval timeout/expiry handling
+- Approve/reject UI
+- Trade-pending state machine
+- Owner availability assumptions
+
+But it ADDS requirements:
+- Telegram bot integration (new component)
+- Robust autonomous execution (no human safety net mid-trade)
+- More sophisticated push alerting on edge cases
+- Higher trust threshold before going live (since you won't be approving each trade)
+
+This actually RAISES the bar for paper trading — paper must demonstrate confidence-worthy autonomy before any real money goes in.
+
+*Pass 43 complete. Strategic pivot captured. 12 website decisions resolved. Audit miss on website acknowledged. L110 to be added.*

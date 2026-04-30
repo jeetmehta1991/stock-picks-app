@@ -1,20 +1,20 @@
 # AUDIT_INDEX.md — Decision and Bug Registry
-**Last regenerated:** April 2026 (post-Pass 42)
-**Source of truth:** AUDIT.md (full prose history, immutable)
+**Last regenerated:** April 2026 (post-Pass 43)
+**Source of truth:** AUDIT.md
 **Companion:** AUDIT_TRIAGE.md (impact/cost analysis for pending decisions)
 
 ---
 
 ## Decision Registry
 
-**Total: 185 decisions**
+**Total: 200 decision entries** (some are sub-IDs like 029-A/B/C)
 
 | Status | Count |
 |---|---|
-| RESOLVED | 31 |
+| RESOLVED | 54 |
 | PARTIAL | 5 |
-| SUPERSEDED | 4 |
-| PENDING | 145 |
+| SUPERSEDED | 8 |
+| PENDING | 133 |
 
 ### All Decisions Table (sorted by ID)
 
@@ -47,15 +47,18 @@
 | **DECISION-025** | Regime-conditional strategy weighting (BUG-175) | PENDING | Strategy / Regime Adaptation (Group D) | Pass 19 | - |
 | **DECISION-026** | Walk-forward parameter re-optimization (BUG-172) | PENDING | Strategy / Regime Adaptation (Group D) | Pass 19 | - |
 | **DECISION-027** | Online learning / feedback loop (BUG-173) | PENDING | Strategy / Regime Adaptation (Group D) | Pass 19 | - |
-| **DECISION-028** | Stage 3 paper trading duration | PENDING | Live Trading Operational (Group E) | Pass 19 | - |
-| **DECISION-029** | Stage 4 starting capital | PENDING | Live Trading Operational (Group E) | Pass 19 | - |
+| **DECISION-028** | Stage 3 paper trading duration — Stage 3 paper trading duration: 3 months | RESOLVED | Live Trading Operational (Group E) | Pass 19 | 43 |
+| **DECISION-029** | Stage 4 starting capital — SPLIT into 029-A/B/C | SUPERSEDED | Live Trading Operational (Group E) | Pass 19 | 43 |
+| **DECISION-029-A** | Paper trading notional 1: $5K CAD (small-account drag realism) | RESOLVED | Paper Trading Setup | Pass 43 | 43 |
+| **DECISION-029-B** | Paper trading notional 2: $50K CAD (target AUM scale) | RESOLVED | Paper Trading Setup | Pass 43 | 43 |
+| **DECISION-029-C** | Real-money starting capital — DEFERRED until post-paper-trading evaluation | PENDING | Live Trading Operational (Group E) | Pass 43 | - |
 | **DECISION-030** | Wikipedia data alternative (BUG-185) — superseded by 052+L88 | SUPERSEDED | SUPERSEDED | Pass 19 | 38 |
-| **DECISION-031** | Codespace/Cloud workflow vs local | PENDING | Process / Infrastructure (Group F) | Pass 19 | - |
+| **DECISION-031** | Codespace/Cloud workflow vs local — Codespace through Phase 0, migrate to cloud before Sta | RESOLVED | Process / Infrastructure (Group F) | Pass 19 | 43 |
 | **DECISION-032** | IBKR vs Alpaca for paper trading — superseded by 054 | SUPERSEDED | SUPERSEDED | Pass 19 | 38 |
-| **DECISION-033** | Email approval system specifics | PENDING | Live Trading Operational (Group E) | Pass 19 | - |
+| **DECISION-033** | Email approval system — REPLACED with email notifications + summaries (no approval gateway | RESOLVED | Live Trading Operational (Group E) | Pass 19 | 43 |
 | **DECISION-034** | Daily loss limits for live trading | PENDING | Live Trading Operational (Group E) | Pass 19 | - |
-| **DECISION-035** | Tax classification approach (Canadian) | PENDING | Live Trading Operational (Group E) | Pass 19 | - |
-| **DECISION-036** | Audit document maintenance going forward | PENDING | Process / Infrastructure (Group F) | Pass 19 | - |
+| **DECISION-035** | Tax classification approach (Canadian) — Defer until CPA consultation before Stage 4 — kee | PENDING | Live Trading Operational (Group E) | Pass 19 | - |
+| **DECISION-036** | Audit document maintenance going forward — Audit doc maintenance: trigger-only, not period | RESOLVED | Process / Infrastructure (Group F) | Pass 19 | 43 |
 | **DECISION-037** | Characterization-test-first approach (Phase A) | PENDING | Phase 0 Sub-Scope (Group G) | Pass 20 | - |
 | **DECISION-038** | Layered execution with iteration budgets | PENDING | Phase 0 Sub-Scope (Group G) | Pass 20 | - |
 | **DECISION-039** | Phase 0 parallelization (deferred) | RESOLVED | Phase 0 / Architecture | Pass 22 | 22 |
@@ -103,7 +106,7 @@
 | **DECISION-081** | Sharpe + Sortino + transaction cost sensitivity | PENDING | Batch X4 — Statistical Methodology | Pass 39 | - |
 | **DECISION-082** | Stress-test pass requirements (2008/2020/2022) | PENDING | Batch X4 — Statistical Methodology | Pass 39 | - |
 | **DECISION-083** | Min trades floor 300 independent positions | PENDING | Batch X4 — Statistical Methodology | Pass 39 | - |
-| **DECISION-084** | Audit flag at 70% win rate | PENDING | Batch X4 — Statistical Methodology | Pass 39 | - |
+| **DECISION-084** | Audit flag at 70% win rate — Audit flag threshold lowered to 65% win rate (more aggressive | RESOLVED | Batch X4 — Statistical Methodology | Pass 39 | 43 |
 | **DECISION-085** | Define macro correlation precisely | PENDING | Batch X4 — Statistical Methodology | Pass 39 | - |
 | **DECISION-086** | Fractional Kelly position sizing | PENDING | Batch X5 — Risk Management Extension | Pass 39 | - |
 | **DECISION-087** | Vol-targeted sizing per-position (closes 023) | PENDING | Batch X5 — Risk Management Extension | Pass 39 | - |
@@ -134,8 +137,8 @@
 | **DECISION-112** | Disaster recovery plan + incident runbook | PENDING | Batch X3 — Architecture | Pass 39 | - |
 | **DECISION-113** | Trade journal + research log + failure log | PENDING | Batch X3 — Architecture | Pass 39 | - |
 | **DECISION-114** | Live-vs-backtest divergence monitoring | PENDING | Batch X3 — Architecture | Pass 39 | - |
-| **DECISION-115** | Tail hedging consideration | PENDING | Batch X5 — Risk Management Extension | Pass 39 | - |
-| **DECISION-116** | Cash management protocol (idle cash to SGOV/T-bills) | PENDING | Batch X5 — Risk Management Extension | Pass 39 | - |
+| **DECISION-115** | Tail hedging consideration — Tail hedging skipped at small AUM, revisit at $100K+ | SUPERSEDED | Batch X5 — Risk Management Extension | Pass 39 | 43 |
+| **DECISION-116** | Cash management protocol (idle cash to SGOV/T-bills) — Cash management: manual idle-to-SGO | RESOLVED | Batch X5 — Risk Management Extension | Pass 39 | 43 |
 | **DECISION-117** | Add file-level checksum + last-validated timestamp to cache | PENDING | Batch X9 — Data integrity | Pass 40 | - |
 | **DECISION-118** | Prefetch full cross-asset macro (VIX direct, DXY, GLD, oil, sector ETFs, TLT, HYG, SHY) | PENDING | Batch X9 — Data integrity | Pass 40 | - |
 | **DECISION-119** | Per-trade explainability dict (primary_signal, dominant_multiplier, agent_tier_delta) | PENDING | Batch X10 — Trade explainability | Pass 40 | - |
@@ -145,7 +148,7 @@
 | **DECISION-123** | Apply exponential decay to smart money signal weights | PENDING | Batch X12 — Smart money refinement | Pass 40 | - |
 | **DECISION-124** | Cross-source smart money clusters (insider+congressional+13F confluence) | PENDING | Batch X12 — Smart money refinement | Pass 40 | - |
 | **DECISION-125** | Add Form 144 prefetch (proposed sales — leading indicator) | PENDING | Batch X12 — Smart money refinement | Pass 40 | - |
-| **DECISION-126** | Document time-resolution limitations of circuit breakers | PENDING | Batch X13 — Circuit breakers extension | Pass 40 | - |
+| **DECISION-126** | Document time-resolution limitations of circuit breakers — Document time-resolution limits | RESOLVED | Batch X13 — Circuit breakers extension | Pass 40 | 43 |
 | **DECISION-127** | Define recovery rules from each circuit breaker level (cooldown, hysteresis) | PENDING | Batch X13 — Circuit breakers extension | Pass 40 | - |
 | **DECISION-128** | Dispersion-conditional circuit breaker | PENDING | Batch X13 — Circuit breakers extension | Pass 40 | - |
 | **DECISION-129** | Live-vs-backtest Sharpe equivalence criterion (within 0.3 to pass Stage 3) | PENDING | Batch X14 — Validation criteria | Pass 40 | - |
@@ -173,9 +176,9 @@
 | **DECISION-151** | Sector-level regime classification | PENDING | Batch X19 — Regime extensions | Pass 40 | - |
 | **DECISION-152** | Hold-out final test period (never touched during audits) | PENDING | Batch X20 — IS/OOS extensions | Pass 40 | - |
 | **DECISION-153** | Regime-stratified train/test splits | PENDING | Batch X20 — IS/OOS extensions | Pass 40 | - |
-| **DECISION-154** | Market structure change tracker (quarterly) | PENDING | Batch X21 — Benchmarking | Pass 40 | - |
+| **DECISION-154** | Market structure change tracker (quarterly) — Informal note in audit when market changes n | SUPERSEDED | Batch X21 — Benchmarking | Pass 40 | 43 |
 | **DECISION-155** | vs-SPY comparison in all backtest reports | PENDING | Batch X21 — Benchmarking | Pass 40 | - |
-| **DECISION-156** | Commit message references explicit CHECKLIST items followed | PENDING | Batch X22 — Process discipline | Pass 40 | - |
+| **DECISION-156** | Commit message references explicit CHECKLIST items followed — Commit messages reference CH | RESOLVED | Batch X22 — Process discipline | Pass 40 | 43 |
 | **DECISION-157** | Synthetic broker outage testing during Stage 3 (chaos engineering) | PENDING | Batch X23 — Edge case handling | Pass 40 | - |
 | **DECISION-158** | Extend backtest period to 2008-2024 (16 years for crisis coverage) | PENDING | Batch X23 — Edge case handling | Pass 40 | - |
 | **DECISION-159** | Regulatory event handler (SEC/DOJ investigations, sanctions) | PENDING | Batch X23 — Edge case handling | Pass 40 | - |
@@ -184,11 +187,11 @@
 | **DECISION-162** | Per-decision time-to-approve estimate + owner-approval-budget tracking | RESOLVED | Batch X24 — Decision management | Pass 41 | 42 |
 | **DECISION-163** | Implementation cost estimate per pending decision | PENDING | Batch X24 — Decision management | Pass 41 | - |
 | **DECISION-164** | Pairwise tradeoff matrix between decision batches (impact vs cost) | RESOLVED | Batch X24 — Decision management | Pass 41 | 42 |
-| **DECISION-165** | Solo PR review checklist before merge to main | PENDING | Batch X25 — Process workflow | Pass 41 | - |
-| **DECISION-166** | HANDOFF.md template specification | PENDING | Batch X25 — Process workflow | Pass 41 | - |
-| **DECISION-167** | Retrospective cadence (every N audit passes) | PENDING | Batch X25 — Process workflow | Pass 41 | - |
-| **DECISION-168** | Incident postmortem template | PENDING | Batch X25 — Process workflow | Pass 41 | - |
-| **DECISION-169** | Owner skills gap audit (statistical, SRE, tax, etc.) | PENDING | Batch X26 — Skills | Pass 41 | - |
+| **DECISION-165** | Solo PR review checklist before merge to main — Skip — solo dev project, CHECKLIST already | SUPERSEDED | Batch X25 — Process workflow | Pass 41 | 43 |
+| **DECISION-166** | HANDOFF.md template specification — HANDOFF template — build when activated by owner | PENDING | Batch X25 — Process workflow | Pass 41 | - |
+| **DECISION-167** | Retrospective cadence (every N audit passes) — Retrospective cadence: every 10 audit passe | RESOLVED | Batch X25 — Process workflow | Pass 41 | 43 |
+| **DECISION-168** | Incident postmortem template — Incident postmortem template — build at first incident | PENDING | Batch X25 — Process workflow | Pass 41 | - |
+| **DECISION-169** | Owner skills gap audit (statistical, SRE, tax, etc.) — Owner self-assesses skills gap (not | PENDING | Batch X26 — Skills | Pass 41 | - |
 | **DECISION-170** | Type hints + mypy in CI | PENDING | Batch X27 — Code quality | Pass 41 | - |
 | **DECISION-171** | Docstring standard + sphinx documentation | PENDING | Batch X27 — Code quality | Pass 41 | - |
 | **DECISION-172** | All numerical constants extracted to config | PENDING | Batch X27 — Code quality | Pass 41 | - |
@@ -205,6 +208,18 @@
 | **DECISION-183** | Memoization layer for signal computation (LRU cache) | PENDING | Batch X31 — Performance optimization | Pass 41 | - |
 | **DECISION-184** | Parallel backtest execution for Stage 1 baseline | PENDING | Batch X31 — Performance optimization | Pass 41 | - |
 | **DECISION-185** | Incremental backtest updates for daily data refresh | PENDING | Batch X31 — Performance optimization | Pass 41 | - |
+| **DECISION-187** | Two-property web architecture: public recommendations site + private analytics dashboard | RESOLVED | Website Architecture | Pass 43 | 43 |
+| **DECISION-188** | Public site card-based layout with track record header (Sections A/B: Today + Yesterday) | RESOLVED | Website Architecture | Pass 43 | 43 |
+| **DECISION-189** | Trade rationale 10-point depth standard (trigger/strategy/setup/smart-money/macro/agent/ri | RESOLVED | Website Architecture | Pass 43 | 43 |
+| **DECISION-190** | Mobile-first design priority for both sites | RESOLVED | Website Architecture | Pass 43 | 43 |
+| **DECISION-191** | Publish timing: pre-market 7-8am ET (tomorrow trades) + post-close 4pm ET (results) | RESOLVED | Website Architecture | Pass 43 | 43 |
+| **DECISION-192** | Site shows actual paper trades with slippage, not theoretical recommendations | RESOLVED | Website Architecture | Pass 43 | 43 |
+| **DECISION-193** | Open positions displayed on results page with mark-to-market unrealized P&L | RESOLVED | Website Architecture | Pass 43 | 43 |
+| **DECISION-194** | Push alert events: stops, circuit breakers, halts, daily P&L breach (-2%/-5%), backtest-pa | RESOLVED | Notifications | Pass 43 | 43 |
+| **DECISION-195** | Telegram bot for push alerts (vs SMS — free, richer formatting) | RESOLVED | Notifications | Pass 43 | 43 |
+| **DECISION-196** | No authentication on paper-trading analytics dashboard; revisit before live trading | RESOLVED | Website Architecture | Pass 43 | 43 |
+| **DECISION-197** | Hosting: Vercel for both web properties (free tier, mobile-optimized); backend on Codespac | RESOLVED | Website Architecture | Pass 43 | 43 |
+| **DECISION-198** | Paper trading mirrors live algo exactly — same logic, sizing, risk rules, exits, breakers  | RESOLVED | Project Axioms | Pass 43 | 43 |
 
 ---
 
@@ -237,9 +252,8 @@
 - **DECISION-124**: Cross-source smart money clusters (insider+congressional+13F confluence)
 - **DECISION-125**: Add Form 144 prefetch (proposed sales — leading indicator)
 
-**Batch X13 — Circuit breakers extension** (3):
+**Batch X13 — Circuit breakers extension** (2):
 
-- **DECISION-126**: Document time-resolution limitations of circuit breakers
 - **DECISION-127**: Define recovery rules from each circuit breaker level (cooldown, hysteresis)
 - **DECISION-128**: Dispersion-conditional circuit breaker
 
@@ -289,14 +303,9 @@
 - **DECISION-152**: Hold-out final test period (never touched during audits)
 - **DECISION-153**: Regime-stratified train/test splits
 
-**Batch X21 — Benchmarking** (2):
+**Batch X21 — Benchmarking** (1):
 
-- **DECISION-154**: Market structure change tracker (quarterly)
 - **DECISION-155**: vs-SPY comparison in all backtest reports
-
-**Batch X22 — Process discipline** (1):
-
-- **DECISION-156**: Commit message references explicit CHECKLIST items followed
 
 **Batch X23 — Edge case handling** (4):
 
@@ -310,16 +319,14 @@
 - **DECISION-161**: Decision dependency graph (DAG)
 - **DECISION-163**: Implementation cost estimate per pending decision
 
-**Batch X25 — Process workflow** (4):
+**Batch X25 — Process workflow** (2):
 
-- **DECISION-165**: Solo PR review checklist before merge to main
-- **DECISION-166**: HANDOFF.md template specification
-- **DECISION-167**: Retrospective cadence (every N audit passes)
-- **DECISION-168**: Incident postmortem template
+- **DECISION-166**: HANDOFF.md template specification — HANDOFF template — build when activated by owner
+- **DECISION-168**: Incident postmortem template — Incident postmortem template — build at first incident
 
 **Batch X26 — Skills** (1):
 
-- **DECISION-169**: Owner skills gap audit (statistical, SRE, tax, etc.)
+- **DECISION-169**: Owner skills gap audit (statistical, SRE, tax, etc.) — Owner self-assesses skills gap (not for Claude to audit)
 
 **Batch X27 — Code quality** (4):
 
@@ -364,19 +371,18 @@
 - **DECISION-184**: Parallel backtest execution for Stage 1 baseline
 - **DECISION-185**: Incremental backtest updates for daily data refresh
 
-**Batch X4 — Statistical Methodology** (9):
+**Batch X4 — Statistical Methodology** (8):
 
 - **DECISION-080**: t-stat + Bonferroni
 - **DECISION-081**: Sharpe + Sortino + transaction cost sensitivity
 - **DECISION-082**: Stress-test pass requirements (2008/2020/2022)
 - **DECISION-083**: Min trades floor 300 independent positions
-- **DECISION-084**: Audit flag at 70% win rate
 - **DECISION-085**: Define macro correlation precisely
 - **DECISION-109**: Rolling 5yr/1yr walk-forward
 - **DECISION-110**: Deflated Sharpe (Bailey et al.)
 - **DECISION-111**: Stationarity / structural break tests
 
-**Batch X5 — Risk Management Extension** (9):
+**Batch X5 — Risk Management Extension** (7):
 
 - **DECISION-086**: Fractional Kelly position sizing
 - **DECISION-087**: Vol-targeted sizing per-position (closes 023)
@@ -385,8 +391,6 @@
 - **DECISION-090**: Max sector exposure cap
 - **DECISION-091**: Drawdown re-sizing
 - **DECISION-092**: Slippage model = f(size%ADV, vol)
-- **DECISION-115**: Tail hedging consideration
-- **DECISION-116**: Cash management protocol (idle cash to SGOV/T-bills)
 
 **Batch X6 — Exits + Circuit Breakers** (9):
 
@@ -421,13 +425,11 @@
 - **DECISION-117**: Add file-level checksum + last-validated timestamp to cache
 - **DECISION-118**: Prefetch full cross-asset macro (VIX direct, DXY, GLD, oil, sector ETFs, TLT, HYG, SHY)
 
-**Live Trading Operational (Group E)** (5):
+**Live Trading Operational (Group E)** (3):
 
-- **DECISION-028**: Stage 3 paper trading duration
-- **DECISION-029**: Stage 4 starting capital
-- **DECISION-033**: Email approval system specifics
+- **DECISION-029-C**: Real-money starting capital — DEFERRED until post-paper-trading evaluation
 - **DECISION-034**: Daily loss limits for live trading
-- **DECISION-035**: Tax classification approach (Canadian)
+- **DECISION-035**: Tax classification approach (Canadian) — Defer until CPA consultation before Stage 4 — keep PENDING but flagged for later
 
 **Phase 0 Sub-Scope (Group G)** (2):
 
@@ -440,11 +442,9 @@
 - **DECISION-015**: Strategy correlation analysis methodology
 - **DECISION-016**: Threshold calibration scope (BUG-130)
 
-**Process / Infrastructure (Group F)** (4):
+**Process / Infrastructure (Group F)** (2):
 
 - **DECISION-020**: News API selection (depends on 002 eval results)
-- **DECISION-031**: Codespace/Cloud workflow vs local
-- **DECISION-036**: Audit document maintenance going forward
 - **DECISION-043**: Retune framework
 
 **Risk Management (Group C)** (5):
@@ -690,4 +690,4 @@
 | **BUG-198** | (NEW) · CRITICAL — No structural PIT data loader; each data source uses ad-hoc P | INLINE-ONLY | - |
 
 ---
-*Regenerated April 2026 from AUDIT.md after Pass 42.*
+*Regenerated April 2026 from AUDIT.md after Pass 43.*
