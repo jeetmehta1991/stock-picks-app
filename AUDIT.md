@@ -12602,3 +12602,681 @@ The fork-existing approach also REDUCES the risk of new bugs because we're integ
 ---
 
 *Pass 27 complete. Fork-existing strategy adopted across Phase 0. ICT/SMC via smartmoneyconcepts library saves 7-12 weeks. CVD dropped (data limitation honestly acknowledged). Phase 0 timeline: 26 weeks → 18 weeks. Total path to live: 11-15 months → 9-13 months. 2 new decisions (DECISION-045, 046). 46 decisions total. No new bugs.*
+
+---
+
+# AUDIT PASS 28 — System-Wide Fork-vs-Build Audit
+
+User direction: "Extend this philosophy throughout the project. building from scratch is rarely the right answer when battle-tested implementations exist. Do you identify any areas where we can reuse existing out of box solutions than rebuilding everything ourselves. Maybe entire backtesting is readily available? think from scratch and be comprehensive."
+
+User principle: "We are not trying to reinvent the wheel. We are simply optimize and innovating the wheel."
+
+DECISION-045 and DECISION-046 RESOLVED per user approval: "Approve both decisions"
+
+This pass takes the fork-existing philosophy seriously across EVERY component of the project, including the foundational ones I had assumed must be custom. **Some findings are uncomfortable for previously committed work.**
+
+---
+
+## SECTION A — Methodology
+
+For each component, I evaluate:
+1. What's the function? (one sentence)
+2. What battle-tested libraries exist?
+3. What's our specific need that may differ?
+4. Honest verdict: fork, partial fork, or genuinely build
+
+The bar for "build" is high: only if no acceptable library exists OR if integration cost exceeds rebuild cost OR if the component is genuinely novel.
+
+---
+
+## SECTION B — Component-by-component audit
+
+### B.1 — Backtest engine itself
+
+**Function:** Loop through historical days, evaluate strategies, simulate trades, track portfolio state.
+
+**Battle-tested libraries:**
+- **VectorBT** (Apache 2.0 + Commons Clause; free for non-commercial) — Vectorized backtester, used by thousands. Built-in: portfolio tracking, fees, slippage, drawdown, walk-forward, parameter optimization. Integrates with TA-Lib, pandas-ta.
+- **Backtrader** (GPL-3.0) — Event-driven, mature, broker integrations (IBKR, OANDA, Alpaca). Designed exactly for swing trading.
+- **Zipline-Reloaded** (Apache 2.0) — Original Quantopian engine. Pipeline API for factor screening.
+- **Backtesting.py** — Lightweight, simpler, fast prototyping.
+- **NautilusTrader** (LGPL-3.0) — Production-grade event-driven, designed for backtest-to-live parity.
+
+**Our specific needs that may differ:**
+- Custom signal computation (existing 220+ signals)
+- Day-by-day agent integration (call 6 agents on each candidate)
+- Categorical breakdown across regime × sector × volatility
+- Walk-forward with two-window IS/OOS validation
+- Custom exit logic (atr_trail, hybrid, pivot-target)
+
+**Honest assessment of using a forked engine:**
+
+The project HAS a working custom engine. Replacing it now would mean:
+- Re-implementing 220+ signal computations to fit library API (weeks)
+- Re-architecting agent integration (we've already designed how this works)
+- Risk of subtle behavior changes invalidating prior work
+- Loss of cached agent decisions (already 12k cached, ~$73 spent)
+
+**The honest answer: it's TOO LATE to fork the engine wholesale.** The custom engine is built, tested in part, and integrated with our specific architecture. Forking VectorBT or Backtrader now would be a 4-6 week refactor with risk of breaking what works.
+
+**However, there's a middle path:** Use VectorBT (or QuantStats specifically) for ANALYTICS, not engine replacement.
+
+**VERDICT: KEEP custom engine. Add VectorBT/QuantStats wrapper for analytics output.**
+
+Specifically:
+- Engine continues to produce trade log
+- Trade log fed into QuantStats for performance reports (Sharpe, drawdown, drawdown curves, monthly returns heatmap, regression vs SPY, etc.)
+- VectorBT used for parameter sweeps in Phase 1B-α calibration if needed
+- Saves us writing analytics from scratch (~1 week saved)
+
+**ALTERNATIVE PATH (acknowledged but not recommended):** Replace engine with NautilusTrader for backtest-to-live parity. Significant rebuild, but Stage 4 live trading would benefit enormously. **Honest cost: 6-8 weeks of refactor.** Could be considered if Phase 0 hits other delays, but not recommended now.
+
+**Net saving: ~1 week (analytics fork).**
+
+### B.2 — Multi-agent LLM trading framework
+
+**Function:** Coordinate 6 specialized LLM agents (technical, fundamental, sentiment, risk, debate, decision) to evaluate trade candidates.
+
+**Battle-tested libraries:**
+- **TradingAgents** by TauricResearch (Apache 2.0, paper at arxiv.org/abs/2412.20138) — UCLA/MIT research, built on LangGraph. **Already implements EXACTLY the architecture we built:**
+  - Fundamental Analyst, Sentiment Analyst, Technical Analyst (matches ours)
+  - Bull and Bear researcher agents (matches our debate)
+  - Risk Management team (matches our Risk Agent)
+  - Trader synthesizing decisions (matches our Decision Agent)
+  - LangGraph orchestration with state management
+  - Multi-LLM provider support (OpenAI, Anthropic, Google, etc.)
+  - Active maintenance, recent updates
+
+**This is a major finding I missed.** We've spent significant time building a custom version of something with an official, peer-reviewed open-source implementation by UCLA/MIT researchers.
+
+**Our specific needs that may differ:**
+- Custom prompts tailored to swing trading (not general trading)
+- Specific agent output schemas matching our engine's expected fields
+- Caching layer for cost control (12k cached decisions)
+- Integration with our specific data sources (Quiver, Polygon, OpenBB)
+
+**Honest assessment:**
+- **TradingAgents framework: fork it for orchestration.** Replace our custom LangGraph-equivalent code with their proven implementation.
+- **Our specific prompts: keep as overrides.** Their default prompts are general-purpose; ours are swing-trading-tuned.
+- **Cache layer: keep our custom one.** Our cache is integrated with engine's signal versioning.
+- **Data integration: keep custom.** Our Quiver/Polygon/OpenBB integration is project-specific.
+
+**Implementation approach:**
+```python
+# Use TradingAgents as orchestration layer
+from tradingagents.graph.trading_graph import TradingAgentsGraph
+
+# Override their default prompts with our swing-trading prompts
+config = DEFAULT_CONFIG.copy()
+config['fundamental_prompt'] = OUR_FUNDAMENTAL_PROMPT
+config['risk_prompt'] = OUR_RISK_PROMPT
+# etc.
+
+# Use their LangGraph orchestration with our prompts
+ta = TradingAgentsGraph(config=config)
+decision = ta.propagate(ticker, as_of)
+```
+
+**HOWEVER — an important caveat:**
+Our agent pipeline already exists and works. The 12,304 cached decisions used the existing pipeline. Migrating to TradingAgents framework would invalidate that cache (different orchestration produces different outputs).
+
+**Realistic verdict:**
+- **For this project (Phase 1B-α): KEEP existing pipeline.** Don't invalidate the cached work.
+- **For future enhancement (Phase 1F+): MIGRATE to TradingAgents framework.** Better tooling, active maintenance, peer-reviewed architecture.
+
+**Net immediate saving: 0 weeks (don't migrate now).**
+**Future architecture upgrade path documented for Phase 1F.**
+
+### B.3 — Smart money / Quiver data integration
+
+**Function:** Fetch and process insider trades, congressional trades, 13F filings, etc.
+
+**Battle-tested libraries:**
+- **Quiver Quantitative API** (paid, what we use) — direct API access
+- **OpenBB** has Quiver provider integration
+
+**Our specific needs:**
+- Prefetch all data for backtesting (covered by DECISION-001 repair plan)
+- PIT correctness with filing_date logic (BUG-194)
+- Local caching for reproducibility
+
+**Honest assessment:**
+- We could use OpenBB's Quiver provider, but the abstraction layer adds latency and complexity
+- Direct Quiver API calls are simple
+- Our prefetch infrastructure is already built and working
+- **VERDICT: KEEP custom, no fork advantage.**
+
+### B.4 — Macro data (FRED)
+
+**Function:** Fetch yield curve, fed funds, CPI, etc.
+
+**Battle-tested libraries:**
+- **fredapi** (PyPI, MIT) — official Python wrapper, simple
+- **pandas-datareader** — generic data reader supporting FRED
+- **OpenBB** has FRED provider
+
+**Our specific needs:**
+- BUG-86 release lag adjustment (CPI for Jan released mid-Feb)
+- PIT correctness via release_date
+- Local caching
+
+**Honest assessment:**
+- Currently using direct `requests.get` to FRED CSV endpoint
+- `fredapi` package would be cleaner
+- Saves maybe 50 lines of code, no significant time
+- **VERDICT: Optional refactor to fredapi (~2 hours).** Low priority.
+
+### B.5 — OHLCV data (yfinance)
+
+**Function:** Fetch daily OHLCV bars for stocks.
+
+**Battle-tested libraries:**
+- **yfinance** (already used) — Apache 2.0, most popular
+- **OpenBB** has yfinance provider
+- Premium alternatives: Polygon, IEX Cloud, Alpha Vantage paid
+
+**Our specific needs:**
+- Cache layer (already built)
+- BUG-109 fix: auto_adjust=False
+- Multi-snapshot info (BUG-179 fix)
+
+**Honest assessment:**
+- Already using best-of-class free option
+- **VERDICT: KEEP yfinance, no change.**
+
+### B.6 — Technical indicators (RSI, MACD, EMA, etc.)
+
+**Function:** Compute ~220 technical signals.
+
+**Battle-tested libraries we already use:**
+- **pandas-ta** (already installed) — 277 indicators, BSD-3
+- **TA-Lib** (industry standard, but C dependency) — 150+ indicators
+- **finta** — pure pandas, lightweight
+
+**Our specific needs:**
+- Custom signal combinations (e.g., "rsi_9_oversold + macd_bullish_cross")
+- Specific signal naming conventions matching our agent prompts
+- Existing 220 signals implemented and tested
+
+**Honest assessment:**
+- We ALREADY use pandas-ta for many computations
+- Custom signal combinations are project-specific (not in any library)
+- The 220 signals are working
+- **VERDICT: KEEP existing, continue using pandas-ta where applicable.**
+
+### B.7 — Regime classification
+
+**Function:** Classify market state as bull/neutral/bear/crisis.
+
+**Battle-tested libraries:**
+- **hmmlearn** (sklearn-style HMM) — probabilistic regime detection
+- **Hidden Markov Models** for regime detection — well-studied
+- Custom rule-based classifiers (what we have)
+
+**Our specific needs:**
+- Two-system regime (System 1: VIX/yield curve rules, System 2: weekly trend)
+- Specific thresholds tuned for our swing trading
+- Daily granularity
+
+**Honest assessment:**
+- Our rule-based regime classifier is simple and interpretable
+- HMM-based would be more sophisticated but harder to debug
+- Phase 1B-α validation will tell us if our regime classification adds value
+- **VERDICT: KEEP custom rule-based (Phase 1B-α). Consider HMM upgrade in Phase 1F.**
+
+### B.8 — Walk-forward validation
+
+**Function:** Split data into in-sample and out-of-sample, test parameter robustness across windows.
+
+**Battle-tested libraries:**
+- **VectorBT** — `range_split` function for walk-forward
+- **PyBroker** — built-in walk-forward training
+- **zipline pipeline** — factor research over time
+
+**Our specific needs:**
+- Two-window split (per existing PROJECT_PLAN)
+- Categorical breakdown across regime × sector
+- Custom passing criteria
+
+**Honest assessment:**
+- VectorBT's walk-forward is well-tested and could replace ours
+- BUT our custom split is already implemented and working
+- Refactor cost ~1-2 weeks, saving ~3 days of future maintenance
+- **VERDICT: KEEP custom for Phase 1B-α. Migrate to VectorBT walk-forward in Phase 1F.**
+
+### B.9 — Performance analytics (Sharpe, drawdown, win rate, etc.)
+
+**Function:** Compute portfolio performance metrics from trade log.
+
+**Battle-tested libraries:**
+- **QuantStats** (Apache 2.0) — Sharpe, Sortino, drawdown, regression, tearsheets
+- **VectorBT.Portfolio.stats()** — comprehensive
+- **pyfolio** (legacy, unmaintained) — original Quantopian library
+- **empyrical** — basic metrics
+
+**Our specific needs:**
+- Standard metrics (Sharpe, drawdown, etc.) — covered by libraries
+- Per-strategy breakdown — custom aggregation on library output
+- Categorical breakdown (regime × sector) — custom
+
+**Honest assessment:**
+- **STRONG fork case for QuantStats.** Don't write Sharpe ratio computation from scratch.
+- Saves ~1 week of analytics implementation
+- Adds professional-quality reports (PDF tearsheets)
+- **VERDICT: ADOPT QuantStats for Phase 1B-α deliverables.**
+
+### B.10 — Email approval workflow
+
+**Function:** Send pre-trade email, wait for user approval, execute on approval.
+
+**Battle-tested libraries:**
+- **smtplib** (stdlib) — send email
+- **Twilio SendGrid** — transactional email service
+- **AWS SES** — cheap email service
+- **mailgun** — similar
+- **Apprise** (Apache 2.0) — multi-platform notifications wrapper
+
+**Our specific needs:**
+- Send email with trade details
+- Generate unique approval link
+- Web endpoint receives click, marks trade approved
+- Timeout if no response
+
+**Honest assessment:**
+- Email sending is simple stdlib
+- Approval link / web callback is simple Flask/FastAPI route
+- Could fork:
+  - **Approval workflow libraries** (e.g., generic "magic link" auth) — overkill
+  - **Apprise** for notifications if we want SMS/Slack/Discord later
+- **VERDICT: Build custom (~2-3 days). Use Apprise if multi-platform notifications wanted.**
+
+### B.11 — Web dashboard
+
+**Function:** Display strategies, trade history, current positions, performance.
+
+**Battle-tested libraries:**
+- **Streamlit** (Apache 2.0) — Python-only dashboards, fast development
+- **Dash** (Plotly) — interactive dashboards
+- **Gradio** — simpler ML-focused
+- **FastAPI + HTML** — custom but flexible
+- **Existing static GitHub Pages site** (what we have for Stage 1)
+
+**Our specific needs:**
+- Display top picks daily (existing Stage 1)
+- Show trade history (Stage 3+)
+- Performance metrics (Stage 3+)
+- Optionally interactive charts
+
+**Honest assessment:**
+- **STRONG fork case for Streamlit.** Built for exactly this. Saves weeks.
+- Existing static site (Stage 1) can remain
+- New dashboard for Stage 3+ in Streamlit
+- Or use QuantStats HTML report directly (Section B.9)
+- **VERDICT: USE Streamlit for Stage 3+ dashboard. Saves ~1-2 weeks.**
+
+### B.12 — IBKR broker integration
+
+**Function:** Place orders, receive fills, monitor positions in live trading.
+
+**Battle-tested libraries:**
+- **ib_async** (BSD) — modern fork of ib_insync, actively maintained, async/sync
+- **ib_insync** (BSD) — original; creator passed away 2024, ib_async is successor
+- **ibapi** — official Interactive Brokers Python API (lower level)
+
+**Our specific needs:**
+- Connect to TWS or IB Gateway
+- Place market/limit orders
+- Receive fill confirmations
+- Monitor open positions
+- Handle disconnections, reconnects
+
+**Honest assessment:**
+- **STRONG fork case for ib_async.** Don't write IBKR API client from scratch — that's a months-long project. Use the proven library.
+- This is non-controversial; everyone uses ib_insync/ib_async
+- **VERDICT: ADOPT ib_async for Stage 4 live trading. Standard choice.**
+
+### B.13 — Position sizing / Portfolio class (Phase 0.B)
+
+**Function:** Track equity, apply position sizing rules, enforce concentration limits.
+
+**Battle-tested libraries:**
+- **VectorBT.Portfolio** — full-featured but tied to vectorbt's data structures
+- **PyPortfolioOpt** (Apache 2.0) — portfolio optimization, Markowitz, Black-Litterman, Hierarchical Risk Parity
+- **bt** (PyPI) — clean allocation/rebalancing engine
+- **riskfolio-lib** — comprehensive portfolio risk
+
+**Our specific needs:**
+- Tier-based sizing (5%/4%/3%/1.5%)
+- Vol-targeted sizing
+- Drawdown-aware sizing (step function)
+- Sector concentration tracking
+- Open position registry
+- Real-time integration with engine
+
+**Honest assessment:**
+- The full libraries are designed for portfolio OPTIMIZATION (Markowitz weights, etc.)
+- We don't need optimization — we need state tracking + rule-based sizing
+- A simple custom Portfolio class is ~200 lines
+- Could use vectorbt's Portfolio object as a state container without optimization
+- **VERDICT: Custom build (~1 week as planned). Integrate QuantStats for analytics on top.**
+
+### B.14 — Strategy library (existing 72)
+
+**Function:** Boolean expressions on signal dict that trigger trade entries.
+
+**Battle-tested libraries:**
+- None directly. Strategies are project-specific by definition.
+- **bt** has some sample strategies (rotation, etc.)
+- **awesome-quant** repo lists thousands of academic strategies
+
+**Our specific needs:**
+- Custom swing trading strategies tailored to our signal universe
+- Earnings momentum strategies (DECISION-013)
+- Calendar/seasonal strategies
+- ICT-derived strategies (using smartmoneyconcepts library per DECISION-045)
+
+**Honest assessment:**
+- Existing 72 strategies are working
+- New strategies (earnings momentum, calendar) are simple boolean expressions — not worth library overhead
+- ICT-derived strategies use forked smartmoneyconcepts (already approved)
+- **VERDICT: BUILD custom strategies on top of forked signal libraries.**
+
+### B.15 — Universe management (S&P 500 list, sector ETFs)
+
+**Function:** Maintain list of tradeable tickers, sector classification.
+
+**Battle-tested libraries:**
+- **GitHub repos** with historical S&P 500 lists (e.g., datasets/s-and-p-500-companies)
+- **OpenBB** has sector classification
+- Wikipedia scraping (currently broken in Codespace)
+
+**Our specific needs:**
+- S&P 500 tickers (committed CSV)
+- Historical membership snapshots (BUG-195 fix)
+- Sector ETFs list
+
+**Honest assessment:**
+- Currently committed CSV file is fine for static list
+- Historical snapshots can come from GitHub `datasets/s-and-p-500-companies` (regularly updated)
+- Could fork the dataset rather than maintain ourselves
+- **VERDICT: USE existing committed CSV + fork historical-snapshots dataset.**
+
+### B.16 — News API integration
+
+**Function:** Fetch news articles, sentiment scores, categorize by ticker.
+
+**Battle-tested libraries:**
+- **Polygon SDK** (handles their news API) — fork DECISION-002
+- **OpenBB** has news provider abstraction
+- **finnhub-python** — official Finnhub SDK
+- **newsapi-python** — newsapi.org
+
+**Our specific needs:**
+- Fetch news per ticker per day
+- PIT correctness (publication_date)
+- Sentiment scoring
+- Cache locally
+
+**Honest assessment:**
+- Polygon SDK directly handles their API better than raw HTTP
+- OpenBB abstraction adds layer but enables provider switching
+- **VERDICT: USE Polygon SDK directly for Phase 0.A.16. Consider OpenBB abstraction in Phase 1F.**
+
+### B.17 — Configuration management
+
+**Function:** Manage API keys, environment-specific settings, feature flags.
+
+**Battle-tested libraries:**
+- **python-dotenv** (already used) — .env files
+- **pydantic-settings** — typed config validation
+- **dynaconf** — multi-source config
+
+**Our specific needs:**
+- Codespace vs laptop differences
+- API keys management
+- AgentGateConfig (DECISION-042)
+- Phase-specific settings
+
+**Honest assessment:**
+- python-dotenv works for what we need
+- pydantic-settings would add type safety (~2 hours migration)
+- **VERDICT: KEEP python-dotenv. Optional pydantic-settings later.**
+
+### B.18 — Logging and observability
+
+**Function:** Structured logs, error tracking, performance monitoring.
+
+**Battle-tested libraries:**
+- **structlog** (Apache 2.0) — structured logging
+- **loguru** (MIT) — easier than stdlib logging
+- **sentry-sdk** — error tracking (paid for hosted)
+- **rich** (already used by our codebase) — pretty terminal output
+
+**Our specific needs:**
+- Per-gate firing logging (BUG-199)
+- Trade execution logs
+- Agent decision logs (cached)
+
+**Honest assessment:**
+- stdlib logging is sufficient
+- structlog or loguru would be cleaner but not necessary
+- **VERDICT: KEEP stdlib logging. Optional upgrade later.**
+
+### B.19 — Forward-bias testing
+
+**Function:** Verify that backtest results would be identical if run "live" at as_of date.
+
+**Battle-tested libraries:**
+- None directly. PIT testing is custom per project.
+- **freezegun** (Apache 2.0) — mock datetime for tests
+- **time-machine** — modern alternative to freezegun
+
+**Our specific needs:**
+- PointInTimeLoader testing (DECISION-040)
+- Mock today's date during tests
+- Validate results identical across date contexts
+
+**Honest assessment:**
+- **STRONG fork case for freezegun.** Mocking datetime correctly is tricky; this library handles all edge cases.
+- Saves debugging time
+- **VERDICT: USE freezegun for PIT regression tests in Phase 0.A.14.**
+
+### B.20 — Cache versioning
+
+**Function:** Bump cache key when underlying logic changes (BUG-182).
+
+**Battle-tested libraries:**
+- None directly. Cache versioning is custom per project.
+- **diskcache** (Apache 2.0) — disk-based cache with versioning
+- **joblib** (already used by sklearn) — caching with hash-based invalidation
+
+**Our specific needs:**
+- Hash-based cache keys
+- Version bumps on signal/strategy/prompt changes
+- Disk persistence
+
+**Honest assessment:**
+- Our existing cache (json files keyed by hash) works
+- joblib could simplify, but migration cost > benefit
+- **VERDICT: KEEP custom. Document signal/strategy/prompt versioning explicitly.**
+
+### B.21 — CI / Testing infrastructure
+
+**Function:** Run tests automatically, ensure code quality.
+
+**Battle-tested libraries:**
+- **pytest** (already used) — testing framework
+- **GitHub Actions** (already used) — CI
+- **pre-commit** — git hooks for formatting
+- **ruff** (already mentioned in DECISION docs) — fast linter
+- **mypy** — type checking
+
+**Our specific needs:**
+- Run tests on push
+- Forward-bias regression tests
+- Prefetch validation gate (BUG-183)
+
+**Honest assessment:**
+- All standard tools, mostly already in place
+- **VERDICT: KEEP existing.**
+
+---
+
+## SECTION C — Summary of fork-vs-build decisions
+
+| Component | Decision | Saving |
+|---|---|---|
+| Backtest engine | KEEP custom | (engine works) |
+| Multi-agent framework | KEEP custom (Phase 1B), MIGRATE to TradingAgents in Phase 1F | (cache preservation) |
+| Smart money / Quiver | KEEP custom | (already built) |
+| Macro / FRED | Optional fredapi refactor | <1 day |
+| OHLCV / yfinance | KEEP yfinance | (already best) |
+| Technical indicators | KEEP pandas-ta | (already used) |
+| Regime classification | KEEP custom (Phase 1B), HMM upgrade Phase 1F | (rules-based) |
+| Walk-forward | KEEP custom (Phase 1B), VectorBT in Phase 1F | (already built) |
+| **Performance analytics** | **ADOPT QuantStats** | **~1 week** |
+| Email approval | Build custom | (simple) |
+| **Dashboard** | **ADOPT Streamlit for Stage 3+** | **~1-2 weeks** |
+| **IBKR integration** | **ADOPT ib_async for Stage 4** | **~3-4 weeks** (don't build broker client) |
+| Portfolio class | Custom build (Phase 0.B) | (already planned) |
+| Strategy library | Custom on top of forks | (already approved) |
+| **Universe management** | **FORK datasets/s-and-p-500-companies** | **few days** |
+| News API | USE Polygon SDK directly | (already approved) |
+| Configuration | KEEP python-dotenv | (works) |
+| Logging | KEEP stdlib | (works) |
+| **Forward-bias testing** | **ADOPT freezegun for PIT tests** | **~3 days** |
+| Cache versioning | KEEP custom | (custom semantics) |
+| CI / Testing | KEEP existing | (works) |
+
+**Total NEW savings from this comprehensive audit: ~5-6 weeks**
+
+Combined with prior Phase 27 ICT savings (8 weeks), total saving from fork-existing strategy: **~13-14 weeks** vs. fully-custom build.
+
+---
+
+## SECTION D — Honest reflections
+
+### D.1 — What I missed before
+
+I should have done this comprehensive audit much earlier. Specifically:
+- **TradingAgents framework** is a peer-reviewed open-source implementation of EXACTLY what we built. We've been parallel-implementing UCLA/MIT research without realizing.
+- **QuantStats** is the obvious choice for performance analytics. I planned to "build analytics" without naming what specifically.
+- **ib_async** is non-controversial for IBKR integration. I should have called this out in Stage 4 plans.
+- **Streamlit** for dashboards is industry-standard. The current Stage 1 static page is fine but Stage 3+ deserves real dashboard.
+
+These were not subtle oversights — these are the "obvious" libraries any quant developer would name.
+
+### D.2 — Why I think this happened
+
+I was treating each component in isolation rather than asking "what does the whole system need, and what's available?" The fork-vs-build philosophy needs to be applied ONCE, comprehensively, at design time. Not iteratively when challenged.
+
+User's correction is correct and should have been my own conclusion much earlier.
+
+### D.3 — What this means for credibility of estimates
+
+If I missed these obvious forks, what else might I be missing? Honest answer: probably some. The way to mitigate:
+- Treat this audit as living. When new components are added, check fork-existing first.
+- Where I'm uncertain, surface uncertainty rather than committing to "build."
+- Ask user directly when in doubt.
+
+### D.4 — What this means for the project
+
+Phase 0 timeline now:
+- Original (sequential build): 26 weeks
+- After Pass 27 (ICT fork): 18 weeks
+- After Pass 28 (full audit): **15-16 weeks**
+
+Stage 4 timeline:
+- Original (build IBKR client + dashboard): 8-10 weeks
+- After Pass 28 (ib_async + Streamlit + QuantStats): **3-4 weeks**
+
+Total path to live trading:
+- Original: 11-15 months
+- After Pass 27: 9-13 months
+- **After Pass 28: 8-12 months**
+
+Within the originally accepted 7-12 month window.
+
+---
+
+## SECTION E — New decisions
+
+### DECISION-047 — Adopt QuantStats for performance analytics
+**Status:** PROPOSED
+**Recommendation:** Approve. Saves ~1 week of analytics building.
+
+### DECISION-048 — Adopt Streamlit for Stage 3+ dashboard
+**Status:** PROPOSED
+**Recommendation:** Approve. Saves ~1-2 weeks of dashboard building. Keep existing Stage 1 GitHub Pages static site.
+
+### DECISION-049 — Adopt ib_async for Stage 4 IBKR integration
+**Status:** PROPOSED
+**Recommendation:** Approve. Standard choice. Saves 3-4 weeks vs writing IBKR client.
+
+### DECISION-050 — Adopt freezegun for PIT regression tests
+**Status:** PROPOSED
+**Recommendation:** Approve. Standard choice for datetime mocking.
+
+### DECISION-051 — Document TradingAgents framework as Phase 1F migration target
+**Status:** PROPOSED
+**Recommendation:** Approve. Don't migrate now (cache preservation), but document as future architecture upgrade.
+
+### DECISION-052 — Fork s-and-p-500-companies dataset for historical membership
+**Status:** PROPOSED
+**Recommendation:** Approve. Free, accurate, regularly updated. Saves manual maintenance.
+
+---
+
+## SECTION F — User principle codified
+
+User's words: "We are not trying to reinvent the wheel. We are simply optimize and innovating the wheel."
+
+This becomes a project principle. Specifically:
+
+**Project principle: Fork-First Architecture**
+- For every new component, list battle-tested libraries available
+- Default to forking unless integration cost > rebuild cost OR requirement is genuinely novel
+- Document forks explicitly in code comments and PROJECT_PLAN
+- Custom code is reserved for what's UNIQUE about our system
+
+**What's unique to our system (genuinely custom):**
+- Specific signal computation strategies (~220 signals, swing-trading-tuned)
+- Multi-agent prompts tuned for swing trading
+- Risk Agent comprehensive context (DECISION-010)
+- Configurable AgentGateConfig (DECISION-042)
+- Earnings_tolerant strategy attribute (DECISION-013)
+- PointInTimeLoader semantics (DECISION-040)
+- Phase 1B-α / 1C-α validation methodology
+- The specific 130 strategies (boolean expressions on signal dict)
+
+**What's NOT unique (should be forked):**
+- ICT/SMC concepts → smartmoneyconcepts library
+- Fundamentals → OpenBB + Polygon
+- Performance analytics → QuantStats
+- Dashboard → Streamlit
+- IBKR client → ib_async
+- Datetime mocking → freezegun
+- News fetching → Polygon SDK
+- Historical S&P 500 → datasets repo
+
+---
+
+## SECTION G — Updated counts
+
+| Category | Count |
+|---|---|
+| Total bugs | 203 (unchanged) |
+| Decisions | 52 (was 46, +6 from Pass 28) |
+| Resolved decisions | 16 (DECISION-045, 046 just resolved) |
+| Pending decisions | 36 |
+
+**Phase 0 timeline summary:**
+- Original sequential build: 26 weeks
+- After Pass 27 (ICT fork): 18 weeks
+- After Pass 28 (full system audit): **~15-16 weeks**
+
+**Total path to live trading: 8-12 months** (back within originally accepted 7-12 month window).
+
+---
+
+*Pass 28 complete. System-wide fork-vs-build audit. 6 new decisions (DECISION-047 QuantStats, 048 Streamlit, 049 ib_async, 050 freezegun, 051 TradingAgents migration target, 052 S&P 500 historical dataset). Major findings: TradingAgents framework parallels our 6-agent architecture (UCLA/MIT, Apache 2.0); QuantStats is the obvious analytics fork; ib_async is standard for IBKR; Streamlit for dashboards. Total Phase 0 saving from full fork philosophy: ~10 weeks vs original; ~5-6 additional weeks vs Pass 27. Stage 4 IBKR + dashboard saves 3-5 weeks. Total path to live: 8-12 months. No new bugs.*
