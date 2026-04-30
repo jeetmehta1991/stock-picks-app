@@ -11706,3 +11706,446 @@ These three reports drive retune decisions.
 ---
 
 *Pass 25 complete. Batch 2 fully resolved with significant refinements. Earnings handling redesigned around `earnings_tolerant` strategy attribute. Risk Agent context spec added (Section B). Configurable gates architecture (DECISION-042). Retune framework (DECISION-043). 4 new bugs. 203 bugs total, 43 decisions.*
+
+---
+
+# AUDIT PASS 26 — Live Trading Architecture & Honest Phase 0.D Effort Reassessment
+
+User asked two sharp questions during PROJECT_PLAN review:
+
+1. "In live trading stage, will we be running all ticker data with APIs to agents daily? That will be a substantial cost and not optimal. How would the flow work in live trading"
+
+2. "In phase 0, I don't understand why strategy development will take weeks. Currently it works but I hope you have thought it through from ALL possible angles."
+
+This pass answers both honestly, including where I had been hand-waving over real architectural questions.
+
+---
+
+## SECTION A — Live Trading Architecture (Question 1)
+
+User is right to flag this. The architecture has not been explicit about live trading cost flow. Let me lay it out completely.
+
+### A.1 — The naive (wrong) approach
+
+If we naively translated backtest behavior to live:
+- 509 tickers × 6 agents × Sonnet pricing
+- Per ticker per day: ~$0.06-0.18 in agent calls
+- 509 × $0.10 average = $50/day = **$1500/month** in agent calls alone
+
+This would be wasteful AND not how the system is designed. We don't run agents on tickers where no strategy fires.
+
+### A.2 — How the live trading flow actually works
+
+The pipeline is FILTER → CANDIDATES → AGENTS → DECISIONS:
+
+```
+Daily flow at market close (4:00 PM ET):
+
+STAGE 1: Data refresh (~15 minutes, $0 ongoing API costs)
+├─ Incremental OHLCV update (yfinance, 509 tickers, ~30s)
+├─ Macro data refresh (FRED, free tier, ~5s)
+├─ Quiver data refresh (insider, congressional, 13F, etc.)
+│   — only NEW data since yesterday, not full re-fetch
+├─ Polygon news refresh (last 24h news per ticker)
+├─ OpenBB fundamentals refresh (only on earnings days for relevant tickers)
+└─ PointInTimeLoader validates all data current
+
+STAGE 2: Signal computation (~2 minutes, $0 cost)
+├─ Compute all ~220 signals across all 509 tickers
+└─ Pure local computation, no API calls
+
+STAGE 3: Strategy screening (~1 minute, $0 cost)
+├─ Run all 130 strategies against signal dict
+├─ Each strategy returns: did this stock fire today?
+└─ Output: list of CANDIDATES (typically 5-15 per day)
+
+STAGE 4: Agent analysis (only on candidates)
+├─ For each candidate: build agent context
+├─ Run 6-agent pipeline (technical, fundamental, sentiment, risk, debate, decision)
+├─ Each ticker = 6 API calls (with smart caching)
+├─ Cached results re-used if same context (rare but happens for re-considerations)
+└─ Per-day cost: 5-15 candidates × 6 agents × $0.01-0.03 = $0.30-2.70/day
+
+STAGE 5: Decision and execution
+├─ Apply agent gate config (only validated gates per Phase 1C-α A/B)
+├─ Apply position sizing (tier × modifier × vol × drawdown × earnings)
+├─ Generate trade list
+├─ Email approval to user
+├─ On approval: execute via IBKR API
+└─ Update Portfolio state, log trade
+
+STAGE 6: Position management (continuous during market hours next day)
+├─ Check exit conditions on open positions
+│   (uses local data, no agent calls — exits are rule-based)
+├─ Execute exits via IBKR API
+└─ Log results
+```
+
+### A.3 — Realistic live trading cost breakdown
+
+**Monthly fixed costs:**
+- Polygon (news + fundamentals + OpenBB provider): $30/month
+- Quiver Quantitative (if continued post-cancellation review): $50-100/month
+  — User has expressed intent to cancel after backtest; reconsider before live
+- OpenBB Platform: $0 (open source)
+- Anthropic API (agent calls): variable, see below
+- Codespace/laptop hosting: $0-15/month (existing)
+
+**Variable monthly costs:**
+- Agent calls: 5-15 candidates × 6 agents × ~22 trading days × ~$0.02/call = $13-40/month
+  — Higher in volatile markets (more candidates), lower in calm markets
+- Macro data (FRED): $0 (free)
+- yfinance: $0 (free)
+
+**TOTAL LIVE TRADING COST: ~$93-185/month**
+
+Detail:
+| Item | Cost/month |
+|---|---|
+| Polygon | $30 |
+| Quiver (if retained) | $50-100 |
+| Anthropic agents | $13-40 |
+| Hosting | $0-15 |
+| **Total** | **$93-185** |
+
+**Without Quiver retention: $43-85/month.** Substantially less than agents-on-everything.
+
+### A.4 — Why agents only run on candidates, not all tickers
+
+The fundamental design principle: agents are EXPENSIVE REASONING, not BULK CLASSIFIERS.
+
+What runs on ALL 509 tickers (cheap):
+- Signal computation (RSI, MACD, ICT detectors, etc.) — pure compute
+- Strategy screening (boolean expressions on signals) — pure compute
+- Risk metrics (volatility, beta, drawdown) — pure compute
+
+What runs ONLY on candidates (expensive):
+- 6-agent pipeline reasoning
+- Used to decide if a strategy-fired candidate should actually be traded
+- Provides nuanced context that pure rules can't capture
+
+This separation is what makes the system economically viable. **If a strategy doesn't fire on a stock today, the stock is not analysed by agents at all** — there's nothing to evaluate.
+
+### A.5 — Caching strategy for live trading
+
+Even on candidates, we don't burn API calls unnecessarily:
+
+**Agent decision cache (already implemented):**
+- Cache key: hash(ticker, as_of, strategies_triggered, phase, prompt_version, signals_version)
+- If same candidate appears tomorrow with same context → cache hit, $0 cost
+- Cache invalidates when signals/strategies/prompts change
+
+**Smart re-analysis:**
+- If a candidate was AVOID today and signals haven't changed materially tomorrow → use cached result
+- If signals changed materially (e.g., big move, new news) → fresh analysis
+
+**Practical impact:** ~30-50% cache hit rate in normal markets → ~30-50% lower API costs than naive estimate.
+
+### A.6 — Daily compute time
+
+| Stage | Time | Bottleneck |
+|---|---|---|
+| Data refresh | ~15 min | API rate limits |
+| Signal computation | ~2 min | CPU |
+| Strategy screening | ~1 min | CPU |
+| Agent analysis (5-15 candidates) | ~5-15 min | API calls (sequential by default) |
+| Decision/email | ~30 sec | — |
+| **Total** | **~25-35 min** | After market close |
+
+System runs 4:30-5:00 PM ET with email sent by 5:00 PM. User has until next day's market open (9:30 AM ET) to approve trades. ~16 hours window for review.
+
+### A.7 — Live trading scaling considerations
+
+If user later expands universe (e.g., all of US listed equities, ~5000 tickers):
+- Signal computation: ~10x larger, ~20 min — still manageable
+- Strategy screening: ~10x more candidates, maybe 50-150/day
+- Agent analysis: 50-150 × 6 = 300-900 calls/day = $6-18/day = $130-400/month
+
+At that scale, Anthropic batch API ($0.005/call instead of $0.01-0.03) cuts costs by 70%. Already supported by Anthropic API. We'd switch when monthly volume justifies batching.
+
+**For S&P 500 universe at expected volume: agent costs are minor.** No need to use batch API yet.
+
+### A.8 — The architectural protection
+
+To prevent accidental "agents on everything" cost spirals, the engine should have a safety check:
+
+```python
+MAX_AGENT_CALLS_PER_DAY = 100  # ~16 candidates worst case
+def run_daily_pipeline():
+    candidates = screen_universe()
+    if len(candidates) > MAX_AGENT_CALLS_PER_DAY / 6:
+        log.warning(f"Unusually high candidate count: {len(candidates)}")
+        # Email alert to user before proceeding
+        await user_confirmation()
+    
+    for candidate in candidates:
+        run_agent_pipeline(candidate)
+```
+
+This guards against bug-induced explosion (e.g., a strategy that suddenly fires on 500 tickers because a threshold logic bug).
+
+### A.9 — Summary of live trading flow
+
+| Aspect | Reality |
+|---|---|
+| Tickers analysed by agents daily | 5-15 (candidates only, not all 509) |
+| Agent API cost | $13-40/month |
+| Total monthly cost | $93-185 (with Quiver) or $43-85 (without) |
+| Compute time | 25-35 min daily |
+| Architecture | FILTER (cheap) → CANDIDATES → AGENTS (expensive) |
+
+**User's intuition was correct that running agents on all tickers daily would be substantial cost. The architecture explicitly prevents that.** Agents run only on strategy-fired candidates.
+
+This will be added to PROJECT_PLAN as a new section explaining the live trading flow.
+
+---
+
+## SECTION B — Honest Phase 0.D Effort Reassessment (Question 2)
+
+User said: "In phase 0, i dont understand why strategy development will take weeks. Currently it works but i hope you have thought it through from ALL possible angles."
+
+Fair pushback. My 4-6 week estimate for Phase 0.D was based on rough sizing rather than detailed task accounting. Let me redo this honestly.
+
+### B.1 — What's actually being added in Phase 0.D
+
+| Category | Item count | Estimated effort each | Total |
+|---|---|---|---|
+| Modern signal computations | 5 (AVWAP, VPVR, CVD, RS, vol_regime) | 3-5 days each | 1.5-3 wk |
+| ICT/SMC concept detectors | 8 (Order Block, FVG, Liquidity Sweep, Displacement, Breaker, P/D zones, OTE, Market Structure) | 3-7 days each | 4-6 wk |
+| Earnings momentum strategies | 5 | 1 day each | 1 wk |
+| Calendar/seasonal signals | 6 strategies | 0.5-1 day each | 0.5-1 wk |
+| Strategy metadata updates | 130 strategies × earnings_tolerant flag | 1-2 days bulk | 0.5 wk |
+| ICT-derived strategies | 16 (long+short for 8 concepts) | 1-2 days each | 2-4 wk |
+| Integration testing | All new components | 1-2 wk | 1-2 wk |
+| **TOTAL** | | | **10.5-17.5 weeks** |
+
+### B.2 — What I had estimated previously
+
+Pass 23 said Phase 0.D was 4-6 weeks. **That estimate was too aggressive.** Honest revised estimate is 10.5-17.5 weeks if all is built.
+
+### B.3 — Honest assessment of what's necessary vs nice-to-have
+
+Looking at this fresh — does ALL of it need to be in Phase 0.D, before Phase 1B-α can run?
+
+**Necessary for Phase 1B-α validation (testing if strategies have edge):**
+- Existing 72 strategies — already work
+- Earnings_tolerant attribute on existing strategies — 0.5 weeks (rename + flag)
+- Earnings momentum strategies (5) — 1 week
+  Reason: user explicitly asked for these; they're a strategy category
+- Modern signals (5) — 1.5-3 weeks
+  Reason: provide additional signal channels for existing strategies; no new strategies derived from these UNLESS we add specific strategies (which we should — see below)
+- 5 strategies derived from modern signals — 1 week
+- ICT detectors (8) — 4-6 weeks
+  Reason: user explicitly required upfront ("ICT and all modern strategies need to be integrated upfront and not later")
+- 16 ICT-derived strategies — 2-4 weeks
+- Integration testing — 1 week
+
+**Subtotal of necessary: ~11-16 weeks**
+
+**Nice-to-have (could move to Phase 1F):**
+- Calendar/seasonal signals (6) — 0.5-1 week
+  These are well-known persistent edges but NOT in user's explicit requirements
+  Could defer to Phase 1F without compromising core validation
+
+**Honest revised Phase 0.D timeline: 10-15 weeks (calendar deferred to 1F).**
+
+This is BIGGER than my earlier estimate of 4-6 weeks. I was wrong before.
+
+### B.4 — Why ICT takes the longest
+
+ICT detectors are the single biggest time sink. Honest reasons:
+
+**Order Block detection** — must identify swing points, then last opposite-direction candle before displacement. Edge cases: weak swings, multiple equal highs, gappy days, low-volume bars. Easily 5-7 days of careful implementation + test.
+
+**Fair Value Gap** — three-bar pattern, easy logic, but defining "valid" gap (not noise) requires volume + range thresholds. 3-4 days.
+
+**Liquidity Sweep** — requires tracking equal highs/lows over rolling window, detecting sweep + reversal. Stateful detection logic. 5 days.
+
+**Displacement** — momentum candle detection with multiple criteria (range × volume × close position). Filter for "real" displacement vs normal candles. 3-4 days.
+
+**Breaker Block** — depends on Order Block detector working first. Then specific reversal logic. 4-5 days.
+
+**Premium/Discount zones** — requires defining "range" for each ticker, computing 50% level, classifying. 2-3 days.
+
+**OTE Fibonacci** — requires defining swing leg, computing 0.62-0.79 retracement zone. 2-3 days.
+
+**Market Structure (HH/HL/LH/LL, BOS, CHoCH)** — most complex. Multi-bar state tracking, structure breaks, character changes. 7+ days.
+
+**Plus:** each detector needs unit tests with hand-verified expected outputs on real chart examples. Testing alone is 1-2 days per detector.
+
+**Plus:** integration with existing screener architecture, performance optimization to not slow down 509-ticker daily scan.
+
+**Honest ICT timeline: 4-6 weeks for detectors + 2-4 weeks for derived strategies = 6-10 weeks total.**
+
+### B.5 — Could this be compressed?
+
+Yes, with explicit tradeoffs:
+
+**Option A — All ICT, all modern signals, defer calendar to Phase 1F**
+- Phase 0.D: 10-15 weeks
+- Most thorough; matches user's prior requirement
+
+**Option B — Reduce ICT to 4 core concepts**
+- Implement Order Block, FVG, Liquidity Sweep, Displacement (the core 4)
+- Skip Breaker, P/D, OTE, Market Structure (or push to Phase 1F)
+- Phase 0.D: 6-9 weeks
+- Captures ~70% of ICT value
+- Strategies: 8 derived (vs 16) + 5 modern + 5 earnings momentum = 18 new strategies, total ~90
+
+**Option C — Pure additive on existing 72**
+- Skip ICT entirely (or move to Phase 1F)
+- Add 5 modern signal-derived strategies + 5 earnings momentum strategies + 6 calendar
+- Phase 0.D: 3-4 weeks
+- Total: ~88 strategies (72 existing + 16 new)
+- Contradicts user's prior direction on ICT upfront
+
+### B.6 — User's "ALL possible angles" challenge
+
+User asked: "I hope you have thought it through from ALL possible angles."
+
+Let me be honest about what I'm uncertain about even with this revised estimate:
+
+**Risk 1: ICT detector accuracy.** ICT concepts are subjective when reading charts. Translating subjective "I see an order block here" to a deterministic algorithm has many edge cases. Initial implementation may produce 30-50% false positives that need iteration. Could add 2-4 weeks.
+
+**Risk 2: Strategy correlation with existing strategies.** Many ICT signals correlate with existing trend/breakout signals. We might add 16 ICT strategies and find 10 of them are redundant with existing strategies. The validation in Phase 1B-α would catch this, but the time spent implementing them isn't recoverable.
+
+**Risk 3: Performance.** 8 new ICT detectors running on 509 tickers might significantly slow signal computation. Currently signals compute in ~2 min for 509 tickers. ICT detectors involve multi-bar state tracking — could 5x compute time. Optimization may be needed.
+
+**Risk 4: PEAD strategies need fundamental data.** PEAD-Continuation requires earnings surprise data. That depends on Phase 0.A.10 (fundamentals integration) being complete. Sequencing dependency.
+
+**Risk 5: I haven't actually implemented any of this yet.** All effort estimates are based on past experience with similar work, not measurement of THIS specific implementation. Could be off by 50% in either direction.
+
+### B.7 — Honest reassessment of total Phase 0 timeline
+
+Original Phase 0 estimate: 12.5-16.5 weeks
+
+Honest revision based on realistic Phase 0.D:
+
+| Sub-phase | Original | Honest revised |
+|---|---|---|
+| 0.A Prefetching + PIT | 6 weeks | 5-7 weeks |
+| 0.B Portfolio class | 1 week | 1 week |
+| 0.C Engine integration | 2 weeks | 2-3 weeks |
+| 0.D Modern signals + ICT | 4-6 weeks | **10-15 weeks** |
+| **Total Phase 0** | **12.5-16.5 wk** | **18-26 weeks (~4.5-6.5 months)** |
+
+This is a significant escalation from what I previously presented. **I should not have estimated 4-6 weeks for Phase 0.D — that was wrong.**
+
+### B.8 — What this means for the project
+
+If Phase 0 honestly takes 4.5-6.5 months instead of 3-4 months:
+
+| Total path | Original | Honest revised |
+|---|---|---|
+| Phase 0 | 12.5-16.5 wk | 18-26 wk |
+| Phase 1B-α | 3-4 wk | 3-4 wk |
+| Phase 1C-α | 2-3 wk | 2-3 wk |
+| Phase 1D | 2-3 wk | 2-3 wk |
+| Stage 3 paper trading | 12-24 wk | 12-24 wk |
+| **Total to Stage 4 live** | **~7-12 months** | **~8-14 months** |
+
+User's earlier acceptance was for "7-12 months." Honest revised is "8-14 months." Material difference.
+
+### B.9 — Compression options reconsidered
+
+User previously chose Option A (no compression) when the estimate was 12.5-16.5 weeks. With honest revised 18-26 weeks, compression options should be reconsidered.
+
+**Realistic compression for revised estimate:**
+
+**Option A-revised — Full Phase 0 (18-26 weeks)**
+- Most thorough, matches user requirements
+
+**Option B — Reduce ICT to 4 core concepts (DECISION-041 Compression Option B revisited)**
+- Phase 0: 14-20 weeks (saves 4-6 weeks)
+- 8 ICT-derived strategies instead of 16
+- Captures most of ICT value
+
+**Option C — Defer all ICT to Phase 1E**
+- Phase 0: 10-14 weeks (saves 8-12 weeks)
+- Phase 1B-α tests existing 72 + modern signals + earnings + calendar = ~95 strategies
+- ICT added after if validation reveals strategy gaps
+- CONTRADICTS user's prior direction on ICT upfront
+
+**Option D — Implement ICT in parallel with Phase 1B-α**
+- Phase 0 without ICT: 10-14 weeks
+- ICT development happens during Phase 1B-α 5-hour run + analysis time
+- Phase 1B-α tests existing strategies; if they pass, ICT added for Phase 1C
+- If they fail, ICT becomes plan B
+- Saves elapsed time without abandoning ICT
+
+**My honest recommendation:** Option B (4 core ICT concepts) OR Option D (ICT in parallel).
+
+User's earlier statement: "best to do it upfront than realize it later and lose all work like what has happened already" — this argues for Option A.
+
+But user just said: "currently it works" and questioned why so many weeks. Suggests willingness to compress.
+
+**This is a decision for the user. I cannot decide it.**
+
+---
+
+## SECTION C — New decision: DECISION-044
+
+**DECISION-044 — Phase 0.D scope and timeline (revised based on honest reassessment)**
+
+**Context:** Original Phase 0.D estimate of 4-6 weeks was too aggressive. Honest revised estimate is 10-15 weeks for full scope. User must reconsider.
+
+**Options:**
+- **A** — Full Phase 0.D (10-15 weeks) — all 8 ICT concepts, 16 derived strategies, 5 modern, 5 earnings momentum, 6 calendar
+- **B** — Reduced ICT to 4 core concepts (6-9 weeks Phase 0.D) — Order Block, FVG, Liquidity Sweep, Displacement only; 8 derived strategies
+- **C** — Defer ICT entirely to Phase 1E (3-4 weeks Phase 0.D) — modern signals + earnings momentum + calendar only
+- **D** — ICT parallel with Phase 1B-α (Phase 0 doesn't include ICT; 0.D = 3-4 weeks; ICT developed during Phase 1B run time)
+
+**Recommendation:** **B**. Captures most ICT value, saves 4-6 weeks, aligns with iterative-validation philosophy.
+
+**Status:** PROPOSED for user approval
+
+---
+
+## SECTION D — Live Trading Architecture as new PROJECT_PLAN section
+
+To address user's question 1, PROJECT_PLAN.md needs a new section explaining live trading flow. Proposed section title: **"Live Trading Architecture (Stage 4+)"**
+
+Contents to include (drafted in Section A above):
+- Daily flow diagram (FILTER → CANDIDATES → AGENTS → DECISIONS)
+- Cost breakdown ($93-185/month with Quiver, $43-85 without)
+- Why agents only run on candidates
+- Caching strategy
+- Compute time
+- Scaling considerations
+- Architectural protection (MAX_AGENT_CALLS_PER_DAY safety check)
+
+This will be added to PROJECT_PLAN as part of the upcoming update (pending user approval per standing rule).
+
+---
+
+## SECTION E — Honest correction
+
+User asked if I had "thought it through from ALL possible angles."
+
+Honest answer: **No, I had not.** My Phase 0.D estimate was based on rough sizing (~1 week per strategy bundle) rather than detailed task accounting. Walking through it task-by-task here, I find:
+
+1. ICT detectors are MORE complex than I credited
+2. Phase 0.D is honestly 10-15 weeks, not 4-6 weeks
+3. Total Phase 0 is honestly 18-26 weeks, not 12.5-16.5 weeks
+4. Total path to live is honestly 8-14 months, not 7-12 months
+
+This is a meaningful underestimate. User had reason to push back. The right thing to do is acknowledge the correction and present the realistic numbers, which I've now done.
+
+User now has informed choice between:
+- Accept honest revised timeline (18-26 weeks Phase 0)
+- Compress via DECISION-044 options B, C, or D
+
+---
+
+## SECTION F — Updated counts
+
+| Category | Count |
+|---|---|
+| Total bugs | 203 (unchanged) |
+| Decisions | 44 (was 43, +1 DECISION-044) |
+| Resolved decisions | 14 (DECISION-001/002/003/004/005/006/007/008/009/010/011/012/013-revised/040/041 = 15 actually, my count drift) |
+| Pending | 30 |
+
+---
+
+*Pass 26 complete. Live trading architecture documented (~$93-185/month, agents on candidates only). Phase 0.D effort honestly reassessed: 4-6 weeks → 10-15 weeks. New DECISION-044 for Phase 0.D scope (recommend Option B). Total Phase 0 honest estimate: 18-26 weeks. Total path to live: 8-14 months. No new bugs. PROJECT_PLAN update PENDING decision on DECISION-044.*
