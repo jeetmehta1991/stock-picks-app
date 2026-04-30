@@ -5974,3 +5974,493 @@ Pass 14 adds 1 bug:
 ---
 
 *Pass 14 complete. Three questions answered. Recommendation surfaced for owner decision: keep current plan, restructure to ablation, or hybrid. No PROJECT_PLAN changes made.*
+
+---
+
+# AUDIT PASS 15 — Why Earlier Passes Missed BUG-113 + Comprehensive Optimization Audit
+
+This pass addresses three things:
+1. **Honest accounting of why earlier passes missed BUG-113** — and what other class of bugs they may also have missed
+2. **Comprehensive optimization audit** of signal generation, agent inputs, agent outputs, strategies, screeners, filters, and thresholds
+3. **Formal capture of Question 2 (categorical validation gap) and Question 3 (ablation methodology)** so they live in the audit, not just in conversation
+
+This is the longest single pass because the user's request was explicit: don't restrict to what we have now, think of what can be done better.
+
+---
+
+## PART 1 — Why earlier passes missed BUG-113
+
+### Honest answer
+
+The 12 prior audit passes had a specific lens. Each pass asked one of these questions:
+- Pass 1-7: "Does the code do what it says?" — type errors, dataclass duplicates, wrong proxies, lookahead leaks
+- Pass 8: "Does the architecture have execution / portfolio / deployment layers?"
+- Pass 9: "Are the existing trade results structurally valid?" — overlap, duplicates, perfect fills
+- Pass 10: "Trace one full trade through the pipeline"
+- Pass 11: "Phase 1B vs 1C, tiering, audit gap inventory"
+- Pass 12: "Coverage and consistency reconciliation"
+- Pass 13: "Coverage of break-and-retest and ICT"
+- Pass 14: "Agent action ignored, categorical gap, ablation"
+
+**None of them asked: "Is every output of every component fully consumed by the next component?"** That's the category BUG-113 falls into. It's an interface contract bug, not a data bug, not a logic bug, not an architecture bug. The agent emits 31 fields across 6 agents. The engine reads 2. Nothing crashes. Nothing produces visibly wrong numbers. The integration is just shallow.
+
+I missed it because I was looking at:
+- What goes IN (data quality, prompt construction)
+- What goes OUT of each agent (Pass 4 audited prompt quality)
+- Whether the engine's overall behaviour was correct
+
+But not: "What does the engine do with each specific field the agent returns?" That question was never asked explicitly. Pass 10 walked through one trade lifecycle and noted "agents added zero differentiation" but attributed it to the VXX bug (BUG-26 → uniform crisis → uniform downgrade), not to the engine ignoring the action field.
+
+### What this teaches us about the audit methodology
+
+Earlier passes were good at finding bugs that produced visibly wrong outputs (NameError crashes, regime labels, position counts). They were less good at finding bugs where everything looked plausible but a key recommendation was being silently dropped on the floor.
+
+This is a known weakness of code review without contract testing. Two correct components connected by an incomplete contract produce a system that runs but doesn't do what either component intended. The standard fix is **contract tests** — explicit assertions that for each output field of upstream component X, downstream component Y either consumes it or has documented why it doesn't.
+
+### What other "interface contract" bugs might exist
+
+Applying the same lens systematically reveals more candidates:
+
+1. **Smart money score → Decision Agent → engine.** Smart money signal is computed (when QUIVER_API_KEY set), passed to Decision Agent prompt, agent's reasoning may incorporate it, but the engine never uses smart money score directly to gate trades. Tier formula uses it for preliminary tier only.
+
+2. **Sentiment Agent → engine.** Sentiment Agent emits `contrarian_signal: extreme_buy|buy|neutral|extreme_sell|sell|extreme_avoid`. This is in agent reasoning text. Engine never reads it. A strong contrarian signal does not gate or size trades.
+
+3. **Risk Agent `trade_blocked` field.** The Risk Agent prompt emits `trade_blocked: True/False`. The engine has no code path that respects this. If Risk Agent says "trade_blocked: True" because of a binary event today, the engine still trades.
+
+4. **Bull/Bear debate winner.** Debate emits `debate_winner: bull|bear|neutral` and `confidence_in_winner: high|medium|low`. Engine never reads either. A high-confidence bear debate winner does not stop a long trade.
+
+5. **Decision Agent `recommended_exit` field.** Engine uses fixed 10%/15% trailing stop. Agent's recommended_exit choice (`atr_trail_1x|trailing_15pct|hybrid_50pct_target|next_pivot_target`) is text only.
+
+6. **Decision Agent `position_size_modifier` field.** Position size is hardcoded $10K (BUG-104). Agent's recommendation of `full|reduced_earnings|reduced_volatility|reduced_concentration|minimal` is text only.
+
+7. **Fundamental Agent `avoid_earnings` field.** Agent can flag "avoid earnings" but engine doesn't gate on it.
+
+8. **Earnings days → engine.** `days_to_next_earnings` is computed, passed to agents, but never used as a hard filter (e.g. "no new entries within 3 days of earnings"). Original plan section says this is a sizing factor, not go/no-go — but even sizing isn't actually applied (BUG-104).
+
+9. **Sector concentration → Decision Agent.** Portfolio context is built and passed to the agent, but the agent's `portfolio_note` warning about over-concentration is text-only. Engine doesn't enforce sector limits.
+
+10. **Agent agreement strength → engine.** Decision Agent reports `agent_agreement: strong|moderate|weak`. A "weak agreement" (agents disagree) probably should reduce position size or skip. Engine ignores this entirely.
+
+That's 10 interface contract bugs in one component (agent layer). The same systematic check would likely surface similar gaps elsewhere — between screener and engine, between regime classifier and screener, between exit_manager and engine. Each is a specific thing one component computes that another component should consume but doesn't.
+
+### Formalizing this as bugs
+
+I'm adding 10 new bug entries (BUG-114 through BUG-123) for the agent integration gaps identified above. Each is HIGH or MEDIUM severity depending on impact.
+
+---
+
+## PART 2 — Comprehensive optimization audit
+
+The user asked: "Look at all strategies, screeners, filters, thresholds, agent capabilities, everything!" This part attempts to do that systematically.
+
+### 2.1 Signal generation — what's computed vs what should be
+
+**Current signals computed (28 functions, ~220 fields):**
+
+Trend & moving averages:
+- EMA/SMA at 9, 21, 20, 50, 200 — covers most use cases
+- DEMA/TEMA at 20 — good
+- Hull MA — good (modern indicator, less lag)
+- Ichimoku — good
+- Supertrend — good
+
+Momentum oscillators:
+- RSI 9, 14, 21 — good multi-period coverage
+- StochRSI — good
+- Stochastic — good
+- MACD, MACD-Fast, PPO — all 3 are slight variants, somewhat redundant
+- Williams %R — good
+- ROC, Awesome Oscillator, Ultimate Oscillator — covered
+
+Volatility:
+- Bollinger Bands, Keltner Channels — both present
+- TTM Squeeze (BB inside Keltner) — good
+- Donchian Channels — good
+- ATR — yes
+
+Volume:
+- OBV, CMF, MFI, A/D Line, Force Index, vol_ratio_20d — good coverage
+
+Pivots:
+- Pivot points, CPR, Camarilla, Fibonacci — covered
+
+Price patterns:
+- 6 candlestick patterns (engulfing, doji, morning star, three white soldiers, shooting star, evening star) — limited
+
+**What's missing that real systems use:**
+
+| Missing signal | What it does | Why it matters |
+|---|---|---|
+| **Anchored VWAP** | VWAP from a specific event (earnings day, last swing high, year start) | Institutions trade off these levels heavily; standard VWAP is a 1-day reset which loses event context |
+| **Volume Profile (VPVR)** | Distribution of volume by price level over a lookback | Identifies "value areas" and "high-volume nodes" — natural support/resistance |
+| **Market Profile (TPO)** | Time-Price Opportunity from CME methodology | Value Area High/Low, Point of Control — institutional structure |
+| **Cumulative Volume Delta (CVD)** | Buy volume minus sell volume cumulative | Detects accumulation/distribution that price alone hides |
+| **Relative Strength vs sector** | Stock return / sector ETF return over N days | Identifies leaders within a sector — the Phase 1C plan mentions this but not yet computed |
+| **Relative Strength vs SPY** | Stock return / SPY return | Beta-adjusted alpha generation |
+| **Beta-adjusted volatility** | ATR / SPY ATR ratio | Distinguishes idiosyncratic moves from market beta |
+| **Realized vs implied volatility** | When IV expands vs HV — vol risk premium | Best entry timing for some strategies |
+| **52-week high/low distance** | % from 52w high, % from 52w low | Already passed to agents but not used as filter; should gate breakouts to "near 52w high" |
+| **Time since last 52w high** | Days since last new high | Distinguishes fresh momentum from extended trends |
+| **Earnings drift signal** | Post-earnings announcement drift (PEAD) | Well-documented edge; need post-EAD return tracking |
+| **Days to/from earnings** | Computed but not used as filter | Should gate or size based on proximity |
+| **News sentiment z-score** | Today's sentiment vs 30-day baseline | Detects sentiment shifts, not absolute levels |
+| **Order book imbalance** (live only) | Bid size vs ask size at top | Cannot backtest from EOD data, but live signal |
+| **Insider buy clustering with magnitude** | Currently binary; should be $-weighted | Smart Insider style scoring |
+| **Congressional buy magnitude** | Currently binary; should weight by member seniority | Speaker buying $500K is different signal from junior member buying $50K |
+
+**Optimization recommendations on signals:**
+
+1. **Add relative strength signals** (vs sector, vs SPY) — these are already in Phase 1C plan but should be Phase 1B priority because they measurably reduce the 88% trade overlap from BUG-101 (relative strength filters out crowd trades).
+
+2. **Replace binary smart money signals with continuous scoring** — currently `congressional_signal: "buy"|"sell"|"none"`. Should be a scalar 0-100 incorporating member seniority, transaction size, recency, frequency. This kills BUG-103 family of issues by making the signal continuous instead of binary gate.
+
+3. **Add Anchored VWAP from key events** — earnings day, last swing high, year start. Three Anchored VWAPs cover most institutional reference points.
+
+4. **Add post-earnings drift tracker** — for each ticker, track 5-day, 10-day, 20-day post-earnings return. PEAD is one of the most documented edges in equity research.
+
+5. **Compute volatility regime per ticker** (not just market) — a ticker can be in low-vol regime when SPY is in high-vol. Volatility regime conditions strategy effectiveness.
+
+6. **Add "signal staleness" tracking** — a strategy fired 5 days ago but stock still hasn't moved is different from a strategy firing today. Time-since-fire is itself a signal.
+
+### 2.2 Strategy universe — what's there vs what's optimization-worthy
+
+**Current 72 strategies organised by category:**
+
+| Category | Count | Coverage assessment |
+|---|---|---|
+| Pivot/CPR/Camarilla | 16 | Adequate — covers daily pivot system reasonably |
+| Momentum oscillators | 14 | Adequate — RSI, MACD, Stoch, Williams%R variants |
+| Trend (MA cross, Ichimoku) | 11 | Adequate but heavy on MA crosses |
+| Volatility (BB, Keltner, Donchian) | 9 | Adequate |
+| Candlestick patterns | 6 | Insufficient — need at least 12 patterns for full coverage |
+| Volume-based | 4 | Insufficient — need OBV crossover, A/D divergence, more |
+| Confluence (multi-indicator) | 9 | Reasonable |
+| Short-side variants | 9 | Insufficient — most strategies don't have short variants |
+
+**Strategy-level optimizations:**
+
+1. **Strategy correlation analysis is missing.** No code computes the correlation matrix between strategies firing on the same ticker. Two strategies that fire identically 90% of the time should be merged or one removed. The 88% trade overlap from BUG-101 is partly due to undetected correlation between strategies.
+
+2. **No strategy diversification scoring.** When 5 strategies fire on the same day, the system treats it as 5x conviction. Real diversification check would weight by correlation: 5 highly-correlated firings = 1 effective signal, 5 orthogonal firings = 5 effective signals.
+
+3. **No conditional strategies.** Every strategy is "fire on this signal." Real systems have conditional strategies: "fire on RSI oversold IF sector ETF is in uptrend AND VIX < 30 AND no earnings within 7 days." Current code mixes some of this into the strategy function but not systematically.
+
+4. **No strategy retirement based on degradation.** Original plan mentions strategy retirement (BUG-65) but criteria are arbitrary (50 trades, win rate drop). Real retirement uses change-point detection on the strategy's own historical returns.
+
+5. **No regime-conditional parameter tuning.** RSI 30/70 thresholds are fixed. In high-vol regime, oversold threshold should be tighter (RSI 20) and overbought looser (RSI 80). Current code has fixed thresholds across all regimes.
+
+6. **Missing strategy classes:**
+   - **Mean reversion to AVWAP** (anchored VWAP) — entries when stock pulls back to anchored VWAP from a key event
+   - **Breakout retest variants** — covered in Pass 13 (BUG-111)
+   - **Pre-market gap fade** — gap up that fails by 11am — daily-bar approximation possible
+   - **Earnings drift continuation** — long if positive surprise + above 50-day MA, 5-20 day hold
+   - **Sector rotation** — long the leading sector ETF, short the lagging
+   - **Pairs trading** — long one stock, short a correlated peer when spread widens
+   - **Calendar effects** — sell-in-May, January effect, end-of-quarter window dressing
+
+### 2.3 Screener / filter audit
+
+**Current entry filters in `_process_day`:**
+
+| Filter | What it does | Critique |
+|---|---|---|
+| `direction == "avoid"` | Skip if conflicting long/short | Good but BUG-04 broke this |
+| `CRISIS_LONG_EXCLUSIONS` | Block VXX/TLT/EEM longs in crisis | Triggered every day due to BUG-26 |
+| `opened_today` set | Same-day same-ticker dedup | Doesn't prevent cross-day overlap (BUG-101) |
+| `next_bar is None` | Skip if no next-day data | Edge case handling, OK |
+| `validate_entry_zone` | Gap filter | Not enforced (BUG-110) |
+| `tier == "AVOID"` and direction == "long"` | Skip avoid tier | Only checks long, not short |
+
+**That's 6 filters total.** Real production systems have 30+. What's missing:
+
+1. **No earnings proximity filter.** Should skip new entries within 3-7 days of earnings. Original plan mentions this is "factor into sizing, NOT go/no-go" but neither sizing nor go/no-go is applied.
+
+2. **No FOMC day filter.** Major Fed days have 2-3x typical intraday volatility. New entries on FOMC days are coin flips.
+
+3. **No CPI/PPI day filter.** Same issue, smaller magnitude.
+
+4. **No correlation-aware concentration filter.** Can take 10 long positions in 10 different sectors but if all 10 are high-beta tech-correlated, they're effectively 1 position.
+
+5. **No ticker-level cooldown after stop-out.** Stopped out of AAPL today, system can re-enter AAPL tomorrow on a new signal. Real risk management says cooldown 5-10 days.
+
+6. **No drawdown-throttled entry.** Plan says "drawdown >20% → suspend new entries" but engine doesn't track equity. With BUG-95 unfixed, this can't work.
+
+7. **No volatility-throttled entry sizing.** When VIX spikes, position sizes should auto-shrink. Current plan has crisis_position_multiplier but it's tied to broken VXX-as-VIX.
+
+8. **No liquidity filter at entry time.** Liquidity filter runs once at universe load, not at entry. A formerly-liquid stock that lost 80% of volume between universe load and entry day still passes.
+
+9. **No spread filter.** Wide bid-ask spreads kill strategies with frequent entries. Backtest assumes spread = 0.
+
+10. **No news-blackout filter.** Major news (M&A rumour, FDA decision pending) — agent-recommended `trade_blocked` would handle but it's ignored (interface bug).
+
+11. **No concentration risk filter in correlated periods.** During COVID March 2020, all stocks moved together. Concentration in 10 names in a correlated period is 10x risk.
+
+12. **No "broke key support yesterday" filter for longs.** If price closed below 200-EMA yesterday on heavy volume, longs are higher risk. Worth a filter.
+
+13. **No "above key resistance untested" filter for shorts.** Mirror.
+
+14. **No earnings season filter.** During Q1/Q3 earnings weeks, bid-ask spreads widen, gaps are larger. Trade frequency could be reduced.
+
+15. **No half-day filter.** Black Friday, day-after-Thanksgiving etc. have abnormal volume profiles.
+
+### 2.4 Threshold audit
+
+The codebase has many hardcoded thresholds. None has been calibrated empirically. Examples:
+
+| Threshold | Current value | Source | Critique |
+|---|---|---|---|
+| RSI oversold | 30 | classical | Fine for low-vol; too tight for high-vol |
+| RSI overbought | 70 | classical | Fine for low-vol; too loose for high-vol |
+| RSI extreme oversold | 20 | derived | Arbitrary |
+| MACD fast | 6 / 13 / 5 | "fast variant" | No basis for these specific numbers |
+| Volume spike threshold | 2x 20-day | classical | Fine but should test 1.5x and 3x |
+| 52-week high break | exact match | binary | Should be "within 1% of 52w high" for noise tolerance |
+| ATR period | 14 | classical | Wilder's original; some research prefers 21 |
+| Trailing stop | 10% / 15% | round numbers | Should be ATR-based or volatility-conditional |
+| Initial stop | 10% | round number | Should depend on ATR and volatility regime |
+| ENTRY_GAP_ATR_MULT | 1.0-2.0 by category | judgment | Reasonable but uncalibrated |
+| Bollinger period | 20 | classical | Standard |
+| Bollinger std dev | 2.0 | classical | Standard but should test 1.5 and 2.5 |
+| Keltner ATR mult | 2.0 | judgment | Standard |
+| Donchian period | 10 / 20 | round numbers | Should test 14, 28 |
+| Squeeze BB inside Keltner | binary | TTM definition | Standard |
+| MIN_REGIME_TRADES | 30 | judgment | Statistically too low for 95% CI on win rate |
+| AGENT_TIER_UPGRADE | 75 | round number | Uncalibrated against outcomes |
+| AGENT_TIER_DOWNGRADE | 40 | round number | Uncalibrated against outcomes |
+| Position size 5/4/3/1.5% | judgment | round numbers | No Kelly derivation |
+| Drawdown limit 20% | judgment | round number | Should depend on Sharpe and recovery time |
+| Min trades for verdict | 500 | judgment | Reasonable but not for per-regime |
+| Sharpe min | 0.5 | from literature | Standard |
+| Profit factor min | 1.3 | from literature | On the lenient side |
+| Win rate min | 55% | judgment | Reasonable for swing |
+| Max drawdown | 20% | judgment | Standard |
+| Smart money lift | 3pp | judgment | Reasonable |
+| Macro correlation lift | 5pp | judgment | Reasonable |
+
+**Optimization recommendation: every threshold should have a calibration test.** For RSI oversold, run 5 candidate values (20, 25, 30, 35, 40) on historical data and pick the one maximizing Sharpe on out-of-sample. Same for every other threshold. This is grid-search hyperparameter tuning — ML 101.
+
+The current thresholds are educated guesses. Some are correct by coincidence. Some are not. Without calibration testing, you don't know which.
+
+### 2.5 Agent capability audit — what they CAN do that they don't
+
+**Each agent can do more than the engine asks.**
+
+**Technical Agent could but doesn't:**
+- Identify chart patterns (head & shoulders, cup & handle, flags, pennants) — currently we have only 6 candlestick patterns
+- Score "trend quality" continuously (not just trending/not)
+- Recognise complex multi-timeframe alignments
+- Distinguish "early-stage breakout" from "extended trend"
+- Identify divergences (price up, RSI down)
+
+**Fundamental Agent could but doesn't:**
+- Read recent earnings call transcripts (input not provided)
+- Compare ticker's valuation to sector
+- Identify guidance changes
+- Score recent SEC filings (8-K, 10-Q, 10-K) — we have raw data via prefetch but not summarized
+- Connect insider activity to recent fundamental events
+
+**Sentiment Agent could but doesn't:**
+- Distinguish company-specific news from market beta news
+- Detect narrative shifts (e.g., "AI" rotation 2023, EV slowdown 2024)
+- Score retail enthusiasm vs institutional skepticism gap
+- Identify "this story has changed" moments (most relevant for swing trades)
+
+**Risk Agent could but doesn't:**
+- Recommend "wait N days" rather than just "block today"
+- Identify which specific risk is dominant (vol vs macro vs idiosyncratic)
+- Recommend hedging (long this, short SPY) for high-conviction trades
+- Compute scenario-weighted expected returns (probability of each macro outcome × return in that outcome)
+
+**Bull/Bear Debate could but doesn't:**
+- Specify the price level at which the bear case validates
+- Specify the level at which the bull case validates
+- Recommend a "stop here, reverse here" pair
+- Identify timing — bear case wins now but bull case wins in 3 months
+
+**Decision Agent could but doesn't:**
+- Recommend pyramiding rules (add to winners, conditions)
+- Recommend partial exits (50% at first target, trail rest)
+- Recommend hedging size and instrument
+- Specify "only enter on pullback to X" rather than next-day open
+- Score the trade against historical analogues (similar setups in last 3 years and their outcomes)
+
+**Of these 30+ capabilities, the engine consumes essentially zero.** The agents are doing analytical work that gets thrown away.
+
+### 2.6 Agent input audit — what context they DON'T have
+
+Each agent gets a prompt with embedded context. Reviewing what's in vs what could be in:
+
+**Currently in agent context:**
+- Ticker, sector, as_of date
+- ~30 technical indicators (RSI, MACD, MAs, Bollinger, etc.)
+- Smart money score (when not gated by BUG-103)
+- Macro snapshot (VIX — broken via VXX, yield curve, fed funds, CPI)
+- Sentiment snapshot (AAII, CNN F&G, news when available)
+- Earnings days
+- Portfolio context (open positions, sector concentration)
+
+**Missing from agent context that would meaningfully improve decisions:**
+
+1. **Historical analogues** — "Last 5 times this exact strategy fired on this ticker, here's what happened." Agent could weight current trade by historical hit rate.
+
+2. **Strategy correlation** — "RSI_oversold and MFI_oversold both firing today on AAPL — these strategies overlap 85% historically, treat as one signal not two." Currently agent sees count of strategies firing without correlation context.
+
+3. **Recent ticker-specific volatility regime** — "AAPL has been in a high-vol regime past 30 days" is different from "AAPL is normally low-vol but spiked yesterday."
+
+4. **News digest as text** — currently sentiment is a number. Agent could read recent headlines: "FDA decision pending, Q3 guidance cut yesterday."
+
+5. **Sector context** — "Tech sector is at 90th percentile RSI, late-stage rally" should inform tech entries.
+
+6. **Insider/congressional detail** — currently "insider_signal: cluster_buy". Should be: "CEO bought $5M and CFO bought $2M in past 30 days, both first buys in 18 months."
+
+7. **Time-of-year context** — "Two days before quarter-end, expect window dressing."
+
+8. **Recent gap behaviour** — "AAPL gapped up 3% then closed unchanged 4 of last 5 days — gap-fade pattern."
+
+9. **Options flow** — Phase 1C adds Unusual Whales but for Phase 1B even basic put/call ratio could help.
+
+10. **Cross-asset signals** — bonds rallying + stocks rallying is bull regime; bonds rallying + stocks selling is risk-off. Currently agents see VIX and yield_curve_concern in isolation.
+
+### 2.7 Output integration audit — comprehensive list
+
+Updating my Part 1 list with severity ratings, this is the full set of agent-output → engine-input gaps:
+
+| # | Agent | Output field | Currently consumed? | Severity | Recommended action |
+|---|---|---|---|---|---|
+| 1 | Decision | `final_score` | YES (only field) | — | Keep |
+| 2 | Decision | `action` (ENTER/WATCH/SKIP/AVOID) | NO | HIGH (BUG-113) | Hard gate: SKIP/AVOID/WATCH never trades |
+| 3 | Decision | `position_size_modifier` | NO | HIGH | Multiplier on position size |
+| 4 | Decision | `recommended_exit` | NO | HIGH | Drives exit strategy choice |
+| 5 | Decision | `agent_agreement` | NO | MEDIUM | "weak" should reduce size |
+| 6 | Decision | `entry_rationale` | text only | LOW | Keep as text in trade log |
+| 7 | Decision | `primary_risk` | text only | LOW | Keep as text in trade log |
+| 8 | Decision | `portfolio_note` | text only | MEDIUM | Should escalate concentration risk |
+| 9 | Risk | `risk_score` | NO | HIGH | Should gate at <3 even if final_score > 50 |
+| 10 | Risk | `trade_blocked` (boolean) | NO | HIGH | Hard block when True |
+| 11 | Risk | `vix_concern` | NO | MEDIUM | "crisis" should reduce size |
+| 12 | Risk | `earnings_risk` | NO | MEDIUM | "critical — within 7" should hard-gate |
+| 13 | Risk | `dxy_impact` | NO | LOW | Inform sizing in materials/EM exposure |
+| 14 | Sentiment | `contrarian_signal` | NO | MEDIUM | "extreme_avoid" should hard-gate |
+| 15 | Sentiment | `congressional_strength` | NO | LOW | Inform sizing |
+| 16 | Sentiment | `news_sentiment` | NO | LOW | Cross-reference with strategy direction |
+| 17 | Fundamental | `avoid_earnings` | NO | HIGH | Hard gate when True and earnings_days < 7 |
+| 18 | Fundamental | `earnings_risk` | NO | MEDIUM | Sizing factor |
+| 19 | Fundamental | `insider_conviction` | NO | MEDIUM | Sizing boost when "high" |
+| 20 | Fundamental | `smart_money_alignment` | NO | MEDIUM | Sizing factor |
+| 21 | Technical | `tech_score` | NO | LOW (covered by final_score) | — |
+| 22 | Technical | `entry_quality` | NO | MEDIUM | "weak" should reduce size or skip |
+| 23 | Technical | `concerns` (list) | NO | LOW | Surface to website for human review |
+| 24 | Technical | `sector_alignment` | NO | MEDIUM | "negative" should reduce size for breakouts |
+| 25 | Debate | `debate_winner` | NO | HIGH | bear winner with high confidence should block long entry |
+| 26 | Debate | `confidence_in_winner` | NO | HIGH | high confidence amplifies the winner's signal |
+| 27 | Debate | `key_bull_argument` | text only | LOW | Surface in trade reasoning |
+| 28 | Debate | `key_bear_argument` | text only | LOW | Surface in trade reasoning |
+| 29 | Debate | `price_positioning` | NO | MEDIUM | "weak entry" near resistance should skip or reduce |
+
+**26 of 29 actionable fields are currently ignored.** That's not "agents help with decisions" — that's "agents produce decoration."
+
+---
+
+## PART 3 — Question 2 (categorical validation gap) and Question 3 (ablation methodology) formalised
+
+### Question 2 — formalised as BUG-114
+
+**BUG-114 · MEDIUM — Validation methodology tests only one categorical dimension (regime); systematic categorical breakdown missing**
+
+The current "10 Passing Criteria" tests strategies per regime (bull/neutral/bear/crisis) but not per:
+- Sector
+- Volatility bucket (low/mid/high based on stock's own ATR/price ratio)
+- Market cap bucket (large/mid/small within S&P 500)
+- Holding period bucket (1-5d / 6-15d / 16-60d)
+- Earnings proximity (within 7d / 8-30d / >30d)
+- Confluence depth (1 strategy fires alone / 2-3 fire together / 4+ cluster)
+- Time-of-year (quarter-end, earnings season, sell-in-May)
+- Sector momentum (strategy fires on stocks in leading sector vs lagging)
+
+**Why this matters for live trading.** The Phase 1B output is a `strategy_regime_matrix.json` mapping each strategy to passing regimes. Live trading uses this to activate strategies. But "RSI oversold passes in bear regime" is too coarse. The reality is closer to: "RSI oversold passes in bear regime within Energy or Healthcare sectors, at mid-volatility, when market cap > $10B, and not within 7 days of earnings."
+
+**Real quant funds** (AQR, Two Sigma, Citadel) test every strategy across multiple categorical dimensions and produce a multidimensional surface. Each cell answers "does this strategy have edge in this specific market context?" Live trading then activates strategies cell-by-cell rather than universally.
+
+**Estimated additional work to add categorical validation:** the metrics computation already groups by regime. Adding sector × strategy × volatility-bucket would be ~200 lines of additional analysis code in `metrics.py`. No additional API costs because it's all post-processing of existing trades.
+
+### Question 3 — formalised as BUG-115
+
+**BUG-115 · HIGH — Validation methodology cannot attribute success/failure cleanly because rules and agents are tested simultaneously**
+
+Phase 1B as currently designed runs rules + agents together. If Phase 1B "fails," cause is ambiguous: bad strategies, bad agent prompts, bad agent context, or bad data integration?
+
+The ablation methodology (sequential validation) is standard ML research practice:
+
+```
+Phase 1B-α: Test rules alone — establish raw strategy edge baseline
+Phase 1B-β: Take rules-survivors → test categorical conditions
+Phase 1C-α: Take cell-survivors → add agents → test agent value
+Phase 1C-β: Calibrate agent sizing/action thresholds where they help
+```
+
+This sequence:
+- Lets you prove the existence of edge before investing in agent infrastructure
+- Lets you isolate where agents help vs hurt
+- Lets you deploy the minimum viable system that has measurable edge
+- Reduces total cost from ~$256 CAD to ~$30-50 CAD if rules survive
+- Gives clean attribution at every step
+
+**Without ablation, the 5-gate Phase 1B as currently committed in PROJECT_PLAN runs rules + agents together. If it shows no edge, you cannot tell whether to fix rules or fix agents. The fix order is itself ambiguous.**
+
+This is methodological rigour. Real research labs use it. The user's instinct is correct.
+
+---
+
+## PART 4 — New bugs added
+
+| # | Severity | Title |
+|---|---|---|
+| BUG-114 | MEDIUM | Categorical validation only on regime; missing sector × volatility × cap × holding-period × earnings-proximity × confluence-depth |
+| BUG-115 | HIGH | No ablation methodology; rules and agents tested simultaneously, cannot attribute success or failure |
+| BUG-116 | HIGH | Risk Agent `trade_blocked` boolean ignored by engine |
+| BUG-117 | HIGH | Decision Agent `recommended_exit` ignored; exit strategy hardcoded |
+| BUG-118 | HIGH | Decision Agent `position_size_modifier` ignored; sizing not differentiated by agent |
+| BUG-119 | HIGH | Bull/Bear Debate winner ignored; high-conviction bear debate doesn't block long |
+| BUG-120 | HIGH | Fundamental Agent `avoid_earnings` ignored; earnings proximity doesn't hard-gate |
+| BUG-121 | MEDIUM | Sentiment Agent `contrarian_signal` extreme_avoid ignored |
+| BUG-122 | MEDIUM | Risk Agent `risk_score` ignored as gate (only factors into final_score via Decision Agent) |
+| BUG-123 | MEDIUM | Decision Agent `agent_agreement` weak/strong ignored; should affect sizing |
+| BUG-124 | MEDIUM | Technical Agent `entry_quality` weak/moderate/strong ignored as filter |
+| BUG-125 | MEDIUM | Technical Agent `sector_alignment` negative ignored for breakouts |
+| BUG-126 | MEDIUM | Debate `price_positioning` weak entry / strong entry ignored |
+| BUG-127 | LOW | Decision Agent `portfolio_note` concentration warnings text-only |
+| BUG-128 | MEDIUM | No correlation analysis between strategies; correlated firings counted as multiple confirmations |
+| BUG-129 | MEDIUM | No regime-conditional parameter tuning (RSI 30/70 fixed across regimes) |
+| BUG-130 | MEDIUM | No threshold calibration; all thresholds (RSI, MACD, Bollinger, sizing) hardcoded without empirical fit |
+| BUG-131 | MEDIUM | No earnings proximity filter; trades open within 0-3 days of earnings |
+| BUG-132 | MEDIUM | No FOMC/CPI day filter; new entries on high-impact days |
+| BUG-133 | MEDIUM | No cross-day cooldown after stop-out; can re-enter same ticker next day |
+| BUG-134 | MEDIUM | No correlation-aware concentration filter; 10 high-beta tech longs treated as diversified |
+| BUG-135 | MEDIUM | Liquidity filter runs at universe load only, not at entry time; stale liquidity check |
+| BUG-136 | MEDIUM | No bid-ask spread filter; backtest assumes zero spread |
+| BUG-137 | LOW | Agent context lacks historical analogues — no "last 5 times this strategy fired here, here's what happened" |
+| BUG-138 | LOW | Agent context lacks news headlines as text — sentiment is number only, not narrative |
+
+That's 25 new bugs in this single pass. Most are MEDIUM optimization opportunities, not show-stoppers. But aggregate impact is large.
+
+---
+
+## PART 5 — Updated bug count
+
+| Category | Count |
+|---|---|
+| **Total bugs documented** | **138** |
+| Critical | 14 |
+| High | 45 |
+| Medium | 60 |
+| Low | 19 |
+
+---
+
+## PART 6 — What goes into PROJECT_PLAN
+
+Per the user's confirmed approval of Option B (ablation methodology) and request for "full agent recommendations integration into decision making," I will draft PROJECT_PLAN changes. The user has explicitly approved this direction. Drafting now.
+
+---
+
+*Pass 15 complete. 25 new bugs documented. Ablation methodology formalised. Agent-engine integration gaps inventoried comprehensively.*
