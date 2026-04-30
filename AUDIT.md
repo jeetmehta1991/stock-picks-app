@@ -9827,3 +9827,601 @@ The user's instinct on parallelization was right and the savings exactly fund th
 ---
 
 *Pass 22 complete. 7 new bugs (BUG-192 to BUG-198). 2 new decisions (DECISION-039, 040). Total 198 bugs, 40 decisions. Major scope refinement: Phase 0.A expanded for PIT work, parallelization saves equivalent time. Section A approval used to RESOLVE DECISION-005 and 006 from prior batch.*
+
+---
+
+# AUDIT PASS 23 — Fundamental Agent Context Specification, Phase 0 Compression Options
+
+This pass addresses three things from the user's batch 1 final review:
+
+1. **DECISION-003 RESOLVED** — Phase 0 approved. User asked for realistic compression options.
+2. **DECISION-040 RESOLVED** — Option A (structural PIT loader) approved.
+3. **DECISION-039 DEFERRED** — Parallelization decision postponed to actual execution time.
+4. **Finding 1 follow-up** — User concern: "need to ensure all the right context is passed to fundamental agent." Section A below specifies this comprehensively.
+
+---
+
+## SECTION A — Fundamental Agent Context Specification
+
+User concern is valid. Currently, the Fundamental Agent receives a thin context (insider, 13F, earnings days, gov contracts, lobbying, social). Once OpenBB+Polygon fundamentals are integrated (DECISION-005), the context expands considerably. We need to specify exactly what gets passed so nothing is missed.
+
+This section is the **agreed-upon specification for what the Fundamental Agent should receive after Phase 0.A completes.** It serves as the contract for Phase 0.A.9 (OpenBB integration) and Phase 0.C (engine integration).
+
+### A.1 — Current Fundamental Agent context (before Phase 0)
+
+```python
+{
+  "ticker": "AAPL",
+  "as_of": "2024-06-15",
+  "insider_signal": {...},      # Quiver insider trades
+  "institutional_signal": {...}, # Quiver 13F changes
+  "earnings_days": 23,           # yfinance — has BUG-193 forward bias
+  "gov_contracts": {...},        # Quiver gov contracts
+  "lobbying": {...},             # Quiver lobbying
+  "social": {...}                # WSB mentions
+}
+```
+
+This is what the agent has TODAY. It's missing all valuation, quality, growth, and earnings dynamics data. The agent makes "fundamental" decisions with no fundamental data.
+
+### A.2 — Required Fundamental Agent context (after Phase 0)
+
+The expanded context, with every field documented. Each field marked with its data source and PIT requirement.
+
+```python
+{
+  # ─── BASIC IDENTIFIERS ─────────────────────────────────────────────
+  "ticker": "AAPL",
+  "as_of": "2024-06-15",
+  "sector": "Technology",         # FROM info_snapshot, PIT-correct via DECISION-040
+  "industry": "Consumer Electronics",  # FROM info_snapshot
+  "market_cap_usd": 2_900_000_000_000,  # FROM info_snapshot at as_of date
+  "market_cap_bucket": "mega_cap",  # derived: mega/large/mid/small
+  
+  # ─── VALUATION METRICS (NEW — from OpenBB+Polygon) ─────────────────
+  "valuation": {
+    "pe_trailing": 28.5,
+    "pe_forward": 26.1,
+    "ps_ratio": 7.2,             # price/sales
+    "pb_ratio": 41.5,            # price/book
+    "peg_ratio": 2.3,            # PE / earnings growth
+    "ev_ebitda": 22.4,           # enterprise value / EBITDA
+    "fcf_yield": 0.034,          # free cash flow / market cap
+    "dividend_yield": 0.005,
+    
+    # Sector context (NEW — for relative valuation)
+    "pe_sector_percentile": 0.65, # 0=cheapest in sector, 1=most expensive
+    "ps_sector_percentile": 0.72,
+    "valuation_summary": "above sector median on most metrics",
+  },
+  
+  # ─── QUALITY METRICS (NEW — from OpenBB+Polygon) ───────────────────
+  "quality": {
+    "roe": 0.156,                # return on equity, trailing 12mo
+    "roic": 0.189,               # return on invested capital
+    "gross_margin": 0.453,
+    "gross_margin_yoy_change": -0.012,  # change vs 12mo ago
+    "operating_margin": 0.297,
+    "operating_margin_yoy_change": +0.003,
+    "net_margin": 0.255,
+    "debt_to_equity": 1.95,      # WARNING: use prior_quarter filing date
+    "debt_to_equity_yoy_change": +0.15,
+    "interest_coverage": 28.4,
+    "current_ratio": 1.04,       # short-term liquidity
+    "altman_z_score": 5.8,       # financial distress score
+    "piotroski_f_score": 7,      # quality score 0-9
+    "accruals_ratio": 0.04,      # red flag if high
+    "quality_summary": "strong margins and ROE; declining gross margin trend"
+  },
+  
+  # ─── GROWTH METRICS (NEW — from OpenBB+Polygon) ────────────────────
+  "growth": {
+    "revenue_yoy": 0.024,        # last 12mo revenue growth
+    "revenue_3yr_cagr": 0.054,
+    "revenue_acceleration": -0.015,  # latest YoY vs 3yr CAGR (negative = decelerating)
+    "eps_yoy": 0.087,
+    "eps_3yr_cagr": 0.112,
+    "eps_acceleration": -0.025,
+    "guidance_direction": "neutral",  # raised|maintained|lowered (last quarter)
+    "growth_summary": "EPS growth decelerating from 11% to 9% trajectory"
+  },
+  
+  # ─── EARNINGS DYNAMICS (NEW — from OpenBB+Polygon) ─────────────────
+  "earnings": {
+    "next_earnings_date": "2024-08-01",  # PIT-correct via DECISION-040 (announced ≤ as_of)
+    "earnings_days_away": 47,
+    "earnings_days_uncertain": false,    # true if next date is not yet announced
+    "last_eps_actual": 1.53,
+    "last_eps_estimate": 1.50,
+    "last_eps_surprise_pct": 0.020,
+    "last_earnings_date": "2024-05-02",
+    "last_earnings_close_change": +0.024,  # day-of return on last announcement
+    "consecutive_beats": 4,      # how many quarterly beats in a row
+    "consecutive_misses": 0,
+    "estimate_revisions_30d": +2,  # # analysts raising vs lowering estimates last 30d
+    "estimate_revision_direction": "positive",
+    "earnings_summary": "Beat last 4 quarters; estimates revised up; next report Aug 1"
+  },
+  
+  # ─── ANALYST CONSENSUS (NEW — from OpenBB+Polygon or yfinance) ─────
+  "analyst": {
+    "rating_consensus": "buy",   # strong_buy|buy|hold|sell|strong_sell
+    "rating_change_30d": "stable", # upgraded|downgraded|stable
+    "price_target_mean": 215,
+    "price_target_high": 250,
+    "price_target_low": 180,
+    "current_price": 195,
+    "upside_to_mean_pct": 0.103,  # (target - current) / current
+    "num_analysts": 35,
+    "analyst_summary": "Buy consensus with 10% mean price target upside"
+  },
+  
+  # ─── SMART MONEY (EXISTING — Quiver, with DECISION-040 PIT fixes) ──
+  "smart_money": {
+    "insider_signal": {
+      "score": 0.65,             # 0-1 scalar (NEW — was binary)
+      "recent_buys_count": 2,    # last 90 days
+      "recent_buys_total_usd": 1_200_000,
+      "recent_sells_count": 0,
+      "recent_sells_total_usd": 0,
+      "buy_sell_ratio_90d": 999,
+      "executives_buying": ["CEO", "CFO"],  # who specifically
+      "filing_dates_within_30d": 1,  # PIT: filing_date not transaction_date
+      "conviction": "high"        # high|medium|low|none
+    },
+    "institutional_13f_signal": {
+      "net_change_quarterly": +850000,  # shares net change last quarter
+      "top_holder_changes": [...],      # which top 10 holders changed positions
+      "ownership_pct_change_qoq": +0.012,
+      "smart_money_concentration": 0.34, # % owned by top 10 funds
+      "13f_filing_date": "2024-05-15",   # PIT correct
+    },
+    "congressional_signal": {
+      "score": 0.0,              # NEW — 0-1 scalar weighting senior+amount+recency
+      "recent_buys_count": 0,
+      "recent_sells_count": 1,
+      "senator_activity": false,
+      "high_seniority": false,
+      "filing_dates_within_45d": 1,
+      "conviction": "low"
+    },
+    "gov_contracts_signal": {
+      "ttm_contracts_usd": 14_500_000,
+      "yoy_change_pct": 0.23,
+      "trend": "rising"
+    },
+    "lobbying_signal": {
+      "ttm_spend_usd": 9_300_000,
+      "yoy_change_pct": +0.05,
+      "topics": ["AI regulation", "tax policy"]
+    },
+    "smart_money_composite": 0.42,  # NEW — weighted combination
+    "smart_money_alignment": "weak"  # strong|moderate|weak|negative
+  },
+  
+  # ─── SECTOR CONTEXT (NEW — for relative analysis) ──────────────────
+  "sector_context": {
+    "sector_etf_return_30d": +0.045,
+    "sector_etf_return_90d": +0.082,
+    "stock_relative_strength_30d": +0.012,  # vs sector
+    "stock_relative_strength_90d": -0.015,
+    "sector_pe_median": 26.3,
+    "sector_growth_median": 0.067,
+    "stock_rank_in_sector_quality": 8,  # of 50 (1 = best)
+    "stock_rank_in_sector_growth": 12,
+    "stock_rank_in_sector_value": 35   # higher number = more expensive
+  }
+}
+```
+
+### A.3 — Updated Fundamental Agent prompt
+
+The expanded prompt asks the agent to use the new context:
+
+```python
+prompt = f"""Analyse fundamental and smart money signals for {ticker} as of {as_of}.
+
+COMPANY: {ticker} ({sector} / {industry}, {market_cap_bucket})
+
+VALUATION (vs sector):
+- P/E trailing: {pe_trailing} ({pe_sector_percentile:.0%}ile in sector)
+- P/E forward: {pe_forward}
+- PEG: {peg_ratio}
+- EV/EBITDA: {ev_ebitda}
+- FCF yield: {fcf_yield:.2%}
+- Summary: {valuation_summary}
+
+QUALITY:
+- ROE: {roe:.1%}, ROIC: {roic:.1%}
+- Margins (gross/op/net): {gross_margin:.1%} / {operating_margin:.1%} / {net_margin:.1%}
+- Margin trend YoY: gross {gross_margin_yoy_change:+.1%}, op {operating_margin_yoy_change:+.1%}
+- Debt/equity: {debt_to_equity}, interest coverage: {interest_coverage}x
+- Altman Z: {altman_z_score}, Piotroski F: {piotroski_f_score}/9
+- Summary: {quality_summary}
+
+GROWTH:
+- Revenue YoY {revenue_yoy:+.1%}, 3yr CAGR {revenue_3yr_cagr:+.1%} (acceleration: {revenue_acceleration:+.1%})
+- EPS YoY {eps_yoy:+.1%}, 3yr CAGR {eps_3yr_cagr:+.1%} (acceleration: {eps_acceleration:+.1%})
+- Last guidance: {guidance_direction}
+- Summary: {growth_summary}
+
+EARNINGS DYNAMICS:
+- Last surprise: {last_eps_surprise_pct:+.1%} (consecutive beats: {consecutive_beats})
+- Estimate revisions last 30d: {estimate_revisions_30d:+d}
+- Next earnings: {earnings_days_away} days {'(uncertain)' if earnings_days_uncertain else '(announced)'}
+- Summary: {earnings_summary}
+
+ANALYST CONSENSUS:
+- Rating: {rating_consensus}, change 30d: {rating_change_30d}
+- Price target mean: ${price_target_mean} ({upside_to_mean_pct:+.1%} from current)
+- {num_analysts} analysts covering
+
+SMART MONEY:
+- Insider score: {insider_score:.2f} ({insider_conviction}); execs buying: {executives_buying}
+- 13F net change quarterly: {net_change_qoq:+,} shares
+- Congressional score: {congressional_score:.2f}
+- Gov contracts TTM: ${gov_contracts_usd:,} ({yoy_change:+.0%})
+- Lobbying TTM: ${lobbying_usd:,}
+- Composite: {smart_money_composite:.2f}, alignment: {smart_money_alignment}
+
+SECTOR RELATIVE:
+- 30d RS vs sector: {rs_30d:+.1%}, 90d RS: {rs_90d:+.1%}
+- Sector quality rank: {quality_rank}/50, growth rank: {growth_rank}/50, value rank: {value_rank}/50
+
+Evaluate: 
+1. Is the company FUNDAMENTALLY HEALTHY (quality + growth)?
+2. Is the price REASONABLE (valuation vs sector + growth)?
+3. Is there CATALYST momentum (earnings beats, estimate revisions, smart money)?
+4. Is there UPSIDE potential (analyst targets) or DOWNSIDE risk (deteriorating quality, valuation stretch)?
+5. Should earnings proximity affect timing?
+
+Return JSON only:
+{{
+  "fundamental_score": <integer 0-100>,
+  "valuation_assessment": "<cheap|fair|expensive|extreme>",
+  "quality_assessment": "<high|good|average|poor>",
+  "growth_assessment": "<accelerating|stable|decelerating|declining>",
+  "smart_money_alignment": "<strong|moderate|weak|negative>",
+  "insider_conviction": "<high|medium|low|none>",
+  "earnings_risk": "<critical|high|medium|low>",
+  "avoid_earnings": <true|false>,
+  "fundamental_thesis": "<bullish|bearish|mixed>",
+  "upside_catalysts": ["<list>"],
+  "downside_risks": ["<list>"],
+  "summary": "<two sentence summary>"
+}}"""
+```
+
+### A.4 — Migration plan
+
+The expansion happens in phases:
+
+**Phase 0.A.9 — OpenBB + Polygon fundamentals integration**
+- Set up OpenBB Platform with Polygon as default provider
+- Build PIT wrapper for fundamentals (filing_date based)
+- Prefetch fundamentals to parquet cache
+- Validate non-empty for all 509 tickers
+
+**Phase 0.A.10 — Fundamental signal computation**
+- New module `backtest/data/fundamentals.py`
+- Function `get_fundamental_context(ticker, as_of)` returning the dict spec above
+- Sector-relative percentile computation (rolling sector aggregates)
+- Growth metric calculations (YoY, 3yr CAGR, acceleration)
+- Composite scores (smart_money_composite, etc.)
+
+**Phase 0.A.11 — Agent prompt expansion**
+- Update `run_fundamental_agent` to consume new context
+- Update prompt template with all new fields
+- Update output schema to include new fields (valuation_assessment, quality_assessment, etc.)
+- Add unit tests for prompt construction
+
+**Phase 0.C — Engine integration of new agent fields**
+- Engine consumes `avoid_earnings` (BUG-120, already approved)
+- Engine consumes `fundamental_thesis` for tier adjustment
+- Engine surfaces `upside_catalysts` and `downside_risks` to trade log
+- These map to DECISION-008 through DECISION-012 (agent integration)
+
+### A.5 — Costs and risks of expanded context
+
+**Costs:**
+- OpenBB Platform: free (open source)
+- Polygon: $30/month (already approved for news, includes financials)
+- Storage: ~50MB additional per year of fundamentals (4 quarterly reports × 509 tickers × ~25KB each)
+- API call rate: prefetch quarterly takes ~1 hour for full S&P 500
+- Code: ~600 lines of new code (fundamentals module + prompt update)
+
+**Risks:**
+- **Prompt token count.** Expanded context is ~2-3x current size. Sonnet/Haiku token cost rises proportionally. Estimate Phase 1C cost: $102 → $130-150. Documented for revised cost estimate.
+- **PIT correctness for fundamentals.** Filing_date for SEC reports is well-documented and DECISION-040 PIT loader handles it. Lower risk than other forward-bias issues.
+- **Sector-relative percentiles require all 509 tickers' data.** If 5% are missing, percentile rankings shift. Validation gate must check coverage.
+- **Provider switching.** If we ever switch from Polygon to FinancialModelingPrep, the OpenBB layer abstracts it. Low lock-in risk.
+
+### A.6 — Specific PIT requirements for fundamentals
+
+Per DECISION-040, every fundamental field needs PIT logic. Specifically:
+
+| Field | PIT requirement |
+|---|---|
+| Quarterly financial statements | Use `filing_date` not `period_end_date`. SEC 10-Q lag: ~40 days from period end |
+| Annual financial statements | Use 10-K filing date. Lag: ~60 days |
+| EPS estimates | Use estimate_publication_date — exclude estimates published after as_of |
+| Analyst price targets | Same as estimates |
+| Analyst rating changes | Use rating_change_date |
+| Earnings announcement dates | Use earnings_announcement_date — exclude dates announced after as_of (BUG-193) |
+| Sector ETF prices | Already PIT via OHLCV cache |
+| Sector aggregates (median P/E etc.) | Recomputed at as_of using PIT-correct individual tickers |
+
+The PIT wrapper handles all of this. No raw OpenBB calls in agent context construction — everything goes through `PointInTimeLoader`.
+
+### A.7 — Validation tests
+
+Phase 0.A must include forward-bias regression tests for fundamentals:
+
+```python
+def test_fundamental_context_pit_correctness():
+    """Build fundamental context for AAPL as of 2023-04-15.
+    AAPL filed 10-Q on 2023-05-04 covering Q2 2023.
+    Verify the 2023-04-15 context shows PRE-Q2 data, not Q2 data.
+    """
+    context = build_fundamental_context('AAPL', date(2023, 4, 15))
+    # As of April 15, only Q1 2023 (filed Feb 2023) should be visible
+    assert context['quality']['roe_period'] == 'Q1 2023'
+    assert 'Q2 2023' not in str(context)  # No leakage
+    
+def test_no_future_earnings_dates():
+    """Build fundamental context for AAPL as of 2023-04-15.
+    Verify next_earnings_date is May 2023 (announced) not Aug 2023 (later).
+    """
+    context = build_fundamental_context('AAPL', date(2023, 4, 15))
+    next_date = parse(context['earnings']['next_earnings_date'])
+    # Q2 earnings date typically announced 4-6 weeks ahead, not 4 months
+    assert next_date <= date(2023, 4, 15) + timedelta(days=60)
+```
+
+These tests run as part of Phase 0.A validation gate. CI fails if any test fails.
+
+---
+
+## SECTION B — Realistic Phase 0 Compression Options
+
+User approved Phase 0 with a request: "but need realistic compression options."
+
+The original Phase 0 estimate was 9-13 weeks. With PIT layer (DECISION-040), it's 12.5-16.5 weeks. With parallelization (DECISION-039 deferred), 8-10.5 weeks. Here are realistic compression options BEYOND parallelization, ranked by tradeoff cost.
+
+### B.1 — Compression Option A — Defer ICT/SMC to Phase 1E
+
+**Saves:** 3-4 weeks of Phase 0.D.2
+
+**Approach:** Phase 0.D includes only modern signals (AVWAP, VPVR, CVD, RS, PEAD, calendar). ICT detectors and 16 ICT-derived strategies move to Phase 1E (post-Phase 1B-α validation).
+
+**Tradeoff:**
+- Phase 1B-α validates existing 72 strategies + ~25 modern strategies = ~97 strategies (vs target 130)
+- ICT capability not in initial deployment
+- If existing strategies pass Phase 1B-α, ICT becomes optional addition
+- If existing strategies fail, ICT was needed earlier — but you'd have learned faster
+
+**User said earlier:** "ICT and all modern strategies need to be integrated upfront and not later."
+
+**Honest assessment:** This contradicts user's explicit prior direction. Recommend AGAINST unless user explicitly reconsiders.
+
+### B.2 — Compression Option B — Reduce ICT to 4 core concepts
+
+**Saves:** ~1.5 weeks
+
+**Approach:** Implement only Order Blocks, Fair Value Gaps, Liquidity Sweeps, Displacement (the 4 highest-value ICT concepts). Skip Breaker Block, Premium/Discount, OTE, Market Structure for now.
+
+**Tradeoff:**
+- ICT-derived strategy count: 16 → 8
+- Premium/Discount and OTE add filtering quality but aren't strategy-generating
+- Breaker Block is variant of OB
+- Market Structure useful but partially redundant with existing trend signals
+
+**Honest assessment:** Compromises ICT thoroughness moderately. The 4 core concepts capture ~70% of ICT value. Acceptable compression.
+
+### B.3 — Compression Option C — Single-snapshot info instead of multi-snapshot
+
+**Saves:** ~3 days
+
+**Approach:** Instead of quarterly info snapshots (PIT correct), use single snapshot at backtest start. Document this as a known limitation.
+
+**Tradeoff:**
+- Sector classifications can shift over 4 years (rare but happens)
+- Market cap bucket may be wrong for stocks that grew/shrunk significantly
+- Survivorship still mitigated (single snapshot includes formerly-listed stocks if snapshot is from 2022)
+
+**Honest assessment:** Minor PIT degradation, modest saving. Acceptable if true PIT for info isn't critical for limited-funds use case.
+
+### B.4 — Compression Option D — Skip multi-API news evaluation, use Polygon directly
+
+**Saves:** ~2 days
+
+**Approach:** Skip the formal Polygon News evaluation script (DECISION-002). Just buy Polygon and use it. If it doesn't work, switch later.
+
+**Tradeoff:**
+- $30 wasted if Polygon doesn't fit (single month)
+- Uncertainty resolved faster
+
+**Honest assessment:** User explicitly required "comprehensive evaluation before purchase." This contradicts that direction. Recommend AGAINST unless user reconsiders.
+
+### B.5 — Compression Option E — Smaller Quiver pre-cancellation repair scope
+
+**Saves:** ~1 day
+
+**Approach:** Repair only the most critical Quiver gaps (insider data 13-month gap, 29 missing 13F tickers). Skip Wikipedia investigation, skip new endpoints (Senate, Twitter, Off-Exchange, App Downloads).
+
+**Tradeoff:**
+- Wikipedia views permanently unavailable (low value signal anyway)
+- Senate trades, Twitter mentions, Off-Exchange not captured
+- One extra month of Quiver subscription if user re-subscribes later
+
+**Honest assessment:** Modest functional loss for modest time saving. Acceptable trade.
+
+### B.6 — Compression Option F — Skip threshold calibration during Phase 1B
+
+**Saves:** ~2-3 weeks (DECISION-016)
+
+**Approach:** Use literature-default thresholds (RSI 30/70, MACD 12/26/9, etc.) without grid search. Calibrate later in Phase 1E if Phase 1B-α shows mediocre results.
+
+**Tradeoff:**
+- Phase 1B-α may show suboptimal thresholds masking real edge
+- Strategy that fails at 30/70 might succeed at 25/75
+- Recovery path: if Phase 1B-α fails, do calibration as Phase 1E.0 before Phase 1E
+
+**Honest assessment:** Reasonable risk. Most thresholds are within 10-20% of optimal in literature. Calibration is iterative refinement, not survival. Acceptable.
+
+### B.7 — Compression Option G — Skip news API entirely until Phase 1C
+
+**Saves:** ~1 week (eliminates Polygon evaluation + integration)
+
+**Approach:** Phase 1B-α runs without news context in agent reasoning. Add news in Phase 1C alongside Sonnet upgrade.
+
+**Tradeoff:**
+- Sentiment Agent has degraded context for Phase 1B-α
+- News-based signals not available for Phase 1B
+- Phase 1C onboards everything new at once (more cascade risk)
+
+**Honest assessment:** Phase 1B-α is rules-only validation per ablation methodology. Sentiment Agent not strictly needed for Phase 1B-α. News integration fits naturally in Phase 1C with Sonnet. **This is a clean compression with low quality tradeoff.**
+
+### B.8 — Compression matrix
+
+| # | Saves | Risk | Recommendation |
+|---|---|---|---|
+| A | 3-4 wk | HIGH (contradicts user) | NOT recommended |
+| B | 1.5 wk | LOW (8 ICT instead of 16) | **Recommended if compression needed** |
+| C | 3 days | LOW (info snapshot) | Recommended |
+| D | 2 days | HIGH (contradicts user) | NOT recommended |
+| E | 1 day | LOW (Quiver scope) | Acceptable |
+| F | 2-3 wk | MEDIUM (calibration deferred) | **Recommended** |
+| G | 1 wk | LOW-MEDIUM (news to Phase 1C) | **Recommended** |
+
+### B.9 — Stacked compression options
+
+Compatible compressions can stack:
+
+**Aggressive (B + C + E + F + G):** saves 4.5-6 weeks.
+- Phase 0 timeline: 12.5-16.5 weeks → **8-10.5 weeks** (without parallelization)
+- ICT reduced to 4 core concepts (8 strategies)
+- Single-snapshot info
+- Quiver scope reduced
+- Calibration deferred to Phase 1E
+- News deferred to Phase 1C
+- All within user's stated priorities
+
+**Conservative (F + G only):** saves 3-4 weeks.
+- Phase 0 timeline: 12.5-16.5 weeks → **9.5-12.5 weeks**
+- Full ICT, full info snapshots, full Quiver
+- Only calibration and news deferred
+
+**My recommendation: Conservative compression (F + G).** It saves meaningful time without diluting the core capabilities. Aggressive compression piles up multiple "small" tradeoffs that compound.
+
+### B.10 — DECISION-041 (NEW)
+
+**DECISION-041 — Phase 0 compression strategy**
+
+**Status:** PROPOSED for user approval
+
+**Options:**
+- **A** — No compression — full Phase 0 with PIT (12.5-16.5 weeks)
+- **B** — Conservative compression (F + G): defer threshold calibration + defer news to Phase 1C (9.5-12.5 weeks)
+- **C** — Aggressive compression (B + C + E + F + G): reduced ICT, single info snapshot, reduced Quiver, defer calibration, defer news (8-10.5 weeks)
+- **D** — User picks specific options from B.1-B.7
+
+**Recommendation:** **B**. Conservative compression saves 3-4 weeks without compromising core capabilities. The compressed items (calibration, news) fit naturally elsewhere in the roadmap.
+
+---
+
+## SECTION C — Decisions resolved this session
+
+### DECISION-003 — Phase 0 inclusion
+**Status:** RESOLVED
+**Decision:** Approved
+**User comment:** "Approved. but need realistic compression options"
+**Compression options provided in Section B above.**
+
+### DECISION-040 — PointInTimeLoader structural framework
+**Status:** RESOLVED
+**Decision:** Option A — adopt full PIT framework
+**User comment:** "DECISION-040 - option A"
+**Action:** Phase 0.A scope expanded by ~3.5 weeks for PIT loader implementation. Forward-bias bugs (BUG-192-198) addressed structurally.
+
+### DECISION-039 — Phase 0 parallelization
+**Status:** DEFERRED
+**Decision:** Defer to actual execution time
+**User comment:** "lets decide later when going sequentially"
+**Action:** Phase 0 plan documented with sequential timeline. Parallelization opportunities preserved as options when execution begins.
+
+### DECISION-005 — Strategy count + fundamentals
+**Status:** RESOLVED (re-confirmed)
+**Decision:** ~130 strategies, fundamentals via OpenBB+Polygon as agent context
+**User Finding 1 follow-up:** "need to ensure all the right context is passed to fundamental agent"
+**Action:** Section A above provides complete Fundamental Agent context specification with all required fields, PIT requirements, prompt template, and validation tests.
+
+### DECISION-041 (NEW) — Phase 0 compression strategy
+**Status:** PROPOSED
+**Recommendation:** Option B (conservative compression)
+
+---
+
+## SECTION D — Updated implementation roadmap
+
+With DECISION-003 (Phase 0 yes), DECISION-040 (PIT loader), and DECISION-005 (fundamentals via OpenBB+Polygon as agent context) all resolved:
+
+```
+PHASE 0 — Foundation (timeline depends on DECISION-041)
+├─ Phase 0.A — Prefetching + PIT layer (~6 weeks, was 2 weeks)
+│   ├─ 0.A.1  Quiver gaps repair
+│   ├─ 0.A.2  Earnings prefetch (PIT-correct)
+│   ├─ 0.A.3  yfinance .info snapshots (multi-date)
+│   ├─ 0.A.4  VIX/DXY explicit
+│   ├─ 0.A.5  Finnhub diagnosis
+│   ├─ 0.A.6  Cache versioning
+│   ├─ 0.A.7  Validation CI
+│   ├─ 0.A.8  auto_adjust=False
+│   ├─ 0.A.9  OpenBB + Polygon fundamentals integration
+│   ├─ 0.A.10 Fundamental signal computation module
+│   ├─ 0.A.11 Fundamental Agent prompt update
+│   ├─ 0.A.12 PointInTimeLoader class
+│   ├─ 0.A.13 Per-source PIT logic
+│   ├─ 0.A.14 Forward-bias regression test suite
+│   ├─ 0.A.15 S&P 500 historical membership snapshots
+│   └─ 0.A.16 News API integration (Polygon News, after evaluation)
+│
+├─ Phase 0.B — Portfolio class FIRST (1 week)
+│
+├─ Phase 0.C — Engine integration (2 weeks)
+│   ├─ Engine consumes Portfolio
+│   ├─ Engine consumes all 29 agent fields (DECISIONS 008-012)
+│   └─ Engine uses PointInTimeLoader for all data access
+│
+└─ Phase 0.D — Modern signals + ICT (4-6 weeks, may compress to 2-3 wk per DECISION-041)
+    ├─ 0.D.1 Modern signals (AVWAP, VPVR, CVD, RS, PEAD, vol regime)
+    ├─ 0.D.2 ICT/SMC concepts (8 detectors, may compress to 4)
+    └─ 0.D.3 Calendar/seasonal signals
+```
+
+**Phase 0 timeline summary:**
+- No compression: 12.5-16.5 weeks
+- Conservative compression (recommended): 9.5-12.5 weeks
+- Aggressive compression: 8-10.5 weeks
+
+Followed by Phase 1B-α through Stage 4 per previously approved roadmap.
+
+---
+
+## SECTION E — Updated bug count and decision count
+
+| Category | Count |
+|---|---|
+| **Total bugs documented** | **198** (unchanged from Pass 22) |
+| Critical | 18 |
+| High | 70 |
+| Medium | 84 |
+| Low | 26 |
+
+**Decisions count: 41** (was 40, +1 DECISION-041 compression options)
+
+**Resolved decisions to date: 9 of 41** (001, 002, 004, 005, 006, 040, 003, 037-038 still pending, 039 deferred)
+
+---
+
+*Pass 23 complete. DECISION-003, DECISION-040 resolved. DECISION-039 deferred. DECISION-041 (compression) proposed. Section A: Fundamental Agent context specification. Section B: 7 realistic compression options with stacking analysis. No new bugs.*
