@@ -49,7 +49,7 @@
 | **DECISION-029** | Stage 4 starting capital — SPLIT into 029-A/B/C | RESOLVED | Live Trading Operational (Group E) | Pass 19 | 43 |
 | **DECISION-029-A** | Paper trading notional 1: $5K CAD (small-account drag realism) | RESOLVED | Paper Trading Setup | Pass 43 | 43 |
 | **DECISION-029-B** | Paper trading notional 2: $50K CAD (target AUM scale) | RESOLVED | Paper Trading Setup | Pass 43 | 43 |
-| **DECISION-029-C** | Real-money starting capital — DEFERRED until post-paper-trading evaluation | PENDING | Live Trading Operational (Group E) | Pass 43 | - |
+| **DECISION-029-C** | Real-money starting capital — DEFERRED until post-paper-trading evaluation | DEFERRED | Live Trading Operational (Group E) | Pass 43 | 52 |
 | **DECISION-030** | Wikipedia data alternative (BUG-185) — superseded by 052+L88 | SUPERSEDED | SUPERSEDED | Pass 19 | 38 |
 | **DECISION-031** | Codespace/Cloud workflow vs local — Codespace through Phase 0, migrate to cloud before Sta | RESOLVED | Process / Infrastructure (Group F) | Pass 19 | 43 |
 | **DECISION-032** | IBKR vs Alpaca for paper trading — superseded by 054 | SUPERSEDED | SUPERSEDED | Pass 19 | 38 |
@@ -310,7 +310,7 @@
 | **DECISION-288** | Legal review of public site — registration check, disclaimer, liability terms BEFORE publi | OBSOLETE | Batch X49 — Thin Areas Surfaced | Pass 47 | 52 |
 | **DECISION-289** | Owner-absent contingency — backup contact, POA, vacation-mode auto-flatten | PENDING | Batch X49 — Thin Areas Surfaced | Pass 47 | - |
 | **DECISION-290** | Dropped strategy re-evaluation cadence (every 6 months re-test, re-admit if Sharpe restore | PENDING | Batch X49 — Thin Areas Surfaced | Pass 47 | - |
-| **DECISION-291** | Triage-based bulk approval — owner approves entire impact-ratio band in single message | PENDING | Batch X50 — Process Improvements | Pass 47 | - |
+| **DECISION-291** | Triage-based bulk approval — owner approves entire impact-ratio band in single message | DEFERRED | Batch X50 — Process Improvements | Pass 47 | 52 |
 | **DECISION-292** | Decision→CHECKLIST migration audit (quarterly, RESOLVED decisions to process rules) | PENDING | Batch X50 — Process Improvements | Pass 47 | - |
 | **DECISION-293** | Fix close_trade `days` NameError — confirmed runtime crash via execution. Reorder `pnl = _ | RESOLVED | Batch X51 — CRITICAL Runtime Bugs | Pass 48 | 49 |
 | **DECISION-294** | Remove duplicate ClosedTrade dataclass definition in exit_manager.py — pick canonical, del | RESOLVED | Batch X51 — CRITICAL Runtime Bugs | Pass 48 | 49 |
@@ -364,6 +364,7 @@
 | **DECISION-342** | Test pass-rate mis-reported — only 38 of 46 tests run cleanly (7 e2e errors); update repor | OBSOLETE | Batch X55 — Documentation Sync | Pass 48 | 52 |
 | **DECISION-343** | Pandas-ta deprecation warning on pandas 4.0 — plan replacement (TA-Lib alternative) | PENDING | Batch X55 — Documentation Sync | Pass 48 | - |
 | **DECISION-344** | Slippage threshold ATR/price > 3% likely too high — most S&P large caps never trigger | PENDING | Batch X55 — Documentation Sync | Pass 48 | - |
+| **DECISION-345** | ICT/SMC timeframe scope — daily-only vs weekly-HTF + daily-trigger vs full multi-timeframe | RESOLVED | Batch X52 — Round 1 Methodology Gaps | Pass 52 | 52 |
 
 ---
 

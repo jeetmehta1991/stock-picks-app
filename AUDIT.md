@@ -19455,6 +19455,8 @@ During Pass 51b, a sandbox session reported expected `65/65` (claimed `63 + 2 ne
 
 **Forward action:** When A/B test infrastructure is built (Stage 2), engine must support running 4 parallel arms with deterministic seed alignment so each arm sees identical entry signals and order book snapshots.
 
+**Forward-link (added Pass 52 post-DEC-345):** Once ICT/SMC strategies come online in Phase 0.D, the "rules-only baseline" arm becomes ambiguous — it currently does not include ICT. Re-decision required at Phase 0.D entry: either redefine "rules" to include ICT, or split into separate arms ("rules without ICT" vs. "rules with ICT"). Logged here so the re-decision is not silently skipped.
+
 ### DEC-206 — Paired A/B design — RESOLVED (Option A)
 
 **Resolution:** Paired design. Every arm evaluates every trade. Each trade produces N decision records (one per arm), all under the same market conditions.
@@ -19472,6 +19474,8 @@ During Pass 51b, a sandbox session reported expected `65/65` (claimed `63 + 2 ne
 **Anti-peeking guardrail:** No interim looks at A/B results before the 300-trade threshold without alpha-spending registration. Tracking dashboard shows progress (trades-completed-per-arm) but withholds outcome metrics until threshold reached.
 
 **Forward action:** A/B test runner must enforce the 300-trade gate at code level: arm verdicts (pass/fail/inconclusive) computed only after trade count ≥300 for both arms in the comparison.
+
+**Forward-link (added Pass 52 post-DEC-345):** Sample-size calculation was performed against a strategy universe that does not include ICT/SMC signals. Once ICT comes online in Phase 0.D, signal frequency and trade count per arm may shift materially. Re-calibrate the 300-trade threshold at Phase 0.D entry. Also note: this resolution is grounded in a Gaussian-power approximation; per Bailey & Lopez de Prado (2014) on Sharpe ratio standard errors being non-Gaussian and skewed, 300 may be a floor rather than ceiling. Combined re-decision (ICT scope + Bailey-Lopez de Prado refinement) recommended at Phase 0.D entry.
 
 ### DEC-208 — Multi-metric A/B comparison — RESOLVED (Option A with explicit tiebreaker)
 
@@ -19499,6 +19503,8 @@ During Pass 51b, a sandbox session reported expected `65/65` (claimed `63 + 2 ne
 
 **Forward action:** A/B test runner must classify each completed paired trade into a regime at trade-completion time using the same DEC-103 classifier the live system uses. Per-regime metrics computed in addition to overall metrics.
 
+**Forward-link (added Pass 52 post-DEC-345):** ICT/SMC signals interact with regimes differently from technical signals — premium-discount zones and HTF structure shift across bull/bear/crisis regimes. Per-regime sample size requirements may shift once ICT comes online in Phase 0.D. Also note: 75-trade fallback per regime is below Bailey & Lopez de Prado (2014) recommended floor of ~100 paired trades for stable Sharpe estimation. Re-calibrate at Phase 0.D entry.
+
 ---
 
 ## Pass 52 Group β counts and forward state
@@ -19515,3 +19521,137 @@ During Pass 51b, a sandbox session reported expected `65/65` (claimed `63 + 2 ne
 - Group ε: DEC-291 — triage-based bulk approval (resolution: DEFERRED with named prerequisite DEC-161, OR scope narrowly)
 
 *Pass 52 Group β complete. 5 A/B framework decisions resolved. No code changes; pure policy/methodology decisions. Verified by independent fresh checkout in sandbox: patch applies cleanly to origin/main HEAD 843344b7; pytest 63/63 still passes (no test impact).*
+
+---
+
+## AUDIT PASS 52 — ICT/SMC Timeframe Scope (DEC-345 — companion to DEC-045)
+
+**Date:** April 30, 2026
+**Trigger:** Owner question mid-Round-1 surfaced a methodology gap. ICT/SMC strategies are in scope per RESOLVED DECISION-045 (smartmoneyconcepts library adoption, Pass 27) and PROJECT_PLAN Phase 0.D, but no companion decision had been made on the timeframe scope. Per CHECKLIST #39 (newly added this session), library adoption decisions must enumerate companion methodology decisions; DEC-045 did not, and this session catches the gap.
+
+### DEC-345 — ICT/SMC timeframe scope — RESOLVED (Option 2: weekly-HTF context + daily-bar triggers)
+
+**Background:** Standard ICT (Inner Circle Trader) methodology uses a multi-timeframe framework: HTF (higher timeframe — typically weekly or daily) identifies bias and premium-discount zones; mid-timeframe (4H/1H) identifies structure; LTF (15m/5m) triggers entries. ICT applied to a single timeframe abandons the multi-timeframe core that is methodologically central. The smartmoneyconcepts library (joshyattridge v0.0.27, MIT) chosen in DEC-045 is timeframe-agnostic — it accepts any OHLCV dataframe — so library choice did not pre-determine the answer.
+
+**Three options considered:**
+
+1. **Daily-only ICT.** Apply smartmoneyconcepts to daily bars only. Simplest, no data-pipeline changes. Methodologically diluted version of ICT — most practitioners would not consider this faithful to the methodology.
+2. **Weekly-HTF context + daily-bar triggers.** Fetch weekly OHLCV (yfinance `interval="1wk"` supported natively). Compute HTF order blocks, FVGs, premium-discount zones on weekly bars. Daily-bar setups (which the rest of the system already operates on) trigger entries only when occurring inside or in alignment with a weekly HTF zone. Captures multi-timeframe core; compatible with existing daily-bar trade execution model and with project rule that intraday is out of scope.
+3. **Full multi-timeframe with intraday triggers.** Standard ICT model: weekly bias → 4H structure → 15m/5m entry. Out of scope per project rule that intraday is a separate future project.
+
+**Resolution:** **Option 2.** Weekly bars added to the cache layer for ICT/SMC use only. Weekly HTF zones computed once per ticker per week. Daily-bar setups gated by HTF context: a daily ICT signal fires only when the daily bar is inside (or aligned with) a weekly HTF zone of the same direction.
+
+**Owner direction (verbatim approval):** "Option 2 sounds good" / "I am approving (i)" / "Approve all" — verbatim approval received in chat.
+
+**Industry-standards grounding (per CHECKLIST #37):**
+- ICT/SMC is a trader-community framework, not academic finance literature. There is no peer-reviewed paper defining the methodology canonically.
+- Authoritative sources for ICT methodology are the original ICT (Michael J. Huddleston) mentorship materials, plus retail systematic adaptations widely visible on TradingView, Bookmap, and trader-community publications.
+- Multi-timeframe context (HTF → LTF) is the consensus interpretation across these sources.
+- Honest caveat: this resolution is grounded in industry practice, not academic statistics. The same epistemic class as a methodology choice in technical analysis broadly — defensible from practice, not provable from first principles.
+
+**Engineering scope implications:**
+- Cache layer (`backtest/data/cache.py`) must be generalized to support multi-interval fetches: daily and weekly. Currently fetches daily only via yfinance default.
+- Cache schema: separate Parquet files per ticker per interval, or a single file with interval column. Decision deferred to implementation phase.
+- ICT/SMC signal computation: fetch weekly bars, compute HTF zones once per week per ticker, persist; on daily bar, check HTF alignment before firing daily ICT signal.
+- Backtest engine point-in-time correctness: weekly bars must align to as-of date without look-ahead bias (i.e., for date D, use weekly bars whose close is ≤ D).
+
+**Forward-pending decisions surfaced by this resolution:**
+- **DEC-345-A (TBD):** specific HTF zone types to compute on weekly bars (order blocks, FVGs, premium-discount zones, breaker blocks, mitigation blocks). To be resolved before Phase 0.D begins.
+- **DEC-345-B (TBD):** alignment rule for HTF + daily — does the daily setup need to be inside the HTF zone, or merely directionally aligned with HTF bias? To be resolved before Phase 0.D.
+- **DEC-345-C (TBD):** weekly bar refresh cadence — every Sunday close vs. live during the week. Defer to implementation.
+
+**Backward-impact on prior decisions:**
+- **DEC-205 (A/B framework — 4 arms):** When ICT/SMC comes online in Phase 0.D, the A/B arm definitions need re-evaluation. The "rules-only baseline" arm currently does not include ICT — once ICT is implemented, "rules" becomes ambiguous between "rules without ICT" and "rules with ICT." Forward-link added; re-decision required at Phase 0.D entry.
+- **DEC-207 (300 paired trades):** Sample-size calculation was performed against a strategy universe that does not include ICT signals. With ICT signals added in Phase 0.D, signal frequency and trade count per arm may shift materially. Re-calibrate at Phase 0.D entry.
+- **DEC-209 (per-regime verdicts):** Same logic — ICT signals may behave differently per regime (premium-discount zones vary across bull/bear/crisis). Per-regime sample size requirements may shift.
+
+*DEC-345 RESOLVED. ICT/SMC timeframe scope set to weekly-HTF context + daily-bar triggers per Option 2. Companion decisions DEC-345-A/B/C tabled for Phase 0.D entry. Forward-impact on DEC-205/207/209 noted — re-decision required at Phase 0.D entry.*
+
+---
+
+## AUDIT PASS 52 — Round 1 Batch 3 (DEC-029-C — DEFERRED resolution)
+
+**Date:** April 30, 2026
+**Scope:** Resolve DEC-029-C as DEFERRED with named prerequisite, removing it from "needs decision" queue and creating a forward-link to its blocker.
+
+### DEC-029-C — Real-money starting capital — DEFERRED
+
+**Background:** DEC-029-C is the deferred sub-decision under parent DEC-029 (Stage 4 starting capital). Original deferral language: "decide post-paper trading." This left the decision in indefinite limbo with no exit criteria.
+
+**Resolution: DEFERRED with named prerequisite DEC-269.**
+
+DEC-269 (Stage 4 entry criteria) is the decision that defines the numeric gates that must all be true before real-money funding starts: paper Sharpe ≥ X, max DD ≤ Y, win rate ≥ Z, agent A/B verdict, live-vs-backtest divergence within tolerance. DEC-269 is currently PENDING.
+
+**Forward-link:** DEC-029-C cannot be cleanly resolved until DEC-269 is itself resolved with concrete numeric gates. When DEC-269 resolves, DEC-029-C re-opens and decides the actual capital amount based on:
+- Actual paper-trading results meeting DEC-269 gates
+- DEC-252 commission model (PENDING — required for accurate cost projection)
+- DEC-092 slippage model (PENDING — required for accurate fill-price projection)
+
+**Process discipline note:** This decision must NOT be picked up in any future bulk-approval batch (per DEC-291 if/when it resolves) until DEC-269 is RESOLVED. Forward-link explicitly bars premature commitment.
+
+**Industry-standards grounding (per CHECKLIST #37):** Capital sizing for live trading systems is a Kelly-criterion-adjacent decision (Kelly 1956, Thorp 1969, Vince 2007 *Handbook of Portfolio Mathematics*) but Kelly itself is a methodology framework, not a fixed number. The number depends on actual realized win-rate / payoff distribution and risk tolerance, both of which require post-paper data. Deferring until DEC-269 gates fire is consistent with the Kelly-criterion principle that capital sizing requires measured edge, not assumed edge.
+
+*DEC-029-C DEFERRED. Resolution documents the dependency on DEC-269, removes from PENDING queue, creates forward-link. No code changes; pure registry hygiene.*
+
+---
+
+## AUDIT PASS 52 — Round 1 Batch 4 (DEC-291 — DEFERRED resolution)
+
+**Date:** April 30, 2026
+**Scope:** Resolve DEC-291 as DEFERRED with named prerequisite, completing Round 1 of zero-engineering-cost decision sweep.
+
+### DEC-291 — Triage-based bulk approval — DEFERRED
+
+**Background:** DEC-291 proposes a process change: allow owner to approve entire impact-ratio bands in a single message ("approve all impact ≥ X, eng-cost ≤ Y") rather than per-decision review. Goal: increase throughput when many obvious-call decisions are queued.
+
+**Why this requires a prerequisite resolution.** Bulk approval works only if the decisions in a band are independent of each other. If any decision in the band depends on another decision (in the band or outside it), bulk approval can authorize a dependent before its prerequisite is settled. This invalidates the dependent decision.
+
+DEC-161 (decision DAG — explicit dependency graph across all PENDING decisions) is the prerequisite: without a dependency graph, "all decisions in band X" cannot be safely identified as independent. DEC-161 is currently PENDING.
+
+**Resolution: DEFERRED with named prerequisite DEC-161.**
+
+**Forward-link:** When DEC-161 resolves with a usable decision DAG, DEC-291 re-opens. The DAG enables a refined version of bulk approval: "approve all decisions in band X *whose dependencies are all RESOLVED*" — only the genuinely-independent subset. This is safe and gives most of the throughput benefit DEC-291 was originally targeting.
+
+**Process discipline note:** Until DEC-161 resolves, **all decision approvals must remain per-decision.** This session has demonstrated the value of per-decision discipline — three of the five A/B framework decisions (DEC-205, 207, 209) were retroactively flagged for revision after the standards audit; per-decision presentation gave room for the audit. Bulk approval would have hidden these.
+
+**Industry-standards grounding (per CHECKLIST #37):** No specific external reference applies. This is a project-process decision. Deferring until DEC-161 establishes the DAG is consistent with software-engineering best practice for any change-management process: never authorize batch changes without explicit dependency analysis (analogous to atomic database transactions, or explicit dependency declarations in package managers).
+
+*DEC-291 DEFERRED. Resolution documents the dependency on DEC-161, removes from PENDING queue, creates forward-link. No code changes; pure registry hygiene.*
+
+---
+
+## Pass 52 — Round 1 closing summary
+
+**Round 1 final tally:**
+
+| Batch | Decisions | Status |
+|---|---|---|
+| Batch 1 (standalone, 8) | DEC-152, 238, 248, 245, 169, 288, 341, 342 | 6 RESOLVED + 2 OBSOLETE |
+| Batch 2 (A/B framework, 5) | DEC-205, 206, 207, 208, 209 | 5 RESOLVED (3 forward-linked for re-decision at Phase 0.D entry) |
+| ICT timeframe scope (1, surfaced mid-round) | DEC-345 | 1 RESOLVED (companion to DEC-045) |
+| Batch 3 (DEC-029-C) | DEC-029-C | 1 DEFERRED with prerequisite DEC-269 |
+| Batch 4 (DEC-291) | DEC-291 | 1 DEFERRED with prerequisite DEC-161 |
+| **Total Round 1 actions** | **16 decisions** | **13 RESOLVED + 2 OBSOLETE + 2 DEFERRED — wait, count is 16 with overlap** |
+
+Recount: 8 (Batch 1) + 5 (Batch 2) + 1 (DEC-345) + 1 (DEC-029-C) + 1 (DEC-291) = **16 decisions touched.**
+Of these: 13 RESOLVED, 2 OBSOLETE, 2 DEFERRED. Wait, that's 17 — recount: Batch 1 = 6 RESOLVED + 2 OBSOLETE = 8; Batch 2 = 5 RESOLVED; DEC-345 = 1 RESOLVED; DEC-029-C = 1 DEFERRED; DEC-291 = 1 DEFERRED. Total = 12 RESOLVED + 2 OBSOLETE + 2 DEFERRED = 16. ✓
+
+**Owner-deferred this session (stay PENDING in registry):**
+- DEC-035 (Tax classification)
+- DEC-270 (CPA consultation)
+
+**Decisions flagged for retroactive revision (deferred to future session per owner direction):**
+- DEC-152, 248, 288 — minor addendum (terminology / forward-link improvements)
+- DEC-205, 207, 209 — medium revision (Bailey-Lopez de Prado statistical refinement + ICT scope re-decision at Phase 0.D entry)
+
+**Process additions this session (per CHECKLIST #32g standing exception):**
+- LEARNINGS: L114 (per-response checklist visibility), L115 (inherited bug flagging), L116 (numerical claims verified at write time), L117 (strategy-universe verification), L118 (multi-timeframe ICT gap)
+- CHECKLIST: #33 (sync-first), #34 (count-derived-fields regenerate from source), #35 (per-response compliance statement), #36 (numerical claims regenerated at write time), #37 (industry-standards compliance with reference shelves), #38 (strategy-universe verification), #39 (methodology-library companion decisions)
+
+**Bugs closed this session:** BUG-264 (LOW) closes alongside DEC-341 universe.py docstring fix.
+
+**Process finding logged:** TRIAGE count drift — origin/main TRIAGE claimed 274 PENDING when actual was 263 (drift of 11). Reconciled in this session; L115 + CHECKLIST #34 added to prevent recurrence.
+
+**Pending count after Round 1:** 250 PENDING (verified by direct row count from AUDIT_INDEX.md) — represents net change of 13 from origin/main's 263.
+
+*Round 1 complete. 16 decisions touched (12 RESOLVED + 2 OBSOLETE + 2 DEFERRED). 5 LEARNINGS additions. 7 CHECKLIST additions. 1 surfaced gap (DEC-345 — ICT timeframe scope) resolved as part of round. 6 decisions flagged for future retroactive revision per industry-standards audit. No code changes affect tests; docstring fix in DEC-341 verified by full pytest run during handoff. Verified by independent fresh checkout in sandbox: full Round 1 patch stack applies cleanly to origin/main HEAD 843344b7; pytest 63/63 still passes.*

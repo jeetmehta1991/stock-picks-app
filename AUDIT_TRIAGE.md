@@ -1,6 +1,6 @@
 # AUDIT_TRIAGE.md — Pending Decision Prioritization
-**Last regenerated:** April 2026 (post-Pass 52 Group β, after A/B framework resolutions: DEC-205, 206, 207, 208, 209)
-**Decisions covered:** 250 PENDING (matches AUDIT_INDEX.md actual count, post-Pass-52 Group β. Note: prior TRIAGE counts were inflated; reconciled in this regeneration.)
+**Last regenerated:** April 2026 (post-Pass 52 Round 1 complete: Batches 1+2+3+4 + DEC-345 ICT timeframe scope)
+**Decisions covered:** 248 PENDING (matches AUDIT_INDEX.md actual count, post-Pass-52 Round 1 complete)
 
 **How to read:**
 - **Impact (1-10):** how much each moves the needle on quality, risk, or unblocking work
@@ -17,11 +17,11 @@
 
 | Metric | Count |
 |---|---|
-| Total pending | 250 |
+| Total pending | 248 |
 | Phase 0.A blockers | 60 |
-| Zero-eng-cost (only review time needed) | 4 |
+| Zero-eng-cost (only review time needed) | 2 |
 | Impact >= 9 | 17 |
-| Impact >= 8 (high) | 73 |
+| Impact >= 8 (high) | 72 |
 | Sum eng-days estimated | 594 |
 
 ---
@@ -154,22 +154,18 @@ These need only owner review time, no implementation work. Easy wins.
 
 | Decision | Title | Impact | Review (min) | Theme |
 |---|---|---|---|---|
-| **DECISION-291** | Triage-based bulk approval — owner approves entire impa | 8 | 10 | Batch X50 — Process Improvemen |
 | **DECISION-270** | Pre-Stage-4 CPA consultation — formal opinion on tradin | 7 | 10 | Batch X45 — Stage 4 Live |
-| **DECISION-029-C** | Real-money starting capital — DEFERRED until post-paper | 5 | 10 | Live Trading Operational (Grou |
 | **DECISION-035** | Tax classification approach (Canadian) — Defer until CP | 4 | 30 | Live Trading Operational (Grou |
 
-**Total zero-eng items: 4 | Total review-min: 60** (post-Pass-52 Group α+β: DEC-291, DEC-270, DEC-029-C, DEC-035 remain. DEC-035 + DEC-270 owner-deferred this session; DEC-029-C and DEC-291 to resolve as DEFERRED with named prerequisites in groups δ/ε.)
+**Total zero-eng items: 2 | Total review-min: 40** (post-Pass-52 Round 1 complete: only DEC-035 + DEC-270 remain, both owner-deferred this session as Canadian-tax pair).
 
 ---
 
-## All 250 Pending — Sorted by Ratio
+## All 248 Pending — Sorted by Ratio
 
 | Decision | Title | Impact | Eng | Review | 🔴 | Ratio |
 |---|---|---|---|---|---|---|
-| **DECISION-291** | Triage-based bulk approval — owner approves entire impa | 8 | 0 | 10 |   | 16.0 |
 | **DECISION-270** | Pre-Stage-4 CPA consultation — formal opinion on tradin | 7 | 0 | 10 |   | 14.0 |
-| **DECISION-029-C** | Real-money starting capital — DEFERRED until post-paper | 5 | 0 | 10 |   | 10.0 |
 | **DECISION-080** | t-stat + Bonferroni | 9 | 1 | 15 | 🔴 | 9.0 |
 | **DECISION-131** | Agent value-add minimum (Sharpe improvement >=0.2 over  | 9 | 1 | 10 | 🔴 | 9.0 |
 | **DECISION-014** | Phase 1B passing criteria adjustments | 8 | 1 | 20 | 🔴 | 8.0 |
