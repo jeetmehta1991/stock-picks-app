@@ -5639,3 +5639,338 @@ The two new entries (BUG-111, BUG-112) are coverage gaps rather than defects. Th
 ---
 
 *Pass 13 complete. Both questions answered: no break-and-retest, no ICT. Both flagged as future Phase 1E additions. No PROJECT_PLAN changes made — recommendation deferred to owner approval.*
+
+---
+
+# AUDIT PASS 14 — Agent Action Field Ignored, Categorical Validation Missing
+
+This pass addresses three questions raised in conversation:
+
+1. Why is the agent's `action` recommendation ignored?
+2. Does the project plan validate "which strategies work in which scenarios" rather than "universal strategies"?
+3. Would it be more rigorous to test rules-only first, then layer on categorical analysis, then layer on agents?
+
+---
+
+## PART 1 — The agent's recommendation is partly ignored (BUG-113)
+
+### What the agent outputs vs what the engine reads
+
+The Decision Agent's prompt explicitly asks for these fields:
+
+```json
+{
+  "final_score": 0-100,
+  "action": "ENTER|WATCH|SKIP|AVOID",
+  "position_size_modifier": "full|reduced_earnings|reduced_volatility|reduced_concentration|minimal",
+  "recommended_exit": "atr_trail_1x|trailing_15pct|hybrid_50pct_target|next_pivot_target",
+  "primary_risk": "string",
+  "agent_agreement": "string"
+}
+```
+
+The engine's `_run_agent_context` method (`backtest/engine/backtest.py` line 555) reads exactly **one** field from this:
+
+```python
+agent_score = result.get("final_score", 50)
+```
+
+The other four control-relevant fields — `action`, `position_size_modifier`, `recommended_exit`, `primary_risk` — are passed through to the trade record's `agent_reasoning` text but never used to gate, size, or exit the trade.
+
+### What this means in practice
+
+When the agent says **"SKIP — RSI 84 overbought, earnings in 3 days, VIX crisis"** with `final_score=22`:
+
+- Engine reads score 22
+- Maps to LOW tier (under 40 = LOW)
+- LOW tier downgrades preliminary tier by 1
+- If preliminary was HIGH → final tier = MEDIUM_HIGH
+- Trade still happens at MEDIUM_HIGH sizing
+
+The agent screamed SKIP. The engine traded MEDIUM_HIGH anyway.
+
+### Why this happened
+
+This is an interface mismatch. The Decision Agent prompt was designed assuming the agent's `action` field would gate the trade. The engine code was designed assuming `final_score` would be the only number that matters. Both were written but never reconciled. The agent's careful reasoning about "skip vs enter vs watch vs avoid" produces output that the engine throws away.
+
+This is also why 99.9% of trades came out at MEDIUM_HIGH in the prior run (BUG-105). The score-only mapping is a one-dimensional projection of the agent's multi-dimensional output.
+
+### The fix has two valid paths
+
+**Path A — Honour the action field:**
+```python
+# In _process_day, after agent runs:
+if agent_result.get("action") == "SKIP":
+    self.skipped_trades.append({"reason": "agent_skip", ...})
+    continue
+if agent_result.get("action") == "AVOID":
+    # AVOID is stronger than SKIP; record but never re-attempt
+    self.skipped_trades.append({"reason": "agent_avoid", ...})
+    continue
+if agent_result.get("action") == "WATCH":
+    # WATCH = surface to website but no trade
+    continue
+```
+
+This is what the agent prompt actually intended. ENTER is the only action that should produce a trade.
+
+**Path B — Honour position_size_modifier:**
+```python
+size_modifier_map = {
+    "full": 1.0,
+    "reduced_earnings": 0.7,
+    "reduced_volatility": 0.7,
+    "reduced_concentration": 0.5,
+    "minimal": 0.3,
+}
+size_mult = size_modifier_map.get(agent_result.get("position_size_modifier", "full"), 1.0)
+trade.position_size_pct = base_position_pct * size_mult
+```
+
+This makes the agent influence dollar exposure (currently fixed $10K — BUG-104).
+
+**Path C — Honour recommended_exit:**
+```python
+exit_strategy_map = {
+    "atr_trail_1x": ATRTrailExit(multiplier=1.0),
+    "trailing_15pct": PercentTrailExit(0.15),
+    "hybrid_50pct_target": HybridExit(target=0.50),
+    "next_pivot_target": PivotTargetExit(),
+}
+```
+
+This makes the agent influence which exit logic applies, currently hardcoded as 10%/15% trailing.
+
+The right fix is **all three paths** — they're complementary, not alternatives. Each makes the agent's output meaningfully control behaviour. Today, the agent is decoration on top of rules.
+
+### BUG-113 · HIGH — Agent action/sizing/exit recommendations ignored by engine
+
+**Files:** `backtest/engine/backtest.py` line 555, `backtest/agents/pipeline.py` line 561-566
+
+**The bug:** Decision Agent emits 4 control-relevant fields (`action`, `position_size_modifier`, `recommended_exit`, `primary_risk`). Engine reads only `final_score`. The other 3 are stored as text but never affect trade execution.
+
+**Impact:**
+- Trades the agent explicitly says SKIP still execute
+- Agent's volatility/earnings risk warnings don't reduce position size
+- Agent's exit recommendation is meaningless — exit is hardcoded
+- This is the underlying cause of BUG-105 (99.9% identical downgrades) — score-only mapping is too narrow a channel for the agent's analysis
+
+**Fix priority:** HIGH. This is part of Gate 1 critical bug fixes if the goal is to make agents actually useful in Phase 1B. If agents are deferred (per Pass 14 Part 3 below), this fix can be deferred too.
+
+---
+
+## PART 2 — Does the project plan validate "strategies in scenarios" or "universal strategies"?
+
+### What the current plan does
+
+The current "10 Passing Criteria" section in PROJECT_PLAN includes per-regime breakdown:
+
+> **Per-regime verdict** — each strategy evaluated independently within each regime. A strategy passes for a specific regime if it meets all 9 other criteria within that regime (minimum 30 trades required). The output is a strategy-regime matrix, not a universal pass/fail. A strategy may be excellent in crisis and irrelevant in bull — both are valid outcomes.
+
+This produces `strategy_regime_matrix.json` mapping each strategy to its passing regimes. So the plan DOES recognise that strategies are regime-conditional.
+
+But that's only ONE categorical dimension (regime). The plan does NOT systematically test:
+- **Sector conditionality** — does mean reversion work better in defensives than in tech?
+- **Volatility conditionality** — do breakouts work in low-vol or high-vol environments?
+- **Market cap conditionality** — do small caps respond differently to the same signals?
+- **Holding period conditionality** — which strategies work for 3-day holds vs 30-day holds?
+- **Earnings proximity conditionality** — do strategies break down within 7 days of earnings?
+- **Confluence depth** — do strategies that fire alone vs in clusters perform differently?
+- **Time-of-year** — does sell-in-May have measurable effects on certain strategy classes?
+- **Sector momentum** — does the strategy work on lagging-sector stocks vs leading-sector stocks?
+
+None of these are part of the current passing criteria. The plan does NOT produce a `strategy_×_sector_×_volatility_matrix.json`. It only produces a `strategy_×_regime_matrix.json`.
+
+This is a real gap. The user's intuition is correct — different strategies excel in different setups, and the plan partially tests this (regime only).
+
+### What real quant funds do
+
+Multi-factor model construction (AQR, Two Sigma, Citadel) routinely tests strategies along multiple categorical dimensions:
+
+```
+strategy × regime × sector × volatility_bucket × cap_bucket × holding_period
+```
+
+The output is not a single pass/fail per strategy. It's a multidimensional surface where each cell answers: "in this specific market context, does this specific strategy have edge?"
+
+The cells are then used to:
+1. Activate strategy X only in the cells where it has edge (regime-conditional weighting)
+2. Size positions higher in cells with higher Sharpe contribution
+3. Identify strategy degradation (a cell that worked historically but not recently → alpha decay)
+4. Prevent crowding (which cells are too popular and likely lower future returns)
+
+### Categorical dimensions worth testing in Phase 1B
+
+For the limited-funds use case (your goal), not all dimensions are equally important. Priority order:
+
+| Priority | Dimension | Min cells | Rationale |
+|---|---|---|---|
+| **1** | Regime (bull/neutral/bear/crisis) | 4 | Already in plan. Largest performance variance. |
+| **2** | Sector (11 GICS sectors) | 4-11 | Energy and tech behave very differently. Already partially tested (sector-adjusted thresholds). |
+| **3** | Volatility bucket (low/mid/high) | 3 | Mean reversion works in low-vol, momentum in high-vol. Easy to compute. |
+| **4** | Holding period (1-5d / 6-15d / 16-60d) | 3 | Different exit logic optimum. |
+| **5** | Confluence depth (1 strat / 2-3 / 4+) | 3 | Tests whether confluence actually helps. |
+| **6** | Earnings proximity (in 7d / 8-30d / >30d) | 3 | Earnings risk is a real edge degrader. |
+
+Priority 1-3 should be **mandatory** for Phase 1B passing criteria. Priorities 4-6 are valuable but can be deferred if compute or data is constrained.
+
+### How this changes the validation output
+
+Instead of:
+```json
+{
+  "rsi_oversold": {
+    "verdict": "PASS",
+    "best_regimes": ["bear", "neutral"],
+    ...
+  }
+}
+```
+
+The full categorical version would be:
+```json
+{
+  "rsi_oversold": {
+    "verdict_overall": "PASS",
+    "by_regime_sector": {
+      "bull/Tech": "FAIL",     "bull/Energy": "PASS",
+      "bear/Tech": "PASS",     "bear/Energy": "PASS",
+      "crisis/Tech": "INSUFF",  "crisis/Energy": "PASS",
+      ...
+    },
+    "by_volatility_bucket": {
+      "low_vol": "FAIL",
+      "mid_vol": "PASS",
+      "high_vol": "PASS"
+    },
+    "live_activation_rule": "Activate only when stock is in {Energy} sector OR (sector ∈ {Tech, Healthcare} AND regime ∈ {bear, crisis}) AND volatility_bucket ∈ {mid, high}"
+  }
+}
+```
+
+This is far more actionable for live trading. Stage 4 deployment knows exactly when to activate each strategy.
+
+---
+
+## PART 3 — The "rules first, then categorical, then agents" approach
+
+This is the user's third question and it is **methodologically more rigorous than the current plan.**
+
+### Why it's better
+
+The current plan tries to validate three things at once in Phase 1B:
+1. Whether the strategy rules have edge
+2. Whether the agents add value
+3. Whether the system as a whole produces tradeable signals
+
+When all three are tested together, you cannot attribute success or failure to any single component. If Phase 1B "fails," is it bad strategies, bad agent prompts, or wrong data? When Phase 1B "passes," is it because of agent filtering or despite it?
+
+This is the same methodological problem as testing a new drug + a new diagnostic + a new dosing schedule simultaneously. You'll get a result, but you can't tell which component caused it.
+
+### The proposed alternative — clean attribution
+
+```
+Phase 1B-α (rules-only):
+  Test which raw strategies have edge in any context.
+  No agents, no smart money score, no tier adjustments.
+  Output: list of strategies with measurable raw edge.
+
+Phase 1B-β (categorical):
+  Take ONLY the rules that passed 1B-α.
+  Test each one across regime × sector × volatility × holding-period.
+  Output: matrix showing where each strategy has edge.
+
+Phase 1C-α (agent layer):
+  Take ONLY the strategy/context cells that passed 1B-β.
+  Add the agent stack on top.
+  Test: do agents improve outcomes vs the categorical baseline?
+  Output: cells where agents add measurable value.
+
+Phase 1C-β (agent calibration):
+  For cells where agents add value: tune position sizing, action thresholds.
+  For cells where agents hurt: deploy without agents in those cells.
+```
+
+This produces clean attribution at every stage:
+- Phase 1B-α tells you whether your strategy ideas have any merit
+- Phase 1B-β tells you in which contexts each strategy works
+- Phase 1C-α tells you whether agents add value (the question you actually want answered)
+- Phase 1C-β tells you when to use them and when not to
+
+### Why this is what real research labs do
+
+Sequential ablation is standard methodology in machine learning research:
+- Train baseline (no extras)
+- Add component A, measure improvement
+- Add component B, measure incremental improvement
+- Add component C, measure incremental improvement
+
+Without ablation, you get a "model" that works but you don't know which parts are pulling weight. Cutting components later requires re-validation. Sequential ablation gives you the flexibility to deploy minimum viable system and add complexity only where it earns its keep.
+
+### Cost comparison
+
+Current plan (3-stage):
+- Phase 1B with agents: ~$116
+- Phase 1C with Sonnet + new APIs: ~$102
+- Phase 1D extended: ~$38
+- **Total: $256 CAD**
+
+Proposed alternative (4-stage with ablation):
+- Phase 1B-α (rules only, no agents): ~$0 (no API calls, just compute)
+- Phase 1B-β (categorical breakdown of survivors): ~$0 (still compute-only, just slicing)
+- Phase 1C-α (add agents to survivor cells): cost depends on how many cells survive
+- Phase 1C-β (calibration): minimal incremental cost
+
+If 1B-α surfaces 20 strategies with edge (out of 72) and 1B-β surfaces 100 cells (across 4 regimes × ~5 sectors avg), then 1C-α tests agents on roughly 100 cells × ~50 trades each = 5,000 agent-evaluated trades. At Haiku cost ~$0.001 per agent call × 6 agents = ~$30 CAD.
+
+**Total alternative cost: ~$30-50 CAD vs $256 CAD.** And the output is more actionable.
+
+### What this means for the previous $160 mistake
+
+The previous Phase 1B run spent $160 producing 34,727 trades that don't tell you which strategies have raw edge (because agents downgraded everything uniformly), don't tell you in which contexts strategies work (regime breakdown only, no sector × strategy), and don't tell you whether agents add value (no rules-only baseline to compare against).
+
+The ablation approach would have spent **$0 on Phase 1B-α** (rules-only is just compute, no API). If 1B-α had revealed mean PnL = -0.98% with no statistical edge over random entries, the entire $160 would have been saved — you'd have stopped before adding agents.
+
+### What this implies for the current 5-gate plan in PROJECT_PLAN
+
+The 5-gate plan committed last turn assumes Phase 1B includes agents. The ablation approach would change Phase 1B's design significantly:
+
+- Gate 1 (bug fixes) — unchanged, still required
+- Gate 2 (static validation) — unchanged
+- Gate 3 (smoke run) — could be done WITHOUT agents to test rules path first
+- Gate 4 (small batch) — split into 4a (rules-only) and 4b (with agents) for direct comparison
+- Gate 5 (full run) — split into 5a (rules-only) and 5b (with agents on survivors)
+
+This is a significant restructuring of the plan committed this morning. The previous plan I committed (5-gate Phase 1B with agents) is internally consistent and approved. The ablation approach is methodologically better but requires plan revision.
+
+**I will not change PROJECT_PLAN.md without your explicit approval.** The choice is yours:
+
+**Option A — Keep current plan** (Phase 1B with agents, 5-gate validation as committed). Easier path forward, less restructuring.
+
+**Option B — Restructure to ablation** (Phase 1B-α rules-only first, then 1B-β categorical, then 1C-α agents). More rigorous, lower cost, cleaner attribution. Requires PROJECT_PLAN edits.
+
+**Option C — Hybrid:** keep current Phase 1B plan but ADD a `--no-agents` mode that runs rules-only as a sanity check at Gate 4. If rules-only at Gate 4 already shows no edge, don't proceed to Gate 5 with agents.
+
+If you want me to draft any of these as PROJECT_PLAN changes for review, say which option and I'll show you the text first.
+
+---
+
+## PART 4 — Updated bug count
+
+Pass 14 adds 1 bug:
+
+### BUG-113 · HIGH — Agent action/sizing/exit recommendations ignored by engine
+
+(Detailed in Part 1 above.)
+
+| Category | Count |
+|---|---|
+| **Total bugs documented** | **113** |
+| Critical | 14 |
+| High | 39 |
+| Medium | 44 |
+| Low | 16 |
+
+---
+
+*Pass 14 complete. Three questions answered. Recommendation surfaced for owner decision: keep current plan, restructure to ablation, or hybrid. No PROJECT_PLAN changes made.*
