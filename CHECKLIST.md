@@ -154,3 +154,42 @@ State compliance visibly: "Checklist: ✅ [each item]"
     f. When in doubt, ask. Slowness is acceptable; silent execution is not.
     g. STANDING EXCEPTION (per owner April 2026): LEARNINGS.md and CHECKLIST.md additions/updates that strengthen process discipline may be made directly without explicit per-change approval. ALL OTHER changes (code, PROJECT_PLAN.md, CLAUDE.md, AUDIT.md substantive sections, AUDIT decision registry items, data operations, API runs) require verbatim owner approval.
     NEVER interpret instructions as approvals; require explicit verbatim approval for every execution step except the standing LEARNINGS/CHECKLIST exception.
+
+33. SYNC-FIRST RULE — before any session that touches code or data:
+    a. Run: git fetch origin && git status
+    b. Run: git log origin/main..main (must be empty before trusting laptop pytest counts)
+    c. Run: git log main..origin/main (must be empty before commit)
+    d. If either log shows commits, reconcile (pull --rebase) before proceeding
+    e. Past mistake: Pass 51b found laptop main was 5 commits behind origin; sandbox
+       claimed "65 tests" while actual was "63 tests" — pre-Pass-51 state confused both sides.
+    NEVER trust local git state until sync verified.
+
+34. COUNT-DERIVED-FIELDS REGENERATE FROM SOURCE OF TRUTH — never adjust incrementally:
+    a. Before regenerating any TRIAGE / INDEX / summary that has count fields, identify the
+       source of truth (e.g., AUDIT_INDEX.md PENDING rows for "Total pending")
+    b. Recompute the count from source of truth at write time, do NOT subtract from prior count
+    c. If discrepancy found vs prior count, log it as a process finding (count drift)
+    d. Past mistake: AUDIT_TRIAGE.md "Total pending" was 274 on origin/main when AUDIT_INDEX.md
+       actual was 263. Inherited drift propagated silently across multiple sessions until
+       a sandbox sanity check caught it during Pass 52 Group β. Fix in L115.
+    NEVER incrementally adjust count fields. Always regenerate from canonical source.
+
+35. PER-RESPONSE CHECKLIST COMPLIANCE STATEMENT — visible, not silent:
+    a. Every substantive response must include a visible block: "Checklist: ✅ #N item, ✅ #M item, ..."
+    b. List every CHECKLIST item materially relevant to the response (not just generic ones)
+    c. For trivial responses (acknowledgments, clarifications), one-line check sufficient
+    d. The act of restating forces re-read, which catches silent compliance violations
+    e. Past mistake: Pass 52 audit work proceeded through 13+ responses without per-response
+       compliance statement. Owner had to explicitly remind. Fix in L114.
+    NEVER assume internalized compliance. State it visibly per response.
+
+36. NUMERICAL CLAIMS REGENERATED AT WRITE TIME — not inherited from prior context:
+    a. Any number in a handoff, audit, commit message, or response (line counts, decision
+       counts, costs, percentages, test counts, file counts) must be regenerated immediately
+       before it's written
+    b. Do not copy numbers from prior session output, prior responses, or memory
+    c. If verification cannot be done in-context, omit or mark "approximate (last verified [date])"
+    d. Same discipline as #26 (assumption validation) extended to numerical claims specifically
+    e. Past mistake: Group α handoff carried "+121/-41" diff stat from prior session output
+       without re-running git diff against current sandbox state. Fix in L116.
+    NEVER write a number you didn't just verify.
