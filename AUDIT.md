@@ -14728,3 +14728,140 @@ This is methodologically better than blasting agents on everything and saves $70
 ---
 
 *Pass 32 complete. Honest cost re-estimate (~$0.30-0.50 per propagate, not $0.18). $300 budget achievable via two-stage validation: rules-only first, then agents on curated subset (~2,500 candidates) using DeepSeek V3.2. Pass 31's "Pattern 1 cost-optimized" was $1-2k, not viable. 2 new decisions (DECISION-058 DeepSeek for backtest, DECISION-059 $300 hard cap). DECISION-051 revised again (staged adoption). 59 decisions total. No new bugs.*
+
+---
+
+# AUDIT PASS 33 — 11 Decisions Approved + Staged $300 Plan Confirmed + One Concern Flagged
+
+Checklist: ✅ #1 (verified via prior pass references) ✅ #4 (records approvals + flags concern) ✅ #5 (proactively flagging Stage 2 selection-bias risk) ✅ #25 (raising disagreement on data-vendor implication before implementing)
+
+User approved: "047, 048, 049, 051 REVISED-3, 053, 054, 055, 056, 057, 058, 059"
+
+This pass records the approvals, confirms the staged $300 plan, and raises ONE concern per checklist #25 before we move forward.
+
+---
+
+## SECTION A — Approvals recorded
+
+| # | Title | Status |
+|---|---|---|
+| 047 | QuantStats for performance analytics | RESOLVED |
+| 048 | Streamlit for Stage 3+ dashboard | RESOLVED |
+| 049 | ib_async for IBKR integration | RESOLVED |
+| 051 REVISED-3 | Staged TradingAgents adoption (rules-only → curated subset → live) | RESOLVED |
+| 053 | Defer Streamlit until Stage 3 actual needs clearer | RESOLVED |
+| 054 | IBKR for both paper and live (single integration) | RESOLVED |
+| 055 | Cost-optimized TradingAgents config (when used) | RESOLVED |
+| 056 | Skip TradingAgents CLI, use programmatic API only | RESOLVED |
+| 057 | Drop Social Analyst from selected_analysts | RESOLVED |
+| 058 | DeepSeek V3.2 for backtest LLM, Anthropic for live | RESOLVED |
+| 059 | $300 hard cap with mandatory cost estimate per checklist #22 | RESOLVED |
+
+**Total resolved decisions this turn: 11**
+**Cumulative resolved: 18 + 11 = 29 of 59 decisions (49%)**
+**Pending: 30 decisions**
+
+---
+
+## SECTION B — Staged $300 Plan Confirmed
+
+Per DECISION-051 REVISED-3 + DECISION-058 + DECISION-059, the agent strategy is:
+
+### Stage 1 — Rules-Only Baseline (Phase 1B-α)
+- Full 4-year × 509-ticker backtest
+- Strategies + signals + position sizing + PIT correctness
+- NO LLM agents in the loop
+- Output: baseline performance metrics (Sharpe, drawdown, hit rate, regime-conditioned breakdowns)
+- **Cost: $0**
+
+### Stage 2 — Selective Agent Overlay (Phase 1B-α-extension)
+- Run TradingAgents framework via DeepSeek V3.2
+- ON CURATED SUBSET only (~2,500 candidates):
+  - All trades from high-tier (5%/4%) confidence strategies
+  - All trades during regime transitions (crisis flagged or regime change ±5 days)
+  - All trades within ±5 days of earnings
+  - 5% random control sample of remaining trades
+- Compare agent decisions vs Stage 1 rules-only decisions
+- Measure: do agents add Sharpe/win-rate improvement, or just noise?
+- **Cost target: ~$300 hard cap**
+
+### Stage 3 — Live Trading Adoption (Phase 1C-α + Stage 4)
+- IF Stage 2 shows agents add edge → integrate TradingAgents in live with Sonnet+Haiku
+- IF Stage 2 shows agents don't add edge → live trading runs rules-only (saves $40-50/month)
+- Decision driven by Stage 2 evidence, not assumption
+
+---
+
+## SECTION C — One Concern I Need to Flag (per checklist #25)
+
+I want to raise this BEFORE we implement, not after.
+
+### The concern: DeepSeek V3.2 hosting and data flow implications
+
+DeepSeek V3.2 is hosted in China. For our use case (research backtest, no PII, no proprietary data leaving), this is workable. But I want you to know:
+
+**What gets sent to DeepSeek API per propagate() call:**
+- Ticker symbol (public)
+- Trade date (public)
+- Stock price/volume data (public, from yfinance)
+- Technical indicator values (computed locally from public data)
+- News headlines (from Polygon — public)
+- Fundamental data (from OpenBB — public)
+- Quiver smart money data (insider trades, congressional trades — public, paid sub)
+- Our agent prompts (the prompts themselves contain our methodology)
+
+**What does NOT get sent:**
+- Your account info, broker credentials, position sizes, capital allocation, real PII
+- Live trading orders (live trading uses Anthropic per DECISION-058)
+
+**Risks honestly flagged:**
+
+1. **Methodology IP exposure.** Our agent prompts encode our trading methodology (e.g., earnings_tolerant strategy attribute, specific signal interpretations from DECISION-013). DeepSeek's terms allow them to use API inputs for model improvement unless you're on a paid enterprise tier. Our prompts could become training data.
+
+2. **Geopolitical/availability risk.** US-China tensions could affect API availability mid-backtest. If DeepSeek API becomes blocked or slow during a Stage 2 run, the run is interrupted.
+
+3. **Quality risk.** DeepSeek V3.2 reasoning is "85% of Sonnet" by my estimate but I haven't tested this on swing-trading-specific reasoning. It might be 70% in our specific use case, or 95%. Won't know until Stage 2.
+
+**Mitigation options:**
+
+- **Option A (proceed as planned):** Use DeepSeek V3.2 for backtest. Accept methodology exposure (our methodology isn't truly novel — most signals are public knowledge). Accept geopolitical risk (worst case: backtest interrupted, retry later). $300 budget achievable.
+
+- **Option B (slightly more expensive but cleaner):** Use Anthropic Haiku 4.5 for ALL nodes in Stage 2. Cost rises to ~$0.20-0.30 per call → 2,500 × $0.25 = ~$625. Doubles budget.
+
+- **Option C (cheapest, no methodology exposure):** Use OpenAI GPT-5.4-mini. $0.50/$2.50 per Mtok. ~$0.10-0.15 per call → 2,500 × $0.13 = ~$325. Just over budget, US-hosted, less methodology IP risk.
+
+**My recommendation: Option C (GPT-5.4-mini) over Option A (DeepSeek).** Negligible cost difference (~$25), no China-hosted methodology exposure, no geopolitical interruption risk.
+
+I should have flagged this BEFORE the user approved DECISION-058. Per checklist #25 I'm flagging it now.
+
+**This may invalidate DECISION-058.** Asking for explicit confirmation: do you want DeepSeek V3.2 (Option A) or GPT-5.4-mini (Option C)?
+
+---
+
+## SECTION D — Updated counts
+
+| Category | Count |
+|---|---|
+| Total bugs | 203 (unchanged) |
+| Decisions | 59 (unchanged this pass) |
+| Resolved | 29 (49%) |
+| Pending | 30 (51%) |
+
+---
+
+## SECTION E — What's next (sequenced)
+
+Per checklist #2 (show full plan, wait for approval), here's the proposed sequence:
+
+1. **First:** You confirm Option A vs Option C for Stage 2 LLM (Section C concern above)
+2. **Second:** I generate HANDOFF.md to capture session state for fresh-session continuation
+3. **Third:** You start a fresh session (current one is laggy per your earlier note)
+4. **In the fresh session:** PROJECT_PLAN.md restructure incorporating all 29 resolved decisions (this is a large diff that will be shown line-by-line for approval per CLAUDE.md rule)
+5. **Then:** Continue with remaining 30 pending decisions (014-039 + others)
+6. **Then:** Phase 0 implementation kickoff per the resolved plan
+
+I'm not going to start any of items 2-6 until you address the Section C concern. The DeepSeek vs GPT-mini choice has implications for our backtest methodology IP exposure that I should have surfaced before the approval.
+
+---
+
+*Pass 33 complete. 11 decisions recorded as resolved (29 of 59 total). Staged $300 plan locked in. ONE concern flagged per checklist #25: DeepSeek V3.2 hosts in China, our methodology prompts could become training data, and there's geopolitical interruption risk. Asking for confirmation: stay with DECISION-058 (DeepSeek) or substitute GPT-5.4-mini at marginally higher cost. No bugs added. No decisions added. No code changes proposed yet.*
