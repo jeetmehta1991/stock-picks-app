@@ -10425,3 +10425,549 @@ Followed by Phase 1B-α through Stage 4 per previously approved roadmap.
 ---
 
 *Pass 23 complete. DECISION-003, DECISION-040 resolved. DECISION-039 deferred. DECISION-041 (compression) proposed. Section A: Fundamental Agent context specification. Section B: 7 realistic compression options with stacking analysis. No new bugs.*
+
+---
+
+# AUDIT PASS 24 — Decision Review Session 2 (Batch 2, Decisions 007-011)
+
+User reviewed and decided DECISION-041 on 2026-04-29 — Option A (no compression). Phase 0 timeline confirmed at 12.5-16.5 weeks (sequential, full PIT, full ICT, full integration).
+
+This pass continues with Batch 2: decisions 007-011, which cover agent integration mechanics. These are the decisions that operationalize the user's directive: "I want ALL of agent recommendations and abilities to be integrated into decision making."
+
+---
+
+## DECISION-041 RESOLVED — Phase 0 compression strategy
+
+**Status:** RESOLVED
+**Decision:** Option A — No compression
+**Decision date:** 2026-04-29
+**User comment:** "Option A"
+
+**Final Phase 0 timeline confirmed:** 12.5-16.5 weeks sequential.
+
+**Implications:**
+- Full ICT/SMC family (8 concepts, 16 strategies) implemented upfront
+- Multi-snapshot info prefetch for true PIT
+- Full Quiver pre-cancellation repair scope
+- Threshold calibration during Phase 1B-α (DECISION-016 stays in scope)
+- News API integration upfront, not deferred to Phase 1C
+- Full PIT loader with all forward-bias bugs structurally fixed
+
+This is the highest-quality path. User's prior statement "best to do it upfront than realize it later and lose all work like what has happened already" is honored.
+
+**DECISION-039 (parallelization) reminder:** still deferred to actual execution time per user. If parallelization is later approved, Phase 0 timeline could compress to 8-10.5 weeks while preserving Option A scope. But planning is sequential.
+
+---
+
+## SECTION A — Batch 2 framing (Decisions 007-011)
+
+These five decisions are the operational details of agent integration. They directly fix BUG-113 family bugs from Pass 14 and BUG-116-127 from Pass 15. Together they make the user's requirement real: "ALL agent recommendations integrated."
+
+The risk profile of this batch is HIGHER than batch 1 because these decisions affect:
+- Trade execution behavior (gate semantics)
+- Position sizing (modifier semantics)
+- Exit logic (recommended exit honoring)
+- Risk management (trade_blocked semantics)
+- Long/short bias (debate winner gating)
+
+A wrong choice here means trades behave differently than agent reasoning suggests. Each decision needs careful thought about edge cases.
+
+### Risks of new bugs from this batch
+
+Specifically, what could go wrong:
+
+1. **Hard gates too aggressive** — agent SKIP/AVOID may fire on too many candidates, leaving no trades to execute. Mitigation: Gate 4 small-batch validation will surface this immediately.
+
+2. **Multiple gates compound** — action=SKIP + trade_blocked=True + debate_winner=bear might cumulatively block 95% of candidates. Mitigation: track cumulative skip rate per filter at Gate 4.
+
+3. **Position size modifier inverts intent** — if "minimal" multiplier is too small (e.g., 10%), trades that DO pass agent become too tiny to overcome friction costs. Mitigation: floor at "viable position" threshold.
+
+4. **Recommended exit assumes data we don't have** — agent says "next_pivot_target" but pivot target hasn't been computed. Engine fails or falls back. Mitigation: validate every recommended_exit value has a computable target.
+
+5. **Soft vs hard gate inconsistency** — if action=SKIP is hard but contrarian_signal=extreme_avoid is soft, behavior depends on which agent fires first. Mitigation: explicit precedence order documented.
+
+I'll flag any new bug risk introduced by each decision below.
+
+---
+
+## DECISION-007 — Phase 0 timeline acceptance (revisit)
+
+**Original Question:** Accept 6-9 month timeline to live trading?
+
+**Status:** AFFIRMED via DECISION-003 + DECISION-041 chain
+
+User has approved Phase 0 (DECISION-003) and rejected compression (DECISION-041 Option A). Total path to live trading:
+
+| Phase | Sequential | With parallelization (deferred) |
+|---|---|---|
+| Phase 0 | 12.5-16.5 weeks | 8-10.5 weeks |
+| Phase 1B (Gates 1-7) | 3-4 weeks | 3-4 weeks |
+| Phase 1C (agents on survivors) | 2-3 weeks | 2-3 weeks |
+| Phase 1D (5-year extended) | 2-3 weeks | 2-3 weeks |
+| Stage 3 (paper trading) | 12-24 weeks | 12-24 weeks |
+| Stage 4 (live $10K) | start | start |
+
+**Total path to Stage 4 live trading: 31-50 weeks (~7-12 months).**
+
+**Status:** RESOLVED — affirmed by Option A approval
+
+**No new bugs from this decision** — it's a timeline confirmation only.
+
+---
+
+## DECISION-008 — Decision Agent action field integration
+
+**Context:** Decision Agent emits `action: ENTER|WATCH|SKIP|AVOID`. Engine currently ignores this entirely (BUG-113). User wants ALL agent recommendations honored.
+
+**Original options:**
+- A — Hard gates: SKIP/AVOID/WATCH never trade, ENTER required
+- B — Soft gates: SKIP reduces position size, AVOID skips, WATCH skips
+- C — Combination: AVOID hard-skips, SKIP soft-reduces, WATCH skips, ENTER trades
+
+### Honest re-examination of each option
+
+**Option A — Hard gates everywhere**
+
+Logic:
+- ENTER → trade proceeds
+- WATCH → no trade (surface to website only)
+- SKIP → no trade
+- AVOID → no trade + 5-day cooldown on ticker
+
+Pros:
+- Cleanest interpretation of agent intent
+- Agent reasoning is detailed; SKIP means SKIP
+- Predictable behavior
+
+Cons:
+- If agent is biased toward caution, may produce too few trades
+- The 99.9% downgrade pattern from previous run suggests agents lean conservative
+- Combined with other hard gates (debate winner, trade_blocked), trade count could collapse
+
+Risk of new bugs: LOW. Simple hard gating, well-defined behavior.
+
+**Option B — Soft gates**
+
+Logic:
+- ENTER → 100% position size
+- WATCH → 0% (skip) — same as A
+- SKIP → 50% position size (reduced conviction)
+- AVOID → 0% (skip + cooldown) — same as A
+
+Pros:
+- Catches "borderline skip" cases where agent is uncertain
+- Allows trade to occur with reduced exposure
+
+Cons:
+- Contradicts agent intent (it said SKIP, not "trade smaller")
+- If agent has high false-positive rate on SKIP, soft gate amplifies losses
+- Adds complexity without clear benefit
+
+Risk of new bugs: MEDIUM. Soft semantics interact unpredictably with other modifiers.
+
+**Option C — Tiered combination**
+
+Logic:
+- ENTER → trade at full position
+- WATCH → no trade (surface only)
+- SKIP → reduced position (50%)
+- AVOID → no trade + cooldown
+
+Same as B but with AVOID being firmer.
+
+Pros, Cons, Risk: same as B but slightly less aggressive on SKIP.
+
+### My recommendation reasoning
+
+The agent emits four distinct action levels with explicit meanings:
+- ENTER — agent is positively recommending entry
+- WATCH — agent sees something interesting but not entry-worthy yet (surface for human review)
+- SKIP — agent recommends not taking this trade
+- AVOID — agent recommends NEVER taking this setup (something fundamentally wrong)
+
+These are not "convictions on a spectrum" — they're discrete recommendations. SKIP doesn't mean "trade smaller," it means "don't take this trade."
+
+**My recommendation: Option A — hard gates, with one clarification.**
+
+Final mapping:
+- ENTER → trade at tier-determined position size
+- WATCH → no trade, surface to website with agent reasoning for human review
+- SKIP → no trade, log skip reason, NO cooldown (other signals may fire later)
+- AVOID → no trade + 5-day cooldown on ticker (something fundamentally wrong)
+
+**Risk of new bugs from Option A:** LOW. Each action has unambiguous engine behavior.
+
+**Specific edge cases handled:**
+1. Agent times out / errors → defaults to "SKIP" (safer than "ENTER")
+2. Action field missing from response → defaults to "SKIP"
+3. Action field is unexpected value → defaults to "SKIP" + log warning
+4. Multiple strategies trigger same ticker, different agent results → take strictest action
+
+**Recommendation:** Option A
+
+**Status:** PROPOSED (User to confirm)
+
+---
+
+## DECISION-009 — Position size modifier integration
+
+**Context:** Decision Agent emits `position_size_modifier: full|reduced_earnings|reduced_volatility|reduced_concentration|minimal`. Engine ignores this (BUG-118).
+
+**Original options:**
+- A — Conservative: full=1.0, reduced_*=0.5, minimal=0.25
+- B — Standard: full=1.0, reduced_*=0.7, minimal=0.3
+- C — Aggressive: full=1.0, reduced_*=0.85, minimal=0.5
+
+### Re-examination
+
+The position_size_modifier is the agent's expression of "I think this is a real trade but I have specific concerns." Specifically:
+- `full` — no concerns, take full position
+- `reduced_earnings` — earnings risk warrants caution
+- `reduced_volatility` — volatility regime warrants caution
+- `reduced_concentration` — sector/correlation concentration warrants caution
+- `minimal` — strong concerns but agent isn't blocking entry
+
+**Conservative (A) at 50%/25%:**
+- Reduced positions are 50% of base — half-sized trade
+- Minimal positions are 25% — quarter-sized trade
+- Risk: trades may be too small to overcome transaction costs (commissions + spread + slippage = ~0.3% round-trip; at 25% of base position size, profit threshold rises proportionally)
+
+**Standard (B) at 70%/30%:**
+- Acknowledges concern without abandoning the trade
+- Math: 70% of 4% (HIGH tier) = 2.8% position; comfortable size
+- Math: 30% of 4% = 1.2% position; getting marginal but viable
+
+**Aggressive (C) at 85%/50%:**
+- Modifiers barely matter (85% ≈ 100%)
+- Ignores agent caution
+- Defeats purpose of having modifiers
+
+### Edge case I want to highlight
+
+Position size also stacks with vol-targeted sizing (BUG-168, DECISION-023). If agent says "reduced_volatility" AND vol-targeted sizing already cuts the position because volatility is high, we're double-counting volatility risk.
+
+**Mitigation:** define modifiers as INDEPENDENT of vol-targeted sizing. Agent's "reduced_volatility" reflects qualitative volatility judgment (e.g., "VIX is high overall, environment is unstable"); vol-targeted sizing reflects this stock's beta/ATR. They measure different things even if they share a name.
+
+If both trigger together: multiply both modifiers (0.7 agent × 0.7 vol-target = 0.49 final). This DOES double-count somewhat but is fine because we're being doubly cautious in genuinely risky setups.
+
+### Recommendation
+
+Option B (Standard) — full=1.0, reduced_*=0.7, minimal=0.3.
+
+**Risk of new bugs:** LOW-MEDIUM.
+
+Edge cases to handle:
+1. Modifier missing → default to `full` (don't penalize agent for incomplete response)
+2. Modifier is unexpected value → log warning, default to `full`
+3. Combined with vol-targeted sizing → multiply (independent risk dimensions)
+4. Combined with drawdown-aware sizing (DECISION-022) → multiply (also independent)
+5. Combined with tier sizing → multiply (tier × modifier × vol × drawdown = final fraction of equity)
+
+**Floor protection:** any combined multiplier < 0.10 results in skip (position too small to be worth it). Logged as "below_minimum_size".
+
+**Status:** PROPOSED (User to confirm)
+
+---
+
+## DECISION-010 — Risk Agent trade_blocked semantics
+
+**Context:** Risk Agent emits `trade_blocked: True|False`. Engine ignores it (BUG-116).
+
+**Original options:**
+- A — Hard block: trade_blocked=True → never trades
+- B — Override-able: high final_score can override
+- C — Cooldown: trade_blocked=True → 24-hour cooldown
+
+### Re-examination
+
+The Risk Agent flags `trade_blocked=True` for specific reasons:
+- Major macro event today (FOMC, CPI release, NFP)
+- Binary catalyst imminent (FDA decision, M&A deadline)
+- Crisis-level market conditions
+
+These are NOT "be cautious" signals — they're "the environment is genuinely uninvestable for this trade type today" signals.
+
+**Option A (hard block):** Most defensive. Agent identifies reason; engine respects it.
+
+**Option B (override-able):** Allows other signals to overcome Risk Agent's veto. The argument FOR is that sometimes a trade has overwhelming positive signals despite macro concerns. The argument AGAINST is that "I can override the risk warning" is exactly the bias that causes catastrophic losses.
+
+**Option C (cooldown):** Adds time-based recovery. But trade_blocked reasons are usually day-specific (e.g., "FOMC today"); next trading day it's no longer blocked anyway.
+
+### Honest assessment
+
+In professional trading, when the Risk function says "block this trade," it gets blocked. You don't override the risk function with positive sentiment. The whole point of separation of concerns is that Risk has authority over its domain.
+
+**Recommendation: Option A — hard block.**
+
+**Specific guarantees:**
+- trade_blocked=True at decision time → no trade today
+- Next trading day: re-evaluate (Risk Agent runs fresh)
+- No carryforward of trade_blocked beyond the day it was set
+
+**Risk of new bugs:** LOW. Hard gating is unambiguous.
+
+**Edge cases:**
+1. Risk Agent times out → defaults to trade_blocked=False (don't block on agent failure)
+2. trade_blocked field missing → defaults to False
+3. Combined with action=ENTER (Decision Agent says ENTER but Risk Agent says block) → trade is blocked. Risk Agent has authority over its domain. Decision Agent can be overridden by domain-specific veto.
+
+**Status:** PROPOSED (User to confirm)
+
+---
+
+## DECISION-011 — Bull/Bear Debate winner integration
+
+**Context:** Bull/Bear Debate emits `debate_winner: bull|bear|neutral` and `confidence_in_winner: high|medium|low`. Engine ignores both (BUG-119).
+
+**Original options:**
+- A — Hard block: bear winner with high confidence blocks long entry, vice versa
+- B — Soft signal: reduces position 50%
+- C — Filter only: ignored, debate is informational
+
+### Re-examination
+
+The Bull/Bear Debate is a structured argument generator: it produces bull case and bear case, scores them, picks a winner. It's analytical noise reduction — even if other agents are saying "trade," the debate forces explicit consideration of the bear case.
+
+For a long trade:
+- debate_winner=bear, confidence=high → both arguments considered, bear case overwhelmingly stronger → contradicts long thesis
+- debate_winner=bear, confidence=medium → bear case stronger but not by much
+- debate_winner=bear, confidence=low → bear case marginally stronger
+- debate_winner=neutral → tied
+- debate_winner=bull → bull case stronger (confirms long thesis)
+
+**The user's earlier preference (DECISION-011 in Pass 19):** "A for high confidence, B for medium confidence, C for low confidence" — layered response based on confidence.
+
+I think this is the right approach. Let me formalize:
+
+**Recommendation: layered tiered response.**
+
+For LONG trades:
+- debate_winner=bull (any confidence) → no action (confirms thesis)
+- debate_winner=neutral (any confidence) → no action
+- debate_winner=bear, confidence=low → no action (weak bear case)
+- debate_winner=bear, confidence=medium → reduce position 50%
+- debate_winner=bear, confidence=high → BLOCK long entry
+
+Mirror for SHORT trades (replace bull↔bear).
+
+### Edge cases
+
+1. Debate Agent times out → defaults to debate_winner=neutral (no impact)
+2. Confidence missing → defaults to "low" (least restrictive interpretation)
+3. Combined with action=ENTER → debate winner can override action (debate sees bear case Decision Agent missed)
+4. Combined with trade_blocked=True → trade still blocked (Risk Agent veto is strongest)
+
+**Risk of new bugs:** MEDIUM. Two-dimensional decision (winner × confidence) has more failure modes than single-dimensional (action only).
+
+**Recommendation:** Layered tiered response as specified above.
+
+**Status:** PROPOSED (User to confirm)
+
+---
+
+## DECISION-012 — Recommended exit integration
+
+**Context:** Decision Agent emits `recommended_exit: atr_trail_1x|trailing_15pct|hybrid_50pct_target|next_pivot_target`. Engine uses fixed 10%/15% trailing (BUG-117).
+
+**Original options:**
+- A — Honour agent's recommendation always
+- B — Honour for HIGH/EXCEPTIONAL tier only; default for lower tiers
+- C — Ignore agent recommendation, use fixed exit
+
+### Re-examination
+
+The four exit strategies have different risk/reward characteristics:
+
+- **atr_trail_1x** — Trail 1× ATR below close. Adapts to volatility. Best for trending stocks.
+- **trailing_15pct** — Fixed 15% trail. Coarser. Works for high-vol names where ATR moves are wild.
+- **hybrid_50pct_target** — Take 50% off at first profit target, trail rest. Captures gains, lets winners run.
+- **next_pivot_target** — Exit at nearest computed pivot resistance/support. Specific level-based.
+
+The agent picks based on its analysis: stock characteristics, volatility, recent levels, conviction.
+
+**Option A (honor always):** Trusts agent's exit decision. Risk: if agent's exit is wrong for the stock (e.g., recommending "next_pivot_target" but pivots aren't computed for this ticker), trade fails to exit properly.
+
+**Option B (HIGH/EXCEPTIONAL only):** Only honor for high-conviction trades. Lower-tier trades use default. Risk: arbitrary distinction; if agent recommends a specific exit, the conviction tier doesn't change whether that exit is correct.
+
+**Option C (ignore):** Wastes agent's analysis. Defeats purpose of having recommended_exit field.
+
+### Critical implementation question
+
+Each exit strategy has prerequisites:
+- atr_trail_1x: requires ATR computed (always available)
+- trailing_15pct: requires close price (always available)
+- hybrid_50pct_target: requires "first profit target" defined — at entry time, what's the target? This needs to be computed and stored.
+- next_pivot_target: requires pivot_r1, pivot_s1, etc. computed (signals already exist)
+
+The engine needs to validate the recommended exit is FEASIBLE before applying it. If feasibility check fails, fallback to ATR trail.
+
+### Edge cases
+
+1. Agent recommends exit not in valid list → fallback to atr_trail_1x
+2. Exit field missing → fallback to atr_trail_1x
+3. Recommended exit's prerequisites not met → fallback + log warning
+4. Trade hits trailing stop before target on hybrid_50pct_target → exit at trailing stop (full position, not 50/50)
+
+**Risk of new bugs:** MEDIUM. Multiple exit logic paths increase code surface. Each path needs unit tests.
+
+**Recommendation: Option A with validation.**
+
+Engine logic:
+```python
+exit_strategy_map = {
+    'atr_trail_1x': ATRTrailExit(multiplier=1.0),
+    'trailing_15pct': PercentTrailExit(pct=0.15),
+    'hybrid_50pct_target': HybridExit(first_target_pct=0.50),
+    'next_pivot_target': PivotTargetExit(),
+}
+
+def select_exit(agent_recommendation, candidate_data):
+    exit_class = exit_strategy_map.get(agent_recommendation)
+    if not exit_class:
+        log.warning(f"Unknown exit: {agent_recommendation}, falling back")
+        return ATRTrailExit(multiplier=1.0)
+    
+    if not exit_class.feasible(candidate_data):
+        log.warning(f"Exit {agent_recommendation} not feasible, falling back")
+        return ATRTrailExit(multiplier=1.0)
+    
+    return exit_class
+```
+
+**Status:** PROPOSED (User to confirm)
+
+---
+
+## SECTION B — Cross-decision interaction matrix
+
+Critical thinking: how do these 5 decisions interact when multiple gates fire?
+
+### Precedence order (when multiple gates fire)
+
+When evaluating a trade, gates are checked in this order. First gate to fire short-circuits the rest.
+
+```
+1. trade_blocked=True (Risk Agent) → BLOCK
+2. avoid_earnings=True AND earnings_days<7 (Fundamental Agent) → BLOCK
+3. action=AVOID (Decision Agent) → BLOCK + 5-day cooldown
+4. action=SKIP (Decision Agent) → BLOCK
+5. action=WATCH (Decision Agent) → BLOCK (surface only)
+6. debate_winner=bear, confidence=high, direction=long → BLOCK
+   debate_winner=bull, confidence=high, direction=short → BLOCK
+7. action=ENTER + all above pass → PROCEED to sizing
+
+Sizing chain:
+8. base_size = tier × POSITION_SIZE_MULT[tier]
+9. size *= position_size_modifier multiplier (DECISION-009)
+10. size *= vol_targeted_sizing (DECISION-023, multiplicative)
+11. size *= drawdown_modifier (DECISION-022, multiplicative)
+12. size *= 0.5 if debate_winner=bear, confidence=medium, direction=long
+13. if final size < 0.10 of equity → BLOCK as below_minimum_size
+
+Exit selection:
+14. exit_strategy = select_exit(decision_agent.recommended_exit, candidate)
+```
+
+### Sanity check on combined effect
+
+What happens when ALL the gates are working as designed?
+
+Take a candidate where:
+- Agent action=ENTER
+- All risk flags clear
+- Debate winner=bull, confidence=high
+- Position size modifier=full
+- Vol-targeted sizing=1.0 (normal volatility)
+- No drawdown
+- Tier=HIGH (4% base)
+
+Final position: 4% × 1.0 × 1.0 × 1.0 × 1.0 = 4%. Same as today.
+
+Now consider a marginal candidate:
+- Agent action=ENTER (positive)
+- trade_blocked=False
+- Debate winner=bear, confidence=medium
+- Position size modifier=reduced_earnings
+- Vol-targeted sizing=0.7 (high vol)
+- Drawdown 10% (modifier 0.8)
+- Tier=MEDIUM (2.5% base)
+
+Final position: 2.5% × 0.7 (modifier) × 0.7 (vol) × 0.8 (drawdown) × 0.5 (debate medium) = 0.49%.
+
+That's below 0.10? No, 0.49% > 0.10%. Trade proceeds at 0.49% of equity.
+
+For $10K account: $49 position. Probably below minimum useful.
+
+**Floor (DECISION-009): any combined multiplier yielding < 0.10% is skipped as below_minimum_size.**
+
+For HIGH tier with all modifiers stacking against it:
+4% × 0.3 × 0.5 × 0.5 × 0.5 = 0.15% — still above floor, trades.
+
+The floor at 0.10% means we're avoiding sub-$10 positions on $10K account. Reasonable.
+
+### Risk of overfitting to gates
+
+If we have:
+- 6 hard gates that can BLOCK
+- 4 soft modifiers that REDUCE
+- Each with non-trivial firing rate
+
+Cumulative impact could be: 80% of candidates blocked, 80% of survivors heavily downsized. That leaves ~4% of original candidates trading at full size.
+
+Is this acceptable? Depends on validation:
+- Phase 1B-α and Gate 4 tell us: how many candidates does each gate block? Cumulative skip rate?
+- If 80% blocked seems too aggressive AT VALIDATION TIME, we re-tune gates
+- If 80% blocked maps to 80% of bad trades being correctly rejected, it's good
+
+**Mitigation: Phase 1B-α MUST surface per-gate skip rates and aggregate skip rate.** If aggregate exceeds 80%, flag for review. If a single gate blocks >40% of candidates, that gate is too aggressive.
+
+**Phase 1B-α deliverable should include:** `gate_firing_report.csv` showing each gate's firing rate, overlap with other gates, and trades blocked by EACH gate.
+
+**This becomes a new Phase 1B-α validation requirement** — adding to BUG list as BUG-199.
+
+### BUG-199 · MEDIUM — No gate firing rate observability
+
+**Context:** With 6 hard gates and 4 soft modifiers, debugging "why does my system block X% of candidates" requires per-gate logging.
+
+**Files:** `backtest/engine/backtest.py` (skipped_trades dict needs per-gate categorization)
+
+**Fix:** Each skip path logs which specific gate caused the skip. Phase 1B-α produces `gate_firing_report.csv` showing aggregate stats per gate.
+
+**Status:** Documented for Phase 0.C scope.
+
+---
+
+## SECTION C — Updated decisions in this batch
+
+| # | Title | Status | Decision |
+|---|---|---|---|
+| 007 | Phase 0 timeline | RESOLVED (via 003+041) | 7-12 month total path accepted |
+| 008 | Action field integration | PROPOSED | Option A — hard gates |
+| 009 | Position size modifier | PROPOSED | Option B — standard 0.7/0.3 |
+| 010 | trade_blocked semantics | PROPOSED | Option A — hard block |
+| 011 | Debate winner integration | PROPOSED | Layered: high=block, medium=reduce, low=ignore |
+| 012 | Recommended exit | PROPOSED | Option A — honor with feasibility validation |
+
+DECISION-012 was originally in batch 2 but I included it here because it's structurally part of the same agent integration work.
+
+---
+
+## SECTION D — Updated bug count
+
+Added BUG-199 for gate firing observability.
+
+| Category | Count |
+|---|---|
+| **Total bugs** | **199** |
+| Critical | 18 |
+| High | 70 |
+| Medium | 85 (was 84, +1) |
+| Low | 26 |
+
+**Decisions count: 41** (DECISION-041 RESOLVED, no new decisions)
+
+**Resolved decisions: 10 of 41** (001, 002, 003, 004, 005, 006, 007, 040, 041 + 039 deferred)
+
+---
+
+*Pass 24 complete. DECISION-041 RESOLVED (Option A no compression). Batch 2 PROPOSED for review: DECISION-007 affirmed via chain, DECISION-008 (hard gates), DECISION-009 (Standard B), DECISION-010 (hard block), DECISION-011 (layered tiered), DECISION-012 (honor with validation). 1 new bug (BUG-199 gate observability). 199 bugs total.*
