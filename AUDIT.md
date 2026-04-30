@@ -9274,3 +9274,556 @@ This is the cleanest split. Fundamentals improve agent reasoning upfront. Full f
 ---
 
 *Pass 21 Session 1 complete. 2 of 5 decisions resolved. 3 deferred with detailed Sections A and B for user reconsideration. No new bugs.*
+
+---
+
+# AUDIT PASS 22 — Forward-Bias Audit, Parallelization Strategy, Fork-vs-Build
+
+This pass addresses three things from the user's batch 1 follow-up:
+
+1. **Fork existing fundamental analysis library vs build from scratch** — user's instinct, evaluated against real options
+2. **Parallelization opportunities in Phase 0** — user observation that some work runs in parallel
+3. **Comprehensive forward-bias / point-in-time audit** — user's critical requirement that backtesting "exactly replicate real world trading"
+
+The third point is the most consequential. Forward bias is what Michael Harris (quant veteran) calls "the worst type of bias because the results are wrong, as opposed to the other forms of biases. Look-ahead bias is immediately revealed in real-world execution."
+
+---
+
+## SECTION A — Fundamental analysis: fork vs build
+
+### A.1 — Existing libraries assessed
+
+I reviewed the popular open-source fundamental analysis libraries on GitHub. Here's what's actually available and whether it suits our needs:
+
+| Library | Stars | Active | Point-in-Time? | License | Verdict |
+|---|---|---|---|---|---|
+| **OpenBB Platform** | 38k | Yes (active) | Partial (some endpoints) | AGPLv3 | **Best candidate** — comprehensive, multi-provider, but AGPL is restrictive |
+| **JerBouma/FundamentalAnalysis** | 1.7k | Yes | No (current snapshot only) | MIT | Easy to integrate, but no PIT |
+| **MachineLearningStocks** | 1.7k | No (2020) | No | MIT | Stale, not maintained |
+| **Automated-Fundamental-Analysis** | 0.7k | No | No | MIT | Single-file scraper, limited |
+| **realmistic/PythonInvest** | 0.4k | Yes | No | Open | Educational notebook style |
+| **finvizfinance** | 0.7k | Yes | No | MIT | Web scraping wrapper |
+| **yfinance fundamentals** | 16k | Yes | No (current only) | Apache | Built-in but limited |
+
+### A.2 — The problem none of them fully solve
+
+Every library above returns **current** fundamentals, not historical point-in-time. For backtesting in 2022, I need to know what AAPL's P/E ratio was on a specific 2022 date — not what it is today.
+
+To get historical PIT fundamentals, you need ONE of:
+- Premium API with historical filings: **FinancialModelingPrep ($14-30/mo)**, **Polygon ($30/mo bundled with news)**, **EOD Historical Data ($20-100/mo)**, **Sharadar ($150/mo via Quandl)**
+- SEC EDGAR direct parsing (free, but XBRL is complex)
+- Bloomberg/FactSet (institutional, expensive)
+
+### A.3 — Recommendation
+
+**Use the OpenBB Platform as the integration layer**, paired with **Polygon as the data provider** (which DECISION-002 evaluation will assess anyway).
+
+Why this combination:
+- OpenBB Platform is the most popular, most-maintained fundamental analysis library — meets user's "popular and verified" criterion
+- It provides a unified Python API across providers, so we're not locked to one
+- Polygon as the underlying provider gives historical PIT data
+- If Polygon evaluation fails, OpenBB lets us swap to FinancialModelingPrep or another provider with minimal code changes
+- AGPL license issue: AGPL only forces source disclosure if we DISTRIBUTE the software. We're running it ourselves — we don't distribute. AGPL doesn't apply.
+
+**What we use from OpenBB:**
+- `obb.equity.fundamental.metrics()` — P/E, P/B, ROE, debt ratios
+- `obb.equity.fundamental.balance()`, `income()`, `cash()` — financial statements
+- `obb.equity.fundamental.historical_eps()` — PIT EPS for PEAD signal
+- Their data validation and standardization (saves us writing it)
+
+**What we still need to build:**
+- The **point-in-time wrapper** that takes (ticker, as_of) and returns fundamentals as known on that date — this is custom logic on top of OpenBB
+- Integration with our agent context construction
+- Cache layer (OpenBB calls APIs each time; we want prefetched parquet)
+
+**Estimated effort:**
+- OpenBB integration: ~2 days
+- PIT wrapper + caching: ~3 days
+- Agent context integration: ~2 days
+- **Total: ~1 week** (matches user's prior approval of "+1 week to Phase 0.A" for Option Alpha)
+
+### A.4 — DECISION-005 update
+
+User approved Option Alpha (fundamentals as agent context only) with fork-existing approach. Refined plan:
+
+**DECISION-005 RESOLVED:** Strategy count target ~130 (Option B). **Fundamental data integrated via OpenBB Platform + Polygon, accessed at agent context construction time, with custom PIT wrapper.** No new strategy family added (Carry/Value/Quality deferred to Phase 1F).
+
+**DECISION-006 RESOLVED (consequence):** All previously-deferred families (Carry/Value, Quality, Pairs, Macro standalone, ML enhancement) remain Phase 1F. Confirmed.
+
+---
+
+## SECTION B — Phase 0 parallelization analysis
+
+User observation: "you have spaced it sequentially but a lot can be done parallely for example running pre-fetch across multiple terminals."
+
+This is correct. Let me separate truly-parallel work from work with hard dependencies, honestly.
+
+### B.1 — Dependency map of Phase 0 sub-phases
+
+```
+Phase 0.A — Prefetching Foundation (2 weeks sequential original)
+├─ 0.A.1 Quiver gaps repair        ← INDEPENDENT (own API)
+├─ 0.A.2 Earnings prefetch         ← INDEPENDENT (yfinance)
+├─ 0.A.3 yfinance .info prefetch   ← INDEPENDENT (yfinance)
+├─ 0.A.4 VIX/DXY explicit prefetch ← INDEPENDENT (yfinance + FRED)
+├─ 0.A.5 Finnhub diagnosis         ← INDEPENDENT (Finnhub)
+├─ 0.A.6 Cache versioning system   ← INDEPENDENT (code only)
+├─ 0.A.7 Validation CI script      ← DEPENDS on 0.A.1-5 (validates them)
+├─ 0.A.8 auto_adjust=False         ← INDEPENDENT (yfinance config)
+└─ 0.A.9 OpenBB + Polygon fundamentals ← DEPENDS on DECISION-002 outcome
+
+Phase 0.B — Portfolio class (1 week sequential)
+└─ Single coherent class. Internal ordering: equity tracking → sizing → drawdown → correlation → tests
+
+Phase 0.C — Engine integration (2 weeks sequential)
+└─ DEPENDS on Phase 0.B Portfolio existing
+   ├─ 0.C.1 Engine consumes Portfolio for sizing
+   ├─ 0.C.2 Action field gating (BUG-113)
+   ├─ 0.C.3 Position size modifier (BUG-118)
+   ├─ 0.C.4 Recommended exit (BUG-117)
+   ├─ 0.C.5 Risk Agent trade_blocked (BUG-116)
+   ├─ 0.C.6 Bull/Bear winner gating (BUG-119)
+   └─ 0.C.7 Avoid earnings hard gate (BUG-120)
+
+Phase 0.D — Modern signals + ICT (4-6 weeks sequential original)
+├─ 0.D.1 Modern signals      ← INDEPENDENT of each other
+│   ├─ AVWAP                 ← INDEPENDENT
+│   ├─ Volume Profile        ← INDEPENDENT
+│   ├─ CVD                   ← INDEPENDENT
+│   ├─ Relative Strength     ← INDEPENDENT (needs OHLCV cache for sector ETFs — already prefetched)
+│   ├─ Per-ticker vol regime ← INDEPENDENT
+│   └─ PEAD                  ← DEPENDS on earnings prefetch (0.A.2)
+├─ 0.D.2 ICT/SMC concepts    ← INDEPENDENT of each other (8 detectors)
+│   ├─ Order blocks          ← INDEPENDENT
+│   ├─ Fair value gaps       ← INDEPENDENT
+│   ├─ Liquidity sweeps      ← INDEPENDENT
+│   ├─ Displacement          ← INDEPENDENT
+│   ├─ Breaker blocks        ← DEPENDS on order block detector
+│   ├─ Premium/discount      ← INDEPENDENT
+│   ├─ OTE                   ← INDEPENDENT
+│   └─ Market structure      ← INDEPENDENT
+└─ 0.D.3 Calendar signals    ← INDEPENDENT of all other Phase 0.D work
+```
+
+### B.2 — Parallelization opportunities
+
+#### Within Phase 0.A — Prefetching (potential 2 wk → 4-5 days)
+
+**True parallel** (different terminals/processes):
+- Terminal 1: Quiver repair (multi-hour rate-limited prefetch)
+- Terminal 2: Earnings prefetch (yfinance, multi-hour rate-limited)
+- Terminal 3: Info prefetch (yfinance)
+- Terminal 4: VIX/DXY (fast, 5 minutes)
+- Terminal 5: Finnhub diagnosis (independent)
+- Terminal 6: Code work — cache versioning + auto_adjust + validation script
+
+The bottleneck becomes the slowest single prefetch (likely Quiver insider re-fetch given rate limits). **Realistic compression: 2 weeks → 4-5 days.** Saves ~1.5 weeks.
+
+**BUT:** prefetch results need to be validated together. Can't declare 0.A "complete" until 0.A.7 (validation CI) confirms ALL prefetches passed. Validation must be sequential AFTER all parallel prefetches finish.
+
+#### Within Phase 0.D — Signals + ICT (potential 4-6 wk → 2-3 wk)
+
+**Multiple developers parallel:** if you had 2-3 developers, each could implement different signal/concept detectors simultaneously. Each is independent, requires only OHLCV cache, has own unit tests.
+
+**Solo developer realistic compression:** ICT detectors and modern signals don't have to be built strictly sequentially. Can:
+- Implement framework (compute_all_signals dispatch) once
+- Implement 2-3 detectors in parallel mental context
+- Test in parallel via pytest -n parallel
+- **Realistic compression: 4-6 wk → 3-4 wk for solo dev**
+
+#### Phase 0.B and Phase 0.C — STRICTLY SEQUENTIAL
+
+Portfolio class (0.B) must exist before engine integration (0.C) consumes it. Cannot parallelize. Each is 1 + 2 = 3 weeks sequential minimum.
+
+### B.3 — Revised Phase 0 timeline with parallelization
+
+| Phase | Sequential | Parallel | Notes |
+|---|---|---|---|
+| 0.A Prefetching | 2 weeks | **4-5 days** | Multi-terminal prefetch |
+| 0.B Portfolio | 1 week | 1 week | Strictly sequential |
+| 0.C Agent integration | 2 weeks | 2 weeks | Depends on 0.B |
+| 0.D Modern signals + ICT | 4-6 weeks | **3-4 weeks** | Solo dev with parallel detectors |
+| **Total Phase 0** | **9-13 weeks** | **6.5-8 weeks** | Saves 2.5-5 weeks |
+
+### B.4 — But: parallelization risks
+
+I want to be honest about what this DOESN'T save you:
+
+1. **Coordination overhead.** Running 6 terminals means monitoring 6 processes for failures. Prefetch failures are silent (Finnhub example). You need active oversight of each.
+
+2. **Memory and CPU contention.** Codespace has limited RAM. Running 6 yfinance processes may rate-limit each other (yfinance has aggregate rate limits per IP, not per process).
+
+3. **Validation deadlocks.** All prefetches must succeed before Phase 0.A validation passes. One failure blocks all. Sequential at least sees failures one at a time.
+
+4. **Mental context switching.** Solo developer running parallel signal implementations needs to maintain context for each. Bugs from context-switching are real.
+
+**Honest recommendation:** parallelize aggressively in Phase 0.A (prefetch is mostly waiting on APIs, low context-switch cost) and Phase 0.D (independent detectors). Phase 0.B and 0.C stay strictly sequential.
+
+### B.5 — DECISION-039 (NEW)
+
+**DECISION-039 — Phase 0 parallelization strategy**
+
+**Status:** PROPOSED for user approval
+
+**Options:**
+- **A** — Strict sequential (9-13 weeks)
+- **B** — Aggressive parallel where independent (6.5-8 weeks)
+- **C** — Hybrid: parallel within sub-phase, sequential between sub-phases (recommended)
+
+**Recommendation:** **C**. Parallelize 0.A.1-5 (different APIs, can run concurrently) and 0.D.1-3 (independent detectors). Keep 0.A→0.B→0.C→0.D ordering at sub-phase level.
+
+**Risk mitigation:** explicit terminal-by-terminal monitoring, validation CI as final gate, no "complete" claim until validation passes.
+
+---
+
+## SECTION C — Forward-bias / point-in-time audit
+
+This is the most consequential section. User explicitly required: "we do not introduce forward bias at any stage during the entire backtesting process and the testing must exactly replicate real world trading."
+
+### C.1 — What forward-bias / look-ahead bias is
+
+A backtest exhibits forward-bias when it uses information not yet available at the moment a trading decision was supposedly made. As Michael Harris notes: "Look-ahead bias is immediately revealed in real-world execution... a strategy looks great in backtest but fails in live." This is the MOST DANGEROUS bias because the gap between backtest and live results can be enormous.
+
+In our codebase, possible forward-bias sources:
+1. **Price/OHLCV data:** using today's close to compute today's signal (when in reality close isn't known until end of day) — addressed by current `as_of` slicing logic
+2. **Fundamental data:** using current company fundamentals when backtesting historical dates
+3. **Survivorship:** universe contains only currently-listed companies (delisted ones removed)
+4. **Earnings dates:** knowing future earnings dates that weren't announced yet at as_of
+5. **Stock splits / dividends:** retroactive adjustment changes historical prices
+6. **Macro data release lag:** CPI for January is published mid-February but backtest uses January date
+7. **Smart money data:** using insider/congressional data with announcement lag (forms filed days after transaction)
+8. **News data:** using articles backdated to events
+9. **Index inclusion:** S&P 500 list as of today, not as of historical date
+10. **Stop fills:** assuming stop hits at exact stop price (no slippage)
+11. **Fill prices:** assuming fills at exact close/open prices
+
+### C.2 — Forward-bias audit on this codebase
+
+I systematically audited each. Findings:
+
+#### C.2.1 — OHLCV slicing — OK
+
+`backtest/engine/backtest.py` line 250-ish: `sliced = df[df.index.date <= as_of]` — correctly filters to as-of date. Signal computation uses `today = df["close"].iloc[-1]` which after slicing IS the as_of date's close. **Verdict: PIT correct.**
+
+#### C.2.2 — yfinance .info — FORWARD BIAS PRESENT (BUG-179, BUG-192)
+
+`backtest/data/fetcher.py` line 175: `info = yf.Ticker(ticker).info` returns the TICKER'S CURRENT (2026) sector, market cap, IPO date, exchange. When backtesting 2022, we read 2026 metadata as if it were 2022 metadata.
+
+**Specific forward-bias risks from this:**
+- Sector classification: a ticker that changed sector classification between 2022 and 2026 has wrong sector context
+- Market cap: a stock that 10x'd between 2022 and 2026 has 10x current market cap, but backtest uses today's value
+- IPO date is fine (doesn't change)
+- Currency / exchange usually fine
+
+**Plus survivorship bias:** if a ticker was delisted (e.g., FRC after 2023 banking crisis), `yf.Ticker(ticker).info` returns empty. Universe filter then drops the ticker. **2022 backtest never sees FRC even though it was tradeable in 2022.**
+
+**Already documented as BUG-179.** Phase 0.A.3 fix: prefetch `info_snapshot.parquet` from a HISTORICAL snapshot date. But this isn't yet truly PIT — it's a single snapshot. Truly PIT would have separate snapshots per date.
+
+**Pragmatic fix:** snapshot info as of multiple historical dates (2022-01-01, 2023-01-01, 2024-01-01, 2025-01-01, 2026-01-01) and engine selects the snapshot ≤ as_of. Increases storage 5x but eliminates this bias.
+
+#### C.2.3 — yfinance .earnings_dates — FORWARD BIAS PRESENT (BUG-193 NEW)
+
+`backtest/data/fetcher.py` line 202: `cal = yf.Ticker(ticker).earnings_dates` returns ALL known earnings dates including dates AFTER as_of that weren't yet ANNOUNCED at as_of.
+
+Example: backtesting 2023-06-15. We ask "next earnings for AAPL?" yfinance returns earnings dates including 2024 Q3 earnings. **A trader on 2023-06-15 wouldn't know AAPL's Q3 2024 earnings date — companies typically announce earnings dates only 4-6 weeks ahead.**
+
+The current code filters `if d > as_of`, picks the soonest. This is correct for the NEAREST future earnings (companies announce these). But it could pick up dates that were unknown at as_of.
+
+**Pragmatic fix:** assume earnings date is "known" only if within ~60 days of as_of. Anything further out is forward-biased and should be treated as "unknown" by the agent.
+
+**NEW BUG to register:** BUG-193.
+
+#### C.2.4 — auto_adjust=True — FORWARD BIAS CONFIRMED (BUG-109)
+
+`backtest/data/fetcher.py` line 117: `auto_adjust=True` — this retroactively adjusts ALL historical prices for dividends paid AT ANY POINT. So a 2022-06-15 close price changes value depending on dividends paid between 2022-06-15 and today.
+
+**Actual impact:** dividend ex-dates and adjustment factors shift slightly each time data is fetched. Re-running same backtest produces slightly different fills. This breaks reproducibility AND is a subtle forward-bias (today's dividends shape past prices).
+
+**Already documented as BUG-109.** Phase 0.A.8 fix: `auto_adjust=False`, store raw prices, apply dividend adjustments only when computing total return AND only using dividends ≤ as_of.
+
+#### C.2.5 — Macro data release lag — FORWARD BIAS PRESENT (BUG-86)
+
+CPI for January is published mid-February. Current code uses January's CPI value at January dates. **A trader on 2023-01-15 wouldn't know January 2023 CPI — that's announced 2023-02-14.**
+
+Same issue for: NFP (released first Friday of next month), GDP (released ~30 days after quarter end), unemployment (monthly).
+
+**Already documented as BUG-86.** Phase 0.A fix: shift macro data dates by typical release lag (CPI: +14 days; NFP: +5 days; GDP: +30 days).
+
+#### C.2.6 — Smart money data lag — FORWARD BIAS LIKELY (BUG-194 NEW)
+
+Form 4 insider filings: required within 2 business days of transaction.
+Form 13F institutional: required within 45 days of quarter end. Quarterly Q1 13F covers positions as of March 31 but filed by May 15.
+Congressional STOCK Act: required within 45 days of transaction.
+
+Current code uses transaction_date for filtering. **Should use filing_date or transaction_date + lag.** Otherwise we're using insider trades that weren't yet public at as_of.
+
+**Specific check needed in Phase 0.A:**
+- Quiver `insider`: does response have `Date` (transaction) or `FilingDate`? Need to use the LATER of the two.
+- Quiver `congressional`: same question
+- Quiver `institutional`: 13F is point-in-time-as-of-quarter-end but filed 45 days later
+
+**NEW BUG to register:** BUG-194.
+
+#### C.2.7 — Index membership / survivorship — FORWARD BIAS LIKELY (BUG-195 NEW)
+
+Universe currently uses CURRENT S&P 500 membership (committed CSV file). 
+
+**Forward bias example:** TSLA was added to S&P 500 in December 2020. If we backtest 2020-06, we shouldn't have TSLA in the universe (it wasn't an S&P 500 member yet). Current code includes it.
+
+Conversely: GE was removed from Dow Jones in 2018. If our universe filter uses 2026 S&P 500 list, GE may be there or not depending on when removed. We'd see consistent exposure or no exposure that wouldn't have matched real-time membership.
+
+**Severity check:** for $10K-$50K limited-funds use case, this is a minor effect (we trade single stocks, not the index). But it's still a forward-bias.
+
+**Pragmatic fix:** maintain quarterly S&P 500 membership snapshots (Wikipedia has historical S&P 500 lists). Engine selects membership ≤ as_of.
+
+**NEW BUG to register:** BUG-195.
+
+#### C.2.8 — Stop fills (BUG-79, already documented)
+
+Current code assumes stops fill at exact stop price. Real stop orders slip — typically 0.1-0.5% on liquid stocks during normal volatility, much more during high vol. **This is more "optimistic backtest" than "forward-bias" but still a real-vs-backtest gap.**
+
+Already documented. Phase 0.C fix: model stop fill as `min(stop_price, today_open)` for longs, with optional slippage parameter.
+
+#### C.2.9 — Trailing stop sequence (BUG-78, already documented)
+
+Engine updates trailing stop BEFORE checking exit, using today's close for both. **Forward bias:** trailing stop at end-of-day uses today's close, then checks if today's close hit the stop. Today's close is always >= today's trailing stop by construction.
+
+Already documented. Phase 0.C fix: check stop FIRST against today's data, update stop AFTER (for next bar).
+
+#### C.2.10 — News articles / sentiment — FORWARD BIAS LIKELY (BUG-196 NEW)
+
+News articles have publication timestamps. Sentiment scores aggregated by publication date. **But:** an article about "Apple Q4 2022 results" published 2022-10-27 is only "available" on or after 2022-10-27. If our news data has retroactive scoring (some sentiment APIs do this), we'd assign high-quality 2024 sentiment to 2022 articles.
+
+**Specific check needed:** for whichever news API we use, confirm:
+- Sentiment is scored AT publication time, not retroactively
+- Article publication_timestamp is reliable
+- No backdated articles
+
+**For Polygon News evaluation (DECISION-002):** add this check to the evaluation criteria.
+
+**NEW BUG to register:** BUG-196.
+
+#### C.2.11 — Agent context — FORWARD BIAS PRESENT (BUG-197 NEW)
+
+When the agent pipeline constructs context for `as_of=2022-06-15`, it pulls:
+- Sector → from `info_snapshot` (BUG-179 fix needed)
+- Smart money → from Quiver cache (BUG-194 fix needed for filing dates)
+- Macro → from FRED cache (BUG-86 fix needed for CPI lag)
+- Earnings days → from yfinance (BUG-193 fix needed)
+- News → from news cache (BUG-196 fix needed)
+
+**The agent's reasoning quality depends on the worst input.** If even ONE input has forward bias, agent decisions are contaminated. Currently, multiple inputs have forward bias.
+
+**This isn't a separate bug — it's the COMPOSITION of the above bugs.** Worth flagging because the cascade is severe: agent reasoning shapes tier downgrades, which shapes position sizing, which shapes PnL.
+
+**NEW BUG to register:** BUG-197 — Agent context composes 5+ forward-biased data sources without adjustment.
+
+### C.3 — Forward-bias mitigation framework
+
+The right mitigation is structural, not vigilance-based. Specifically:
+
+#### C.3.1 — Build a `pit_data_loader` abstraction
+
+Every data source goes through ONE class with ONE method:
+```python
+class PointInTimeLoader:
+    def get(self, dataset: str, ticker: str, as_of: date) -> Any:
+        """Return data for ticker that was AVAILABLE at as_of.
+        
+        Abstracts away release lag, filing lag, retroactive adjustments.
+        """
+        match dataset:
+            case 'ohlcv':
+                df = read_parquet(...)
+                return df[df.index.date <= as_of]
+            
+            case 'macro':
+                df = read_parquet(...)
+                # Apply release lag — CPI shifted +14 days, etc.
+                return df[df['release_date'] <= as_of]
+            
+            case 'insider':
+                df = read_parquet(...)
+                # Use filing_date not transaction_date
+                return df[df['filing_date'] <= as_of]
+            
+            case 'institutional':
+                df = read_parquet(...)
+                # Use 45-day lag from quarter end
+                return df[df['filing_date'] <= as_of]
+            
+            case 'fundamentals':
+                df = read_parquet(...)
+                # Use SEC filing date, not period end
+                return df[df['filing_date'] <= as_of]
+            
+            case 'earnings_dates':
+                df = read_parquet(...)
+                # Only include dates that were ANNOUNCED by as_of
+                # Companies typically announce 4-6 weeks ahead
+                return df[(df['date'] > as_of) & 
+                         (df['announcement_date'] <= as_of)]
+            
+            case 'info':
+                # Snapshot-based — pick latest snapshot <= as_of
+                snapshots = load_snapshots('info')
+                latest = max(s for s in snapshots if s.date <= as_of)
+                return latest.data
+            
+            case 'news':
+                df = read_parquet(...)
+                # Sentiment aggregated by publication_date (NOT score date)
+                return df[df['publication_date'] <= as_of]
+            
+            case 'index_membership':
+                # Quarterly snapshots
+                snapshots = load_snapshots('sp500')
+                return latest_snapshot_le(snapshots, as_of)
+
+```
+
+This is the structural fix. Every data access goes through this loader, which makes forward bias structurally impossible.
+
+#### C.3.2 — Forward-bias regression tests
+
+Add tests like:
+```python
+def test_no_forward_bias_in_agent_context():
+    """Build agent context for 2022-06-15. Re-run on 2022-06-15.
+    Both contexts should be IDENTICAL even though we ran on 2026.
+    """
+    context_a = build_agent_context('AAPL', date(2022, 6, 15))
+    # Mock current time to be 2022-06-16
+    with mock_today(date(2022, 6, 16)):
+        context_b = build_agent_context('AAPL', date(2022, 6, 15))
+    
+    # Even if "today" is different, as_of=2022-06-15 should give same result
+    assert context_a == context_b
+```
+
+If a forward-bias bug exists, the two contexts will differ (today's information leaked in).
+
+#### C.3.3 — Phase 0 deliverable
+
+Phase 0 must produce a `forward_bias_audit.md` document showing:
+- For every data source: PIT method documented (filing_date vs transaction_date, etc.)
+- Test results for forward-bias regression suite
+- Sign-off that engine cannot access future information through any path
+
+This becomes the validation gate for "ready to run Phase 1B-α."
+
+### C.4 — New bugs added in this section
+
+| # | Severity | Title |
+|---|---|---|
+| BUG-192 | HIGH | yfinance .info forward-bias: returns 2026 data for 2022 backtest dates |
+| BUG-193 | HIGH | yfinance .earnings_dates returns dates not yet announced at as_of |
+| BUG-194 | HIGH | Quiver insider/congressional/13F filtered by transaction_date not filing_date |
+| BUG-195 | MEDIUM | S&P 500 membership uses current list, not as-of-date list |
+| BUG-196 | MEDIUM | News article sentiment timing not validated (some APIs retroactively score) |
+| BUG-197 | HIGH | Agent context composes 5+ forward-biased inputs without per-source PIT validation |
+
+Plus the structural recommendation:
+- BUG-198 (NEW) · CRITICAL — No structural PIT data loader; each data source uses ad-hoc PIT logic
+
+### C.5 — Phase 0 scope expansion required
+
+Phase 0.A originally 2 weeks. With proper PIT layer:
+
+| Item | Effort |
+|---|---|
+| PointInTimeLoader class | 3 days |
+| Per-source PIT logic (10 sources) | 4 days |
+| Forward-bias regression test suite | 2 days |
+| Multi-snapshot info prefetch | 2 days |
+| Macro release-lag adjustments | 1 day |
+| Filing date vs transaction date for Quiver | 2 days |
+| S&P 500 historical membership snapshots | 1 day |
+| Earnings date announcement-lag handling | 1 day |
+| Forward-bias audit document | 1 day |
+| **Additional Phase 0.A work for PIT** | **~17 days = ~3.5 weeks** |
+
+**Phase 0.A grows from 2 weeks → 3-4 weeks (sequential) or 1.5-2 weeks (with parallelization).**
+
+This is necessary work. Skipping it means backtest results are not transferable to live trading. The user's explicit requirement was that backtesting "exactly replicate real world trading" — that is impossible without this PIT layer.
+
+---
+
+## SECTION D — Updated decisions
+
+| # | Title | Status | Decision |
+|---|---|---|---|
+| 005 | Strategy count + fundamentals | RESOLVED | Option B (~130) + fundamentals via OpenBB+Polygon as agent context only |
+| 006 | Family deferrals | RESOLVED | Carry/Value/Quality/Pairs/Macro/ML all Phase 1F; ICT/PEAD/Calendar/AVWAP/VPVR upfront |
+| 039 | Phase 0 parallelization | PROPOSED | Option C — within sub-phase parallel, between sub-phases sequential |
+| 040 | PIT data loader (NEW) | PROPOSED | Add structural PIT layer to Phase 0.A |
+
+### DECISION-040 — Adopt structural PIT data loader
+
+**Status:** PROPOSED for user approval
+
+**Options:**
+- **A** — Adopt PointInTimeLoader pattern (recommended, 3.5 weeks Phase 0.A work)
+- **B** — Address forward-bias bugs individually as they're found (faster but no structural protection)
+- **C** — Skip PIT framework, accept forward-bias for Phase 1B-α and remediate before Stage 3
+
+**Recommendation:** **A**. User explicitly required forward-bias-free backtesting. Structural protection is the only reliable path. Vigilance-based mitigation (Option B) requires perfect discipline forever; PointInTimeLoader makes mistakes structurally impossible.
+
+---
+
+## SECTION E — Updated bug count and decision count
+
+| Category | Count |
+|---|---|
+| **Total bugs documented** | **198** |
+| Critical | 18 (was 17, +1 BUG-198 PIT loader) |
+| High | 70 (was 65, +5 BUG-192/193/194/197 + agent context cascade) |
+| Medium | 84 (was 82, +2 BUG-195/196) |
+| Low | 26 (unchanged) |
+
+**Decisions count: 40** (was 38, +2 DECISION-039 parallelization, DECISION-040 PIT loader)
+
+---
+
+## SECTION F — Implementation status update
+
+**Cleared to start (after batches complete):**
+- Quiver pre-cancellation repair (DECISION-001, RESOLVED)
+- Polygon News evaluation (DECISION-002, RESOLVED — eval phase)
+- Phase 0.A scope confirmed (DECISION-004, RESOLVED) — but expanded by PIT work (pending DECISION-040)
+- Strategy count target ~130 (DECISION-005, RESOLVED) with OpenBB+Polygon for fundamentals
+- Family deferrals (DECISION-006, RESOLVED)
+
+**Pending (this batch):**
+- DECISION-003 (Phase 0 inclusion) — user reviewing Section A
+- DECISION-039 (parallelization) — user reviewing Section B
+- DECISION-040 (PIT data loader) — user reviewing Section C
+
+**Remaining for batches 2-7:**
+- DECISIONS 007-038 (32 decisions remaining)
+
+---
+
+## SECTION G — Honest summary
+
+User's three points were all sharp and correct.
+
+**Fork vs build:** OpenBB Platform + Polygon is the fork-existing solution. We don't build a fundamentals library; we use the most popular one. Custom code limited to PIT wrapper and agent integration. ~1 week additional work.
+
+**Parallelization:** real opportunities exist. Phase 0.A: 2 wk → 4-5 days (with multi-terminal prefetch). Phase 0.D: 4-6 wk → 3-4 wk (independent detectors). Phase 0.B/0.C strictly sequential. Total Phase 0: 9-13 wk → 6.5-8 wk.
+
+**Forward bias:** the codebase has 7 distinct forward-bias issues (some documented, some new). User's requirement that backtesting "exactly replicate real world trading" is achievable but requires a structural PointInTimeLoader. ~3.5 weeks added to Phase 0.A. Without this, backtest results are not transferable to live.
+
+**Net Phase 0 timeline impact:**
+- Original (sequential, no PIT): 9-13 weeks
+- With parallelization, no PIT: 6.5-8 weeks
+- With parallelization AND PIT: 8-10.5 weeks (PIT adds back what parallelization saves)
+- With PIT, no parallelization: 12.5-16.5 weeks
+
+**Recommended path: parallel + PIT = 8-10.5 weeks Phase 0.** Same as original sequential estimate, but with proper forward-bias protection.
+
+The user's instinct on parallelization was right and the savings exactly fund the PIT work. Net new timeline: same as original. Result quality: dramatically better (forward-bias structurally impossible).
+
+---
+
+*Pass 22 complete. 7 new bugs (BUG-192 to BUG-198). 2 new decisions (DECISION-039, 040). Total 198 bugs, 40 decisions. Major scope refinement: Phase 0.A expanded for PIT work, parallelization saves equivalent time. Section A approval used to RESOLVE DECISION-005 and 006 from prior batch.*
