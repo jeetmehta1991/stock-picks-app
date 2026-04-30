@@ -19333,3 +19333,102 @@ During Pass 51b, a sandbox session reported expected `65/65` (claimed `63 + 2 ne
 - Unit tests: 56 (was 54 + 2 new)
 
 *Pass 51b complete. Hybrid trail latent bugs fixed; 63/63 tests pass.*
+
+---
+
+## AUDIT PASS 52 — Round 1 Group α decision resolutions (8 items)
+
+**Date:** April 30, 2026
+**Scope:** Owner-driven resolution of zero-engineering-cost decisions from AUDIT_TRIAGE.md.
+**Format:** Each decision resolution recorded with chosen option, rationale, and any forward-link to dependent decisions.
+
+### DEC-152 — Hold-out final test period — RESOLVED (Option A)
+
+**Resolution:** Last 6 months of available data designated as sealed hold-out. NEVER touched during any audit pass, parameter tune, or strategy iteration. Used only for the final pass/fail evaluation before Stage 4 (real-money) funding.
+
+**Rationale:** Walk-forward validation catches in-period overfitting; only a sealed hold-out catches meta-overfitting from 50+ audit cycles. With DEC-266 extending history to 2010 and DEC-158 setting 16-year backtest, losing 6 months represents ~3% of data — small cost for guarding against meta-overfitting. 6 months covers ~125 trading days, sufficient for ≥30 trades per strategy at expected trade frequency.
+
+**Forward action:** Add CHECKLIST item — backtest engine must error if any audit pass attempts to evaluate strategy performance against the hold-out window outside of the official Stage 4 gate evaluation.
+
+### DEC-238 — Pre/after-hours trading policy — RESOLVED (Option A)
+
+**Resolution:** NO extended-hours trading. RTH only (9:30am–4:00pm ET).
+
+**Rationale:** Three reinforcing reasons. (1) Backtest data is RTH OHLC bars from yfinance — running live in extended hours would create immediate backtest-live mismatch (DEC-129 Sharpe equivalence becomes meaningless). (2) Extended-hour spreads on S&P 500 mid-caps are typically 3–10× RTH spreads. (3) IBKR fills in extended hours have higher slippage than DEC-092 slippage model is designed to capture.
+
+**Forward action:** Encode RTH-only as broker-side order constraint at Stage 3+ (paper trading / live execution).
+
+### DEC-248 — Owner pre-commitment document — RESOLVED (Option A)
+
+**Resolution:** Build now. Lightweight 1-page document, ~5 owner-committed rules, lives in repo. To be drafted before paper trading begins.
+
+**Rationale:** Well-documented behavioral finance pattern: pre-commitment reduces in-the-moment temptation during drawdowns. Cost of writing now is low (~30 min); benefit during a real drawdown is high. Building it after first violation trades dollars for clarity at the worst possible moment.
+
+**Initial rule set (proposed for owner draft):**
+1. I will not override the system mid-drawdown (no manual closes of open positions during a -X% portfolio drawdown).
+2. I will not manually close winning trades early.
+3. I will not add capital after a 10% drawdown to chase recovery.
+4. I will not change strategy parameters during a losing streak.
+5. I will let the circuit breakers fire and respect their cooldown periods.
+
+**Forward action:** Owner drafts `docs/PRE_COMMITMENT.md` before Stage 3 paper trading begins. Final rule list and language is owner's responsibility.
+
+### DEC-245 — Owner experience retrospective — RESOLVED (Option B)
+
+**Resolution:** Informal — flag friction when it surfaces. No formal cadence.
+
+**Rationale:** Solo project. Formal monthly cadence creates overhead without changing behavior. Friction surfaces organically through the audit work itself (e.g., "terminal interface is inefficient" → VS Code extension switch this session). Adding a calendared retrospective creates a checkbox without producing insight.
+
+### DEC-169 — Owner skills gap audit — RESOLVED (Option B)
+
+**Resolution:** Defer formal audit until specific friction surfaces. No standalone skills-audit document.
+
+**Rationale:** Same logic as DEC-245. Skills gaps are surfacing organically through the audit cycles themselves — the cost-estimate misses revealed a "verify pricing at source" gap that became LEARNINGS L111-L113. A standalone skills-audit document risks being filled out once and never updated. Wait until something concrete goes wrong, then capture the lesson in LEARNINGS.
+
+### DEC-288 — Legal review of public site — OBSOLETE
+
+**Resolution:** OBSOLETE. The concern (third-party reliance / Canadian securities-registration risk) does not apply when the site's audience is owner-only. Site is technically public but functionally for personal consumption only.
+
+**Standing safeguard:** Standard "not financial advice / for personal use only" disclaimer in HTML footer is sufficient given audience definition.
+
+**Re-open trigger:** RE-OPEN this decision if the audience definition changes — e.g., site is promoted to others, picks are posted on social media, track record is published with intent to attract followers, or the site URL is shared beyond owner. Any of these introduces third-party reliance and re-creates the registration-risk question.
+
+**No change to website architecture:** DEC-187 through DEC-197 (two-property architecture, card-based layout, mobile-first, etc.) remain RESOLVED and unchanged. PROJECT_PLAN Section 21 stands as written.
+
+### DEC-341 — universe.py docstring claims Wikipedia fetch — RESOLVED (Option A)
+
+**Resolution:** Fix the module docstring at `backtest/data/universe.py` to match implementation reality (CSV-backed, not Wikipedia-fetched). Closes BUG-264.
+
+**Rationale:** The docstring claimed dynamic Wikipedia fetch, but actual code reads from committed `sp500_tickers.csv`. Per L88 ("NEVER USE WIKIPEDIA AS A DATA SOURCE"), the CSV-based approach is the correct pattern — the docstring was simply stale. Code logic is correct; only the documentation was wrong.
+
+**Closes:** BUG-264 (LOW, OPEN → RESOLVED)
+
+### DEC-342 — Test pass-rate mis-reported — OBSOLETE
+
+**Resolution:** OBSOLETE. The concern (only 38/46 tests passing) was based on stale pre-Pass-51b laptop state. Pass 51b empirically verified the real test count is 63/63 after `git pull --rebase` synced laptop main with origin (which was 5 commits ahead). Documented in this AUDIT.md under the Pass 51b section.
+
+**Process safeguards already in place:** L94 (sandbox-reported counts are advisory only) + CHECKLIST #33 (verify `git log origin/main..main` is empty before trusting local pytest counts) + Pass 51b "test count drift" entry. No additional action required.
+
+---
+
+## Pass 52 counts and forward state
+
+**Decisions resolved this pass:** 8 (6 RESOLVED + 2 OBSOLETE)
+- RESOLVED: DEC-152, 238, 248, 245, 169, 341
+- OBSOLETE: DEC-288, 342
+
+**Bugs closed:** 1 (BUG-264, LOW)
+
+**Owner-deferred this session (stay PENDING in registry):**
+- DEC-035 (tax classification approach, Canadian) — deferred per owner direction; revisit in future session
+- DEC-270 (pre-Stage-4 CPA consultation) — deferred per owner direction; revisit in future session
+
+**Round 1 remaining (groups β, δ, ε):**
+- Group β: DEC-207 + DEC-208 + DEC-209 — A/B framework bundle (3 decisions, resolve together)
+- Group δ: DEC-029-C — real-money starting capital (resolution: DEFERRED with named prerequisite DEC-269)
+- Group ε: DEC-291 — triage-based bulk approval (resolution: DEFERRED with named prerequisite DEC-161, OR scope narrowly)
+
+**New CHECKLIST candidate from this pass:**
+- Hold-out window enforcement (DEC-152): backtest engine must refuse to evaluate strategy performance against the hold-out 6 months outside the official Stage 4 gate evaluation. To be added when DEC-152 implementation lands (zero-eng-cost for the policy decision; small implementation work to encode the check).
+
+*Pass 52 complete. 8 zero-eng-cost decisions resolved; 5 deferred (3 owner-deferred this session + 2 to be resolved in groups β/δ/ε). No code changes affect tests; docstring fix verified by full pytest run during handoff.*

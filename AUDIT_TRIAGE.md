@@ -1,6 +1,6 @@
 # AUDIT_TRIAGE.md — Pending Decision Prioritization
-**Last regenerated:** April 2026 (post-Pass 49, after BUG-214/215/216/217 fixes committed)
-**Decisions covered:** 274 PENDING (matches AUDIT_INDEX.md)
+**Last regenerated:** April 2026 (post-Pass 52, after Group α resolutions: DEC-152, 238, 248, 245, 169, 288, 341, 342)
+**Decisions covered:** 266 PENDING (matches AUDIT_INDEX.md, post-Pass-52)
 
 **How to read:**
 - **Impact (1-10):** how much each moves the needle on quality, risk, or unblocking work
@@ -17,9 +17,9 @@
 
 | Metric | Count |
 |---|---|
-| Total pending | 274 |
+| Total pending | 266 |
 | Phase 0.A blockers | 60 |
-| Zero-eng-cost (only review time needed) | 13 |
+| Zero-eng-cost (only review time needed) | 5 |
 | Impact >= 9 | 21 |
 | Impact >= 8 (high) | 78 |
 | Sum eng-days estimated | 594 |
@@ -30,17 +30,11 @@
 
 | Rank | Decision | Title | Impact | Eng | Review | 🔴 | Ratio | Theme |
 |---|---|---|---|---|---|---|---|---|
-| 1 | **DECISION-152** | Hold-out final test period (never touched during audits | 9 | 0 | 10 | 🔴 | 18.0 | Batch X20 — IS/OOS extensions |
 | 2 | **DECISION-207** | Pre-commit minimum sample size per arm (300 paired trad | 9 | 0 | 15 | 🔴 | 18.0 | Batch X32 — Agent A/B Testing |
-| 3 | **DECISION-288** | Legal review of public site — registration check, discl | 8 | 0 | 30 |   | 16.0 | Batch X49 — Thin Areas Surfaced |
 | 4 | **DECISION-291** | Triage-based bulk approval — owner approves entire impa | 8 | 0 | 10 |   | 16.0 | Batch X50 — Process Improvements |
 | 5 | **DECISION-270** | Pre-Stage-4 CPA consultation — formal opinion on tradin | 7 | 0 | 10 |   | 14.0 | Batch X45 — Stage 4 Live |
-| 6 | **DECISION-248** | Owner pre-commitment doc (rules owner commits to before | 6 | 0 | 30 |   | 12.0 | Batch X38 — Knowledge Gaps |
 | 7 | **DECISION-205** | A/B test arm design — minimum 4 arms (rules, full-agent | 10 | 1 | 15 | 🔴 | 10.0 | Batch X32 — Agent A/B Testing |
 | 8 | **DECISION-029-C** | Real-money starting capital — DEFERRED until post-paper | 5 | 0 | 10 |   | 10.0 | Live Trading Operational (Group E) |
-| 9 | **DECISION-169** | Owner skills gap audit (statistical, SRE, tax, etc.) —  | 5 | 0 | 30 |   | 10.0 | Batch X26 — Skills |
-| 10 | **DECISION-238** | Pre/after-hours policy (recommendation: NO extended hou | 5 | 0 | 5 |   | 10.0 | Batch X36 — Data Quality + Trading Mecha |
-| 11 | **DECISION-342** | Test pass-rate mis-reported — only 38 of 46 tests run c | 5 | 0 | 5 |   | 10.0 | Batch X55 — Documentation Sync |
 | 12 | **DECISION-080** | t-stat + Bonferroni | 9 | 1 | 15 | 🔴 | 9.0 | Batch X4 — Statistical Methodology |
 | 13 | **DECISION-131** | Agent value-add minimum (Sharpe improvement >=0.2 over  | 9 | 1 | 10 | 🔴 | 9.0 | Batch X14 — Validation criteria |
 | 14 | **DECISION-206** | Paired A/B design — every trade evaluated by every arm  | 9 | 1 | 10 | 🔴 | 9.0 | Batch X32 — Agent A/B Testing |
@@ -70,7 +64,6 @@ This is the recommended next-batch for fix approval. Includes runtime correctnes
 
 | Decision | Title | Impact | Eng | 🔴 | Theme | Why critical |
 |---|---|---|---|---|---|---|
-| **DECISION-152** | Hold-out final test period (never touched during a | 9 | 0 | 🔴 | Batch X20 — IS/OOS extensions | Statistical integrity |
 | **DECISION-207** | Pre-commit minimum sample size per arm (300 paired | 9 | 0 | 🔴 | Batch X32 — Agent A/B Testing | Gates Stage 2 agent decision |
 | **DECISION-205** | A/B test arm design — minimum 4 arms (rules, full- | 10 | 1 | 🔴 | Batch X32 — Agent A/B Testing | Gates Stage 2 agent decision |
 | **DECISION-080** | t-stat + Bonferroni | 9 | 1 | 🔴 | Batch X4 — Statistical Methodo | High system impact |
@@ -100,7 +93,6 @@ This is the recommended next-batch for fix approval. Includes runtime correctnes
 
 | Decision | Title | Impact | Eng | Ratio |
 |---|---|---|---|---|
-| **DECISION-152** | Hold-out final test period (never touched during audits) | 9 | 0 | 18.0 |
 | **DECISION-207** | Pre-commit minimum sample size per arm (300 paired trades) b | 9 | 0 | 18.0 |
 | **DECISION-205** | A/B test arm design — minimum 4 arms (rules, full-agents, no | 10 | 1 | 10.0 |
 | **DECISION-080** | t-stat + Bonferroni | 9 | 1 | 9.0 |
@@ -171,39 +163,25 @@ These need only owner review time, no implementation work. Easy wins.
 
 | Decision | Title | Impact | Review (min) | Theme |
 |---|---|---|---|---|
-| **DECISION-152** | Hold-out final test period (never touched during audits | 9 | 10 | Batch X20 — IS/OOS extensions |
 | **DECISION-207** | Pre-commit minimum sample size per arm (300 paired trad | 9 | 15 | Batch X32 — Agent A/B Testing |
-| **DECISION-288** | Legal review of public site — registration check, discl | 8 | 30 | Batch X49 — Thin Areas Surface |
 | **DECISION-291** | Triage-based bulk approval — owner approves entire impa | 8 | 10 | Batch X50 — Process Improvemen |
 | **DECISION-270** | Pre-Stage-4 CPA consultation — formal opinion on tradin | 7 | 10 | Batch X45 — Stage 4 Live |
-| **DECISION-248** | Owner pre-commitment doc (rules owner commits to before | 6 | 30 | Batch X38 — Knowledge Gaps |
 | **DECISION-029-C** | Real-money starting capital — DEFERRED until post-paper | 5 | 10 | Live Trading Operational (Grou |
-| **DECISION-169** | Owner skills gap audit (statistical, SRE, tax, etc.) —  | 5 | 30 | Batch X26 — Skills |
-| **DECISION-238** | Pre/after-hours policy (recommendation: NO extended hou | 5 | 5 | Batch X36 — Data Quality + Tra |
-| **DECISION-342** | Test pass-rate mis-reported — only 38 of 46 tests run c | 5 | 5 | Batch X55 — Documentation Sync |
 | **DECISION-035** | Tax classification approach (Canadian) — Defer until CP | 4 | 30 | Live Trading Operational (Grou |
-| **DECISION-245** | Owner experience retrospective (periodic check-in on wo | 4 | 30 | Batch X37 — Process / Owner Ex |
-| **DECISION-341** | universe.py docstring claims Wikipedia fetch but code u | 4 | 5 | Batch X55 — Documentation Sync |
 
-**Total zero-eng items: 13 | Total review-min: 220**
+**Total zero-eng items: 5 | Total review-min: 75** (post-Pass-52: DEC-207 + bundled siblings 208/209, DEC-270, DEC-035, DEC-029-C, DEC-291)
 
 ---
 
-## All 274 Pending — Sorted by Ratio
+## All 266 Pending — Sorted by Ratio
 
 | Decision | Title | Impact | Eng | Review | 🔴 | Ratio |
 |---|---|---|---|---|---|---|
-| **DECISION-152** | Hold-out final test period (never touched during audits | 9 | 0 | 10 | 🔴 | 18.0 |
 | **DECISION-207** | Pre-commit minimum sample size per arm (300 paired trad | 9 | 0 | 15 | 🔴 | 18.0 |
-| **DECISION-288** | Legal review of public site — registration check, discl | 8 | 0 | 30 |   | 16.0 |
 | **DECISION-291** | Triage-based bulk approval — owner approves entire impa | 8 | 0 | 10 |   | 16.0 |
 | **DECISION-270** | Pre-Stage-4 CPA consultation — formal opinion on tradin | 7 | 0 | 10 |   | 14.0 |
-| **DECISION-248** | Owner pre-commitment doc (rules owner commits to before | 6 | 0 | 30 |   | 12.0 |
 | **DECISION-205** | A/B test arm design — minimum 4 arms (rules, full-agent | 10 | 1 | 15 | 🔴 | 10.0 |
 | **DECISION-029-C** | Real-money starting capital — DEFERRED until post-paper | 5 | 0 | 10 |   | 10.0 |
-| **DECISION-169** | Owner skills gap audit (statistical, SRE, tax, etc.) —  | 5 | 0 | 30 |   | 10.0 |
-| **DECISION-238** | Pre/after-hours policy (recommendation: NO extended hou | 5 | 0 | 5 |   | 10.0 |
-| **DECISION-342** | Test pass-rate mis-reported — only 38 of 46 tests run c | 5 | 0 | 5 |   | 10.0 |
 | **DECISION-080** | t-stat + Bonferroni | 9 | 1 | 15 | 🔴 | 9.0 |
 | **DECISION-131** | Agent value-add minimum (Sharpe improvement >=0.2 over  | 9 | 1 | 10 | 🔴 | 9.0 |
 | **DECISION-206** | Paired A/B design — every trade evaluated by every arm  | 9 | 1 | 10 | 🔴 | 9.0 |
@@ -224,8 +202,6 @@ These need only owner review time, no implementation work. Easy wins.
 | **DECISION-295** | Reconcile SHORT_BORROW_COST_PER_DAY units — 0.005 ambig | 8 | 1 | 10 |   | 8.0 |
 | **DECISION-305** | PIT guard `_assert_no_lookahead` logs WARNING but doesn | 8 | 1 | 5 | 🔴 | 8.0 |
 | **DECISION-035** | Tax classification approach (Canadian) — Defer until CP | 4 | 0 | 30 |   | 8.0 |
-| **DECISION-245** | Owner experience retrospective (periodic check-in on wo | 4 | 0 | 30 |   | 8.0 |
-| **DECISION-341** | universe.py docstring claims Wikipedia fetch but code u | 4 | 0 | 5 |   | 8.0 |
 | **DECISION-034** | Daily loss limits for live trading | 7 | 1 | 15 |   | 7.0 |
 | **DECISION-038** | Layered execution with iteration budgets | 7 | 1 | 15 | 🔴 | 7.0 |
 | **DECISION-079** | Reconcile Level 2 earnings gap with earnings_tolerant | 7 | 1 | 10 | 🔴 | 7.0 |

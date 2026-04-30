@@ -172,7 +172,7 @@
 | **DECISION-149** | Regime transition probability matrix | PENDING | Batch X19 — Regime extensions | Pass 40 | - |
 | **DECISION-150** | Multi-asset regime detection (equity+credit+commodity+currency) | PENDING | Batch X19 — Regime extensions | Pass 40 | - |
 | **DECISION-151** | Sector-level regime classification | PENDING | Batch X19 — Regime extensions | Pass 40 | - |
-| **DECISION-152** | Hold-out final test period (never touched during audits) | PENDING | Batch X20 — IS/OOS extensions | Pass 40 | - |
+| **DECISION-152** | Hold-out final test period (never touched during audits) | RESOLVED | Batch X20 — IS/OOS extensions | Pass 40 | 52 |
 | **DECISION-153** | Regime-stratified train/test splits | PENDING | Batch X20 — IS/OOS extensions | Pass 40 | - |
 | **DECISION-154** | Market structure change tracker (quarterly) — Informal note in audit when market changes n | SUPERSEDED | Batch X21 — Benchmarking | Pass 40 | 43 |
 | **DECISION-155** | vs-SPY comparison in all backtest reports | PENDING | Batch X21 — Benchmarking | Pass 40 | - |
@@ -189,7 +189,7 @@
 | **DECISION-166** | HANDOFF.md template specification — HANDOFF template — build when activated by owner | PENDING | Batch X25 — Process workflow | Pass 41 | - |
 | **DECISION-167** | Retrospective cadence (every N audit passes) — Retrospective cadence: every 10 audit passe | RESOLVED | Batch X25 — Process workflow | Pass 41 | 43 |
 | **DECISION-168** | Incident postmortem template — Incident postmortem template — build at first incident | PENDING | Batch X25 — Process workflow | Pass 41 | - |
-| **DECISION-169** | Owner skills gap audit (statistical, SRE, tax, etc.) — Owner self-assesses skills gap (not | PENDING | Batch X26 — Skills | Pass 41 | - |
+| **DECISION-169** | Owner skills gap audit (statistical, SRE, tax, etc.) — Owner self-assesses skills gap (not | RESOLVED | Batch X26 — Skills | Pass 41 | 52 |
 | **DECISION-170** | Type hints + mypy in CI | PENDING | Batch X27 — Code quality | Pass 41 | - |
 | **DECISION-171** | Docstring standard + sphinx documentation | PENDING | Batch X27 — Code quality | Pass 41 | - |
 | **DECISION-172** | All numerical constants extracted to config | PENDING | Batch X27 — Code quality | Pass 41 | - |
@@ -257,17 +257,17 @@
 | **DECISION-235** | Time/calendar handling spec (NYSE calendar, holidays, DST, half-days) | PENDING | Batch X36 — Data Quality + Trading Mechanics | Pass 45 | - |
 | **DECISION-236** | Position sizing precision rules (round to broker minimum increment) | PENDING | Batch X36 — Data Quality + Trading Mechanics | Pass 45 | - |
 | **DECISION-237** | Order type policy (when MOO vs limit vs stop vs stop-limit) | PENDING | Batch X36 — Data Quality + Trading Mechanics | Pass 45 | - |
-| **DECISION-238** | Pre/after-hours policy (recommendation: NO extended hours) | PENDING | Batch X36 — Data Quality + Trading Mechanics | Pass 45 | - |
+| **DECISION-238** | Pre/after-hours policy (recommendation: NO extended hours) | RESOLVED | Batch X36 — Data Quality + Trading Mechanics | Pass 45 | 52 |
 | **DECISION-239** | Multi-account architecture (TFSA/RRSP/Margin future-proofing) | PENDING | Batch X36 — Data Quality + Trading Mechanics | Pass 45 | - |
 | **DECISION-240** | Alert tuning — configurable thresholds per event + rate tracking | PENDING | Batch X36 — Data Quality + Trading Mechanics | Pass 45 | - |
 | **DECISION-241** | Time-in-market metric (% in any position, % long, % short, % cash) | PENDING | Batch X36 — Data Quality + Trading Mechanics | Pass 45 | - |
 | **DECISION-242** | Distribution analysis (skewness, kurtosis, max single-trade contribution) | PENDING | Batch X36 — Data Quality + Trading Mechanics | Pass 45 | - |
 | **DECISION-243** | Owner Approval Queue file (pending decisions waiting on owner reply, by age) | PENDING | Batch X37 — Process / Owner Experience | Pass 45 | - |
 | **DECISION-244** | SESSION_START.md — Claude reads first in any new session for fast onboarding | PENDING | Batch X37 — Process / Owner Experience | Pass 45 | - |
-| **DECISION-245** | Owner experience retrospective (periodic check-in on workflow productivity) | PENDING | Batch X37 — Process / Owner Experience | Pass 45 | - |
+| **DECISION-245** | Owner experience retrospective (periodic check-in on workflow productivity) | RESOLVED | Batch X37 — Process / Owner Experience | Pass 45 | 52 |
 | **DECISION-246** | Quant finance correctness audit (Sharpe annualization, DD computation, vol periodicity) | PENDING | Batch X38 — Knowledge Gaps | Pass 45 | - |
 | **DECISION-247** | Stats/ML implementation review (HMM, deflated Sharpe, Kelly — validate against known resul | PENDING | Batch X38 — Knowledge Gaps | Pass 45 | - |
-| **DECISION-248** | Owner pre-commitment doc (rules owner commits to before losses) | PENDING | Batch X38 — Knowledge Gaps | Pass 45 | - |
+| **DECISION-248** | Owner pre-commitment doc (rules owner commits to before losses) | RESOLVED | Batch X38 — Knowledge Gaps | Pass 45 | 52 |
 | **DECISION-249** | Strategy decay metric (rolling 6mo Sharpe per strategy; flag >50% drop) | PENDING | Batch X39 — Strategy Decay + Code Quality | Pass 45 | - |
 | **DECISION-250** | Edge decay assumption (discount backtest Sharpe by expected crowding %) | PENDING | Batch X39 — Strategy Decay + Code Quality | Pass 45 | - |
 | **DECISION-251** | Dependency injection audit (refactor for testability with mocks) | PENDING | Batch X39 — Strategy Decay + Code Quality | Pass 45 | - |
@@ -307,7 +307,7 @@
 | **DECISION-285** | Mid-hold agent re-evaluation — does live agent re-rate open positions? | PENDING | Batch X49 — Thin Areas Surfaced | Pass 47 | - |
 | **DECISION-286** | Wealthsimple replication tracking — log owner-placed manual trades, compute exec-quality v | PENDING | Batch X49 — Thin Areas Surfaced | Pass 47 | - |
 | **DECISION-287** | Public site failure handling + freshness signal (last-updated timestamp prominent) | PENDING | Batch X49 — Thin Areas Surfaced | Pass 47 | - |
-| **DECISION-288** | Legal review of public site — registration check, disclaimer, liability terms BEFORE publi | PENDING | Batch X49 — Thin Areas Surfaced | Pass 47 | - |
+| **DECISION-288** | Legal review of public site — registration check, disclaimer, liability terms BEFORE publi | OBSOLETE | Batch X49 — Thin Areas Surfaced | Pass 47 | 52 |
 | **DECISION-289** | Owner-absent contingency — backup contact, POA, vacation-mode auto-flatten | PENDING | Batch X49 — Thin Areas Surfaced | Pass 47 | - |
 | **DECISION-290** | Dropped strategy re-evaluation cadence (every 6 months re-test, re-admit if Sharpe restore | PENDING | Batch X49 — Thin Areas Surfaced | Pass 47 | - |
 | **DECISION-291** | Triage-based bulk approval — owner approves entire impact-ratio band in single message | PENDING | Batch X50 — Process Improvements | Pass 47 | - |
@@ -360,8 +360,8 @@
 | **DECISION-338** | Conversion logic (short→long in bull regime) creates label only; no actual long opened — d | PENDING | Batch X54 — Medium-Severity Improvements | Pass 48 | - |
 | **DECISION-339** | pnl_dollar hardcoded $10K notional — wrong for $5K paper / $50K next stage / $1K live | PENDING | Batch X54 — Medium-Severity Improvements | Pass 48 | - |
 | **DECISION-340** | get_correlation_matrix silently drops tickers with <20 history — variable corr-matrix memb | PENDING | Batch X54 — Medium-Severity Improvements | Pass 48 | - |
-| **DECISION-341** | universe.py docstring claims Wikipedia fetch but code uses static CSV — fix docstring or i | PENDING | Batch X55 — Documentation Sync | Pass 48 | - |
-| **DECISION-342** | Test pass-rate mis-reported — only 38 of 46 tests run cleanly (7 e2e errors); update repor | PENDING | Batch X55 — Documentation Sync | Pass 48 | - |
+| **DECISION-341** | universe.py docstring claims Wikipedia fetch but code uses static CSV — fix docstring or i | RESOLVED | Batch X55 — Documentation Sync | Pass 48 | 52 |
+| **DECISION-342** | Test pass-rate mis-reported — only 38 of 46 tests run cleanly (7 e2e errors); update repor | OBSOLETE | Batch X55 — Documentation Sync | Pass 48 | 52 |
 | **DECISION-343** | Pandas-ta deprecation warning on pandas 4.0 — plan replacement (TA-Lib alternative) | PENDING | Batch X55 — Documentation Sync | Pass 48 | - |
 | **DECISION-344** | Slippage threshold ATR/price > 3% likely too high — most S&P large caps never trigger | PENDING | Batch X55 — Documentation Sync | Pass 48 | - |
 
@@ -1006,7 +1006,7 @@
 | **BUG-112** | LOW — No ICT/SMC concepts implemented | LOW | OPEN | Pass 13 |
 | **BUG-183** | LOW — No prefetch validation step | LOW | OPEN | Pass 17 |
 | **BUG-204** | engine.py dead code shipping in repo (426 lines, no current import) | LOW | OPEN | Pass 47 |
-| **BUG-264** | universe.py docstring claims Wikipedia fetch but uses static CSV | LOW | OPEN | Pass 48 |
+| **BUG-264** | universe.py docstring claims Wikipedia fetch but uses static CSV | LOW | RESOLVED | Pass 48 (closed Pass 52) |
 | **BUG-265** | yfinance auto_adjust=True hardcoded; no raw price option | LOW | OPEN | Pass 48 |
 | **BUG-266** | delay_sec 0.3 magic number undocumented | LOW | OPEN | Pass 48 |
 | **BUG-267** | Test e2e takes 4.5 min for 1 passing test — too slow for smoke | LOW | OPEN | Pass 48 |

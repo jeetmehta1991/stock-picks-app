@@ -2,15 +2,20 @@
 data/universe.py — Instrument manager.
 
 Handles:
-  - Fetching S&P 500 constituent list from Wikipedia (point-in-time approximate)
+  - Loading S&P 500 constituent list from committed static CSV (sp500_tickers.csv)
+    The CSV is refreshed quarterly via slickcharts.com (or S&P press releases).
+    See LEARNINGS L88: Wikipedia is unreliable as a runtime data source — the
+    static CSV pattern is the correct approach.
   - Applying liquidity filters to reduce ~500 → ~380-420 tradeable names
   - Appending new instruments to existing universe without re-fetching
   - Sector breakdown for correlation analysis
 
 Universe tiers:
   Phase 1A: SP50 + 17 ETFs = 67 instruments (hardcoded — pipeline validation)
-  Phase 1B: Filtered S&P 500 + all ETFs = ~400 instruments (dynamic)
+  Phase 1B: Filtered S&P 500 + all ETFs = ~400 instruments (CSV-backed)
   Phase 1C: Passing strategies only, full universe
+
+Resolves: DEC-341 (Pass 52), closes BUG-264.
 """
 
 import logging
