@@ -11,6 +11,7 @@ from datetime import date
 from pathlib import Path
 
 import pandas as pd
+import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 logging.disable(logging.CRITICAL)  # suppress noise during test
@@ -21,11 +22,16 @@ SMOKE_START   = date(2022, 1, 1)
 SMOKE_END     = date(2022, 3, 31)
 
 
-def test_e2e_backtest_runs():
-    """Full pipeline smoke test — no agents, 5 tickers, 3 months."""
+@pytest.fixture(scope="module")
+def engine():
+    """
+    BUG-216 fix (Pass 48): converted from regular function returning engine
+    into a proper pytest fixture so dependent tests can use `engine` parameter.
+    Module-scoped so the slow backtest only runs once per test session.
+    """
     from backtest.engine.backtest import BacktestEngine
 
-    engine = BacktestEngine(
+    eng = BacktestEngine(
         universe=SMOKE_TICKERS,
         start=SMOKE_START,
         end=SMOKE_END,
@@ -36,18 +42,20 @@ def test_e2e_backtest_runs():
         apply_costs=True,
         walk_forward=False,
     )
-    engine.load_data()
-    engine.run()
+    eng.load_data()
+    eng.run()
+
+    if len(eng.ohlcv_dict) == 0:
+        pytest.skip("OHLCV cache not available — run e2e from Codespaces with cache populated")
+
+    return eng
 
 
-    if len(engine.ohlcv_dict) == 0:
-        print("⚠️  OHLCV cache not available — run e2e from Codespaces")
-        return None
-
+def test_e2e_backtest_runs(engine):
+    """Full pipeline smoke test — no agents, 5 tickers, 3 months."""
     assert len(engine.closed_trades) > 0, \
         "Smoke test produced zero closed trades — pipeline broken"
     print(f"✅ E2E backtest ran — {len(engine.closed_trades)} closed trades")
-    return engine
 
 
 def test_trade_log_completeness(engine):

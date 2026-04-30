@@ -1,5 +1,5 @@
 # AUDIT_INDEX.md — Decision and Bug Registry
-**Last regenerated:** April 2026 (post-Pass 48)
+**Last regenerated:** April 2026 (post-Pass 49)
 
 ---
 
@@ -9,10 +9,10 @@
 
 | Status | Count |
 |---|---|
-| RESOLVED | 55 |
+| RESOLVED | 60 |
 | PARTIAL | 5 |
 | SUPERSEDED | 7 |
-| PENDING | 279 |
+| PENDING | 274 |
 
 ### All Decisions Table
 
@@ -312,11 +312,11 @@
 | **DECISION-290** | Dropped strategy re-evaluation cadence (every 6 months re-test, re-admit if Sharpe restore | PENDING | Batch X49 — Thin Areas Surfaced | Pass 47 | - |
 | **DECISION-291** | Triage-based bulk approval — owner approves entire impact-ratio band in single message | PENDING | Batch X50 — Process Improvements | Pass 47 | - |
 | **DECISION-292** | Decision→CHECKLIST migration audit (quarterly, RESOLVED decisions to process rules) | PENDING | Batch X50 — Process Improvements | Pass 47 | - |
-| **DECISION-293** | Fix close_trade `days` NameError — confirmed runtime crash via execution. Reorder `pnl = _ | PENDING | Batch X51 — CRITICAL Runtime Bugs | Pass 48 | - |
-| **DECISION-294** | Remove duplicate ClosedTrade dataclass definition in exit_manager.py — pick canonical, del | PENDING | Batch X51 — CRITICAL Runtime Bugs | Pass 48 | - |
+| **DECISION-293** | Fix close_trade `days` NameError — confirmed runtime crash via execution. Reorder `pnl = _ | RESOLVED | Batch X51 — CRITICAL Runtime Bugs | Pass 48 | 49 |
+| **DECISION-294** | Remove duplicate ClosedTrade dataclass definition in exit_manager.py — pick canonical, del | RESOLVED | Batch X51 — CRITICAL Runtime Bugs | Pass 48 | 49 |
 | **DECISION-295** | Reconcile SHORT_BORROW_COST_PER_DAY units — 0.005 ambiguous (per-day decimal vs per-day pe | PENDING | Batch X51 — CRITICAL Runtime Bugs | Pass 48 | - |
-| **DECISION-296** | Fix test_e2e fixture — engine fixture undefined, 7 of 8 e2e tests ERROR at setup | PENDING | Batch X51 — CRITICAL Runtime Bugs | Pass 48 | - |
-| **DECISION-297** | Add unit test for close_trade — would have caught the days bug; same for any function in c | PENDING | Batch X51 — CRITICAL Runtime Bugs | Pass 48 | - |
+| **DECISION-296** | Fix test_e2e fixture — engine fixture undefined, 7 of 8 e2e tests ERROR at setup | RESOLVED | Batch X51 — CRITICAL Runtime Bugs | Pass 48 | 49 |
+| **DECISION-297** | Add unit test for close_trade — would have caught the days bug; same for any function in c | RESOLVED | Batch X51 — CRITICAL Runtime Bugs | Pass 48 | 49 |
 | **DECISION-298** | Cache stores adjusted-close (auto_adjust=True) which changes over time as splits/dividends | PENDING | Batch X52 — CRITICAL PIT Correctness | Pass 48 | - |
 | **DECISION-299** | yfinance fetch_info returns CURRENT sector/mkt_cap/IPO date regardless of as_of — full his | PENDING | Batch X52 — CRITICAL PIT Correctness | Pass 48 | - |
 | **DECISION-300** | yfinance earnings_dates and analyst data return CURRENT values not as-of — replace with PI | PENDING | Batch X52 — CRITICAL PIT Correctness | Pass 48 | - |
@@ -325,7 +325,7 @@
 | **DECISION-303** | S&P 500 constituent list is current membership applied retroactively — survivorship bias;  | PENDING | Batch X52 — CRITICAL PIT Correctness | Pass 48 | - |
 | **DECISION-304** | CPI/NFP/FOMC dates hardcoded through March 2026 only — auto-extend from FRED FOMC + BLS sc | PENDING | Batch X52 — CRITICAL PIT Correctness | Pass 48 | - |
 | **DECISION-305** | PIT guard `_assert_no_lookahead` logs WARNING but doesn't RAISE — switch to RAISE in backt | PENDING | Batch X52 — CRITICAL PIT Correctness | Pass 48 | - |
-| **DECISION-306** | get_news_sentiment path mismatch — code reads /prefetch/news/ but data lives in /cache/fin | PENDING | Batch X52 — CRITICAL PIT Correctness | Pass 48 | - |
+| **DECISION-306** | get_news_sentiment path mismatch — code reads /prefetch/news/ but data lives in /cache/fin | RESOLVED | Batch X52 — CRITICAL PIT Correctness | Pass 48 | 49 |
 | **DECISION-307** | Cache get_ohlcv front-extension missing — only fetches missing TAIL; if user requests star | PENDING | Batch X53 — High-Impact Engine Bugs | Pass 48 | - |
 | **DECISION-308** | Cache get_ohlcv_bulk requires >=20 trading days — silently rejects valid cache for shorter | PENDING | Batch X53 — High-Impact Engine Bugs | Pass 48 | - |
 | **DECISION-309** | Cache ticker collision: BRK-B and (hypothetical) BRK.B both map to BRK_B.parquet — silent  | PENDING | Batch X53 — High-Impact Engine Bugs | Pass 48 | - |
@@ -681,15 +681,11 @@
 - **DECISION-291**: Triage-based bulk approval — owner approves entire impact-ratio band in single message
 - **DECISION-292**: Decision→CHECKLIST migration audit (quarterly, RESOLVED decisions to process rules)
 
-**Batch X51 — CRITICAL Runtime Bugs** (5):
+**Batch X51 — CRITICAL Runtime Bugs** (1):
 
-- **DECISION-293**: Fix close_trade `days` NameError — confirmed runtime crash via execution. Reorder `pnl = _pnl(...)` after `days = ...` assignment
-- **DECISION-294**: Remove duplicate ClosedTrade dataclass definition in exit_manager.py — pick canonical, delete other
 - **DECISION-295**: Reconcile SHORT_BORROW_COST_PER_DAY units — 0.005 ambiguous (per-day decimal vs per-day percent); risks 100× error
-- **DECISION-296**: Fix test_e2e fixture — engine fixture undefined, 7 of 8 e2e tests ERROR at setup
-- **DECISION-297**: Add unit test for close_trade — would have caught the days bug; same for any function in critical exit path
 
-**Batch X52 — CRITICAL PIT Correctness** (9):
+**Batch X52 — CRITICAL PIT Correctness** (8):
 
 - **DECISION-298**: Cache stores adjusted-close (auto_adjust=True) which changes over time as splits/dividends accrue — store raw OHLCV + corp actions; recompute adjusted on demand
 - **DECISION-299**: yfinance fetch_info returns CURRENT sector/mkt_cap/IPO date regardless of as_of — full historical company info source needed (Polygon Reference)
@@ -699,7 +695,6 @@
 - **DECISION-303**: S&P 500 constituent list is current membership applied retroactively — survivorship bias; need historical PIT membership data
 - **DECISION-304**: CPI/NFP/FOMC dates hardcoded through March 2026 only — auto-extend from FRED FOMC + BLS schedule
 - **DECISION-305**: PIT guard `_assert_no_lookahead` logs WARNING but doesn't RAISE — switch to RAISE in backtest mode
-- **DECISION-306**: get_news_sentiment path mismatch — code reads /prefetch/news/ but data lives in /cache/finnhub_news/ + /cache/av_news/; news data NEVER read by sentiment snapshot
 
 **Batch X53 — High-Impact Engine Bugs** (21):
 
@@ -836,9 +831,17 @@
 
 **Total: 269 unique bug IDs.**
 
+| Status | Count |
+|---|---|
+| RESOLVED | 4 |
+| OPEN | 265 |
+
+
+### Open Bugs by Severity
+
 | Severity | Count |
 |---|---|
-| CRITICAL | 28 |
+| CRITICAL | 24 |
 | HIGH | 58 |
 | MEDIUM | 67 |
 | LOW | 21 |
@@ -847,277 +850,277 @@
 
 ### All Bugs Table
 
-| ID | Title | Severity | Pass Intro |
-|---|---|---|---|
-| **BUG-026** | CRITICAL — VIX proxy is VXX price (223–461), not actual VIX (18–36) — all regime | CRITICAL | - |
-| **BUG-027** | CRITICAL — `regime_confidence()` function built but never called — dead code | CRITICAL | - |
-| **BUG-057** | MEDIUM — Integration tests missing 15 critical scenarios — 5 bugs would have bee | CRITICAL | - |
-| **BUG-063** | MEDIUM — Email approval system has 6 critical design gaps not addressed in PROJE | CRITICAL | - |
-| **BUG-068** | MEDIUM — CLAUDE.md missing 5 critical recent decisions | CRITICAL | - |
-| **BUG-078** | CRITICAL — Trailing stop lookahead bias: stop updated using today's close BEFORE | CRITICAL | - |
-| **BUG-093** | CRITICAL — No execution layer exists; PROJECT_PLAN describes it conceptually onl | CRITICAL | - |
-| **BUG-094** | CRITICAL — Stage 3 paper trading cannot actually run as designed | CRITICAL | - |
-| **BUG-095** | CRITICAL — No portfolio-level state; every trade evaluated independently | CRITICAL | - |
-| **BUG-101** | CRITICAL — 88.1% of trades are overlapping re-entries on the same ticker — backt | CRITICAL | - |
-| **BUG-102** | CRITICAL — 3.5× same-day duplicate inflation: 9,921 unique decisions logged as 3 | CRITICAL | - |
-| **BUG-103** | CRITICAL — Smart money data prefetched for 7 categories × 509 tickers but never  | CRITICAL | - |
-| **BUG-184** | CRITICAL — Insider data prefetch stops 2024-12-31; 13-month gap before backtest  | CRITICAL | Pass 18 |
-| **BUG-185** | CRITICAL — Wikipedia views prefetch failed entirely; all 509 files empty | CRITICAL | Pass 18 |
-| **BUG-191** | CRITICAL — No prefetch validation gate before cache-dependent code runs | CRITICAL | Pass 18 |
-| **BUG-200** | CRITICAL — Risk Agent context expansion required (Section B) | CRITICAL | Pass 25 |
-| **BUG-214** | close_trade NameError: 'days' used before assignment — confirmed via execution;  | CRITICAL | Pass 48 |
-| **BUG-215** | Duplicate ClosedTrade dataclass at lines 73 + 128 of exit_manager.py — second si | CRITICAL | Pass 48 |
-| **BUG-216** | test_e2e fixture undefined — 7 of 8 e2e tests ERROR at setup; engine fixture mis | CRITICAL | Pass 48 |
-| **BUG-217** | get_news_sentiment path mismatch — reads /prefetch/news/ but data lives in /cach | CRITICAL | Pass 48 |
-| **BUG-218** | yfinance fetch_info returns CURRENT analyst data not as_of — sector/mkt_cap/IPO/ | CRITICAL | Pass 48 |
-| **BUG-219** | Cache stores adjusted-close which silently shifts as new corp actions accrue — h | CRITICAL | Pass 48 |
-| **BUG-220** | FRED data revisions unhandled — current API returns latest revised values not vi | CRITICAL | Pass 48 |
-| **BUG-221** | VXX used as ^VIX proxy + UUP as DXY proxy — neither tracks underlying accurately | CRITICAL | Pass 48 |
-| **BUG-222** | S&P 500 constituents are CURRENT membership applied to all backtest dates — surv | CRITICAL | Pass 48 |
-| **BUG-223** | CPI/NFP/FOMC dates hardcoded through March 2026 only — live trading after that h | CRITICAL | Pass 48 |
-| **BUG-224** | PIT guard `_assert_no_lookahead` logs WARNING not RAISE — leakage swallowed in p | CRITICAL | Pass 48 |
-| **BUG-225** | Regime classifier returns 'neutral' on missing VIX silently — should refuse to t | CRITICAL | Pass 48 |
-| **BUG-028** | HIGH — RSI computation uses simple rolling mean instead of Wilder exponential sm | HIGH | - |
-| **BUG-029** | HIGH — Open trades at backtest end silently discarded — upward bias in all metri | HIGH | - |
-| **BUG-030** | HIGH — VIX tightening in crisis contradicts own documentation | HIGH | - |
-| **BUG-031** | HIGH — Walk-forward OOS minimum of 30 trades is statistically insufficient | HIGH | - |
-| **BUG-032** | HIGH — Profit factor minimum 1.2 too low; literature requires 1.5 minimum | HIGH | - |
-| **BUG-033** | HIGH — Sharpe ratio not required as passing criterion; computed but ignored | HIGH | - |
-| **BUG-034** | HIGH — Mean reversion strategies run in all regimes — literature shows they fail | HIGH | - |
-| **BUG-051** | HIGH — All 5 agents receive wrong or zero price context due to BUG-10 compoundin | HIGH | - |
-| **BUG-052** | HIGH — Risk Agent's VIX floor behavior now fully explained by BUG-26 | HIGH | - |
-| **BUG-053** | HIGH — Finnhub news cache: all 509 files are empty — Sentiment Agent has no news | HIGH | - |
-| **BUG-060** | HIGH — Short entry zone validation rejects favourable gap-down — understates sho | HIGH | - |
-| **BUG-061** | HIGH — Backtest allows multiple concurrent positions in same ticker across conse | HIGH | - |
-| **BUG-062** | HIGH — Phase 1D cannot run — 2020 OHLCV data not cached, DATA_LOAD_START=2021 | HIGH | - |
-| **BUG-072** | HIGH — `validate_phase1b_data.py` passes all checks but misses 6 blockers — fals | HIGH | - |
-| **BUG-073** | HIGH — `prepopulate_cache_index.py` writes incompatible format — causes cache mi | HIGH | - |
-| **BUG-074** | HIGH — BUG-14 worse than documented: XLE also missing from `run_full.sh` — 5 tic | HIGH | - |
-| **BUG-079** | HIGH — Stop fills assumed at the stop price; gap-through is not modelled (slippa | HIGH | - |
-| **BUG-080** | HIGH — Exit slippage never applied; only entry slippage charged. Round-trip slip | HIGH | - |
-| **BUG-081** | HIGH — `SHORT_BORROW_COST_PER_DAY = 0.005` is 2.5× the documented intent | HIGH | - |
-| **BUG-082** | HIGH — Slippage and transaction-cost double-charging — total cost 2× literature  | HIGH | - |
-| **BUG-083** | HIGH — `get_congressional_detail()` filters with INVERTED point-in-time logic | HIGH | - |
-| **BUG-096** | HIGH — No benchmark comparison (SPY buy-and-hold) | HIGH | - |
-| **BUG-097** | HIGH — No infrastructure-as-code; manual VPS setup | HIGH | - |
-| **BUG-098** | HIGH — No monitoring or alerting | HIGH | - |
-| **BUG-104** | HIGH — Position sizing rules from config never applied to PnL — backtest assumes | HIGH | - |
-| **BUG-105** | HIGH — Agent downgrade cascade: 99.9% of trades downgraded by exactly 1 tier — a | HIGH | - |
-| **BUG-106** | HIGH — Perfect stop fills in trade log: every trailing-stop exit fills at exactl | HIGH | - |
-| **BUG-109** | HIGH — yfinance auto_adjust causes data drift; backtest results not reproducible | HIGH | Pass 12 |
-| **BUG-110** | HIGH — Entry gap filter not enforced; trades opened despite exceeding ATR limit | HIGH | Pass 12 |
-| **BUG-113** | HIGH — Agent action/sizing/exit recommendations ignored by engine | HIGH | Pass 14 |
-| **BUG-178** | HIGH — Earnings dates fetched live during backtest, no prefetch path | HIGH | Pass 17 |
-| **BUG-179** | HIGH — yfinance .info fetched live during backtest universe load | HIGH | Pass 17 |
-| **BUG-180** | HIGH — VIX not explicitly prefetched; VXX used as proxy is cause of BUG-26 | HIGH | Pass 17 |
-| **BUG-186** | HIGH — 29 institutional 13F files empty including major tickers (AAPL, ABBV, AMZ | HIGH | Pass 18 |
-| **BUG-187** | HIGH — WSB mentions prefetch stops 2025-02-21; 14-month gap | HIGH | Pass 18 |
-| **BUG-205** | TRANSACTION_COSTS understates 3x at small notional (no IBKR cap modeling) | HIGH | Pass 47 |
-| **BUG-206** | Cache stale-data silent use (402 tickers end 2024-12-31, no warning) | HIGH | Pass 47 |
-| **BUG-210** | agents/pipeline.py silent downgrade on API failure (5 sites) | HIGH | Pass 47 |
-| **BUG-212** | sync_from_claude.yml --strategy=theirs silently overrides owner edits on conflic | HIGH | Pass 47 |
-| **BUG-226** | Cache get_ohlcv front-extension missing; if requested start before cached_start, | HIGH | Pass 48 |
-| **BUG-227** | Cache bulk fetch >=20 trading days threshold — silently rejects valid cache for  | HIGH | Pass 48 |
-| **BUG-228** | Cache ticker collision: BRK-B and BRK.B both → BRK_B.parquet | HIGH | Pass 48 |
-| **BUG-229** | Cache zero-volume days dropped silently — halted/suspended stocks invisible | HIGH | Pass 48 |
-| **BUG-230** | Trailing-stop ATR exits use ENTRY-time ATR throughout hold — should refresh dail | HIGH | Pass 48 |
-| **BUG-231** | exit_hybrid_50pct max_days=252 but other 11 exits don't have max — comparison no | HIGH | Pass 48 |
-| **BUG-232** | update_trailing_stop ignores intraday HIGH — only updates at close above prior b | HIGH | Pass 48 |
-| **BUG-233** | Circuit breakers level 3 + 4 documented but not implemented | HIGH | Pass 48 |
-| **BUG-234** | VIX hard thresholds flip regime on single print — no MA smoothing | HIGH | Pass 48 |
-| **BUG-235** | AAII pub-lag not respected — Wed survey marked tradeable Wed instead of Thu | HIGH | Pass 48 |
-| **BUG-236** | AAII auto-refresh missing — committed CSV will go stale | HIGH | Pass 48 |
-| **BUG-237** | CNN F&G CSV interpolated between key readings — fabricated PIT signal | HIGH | Pass 48 |
-| **BUG-238** | Liquidity filter market-cap fail-open — missing data passes filter | HIGH | Pass 48 |
-| **BUG-239** | Sector reclassifications retro-applied — current sector for old trades | HIGH | Pass 48 |
-| **BUG-240** | Congressional signal weighted by disclosure_date not transaction_date | HIGH | Pass 48 |
-| **BUG-241** | Institutional 13F PIT assumes on-time filing — late filers invisible | HIGH | Pass 48 |
-| **BUG-242** | Short borrow cost duplicated across improvements.py and exit_manager.py with dif | HIGH | Pass 48 |
-| **BUG-243** | Walk-forward windows hardcoded calendar dates — stale after June 2026 | HIGH | Pass 48 |
-| **BUG-244** | close_trade circuit breaker exits skip MAE/MFE update on day of exit (passes 0.0 | HIGH | Pass 48 |
-| **BUG-035** | MEDIUM — Decision Agent default fallback has invalid `action` value | MEDIUM | - |
-| **BUG-036** | MEDIUM — Regime-aware strategy weighting not implemented | MEDIUM | - |
-| **BUG-037** | MEDIUM — Survivorship bias haircut methodology is arbitrary | MEDIUM | - |
-| **BUG-038** | MEDIUM — No minimum Sharpe in Bonferroni correction | MEDIUM | - |
-| **BUG-039** | MEDIUM — `regime_confidence()` compares VIX-based regime with SPY-trend regime i | MEDIUM | - |
-| **BUG-040** | MEDIUM — Short stop distance same as long (10%) — asymmetric risk not accounted  | MEDIUM | - |
-| **BUG-041** | MEDIUM — `min_market_cap_m = 100` too low; admits stocks with poor institutional | MEDIUM | - |
-| **BUG-045** | MEDIUM — FX currency risk not modelled | MEDIUM | - |
-| **BUG-046** | MEDIUM — `fetch_info_bulk` info cache uses current market_cap, not historical | MEDIUM | - |
-| **BUG-047** | MEDIUM — VXX in universe creates self-referencing regime paradox | MEDIUM | - |
-| **BUG-048** | MEDIUM — Sector `Volatility` and `Emerging Markets` not in sector criteria profi | MEDIUM | - |
-| **BUG-054** | MEDIUM — Hull Moving Average uses simple rolling mean instead of WMA — signal ti | MEDIUM | - |
-| **BUG-055** | MEDIUM — PSAR flip detection uses approximation that may fire on wrong day | MEDIUM | - |
-| **BUG-056** | MEDIUM — Phase 1C base score can exceed [0, 100] — Decision Agent adjustment not | MEDIUM | - |
-| **BUG-064** | MEDIUM — Phase 1C prerequisites not documented — Unusual Whales and Ortex integr | MEDIUM | - |
-| **BUG-065** | MEDIUM — Strategy retirement rule statistically invalid at realistic live trade  | MEDIUM | - |
-| **BUG-066** | MEDIUM — PROJECT_PLAN mentions "60 strategies" 11 times — 9 of 12 new short stra | MEDIUM | - |
-| **BUG-067** | MEDIUM — Alpaca paper trading (Stage 3) does not match IBKR live trading (Stage  | MEDIUM | - |
-| **BUG-075** | MEDIUM — `max_drawdown` computed on unsorted PnL series — results depend on exit | MEDIUM | - |
-| **BUG-076** | MEDIUM — Agent cache fully contaminated: all runs for same ticker+date+phase sha | MEDIUM | - |
-| **BUG-077** | MEDIUM — Candidate ranking by `strategy_count` inflated by `avoid` entries — top | MEDIUM | - |
-| **BUG-084** | MEDIUM — IS/OOS walk-forward boundary leakage on multi-day swing trades | MEDIUM | - |
-| **BUG-085** | MEDIUM — `regime_at_entry` includes the regime label but no transition tracking | MEDIUM | - |
-| **BUG-086** | MEDIUM — FRED CPI lookahead bias of ~10 days | MEDIUM | - |
-| **BUG-087** | MEDIUM — No data quality validation on ingestion | MEDIUM | - |
-| **BUG-088** | MEDIUM — No signal versioning; cache invalidation incomplete | MEDIUM | - |
-| **BUG-089** | MEDIUM — Flat signal dict (220 fields) lacks type safety | MEDIUM | - |
-| **BUG-090** | MEDIUM — No state checkpointing for crashes/restarts | MEDIUM | - |
-| **BUG-091** | MEDIUM — No determinism control | MEDIUM | - |
-| **BUG-099** | MEDIUM — No secret management; API keys in environment variables | MEDIUM | - |
-| **BUG-100** | MEDIUM — No kill switch; manual intervention required to stop trading | MEDIUM | - |
-| **BUG-107** | MEDIUM — Silent exception swallowing: `except Exception: pass` masks checkpoint  | MEDIUM | - |
-| **BUG-108** | MEDIUM — Agent context built with `.get(key, default)` masks missing data; agent | MEDIUM | - |
-| **BUG-111** | MEDIUM — No break-and-retest variants of breakout strategies | MEDIUM | Pass 13 |
-| **BUG-181** | MEDIUM — Finnhub news prefetch silently produces empty files | MEDIUM | Pass 17 |
-| **BUG-182** | MEDIUM — Agent cache invalidated by every code change with no versioning gate | MEDIUM | Pass 17 |
-| **BUG-188** | MEDIUM — Defense tickers (NOC, TXT) have empty gov_contracts data | MEDIUM | Pass 18 |
-| **BUG-189** | MEDIUM — Ticker symbol mapping issue: BF-B, BRK-B variants empty | MEDIUM | Pass 18 |
-| **BUG-190** | MEDIUM — Quiver endpoints not in prefetch (Senate, Twitter, Off-Exchange, App Do | MEDIUM | Pass 18 |
-| **BUG-199** | MEDIUM — No gate firing rate observability | MEDIUM | Pass 24 |
-| **BUG-201** | MEDIUM — Strategy `earnings_tolerant` attribute missing | MEDIUM | Pass 25 |
-| **BUG-202** | MEDIUM — No earnings-momentum strategies implemented | MEDIUM | Pass 25 |
-| **BUG-203** | MEDIUM — No A/B testing infrastructure for agent gates | MEDIUM | Pass 25 |
-| **BUG-207** | Type hint coverage 0% in screener.py + engine/backtest.py (blocks mypy) | MEDIUM | Pass 47 |
-| **BUG-208** | Docstring coverage near zero in engine/backtest.py (4 of all functions) | MEDIUM | Pass 47 |
-| **BUG-209** | 81 except Exception blocks; some swallow real errors | MEDIUM | Pass 47 |
-| **BUG-211** | Cache concurrency unverified — prefetch + validate may collide | MEDIUM | Pass 47 |
-| **BUG-213** | requirements.txt missing openai, tradingagents, fredapi (incomplete) | MEDIUM | Pass 47 |
-| **BUG-245** | Cache filelock fallback silently overwrites — concurrent corruption risk | MEDIUM | Pass 48 |
-| **BUG-246** | Module globals (VIX, DXY, AAII, CNN F&G) not multi-process safe | MEDIUM | Pass 48 |
-| **BUG-247** | Cache schema not versioned | MEDIUM | Pass 48 |
-| **BUG-248** | ETF list fragmented across 3 files with different memberships | MEDIUM | Pass 48 |
-| **BUG-249** | Smart money scoring weights hardcoded — no config | MEDIUM | Pass 48 |
-| **BUG-250** | Sentiment thresholds don't match CNN published bands | MEDIUM | Pass 48 |
-| **BUG-251** | composite_score uses win_rate as ROI proxy — incorrect | MEDIUM | Pass 48 |
-| **BUG-252** | composite_score weights 40/30/30 hardcoded | MEDIUM | Pass 48 |
-| **BUG-253** | info_cache.json never refreshed — stale data persists | MEDIUM | Pass 48 |
-| **BUG-254** | Conversion logic creates label only; no actual long opened | MEDIUM | Pass 48 |
-| **BUG-255** | pnl_dollar hardcoded $10K notional | MEDIUM | Pass 48 |
-| **BUG-256** | get_correlation_matrix silently drops short-history tickers | MEDIUM | Pass 48 |
-| **BUG-257** | get_gov_contracts trend math compares mismatched window sizes | MEDIUM | Pass 48 |
-| **BUG-258** | ATR fallback magic number 2% in exit strategies | MEDIUM | Pass 48 |
-| **BUG-259** | exit_time_stop mis-labels exit as time_stop_10d when actually end-of-data at day | MEDIUM | Pass 48 |
-| **BUG-260** | exit_fixed_target uses STOP-FIRST priority — both stop+target same day uses stop | MEDIUM | Pass 48 |
-| **BUG-261** | Pandas4 deprecation warning on pandas-ta — needs replacement plan | MEDIUM | Pass 48 |
-| **BUG-262** | apply_slippage threshold ATR/price > 3% rarely triggered for typical stocks | MEDIUM | Pass 48 |
-| **BUG-263** | Slippage applied at apply_transaction_costs separate from _pnl borrow — short tr | MEDIUM | Pass 48 |
-| **BUG-009** | `below_cam_s3` signal key does not exist | LOW | - |
-| **BUG-042** | LOW — `LILLY` appears as ticker in `run_full.sh` but should be `LLY` | LOW | - |
-| **BUG-043** | LOW — Missing Calmar ratio minimum in passing criteria | LOW | - |
-| **BUG-044** | LOW — Test suite has no test for `close_trade()` or `_process_day()` | LOW | - |
-| **BUG-049** | LOW — FX risk not mentioned in EXPLANATION.md or PROJECT_PLAN.md | LOW | - |
-| **BUG-050** | LOW — `position_staleness_pct=1%` in live rules has no backtest equivalent | LOW | - |
-| **BUG-058** | LOW — StochRSI cross-up fires in mid-range, not just oversold zone | LOW | - |
-| **BUG-059** | LOW — CPR top/bottom labels are reversed vs industry convention | LOW | - |
-| **BUG-069** | LOW — Infrastructure design: GitHub Actions vs VPS ambiguity | LOW | - |
-| **BUG-070** | LOW — No database schema designed for Stage 3 PostgreSQL | LOW | - |
-| **BUG-071** | LOW — IBKR API session management not designed | LOW | - |
-| **BUG-092** | LOW — No streaming progress / metrics during run | LOW | - |
-| **BUG-112** | LOW — No ICT/SMC concepts implemented | LOW | Pass 13 |
-| **BUG-183** | LOW — No prefetch validation step | LOW | Pass 17 |
-| **BUG-204** | engine.py dead code shipping in repo (426 lines, no current import) | LOW | Pass 47 |
-| **BUG-264** | universe.py docstring claims Wikipedia fetch but uses static CSV | LOW | Pass 48 |
-| **BUG-265** | yfinance auto_adjust=True hardcoded; no raw price option | LOW | Pass 48 |
-| **BUG-266** | delay_sec 0.3 magic number undocumented | LOW | Pass 48 |
-| **BUG-267** | Test e2e takes 4.5 min for 1 passing test — too slow for smoke | LOW | Pass 48 |
-| **BUG-268** | ETF sector labels hardcoded — new ETFs default to Unknown | LOW | Pass 48 |
-| **BUG-269** | Quiver _DELAY constant unused — live API never called in backtest | LOW | Pass 48 |
-| **BUG-001** | `crisis_flag` used before definition → NameError crash | UNKNOWN | - |
-| **BUG-002** | `days` variable used before definition → UnboundLocalError on every trade close | UNKNOWN | - |
-| **BUG-003** | `ClosedTrade` dataclass defined twice — dead code, maintenance risk | UNKNOWN | - |
-| **BUG-004** | `avoid` direction falls into `triggered_short` bucket — inflates confidence tier | UNKNOWN | - |
-| **BUG-005** | `strategies_triggered` key mismatch — agent cache is always wrong | UNKNOWN | - |
-| **BUG-006** | Double borrow cost on short trades | UNKNOWN | - |
-| **BUG-007** | API key guard blocks no-agent Phase 1B run | UNKNOWN | - |
-| **BUG-008** | `ema_50_200_bullish` signal key does not exist | UNKNOWN | - |
-| **BUG-010** | Agent signal keys wrong — agents always see `False` for key price context | UNKNOWN | - |
-| **BUG-011** | `williams_r` short default fires incorrectly | UNKNOWN | - |
-| **BUG-012** | Deduplication order bias — shorts never fire when long strategy fires first | UNKNOWN | - |
-| **BUG-013** | `days_to_next_earnings` makes ~106,000 live yfinance calls during backtest | UNKNOWN | - |
-| **BUG-014** | AAPL, CVS, JPM, NVDA missing from `run_full.sh` batch ticker lists | UNKNOWN | - |
-| **BUG-015** | `max_drawdown` uses `cumsum()` instead of compounded equity curve | UNKNOWN | - |
-| **BUG-016** | `PASSING_CRITERIA min_trades = 100` contradicts all documentation | UNKNOWN | - |
-| **BUG-017** | `run_commit.sh` full mode hangs on interactive `input()` in merge script | UNKNOWN | - |
-| **BUG-018** | Bonferroni correction hardcoded to 60 strategies, should be 72 | UNKNOWN | - |
-| **BUG-019** | OHLCV cache incomplete — 402 of 495 tickers only cover to 2024-12-31 | UNKNOWN | - |
-| **BUG-020** | Regime thresholds inconsistent between PROJECT_PLAN and config.py | UNKNOWN | - |
-| **BUG-021** | `exit_strategies.py` own `_pnl` has no borrow cost — short comparison optimistic | UNKNOWN | - |
-| **BUG-022** | `run_phase1a.py` header prints "60 strategies" | UNKNOWN | - |
-| **BUG-023** | `screener.py` docstring says "60 strategies across 7 categories" | UNKNOWN | - |
-| **BUG-024** | CHECKLIST item 13c says "review ALL agent outputs" — not applicable for no-agent | UNKNOWN | - |
-| **BUG-025** | `run_tests.sh` does not pass `--no-agents` flag | UNKNOWN | - |
-| **BUG-114** | through BUG-123) for the agent integration gaps identified above. Each is HIGH o | INLINE-ONLY | - |
-| **BUG-115** | **BUG-115 · HIGH — Validation methodology cannot attribute success/failure clean | INLINE-ONLY | - |
-| **BUG-116** | \| HIGH \| Risk Agent `trade_blocked` boolean ignored by engine \| | INLINE-ONLY | - |
-| **BUG-117** | \| HIGH \| Decision Agent `recommended_exit` ignored; exit strategy hardcoded \| | INLINE-ONLY | - |
-| **BUG-118** | \| HIGH \| Decision Agent `position_size_modifier` ignored; sizing not different | INLINE-ONLY | - |
-| **BUG-119** | \| HIGH \| Bull/Bear Debate winner ignored; high-conviction bear debate doesn't  | INLINE-ONLY | - |
-| **BUG-120** | \| HIGH \| Fundamental Agent `avoid_earnings` ignored; earnings proximity doesn' | INLINE-ONLY | - |
-| **BUG-121** | \| MEDIUM \| Sentiment Agent `contrarian_signal` extreme_avoid ignored \| | INLINE-ONLY | - |
-| **BUG-122** | \| MEDIUM \| Risk Agent `risk_score` ignored as gate (only factors into final_sc | INLINE-ONLY | - |
-| **BUG-123** | ) for the agent integration gaps identified above. Each is HIGH or MEDIUM severi | INLINE-ONLY | - |
-| **BUG-124** | \| MEDIUM \| Technical Agent `entry_quality` weak/moderate/strong ignored as fil | INLINE-ONLY | - |
-| **BUG-125** | \| MEDIUM \| Technical Agent `sector_alignment` negative ignored for breakouts \ | INLINE-ONLY | - |
-| **BUG-126** | \| MEDIUM \| Debate `price_positioning` weak entry / strong entry ignored \| | INLINE-ONLY | - |
-| **BUG-127** | \| LOW \| Decision Agent `portfolio_note` concentration warnings text-only \| | INLINE-ONLY | - |
-| **BUG-128** | \| MEDIUM \| No correlation analysis between strategies; correlated firings coun | INLINE-ONLY | - |
-| **BUG-129** | \| MEDIUM \| No regime-conditional parameter tuning (RSI 30/70 fixed across regi | INLINE-ONLY | - |
-| **BUG-130** | \| MEDIUM \| No threshold calibration; all thresholds (RSI, MACD, Bollinger, siz | INLINE-ONLY | - |
-| **BUG-131** | \| MEDIUM \| No earnings proximity filter; trades open within 0-3 days of earnin | INLINE-ONLY | - |
-| **BUG-132** | \| MEDIUM \| No FOMC/CPI day filter; new entries on high-impact days \| | INLINE-ONLY | - |
-| **BUG-133** | \| MEDIUM \| No cross-day cooldown after stop-out; can re-enter same ticker next | INLINE-ONLY | - |
-| **BUG-134** | \| MEDIUM \| No correlation-aware concentration filter; 10 high-beta tech longs  | INLINE-ONLY | - |
-| **BUG-135** | \| MEDIUM \| Liquidity filter runs at universe load only, not at entry time; sta | INLINE-ONLY | - |
-| **BUG-136** | \| MEDIUM \| No bid-ask spread filter; backtest assumes zero spread \| | INLINE-ONLY | - |
-| **BUG-137** | \| LOW \| Agent context lacks historical analogues — no "last 5 times this strat | INLINE-ONLY | - |
-| **BUG-138** | \| LOW \| Agent context lacks news headlines as text — sentiment is number only, | INLINE-ONLY | - |
-| **BUG-139** | to BUG-150) | INLINE-ONLY | - |
-| **BUG-140** | MEDIUM** — No Quality strategy family (ROE, accruals, low debt) | INLINE-ONLY | - |
-| **BUG-141** | HIGH** — No Volatility-based strategies (vol-targeting, vol carry) | INLINE-ONLY | - |
-| **BUG-142** | HIGH** — No Event-driven strategies (PEAD, M&A arb, index inclusion) | INLINE-ONLY | - |
-| **BUG-143** | MEDIUM** — No Macro/Cross-asset strategies | INLINE-ONLY | - |
-| **BUG-144** | HIGH** — Smart-money signals are binary gates, not continuous strategy inputs | INLINE-ONLY | - |
-| **BUG-145** | HIGH** — No ICT/SMC strategy family (8 core concepts, 16 derived strategies) | INLINE-ONLY | - |
-| **BUG-146** | HIGH** — No Volume Profile / VPVR strategies | INLINE-ONLY | - |
-| **BUG-147** | MEDIUM** — No Anchored VWAP strategies | INLINE-ONLY | - |
-| **BUG-148** | MEDIUM** — No Sentiment/Narrative rule strategies (only agent-mediated) | INLINE-ONLY | - |
-| **BUG-149** | MEDIUM** — No Calendar/Seasonal strategies (FOMC, January, sell-in-May) | INLINE-ONLY | - |
-| **BUG-150** | ) | INLINE-ONLY | - |
-| **BUG-151** | to BUG-159) | INLINE-ONLY | - |
-| **BUG-152** | HIGH** — Volume Profile (POC, VAH, VAL, HVN, LVN) not computed | INLINE-ONLY | - |
-| **BUG-153** | MEDIUM** — Cumulative Volume Delta (CVD) not computed | INLINE-ONLY | - |
-| **BUG-154** | HIGH** — Relative Strength vs sector and SPY not computed (planned for 1C, recom | INLINE-ONLY | - |
-| **BUG-155** | MEDIUM** — Per-ticker volatility regime not computed | INLINE-ONLY | - |
-| **BUG-156** | HIGH** — Post-Earnings Announcement Drift (PEAD) tracking absent | INLINE-ONLY | - |
-| **BUG-157** | MEDIUM** — News headlines not passed to agents as text (only sentiment number) | INLINE-ONLY | - |
-| **BUG-158** | LOW** — Implied volatility / Volatility Risk Premium signals absent (Phase 1C+) | INLINE-ONLY | - |
-| **BUG-159** | ) | INLINE-ONLY | - |
-| **BUG-160** | to BUG-167) | INLINE-ONLY | - |
-| **BUG-161** | HIGH** — Fair Value Gap (FVG) detection absent | INLINE-ONLY | - |
-| **BUG-162** | HIGH** — Liquidity Sweep / Stop Hunt detection absent | INLINE-ONLY | - |
-| **BUG-163** | MEDIUM** — Displacement filter absent (used as quality filter for OB/FVG) | INLINE-ONLY | - |
-| **BUG-164** | MEDIUM** — Breaker Block detection absent | INLINE-ONLY | - |
-| **BUG-165** | MEDIUM** — Premium/Discount zones not computed | INLINE-ONLY | - |
-| **BUG-166** | MEDIUM** — Optimal Trade Entry (OTE) Fibonacci zone not computed | INLINE-ONLY | - |
-| **BUG-167** | ) | INLINE-ONLY | - |
-| **BUG-168** | to BUG-177) | INLINE-ONLY | - |
-| **BUG-169** | HIGH** — No correlation-adjusted concentration limits | INLINE-ONLY | - |
-| **BUG-170** | MEDIUM** — No drawdown-aware position sizing | INLINE-ONLY | - |
-| **BUG-171** | MEDIUM** — No risk parity allocation across strategies | INLINE-ONLY | - |
-| **BUG-172** | MEDIUM** — No walk-forward parameter optimization (all params static) | INLINE-ONLY | - |
-| **BUG-173** | MEDIUM** — No online learning / feedback loop from live performance | INLINE-ONLY | - |
-| **BUG-174** | LOW** — No execution algorithm sophistication (acceptable at $10K scale) | INLINE-ONLY | - |
-| **BUG-175** | HIGH** — No regime-conditional strategy weighting (smooth mixture) | INLINE-ONLY | - |
-| **BUG-176** | MEDIUM** — No ML enhancement layer (acceptable; agents are intended substitute) | INLINE-ONLY | - |
-| **BUG-177** | ) | INLINE-ONLY | - |
-| **BUG-192** | ) | INLINE-ONLY | - |
-| **BUG-193** | NEW) | INLINE-ONLY | - |
-| **BUG-194** | NEW) | INLINE-ONLY | - |
-| **BUG-195** | NEW) | INLINE-ONLY | - |
-| **BUG-196** | NEW) | INLINE-ONLY | - |
-| **BUG-197** | NEW) | INLINE-ONLY | - |
-| **BUG-198** | (NEW) · CRITICAL — No structural PIT data loader; each data source uses ad-hoc P | INLINE-ONLY | - |
+| ID | Title | Severity | Status | Pass Intro |
+|---|---|---|---|---|
+| **BUG-026** | CRITICAL — VIX proxy is VXX price (223–461), not actual VIX (18–36) — all regime | CRITICAL | OPEN | - |
+| **BUG-027** | CRITICAL — `regime_confidence()` function built but never called — dead code | CRITICAL | OPEN | - |
+| **BUG-057** | MEDIUM — Integration tests missing 15 critical scenarios — 5 bugs would have bee | CRITICAL | OPEN | - |
+| **BUG-063** | MEDIUM — Email approval system has 6 critical design gaps not addressed in PROJE | CRITICAL | OPEN | - |
+| **BUG-068** | MEDIUM — CLAUDE.md missing 5 critical recent decisions | CRITICAL | OPEN | - |
+| **BUG-078** | CRITICAL — Trailing stop lookahead bias: stop updated using today's close BEFORE | CRITICAL | OPEN | - |
+| **BUG-093** | CRITICAL — No execution layer exists; PROJECT_PLAN describes it conceptually onl | CRITICAL | OPEN | - |
+| **BUG-094** | CRITICAL — Stage 3 paper trading cannot actually run as designed | CRITICAL | OPEN | - |
+| **BUG-095** | CRITICAL — No portfolio-level state; every trade evaluated independently | CRITICAL | OPEN | - |
+| **BUG-101** | CRITICAL — 88.1% of trades are overlapping re-entries on the same ticker — backt | CRITICAL | OPEN | - |
+| **BUG-102** | CRITICAL — 3.5× same-day duplicate inflation: 9,921 unique decisions logged as 3 | CRITICAL | OPEN | - |
+| **BUG-103** | CRITICAL — Smart money data prefetched for 7 categories × 509 tickers but never  | CRITICAL | OPEN | - |
+| **BUG-184** | CRITICAL — Insider data prefetch stops 2024-12-31; 13-month gap before backtest  | CRITICAL | OPEN | Pass 18 |
+| **BUG-185** | CRITICAL — Wikipedia views prefetch failed entirely; all 509 files empty | CRITICAL | OPEN | Pass 18 |
+| **BUG-191** | CRITICAL — No prefetch validation gate before cache-dependent code runs | CRITICAL | OPEN | Pass 18 |
+| **BUG-200** | CRITICAL — Risk Agent context expansion required (Section B) | CRITICAL | OPEN | Pass 25 |
+| **BUG-214** | close_trade NameError: 'days' used before assignment — confirmed via execution;  | CRITICAL | RESOLVED | Pass 48 |
+| **BUG-215** | Duplicate ClosedTrade dataclass at lines 73 + 128 of exit_manager.py — second si | CRITICAL | RESOLVED | Pass 48 |
+| **BUG-216** | test_e2e fixture undefined — 7 of 8 e2e tests ERROR at setup; engine fixture mis | CRITICAL | RESOLVED | Pass 48 |
+| **BUG-217** | get_news_sentiment path mismatch — reads /prefetch/news/ but data lives in /cach | CRITICAL | RESOLVED | Pass 48 |
+| **BUG-218** | yfinance fetch_info returns CURRENT analyst data not as_of — sector/mkt_cap/IPO/ | CRITICAL | OPEN | Pass 48 |
+| **BUG-219** | Cache stores adjusted-close which silently shifts as new corp actions accrue — h | CRITICAL | OPEN | Pass 48 |
+| **BUG-220** | FRED data revisions unhandled — current API returns latest revised values not vi | CRITICAL | OPEN | Pass 48 |
+| **BUG-221** | VXX used as ^VIX proxy + UUP as DXY proxy — neither tracks underlying accurately | CRITICAL | OPEN | Pass 48 |
+| **BUG-222** | S&P 500 constituents are CURRENT membership applied to all backtest dates — surv | CRITICAL | OPEN | Pass 48 |
+| **BUG-223** | CPI/NFP/FOMC dates hardcoded through March 2026 only — live trading after that h | CRITICAL | OPEN | Pass 48 |
+| **BUG-224** | PIT guard `_assert_no_lookahead` logs WARNING not RAISE — leakage swallowed in p | CRITICAL | OPEN | Pass 48 |
+| **BUG-225** | Regime classifier returns 'neutral' on missing VIX silently — should refuse to t | CRITICAL | OPEN | Pass 48 |
+| **BUG-028** | HIGH — RSI computation uses simple rolling mean instead of Wilder exponential sm | HIGH | OPEN | - |
+| **BUG-029** | HIGH — Open trades at backtest end silently discarded — upward bias in all metri | HIGH | OPEN | - |
+| **BUG-030** | HIGH — VIX tightening in crisis contradicts own documentation | HIGH | OPEN | - |
+| **BUG-031** | HIGH — Walk-forward OOS minimum of 30 trades is statistically insufficient | HIGH | OPEN | - |
+| **BUG-032** | HIGH — Profit factor minimum 1.2 too low; literature requires 1.5 minimum | HIGH | OPEN | - |
+| **BUG-033** | HIGH — Sharpe ratio not required as passing criterion; computed but ignored | HIGH | OPEN | - |
+| **BUG-034** | HIGH — Mean reversion strategies run in all regimes — literature shows they fail | HIGH | OPEN | - |
+| **BUG-051** | HIGH — All 5 agents receive wrong or zero price context due to BUG-10 compoundin | HIGH | OPEN | - |
+| **BUG-052** | HIGH — Risk Agent's VIX floor behavior now fully explained by BUG-26 | HIGH | OPEN | - |
+| **BUG-053** | HIGH — Finnhub news cache: all 509 files are empty — Sentiment Agent has no news | HIGH | OPEN | - |
+| **BUG-060** | HIGH — Short entry zone validation rejects favourable gap-down — understates sho | HIGH | OPEN | - |
+| **BUG-061** | HIGH — Backtest allows multiple concurrent positions in same ticker across conse | HIGH | OPEN | - |
+| **BUG-062** | HIGH — Phase 1D cannot run — 2020 OHLCV data not cached, DATA_LOAD_START=2021 | HIGH | OPEN | - |
+| **BUG-072** | HIGH — `validate_phase1b_data.py` passes all checks but misses 6 blockers — fals | HIGH | OPEN | - |
+| **BUG-073** | HIGH — `prepopulate_cache_index.py` writes incompatible format — causes cache mi | HIGH | OPEN | - |
+| **BUG-074** | HIGH — BUG-14 worse than documented: XLE also missing from `run_full.sh` — 5 tic | HIGH | OPEN | - |
+| **BUG-079** | HIGH — Stop fills assumed at the stop price; gap-through is not modelled (slippa | HIGH | OPEN | - |
+| **BUG-080** | HIGH — Exit slippage never applied; only entry slippage charged. Round-trip slip | HIGH | OPEN | - |
+| **BUG-081** | HIGH — `SHORT_BORROW_COST_PER_DAY = 0.005` is 2.5× the documented intent | HIGH | OPEN | - |
+| **BUG-082** | HIGH — Slippage and transaction-cost double-charging — total cost 2× literature  | HIGH | OPEN | - |
+| **BUG-083** | HIGH — `get_congressional_detail()` filters with INVERTED point-in-time logic | HIGH | OPEN | - |
+| **BUG-096** | HIGH — No benchmark comparison (SPY buy-and-hold) | HIGH | OPEN | - |
+| **BUG-097** | HIGH — No infrastructure-as-code; manual VPS setup | HIGH | OPEN | - |
+| **BUG-098** | HIGH — No monitoring or alerting | HIGH | OPEN | - |
+| **BUG-104** | HIGH — Position sizing rules from config never applied to PnL — backtest assumes | HIGH | OPEN | - |
+| **BUG-105** | HIGH — Agent downgrade cascade: 99.9% of trades downgraded by exactly 1 tier — a | HIGH | OPEN | - |
+| **BUG-106** | HIGH — Perfect stop fills in trade log: every trailing-stop exit fills at exactl | HIGH | OPEN | - |
+| **BUG-109** | HIGH — yfinance auto_adjust causes data drift; backtest results not reproducible | HIGH | OPEN | Pass 12 |
+| **BUG-110** | HIGH — Entry gap filter not enforced; trades opened despite exceeding ATR limit | HIGH | OPEN | Pass 12 |
+| **BUG-113** | HIGH — Agent action/sizing/exit recommendations ignored by engine | HIGH | OPEN | Pass 14 |
+| **BUG-178** | HIGH — Earnings dates fetched live during backtest, no prefetch path | HIGH | OPEN | Pass 17 |
+| **BUG-179** | HIGH — yfinance .info fetched live during backtest universe load | HIGH | OPEN | Pass 17 |
+| **BUG-180** | HIGH — VIX not explicitly prefetched; VXX used as proxy is cause of BUG-26 | HIGH | OPEN | Pass 17 |
+| **BUG-186** | HIGH — 29 institutional 13F files empty including major tickers (AAPL, ABBV, AMZ | HIGH | OPEN | Pass 18 |
+| **BUG-187** | HIGH — WSB mentions prefetch stops 2025-02-21; 14-month gap | HIGH | OPEN | Pass 18 |
+| **BUG-205** | TRANSACTION_COSTS understates 3x at small notional (no IBKR cap modeling) | HIGH | OPEN | Pass 47 |
+| **BUG-206** | Cache stale-data silent use (402 tickers end 2024-12-31, no warning) | HIGH | OPEN | Pass 47 |
+| **BUG-210** | agents/pipeline.py silent downgrade on API failure (5 sites) | HIGH | OPEN | Pass 47 |
+| **BUG-212** | sync_from_claude.yml --strategy=theirs silently overrides owner edits on conflic | HIGH | OPEN | Pass 47 |
+| **BUG-226** | Cache get_ohlcv front-extension missing; if requested start before cached_start, | HIGH | OPEN | Pass 48 |
+| **BUG-227** | Cache bulk fetch >=20 trading days threshold — silently rejects valid cache for  | HIGH | OPEN | Pass 48 |
+| **BUG-228** | Cache ticker collision: BRK-B and BRK.B both → BRK_B.parquet | HIGH | OPEN | Pass 48 |
+| **BUG-229** | Cache zero-volume days dropped silently — halted/suspended stocks invisible | HIGH | OPEN | Pass 48 |
+| **BUG-230** | Trailing-stop ATR exits use ENTRY-time ATR throughout hold — should refresh dail | HIGH | OPEN | Pass 48 |
+| **BUG-231** | exit_hybrid_50pct max_days=252 but other 11 exits don't have max — comparison no | HIGH | OPEN | Pass 48 |
+| **BUG-232** | update_trailing_stop ignores intraday HIGH — only updates at close above prior b | HIGH | OPEN | Pass 48 |
+| **BUG-233** | Circuit breakers level 3 + 4 documented but not implemented | HIGH | OPEN | Pass 48 |
+| **BUG-234** | VIX hard thresholds flip regime on single print — no MA smoothing | HIGH | OPEN | Pass 48 |
+| **BUG-235** | AAII pub-lag not respected — Wed survey marked tradeable Wed instead of Thu | HIGH | OPEN | Pass 48 |
+| **BUG-236** | AAII auto-refresh missing — committed CSV will go stale | HIGH | OPEN | Pass 48 |
+| **BUG-237** | CNN F&G CSV interpolated between key readings — fabricated PIT signal | HIGH | OPEN | Pass 48 |
+| **BUG-238** | Liquidity filter market-cap fail-open — missing data passes filter | HIGH | OPEN | Pass 48 |
+| **BUG-239** | Sector reclassifications retro-applied — current sector for old trades | HIGH | OPEN | Pass 48 |
+| **BUG-240** | Congressional signal weighted by disclosure_date not transaction_date | HIGH | OPEN | Pass 48 |
+| **BUG-241** | Institutional 13F PIT assumes on-time filing — late filers invisible | HIGH | OPEN | Pass 48 |
+| **BUG-242** | Short borrow cost duplicated across improvements.py and exit_manager.py with dif | HIGH | OPEN | Pass 48 |
+| **BUG-243** | Walk-forward windows hardcoded calendar dates — stale after June 2026 | HIGH | OPEN | Pass 48 |
+| **BUG-244** | close_trade circuit breaker exits skip MAE/MFE update on day of exit (passes 0.0 | HIGH | OPEN | Pass 48 |
+| **BUG-035** | MEDIUM — Decision Agent default fallback has invalid `action` value | MEDIUM | OPEN | - |
+| **BUG-036** | MEDIUM — Regime-aware strategy weighting not implemented | MEDIUM | OPEN | - |
+| **BUG-037** | MEDIUM — Survivorship bias haircut methodology is arbitrary | MEDIUM | OPEN | - |
+| **BUG-038** | MEDIUM — No minimum Sharpe in Bonferroni correction | MEDIUM | OPEN | - |
+| **BUG-039** | MEDIUM — `regime_confidence()` compares VIX-based regime with SPY-trend regime i | MEDIUM | OPEN | - |
+| **BUG-040** | MEDIUM — Short stop distance same as long (10%) — asymmetric risk not accounted  | MEDIUM | OPEN | - |
+| **BUG-041** | MEDIUM — `min_market_cap_m = 100` too low; admits stocks with poor institutional | MEDIUM | OPEN | - |
+| **BUG-045** | MEDIUM — FX currency risk not modelled | MEDIUM | OPEN | - |
+| **BUG-046** | MEDIUM — `fetch_info_bulk` info cache uses current market_cap, not historical | MEDIUM | OPEN | - |
+| **BUG-047** | MEDIUM — VXX in universe creates self-referencing regime paradox | MEDIUM | OPEN | - |
+| **BUG-048** | MEDIUM — Sector `Volatility` and `Emerging Markets` not in sector criteria profi | MEDIUM | OPEN | - |
+| **BUG-054** | MEDIUM — Hull Moving Average uses simple rolling mean instead of WMA — signal ti | MEDIUM | OPEN | - |
+| **BUG-055** | MEDIUM — PSAR flip detection uses approximation that may fire on wrong day | MEDIUM | OPEN | - |
+| **BUG-056** | MEDIUM — Phase 1C base score can exceed [0, 100] — Decision Agent adjustment not | MEDIUM | OPEN | - |
+| **BUG-064** | MEDIUM — Phase 1C prerequisites not documented — Unusual Whales and Ortex integr | MEDIUM | OPEN | - |
+| **BUG-065** | MEDIUM — Strategy retirement rule statistically invalid at realistic live trade  | MEDIUM | OPEN | - |
+| **BUG-066** | MEDIUM — PROJECT_PLAN mentions "60 strategies" 11 times — 9 of 12 new short stra | MEDIUM | OPEN | - |
+| **BUG-067** | MEDIUM — Alpaca paper trading (Stage 3) does not match IBKR live trading (Stage  | MEDIUM | OPEN | - |
+| **BUG-075** | MEDIUM — `max_drawdown` computed on unsorted PnL series — results depend on exit | MEDIUM | OPEN | - |
+| **BUG-076** | MEDIUM — Agent cache fully contaminated: all runs for same ticker+date+phase sha | MEDIUM | OPEN | - |
+| **BUG-077** | MEDIUM — Candidate ranking by `strategy_count` inflated by `avoid` entries — top | MEDIUM | OPEN | - |
+| **BUG-084** | MEDIUM — IS/OOS walk-forward boundary leakage on multi-day swing trades | MEDIUM | OPEN | - |
+| **BUG-085** | MEDIUM — `regime_at_entry` includes the regime label but no transition tracking | MEDIUM | OPEN | - |
+| **BUG-086** | MEDIUM — FRED CPI lookahead bias of ~10 days | MEDIUM | OPEN | - |
+| **BUG-087** | MEDIUM — No data quality validation on ingestion | MEDIUM | OPEN | - |
+| **BUG-088** | MEDIUM — No signal versioning; cache invalidation incomplete | MEDIUM | OPEN | - |
+| **BUG-089** | MEDIUM — Flat signal dict (220 fields) lacks type safety | MEDIUM | OPEN | - |
+| **BUG-090** | MEDIUM — No state checkpointing for crashes/restarts | MEDIUM | OPEN | - |
+| **BUG-091** | MEDIUM — No determinism control | MEDIUM | OPEN | - |
+| **BUG-099** | MEDIUM — No secret management; API keys in environment variables | MEDIUM | OPEN | - |
+| **BUG-100** | MEDIUM — No kill switch; manual intervention required to stop trading | MEDIUM | OPEN | - |
+| **BUG-107** | MEDIUM — Silent exception swallowing: `except Exception: pass` masks checkpoint  | MEDIUM | OPEN | - |
+| **BUG-108** | MEDIUM — Agent context built with `.get(key, default)` masks missing data; agent | MEDIUM | OPEN | - |
+| **BUG-111** | MEDIUM — No break-and-retest variants of breakout strategies | MEDIUM | OPEN | Pass 13 |
+| **BUG-181** | MEDIUM — Finnhub news prefetch silently produces empty files | MEDIUM | OPEN | Pass 17 |
+| **BUG-182** | MEDIUM — Agent cache invalidated by every code change with no versioning gate | MEDIUM | OPEN | Pass 17 |
+| **BUG-188** | MEDIUM — Defense tickers (NOC, TXT) have empty gov_contracts data | MEDIUM | OPEN | Pass 18 |
+| **BUG-189** | MEDIUM — Ticker symbol mapping issue: BF-B, BRK-B variants empty | MEDIUM | OPEN | Pass 18 |
+| **BUG-190** | MEDIUM — Quiver endpoints not in prefetch (Senate, Twitter, Off-Exchange, App Do | MEDIUM | OPEN | Pass 18 |
+| **BUG-199** | MEDIUM — No gate firing rate observability | MEDIUM | OPEN | Pass 24 |
+| **BUG-201** | MEDIUM — Strategy `earnings_tolerant` attribute missing | MEDIUM | OPEN | Pass 25 |
+| **BUG-202** | MEDIUM — No earnings-momentum strategies implemented | MEDIUM | OPEN | Pass 25 |
+| **BUG-203** | MEDIUM — No A/B testing infrastructure for agent gates | MEDIUM | OPEN | Pass 25 |
+| **BUG-207** | Type hint coverage 0% in screener.py + engine/backtest.py (blocks mypy) | MEDIUM | OPEN | Pass 47 |
+| **BUG-208** | Docstring coverage near zero in engine/backtest.py (4 of all functions) | MEDIUM | OPEN | Pass 47 |
+| **BUG-209** | 81 except Exception blocks; some swallow real errors | MEDIUM | OPEN | Pass 47 |
+| **BUG-211** | Cache concurrency unverified — prefetch + validate may collide | MEDIUM | OPEN | Pass 47 |
+| **BUG-213** | requirements.txt missing openai, tradingagents, fredapi (incomplete) | MEDIUM | OPEN | Pass 47 |
+| **BUG-245** | Cache filelock fallback silently overwrites — concurrent corruption risk | MEDIUM | OPEN | Pass 48 |
+| **BUG-246** | Module globals (VIX, DXY, AAII, CNN F&G) not multi-process safe | MEDIUM | OPEN | Pass 48 |
+| **BUG-247** | Cache schema not versioned | MEDIUM | OPEN | Pass 48 |
+| **BUG-248** | ETF list fragmented across 3 files with different memberships | MEDIUM | OPEN | Pass 48 |
+| **BUG-249** | Smart money scoring weights hardcoded — no config | MEDIUM | OPEN | Pass 48 |
+| **BUG-250** | Sentiment thresholds don't match CNN published bands | MEDIUM | OPEN | Pass 48 |
+| **BUG-251** | composite_score uses win_rate as ROI proxy — incorrect | MEDIUM | OPEN | Pass 48 |
+| **BUG-252** | composite_score weights 40/30/30 hardcoded | MEDIUM | OPEN | Pass 48 |
+| **BUG-253** | info_cache.json never refreshed — stale data persists | MEDIUM | OPEN | Pass 48 |
+| **BUG-254** | Conversion logic creates label only; no actual long opened | MEDIUM | OPEN | Pass 48 |
+| **BUG-255** | pnl_dollar hardcoded $10K notional | MEDIUM | OPEN | Pass 48 |
+| **BUG-256** | get_correlation_matrix silently drops short-history tickers | MEDIUM | OPEN | Pass 48 |
+| **BUG-257** | get_gov_contracts trend math compares mismatched window sizes | MEDIUM | OPEN | Pass 48 |
+| **BUG-258** | ATR fallback magic number 2% in exit strategies | MEDIUM | OPEN | Pass 48 |
+| **BUG-259** | exit_time_stop mis-labels exit as time_stop_10d when actually end-of-data at day | MEDIUM | OPEN | Pass 48 |
+| **BUG-260** | exit_fixed_target uses STOP-FIRST priority — both stop+target same day uses stop | MEDIUM | OPEN | Pass 48 |
+| **BUG-261** | Pandas4 deprecation warning on pandas-ta — needs replacement plan | MEDIUM | OPEN | Pass 48 |
+| **BUG-262** | apply_slippage threshold ATR/price > 3% rarely triggered for typical stocks | MEDIUM | OPEN | Pass 48 |
+| **BUG-263** | Slippage applied at apply_transaction_costs separate from _pnl borrow — short tr | MEDIUM | OPEN | Pass 48 |
+| **BUG-009** | `below_cam_s3` signal key does not exist | LOW | OPEN | - |
+| **BUG-042** | LOW — `LILLY` appears as ticker in `run_full.sh` but should be `LLY` | LOW | OPEN | - |
+| **BUG-043** | LOW — Missing Calmar ratio minimum in passing criteria | LOW | OPEN | - |
+| **BUG-044** | LOW — Test suite has no test for `close_trade()` or `_process_day()` | LOW | OPEN | - |
+| **BUG-049** | LOW — FX risk not mentioned in EXPLANATION.md or PROJECT_PLAN.md | LOW | OPEN | - |
+| **BUG-050** | LOW — `position_staleness_pct=1%` in live rules has no backtest equivalent | LOW | OPEN | - |
+| **BUG-058** | LOW — StochRSI cross-up fires in mid-range, not just oversold zone | LOW | OPEN | - |
+| **BUG-059** | LOW — CPR top/bottom labels are reversed vs industry convention | LOW | OPEN | - |
+| **BUG-069** | LOW — Infrastructure design: GitHub Actions vs VPS ambiguity | LOW | OPEN | - |
+| **BUG-070** | LOW — No database schema designed for Stage 3 PostgreSQL | LOW | OPEN | - |
+| **BUG-071** | LOW — IBKR API session management not designed | LOW | OPEN | - |
+| **BUG-092** | LOW — No streaming progress / metrics during run | LOW | OPEN | - |
+| **BUG-112** | LOW — No ICT/SMC concepts implemented | LOW | OPEN | Pass 13 |
+| **BUG-183** | LOW — No prefetch validation step | LOW | OPEN | Pass 17 |
+| **BUG-204** | engine.py dead code shipping in repo (426 lines, no current import) | LOW | OPEN | Pass 47 |
+| **BUG-264** | universe.py docstring claims Wikipedia fetch but uses static CSV | LOW | OPEN | Pass 48 |
+| **BUG-265** | yfinance auto_adjust=True hardcoded; no raw price option | LOW | OPEN | Pass 48 |
+| **BUG-266** | delay_sec 0.3 magic number undocumented | LOW | OPEN | Pass 48 |
+| **BUG-267** | Test e2e takes 4.5 min for 1 passing test — too slow for smoke | LOW | OPEN | Pass 48 |
+| **BUG-268** | ETF sector labels hardcoded — new ETFs default to Unknown | LOW | OPEN | Pass 48 |
+| **BUG-269** | Quiver _DELAY constant unused — live API never called in backtest | LOW | OPEN | Pass 48 |
+| **BUG-001** | `crisis_flag` used before definition → NameError crash | UNKNOWN | OPEN | - |
+| **BUG-002** | `days` variable used before definition → UnboundLocalError on every trade close | UNKNOWN | OPEN | - |
+| **BUG-003** | `ClosedTrade` dataclass defined twice — dead code, maintenance risk | UNKNOWN | OPEN | - |
+| **BUG-004** | `avoid` direction falls into `triggered_short` bucket — inflates confidence tier | UNKNOWN | OPEN | - |
+| **BUG-005** | `strategies_triggered` key mismatch — agent cache is always wrong | UNKNOWN | OPEN | - |
+| **BUG-006** | Double borrow cost on short trades | UNKNOWN | OPEN | - |
+| **BUG-007** | API key guard blocks no-agent Phase 1B run | UNKNOWN | OPEN | - |
+| **BUG-008** | `ema_50_200_bullish` signal key does not exist | UNKNOWN | OPEN | - |
+| **BUG-010** | Agent signal keys wrong — agents always see `False` for key price context | UNKNOWN | OPEN | - |
+| **BUG-011** | `williams_r` short default fires incorrectly | UNKNOWN | OPEN | - |
+| **BUG-012** | Deduplication order bias — shorts never fire when long strategy fires first | UNKNOWN | OPEN | - |
+| **BUG-013** | `days_to_next_earnings` makes ~106,000 live yfinance calls during backtest | UNKNOWN | OPEN | - |
+| **BUG-014** | AAPL, CVS, JPM, NVDA missing from `run_full.sh` batch ticker lists | UNKNOWN | OPEN | - |
+| **BUG-015** | `max_drawdown` uses `cumsum()` instead of compounded equity curve | UNKNOWN | OPEN | - |
+| **BUG-016** | `PASSING_CRITERIA min_trades = 100` contradicts all documentation | UNKNOWN | OPEN | - |
+| **BUG-017** | `run_commit.sh` full mode hangs on interactive `input()` in merge script | UNKNOWN | OPEN | - |
+| **BUG-018** | Bonferroni correction hardcoded to 60 strategies, should be 72 | UNKNOWN | OPEN | - |
+| **BUG-019** | OHLCV cache incomplete — 402 of 495 tickers only cover to 2024-12-31 | UNKNOWN | OPEN | - |
+| **BUG-020** | Regime thresholds inconsistent between PROJECT_PLAN and config.py | UNKNOWN | OPEN | - |
+| **BUG-021** | `exit_strategies.py` own `_pnl` has no borrow cost — short comparison optimistic | UNKNOWN | OPEN | - |
+| **BUG-022** | `run_phase1a.py` header prints "60 strategies" | UNKNOWN | OPEN | - |
+| **BUG-023** | `screener.py` docstring says "60 strategies across 7 categories" | UNKNOWN | OPEN | - |
+| **BUG-024** | CHECKLIST item 13c says "review ALL agent outputs" — not applicable for no-agent | UNKNOWN | OPEN | - |
+| **BUG-025** | `run_tests.sh` does not pass `--no-agents` flag | UNKNOWN | OPEN | - |
+| **BUG-114** | through BUG-123) for the agent integration gaps identified above. Each is HIGH o | INLINE-ONLY | OPEN | - |
+| **BUG-115** | **BUG-115 · HIGH — Validation methodology cannot attribute success/failure clean | INLINE-ONLY | OPEN | - |
+| **BUG-116** | \| HIGH \| Risk Agent `trade_blocked` boolean ignored by engine \| | INLINE-ONLY | OPEN | - |
+| **BUG-117** | \| HIGH \| Decision Agent `recommended_exit` ignored; exit strategy hardcoded \| | INLINE-ONLY | OPEN | - |
+| **BUG-118** | \| HIGH \| Decision Agent `position_size_modifier` ignored; sizing not different | INLINE-ONLY | OPEN | - |
+| **BUG-119** | \| HIGH \| Bull/Bear Debate winner ignored; high-conviction bear debate doesn't  | INLINE-ONLY | OPEN | - |
+| **BUG-120** | \| HIGH \| Fundamental Agent `avoid_earnings` ignored; earnings proximity doesn' | INLINE-ONLY | OPEN | - |
+| **BUG-121** | \| MEDIUM \| Sentiment Agent `contrarian_signal` extreme_avoid ignored \| | INLINE-ONLY | OPEN | - |
+| **BUG-122** | \| MEDIUM \| Risk Agent `risk_score` ignored as gate (only factors into final_sc | INLINE-ONLY | OPEN | - |
+| **BUG-123** | ) for the agent integration gaps identified above. Each is HIGH or MEDIUM severi | INLINE-ONLY | OPEN | - |
+| **BUG-124** | \| MEDIUM \| Technical Agent `entry_quality` weak/moderate/strong ignored as fil | INLINE-ONLY | OPEN | - |
+| **BUG-125** | \| MEDIUM \| Technical Agent `sector_alignment` negative ignored for breakouts \ | INLINE-ONLY | OPEN | - |
+| **BUG-126** | \| MEDIUM \| Debate `price_positioning` weak entry / strong entry ignored \| | INLINE-ONLY | OPEN | - |
+| **BUG-127** | \| LOW \| Decision Agent `portfolio_note` concentration warnings text-only \| | INLINE-ONLY | OPEN | - |
+| **BUG-128** | \| MEDIUM \| No correlation analysis between strategies; correlated firings coun | INLINE-ONLY | OPEN | - |
+| **BUG-129** | \| MEDIUM \| No regime-conditional parameter tuning (RSI 30/70 fixed across regi | INLINE-ONLY | OPEN | - |
+| **BUG-130** | \| MEDIUM \| No threshold calibration; all thresholds (RSI, MACD, Bollinger, siz | INLINE-ONLY | OPEN | - |
+| **BUG-131** | \| MEDIUM \| No earnings proximity filter; trades open within 0-3 days of earnin | INLINE-ONLY | OPEN | - |
+| **BUG-132** | \| MEDIUM \| No FOMC/CPI day filter; new entries on high-impact days \| | INLINE-ONLY | OPEN | - |
+| **BUG-133** | \| MEDIUM \| No cross-day cooldown after stop-out; can re-enter same ticker next | INLINE-ONLY | OPEN | - |
+| **BUG-134** | \| MEDIUM \| No correlation-aware concentration filter; 10 high-beta tech longs  | INLINE-ONLY | OPEN | - |
+| **BUG-135** | \| MEDIUM \| Liquidity filter runs at universe load only, not at entry time; sta | INLINE-ONLY | OPEN | - |
+| **BUG-136** | \| MEDIUM \| No bid-ask spread filter; backtest assumes zero spread \| | INLINE-ONLY | OPEN | - |
+| **BUG-137** | \| LOW \| Agent context lacks historical analogues — no "last 5 times this strat | INLINE-ONLY | OPEN | - |
+| **BUG-138** | \| LOW \| Agent context lacks news headlines as text — sentiment is number only, | INLINE-ONLY | OPEN | - |
+| **BUG-139** | to BUG-150) | INLINE-ONLY | OPEN | - |
+| **BUG-140** | MEDIUM** — No Quality strategy family (ROE, accruals, low debt) | INLINE-ONLY | OPEN | - |
+| **BUG-141** | HIGH** — No Volatility-based strategies (vol-targeting, vol carry) | INLINE-ONLY | OPEN | - |
+| **BUG-142** | HIGH** — No Event-driven strategies (PEAD, M&A arb, index inclusion) | INLINE-ONLY | OPEN | - |
+| **BUG-143** | MEDIUM** — No Macro/Cross-asset strategies | INLINE-ONLY | OPEN | - |
+| **BUG-144** | HIGH** — Smart-money signals are binary gates, not continuous strategy inputs | INLINE-ONLY | OPEN | - |
+| **BUG-145** | HIGH** — No ICT/SMC strategy family (8 core concepts, 16 derived strategies) | INLINE-ONLY | OPEN | - |
+| **BUG-146** | HIGH** — No Volume Profile / VPVR strategies | INLINE-ONLY | OPEN | - |
+| **BUG-147** | MEDIUM** — No Anchored VWAP strategies | INLINE-ONLY | OPEN | - |
+| **BUG-148** | MEDIUM** — No Sentiment/Narrative rule strategies (only agent-mediated) | INLINE-ONLY | OPEN | - |
+| **BUG-149** | MEDIUM** — No Calendar/Seasonal strategies (FOMC, January, sell-in-May) | INLINE-ONLY | OPEN | - |
+| **BUG-150** | ) | INLINE-ONLY | OPEN | - |
+| **BUG-151** | to BUG-159) | INLINE-ONLY | OPEN | - |
+| **BUG-152** | HIGH** — Volume Profile (POC, VAH, VAL, HVN, LVN) not computed | INLINE-ONLY | OPEN | - |
+| **BUG-153** | MEDIUM** — Cumulative Volume Delta (CVD) not computed | INLINE-ONLY | OPEN | - |
+| **BUG-154** | HIGH** — Relative Strength vs sector and SPY not computed (planned for 1C, recom | INLINE-ONLY | OPEN | - |
+| **BUG-155** | MEDIUM** — Per-ticker volatility regime not computed | INLINE-ONLY | OPEN | - |
+| **BUG-156** | HIGH** — Post-Earnings Announcement Drift (PEAD) tracking absent | INLINE-ONLY | OPEN | - |
+| **BUG-157** | MEDIUM** — News headlines not passed to agents as text (only sentiment number) | INLINE-ONLY | OPEN | - |
+| **BUG-158** | LOW** — Implied volatility / Volatility Risk Premium signals absent (Phase 1C+) | INLINE-ONLY | OPEN | - |
+| **BUG-159** | ) | INLINE-ONLY | OPEN | - |
+| **BUG-160** | to BUG-167) | INLINE-ONLY | OPEN | - |
+| **BUG-161** | HIGH** — Fair Value Gap (FVG) detection absent | INLINE-ONLY | OPEN | - |
+| **BUG-162** | HIGH** — Liquidity Sweep / Stop Hunt detection absent | INLINE-ONLY | OPEN | - |
+| **BUG-163** | MEDIUM** — Displacement filter absent (used as quality filter for OB/FVG) | INLINE-ONLY | OPEN | - |
+| **BUG-164** | MEDIUM** — Breaker Block detection absent | INLINE-ONLY | OPEN | - |
+| **BUG-165** | MEDIUM** — Premium/Discount zones not computed | INLINE-ONLY | OPEN | - |
+| **BUG-166** | MEDIUM** — Optimal Trade Entry (OTE) Fibonacci zone not computed | INLINE-ONLY | OPEN | - |
+| **BUG-167** | ) | INLINE-ONLY | OPEN | - |
+| **BUG-168** | to BUG-177) | INLINE-ONLY | OPEN | - |
+| **BUG-169** | HIGH** — No correlation-adjusted concentration limits | INLINE-ONLY | OPEN | - |
+| **BUG-170** | MEDIUM** — No drawdown-aware position sizing | INLINE-ONLY | OPEN | - |
+| **BUG-171** | MEDIUM** — No risk parity allocation across strategies | INLINE-ONLY | OPEN | - |
+| **BUG-172** | MEDIUM** — No walk-forward parameter optimization (all params static) | INLINE-ONLY | OPEN | - |
+| **BUG-173** | MEDIUM** — No online learning / feedback loop from live performance | INLINE-ONLY | OPEN | - |
+| **BUG-174** | LOW** — No execution algorithm sophistication (acceptable at $10K scale) | INLINE-ONLY | OPEN | - |
+| **BUG-175** | HIGH** — No regime-conditional strategy weighting (smooth mixture) | INLINE-ONLY | OPEN | - |
+| **BUG-176** | MEDIUM** — No ML enhancement layer (acceptable; agents are intended substitute) | INLINE-ONLY | OPEN | - |
+| **BUG-177** | ) | INLINE-ONLY | OPEN | - |
+| **BUG-192** | ) | INLINE-ONLY | OPEN | - |
+| **BUG-193** | NEW) | INLINE-ONLY | OPEN | - |
+| **BUG-194** | NEW) | INLINE-ONLY | OPEN | - |
+| **BUG-195** | NEW) | INLINE-ONLY | OPEN | - |
+| **BUG-196** | NEW) | INLINE-ONLY | OPEN | - |
+| **BUG-197** | NEW) | INLINE-ONLY | OPEN | - |
+| **BUG-198** | (NEW) · CRITICAL — No structural PIT data loader; each data source uses ad-hoc P | INLINE-ONLY | OPEN | - |
 
 ---
-*Regenerated April 2026 after Pass 48.*
+*Regenerated April 2026 after Pass 49.*

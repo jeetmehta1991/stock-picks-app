@@ -146,6 +146,122 @@ def test_circuit_breaker_no_trigger_normal():
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# CLOSE_TRADE — regression test for BUG-214 (Pass 48)
+# ─────────────────────────────────────────────────────────────────────────────
+
+def test_close_trade_long_winner():
+    """BUG-214 regression: close_trade must compute days BEFORE pnl. NameError in old code."""
+    from backtest.engine.exit_manager import close_trade, OpenTrade, ClosedTrade
+    trade = OpenTrade(
+        ticker="AAPL", entry_date=date(2024,1,1), entry_price=100.0,
+        direction="long", strategy="test_strat", category="momentum",
+        sector="Information Technology",
+        initial_stop=90.0, trailing_stop=95.0, highest_close=110.0,
+        regime_at_entry="bull",
+    )
+    closed = close_trade(trade, exit_price=110.0, exit_date=date(2024,1,15),
+                         exit_reason="trailing_stop",
+                         max_adverse=-2.0, max_favourable=10.0)
+    assert isinstance(closed, ClosedTrade)
+    assert closed.hold_days == 14
+    assert closed.pnl_pct == 10.0
+    assert closed.win is True
+    assert closed.sector == "Information Technology"
+    print("✅ close_trade long winner — days/pnl computed in correct order")
+
+
+def test_close_trade_short_with_borrow_cost():
+    """close_trade must apply short borrow cost without crashing."""
+    from backtest.engine.exit_manager import close_trade, OpenTrade
+    trade = OpenTrade(
+        ticker="TSLA", entry_date=date(2024,1,1), entry_price=200.0,
+        direction="short", strategy="test_strat", category="momentum_short",
+        sector="Consumer Discretionary",
+        initial_stop=220.0, trailing_stop=210.0, highest_close=190.0,
+        regime_at_entry="bear",
+    )
+    closed = close_trade(trade, exit_price=180.0, exit_date=date(2024,1,11),
+                         exit_reason="trailing_stop",
+                         max_adverse=-1.0, max_favourable=15.0)
+    # Short: gross PnL = (200 - 180) / 200 * 100 = 10%
+    # 10-day hold; borrow cost subtracted in _pnl
+    assert closed.hold_days == 10
+    assert closed.win is True
+    assert closed.direction == "short"
+    print("✅ close_trade short trade with borrow cost — runs without error")
+
+
+def test_close_trade_loser_generates_fail_reason():
+    """close_trade must generate a fail_reason for losers."""
+    from backtest.engine.exit_manager import close_trade, OpenTrade
+    trade = OpenTrade(
+        ticker="META", entry_date=date(2024,1,1), entry_price=400.0,
+        direction="long", strategy="test_strat", category="momentum",
+        sector="Communication Services",
+        initial_stop=360.0, trailing_stop=380.0, highest_close=410.0,
+        regime_at_entry="neutral",
+    )
+    closed = close_trade(trade, exit_price=380.0, exit_date=date(2024,1,8),
+                         exit_reason="trailing_stop",
+                         max_adverse=-5.0, max_favourable=2.5)
+    assert closed.win is False
+    assert closed.fail_reason  # auto-generated, not empty
+    print("✅ close_trade loser — fail_reason auto-generated")
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# CLOSEDTRADE DATACLASS — regression test for BUG-215 (Pass 48)
+# ─────────────────────────────────────────────────────────────────────────────
+
+def test_closed_trade_single_definition():
+    """BUG-215 regression: only ONE ClosedTrade definition should exist."""
+    import ast
+    from pathlib import Path
+    src = Path(__file__).parent.parent / "engine" / "exit_manager.py"
+    tree = ast.parse(src.read_text())
+    classes = [n for n in ast.walk(tree)
+               if isinstance(n, ast.ClassDef) and n.name == "ClosedTrade"]
+    assert len(classes) == 1, \
+        f"Expected exactly 1 ClosedTrade class, found {len(classes)} (BUG-215 regression)"
+    print("✅ Single ClosedTrade dataclass definition")
+
+
+def test_closed_trade_has_canonical_fields():
+    """ClosedTrade must have sector, preliminary_tier, agent_reasoning fields."""
+    import dataclasses
+    from backtest.engine.exit_manager import ClosedTrade
+    fields = {f.name for f in dataclasses.fields(ClosedTrade)}
+    required = {
+        "sector", "preliminary_tier", "agent_reasoning",
+        "conversion_pair_id", "circuit_breaker_level",
+        "congressional_signal", "insider_signal",
+        "aaii_bullish", "cnn_fg_score",
+    }
+    missing = required - fields
+    assert not missing, f"ClosedTrade missing fields: {missing}"
+    print(f"✅ ClosedTrade has all canonical fields ({len(fields)} total)")
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# NEWS SENTIMENT — regression test for BUG-217 (Pass 48)
+# ─────────────────────────────────────────────────────────────────────────────
+
+def test_news_sentiment_reads_av_cache():
+    """BUG-217 regression: get_news_sentiment must read from cache/av_news/, not /prefetch/news/."""
+    from backtest.data.smart_money import get_news_sentiment, AV_NEWS_DIR
+    # The directory should exist (committed test data) and point at cache/av_news
+    assert "cache" in str(AV_NEWS_DIR), \
+        f"AV_NEWS_DIR should reference cache/, got {AV_NEWS_DIR}"
+    assert "av_news" in str(AV_NEWS_DIR), \
+        f"AV_NEWS_DIR should reference av_news/, got {AV_NEWS_DIR}"
+    # Returns dict with 'source' field (added in fix)
+    result = get_news_sentiment("XYZNONEXISTENT", date(2024,1,1))
+    assert "source" in result, "BUG-217 fix not applied — missing 'source' key"
+    assert result["source"] == "none"
+    print(f"✅ get_news_sentiment paths corrected — AV_NEWS_DIR={AV_NEWS_DIR.name}")
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # POINT-IN-TIME ENFORCEMENT
 # ─────────────────────────────────────────────────────────────────────────────
 

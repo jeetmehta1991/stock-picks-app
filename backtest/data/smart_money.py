@@ -508,64 +508,89 @@ def smart_money_score(
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# ALPHA VANTAGE NEWS SENTIMENT
-# Read from pre-fetched cache (scripts/prefetch_alphavantage_news.py)
-# Falls back to neutral if cache not available.
+# ALPHA VANTAGE / FINNHUB NEWS SENTIMENT
+# Read from pre-fetched cache (scripts/prefetch_alphavantage_news.py +
+# scripts/prefetch_finnhub_news.py). Falls back to neutral if no cache.
 # ─────────────────────────────────────────────────────────────────────────────
+#
+# BUG-217 fix (Pass 48): previous implementation looked at `prefetch/news/`
+# with `{ticker}_{year}.parquet` files and a `sentiment_score` column — none
+# of which exist. Actual data is in `cache/av_news/` and `cache/finnhub_news/`
+# as `{ticker}.parquet` with columns `sentiment_mean` / `sentiment_weighted` /
+# `article_count`. This caused get_news_sentiment to return neutral for every
+# ticker for every date, silently dropping the prefetched news data.
 
-NEWS_DIR = Path(__file__).parent / "prefetch" / "news"
+AV_NEWS_DIR = Path(__file__).parent / "cache" / "av_news"
+FH_NEWS_DIR = Path(__file__).parent / "cache" / "finnhub_news"
 
 
 def get_news_sentiment(ticker: str, as_of: date, lookback_days: int = 7) -> dict:
     """
     Return news sentiment for ticker in the lookback window before as_of.
-    Reads from pre-fetched Finnhub news cache (annual Parquet files per ticker).
+    Reads from pre-fetched Alpha Vantage cache first, falls back to Finnhub.
 
     Returns dict:
         sentiment_score: float (-1 to 1), positive = bullish news
         article_count: int — number of articles in window
         signal: bullish | bearish | neutral
+        source: alphavantage | finnhub | none
     """
-    year = as_of.year
-    safe_ticker = ticker.replace("-", "_")
-    path = NEWS_DIR / f"{safe_ticker}_{year}.parquet"
+    safe_ticker = ticker.replace("-", "_").replace(".", "_")
+    result = {"sentiment_score": 0.0, "article_count": 0,
+              "signal": "neutral", "source": "none"}
 
-    result = {"sentiment_score": 0.0, "article_count": 0, "signal": "neutral"}
+    for cache_dir, source in [(AV_NEWS_DIR, "alphavantage"),
+                               (FH_NEWS_DIR, "finnhub")]:
+        path = cache_dir / f"{safe_ticker}.parquet"
+        if not path.exists():
+            continue
+        try:
+            df = pd.read_parquet(path)
+            if df.empty or "date" not in df.columns:
+                continue
 
-    if not path.exists():
-        return result
+            df["date"] = pd.to_datetime(df["date"])
+            window_start = pd.Timestamp(as_of - timedelta(days=lookback_days))
+            window_end   = pd.Timestamp(as_of)
+            window = df[(df["date"] >= window_start) & (df["date"] <= window_end)]
 
-    try:
-        df = pd.read_parquet(path)
-        if df.empty or "date" not in df.columns:
-            return result
+            if window.empty:
+                continue
 
-        df["date"] = pd.to_datetime(df["date"])
-        window_start = pd.Timestamp(as_of - timedelta(days=lookback_days))
-        window_end   = pd.Timestamp(as_of)
-        window = df[(df["date"] >= window_start) & (df["date"] <= window_end)]
+            # Prefer relevance-weighted sentiment when available (AV);
+            # fall back to mean sentiment otherwise.
+            if "sentiment_weighted" in window.columns:
+                avg_score = float(window["sentiment_weighted"].mean())
+            elif "sentiment_mean" in window.columns:
+                avg_score = float(window["sentiment_mean"].mean())
+            elif "sentiment_score" in window.columns:
+                # legacy schema fallback
+                avg_score = float(window["sentiment_score"].mean())
+            else:
+                continue
 
-        if window.empty:
-            return result
+            article_count = (int(window["article_count"].sum())
+                             if "article_count" in window.columns
+                             else len(window))
 
-        avg_score     = window["sentiment_score"].mean()
-        article_count = int(window["article_count"].sum())
+            if avg_score >= 0.15:
+                signal = "bullish"
+            elif avg_score <= -0.15:
+                signal = "bearish"
+            else:
+                signal = "neutral"
 
-        if avg_score >= 0.15:
-            signal = "bullish"
-        elif avg_score <= -0.15:
-            signal = "bearish"
-        else:
-            signal = "neutral"
+            return {
+                "sentiment_score": round(avg_score, 3),
+                "article_count":   article_count,
+                "signal":          signal,
+                "source":          source,
+            }
+        except Exception as exc:
+            logger.debug("get_news_sentiment(%s,%s): %s", ticker, source, exc)
+            continue
 
-        return {
-            "sentiment_score": round(float(avg_score), 3),
-            "article_count":   article_count,
-            "signal":          signal,
-        }
-    except Exception as exc:
-        logger.debug("get_news_sentiment(%s): %s", ticker, exc)
-        return result
+    return result
 
 
 def get_gov_contracts(ticker: str, as_of: date, lookback_days: int = 365) -> dict:

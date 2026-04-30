@@ -69,59 +69,11 @@ class OpenTrade:
     cnn_fg_label:         str = "Neutral"
 
 
-@dataclass
-class ClosedTrade:
-    """A completed trade with full performance record."""
-    # Identity
-    ticker:             str
-    entry_date:         date
-    exit_date:          date
-    direction:          str
-    strategy:           str
-    category:           str
-    confidence_tier:    str
-    regime:             str
-    conversion_pair_id: Optional[str]
-
-    # Prices
-    entry_price:        float
-    exit_price:         float
-    initial_stop:       float
-    highest_close:      float
-    trailing_stop_at_exit: float
-    circuit_breaker_level: Optional[int]
-
-    # Exit
-    exit_reason:        str    # trailing_stop | circuit_breaker_N | conversion_exit
-
-    # Performance
-    pnl_pct:            float
-    pnl_dollar:         float  # on $10k notional
-    win:                bool
-    hold_days:          int
-    max_adverse_excursion:   float   # worst % against trade
-    max_favourable_excursion: float  # best % in favour
-
-    # Context
-    signals_at_entry:   dict
-    context_bullets:    list
-    context_paragraph:  str
-    fail_reason:        str
-
-    # Smart money / macro / sentiment scores
-    smart_money_score:  int = 0
-    macro_score:        int = 0
-    sentiment_score:    int = 0
-    days_to_earnings:   Optional[int] = None
-    # Raw granular signals at entry — for audit and re-analysis
-    congressional_signal: str = "none"   # strong_buy|buy|neutral|sell|none
-    insider_signal:       str = "none"   # cluster_buy|buy|neutral|sell|none
-    institutional_signal: str = "none"   # accumulating|neutral|reducing|none
-    aaii_bullish:         float = 0.0    # AAII bullish % at entry date
-    aaii_bearish:         float = 0.0    # AAII bearish % at entry date
-    aaii_signal:          str = "neutral" # AAII signal at entry date
-    cnn_fg_score:         float = 50.0   # CNN Fear & Greed score at entry date
-    cnn_fg_label:         str = "Neutral" # CNN F&G label at entry date
+# BUG-215 fix (Pass 48): removed duplicate older ClosedTrade dataclass that
+# previously lived here. Canonical definition follows below — has 41 fields
+# vs the old 38, includes `sector` at the canonical position after `regime`,
+# and properly defaults `conversion_pair_id` / `circuit_breaker_level` as
+# Optional fields. The duplicate was being silently overwritten by Python.
 
 
 @dataclass
@@ -292,9 +244,10 @@ def close_trade(
     fail_reason: str = "",
 ) -> ClosedTrade:
     """Convert an OpenTrade to a ClosedTrade with full performance metrics."""
+    # BUG-214 fix (Pass 48): days must be computed BEFORE _pnl() call
+    days  = (exit_date - trade.entry_date).days
     pnl   = _pnl(trade.entry_price, exit_price, trade.direction, days)
     win   = pnl > 0
-    days  = (exit_date - trade.entry_date).days
 
     if not win and not fail_reason:
         # Auto-generate fail reason
