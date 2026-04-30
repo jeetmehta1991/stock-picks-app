@@ -8812,3 +8812,465 @@ Decisions count: **38** (was 36, +2 from Pass 20).
 ---
 
 *Pass 20 complete. Resolution strategy specified: layered execution with characterization tests. 2 new decisions added (DECISION-037, 038) for Phase A adoption and budgeted layering. No new bugs.*
+
+---
+
+# AUDIT PASS 21 — Decision Review Session 1 (Decisions 001-005)
+
+User reviewed Batch 1 of decisions on 2026-04-29. Outcomes documented below.
+
+---
+
+## DECISION-001 — Quiver subscription cancellation timing
+
+**Status:** RESOLVED
+**Decision:** Option B — Run pre-cancellation repair, retain subscription until validation passes
+**Decision date:** 2026-04-29
+**User comment:** "Will retain and wait."
+
+**Action items unblocked:**
+- Quiver pre-cancellation repair scripts (BUG-184 through BUG-191)
+- 1-2 days of dedicated prefetch work
+- Validation gate runs before cancel
+
+---
+
+## DECISION-002 — Polygon News evaluation
+
+**Status:** RESOLVED (evaluation phase only)
+**Decision:** Approve evaluation script. Subscription decision deferred to post-evaluation.
+**Decision date:** 2026-04-29
+**User comment:** "Evaluation approved"
+
+**Action items unblocked:**
+- Write `scripts/evaluate_polygon_news.py` against Polygon free tier
+- Test 6 criteria: ticker coverage, historical depth, latency, schema, rate limits, deduplication
+- Comparison report vs current AV cache
+- DECISION-020 finalisation depends on results
+
+---
+
+## DECISION-003 — Phase 0 inclusion in PROJECT_PLAN
+
+**Status:** PENDING — User requested deep dive before deciding
+**User comment:** "I want to understand more about phase 0 and associated timelines costs uses expectations outputs before i provide my decision"
+
+**Pass 21 Section A below provides the requested deep dive.**
+
+---
+
+## DECISION-004 — Phase 0.A scope
+
+**Status:** RESOLVED
+**Decision:** Option B — Standard scope (2 weeks)
+**Decision date:** 2026-04-29
+**User comment:** "Recommendation B"
+
+**Scope confirmed includes:**
+- Quiver gaps repair (BUG-184-191)
+- Earnings dates prefetch (BUG-178)
+- yfinance .info prefetch with snapshot date (BUG-179)
+- VIX/DXY explicit prefetch (BUG-180/26)
+- Diagnose Finnhub failure (BUG-181)
+- Cache versioning (BUG-182)
+- Validation CI (BUG-183)
+- Set auto_adjust=False (BUG-109)
+
+**Out of scope for Phase 0.A:**
+- Polygon News integration (separate workstream after DECISION-020)
+- Unusual Whales / Ortex stubs (Phase 1C prep work)
+
+---
+
+## DECISION-005 — Strategy count target
+
+**Status:** PENDING — User wants to include fundamental analysis
+**User comment:** "I believe fundamental data analysis is not a bad idea. Helps understand upward potential or possible downward correct which is not possble with just technical analysis"
+
+**This re-opens DECISION-006 (family deferrals) since Carry/Value/Quality are fundamental-data-dependent.**
+
+**Pass 21 Section B below provides honest analysis of the fundamental data tradeoff and a revised proposal for the user's reconsideration.**
+
+---
+
+## SECTION A — Phase 0 Deep Dive (for DECISION-003 reconsideration)
+
+User asked: timelines, costs, uses, expectations, outputs.
+
+### A.1 — What Phase 0 IS
+
+Phase 0 is **the foundation work that must happen BEFORE Phase 1B-α can run safely**. It exists because the audit identified that running Phase 1B without this work led to the previous $160 wasted result.
+
+Phase 0 is **NOT** strategy work, NOT validation work, NOT live trading. It's the engineering infrastructure that makes everything else possible.
+
+### A.2 — Why Phase 0 must come before Phase 1B
+
+The previous Phase 1B run failed because:
+1. VIX was prefetched as VXX → wrong regime detection (BUG-26)
+2. Earnings dates fetched live → rate limits, slow, inconsistent (BUG-178)
+3. Position sizing not applied → fixed $10K dollar PnL meaningless (BUG-104)
+4. Agent decisions ignored → 99.9% identical downgrades (BUG-113)
+5. Cross-day overlap not detected → 88% trade duplication (BUG-101)
+6. No characterization tests → bugs went undetected until manifestation
+
+Each of these is foundation, not strategy. Re-running Phase 1B without fixing them produces the same kind of useless output as before.
+
+### A.3 — Phase 0 sub-phases with timelines
+
+#### Phase 0.A — Prefetching Foundation
+**Timeline:** 2 weeks
+**Cost:** $0 (engineering time only) + ~1 month Quiver subscription extension ($50-100)
+**Deliverables:**
+- Repaired Quiver cache (insider data current, Wikipedia diagnosed, 29 missing 13F tickers, etc.)
+- New prefetch scripts: earnings, info, VIX-explicit
+- Cache versioning system across all caches
+- Validation CI script that fails build if any prefetch is empty/stale/missing
+- Documentation of every data source: schema, refresh cadence, owner
+- BUG-178, 179, 180, 181, 182, 183 resolved
+- BUG-26 root cause fixed
+
+**Output artifact:** `prefetch_validation_report.md` — confirms all data sources are populated and current.
+
+**Success criteria:**
+- All 7 Quiver datasets have ≥80% non-empty tickers
+- Insider data covers through last 30 days
+- Earnings dates cover full backtest period + 90-day forward window
+- yfinance .info snapshot exists for all 509 tickers
+- VIX is explicitly in macro_combined.parquet (not VXX proxy)
+- Validation script passes
+
+#### Phase 0.B — Portfolio class FIRST
+**Timeline:** 1 week
+**Cost:** $0
+**Deliverables:**
+- New `backtest/portfolio/portfolio.py` Portfolio class
+- Equity tracking
+- Tier-based position sizing
+- Vol-targeted sizing layer (BUG-168)
+- Correlation-adjusted concentration limits (BUG-169)
+- Drawdown-aware sizing (BUG-170)
+- Sector concentration tracking
+- Open position tracking
+- Daily/weekly/monthly P&L attribution
+
+**Output artifact:** Portfolio class with comprehensive unit tests.
+
+**Success criteria:**
+- All Portfolio operations have unit tests
+- Backtest engine successfully imports and uses Portfolio
+- Existing tier-based sizing logic moves into Portfolio
+- BUG-95 resolved
+- BUG-104 unblocked (now possible to apply position sizing)
+
+#### Phase 0.C — Engine integration with full agent fields
+**Timeline:** 2 weeks
+**Cost:** $0
+**Deliverables:**
+- Engine consumes all 29 actionable agent fields (not just final_score)
+- Agent action field gates trades (ENTER/WATCH/SKIP/AVOID)
+- Position size modifier applies multiplier to base tier size
+- Recommended exit drives exit strategy choice
+- Risk Agent trade_blocked acts as hard block
+- Bull/Bear debate winner with confidence affects long/short gates
+- Fundamental Agent avoid_earnings hard-gates near earnings
+- BUG-113, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127 resolved (all 13 agent integration bugs)
+
+**Output artifact:** Engine with documented agent integration matrix (which agent field controls what behavior).
+
+**Success criteria:**
+- Each of 29 fields has a documented engine consumer
+- Integration tests demonstrate each agent recommendation produces expected behavior change
+- Smoke test (single ticker, single month) shows agent SKIP correctly skips trade
+
+#### Phase 0.D — Modern signals + ICT/SMC
+**Timeline:** 4-6 weeks
+**Cost:** $0 (no new APIs needed for ICT or pure-compute signals)
+**Deliverables:**
+
+Sub-phase 0.D.1 — Modern signals (1-2 weeks):
+- Anchored VWAP from 5 anchors (earnings, year, swing high, swing low, 52w high)
+- Volume Profile (POC, VAH, VAL, HVN, LVN)
+- Cumulative Volume Delta (CVD)
+- Relative Strength vs sector and SPY
+- Per-ticker volatility regime
+- Post-Earnings Announcement Drift tracker
+
+Sub-phase 0.D.2 — ICT/SMC concept detectors (3-4 weeks):
+- Order Block detection (bullish + bearish)
+- Fair Value Gap detection (bullish + bearish)
+- Liquidity Sweep detection
+- Displacement filter
+- Breaker Block detection
+- Premium/Discount zones
+- Optimal Trade Entry (OTE) Fibonacci zones
+- Market Structure (HH/HL/LH/LL, BOS, CHoCH)
+
+Sub-phase 0.D.3 — Calendar/seasonal signals (1 week):
+- FOMC day flags
+- January effect signal
+- Sell-in-May overlay
+- End-of-quarter window dressing
+- Santa rally signal
+- Tax-loss selling signal
+
+**Output artifact:** Updated `compute_all_signals()` with 100+ new signal fields.
+
+**Success criteria:**
+- Each new signal has unit test with hand-verified expected output
+- Each new signal has bounds check (no NaN, no negative-when-shouldn't-be, etc.)
+- Existing 220 signals still produce identical output (characterization test)
+- Documentation of every signal: what it measures, value range, NaN handling
+
+### A.4 — Total Phase 0 footprint
+
+| Sub-phase | Time | API Cost | Lines added | New tests |
+|---|---|---|---|---|
+| 0.A | 2 wk | ~$50-100 (Quiver extension) | ~600 | 15-20 |
+| 0.B | 1 wk | $0 | ~400 | 25-30 |
+| 0.C | 2 wk | $0 | ~300 (engine changes) | 20-25 |
+| 0.D.1 | 1-2 wk | $0 | ~500 | 15-20 |
+| 0.D.2 | 3-4 wk | $0 | ~800 | 25-30 |
+| 0.D.3 | 1 wk | $0 | ~300 | 10-15 |
+| **TOTAL** | **9-13 wk** | **~$50-100** | **~2,900** | **110-140** |
+
+This is significant work. But:
+- It eliminates the entire class of failures from the previous $160 run
+- Almost all of it is engineering, not API spending
+- Once done, Phase 1B-α through Stage 4 proceeds at normal speed
+
+### A.5 — What if you skip Phase 0?
+
+If you go straight to Phase 1B-α without Phase 0:
+- VXX-as-VIX bug still produces wrong regimes (no fix without prefetch)
+- Earnings dates still fetched live (slow, unreliable)
+- Position sizing meaningless without Portfolio class
+- Agent integration still broken (recommendations ignored)
+- New ICT/modern strategies don't exist (defer or skip entirely)
+- Phase 1B-α would need to be re-run after each foundational fix anyway
+
+**You would end up doing Phase 0 work piecemeal across many iterations instead of cohesively up front.** This is exactly the iteration explosion problem from Pass 20.
+
+### A.6 — Honest tradeoffs
+
+The hard truth: Phase 0 delays validation results. Today, you don't know if your strategies work. After Phase 0, you still won't know — but you'll have the infrastructure to find out reliably.
+
+**Counter-argument for going faster:** the prior 34,727 trades suggest mean PnL near zero. Even fully fixed, validation might show no edge. Doing 9-13 weeks of foundation work for a system that may have no edge is a real risk.
+
+**Counter to that:** the validation in those 34,727 trades was structurally invalid. We literally cannot tell from them whether the strategies have edge. The only path to that answer requires fixing the foundation.
+
+**My honest recommendation: A — adopt Phase 0.** Without it, you cannot reliably answer the question that's blocking everything else.
+
+### A.7 — Compression options if 9-13 weeks feels too long
+
+If the timeline is the dealbreaker, here are the only safe ways to compress:
+
+**Compression A — Defer 0.D (modern signals + ICT) to Phase 1E.** Saves 4-6 weeks. Phase 1B-α runs on existing 72 strategies only. Risk: if existing strategies fail, you've still got to add them. But if existing strategies pass, you ship to live faster and add modern strategies post-deployment.
+
+**Compression B — Run 0.A and 0.B in parallel with characterization test development (Phase A from Pass 20).** Saves 0.5 weeks. Modest gain.
+
+**Compression C — Reduce 0.D.2 (ICT) scope.** Implement only the 4 highest-value concepts (Order Blocks, FVG, Liquidity Sweeps, Displacement) instead of all 8. Saves 1.5 weeks. Reduces ICT strategy count from 16 to 8. Acceptable if 8 is enough to validate the concept.
+
+**My recommendation:** If timeline matters, **Compression A**. ICT and modern signals are valuable but not required for Phase 1B-α validation. They can be added in parallel with Stage 3 paper trading if existing strategies pass.
+
+---
+
+## SECTION B — Fundamental Data Analysis (for DECISION-005 / 006 reconsideration)
+
+User said: "I believe fundamental data analysis is not a bad idea. Helps understand upward potential or possible downward correct which is not possble with just technical analysis"
+
+**The user is correct that fundamental analysis adds something technical analysis cannot.** But adding it requires honest scope expansion analysis.
+
+### B.1 — What fundamental data actually means
+
+In quant systematic trading, "fundamentals" splits into 4 categories:
+
+1. **Valuation factors** — P/E, P/B, P/S, EV/EBITDA, dividend yield, FCF yield
+2. **Quality factors** — ROE, ROIC, gross margin trend, earnings stability, accruals, debt/equity
+3. **Growth factors** — revenue growth, EPS growth, analyst estimate revisions
+4. **Earnings dynamics** — surprise magnitude, guidance changes, forward estimate trajectory
+
+Each has different data requirements, different update cadence, and different strategy types.
+
+### B.2 — Strategy types that use fundamentals
+
+| Strategy family | What it does | Holding period | Edge type |
+|---|---|---|---|
+| **Value** | Long cheap stocks, short expensive | 6-24 months | Mean reversion of valuations |
+| **Quality** | Long high-ROE, low-debt firms | 3-12 months | Quality persistence |
+| **Growth at reasonable price (GARP)** | Combine growth + value | 6-12 months | Compound metric |
+| **Earnings momentum** | Long stocks with rising estimates | 1-3 months | Analyst revision effect |
+| **Earnings drift (PEAD)** | Long surprises, hold 30-60d | 1-3 months | Post-announcement drift |
+
+**Critical observation:** Most fundamental strategies have **6-24 month holding periods**. This is fundamentally different from the current swing trading framework (1-30 day holds).
+
+### B.3 — Honest assessment of fundamental analysis fit for current system
+
+**The user's intuition is right that fundamentals help.** But the implementation has tradeoffs the user should know about:
+
+**Pros of adding fundamentals:**
+- Captures upward/downward potential not visible in price action
+- Adds orthogonal signals that don't correlate with technical signals (reducing the 88% trade overlap problem)
+- Real edge per academic literature (Fama-French factors persist)
+- Helps explain why a "technically perfect" trade fails (fundamentals deteriorating)
+- Agent context becomes much richer
+
+**Cons / costs of adding fundamentals:**
+
+1. **Data requirements are substantial.** Fundamentals come from earnings reports (4× per year), 10-Q/10-K filings (4× per year), guidance updates (irregular), analyst estimate revisions (continuous). Sources:
+   - **yfinance** has limited fundamental fields (free but unreliable)
+   - **Alpha Vantage** has fundamentals via EARNINGS, INCOME_STATEMENT, BALANCE_SHEET, CASH_FLOW endpoints (paid tier covers it)
+   - **FinancialModelingPrep** ($14-30/mo for full coverage)
+   - **Polygon** financials endpoint ($30/mo with news)
+   - **SEC EDGAR** (free, but requires parsing XBRL)
+
+2. **Point-in-time data is critical.** A stock's P/E ratio TODAY is irrelevant for backtesting 2022. We need P/E **as of each historical date**. Most APIs return current values only — getting historical requires premium tier or careful EDGAR parsing.
+
+3. **Holding period mismatch.** Fundamental edges play out over months. Swing trading is 1-30 days. To use fundamentals in swing trading, we use them as:
+   - Context (agent reasoning) — works fine, low cost
+   - Filters (avoid expensive stocks for longs) — works fine
+   - Strategies (long cheap value stocks) — only if we extend hold periods
+
+4. **Strategy taxonomy expansion.** Adding fundamental strategies brings us to ~150 strategies (DECISION-005 Option C). More to validate, more correlation analysis needed.
+
+5. **Validation methodology change.** Fundamental strategies need longer in-sample windows (multi-year trends), changing the categorical validation framework.
+
+### B.4 — Three options for incorporating fundamentals
+
+#### Option Alpha — Fundamentals as context only (no new strategies)
+
+Add fundamental data as agent context. Agents reason about valuation/quality/growth when making decisions. No new strategies; existing strategies get richer reasoning.
+
+**What's needed:**
+- Add Polygon financials API (~$0/month if combined with Polygon News, otherwise $20/month)
+- Build fundamentals prefetch with point-in-time logic
+- Add fundamentals fields to agent context
+- Update agent prompts to consider fundamentals
+
+**Timeline impact:** +1 week to Phase 0.A
+**API cost:** ~$0-20/mo additional (depending on Polygon News bundling)
+**Strategy count:** unchanged at ~130
+**Risk:** LOW — pure additive context
+
+**Best for:** Getting most of the benefit (agent reasoning improvement) with minimum scope expansion. Fundamentals show up in agent's "primary_risk" reasoning, agent's debate, and agent's tier adjustments.
+
+#### Option Beta — Fundamentals as filters + agent context
+
+Same as Alpha PLUS hard filters:
+- Don't take longs in stocks with P/E > 95th percentile of sector
+- Don't take longs in stocks with declining 4-quarter revenue
+- Don't take shorts in stocks with rising EPS estimates
+
+**What's needed:** Above + filter logic in screener.
+
+**Timeline impact:** +1.5 weeks to Phase 0.A
+**API cost:** same as Alpha
+**Strategy count:** ~130 (unchanged) but each gets fundamental filters
+**Risk:** MEDIUM — filters can be too aggressive, killing trade volume
+
+**Best for:** Reducing avoidable losses (don't long expensive deteriorating businesses) without dramatically expanding strategy count.
+
+#### Option Gamma — Full fundamental strategy family (Carry/Value/Quality)
+
+Same as Beta PLUS new strategy family with longer holds:
+- Value rotation (long cheapest decile of S&P 500, rebalance quarterly)
+- Quality long (high-ROE low-debt rotation, rebalance quarterly)
+- Earnings momentum (long stocks with positive estimate revisions)
+- Earnings drift continuation (PEAD with 30-60d hold)
+- ~10-15 new strategies
+
+**What's needed:** Above + new strategy implementations + new exit logic for longer holds + new validation framework.
+
+**Timeline impact:** +3-4 weeks to Phase 0.D
+**API cost:** same as Alpha/Beta
+**Strategy count:** ~145-150
+**Risk:** HIGH — different validation methodology, longer holds change risk profile, capital allocation across timescales becomes complex
+
+**Best for:** Comprehensive edge harvesting. But this is significant scope expansion and changes what the system does ("swing trading" → "swing + position trading").
+
+### B.5 — My honest recommendation for fundamentals
+
+**Option Alpha** — fundamentals as agent context.
+
+**Why:**
+- Gets 70% of the benefit (agent reasoning improvement, downside protection awareness, upward potential awareness)
+- Costs <1 week additional time
+- No strategy taxonomy expansion
+- No methodology change
+- Pure additive — doesn't break anything
+- Aligns with the "ALL agent recommendations integrated" requirement (DECISION-008-012)
+
+**Why not Option Beta:** Filters can be too aggressive. The risk of "system kills its own trades for fundamental reasons that turn out wrong" is real. Better to let agents reason about it (Alpha) than hard-filter.
+
+**Why not Option Gamma:** Significantly extends scope and timeline. Changes the system's character. Better suited to Phase 1F post-deployment when you have more capital and more validation data.
+
+### B.6 — Revised DECISION-005 proposal
+
+**Original:**
+- A — ~110 strategies
+- B — ~130 strategies (recommended)
+- C — ~150 strategies (with Carry/Value/Quality)
+
+**Revised proposal incorporating user feedback:**
+- A — ~110 strategies (no fundamental work)
+- **B-revised — ~130 strategies + fundamental data as agent context (Option Alpha)** ← **NEW RECOMMENDATION**
+- B-old — ~130 strategies, no fundamentals
+- C — ~150 strategies + full fundamental strategy family (Option Gamma)
+
+The **B-revised** option captures the user's correct intuition (fundamentals help) without the scope explosion of full fundamental strategy family.
+
+### B.7 — Revised DECISION-006 (family deferrals) implications
+
+If B-revised is chosen for DECISION-005:
+
+| Family | Phase 0 / Phase 1B | Phase 1F |
+|---|---|---|
+| ICT/SMC | UPFRONT | — |
+| Event-driven (PEAD) | UPFRONT | — |
+| AVWAP / Volume Profile | UPFRONT | — |
+| Calendar / Seasonal | UPFRONT | — |
+| **Fundamental data as agent context** | **UPFRONT (NEW)** | — |
+| **Fundamental as hard filters** | DEFER | Phase 1F |
+| Carry / Value strategies | DEFER | Phase 1F |
+| Quality factor strategies | DEFER | Phase 1F |
+| Pairs / StatArb | DEFER | Phase 1F |
+| Macro/Cross-asset standalone | DEFER (in agent context now) | Phase 1F |
+| ML enhancement layer | DEFER | Phase 1F |
+
+This is the cleanest split. Fundamentals improve agent reasoning upfront. Full fundamental strategy family waits until live trading proves the system has edge.
+
+---
+
+## SECTION C — Updated decision states
+
+| # | Title | Status | Decision |
+|---|---|---|---|
+| 001 | Quiver cancellation | RESOLVED | Option B — repair first |
+| 002 | Polygon News | RESOLVED (eval phase) | Approve evaluation script |
+| 003 | Phase 0 inclusion | PENDING | User reviewing Section A above |
+| 004 | Phase 0.A scope | RESOLVED | Option B — standard scope |
+| 005 | Strategy count | PENDING | User reviewing B-revised proposal in Section B |
+| 006 | Family deferrals | PENDING | Tied to DECISION-005 outcome |
+| 007 | Phase 0 timeline | PENDING | Tied to DECISION-003 outcome |
+| 008-036 | (other) | PENDING | Subsequent batches |
+| 037-038 | Pass 20 decisions | PENDING | After Phase 0 decisions |
+
+**Resolved this session: 2 of 5 (DECISION-001, 002, 004)**
+**Deferred for user review: 3 of 5 (DECISION-003, 005, 006)**
+
+---
+
+## Implementation status
+
+**Cleared to start work (after batches complete):**
+- Quiver pre-cancellation repair scripts (DECISION-001)
+- Polygon News evaluation script (DECISION-002)
+- Phase 0.A scope confirmed at standard level (DECISION-004)
+
+**Blocked pending decisions:**
+- Phase 0 inclusion in plan (DECISION-003)
+- Strategy count target (DECISION-005)
+- Family deferrals (DECISION-006)
+
+---
+
+*Pass 21 Session 1 complete. 2 of 5 decisions resolved. 3 deferred with detailed Sections A and B for user reconsideration. No new bugs.*
