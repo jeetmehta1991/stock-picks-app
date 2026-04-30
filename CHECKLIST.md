@@ -221,3 +221,30 @@ State compliance visibly: "Checklist: ✅ [each item]"
        for owner re-decision — not silently grandfathered.
     NEVER make a recommendation without citing authoritative grounding. Ungrounded
     recommendations from prior Sonnet sessions produced 203 documented bugs.
+
+38. STRATEGY-UNIVERSE VERIFICATION — before any A/B / backtest / sample-size decision:
+    a. Grep PROJECT_PLAN.md, AUDIT.md, AUDIT_INDEX.md for every strategy class in scope
+       (technical, ICT/SMC, fundamental, smart-money, options, macro, sentiment, mean reversion,
+       momentum, trend-following, volatility, etc.)
+    b. List which are currently implemented vs. planned (Phase 0.D ICT, Stage 3+ options, etc.)
+    c. Verify the framework / backtest / sample-size calculation accommodates ALL strategy classes
+       in the deployed-and-planned universe — not just the implemented subset
+    d. If a strategy class is planned but not implemented, the framework must accommodate its
+       future addition (e.g., A/B arm structures must allow extending to "rules + ICT" arm later)
+    e. Past mistake: Round 1 Batch 2 A/B framework presented without verifying ICT/SMC was in
+       scope per DECISION-045 + Phase 0.D. Fix in L117.
+    NEVER present a methodology framework without first listing the full strategy universe
+    it must operate over.
+
+39. METHODOLOGY-LIBRARY ADOPTION TRIGGERS COMPANION DECISIONS:
+    a. When a methodology library is adopted (TradingAgents, smartmoneyconcepts, QuantStats, etc.),
+       immediately enumerate the methodology decisions the library does NOT make on its own:
+       timeframe scope, parameter values, signal aggregation, weighting, threshold tuning,
+       multi-timeframe combination rules, etc.
+    b. Each enumerated methodology decision must be added to AUDIT_INDEX.md as a PENDING decision
+    c. Library adoption is incomplete until ALL companion methodology decisions are at least logged
+    d. Past mistake: DECISION-045 (smartmoneyconcepts library) was RESOLVED Pass 27 without
+       companion decision on ICT timeframe scope. Owner had to surface the gap in Round 1
+       (Pass 52). Fix in L118; new DECISION-343 to be added.
+    NEVER mark a library-adoption decision RESOLVED without enumerating its companion
+    methodology decisions in the registry.
