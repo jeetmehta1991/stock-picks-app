@@ -7616,3 +7616,671 @@ The system has no automated check confirming prefetch completeness. Empty data f
 ---
 
 *Pass 18 complete. 8 new bugs (BUG-184 to BUG-191). Total 191 bugs. Quiver pre-cancellation action plan documented.*
+
+---
+
+# AUDIT PASS 19 — Consolidated Pending Decisions Registry
+
+This pass consolidates every open decision discovered across passes 1-18 into a single registry. Each decision is presented with: context, options, my recommendation, and explicit user approval status. The user requested this so we can go through them one-by-one in a single review session.
+
+This is a **decision registry**, not a bug list. Bugs go in their own sections (BUG-001 to BUG-191). Decisions here are choices about how to structure the project and what to build, where reasonable people could pick differently.
+
+---
+
+## How to use this registry
+
+For each decision below:
+- **Context** — what triggered the decision and why it matters
+- **Options** — concrete alternatives with tradeoffs
+- **My recommendation** — what I'd choose and why
+- **Status** — APPROVED / REJECTED / PENDING
+- **Decision date / Decision text** — once decided
+
+The user reviews each, picks an option (or asks for more info), and Claude updates the status. Once all are PENDING-cleared, the PROJECT_PLAN restructure can proceed.
+
+---
+
+## DECISION-001 — Quiver subscription cancellation timing
+
+**Context:** User is paying Quiver subscription and wants to cancel after prefetching everything. Pass 18 audit found 8 critical gaps (insider data 13-month gap, Wikipedia entirely empty, 29 major institutional tickers empty, WSB 14-month gap, missing endpoints).
+
+**Options:**
+- **A** — Cancel now (loses ~$50-100/month, accepts data gaps permanently)
+- **B** — Run pre-cancellation repair (1-2 days work, possibly 1 extra month subscription, then cancel)
+- **C** — Keep subscription indefinitely until live trading begins
+
+**Recommendation:** **B** — repair before cancellation. Cost of one extra month ($50-100) is cheap insurance vs cancelling and finding gaps later, which would require re-subscription anyway.
+
+**Status:** PENDING
+
+---
+
+## DECISION-002 — Polygon News subscription
+
+**Context:** User wants news data integrated into agent context. AV news cache covers 25 tickers with 5 having actual data. User said "ok with polygon news but need to check and test it comprehensively that it would suit our purposes before buying."
+
+**Options:**
+- **A** — Polygon News $30/month (full S&P 500 coverage, established API)
+- **B** — Tiingo News (free tier exists, paid for full coverage, less established)
+- **C** — Upgrade Alpha Vantage to paid tier $50/month (1200 calls/day, can cover S&P 500 with rate management)
+- **D** — Defer news entirely until Phase 1C (use only the 5 ticker cache for Phase 1B)
+- **E** — Marketaux ($25/month, similar to Polygon)
+
+**Recommendation:** **A** with **B** as fallback. Polygon is industry standard, well-documented API, predictable pricing. But evaluate before purchase via free tier API key.
+
+**Pre-purchase evaluation needed:**
+- Coverage check: do all 509 S&P 500 tickers return non-trivial articles?
+- Historical depth: can we get 2022-2026 data?
+- Schema check: sentiment, ticker tagging, summary, source available?
+- Rate limit check: throughput on lowest paid tier sufficient for prefetch?
+
+**Status:** PENDING
+
+---
+
+## DECISION-003 — Project plan restructure: Phase 0 inclusion
+
+**Context:** Multiple audit passes (15, 16, 17) have identified work that must happen BEFORE Phase 1B can run. Current PROJECT_PLAN.md has no "Phase 0" section. User confirmed in earlier turn: "I am ok with restructuring now as its best to do it upfront than realize it later."
+
+**Options:**
+- **A** — Add Phase 0 as new section before Phase 1B (recommended)
+- **B** — Distribute Phase 0 work into existing Phase 1B Gate 1 (would make Gate 1 enormous)
+- **C** — Defer Phase 0 work and run Phase 1B without it (rejected — caused $160 mistake)
+
+**Recommendation:** **A**. Phase 0 has 4 sub-phases with clear scope:
+- Phase 0.A — Prefetching Foundation (2 weeks)
+- Phase 0.B — Portfolio class FIRST (1 week, per user direction)
+- Phase 0.C — Engine integration with full agent fields (2 weeks)
+- Phase 0.D — Modern signals + ICT (4-6 weeks)
+
+Total Phase 0: 9-13 weeks
+
+**Status:** PENDING
+
+---
+
+## DECISION-004 — Phase 0.A scope (Prefetching Foundation)
+
+**Context:** Phase 0.A adds prefetch scripts for missing data and fixes broken prefetch.
+
+**Options for scope:**
+- **A** — Minimum scope: fix Quiver gaps + add VIX prefetch (1 week)
+- **B** — Standard scope (recommended): A + earnings prefetch + info prefetch + Finnhub repair + cache versioning + validation CI (2 weeks)
+- **C** — Maximum scope: B + Polygon News + Unusual Whales/Ortex stubs (3 weeks)
+
+**Recommendation:** **B**. Earnings prefetch and info prefetch are critical (BUG-178, BUG-179). Polygon News belongs to a separate decision (DECISION-002). Unusual Whales/Ortex stubs can wait until Phase 1C prep.
+
+**Status:** PENDING
+
+---
+
+## DECISION-005 — Strategy count target after Phase 0.D
+
+**Context:** Current codebase has 72 strategies (mostly trend + mean reversion variants). Pass 16 recommends adding ICT (16), modern signals like AVWAP/VPVR (~10), event-driven like PEAD (~5), calendar (~6) = ~110-130 total. User confirmed "comfortable with scale."
+
+**Options:**
+- **A** — Target ~110 strategies (ICT + modern signals + PEAD only)
+- **B** — Target ~130 strategies (above + calendar + sentiment-based)
+- **C** — Target ~150 strategies (above + Carry/Value/Quality factors)
+
+**Recommendation:** **B** at ~130. Carry/Value/Quality (option C extras) require fundamental data not currently prefetched and significantly different validation methodology — defer to Phase 1F per Pass 16.
+
+**Status:** PENDING
+
+---
+
+## DECISION-006 — Strategy families to defer to Phase 1F
+
+**Context:** Pass 16 identified 6 strategy families currently missing. Some are recommended upfront, some deferred.
+
+**Options for deferral:**
+
+| Family | Defer? | Reason |
+|---|---|---|
+| ICT/SMC | NO — upfront | User explicit request |
+| Event-driven (PEAD) | NO — upfront | High edge per literature |
+| AVWAP / Volume Profile | NO — upfront | Pure compute, no new data |
+| Calendar / Seasonal | NO — upfront | Pure date math |
+| Carry / Value | YES — Phase 1F | Requires fundamental data prefetch |
+| Quality factors | YES — Phase 1F | Requires balance sheet data prefetch |
+| Pairs / StatArb | YES — Phase 1F | Capital-inefficient for $10K-$50K |
+| Macro/Cross-asset standalone | YES — Phase 1F | Best as agent context first |
+| ML enhancement layer | YES — Phase 1F | After 6mo live performance data |
+
+**Recommendation:** Approve the table as shown above.
+
+**Status:** PENDING
+
+---
+
+## DECISION-007 — Phase 0 timeline (9-13 weeks before Phase 1B can start)
+
+**Context:** Phase 0 work uplift is significant. Total path from today to live trading:
+- Phase 0: 9-13 weeks
+- Phase 1B (rules-only ablation): 3-4 weeks  
+- Phase 1C (agents on survivor cells): 3-4 weeks
+- Phase 1D (5-year extended): 2-3 weeks
+- Stage 3 (paper trading 3-6 months): 12-24 weeks
+- Stage 4 (live trading): begins after Stage 3
+
+**Total to live trading: 6-9 months from today.**
+
+**Options:**
+- **A** — Accept 6-9 month timeline
+- **B** — Compress by deferring Phase 0.D (modern signals + ICT) to post-deployment
+- **C** — Compress by skipping Phase 1D (5-year backtest)
+- **D** — Compress by reducing Stage 3 paper trading to 2 months minimum
+
+**Recommendation:** **A**. User said "best to do it upfront than realize it later" — compression risks repeating the $160 mistake. The Max plan helps with iteration speed but doesn't change the underlying work.
+
+**Status:** PENDING
+
+---
+
+## DECISION-008 — Decision Agent action field integration (BUG-113)
+
+**Context:** Decision Agent emits `action: ENTER|WATCH|SKIP|AVOID` but engine ignores it. Pass 14 identified this as HIGH priority. User said "I want ALL of agent recommendations and abilities to be integrated into decision making."
+
+**Options for integration:**
+- **A** — Hard gates: SKIP/AVOID/WATCH never trade, ENTER required
+- **B** — Soft gates: SKIP reduces position size, AVOID skips, WATCH skips
+- **C** — Combination: AVOID hard-skips, SKIP soft-reduces, WATCH skips, ENTER trades
+
+**Recommendation:** **A** — hard gates. The agent's reasoning is detailed; if it says SKIP, respect it. Soft gates create gray-area trades. AVOID adds 5-day cooldown on that ticker.
+
+**Status:** PENDING
+
+---
+
+## DECISION-009 — Position size modifier integration (BUG-118)
+
+**Context:** Decision Agent emits `position_size_modifier: full|reduced_earnings|reduced_volatility|reduced_concentration|minimal`. Engine ignores it.
+
+**Options for size multiplier mapping:**
+- **A** — Conservative: full=1.0, reduced_*=0.5, minimal=0.25
+- **B** — Standard (recommended): full=1.0, reduced_*=0.7, minimal=0.3
+- **C** — Aggressive: full=1.0, reduced_*=0.85, minimal=0.5
+
+**Recommendation:** **B**. The agent flags reduced_* for specific reasons (earnings, volatility, concentration); 70% acknowledges the concern without abandoning the trade. Minimal at 30% reflects strong agent caution.
+
+**Status:** PENDING
+
+---
+
+## DECISION-010 — Risk Agent trade_blocked semantics (BUG-116)
+
+**Context:** Risk Agent emits `trade_blocked: True/False`. Engine ignores it.
+
+**Options:**
+- **A** — Hard block: trade_blocked=True → never trades regardless of all other signals
+- **B** — Override-able: trade_blocked=True logs warning but trade can still execute if final_score very high
+- **C** — Cooldown: trade_blocked=True triggers 24-hour cooldown on the ticker
+
+**Recommendation:** **A**. Risk Agent identifies macro events (FOMC today, CPI imminent, binary catalyst). Hard block is appropriate. Other agent signals don't override this.
+
+**Status:** PENDING
+
+---
+
+## DECISION-011 — Bull/Bear debate winner integration (BUG-119)
+
+**Context:** Debate emits `debate_winner: bull|bear|neutral` and `confidence_in_winner: high|medium|low`. Both ignored.
+
+**Options:**
+- **A** — Hard block: bear winner with high confidence blocks long entry, vice versa
+- **B** — Soft signal: bear winner reduces position size 50%, doesn't block
+- **C** — Filter only: ignored, debate is informational
+
+**Recommendation:** **A** for high confidence, **B** for medium confidence, **C** for low confidence. Layered response based on confidence.
+
+**Status:** PENDING
+
+---
+
+## DECISION-012 — Recommended exit integration (BUG-117)
+
+**Context:** Decision Agent emits `recommended_exit: atr_trail_1x|trailing_15pct|hybrid_50pct_target|next_pivot_target`. Engine uses fixed 10%/15% trailing.
+
+**Options:**
+- **A** — Honour agent's recommendation always
+- **B** — Honour for HIGH/EXCEPTIONAL tier only; default for lower tiers
+- **C** — Ignore agent recommendation, use fixed exit (current behaviour)
+
+**Recommendation:** **A**. The agent's exit recommendation is based on its full analysis (volatility, support/resistance, regime). Fixed exits are arbitrary. Use agent's choice.
+
+**Status:** PENDING
+
+---
+
+## DECISION-013 — Categorical validation dimensions for Phase 1B-β
+
+**Context:** Pass 14 identified that current plan tests only regime as categorical dimension. Pass 15 recommended adding sector × volatility × cap × holding-period × earnings-proximity × confluence-depth.
+
+**Options:**
+- **A** — Mandatory dimensions: regime, sector, volatility-bucket (3 dimensions)
+- **B** — Recommended dimensions: A + holding-period + earnings-proximity (5 dimensions)
+- **C** — Comprehensive: all 8 dimensions identified in Pass 15
+
+**Recommendation:** **B**. Five dimensions produce ~4 × 11 × 3 × 3 × 3 = 1188 cells per strategy. Already a lot of slicing. Adding cap-bucket and confluence-depth (option C) brings it to 31,000+ cells — sparse data per cell.
+
+**Status:** PENDING
+
+---
+
+## DECISION-014 — Phase 1B passing criteria adjustments
+
+**Context:** Current "10 Passing Criteria" includes win_rate ≥ 55%, profit_factor > 1.3, Sharpe > 0.5, etc. Pass 15 questioned whether these thresholds are calibrated.
+
+**Options:**
+- **A** — Keep current thresholds (literature-derived)
+- **B** — Calibrate thresholds against random-entry baseline (require strategy beat random by ≥3pp)
+- **C** — Calibrate against SPY buy-and-hold (require strategy beat SPY by ≥3pp annualised)
+- **D** — Both B and C
+
+**Recommendation:** **D**. Calibration against random-entry baseline is the gold standard for "is there an edge?" SPY buy-and-hold is the realistic benchmark for "is this worth doing vs index funds." Both required.
+
+**Status:** PENDING
+
+---
+
+## DECISION-015 — Strategy correlation analysis methodology
+
+**Context:** Pass 15 BUG-128 — no correlation analysis between strategies. Multiple strategies firing on same ticker may be measuring same thing.
+
+**Options:**
+- **A** — Pairwise correlation matrix between strategy returns (every strategy pair, run quarterly)
+- **B** — Cluster analysis to identify strategy groups (k-means on return timeseries)
+- **C** — Both A and B
+
+**Recommendation:** **A**. Pairwise correlation is more interpretable. Cluster analysis adds complexity without clear actionable output for limited-funds use case.
+
+**Status:** PENDING
+
+---
+
+## DECISION-016 — Threshold calibration scope (BUG-130)
+
+**Context:** Many thresholds hardcoded without empirical fit (RSI 30/70, MACD 12/26/9, etc.).
+
+**Options:**
+- **A** — Defer threshold calibration to Phase 1E (post-validation)
+- **B** — Run threshold calibration during Phase 1B-α before declaring strategies "passed" (grid search adds 2-3 weeks)
+- **C** — Hybrid: calibrate only the 5 most-impactful thresholds (RSI, MACD periods, ATR multipliers, position sizing, stop distances)
+
+**Recommendation:** **C**. Comprehensive calibration is over-engineering for limited-funds; focused calibration on the 5 highest-leverage thresholds captures most benefit.
+
+**Status:** PENDING
+
+---
+
+## DECISION-017 — Earnings proximity hard filter (BUG-131)
+
+**Context:** Plan says earnings proximity is a sizing factor, not go/no-go. But sizing isn't applied (BUG-104). Result: trades open within 0-3 days of earnings.
+
+**Options:**
+- **A** — Hard filter: no new entries within 7 days before earnings
+- **B** — Hard filter: no new entries within 3 days before earnings  
+- **C** — Soft filter: reduce size 50% within 7 days, no entries within 3 days
+- **D** — Defer to Fundamental Agent's `avoid_earnings` field (BUG-120)
+
+**Recommendation:** **C** combined with **D**. Engine implements C as floor; agent's avoid_earnings can override to skip even further out (e.g., agent sees binary FDA event in 14 days, blocks earlier).
+
+**Status:** PENDING
+
+---
+
+## DECISION-018 — Cooldown after stop-out (BUG-133)
+
+**Context:** Currently can re-enter same ticker next day after stop-out.
+
+**Options:**
+- **A** — No cooldown (current behaviour)
+- **B** — 5-day cooldown after any stop-out
+- **C** — 5-day cooldown after stop-loss (not target)
+- **D** — Variable cooldown: 5 days for stop-loss, 0 for trailing stop, 0 for target hit
+
+**Recommendation:** **D**. Stop-loss indicates the original thesis was wrong; cooldown prevents revenge trading. Target/trail exits are profitable; no cooldown needed.
+
+**Status:** PENDING
+
+---
+
+## DECISION-019 — Liquidity filter timing (BUG-135)
+
+**Context:** Liquidity filter runs at universe load (annually). A formerly-liquid stock that lost 80% of volume between universe load and entry day still passes.
+
+**Options:**
+- **A** — Move liquidity check to entry time (per-day per-ticker)
+- **B** — Refresh liquidity quarterly (vs annually)
+- **C** — Two-stage: annual universe filter + entry-time spot check
+
+**Recommendation:** **C**. Annual filter catches most of the universe. Entry-time spot check (last 5 days avg volume × price > $5M) catches stocks that degraded mid-year.
+
+**Status:** PENDING
+
+---
+
+## DECISION-020 — News API selection (depends on DECISION-002)
+
+**Context:** Once Polygon News evaluation completes, need final decision on news source.
+
+**Options:**
+- **A** — Polygon News $30/mo (if evaluation passes)
+- **B** — Alpha Vantage paid tier $50/mo
+- **C** — Tiingo News (free tier + paid)
+- **D** — Defer news to Phase 1C
+
+**Recommendation:** **A** if evaluation passes; **B** as fallback.
+
+**Status:** PENDING (blocked by DECISION-002 evaluation)
+
+---
+
+## DECISION-021 — Tier system simplification
+
+**Context:** Current 6-tier system (EXCEPTIONAL/VERY_HIGH/HIGH/MEDIUM_HIGH/MEDIUM/LOW). Pass 11 identified this as below professional standard.
+
+**Options:**
+- **A** — Keep 6 tiers as-is
+- **B** — Simplify to 3 tiers: TRADE / WATCH / BLOCK
+- **C** — Replace with continuous score 0-100 driving sigmoid-smoothed sizing
+
+**Recommendation:** **B** for limited-funds initial deployment. **C** for Phase 1E post-validation. Six tiers is over-engineering for $10K-$50K accounts.
+
+**Status:** PENDING
+
+---
+
+## DECISION-022 — Drawdown-aware position sizing (BUG-170)
+
+**Context:** Pass 16 — when portfolio is in drawdown, real funds reduce per-trade size automatically.
+
+**Options:**
+- **A** — Skip — handled by agent's reduced_concentration modifier
+- **B** — Implement with linear formula: size_mult = 1.0 - max(0, (drawdown_pct - 5) × 0.02)
+- **C** — Implement with step function: 0-5% no reduction, 5-15% reduce 25%, 15-25% reduce 50%, 25%+ pause new entries
+
+**Recommendation:** **C**. Step function is more interpretable and matches retail psychology (round drawdown thresholds trigger discipline).
+
+**Status:** PENDING
+
+---
+
+## DECISION-023 — Vol-targeted position sizing (BUG-168)
+
+**Context:** Industry standard is to size positions inversely to stock volatility, equalising risk contribution.
+
+**Options:**
+- **A** — Skip — keep tier-based percentages (5%/4%/3%)
+- **B** — Implement vol targeting on top of tier: actual_size = tier_size × (target_vol / stock_vol)
+- **C** — Replace tier sizing entirely with vol targeting
+
+**Recommendation:** **B**. Tier provides conviction-based scaling; vol targeting provides risk-equalisation. Multiplicative combination captures both. Cap at ±50% of tier base to prevent extreme sizing.
+
+**Status:** PENDING
+
+---
+
+## DECISION-024 — Correlation-adjusted concentration limits (BUG-169)
+
+**Context:** Currently "max 10 positions" and "max 30% per sector." Doesn't account for cross-sector correlation (e.g., 10 high-beta tech longs in 10 different sub-sectors look diversified but aren't).
+
+**Options:**
+- **A** — Skip — sector limit is good enough for limited-funds
+- **B** — Add beta-weighted gross exposure cap: Σ(position_size × stock_beta) ≤ 1.5× portfolio_value
+- **C** — Add rolling correlation check: max 3 positions with mutual correlation > 0.7
+
+**Recommendation:** **B**. Simpler than rolling correlation (one number), captures the actual risk (total beta exposure), tractable to implement.
+
+**Status:** PENDING
+
+---
+
+## DECISION-025 — Regime-conditional strategy weighting (BUG-175)
+
+**Context:** Currently strategies fire identically in all regimes. Real funds use smooth mixture model based on detected regime.
+
+**Options:**
+- **A** — Skip — Phase 1B-β categorical analysis already filters to regime-appropriate strategies
+- **B** — Implement smooth weighting: strategies have regime fitness scores derived from Phase 1B-β output
+- **C** — Hard regime gating: strategies disabled outside passing regimes
+
+**Recommendation:** **C** for live trading. The Phase 1B-β output IS the regime gating logic (`strategy_regime_matrix.json`). Smooth weighting (option B) adds complexity without clear benefit at limited-funds scale.
+
+**Status:** PENDING
+
+---
+
+## DECISION-026 — Walk-forward parameter re-optimization (BUG-172)
+
+**Context:** All parameters static (RSI 30/70 forever). Real funds re-optimize on rolling window.
+
+**Options:**
+- **A** — Skip — Phase 1B-α with calibrated thresholds (DECISION-016) is sufficient
+- **B** — Implement quarterly re-optimization on 6-month rolling window
+- **C** — Implement annual re-optimization (less aggressive)
+
+**Recommendation:** **A**. Re-optimization is over-engineering for limited-funds and creates risk of overfitting on short windows. Stick with calibrated parameters from Phase 1B-α.
+
+**Status:** PENDING
+
+---
+
+## DECISION-027 — Online learning / feedback loop (BUG-173)
+
+**Context:** No feedback from live performance to strategy weighting.
+
+**Options:**
+- **A** — Skip — manual review during Stage 3 paper trading is sufficient
+- **B** — Auto-disable strategies after 5 consecutive losses
+- **C** — Auto-reduce strategy weight by 50% after underperforming SPY by ≥10% over 3 months
+
+**Recommendation:** **B** as a safety net, manual review primary. Automated strategy retirement based on short windows risks killing a strategy in temporary drawdown.
+
+**Status:** PENDING
+
+---
+
+## DECISION-028 — Stage 3 paper trading duration
+
+**Context:** Original plan was vague. Pass 14 added A/B test (Branch A with agents, Branch B without).
+
+**Options:**
+- **A** — 3 months minimum, 6 months target
+- **B** — 6 months minimum, 12 months target
+- **C** — Trade-count-based: minimum 100 trades per branch
+
+**Recommendation:** **A**. 3 months produces ~50-80 trades per branch (enough for statistical comparison). Longer wait without proportional learning isn't worth the delay.
+
+**Status:** PENDING
+
+---
+
+## DECISION-029 — Stage 4 starting capital
+
+**Context:** Original plan said $10,000 CAD. User has mentioned $10K-$50K range.
+
+**Options:**
+- **A** — Start at $10K, scale to $25K if 3 months profitable, $50K if 6 months profitable
+- **B** — Start at $25K (middle of range)
+- **C** — Start at $50K (full range)
+
+**Recommendation:** **A**. Stepped scaling protects against system bugs that only surface in live with real capital. $10K limits early loss exposure.
+
+**Status:** PENDING
+
+---
+
+## DECISION-030 — Wikipedia data alternative (BUG-185)
+
+**Context:** Quiver Wikipedia views prefetch failed entirely. May be deprecated endpoint.
+
+**Options:**
+- **A** — Investigate and fix (best case: works, worst case: confirms deprecated)
+- **B** — Skip Wikipedia views entirely (signal not used heavily anyway)
+- **C** — Find alternative source for Wikipedia/page-views data
+
+**Recommendation:** **A** first (15 minutes to investigate). If deprecated → **B**. Wikipedia views is a low-value signal; not worth a separate API.
+
+**Status:** PENDING
+
+---
+
+## DECISION-031 — Codespace/Cloud workflow vs local
+
+**Context:** User uses GitHub Codespaces ("vigilant system") + Windows laptop with Claude Code. Some prefetches blocked by Codespaces network policies (Quiver, etc.).
+
+**Options:**
+- **A** — Run prefetches on laptop, commit cache to git, Codespaces reads from git
+- **B** — Move prefetch to Codespaces with VPN/proxy
+- **C** — Keep current workflow (laptop for prefetch, Codespaces for backtest)
+
+**Recommendation:** **C** — current workflow is established and working. Just document it explicitly so future re-runs follow same pattern.
+
+**Status:** PENDING (documentation only — no code change)
+
+---
+
+## DECISION-032 — IBKR vs Alpaca for paper trading (Stage 3)
+
+**Context:** Original plan mentioned both. Pass 14 recommended IBKR-only since user is Canadian and IBKR is the live broker.
+
+**Options:**
+- **A** — IBKR paper only (matches future live)
+- **B** — Both IBKR paper and Alpaca paper (more validation)
+- **C** — Alpaca paper only (simpler API, free)
+
+**Recommendation:** **A**. Paper trading should match live as closely as possible. Different broker behaviour (fills, slippage, asset coverage) makes Alpaca paper translate poorly.
+
+**Status:** PENDING
+
+---
+
+## DECISION-033 — Email approval system specifics
+
+**Context:** Plan calls for email approval before live trades. Specifics not defined.
+
+**Options:**
+- **A** — Time window: 30 minutes after email send, auto-cancel if no reply
+- **B** — Time window: 60 minutes
+- **C** — Time window: 120 minutes (longer for travel/sleep)
+- **D** — Time-of-day-aware: 30 min during market, until next market open if signal generated overnight
+
+**Recommendation:** **A** for daily 4:30pm signals (user can review within 30 min before close). User confirms / edits this in Stage 4 design.
+
+**Status:** PENDING
+
+---
+
+## DECISION-034 — Daily loss limits for live trading
+
+**Context:** Original plan mentioned drawdown limits. Specifics for daily/weekly/monthly not defined.
+
+**Options:**
+- **A** — Daily 3% / Weekly 8% / Monthly 15%
+- **B** — Daily 2% / Weekly 5% / Monthly 10% (more conservative)
+- **C** — Daily 5% / Weekly 12% / Monthly 20% (more aggressive)
+
+**Recommendation:** **A**. Standard for medium-high risk profile. Conservative enough to prevent ruin; loose enough to weather normal drawdowns.
+
+**Status:** PENDING
+
+---
+
+## DECISION-035 — Tax classification approach (Canadian)
+
+**Context:** Pass 11 raised CRA business income classification risk for active trading.
+
+**Options:**
+- **A** — Trade in TFSA-equivalent (limited contribution room ~$95K lifetime)
+- **B** — Trade in non-registered account, accept business income tax (~50% in Ontario)
+- **C** — Incorporate, trade through corporation (additional setup but tax efficient at scale)
+
+**Recommendation:** **A** for initial $10K-$50K. **C** for scaling. Discuss with CPA before Stage 4.
+
+**Status:** PENDING (requires CPA consultation)
+
+---
+
+## DECISION-036 — Audit document maintenance going forward
+
+**Context:** Audit document is now 4000+ lines. User said "audit is fine" — Claude can push directly.
+
+**Options:**
+- **A** — Continue appending passes (current approach)
+- **B** — Split into multiple files (audit/passes/01-25.md, audit/decisions.md, audit/bugs.md)
+- **C** — Rewrite as living document with current state, archive history
+
+**Recommendation:** **A** for now (passes are chronological, easier to review). Consider **B** when document exceeds 200KB or 8000 lines.
+
+**Status:** PENDING (document hygiene, no impact on plan)
+
+---
+
+## Summary of pending decisions
+
+| # | Title | Recommendation | Blocks |
+|---|---|---|---|
+| 001 | Quiver cancellation timing | B (repair first) | Phase 0.A |
+| 002 | Polygon News subscription | A (after evaluation) | DECISION-020 |
+| 003 | Phase 0 inclusion | A (add new section) | PROJECT_PLAN draft |
+| 004 | Phase 0.A scope | B (standard) | Phase 0.A draft |
+| 005 | Strategy count target | B (~130) | Phase 0.D scope |
+| 006 | Family deferrals to 1F | Approve table | Phase 1F section |
+| 007 | Phase 0 timeline | A (accept 6-9mo) | All schedule |
+| 008 | Action field integration | A (hard gates) | BUG-113 fix |
+| 009 | Position size mult | B (standard) | BUG-118 fix |
+| 010 | trade_blocked semantics | A (hard block) | BUG-116 fix |
+| 011 | Debate winner | A/B/C tiered | BUG-119 fix |
+| 012 | Recommended exit | A (honour) | BUG-117 fix |
+| 013 | Categorical dimensions | B (5 dims) | Phase 1B-β |
+| 014 | Passing criteria | D (both random + SPY) | Phase 1B criteria |
+| 015 | Correlation analysis | A (pairwise) | Phase 1B-β |
+| 016 | Threshold calibration | C (top 5) | Phase 1B-α |
+| 017 | Earnings filter | C+D | BUG-131 fix |
+| 018 | Stop-out cooldown | D (variable) | BUG-133 fix |
+| 019 | Liquidity timing | C (two-stage) | BUG-135 fix |
+| 020 | News API final | A (Polygon) | Phase 0.A |
+| 021 | Tier simplification | B (3 tiers) | Engine refactor |
+| 022 | Drawdown sizing | C (step) | BUG-170 fix |
+| 023 | Vol-targeted sizing | B (multiplicative) | BUG-168 fix |
+| 024 | Correlation limits | B (beta-weighted) | BUG-169 fix |
+| 025 | Regime weighting | C (hard gating) | Live trading logic |
+| 026 | Walk-forward re-opt | A (skip) | — |
+| 027 | Online learning | B (5-loss disable) | Live trading logic |
+| 028 | Paper duration | A (3-6 months) | Stage 3 |
+| 029 | Stage 4 capital | A (stepped 10/25/50) | Stage 4 |
+| 030 | Wikipedia alternative | A then B | Phase 0.A |
+| 031 | Codespace workflow | C (current) | Documentation |
+| 032 | IBKR vs Alpaca | A (IBKR only) | Stage 3 |
+| 033 | Email approval timing | A (30 min) | Stage 4 |
+| 034 | Daily loss limits | A (3/8/15%) | Stage 4 |
+| 035 | Tax classification | A initial, C scaling | Stage 4 |
+| 036 | Audit doc hygiene | A (continue) | — |
+
+**36 pending decisions.** User can go through one-by-one or batch-approve recommendations and flag dissents. Once cleared, PROJECT_PLAN restructure can proceed.
+
+---
+
+## Implementation pending list
+
+After all decisions are resolved, the following implementation work proceeds in this order:
+
+1. **Quiver pre-cancellation repair** (DECISION-001) — 1-2 days
+2. **PROJECT_PLAN restructure draft** — Claude drafts, user reviews, commits after approval
+3. **Polygon News evaluation script** (DECISION-002) — Claude drafts, user reviews
+4. **Phase 0.A prefetch foundation** (DECISION-004) — 2 weeks dev
+5. **Phase 0.B Portfolio class** (DECISION-003) — 1 week dev
+6. **Phase 0.C agent integration** (DECISIONS 008-012) — 2 weeks dev
+7. **Phase 0.D modern signals + ICT** (DECISIONS 005, 006) — 4-6 weeks dev
+8. **Gate 1 critical bug fixes** — 1 week dev
+9. **Gates 2-5 of Phase 1B-α** — 1 week
+10. **Gate 6 categorical analysis** — 1 week
+11. **Gate 7 Phase 1C-α** — 1 week + ~$30 API
+12. **Phase 1D 5-year extended** — 2 weeks + ~$38 API
+13. **Stage 3 paper trading** — 3-6 months elapsed
+14. **Stage 4 live trading** — ongoing
+
+---
+
+*Pass 19 complete. 36 decisions consolidated for one-by-one review. No new bugs added.*
