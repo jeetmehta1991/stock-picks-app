@@ -367,6 +367,7 @@
 | **DECISION-345** | ICT/SMC timeframe scope — daily-only vs weekly-HTF + daily-trigger vs full multi-timeframe | RESOLVED | Batch X52 — Round 1 Methodology Gaps | Pass 52 | 52 |
 | **DECISION-346** | Multidimensional categorical verdict matrix — supersedes single-dimension regime verdict | PENDING | Batch X52 — Round 1 Methodology Gaps | Pass 52 | - |
 | **DECISION-347** | Lagging-indicator dominance — add leading-style signals + regime-condition the lagging ones (1+3 combination) | PENDING | Batch X52 — Round 1 Methodology Gaps | Pass 52 | - |
+| **DECISION-348** | Event-calendar suppression — FOMC / earnings / CPI date-aware signal gating | PENDING | Batch X52 — Round 1 Methodology Gaps | Pass 52 | - |
 
 ---
 

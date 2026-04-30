@@ -1,6 +1,6 @@
 # AUDIT_TRIAGE.md — Pending Decision Prioritization
-**Last regenerated:** April 2026 (post-Pass 52 Round 1 complete + DEC-346 categorical matrix + DEC-347 lagging-indicator gap logged)
-**Decisions covered:** 250 PENDING (matches AUDIT_INDEX.md actual count, post-Pass-52 Round 1 + DEC-346 + DEC-347 logged as new pending)
+**Last regenerated:** April 2026 (post-Pass 52 Round 1 complete + DEC-346 categorical matrix + DEC-347 lagging-indicator gap + DEC-348 event-calendar suppression logged)
+**Decisions covered:** 251 PENDING (matches AUDIT_INDEX.md actual count, post-Pass-52 Round 1 + DEC-346 + DEC-347 + DEC-348 logged as new pending)
 
 **How to read:**
 - **Impact (1-10):** how much each moves the needle on quality, risk, or unblocking work
@@ -17,7 +17,7 @@
 
 | Metric | Count |
 |---|---|
-| Total pending | 250 |
+| Total pending | 251 |
 | Phase 0.A blockers | 60 |
 | Zero-eng-cost (only review time needed) | 2 |
 | Impact >= 9 | 17 |
@@ -161,7 +161,7 @@ These need only owner review time, no implementation work. Easy wins.
 
 ---
 
-## All 250 Pending — Sorted by Ratio
+## All 251 Pending — Sorted by Ratio
 
 | Decision | Title | Impact | Eng | Review | 🔴 | Ratio |
 |---|---|---|---|---|---|---|

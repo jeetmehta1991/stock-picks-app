@@ -19559,6 +19559,7 @@ During Pass 51b, a sandbox session reported expected `65/65` (claimed `63 + 2 ne
 - **DEC-345-A (TBD):** specific HTF zone types to compute on weekly bars (order blocks, FVGs, premium-discount zones, breaker blocks, mitigation blocks). To be resolved before Phase 0.D begins.
 - **DEC-345-B (TBD):** alignment rule for HTF + daily — does the daily setup need to be inside the HTF zone, or merely directionally aligned with HTF bias? To be resolved before Phase 0.D.
 - **DEC-345-C (TBD):** weekly bar refresh cadence — every Sunday close vs. live during the week. Defer to implementation.
+- **DEC-345-D (added Pass 52, post-research-Stage-1):** liquidity / stop-hunting awareness — the 25 pivot-bounce and breakout strategies in current screener.py (~35% of universe) are exposed to stop-sweep failure modes. DEC-345-A must explicitly include liquidity-pool primitives + stop-sweep candle detection (smartmoneyconcepts library has both — fork-first answer per DEC-045 + new CLAUDE.md fork-first rule). Not a separate decision; absorbed into DEC-345 implementation scope.
 
 **Backward-impact on prior decisions:**
 - **DEC-205 (A/B framework — 4 arms):** When ICT/SMC comes online in Phase 0.D, the A/B arm definitions need re-evaluation. The "rules-only baseline" arm currently does not include ICT — once ICT is implemented, "rules" becomes ambiguous between "rules without ICT" and "rules with ICT." Forward-link added; re-decision required at Phase 0.D entry.
@@ -19710,6 +19711,7 @@ Of these: 13 RESOLVED, 2 OBSOLETE, 2 DEFERRED. Wait, that's 17 — recount: Batc
 - **DEC-346-B (TBD):** Minimum sample size per cell for valid verdict (per Bailey & López de Prado floor: ≥100 paired trades for stable Sharpe; or use hierarchical shrinkage with smaller per-cell n)?
 - **DEC-346-C (TBD):** Multiple-testing correction method (Bonferroni / Holm-Bonferroni / Benjamini-Hochberg FDR / hierarchical Bayes shrinkage)?
 - **DEC-346-D (TBD):** Output schema for the multidimensional verdict matrix (storage, query, dashboard primitives)?
+- **DEC-346-E (added Pass 52, post-research-Stage-1):** Concentration / breadth as categorical dimensions. Stage 1 research surfaced that 7 stocks were 52% of 2025 S&P returns — passive S&P was effectively a leveraged AI bet. Position-sizing assumes "S&P 500 = 500 diversified names," which fails when concentration is high. Concentration regime (top-N share of returns; breadth-thrust state) should be primary verdict categoricals, not just diagnostic. Sizing rules may need concentration-adjustment factor. Absorbed into DEC-346 scope; not a separate decision.
 
 **Owner direction this session:** Q1=Option C in chat — formalize categorical scope (resolve DEC-066, DEC-100) AND expand the categorical list (more dimensions than the 17+ already specified). Q2=Agree resolution should happen in a future focused session, not this round. Q3=Approved logging DEC-346 as the parent decision.
 
@@ -19777,3 +19779,64 @@ The resolution path explicitly follows fork-first. No custom indicator developme
 **Resolution status:** PENDING. To be resolved in a future focused session covering DEC-099 + DEC-100 + DEC-101 + DEC-102 + DEC-346 + DEC-347 jointly. Estimated scope: ~4-5 hours focused work given fork-first library evaluation discipline (per L103 — must read source before recommending).
 
 *DEC-347 logged. Stage 1 research finding properly captured. Resolution deferred to focused session per owner option (c) approved Pass 52 (research stream). Resolution path explicitly follows fork-first architecture (DEC-045) with no custom-indicator-development assumed.*
+
+---
+
+## AUDIT PASS 52 — Event-Calendar Signal Suppression (DEC-348 — Stage 1 research finding)
+
+**Date:** April 30, 2026
+**Trigger:** Stage 1 strategy-research deliverable surfaced that the current 72-strategy universe has zero event-calendar awareness. No FOMC blackout, no earnings-window suppression, no CPI release special handling. The 2024-2026 environment had multiple high-volatility event days (April 2025 Liberation Day tariff announcement, Q3 2025 silver flash crash on CME margin hikes, periodic FOMC rate-decision spikes) that whipsaw strategies fired naively at those windows.
+
+### DEC-348 — Event-calendar signal suppression — PENDING (logged Pass 52, resolution deferred to focused session)
+
+**The gap:** Strategies fire identically on FOMC announcement day as on any other day. Same for earnings-week single names, same for CPI release days. Empirically these days carry 2-5× normal volatility and frequent intraday reversals. Mean-reversion strategies are most exposed (RSI 30 hits trigger entries that get stop-hunted by the event reaction); breakout strategies have mixed exposure (real breakouts on positive surprises, false breakouts on initial reactions that reverse).
+
+**Why this matters in the 2024-2026 window specifically:**
+- Liberation Day (April 2, 2025): VIX spiked from ~17 to >60 in days. Pre-event lagging-indicator signals ignored the macro setup; post-event mean-reversion signals fired into the spike, then again into the recovery.
+- FOMC days throughout 2024-2025: rate-cut cycle began 2024 (3 cuts totaling 100 bps), continued into 2025; each FOMC produced 1-3% intraday moves with reversal patterns.
+- CPI releases: persistently above-target inflation made each release a vol event.
+- Single-name earnings: NVIDIA, Palantir, Vistra all had 5-10% earnings-day moves with reversal patterns.
+
+**Three response options:**
+
+1. **Hard suppression** — strategies do not fire on event days at all. Simplest.
+2. **Soft suppression** — strategies fire but with reduced position sizing on event days (e.g., 0.5× normal size).
+3. **Strategy-class-conditional suppression** — different rules per strategy class (e.g., suppress mean-reversion entirely on FOMC; allow breakouts at reduced size; allow trend-following normally).
+
+**Resolution path (per fork-first architecture):**
+
+**Step 1 — Identify event sources (fork-first):**
+- **FOMC schedule:** Federal Reserve official calendar; `fredapi` (MIT) provides FOMC meeting dates programmatically
+- **Earnings dates per ticker:** `yfinance` provides `Ticker.calendar` (already have yfinance in stack)
+- **CPI release:** Bureau of Labor Statistics publishes release calendar; can scrape or use `fredapi`
+- **Other potentially relevant events:** ECB rate decisions (for cross-asset), OPEC meetings (energy sector), employment reports (NFP — first Friday monthly)
+
+**Step 2 — Use existing libraries for calendar mechanics:**
+- `pandas-market-calendars` (Apache 2.0) — exchange calendars, half-days, holidays. Can be extended with custom event calendars.
+- The fork-first answer: use `pandas-market-calendars` + `fredapi` (already need fredapi for macro per existing project structure).
+
+**Step 3 — Build only the suppression rule logic** (genuinely novel, no library covers project-specific suppression rules). Implementation: `engine/event_filter.py` companion to `engine/regime_filter.py`. Engine consults event filter; suppression rule per strategy class.
+
+**Cross-reference dependencies:**
+- DEC-013 `earnings_tolerant` strategy attribute — RESOLVED. Existing scaffolding for earnings-aware strategies; DEC-348 generalizes this concept.
+- DEC-101 (earnings strategies post-Phase 0.A) — PENDING. DEC-348 is the suppression-side counterpart to DEC-101's strategy-side. Should resolve jointly.
+- DEC-103 (4-regime classifier) — already in code, complementary
+- DEC-345 (ICT timeframe scope) — RESOLVED Pass 52, related (event-day HTF context may require special handling)
+- DEC-347 (lagging-indicator gap) — PENDING, related; lagging signals are most exposed to event-day whipsaws
+- L88 (Wikipedia banned) — calendars must come from authoritative sources; do not scrape Wikipedia for FOMC dates
+
+**Industry-standards grounding (per CHECKLIST #37):**
+- **Lucca & Moench (2015)** "The Pre-FOMC Announcement Drift" *Journal of Finance* — documents systematic pre-FOMC equity returns (canonical paper); event-aware strategies have measurable edge in either direction
+- **Savor & Wilson (2013)** "How Much Do Investors Care About Macroeconomic Risk? Evidence from Scheduled Economic Announcements" *Journal of Financial and Quantitative Analysis* — empirical study of FOMC/employment/inflation announcement effects on cross-section returns
+- **Bernard & Thomas (1989)** "Post-Earnings-Announcement Drift" *Journal of Accounting and Economics* — foundational paper on PEAD; directly relevant to earnings-window strategy decisions
+- **Practitioner consensus:** institutional systematic strategies routinely include event-day handling; FOMC blackout is industry standard
+
+**Forward-pending sub-decisions surfaced by DEC-348:**
+- **DEC-348-A (TBD):** Hard / soft / strategy-class-conditional suppression?
+- **DEC-348-B (TBD):** Event scope — FOMC only / + CPI / + earnings / + NFP / + ECB+OPEC?
+- **DEC-348-C (TBD):** Window — event-day only or ± N days?
+- **DEC-348-D (TBD):** Per-strategy-class suppression rules (mean-reversion vs breakout vs trend-follow vs ICT)
+
+**Resolution status:** PENDING. To be resolved in focused future session covering DEC-101 (earnings strategies) + DEC-348 (event suppression) jointly, since they're complementary sides of event-aware logic. Estimated scope: ~2-3 hours focused work.
+
+*DEC-348 logged. Stage 1 research finding captured. Resolution deferred. Resolution path follows fork-first (`fredapi` for FOMC dates, `yfinance.calendar` for earnings, `pandas-market-calendars` for exchange mechanics; build only the project-specific suppression rule logic).*
