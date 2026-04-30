@@ -1,18 +1,18 @@
 # AUDIT_INDEX.md — Decision and Bug Registry
-**Last regenerated:** April 2026 (post-Pass 46)
+**Last regenerated:** April 2026 (post-Pass 47 comprehensive sweep)
 
 ---
 
 ## Decision Registry
 
-**Total: 257 decision entries**
+**Total: 294 decision entries**
 
 | Status | Count |
 |---|---|
 | RESOLVED | 55 |
 | PARTIAL | 5 |
 | SUPERSEDED | 7 |
-| PENDING | 190 |
+| PENDING | 227 |
 
 ### All Decisions Table
 
@@ -275,6 +275,43 @@
 | **DECISION-253** | Routing decision for interlisted securities: evaluate TSX-CAD vs US-NYSE per trade based o | PENDING | Batch X40 — Cost Modeling Accuracy | Pass 46 | - |
 | **DECISION-254** | ETF substitution for index strategies: SPY/QQQ/IWM trades evaluate TSX-CAD equivalents (XS | PENDING | Batch X40 — Cost Modeling Accuracy | Pass 46 | - |
 | **DECISION-255** | Norbert's Gambit at funding: use DLR.TO/DLR.U.TO for CAD->USD conversion when capital move | PENDING | Batch X40 — Cost Modeling Accuracy | Pass 46 | - |
+| **DECISION-256** | Earnings calendar prefetch (datetime + EPS surprise data) per ticker per quarter | PENDING | Batch X41 — Phase 0.A Data Prefetch Gaps | Pass 47 | - |
+| **DECISION-257** | Quarterly fundamentals prefetch — explicit field/source/PIT inventory | PENDING | Batch X41 — Phase 0.A Data Prefetch Gaps | Pass 47 | - |
+| **DECISION-258** | Options chain snapshot cache (OI + IV + put-call ratio) per ticker per day | PENDING | Batch X41 — Phase 0.A Data Prefetch Gaps | Pass 47 | - |
+| **DECISION-259** | ICT/SMC signal pre-computation cache (FVG/BOS/CHoCH/order blocks) | PENDING | Batch X41 — Phase 0.A Data Prefetch Gaps | Pass 47 | - |
+| **DECISION-260** | Cache freshness assertion — refuse to backtest beyond cache end-date per ticker | PENDING | Batch X41 — Phase 0.A Data Prefetch Gaps | Pass 47 | - |
+| **DECISION-261** | ICT/SMC PIT rules — minimum lag from pattern completion to actionable signal | PENDING | Batch X41 — Phase 0.A Data Prefetch Gaps | Pass 47 | - |
+| **DECISION-262** | 10-candidate-cap rationale — keep, raise, or make conditional | PENDING | Batch X42 — Phase 1B-α Stress | Pass 47 | - |
+| **DECISION-263** | Burst-day stress test — re-run high-volatility days, verify no silent drops | PENDING | Batch X42 — Phase 1B-α Stress | Pass 47 | - |
+| **DECISION-264** | Walk-forward window count — given current data, ensure adequate OOS testing | PENDING | Batch X42 — Phase 1B-α Stress | Pass 47 | - |
+| **DECISION-265** | Smoke test power analysis — minimum candidates for ENTER/SKIP statistical distinguishabili | PENDING | Batch X42 — Phase 1B-α Stress | Pass 47 | - |
+| **DECISION-266** | Data history extension — push backtest start from 2020 to 2010 for proper walk-forward + h | PENDING | Batch X43 — Data History | Pass 47 | - |
+| **DECISION-267** | Trade event store schema — fields per trade + storage format (SQLite paper, Postgres live) | PENDING | Batch X44 — Paper Trading Infrastructure | Pass 47 | - |
+| **DECISION-268** | Paper-vs-backtest comparison methodology — Bayesian posterior over Sharpe | PENDING | Batch X44 — Paper Trading Infrastructure | Pass 47 | - |
+| **DECISION-269** | Stage 4 entry criteria — explicit numeric gates (Sharpe/DD/win-rate/A-B-clear/divergence) | PENDING | Batch X45 — Stage 4 Live | Pass 47 | - |
+| **DECISION-270** | Pre-Stage-4 CPA consultation — formal opinion on trading business classification | PENDING | Batch X45 — Stage 4 Live | Pass 47 | - |
+| **DECISION-271** | Real-time data feed cost — explicit Stage 4+ line item (IBKR market data subs) | PENDING | Batch X45 — Stage 4 Live | Pass 47 | - |
+| **DECISION-272** | Stage 4 hosting migration plan — target platform, deployment, monitoring, secrets, cost | PENDING | Batch X46 — Stage 5 Operational | Pass 47 | - |
+| **DECISION-273** | Disaster recovery plan — broker-side stops, heartbeat monitoring, manual override | PENDING | Batch X46 — Stage 5 Operational | Pass 47 | - |
+| **DECISION-274** | sync_from_claude.yml conflict policy — fail on conflict instead of silent --strategy=their | PENDING | Batch X47 — Code Defects | Pass 47 | - |
+| **DECISION-275** | requirements.txt audit + completeness (openai/tradingagents/fredapi missing) | PENDING | Batch X47 — Code Defects | Pass 47 | - |
+| **DECISION-276** | OMS layer or use IBKR algos? Integrate IBKR TWAP/VWAP rather than rolling own | PENDING | Batch X48 — Professional Benchmark Gaps | Pass 47 | - |
+| **DECISION-277** | Per-strategy promotion workflow — each of 72 strategies has independent stage | PENDING | Batch X48 — Professional Benchmark Gaps | Pass 47 | - |
+| **DECISION-278** | Internal trade journal schema — chart snapshot, agent transcripts, signal raw values, regi | PENDING | Batch X48 — Professional Benchmark Gaps | Pass 47 | - |
+| **DECISION-279** | P&L decomposition — separate (signal/timing/exit/sizing/agent) contributions | PENDING | Batch X48 — Professional Benchmark Gaps | Pass 47 | - |
+| **DECISION-280** | Time-of-day slippage adjustment — first/last 30 min higher slippage | PENDING | Batch X48 — Professional Benchmark Gaps | Pass 47 | - |
+| **DECISION-281** | Tax data architecture — design now, populate from Day 1 of paper trading | PENDING | Batch X49 — Thin Areas Surfaced | Pass 47 | - |
+| **DECISION-282** | Notification cascade — Telegram primary, Email fallback, SMS for critical breaker events | PENDING | Batch X49 — Thin Areas Surfaced | Pass 47 | - |
+| **DECISION-283** | Backtest output schema — explicit columns/types/nullability/post-conditions, versioned | PENDING | Batch X49 — Thin Areas Surfaced | Pass 47 | - |
+| **DECISION-284** | Borderline strategy handling — explicit policy at threshold edge cases | PENDING | Batch X49 — Thin Areas Surfaced | Pass 47 | - |
+| **DECISION-285** | Mid-hold agent re-evaluation — does live agent re-rate open positions? | PENDING | Batch X49 — Thin Areas Surfaced | Pass 47 | - |
+| **DECISION-286** | Wealthsimple replication tracking — log owner-placed manual trades, compute exec-quality v | PENDING | Batch X49 — Thin Areas Surfaced | Pass 47 | - |
+| **DECISION-287** | Public site failure handling + freshness signal (last-updated timestamp prominent) | PENDING | Batch X49 — Thin Areas Surfaced | Pass 47 | - |
+| **DECISION-288** | Legal review of public site — registration check, disclaimer, liability terms BEFORE publi | PENDING | Batch X49 — Thin Areas Surfaced | Pass 47 | - |
+| **DECISION-289** | Owner-absent contingency — backup contact, POA, vacation-mode auto-flatten | PENDING | Batch X49 — Thin Areas Surfaced | Pass 47 | - |
+| **DECISION-290** | Dropped strategy re-evaluation cadence (every 6 months re-test, re-admit if Sharpe restore | PENDING | Batch X49 — Thin Areas Surfaced | Pass 47 | - |
+| **DECISION-291** | Triage-based bulk approval — owner approves entire impact-ratio band in single message | PENDING | Batch X50 — Process Improvements | Pass 47 | - |
+| **DECISION-292** | Decision→CHECKLIST migration audit (quarterly, RESOLVED decisions to process rules) | PENDING | Batch X50 — Process Improvements | Pass 47 | - |
 
 ---
 
@@ -515,6 +552,68 @@
 - **DECISION-254**: ETF substitution for index strategies: SPY/QQQ/IWM trades evaluate TSX-CAD equivalents (XSP/XQQ/XSU, VFV unhedged, etc.) on hedging-cost vs FX-cost vs commission-cap basis
 - **DECISION-255**: Norbert's Gambit at funding: use DLR.TO/DLR.U.TO for CAD->USD conversion when capital moved to IBKR; document one-time savings; not per-trade relevant
 
+**Batch X41 — Phase 0.A Data Prefetch Gaps** (6):
+
+- **DECISION-256**: Earnings calendar prefetch (datetime + EPS surprise data) per ticker per quarter
+- **DECISION-257**: Quarterly fundamentals prefetch — explicit field/source/PIT inventory
+- **DECISION-258**: Options chain snapshot cache (OI + IV + put-call ratio) per ticker per day
+- **DECISION-259**: ICT/SMC signal pre-computation cache (FVG/BOS/CHoCH/order blocks)
+- **DECISION-260**: Cache freshness assertion — refuse to backtest beyond cache end-date per ticker
+- **DECISION-261**: ICT/SMC PIT rules — minimum lag from pattern completion to actionable signal
+
+**Batch X42 — Phase 1B-α Stress** (4):
+
+- **DECISION-262**: 10-candidate-cap rationale — keep, raise, or make conditional
+- **DECISION-263**: Burst-day stress test — re-run high-volatility days, verify no silent drops
+- **DECISION-264**: Walk-forward window count — given current data, ensure adequate OOS testing
+- **DECISION-265**: Smoke test power analysis — minimum candidates for ENTER/SKIP statistical distinguishability
+
+**Batch X43 — Data History** (1):
+
+- **DECISION-266**: Data history extension — push backtest start from 2020 to 2010 for proper walk-forward + hold-out
+
+**Batch X44 — Paper Trading Infrastructure** (2):
+
+- **DECISION-267**: Trade event store schema — fields per trade + storage format (SQLite paper, Postgres live)
+- **DECISION-268**: Paper-vs-backtest comparison methodology — Bayesian posterior over Sharpe
+
+**Batch X45 — Stage 4 Live** (3):
+
+- **DECISION-269**: Stage 4 entry criteria — explicit numeric gates (Sharpe/DD/win-rate/A-B-clear/divergence)
+- **DECISION-270**: Pre-Stage-4 CPA consultation — formal opinion on trading business classification
+- **DECISION-271**: Real-time data feed cost — explicit Stage 4+ line item (IBKR market data subs)
+
+**Batch X46 — Stage 5 Operational** (2):
+
+- **DECISION-272**: Stage 4 hosting migration plan — target platform, deployment, monitoring, secrets, cost
+- **DECISION-273**: Disaster recovery plan — broker-side stops, heartbeat monitoring, manual override
+
+**Batch X47 — Code Defects** (2):
+
+- **DECISION-274**: sync_from_claude.yml conflict policy — fail on conflict instead of silent --strategy=theirs
+- **DECISION-275**: requirements.txt audit + completeness (openai/tradingagents/fredapi missing)
+
+**Batch X48 — Professional Benchmark Gaps** (5):
+
+- **DECISION-276**: OMS layer or use IBKR algos? Integrate IBKR TWAP/VWAP rather than rolling own
+- **DECISION-277**: Per-strategy promotion workflow — each of 72 strategies has independent stage
+- **DECISION-278**: Internal trade journal schema — chart snapshot, agent transcripts, signal raw values, regime inputs
+- **DECISION-279**: P&L decomposition — separate (signal/timing/exit/sizing/agent) contributions
+- **DECISION-280**: Time-of-day slippage adjustment — first/last 30 min higher slippage
+
+**Batch X49 — Thin Areas Surfaced** (10):
+
+- **DECISION-281**: Tax data architecture — design now, populate from Day 1 of paper trading
+- **DECISION-282**: Notification cascade — Telegram primary, Email fallback, SMS for critical breaker events
+- **DECISION-283**: Backtest output schema — explicit columns/types/nullability/post-conditions, versioned
+- **DECISION-284**: Borderline strategy handling — explicit policy at threshold edge cases
+- **DECISION-285**: Mid-hold agent re-evaluation — does live agent re-rate open positions?
+- **DECISION-286**: Wealthsimple replication tracking — log owner-placed manual trades, compute exec-quality vs system
+- **DECISION-287**: Public site failure handling + freshness signal (last-updated timestamp prominent)
+- **DECISION-288**: Legal review of public site — registration check, disclaimer, liability terms BEFORE publish
+- **DECISION-289**: Owner-absent contingency — backup contact, POA, vacation-mode auto-flatten
+- **DECISION-290**: Dropped strategy re-evaluation cadence (every 6 months re-test, re-admit if Sharpe restored)
+
 **Batch X5 — Risk Management Extension** (7):
 
 - **DECISION-086**: Fractional Kelly position sizing
@@ -524,6 +623,11 @@
 - **DECISION-090**: Max sector exposure cap
 - **DECISION-091**: Drawdown re-sizing
 - **DECISION-092**: Slippage model = f(size%ADV, vol)
+
+**Batch X50 — Process Improvements** (2):
+
+- **DECISION-291**: Triage-based bulk approval — owner approves entire impact-ratio band in single message
+- **DECISION-292**: Decision→CHECKLIST migration audit (quarterly, RESOLVED decisions to process rules)
 
 **Batch X6 — Exits + Circuit Breakers** (9):
 
@@ -611,14 +715,14 @@
 ---
 ## Bug Registry
 
-**Total: 203 unique bug IDs.**
+**Total: 213 unique bug IDs.**
 
 | Severity | Count |
 |---|---|
 | CRITICAL | 16 |
-| HIGH | 35 |
-| MEDIUM | 43 |
-| LOW | 14 |
+| HIGH | 39 |
+| MEDIUM | 48 |
+| LOW | 15 |
 | UNKNOWN | 24 |
 | INLINE-ONLY | 71 |
 
@@ -677,6 +781,10 @@
 | **BUG-180** | HIGH — VIX not explicitly prefetched; VXX used as proxy is cause of BUG-26 | HIGH | Pass 17 |
 | **BUG-186** | HIGH — 29 institutional 13F files empty including major tickers (AAPL, ABBV, AMZ | HIGH | Pass 18 |
 | **BUG-187** | HIGH — WSB mentions prefetch stops 2025-02-21; 14-month gap | HIGH | Pass 18 |
+| **BUG-205** | TRANSACTION_COSTS understates 3x at small notional (no IBKR cap modeling) | HIGH | Pass 47 |
+| **BUG-206** | Cache stale-data silent use (402 tickers end 2024-12-31, no warning) | HIGH | Pass 47 |
+| **BUG-210** | agents/pipeline.py silent downgrade on API failure (5 sites) | HIGH | Pass 47 |
+| **BUG-212** | sync_from_claude.yml --strategy=theirs silently overrides owner edits on conflic | HIGH | Pass 47 |
 | **BUG-035** | MEDIUM — Decision Agent default fallback has invalid `action` value | MEDIUM | - |
 | **BUG-036** | MEDIUM — Regime-aware strategy weighting not implemented | MEDIUM | - |
 | **BUG-037** | MEDIUM — Survivorship bias haircut methodology is arbitrary | MEDIUM | - |
@@ -720,6 +828,11 @@
 | **BUG-201** | MEDIUM — Strategy `earnings_tolerant` attribute missing | MEDIUM | Pass 25 |
 | **BUG-202** | MEDIUM — No earnings-momentum strategies implemented | MEDIUM | Pass 25 |
 | **BUG-203** | MEDIUM — No A/B testing infrastructure for agent gates | MEDIUM | Pass 25 |
+| **BUG-207** | Type hint coverage 0% in screener.py + engine/backtest.py (blocks mypy) | MEDIUM | Pass 47 |
+| **BUG-208** | Docstring coverage near zero in engine/backtest.py (4 of all functions) | MEDIUM | Pass 47 |
+| **BUG-209** | 81 except Exception blocks; some swallow real errors | MEDIUM | Pass 47 |
+| **BUG-211** | Cache concurrency unverified — prefetch + validate may collide | MEDIUM | Pass 47 |
+| **BUG-213** | requirements.txt missing openai, tradingagents, fredapi (incomplete) | MEDIUM | Pass 47 |
 | **BUG-009** | `below_cam_s3` signal key does not exist | LOW | - |
 | **BUG-042** | LOW — `LILLY` appears as ticker in `run_full.sh` but should be `LLY` | LOW | - |
 | **BUG-043** | LOW — Missing Calmar ratio minimum in passing criteria | LOW | - |
@@ -734,6 +847,7 @@
 | **BUG-092** | LOW — No streaming progress / metrics during run | LOW | - |
 | **BUG-112** | LOW — No ICT/SMC concepts implemented | LOW | Pass 13 |
 | **BUG-183** | LOW — No prefetch validation step | LOW | Pass 17 |
+| **BUG-204** | engine.py dead code shipping in repo (426 lines, no current import) | LOW | Pass 47 |
 | **BUG-001** | `crisis_flag` used before definition → NameError crash | UNKNOWN | - |
 | **BUG-002** | `days` variable used before definition → UnboundLocalError on every trade close | UNKNOWN | - |
 | **BUG-003** | `ClosedTrade` dataclass defined twice — dead code, maintenance risk | UNKNOWN | - |
@@ -831,4 +945,4 @@
 | **BUG-198** | (NEW) · CRITICAL — No structural PIT data loader; each data source uses ad-hoc P | INLINE-ONLY | - |
 
 ---
-*Regenerated April 2026 after Pass 46.*
+*Regenerated April 2026 after Pass 47.*

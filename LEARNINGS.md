@@ -468,3 +468,16 @@ Common pattern: Claude defaults to "implement what's stated" without questioning
 - Pricing structure detail (rate, min, max, third-party fees)
 **Why:** Pricing changes. Six months from now, IBKR rates may shift, GPT costs may drop, TSX commission caps may revise. Without sourcing + dating, future Claude sessions or owner reviews cannot tell which figures are stale.
 **Rule:** Cost figures without source+date are treated as untrustworthy. Future audits should flag undated cost claims for re-verification.
+
+### L114 — When decision queue exceeds ~50, queue management itself becomes the bottleneck [critical/process/scalability]
+**Observation (Pass 47, April 2026):** Decision count grew 116 → 185 → 200 → 206 → 253 → 257 → 294 across audit passes. At 227 PENDING decisions, owner cannot reasonably approve one-by-one — the management of the queue overwhelms the substance of the decisions.
+**Failure mode:** Decisions accumulate faster than they resolve. Each new sweep adds 30-50 findings while resolution rate is ~2-5/turn. Queue grows monotonically. Eventually queue management dominates project work.
+**Rule:** When PENDING decision queue exceeds 50, switch from per-decision approval to BATCH approvals by impact/cost theme. Use the triage matrix to enable "approve all in this band" workflows. Don't keep adding to a queue that nobody can process.
+**Mechanism:** Triage matrix (impact/cost ratio) + bulk-approve-by-band + delegation of low-stakes decisions (defaults Claude can apply autonomously per CHECKLIST exception).
+**Captured as:** DECISION-291 (triage-based bulk approval).
+
+### L115 — Adversarial sweeps must be scheduled, not on-demand [critical/process/cadence]
+**Observation (Pass 47):** Each comprehensive adversarial sweep yields 30-50 new findings. Three sweeps in a month yields 90-150 new decisions, far exceeding the resolution rate.
+**Rule:** Schedule comprehensive sweeps quarterly (or per phase transition), NOT at every owner request. Between sweeps, only specific-trigger reviews (new bug, phase transition, owner question) — these produce ≤5 new decisions per pass.
+**Why:** Continuous adversarial mode is structurally infeasible because the decision-resolution rate is much slower than the decision-discovery rate. Bounded cadence keeps the system tractable.
+**Pre-conditions for next adversarial sweep:** Current PENDING queue triaged + bulk-approved down to <50 PENDING. Without that, additional findings only worsen the queue.
