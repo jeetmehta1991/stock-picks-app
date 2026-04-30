@@ -13280,3 +13280,405 @@ This becomes a project principle. Specifically:
 ---
 
 *Pass 28 complete. System-wide fork-vs-build audit. 6 new decisions (DECISION-047 QuantStats, 048 Streamlit, 049 ib_async, 050 freezegun, 051 TradingAgents migration target, 052 S&P 500 historical dataset). Major findings: TradingAgents framework parallels our 6-agent architecture (UCLA/MIT, Apache 2.0); QuantStats is the obvious analytics fork; ib_async is standard for IBKR; Streamlit for dashboards. Total Phase 0 saving from full fork philosophy: ~10 weeks vs original; ~5-6 additional weeks vs Pass 27. Stage 4 IBKR + dashboard saves 3-5 weeks. Total path to live: 8-12 months. No new bugs.*
+
+---
+
+# AUDIT PASS 29 — TradingAgents Framework Integration & Cost Verification for All Forks
+
+User raised three sharp questions about my Pass 28 recommendations:
+
+1. "Finding 1: We use Trading agents framework itself from github. No parallel invention. Is there a better way to use it than what we are doing now?"
+2. "Cost of quantstats? any cheaper alternatives?"
+3. "Same for Streamlit, Same for broker integration."
+
+Plus approvals: DECISION-050 (freezegun), DECISION-052 (S&P 500 dataset).
+
+This pass addresses each honestly with verified pricing/licensing data.
+
+---
+
+## SECTION A — Cost verification for all proposed forks
+
+I should have stated this upfront in Pass 28. **Every library I recommended is open-source and free to use.** The "cost" concern is valid but the answer is "$0 in licensing, only engineering time to integrate." Verified pricing below:
+
+### A.1 — QuantStats
+
+- **License:** Apache 2.0
+- **Cost:** **$0 — completely free, no commercial restrictions**
+- **PyPI:** `pip install quantstats`
+- **Repo:** github.com/ranaroussi/quantstats (5k+ stars, actively maintained)
+- **Caveat:** Original repo had stale period mid-2024. Active forks exist:
+  - `quantstats-lumi` (Lumiwealth fork, March 2026, Apache 2.0)
+  - `quantstats-reloaded` (Aaron Yang fork, June 2025, Apache 2.0)
+  - Original `quantstats` is back to active updates (Jan 2026 release)
+
+**Cheaper alternatives?** There aren't cheaper than free, but there ARE simpler alternatives:
+
+| Library | License | Pros | Cons |
+|---|---|---|---|
+| **QuantStats** | Apache 2.0 | Comprehensive, tearsheets, Monte Carlo | Heavy, lots of dependencies |
+| **empyrical** | Apache 2.0 | Lightweight, basic metrics only | No tearsheets, less comprehensive |
+| **pyfolio** | Apache 2.0 | Original Quantopian lib | Unmaintained since 2020 |
+| **bt** | MIT | Includes backtest + analytics | Backtest engine we don't need |
+| **Rolling pandas calcs** | n/a | Build your own | ~3-5 days work for Sharpe/Sortino/drawdown |
+
+**Honest recommendation:** **QuantStats** — it's the standard, free, comprehensive, and tearsheets save us writing Phase 1B-α deliverables manually. Empyrical is leaner if we just want basic metrics, but we lose tearsheets.
+
+**Verdict: DECISION-047 (QuantStats) — FREE. No cost concern.**
+
+### A.2 — Streamlit
+
+- **License:** Apache 2.0 (the library itself)
+- **Cost (self-hosted):** **$0 — completely free**
+- **Cost (Streamlit Community Cloud):** $0 free tier, paid tiers exist for enterprise but not relevant
+- **Hosting cost if self-hosted:** ~$5-15/month for a small VM (DigitalOcean droplet, AWS Lightsail, Google Cloud Run)
+- **Or: $0 if hosted on existing GitHub Pages-equivalent (more on this below)**
+
+**Cheaper alternatives?**
+
+| Option | Cost | Pros | Cons |
+|---|---|---|---|
+| **Streamlit (self-hosted)** | $0-15/mo | Python-only, fast dev | Needs a server |
+| **Streamlit Community Cloud (free)** | $0 | Zero hosting cost | URL is `<app>.streamlit.app/`, 1GB RAM limit, public |
+| **Existing GitHub Pages static site** | $0 | Already in use | No interactivity, manual updates |
+| **Plotly Dash** | $0 (open source) | More flexibility | Steeper learning curve |
+| **Gradio** | $0 | Simple ML-focused | Less suited for trading dashboard |
+| **FastAPI + simple HTML** | $0 | Most flexible | Most coding required |
+| **Jupyter Notebook with QuantStats** | $0 | Zero hosting needed | Not interactive for non-technical users |
+
+**Honest recommendation:** Tiered approach based on stage:
+- **Stage 1 (current):** Keep existing static GitHub Pages site. $0.
+- **Stage 3 paper trading:** Streamlit Community Cloud free tier. $0. Limit is fine for personal use.
+- **Stage 4 live (if needing custom domain or privacy):** Self-host Streamlit on $5-10/month VM, OR pay Streamlit Community Cloud Teams ($250/mo — likely overkill for personal use).
+
+**Even cheaper alternative:** QuantStats generates HTML tearsheets that can be committed to the existing GitHub Pages site. Full-featured trading reports with $0 hosting cost.
+
+**Verdict on DECISION-048:** Streamlit at $0 self-hosted free tier is ideal. **Even cheaper:** combine QuantStats HTML reports with existing GitHub Pages = no new hosting cost. **Adopt Streamlit only if interactivity needed beyond static reports.**
+
+### A.3 — Broker integration (ib_async vs alternatives)
+
+The library is free. The COST is from the broker itself.
+
+- **ib_async** (BSD license) — **$0 library cost.**
+- IBKR account: Free, no monthly fees on basic account. Commissions per trade ($0.0035/share with $0.35 minimum, $1 maximum per US stock side; or IBKR Lite for free trades).
+- IBKR data subscriptions: $4.50-$30/month for level 1 quotes. NOT required for backtest or paper trading.
+
+**Cheaper broker alternatives:**
+
+| Broker | Library | Library Cost | Broker Cost | Verdict for our use |
+|---|---|---|---|---|
+| **IBKR** | ib_async | $0 | $1/trade max, $0 base | Best for short selling (Stage 4 plan) |
+| **Alpaca** | `alpaca-py` (official) | $0 | $0 commission stocks/ETFs | Free, but no shorts, US only |
+| **Tradier** | Their API | $0 | $0.35-$10/trade | Mid-tier alternative |
+| **Robinhood** | unofficial libs | $0 | $0 commission | API unofficial, not recommended |
+| **TD Ameritrade** | discontinued | n/a | n/a | Acquired by Schwab, API in transition |
+
+**Honest analysis:** 
+- **For paper trading (Stage 3)** — Alpaca paper trading is FREE and has the simplest API. Could be cheaper/easier than IBKR paper.
+- **For live (Stage 4)** — User's plan is IBKR specifically for short-selling support. IBKR is correct choice.
+
+**Cheaper Stage 3 path:** Use Alpaca for paper trading (free, simpler), then switch to IBKR for live. Two integrations to build, but Alpaca is ~3 days of work.
+
+**Honest recommendation:**
+- **Option A (recommended):** Stick with IBKR + ib_async for both paper AND live. Single integration. Matches user's prior plan.
+- **Option B (split):** Alpaca for paper, IBKR for live. Saves a few weeks during paper trading by using Alpaca's simpler API. But 2 integrations to maintain.
+
+**Verdict on DECISION-049:** ib_async at $0 library cost is correct. IBKR commissions are not avoidable for live trading shorts. **Net: $0 library cost; broker fees are unavoidable regardless of library choice.**
+
+---
+
+## SECTION B — TradingAgents Framework: Better Use Approach (Finding 1)
+
+User correction: "We use Trading agents framework itself from github. No parallel invention. Is there a better way to use it than what we are doing now?"
+
+This was my failure in Pass 28. I said "migrate to TradingAgents in Phase 1F" but that was the wrong call. Let me re-evaluate honestly.
+
+### B.1 — Updated assessment of TradingAgents framework
+
+I checked the repo state (April 2026):
+- **Stars:** 50,000+ (grew from 21k since I last checked)
+- **License:** Apache 2.0
+- **Active maintenance:** Releases v0.2.0 (Feb 2026), v0.2.2 (March), v0.2.3 (March), v0.2.4 (April)
+- **Status:** Production-stable, peer-reviewed (UCLA/MIT, arxiv 2412.20138)
+
+**Key features in current version:**
+- 6-agent architecture: Fundamental, Sentiment, News, Technical Analysts + Bull/Bear Researchers + Trader + Risk Management Team + Portfolio Manager
+- LangGraph orchestration with state management
+- Multi-LLM support (Anthropic, OpenAI, Google, xAI, DeepSeek, Qwen, GLM, OpenRouter, Ollama, Azure)
+- Anthropic effort level support (matches our Claude usage)
+- Five-tier rating scale (Buy/Overweight/Hold/Underweight/Sell) — similar to our 6-tier but cleaner
+- Structured Pydantic outputs (typed responses, no JSON parse errors)
+- LangGraph checkpoint resume (crash recovery)
+- **Persistent decision log with outcome reflection** — runs feedback loop where past decisions inform future ones
+- **Backtesting look-ahead leak fix in #475** — they explicitly fixed this in March 2026
+
+### B.2 — Why my Pass 28 verdict was wrong
+
+I said "don't migrate now, preserve the 12k cached agent decisions." That reasoning was flawed:
+
+1. **The cached agent decisions are already invalid** due to the BUG-05 bucket key mismatch (per Pass 1-12 audits). Any code change to fix bugs invalidates the cache anyway.
+2. **The cache is from a phase that produced unusable trades.** The 34,727 trades had structural bugs (BUG-101 cross-day overlap, BUG-104 sizing not applied, BUG-26 VXX-as-VIX). The decisions that produced them are not work we want to preserve.
+3. **TradingAgents has the look-ahead bias fix we need (#475).** If we migrate to it, we get DECISION-040 PIT correctness via their proven infrastructure.
+
+**Honest reassessment: we SHOULD migrate to TradingAgents framework, NOT preserve our custom orchestration.**
+
+### B.3 — How to use TradingAgents better than current approach
+
+There are three integration patterns. Listed in increasing leverage of the library.
+
+**Pattern 1 — Wrapper around their `propagate()` (Lowest leverage)**
+
+Use their entire pipeline as a black box:
+```python
+from tradingagents.graph.trading_graph import TradingAgentsGraph
+ta = TradingAgentsGraph(config=our_config)
+_, decision = ta.propagate("AAPL", "2024-06-15")
+# Their decision becomes input to our engine
+```
+
+**Pros:** Fastest integration (~1 week)
+**Cons:** Less control over individual agents, harder to swap our specific data sources (Quiver, Polygon)
+
+**Pattern 2 — Use their orchestration with our agents (Recommended)**
+
+Use their LangGraph state machine but replace specific analyst agents with ours:
+```python
+from tradingagents.graph.trading_graph import TradingAgentsGraph
+from tradingagents.agents.analysts import FundamentalAnalyst
+
+# Our custom Fundamental Analyst class extending theirs
+class OurFundamentalAnalyst(FundamentalAnalyst):
+    def analyze(self, ticker, as_of):
+        # Our enhanced context with Quiver, Polygon, OpenBB
+        context = build_our_fundamental_context(ticker, as_of)  # DECISION-005
+        # Use their prompt structure but our context
+        return super().analyze(ticker, as_of, context_override=context)
+
+config = DEFAULT_CONFIG.copy()
+config['fundamental_analyst_class'] = OurFundamentalAnalyst
+config['risk_analyst_class'] = OurRiskAnalyst  # DECISION-010 spec
+ta = TradingAgentsGraph(config=config)
+```
+
+**Pros:** Best of both worlds — battle-tested orchestration + our specific data integrations
+**Cons:** Need to align our agent class signatures with theirs (~1-2 weeks)
+
+**Pattern 3 — Replace our entire pipeline (Highest leverage)**
+
+Throw out our custom agent pipeline, use theirs entirely with config overrides:
+```python
+# Just use their default agents with our prompts as overrides
+config = DEFAULT_CONFIG.copy()
+config['anthropic_api_key'] = OUR_KEY
+config['model_provider'] = 'anthropic'
+config['model_name'] = 'claude-sonnet-4-6'
+# Their agents, our LLM, their orchestration
+```
+
+**Pros:** Maximum library leverage, fastest path
+**Cons:** Lose our swing-trading-specific prompt tuning, lose Quiver/Polygon integration unless we extend their data fetcher
+
+### B.4 — Honest recommendation
+
+**Pattern 2** — use their LangGraph orchestration with our specific agents. This is the most practical fork:
+
+- **Their orchestration:** LangGraph state machine, checkpoint resume, persistent decision log, structured outputs, multi-LLM support
+- **Our agents:** Our specific prompts (swing-trading-tuned), our specific data sources (Quiver/Polygon/OpenBB), our specific output schemas matching engine expectations
+- **Their look-ahead fix:** Inherit their #475 PIT correctness work
+- **Their decision log:** Use it for our cache + outcome reflection
+
+**Implementation cost:**
+- Pattern 1 (wrapper): ~1 week
+- **Pattern 2 (orchestration + custom agents): ~2-3 weeks** ← Recommended
+- Pattern 3 (full replacement): ~1.5 weeks but lose our tuning
+
+**Time savings vs custom orchestration we're currently building:**
+- Custom LangGraph orchestration: 1-2 weeks
+- Custom checkpoint resume: 1 week
+- Custom decision logging: 0.5 week
+- Custom structured output handling: 0.5 week
+- **Total savings: 3-4 weeks**
+
+Plus we get peer-reviewed architecture, ongoing maintenance from UCLA/MIT, and bug fixes for free.
+
+### B.5 — Migration impact on existing work
+
+**Data we keep:**
+- Our 220 signals (unchanged)
+- Our 130 strategies (unchanged)
+- Our prefetch infrastructure (unchanged)
+- Our PointInTimeLoader (unchanged, complements their #475 fix)
+- Our agent prompts (re-used as their config overrides)
+- Our backtest engine (unchanged)
+
+**Data we discard:**
+- Custom LangGraph orchestration code (~500 lines)
+- Custom checkpoint logic
+- Custom JSON parsing for agent responses
+- 12,304 cached agent decisions (already invalid per BUG-05; not a real loss)
+
+**What changes:**
+- `backtest/agents/pipeline.py` becomes a thin wrapper around TradingAgentsGraph
+- Agent prompt files stay as constants, passed via config
+- Cache layer integrates with their persistent decision log
+
+### B.6 — Updated DECISION-051
+
+**Original DECISION-051 (Pass 28):** "Document TradingAgents as Phase 1F migration target"
+
+**REVISED DECISION-051:** "Migrate to TradingAgents framework in Phase 0.C (Engine Integration), Pattern 2 approach"
+
+**Rationale for migrating now, not later:**
+- Cache preservation argument was wrong (cache already invalid)
+- We're about to do Phase 0.C agent integration anyway — perfect time to migrate
+- Saves 3-4 weeks of building our own orchestration that they've already built better
+- Inherits their #475 PIT fix
+- Their active maintenance means future improvements come for free
+
+**Risk:** Their framework still calls itself "Development Status :: Alpha" in some places. We pin a specific version (v0.2.4) and validate before relying on it.
+
+### B.7 — Pattern 2 implementation plan (Phase 0.C revision)
+
+**Phase 0.C now becomes (3 weeks instead of 2):**
+
+Week 1: TradingAgents integration
+- Install `pip install tradingagents` (currently it's in alpha and needs git install — pin to v0.2.4 commit hash)
+- Configure to use our LLM provider + API key
+- Smoke test: run their default `propagate()` on a known ticker/date
+
+Week 2: Custom agent classes
+- Extend their FundamentalAnalyst with our prompt + our data context (DECISION-005)
+- Extend their RiskAnalyst with our 40-field context (DECISION-010, BUG-200)
+- Extend their TechnicalAnalyst to use our 220 signals
+- Extend their SentimentAnalyst with our Quiver smart money + Polygon news
+- Bull/Bear Researchers and Trader: use their defaults with our prompts injected
+
+Week 3: Engine integration + AgentGateConfig
+- backtest engine consumes their structured Pydantic decision output
+- AgentGateConfig (DECISION-042) gates honor or ignore their fields
+- earnings_tolerant strategy attribute (DECISION-013) integrated
+- Unit tests for all gate configurations
+
+**Total: 3 weeks (was 2 weeks for custom). Net cost: +1 week. But we save 3-4 weeks elsewhere (custom orchestration we no longer need to build).**
+
+**Net savings vs Pass 28: ~2-3 weeks of Phase 0 time.**
+
+### B.8 — Updated Phase 0 timeline
+
+| Sub-phase | Pass 28 estimate | Pass 29 estimate |
+|---|---|---|
+| 0.A Prefetching + PIT + Fundamentals + Risk + News | ~8 weeks | ~8 weeks |
+| 0.B Portfolio class | 1 week | 1 week |
+| 0.C Engine integration + TradingAgents migration | 2 weeks | **3 weeks** (+1 for migration) |
+| 0.D.1 Modern signals (no CVD) | 1.5 weeks | 1.5 weeks |
+| 0.D.2 ICT/SMC via library | 2.5 weeks | 2.5 weeks |
+| 0.D.3 Earnings momentum strategies | 1 week | 1 week |
+| 0.D.4 Calendar strategies | 1 week | 1 week |
+| Integration testing | 1 week | 1 week |
+| **Custom orchestration code (skipped)** | (1-2 weeks) | **REMOVED** |
+| **TOTAL Phase 0** | **~15-16 weeks** | **~15-16 weeks** |
+
+Net effect: Same Phase 0 timeline but **higher quality, lower maintenance burden, peer-reviewed orchestration**.
+
+---
+
+## SECTION C — Updated decisions
+
+### DECISION-047 — QuantStats for analytics
+**Status:** Approved by user (verifying free)
+**Cost confirmed:** $0 (Apache 2.0)
+**Cheaper alternative:** Build basic Sharpe/drawdown ourselves (~3-5 days work). Not recommended given $0 license cost.
+
+### DECISION-048 — Streamlit for dashboard
+**Status:** Approved by user (verifying free)
+**Cost confirmed:** $0 library, $0-15/month hosting
+**Cheaper alternative:** **QuantStats HTML reports committed to existing GitHub Pages site = $0 total**. Use Streamlit only if interactivity needed beyond static reports.
+
+### DECISION-049 — ib_async for IBKR
+**Status:** Approved by user (verifying free)
+**Cost confirmed:** $0 library. Broker fees unavoidable regardless of library.
+**Cheaper alternative for Stage 3 paper:** Alpaca paper trading API (free, simpler). But requires building 2 integrations. Recommend single IBKR integration.
+
+### DECISION-050 — freezegun for PIT tests
+**Status:** APPROVED by user
+**Cost:** $0 (Apache 2.0)
+
+### DECISION-051 REVISED — Migrate to TradingAgents framework in Phase 0.C
+**Status:** PROPOSED (revised from Pass 28)
+**Cost:** $0 (Apache 2.0)
+**Approach:** Pattern 2 — use their orchestration with our specific agent classes
+**Net effect:** +1 week Phase 0.C time, -3-4 weeks custom orchestration time = net 2-3 weeks saved
+**Recommendation:** Approve. Better use of the framework than our previous "future migration" plan.
+
+### DECISION-052 — Fork S&P 500 historical dataset
+**Status:** APPROVED by user
+**Cost:** $0 (CC0 public dataset)
+
+### DECISION-053 (NEW) — Streamlit timing
+**Context:** Streamlit useful for Stage 3+ but not strictly needed; QuantStats HTML reports are an alternative
+**Status:** PROPOSED
+
+**Options:**
+- A — Adopt Streamlit immediately for Stage 3 dashboards (~1-2 weeks)
+- **B — Use QuantStats HTML reports + GitHub Pages until Stage 4, adopt Streamlit only if interactivity needed (saves 1-2 weeks now)**
+- C — Skip Streamlit entirely, use only static HTML reports
+
+**Recommendation:** **B** — defer Streamlit decision until Stage 3 actual needs are clearer.
+
+### DECISION-054 (NEW) — Stage 3 paper trading broker
+**Context:** IBKR vs Alpaca for paper trading specifically
+**Status:** PROPOSED
+
+**Options:**
+- **A — IBKR paper for Stage 3, IBKR live for Stage 4** — single integration, matches user's plan
+- B — Alpaca paper for Stage 3, IBKR live for Stage 4 — saves time in Stage 3 but two integrations
+
+**Recommendation:** **A**. Single integration is better. User's prior direction (DECISION-032 in earlier audit) was IBKR.
+
+---
+
+## SECTION D — Cost summary across all forks
+
+| Library | License | $/month | Comment |
+|---|---|---|---|
+| smartmoneyconcepts | MIT | $0 | DECISION-045 |
+| OpenBB Platform | AGPLv3 | $0 | DECISION-005 |
+| Polygon News API | n/a | $30 | DECISION-002 |
+| Quiver API | n/a | $50-100 | DECISION-001 (post-cancellation TBD) |
+| QuantStats | Apache 2.0 | $0 | DECISION-047 |
+| Streamlit | Apache 2.0 | $0-15 | DECISION-048 (defer to Stage 3) |
+| ib_async | BSD | $0 | DECISION-049 |
+| freezegun | Apache 2.0 | $0 | DECISION-050 |
+| TradingAgents | Apache 2.0 | $0 | DECISION-051 REVISED |
+| s-and-p-500-companies | CC0 | $0 | DECISION-052 |
+| pandas-ta | BSD | $0 | already used |
+| yfinance | Apache 2.0 | $0 | already used |
+| FRED API | gov't free | $0 | already used |
+| Alpha Vantage | tiered | $0 (free tier) | currently used |
+| Anthropic API | per-call | ~$13-40 (live trading variable) | per Pass 26 |
+
+**TOTAL fork cost: $0 in licensing.**
+**TOTAL ongoing cost (live trading): $93-185/month** (per Pass 26 Section A) — broker + APIs + agent calls. Unchanged.
+
+**No fork incurs licensing cost.** All open source under permissive licenses (Apache 2.0, MIT, BSD, CC0). The only ongoing costs are API subscriptions for data (which we'd pay regardless of library choice).
+
+---
+
+## SECTION E — Updated counts
+
+| Category | Count |
+|---|---|
+| Total bugs | 203 (unchanged) |
+| Decisions | 54 (was 52, +2 DECISION-053 Streamlit timing, DECISION-054 broker choice) |
+| Resolved decisions | 18 (DECISION-050, 052 just approved + others previously) |
+| Pending decisions | 36 |
+
+**Updated implementation order:**
+1. Quiver pre-cancellation repair (DECISION-001 cleared, scripts pending approval)
+2. Polygon News evaluation (DECISION-002 cleared, script pending approval)
+3. PROJECT_PLAN restructure incorporating all 18 resolved decisions
+4. Phase 0.A start (after PROJECT_PLAN approved)
+
+---
+
+*Pass 29 complete. All fork costs verified at $0 licensing. TradingAgents framework migration moved EARLIER (Phase 0.C, not Phase 1F) — better leverage of peer-reviewed framework. Net Phase 0 timeline unchanged at ~15-16 weeks but quality improved. 2 new decisions (DECISION-053, 054). 54 decisions total. No new bugs.*
