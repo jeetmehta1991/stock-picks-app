@@ -1,29 +1,27 @@
 # AUDIT_INDEX.md — Decision and Bug Registry
-**Generated:** April 2026 (Pass 39 + post-Pass-39 commits)
+**Last regenerated:** April 2026 (post-Pass 41)
 **Source of truth:** AUDIT.md (full prose history, immutable)
-**Purpose:** Single index for `redo-and-flag-new` audit exercises and for quick navigation. Maps every Decision and Bug ID to its current status, theme, severity, and (where available) line reference in AUDIT.md.
+**Purpose:** Single index for `redo-and-flag-new` audit exercises and quick navigation. Maps every Decision and Bug ID to its current status, theme, severity, and pass introduced.
 
 **How to use:**
-- For a redo audit: cross-check new findings against this index. Anything not here is genuinely net-new.
+- For redo audit: cross-check new findings against this index. Anything not here is genuinely net-new.
 - For decision review: filter by status / theme / pass_intro to find what needs attention.
-- For bug triage: filter by severity, then check formal-block status for whether full detail is in AUDIT.md narrative or needs to be written.
-
-**Maintenance:** Should be regenerated when (a) new decision/bug added, (b) status changes, (c) redo-audit requested. Currently generated ad-hoc; future: `scripts/build_audit_index.py` (TBD per Pass 39 SECTION 18 followups).
+- For bug triage: filter by severity, then check formal-block status.
 
 ---
 
 ## Decision Registry
 
-**Total: 116 decisions** (last updated through Pass 39, April 2026)
+**Total: 185 decisions** (last updated through Pass 41, April 2026)
 
 **Status distribution:**
 
 | Status | Count | Meaning |
 |---|---|---|
 | RESOLVED | 29 | Owner approved, in effect |
-| PARTIAL | 5 | Resolved but partially obsolete due to TradingAgents architecture (decisions 008-012, 042) |
-| SUPERSEDED | 4 | Closed because covered by another resolved decision |
-| PENDING | 78 | Awaiting owner verbatim approval |
+| PARTIAL | 5 | Resolved but partially obsolete due to TradingAgents architecture (008-012, 042) |
+| SUPERSEDED | 4 | Closed because covered by another resolved decision (017, 030, 032, 044) |
+| PENDING | 147 | Awaiting owner verbatim approval |
 
 ### All Decisions Table (sorted by ID)
 
@@ -145,10 +143,79 @@
 | **DECISION-114** | Live-vs-backtest divergence monitoring | PENDING | Batch X3 — Architecture | Pass 39 | - |
 | **DECISION-115** | Tail hedging consideration | PENDING | Batch X5 — Risk Management Extension | Pass 39 | - |
 | **DECISION-116** | Cash management protocol (idle cash to SGOV/T-bills) | PENDING | Batch X5 — Risk Management Extension | Pass 39 | - |
+| **DECISION-117** | Add file-level checksum + last-validated timestamp to cache | PENDING | Batch X9 — Data integrity | Pass 40 | - |
+| **DECISION-118** | Prefetch full cross-asset macro (VIX direct, DXY, GLD, oil, sector ETFs, TLT, HYG, SHY) | PENDING | Batch X9 — Data integrity | Pass 40 | - |
+| **DECISION-119** | Per-trade explainability dict (primary_signal, dominant_multiplier, agent_tier_delta) | PENDING | Batch X10 — Trade explainability | Pass 40 | - |
+| **DECISION-120** | Automatic loss attribution report — top 10 losing trades per strategy with full context | PENDING | Batch X10 — Trade explainability | Pass 40 | - |
+| **DECISION-121** | Exit comparison report includes side-by-side exit dates/prices | PENDING | Batch X11 — Exit comparison | Pass 40 | - |
+| **DECISION-122** | Per-exit-method slippage modeling | PENDING | Batch X11 — Exit comparison | Pass 40 | - |
+| **DECISION-123** | Apply exponential decay to smart money signal weights | PENDING | Batch X12 — Smart money refinement | Pass 40 | - |
+| **DECISION-124** | Cross-source smart money clusters (insider+congressional+13F confluence) | PENDING | Batch X12 — Smart money refinement | Pass 40 | - |
+| **DECISION-125** | Add Form 144 prefetch (proposed sales — leading indicator) | PENDING | Batch X12 — Smart money refinement | Pass 40 | - |
+| **DECISION-126** | Document time-resolution limitations of circuit breakers | PENDING | Batch X13 — Circuit breakers extension | Pass 40 | - |
+| **DECISION-127** | Define recovery rules from each circuit breaker level (cooldown, hysteresis) | PENDING | Batch X13 — Circuit breakers extension | Pass 40 | - |
+| **DECISION-128** | Dispersion-conditional circuit breaker | PENDING | Batch X13 — Circuit breakers extension | Pass 40 | - |
+| **DECISION-129** | Live-vs-backtest Sharpe equivalence criterion (within 0.3 to pass Stage 3) | PENDING | Batch X14 — Validation criteria | Pass 40 | - |
+| **DECISION-130** | Capacity stress test (5x capital, Sharpe drop <0.3) | PENDING | Batch X14 — Validation criteria | Pass 40 | - |
+| **DECISION-131** | Agent value-add minimum (Sharpe improvement >=0.2 over rules-only) | PENDING | Batch X14 — Validation criteria | Pass 40 | - |
+| **DECISION-132** | Annual Sharpe variance < 0.5 stability requirement | PENDING | Batch X14 — Validation criteria | Pass 40 | - |
+| **DECISION-133** | Max gross long/short/net exposure caps | PENDING | Batch X15 — Risk management deeper | Pass 40 | - |
+| **DECISION-134** | USD/CAD currency exposure tracking + optional FX hedge | PENDING | Batch X15 — Risk management deeper | Pass 40 | - |
+| **DECISION-135** | Per-ticker cumulative max-loss cap (rolling 30-day) | PENDING | Batch X15 — Risk management deeper | Pass 40 | - |
+| **DECISION-136** | Portfolio rebalancing frequency policy | PENDING | Batch X15 — Risk management deeper | Pass 40 | - |
+| **DECISION-137** | Backtest output schema versioning + migration path | PENDING | Batch X16 — Architecture extension | Pass 40 | - |
+| **DECISION-138** | Cold-start CI test (fresh container in <30 min) | PENDING | Batch X16 — Architecture extension | Pass 40 | - |
+| **DECISION-139** | Remote kill switch (email-based STOP) | PENDING | Batch X16 — Architecture extension | Pass 40 | - |
+| **DECISION-140** | Structured JSON logging standard | PENDING | Batch X16 — Architecture extension | Pass 40 | - |
+| **DECISION-141** | Sector-neutral hedge overlay (long position + short sector ETF) | PENDING | Batch X17 — Strategy extensions | Pass 40 | - |
+| **DECISION-142** | Optional market-neutral construction (long stock + short SPY at beta) | PENDING | Batch X17 — Strategy extensions | Pass 40 | - |
+| **DECISION-143** | IPO/lockup/secondary offering systematic framework | PENDING | Batch X17 — Strategy extensions | Pass 40 | - |
+| **DECISION-144** | Stock-vs-sector momentum delta as breakdown variable | PENDING | Batch X17 — Strategy extensions | Pass 40 | - |
+| **DECISION-145** | IV delta vs historical pre-earnings pattern as signal | PENDING | Batch X17 — Strategy extensions | Pass 40 | - |
+| **DECISION-146** | Corporate actions handler (split/dividend/spinoff/rename) | PENDING | Batch X18 — Universe management | Pass 40 | - |
+| **DECISION-147** | Delisting registry + survivorship bias correction | PENDING | Batch X18 — Universe management | Pass 40 | - |
+| **DECISION-148** | Stock-specific adaptive momentum lookback (vol-adjusted) | PENDING | Batch X18 — Universe management | Pass 40 | - |
+| **DECISION-149** | Regime transition probability matrix | PENDING | Batch X19 — Regime extensions | Pass 40 | - |
+| **DECISION-150** | Multi-asset regime detection (equity+credit+commodity+currency) | PENDING | Batch X19 — Regime extensions | Pass 40 | - |
+| **DECISION-151** | Sector-level regime classification | PENDING | Batch X19 — Regime extensions | Pass 40 | - |
+| **DECISION-152** | Hold-out final test period (never touched during audits) | PENDING | Batch X20 — IS/OOS extensions | Pass 40 | - |
+| **DECISION-153** | Regime-stratified train/test splits | PENDING | Batch X20 — IS/OOS extensions | Pass 40 | - |
+| **DECISION-154** | Market structure change tracker (quarterly) | PENDING | Batch X21 — Benchmarking | Pass 40 | - |
+| **DECISION-155** | vs-SPY comparison in all backtest reports | PENDING | Batch X21 — Benchmarking | Pass 40 | - |
+| **DECISION-156** | Commit message references explicit CHECKLIST items followed | PENDING | Batch X22 — Process discipline | Pass 40 | - |
+| **DECISION-157** | Synthetic broker outage testing during Stage 3 (chaos engineering) | PENDING | Batch X23 — Edge case handling | Pass 40 | - |
+| **DECISION-158** | Extend backtest period to 2008-2024 (16 years for crisis coverage) | PENDING | Batch X23 — Edge case handling | Pass 40 | - |
+| **DECISION-159** | Regulatory event handler (SEC/DOJ investigations, sanctions) | PENDING | Batch X23 — Edge case handling | Pass 40 | - |
+| **DECISION-160** | Multi-vendor fallback chain per data source | PENDING | Batch X23 — Edge case handling | Pass 40 | - |
+| **DECISION-161** | Decision dependency graph (DAG) | PENDING | Batch X24 — Decision management | Pass 41 | - |
+| **DECISION-162** | Per-decision time-to-approve estimate + owner-approval-budget tracking | PENDING | Batch X24 — Decision management | Pass 41 | - |
+| **DECISION-163** | Implementation cost estimate per pending decision | PENDING | Batch X24 — Decision management | Pass 41 | - |
+| **DECISION-164** | Pairwise tradeoff matrix between decision batches (impact vs cost) | PENDING | Batch X24 — Decision management | Pass 41 | - |
+| **DECISION-165** | Solo PR review checklist before merge to main | PENDING | Batch X25 — Process workflow | Pass 41 | - |
+| **DECISION-166** | HANDOFF.md template specification | PENDING | Batch X25 — Process workflow | Pass 41 | - |
+| **DECISION-167** | Retrospective cadence (every N audit passes) | PENDING | Batch X25 — Process workflow | Pass 41 | - |
+| **DECISION-168** | Incident postmortem template | PENDING | Batch X25 — Process workflow | Pass 41 | - |
+| **DECISION-169** | Owner skills gap audit (statistical, SRE, tax, etc.) | PENDING | Batch X26 — Skills | Pass 41 | - |
+| **DECISION-170** | Type hints + mypy in CI | PENDING | Batch X27 — Code quality | Pass 41 | - |
+| **DECISION-171** | Docstring standard + sphinx documentation | PENDING | Batch X27 — Code quality | Pass 41 | - |
+| **DECISION-172** | All numerical constants extracted to config | PENDING | Batch X27 — Code quality | Pass 41 | - |
+| **DECISION-173** | Adopt ruff + black + isort + mypy as CI gates | PENDING | Batch X27 — Code quality | Pass 41 | - |
+| **DECISION-174** | Strategy classification by trigger type (catalyst/technical/stat-arb) | PENDING | Batch X28 — Strategy meta | Pass 41 | - |
+| **DECISION-175** | Signal persistence weighting (consecutive-day signals) | PENDING | Batch X28 — Strategy meta | Pass 41 | - |
+| **DECISION-176** | Meta-strategies (boolean AND/OR combinations of base strategies) | PENDING | Batch X28 — Strategy meta | Pass 41 | - |
+| **DECISION-177** | Explicit random seed in every backtest run output (reproducibility test) | PENDING | Batch X29 — Reproducibility | Pass 41 | - |
+| **DECISION-178** | Signal lookup performance benchmark + caching strategy | PENDING | Batch X29 — Reproducibility | Pass 41 | - |
+| **DECISION-179** | Memory profiling per backtest run + memory cap enforcement | PENDING | Batch X29 — Reproducibility | Pass 41 | - |
+| **DECISION-180** | Pre-market and open-of-day operational checklist | PENDING | Batch X30 — Live trading ops | Pass 41 | - |
+| **DECISION-181** | End-of-day reconciliation report (positions/P&L/agents/regime) | PENDING | Batch X30 — Live trading ops | Pass 41 | - |
+| **DECISION-182** | Weekly auto-generated performance review | PENDING | Batch X30 — Live trading ops | Pass 41 | - |
+| **DECISION-183** | Memoization layer for signal computation (LRU cache) | PENDING | Batch X31 — Performance optimization | Pass 41 | - |
+| **DECISION-184** | Parallel backtest execution for Stage 1 baseline | PENDING | Batch X31 — Performance optimization | Pass 41 | - |
+| **DECISION-185** | Incremental backtest updates for daily data refresh | PENDING | Batch X31 — Performance optimization | Pass 41 | - |
 
 ---
 
-### Pending Decisions by Theme (for prioritization)
+### Pending Decisions by Theme (for owner prioritization)
 
 **Batch X1 — Data + Universe** (8 pending):
 
@@ -161,6 +228,127 @@
 - **DECISION-104**: Auto-populate Tier 3 momentum watchlist
 - **DECISION-105**: Spinoff detector
 
+**Batch X10 — Trade explainability** (2 pending):
+
+- **DECISION-119**: Per-trade explainability dict (primary_signal, dominant_multiplier, agent_tier_delta)
+- **DECISION-120**: Automatic loss attribution report — top 10 losing trades per strategy with full context
+
+**Batch X11 — Exit comparison** (2 pending):
+
+- **DECISION-121**: Exit comparison report includes side-by-side exit dates/prices
+- **DECISION-122**: Per-exit-method slippage modeling
+
+**Batch X12 — Smart money refinement** (3 pending):
+
+- **DECISION-123**: Apply exponential decay to smart money signal weights
+- **DECISION-124**: Cross-source smart money clusters (insider+congressional+13F confluence)
+- **DECISION-125**: Add Form 144 prefetch (proposed sales — leading indicator)
+
+**Batch X13 — Circuit breakers extension** (3 pending):
+
+- **DECISION-126**: Document time-resolution limitations of circuit breakers
+- **DECISION-127**: Define recovery rules from each circuit breaker level (cooldown, hysteresis)
+- **DECISION-128**: Dispersion-conditional circuit breaker
+
+**Batch X14 — Validation criteria** (4 pending):
+
+- **DECISION-129**: Live-vs-backtest Sharpe equivalence criterion (within 0.3 to pass Stage 3)
+- **DECISION-130**: Capacity stress test (5x capital, Sharpe drop <0.3)
+- **DECISION-131**: Agent value-add minimum (Sharpe improvement >=0.2 over rules-only)
+- **DECISION-132**: Annual Sharpe variance < 0.5 stability requirement
+
+**Batch X15 — Risk management deeper** (4 pending):
+
+- **DECISION-133**: Max gross long/short/net exposure caps
+- **DECISION-134**: USD/CAD currency exposure tracking + optional FX hedge
+- **DECISION-135**: Per-ticker cumulative max-loss cap (rolling 30-day)
+- **DECISION-136**: Portfolio rebalancing frequency policy
+
+**Batch X16 — Architecture extension** (4 pending):
+
+- **DECISION-137**: Backtest output schema versioning + migration path
+- **DECISION-138**: Cold-start CI test (fresh container in <30 min)
+- **DECISION-139**: Remote kill switch (email-based STOP)
+- **DECISION-140**: Structured JSON logging standard
+
+**Batch X17 — Strategy extensions** (5 pending):
+
+- **DECISION-141**: Sector-neutral hedge overlay (long position + short sector ETF)
+- **DECISION-142**: Optional market-neutral construction (long stock + short SPY at beta)
+- **DECISION-143**: IPO/lockup/secondary offering systematic framework
+- **DECISION-144**: Stock-vs-sector momentum delta as breakdown variable
+- **DECISION-145**: IV delta vs historical pre-earnings pattern as signal
+
+**Batch X18 — Universe management** (3 pending):
+
+- **DECISION-146**: Corporate actions handler (split/dividend/spinoff/rename)
+- **DECISION-147**: Delisting registry + survivorship bias correction
+- **DECISION-148**: Stock-specific adaptive momentum lookback (vol-adjusted)
+
+**Batch X19 — Regime extensions** (3 pending):
+
+- **DECISION-149**: Regime transition probability matrix
+- **DECISION-150**: Multi-asset regime detection (equity+credit+commodity+currency)
+- **DECISION-151**: Sector-level regime classification
+
+**Batch X20 — IS/OOS extensions** (2 pending):
+
+- **DECISION-152**: Hold-out final test period (never touched during audits)
+- **DECISION-153**: Regime-stratified train/test splits
+
+**Batch X21 — Benchmarking** (2 pending):
+
+- **DECISION-154**: Market structure change tracker (quarterly)
+- **DECISION-155**: vs-SPY comparison in all backtest reports
+
+**Batch X22 — Process discipline** (1 pending):
+
+- **DECISION-156**: Commit message references explicit CHECKLIST items followed
+
+**Batch X23 — Edge case handling** (4 pending):
+
+- **DECISION-157**: Synthetic broker outage testing during Stage 3 (chaos engineering)
+- **DECISION-158**: Extend backtest period to 2008-2024 (16 years for crisis coverage)
+- **DECISION-159**: Regulatory event handler (SEC/DOJ investigations, sanctions)
+- **DECISION-160**: Multi-vendor fallback chain per data source
+
+**Batch X24 — Decision management** (4 pending):
+
+- **DECISION-161**: Decision dependency graph (DAG)
+- **DECISION-162**: Per-decision time-to-approve estimate + owner-approval-budget tracking
+- **DECISION-163**: Implementation cost estimate per pending decision
+- **DECISION-164**: Pairwise tradeoff matrix between decision batches (impact vs cost)
+
+**Batch X25 — Process workflow** (4 pending):
+
+- **DECISION-165**: Solo PR review checklist before merge to main
+- **DECISION-166**: HANDOFF.md template specification
+- **DECISION-167**: Retrospective cadence (every N audit passes)
+- **DECISION-168**: Incident postmortem template
+
+**Batch X26 — Skills** (1 pending):
+
+- **DECISION-169**: Owner skills gap audit (statistical, SRE, tax, etc.)
+
+**Batch X27 — Code quality** (4 pending):
+
+- **DECISION-170**: Type hints + mypy in CI
+- **DECISION-171**: Docstring standard + sphinx documentation
+- **DECISION-172**: All numerical constants extracted to config
+- **DECISION-173**: Adopt ruff + black + isort + mypy as CI gates
+
+**Batch X28 — Strategy meta** (3 pending):
+
+- **DECISION-174**: Strategy classification by trigger type (catalyst/technical/stat-arb)
+- **DECISION-175**: Signal persistence weighting (consecutive-day signals)
+- **DECISION-176**: Meta-strategies (boolean AND/OR combinations of base strategies)
+
+**Batch X29 — Reproducibility** (3 pending):
+
+- **DECISION-177**: Explicit random seed in every backtest run output (reproducibility test)
+- **DECISION-178**: Signal lookup performance benchmark + caching strategy
+- **DECISION-179**: Memory profiling per backtest run + memory cap enforcement
+
 **Batch X3 — Architecture** (9 pending):
 
 - **DECISION-093**: Migrate live to AWS/GCP/DO before Stage 4
@@ -172,6 +360,18 @@
 - **DECISION-112**: Disaster recovery plan + incident runbook
 - **DECISION-113**: Trade journal + research log + failure log
 - **DECISION-114**: Live-vs-backtest divergence monitoring
+
+**Batch X30 — Live trading ops** (3 pending):
+
+- **DECISION-180**: Pre-market and open-of-day operational checklist
+- **DECISION-181**: End-of-day reconciliation report (positions/P&L/agents/regime)
+- **DECISION-182**: Weekly auto-generated performance review
+
+**Batch X31 — Performance optimization** (3 pending):
+
+- **DECISION-183**: Memoization layer for signal computation (LRU cache)
+- **DECISION-184**: Parallel backtest execution for Stage 1 baseline
+- **DECISION-185**: Incremental backtest updates for daily data refresh
 
 **Batch X4 — Statistical Methodology** (9 pending):
 
@@ -225,6 +425,11 @@
 - **DECISION-066**: Granularity standard for all backtest outputs
 - **DECISION-100**: 17+ categorical breakdown variables
 
+**Batch X9 — Data integrity** (2 pending):
+
+- **DECISION-117**: Add file-level checksum + last-validated timestamp to cache
+- **DECISION-118**: Prefetch full cross-asset macro (VIX direct, DXY, GLD, oil, sector ETFs, TLT, HYG, SHY)
+
 **Live Trading Operational (Group E)** (5 pending):
 
 - **DECISION-028**: Stage 3 paper trading duration
@@ -274,9 +479,9 @@
 
 ## Bug Registry
 
-**Total: 203 unique bug IDs** referenced across audit history (Pass 1-39).
+**Total: 203 unique bug IDs** referenced across audit history.
 
-Note: bug IDs were normalized — early audit used `BUG-01` (2-digit), later `BUG-100+` (3-digit). All normalized to `BUG-NNN` zero-padded format here.
+Note: bug IDs were normalized — early audit used `BUG-NN` (2-digit), later `BUG-NNN` (3-digit). All normalized to `BUG-NNN` zero-padded format.
 
 **Severity distribution:**
 
@@ -291,9 +496,8 @@ Note: bug IDs were normalized — early audit used `BUG-01` (2-digit), later `BU
 
 **Notes:**
 - INLINE-ONLY bugs are referenced in audit prose but lack formal `### BUG-NNN` headers. Detail is preserved within audit pass narrative.
-- UNKNOWN severity = formal block exists but severity tag not in standard format. Most are early bugs (BUG-001 to BUG-024) that pre-date severity tagging convention.
-
-**Triage status:** Per Pass 38 Part B Section B and Pass 37, bugs await 3-pass triage against the new architecture (AUTO-RESOLVED by TradingAgents/fork-existing migration / STILL APPLIES / OBSOLETE / NEEDS VERIFICATION). This index does NOT yet include triage status — that's a future enrichment when bug triage starts.
+- UNKNOWN severity = formal block exists but severity tag not in standard format.
+- **Triage status:** Per Pass 38 Part B Section B and Pass 37, bugs await 3-pass triage against the new architecture. This index does NOT yet include triage status — that's a future enrichment.
 
 ### All Bugs Table — sorted by severity then ID
 
@@ -507,37 +711,23 @@ Note: bug IDs were normalized — early audit used `BUG-01` (2-digit), later `BU
 
 ## Cross-References to Source Files
 
-- **AUDIT.md** — Full prose history, 39 passes, immutable. Every decision and bug detail block is here.
-- **PROJECT_PLAN.md** — Current state architecture and plan (post-Pass-38 rewrite).
-- **PROJECT_PLAN_ARCHIVE.md** — Pre-April-2026 detail (60 strategies, 274-field signal universe, 12 exit methods, restored sections).
+- **AUDIT.md** — Full prose history, 41 passes, immutable.
+- **PROJECT_PLAN.md** — Current state architecture and plan.
+- **PROJECT_PLAN_ARCHIVE.md** — Pre-April-2026 detail.
 - **CHECKLIST.md** — 32 process discipline rules.
-- **LEARNINGS.md** — 108 universal lessons.
+- **LEARNINGS.md** — 109 universal lessons.
 - **CLAUDE.md** — Top-of-mind operating rules.
 
 ### How to navigate AUDIT.md
 
-**For a specific decision detail:**
-- Decisions 001-062: search `## DECISION-NNN` or `### DECISION-NNN` (formal blocks exist)
-- Decisions 063-116: search `DECISION-NNN` — currently one-line summaries in Pass 39 enumeration. Full detail blocks not yet written (per Owner clarification: backfill on-demand when reviewing each decision).
+**For specific decision detail:**
+- Decisions 001-062: search `## DECISION-NNN` or `### DECISION-NNN` (formal blocks)
+- Decisions 063-116: one-line summaries in Pass 39 enumeration; full detail backfill on-demand
+- Decisions 117-160: one-line summaries in Pass 40 enumeration
+- Decisions 161-185: one-line summaries in Pass 41 enumeration
 
-**For a specific bug detail:**
-- Bugs with formal blocks: search `### BUG-NN` (early format) or `### BUG-NNN` (later format)
-- Inline-only bugs: search `BUG-NN` or `BUG-NNN` — context in surrounding audit pass prose
-
-**For pass-by-pass reading:** search `# AUDIT PASS N` or `# Audit Pass N`
+**For bug detail:** search `### BUG-NN` (early) or `### BUG-NNN` (later); inline-only bugs need narrative search.
 
 ---
 
-## For Future `redo-and-flag-new` Audits
-
-When the owner requests a redo audit:
-1. Run a fresh adversarial audit on the current project state
-2. For each new finding, search this AUDIT_INDEX for matching ID or theme
-3. Anything not here is genuinely net-new — flag it as a new decision/bug with the next available ID
-4. Anything matching an existing entry: cross-reference and note in the new pass
-
-This file is the lookup table. AUDIT.md is the source of truth for context.
-
----
-
-*End of AUDIT_INDEX.md — generated April 2026 from AUDIT.md as of commit a416523d.*
+*Regenerated April 2026 from AUDIT.md.*

@@ -415,3 +415,10 @@ Common pattern: Claude defaults to "implement what's stated" without questioning
 - All non-process changes require verbatim approval per above
 **Why this matters:** Past Sonnet behavior interpreted instructions broadly, leading to silent decisions and 203 documented bugs. Strictest interpretation prevents recurrence even when it slows execution. The LEARNINGS/CHECKLIST exception was granted because process discipline strengthens guardrails — it can never weaken project safety.
 **Rule:** Every commit, every implementation choice, every architectural decision, every code change, every data operation requires verbatim owner approval before execution. The ONLY exception: LEARNINGS.md and CHECKLIST.md additions/updates that strengthen process discipline (per owner's standing permission).
+
+### L109 — Archive everything always: decisions, bugs, audit findings, lessons [critical/process]
+**Owner directive (April 2026):** "Archiving everything is also a learning."
+**Principle:** Every decision considered, every bug found, every audit finding, every lesson learned must be archived in a recoverable, indexable form. Not just current-state snapshots.
+**Why this matters:** Future redo-and-flag-new audits require comparing against complete history. Without archive, "net-new" findings become guesses. With archive, the comparison is mechanical and reliable.
+**Implementation:** AUDIT.md preserves all 41 audit passes immutably. AUDIT_INDEX.md provides single-lookup catalog. PROJECT_PLAN_ARCHIVE.md preserves pre-rewrite detail. LEARNINGS.md never deletes entries (109 and counting). CHECKLIST.md never deletes items (32 and counting). Standing exception in CHECKLIST #32g allows process-discipline files to grow without per-change approval.
+**Rule:** Nothing is ever deleted from these archive files. Updates supersede but don't replace. The archive is the project's institutional memory. Treat it accordingly.
