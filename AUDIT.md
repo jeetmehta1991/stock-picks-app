@@ -15672,3 +15672,275 @@ I'll wait for your call on these before doing the rewrite. CLAUDE.md, CHECKLIST.
 ---
 
 *Pass 38 part A complete. Agent count verified at source: 12 (we use 11). Tier system change required — DECISION-061 needed. Concern flagged per CHECKLIST #25 about destructive AUDIT rewrite. Awaiting owner confirmation on archive approach. CLAUDE.md/CHECKLIST.md/LEARNINGS.md additions still pending owner go-ahead for commit (have Y but holding for combined commit with rest).*
+
+---
+
+# AUDIT PASS 38 PART B — Consolidated Current State (All Decisions + Bug Triage Plan)
+
+Checklist: ✅ #1 (verified by extracting decision IDs from AUDIT.md, not memory) ✅ #4 (consolidates current state in one place) ✅ #25 (preserves passes 1-37 as audit trail per concern raised in Part A) ✅ #26 (every decision status verified against actual audit text) ✅ #27 (executes the approved scope: append consolidated state, don't delete history)
+
+User approved (this turn): "Approve all"
+- AUDIT.md scope: A — preserve passes 1-37, append consolidated Pass 38
+- PROJECT_PLAN.md scope: A — full rewrite, archive old to PROJECT_PLAN_ARCHIVE.md
+- Tier system mapping (DECISION-061): Option 1 — their 5-tier → our tier upgrade/downgrade
+
+Pass 38 Part A (commit 199a516d) already documented agent inventory + dependencies. Part B here documents consolidated decision and bug status.
+
+---
+
+## SECTION A — All 60 decisions: verified status table
+
+Status legend:
+- **RESOLVED** — owner approved, in effect
+- **SUPERSEDED** — replaced by a later decision; closed
+- **OBSOLETE** — applies to architecture being deleted; no action needed
+- **PARTIAL** — resolved but partially obsolete due to architecture change
+- **PENDING** — awaiting owner decision
+
+### Resolved (31)
+
+| # | Title | Status | Resolved in |
+|---|---|---|---|
+| 001 | Quiver retain + repair | RESOLVED | Pass 19-25 |
+| 002 | Polygon News evaluation | RESOLVED | Pass 19-25 |
+| 003 | Phase 0 inclusion in PROJECT_PLAN | RESOLVED | Pass 19-25 |
+| 004 | Phase 0.A scope | RESOLVED | Pass 19-25 |
+| 005 | 130 strategies + OpenBB+Polygon fundamentals | RESOLVED | Pass 19-25 |
+| 006 | Defer specific families to Phase 1F | RESOLVED | Pass 19-25 |
+| 007 | 7-12 month path to live trading | RESOLVED | Pass 19-25 |
+| 008 | Decision Agent action field integration | PARTIAL — agent output schema changes per Part A | Pass 19-25, revised Pass 38A |
+| 009 | Position size modifier integration | PARTIAL — TradingAgents doesn't emit continuous modifier | Pass 19-25, revised Pass 38A |
+| 010 | Risk Agent trade_blocked semantics | PARTIAL — Risk Agent split into 3 debaters in new architecture | Pass 19-25, revised Pass 38A |
+| 011 | Bull/Bear debate winner integration | PARTIAL — now Research Manager judge_decision | Pass 19-25, revised Pass 38A |
+| 012 | Recommended exit integration | PARTIAL — TradingAgents doesn't emit exit recommendations | Pass 19-25, revised Pass 38A |
+| 013 REVISED | earnings_tolerant strategy attribute | RESOLVED | Pass 24 |
+| 039 | Phase 0 parallelization deferred | RESOLVED | Pass 22 |
+| 040 | Adopt PIT data loader (Option A) | RESOLVED | Pass 22 |
+| 041 | No Phase 0 compression | RESOLVED | Pass 23 |
+| 042 | AgentGateConfig spec | PARTIAL — needs revision per Part A B.3 | Pass 25, revised Pass 38A |
+| 045 | Adopt fork-existing strategy | RESOLVED | Pass 27 |
+| 046 | Drop CVD from Phase 0 | RESOLVED | Pass 27 |
+| 047 | QuantStats for performance analytics | RESOLVED | Pass 33 |
+| 048 | Streamlit for Stage 3+ dashboard | RESOLVED | Pass 33 |
+| 049 | ib_async for IBKR | RESOLVED | Pass 33 |
+| 050 | freezegun for PIT regression tests | RESOLVED | Pass 28-29 |
+| 051 REVISED-3 | TradingAgents staged adoption | RESOLVED | Pass 33 |
+| 052 | Fork S&P 500 historical dataset | RESOLVED | Pass 28 |
+| 053 | Defer Streamlit to Stage 3+ | RESOLVED | Pass 33 |
+| 054 | IBKR for both paper and live | RESOLVED | Pass 33 |
+| 055 | Cost-optimized TradingAgents config | RESOLVED | Pass 33 |
+| 056 | Skip TradingAgents CLI, programmatic only | RESOLVED | Pass 33 |
+| 057 | Drop Social Analyst | RESOLVED | Pass 33 |
+| 058 REVISED | GPT-5.4-mini for backtest, Anthropic for live | RESOLVED | Pass 35 |
+| 059 | $300 hard cap on Stage 2 backtest | RESOLVED | Pass 33 |
+| 060 | Smoke test gating before Stage 2 scale | RESOLVED | Pass 36 |
+
+**Net: 31 RESOLVED, 5 of which are now PARTIAL due to TradingAgents architecture (008, 009, 010, 011, 012, 042 — but they remain "resolved" in spirit; the partial-obsolescence is about implementation detail).**
+
+### Newly Superseded by other resolved decisions (4)
+
+| # | Title | Superseded by | Status |
+|---|---|---|---|
+| 017 | Earnings proximity hard filter (BUG-131) | DECISION-013 REVISED — earnings_tolerant attribute | SUPERSEDED |
+| 030 | Wikipedia data alternative (BUG-185) | DECISION-052 + L88 — slickcharts.com / committed CSV | SUPERSEDED |
+| 032 | IBKR vs Alpaca for paper trading | DECISION-054 — IBKR for both | SUPERSEDED |
+| 044 | Phase 0.D scope (full ICT vs reduced) | DECISION-045 — fork smartmoneyconcepts | SUPERSEDED |
+
+**Action: closed via supersession. No further owner approval needed for these 4.**
+
+### Pending (25 — was 29 before supersession closures)
+
+**Group B — Phase 1B-α validation methodology (3):**
+| # | Topic |
+|---|---|
+| 014 | Phase 1B passing criteria adjustments |
+| 015 | Strategy correlation analysis methodology |
+| 016 | Threshold calibration scope (BUG-130) |
+
+**Group C — Risk management rules (5):**
+| # | Topic |
+|---|---|
+| 018 | Cooldown after stop-out (BUG-133) |
+| 019 | Liquidity filter timing (BUG-135) |
+| 022 | Drawdown-aware position sizing (BUG-170) |
+| 023 | Vol-targeted position sizing (BUG-168) |
+| 024 | Correlation-adjusted concentration limits (BUG-169) |
+
+**Group D — Strategy/regime adaptation (4):**
+| # | Topic |
+|---|---|
+| 021 | Tier system simplification |
+| 025 | Regime-conditional strategy weighting (BUG-175) |
+| 026 | Walk-forward parameter re-optimization (BUG-172) |
+| 027 | Online learning / feedback loop (BUG-173) |
+
+**Group E — Live trading operational (5):**
+| # | Topic |
+|---|---|
+| 028 | Stage 3 paper trading duration |
+| 029 | Stage 4 starting capital |
+| 033 | Email approval system specifics |
+| 034 | Daily loss limits for live trading |
+| 035 | Tax classification (Canadian) |
+
+**Group F — Process/infrastructure (4):**
+| # | Topic |
+|---|---|
+| 020 | News API final selection (depends on Polygon eval results) |
+| 031 | Codespace vs local execution |
+| 036 | Audit document maintenance going forward |
+| 043 | Retune framework |
+
+**Group G — Phase 0 sub-scope (2):**
+| # | Topic |
+|---|---|
+| 037 | Characterization-tests-first approach |
+| 038 | Layered execution with iteration budgets |
+
+**Group H (NEW) — TradingAgents architecture mapping (2):**
+| # | Topic |
+|---|---|
+| 061 | Tier system mapping for TradingAgents 5-tier output (proposed Option 1: their 5-tier → our tier upgrade/downgrade — APPROVED THIS TURN) |
+| 062 (NEW) | Output schema translation: TradingAgents → our position_size_modifier (closes the gap from Decision 008/009 partials) |
+
+### DECISION-061 — RESOLVED this turn
+
+Per owner approval ("Approve all"): tier system mapping = **Option 1**.
+
+**Specification:**
+- TradingAgents Portfolio Manager outputs one of: Buy / Overweight / Hold / Underweight / Sell
+- Mapping to our tier adjustment:
+  - **Buy** → upgrade preliminary tier by 1 level
+  - **Overweight** → upgrade preliminary tier by 0.5 (or stay-within-tier with priority flag)
+  - **Hold** → no tier change
+  - **Underweight** → downgrade preliminary tier by 1 level
+  - **Sell** → downgrade to AVOID (do not trade)
+- Preliminary tier discipline preserved (rule-based first stage independent of agent output)
+- AVOID tier never upgrades regardless of agent rating (matches old design)
+
+This becomes part of Phase 0.C TradingAgents integration spec.
+
+### DECISION-062 (NEW) — Output schema translation
+
+**Status:** PROPOSED.
+
+The `position_size_modifier` from old DECISION-009 doesn't exist in TradingAgents output. Proposal:
+- Map their 5-tier rating to a sizing multiplier (Buy=1.0×, Overweight=0.85×, Hold=skip, Underweight=0.5× shadow position only, Sell=skip)
+- Multiplier integrates with vol-targeted sizing (DECISION-023, pending) and drawdown sizing (DECISION-022, pending) when those resolve
+- Phase 0.C implementation detail
+
+**Recommendation:** Approve when Group C decisions resolve (so the multiplier stack is fully defined).
+
+---
+
+## SECTION B — Bug registry: triage plan against new architecture
+
+**Current count:** 206 unique bug references in AUDIT.md (Pass 1-37). Severity distribution per Pass 24-25: 14 CRITICAL, 39 HIGH, 45 MEDIUM, 12 LOW (~110 categorized; ~96 are duplicates or sub-references).
+
+### Three-pass triage plan (per Pass 37 Section B)
+
+**Pass 1 — Reclassify against new architecture (1-2 days work, owner gates each batch of 50 bugs):**
+
+For each unique bug, determine status in new architecture:
+- **AUTO-RESOLVED** — Code being replaced by fork/TradingAgents/etc., bug deleted with the code
+- **STILL APPLIES** — Real bug in code that survives the architecture change
+- **OBSOLETE** — Refers to deleted code path; can be closed
+- **NEEDS VERIFICATION** — Bug claim made from code reading, not run-tested per L45; needs 5-line test before scheduling for fix
+
+Expected outcome: real fix list of 40-60 bugs (down from 206) per Pass 37 estimate.
+
+**Pass 2 — Prioritize by phase (half-day):**
+
+Map each remaining bug to which Phase 0 sub-phase it must be fixed in (0.A prefetch, 0.B portfolio, 0.C agents, 0.D signals, or Phase 1B-α validation).
+
+**Pass 3 — Fix in implementation order (during Phase 0):**
+
+Each fix gets:
+- Regression test added per CHECKLIST #14 + L45 ("audits caught zero bugs without tests")
+- Verified by running, not by reading per L1
+- Documented as fixed in AUDIT.md with reference to fixing commit
+
+### Categories likely to AUTO-RESOLVE (per Part A dependency map)
+
+- Bugs in `pipeline.py` (772 lines being replaced by TradingAgents wrapper) — likely 30-50 bugs auto-resolved
+- Bugs in custom ICT signal computation (replaced by smartmoneyconcepts library) — likely 5-10 bugs auto-resolved
+- Bugs in fundamentals scraping (replaced by OpenBB) — likely 5-15 bugs auto-resolved
+- Bugs in Wikipedia scraping (replaced by static CSV per DECISION-052) — likely 3-5 bugs auto-resolved
+- Cache key mismatch bugs (the L44 family) — partially auto-resolved by simpler agent caching (per Part A B.4)
+- Decision Agent specific bugs (split into Trader + Portfolio Manager) — partially auto-resolved
+
+### Categories likely STILL APPLY
+
+- PIT correctness bugs (data layer, not agent layer) — unaffected by agent change
+- Position sizing bugs (DECISION-022/023/024 dependent) — independent of agent layer
+- Regime classification bugs — unaffected
+- Engine main loop bugs (separate from agents) — unaffected
+- Universe management bugs (Tier 1/2/3 architecture) — unaffected
+
+### Categories likely OBSOLETE
+
+- Bugs about Bull/Bear bundling (now separated into Bull Researcher + Bear Researcher)
+- Bugs about old Decision Agent score calibration (now using 5-tier, score doesn't exist)
+- Bugs about Risk Agent unitary scoring (now 3 risk debaters with separate perspectives)
+
+### Triage gate sequence per CHECKLIST #29
+
+This triage is itself a multi-batch operation per the new STOP-EARLY-ON-BUDGET discipline:
+- **Test batch:** First 10 bugs reclassified, owner reviews methodology, approves
+- **Mid batch:** Next 50 bugs, owner reviews categorization quality
+- **Full batch:** Remaining ~146 bugs
+- No bug fix work begins until reclassification is complete and owner approves the resulting fix list
+
+---
+
+## SECTION C — Document state inventory (post-Pass-38)
+
+| Document | Lines | Role |
+|---|---|---|
+| AUDIT.md | ~15,800 (Pass 1-37 preserved + Pass 38) | Live audit ledger, immutable history |
+| PROJECT_PLAN.md | TBD (will be rewritten Commit 3) | Current-state reference, comprehensive yet readable |
+| PROJECT_PLAN_ARCHIVE.md | TBD (will contain old PROJECT_PLAN content) | Historical preservation per L94 spirit |
+| CHECKLIST.md | 117 (29 items including #29 STOP-EARLY-ON-BUDGET) | Pre-action discipline rules |
+| LEARNINGS.md | 388 (L105 added) | Universal lessons, retroactive |
+| CLAUDE.md | 189 (+1 bullet on budget batch discipline) | Top-of-mind rules |
+
+---
+
+## SECTION D — Forward-looking work plan
+
+### Immediate next steps (in order)
+
+1. **Finish architectural alignment** — this commit + PROJECT_PLAN rewrite (Commit 3)
+2. **Group F decisions (Process/infrastructure)** — 4 decisions: 020 News API, 031 Codespace, 036 Audit cadence, 043 Retune framework
+3. **Group B decisions (Phase 1B methodology)** — 3 decisions: 014, 015, 016
+4. **Group G decisions (Phase 0 sub-scope)** — 2 decisions: 037, 038
+5. **DECISION-062** (output schema translation) — once Group C resolves
+6. **Group C, D, E** — risk management, strategy adaptation, live trading ops (parallel with Phase 0 implementation work)
+7. **Bug triage Pass 1** — reclassify against new architecture in batches per CHECKLIST #29
+8. **Phase 0.A implementation** — Quiver pre-cancellation repair, Polygon News evaluation, prefetch pipeline
+
+### Deferred (paused per owner)
+
+- HANDOFF.md generation (paused until owner explicitly requests)
+
+### Counts after Pass 38
+
+| Category | Count |
+|---|---|
+| Total decisions | 62 (was 60; +061 tier mapping resolved this turn, +062 NEW pending) |
+| Resolved | 36 (was 31; +061, +superseded closures 017/030/032/044) |
+| Pending | 26 (29 - 4 superseded + 1 new = 26) |
+| Total bugs | 206 (unchanged; triage will reclassify) |
+| Critical bugs | 14 |
+
+---
+
+## SECTION E — Pass 38 summary
+
+- **Part A (commit 199a516d):** TradingAgents agent inventory verified at source (12 agents, we use 11). Tier system change required. 5 prior decisions (008-012) marked PARTIAL. DECISION-061 needed for tier mapping. Concern raised about destructive AUDIT/PROJECT_PLAN rewrite.
+- **Part B (this commit):** Owner approved all three calls. Consolidated current state: 36 resolved / 26 pending decisions. DECISION-061 resolved (Option 1: their 5-tier → our tier upgrade/downgrade). DECISION-062 NEW (output schema translation). Bug triage plan documented. Document inventory updated. Forward work plan sequenced.
+- **Audit trail preserved:** Passes 1-37 immutable. Pass 38 appends consolidated state without deleting history.
+
+---
+
+*Pass 38 Part B complete. 60 decisions → 62 total (DECISION-061 resolved this turn, DECISION-062 NEW pending). 36 resolved, 26 pending. 206 bugs unchanged pending triage. AUDIT history preserved. PROJECT_PLAN.md rewrite is Commit 3 of this sequence.*
