@@ -248,3 +248,17 @@ State compliance visibly: "Checklist: ✅ [each item]"
        (Pass 52). Fix in L118; new DECISION-343 to be added.
     NEVER mark a library-adoption decision RESOLVED without enumerating its companion
     methodology decisions in the registry.
+
+40. PROJECT-PRIOR-ART GREP BEFORE PROPOSING NEW PRINCIPLES / FRAMEWORKS / DIRECTIONS:
+    a. When owner directs a new philosophy, principle, or architectural approach, the FIRST step
+       is grep CLAUDE.md + PROJECT_PLAN.md + AUDIT.md + AUDIT_INDEX.md for the relevant terms
+    b. If prior art exists, surface it explicitly: "this is already documented at [location], and
+       says [summary]. Do you want to (a) leave it as-is, (b) strengthen, (c) modify, (d) replace?"
+    c. Do NOT propose to write the principle from scratch as if it's new ground
+    d. Do NOT ask "interpretation A/B/C" before checking what's already there
+    e. Past mistakes: L107, L117, L119 all share the pattern "recommended without first reading
+       the project"
+    f. This is CHECKLIST #26 (Assumption Validation) applied specifically to project documents:
+       prior-art search is a free verification, do it first
+    NEVER propose to add a "new" principle to project docs without first proving by grep that
+    it isn't already there.
