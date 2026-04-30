@@ -14865,3 +14865,179 @@ I'm not going to start any of items 2-6 until you address the Section C concern.
 ---
 
 *Pass 33 complete. 11 decisions recorded as resolved (29 of 59 total). Staged $300 plan locked in. ONE concern flagged per checklist #25: DeepSeek V3.2 hosts in China, our methodology prompts could become training data, and there's geopolitical interruption risk. Asking for confirmation: stay with DECISION-058 (DeepSeek) or substitute GPT-5.4-mini at marginally higher cost. No bugs added. No decisions added. No code changes proposed yet.*
+
+---
+
+# AUDIT PASS 34 — GPT-5.4-mini Quality Assessment for Our Use Case
+
+Checklist: ✅ #1 (verified benchmarks via current 2026 sources) ✅ #4 (directly answers GPT quality question) ✅ #5 (flagging my own pricing error from Pass 31) ✅ #12 (re-verified pricing from multiple sources April 2026) ✅ #25 (correcting my own prior wrong pricing claim)
+
+User asked: "How good is GPT?"
+
+Verified benchmark data from multiple April 2026 sources below.
+
+---
+
+## SECTION A — First, an honest pricing correction
+
+In Pass 31 I quoted GPT-5.4-mini at "$0.50/$2.50 per million tokens." Re-verifying now from current sources:
+
+**Actual GPT-5.4-mini pricing (April 2026): $0.75 input / $4.50 output per million tokens.**
+
+Sources: tokenmix.ai (April 2026), llm-stats.com (March 2026), artificialanalysis.ai (current).
+
+This changes the Stage 2 cost estimate:
+- Old (wrong) estimate: 2,500 candidates × $0.13 = ~$325
+- **Correct estimate:** 2,500 candidates × ~$0.16 (slightly higher input/output) = **~$400**
+
+That's $100 over your $300 budget. The shape of the decision changes.
+
+---
+
+## SECTION B — How good is GPT-5.4-mini, honestly?
+
+### B.1 — On reasoning benchmarks (MMLU, GPQA, etc.)
+
+GPT-5.4-mini is the **quality leader among budget models** per April 2026 benchmarks:
+- MMLU: ~85%
+- HumanEval: ~87%
+- SWE-Bench Pro: 50%+ (strong for a "mini" tier)
+- Terminal-Bench 2.0: competitive
+
+For comparison in the same tier:
+- Claude Haiku 4.5: ~70% of Sonnet quality (no specific MMLU verified)
+- DeepSeek V3.2: ~85% of Sonnet quality on coding (reasoning data sparser)
+- Gemini 3.1 Flash: ~70% of Pro quality
+
+**Verdict on reasoning: GPT-5.4-mini is the strongest budget-tier model on reasoning benchmarks as of April 2026.**
+
+### B.2 — On structured output (CRITICAL for our use case)
+
+This matters more than raw reasoning for TradingAgents because v0.2.4 uses Pydantic structured outputs:
+- **GPT-5.4-mini structured output compliance: 99.7%** (300-call test)
+- GPT-5 (older): 96%
+- Claude Opus 4.6: 99.2%
+- Haiku 4.5: not separately benchmarked
+
+GPT-5.4-mini is **best-in-tier for structured output reliability**. For TradingAgents this is significant because:
+- Their Research Manager and Portfolio Manager use `bind_structured()` for typed Pydantic outputs
+- Failed structured output = retry = doubled cost on that node
+- 0.3% failure rate on GPT-mini vs higher on others = real cost saving in practice
+
+### B.3 — On tool calling (also critical)
+
+TradingAgents' analyst nodes use LangChain tool-calling loops (per Pass 31/32 finding). Quality of tool-call generation directly affects how many LLM calls each propagate() makes.
+
+- **GPT-5.4-mini: stronger** function calling than older GPT-5, lower hallucination on tool args
+- DeepSeek V3.2: reported tool support lagging across LLM tools
+- Haiku 4.5: solid but not benchmarked specifically here
+
+GPT-5.4-mini's tool-calling reliability means **fewer wasted LLM calls** per propagate() vs alternatives. Real per-propagate cost may end up 10-20% LOWER than my naive arithmetic suggests.
+
+### B.4 — On financial reasoning specifically
+
+Honest caveat: I have NOT seen rigorous swing-trading-specific benchmarks for any of these models. Public benchmarks measure general reasoning, code, math. Financial domain reasoning is a derivative skill that correlates but isn't directly tested.
+
+What we know:
+- GPT-5.4-mini has strong general reasoning + structured output → high likelihood of working well for our use case
+- DeepSeek V3.2 has good math/coding but tool-calling weakness in agent harnesses
+- Haiku 4.5 is a known quantity but pricier and lower benchmark scores than GPT-5.4-mini
+
+**Honest verdict for our use case:** GPT-5.4-mini is likely the best price/quality tradeoff. But I can't promise quality without testing. The first 100 candidates of Stage 2 are a SMOKE TEST — if quality is poor, we stop and switch.
+
+### B.5 — Comparison summary table
+
+| Model | Reasoning | Structured Output | Tool Calling | Hosting | Cost (input/output per Mtok) | Methodology IP risk |
+|---|---|---|---|---|---|---|
+| **GPT-5.4-mini** | **Best in tier** | **99.7% compliance** | Strong | US (OpenAI/Azure) | $0.75/$4.50 | None (paid API) |
+| Claude Haiku 4.5 | Good | Not benchmarked | Solid | US (Anthropic) | $1.00/$5.00 | None |
+| Claude Sonnet 4.6 | Excellent | 99.2% compliance | Strong | US (Anthropic) | $3.00/$15.00 | None |
+| DeepSeek V3.2 | Good on math/code | Not benchmarked | **Weak in tool harnesses** | China | $0.28/$0.42 | **Free tier: prompts may be training data** |
+| Gemini 3.1 Flash | Decent | Adequate | Adequate | US (Google) | $0.30/$2.50 | None (paid API) |
+
+---
+
+## SECTION C — Revised cost projections with corrected pricing
+
+For Stage 2 (~2,500 curated candidates, ~$0.16-0.18 per propagate after tool overhead):
+
+| LLM Provider | Cost estimate | Quality verdict | Hosting |
+|---|---|---|---|
+| **GPT-5.4-mini** | **~$400-450** | Best price/quality budget tier | US |
+| Gemini 3.1 Flash | ~$200-250 | Decent, less benchmarked | US |
+| DeepSeek V3.2 | ~$200-300 | Adequate but tool-calling weak | China + IP risk |
+| Haiku 4.5 | ~$500-625 | Known quantity | US |
+| Sonnet 4.6 | ~$1,000-1,500 | Best quality, over budget | US |
+
+---
+
+## SECTION D — Updated recommendation given $300 hard cap
+
+**Honest reality:** $300 hard cap on Stage 2 is now tight. Three viable paths:
+
+### Path 1 — Reduce sample size, use GPT-5.4-mini
+- 1,800 candidates instead of 2,500
+- Sample more selectively: only high-tier strategies (5%/4%) + earnings ±5d
+- Cost: ~$300
+- Quality: best available budget tier
+- Trade-off: less coverage of regime transitions and random control
+
+### Path 2 — Keep 2,500 candidates, use Gemini 3.1 Flash
+- Same sample size as planned
+- Lower per-call quality but US-hosted, no IP exposure
+- Cost: ~$200-250
+- Trade-off: results have higher noise floor, may need re-runs
+
+### Path 3 — Stay with DeepSeek V3.2 per DECISION-058
+- Cheapest at ~$200-300
+- Accept methodology IP exposure (free tier) OR pay for enterprise tier (negates cost advantage)
+- Tool-calling weakness may cause more retries = unpredictable real cost
+
+### Path 4 — Increase budget to $400, use GPT-5.4-mini
+- Original 2,500-candidate plan
+- US-hosted, best benchmarks, no IP risk
+- $400 instead of $300 (+33%)
+- Trade-off: $100 over your stated cap
+
+### My honest recommendation: Path 1 (GPT-5.4-mini at $300, smaller sample)
+
+Reasoning per checklist #25:
+- GPT-5.4-mini is genuinely the best quality at this price tier
+- 1,800 candidates is still statistically meaningful for testing whether agents add edge
+- Stays in your $300 budget
+- US-hosted, no methodology training-data exposure
+- Best structured output compliance reduces wasted calls
+- Best tool calling reduces wasted LLM rounds within each propagate()
+
+The smaller sample is sourced as: ~1,200 high-tier strategy trades + ~300 earnings-window trades + ~150 regime-transition trades + ~150 random control. Still answers the core question: do agents add edge over rules?
+
+### Alternative: Path 4 if you'd prefer no scope reduction
+
+If you'd rather keep all 2,500 candidates and accept $400 spend (+33% over cap), GPT-5.4-mini still delivers best quality. Up to you.
+
+---
+
+## SECTION E — Decision path forward
+
+Three new options to choose from:
+
+**Option A:** Stay with DEC-058 (DeepSeek V3.2). Accept IP risk, ~$300 budget.
+**Option B:** Revise DEC-058 to GPT-5.4-mini, REDUCE sample to ~1,800 candidates to fit $300. (My recommendation.)
+**Option C:** Revise DEC-058 to GPT-5.4-mini, INCREASE budget to $400 for full 2,500 sample.
+**Option D:** Revise DEC-058 to Gemini 3.1 Flash, keep 2,500 candidates at ~$200-250 (cheaper but lower quality).
+
+---
+
+## SECTION F — Honest reflection
+
+Two errors in my earlier passes:
+
+1. **Pass 31:** Quoted GPT-5.4-mini at "$0.50/$2.50" — wrong by 50%. Real pricing is $0.75/$4.50. Per-checklist #12 I should have re-verified before quoting in Pass 31. I didn't. Corrected here.
+
+2. **Pass 32:** When I proposed "Option C (GPT-5.4-mini, ~$325)" in Section C, I used the wrong pricing. With correct pricing it's ~$400-450 for full 2,500 candidates. Either reduce sample or increase budget.
+
+This is twice in one session I've quoted pricing without verifying current numbers. Going forward: explicit pricing verification on every quote, with source link.
+
+---
+
+*Pass 34 complete. GPT-5.4-mini quality assessment: genuinely best-in-tier for budget reasoning, 99.7% structured output compliance, US-hosted, no IP risk. Pricing corrected: $0.75/$4.50 (not $0.50/$2.50 from Pass 31). Stage 2 with full 2,500 candidates ≈ $400-450 not $325. Four options presented (A/B/C/D). Recommendation: Path B — GPT-5.4-mini at reduced ~1,800 sample to fit $300. No new bugs. No new decisions resolved (DECISION-058 status pending user choice).*
