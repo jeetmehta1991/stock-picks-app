@@ -19033,3 +19033,148 @@ System now runs (smoke test fixture wires correctly, close_trade no longer crash
 Still on Pass 48 sweep TODO list: backtest.py engine, signals/screener.py, signals/technical.py, agents/pipeline.py, results layer, scripts, GitHub Actions, API doc validation, professional firm benchmark, live execution simulation, doc sync audit.
 
 *Pass 49 complete. 4 critical runtime bugs fixed. 6 regression tests added. System runnable.*
+
+---
+
+# AUDIT PASS 50 — Tier-1 PIT Correctness Patches (Owner-Approved Batch)
+
+Owner directive: "Approve Tier-1 batch as-is → I implement, test, regression-test, commit."
+
+✅ CHECKLIST #1 (executed code to verify) #5 (focused fix) #25 (concerns flagged) #26 (verbatim) #27 (regression tests added: 10 new) #32 (only the 5 owner-approved Tier-1 decisions; DEC-295/301/302/304/305 RESOLVED)
+
+## What Tier-1 was
+
+Five highest-leverage PIT-correctness fixes from Pass 48 sweep findings, surfaced via AUDIT_TRIAGE rerank:
+
+| Decision | Bug | Status |
+|---|---|---|
+| DEC-295 | SHORT_BORROW_COST_PER_DAY ambiguous units (0.005 = decimal/day or percent/day?) | ✅ RESOLVED |
+| DEC-301 | FRED returns latest revised values (no vintage); UNRATE/CPI revision look-ahead | ✅ RESOLVED |
+| DEC-302 | VXX used as ^VIX proxy + UUP as DXY proxy with material tracking error | ✅ RESOLVED |
+| DEC-304 | CPI/NFP/FOMC dates hardcoded ending March 2026 — silent gap past coverage | ✅ RESOLVED |
+| DEC-305 | `_assert_no_lookahead` logs WARNING but doesn't RAISE — leakage silently swallowed | ✅ RESOLVED |
+
+## Patches applied
+
+### 1. DEC-295 — Short borrow cost canonical single-source
+
+**Problem:** Two definitions in different modules with different units:
+- `config.py`: `SHORT_BORROW_COST_PER_DAY = 0.005` with comment "percent per day" (= 1.26%/yr if percent, 126%/yr if decimal — ambiguous)
+- `improvements.py`: `ANNUAL_BORROW_RATE = 0.005` clearly = 0.5%/yr decimal
+- Borrow cost was applied TWICE: once in `_pnl()` (via SHORT_BORROW_COST_PER_DAY) and once in `apply_transaction_costs()` (via ANNUAL_BORROW_RATE). Double-counting on shorts.
+
+**Fix:**
+- Renamed canonical constant: `SHORT_ANNUAL_BORROW_RATE = 0.005` (= 0.5%/yr decimal, unambiguous)
+- Removed borrow subtraction from `_pnl()` (now returns gross PnL only; `hold_days` kept in signature for backward compat but unused)
+- `apply_transaction_costs` imports `SHORT_ANNUAL_BORROW_RATE` from config (no duplicate constant)
+- Single application point: borrow cost lives in `apply_transaction_costs` only
+
+**Verified:** `_pnl(200, 180, 'short', hold_days=1) == _pnl(200, 180, 'short', hold_days=30)` (both gross 10%); apply_transaction_costs gives `cost_30d > cost_1d` (borrow scales with hold_days as expected).
+
+### 2. DEC-301 — ALFRED vintage FRED data
+
+**Problem:** `_fred_series` always returns LATEST revised values from FRED API. UNRATE, CPI, GDP routinely revised 6+ months after first publication. Backtests using these as features have look-ahead bias.
+
+**Fix:** `_fred_series` accepts optional `as_of` parameter. When provided, uses ALFRED archival endpoint with `realtime_end=as_of` parameter so returned values are PIT-correct (what was known on as_of, not latest revision). Cache layer bypassed when as_of given (cache contains revised values, only safe for forward analysis).
+
+**Propagated:** `get_yield_curve` passes `as_of` through to `_fred_series`.
+
+**Verified:** `inspect.signature(_fred_series).parameters['as_of'].default is None` — backward compat preserved.
+
+### 3. DEC-302 — Canonical ^VIX and DX-Y.NYB priority
+
+**Problem:** `_load_vix_from_ohlcv_cache` listed `["VXX", "^VIX"]` and preferred VXX FIRST. VXX is a futures-tracking ETF with severe contango decay — diverges from VIX after ~1 day. UUP similarly differs from DXY. Regime classification was using degraded proxies even when canonical data could be available.
+
+**Fix:**
+- Reversed candidate order: `[("^VIX", False), ("VXX", True)]`. ^VIX first, VXX as fallback marked `is_proxy=True`
+- When falling back to proxy, emit `logger.warning` with explicit message about contango decay and regime classification degradation
+- Added `_VIX_SOURCE` and `_DXY_SOURCE` module state to track which symbol is used
+- Added helpers `get_vix_data_source()` and `get_dxy_data_source()` for downstream visibility
+- Created `scripts/prefetch_canonical_macro_ohlcv.py` for owner to populate ^VIX and DX-Y.NYB into cache from Codespaces (yfinance allowed there; blocked here)
+
+**Verified:** `inspect.getsource(_load_vix_from_ohlcv_cache)` shows '^VIX' position before 'VXX' position. Same for DX-Y.NYB / UUP.
+
+### 4. DEC-304 — JSON-based economic calendar
+
+**Problem:** CPI/NFP/FOMC dates were 136 hardcoded `date(YYYY, M, D)` literals in macro.py ending ~March 2026. After that date, `is_near_high_impact_event` returns "no events near" silently for every input — system blind to events 4+ weeks from now (live trading after April 2026 has no event filtering).
+
+**Fix:**
+- Migrated all hardcoded dates to `backtest/data/economic_calendar.json` (51 CPI + 51 NFP + 34 FOMC dates as ISO strings + `_metadata` with source URLs)
+- Added `_load_economic_calendar()` function reading JSON at module load
+- `CPI_DATES`/`NFP_DATES`/`FOMC_DATES`/`ALL_HIGH_IMPACT` constants populated from JSON (existing API preserved)
+- Added `_check_calendar_coverage(as_of)` that warns once per process when as_of is within 30 days of last hardcoded event
+- Created `scripts/refresh_event_calendar.py` documenting how to fetch new dates from federalreserve.gov, BLS schedule pages
+
+**Verified:** `_load_economic_calendar()` returns 51 CPI + 51 NFP + 34 FOMC dates. Metadata has source URLs documented. `is_near_high_impact_event(date(2024,3,19))` correctly identifies FOMC on March 20, 2024.
+
+### 5. DEC-305 — PIT guard raises instead of warns
+
+**Problem:** `_assert_no_lookahead(df, as_of, label)` logged a WARNING when leakage was detected and silently returned filtered data. In production with WARNING+ log levels, leakage goes completely silent. PIT correctness theme of Pass 39 was partially defeated.
+
+**Fix:**
+- New exception class `LookAheadBiasError(RuntimeError)`
+- `_assert_no_lookahead` now RAISES `LookAheadBiasError` when leakage detected
+- Bypass via env var `ALLOW_LOOKAHEAD_LEAK=1` for narrow debug scenarios (logs warning instead of raising)
+- Backward-compatible behavior preserved when no leakage
+
+**Verified:** `_assert_no_lookahead(df_with_leakage, as_of, "TEST")` raises `LookAheadBiasError`. Same call with `ALLOW_LOOKAHEAD_LEAK=1` env var emits warning and returns filtered df.
+
+## New script files
+
+- `scripts/prefetch_canonical_macro_ohlcv.py` — populates ^VIX and DX-Y.NYB into OHLCV cache (run in Codespaces)
+- `scripts/refresh_event_calendar.py` — annual calendar refresh helper (documents BLS/FOMC URLs)
+
+## New regression tests (10 new in test_unit.py)
+
+- `test_pit_guard_raises_on_leakage` — DEC-305 RAISE behavior
+- `test_pit_guard_silent_on_clean_data` — DEC-305 no-op on PIT-correct input
+- `test_pit_guard_warn_mode_via_env_var` — DEC-305 ALLOW_LOOKAHEAD_LEAK=1 bypass
+- `test_borrow_cost_canonical_unit` — DEC-295 SHORT_ANNUAL_BORROW_RATE present and correct magnitude
+- `test_borrow_cost_in_one_place_only` — DEC-295 _pnl gross-only; borrow only in apply_transaction_costs
+- `test_economic_calendar_loads_from_json` — DEC-304 JSON loader works, populates correct counts
+- `test_high_impact_event_detection` — DEC-304 detection still works post-migration
+- `test_fred_series_supports_as_of_param` — DEC-301 ALFRED parameter exposed
+- `test_vix_loader_prefers_real_index` — DEC-302 ^VIX prioritized in code
+- `test_dxy_loader_prefers_real_index` — DEC-302 DX-Y.NYB prioritized in code
+
+## Test results post-Tier-1
+
+```
+backtest/tests/test_unit.py:        45 passed (was 35; +10 Tier-1 regression tests)
+backtest/tests/test_integration.py:  7 passed (unchanged)
+backtest/tests/test_e2e.py:         10 collected (smoke run requires populated OHLCV cache)
+TOTAL: 52 of 52 ran tests pass.
+```
+
+## What's NOT in Tier-1 (still pending from Pass 48)
+
+CRITICAL bugs deferred for follow-up:
+- DEC-298: Cache adjusted-close PIT bug (5 eng-days; bigger architecture rewrite)
+- DEC-299: yfinance fetch_info CURRENT data (needs vendor decision: Polygon Reference?)
+- DEC-300: yfinance earnings/analyst PIT (same vendor question)
+- DEC-303: S&P historical constituent membership (depends on Polygon Reference decision)
+- DEC-256/257: Earnings + fundamentals prefetch (Phase 0.A blockers, larger scope)
+
+22 other CRITICAL bugs, 58 HIGH bugs, 67 MEDIUM bugs, 21 LOW bugs all still pending from Pass 48 sweep.
+
+## Counts post-Pass-50
+
+- Decisions: 346 (5 RESOLVED via this commit: 295, 301, 302, 304, 305)
+- Status: 65 RESOLVED, 5 PARTIAL, 7 SUPERSEDED, 269 PENDING
+- Bugs: 269 (10 RESOLVED total — 4 from Pass 49 + 6 from Pass 50)
+- LEARNINGS: 113 unchanged
+- CHECKLIST: 32 unchanged
+- Audit passes: 50
+
+## Commit summary
+
+System now has materially improved PIT correctness:
+- ✅ Look-ahead leakage RAISES (was silent warning)
+- ✅ FRED supports vintage queries (was always-revised-latest)
+- ✅ VIX/DXY prefer canonical symbols (was always proxy)
+- ✅ Calendar refreshable via JSON (was hardcoded ending Q1 2026)
+- ✅ Short borrow cost single-source (was double-counted with conflicting units)
+
+5 of 28 CRITICAL Pass 48 bugs resolved. 23 CRITICAL bugs remain — owner can pick next batch.
+
+*Pass 50 complete. Tier-1 implemented as approved. 10 regression tests prevent recurrence.*

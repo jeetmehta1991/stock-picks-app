@@ -25,6 +25,9 @@ logger = logging.getLogger(__name__)
 
 FRED_KEY  = os.environ.get("FRED_API_KEY", "")
 FRED_BASE = "https://api.stlouisfed.org/fred/series/observations"
+# DEC-301 fix (Pass 50): ALFRED archival endpoint for vintage (PIT-correct) data.
+# Without this, FRED returns latest revised values, leaking future revisions into past dates.
+ALFRED_BASE = "https://api.stlouisfed.org/fred/series/observations"
 MACRO_CACHE = Path(__file__).parent / "cache" / "macro"
 
 SERIES_MAP = {
@@ -53,10 +56,25 @@ def _load_macro_combined() -> Optional[pd.DataFrame]:
     return _MACRO_COMBINED
 
 
-def _fred_series(series_id: str, start: date, end: date) -> pd.Series:
-    # Try pre-fetched Parquet cache first
+def _fred_series(series_id: str, start: date, end: date,
+                  as_of: Optional[date] = None) -> pd.Series:
+    """
+    Fetch FRED time series with optional vintage-aware (ALFRED) query.
+
+    DEC-301 fix (Pass 50): when `as_of` is provided, calls FRED with
+    `realtime_end=as_of` so the returned series contains the data values
+    that were KNOWN on as_of, not the latest revised values. Eliminates
+    revision look-ahead bias for backtest macro features (UNRATE/CPI/GDP
+    are routinely revised 6+ months after first publication).
+
+    Without as_of: returns latest revised values (legacy behavior, only
+    safe for forward-looking analysis or non-revised series).
+    """
+    # Try pre-fetched Parquet cache first (which uses latest revisions —
+    # correct for FORWARD analysis but NOT PIT-correct for backtest).
+    # Cache is bypassed when as_of provided to ensure vintage path.
     name = SERIES_MAP.get(series_id)
-    if name:
+    if name and as_of is None:
         combined = _load_macro_combined()
         if combined is not None and name in combined.columns:
             mask = (combined["date"] >= pd.Timestamp(start)) & \
@@ -67,13 +85,20 @@ def _fred_series(series_id: str, start: date, end: date) -> pd.Series:
 
     if FRED_KEY:
         try:
-            resp = requests.get(
-                FRED_BASE,
-                params={"series_id": series_id, "observation_start": start.isoformat(),
-                        "observation_end": end.isoformat(), "api_key": FRED_KEY,
-                        "file_type": "json"},
-                timeout=20,
-            )
+            params = {
+                "series_id": series_id,
+                "observation_start": start.isoformat(),
+                "observation_end": end.isoformat(),
+                "api_key": FRED_KEY,
+                "file_type": "json",
+            }
+            # DEC-301: when as_of provided, use ALFRED vintage parameters
+            if as_of is not None:
+                params["realtime_end"] = as_of.isoformat()
+                # realtime_start defaults to series start; realtime_end caps the
+                # vintage so we get values KNOWN on as_of.
+                logger.debug("FRED %s: fetching vintage values as of %s", series_id, as_of)
+            resp = requests.get(ALFRED_BASE, params=params, timeout=20)
             resp.raise_for_status()
             obs = resp.json().get("observations", [])
             s = pd.Series(
@@ -111,7 +136,8 @@ def _fred_series(series_id: str, start: date, end: date) -> pd.Series:
 
 def get_yield_curve(start: date, end: date, as_of: Optional[date] = None) -> pd.DataFrame:
     effective_end = min(end, as_of) if as_of else end
-    raw = _fred_series("T10Y2Y", start, effective_end)
+    # DEC-301 fix (Pass 50): pass as_of to _fred_series for vintage values
+    raw = _fred_series("T10Y2Y", start, effective_end, as_of=as_of)
     if raw.empty:
         return pd.DataFrame()
     df = raw.rename("spread_10y_2y").to_frame()
@@ -133,39 +159,92 @@ def yield_curve_regime(as_of: date, lookback_days: int = 30) -> str:
 # VIX and DXY pre-loaded at module level from OHLCV cache — avoids live calls during backtest
 _VIX_CACHE: Optional[pd.DataFrame] = None
 _DXY_CACHE: Optional[pd.DataFrame] = None
+# DEC-302 fix (Pass 50): track which symbol is being used so downstream can warn
+_VIX_SOURCE: Optional[str] = None  # '^VIX' (canonical) or 'VXX' (proxy)
+_DXY_SOURCE: Optional[str] = None  # 'DX-Y.NYB' (canonical) or 'UUP' (proxy)
 
 
 def _load_vix_from_ohlcv_cache() -> Optional[pd.DataFrame]:
-    """Load VIX from pre-fetched OHLCV Parquet cache. No live calls."""
-    global _VIX_CACHE
+    """
+    Load VIX from pre-fetched OHLCV Parquet cache. No live calls.
+
+    DEC-302 fix (Pass 50): prefers actual ^VIX (volatility index, the canonical
+    source) over VXX (futures-tracking ETF with severe contango decay — diverges
+    from VIX after ~1 day). VXX is kept as fallback so existing caches still
+    work, but emits a WARNING when used so users know regime classification
+    quality is degraded. Run scripts/prefetch_macro.py in Codespaces to
+    populate ^VIX into cache.
+    """
+    global _VIX_CACHE, _VIX_SOURCE
     if _VIX_CACHE is not None:
         return _VIX_CACHE
     from backtest.data.cache import get_ohlcv_bulk as cached_ohlcv_bulk
     from datetime import date as _date
-    vix_dict = cached_ohlcv_bulk(["VXX", "^VIX"], start=_date(2020,1,1), end=_date(2026,12,31))
-    for key in ["VXX", "^VIX"]:
-        if key in vix_dict and not vix_dict[key].empty:
-            df = vix_dict[key][["close"]].rename(columns={"close": "vix"})
+    # Try canonical source FIRST (note ordering reversal vs old code)
+    candidates = [("^VIX", False), ("VXX", True)]
+    for symbol, is_proxy in candidates:
+        result = cached_ohlcv_bulk([symbol], start=_date(2020,1,1), end=_date(2026,12,31))
+        if symbol in result and not result[symbol].empty:
+            df = result[symbol][["close"]].rename(columns={"close": "vix"})
             _VIX_CACHE = df
-            logger.info("VIX loaded from OHLCV cache: %d rows", len(df))
+            _VIX_SOURCE = symbol
+            if is_proxy:
+                logger.warning(
+                    "VIX loader using PROXY %s — material tracking error vs ^VIX "
+                    "(VXX has contango decay, diverges from VIX after ~1 day). "
+                    "Run scripts/prefetch_macro.py in Codespaces to populate ^VIX. "
+                    "Regime classification may be degraded.",
+                    symbol,
+                )
+            else:
+                logger.info("VIX loaded from canonical ^VIX: %d rows", len(df))
             return _VIX_CACHE
     return None
 
 
 def _load_dxy_from_ohlcv_cache() -> Optional[pd.DataFrame]:
-    """Load DXY from pre-fetched OHLCV Parquet cache. No live calls."""
-    global _DXY_CACHE
+    """
+    Load DXY from pre-fetched OHLCV Parquet cache.
+
+    DEC-302 fix (Pass 50): prefers actual DX-Y.NYB (US Dollar Index) over
+    UUP (ETF proxy with different basket weighting). UUP retained as
+    fallback with WARNING. Run scripts/prefetch_macro.py in Codespaces.
+    """
+    global _DXY_CACHE, _DXY_SOURCE
     if _DXY_CACHE is not None:
         return _DXY_CACHE
     from backtest.data.cache import get_ohlcv_bulk as cached_ohlcv_bulk
     from datetime import date as _date
-    dxy_dict = cached_ohlcv_bulk(["UUP"], start=_date(2020,1,1), end=_date(2026,12,31))
-    if "UUP" in dxy_dict and not dxy_dict["UUP"].empty:
-        df = dxy_dict["UUP"][["close"]].rename(columns={"close": "dxy"})
-        _DXY_CACHE = df
-        logger.info("DXY proxy (UUP) loaded from OHLCV cache: %d rows", len(df))
-        return _DXY_CACHE
+    candidates = [("DX-Y.NYB", False), ("UUP", True)]
+    for symbol, is_proxy in candidates:
+        result = cached_ohlcv_bulk([symbol], start=_date(2020,1,1), end=_date(2026,12,31))
+        if symbol in result and not result[symbol].empty:
+            df = result[symbol][["close"]].rename(columns={"close": "dxy"})
+            _DXY_CACHE = df
+            _DXY_SOURCE = symbol
+            if is_proxy:
+                logger.warning(
+                    "DXY loader using PROXY %s — different basket weighting than DX-Y.NYB. "
+                    "Run scripts/prefetch_macro.py in Codespaces to populate DX-Y.NYB. "
+                    "DXY trend classification may be degraded.",
+                    symbol,
+                )
+            else:
+                logger.info("DXY loaded from canonical DX-Y.NYB: %d rows", len(df))
+            return _DXY_CACHE
     return None
+
+
+def get_vix_data_source() -> Optional[str]:
+    """Return the symbol used for current VIX data ('^VIX' canonical or 'VXX' proxy)."""
+    _load_vix_from_ohlcv_cache()
+    return _VIX_SOURCE
+
+
+def get_dxy_data_source() -> Optional[str]:
+    """Return the symbol used for current DXY data ('DX-Y.NYB' canonical or 'UUP' proxy)."""
+    _load_dxy_from_ohlcv_cache()
+    return _DXY_SOURCE
 
 
 def get_vix(start: date, end: date, as_of: Optional[date] = None) -> pd.DataFrame:
@@ -243,58 +322,87 @@ def dxy_trend(as_of: date, lookback_days: int = 20) -> str:
     return "flat"
 
 
-# Economic calendar — CPI, NFP, FOMC dates 2022-2026
-CPI_DATES = [
-    date(2022,1,12),date(2022,2,10),date(2022,3,10),date(2022,4,12),
-    date(2022,5,11),date(2022,6,10),date(2022,7,13),date(2022,8,10),
-    date(2022,9,13),date(2022,10,13),date(2022,11,10),date(2022,12,13),
-    date(2023,1,12),date(2023,2,14),date(2023,3,14),date(2023,4,12),
-    date(2023,5,10),date(2023,6,13),date(2023,7,12),date(2023,8,10),
-    date(2023,9,13),date(2023,10,12),date(2023,11,14),date(2023,12,12),
-    date(2024,1,11),date(2024,2,13),date(2024,3,12),date(2024,4,10),
-    date(2024,5,15),date(2024,6,12),date(2024,7,11),date(2024,8,14),
-    date(2024,9,11),date(2024,10,10),date(2024,11,13),date(2024,12,11),
-    # 2025
-    date(2025,1,15),date(2025,2,12),date(2025,3,12),date(2025,4,10),
-    date(2025,5,13),date(2025,6,11),date(2025,7,11),date(2025,8,13),
-    date(2025,9,10),date(2025,10,15),date(2025,11,13),date(2025,12,10),
-    # 2026 Q1
-    date(2026,1,15),date(2026,2,12),date(2026,3,12),
-]
-NFP_DATES = [
-    date(2022,1,7),date(2022,2,4),date(2022,3,4),date(2022,4,1),
-    date(2022,5,6),date(2022,6,3),date(2022,7,8),date(2022,8,5),
-    date(2022,9,2),date(2022,10,7),date(2022,11,4),date(2022,12,2),
-    date(2023,1,6),date(2023,2,3),date(2023,3,10),date(2023,4,7),
-    date(2023,5,5),date(2023,6,2),date(2023,7,7),date(2023,8,4),
-    date(2023,9,1),date(2023,10,6),date(2023,11,3),date(2023,12,8),
-    date(2024,1,5),date(2024,2,2),date(2024,3,8),date(2024,4,5),
-    date(2024,5,3),date(2024,6,7),date(2024,7,5),date(2024,8,2),
-    date(2024,9,6),date(2024,10,4),date(2024,11,1),date(2024,12,6),
-    # 2025
-    date(2025,1,10),date(2025,2,7),date(2025,3,7),date(2025,4,4),
-    date(2025,5,2),date(2025,6,6),date(2025,7,3),date(2025,8,1),
-    date(2025,9,5),date(2025,10,3),date(2025,11,7),date(2025,12,5),
-    # 2026 Q1
-    date(2026,1,9),date(2026,2,6),date(2026,3,6),
-]
-FOMC_DATES = [
-    date(2022,1,26),date(2022,3,16),date(2022,5,4),date(2022,6,15),
-    date(2022,7,27),date(2022,9,21),date(2022,11,2),date(2022,12,14),
-    date(2023,2,1),date(2023,3,22),date(2023,5,3),date(2023,6,14),
-    date(2023,7,26),date(2023,9,20),date(2023,11,1),date(2023,12,13),
-    date(2024,1,31),date(2024,3,20),date(2024,5,1),date(2024,6,12),
-    date(2024,7,31),date(2024,9,18),date(2024,11,7),date(2024,12,18),
-    # 2025
-    date(2025,1,29),date(2025,3,19),date(2025,5,7),date(2025,6,18),
-    date(2025,7,30),date(2025,9,17),date(2025,11,5),date(2025,12,17),
-    # 2026 Q1
-    date(2026,1,28),date(2026,3,18),
-]
+# DEC-304 fix (Pass 50): economic calendar migrated from hardcoded Python lists
+# to JSON file (backtest/data/economic_calendar.json) for easier annual refresh.
+# Hardcoded lists were ending March 2026 with no auto-warning past coverage.
+# JSON loader provides: CPI_DATES, NFP_DATES, FOMC_DATES, _metadata.
+# Run scripts/refresh_event_calendar.py to extend coverage.
+
+ECONOMIC_CALENDAR_FILE = Path(__file__).parent / "economic_calendar.json"
+
+
+def _load_economic_calendar() -> dict:
+    """
+    Load CPI/NFP/FOMC dates from JSON file. Returns dict with date lists
+    (parsed to date objects) plus _metadata dict documenting source URLs
+    and refresh instructions.
+
+    DEC-304: replaces previously-hardcoded Python lists. JSON file is the
+    single source; hardcoded fallback exists only if file missing (would
+    indicate a packaging bug, not normal operation).
+    """
+    import json
+    if not ECONOMIC_CALENDAR_FILE.exists():
+        logger.error(
+            "ECONOMIC CALENDAR FILE MISSING [DEC-304]: %s not found. "
+            "is_near_high_impact_event will return no-events for all dates. "
+            "Repository may be corrupt — restore from git or commit calendar JSON.",
+            ECONOMIC_CALENDAR_FILE,
+        )
+        return {"CPI_DATES": [], "NFP_DATES": [], "FOMC_DATES": [],
+                "_metadata": {"sources": {}, "schema_version": 0,
+                              "error": "calendar file missing"}}
+    raw = json.loads(ECONOMIC_CALENDAR_FILE.read_text())
+    return {
+        "CPI_DATES":  [date.fromisoformat(s) for s in raw.get("CPI_DATES",  [])],
+        "NFP_DATES":  [date.fromisoformat(s) for s in raw.get("NFP_DATES",  [])],
+        "FOMC_DATES": [date.fromisoformat(s) for s in raw.get("FOMC_DATES", [])],
+        "_metadata":  raw.get("_metadata", {}),
+    }
+
+
+# Module-level constants populated from JSON at import time.
+# These names preserved for backward compatibility with existing callers.
+_calendar_data = _load_economic_calendar()
+CPI_DATES  = _calendar_data["CPI_DATES"]
+NFP_DATES  = _calendar_data["NFP_DATES"]
+FOMC_DATES = _calendar_data["FOMC_DATES"]
+
 ALL_HIGH_IMPACT = sorted(set(CPI_DATES + NFP_DATES + FOMC_DATES))
+LAST_HARDCODED_EVENT = ALL_HIGH_IMPACT[-1] if ALL_HIGH_IMPACT else None
+
+# DEC-304 fix (Pass 50): track whether we've already warned about calendar
+# staleness so we don't spam logs (one warn per process is enough).
+_CALENDAR_STALENESS_WARNED = False
+
+
+def _check_calendar_coverage(as_of: date) -> None:
+    """
+    Warn if as_of is at or past the last hardcoded high-impact event date —
+    means we have NO event filtering for forward dates and would silently
+    treat all upcoming days as 'no events near'.
+
+    DEC-304: hardcoded calendars end ~March 2026. Without this check the
+    system silently degrades to no-event-filtering as time advances past
+    the hardcoded end-date. Run scripts/refresh_event_calendar.py to extend.
+    """
+    global _CALENDAR_STALENESS_WARNED
+    if _CALENDAR_STALENESS_WARNED or LAST_HARDCODED_EVENT is None:
+        return
+    days_remaining = (LAST_HARDCODED_EVENT - as_of).days
+    if days_remaining <= 30:
+        logger.warning(
+            "CALENDAR STALENESS [DEC-304]: hardcoded event calendar ends %s "
+            "(%d days from as_of=%s). Beyond this date, is_near_high_impact_event "
+            "returns 'no events' silently. Run scripts/refresh_event_calendar.py "
+            "or extend CPI_DATES/NFP_DATES/FOMC_DATES in macro.py.",
+            LAST_HARDCODED_EVENT, days_remaining, as_of,
+        )
+        _CALENDAR_STALENESS_WARNED = True
 
 
 def is_near_high_impact_event(as_of: date, window_days: int = 2) -> dict:
+    _check_calendar_coverage(as_of)
     ws = as_of - timedelta(days=window_days)
     we = as_of + timedelta(days=window_days)
     blocked = []

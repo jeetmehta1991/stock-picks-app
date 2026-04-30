@@ -476,6 +476,166 @@ def test_sentiment_score_excludes_cot():
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# TIER-1 PIT CORRECTNESS — regression tests for Pass 50 fixes
+# DEC-295 (borrow units), DEC-301 (FRED ALFRED), DEC-302 (VIX/DXY proxies),
+# DEC-304 (calendar JSON), DEC-305 (PIT guard RAISE)
+# ─────────────────────────────────────────────────────────────────────────────
+
+def test_pit_guard_raises_on_leakage():
+    """DEC-305: _assert_no_lookahead must RAISE LookAheadBiasError by default."""
+    from backtest.data.fetcher import _assert_no_lookahead, LookAheadBiasError
+    df = pd.DataFrame({"close": [100, 101, 102]},
+                      index=pd.to_datetime(["2024-01-01", "2024-01-02", "2024-02-01"]))
+    try:
+        _assert_no_lookahead(df, date(2024, 1, 15), "TEST")
+        raised = False
+    except LookAheadBiasError:
+        raised = True
+    assert raised, "PIT guard must raise LookAheadBiasError on leakage (DEC-305)"
+    print("✅ DEC-305: PIT guard raises LookAheadBiasError on leakage")
+
+
+def test_pit_guard_silent_on_clean_data():
+    """DEC-305: _assert_no_lookahead must NOT raise on clean data."""
+    from backtest.data.fetcher import _assert_no_lookahead
+    df = pd.DataFrame({"close": [100, 101]},
+                      index=pd.to_datetime(["2024-01-01", "2024-01-02"]))
+    result = _assert_no_lookahead(df, date(2024, 1, 5), "CLEAN")
+    assert len(result) == 2
+    print("✅ DEC-305: PIT guard passes clean data unchanged")
+
+
+def test_pit_guard_warn_mode_via_env_var():
+    """DEC-305: ALLOW_LOOKAHEAD_LEAK=1 downgrades raise → warn for cache-repair scenarios."""
+    import os
+    from backtest.data.fetcher import _assert_no_lookahead
+    df = pd.DataFrame({"close": [100, 102]},
+                      index=pd.to_datetime(["2024-01-01", "2024-02-01"]))
+    os.environ["ALLOW_LOOKAHEAD_LEAK"] = "1"
+    try:
+        result = _assert_no_lookahead(df, date(2024, 1, 15), "WARN")
+        raised = False
+    except Exception:
+        raised = True
+    finally:
+        del os.environ["ALLOW_LOOKAHEAD_LEAK"]
+    assert not raised, "ALLOW_LOOKAHEAD_LEAK=1 must NOT raise"
+    assert len(result) == 1, "Filtered result should have 1 row remaining"
+    print("✅ DEC-305: ALLOW_LOOKAHEAD_LEAK=1 downgrades to warning")
+
+
+def test_borrow_cost_canonical_unit():
+    """DEC-295: SHORT_ANNUAL_BORROW_RATE is the canonical single-source name.
+    Value 0.005 = 0.5%/year (decimal), unambiguous."""
+    from backtest.config import SHORT_ANNUAL_BORROW_RATE
+    assert SHORT_ANNUAL_BORROW_RATE > 0, "Annual rate must be positive"
+    # Sanity: 0.005 = 0.5% per year, NOT 0.5% per day
+    assert SHORT_ANNUAL_BORROW_RATE < 0.1, \
+        "Annual rate must be small fraction (<10%/yr); 0.005 = 0.5%/yr is typical"
+    print(f"✅ DEC-295: SHORT_ANNUAL_BORROW_RATE = {SHORT_ANNUAL_BORROW_RATE} (decimal, ={SHORT_ANNUAL_BORROW_RATE*100}%/yr)")
+
+
+def test_borrow_cost_in_one_place_only():
+    """DEC-295: borrow cost lives in apply_transaction_costs, NOT in _pnl.
+    _pnl returns gross PnL only; centralised cost layer handles borrow."""
+    from backtest.engine.exit_manager import _pnl
+    # Long PnL: hold_days irrelevant (no borrow)
+    long_short = _pnl(180, 200, "long",  hold_days=1)
+    long_long  = _pnl(180, 200, "long",  hold_days=30)
+    assert long_short == long_long, "Long PnL must not depend on hold_days"
+    # Short PnL: hold_days IGNORED here (borrow now in apply_transaction_costs)
+    short_1d  = _pnl(200, 180, "short", hold_days=1)
+    short_30d = _pnl(200, 180, "short", hold_days=30)
+    assert short_1d == short_30d, \
+        "DEC-295 design: _pnl is gross only; borrow lives in apply_transaction_costs"
+    # The full pipeline (close → apply_costs) DOES charge borrow on shorts:
+    from backtest.engine.improvements import apply_transaction_costs
+    df = pd.DataFrame([
+        {"ticker": "AAPL", "direction": "short", "hold_days": 1,  "pnl_pct": 5.0, "win": True},
+        {"ticker": "AAPL", "direction": "short", "hold_days": 30, "pnl_pct": 5.0, "win": True},
+    ])
+    result = apply_transaction_costs(df, {"AAPL": {"market_cap": 3e12}})
+    cost_1d  = result.iloc[0]["cost_pct"]
+    cost_30d = result.iloc[1]["cost_pct"]
+    assert cost_30d > cost_1d, \
+        "30-day short hold must have more borrow cost than 1-day"
+    print("✅ DEC-295: borrow centralised in apply_transaction_costs; _pnl is gross-only")
+
+
+def test_economic_calendar_loads_from_json():
+    """DEC-304: economic calendar loaded from JSON file, not hardcoded."""
+    from backtest.data.macro import _load_economic_calendar
+    cal = _load_economic_calendar()
+    assert "CPI_DATES" in cal
+    assert "NFP_DATES" in cal
+    assert "FOMC_DATES" in cal
+    assert "_metadata" in cal
+    # Should have actual content (not empty due to file missing)
+    assert len(cal["CPI_DATES"]) >= 30, "CPI_DATES should have multiple years"
+    assert len(cal["FOMC_DATES"]) >= 20, "FOMC_DATES should have multiple years"
+    # Metadata documents source
+    assert "sources" in cal["_metadata"]
+    print(f"✅ DEC-304: economic calendar loaded — "
+          f"CPI={len(cal['CPI_DATES'])}, NFP={len(cal['NFP_DATES'])}, "
+          f"FOMC={len(cal['FOMC_DATES'])}")
+
+
+def test_high_impact_event_detection():
+    """DEC-304: is_near_high_impact_event still works with JSON-loaded dates."""
+    from backtest.data.macro import is_near_high_impact_event
+    # 2024-03-20 was an FOMC meeting; 1 day before should fire
+    result = is_near_high_impact_event(date(2024, 3, 19), window_days=2)
+    assert result["blocked"] is True
+    assert result["nearest_event_type"] == "FOMC"
+    # Random non-event date should NOT fire
+    result2 = is_near_high_impact_event(date(2024, 3, 27), window_days=2)
+    assert result2["blocked"] is False
+    print("✅ DEC-304: high-impact event detection still works after JSON migration")
+
+
+def test_fred_series_supports_as_of_param():
+    """DEC-301: _fred_series accepts as_of for ALFRED PIT correctness."""
+    import inspect
+    from backtest.data.macro import _fred_series
+    sig = inspect.signature(_fred_series)
+    assert "as_of" in sig.parameters, \
+        "_fred_series must accept as_of parameter for PIT correctness (DEC-301)"
+    # Default should be None for backward compat
+    assert sig.parameters["as_of"].default is None
+    print("✅ DEC-301: _fred_series exposes as_of parameter for ALFRED")
+
+
+def test_vix_loader_prefers_real_index():
+    """DEC-302: VIX loader code structure prefers ^VIX over VXX."""
+    import inspect
+    from backtest.data import macro
+    src = inspect.getsource(macro._load_vix_from_ohlcv_cache)
+    assert '^VIX' in src, "VIX loader must check for ^VIX (real index) first"
+    assert 'VXX' in src, "VIX loader must have VXX fallback"
+    # ^VIX block must appear BEFORE VXX block in source
+    vix_idx = src.find('^VIX')
+    vxx_idx = src.rfind('VXX')
+    assert vix_idx < vxx_idx, \
+        "^VIX preference must come before VXX fallback in code"
+    print("✅ DEC-302: VIX loader prefers ^VIX with VXX fallback")
+
+
+def test_dxy_loader_prefers_real_index():
+    """DEC-302: DXY loader code structure prefers DX-Y.NYB over UUP."""
+    import inspect
+    from backtest.data import macro
+    src = inspect.getsource(macro._load_dxy_from_ohlcv_cache)
+    assert 'DX-Y.NYB' in src, "DXY loader must check for DX-Y.NYB first"
+    assert 'UUP' in src, "DXY loader must have UUP fallback"
+    # DX-Y.NYB block must appear BEFORE UUP fallback in source
+    dxy_idx = src.find('DX-Y.NYB')
+    uup_idx = src.rfind('UUP')
+    assert dxy_idx < uup_idx, \
+        "DX-Y.NYB preference must come before UUP fallback in code"
+    print("✅ DEC-302: DXY loader prefers DX-Y.NYB with UUP fallback")
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # RUNNER
 # ─────────────────────────────────────────────────────────────────────────────
 

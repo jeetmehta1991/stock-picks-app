@@ -136,13 +136,15 @@ class ClosedTrade:
 
 
 def _pnl(entry, exit_p, direction, hold_days=0):
+    """
+    Gross percentage PnL for a trade. DOES NOT subtract borrow cost — that is
+    applied centrally in improvements.apply_transaction_costs (DEC-295 fix,
+    Pass 50). hold_days kept in signature for backward compatibility but unused.
+    """
     if direction == "long":
         return (exit_p - entry) / entry * 100
-    # Short PnL minus daily borrow cost
-    from backtest.config import SHORT_BORROW_COST_PER_DAY
-    raw = (entry - exit_p) / entry * 100
-    borrow_cost = SHORT_BORROW_COST_PER_DAY * max(hold_days, 1)
-    return raw - borrow_cost
+    # Short: gross only; borrow cost handled elsewhere
+    return (entry - exit_p) / entry * 100
 
 
 def check_circuit_breakers(

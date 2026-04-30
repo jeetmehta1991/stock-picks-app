@@ -1,5 +1,5 @@
 # AUDIT_INDEX.md — Decision and Bug Registry
-**Last regenerated:** April 2026 (post-Pass 49)
+**Last regenerated:** April 2026 (post-Pass 50)
 
 ---
 
@@ -9,10 +9,10 @@
 
 | Status | Count |
 |---|---|
-| RESOLVED | 60 |
+| RESOLVED | 65 |
 | PARTIAL | 5 |
 | SUPERSEDED | 7 |
-| PENDING | 274 |
+| PENDING | 269 |
 
 ### All Decisions Table
 
@@ -314,17 +314,17 @@
 | **DECISION-292** | Decision→CHECKLIST migration audit (quarterly, RESOLVED decisions to process rules) | PENDING | Batch X50 — Process Improvements | Pass 47 | - |
 | **DECISION-293** | Fix close_trade `days` NameError — confirmed runtime crash via execution. Reorder `pnl = _ | RESOLVED | Batch X51 — CRITICAL Runtime Bugs | Pass 48 | 49 |
 | **DECISION-294** | Remove duplicate ClosedTrade dataclass definition in exit_manager.py — pick canonical, del | RESOLVED | Batch X51 — CRITICAL Runtime Bugs | Pass 48 | 49 |
-| **DECISION-295** | Reconcile SHORT_BORROW_COST_PER_DAY units — 0.005 ambiguous (per-day decimal vs per-day pe | PENDING | Batch X51 — CRITICAL Runtime Bugs | Pass 48 | - |
+| **DECISION-295** | Reconcile SHORT_BORROW_COST_PER_DAY units — 0.005 ambiguous (per-day decimal vs per-day pe | RESOLVED | Batch X51 — CRITICAL Runtime Bugs | Pass 48 | 50 |
 | **DECISION-296** | Fix test_e2e fixture — engine fixture undefined, 7 of 8 e2e tests ERROR at setup | RESOLVED | Batch X51 — CRITICAL Runtime Bugs | Pass 48 | 49 |
 | **DECISION-297** | Add unit test for close_trade — would have caught the days bug; same for any function in c | RESOLVED | Batch X51 — CRITICAL Runtime Bugs | Pass 48 | 49 |
 | **DECISION-298** | Cache stores adjusted-close (auto_adjust=True) which changes over time as splits/dividends | PENDING | Batch X52 — CRITICAL PIT Correctness | Pass 48 | - |
 | **DECISION-299** | yfinance fetch_info returns CURRENT sector/mkt_cap/IPO date regardless of as_of — full his | PENDING | Batch X52 — CRITICAL PIT Correctness | Pass 48 | - |
 | **DECISION-300** | yfinance earnings_dates and analyst data return CURRENT values not as-of — replace with PI | PENDING | Batch X52 — CRITICAL PIT Correctness | Pass 48 | - |
-| **DECISION-301** | FRED data revisions completely unhandled — switch to ALFRED (archival FRED) for vintage da | PENDING | Batch X52 — CRITICAL PIT Correctness | Pass 48 | - |
-| **DECISION-302** | VXX used as VIX proxy + UUP used as DXY proxy — quantify tracking error or replace with ac | PENDING | Batch X52 — CRITICAL PIT Correctness | Pass 48 | - |
+| **DECISION-301** | FRED data revisions completely unhandled — switch to ALFRED (archival FRED) for vintage da | RESOLVED | Batch X52 — CRITICAL PIT Correctness | Pass 48 | 50 |
+| **DECISION-302** | VXX used as VIX proxy + UUP used as DXY proxy — quantify tracking error or replace with ac | RESOLVED | Batch X52 — CRITICAL PIT Correctness | Pass 48 | 50 |
 | **DECISION-303** | S&P 500 constituent list is current membership applied retroactively — survivorship bias;  | PENDING | Batch X52 — CRITICAL PIT Correctness | Pass 48 | - |
-| **DECISION-304** | CPI/NFP/FOMC dates hardcoded through March 2026 only — auto-extend from FRED FOMC + BLS sc | PENDING | Batch X52 — CRITICAL PIT Correctness | Pass 48 | - |
-| **DECISION-305** | PIT guard `_assert_no_lookahead` logs WARNING but doesn't RAISE — switch to RAISE in backt | PENDING | Batch X52 — CRITICAL PIT Correctness | Pass 48 | - |
+| **DECISION-304** | CPI/NFP/FOMC dates hardcoded through March 2026 only — auto-extend from FRED FOMC + BLS sc | RESOLVED | Batch X52 — CRITICAL PIT Correctness | Pass 48 | 50 |
+| **DECISION-305** | PIT guard `_assert_no_lookahead` logs WARNING but doesn't RAISE — switch to RAISE in backt | RESOLVED | Batch X52 — CRITICAL PIT Correctness | Pass 48 | 50 |
 | **DECISION-306** | get_news_sentiment path mismatch — code reads /prefetch/news/ but data lives in /cache/fin | RESOLVED | Batch X52 — CRITICAL PIT Correctness | Pass 48 | 49 |
 | **DECISION-307** | Cache get_ohlcv front-extension missing — only fetches missing TAIL; if user requests star | PENDING | Batch X53 — High-Impact Engine Bugs | Pass 48 | - |
 | **DECISION-308** | Cache get_ohlcv_bulk requires >=20 trading days — silently rejects valid cache for shorter | PENDING | Batch X53 — High-Impact Engine Bugs | Pass 48 | - |
@@ -681,20 +681,12 @@
 - **DECISION-291**: Triage-based bulk approval — owner approves entire impact-ratio band in single message
 - **DECISION-292**: Decision→CHECKLIST migration audit (quarterly, RESOLVED decisions to process rules)
 
-**Batch X51 — CRITICAL Runtime Bugs** (1):
-
-- **DECISION-295**: Reconcile SHORT_BORROW_COST_PER_DAY units — 0.005 ambiguous (per-day decimal vs per-day percent); risks 100× error
-
-**Batch X52 — CRITICAL PIT Correctness** (8):
+**Batch X52 — CRITICAL PIT Correctness** (4):
 
 - **DECISION-298**: Cache stores adjusted-close (auto_adjust=True) which changes over time as splits/dividends accrue — store raw OHLCV + corp actions; recompute adjusted on demand
 - **DECISION-299**: yfinance fetch_info returns CURRENT sector/mkt_cap/IPO date regardless of as_of — full historical company info source needed (Polygon Reference)
 - **DECISION-300**: yfinance earnings_dates and analyst data return CURRENT values not as-of — replace with PIT source or remove from PIT-claiming functions
-- **DECISION-301**: FRED data revisions completely unhandled — switch to ALFRED (archival FRED) for vintage data, or document revision-bias acceptance
-- **DECISION-302**: VXX used as VIX proxy + UUP used as DXY proxy — quantify tracking error or replace with actual ^VIX/DX-Y.NYB
 - **DECISION-303**: S&P 500 constituent list is current membership applied retroactively — survivorship bias; need historical PIT membership data
-- **DECISION-304**: CPI/NFP/FOMC dates hardcoded through March 2026 only — auto-extend from FRED FOMC + BLS schedule
-- **DECISION-305**: PIT guard `_assert_no_lookahead` logs WARNING but doesn't RAISE — switch to RAISE in backtest mode
 
 **Batch X53 — High-Impact Engine Bugs** (21):
 
@@ -833,16 +825,16 @@
 
 | Status | Count |
 |---|---|
-| RESOLVED | 4 |
-| OPEN | 265 |
+| RESOLVED | 10 |
+| OPEN | 259 |
 
 
 ### Open Bugs by Severity
 
 | Severity | Count |
 |---|---|
-| CRITICAL | 24 |
-| HIGH | 58 |
+| CRITICAL | 20 |
+| HIGH | 56 |
 | MEDIUM | 67 |
 | LOW | 21 |
 | UNKNOWN | 24 |
@@ -874,11 +866,11 @@
 | **BUG-217** | get_news_sentiment path mismatch — reads /prefetch/news/ but data lives in /cach | CRITICAL | RESOLVED | Pass 48 |
 | **BUG-218** | yfinance fetch_info returns CURRENT analyst data not as_of — sector/mkt_cap/IPO/ | CRITICAL | OPEN | Pass 48 |
 | **BUG-219** | Cache stores adjusted-close which silently shifts as new corp actions accrue — h | CRITICAL | OPEN | Pass 48 |
-| **BUG-220** | FRED data revisions unhandled — current API returns latest revised values not vi | CRITICAL | OPEN | Pass 48 |
-| **BUG-221** | VXX used as ^VIX proxy + UUP as DXY proxy — neither tracks underlying accurately | CRITICAL | OPEN | Pass 48 |
+| **BUG-220** | FRED data revisions unhandled — current API returns latest revised values not vi | CRITICAL | RESOLVED | Pass 48 |
+| **BUG-221** | VXX used as ^VIX proxy + UUP as DXY proxy — neither tracks underlying accurately | CRITICAL | RESOLVED | Pass 48 |
 | **BUG-222** | S&P 500 constituents are CURRENT membership applied to all backtest dates — surv | CRITICAL | OPEN | Pass 48 |
-| **BUG-223** | CPI/NFP/FOMC dates hardcoded through March 2026 only — live trading after that h | CRITICAL | OPEN | Pass 48 |
-| **BUG-224** | PIT guard `_assert_no_lookahead` logs WARNING not RAISE — leakage swallowed in p | CRITICAL | OPEN | Pass 48 |
+| **BUG-223** | CPI/NFP/FOMC dates hardcoded through March 2026 only — live trading after that h | CRITICAL | RESOLVED | Pass 48 |
+| **BUG-224** | PIT guard `_assert_no_lookahead` logs WARNING not RAISE — leakage swallowed in p | CRITICAL | RESOLVED | Pass 48 |
 | **BUG-225** | Regime classifier returns 'neutral' on missing VIX silently — should refuse to t | CRITICAL | OPEN | Pass 48 |
 | **BUG-028** | HIGH — RSI computation uses simple rolling mean instead of Wilder exponential sm | HIGH | OPEN | - |
 | **BUG-029** | HIGH — Open trades at backtest end silently discarded — upward bias in all metri | HIGH | OPEN | - |
@@ -898,7 +890,7 @@
 | **BUG-074** | HIGH — BUG-14 worse than documented: XLE also missing from `run_full.sh` — 5 tic | HIGH | OPEN | - |
 | **BUG-079** | HIGH — Stop fills assumed at the stop price; gap-through is not modelled (slippa | HIGH | OPEN | - |
 | **BUG-080** | HIGH — Exit slippage never applied; only entry slippage charged. Round-trip slip | HIGH | OPEN | - |
-| **BUG-081** | HIGH — `SHORT_BORROW_COST_PER_DAY = 0.005` is 2.5× the documented intent | HIGH | OPEN | - |
+| **BUG-081** | HIGH — `SHORT_BORROW_COST_PER_DAY = 0.005` is 2.5× the documented intent | HIGH | RESOLVED | - |
 | **BUG-082** | HIGH — Slippage and transaction-cost double-charging — total cost 2× literature  | HIGH | OPEN | - |
 | **BUG-083** | HIGH — `get_congressional_detail()` filters with INVERTED point-in-time logic | HIGH | OPEN | - |
 | **BUG-096** | HIGH — No benchmark comparison (SPY buy-and-hold) | HIGH | OPEN | - |
@@ -935,7 +927,7 @@
 | **BUG-239** | Sector reclassifications retro-applied — current sector for old trades | HIGH | OPEN | Pass 48 |
 | **BUG-240** | Congressional signal weighted by disclosure_date not transaction_date | HIGH | OPEN | Pass 48 |
 | **BUG-241** | Institutional 13F PIT assumes on-time filing — late filers invisible | HIGH | OPEN | Pass 48 |
-| **BUG-242** | Short borrow cost duplicated across improvements.py and exit_manager.py with dif | HIGH | OPEN | Pass 48 |
+| **BUG-242** | Short borrow cost duplicated across improvements.py and exit_manager.py with dif | HIGH | RESOLVED | Pass 48 |
 | **BUG-243** | Walk-forward windows hardcoded calendar dates — stale after June 2026 | HIGH | OPEN | Pass 48 |
 | **BUG-244** | close_trade circuit breaker exits skip MAE/MFE update on day of exit (passes 0.0 | HIGH | OPEN | Pass 48 |
 | **BUG-035** | MEDIUM — Decision Agent default fallback has invalid `action` value | MEDIUM | OPEN | - |
@@ -1123,4 +1115,4 @@
 | **BUG-198** | (NEW) · CRITICAL — No structural PIT data loader; each data source uses ad-hoc P | INLINE-ONLY | OPEN | - |
 
 ---
-*Regenerated April 2026 after Pass 49.*
+*Regenerated April 2026 after Pass 50.*

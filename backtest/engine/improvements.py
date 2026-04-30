@@ -66,7 +66,8 @@ def apply_transaction_costs(
     """
     df = df_trades.copy()
 
-    ANNUAL_BORROW_RATE = 0.005   # 0.5% per year for easy-to-borrow large caps
+    # DEC-295 fix (Pass 50): import canonical single-source rate from config.
+    from backtest.config import SHORT_ANNUAL_BORROW_RATE
 
     costs = []
     for _, row in df.iterrows():
@@ -79,7 +80,7 @@ def apply_transaction_costs(
         # Short trade: add securities lending (borrow) cost
         if row.get("direction") == "short":
             hold_days = row.get("hold_days", 10)
-            borrow_cost = ANNUAL_BORROW_RATE * (hold_days / 252)
+            borrow_cost = SHORT_ANNUAL_BORROW_RATE * (hold_days / 252)
             round_trip += borrow_cost
 
         costs.append(round_trip * 100)  # as percentage

@@ -426,9 +426,16 @@ CRISIS_LONG_EXCLUSIONS = {
 }
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SHORT BORROW COST
-# Daily cost deducted from short trade PnL to simulate borrow fees.
-# S&P 500 large caps: ~0.25-1% annualised = 0.001–0.004% per day.
-# Using 0.005% per day (~1.8% annualised) as conservative estimate.
+# SHORT BORROW COST  (DEC-295 fix, Pass 50)
+# Annual borrow rate as a DECIMAL (0.005 = 0.5% per year), applied
+# proportionally to hold period: borrow = SHORT_ANNUAL_BORROW_RATE * (hold_days / 252).
+#
+# IBKR Canada quotes ~0.25%–1% annual borrow for easy-to-borrow large caps.
+# 0.5%/yr is a representative midpoint. Single source of truth — used by
+# improvements.apply_transaction_costs ONLY. Do NOT also subtract in _pnl().
+#
+# Previous SHORT_BORROW_COST_PER_DAY (= 0.005 with comment "% per day") was
+# ambiguous: same numeric value could mean 1.26%/yr (if percent-units) OR
+# 126%/yr (if decimal-units). Renamed and clarified.
 # ─────────────────────────────────────────────────────────────────────────────
-SHORT_BORROW_COST_PER_DAY = 0.005   # percent per day deducted from short PnL
+SHORT_ANNUAL_BORROW_RATE = 0.005   # decimal: 0.005 = 0.5% per year

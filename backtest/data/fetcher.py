@@ -44,8 +44,14 @@ def _to_date(d) -> date:
 
 def _assert_no_lookahead(df: pd.DataFrame, as_of: date, label: str) -> pd.DataFrame:
     """
-    Strip any rows after `as_of` and raise a loud warning if any were found.
-    This is the automated look-ahead bias guard required by section 4.12.
+    Strip any rows after `as_of` and RAISE if any were found.
+
+    DEC-305 fix (Pass 50): previously logged WARNING and silently returned
+    filtered df. Backtest leaks were swallowed in production. Now raises
+    LookAheadBiasError so the issue is forced to surface.
+
+    Bypass: set env var ALLOW_LOOKAHEAD_LEAK=1 to revert to warning-only mode.
+    Use ONLY for debugging or in narrowly-scoped paths pending fix.
     """
     if df.empty:
         return df
@@ -56,11 +62,18 @@ def _assert_no_lookahead(df: pd.DataFrame, as_of: date, label: str) -> pd.DataFr
         mask = pd.Series([_to_date(str(d)[:10]) for d in idx], index=idx) <= as_of
     leaked = (~mask).sum()
     if leaked:
-        logger.warning(
-            "LOOK-AHEAD BIAS GUARD [%s]: stripped %d rows after as_of=%s",
-            label, leaked, as_of,
-        )
+        msg = (f"LOOK-AHEAD BIAS DETECTED [{label}]: {leaked} rows after "
+               f"as_of={as_of} would have leaked into backtest.")
+        if os.environ.get("ALLOW_LOOKAHEAD_LEAK") == "1":
+            logger.warning(msg + " (bypass via ALLOW_LOOKAHEAD_LEAK=1)")
+        else:
+            raise LookAheadBiasError(msg)
     return df[mask]
+
+
+class LookAheadBiasError(RuntimeError):
+    """Raised when PIT guard detects rows after the as_of cutoff. DEC-305."""
+    pass
 
 
 # ---------------------------------------------------------------------------
