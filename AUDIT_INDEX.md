@@ -1,22 +1,20 @@
 # AUDIT_INDEX.md — Decision and Bug Registry
-**Last regenerated:** April 2026 (post-Pass 44)
-**Source of truth:** AUDIT.md
-**Companion:** AUDIT_TRIAGE.md (impact/cost analysis for pending decisions)
+**Last regenerated:** April 2026 (post-Pass 45)
 
 ---
 
 ## Decision Registry
 
-**Total: 206 decision entries**
+**Total: 253 decision entries**
 
 | Status | Count |
 |---|---|
 | RESOLVED | 54 |
 | PARTIAL | 5 |
 | SUPERSEDED | 8 |
-| PENDING | 139 |
+| PENDING | 186 |
 
-### All Decisions Table (sorted by ID)
+### All Decisions Table
 
 | ID | Title | Status | Theme | Pass Intro | Pass Resolved |
 |---|---|---|---|---|---|
@@ -226,6 +224,53 @@
 | **DECISION-202** | Dashboard 4 detailed spec (Stage 3 paper trading analytics) | PENDING | Dashboard Specifications | Pass 44 | - |
 | **DECISION-203** | Dashboard 5 detailed spec (Stage 4 live trading analytics) | PENDING | Dashboard Specifications | Pass 44 | - |
 | **DECISION-204** | Dashboard 6 detailed spec (cross-phase comparison waterfall) | PENDING | Dashboard Specifications | Pass 44 | - |
+| **DECISION-205** | A/B test arm design — minimum 4 arms (rules, full-agents, no-Risk, no-Bull-Bear) | PENDING | Batch X32 — Agent A/B Testing | Pass 45 | - |
+| **DECISION-206** | Paired A/B design — every trade evaluated by every arm in parallel | PENDING | Batch X32 — Agent A/B Testing | Pass 45 | - |
+| **DECISION-207** | Pre-commit minimum sample size per arm (300 paired trades) before declaring winner | PENDING | Batch X32 — Agent A/B Testing | Pass 45 | - |
+| **DECISION-208** | Multi-metric A/B comparison (Sharpe + Sortino + DD + win rate + PF + CVaR + cost) | PENDING | Batch X32 — Agent A/B Testing | Pass 45 | - |
+| **DECISION-209** | Per-regime A/B verdicts — agents pass/fail separately per regime | PENDING | Batch X32 — Agent A/B Testing | Pass 45 | - |
+| **DECISION-210** | Net Sharpe contribution accounting (gross lift minus annualized agent cost) | PENDING | Batch X32 — Agent A/B Testing | Pass 45 | - |
+| **DECISION-211** | Per-agent ablation studies (drop each agent one at a time) | PENDING | Batch X32 — Agent A/B Testing | Pass 45 | - |
+| **DECISION-212** | Agent-disagreement decomposition (Bull vs Bear, Risk override) — testable hypotheses | PENDING | Batch X32 — Agent A/B Testing | Pass 45 | - |
+| **DECISION-213** | Both-rationales storage (rules-only AND agent rationale stored every trade) | PENDING | Batch X32 — Agent A/B Testing | Pass 45 | - |
+| **DECISION-214** | Quarterly re-validation of agent A/B test (model drift / cost drift) | PENDING | Batch X32 — Agent A/B Testing | Pass 45 | - |
+| **DECISION-215** | A/B test result registry (structured artifacts versioned in repo) | PENDING | Batch X32 — Agent A/B Testing | Pass 45 | - |
+| **DECISION-216** | A/B test orchestrator code module (parallel arms with deterministic seeds) | PENDING | Batch X32 — Agent A/B Testing | Pass 45 | - |
+| **DECISION-217** | Audit and remove dead code (engine.py vs engine/backtest.py duplication etc.) | PENDING | Batch X33 — Architecture Hygiene | Pass 45 | - |
+| **DECISION-218** | Documentation audit — role of EXPLANATION/PROGRESS/UNIVERSAL_LEARNINGS, README content | PENDING | Batch X33 — Architecture Hygiene | Pass 45 | - |
+| **DECISION-219** | GitHub Actions audit — security, schedule, failure alerting, idempotency | PENDING | Batch X33 — Architecture Hygiene | Pass 45 | - |
+| **DECISION-220** | Audit sync_from_claude.yml — disable if it bypasses owner approval | PENDING | Batch X33 — Architecture Hygiene | Pass 45 | - |
+| **DECISION-221** | Test coverage measurement (pytest --cov) + CI gate | PENDING | Batch X34 — Test + Cache Infrastructure | Pass 45 | - |
+| **DECISION-222** | Test naming and structure audit; regression tests for top-20 critical bugs | PENDING | Batch X34 — Test + Cache Infrastructure | Pass 45 | - |
+| **DECISION-223** | CI gate — PR cannot merge to main without all tests passing | PENDING | Batch X34 — Test + Cache Infrastructure | Pass 45 | - |
+| **DECISION-224** | Cache concurrency audit (filelock under concurrent access) | PENDING | Batch X34 — Test + Cache Infrastructure | Pass 45 | - |
+| **DECISION-225** | Cache eviction policy (preserve prefetched, evict only computed) | PENDING | Batch X34 — Test + Cache Infrastructure | Pass 45 | - |
+| **DECISION-226** | Cache schema versioning (every parquet has schema_version metadata) | PENDING | Batch X34 — Test + Cache Infrastructure | Pass 45 | - |
+| **DECISION-227** | Cache size monitoring + alerting (cache_size_gb metric, 80% disk alert) | PENDING | Batch X34 — Test + Cache Infrastructure | Pass 45 | - |
+| **DECISION-228** | Fetcher reliability audit (retry/rate-limit/idempotency per API) | PENDING | Batch X35 — Reliability + Determinism | Pass 45 | - |
+| **DECISION-229** | Config management upgrade (pydantic + env overrides + change log) | PENDING | Batch X35 — Reliability + Determinism | Pass 45 | - |
+| **DECISION-230** | Logging audit + standard (structured JSON, rotation, level standardization) | PENDING | Batch X35 — Reliability + Determinism | Pass 45 | - |
+| **DECISION-231** | Audit all except Exception patterns; ensure WARNING+ logging with context | PENDING | Batch X35 — Reliability + Determinism | Pass 45 | - |
+| **DECISION-232** | Determinism test (run identical backtest twice, diff outputs) | PENDING | Batch X35 — Reliability + Determinism | Pass 45 | - |
+| **DECISION-233** | Daily data quality monitoring (per-ticker NaN/missing/anomaly detection) | PENDING | Batch X36 — Data Quality + Trading Mechanics | Pass 45 | - |
+| **DECISION-234** | Ticker lifecycle event handler (CUSIP/ISIN tracking across renames/mergers) | PENDING | Batch X36 — Data Quality + Trading Mechanics | Pass 45 | - |
+| **DECISION-235** | Time/calendar handling spec (NYSE calendar, holidays, DST, half-days) | PENDING | Batch X36 — Data Quality + Trading Mechanics | Pass 45 | - |
+| **DECISION-236** | Position sizing precision rules (round to broker minimum increment) | PENDING | Batch X36 — Data Quality + Trading Mechanics | Pass 45 | - |
+| **DECISION-237** | Order type policy (when MOO vs limit vs stop vs stop-limit) | PENDING | Batch X36 — Data Quality + Trading Mechanics | Pass 45 | - |
+| **DECISION-238** | Pre/after-hours policy (recommendation: NO extended hours) | PENDING | Batch X36 — Data Quality + Trading Mechanics | Pass 45 | - |
+| **DECISION-239** | Multi-account architecture (TFSA/RRSP/Margin future-proofing) | PENDING | Batch X36 — Data Quality + Trading Mechanics | Pass 45 | - |
+| **DECISION-240** | Alert tuning — configurable thresholds per event + rate tracking | PENDING | Batch X36 — Data Quality + Trading Mechanics | Pass 45 | - |
+| **DECISION-241** | Time-in-market metric (% in any position, % long, % short, % cash) | PENDING | Batch X36 — Data Quality + Trading Mechanics | Pass 45 | - |
+| **DECISION-242** | Distribution analysis (skewness, kurtosis, max single-trade contribution) | PENDING | Batch X36 — Data Quality + Trading Mechanics | Pass 45 | - |
+| **DECISION-243** | Owner Approval Queue file (pending decisions waiting on owner reply, by age) | PENDING | Batch X37 — Process / Owner Experience | Pass 45 | - |
+| **DECISION-244** | SESSION_START.md — Claude reads first in any new session for fast onboarding | PENDING | Batch X37 — Process / Owner Experience | Pass 45 | - |
+| **DECISION-245** | Owner experience retrospective (periodic check-in on workflow productivity) | PENDING | Batch X37 — Process / Owner Experience | Pass 45 | - |
+| **DECISION-246** | Quant finance correctness audit (Sharpe annualization, DD computation, vol periodicity) | PENDING | Batch X38 — Knowledge Gaps | Pass 45 | - |
+| **DECISION-247** | Stats/ML implementation review (HMM, deflated Sharpe, Kelly — validate against known resul | PENDING | Batch X38 — Knowledge Gaps | Pass 45 | - |
+| **DECISION-248** | Owner pre-commitment doc (rules owner commits to before losses) | PENDING | Batch X38 — Knowledge Gaps | Pass 45 | - |
+| **DECISION-249** | Strategy decay metric (rolling 6mo Sharpe per strategy; flag >50% drop) | PENDING | Batch X39 — Strategy Decay + Code Quality | Pass 45 | - |
+| **DECISION-250** | Edge decay assumption (discount backtest Sharpe by expected crowding %) | PENDING | Batch X39 — Strategy Decay + Code Quality | Pass 45 | - |
+| **DECISION-251** | Dependency injection audit (refactor for testability with mocks) | PENDING | Batch X39 — Strategy Decay + Code Quality | Pass 45 | - |
 
 ---
 
@@ -377,6 +422,77 @@
 - **DECISION-184**: Parallel backtest execution for Stage 1 baseline
 - **DECISION-185**: Incremental backtest updates for daily data refresh
 
+**Batch X32 — Agent A/B Testing** (12):
+
+- **DECISION-205**: A/B test arm design — minimum 4 arms (rules, full-agents, no-Risk, no-Bull-Bear)
+- **DECISION-206**: Paired A/B design — every trade evaluated by every arm in parallel
+- **DECISION-207**: Pre-commit minimum sample size per arm (300 paired trades) before declaring winner
+- **DECISION-208**: Multi-metric A/B comparison (Sharpe + Sortino + DD + win rate + PF + CVaR + cost)
+- **DECISION-209**: Per-regime A/B verdicts — agents pass/fail separately per regime
+- **DECISION-210**: Net Sharpe contribution accounting (gross lift minus annualized agent cost)
+- **DECISION-211**: Per-agent ablation studies (drop each agent one at a time)
+- **DECISION-212**: Agent-disagreement decomposition (Bull vs Bear, Risk override) — testable hypotheses
+- **DECISION-213**: Both-rationales storage (rules-only AND agent rationale stored every trade)
+- **DECISION-214**: Quarterly re-validation of agent A/B test (model drift / cost drift)
+- **DECISION-215**: A/B test result registry (structured artifacts versioned in repo)
+- **DECISION-216**: A/B test orchestrator code module (parallel arms with deterministic seeds)
+
+**Batch X33 — Architecture Hygiene** (4):
+
+- **DECISION-217**: Audit and remove dead code (engine.py vs engine/backtest.py duplication etc.)
+- **DECISION-218**: Documentation audit — role of EXPLANATION/PROGRESS/UNIVERSAL_LEARNINGS, README content
+- **DECISION-219**: GitHub Actions audit — security, schedule, failure alerting, idempotency
+- **DECISION-220**: Audit sync_from_claude.yml — disable if it bypasses owner approval
+
+**Batch X34 — Test + Cache Infrastructure** (7):
+
+- **DECISION-221**: Test coverage measurement (pytest --cov) + CI gate
+- **DECISION-222**: Test naming and structure audit; regression tests for top-20 critical bugs
+- **DECISION-223**: CI gate — PR cannot merge to main without all tests passing
+- **DECISION-224**: Cache concurrency audit (filelock under concurrent access)
+- **DECISION-225**: Cache eviction policy (preserve prefetched, evict only computed)
+- **DECISION-226**: Cache schema versioning (every parquet has schema_version metadata)
+- **DECISION-227**: Cache size monitoring + alerting (cache_size_gb metric, 80% disk alert)
+
+**Batch X35 — Reliability + Determinism** (5):
+
+- **DECISION-228**: Fetcher reliability audit (retry/rate-limit/idempotency per API)
+- **DECISION-229**: Config management upgrade (pydantic + env overrides + change log)
+- **DECISION-230**: Logging audit + standard (structured JSON, rotation, level standardization)
+- **DECISION-231**: Audit all except Exception patterns; ensure WARNING+ logging with context
+- **DECISION-232**: Determinism test (run identical backtest twice, diff outputs)
+
+**Batch X36 — Data Quality + Trading Mechanics** (10):
+
+- **DECISION-233**: Daily data quality monitoring (per-ticker NaN/missing/anomaly detection)
+- **DECISION-234**: Ticker lifecycle event handler (CUSIP/ISIN tracking across renames/mergers)
+- **DECISION-235**: Time/calendar handling spec (NYSE calendar, holidays, DST, half-days)
+- **DECISION-236**: Position sizing precision rules (round to broker minimum increment)
+- **DECISION-237**: Order type policy (when MOO vs limit vs stop vs stop-limit)
+- **DECISION-238**: Pre/after-hours policy (recommendation: NO extended hours)
+- **DECISION-239**: Multi-account architecture (TFSA/RRSP/Margin future-proofing)
+- **DECISION-240**: Alert tuning — configurable thresholds per event + rate tracking
+- **DECISION-241**: Time-in-market metric (% in any position, % long, % short, % cash)
+- **DECISION-242**: Distribution analysis (skewness, kurtosis, max single-trade contribution)
+
+**Batch X37 — Process / Owner Experience** (3):
+
+- **DECISION-243**: Owner Approval Queue file (pending decisions waiting on owner reply, by age)
+- **DECISION-244**: SESSION_START.md — Claude reads first in any new session for fast onboarding
+- **DECISION-245**: Owner experience retrospective (periodic check-in on workflow productivity)
+
+**Batch X38 — Knowledge Gaps** (3):
+
+- **DECISION-246**: Quant finance correctness audit (Sharpe annualization, DD computation, vol periodicity)
+- **DECISION-247**: Stats/ML implementation review (HMM, deflated Sharpe, Kelly — validate against known results)
+- **DECISION-248**: Owner pre-commitment doc (rules owner commits to before losses)
+
+**Batch X39 — Strategy Decay + Code Quality** (3):
+
+- **DECISION-249**: Strategy decay metric (rolling 6mo Sharpe per strategy; flag >50% drop)
+- **DECISION-250**: Edge decay assumption (discount backtest Sharpe by expected crowding %)
+- **DECISION-251**: Dependency injection audit (refactor for testability with mocks)
+
 **Batch X4 — Statistical Methodology** (8):
 
 - **DECISION-080**: t-stat + Bonferroni
@@ -482,7 +598,6 @@
 - **DECISION-062**: Output schema translation: TradingAgents 5-tier → position_size_modifier
 
 ---
-
 ## Bug Registry
 
 **Total: 203 unique bug IDs.**
@@ -496,7 +611,7 @@
 | UNKNOWN | 24 |
 | INLINE-ONLY | 71 |
 
-### All Bugs Table — sorted by severity then ID
+### All Bugs Table
 
 | ID | Title | Severity | Pass Intro |
 |---|---|---|---|
@@ -705,4 +820,4 @@
 | **BUG-198** | (NEW) · CRITICAL — No structural PIT data loader; each data source uses ad-hoc P | INLINE-ONLY | - |
 
 ---
-*Regenerated April 2026 from AUDIT.md after Pass 44.*
+*Regenerated April 2026 after Pass 45.*

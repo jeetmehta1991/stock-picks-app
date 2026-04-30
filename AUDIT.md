@@ -17714,3 +17714,389 @@ New Section 21 (~150 lines) covering:
 Per L110 (added Pass 43): Website/UX/notifications is first-class architecture, not peripheral. This section embeds that learning into PROJECT_PLAN — anyone reading the project's master plan now sees website + dashboards as a primary architectural concern, not a footnote. The 6-dashboard separation prevents the "one giant dashboard" anti-pattern that obscures phase-specific analysis questions.
 
 *Pass 44 complete. Section 21 committed. 6 dashboard decisions added to registry.*
+
+---
+
+# AUDIT PASS 45 — Deep Architecture & Adversarial Review (Owner-Triggered)
+
+Owner directive this turn: "Note that analysis of agent performance is crucial for relevant phases. We will need scenarios for ab testing. Do another deep architecture review as well as an adversarial review of everything else. Don't miss anything."
+
+✅ CHECKLIST #1 (verified by reading filesystem + code structure) #5 (adversarial mode) #25 (will flag all concerns) #26 (verbatim sourcing) #27 (covering both directives — agent A/B + comprehensive review) #30 (questioning premises across whole system) #32 (no decisions executed)
+
+This pass goes into corners I haven't explored before. I'm structuring it by domain rather than re-walking Pass 39/40/41 territory. Where I touch prior territory, only NET-NEW findings.
+
+---
+
+## Section 45.1 — Agent A/B Testing Framework (Owner Directive)
+
+The owner explicitly flagged this: "analysis of agent performance is crucial for relevant phases. We will need scenarios for ab testing."
+
+**Current state:** DEC-131 says "Agent value-add must be ≥0.2 Sharpe improvement over rules-only OR agent system is dropped." DEC-203 says Path B Stage 2 will compare. Neither specifies the A/B testing scenarios in detail.
+
+**Adversarial gaps:**
+
+1. **Single-arm vs multi-arm test design unspecified.** Are we comparing rules-only vs full-agents only (2 arms)? Or rules-only vs Bull-only vs Bear-only vs Risk-only vs full-stack (5+ arms)? The latter tells us which agent types add value, the former just whether agents help at all.
+2. **NEW DECISION-205** (NEW) — A/B test arm design: minimum 4 arms (rules-only, full-agents, agents-without-Risk, agents-without-Bull-Bear-debate) to attribute value to each agent layer.
+3. **Within-trade vs across-trade allocation.** When a strategy fires on AAPL on day T, do we send half the trades down one arm and half down another (paired)? Or does arm A get all AAPL trades and arm B get all MSFT trades (unpaired)? Paired is more powerful statistically, unpaired is simpler.
+4. **NEW DECISION-206** (NEW) — Paired A/B design: every trade evaluated by every arm in parallel; outcomes compared on identical entries to maximize statistical power.
+5. **Sample size pre-commitment.** How many trades per arm before we declare a winner? Without pre-commitment, we'll fall victim to looking-too-early. Power analysis: detecting a 0.2 Sharpe difference at 80% power requires ~150-300 paired trades depending on volatility.
+6. **NEW DECISION-207** (NEW) — Pre-commit minimum sample size per arm (300 paired trades) before any arm is declared winner. Sequential testing methods (alpha-spending) for early-stop only with strict guardrails.
+7. **Sharpe is not the only metric.** Agents might not lift Sharpe but might reduce drawdown, or improve win-rate-on-large-trades, or reduce false positives in crisis regime. Single-metric comparison hides multi-dimensional value.
+8. **NEW DECISION-208** (NEW) — Multi-metric A/B comparison: Sharpe, Sortino, max drawdown, win rate, profit factor, CVaR-95, hit rate by regime, cost-per-trade. Each arm scored on all; agents must dominate on majority + meet min Sharpe lift to pass.
+9. **No regime-conditional A/B.** Agents may help in some regimes (uncertain ones) but hurt in others (clear trends). One overall verdict is too coarse.
+10. **NEW DECISION-209** (NEW) — Per-regime A/B verdicts: agents pass/fail separately in bull/neutral/bear/crisis. Optionally deploy agents only in regimes where they pass.
+11. **Cost vs benefit not surfaced.** Even if agents add 0.3 Sharpe, do they cost more than 0.3 Sharpe equivalent in fees + latency + complexity? The $300 Stage 2 budget is a forward-looking spend; ongoing live agent cost is $93-185/mo per Pass 26-31.
+12. **NEW DECISION-210** (NEW) — Net Sharpe contribution accounting: agent gross Sharpe lift MINUS (agent cost / capital) annualized. Net must still exceed 0.2 threshold.
+13. **No per-agent ablation.** TradingAgents has 12 agents, we use 11 (Social Analyst dropped per DEC-057). Within those 11, which actually contribute? Maybe News Analyst is doing all the work; maybe the Bull/Bear debate is noise.
+14. **NEW DECISION-211** (NEW) — Per-agent ablation studies: drop each agent one at a time, measure Sharpe delta. Agents with no measurable contribution get dropped (saves cost).
+15. **No "agent disagreement" analysis.** When Bull and Bear strongly disagree, is that signal or noise? When Risk overrides Decision, is the override usually right? These are distinct testable hypotheses.
+16. **NEW DECISION-212** (NEW) — Agent-disagreement decomposition: when agents disagree (Bull vs Bear, Risk override), what's the win rate of each arm? Drives whether overrides should be honored or vetoed.
+17. **No counterfactual rationale comparison.** When agents recommend different action than rules, we should preserve BOTH rationales and grade them in hindsight.
+18. **NEW DECISION-213** (NEW) — Both-rationales storage: every trade stores rules-only rationale AND agent rationale, even when they agree. Enables retrospective grading.
+19. **Concept drift in agent quality.** Models change (GPT-5.4-mini → GPT-5.5 → GPT-6). Cost changes. Quality changes. A/B test from Q1 may not hold in Q3.
+20. **NEW DECISION-214** (NEW) — Quarterly re-validation of agent A/B test (re-run last 90 days through both arms; verify Sharpe lift still holds).
+
+### A/B testing infrastructure requirements
+
+Beyond the test design itself, infrastructure that doesn't exist yet:
+21. **NEW DECISION-215** (NEW) — A/B test result registry: every test run produces a structured artifact (arm definitions, sample size, metrics, p-values, verdict) versioned in repo for audit trail.
+22. **NEW DECISION-216** (NEW) — A/B test orchestrator code module: takes (strategy candidate list, arm definitions) and runs all arms in parallel, ensuring identical entries / fills / costs / regimes across arms (deterministic via DEC-177 random seeds).
+
+---
+
+## Section 45.2 — Architecture Audit: Things I Haven't Looked at Before
+
+Things in the repo that prior audits skipped or treated superficially.
+
+### 45.2.1 Two engine files — possible dead code
+
+Verified by `ls`: both `backtest/engine.py` (16,805 bytes) AND `backtest/engine/backtest.py` exist. Need to determine which is canonical.
+
+23. **NEW BUG flagged** — Possible duplicate engine code. `backtest/engine.py` vs `backtest/engine/backtest.py` — one is likely legacy. Verify and remove if dead.
+24. **NEW DECISION-217** (NEW) — Audit and remove dead code: identify all duplicate / obsolete files (engine.py, possible obsolete agent/data modules) and clean.
+
+### 45.2.2 Top-level documentation files I've never indexed
+
+Files in repo I've never audited for content, redundancy, or staleness:
+- `EXPLANATION.md` (20,841 bytes — what is this for?)
+- `PROGRESS.md` (3,582 bytes — possibly stale)
+- `UNIVERSAL_LEARNINGS.md` (12,353 bytes — overlaps LEARNINGS.md?)
+- `README.md` (only 81 bytes — clearly stale/empty)
+
+25. **NEW DECISION-218** (NEW) — Documentation audit: identify role of each top-level .md file, flag overlaps with LEARNINGS/PROJECT_PLAN/CLAUDE, consolidate or delete redundant files. README.md needs proper content for any new contributor / future Claude session.
+26. **NEW concern** — UNIVERSAL_LEARNINGS.md may duplicate LEARNINGS.md. If they diverge, which is canonical? Need to merge or delete one.
+
+### 45.2.3 GitHub Actions workflows
+
+Six `.yml` files in `.github/workflows/`:
+- prefetch_av_news.yml
+- prefetch_finnhub.yml
+- prefetch_quiver.yml
+- sync_from_claude.yml
+- update_stocks.yml
+- validate_backtest.yml
+
+I've never audited what these do, whether they're scheduled correctly, whether they run on protected branches only, what secrets they need.
+
+27. **NEW concern** — GitHub Actions secrets management. If API keys are in GH secrets, that's OK, but we need to confirm they're not leaked anywhere in workflow output (no echo $API_KEY by accident).
+28. **NEW DECISION-219** (NEW) — GitHub Actions audit: review each workflow for security (secrets handling), schedule correctness, failure alerting, idempotency.
+29. **NEW concern** — `sync_from_claude.yml` — what is this? Auto-syncing from Claude's branch to main? If yes, that's a backdoor that bypasses owner approval.
+30. **NEW DECISION-220** (NEW) — Audit `sync_from_claude.yml` and disable if it bypasses owner approval discipline. CHECKLIST #32 says all changes require verbatim approval; an auto-sync workflow contradicts that.
+
+### 45.2.4 Test infrastructure — coverage unknown
+
+Tests exist (866 lines across unit/integration/e2e) but:
+- No coverage measurement run
+- No CI gate enforcing tests pass
+- No test naming convention audit
+- No verification tests cover the bug-fix paths (per L45)
+
+31. **NEW DECISION-221** (NEW) — Test coverage measurement: run `pytest --cov` and report current %. Set CI gate.
+32. **NEW DECISION-222** (NEW) — Test naming and structure audit: each bug should have a regression test (per L45). Verify or backfill for top-20 critical bugs.
+33. **NEW DECISION-223** (NEW) — CI gate: PR cannot merge to main without all tests passing. Currently no gate enforces this.
+
+### 45.2.5 Cache layer adversarial review
+
+The cache (Parquet + filelock + index.json) is 161MB, 4,667 files. I've audited contents but not the cache LAYER itself.
+
+34. **NEW concern** — Is filelock actually preventing race conditions? When `validate_backtest.yml` runs alongside `prefetch_quiver.yml`, do they collide?
+35. **NEW DECISION-224** (NEW) — Cache concurrency audit: simulate concurrent reads/writes, verify filelock works, measure overhead.
+36. **NEW concern** — Cache eviction policy is undefined. If we ever run out of disk in Codespace (typically 32GB), what gets evicted? LRU? Manual?
+37. **NEW DECISION-225** (NEW) — Cache eviction policy: define what gets evicted when disk pressure hits. Recommend: never evict prefetched data; evict only computed signals (DEC-183 memoization).
+38. **NEW concern** — Cache versioning. When schema changes (e.g., add new column to Quiver table), old parquet files don't match new code. No versioning prevents this.
+39. **NEW DECISION-226** (NEW) — Cache schema versioning: every parquet file has a schema_version metadata column. Code checks version on load; auto-migrates or raises on mismatch.
+40. **NEW concern** — No cache size monitoring. We don't know when cache is approaching disk limits.
+41. **NEW DECISION-227** (NEW) — Cache size monitoring + alerting (cache_size_gb metric, alert at 80% disk).
+
+### 45.2.6 Data fetcher reliability
+
+`backtest/data/fetcher.py` exists but I haven't audited:
+- Retry logic (exponential backoff?)
+- Rate limiting (Alpha Vantage 5/min limit?)
+- Failure modes (network down, API key invalid, malformed response)
+- Idempotency (can we re-run safely?)
+
+42. **NEW DECISION-228** (NEW) — Fetcher reliability audit: verify retry/rate-limit/idempotency for every external API. Document failure modes and recovery.
+
+### 45.2.7 Configuration management
+
+`backtest/config.py` is 434 lines with 24,700 bytes of constants. I've reviewed CIRCUIT_BREAKERS and PASSING_CRITERIA but not:
+- Version control: when constants change, do we record the change reason?
+- Environment overrides: dev vs prod constants?
+- Config validation: are values in valid ranges?
+- Hot-reload: do we restart on config change, or does code re-read?
+
+43. **NEW DECISION-229** (NEW) — Config management upgrade: pydantic models with validation, environment-specific overrides via .env, config change log in git history with CHECKLIST item.
+
+### 45.2.8 Logging / observability
+
+I haven't audited logging.
+
+44. **NEW concern** — Where do logs go? stdout only? File? rotating? structured?
+45. **NEW concern** — What gets logged at INFO vs DEBUG vs ERROR? Inconsistent across files.
+46. **NEW DECISION-230** (NEW) — Logging audit + standard: structured JSON (per existing DEC-140) AND log rotation AND log level standardization (INFO for trades, ERROR for failures, DEBUG for signal computation details).
+
+### 45.2.9 Error handling
+
+Spot-check: `try/except Exception` in exit_strategies.py swallows errors (only logs at DEBUG).
+47. **NEW BUG flagged** — Silent error swallowing in exit_strategies.py `run_exit_comparison`. If exit method crashes on a trade, error logged at DEBUG (often suppressed) and trade is silently skipped. We may have entire strategies appearing valid but missing 30% of their trades due to silent exits.
+48. **NEW DECISION-231** (NEW) — Audit all `except Exception:` patterns; ensure errors are logged at WARNING+ minimum, with context (which trade, which exit, what input).
+
+### 45.2.10 Backtest determinism
+
+Pass 39 mentioned random seeds (DEC-177) but didn't audit current state.
+
+49. **NEW concern** — Is the current backtest deterministic? If I run the same backtest twice with same data, do I get identical results? If not, we have a reproducibility bug.
+50. **NEW DECISION-232** (NEW) — Determinism test: run identical backtest twice, diff outputs row-by-row. Any non-determinism is a bug; fix before any results are taken seriously.
+
+---
+
+## Section 45.3 — Things I Missed in Pass 39/40/41
+
+Adversarial re-examination of system areas I may have under-audited.
+
+### 45.3.1 Data quality monitoring
+
+Pass 39 mentioned validating stored data (DEC-065), but no DAILY data quality monitoring exists. When yfinance returns garbage on a ticker (split adjustment failure, missing day, NaN in OHLC), we wouldn't know.
+
+51. **NEW DECISION-233** (NEW) — Daily data quality monitoring: per-ticker check (no missing days, no NaN OHLC, prices reasonable, volume reasonable), alert on anomaly.
+
+### 45.3.2 Survivorship bias deeper than DEC-147
+
+DEC-147 covered delisting registry. But what about merged tickers, ticker changes, sector reclassifications? Each can corrupt PIT correctness.
+
+52. **NEW DECISION-234** (NEW) — Ticker lifecycle event handler: track CUSIP/ISIN/SEDOL across name changes; flag merger/acquisition events; preserve historical sector classification.
+
+### 45.3.3 Walk-forward design gaps
+
+DEC-109 specified rolling 5yr/1yr. But:
+- What's the time-zone for data alignment? US Eastern? UTC?
+- What about holidays? DST transitions? Half-days?
+- How are gaps in price data handled (suspended trading, halts)?
+
+53. **NEW DECISION-235** (NEW) — Time/calendar handling spec: explicitly define market calendar (NYSE), holiday handling, DST treatment, half-day rules.
+
+### 45.3.4 Position size precision
+
+At $1K-$5K capital, positions are small. Fractional shares help but introduce precision questions: how many decimal places? Round-to-cent or round-to-share-fraction?
+
+54. **NEW DECISION-236** (NEW) — Position sizing precision rules: round to broker minimum increment; document slippage from rounding.
+
+### 45.3.5 Order types beyond market
+
+System currently assumes market orders (implicit). But limit orders, stop orders, stop-limit, GTC vs DAY all have implications for fills.
+
+55. **NEW DECISION-237** (NEW) — Order type policy: which orders types we use when (e.g., MOO for entries, stop for exits, limit for thin tickers). Backtest must simulate the chosen type.
+
+### 45.3.6 Pre/after-hours handling
+
+Earnings often pre-market or after-hours. How does our system enter/exit around these?
+
+56. **NEW DECISION-238** (NEW) — Pre/after-hours policy: do we trade extended hours? (Recommendation: NO for paper/Stage 4 — extended hours have wide spreads and poor liquidity.)
+
+### 45.3.7 Multi-account handling (future)
+
+Owner mentioned manually replicating to Wealthsimple. If owner has IBKR + WS + maybe an RRSP later, does our system know about all accounts?
+
+57. **NEW DECISION-239** (NEW) — Multi-account architecture: future-proof for multiple brokers / multiple accounts (TFSA/RRSP/Margin). Currently single-account assumption.
+
+### 45.3.8 Alert fatigue / noise
+
+DEC-194 specified 6 push alert events. But thresholds will create alert fatigue if too sensitive.
+
+58. **NEW DECISION-240** (NEW) — Alert tuning: each alert event has a configurable threshold; default values + tunability; track alert rate per type to prevent fatigue.
+
+### 45.3.9 Time-in-market analysis
+
+We track Sharpe, win rate, drawdown. We don't track % of time in market vs cash. Strategies that are 90% cash but win when deployed are different beasts than 90% deployed.
+
+59. **NEW DECISION-241** (NEW) — Time-in-market metric: % of time in any position, % in long/short specifically. Reported per backtest and per strategy.
+
+### 45.3.10 Profit/loss skew
+
+Profit factor catches some skew, but not full distribution. Some strategies have many small losses + few huge wins (long-vol skew). Others reverse. Both can have same Sharpe.
+
+60. **NEW DECISION-242** (NEW) — Distribution analysis: skewness, kurtosis, max single-trade contribution to total P&L. Strategies that depend on rare jackpots get flagged.
+
+---
+
+## Section 45.4 — Adversarial: Workflows / Processes / Owner Experience
+
+### 45.4.1 Process discipline gaps
+
+Per Pass 41 Section 41.2 already covered most. But:
+
+61. **NEW concern** — Owner has now approved many decisions across many turns. Without a "pending owner approvals queue" view, owner can't see at-a-glance what's still on their plate.
+62. **NEW DECISION-243** (NEW) — Owner Approval Queue: a section in AUDIT_TRIAGE.md (or new file) that lists ONLY decisions explicitly waiting for owner reply, sorted by age. Stale items get flagged.
+
+### 45.4.2 Decision dependency tracking
+
+Pass 41 surfaced DEC-161 (decision dependency graph). Still PENDING. Without it, owner approves DEC-X without realizing it depends on DEC-Y also being approved.
+
+63. **Reaffirmed concern** — DEC-161 should be elevated to high-priority. Without dependency tracking, approvals are sequenced wrong and rework happens.
+
+### 45.4.3 No structured onboarding for next Claude session
+
+When a future Claude session starts (after compaction or new session), it reads CLAUDE.md, glances at PROJECT_PLAN.md, may miss key context. The transcripts directory exists but isn't always read.
+
+64. **NEW concern** — DEC-166 (HANDOFF.md template) covers handoff but not deeper context. Future Claude needs: current state snapshot, what's blocked, what's most important right now, how owner prefers to work.
+65. **NEW DECISION-244** (NEW) — Session bootstrap doc (`SESSION_START.md`) — short doc Claude reads first in any new session: current top priority, last 3 things owner asked, current decision queue, key learnings to remember.
+
+### 45.4.4 No retrospective on owner experience
+
+Owner has spent many hours in this project. Have we surfaced what's working / not working from owner's perspective?
+
+66. **NEW DECISION-245** (NEW) — Owner experience retrospective: periodic check-in on what feels productive vs draining; iterate on workflow based on owner feedback.
+
+---
+
+## Section 45.5 — Adversarial: Skills / Knowledge / Tools
+
+Beyond Pass 41 Section 41.3:
+
+### 45.5.1 Quant finance knowledge gaps in code
+
+Some code patterns suggest the original author may not have deep quant background:
+- Sharpe computed without annualization in some places (need to verify)
+- Drawdown computed via cumsum vs compounded equity (per BUG-15 found earlier)
+- Vol computed daily vs weekly vs monthly (not standardized)
+
+67. **NEW DECISION-246** (NEW) — Quant finance correctness audit: verify Sharpe annualization, drawdown computation, vol periodicity, return calculation (geometric vs arithmetic) across all metrics. Standardize.
+
+### 45.5.2 ML / statistical knowledge gaps
+
+If we're going to add HMM regime models (DEC-108), Kelly sizing (DEC-086), deflated Sharpe (DEC-110), we need someone who can validate these are implemented correctly. Self-implementation without expert review = risk.
+
+68. **NEW DECISION-247** (NEW) — Stats/ML implementation review: when we implement HMM, deflated Sharpe, Kelly, etc., have an external reference (textbook formula, peer-reviewed paper) to validate against. Unit-test against known results.
+
+### 45.5.3 Trading psychology / discipline knowledge
+
+Owner is operating in autonomous-execution mode. When losses come (and they will), there's psychological pressure to override the system. Do we have a written commitment / pre-mortem for what owner won't do?
+
+69. **NEW DECISION-248** (NEW) — Owner pre-commitment doc: written rules owner commits to BEFORE losses happen ("I won't override the system mid-drawdown"). Reduces in-the-moment temptation.
+
+---
+
+## Section 45.6 — Adversarial: Strategies (Beyond Pass 39/40)
+
+### 45.6.1 Strategy decay tracking
+
+A strategy that worked 2010-2015 may not work 2020+. We don't track strategy half-life.
+
+70. **NEW DECISION-249** (NEW) — Strategy decay metric: rolling 6-month Sharpe per strategy; flag when latest 6mo Sharpe drops >50% below historical avg.
+
+### 45.6.2 No competitive context
+
+Other quant systems exist. Are we losing alpha to systems that share our same signals (PEAD, momentum)? Probably yes — these signals are widely known.
+
+71. **NEW concern** — Some strategies (PEAD, classic momentum) are heavily exploited by hedge funds. Edge is shrinking. Need to model this.
+72. **NEW DECISION-250** (NEW) — Edge decay assumption: backtest results discounted by expected edge decay (e.g., subtract 30% from PEAD Sharpe to account for crowding).
+
+### 45.6.3 Regime-conditional strategy WEIGHTING
+
+DEC-025 covered conditional weighting (PENDING). But it deserves elevated focus given autonomous execution.
+
+73. **Reaffirmed concern** — DEC-025 is now more important. Autonomous execution means the system itself must decide which strategies to deploy in each regime, not the owner.
+
+---
+
+## Section 45.7 — Adversarial: Code Quality (Beyond Pass 41)
+
+### 45.7.1 Module boundaries
+
+Looking at code structure:
+- `backtest/data/` has fetcher, cache, macro, sentiment, smart_money, universe — 6 files
+- `backtest/engine/` has 5 files
+- `backtest/signals/` has 2 files
+- `backtest/results/` has 3 files
+- `backtest/agents/` has 1 file (pipeline.py 772 lines — to be replaced)
+
+74. **NEW concern** — `agents/pipeline.py` is 772 lines in ONE file. Per L99-style reflection, monolithic files are bug-prone.
+75. **Reaffirmed concern** — DEC-051 (TradingAgents adoption) replaces this. Re-confirms criticality.
+
+### 45.7.2 Dependency injection / testability
+
+Are functions written for testability? When `screen_universe()` is called, can I mock the data layer cleanly?
+
+76. **NEW DECISION-251** (NEW) — Dependency injection audit: refactor critical functions to accept data/config as parameters (not import them globally) so tests can inject mocks.
+
+### 45.7.3 No type safety
+
+Python 3 has type hints. We don't use them consistently (DEC-170 covers this). But mypy in CI (DEC-173) hasn't been adopted yet.
+
+77. **Reaffirmed concern** — DEC-170 + DEC-173 should be elevated as autonomous execution depends on correctness.
+
+---
+
+## Section 45.8 — Pass 45 Summary
+
+### Net-new findings
+
+- **47 new decisions** surfaced (DEC-205 through DEC-251)
+- **2 new bugs** flagged (duplicate engine code, silent error swallowing in run_exit_comparison)
+- **0 new LEARNINGS** (no new universal lessons; existing ones continue to apply)
+- **0 new CHECKLIST items** (existing 32 sufficient)
+
+### New decision themes
+
+| Batch | Decisions | Theme |
+|---|---|---|
+| X32 | 205-216 | Agent A/B Testing Framework (12 decisions) |
+| X33 | 217-220 | Architecture Hygiene (dead code, docs, GitHub Actions) |
+| X34 | 221-227 | Test + Cache Infrastructure |
+| X35 | 228-232 | Reliability + Determinism |
+| X36 | 233-242 | Data Quality + Trading Mechanics |
+| X37 | 243-245 | Process / Owner Experience |
+| X38 | 246-248 | Knowledge Gaps |
+| X39 | 249-251 | Strategy Decay + Code Quality |
+
+### Counts post-Pass-45
+
+- Decisions: 206 → 253 (47 new, all PENDING)
+- Resolved: 54
+- Partial: 5
+- Superseded: 8
+- Pending: 139 → 186 (47 new pending)
+- Bugs: 203 → 205 (+ duplicate engine, silent error swallowing)
+- LEARNINGS: 110
+- CHECKLIST: 32
+- Audit passes: 45
+
+### Honest assessment
+
+The decision count is accelerating not decelerating. From 116 → 185 → 200 → 206 → 253 over four audit passes. Each adversarial review finds 25-50 more concerns.
+
+This means one of:
+- (a) We're discovering genuine gaps that need resolution (true value)
+- (b) We're inventing concerns that don't materially affect outcomes (false positives)
+- (c) The system is genuinely too complex for retail scale and we should simplify
+
+My honest take: probably mostly (a) with some (b). To distinguish, the AUDIT_TRIAGE impact/cost analysis is the right tool — it lets owner separate "must-do" from "nice-to-have."
+
+**I will stop generating new decisions in subsequent passes unless owner asks for another adversarial sweep.** Future passes should be triggered by specific events (new bug found, owner question, phase transition) and produce ≤5 new decisions per pass.
+
+This is captured as a soft commitment, not yet a CHECKLIST item — owner may or may not want to formalize.
+
+---
+
+*Pass 45 complete. 47 new decisions surfaced across agent A/B testing framework, architecture hygiene, infrastructure, reliability, data quality, process, and code quality. 2 new bugs flagged. AUDIT_INDEX needs regeneration.*
