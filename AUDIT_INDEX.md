@@ -365,6 +365,7 @@
 | **DECISION-343** | Pandas-ta deprecation warning on pandas 4.0 — plan replacement (TA-Lib alternative) | PENDING | Batch X55 — Documentation Sync | Pass 48 | - |
 | **DECISION-344** | Slippage threshold ATR/price > 3% likely too high — most S&P large caps never trigger | PENDING | Batch X55 — Documentation Sync | Pass 48 | - |
 | **DECISION-345** | ICT/SMC timeframe scope — daily-only vs weekly-HTF + daily-trigger vs full multi-timeframe | RESOLVED | Batch X52 — Round 1 Methodology Gaps | Pass 52 | 52 |
+| **DECISION-346** | Multidimensional categorical verdict matrix — supersedes single-dimension regime verdict | PENDING | Batch X52 — Round 1 Methodology Gaps | Pass 52 | - |
 
 ---
 

@@ -19655,3 +19655,64 @@ Of these: 13 RESOLVED, 2 OBSOLETE, 2 DEFERRED. Wait, that's 17 — recount: Batc
 **Pending count after Round 1:** 250 PENDING (verified by direct row count from AUDIT_INDEX.md) — represents net change of 13 from origin/main's 263.
 
 *Round 1 complete. 16 decisions touched (12 RESOLVED + 2 OBSOLETE + 2 DEFERRED). 5 LEARNINGS additions. 7 CHECKLIST additions. 1 surfaced gap (DEC-345 — ICT timeframe scope) resolved as part of round. 6 decisions flagged for future retroactive revision per industry-standards audit. No code changes affect tests; docstring fix in DEC-341 verified by full pytest run during handoff. Verified by independent fresh checkout in sandbox: full Round 1 patch stack applies cleanly to origin/main HEAD 843344b7; pytest 63/63 still passes.*
+
+---
+
+## AUDIT PASS 52 — Multidimensional Categorical Verdict Matrix (DEC-346 — owner-surfaced gap, logged for future resolution)
+
+**Date:** April 30, 2026
+**Trigger:** Owner-surfaced direction during Round 1: "Regime yes but there should be a lot more categorical variables." Per CHECKLIST #40 prior-art grep, the project already documents 17+ categorical variables (AUDIT.md Section 9.2; LEARNINGS L106) but treats regime as the primary verdict dimension while other categoricals are diagnostic. Owner's direction strengthens this: per-regime verdict should be one cell of a multidimensional verdict matrix, not the sole verdict dimension.
+
+### DEC-346 — Multidimensional categorical verdict matrix supersedes single-dimension regime verdict — PENDING (logged Pass 52, resolution deferred to focused future session)
+
+**Background — what's already documented in the project:**
+- **CLAUDE.md lines 121, 134, 142, 189:** per-regime strategy library philosophy. "PASS in ≥1 regime (not universal pass required). A strategy valid in crisis but not bull is deployed only during crisis — this is intentional."
+- **AUDIT.md Section 9.2 (Pass 39):** lists 17+ categorical variables — cap band, liquidity bucket, beta bucket, vol bucket, earnings proximity, RSI bucket, short interest bucket, days to FOMC, days since IPO, index membership, VIX bucket, yield curve shape, sector momentum percentile, day-of-week, seasonality flag, plus base dimensions (strategy, regime, sector, tier, direction, date).
+- **LEARNINGS L106 (granular-by-default):** every metric reported at multiple breakdown levels.
+- **PENDING DEC-066:** granularity standard for all backtest outputs.
+- **PENDING DEC-100:** adopt 17+ categorical breakdown variables for all backtest outputs.
+
+**Gap surfaced by DEC-346:** Existing decisions (DEC-066, DEC-100) treat categorical breakdowns as **reporting/diagnostic** dimensions. Owner's direction elevates them to **verdict** dimensions: a strategy passes if it works in ≥1 cell of the multidimensional matrix, not just ≥1 regime. This is a meaningful upgrade with architectural implications.
+
+**Three options (deferred to focused session for resolution):**
+
+1. **Status quo + reporting only.** Keep regime as sole verdict dimension. Add categorical breakdowns to dashboards and reports only. Lowest commitment; matches existing language. Likely too weak for owner's direction.
+
+2. **Multidimensional verdict matrix — primary categoricals.** Define a small set of "primary verdict" categoricals (e.g., regime + cap band + vol bucket = 4 × 5 × 4 = 80 cells). Strategy passes if PASS in ≥1 cell. Diagnostic categoricals (the rest of the 17+) reported but not verdict-determining. Manageable cell count; valid statistics per cell with sufficient data.
+
+3. **Full multidimensional verdict — all 17+ categoricals.** Strategy passes if PASS in ≥1 cell across the full Cartesian product of all 17+ categoricals. Cell count explodes (millions of cells); most cells under-sampled; verdict noise dominates signal. Statistically problematic without explicit hierarchy / Bayesian shrinkage.
+
+**Why this needs a focused session, not a quick resolution this round:**
+- Cell-count explosion (Option 3) requires statistical mitigation: hierarchical Bayes, shrinkage, parent-cell-fallback rules, minimum-cell-size requirements. Bailey & López de Prado (2014) on multiple-testing inflation directly applies — naive cell-by-cell verdicts inflate false-positive rate proportional to cell count.
+- A/B framework (DEC-205-209) was just resolved this round assuming single-dimension regime verdicts. Resolving DEC-346 implies re-decision of DEC-205, DEC-207, DEC-209 with multidimensional sample-size requirements.
+- Storage and compute implications: per-cell metrics with 17 dimensions × per-strategy × per-instrument is a non-trivial data structure. Backtest engine output schema needs design.
+- Dashboard architecture (DEC-198-204, mostly PENDING) needs to support drill-down across the full categorical matrix.
+
+**Cross-reference dependencies:**
+- DEC-066 (granularity standard) — PENDING, related; should resolve jointly with DEC-346
+- DEC-100 (17+ categorical breakdown variables) — PENDING, related; should resolve jointly
+- DEC-099 (11 missing strategy categories) — PENDING, related; categorical scope
+- DEC-101 (earnings strategies) — PENDING, "earnings proximity" is one of the 17+ categoricals
+- DEC-102 (market-level / correlation-factor strategies) — PENDING, related strategy-level scope expansion
+- DEC-205, DEC-207, DEC-209 (A/B framework, RESOLVED Pass 52) — forward-link added: re-decision required when DEC-346 resolves
+- L106 (granular-by-default principle) — DEC-346 elevates from principle to architectural commitment
+- DEC-153 (regime-stratified splits) — PENDING; multidimensional categoricals would supersede or extend this
+- BUG-129 (no regime-conditional parameter tuning) — OPEN; multidimensional categoricals would affect parameter-tuning decision space
+- BUG-175 (no regime-conditional strategy weighting) — OPEN; multidimensional weighting is a substantial generalization
+
+**Industry-standards grounding (per CHECKLIST #37):**
+- Multidimensional categorical verdicts are standard practice in factor research (Fama-French dimensions: size, value, momentum, profitability, investment) — strategies are characterized by exposure across multiple categoricals, not a single bucket.
+- Hierarchical / Bayesian shrinkage for sparse-cell verdicts: López de Prado (2018) *Advances in Financial ML* Ch 7 (cross-validation in finance with sample weights), Ch 17 (microstructural features). Hierarchical Bayes is the canonical mitigation for sparse-cell statistical issues.
+- The trade-off this decision navigates is fundamental statistics: more dimensions = more granular insights but more multiple-testing inflation and more under-sampled cells. There is no single "correct" cut; the right answer depends on data volume (DEC-158 16-yr backtest), strategy count (PROJECT_PLAN section 7), and acceptable false-positive rate.
+
+**Forward-pending sub-decisions surfaced by DEC-346:**
+- **DEC-346-A (TBD):** Which categoricals are primary (verdict-determining) vs diagnostic (reporting-only)?
+- **DEC-346-B (TBD):** Minimum sample size per cell for valid verdict (per Bailey & López de Prado floor: ≥100 paired trades for stable Sharpe; or use hierarchical shrinkage with smaller per-cell n)?
+- **DEC-346-C (TBD):** Multiple-testing correction method (Bonferroni / Holm-Bonferroni / Benjamini-Hochberg FDR / hierarchical Bayes shrinkage)?
+- **DEC-346-D (TBD):** Output schema for the multidimensional verdict matrix (storage, query, dashboard primitives)?
+
+**Owner direction this session:** Q1=Option C in chat — formalize categorical scope (resolve DEC-066, DEC-100) AND expand the categorical list (more dimensions than the 17+ already specified). Q2=Agree resolution should happen in a future focused session, not this round. Q3=Approved logging DEC-346 as the parent decision.
+
+**Resolution status:** PENDING. To be resolved in a future focused session covering DEC-066 + DEC-099 + DEC-100 + DEC-101 + DEC-102 + DEC-346 jointly as a coherent strategy-categorical-architecture batch. Estimated session scope: ~3-4 hours of focused work given dependencies.
+
+*DEC-346 logged. Owner-surfaced gap captured properly per CHECKLIST #40 (prior-art surfaced before any new edits to CLAUDE.md / PROJECT_PLAN). Resolution deferred to focused session. Forward-link references prevent silent drift on prior decisions.*
