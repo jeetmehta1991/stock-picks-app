@@ -6464,3 +6464,635 @@ Per the user's confirmed approval of Option B (ablation methodology) and request
 ---
 
 *Pass 15 complete. 25 new bugs documented. Ablation methodology formalised. Agent-engine integration gaps inventoried comprehensively.*
+
+---
+
+# AUDIT PASS 16 — Comprehensive Real-World Systematic Trading Audit
+
+This pass is the methodologically rigorous version of "compare against real world systems" that earlier passes missed. Earlier passes compared at a high level (factor models exist, tiering is below institutional standard). This pass goes component-by-component through what modern systematic trading actually does and asks: present, partial, or missing? If missing, what's the cost-benefit of adding it?
+
+The audit is organized by component. For each: (1) what real-world systems do, (2) what this codebase does, (3) gap, (4) recommendation.
+
+This is also the pass where ICT/SMC concepts get formal documentation as upfront requirements, not deferred Phase 1E work. The user explicitly requested this: "ICT and all modern strategies need to be integrated upfront and not later."
+
+Bug count grows substantially in this pass. Most additions are MEDIUM/LOW severity but represent significant uplift in capability when implemented.
+
+---
+
+## PART 1 — Strategy taxonomy: what real-world systematic trading uses
+
+### 1.1 The major strategy families in modern markets
+
+A comprehensive systematic trading platform typically has strategies from each of these families:
+
+| Family | Examples | What it captures |
+|---|---|---|
+| **Trend-following** | MA crosses, breakouts, momentum factors | Persistence in returns over weeks-to-months |
+| **Mean reversion** | RSI, Bollinger, statistical arbitrage | Tendency for extreme moves to revert |
+| **Carry / Value** | P/E, P/B, dividend yield rank | Cheap stocks outperform expensive over time |
+| **Quality** | ROE, accruals, low debt | Stable companies outperform during stress |
+| **Volatility-based** | Vol-targeting, vol carry, gamma scalping | Risk-adjusted return improvement |
+| **Microstructure** | Order flow, bid-ask, opening auction | Intraday inefficiencies (mostly intraday) |
+| **Event-driven** | Earnings drift, M&A arb, index inclusion | Catalysts create temporary mispricings |
+| **Macro/Cross-asset** | Yield curve, credit spreads, FX, gold | Regime shifts visible across asset classes |
+| **Smart-money / Positioning** | Insider flow, congressional, 13F, options | Asymmetric information leakage |
+| **ICT / SMC** | Order blocks, FVG, liquidity sweeps, displacement | Institutional positioning visible in price action |
+| **Volume / Profile** | VPVR, anchored VWAP, CVD | Where institutions are committing size |
+| **Sentiment / Narrative** | News tone, retail positioning, narrative shifts | Crowd psychology |
+| **Calendar / Seasonal** | Sell-in-May, Santa rally, FOMC drift | Persistent calendar effects |
+
+### 1.2 Coverage assessment of current codebase
+
+**Current 72 strategies map to families as follows:**
+
+| Family | Strategies in code | Coverage rating |
+|---|---|---|
+| Trend-following | ~20 (MA crosses, breakouts, supertrend, ichimoku) | **OVER-COVERED** with redundant variants |
+| Mean reversion | ~15 (RSI, BB, Williams%R, stoch, MFI) | **OVER-COVERED** |
+| Carry / Value | 0 | **MISSING ENTIRELY** |
+| Quality | 0 | **MISSING ENTIRELY** |
+| Volatility-based | 1 (squeeze breakout) | **CRITICALLY UNDER-COVERED** |
+| Microstructure | 0 | **N/A** (daily-bar only — appropriate) |
+| Event-driven | 0 | **MISSING** (earnings drift especially) |
+| Macro/Cross-asset | 0 strategies (only context) | **MISSING** |
+| Smart-money | Tracked but binary (BUG-103 gates) | **UNDER-EXPLOITED** |
+| ICT / SMC | 0 | **MISSING ENTIRELY** |
+| Volume / Profile | 0 (basic OBV/CMF only) | **MISSING** |
+| Sentiment / Narrative | Agent-based only, no rule strategies | **UNDER-EXPLOITED** |
+| Calendar / Seasonal | 0 | **MISSING** |
+
+**The diagnosis is clear:** the codebase has 35+ technical-indicator strategies that all capture variants of the same two ideas (trend and mean reversion) and zero strategies from 6 other families that real-world systems use. This is the structural reason for the 88% trade overlap finding (BUG-101): when 35 strategies all measure variants of "stock is trending," they fire together.
+
+**The fix is not "add more technical indicators." The fix is "add strategies from the missing families."**
+
+---
+
+## PART 2 — ICT / Smart Money Concepts (upfront integration, not deferred)
+
+The user explicitly requested: "ICT and all modern strategies need to be integrated upfront and not later." Pass 13 deferred this to a future Phase 1E. That deferral is hereby revoked. ICT/SMC capability is now an upfront design requirement.
+
+### 2.1 What ICT/SMC actually is
+
+ICT (Inner Circle Trader) / Smart Money Concepts is a price-action methodology for identifying institutional positioning. The core insight is that institutions cannot fill large orders without leaving footprints in price and volume. The methodology defines specific patterns those footprints create.
+
+**Note on framing:** much of the ICT online community has marketing baggage. The underlying concepts, however, are mechanically definable rules that can be backtested. Real prop traders and some quant funds use ICT-derived rules. The right approach is to extract the testable mechanics and treat them like any other signal — backtest them, keep what works, discard what doesn't.
+
+### 2.2 Core ICT concepts as backtestable signals
+
+Each concept below has a precise, code-implementable definition.
+
+#### 2.2.1 Order Block (OB)
+
+**Definition:** The last opposite-color candle before a strong impulsive move in the new direction.
+
+**Bullish OB:** Last bearish candle before a move that creates a fair value gap (FVG) and breaks short-term structure higher. The OB's high-low range becomes a future support zone where institutional buy orders are likely resting.
+
+**Bearish OB:** Mirror — last bullish candle before a strong bearish impulse.
+
+**Formal definition for daily bars:**
+```
+A candle at index i is a bullish OB if:
+  candle[i].close < candle[i].open  (bearish candle)
+  AND candle[i+1].low > candle[i+1].open  (next candle gaps up or strongly bullish)
+  AND candle[i+1].close - candle[i+1].open > 1.5 × ATR(20)  (displacement)
+  AND there exists a candle in [i+1, i+5] whose high > recent_swing_high
+```
+
+**Trading rule:** Long entry when price returns to the OB zone (between candle[i].low and candle[i].high), invalidation if price closes through the OB low.
+
+#### 2.2.2 Fair Value Gap (FVG)
+
+**Definition:** A 3-candle pattern where there's a price range never tested by candle 2's full range.
+
+**Bullish FVG:** `candle[i].high < candle[i+2].low` — a gap exists between candle 1's high and candle 3's low. Price has statistical tendency to return and "fill" this gap before continuing.
+
+**Bearish FVG:** `candle[i].low > candle[i+2].high`
+
+**Formal definition:**
+```
+A bullish FVG exists at indices [i, i+2] if:
+  candle[i].high < candle[i+2].low
+  AND (candle[i+2].low - candle[i].high) > 0.3 × ATR(14)  (meaningful gap)
+  AND candle[i+1].open < candle[i+1].close  (confirming bullish middle)
+
+The FVG zone is [candle[i].high, candle[i+2].low].
+The FVG is "filled" when price returns into this zone.
+The FVG is "broken" when price closes below candle[i].low (bullish FVG invalidated).
+```
+
+**Trading rule:** Long entry on first retest of an unfilled FVG zone. Tight stop below FVG bottom.
+
+#### 2.2.3 Liquidity Sweep / Stop Hunt
+
+**Definition:** A candle that briefly takes out a recent swing high or low (where stops cluster) but closes back inside the prior range. Indicates institutional liquidity grab before reversal.
+
+**Formal definition:**
+```
+A bullish liquidity sweep exists at candle[i] if:
+  candle[i].low < min(candle[i-N..i-1].low) by 0.1 × ATR(14)  (took out prior swing low)
+  AND candle[i].close > candle[i-1].low  (closed back above prior low)
+  AND candle[i+1].close > candle[i].high  (next candle confirms reversal)
+
+Where N is typically 10-20 bars.
+```
+
+**Trading rule:** Long entry on candle i+1 close confirming reversal, stop just below candle[i].low.
+
+#### 2.2.4 Displacement
+
+**Definition:** A strong impulsive candle with high range, body dominating, low wicks. Indicates institutional participation.
+
+**Formal definition:**
+```
+A bullish displacement exists at candle[i] if:
+  candle[i].close > candle[i].open  (bullish)
+  AND (candle[i].close - candle[i].open) > 1.5 × ATR(20)  (range > 1.5 ATR)
+  AND (candle[i].close - candle[i].open) / (candle[i].high - candle[i].low) > 0.7  (body > 70% of range)
+  AND volume[i] > 1.3 × volume_20d_avg  (volume confirmation)
+```
+
+**Use:** Filter for OB/FVG validity. An OB or FVG without displacement is weak. With displacement, signal is high-conviction.
+
+#### 2.2.5 Breaker Block
+
+**Definition:** An order block that gets violated (price closes through it), then price returns to it. Former support becomes resistance, or vice versa. ICT version of the classical break-and-retest.
+
+**Formal definition:**
+```
+A bearish breaker exists when:
+  A prior bullish OB at zone [A, B] is broken — price closes below A
+  AND price subsequently returns to test zone [A, B] from below
+  AND price rejects the zone (closes below B again)
+```
+
+**Trading rule:** Short entry on rejection, stop above breaker zone.
+
+#### 2.2.6 Premium / Discount Zones
+
+**Definition:** Price relative to the midpoint of the recent swing range.
+
+**Formal definition:**
+```
+swing_high = max(high[i-N..i])
+swing_low = min(low[i-N..i])
+midline = (swing_high + swing_low) / 2
+
+If close > midline: price is in PREMIUM zone (less favorable for longs)
+If close < midline: price is in DISCOUNT zone (more favorable for longs)
+```
+
+**Use:** Trade direction filter. Only take longs in discount zone, only shorts in premium zone. Drastically improves risk/reward.
+
+#### 2.2.7 Optimal Trade Entry (OTE)
+
+**Definition:** The 0.62-0.79 Fibonacci retracement zone within a swing. ICT identifies this as the highest-probability entry zone.
+
+**Formal definition:**
+```
+For a bullish OTE in an uptrend:
+  swing_low = recent low
+  swing_high = recent high
+  fib_62 = swing_high - 0.62 × (swing_high - swing_low)
+  fib_79 = swing_high - 0.79 × (swing_high - swing_low)
+  
+OTE zone = [fib_79, fib_62]
+Long entry triggered on touch with confirmation.
+```
+
+#### 2.2.8 Market Structure (HH/HL/LH/LL)
+
+**Definition:** Tracking the sequence of higher highs (HH), higher lows (HL), lower highs (LH), lower lows (LL) to identify trend state.
+
+**Formal definition:**
+```
+Bullish structure: most recent swing high > prior swing high AND most recent swing low > prior swing low
+Bearish structure: most recent swing high < prior swing high AND most recent swing low < prior swing low
+Choch (Change of Character): bullish structure breaks (recent low < prior low) — early reversal signal
+BOS (Break of Structure): bearish structure breaks (recent high > prior high) — confirmed trend change
+```
+
+### 2.3 ICT-derived strategy specifications
+
+The above 8 concepts produce a coherent strategy family. Specific strategies that combine them:
+
+| # | Strategy | Long entry condition | Stop | Win-rate target |
+|---|---|---|---|---|
+| ICT-1 | Bullish OB retest in discount | Price returns to bullish OB; OB has displacement; market in discount zone | OB low | 55-60% |
+| ICT-2 | FVG fill in trend | Bullish FVG forms in uptrend; price returns to fill; structure still bullish | FVG bottom | 55-65% |
+| ICT-3 | Liquidity sweep reversal | Sweep below recent swing low + bullish displacement next bar | Sweep bar low | 55-60% |
+| ICT-4 | OTE entry in trend | Pullback to 0.62-0.79 fib in established trend; bullish PA confirmation | Below 0.79 fib | 55-65% |
+| ICT-5 | Breaker block long | Bearish OB violated upward, price returns to test, rejects | Below breaker zone | 55-65% |
+| ICT-6 | CHoCH long entry | Bullish CHoCH (recent high > prior high in downtrend) + retest of broken structure | Below retested level | 50-60% |
+| ICT-7 | BOS continuation long | Bullish BOS confirmed; pullback to last unfilled bullish FVG | FVG bottom | 60-65% |
+| ICT-8 | Premium short / Discount long | Counter-trend setups only valid in correct PD zone | Recent swing | 50-55% |
+
+Each has a symmetric short variant. Total: 16 ICT-derived strategies.
+
+### 2.4 ICT — what NOT to include
+
+The ICT community has many concepts that are either redundant with existing ones or not statistically validated. Skip these:
+
+- "Power of 3" intraday model — not applicable to daily bars
+- Specific Killzones (London/NY open) — not applicable to daily-bar swing trading
+- Most timing-of-day rules — not applicable
+- "Inducement" — overlaps heavily with liquidity sweep, doesn't add testable rules
+- "Mitigation block" — variant of OB, redundant
+- "Mentorship-specific" patterns — not statistically validated outside the community
+
+Implement the 8 core concepts (sections 2.2.1-2.2.8) and the 8 derived strategies (Section 2.3 with short variants = 16). Skip the rest.
+
+### 2.5 ICT integration cost
+
+Implementing ICT properly requires:
+
+| Task | Effort | Cost |
+|---|---|---|
+| Implement 8 core concept detection functions | 2-3 weeks | $0 |
+| Add ~50 new signal fields to `compute_all_signals` | 1 week | $0 |
+| Implement 16 ICT-derived strategies | 1-2 weeks | $0 |
+| Update agent prompts to include ICT context | 1 week | $0 |
+| Validation through 7-gate ablation methodology | 2-3 weeks | ~$30 |
+| **Total** | **7-10 weeks** | **~$30** |
+
+This is significant but tractable. Per user instruction, this is upfront work, not deferred.
+
+---
+
+## PART 3 — Other modern systematic concepts to integrate upfront
+
+### 3.1 Anchored VWAP — the most useful single addition
+
+**What it is:** VWAP calculated from a specific anchor event rather than from session start. Institutions trade off these levels heavily because they represent average accumulation cost since the event.
+
+**Common anchors:**
+- Last earnings announcement (most important — institutional re-positioning)
+- Last swing high (resistance becomes support)
+- Last swing low (support becomes resistance)
+- Year start (annual benchmark)
+- Last 52-week high (psychological level)
+
+**Why this is more powerful than standard VWAP:**
+
+Standard VWAP resets every session. By 3pm any session, it's just an indicator of today's average price. AVWAP from earnings is a measure of institutional cost basis — every bar since the earnings event is included. Price testing AVWAP from earnings is testing the cumulative cost basis of every share traded since that catalyst.
+
+**Implementation:** ~100 lines. Add 5 AVWAP signals (earnings, year-start, swing-high, swing-low, 52w-high) with formulas:
+```python
+def anchored_vwap(df, anchor_idx):
+    """VWAP from anchor_idx forward"""
+    sub = df.iloc[anchor_idx:]
+    typical_price = (sub['high'] + sub['low'] + sub['close']) / 3
+    cum_vol_price = (typical_price * sub['volume']).cumsum()
+    cum_vol = sub['volume'].cumsum()
+    return cum_vol_price / cum_vol
+```
+
+**Strategies enabled:** AVWAP support/resistance entries (~6 new strategies), AVWAP confluence with existing signals.
+
+### 3.2 Volume Profile (VPVR / TPO)
+
+**What it is:** Distribution of volume across price levels over a lookback period. Identifies "high-volume nodes" (HVN) where heavy trading occurred and "low-volume nodes" (LVN) where price moved through quickly.
+
+**Key concepts:**
+- **Point of Control (POC):** the single price level with most volume in the period — the strongest S/R
+- **Value Area High/Low (VAH/VAL):** range containing 70% of volume — market's accepted range
+- **HVN/LVN:** clusters of high/low volume
+
+**Why it matters:** Price that has spent significant time at a level has institutional acceptance there. Returns to that level have ~70% probability of bounce in liquid stocks.
+
+**Implementation:** ~150 lines. Volume bin by price over rolling window. Computationally heavier but tractable.
+
+**Strategies enabled:**
+- POC bounce (long at POC test from above)
+- Value area edge fade (short at VAH, long at VAL)
+- LVN gap-fill (price moves rapidly through LVN, gaps tend to fill)
+
+### 3.3 Cumulative Volume Delta (CVD)
+
+**What it is:** Sum of (buy_volume - sell_volume) over time. For daily bars, approximated as:
+```python
+cvd[i] = cvd[i-1] + (volume[i] if close > open else -volume[i])
+```
+
+More accurate version uses tick data for true buy/sell volume. Daily approximation is "did the bar close green or red, weighted by volume."
+
+**Why it matters:** Price can be flat while CVD diverges. Price up + CVD down = distribution (institutions selling into rally). Price down + CVD up = accumulation. Detects positioning that price alone hides.
+
+**Implementation:** ~30 lines. Pure post-processing of OHLCV. No new data needed.
+
+**Strategies enabled:**
+- CVD divergence (price up, CVD flat or down — fade the rally)
+- CVD confirmation (price breakout + CVD breakout — high conviction long)
+
+### 3.4 Relative Strength (vs sector, vs SPY)
+
+**What it is:** Stock return / benchmark return over N periods. The simplest factor in equities.
+
+**Why it matters:** Alpha vs beta separation. A stock that rallies during a tech selloff is showing real strength. A stock that rallies with everything else is just market beta.
+
+**Note:** Plan mentions this for Phase 1C with "relative strength precondition added to all 6 existing breakout strategies." The audit recommends adding it to **Phase 1B as upfront capability**, not deferred.
+
+**Implementation:** ~50 lines. Add 4 RS signals (vs sector ETF over 5d, 20d; vs SPY over 5d, 20d).
+
+**Strategies enabled:**
+- Long the strongest stocks in the strongest sectors (RS quintile breakout)
+- RS divergence (stock RS rising while price flat — accumulation)
+- Sector rotation (long leading sector ETF, short lagging)
+
+### 3.5 Realised volatility regime per ticker
+
+**What it is:** Each ticker's own volatility classification, separate from market regime.
+
+**Why it matters:** AAPL in low-vol regime behaves differently from AAPL in high-vol regime. Mean reversion strategies need volatility to work; trend strategies need volatility to NOT explode.
+
+**Implementation:**
+```python
+def vol_regime(df, lookback=60):
+    daily_returns = df['close'].pct_change()
+    realised_vol = daily_returns.tail(lookback).std() * sqrt(252)
+    historical_vols = df['close'].pct_change().rolling(lookback).std() * sqrt(252)
+    percentile = (historical_vols < realised_vol).mean()  # current vol percentile
+    if percentile < 0.33: return 'low_vol'
+    if percentile < 0.67: return 'mid_vol'
+    return 'high_vol'
+```
+
+**Use:** Conditional strategy selection. Mean reversion strategies get higher weights in mid-vol regime, lower in high-vol. Trend strategies get higher weights in mid-to-high-vol, lower in low-vol.
+
+### 3.6 Post-Earnings Announcement Drift (PEAD)
+
+**What it is:** Stocks with positive earnings surprises tend to drift higher for 30-60 days. Stocks with negative surprises drift lower.
+
+**Why it matters:** PEAD is one of the most documented edges in equity research, with 50+ years of academic literature. It's mechanically definable and persistently profitable.
+
+**Implementation:**
+```python
+def pead_signal(ticker, df, earnings_dates):
+    # Find most recent earnings within 60 days
+    recent_earnings = max([d for d in earnings_dates if d <= today and d >= today - 60d])
+    if not recent_earnings:
+        return None
+    # Compute earnings day return
+    eday_idx = df.index.get_loc(recent_earnings)
+    next_day_return = df.iloc[eday_idx+1].close / df.iloc[eday_idx].close - 1
+    # PEAD strength
+    days_since = (today - recent_earnings).days
+    if next_day_return > 0.03 and days_since < 60:
+        return 'positive_drift'  # Long-bias signal
+    if next_day_return < -0.03 and days_since < 60:
+        return 'negative_drift'  # Short-bias signal
+    return 'neutral'
+```
+
+**Strategies enabled:**
+- PEAD continuation long (positive surprise + still drifting + above 50-EMA)
+- PEAD reversal entries (overshoot with mean-reversion setup at 30+ days)
+
+### 3.7 Pairs and statistical arbitrage
+
+**What it is:** Long one stock, short a correlated peer. Profits from divergence and mean reversion of the spread.
+
+**Why it matters:** Removes market beta exposure. Pure relative-value bet. Lower drawdowns.
+
+**Why it's hard for limited-funds:** Requires shorting (margin), pair selection (correlation analysis), and capital efficiency (each pair uses 2× the capital of a single position).
+
+**Recommendation:** Acknowledge as a strategy family. Implement in **Phase 1F (post-deployment)** rather than upfront. Single-stock long/short entries are enough complexity for $10K-$50K accounts.
+
+### 3.8 Calendar effects
+
+**What it is:** Persistent calendar-based patterns:
+- Sell-in-May effect (May-October underperforms November-April)
+- January effect (small caps outperform in January)
+- Santa rally (last 5 days of December + first 2 of January)
+- FOMC drift (positive returns 24 hours before FOMC announcement)
+- End-of-quarter window dressing
+- Tax-loss selling (December for underperformers)
+
+**Why it matters:** These are real, well-documented effects. Magnitude varies year to year but direction is persistent.
+
+**Implementation:** ~50 lines. Add date-based filters and signals.
+
+**Strategies enabled:**
+- FOMC drift long (long SPY 24h before FOMC in non-hawkish environment)
+- January small-cap (long IWM in January, neutral rest of year)
+- Sell-in-May overlay (reduce long exposure May-October)
+
+### 3.9 Volatility risk premium (VRP)
+
+**What it is:** Implied volatility (from options) typically exceeds realised volatility (actually delivered). Selling options harvests this premium.
+
+**Why it's relevant for stock trading (even without options):** When IV is high relative to RV, market is pricing in more vol than will likely materialize — favoring mean reversion. When IV is low relative to RV, market is under-pricing risk — favoring momentum.
+
+**Implementation requires:** Implied volatility data. Available from Unusual Whales (Phase 1C API). Or estimate via VIX as proxy for SPY components.
+
+**Strategies enabled (Phase 1C+):**
+- IV/RV ratio as filter for mean reversion setups
+- VRP-aware position sizing (smaller in high-IV regimes)
+
+---
+
+## PART 4 — Modern systematic features the codebase lacks
+
+### 4.1 Vol-targeted position sizing (industry standard)
+
+**What real funds do:**
+```python
+position_size = (target_portfolio_vol / stock_realised_vol) × risk_budget
+```
+
+A stock with 40% annualised vol gets half the position of one with 20% vol, because risk contribution is equalised. AQR, Bridgewater, and most CTAs size this way.
+
+**Current codebase:** Fixed 5%/4%/3%/1.5% by tier regardless of stock volatility. A 5% position in TSLA carries ~3× the daily risk of 5% in JNJ.
+
+**Cost to implement:** ~30 lines in Portfolio class (which doesn't exist yet — BUG-95).
+
+### 4.2 Correlation-adjusted concentration limits
+
+**What real funds do:** Track pairwise correlation between open positions. Limit total beta exposure (sum of beta-weighted positions) and total correlation cluster size.
+
+**Current codebase:** Limit is "max 10 positions" and "max 30% per sector." 10 high-beta tech longs in different sub-sectors looks diversified but isn't.
+
+**Cost:** ~100 lines. Requires rolling correlation matrix maintenance.
+
+### 4.3 Drawdown-aware position sizing
+
+**What real funds do:** When portfolio is in drawdown, automatically reduce per-trade size. When recovering, gradually scale up. Prevents over-trading after losses (a major behavioural failure mode).
+
+**Formula:**
+```python
+size_multiplier = 1.0 if drawdown < 5% else 1.0 - (drawdown - 5%) × 2
+# 5% DD: 100% size; 15% DD: 80% size; 25% DD: 60% size; 35% DD: 40% size
+```
+
+**Current codebase:** Drawdown is mentioned in plan ("suspend at 30%") but not tracked because Portfolio class doesn't exist.
+
+### 4.4 Risk parity allocation across strategies
+
+**What real funds do:** Allocate equal RISK (not equal capital) across strategies. A high-Sharpe low-vol strategy and a low-Sharpe high-vol strategy get different capital allocations to deliver same expected risk contribution.
+
+**Current codebase:** All strategies treated equally. EXCEPTIONAL tier strategies get 5%; HIGH gets 4%. No reference to historical strategy Sharpe.
+
+### 4.5 Walk-forward parameter optimization
+
+**What real funds do:** Re-optimize key parameters (lookback periods, entry thresholds) every N months on rolling window. Captures regime adaptation without overfitting.
+
+**Current codebase:** All parameters are static (RSI 30/70 forever, MACD 12/26/9 forever). No re-optimization.
+
+### 4.6 Online learning / feedback loop
+
+**What real funds do:** Track each strategy's recent performance. Strategies in drawdown get lower weight. Strategies on hot streak get protected against over-allocation (mean-reversion guard).
+
+**Current codebase:** Static weights. No feedback from live performance to allocation.
+
+### 4.7 Execution algorithm sophistication
+
+**What real funds do:** Even for swing trading, large orders are split via TWAP, VWAP, or POV (percentage of volume) algorithms to minimise market impact. For $10K positions this is overkill, but for $100K+ it matters.
+
+**Current codebase:** Plans for "market order at next-day open." For $10K positions, fine. For scaled deployment, will leak slippage.
+
+### 4.8 Regime-conditional strategy weighting
+
+**What real funds do:** Each strategy has documented regime fitness. The portfolio dynamically reweights based on detected regime — NOT using if-else logic but smooth mixture model.
+
+```python
+strategy_weights[regime] = {
+    'rsi_oversold': {'bull': 0.2, 'neutral': 0.7, 'bear': 1.0, 'crisis': 0.5},
+    'momentum_breakout': {'bull': 1.0, 'neutral': 0.5, 'bear': 0.2, 'crisis': 0.1},
+    ...
+}
+final_weight = sum(regime_probability[r] × strategy_weights[r] for r in regimes)
+```
+
+**Current codebase:** Strategy fires identically in all regimes. Tier-based sizing is regime-conditional but only via crisis_position_multiplier (single multiplier).
+
+### 4.9 Machine learning enhancement layer
+
+**What real funds do:** Use ML (gradient boosting, neural nets) to predict strategy edge conditional on context. Each historical trade becomes a training example. Features include all signals + regime + sector. Target is next-N-day return.
+
+**Current codebase:** No ML. Agent layer is the closest equivalent but agents reason rather than learn from outcomes.
+
+**Caveat:** ML is prone to overfitting on financial data. Most retail "ML for trading" projects fail. But properly done (walk-forward, purged CV, deflated Sharpe), ML can add 10-20% Sharpe lift.
+
+### 4.10 News/event NLP layer
+
+**What real funds do:** Real-time NLP on earnings transcripts, 8-K filings, news wires. Extract sentiment shifts, guidance changes, management tone changes. This is one of the strongest edges available today (BloombergGPT, FinBERT, etc.).
+
+**Current codebase:** AV news sentiment cache (mostly empty), Finnhub news cache (entirely empty). No NLP. Agents can't read recent news because the data isn't passed to them.
+
+---
+
+## PART 5 — What this all means: the diagnosis
+
+The current codebase is a **first-generation technical-indicator-based system** with an agent layer bolted on. It looks comprehensive (72 strategies, 220 signals, 6 agents) but the strategies are all variants of trend or mean reversion, the signals are all classical TA, and the agents' work is mostly thrown away.
+
+A **modern systematic trading platform** has:
+- Multiple strategy families, not just two
+- Smart-money/positioning data integrated as first-class signals
+- ICT/SMC concepts integrated upfront
+- Volume profile, AVWAP, CVD as standard
+- Vol-targeted, correlation-adjusted, drawdown-aware sizing
+- Regime-conditional strategy weighting
+- ML layer or sophisticated agent reasoning that's actually consumed
+- News/event NLP integrated with agent context
+
+The user's instruction is correct: these need to be integrated upfront, not deferred. A system that ships without ICT or AVWAP or vol-targeted sizing in 2026 is fighting with one hand tied.
+
+---
+
+## PART 6 — New bugs documented
+
+### Strategy family gaps (BUG-139 to BUG-150)
+
+- **BUG-139 · MEDIUM** — No Carry/Value strategy family (P/E, P/B, dividend yield rank)
+- **BUG-140 · MEDIUM** — No Quality strategy family (ROE, accruals, low debt)
+- **BUG-141 · HIGH** — No Volatility-based strategies (vol-targeting, vol carry)
+- **BUG-142 · HIGH** — No Event-driven strategies (PEAD, M&A arb, index inclusion)
+- **BUG-143 · MEDIUM** — No Macro/Cross-asset strategies
+- **BUG-144 · HIGH** — Smart-money signals are binary gates, not continuous strategy inputs
+- **BUG-145 · HIGH** — No ICT/SMC strategy family (8 core concepts, 16 derived strategies)
+- **BUG-146 · HIGH** — No Volume Profile / VPVR strategies
+- **BUG-147 · MEDIUM** — No Anchored VWAP strategies
+- **BUG-148 · MEDIUM** — No Sentiment/Narrative rule strategies (only agent-mediated)
+- **BUG-149 · MEDIUM** — No Calendar/Seasonal strategies (FOMC, January, sell-in-May)
+- **BUG-150 · LOW** — No Pairs/StatArb strategies (acceptable for limited-funds, log only)
+
+### Modern signal gaps (BUG-151 to BUG-159)
+
+- **BUG-151 · HIGH** — Anchored VWAP not computed (5 anchors: earnings, year, swing-hi, swing-lo, 52w-hi)
+- **BUG-152 · HIGH** — Volume Profile (POC, VAH, VAL, HVN, LVN) not computed
+- **BUG-153 · MEDIUM** — Cumulative Volume Delta (CVD) not computed
+- **BUG-154 · HIGH** — Relative Strength vs sector and SPY not computed (planned for 1C, recommend upfront)
+- **BUG-155 · MEDIUM** — Per-ticker volatility regime not computed
+- **BUG-156 · HIGH** — Post-Earnings Announcement Drift (PEAD) tracking absent
+- **BUG-157 · MEDIUM** — News headlines not passed to agents as text (only sentiment number)
+- **BUG-158 · LOW** — Implied volatility / Volatility Risk Premium signals absent (Phase 1C+)
+- **BUG-159 · MEDIUM** — Time-since-strategy-fire not tracked as itself a signal
+
+### ICT/SMC concept gaps (BUG-160 to BUG-167)
+
+- **BUG-160 · HIGH** — Order Block (OB) detection absent
+- **BUG-161 · HIGH** — Fair Value Gap (FVG) detection absent
+- **BUG-162 · HIGH** — Liquidity Sweep / Stop Hunt detection absent
+- **BUG-163 · MEDIUM** — Displacement filter absent (used as quality filter for OB/FVG)
+- **BUG-164 · MEDIUM** — Breaker Block detection absent
+- **BUG-165 · MEDIUM** — Premium/Discount zones not computed
+- **BUG-166 · MEDIUM** — Optimal Trade Entry (OTE) Fibonacci zone not computed
+- **BUG-167 · MEDIUM** — Market Structure (HH/HL/LH/LL, BOS, CHoCH) not tracked
+
+### Modern systematic-trading capability gaps (BUG-168 to BUG-177)
+
+- **BUG-168 · HIGH** — No vol-targeted position sizing (industry standard)
+- **BUG-169 · HIGH** — No correlation-adjusted concentration limits
+- **BUG-170 · MEDIUM** — No drawdown-aware position sizing
+- **BUG-171 · MEDIUM** — No risk parity allocation across strategies
+- **BUG-172 · MEDIUM** — No walk-forward parameter optimization (all params static)
+- **BUG-173 · MEDIUM** — No online learning / feedback loop from live performance
+- **BUG-174 · LOW** — No execution algorithm sophistication (acceptable at $10K scale)
+- **BUG-175 · HIGH** — No regime-conditional strategy weighting (smooth mixture)
+- **BUG-176 · MEDIUM** — No ML enhancement layer (acceptable; agents are intended substitute)
+- **BUG-177 · HIGH** — No news/event NLP layer (agent context lacks recent headlines)
+
+### Agent capability gaps revisited
+
+The agent capability gaps listed in Pass 15 (BUG-114 to BUG-138) compound with the integration gaps. Even when agents make recommendations, those recommendations rest on degraded context (missing AVWAP, missing market structure, missing news headlines). Fixing the integration without fixing the input would still produce mediocre decisions.
+
+---
+
+## PART 7 — Updated bug count
+
+| Category | Count |
+|---|---|
+| **Total bugs documented** | **177** |
+| Critical | 14 |
+| High | 60 |
+| Medium | 79 |
+| Low | 24 |
+
+**That's 39 new bugs in this single pass.** The overall character of the bug registry has shifted: original passes found defects and lookahead bugs (CRITICAL/HIGH), this pass finds capability gaps (mostly MEDIUM, some HIGH).
+
+The CRITICAL count remains 14 — these are still the bugs that block any meaningful Phase 1B run. The expanded HIGH and MEDIUM counts represent the gap between "current system" and "modern systematic platform."
+
+---
+
+## PART 8 — Implications for PROJECT_PLAN
+
+This pass establishes a substantial body of work that needs to be integrated upfront per user direction. The implications for PROJECT_PLAN are significant:
+
+1. **Phase 1B scope expands** to include implementing core ICT/SMC concepts (BUG-160 to BUG-167) as upfront capability, not deferred Phase 1E. Adds ~7-10 weeks of implementation.
+
+2. **Phase 1B signals expand** to include AVWAP, Volume Profile, CVD, Relative Strength, PEAD (BUG-151 to BUG-156). Adds ~3-4 weeks.
+
+3. **New strategy families add** to compensate for the over-coverage of trend/mean-reversion. Adds ~4-6 weeks.
+
+4. **Vol-targeted sizing and correlation-aware limits** become Phase 0 / Gate 1 prerequisites rather than future work. Adds ~2-3 weeks.
+
+5. **News headlines as agent context** becomes Phase 1B prerequisite (BUG-177). Adds ~1 week.
+
+**Total upfront work uplift: ~17-25 weeks of additional implementation before Gate 5 (full Phase 1B-α) can run.**
+
+This is a significant shift from the current PROJECT_PLAN. The user has authorised me to update PROJECT_PLAN. I will now draft those changes and **show them for review before committing** as per established protocol.
+
+The next message will contain the proposed PROJECT_PLAN changes (Phase 0 expansion, new strategy families, ICT integration, modern signals, modern systematic features). The audit (this Pass 16) is already comprehensive and committed.
+
+---
+
+*Pass 16 complete. 39 new bugs documented (BUG-139 to BUG-177). Total 177 bugs across 16 passes. ICT/SMC formally specified as upfront integration. Modern systematic trading capabilities catalogued. PROJECT_PLAN changes drafted in next message for owner review.*
