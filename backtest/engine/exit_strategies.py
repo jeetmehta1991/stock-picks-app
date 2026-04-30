@@ -405,7 +405,18 @@ def exit_hybrid_50pct(df_full, entry_date, entry_price, direction, atr,
                 if close > best:
                     best = close
                     stop = max(stop, best * (1 - trail_pct))
-                if low <= stop:
+                if l <= stop:
+                    full_pnl = _pnl(entry_price, stop, direction)
+                    pnl = blended_pnl * 0.5 + full_pnl * 0.5
+                    return {"exit_price": round(stop, 4), "exit_date": idx.date(),
+                            "exit_reason": "hybrid_trail", "pnl_pct": round(pnl, 4),
+                            "win": pnl > 0,
+                            "hold_days": (idx.date() - entry_date).days}
+            else:  # short
+                if close < best:
+                    best = close
+                    stop = min(stop, best * (1 + trail_pct))
+                if h >= stop:
                     full_pnl = _pnl(entry_price, stop, direction)
                     pnl = blended_pnl * 0.5 + full_pnl * 0.5
                     return {"exit_price": round(stop, 4), "exit_date": idx.date(),

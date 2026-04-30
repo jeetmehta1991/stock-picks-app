@@ -781,6 +781,50 @@ def test_congressional_uses_transaction_date():
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# HYBRID 50PCT EXIT — BUG-270a / BUG-270b REGRESSION
+# ─────────────────────────────────────────────────────────────────────────────
+
+def _make_ohlcv(dates, highs, lows, closes):
+    df = pd.DataFrame({"high": highs, "low": lows, "close": closes}, index=dates)
+    df.index = pd.DatetimeIndex(df.index)
+    return df
+
+def test_hybrid_long_trail_after_target_hit():
+    """BUG-270a: must NOT raise NameError ('low' undefined) after target hit."""
+    from backtest.engine.exit_strategies import exit_hybrid_50pct
+    import datetime
+    base = date(2022, 1, 3)
+    dates  = [base + timedelta(days=i) for i in range(30)]
+    # Days 0-4: rise to ~106 (hits 3×ATR=3 target), then crash to 70
+    highs  = [101, 103, 105, 107, 107] + [90, 80, 75, 70, 70] + [70]*20
+    lows   = [99,  101, 103, 105, 105] + [85, 75, 70, 65, 65] + [65]*20
+    closes = [100, 102, 104, 106, 106] + [88, 78, 72, 68, 68] + [68]*20
+    df = _make_ohlcv(dates, highs, lows, closes)
+    entry_date = date(2022, 1, 2)   # one day before df starts
+    result = exit_hybrid_50pct(df, entry_date, 100.0, "long", atr=1.0)
+    assert result["exit_reason"] in ("hybrid_trail", "stop_loss", "end_of_data"), \
+        f"Unexpected exit_reason: {result['exit_reason']}"
+    print(f"✅ BUG-270a: long hybrid trail no NameError — exit={result['exit_reason']}")
+
+def test_hybrid_short_trail_after_target_hit():
+    """BUG-270b: short branch must trail and exit via hybrid_trail, not end_of_data."""
+    from backtest.engine.exit_strategies import exit_hybrid_50pct
+    import datetime
+    base = date(2022, 1, 3)
+    dates  = [base + timedelta(days=i) for i in range(30)]
+    # Days 0-4: drop to ~94 (hits 3×ATR=3 short target), then spike to 130
+    highs  = [101, 99,  97,  95,  95] + [105, 115, 125, 130, 130] + [130]*20
+    lows   = [99,  97,  95,  93,  93] + [100, 110, 120, 128, 128] + [128]*20
+    closes = [100, 98,  96,  94,  94] + [102, 112, 122, 129, 129] + [129]*20
+    df = _make_ohlcv(dates, highs, lows, closes)
+    entry_date = date(2022, 1, 2)
+    result = exit_hybrid_50pct(df, entry_date, 100.0, "short", atr=1.0)
+    assert result["exit_reason"] in ("hybrid_trail", "stop_loss"), \
+        f"Expected hybrid_trail or stop_loss, got: {result['exit_reason']} (pre-fix would be end_of_data)"
+    print(f"✅ BUG-270b: short hybrid trail exits correctly — exit={result['exit_reason']}")
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # RUNNER
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -802,6 +846,8 @@ if __name__ == "__main__":
         test_slippage_increases_long_entry, test_slippage_decreases_short_entry,
         test_etf_slippage_lower_than_stock,
         test_cot_returns_neutral, test_sentiment_score_excludes_cot,
+        test_hybrid_long_trail_after_target_hit,
+        test_hybrid_short_trail_after_target_hit,
     ]
     passed = 0
     failed = []
