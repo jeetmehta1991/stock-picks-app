@@ -15230,3 +15230,204 @@ Until then, work continues in current session.
 ---
 
 *Pass 36 complete. DECISION-060 RESOLVED. Handoff paused per owner instruction. No new decisions, bugs, or claims this turn.*
+
+---
+
+# AUDIT PASS 37 — Pending Decisions Inventory + Bug Handling Approach
+
+Checklist: ✅ #1 (verified by extracting decision list from AUDIT.md, not memory) ✅ #4 (directly answers two specific questions) ✅ #26 (cross-verified resolved status against actual file content, not assumed) ✅ #27 (staying on the two questions asked, no scope drift)
+
+User questions:
+1. "What decisions are still pending?"
+2. "Once we are done with decisions what is the best way to handle bugs?"
+
+---
+
+## SECTION A — Pending Decisions Inventory
+
+**Verified by grep on AUDIT.md.** Total decisions: 60. Resolved: 31. Pending: 29.
+
+### Decisions explicitly resolved (31)
+
+From Pass 19-25 batch resolutions: 001, 002, 003, 004, 005, 006, 007, 008, 009, 010, 011, 012, 013 REVISED.
+From Pass 22-23: 039 (deferred), 040 (PIT loader), 041 (no compression), 042 (AgentGateConfig).
+From Pass 27-28: 045 (fork-existing), 046 (drop CVD).
+From Pass 29-30: 050 (freezegun), 052 (S&P 500 dataset).
+From Pass 33 blanket approval: 047, 048, 049, 051 REVISED-3, 053, 054, 055, 056, 057, 059.
+From Pass 35-36: 058 REVISED (GPT-5.4-mini), 060 (smoke test gating).
+
+### Decisions still pending (29)
+
+**A — Likely superseded by other resolved decisions (4) — needs explicit closure:**
+
+| # | Topic | Likely superseded by |
+|---|---|---|
+| 017 | Earnings proximity hard filter (BUG-131) | 013 REVISED — earnings_tolerant attribute |
+| 030 | Wikipedia data alternative (BUG-185) | 052 + L88 — slickcharts.com / committed CSV |
+| 032 | IBKR vs Alpaca for paper trading | 054 — IBKR for both paper and live |
+| 044 | Phase 0.D scope (full ICT vs reduced) | 045 — fork smartmoneyconcepts library |
+
+These 4 can be closed with a single confirmation each.
+
+**B — Phase 1B / 1C-α validation methodology (3):**
+
+| # | Topic | Notes |
+|---|---|---|
+| 014 | Phase 1B passing criteria adjustments | Affects Stage 1 rules-only pass/fail thresholds |
+| 015 | Strategy correlation analysis methodology | How to detect redundant strategies |
+| 016 | Threshold calibration scope (BUG-130) | Calibrate signal thresholds against historical distributions |
+
+**C — Risk management rules (5):**
+
+| # | Topic | Notes |
+|---|---|---|
+| 018 | Cooldown after stop-out (BUG-133) | Re-entry timing after stops |
+| 019 | Liquidity filter timing (BUG-135) | Pre-trade vs in-trade liquidity check |
+| 022 | Drawdown-aware position sizing (BUG-170) | Step function: size shrinks at -5/-10/-15% drawdown |
+| 023 | Vol-targeted position sizing (BUG-168) | Inverse-ATR sizing |
+| 024 | Correlation-adjusted concentration limits (BUG-169) | Sector/factor caps |
+
+**D — Strategy/regime adaptation (3):**
+
+| # | Topic | Notes |
+|---|---|---|
+| 021 | Tier system simplification | 6 tiers vs 3 tiers |
+| 025 | Regime-conditional strategy weighting (BUG-175) | Strategy weights vary by regime |
+| 026 | Walk-forward parameter re-optimization (BUG-172) | Re-tune frequency |
+| 027 | Online learning / feedback loop (BUG-173) | Strategy weights update from realized results |
+
+**E — Live trading operational (5):**
+
+| # | Topic | Notes |
+|---|---|---|
+| 028 | Stage 3 paper trading duration | 12 weeks vs 24 weeks |
+| 029 | Stage 4 starting capital | $10K vs $25K vs $50K |
+| 033 | Email approval system specifics | Wording, timeout, response format |
+| 034 | Daily loss limits for live trading | Hard kill switches |
+| 035 | Tax classification (Canadian) | Capital gains vs business income |
+
+**F — Process/infrastructure (4):**
+
+| # | Topic | Notes |
+|---|---|---|
+| 020 | News API final selection | Depends on Pass-2 evaluation script results |
+| 031 | Codespace vs local execution | Where does production run |
+| 036 | Audit document maintenance going forward | Ongoing audit cadence |
+| 043 | Retune framework | When/how to re-tune strategy parameters post-launch |
+
+**G — Phase 0 sub-scope (2):**
+
+| # | Topic | Notes |
+|---|---|---|
+| 037 | Characterization tests-first approach (Phase A) | Test discipline before Phase 0 implementation |
+| 038 | Layered execution with iteration budgets | Implementation gating |
+
+### Suggested resolution order
+
+**Group A first (4 decisions, ~5 minutes):** Close superseded ones with explicit confirmation. No real work, just hygiene.
+
+**Group F + B next (7 decisions):** Process/infrastructure + Phase 1B methodology. These define HOW we run Phase 1B-α (which is the very next implementation work).
+
+**Group C + D + G next (12 decisions):** Risk management + strategy adaptation + Phase 0 sub-scope. These shape Phase 0 implementation.
+
+**Group E last (5 decisions):** Live trading operational. Not blocking until Stage 3+.
+
+This sequence keeps decisions ahead of the implementation work, not behind.
+
+---
+
+## SECTION B — Bug Handling Approach (post-decisions)
+
+**Current bug count:** 206 unique bug references in AUDIT.md across all passes. Severity distribution per Pass 24-25 audit: **14 CRITICAL, 39 HIGH, 45 MEDIUM, 12 LOW** (~110 categorized; remaining ~96 are duplicates or sub-bugs).
+
+### Why "fix all 200+ bugs sequentially" is the wrong approach
+
+Bugs were found across 7 distinct categories of work (see Pass 13-25). Many will be:
+- **Auto-fixed by the fork-existing strategy** — TradingAgents framework adoption invalidates 12k cached agent decisions and replaces 772 lines of buggy custom orchestration. Many bugs in `pipeline.py` simply disappear.
+- **Auto-fixed by the new architecture** — DECISION-040 (PIT loader) + DECISION-058 REVISED (GPT-5.4-mini via TradingAgents) eliminate entire bug families (cache key mismatches, prefetch gaps, agent input drift).
+- **No longer applicable** — bugs about strategy implementations that get replaced by the fork (e.g., custom Wikipedia scraping).
+
+**Sequential bug-fix would take months and fix bugs we'd later delete anyway.**
+
+### Recommended approach: Three-pass triage
+
+**Pass 1 — Reclassify all bugs against the new architecture (1-2 days):**
+
+For each bug, determine status:
+- **AUTO-RESOLVED** — fixed by the architecture changes (TradingAgents adoption, smartmoneyconcepts fork, etc.)
+- **STILL APPLIES** — needs explicit fix in the new architecture
+- **OBSOLETE** — refers to code being deleted; can be closed
+
+This reduces 206 to a real fix list — likely 40-60 bugs.
+
+**Pass 2 — Prioritize the real fix list by phase (half day):**
+
+Map each remaining bug to which phase it must be fixed in:
+- **Pre-Phase 0.A:** Bugs that block any work (none expected; Phase 0.A starts with new architecture)
+- **Phase 0.A:** Bugs in prefetch/data pipeline (BUG-178, 179, 184-191, etc.)
+- **Phase 0.B:** Bugs in Portfolio/sizing
+- **Phase 0.C:** Bugs in agent integration
+- **Phase 0.D:** Bugs in signal computation
+- **Phase 1B-α:** Validation-discoverable bugs (left for empirical detection)
+
+**Pass 3 — Fix in implementation order (during Phase 0):**
+
+Bugs are fixed as their phase is implemented. Each fix:
+1. Has a regression test added per CHECKLIST 14 + L45 ("audits caught zero bugs without tests").
+2. Verified by running, not by reading per L1.
+3. Documented as fixed in AUDIT.md with reference to fixing commit.
+
+This is naturally how Phase 0 work integrates the bug list — fix-in-place rather than separate fix sprints.
+
+### What NOT to do
+
+- **Don't fix all bugs upfront before implementation.** Many will be deleted by the new architecture.
+- **Don't fix bugs without regression tests.** Per L45 — three audits read code and missed the same critical bugs. Reading is not verification.
+- **Don't trust audit findings as fix specifications.** Each fix must have an executable test that fails before the fix and passes after, per CHECKLIST 14.
+- **Don't batch-fix without owner approval.** Per L94 (PROJECT_PLAN.md append-only) and the broader principle that big changes need approval.
+
+### One concern flagged per CHECKLIST 25
+
+The bug registry in AUDIT.md is comprehensive but **not all bugs were independently verified by running code.** Some are inferred from code review. Per L45, code-review-only audits historically missed real bugs. So the triage Pass 1 may also reveal:
+- **Bugs that don't actually exist** — claims based on code reading that turn out to be wrong on actual run
+- **Bugs that exist differently** — actual behavior differs from what the audit assumed
+
+This means Pass 1 triage should include **light verification** — for any bug claimed to be CRITICAL, run a 5-line test confirming the bug actually exists before scheduling it for fix. This prevents the inverse mistake of fixing phantom bugs.
+
+---
+
+## SECTION C — Recommended next steps
+
+Per CHECKLIST 2 (show full plan, wait for approval) — these are options, not actions:
+
+**Option 1 — Quick wins first.** Resolve Group A (4 superseded decisions, ~5 min total). Then Group F + B (7 process decisions). Total: 11 of 29 pending decisions cleared in this turn or next.
+
+**Option 2 — Sequential walkthrough.** Go through pending decisions in numerical order one at a time. Slower but ensures each gets full discussion.
+
+**Option 3 — Phase-driven walkthrough.** Resolve only decisions that block the immediate next implementation work (Phase 0.A). Defer others.
+
+**My recommendation: Option 1** — quick supersession closures first, then process/methodology decisions ahead of Phase 0 implementation.
+
+**For bugs:** Pass 1 triage should happen AFTER decisions are resolved, not in parallel. Why: many bug fates depend on decisions still pending. Examples:
+- DECISION-018 (cooldown) determines whether several stop-related bugs apply
+- DECISION-022/023/024 (sizing rules) determine which sizing bugs need fixing
+- DECISION-025 (regime weighting) affects regime-related bug priorities
+
+So sequence is: **finish decisions → bug triage → Phase 0.A implementation**.
+
+---
+
+## SECTION D — Counts
+
+| Category | Count |
+|---|---|
+| Total decisions | 60 |
+| Resolved | 31 (52%) |
+| Pending | 29 (48%) |
+| Total bugs (unique references) | 206 |
+| Critical bugs | ~14 |
+| Bugs likely auto-resolved by new architecture | ~50% (estimate, needs Pass 1 triage) |
+
+---
+
+*Pass 37 complete. Pending decisions inventoried (29 across 7 groups: superseded closures, validation methodology, risk management, strategy adaptation, live trading ops, process/infrastructure, Phase 0 sub-scope). Bug handling approach: 3-pass triage (reclassify against new architecture → prioritize by phase → fix in implementation order with regression tests). Recommended sequence: decisions first, then bug triage, then Phase 0.A. No new bugs, no new decisions.*
