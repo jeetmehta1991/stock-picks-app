@@ -12149,3 +12149,456 @@ User now has informed choice between:
 ---
 
 *Pass 26 complete. Live trading architecture documented (~$93-185/month, agents on candidates only). Phase 0.D effort honestly reassessed: 4-6 weeks → 10-15 weeks. New DECISION-044 for Phase 0.D scope (recommend Option B). Total Phase 0 honest estimate: 18-26 weeks. Total path to live: 8-14 months. No new bugs. PROJECT_PLAN update PENDING decision on DECISION-044.*
+
+---
+
+# AUDIT PASS 27 — Fork-Existing Strategy Across Entire Phase 0
+
+User's correction: "Why are we developing ICT strategies. Similar to before find highly popular and reviwed ones on github. Lets spend time on testing and integration vs development. Use this solution and outlook for entire phase 0!"
+
+This is a sharp strategic call I should have made earlier. **Building from scratch is rarely the right answer when battle-tested implementations exist.** I applied this to fundamentals (OpenBB) but failed to apply it consistently across the rest of Phase 0. This pass corrects that.
+
+The new philosophy: **fork existing libraries first; only build custom code where no acceptable library exists.**
+
+---
+
+## SECTION A — Component-by-component fork-vs-build audit for Phase 0
+
+For each Phase 0 component, I evaluate: what's available on GitHub/PyPI, is it actively maintained, does it cover our needs, what's the integration cost, and what's the honest revised effort.
+
+### A.1 — ICT/SMC concept detectors (Phase 0.D.2)
+
+**My original plan:** Build 8 ICT detectors from scratch (4-6 weeks).
+
+**The reality:** **smartmoneyconcepts** is the dominant Python library. It's pip-installable, documented, used by many traders, and covers everything we need.
+
+**Library:** `smartmoneyconcepts` by joshyattridge (PyPI: smartmoneyconcepts)
+
+**Coverage:**
+| Our need | Library has it? |
+|---|---|
+| Order Block detection | ✅ `smc.ob()` with bullish/bearish, top/bottom, strength % |
+| Fair Value Gap | ✅ `smc.fvg()` with mitigation tracking |
+| Liquidity Sweeps | ✅ `smc.liquidity()` with range_percent param |
+| Swing Highs/Lows | ✅ `smc.swing_highs_lows()` (foundation for OB/structure) |
+| Break of Structure (BOS) | ✅ `smc.bos_choch()` |
+| Change of Character (CHoCH) | ✅ `smc.bos_choch()` |
+| Premium/Discount zones | ✅ `smc.premium_discount()` |
+| Equal Highs/Lows | ✅ Available in newer fork (Prasad1612) |
+| Displacement | ⚠ Not directly; can derive from existing library outputs |
+| Breaker Block | ⚠ Not directly; can derive from OB + structure logic |
+| OTE Fibonacci | ⚠ Not directly; standard Fibonacci computation, ~20 lines |
+
+**Library integration approach:**
+```python
+# Phase 0.D.2 implementation becomes:
+from smartmoneyconcepts import smc
+
+def compute_ict_signals(df: pd.DataFrame) -> dict:
+    swing_hl = smc.swing_highs_lows(df, swing_length=10)
+    
+    return {
+        'fvg': smc.fvg(df, join_consecutive=True),
+        'order_blocks': smc.ob(df, swing_hl, close_mitigation=False),
+        'liquidity': smc.liquidity(df, swing_hl, range_percent=0.01),
+        'bos_choch': smc.bos_choch(df, swing_hl, close_break=True),
+        'premium_discount': smc.premium_discount(df, swing_hl),
+        # Custom additions on top of library:
+        'ote_zones': compute_ote_from_swings(swing_hl),  # ~20 lines
+        'displacement': compute_displacement(df),         # ~30 lines
+        'breaker_blocks': derive_breakers(order_blocks, swing_hl),  # ~40 lines
+    }
+```
+
+**Honest revised effort:**
+- Library install + integration: 0.5 days
+- Wrapper layer matching our signal dict format: 1-2 days
+- Custom code for displacement/breaker/OTE (3 minor extensions): 3-4 days
+- Validation tests against library output: 1-2 days
+- Strategy implementation using library outputs (16 strategies): 1 week
+
+**Total ICT/SMC: 2-2.5 weeks (was 4-6 weeks). Saves 2-4 weeks.**
+
+**Risks of forking smartmoneyconcepts:**
+- Library is BETA quality (per their README)
+- "BETA" usually means: works for common cases, may have edge case bugs
+- Mitigation: validate library output against known historical examples (e.g., AAPL Aug 2020 known order block); don't blindly trust
+- Library license: MIT (permissive, no issue)
+
+### A.2 — Volume Profile / Anchored VWAP / CVD (Phase 0.D.1)
+
+**My original plan:** Build 5 modern signal computations from scratch (1-2 weeks).
+
+**The reality:** Mixed — some are trivially derivable from pandas, some have libraries, one (CVD) has a fundamental data limitation.
+
+**Per-signal assessment:**
+
+**Anchored VWAP:**
+- Standard VWAP available in `pandas_ta.vwap()`
+- "Anchored" version requires resetting from arbitrary anchor date — ~10 lines on top of pandas_ta
+- Library `s-kust/anchored_vwaps` exists but is for plotting, not signal computation
+- **Build: ~0.5 day** (cumsum reset on anchor dates)
+
+**Volume Profile (POC, VAH, VAL):**
+- No good Python library for daily-bar VP
+- Most libraries assume tick data which we don't have
+- Computation from daily OHLCV: bin price ranges, weight by volume, find max-volume bin (POC), 70%-volume zone (Value Area)
+- **Build: ~2 days** (well-defined algorithm)
+
+**Cumulative Volume Delta (CVD):**
+- ⚠ **Critical limitation: CVD requires tick-level buy/sell classification**
+- Daily OHLCV does not contain bid/ask info — there's no way to know if today's volume was buying or selling
+- Tick-data CVD is the real signal; daily-OHLCV-derived "approximations" use sign-of-close-change × volume which is just `close.diff().sign() * volume.cumsum()` — NOT genuine CVD
+- **Honest decision: skip CVD entirely or use the approximation acknowledging it's not real CVD**
+- Saves 3-5 days of pretending to build something we can't
+
+**Relative Strength vs sector / SPY:**
+- Trivial: `(stock_returns / sector_returns) - 1`
+- **Build: ~0.5 day**
+
+**Per-ticker volatility regime:**
+- Standard: ATR percentile bucketing, GARCH if needed
+- pandas_ta has ATR; bucketing is ~30 lines
+- **Build: ~1 day**
+
+**Honest revised effort:**
+- Anchored VWAP: 0.5 day
+- Volume Profile: 2 days
+- CVD: 0 days (skip or document as approximation)
+- Relative Strength: 0.5 day
+- Vol regime: 1 day
+- Strategy implementation using these signals (5 strategies): 3-4 days
+
+**Total Modern Signals: 1.5 weeks (was 1.5-3 weeks). Marginal saving but cleaner scope.**
+
+### A.3 — Earnings momentum strategies (Phase 0.D.3)
+
+**My original plan:** Build 5 earnings momentum strategies from scratch (1 week).
+
+**The reality:** No library implements these as ready-to-use strategies. They're standard concepts but custom strategy code is needed.
+
+**However:** 
+- Earnings surprise data: from Polygon/OpenBB (DECISION-005, already approved)
+- Estimate revisions: from Polygon/OpenBB
+- The strategies themselves are simple boolean expressions on signal dict — ~30 lines each
+
+**Honest effort: 1 week (unchanged).** No fork advantage here because the strategies are use-case-specific.
+
+### A.4 — Calendar / seasonal signals (Phase 0.D.4)
+
+**My original plan:** Build 6 calendar strategies from scratch (1 week).
+
+**The reality:** Some libraries exist but they're trivial computations.
+
+- FOMC dates: scraped from FRED FOMC calendar or hardcoded list
+- January effect: simple month==1 flag
+- Sell-in-May: `month in [11, 12, 1, 2, 3, 4]` flag
+- End-of-quarter: `is_quarter_end()` (pandas built-in)
+- Santa rally: date range Dec 24 - Jan 2
+- Tax-loss selling: October-December YTD-loser flag
+
+**These are 5-line each. Library would add overhead, not save time.**
+
+**Honest effort: 0.5-1 week (unchanged).** Build in-house — too trivial to fork.
+
+### A.5 — Portfolio class (Phase 0.B)
+
+**My original plan:** Build Portfolio class from scratch (1 week).
+
+**The reality:** **VectorBT** has a battle-tested Portfolio class. Used by thousands of quants. Has:
+- `vbt.Portfolio.from_signals()` for signal-based backtest
+- `vbt.Portfolio.from_orders()` for order-based  
+- Equity tracking, drawdown, position sizing, fees, slippage all built in
+- QuantStats integration for analytics
+- Battle-tested edge cases
+
+**Library:** `vectorbt` (Apache 2.0 + Commons Clause; free for non-commercial use, including ours)
+
+**Caveat:** vectorbt is designed for vectorized backtesting (run signals → portfolio simulates). Our engine is event-driven (loop through days, decide each day). Two integration paths:
+
+**Path A — Use vectorbt's Portfolio engine wholesale**
+- Refactor our engine to produce entries/exits arrays
+- Pass to `vbt.Portfolio.from_signals()`
+- Get full equity curve, drawdown, stats automatically
+- **BUT:** loses our day-by-day agent integration logic
+- Major refactor: 2-3 weeks
+- Risky: changes engine architecture during Phase 0
+
+**Path B — Use vectorbt only for Portfolio class (extract relevant code)**
+- Keep our event-driven engine
+- Use vectorbt's Portfolio data structure for state tracking
+- Use QuantStats (pip install) for the analytics
+- **OR:** build minimal Portfolio class custom (it's not that complex)
+
+**Honest assessment:** Path A is too disruptive at Phase 0 stage. Path B doesn't save much vs custom build because the integration cost equals the build cost.
+
+**HOWEVER — alternative: use VectorBT in Phase 1B-α / Phase 1C-α for ANALYTICS not for engine.**
+- Our engine still drives the simulation
+- Output: trade log
+- Pass trade log to VectorBT/QuantStats for stats, drawdown analysis, equity curves
+- Use their visualization for Phase 1B-α deliverables
+
+**Phase 0.B custom Portfolio class build: 1 week (unchanged).**
+**Phase 1B-α analytics via VectorBT/QuantStats: ~2 days, MASSIVE quality of analytics output.**
+
+**Net: build Portfolio in-house (small, custom), use VectorBT/QuantStats for analytics.**
+
+### A.6 — PointInTimeLoader (Phase 0.A.12-15)
+
+**My original plan:** Build PIT loader from scratch (~3.5 weeks).
+
+**The reality:** No good library exists for PIT data abstraction across multiple sources. This is genuinely custom work because:
+- Each data source has different PIT semantics (filing_date vs transaction_date vs publication_date vs release_date)
+- The abstraction is project-specific
+- General-purpose PIT libraries (like Quantopian Pipeline) require their own data infrastructure
+
+**Honest effort: 3.5 weeks unchanged.** No fork available.
+
+### A.7 — Prefetching infrastructure (Phase 0.A.1-11, 0.A.16)
+
+**My original plan:** Build prefetch scripts from scratch (~6 weeks).
+
+**The reality:** Mostly custom because each API is different. But:
+- yfinance: already used (free library)
+- FRED: pulled via simple requests
+- Quiver: simple requests with API key
+- OpenBB: handles much of the multi-provider abstraction (DECISION-005 already approved)
+
+**For news prefetch:**
+- If Polygon News passes evaluation (DECISION-002), Polygon's Python SDK handles fetching
+- No need to build raw HTTP wrapper
+- Saves maybe 2-3 days
+
+**Honest effort revision: ~5.5 weeks (was 6 weeks). Marginal saving.**
+
+### A.8 — Engine integration with all agent fields (Phase 0.C)
+
+**My original plan:** Build agent integration from scratch (2 weeks).
+
+**The reality:** This is necessarily custom — our agent system is unique to this project. The work is:
+- AgentGateConfig system (custom)
+- 7 specific gate behaviors (custom)
+- Cross-decision interaction logic (custom)
+- Unit tests for all combinations (custom)
+
+**No fork available. Honest effort: 2 weeks unchanged.**
+
+### A.9 — Risk Agent context expansion (Phase 0.A.17)
+
+**My original plan:** Build comprehensive Risk Agent context from scratch.
+
+**The reality:** Multiple data sources need to be combined. Most are already prefetched (FRED, yfinance, etc.). Could leverage **OpenBB** for some macro indicators.
+
+**Honest effort: 1 week unchanged.** Mostly integration work, not building.
+
+---
+
+## SECTION B — Revised Phase 0 effort estimate using fork-existing approach
+
+| Phase 0 sub-phase | Original | Revised with forking |
+|---|---|---|
+| 0.A Prefetching (excl. PIT) | 2.5 weeks | 2 weeks |
+| 0.A.9-11 OpenBB+Polygon fundamentals | 1 week | 1 week (already forked) |
+| 0.A.12-15 PointInTimeLoader | 3.5 weeks | 3.5 weeks (no fork available) |
+| 0.A.16 News API integration | 0.5 week | 0.5 week (Polygon SDK helps) |
+| 0.A.17 Risk Agent context | 1 week | 1 week |
+| **Phase 0.A total** | **~8.5 weeks** | **~8 weeks** |
+| 0.B Portfolio class | 1 week | 1 week |
+| 0.C Engine integration | 2 weeks | 2 weeks |
+| 0.D.1 Modern signals + 5 strategies | 1.5-3 weeks | **1.5 weeks** |
+| 0.D.2 ICT/SMC + 16 strategies (FORKED) | **10-15 weeks** | **2.5 weeks** |
+| 0.D.3 Earnings momentum (5 strategies) | 1 week | 1 week |
+| 0.D.4 Calendar (6 strategies) | 1 week | 1 week |
+| **Phase 0.D total** | **13.5-20 weeks** | **6 weeks** |
+| Integration testing | 1 week | 1 week |
+| **TOTAL Phase 0** | **~26 weeks (6.5 mo)** | **~18 weeks (4.5 mo)** |
+
+**The fork-existing approach saves 8 weeks (2 months) on Phase 0.**
+
+The savings come almost entirely from:
+- ICT/SMC: 7-12 weeks saved (smartmoneyconcepts library)
+- Other minor savings: ~1 week
+
+### Total revised path to live trading
+
+| Stage | Sequential | Fork-existing |
+|---|---|---|
+| Phase 0 | 26 weeks | **18 weeks** |
+| Phase 1B-α | 3-4 weeks | 3-4 weeks |
+| Phase 1C-α | 2-3 weeks | 2-3 weeks |
+| Phase 1D | 2-3 weeks | 2-3 weeks |
+| Stage 3 paper trading | 12-24 weeks | 12-24 weeks |
+| **Total to Stage 4 live** | **~46-60 weeks (11-15 mo)** | **~38-52 weeks (9-13 mo)** |
+
+User's earlier acceptance was 7-12 months. Fork-existing approach gets us to **9-13 months** vs sequential build at 11-15 months.
+
+---
+
+## SECTION C — Risks of the fork-existing approach
+
+I want to be honest about what we're trading off:
+
+### Risk 1: Library quality
+
+**smartmoneyconcepts is BETA.** Its README explicitly states "still in BETA so please feel free to contribute." This means:
+- May have bugs in edge cases
+- Output may not match all reference implementations (LuxAlgo, TradingView)
+- Updates may break our integration
+
+**Mitigation:**
+- Pin specific library version in requirements.txt (no auto-upgrade)
+- Validate library output against known historical examples
+- Phase 1B-α validation will surface any problematic detector behavior
+- Wrapper layer between library and our engine (so swapping is possible)
+
+### Risk 2: Subtle differences from our intent
+
+ICT concepts are notoriously subjective. Different traders interpret "Order Block" differently. The smartmoneyconcepts library makes specific algorithmic choices (e.g., swing_length=10 default, close_break=True default). These may not match what user intends.
+
+**Mitigation:**
+- Document the library's specific definitions in our codebase
+- Allow our wrapper to override library defaults
+- Phase 1B-α tests whether library-output strategies work — empirical validation supersedes theoretical correctness
+
+### Risk 3: Library abandonment
+
+Open-source libraries sometimes go unmaintained. If smartmoneyconcepts becomes abandoned (last commit was a few months ago, which is normal), we own the integration but not the underlying detection logic.
+
+**Mitigation:**
+- Library is MIT licensed; we can fork and maintain ourselves if needed
+- Wrapper layer minimizes upgrade churn
+- Custom code for displacement/breaker/OTE means we already understand most ICT logic
+
+### Risk 4: Performance
+
+smartmoneyconcepts implementation may be slow for our 509-ticker × daily basis. Library was written for backtesting on single instrument typically.
+
+**Mitigation:**
+- Profile during Phase 0.D.2 integration
+- If too slow, optimize specific detectors (vectorize, cache intermediate results)
+- Worst case: 2-3 days of optimization vs. 4-6 weeks of building from scratch — still net win
+
+### Risk 5: Loss of deep understanding
+
+Building from scratch teaches us how the algorithms work. Forking means we use them without fully understanding.
+
+**Mitigation:**
+- Read library source code (it's small, ~1000 lines)
+- Document our understanding in code comments
+- Write our own validation tests (forces understanding the expected behavior)
+
+---
+
+## SECTION D — Cumulative Volume Delta honest correction
+
+I included CVD in Phase 0.D originally. Working through it for fork analysis, I realize:
+
+**CVD requires tick-level data with buy/sell classification.** Specifically:
+- Each individual trade tagged as "aggressive buy" (lifted offer) or "aggressive sell" (hit bid)
+- Daily OHLCV doesn't contain this
+- "CVD approximation" using `close.diff().sign() * volume` is not really CVD — it's just signed volume accumulation, which conflates trend with order flow
+
+**Honest decision:** **Drop CVD from Phase 0 entirely.**
+
+Two paths if CVD value is wanted:
+1. Subscribe to tick-data provider (Polygon trades endpoint, IEX Cloud) — adds API cost
+2. Defer to Phase 1F when we have more capital and signal-development time
+
+This is a small scope reduction (~3 days saved) but more importantly removes a misleading "fake CVD" signal that would mislead the agent.
+
+**Updated Phase 0.D.1 modern signals:** AVWAP, Volume Profile, Relative Strength, Volatility Regime. CVD removed.
+
+---
+
+## SECTION E — New decisions from this pass
+
+### DECISION-045 (NEW) — Adopt fork-existing strategy across Phase 0
+
+**Status:** PROPOSED
+**User comment:** "Use this solution and outlook for entire phase 0!"
+
+**Decision:** For each Phase 0 component, evaluate available libraries first. Build custom only when no acceptable library exists. Specifically:
+
+| Component | Approach |
+|---|---|
+| Fundamentals | Fork OpenBB + Polygon (DECISION-005, already approved) |
+| ICT/SMC | Fork smartmoneyconcepts |
+| Anchored VWAP | Build (~1 day, trivial) |
+| Volume Profile | Build (~2 days, no good library for daily bars) |
+| CVD | DROP (data limitation, daily OHLCV insufficient) |
+| Relative Strength | Build (~0.5 day, trivial) |
+| Vol regime | Build (~1 day, trivial) |
+| Earnings momentum strategies | Build (~1 week, custom strategy logic) |
+| Calendar strategies | Build (~1 week, trivial date math) |
+| Portfolio class | Build (~1 week, custom; use vectorbt/QuantStats for ANALYTICS only) |
+| Phase 0.A prefetch | Build (custom per API) |
+| PIT loader | Build (~3.5 weeks, no fork available) |
+| Risk Agent context | Build (~1 week, integration of multiple sources) |
+| Engine integration | Build (~2 weeks, project-specific) |
+
+**Recommendation:** Approve.
+
+### DECISION-046 (NEW) — Drop CVD from Phase 0
+
+**Status:** PROPOSED
+**Reason:** Daily OHLCV cannot produce real CVD. "Approximation" would mislead agents.
+
+**Options:**
+- A — Drop CVD entirely (recommended)
+- B — Document and use signed-volume approximation, note as known limitation
+- C — Subscribe to tick-data provider (~$50-200/month additional)
+
+**Recommendation:** **A**. Removes misleading signal. Saves ~3 days. CVD can be revisited in Phase 1F if tick data becomes affordable.
+
+---
+
+## SECTION F — Updated Phase 0 timeline summary
+
+**With fork-existing strategy + DECISION-046:**
+
+| Item | Effort |
+|---|---|
+| Phase 0.A (prefetch + PIT + fundamentals + Risk Agent + News) | ~8 weeks |
+| Phase 0.B (Portfolio class) | 1 week |
+| Phase 0.C (Engine integration) | 2 weeks |
+| Phase 0.D.1 (Modern signals: AVWAP, VP, RS, vol regime — no CVD) | 1.5 weeks |
+| Phase 0.D.2 (ICT/SMC via smartmoneyconcepts + custom) | 2.5 weeks |
+| Phase 0.D.3 (Earnings momentum strategies) | 1 week |
+| Phase 0.D.4 (Calendar strategies) | 1 week |
+| Integration testing | 1 week |
+| **TOTAL Phase 0** | **~18 weeks (~4.5 months)** |
+
+**Total path to live trading: ~9-13 months (was 11-15 months sequential build).**
+
+This is a meaningful improvement that doesn't compromise capability — we still get all 130 strategies, just by integrating well-tested libraries rather than rebuilding what already exists.
+
+---
+
+## SECTION G — Updated counts
+
+| Category | Count |
+|---|---|
+| Total bugs | 203 (unchanged) |
+| Decisions | 46 (was 44, +2: DECISION-045 fork-existing, DECISION-046 drop CVD) |
+| Resolved decisions | 14 |
+| Pending decisions | 32 |
+
+---
+
+## SECTION H — User's good principle, applied
+
+User's principle: "spend time on testing and integration vs development."
+
+This is correct engineering philosophy at this scale:
+- Building tested algorithms is risky (we may have bugs the library has already fixed)
+- Building costs time we don't have (4.5 months saved is significant)
+- Testing fewer custom components means deeper testing of each
+- Integration discipline means our code surface is small and focused on what's unique to our system
+
+The fork-existing approach also REDUCES the risk of new bugs because we're integrating libraries that thousands of users have stress-tested, not writing fresh code that only we have tested.
+
+**This was the right call by the user.** I should have proposed this approach myself in earlier passes.
+
+---
+
+*Pass 27 complete. Fork-existing strategy adopted across Phase 0. ICT/SMC via smartmoneyconcepts library saves 7-12 weeks. CVD dropped (data limitation honestly acknowledged). Phase 0 timeline: 26 weeks → 18 weeks. Total path to live: 11-15 months → 9-13 months. 2 new decisions (DECISION-045, 046). 46 decisions total. No new bugs.*
