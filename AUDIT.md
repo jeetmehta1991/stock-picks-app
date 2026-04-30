@@ -8284,3 +8284,531 @@ After all decisions are resolved, the following implementation work proceeds in 
 ---
 
 *Pass 19 complete. 36 decisions consolidated for one-by-one review. No new bugs added.*
+
+---
+
+# AUDIT PASS 20 — Resolution Strategy: Minimizing Iterations and Mitigating Unknown Dependencies
+
+The user asked three sharp questions:
+1. What is the best way to resolve all flags in audit file without increasing iterations?
+2. Will addressing items create risks from unknown/unaccessed dependencies?
+3. How do we mitigate that?
+
+This pass answers honestly, including where the answers are uncomfortable. The codebase has known-bad observability into its own correctness — the prior Phase 1B run silently failed 14 ways and the small-batch test caught zero. Naive "fix all bugs in priority order" approach will produce more rework, not less.
+
+---
+
+## PART 1 — The honest answer about iterations
+
+**There is no path to resolving 191 bugs in zero iterations.** Anyone claiming otherwise is either underestimating the problem or overestimating their tooling. The realistic question is: **how do we minimize iterations and detect breakage early when it happens?**
+
+### What "iteration" actually means here
+
+In this project, an iteration is one of:
+- **Code change → Gate run → Discover regression → Fix** (~hours to days)
+- **Code change → Phase 1B-α run → Discover regression → Fix** (~5 hours of compute, $0 if rules-only)
+- **Code change → Phase 1C run → Discover regression → Fix** (~3 hours, $30+)
+- **Code change → Stage 3 paper trading → Discover regression → Fix** (~weeks to months)
+
+The cost asymmetry is enormous. Catching a bug at Gate 2 costs minutes. Catching it at Stage 3 costs months. **The strategy that minimizes iterations is the one that maximizes early detection.** That's what the 7-gate ablation plan was designed for, but the audit identified weaknesses even in that plan.
+
+### Why fixing all 191 bugs at once is not the answer
+
+Naive batching ("fix all CRITICALs in one PR, then all HIGHs") fails because:
+
+1. **Bugs have cross-dependencies.** BUG-104 (position sizing not applied) depends on BUG-95 (no Portfolio class). Fixing BUG-104 first produces broken half-fix.
+
+2. **Fixing some bugs invalidates work.** BUG-05 (strategies_triggered key mismatch) means cached agent decisions used wrong context. Fixing BUG-05 invalidates all 12,304 cached agent decisions. If you also fix BUG-26 (VXX as VIX) in the same PR, you can't tell which fix made trades change.
+
+3. **The codebase has no regression detection.** No unit tests for most components. No integration tests. No characterization tests showing current behavior. After fixing 10 bugs, no way to know what additional things broke.
+
+4. **Some bugs are interdependent in unexpected ways.** Fixing BUG-78 (trailing stop lookahead) changes win rate. That changes the validation threshold meaningfulness. That changes which strategies pass Phase 1B-α. That changes which (strategy, cell) combinations get tested in Phase 1B-β.
+
+### The right framing
+
+The goal is not "resolve 191 flags." The goal is **"reach a system that produces validated trading signals with minimum total work."** Some flags are not on the critical path. Some flags become moot after other flags are resolved (BUG-08 ema_50_200_bullish typo becomes irrelevant if Phase 1B-α doesn't survive — there's nothing to advance). Some flags only matter in Phase 1F (Carry/Value strategies).
+
+**Smart resolution order eliminates ~30% of flags through later-phase invalidation, defers ~20% to post-deployment, and properly addresses the remaining ~50%.**
+
+---
+
+## PART 2 — The dependency reality
+
+### Categories of dependency
+
+Bugs and decisions interact through four channels. Listed in increasing order of how-hard-to-detect:
+
+**Tier 1 — Static dependencies (visible).** File A imports file B. `mypy` and `ruff` catch these. ~80% of bugs are tier 1. Examples: BUG-08 wrong signal key name, BUG-03 duplicate dataclass, BUG-08-10 typo'd keys.
+
+**Tier 2 — Runtime dependencies (mostly visible).** Function A calls function B during execution. Visible from grep + call traces. Example: BUG-178 earnings dates fetched live by `days_to_next_earnings()` called from engine — visible if you look.
+
+**Tier 3 — Data dependencies (fragile).** Component A reads cache files with specific schemas, written by Component B with implicit schema. Schema changes break things silently. Example: agent cache key formula doesn't include `SIGNALS_VERSION`, so code changes to signals silently produce stale agent results.
+
+**Tier 4 — Behavioral dependencies (invisible).** Changing X's output distribution changes Y's threshold meaningfulness. Example: fixing BUG-26 (VXX as VIX) changes regime classifier output, which changes regime filter, which changes position sizing, which changes win rates per strategy, which changes Phase 1B-α threshold pass/fail decisions, which changes which strategies advance.
+
+**Tier 4 is where the surprises live.** The current codebase has no detection mechanism for tier 4 dependencies.
+
+### Concrete tier-4 cascade examples in this codebase
+
+#### Cascade A: BUG-26 fix (VXX → real VIX)
+
+Before fix: every regime labelled "crisis" because VXX ≈ 380 and crisis threshold is VIX > 40.
+After fix: regimes distribute across bull/neutral/bear/crisis as actually occurred 2022-2026.
+
+What this changes downstream:
+- Which days fire `crisis_position_multiplier` (was: every day; now: ~10% of days)
+- Which trades hit `CRISIS_LONG_EXCLUSIONS` (was: every long trade; now: ~10%)
+- Risk Agent's `vix_concern` field (was: "crisis" always; now: variable)
+- Decision Agent's `final_score` on every trade (driven heavily by VIX)
+- Tier downgrades (was: 99.9% downgrades; now: variable)
+- Aggregate win rate per strategy (could shift either direction)
+- Whether each strategy passes Phase 1B threshold criteria
+- 12,304 cached agent decisions become invalid (different VIX context)
+
+**One 3-line fix triggers a cascade requiring:**
+- Agent cache invalidation
+- Re-run of Gate 2-5
+- Possibly different strategies surviving Phase 1B-α
+- Different categorical cells advancing to 1B-β
+- Different agent layer evaluations in 1C-α
+
+If you fix BUG-26 alone and re-run, you get one set of survivor strategies. If you also fix BUG-78 (trailing stop lookahead) in the same iteration, you get a different set, and you cannot attribute the difference to either fix.
+
+#### Cascade B: Agent integration (BUG-113-127)
+
+Before fix: engine reads only `final_score`, ignores 26 of 29 actionable agent fields.
+After fix: engine respects action, position_size_modifier, recommended_exit, trade_blocked, debate_winner, avoid_earnings, etc.
+
+What this changes:
+- Which trades are skipped (action=SKIP gates trade)
+- Position sizes (position_size_modifier multiplies)
+- Exit logic (recommended_exit replaces fixed 10%/15% trailing)
+- Effective tier distribution (more skips, smaller positions, varied exits)
+- Aggregate trade count (could drop 30-50% if agents are doing their job)
+- Win rate per strategy (smaller number of higher-conviction trades)
+
+If you fix BUG-26 first and re-run agents, agents make NEW decisions on NEW VIX values, producing one trade set. If you then fix BUG-113-127 and re-run, the engine respects those agent decisions, producing a DIFFERENT trade set. Two separate iterations. But if you fix BOTH together and don't see expected outcomes, you can't tell which fix produced the result.
+
+#### Cascade C: Portfolio class (BUG-95)
+
+Before fix: each trade uses fixed $10K position size. No equity tracking. No drawdown tracking.
+After fix: Portfolio tracks equity, applies tier-based sizing, vol-targeting, correlation limits, drawdown throttling.
+
+What this changes:
+- Dollar PnL on every trade (was: function of % only; now: varies by tier × volatility × portfolio state)
+- Whether new trades can open (concurrent position limits, drawdown triggers)
+- Which agent decisions are valid (sector concentration warnings now actionable)
+- Total return calculation (function of cumulative equity, not sum of percentages)
+
+This is foundational. Almost every other fix is downstream.
+
+### Dependency map at a glance
+
+```
+Foundation (must come first):
+  BUG-95 Portfolio class
+   ├→ BUG-104 Position sizing (depends on Portfolio)
+   ├→ BUG-168 Vol-targeted sizing (depends on Portfolio)
+   ├→ BUG-169 Correlation limits (depends on Portfolio)
+   ├→ BUG-170 Drawdown sizing (depends on Portfolio)
+   └→ Agent integration sizing fields (depends on Portfolio)
+
+Data integrity (must come next):
+  BUG-26 VIX prefetch + classifier
+   ├→ All regime-conditional logic
+   ├→ Crisis exclusions
+   └→ Risk Agent context
+   
+  BUG-178 Earnings prefetch
+   ├→ Risk Agent context
+   ├→ Fundamental Agent earnings_days
+   └→ Earnings proximity filters
+   
+  BUG-179 Info prefetch (sector, mcap, IPO)
+   ├→ Universe filtering
+   ├→ Sector concentration logic
+   └→ Survivorship bias remediation
+   
+  BUG-184-191 Quiver prefetch repairs
+   ├→ Smart money signals
+   ├→ Sentiment Agent context
+   └→ Decision Agent reasoning
+
+Engine fixes (depend on foundation + data):
+  BUG-01, 02, 03 Code-level crashes (fix together, isolated)
+  BUG-04, 05 Bucket and key mismatch (fix together)
+  BUG-78 Trailing stop sequence (isolated)
+  BUG-101 Cross-day dedup (isolated)
+  BUG-103 Quiver gate removal (isolated, 1-line)
+
+Agent integration (depends on engine fixes + Portfolio):
+  BUG-113-127 Agent field consumption (12 bugs, ALL together)
+
+Signal additions (depend on data integrity):
+  BUG-151-167 ICT/SMC concepts and modern signals (16+ bugs)
+  
+Strategy additions (depend on signal additions):
+  BUG-139-150 Missing strategy families (12 bugs)
+
+Methodology (orthogonal — can run in parallel):
+  BUG-114, 115 Categorical validation, ablation methodology
+  BUG-128, 129, 130 Calibration and correlation analysis
+```
+
+### What this map tells us
+
+There are roughly **6 dependency layers**, not 191 independent items. Resolving in layer order preserves attribution. Resolving across layers (e.g., fixing 5 random bugs from different layers in one PR) destroys attribution.
+
+---
+
+## PART 3 — Resolution strategy: layer-by-layer with characterization
+
+### Strategy summary
+
+```
+Layer 1: Foundation (Phase 0.A + 0.B)
+   Goal: Build observability so layer 2+ changes are diagnosable
+   - Prefetch repairs (data integrity)
+   - Portfolio class
+   - Cache versioning  
+   - Validation gates
+   - Characterization tests on current behavior
+   
+Layer 2: Engine code-level fixes (Gate 1)
+   Goal: Fix bugs that crash or silently produce wrong values
+   - 14 CRITICAL bugs (BUG-01-05, 26, 78, 93-95, 101-104)
+   - Each fix paired with regression test
+   - Layer 1 characterization tests detect tier-4 cascades
+
+Layer 3: Agent integration (Phase 0.C)
+   Goal: Honour all 29 agent output fields  
+   - BUG-113, 116-127 (12 bugs)
+   - Done as single PR (they're conceptually one change)
+   - Validated against Layer 1 characterization
+
+Layer 4: Signal additions (Phase 0.D part 1)
+   Goal: Add modern signals (no API costs, pure compute)
+   - AVWAP, VPVR, CVD, RS, PEAD, ICT detectors
+   - Each addition is purely additive (doesn't change existing signals)
+   - Less cascade risk since no existing logic depends on new signals
+
+Layer 5: Strategy additions (Phase 0.D part 2)
+   Goal: Add missing strategy families
+   - ICT-derived strategies, calendar, event-driven
+   - Pure additions (existing strategies unaffected)
+   - New strategies validated by Phase 1B-α process
+
+Layer 6: Validation methodology (Phase 1B-β + 1C)
+   Goal: Run ablation correctly
+   - Categorical breakdown
+   - Statistical baselines (random + SPY)
+   - Calibration of thresholds
+```
+
+**Total iteration count if everything goes smoothly: 6 major iterations.**
+Versus naive approach of "fix all 191 in priority order with single big-bang": probably 15-25 iterations as cascade surprises require rework.
+
+### What "characterization tests" means and why it matters
+
+A characterization test captures CURRENT behavior, not desired behavior. The point is to detect when a change accidentally alters behavior somewhere unexpected.
+
+Example for this codebase:
+```python
+# tests/characterization/test_signal_outputs.py
+
+def test_aapl_2024_01_15_signals_unchanged():
+    """Asserts compute_all_signals on AAPL 2024-01-15 produces 
+    bit-identical output. Captures all ~220 signal fields.
+    
+    If this test fails, you changed signal computation in a way 
+    that affects existing data. Investigate before proceeding.
+    """
+    df = load_ohlcv('AAPL', through='2024-01-15')
+    sigs = compute_all_signals(df.iloc[-200:])
+    
+    # Hash the entire signal dict for compact comparison
+    sig_hash = hashlib.sha256(json.dumps(sigs, sort_keys=True, default=str).encode()).hexdigest()
+    
+    expected = "abc123..."  # baseline computed once before changes
+    assert sig_hash == expected, f"Signals changed for AAPL 2024-01-15. Diff:\n{compare_signal_dicts(sigs, load_baseline())}"
+```
+
+This is **not** a correctness test. The signals could be wrong; the test passes anyway. The test fails when behavior changes — alerting you that something unintended happened.
+
+For 191 bugs, characterization tests should cover:
+- Signal output for 5 representative tickers on 5 representative dates (25 baseline hashes)
+- Regime classifier output for 1000 sample dates
+- Strategy firing patterns for 5 tickers × 1 year
+- Agent decision for 10 cached candidates (tests prompt construction stability)
+- Portfolio metrics (when Portfolio exists)
+
+That's ~50 characterization tests. They take 2-3 days to write. They catch the vast majority of tier-4 cascades.
+
+### The full mitigation approach
+
+**Step 1: Baseline (before any changes).** Run all characterization tests, save baseline hashes. ~3 days work.
+
+**Step 2: Layer-by-layer execution.** For each of the 6 layers:
+- Make changes for that layer
+- Run characterization tests
+- Where tests fail, document expected vs unexpected diffs
+- Update baseline if expected, debug if unexpected
+- Run gate validation tests
+- Move to next layer only when characterization tests are stable
+
+**Step 3: Per-layer atomicity.** Within a layer, changes go in together as one PR. Cross-layer changes split into separate PRs. This preserves attribution.
+
+**Step 4: Versioned caches.** Every cache (agent, signals, prefetch) has a version key in its hash. When a layer change invalidates a cache, the version bumps automatically. No silent stale-cache reads.
+
+**Step 5: Mandatory documentation.** Each change explains in PR description: "This change should affect X, Y, Z (cascade), and not anything else. Characterization test diff is expected." Reviewer (you) approves before merge.
+
+**Step 6: Iteration budget.** Each layer has an iteration budget. Layer 2 budget: 2 iterations. If we need a 3rd, stop and audit: are we missing dependencies?
+
+---
+
+## PART 4 — Specific risks for each layer (where surprises hide)
+
+### Layer 1 risks (Foundation)
+
+**Risk:** Prefetch script changes silently produce different cache contents, changing all downstream signals.
+**Mitigation:** Validation gate that asserts cache row counts, date ranges, schema compatibility. Snapshot tests on key columns.
+
+**Risk:** Portfolio class changes invalidate position-size calculations across all existing trade logs.
+**Mitigation:** Portfolio class is BRAND NEW — no existing code depends on it yet. The risk is downstream code that starts using it. Characterization test captures BEFORE-Portfolio behavior; AFTER-Portfolio is expected to differ.
+
+### Layer 2 risks (CRITICAL bugs)
+
+**Risk:** Fix BUG-26 (VXX as VIX). Cascade through regime, crisis exclusions, agent context, sizing.
+**Mitigation:** Characterization test on regime classifier shows expected diff (more bull/neutral days, fewer crisis days). Anything else is unexpected. Rollback if unexpected.
+
+**Risk:** Fix BUG-78 (trailing stop lookahead). Cascade through fill prices, win rates, profit factors.
+**Mitigation:** Characterization test on closed_trades for 5 tickers × 6 months. Expected diff: exit prices on trailing-stop trades should be DIFFERENT (better, since we now use yesterday's stop instead of today's). Other trade types should be unchanged.
+
+**Risk:** Fix BUG-101 (cross-day dedup). Reduces trade count by ~88%.
+**Mitigation:** Characterization test asserts unique (ticker, entry_date) pairs. Pre-fix shows duplicates; post-fix shows none. Trade count reduction is expected.
+
+### Layer 3 risks (Agent integration)
+
+**Risk:** Engine now respects agent SKIP/AVOID. ~30-50% of trades skip. Win rate changes. Strategy validation thresholds may be unmet (sample size).
+**Mitigation:** Phase 1B-α now run with agents OFF first (per Option B ablation). Agent integration only matters in Phase 1C. Decoupling reduces cascade.
+
+**Risk:** Agent action field accidentally blocks all trades because of a bug in the consumption logic.
+**Mitigation:** Gate 3 (single-ticker smoke test) catches this immediately — would show 0 trades.
+
+### Layer 4 risks (Signal additions)
+
+**Risk:** New signal computation has bugs (off-by-one in lookback, wrong column reference) that produce silently wrong values.
+**Mitigation:** Each new signal has a unit test with hand-verified expected output for 3+ test cases.
+
+**Risk:** New signals shift the distribution of agent context, agents make different decisions.
+**Mitigation:** Agent cache versioning forces re-computation. Acceptable since we want agents to use new signals.
+
+### Layer 5 risks (Strategy additions)
+
+**Risk:** New ICT strategies fire constantly because of bugs in concept detection, swamping the candidate set.
+**Mitigation:** Per-strategy fire-rate sanity check: any strategy firing on >5% of (ticker, day) pairs is flagged for review. Real strategies fire on 1-3% of bars.
+
+**Risk:** New strategies pass Phase 1B-α because there's not enough data to detect overfitting.
+**Mitigation:** DECISION-014 (passing criteria with random and SPY baselines) catches this. New strategies must beat random by ≥3pp and SPY by ≥3pp.
+
+### Layer 6 risks (Validation methodology)
+
+**Risk:** Categorical breakdown produces sparse cells, false positives from small-sample statistical noise.
+**Mitigation:** Per-cell minimum sample size (≥30 trades) before declaring "edge." Bonferroni correction for multiple comparisons.
+
+**Risk:** Random-entry baseline isn't truly random (uses same exits which have their own structure).
+**Mitigation:** True random baseline uses both random entries AND random exits, with exit duration matched to median strategy hold period.
+
+---
+
+## PART 5 — The minimum-iteration recommendation
+
+Given everything above, the right approach is:
+
+### Phase A — Build observability (3-5 days, before any bug fixes)
+
+1. Write characterization tests covering current state
+2. Implement cache versioning for all caches
+3. Write validation gate scripts for prefetch
+4. Implement structured logging for engine decisions
+
+This is overhead. It does not fix any bug. It makes layers B-G safe to attempt.
+
+### Phase B — Foundation layer (Phase 0.A + 0.B) — 3-4 weeks
+
+Includes Quiver pre-cancellation repair, prefetch additions (earnings, info, VIX explicit), Portfolio class.
+
+### Phase C — Critical bug layer (Gate 1 of Phase 1B) — 1-2 weeks
+
+14 CRITICAL bugs in dependency-aware order:
+- BUG-01, 02, 03 first (independent code-level)
+- BUG-26 second (data integrity, depends on prefetch)
+- BUG-78 third (engine logic, isolated)
+- BUG-93, 94, 95 fourth (infrastructure, depends on Portfolio from Phase B)
+- BUG-101, 102 fifth (engine logic, depends on Portfolio for position tracking)
+- BUG-103 sixth (1-line, isolated)
+- BUG-104 seventh (depends on Portfolio + tier system)
+- BUG-04, 05 with the agent integration layer
+
+After each: run characterization tests, document diffs, proceed only if diffs are expected.
+
+### Phase D — Agent integration layer (Phase 0.C) — 2 weeks
+
+All 12 agent integration bugs (BUG-113, 116-127) as one cohesive change. They're conceptually a single "honour the agent" change. Splitting them creates false attribution.
+
+### Phase E — Signal additions (Phase 0.D part 1) — 2-3 weeks
+
+ICT detectors, AVWAP, VPVR, CVD, RS, PEAD. Pure additions; lower cascade risk.
+
+### Phase F — Strategy additions (Phase 0.D part 2) — 2-3 weeks
+
+ICT-derived strategies (16), event-driven (PEAD continuation), calendar (4-6). Pure additions.
+
+### Phase G — Methodology improvements — 1-2 weeks
+
+Categorical validation dimensions, calibrated passing criteria, correlation analysis. Done before Gate 5 of Phase 1B-α.
+
+### Phase H — Run Phase 1B-α through Stage 4
+
+Per the previously approved 7-gate plan.
+
+**Total layered work: 14-22 weeks before Stage 3 paper trading begins.**
+
+This is at the longer end of the previous 9-13 week Phase 0 estimate because we're adding the observability layer (Phase A) and methodology layer (Phase G) explicitly. Without these, Phase 1B-α runs may produce unattributable results that require redo.
+
+### Iteration budget per phase
+
+| Phase | Budget | Why |
+|---|---|---|
+| A | 1 iteration | Pure adds, no behavior change |
+| B | 2 iterations | Some prefetch failures expected |
+| C | 3 iterations | 14 fixes with cascades — characterization tests detect surprises |
+| D | 2 iterations | One conceptual change but big surface |
+| E | 2 iterations | Bug discovery in new signal code |
+| F | 2 iterations | Bug discovery in new strategy code |
+| G | 1 iteration | Methodology is mostly orthogonal |
+| H | 1-3 iterations | Per-gate (Gates 3-7 each get 1 budget) |
+
+**Total iteration budget: 14-22.** If a phase exceeds budget, stop and audit.
+
+---
+
+## PART 6 — Trade-offs of this approach vs alternatives
+
+### Alternative 1: "Big bang" (fix all 191 bugs in one massive PR)
+
+**Pros:** Single iteration if it works.
+**Cons:** Won't work. Cascades are guaranteed; without characterization tests, attribution is impossible. Estimated 15-25 effective iterations as bugs surface in production.
+**Verdict:** Not recommended.
+
+### Alternative 2: "Fire and forget" (fix bugs in priority order, skip observability)
+
+**Pros:** Faster start. Less upfront overhead.
+**Cons:** Each layer's fixes will trigger surprises in unrelated areas. Without characterization tests, surprises look like new bugs and trigger reactive fixes. Likely 2x iterations of the layered approach.
+**Verdict:** Faster start, slower finish.
+
+### Alternative 3: Layered with characterization (this pass's recommendation)
+
+**Pros:** Most predictable iteration count. Best attribution. Catches tier-4 cascades.
+**Cons:** 3-5 days upfront overhead before any bug fix.
+**Verdict:** Recommended.
+
+### Alternative 4: "Rebuild from scratch"
+
+**Pros:** Clean slate. No legacy bugs.
+**Cons:** Loses 12,000 cached agent decisions, validated OHLCV cache, signal computation, agent prompts. Months of work re-done. Not justified by current state.
+**Verdict:** Not recommended.
+
+---
+
+## PART 7 — Specific to current state — what's the most urgent next step?
+
+The user has 3 things waiting:
+
+1. **Quiver subscription** — paying daily, gaps identified, action plan ready (Pass 18). Time-sensitive.
+2. **Polygon News evaluation** — uncertain timing, prerequisite to DECISION-002.
+3. **PROJECT_PLAN restructure** — blocked on 36 decisions in Pass 19.
+
+If Phase A (observability) is the right first technical step, the project work can proceed in this order:
+
+1. **Today / immediate:** User reviews Pass 19's 36 decisions, approves a batch.
+2. **Day 1-2:** Quiver pre-cancellation repair scripts (DECISION-001 approval required).
+3. **Day 3:** Polygon News evaluation script runs (DECISION-002 in progress).
+4. **Day 4-7:** Phase A — write characterization tests, cache versioning, validation gates. This is BEFORE any bug fix.
+5. **Week 2+:** PROJECT_PLAN restructure committed (after decisions cleared and Phase A architecture validated).
+6. **Week 3+:** Phase B, C, D, E, F, G, H execution per plan.
+
+Phase A's characterization tests can begin with current (buggy) state as the baseline. As Phase C fixes bugs, tests fail by expected amounts. Each expected-diff is documented; baseline updated. Each unexpected diff stops the work for investigation. **This is the mechanism that catches tier-4 cascades.**
+
+---
+
+## PART 8 — Honest answer to the question
+
+> "What is the best way to resolve all flags in audit file without increasing iterations?"
+
+**There is no zero-iteration path.** Realistic minimum is 14-22 effective iterations across 14-22 weeks of dev work, achieved through layered execution with characterization-test-based regression detection.
+
+> "Will addressing items create risks from unknown/unaccessed dependencies?"
+
+**Yes, definitely.** The codebase has heavy tier-4 (behavioral) dependencies that are invisible to standard tooling. Fixing BUG-26 alone cascades through regime, exclusions, agents, sizing, validation. Currently undetectable until manifestation.
+
+> "How do we mitigate that?"
+
+**Three mitigations, in order of importance:**
+1. **Characterization tests** built BEFORE any change, capturing current behavior. Tier-4 cascades show as test failures with diff reports.
+2. **Layered execution** with explicit dependency-aware ordering. Foundation → critical bugs → agent integration → additions → methodology.
+3. **Per-layer iteration budget** with "stop and audit" gate. If layer C needs 4 iterations instead of budgeted 3, we have an unknown dependency surface.
+
+**This is engineering rigor. It costs 3-5 days upfront. It saves 5-10 iterations downstream. The user's instinct to ask is correct — without this, we'd be doing it wrong.**
+
+---
+
+## PART 9 — Updated decision register (DECISION-037, 038)
+
+### DECISION-037 — Adopt characterization-test-first approach (Phase A)
+
+**Context:** Pass 20 recommends 3-5 days of observability work (characterization tests, cache versioning, validation gates) BEFORE any bug fix, to detect tier-4 cascades.
+
+**Options:**
+- **A** — Adopt Phase A approach as recommended (3-5 days upfront, savings later)
+- **B** — Skip Phase A, accept higher iteration count
+- **C** — Lighter Phase A (just structured logging, no characterization tests)
+
+**Recommendation:** **A**. Investment of 3-5 days saves estimated 5-10 iterations. Critical for tier-4 cascade detection.
+
+**Status:** PENDING
+
+---
+
+### DECISION-038 — Layered execution with iteration budgets
+
+**Context:** Pass 20 recommends executing in 8 phases (A-H) with explicit iteration budgets.
+
+**Options:**
+- **A** — Adopt 8-phase layered approach with budgets
+- **B** — Looser approach: priority-order fixes without budget caps
+- **C** — Stricter approach: per-bug PRs with full review
+
+**Recommendation:** **A**. Budgets provide stop-and-audit triggers without micro-management. Per-bug PRs (option C) is over-engineering at this scale.
+
+**Status:** PENDING
+
+---
+
+## PART 10 — Bug count unchanged
+
+This pass adds methodology, not bugs. Bug count remains **191**.
+
+| Category | Count |
+|---|---|
+| Total bugs | 191 |
+| Critical | 17 |
+| High | 65 |
+| Medium | 84 |
+| Low | 25 |
+
+Decisions count: **38** (was 36, +2 from Pass 20).
+
+---
+
+*Pass 20 complete. Resolution strategy specified: layered execution with characterization tests. 2 new decisions added (DECISION-037, 038) for Phase A adoption and budgeted layering. No new bugs.*
