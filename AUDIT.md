@@ -10971,3 +10971,738 @@ Added BUG-199 for gate firing observability.
 ---
 
 *Pass 24 complete. DECISION-041 RESOLVED (Option A no compression). Batch 2 PROPOSED for review: DECISION-007 affirmed via chain, DECISION-008 (hard gates), DECISION-009 (Standard B), DECISION-010 (hard block), DECISION-011 (layered tiered), DECISION-012 (honor with validation). 1 new bug (BUG-199 gate observability). 199 bugs total.*
+
+---
+
+# AUDIT PASS 25 — Batch 2 Refinements: A/B Testable Gates, Risk Agent Spec, Earnings Momentum
+
+User's batch 2 review introduced several corrections that materially change the design. This pass addresses each.
+
+---
+
+## SECTION A — User's points and my responses
+
+### Point 1: Hard gates need A/B testing before defaulting
+
+**User said:** "DECISION-008 - Hard gate for now but i want to do a A/B test in phase 1 B or phase 1C to check the success of agent decisions before we default to agent decisions. Needs to be more nuanced than hard gates"
+
+**My response:** This is a strong correction. I was treating "agent integration" and "agent authority" as the same thing. They're not. Agent integration means the engine HAS the capability to honor agent recommendations. Agent authority means the engine ALWAYS does. The user wants integration without locked-in authority — A/B test first.
+
+**Architectural implication:** Each agent gate becomes parameterized:
+```python
+class AgentGateConfig:
+    honor_action_field: bool = True
+    honor_trade_blocked: bool = True
+    honor_debate_winner: bool = True
+    honor_position_modifier: bool = True
+    honor_recommended_exit: bool = True
+```
+
+A backtest run can flip each gate independently. Phase 1B-α runs WITHOUT agent gates (rules-only baseline). Phase 1C-α runs WITH gates. The DIFFERENCE between them tells us whether each specific gate adds value.
+
+**This is the natural extension of the ablation methodology already approved.** Rules-only first, then gates added one at a time, A/B compared.
+
+**Updated DECISION-008:** Hard gate **as the implementation**, but **gate honoring is configurable**. Phase 1B-α defaults: all gates OFF (rules-only ablation). Phase 1C-α tests each gate ON one at a time. Live deployment honors only gates that empirically improved performance.
+
+### Point 2: DECISION-010 Risk Agent needs ALL right data + edge case testing
+
+**User said:** "Option A but we need to ensure risk agent is getting ALL the right data and nothing is being missed. Also VXX error last time led it to floor everything. Issues like this must be comprehensively tested including edge cases so we dont lose out due to hard blocks"
+
+**My response:** This is exactly the failure mode we just barely escaped. The previous Phase 1B run had Risk Agent always seeing VIX as ~380 (VXX value), reporting "vix_concern: crisis" on every single day, contributing to the 99.9% identical agent downgrades. If we'd had `trade_blocked` honored back then, EVERY trade would have been blocked.
+
+We need Risk Agent context spec analogous to the Fundamental Agent spec from Pass 23.
+
+**Section B below provides this comprehensive Risk Agent context specification.**
+
+Plus we need edge case test suite for Risk Agent specifically. Section C covers this.
+
+### Point 3: Earnings momentum should be a strategy, not blocked
+
+**User said:** "I dont agree at all with avoid earnings. Earnings is the best time to capture momentum. Earnings momentum capture should be a part of our strategies as well."
+
+**My response:** User is correct. Several considerations:
+
+**Earnings momentum is well-documented academic edge:**
+- Post-Earnings Announcement Drift (PEAD) — already in our plan as a strategy family (BUG-156, DECISION-005)
+- Earnings beat continuation — stocks beating estimates often continue rising for 30-60 days
+- Estimate revision momentum — analyst upgrades after earnings drive price persistence
+
+**Hard avoid_earnings filter would kill these strategies.** A strategy that ENTERS on the day of earnings to capture next-day gap, or 2 days after earnings to ride momentum, cannot exist if earnings proximity hard-blocks all trades.
+
+**The Fundamental Agent's `avoid_earnings` field was originally designed to flag "stock is volatile near earnings, reduce risk."** That's not the same as "never trade near earnings."
+
+**Architectural fix:** the agent field should be **renamed and refactored**:
+- Old: `avoid_earnings: True/False` (binary, suggests universal block)
+- New: `earnings_volatility_warning: True/False` (informational, doesn't block)
+
+PLUS strategies declare their own earnings-tolerance:
+- Earnings momentum strategies (PEAD continuation, earnings-day breakouts) have `earnings_tolerant: True`
+- Standard swing strategies have `earnings_tolerant: False` 
+
+The engine logic becomes:
+```python
+if strategy.earnings_tolerant:
+    # Earnings proximity is fine, this strategy WANTS earnings catalysts
+    ignore_earnings_proximity()
+else:
+    # Standard strategy, reduce position size near earnings (not block)
+    if earnings_days < 7:
+        size *= 0.5  # halve position, don't block
+```
+
+**This is a much better design than what I originally proposed.** User's correction prevents a real bug.
+
+**Updated DECISION-013 (NEW from Pass 24, was BUG-120 fix):** Replace `avoid_earnings` hard block with `earnings_volatility_warning` informational flag. Add `earnings_tolerant` attribute to strategies. PEAD and earnings-momentum strategies are tolerant; others reduce size 50% within 7 days of earnings.
+
+### Point 4: Why cooldown on AVOID?
+
+**User asked:** "Whats the need to have cooldown on AVOID?"
+
+**My honest response:** I added it without strong rationale. Reviewing my reasoning:
+
+I wrote "AVOID means something fundamentally wrong with this setup." But:
+- "Fundamentally wrong today" might be specific to today's conditions
+- If the agent is right that something is wrong today, it's almost certainly going to flag the same problem tomorrow without needing cooldown
+- If the conditions change tomorrow (news, fundamentals, technical structure), the agent should re-evaluate fresh, not be locked out by yesterday's cooldown
+- Cooldown adds state to the system that needs to be tracked, persisted across restarts, etc. — implementation complexity
+
+**Conclusion: cooldown was over-engineering.** The agent will re-evaluate every day. If conditions remain bad, agent will flag AVOID again. If conditions change, agent should be allowed to update its view.
+
+**Updated DECISION-008:** AVOID = same as SKIP. Both = no trade today. No cooldown. Agent re-evaluates fresh each day.
+
+The DIFFERENCE between SKIP and AVOID becomes: AVOID is logged as stronger signal in the trade journal (for human review) but produces same engine action.
+
+### Point 5: Cumulative impact concern, retune during testing
+
+**User said:** "I am still very wary of cumulative impact. we will need to retune during testing"
+
+**My response:** Aligned. Three things:
+
+1. **Don't lock in gate parameters at design time.** Treat all thresholds (debate confidence levels, position size modifiers, gate enable/disable) as TUNABLE PARAMETERS validated empirically.
+
+2. **Phase 1B-α and Gate 4 produce explicit metrics:**
+   - Per-gate firing rate (% of candidates blocked by each gate)
+   - Per-gate overlap (when gate A fires, what's probability gate B also fires)
+   - Aggregate skip rate (% of candidates blocked by ANY gate)
+   - Per-gate trade impact (PnL difference: trades that PASSED gate vs trades that gate blocked)
+
+3. **Phase 1C-α A/B test:** Each gate tested ON vs OFF. The DIFFERENCE in outcomes tells us if the gate is worth keeping.
+
+If aggregate skip rate exceeds, say, 70% AND no measurable PnL improvement → gates are too aggressive, retune.
+
+If aggregate skip rate is 30% BUT a few specific gates produce most of the value → consider promoting those, demoting others.
+
+**This re-tuning IS the validation methodology.** It's not a backup plan; it's the design.
+
+---
+
+## SECTION B — Risk Agent Context Specification
+
+User concern is valid. Specification per the Fundamental Agent template from Pass 23.
+
+### B.1 — Current Risk Agent context (degraded by VXX bug)
+
+```python
+{
+  "ticker": "AAPL",
+  "as_of": "2024-06-15",
+  "macro_snap": {
+    "vix": 380,           # VXX masquerading as VIX (BUG-26)
+    "yield_curve": -0.42,
+    "fed_funds": 5.33,
+    "cpi": 3.2,
+  },
+  "earnings_days": 23,
+  "sector": "Technology",
+}
+```
+
+This is what triggered "every regime crisis, every trade downgraded."
+
+### B.2 — Required Risk Agent context (after Phase 0)
+
+```python
+{
+  # ─── BASIC IDENTIFIERS ─────────────────────────────────────────────
+  "ticker": "AAPL",
+  "as_of": "2024-06-15",
+  "sector": "Technology",         # FROM info_snapshot (PIT-correct, DECISION-040)
+  "market_cap_bucket": "mega_cap",
+  
+  # ─── CORE MACRO INDICATORS (PIT-correct after Phase 0.A) ──────────
+  "macro": {
+    # Volatility
+    "vix": 13.5,                    # ACTUAL VIX from FRED VIXCLS (BUG-180 fixed)
+    "vix_percentile_1y": 0.25,      # 25th percentile of last year — calm
+    "vix_regime": "calm",           # crisis (>40) | elevated (>25) | normal (15-25) | calm (<15)
+    
+    # Yield curve
+    "treasury_10y": 4.21,
+    "treasury_2y": 4.85,
+    "yield_curve_2_10": -0.64,     # 10y - 2y; negative = inverted
+    "curve_status": "inverted",    # inverted | flat | normal | steep
+    "curve_inversion_days": 287,   # how long inverted (recession signal)
+    
+    # Fed
+    "fed_funds": 5.33,
+    "fed_funds_path": "stable",    # rising | stable | falling
+    "next_fomc_days": 12,
+    "next_fomc_expected": "hold",  # hike | hold | cut
+    
+    # Inflation
+    "cpi_yoy": 0.034,
+    "cpi_release_date": "2024-06-12",  # Last release date (PIT, BUG-86 fixed)
+    "cpi_trajectory": "stable",        # rising | stable | falling
+    "next_cpi_days": 18,
+    
+    # Credit
+    "credit_spreads_ig": 0.012,    # investment grade spreads
+    "credit_spreads_hy": 0.034,    # high yield spreads
+    "credit_status": "tight",      # tight | normal | wide | crisis
+    
+    # Currency
+    "dxy": 105.4,
+    "dxy_trend_30d": "rising",
+    "dxy_impact": "headwind",      # for stocks with foreign revenue
+    
+    # Macro composite
+    "macro_environment": "neutral", # favorable | neutral | unfavorable | crisis
+    "macro_score": 0,               # -10 to +10
+  },
+  
+  # ─── EVENT CALENDAR (NEW — for binary risk detection) ──────────────
+  "events": {
+    "earnings_days": 23,                # PIT-correct (BUG-193 fixed)
+    "earnings_days_uncertain": false,   # true if next earnings not yet announced
+    
+    # Macro events in next 14 days
+    "fomc_in_14d": false,
+    "cpi_in_14d": true,
+    "cpi_in_14d_days": 18,             # contradicts above; only one true
+    "ppi_in_14d": false,
+    "nfp_in_14d": true,
+    "nfp_in_14d_days": 6,
+    "gdp_in_14d": false,
+    "claims_today": false,             # weekly jobless claims released today
+    
+    # Stock-specific events
+    "ex_dividend_in_7d": false,
+    "earnings_in_7d": false,
+    "split_in_30d": false,
+    "spinoff_pending": false,
+    
+    # Sector-specific
+    "fda_decision_pending": false,     # pharma/biotech only
+    "trial_results_pending": false,    # biotech only
+    "election_in_30d": false,          # political-sensitive sectors
+  },
+  
+  # ─── TICKER-SPECIFIC RISK FACTORS (NEW) ────────────────────────────
+  "ticker_risk": {
+    "stock_volatility_30d": 0.018,     # 30d realized vol (daily stdev)
+    "stock_volatility_percentile": 0.40,  # vs own 1yr history
+    "stock_vol_regime": "normal",      # high | elevated | normal | low (per-ticker)
+    "sector_relative_vol": 1.05,       # stock vol / sector vol
+    
+    "beta_60d": 1.15,                  # rolling beta vs SPY
+    "beta_change_30d": +0.08,          # beta rising (more market-correlated)
+    
+    "max_drawdown_60d": -0.085,        # worst peak-to-trough recently
+    "drawdown_today": -0.018,          # current drawdown from recent high
+    
+    "gap_frequency_60d": 0.12,         # % of days with >2% gap
+    "is_earnings_volatile": true,      # historical earnings move > 5% on average
+    
+    # News & catalysts
+    "news_volume_30d_percentile": 0.65,  # is news flow elevated?
+    "news_negative_ratio_30d": 0.32,
+    "social_sentiment_extreme": false,   # WSB / Twitter showing extreme positioning
+  },
+  
+  # ─── ENVIRONMENTAL RISK FLAGS (NEW) ────────────────────────────────
+  "environmental": {
+    "circuit_breaker_today": false,    # market-wide circuit breaker triggered
+    "trading_halt_active": false,      # ticker-specific trading halt
+    "bid_ask_spread_pct": 0.012,       # current spread (proxy for liquidity)
+    "spread_widening": false,          # spread > 2x normal
+    "volume_anomaly": false,           # volume > 5x normal (could be news event)
+    "after_hours_volatility": "normal", # normal | elevated | extreme
+  },
+  
+  # ─── HISTORICAL CONTEXT (NEW) ──────────────────────────────────────
+  "historical": {
+    "trade_count_this_ticker_30d": 2,  # how often did we trade this recently?
+    "win_rate_this_ticker_60d": 0.50,  # our recent track record
+    "avg_holding_days_this_ticker": 7,  # how long do we typically hold?
+  }
+}
+```
+
+### B.3 — Updated Risk Agent prompt
+
+```python
+prompt = f"""Assess macro risk for {ticker} ({sector}) trade as of {as_of}.
+
+VOLATILITY ENVIRONMENT:
+- VIX: {vix} ({vix_regime}, {vix_percentile_1y:.0%}ile of last year)
+- {ticker} vol 30d: {stock_volatility_30d:.1%} ({stock_vol_regime})
+- Stock vs sector vol: {sector_relative_vol:.2f}x
+
+YIELD CURVE:
+- 10y-2y spread: {yield_curve_2_10:.2%} ({curve_status})
+- Inversion duration: {curve_inversion_days} days
+
+FED & RATES:
+- Fed funds: {fed_funds:.2%} ({fed_funds_path})
+- Next FOMC: {next_fomc_days}d, expected {next_fomc_expected}
+
+INFLATION:
+- CPI YoY: {cpi_yoy:.1%} ({cpi_trajectory})
+- Next CPI release: {next_cpi_days}d
+
+CREDIT:
+- IG spreads: {credit_spreads_ig:.0%}, HY: {credit_spreads_hy:.0%} ({credit_status})
+
+CURRENCY:
+- DXY: {dxy:.1f} ({dxy_trend_30d})
+- Impact for {sector}: {dxy_impact}
+
+EVENTS (next 14 days):
+- Earnings: {earnings_days}d {'(uncertain)' if earnings_days_uncertain else ''}
+- FOMC: {'YES in ' + str(fomc_in_14d_days) + 'd' if fomc_in_14d else 'no'}
+- CPI: {'YES in ' + str(cpi_in_14d_days) + 'd' if cpi_in_14d else 'no'}
+- NFP: {'YES in ' + str(nfp_in_14d_days) + 'd' if nfp_in_14d else 'no'}
+
+TICKER-SPECIFIC:
+- Beta: {beta_60d:.2f} (change 30d: {beta_change_30d:+.2f})
+- Recent drawdown: {drawdown_today:.1%}
+- Gap-prone: {gap_frequency_60d:.0%} of days >2% gap
+- News flow: {news_volume_30d_percentile:.0%}ile
+
+ENVIRONMENTAL:
+- Bid-ask spread: {bid_ask_spread_pct:.2%}, widening: {spread_widening}
+- Volume anomaly: {volume_anomaly}
+- Trading halts/circuit breakers: {trading_halt_active or circuit_breaker_today}
+
+Evaluate the macro and ticker-specific risk environment.
+
+CRITICAL: only flag `trade_blocked: True` for genuinely uninvestable conditions.
+Examples of trade_blocked=True:
+- Circuit breaker active or trading halt on this ticker
+- FOMC announcement TODAY (not "in 12 days")
+- Binary catalyst with announced outcome timing TODAY
+- VIX > 50 AND credit spreads in crisis territory
+- Stock has news-driven volatility surge today (>5x normal volume)
+
+Examples of trade_blocked=False (issue acknowledged but trade can proceed):
+- High VIX but no specific event today
+- Yield curve inverted (chronic condition, not acute)
+- Earnings in N days (informational, agent uses earnings_volatility_warning)
+- Macro environment unfavorable (informational, factors into final_score)
+
+Return JSON only:
+{{
+  "risk_score": <integer 0-10>,
+  "macro_environment": "<favorable|neutral|unfavorable|crisis>",
+  "vix_concern": "<calm|normal|elevated|crisis>",
+  "yield_curve_concern": "<none|moderate|high>",
+  "credit_spread_concern": "<tight|normal|wide|crisis>",
+  "dxy_impact": "<tailwind|neutral|headwind>",
+  "earnings_volatility_warning": <true|false>,
+  "binary_event_today": <true|false>,
+  "trade_blocked": <true|false>,
+  "trade_blocked_reason": "<string if blocked, empty otherwise>",
+  "summary": "<one sentence>"
+}}"""
+```
+
+Key changes from current:
+- VIX is real (not VXX proxy)
+- All percentile and regime indicators added
+- Separate `binary_event_today` (informational) from `trade_blocked` (gating)
+- `earnings_volatility_warning` instead of `avoid_earnings`
+- Explicit reason logged when blocked
+- All fields PIT-correct
+
+### B.4 — Risk Agent edge case tests
+
+Phase 0.A.14 (forward-bias regression suite, DECISION-040) plus dedicated Risk Agent tests:
+
+```python
+# Critical edge cases that previous run failed
+
+def test_vix_regime_correct_during_calm_period():
+    """2024-Q1 was calm (VIX 12-16). Risk Agent should NOT flag crisis."""
+    context = build_risk_context('AAPL', date(2024, 2, 15))
+    assert context['macro']['vix'] < 20
+    assert context['macro']['vix_regime'] == 'calm'
+    
+def test_vix_regime_correct_during_crisis():
+    """March 2020 COVID had VIX 60+. Should flag crisis."""
+    context = build_risk_context('AAPL', date(2020, 3, 16))
+    assert context['macro']['vix'] > 40
+    assert context['macro']['vix_regime'] == 'crisis'
+
+def test_fomc_proximity_warning_not_block():
+    """FOMC in 12 days should warn, not block."""
+    context = build_risk_context('AAPL', date(2024, 6, 1))  # FOMC June 12
+    assert context['events']['fomc_in_14d'] == True
+    # Risk Agent should consider this in score but not auto-block
+    
+def test_fomc_today_blocks():
+    """FOMC TODAY should auto-block."""
+    context = build_risk_context('AAPL', date(2024, 6, 12))  # FOMC day
+    # We expect Risk Agent to set trade_blocked=True
+
+def test_data_degradation_doesnt_floor_everything():
+    """If macro data becomes unavailable, should NOT default to crisis."""
+    with mock_macro_data_unavailable():
+        context = build_risk_context('AAPL', date(2024, 6, 15))
+    # Risk Agent should report 'unknown' or 'unavailable', NOT 'crisis'
+    # Should NOT trigger trade_blocked due to missing data
+
+def test_circuit_breaker_blocks():
+    """Market-wide circuit breaker should block."""
+    with mock_circuit_breaker_active(date(2024, 8, 5)):
+        context = build_risk_context('AAPL', date(2024, 8, 5))
+    assert context['environmental']['circuit_breaker_today'] == True
+    # Risk Agent should set trade_blocked=True
+
+def test_trading_halt_on_ticker_blocks_trade():
+    """Trading halt on the specific ticker should block."""
+    with mock_trading_halt('GME', date(2021, 1, 28)):
+        context = build_risk_context('GME', date(2021, 1, 28))
+    assert context['environmental']['trading_halt_active'] == True
+
+def test_earnings_proximity_does_NOT_block():
+    """Earnings in 5 days should warn, not block (per DECISION-013)."""
+    context = build_risk_context('AAPL', date(2024, 7, 30))  # AAPL Q3 earnings ~Aug 1
+    assert context['events']['earnings_days'] < 7
+    # Risk Agent should set earnings_volatility_warning=True, NOT trade_blocked=True
+```
+
+### B.5 — Risk Agent failure mode protections
+
+Specific safeguards to prevent VXX-style blanket blocking:
+
+1. **Default-to-not-blocked policy.** If Risk Agent fails for any reason (timeout, parse error, missing data), default to `trade_blocked=False`. Don't block on uncertainty.
+
+2. **Sanity bounds on inputs.** If VIX value is outside [5, 100] range, log error and skip the trade evaluation. Don't pass garbage data to Risk Agent.
+
+3. **Mandatory data validation before agent call.** PointInTimeLoader (DECISION-040) validates each macro field is in expected range before passing to agent.
+
+4. **Explicit blocked reason required.** If `trade_blocked=True`, agent MUST provide `trade_blocked_reason`. Empty reason → ignore the block (treat as malformed response).
+
+5. **Gate firing rate alerts.** If `trade_blocked=True` fires on >30% of candidates over a 5-day window, alert and review. Normal blocking rate should be <5%.
+
+6. **A/B testable.** The `honor_trade_blocked` config flag lets us run with and without honoring the block. Phase 1C-α compares outcomes.
+
+### B.6 — BUG-200 (NEW) — Risk Agent context spec
+
+**BUG-200 · CRITICAL — Risk Agent context expansion required**
+
+**Files:** `backtest/agents/pipeline.py` `run_risk_agent`, `backtest/data/macro.py`
+
+**The bug:** Risk Agent currently receives ~6 macro fields, mostly degraded by VXX-as-VIX. Required spec (Pass 25 Section B.2) is ~40 fields including event calendar, ticker-specific risk, environmental flags, historical context.
+
+**Fix:** Phase 0.A.17 (NEW) — Risk Agent context module producing the full spec. PIT-correct via DECISION-040. Edge case tests per Section B.4.
+
+---
+
+## SECTION C — Earnings Momentum Strategy Family
+
+User said: "Earnings momentum capture should be a part of our strategies as well."
+
+Audit Pass 16 already includes Event-driven family (BUG-142) with PEAD strategies. Let me make this explicit and expand.
+
+### C.1 — Earnings momentum strategy specifications
+
+These are NEW strategies to add in Phase 0.D.1 alongside other modern signals.
+
+**Strategy 1: PEAD-Continuation-Long**
+- Trigger: stock had positive earnings surprise (>3%) within last 20 days
+- Filter: stock above its 50-EMA, RSI > 50
+- Entry: market open day after signal day
+- Exit: 30-day max hold or 1.5x ATR trailing stop
+- `earnings_tolerant`: True
+
+**Strategy 2: PEAD-Continuation-Short**
+- Trigger: stock had negative earnings surprise (>3%) within last 20 days
+- Filter: stock below its 50-EMA, RSI < 50
+- Entry: market open day after signal day
+- Exit: 30-day max hold or 1.5x ATR trailing stop
+- `earnings_tolerant`: True
+
+**Strategy 3: Earnings-Day-Gap-Continuation**
+- Trigger: stock gapped up >3% on earnings (open vs prior close)
+- Filter: gap occurred today, volume > 2x average
+- Entry: market open NEXT day (capture day-2 momentum)
+- Exit: 5-day max hold or 1x ATR trailing stop
+- `earnings_tolerant`: True
+
+**Strategy 4: Earnings-Drift-After-Reset**
+- Trigger: stock has strong post-earnings drift over 30 days, then 1-week consolidation
+- Filter: drift > 10%, consolidation range < 3% over 5 days
+- Entry: breakout from consolidation
+- Exit: 15-day max hold or pivot target
+- `earnings_tolerant`: True
+
+**Strategy 5: Estimate-Revision-Momentum-Long**
+- Trigger: ≥5 analysts raised estimates in last 30 days, no downgrades
+- Filter: stock above 50-EMA, RSI 50-80
+- Entry: signal day +1
+- Exit: 20-day max hold or 1.5 ATR trailing stop
+- `earnings_tolerant`: True (depends on revision data, not raw earnings)
+
+**Total: 5 new earnings-momentum strategies.** All declare `earnings_tolerant: True`.
+
+### C.2 — Strategy attribute: earnings_tolerant
+
+Add to all strategy definitions:
+
+```python
+class StrategyMetadata:
+    name: str
+    direction: Literal["long", "short", "either"]
+    category: Literal["pivot", "trend", "mean_reversion", "momentum", "event_driven"]
+    earnings_tolerant: bool = False  # NEW — does this strategy WANT earnings catalysts?
+    
+# Strategies marked earnings_tolerant=True:
+# - PEAD-Continuation-Long
+# - PEAD-Continuation-Short
+# - Earnings-Day-Gap-Continuation
+# - Earnings-Drift-After-Reset
+# - Estimate-Revision-Momentum-Long
+# - Earnings-Drift-Reversal (mean reversion of overdone moves)
+
+# All other ~125 strategies default to earnings_tolerant=False
+```
+
+### C.3 — Engine logic for earnings handling
+
+```python
+# In _process_day, when evaluating a candidate:
+
+if strategy.earnings_tolerant:
+    # Strategy wants earnings catalysts. No earnings-based size reduction.
+    earnings_modifier = 1.0
+else:
+    # Standard strategy. Reduce size if earnings imminent.
+    if earnings_days < 3:
+        earnings_modifier = 0.5  # half size within 3 days
+    elif earnings_days < 7:
+        earnings_modifier = 0.75  # 75% size within 7 days
+    else:
+        earnings_modifier = 1.0
+
+final_size = tier_size * agent_modifier * vol_modifier * drawdown_modifier * earnings_modifier
+```
+
+This achieves user's goal:
+- Earnings momentum strategies trade fully through earnings windows
+- Standard swing strategies reduce (not block) near earnings
+- Both can use the same engine
+
+### C.4 — Updated DECISION-013 (was avoid_earnings hard filter)
+
+**OLD DECISION-013 (Pass 24):** Hard filter — no entries within 7 days before earnings.
+
+**REVISED DECISION-013:** 
+- Strategy attribute `earnings_tolerant` controls per-strategy behavior
+- For `earnings_tolerant=False` strategies: reduce size (0.75 within 7d, 0.5 within 3d), don't block
+- For `earnings_tolerant=True` strategies: ignore earnings proximity entirely
+- Fundamental Agent's `earnings_volatility_warning` is informational only (added to context, not enforced as hard gate)
+
+**Status:** PROPOSED (User to confirm)
+
+---
+
+## SECTION D — Refined DECISION-008: Configurable Gates
+
+### D.1 — Architecture
+
+```python
+class AgentGateConfig:
+    """Configuration for which agent recommendations the engine honors.
+    
+    Each flag is independently A/B testable.
+    """
+    # Hard gates
+    honor_action_field: bool = False         # Honor action=ENTER/SKIP/AVOID/WATCH
+    honor_trade_blocked: bool = False        # Honor Risk Agent trade_blocked
+    honor_debate_winner: bool = False        # Honor debate winner+confidence
+    
+    # Soft modifiers
+    honor_position_modifier: bool = False    # Apply position_size_modifier
+    honor_recommended_exit: bool = False     # Use agent's exit choice
+    
+    # Threshold parameters (when honored)
+    debate_high_confidence_blocks: bool = True   # high confidence bear blocks long
+    debate_medium_confidence_reduces: bool = True  # medium reduces by 50%
+    
+    # Floor protections
+    minimum_position_pct: float = 0.001     # below 0.1% of equity → skip
+    
+    @classmethod
+    def rules_only(cls):
+        """Phase 1B-α: pure rules, no agent gates."""
+        return cls()  # all flags False
+    
+    @classmethod
+    def full_agent(cls):
+        """Phase 1C-α with all gates: maximum agent authority."""
+        return cls(
+            honor_action_field=True,
+            honor_trade_blocked=True,
+            honor_debate_winner=True,
+            honor_position_modifier=True,
+            honor_recommended_exit=True,
+        )
+    
+    @classmethod
+    def custom_ablation(cls, **flags):
+        """Phase 1C-α A/B: enable specific gates only."""
+        return cls(**flags)
+```
+
+### D.2 — Phase 1B-α and Phase 1C-α A/B test
+
+**Phase 1B-α** runs `AgentGateConfig.rules_only()` — pure rules baseline. No agent influence.
+
+**Phase 1C-α** runs the agent ablation:
+1. **Run 1:** rules_only (baseline from Phase 1B-α, re-run for comparability)
+2. **Run 2:** action_field_only (only honor action=SKIP/AVOID/WATCH)
+3. **Run 3:** trade_blocked_only (only honor Risk Agent veto)
+4. **Run 4:** debate_only (only honor debate winner)
+5. **Run 5:** position_modifier_only
+6. **Run 6:** recommended_exit_only
+7. **Run 7:** full_agent (all flags ON)
+
+Compare each run's PnL, Sharpe, win rate, drawdown vs Run 1 baseline.
+
+**A gate is "validated" if:** the run with that gate shows improved Sharpe or comparable Sharpe with reduced drawdown vs baseline. If it shows degradation, the gate is dropped.
+
+Live deployment honors only validated gates.
+
+### D.3 — Cost of A/B test
+
+Phase 1C-α was budgeted ~$30 (single Sonnet run on survivor cells). The A/B test runs the same agent calls but TESTS multiple configurations on cached results. **No additional API cost** because agent results are cached; only engine logic changes between runs.
+
+This is a perfect use of the layered architecture.
+
+### D.4 — Updated DECISION-008
+
+**REVISED DECISION-008:**
+- Hard gates IMPLEMENTED but not DEFAULT-ON
+- Phase 1B-α: all gates OFF (rules-only baseline)
+- Phase 1C-α: A/B test each gate independently
+- Live deployment: honor only empirically-validated gates
+- AVOID == SKIP semantically (no cooldown, no special treatment beyond logging)
+
+**Status:** PROPOSED (User to confirm)
+
+---
+
+## SECTION E — Cumulative Impact Re-Tuning Framework
+
+User said: "I am still very wary of cumulative impact. we will need to retune during testing."
+
+### E.1 — Specific retune triggers (when Phase 1B-α / Gate 4 outputs require gate adjustment)
+
+**Trigger 1: Aggregate skip rate too high.**
+If >70% of candidates are blocked by ANY gate during Gate 4, re-tune. Possible adjustments:
+- Soften specific gate (e.g., debate_winner medium-confidence reduces 30% instead of 50%)
+- Disable lowest-value gate per A/B test results
+- Raise position_size_modifier minimum (don't reduce below 50%)
+
+**Trigger 2: Specific gate over-firing.**
+If any single gate fires on >40% of candidates, that gate is too aggressive. Possible adjustments:
+- Adjust agent prompt to be more selective
+- Raise confidence threshold (only honor "very high" confidence)
+- Disable gate, let other gates do the filtering
+
+**Trigger 3: Gates correlate too heavily.**
+If gates A and B fire together >80% of the time, they're redundant. One can be dropped.
+
+**Trigger 4: PnL comparison.**
+If gate-on PnL < gate-off PnL by significant margin (Phase 1C-α A/B output), drop the gate.
+
+### E.2 — Retune authority
+
+User has final authority on gate retuning. Claude proposes adjustments based on Phase 1B-α / Gate 4 output. User approves before re-running.
+
+This makes gate parameters PART OF the validation methodology, not part of locked-in design.
+
+### E.3 — Phase 1B-α deliverable update
+
+Add to Phase 1B-α outputs:
+- `gate_firing_report.csv` (per BUG-199)
+- `gate_correlation_matrix.csv` — pairwise correlation between gate fires
+- `gate_pnl_impact.csv` — PnL of trades passed each gate vs trades blocked
+
+These three reports drive retune decisions.
+
+---
+
+## SECTION F — Updated Decisions Status
+
+| # | Title | Status | Decision |
+|---|---|---|---|
+| 008 | Action field | RESOLVED-with-caveats | Hard gate IMPLEMENTED, A/B testable, AVOID=SKIP no cooldown |
+| 009 | Position size modifier | RESOLVED | Standard 0.7/0.3, careful unit testing required |
+| 010 | trade_blocked semantics | RESOLVED-with-caveats | Hard block, comprehensive Risk Agent context spec (Section B), edge case tests (B.4-B.5) |
+| 011 | Debate winner | RESOLVED-with-caveats | Layered tiered, unit tests required |
+| 012 | Recommended exit | RESOLVED-with-caveats | Honor with feasibility validation, unit tests required |
+| 013 | Earnings handling | REVISED | Per-strategy `earnings_tolerant` attribute. NOT hard avoid_earnings |
+| 042 (NEW) | Configurable gates / A/B | PROPOSED | AgentGateConfig with rules_only baseline, gate-by-gate A/B |
+| 043 (NEW) | Retune framework | PROPOSED | Specific triggers + user authority on gate adjustments |
+
+---
+
+## SECTION G — New bugs documented
+
+### BUG-200 · CRITICAL — Risk Agent context expansion required (Section B)
+
+### BUG-201 · MEDIUM — Strategy `earnings_tolerant` attribute missing
+
+**Files:** All strategy functions in `backtest/signals/screener.py`
+
+**The issue:** Strategies don't declare whether they tolerate earnings proximity. Engine cannot differentiate earnings-momentum strategies from standard swing strategies.
+
+**Fix:** Add `earnings_tolerant: bool = False` to strategy metadata. Set True for new earnings-momentum strategies.
+
+### BUG-202 · MEDIUM — No earnings-momentum strategies implemented
+
+**Files:** `backtest/signals/screener.py`
+
+**The issue:** Plan calls for ~5 earnings-momentum strategies (Section C.1). None implemented.
+
+**Fix:** Phase 0.D.1 implementation, alongside other modern signals.
+
+### BUG-203 · MEDIUM — No A/B testing infrastructure for agent gates
+
+**Files:** `backtest/engine/backtest.py`, `backtest/agents/pipeline.py`
+
+**The issue:** Engine has no concept of `AgentGateConfig`. Cannot run rules-only baseline. Cannot A/B test gates.
+
+**Fix:** Phase 0.C scope addition.
+
+---
+
+## SECTION H — Updated counts
+
+| Category | Count |
+|---|---|
+| **Total bugs** | **203** (was 199, +4 BUG-200/201/202/203) |
+| Critical | 19 (was 18, +1 BUG-200) |
+| High | 70 |
+| Medium | 88 (was 85, +3 BUG-201/202/203) |
+| Low | 26 |
+
+**Decisions count: 43** (was 41, +2 DECISION-042 / 043)
+
+**Resolved decisions: 12 of 43** (resolved-with-caveats counted as resolved). DECISION-007/039/041/003/004/005/006/008/009/010/011/012/013-revised + 040 = 14 closures, but some are "resolved with caveats" requiring testing follow-up.
+
+---
+
+*Pass 25 complete. Batch 2 fully resolved with significant refinements. Earnings handling redesigned around `earnings_tolerant` strategy attribute. Risk Agent context spec added (Section B). Configurable gates architecture (DECISION-042). Retune framework (DECISION-043). 4 new bugs. 203 bugs total, 43 decisions.*
