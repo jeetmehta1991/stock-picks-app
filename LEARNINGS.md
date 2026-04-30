@@ -520,3 +520,13 @@ Common pattern: Claude defaults to "implement what's stated" without questioning
 **Common pattern across L107, L117, L119:** Claude proposes new content / new direction / new framework without first grepping the existing project for prior art. CHECKLIST #26 (Assumption Validation) was supposed to catch this — "verify via web_search, file read, or code execution before recommending." Reading CLAUDE.md is one of the cheapest verifications possible — should be reflex.
 **Fix:** Added L119 + CHECKLIST #40 (project-prior-art grep before recommending any new principle / direction / framework).
 **Rule:** Before responding to any owner direction that proposes a new principle, philosophy, framework, or architectural approach, grep CLAUDE.md + PROJECT_PLAN.md + AUDIT.md + AUDIT_INDEX.md for the relevant terms FIRST. If prior art exists, surface it before proposing additions. Treat new-principle recommendations as a search problem before a writing problem.
+
+### L120 — Handoff pre-flight must explicitly check for dirty working tree, not just remote sync [critical/process]
+**Mistake (this session):** Round 1 handoff document specified pre-flight checks for git remote sync (`git fetch`, `git log origin/main..main`, `git log main..origin/main`, `git rev-parse HEAD`) but did NOT explicitly check for dirty working tree (uncommitted changes / untracked files). When laptop ran the pre-flight, the output showed 480+ modified Parquet files (Phase 1B cache download in-progress) plus an untracked `0,` artifact. Patch would have applied cleanly to the doc files but a careless `git add -A` could have included the cache files in the Round 1 commit.
+**Why this matters:** "Synced with origin" ≠ "ready for new commit." A working tree can have:
+  (a) unrelated uncommitted work that must be preserved (Phase 1B cache) — must commit/stash first
+  (b) untracked artifacts (the `0,` file) — must clean up
+  (c) tracked-but-uncommitted config (`.claude/settings.local.json`) — must gitignore or skip
+Each of these is a separate concern that the standard remote-sync check does not catch.
+**Fix:** Added L120 + CHECKLIST #41 (handoff pre-flight must include `git status --short` check; non-empty output halts the handoff for owner reconciliation).
+**Rule:** Every handoff document's pre-flight section MUST include `git status --short` as a check. Output must be empty (or contain only files we explicitly intend to modify) before patch application proceeds. Non-empty status halts the handoff for owner-driven reconciliation. CHECKLIST #16 said to run git status before git commands; this generalizes it specifically to handoff pre-flights.

@@ -262,3 +262,18 @@ State compliance visibly: "Checklist: ✅ [each item]"
        prior-art search is a free verification, do it first
     NEVER propose to add a "new" principle to project docs without first proving by grep that
     it isn't already there.
+
+41. HANDOFF PRE-FLIGHT MUST CHECK DIRTY WORKING TREE — not just remote sync:
+    a. Every handoff document's pre-flight section must include: `git status --short`
+    b. Output must be empty before patch application proceeds
+    c. If non-empty, output is shown to owner; handoff is HALTED until reconciled
+    d. Three categories of non-empty status to handle:
+       (a) Unrelated uncommitted work (e.g., data cache, in-progress feature) — commit or stash separately first
+       (b) Untracked artifacts (typo files, OS junk) — clean up with `rm` after owner verifies they're not intentional
+       (c) Tracked-but-uncommitted config files (e.g., `.claude/settings.local.json`) — add to `.gitignore` and `git rm --cached`, OR explicitly skip in `git add`
+    e. NEVER trust "synced with origin" as proof of clean tree. Sync state ≠ working-tree state.
+    f. Past mistake: Round 1 handoff (Pass 52) did sync check but not dirty-tree check. Owner's
+       laptop had 480+ uncommitted Parquet files (Phase 1B cache); could have been silently
+       included in Round 1 commit. Caught only because owner pasted full git status output.
+       Fix in L120.
+    NEVER apply a patch to a dirty working tree. Always reconcile dirty state first.
