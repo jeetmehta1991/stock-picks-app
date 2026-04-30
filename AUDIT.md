@@ -15180,3 +15180,53 @@ I will NOT proceed to step 2 until you approve DECISION-060.
 ---
 
 *Pass 35 complete. CHECKLIST.md +3 items (26 assumption validation, 27 relevance check, 28 retroactive learning). LEARNINGS.md +5 entries (L100-L104) capturing this session's mistakes retroactively. Path B validated against new discipline — 5 facts verified, 4 assumptions explicitly flagged with mitigations. DECISION-058 REVISED to GPT-5.4-mini (Path B). DECISION-060 NEW for mandatory smoke test gating per CHECKLIST 13. 60 decisions total (30 resolved). No new bugs.*
+
+---
+
+# AUDIT PASS 36 — DECISION-060 Resolved + Handoff Paused
+
+Checklist: ✅ #1 (verified by reading user message) ✅ #4 (records two specific instructions only) ✅ #26 (no new claims) ✅ #27 (stays on the actual question)
+
+User direction:
+1. "060 - approved"
+2. "Lets pause on handoff till i say so. When i say, generate the handoff document"
+
+---
+
+## SECTION A — Approvals recorded
+
+| # | Title | Status |
+|---|---|---|
+| 060 | Smoke test gating before Stage 2 scale (10 → 100 → full per CHECKLIST 13/22) | RESOLVED |
+
+**Cumulative resolved: 31 of 60 decisions (52%)**
+**Pending: 29 decisions**
+
+---
+
+## SECTION B — Handoff paused
+
+HANDOFF.md generation is paused until owner explicitly requests it. When requested, the handoff will include:
+- Current resolved/pending decision state
+- Path B staged plan with kill switches per DECISION-060
+- New CHECKLIST items 26/27/28
+- New LEARNINGS L100-L104
+- All 35 audit passes' summary
+- First-message protocol for the fresh session
+
+Until then, work continues in current session.
+
+---
+
+## SECTION C — Counts
+
+| Category | Count |
+|---|---|
+| Total bugs | 203 (unchanged) |
+| Decisions | 60 (unchanged) |
+| Resolved | 31 (52%) |
+| Pending | 29 |
+
+---
+
+*Pass 36 complete. DECISION-060 RESOLVED. Handoff paused per owner instruction. No new decisions, bugs, or claims this turn.*
