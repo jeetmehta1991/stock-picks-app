@@ -8,6 +8,7 @@
 ## Critical Rules
 
 - **ALL decisions need explicit owner approval before implementation. No exceptions.**
+- **All API runs costing money: small test batch → manual review → owner approval → scale. NEVER jump from "data ready" to "full run". Past mistakes (L86, L95) cost $150 in discarded work — same pattern, different operation, same outcome unless this discipline is mandatory. See CHECKLIST #13, #22, #23, #29.**
 - Never change rules, filters, thresholds, or parameters without approval. Recommend only.
 - Think through every action completely before suggesting it. Anticipate edge cases.
 - Never jump ahead of the current phase. One instruction at a time.

@@ -114,3 +114,15 @@ State compliance visibly: "Checklist: ✅ [each item]"
     d. Surface those instances explicitly to the owner — do not let them slide
     e. Update related decisions in AUDIT.md if the mistake invalidates a prior recommendation
     NEVER let a mistake stay localized. Apply the lesson everywhere it applies.
+
+29. STOP-EARLY-ON-BUDGET — CONSOLIDATED RULE for any API spending operation:
+    a. Compute cost estimate before any API run (per #22) and get explicit written approval
+    b. Always start with smallest possible test batch (per #23): test (1-10 units) → mid (50-100 units) → full
+    c. Manual owner review of OUTPUT QUALITY between every gate, not just cost
+    d. Hard stop at 80% of budget cap for owner check-in (e.g., $240 of $300)
+    e. Hard stop at 100% of budget cap regardless of completeness
+    f. If actual cost differs from estimate by >2x at any gate, stop and recalibrate before continuing
+    g. If output quality is incoherent on test batch, stop and reconsider before scaling
+    h. Past mistakes: L86 (jumped data-ready → full run), L95 ($150 lost on Phase 1B), L102 (3.5x cost multiplier missed)
+    i. Apply to: backtest runs, agent calls, data downloads, LLM evaluations, ANY operation that costs money OR is hard to redo
+    NEVER scale before each gate is explicitly approved by the owner. Past project lost $150 on a discarded run — that pattern is unacceptable to repeat.
