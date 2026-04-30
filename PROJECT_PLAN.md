@@ -413,4 +413,212 @@ Distilled from LEARNINGS.md (105 entries, full detail there):
 
 ---
 
+## 21. Website Architecture & Phase-Specific Analytics Dashboards
+
+*(Added April 2026 per Pass 43 + this turn's approval. Formerly proposed as Section 25 in conversation.)*
+
+### 21.1 Two-Property Web Architecture (per DECISION-187)
+
+The system has two distinct web properties, not one:
+
+**Property 1 — Public Recommendations Site** (mobile-first, no auth, end-of-day refresh)
+- Today's trade recommendations with full 10-point rationale
+- Yesterday's recommendation results (success/failure with mark-to-market on still-open positions)
+- Track record header: rolling 30/90/all-time recommendation win rate, avg gain, avg loss
+- URL: TBD public domain
+
+**Property 2 — Private Analytics Dashboards** (multiple dashboards, no auth during paper trading per DEC-196, revisit before live)
+- Phase-specific dashboards (one per phase — see Section 21.5)
+- All deeply linked, accessed via internal URLs
+- URL: TBD internal subdomain
+
+### 21.2 Trade Flow: Algo → Execution → Notification → Display
+
+```
+[Backtest / Paper / Live Algo Engine]
+              ↓
+   Generates trade decisions
+              ↓
+[Autonomous Execution] ←─── (no human approval gate per DEC-033 changed)
+              ↓
+   Trades placed (paper or live broker via IBKR)
+              ↓
+   Fills + slippage recorded
+              ↓
+        ┌─────┴─────┐
+        ↓           ↓
+[Notification    [Database]
+   Layer]            ↓
+   - Telegram    [Public Site] ← end-of-day refresh
+   - Email       [Private Dashboards] ← real-time/on-demand
+   - Push           ↓
+        ↓        Owner monitors via mobile
+   Owner alerts:
+   stops, breakers,
+   halts, P&L breach,
+   divergence, data
+   feed failures
+        ↓
+   Owner may manually
+   replicate trades in
+   Wealthsimple (out of system)
+```
+
+### 21.3 Public Recommendations Site — Spec (per DEC-187 to 198)
+
+**Layout: Mobile-first card-based, two main sections.**
+
+**Section A — Today's / Tomorrow's Recommendations**
+- Card per recommendation
+- Card collapsed view (default on mobile): ticker, direction, tier, entry, stop, target, hold range, strategy name, top 3 signals
+- Card expanded view (tap to expand): full 10-point rationale per DEC-189
+
+**Section B — Yesterday's Results**
+- Card per recommendation made yesterday
+- Status badges: ✅ closed positive, ❌ closed negative, 🔄 still open with mark-to-market
+- Closed cards show: entry, exit, hold days, exit reason, P&L
+- Open cards show: entry, current, unrealized P&L, days held so far
+- Original rationale expandable
+
+**Header — Track Record**
+- Rolling win rate (30d / 90d / all)
+- Avg gain on winners / avg loss on losers
+- Profit factor
+- Total recommendations
+
+**10-Point Trade Rationale (DEC-189) per recommendation:**
+1. Trigger — exact signal values (RSI=28, not "oversold")
+2. Strategy — name + one-line description
+3. Setup — chart pattern / context
+4. Smart money context — insider/congressional/13F flags with names
+5. Macro/regime fit — why this trade fits current regime
+6. Agent reasoning — Bull case, Bear case, who won
+7. Risk assessment — gap risk, earnings proximity, sector weakness
+8. Similar historical trades — "won 14 of 22 in similar setups"
+9. Position sizing rationale — why this tier
+10. Exit plan — stop, target, time stop, abort conditions
+
+**Publish timing (DEC-191):**
+- Pre-market 7-8am ET: tomorrow's recommendations published
+- Post-close 4pm ET: today's results updated, status badges set
+
+**Site shows actual paper trades with real slippage (DEC-192), not theoretical recommendations.** Track record reflects what actually happened including fills.
+
+### 21.4 Push Notification Layer (DEC-194, DEC-195)
+
+**Bot:** Telegram (free, richer formatting than SMS, separate from phone SMS).
+
+**6 alert events:**
+1. Stop-out fired on any open position
+2. Circuit breaker triggered (any of 5 levels per CIRCUIT_BREAKERS config)
+3. Position halted intraday
+4. Daily P&L breach (-2% warning, -5% critical)
+5. Backtest-vs-paper divergence > threshold (paper Sharpe drops 0.5 below backtest, per DEC-114)
+6. Data feed failure (any vendor)
+
+**NOT alerting on:** earnings beats/misses (too noisy across many open positions).
+
+**Email summary (twice daily):**
+- Pre-market 7am ET: tomorrow's planned trades + overnight news + regime classification
+- Post-close 4:30pm ET: today's executed trades + day P&L + open positions + tomorrow's preview
+
+### 21.5 Phase-Specific Analytics Dashboards (6 dashboards)
+
+Each phase produces different output shapes and answers different questions. One dashboard each:
+
+**Dashboard 1 — Phase 1B-α Backtest Analysis** (most analysis-heavy)
+*Pending detailed spec: DECISION-199*
+
+Sections:
+- Run summary (dates, universe, trades, Sharpe)
+- Strategy leaderboard (60 strategies sorted by composite score)
+- Strategy × regime heatmap (Sharpe per cell)
+- Strategy × sector heatmap (11 GICS sectors)
+- Strategy × cap-band heatmap
+- Strategy × volatility-bucket heatmap
+- Exit method comparison per strategy with bootstrap CIs (DEC-068)
+- Per-strategy drill-down (trade list, equity curve, drawdown, monthly returns, top losers per DEC-120)
+- Walk-forward stability (rolling 5yr/1yr Sharpe per DEC-109)
+- Statistical rigor panel (t-stat, deflated Sharpe DEC-110, Bonferroni p-values DEC-080)
+- Capacity stress test (1x/2x/5x capital per DEC-130)
+- Stress test breakdowns (2008/2018/2020/2022 per DEC-082, DEC-158)
+- Pairwise strategy correlation matrix
+- Transaction cost sensitivity (5/10/15/20bps)
+- Audit flag panel (>65% win rate red flag per DEC-084)
+
+Filters: date range, universe slice, regime, sector, cap, vol bucket, signal score threshold.
+
+**Dashboard 2 — Phase 0.D ICT/SMC Signal Audit**
+*Pending detailed spec: DECISION-200*
+
+Sections: coverage table, PIT correctness audit (DEC-040), signal frequency histogram, signal value distributions, cross-ticker correlation, visual chart inspector with annotations, computation cost log.
+
+**Dashboard 3 — Stage 2 Path B Agent Overlay Analysis**
+*Pending detailed spec: DECISION-201*
+
+Sections: smoke gate status with cost vs $300 cap (DEC-060), cost panel, agent vs rules Sharpe comparison (DEC-131 ≥0.2 threshold), agent decision distribution (ENTER/WATCH/SKIP/AVOID), tier modifier impact, agent rationale browser, where-agents-help-vs-hurt patterns, per-agent attribution, cost-vs-benefit per regime, smoke gate pass/fail history.
+
+**Dashboard 4 — Stage 3 Paper Trading Analytics** (the private monitoring dashboard)
+*Pending detailed spec: DECISION-202*
+
+Sections: status bar, equity curves ($5K vs $50K vs SPY per DEC-029-A/B), drawdown chart with circuit-breaker overlay, per-strategy P&L attribution, per-regime breakdown, trade journal with 10-point rationale searchable, backtest-vs-paper divergence tracker (DEC-114), KPIs (Sharpe / win rate / profit factor / vs-SPY per DEC-155), circuit breaker status, system health panel, push alert log.
+
+Filters: notional ($5K/$50K), date range, strategy, regime.
+
+**Dashboard 5 — Stage 4 Live Trading Analytics** (mirrors Dashboard 4 + real-money concerns)
+*Pending detailed spec: DECISION-203*
+
+Adds: real cash position + USD/CAD exposure (DEC-134), tax event log (DEC-035), capital protection metrics (drawdown vs limits / vol vs target / factor exposure caps), reconciliation status (DEC-097), order routing performance (fill quality vs NBBO), regulatory event flags (DEC-159), optional Wealthsimple replication tracking log.
+
+**Dashboard 6 — Cross-Phase Comparison** (master "is it working" view)
+*Pending detailed spec: DECISION-204*
+
+Sections: Sharpe waterfall (Backtest → Stage 2 → Stage 3 → Stage 4 per DEC-129), win rate degradation waterfall, slippage attribution per phase, strategy mortality (which strategies passed/failed each phase), cost stack (commission + slippage + agent fees + infra per trade across phases), decision ledger (when each strategy was promoted/demoted).
+
+### 21.6 Tech Stack & Hosting (Hybrid per owner approval this turn)
+
+**Public site (Property 1):** Next.js + Vercel
+- Mobile-first, SSR/SSG-optimized
+- Custom domain (TBD)
+- Free tier sufficient for paper trading phase
+- SEO and polish required for public-facing
+
+**Private dashboards (Property 2, all 6):** Streamlit (per DEC-048 already approved)
+- Python-native, fast iteration
+- One Streamlit app per dashboard, deep-linked
+- Hosted via Streamlit Cloud free tier or self-hosted alongside backend
+- Single-user friendly; revisit if multi-user need emerges
+
+**Backend / Algo engine:** Codespace through paper trading per DEC-031, migrate to AWS/GCP/DO before Stage 4 per DEC-093.
+
+**Database:** Existing Parquet cache + new transactional store for trades/results (TBD: SQLite during paper, Postgres for live).
+
+### 21.7 Build Sequence Aligned to Phase Milestones
+
+Dashboards don't all need to exist on Day 1. Built in lockstep with phase progression:
+
+| Phase | Dashboards Required | Why |
+|---|---|---|
+| **Now (Phase 0.A prep)** | Dashboard 1 spec + skeleton | Backtest output schema must be designed before backtest runs |
+| **Phase 0.D** | Dashboard 2 (ICT/SMC audit) | Validate signals before they're traded |
+| **Stage 1 backtest** | Dashboard 1 fully built | Required to interpret results and pass/fail strategies |
+| **Stage 2** | Dashboard 3 (agent analysis) | Required at smoke gate decisions per DEC-060 |
+| **Stage 3 (Paper trading)** | Dashboard 4 + Public Site | Required before paper trading goes live |
+| **Stage 4 (Live)** | Dashboard 5 + Dashboard 6 | Required before real money goes in |
+
+### 21.8 Forward-Looking Decisions
+
+Six new pending decisions added to registry, each requiring detailed approval at the corresponding build phase:
+
+- **DECISION-199** — Dashboard 1 detailed spec (Phase 1B-α backtest analysis)
+- **DECISION-200** — Dashboard 2 detailed spec (Phase 0.D ICT/SMC signal audit)
+- **DECISION-201** — Dashboard 3 detailed spec (Stage 2 agent analysis)
+- **DECISION-202** — Dashboard 4 detailed spec (Stage 3 paper trading)
+- **DECISION-203** — Dashboard 5 detailed spec (Stage 4 live trading)
+- **DECISION-204** — Dashboard 6 detailed spec (cross-phase comparison)
+
+Each will be reviewed and approved when its phase is reached, allowing iteration based on what we learned in prior phases.
+
+---
+
 *End of PROJECT_PLAN.md current state. For pre-April-2026 detail (60-strategy descriptions, 274-field signal universe, full glossary, restored sections), see PROJECT_PLAN_ARCHIVE.md.*

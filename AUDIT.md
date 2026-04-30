@@ -17669,3 +17669,48 @@ But it ADDS requirements:
 This actually RAISES the bar for paper trading — paper must demonstrate confidence-worthy autonomy before any real money goes in.
 
 *Pass 43 complete. Strategic pivot captured. 12 website decisions resolved. Audit miss on website acknowledged. L110 to be added.*
+
+---
+
+# AUDIT PASS 44 — Section 21 added to PROJECT_PLAN: Website + 6 Phase Dashboards
+
+Owner approved verbatim this turn: "Approve PROJECT_PLAN section 25 + tech stack (c) hybrid"
+
+Note: Section is committed as **Section 21** (next available number — Sections 21-24 don't exist, only 1-20 + new 21). Internally referenced as "formerly proposed as Section 25" for conversation traceability.
+
+## What was committed to PROJECT_PLAN.md
+
+New Section 21 (~150 lines) covering:
+
+- 21.1 Two-property web architecture (recap of DEC-187)
+- 21.2 Trade flow diagram (algo → autonomous execution → notification → display → optional manual replication)
+- 21.3 Public Recommendations Site spec (mobile-first cards, 10-point rationale per DEC-189, publish timing per DEC-191, actual-paper-trades semantics per DEC-192)
+- 21.4 Push notification layer (Telegram bot, 6 alert events per DEC-194, twice-daily email summaries)
+- 21.5 Six phase-specific dashboards spec'd at high level:
+  * Dashboard 1 — Phase 1B-α Backtest Analysis (15+ sections including strategy heatmaps, exit comparison with bootstrap CI per DEC-068, walk-forward stability per DEC-109, statistical rigor panel, capacity stress test, stress test breakdowns, audit flag panel per DEC-084)
+  * Dashboard 2 — Phase 0.D ICT/SMC Signal Audit
+  * Dashboard 3 — Stage 2 Path B Agent Overlay Analysis (smoke gate status, cost panel, agent-vs-rules Sharpe per DEC-131, agent rationale browser)
+  * Dashboard 4 — Stage 3 Paper Trading Analytics (the private monitoring dashboard)
+  * Dashboard 5 — Stage 4 Live Trading Analytics (mirrors 4 + real-money concerns: USD/CAD per DEC-134, tax per DEC-035, reconciliation per DEC-097)
+  * Dashboard 6 — Cross-Phase Comparison (Sharpe waterfall, strategy mortality, cost stack)
+- 21.6 Tech stack: hybrid per approval — Next.js+Vercel for public site, Streamlit for 6 internal dashboards (per existing DEC-048)
+- 21.7 Build sequence aligned to phase milestones (dashboards built when needed, not Day 1)
+- 21.8 Six forward-looking decisions (DEC-199 to 204) for detailed dashboard specs at build time
+
+## New decisions added
+
+- DEC-199 through 204 — one per dashboard, all PENDING, status changes to RESOLVED when each dashboard's detailed spec is approved at its build phase
+
+## Counts post-Pass-44
+
+- Decisions: 200 → 206 entries (54 RESOLVED, 5 PARTIAL, 8 SUPERSEDED, 139 PENDING)
+- Bugs: 203 unchanged
+- LEARNINGS: 110 unchanged
+- CHECKLIST: 32 unchanged
+- Audit passes: 44
+
+## Why this section matters
+
+Per L110 (added Pass 43): Website/UX/notifications is first-class architecture, not peripheral. This section embeds that learning into PROJECT_PLAN — anyone reading the project's master plan now sees website + dashboards as a primary architectural concern, not a footnote. The 6-dashboard separation prevents the "one giant dashboard" anti-pattern that obscures phase-specific analysis questions.
+
+*Pass 44 complete. Section 21 committed. 6 dashboard decisions added to registry.*

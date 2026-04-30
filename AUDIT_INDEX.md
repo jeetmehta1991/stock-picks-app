@@ -1,5 +1,5 @@
 # AUDIT_INDEX.md — Decision and Bug Registry
-**Last regenerated:** April 2026 (post-Pass 43)
+**Last regenerated:** April 2026 (post-Pass 44)
 **Source of truth:** AUDIT.md
 **Companion:** AUDIT_TRIAGE.md (impact/cost analysis for pending decisions)
 
@@ -7,14 +7,14 @@
 
 ## Decision Registry
 
-**Total: 200 decision entries** (some are sub-IDs like 029-A/B/C)
+**Total: 206 decision entries**
 
 | Status | Count |
 |---|---|
 | RESOLVED | 54 |
 | PARTIAL | 5 |
 | SUPERSEDED | 8 |
-| PENDING | 133 |
+| PENDING | 139 |
 
 ### All Decisions Table (sorted by ID)
 
@@ -220,6 +220,12 @@
 | **DECISION-196** | No authentication on paper-trading analytics dashboard; revisit before live trading | RESOLVED | Website Architecture | Pass 43 | 43 |
 | **DECISION-197** | Hosting: Vercel for both web properties (free tier, mobile-optimized); backend on Codespac | RESOLVED | Website Architecture | Pass 43 | 43 |
 | **DECISION-198** | Paper trading mirrors live algo exactly — same logic, sizing, risk rules, exits, breakers  | RESOLVED | Project Axioms | Pass 43 | 43 |
+| **DECISION-199** | Dashboard 1 detailed spec (Phase 1B-α backtest analysis) | PENDING | Dashboard Specifications | Pass 44 | - |
+| **DECISION-200** | Dashboard 2 detailed spec (Phase 0.D ICT/SMC signal audit) | PENDING | Dashboard Specifications | Pass 44 | - |
+| **DECISION-201** | Dashboard 3 detailed spec (Stage 2 agent overlay analysis) | PENDING | Dashboard Specifications | Pass 44 | - |
+| **DECISION-202** | Dashboard 4 detailed spec (Stage 3 paper trading analytics) | PENDING | Dashboard Specifications | Pass 44 | - |
+| **DECISION-203** | Dashboard 5 detailed spec (Stage 4 live trading analytics) | PENDING | Dashboard Specifications | Pass 44 | - |
+| **DECISION-204** | Dashboard 6 detailed spec (cross-phase comparison waterfall) | PENDING | Dashboard Specifications | Pass 44 | - |
 
 ---
 
@@ -424,6 +430,15 @@
 
 - **DECISION-117**: Add file-level checksum + last-validated timestamp to cache
 - **DECISION-118**: Prefetch full cross-asset macro (VIX direct, DXY, GLD, oil, sector ETFs, TLT, HYG, SHY)
+
+**Dashboard Specifications** (6):
+
+- **DECISION-199**: Dashboard 1 detailed spec (Phase 1B-α backtest analysis)
+- **DECISION-200**: Dashboard 2 detailed spec (Phase 0.D ICT/SMC signal audit)
+- **DECISION-201**: Dashboard 3 detailed spec (Stage 2 agent overlay analysis)
+- **DECISION-202**: Dashboard 4 detailed spec (Stage 3 paper trading analytics)
+- **DECISION-203**: Dashboard 5 detailed spec (Stage 4 live trading analytics)
+- **DECISION-204**: Dashboard 6 detailed spec (cross-phase comparison waterfall)
 
 **Live Trading Operational (Group E)** (3):
 
@@ -690,4 +705,4 @@
 | **BUG-198** | (NEW) · CRITICAL — No structural PIT data loader; each data source uses ad-hoc P | INLINE-ONLY | - |
 
 ---
-*Regenerated April 2026 from AUDIT.md after Pass 43.*
+*Regenerated April 2026 from AUDIT.md after Pass 44.*
