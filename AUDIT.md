@@ -19716,3 +19716,64 @@ Of these: 13 RESOLVED, 2 OBSOLETE, 2 DEFERRED. Wait, that's 17 — recount: Batc
 **Resolution status:** PENDING. To be resolved in a future focused session covering DEC-066 + DEC-099 + DEC-100 + DEC-101 + DEC-102 + DEC-346 jointly as a coherent strategy-categorical-architecture batch. Estimated session scope: ~3-4 hours of focused work given dependencies.
 
 *DEC-346 logged. Owner-surfaced gap captured properly per CHECKLIST #40 (prior-art surfaced before any new edits to CLAUDE.md / PROJECT_PLAN). Resolution deferred to focused session. Forward-link references prevent silent drift on prior decisions.*
+
+---
+
+## AUDIT PASS 52 — Lagging-Indicator Dominance (DEC-347 — Stage 1 research finding)
+
+**Date:** April 30, 2026
+**Trigger:** Stage 1 strategy-research deliverable (post-Round-1, separate research stream). Empirical 2024-2026 landscape review identified that all 72 currently-implemented strategies in `backtest/signals/screener.py` are technical-indicator combinations, with the dominant signal types being smoothing-induced lagging indicators (MACD, MA crossovers, RSI, Bollinger, Ichimoku). The April 2025 V-shaped recovery is the case-in-point: VIX spiked >60 on tariff announcement, then S&P recovered ~39% to year-end. Lagging-indicator strategies stop out at the bottom and miss most of the recovery; this pattern would have repeated multiple times across the 2024-2026 window.
+
+### DEC-347 — Lagging-indicator dominance — PENDING (logged Pass 52, resolution deferred to focused session)
+
+**The actual problem (precise):** Not "lag" generically — all indicators lag price by definition. The problem is **smoothing-induced lag**: signals that introduce additional delay through period-based smoothing (MA periods, RSI windows, MACD EMA differences). Examples:
+- Golden Cross 50/200 fires 50+ bars after the trend changed
+- MACD crossover lags the underlying momentum inflection by 3-7 bars
+- Bollinger band breakouts use 20-period bands; in a 5-day vol regime change they miss the move
+- Ichimoku cloud breakouts use 26/52-period look-backs
+
+**Lagging indicators are not bad universally — they work in sustained trends and fail in V-shapes / chop.** The 2024-2026 environment had multiple V-shapes (Q1 2025 IT crash → Liberation Day spike → H2 recovery → Q1 2026 sector rotation). Lagging-only systems were structurally exposed.
+
+**Owner direction (chat, Pass 52 research stream):** Three-option framing presented (1=add leading-style signals as primary triggers / 2=use lagging only as confirmation / 3=regime-condition the lagging signals). Owner approved **1+3 combination**: add some leading-style signals AND regime-gate the lagging ones in choppy / V-shape regimes.
+
+**Resolution path (per fork-first architecture, DEC-045, and CLAUDE.md fork-first rule added Pass 52):**
+
+The resolution path explicitly follows fork-first. No custom indicator development unless no library covers it.
+
+**Step 1 — Audit pandas-ta (already adopted) for unused leading-style signals.** pandas-ta is in requirements; we currently use <10% of its surface. Need to enumerate what's there for volume-flow, breadth, market-internals, volatility-expansion that we're not using.
+
+**Step 2 — Evaluate additional libraries for gaps pandas-ta doesn't cover.** Candidates (per L103, must read source before recommending):
+- **vectorbt** (Apache 2.0) — has built-in market-internals, breadth-thrust, volatility-expansion primitives
+- **stockstats** (MIT) — small, fast, common indicators
+- **finta**, **tulip**, **talipp** — alternative TA libraries with broader signal coverage
+- **smartmoneyconcepts** (already adopted per DEC-045) — has volume-profile and market-structure primitives
+
+**Step 3 — Build only the regime-gating logic** (genuinely novel custom work, no library covers project-specific gating). Use existing `backtest/engine/regime_filter.py` as the gate; in choppy/V-shape regimes, suppress lagging-indicator strategies; in sustained-trend regimes, trust them.
+
+**Cross-reference dependencies:**
+- DEC-045 (fork-first architecture) — RESOLVED Pass 27 — this resolution must follow fork-first
+- DEC-103 (4-regime classifier) — already in code, used for Step 3 gating
+- DEC-153 (regime-stratified splits) — PENDING, related; Step 3 may need richer regime classification
+- BUG-129 (no regime-conditional parameter tuning) — OPEN; closely related, partially addresses same gap
+- BUG-175 (no regime-conditional strategy weighting) — OPEN; closely related
+- DEC-099 (11 missing strategy categories) — PENDING; may include leading-style signal categories
+- DEC-100 (17+ categorical breakdowns) — PENDING; verdict per regime/category
+- DEC-346 (multidimensional verdict matrix) — PENDING; resolves jointly
+- L103 (read library source before recommending) — must follow during Step 2
+
+**Industry-standards grounding (per CHECKLIST #37):**
+- **Pring (2014)** *Technical Analysis Explained* — explicitly discusses leading-vs-lagging-indicator question; recommends combination with confirmation logic
+- **Connors (2009)** *Short Term Trading Strategies That Work* — documents declining efficacy of pure RSI mean-reversion since the 2000s; supports the lagging-indicator alpha decay thesis
+- **Lo, Mamaysky, Wang (2000)** *Foundations of Technical Analysis* — academic study; mixed results for technical indicators broadly but volume/breadth/microstructure-derived signals hold up better than smoothed-price
+
+**Honest caveat:** ICT/SMC literature is trader-community, not peer-reviewed. The fork-first answer (smartmoneyconcepts library, already adopted via DEC-045) is the implementation approach but the methodology epistemology is industry-practice, not academic. Same caveat as DEC-345.
+
+**Forward-pending sub-decisions surfaced by DEC-347:**
+- **DEC-347-A (TBD):** Specific leading-style signals to add (volume-weighted breakout, volatility expansion, breadth thrust, advance-decline, etc.)
+- **DEC-347-B (TBD):** Library evaluation outcome — pandas-ta extended use vs vectorbt vs stockstats vs hybrid
+- **DEC-347-C (TBD):** Regime-gating rules — which regimes suppress which lagging indicator categories
+- **DEC-347-D (TBD):** Integration with existing 72-strategy universe — replace, augment, or filter
+
+**Resolution status:** PENDING. To be resolved in a future focused session covering DEC-099 + DEC-100 + DEC-101 + DEC-102 + DEC-346 + DEC-347 jointly. Estimated scope: ~4-5 hours focused work given fork-first library evaluation discipline (per L103 — must read source before recommending).
+
+*DEC-347 logged. Stage 1 research finding properly captured. Resolution deferred to focused session per owner option (c) approved Pass 52 (research stream). Resolution path explicitly follows fork-first architecture (DEC-045) with no custom-indicator-development assumed.*
