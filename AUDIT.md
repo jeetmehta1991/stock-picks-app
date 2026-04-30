@@ -17523,3 +17523,51 @@ This prevents decision-count explosion.
 ---
 
 *Pass 40 complete: 44 net-new decisions. Pass 41 complete: 25 net-new decisions. Total decisions: 185. AUDIT_INDEX needs regeneration to reflect new count. L109 to be added per owner standing exception.*
+
+---
+
+# AUDIT PASS 42 — DECISION-162 + 164 Resolved + Triage Tool Built
+
+Owner approved this turn: "162 and 164 approved" — verbatim approval recorded.
+
+Both decisions are about TRIAGE TOOLING. Per loosened-interpretation guidance ("Don't be so literal... infer from context... provide recommendation"), I executed Interpretation A: built the actual triage analysis as a deliverable.
+
+## Resolution
+
+- **DECISION-162** RESOLVED: Per-decision time-to-approve estimate + owner-approval-budget tracking — implemented as `AUDIT_TRIAGE.md` with Review Min column for all 147 pending decisions.
+- **DECISION-164** RESOLVED: Pairwise tradeoff matrix between decisions (impact vs cost) — implemented as `AUDIT_TRIAGE.md` with Impact/Eng Days/Ratio columns and sorted views.
+
+Note: DECISION-163 (implementation cost estimate per pending decision) is functionally also resolved by the same deliverable, but remains marked PENDING in registry pending owner verbatim approval. Recommendation: owner can mark 163 RESOLVED in next message if desired since the work is done.
+
+## Deliverable: AUDIT_TRIAGE.md (319 lines)
+
+Contents:
+- Top 30 highest impact/cost ratio decisions (recommended approve-first list)
+- All 147 pending decisions sorted by ratio
+- Phase 0.A critical path (~25 blockers, ~50 eng-days)
+- Zero-cost approvals (decisions needing only owner judgment, no code)
+- Defer candidates (low leverage)
+- Summary statistics
+
+Top-5 by impact/cost ratio:
+1. DECISION-152 (ratio 18.0) — Hold-out final test period (cost: discipline only, impact: prevents meta-overfitting)
+2. DECISION-084 (ratio 14.0) — Audit flag at 70% win rate (cost: config change, impact: tighter overfitting screen)
+3. DECISION-164 (ratio 10.0) — already resolved this turn
+4. DECISION-031 (ratio 10.0) — Codespace/Cloud (cost: 0 eng-days, impact: 5)
+5. DECISION-028 (ratio 10.0) — Stage 3 paper trading duration (cost: 0 eng-days, impact: 5)
+
+## Headline insights from triage
+
+- **~25 Phase 0.A blockers** to resolve first (~50 eng-days)
+- **~16 zero-cost decisions** that just need owner judgment (no code)
+- **Total if all 147 approved:** ~340 eng-days (~68 weeks at 5d/wk) — clearly need to triage
+- **Recommended:** approve top-30 by ratio first, then re-evaluate
+
+## Counts
+
+- Decisions: 185 total (29 RESOLVED + 2 newly RESOLVED via this pass = 31 RESOLVED, 5 PARTIAL, 4 SUPERSEDED, 145 PENDING)
+- Bugs: 203 (unchanged)
+- LEARNINGS: 109
+- CHECKLIST: 32
+
+*Pass 42 complete. Two decisions resolved. Triage deliverable built. AUDIT_INDEX needs regeneration to update statuses.*
