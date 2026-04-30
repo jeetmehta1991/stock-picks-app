@@ -1,18 +1,18 @@
 # AUDIT_INDEX.md — Decision and Bug Registry
-**Last regenerated:** April 2026 (post-Pass 47 comprehensive sweep)
+**Last regenerated:** April 2026 (post-Pass 48)
 
 ---
 
 ## Decision Registry
 
-**Total: 294 decision entries**
+**Total: 346 decision entries**
 
 | Status | Count |
 |---|---|
 | RESOLVED | 55 |
 | PARTIAL | 5 |
 | SUPERSEDED | 7 |
-| PENDING | 227 |
+| PENDING | 279 |
 
 ### All Decisions Table
 
@@ -312,6 +312,58 @@
 | **DECISION-290** | Dropped strategy re-evaluation cadence (every 6 months re-test, re-admit if Sharpe restore | PENDING | Batch X49 — Thin Areas Surfaced | Pass 47 | - |
 | **DECISION-291** | Triage-based bulk approval — owner approves entire impact-ratio band in single message | PENDING | Batch X50 — Process Improvements | Pass 47 | - |
 | **DECISION-292** | Decision→CHECKLIST migration audit (quarterly, RESOLVED decisions to process rules) | PENDING | Batch X50 — Process Improvements | Pass 47 | - |
+| **DECISION-293** | Fix close_trade `days` NameError — confirmed runtime crash via execution. Reorder `pnl = _ | PENDING | Batch X51 — CRITICAL Runtime Bugs | Pass 48 | - |
+| **DECISION-294** | Remove duplicate ClosedTrade dataclass definition in exit_manager.py — pick canonical, del | PENDING | Batch X51 — CRITICAL Runtime Bugs | Pass 48 | - |
+| **DECISION-295** | Reconcile SHORT_BORROW_COST_PER_DAY units — 0.005 ambiguous (per-day decimal vs per-day pe | PENDING | Batch X51 — CRITICAL Runtime Bugs | Pass 48 | - |
+| **DECISION-296** | Fix test_e2e fixture — engine fixture undefined, 7 of 8 e2e tests ERROR at setup | PENDING | Batch X51 — CRITICAL Runtime Bugs | Pass 48 | - |
+| **DECISION-297** | Add unit test for close_trade — would have caught the days bug; same for any function in c | PENDING | Batch X51 — CRITICAL Runtime Bugs | Pass 48 | - |
+| **DECISION-298** | Cache stores adjusted-close (auto_adjust=True) which changes over time as splits/dividends | PENDING | Batch X52 — CRITICAL PIT Correctness | Pass 48 | - |
+| **DECISION-299** | yfinance fetch_info returns CURRENT sector/mkt_cap/IPO date regardless of as_of — full his | PENDING | Batch X52 — CRITICAL PIT Correctness | Pass 48 | - |
+| **DECISION-300** | yfinance earnings_dates and analyst data return CURRENT values not as-of — replace with PI | PENDING | Batch X52 — CRITICAL PIT Correctness | Pass 48 | - |
+| **DECISION-301** | FRED data revisions completely unhandled — switch to ALFRED (archival FRED) for vintage da | PENDING | Batch X52 — CRITICAL PIT Correctness | Pass 48 | - |
+| **DECISION-302** | VXX used as VIX proxy + UUP used as DXY proxy — quantify tracking error or replace with ac | PENDING | Batch X52 — CRITICAL PIT Correctness | Pass 48 | - |
+| **DECISION-303** | S&P 500 constituent list is current membership applied retroactively — survivorship bias;  | PENDING | Batch X52 — CRITICAL PIT Correctness | Pass 48 | - |
+| **DECISION-304** | CPI/NFP/FOMC dates hardcoded through March 2026 only — auto-extend from FRED FOMC + BLS sc | PENDING | Batch X52 — CRITICAL PIT Correctness | Pass 48 | - |
+| **DECISION-305** | PIT guard `_assert_no_lookahead` logs WARNING but doesn't RAISE — switch to RAISE in backt | PENDING | Batch X52 — CRITICAL PIT Correctness | Pass 48 | - |
+| **DECISION-306** | get_news_sentiment path mismatch — code reads /prefetch/news/ but data lives in /cache/fin | PENDING | Batch X52 — CRITICAL PIT Correctness | Pass 48 | - |
+| **DECISION-307** | Cache get_ohlcv front-extension missing — only fetches missing TAIL; if user requests star | PENDING | Batch X53 — High-Impact Engine Bugs | Pass 48 | - |
+| **DECISION-308** | Cache get_ohlcv_bulk requires >=20 trading days — silently rejects valid cache for shorter | PENDING | Batch X53 — High-Impact Engine Bugs | Pass 48 | - |
+| **DECISION-309** | Cache ticker collision: BRK-B and (hypothetical) BRK.B both map to BRK_B.parquet — silent  | PENDING | Batch X53 — High-Impact Engine Bugs | Pass 48 | - |
+| **DECISION-310** | Cache writes zero-volume days dropped silently (df[volume>0]) — halted/suspended stocks in | PENDING | Batch X53 — High-Impact Engine Bugs | Pass 48 | - |
+| **DECISION-311** | Trailing-stop ATR exits use ENTRY-time ATR throughout hold period — should refresh daily;  | PENDING | Batch X53 — High-Impact Engine Bugs | Pass 48 | - |
+| **DECISION-312** | exit_hybrid_50pct has max_days=252 but 11 other exits don't — comparison metrics not apple | PENDING | Batch X53 — High-Impact Engine Bugs | Pass 48 | - |
+| **DECISION-313** | update_trailing_stop ignores intraday HIGH — stop only updates at close above prior best;  | PENDING | Batch X53 — High-Impact Engine Bugs | Pass 48 | - |
+| **DECISION-314** | Circuit breakers levels 3 and 4 (intraday halt, market halt) documented but NOT implemente | PENDING | Batch X53 — High-Impact Engine Bugs | Pass 48 | - |
+| **DECISION-315** | Circuit breakers checked one-at-a-time — if Level 1 + Level 5 both fire same day, Level 5  | PENDING | Batch X53 — High-Impact Engine Bugs | Pass 48 | - |
+| **DECISION-316** | Regime classifier returns 'neutral' default on missing VIX — should refuse to trade with n | PENDING | Batch X53 — High-Impact Engine Bugs | Pass 48 | - |
+| **DECISION-317** | VIX hard thresholds (40/30/20) flip regime on single print — needs MA smoothing | PENDING | Batch X53 — High-Impact Engine Bugs | Pass 48 | - |
+| **DECISION-318** | AAII pub-lag treatment missing — survey data marked available on survey-Wed, actually publ | PENDING | Batch X53 — High-Impact Engine Bugs | Pass 48 | - |
+| **DECISION-319** | AAII auto-refresh missing — committed CSV will go stale, no refresh script in /scripts or  | PENDING | Batch X53 — High-Impact Engine Bugs | Pass 48 | - |
+| **DECISION-320** | CNN F&G CSV interpolated between key readings — fabricated values used as PIT signal | PENDING | Batch X53 — High-Impact Engine Bugs | Pass 48 | - |
+| **DECISION-321** | Liquidity filter market-cap check skips silently if data missing — fail-open instead of fa | PENDING | Batch X53 — High-Impact Engine Bugs | Pass 48 | - |
+| **DECISION-322** | Market cap from yfinance.info CURRENT not historical — backtesting 2020 trades uses 2026 m | PENDING | Batch X53 — High-Impact Engine Bugs | Pass 48 | - |
+| **DECISION-323** | Sector reclassifications retro-applied — Meta moved from Comms to Tech; 2020 backtests use | PENDING | Batch X53 — High-Impact Engine Bugs | Pass 48 | - |
+| **DECISION-324** | Congressional weight by disclosure_date not transaction_date — smart-money signal weighted | PENDING | Batch X53 — High-Impact Engine Bugs | Pass 48 | - |
+| **DECISION-325** | Institutional 13F PIT assumes universal on-time filing — late filers (some big funds) invi | PENDING | Batch X53 — High-Impact Engine Bugs | Pass 48 | - |
+| **DECISION-326** | Walk-forward windows hardcoded calendar dates — no rolling logic per DEC-109; stale after  | PENDING | Batch X53 — High-Impact Engine Bugs | Pass 48 | - |
+| **DECISION-327** | Short-borrow cost duplicated across improvements.py + exit_manager.py with different units | PENDING | Batch X53 — High-Impact Engine Bugs | Pass 48 | - |
+| **DECISION-328** | Cache filelock fallback writes silently if lock unavailable — concurrent writes can corrup | PENDING | Batch X54 — Medium-Severity Improvements | Pass 48 | - |
+| **DECISION-329** | Module-level global caches (VIX, DXY, AAII, CNN F&G) not multi-process safe | PENDING | Batch X54 — Medium-Severity Improvements | Pass 48 | - |
+| **DECISION-330** | Cache schema not versioned — schema changes silently mix old + new parquet | PENDING | Batch X54 — Medium-Severity Improvements | Pass 48 | - |
+| **DECISION-331** | ETF list fragmented (ETFS in config.py 17 items, ETFS_FULL in universe.py 25 items, ETF_TI | PENDING | Batch X54 — Medium-Severity Improvements | Pass 48 | - |
+| **DECISION-332** | Smart money composite scoring weights (4/2/-3 etc) hardcoded magic — move to config with d | PENDING | Batch X54 — Medium-Severity Improvements | Pass 48 | - |
+| **DECISION-333** | Sentiment thresholds (AAII 55/45, CNN F&G 20/35/65/80) don't match CNN's published bands | PENDING | Batch X54 — Medium-Severity Improvements | Pass 48 | - |
+| **DECISION-334** | composite_score uses win_rate as ROI proxy — replace with actual ROI | PENDING | Batch X54 — Medium-Severity Improvements | Pass 48 | - |
+| **DECISION-335** | composite_score weights (40/30/30) hardcoded — make configurable | PENDING | Batch X54 — Medium-Severity Improvements | Pass 48 | - |
+| **DECISION-336** | info_cache.json never refreshed — stale market caps persist project-lifetime | PENDING | Batch X54 — Medium-Severity Improvements | Pass 48 | - |
+| **DECISION-337** | update_trailing_stop ignores intraday extremes for stop placement; fix to track highs and  | PENDING | Batch X54 — Medium-Severity Improvements | Pass 48 | - |
+| **DECISION-338** | Conversion logic (short→long in bull regime) creates label only; no actual long opened — d | PENDING | Batch X54 — Medium-Severity Improvements | Pass 48 | - |
+| **DECISION-339** | pnl_dollar hardcoded $10K notional — wrong for $5K paper / $50K next stage / $1K live | PENDING | Batch X54 — Medium-Severity Improvements | Pass 48 | - |
+| **DECISION-340** | get_correlation_matrix silently drops tickers with <20 history — variable corr-matrix memb | PENDING | Batch X54 — Medium-Severity Improvements | Pass 48 | - |
+| **DECISION-341** | universe.py docstring claims Wikipedia fetch but code uses static CSV — fix docstring or i | PENDING | Batch X55 — Documentation Sync | Pass 48 | - |
+| **DECISION-342** | Test pass-rate mis-reported — only 38 of 46 tests run cleanly (7 e2e errors); update repor | PENDING | Batch X55 — Documentation Sync | Pass 48 | - |
+| **DECISION-343** | Pandas-ta deprecation warning on pandas 4.0 — plan replacement (TA-Lib alternative) | PENDING | Batch X55 — Documentation Sync | Pass 48 | - |
+| **DECISION-344** | Slippage threshold ATR/price > 3% likely too high — most S&P large caps never trigger | PENDING | Batch X55 — Documentation Sync | Pass 48 | - |
 
 ---
 
@@ -629,6 +681,73 @@
 - **DECISION-291**: Triage-based bulk approval — owner approves entire impact-ratio band in single message
 - **DECISION-292**: Decision→CHECKLIST migration audit (quarterly, RESOLVED decisions to process rules)
 
+**Batch X51 — CRITICAL Runtime Bugs** (5):
+
+- **DECISION-293**: Fix close_trade `days` NameError — confirmed runtime crash via execution. Reorder `pnl = _pnl(...)` after `days = ...` assignment
+- **DECISION-294**: Remove duplicate ClosedTrade dataclass definition in exit_manager.py — pick canonical, delete other
+- **DECISION-295**: Reconcile SHORT_BORROW_COST_PER_DAY units — 0.005 ambiguous (per-day decimal vs per-day percent); risks 100× error
+- **DECISION-296**: Fix test_e2e fixture — engine fixture undefined, 7 of 8 e2e tests ERROR at setup
+- **DECISION-297**: Add unit test for close_trade — would have caught the days bug; same for any function in critical exit path
+
+**Batch X52 — CRITICAL PIT Correctness** (9):
+
+- **DECISION-298**: Cache stores adjusted-close (auto_adjust=True) which changes over time as splits/dividends accrue — store raw OHLCV + corp actions; recompute adjusted on demand
+- **DECISION-299**: yfinance fetch_info returns CURRENT sector/mkt_cap/IPO date regardless of as_of — full historical company info source needed (Polygon Reference)
+- **DECISION-300**: yfinance earnings_dates and analyst data return CURRENT values not as-of — replace with PIT source or remove from PIT-claiming functions
+- **DECISION-301**: FRED data revisions completely unhandled — switch to ALFRED (archival FRED) for vintage data, or document revision-bias acceptance
+- **DECISION-302**: VXX used as VIX proxy + UUP used as DXY proxy — quantify tracking error or replace with actual ^VIX/DX-Y.NYB
+- **DECISION-303**: S&P 500 constituent list is current membership applied retroactively — survivorship bias; need historical PIT membership data
+- **DECISION-304**: CPI/NFP/FOMC dates hardcoded through March 2026 only — auto-extend from FRED FOMC + BLS schedule
+- **DECISION-305**: PIT guard `_assert_no_lookahead` logs WARNING but doesn't RAISE — switch to RAISE in backtest mode
+- **DECISION-306**: get_news_sentiment path mismatch — code reads /prefetch/news/ but data lives in /cache/finnhub_news/ + /cache/av_news/; news data NEVER read by sentiment snapshot
+
+**Batch X53 — High-Impact Engine Bugs** (21):
+
+- **DECISION-307**: Cache get_ohlcv front-extension missing — only fetches missing TAIL; if user requests start before cached_start, cache is overwritten with shorter range
+- **DECISION-308**: Cache get_ohlcv_bulk requires >=20 trading days — silently rejects valid cache for shorter-window queries
+- **DECISION-309**: Cache ticker collision: BRK-B and (hypothetical) BRK.B both map to BRK_B.parquet — silent overwrite
+- **DECISION-310**: Cache writes zero-volume days dropped silently (df[volume>0]) — halted/suspended stocks invisible vs not-trading
+- **DECISION-311**: Trailing-stop ATR exits use ENTRY-time ATR throughout hold period — should refresh daily; stops mis-sized for current volatility
+- **DECISION-312**: exit_hybrid_50pct has max_days=252 but 11 other exits don't — comparison metrics not apples-to-apples
+- **DECISION-313**: update_trailing_stop ignores intraday HIGH — stop only updates at close above prior best; misses highs
+- **DECISION-314**: Circuit breakers levels 3 and 4 (intraday halt, market halt) documented but NOT implemented
+- **DECISION-315**: Circuit breakers checked one-at-a-time — if Level 1 + Level 5 both fire same day, Level 5 stop tighten missed
+- **DECISION-316**: Regime classifier returns 'neutral' default on missing VIX — should refuse to trade with no regime data
+- **DECISION-317**: VIX hard thresholds (40/30/20) flip regime on single print — needs MA smoothing
+- **DECISION-318**: AAII pub-lag treatment missing — survey data marked available on survey-Wed, actually published Thursday
+- **DECISION-319**: AAII auto-refresh missing — committed CSV will go stale, no refresh script in /scripts or workflows
+- **DECISION-320**: CNN F&G CSV interpolated between key readings — fabricated values used as PIT signal
+- **DECISION-321**: Liquidity filter market-cap check skips silently if data missing — fail-open instead of fail-closed
+- **DECISION-322**: Market cap from yfinance.info CURRENT not historical — backtesting 2020 trades uses 2026 mkt cap
+- **DECISION-323**: Sector reclassifications retro-applied — Meta moved from Comms to Tech; 2020 backtests use current sector
+- **DECISION-324**: Congressional weight by disclosure_date not transaction_date — smart-money signal weighted by FILING age, not actual TRADE age
+- **DECISION-325**: Institutional 13F PIT assumes universal on-time filing — late filers (some big funds) invisible
+- **DECISION-326**: Walk-forward windows hardcoded calendar dates — no rolling logic per DEC-109; stale after June 2026
+- **DECISION-327**: Short-borrow cost duplicated across improvements.py + exit_manager.py with different units — pick single source
+
+**Batch X54 — Medium-Severity Improvements** (13):
+
+- **DECISION-328**: Cache filelock fallback writes silently if lock unavailable — concurrent writes can corrupt
+- **DECISION-329**: Module-level global caches (VIX, DXY, AAII, CNN F&G) not multi-process safe
+- **DECISION-330**: Cache schema not versioned — schema changes silently mix old + new parquet
+- **DECISION-331**: ETF list fragmented (ETFS in config.py 17 items, ETFS_FULL in universe.py 25 items, ETF_TICKERS in improvements.py 27 items) — single source
+- **DECISION-332**: Smart money composite scoring weights (4/2/-3 etc) hardcoded magic — move to config with documentation
+- **DECISION-333**: Sentiment thresholds (AAII 55/45, CNN F&G 20/35/65/80) don't match CNN's published bands
+- **DECISION-334**: composite_score uses win_rate as ROI proxy — replace with actual ROI
+- **DECISION-335**: composite_score weights (40/30/30) hardcoded — make configurable
+- **DECISION-336**: info_cache.json never refreshed — stale market caps persist project-lifetime
+- **DECISION-337**: update_trailing_stop ignores intraday extremes for stop placement; fix to track highs and lows
+- **DECISION-338**: Conversion logic (short→long in bull regime) creates label only; no actual long opened — document or implement
+- **DECISION-339**: pnl_dollar hardcoded $10K notional — wrong for $5K paper / $50K next stage / $1K live
+- **DECISION-340**: get_correlation_matrix silently drops tickers with <20 history — variable corr-matrix membership
+
+**Batch X55 — Documentation Sync** (4):
+
+- **DECISION-341**: universe.py docstring claims Wikipedia fetch but code uses static CSV — fix docstring or implement
+- **DECISION-342**: Test pass-rate mis-reported — only 38 of 46 tests run cleanly (7 e2e errors); update reporting
+- **DECISION-343**: Pandas-ta deprecation warning on pandas 4.0 — plan replacement (TA-Lib alternative)
+- **DECISION-344**: Slippage threshold ATR/price > 3% likely too high — most S&P large caps never trigger
+
 **Batch X6 — Exits + Circuit Breakers** (9):
 
 - **DECISION-067**: Add 9 missing exit methods
@@ -715,14 +834,14 @@
 ---
 ## Bug Registry
 
-**Total: 213 unique bug IDs.**
+**Total: 269 unique bug IDs.**
 
 | Severity | Count |
 |---|---|
-| CRITICAL | 16 |
-| HIGH | 39 |
-| MEDIUM | 48 |
-| LOW | 15 |
+| CRITICAL | 28 |
+| HIGH | 58 |
+| MEDIUM | 67 |
+| LOW | 21 |
 | UNKNOWN | 24 |
 | INLINE-ONLY | 71 |
 
@@ -746,6 +865,18 @@
 | **BUG-185** | CRITICAL — Wikipedia views prefetch failed entirely; all 509 files empty | CRITICAL | Pass 18 |
 | **BUG-191** | CRITICAL — No prefetch validation gate before cache-dependent code runs | CRITICAL | Pass 18 |
 | **BUG-200** | CRITICAL — Risk Agent context expansion required (Section B) | CRITICAL | Pass 25 |
+| **BUG-214** | close_trade NameError: 'days' used before assignment — confirmed via execution;  | CRITICAL | Pass 48 |
+| **BUG-215** | Duplicate ClosedTrade dataclass at lines 73 + 128 of exit_manager.py — second si | CRITICAL | Pass 48 |
+| **BUG-216** | test_e2e fixture undefined — 7 of 8 e2e tests ERROR at setup; engine fixture mis | CRITICAL | Pass 48 |
+| **BUG-217** | get_news_sentiment path mismatch — reads /prefetch/news/ but data lives in /cach | CRITICAL | Pass 48 |
+| **BUG-218** | yfinance fetch_info returns CURRENT analyst data not as_of — sector/mkt_cap/IPO/ | CRITICAL | Pass 48 |
+| **BUG-219** | Cache stores adjusted-close which silently shifts as new corp actions accrue — h | CRITICAL | Pass 48 |
+| **BUG-220** | FRED data revisions unhandled — current API returns latest revised values not vi | CRITICAL | Pass 48 |
+| **BUG-221** | VXX used as ^VIX proxy + UUP as DXY proxy — neither tracks underlying accurately | CRITICAL | Pass 48 |
+| **BUG-222** | S&P 500 constituents are CURRENT membership applied to all backtest dates — surv | CRITICAL | Pass 48 |
+| **BUG-223** | CPI/NFP/FOMC dates hardcoded through March 2026 only — live trading after that h | CRITICAL | Pass 48 |
+| **BUG-224** | PIT guard `_assert_no_lookahead` logs WARNING not RAISE — leakage swallowed in p | CRITICAL | Pass 48 |
+| **BUG-225** | Regime classifier returns 'neutral' on missing VIX silently — should refuse to t | CRITICAL | Pass 48 |
 | **BUG-028** | HIGH — RSI computation uses simple rolling mean instead of Wilder exponential sm | HIGH | - |
 | **BUG-029** | HIGH — Open trades at backtest end silently discarded — upward bias in all metri | HIGH | - |
 | **BUG-030** | HIGH — VIX tightening in crisis contradicts own documentation | HIGH | - |
@@ -785,6 +916,25 @@
 | **BUG-206** | Cache stale-data silent use (402 tickers end 2024-12-31, no warning) | HIGH | Pass 47 |
 | **BUG-210** | agents/pipeline.py silent downgrade on API failure (5 sites) | HIGH | Pass 47 |
 | **BUG-212** | sync_from_claude.yml --strategy=theirs silently overrides owner edits on conflic | HIGH | Pass 47 |
+| **BUG-226** | Cache get_ohlcv front-extension missing; if requested start before cached_start, | HIGH | Pass 48 |
+| **BUG-227** | Cache bulk fetch >=20 trading days threshold — silently rejects valid cache for  | HIGH | Pass 48 |
+| **BUG-228** | Cache ticker collision: BRK-B and BRK.B both → BRK_B.parquet | HIGH | Pass 48 |
+| **BUG-229** | Cache zero-volume days dropped silently — halted/suspended stocks invisible | HIGH | Pass 48 |
+| **BUG-230** | Trailing-stop ATR exits use ENTRY-time ATR throughout hold — should refresh dail | HIGH | Pass 48 |
+| **BUG-231** | exit_hybrid_50pct max_days=252 but other 11 exits don't have max — comparison no | HIGH | Pass 48 |
+| **BUG-232** | update_trailing_stop ignores intraday HIGH — only updates at close above prior b | HIGH | Pass 48 |
+| **BUG-233** | Circuit breakers level 3 + 4 documented but not implemented | HIGH | Pass 48 |
+| **BUG-234** | VIX hard thresholds flip regime on single print — no MA smoothing | HIGH | Pass 48 |
+| **BUG-235** | AAII pub-lag not respected — Wed survey marked tradeable Wed instead of Thu | HIGH | Pass 48 |
+| **BUG-236** | AAII auto-refresh missing — committed CSV will go stale | HIGH | Pass 48 |
+| **BUG-237** | CNN F&G CSV interpolated between key readings — fabricated PIT signal | HIGH | Pass 48 |
+| **BUG-238** | Liquidity filter market-cap fail-open — missing data passes filter | HIGH | Pass 48 |
+| **BUG-239** | Sector reclassifications retro-applied — current sector for old trades | HIGH | Pass 48 |
+| **BUG-240** | Congressional signal weighted by disclosure_date not transaction_date | HIGH | Pass 48 |
+| **BUG-241** | Institutional 13F PIT assumes on-time filing — late filers invisible | HIGH | Pass 48 |
+| **BUG-242** | Short borrow cost duplicated across improvements.py and exit_manager.py with dif | HIGH | Pass 48 |
+| **BUG-243** | Walk-forward windows hardcoded calendar dates — stale after June 2026 | HIGH | Pass 48 |
+| **BUG-244** | close_trade circuit breaker exits skip MAE/MFE update on day of exit (passes 0.0 | HIGH | Pass 48 |
 | **BUG-035** | MEDIUM — Decision Agent default fallback has invalid `action` value | MEDIUM | - |
 | **BUG-036** | MEDIUM — Regime-aware strategy weighting not implemented | MEDIUM | - |
 | **BUG-037** | MEDIUM — Survivorship bias haircut methodology is arbitrary | MEDIUM | - |
@@ -833,6 +983,25 @@
 | **BUG-209** | 81 except Exception blocks; some swallow real errors | MEDIUM | Pass 47 |
 | **BUG-211** | Cache concurrency unverified — prefetch + validate may collide | MEDIUM | Pass 47 |
 | **BUG-213** | requirements.txt missing openai, tradingagents, fredapi (incomplete) | MEDIUM | Pass 47 |
+| **BUG-245** | Cache filelock fallback silently overwrites — concurrent corruption risk | MEDIUM | Pass 48 |
+| **BUG-246** | Module globals (VIX, DXY, AAII, CNN F&G) not multi-process safe | MEDIUM | Pass 48 |
+| **BUG-247** | Cache schema not versioned | MEDIUM | Pass 48 |
+| **BUG-248** | ETF list fragmented across 3 files with different memberships | MEDIUM | Pass 48 |
+| **BUG-249** | Smart money scoring weights hardcoded — no config | MEDIUM | Pass 48 |
+| **BUG-250** | Sentiment thresholds don't match CNN published bands | MEDIUM | Pass 48 |
+| **BUG-251** | composite_score uses win_rate as ROI proxy — incorrect | MEDIUM | Pass 48 |
+| **BUG-252** | composite_score weights 40/30/30 hardcoded | MEDIUM | Pass 48 |
+| **BUG-253** | info_cache.json never refreshed — stale data persists | MEDIUM | Pass 48 |
+| **BUG-254** | Conversion logic creates label only; no actual long opened | MEDIUM | Pass 48 |
+| **BUG-255** | pnl_dollar hardcoded $10K notional | MEDIUM | Pass 48 |
+| **BUG-256** | get_correlation_matrix silently drops short-history tickers | MEDIUM | Pass 48 |
+| **BUG-257** | get_gov_contracts trend math compares mismatched window sizes | MEDIUM | Pass 48 |
+| **BUG-258** | ATR fallback magic number 2% in exit strategies | MEDIUM | Pass 48 |
+| **BUG-259** | exit_time_stop mis-labels exit as time_stop_10d when actually end-of-data at day | MEDIUM | Pass 48 |
+| **BUG-260** | exit_fixed_target uses STOP-FIRST priority — both stop+target same day uses stop | MEDIUM | Pass 48 |
+| **BUG-261** | Pandas4 deprecation warning on pandas-ta — needs replacement plan | MEDIUM | Pass 48 |
+| **BUG-262** | apply_slippage threshold ATR/price > 3% rarely triggered for typical stocks | MEDIUM | Pass 48 |
+| **BUG-263** | Slippage applied at apply_transaction_costs separate from _pnl borrow — short tr | MEDIUM | Pass 48 |
 | **BUG-009** | `below_cam_s3` signal key does not exist | LOW | - |
 | **BUG-042** | LOW — `LILLY` appears as ticker in `run_full.sh` but should be `LLY` | LOW | - |
 | **BUG-043** | LOW — Missing Calmar ratio minimum in passing criteria | LOW | - |
@@ -848,6 +1017,12 @@
 | **BUG-112** | LOW — No ICT/SMC concepts implemented | LOW | Pass 13 |
 | **BUG-183** | LOW — No prefetch validation step | LOW | Pass 17 |
 | **BUG-204** | engine.py dead code shipping in repo (426 lines, no current import) | LOW | Pass 47 |
+| **BUG-264** | universe.py docstring claims Wikipedia fetch but uses static CSV | LOW | Pass 48 |
+| **BUG-265** | yfinance auto_adjust=True hardcoded; no raw price option | LOW | Pass 48 |
+| **BUG-266** | delay_sec 0.3 magic number undocumented | LOW | Pass 48 |
+| **BUG-267** | Test e2e takes 4.5 min for 1 passing test — too slow for smoke | LOW | Pass 48 |
+| **BUG-268** | ETF sector labels hardcoded — new ETFs default to Unknown | LOW | Pass 48 |
+| **BUG-269** | Quiver _DELAY constant unused — live API never called in backtest | LOW | Pass 48 |
 | **BUG-001** | `crisis_flag` used before definition → NameError crash | UNKNOWN | - |
 | **BUG-002** | `days` variable used before definition → UnboundLocalError on every trade close | UNKNOWN | - |
 | **BUG-003** | `ClosedTrade` dataclass defined twice — dead code, maintenance risk | UNKNOWN | - |
@@ -945,4 +1120,4 @@
 | **BUG-198** | (NEW) · CRITICAL — No structural PIT data loader; each data source uses ad-hoc P | INLINE-ONLY | - |
 
 ---
-*Regenerated April 2026 after Pass 47.*
+*Regenerated April 2026 after Pass 48.*
