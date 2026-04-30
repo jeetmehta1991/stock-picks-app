@@ -193,3 +193,31 @@ State compliance visibly: "Checklist: ✅ [each item]"
     e. Past mistake: Group α handoff carried "+121/-41" diff stat from prior session output
        without re-running git diff against current sandbox state. Fix in L116.
     NEVER write a number you didn't just verify.
+
+37. INDUSTRY-STANDARDS COMPLIANCE for every recommendation — no exceptions:
+    a. Cite the specific authoritative source(s) the recommendation draws from (textbook chapter,
+       peer-reviewed paper, regulatory document, official broker docs, established methodology)
+    b. Note which tradition the recommendation aligns with (institutional quant, retail systematic,
+       academic finance, etc.) — practices differ across traditions
+    c. If the recommendation deviates from standard practice, flag the deviation explicitly and
+       justify it (e.g., "300 paired trades vs Bailey-Lopez de Prado's 1000-trade recommendation
+       because retail-scale system with limited universe constrains achievable sample size")
+    d. For statistical claims (sample sizes, significance thresholds, multiple-testing corrections,
+       confidence intervals), cite the specific paper/textbook formula being applied
+    e. Web-search to verify current best practice when recommendation hinges on a methodology
+       choice; pricing/regulatory items per CHECKLIST #26 + L111
+    f. Standard reference shelves for this project:
+       - Statistical/methodology: Lopez de Prado (Advances in Financial ML), Bailey & Lopez de Prado
+         (backtest overfitting), Harvey & Liu (multiple testing), Pesaran/Timmermann (walk-forward)
+       - Risk: Hull (Options/Futures/Derivatives), Jorion (Value at Risk), CFA risk frameworks
+       - Execution: Almgren-Chriss, Kissell (transaction costs), broker official docs
+       - Portfolio theory: Markowitz, Kelly (with practical leverage caveats), Black-Litterman
+       - Software for finance: separation of backtest/live, paper-trading discipline, walk-forward,
+         no look-ahead bias, point-in-time data
+       - Tax/regulatory: CRA Income Tax Folios, CIRO/IIROC bulletins, IRS Pub 550 (deferred topic
+         this session per owner direction)
+    g. RETROACTIVE: When this checklist item is added or strengthened, audit recently-resolved
+       decisions in current session against the standard. Any that don't hold up must be flagged
+       for owner re-decision — not silently grandfathered.
+    NEVER make a recommendation without citing authoritative grounding. Ungrounded
+    recommendations from prior Sonnet sessions produced 203 documented bugs.
