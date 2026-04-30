@@ -179,6 +179,14 @@ REGIME_FILTER = {
         "long": "reduced",   # 50% size — buy dips in crisis, don't block
         "short": "cautious",
     },
+    # DEC-316 fix (Pass 51): unknown = no VIX data → block all new entries.
+    # Existing positions continue under their original stop logic; new entries
+    # refuse until regime data returns. Fail-closed beats silently trading
+    # on missing context.
+    "unknown": {
+        "long": "none", "short": "none",
+        "description": "Missing VIX/regime data — block new entries",
+    },
 }
 
 # Position size multipliers per regime

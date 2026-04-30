@@ -98,10 +98,30 @@ def exit_trailing_pct(df_full, entry_date, entry_price, direction, atr,
 
 def exit_atr_trail(df_full, entry_date, entry_price, direction, atr,
                     atr_mult=1.0, max_days=252):
+    """
+    ATR-based trailing stop.
+
+    DEC-311 fix (Pass 51): stop distance now adapts to CURRENT volatility
+    (rolling 14-period ATR refreshed each day) instead of frozen entry-time
+    ATR. If volatility doubles 30 days into the hold, the stop widens to
+    accommodate; if it halves, the stop tightens. This matches how real
+    volatility-adaptive stops work and avoids the prior bug where stops
+    were mis-sized for current conditions.
+
+    Implementation: pre-compute the EMA-ATR series once over df_full (O(n))
+    and read into the loop. Falls back to entry-time `atr` when current
+    ATR isn't yet computable (early in series).
+    """
     future = df_full[df_full.index.date > entry_date]
     if future.empty or atr == 0:
         return exit_trailing_pct(df_full, entry_date, entry_price,
                                   direction, atr, trail_pct=0.10)
+
+    # DEC-311: pre-compute rolling ATR series on full history (single O(n) pass)
+    h, l, c = df_full["high"], df_full["low"], df_full["close"]
+    tr = pd.concat([h - l, (h - c.shift()).abs(), (l - c.shift()).abs()], axis=1).max(axis=1)
+    atr_series = tr.ewm(alpha=1/14, adjust=False).mean()
+
     best  = entry_price
     stop  = (entry_price - atr_mult * atr) if direction == "long" \
             else (entry_price + atr_mult * atr)
@@ -111,17 +131,25 @@ def exit_atr_trail(df_full, entry_date, entry_price, direction, atr,
         close = float(row["close"])
         low   = float(row.get("low",  close))
         high  = float(row.get("high", close))
+        # DEC-311: use TODAY's ATR for stop-distance (refreshed daily)
+        try:
+            current_atr = float(atr_series.loc[idx])
+            if not (current_atr > 0):  # NaN or zero — fall back to entry ATR
+                current_atr = atr
+        except (KeyError, ValueError):
+            current_atr = atr
         if direction == "long":
             if close > best:
                 best = close
-                stop = max(stop, best - atr_mult * atr)
+                # Stop ratchets up only — uses current ATR for distance
+                stop = max(stop, best - atr_mult * current_atr)
             if low <= stop:
                 return _base_result(entry_price, stop, entry_date,
                                     idx.date(), "atr_trailing_stop", direction)
         else:
             if close < best:
                 best = close
-                stop = min(stop, best + atr_mult * atr)
+                stop = min(stop, best + atr_mult * current_atr)
             if high >= stop:
                 return _base_result(entry_price, stop, entry_date,
                                     idx.date(), "atr_trailing_stop", direction)
@@ -347,16 +375,10 @@ def exit_hybrid_50pct(df_full, entry_date, entry_price, direction, atr,
                             entry_date, "no_data", direction)
 
     for i, (idx, row) in enumerate(future.iterrows()):
-        if i >= max_days:
-            close    = float(row["close"])
-            low      = float(row.get("low",  close))
-            high     = float(row.get("high", close))
-            full_pnl = _pnl(entry_price, close, direction)
-            pnl = (blended_pnl * 0.5 + full_pnl * 0.5) if half_taken else full_pnl
-            return {"exit_price": round(close, 4), "exit_date": idx.date(),
-                    "exit_reason": "max_days", "pnl_pct": round(pnl, 4),
-                    "win": pnl > 0,
-                    "hold_days": (idx.date() - entry_date).days}
+        # DEC-312 fix (Pass 51): max_days check removed for parity with other
+        # 11 exit strategies. Hybrid was the only one enforcing 252-day cap;
+        # made comparison metrics non-apples-to-apples in run_exit_comparison.
+        # max_days param kept in signature for backward compat but unused.
         h, l, close = float(row["high"]), float(row["low"]), float(row["close"])
 
         # Hard stop

@@ -24,10 +24,16 @@ def classify_regime(
     """
     Classify market regime from VIX level and SPY vs 200 EMA.
 
-    Returns: 'bull' | 'neutral' | 'bear' | 'crisis'
+    Returns: 'bull' | 'neutral' | 'bear' | 'crisis' | 'unknown'
+
+    DEC-316 fix (Pass 51): returns 'unknown' on missing VIX data instead of
+    silently defaulting to 'neutral'. Previously, a cache miss or data feed
+    failure caused the system to trade as if conditions were normal. Now
+    'unknown' is a fail-closed signal — REGIME_FILTER['unknown'] blocks new
+    entries; existing positions continue under their original stop logic.
     """
     if vix_value is None:
-        return "neutral"
+        return "unknown"
 
     if vix_value >= 40:
         return "crisis"
@@ -52,7 +58,10 @@ def get_regime_context(
     spy_above = (spy_close > spy_ema200
                  if spy_close and spy_ema200 else None)
     regime    = classify_regime(vix_value, spy_above)
-    cfg       = REGIME_FILTER.get(regime, REGIME_FILTER["neutral"])
+    # DEC-316 fix (Pass 51): when regime is 'unknown', use unknown config (block).
+    # Previously fell through to 'neutral' which silently allowed trading on
+    # missing data. Now 'unknown' has long='none' / short='none' → blocks entries.
+    cfg       = REGIME_FILTER.get(regime, REGIME_FILTER["unknown"])
 
     long_mult  = POSITION_SIZE_MULT.get(cfg.get("long", "full"), 1.0)
     short_mult = POSITION_SIZE_MULT.get(cfg.get("short", "full"), 1.0)
@@ -71,6 +80,7 @@ def get_regime_context(
             "neutral": "Mixed conditions — both directions allowed at full size",
             "bear":    "VIX > 30, SPY below 200 EMA — favour shorts",
             "crisis":  "VIX > 40 — reduce long size to 50%, require VERY HIGH min tier. Do NOT tighten stops (causes whipsawing).",
+            "unknown": "Insufficient data (no VIX) — fail closed, block new entries (DEC-316)",
         }.get(regime, ""),
     }
 

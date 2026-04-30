@@ -636,6 +636,151 @@ def test_dxy_loader_prefers_real_index():
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# TIER-2 ENGINE-CORRECTNESS — regression tests for Pass 51 fixes
+# DEC-309 (cache collision), DEC-311 (ATR refresh), DEC-312 (hybrid parity),
+# DEC-315 (multi-CB), DEC-316 (regime fail-closed), DEC-324 (transaction date)
+# ─────────────────────────────────────────────────────────────────────────────
+
+def test_cache_ticker_collision_raises():
+    """DEC-309: BRK-B and BRK.B both → BRK_B.parquet. Must raise, not silently overwrite."""
+    from backtest.data.cache import _assert_no_ticker_collision, TickerCollisionError
+    # BRK-B and BRK.B both map to same filename
+    try:
+        _assert_no_ticker_collision("BRK-B", {"BRK.B": {"start": "2024-01-01"}})
+        raised = False
+    except TickerCollisionError:
+        raised = True
+    assert raised, "DEC-309: collision must raise TickerCollisionError"
+    print("✅ DEC-309: ticker collision detected")
+
+
+def test_cache_no_collision_on_unique_ticker():
+    """DEC-309: unique tickers must NOT raise."""
+    from backtest.data.cache import _assert_no_ticker_collision
+    # AAPL alongside MSFT — no collision
+    _assert_no_ticker_collision("AAPL", {"MSFT": {}})
+    # New ticker into empty cache
+    _assert_no_ticker_collision("NVDA", {})
+    print("✅ DEC-309: unique tickers pass collision check")
+
+
+def test_atr_trail_uses_rolling_atr():
+    """DEC-311: ATR trailing stop adapts to current volatility, not entry-time only."""
+    import inspect
+    from backtest.engine.exit_strategies import exit_atr_trail
+    src = inspect.getsource(exit_atr_trail)
+    # Pre-computed rolling ATR series should be present
+    assert "atr_series" in src, "DEC-311: rolling ATR series missing"
+    assert "ewm(alpha=1/14" in src, "DEC-311: 14-period EMA-ATR computation missing"
+    assert "current_atr" in src, "DEC-311: per-iteration current_atr missing"
+    print("✅ DEC-311: ATR trail refreshes daily from rolling series")
+
+
+def test_atr_trail_runs_end_to_end():
+    """DEC-311: exit_atr_trail produces sensible result with synthetic data."""
+    import pandas as pd
+    from datetime import date as _date
+    from backtest.engine.exit_strategies import exit_atr_trail
+    # Build 30 trading days of synthetic data
+    idx = pd.bdate_range("2024-01-01", periods=30)
+    df = pd.DataFrame({
+        "open":   [100 + i*0.5 for i in range(30)],
+        "high":   [101 + i*0.5 for i in range(30)],
+        "low":    [99  + i*0.5 for i in range(30)],
+        "close":  [100 + i*0.5 for i in range(30)],
+        "volume": [1_000_000] * 30,
+    }, index=idx)
+    result = exit_atr_trail(df, _date(2024,1,1), entry_price=100.0,
+                             direction="long", atr=2.0, atr_mult=1.0)
+    assert "exit_price" in result
+    assert "pnl_pct" in result
+    assert "exit_reason" in result
+    # Trending up data — should hit end_of_data with positive pnl
+    assert result["pnl_pct"] > 0, f"Trending-up should be profitable, got {result}"
+    print(f"✅ DEC-311: exit_atr_trail end-to-end: {result['exit_reason']} pnl={result['pnl_pct']:.2f}%")
+
+
+def test_hybrid_max_days_check_removed():
+    """DEC-312: exit_hybrid_50pct must NOT enforce max_days (parity with other 11)."""
+    import inspect
+    from backtest.engine.exit_strategies import exit_hybrid_50pct
+    src = inspect.getsource(exit_hybrid_50pct)
+    assert "if i >= max_days" not in src, \
+        "DEC-312 regression: hybrid still has max_days check; breaks comparison fairness"
+    print("✅ DEC-312: hybrid max_days check removed for exit-comparison parity")
+
+
+def test_circuit_breakers_all_returns_multiple():
+    """DEC-315: check_circuit_breakers_all returns ALL triggered breakers same day."""
+    from backtest.engine.exit_manager import (
+        check_circuit_breakers_all, check_circuit_breakers, OpenTrade
+    )
+    trade = OpenTrade(
+        ticker="AAPL", entry_date=date(2022,1,1), entry_price=100.0,
+        direction="long", strategy="test", category="test", sector="Tech",
+        initial_stop=90.0, trailing_stop=90.0, highest_close=105.0,
+        regime_at_entry="bull",
+    )
+    # Big gap down (Level 1) AND VIX crisis (Level 5) same day
+    results = check_circuit_breakers_all(
+        trade, today_open=85.0, prev_close=100.0, vix_value=42.0
+    )
+    levels = [r["level"] for r in results]
+    assert 1 in levels, f"Level 1 should trigger on -15% gap, got {levels}"
+    assert 5 in levels, f"Level 5 should trigger on VIX 42, got {levels}"
+    # Backward-compat wrapper still works
+    first = check_circuit_breakers(trade, today_open=85.0, prev_close=100.0, vix_value=42.0)
+    assert first is not None, "Wrapper must return first result"
+    print(f"✅ DEC-315: check_circuit_breakers_all captures all {len(results)} triggered breakers")
+
+
+def test_regime_unknown_blocks_trades():
+    """DEC-316: classify_regime returns 'unknown' on missing VIX; entries blocked."""
+    from backtest.engine.regime_filter import classify_regime, get_regime_context
+    # No VIX value
+    assert classify_regime(None, None) == "unknown", \
+        "DEC-316: missing VIX must return 'unknown', not 'neutral'"
+    assert classify_regime(None, True) == "unknown"
+    # Context blocks both directions
+    ctx = get_regime_context(None, None, None)
+    assert ctx["regime"] == "unknown"
+    assert ctx["long_allowed"] is False, "Unknown regime must block longs"
+    assert ctx["short_allowed"] is False, "Unknown regime must block shorts"
+    assert ctx["long_size_mult"] == 0.0
+    assert ctx["short_size_mult"] == 0.0
+    # Sanity: known VIX still works as before
+    assert classify_regime(15.0, True) == "bull"
+    print("✅ DEC-316: missing VIX → unknown regime → trades blocked")
+
+
+def test_regime_filter_has_unknown_entry():
+    """DEC-316: REGIME_FILTER config must include 'unknown' for fallback."""
+    from backtest.config import REGIME_FILTER
+    assert "unknown" in REGIME_FILTER, \
+        "DEC-316: REGIME_FILTER must define 'unknown' for missing-data fallback"
+    cfg = REGIME_FILTER["unknown"]
+    assert cfg.get("long") == "none", "Unknown regime must block longs"
+    assert cfg.get("short") == "none", "Unknown regime must block shorts"
+    print("✅ DEC-316: REGIME_FILTER['unknown'] correctly configured to block")
+
+
+def test_congressional_uses_transaction_date():
+    """DEC-324: congressional_signal age-weights by transaction_date, not disclosure_date."""
+    import inspect
+    from backtest.data.smart_money import congressional_signal
+    src = inspect.getsource(congressional_signal)
+    assert "transaction_date" in src, \
+        "DEC-324: congressional_signal must reference transaction_date"
+    assert "TransactionDate" in src, \
+        "DEC-324: must read Quiver TransactionDate field"
+    # Ensure age-weight uses transaction_date (not disclosure_date)
+    age_weight_section = src[src.find("age_days"):src.find("buys   = recent")]
+    assert "transaction_date" in age_weight_section, \
+        "DEC-324: age_days must be computed from transaction_date"
+    print("✅ DEC-324: congressional age-weighting uses transaction_date")
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # RUNNER
 # ─────────────────────────────────────────────────────────────────────────────
 

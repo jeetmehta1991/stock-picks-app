@@ -147,6 +147,54 @@ def _pnl(entry, exit_p, direction, hold_days=0):
     return (entry - exit_p) / entry * 100
 
 
+def check_circuit_breakers_all(
+    trade: OpenTrade,
+    today_open: float,
+    prev_close: float,
+    vix_value: Optional[float],
+) -> list[dict]:
+    """
+    Check ALL circuit breakers at market open and return every one that triggered.
+
+    DEC-315 fix (Pass 51): previously check_circuit_breakers returned only the
+    FIRST triggered breaker. If today had both Level 1 (overnight gap) AND
+    Level 5 (VIX crisis), Level 1 fired and Level 5 was missed silently.
+    Now caller receives the full list and can apply all relevant actions
+    (e.g., exit_at_open is terminal for that trade; tighten_stop is additive
+    for surviving positions).
+    """
+    cb = CIRCUIT_BREAKERS
+    results = []
+
+    # Level 1 — overnight gap
+    if prev_close > 0:
+        gap_pct = (today_open - prev_close) / prev_close
+        if trade.direction == "long" and gap_pct <= -cb["level_1_gap_pct"]:
+            results.append({"level": 1, "action": "exit_at_open",
+                            "reason": f"overnight_gap_down_{abs(gap_pct)*100:.1f}pct"})
+        elif trade.direction == "short" and gap_pct >= cb["level_1_gap_pct"]:
+            results.append({"level": 1, "action": "exit_at_open",
+                            "reason": f"overnight_gap_up_{gap_pct*100:.1f}pct"})
+
+    # Level 2 — earnings gap
+    if trade.days_to_earnings == 0 and prev_close > 0:
+        gap_pct = (today_open - prev_close) / prev_close
+        if trade.direction == "long" and gap_pct <= -cb["level_2_earnings_gap_pct"]:
+            results.append({"level": 2, "action": "exit_at_open",
+                            "reason": f"earnings_gap_down_{abs(gap_pct)*100:.1f}pct"})
+        elif trade.direction == "short" and gap_pct >= cb["level_2_earnings_gap_pct"]:
+            results.append({"level": 2, "action": "exit_at_open",
+                            "reason": f"earnings_gap_up_{gap_pct*100:.1f}pct"})
+
+    # Level 5 — VIX crisis (tighten stops; additive — does not exit position)
+    if vix_value and vix_value >= cb["level_5_vix_crisis"]:
+        results.append({"level": 5, "action": "tighten_stop",
+                        "new_pct": cb["level_5_tightened_pct"],
+                        "reason": f"vix_crisis_{vix_value:.1f}"})
+
+    return results
+
+
 def check_circuit_breakers(
     trade: OpenTrade,
     today_open: float,
@@ -154,38 +202,14 @@ def check_circuit_breakers(
     vix_value: Optional[float],
 ) -> Optional[dict]:
     """
-    Check all circuit breakers at market open.
-    Returns dict with level and action if triggered, else None.
+    Backward-compat wrapper around check_circuit_breakers_all.
+
+    Returns the FIRST triggered circuit breaker, or None. New callers should
+    use check_circuit_breakers_all for full visibility (DEC-315). Existing
+    callers continue to receive the highest-priority single result.
     """
-    cb = CIRCUIT_BREAKERS
-
-    # Level 1 — overnight gap
-    if prev_close > 0:
-        gap_pct = (today_open - prev_close) / prev_close
-        if trade.direction == "long" and gap_pct <= -cb["level_1_gap_pct"]:
-            return {"level": 1, "action": "exit_at_open",
-                    "reason": f"overnight_gap_down_{abs(gap_pct)*100:.1f}pct"}
-        if trade.direction == "short" and gap_pct >= cb["level_1_gap_pct"]:
-            return {"level": 1, "action": "exit_at_open",
-                    "reason": f"overnight_gap_up_{gap_pct*100:.1f}pct"}
-
-    # Level 2 — earnings gap (checked separately with earnings flag)
-    if trade.days_to_earnings == 0:
-        gap_pct = (today_open - prev_close) / prev_close if prev_close > 0 else 0
-        if trade.direction == "long" and gap_pct <= -cb["level_2_earnings_gap_pct"]:
-            return {"level": 2, "action": "exit_at_open",
-                    "reason": f"earnings_gap_down_{abs(gap_pct)*100:.1f}pct"}
-        if trade.direction == "short" and gap_pct >= cb["level_2_earnings_gap_pct"]:
-            return {"level": 2, "action": "exit_at_open",
-                    "reason": f"earnings_gap_up_{gap_pct*100:.1f}pct"}
-
-    # Level 5 — VIX crisis (tighten stops, no new longs — existing positions tighten)
-    if vix_value and vix_value >= cb["level_5_vix_crisis"]:
-        return {"level": 5, "action": "tighten_stop",
-                "new_pct": cb["level_5_tightened_pct"],
-                "reason": f"vix_crisis_{vix_value:.1f}"}
-
-    return None
+    results = check_circuit_breakers_all(trade, today_open, prev_close, vix_value)
+    return results[0] if results else None
 
 
 def update_trailing_stop(trade: OpenTrade, today_close: float, vix_value: Optional[float] = None) -> OpenTrade:
@@ -339,22 +363,32 @@ def process_day_exits(
             trade.max_adverse_excursion    = min(trade.max_adverse_excursion,    today_adv)
             trade.max_favourable_excursion = max(trade.max_favourable_excursion, today_fav)
 
-        # ── Step 1: Circuit breaker check ──
-        cb_result = check_circuit_breakers(trade, today_open, prev_close, vix_value)
+        # ── Step 1: Circuit breaker check (DEC-315 — process ALL triggered breakers) ──
+        cb_results = check_circuit_breakers_all(trade, today_open, prev_close, vix_value)
+        # Find terminal action (exit_at_open) and additive action (tighten_stop)
+        exit_cb    = next((r for r in cb_results if r["action"] == "exit_at_open"),  None)
+        tighten_cb = next((r for r in cb_results if r["action"] == "tighten_stop"), None)
 
-        if cb_result and cb_result["action"] == "exit_at_open":
-            trade.circuit_breaker_triggered = cb_result["level"]
+        if exit_cb:
+            trade.circuit_breaker_triggered = exit_cb["level"]
             closed.append(close_trade(
                 trade, today_open, today_date,
-                f"circuit_breaker_{cb_result['level']}",
+                f"circuit_breaker_{exit_cb['level']}",
                 0.0, 0.0,  # MAE/MFE now on trade object
-                fail_reason=cb_result["reason"],
+                fail_reason=exit_cb["reason"],
             ))
             circuit_breaker_log.append({
                 "date": today_date, "ticker": trade.ticker,
-                "level": cb_result["level"], "reason": cb_result["reason"],
+                "level": exit_cb["level"], "reason": exit_cb["reason"],
                 "exit_price": today_open,
             })
+            # If a tighten ALSO fired today, log it too (visible in audit trail)
+            if tighten_cb:
+                circuit_breaker_log.append({
+                    "date": today_date, "ticker": trade.ticker,
+                    "level": tighten_cb["level"], "reason": tighten_cb["reason"],
+                    "note": "co-fired with exit; not applied (position already closing)",
+                })
 
             # ── Conversion check after CB exit ──
             if (regime == "bull" and trade.direction == "short"):
@@ -363,14 +397,20 @@ def process_day_exits(
                     closed[-1].conversion_pair_id = f"convert_{trade.ticker}_{today_date}"
             continue
 
-        if cb_result and cb_result["action"] == "tighten_stop":
-            new_pct = cb_result["new_pct"]
+        # No exit_at_open; if tighten_stop fired, apply it (additive — position survives)
+        if tighten_cb:
+            new_pct = tighten_cb["new_pct"]
             if trade.direction == "long":
                 trade.trailing_stop = max(trade.trailing_stop,
                                           trade.highest_close * (1 - new_pct))
             else:
                 trade.trailing_stop = min(trade.trailing_stop,
                                           trade.highest_close * (1 + new_pct))
+            circuit_breaker_log.append({
+                "date": today_date, "ticker": trade.ticker,
+                "level": tighten_cb["level"], "reason": tighten_cb["reason"],
+                "action": "tighten_stop", "new_stop": trade.trailing_stop,
+            })
 
         # ── Step 2: Update trailing stop from today's close ──
         trade = update_trailing_stop(trade, today_close, vix_value)

@@ -322,16 +322,38 @@ def congressional_signal(ticker: str, as_of: date, lookback_days: int = 45) -> d
         df = pd.DataFrame(data)
         if df.empty:
             return {"signal": "none", "buy_count": 0, "sell_count": 0}
+
+        # DEC-324 fix (Pass 51): use BOTH disclosure_date (PIT availability)
+        # AND transaction_date (age-weighting). STOCK Act gives members up
+        # to 45 days to disclose; a trade DISCLOSED 5 days ago might have
+        # been TRANSACTED 40 days ago. Smart-money signal value comes from
+        # when they ACTUALLY POSITIONED, not when paperwork landed.
+        # Previously age-weighted by disclosure date, mis-weighting late filings.
         df["disclosure_date"] = pd.to_datetime(
-            df.get("Date", df.get("date", ""))).dt.date
+            df.get("ReportDate", df.get("Date", df.get("date", "")))
+        ).dt.date
+        # Transaction date — fall back to disclosure_date if not present (some
+        # Quiver records have only one). Schema field tested: "TransactionDate".
+        if "TransactionDate" in df.columns:
+            df["transaction_date"] = pd.to_datetime(df["TransactionDate"]).dt.date
+        elif "transactionDate" in df.columns:
+            df["transaction_date"] = pd.to_datetime(df["transactionDate"]).dt.date
+        else:
+            # Fallback: disclosure_date as proxy when transaction_date missing
+            df["transaction_date"] = df["disclosure_date"]
+
+        # PIT filter: only trades where DISCLOSURE was on/before as_of are visible
         df = df[df["disclosure_date"] <= as_of]
+
+        # Age-weight by TRANSACTION date (when they actually traded)
         window_start = as_of - timedelta(days=lookback_days)
-        recent = df[df["disclosure_date"] >= window_start].copy()
+        recent = df[df["transaction_date"] >= window_start].copy()
         # Age-weight: <30 days = full, 30-60 days = 0.5x, >60 days = excluded
-        recent["age_days"] = (pd.Timestamp(as_of) - pd.to_datetime(recent["disclosure_date"])).dt.days
+        recent["age_days"] = (pd.Timestamp(as_of) - pd.to_datetime(recent["transaction_date"])).dt.days
         recent["weight"]   = recent["age_days"].apply(
             lambda d: 1.0 if d < 30 else 0.5 if d < 60 else 0.0)
         recent = recent[recent["weight"] > 0]  # exclude >60 days
+
         buys   = recent[recent.get("Transaction","transaction").str.contains(
             "Purchase|Buy", case=False, na=False)]
         sells  = recent[recent.get("Transaction","transaction").str.contains(

@@ -54,6 +54,31 @@ def _cache_path(ticker: str) -> Path:
     return CACHE_DIR / f"{ticker.replace('-', '_').replace('.', '_')}.parquet"
 
 
+class TickerCollisionError(ValueError):
+    """Raised when two distinct ticker symbols map to the same cache filename. DEC-309."""
+    pass
+
+
+def _assert_no_ticker_collision(ticker: str, index: dict) -> None:
+    """
+    DEC-309 fix (Pass 51): detect tickers that share a cache filename.
+
+    `_cache_path` replaces both `-` and `.` with `_`, so BRK-B and BRK.B
+    both map to BRK_B.parquet. yfinance accepts both forms; whichever
+    runs second silently overwrote the first. This guard makes the
+    collision a hard error at write time rather than silent corruption.
+    """
+    target_filename = _cache_path(ticker).name
+    for cached_ticker in index:
+        if cached_ticker != ticker and _cache_path(cached_ticker).name == target_filename:
+            raise TickerCollisionError(
+                f"Ticker collision: {ticker!r} and {cached_ticker!r} "
+                f"both map to cache filename {target_filename!r}. "
+                f"Cache cannot store both. If both must be tracked, the "
+                f"_cache_path encoding scheme must be revised."
+            )
+
+
 def _fetch_from_yfinance(
     ticker: str,
     start: date,
@@ -153,6 +178,8 @@ def get_ohlcv(
 
     # Save to cache
     try:
+        # DEC-309 fix (Pass 51): collision check — fail loud, not silent overwrite
+        _assert_no_ticker_collision(ticker, index)
         df.to_parquet(cache_file)
         index[ticker] = {
             "start": str(df.index[0].date()),
@@ -160,6 +187,8 @@ def get_ohlcv(
             "rows":  len(df),
         }
         _save_index(index)
+    except TickerCollisionError:
+        raise  # Don't swallow collisions — must surface
     except Exception as exc:
         logger.warning("Cache write failed for %s: %s", ticker, exc)
 

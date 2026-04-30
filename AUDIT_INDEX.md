@@ -1,5 +1,5 @@
 # AUDIT_INDEX.md — Decision and Bug Registry
-**Last regenerated:** April 2026 (post-Pass 50)
+**Last regenerated:** April 2026 (post-Pass 51)
 
 ---
 
@@ -9,10 +9,10 @@
 
 | Status | Count |
 |---|---|
-| RESOLVED | 65 |
+| RESOLVED | 71 |
 | PARTIAL | 5 |
 | SUPERSEDED | 7 |
-| PENDING | 269 |
+| PENDING | 263 |
 
 ### All Decisions Table
 
@@ -328,14 +328,14 @@
 | **DECISION-306** | get_news_sentiment path mismatch — code reads /prefetch/news/ but data lives in /cache/fin | RESOLVED | Batch X52 — CRITICAL PIT Correctness | Pass 48 | 49 |
 | **DECISION-307** | Cache get_ohlcv front-extension missing — only fetches missing TAIL; if user requests star | PENDING | Batch X53 — High-Impact Engine Bugs | Pass 48 | - |
 | **DECISION-308** | Cache get_ohlcv_bulk requires >=20 trading days — silently rejects valid cache for shorter | PENDING | Batch X53 — High-Impact Engine Bugs | Pass 48 | - |
-| **DECISION-309** | Cache ticker collision: BRK-B and (hypothetical) BRK.B both map to BRK_B.parquet — silent  | PENDING | Batch X53 — High-Impact Engine Bugs | Pass 48 | - |
+| **DECISION-309** | Cache ticker collision: BRK-B and (hypothetical) BRK.B both map to BRK_B.parquet — silent  | RESOLVED | Batch X53 — High-Impact Engine Bugs | Pass 48 | 51 |
 | **DECISION-310** | Cache writes zero-volume days dropped silently (df[volume>0]) — halted/suspended stocks in | PENDING | Batch X53 — High-Impact Engine Bugs | Pass 48 | - |
-| **DECISION-311** | Trailing-stop ATR exits use ENTRY-time ATR throughout hold period — should refresh daily;  | PENDING | Batch X53 — High-Impact Engine Bugs | Pass 48 | - |
-| **DECISION-312** | exit_hybrid_50pct has max_days=252 but 11 other exits don't — comparison metrics not apple | PENDING | Batch X53 — High-Impact Engine Bugs | Pass 48 | - |
+| **DECISION-311** | Trailing-stop ATR exits use ENTRY-time ATR throughout hold period — should refresh daily;  | RESOLVED | Batch X53 — High-Impact Engine Bugs | Pass 48 | 51 |
+| **DECISION-312** | exit_hybrid_50pct has max_days=252 but 11 other exits don't — comparison metrics not apple | RESOLVED | Batch X53 — High-Impact Engine Bugs | Pass 48 | 51 |
 | **DECISION-313** | update_trailing_stop ignores intraday HIGH — stop only updates at close above prior best;  | PENDING | Batch X53 — High-Impact Engine Bugs | Pass 48 | - |
 | **DECISION-314** | Circuit breakers levels 3 and 4 (intraday halt, market halt) documented but NOT implemente | PENDING | Batch X53 — High-Impact Engine Bugs | Pass 48 | - |
-| **DECISION-315** | Circuit breakers checked one-at-a-time — if Level 1 + Level 5 both fire same day, Level 5  | PENDING | Batch X53 — High-Impact Engine Bugs | Pass 48 | - |
-| **DECISION-316** | Regime classifier returns 'neutral' default on missing VIX — should refuse to trade with n | PENDING | Batch X53 — High-Impact Engine Bugs | Pass 48 | - |
+| **DECISION-315** | Circuit breakers checked one-at-a-time — if Level 1 + Level 5 both fire same day, Level 5  | RESOLVED | Batch X53 — High-Impact Engine Bugs | Pass 48 | 51 |
+| **DECISION-316** | Regime classifier returns 'neutral' default on missing VIX — should refuse to trade with n | RESOLVED | Batch X53 — High-Impact Engine Bugs | Pass 48 | 51 |
 | **DECISION-317** | VIX hard thresholds (40/30/20) flip regime on single print — needs MA smoothing | PENDING | Batch X53 — High-Impact Engine Bugs | Pass 48 | - |
 | **DECISION-318** | AAII pub-lag treatment missing — survey data marked available on survey-Wed, actually publ | PENDING | Batch X53 — High-Impact Engine Bugs | Pass 48 | - |
 | **DECISION-319** | AAII auto-refresh missing — committed CSV will go stale, no refresh script in /scripts or  | PENDING | Batch X53 — High-Impact Engine Bugs | Pass 48 | - |
@@ -343,7 +343,7 @@
 | **DECISION-321** | Liquidity filter market-cap check skips silently if data missing — fail-open instead of fa | PENDING | Batch X53 — High-Impact Engine Bugs | Pass 48 | - |
 | **DECISION-322** | Market cap from yfinance.info CURRENT not historical — backtesting 2020 trades uses 2026 m | PENDING | Batch X53 — High-Impact Engine Bugs | Pass 48 | - |
 | **DECISION-323** | Sector reclassifications retro-applied — Meta moved from Comms to Tech; 2020 backtests use | PENDING | Batch X53 — High-Impact Engine Bugs | Pass 48 | - |
-| **DECISION-324** | Congressional weight by disclosure_date not transaction_date — smart-money signal weighted | PENDING | Batch X53 — High-Impact Engine Bugs | Pass 48 | - |
+| **DECISION-324** | Congressional weight by disclosure_date not transaction_date — smart-money signal weighted | RESOLVED | Batch X53 — High-Impact Engine Bugs | Pass 48 | 51 |
 | **DECISION-325** | Institutional 13F PIT assumes universal on-time filing — late filers (some big funds) invi | PENDING | Batch X53 — High-Impact Engine Bugs | Pass 48 | - |
 | **DECISION-326** | Walk-forward windows hardcoded calendar dates — no rolling logic per DEC-109; stale after  | PENDING | Batch X53 — High-Impact Engine Bugs | Pass 48 | - |
 | **DECISION-327** | Short-borrow cost duplicated across improvements.py + exit_manager.py with different units | PENDING | Batch X53 — High-Impact Engine Bugs | Pass 48 | - |
@@ -688,18 +688,13 @@
 - **DECISION-300**: yfinance earnings_dates and analyst data return CURRENT values not as-of — replace with PIT source or remove from PIT-claiming functions
 - **DECISION-303**: S&P 500 constituent list is current membership applied retroactively — survivorship bias; need historical PIT membership data
 
-**Batch X53 — High-Impact Engine Bugs** (21):
+**Batch X53 — High-Impact Engine Bugs** (15):
 
 - **DECISION-307**: Cache get_ohlcv front-extension missing — only fetches missing TAIL; if user requests start before cached_start, cache is overwritten with shorter range
 - **DECISION-308**: Cache get_ohlcv_bulk requires >=20 trading days — silently rejects valid cache for shorter-window queries
-- **DECISION-309**: Cache ticker collision: BRK-B and (hypothetical) BRK.B both map to BRK_B.parquet — silent overwrite
 - **DECISION-310**: Cache writes zero-volume days dropped silently (df[volume>0]) — halted/suspended stocks invisible vs not-trading
-- **DECISION-311**: Trailing-stop ATR exits use ENTRY-time ATR throughout hold period — should refresh daily; stops mis-sized for current volatility
-- **DECISION-312**: exit_hybrid_50pct has max_days=252 but 11 other exits don't — comparison metrics not apples-to-apples
 - **DECISION-313**: update_trailing_stop ignores intraday HIGH — stop only updates at close above prior best; misses highs
 - **DECISION-314**: Circuit breakers levels 3 and 4 (intraday halt, market halt) documented but NOT implemented
-- **DECISION-315**: Circuit breakers checked one-at-a-time — if Level 1 + Level 5 both fire same day, Level 5 stop tighten missed
-- **DECISION-316**: Regime classifier returns 'neutral' default on missing VIX — should refuse to trade with no regime data
 - **DECISION-317**: VIX hard thresholds (40/30/20) flip regime on single print — needs MA smoothing
 - **DECISION-318**: AAII pub-lag treatment missing — survey data marked available on survey-Wed, actually published Thursday
 - **DECISION-319**: AAII auto-refresh missing — committed CSV will go stale, no refresh script in /scripts or workflows
@@ -707,7 +702,6 @@
 - **DECISION-321**: Liquidity filter market-cap check skips silently if data missing — fail-open instead of fail-closed
 - **DECISION-322**: Market cap from yfinance.info CURRENT not historical — backtesting 2020 trades uses 2026 mkt cap
 - **DECISION-323**: Sector reclassifications retro-applied — Meta moved from Comms to Tech; 2020 backtests use current sector
-- **DECISION-324**: Congressional weight by disclosure_date not transaction_date — smart-money signal weighted by FILING age, not actual TRADE age
 - **DECISION-325**: Institutional 13F PIT assumes universal on-time filing — late filers (some big funds) invisible
 - **DECISION-326**: Walk-forward windows hardcoded calendar dates — no rolling logic per DEC-109; stale after June 2026
 - **DECISION-327**: Short-borrow cost duplicated across improvements.py + exit_manager.py with different units — pick single source
@@ -825,16 +819,16 @@
 
 | Status | Count |
 |---|---|
-| RESOLVED | 10 |
-| OPEN | 259 |
+| RESOLVED | 15 |
+| OPEN | 254 |
 
 
 ### Open Bugs by Severity
 
 | Severity | Count |
 |---|---|
-| CRITICAL | 20 |
-| HIGH | 56 |
+| CRITICAL | 19 |
+| HIGH | 52 |
 | MEDIUM | 67 |
 | LOW | 21 |
 | UNKNOWN | 24 |
@@ -871,7 +865,7 @@
 | **BUG-222** | S&P 500 constituents are CURRENT membership applied to all backtest dates — surv | CRITICAL | OPEN | Pass 48 |
 | **BUG-223** | CPI/NFP/FOMC dates hardcoded through March 2026 only — live trading after that h | CRITICAL | RESOLVED | Pass 48 |
 | **BUG-224** | PIT guard `_assert_no_lookahead` logs WARNING not RAISE — leakage swallowed in p | CRITICAL | RESOLVED | Pass 48 |
-| **BUG-225** | Regime classifier returns 'neutral' on missing VIX silently — should refuse to t | CRITICAL | OPEN | Pass 48 |
+| **BUG-225** | Regime classifier returns 'neutral' on missing VIX silently — should refuse to t | CRITICAL | RESOLVED | Pass 48 |
 | **BUG-028** | HIGH — RSI computation uses simple rolling mean instead of Wilder exponential sm | HIGH | OPEN | - |
 | **BUG-029** | HIGH — Open trades at backtest end silently discarded — upward bias in all metri | HIGH | OPEN | - |
 | **BUG-030** | HIGH — VIX tightening in crisis contradicts own documentation | HIGH | OPEN | - |
@@ -913,10 +907,10 @@
 | **BUG-212** | sync_from_claude.yml --strategy=theirs silently overrides owner edits on conflic | HIGH | OPEN | Pass 47 |
 | **BUG-226** | Cache get_ohlcv front-extension missing; if requested start before cached_start, | HIGH | OPEN | Pass 48 |
 | **BUG-227** | Cache bulk fetch >=20 trading days threshold — silently rejects valid cache for  | HIGH | OPEN | Pass 48 |
-| **BUG-228** | Cache ticker collision: BRK-B and BRK.B both → BRK_B.parquet | HIGH | OPEN | Pass 48 |
+| **BUG-228** | Cache ticker collision: BRK-B and BRK.B both → BRK_B.parquet | HIGH | RESOLVED | Pass 48 |
 | **BUG-229** | Cache zero-volume days dropped silently — halted/suspended stocks invisible | HIGH | OPEN | Pass 48 |
-| **BUG-230** | Trailing-stop ATR exits use ENTRY-time ATR throughout hold — should refresh dail | HIGH | OPEN | Pass 48 |
-| **BUG-231** | exit_hybrid_50pct max_days=252 but other 11 exits don't have max — comparison no | HIGH | OPEN | Pass 48 |
+| **BUG-230** | Trailing-stop ATR exits use ENTRY-time ATR throughout hold — should refresh dail | HIGH | RESOLVED | Pass 48 |
+| **BUG-231** | exit_hybrid_50pct max_days=252 but other 11 exits don't have max — comparison no | HIGH | RESOLVED | Pass 48 |
 | **BUG-232** | update_trailing_stop ignores intraday HIGH — only updates at close above prior b | HIGH | OPEN | Pass 48 |
 | **BUG-233** | Circuit breakers level 3 + 4 documented but not implemented | HIGH | OPEN | Pass 48 |
 | **BUG-234** | VIX hard thresholds flip regime on single print — no MA smoothing | HIGH | OPEN | Pass 48 |
@@ -925,7 +919,7 @@
 | **BUG-237** | CNN F&G CSV interpolated between key readings — fabricated PIT signal | HIGH | OPEN | Pass 48 |
 | **BUG-238** | Liquidity filter market-cap fail-open — missing data passes filter | HIGH | OPEN | Pass 48 |
 | **BUG-239** | Sector reclassifications retro-applied — current sector for old trades | HIGH | OPEN | Pass 48 |
-| **BUG-240** | Congressional signal weighted by disclosure_date not transaction_date | HIGH | OPEN | Pass 48 |
+| **BUG-240** | Congressional signal weighted by disclosure_date not transaction_date | HIGH | RESOLVED | Pass 48 |
 | **BUG-241** | Institutional 13F PIT assumes on-time filing — late filers invisible | HIGH | OPEN | Pass 48 |
 | **BUG-242** | Short borrow cost duplicated across improvements.py and exit_manager.py with dif | HIGH | RESOLVED | Pass 48 |
 | **BUG-243** | Walk-forward windows hardcoded calendar dates — stale after June 2026 | HIGH | OPEN | Pass 48 |
@@ -1115,4 +1109,4 @@
 | **BUG-198** | (NEW) · CRITICAL — No structural PIT data loader; each data source uses ad-hoc P | INLINE-ONLY | OPEN | - |
 
 ---
-*Regenerated April 2026 after Pass 50.*
+*Regenerated April 2026 after Pass 51.*

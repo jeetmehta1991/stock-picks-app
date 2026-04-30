@@ -19178,3 +19178,126 @@ System now has materially improved PIT correctness:
 5 of 28 CRITICAL Pass 48 bugs resolved. 23 CRITICAL bugs remain — owner can pick next batch.
 
 *Pass 50 complete. Tier-1 implemented as approved. 10 regression tests prevent recurrence.*
+
+---
+
+# AUDIT PASS 51 — Tier-2 Engine-Correctness Patches (Owner-Approved Batch)
+
+Owner directive: "Approve all your recommendations" — proceed with both rec defaults (DEC-316 BLOCK new entries; DEC-312 REMOVE max_days from hybrid).
+
+✅ CHECKLIST #1 (executed code to verify) #5 (focused fix, 6 owner-approved decisions only) #25 (concerns flagged) #26 (verbatim) #27 (9 regression tests added) #32 (DEC-309/311/312/315/316/324 RESOLVED via this commit)
+
+## Patches applied
+
+### 1. DEC-309 — Cache ticker collision detection
+
+**File:** `backtest/data/cache.py`
+
+`_cache_path` replaces both `-` and `.` with `_`, so `BRK-B` and `BRK.B` both map to `BRK_B.parquet`. yfinance accepts both forms; whichever runs second silently overwrote the first.
+
+**Fix:** Added `TickerCollisionError(ValueError)` and `_assert_no_ticker_collision(ticker, index)` that scans the cache index for any other ticker mapping to the same filename. Wired into the cache write path in `get_ohlcv` so a collision raises before clobber. Existing files unaffected; only new writes are checked. Caches with both colliding tickers must be repaired manually before either can write.
+
+**Verified:** `_assert_no_ticker_collision("BRK-B", {"BRK.B": {}})` → raises `TickerCollisionError`. Unique tickers pass.
+
+### 2. DEC-311 — Trailing-stop ATR refresh daily
+
+**File:** `backtest/engine/exit_strategies.py`
+
+`exit_atr_trail` was using entry-time `atr` for the entire hold. After 30 days of regime change the stop distance became wildly mis-sized for current volatility.
+
+**Fix:** Pre-compute the rolling 14-period EMA-ATR series once over `df_full` (single O(n) pass), then read into the loop. Falls back to entry-time `atr` if the current-day value is NaN (early-bar case). Stop ratchet preserved (one-way, can only lock in profit).
+
+**Verified:** Source includes `atr_series = tr.ewm(alpha=1/14, adjust=False).mean()` and `current_atr = float(atr_series.loc[idx])` per iteration. End-to-end synthetic-data test passes with positive PnL on trending data.
+
+### 3. DEC-312 — Remove max_days from exit_hybrid_50pct
+
+**File:** `backtest/engine/exit_strategies.py`
+
+`exit_hybrid_50pct` was the only one of 12 exit strategies enforcing `if i >= max_days: return ... "max_days" ...`. Made `run_exit_comparison` not apples-to-apples — hybrid metrics unfairly penalized for long-running trades.
+
+**Fix:** Deleted the `if i >= max_days` block. `max_days` parameter kept in signature for backward compat but ignored. Hybrid now matches the other 11 (trailing stop and circuit breakers exit only).
+
+**Verified:** Source no longer contains `if i >= max_days`.
+
+### 4. DEC-315 — Multiple circuit breakers same day
+
+**File:** `backtest/engine/exit_manager.py`
+
+`check_circuit_breakers` returned at first match. If today had Level 1 (overnight gap) AND Level 5 (VIX crisis), only Level 1 fired and the Level 5 stop-tightening on surviving positions was missed.
+
+**Fix:**
+- New `check_circuit_breakers_all(...)` returns list of all triggered breakers
+- `check_circuit_breakers(...)` preserved as backward-compat wrapper (returns first or None)
+- `process_day_exits` now uses `_all` form: handles BOTH `exit_at_open` (terminal — closes the trade) AND `tighten_stop` (additive — survives but tightens) when both fire same day
+- Audit log notes when both co-fire (e.g., L1 closes the gap-out trade, L5 logged with note "co-fired with exit; not applied")
+
+**Verified:** Trade with -15% gap and VIX 42 returns `[1, 5]` from `check_circuit_breakers_all`; backward-compat `check_circuit_breakers` returns Level 1 (the first).
+
+### 5. DEC-316 — Regime classifier fail-closed
+
+**Files:** `backtest/engine/regime_filter.py`, `backtest/config.py`
+
+`classify_regime(None, ...)` returned `"neutral"` silently. A cache miss or feed failure caused the system to trade as if conditions were normal.
+
+**Fix:**
+- `classify_regime` returns new regime `"unknown"` when `vix_value is None` (was `"neutral"`)
+- `REGIME_FILTER["unknown"] = {"long": "none", "short": "none", ...}` added to config — blocks both directions
+- `get_regime_context` falls through to `REGIME_FILTER["unknown"]` (was `["neutral"]`) when classify_regime returns unknown
+- New entries refused when regime is unknown; existing positions continue under their original stop logic (don't force-flatten — single missing-VIX-day shouldn't be catastrophic)
+
+**Verified:** `classify_regime(None, None) == "unknown"`. `get_regime_context(None, None, None)` returns `{regime: "unknown", long_allowed: False, short_allowed: False, long_size_mult: 0.0, short_size_mult: 0.0}`. Known VIX still classifies as before (15.0/True → "bull").
+
+### 6. DEC-324 — Congressional weight by transaction date
+
+**File:** `backtest/data/smart_money.py`
+
+STOCK Act gives congressional members up to 45 days to disclose. A trade DISCLOSED 5 days ago might have been TRANSACTED 40 days ago. Previous code age-weighted by disclosure date (filing age), so late filings got full weight when they should have been down-weighted.
+
+**Fix:** Use BOTH dates with different roles:
+- `disclosure_date` (from `ReportDate` field) → PIT availability filter: only trades whose disclosure was on/before `as_of` are visible
+- `transaction_date` (from `TransactionDate` field, with `transactionDate` and `disclosure_date` fallbacks) → age-weighting: smart-money signal weighted by when they ACTUALLY POSITIONED
+
+Field detection chain handles missing fields gracefully — if `TransactionDate` not present, falls back to `disclosure_date` (current behavior, never breaks).
+
+**Verified:** Source includes `transaction_date` for age-weighting and `TransactionDate` field detection. `age_days` computation references `transaction_date` not `disclosure_date`.
+
+## Regression tests added (9 new in test_unit.py)
+
+| Test | Decision |
+|---|---|
+| `test_cache_ticker_collision_raises` | DEC-309 |
+| `test_cache_no_collision_on_unique_ticker` | DEC-309 |
+| `test_atr_trail_uses_rolling_atr` | DEC-311 (source check) |
+| `test_atr_trail_runs_end_to_end` | DEC-311 (synthetic data) |
+| `test_hybrid_max_days_check_removed` | DEC-312 |
+| `test_circuit_breakers_all_returns_multiple` | DEC-315 |
+| `test_regime_unknown_blocks_trades` | DEC-316 |
+| `test_regime_filter_has_unknown_entry` | DEC-316 |
+| `test_congressional_uses_transaction_date` | DEC-324 |
+
+## Test results post-Tier-2
+
+```
+test_unit.py:        54 passed (was 45; +9 Tier-2 regression tests)
+test_integration.py:  7 passed (unchanged)
+test_e2e.py:         10 collected (smoke run requires populated cache)
+TOTAL: 61 of 61 ran tests pass.
+```
+
+## Counts post-Pass-51
+
+- Decisions: 346 (6 RESOLVED via this commit; 71 cumulative resolved)
+- Status: 71 RESOLVED, 5 PARTIAL, 7 SUPERSEDED, 263 PENDING
+- Bugs: 269 (15 RESOLVED total — 4 from Pass 49 + 6 from Pass 50 + 5 from Pass 51)
+- LEARNINGS: 113 unchanged
+- CHECKLIST: 32 unchanged
+- Audit passes: 51
+
+## What's NOT in Tier-2 (still pending)
+
+22 CRITICAL bugs remain from Pass 48. Owner can pick next batch via AUDIT_TRIAGE. Suggested next paths:
+- Tier-3 (zero-eng policy approvals): DEC-152, 207, 291, 288, 238 — ~70 min review
+- Continue Pass 48 sweeps on `backtest.py` (679-line engine), `screener.py` (1020 lines)
+- DEC-298 cache adjusted-close PIT (5 eng-days; biggest remaining CRITICAL)
+
+*Pass 51 complete. Tier-2 implemented as approved. 9 regression tests prevent recurrence.*
