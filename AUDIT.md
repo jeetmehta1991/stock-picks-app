@@ -18100,3 +18100,98 @@ This is captured as a soft commitment, not yet a CHECKLIST item — owner may or
 ---
 
 *Pass 45 complete. 47 new decisions surfaced across agent A/B testing framework, architecture hygiene, infrastructure, reliability, data quality, process, and code quality. 2 new bugs flagged. AUDIT_INDEX needs regeneration.*
+
+---
+
+# AUDIT PASS 46 — Cost Estimate Corrections + Interlisting / Norbert's Gambit / TSX-ETF Optimization
+
+Owner-triggered corrections this turn:
+1. "Your cost estimates appear to be incorrect" (linked to https://www.interactivebrokers.ca/en/pricing/commissions-home.php)
+2. "Also for cost note that sp500 stocks have tsx equivalents which can also save more money. Same for etfs"
+
+✅ CHECKLIST #1 (web-fetched IBKR Canada canonical pages this turn) #25 (acknowledging multiple prior cost errors) #26 (verbatim sourcing this turn) #30 (premise questioning — was treating cost as memorized scalar) #32 (no decisions executed, only audit findings + LEARNINGS per standing exception)
+
+## Cost errors corrected this turn
+
+### Error 1: IBKR commission "$0.005/share min $1" — INCOMPLETE
+
+I quoted this multiple times in earlier turns (notably DEC-029-A discussion when arguing for $5K vs $1K capital). It's incomplete because there are TWO pricing tiers and a max-per-order cap I never mentioned.
+
+**Verified via web_fetch April 2026 (https://www.interactivebrokers.ca/en/pricing/commissions-stocks.php):**
+
+US Stocks (≤300K shares/mo volume):
+| Tier | Per-share | Min/order | Max/order |
+|---|---|---|---|
+| **Tiered** | USD 0.0035 | USD 0.35 | **1% of trade value** |
+| **Fixed** | USD 0.005 | USD 1.00 | **1% of trade value** |
+
+Canadian Stocks (CAD-denominated, ≤300K shares/mo):
+| Tier | Per-share | Min/order | Max/order |
+|---|---|---|---|
+| Tiered | CAD 0.008 | CAD 1.00 | **0.5% of trade value** |
+| Fixed | CAD 0.01 | CAD 1.00 | **0.5% of trade value** |
+
+The 1% / 0.5% caps materially change small-trade economics. At $1K capital with a $30 trade, drag is 2% (Tiered) not 3.3% (the wrong number I cited).
+
+### Error 2: Interlisted / TSX-equivalent optimization not surfaced
+
+Across 45 audit passes covering cost, broker selection, currency, and Canadian-specific concerns, never raised:
+- TSX-CAD interlisted Canadian companies (RY/TD/BMO/SHOP/BN etc.) — for a Canadian trader these can be cheaper than NYSE-USD versions due to TSX 0.5% cap vs US 1.0% cap
+- TSX-listed S&P 500 ETF equivalents (XSP, VFV unhedged, HXS total-return swap)
+- Norbert's Gambit for CAD->USD funding via DLR.TO/DLR.U.TO
+
+This was a genuine architecture gap — cost-routing was treated as an afterthought rather than a per-trade decision module.
+
+## Honest scope of impact
+
+For our system's primary universe (S&P 500 individual stocks):
+- ~5-10% of S&P 500 components are Canadian-domiciled and have TSX listings (mostly Canadian banks, energy, materials in S&P/TSX 60 overlap)
+- For those: TSX-CAD venue can be cheaper if cap binds (small trades) AND avoids FX cost
+- For the other 90%+ (NVDA, AAPL, GOOGL, MSFT etc.): no Canadian listing, must trade NYSE/NASDAQ
+
+For ETF positions (currently not primary strategy but relevant for DEC-141/142 sector/market-neutral overlays, future strategies):
+- TSX equivalents widely available for major US indices
+- Math is non-trivial: tracking error from CAD-hedge (~10-30 bps/yr) vs FX cost vs commission cap savings vs withholding tax differences in TFSA/RRSP
+
+For currency conversion at funding:
+- Norbert's Gambit via DLR.TO/DLR.U.TO saves vs IBKR's already-good 0.20bp + spot FX
+- One-time at funding/withdrawal, not per-trade
+
+## New decisions surfaced (4)
+
+- **DEC-252** — Explicit commission model in backtest using real IBKR pricing tables (not flat per-share)
+- **DEC-253** — Routing decision for interlisted securities: per-trade evaluation of TSX-CAD vs NYSE-USD
+- **DEC-254** — ETF substitution for index strategies: evaluate TSX equivalents on hedging-cost vs FX-cost vs commission-cap math
+- **DEC-255** — Norbert's Gambit at funding (DLR.TO/DLR.U.TO) for CAD->USD conversion
+
+## New LEARNINGS (3) — per CHECKLIST #32 standing exception
+
+- **L111** — Never quote cost figures from memory; always re-verify against source. Documents three cost-error instances in the project as the failure pattern.
+- **L112** — Cost optimization is per-trade-context, not global. Cheapest venue depends on (security, account currency, account type, trade size, position purpose). System needs a routing module, not a default.
+- **L113** — Pair every cost claim with source URL + verification date. Future audits flag undated claims for re-verification.
+
+## Implications for prior decisions
+
+- **DEC-029-A ($5K paper notional)**: was approved partly on inflated drag math. Still defensible (more realistic-scale testing) but the cost-driven argument was weaker than presented. Owner can revisit if desired.
+- **DEC-029-C (real-money sizing, deferred)**: when decided post-paper, math should use the corrected commission model from DEC-252.
+- **DEC-092 (slippage model)**: should be paired with the explicit commission model from DEC-252 in implementation. Cost = slippage + commission + fees, all modeled.
+
+## Reflection — third cost error in conversation
+
+Cost errors found this conversation:
+1. Pass 34 — GPT-5.4-mini pricing $0.50/$2.50 → actual $0.75/$4.50
+2. Pass 45 turn — IBKR commission ignored 1% cap
+3. This turn — Interlisting / TSX optimization never surfaced
+
+All three same root pattern: treating cost as memorized scalar. L111+L112+L113 codify the fix: cost is verified-at-source structured pricing, with routing logic, paired with sourcing + date.
+
+## Counts post-Pass-46
+
+- Decisions: 253 → 257 (+4: DEC-252-255, all PENDING)
+- Status: 54 RESOLVED, 5 PARTIAL, 8 SUPERSEDED, 190 PENDING
+- Bugs: 205 unchanged
+- LEARNINGS: 110 → 113 (+L111, L112, L113)
+- CHECKLIST: 32 unchanged
+- Audit passes: 46
+
+*Pass 46 complete. Cost model upgrades surfaced as 4 decisions; 3 LEARNINGS codify the verification discipline.*

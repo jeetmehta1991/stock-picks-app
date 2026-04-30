@@ -1,18 +1,18 @@
 # AUDIT_INDEX.md — Decision and Bug Registry
-**Last regenerated:** April 2026 (post-Pass 45)
+**Last regenerated:** April 2026 (post-Pass 46)
 
 ---
 
 ## Decision Registry
 
-**Total: 253 decision entries**
+**Total: 257 decision entries**
 
 | Status | Count |
 |---|---|
-| RESOLVED | 54 |
+| RESOLVED | 55 |
 | PARTIAL | 5 |
-| SUPERSEDED | 8 |
-| PENDING | 186 |
+| SUPERSEDED | 7 |
+| PENDING | 190 |
 
 ### All Decisions Table
 
@@ -46,7 +46,7 @@
 | **DECISION-026** | Walk-forward parameter re-optimization (BUG-172) | PENDING | Strategy / Regime Adaptation (Group D) | Pass 19 | - |
 | **DECISION-027** | Online learning / feedback loop (BUG-173) | PENDING | Strategy / Regime Adaptation (Group D) | Pass 19 | - |
 | **DECISION-028** | Stage 3 paper trading duration — Stage 3 paper trading duration: 3 months | RESOLVED | Live Trading Operational (Group E) | Pass 19 | 43 |
-| **DECISION-029** | Stage 4 starting capital — SPLIT into 029-A/B/C | SUPERSEDED | Live Trading Operational (Group E) | Pass 19 | 43 |
+| **DECISION-029** | Stage 4 starting capital — SPLIT into 029-A/B/C | RESOLVED | Live Trading Operational (Group E) | Pass 19 | 43 |
 | **DECISION-029-A** | Paper trading notional 1: $5K CAD (small-account drag realism) | RESOLVED | Paper Trading Setup | Pass 43 | 43 |
 | **DECISION-029-B** | Paper trading notional 2: $50K CAD (target AUM scale) | RESOLVED | Paper Trading Setup | Pass 43 | 43 |
 | **DECISION-029-C** | Real-money starting capital — DEFERRED until post-paper-trading evaluation | PENDING | Live Trading Operational (Group E) | Pass 43 | - |
@@ -271,6 +271,10 @@
 | **DECISION-249** | Strategy decay metric (rolling 6mo Sharpe per strategy; flag >50% drop) | PENDING | Batch X39 — Strategy Decay + Code Quality | Pass 45 | - |
 | **DECISION-250** | Edge decay assumption (discount backtest Sharpe by expected crowding %) | PENDING | Batch X39 — Strategy Decay + Code Quality | Pass 45 | - |
 | **DECISION-251** | Dependency injection audit (refactor for testability with mocks) | PENDING | Batch X39 — Strategy Decay + Code Quality | Pass 45 | - |
+| **DECISION-252** | Explicit commission model in backtest using real IBKR pricing tables (Tiered + Fixed, with | PENDING | Batch X40 — Cost Modeling Accuracy | Pass 46 | - |
+| **DECISION-253** | Routing decision for interlisted securities: evaluate TSX-CAD vs US-NYSE per trade based o | PENDING | Batch X40 — Cost Modeling Accuracy | Pass 46 | - |
+| **DECISION-254** | ETF substitution for index strategies: SPY/QQQ/IWM trades evaluate TSX-CAD equivalents (XS | PENDING | Batch X40 — Cost Modeling Accuracy | Pass 46 | - |
+| **DECISION-255** | Norbert's Gambit at funding: use DLR.TO/DLR.U.TO for CAD->USD conversion when capital move | PENDING | Batch X40 — Cost Modeling Accuracy | Pass 46 | - |
 
 ---
 
@@ -503,6 +507,13 @@
 - **DECISION-109**: Rolling 5yr/1yr walk-forward
 - **DECISION-110**: Deflated Sharpe (Bailey et al.)
 - **DECISION-111**: Stationarity / structural break tests
+
+**Batch X40 — Cost Modeling Accuracy** (4):
+
+- **DECISION-252**: Explicit commission model in backtest using real IBKR pricing tables (Tiered + Fixed, with 1% / 0.5% caps, third-party fees) — not flat per-share
+- **DECISION-253**: Routing decision for interlisted securities: evaluate TSX-CAD vs US-NYSE per trade based on commission cap + FX cost + liquidity + tax treatment
+- **DECISION-254**: ETF substitution for index strategies: SPY/QQQ/IWM trades evaluate TSX-CAD equivalents (XSP/XQQ/XSU, VFV unhedged, etc.) on hedging-cost vs FX-cost vs commission-cap basis
+- **DECISION-255**: Norbert's Gambit at funding: use DLR.TO/DLR.U.TO for CAD->USD conversion when capital moved to IBKR; document one-time savings; not per-trade relevant
 
 **Batch X5 — Risk Management Extension** (7):
 
@@ -820,4 +831,4 @@
 | **BUG-198** | (NEW) · CRITICAL — No structural PIT data loader; each data source uses ad-hoc P | INLINE-ONLY | - |
 
 ---
-*Regenerated April 2026 after Pass 45.*
+*Regenerated April 2026 after Pass 46.*

@@ -435,3 +435,36 @@ Common pattern: Claude defaults to "implement what's stated" without questioning
 6. Trade rationale presentation depth
 7. Owner monitoring workflow
 **Rule:** When an audit pass lists "architecture" as a section, UX/website/notifications must be a sub-section, not assumed-out-of-scope. Review all 42 prior passes retroactively for items missed and add them as decisions where applicable.
+
+### L111 — Never quote cost figures from memory; always re-verify against source [critical/cost/discipline]
+**Mistake pattern (April 2026):** Multiple cost claims made in this conversation were wrong because I quoted from memory or heuristic instead of fetching the canonical source:
+- Pass 34: GPT-5.4-mini pricing quoted at $0.50/$2.50 input/output per Mtok — actual was $0.75/$4.50
+- Pass 45 turn: IBKR commission cited as "$0.005/share min $1" without mentioning the **1% per-order cap** which materially changes economics for small trades
+- Pre-this-turn: never surfaced interlisted TSX/NYSE routing or ETF substitution as cost optimization
+**Common cause:** Treating cost as a single memorized number rather than a verified-at-source figure with full structure (rate + minimum + maximum + caps + third-party fees).
+**Rule:** Every cost claim in any audit, recommendation, or decision MUST:
+1. Web-fetch the canonical pricing page at time of claim
+2. Quote the source URL and verification date inline
+3. Include full pricing structure (rates + minimums + maximums + caps + third-party fees) — not just the headline number
+4. Re-verify on a quarterly cadence for any persistent claims (since pricing changes)
+**Past instances captured (these are documented mistakes):** Pass 34 GPT pricing, Pass 45 IBKR commission, this turn's interlisting omission. All three followed the same pattern.
+
+### L112 — Cost optimization is per-trade-context, not global [critical/cost/architecture]
+**Insight (owner-surfaced April 2026):** "SP500 stocks have TSX equivalents which can also save more money. Same for ETFs." This is true but only for specific contexts: Canadian dual-listed names (RY/TD/SHOP/BMO etc.) and US-index ETFs that have TSX equivalents (SPY→XSP/VFV, QQQ→XQQ/ZQQ).
+**Principle:** The cheapest execution venue depends on (security, account currency, account type, trade size, position purpose). There is no single "cheapest broker" or "cheapest exchange" — only cheapest-for-this-trade.
+**Variables that matter per trade:**
+- Security availability on multiple exchanges (interlisted yes/no)
+- Per-exchange commission rate, minimum, AND maximum-per-order cap
+- FX conversion cost (avoided if security trades natively in account currency)
+- Liquidity / bid-ask spread on each exchange
+- Account type tax treatment (TFSA/RRSP withholding rules differ for US vs CAD listed)
+- Position size (cap-binding for small trades, per-share-rate-binding for large)
+**Rule:** System must reason about routing per trade, not assume a default. Implement as a routing module that takes trade-context inputs and returns optimal venue + currency. Captured as DECISIONS-253/254/255.
+
+### L113 — Pair cost claims with source URL and verification date [critical/cost/auditing]
+**Reinforcement of L111 with documentation requirement:** Every cost figure in any project document (PROJECT_PLAN, AUDIT pass, decision register, dashboards) must be paired with:
+- Source URL where the figure was obtained
+- Date of last verification
+- Pricing structure detail (rate, min, max, third-party fees)
+**Why:** Pricing changes. Six months from now, IBKR rates may shift, GPT costs may drop, TSX commission caps may revise. Without sourcing + dating, future Claude sessions or owner reviews cannot tell which figures are stale.
+**Rule:** Cost figures without source+date are treated as untrustworthy. Future audits should flag undated cost claims for re-verification.
