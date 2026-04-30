@@ -7415,3 +7415,204 @@ After Phase 0.A completes, **a backtest run can be repeated dozens of times with
 ---
 
 *Pass 17 complete. 6 new bugs documented (BUG-178 to BUG-183). Total 183 bugs. Prefetching gaps inventoried. Phase 0.A specified for inclusion in PROJECT_PLAN restructure.*
+
+---
+
+# AUDIT PASS 18 — Quiver Prefetch State Audit (Pre-Cancellation Verification)
+
+The user is paying for a Quiver subscription and wants to cancel after prefetching everything. This pass audits the current Quiver cache state to identify ALL gaps that must be filled before cancellation. Once the subscription is cancelled, missing historical data cannot be re-fetched.
+
+---
+
+## PART 1 — Current Quiver cache state (snapshot 2026-04-29)
+
+### Coverage by dataset
+
+| Dataset | Files | With data | Empty | Total rows | Latest data |
+|---|---|---|---|---|---|
+| Insider trades | 509 | 476 | 33 | 190,198 | **2024-12-31** ⚠ |
+| Congressional | 509 | 505 | 4 | 60,554 | 2026-04-15 ✓ |
+| Institutional 13F | 509 | 480 | 29 | 4,258,844 | 2026-03-27 ✓ |
+| Gov contracts | 509 | 203 | 306 | 9,427 | 2025 ✓ |
+| Lobbying | 509 | 347 | 162 | 42,115 | 2026-03-31 ✓ |
+| WallStreetBets | 509 | 487 | 22 | 176,558 | 2025-02-21 ⚠ |
+| Wikipedia views | 509 | **0** | **509** | **0** | NONE ⚠⚠⚠ |
+
+### Critical issues (in order of severity)
+
+**P0 — INSIDER DATA STOPS 2024-12-31.** Backtest goes through 2026-01-31. **13 months of insider trading data is missing.** The agent's `insider_signal` will show "no_data" for all of 2025 and 2026. This is a major gap and must be re-fetched.
+
+**P0 — WIKIPEDIA VIEWS: ZERO DATA.** All 509 files are empty (0 bytes of actual content). The prefetch script ran but every API call apparently returned empty. The cause is unclear without investigation but could be: (1) wrong endpoint URL, (2) Quiver Wikipedia endpoint requires a different tier, (3) Quiver retired this endpoint. **Must investigate before cancellation.**
+
+**P1 — WSB DATA STOPS 2025-02-21.** ~14 months of WSB mentions missing. Less critical than insider since WSB is a sentiment signal, not an action signal. But still a gap.
+
+**P1 — 33 INSIDER FILES EMPTY.** Mostly ETFs (SPY, QQQ, EEM, EFA, etc. — these legitimately have no Form 4 filings). But also BF-B and LILLY which DO have insider data normally — likely a ticker symbol mapping issue (BF-B → BF.B in Quiver).
+
+**P1 — 29 INSTITUTIONAL FILES EMPTY.** Most concerning: AAPL, ABBV, ADBE, AMD, AMZN are all empty. These are MASSIVE 13F-tracked names that should have thousands of rows. This is a definite prefetch failure on these specific tickers.
+
+**P2 — 22 WSB FILES EMPTY.** Includes major tickers (GOOGL, MA, F, BRK-B). Some are legitimate (low Reddit attention) but GOOGL having zero WSB mentions is unrealistic.
+
+**P2 — DEFENSE TICKERS WITH MISSING GOV CONTRACTS.** NOC and TXT have empty gov_contracts files but they're literally defense contractors. Definite prefetch failure.
+
+**P3 — 4 CONGRESSIONAL FILES EMPTY.** BF-B, BRK-B, DHC, LILLY. Same ticker-mapping pattern as P1.
+
+### What's missing entirely (additional Quiver endpoints worth fetching)
+
+The current prefetch covers 7 endpoints. Quiver offers more that are relevant to swing trading:
+
+| Endpoint | Relevance | Recommend fetch? |
+|---|---|---|
+| **Senate trades** (separate from House) | Senators have higher conviction trades historically | YES |
+| **Twitter mentions** | Real-time sentiment | YES |
+| **Off-Exchange (dark pool)** | Institutional positioning visible in dark pool prints | YES |
+| **Patent grants** | Long-term innovation signal | OPTIONAL (low signal) |
+| **Corporate flights** | M&A leak signal (jets flying to potential acquirer HQ) | OPTIONAL (niche) |
+| **App downloads** | Direct demand signal for consumer tech | YES (for tech tickers) |
+| **Crypto holdings** | Treasury crypto exposure | NO (not relevant to S&P 500 strategies) |
+| **Reddit (general)** | Broader retail than just WSB | OPTIONAL |
+
+---
+
+## PART 2 — Pre-cancellation prefetch action plan
+
+This is the **must-do list before cancellation**. Cost: 1 dedicated session of prefetch script execution.
+
+### Phase 1 — Repair existing prefetches (P0 + P1)
+
+1. **Re-run insider prefetch with extended date range** (cover 2020-01-01 to 2026-04-29 = today)
+2. **Diagnose Wikipedia endpoint failure** — read API docs, test endpoint manually, fix or remove
+3. **Re-run WSB prefetch with extended date range** (cover up to today)
+4. **Targeted re-fetch for failed tickers** in institutional (AAPL, ABBV, ADBE, AMD, AMZN, etc. — 29 tickers) and gov_contracts for defense tickers (NOC, TXT)
+5. **Fix ticker symbol mappings** (BF-B vs BF.B, BRK-B vs BRK.B) and re-run for those
+
+### Phase 2 — Add missing endpoints (worth fetching while subscription active)
+
+6. **Senate trades prefetch** (similar pattern to congressional)
+7. **Twitter mentions prefetch**
+8. **Off-Exchange / Dark pool prefetch**
+9. **App downloads** for tech tickers (GOOGL, AAPL, MSFT, META, NFLX, AMZN, etc.)
+
+### Phase 3 — Validation gate (do not cancel until this passes)
+
+10. **Add validation script** that asserts:
+    - Insider data covers through last 30 days
+    - All major tickers have institutional data (>1000 rows for AAPL, MSFT, NVDA, etc.)
+    - Wikipedia data has any rows at all (>0)
+    - WSB data covers through last 30 days
+    - Defense tickers have gov_contracts data
+    - All 7+ endpoints have non-empty parquet for ≥80% of tickers
+
+### Estimated time
+
+- Phase 1 (repair): 4-6 hours of prefetch runtime, 2 hours of debugging
+- Phase 2 (new endpoints): 4-8 hours of prefetch runtime
+- Phase 3 (validation): 30 minutes to write script, run, fix issues
+
+**Total: 1-2 days of focused work before cancellation is safe.**
+
+### Cost of cancellation timing
+
+Quiver subscription cost: typically $50-100/month depending on tier. If the user pays for one extra month while completing the prefetch repair, that's $50-100. If the user cancels prematurely and missing data is only discovered during Phase 1B Gate 4, re-subscription at minimum 1 month = $50-100 (same cost) PLUS the delay of weeks.
+
+**Conclusion: do NOT cancel until Phase 3 validation passes. Pay one extra month of subscription if needed — it's cheap insurance.**
+
+---
+
+## PART 3 — New bugs from this audit
+
+### BUG-184 · CRITICAL — Insider data prefetch stops 2024-12-31; 13-month gap before backtest end
+
+**Files:** `backtest/data/cache/quiver/insider/*.parquet`
+
+Latest insider date across all 476 non-empty files is 2024-12-31. Backtest period is 2022-2026. Phase 1B-α and all subsequent phases will have NO insider signal data for 2025-2026 — meaning agent reasoning about insider conviction will be "no_data" for that entire period.
+
+**Fix:** Re-run `prefetch_quiver.py --datasets insider --tickers all` with extended date range. Estimated 1-2 hours runtime depending on rate limits.
+
+### BUG-185 · CRITICAL — Wikipedia views prefetch failed entirely; all 509 files empty
+
+**Files:** `backtest/data/cache/quiver/wikipedia/*.parquet` (all 509 are 0 rows)
+
+The prefetch ran but produced no data. Every API call apparently returned empty response. Could be wrong endpoint URL, deprecated endpoint, or auth issue.
+
+**Fix:** Investigate Quiver API docs for correct Wikipedia endpoint. Test manually with one ticker. If endpoint exists, fix `prefetch_quiver.py` and re-run. If endpoint deprecated, remove from prefetch list and document the data is unavailable.
+
+### BUG-186 · HIGH — 29 institutional 13F files empty including major tickers (AAPL, ABBV, AMZN, etc.)
+
+**Files:** `backtest/data/cache/quiver/institutional/{AAPL,ABBV,ADBE,AMD,AMZN,...}.parquet` (29 tickers)
+
+These are large-cap S&P 500 names that have abundant 13F filings. Empty files indicate prefetch failure on these specific tickers. Pattern unclear — could be ticker mapping or rate limit timeout during their fetch slot.
+
+**Fix:** Identify the 29 affected tickers, re-fetch with retry logic.
+
+### BUG-187 · HIGH — WSB mentions prefetch stops 2025-02-21; 14-month gap
+
+**Files:** `backtest/data/cache/quiver/wallstreetbets/*.parquet`
+
+Same pattern as insider data — prefetch was run earlier, hasn't been refreshed.
+
+**Fix:** Re-run with extended date range. Lower priority than insider since WSB is a soft sentiment signal.
+
+### BUG-188 · MEDIUM — Defense tickers (NOC, TXT) have empty gov_contracts data
+
+**Files:** `backtest/data/cache/quiver/gov_contracts/{NOC,TXT}.parquet`
+
+These are literally defense contractors. Empty data is a definite prefetch failure on these tickers (not a "company has no contracts" case).
+
+**Fix:** Targeted re-fetch with retry.
+
+### BUG-189 · MEDIUM — Ticker symbol mapping issue: BF-B, BRK-B variants empty
+
+**Files:** Several Quiver datasets show empty parquet for BF-B, BRK-B, NWSA, FOXA, etc.
+
+These tickers have dot/dash variants that don't match Quiver's expected format (BRK-B vs BRK.B vs BRK/B). The prefetch silently saved empty parquet when API returned 404.
+
+**Fix:** Add ticker symbol mapping table in prefetch script, retry with both variants.
+
+### BUG-190 · MEDIUM — Quiver endpoints not in prefetch (Senate, Twitter, Off-Exchange, App Downloads)
+
+**Files:** Missing from `prefetch_quiver.py` ENDPOINTS dict
+
+Four high-value endpoints exist in Quiver subscription but are not being prefetched. User is paying for them but not capturing data.
+
+**Fix:** Add Senate trades, Twitter mentions, Off-Exchange, App Downloads endpoints to prefetch script. Run while subscription is still active.
+
+### BUG-191 · CRITICAL — No prefetch validation gate before cache-dependent code runs
+
+**Files:** Missing from CI / pre-flight check
+
+The system has no automated check confirming prefetch completeness. Empty data flows silently through the engine and into agent reasoning as "no_data". User cannot know what's missing without running this audit manually.
+
+**Fix:** Add `validate_prefetch_completeness.py` that asserts all critical data is present, runs as CI step before any backtest, fails loudly with specific gap report.
+
+---
+
+## PART 4 — Updated bug count
+
+| Category | Count |
+|---|---|
+| **Total bugs documented** | **191** |
+| Critical | 17 (was 14, +3) |
+| High | 65 (was 63, +2) |
+| Medium | 84 (was 81, +3) |
+| Low | 25 |
+
+---
+
+## PART 5 — Recommendation
+
+**DO NOT cancel Quiver subscription until:**
+
+1. ✅ Run targeted re-fetch for insider data (close 13-month gap)
+2. ✅ Diagnose and fix or document Wikipedia endpoint
+3. ✅ Run targeted re-fetch for 29 missing institutional tickers
+4. ✅ Run targeted re-fetch for WSB (close 14-month gap)
+5. ✅ Add 4 new endpoints to prefetch (Senate, Twitter, Off-Exchange, App Downloads)
+6. ✅ Run validation script asserting all critical data present
+7. ✅ Verify validation passes for ≥95% of S&P 500 universe
+
+**Estimated work:** 1-2 days dedicated.
+**Cost of one extra month of Quiver subscription:** $50-100 — cheap insurance vs the cost of cancelling and discovering gaps later (which would require re-subscription = same $50-100 + weeks of delay).
+
+---
+
+*Pass 18 complete. 8 new bugs (BUG-184 to BUG-191). Total 191 bugs. Quiver pre-cancellation action plan documented.*
