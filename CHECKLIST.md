@@ -126,3 +126,31 @@ State compliance visibly: "Checklist: ✅ [each item]"
     h. Past mistakes: L86 (jumped data-ready → full run), L95 ($150 lost on Phase 1B), L102 (3.5x cost multiplier missed)
     i. Apply to: backtest runs, agent calls, data downloads, LLM evaluations, ANY operation that costs money OR is hard to redo
     NEVER scale before each gate is explicitly approved by the owner. Past project lost $150 on a discarded run — that pattern is unacceptable to repeat.
+
+30. PREMISE QUESTIONING — when implementing per a spec or instruction:
+    a. Identify the unstated assumptions in the spec/instruction
+    b. Verify those assumptions against current best practice (search web, read source, check docs)
+    c. If the spec contradicts best practice OR is suboptimal vs available alternatives, flag it
+    d. Surface the question explicitly to the owner: "spec says X but Y is better because..."
+    e. Wait for owner decision before implementing
+    f. Past mistakes from missing this: 6-vs-12 agents, duplicated Quiver scoring, Wikipedia universe (L88), 789-line PROJECT_PLAN rewrite (L94), Phase 1B $150 loss (L95)
+    NEVER implement to spec without first asking whether the spec is optimal.
+
+31. DECISION SURFACING — when an implementation choice arises:
+    a. List ALL viable options (not just the obvious one)
+    b. State tradeoffs for each option
+    c. State your recommendation with reasoning
+    d. Wait for owner approval before implementing
+    e. If you discover a new option later, surface it as a decision revision (not a silent change)
+    f. "Approve all" or "approve" applies ONLY to items explicitly enumerated in the immediately prior turn
+    NEVER make implementation choices that have material project impact without explicit owner approval.
+
+32. STRICT APPROVAL DISCIPLINE — interpretation of owner instructions:
+    a. Approval is signaled ONLY by verbatim "approved", "Y", "yes", "go ahead", "commit it", or equivalent explicit language
+    b. "Add to X" / "include Y" / "make sure Z" are descriptive instructions, NOT approvals to execute (except for LEARNINGS/CHECKLIST per owner standing exception in 32g)
+    c. Ambiguous instructions trigger clarification: list A/B/C/D interpretations and ask
+    d. Silence is not agreement
+    e. Recent prior approvals do NOT carry forward to new items unless explicitly stated
+    f. When in doubt, ask. Slowness is acceptable; silent execution is not.
+    g. STANDING EXCEPTION (per owner April 2026): LEARNINGS.md and CHECKLIST.md additions/updates that strengthen process discipline may be made directly without explicit per-change approval. ALL OTHER changes (code, PROJECT_PLAN.md, CLAUDE.md, AUDIT.md substantive sections, AUDIT decision registry items, data operations, API runs) require verbatim owner approval.
+    NEVER interpret instructions as approvals; require explicit verbatim approval for every execution step except the standing LEARNINGS/CHECKLIST exception.

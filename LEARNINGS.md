@@ -324,7 +324,7 @@ Win rates were reported as single numbers (55.3%) without confidence intervals. 
 ### L94 — PROJECT_PLAN.md is append-only without explicit permission [critical/documentation]
 **Mistake:** Commit 38e7ee2 did a "complete rewrite" of PROJECT_PLAN.md removing 789 lines — all 60 strategy descriptions, full API stack tables, signal universe (274 fields), confidence tier logic, website design, stage roadmaps, rules tables, and 24 numbered sections. This was done without owner permission.
 **Fix:** All removed content restored in April 2026 by appending pre-rewrite sections back to current file.
-**Rule:** PROJECT_PLAN.md is APPEND-ONLY. Claude may only add new content or update existing content. Removing or rewriting any section requires explicit owner permission. If a rewrite is needed, propose the specific changes and wait for approval before touching the file.
+**Rule (UPDATED April 2026 per owner instruction):** PROJECT_PLAN.md changes — including additions, removals, rewrites, restructures, and edits — all require explicit owner approval before being made. Append-only restriction has been LIFTED. The CRITICAL element preserved: every change must be proposed with diff/scope, then explicitly approved, then implemented. Silent changes are still forbidden.
 
 ### L95 — Always compute cost estimate before any run. No exceptions. [critical/cost]
 **Mistake:** Full Phase 1B run launched without validating actual screener pass rate against cost estimate. PROJECT_PLAN.md estimated 8 candidates/day but crisis regime passed 28/day — a 3.5x multiplier that was never checked. Result: $150 spent on an incomplete run.
@@ -385,3 +385,33 @@ Win rates were reported as single numbers (55.3%) without confidence intervals. 
 **Why this matters:** Path B agent backtest has a $300 hard cap. Phase 0.A prefetch will have its own cost. Phase 0.C TradingAgents integration will have its own cost. Each is a NEW chance to repeat the L95 mistake unless the discipline is applied universally, not per-operation.
 **Fix:** CHECKLIST #29 added — STOP-EARLY-ON-BUDGET as consolidated cross-reference rule. CLAUDE.md elevated to top-of-mind. Apply to: backtest runs, agent calls, data downloads, LLM evaluations, any operation costing money OR hard to redo.
 **Rule:** Every API spending operation must follow the same discipline: cost estimate → smallest test batch → manual review → mid batch → manual review → scale, with hard stops at 80% and 100% of budget. Owner explicitly approves at each gate. No exceptions, no operation-specific carveouts.
+
+### L106 — Granular-by-default for all analysis [critical/methodology]
+**Principle:** Aggregates obscure where strategies fail. Every backtest output, every metric, every signal evaluation must be reportable at multiple breakdown levels: total, per-strategy, per-regime, per-sector, per-cap-band, per-volatility-bucket, per-month, per-categorical-variable. Aggregate-only is rejected.
+**Why this matters:** A strategy with 55% overall win rate may have 70% in bull regime and 35% in crisis. Reporting only the aggregate hides the regime-conditional behavior that determines whether to deploy. Same for sector, cap, volatility — every dimension can hide systematic failure.
+**Rule:** Every metric reported at multiple breakdowns. Dashboards must support drill-down. The 17+ categorical variables in Pass 39 Section 9.2 are the standard set: cap band, liquidity bucket, beta bucket, vol bucket, earnings proximity, RSI bucket, short interest bucket, days to FOMC, days since IPO, index membership, VIX bucket, yield curve shape, sector momentum percentile, day-of-week, seasonality flag, plus base dimensions (strategy, regime, sector, tier, direction, date).
+
+### L107 — Implementing to spec is NOT enough — premise questioning required [critical/process]
+**Mistake pattern:** Multiple project failures share the same root cause: implementing instructions or spec without questioning whether the spec/instruction was optimal. Examples:
+- 6-agent pipeline implemented per spec, but TradingAgents has 12 agents available
+- Quiver insider/congressional scoring computed by us, but Quiver provides pre-built composites
+- Wikipedia used as universe source per default heuristic (L88)
+- 789-line PROJECT_PLAN rewrite per "rewrite this" interpretation (L94)
+- $150 Phase 1B run launched per data-ready signal without batch test (L95)
+Common pattern: Claude defaults to "implement what's stated" without questioning premise. Specs are ALWAYS incomplete.
+**Fix:** New CHECKLIST #30 (Premise Questioning) and #31 (Decision Surfacing). Claude must surface unstated assumptions in any spec/instruction, identify viable alternatives, and ask owner before implementing.
+**Rule:** No implementation begins until: (a) unstated assumptions surfaced, (b) alternatives compared against best practice, (c) explicit owner approval received. Implementing-to-spec without premise questioning is now a documented failure mode.
+
+### L108 — Strict approval discipline — verbatim only, with permitted exception for process docs [critical/process]
+**Owner directive (April 2026):** "Do not execute decisions without explicit approval." Refined: LEARNINGS.md and CHECKLIST.md updates do NOT need explicit approval (they are process discipline that strengthens the project). EVERYTHING else — code, PROJECT_PLAN.md, CLAUDE.md, AUDIT.md substantive sections, architectural choices, data downloads, API runs, decisions in the AUDIT decision registry — requires verbatim owner approval before execution.
+**Operating rule:**
+- Approval is signaled ONLY by verbatim "approved", "Y", "yes", "go ahead", "commit it", or equivalent explicit language
+- "Add to X" / "include Y" / "make sure Z" are descriptive instructions, NOT approvals to execute (except for LEARNINGS/CHECKLIST per owner exception)
+- Ambiguous instructions trigger clarification: list A/B/C/D interpretations and ask
+- Silence is not agreement
+- Recent prior approvals do NOT carry forward to new items unless explicitly stated
+- "Approve all" applies ONLY to items explicitly enumerated in the immediately prior turn
+- LEARNINGS.md and CHECKLIST.md additions/updates may be made directly when discipline gaps are identified, with the owner's standing exception
+- All non-process changes require verbatim approval per above
+**Why this matters:** Past Sonnet behavior interpreted instructions broadly, leading to silent decisions and 203 documented bugs. Strictest interpretation prevents recurrence even when it slows execution. The LEARNINGS/CHECKLIST exception was granted because process discipline strengthens guardrails — it can never weaken project safety.
+**Rule:** Every commit, every implementation choice, every architectural decision, every code change, every data operation requires verbatim owner approval before execution. The ONLY exception: LEARNINGS.md and CHECKLIST.md additions/updates that strengthen process discipline (per owner's standing permission).

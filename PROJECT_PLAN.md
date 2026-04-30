@@ -288,7 +288,7 @@ Per CLAUDE.md + CHECKLIST.md (29 items):
 3. **Recommendations require Relevance Check** (CHECKLIST #27): state the question, state how the recommendation addresses it.
 4. **Mistakes get added to LEARNINGS retroactively** (CHECKLIST #28).
 5. **API runs follow STOP-EARLY-ON-BUDGET** (CHECKLIST #29): cost estimate → smallest test batch → manual review → mid → full, with hard stops at 80% and 100% of budget.
-6. **PROJECT_PLAN.md is APPEND-ONLY** without explicit permission (L94).
+6. **PROJECT_PLAN.md changes require explicit owner approval** (L94 updated April 2026 — append-only restriction lifted, approval requirement preserved).
 7. **AUDIT.md preserves full pass history.** Pass 38 Part B consolidated current state, but passes 1-37 remain immutable.
 
 ---
@@ -389,7 +389,7 @@ Distilled from LEARNINGS.md (105 entries, full detail there):
 - **L45**: Audits without tests catch zero bugs.
 - **L86, L95, L102**: Cost overruns happen when batch test sequence is skipped.
 - **L88**: Wikipedia is never a valid data source.
-- **L94**: PROJECT_PLAN.md is APPEND-ONLY without explicit permission.
+- **L94**: PROJECT_PLAN.md changes require explicit owner approval (append-only lifted April 2026).
 - **L99**: 3.5× trade row inflation due to multi-strategy fires on same ticker — recalibrate sample size assumptions.
 - **L100-L104**: Recommendations made without validating assumptions, without relevance check, without counting LLM call multipliers, without reading framework source.
 - **L105**: Budget batch discipline must apply to EVERY API operation, not just the one that just lost money.
