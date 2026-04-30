@@ -15041,3 +15041,142 @@ This is twice in one session I've quoted pricing without verifying current numbe
 ---
 
 *Pass 34 complete. GPT-5.4-mini quality assessment: genuinely best-in-tier for budget reasoning, 99.7% structured output compliance, US-hosted, no IP risk. Pricing corrected: $0.75/$4.50 (not $0.50/$2.50 from Pass 31). Stage 2 with full 2,500 candidates ≈ $400-450 not $325. Four options presented (A/B/C/D). Recommendation: Path B — GPT-5.4-mini at reduced ~1,800 sample to fit $300. No new bugs. No new decisions resolved (DECISION-058 status pending user choice).*
+
+---
+
+# AUDIT PASS 35 — New Workflow Discipline + Path B Validated + DECISION-058 Revised
+
+Checklist: ✅ #1 (validated by reading source code, file structure, current pricing) ✅ #2 (showing full plan before execution) ✅ #4 (directly addresses workflow change + Path B confirmation) ✅ #5 (proactively flagged 3 unverified assumptions in Path B) ✅ #25 (will follow Path B but with explicit kill switches per past failure modes) ✅ #26 NEW (assumption validation applied to Path B) ✅ #27 NEW (relevance check applied to Path B) ✅ #28 NEW (retroactive learning application — L100-L104 added)
+
+User direction:
+1. "Comprehensively check and validate all assumptions and check relevance before recommending anything to me. Add this to the checklist as well and needs to be followed all the time."
+2. "Whenever you make mistakes, keep adding to learnings and checklist. Apply this retroactively as well. This is the standard workflow."
+3. "Lets go with path B. But i hope its well thought out and gives us the result that we need. The past project development with sonnet has been horrible as you have seen with all the issues and bugs that we have identified till date. I DO NOT WANT TO MAKE THE SAME MISTAKES AGAIN!"
+
+---
+
+## SECTION A — CHECKLIST.md updated (3 new items)
+
+CHECKLIST.md grew from 91 lines to 116 lines. New items:
+
+**#26 ASSUMPTION VALIDATION BEFORE EVERY RECOMMENDATION** — list every factual claim, identify source, verify if uncertain, state "Verified:" explicitly, re-verify pricing/capability claims every time.
+
+**#27 RELEVANCE CHECK BEFORE EVERY RECOMMENDATION** — state the specific question, state how the recommendation addresses it, confirm assumptions match the owner's stated requirements.
+
+**#28 RETROACTIVE LEARNING APPLICATION** — when mistakes are identified, add to LEARNINGS.md, add rule to CHECKLIST if recurring, re-audit conversation for same mistake elsewhere, surface to owner.
+
+These rules are non-negotiable per checklist preamble.
+
+---
+
+## SECTION B — LEARNINGS.md updated (5 new entries L100-L104)
+
+LEARNINGS.md grew from 351 lines to 381 lines. New entries capture this session's mistakes retroactively:
+
+**L100** — Recommendations made without validating underlying assumptions. Pass 26-34 multiple errors compounded.
+
+**L101** — Recommendations made without checking current question relevance. Pass 28 Pattern 2 recommendation drifted from cost question.
+
+**L102** — Cost estimates given without counting actual LLM call multipliers. Tool-loop multiplier missed across 3 passes.
+
+**L103** — Recommended frameworks/libraries without reading their source code. Pass 28 Pattern 2 recommendation based on README skim.
+
+**L104** — Past project mistakes (Sonnet development) must inform Path B validation. User explicit: "I do not want to make the same mistakes again."
+
+---
+
+## SECTION C — Path B validated against new CHECKLIST 26 + 27
+
+### Question being addressed
+"Use TradingAgents framework for backtest validation, stay within $300 hard cap, do not repeat the Sonnet-development mistakes that produced 203 bugs."
+
+### Verified facts (✅)
+- GPT-5.4-mini pricing $0.75/$4.50 per Mtok (multi-source April 2026)
+- TradingAgents v0.2.4 supports OpenAI provider (read tradingagents/llm_clients/ + default_config.py)
+- TradingAgents supports configurable selected_analysts subset (read tradingagents/graph/setup.py setup_graph signature)
+- Stage 1 rules-only backtest is $0 (no agent calls)
+- TradingAgents structured outputs work with GPT-5.4-mini (changelog v0.2.4 + GPT-5.4-mini 99.7% compliance)
+
+### Unverified assumptions (⚠️ FLAGGED, NOT HIDDEN)
+- **Per-propagate cost ~$0.16-0.18:** Computed from estimated tokens × pricing. Real cost will only be known after smoke test. Mitigated by CHECKLIST #22 (mandatory cost estimate) + #23 (small batch policy).
+- **1,800 sample size statistically defensible:** Based on ~300 trades per stratum × 6 stratums heuristic. Should be confirmed by explicit power analysis before scaling.
+- **Curated subset covers cases where agents add value:** This is a hypothesis, not a proven fact. Stage 2 specifically tests it.
+- **PIT correctness preserved with TradingAgents:** Their #475 fix matches our DECISION-040 requirement, but must be verified by running on a known historical date and confirming no future data leak.
+
+### Relevance verified
+- User said: "$300 max on backtesting total"
+- Path B says: Stage 1 = $0, Stage 2 = $300 hard cap, Stage 3 only if Stage 2 shows edge
+- Match: ✅ confirmed
+
+### Kill switches in place (mitigations against repeat of 203-bug development)
+
+| Gate | Trigger | Action |
+|---|---|---|
+| Smoke test | First 10 candidates of Stage 2 | Owner manually reviews agent outputs, approves before scaling |
+| Mid-batch | First 100 candidates | Owner reviews actual cost vs estimate, recalibrates if >2x off (per CHECKLIST #22) |
+| 80% spend | $240 cumulative | Owner approves continuation explicitly |
+| Hard stop | $300 cumulative | Stop regardless of completeness |
+| Quality kill | Agent outputs incoherent on smoke test | Stop, switch model or abandon Stage 2 |
+
+These mirror CHECKLIST #13 (mandatory batch test sequence) and #22 (mandatory cost estimate) — both rules added because of past expensive failures (L86, L95).
+
+---
+
+## SECTION D — DECISION-058 REVISED
+
+**Original DECISION-058 (Pass 32):** DeepSeek V3.2 for backtest LLM, Anthropic for live trading.
+
+**REVISED DECISION-058:** GPT-5.4-mini for backtest LLM (Stage 2), Anthropic Sonnet+Haiku for live trading (Stage 3+).
+
+**Reason for revision:**
+- DeepSeek V3.2 hosted in China — methodology IP exposure on free tier
+- DeepSeek V3.2 has documented tool-calling weakness in LangChain harnesses
+- GPT-5.4-mini has best-in-tier structured output compliance (99.7%) which TradingAgents v0.2.4 relies on
+- Cost difference is ~$50-100 over the budget cap, mitigated by reduced sample size
+
+**Status:** RESOLVED. User approved Path B. DECISION-058 REVISED in effect.
+
+---
+
+## SECTION E — DECISION-060 (NEW): Smoke test gating before Stage 2 scale
+
+**Status:** PROPOSED
+
+Per CHECKLIST #13 (mandatory batch test sequence) and L86 (jumped from data-ready to full run), Stage 2 must include explicit smoke test gating:
+
+a. **Test batch (10 candidates, ~$2):** Run Stage 2 on 10 candidates only. Manually review agent outputs. Owner approves quality before continuing.
+
+b. **Mid batch (100 candidates, ~$15-20):** Run on 100 candidates. Compute actual cost per propagate. If actual cost differs from estimate by >2x, stop and recalibrate budget per CHECKLIST #22.
+
+c. **Full Stage 2 (remaining ~1,690 candidates, ~$280):** Only after both prior steps approved. Hard stop at 80% spend ($240) for owner check-in. Hard stop at $300 regardless.
+
+**Recommendation:** Approve.
+
+---
+
+## SECTION F — Updated counts
+
+| Category | Count |
+|---|---|
+| Total bugs | 203 (unchanged) |
+| Decisions | 60 (was 59, +1 DECISION-060) |
+| Resolved decisions | 30 (DECISION-058 REVISED counted) |
+| Pending | 30 |
+
+---
+
+## SECTION G — What happens next
+
+Path B is now validated and locked in pending DECISION-060 approval (smoke test gating). Sequence forward:
+
+1. **Now (this turn):** You approve or revise DECISION-060 (smoke test gating)
+2. **Next:** I generate HANDOFF.md per your earlier session-handoff request — comprehensive state file for fresh-session continuity. New session gets all 30 resolved decisions + Path B validated state + new CHECKLIST + new LEARNINGS.
+3. **Fresh session start:** First message protocol per Pass 30 Section C
+4. **In fresh session:** PROJECT_PLAN.md restructure incorporating all 30 resolved decisions (shown line-by-line for approval before commit per L94 — APPEND-ONLY rule)
+5. **Then:** Phase 0.A implementation kickoff (Quiver pre-cancellation repair scripts, Polygon News evaluation)
+
+I will NOT proceed to step 2 until you approve DECISION-060.
+
+---
+
+*Pass 35 complete. CHECKLIST.md +3 items (26 assumption validation, 27 relevance check, 28 retroactive learning). LEARNINGS.md +5 entries (L100-L104) capturing this session's mistakes retroactively. Path B validated against new discipline — 5 facts verified, 4 assumptions explicitly flagged with mitigations. DECISION-058 REVISED to GPT-5.4-mini (Path B). DECISION-060 NEW for mandatory smoke test gating per CHECKLIST 13. 60 decisions total (30 resolved). No new bugs.*

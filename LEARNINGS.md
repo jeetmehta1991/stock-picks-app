@@ -349,3 +349,33 @@ Win rates were reported as single numbers (55.3%) without confidence intervals. 
 ### L99 — Trade inflation 3.5x — 500-trade minimum is effectively 143 independent positions [data/design]
 **Finding:** 34,727 total trades = only ~9,900 unique ticker+date decisions. Multiple strategies fire on the same ticker+date, creating 3.5x row inflation. The 500-trade minimum per strategy in PROJECT_PLAN assumes independent trades — but 500 rows may represent only ~143 genuinely independent positions.
 **Phase 1C fix:** Either (a) deduplicate to one position per ticker per day before evaluating strategy criteria, or (b) recalibrate the minimum to 1,750 rows (equivalent to 500 independent positions at 3.5x inflation factor). Both require owner approval before implementation.
+
+### L100 — Recommendations made without validating underlying assumptions [critical/process]
+**Mistake:** Across audit Passes 26-34, multiple recommendations were given based on stale memory or untested assumptions. Pass 26 estimated live agent cost at "$13-40/month" without counting actual LLM nodes per propagate(). Pass 28 recommended "Pattern 2 custom agents" without reading TradingAgents source. Pass 31 quoted GPT-5.4-mini at "$0.50/$2.50" — actual is $0.75/$4.50. Pass 32 estimated propagate() cost at "$0.18" without counting tool-use loops; real is $0.30-0.50.
+**Why this matters:** Each error compounded. The user had to push back three times to get to the right cost answer. A real backtest run with these numbers would have gone over budget by 2-5x — a direct repeat of the L95 mistake (Phase 1B cost overrun).
+**Fix:** New CHECKLIST item #26 — Assumption Validation Before Every Recommendation. List every factual claim, source it, verify if uncertain, state "Verified:" explicitly in response.
+**Rule:** No recommendation goes out without explicit validation of all factual claims it depends on. Pricing especially — re-verify in the current session, not from memory.
+
+### L101 — Recommendations made without checking current question relevance [critical/process]
+**Mistake:** Pass 28 recommended Pattern 2 custom agents (multi-week effort) when user had not asked for custom agent integration — they had asked about cost. Pass 31 recommended cost-optimized config but framed it as if the user was already using TradingAgents (they were not — 772 lines of custom code that didn't import the framework). Each recommendation drifted from the actual question.
+**Why this matters:** Recommendations that don't address the actual question waste owner's time and energy reviewing them. They compound: each off-topic recommendation generates cascade decisions that also don't address the original need.
+**Fix:** New CHECKLIST item #27 — Relevance Check Before Every Recommendation. State the specific question, state how the recommendation addresses it, confirm assumptions match the current message.
+**Rule:** Recommendations must directly trace back to the owner's stated question. If they don't, ask before recommending.
+
+### L102 — Cost estimates given without counting actual LLM call multipliers [critical/cost]
+**Mistake:** Pass 26 said "6 agents × $0.02 per call." Reality: 11+ LLM nodes per propagate() because (a) Bull/Bear and Risk debaters are separate nodes, not bundled "agents," (b) each Analyst makes 2-4 LLM calls due to LangChain tool-use loops (initial → tool call → interpret → maybe retry), (c) Reflection node post-decision adds another call. Naive node counting misses tool loops. Real cost is 2-3x naive estimates.
+**Why this matters:** With $300 budget hardcap, 2-3x cost error = budget blown. Past project (L95) had identical pattern: estimate based on "candidates × agents × cost" without measuring actual tool-loop multipliers, ended up 5x over.
+**Fix:** Cost estimates for any LLM-orchestrator framework must include: (a) explicit count of LangChain/LangGraph nodes by reading setup.py, (b) tool-use loop multiplier (typically 2-4x per analyst node), (c) debate round multiplier, (d) verified pricing from current source.
+**Rule:** No LLM cost estimate is final until it explicitly accounts for tool-loop multipliers and debate rounds, with source-verified pricing.
+
+### L103 — Recommended frameworks/libraries without reading their source code [critical/architecture]
+**Mistake:** Pass 28 said TradingAgents Pattern 2 (custom agents extending theirs) was "best of both worlds." Pass 31 reading their actual code revealed Pattern 2 is much harder than claimed because their analysts use LangGraph tool nodes, not injected context. Recommendation was based on README skim, not source read.
+**Why this matters:** Architectural recommendations that cannot be implemented as described waste implementation time and create broken integrations. Same pattern that caused L44 (producer/consumer key mismatch — three audits read code but not enough of it).
+**Fix:** Before recommending integration with any external framework, clone the repo and read at least: (a) the main entry-point file, (b) the file containing the orchestration/setup code, (c) one example agent/component file. Confirm the integration pattern is actually supported.
+**Rule:** No "fork existing library" recommendation without reading the library's actual source structure first. README skim is insufficient.
+
+### L104 — Past project mistakes (Sonnet development) must inform Path B validation [critical/process]
+**Mistake (about to repeat unless prevented):** The Sonnet-driven development of this project produced 203 bugs because Claude built without validating assumptions and tested only by reading. User explicitly named this risk: "I do not want to make the same mistakes again."
+**Why this matters:** Path B (GPT-5.4-mini, ~1,800 candidates, $300) was recommended quickly. It needs the same validation discipline being added in CHECKLIST 26-28 BEFORE it becomes a final decision.
+**Fix:** Validate every assumption in Path B explicitly: pricing source-verified, sample size statistically defensible, framework integration pattern confirmed by code reading, success criteria defined upfront, kill switches in place per CHECKLIST 22 (cost estimate) and 23 (small batch).
+**Rule:** Major path decisions must pass Assumption Validation (CHECKLIST 26) and Relevance Check (CHECKLIST 27) before being locked in. The recommendation is not final until validation is shown.

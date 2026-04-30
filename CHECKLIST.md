@@ -89,3 +89,28 @@ State compliance visibly: "Checklist: ✅ [each item]"
     d. If Claude disagrees with an approved decision, Claude states the disagreement once clearly, then implements the owner's decision if instructed.
     e. Silence is NOT agreement. If Claude has a concern, it must be voiced.
     NEVER execute something Claude believes is wrong without first stating the concern explicitly.
+
+26. ASSUMPTION VALIDATION BEFORE EVERY RECOMMENDATION — no exceptions:
+    a. List every factual claim the recommendation depends on (pricing, capabilities, library state, code structure, data availability)
+    b. For each claim, identify the source (search result, file read, code grep, prior knowledge)
+    c. If source is "prior knowledge" or "I think" — verify via web_search, file read, or code execution before recommending
+    d. State explicitly in the response: "Verified: [list of items checked]" so the owner can see what was validated
+    e. If a claim cannot be verified, flag it as ASSUMPTION and ask the owner to validate before proceeding
+    f. Re-verify pricing and capability claims separately for every recommendation — they change frequently
+    NEVER recommend based on stale memory. Re-verify in the current session.
+
+27. RELEVANCE CHECK BEFORE EVERY RECOMMENDATION — no exceptions:
+    a. State the specific question or problem being solved
+    b. State explicitly how the recommendation addresses that problem
+    c. Identify what assumptions about user goals/constraints/budget the recommendation depends on
+    d. Confirm those assumptions match the current message AND the project state (CHECKLIST, AUDIT, PROJECT_PLAN)
+    e. If a recommendation requires an assumption not yet stated by the owner, ask before recommending — don't infer
+    NEVER recommend a solution to a problem the owner didn't ask about. Stay on the actual question.
+
+28. RETROACTIVE LEARNING APPLICATION — when mistakes are identified:
+    a. Add the mistake to LEARNINGS.md with format: L{N} — title [category]
+    b. Add the corresponding rule to CHECKLIST.md if it's a recurring failure mode
+    c. Re-audit the current conversation for any other instances of the same mistake
+    d. Surface those instances explicitly to the owner — do not let them slide
+    e. Update related decisions in AUDIT.md if the mistake invalidates a prior recommendation
+    NEVER let a mistake stay localized. Apply the lesson everywhere it applies.
