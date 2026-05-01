@@ -21954,3 +21954,84 @@ DEC-069's narrow scope (per-strategy × per-regime exit selection) is subsumed b
 | 35-themes-remaining | various | pending |
 
 *Theme 8 is unique — it's not a pre-existing batch but a system-design decision elevated from Theme 7 reframing. Per L134/CHECKLIST #55, this is the right architectural treatment. Per CHECKLIST #43 (prior-art verified — DEC-068/069/080/082/083/085/110/388/410/411/417 cross-referenced); #45 (compliance statement); #46 (three-source check); #47 (full-text grep); #48 (sub-decisions formally logged); #49+#50 (CAV-062 cross-referenced inline); #51 (explicit "Approve all"); #52 (advancement parsed); #53 (grounded format applied including hold-duration correction); #54 (test signals specified for DEC-422 + sub-decisions); #55-NEW (phase scope check codified retroactive to DEC-068/069 framing pattern).*
+
+---
+
+## AUDIT PASS 52 — DEC-422 schema correction (Option A inline edit) per owner directive
+
+**Trigger:** Owner Pass 52 verbatim: "Per-cell output schema - Shouldnt it enclude risk:reward ratio and ROI as key eval criteria too?????"
+Followed by 4 explicit approvals: Option A inline / schema as proposed / FAIL_RR confirmed / test signal updates yes.
+
+### What was wrong
+
+My DEC-422 per-cell output schema (logged in commit 7909891c) listed:
+`sharpe / sortino / win_rate / n_trades / statistical_confidence / bonferroni_p / psr / fallback_used`
+
+**Missing critical metrics that are ALREADY computed in `metrics.py`:**
+- `roi_pct` (sum of pnl_pct — first-order outcome metric)
+- `reward_risk_ratio` = `|avg_win / avg_loss|` (DEC-353 HARD CONSTRAINT: 2R minimum)
+- `profit_factor` = `gross_wins / gross_losses`
+- `expectancy` = `(win_rate × avg_win) + ((1-win_rate) × avg_loss)`
+- `max_drawdown`, `calmar`, `avg_win`, `avg_loss`
+- `max_adverse_excursion_avg`, `max_favourable_excursion_avg` (already tracked in OpenTrade)
+- `roi_after_costs`, `sharpe_at_5bps/10bps/20bps` (per DEC-081 Phase C just approved)
+- `t_stat`, `ci_95`
+
+### Root cause analysis
+
+Same L132 root pattern: industry-textbook framing rather than grep-existing-infrastructure-first. `metrics.py` already had all the missing metrics for per-strategy output; I should have copied that schema forward as the starting point for per-cell output, then added new fields. Instead I drafted from scratch.
+
+**This is the 6th consecutive lapse in DEC-422 framework drafting** (turns 1-6 documented in last response). Each catch was a grep-able verification I should have run before recommending. Owner has been the catch mechanism in every case.
+
+### Correction (Option A inline edit per owner approval)
+
+DEC-422 entry in AUDIT_INDEX.md updated inline with full corrected schema:
+
+**Performance:** roi_pct, sharpe, sortino
+**R:R + trade quality:** reward_risk_ratio, rr_compliance (boolean per DEC-353), profit_factor, expectancy
+**Sample:** win_rate, n_trades, avg_win, avg_loss, avg_hold_days (outcome diagnostic, not slicing input)
+**Drawdown/capacity:** max_drawdown, calmar, max_adverse_excursion_avg, max_favourable_excursion_avg
+**Cost-adjusted:** roi_after_costs, sharpe_at_5bps/10bps/20bps (per DEC-081 Phase C)
+**Statistical confidence:** bonferroni_p, psr (per DEC-110), t_stat, ci_95
+**Fallback metadata:** fallback_used, fallback_reason
+**Pair verdict (5 states):** PASS | FAIL_RR | FAIL_CONFIDENCE | FAIL_DRAWDOWN | INSUFFICIENT_SAMPLE
+
+### NEW: FAIL_RR hard rejection (per DEC-353 enforcement)
+
+**Statistical gates per cell expanded from 4 to 5:**
+1. n_trades ≥ 30
+2. Bonferroni-corrected p < 0.05
+3. PSR ≥ 0.95
+4. t-stat ≥ 3.4
+5. **R:R ≥ 2.0 (DEC-353 hard constraint) — NEW**
+
+A cell with measured R:R < 2.0 is HARD-REJECTED regardless of Sharpe, statistical significance, or any other metric. Live system query for that state vector returns fallback to broader cell or "no valid pair found." This enforces DEC-353 RESOLVED at the schema/output level — not just at exit-method-design level.
+
+### DEC-426 updated
+
+DEC-426 (Phase 2 per-cell statistical engine) implementation updated to:
+- Compute full metrics suite per corrected schema
+- Apply 5-gate validity filter (was 4-gate; now includes R:R ≥ 2.0)
+- Tag pair_verdict with 5 states (was 4 confidence levels)
+
+### Test signals updated
+
+Per CHECKLIST #54 mandatory:
+- Test run produces non-empty cube
+- At least one cell flagged INSUFFICIENT_SAMPLE
+- At least one cell with VALID confidence (PASS verdict)
+- At least one cell flagged FAIL_RR (verifies hard reject mechanism wired)
+- roi_pct + reward_risk_ratio + profit_factor + max_drawdown all populate non-zero across cells (verifies metric pipeline wired)
+- sharpe_at_5bps differs from sharpe_at_0bps (verifies cost sensitivity wired)
+
+### Commit scope
+
+Inline edits only:
+- DEC-422 entry in AUDIT_INDEX.md (schema + FAIL_RR + test signals)
+- DEC-426 entry in AUDIT_INDEX.md (5-gate filter + 5-state verdict + full metrics suite)
+
+No new decisions. No CAV updates. No process discipline changes. This is purely the schema-correction commit owner directed via Option A.
+
+### Pending count: 329 (unchanged — correction only, no new decisions)
+
+*DEC-422 schema correction (Option A inline) per owner directive. 6th DEC-422 drafting lapse documented honestly. Per CHECKLIST #43 (prior-art verified — `metrics.py` schema + DEC-353 RESOLVED + DEC-081 Phase C + DEC-110); #45 (compliance statement); #46 (three-source check applied); #47 (full-text grep applied to metrics.py); #51 (explicit owner approvals on all 4 sub-questions); #53 (grounded format with explicit grep evidence); #54 (test signals updated for 5-gate verdict); #55 (system-design-level decision; correction is also system-design-level → inline edit per Option A keeps the architectural framing visible in the same entry).*
