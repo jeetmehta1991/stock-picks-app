@@ -368,6 +368,7 @@
 | **DECISION-346** | Multidimensional categorical verdict matrix — supersedes single-dimension regime verdict | PENDING | Batch X52 — Round 1 Methodology Gaps | Pass 52 | - |
 | **DECISION-347** | Lagging-indicator dominance — add leading-style signals + regime-condition the lagging ones (1+3 combination) | PENDING | Batch X52 — Round 1 Methodology Gaps | Pass 52 | - |
 | **DECISION-348** | Event-calendar suppression — FOMC / earnings / CPI date-aware signal gating | PENDING | Batch X52 — Round 1 Methodology Gaps | Pass 52 | - |
+| **DECISION-349** | Asymmetric event window — `is_near_high_impact_event` should use pre_days=1, post_days=2-3 instead of symmetric window_days=2 (per microstructure event-volatility research) | PENDING | Batch X52 — Round 1 Methodology Gaps | Pass 52 | - |
 
 ---
 

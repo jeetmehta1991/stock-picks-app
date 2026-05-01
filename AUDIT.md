@@ -20542,3 +20542,67 @@ Let me recount precisely:
 **~13,000 of 13,251 LOC adversarially audited.** Remaining ~250 LOC scattered across small utility files + GitHub Actions workflows. Substantially complete.
 
 *BUG-281, 282, 283, 284 logged. BUG-204 + DEC-217 confirmed via prior-art. Adversarial audit Pass 52 Stage 5.5 substantially complete: 15 new bugs surfaced via runtime probes; 10 existing bugs/decisions verified via prior-art grep. Total adversarial findings this session: 25.*
+
+---
+
+## AUDIT PASS 52 — Stage 6 (multi-timeframe + microstructure synthesis)
+
+**Date:** April 30, 2026
+**Trigger:** Owner Q3 = "do it now" (Pass 52)
+**Output:** `/mnt/user-data/outputs/RESEARCH_STAGE6_MULTITIMEFRAME_MICROSTRUCTURE.md` (full deliverable)
+
+**Stage 6 yield:** This is a synthesis stage. Identified 0 NEW bugs (microstructure issues already in audit), 1 NEW decision (DEC-349), 9 forward-links to existing audit items. This is the appropriate yield — the audit catalog is mature.
+
+### DEC-349 — Asymmetric event window for `is_near_high_impact_event` — PENDING
+
+**File:** `backtest/data/macro.py` line 404 (function `is_near_high_impact_event`)
+
+**Current behavior:** `is_near_high_impact_event(as_of, window_days=2)` uses a symmetric 2-day window — flags events 2 days before AND 2 days after `as_of`.
+
+**Microstructure literature consensus (Stage 6 research, multiple 2024-2026 sources):** Event-driven volatility is asymmetric. Pre-event volatility is implied (option-premium build-up, position de-risking, typically 1 day before). Post-event volatility is realized (the actual reaction, persisting 1-3 trading days after).
+
+**Asymmetric window is more empirically accurate:**
+- pre_days=1 (positions de-risk overnight before event)
+- post_days=2-3 (reaction volatility persists)
+
+**Proposed resolution:**
+```python
+def is_near_high_impact_event(as_of: date, pre_days: int = 1, post_days: int = 3) -> dict:
+    # ... event check with asymmetric window ...
+```
+Maintain backward compatibility by accepting `window_days` as a deprecated alias that sets pre_days=post_days.
+
+**Severity:** LOW-MEDIUM. Not a code crash — a tuning improvement based on empirical microstructure. Resolution unblocks DEC-348 (event-calendar suppression) by giving strategies a more accurate "near event" signal.
+
+**Forward-links:**
+- DEC-348 (event-calendar suppression — pending) — DEC-349 refines the underlying primitive that DEC-348 will consume
+- Microstructure literature: Risky Intraday Order Flow (May 2025), Bookmap microstructure changes (Oct 2025)
+
+**Industry-standards grounding (per CHECKLIST #37):** Empirical microstructure research from 2024-2025 academic sources + practitioner consensus. Asymmetric event windows are standard in event-study methodology (Brown & Warner 1985 baseline; modern intraday extensions in Anantha et al. 2024 Hawkes-process forecasting).
+
+### Stage 6 affirmations (no relitigation)
+
+1. DEC-045 + DEC-345 retained — Stage 6 industry-research confirms Option 2 (weekly-HTF + daily-trigger) is internally coherent and aligns with retail consensus given the project's intraday-out-of-scope rule.
+2. Daily-bar scope discipline affirmed — algorithmic-dominance research (40-71% of volume per surveyed sources) reinforces that retail edge lives in timeframe arbitrage (days, not milliseconds).
+3. 7 existing microstructure-related items already in audit (BUG-232, BUG-233, BUG-234, DEC-313, DEC-314, DEC-337, DEC-079) — Stage 6 confirms these are the right set; no additions needed.
+
+### Stage 6 forward-link bundle for focused-batch resolution session
+
+Recommended resolution sequencing for the upcoming focused-batch session:
+1. **Cache layer multi-interval extension** (~50-100 LOC, precondition for everything else)
+2. **DEC-345-A/B/C/D batch** (HTF zone types, alignment rule, refresh cadence, liquidity primitives)
+3. **DEC-348 + DEC-349 paired** (event suppression + asymmetric window)
+4. **BUG-232/DEC-313/DEC-337 joint** (intraday HIGH for trailing stop)
+5. **BUG-233/DEC-314 joint** (circuit breakers L3+4)
+6. **BUG-234** (VIX MA smoothing)
+7. **DEC-079** (Level 2 earnings gap, paired with DEC-348)
+
+### Stage 6 honest limits
+
+What Stage 6 did NOT produce, and intentionally so:
+- No new strategy class proposals (existing universe + DEC-345 implementation covers it)
+- No OFI / LOB / tick-data infrastructure recommendations (out of scope per project rule)
+- No re-questioning of daily-bar choice (affirmed)
+- No long bug list (catalog mature; 0 new bugs is correct yield for synthesis stage)
+
+*DEC-349 logged Pass 52 per CHECKLIST #43 (prior-art verified — no overlap with existing window-days handling) + #37 (industry-standards grounding — empirical microstructure research). Per owner standing approval Pass 52. Stage 6 deliverable in /mnt/user-data/outputs.*
