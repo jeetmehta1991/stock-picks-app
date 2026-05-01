@@ -289,3 +289,21 @@ State compliance visibly: "Checklist: ✅ [each item]"
     e. Refines CHECKLIST #40 (project-prior-art grep) to explicitly include both decision IDs
        and bug IDs in search.
     NEVER propose a new decision/bug without searching both DEC and BUG entries for the topic.
+
+43. OWNER ASKING "ALREADY IN AUDIT?" = MANDATORY FULL SEARCH FIRST:
+    a. Trigger phrases: "is it already audited", "already flagged", "already tracked",
+       "is it part of audit", "have we covered this", "is this in the plan"
+    b. STOP all drafting on detection. Do NOT continue with proposal.
+    c. Run prior-art search across ALL documents:
+       - grep AUDIT_INDEX.md (DEC and BUG entries)
+       - grep AUDIT.md (full text for related context)
+       - grep LEARNINGS.md (relevant L-numbers)
+       - grep CHECKLIST.md (existing rules)
+       - grep PROJECT_PLAN.md (planning context)
+    d. Show owner the prior art that exists with specific IDs and one-line summaries
+    e. THEN ask: "this is covered by [X, Y, Z] — should I (a) surface them with new context,
+       (b) add a forward-link note, or (c) propose something genuinely new not covered?"
+    f. Past mistake: Pass 52 — three times in single session proposed new entries for
+       topics already extensively in audit. L122 captures the pattern. 43 fixes the
+       mechanical trigger.
+    NEVER skip the full-document search when owner uses these trigger phrases.

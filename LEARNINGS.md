@@ -539,3 +539,9 @@ Each of these is a separate concern that the standard remote-sync check does not
 - `grep "DECISION-" AUDIT_INDEX.md | grep -i "<keyword>"`  
 - `grep "BUG-" AUDIT_INDEX.md | grep -i "<keyword>"`
 Both required. Refines #40.
+
+### L122 — When asked "is X already in audit," check audit BEFORE proposing X [critical/process]
+**Mistake (Pass 52, third occurrence in single session):** Owner asked about testing/batch discipline. Three relevant decisions (DEC-098, DEC-221, DEC-222, DEC-265) and CHECKLIST #29 (STOP-EARLY-ON-BUDGET) plus L86/L95/L102 all extensively cover the topic. I should have surfaced these first instead of treating it as a new question. Pattern repeats from earlier same-session: DEC-346 categorical (overlap with DEC-066/100), DEC-349 endpoint inventory (overlap with BUG-190/191).
+**Why this matters:** Owner has been reminding me to refer to audit each time. Each repetition wastes attention and erodes trust in claude-side discipline. The audit is the source of truth; my proposing things that are already there means I'm reading the audit shallowly.
+**Fix:** When owner's prompt contains words like "is it already audited," "already flagged," "have we tracked this," — STOP. Do NOT continue drafting. Run grep on AUDIT_INDEX, AUDIT.md, LEARNINGS.md, CHECKLIST.md for the topic FIRST. Show owner the prior art that exists. THEN respond.
+**Rule:** Owner phrasing "is X in audit / already flagged / already tracked" = mandatory full-search first. No proposal until search completes. Refines L121 (which only added BUG search) — this adds the discipline of recognizing the trigger phrase.
