@@ -1027,6 +1027,10 @@
 | **BUG-278** | yield_curve_regime() doesn't use macro_combined.parquet cache; live-fetches FRED only | MEDIUM | OPEN | Pass 52 |
 | **BUG-279** | get_ohlcv() with reversed date order silently returns 0 rows; no error to caller | MEDIUM | OPEN | Pass 52 |
 | **BUG-280** | days_to_next_earnings() returns None silently when yfinance live blocked; caller may misread as "no earnings concern" | LOW | OPEN | Pass 52 |
+| **BUG-281** | site_generator._assign_tier duplicates engine._assign_confidence_tier — two places to keep in sync, drift-prone | MEDIUM | OPEN | Pass 52 |
+| **BUG-282** | site_generator.build_entry_zone ignores `category` parameter — trend and reversal produce identical output | LOW | OPEN | Pass 52 |
+| **BUG-283** | site_generator.build_position_sizing returns 0% silently for unknown tier — no error/warning on invalid input | LOW | OPEN | Pass 52 |
+| **BUG-284** | prefetch_quiver DATE_FIELDS gov_contracts="Date" but cache schema has Qtr+Year only — date filter silently skipped | MEDIUM | OPEN | Pass 52 |
 | **BUG-001** | `crisis_flag` used before definition → NameError crash | UNKNOWN | OPEN | - |
 | **BUG-002** | `days` variable used before definition → UnboundLocalError on every trade close | UNKNOWN | OPEN | - |
 | **BUG-003** | `ClosedTrade` dataclass defined twice — dead code, maintenance risk | UNKNOWN | OPEN | - |
