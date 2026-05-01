@@ -611,3 +611,28 @@ A gap is real if any of: (a) audit logs it as gap, (b) PROJECT_PLAN specifies it
 A finding only counts as "no prior art" when ALL FOUR sources confirm absence. INDEX is necessary but not sufficient.
 
 **Pair:** L126 + CHECKLIST #47.
+
+## L127 (Pass 52) — Enumerating in prose ≠ logging as decision (owner directive)
+
+**Trigger:** Owner Pass 52 — caught me with: "I want each and every price action strategy to be tested!!!!!!!!! CRITICAL AND MOST IMPORTANT REQUIREMENT!" after I had listed 7 chart pattern classes in Pass 52 prose during Stage 6 / strategy-coverage discussion but never converted them into logged decisions. Owner had to ask the direct question to surface the gap.
+
+**Why this matters:** Audit reports, deliverables, and chat responses are different artifacts than the audit catalog. Information in deliverable prose is owner-readable but NOT decision-tracked. Future passes can search AUDIT_INDEX/AUDIT.md for "what's logged" and miss anything that lived only in prose. The catalog is authoritative; the prose is communication.
+
+**Pattern of failure:** During Pass 52 specifically, three lapses:
+1. Stage 5.5 initial bug candidates drafted before prior-art grep (caught by CHECKLIST #43)
+2. AUDIT_RESOLVED.md file proposal made before conversation_search of prior sessions (caught by CHECKLIST #43 extension)
+3. **Chart pattern enumeration listed in prose but not logged as decisions (caught only by direct owner pushback)**
+
+The common root: I treat "I mentioned it" as equivalent to "it's in the audit." It's not.
+
+**Rule (CHECKLIST #48):** Any time a response contains a list of:
+- "things to do" / "gaps" / "patterns to add" / "questions to consider" / "items remaining"
+
+The same response must convert each enumerated item into one of:
+- A logged decision (DEC-N PENDING) in AUDIT_INDEX + substantive section in AUDIT.md
+- A logged bug (BUG-N OPEN) similarly
+- An explicit deferral with reasoning ("not logging because [reason]") — and even then, the deferral itself should be discoverable
+
+**Pair:** L127 + CHECKLIST #48. Per owner standing exception for process-discipline files.
+
+**Past reference:** This is L121-L126 family — all about "log things properly." L127 closes a specific recurrence pattern (prose-to-decision conversion).

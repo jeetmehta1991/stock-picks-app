@@ -20918,3 +20918,177 @@ Approve the following housekeeping:
 5. **Add L126 + CHECKLIST #47** for full-AUDIT-text prior-art grep
 
 *Honest correction logged. 3 of 5 newly-logged decisions either close or reframe. Pattern of CHECKLIST #43 lapse identified for systemic fix via L126/CHECKLIST #47.*
+
+---
+
+## AUDIT PASS 52 — Owner-elevated CRITICAL: chart pattern strategies (DEC-354 reopened, DEC-355 through DEC-362 logged)
+
+**Trigger:** Owner Pass 52 verbatim: "Have these been added in pending decisions? to be covered (additional gaps Stage 6 didn't surface but this question prompts): Trendline break + retest, Channel breakouts + retest, Range breakouts + retest, Wedge / triangle / pennant breakouts (continuation patterns), Head & shoulders / double top / double bottom (reversal patterns), Cup & handle, Flag / pennant continuation. I want each and every price action strategy to be tested!!!!!!!!! CRITICAL AND MOST IMPORTANT REQUIREMENT!"
+
+### Lapse acknowledgment
+
+**My prior lapse:** I listed those 7 pattern classes in Pass 52 prose during Stage 6 / strategy-coverage discussion but **did not log them as decisions**. Owner asked the direct question and caught the gap. Per CHECKLIST #43, when I surface gaps in prose I am supposed to log them; I didn't.
+
+**Compounding lapse:** When I logged DEC-354 (chart patterns umbrella), I then merged it into DEC-099 ("11 missing strategy categories"). DEC-099's actual scope (Pairs/Calendar/Cross-Asset/Index Rebalance — category-level) does NOT enumerate chart patterns (within-category strategies). **The merge was loose — different scope buckets.** I'm reversing that merge now.
+
+### Verification per CHECKLIST #46 (three-source check)
+
+**Code grep (screener.py + technical.py):**
+- trendline: 0 hits
+- price-action channel (vs Keltner volatility band): 0 hits
+- multi-day range breakout (vs inside_bar 1-bar): 0 hits
+- wedge: 0 hits
+- triangle (vs symmetric/ascending/descending detection): 0 hits
+- pennant: 0 hits
+- head & shoulders / inverse: 0 hits
+- double top / double bottom: 0 hits
+- cup & handle: 0 hits
+- flag continuation: 0 hits (existing "flag" hits are unrelated variable names)
+
+**PROJECT_PLAN grep:** None of these patterns appear in PROJECT_PLAN.md or PROJECT_PLAN_ARCHIVE.md. **Out of original 60-strategy scope.**
+
+**AUDIT.md full-text grep (per L126/CHECKLIST #47):** Patterns appear in 4-5 locations as discussion mentions or recommendations, but NEVER as logged decisions. The closest is line 6249 — a Pass-X recommendation list ("Identify chart patterns (head & shoulders, cup & handle, flags, pennants) — currently we have only 6 candlestick patterns") — but this was never converted to a logged decision.
+
+**Conclusion:** All 8 pattern classes (the 7 owner listed + retest as cross-cutting) are genuinely new scope expansions. Not in code, not in PROJECT_PLAN, not in audit as decisions.
+
+### DEC-354 REOPENED Pass 52 — Chart pattern strategies umbrella (PENDING)
+
+Reverted from SUPERSEDED to PENDING. Scope: parent/umbrella for DEC-355 through DEC-362. The merge into DEC-099 was incorrect; DEC-099 stays scoped to category-level missing strategies (Pairs, Calendar, Cross-Asset, Index Rebalance), and DEC-354 stays scoped to within-category chart-pattern strategies.
+
+### Eight individual chart-pattern strategy decisions (PENDING)
+
+Each is its own decision because **owner directive: "I want each and every price action strategy to be tested"** — which means each must be testable independently with its own backtest verdict, not bundled.
+
+#### DEC-355 PENDING — Trendline break + retest
+
+**Definition:** Trendline = line connecting 3+ swing highs (descending) or 3+ swing lows (ascending). Entry on break of trendline + retest (price returns to broken trendline as new S/R).
+
+**Long variant:** Descending trendline broken upward → price retests broken trendline from above → bounces → entry on bounce confirmation.
+
+**Short variant:** Ascending trendline broken downward → price retests from below → rejection → entry on rejection.
+
+**Implementation primitives needed:**
+- Swing high/low detector (likely fork from smartmoneyconcepts.smc.swing_highs_lows)
+- Linear regression / line-fit on 3+ points
+- Break detection (close beyond trendline by N×ATR)
+- Retest detection (price returns within M×ATR of trendline within K bars after break)
+
+**Forward-link:** BUG-111 retest variant; smartmoneyconcepts library candidate per DEC-045
+
+#### DEC-356 PENDING — Channel breakout + retest
+
+**Definition:** Parallel channel = two parallel trendlines (upper resistance + lower support, both with same slope). Three sub-types: ascending channel (rising parallel), descending channel (falling parallel), horizontal channel (sideways).
+
+**Distinct from existing Keltner Channel** (volatility band, ATR-based, already in compute_keltner). This is **price-action channel** from swing-high/swing-low detection.
+
+**Long variant:** Channel boundary broken upward → retest of broken upper boundary → bounce → entry.
+
+**Short variant:** Lower boundary broken downward → retest → entry.
+
+**Forward-link:** DEC-355 (shares trendline primitives); BUG-111 retest
+
+#### DEC-357 PENDING — Range breakout + retest
+
+**Definition:** Horizontal range / consolidation = price oscillating between fixed support and resistance for N+ bars (N typically 10-30). Range tightness threshold = max(high) - min(low) ≤ X×ATR.
+
+**Distinct from `inside_bar_breakout`** (1-bar inside another) — this is **multi-day** range.
+
+**Long variant:** Break above range high + retest of broken high as new support → entry.
+
+**Short variant:** Break below range low + retest as new resistance → entry.
+
+**Forward-link:** smartmoneyconcepts.smc.liquidity for range high/low identification per DEC-345-D
+
+#### DEC-358 PENDING — Wedge / triangle / pennant breakouts (continuation)
+
+**Definition:** Three converging-line patterns:
+- **Rising wedge:** both lines slope up but converge (bearish — usually breaks down)
+- **Falling wedge:** both lines slope down but converge (bullish — usually breaks up)
+- **Symmetric triangle:** upper line slopes down, lower slopes up (continuation in prior trend direction)
+- **Ascending triangle:** flat upper, rising lower (bullish continuation)
+- **Descending triangle:** descending upper, flat lower (bearish continuation)
+- **Bullish pennant:** small symmetric triangle after sharp upmove
+- **Bearish pennant:** mirror after sharp downmove
+
+**Implementation:** Each of these 7 sub-patterns may be a sub-strategy. Owner directive "each and every" suggests they SHOULD be individually testable.
+
+**Honest scoping note:** DEC-358 may need to split into 7 child decisions (DEC-358-A through DEC-358-G) when implementation is approached. Logging now as umbrella to avoid further duplication; will split when owner approves resolution.
+
+**Forward-link:** All require break + retest entry per BUG-111 elevation
+
+#### DEC-359 PENDING — Head & shoulders / inverse head & shoulders (reversal)
+
+**Definition:** Three-peak/three-trough patterns marking trend reversal.
+- **H&S top (bearish):** Three peaks; middle (head) higher than the two shoulders. Neckline = line through the two intermediate troughs. Break of neckline = bearish entry signal.
+- **Inverse H&S (bullish):** Mirror — three troughs; middle (head) lower than two shoulders. Neckline through two intermediate peaks. Break upward = bullish entry.
+
+**Measured-move target:** Distance from head to neckline projected from neckline = price target.
+
+**Entry:** Neckline break + retest of broken neckline as new S/R.
+
+**Forward-link:** smartmoneyconcepts.smc.swing_highs_lows for peak detection; BUG-111 retest
+
+#### DEC-360 PENDING — Double top / double bottom (reversal)
+
+**Definition:** Two-peak/two-trough patterns.
+- **Double top (bearish):** Two peaks within ~3% of each other, separated by ≥N bars (typically 10-20). Neckline = trough between them. Break below neckline = entry.
+- **Double bottom (bullish):** Mirror.
+
+**Tolerance parameters:**
+- Peak/trough proximity: ≤3% of price
+- Minimum bars between: 10
+- Maximum bars between: 60 (else pattern degrades into range)
+
+**Entry:** Neckline break + retest.
+
+**Forward-link:** Shared primitives with DEC-359; BUG-111 retest
+
+#### DEC-361 PENDING — Cup & handle / inverted cup & handle
+
+**Definition:**
+- **Cup & handle (bullish):** U-shaped base (cup) over 7+ weeks → small downward drift / consolidation (handle) typically 1-4 weeks → breakout above handle resistance.
+- **Inverted (bearish):** Inverted-U top → small upward consolidation handle → breakdown below handle support.
+
+**Entry:** Handle resistance broken + retest of broken handle as new support → entry.
+
+**Implementation:** Cup detection requires depth/duration/symmetry constraints. William O'Neil canonical specs: cup depth 12-33%, duration 7-65 weeks, handle ≤12% from rim.
+
+**Forward-link:** Likely needs custom implementation; smartmoneyconcepts doesn't cover; BUG-111 retest
+
+#### DEC-362 PENDING — Flag / pennant continuation (mirror of pennant in DEC-358)
+
+**Definition:**
+- **Bull flag:** After sharp upmove (the "pole"), tight downward-sloping parallel-channel consolidation (the "flag") for 5-15 bars → breakout up + retest of breakout level.
+- **Bear flag:** Mirror.
+
+**Distinct from pennant in DEC-358:** Flag is parallel-channel sloping against prior trend; pennant is symmetric-triangle converging. Both are "after-pole" continuation patterns but different geometry.
+
+**Forward-link:** Shares pole-detection primitive; BUG-111 retest; channel detection from DEC-356
+
+### BUG-111 severity HIGH → CRITICAL (further upgrade Pass 52)
+
+Owner directive verbatim: "CRITICAL AND MOST IMPORTANT REQUIREMENT!"
+
+Severity escalated again — retest is **cross-cutting requirement** for all 8 chart pattern decisions AND for the existing breakout strategies in screener.py categories Breakout (6) + Pivot Based (10) + Confluence (9). That's potentially 25 existing strategies that should have retest variants added, PLUS the 8 new pattern classes.
+
+Implementation note: BUG-111 resolution becomes either (a) a single shared "retest" entry-signal primitive that any breakout strategy can opt into, or (b) explicit `_retest` suffixed variant for each breakout strategy. Owner direction needed at resolution time.
+
+### Dependency mapping update
+
+Adding to TRIAGE in batch 3:
+- DEC-355-362 all blocked by: DEC-345 implementation (smartmoneyconcepts integration provides swing_highs_lows + liquidity primitives), BUG-111 (retest entry-signal primitive shared)
+- DEC-355-362 all joint with: DEC-354 (parent umbrella) and BUG-111 (retest cross-cutting)
+- DEC-355-362 share primitive: swing high/low detection — **do this once, share across all 8**
+
+### Process learning — third L126 / CHECKLIST #47 application
+
+This is the third Pass 52 lapse where I had information in prose but didn't log it as a decision:
+1. Stage 5.5 initial 5 candidates (3 turned out duplicates)
+2. AUDIT_RESOLVED.md proposal (already addressed)
+3. **This one — DEC-355-362 enumerated in Pass 52 prose but never logged**
+
+Pattern: I write recommendations in deliverables, then forget to convert to formal decisions. Per CHECKLIST #47, prior-art grep on AUDIT.md full text catches some of this, but doesn't catch "I mentioned it but never logged it."
+
+**Adding L127 + CHECKLIST #48:** Any time my Pass-N prose enumerates "things to do" or "gaps" or "patterns to add" or "questions to consider" — the same response must convert each enumerated item into a logged decision/bug entry, OR explicitly note it as deferred. Owner-readable list != audit-tracked decision. Two distinct artifacts; both need to exist.
+
+*DEC-354 reopened from SUPERSEDED to PENDING (parent umbrella). DEC-355 through DEC-362 logged as 8 individual chart-pattern strategy decisions per owner directive "each and every price action strategy to be tested." BUG-111 escalated HIGH → CRITICAL. Per CHECKLIST #43 + #46 + #47 + new L127/CHECKLIST #48.*

@@ -363,3 +363,14 @@ State compliance visibly: "Checklist: ✅ [each item]"
     extend grep targets in #43 to include AUDIT.md full text. Specifically search inline
     bug entries (BUG-NNN format with INLINE-ONLY status in INDEX requires full-text dive
     into AUDIT.md to read the actual entry).
+
+48. **Enumerating in prose ≠ logging as decision (Pass 52 owner directive):**
+    Per L127. Any response containing a list of "things to do / gaps / patterns
+    to add / questions to consider / items remaining" — the same response must
+    convert each enumerated item into one of:
+    a. A logged decision (DEC-N PENDING) in AUDIT_INDEX + substantive section in AUDIT.md
+    b. A logged bug (BUG-N OPEN) similarly
+    c. An explicit deferral with reasoning ("not logging because [reason]")
+    Past failures: Pass 52 had me list 7 chart pattern classes in prose with no
+    logging; owner had to directly ask before they were entered into the catalog.
+    Owner-readable prose != audit-tracked decision. Both must exist.
