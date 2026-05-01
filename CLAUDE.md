@@ -16,6 +16,7 @@
 - Point-in-time data enforcement is non-negotiable.
 - **Never use `git reset --hard` without running `git status` first. This has destroyed data twice (L49, L77).**
 - **Run CHECKLIST.md before every suggestion or execution.**
+- **MANDATORY (Pass 52): every response must end with a visible CHECKLIST compliance statement enumerating which items applied and were satisfied. No exceptions. If checklist was not consulted before responding, the response itself is non-compliant. Owner has authorized ending conversation if this rule is repeatedly violated.**
 - For every proposed change, always provide a recommendation with clear reasoning and tradeoffs before waiting for approval.
 - After every audit, validate by RUNNING CODE — not reading it.
 - Run `backtest/tests/test_integration.py` and `backtest/tests/test_unit.py` before every phase run and after every significant code change (36/36 must pass).

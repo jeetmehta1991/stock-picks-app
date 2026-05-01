@@ -556,3 +556,15 @@ Both required. Refines #40.
   4. Assert return is non-default
   5. If default returned: investigate schema/type/filter assumption mismatch
 **Rule:** Audit of data-consumption code is incomplete without runtime execution. 90 minutes of runtime-probe discipline (Stage 5.5) caught 5 bugs that 40+ read-audit passes missed.
+
+## L124 (Pass 52) — Mandatory per-response checklist compliance statement (owner-elevated rule)
+
+**Trigger:** Owner Pass 52 direction — "Make referring to checklist compulsory every time you respond. Add this mandatory requirement to claude md if not already present."
+
+**Why this matters:** Existing CLAUDE.md line "Run CHECKLIST.md before every suggestion or execution" was insufficient — it could be silently violated without the response itself being visibly non-compliant. Owner has had to remind multiple times to refer to checklist + audit. The fix elevates the rule to per-response visibility: every response must end with a compliance statement enumerating which items were satisfied. If absent, the response itself is non-compliant and easier to flag.
+
+**Rule (CLAUDE.md elevated, CHECKLIST #45 added):** Every response — full or partial — must end with a visible "CHECKLIST: ✅ compliance" block. Items not relevant to the turn can be omitted; items applied must be explicitly listed. Exception: pure tool-use turns with no user-facing prose still close with a compliance statement before yielding.
+
+**Past mistakes corrected:** Pass 52 itself had ~3 lapses where I drafted deliverables before running CHECKLIST #43 prior-art grep, requiring re-work. Per-response compliance statement makes the discipline visible-by-default.
+
+**Pair:** L124 + CHECKLIST #45. Owner has authorized strong action if the rule is repeatedly violated.

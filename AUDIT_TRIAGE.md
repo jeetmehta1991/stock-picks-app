@@ -513,3 +513,117 @@ This sequencing prevents fixing bugs in code that's about to be replaced.
 
 ---
 *Bug triage section added Pass 52 per owner direction. Initial coverage = top severity + Stage 5.5 surfaced bugs. Future passes should expand to systematically prioritize all 256 OPEN bugs.*
+---
+
+# DEPENDENCY MAPPING (added Pass 52 per owner direction)
+
+**Owner direction (Pass 52):** "Ensure dependencies are mapped in triage of decisions and triage of bugs."
+
+**Scope of this section:** STARTER PASS — maps dependencies for highest-impact decisions and bugs. Full mapping of all 252 pending decisions + 269 OPEN bugs requires a dedicated future pass. This section captures the dependencies most consequential for sequencing the focused-batch resolution session.
+
+**Notation:**
+- `A → B` means "A blocks B" (A must resolve before B can resolve cleanly)
+- `A ↔ B` means "joint resolution" (must resolve together; partial fix of one creates regression in the other)
+- `A | B` means "either-or" (one of these is sufficient; not both required)
+- `A ⊃ B` means "A subsumes B" (resolving A automatically resolves B)
+
+## Decision dependencies — top 20 by impact
+
+| Decision | Blocks | Blocked by | Joint with | Notes |
+|---|---|---|---|---|
+| **DEC-098** (test coverage gate) | DEC-221, DEC-222 | none | DEC-265 | Test infra precondition for all bug-fix verification |
+| **DEC-221** (pytest --cov + CI gate) | DEC-222 | DEC-098 | — | Measurement before requirement |
+| **DEC-222** (regression tests for top-20 bugs) | bug-fix verification | DEC-098, DEC-221 | DEC-265 | Would have caught BUG-005, 270-277 |
+| **DEC-265** (smoke test power analysis) | Phase 1B re-run | — | DEC-222 | Stage 5 forward-link — scope to include input validation |
+| **DEC-345** (ICT timeframe) | DEC-345-A/B/C/D, DEC-350 | none | DEC-045 | RESOLVED; opens implementation-detail decisions |
+| **DEC-345-A** (HTF zone types) | DEC-345 implementation | DEC-345 (resolved) | DEC-345-B, DEC-345-C, DEC-345-D | Single batch resolution recommended |
+| **DEC-345-D** (liquidity primitives) | strategy-level stop-sweep filter | DEC-345 (resolved) | — | smartmoneyconcepts.liquidity() |
+| **DEC-348** (event-cal strategy gating) | mean-reversion strategy correctness | DEC-304 (resolved Pass 50) | DEC-349 | Calendar exists; consumption is gap |
+| **DEC-349** (asymmetric event window) | DEC-348 | none | DEC-348 | Refines primitive that DEC-348 consumes |
+| **DEC-350** (multi-TF strategy testing) | strategy-TF optimization | cache layer multi-interval | DEC-345 implementation | Same cache precondition as DEC-345 |
+| **DEC-351** (anchored VWAP) | institutional-context strategies | none | DEC-352 | New primitive |
+| **DEC-352** (13F price-level mapping) | institutional-context strategies | BUG-186 (data) + BUG-274 (consumption) | DEC-351 | Requires BUG-186 + BUG-274 fixed first |
+| **DEC-353** (R/R ratio sweep) | exit method comparison v2 | none | — | Trivial code; resolves quickly |
+| **DEC-354** (chart pattern strategies) | strategy universe expansion | — | BUG-111 (retest) | Joint with retest variants |
+| **DEC-217** (dead code removal: engine.py) | code hygiene | — | BUG-204 | engine.py vs engine/backtest.py duplicate |
+| **DEC-308** (cache 20-day rejection) | possibly invalid | — | — | Pass 52 verification: prediction may be wrong; needs owner verify |
+| **DEC-073** (Quiver Smart Score) | Phase 1C smart-money primary signal | — | — | Verify before subscribing more APIs |
+| **DEC-035** (Canadian tax) | — | — | — | Owner-deferred PENDING |
+| **DEC-270** (Canadian tax pair) | — | — | — | Owner-deferred PENDING; pair with DEC-035 |
+| **DEC-191** (validation gate) | Phase 1B re-run + API subscriptions | — | BUG-191 | CRITICAL OPEN since Pass 18 |
+
+## Bug dependencies — Stage 5/5.5 cluster + cross-references
+
+| Bug | Blocks | Blocked by | Joint with | Notes |
+|---|---|---|---|---|
+| **BUG-005** (CRITICAL — strategies field mismatch) | All agent reasoning | none | BUG-276 | MUST fix jointly with BUG-276 (sortable cache key) |
+| **BUG-276** (HIGH — sorted on dicts) | Agent cache when strategies populate | BUG-005 (currently masks it) | BUG-005 | Crashes immediately when BUG-005 fixed |
+| **BUG-270** (HIGH — insider column mismatch) | insider_signal correctness | none | — | ~10-15 LOC fix |
+| **BUG-271** (HIGH — gov_contracts no Date) | gov_contracts signal | BUG-284 (prefetch side) | BUG-284 | Joint fix: build Date from Qtr+Year in prefetch |
+| **BUG-272** (HIGH — lobbying string concat) | lobbying signal | none | — | ~3 LOC fix |
+| **BUG-273** (HIGH — congressional Chamber/House) | congressional_signal correctness | none | — | ~3 LOC fix |
+| **BUG-274** (HIGH — institutional SharesChange) | institutional_signal correctness | BUG-186 (data side, 5-mo coverage + 29 empty) | DEC-352 | DEC-352 (price mapping) needs BUG-274 fixed |
+| **BUG-277** (HIGH — classify_regime fails) | regime classification | none | BUG-026, BUG-234 | Caller-chain trace needed for severity confirmation; if engine uses directly, severity → CRITICAL |
+| **BUG-278** (MEDIUM — yield_curve no cache) | macro snapshot in restricted-network | none | — | Standalone fix |
+| **BUG-279** (MEDIUM — get_ohlcv reverse-date) | input validation | none | — | Standalone fix |
+| **BUG-280** (LOW — earnings None silent) | Risk Agent earnings input | — | — | Defensive sentinel return |
+| **BUG-281** (MEDIUM — tier duplicate) | drift risk | — | DEC-217 | Same pattern as BUG-215 |
+| **BUG-282** (LOW — category ignored) | site_generator correctness | — | — | Standalone |
+| **BUG-283** (LOW — invalid tier silent) | site_generator robustness | — | — | Standalone |
+| **BUG-284** (MEDIUM — prefetch DATE_FIELDS) | prefetch correctness | none | BUG-271 | Joint fix recovers gov_contracts pipeline |
+| **BUG-185** (CRITICAL — wikipedia 100% empty) | — | none | — | OPEN since Pass 18; verify Quiver endpoint or remove |
+| **BUG-186** (HIGH — institutional 29 empty + 5-mo gap) | DEC-352, BUG-274 effective testing | none | — | OPEN since Pass 18; data-side, requires Quiver verification |
+| **BUG-053** + **BUG-181** (Finnhub empty) | news sentiment input | — | — | OPEN; verify endpoint or remove |
+| **BUG-072** (validator false-pass) | Phase 1B safety | none | DEC-265 | CRITICAL prerequisite for any agent re-run |
+| **BUG-191** (validation gate) | Phase 1B re-run, API subscriptions | none | BUG-072 | CRITICAL OPEN since Pass 18 |
+| **BUG-111** (retest variants missing) | strategy coverage | — | DEC-354 | Joint resolution with chart patterns |
+| **BUG-146** + **BUG-152** (Volume Profile) | institutional-context strategies | — | DEC-351 | Joint with anchored VWAP |
+| **BUG-232** (intraday HIGH for stops) | trailing stop correctness | — | DEC-313, DEC-337 | Joint resolution |
+| **BUG-233** (circuit breaker L3+4) | exit reason completeness | — | DEC-314 | Joint |
+| **BUG-204** (engine.py dead code) | code hygiene | — | DEC-217 | Joint |
+
+## Critical resolution sequence (entering focused-batch session)
+
+Per owner sequencing rule: "decisions first → eliminate non-applicable bugs → fix remainder."
+
+**Phase A: Test infrastructure decisions (unblocks safe bug-fix verification)**
+1. DEC-098 → DEC-221 → DEC-222 → DEC-265 (joint resolution)
+2. Outcome: regression-test framework in place; bug fixes can be verified
+
+**Phase B: Validation gate (CRITICAL prerequisites for Phase 1B re-run)**
+3. DEC-191 + BUG-191 + BUG-072 (joint)
+4. Outcome: validate_phase1b_data.py upgraded; pass-then-burn-money pattern fixed
+
+**Phase C: Cascade fix — smart-money pipeline**
+5. BUG-005 + BUG-276 (joint, ~5 lines)
+6. BUG-270, 271, 272, 273, 274 (~30 lines total)
+7. BUG-284 (joint with BUG-271; ~5 lines)
+8. BUG-277 caller-chain trace + fix
+9. Outcome: smart-money + regime classification working; tier distribution should shift from 93.7% LOW to balanced
+
+**Phase D: Strategy coverage decisions**
+10. DEC-345-A/B/C/D batch (HTF primitives)
+11. DEC-348 + DEC-349 paired (event suppression)
+12. DEC-350 (multi-TF strategy testing)
+13. DEC-351 + DEC-352 (anchored VWAP + 13F mapping; DEC-352 requires BUG-186/274 fixed first)
+14. DEC-353 (R/R sweep)
+15. DEC-354 + BUG-111 (chart patterns + retest variants)
+
+**Phase E: Hygiene + medium-severity**
+16. BUG-281, 282, 283 (site_generator)
+17. BUG-278, 279, 280 (defensive)
+18. DEC-217 + BUG-204 (dead code removal)
+19. BUG-232 + DEC-313 + DEC-337 (intraday HIGH for stops)
+20. BUG-233 + DEC-314 (circuit breakers)
+
+## Honest scope statement
+
+**This dependency map is a STARTER pass — it covers ~50 of the highest-impact items out of ~520 total OPEN/PENDING items.** Full mapping requires:
+- Walk every PENDING decision; identify what it blocks and what blocks it
+- Walk every OPEN bug; identify dependencies on data-side / decision-side / other bugs
+- Cross-link in INDEX with `Depends-on:` / `Blocks:` columns
+- Re-triage by Impact / (Eng × Dependency-depth) ratio
+
+**Estimated effort for full mapping:** 1-2 dedicated audit passes. Worth doing before the focused-batch resolution session begins, OR can be done incrementally as each bundle is approached.
+
+*Dependency mapping starter added Pass 52. Full mapping deferred to dedicated future pass; current scope sufficient for sequencing the immediate focused-batch resolution session.*

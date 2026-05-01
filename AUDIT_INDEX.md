@@ -369,6 +369,11 @@
 | **DECISION-347** | Lagging-indicator dominance — add leading-style signals + regime-condition the lagging ones (1+3 combination) | PENDING | Batch X52 — Round 1 Methodology Gaps | Pass 52 | - |
 | **DECISION-348** | Event-calendar suppression — FOMC / earnings / CPI date-aware signal gating | PENDING | Batch X52 — Round 1 Methodology Gaps | Pass 52 | - |
 | **DECISION-349** | Asymmetric event window — `is_near_high_impact_event` should use pre_days=1, post_days=2-3 instead of symmetric window_days=2 (per microstructure event-volatility research) | PENDING | Batch X52 — Round 1 Methodology Gaps | Pass 52 | - |
+| **DECISION-350** | Multi-timeframe testing across ALL strategies — currently 72/72 strategies operate on daily bars only; should test each on weekly + 4H + daily to find optimal TF per strategy (scope expansion: 72 → 72×N) | PENDING | Batch X55 — Strategy Coverage Gaps (Pass 52) | Pass 52 | - |
+| **DECISION-351** | Anchored VWAP for institutional cost-basis context — anchored from earnings, FOMC, breakout date marks where institutional volume aggregated; not currently computed | PENDING | Batch X55 — Strategy Coverage Gaps (Pass 52) | Pass 52 | - |
+| **DECISION-352** | 13F price-level mapping — map institutional accumulation prices from quarterly 13F filings to current price; identify levels where institutions are above/below water | PENDING | Batch X55 — Strategy Coverage Gaps (Pass 52) | Pass 52 | - |
+| **DECISION-353** | Risk-reward ratio sweep — currently only 3:2 fixed RR tested via exit_fixed_target; should sweep 1:1, 1:2, 1:3, 2:1 to find optimal per-strategy/per-regime RR | PENDING | Batch X55 — Strategy Coverage Gaps (Pass 52) | Pass 52 | - |
+| **DECISION-354** | Chart pattern strategies — currently 0/72 strategies use cup&handle, head&shoulders, double-top/bottom, wedges, triangles, pennants, flag continuation patterns; significant price-action gap | PENDING | Batch X55 — Strategy Coverage Gaps (Pass 52) | Pass 52 | - |
 
 ---
 

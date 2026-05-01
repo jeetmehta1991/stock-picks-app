@@ -323,3 +323,14 @@ State compliance visibly: "Checklist: ✅ [each item]"
     e. Apply this discipline retrospectively to all existing data-consumption code paths
        (engine, signals, cache layer) — Stage 5.5 only audited smart_money + partial macro
     NEVER mark a data-consumption function as audited without running it.
+
+45. **MANDATORY per-response checklist compliance statement (Pass 52 owner-elevated):**
+    Every response must end with a visible "CHECKLIST: ✅ compliance" block.
+    a. List each item that applied this turn and confirm satisfied (e.g. "✅ #43 prior-art")
+    b. Items irrelevant to the turn can be omitted from the list
+    c. If a violation occurred, list it explicitly with "⚠ #N violated — [reason]"
+    d. No exceptions. Pure tool-use turns that yield without user-facing prose still
+       require a compliance statement before yielding.
+    e. Per L124. Owner has authorized strong action if the rule is repeatedly violated.
+    f. The compliance statement is the LAST item in the response, after audit status table
+       and other content.

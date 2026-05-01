@@ -20606,3 +20606,111 @@ What Stage 6 did NOT produce, and intentionally so:
 - No long bug list (catalog mature; 0 new bugs is correct yield for synthesis stage)
 
 *DEC-349 logged Pass 52 per CHECKLIST #43 (prior-art verified — no overlap with existing window-days handling) + #37 (industry-standards grounding — empirical microstructure research). Per owner standing approval Pass 52. Stage 6 deliverable in /mnt/user-data/outputs.*
+
+---
+
+## AUDIT PASS 52 — Side-note responses (5 owner questions)
+
+**Trigger:** Owner Pass 52 — "have we comprehensively added ALL price action strategies including retest? have we broadly included. are we also testing different timeframes across ALL strategies? how are we bringing in resistance and support levels to bring in context of institutional interest? in exit strategies, are we testing fixed risk to reward ratios? confirming that all resolved bugs and decisions are being archived in the right folder as done previously"
+
+**Methodology:** Per CHECKLIST #43, every proposed new entry was prior-art-grep verified before logging. Per CHECKLIST #44, code claims verified by reading actual screener.py + exit_strategies.py.
+
+### Q1: Price action strategies including retest — PARTIAL coverage; retest is GAP
+
+**Currently in screener.py (72 strategies):**
+- Pivot bounces / breakouts (5)
+- CPR / Camarilla (3)
+- Bollinger / Keltner / Donchian channel touches (5)
+- Inside bar breakout (1)
+- 52-week high/low breakouts (2)
+- Volume spike breakout (1)
+- Squeeze breakout (1)
+- Candlestick patterns: morning star, bullish engulfing, doji at support, three white soldiers, shooting star, evening star (6)
+- Several others rely on price-vs-MA or price-vs-band relationships
+
+**Confirmed GAP — retest variants:** 0 of 72 strategies use the break-and-retest pattern (price breaks resistance → pulls back to it as new support → enters on hold). **This is BUG-111 OPEN since Pass 13** ("No break-and-retest variants of breakout strategies"). Forward-link added with severity-upgrade recommendation: GAP is more material than the original MEDIUM rating, given that retest entries are arguably the highest-quality systematic price-action setup.
+
+**Confirmed GAP — chart patterns:** 0 of 72 strategies use cup&handle, head&shoulders, double-top/double-bottom, wedge, triangle, pennant, or flag continuation. Logged as **DEC-354 PENDING**. Significant price-action coverage gap.
+
+### Q2: Multi-timeframe testing across ALL strategies — NOT TESTED
+
+**Code-grep confirms:** All 72 strategies operate on daily bars only. No interval parameter exists in cache.py, screener.py, or technical.py.
+
+**DEC-345 RESOLVED Pass 52** introduced weekly bars but ONLY for ICT/SMC HTF context (a different question — using HTF as filter for daily setups, not testing same strategy on multiple TFs).
+
+**Owner question implies a methodology where each strategy is independently backtested on D / W / 4H to find optimal TF per strategy.** This is a major scope expansion: 72 strategies × ~3 timeframes = 216 strategy-TF combinations. Worth pursuing because some strategies (e.g., golden crosses) may have different signal-to-noise on weekly than daily.
+
+**Logged as DEC-350 PENDING.** Resolution requires:
+- Cache layer multi-interval extension (~50-100 LOC; precondition; same as DEC-345 implementation)
+- Engine extension to accept interval parameter
+- Backtest framework runs per-strategy across TFs
+- Per-strategy TF selection in production (e.g., MACD crossover may best on weekly, RSI oversold may best on daily)
+
+### Q3: Support/resistance for institutional interest context — PARTIALLY covered; new GAPS surfaced
+
+**Existing S/R primitives in technical.py:**
+- compute_pivots (R1-R3 / S1-S3 from prev day OHLC)
+- compute_fibonacci (38.2 / 50 / 61.8 retracement)
+- compute_vwap (with ±1σ / ±2σ bands)
+- compute_donchian (10/20/50-day high/low channels)
+- compute_bollinger / compute_keltner
+
+**Institutional-interest connection:**
+- **Already-audited gap (BUG-146 HIGH OPEN):** No Volume Profile / VPVR strategies. POC, VAH, VAL identify institutional-volume levels.
+- **Already-audited gap (BUG-152 HIGH OPEN):** Volume Profile primitives (POC, VAH, VAL, HVN, LVN) not computed at all.
+- **DEC-345 (RESOLVED Pass 52)** brings ICT/SMC primitives via smartmoneyconcepts library — order blocks + FVGs are explicit institutional-footprint markers.
+- **NEW GAP (DEC-351 PENDING)** — Anchored VWAP. Standard practitioner technique: VWAP anchored from earnings date, FOMC date, breakout date marks institutional cost basis from that event. Especially useful with 2024-2026 high event-vol environment. Not in current code.
+- **NEW GAP (DEC-352 PENDING)** — 13F price-level mapping. We HAVE institutional 13F data in Quiver cache (subject to BUG-186 / BUG-274 schema issues). What's NOT done: map filing-quarter prices to current price to identify levels where institutions are above/below water. Such levels often act as defense (institutions buy more) or supply (institutions exit) zones. Distinct from BUG-274 which is about correctly extracting position direction; DEC-352 is about mapping price levels.
+
+**Net answer:** Institutional-interest context is **partially covered** (Volume Profile gaps logged, DEC-345 ICT primitives landing). **Two new gaps surfaced** (anchored VWAP + 13F price-level mapping) — both worth pursuing as standard tools for the project's "medium-high risk, swing trade" thesis.
+
+### Q4: Fixed risk-to-reward ratios in exit strategies — INCOMPLETE coverage
+
+**Currently:**
+- `exit_fixed_target` exists with hard-coded `target_mult=3.0, stop_mult=2.0` → 3:2 R/R = **1.5R reward per 1R risk**
+- 8 exit methods compared in `run_exit_comparison`; only one is fixed-RR
+- Practitioner literature commonly cites 1:2 (2R reward per 1R risk) as minimum acceptable swing-trade RR
+
+**NOT tested:**
+- 1:1 RR (scalp-style)
+- 1:2 RR (standard swing) ← practitioner default; current 1.5R is below this
+- 1:3 RR (high-conviction; often used with confidence-tier sizing)
+- 2:1 RR (asymmetric anti-trend; rare but valid for mean-reversion in strong regimes)
+
+**Logged as DEC-353 PENDING.** Resolution: parameterize `exit_fixed_target` to sweep RR ratios; report per-strategy/per-regime optimal RR alongside existing exit method comparison. Trivial code change; the work is interpreting which RR pairs win.
+
+**Compound observation:** Per current exit_fixed_target with target_mult=3.0 and stop_mult=2.0, the system is testing a 1.5R-reward exit. **For swing trading at the project's medium-high risk thesis, this is below the practitioner-standard 2R minimum.** That's not a bug per se but a parameter-defaulting-low concern.
+
+### Q5: Resolved-bugs-and-decisions archive convention — DOES NOT EXIST
+
+**Honest finding.** Owner's question implies a prior convention to archive resolved items into a separate folder/file. **Audited:**
+- `.archive/` exists but contains only one backtest code snapshot (2026-04-19); not an audit-resolved archive.
+- `PROJECT_PLAN_ARCHIVE.md` exists (old project plan archived).
+- AUDIT.md (20,608 lines) and AUDIT_INDEX.md (1,131 lines) contain ALL items including all 103 RESOLVED decisions and 16 RESOLVED bugs. **None have been moved to a separate archive file.**
+- Git log search for "archive resolved" returns nothing.
+
+**Possibilities:**
+- (a) The convention exists in owner's memory of another project; doesn't exist here
+- (b) The convention was discussed but never implemented
+- (c) I am missing something — owner should clarify
+
+**Recommendation:** If owner wants a resolved archive, I can create one. Suggested format:
+- `AUDIT_RESOLVED.md` — full text of all RESOLVED decisions and bugs (with original logged date and resolved date)
+- `AUDIT.md` retains active OPEN/PENDING items only (would shrink from 20,608 to ~12,000 lines, much more navigable)
+- `AUDIT_INDEX.md` retains ALL entries (resolved get linked to AUDIT_RESOLVED.md, open get linked to AUDIT.md)
+- One-time migration script: walk existing files, move RESOLVED sections to archive
+
+**Awaiting owner sign-off before creating.** Do not want to invent a convention without explicit approval.
+
+### Process discipline this batch
+
+CHECKLIST #43 prior-art catches:
+- BUG-111 (retest variants) — already existed since Pass 13
+- BUG-146 + BUG-152 (Volume Profile) — already existed
+- DEC-345 (ICT/SMC) — already RESOLVED Pass 52
+
+CHECKLIST #44 not directly applicable (these are coverage questions, not code-bug questions).
+
+CHECKLIST #45 (Pass 52 NEW) applied — ending this batch with explicit compliance statement.
+
+*Side-note responses logged Pass 52. DEC-350/351/352/353/354 added (5 new pending decisions). BUG-111 forward-link with severity-upgrade recommendation. Resolved-archive convention question raised for owner direction. Per owner standing approval Pass 52 (add to audit conditional on prior-art verification).*
