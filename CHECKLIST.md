@@ -277,3 +277,15 @@ State compliance visibly: "Checklist: ✅ [each item]"
        included in Round 1 commit. Caught only because owner pasted full git status output.
        Fix in L120.
     NEVER apply a patch to a dirty working tree. Always reconcile dirty state first.
+
+42. PRIOR-ART GREP MUST INCLUDE BUGS, NOT JUST DECISIONS — when proposing new decision/bug:
+    a. Grep for matching DEC entries: grep "DECISION-" AUDIT_INDEX.md | grep -i "<keyword>"
+    b. Grep for matching BUG entries: grep "BUG-" AUDIT_INDEX.md | grep -i "<keyword>"
+    c. BOTH searches required. Bugs and decisions are stored in same INDEX file but tracked separately.
+    d. Past mistake: Pass 52 — proposed DEC-349 (API endpoint inventory + agent-feed mapping) without
+       checking BUG-190 (Quiver endpoints not prefetched, OPEN since Pass 18) and BUG-191 (no
+       prefetch validation gate, CRITICAL OPEN since Pass 18). Both bugs covered most of the
+       proposed decision's scope.
+    e. Refines CHECKLIST #40 (project-prior-art grep) to explicitly include both decision IDs
+       and bug IDs in search.
+    NEVER propose a new decision/bug without searching both DEC and BUG entries for the topic.

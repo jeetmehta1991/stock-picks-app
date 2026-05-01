@@ -530,3 +530,12 @@ Common pattern: Claude defaults to "implement what's stated" without questioning
 Each of these is a separate concern that the standard remote-sync check does not catch.
 **Fix:** Added L120 + CHECKLIST #41 (handoff pre-flight must include `git status --short` check; non-empty output halts the handoff for owner reconciliation).
 **Rule:** Every handoff document's pre-flight section MUST include `git status --short` as a check. Output must be empty (or contain only files we explicitly intend to modify) before patch application proceeds. Non-empty status halts the handoff for owner-driven reconciliation. CHECKLIST #16 said to run git status before git commands; this generalizes it specifically to handoff pre-flights.
+
+### L121 — Prior-art grep must search both DEC and BUG, not just DEC [process/discipline]
+**Mistake (this session, Pass 52, twice):** Twice in this session I proposed new decisions for gaps that were already documented. First: DEC-346 categorical matrix overlapped existing DEC-066/100 (caught by owner). Second: proposed DEC-349 for API endpoint inventory + agent-feed mapping; owner asked "is it part of existing audit?" — grep revealed BUG-190 (Quiver endpoints not prefetched, OPEN since Pass 18) and BUG-191 (no prefetch validation, CRITICAL OPEN since Pass 18) covered most of it.
+**Why this matters:** The audit catalog is large. Decisions and bugs are tracked separately even though stored in the same INDEX file. A decision-only grep misses bug-tracked gaps. Multi-pass audits accumulate prior art across both categories; failing to search both wastes time and produces duplicate tracking.
+**Fix:** Added CHECKLIST #42. Prior-art grep MUST include both DEC and BUG searches for any topic before proposing a new entry.
+**Rule:** Before any new decision/bug proposal, run both:
+- `grep "DECISION-" AUDIT_INDEX.md | grep -i "<keyword>"`  
+- `grep "BUG-" AUDIT_INDEX.md | grep -i "<keyword>"`
+Both required. Refines #40.
