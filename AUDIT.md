@@ -21615,3 +21615,98 @@ Adding 4 new caveats to LIMITATIONS_CAVEATS_ASSUMPTIONS.md:
 ### Pending count: 291 + 7 = 298
 
 *Theme 4 (Batch X53 — High-Impact Engine Bugs) closed in full. 15 of 15 decisions resolved across 3 batches in Pass 52. Per CHECKLIST #43 (prior-art verified — BUG-186/191/239/241 + DEC-109/257/299/383 cross-referenced); #45 (compliance statement); #46 (three-source check applied); #48 (sub-decisions formally logged); #49+#50 (CAV-044/045/046/047/048 cross-referenced inline); #51 (explicit "approve all" used); #52 ("Next batch" = advance to Theme 5 with recommendations only).*
+
+---
+
+## AUDIT PASS 52 — Theme 5 batch 1 closure (DEC-080/081/082/083/085 owner-approved with revisions) + NEW DEC-410 API utilization audit + L132/CHECKLIST #53
+
+**Trigger:** Owner Pass 52 directives across two turns:
+- Turn 1: "Approve all your recs in this batch, except 082. ... Except 083, is a min of 300 even possible in our sample? Except 085 Macro needs to have inputs like unemployment data release, interest rates, and all other factors that affect the market."
+- Turn 2: "Are we leveraging all available dimensions/endpoints from our API list? this the last decision we make. We need to ensure all Available datapoints offered by our APIs are being integrated... Should not be surface level but a deep dive on available API endpoints/dimensions and how can be integrated into our cost at no additional cost. Agree with all your other recs."
+
+### Theme 5 batch 1 status: COMPLETE (5 of 8)
+
+| Decision | Resolution | Sub-decisions |
+|---|---|---|
+| DEC-080 — Bonferroni dynamic N + t-stat | Owner-approved | DEC-400/401 |
+| DEC-081 — Sharpe canonicalization + Sortino + tx cost | Owner-approved | DEC-402/403/404 |
+| DEC-082 — Stress tests REVISED Option A | Owner-approved (only 2022 + crisis sub-periods within 2021-2024) | DEC-405 |
+| DEC-083 — Min trades floor REVISED TIERED | Owner-approved (300/100/30 by strategy class) | DEC-406 |
+| DEC-085 — Macro correlation REVISED COMPREHENSIVE | Owner-approved (existing 9 + 8 new + event windows) | DEC-407/408/409 |
+
+### Lapse acknowledgment
+
+Three out of five Theme 5 batch 1 recommendations had factual errors in original prior turn:
+- DEC-082 proposed thresholds for 2008/2020 (cache covers 2021-2024 only)
+- DEC-083 proposed 300-trade floor (excludes legitimate event-driven strategies ~25 trades)
+- DEC-085 listed 5 macro indicators (codebase already pulls 9 + event calendars exist)
+
+All three were caught by owner's common-sense questions. All three were avoidable with one grep + one feasibility math step.
+
+This is the SIXTH Pass 52 process recurrence — first one targeting recommendation quality (not logging discipline). New process discipline L132/CHECKLIST #53 introduced as response.
+
+### NEW DEC-410 — API endpoint utilization audit (CRITICAL TODO)
+
+**Owner directive verbatim:** "Are we leveraging all available dimensions/endpoints from our API list? this the last decision we make. We need to ensure all Available datapoints offered by our APIs are being integrated into the system. Doesnt matter that we should have it coded now but its a to do list before running passes. Should not be surface level but a deep dive on available API endpoints/dimensions and how can be integrated into our cost at no additional cost."
+
+**Scope:** Deep-dive inventory of ALL available endpoints/dimensions per API in PROJECT_PLAN section 10:
+- yfinance (free) — current usage: OHLCV + VIX + DXY + earnings_dates (per DEC-300 caveat) + info; available: many more endpoints
+- Alpha Vantage (free tier) — current usage: news sentiment only; available: 50+ endpoints (technicals, FX, crypto, fundamentals, sector performance, etc.)
+- Polygon ($30/mo) — current usage: ZERO (subscription not yet activated per code grep); available: news, intraday, options chains, reference data
+- OpenBB (free) — current usage: ZERO (Phase 0.A deliverable not yet implemented); available: hundreds of fundamentals endpoints
+- Quiver ($50-100/mo) — current usage: insider, congressional, gov contracts, lobbying, WSB, Wikipedia (6 endpoints); available: more endpoints (ETF flows, Twitter sentiment, lobbying detail, patents, off-exchange short volume, etc.)
+- Finnhub (free tier) — current usage: news sentiment fallback only; available: 100+ endpoints (recommendations, price targets, social sentiment, earnings calendar, IPO calendar, etc.)
+- FRED (free) — current usage: 9 series; available: 800,000+ economic series
+- AAII (free) — current usage: weekly survey; available: same
+- CNN F&G (free) — current usage: daily index; available: same
+- Stage 3+ APIs (Unusual Whales, Ortex) — not yet active
+
+**Methodology (deep, not surface-level):**
+1. Pull official endpoint documentation per API
+2. Catalog every endpoint with: name, returns, frequency, data type, free/paid tier
+3. Cross-reference current code consumption — which endpoints are imported/called?
+4. For unused endpoints at no additional cost (existing tier): assess strategic value
+   - Could feed strategies (e.g., Polygon news → news-momentum strategy)
+   - Could feed agent inputs (e.g., Finnhub price targets → fundamental agent context)
+   - Should be in prefetch pipeline
+5. Each underused endpoint becomes a candidate decision for strategy/agent integration
+6. Tag with cost implication — confirm "no additional cost" boundary
+
+**Pre-condition:** This audit is a GATE before next backtest pass run per owner directive ("its a to do list before running passes"). Phase 1B-α should not run until DEC-410 audit completes and high-value endpoints integrated.
+
+**Effort estimate:** 2-3 days for full deep-dive across all 9 APIs. Per-API audit is ~3-4 hours. Output: structured table per API + recommended additions list.
+
+**Sub-decisions:** Each API will spawn its own resolution batch after audit. Specific sub-decision IDs reserved post-audit (DEC-411 through DEC-450 estimated for API-specific additions).
+
+**Joint with:**
+- DEC-002 (Polygon News evaluation — Phase 0.A deliverable)
+- DEC-064/DEC-065 (Phase 0.A prefetch checklist — DEC-410 informs which endpoints to prefetch)
+- DEC-073 (Quiver pre-built composites — overlap with DEC-410 Quiver section)
+- DEC-300/DEC-381 (earnings prefetch — Finnhub earnings calendar is candidate source)
+- BUG-053/BUG-181 (Finnhub news 100% empty — fix during DEC-410 Finnhub audit)
+- BUG-185 (Wikipedia 100% empty — Quiver section of DEC-410)
+
+### Process discipline added
+
+**L132 + CHECKLIST #53 — Grounded-recommendation format mandatory.** Sixth Pass 52 process recurrence; first targeting recommendation quality. Every recommendation must include 5 verification elements before being stated:
+1. CURRENT STATE (grep output)
+2. PROJECT SCOPE (cache + PROJECT_PLAN scope)
+3. SCOPE FIT CHECK (yes/no with math)
+4. EXISTING INFRASTRUCTURE CHECK (does code already do part of this?)
+5. FEASIBILITY MATH (for any numeric threshold)
+
+Skip any element → flag rec as `UNVERIFIED — pattern-match only`. NEVER "Confidence: HIGH" without verification work shown.
+
+### Caveats added (CAV-049 through CAV-053)
+
+5 new caveats added to LIMITATIONS_CAVEATS_ASSUMPTIONS.md:
+- CAV-049 — Bonferroni assumes independence; correlated strategies may need Holm/FDR
+- CAV-050 — Daily mark-to-market storage cost (~10-20MB per strategy)
+- CAV-051 — Limited crisis coverage in 2021-2024 scope (no 2008, no full 2020 COVID)
+- CAV-052 — Effective-N correlation correction for trade independence
+- CAV-053 — Macro correlation tag thresholds are heuristics, may need calibration
+
+### Total decisions logged this commit: 11 (DEC-400 through DEC-410)
+### Pending count: 298 + 11 = 309
+
+*Theme 5 batch 1 closed (5 of 8). NEW DEC-410 API utilization audit logged as CRITICAL TODO + pre-condition gate before next backtest pass. L132/CHECKLIST #53 introduced. Per CHECKLIST #43 (prior-art verified — DEC-002/064/065/073/300/381 + BUG-018/038/053/181/185/275/079/106 cross-referenced); #45 (compliance statement); #46 (three-source check); #47 (full-text grep); #48 (sub-decisions formally logged); #49+#50 (CAV-049 through CAV-053 cross-referenced inline); #51 (explicit "Approve all" + "Agree with all your other recs"); #52 (advancement parsed correctly); #53-NEW (this turn applies grounded-recommendation format retroactively to DEC-082/083/085 revisions).*

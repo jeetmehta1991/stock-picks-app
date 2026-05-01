@@ -438,3 +438,45 @@ When a caveat is resolved:
 **Caveat:** Code state shows `improvements.py:80-84` charges borrow cost while `exit_manager.py:140-146` says "handled elsewhere" without charging. DEC-398 investigation will determine whether production path is `improvements` (charged) or `exit_manager` (not charged) or both (double-charged) or neither (zero-charged). If zero-charged in production, all historical short-trade backtest results have inflated net PnL.
 **Operational impact:** Magnitude estimate for typical case: 0.5% annual borrow rate × 20-day average hold ÷ 252 trading days ≈ 0.04% per short trade. Across ~30% of backtest trades being shorts and a 4-year backtest, cumulative net PnL inflation could be ~1-2% if zero-counted. Not catastrophic but real. DEC-398 investigation provides exact magnitude; DEC-399 fix consolidates to single shared utility ensuring exactly-once charging.
 **Forward-link:** Resolved when DEC-398 (investigate) + DEC-399 (consolidate) lands; document delta in any historical backtest report.
+
+## Section — Pass 52 Theme 5 batch 1 + API audit caveats
+
+### CAV-049 — Bonferroni assumes independence; our strategies highly correlated
+
+**Source:** DEC-080/DEC-400/DEC-401 PENDING (Pass 52)
+**Status:** ACTIVE
+**Caveat:** Bonferroni correction for multiple testing assumes independent tests. Our strategy registry has 60 base strategies + 12 short variants (72 total) with high inter-strategy correlation — multiple momentum variants, multiple mean reversion variants, etc. Bonferroni over-corrects when tests are correlated, making it harder for valid edges to clear significance threshold. Holm-Bonferroni step-down is less conservative middle ground; FDR (Benjamini-Hochberg) is least conservative.
+**Operational impact:** Default to Bonferroni for safety in initial Phase 1B-α; document tradeoff. After first run shows distribution of strategy results, owner approval gate to switch to Holm or FDR if Bonferroni rejects too many strategies that were intuitively edge-worthy. DEC-401 carries this owner-decision flag.
+**Forward-link:** Resolved by DEC-401 owner approval after first Phase 1B-α run reveals correction-method tradeoff in practice.
+
+### CAV-050 — Daily mark-to-market storage cost
+
+**Source:** DEC-081/DEC-402/DEC-403 PENDING (Pass 52)
+**Status:** ACTIVE
+**Caveat:** Sharpe daily and Sortino require per-day OHLC for every open position throughout each holding period. For 5-year backtest with avg 20-day holds and ~1000 trades per strategy, that's ~20,000 daily PnL points to track. Across 60-72 strategies, ~1.2M-1.4M data points. Manageable storage but not free.
+**Operational impact:** Increases backtest output disk footprint by ~10-20MB per strategy. Compute cost increases proportionally to mark-to-market frequency. Acceptable tradeoff for industry-standard Sharpe/Sortino comparability.
+**Forward-link:** No resolution path needed — accepted cost of canonical metrics.
+
+### CAV-051 — Limited crisis coverage in current 4-year backtest scope
+
+**Source:** DEC-082/DEC-405 PENDING (Pass 52)
+**Status:** ACTIVE
+**Caveat:** Current backtest scope is 2021-01-04 to 2024-12-31 (4 years × 509 tickers per cache verification). 2008 GFC and 2020 COVID crashes are NOT in this range. Crisis sub-periods within scope are limited to: Q1 2022 invasion-related volatility, March 2023 SVB collapse, Oct 2023 Israel/Hamas escalation, plus 2022 full-year rate-rise bear. These are smaller-magnitude events than 2008/2020.
+**Operational impact:** Stress-test verdicts cover only moderate-stress events. Strategies that pass current stress tests may still fail in true tail-risk events (2008-magnitude). Phase 1D (5-year extension) when activated will pull in 2020 COVID. 2008 GFC requires paid CRSP/Polygon Reference for delisted-ticker historical OHLCV (DEC-303 dependency). Document in any Phase 1B-α verdict report.
+**Forward-link:** 2020 COVID coverage resolved when Phase 1D 5-year scope activates. 2008 GFC coverage resolved only with paid historical-data subscription.
+
+### CAV-052 — Effective-N correlation correction for trade independence
+
+**Source:** DEC-083/DEC-406 PENDING (Pass 52)
+**Status:** ACTIVE
+**Caveat:** Tiered min-trades thresholds (300 daily / 100 regime-gated / 30 event-driven) treat each trade as an independent observation. In practice, trades on highly correlated tickers (e.g., same strategy fired on AAPL/MSFT/GOOG on the same day during a tech rally) are NOT statistically independent. Effective N is lower than raw trade count; statistical power is overstated.
+**Operational impact:** DEC-406 reports `effective_n` (Bessel-corrected for cross-trade correlation) alongside raw `n_trades`. A strategy with 300 raw trades but effective_n=120 has the statistical power of ~120 independent trades. Verdict logic should reference effective_n for INSUFFICIENT_OOS_DATA gate, not raw count.
+**Forward-link:** Resolved by DEC-406 implementation; calibration of correlation correction may need refinement after first run.
+
+### CAV-053 — Macro correlation tag thresholds are heuristics
+
+**Source:** DEC-085/DEC-407/DEC-408/DEC-409 PENDING (Pass 52)
+**Status:** ACTIVE
+**Caveat:** Threshold values for macro correlation tags (vix_sensitive at |corr|>0.3; rate/curve/dollar/credit/inflation/growth/consumer/liquidity_sensitive at |corr|>0.2) are heuristics. Calibration may shift after first run reveals actual correlation distribution across our strategies. Tags labeled "macro-sensitive" should be communicated as data observations, not statistical guarantees.
+**Operational impact:** Initial tagging may over- or under-flag strategies. Phase D refinement opportunity: adjust thresholds based on empirical distribution. Strategies tagged sensitive should still run; tag is informational for sizing/regime filters, not exclusion criterion.
+**Forward-link:** Refinement after first Phase 1B-α run reveals correlation distribution.

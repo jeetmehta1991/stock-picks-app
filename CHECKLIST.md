@@ -442,3 +442,23 @@ State compliance visibly: "Checklist: ✅ [each item]"
     fifth Pass 52 process recurrence; L130/CHECKLIST #51 was supposed to prevent
     this class of error but didn't catch the ambiguous-brief-directive variant.
     Bias toward ASK over assume — clarification round is cheaper than rollback.
+
+53. **Grounded-recommendation format mandatory (Pass 52 sixth process recurrence — owner trust mechanism):**
+    Per L132. Every recommendation in responses must include 5 verification elements
+    BEFORE stating the recommendation:
+    a. **CURRENT STATE** — paste actual grep/code-output, not summary
+    b. **PROJECT SCOPE** — date range + universe size + period coverage from cache + PROJECT_PLAN
+    c. **SCOPE FIT CHECK** — explicit yes/no with math (does the rec apply to OUR data?)
+    d. **EXISTING INFRASTRUCTURE CHECK** — does anything in code already do part of this?
+    e. **FEASIBILITY MATH** — for any numeric threshold, compute what it means for our data
+    Skip any element → flag rec as `UNVERIFIED — pattern-match only`.
+    Confidence labels:
+    - "Verified: [list grep checks]" only when 5/5 elements present
+    - "Pattern-matched: [industry source]" when relying on heuristic
+    - NEVER "Confidence: HIGH" without verification work shown
+    Past failures: Pass 52 had me recommend (1) 2008/2020 stress-test thresholds for periods
+    our backtest doesn't cover; (2) 300-trade floor that excludes legitimate event-driven
+    strategies; (3) 5-indicator macro factor list when codebase already pulls 9 indicators.
+    All three were caught by owner's common-sense questions; all three were avoidable with
+    one grep + one math check. This rule makes those checks mandatory and visible to owner
+    so a non-technical reviewer can audit the verification work, not just the recommendation.

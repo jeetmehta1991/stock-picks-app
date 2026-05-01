@@ -738,3 +738,42 @@ Both are boundary-discipline failures around what's officially decided vs inform
 **Pair:** L131 + CHECKLIST #52. Per owner standing exception for process-discipline files.
 
 **Honest meta-observation:** L130/CHECKLIST #51 was supposed to fix this class of error. It didn't, because the failure mode shifted from "inferring approval from silence" to "inferring approval from ambiguous brief directive." L131/CHECKLIST #52 narrows the gap further. If a sixth recurrence happens, the pattern is structural and warrants a more aggressive default (e.g., ALWAYS confirm before any commit involving formal logging).
+
+## L132 (Pass 52, sixth process recurrence — pattern: industry-heuristic-without-scope-check) — Grounded-recommendation format mandatory
+
+**Trigger:** Owner Pass 52 — caught three out of five DEC-082/083/085 recommendations with factual errors:
+- DEC-082 proposed thresholds for 2008/2020 periods our backtest doesn't cover (cache: 2021-2024)
+- DEC-083 proposed 300-trade floor that excludes legitimate event-driven strategies (~25 trades for spinoff cases)
+- DEC-085 listed 5 macro indicators when `backtest/data/macro.py` already pulls 9
+
+Owner: "Given the errors in your recommendations, how can i be sure you are thinking through your recommendations deeply, broadly and comprehensively. I am not a tech person so i cant verify your suggestion for bugs and code"
+
+**Why this matters:** This is the sixth Pass 52 process recurrence and a NEW pattern class — not "logging without approval" (L130/L131) but "generating plausible-sounding recommendations from industry pattern-matching without verifying scope/feasibility/existing-infrastructure fit." The failure mode is invisible to surface-level review and undermines owner trust because recommendations sound expert while being factually wrong.
+
+Pattern of all 6 Pass 52 process recurrences:
+1. Stage 5.5 candidates drafted before prior-art grep (L114-L120)
+2. AUDIT_RESOLVED.md proposal before conversation_search (L120 expansion)
+3. Chart pattern enumeration listed in prose but not logged (L127)
+4. DEC-365/366 + broadened DEC-363/364 logged as approved when only narrow directives given (L130)
+5. "Lets proceed" interpreted as approval rather than "move on" (L131)
+6. **THIS ONE — Industry-heuristic recommendations without scope/feasibility/infrastructure check (L132)**
+
+**Pattern root cause:** Recommendations sound authoritative because they're industry-pattern-matched ("best practice is min 300 trades for Bonferroni"), but pattern-matching to general quant practice ≠ pattern-matching to OUR specific 4-year × 509-ticker × 2021-2024 system. Industry-correct ≠ project-correct.
+
+**Rule (CHECKLIST #53):** Every recommendation must include grounded-recommendation evidence in the response itself, before stating the recommendation:
+1. **CURRENT STATE** — paste actual grep output of relevant code, not summary. ("`backtest/data/macro.py` SERIES_MAP currently has: VIX, DGS10, T10Y2Y, FEDFUNDS, UNRATE, CPIAUCSL, T10YIE, BAA10Y, DXY = 9 series")
+2. **PROJECT SCOPE** — date range, universe size, period coverage from cache + PROJECT_PLAN ("Cache covers 2021-01-04 to 2024-12-31 across 495 tickers")
+3. **SCOPE FIT CHECK** — explicit yes/no with math ("Recommendation X requires 2008 data → cache has no 2008 → does NOT fit current scope")
+4. **EXISTING INFRASTRUCTURE CHECK** — does anything already do part of this? ("DEC-085 macro factors duplicate `macro.py` — must extend, not replace")
+5. **FEASIBILITY MATH** — for any numeric threshold, compute what it implies for our data ("300 trades over 4 years × 509 tickers requires ~5 fires/year/ticker — daily-frequency strategies easily reach this; event-driven (~0.05 fires/year/ticker) cannot")
+
+If any of the 5 cannot be answered: flag the recommendation as `UNVERIFIED — pattern-match only` rather than presenting it as confident.
+
+**Confidence labels recalibrated:**
+- "Verified: [list of grep checks performed]" — concrete verification
+- "Pattern-matched: [industry source]" — heuristic, not project-specific
+- NEVER present a "Confidence: HIGH" label without showing the verification work
+
+**Pair:** L132 + CHECKLIST #53. Per owner standing exception for process-discipline files.
+
+**Honest meta-observation:** Five prior process recurrences targeted "logging discipline" (when/whether to log). This recurrence targets "recommendation discipline" (whether the recommendation is grounded). Different failure surface. L132/CHECKLIST #53 is the first rule addressing recommendation quality directly. If this rule's introduction is followed by another grounded-recommendation failure, the pattern would warrant: every numeric threshold or scope-dependent claim in a recommendation must be preceded by a Python computation cell showing the math, treated as a hard procedural requirement.
