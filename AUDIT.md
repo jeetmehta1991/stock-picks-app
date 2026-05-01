@@ -21279,3 +21279,112 @@ Detail of each in INDEX entry. AUDIT.md substantive content for each can be expa
 ### Pending count: 264 + 9 = 273
 
 *Per CHECKLIST #43 (prior-art verified across all 9), #45 (compliance statement), #46 (three-source check applied), #48 (enumerating in prose now logged), #50 (caveats inline in PROJECT_PLAN flagged as CAV-025 through CAV-031 to-be-added in LIMITATIONS_CAVEATS_ASSUMPTIONS.md). Per L129 (caveats inline in PROJECT_PLAN — will apply when DEC-363/364/365/366 land in PROJECT_PLAN amendments).*
+
+---
+
+## AUDIT PASS 52 — Theme 2 closure: DEC-103/104/105 owner-approved + 9 phased sub-decisions logged
+
+**Trigger:** Owner Pass 52 verbatim: "Approve all" — referring to my recommendations for DEC-103/104/105 in prior turn.
+
+### Theme 2 status
+
+**Theme 2 (Batch X1 — Data + Universe, 8 decisions): COMPLETE.**
+
+| Decision | Resolution | Logged sub-decisions |
+|---|---|---|
+| DEC-063 | Owner-approved | (covered by DEC-364/365 expansions) |
+| DEC-064 | Owner-approved | Phase 0.A prefetch checklist |
+| DEC-065 | Owner-approved | Validation gate hardening |
+| DEC-099 | Split-approved | DEC-367/368/369/370/371 |
+| DEC-101 | Owner-approved | Sequenced behind DEC-300 |
+| DEC-103 | Owner-approved | DEC-372/373/374 (Tier 2 automation, validate mode, historical backfill) |
+| DEC-104 | Owner-approved | DEC-375/376/377 (code change, automation, historical backfill — last blocked on DEC-298) |
+| DEC-105 | Owner-approved | DEC-378/379/380 (NASDAQ diff, SEC EDGAR, Polygon Reference) |
+
+### DEC-103 Phased Implementation (DEC-372/373/374)
+
+**DEC-372 — Phase A: Monthly GitHub Actions automation**
+- Workflow: `.github/workflows/refresh_extended_universe.yml`
+- Schedule: 1st of each month (cron `0 6 1 * *`)
+- Action: `python scripts/refresh_extended_universe.py --write`, then auto-PR with diff
+- Depends on: DEC-105 Phase 1 spinoff feed (DEC-378) for new-ticker triggers
+- Effort: ~1 day
+
+**DEC-373 — Phase B: Validate mode for edge cases**
+- Add `--validate` flag to `refresh_extended_universe.py`
+- Behavior: when yfinance returns empty `info` for a candidate ticker, log to `extended_universe_review.csv` instead of silent drop
+- SNDK-style cases (yfinance lag on re-listings) preserved for manual review
+- Effort: ~1 day
+
+**DEC-374 — Phase C: Historical backfill 2010-2024**
+- Manual research per spinoff/IPO event (Edgar 10-12B filings, news archives)
+- yfinance unreliable for re-listed tickers — first-trade-date often missing
+- Output: `tier2_membership_history.csv` with `ticker, added_date, removed_date_to_sp500_or_delisted`
+- Effort: ~3-5 days
+- CAV-028 acknowledged: free-data approach has gaps; Polygon Reference upgrade option
+
+### DEC-104 Phased Implementation (DEC-375/376/377)
+
+**DEC-375 — Phase A: Code changes per DEC-364**
+- `scripts/build_momentum_watchlist.py` line: `MAX_TICKERS = 50` → `MAX_TICKERS = 100`
+- `backtest/data/universe.py` `build_phase1b_universe()`: add Tier 3 alongside Tier 1 + ETFs
+- Effort: ~0.5 days
+
+**DEC-376 — Phase B: Monthly GitHub Actions automation**
+- Workflow: `.github/workflows/refresh_momentum_watchlist.yml`
+- Schedule: 1st of each month
+- Action: `python scripts/build_momentum_watchlist.py --write`, then auto-PR
+- Effort: ~1 day
+
+**DEC-377 — Phase C: Historical recomputation infrastructure**
+- **BLOCKED ON DEC-298** (PIT OHLCV needed for accurate historical momentum)
+- New script: `scripts/backfill_tier3_history.py`
+- Logic: for each historical month, recompute watchlist using only data available at month-end
+- Volume: ~100 tickers × ~190 months = 19,000 historical screens
+- Output: `tier3_membership_history.csv` with `ticker, watchlist_month, momentum_score`
+- Engine integration: `get_momentum_watchlist(as_of=D)` returns watchlist for calendar month containing D
+- Effort: ~3-5 days post-DEC-298 resolution
+- CAV-027 acknowledged: computational cost
+
+### DEC-105 Phased Implementation (DEC-378/379/380)
+
+**DEC-378 — Phase 1: NASDAQ symbol-directory weekly diff (free)**
+- Source: `ftp.nasdaqtrader.com/SymbolDirectory/nasdaqtraded.txt`
+- Schedule: weekly (cron `0 6 * * 1` Mondays)
+- Logic: diff against last week's snapshot, flag new tickers, validate market cap >$5B via yfinance
+- Output: `spinoff_events.csv` with `parent_ticker, spinoff_ticker, distribution_date, market_cap_b_at_listing, sector`
+- DEC-378 outputs feed DEC-372 (DEC-103 Phase A) workflow
+- Effort: ~2 days
+- Confidence: HIGH
+
+**DEC-379 — Phase 2: SEC EDGAR Form 10-12B scraping (free)**
+- Source: SEC EDGAR RSS at `sec.gov/cgi-bin/browse-edgar`
+- Lead time advantage: 30-90 day forward visibility (vs Phase 1's reactive detection)
+- Form 10-12B = spinoff registration filed before distribution
+- Scope: HTML/PDF text extraction non-trivial; parsing form-12B for parent/child/distribution-date fields
+- Effort: ~2-3 days
+- May defer if Phase 1 NASDAQ-diff catches enough spinoffs in practice
+- Confidence: MEDIUM (defer-eligible)
+
+**DEC-380 — Phase 3: Polygon Reference API (paid)**
+- Cleaner data, structured spinoff events with full parent/child/ratio/distribution-date fields
+- Subscription cost decision separate from this approval
+- Defer to post-Phase-1/2 evaluation
+- Effort: ~1 day post-subscription
+- Confidence: HIGH on integration, MEDIUM on whether subscription is needed
+
+### Resolution Sequencing
+
+Per my prior recommendation:
+1. **DEC-378 first** (NASDAQ diff) — provides spinoff-event feed
+2. **DEC-372 + DEC-373** (Tier 2 automation + validate mode) — consumes DEC-378 feed
+3. **DEC-375 + DEC-376** (Tier 3 code change + automation) — independent, can parallelize
+4. **DEC-379** (SEC EDGAR) — defer-eligible if Phase 1 sufficient
+5. **DEC-374** (Tier 2 historical backfill) — manual; runs in background
+6. **DEC-377** (Tier 3 historical backfill) — BLOCKED on DEC-298 PIT cluster
+7. **DEC-380** (Polygon Reference) — defer pending subscription decision
+
+### Total decisions logged this commit: 9 sub-decisions (DEC-372 through DEC-380)
+### Pending count: 273 + 9 = 282
+
+*Theme 2 (Batch X1 — Data + Universe) closed. All 8 parent decisions resolved with phased sub-decisions logged where applicable. Per CHECKLIST #43 (prior-art verified — DEC-298/364/103/104/105/063 all cross-referenced); #45 (compliance statement); #46 (three-source check); #48 (Phase splits enumerated in prior turn now formally logged); #50 (caveats CAV-027/028 cross-referenced inline).*
