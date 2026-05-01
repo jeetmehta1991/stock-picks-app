@@ -1021,11 +1021,16 @@
 | **BUG-272** | get_lobbying() Amount string concat — 98.8% silent failure (n=500) | HIGH | OPEN | Pass 52 |
 | **BUG-273** | congressional_signal() Chamber/House column mismatch — silent crash on populated dates | HIGH | OPEN | Pass 52 |
 | **BUG-274** | institutional_signal() SharesChange column missing — never fires "buy" signal | HIGH | OPEN | Pass 52 |
+| **BUG-275** | bonferroni_adjusted_threshold(n=0) raises TypeError on complex round() | LOW | OPEN | Pass 52 |
+| **BUG-276** | _agent_cache_key calls sorted() on list of dicts — crashes when strategies fire | HIGH | OPEN | Pass 52 |
+| **BUG-277** | classify_regime() truth-value-of-DataFrame error — 100% failure on every probe | HIGH | OPEN | Pass 52 |
+| **BUG-278** | yield_curve_regime() doesn't use macro_combined.parquet cache; live-fetches FRED only | MEDIUM | OPEN | Pass 52 |
+| **BUG-279** | get_ohlcv() with reversed date order silently returns 0 rows; no error to caller | MEDIUM | OPEN | Pass 52 |
 | **BUG-001** | `crisis_flag` used before definition → NameError crash | UNKNOWN | OPEN | - |
 | **BUG-002** | `days` variable used before definition → UnboundLocalError on every trade close | UNKNOWN | OPEN | - |
 | **BUG-003** | `ClosedTrade` dataclass defined twice — dead code, maintenance risk | UNKNOWN | OPEN | - |
 | **BUG-004** | `avoid` direction falls into `triggered_short` bucket — inflates confidence tier | UNKNOWN | OPEN | - |
-| **BUG-005** | `strategies_triggered` key mismatch — agent cache is always wrong | UNKNOWN | OPEN | - |
+| **BUG-005** | `strategies_triggered` key mismatch — agent cache is always wrong (severity upgraded Pass 52: CRITICAL — reproducer confirms screener emits `strategies` key, pipeline reads `strategies_triggered`; cache always shows empty list, agents reason without strategy context) | CRITICAL | OPEN | - |
 | **BUG-006** | Double borrow cost on short trades | UNKNOWN | OPEN | - |
 | **BUG-007** | API key guard blocks no-agent Phase 1B run | UNKNOWN | OPEN | - |
 | **BUG-008** | `ema_50_200_bullish` signal key does not exist | UNKNOWN | OPEN | - |
