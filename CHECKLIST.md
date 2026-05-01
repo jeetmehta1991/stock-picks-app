@@ -485,3 +485,20 @@ State compliance visibly: "Checklist: ✅ [each item]"
     Effort ~35 hrs for full population. Older decisions may be flagged as
     `OBSOLETE_BY_TEST_RUN` if system evolution since original logging makes them
     no longer applicable (CAV-057).
+
+55. **Phase scope check (Pass 52 L134 — architectural framing gate before walkthrough):**
+    Per L134. Before walking through any Phase 1B-α decision (or any phase-deliverable
+    decision: Phase 0, Stage 1, Stage 2, Stage 3, Stage 4), explicitly classify:
+    a. **Patch-level:** stand-alone fix/metric/gap → normal batch review
+    b. **System-design-level:** defines phase output structure, methodology, dimensional
+       scope, or framework → focused walkthrough as its own decision; cannot be batched
+    If a decision is system-design-level but framed as patch-level, FLAG and propose
+    elevating to its own decision before continuing patch-level batch review.
+    Layered defense alongside #43/#46/#47/#53/#54:
+    - #43/#46/#47: catch duplicates (prior-art + three-source + full-text)
+    - #53: catch scope/feasibility errors (grounded-recommendation format)
+    - #54: catch empirical-failure errors (test-run audit gate)
+    - #55: catch architectural-framing errors (THIS — phase scope check)
+    Past failures (Pass 52 4-turn recurrence): treating DEC-068/069 as patches when
+    they were components of system-design-level DEC-422 dimensional framework. Owner
+    caught after 4 consecutive turns.

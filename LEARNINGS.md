@@ -807,3 +807,46 @@ If any of the 5 cannot be answered: flag the recommendation as `UNVERIFIED — p
 **Retroactive scope (Pass 52 owner directive amendment):** Per owner directive "you should apply this retroactively as well for all decisions already in the index file" — DEC-417 scope is ALL ~419 decisions in AUDIT_INDEX.md, not just Pass 52 ones. Older decisions logged in earlier passes (Pass 38/39/40/etc.) also need test_signal/test_output_expected/test_mismatch_action populated. Effort ~35 hrs total. Older decisions may be flagged `OBSOLETE_BY_TEST_RUN` if system has evolved since original logging.
 
 **Honest meta-observation:** This rule is the strongest defense yet against my pattern-match-without-verification failure mode. CHECKLIST #43 (prior-art grep) catches duplicates. CHECKLIST #46 (three-source check) catches scope misfits. CHECKLIST #53 (grounded-recommendation format) catches feasibility errors. CHECKLIST #54 (test-run audit) catches everything that survives the first three by requiring empirical confirmation. If a recommendation passes all four checks AND survives test-run validation, it's genuinely deployment-ready.
+
+## L134 (Pass 52) — Phase scope check: distinguish patch-level vs system-design-level decisions
+
+**Trigger:** Pass 52 four-turn architectural recurrence pattern. Owner caught:
+1. Sector concentration entry vs exit category error (DEC-070)
+2. Phase 1B-α vs Stage 3+ scope error (DEC-070)
+3. Static-vs-dynamic exit framing (Theme 7)
+4. **Single-dimension regime slicing vs multi-dimensional optimization framework (DEC-068/069 vs DEC-422)**
+
+**Why this matters:** L132/CHECKLIST #53 grounded format catches static checks (current state grep, scope, feasibility, infrastructure) but misses **architectural framing.** Decisions like DEC-068 ("add bootstrap CI") and DEC-069 ("per-regime exit selection") were getting walked through as patches when they were actually pieces of a larger system-design question (DEC-422: full dimensional space optimization). Walking patches one at a time obscures that the right answer requires reframing the system level.
+
+**Owner directive verbatim:** "Phase 1 is not a patch. Its to identify best strategies in the entire possible dimensional space before we add an AI agent on top of it."
+
+**Rule (CHECKLIST #55):** Before walking through a Phase 1B-α decision, explicitly ask:
+
+1. **Is this decision patch-level or system-design-level?**
+   - **Patch-level:** Fixes a specific bug, adds a specific metric, addresses a known gap. Stand-alone scope. Belongs in normal batch review.
+   - **System-design-level:** Defines what the phase delivers, how outputs are structured, what dimensions the analysis covers. Cannot be batched with patches; needs focused walkthrough as its own decision.
+
+2. **If system-design-level:** does it warrant its own decision rather than being subsumed into a patch decision? Examples:
+   - DEC-422 (dimensional space optimization) is system-design-level → its own decision
+   - DEC-068 (bootstrap CI) is patch-level → normal batch
+   - DEC-069 (per-regime exit) was framed as patch-level but actually proposed system-design-level changes (per-regime selection mechanism) → got SUPERSEDED when DEC-422 captured the broader frame
+
+3. **Architecture-fit check:** does this recommendation operate at the right level of abstraction for what the system needs to do? Or am I pattern-matching to a textbook concept that fits a different system architecture?
+
+**Pair:** L134 + CHECKLIST #55. Per owner standing exception for process-discipline files.
+
+**Honest meta-observation:** L132/CHECKLIST #53 (grounded format) and L133/CHECKLIST #54 (test-run audit) are static-check rules. L134/CHECKLIST #55 is the first rule about WHICH FRAMING level a decision belongs to. The four architectural recurrences in Pass 52 weren't caught by static checks because they were framing errors, not factual errors. Going forward: when a decision involves a phase deliverable (Phase 0/1B/2/3/4), explicitly classify patch vs system-design BEFORE the grounded-format walkthrough. If it's system-design-level and not yet logged as such, propose elevating it to its own decision before continuing the patch-level batch review.
+
+**Pattern lineage Pass 52:**
+- L114-L131: logging discipline rules
+- L132/CHECKLIST #53: grounded-recommendation format (recommendation quality)
+- L133/CHECKLIST #54: test-run audit gate (empirical validation)
+- L134/CHECKLIST #55 (THIS): phase scope check (architectural framing)
+
+These four rules form the layered defense:
+1. CHECKLIST #43/#46/#47: prior-art + three-source + full-text (catch duplicates)
+2. CHECKLIST #53: grounded-recommendation format (catch scope/feasibility errors)
+3. CHECKLIST #54: test-run audit (catch empirical-failure errors)
+4. CHECKLIST #55: phase scope check (catch architectural-framing errors)
+
+If this rule is itself followed by a fifth-class architectural recurrence, the right fix is probably "slow down on recommendations" not another checklist item.

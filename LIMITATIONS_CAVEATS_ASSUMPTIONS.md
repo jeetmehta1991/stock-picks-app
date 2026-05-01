@@ -552,3 +552,17 @@ Process: when populating validation table, mark obsolete decisions clearly; do n
 **Caveat:** DEC-132 variance < 0.5 threshold catches extreme cases (e.g., annual Sharpes [1.5, 0.2, 2.0, -0.3] = variance 0.97). Subtler instability (e.g., [1.2, 0.7, 1.1, 0.3] = variance 0.16) passes but shows clear declining edge. Tighter threshold variance < 0.25 would catch this (limits range to ~2× rather than ~5×).
 **Operational impact:** Initial Stage 3→4 gate uses variance < 0.5. Strategies near boundary should be reviewed for trend (declining vs stationary). Joint with DEC-415 (rolling Sharpe deviation) — DEC-415 catches trend-decay better than calendar-year variance. Both tests in tandem provide stronger stability signal than either alone.
 **Forward-link:** Phase D refinement candidate: tighten threshold or add trend-detection logic alongside variance check.
+
+## Section — Pass 52 Theme 8 (DEC-422 dimensional framework) caveats
+
+### CAV-062 — Combinatorial explosion limits combined-cell density beyond 3 dimensions
+
+**Source:** DEC-422/DEC-425-431 PENDING (Pass 52)
+**Status:** ACTIVE
+**Caveat:** DEC-422 dimensional framework slices on ~17 dimensions. Combined slicing of all dimensions simultaneously is statistically infeasible: 60+ strategies × 17 exits × 4 regimes × 11 sectors × 4 cap × 4 vol × 4 days-to-earnings × ... = millions of cells, with average ~10-20 trades total spread across all dimensional combinations. Bayesian shrinkage (Approach C) deferred to Phase D.
+**Operational impact:** Methodology hybrid (Approach A + B) handles this:
+- Marginal heatmaps (2D slicing per dimension) — statistically valid
+- Combined 3D heatmaps for top-20% strategies — moderate validity
+- 4D+ combinations infeasible without paid-tier data (longer history) or Bayesian shrinkage (engineering complexity)
+Cells with n<30 trades fall back to marginal-best (next-broader cell). Live decision lookup table includes fallback hierarchy. Strategies relying on 4D+ specific conditions ("crisis regime + tech sector + earnings-imminent + high VIX") will likely produce INSUFFICIENT_CONFIDENCE flags; verdict reverts to marginal best across one or two dimensions.
+**Forward-link:** Phase D refinement: implement Approach C (Bayesian shrinkage) for top-tier strategies after first Phase 1B-α run reveals which 4D+ cells matter most.

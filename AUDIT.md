@@ -21841,3 +21841,116 @@ Skip any element → flag rec as `UNVERIFIED — pattern-match only`. NEVER "Con
 ### Pending count: 316 + 4 = 320
 
 *Theme 6 closure (4/4). DEC-417 retroactive scope expanded to all 419 decisions per owner directive. L133/CHECKLIST #54 amended. Per CHECKLIST #43 (prior-art verified — DEC-081/093/205-209/415, BUG-079/106/78 cross-referenced); #45 (compliance statement); #46 (three-source check); #47 (full-text grep); #48 (sub-decisions formally logged); #49+#50 (CAV-057 through CAV-061 cross-referenced inline); #51 (explicit "Approve all"); #52 (advancement parsed); #53 (grounded-recommendation format applied); #54 (test-run audit gate amended).*
+
+---
+
+## AUDIT PASS 52 — DEC-422 Phase 1B-α dimensional space optimization framework + DEC-068 expansion + DEC-069 supersession + L134/CHECKLIST #55
+
+**Trigger:** Owner Pass 52 verbatim across multiple turns:
+- "Phase 1 is not a patch. Its to identify best strategies in the entire possible dimensional space before we add an AI agent on top of it"
+- "Option 2 - integrate all into backtesting"
+- Corrections: "strategies will be alot more - you are only considering the ones in code but we will add alot from pending decisions" + "Tier 1 - isnt hold duration an outcome of exit?"
+- "Approve all your recommendations"
+
+### Reframing of Phase 1B-α
+
+Phase 1B-α scope redefined from "validate per-strategy edges" to **comprehensive multi-dimensional discovery system** that identifies the optimal (strategy, exit_method) pair for every cell in the dimensional space — BEFORE AI agents are layered on top.
+
+**Output deliverable:** queryable lookup table where the live system asks "given current state vector (regime, sector, days-to-earnings, VIX, ...), what's the best entry-exit pair?" and gets a (strategy, exit, confidence) tuple.
+
+### NEW DEC-422 — Phase 1B-α Dimensional Space Optimization Framework
+
+**Owner-approved framework:**
+
+**Dimensions (corrected for owner feedback):**
+- **Strategy** (DYNAMIC count — currently ~60 in code + 16 chart pattern strategies via DEC-355-362 + future additions; NOT hardcoded)
+- **Exit method** (17 after DEC-067)
+- **Regime** (4: bull/neutral/bear/crisis per DEC-388)
+- **Sector** (11 GICS)
+- **Confidence tier** (4)
+- **Direction** (long/short)
+- **Days-to-earnings** (4 buckets)
+- **Smart money score** (3 bands)
+- **VIX level** (4 bands — finer than regime)
+- **Yield curve state** (3)
+- **AAII extreme** (3)
+- **CNN F&G** (5)
+- **Cap-band** (4)
+- **Volatility-bucket** (4)
+- **Distance from 52wk high** (3)
+- **Days to FOMC/CPI/NFP** (3 each)
+- **Earnings season binary**
+- **Market breadth** (3)
+- **Relative strength vs sector** (3)
+
+**Hold duration EXCLUDED (per owner correction):** Hold duration is an OUTCOME of the exit method, not an input. Including it as a slicing dimension would create circular logic.
+
+**Methodology:** Hybrid Approach A (marginal heatmaps for stat validity) + Approach B (3D combined for top-N strategies). Approach C (Bayesian shrinkage) deferred to Phase D.
+
+**Statistical gates per cell:**
+- n_trades ≥ 30 minimum
+- Bonferroni-corrected p < 0.05 (joint with DEC-080)
+- PSR ≥ 0.95 (joint with DEC-110)
+- t-stat ≥ 3.4 (Bonferroni-implied)
+
+Cells failing any gate → INSUFFICIENT_CONFIDENCE; verdict reverts to marginal best (next-broader cell).
+
+**Implementation:** 7 phases over ~20-28 days (4-6 weeks):
+
+| Sub-decision | Phase | Effort |
+|---|---|---|
+| DEC-425 | Phase 1: Dimensional slicing infrastructure | ~5-7 days |
+| DEC-426 | Phase 2: Per-cell statistical engine | ~3-4 days |
+| DEC-427 | Phase 3: Marginal heatmap analysis (Approach A) | ~2-3 days |
+| DEC-428 | Phase 4: Combined 3D analysis (Approach B) | ~3-4 days |
+| DEC-429 | Phase 5: Live decision lookup table builder | ~2 days |
+| DEC-430 | Phase 6: Dashboard 1 multi-dim cube visualization | ~3-5 days |
+| DEC-431 | Phase 7: Validation/regression tests + DEC-417 integration | ~2-3 days |
+
+**Pre-condition gate:** Stage 1 backtest run cannot proceed until DEC-422 framework complete. This is the deliverable Phase 1B-α produces.
+
+### DEC-423 — DEC-068 expansion (per-cell bootstrap)
+
+DEC-068 originally scoped per-strategy bootstrap CI. Expanded under DEC-422 framework: bootstrap operates at **per-cell level** within dimensional cube. Pairwise (strategy, exit) comparisons within cell. Bonferroni-correct across all cell pairs. Cells with n<30 fall back to marginal-best.
+
+### DEC-424 — DEC-069 SUPERSEDED_BY_DEC-422
+
+DEC-069's narrow scope (per-strategy × per-regime exit selection) is subsumed by DEC-422 where regime is one of ~17 dimensions. DEC-069 outputs become marginal-analysis subset of broader framework. Status: SUPERSEDED.
+
+### Process discipline added: L134 + CHECKLIST #55
+
+**Pattern recognition:** 4-turn architectural recurrence in Pass 52 exposed that L132/CHECKLIST #53 (grounded format) catches static checks (current state, scope, feasibility, infrastructure) but misses **architectural framing.** Decisions like DEC-068/069 were getting walked through as patches when they were actually pieces of a larger system-design question (DEC-422).
+
+**L134/CHECKLIST #55 — Phase scope check:** Before walking through any phase-deliverable decision (Phase 0/1B/2/3/4):
+1. Classify as patch-level OR system-design-level
+2. If system-design-level: focused walkthrough as own decision; cannot be batched
+3. Architecture-fit check: right level of abstraction for actual system?
+
+**Layered defense (5 levels):**
+- CHECKLIST #43/#46/#47: prior-art + three-source + full-text (catch duplicates)
+- CHECKLIST #53: grounded-recommendation format (catch scope/feasibility errors)
+- CHECKLIST #54: test-run audit gate (catch empirical-failure errors)
+- **CHECKLIST #55 (NEW): phase scope check (catch architectural-framing errors)**
+
+### Caveats added (CAV-062)
+
+- **CAV-062** — Combinatorial explosion limits combined-cell density beyond 3 dimensions; mitigated by Approach A+B hybrid methodology + INSUFFICIENT_CONFIDENCE fallback to marginal-best
+
+### Total decisions logged this commit: 10 (DEC-422 framework + DEC-423 DEC-068 expansion + DEC-424 DEC-069 supersession + DEC-425-431 implementation phases)
+### Pending count: 320 + 10 = 330 (DEC-069 status flipped PENDING → SUPERSEDED, so +9 net new PENDING)
+
+### Theme progression Pass 52 (running tally)
+
+| Theme | Decisions | Status |
+|---|---|---|
+| Theme 1 (PIT, 4) | DEC-298/299/300/303 | ✓ |
+| Theme 2 (Data+Universe, 8) | DEC-063-065/099/101/103-105 | ✓ |
+| Theme 3 (Phase 0.A Prefetch, 6) | DEC-256-261 | NOT approved |
+| Theme 4 (Engine Bugs, 15) | DEC-307-327 | ✓ |
+| Theme 5 (Statistical Methodology, 8) | DEC-080-085, 109-111 | ✓ |
+| Theme 6 (Validation criteria, 4) | DEC-129-132 | ✓ |
+| Theme 7 (Exits + Circuit Breakers, 9) | DEC-067/068/070/075-079 | IN PROGRESS — DEC-068 expanded; DEC-069 superseded; DEC-067/070/075-079 still pending |
+| **Theme 8 (NEW — Dimensional Framework)** | **DEC-422-431** | **APPROVED this commit** |
+| 35-themes-remaining | various | pending |
+
+*Theme 8 is unique — it's not a pre-existing batch but a system-design decision elevated from Theme 7 reframing. Per L134/CHECKLIST #55, this is the right architectural treatment. Per CHECKLIST #43 (prior-art verified — DEC-068/069/080/082/083/085/110/388/410/411/417 cross-referenced); #45 (compliance statement); #46 (three-source check); #47 (full-text grep); #48 (sub-decisions formally logged); #49+#50 (CAV-062 cross-referenced inline); #51 (explicit "Approve all"); #52 (advancement parsed); #53 (grounded format applied including hold-duration correction); #54 (test signals specified for DEC-422 + sub-decisions); #55-NEW (phase scope check codified retroactive to DEC-068/069 framing pattern).*
