@@ -126,6 +126,30 @@ All 9 must pass overall for a strategy to advance. Additionally, each strategy g
 - **NEVER run any git destructive command during or after parallel batch runs without checking status.**
 - All code goes to `claude-updates` branch, merged to main via push.
 
+### Push & PAT Pattern (Pass 52 owner-approved Option 3)
+- Repo URL: `https://github.com/jeetmehta1991/stock-picks-app.git`
+- **Authentication:** Personal Access Token (PAT) cached in sandbox session.
+- **Lifecycle (Option 3 per Pass 52 owner directive):**
+  1. Owner issues a long-lived PAT (30-90 day expiration) at session start
+  2. Claude caches PAT to `~/.git-credentials` for in-session reuse
+  3. Sandbox is ephemeral — `/home/claude` resets between work sessions
+  4. Owner re-pastes PAT at start of each new session
+  5. Owner revokes PAT when project is paused or done
+- **PAT settings (recommended):**
+  - Name: `claude-sandbox-YYYY-MM-DD` or similar timestamp
+  - Expiration: 30 days (re-issuable; long enough to avoid re-prompting per session, short enough to limit blast radius if leaked)
+  - Type: Fine-grained PAT preferred over classic
+  - Scope: Repository = `jeetmehta1991/stock-picks-app` only
+  - Permissions: Repository → Contents = Read and write; Metadata = Read-only (auto-set)
+- **Hard rules — NEVER violate:**
+  - **NEVER commit the PAT to any tracked file.** PAT lives only in `~/.git-credentials` (untracked) or in the active session's `git remote set-url` config.
+  - **NEVER write the PAT to any file under `/home/claude/stock-picks-app/`** (the repo working tree). That file would get caught by `git add` someday and pushed publicly.
+  - **NEVER paste the PAT into AUDIT.md, LEARNINGS.md, CLAUDE.md, or any other repo file.** The pattern is documented here; the secret never is.
+  - After each push, immediately reset the remote URL to remove the PAT from `.git/config` (which `git remote set-url <PAT-URL>` may have written): `git remote set-url origin https://github.com/jeetmehta1991/stock-picks-app.git`
+- **Push cadence:** at meaningful checkpoints (theme closures, significant work milestones), not after every commit. Reduces re-issuance friction.
+- **If push is rejected (remote ahead):** `git fetch origin main` → review remote commits → `git rebase origin/main` if file-change sets disjoint → push again. NEVER force-push without explicit owner approval.
+- **Recovery if PAT compromised:** owner revokes PAT at github.com/settings/personal-access-tokens. Issues new one. Repaste in new session.
+
 ### Data Sources
 - **NEVER use Wikipedia.** Blocked in Codespaces, not point-in-time, fragile (L88).
   - S&P 500 → `backtest/data/sp500_tickers.csv` refreshed quarterly via `scripts/refresh_sp500_universe.py` on LAPTOP using slickcharts.com
