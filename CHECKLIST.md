@@ -334,3 +334,16 @@ State compliance visibly: "Checklist: ✅ [each item]"
     e. Per L124. Owner has authorized strong action if the rule is repeatedly violated.
     f. The compliance statement is the LAST item in the response, after audit status table
        and other content.
+
+46. **Strategy/feature coverage checks must cross-reference three sources (Pass 52 owner directive):**
+    Per L125. For any question about whether a strategy, signal, primitive, or feature
+    is covered:
+    a. Code grep — current implementation state in screener.py/technical.py/exit_strategies.py/etc
+    b. AUDIT_INDEX grep — bugs and decisions logged about it
+    c. **PROJECT_PLAN.md grep** — what was DESIGNED to exist in scope
+    A gap is real if ANY of these three sources contradicts the others:
+    - Code missing what PROJECT_PLAN specifies = drift gap (previously-committed scope drifted out)
+    - PROJECT_PLAN missing what audit specifies = scope expansion documented in audit only
+    - Both code + PROJECT_PLAN missing what practitioner research says = research-suggested gap (lowest priority)
+    Skipping #c was the exact mistake in Pass 52 side-note responses. Going forward,
+    PROJECT_PLAN is mandatory third source.

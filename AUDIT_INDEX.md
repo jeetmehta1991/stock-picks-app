@@ -372,7 +372,7 @@
 | **DECISION-350** | Multi-timeframe testing across ALL strategies — currently 72/72 strategies operate on daily bars only; should test each on weekly + 4H + daily to find optimal TF per strategy (scope expansion: 72 → 72×N) | PENDING | Batch X55 — Strategy Coverage Gaps (Pass 52) | Pass 52 | - |
 | **DECISION-351** | Anchored VWAP for institutional cost-basis context — anchored from earnings, FOMC, breakout date marks where institutional volume aggregated; not currently computed | PENDING | Batch X55 — Strategy Coverage Gaps (Pass 52) | Pass 52 | - |
 | **DECISION-352** | 13F price-level mapping — map institutional accumulation prices from quarterly 13F filings to current price; identify levels where institutions are above/below water | PENDING | Batch X55 — Strategy Coverage Gaps (Pass 52) | Pass 52 | - |
-| **DECISION-353** | Risk-reward ratio sweep — currently only 3:2 fixed RR tested via exit_fixed_target; should sweep 1:1, 1:2, 1:3, 2:1 to find optimal per-strategy/per-regime RR | PENDING | Batch X55 — Strategy Coverage Gaps (Pass 52) | Pass 52 | - |
+| **DECISION-353** | Risk-reward ratio sweep — owner resolution Pass 52: 2R reward:risk MINIMUM. Current default `exit_fixed_target(target_mult=3.0, stop_mult=2.0)` = 3R/2R = 1.5:1 R/R, which is BELOW the new 2:1 minimum and must be changed. Sweep across 2:1, 3:1, 4:1, 5:1 to find optimal per-strategy/per-regime RR. NEVER test below 2:1 anywhere in the system. | RESOLVED | Batch X55 — Strategy Coverage Gaps (Pass 52) | Pass 52 | 52 |
 | **DECISION-354** | Chart pattern strategies — currently 0/72 strategies use cup&handle, head&shoulders, double-top/bottom, wedges, triangles, pennants, flag continuation patterns; significant price-action gap | PENDING | Batch X55 — Strategy Coverage Gaps (Pass 52) | Pass 52 | - |
 
 ---
@@ -967,7 +967,7 @@
 | **BUG-100** | MEDIUM — No kill switch; manual intervention required to stop trading | MEDIUM | OPEN | - |
 | **BUG-107** | MEDIUM — Silent exception swallowing: `except Exception: pass` masks checkpoint  | MEDIUM | OPEN | - |
 | **BUG-108** | MEDIUM — Agent context built with `.get(key, default)` masks missing data; agent | MEDIUM | OPEN | - |
-| **BUG-111** | MEDIUM — No break-and-retest variants of breakout strategies | MEDIUM | OPEN | Pass 13 |
+| **BUG-111** | HIGH — No break-and-retest variants of breakout strategies (severity upgraded Pass 52 per owner: retest variants are highest-quality systematic price-action setup; gap is more material than original MEDIUM) | HIGH | OPEN | Pass 13 |
 | **BUG-181** | MEDIUM — Finnhub news prefetch silently produces empty files | MEDIUM | OPEN | Pass 17 |
 | **BUG-182** | MEDIUM — Agent cache invalidated by every code change with no versioning gate | MEDIUM | OPEN | Pass 17 |
 | **BUG-188** | MEDIUM — Defense tickers (NOC, TXT) have empty gov_contracts data | MEDIUM | OPEN | Pass 18 |

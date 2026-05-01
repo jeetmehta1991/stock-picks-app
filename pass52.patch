@@ -1,0 +1,379 @@
+From 1326888576281af9837d934e272e124ccb7a867c Mon Sep 17 00:00:00 2001
+From: Claude Sandbox <claude-sandbox@local>
+Date: Thu, 30 Apr 2026 13:46:09 +0000
+Subject: [PATCH] =?UTF-8?q?Pass=2052:=20Round=201=20Group=20=CE=B1=20?=
+ =?UTF-8?q?=E2=80=94=208=20zero-eng-cost=20decisions=20resolved?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+RESOLVED:
+- DEC-152 (hold-out test period — 6 months, never touched during audits)
+- DEC-238 (pre/after-hours policy — RTH only, no extended hours)
+- DEC-248 (owner pre-commitment doc — build now, lightweight 5-rule doc)
+- DEC-245 (owner experience retrospective — informal, no cadence)
+- DEC-169 (skills gap audit — defer until friction surfaces)
+- DEC-341 (universe.py docstring fix — closes BUG-264)
+
+OBSOLETE:
+- DEC-288 (legal review — site is owner-only personal consumption,
+  no third-party reliance, no securities-registration trigger;
+  re-open if audience definition changes)
+- DEC-342 (test pass-rate concern — Pass 51b verified 63/63;
+  was based on stale pre-sync state)
+
+DEFERRED THIS SESSION (stay PENDING):
+- DEC-035 + DEC-270 (tax / CPA pair — owner-deferred, revisit later)
+
+Files:
+- AUDIT.md: +99 lines (Pass 52 section appended)
+- AUDIT_INDEX.md: 8 status updates + BUG-264 OPEN→RESOLVED
+- AUDIT_TRIAGE.md: removed 24 rows (8 decisions × 3 tables); count
+  headers updated (274→266 pending; 13→5 zero-eng remaining)
+- backtest/data/universe.py: docstring fix (CSV-backed, references L88)
+
+Verification:
+- All 8 decisions: TRIAGE table rows = 0, INDEX status = updated
+- DEC-035, DEC-270, DEC-207, DEC-029-C, DEC-291 confirmed still PENDING
+- pytest backtest/tests/test_unit.py backtest/tests/test_integration.py
+  → 63/63 passed (3.35s)
+
+Process discipline:
+- L1 + L2 dependency analysis run before resolutions; 3 prerequisite
+  conflicts identified and adjusted (DEC-035/270 deferred, DEC-029-C
+  bundled to Group δ pending DEC-269, DEC-291 bundled to Group ε
+  pending DEC-161)
+- Stricter verification confirmed: zero code/CI references to AUDIT*.md,
+  CHECKLIST.md, LEARNINGS.md, PROJECT_PLAN.md — doc edits cannot
+  break tests
+- Full pytest run because universe.py was touched (docstring only,
+  no logic change)
+
+Owner-approved picks: 1A 2A 3A 4B 5B 6OBSOLETE 7A 8OBSOLETE
+Round 1 progress: 8/13 resolved this batch; 5 remaining (Group β/δ/ε)
+---
+ AUDIT.md                  | 99 +++++++++++++++++++++++++++++++++++++++
+ AUDIT_INDEX.md            | 18 +++----
+ AUDIT_TRIAGE.md           | 36 +++-----------
+ backtest/data/universe.py |  9 +++-
+ 4 files changed, 121 insertions(+), 41 deletions(-)
+
+diff --git a/AUDIT.md b/AUDIT.md
+index 3d6ca29f..e065e7a5 100644
+--- a/AUDIT.md
++++ b/AUDIT.md
+@@ -19333,3 +19333,102 @@ During Pass 51b, a sandbox session reported expected `65/65` (claimed `63 + 2 ne
+ - Unit tests: 56 (was 54 + 2 new)
+ 
+ *Pass 51b complete. Hybrid trail latent bugs fixed; 63/63 tests pass.*
++
++---
++
++## AUDIT PASS 52 — Round 1 Group α decision resolutions (8 items)
++
++**Date:** April 30, 2026
++**Scope:** Owner-driven resolution of zero-engineering-cost decisions from AUDIT_TRIAGE.md.
++**Format:** Each decision resolution recorded with chosen option, rationale, and any forward-link to dependent decisions.
++
++### DEC-152 — Hold-out final test period — RESOLVED (Option A)
++
++**Resolution:** Last 6 months of available data designated as sealed hold-out. NEVER touched during any audit pass, parameter tune, or strategy iteration. Used only for the final pass/fail evaluation before Stage 4 (real-money) funding.
++
++**Rationale:** Walk-forward validation catches in-period overfitting; only a sealed hold-out catches meta-overfitting from 50+ audit cycles. With DEC-266 extending history to 2010 and DEC-158 setting 16-year backtest, losing 6 months represents ~3% of data — small cost for guarding against meta-overfitting. 6 months covers ~125 trading days, sufficient for ≥30 trades per strategy at expected trade frequency.
++
++**Forward action:** Add CHECKLIST item — backtest engine must error if any audit pass attempts to evaluate strategy performance against the hold-out window outside of the official Stage 4 gate evaluation.
++
++### DEC-238 — Pre/after-hours trading policy — RESOLVED (Option A)
++
++**Resolution:** NO extended-hours trading. RTH only (9:30am–4:00pm ET).
++
++**Rationale:** Three reinforcing reasons. (1) Backtest data is RTH OHLC bars from yfinance — running live in extended hours would create immediate backtest-live mismatch (DEC-129 Sharpe equivalence becomes meaningless). (2) Extended-hour spreads on S&P 500 mid-caps are typically 3–10× RTH spreads. (3) IBKR fills in extended hours have higher slippage than DEC-092 slippage model is designed to capture.
++
++**Forward action:** Encode RTH-only as broker-side order constraint at Stage 3+ (paper trading / live execution).
++
++### DEC-248 — Owner pre-commitment document — RESOLVED (Option A)
++
++**Resolution:** Build now. Lightweight 1-page document, ~5 owner-committed rules, lives in repo. To be drafted before paper trading begins.
++
++**Rationale:** Well-documented behavioral finance pattern: pre-commitment reduces in-the-moment temptation during drawdowns. Cost of writing now is low (~30 min); benefit during a real drawdown is high. Building it after first violation trades dollars for clarity at the worst possible moment.
++
++**Initial rule set (proposed for owner draft):**
++1. I will not override the system mid-drawdown (no manual closes of open positions during a -X% portfolio drawdown).
++2. I will not manually close winning trades early.
++3. I will not add capital after a 10% drawdown to chase recovery.
++4. I will not change strategy parameters during a losing streak.
++5. I will let the circuit breakers fire and respect their cooldown periods.
++
++**Forward action:** Owner drafts `docs/PRE_COMMITMENT.md` before Stage 3 paper trading begins. Final rule list and language is owner's responsibility.
++
++### DEC-245 — Owner experience retrospective — RESOLVED (Option B)
++
++**Resolution:** Informal — flag friction when it surfaces. No formal cadence.
++
++**Rationale:** Solo project. Formal monthly cadence creates overhead without changing behavior. Friction surfaces organically through the audit work itself (e.g., "terminal interface is inefficient" → VS Code extension switch this session). Adding a calendared retrospective creates a checkbox without producing insight.
++
++### DEC-169 — Owner skills gap audit — RESOLVED (Option B)
++
++**Resolution:** Defer formal audit until specific friction surfaces. No standalone skills-audit document.
++
++**Rationale:** Same logic as DEC-245. Skills gaps are surfacing organically through the audit cycles themselves — the cost-estimate misses revealed a "verify pricing at source" gap that became LEARNINGS L111-L113. A standalone skills-audit document risks being filled out once and never updated. Wait until something concrete goes wrong, then capture the lesson in LEARNINGS.
++
++### DEC-288 — Legal review of public site — OBSOLETE
++
++**Resolution:** OBSOLETE. The concern (third-party reliance / Canadian securities-registration risk) does not apply when the site's audience is owner-only. Site is technically public but functionally for personal consumption only.
++
++**Standing safeguard:** Standard "not financial advice / for personal use only" disclaimer in HTML footer is sufficient given audience definition.
++
++**Re-open trigger:** RE-OPEN this decision if the audience definition changes — e.g., site is promoted to others, picks are posted on social media, track record is published with intent to attract followers, or the site URL is shared beyond owner. Any of these introduces third-party reliance and re-creates the registration-risk question.
++
++**No change to website architecture:** DEC-187 through DEC-197 (two-property architecture, card-based layout, mobile-first, etc.) remain RESOLVED and unchanged. PROJECT_PLAN Section 21 stands as written.
++
++### DEC-341 — universe.py docstring claims Wikipedia fetch — RESOLVED (Option A)
++
++**Resolution:** Fix the module docstring at `backtest/data/universe.py` to match implementation reality (CSV-backed, not Wikipedia-fetched). Closes BUG-264.
++
++**Rationale:** The docstring claimed dynamic Wikipedia fetch, but actual code reads from committed `sp500_tickers.csv`. Per L88 ("NEVER USE WIKIPEDIA AS A DATA SOURCE"), the CSV-based approach is the correct pattern — the docstring was simply stale. Code logic is correct; only the documentation was wrong.
++
++**Closes:** BUG-264 (LOW, OPEN → RESOLVED)
++
++### DEC-342 — Test pass-rate mis-reported — OBSOLETE
++
++**Resolution:** OBSOLETE. The concern (only 38/46 tests passing) was based on stale pre-Pass-51b laptop state. Pass 51b empirically verified the real test count is 63/63 after `git pull --rebase` synced laptop main with origin (which was 5 commits ahead). Documented in this AUDIT.md under the Pass 51b section.
++
++**Process safeguards already in place:** L94 (sandbox-reported counts are advisory only) + CHECKLIST #33 (verify `git log origin/main..main` is empty before trusting local pytest counts) + Pass 51b "test count drift" entry. No additional action required.
++
++---
++
++## Pass 52 counts and forward state
++
++**Decisions resolved this pass:** 8 (6 RESOLVED + 2 OBSOLETE)
++- RESOLVED: DEC-152, 238, 248, 245, 169, 341
++- OBSOLETE: DEC-288, 342
++
++**Bugs closed:** 1 (BUG-264, LOW)
++
++**Owner-deferred this session (stay PENDING in registry):**
++- DEC-035 (tax classification approach, Canadian) — deferred per owner direction; revisit in future session
++- DEC-270 (pre-Stage-4 CPA consultation) — deferred per owner direction; revisit in future session
++
++**Round 1 remaining (groups β, δ, ε):**
++- Group β: DEC-207 + DEC-208 + DEC-209 — A/B framework bundle (3 decisions, resolve together)
++- Group δ: DEC-029-C — real-money starting capital (resolution: DEFERRED with named prerequisite DEC-269)
++- Group ε: DEC-291 — triage-based bulk approval (resolution: DEFERRED with named prerequisite DEC-161, OR scope narrowly)
++
++**New CHECKLIST candidate from this pass:**
++- Hold-out window enforcement (DEC-152): backtest engine must refuse to evaluate strategy performance against the hold-out 6 months outside the official Stage 4 gate evaluation. To be added when DEC-152 implementation lands (zero-eng-cost for the policy decision; small implementation work to encode the check).
++
++*Pass 52 complete. 8 zero-eng-cost decisions resolved; 5 deferred (3 owner-deferred this session + 2 to be resolved in groups β/δ/ε). No code changes affect tests; docstring fix verified by full pytest run during handoff.*
+diff --git a/AUDIT_INDEX.md b/AUDIT_INDEX.md
+index b826da45..118f1c65 100644
+--- a/AUDIT_INDEX.md
++++ b/AUDIT_INDEX.md
+@@ -172,7 +172,7 @@
+ | **DECISION-149** | Regime transition probability matrix | PENDING | Batch X19 — Regime extensions | Pass 40 | - |
+ | **DECISION-150** | Multi-asset regime detection (equity+credit+commodity+currency) | PENDING | Batch X19 — Regime extensions | Pass 40 | - |
+ | **DECISION-151** | Sector-level regime classification | PENDING | Batch X19 — Regime extensions | Pass 40 | - |
+-| **DECISION-152** | Hold-out final test period (never touched during audits) | PENDING | Batch X20 — IS/OOS extensions | Pass 40 | - |
++| **DECISION-152** | Hold-out final test period (never touched during audits) | RESOLVED | Batch X20 — IS/OOS extensions | Pass 40 | 52 |
+ | **DECISION-153** | Regime-stratified train/test splits | PENDING | Batch X20 — IS/OOS extensions | Pass 40 | - |
+ | **DECISION-154** | Market structure change tracker (quarterly) — Informal note in audit when market changes n | SUPERSEDED | Batch X21 — Benchmarking | Pass 40 | 43 |
+ | **DECISION-155** | vs-SPY comparison in all backtest reports | PENDING | Batch X21 — Benchmarking | Pass 40 | - |
+@@ -189,7 +189,7 @@
+ | **DECISION-166** | HANDOFF.md template specification — HANDOFF template — build when activated by owner | PENDING | Batch X25 — Process workflow | Pass 41 | - |
+ | **DECISION-167** | Retrospective cadence (every N audit passes) — Retrospective cadence: every 10 audit passe | RESOLVED | Batch X25 — Process workflow | Pass 41 | 43 |
+ | **DECISION-168** | Incident postmortem template — Incident postmortem template — build at first incident | PENDING | Batch X25 — Process workflow | Pass 41 | - |
+-| **DECISION-169** | Owner skills gap audit (statistical, SRE, tax, etc.) — Owner self-assesses skills gap (not | PENDING | Batch X26 — Skills | Pass 41 | - |
++| **DECISION-169** | Owner skills gap audit (statistical, SRE, tax, etc.) — Owner self-assesses skills gap (not | RESOLVED | Batch X26 — Skills | Pass 41 | 52 |
+ | **DECISION-170** | Type hints + mypy in CI | PENDING | Batch X27 — Code quality | Pass 41 | - |
+ | **DECISION-171** | Docstring standard + sphinx documentation | PENDING | Batch X27 — Code quality | Pass 41 | - |
+ | **DECISION-172** | All numerical constants extracted to config | PENDING | Batch X27 — Code quality | Pass 41 | - |
+@@ -257,17 +257,17 @@
+ | **DECISION-235** | Time/calendar handling spec (NYSE calendar, holidays, DST, half-days) | PENDING | Batch X36 — Data Quality + Trading Mechanics | Pass 45 | - |
+ | **DECISION-236** | Position sizing precision rules (round to broker minimum increment) | PENDING | Batch X36 — Data Quality + Trading Mechanics | Pass 45 | - |
+ | **DECISION-237** | Order type policy (when MOO vs limit vs stop vs stop-limit) | PENDING | Batch X36 — Data Quality + Trading Mechanics | Pass 45 | - |
+-| **DECISION-238** | Pre/after-hours policy (recommendation: NO extended hours) | PENDING | Batch X36 — Data Quality + Trading Mechanics | Pass 45 | - |
++| **DECISION-238** | Pre/after-hours policy (recommendation: NO extended hours) | RESOLVED | Batch X36 — Data Quality + Trading Mechanics | Pass 45 | 52 |
+ | **DECISION-239** | Multi-account architecture (TFSA/RRSP/Margin future-proofing) | PENDING | Batch X36 — Data Quality + Trading Mechanics | Pass 45 | - |
+ | **DECISION-240** | Alert tuning — configurable thresholds per event + rate tracking | PENDING | Batch X36 — Data Quality + Trading Mechanics | Pass 45 | - |
+ | **DECISION-241** | Time-in-market metric (% in any position, % long, % short, % cash) | PENDING | Batch X36 — Data Quality + Trading Mechanics | Pass 45 | - |
+ | **DECISION-242** | Distribution analysis (skewness, kurtosis, max single-trade contribution) | PENDING | Batch X36 — Data Quality + Trading Mechanics | Pass 45 | - |
+ | **DECISION-243** | Owner Approval Queue file (pending decisions waiting on owner reply, by age) | PENDING | Batch X37 — Process / Owner Experience | Pass 45 | - |
+ | **DECISION-244** | SESSION_START.md — Claude reads first in any new session for fast onboarding | PENDING | Batch X37 — Process / Owner Experience | Pass 45 | - |
+-| **DECISION-245** | Owner experience retrospective (periodic check-in on workflow productivity) | PENDING | Batch X37 — Process / Owner Experience | Pass 45 | - |
++| **DECISION-245** | Owner experience retrospective (periodic check-in on workflow productivity) | RESOLVED | Batch X37 — Process / Owner Experience | Pass 45 | 52 |
+ | **DECISION-246** | Quant finance correctness audit (Sharpe annualization, DD computation, vol periodicity) | PENDING | Batch X38 — Knowledge Gaps | Pass 45 | - |
+ | **DECISION-247** | Stats/ML implementation review (HMM, deflated Sharpe, Kelly — validate against known resul | PENDING | Batch X38 — Knowledge Gaps | Pass 45 | - |
+-| **DECISION-248** | Owner pre-commitment doc (rules owner commits to before losses) | PENDING | Batch X38 — Knowledge Gaps | Pass 45 | - |
++| **DECISION-248** | Owner pre-commitment doc (rules owner commits to before losses) | RESOLVED | Batch X38 — Knowledge Gaps | Pass 45 | 52 |
+ | **DECISION-249** | Strategy decay metric (rolling 6mo Sharpe per strategy; flag >50% drop) | PENDING | Batch X39 — Strategy Decay + Code Quality | Pass 45 | - |
+ | **DECISION-250** | Edge decay assumption (discount backtest Sharpe by expected crowding %) | PENDING | Batch X39 — Strategy Decay + Code Quality | Pass 45 | - |
+ | **DECISION-251** | Dependency injection audit (refactor for testability with mocks) | PENDING | Batch X39 — Strategy Decay + Code Quality | Pass 45 | - |
+@@ -307,7 +307,7 @@
+ | **DECISION-285** | Mid-hold agent re-evaluation — does live agent re-rate open positions? | PENDING | Batch X49 — Thin Areas Surfaced | Pass 47 | - |
+ | **DECISION-286** | Wealthsimple replication tracking — log owner-placed manual trades, compute exec-quality v | PENDING | Batch X49 — Thin Areas Surfaced | Pass 47 | - |
+ | **DECISION-287** | Public site failure handling + freshness signal (last-updated timestamp prominent) | PENDING | Batch X49 — Thin Areas Surfaced | Pass 47 | - |
+-| **DECISION-288** | Legal review of public site — registration check, disclaimer, liability terms BEFORE publi | PENDING | Batch X49 — Thin Areas Surfaced | Pass 47 | - |
++| **DECISION-288** | Legal review of public site — registration check, disclaimer, liability terms BEFORE publi | OBSOLETE | Batch X49 — Thin Areas Surfaced | Pass 47 | 52 |
+ | **DECISION-289** | Owner-absent contingency — backup contact, POA, vacation-mode auto-flatten | PENDING | Batch X49 — Thin Areas Surfaced | Pass 47 | - |
+ | **DECISION-290** | Dropped strategy re-evaluation cadence (every 6 months re-test, re-admit if Sharpe restore | PENDING | Batch X49 — Thin Areas Surfaced | Pass 47 | - |
+ | **DECISION-291** | Triage-based bulk approval — owner approves entire impact-ratio band in single message | PENDING | Batch X50 — Process Improvements | Pass 47 | - |
+@@ -360,8 +360,8 @@
+ | **DECISION-338** | Conversion logic (short→long in bull regime) creates label only; no actual long opened — d | PENDING | Batch X54 — Medium-Severity Improvements | Pass 48 | - |
+ | **DECISION-339** | pnl_dollar hardcoded $10K notional — wrong for $5K paper / $50K next stage / $1K live | PENDING | Batch X54 — Medium-Severity Improvements | Pass 48 | - |
+ | **DECISION-340** | get_correlation_matrix silently drops tickers with <20 history — variable corr-matrix memb | PENDING | Batch X54 — Medium-Severity Improvements | Pass 48 | - |
+-| **DECISION-341** | universe.py docstring claims Wikipedia fetch but code uses static CSV — fix docstring or i | PENDING | Batch X55 — Documentation Sync | Pass 48 | - |
+-| **DECISION-342** | Test pass-rate mis-reported — only 38 of 46 tests run cleanly (7 e2e errors); update repor | PENDING | Batch X55 — Documentation Sync | Pass 48 | - |
++| **DECISION-341** | universe.py docstring claims Wikipedia fetch but code uses static CSV — fix docstring or i | RESOLVED | Batch X55 — Documentation Sync | Pass 48 | 52 |
++| **DECISION-342** | Test pass-rate mis-reported — only 38 of 46 tests run cleanly (7 e2e errors); update repor | OBSOLETE | Batch X55 — Documentation Sync | Pass 48 | 52 |
+ | **DECISION-343** | Pandas-ta deprecation warning on pandas 4.0 — plan replacement (TA-Lib alternative) | PENDING | Batch X55 — Documentation Sync | Pass 48 | - |
+ | **DECISION-344** | Slippage threshold ATR/price > 3% likely too high — most S&P large caps never trigger | PENDING | Batch X55 — Documentation Sync | Pass 48 | - |
+ 
+@@ -1006,7 +1006,7 @@
+ | **BUG-112** | LOW — No ICT/SMC concepts implemented | LOW | OPEN | Pass 13 |
+ | **BUG-183** | LOW — No prefetch validation step | LOW | OPEN | Pass 17 |
+ | **BUG-204** | engine.py dead code shipping in repo (426 lines, no current import) | LOW | OPEN | Pass 47 |
+-| **BUG-264** | universe.py docstring claims Wikipedia fetch but uses static CSV | LOW | OPEN | Pass 48 |
++| **BUG-264** | universe.py docstring claims Wikipedia fetch but uses static CSV | LOW | RESOLVED | Pass 48 (closed Pass 52) |
+ | **BUG-265** | yfinance auto_adjust=True hardcoded; no raw price option | LOW | OPEN | Pass 48 |
+ | **BUG-266** | delay_sec 0.3 magic number undocumented | LOW | OPEN | Pass 48 |
+ | **BUG-267** | Test e2e takes 4.5 min for 1 passing test — too slow for smoke | LOW | OPEN | Pass 48 |
+diff --git a/AUDIT_TRIAGE.md b/AUDIT_TRIAGE.md
+index 5a22313b..dd031f38 100644
+--- a/AUDIT_TRIAGE.md
++++ b/AUDIT_TRIAGE.md
+@@ -1,6 +1,6 @@
+ # AUDIT_TRIAGE.md — Pending Decision Prioritization
+-**Last regenerated:** April 2026 (post-Pass 49, after BUG-214/215/216/217 fixes committed)
+-**Decisions covered:** 274 PENDING (matches AUDIT_INDEX.md)
++**Last regenerated:** April 2026 (post-Pass 52, after Group α resolutions: DEC-152, 238, 248, 245, 169, 288, 341, 342)
++**Decisions covered:** 266 PENDING (matches AUDIT_INDEX.md, post-Pass-52)
+ 
+ **How to read:**
+ - **Impact (1-10):** how much each moves the needle on quality, risk, or unblocking work
+@@ -17,9 +17,9 @@
+ 
+ | Metric | Count |
+ |---|---|
+-| Total pending | 274 |
++| Total pending | 266 |
+ | Phase 0.A blockers | 60 |
+-| Zero-eng-cost (only review time needed) | 13 |
++| Zero-eng-cost (only review time needed) | 5 |
+ | Impact >= 9 | 21 |
+ | Impact >= 8 (high) | 78 |
+ | Sum eng-days estimated | 594 |
+@@ -30,17 +30,11 @@
+ 
+ | Rank | Decision | Title | Impact | Eng | Review | 🔴 | Ratio | Theme |
+ |---|---|---|---|---|---|---|---|---|
+-| 1 | **DECISION-152** | Hold-out final test period (never touched during audits | 9 | 0 | 10 | 🔴 | 18.0 | Batch X20 — IS/OOS extensions |
+ | 2 | **DECISION-207** | Pre-commit minimum sample size per arm (300 paired trad | 9 | 0 | 15 | 🔴 | 18.0 | Batch X32 — Agent A/B Testing |
+-| 3 | **DECISION-288** | Legal review of public site — registration check, discl | 8 | 0 | 30 |   | 16.0 | Batch X49 — Thin Areas Surfaced |
+ | 4 | **DECISION-291** | Triage-based bulk approval — owner approves entire impa | 8 | 0 | 10 |   | 16.0 | Batch X50 — Process Improvements |
+ | 5 | **DECISION-270** | Pre-Stage-4 CPA consultation — formal opinion on tradin | 7 | 0 | 10 |   | 14.0 | Batch X45 — Stage 4 Live |
+-| 6 | **DECISION-248** | Owner pre-commitment doc (rules owner commits to before | 6 | 0 | 30 |   | 12.0 | Batch X38 — Knowledge Gaps |
+ | 7 | **DECISION-205** | A/B test arm design — minimum 4 arms (rules, full-agent | 10 | 1 | 15 | 🔴 | 10.0 | Batch X32 — Agent A/B Testing |
+ | 8 | **DECISION-029-C** | Real-money starting capital — DEFERRED until post-paper | 5 | 0 | 10 |   | 10.0 | Live Trading Operational (Group E) |
+-| 9 | **DECISION-169** | Owner skills gap audit (statistical, SRE, tax, etc.) —  | 5 | 0 | 30 |   | 10.0 | Batch X26 — Skills |
+-| 10 | **DECISION-238** | Pre/after-hours policy (recommendation: NO extended hou | 5 | 0 | 5 |   | 10.0 | Batch X36 — Data Quality + Trading Mecha |
+-| 11 | **DECISION-342** | Test pass-rate mis-reported — only 38 of 46 tests run c | 5 | 0 | 5 |   | 10.0 | Batch X55 — Documentation Sync |
+ | 12 | **DECISION-080** | t-stat + Bonferroni | 9 | 1 | 15 | 🔴 | 9.0 | Batch X4 — Statistical Methodology |
+ | 13 | **DECISION-131** | Agent value-add minimum (Sharpe improvement >=0.2 over  | 9 | 1 | 10 | 🔴 | 9.0 | Batch X14 — Validation criteria |
+ | 14 | **DECISION-206** | Paired A/B design — every trade evaluated by every arm  | 9 | 1 | 10 | 🔴 | 9.0 | Batch X32 — Agent A/B Testing |
+@@ -70,7 +64,6 @@ This is the recommended next-batch for fix approval. Includes runtime correctnes
+ 
+ | Decision | Title | Impact | Eng | 🔴 | Theme | Why critical |
+ |---|---|---|---|---|---|---|
+-| **DECISION-152** | Hold-out final test period (never touched during a | 9 | 0 | 🔴 | Batch X20 — IS/OOS extensions | Statistical integrity |
+ | **DECISION-207** | Pre-commit minimum sample size per arm (300 paired | 9 | 0 | 🔴 | Batch X32 — Agent A/B Testing | Gates Stage 2 agent decision |
+ | **DECISION-205** | A/B test arm design — minimum 4 arms (rules, full- | 10 | 1 | 🔴 | Batch X32 — Agent A/B Testing | Gates Stage 2 agent decision |
+ | **DECISION-080** | t-stat + Bonferroni | 9 | 1 | 🔴 | Batch X4 — Statistical Methodo | High system impact |
+@@ -100,7 +93,6 @@ This is the recommended next-batch for fix approval. Includes runtime correctnes
+ 
+ | Decision | Title | Impact | Eng | Ratio |
+ |---|---|---|---|---|
+-| **DECISION-152** | Hold-out final test period (never touched during audits) | 9 | 0 | 18.0 |
+ | **DECISION-207** | Pre-commit minimum sample size per arm (300 paired trades) b | 9 | 0 | 18.0 |
+ | **DECISION-205** | A/B test arm design — minimum 4 arms (rules, full-agents, no | 10 | 1 | 10.0 |
+ | **DECISION-080** | t-stat + Bonferroni | 9 | 1 | 9.0 |
+@@ -171,39 +163,25 @@ These need only owner review time, no implementation work. Easy wins.
+ 
+ | Decision | Title | Impact | Review (min) | Theme |
+ |---|---|---|---|---|
+-| **DECISION-152** | Hold-out final test period (never touched during audits | 9 | 10 | Batch X20 — IS/OOS extensions |
+ | **DECISION-207** | Pre-commit minimum sample size per arm (300 paired trad | 9 | 15 | Batch X32 — Agent A/B Testing |
+-| **DECISION-288** | Legal review of public site — registration check, discl | 8 | 30 | Batch X49 — Thin Areas Surface |
+ | **DECISION-291** | Triage-based bulk approval — owner approves entire impa | 8 | 10 | Batch X50 — Process Improvemen |
+ | **DECISION-270** | Pre-Stage-4 CPA consultation — formal opinion on tradin | 7 | 10 | Batch X45 — Stage 4 Live |
+-| **DECISION-248** | Owner pre-commitment doc (rules owner commits to before | 6 | 30 | Batch X38 — Knowledge Gaps |
+ | **DECISION-029-C** | Real-money starting capital — DEFERRED until post-paper | 5 | 10 | Live Trading Operational (Grou |
+-| **DECISION-169** | Owner skills gap audit (statistical, SRE, tax, etc.) —  | 5 | 30 | Batch X26 — Skills |
+-| **DECISION-238** | Pre/after-hours policy (recommendation: NO extended hou | 5 | 5 | Batch X36 — Data Quality + Tra |
+-| **DECISION-342** | Test pass-rate mis-reported — only 38 of 46 tests run c | 5 | 5 | Batch X55 — Documentation Sync |
+ | **DECISION-035** | Tax classification approach (Canadian) — Defer until CP | 4 | 30 | Live Trading Operational (Grou |
+-| **DECISION-245** | Owner experience retrospective (periodic check-in on wo | 4 | 30 | Batch X37 — Process / Owner Ex |
+-| **DECISION-341** | universe.py docstring claims Wikipedia fetch but code u | 4 | 5 | Batch X55 — Documentation Sync |
+ 
+-**Total zero-eng items: 13 | Total review-min: 220**
++**Total zero-eng items: 5 | Total review-min: 75** (post-Pass-52: DEC-207 + bundled siblings 208/209, DEC-270, DEC-035, DEC-029-C, DEC-291)
+ 
+ ---
+ 
+-## All 274 Pending — Sorted by Ratio
++## All 266 Pending — Sorted by Ratio
+ 
+ | Decision | Title | Impact | Eng | Review | 🔴 | Ratio |
+ |---|---|---|---|---|---|---|
+-| **DECISION-152** | Hold-out final test period (never touched during audits | 9 | 0 | 10 | 🔴 | 18.0 |
+ | **DECISION-207** | Pre-commit minimum sample size per arm (300 paired trad | 9 | 0 | 15 | 🔴 | 18.0 |
+-| **DECISION-288** | Legal review of public site — registration check, discl | 8 | 0 | 30 |   | 16.0 |
+ | **DECISION-291** | Triage-based bulk approval — owner approves entire impa | 8 | 0 | 10 |   | 16.0 |
+ | **DECISION-270** | Pre-Stage-4 CPA consultation — formal opinion on tradin | 7 | 0 | 10 |   | 14.0 |
+-| **DECISION-248** | Owner pre-commitment doc (rules owner commits to before | 6 | 0 | 30 |   | 12.0 |
+ | **DECISION-205** | A/B test arm design — minimum 4 arms (rules, full-agent | 10 | 1 | 15 | 🔴 | 10.0 |
+ | **DECISION-029-C** | Real-money starting capital — DEFERRED until post-paper | 5 | 0 | 10 |   | 10.0 |
+-| **DECISION-169** | Owner skills gap audit (statistical, SRE, tax, etc.) —  | 5 | 0 | 30 |   | 10.0 |
+-| **DECISION-238** | Pre/after-hours policy (recommendation: NO extended hou | 5 | 0 | 5 |   | 10.0 |
+-| **DECISION-342** | Test pass-rate mis-reported — only 38 of 46 tests run c | 5 | 0 | 5 |   | 10.0 |
+ | **DECISION-080** | t-stat + Bonferroni | 9 | 1 | 15 | 🔴 | 9.0 |
+ | **DECISION-131** | Agent value-add minimum (Sharpe improvement >=0.2 over  | 9 | 1 | 10 | 🔴 | 9.0 |
+ | **DECISION-206** | Paired A/B design — every trade evaluated by every arm  | 9 | 1 | 10 | 🔴 | 9.0 |
+@@ -224,8 +202,6 @@ These need only owner review time, no implementation work. Easy wins.
+ | **DECISION-295** | Reconcile SHORT_BORROW_COST_PER_DAY units — 0.005 ambig | 8 | 1 | 10 |   | 8.0 |
+ | **DECISION-305** | PIT guard `_assert_no_lookahead` logs WARNING but doesn | 8 | 1 | 5 | 🔴 | 8.0 |
+ | **DECISION-035** | Tax classification approach (Canadian) — Defer until CP | 4 | 0 | 30 |   | 8.0 |
+-| **DECISION-245** | Owner experience retrospective (periodic check-in on wo | 4 | 0 | 30 |   | 8.0 |
+-| **DECISION-341** | universe.py docstring claims Wikipedia fetch but code u | 4 | 0 | 5 |   | 8.0 |
+ | **DECISION-034** | Daily loss limits for live trading | 7 | 1 | 15 |   | 7.0 |
+ | **DECISION-038** | Layered execution with iteration budgets | 7 | 1 | 15 | 🔴 | 7.0 |
+ | **DECISION-079** | Reconcile Level 2 earnings gap with earnings_tolerant | 7 | 1 | 10 | 🔴 | 7.0 |
+diff --git a/backtest/data/universe.py b/backtest/data/universe.py
+index e159207e..869b9bac 100644
+--- a/backtest/data/universe.py
++++ b/backtest/data/universe.py
+@@ -2,15 +2,20 @@
+ data/universe.py — Instrument manager.
+ 
+ Handles:
+-  - Fetching S&P 500 constituent list from Wikipedia (point-in-time approximate)
++  - Loading S&P 500 constituent list from committed static CSV (sp500_tickers.csv)
++    The CSV is refreshed quarterly via slickcharts.com (or S&P press releases).
++    See LEARNINGS L88: Wikipedia is unreliable as a runtime data source — the
++    static CSV pattern is the correct approach.
+   - Applying liquidity filters to reduce ~500 → ~380-420 tradeable names
+   - Appending new instruments to existing universe without re-fetching
+   - Sector breakdown for correlation analysis
+ 
+ Universe tiers:
+   Phase 1A: SP50 + 17 ETFs = 67 instruments (hardcoded — pipeline validation)
+-  Phase 1B: Filtered S&P 500 + all ETFs = ~400 instruments (dynamic)
++  Phase 1B: Filtered S&P 500 + all ETFs = ~400 instruments (CSV-backed)
+   Phase 1C: Passing strategies only, full universe
++
++Resolves: DEC-341 (Pass 52), closes BUG-264.
+ """
+ 
+ import logging
+-- 
+2.43.0
+

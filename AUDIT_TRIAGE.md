@@ -627,3 +627,146 @@ Per owner sequencing rule: "decisions first → eliminate non-applicable bugs �
 **Estimated effort for full mapping:** 1-2 dedicated audit passes. Worth doing before the focused-batch resolution session begins, OR can be done incrementally as each bundle is approached.
 
 *Dependency mapping starter added Pass 52. Full mapping deferred to dedicated future pass; current scope sufficient for sequencing the immediate focused-batch resolution session.*
+
+---
+
+## Dependency mapping batch 2 — second tier (Pass 52, owner directive: continue)
+
+**Coverage this batch:** Phase 1B methodology, risk management (Group C), strategy/regime adaptation (Group D), exits batch X6, smart money batch X7, granularity batch X8. ~50 additional items mapped.
+
+| Decision | Blocks | Blocked by | Joint with | Notes |
+|---|---|---|---|---|
+| **DEC-014** (Phase 1B passing criteria) | Phase 1B → 1C transition | DEC-098/221/222 (test infra) | DEC-015, DEC-016 | Joint Group B resolution |
+| **DEC-015** (Strategy correlation methodology) | Phase 1B verdicts | none | DEC-014 | Methodology question |
+| **DEC-016** (Threshold calibration) | Strategy verdicts; depends on BUG-130 | BUG-130 fix | DEC-014 | Calibration depends on which strategies actually fire correctly post-cascade-fix |
+| **DEC-018** (Cooldown after stop-out) | Risk management; BUG-133 fix | none | — | Standalone |
+| **DEC-019** (Liquidity filter timing) | BUG-135 fix; BUG-238 | BUG-238 (HIGH OPEN) | — | Liquidity filter market-cap fail-open already a bug |
+| **DEC-020** (News API selection) | Phase 1C news | DEC-002 results | BUG-053/181 (Finnhub empty) | Phase 1C precondition |
+| **DEC-021** (Tier system simplification) | Tier code refactor | DEC-345 implementation | BUG-281 (tier duplicate) | Joint with site_generator vs engine cleanup |
+| **DEC-022** (Drawdown-aware sizing) | Risk management | none | DEC-023, DEC-024 | Group C resolution |
+| **DEC-023** (Vol-targeted sizing) | Risk management | DEC-022 | DEC-022 | Joint |
+| **DEC-024** (Correlation-adjusted concentration) | Portfolio risk | DEC-015 (correlation methodology) | DEC-022, DEC-023 | Group C resolution |
+| **DEC-025** (Regime-conditional strategy weighting) | Strategy execution | BUG-277 (regime classifier broken) | DEC-026 | Cannot resolve until regime classifier works |
+| **DEC-026** (Walk-forward param re-optimization) | Continuous validation | DEC-014 | — | Methodology question |
+| **DEC-027** (Online learning) | — | DEC-026 | — | Far-future |
+| **DEC-034** (Daily loss limits live) | Stage 3 live trading | none | DEC-035 | Stage 3 prep |
+| **DEC-035** + **DEC-270** (Canadian tax) | Stage 4 live trading | CPA consult | each other | Owner-deferred PENDING |
+| **DEC-037** (Characterization-test-first) | Phase 0.A approach | none | DEC-038 | Methodology |
+| **DEC-038** (Layered execution + iteration budgets) | Phase 0.A approach | DEC-037 | DEC-037 | Joint |
+| **DEC-043** (Retune framework) | Continuous optimization | DEC-026 | — | Phase 1+ infrastructure |
+| **DEC-062** (Output schema 5-tier mapping) | TradingAgents pipeline correctness | DEC-061 RESOLVED | BUG-005 cascade | Cannot validate while BUG-005 broken |
+| **DEC-063** (Universe refresh automation) | Quarterly universe maintenance | none | — | Phase 0.A prefetch |
+| **DEC-064** (Phase 0.A prefetch checklist) | Phase 0.A start | none | DEC-065 | Joint Phase 0.A entry |
+| **DEC-065** (Validate stored data quality before Phase 1B-α) | Phase 1B run | none | BUG-072, BUG-191 | Same root as BUG-072/191 |
+| **DEC-066** (Granularity standard for outputs) | All output writers | none | DEC-067, DEC-068, DEC-069 | Affects exit method comparison |
+| **DEC-067** (Add 9 missing exit methods) | Exit comparison completeness | DEC-353 (R/R minimum) | DEC-068, DEC-069 | Must enforce 2:1 R/R from DEC-353 in new methods |
+| **DEC-068** (Bootstrap CI + pairwise sig for exits) | Exit comparison validity | DEC-067 | — | Statistics |
+| **DEC-069** (Per-regime exit selection) | Exit method assignment | BUG-277 (regime broken) | DEC-070 | Cannot assign per-regime if regime broken |
+| **DEC-070** (Portfolio-level exit logic) | Portfolio risk | DEC-067, DEC-069 | — | Top-level; depends on per-trade and per-regime first |
+| **DEC-071** (Smart money refinement: officer roles, 10b5-1) | Smart-money signal quality | BUG-270 (insider broken) | DEC-073 | Cannot refine until extraction works |
+| **DEC-072** (Separate WSB from smart money) | Signal taxonomy | none | DEC-071 | Categorization |
+| **DEC-073** (Adopt Quiver pre-built composites) | Phase 1C smart money | BUG-185/053/181 (data-side) | — | Owner verify before subscribing more APIs |
+| **DEC-079** (Level 2 earnings gap) | Earnings handling | none | DEC-348 | Joint with event suppression |
+| **DEC-080** (t-stat + Bonferroni) | Strategy significance | DEC-353 (downstream R/R) | BUG-018, BUG-038, BUG-275 | Joint statistical methodology |
+| **DEC-081** (Sharpe + Sortino + tx cost sensitivity) | Strategy metrics | DEC-246 (quant correctness audit) | DEC-080, DEC-110, DEC-129/130/131/132 | Quant methodology batch |
+| **DEC-110** (Deflated Sharpe) | Strategy metrics | DEC-080 | DEC-081 | Joint quant |
+| **DEC-129** (Live-vs-backtest Sharpe equivalence) | Stage 3 → Stage 4 gate | DEC-081 | DEC-130, DEC-131, DEC-132 | Validation criteria batch |
+| **DEC-130** (Capacity stress test 5x) | Stage 3 → Stage 4 gate | DEC-129 | DEC-131, DEC-132 | Validation criteria |
+| **DEC-131** (Agent value-add minimum) | Phase 1C decision | DEC-129 | DEC-132 | A/B test verdict |
+| **DEC-132** (Annual Sharpe variance < 0.5) | Stability validation | DEC-129 | — | Validation criteria |
+| **DEC-205-209** (A/B framework) | A/B testing | DEC-098/221/222 (test infra) | each other | RESOLVED Pass 52; cited for completeness |
+| **DEC-210** (Net Sharpe contribution) | Agent ROI accounting | DEC-205-209 RESOLVED | — | Phase 1C decision |
+| **DEC-246** (Quant finance correctness audit) | Sharpe annualization, DD, vol periodicity | DEC-098/222 | DEC-080, DEC-081, DEC-110 | Parent decision for metrics edge cases |
+| **DEC-257** (Quarterly fundamentals prefetch) | Phase 0.A | none | — | 🔴 Phase 0.A blocker |
+| **DEC-259** (ICT/SMC pre-computation cache) | DEC-345 implementation | cache layer multi-interval | DEC-345-A/B/C/D | Cache extension precondition |
+| **DEC-288** OBSOLETE | — | — | — | Closed Pass 52 Round 1 |
+| **DEC-291** DEFERRED | — | — | — | Closed Pass 52 Round 1 |
+| **DEC-298** (Cache adjusted-close vs as-of-date) | PIT correctness | none | DEC-299/300/301/302/303 | 🔴 Phase 0.A blocker; PIT batch |
+| **DEC-299** (yfinance fetch_info CURRENT sector/mkt_cap) | PIT correctness | none | DEC-298 | 🔴 PIT batch |
+| **DEC-300** (yfinance earnings_dates, analyst data CURRENT) | PIT correctness | none | DEC-298 | 🔴 PIT batch |
+| **DEC-301** (FRED data revisions) | PIT correctness | none | DEC-298 | 🔴 PIT batch |
+| **DEC-302** (Survivorship in static CSV) | PIT correctness | DEC-303 | DEC-298 | 🔴 PIT batch |
+| **DEC-303** (S&P 500 historical membership) | PIT correctness | none | DEC-302 | 🔴 PIT batch |
+| **DEC-304** RESOLVED Pass 50 | — | — | — | Event calendar (already done) |
+| **DEC-313** (update_trailing_stop intraday HIGH) | Trailing stop correctness | none | BUG-232, DEC-337 | Joint trio |
+| **DEC-314** (Circuit breakers L3+4) | Exit reason completeness | none | BUG-233 | Joint pair |
+| **DEC-327** (Short-borrow cost duplicated) | Cost accounting | none | — | Code hygiene |
+| **DEC-337** (intraday extremes for stops) | Trailing stop correctness | none | BUG-232, DEC-313 | Joint trio |
+| **DEC-341** RESOLVED Pass 52 | — | — | — | Round 1 complete |
+| **DEC-342** OBSOLETE | — | — | — | Round 1 complete |
+| **DEC-346** (Multidim categorical verdict matrix) | Strategy verdict format | none | DEC-066 (granularity) | Affects all output |
+| **DEC-347** (Lagging-indicator dominance) | Signal universe | DEC-345 (RESOLVED) | DEC-345-A | Joint with HTF impl |
+| **DEC-350** (Multi-TF testing) | Strategy execution | cache layer multi-interval | DEC-345 | Same precondition as DEC-345 |
+| **DEC-351** (Anchored VWAP) | Institutional context | none | DEC-352 | New primitive |
+| **DEC-352** (13F price-level mapping) | Institutional context | BUG-186, BUG-274 | DEC-351 | Data-side bugs first |
+| **DEC-354** (Chart pattern strategies) | Strategy universe expansion | none | BUG-111 | Joint with retest |
+
+## Bug dependencies — second tier (Pass 52)
+
+| Bug | Blocks | Blocked by | Joint with | Notes |
+|---|---|---|---|---|
+| **BUG-018** (Bonferroni hardcoded 60) | Statistical correctness | DEC-080 | BUG-038, BUG-275 | Statistics cluster |
+| **BUG-026** (CRITICAL VIX proxy is VXX) | Regime classification | none | BUG-027, BUG-277, BUG-234 | Regime cluster |
+| **BUG-027** (CRITICAL regime_confidence dead code) | Regime classification | none | BUG-026, BUG-277 | Regime cluster |
+| **BUG-038** (No min Sharpe in Bonferroni) | Statistical filtering | DEC-080 | BUG-018, BUG-275 | Statistics cluster |
+| **BUG-041** (min_market_cap too low) | Liquidity filter | none | BUG-238 | Liquidity cluster |
+| **BUG-053** (CRITICAL Finnhub news 100% empty) | News sentiment | data side | BUG-181 | OPEN since early passes |
+| **BUG-064** (Phase 1C prerequisites undocumented) | Phase 1C kickoff | DEC-064 | — | Process |
+| **BUG-068** (CRITICAL CLAUDE.md missing 5 critical decisions) | Context completeness | none | — | Process |
+| **BUG-072** (HIGH validate_phase1b_data false-pass) | Phase 1B safety | none | BUG-191, DEC-065 | Validation gate |
+| **BUG-079** (HIGH stop fills assumed at stop price) | Exit price accuracy | none | BUG-106, BUG-78 | Slippage cluster |
+| **BUG-093** (No execution layer) | Stage 3 paper trading | DEC-067, DEC-070 | BUG-094 | Stage 3 prep |
+| **BUG-094** (Stage 3 cannot run as designed) | Stage 3 launch | BUG-093 | — | Stage 3 prep |
+| **BUG-095** (No portfolio-level state) | Portfolio risk | none | DEC-070 | Joint with portfolio exit |
+| **BUG-101** (88.1% trades are overlapping re-entries) | Backtest validity | none | BUG-102 | Trade-log cluster |
+| **BUG-102** (3.5× same-day duplicate inflation) | Trade count accuracy | BUG-101 | — | Trade-log cluster |
+| **BUG-103** (Smart money prefetched but not consulted at runtime) | Smart-money signal | none | BUG-270/271/272/273/274 | Cascade root |
+| **BUG-106** (HIGH Perfect stop fills slippage 0) | Exit realism | none | BUG-79, BUG-78 | Slippage cluster |
+| **BUG-129** (CRITICAL no regime-conditional param tuning) | Strategy adaptation | BUG-277 (regime broken) | DEC-025 | Cannot tune until regime classifier works |
+| **BUG-130** (Threshold calibration) | DEC-016 | none | — | Calibration |
+| **BUG-133** (Cooldown after stop-out) | DEC-018 | none | — | Risk |
+| **BUG-135** (Liquidity filter timing) | DEC-019 | none | — | Liquidity |
+| **BUG-146** (HIGH no Volume Profile strategies) | Strategy universe | BUG-152 | DEC-351 | Joint primitives |
+| **BUG-152** (HIGH Volume Profile primitives not computed) | Strategy universe | none | BUG-146, DEC-351 | Joint primitives |
+| **BUG-168** (DEC-023 vol sizing) | DEC-023 | none | DEC-023 | Risk |
+| **BUG-169** (DEC-024 concentration) | DEC-024 | none | DEC-024 | Risk |
+| **BUG-170** (DEC-022 drawdown sizing) | DEC-022 | none | DEC-022 | Risk |
+| **BUG-172** (DEC-026 walk-forward retune) | DEC-026 | none | DEC-026 | Methodology |
+| **BUG-173** (DEC-027 online learning) | DEC-027 | none | DEC-027 | Far-future |
+| **BUG-175** (DEC-025 regime-conditional weighting) | DEC-025 | BUG-277 | DEC-025 | Cannot resolve until regime works |
+| **BUG-185** (CRITICAL wikipedia 100% empty) | smart-money completeness | none | — | Data side |
+| **BUG-186** (HIGH 29 institutional empty + 5-mo gap) | Institutional signal + DEC-352 | none | BUG-274, DEC-352 | Data side; blocks DEC-352 |
+| **BUG-187** (HIGH WSB 14-month gap) | WSB signal | none | DEC-072 | Data side |
+| **BUG-191** (CRITICAL no prefetch validation gate) | Phase 1B safety + API subscriptions | none | BUG-072, DEC-065 | Validation gate |
+| **BUG-204** (LOW engine.py dead code) | Code hygiene | none | DEC-217 | Joint cleanup |
+| **BUG-207** (Type hints 0% screener+engine) | Type checking | none | — | Code quality |
+| **BUG-209** (81 except blocks; some swallow errors) | Error visibility | none | various silent-failure bugs | Audit-revealed pattern |
+| **BUG-230** RESOLVED Pass 48 | — | — | — | Cited for completeness |
+| **BUG-231** RESOLVED Pass 48 | — | — | — | Cited for completeness |
+| **BUG-232** (HIGH update_trailing_stop ignores intraday HIGH) | Trailing stop correctness | none | DEC-313, DEC-337 | Joint trio |
+| **BUG-233** (HIGH Circuit breakers L3+4 not implemented) | Exit reason completeness | none | DEC-314 | Joint pair |
+| **BUG-234** (HIGH VIX hard thresholds flip on single print) | Regime stability | none | BUG-026, BUG-277 | Regime cluster |
+| **BUG-235** (HIGH AAII pub-lag not respected) | PIT sentiment | none | BUG-236 | AAII cluster |
+| **BUG-236** (HIGH AAII auto-refresh missing) | PIT sentiment freshness | none | BUG-235 | AAII cluster |
+| **BUG-237** (HIGH CNN F&G interpolated) | PIT sentiment | none | — | Sentiment integrity |
+| **BUG-238** (HIGH Liquidity filter market-cap fail-open) | Liquidity correctness | none | BUG-041 | Liquidity cluster |
+| **BUG-239** (HIGH Sector reclass retro-applied) | PIT sector | none | DEC-298 PIT batch | Joint with PIT cluster |
+| **BUG-241** (HIGH Institutional 13F PIT late filers) | Institutional PIT | none | BUG-186, BUG-274 | Institutional cluster |
+
+## Honest scope statement — batch 2
+
+**Coverage: ~50 additional decisions + ~50 additional bugs mapped this batch. Cumulative: ~100 of ~520 items mapped (~19%).**
+
+Significant clusters now visible:
+- **Regime cluster:** BUG-026/027/277/234, DEC-025, BUG-129, BUG-175 — all blocked by classify_regime fix
+- **PIT cluster:** DEC-298/299/300/301/302/303 + BUG-239 + BUG-241 — joint Phase 0.A blocker batch
+- **Validation gate cluster:** BUG-072/191, DEC-065 — joint resolution unblocks Phase 1B safely
+- **Sentiment cluster:** BUG-235/236/237, BUG-053/181 + AAII cluster
+- **Slippage cluster:** BUG-79/106/78 — exit-price-realism cluster
+- **Smart money cascade:** BUG-005/270/271/272/273/274/276 + DEC-352 dependence on BUG-186/274
+- **Trailing stop cluster:** BUG-232 + DEC-313 + DEC-337 — joint trio
+- **Quant statistics cluster:** DEC-080/081/110/129/130/131/132 + DEC-246 + BUG-018/038/275
+
+**Remaining for future batches:** ~420 of ~520 items still unmapped (~81%). Continuing in subsequent passes.
+
+*Dependency mapping batch 2 added Pass 52. Cumulative ~19% coverage. Cluster patterns emerging give clear sequencing for focused-batch resolution session.*

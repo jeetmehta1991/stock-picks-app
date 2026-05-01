@@ -568,3 +568,20 @@ Both required. Refines #40.
 **Past mistakes corrected:** Pass 52 itself had ~3 lapses where I drafted deliverables before running CHECKLIST #43 prior-art grep, requiring re-work. Per-response compliance statement makes the discipline visible-by-default.
 
 **Pair:** L124 + CHECKLIST #45. Owner has authorized strong action if the rule is repeatedly violated.
+
+## L125 (Pass 52) — Strategy/feature coverage checks must cross-reference PROJECT_PLAN.md alongside AUDIT.md and code (owner directive)
+
+**Trigger:** Owner Pass 52 — "strategy coverage check - should be mapped against audit and project plan both."
+
+**Why this matters:** I previously performed strategy-coverage checks by walking screener.py + AUDIT_INDEX only. This misses scope that was DESIGNED in PROJECT_PLAN.md but never implemented in code or logged in audit. Such drift is invisible to my prior check pattern. PROJECT_PLAN is the design-intent source of truth; gaps relative to PROJECT_PLAN are previously-committed scope that drifted out, distinct from gaps the audit might flag.
+
+**Rule (CHECKLIST #46):** For any strategy/feature/signal coverage question, the check must include three sources:
+1. **Code grep** (e.g., `screener.py`, `technical.py`, `exit_strategies.py`) — current implementation state
+2. **AUDIT_INDEX grep** — what's been logged as bug or decision
+3. **PROJECT_PLAN.md grep** — what was DESIGNED to exist
+
+A gap is real if any of: (a) audit logs it as gap, (b) PROJECT_PLAN specifies it but code doesn't implement, (c) practitioner research says it should exist (lowest priority — yields to PROJECT_PLAN when conflict).
+
+**Past mistake corrected:** Pass 52 side-note responses to owner ("ALL price action strategies including retest?", "S/R for institutional interest?") only checked code + audit. Did not check PROJECT_PLAN. Findings were valid but incomplete — may have under-counted gaps or proposed new decisions for things already in PROJECT_PLAN scope.
+
+**Pair:** L125 + CHECKLIST #46. Per owner standing exception for process-discipline files.

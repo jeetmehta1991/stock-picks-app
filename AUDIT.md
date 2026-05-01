@@ -20714,3 +20714,105 @@ CHECKLIST #44 not directly applicable (these are coverage questions, not code-bu
 CHECKLIST #45 (Pass 52 NEW) applied — ending this batch with explicit compliance statement.
 
 *Side-note responses logged Pass 52. DEC-350/351/352/353/354 added (5 new pending decisions). BUG-111 forward-link with severity-upgrade recommendation. Resolved-archive convention question raised for owner direction. Per owner standing approval Pass 52 (add to audit conditional on prior-art verification).*
+
+---
+
+## AUDIT PASS 52 — DEC-353 RESOLVED + BUG-111 severity upgrade + new strategy-coverage directive
+
+**Trigger:** Owner Pass 52 directives: "3. HIGH" (BUG-111 severity) + "4. 2R to be minimum" (DEC-353 R/R floor) + "strategy coverage check - should be mapped against audit and project plan both" + "5. Continue" (full dependency mapping).
+
+### DEC-353 — RESOLVED Pass 52 — 2R minimum reward:risk for fixed-RR exits
+
+**Owner verdict:** "2R to be minimum"
+
+**Interpretation:** Reward-to-risk ratio of 2:1 is the floor. Target must be ≥ 2× stop in any fixed-RR exit. The system must NEVER test or trade below 2:1 R/R.
+
+**Current state of code (Pass 52 verified):**
+- `backtest/engine/exit_strategies.py`: `exit_fixed_target(target_mult=3.0, stop_mult=2.0)` → **target = 3× ATR, stop = 2× ATR = 1.5:1 R/R**
+- `run_exit_comparison` includes `fixed_3r_2r` as one of 8 exit methods
+- **The default is BELOW the new 2:1 minimum.** All historical exit comparisons that included `fixed_3r_2r` were biased by a sub-minimum RR exit.
+
+**Required code changes (Phase D pending implementation, not done this commit):**
+1. Change default `target_mult` from 3.0 to ≥ 4.0 (so target ≥ 2× stop_mult of 2.0)
+2. Add validation guard: `assert target_mult >= 2 * stop_mult, "DEC-353: R/R must be ≥ 2:1"` at function entry
+3. Replace `fixed_3r_2r` in EXIT_METHODS with sweep across `fixed_2r1r` (target=2 stop=1), `fixed_3r1r` (3:1), `fixed_4r2r` (2:1), `fixed_6r2r` (3:1), `fixed_4r1r` (4:1)
+4. Re-run exit comparison after fix; previous `fixed_3r_2r` results in any committed output files are now invalidated and should be marked
+
+**Cross-references:**
+- L11 — verify by running, not memory (the historical exit comparisons are now suspect)
+- DEC-098/221/222/265 (test infrastructure) — joint with regression test that 2:1 minimum is enforced
+
+**Forward-link:** When DEC-353 implementation lands, all prior backtest output that included `fixed_3r_2r` as a winning exit method should be re-evaluated against the 2:1-minimum sweep. May change which exits "win."
+
+### BUG-111 — Severity upgrade MEDIUM → HIGH (owner directive Pass 52)
+
+**Owner verdict:** "3. HIGH"
+
+**Reason:** Retest variants are arguably the highest-quality systematic price-action setup. The MEDIUM rating from Pass 13 underestimates impact. With 0/72 strategies covering retest, the gap is materially blocking the project's price-action coverage thesis.
+
+**No additional content change** — Pass 52 Stage 5.5 batch 3 already documented the gap; this is a severity recalibration only.
+
+### NEW DIRECTIVE — Strategy coverage check must be mapped against AUDIT AND PROJECT_PLAN both
+
+**Owner directive Pass 52:** "strategy coverage check - should be mapped against audit and project plan both"
+
+**Reason:** My previous strategy-coverage check (Pass 52 side-notes) only walked screener.py + AUDIT_INDEX. PROJECT_PLAN.md is the design-intent source of truth — it specifies what strategies the system was DESIGNED to have, separately from what AUDIT records. A strategy in PROJECT_PLAN but missing from screener.py is a different class of gap than one in neither — the PROJECT_PLAN ones are previously-committed scope that drifted out of implementation.
+
+**Honest finding upfront:** I have NOT yet performed this two-source check this session. Doing it now in next batch — separate commit. This commit captures the directive.
+
+**Method (per CHECKLIST #43 + new discipline):** For every strategy-coverage question:
+1. Grep `screener.py` for the implemented strategies (current state)
+2. Grep `PROJECT_PLAN.md` for the designed strategies (intended state)
+3. Grep `AUDIT_INDEX.md` for any logged decisions/bugs about each (audit state)
+4. Cross-reference: a gap exists if (a) audit says it should exist OR (b) PROJECT_PLAN says it should exist
+5. Bias toward PROJECT_PLAN over my web-research recommendations when they conflict — owner has signed off on PROJECT_PLAN specifically
+
+**Adding to LEARNINGS as L125 + CHECKLIST #46:** Strategy/feature coverage checks must include PROJECT_PLAN.md grep alongside screener.py + AUDIT_INDEX.md grep. Per owner standing exception for process-discipline files.
+
+*DEC-353 RESOLVED Pass 52 (2R minimum R/R; implementation pending in Phase D). BUG-111 severity upgraded MEDIUM→HIGH. New strategy-coverage cross-check directive logged. Per CHECKLIST #43 + #45 + #46-pending.*
+
+### Strategy-coverage check redone with PROJECT_PLAN cross-reference (per CHECKLIST #46)
+
+**Method:** Per L125, walked screener.py + AUDIT_INDEX + PROJECT_PLAN.md/PROJECT_PLAN_ARCHIVE.md for each gap originally proposed.
+
+**Findings — original proposals reclassified:**
+
+| Original Pass 52 finding | Code (screener.py) | Audit (INDEX) | PROJECT_PLAN | Reclassified as |
+|---|---|---|---|---|
+| Retest variants (DEC-355 candidate, BUG-111 forward-link) | 0/72 implemented | BUG-111 OPEN since Pass 13 | NOT in scope | Audit-flagged gap; not PROJECT_PLAN drift. **BUG-111 HIGH** captures it correctly. |
+| Chart patterns (cup&handle, H&S etc.) — DEC-354 | 0/72 implemented | None before Pass 52 | NOT in scope (only "chart pattern / context" as a setup-classification metadata) | **Research-suggested, not PROJECT_PLAN drift.** DEC-354 is a NEW scope expansion. |
+| Multi-TF testing — DEC-350 | All daily | None | NOT in scope | **Research-suggested, NEW scope expansion.** |
+| Anchored VWAP — DEC-351 | Not computed | None | NOT in scope | **Research-suggested, NEW scope expansion.** |
+| 13F price-level mapping — DEC-352 | Not computed | None | NOT in scope | **Research-suggested, NEW scope expansion.** |
+| R/R sweep + 2R minimum — DEC-353 RESOLVED | exit_fixed_target uses 1.5R | None before Pass 52 | NOT documented (no R/R policy in PROJECT_PLAN) | **Owner-NEW policy Pass 52.** Requires PROJECT_PLAN update. |
+| Volume Profile — BUG-146/152 | Not computed | OPEN | NOT in scope | Audit-flagged gap; **not PROJECT_PLAN drift.** |
+
+**Strategy count cross-check: 72 in code vs 60 in PROJECT_PLAN — NOT drift, additive:**
+- Code's 72 = PROJECT_PLAN's 60 (across 7 categories: pivot 10, momentum 9, trend 9, mean rev 11, breakout 6, candle 6, confluence 9) + 12 short variants
+- The 60 are 100% covered. No drift gap from PROJECT_PLAN.
+- The 12 short variants are extensions (likely added per intra-pass owner approvals); they expand but don't drift from PROJECT_PLAN scope.
+
+**Net reclassification:**
+- **0 PROJECT_PLAN-drift gaps** found (the 60 designed strategies are all in code)
+- **3 audit-flagged gaps** (BUG-111 retest, BUG-146/152 Volume Profile)
+- **5 NEW scope-expansion proposals** (DEC-350/351/352/353/354) — all originate from research/owner directive, NOT from PROJECT_PLAN
+
+### Required PROJECT_PLAN updates (deferred to focused-batch session)
+
+When the focused-batch resolution session begins, these PROJECT_PLAN amendments should be made:
+1. **R/R minimum 2:1 policy** (DEC-353 RESOLVED) — add to "Exit Rules" section in PROJECT_PLAN
+2. **Multi-TF testing** (DEC-350) — once approved, document the per-strategy TF assignment
+3. **Anchored VWAP / 13F mapping / Volume Profile / chart patterns** — once approved, expand "Strategy Universe" from 60 → 60+N
+4. **Retest variants** — once approved (BUG-111 HIGH), expand breakout category from 6 → 6+retest variants
+
+**Honest scope note:** These are documentation tasks AFTER decisions resolve, not before. PROJECT_PLAN should reflect APPROVED scope; it's not a wishlist.
+
+### Honest correction of my Pass 52 prior strategy-coverage answers
+
+In the previous-turn side-note responses, I framed all 5 new decisions (DEC-350/351/352/353/354) as gaps. Per L125 + CHECKLIST #46, more accurate framing:
+- **DEC-353 (R/R)** — owner-NEW policy, not gap
+- **DEC-350/351/352/354 + research-suggested chart patterns** — scope EXPANSIONS beyond original 60-strategy PROJECT_PLAN, not gaps from current scope
+
+This matters because "gap" implies the system is non-compliant with its own design. "Scope expansion" means owner is considering whether to expand design. Different decision class. Both are valid; just different framing.
+
+*Strategy-coverage check redone with PROJECT_PLAN as third source (per L125, CHECKLIST #46). 0 PROJECT_PLAN-drift gaps; 3 audit-flagged gaps already logged; 5 scope-expansion proposals reclassified. PROJECT_PLAN updates deferred to post-resolution work.*
