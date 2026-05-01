@@ -278,3 +278,61 @@ When a caveat is resolved:
 ---
 
 *Created Pass 52 per owner directive: "Document all caveats. Create a separate limitations/caveats/assumptions md file and keep adding to it." Initial population from retroactive scan of AUDIT.md (56 caveat mentions consolidated) + Pass 52 specific caveats. Append-only convention per L109. 24 entries at creation; ongoing additions expected.*
+
+## Section — Pass 52 universe expansion caveats
+
+### CAV-025 — Futures-based commodity ETFs subject to contango drag
+
+**Source:** DEC-363 PENDING (Pass 52)
+**Status:** ACTIVE
+**Caveat:** DBB (base metals) and CPER (copper) are futures-based ETFs. Front-month futures are consistently higher than spot during contango periods (typical for industrial metals). Holding these ETFs creates systematic drag — they may underperform spot copper/aluminum even when those underlying metals rise. Equity miner ETFs (COPX, GDX, PICK) avoid contango but introduce equity-market correlation.
+**Operational impact:** Backtests using DBB/CPER as proxies for "copper exposure" will systematically underestimate the edge of a true spot-copper trade. When evaluating commodity-correlation strategies, prefer equity miner ETFs OR explicitly model the contango drag in the backtest.
+**Forward-link:** Resolved when DEC-363 implementation includes contango-drag adjustment OR replaces futures-based with equity-miner ETFs.
+
+### CAV-026 — LIT lithium ETF concentrated in ~30 holdings
+
+**Source:** DEC-363 PENDING (Pass 52)
+**Status:** ACTIVE
+**Caveat:** LIT (Global X Lithium & Battery Tech) holds ~30 names spanning lithium miners, refiners, and battery makers. High idiosyncratic / single-name risk vs broad commodity ETFs (DBC has 14+ underlying commodities). AUM ~$1B as of mid-2025; sufficient liquidity but smaller than GLD/SLV/USO which have $50B+/$8B+/$2B+ respectively.
+**Operational impact:** LIT moves on individual constituent news (e.g., Albemarle earnings, Tesla battery announcements) more than a broad-basket lithium price index would. Treat as battery-thematic equity proxy, not pure-play commodity.
+**Forward-link:** No resolution path within current scope; alternative ETFs (LITP) are smaller. Accept as design tradeoff.
+
+### CAV-027 — Tier 3 backtest historical-membership problem
+
+**Source:** DEC-364 PENDING (Pass 52)
+**Status:** ACTIVE
+**Caveat:** Backtesting Tier 3 momentum watchlist (100 tickers per Pass 52 owner direction) requires recomputing the watchlist as-of each historical month. A momentum watchlist computed today is not valid for 2018 backtest — the 2018 momentum names were different. ~100 tickers × ~190 months of backtest = 19,000 historical screens; computationally heavy, requires per-month rerun of `build_momentum_watchlist.py` against historical data.
+**Operational impact:** Tier 3 cannot be naively activated for backtesting by populating a single CSV. Phased activation: Tier 2 first (DEC-105 spinoff detector dependency), Tier 3 second after historical-recomputation infrastructure built. Until Tier 3 historical-recomputation is implemented, backtests using current Tier 3 watchlist for historical periods will have severe lookahead bias (today's known winners read into 2018 backtest).
+**Forward-link:** Resolved when historical-recomputation infrastructure built per DEC-364 implementation.
+
+### CAV-028 — Tier 2 spinoff/IPO detection needs paid source
+
+**Source:** DEC-364 PENDING (Pass 52)
+**Status:** ACTIVE
+**Caveat:** yfinance does not preserve "first trade date" reliably for historical analysis (some delisted-then-relisted tickers like SNDK lose their original IPO date; spinoffs often inherit parent's listing date). Robust spinoff/IPO detection for Tier 2 requires Polygon Reference (paid), CRSP (academic-paid), or manual M&A archive scrape (brittle).
+**Operational impact:** Until paid source integrated, Tier 2 will rely on manually-curated CSV with limited historical coverage. SNDK case (re-listed Feb 2025 post-spinoff) is the canonical example — tracking it required manual addition.
+**Forward-link:** Resolved when DEC-105 (spinoff detector) lands with paid-source integration OR manual-curation workflow.
+
+### CAV-029 — Russell 1000 historical PIT membership not free
+
+**Source:** DEC-365 PENDING (Pass 52)
+**Status:** ACTIVE
+**Caveat:** Russell 1000 historical point-in-time membership is paid (FTSE Russell subscription). Without it, expanding universe to Russell 1000 mid-cap (500 names) creates survivorship bias at larger scale than DEC-303 — backtests for 2018 use today's Russell 1000 list, which excludes companies that exited between 2018 and now (and includes companies that weren't in then). Same caveat class as DEC-303 but at 500-ticker scale instead of 500-ticker scale.
+**Operational impact:** DEC-365 Phase A (free, current static list) ships with known survivorship bias. Phase B (paid FTSE) is the resolution path. Backtests using Phase A should annotate "Russell mid-cap subset has known survivorship bias pending DEC-365 Phase B."
+**Forward-link:** Resolved when DEC-365 Phase B (FTSE subscription) approved + integrated.
+
+### CAV-030 — Universe expansion multiplies subscription costs
+
+**Source:** DEC-365 PENDING (Pass 52)
+**Status:** ACTIVE
+**Caveat:** Each new ticker added to universe multiplies prefetch cost across all per-ticker data sources (Quiver smart money, Finnhub news, AV news, OpenBB fundamentals, yfinance OHLCV). The $263 CAD/month Phase 1C cost estimate was based on 500-ticker universe. Expansion to ~1100 instruments (Tier 1 + Tier 2 + Tier 3 + Russell mid-cap + ETFs) would roughly double all per-ticker subscription consumption + storage. Estimated revised cost: $400-500/mo. Russell 2000 expansion (Phase C) would push to $700-1000+/mo.
+**Operational impact:** Phase B / Phase C of DEC-365 carry separate cost decision before subscription. Owner approval gate required before activating wider universe at full subscription tier.
+**Forward-link:** Resolved per Phase by owner cost approval at each gate.
+
+### CAV-031 — Liquidity floor excludes legitimate small-cap opportunities
+
+**Source:** DEC-366 PENDING (Pass 52)
+**Status:** ACTIVE
+**Caveat:** DEC-366 sets liquidity floor at $300M market cap + $5M ADV. This excludes some legitimate small-cap momentum opportunities (sub-$300M companies with strong technicals). The choice prioritizes execution feasibility (fillable position sizes at Stage 4 capital scale) over coverage breadth.
+**Operational impact:** System will miss high-momentum sub-$300M names. Acceptable tradeoff at Stage 4 ($10K-25K capital) where filling above 5% of ADV creates material slippage. Reviewable annually based on actual Stage 3 paper-trading fill quality.
+**Forward-link:** Annual review per DEC-366; floor adjustable downward if Stage 3 fill quality permits.

@@ -21160,3 +21160,122 @@ Per the agreed walkthrough sequence:
 Standing by for owner direction to proceed to Theme 2.
 
 *DEC-298, DEC-299, DEC-300, DEC-303 RESOLVED Pass 52. LIMITATIONS_CAVEATS_ASSUMPTIONS.md created with 24 initial entries. L128 + CHECKLIST #49 codifying caveat-tracking discipline. Per CHECKLIST #43 + #45 + #49 + L128.*
+
+---
+
+## AUDIT PASS 52 — Theme 2 owner approvals + Tier 3 expansion to 100 + lithium/base metals ETFs
+
+**Trigger:** Owner Pass 52 directives:
+1. "Tier 3 - expand to 100"
+2. "Add lithium, base metals ETFs as well"
+3. "Agree with recs on rest" (DEC-064/065/099/101 with split, plus my proposed DEC-363/364/365/366)
+
+### Owner-approved decisions logged this commit
+
+#### DEC-064 PENDING — Phase 0.A prefetch checklist (10 entry items)
+Approved per Theme 2 walkthrough. Joint resolution with DEC-065 + BUG-072 + BUG-191. Checklist items 1-10 documented in prior turn.
+
+#### DEC-065 PENDING — Validate stored data quality before Phase 1B-α
+Approved. Hard gate before any Phase 1B re-run. Per-source non-empty thresholds, schema validation, date-range validation, spot-check live calls, blocker-mode failures. Joint with BUG-072 + BUG-191.
+
+#### DEC-099 PENDING — split into 5 sub-decisions
+Per owner approval, DEC-099 parent stays PENDING but is split. Sub-decisions logged as DEC-367 through DEC-371 (see below). Parent acts as umbrella.
+
+#### DEC-101 PENDING — Earnings strategies post-Phase 0.A
+Approved. Sequenced behind DEC-300 (PIT earnings dates). Phased: PEAD first (Phase 0.A), surprise z-score second, pre-earnings drift third, conf-call NLP and guidance tracking deferred to Stage 3.
+
+### NEW DEC-363 — Expand commodity ETF coverage (PENDING)
+
+**Owner directive Pass 52:** "Add lithium, base metals ETFs as well." Combined with prior-turn approval of expanded commodity coverage.
+
+**Currently in `config.py` ETFS list:**
+- Broad: SPY, QQQ, IWM, DIA, VTI
+- Sector: XLK, XLF, XLE, XLV, XLI
+- Volatility: VXX
+- Bonds: TLT, HYG, LQD
+- Commodities: GLD, SLV, GDX (gold + silver + gold miners only)
+- **Total: 17 ETFs**
+
+**Adding (8 new ETFs):**
+- **USO** — Crude oil (United States Oil Fund); WTI futures-tracking, most liquid oil ETF
+- **UNG** — Natural gas (United States Natural Gas Fund); Henry Hub futures
+- **DBC** — Broad commodity basket (Invesco DB Commodity Index)
+- **DBA** — Agricultural (Invesco DB Agriculture Fund)
+- **CPER** — Copper-specific futures (United States Copper Index Fund)
+- **DBB** — Base metals basket (Invesco DB Base Metals): aluminum, zinc, copper, lead, nickel
+- **LIT** — Lithium + battery tech (Global X Lithium & Battery Tech ETF); covers full lithium cycle from mining to battery production
+- **COPX** — Copper miners equity (Global X Copper Miners ETF)
+
+**New ETFS total: 17 + 8 = 25.**
+
+**No leveraged ETFs** per existing rule (TQQQ, SQQQ, SPXL, UVXY, SOXL excluded; reason: volatility decay makes backtested win rates non-transferable to live trading).
+
+**Caveat (per CHECKLIST #50, inline in PROJECT_PLAN amendment):** *DBB and CPER are futures-based ETFs subject to contango drag — front-month futures consistently higher than spot causes systematic drag during contango periods. May underperform spot copper/aluminum even when those metals rise. Equity miner ETFs (COPX, GDX, PICK) have leverage to commodity prices but also general equity-market correlation. Both representations have tradeoffs. (CAV-025 — to be added)*
+
+**Caveat:** *LIT is concentrated in ~30 holdings (lithium miners + battery makers). High idiosyncratic risk vs broad commodity ETFs. ~$1B AUM as of mid-2025; sufficient liquidity but smaller than GLD/SLV/USO. (CAV-026 — to be added)*
+
+### NEW DEC-364 — Activate Tier 2 + Tier 3 for Phase 1B backtesting (PENDING)
+
+**Owner directive Pass 52:**
+- Tier 3 expanded from 50 → **100** instruments per owner verbatim "Tier 3 - expand to 100"
+- Activate both tiers for backtesting (not just Stage 3+ live)
+
+**Code changes required:**
+1. `scripts/build_momentum_watchlist.py` — change `MAX_TICKERS = 50` to `MAX_TICKERS = 100`
+2. Update PROJECT_PLAN section 5 — Tier 3 size 50 → 100
+3. Implement Tier 2 historical-membership table (joint with DEC-105 spinoff detector)
+4. Implement Tier 3 per-month historical recomputation for backtest validity
+
+**Caveat:** *Backtesting Tier 3 has historical-membership problem identical to DEC-303 — a momentum watchlist computed today is not valid for 2018 backtest. Each historical month requires recomputing the 100-ticker watchlist from data available at that month's end. This is computationally heavy (100 tickers × ~190 months of backtest = 19,000 historical screens) but doable. Storage and compute cost added to Phase 0.A scope. (CAV-027 — to be added)*
+
+**Caveat:** *Tier 2 spinoff/IPO detection requires news-archive source. yfinance does not preserve historical "first trade date" reliably. May need paid Polygon Reference or manual M&A archive scrape. (CAV-028 — to be added)*
+
+### NEW DEC-365 — Universe expansion beyond S&P 500 (PENDING)
+
+**Owner directive Pass 52:** "no need to restrict to just top 500 tickers and/or ETFs."
+
+**Phased implementation:**
+- **Phase A (free, immediate):** Add current Russell 1000 minus S&P 500 ≈ 500 mid-cap names. Static CSV `russell_1000_mid_cap.csv` similar to sp500_tickers.csv.
+- **Phase B (paid, defer):** Historical PIT membership requires FTSE Russell subscription OR manual Wikipedia archive scrape (effort, brittle).
+- **Phase C (defer pending owner cost approval):** Russell 2000 small-cap = additional 1000 tickers. Significant prefetch cost increase.
+
+**Total designed universe at full activation:** Tier 1 (485) + Tier 2 (50-100) + Tier 3 (100) + Russell 1000 mid-cap (500) + ETFs (25) ≈ **~1160-1210 instruments**. Russell 2000 expansion would push to ~2200.
+
+**Caveat:** *Russell historical PIT membership is paid (FTSE Russell). Phase B carries data-cost decision separate from this approval. Until Phase B lands, Russell-side mid-caps in backtest will have survivorship bias — same caveat class as DEC-303 but at larger scale. (CAV-029 — to be added)*
+
+**Caveat:** *Each new ticker added to universe multiplies prefetch cost across Quiver (smart money), Finnhub (news), AV news, OpenBB fundamentals, yfinance OHLCV. Going from ~500 to ~1100 instruments roughly doubles all per-ticker subscription consumption + storage. Quiver's $263 CAD/month estimate per Phase 1C plan was based on 500-ticker universe; expansion to 1100 may push closer to $400-500/mo. Owner cost approval gate before Phase B. (CAV-030 — to be added)*
+
+### NEW DEC-366 — Liquidity floor for universe inclusion (PENDING)
+
+**Owner-approved Pass 52.** Replaces current `min_market_cap_m=100` (BUG-041 flagged "too low") + closes BUG-238 fail-open. Floor across all tiers:
+
+| Filter | Current | New |
+|---|---|---|
+| Min price | $5 (build_momentum_watchlist) | **$5** |
+| Min ADV (avg dollar volume) | not enforced | **$5M USD** |
+| Min market cap | $100M (config) | **$300M** |
+| Min trading days in past year | not enforced | **≥250** |
+| Re-evaluation cadence | none | **Annual** |
+
+Implements joint resolution of BUG-041 + BUG-238.
+
+**Caveat:** *Liquidity floor at $300M market cap excludes some legitimate small-cap momentum opportunities. The choice prioritizes execution feasibility (fillable position sizes) over coverage breadth. Reviewable annually based on actual fill quality from Stage 3 paper trading. (CAV-031 — to be added)*
+
+### Sub-decisions DEC-367 through DEC-371 (DEC-099 split)
+
+Per owner approval, DEC-099 parent retained as umbrella. Sub-decisions logged as separate PENDING for explicit phasing:
+
+| Sub-decision | Scope | Phase target |
+|---|---|---|
+| DEC-367 | Pairs / Stat Arb category | Phase 1C |
+| DEC-368 | Calendar / Seasonal strategies | Phase 0.D / 1B |
+| DEC-369 | Cross-Asset strategies | Phase 1D |
+| DEC-370 | Index Rebalance strategies | Phase 1C |
+| DEC-371 | Within-category gaps catalog | Per-category as raised |
+
+Detail of each in INDEX entry. AUDIT.md substantive content for each can be expanded when implementation is approached.
+
+### Total decisions logged this commit: 9 (DEC-363, 364, 365, 366, 367, 368, 369, 370, 371)
+### Pending count: 264 + 9 = 273
+
+*Per CHECKLIST #43 (prior-art verified across all 9), #45 (compliance statement), #46 (three-source check applied), #48 (enumerating in prose now logged), #50 (caveats inline in PROJECT_PLAN flagged as CAV-025 through CAV-031 to-be-added in LIMITATIONS_CAVEATS_ASSUMPTIONS.md). Per L129 (caveats inline in PROJECT_PLAN — will apply when DEC-363/364/365/366 land in PROJECT_PLAN amendments).*
