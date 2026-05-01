@@ -362,3 +362,37 @@ When a caveat is resolved:
 **Caveat:** Robust single-name halt detection requires paid NYSE/Nasdaq halt feed (~$X/mo, Phase C deferred). Free gap-based proxy (gap > 10% intraday without execution data) has false positives — earnings gaps and news-driven spikes are not halts but trigger the same proxy signal.
 **Operational impact:** DEC-386 Phase B free proxy acceptable for Phase 1B with documented limitation. Backtests may falsely model "halt exits" on legitimate earnings gap days. Mitigation: cross-reference earnings calendar (DEC-256) — if gap occurs on earnings day, treat as earnings event not halt.
 **Forward-link:** Resolved via DEC-387 Phase C paid feed integration (deferred to Stage 3+).
+
+## Section — Pass 52 Theme 4 batch 2 caveats
+
+### CAV-040 — VIX SMA + hysteresis lag tradeoff
+
+**Source:** DEC-317/DEC-388 PENDING (Pass 52)
+**Status:** ACTIVE
+**Caveat:** DEC-388 replaces single-print VIX thresholds with `vix_sma_5 = VIX.rolling(5).mean()` + hysteresis bands. This eliminates regime flip-flop on single intraday VIX prints near thresholds, but introduces 2-3 day delay vs single-print detection. In flash crashes (March 2020 day-by-day VIX moves from 12 to 82), the smoothed regime lags actual market stress — system may still be in "neutral" while actual VIX is at crisis levels for 2-3 days.
+**Operational impact:** Crisis-period drawdowns may be initially underestimated by ~2-3 days as smoothed VIX catches up. Hysteresis bands (5-pt for crisis, 3-pt for high_vol) help avoid flip-flop but don't eliminate the lag. Per-regime calibration of lookback window (5 days vs 3 days vs 7 days) may be revisited in DEC-016 after Phase 1B-α verdict data.
+**Forward-link:** Per-regime lookback calibration possible in DEC-016 (threshold calibration).
+
+### CAV-041 — AAII HTML scraping fragility
+
+**Source:** DEC-319/DEC-390 PENDING (Pass 52)
+**Status:** ACTIVE
+**Caveat:** AAII Sentiment Survey at aaii.com/sentimentsurvey is HTML scraping target. Page layout changes break the parser. AAII does not publish a stable CSV download or API endpoint for free-tier access. Long-term reliability unknown; may need monthly health check after deployment.
+**Operational impact:** If scraper fails, AAII cache goes stale. Validation gate (DEC-065) catches stale cache but requires manual intervention to re-establish source. Fallback: manual CSV download by data team if scraping breaks.
+**Forward-link:** Resolved if AAII publishes stable API; otherwise long-term scraper maintenance overhead.
+
+### CAV-042 — CNN F&G undocumented API risk
+
+**Source:** DEC-320/DEC-391 PENDING (Pass 52)
+**Status:** ACTIVE
+**Caveat:** CNN's `production.dataviz.cnn.io/index/fearandgreed/graphdata` is an undocumented endpoint reverse-engineered from the public cnn.com/markets/fear-and-greed page. CNN may change or remove this endpoint without notice. No SLA, no support contract.
+**Operational impact:** If endpoint changes, CNN F&G refresh breaks silently. Need monitoring (HTTP 404/500 responses). Fallback: scrape the cnn.com/markets/fear-and-greed page directly. Acceptable risk since F&G is a sentiment input (not an execution-critical signal); strategies can degrade gracefully when F&G unavailable.
+**Forward-link:** Resolved if CNN publishes documented API (unlikely); otherwise long-term endpoint monitoring.
+
+### CAV-043 — Fail-closed liquidity filter rejection-rate monitoring
+
+**Source:** DEC-321/DEC-392 PENDING (Pass 52)
+**Status:** ACTIVE
+**Caveat:** DEC-392 changes `apply_liquidity_filter` from fail-open to fail-closed: missing market_cap → REJECTS ticker. This is the correct safety policy but will reject some legitimately-valid tickers where yfinance has temporary missing data: new IPOs in their first few days (info field not yet populated by yfinance), tickers in halt (info may be stale during halt), tickers with brief data outages.
+**Operational impact:** Universe may shrink by 1-3% post-deployment due to transient data issues. Acceptable tradeoff vs current silent fail-open which let unfillable positions through. Monitoring requirement: log rejection rate by reason (missing_market_cap vs below_min_cap vs below_min_adv vs insufficient_history). If `missing_market_cap` rejections exceed 5% of universe, investigate yfinance quality (may indicate broader data issue, not just edge cases).
+**Forward-link:** Annual review of rejection patterns; threshold adjustments if Stage 3 paper-trading shows different fill quality patterns.

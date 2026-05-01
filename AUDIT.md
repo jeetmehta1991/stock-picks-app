@@ -21422,3 +21422,84 @@ Per my prior recommendation:
 ### Pending count: 282 + 7 = 289
 
 *Theme 4 batch 1 of 3 complete. Per CHECKLIST #43 (prior-art verified — BUG-232/233 + DEC-337 cross-referenced); #45 (compliance statement); #46 (three-source check); #48 (sub-decisions formally logged); #49+#50 (CAV-037/038/039 to be added inline-style); #51 (no inferred approval — explicit "Approve all" used); #52 (advancement directive "Next batch" interpreted correctly per new rule).*
+
+---
+
+## AUDIT PASS 52 — Theme 4 batch 2 closure: DEC-317/318/319/320/321 owner-approved
+
+**Trigger:** Owner Pass 52 verbatim: "Approve all your recs in this batch, please execute. Then Lets review Next batch"
+
+### Theme 4 batch 2 status: COMPLETE
+
+| Decision | Resolution | Sub-decisions |
+|---|---|---|
+| DEC-317 — VIX hard thresholds | Owner-approved | DEC-388 (5-day SMA + hysteresis) |
+| DEC-318 — AAII pub-lag | Owner-approved | DEC-389 (1-day shift + pub_date column) |
+| DEC-319 — AAII auto-refresh | Owner-approved | DEC-390 (refresh script + Friday workflow) |
+| DEC-320 — CNN F&G interpolation | Owner-approved | DEC-391 (last-published + age_days) |
+| DEC-321 — Liquidity fail-open | Owner-approved | DEC-392 (fail-closed + reasons enum) |
+
+### DEC-388 — DEC-317 implementation (VIX SMA + hysteresis)
+
+- Code change: `regime_filter.py:38-40` + `improvements.py:394` to use `vix_sma_5 = VIX.rolling(5).mean()` for regime decision input
+- Hysteresis bands: crisis enter ≥40 / exit <35 (5-pt band); high_vol enter ≥30 / exit <27 (3-pt band)
+- Joint with regime cluster: BUG-026 (VIX proxy is VXX), BUG-027 (regime_confidence dead code), BUG-234 (hard threshold flip), BUG-277 (regime classifier broken), DEC-025 (regime-conditional weighting), BUG-129 (regime-conditional tuning)
+- **Caveat CAV-040:** *5-day SMA delays regime detection by 2-3 days vs single print. In flash crashes (March 2020 day-by-day VIX moves), smoothed regime lags actual market stress. Hysteresis bands help but don't eliminate the lag. Tradeoff: false-positive flips (current) vs delayed crisis detection (proposed). Per-regime calibration may be revisited in DEC-016.*
+- Effort: ~1 day
+
+### DEC-389 — DEC-318 implementation (AAII pub-lag fix)
+
+- In `sentiment.py` AAII consumption: when reading for `as_of=D`, look up survey from prior week ending Friday before D-2 (so survey-Wed → published-Thu → readable D+)
+- Update `aaii_sentiment.csv` schema: add `pub_date` column = `survey_date + 1 trading day`
+- Document rule in `sentiment.py` docstring + PROJECT_PLAN section 9
+- Re-run any backtest that consumed AAII; document size of prior bias (sentiment-contrarian strategy performance delta)
+- Joint with BUG-235 (HIGH OPEN — same root issue)
+- Effort: ~0.5-1 day
+
+### DEC-390 — DEC-319 implementation (AAII auto-refresh)
+
+- New script `scripts/refresh_aaii_sentiment.py` — source: `aaii.com/sentimentsurvey/sent_results`
+- New workflow `.github/workflows/refresh_aaii.yml` — schedule Friday 14:00 UTC (cron `0 14 * * 5`, 9-10am ET, after Thursday publication)
+- Auto-PR weekly delta with new `pub_date` column populated
+- DEC-065 validation gate checks AAII CSV freshness (mtime within 14 days)
+- **Caveat CAV-041:** *AAII page is HTML scraping; layout changes break parser. Add fallback to manual CSV download. Long-term reliability unknown.*
+- Effort: ~1 day
+
+### DEC-391 — DEC-320 implementation (CNN F&G last-published)
+
+- In `sentiment.py` F&G consumption: expose underlying as `last_published_value`, `last_published_date`, `age_days` tuple
+- Strategies that need F&G filter `age_days ≤ 3` to avoid stale reads
+- New script `scripts/refresh_cnn_fear_greed.py` — source: `production.dataviz.cnn.io/index/fearandgreed/graphdata` (CNN's public API endpoint)
+- Migrate existing `cnn_fear_greed.csv` — historical interpolated values flagged `is_interpolated=True`; new data uses real values only
+- Joint with BUG-237 (HIGH OPEN — same root issue)
+- **Caveat CAV-042:** *CNN API is undocumented; may change without notice. Fallback to scraping `cnn.com/markets/fear-and-greed` page.*
+- Effort: ~1 day
+
+### DEC-392 — DEC-321 implementation (liquidity fail-closed)
+
+- In `apply_liquidity_filter`: change behavior — `if market_cap is None or market_cap == 0: REJECT (return False), log warning`
+- Add `LIQUIDITY_FILTER_FAIL_REASONS` enum: `missing_market_cap`, `below_min_cap`, `below_min_adv`, `insufficient_history`
+- Joint with BUG-238 (HIGH OPEN — fail-open root) + DEC-366 (liquidity floor thresholds: $300M cap, $5M ADV, ≥250 trading days, already approved)
+- **Caveat CAV-043:** *Fail-closed will reject some legitimately-valid tickers where yfinance has temporary missing data (new IPOs first few days, halted tickers). Acceptable tradeoff vs current silent fail-open. Monitor post-deployment rejection rate; investigate if >5% rejected.*
+- Effort: ~0.5 days
+
+### Resolution sequencing recommendation
+
+1. **DEC-392 first** (DEC-321) — cheap; closes silent fail-open
+2. **DEC-389** (DEC-318) — small fix, big lookahead correction
+3. **DEC-390** (DEC-319) — AAII auto-refresh, joint with DEC-318
+4. **DEC-391** (DEC-320) — CNN F&G similar pattern
+5. **DEC-388** (DEC-317) — VIX smoothing, joint with regime cluster
+
+### Caveats added (CAV-040 through CAV-043)
+
+Adding 4 new caveats to LIMITATIONS_CAVEATS_ASSUMPTIONS.md:
+- **CAV-040** — VIX SMA + hysteresis lag tradeoff (DEC-317/388)
+- **CAV-041** — AAII HTML scraping fragility (DEC-319/390)
+- **CAV-042** — CNN F&G undocumented API risk (DEC-320/391)
+- **CAV-043** — Fail-closed liquidity filter rejection-rate monitoring (DEC-321/392)
+
+### Total decisions logged this commit: 5 sub-decisions (DEC-388 through DEC-392)
+### Pending count: 286 + 5 = 291
+
+*Theme 4 batch 2 closed. 10 of 15 Theme 4 decisions resolved. Per CHECKLIST #43 (prior-art verified — BUG-026/027/234/235/237/238/277 + DEC-016/025/065/129/175/366 cross-referenced); #45 (compliance statement); #46 (three-source check applied); #48 (sub-decisions formally logged); #49+#50 (CAV-040/041/042/043 cross-referenced inline); #51 (explicit "approve all" used); #52 (advancement "Next batch" interpreted as advance to batch 3 with recommendations only).*
