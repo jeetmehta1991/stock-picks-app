@@ -19840,3 +19840,64 @@ The resolution path explicitly follows fork-first. No custom indicator developme
 **Resolution status:** PENDING. To be resolved in focused future session covering DEC-101 (earnings strategies) + DEC-348 (event suppression) jointly, since they're complementary sides of event-aware logic. Estimated scope: ~2-3 hours focused work.
 
 *DEC-348 logged. Stage 1 research finding captured. Resolution deferred. Resolution path follows fork-first (`fredapi` for FOMC dates, `yfinance.calendar` for earnings, `pandas-market-calendars` for exchange mechanics; build only the project-specific suppression rule logic).*
+
+---
+
+## AUDIT PASS 52 — Three production bugs surfaced during Stage 5 endpoint research (BUG-270, 271, 272)
+
+**Date:** April 30, 2026
+**Trigger:** Stage 5 strategy-research deliverable (endpoint documentation + agent feed mapping). Owner asked: "Are we capturing all API endpoints in the plan for agent feed?" Per L103 source-read discipline, while doing the inspection I traced concrete bugs in three smart-money consumption functions. Each was reproduced in sandbox by calling the function directly with known-populated tickers (AAPL).
+
+**Quantification:** Random sample n=500 of 12,304 Phase 1B agent cache JSONs. Silent-failure rates documented per-bug.
+
+**These bugs are exactly the failure mode BUG-191 (CRITICAL OPEN since Pass 18) warned about:** "Empty data flows silently through the engine and into agent reasoning as 'no_data'. User cannot know what's missing without running this audit manually." BUG-191 prediction confirmed empirically 30+ passes later.
+
+### BUG-270 · HIGH — `insider_signal()` column-name mismatch (100% silent failure)
+
+**File:** `backtest/data/smart_money.py` lines 145-180 (function `insider_signal`)
+**Evidence:**
+- n=500 random Phase 1B agent cache JSONs: `insider_conviction = "none"` in 500/500 (100.0%)
+- Reproduced in sandbox: `insider_signal("AAPL", date(2024, 6, 1))` returns `{"signal": "none", "buy_count": 0, "sell_count": 0}` despite AAPL having 249 rows of insider data in cache
+**Root cause:** Function looks for columns `Transaction`, `transaction`, `InsiderTitle`, `insiderTitle`, `InsiderName`, `insiderName`. Actual cached parquet columns are `TransactionCode`, `officerTitle`, `Name`. The `df[tx_col].str.contains(...)` filter raises `KeyError` (missing column); silent `try/except` returns default `{"signal": "none"}`.
+**Impact:** Insider conviction signal is structurally zero-information across all Phase 1B Decision Agent calls. Decision Agent reasoning frequently shows "no insider buying conviction" — this is a bug, not a real-world finding.
+**Fix:** Map columns correctly. Translate `TransactionCode` SEC Form 4 codes (`'P'`=Purchase, `'S'`=Sale, `'A'`=Award, `'D'`=Disposition non-purchase, `'M'`=Option exercise, `'F'`=Tax payment, `'G'`=Gift) to buy/sell/exercise categories per SEC documentation.
+**Effort:** ~10-15 lines. Standard SEC Form 4 transaction code mapping is well-documented.
+**Cross-references:** BUG-191 (CRITICAL parent — silent-failure pattern); DEC-222 (regression tests for top-20 critical bugs — BUG-270 belongs in that list).
+
+### BUG-271 · HIGH — `get_gov_contracts()` no Date column lookup (99.4% silent failure)
+
+**File:** `backtest/data/smart_money.py` (function `get_gov_contracts`, ~line 250)
+**Evidence:**
+- n=500 sample: `gov_contract_signal = "no_data"` in 497/500 (99.4%)
+- Reproduced in sandbox: AAPL has 66 rows of gov_contracts data with columns `Ticker, Amount, Qtr, Year` — no Date column exists
+**Root cause:** Function does `date_col = next((c for c in df.columns if "date" in c.lower()), None)` and returns `"no_data"` if no date column found. Cached parquet schema has `Qtr + Year` (e.g., Q1 2024) but no derived `Date` column. The data is correctly prefetched; the date-format mismatch is between the source schema and the consumption code.
+**Impact:** Gov contracts signal is 99.4% "no_data" in agent cache despite valid quarterly contract data being prefetched. Decision Agent reasoning frequently shows "zero government contracts" — bug, not real finding.
+**Fix:** Construct `Date` from `Qtr` + `Year` before applying date filter. Q1→2024-03-31, Q2→2024-06-30, Q3→2024-09-30, Q4→2024-12-31. Or use end-of-quarter from a `pd.PeriodIndex(quarter=df['Qtr'], year=df['Year']).end_time`.
+**Effort:** ~5-8 lines.
+**Cross-references:** BUG-191 (CRITICAL parent); DEC-222 (regression tests).
+
+### BUG-272 · HIGH — `get_lobbying()` Amount string concat (98.8% silent failure)
+
+**File:** `backtest/data/smart_money.py` (function `get_lobbying`, ~line 290)
+**Evidence:**
+- n=500 sample: `lobbying_signal = "no_data"` in 494/500 (98.8%)
+- Reproduced in sandbox: `get_lobbying("AAPL", date(2024, 6, 1))` returns `{"total_spend": 0.0, "signal": "no_data"}` despite AAPL having 215 rows of lobbying data with 33 in the requested 12-month window
+**Root cause:** Cached parquet `Amount` column is dtype `object` (strings like `'2840000.0'`). Function does `total = float(window[amount_col].sum())`. `.sum()` on a string Series concatenates: `'50000.02130000.0110000.0...'`. `float()` then raises `ValueError` on the concatenated string. Silent `try/except` returns default `{"signal": "no_data"}`.
+**Impact:** Lobbying signal is 98.8% "no_data" in agent cache despite valid data being prefetched for ~76% of S&P 500 tickers (verified in sample of 30 random tickers). The 24% of tickers with no lobbying data is real (companies that don't lobby federally), but the 98.8% silent-failure rate is bug-driven.
+**Fix:** Cast `Amount` to numeric before window filter: `df[amount_col] = pd.to_numeric(df[amount_col], errors='coerce')`. Three-line fix.
+**Effort:** ~3 lines. Cheapest fix of the three.
+**Cross-references:** BUG-191 (CRITICAL parent); DEC-222 (regression tests).
+
+### Pattern observation — silent except blocks consume real data integrity
+
+All three bugs share the failure pattern: `try:` block contains the real logic, `except Exception: ... return default` swallows any error silently. Bug-209 (existing OPEN) already flags this: "81 except Exception blocks; some swallow real errors." BUG-270/271/272 are three concrete instances of BUG-209 causing real production damage.
+
+**Forward-link added to BUG-191:** Pass 52 Stage 5 quantified the silent-failure pattern. Three specific bugs (BUG-270/271/272) traced and root-caused. BUG-191's CRITICAL severity from Pass 18 was correct — silent failures predicted, now empirically confirmed at 98-100% rates. Resolution path: BUG-191 should require both (a) `validate_prefetch_completeness.py` (presence of data on disk) AND (b) `validate_agent_consumption.py` (actual function calls return non-default values for known-populated tickers). Either gate alone fails to catch the BUG-270/271/272 class of bugs.
+
+**Forward-link added to DEC-222:** Pass 52 Stage 5 surfaced 3 new HIGH-severity bugs (BUG-270/271/272) that trivial regression tests would have caught. Each is 1-3 lines of test code: assert `function(known_populated_ticker, date)` returns non-default values. Empirical evidence supports moving DEC-222 priority forward. The "top-20 critical bugs" list to backfill regression tests for should now include BUG-270/271/272.
+
+**Forward-link added to DEC-098:** 70% test coverage gate before Stage 3 — Stage 5 evidence (3 bugs in critical-path consumption code, all detectable by trivial unit tests) demonstrates the gap that DEC-098 closes. Per L95 ($150 burned on Phase 1B with broken signal pipeline), the cost of NOT having coverage gate = real money. Empirical case for DEC-098 prioritization.
+
+**Forward-link added to DEC-265:** Smoke test power analysis — Stage 5 reinforces that smoke testing on agent OUTPUTS alone (the original DEC-265 framing) is insufficient. Smoke tests must also validate that INPUTS to agents are non-default. A smoke test that shows "all agents produce coherent SKIP rationales" can hide that the SKIP rationale comes from systematically empty smart-money inputs. DEC-265 scope should include input validation, not just output coherence.
+
+*BUG-270/271/272 logged. Per CHECKLIST #43 (just added) — verified existing audit prior art before logging: BUG-191 covers parent silent-failure pattern; BUG-209 covers except-Exception pattern; DEC-098/221/222/265 cover testing infrastructure gap. New bugs are concrete instances, not duplicates of those parent decisions/bugs.*

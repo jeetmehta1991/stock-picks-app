@@ -1016,6 +1016,9 @@
 | **BUG-267** | Test e2e takes 4.5 min for 1 passing test — too slow for smoke | LOW | OPEN | Pass 48 |
 | **BUG-268** | ETF sector labels hardcoded — new ETFs default to Unknown | LOW | OPEN | Pass 48 |
 | **BUG-269** | Quiver _DELAY constant unused — live API never called in backtest | LOW | OPEN | Pass 48 |
+| **BUG-270** | insider_signal() column-name mismatch — 100% silent failure (n=500) | HIGH | OPEN | Pass 52 |
+| **BUG-271** | get_gov_contracts() no Date column lookup — 99.4% silent failure (n=500) | HIGH | OPEN | Pass 52 |
+| **BUG-272** | get_lobbying() Amount string concat — 98.8% silent failure (n=500) | HIGH | OPEN | Pass 52 |
 | **BUG-001** | `crisis_flag` used before definition → NameError crash | UNKNOWN | OPEN | - |
 | **BUG-002** | `days` variable used before definition → UnboundLocalError on every trade close | UNKNOWN | OPEN | - |
 | **BUG-003** | `ClosedTrade` dataclass defined twice — dead code, maintenance risk | UNKNOWN | OPEN | - |
