@@ -336,3 +336,29 @@ When a caveat is resolved:
 **Caveat:** DEC-366 proposal sets liquidity floor at $300M market cap + $5M ADV. This excludes some legitimate small-cap momentum opportunities (sub-$300M companies with strong technicals). The choice would prioritize execution feasibility (fillable position sizes at Stage 4 capital scale) over coverage breadth.
 **Operational impact:** If DEC-366 approved, system will miss high-momentum sub-$300M names. Acceptable tradeoff at Stage 4 ($10K-25K capital) where filling above 5% of ADV creates material slippage. Reviewable annually based on actual Stage 3 paper-trading fill quality.
 **Forward-link:** Caveat applies only if DEC-366 approved; annual review per DEC-366; floor adjustable downward if Stage 3 fill quality permits.
+
+## Section — Pass 52 Theme 4 batch 1 engine bug caveats
+
+### CAV-037 — DEC-310 zero-volume cache fix is forward-only
+
+**Source:** DEC-310/DEC-383 PENDING (Pass 52)
+**Status:** ACTIVE
+**Caveat:** DEC-383 removes the silent `df = df[df["volume"] > 0]` filter from cache write path. Forward-only migration: existing cached Parquet files retain dropped zero-volume days. Halted days for past dates (pre-DEC-383 implementation) remain missing in current cache. Future events captured correctly.
+**Operational impact:** Backtests run on existing cache will not see historical halted days. Halt-resume gap strategies (uncommon but documented edge) cannot fire on pre-fix historical periods. Optional remediation: rebuild full cache from yfinance after DEC-383 lands; high cost (~485 tickers × 16 years of OHLCV refetch + storage).
+**Forward-link:** Optional remediation if owner approves cache rebuild.
+
+### CAV-038 — DEC-313 yfinance high/low can include outlier ticks
+
+**Source:** DEC-313/DEC-384 PENDING (Pass 52)
+**Status:** ACTIVE
+**Caveat:** yfinance intraday high/low values occasionally include stale prints or outlier ticks (e.g., a bar's high might be 10% above the close due to a single bad tick from a market data error). Using these for trailing-stop updates would create false stop drift.
+**Operational impact:** DEC-384 implementation must include outlier filter — high must be within 5% of close AND sanity-check vs prior day. If outlier detected, skip update for that bar (stop stays at prior level). Conservative tradeoff: occasional missed updates on legitimate volatile days; better than false stop drift.
+**Forward-link:** Resolved via DEC-384 outlier-filter implementation.
+
+### CAV-039 — DEC-314 Level 3 single-name halt false positives without paid feed
+
+**Source:** DEC-314/DEC-386/DEC-387 PENDING (Pass 52)
+**Status:** ACTIVE
+**Caveat:** Robust single-name halt detection requires paid NYSE/Nasdaq halt feed (~$X/mo, Phase C deferred). Free gap-based proxy (gap > 10% intraday without execution data) has false positives — earnings gaps and news-driven spikes are not halts but trigger the same proxy signal.
+**Operational impact:** DEC-386 Phase B free proxy acceptable for Phase 1B with documented limitation. Backtests may falsely model "halt exits" on legitimate earnings gap days. Mitigation: cross-reference earnings calendar (DEC-256) — if gap occurs on earnings day, treat as earnings event not halt.
+**Forward-link:** Resolved via DEC-387 Phase C paid feed integration (deferred to Stage 3+).

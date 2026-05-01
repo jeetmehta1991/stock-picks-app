@@ -21388,3 +21388,37 @@ Per my prior recommendation:
 ### Pending count: 273 + 9 = 282
 
 *Theme 2 (Batch X1 — Data + Universe) closed. All 8 parent decisions resolved with phased sub-decisions logged where applicable. Per CHECKLIST #43 (prior-art verified — DEC-298/364/103/104/105/063 all cross-referenced); #45 (compliance statement); #46 (three-source check); #48 (Phase splits enumerated in prior turn now formally logged); #50 (caveats CAV-027/028 cross-referenced inline).*
+
+---
+
+## AUDIT PASS 52 — Theme 4 batch 1 owner-approved (DEC-307/308/310/313/314)
+
+**Trigger:** Owner Pass 52 verbatim: "Approve all your recs. Next batch" — explicit approval words ("Approve") plus advancement directive ("Next batch"). Per L131/CHECKLIST #52, approval words = execute; advancement words = move on without re-executing.
+
+**This batch:** 5 of 15 decisions in Theme 4 (Batch X53 — High-Impact Engine Bugs). Approved: DEC-307/308/310/313/314 with implementation as recommended in prior turn. Sub-decisions DEC-381 through DEC-387 logged.
+
+| Parent Decision | Sub-decisions | Effort |
+|---|---|---|
+| DEC-307 (cache front-extension) | DEC-381 | ~1 day |
+| DEC-308 (cache 20-day threshold) | DEC-382 | ~0.5 days |
+| DEC-310 (zero-volume drops) | DEC-383 | ~1 day |
+| DEC-313 (trailing stop intraday) | DEC-384 (joint with DEC-337 + BUG-232) | ~1-2 days |
+| DEC-314 (circuit breakers L3+L4) | DEC-385 / DEC-386 / DEC-387 | ~3-4 days total |
+
+**Resolution sequencing per my recommendation:**
+1. DEC-383 (DEC-310 zero-volume) — simplest
+2. DEC-381 (DEC-307 front-extension) — foundation
+3. DEC-382 (DEC-308 threshold) — verification + fix
+4. DEC-384 (DEC-313+337 trailing stop) — joint
+5. DEC-385/386/387 (DEC-314 circuit breakers) — phased; Phase C deferred subscription
+
+### New caveats logged (CAV-037 through CAV-039)
+
+- **CAV-037 — DEC-310 forward-only migration:** Existing cache retains zero-volume days already dropped. Halted days for past dates remain missing in current cache. Future events captured correctly via fix.
+- **CAV-038 — DEC-313 yfinance high/low outliers:** Intraday high/low can include stale prints / outlier ticks. Filter: high must be within 5% of close + sanity-check vs prior day. Otherwise treat as suspicious and skip update for that bar.
+- **CAV-039 — DEC-314 Level 3 false positives without paid feed:** Gap-based proxy for single-name halts has false positives — earnings gaps not halts. Robust detection requires paid NYSE/Nasdaq halt feed (Phase C, deferred). Phase B free proxy acceptable for Phase 1B with documented limitation.
+
+### Total decisions logged this commit: 7 sub-decisions (DEC-381 through DEC-387)
+### Pending count: 282 + 7 = 289
+
+*Theme 4 batch 1 of 3 complete. Per CHECKLIST #43 (prior-art verified — BUG-232/233 + DEC-337 cross-referenced); #45 (compliance statement); #46 (three-source check); #48 (sub-decisions formally logged); #49+#50 (CAV-037/038/039 to be added inline-style); #51 (no inferred approval — explicit "Approve all" used); #52 (advancement directive "Next batch" interpreted correctly per new rule).*
