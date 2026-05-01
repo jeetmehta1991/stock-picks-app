@@ -307,3 +307,19 @@ State compliance visibly: "Checklist: ✅ [each item]"
        topics already extensively in audit. L122 captures the pattern. 43 fixes the
        mechanical trigger.
     NEVER skip the full-document search when owner uses these trigger phrases.
+
+44. DATA-CONSUMPTION AUDIT MUST INCLUDE RUNTIME PROBE:
+    a. For any function that reads cached/external data (parquet, JSON, API), audit by RUNNING:
+       - Identify cache source the function reads
+       - Verify cache populated for at least 1 known ticker
+       - Call function: `result = func(known_ticker, date_in_cache_range)`
+       - Assert return is non-default (no "no_data", no "none", no zero counts)
+    b. If default returned: investigate schema mismatch, type mismatch, filter logic
+    c. Static reading is necessary but NOT sufficient — column-name typos, schema drift,
+       and silent except blocks are invisible to read-audit
+    d. Past mistake: 40+ audit passes Pass 1-51 missed BUG-270/271/272/273/274 (5 schema
+       mismatch bugs). 90 minutes of runtime-probe in Pass 52 Stage 5.5 caught them all.
+       L123 captures the pattern.
+    e. Apply this discipline retrospectively to all existing data-consumption code paths
+       (engine, signals, cache layer) — Stage 5.5 only audited smart_money + partial macro
+    NEVER mark a data-consumption function as audited without running it.

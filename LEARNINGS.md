@@ -545,3 +545,14 @@ Both required. Refines #40.
 **Why this matters:** Owner has been reminding me to refer to audit each time. Each repetition wastes attention and erodes trust in claude-side discipline. The audit is the source of truth; my proposing things that are already there means I'm reading the audit shallowly.
 **Fix:** When owner's prompt contains words like "is it already audited," "already flagged," "have we tracked this," — STOP. Do NOT continue drafting. Run grep on AUDIT_INDEX, AUDIT.md, LEARNINGS.md, CHECKLIST.md for the topic FIRST. Show owner the prior art that exists. THEN respond.
 **Rule:** Owner phrasing "is X in audit / already flagged / already tracked" = mandatory full-search first. No proposal until search completes. Refines L121 (which only added BUG search) — this adds the discipline of recognizing the trigger phrase.
+
+### L123 — Audit by reading code is insufficient for data-consumption logic [critical/process]
+**Mistake (Pass 52, owner-flagged):** 40+ audit passes did not catch BUG-270/271/272/273/274/275/276/277 — eight HIGH-severity bugs in smart-money data consumption code. Each is a schema mismatch, type mismatch, or empty-cache issue that is invisible to read-audit unless the auditor has both code AND actual data shape in front of them. Owner spent $150 on a Phase 1B agent run where every smart-money signal was silently broken.
+**Why this matters:** Data-consumption code passes static review — types check out, exception handlers exist, code reads as normal. The bug only manifests when the cache schema doesn't match the code's column-name/type assumption. Reading is insufficient. Running on real data is required.
+**Fix:** L123 + CHECKLIST #44. For any data-consumption code under audit:
+  1. Identify the cache file/source the function reads
+  2. Verify cache is populated for at least 1 known ticker (e.g., AAPL)
+  3. Call the function with that ticker, date inside cache range
+  4. Assert return is non-default
+  5. If default returned: investigate schema/type/filter assumption mismatch
+**Rule:** Audit of data-consumption code is incomplete without runtime execution. 90 minutes of runtime-probe discipline (Stage 5.5) caught 5 bugs that 40+ read-audit passes missed.
