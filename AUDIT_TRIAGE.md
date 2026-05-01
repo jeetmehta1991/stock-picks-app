@@ -427,3 +427,89 @@ These need only owner review time, no implementation work. Easy wins.
 
 ---
 *Regenerated April 2026 (post-Pass-49) — 274 pending decisions ranked by impact/cost ratio.*
+
+---
+
+# BUG TRIAGE — Pending Bug Prioritization (added Pass 52 per owner direction)
+
+**Note:** Bugs are tracked separately from decisions per owner direction Pass 52: "TRIAGE should include bugs too although those would be a separate set all together. Note that Decisions will impact code. We will do decisions first, eliminate non applicable bugs and then solve for what is still remaining."
+
+**Approach:**
+- Decisions resolve first (per owner sequencing)
+- Bug priority computed assuming current decision state
+- Some bugs may become NON-APPLICABLE after relevant decisions resolve (e.g., a bug in code that gets refactored per a decision)
+- Re-triage bugs after decision-resolution session
+
+**OPEN bug counts (verified by INDEX row count, Pass 52):**
+- CRITICAL: 20
+- HIGH: 75 (post-Pass-52 Stage 5/5.5 +5: BUG-270, 271, 272, 273, 274)
+- MEDIUM: 102
+- LOW: 25
+- Total OPEN: 256+ (some severity-uncoded entries)
+
+## Top OPEN BUGs by severity + cheapness — for focused-batch resolution session
+
+This is a **starter list**, not exhaustive. Generated Pass 52 Stage 5.5 from highest-impact-per-effort cluster. To be expanded systematically in future passes.
+
+### CRITICAL severity OPEN — must triage all 20
+
+The following 20 CRITICAL bugs are OPEN. Each warrants individual review during decision-first sequencing:
+- BUG-026 — VIX proxy is VXX price (regime classifier broken)
+- BUG-027 — `regime_confidence()` built but never called (dead code)
+- BUG-057 — Integration tests missing 15 critical scenarios
+- BUG-063 — Email approval system 6 critical design gaps
+- BUG-068 — CLAUDE.md missing 5 critical recent decisions
+- BUG-129 — No regime-conditional parameter tuning
+- BUG-185 — Wikipedia views prefetch failed entirely (verified still OPEN Pass 52 Stage 5.5)
+- BUG-191 — No prefetch validation gate (verified still OPEN; predictions confirmed Stage 5.5)
+- (12 more — see AUDIT_INDEX for full list)
+
+### HIGH severity, cheap-fix OPEN bugs (Stage 5.5 surfaced)
+
+Highest leverage per Pass 52 Stage 5.5 finding — these are <20 lines of code total to fix and unblock the smart-money agent pipeline:
+
+| Bug | Severity | Effort (lines) | Impact |
+|---|---|---|---|
+| BUG-270 | HIGH | ~10-15 | insider_signal: 100% silent failure → recovers all insider signal |
+| BUG-271 | HIGH | ~5-8 | gov_contracts: 99.4% silent failure → recovers contract signal |
+| BUG-272 | HIGH | ~3 | lobbying: 98.8% silent failure → cheapest fix; recovers lobbying for ~76% of tickers |
+| BUG-273 | HIGH | ~3 | congressional: silent crash on populated dates |
+| BUG-274 | HIGH | ~10 (+ schema verify) | institutional: SharesChange column missing |
+
+**Total ~30-50 lines of code recovers the smart-money portion of the agent pipeline.** Should resolve as a batch.
+
+### Pre-existing prefetch-empty bugs (no code fix; data/subscription side)
+
+| Bug | Severity | Open since | Action |
+|---|---|---|---|
+| BUG-053 | HIGH | (early passes) | Finnhub news cache 100% empty — investigate or remove |
+| BUG-181 | MEDIUM | Pass 17 | Finnhub silent prefetch failure — same root |
+| BUG-185 | CRITICAL | Pass 18 | Wikipedia prefetch 100% empty — verify endpoint or remove |
+| BUG-186 | HIGH | Pass 18 | 29 institutional files empty (AAPL, ABBV, AMZN) + Pass 52 finding: populated tickers only have 5 months data |
+| BUG-187 | HIGH | Pass 18 | WSB mentions 14-month gap |
+| BUG-190 | MEDIUM | Pass 18 | 4 Quiver endpoints not in prefetch (Senate, Twitter, Off-Exchange, App Downloads) |
+
+### Test infrastructure (existing PENDING decisions; not bugs but critical)
+
+These are decisions that, once resolved, would have caught BUG-270 through 274:
+- DEC-098 PENDING — 70% test coverage gate before Stage 3
+- DEC-221 PENDING — pytest --cov measurement + CI gate
+- DEC-222 PENDING — Regression tests for top-20 critical bugs (Stage 5/5.5 says expand to top-25)
+- DEC-265 PENDING — Smoke test power analysis (Stage 5 forward-link: scope to include input validation)
+
+## Re-triage discipline — after decision resolution
+
+Per owner direction "Decisions will impact code. We will do decisions first, eliminate non applicable bugs and then solve for what is still remaining":
+
+1. Resolve decisions in focused-batch session
+2. After each decision resolves, scan OPEN bugs for:
+   - Bugs in code paths that get refactored → may become NON-APPLICABLE
+   - Bugs whose underlying assumption changes → may become INVALID
+   - Bugs that the decision explicitly fixes → close as RESOLVED with cross-ref
+3. Re-prioritize remaining OPEN bugs
+4. Implement fixes for remaining
+
+This sequencing prevents fixing bugs in code that's about to be replaced.
+
+---
+*Bug triage section added Pass 52 per owner direction. Initial coverage = top severity + Stage 5.5 surfaced bugs. Future passes should expand to systematically prioritize all 256 OPEN bugs.*

@@ -19901,3 +19901,129 @@ All three bugs share the failure pattern: `try:` block contains the real logic, 
 **Forward-link added to DEC-265:** Smoke test power analysis — Stage 5 reinforces that smoke testing on agent OUTPUTS alone (the original DEC-265 framing) is insufficient. Smoke tests must also validate that INPUTS to agents are non-default. A smoke test that shows "all agents produce coherent SKIP rationales" can hide that the SKIP rationale comes from systematically empty smart-money inputs. DEC-265 scope should include input validation, not just output coherence.
 
 *BUG-270/271/272 logged. Per CHECKLIST #43 (just added) — verified existing audit prior art before logging: BUG-191 covers parent silent-failure pattern; BUG-209 covers except-Exception pattern; DEC-098/221/222/265 cover testing infrastructure gap. New bugs are concrete instances, not duplicates of those parent decisions/bugs.*
+
+---
+
+## AUDIT PASS 52 — Stage 5.5 Adversarial Code Audit (5 candidates surfaced; 2 logged as new, 3 confirmed duplicates of existing bugs)
+
+**Date:** April 30, 2026
+**Trigger:** Owner direction "Go into adversarial mode, run simulations, analyze each and every line of code. FIND ALL SUCH BUGS! IF CRITICAL BUGS are still not being flagged after 40+ passes, I don't know what else to do. Horrible performance"
+**Methodology:** Static code analysis + runtime probing. Called every smart-money function on known-populated tickers, asserted non-default returns. 90 minutes of focused work.
+**Honest meta-finding:** This audit found 5 bug candidates in 90 min, of which **3 turn out to be duplicates of existing bugs** that have been OPEN for 30+ passes (BUG-185 since Pass 18, BUG-053 likely from earliest passes, BUG-186 from Pass 18). Owner's frustration is doubly justified: bugs were both missed by reading-only audit AND, where they were caught, sat unresolved for years.
+
+### CHECKLIST #43 application — verified existing audit before logging
+
+Per CHECKLIST #43 (added Pass 52), grep'd existing bugs for keyword overlap. Found:
+
+| Stage 5.5 candidate | Mapping to existing audit |
+|---|---|
+| Congressional Chamber/House column mismatch | **NEW** — distinct from BUG-083 (PIT logic), BUG-240 RESOLVED (date weighting). Logged as BUG-273. |
+| Institutional SharesChange column missing | **NEW** — distinct from BUG-186 (empty files for 29 tickers), BUG-241 (PIT timing). Logged as BUG-274. |
+| Quiver wikipedia 100% empty | **DUPLICATE of BUG-185** (CRITICAL, OPEN since Pass 18) — confirmed unchanged. Forward-link added below. |
+| Quiver institutional 5-month coverage | **OVERLAPS BUG-186** — Stage 5.5 surfaced additional finding (the 67% populated have only 5 months data). Forward-link added below. |
+| Finnhub news 100% empty | **DUPLICATE of BUG-053 + BUG-181** (HIGH/MEDIUM, OPEN) — confirmed unchanged. Forward-link added below. |
+
+**Net: 2 new bugs logged (BUG-273, BUG-274). 3 candidates were duplicates surfaced for owner-visibility but not added as new entries.**
+
+### BUG-273 · HIGH — `congressional_signal()` Chamber/House column mismatch
+
+**File:** `backtest/data/smart_money.py` line ~360 (function `congressional_signal`)
+
+**Reproducer (sandbox-verified):**
+```python
+>>> from backtest.data.smart_money import congressional_signal
+>>> from datetime import date
+>>> congressional_signal("TSLA", date(2024, 8, 15))
+{'signal': 'none', 'buy_count': 0, 'sell_count': 0}
+```
+
+**Expected:** TSLA has 4 sales by Gottheimer + Khanna in the 45-day window before this date. Function should fire `signal: "sell"`. Trace shows it correctly identifies all 4 trades as sales, but crashes when reaching the senate-detection logic.
+
+**Root cause:** Cached parquet has column `House` (values: "Representatives", "Senate"). Code looks for `Chamber`. Specific line:
+```python
+senate_buys = recent[recent.get("Chamber", "chamber").str.lower() == "senate"]
+```
+When `Chamber` column doesn't exist, `recent.get("Chamber", "chamber")` returns the **string literal `"chamber"`** (the default value), which has no `.str` attribute. AttributeError: `'str' object has no attribute 'str'`. Silent except returns `{"signal": "none"}`.
+
+**Impact:** Any congressional_signal call where data exists in the window (i.e., when `len(recent) > 0`) crashes silently. Sample evidence: 55.4% "none" rate from Stage 5 n=500 sample is partly real-data-sparsity but partly bug-driven for the populated-window cases.
+
+**Fix (~3 lines):**
+```python
+chamber_col = "House" if "House" in recent.columns else "Chamber"
+senate_buys = recent[recent[chamber_col].str.lower().isin(["senate"])]
+```
+
+**Cross-references:**
+- BUG-083 — `get_congressional_detail()` PIT logic (different function, different bug)
+- BUG-240 — congressional weighted by disclosure_date (RESOLVED Pass 48)
+- BUG-209 — except-Exception pattern
+- BUG-191 — silent failure parent pattern
+- DEC-222 — regression tests (this bug = 1 unit test would have caught)
+
+### BUG-274 · HIGH — `institutional_signal()` SharesChange column missing
+
+**File:** `backtest/data/smart_money.py` (function `institutional_signal`)
+
+**Reproducer (sandbox-verified):**
+```python
+>>> from backtest.data.smart_money import institutional_signal
+>>> from datetime import date
+>>> institutional_signal("MSFT", date(2024, 6, 1))
+{'signal': 'none'}
+```
+
+**Expected:** MSFT has 7,602 institutional holdings rows in cache. At minimum some signal should compute.
+
+**Root cause:** Code looks for `SharesChange` or `sharesChange` column. Cached parquet has only `Shares` and `Value`, plus other metadata (`Name`, `Fund`, `Direction`, etc.). No `SharesChange`. Specific lines:
+```python
+sc = "SharesChange" if "SharesChange" in df else "sharesChange"
+df[sc] = pd.to_numeric(df.get(sc, 0), errors="coerce").fillna(0)
+```
+When column doesn't exist:
+- `sc = "sharesChange"` (also doesn't exist)
+- `df.get(sc, 0)` returns scalar `0`
+- `pd.to_numeric(0, ...)` returns scalar `0`
+- `df[sc] = 0` sets entire column to `0`
+- Then `(latest[sc] == latest[sh])` checks `0 == Shares` → false everywhere
+- `(latest[sc] > 0)` → false everywhere
+- All counters return 0 → signal = "none"
+
+**Impact:** Institutional signal is structurally non-functional. Decision Agent cache shows `"institutional_sig": {"signal": "none"}` for tickers with thousands of 13F filings.
+
+**Fix:** Schema verification needed against current Quiver API. Possible directions:
+- (a) Compute period-over-period delta from `Shares` column: group by Fund, compute change between consecutive `ReportPeriod` values
+- (b) Use the `Direction` column which appears to track buy/sell direction directly
+- (c) Verify Quiver schema may have changed since code was written; field may be `SharesChange` in API response but flattened differently in prefetch
+
+**Cross-references:**
+- **BUG-186** (HIGH OPEN since Pass 18) — 29 institutional 13F files empty including AAPL/ABBV/AMZN. **Stage 5.5 forward-link:** confirmed AAPL still empty in current cache; verified MSFT (7602 rows) still fails consumption due to BUG-274. BUG-186 is data-side; BUG-274 is code-side; both blocking.
+- **BUG-186 forward-link added below:** Stage 5.5 surfaced additional finding — the 67% non-empty institutional caches contain only 5 months of data (2025-11 to 2026-03 sample range), even though `prefetch_quiver.py` has `DATE_START = date(2020, 1, 1)`. Either Quiver tier limitation or prefetch error. Backtest scope per DEC-158 is 16 years — institutional is unusable for historical backtest until both 274 and the date-range issue resolve.
+- BUG-241 — institutional 13F PIT (different bug)
+
+### Forward-links to existing bugs (no new bug needed)
+
+#### BUG-185 forward-link
+
+**Pass 52 Stage 5.5 verified:** All 509 wikipedia parquets are STILL 100% empty (0 rows AND 0 columns). BUG-185 CRITICAL prediction from Pass 18 confirmed unchanged 30+ passes later. Per BUG-185's own fix path: investigate Quiver API endpoint validity, OR remove from prefetch list.
+
+**Additional finding:** No consumption code exists for wikipedia data in the project anyway (verified by grep). Even if BUG-185 is fixed, the data has no consumer. Recommend resolution path: **remove wikipedia from `prefetch_quiver.py` ENDPOINTS dict** unless owner has plans to add consumption logic.
+
+#### BUG-186 forward-link
+
+**Pass 52 Stage 5.5 verified + extended:** BUG-186 reported "29 institutional files empty including AAPL/ABBV/AMZN." Verified AAPL still empty in current cache (0 rows). Extended finding: of the populated 67% (340 of 509 tickers), all sampled have only ~5 months of data (e.g., MSFT 7602 rows but date range 2025-11-14 to 2026-03-27). Either Quiver tier caps historical institutional data, or prefetch script has date-range issue. Backtest scope per DEC-158 (16 years) is incompatible with 5 months of institutional data.
+
+**Recommended scope expansion to BUG-186:** Two distinct sub-issues — (a) 29 specific tickers empty (original Pass 18 finding), (b) populated tickers have only recent ~5 months (Pass 52 finding). Resolution requires verifying Quiver subscription tier covers historical 13F + re-running prefetch with proper date range.
+
+#### BUG-053 + BUG-181 forward-link
+
+**Pass 52 Stage 5.5 verified:** All 509 finnhub_news parquets are STILL 0 rows (1012 bytes empty schema only). BUG-053 (HIGH) + BUG-181 (MEDIUM) predictions unchanged 30+ passes later. Combined with AV news only 25/509 populated AND Phase 1B running with `disable_news=True` by default — **news sentiment input to agents is functionally absent across the entire pipeline.**
+
+**Recommended:** BUG-053 + BUG-181 should resolve jointly with Phase 1C scope (news re-enable). Until resolved, news-related agent reasoning has zero input — `news_sentiment: "not_available"` 99.4% of the time per Stage 5 sample is the expected outcome of broken cache + disabled loader.
+
+### Process discipline (CHECKLIST #44 added Pass 52)
+
+Stage 5.5 demonstrated that data-consumption code requires **runtime probes** during audit, not just code reading. Every BUG-270/271/272/273/274 was invisible to read-audit because the bug only manifests when actual cache schema doesn't match code's column-name assumption. CHECKLIST #44 codifies the runtime-probe discipline. L123 captures the underlying mistake.
+
+**Honest acknowledgment:** Stage 5.5 also re-demonstrated CHECKLIST #43 lapse (proposed 5 bugs without first checking existing audit; 3 turned out duplicates). Drafting deliverable BEFORE running prior-art search is the recurring failure mode. Will tighten to: prior-art grep is the FIRST step of any new-bug-proposal workflow, not a verification step at the end.
+
+*BUG-273 + BUG-274 logged. BUG-275/276/277 candidates determined to be duplicates of existing BUG-185/186/053/181 — forward-links added rather than new logging. CHECKLIST #43 applied (after-the-fact) and lapse documented for future tightening.*
