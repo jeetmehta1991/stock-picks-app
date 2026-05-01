@@ -347,3 +347,19 @@ State compliance visibly: "Checklist: ✅ [each item]"
     - Both code + PROJECT_PLAN missing what practitioner research says = research-suggested gap (lowest priority)
     Skipping #c was the exact mistake in Pass 52 side-note responses. Going forward,
     PROJECT_PLAN is mandatory third source.
+
+47. **Prior-art grep must scan AUDIT.md full text in addition to INDEX (Pass 52 third-recurrence fix):**
+    Per L126. Owner direct correction Pass 52: "you missed pending decisions in audit md yet again."
+    a. AUDIT_INDEX.md grep — existing #43 — top-line table summaries only
+    b. **AUDIT.md FULL TEXT grep** — NEW — substantive content lives here:
+       - Pass 39 Section 9 strategy-category gaps
+       - BUG-139 through BUG-167 inline-only bug entries
+       - Pass 13 retest section
+       - Plain-English strategy listings
+    c. PROJECT_PLAN.md / PROJECT_PLAN_ARCHIVE.md grep (per #46)
+    d. Code grep
+    A finding is "no prior art" only when ALL FOUR are negative. INDEX alone is insufficient.
+    Owner has had to re-prompt 3 times this session for this lapse. Fix is mechanical:
+    extend grep targets in #43 to include AUDIT.md full text. Specifically search inline
+    bug entries (BUG-NNN format with INLINE-ONLY status in INDEX requires full-text dive
+    into AUDIT.md to read the actual entry).

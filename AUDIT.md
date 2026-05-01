@@ -20816,3 +20816,105 @@ In the previous-turn side-note responses, I framed all 5 new decisions (DEC-350/
 This matters because "gap" implies the system is non-compliant with its own design. "Scope expansion" means owner is considering whether to expand design. Different decision class. Both are valid; just different framing.
 
 *Strategy-coverage check redone with PROJECT_PLAN as third source (per L125, CHECKLIST #46). 0 PROJECT_PLAN-drift gaps; 3 audit-flagged gaps already logged; 5 scope-expansion proposals reclassified. PROJECT_PLAN updates deferred to post-resolution work.*
+
+---
+
+## AUDIT PASS 52 — Strategy-coverage check FINAL CORRECTION (per owner direction "you missed pending decisions in audit md yet again")
+
+**Trigger:** Owner direct correction Pass 52 — "Again strategy coverage check - should be mapped against audit and project plan both. You missed pending decisions in audit md yet again."
+
+**Honest acknowledgment:** My prior-turn redo of strategy-coverage applied CHECKLIST #46 partially. I checked:
+- ✅ Code (screener.py)
+- ✅ AUDIT_INDEX.md (top-line decision/bug entries)
+- ✅ PROJECT_PLAN.md
+- ❌ **AUDIT.md (Pass 39 Section 9, Pass 13 retest section, BUG-139 through BUG-167 inline-only entries)**
+
+The lapse: AUDIT_INDEX is a top-line table; AUDIT.md is the substantive content. INDEX entries are short labels; AUDIT.md has the actual gap documentation. **My grep on INDEX missed the comprehensive Pass 39 strategy-gap inventory.**
+
+### Full prior-art inventory I missed (substantive AUDIT.md entries)
+
+**Strategy family gaps (BUG-139 to BUG-150):**
+| Existing bug | Severity | Topic |
+|---|---|---|
+| BUG-139 | MEDIUM | No Carry/Value strategy family (P/E, P/B, dividend yield) |
+| BUG-140 | MEDIUM | No Quality strategy family (ROE, accruals, low debt) |
+| BUG-141 | HIGH | No Volatility-based strategies (vol-targeting, vol carry) |
+| BUG-142 | HIGH | No Event-driven strategies (PEAD, M&A arb, index inclusion) |
+| BUG-143 | MEDIUM | No Macro/Cross-asset strategies |
+| BUG-144 | HIGH | Smart-money signals binary gates not continuous |
+| BUG-145 | HIGH | No ICT/SMC strategy family (8 core concepts, 16 derived) |
+| BUG-146 | HIGH | No Volume Profile / VPVR strategies |
+| BUG-147 | MEDIUM | **No Anchored VWAP strategies** ← my DEC-351 duplicate |
+| BUG-148 | MEDIUM | No Sentiment/Narrative rule strategies |
+| BUG-149 | MEDIUM | No Calendar/Seasonal strategies (FOMC, January, sell-in-May) |
+| BUG-150 | LOW | No Pairs/StatArb strategies |
+
+**Modern signal gaps (BUG-151 to BUG-159):**
+| Existing bug | Severity | Topic |
+|---|---|---|
+| BUG-151 | HIGH | **Anchored VWAP not computed (5 anchors: earnings, year, swing-hi, swing-lo, 52w-hi)** ← my DEC-351 duplicate |
+| BUG-152 | HIGH | Volume Profile (POC, VAH, VAL, HVN, LVN) not computed |
+| BUG-153 | MEDIUM | Cumulative Volume Delta (CVD) not computed |
+| BUG-154 | HIGH | Relative Strength vs sector and SPY not computed |
+| BUG-155 | MEDIUM | Per-ticker volatility regime not computed |
+| BUG-156 | HIGH | Post-Earnings Announcement Drift (PEAD) tracking absent |
+| BUG-157 | MEDIUM | News headlines not passed to agents as text |
+| BUG-158 | LOW | Implied volatility / VRP signals absent (Phase 1C+) |
+| BUG-159 | MEDIUM | Time-since-strategy-fire not tracked |
+
+**ICT/SMC concept gaps (BUG-160 to BUG-167):** All ICT primitives addressed by DEC-345 RESOLVED Pass 52 + DEC-345-A/B/C/D pending — already covered.
+
+**Pass 39 Section 9 strategy-category gaps (DEC-099):**
+- Pairs / Stat Arb (matches BUG-150)
+- Calendar / Seasonal (matches BUG-149)
+- Cross-Asset (matches BUG-143)
+- Index Rebalance
+- Plus gap-fills: Russell rebalance, IPO flip, dark pool prints, FDA cycles, drug approval, court rulings
+
+**Pass 13 dedicated section on retest (BUG-111):** Full audit pass dedicated to break-and-retest. Captured retest semantics (3-event sequence: break → retest → continuation) and explicit finding that "None of [the 72 strategies] require a retest. Each fires on the bar that crosses the level. The trade enters at next-day open after the break — there is no 'wait for retest' logic anywhere in the system."
+
+### Reclassification of my Pass 52 logged decisions
+
+| Logged Pass 52 | Status | Reason |
+|---|---|---|
+| **DEC-350** (Multi-TF testing across ALL strategies) | RECLASSIFIED — partial duplicate of DEC-345 | DEC-345 RESOLVED multi-TF for ICT/SMC. DEC-350's distinct contribution: **extends multi-TF question to remaining 72-12=60 non-ICT strategies.** Valid distinction; should be re-described as "extension of DEC-345 to non-ICT strategies" not "new gap." |
+| **DEC-351** (Anchored VWAP) | **DUPLICATE — close as superseded** | BUG-147 + BUG-151 already cover anchored VWAP. **Closing DEC-351 as SUPERSEDED by BUG-147/151.** |
+| **DEC-352** (13F price-level mapping) | NEW — no prior art found | BUG-186 covers data-side institutional 13F gap; BUG-274 covers consumption code; **but the specific concept of mapping 13F filing prices to current price as institutional-cost-basis levels is NOT explicitly covered** in BUG-141/142/144/151. DEC-352 retained as genuinely new. |
+| **DEC-353** (R/R 2:1 minimum) | RESOLVED Pass 52 | Owner directive; not a gap. Retained. |
+| **DEC-354** (Chart pattern strategies) | RECLASSIFIED — overlaps DEC-099 + Section 9.1 | Section 9.1 lists "missing" gap-fills like "Russell rebalance, IPO flip" but does NOT explicitly enumerate cup&handle / H&S / wedge / triangle / pennant / flag continuation. DEC-099 is broad ("11 missing strategy categories") — chart patterns could be considered as part of "Pairs/StatArb/Calendar/Cross-Asset" categories or as a separate category. **Closing DEC-354 as merged into DEC-099 — chart patterns covered as part of "additional strategy gaps" within the Pass 39 framework.** |
+
+### Decisions to close (housekeeping per L122 + this correction)
+
+- **DEC-351 (Anchored VWAP)** — close as DUPLICATE of BUG-147 + BUG-151 (which were logged earlier as inline bugs, not formal blocks)
+- **DEC-354 (Chart patterns)** — close as MERGED INTO DEC-099 (11 missing strategy categories)
+
+### Decision to retain with reframing
+
+- **DEC-350 (Multi-TF for ALL strategies)** — retain but reframe as "extension of DEC-345 from ICT/SMC to remaining 60 strategies." Distinct from DEC-345 because DEC-345 only authorized weekly-HTF-context for ICT signals; DEC-350 asks whether non-ICT strategies (MACD, RSI, Bollinger, etc.) should be backtested on weekly bars themselves to find optimal TF per strategy.
+
+### Decisions to keep
+
+- **DEC-352 (13F price-level mapping)** — retain; genuinely new
+- **DEC-353 (R/R 2:1 minimum)** — RESOLVED; owner directive, not gap
+
+### Process learning (this session, third recurrence)
+
+**Pass 52 has had 3 distinct CHECKLIST #43 lapses where I drafted before checking:**
+1. Stage 5.5 initial 5 candidates (3 turned out duplicates of BUG-185/186/053+181)
+2. AUDIT_RESOLVED.md proposal (already addressed by AUDIT_INDEX per L109)
+3. **This one — DEC-350/351/352/354 logged without checking BUG-139-167 in AUDIT.md inline bugs**
+
+**Common root cause:** I'm searching INDEX (top-line table) but not AUDIT.md (substantive content). **CHECKLIST #43 needs strengthening to require BOTH.**
+
+**Adding L126 + CHECKLIST #47:** Prior-art grep must be performed on AUDIT.md FULL TEXT, not just AUDIT_INDEX.md table entries. INDEX has ~1-line summaries; AUDIT.md has the substantive gap inventories where comprehensive prior-art lives.
+
+### Recommendation for owner approval
+
+Approve the following housekeeping:
+1. **Close DEC-351** as DUPLICATE of BUG-147 + BUG-151
+2. **Close DEC-354** as MERGED INTO DEC-099
+3. **Reframe DEC-350** as "extension of DEC-345 to non-ICT strategies"
+4. **Retain DEC-352** as new
+5. **Add L126 + CHECKLIST #47** for full-AUDIT-text prior-art grep
+
+*Honest correction logged. 3 of 5 newly-logged decisions either close or reframe. Pattern of CHECKLIST #43 lapse identified for systemic fix via L126/CHECKLIST #47.*

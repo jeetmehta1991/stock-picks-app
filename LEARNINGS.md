@@ -585,3 +585,29 @@ A gap is real if any of: (a) audit logs it as gap, (b) PROJECT_PLAN specifies it
 **Past mistake corrected:** Pass 52 side-note responses to owner ("ALL price action strategies including retest?", "S/R for institutional interest?") only checked code + audit. Did not check PROJECT_PLAN. Findings were valid but incomplete — may have under-counted gaps or proposed new decisions for things already in PROJECT_PLAN scope.
 
 **Pair:** L125 + CHECKLIST #46. Per owner standing exception for process-discipline files.
+
+## L126 (Pass 52) — Prior-art grep must scan AUDIT.md FULL TEXT, not just AUDIT_INDEX.md table
+
+**Trigger:** Owner Pass 52 — "You missed pending decisions in audit md yet again." 3rd recurrence this session.
+
+**Why this matters:** AUDIT_INDEX.md has ~1-line summaries per decision/bug. AUDIT.md has the substantive content including:
+- Pass 39 Section 9 strategy-category gap inventory (DEC-099 + 11 categories + 17+ categorical breakdowns)
+- BUG-139 through BUG-167 inline-only bug entries (29 strategy/signal gap bugs)
+- Pass 13 retest section (full retest semantics + BUG-111 context)
+- Pass 39 Section 18 plain-English strategy listings
+
+**Past mistakes (Pass 52, 3 recurrences):**
+1. Stage 5.5 initial 5 candidates — 3 were duplicates of BUG-185/186/053+181 (caught by checking only after drafting)
+2. AUDIT_RESOLVED.md proposal — already addressed by AUDIT_INDEX (caught only via conversation_search of prior session)
+3. DEC-350/351/352/354 logged Pass 52 — DEC-351 = duplicate of BUG-147/151; DEC-354 = merged into DEC-099; all detected only when owner re-prompted "you missed pending decisions in audit md yet again"
+
+**Common root cause:** grep targeted AUDIT_INDEX table only; INDEX has short labels not substantive content. The 11-category gap audit (Pass 39 Section 9) is ~80 lines of detail in AUDIT.md but only 4 one-liners in INDEX. Easy to miss.
+
+**Rule (CHECKLIST #47):** Prior-art grep for any new bug/decision proposal must include:
+1. AUDIT_INDEX.md grep (existing CHECKLIST #43 — top-line table)
+2. **AUDIT.md FULL TEXT grep** (new — substantive content)
+3. PROJECT_PLAN.md grep (existing CHECKLIST #46)
+4. Code grep
+A finding only counts as "no prior art" when ALL FOUR sources confirm absence. INDEX is necessary but not sufficient.
+
+**Pair:** L126 + CHECKLIST #47.
