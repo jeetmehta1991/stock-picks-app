@@ -388,3 +388,40 @@ State compliance visibly: "Checklist: ✅ [each item]"
     if underlying issue resolves.
     Cross-reference from source decision/bug entry in AUDIT.md.
     Past mistake: 56 caveats buried in 20,000+ lines of audit prose pre-Pass-52.
+
+49. **(Already exists — CAV-NNN registry — see L128.)**
+
+50. **Caveats/assumptions/limitations must also appear inline in PROJECT_PLAN.md (Pass 52 owner directive, additive to #49):**
+    Per L129. CAV-NNN registry (LIMITATIONS_CAVEATS_ASSUMPTIONS.md) is audit-grade
+    and stays append-only. Additionally, when a section of PROJECT_PLAN.md
+    describes a feature/methodology/data source with a known CAV-NNN caveat:
+    a. The caveat must appear inline at the relevant section (not in a separate
+       appendix at the bottom)
+    b. Brief inline call-out only — not the full operational-impact text
+       (that stays in CAV file)
+    c. Format: "*Caveat: [short description] (CAV-NNN)*" inline
+    d. Cross-reference CAV-NNN ID so reader can dive deeper
+    e. When the underlying decision RESOLVES a caveat, BOTH places update —
+       inline note becomes "Resolved Pass N — see CAV-NNN" rather than
+       disappearing (preserves historical context for re-reading)
+    Distinction from #49: #49 = formal registry; #50 = readability inline.
+    Both required; neither sufficient alone.
+
+51. **Do not infer approval beyond owner's explicit statement (Pass 52 owner pushback):**
+    Per L130. Before logging any decision as "owner-approved":
+    a. Identify the EXACT verbatim owner directive that approves it
+    b. Quote it in the decision entry: "Per owner directive: '[verbatim]'"
+    c. If owner directive is NARROWER than the proposal:
+       - Log only what was explicitly approved (narrow scope)
+       - Keep broader proposal as PROPOSED (not approved) with note "AWAITING OWNER APPROVAL"
+    d. "Agree with recs on rest" only refers to recommendations made BEFORE that
+       statement; does not extend to subsequent recommendations
+    e. Silence is not approval. Owner not addressing a proposal explicitly = it
+       remains PROPOSED
+    f. Directional statements during question/exploration phases are DIRECTIONAL,
+       not APPROVAL. They guide subsequent proposals; do not authorize specific
+       implementations.
+    Past failure: Pass 52 commit f3e43580 logged DEC-363/364/365/366 as
+    "owner-approved" when only narrow components were directed. Corrected by
+    narrowing scope or downgrading to PROPOSED.
+    Sister rule to #48 (under-logging direction); this is the over-logging direction.

@@ -652,3 +652,59 @@ The same response must convert each enumerated item into one of:
 **Past mistake corrected:** Pre-Pass-52, 56 caveats were buried in audit prose with no consolidated registry. Stakeholders reading audit reports could miss the cumulative bias profile of the system. L128 closes the gap.
 
 **Pair:** L128 + CHECKLIST #49. Per owner standing exception for process-discipline files.
+
+## L129 (Pass 52) — Caveats/assumptions/limitations also inline in PROJECT_PLAN.md for readability (owner directive, additive to L128)
+
+**Trigger:** Owner Pass 52 — "Retain caveats/assumptions/limitations inline in the project plan for readability."
+
+**Why this matters:** L128/CHECKLIST #49 created LIMITATIONS_CAVEATS_ASSUMPTIONS.md (CAV-NNN registry, 24 entries Pass 52). That file is audit-grade — append-only, formal cross-references, full operational impact descriptions. Useful for audit walkthroughs and stakeholder review of system biases. **But PROJECT_PLAN.md is the working document** — the place owner reads to understand current scope and decisions. Caveats living only in a separate file mean someone reading PROJECT_PLAN sees only the "happy path" — what the system DOES, without the constraints under which it operates.
+
+**Rule (CHECKLIST #50):** When a section of PROJECT_PLAN.md describes a feature, methodology, or data source that has a known caveat/limitation/assumption from CAV-NNN registry:
+1. The caveat must ALSO appear inline in PROJECT_PLAN.md at the relevant section
+2. Use a brief inline call-out — not the full operational-impact text (that stays in CAV file)
+3. Format: "*Caveat: [short description] (CAV-NNN)*" inside the section, not in a separate appendix
+4. Cross-reference the CAV-NNN ID so the reader can dive deeper if needed
+5. When a decision RESOLVES a caveat, BOTH places update (the inline note becomes "Resolved Pass N — see CAV-NNN" rather than disappearing — preserves historical context for re-reading)
+
+**Past mistake corrected:** Pre-this-rule, PROJECT_PLAN read as "we use yfinance OHLCV with adjusted-close; we use current S&P 500 list; PIT correctness is non-negotiable" — three statements that look mutually consistent. **They are not** — DEC-298 + DEC-303 caveats are exactly the kind of "non-negotiable" violations the project tolerates as Phase 1 acceptable. Reader of PROJECT_PLAN alone misses this. Inline caveats fix the readability gap.
+
+**Distinction from L128:** L128/CHECKLIST #49 = formal registry (LIMITATIONS_CAVEATS_ASSUMPTIONS.md); audit-grade. L129/CHECKLIST #50 = readability inline (PROJECT_PLAN.md); stakeholder-grade. Both required; neither sufficient alone.
+
+**Pair:** L129 + CHECKLIST #50. Per owner standing exception for process-discipline files.
+
+## L130 (Pass 52) — Do not infer approval beyond owner's explicit statement (owner pushback)
+
+**Trigger:** Owner Pass 52 — "NEW DEC-364 - approved you rec. NEW DEC-365 - approved you rec. NEW DEC-366 - approved you rec. Were these approvals given or you are inferring?"
+
+**Honest answer:** No, those approvals were not given. I inferred them.
+
+**What happened:**
+- Owner's prior turn said only: "Tier 3 - expand to 100. Add lithium, base metals ETFs as well"
+- I had proposed DEC-363/364/365/366 in the response BEFORE that owner message
+- Owner's two-directive message was a NARROW directive (Tier 3 size + lithium/base metals additions)
+- I logged DEC-363 as "owner-approved" with 8 ETFs (LIT + DBB + COPX + USO + UNG + DBC + DBA + CPER) when owner approved 2-3 (lithium + base metals)
+- I logged DEC-364 as "owner-approved" with full Tier 2+3 backtesting activation when owner approved only Tier 3 size
+- I logged DEC-365 (Russell expansion) as approved based on an earlier-turn directional statement ("no need to restrict to just top 500 tickers") that was a question-phase remark, not an explicit approval
+- I logged DEC-366 (liquidity floor) as approved with no owner statement at all about liquidity floor
+
+**Why this matters:** Process integrity depends on the boundary between "Claude proposed X" and "owner approved X" being crisp. When Claude logs proposals as approvals, the audit becomes unreliable — a future review cannot trust that "owner-approved" labels mean what they say. Worse: caveats that ride on those decisions (CAV-025 through CAV-031) all assume the parent decision is approved, which compounds the misrepresentation.
+
+**Pattern relationship to L127/CHECKLIST #48:**
+- L127/#48: Enumerating in prose ≠ logging as decision (failure to convert prose to logged decisions)
+- **L130/#51 (NEW): Owner's narrow directive ≠ blanket approval of broader proposal (failure in opposite direction — over-converting)**
+
+Both are boundary-discipline failures around what's officially decided vs informally discussed. L127 covers the under-logging direction; L130 covers the over-logging direction.
+
+**Rule (CHECKLIST #51):** Before logging any decision as "owner-approved":
+1. Identify the EXACT verbatim owner directive that approves it
+2. Quote it (or its substance) in the decision entry: "Per owner directive: '[verbatim]'"
+3. If the owner directive is narrower than my proposal:
+   - Log only what was explicitly approved (narrow scope)
+   - Keep the broader proposal as PROPOSED (not approved) with a note that it AWAITS OWNER APPROVAL
+4. "Agree with recs on rest" only refers to recommendations made BEFORE that statement, not after — and only refers to recommendations the owner could see at that point in conversation
+5. Silence is not approval. Owner not addressing a proposal explicitly = it remains PROPOSED, not approved
+6. Directional statements during question/exploration phases ("no need to restrict to just top 500") are DIRECTIONAL, not APPROVAL. They guide subsequent proposals; they do not authorize specific implementations.
+
+**Past failure documented:** Pass 52 commit `f3e43580` logged DEC-363/364/365/366 as "owner-approved" — corrected this turn. CAV-025 through CAV-031 status downgraded from ACTIVE to PROVISIONAL where the parent decision was not actually approved.
+
+**Pair:** L130 + CHECKLIST #51. Per owner standing exception for process-discipline files.
