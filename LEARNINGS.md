@@ -804,4 +804,6 @@ If any of the 5 cannot be answered: flag the recommendation as `UNVERIFIED — p
 
 **Pair:** L133 + CHECKLIST #54. Per owner standing exception for process-discipline files.
 
+**Retroactive scope (Pass 52 owner directive amendment):** Per owner directive "you should apply this retroactively as well for all decisions already in the index file" — DEC-417 scope is ALL ~419 decisions in AUDIT_INDEX.md, not just Pass 52 ones. Older decisions logged in earlier passes (Pass 38/39/40/etc.) also need test_signal/test_output_expected/test_mismatch_action populated. Effort ~35 hrs total. Older decisions may be flagged `OBSOLETE_BY_TEST_RUN` if system has evolved since original logging.
+
 **Honest meta-observation:** This rule is the strongest defense yet against my pattern-match-without-verification failure mode. CHECKLIST #43 (prior-art grep) catches duplicates. CHECKLIST #46 (three-source check) catches scope misfits. CHECKLIST #53 (grounded-recommendation format) catches feasibility errors. CHECKLIST #54 (test-run audit) catches everything that survives the first three by requiring empirical confirmation. If a recommendation passes all four checks AND survives test-run validation, it's genuinely deployment-ready.

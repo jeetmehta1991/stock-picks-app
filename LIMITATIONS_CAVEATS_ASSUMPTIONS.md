@@ -506,3 +506,49 @@ When a caveat is resolved:
 **Caveat:** With 4-year sample (extending to 6 years post-DEC-411), structural break tests have limited statistical power. Chow split-sample test requires n_trades ≥ 600 (300 per half) to be meaningful. Many low-frequency strategies fall short. ADF and rolling-Sharpe tests have sufficient observations (~1000 daily PnL points) but detect only large breaks. Strategies that gradually decay over 2-3 years may not register as "broken" until the decay is severe.
 **Operational impact:** DEC-414/415/416 detection is conservative — false negatives (missed breaks) more likely than false positives. Strategies passing all three tests should still be monitored in live trading; statistical tests describe past behavior, not future deployment risk. Phase 1D 5-year extension improves but doesn't eliminate this constraint.
 **Forward-link:** No full resolution within current scope; long-term improvement requires multi-decade sample (10+ years) which requires paid historical data subscription.
+
+## Section — Pass 52 Theme 6 + retroactive test-run scope caveats
+
+### CAV-057 — Retroactive test-run validation may flag obsolete decisions
+
+**Source:** DEC-417 PENDING (Pass 52, retroactive scope expansion)
+**Status:** ACTIVE
+**Caveat:** DEC-417 retroactive scope (all 419 decisions in AUDIT_INDEX.md per Pass 52 owner directive) means decisions logged in earlier passes (Pass 38/39/40/etc.) — some 6+ months old — must also be validated against current system behavior. System has evolved significantly since those decisions were logged: bugs fixed, scope expanded, strategies added. Some older decisions may be obsolete (problem already solved, scope deprecated, methodology superseded).
+**Operational impact:** Per-decision validation must allow for `OBSOLETE_BY_TEST_RUN` flag — distinguishes "rec failed test" from "rec no longer applies." Examples likely:
+- Pre-DEC-303 decisions about S&P 500 historical membership (now superseded by approved DEC-303 path)
+- Pre-Theme-4-batch-1 decisions about cache front-extension (now superseded by DEC-381)
+- Pre-Theme-5 decisions about Sharpe annualization (now superseded by DEC-402)
+Process: when populating validation table, mark obsolete decisions clearly; do not treat as failures.
+**Forward-link:** Resolved when DEC-417 implementation produces full validation table; obsolete decisions get explicit closure status.
+
+### CAV-058 — DEC-129 absolute Sharpe threshold may be lenient at low baselines
+
+**Source:** DEC-129/DEC-418 PENDING (Pass 52)
+**Status:** ACTIVE
+**Caveat:** DEC-129 threshold |live_sharpe - backtest_sharpe| ≤ 0.3 is calibrated for typical Sharpe range 0.8-1.5. For low-Sharpe strategies (raw 0.5), 0.3 absolute deviation = 60% of edge — too lenient. For high-Sharpe strategies (raw 2.5), 0.3 is too strict (only 12% deviation allowed when 25-30% live degradation is typical).
+**Operational impact:** Initial Stage 3→4 gate uses absolute 0.3 threshold. Phase D refinement candidate: relative threshold (e.g., max 30% Sharpe degradation) or tiered absolute (0.5 for high-Sharpe, 0.2 for low-Sharpe). Strategies near gate boundary should be reviewed manually before Stage 4 promotion.
+**Forward-link:** Phase D refinement after first Stage 3 paper trading produces actual live Sharpe distribution.
+
+### CAV-059 — DEC-130 5× capacity stress premature for early Stage 4 capital
+
+**Source:** DEC-130/DEC-419 PENDING (Pass 52)
+**Status:** ACTIVE
+**Caveat:** DEC-130 tests strategies at 5× initial capital (e.g., $25K → $125K). Owner's actual Stage 4 deployment capital is ~$25K initially per memory; reaching 5× (~$125K) requires sustained profitability over multiple years. Capacity stress at 5× may be theoretical for the first 1-2 years of live trading.
+**Operational impact:** 5× test still valuable as forward-looking gate (preserves Stage 5+ scalability), but immediate Stage 4 deployment can proceed if 1× and 2× tests pass even when 5× fails (CAPACITY_LIMITED tag with size cap). Owner approval for tier system: which strategies tagged CAPACITY_LIMITED can deploy at 1×/2× capital with explicit Stage 5 reassessment.
+**Forward-link:** Phase D refinement when Stage 4 capital actually approaches 5× of initial.
+
+### CAV-060 — DEC-131 0.2 Sharpe improvement may be lenient at low baseline
+
+**Source:** DEC-131/DEC-420 PENDING (Pass 52)
+**Status:** ACTIVE
+**Caveat:** DEC-131 threshold "agent_sharpe - rules_sharpe ≥ 0.2" is reasonable when rules-only baseline Sharpe ≥ 1.0 (20% relative improvement). At low baseline (0.5), 0.2 improvement = 40% relative — questionable whether the agent overlay's $300 cost is justified. Tighter alternative: minimum absolute Sharpe ≥ 0.7 AND improvement ≥ 0.2.
+**Operational impact:** Initial Stage 2 evaluation uses absolute 0.2 threshold. If rules-only baseline turns out poor, agent improvement should be evaluated against absolute Sharpe AND relative improvement. Failure mode (PROJECT_PLAN section 4: "abandon Stage 2 agent overlay") should trigger if absolute agent Sharpe is insufficient regardless of improvement delta.
+**Forward-link:** Phase D refinement after Stage 2 backtest reveals actual rules-only baseline Sharpe distribution.
+
+### CAV-061 — DEC-132 variance threshold 0.5 generous; may miss subtle instability
+
+**Source:** DEC-132/DEC-421 PENDING (Pass 52)
+**Status:** ACTIVE
+**Caveat:** DEC-132 variance < 0.5 threshold catches extreme cases (e.g., annual Sharpes [1.5, 0.2, 2.0, -0.3] = variance 0.97). Subtler instability (e.g., [1.2, 0.7, 1.1, 0.3] = variance 0.16) passes but shows clear declining edge. Tighter threshold variance < 0.25 would catch this (limits range to ~2× rather than ~5×).
+**Operational impact:** Initial Stage 3→4 gate uses variance < 0.5. Strategies near boundary should be reviewed for trend (declining vs stationary). Joint with DEC-415 (rolling Sharpe deviation) — DEC-415 catches trend-decay better than calendar-year variance. Both tests in tandem provide stronger stability signal than either alone.
+**Forward-link:** Phase D refinement candidate: tighten threshold or add trend-detection logic alongside variance check.

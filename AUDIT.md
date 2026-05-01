@@ -21777,3 +21777,67 @@ Skip any element → flag rec as `UNVERIFIED — pattern-match only`. NEVER "Con
 ### Pending count: 309 + 7 = 316
 
 *Theme 5 closure (8/8). Theme progression: Theme 1 (PIT 4) ✓ + Theme 2 (Data+Universe 8) ✓ + Theme 4 (Engine Bugs 15) ✓ + Theme 5 (Statistical Methodology 8) ✓ = 35 decisions across 4 themes. Theme 3 (Phase 0.A Prefetch, 6) NOT approved — per owner deferred. Theme 6 next (Batch X14 Validation criteria). Per CHECKLIST #43 (prior-art verified — DEC-298/326/080/081/246/410/411 cross-referenced); #45 (compliance statement); #46 (three-source check applied including DEC-326 conflict); #47 (full-text grep); #48 (sub-decisions formally logged); #49+#50 (CAV-054/055/056 cross-referenced inline); #51 (explicit "Approve all"); #52 (advancement parsed); #53 (grounded-recommendation format applied throughout); #54-NEW (test-run audit gate codified).*
+
+---
+
+## AUDIT PASS 52 — Theme 6 closure (DEC-129/130/131/132) + DEC-417 retroactive scope expansion
+
+**Trigger:** Owner Pass 52 verbatim: "One thing to note Audit checklist after run agreed: but you should apply this retroactively as well for all decisions already in the index file. Approve all your recommendations in this batch. Lets review the next batch."
+
+### Theme 6 status: COMPLETE (4 of 4)
+
+| Decision | Resolution | Sub-decisions |
+|---|---|---|
+| DEC-129 — Live-vs-backtest Sharpe equivalence | Owner-approved | DEC-418 |
+| DEC-130 — Capacity stress 5× | Owner-approved | DEC-419 |
+| DEC-131 — Agent value-add | Owner-approved | DEC-420 |
+| DEC-132 — Annual Sharpe variance | Owner-approved | DEC-421 |
+
+### DEC-417 RETROACTIVE SCOPE EXPANSION
+
+**Owner directive:** "you should apply this retroactively as well for all decisions already in the index file"
+
+**Scope before:** Pass 52 approved decisions only (~80 to validate)
+**Scope after:** ALL 419 decisions in AUDIT_INDEX.md (PENDING + RESOLVED + all states)
+**Effort revised:** 419 × ~5 min/decision = ~35 hours total (vs original ~7 hours for Pass 52 only)
+
+**Why this matters:** Earlier-pass decisions (Pass 38/39/40+) are 6+ months old. System has evolved significantly since. Some decisions may be obsolete (problem solved, scope changed, methodology superseded). Retroactive validation surfaces these via OBSOLETE_BY_TEST_RUN flag — distinguishes "rec failed test" from "rec no longer applies."
+
+**Updated DEC-417 entry:** All states (PENDING + RESOLVED + SUPERSEDED) need test_signal/test_output_expected/test_mismatch_action populated. Non-PENDING decisions may receive OBSOLETE_BY_TEST_RUN flag.
+
+**Updated L133 + CHECKLIST #54:** Both amended to reflect retroactive scope expansion.
+
+### Sub-decisions DEC-418 through DEC-421
+
+| Sub-decision | Implementation | Effort |
+|---|---|---|
+| DEC-418 (DEC-129) | Live-vs-backtest comparison framework `backtest/results/stage3_gate.py`; needs 6mo paper trading | ~2 days |
+| DEC-419 (DEC-130) | Capacity stress + slippage scaling model `slippage_bps = base + linear × (pos_pct_of_adv)`; replay 1×/2×/5× | ~3-4 days |
+| DEC-420 (DEC-131) | Agent A/B framework — paired (rules_decision, agent_decision, paired_pnl) per Stage 2 candidate | ~2 days |
+| DEC-421 (DEC-132) | Calendar-year Sharpe variance computation; depends on DEC-081 daily mark-to-market | ~1 day post-DEC-081 |
+
+### Caveats added (CAV-057 through CAV-061)
+
+- **CAV-057** — Retroactive validation may flag obsolete decisions (older decisions superseded by system evolution; OBSOLETE_BY_TEST_RUN flag distinguishes from failures)
+- **CAV-058** — DEC-129 absolute Sharpe threshold may be lenient at low baselines / strict at high
+- **CAV-059** — DEC-130 5× capacity stress premature for early Stage 4 capital (~$25K initial)
+- **CAV-060** — DEC-131 0.2 absolute improvement may be lenient at low rules-only baseline
+- **CAV-061** — DEC-132 variance 0.5 threshold generous; may miss subtle instability (e.g., declining edge)
+
+### Theme progression Pass 52 (running tally)
+
+| Theme | Decisions | Status |
+|---|---|---|
+| Theme 1 (PIT, 4) | DEC-298/299/300/303 | ✅ Complete |
+| Theme 2 (Data+Universe, 8) | DEC-063-065/099/101/103-105 | ✅ Complete |
+| Theme 3 (Phase 0.A Prefetch, 6) | DEC-256-261 | ❌ Not approved (owner deferred) |
+| Theme 4 (Engine Bugs, 15) | DEC-307-327 | ✅ Complete |
+| Theme 5 (Statistical Methodology, 8) | DEC-080-085, 109-111 | ✅ Complete |
+| Theme 6 (Validation criteria, 4) | DEC-129-132 | **✅ Complete (this commit)** |
+| **Total resolved** | **39 parent decisions** | |
+| **Sub-decisions logged** | **~110 (DEC-345-421)** | |
+
+### Total decisions logged this commit: 4 sub-decisions (DEC-418/419/420/421) + DEC-417 amended scope
+### Pending count: 316 + 4 = 320
+
+*Theme 6 closure (4/4). DEC-417 retroactive scope expanded to all 419 decisions per owner directive. L133/CHECKLIST #54 amended. Per CHECKLIST #43 (prior-art verified — DEC-081/093/205-209/415, BUG-079/106/78 cross-referenced); #45 (compliance statement); #46 (three-source check); #47 (full-text grep); #48 (sub-decisions formally logged); #49+#50 (CAV-057 through CAV-061 cross-referenced inline); #51 (explicit "Approve all"); #52 (advancement parsed); #53 (grounded-recommendation format applied); #54 (test-run audit gate amended).*

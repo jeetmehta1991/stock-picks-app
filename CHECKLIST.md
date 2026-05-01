@@ -480,4 +480,8 @@ State compliance visibly: "Checklist: ✅ [each item]"
     f. TEST_MISMATCH=false → proceed to implementation
     Catches errors surviving CHECKLIST #43 (prior-art), #46 (three-source check),
     #53 (grounded-recommendation format) — empirical validation is the final gate.
-    Applies retroactively to all Pass 52 approved decisions.
+    **Retroactive scope (Pass 52 owner directive):** Applies to ALL ~419 decisions
+    in AUDIT_INDEX.md (PENDING + RESOLVED + all states), not just Pass 52 ones.
+    Effort ~35 hrs for full population. Older decisions may be flagged as
+    `OBSOLETE_BY_TEST_RUN` if system evolution since original logging makes them
+    no longer applicable (CAV-057).
