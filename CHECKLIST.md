@@ -462,3 +462,22 @@ State compliance visibly: "Checklist: ✅ [each item]"
     All three were caught by owner's common-sense questions; all three were avoidable with
     one grep + one math check. This rule makes those checks mandatory and visible to owner
     so a non-technical reviewer can audit the verification work, not just the recommendation.
+
+54. **Test-run audit gate (Pass 52 L133 — CRITICAL process gate before full implementation):**
+    Per L133. Decisions transition from "owner-approved" to "implementation-ready"
+    only after passing limited-sample test-run validation. Sequence:
+    a. Full data prefetch complete (DEC-410 API audit + DEC-411 OHLCV extension)
+    b. All themes reviewed — every audit decision walked through
+    c. Limited-sample test run: 10 tickers × 60 days × current strategies
+    d. Per-decision validation table populated in AUDIT_TEST_RUN_RESULTS.md:
+       - decision_id
+       - recommendation (logged in audit)
+       - test_signal (what to look for in test output)
+       - test_output_expected (concrete expected pattern/value)
+       - test_mismatch_action (what we do if test fails)
+       - test_mismatch_flag (binary true/false after test run)
+    e. TEST_MISMATCH=true → investigation/revision required before full implementation
+    f. TEST_MISMATCH=false → proceed to implementation
+    Catches errors surviving CHECKLIST #43 (prior-art), #46 (three-source check),
+    #53 (grounded-recommendation format) — empirical validation is the final gate.
+    Applies retroactively to all Pass 52 approved decisions.

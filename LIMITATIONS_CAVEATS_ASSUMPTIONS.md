@@ -480,3 +480,29 @@ When a caveat is resolved:
 **Caveat:** Threshold values for macro correlation tags (vix_sensitive at |corr|>0.3; rate/curve/dollar/credit/inflation/growth/consumer/liquidity_sensitive at |corr|>0.2) are heuristics. Calibration may shift after first run reveals actual correlation distribution across our strategies. Tags labeled "macro-sensitive" should be communicated as data observations, not statistical guarantees.
 **Operational impact:** Initial tagging may over- or under-flag strategies. Phase D refinement opportunity: adjust thresholds based on empirical distribution. Strategies tagged sensitive should still run; tag is informational for sizing/regime filters, not exclusion criterion.
 **Forward-link:** Refinement after first Phase 1B-α run reveals correlation distribution.
+
+## Section — Pass 52 Theme 5 batch 2 caveats
+
+### CAV-054 — 5yr/1yr walk-forward requires data extension beyond current 4yr scope
+
+**Source:** DEC-109/DEC-411/DEC-412 PENDING (Pass 52)
+**Status:** ACTIVE
+**Caveat:** Canonical academic 5yr train / 1yr OOS walk-forward needs ≥6 years of data for 2 OOS rolling windows. Current cache is 2021-01-04 to 2024-12-31 = 4 years. DEC-411 extends to 2018-01-01 enabling 5yr/1yr train-test cycles. Until DEC-411 lands, walk-forward windows are limited to 2yr/1yr or 3yr/1yr (DEC-326's setting).
+**Operational impact:** Phase 1B-α walk-forward methodology depends on extended data load. DEC-411 is precondition for DEC-412 rolling 5yr/1yr; sequenced AFTER DEC-298 PIT cache rebuild (joint operation). Strategy verdicts using shorter walk-forward have lower out-of-sample confidence; verdicts will change after DEC-411/412 lands.
+**Forward-link:** Resolved when DEC-411 extends data load + DEC-412 implements rolling 5yr/1yr.
+
+### CAV-055 — Deflated Sharpe assumes iid returns; momentum/mean-reversion have autocorrelation
+
+**Source:** DEC-110/DEC-413 PENDING (Pass 52)
+**Status:** ACTIVE
+**Caveat:** Bailey et al. (2014) Probabilistic/Deflated Sharpe Ratio formula assumes returns are independent and identically distributed (iid). Our strategy universe includes momentum strategies (positive serial correlation in returns) and mean-reversion strategies (negative serial correlation). The iid assumption is violated; PSR may be biased. Lo (2002) provides autocorrelation-adjusted Sharpe formulas but adds significant complexity.
+**Operational impact:** Initial Phase 1B-α uses unadjusted PSR. Strategies tagged "passes PSR threshold" should be interpreted as "likely robust under iid assumption" — not as "definitively robust." Phase D refinement: implement Lo 2002 adjustment for top-N strategies to validate PSR claim.
+**Forward-link:** Phase D refinement after first Phase 1B-α run reveals which strategies cluster near PSR=0.95 boundary.
+
+### CAV-056 — 4-year sample limits structural-break detection power
+
+**Source:** DEC-111/DEC-414/DEC-415/DEC-416 PENDING (Pass 52)
+**Status:** ACTIVE
+**Caveat:** With 4-year sample (extending to 6 years post-DEC-411), structural break tests have limited statistical power. Chow split-sample test requires n_trades ≥ 600 (300 per half) to be meaningful. Many low-frequency strategies fall short. ADF and rolling-Sharpe tests have sufficient observations (~1000 daily PnL points) but detect only large breaks. Strategies that gradually decay over 2-3 years may not register as "broken" until the decay is severe.
+**Operational impact:** DEC-414/415/416 detection is conservative — false negatives (missed breaks) more likely than false positives. Strategies passing all three tests should still be monitored in live trading; statistical tests describe past behavior, not future deployment risk. Phase 1D 5-year extension improves but doesn't eliminate this constraint.
+**Forward-link:** No full resolution within current scope; long-term improvement requires multi-decade sample (10+ years) which requires paid historical data subscription.

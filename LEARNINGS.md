@@ -777,3 +777,31 @@ If any of the 5 cannot be answered: flag the recommendation as `UNVERIFIED — p
 **Pair:** L132 + CHECKLIST #53. Per owner standing exception for process-discipline files.
 
 **Honest meta-observation:** Five prior process recurrences targeted "logging discipline" (when/whether to log). This recurrence targets "recommendation discipline" (whether the recommendation is grounded). Different failure surface. L132/CHECKLIST #53 is the first rule addressing recommendation quality directly. If this rule's introduction is followed by another grounded-recommendation failure, the pattern would warrant: every numeric threshold or scope-dependent claim in a recommendation must be preceded by a Python computation cell showing the math, treated as a hard procedural requirement.
+
+## L133 (Pass 52) — Test-run audit gate: empirical validation of recommendations before full implementation (owner directive)
+
+**Trigger:** Owner Pass 52 directive: "audit recommendations after limited-sample test run... after we prefetch ALL OHCLV and API data within agreed scope. When - after we are done reviewing the entire audit file. What's the audit checklist after the run? Agreed. But i want to log your recommendation, decision, and your suggestion on what we should be testing and output on run and binary on Test_Mismatch"
+
+**Why this matters:** Sixth Pass 52 process recurrence (L132) was about recommendations being industry-pattern-matched without scope/feasibility checks. Even with grounded-recommendation format (CHECKLIST #53), recommendations remain theoretical until validated against actual system behavior. The test-run gate makes empirical validation a hard precondition before any full implementation. Catches errors that survive code-grep + scope-check + feasibility-math because those checks are static; only running the system reveals what actually happens.
+
+**Sequence (mandatory order):**
+1. **Full data prefetch** complete per agreed scope (DEC-410 API audit, all OHLCV including DEC-411 2018-extension, all API endpoints scoped in)
+2. **All themes reviewed** — every audit decision walked through with owner approval/rejection
+3. **Limited-sample test run** — 10 tickers × 60 days × current strategies → produces actual trade logs, signal fires, regime tags, metrics
+4. **Per-decision validation table** — for EVERY owner-approved decision, document:
+   - Decision ID
+   - The recommendation (what we said we'd do)
+   - The suggested test signal/output (what we expect to see in test data if rec is correct)
+   - Binary TEST_MISMATCH flag (true/false based on test output vs expectation)
+5. **TEST_MISMATCH triage** — recommendations failing the test require investigation/revision before full implementation; recommendations passing proceed to implementation
+
+**Rule (CHECKLIST #54):** Decisions in AUDIT_INDEX.md must include three additional fields populated when ready for test-run validation:
+- `test_signal` — what to look for in test output (e.g., "DEC-388 VIX SMA: regime classifier output should NOT flip more than 2x per month in test sample, vs current behavior of flipping ~5x per month")
+- `test_output_expected` — concrete expected value or pattern (e.g., "regime_change_count <= 2 over 60-day window")
+- `test_mismatch_action` — what we do if test fails (e.g., "investigate VIX threshold sensitivity; may need 7-day SMA instead of 5-day")
+
+**Output document:** `AUDIT_TEST_RUN_RESULTS.md` — generated AFTER test run completes. One row per owner-approved decision. Reviewable by owner (binary pass/fail clear without technical interpretation).
+
+**Pair:** L133 + CHECKLIST #54. Per owner standing exception for process-discipline files.
+
+**Honest meta-observation:** This rule is the strongest defense yet against my pattern-match-without-verification failure mode. CHECKLIST #43 (prior-art grep) catches duplicates. CHECKLIST #46 (three-source check) catches scope misfits. CHECKLIST #53 (grounded-recommendation format) catches feasibility errors. CHECKLIST #54 (test-run audit) catches everything that survives the first three by requiring empirical confirmation. If a recommendation passes all four checks AND survives test-run validation, it's genuinely deployment-ready.

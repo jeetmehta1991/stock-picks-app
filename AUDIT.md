@@ -21710,3 +21710,70 @@ Skip any element → flag rec as `UNVERIFIED — pattern-match only`. NEVER "Con
 ### Pending count: 298 + 11 = 309
 
 *Theme 5 batch 1 closed (5 of 8). NEW DEC-410 API utilization audit logged as CRITICAL TODO + pre-condition gate before next backtest pass. L132/CHECKLIST #53 introduced. Per CHECKLIST #43 (prior-art verified — DEC-002/064/065/073/300/381 + BUG-018/038/053/181/185/275/079/106 cross-referenced); #45 (compliance statement); #46 (three-source check); #47 (full-text grep); #48 (sub-decisions formally logged); #49+#50 (CAV-049 through CAV-053 cross-referenced inline); #51 (explicit "Approve all" + "Agree with all your other recs"); #52 (advancement parsed correctly); #53-NEW (this turn applies grounded-recommendation format retroactively to DEC-082/083/085 revisions).*
+
+---
+
+## AUDIT PASS 52 — Theme 5 batch 2 closure (DEC-109/110/111) + DEC-417 test-run audit gate + L133/CHECKLIST #54
+
+**Trigger:** Owner Pass 52 verbatim: "Approve all your recommendations in this batch. Lets review the next batch. audit recommendations after limited-sample test run - Your understanding is correct. But after we prefetch ALL OHCLV and API data within agreed scope. When - after we are done reviewing the entire audit file. What's the audit checklist after the run? Agreed. But i want to log your recommendation, decision, and your suggestion on what we should be testing and output on run and binary on Test_Mismatch"
+
+### Theme 5 batch 2 status: COMPLETE → THEME 5 OVERALL COMPLETE (8 of 8)
+
+| Decision | Resolution | Sub-decisions |
+|---|---|---|
+| DEC-109 — Rolling 5yr/1yr walk-forward | Owner-approved Option B (extend to 2018) | DEC-411 (data extension), DEC-412 (rolling impl) |
+| DEC-110 — Deflated Sharpe (Bailey et al.) | Owner-approved | DEC-413 (PSR implementation) |
+| DEC-111 — Stationarity / structural break tests | Owner-approved scoped 3 tests | DEC-414 (ADF), DEC-415 (rolling Sharpe), DEC-416 (Chow) |
+
+### NEW DEC-417 — Test-run audit gate (CRITICAL process gate)
+
+**Owner directive verbatim:**
+- "audit recommendations after limited-sample test run - Your understanding is correct"
+- "after we prefetch ALL OHCLV and API data within agreed scope"
+- "When - after we are done reviewing the entire audit file"
+- "i want to log your recommendation, decision, and your suggestion on what we should be testing and output on run and binary on Test_Mismatch"
+
+**Sequence (mandatory order):**
+1. Full data prefetch complete (DEC-410 API audit + DEC-411 OHLCV 2018-extension + all approved prefetch decisions)
+2. All themes in audit reviewed — every decision walked through with owner approval
+3. Limited-sample test run: 10 tickers × 60 days × current strategies
+4. Per-decision validation table populated in `AUDIT_TEST_RUN_RESULTS.md`:
+   - decision_id
+   - recommendation (logged in audit)
+   - test_signal (what to look for in test output)
+   - test_output_expected (concrete expected pattern/value)
+   - test_mismatch_action (what we do if test fails)
+   - test_mismatch_flag (binary true/false after test run)
+5. TEST_MISMATCH=true → investigation/revision required before full implementation
+6. TEST_MISMATCH=false → proceed to implementation
+
+**Joint with:**
+- DEC-410 (API audit) — precondition; data must be prefetched first
+- DEC-411 (data extension) — precondition; OHLCV must be complete
+- All Pass 52 approved decisions retroactively — every one needs test_signal/test_output_expected/test_mismatch_action populated
+
+**Effort:** ~1-2 days to populate validation table for ~80 Pass 52 decisions (after themes complete) + ~30 min for test run + ~1 day for triage of any mismatches.
+
+### Codified as L133 + CHECKLIST #54
+
+**L133:** Test-run audit gate is the strongest defense against pattern-match-without-verification failure. CHECKLIST #43 (prior-art) catches duplicates. CHECKLIST #46 (three-source) catches scope misfits. CHECKLIST #53 (grounded format) catches feasibility errors. **CHECKLIST #54 (test-run audit) catches everything that survives the first three by requiring empirical confirmation.**
+
+**CHECKLIST #54:** Decisions transition from "owner-approved" to "implementation-ready" only after passing limited-sample test-run validation. Per-decision audit table required.
+
+### Theme 5 OVERALL: 8 of 8 COMPLETE
+
+| Theme 5 Batch | Decisions | Status |
+|---|---|---|
+| Batch 1 (Pass 52) | DEC-080/081/082/083/085 | Complete (commit 64bc12a8 — with revisions on 082/083/085) |
+| Batch 2 (Pass 52) | DEC-109/110/111 | **Complete (this commit)** |
+
+### Caveats added (CAV-054 through CAV-056)
+
+- CAV-054 — 5yr/1yr walk-forward requires data extension beyond current 4yr scope
+- CAV-055 — Deflated Sharpe iid assumption violated by momentum/mean-reversion autocorrelation
+- CAV-056 — 4-year sample limits structural-break detection power (false negatives more likely)
+
+### Total decisions logged this commit: 7 sub-decisions (DEC-411 through DEC-417)
+### Pending count: 309 + 7 = 316
+
+*Theme 5 closure (8/8). Theme progression: Theme 1 (PIT 4) ✓ + Theme 2 (Data+Universe 8) ✓ + Theme 4 (Engine Bugs 15) ✓ + Theme 5 (Statistical Methodology 8) ✓ = 35 decisions across 4 themes. Theme 3 (Phase 0.A Prefetch, 6) NOT approved — per owner deferred. Theme 6 next (Batch X14 Validation criteria). Per CHECKLIST #43 (prior-art verified — DEC-298/326/080/081/246/410/411 cross-referenced); #45 (compliance statement); #46 (three-source check applied including DEC-326 conflict); #47 (full-text grep); #48 (sub-decisions formally logged); #49+#50 (CAV-054/055/056 cross-referenced inline); #51 (explicit "Approve all"); #52 (advancement parsed); #53 (grounded-recommendation format applied throughout); #54-NEW (test-run audit gate codified).*
