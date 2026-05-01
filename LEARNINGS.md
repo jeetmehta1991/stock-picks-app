@@ -636,3 +636,19 @@ The same response must convert each enumerated item into one of:
 **Pair:** L127 + CHECKLIST #48. Per owner standing exception for process-discipline files.
 
 **Past reference:** This is L121-L126 family — all about "log things properly." L127 closes a specific recurrence pattern (prose-to-decision conversion).
+
+## L128 (Pass 52) — Caveats must be collected in LIMITATIONS_CAVEATS_ASSUMPTIONS.md, not buried in audit prose (owner directive)
+
+**Trigger:** Owner Pass 52 directive — "Document all caveats. Create a separate limitations/caveats/assumptions md file and keep adding to it."
+
+**Why this matters:** AUDIT.md had 56 mentions of "caveat" and "honest caveat" scattered across 20,000+ lines. Caveats inline in audit prose are invisible to stakeholder review. A live trading system that ships with known biases must be transparent about them — but only if those biases are surfaced in one discoverable place. A 2.0 Sharpe is a different claim if the system has documented survivorship bias than if it doesn't. Reporting must reference the caveats file alongside any backtest result.
+
+**Rule (CHECKLIST #49):** Every time a decision resolves WITH CAVEATS, or a runtime probe surfaces a known limitation, or a methodology choice has an honest tradeoff:
+1. Log the caveat in LIMITATIONS_CAVEATS_ASSUMPTIONS.md as CAV-NNN entry
+2. Cross-reference from the source decision/bug entry in AUDIT.md
+3. Append-only — never delete; mark RESOLVED Pass N if the underlying issue resolves
+4. Format requirements: Source / Status / Caveat / Operational impact / Forward-link
+
+**Past mistake corrected:** Pre-Pass-52, 56 caveats were buried in audit prose with no consolidated registry. Stakeholders reading audit reports could miss the cumulative bias profile of the system. L128 closes the gap.
+
+**Pair:** L128 + CHECKLIST #49. Per owner standing exception for process-discipline files.

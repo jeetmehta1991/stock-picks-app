@@ -21092,3 +21092,71 @@ Pattern: I write recommendations in deliverables, then forget to convert to form
 **Adding L127 + CHECKLIST #48:** Any time my Pass-N prose enumerates "things to do" or "gaps" or "patterns to add" or "questions to consider" — the same response must convert each enumerated item into a logged decision/bug entry, OR explicitly note it as deferred. Owner-readable list != audit-tracked decision. Two distinct artifacts; both need to exist.
 
 *DEC-354 reopened from SUPERSEDED to PENDING (parent umbrella). DEC-355 through DEC-362 logged as 8 individual chart-pattern strategy decisions per owner directive "each and every price action strategy to be tested." BUG-111 escalated HIGH → CRITICAL. Per CHECKLIST #43 + #46 + #47 + new L127/CHECKLIST #48.*
+
+---
+
+## AUDIT PASS 52 — Theme 1 RESOLVED (Batch X52 CRITICAL PIT Correctness) + LIMITATIONS_CAVEATS_ASSUMPTIONS.md created
+
+**Owner directive Pass 52 verbatim:** "Approve all. Document all caveats. Create a separate limitations/caveats/assumptions md file and keep adding to it"
+
+### DEC-298 RESOLVED Pass 52 — Cache stores adjusted-close
+
+**Owner verdict:** APPROVE
+**Resolution:** Three-step sequence:
+1. Switch `auto_adjust=False` in cache.py:96 + fetcher.py:130 (~1 day)
+2. Build PIT adjustment function — apply only corp actions ≤ as_of (~3-4 days)
+3. Migrate cache schema — store raw OHLCV separately from corp actions (~1 day)
+**Caveats:** CAV-001 logged in LIMITATIONS file
+**Tests required:** Regression test that fetching AAPL OHLCV for as_of=2020-01-01 returns same numbers regardless of when test runs
+
+### DEC-299 RESOLVED Pass 52 — yfinance fetch_info CURRENT sector
+
+**Owner verdict:** APPROVE
+**Resolution:** Three-step sequence:
+1. Snapshot current fetch_info results to dated CSV (Step 1, immediate, ~1 day)
+2. Defer Polygon Reference subscription per BUG-191 sequencing rule
+3. Migrate to Polygon Reference once paid + consumer built
+**Caveats:** CAV-002 logged
+
+### DEC-300 RESOLVED Pass 52 — yfinance earnings_dates / analyst data CURRENT
+
+**Owner verdict:** APPROVE
+**Resolution:** Tiered approach:
+1. Enforce earnings_tolerant flag at all call sites (~80% exposure reduction)
+2. PIT earnings calendar via Polygon News (Phase 1C scope)
+3. REMOVE analyst data from PIT-claiming functions until paid PIT analyst-estimate source built
+**Caveats:** CAV-003 logged
+
+### DEC-303 RESOLVED Pass 52 — S&P 500 historical membership
+
+**Owner verdict:** APPROVE
+**Resolution:** Phased delivery:
+1. Build sp500_membership_history.csv from Wikipedia free source (~2 days)
+2. Modify get_sp500_constituents(as_of) to filter by added_date/removed_date
+3. Re-run all backtests; expect material change to crisis-period numbers (correct direction)
+**Caveats:** CAV-004 logged including residual delisted-ticker-OHLCV gap (yfinance often removes delisted-ticker bars; document gap rather than pay for CRSP this phase)
+
+### LIMITATIONS_CAVEATS_ASSUMPTIONS.md created Pass 52
+
+**File:** `/LIMITATIONS_CAVEATS_ASSUMPTIONS.md` (new)
+**Format:** CAV-NNN entries with Source / Status / Caveat / Operational impact / Forward-link
+**Initial population:** 24 entries across 7 sections:
+- Section 1: Data quality and PIT correctness (CAV-001 through CAV-004)
+- Section 2: Methodology and statistical caveats (CAV-005 through CAV-008)
+- Section 3: Cascade-broken signal pipelines (CAV-009 through CAV-011)
+- Section 4: Data source caveats (CAV-012 through CAV-015)
+- Section 5: Architecture and code-hygiene caveats (CAV-016 through CAV-019)
+- Section 6: Cost and operational caveats (CAV-020 through CAV-022)
+- Section 7: Strategy and scope caveats (CAV-023 through CAV-024)
+**Convention:** Append-only per L109 — caveats never deleted, marked RESOLVED Pass N when underlying issue resolves
+**Discipline added:** L128 + CHECKLIST #49 — every decision-resolved-with-caveats, every runtime-probe-surfaced limitation, every honest-tradeoff methodology choice must log a CAV-NNN entry
+
+### Theme 1 complete; ready to advance to Theme 2
+
+Per the agreed walkthrough sequence:
+- **Theme 1 — Batch X52 CRITICAL PIT Correctness:** 4/4 RESOLVED ✅
+- **Theme 2 — Batch X1 Data + Universe:** next, 8 decisions
+
+Standing by for owner direction to proceed to Theme 2.
+
+*DEC-298, DEC-299, DEC-300, DEC-303 RESOLVED Pass 52. LIMITATIONS_CAVEATS_ASSUMPTIONS.md created with 24 initial entries. L128 + CHECKLIST #49 codifying caveat-tracking discipline. Per CHECKLIST #43 + #45 + #49 + L128.*

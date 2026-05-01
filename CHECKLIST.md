@@ -374,3 +374,17 @@ State compliance visibly: "Checklist: ✅ [each item]"
     Past failures: Pass 52 had me list 7 chart pattern classes in prose with no
     logging; owner had to directly ask before they were entered into the catalog.
     Owner-readable prose != audit-tracked decision. Both must exist.
+
+49. **Caveats must be logged in LIMITATIONS_CAVEATS_ASSUMPTIONS.md (Pass 52 owner directive):**
+    Per L128. Every time:
+    - A decision resolves WITH CAVEATS (e.g., "approved Step 1, defer Step 2")
+    - A runtime probe surfaces a known limitation
+    - A methodology choice has an honest tradeoff
+    - A piece of code has a self-acknowledged shortcut (e.g., "acceptable for Phase 1")
+    The caveat must be logged in LIMITATIONS_CAVEATS_ASSUMPTIONS.md as CAV-NNN.
+    Format: Source (DEC/BUG/pass) / Status (ACTIVE/MITIGATED/RESOLVED Pass N) /
+    Caveat (plain English) / Operational impact / Forward-link.
+    Append-only convention per L109 — never delete; mark RESOLVED with forward-link
+    if underlying issue resolves.
+    Cross-reference from source decision/bug entry in AUDIT.md.
+    Past mistake: 56 caveats buried in 20,000+ lines of audit prose pre-Pass-52.
