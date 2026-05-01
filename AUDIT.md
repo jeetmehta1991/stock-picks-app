@@ -20239,3 +20239,128 @@ CHECKLIST #44 (runtime probe) caught new bugs:
 **Honest meta-finding:** This batch shows the audit catalog is partially polluted with stale or unverifiable entries (BUG-005 sitting CRITICAL severity-UNKNOWN; DEC-308 possibly invalid). A separate **catalog audit** to refresh stale entries may be warranted in a future pass.
 
 *BUG-275/276/277/278/279 logged. BUG-005 severity upgraded UNKNOWN→CRITICAL with reproducer. DEC-308 prediction-vs-code conflict flagged for owner verification. ~6,000 of 13,251 LOC covered; remaining ~7,000 LOC for future audit pass.*
+
+---
+
+## AUDIT PASS 52 — Stage 5.5 Continued (full-codebase adversarial audit, batch 2: engine + scripts + tests probed)
+
+**Date:** April 30, 2026
+**Coverage this batch:** engine/backtest.py BacktestEngine class, engine/exit_manager.py, engine/regime_filter.py (already covered batch 1), data/fetcher.py, scripts/validate_phase1b_data.py, scripts/refresh_economic_calendar.py, backtest/tests/test_unit.py — ~5,000 additional LOC.
+
+**Cumulative coverage Stages 5+5.5 batches 1+2: ~11,000 of 13,251 LOC.** Remaining ~2,000 LOC: results/writer.py, results/site_generator.py, scripts/prefetch_*, scripts/build_momentum_watchlist.py.
+
+### Files probed clean this batch
+
+- `engine/exit_manager.py` — trailing stop progression correct; close_trade hold_days correct; check_trailing_stop_hit correctly detects gap-through stops. DEC-297 days bug confirmed RESOLVED.
+- `data/fetcher.py` — `_assert_no_lookahead` correctly raises on future bars; `get_sp500_constituents` returns 482 from static CSV per DEC-052.
+- `data/sentiment.py` — works
+- `signals/technical.py` — all 23 compute functions clean (covered batch 1)
+- `backtest/tests/test_unit.py` — all 56 tests PASS in 3.59s. **BUT — see major finding below.**
+
+### MAJOR FINDING — Test suite passes 100% while 8+ HIGH bugs exist in code
+
+**`pytest backtest/tests/test_unit.py` reports `56 passed` cleanly.**
+
+**Yet at this point of the audit:** BUG-005 CRITICAL, BUG-270/271/272/273/274/276/277 HIGH all exist in code. None caught by tests.
+
+Tests cover: tier adjustment (6), transaction costs (3), survivorship, circuit breaker (2), close_trade (3), ClosedTrade dataclass (2), news sentiment cache reading, congressional lag, AAII PIT, CI bounds (3), sector ETF labelling, unknown-ticker handling — **all internal logic.** No tests for the 5 broken Quiver consumption functions where >$120/month of API spend lands.
+
+**Empirical confirmation of why DEC-222 (regression tests for top-20 critical bugs, OPEN since Pass 45) is high-leverage.** Each Stage 5+5.5 bug would have been a 1-3 line test that fails on the buggy code:
+```python
+def test_insider_signal_returns_data_for_AAPL():  # would catch BUG-270
+def test_get_gov_contracts_returns_data_for_AAPL():  # would catch BUG-271
+def test_get_lobbying_returns_data_for_AAPL():  # would catch BUG-272
+def test_congressional_signal_returns_data_for_TSLA_busy_day():  # would catch BUG-273
+def test_institutional_signal_returns_data_for_MSFT():  # would catch BUG-274
+def test_classify_regime_works_on_SPY():  # would catch BUG-277
+def test_agent_cache_key_handles_strategy_dicts():  # would catch BUG-276
+```
+Seven tests, ~30 lines, would have flagged 7 of the 8 new bugs. Test suite false-pass = direct $150 burn cause.
+
+### BUG-280 · LOW — `days_to_next_earnings()` returns None on yfinance failure
+
+**File:** `backtest/data/fetcher.py` (function `days_to_next_earnings`)
+
+**Reproducer:** In sandbox / blocked-network environment: `days_to_next_earnings("AAPL", date(2024, 6, 1))` returns `None`. This propagates upstream to Risk Agent, which interprets None as "earnings date unknown" rather than "fetch failed."
+
+**Impact:** Silent degradation when yfinance is unreachable. Risk Agent may assess earnings risk as low when actually we have no information. Distinct from BUG-279 (cache reverse-date) and BUG-070-class (yfinance fragility) — this one specifically about earnings dates.
+
+**Fix:** Either (a) cache earnings dates per-ticker so live fetch is fallback only, or (b) return sentinel value distinguishing "no upcoming earnings" from "fetch failed."
+
+**Cross-references:** L11 (pre-fetch everything, never call APIs in compute loops); BUG-191 (validation gate)
+
+### Forward-link to BUG-072 (existing HIGH OPEN)
+
+**Pass 52 Stage 5.5 batch 2 confirmed BUG-072 prediction:**
+
+`scripts/validate_phase1b_data.py` runs and reports `13 PASSED, 1 WARNING, 0 BLOCKERS — ALL CHECKS PASSED — ready for Phase 1B`. **Yet wikipedia cache is 100% empty (0/509 non-empty, marked ✅).** And gov_contracts is only 40% non-empty (203/509, marked ✅).
+
+The validator's pass/fail logic is too lenient — it checks "files exist on disk" not "files have data." BUG-072 ("validate_phase1b_data.py passes all checks but misses 6 blockers — false pass") confirmed empirically. The empty wikipedia cache + 5/509 AV news + likely-empty Finnhub all sailed through validation green.
+
+This is the upstream of L95 ($150 burned). Validator green-lit a run that had broken downstream signal consumption. Resolution path: BUG-072 should be a Phase 0.A blocker — fix before any further agent run.
+
+### DEC-348 scope CLARIFICATION (Stage 5.5 batch 2 finding)
+
+**My Stage 4 deliverable said "no library does FOMC/CPI/earnings dates; need custom module."** **That was wrong.**
+
+Discovered Pass 52 Stage 5.5 batch 2: `backtest/data/economic_calendar.json` already exists with 51 CPI / 51 NFP / 34 FOMC dates through Q1 2026. `scripts/refresh_economic_calendar.py` exists to extend it from Fed/BLS sources. `backtest/data/macro.py:_load_economic_calendar()` loads it. `is_near_high_impact_event(as_of, window_days=2)` consumes it. `macro_snapshot()` flags `near_high_impact_event` to Risk Agent.
+
+**DEC-304 RESOLVED Pass 50 already implemented this.**
+
+What's STILL the gap (DEC-348's correct scope): **strategies don't consume the calendar.** Confirmed by grep:
+- `near_high_impact` referenced ZERO times in `backtest/signals/screener.py`
+- `near_high_impact` referenced ZERO times in `backtest/engine/backtest.py` strategy-firing logic
+- Only Risk Agent sees the flag (via `macro_snapshot`)
+
+**Strategies fire identically on event days.** Mean-reversion strategies enter on RSI 30 hits triggered by the event whipsaw; breakout strategies enter on event-driven false breakouts.
+
+**Corrected DEC-348 scope:** "Add event-calendar consumption to strategy gating logic. Calendar already exists (`economic_calendar.json` per DEC-304 RESOLVED Pass 50); plumbing to add is from screener.py + backtest.py to consume `is_near_high_impact_event()` already in macro.py." This is a smaller scope than originally framed — no new module, just consumption code. Estimate ~30-50 lines vs original "build event calendar + suppression."
+
+**Honest correction:** Stage 4 deliverable is now partially incorrect (claims event calendar doesn't exist). Stage 5 deliverable too. Both should be corrected. Future research stages should confirm prior-art via in-repo grep, not just web search.
+
+### Cascade impact of BUG-005/270/271/272/273/274 — quantified Pass 52 batch 2
+
+**Empirical evidence from 1,000-sample tier distribution analysis:**
+
+| Tier | Count (n=1000) | % |
+|---|---|---|
+| LOW | 937 | 93.7% |
+| AVOID | 57 | 5.7% |
+| MEDIUM | 2 | 0.2% |
+| NONE | 4 | 0.4% |
+| EXCEPTIONAL / VERY_HIGH / HIGH / MEDIUM_HIGH | **0** | **0.0%** |
+
+**Zero high-conviction tier signals fired in 1,000 random Phase 1B agent runs.** The agent pipeline operated as a binary AVOID/LOW system. EXCEPTIONAL requires `congressional+insider_cluster` smart-money — but BUG-270 (insider 100% none) + BUG-273 (congressional crashes when populated) make this tier structurally unreachable.
+
+**This is concrete cost-of-bugs:** the $150 Phase 1B run produced 12,304 cached agent analyses, of which ~94% were LOW tier (zero position size, never traded). The trades that DID happen came from the ~6% AVOID + a few MEDIUM that don't get acted on either. **The run produced essentially zero actionable swing-trade signal output.** That is the operational meaning of "$150 burn — no value."
+
+### Honest scope statement — what remains unaudited
+
+**Approximately 2,000 LOC remain in scope that I have not yet probed:**
+
+- `backtest/results/writer.py` (385 LOC) — output writing, may have schema-format bugs
+- `backtest/results/site_generator.py` (341 LOC) — HTML site build for Stage 1 daily picks page
+- `scripts/prefetch_*` (~700 LOC across 5 prefetch scripts) — data download logic, error handling, retry logic
+- `scripts/build_momentum_watchlist.py` (245 LOC) — momentum scan
+- `scripts/refresh_*` (538 LOC across 3) — universe + calendar refresh
+- `scripts/merge_batch_outputs.py` (213 LOC) — batch result aggregation
+- `fetch_stocks.py` (436 LOC, root level) — Stage 1 daily picks fetcher
+
+These could harbor more bugs of similar class. **Audit incomplete.** Future pass should target these.
+
+### Process discipline observations from batches 1+2
+
+CHECKLIST #43 (prior-art grep) caught existing prior art **6 times** during batches 1+2:
+- BUG-079 (exit overstatement) caught before duplicating
+- DEC-246 (metrics edge cases) caught before logging new
+- BUG-005 (strategies field mismatch) **already existed UNKNOWN severity, upgraded to CRITICAL**
+- BUG-072 (validator false-pass) caught before duplicating
+- DEC-304 (event calendar) — already RESOLVED, my Stage 4 was wrong about its absence
+- DEC-308 — possibly invalid prediction; flagged for verification
+
+CHECKLIST #44 (runtime probe) caught **6 new bugs**:
+- BUG-275, 276, 277, 278, 279, 280
+
+**This is a healthy ratio.** Discipline is working when applied. The mistake remains: applying #43 AFTER drafting deliverable instead of before. Trying to make #43 mechanical-trigger-first.
+
+*BUG-280 logged. BUG-072 forward-link added empirical confirmation. DEC-348 scope corrected (calendar exists per DEC-304 RESOLVED; gap is strategy-level consumption). Cascade impact quantified: 0% high-tier signals in n=1000 sample. Audit ~83% complete (~11,000 of 13,251 LOC); remaining 2,000 LOC for future pass.*

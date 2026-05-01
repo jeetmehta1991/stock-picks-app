@@ -1026,6 +1026,7 @@
 | **BUG-277** | classify_regime() truth-value-of-DataFrame error — 100% failure on every probe | HIGH | OPEN | Pass 52 |
 | **BUG-278** | yield_curve_regime() doesn't use macro_combined.parquet cache; live-fetches FRED only | MEDIUM | OPEN | Pass 52 |
 | **BUG-279** | get_ohlcv() with reversed date order silently returns 0 rows; no error to caller | MEDIUM | OPEN | Pass 52 |
+| **BUG-280** | days_to_next_earnings() returns None silently when yfinance live blocked; caller may misread as "no earnings concern" | LOW | OPEN | Pass 52 |
 | **BUG-001** | `crisis_flag` used before definition → NameError crash | UNKNOWN | OPEN | - |
 | **BUG-002** | `days` variable used before definition → UnboundLocalError on every trade close | UNKNOWN | OPEN | - |
 | **BUG-003** | `ClosedTrade` dataclass defined twice — dead code, maintenance risk | UNKNOWN | OPEN | - |
