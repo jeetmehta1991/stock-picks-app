@@ -396,3 +396,45 @@ When a caveat is resolved:
 **Caveat:** DEC-392 changes `apply_liquidity_filter` from fail-open to fail-closed: missing market_cap → REJECTS ticker. This is the correct safety policy but will reject some legitimately-valid tickers where yfinance has temporary missing data: new IPOs in their first few days (info field not yet populated by yfinance), tickers in halt (info may be stale during halt), tickers with brief data outages.
 **Operational impact:** Universe may shrink by 1-3% post-deployment due to transient data issues. Acceptable tradeoff vs current silent fail-open which let unfillable positions through. Monitoring requirement: log rejection rate by reason (missing_market_cap vs below_min_cap vs below_min_adv vs insufficient_history). If `missing_market_cap` rejections exceed 5% of universe, investigate yfinance quality (may indicate broader data issue, not just edge cases).
 **Forward-link:** Annual review of rejection patterns; threshold adjustments if Stage 3 paper-trading shows different fill quality patterns.
+
+## Section — Pass 52 Theme 4 batch 3 caveats
+
+### CAV-044 — Market cap PIT blocked on fundamentals prefetch
+
+**Source:** DEC-322/DEC-393 PENDING (Pass 52)
+**Status:** ACTIVE
+**Caveat:** DEC-322 requires `market_cap_pit(ticker, as_of) = close × shares_outstanding(as_of)`. PIT shares outstanding is provided by DEC-257/DEC-383 (Theme 3 fundamentals prefetch). Until that lands, `info.get("marketCap", 0)` continues to return CURRENT value regardless of `as_of` parameter.
+**Operational impact:** AAPL 2020-01-01 market_cap reads as ~$3T (current) instead of historical ~$1.3T. TSLA pre-2020 trades read >$1T (current) instead of <$100B (historical). Liquidity filter (DEC-366: $300M floor) admits or rejects based on today's value. Size-factor strategies (small-cap momentum, market-cap-weighted) get wrong inputs throughout history. Phase 1B-α can proceed with documented limitation in any backtest report; size-factor strategies should NOT run until DEC-322 resolves.
+**Forward-link:** Resolved when DEC-257/DEC-383 (Theme 3 fundamentals prefetch) lands and DEC-393 (DEC-322 implementation) follows.
+
+### CAV-045 — Free sector history covers 2018+ major reclassifications only
+
+**Source:** DEC-323/DEC-394 PENDING (Pass 52)
+**Status:** ACTIVE
+**Caveat:** DEC-394 Phase 1 builds free static `sector_history.csv` from GICS press releases. Coverage scope: Sep 2018 GICS Communication Services creation (FB, GOOG, NFLX, DIS, T, VZ, CMCSA, EA, ATVI, TWTR moves) + individual reclassifications post-2018 (manually researched). Pre-2018 reclassifications and minor sub-sector renames not covered.
+**Operational impact:** Pre-2018 backtests using sector signals may have residual misclassification. Acceptable for Phase 1B-α since strategy universe focuses on post-2018 era; revisit if sector strategy verdicts depend heavily on coverage breadth. Phase 2 (DEC-395) Polygon Reference / FactSet provides full PIT but requires subscription.
+**Forward-link:** Resolved when DEC-395 Phase 2 (paid sector PIT) approved + integrated.
+
+### CAV-046 — 13F late filers conservative behavior change
+
+**Source:** DEC-325/DEC-396 PENDING (Pass 52)
+**Status:** ACTIVE
+**Caveat:** DEC-396 changes 13F PIT lookup from `quarter_end + 45 days` to actual `filing_date`. Some late filers (especially smaller funds with SEC extensions) file 60-180 days post-quarter. Strategies see position data later than current implementation; some positions never appear if filer is consistently late.
+**Operational impact:** Smart-money strategies fire later, with some positions invisible. Compared to current implementation (which assumes Day 45 for all filers), new behavior is correctly conservative — eliminates lookahead bias from assumed-on-time filings. Backtest performance may decline slightly for strategies that benefited from the implicit lookahead.
+**Forward-link:** No further resolution path — this is the correct PIT behavior; current implementation was the bug.
+
+### CAV-047 — Rolling walk-forward result drift; --anchor-date for reproducibility
+
+**Source:** DEC-326/DEC-397 PENDING (Pass 52)
+**Status:** ACTIVE
+**Caveat:** DEC-397 makes walk-forward windows roll relative to `today`. The same backtest run 6 months apart produces different train/test windows because `today` advanced. Result drift is expected behavior — system uses most recent data for the next out-of-sample period.
+**Operational impact:** Year-over-year comparisons of "the same backtest" need explicit anchoring. `--anchor-date YYYY-MM-DD` flag locks entire walk-forward computation to a specific reference date for reproducibility in audits, regression tests, and historical comparisons. Without the flag, results legitimately drift.
+**Forward-link:** No resolution needed — the drift is the feature; --anchor-date is the reproducibility mechanism.
+
+### CAV-048 — Potential historical short-trade PnL inflation if borrow zero-counted
+
+**Source:** DEC-327/DEC-398/DEC-399 PENDING (Pass 52)
+**Status:** ACTIVE — INVESTIGATION PENDING
+**Caveat:** Code state shows `improvements.py:80-84` charges borrow cost while `exit_manager.py:140-146` says "handled elsewhere" without charging. DEC-398 investigation will determine whether production path is `improvements` (charged) or `exit_manager` (not charged) or both (double-charged) or neither (zero-charged). If zero-charged in production, all historical short-trade backtest results have inflated net PnL.
+**Operational impact:** Magnitude estimate for typical case: 0.5% annual borrow rate × 20-day average hold ÷ 252 trading days ≈ 0.04% per short trade. Across ~30% of backtest trades being shorts and a 4-year backtest, cumulative net PnL inflation could be ~1-2% if zero-counted. Not catastrophic but real. DEC-398 investigation provides exact magnitude; DEC-399 fix consolidates to single shared utility ensuring exactly-once charging.
+**Forward-link:** Resolved when DEC-398 (investigate) + DEC-399 (consolidate) lands; document delta in any historical backtest report.

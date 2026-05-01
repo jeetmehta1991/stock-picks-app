@@ -21503,3 +21503,115 @@ Adding 4 new caveats to LIMITATIONS_CAVEATS_ASSUMPTIONS.md:
 ### Pending count: 286 + 5 = 291
 
 *Theme 4 batch 2 closed. 10 of 15 Theme 4 decisions resolved. Per CHECKLIST #43 (prior-art verified — BUG-026/027/234/235/237/238/277 + DEC-016/025/065/129/175/366 cross-referenced); #45 (compliance statement); #46 (three-source check applied); #48 (sub-decisions formally logged); #49+#50 (CAV-040/041/042/043 cross-referenced inline); #51 (explicit "approve all" used); #52 (advancement "Next batch" interpreted as advance to batch 3 with recommendations only).*
+
+---
+
+## AUDIT PASS 52 — Theme 4 batch 3 closure: DEC-322/323/325/326/327 owner-approved
+
+**Trigger:** Owner Pass 52 verbatim: "Approve all your recs in this batch, please execute. Then Lets review Next batch"
+
+### Theme 4 batch 3 status: COMPLETE → THEME 4 OVERALL COMPLETE (15 of 15)
+
+| Decision | Resolution | Sub-decisions |
+|---|---|---|
+| DEC-322 — Market cap CURRENT not historical | Owner-approved | DEC-393 (BLOCKED on DEC-257) |
+| DEC-323 — Sector reclassifications retro-applied | Owner-approved phased | DEC-394 (Phase 1 free) + DEC-395 (Phase 2 paid) |
+| DEC-325 — 13F PIT assumes universal on-time filing | Owner-approved | DEC-396 (filing_date capture) |
+| DEC-326 — Walk-forward windows hardcoded | Owner-approved | DEC-397 (rolling logic) |
+| DEC-327 — Short-borrow cost duplicated | Owner-approved phased | DEC-398 (investigate) + DEC-399 (consolidate) |
+
+### DEC-393 — DEC-322 implementation (market cap PIT)
+
+- Compute `market_cap_pit(ticker, as_of) = close_price(ticker, as_of) × shares_outstanding(ticker, as_of)`
+- Replace `info.get("marketCap", 0) or 0` callers in fetcher.py with `market_cap_pit()` lookup
+- Validation: AAPL 2020-01-01 ≈ $1.3T (not current ~$3T)
+- **BLOCKED ON DEC-257/DEC-383** (Theme 3 fundamentals prefetch provides PIT shares outstanding)
+- Joint with: BUG-191 (validation gate), DEC-299 (Theme 1 PIT cluster — already approved)
+- **Caveat CAV-044:** Until DEC-257 lands, market_cap remains CURRENT. Phase 1B-α can proceed with documented limitation; size-factor strategies should NOT run until DEC-322 lands.
+- Effort: ~1-2 days post-DEC-257
+
+### DEC-394 — DEC-323 Phase 1 (free static sector history)
+
+- New `backtest/data/sector_history.csv`
+- Schema: `ticker, effective_date, old_sector, new_sector, reason`
+- Coverage:
+  - **Sep 2018 GICS Communication Services creation** — FB, GOOG (Class A+C), NFLX, DIS, T, VZ, CMCSA, EA, ATVI, TWTR moved from Tech/Discretionary/Telecom → Comms
+  - **Individual reclassifications post-2018** — manually researched from GICS press releases
+- Source: GICS official press releases + S&P Dow Jones Indices announcements (free)
+- Engine integration: `get_sector(ticker, as_of=D)` consults `sector_history.csv` first; falls back to current `info.get("sector")` only if no historical entry exists
+- Joint with: BUG-239 (sector reclass retro-applied)
+- **Caveat CAV-045:** Free static table covers 2018+ major reclassifications. Pre-2018 changes and minor sub-sector renames not covered. Acceptable for Phase 1B-α; revisit if sector strategy verdicts depend heavily on coverage.
+- Effort: ~2 days
+
+### DEC-395 — DEC-323 Phase 2 (paid PIT sector)
+
+- Polygon Reference / FactSet subscription
+- Replaces static CSV with full PIT coverage including pre-2018 changes
+- Cost decision separate; defer to Stage 3+
+- Effort: ~1 day post-subscription
+
+### DEC-396 — DEC-325 implementation (13F filing_date)
+
+- In `quiver` 13F prefetch (or whatever supersedes per BUG-186/241/274 cascade resolution): capture `filing_date` field per position
+- Storage: per-position `filing_date` not just `quarter_end`
+- PIT lookup: `get_institutional_positions(ticker, as_of=D)` returns positions where `filing_date <= D` (NOT `quarter_end + 45 <= D`)
+- Strategies see position data the day after the filer actually filed
+- Joint with: BUG-241 (institutional 13F PIT late filers — same root), BUG-186 (institutional empty + 5-mo gap)
+- **Caveat CAV-046:** Some late filers (especially smaller funds with extensions) file 60-180 days post-quarter. Strategies fire later than current implementation; some positions never appear if filer is consistently late. Compared to current (which assumes Day 45 for all), new behavior is correctly conservative.
+- Effort: ~1-2 days
+
+### DEC-397 — DEC-326 implementation (rolling walk-forward)
+
+- Replace hardcoded calendar dates with rolling logic:
+  - `train_window_years = 4` (configurable in config.py)
+  - `oos_window_years = 1` (configurable)
+  - `train_start = today - train_window_years - oos_window_years`
+  - `train_end = today - oos_window_years - 1 day`
+  - `oos_start = train_end + 1 day`
+  - `oos_end = today - 1 day`
+- `--anchor-date YYYY-MM-DD` override flag for reproducibility (lock entire walk-forward to specific reference date)
+- Document in PROJECT_PLAN section 11
+- Joint with: DEC-109 (parent rolling-walk-forward decision)
+- **Caveat CAV-047:** Rolling windows make backtest results "drift" — same backtest 6 months apart produces different train/test windows. `--anchor-date` flag is the reproducibility mechanism for audits/comparisons.
+- Effort: ~1 day
+
+### DEC-398 — DEC-327 Phase A (investigate borrow cost path)
+
+- Trace actual backtest call path:
+  - `improvements.py:80-84`: `borrow_cost = SHORT_ANNUAL_BORROW_RATE * (hold_days / 252); round_trip += borrow_cost` — charges
+  - `exit_manager.py:140-146`: comment says *"Gross percentage PnL... DOES NOT subtract borrow cost — that is handled elsewhere"* — doesn't charge
+- Determine whether `improvements.calculate_round_trip_pnl` is production or `exit_manager` is
+- Quantify: zero-counted, single-counted, or double-counted in production
+- Effort: ~0.5 days
+
+### DEC-399 — DEC-327 Phase B (consolidate borrow cost)
+
+- Move borrow cost calculation to shared utility `backtest.engine.costs.calculate_borrow_cost(trade, hold_days)`
+- Both `improvements.py` and `exit_manager.py` consume the shared utility
+- Remove duplication
+- Unit test: assert borrow cost charged exactly once per short trade
+- Re-run historical short-trade backtests; document net PnL delta as "borrow cost correction"
+- **Caveat CAV-048:** If DEC-398 reveals borrow cost is currently zero-counted in production, all historical short-trade backtest results have inflated net PnL by approximately `SHORT_ANNUAL_BORROW_RATE × avg_hold_days / 252`. For 0.5% annual rate × 20-day hold = ~0.04% per trade. Document the size of correction.
+- Effort: ~0.5 days
+
+### Theme 4 OVERALL: 15 of 15 COMPLETE
+
+| Theme 4 Batch | Decisions | Status |
+|---|---|---|
+| Batch 1 (Pass 52) | DEC-307/308/310/313/314 | Complete (commit e8c8c2a3) |
+| Batch 2 (Pass 52) | DEC-317/318/319/320/321 | Complete (commit c0fba500) |
+| Batch 3 (Pass 52) | DEC-322/323/325/326/327 | **Complete (this commit)** |
+
+### Caveats added (CAV-044 through CAV-048)
+
+5 new caveats:
+- **CAV-044** — Market cap PIT blocked on DEC-257 fundamentals prefetch
+- **CAV-045** — Free sector history covers 2018+ major reclassifications only
+- **CAV-046** — 13F late filers conservative behavior change
+- **CAV-047** — Rolling walk-forward result drift; --anchor-date for reproducibility
+- **CAV-048** — Potential historical short-trade PnL inflation if borrow zero-counted
+
+### Total decisions logged this commit: 7 sub-decisions (DEC-393 through DEC-399)
+### Pending count: 291 + 7 = 298
+
+*Theme 4 (Batch X53 — High-Impact Engine Bugs) closed in full. 15 of 15 decisions resolved across 3 batches in Pass 52. Per CHECKLIST #43 (prior-art verified — BUG-186/191/239/241 + DEC-109/257/299/383 cross-referenced); #45 (compliance statement); #46 (three-source check applied); #48 (sub-decisions formally logged); #49+#50 (CAV-044/045/046/047/048 cross-referenced inline); #51 (explicit "approve all" used); #52 ("Next batch" = advance to Theme 5 with recommendations only).*
