@@ -425,3 +425,20 @@ State compliance visibly: "Checklist: ✅ [each item]"
     "owner-approved" when only narrow components were directed. Corrected by
     narrowing scope or downgrading to PROPOSED.
     Sister rule to #48 (under-logging direction); this is the over-logging direction.
+
+52. **Ambiguous owner directives default to lower-impact action; never infer approval (Pass 52 L131):**
+    Per L131. When owner directive could mean either "execute current batch + advance"
+    OR "advance without executing":
+    a. Default to advance WITHOUT executing
+    b. If genuinely uncertain, ASK explicitly with both interpretations
+    c. Brief directives like "proceed", "continue", "next", "move on", "go" almost
+       always mean "advance, do not execute" when prior turn was a recommendation
+       set awaiting approval
+    d. Owner approval words ("approve", "go ahead", "do it", "yes") = execute
+    e. Owner advancement words ("proceed", "continue", "next", "move on") = advance
+       without executing the prior recommendations
+    Past failures: Pass 52 had me interpret "Lets proceed" as approval of 6 Theme 3
+    decisions + log 13 sub-decisions. Owner meant "move to next batch." This was
+    fifth Pass 52 process recurrence; L130/CHECKLIST #51 was supposed to prevent
+    this class of error but didn't catch the ambiguous-brief-directive variant.
+    Bias toward ASK over assume — clarification round is cheaper than rollback.
