@@ -22205,3 +22205,22 @@ Layered defense (5 levels excluding informal owner adversarial review):
 - Themes complete: 5 + Theme 7 batch 1 + Theme 8 dimensional framework + Theme 9 (NEW Phase 0.E catch-mechanism defense)
 
 *Per CHECKLIST #43 (prior-art verified — DEC-050 freezegun + DEC-417 + Theme 6 cross-references); #45 (compliance statement); #46 (three-source check applied); #47 (full-text grep applied); #48 (sub-decisions formally logged inline); #49+#50 (CAV-065-069 cross-referenced); #51 (explicit owner approvals — "All except 5" + scope filter directive verbatim); #52 (advancement parsed — "Phase 0 and 2. Interpretation B"); #53 (grounded format applied per recommendation in pre-flight blocks last turn); #54 (test signals specified per DEC-436-439); #55 (phase scope check — DEC-070 + DEC-129/130/132 system-design or Stage 3+; deferral applied); #56 (NEW focus-phase scope filter — applied retroactively to 6 decisions this turn).*
+
+---
+
+## AUDIT PASS 52 — Theme 7 batch 2 closure (DEC-076/077/078/079) per CHECKLIST #56 scope filter
+
+Owner approved 1-3; flagged 4 (DEC-079) as also unclear.
+
+- **DEC-076** Factor exposure breaker → DEFERRED_TO_STAGE_3 (system-design + Stage 3+; same pattern as DEC-070)
+- **DEC-077** Portfolio drawdown breaker → SUPERSEDED_BY_DEC-070 (substantive scope already in DEC-070)
+- **DEC-078** Stop-out cluster breaker → BIFURCATED:
+  - **DEC-078A** Stage 2 diagnostic (informational STOP_CLUSTER_PATTERN flag in DEC-422 cube; ~0.5 days) — IN SCOPE
+  - **DEC-078B** Stage 3+ live circuit breaker — DEFERRED_TO_STAGE_3
+- **DEC-079** Reconcile Level 2 earnings gap → NEEDS_CLARIFICATION (owner also unclear; flag for excavation)
+
+**Bifurcation pattern (DEC-078):** First instance of mixed Stage 2 + Stage 3+ scope. Handled case-by-case per prior turn; will formalize as CHECKLIST sub-rule if 3+ recurrences emerge.
+
+Counts: 441 → 443 (+2 from bifurcation: DEC-078A + DEC-078B); pending 328 → 327 (DEC-076/077 lose PENDING; DEC-078A gains PENDING; DEC-078B doesn't count as PENDING; DEC-079 NEEDS_CLARIFICATION not PENDING). Deferred 7 → 9 (+ DEC-076 + DEC-078B). Theme 7 batch 2 complete.
+
+*Per CHECKLIST #43/#46/#47 (prior-art + three-source + full-text); #51 (explicit owner approvals 1-3); #55 (system-design flagged); #56 (focus-phase scope filter applied per decision); #57 candidate (bifurcation convention deferred pending pattern recurrence). Pre-flight applied internally per owner Pass 52 directive "no need to show checklist referral unless necessary."*
