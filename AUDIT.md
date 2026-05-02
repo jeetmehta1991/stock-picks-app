@@ -22569,3 +22569,24 @@ CHECKLIST #56 OVERRIDE EXPIRES post this commit. Going forward: standard scope f
 Counts: 445 → 460 (+15 sub-decisions). Pending: 326 → 340 (+14 net: +15 new -1 DEC-410 resolved). Resolved: 95 → 96.
 
 *Per CHECKLIST #43/#46/#47/#51 (explicit "Approve all recs")/#56-override-expired/#57.*
+
+---
+
+## AUDIT PASS 52 — Theme X53 bookkeeping cleanup (Option C step 1)
+
+Owner Pass 52 turn 24 directive: "Option C" — bookkeeping flip first, then walk truly-pending decisions in batches.
+
+**Pre-flight finding (status-vs-text contradiction caught):**
+15 decisions in Batch X53 had "Pass 52 owner-approved" in their text descriptions but `PENDING` in their status column. AUDIT.md narrative also stated "Theme 4 (Batch X53) closed in full." The contradiction is exactly the class of error DEC-417 retroactive run catches — approvals not propagated to status.
+
+**Bookkeeping action this turn:**
+15 decisions flipped PENDING → RESOLVED:
+DEC-307, 308, 310, 313, 314, 317, 318, 319, 320, 321, 322, 323, 325, 326, 327
+
+This is administrative correction reflecting actual approval state — no new owner approvals required (text already said "owner-approved"). Sub-decisions DEC-381 through ~DEC-405 already logged in prior Pass 52 work cover implementation.
+
+Counts: Pending 340 → 325 (−15); Resolved 96 → 111 (+15); Total 460 (unchanged).
+
+**Next:** Walk remaining ~19 truly-pending Batch X53 decisions in batches of 5-7 with new background-and-objective format per owner Pass 52 directive.
+
+*Per CHECKLIST #43 (prior-art surfaced contradiction); #51 (Option C explicit owner approval; bookkeeping-only flip is administrative not new approval); #45.*
