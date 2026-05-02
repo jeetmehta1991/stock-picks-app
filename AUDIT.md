@@ -22238,3 +22238,52 @@ Owner approved both recommendations as proposed.
 Theme 6 fully closed: DEC-129/130/132 DEFERRED_TO_STAGE_3 (prior turn); DEC-131/420 approved as in-scope Stage 2 work (this turn).
 
 *Per CHECKLIST #43/#46/#47/#51/#53/#54/#55/#56 — pre-flight applied internally per owner Pass 52 directive on conciseness.*
+
+---
+
+## AUDIT PASS 52 — DEC-410 expansion (use-case mapping schema) + DEC-440 AV→Polygon + L136/CHECKLIST #57
+
+Owner directives Pass 52 turn 16:
+- Approve 6-dimension expanded schema for DEC-410
+- "Always map in context of our use cases" — codify as new checklist rule
+- AV replaced by Polygon (owner confirmed from prior chat memory)
+- Approve OpenBB dual treatment (audit finding + sub-decision, not BUG)
+- Approve audit-takes-precedence-over-PROJECT_PLAN clause
+
+**DEC-410 expanded** with 6-dimension cross-reference schema:
+1. Subscription tier + cost + rate limits
+2. Endpoints with PIT-safety/lookback/free-flag/used-flag
+3. Currently consumed code references
+4. Gaps (endpoints in tier not consumed)
+5. **Use-case cross-reference** — endpoints → 60+ strategies, ~11 agents, ~17 DEC-422 cube dimensions
+6. **Caching/rate-limit feasibility** for S&P 500 × 5yr scope per DEC-411
+
+In-scope APIs (after CHECKLIST #56 filter): yfinance, Polygon, OpenBB, Quiver, Finnhub, FRED, AAII, CNN F&G. Out: Alpha Vantage (replaced per DEC-440), Unusual Whales, Ortex (Stage 3+).
+
+**Audit-as-source-of-truth principle codified in DEC-410 text:** API list per audit takes precedence over PROJECT_PLAN section 10 when in conflict. Per owner Pass 52: "PROJECT_PLAN is outdated, heavily dependent on audit."
+
+**OpenBB consumption gap** — dual treatment: audit finding + sub-decision (consume vs remove from project scope). Not a BUG (it's unresolved scope, not broken code).
+
+**NEW DEC-440** — Alpha Vantage replaced by Polygon. Polygon takes over news sentiment (replaces 25-ticker AV cap) + fundamentals. AV code deprecation timeline becomes sub-decision.
+
+**NEW PROCESS DISCIPLINE — L136 + CHECKLIST #57 (use-case mapping):**
+8th Pass 52 process recurrence. Owner verbatim: "This should have been your first recommendation after thinking it through. Always map in context of our use cases."
+
+Rule: Before any recommendation involving audits/schemas/inventories/frameworks/data architecture/test infrastructure, explicitly map against this system's actual use cases:
+1. Who consumes the output? (60+ strategies, ~11 agents, DEC-422 cube dims, PIT loader, owner decisions)
+2. Does the structure surface what each consumer needs?
+3. Is it shaped by THIS system's contexts, or generic templates?
+Reuse-test: if recommendation could apply unchanged to another trading system or different domain — that's a flag.
+
+Layered defense expanded to 7 levels (Pass 52 process discipline rules):
+- #43/#46/#47: duplicates
+- #53: scope/feasibility
+- #54: empirical-failure
+- #55: architectural-framing
+- #56: focus-phase scope-filter
+- **#57 (NEW): use-case mapping (this-system vs generic-template)**
+- Owner adversarial review (informal)
+
+Counts: 443 → 444 (+DEC-440); pending 325 → 326. Themes complete: Theme 6 + Theme 7 + Theme 8 + Theme 9 + DEC-410 framework approved.
+
+*Per CHECKLIST #43/#46/#47/#51/#53/#55/#56/#57 — pre-flight applied internally per owner Pass 52 directive on conciseness.*

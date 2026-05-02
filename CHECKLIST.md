@@ -523,3 +523,28 @@ State compliance visibly: "Checklist: ✅ [each item]"
     Past failures (Pass 52 turn 8): Theme 6 DEC-129/130/132 approved as Stage 3→4
     gates when scope filter was implicit. Owner directive made filter explicit;
     these were retroactively deferred per L135.
+
+57. **Use-case mapping discipline (Pass 52 L136 — this-system vs generic-template):**
+    Per L136. Before stating any recommendation involving audits, schemas, inventories,
+    framework designs, data architectures, test infrastructure, or output formats,
+    explicitly map against this system's actual use cases:
+    a. **Who consumes the output?** (60+ strategies, ~11 agents, DEC-422 cube dimensions,
+       PIT loader, owner decisions, etc.)
+    b. **Does the proposed structure surface what each consumer needs?**
+    c. **Is the structure shaped by THIS system's contexts, or by generic templates?**
+    Reuse-test: if the recommendation could be applied unchanged to a different
+    trading system or different domain, that's a flag. Generic-by-default
+    recommendations don't address this system's specific gaps.
+    Past failure (Pass 52 turn 15): DEC-410 initial audit schema was endpoint-inventory
+    level (subscription/endpoints/consumption/gaps/recs) — surface-level despite
+    owner verbatim "should not be surface level but a deep dive." Owner had to ask
+    "is it comprehensive for our use cases?" before I expanded to 6 use-case
+    dimensions (PIT-safety, universe coverage, strategy mapping, agent mapping,
+    cube dimension sourcing, rate-limit feasibility).
+    Layered defense (Pass 52 expanded to 7 levels):
+    - #43/#46/#47: duplicates
+    - #53: scope/feasibility (grounded format)
+    - #54: empirical-failure (test-run gate)
+    - #55: architectural-framing (patch vs system-design)
+    - #56: focus-phase scope-filter (forward-looking deferral)
+    - #57 (THIS): use-case mapping (this-system vs generic-template)

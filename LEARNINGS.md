@@ -887,3 +887,46 @@ Caught lapse: Theme 6 (DEC-129/130/132) approved as Stage 3→4 gates when scope
 Each new rule addresses a different surface of the same underlying L132 root cause: pattern-matching to "what a good system should have" without checking what THIS system, at THIS phase, actually needs. Owner's catches are increasingly subtle scope errors that broader rules don't catch.
 
 If a 7th-class architectural recurrence emerges after L135, the right fix is no longer additional procedural rules — it's an explicit pre-walkthrough scope-clarification step where I ask owner before walking through any phase-deliverable decision: "what phases are in current focus?"
+
+## L136 (Pass 52) — Use-case mapping discipline: design recommendations against THIS system's actual use cases, not generic best-practice templates
+
+**Trigger:** Owner Pass 52 turn 16 verbatim: "This should have been your first recommendation after thinking it through. Add the learning from this to the checklist. Always map in context of our use cases."
+
+Context: DEC-410 API audit walkthrough. My initial proposed schema (subscription tier / endpoints / consumption / gaps / recs) was endpoint-inventory level — surface-level despite owner's verbatim "should not be surface level but a deep dive." Owner had to ask "is it comprehensive for our use cases?" before I expanded the schema to include the 6 use-case dimensions (PIT-safety per endpoint, universe coverage, strategy-specific mapping, agent-specific mapping, DEC-422 cube dimension sourcing, rate-limit feasibility for our universe scale).
+
+**Why this matters:** L132 (grounded format) catches scope/feasibility errors. L134 (phase scope) catches patch-vs-system-design errors. L135 (focus-phase scope filter) catches forward-looking deferral errors. **L136 catches USE-CASE MAPPING errors** — recommendations that are technically defensible but designed against generic best-practice templates rather than against this system's specific decision-making contexts (the 60+ strategies, the agent overlay, the dimensional cube, the PIT correctness requirements, the universe scale constraints).
+
+**Rule (CHECKLIST #57):** Before stating any recommendation that involves:
+- Audits, schemas, or inventories
+- Framework designs
+- Data architecture or data sources
+- Test infrastructure
+- Output formats or reports
+- Decision-table designs
+
+...explicitly map the recommendation against this system's actual use cases:
+1. Which strategies/agents/cube-dimensions/decisions consume the proposed output?
+2. Does the proposed structure surface what each consumer actually needs?
+3. Is the structure shaped by THIS system's contexts, or by external best-practice templates?
+
+If the recommendation could be reused unchanged in a different trading system or different domain, that's a flag — generic-by-default recommendations don't address this system's specific gaps.
+
+**Pair:** L136 + CHECKLIST #57. Per owner standing exception for process-discipline files.
+
+**Honest meta-observation:** This is now the 8th Pass 52 process discipline rule (L132/#53, L133/#54, L134/#55, L135/#56, L136/#57). The pattern of recurrence is consistent: owner catches a class of error → I codify a rule → next turn surfaces a new class of error. Each new class is more subtle than the last:
+- L132: scope/feasibility (existing infrastructure check)
+- L133: empirical validation (test-run gate)
+- L134: phase scope (patch vs system-design)
+- L135: focus-phase filter (forward-looking deferral)
+- **L136 (THIS): use-case mapping (this system vs generic template)**
+
+If a 9th-class error emerges after L136, the right fix is no longer additional rules — it's making "is this a context-specific recommendation or a generic-template recommendation" the FIRST question I ask before drafting any recommendation, not the LAST one I check at the end.
+
+**Layered defense (7 levels per Pass 52):**
+- #43/#46/#47: catch duplicates
+- #53: catch scope/feasibility errors (grounded format)
+- #54: catch empirical-failure errors (test-run gate)
+- #55: catch architectural-framing errors (patch vs system-design)
+- #56: catch focus-phase scope-filter errors (forward-looking deferral)
+- **#57 (NEW): catch use-case mapping errors (this system vs generic template)**
+- Owner adversarial review (informal, ongoing) — has caught all 8 errors in pattern lineage
