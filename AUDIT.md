@@ -23286,3 +23286,40 @@ X3 STATUS: 9 of 9 sub-decisions in terminal state.
 Counts: 461 / 185 PENDING / 222 RESOLVED-DECIDED / 15 DEFERRED_TO_STAGE_3 / 6 DEFERRED_TO_STAGE_4 / 11 SUPERSEDED / 9 BLOCKED_ON_X / 13 other.
 
 *Per CHECKLIST #43/#46/#47/#51 (explicit owner override on DEC-098 + per-rec batch approval on others)/#56 (6 deferrals applied)/#57.*
+
+---
+
+## AUDIT PASS 52 turn 58/59 — X36 Data Quality + Trading Mechanics fully closed (9 of 9)
+
+Owner Pass 52 turn 57: "Approve all recs. After commit lets complete X3"
+Owner Pass 52 turn 59 clarification: X3 was approved in same turn 57 message; X3 already closed via commit 454b2305 (turn 58).
+
+Note: Claude misparsed turn 57 in turn 58, treating "complete X3" as forward-going work rather than "act on already-presented X3 recs." Owner clarified turn 59. X3 commit was correct; only Claude's narrative state was off.
+
+X36 SUB-DECISION CLOSURES (9 of 9):
+
+Stage 2 RESOLVED-DECIDED (5):
+- DEC-233 (Daily data quality monitoring) → joint with DEC-260; REVISIT_AFTER_BACKTEST tag ~1d
+- DEC-234 (Ticker lifecycle CUSIP/ISIN) → joint with DEC-380 Polygon corporate-actions; hard-reversibility ~2-3d
+- DEC-235 (Calendar handling) → pandas_market_calendars library ~1d
+- DEC-241 (Time-in-market metric) → ~0.5d
+- DEC-242 (Distribution analysis: skewness/kurtosis/max contribution) → joint with DEC-413 PSR ~0.5d
+
+Stage 3+ DEFERRED (2):
+- DEC-236 (Position sizing precision) → DEFERRED_TO_STAGE_3
+- DEC-237 (Order type policy) → DEFERRED_TO_STAGE_3
+
+Stage 4+ DEFERRED (2):
+- DEC-239 (Multi-account TFSA/RRSP/Margin) → DEFERRED_TO_STAGE_4 (joint DEC-281)
+- DEC-240 (Alert tuning configurable thresholds) → DEFERRED_TO_STAGE_4 (joint DEC-095)
+
+X36 IMPLEMENTATION EFFORT (Stage 2 only): ~5-6 engineering days
+X36 STATUS: 9 of 9 in terminal state.
+
+CUMULATIVE COUNTS POST X3+X36:
+- 461 / 176 PENDING / 227 RESOLVED-DECIDED / 17 DEFERRED_TO_STAGE_3 / 8 DEFERRED_TO_STAGE_4 / 11 SUPERSEDED / 9 BLOCKED_ON_X / 13 other.
+
+CONVERSATION STATE LESSON (turn 58 → 59):
+"Approve all recs after [some action]" carries forward to ALL pending recs from prior turns, not just the most recent. When walkthroughs are presented but not yet committed (X3 turn 57 had recs presented; X36 turn 58 had recs presented), batch approval covers both. Going forward Claude should track all uncommitted pending walkthroughs explicitly when interpreting "approve all" commands.
+
+*Per CHECKLIST #43/#46/#47/#51 (explicit owner approval per turn 57 + clarification turn 59)/#56/#57.*
