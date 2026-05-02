@@ -782,3 +782,332 @@ No new sub-decisions — current use is appropriate scope.
 **Next batch (Batch 3):** OpenBB, Alpha Vantage (deprecation), Unusual Whales, Ortex — fundamentals + Stage 3+ APIs.
 
 ---
+## 8. OpenBB — PROJECT_PLAN says ✓ Stage 1-2, code shows ZERO consumption (consumption gap)
+
+### Subscription tier
+- **FREE** open-source SDK (Python `openbb` package)
+- No API key required for core functionality (some integrations require third-party keys)
+- Self-hosted; aggregates multiple data providers
+
+### Available data (OpenBB SDK is meta-aggregator; here's high-level coverage)
+
+| Capability | Underlying source | PIT-safe? | Currently used? |
+|---|---|---|---|
+| Fundamentals (income / balance sheet / cash flow) | yfinance + FMP + SEC EDGAR routing | LIMITED (depends on routing) | NO (zero consumption) |
+| OHLCV history | yfinance + others | PARTIAL | NO |
+| Macro indicators | FRED + others | YES (FRED-routed) | NO |
+| News | Multiple providers | YES | NO |
+| Analyst estimates | yfinance + others | LIMITED | NO |
+| Insider transactions | SEC EDGAR + others | YES | NO |
+| Crypto / forex | Various | LIMITED | NO |
+| Options chains | yfinance + others | YES | NO |
+| Earnings calendar | Multiple | YES | NO |
+| Economic calendar | Various | YES | NO |
+| Screener (custom queries) | Aggregated | LIMITED | NO |
+
+### Currently consumed code references
+
+**ZERO.** Despite PROJECT_PLAN section 10 listing OpenBB as ✓ for Stage 1-2 ("Fundamentals (replaces scraping)"), grep shows no imports, no calls, no integration anywhere.
+
+**This is the "OpenBB consumption gap" formally flagged per DEC-410 + DEC-441.**
+
+### Gaps
+
+ENTIRE SCOPE — OpenBB is conceptually approved but never implemented. The 6 owner-mandated questions help resolve: should it be?
+
+### Use-case cross-reference
+
+Critical question: **what would OpenBB give us that Polygon (DEC-441) doesn't?**
+
+| Use case | OpenBB | Polygon (DEC-441) | Delta |
+|---|---|---|---|
+| Fundamentals | yfinance / FMP / SEC routing | Native `/v3/reference/financials` with filing_date | Polygon better (PIT) |
+| OHLCV | yfinance routing | Native `/v2/aggs/...` | Polygon better |
+| News | Multiple | Native `/v2/reference/news` | Equal-to-better |
+| Earnings calendar | Multiple | Events endpoint (DEC-256) | Equal |
+| Macro | FRED-routed | FRED native (we already use directly) | FRED native better (DEC-301 ALFRED) |
+| Insider transactions | SEC EDGAR routing | Not Polygon scope | Quiver authoritative |
+| Options | yfinance | DEC-258 deferred | DEC-258 deferred |
+| Screener | Aggregated multi-source | Not Polygon scope | OpenBB unique IF needed |
+| Crypto / forex | Various | Some Polygon coverage | Out of scope |
+
+**Net OpenBB unique value post-DEC-441: limited screener functionality only. All major use cases better covered by direct API integrations.**
+
+### Caching & rate-limit feasibility
+
+- OpenBB SDK depends on underlying provider rate limits (yfinance, FMP, SEC EDGAR free)
+- Adds an integration layer that could obscure source-level errors
+- Each fetch goes through SDK → underlying provider → response
+- Latency and complexity overhead not justified for our scope
+
+### Owner question answers
+
+**Q1: Can OpenBB be used in a better way?**
+Hypothetically yes (it's never been used). But "better way" framing assumes some baseline use; we have none. **The real question is: should there BE any use?**
+
+**Q2: Are we using everything offered?**
+NO — using 0% of capabilities. PROJECT_PLAN said ✓ but code never integrated.
+
+**Q3: Is the cost worth it?**
+Cost is integration effort (~3-5 days greenfield SDK integration). Per #57 use-case mapping, what does OpenBB give us that DEC-441 Polygon + Quiver + FRED doesn't? Nothing significant for Stage 0+Stage 2.
+
+**Q4: Can OpenBB replace or be replaced?**
+- **Reverse direction confirmed:** Polygon + Quiver + FRED collectively replace OpenBB's Stage 0+Stage 2 scope.
+- OpenBB unique value (screener / multi-source aggregation) has no current consumer per #57.
+
+### Hypotheses
+
+**H-openbb-1 (DEFINITIVE):** Polygon (DEC-441) + Quiver + FRED collectively cover all OpenBB use cases for Stage 0+Stage 2 → OpenBB has zero unique remaining value at current scope.
+
+**H-openbb-2 (LOW):** Future Phase 1C+ screener use cases could justify OpenBB integration → speculative, no current consumer per #57.
+
+### Sub-decision candidates (PROPOSED)
+
+- **DEC-454 PROPOSED** — Remove OpenBB from project scope. Update PROJECT_PLAN section 10 to remove OpenBB row. Resolves DEC-410 OpenBB consumption gap dual treatment per audit-as-source-of-truth principle (audit > PROJECT_PLAN). Net architecture: 1 fewer API to consider.
+
+### OpenBB verdict
+
+**REMOVE FROM PROJECT SCOPE.** Polygon DEC-441 supersedes; OpenBB has no unique value for Stage 0+Stage 2 use cases. Screener-driven future use cases can revisit at Phase 1C+. Single sub-decision PROPOSED.
+
+---
+
+## 9. Alpha Vantage — Already DEC-440 marked for Polygon replacement; this audit formalizes deprecation
+
+### Subscription tier
+- **FREE** with `ALPHAVANTAGE_API_KEY`
+- Rate limits: 5 calls/min, 500 calls/day on free tier
+- Paid tiers: $50-150/mo for higher limits
+- Per DEC-440: replaced by Polygon (DEC-441 subscription)
+
+### Available endpoints (Alpha Vantage, current consumption)
+
+| Endpoint | Returns | PIT-safe? | Currently used? |
+|---|---|---|---|
+| `/news?function=NEWS_SENTIMENT` | News + sentiment scores | YES (publish_date) | YES (broken — 25-ticker cap, severe rate limits) |
+| `/query?function=TIME_SERIES_DAILY_ADJUSTED` | OHLCV daily | YES | NO (yfinance authoritative) |
+| `/query?function=INCOME_STATEMENT` | Annual income | LIMITED | NO |
+| `/query?function=BALANCE_SHEET` | Balance sheet | LIMITED | NO |
+| `/query?function=CASH_FLOW` | Cash flow | LIMITED | NO |
+| `/query?function=EARNINGS` | Earnings history | YES | NO |
+| `/query?function=EARNINGS_CALENDAR` | Upcoming earnings | YES | NO |
+| `/query?function=ECONOMIC_INDICATORS` | Macro data | LIMITED | NO (FRED authoritative) |
+| `/query?function=COMMODITIES` | Commodity prices | LIMITED | NO |
+| `/query?function=CRYPTO_*` | Crypto data | LIMITED | NO |
+| `/query?function=FX_DAILY` | Forex daily | LIMITED | NO |
+| `/query?function=TECHNICAL_INDICATORS` | Precomputed indicators | YES | NO (Polygon offers via H-polygon-3) |
+| `/query?function=COMPANY_OVERVIEW` | Company snapshot | NO (current only) | NO |
+
+### Currently consumed code references (per DEC-440 marked for deprecation)
+
+```
+backtest/agents/pipeline.py — AV in agent context
+backtest/data/smart_money.py — AV fallback path  
+scripts/prefetch_alphavantage_news.py — AV news prefetch (25-ticker cap limited)
+```
+
+### Gaps
+
+Most endpoints unused. Per DEC-440, Alpha Vantage scope is shrinking to deprecation, not expanding.
+
+### Use-case cross-reference
+
+| Endpoint | Currently consumed by | Polygon (DEC-441) replacement | Verdict |
+|---|---|---|---|
+| News sentiment | Sentiment Agent (broken — 25 ticker cap) | `/v2/reference/news` (DEC-440) | Replaced |
+| Daily OHLCV (UNUSED) | None | `/v2/aggs/...` | Polygon better |
+| Income statement (UNUSED) | None | `/v3/reference/financials` (filing_date) | Polygon better (PIT) |
+| Earnings (UNUSED) | None | Events endpoint (DEC-256) | Polygon better |
+| Macro (UNUSED) | None | FRED native | FRED authoritative |
+| Technical indicators (UNUSED) | None | Polygon precomputed (H-polygon-3) | Polygon better (DEC-439 differential reference fit) |
+| FX / Crypto / Commodities (UNUSED) | None | Out of scope | Out of scope |
+
+### Caching & rate-limit feasibility
+
+- Free tier 5 calls/min → essentially unusable at S&P 500 scale
+- 25-ticker cap on AV's documented historical news limit blocks coverage
+- Paid tier $50-150/mo duplicates Polygon coverage at higher cost
+- **No path to making Alpha Vantage viable for our scope.**
+
+### Owner question answers
+
+**Q1: Can Alpha Vantage be used in a better way?**
+NO — already marked for deprecation per DEC-440. Free tier rate limits are blocking; paid tier bad value vs Polygon.
+
+**Q2: Are we using everything offered?**
+~5% (only news, broken). Most endpoints unused.
+
+**Q3: Is the cost worth it?**
+NO — free tier has hidden cost (25-ticker cap blocking coverage). Paid tier duplicates Polygon.
+
+**Q4: Can Alpha Vantage replace or be replaced?**
+**Replaced by Polygon (DEC-441) confirmed per DEC-440.** Alpha Vantage replaces nothing in our stack.
+
+### Hypotheses
+
+**H-av-1 (DEFINITIVE):** Polygon DEC-441 fully covers all Alpha Vantage scope post-DEC-440 → AV has zero remaining unique value.
+
+### Sub-decision candidates (PROPOSED)
+
+- **DEC-455 PROPOSED** — Alpha Vantage deprecation timeline: (a) preserve existing AV cache parquet artifacts for transition; (b) remove AV from active prefetch scripts; (c) remove ALPHAVANTAGE_API_KEY from required config (mark optional during transition); (d) full removal post-Polygon news prefetch validation. Joint with DEC-440. ~0.5d cleanup.
+
+### Alpha Vantage verdict
+
+**Deprecate per DEC-440 confirmed; DEC-455 formalizes timeline.** Single sub-decision proposed.
+
+---
+
+## 10. Unusual Whales — Stage 3+ (inventory only per Pass 52 turn 19 override)
+
+### Subscription tier
+- **$50/month** (per PROJECT_PLAN section 10)
+- Rate limits: typically generous on retail tier
+- Stage 3+ scope per CHECKLIST #56; consumption decisions DEFERRED
+
+### Available endpoints (Unusual Whales focuses on options flow + dark pool + congressional)
+
+| Endpoint | Returns | PIT-safe? | Stage 1-2 use? |
+|---|---|---|---|
+| Options flow (real-time + historical) | Bullish/bearish flow, sweeps, blocks | LIMITED (real-time scoring) | NO (Stage 3+) |
+| Unusual options activity alerts | Filtered alerts | LIMITED | NO (Stage 3+) |
+| Dark pool prints | Dark pool transactions | LIMITED | NO (Stage 3+) |
+| Congressional trading | Congress trades | YES | NO (Quiver authoritative for Stage 0+Stage 2) |
+| Insider trading | Form 4 filings | YES | NO (Quiver authoritative) |
+| Earnings calendar | Earnings dates | YES | NO (Polygon DEC-256 for Stage 0+Stage 2) |
+| Short volume | Aggregated short volume | LIMITED | NO (Stage 3+) |
+| Off-exchange volume | Off-exchange/block trades | LIMITED | NO (Quiver covers partial) |
+| ETF flows | ETF inflow/outflow | LIMITED | NO (Stage 3+) |
+| Greeks / IV surface | Options pricing dynamics | YES | NO (DEC-258 deferred) |
+| Sector flows | Sector-level capital flow | LIMITED | NO (Stage 3+) |
+
+### Currently consumed code references
+
+**ZERO** — Stage 3+ scope; not yet consumed. Correct per CHECKLIST #56.
+
+### Gaps
+
+ENTIRE SCOPE — not yet consumed. Audit captures inventory for future Phase 1C / Stage 3+ planning.
+
+### Use-case cross-reference (Stage 3+ POTENTIAL — not current)
+
+| Endpoint | Future strategies | Future agents | Future cube dims |
+|---|---|---|---|
+| Options flow | Options-flow strategies (Phase 1C+) | Options Agent (potential) | options_sentiment dim (potential) |
+| Dark pool prints | Smart money strategies | Smart Money | (institutional flow dim potential) |
+| Greeks / IV surface | Volatility strategies | Risk | (IV regime dim potential) |
+| Sector flows | Sector rotation strategies | Macro | sector dim feeder enhancement |
+| Earnings calendar | (Already covered by Polygon Stage 0+Stage 2) | None | None |
+
+### Owner question answers
+
+**Q1: Can Unusual Whales be used in a better way?**
+N/A — not in current scope. At Stage 3+ scope when paper-trading begins, options-flow strategies become candidate consumers.
+
+**Q2: Are we using everything offered?**
+Using 0% (correct per CHECKLIST #56 deferral).
+
+**Q3: Is the cost worth it?**
+$50/mo at Stage 3+ scope evaluation, NOT current. Per #57: only worth it when consumers exist (options strategies). Currently no consumers.
+
+**Q4: Can Unusual Whales replace or be replaced?**
+- Cannot replace Polygon/Quiver/FRED for Stage 0+Stage 2 scope.
+- Has Quiver-overlapping endpoints (Congressional, insider) — Quiver authoritative at lower cost.
+- **Unique value: options flow + dark pool prints + Greeks** — Stage 3+ specific.
+
+### Hypotheses (Stage 3+ scope, not Stage 1-2)
+
+**H-uw-1 (Stage 3+ ONLY):** Options flow + dark pool data add measurable signal value once Phase 1C options-flow strategies are added to roster.
+
+### Sub-decision candidates
+
+**NONE NEW** — DEFERRED_TO_STAGE_3 status. When/if Phase 1C options-flow strategies are scoped, revisit Unusual Whales subscription decision then.
+
+### Unusual Whales verdict
+
+**Inventory documented. Decision DEFERRED_TO_STAGE_3 per CHECKLIST #56.** Subscription evaluation re-opens at Phase 1C+ when options-flow strategies are scoped.
+
+---
+
+## 11. Ortex — Stage 3+ (inventory only per Pass 52 turn 19 override)
+
+### Subscription tier
+- **$40/month** (per PROJECT_PLAN section 10)
+- Rate limits: typically generous on retail tier
+- Stage 3+ scope per CHECKLIST #56; consumption decisions DEFERRED
+
+### Available endpoints (Ortex focuses on short interest + borrow rates)
+
+| Endpoint | Returns | PIT-safe? | Stage 1-2 use? |
+|---|---|---|---|
+| Short interest (daily est.) | Estimated daily short interest | LIMITED (daily reporting lag) | NO (Stage 3+) |
+| Cost to borrow (CTB) | Borrow rate curve | NO (real-time) | NO (Stage 3+) |
+| Days to cover (DTC) | Liquidity-adjusted short | LIMITED | NO (Stage 3+) |
+| Short squeeze score | Composite squeeze indicator | LIMITED | NO (Stage 3+) |
+| Available shares to short | Loan availability | NO (real-time) | NO (Stage 3+) |
+| Historical short interest (bi-monthly NYSE/Nasdaq) | Settled short interest | YES (publish_date) | NO (Stage 3+) |
+| ETF short data | ETF-level shorts | LIMITED | NO (Stage 3+) |
+| FTD (failed-to-deliver) | Settlement failures | YES | NO (Stage 3+) |
+
+### Currently consumed code references
+
+**ZERO** — Stage 3+ scope; not yet consumed. Correct per CHECKLIST #56.
+
+### Gaps
+
+ENTIRE SCOPE — not yet consumed.
+
+### Use-case cross-reference (Stage 3+ POTENTIAL)
+
+| Endpoint | Future strategies | Future agents | Future cube dims |
+|---|---|---|---|
+| Short interest + DTC | Short squeeze strategies | Smart Money | short_interest_band dim (potential) |
+| Cost to borrow | Long/short cost-aware strategies | Risk | borrow_cost dim (potential) |
+| Squeeze score | Squeeze trigger strategies | Smart Money | None directly |
+| FTD | Settlement-stress strategies | None directly | None |
+
+### Owner question answers
+
+**Q1: Can Ortex be used in a better way?**
+N/A — not in current scope. Stage 3+ when squeeze/short-aware strategies enter roster.
+
+**Q2: Are we using everything offered?**
+Using 0% (correct per CHECKLIST #56 deferral).
+
+**Q3: Is the cost worth it?**
+$40/mo at Stage 3+ scope, NOT current. Short-aware strategies are speculative for our roster.
+
+**Q4: Can Ortex replace or be replaced?**
+- Free alternative for historical short interest: NYSE/Nasdaq publish bi-monthly settlement data (free via SEC, manually scrapeable).
+- For DAILY estimates + borrow rates, Ortex is largely unique at retail price point.
+- Bloomberg / Refinitiv have similar at much higher cost.
+
+### Hypotheses (Stage 3+ scope)
+
+**H-ortex-1 (Stage 3+ ONLY):** Short interest + DTC + borrow rates add measurable signal value if Phase 1C+ short-aware strategies are scoped.
+
+**H-ortex-2 (LOW):** Free bi-monthly NYSE/Nasdaq short interest could substitute for daily estimates if precision is non-critical → speculative cost-saving.
+
+### Sub-decision candidates
+
+**NONE NEW** — DEFERRED_TO_STAGE_3 status.
+
+### Ortex verdict
+
+**Inventory documented. Decision DEFERRED_TO_STAGE_3 per CHECKLIST #56.** Re-evaluate at Phase 1C+ when short-aware strategies scoped. Free NYSE/Nasdaq alternative noted for cost-conscious revisit.
+
+---
+
+# Batch 3 summary
+
+| API | Verdict | Sub-decisions PROPOSED |
+|---|---|---|
+| **OpenBB** | **REMOVE FROM PROJECT SCOPE** — Polygon DEC-441 supersedes; zero unique value for Stage 0+2 | DEC-454 |
+| **Alpha Vantage** | Deprecate timeline per DEC-440 | DEC-455 |
+| **Unusual Whales** | DEFERRED_TO_STAGE_3 — inventory only per #56 override | None new |
+| **Ortex** | DEFERRED_TO_STAGE_3 — inventory only per #56 override | None new |
+
+**2 additional sub-decisions PROPOSED.**
+**Cumulative Batch 1+2+3: 14 sub-decisions PROPOSED, NOT LOGGED yet.**
+
+**Next batch (Batch 4):** Tier 2 (Tiingo, IEX Cloud, FMP, SEC EDGAR, Refinitiv/Bloomberg), Tier 3 (Reddit, Stocktwits), Tier 4 libraries (smartmoneyconcepts, pandas-datareader, fredapi). Then summary turn.
+
+---

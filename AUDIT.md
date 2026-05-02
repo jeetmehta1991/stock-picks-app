@@ -22430,3 +22430,36 @@ Cumulative Batch 1+2: 12 sub-decisions PROPOSED, NOT LOGGED yet.
 Next: Batch 3 (OpenBB, Alpha Vantage, Unusual Whales, Ortex).
 
 *Per CHECKLIST #43/#46/#47/#51/#56-overridden/#57.*
+
+---
+
+## AUDIT PASS 52 — DEC-410 Batch 3 (OpenBB/Alpha Vantage/Unusual Whales/Ortex)
+
+OpenBB verdict: REMOVE FROM PROJECT SCOPE.
+- Code consumption verified ZERO (consumption gap formally confirmed)
+- Polygon DEC-441 + Quiver + FRED collectively cover all OpenBB Stage 0+2 use cases
+- DEC-454 PROPOSED — remove from PROJECT_PLAN section 10
+
+Alpha Vantage verdict: Deprecate per DEC-440 confirmed; DEC-455 PROPOSED for timeline.
+- ~5% endpoint utilization; 25-ticker cap blocking
+- Polygon DEC-441 fully replaces; paid tier bad value
+- DEC-455 PROPOSED — deprecation timeline (cleanup ~0.5d)
+
+Unusual Whales verdict: DEFERRED_TO_STAGE_3 per CHECKLIST #56.
+- Inventory documented per Pass 52 turn 19 override
+- Stage 3+ options-flow / dark-pool focus
+- Re-evaluate at Phase 1C+ when options-flow strategies scoped
+- No new sub-decisions
+
+Ortex verdict: DEFERRED_TO_STAGE_3 per CHECKLIST #56.
+- Inventory documented per Pass 52 turn 19 override
+- Stage 3+ short-interest / borrow-rate focus
+- Free NYSE/Nasdaq bi-monthly short interest alternative noted
+- No new sub-decisions
+
+Batch 3 sub-decisions PROPOSED: 2 (DEC-454/455).
+Cumulative Batch 1+2+3: 14 sub-decisions PROPOSED, NOT LOGGED yet.
+
+Next: Batch 4 (Tier 2 alternatives + Tier 3 social + Tier 4 libraries) + summary turn.
+
+*Per CHECKLIST #43/#46/#47/#51/#56-overridden/#57.*
