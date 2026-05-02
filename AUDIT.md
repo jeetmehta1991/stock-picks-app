@@ -23202,3 +23202,47 @@ X6 STATUS: 9 of 9 sub-decisions in terminal state.
 Counts: 461 / 203 PENDING / 215 RESOLVED-DECIDED / 10 SUPERSEDED / 1 SUPERSEDED_BY_DEC-422 / 10 DEFERRED_TO_STAGE_3 / 9 BLOCKED_ON_X / 13 other.
 
 *Per CHECKLIST #43/#46/#47/#51 (explicit owner approval Yes to all)/#56/#57. Option C verification gate honored.*
+
+---
+
+## AUDIT PASS 52 turn 56 — Theme X49 Thin Areas Surfaced fully closed (9 of 9)
+
+Owner Pass 52 turn 56: "Approve all recs" — approves all 4 specific clarifications + per-rec batch approval.
+
+X49 SUB-DECISION CLOSURES:
+
+Stage 2 RESOLVED-DECIDED (3):
+- DEC-283 (Backtest output schema versioning) → RESOLVED-DECIDED, joint with DEC-330 ~1d
+- DEC-284 (Borderline strategy policy) → RESOLVED-DECIDED, strict-LT for fail / strict-GTE for pass; equality goes pass-side ~0.25d
+- DEC-290 (Dropped strategy re-evaluation) → RESOLVED-DECIDED, QUARTERLY (3-month) cadence per owner-approved cadence change from original 6-month; joint with DEC-249/250 strategy decay metric ~0.5d
+
+Stage 1 RESOLVED-DECIDED (1):
+- DEC-287 (Public site failure handling + freshness signal) → RESOLVED-DECIDED, last-updated timestamp prominent + error state on fetch failure ~0.5d
+
+Stage 3+ DEFERRED (4):
+- DEC-281 (Tax data architecture) → DEFERRED_TO_STAGE_3, design folded into Phase 0.B Portfolio class trade ledger schema; population begins Stage 3 paper trading
+- DEC-282 (Notification cascade) → DEFERRED_TO_STAGE_3 with SCOPE CORRECTION: original "Telegram primary" replaced with email-primary per Pass 51 owner directive
+- DEC-285 (Mid-hold agent re-evaluation) → DEFERRED_TO_STAGE_3, design during Stage 3 paper trading
+- DEC-286 (Wealthsimple replication tracking) → DEFERRED_TO_STAGE_3, meaningful only when owner trades live or paper
+
+Stage 4+ DEFERRED (1) — NEW STATUS:
+- DEC-289 (Owner-absent contingency) → DEFERRED_TO_STAGE_4, real-money risk specific; Stage 4 small-live appropriate scope
+
+X49 IMPLEMENTATION EFFORT (Stage 1/2 items only):
+- DEC-283 schema: ~1d (joint DEC-330)
+- DEC-284 borderline: ~0.25d
+- DEC-287 site reliability: ~0.5d
+- DEC-290 quarterly re-evaluation: ~0.5d
+- Total Stage 2 X49: ~2.25d
+
+X49 STATUS: 9 of 9 sub-decisions in terminal state (4 RESOLVED-DECIDED + 4 DEFERRED_TO_STAGE_3 + 1 DEFERRED_TO_STAGE_4).
+
+NEW STATUS INTRODUCED: DEFERRED_TO_STAGE_4 (distinct from DEFERRED_TO_STAGE_3 to capture decisions that are specifically Stage 4 small-live concerns, not just any post-Stage-2).
+
+CADENCE CORRECTION: DEC-290 quarterly cadence change from original 6-month — owner-approved Pass 52 turn 56 given strategy decay risk per DEC-249/250.
+
+SCOPE CORRECTION: DEC-282 notification channel — Pass 51 owner directive set email-primary; original audit text said Telegram-primary. Corrected in commit.
+
+Counts: 461 / 194 PENDING / 219 RESOLVED-DECIDED / 14 DEFERRED_TO_STAGE_3 / 1 DEFERRED_TO_STAGE_4 / 11 SUPERSEDED / 9 BLOCKED_ON_X / 13 other.
+
+*Per CHECKLIST #43/#46/#47/#51/#56 (4 deferrals applied per scope filter)/#57.*
