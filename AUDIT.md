@@ -22391,3 +22391,42 @@ BATCH 1 EXECUTED (yfinance, Polygon, FRED):
 Next: Batch 2 (Quiver, Finnhub, AAII, CNN F&G) — smart money + sentiment.
 
 *Per CHECKLIST #43/#46/#47/#51/#56-overridden/#57 — pre-flight applied internally; #56 override logged in DEC-410 entry.*
+
+---
+
+## AUDIT PASS 52 — DEC-410 Batch 2 execution (Quiver/Finnhub/AAII/CNN F&G)
+
+Owner directive: proceed Batch 2 (smart money + sentiment APIs).
+
+**Quiver verdict: Keep free tier; fix BUG-190 + BUG-284 + DEC-396 to maximize value before premium upgrade decision.**
+- 13+ available endpoints; ~4-5 currently used
+- BUG-190 MEDIUM OPEN (Senate, Twitter, Off-Exchange, App Downloads not in prefetch)
+- BUG-284 MEDIUM OPEN (gov_contracts date filter broken)
+- DEC-396 PENDING (13F filing_date PIT capture)
+- 3 sub-decisions PROPOSED: DEC-450/451/452
+
+**Finnhub verdict: DEPRECATE ENTIRELY.**
+- Polygon DEC-441 fully supersedes news (BUG-053/181 already WILL_RESOLVE_VIA_DEC-440)
+- Other endpoints duplicate Quiver/FRED/yfinance/Polygon coverage
+- Free tier rate limits + paid tier bad value vs Polygon
+- 1 sub-decision PROPOSED: DEC-453 (deprecation)
+- Architectural simplification: 1 fewer API to maintain
+
+**AAII verdict: Keep as-is; DEC-318 implementation fixes BUG-235/236.**
+- Free, simple, well-defined sentiment input
+- Cube `aaii_extreme` dim direct consumer
+- 5 fields used appropriately
+- No new sub-decisions
+
+**CNN F&G verdict: Keep as-is; minor source.**
+- Composite F&G consumed; cube `cnn_fg_band` dim feeder (5 bands)
+- Sub-components unused but no current consumer per #57
+- Scraping fragility caveat
+- No new sub-decisions
+
+Batch 2 sub-decisions PROPOSED (4): DEC-450/451/452/453
+Cumulative Batch 1+2: 12 sub-decisions PROPOSED, NOT LOGGED yet.
+
+Next: Batch 3 (OpenBB, Alpha Vantage, Unusual Whales, Ortex).
+
+*Per CHECKLIST #43/#46/#47/#51/#56-overridden/#57.*

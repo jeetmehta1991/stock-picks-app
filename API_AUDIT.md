@@ -401,3 +401,384 @@ PARTIAL: FRED can replace yfinance for ^VIX (resolves BUG-19 for that specific u
 **Next batch (Batch 2):** Quiver, Finnhub, AAII, CNN F&G — smart money + sentiment APIs.
 
 ---
+## 4. Quiver Quantitative — Currently consumed; multiple under-used endpoints + BUGs
+
+### Subscription tier
+- **Free tier** currently in use (per `backtest/data/smart_money.py` comment "Quiver Quantitative free tier: congressional, insider, 13F, analyst revisions")
+- Premium: $50-100/month per PROJECT_PLAN section 10
+- Rate limits: free tier is restrictive; documented as limiting in audit history
+- Quiver retention status per PROJECT_PLAN: "✓ (final repair) for Stage 1-2"
+
+### Available endpoints (Quiver tier overview)
+
+| Endpoint | Returns | PIT-safe? | Currently used? |
+|---|---|---|---|
+| `/historical/congresstrading/{ticker}` | Congressional trades | YES | YES |
+| `/historical/senatetrading/{ticker}` | Senate trades (separate) | YES | NO (BUG-190) |
+| `/historical/housetrading/{ticker}` | House trades (separate) | YES | NO (BUG-190 implied) |
+| `/historical/insidertrading/{ticker}` | Insider transactions (Form 4) | YES | YES |
+| `/historical/13f/{ticker}` | Institutional 13F filings | YES (if filing_date captured per DEC-396) | YES |
+| `/historical/analystratings/{ticker}` | Analyst rating changes | YES | YES (analyst revisions) |
+| `/historical/govcontracts/{ticker}` | Government contract awards | YES (if Date field used per BUG-284) | YES (BUG-284 — date filter broken) |
+| `/historical/lobbying/{ticker}` | Lobbying spend | YES | NO |
+| `/historical/wikipedia/{ticker}` | Wikipedia traffic per ticker | YES | NO |
+| `/historical/reddittraders/{ticker}` | Reddit trader activity (sentiment proxy) | YES | NO (BUG-190 — Twitter/Reddit/Off-Exchange/AppDownload not in prefetch) |
+| `/historical/twittersentiment/{ticker}` | Twitter sentiment per ticker | YES | NO (BUG-190) |
+| `/historical/offexchange/{ticker}` | Off-exchange / dark-pool volume | YES | NO (BUG-190) |
+| `/historical/appdownloads/{ticker}` | App download stats (consumer signal) | YES | NO (BUG-190) |
+| `/historical/sec13f/{ticker}` | Alternative 13F endpoint | YES | NO |
+| `/live/...` | Real-time variants | NO (real-time) | NO (Stage 3+ only) |
+
+### Currently consumed code references
+
+```
+backtest/agents/pipeline.py — Quiver in agent context
+backtest/data/smart_money.py — _quiver_get() with cache-first lookups
+backtest/engine/backtest.py — agent integration
+backtest/run_phase1a.py — top-level runner
+scripts/prefetch_quiver.py — prefetch script (BUG-284 date filter broken)
+scripts/run_quiver_vscode.ps1 — Windows runner
+scripts/validate_phase1b_data.py — validation
+```
+
+### Gaps (endpoints in tier NOT consumed — documented in BUG-190)
+
+Per BUG-190 MEDIUM OPEN: "Quiver endpoints not in prefetch (Senate, Twitter, Off-Exchange, App Downloads)"
+
+Specific gaps:
+- **Senate trading separate** (currently bundled with congressional) — granularity loss
+- **House trading separate** — same granularity issue
+- **Lobbying spend** — leading indicator for regulatory tailwinds
+- **Wikipedia traffic** — attention/awareness proxy
+- **Reddit trader activity** — sentiment proxy
+- **Twitter sentiment** — sentiment proxy
+- **Off-exchange / dark pool volume** — institutional flow signal
+- **App downloads** — consumer/product traction
+
+### Use-case cross-reference
+
+| Endpoint | Strategies | Agents | Cube dims | BUGs |
+|---|---|---|---|---|
+| Congressional trading | Smart money strategies | Smart Money | smart_money_score dim | None |
+| Insider transactions | Smart money strategies | Smart Money | smart_money_score dim | None |
+| 13F institutional | Smart money strategies | Smart Money | smart_money_score dim | DEC-396/BUG-241 (filing_date) |
+| Analyst ratings | Analyst-change strategies | Sentiment | (analyst rating dim potential) | None |
+| Government contracts | Defense/healthcare strategies | Macro | (sector tailwind dim potential) | BUG-284 (date filter broken) |
+| Lobbying (UNUSED) | Regulatory strategies | Macro | (regulatory dim potential) | BUG-190 |
+| Wikipedia (UNUSED) | Attention strategies | Sentiment | (attention dim potential) | BUG-190 |
+| Reddit/Twitter (UNUSED) | Sentiment strategies | Sentiment | (sentiment_score dim feeder) | BUG-190 |
+| Off-exchange (UNUSED) | Smart money strategies | Smart Money | (institutional flow proxy) | BUG-190 |
+| App downloads (UNUSED) | Consumer strategies | Fundamental | (product traction proxy) | BUG-190 |
+
+### Caching & rate-limit feasibility
+
+- Free tier rate-limited; 9 endpoints × 509 tickers = ~4,500 prefetch calls per category
+- Documented as constraining; PROJECT_PLAN suggests $50-100/mo premium for higher limits
+- DEC-396 (filing_date capture) implementation pending — affects 13F PIT correctness
+- BUG-284 (gov_contracts date filter broken) — date-based queries silently skip correctly
+
+### Owner question answers
+
+**Q1: Can Quiver be used in a better way?**
+YES significantly. We use ~4-5 of 13+ endpoints. Per BUG-190, Senate/Twitter/Reddit/Off-Exchange/App Downloads are tier-available but not prefetched. Each represents a distinct signal class:
+- Off-exchange volume → institutional flow (different from 13F)
+- Lobbying → regulatory tailwind (leading indicator)
+- Wikipedia/Reddit/Twitter → retail attention/sentiment (cube `sentiment_score` dim feeder)
+
+Three architectural improvements:
+1. Fix BUG-190 by extending `prefetch_quiver.py` to 8+ additional endpoints
+2. Fix BUG-284 (gov_contracts date filter)
+3. Implement DEC-396 (13F filing_date capture for PIT)
+
+**Q2: Are we using everything offered?**
+NO — ~30-40% of available endpoints used. The unused endpoints aren't speculative additions; they're documented gaps (BUG-190).
+
+**Q3: Is the cost worth it?**
+**Mixed.** Free tier IS being used and provides genuine value (smart money score is a meaningful cube dim). However:
+- Free tier is rate-limited; full S&P 500 prefetch is slow (per audit history)
+- Premium ($50-100/mo) would resolve rate limits and likely unlock additional endpoints
+- **PROJECT_PLAN lists "Quiver retention pending Phase 0.A repair completion"** — suggesting retention itself is conditional
+
+Recommendation: **resolve free-tier endpoint coverage first** (BUG-190, BUG-284, DEC-396). If free tier is used to its full extent, decide on premium upgrade based on whether more data quality / rate is needed.
+
+**Q4: Can Quiver replace or be replaced by other APIs?**
+Quiver is **largely irreplaceable for its primary use cases** at this price point:
+- Congressional/insider trading: not available cheaply elsewhere
+- 13F: also available via SEC EDGAR free, but Quiver provides cleaner aggregation
+- Analyst ratings: yfinance/Polygon also provide; Quiver's coverage may be deeper
+- Off-exchange / dark pool: Quiver-unique at retail price point
+- Twitter/Reddit sentiment: alternatives exist (Stocktwits direct API) but Quiver bundles them
+
+**Cannot consolidate Quiver away.** However, can consolidate analyst ratings (Quiver vs yfinance vs Polygon) — likely Quiver authoritative.
+
+### Hypotheses
+
+**H-quiver-1 (HIGH):** Fixing BUG-190 (extend prefetch to 8+ endpoints) materially strengthens Smart Money / Sentiment / Macro agents — net cube `sentiment_score`, `smart_money_score`, regulatory tailwind become available.
+
+**H-quiver-2 (MEDIUM):** Free tier with full endpoint coverage is sufficient; premium upgrade ($50-100/mo) provides marginal benefit only if S&P 500 prefetch rate becomes bottleneck.
+
+**H-quiver-3 (LOW):** SEC EDGAR free could supplement Quiver 13F at the cost of integration complexity; not worth it given Quiver bundles it.
+
+### Sub-decision candidates (PROPOSED)
+
+- **DEC-450 PROPOSED** — Extend `prefetch_quiver.py` to 8+ unused endpoints (Senate, House, Lobbying, Wikipedia, Reddit, Twitter, Off-Exchange, App Downloads). Resolves BUG-190. ~2-3 days.
+- **DEC-451 PROPOSED** — Fix BUG-284 (gov_contracts date filter via Qtr+Year reconstruction or full Date field re-prefetch). ~0.5d.
+- **DEC-452 PROPOSED** — Quiver premium upgrade decision after BUG-190 fix lands; evaluate based on rate-limit experience during full S&P 500 prefetch.
+
+### Quiver verdict
+
+**Keep free tier; fix BUG-190/284 + DEC-396 to maximize free-tier value before considering premium upgrade.** Three sub-decisions proposed; effort ~3-4 days total.
+
+---
+
+## 5. Finnhub — Severely scope-reduced post-DEC-440 supersession
+
+### Subscription tier
+- **Free tier** currently used (FINNHUB_API_KEY env var)
+- Rate limits: ~60 calls/min on free tier (documented as causing BUG-053 "8-hour prefetch with empty results")
+- Paid tiers: $25-150/month for higher rates
+
+### Available endpoints (Finnhub free tier)
+
+| Endpoint | Returns | PIT-safe? | Currently used? |
+|---|---|---|---|
+| `/news?category=general` + `/company-news` | News articles | YES | YES (broken — BUG-053/181) |
+| `/calendar/earnings` | Earnings calendar | YES | NO (DEC-256 chose Polygon) |
+| `/quote` | Real-time quote | NO | NO |
+| `/stock/profile2` | Company profile | LIMITED | NO |
+| `/stock/financials-reported` | SEC filings (free tier limited) | LIMITED | NO |
+| `/stock/recommendation` | Analyst recommendations | LIMITED | NO |
+| `/stock/peers` | Peer companies | LIMITED | NO |
+| `/stock/insider-transactions` | Insider transactions | LIMITED | NO (Quiver authoritative) |
+| `/stock/insider-sentiment` | Aggregated insider sentiment | LIMITED | NO |
+| `/stock/social-sentiment` | Social sentiment | LIMITED | NO |
+| `/stock/uspto-patent` | Patent filings | LIMITED | NO |
+| `/stock/visa-application` | H1B/visa applications | LIMITED | NO |
+| `/stock/lobbying` | Lobbying activity | LIMITED | NO (Quiver authoritative) |
+| `/stock/usa-spending` | Government contracts | LIMITED | NO (Quiver authoritative) |
+| `/stock/congressional-trading` | Congress trading | LIMITED | NO (Quiver authoritative) |
+| `/economic` | Economic data | LIMITED | NO (FRED authoritative) |
+
+### Currently consumed code references
+
+```
+backtest/agents/pipeline.py — Finnhub in agent context
+backtest/data/smart_money.py — fallback path
+scripts/prefetch_finnhub_news.py — broken news prefetch (BUG-053/181)
+```
+
+### Gaps (mostly N/A — Finnhub scope is shrinking)
+
+Post-DEC-440 supersession, Finnhub's primary use case (news) is replaced by Polygon. Other endpoints are duplicates of better sources:
+- Earnings → Polygon (DEC-256)
+- Insider/Congressional → Quiver (authoritative)
+- Lobbying / Gov contracts → Quiver
+- Economic → FRED (authoritative)
+- Recommendations → yfinance / Polygon
+
+**Genuinely Finnhub-unique endpoints in free tier:**
+- USPTO patent filings (no other source in our stack)
+- Visa applications (H1B as hiring signal)
+- Insider sentiment (aggregated, vs raw insider transactions from Quiver)
+
+### Use-case cross-reference
+
+| Endpoint | Currently consumed by | Strategy/Agent fit | Verdict |
+|---|---|---|---|
+| News | Sentiment Agent (broken) | Replaced by Polygon | Deprecate post-DEC-440 |
+| USPTO patents (UNUSED) | None | Innovation/IP strategy potential | Speculative — no current consumer |
+| Visa applications (UNUSED) | None | Hiring/growth signal | Speculative — no current consumer |
+| Insider sentiment aggregate (UNUSED) | None | Smart money score enhancement | Marginal vs Quiver raw insider |
+
+### Caching & rate-limit feasibility
+
+- Free tier rate limit (~60/min) caused BUG-053 (8hr prefetch yielded empty files at S&P 500 scale)
+- Even if news use case stays (it doesn't post-DEC-440), free tier insufficient
+- Paid tier ($25-150/mo) duplicates Polygon coverage — bad value
+
+### Owner question answers
+
+**Q1: Can Finnhub be used in a better way?**
+NOT MEANINGFULLY. Free tier rate limits + endpoint redundancy with better sources (Polygon, Quiver, FRED) means Finnhub has shrinking unique value.
+
+**Q2: Are we using everything offered?**
+NO — but the unused endpoints don't have consumers per #57. USPTO patents and visa applications are interesting in theory but no current strategy needs them.
+
+**Q3: Is the cost worth it?**
+NO — even free tier has hidden cost (BUG-053/181 broken integration, debugging time). Paid tier is bad value (duplicates Polygon). **Recommendation: deprecate Finnhub entirely from project.**
+
+**Q4: Can Finnhub replace or be replaced?**
+**Finnhub is replaced by Polygon (news) + Quiver (smart money) + FRED (macro) + yfinance (basic).** No reverse direction — Finnhub doesn't replace anything we have.
+
+### Hypotheses
+
+**H-finnhub-1 (HIGH):** Polygon news + Quiver smart money + FRED macro fully cover Finnhub's used scope post-DEC-440 → Finnhub has zero remaining unique value in our stack.
+
+**H-finnhub-2 (LOW):** USPTO patents / visa applications could be useful for innovation-focused strategies → speculative, no current consumer per #57.
+
+### Sub-decision candidates (PROPOSED)
+
+- **DEC-453 PROPOSED** — Deprecate Finnhub from project entirely. Remove `prefetch_finnhub_news.py`, remove `FINNHUB_API_KEY` from config requirements, mark BUG-053/181 RESOLVED via deprecation (already WILL_RESOLVE_VIA_DEC-440 — final closure). Net architecture simplification: 1 fewer API to maintain.
+
+### Finnhub verdict
+
+**Deprecate entirely.** Polygon DEC-441 fully supersedes. Single sub-decision proposed. Architectural simplification.
+
+---
+
+## 6. AAII Sentiment Survey — Currently consumed; pub-lag BUGs
+
+### Subscription tier
+- **FREE** (CSV download from AAII; no API key)
+- Update frequency: weekly (Wednesday survey, Thursday publication)
+- Historical depth: full back to 1987
+
+### Available data (single CSV, simple structure)
+
+| Field | Returns | PIT-safe? | Currently used? |
+|---|---|---|---|
+| `survey_date` | Wednesday of survey week | NO directly (BUG-235) | YES |
+| `bullish_pct` | % bullish | YES (post pub-lag) | YES |
+| `neutral_pct` | % neutral | YES (post pub-lag) | YES |
+| `bearish_pct` | % bearish | YES (post pub-lag) | YES |
+| Spread (bullish - bearish) | Computed sentiment indicator | YES | YES (typically) |
+| 8-week moving average | Smoothed | YES | NO |
+
+### Currently consumed code references
+
+Search shows AAII consumed but heavily through agent cache (JSON files in `backtest/agents/cache/`); no clear single-file integration point. Likely consumed via macro.py global or agent context.
+
+### Gaps
+
+The data is essentially complete (single CSV with 5 fields). No "endpoints" to add. Issues are operational:
+- BUG-235 HIGH OPEN: pub-lag not respected (Wed survey marked tradeable Wed instead of Thu)
+- BUG-236 HIGH OPEN: auto-refresh missing — committed CSV will go stale
+- BUG-246 MEDIUM OPEN: module globals (incl. AAII) not multi-process safe
+- DEC-318 PENDING (DEC-389 sub-decision): pub-lag treatment fix
+
+### Use-case cross-reference
+
+| Field | Strategies | Agents | Cube dims |
+|---|---|---|---|
+| Bullish/Bearish/Neutral % | Contrarian sentiment strategies | Sentiment | aaii_extreme dim (DEC-422) |
+| Spread (bull-bear) | Extreme-sentiment reversal | Sentiment | aaii_extreme dim |
+| 8-week MA (UNUSED) | Smoothed regime | Sentiment | (potential smoothed sentiment dim) |
+
+### Caching & rate-limit feasibility
+
+- CSV download is small (~38 years × 52 weeks = ~2000 rows total)
+- No rate limit (it's a static file); auto-refresh weekly
+- Storage trivial
+
+### Owner question answers
+
+**Q1: Can AAII be used in a better way?**
+PARTIAL. Data is what it is (5 fields). Better USE means:
+- Fix BUG-235 (pub-lag respect) per DEC-318
+- Fix BUG-236 (auto-refresh)
+- Consider 8-week MA as additional cube feature
+
+**Q2: Are we using everything offered?**
+~70% — primary fields used; 8-week MA derived metric NOT used currently.
+
+**Q3: Is the cost worth it?**
+ABSOLUTELY — free, simple, well-defined sentiment input. Per-cube AAII dim per DEC-422 makes it directly useful.
+
+**Q4: Can AAII replace or be replaced?**
+**Cannot be replaced cheaply.** AAII is a unique investor sentiment survey not duplicated elsewhere. CNN F&G is composite (different methodology). AAII is institutional-survey-based; specific value.
+
+### Hypotheses
+
+**H-aaii-1 (HIGH):** Fixing BUG-235 (pub-lag respect) per DEC-318 fixes a PIT correctness violation that currently leaks Wed survey into Wed trades.
+
+**H-aaii-2 (LOW):** 8-week MA as derived feature adds marginal value beyond raw sentiment.
+
+### Sub-decision candidates (PROPOSED)
+
+No new sub-decisions — DEC-318/389 already cover the BUG-235 fix scope. AAII is well-handled.
+
+### AAII verdict
+
+**Keep as-is; ensure DEC-318 implementation fixes BUG-235/236 pub-lag.** No architectural change needed.
+
+---
+
+## 7. CNN Fear & Greed Index — Currently consumed; minor
+
+### Subscription tier
+- **FREE** (CNN scraping or unofficial JSON endpoints)
+- Update frequency: daily during market hours
+- Historical depth: limited; CNN doesn't publish full archive officially (alternative scraping or third-party archives)
+
+### Available data
+
+| Field | Returns | PIT-safe? | Currently used? |
+|---|---|---|---|
+| `fear_greed_value` (0-100) | Composite sentiment index | LIMITED (history reconstruction unreliable) | YES |
+| `fear_greed_classification` | Extreme Fear / Fear / Neutral / Greed / Extreme Greed | LIMITED | YES |
+| Sub-component (7 indicators making up the composite) | Individual components | LIMITED | NO |
+
+### Currently consumed code references
+
+Like AAII — consumed through agent cache + macro.py global (BUG-246 module globals not multi-process safe).
+
+### Gaps
+
+- Sub-component indicators (7 underlying signals: stock price momentum, stock price strength, etc.) NOT used — only composite
+- Historical depth limited (CNN doesn't archive officially)
+- No formal API; scraping fragile
+
+### Use-case cross-reference
+
+| Field | Strategies | Agents | Cube dims |
+|---|---|---|---|
+| Composite F&G value | Sentiment strategies | Sentiment | cnn_fg_band dim (DEC-422) — 5 bands |
+| Sub-components (UNUSED) | None directly | Sentiment | None | 
+
+### Owner question answers
+
+**Q1: Can CNN F&G be used in a better way?**
+MARGINALLY. Sub-components could be unpacked but no current consumer per #57. Composite is what we use; that's correct.
+
+**Q2: Are we using everything offered?**
+~50% (composite yes, sub-components no). But sub-components don't have consumer fit.
+
+**Q3: Is the cost worth it?**
+FREE; cube dim adds value. **Yes — minimal cost, modest benefit.** Caveat: scraping fragility means data quality risk (vs FRED/AAII which are stable sources).
+
+**Q4: Can CNN F&G replace or be replaced?**
+- CANNOT replace AAII (different methodology)
+- CANNOT be cheaply replaced (no equivalent free composite sentiment)
+- Premium alternatives (Refinitiv StarMine, Bloomberg) exist but $$$$
+
+### Hypotheses
+
+**H-cnn-1 (LOW):** Sub-component indicators add cube dimensions worth slicing on → speculative, defer until use case identified.
+
+**H-cnn-2 (MEDIUM):** Scraping reliability over 5-year backtest is acceptable; if not, accept data gaps as caveat.
+
+### Sub-decision candidates (PROPOSED)
+
+No new sub-decisions — current use is appropriate scope.
+
+### CNN F&G verdict
+
+**Keep as-is; no architectural change.** Minor data source.
+
+---
+
+# Batch 2 summary
+
+| API | Verdict | Sub-decisions PROPOSED |
+|---|---|---|
+| **Quiver** | Keep free tier; fix BUG-190/284 + DEC-396 to maximize value before premium upgrade | DEC-450, 451, 452 |
+| **Finnhub** | **DEPRECATE entirely** — Polygon supersedes; architectural simplification | DEC-453 |
+| **AAII** | Keep as-is; DEC-318 implementation fixes BUG-235/236 | None new |
+| **CNN F&G** | Keep as-is; minor source | None new |
+
+**4 additional sub-decisions PROPOSED (DEC-450 through DEC-453).**
+**Cumulative Batch 1+2: 12 sub-decisions PROPOSED.**
+
+**Next batch (Batch 3):** OpenBB, Alpha Vantage (deprecation), Unusual Whales, Ortex — fundamentals + Stage 3+ APIs.
+
+---
