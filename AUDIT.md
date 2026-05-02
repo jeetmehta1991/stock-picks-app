@@ -23394,3 +23394,78 @@ KEY ARCHITECTURAL DECISIONS:
 Counts: 461 / 168 PENDING / 235 RESOLVED-DECIDED / 17 DEFERRED_TO_STAGE_3 / 8 DEFERRED_TO_STAGE_4 / 11 SUPERSEDED / 9 BLOCKED_ON_X / 13 other.
 
 *Per CHECKLIST #43/#46/#47/#51 (explicit owner approval all 6 specific clarifications + per-rec batch)/#56/#57.*
+
+---
+
+## AUDIT PASS 52 turn 63 — Theme X58 Phase 1B-α Dimensional Framework fully closed (7 of 7)
+
+Owner Pass 52 turn 63: "Approve all recs"
+
+X58 SUB-DECISION CLOSURES (7 of 7) — all RESOLVED-DECIDED:
+
+DEC-422 PHASE 1-7 FULL IMPLEMENTATION ROADMAP:
+
+Phase 1 (HARD) — DEC-425: Dimensional slicing infrastructure
+- Sparse pandas MultiIndex DataFrame in `backtest/results/dim_cube.py`
+- Sandbox prototype on synthetic data BEFORE locking architecture
+- ~5-7d
+
+Phase 2 (HARD) — DEC-426: Per-cell statistical engine
+- Full metrics suite per DEC-422 schema + 5-gate validity filter
+- pair_verdict tagging: PASS / FAIL_RR / FAIL_CONFIDENCE / FAIL_DRAWDOWN / INSUFFICIENT_SAMPLE
+- Joint with DEC-080/110/353/068 upstream methodology
+- ~4-6d (estimated; audit didn't specify)
+
+Phase 3 (Medium) — DEC-427: Marginal heatmap (Approach A)
+- Per (strategy_i, exit_j) pair, per-dimension marginal heatmap
+- Conservative methodology before 3D
+- ~2-3d
+
+Phase 4 (Medium) — DEC-428: Combined 3D analysis (Approach B)
+- For top-20% strategies, 3D cells (strategy × regime × second-dim)
+- Sparse cells fall back to marginal-best
+- ~3-4d
+
+Phase 5 (Medium) — DEC-429: Live decision lookup table
+- State vector → (strategy, exit_method, confidence) tuple
+- Fallback hierarchy for INSUFFICIENT_CONFIDENCE cells
+- JSON output for live system
+- ~2d
+
+Phase 6 (Medium) — DEC-430: Dashboard 1 visualization
+- Streamlit interactive (Python-native, low overhead)
+- 2D heatmap + 3D scatter + per-cell drill-down + filter sliders
+- Joint with DEC-199 (Dashboard 1 spec)
+- ~3-5d
+
+Phase 7 (Cheap) — DEC-431: Validation/regression test suite
+- 4 synthetic test cases (gates, sparse cells, Bonferroni, integration)
+- Joint with DEC-417 (test-run audit gate)
+- ~2-3d
+
+X58 TOTAL IMPLEMENTATION EFFORT: ~21-30 engineering days
+X58 STATUS: 7 of 7 sub-decisions in terminal state. All Stage 2 critical-path scope.
+
+CRITICAL PATH IMPLICATION:
+X58 is the final infrastructure before Phase 1B-α can run. Per IMPLEMENTATION_READINESS_DASHBOARD Sprint 9, Phase 1B-α gated on X58 completion. Sprint sequencing: X58 spans Sprint 7-8 (most engineering-heavy block in remaining work).
+
+KEY ARCHITECTURAL DECISIONS:
+- Sparse pandas MultiIndex for cube storage (DEC-425) — sandbox prototype required
+- 5-gate validity filter (n≥30 + p<0.05 + PSR≥0.95 + t-stat≥3.4 + R:R≥2.0) — DEC-353 R:R hard reject
+- Approach A (marginal 2D) before Approach B (3D combined for top-20%) — sample-size-aware sequencing
+- Streamlit for Dashboard 1 — Python-native + low overhead vs custom React
+- Test suite joint with DEC-417 — prevents methodology bugs invalidating Phase 1B-α silently
+
+DEPENDENCIES (all RESOLVED-DECIDED upstream):
+- DEC-422 (parent dimensional cube framework) ✓
+- DEC-068 + DEC-423 (bootstrap CI per-cell) ✓
+- DEC-080 + DEC-400 (Bonferroni dynamic N) ✓
+- DEC-110 + DEC-413 (Deflated Sharpe / PSR) ✓
+- DEC-353 (2:1 R/R hard constraint) ✓
+- DEC-082 + DEC-405 (stress test runner) ✓
+- DEC-199 (Dashboard 1 spec) — joint with DEC-430
+- DEC-417 (test-run audit gate) — joint with DEC-431
+
+Counts: 461 / 161 PENDING / 242 RESOLVED-DECIDED / 17 DEFERRED_TO_STAGE_3 / 8 DEFERRED_TO_STAGE_4 / 11 SUPERSEDED / 9 BLOCKED_ON_X / 13 other.
+
+*Per CHECKLIST #43/#46/#47/#51 (explicit owner approval all 6 specific clarifications + per-rec batch)/#56 (all Stage 2 critical-path)/#57.*
