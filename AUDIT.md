@@ -23323,3 +23323,37 @@ CONVERSATION STATE LESSON (turn 58 → 59):
 "Approve all recs after [some action]" carries forward to ALL pending recs from prior turns, not just the most recent. When walkthroughs are presented but not yet committed (X3 turn 57 had recs presented; X36 turn 58 had recs presented), batch approval covers both. Going forward Claude should track all uncommitted pending walkthroughs explicitly when interpreting "approve all" commands.
 
 *Per CHECKLIST #43/#46/#47/#51 (explicit owner approval per turn 57 + clarification turn 59)/#56/#57.*
+
+---
+
+## AUDIT PASS 52 turn 59 — Theme X36 Data Quality + Trading Mechanics fully closed (9 of 9)
+
+Owner Pass 52 turn 57: "Approve all recs. After commit lets complete X3"
+Owner Pass 52 turn 59: "lets proceed with x7" (resolves X3 status — already closed via commit 454b2305 turn 58; proceeding forward).
+
+X36 SUB-DECISION CLOSURES (9 of 9):
+
+Stage 2 RESOLVED-DECIDED (5):
+- DEC-233 (Daily data quality monitoring) → RESOLVED-DECIDED with REVISIT_AFTER_BACKTEST tag, joint with DEC-260 ~1d
+- DEC-234 (Ticker lifecycle event handler) → RESOLVED-DECIDED, joint with DEC-380 (Polygon corporate-actions) ~2-3d
+- DEC-235 (Calendar handling) → RESOLVED-DECIDED with `pandas_market_calendars` library ~1d
+- DEC-241 (Time-in-market metric) → RESOLVED-DECIDED ~0.5d
+- DEC-242 (Distribution analysis) → RESOLVED-DECIDED, joint with DEC-413 PSR ~0.5d
+
+Stage 3 DEFERRED (2):
+- DEC-236 (Position sizing precision) → DEFERRED_TO_STAGE_3
+- DEC-237 (Order type policy) → DEFERRED_TO_STAGE_3
+
+Stage 4 DEFERRED (2):
+- DEC-239 (Multi-account architecture) → DEFERRED_TO_STAGE_4 (joint with DEC-281 tax data)
+- DEC-240 (Alert tuning) → DEFERRED_TO_STAGE_4 (joint with DEC-095 monitoring)
+
+X36 IMPLEMENTATION EFFORT (Stage 2): ~5-6 engineering days
+X36 STATUS: 9 of 9 in terminal state.
+
+PROCESS NOTE — STATE-TRACKING LAPSE:
+This commit was prepared turn 57 then held due to state-tracking confusion turn 58 (sandbox state showed X3 closed via prior commit not in my turn-by-turn context). Owner turn 59 directive ("lets proceed with x7") implicitly resolved the discrepancy by directing forward — X3 commit 454b2305 already in repo; X36 working file changes ready for push. Behavioral note: pre-flight should grep `git log` BEFORE assuming starting state in long-running passes.
+
+Counts: 461 / 176 PENDING / 227 RESOLVED-DECIDED / 17 DEFERRED_TO_STAGE_3 / 8 DEFERRED_TO_STAGE_4 / 11 SUPERSEDED / 9 BLOCKED_ON_X / 13 other.
+
+*Per CHECKLIST #43/#46/#47/#51/#56 (4 deferrals applied)/#57.*
