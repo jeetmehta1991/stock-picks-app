@@ -22758,3 +22758,50 @@ THEME X1 STATUS post-this-commit:
 Counts: 460 / 313 PENDING / 112 RESOLVED / 10 DEFERRED_TO_STAGE_3 / 2 BLOCKED_ON_BUG-095 / 23 other.
 
 *Per CHECKLIST #43/#46/#47/#51 (Block 3 held for owner — explicit recs not given on owner-decision items)/#56-corrected/#57.*
+
+---
+
+## AUDIT PASS 52 — Theme X1 Block 3 closure (DEC-365 + DEC-366 tier-specific + DEC-457 NEW)
+
+Owner Pass 52 turn 35: "Approve your recs"
+
+DEC-365 Universe expansion beyond S&P 500 — owner-approved.
+- Phase A: Russell 1000 minus S&P 500 ≈ 500 mid-caps, free static list
+- Phase B: paid FTSE Russell subscription (deferred until maintenance burden triggers)
+- Phase C: Russell 2000 +1000 small-caps DEFERRED (revisit at Phase 1B-α completion)
+- Total Stage 2 universe: ~1100-1200 instruments at Phase A activation
+- Joint with DEC-366 (tier-specific liquidity floor) + DEC-367/369/370 (strategy categories that benefit from mid-cap inclusion)
+
+DEC-366 Liquidity floor — owner-approved with TIER-SPECIFIC FRAMEWORK per owner directive: "Different liquidity filters might apply to different tiers of watchlists."
+
+Tier-specific thresholds:
+- Tier 1 (S&P 500): cap $0 (S&P 500 IS cap filter), ADV $10M, history 250d
+- Tier 2 (spinoffs/IPOs): cap $2B, ADV $5M, history 20d with LIMITED_HISTORY flag
+- Tier 3 (momentum): cap $300M, ADV $5M, history 60d
+- Russell 1000 add: cap $300M, ADV $3M, history 250d
+
+DEC-457 NEW sub-decision PROPOSED → owner-approved: tier-specific apply_liquidity_filter implementation.
+- Add `tier` parameter to function signature
+- Read thresholds from LIQUIDITY_BY_TIER config dict
+- Compute min_avg_dollar_volume (close × volume rolling-20)
+- Joint with DEC-392 fail-closed implementation
+- ~1.5 days combined effort
+
+Risk implications:
+- Tier 1 rejection rate ≤3% (some fading S&P 500 names)
+- Tier 2 rejection rate 60-70% (most raw spinoffs/IPOs filtered)
+- Tier 3 rejection rate ≤30%
+- Russell 1000 rejection rate 20-30% (illiquid mid-caps filtered)
+- Net Russell 1000 add post-filter: 350-400 names
+
+THEME X1 STATUS: FULLY CLOSED.
+- 8 stub parents → RESOLVED (Block 1)
+- 5 strategy categories → PENDING in scope (Block 2)
+- DEC-365/366 owner-approved (Block 3)
+- 13 Stage 2 sub-decisions formally approved (Block 4)
+- DEC-457 NEW sub-decision logged
+Total resolution: 26 PENDING → 8 RESOLVED + 18 PENDING + 1 NEW (DEC-457) = 27 X1 entries.
+
+Counts: 461 total / 314 PENDING / 112 RESOLVED / 10 DEFERRED_TO_STAGE_3 / 2 BLOCKED_ON_BUG-095 / 23 other.
+
+*Per CHECKLIST #43/#46/#47/#51/#56/#57.*
