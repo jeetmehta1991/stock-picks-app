@@ -1,0 +1,79 @@
+# Theme X53 — Implementation Sequencing & Dependency Map (15 Stage 2 sub-decisions)
+
+**Background:** Theme X53 (High-Impact Engine Bugs) catalogs CRITICAL/HIGH severity bugs in the backtest engine that produce plausible-looking but invalid results. Parent decisions DEC-307-327 are owner-approved per Pass 52; their implementation sub-decisions DEC-381-399 are the engineering work. This document sequences the 15 truly-pending Stage 2 sub-decisions after CHECKLIST #56 deferred 4 Stage 3+ items (DEC-385/386/387/395) to Stage 3 prep theme.
+
+**Scope filter applied:** CHECKLIST #56 (Phase 0 + Stage 2 only) — DEC-385/386/387 (live circuit breaker mechanics) and DEC-395 (paid sector PIT subscription) deferred per L135.
+
+---
+
+## Dependency tiers
+
+### Tier A — Independent (can start immediately, no blockers)
+
+| Sub-decision | Parent | Description (one-line) | Effort | Resolves |
+|---|---|---|---|---|
+| **DEC-381** | DEC-307 | Cache get_ohlcv symmetric front-extension (fail-fast, no silent truncation) | ~1d | Cache-correctness gap |
+| **DEC-382** | DEC-308 | Replace 20-day floor with min(20, available) + LIMITED_HISTORY flag | ~0.5d | Tier 2 ticker exclusion |
+| **DEC-383** | DEC-310 | Remove `df[volume>0]` from cache write; add is_halted column | ~0.5d | Halted-stock invisibility |
+| **DEC-384** | DEC-313+337 | update_trailing_stop signature change to use intraday HIGH/LOW | ~1d | BUG-232 lookahead in stops |
+| **DEC-388** | DEC-317 | VIX 5-day SMA + hysteresis (crisis ≥40, exit <35) regime input | ~0.5d | Regime classifier flapping |
+| **DEC-389** | DEC-318 | AAII pub-lag fix (shift as_of by 1 trading day; add pub_date column) | ~0.5d | BUG-235 PIT violation |
+| **DEC-390** | DEC-319 | scripts/refresh_aaii_sentiment.py + GitHub Actions workflow | ~0.5d | BUG-236 stale CSV |
+| **DEC-391** | DEC-320 | CNN F&G replace interpolation with last-published; expose age_days | ~0.5d | Interpolation lookahead |
+| **DEC-392** | DEC-321 | apply_liquidity_filter fail-closed on missing/zero market_cap | ~0.5d | Silent universe leak |
+| **DEC-394** | DEC-323 | Static sector_history.csv with major reclassifications (Phase 1) | ~1d | Sector PIT partial fix |
+| **DEC-397** | DEC-326 | Replace hardcoded calendar with rolling train/oos windows | ~1d | Methodology inflexibility |
+| **DEC-398** | DEC-327 Phase A | Investigate borrow cost path (improvements vs exit_manager) | ~0.5d | Code path duplication |
+| **DEC-399** | DEC-327 Phase B | Consolidate borrow cost to backtest.engine.costs module | ~1d | Cost computation drift |
+
+**Tier A subtotal: 13 sub-decisions, ~9 days effort, no dependencies.**
+
+### Tier B — Blocked on prior decisions (cannot start until prerequisite lands)
+
+| Sub-decision | Parent | Description | Blocker | Effort post-blocker |
+|---|---|---|---|---|
+| **DEC-393** | DEC-322 | market_cap_pit(ticker, as_of) = close × shares_outstanding(as_of) | DEC-257 (Polygon fundamentals — provides PIT shares outstanding) | ~1d |
+| **DEC-396** | DEC-325 | Quiver 13F filing_date capture in prefetch | DEC-450 (Quiver prefetch extension already covers 13F filing_date scope per DEC-410 audit) | ~1-2d |
+
+**Tier B subtotal: 2 sub-decisions, ~2-3 days post-blockers.**
+
+---
+
+## Total Stage 2 X53 implementation effort
+
+**~11-12 days** for 15 sub-decisions (9d Tier A + 2-3d Tier B post-blockers).
+
+Dependency graph:
+- Tier A (13 sub-decisions) can start in any order today
+- DEC-393 blocked → starts after DEC-257 (Polygon fundamentals prefetch)
+- DEC-396 blocked → starts after DEC-450 (Quiver endpoint extension)
+
+---
+
+## Recommended implementation order
+
+Optimized for compound impact:
+
+1. **DEC-383** (zero-volume preservation) — foundational; affects all downstream cache reads
+2. **DEC-381** (front-extension fail-fast) — fixes silent truncation that could hide cache holes
+3. **DEC-382** (20-day floor relaxation) — unblocks Tier 2 newly-listed tickers in universe
+4. **DEC-389** (AAII pub-lag) — PIT correctness; resolves BUG-235 HIGH OPEN
+5. **DEC-390** (AAII auto-refresh) — operational; resolves BUG-236 HIGH OPEN
+6. **DEC-391** (CNN F&G interpolation fix) — PIT correctness pattern match with DEC-389
+7. **DEC-388** (VIX SMA hysteresis) — regime classifier stability; affects DEC-422 cube
+8. **DEC-392** (liquidity filter fail-closed) — universe correctness
+9. **DEC-394** (sector_history.csv Phase 1) — partial sector PIT fix
+10. **DEC-384** (intraday HIGH stop tracking) — execution realism; resolves BUG-232
+11. **DEC-397** (rolling train/oos) — enables walk-forward methodology per DEC-082
+12. **DEC-398** (borrow cost path investigation) — diagnostic before consolidation
+13. **DEC-399** (borrow cost consolidation) — depends on DEC-398 finding
+14. **DEC-393** (market_cap_pit) — starts when DEC-257 lands
+15. **DEC-396** (Quiver 13F filing_date) — starts when DEC-450 lands
+
+---
+
+## Status: 15 X53 sub-decisions remain PENDING (correctly — they are pending implementation, not approval)
+
+These don't need re-approval — parents already approved Pass 52. They need to land as code changes in chronological/dependency order above. Owner can reference this document during implementation phase to track progress.
+
+*Per CHECKLIST #43/#46/#47/#56/#57. Pass 52 turn 26 execution per owner directive "Approve your recs."*

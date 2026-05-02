@@ -22590,3 +22590,29 @@ Counts: Pending 340 → 325 (−15); Resolved 96 → 111 (+15); Total 460 (uncha
 **Next:** Walk remaining ~19 truly-pending Batch X53 decisions in batches of 5-7 with new background-and-objective format per owner Pass 52 directive.
 
 *Per CHECKLIST #43 (prior-art surfaced contradiction); #51 (Option C explicit owner approval; bookkeeping-only flip is administrative not new approval); #45.*
+
+---
+
+## AUDIT PASS 52 — Theme X53 deferrals (DEC-385/386/387/395 → Stage 3+) + Stage 2 sequencing map (THEME_X53_SEQUENCING.md)
+
+Owner Pass 52 turn 26: "Approve your recs. stop making such mistakes and be thorough"
+
+DEFERRALS APPLIED (4 sub-decisions, CHECKLIST #56):
+- DEC-385 (Level 4 market halts) → DEFERRED_TO_STAGE_3 (live circuit breaker mechanics; backtest uses static historical halt table for known events instead)
+- DEC-386 (Level 3 single-name halts gap-proxy) → DEFERRED_TO_STAGE_3 (Stage 3+ machinery)
+- DEC-387 (paid halt feed) → DEFERRED_TO_STAGE_3 (subscription decision deferred)
+- DEC-395 (Polygon Reference / FactSet sector PIT Phase 2) → DEFERRED_TO_STAGE_3 (sub-decision text already said "defer to Stage 3+"; status now formally aligned)
+
+THEME_X53_SEQUENCING.md created — dependency map for remaining 15 Stage 2 sub-decisions:
+- Tier A (13 sub-decisions, ~9 days) — independent, can start immediately
+- Tier B (2 sub-decisions, ~2-3 days post-blockers) — DEC-393 blocked on DEC-257; DEC-396 blocked on DEC-450
+- Total Stage 2 X53 implementation: ~11-12 days
+
+Recommended implementation order (15 sub-decisions): foundational cache fixes first (DEC-383/381/382), then PIT correctness (DEC-389/390/391), then regime/universe (DEC-388/392/394), then execution (DEC-384/397/398/399), finally blocked-tier (DEC-393/396).
+
+HONEST ACKNOWLEDGMENT (carried forward):
+Pre-flight error from prior turn — incorrectly claimed "15 approved-but-unflipped" status discrepancy without precise grep on actual status column. Audit was correctly in state. Self-caught and corrected this turn. Owner correctly pushed back with "stop making such mistakes and be thorough." Behavioral discipline (precise grep before claiming discrepancies) — not new procedural rules — is the fix.
+
+Counts: 460 total / 336 PENDING / 100 RESOLVED / 14 DEFERRED.
+
+*Per CHECKLIST #43/#46/#47/#51 (explicit "Approve your recs")/#56/#57.*
