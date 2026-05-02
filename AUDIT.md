@@ -22711,3 +22711,50 @@ Counts: 460 / 321 PENDING / 104 RESOLVED / 10 DEFERRED_TO_STAGE_3 / 2 BLOCKED_ON
 3rd phase-nomenclature correction this thread. Acting on latest; not adding rules; not relitigating.
 
 *Per CHECKLIST #43/#46/#47/#51/#56-corrected/#57.*
+
+---
+
+## AUDIT PASS 52 — Theme X1 Blocks 1, 2, 4 closure (Block 3 held for owner)
+
+Owner Pass 52 turn 33: "Approve your recs"
+
+Scoped to Blocks 1/2/4 — my recommendations. Block 3 (DEC-365 universe expansion + DEC-366 liquidity floor) requires substantive owner decisions I did not recommend on; held per CHECKLIST #51.
+
+BLOCK 1 — 8 stub parents flipped PENDING → RESOLVED with SUPERSEDED_BY cross-references:
+- DEC-063 (Universe refresh automation) → DEC-372/373/374/375/376/377/378/379/380
+- DEC-064 (Phase 0.A prefetch checklist) → DEC-256/257/258/259/260/261
+- DEC-065 (Validate stored data quality) → DEC-410/260/417
+- DEC-099 (11 missing strategy categories) → DEC-367/368/369/370/371
+- DEC-101 (Earnings strategies post-Phase 0.A) → DEC-256/441
+- DEC-103 (Auto-populate Tier 2) → DEC-372/373/374
+- DEC-104 (Auto-populate Tier 3) → DEC-364/375/376/377
+- DEC-105 (Spinoff detector) → DEC-378/379/380
+
+BLOCK 2 — 5 strategy categories approved as PENDING in scope (Phase 1C is Stage 2 sub-phase per turn 32 correction):
+- DEC-367 (Pairs / Stat Arb) — cointegration tests, beta-neutral sizing; ~5-7 days
+- DEC-368 (Calendar / Seasonal) — date-based filters; ~2-3 days
+- DEC-369 (Cross-Asset) — TLT/GLD/UUP/USO intermarket; ~5-7 days
+- DEC-370 (Index Rebalance) — adds-drops calendar frontrun; ~3-5 days
+- DEC-371 (Within-category gaps catalog) — ~1 day cataloging
+
+BLOCK 4 — 13 Stage 2 sub-decisions formally approved (already PENDING with substantive Pass 52 scope — owner approval formalizes as work items):
+- DEC-363 (LIT/DBB/COPX commodity ETFs)
+- DEC-364 (Tier 3 50→100)
+- DEC-372/373/374 (Tier 2 phases A/B/C)
+- DEC-375/376/377 (Tier 3 phases A/B/C)
+- DEC-378/379/380 (Spinoff detector phases 1/2/3)
+
+BLOCK 3 — STILL OPEN (held per CHECKLIST #51):
+- DEC-365 Russell 1000 universe expansion: APPROVE or REJECT (need owner)
+- DEC-366 Liquidity floor: APPROVE with what threshold (need owner)
+
+THEME X1 STATUS post-this-commit:
+- 8 stub parents → RESOLVED ✓
+- 13 Block 4 sub-decisions → PENDING approved (formalized) ✓
+- 5 Block 2 strategy categories → PENDING in scope ✓
+- 2 Block 3 substantive new decisions → AWAITING OWNER (DEC-365/366)
+- Total 26 X1 PENDING from start of theme: 8 closed + 18 still PENDING + 0 deferred (corrected per Phase 1C/Stage 2 scope)
+
+Counts: 460 / 313 PENDING / 112 RESOLVED / 10 DEFERRED_TO_STAGE_3 / 2 BLOCKED_ON_BUG-095 / 23 other.
+
+*Per CHECKLIST #43/#46/#47/#51 (Block 3 held for owner — explicit recs not given on owner-decision items)/#56-corrected/#57.*
