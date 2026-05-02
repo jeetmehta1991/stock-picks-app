@@ -22985,3 +22985,43 @@ CHANGE FROM PREVIOUS PASSES:
 This is the first commit in Pass 52 that establishes infrastructure for engineering execution as opposed to decision walkthrough. ENGINEERING_REGISTER.md becomes the source-of-truth for what's being built; AUDIT_INDEX.md remains source-of-truth for what's been decided.
 
 *Per CHECKLIST #43 (precise grep on actual statuses)/#46/#47/#51 (explicit owner approval Pass 52 turn 41)/#56/#57.*
+
+---
+
+## AUDIT PASS 52 turn 49 — Theme X54 medium-tier closure (3 of 4) + DEC-338 held + new visibility standard adopted
+
+Owner Pass 52 turn 47-49: Per-decision visibility before status flip is now mandatory; cheap and medium items both. Behavioral standard applied turn 48 onward.
+
+NEW STANDARD ADOPTED:
+Every sub-decision presented in walkthroughs gets the format:
+- Scope: <one-line description>
+- Reversibility: <Cheap/Medium/Hard>
+- Recommendation: <RESOLVED-DECIDED / SUPERSEDED_BY_X / BLOCKED_ON_X / REJECTED / DEFERRED>
+- Rationale: <one-line why>
+- Test signal: <verification criterion>
+- Action: <what changes in audit on approval>
+
+NOT adding new CHECKLIST item per owner standing directive. This is presentation discipline, not procedural rule.
+
+X54 MEDIUM-TIER CLOSURE (3 of 4):
+- DEC-329 (multi-process safe globals) → RESOLVED-DECIDED ~1.5d
+- DEC-330 (cache schema versioning) → RESOLVED-DECIDED ~1d
+- DEC-336 (info_cache TTL) → RESOLVED-DECIDED with DEC-443 supersession-check note ~0.5d if Polygon doesn't fully cover; potentially obsolete
+
+DEC-338 (Conversion logic semantics) HELD per #51 — owner approved my hold rec; needs explicit A vs B sub-choice:
+- (A) Implement actual position open in opposite direction (~1d)
+- (B) Remove misleading label (~0.25d)
+Awaiting owner direction.
+
+X54 STATUS post-this-commit:
+- 9 cheap-tier sub-decisions RESOLVED-DECIDED + 1 SUPERSEDED (turn 46)
+- 3 medium-tier sub-decisions RESOLVED-DECIDED (this turn)
+- 1 medium-tier HELD (DEC-338)
+- 12 of 13 X54 sub-decisions in terminal state
+- ~6.5d total Stage 2 implementation effort for X54
+
+RETROACTIVE: 9 cheap items committed turn 46 without per-decision visibility format. Owner approved (Option A turn 48): accept committed items; apply new standard forward.
+
+Counts: 461 / 226 PENDING / 194 RESOLVED-DECIDED / 10 SUPERSEDED / 10 DEFERRED_TO_STAGE_3 / 7 BLOCKED_ON_X / 14 other.
+
+*Per CHECKLIST #43/#46/#47/#51 (explicit approval per item)/#56/#57. New visibility standard adopted as behavioral discipline, not new rule.*
