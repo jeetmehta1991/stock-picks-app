@@ -23246,3 +23246,43 @@ SCOPE CORRECTION: DEC-282 notification channel — Pass 51 owner directive set e
 Counts: 461 / 194 PENDING / 219 RESOLVED-DECIDED / 14 DEFERRED_TO_STAGE_3 / 1 DEFERRED_TO_STAGE_4 / 11 SUPERSEDED / 9 BLOCKED_ON_X / 13 other.
 
 *Per CHECKLIST #43/#46/#47/#51/#56 (4 deferrals applied per scope filter)/#57.*
+
+---
+
+## AUDIT PASS 52 turn 58 — Theme X3 Architecture fully closed (9 of 9)
+
+Owner Pass 52 turn 58 directives:
+- DEC-098 — test coverage 90% (overriding Claude's 70% rec)
+- All other recs approved as scoped
+
+X3 SUB-DECISION CLOSURES:
+
+Stage 2 RESOLVED-DECIDED (3):
+- DEC-096 (Backtest reproducibility manifest) → joint with DEC-283/330 ~1.5d coordinated
+- DEC-098 (Test coverage 90% — owner override from Claude's 70% rec) → ~10-20d depending on baseline; REVISIT_AFTER_BACKTEST tag retained to confirm 90% feasible without delaying Phase 1B-α
+- DEC-113 (Trade journal + research log + failure log) → PHASED: Stage 2 portion (research + failure logs ~0.5d); Stage 3+ portion (trade journal) deferred until Stage 3
+
+Stage 3 DEFERRED (1):
+- DEC-097 (Reconciliation job) → DEFERRED_TO_STAGE_3, daily reconciliation against paper account begins Stage 3
+
+Stage 4 DEFERRED (5):
+- DEC-093 (Cloud migration) → DEFERRED_TO_STAGE_4
+- DEC-094 (Secrets manager) → DEFERRED_TO_STAGE_4
+- DEC-095 (Monitoring + alerting) → DEFERRED_TO_STAGE_4
+- DEC-112 (DR plan + incident runbook) → DEFERRED_TO_STAGE_4
+- DEC-114 (Live-vs-backtest divergence monitoring) → DEFERRED_TO_STAGE_4
+
+OWNER OVERRIDE NOTED:
+DEC-098 test coverage threshold raised from Claude's 70% rec to owner's 90% directive. Implications: ~10-20d effort (last 20% always hardest — edge cases, error paths, rare branches); could materially impact Stage 2 → Phase 1B-α timeline. REVISIT_AFTER_BACKTEST tag retained for post-Phase-1B-α threshold review if 90% creates schedule pressure. Owner's quality-over-schedule preference recorded.
+
+X3 IMPLEMENTATION EFFORT (Stage 2 RESOLVED-DECIDED items):
+- DEC-096 reproducibility manifest: ~1.5d (joint DEC-283/330)
+- DEC-098 test coverage to 90%: ~10-20d
+- DEC-113 logs (Stage 2 portion): ~0.5d
+- Total Stage 2 X3: ~12-22d
+
+X3 STATUS: 9 of 9 sub-decisions in terminal state.
+
+Counts: 461 / 185 PENDING / 222 RESOLVED-DECIDED / 15 DEFERRED_TO_STAGE_3 / 6 DEFERRED_TO_STAGE_4 / 11 SUPERSEDED / 9 BLOCKED_ON_X / 13 other.
+
+*Per CHECKLIST #43/#46/#47/#51 (explicit owner override on DEC-098 + per-rec batch approval on others)/#56 (6 deferrals applied)/#57.*
