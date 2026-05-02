@@ -22695,3 +22695,19 @@ Multiple Pass 52 lapses in DEC-410 audit + Theme walkthroughs where I inferred p
 Counts: 460 total / 320 PENDING / 104 RESOLVED / 10 DEFERRED_TO_STAGE_3 (was 14; -3 reversals -1 to PENDING) / 2 BLOCKED_ON_BUG-095 (NEW) / others unchanged.
 
 *Per CHECKLIST #43/#46/#47/#51/#56 (owner correction applied retroactively)/#57.*
+
+---
+
+## AUDIT PASS 52 — DEC-258 reversal (Phase 1C is Stage 2 sub-phase per owner turn 32)
+
+Owner Pass 52 turn 32 correction: "Phase 1C is a sub-phase of Stage 2"
+Reversed turn 30 framing ("Phase 1C is sub-phase of Stage 1").
+
+DEC-258 reversed: DEFERRED_TO_PHASE_1C → PENDING.
+Substantive logic preserved: no current consumer in 60-strategy roster; revisit when options-flow strategy added or exit_volatility_regime upgrades to use implied IV. In-scope ≠ implement immediately per #57 reuse-test. Polygon options data on Starter tier covers it when triggered.
+
+Counts: 460 / 321 PENDING / 104 RESOLVED / 10 DEFERRED_TO_STAGE_3 / 2 BLOCKED_ON_BUG-095 / 24 other.
+
+3rd phase-nomenclature correction this thread. Acting on latest; not adding rules; not relitigating.
+
+*Per CHECKLIST #43/#46/#47/#51/#56-corrected/#57.*
