@@ -629,3 +629,11 @@ Cells with n<30 trades fall back to marginal-best (next-broader cell). Live deci
 **Caveat:** Multiple Pass 52 already-approved decisions retroactively deferred to Stage 3 scope per owner filter: DEC-129/130/132 (Theme 6 Validation criteria), DEC-070 (already DEFERRED prior turn), DEC-418/419/421 (sub-decisions). At Stage 3 prep theme, these will be re-walked with then-current code state; original approvals may need updating if system has evolved (similar to OBSOLETE_BY_TEST_RUN flag in CAV-057). Owner directive may surface additional Stage 3+ decisions that should also be deferred.
 **Operational impact:** Pending count drops as decisions move to DEFERRED status (counts: ~6 decisions deferred this turn). Active workload reduces; focus narrows to Phase 0 + Stage 2. At Stage 3 prep theme, re-walk batch will be substantial — these decisions accumulate unimplemented during the deferral window.
 **Forward-link:** Stage 3 prep theme will need its own focused walkthrough re-examining all DEFERRED_TO_STAGE_3 decisions with then-current system state.
+
+### CAV-070 — Fundamentals filing_date approximation when source lacks explicit field
+
+**Source:** DEC-257 PENDING (Pass 52)
+**Status:** ACTIVE
+**Caveat:** PIT correctness for fundamentals requires `filing_date` (when 10-K/10-Q became publicly known), not `period_end_date` (when fiscal period ended). Polygon `/v3/reference/financials` provides filing_date; yfinance Ticker.financials does NOT (period_end_date only). Fallback approximation: `estimated_filing_date = period_end_date + 45 days` (standard SEC filing window for 10-Q; 60-90 days for 10-K).
+**Operational impact:** When yfinance fallback path activates (Polygon coverage gap or rate-limit), PIT loader uses approximate filing_date. This means a strategy may "see" fundamentals 45 days post-period-end, when in reality filing might have been earlier (e.g., 35 days) or later (e.g., 70 days). Could over-optimistic by ~10-20 days for late filers; under-optimistic by ~5-10 days for early filers. Magnitude: small lookahead/lookback risk.
+**Forward-link:** Track which tickers fall back to yfinance during prefetch; flag in CAV-066 property tests; consider tightening to 60-day proxy if backtest results show material sensitivity.

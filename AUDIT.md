@@ -22287,3 +22287,60 @@ Layered defense expanded to 7 levels (Pass 52 process discipline rules):
 Counts: 443 → 444 (+DEC-440); pending 325 → 326. Themes complete: Theme 6 + Theme 7 + Theme 8 + Theme 9 + DEC-410 framework approved.
 
 *Per CHECKLIST #43/#46/#47/#51/#53/#55/#56/#57 — pre-flight applied internally per owner Pass 52 directive on conciseness.*
+
+---
+
+## AUDIT PASS 52 — Theme 3 closure (DEC-256-261) + DEC-441 Polygon subscription + BUG-053/181 supersession + CAV-070
+
+Owner directives Pass 52 turn 18:
+- "Had bad experience with Finnhub free tier in the past failed run. You should find that context in one of the documents."
+- "If we are already using polygon in phase 2 beta or something, wouldnt it make sense to buy polygon API now itself."
+- "Approve all" (5 owner approvals)
+
+CRITICAL #43 PRIOR-ART LAPSE CAUGHT BY OWNER:
+My prior-turn recommendation was Finnhub for DEC-256 earnings calendar. Failed to grep BUG-053 (HIGH OPEN: Finnhub news cache 509 files empty) + BUG-181 (MEDIUM OPEN: Finnhub silently produces empty files) before recommending. Owner caught the lapse correctly.
+
+REVISED RECOMMENDATIONS — POLYGON BUY NOW:
+
+DEC-441 (NEW) — Polygon Stocks Starter $30/mo subscription approved for purchase NOW (Phase 0 prep). Replaces 4 jobs:
+1. Earnings calendar (DEC-256)
+2. News sentiment (DEC-440 — replaces broken Finnhub + AV 25-ticker cap)
+3. Fundamentals (DEC-257)
+4. Reference/corporate actions (PIT correctness)
+
+Net architecture simplification: 4 sources (AV+Finnhub+OpenBB+?) → Polygon as primary + yfinance + Quiver + FRED + AAII/CNN.
+
+THEME 3 DECISIONS (per #57 use-case mapping):
+
+DEC-256 Earnings calendar prefetch — APPROVED (Polygon source, ~2d)
+- Storage `backtest/data/cache/earnings/{TICKER}.parquet`; columns include time_of_day (BMO/AMC) for PIT correctness
+- Use case: earnings strategies, days_to_earnings cube dim, exit_macro_event, BUG-13 fix
+
+DEC-257 Quarterly fundamentals — APPROVED (Polygon→yfinance fallback, ~3-4d)
+- 15 required + 9 computed fields; PIT via filing_date (Polygon native) or 45-day proxy (yfinance fallback per CAV-070)
+- Drops OpenBB conditionality; OpenBB scope likely "remove" pending DEC-410 audit
+
+DEC-258 Options chain snapshot — DEFERRED_TO_PHASE_1C
+- No current consumer in 60-strategy roster; per #57 reuse-test: building without consumers is generic-template work
+
+DEC-259 ICT/SMC signal cache — APPROVED (Phase 0.D smartmoneyconcepts dependency, ~2-3d)
+- smartmoneyconcepts library output cached per (ticker, date); PIT-safe natively
+
+DEC-260 Cache freshness assertion — APPROVED (~1d patch-level)
+- Uniform mechanism across all cache types; CacheStaleError fail-fast vs silent stale
+- Fixes BUG-19 silent fallback class
+
+DEC-261 ICT/SMC PIT lag rule — APPROVED (~0.5d)
+- N+1 lag: pattern complete at bar N, actionable at bar N+1 open
+
+BUG-053 + BUG-181 → WILL_RESOLVE_VIA_DEC-440:
+Polygon news (per DEC-441 subscription) supersedes Finnhub free tier as canonical news source. Both bugs become obsolete rather than fixed; status flipped from OPEN to WILL_RESOLVE_VIA_DEC-440.
+
+NEW CAV-070 — Fundamentals filing_date approximation:
+PIT correctness requires filing_date (not period_end). Polygon native; yfinance fallback uses 45-day proxy. Small lookahead/lookback risk (5-20 days) tracked.
+
+#57 use-case mapping correctly applied to all 6 decisions + DEC-441. Owner caught one #43 prior-art lapse (Finnhub history); corrected within turn.
+
+Counts: 444 → 446 (+DEC-441 + DEC-258 status change DEFERRED_TO_PHASE_1C is NEW deferred category; DEC-256/257/259/260/261 stay PENDING; +1 net new decision DEC-441). Pending: 326 → 327 (+DEC-441) -1 (DEC-258 deferred) = 326. Deferred: 10 → 11 (DEC-258).
+
+*Per CHECKLIST #43/#46/#47/#51/#53/#55/#56/#57 — pre-flight applied internally per owner directive; #43 lapse on Finnhub-prior-art caught by owner this turn; corrected within turn.*
