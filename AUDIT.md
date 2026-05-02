@@ -22805,3 +22805,58 @@ Total resolution: 26 PENDING → 8 RESOLVED + 18 PENDING + 1 NEW (DEC-457) = 27 
 Counts: 461 total / 314 PENDING / 112 RESOLVED / 10 DEFERRED_TO_STAGE_3 / 2 BLOCKED_ON_BUG-095 / 23 other.
 
 *Per CHECKLIST #43/#46/#47/#51/#56/#57.*
+
+---
+
+## AUDIT PASS 52 — Theme X1 fully closed (DEC-365/366/457) + reversibility framework adopted (turn 35)
+
+Owner Pass 52 turn 35: "agree with your recs"
+
+Adopting recommendations across two domains: process framework + remaining X1 decisions.
+
+PROCESS FRAMEWORK ADOPTED (reversibility-based decision tier review):
+- Cheap-to-reverse (config values, thresholds, scope toggles): trust pre-flight, approve quickly, REVISIT_AFTER_BACKTEST tag
+- Medium-to-reverse (architectural choices affecting downstream): explicit pre-flight depth + 2-source verification; flag for revisit gate
+- Hard-to-reverse (data-shape decisions, code patterns): maximum pre-flight + sandbox prototype before locking; explicit rollback plan
+
+REVISIT_AFTER_BACKTEST tag introduced for cheap-to-reverse decisions; auto-surfaces during post-Phase 1B-α backtest review.
+
+NOT adding new CHECKLIST item — owner's standing directive ("stop adding rules; be thorough") respected. Reversibility framework is a usage convention, not a procedural rule.
+
+THEME X1 FINAL CLOSURE:
+
+DEC-365 — Russell 1000 universe expansion → RESOLVED.
+- Add ~500 mid-cap names (Russell 1000 minus S&P 500)
+- Phase A static (free) approved; Phase B FTSE paid feed deferred until needed; Phase C Russell 2000 deferred
+- Joint with DEC-366 tier-specific liquidity floors (Russell 1000 gets own tier)
+- ~1d Phase A integration
+- REVISIT_AFTER_BACKTEST: confirm Russell 1000 add improves edge per Stage 2 validation gate
+
+DEC-366 — Tier-specific liquidity floors → RESOLVED.
+- Tier 1 (S&P 500): cap=$0, ADV=$10M, history=250d
+- Tier 2 (spinoffs/IPOs): cap=$2B, ADV=$5M, history=20d with LIMITED_HISTORY flag
+- Tier 3 (momentum top-100): cap=$300M, ADV=$5M, history=60d
+- Russell 1000 add: cap=$300M, ADV=$3M, history=250d
+- Joint with DEC-321 (RESOLVED) + DEC-457 (NEW PENDING implementation)
+- Cheap-to-reverse: thresholds tunable post-backtest
+- REVISIT_AFTER_BACKTEST: tune thresholds based on rejection rates and trade counts
+
+DEC-457 NEW LOGGED — DEC-366 implementation sub-decision:
+- LIQUIDITY_BY_TIER config dict
+- apply_liquidity_filter(tier=) parameter accepts tier
+- min_avg_dollar_volume = (close × volume).rolling(20).mean() replaces share-count
+- Joint with DEC-392 (apply_liquidity_filter fail-closed) single combined commit
+- ~1.5d combined effort
+- REVERSIBILITY: cheap; REVISIT_AFTER_BACKTEST tag
+
+THEME X1 STATUS post-this-commit:
+- All X1 decisions resolved or in-flight (PENDING with substantive scope, no awaiting-owner-decision items)
+- Block 1 (8 stubs): RESOLVED via supersession
+- Block 2 (5 strategy categories): PENDING in scope (Phase 1C is Stage 2 sub-phase per turn 32)
+- Block 3 (DEC-365/366): RESOLVED this turn
+- Block 4 (13 Stage 2 sub-decisions): PENDING formalized
+- DEC-457: NEW PENDING
+
+Counts: 461 / 312 PENDING / 114 RESOLVED / 10 DEFERRED_TO_STAGE_3 / 2 BLOCKED_ON_BUG-095 / 23 other.
+
+*Per CHECKLIST #43/#46/#47/#51 (explicit "agree with your recs")/#56-corrected/#57.*
