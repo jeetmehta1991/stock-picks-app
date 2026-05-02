@@ -22463,3 +22463,34 @@ Cumulative Batch 1+2+3: 14 sub-decisions PROPOSED, NOT LOGGED yet.
 Next: Batch 4 (Tier 2 alternatives + Tier 3 social + Tier 4 libraries) + summary turn.
 
 *Per CHECKLIST #43/#46/#47/#51/#56-overridden/#57.*
+
+---
+
+## AUDIT PASS 52 — DEC-410 Batch 4 (Tier 2/3/4 APIs — alternatives + social + libraries)
+
+10 APIs audited; all ZERO consumption verified. Findings:
+
+**Tier 2 (alternatives):**
+- Tiingo — NOT NEEDED (Polygon supersedes)
+- IEX Cloud — UNAVAILABLE (sunset 2024; honest knowledge limit on exact status)
+- FMP — HOLD AS BACKUP if Polygon fundamentals fail (conditional)
+- **SEC EDGAR — HOLD AS DEC-439 DIFFERENTIAL REFERENCE for fundamentals PIT validation; DEC-456 PROPOSED**
+- Refinitiv/Bloomberg — NOT NEEDED (institutional pricing prohibitive)
+
+**Tier 3 (social):**
+- Reddit — NOT NEEDED (Quiver covers via DEC-450 PROPOSED)
+- Stocktwits — NOT NEEDED (speculative consumer fit)
+
+**Tier 4 (libraries):**
+- smartmoneyconcepts — ALREADY SCOPED via DEC-045 + DEC-259
+- pandas-datareader — NOT NEEDED (direct API integrations preferred)
+- fredapi — NOT NEEDED (CORRECTION: was misclassified as consumed; macro.py uses direct HTTP)
+
+#43 LAPSE SELF-CAUGHT during Batch 4 pre-flight: fredapi was previously assumed consumed. Verified zero direct imports. macro.py uses raw requests.get() against FRED HTTP API. ALFRED PIT support per DEC-301 stays in raw HTTP path.
+
+Batch 4 sub-decisions PROPOSED: 1 (DEC-456 SEC EDGAR as DEC-439 differential reference).
+Cumulative Batch 1+2+3+4: 15 sub-decisions PROPOSED, NOT LOGGED yet (DEC-442 through DEC-456).
+
+Next: Batch 5 summary turn — consolidating findings, full sub-decision logging proposal, architectural simplification recap, owner approval batch.
+
+*Per CHECKLIST #43/#46/#47/#51/#56-overridden/#57. #43 lapse caught and corrected within turn.*

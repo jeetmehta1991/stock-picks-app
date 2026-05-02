@@ -1111,3 +1111,387 @@ $40/mo at Stage 3+ scope, NOT current. Short-aware strategies are speculative fo
 **Next batch (Batch 4):** Tier 2 (Tiingo, IEX Cloud, FMP, SEC EDGAR, Refinitiv/Bloomberg), Tier 3 (Reddit, Stocktwits), Tier 4 libraries (smartmoneyconcepts, pandas-datareader, fredapi). Then summary turn.
 
 ---
+# Tier 2 APIs — Alternatives mentioned in AUDIT.md (none currently consumed)
+
+## 12. Tiingo
+
+### Subscription tier
+- **Free tier** (limited): 500 calls/hour, 1 year history
+- **Power $10/mo**: more history, more endpoints
+- **Premium $50/mo**: full coverage, real-time
+
+### Available endpoints (Tiingo)
+
+| Endpoint | Returns | PIT-safe? | Currently used? |
+|---|---|---|---|
+| `/iex/{ticker}/prices` | Daily OHLCV | YES | NO |
+| `/tiingo/daily/{ticker}/prices` | Adjusted daily OHLCV | YES | NO |
+| `/iex/?tickers=...` | Real-time IEX quote | NO | NO |
+| `/tiingo/news` | News articles | YES | NO |
+| `/tiingo/fundamentals/{ticker}/daily` | Fundamental ratios daily | LIMITED | NO |
+| `/tiingo/fundamentals/{ticker}/statements` | Income/balance/cash flow | LIMITED | NO |
+| `/tiingo/crypto` | Crypto data | LIMITED | NO |
+| `/tiingo/fx` | Forex | LIMITED | NO |
+
+### Owner question answers
+
+**Q1-Q2:** Zero consumption; would offer overlapping coverage with Polygon DEC-441.
+
+**Q3 — Cost worth it?**
+- Free tier 1-yr history is insufficient for our 5-yr scope
+- Power $10/mo + Premium $50/mo overlap with Polygon $30/mo
+- **Worse value than Polygon for our use cases.**
+
+**Q4 — Replace others?**
+NO. Polygon DEC-441 covers Tiingo's strengths (OHLCV, news, fundamentals) at equal or better quality.
+
+### Verdict: NOT NEEDED
+
+No sub-decisions proposed. Document as "considered alternative; rejected per DEC-441 Polygon supersession."
+
+---
+
+## 13. IEX Cloud
+
+### Subscription tier
+- **Status: SUNSETTING.** IEX Cloud was discontinued by IEX Group August 2024 (publicly announced); legacy users transitioned through 2024.
+- **Effectively unavailable for new integrations.**
+
+### Owner question answers
+
+All four questions moot — IEX Cloud is no longer a viable option as of mid-2024.
+
+### Verdict: REMOVE FROM PROJECT_PLAN consideration
+
+IEX Cloud is no longer purchasable. No sub-decision proposed. **Honest knowledge limit:** my training data on IEX Cloud sunsetting is approximate; owner may want to verify current status before fully striking from PROJECT_PLAN. If IEX successor service exists, scope appropriately.
+
+---
+
+## 14. Financial Modeling Prep (FMP)
+
+### Subscription tier
+- **Free tier**: 250 calls/day, limited fundamentals
+- **Starter $14/mo, Premium $29/mo, Ultimate $79/mo**
+- Strengths: fundamentals depth, decent rate limits at paid tiers
+
+### Available endpoints (FMP)
+
+| Endpoint | Returns | PIT-safe? | Currently used? |
+|---|---|---|---|
+| `/api/v3/historical-price-full/{ticker}` | OHLCV | YES | NO |
+| `/api/v3/income-statement/{ticker}` | Income statement | LIMITED | NO |
+| `/api/v3/balance-sheet/{ticker}` | Balance sheet | LIMITED | NO |
+| `/api/v3/cash-flow/{ticker}` | Cash flow | LIMITED | NO |
+| `/api/v3/key-metrics/{ticker}` | Computed ratios | YES | NO |
+| `/api/v3/financial-growth/{ticker}` | Growth metrics | YES | NO |
+| `/api/v3/discounted-cash-flow/{ticker}` | DCF valuation | LIMITED | NO |
+| `/api/v3/earning-calendar` | Earnings calendar | YES | NO |
+| `/api/v3/stock-news` | News | LIMITED | NO |
+| `/api/v3/insider-trading/{ticker}` | Insider transactions | YES | NO |
+
+### Owner question answers
+
+**Q1-Q2:** Zero consumption.
+
+**Q3 — Cost worth it?**
+- $29/mo Premium overlaps with Polygon $30/mo
+- FMP strength is **fundamentals-specific depth** (DCF, growth metrics computed)
+- Could be cheaper than Polygon if ONLY fundamentals were needed — but we need OHLCV, news, etc. too
+
+**Q4 — Replace others?**
+PARTIALLY: FMP fundamentals could substitute Polygon `/v3/reference/financials` IF Polygon coverage proves inadequate per H-polygon hypotheses. Otherwise duplicate.
+
+### Verdict: HOLD AS BACKUP option
+
+If DEC-257 implementation reveals Polygon fundamentals coverage gaps for S&P 500 (verified during DEC-410 implementation, not pre-decided), FMP $29/mo is the cheapest alternative. Otherwise NOT NEEDED.
+
+**No sub-decision proposed currently.** Conditional: revisit only if Polygon fundamentals fail.
+
+---
+
+## 15. SEC EDGAR
+
+### Subscription tier
+- **FREE** (US government; no API key required)
+- Rate limits: ~10 requests/sec (very generous)
+- Historical depth: full back to 1993+
+- Format: XBRL filings (parsing complexity)
+
+### Available data (SEC EDGAR)
+
+| Data | Returns | PIT-safe? | Currently used? |
+|---|---|---|---|
+| 10-K / 10-Q filings | Quarterly/annual financials with native filing_date | YES (authoritative) | NO |
+| 8-K filings | Material events (M&A, executive changes, etc.) | YES | NO |
+| Form 4 (insider transactions) | Insider buy/sell with filing_date | YES | NO (Quiver authoritative for current scope) |
+| Form 13F (institutional holdings) | Quarterly institutional positions | YES | NO (Quiver authoritative) |
+| Form 13D/13G (>5% holders) | Major stake changes | YES | NO |
+| Form S-1 (IPO filings) | New issuance disclosures | YES | NO |
+| Form DEF 14A (proxy statements) | Compensation, governance | YES | NO |
+| Form 4 timely-disclosure | Same-day insider | YES | NO |
+
+### Owner question answers
+
+**Q1: Better way?**
+SEC EDGAR is the **authoritative regulatory source** with native filing_date — every other data provider derives from EDGAR. Better-way framing: parse EDGAR directly for highest-quality PIT correctness.
+
+**Q2: Are we using everything offered?**
+ZERO. EDGAR is fully unused.
+
+**Q3: Cost worth it?**
+**FREE.** No subscription cost. **Only cost is XBRL parsing complexity** — significant engineering effort (~5-10 days for full parser if doing fresh; libraries like `edgartools` or `python-secedgar` reduce this).
+
+**Q4: Can SEC EDGAR replace others?**
+- **Polygon `/v3/reference/financials`** — EDGAR is the underlying source; Polygon parses + serves. Direct EDGAR access could be more PIT-correct but slower / harder.
+- **Quiver 13F + insider** — EDGAR is the authoritative source; Quiver aggregates.
+- **Realistic answer:** EDGAR is the "ground truth" everyone derives from, but the **engineering cost of direct integration outweighs benefit when paid aggregators exist.**
+
+### Verdict: HOLD AS PIT-VALIDATION TOOL
+
+EDGAR could serve as **differential testing reference** per DEC-439 layer 5 catch mechanism. Polygon fundamentals vs EDGAR fundamentals comparison would catch parsing errors in either source.
+
+### Sub-decision candidate (PROPOSED)
+
+- **DEC-456 PROPOSED** — SEC EDGAR as DEC-439 differential testing reference for fundamentals PIT correctness. Sample 10 tickers × 4 quarters; parse via `edgartools` library; compare against Polygon `/v3/reference/financials` for same. Catches common-mode failures per CAV-068. ~2 days. **Stage 0+Stage 2 IN scope** as catch mechanism, not primary data source.
+
+### SEC EDGAR verdict
+
+**HOLD AS DIFFERENTIAL REFERENCE** — DEC-456 PROPOSED for DEC-439 layer 5 strengthening. Not primary source; not Stage 3+ deferred. Free + authoritative + zero ongoing cost = good fit for catch-mechanism use.
+
+---
+
+## 16. Refinitiv / Bloomberg
+
+### Subscription tier
+- **Bloomberg Terminal: $24,000+/year per seat**
+- **Refinitiv Eikon: $22,000+/year per seat**
+- Rate limits: typically generous; data quality is institutional-grade
+- Used by hedge funds, banks, asset managers
+
+### Available endpoints
+
+Comprehensive — covers everything in our stack at higher quality. Bloomberg has BBG identifiers, Refinitiv has RIC codes; both have full corporate actions, fundamentals, earnings, options, fixed income, FX, commodities, news, sentiment, ESG, etc.
+
+### Owner question answers
+
+**Q1-Q2:** Zero consumption; would be massively over-spec for retail-scale strategy.
+
+**Q3 — Cost worth it?**
+**ABSOLUTELY NOT** for our scope. $22K-24K/year vs Polygon $30/mo = ~700-800x cost difference. The marginal data-quality improvement does not justify the cost at retail capital scale ($10K-50K+ Stage 4 target per PROJECT_PLAN).
+
+**Q4 — Replace others?**
+TECHNICALLY YES (Bloomberg/Refinitiv replace literally every other API in the stack). PRACTICALLY NO (cost-prohibitive).
+
+### Verdict: NOT NEEDED — for institutional reference only
+
+Document as "institutional reference; not viable at retail scale." No sub-decision proposed.
+
+---
+
+# Tier 3 APIs — Social / sentiment alternatives
+
+## 17. Reddit (PRAW or Pushshift)
+
+### Subscription tier
+- **Reddit API: FREE** with rate limits + recent policy changes (post-2023 monetization)
+- Pushshift archive: was free, now restricted
+- PRAW (Python Reddit API Wrapper): free Python interface
+
+### Available data
+
+| Data | Returns | PIT-safe? | Currently used? |
+|---|---|---|---|
+| WallStreetBets posts/comments | Retail sentiment per ticker | YES | NO |
+| Subreddit-specific (e.g. /r/investing, /r/SecurityAnalysis) | Discussion volume + sentiment | YES | NO |
+| Post upvotes / mentions over time | Attention proxy | YES | NO |
+
+### Owner question answers
+
+**Q1: Better way?**
+N/A — zero consumption.
+
+**Q2: Are we using everything?**
+ZERO.
+
+**Q3: Cost worth it?**
+- Free + access policy changes (Reddit's 2023 API monetization push) = unstable
+- Engineering cost: significant (subreddit scraping, sentiment classification)
+- **Quiver `/historical/reddittraders/` already provides Reddit signals as part of bundled access** — per Batch 2 finding (DEC-450 PROPOSED to extend Quiver prefetch to include Reddit endpoint)
+
+**Q4: Replace others?**
+- **Quiver covers Reddit signals (via DEC-450 PROPOSED).** Direct Reddit API integration = duplicate.
+
+### Verdict: NOT NEEDED — Quiver supersedes
+
+No sub-decision proposed. Direct Reddit access not needed; Quiver Reddit endpoint handles this within DEC-450 PROPOSED scope.
+
+---
+
+## 18. Stocktwits
+
+### Subscription tier
+- **Free public API**: limited (community-tier)
+- **StreamingHub paid**: enterprise pricing, not retail-friendly
+- Rate limits restrictive on free tier
+
+### Available data
+
+| Data | Returns | PIT-safe? | Currently used? |
+|---|---|---|---|
+| Symbol stream | Real-time messages per ticker | NO (stream) | NO |
+| Symbol sentiment | Bullish/bearish ratio per ticker | LIMITED | NO |
+| Trending tickers | Top mentioned tickers | NO (real-time) | NO |
+| Watchlist counts | Aggregate retail interest | LIMITED | NO |
+
+### Owner question answers
+
+**Q1: Better way?**
+N/A — zero consumption.
+
+**Q2: Are we using everything?**
+ZERO.
+
+**Q3: Cost worth it?**
+- Free tier rate-limited
+- Quiver `/historical/twittersentiment/` proxy covers similar retail sentiment via Twitter (per DEC-450 PROPOSED)
+- Stocktwits-specific value: bullish/bearish per-message tagging by users (Twitter doesn't have this) — but unique value per #57 has no current consumer
+
+**Q4: Replace others?**
+- Partially overlaps with Quiver Twitter sentiment endpoint (DEC-450 scope)
+- Bullish/bearish tagging is unique but speculative consumer fit
+
+### Verdict: NOT NEEDED — speculative consumer fit
+
+No sub-decision proposed. Document as "considered; deferred until specific consumer use case emerges."
+
+---
+
+# Tier 4 — Library-based data sources
+
+## 19. smartmoneyconcepts (Phase 0.D fork — DEC-045)
+
+### Subscription tier
+- **FREE** open-source Python library (joeanton719/smartmoneyconcepts)
+- Per DEC-045 RESOLVED: forked into Phase 0.D as ICT/SMC pattern detector
+- Computes signals from OHLCV (no external API calls)
+
+### Available capabilities
+
+| Capability | Returns | PIT-safe? | Currently used? |
+|---|---|---|---|
+| Fair Value Gap (FVG) | FVG levels + active flags | YES (computed from past bars) | NO directly (DEC-259 will use) |
+| Break of Structure (BOS) | BOS event boolean | YES | NO directly |
+| Change of Character (CHoCH) | CHoCH event boolean | YES | NO directly |
+| Order Blocks | OB level identification | YES | NO directly |
+| Liquidity Grabs | Liquidity grab event | YES | NO directly |
+| Premium/Discount zones | Range-based zones | YES | NO directly |
+
+### Currently consumed code references
+
+**ZERO direct imports** in current code. DEC-045 RESOLVED scope says "Phase 0.D forked library" — implementation status not yet verified per pre-flight findings in Theme 3 walkthrough (DEC-259 explicitly notes Phase 0.D verification needed before consumption).
+
+### Owner question answers
+
+**Q1: Better way?**
+The library IS the source for ICT/SMC patterns — no alternative. Better-way framing: ensure library is properly forked + integrated per Phase 0.D before DEC-259 consumes it.
+
+**Q2: Are we using everything offered?**
+ZERO currently. DEC-259 (just approved Theme 3) proposes consumption.
+
+**Q3: Cost worth it?**
+FREE. Engineering cost: ~2-3 days per DEC-259 (cache prefetch + integration).
+
+**Q4: Replace others?**
+NO replacement — ICT/SMC patterns are unique to this methodology.
+
+### Verdict: ALREADY SCOPED via DEC-045 + DEC-259
+
+No new sub-decision. Phase 0.D fork status verification is the open question (per DEC-259 dependency). When verified operational, DEC-259 implementation proceeds.
+
+---
+
+## 20. pandas-datareader
+
+### Subscription tier
+- **FREE** Python library; multi-source aggregator (similar role to OpenBB but lighter)
+
+### Available capabilities
+
+| Source | Coverage | PIT-safe? | Currently used? |
+|---|---|---|---|
+| FRED | Macro series | YES | NO (we use raw FRED HTTP) |
+| Yahoo Finance | OHLCV | PARTIAL | NO |
+| Google Finance | Discontinued | N/A | NO |
+| Stooq | International markets | LIMITED | NO |
+| OECD | Macro indicators | YES | NO |
+| Eurostat | EU statistics | YES | NO |
+| World Bank | Global indicators | YES | NO |
+
+### Owner question answers
+
+**Q1-Q2:** Zero consumption.
+
+**Q3 — Cost worth it?**
+- Free, but adds an abstraction layer (pandas-datareader → underlying provider → response)
+- Same critique as OpenBB: indirection obscures source-level errors
+- We already use FRED via direct `requests.get()` (cleaner)
+- Polygon, Quiver have native libraries
+
+**Q4 — Replace others?**
+NO. Direct API integrations are cleaner than aggregator layers for our scope.
+
+### Verdict: NOT NEEDED
+
+No sub-decision proposed. Document as "considered; rejected — direct API integrations preferred."
+
+---
+
+## 21. fredapi
+
+### Subscription tier
+- **FREE** Python library (mortada/fredapi)
+- Wrapper around FRED HTTP API
+
+### Currently consumed code references — CORRECTION FROM PRIOR BATCHES
+
+**Pre-flight finding:** I previously assumed fredapi was being used per "fredapi" mention in audit. **Verified: macro.py uses raw `requests.get()` against FRED HTTP API directly, NOT fredapi library.** The fredapi mention in AUDIT.md was likely an alternative considered but not adopted.
+
+### Owner question answers
+
+**Q1: Better way?**
+Switching from raw `requests.get()` to fredapi library is a marginal stylistic improvement (less boilerplate, slightly cleaner). Not a meaningful "better way."
+
+**Q2-Q3:** Zero consumption (correctly so — direct HTTP works fine).
+
+**Q4 — Replace?**
+fredapi could replace our raw HTTP FRED calls but adds dependency for negligible gain. ALFRED PIT support per DEC-301 is implemented in our raw HTTP path; fredapi may not natively support ALFRED queries.
+
+### Verdict: NOT NEEDED
+
+Direct HTTP integration in macro.py is appropriate. ALFRED PIT support per DEC-301 stays in raw HTTP path. No sub-decision proposed.
+
+---
+
+# Batch 4 summary
+
+| API | Tier | Verdict | Sub-decisions PROPOSED |
+|---|---|---|---|
+| **Tiingo** | 2 | NOT NEEDED — Polygon supersedes | None |
+| **IEX Cloud** | 2 | UNAVAILABLE (sunsetting/sunset 2024) | None |
+| **FMP** | 2 | HOLD AS BACKUP if Polygon fundamentals fail | None (conditional) |
+| **SEC EDGAR** | 2 | **HOLD AS DEC-439 DIFFERENTIAL REFERENCE** for fundamentals PIT validation | DEC-456 |
+| **Refinitiv/Bloomberg** | 2 | NOT NEEDED — institutional pricing prohibitive | None |
+| **Reddit** | 3 | NOT NEEDED — Quiver covers via DEC-450 PROPOSED | None |
+| **Stocktwits** | 3 | NOT NEEDED — speculative consumer fit | None |
+| **smartmoneyconcepts** | 4 | ALREADY SCOPED via DEC-045 + DEC-259 | None |
+| **pandas-datareader** | 4 | NOT NEEDED — direct API integrations preferred | None |
+| **fredapi** | 4 | NOT NEEDED — direct HTTP works; ALFRED PIT preserved | None |
+
+**1 additional sub-decision PROPOSED** (DEC-456 SEC EDGAR as DEC-439 differential reference).
+**Cumulative Batch 1+2+3+4: 15 sub-decisions PROPOSED, NOT LOGGED yet.**
+
+**Critical correction:** fredapi was misclassified as consumed in prior reasoning. It's NOT consumed. macro.py uses direct HTTP. This is a #43 prior-art lapse self-caught during Batch 4 pre-flight.
+
+**Next: Batch 5 summary turn — consolidating findings, full sub-decision logging proposal (DEC-442 through DEC-456), architectural simplification recap, owner approval batch.**
+
+---
