@@ -23057,3 +23057,58 @@ Total Theme X55 implementation effort estimate: ~33-41 engineering days for full
 Counts: 461 / 225 PENDING / 195 RESOLVED-DECIDED / 11 SUPERSEDED / 10 DEFERRED_TO_STAGE_3 / 7 BLOCKED_ON_X / 13 other.
 
 *Per CHECKLIST #43/#46/#47/#51/#56/#57. New visibility standard applied per item.*
+
+---
+
+## AUDIT PASS 52 turn 51 — Theme X55 Strategy Coverage Gaps fully closed (13 of 13)
+
+Owner Pass 52 turn 51 approvals:
+1. DEC-350 — scope LIMIT approved (daily + weekly only)
+2. DEC-358 — single sub-decision (no split)
+3. DEC-343 — joint-with-DEC-445 framing approved
+4. All 13 X55 sub-decisions approved per recs (cheap/medium/hard)
+
+X55 SUB-DECISION CLOSURES:
+
+Documentation Sync (2):
+- DEC-343 (Pandas-ta deprecation) → RESOLVED-DECIDED with joint-DEC-445 framing — wait until DEC-445 reveals whether Polygon precomputed indicators cover most use cases before committing to full pandas-ta replacement scope
+- DEC-344 (Slippage threshold ATR/price > 3%) → RESOLVED-DECIDED with REVISIT_AFTER_BACKTEST — post-Phase 1B-α observe ATR/price distribution
+
+Strategy Coverage Gaps (11):
+- DEC-350 (Multi-TF for non-ICT) → RESOLVED-DECIDED with scope LIMIT — cube `timeframe` dim takes {daily, weekly} for non-ICT only; ICT keeps DEC-345 logic; do NOT add intraday
+- DEC-352 (13F price-level mapping) → RESOLVED-DECIDED — joint with DEC-450 (Quiver paid endpoints) + DEC-396 (filing_date capture)
+- DEC-354 (Chart pattern strategies umbrella) → RESOLVED-DECIDED — parent of DEC-355-362
+- DEC-355 (Trendline break + retest) → RESOLVED-DECIDED — owner CRITICAL Pass 52
+- DEC-356 (Channel breakout + retest) → RESOLVED-DECIDED — owner CRITICAL
+- DEC-357 (Range breakout + retest) → RESOLVED-DECIDED — owner CRITICAL
+- DEC-358 (Wedge / triangle / pennant — single sub-decision) → RESOLVED-DECIDED — all 3 patterns implemented under DEC-358 umbrella
+- DEC-359 (H&S + inverse H&S) → RESOLVED-DECIDED — owner CRITICAL
+- DEC-360 (Double top / double bottom) → RESOLVED-DECIDED — owner CRITICAL
+- DEC-361 (Cup & handle / inverted) → RESOLVED-DECIDED — owner CRITICAL
+- DEC-362 (Flag / pennant continuation) → RESOLVED-DECIDED — owner CRITICAL
+
+X55 IMPLEMENTATION EFFORT:
+- Documentation Sync (2): ~3-4d total
+- Multi-TF dimension (1, hard): ~3-4d
+- 13F price-level mapping (1, medium): ~2d
+- Chart pattern strategies (8 + umbrella): ~22-29d
+- Total Theme X55: ~33-41 engineering days
+
+X55 STATUS: 13 of 13 sub-decisions in terminal state (all RESOLVED-DECIDED).
+
+CHART PATTERN STRATEGY ROSTER EXPANSION:
+8 new strategy classes added to project scope per owner Pass 52 CRITICAL directive:
+1. Trendline break + retest (DEC-355)
+2. Channel breakout + retest (DEC-356)
+3. Range breakout + retest (DEC-357)
+4. Wedge/triangle/pennant continuation — 3 patterns under one decision (DEC-358)
+5. Head & shoulders + inverse H&S (DEC-359)
+6. Double top / double bottom (DEC-360)
+7. Cup & handle / inverted (DEC-361)
+8. Flag / pennant continuation (DEC-362)
+
+Total strategies expansion: from current 60-strategy roster to ~70+ strategies post-X55 implementation.
+
+Counts: 461 / 212 PENDING / 208 RESOLVED-DECIDED / 11 SUPERSEDED / 10 DEFERRED_TO_STAGE_3 / 7 BLOCKED_ON_X / 13 other.
+
+*Per CHECKLIST #43/#46/#47/#51 (explicit owner approval for all 4 specific clarifications + per-rec batch approval)/#56/#57. Option C verification gate honored — owner pre-approved exact commit content turn 50; commit executed turn 51.*
