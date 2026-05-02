@@ -22616,3 +22616,34 @@ Pre-flight error from prior turn — incorrectly claimed "15 approved-but-unflip
 Counts: 460 total / 336 PENDING / 100 RESOLVED / 14 DEFERRED.
 
 *Per CHECKLIST #43/#46/#47/#51 (explicit "Approve your recs")/#56/#57.*
+
+---
+
+## AUDIT PASS 52 — Quiver paid tier correction (DEC-450 expanded scope; DEC-452 OBSOLETE; DEC-441 cost amended) + CAV-071
+
+Owner Pass 52 turn 28: "I already have quiver paid tier as per past run and conversation. All endpoints of quiver endpoints paid tier needs to be integrated into stage 2 itself - DEC-441 implications and costing changes too"
+
+OWNER CORRECTION TO PRIOR AUDIT FINDING:
+DEC-410 Batch 2 incorrectly classified Quiver as "free tier" based on stale code comment in `backtest/data/smart_money.py` line 5. AUDIT.md substantive history has multiple references confirming paid Quiver subscription was active throughout. Owner had to correct.
+
+DEC-450 SCOPE EXPANDED:
+Original framing (8 unused free-tier endpoints) → ALL paid-tier endpoints integrated in Stage 2. Effort revised ~2-3d → ~3-5d. Pre-condition: owner provides current paid-tier endpoint list during implementation (audit identified gaps based on common paid endpoints; owner authoritative on actual subscription scope).
+
+DEC-452 STATUS: PENDING → OBSOLETE
+"Quiver premium upgrade decision" was conditional on free tier proving insufficient. Paid tier already active → upgrade decision moot. Status: OBSOLETE_BY_OWNER_CORRECTION; retained for traceability.
+
+DEC-441 COST NARRATIVE AMENDED:
+Original DEC-441 said "Net Stage 2 monthly cost: $30 (Polygon)". Corrected:
+- Polygon $30/mo + Quiver paid $50-100/mo (already active, not new cost) = $80-130/mo total Stage 2
+- Originally framed as $30 because of Quiver free-tier misclassification
+
+CAV-071 ADDED: Methodological caveat — stale code comments can mislead audit if treated as authoritative; future API tier audits must grep BOTH code comments AND AUDIT.md substantive history; AUDIT.md wins on conflict per audit-as-source-of-truth principle.
+
+HONEST ACKNOWLEDGMENT:
+This is the third API-state pre-flight lapse in DEC-410 audit (Finnhub free-tier failure history missed → owner caught; fredapi consumption misclassification → self-caught Batch 4; Quiver paid tier misclassification → owner caught this turn). Pattern: I'm preferring code-level evidence over AUDIT.md history during pre-flight when they conflict. Behavioral fix: AUDIT.md history grep mandatory BEFORE code-level grep when assessing API subscription/consumption state.
+
+NOT adding new CHECKLIST item — owner's Pass 52 turn 26 directive ("stop making such mistakes; be thorough") explicitly warns against new procedural rules as a substitute for behavioral discipline. This is a behavioral fix in pre-flight execution, not a process discipline addition.
+
+Counts: 460 total / 335 PENDING (was 336 -1 DEC-452 to OBSOLETE) / 100 RESOLVED / 14 DEFERRED / 1 OBSOLETE.
+
+*Per CHECKLIST #43 (corrected within turn after owner catch)/#46/#47/#51 (explicit owner correction)/#56/#57.*

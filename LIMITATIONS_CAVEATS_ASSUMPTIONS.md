@@ -637,3 +637,11 @@ Cells with n<30 trades fall back to marginal-best (next-broader cell). Live deci
 **Caveat:** PIT correctness for fundamentals requires `filing_date` (when 10-K/10-Q became publicly known), not `period_end_date` (when fiscal period ended). Polygon `/v3/reference/financials` provides filing_date; yfinance Ticker.financials does NOT (period_end_date only). Fallback approximation: `estimated_filing_date = period_end_date + 45 days` (standard SEC filing window for 10-Q; 60-90 days for 10-K).
 **Operational impact:** When yfinance fallback path activates (Polygon coverage gap or rate-limit), PIT loader uses approximate filing_date. This means a strategy may "see" fundamentals 45 days post-period-end, when in reality filing might have been earlier (e.g., 35 days) or later (e.g., 70 days). Could over-optimistic by ~10-20 days for late filers; under-optimistic by ~5-10 days for early filers. Magnitude: small lookahead/lookback risk.
 **Forward-link:** Track which tickers fall back to yfinance during prefetch; flag in CAV-066 property tests; consider tightening to 60-day proxy if backtest results show material sensitivity.
+
+### CAV-071 — Stale code comments can mislead audit if treated as authoritative
+
+**Source:** Pass 52 turn 28 owner correction (Quiver tier misclassification)
+**Status:** ACTIVE — methodological caveat
+**Caveat:** During DEC-410 audit Batch 2, I (Claude) classified Quiver as "free tier" based on `backtest/data/smart_money.py` line 5 comment ("Quiver Quantitative free tier: congressional, insider, 13F, analyst revisions"). AUDIT.md substantive history has multiple references confirming Quiver paid subscription was active. Owner had to correct the audit. **The code comment was authoritative at time of writing (Pass <X>) but became stale when subscription tier changed; my pre-flight grep on smart_money.py preferred the code comment over AUDIT.md history.**
+**Operational impact:** Future API tier audits must grep BOTH code comments AND AUDIT.md substantive history; AUDIT.md takes precedence per audit-as-source-of-truth principle (DEC-410 + DEC-441 + Pass 52 owner directive). When code comment and AUDIT.md disagree, AUDIT.md wins; flag the code comment for update.
+**Forward-link:** smart_money.py line 5 comment should be updated post-DEC-450 implementation to reflect paid-tier consumption pattern.
