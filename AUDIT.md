@@ -22860,3 +22860,23 @@ THEME X1 STATUS post-this-commit:
 Counts: 461 / 312 PENDING / 114 RESOLVED / 10 DEFERRED_TO_STAGE_3 / 2 BLOCKED_ON_BUG-095 / 23 other.
 
 *Per CHECKLIST #43/#46/#47/#51 (explicit "agree with your recs")/#56-corrected/#57.*
+
+---
+
+## AUDIT PASS 52 turn 36 — Implementation Readiness Dashboard generated
+
+Owner directive: Implementation-readiness review - dashboard
+
+IMPLEMENTATION_READINESS_DASHBOARD.md created (~265 lines):
+- READY-NOW work organized into 6 groups (A-F): Phase 0.A foundation, Engine bug fixes, DEC-410 audit, Universe management, Strategy categories, Phase 0.E defense
+- BLOCKED items grouped by blocker (Phase 0.A prefetch, DEC-450 Quiver, DEC-298 PIT, BUG-095 Portfolio class, Phase 0.D smartmoneyconcepts)
+- AWAITING OWNER: empty — all open Pass 52 owner-decision items closed
+- CRITICAL OPEN bugs flagged (21 total; sample listed; 14 in resolution path through DEC-410 sub-decisions)
+- 9-sprint sequencing recommended with parallelism acknowledged
+- Critical path: Sprint 1 (Phase 0.A) → Sprint 2 (engine fixes) → Sprint 3 (Phase 0.B Portfolio) → Phase 1B-α run = ~21-25 days minimum
+- Realistic timeline: ~30-40 engineering days from Sprint 1 start to Phase 1B-α-ready
+- Sprint 7-8 (strategy categories + remaining themes) NOT on critical path; can run during/after first backtest run
+
+Counts unchanged this turn: 461 / 312 PENDING / 114 RESOLVED / 10 DEFERRED_TO_STAGE_3 / 2 BLOCKED_ON_BUG-095 / 23 other.
+
+*Per CHECKLIST #43/#46/#47/#56/#57.*
