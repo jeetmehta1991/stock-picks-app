@@ -23469,3 +23469,55 @@ DEPENDENCIES (all RESOLVED-DECIDED upstream):
 Counts: 461 / 161 PENDING / 242 RESOLVED-DECIDED / 17 DEFERRED_TO_STAGE_3 / 8 DEFERRED_TO_STAGE_4 / 11 SUPERSEDED / 9 BLOCKED_ON_X / 13 other.
 
 *Per CHECKLIST #43/#46/#47/#51 (explicit owner approval all 6 specific clarifications + per-rec batch)/#56 (all Stage 2 critical-path)/#57.*
+
+---
+
+## AUDIT PASS 52 turn 65 — Theme X34 Test + Cache Infrastructure fully closed (7 of 7)
+
+Owner Pass 52 turn 65: "Approve all recs"
+
+X34 SUB-DECISION CLOSURES (7 of 7):
+
+Stage 2 RESOLVED-DECIDED (3):
+- DEC-222 (Test naming + regression suite for top-20 CRITICAL bugs) → RESOLVED-DECIDED, joint DEC-438 ~3-4d
+- DEC-225 (Cache eviction policy) → RESOLVED-DECIDED with cache_class tagging (prefetched/computed/derived); joint DEC-227 ~1d
+- DEC-227 (Cache size monitoring) → RESOLVED-DECIDED with 80% disk threshold; Stage 2 = monitoring + log; Stage 4+ alerting via DEC-095 ~0.5d
+
+SUPERSEDED (4) — caught via Pass 65 pre-flight overlap analysis:
+- DEC-221 (test coverage + CI gate) → SUPERSEDED_BY_DEC-098 (90% target Pass 52 turn 58)
+- DEC-223 (PR-merge CI gate) → SUPERSEDED_BY_DEC-436 (Phase 0.E CI/CD pipeline Layer 2)
+- DEC-224 (cache concurrency audit) → SUPERSEDED_BY_DEC-328 (filelock fail-fast Pass 48 → RESOLVED Pass 52)
+- DEC-226 (cache schema versioning) → SUPERSEDED_BY_DEC-330 (cache schema versioning RESOLVED Pass 52)
+
+X34 IMPLEMENTATION EFFORT (Stage 2): ~4.5-5.5 engineering days
+X34 STATUS: 7 of 7 sub-decisions in terminal state.
+
+PRE-FLIGHT VALUE DEMONSTRATED:
+4 of 7 X34 sub-decisions (57%) caught as supersession during pre-flight overlap analysis vs already-RESOLVED-DECIDED decisions. Per #43 precise grep before claiming distinct scope. Without overlap check, would have created parallel decisions on identical scope (DEC-098/098 + DEC-436/223 + DEC-328/224 + DEC-330/226).
+
+PROCESS NOTE — AWK COUNT PARSING:
+Some sub-decisions have `|` characters in scope text (e.g., DEC-225 lists "prefetched | computed | derived"; DEC-422 lists "FAIL_RR / FAIL_CONFIDENCE"). Awk field-split on `|` produces false status counts when scope text contains `|`. Direct grep confirms actual status fields are correct. Future status counting should use Python script with proper escaping or filter rows by structural position (col 5 not col 3 for full-table parsing).
+
+KEY CACHE INFRASTRUCTURE NOW DECIDED:
+- DEC-328: filelock fail-fast (no silent fallback) ✓
+- DEC-329: multi-process safe globals ✓
+- DEC-330: schema versioning (CacheSchemaError on mismatch) ✓
+- DEC-260: cache freshness assertion ✓
+- DEC-225: eviction policy (prefetched preserved) ✓ (this turn)
+- DEC-227: size monitoring (80% threshold) ✓ (this turn)
+Combined: comprehensive cache reliability stack across X34/X54/Phase 0.A.
+
+KEY TEST INFRASTRUCTURE NOW DECIDED:
+- DEC-098: 90% coverage target ✓
+- DEC-222: top-20 CRITICAL bug regression tests ✓ (this turn)
+- DEC-417: test-run audit gate ✓
+- DEC-436: CI/CD pipeline Layer 2 ✓
+- DEC-437: property-based testing ✓
+- DEC-438: characterization tests ✓
+- DEC-439: differential testing ✓
+- DEC-431: Phase 1B-α cube validation tests ✓
+Combined: 5-layer catch-mechanism defense + per-bug regression coverage.
+
+Counts: 461 / 154 PENDING / 244 RESOLVED-DECIDED / 17 DEFERRED_TO_STAGE_3 / 8 DEFERRED_TO_STAGE_4 / 16 SUPERSEDED (10 + 6 SUPERSEDED_BY_*) / 9 BLOCKED_ON_X / 13 other.
+
+*Per CHECKLIST #43 (overlap pre-flight caught 4 supersessions)/#46/#47/#51/#56/#57.*
