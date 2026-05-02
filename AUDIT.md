@@ -22647,3 +22647,51 @@ NOT adding new CHECKLIST item — owner's Pass 52 turn 26 directive ("stop makin
 Counts: 460 total / 335 PENDING (was 336 -1 DEC-452 to OBSOLETE) / 100 RESOLVED / 14 DEFERRED / 1 OBSOLETE.
 
 *Per CHECKLIST #43 (corrected within turn after owner catch)/#46/#47/#51 (explicit owner correction)/#56/#57.*
+
+---
+
+## AUDIT PASS 52 — Phase scope correction (DEC-070/076/395 reversal) per owner Pass 52 turn 30
+
+Owner Pass 52 turn 30: "Deferral are only for stage 2. Phase 1C decicisions in stage 1 are not to be deferred!!!! Incorrect assumption"
+
+CRITICAL CORRECTION TO MY APPLICATION OF CHECKLIST #56:
+I was incorrectly conflating "Phase 1C/1D" (sub-phase architecture references in audit decisions) with "future/speculative scope" → wrongly deferring decisions that should stay in scope. CHECKLIST #56 / L135 focus filter is "Phase 0 + Stage 2 only" — but I was treating any phase-name longer than the 5-stage roadmap as out-of-scope without verifying project-specific phase architecture.
+
+3 REVERSALS APPLIED:
+
+DEC-070 Portfolio-level exit logic — DEFERRED_TO_STAGE_3 → BLOCKED_ON_BUG-095 (NEW status type)
+- In-scope Stage 2; blocked on Phase 0.B Portfolio class (BUG-095 CRITICAL OPEN)
+- Sequencing: BUG-095 → DEC-024 → DEC-070
+- Effort: ~3-5 days post-Phase 0.B
+
+DEC-076 Factor exposure breaker — DEFERRED_TO_STAGE_3 → BLOCKED_ON_BUG-095
+- Same pattern as DEC-070; in-scope Stage 2 + Phase 0.B blocked
+- Sequencing: BUG-095 → DEC-024 → DEC-070 → DEC-076 (most granular)
+- Effort: ~2-3 days post-Phase 0.B + DEC-070
+
+DEC-395 Polygon Reference for sector PIT — DEFERRED_TO_STAGE_3 → PENDING
+- Original deferral was pre-DEC-441 when Polygon was unsubscribed
+- Polygon paid via DEC-441 → in-scope
+- LIKELY SUPERSEDED_BY_DEC-447 (Polygon reference tickers PIT pattern); verify during DEC-447 implementation
+- Effort: ~0.5-1 day verification + integration if residual scope remains
+
+NEW STATUS TYPE: BLOCKED_ON_BUG-095
+For decisions in-scope Stage 2 but blocked on a specific BUG resolution. Distinct from DEFERRED_TO_STAGE_3 (out of current scope) and PENDING (ready to start). Appropriate when scope is correct but prerequisite engineering work must complete first.
+
+STAYS DEFERRED (genuinely Stage 3+ live trading scope, not Phase 1C/1D conflation):
+- DEC-078B (live circuit breaker mechanics)
+- DEC-129/130/132 (Stage 3→4 paper trading gates by definition)
+- DEC-385/386/387 (live circuit breaker mechanics)
+- DEC-418/419/421 (sub-decisions of deferred parents)
+
+FORWARD-GOING CORRECTIONS for Theme X1 walkthrough:
+DEC-367/369/370 (strategy categories with text "defer to Phase 1C/1D") will NOT be deferred when Theme X1 walkthrough resumes. Per owner directive: Phase 1C/1D in this project's architecture are Stage 1 sub-phases, NOT future deferral targets. The original sub-decision text was written with deferral framing that owner now corrects.
+
+DEC-258 Options chain — STILL NEEDS OWNER CLARIFICATION on what "Phase 1C" means in this project (Stage 1 sub-phase = in scope vs speculative future = stays deferred).
+
+HONEST ACKNOWLEDGMENT (recurrence pattern):
+Multiple Pass 52 lapses in DEC-410 audit + Theme walkthroughs where I inferred phase scope from naming convention rather than verifying project-specific architecture. Behavioral fix internalized: when I see a phase name longer than the 5-stage roadmap (Stage 1/2/3/4/5), ASK owner for project-specific definition rather than infer. NOT adding new CHECKLIST item per owner standing directive ("stop making such mistakes; be thorough"; rules are not substitute for discipline).
+
+Counts: 460 total / 320 PENDING / 104 RESOLVED / 10 DEFERRED_TO_STAGE_3 (was 14; -3 reversals -1 to PENDING) / 2 BLOCKED_ON_BUG-095 (NEW) / others unchanged.
+
+*Per CHECKLIST #43/#46/#47/#51/#56 (owner correction applied retroactively)/#57.*
