@@ -1495,3 +1495,210 @@ Direct HTTP integration in macro.py is appropriate. ALFRED PIT support per DEC-3
 **Next: Batch 5 summary turn — consolidating findings, full sub-decision logging proposal (DEC-442 through DEC-456), architectural simplification recap, owner approval batch.**
 
 ---
+# Batch 5 — Summary, Architecture Simplification, Sub-Decision Logging Proposal
+
+## Findings consolidation
+
+### 17 APIs audited across 4 tiers
+
+| Tier | Count | APIs |
+|---|---|---|
+| 1 — PROJECT_PLAN section 10 | 10 | yfinance, Alpha Vantage, Polygon, OpenBB, Quiver, Unusual Whales, Ortex, FRED, AAII, CNN F&G |
+| 2 — AUDIT alternatives | 5 | Tiingo, IEX Cloud, FMP, SEC EDGAR, Refinitiv/Bloomberg |
+| 3 — Social/sentiment | 2 | Reddit, Stocktwits |
+| 4 — Library-based | 3 | smartmoneyconcepts, pandas-datareader, fredapi |
+| **Note: Finnhub** | (Tier 1 inferred) | (was implicit in active stack via prior consumption; deprecated this audit) |
+
+### Per-API verdict matrix
+
+| API | Status post-audit | Sub-decisions PROPOSED |
+|---|---|---|
+| **Polygon** | NEW PRIMARY (DEC-441 active; expand to 7+ uses) | DEC-445/446/447 |
+| **Quiver** | KEEP free tier; expand endpoints | DEC-450/451/452 |
+| **FRED** | KEEP authoritative macro; expand SERIES_MAP | DEC-448/449 |
+| **AAII** | KEEP as-is; DEC-318 fixes BUG-235/236 | None new |
+| **CNN F&G** | KEEP as minor source | None new |
+| **yfinance** | DEMOTE to fallback after Polygon validates | DEC-442/443/444 |
+| **Alpha Vantage** | DEPRECATE per DEC-440 (timeline) | DEC-455 |
+| **Finnhub** | DEPRECATE entirely (Polygon supersedes) | DEC-453 |
+| **OpenBB** | REMOVE from project scope (consumption gap) | DEC-454 |
+| **SEC EDGAR** | HOLD as DEC-439 differential reference | DEC-456 |
+| **Tiingo** | NOT NEEDED | None |
+| **IEX Cloud** | UNAVAILABLE (sunset 2024) | None |
+| **FMP** | CONDITIONAL backup (Polygon fundamentals fail) | None (conditional) |
+| **Refinitiv/Bloomberg** | NOT NEEDED (institutional cost prohibitive) | None |
+| **Reddit** | NOT NEEDED (Quiver covers via DEC-450) | None |
+| **Stocktwits** | NOT NEEDED (speculative consumer fit) | None |
+| **smartmoneyconcepts** | ALREADY scoped via DEC-045 + DEC-259 | None |
+| **pandas-datareader** | NOT NEEDED (direct API integrations preferred) | None |
+| **fredapi** | NOT NEEDED (direct HTTP works; ALFRED preserved) | None |
+
+---
+
+## Architectural simplification trajectory
+
+### Before this audit (Stage 0+Stage 2 active stack)
+
+9 active sources (broken or planned):
+1. yfinance (primary OHLCV; multiple BUGs)
+2. Alpha Vantage (news, broken at scale)
+3. Finnhub (news, broken via BUG-053/181)
+4. Polygon (planned per DEC-440 but not subscribed)
+5. OpenBB (PROJECT_PLAN says ✓ but never integrated)
+6. Quiver (smart money, partially used)
+7. FRED (macro, well-integrated)
+8. AAII (sentiment, BUG-235/236)
+9. CNN F&G (sentiment, minor)
+
+### After audit + DEC-441 + sub-decisions adopted (target state)
+
+4 active primary sources:
+1. **Polygon** ($30/mo) — OHLCV, news, fundamentals, earnings, reference, indicators (DEC-439 differential), slippage calibration
+2. **Quiver** (free tier; potential premium) — congressional, insider, 13F, analyst, lobbying, Wikipedia, Reddit, Twitter, off-exchange, app downloads
+3. **FRED** (free) — macro time series with ALFRED PIT
+4. **AAII + CNN F&G** (free) — sentiment cube dimensions
+
+Plus:
+- **yfinance** demoted to fallback (still in code; secondary role)
+- **SEC EDGAR** as differential reference for DEC-439
+
+Removed: Alpha Vantage, Finnhub, OpenBB.
+
+### Cost analysis
+
+| State | Monthly cost |
+|---|---|
+| Before (broken/aspirational mix) | $0 (Quiver free + Finnhub free + AV free) |
+| After (Polygon primary) | **$30/mo Polygon + $0 Quiver free = $30/mo total** |
+| Stage 3+ additional | +$50 Unusual Whales + $40 Ortex + $50-100 Quiver premium = $140-190/mo extra |
+
+**Net Stage 0+Stage 2 monthly cost: $30** (confirmed budget per DEC-441).
+
+### BUGs resolution trajectory
+
+After all sub-decisions adopt:
+
+| BUG | Severity | Status post-resolution path |
+|---|---|---|
+| BUG-218 (yfinance .info CRITICAL) | CRITICAL | Resolved by DEC-443 (Polygon reference replaces .info) |
+| BUG-053 (Finnhub news empty) | HIGH | Already WILL_RESOLVE_VIA_DEC-440; DEC-453 finalizes |
+| BUG-109 (yfinance auto_adjust drift) | HIGH | Resolved by DEC-442 (Polygon OHLCV demotes yfinance) |
+| BUG-179 (yfinance .info live) | HIGH | Resolved by DEC-443 |
+| BUG-181 (Finnhub silent empty) | MEDIUM | Already WILL_RESOLVE_VIA_DEC-440; DEC-453 finalizes |
+| BUG-190 (Quiver endpoints not in prefetch) | MEDIUM | Resolved by DEC-450 |
+| BUG-46 (market_cap snapshot 70 tickers) | (severity pending) | Resolved by DEC-443 |
+| BUG-19 (yfinance Codespaces blocked) | (severity pending) | Resolved by DEC-442 (partial: VIX/DXY) and DEC-448 (FRED VIXCLS replaces) |
+| BUG-265 (yfinance auto_adjust hardcoded) | LOW | Resolved by DEC-442 |
+| BUG-280 (days_to_next_earnings None silent) | LOW | Resolved by DEC-444 |
+| BUG-13 (106K live yfinance calls) | UNKNOWN | Resolved by DEC-444 |
+| BUG-284 (gov_contracts date filter broken) | MEDIUM | Resolved by DEC-451 |
+| BUG-235 (AAII pub-lag) | HIGH | Already covered by DEC-318/389 |
+| BUG-236 (AAII auto-refresh missing) | HIGH | Already covered by DEC-318/389 |
+
+**14 BUGs in resolution path through DEC-410 audit findings.** This is the audit's true value — not just inventorying APIs but identifying bug-resolution sequencing.
+
+---
+
+## Sub-decision logging proposal — owner approval batch
+
+15 sub-decisions PROPOSED across batches 1-4. Per L131/CHECKLIST #51, holding for explicit owner approval before logging. Proposed log status for each:
+
+### Polygon expansion (Batch 1, 3 sub-decisions)
+
+- **DEC-445** — Polygon precomputed indicators integration as DEC-439 layer 5 differential reference
+- **DEC-446** — Polygon intraday quotes selective fetch for slippage calibration sample (20 tickers × 30 days)
+- **DEC-447** — Polygon reference tickers PIT consumption pattern (replaces yfinance.info)
+
+### yfinance demotion (Batch 1, 3 sub-decisions)
+
+- **DEC-442** — Demote yfinance to fallback OHLCV after Polygon prefetch validation
+- **DEC-443** — Replace yfinance .info with Polygon reference endpoints (resolves BUG-218 CRITICAL + BUG-179)
+- **DEC-444** — Deprecate days_to_next_earnings via yfinance live calls (resolves BUG-280/013)
+
+### FRED expansion (Batch 1, 2 sub-decisions)
+
+- **DEC-448** — Expand SERIES_MAP with VIXCLS, DTWEXBGS, DGS2, HY spread, ICSA (~0.5d config + prefetch update)
+- **DEC-449** — Validate DEC-301 ALFRED PIT mitigation produces materially different values on test sample
+
+### Quiver expansion (Batch 2, 3 sub-decisions)
+
+- **DEC-450** — Extend prefetch_quiver.py to 8+ unused endpoints (Senate, House, Lobbying, Wikipedia, Reddit, Twitter, Off-Exchange, App Downloads). Resolves BUG-190. ~2-3 days.
+- **DEC-451** — Fix BUG-284 (gov_contracts date filter via Qtr+Year reconstruction or full Date field re-prefetch). ~0.5d.
+- **DEC-452** — Quiver premium upgrade decision after BUG-190 fix lands; conditional on rate-limit experience
+
+### Finnhub deprecation (Batch 2, 1 sub-decision)
+
+- **DEC-453** — Deprecate Finnhub from project entirely. Remove prefetch_finnhub_news.py; mark FINNHUB_API_KEY optional; close BUG-053/181 via deprecation. ~0.5d cleanup.
+
+### OpenBB removal (Batch 3, 1 sub-decision)
+
+- **DEC-454** — Remove OpenBB from project scope. Update PROJECT_PLAN section 10. Resolves DEC-410 OpenBB consumption gap dual treatment. ~0.25d documentation.
+
+### Alpha Vantage deprecation (Batch 3, 1 sub-decision)
+
+- **DEC-455** — Alpha Vantage deprecation timeline: preserve cache, remove from active prefetch, full removal post-Polygon news validation. Joint with DEC-440. ~0.5d cleanup.
+
+### SEC EDGAR (Batch 4, 1 sub-decision)
+
+- **DEC-456** — SEC EDGAR as DEC-439 differential reference for fundamentals PIT validation. Sample 10 tickers × 4 quarters via edgartools library; compare against Polygon. ~2 days. Stage 0+Stage 2 IN scope as catch mechanism.
+
+### Total effort estimate (sub-decision implementation)
+
+| Sub-decision | Effort |
+|---|---|
+| DEC-442 (yfinance OHLCV demotion) | absorbed into Polygon OHLCV prefetch implementation |
+| DEC-443 (yfinance .info replacement) | ~1d |
+| DEC-444 (yfinance earnings live deprecation) | absorbed into DEC-256 implementation |
+| DEC-445 (Polygon indicators) | ~1d |
+| DEC-446 (Polygon intraday slippage sample) | ~1d |
+| DEC-447 (Polygon reference PIT) | absorbed into DEC-443 |
+| DEC-448 (FRED SERIES_MAP expansion) | ~0.5d |
+| DEC-449 (DEC-301 ALFRED validation) | ~0.5d |
+| DEC-450 (Quiver endpoints extension) | ~2-3d |
+| DEC-451 (Quiver gov_contracts date fix) | ~0.5d |
+| DEC-452 (Quiver premium decision) | ~0.25d evaluation only |
+| DEC-453 (Finnhub deprecation) | ~0.5d |
+| DEC-454 (OpenBB removal) | ~0.25d |
+| DEC-455 (Alpha Vantage deprecation) | ~0.5d |
+| DEC-456 (SEC EDGAR differential) | ~2d |
+| **Total net new effort** | **~10-12 days** (much absorbed into adjacent work) |
+
+This is in addition to the underlying DEC-410 audit effort (~10-14 days for the audit itself, now complete via batches 1-4).
+
+---
+
+## DEC-410 closure status
+
+**DEC-410 is READY FOR RESOLVED CLOSURE upon:**
+
+1. Owner approval of 15 sub-decisions (DEC-442 through DEC-456) — batch approval
+2. Sub-decisions logged in AUDIT_INDEX.md with PENDING status
+3. DEC-410 status flipped PENDING → RESOLVED with cross-reference to all 15 sub-decisions
+4. API_AUDIT.md committed (already done across 4 batches)
+
+DEC-410 deliverable per its scope: "API_AUDIT.md committed; sub-decisions logged per gap" — both met upon owner approval.
+
+---
+
+## Honest acknowledgments (per L132 transparency standard)
+
+Across the 4-batch audit:
+
+1. **#43 prior-art lapse self-caught (Batch 4):** fredapi misclassified as consumed in earlier reasoning. Verified ZERO direct imports. Corrected within turn.
+
+2. **Knowledge limits flagged per #51 throughout:** Endpoint inventories are training-data-derived hypotheses, not verified facts. Sub-decisions should treat hypotheses as questions to verify during implementation, not pre-confirmed answers.
+
+3. **Stage 3+ APIs (Unusual Whales, Ortex):** included for inventory only per Pass 52 turn 19 "this instance" override. Consumption decisions remain CHECKLIST #56 scoped (deferred to Phase 1C / Stage 3 prep theme).
+
+4. **CHECKLIST #56 override expires post-Batch 5:** going forward, scope filter resumes (Phase 0 + Stage 2 only). Stage 3+ decisions deferred per L135.
+
+---
+
+## Owner approval batch — pending
+
+**Approve all 15 sub-decisions (DEC-442 through DEC-456) for logging?** OR specific approve/defer/reject per sub-decision?
+
+If batch-approve all 15: I log all sub-decisions, mark DEC-410 RESOLVED, commit + push, and audit is closed.
+
+If selective: please specify which to approve, defer, or reject.
+

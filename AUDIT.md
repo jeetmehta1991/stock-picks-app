@@ -22494,3 +22494,54 @@ Cumulative Batch 1+2+3+4: 15 sub-decisions PROPOSED, NOT LOGGED yet (DEC-442 thr
 Next: Batch 5 summary turn — consolidating findings, full sub-decision logging proposal, architectural simplification recap, owner approval batch.
 
 *Per CHECKLIST #43/#46/#47/#51/#56-overridden/#57. #43 lapse caught and corrected within turn.*
+
+---
+
+## AUDIT PASS 52 — DEC-410 Batch 5 (summary, sub-decision logging proposal, DEC-410 ready for RESOLVED closure)
+
+DEC-410 audit complete across 17 APIs / 4 tiers / 4 walkthrough batches. API_AUDIT.md ~1704 lines.
+
+ARCHITECTURAL SIMPLIFICATION:
+- Before audit: 9 active sources (broken/aspirational mix)
+- After: 4 active primaries (Polygon $30/mo + Quiver free + FRED + AAII/CNN F&G)
+- yfinance demoted to fallback; SEC EDGAR as DEC-439 differential reference
+- Removed: Alpha Vantage, Finnhub, OpenBB
+- Stage 3+ deferred: Unusual Whales, Ortex
+- Net Stage 0+Stage 2 monthly cost: \$30 (DEC-441 confirmed)
+
+BUGs RESOLUTION TRAJECTORY:
+14 BUGs in resolution path through DEC-410 sub-decisions:
+- BUG-218 CRITICAL → DEC-443
+- BUG-053/181 HIGH/MEDIUM → DEC-453 (already WILL_RESOLVE_VIA_DEC-440)
+- BUG-109 HIGH → DEC-442
+- BUG-179 HIGH → DEC-443
+- BUG-190 MEDIUM → DEC-450
+- BUG-46/19/265/280/13 → DEC-442/443/444/448 paths
+- BUG-284 MEDIUM → DEC-451
+- BUG-235/236 HIGH → already DEC-318/389
+
+15 SUB-DECISIONS PROPOSED (DEC-442 through DEC-456):
+- Polygon expansion: DEC-445/446/447
+- yfinance demotion: DEC-442/443/444
+- FRED expansion: DEC-448/449
+- Quiver expansion: DEC-450/451/452
+- Finnhub deprecation: DEC-453
+- OpenBB removal: DEC-454
+- Alpha Vantage deprecation: DEC-455
+- SEC EDGAR differential reference: DEC-456
+
+Total net new implementation effort: ~10-12 days (much absorbed into adjacent work).
+
+DEC-410 READY FOR RESOLVED CLOSURE upon:
+1. Owner approval of 15 sub-decisions (batch or selective)
+2. Sub-decisions logged in AUDIT_INDEX.md with PENDING status
+3. DEC-410 status flipped PENDING → RESOLVED with cross-reference
+
+CHECKLIST #56 OVERRIDE EXPIRES post-Batch 5: scope filter resumes (Phase 0 + Stage 2 only) per L135.
+
+HONEST ACKNOWLEDGMENTS:
+- #43 prior-art lapse (fredapi) caught within turn
+- Endpoint inventories training-data-derived; verify during implementation
+- Stage 3+ APIs documented for inventory only
+
+*Per CHECKLIST #43/#46/#47/#51/#56-overridden-expiring/#57.*
