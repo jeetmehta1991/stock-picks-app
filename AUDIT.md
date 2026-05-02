@@ -22344,3 +22344,50 @@ PIT correctness requires filing_date (not period_end). Polygon native; yfinance 
 Counts: 444 → 446 (+DEC-441 + DEC-258 status change DEFERRED_TO_PHASE_1C is NEW deferred category; DEC-256/257/259/260/261 stay PENDING; +1 net new decision DEC-441). Pending: 326 → 327 (+DEC-441) -1 (DEC-258 deferred) = 326. Deferred: 10 → 11 (DEC-258).
 
 *Per CHECKLIST #43/#46/#47/#51/#53/#55/#56/#57 — pre-flight applied internally per owner directive; #43 lapse on Finnhub-prior-art caught by owner this turn; corrected within turn.*
+
+---
+
+## AUDIT PASS 52 — DEC-410 scope expansion (one-time CHECKLIST #56 override) + Batch 1 execution (yfinance/Polygon/FRED)
+
+Owner directives Pass 52 turn 19-20:
+- "extend DEC-410 audit to ALL APIs in the audit md and project plan across all phases" (one-time #56 override)
+- "Always answer the question, can this API be used in a better way? Are we using everything offered by this API than can help with the project? Is the cost worth it? Can the benefits and coverage offered by this API replace the need of some other APIs?"
+- 4-batch execution Path A approved
+- Sub-decisions PROPOSED but not LOGGED until owner approval per L131/CHECKLIST #51
+
+DEC-410 SCOPE EXTENDED from 7-9 APIs to ~17 APIs (Tier 1-4 across all phases):
+- Tier 1 (10): yfinance, Alpha Vantage, Polygon, OpenBB, Quiver, Unusual Whales, Ortex, FRED, AAII, CNN F&G
+- Tier 2 (5): Tiingo, IEX Cloud, FMP, SEC EDGAR, Refinitiv/Bloomberg
+- Tier 3 (2): Reddit, Stocktwits
+- Tier 4 (3 libraries): smartmoneyconcepts, pandas-datareader, fredapi
+- Effort revised: ~5-6d → ~10-14d
+- Stage 3+ APIs included for inventory ONLY; consumption decisions remain CHECKLIST #56 scoped
+
+API_AUDIT.md created with 4 owner-mandated strategic questions framework + 6-dim cross-reference + hypothesis-driven framing.
+
+BATCH 1 EXECUTED (yfinance, Polygon, FRED):
+
+**yfinance verdict: DEMOTE TO FALLBACK after Polygon validates.**
+- 6 OPEN BUGs (BUG-218 CRITICAL, BUG-109 HIGH, BUG-179 HIGH, BUG-46, BUG-19, BUG-265, BUG-280, BUG-13)
+- "Free" with hidden reliability cost = weeks of debugging
+- Polygon (DEC-441) covers all yfinance use cases at $30/mo
+- 3 sub-decisions PROPOSED: DEC-442/443/444
+
+**Polygon verdict: HIGHEST-LEVERAGE API in stack.**
+- 7+ use cases at $30/mo
+- 4 already approved (OHLCV/earnings/news/fundamentals via DEC-441)
+- 3 additional high-leverage uses identified: H1 OHLCV replacement, H2 precomputed indicators (DEC-439 differential reference at zero cost), H3 intraday quotes (DEC-422 slippage calibration)
+- Net architecture simplification: 8 sources → 4 (Polygon + Quiver + FRED + AAII/CNN)
+- 3 sub-decisions PROPOSED: DEC-445/446/447
+
+**FRED verdict: BEST FREE API in stack.**
+- Already PIT-correct via ALFRED per DEC-301 RESOLVED
+- 7 series consumed of 800K+ available (correct selectivity)
+- ~5-10 series additions would resolve BUG-19 partial (VIXCLS replaces yfinance ^VIX) + improve cube coverage
+- 2 sub-decisions PROPOSED: DEC-448/449
+
+8 SUB-DECISIONS PROPOSED (DEC-442 through DEC-449), NOT LOGGED yet — awaiting owner approval per L131/#51.
+
+Next: Batch 2 (Quiver, Finnhub, AAII, CNN F&G) — smart money + sentiment.
+
+*Per CHECKLIST #43/#46/#47/#51/#56-overridden/#57 — pre-flight applied internally; #56 override logged in DEC-410 entry.*
