@@ -23357,3 +23357,40 @@ This commit was prepared turn 57 then held due to state-tracking confusion turn 
 Counts: 461 / 176 PENDING / 227 RESOLVED-DECIDED / 17 DEFERRED_TO_STAGE_3 / 8 DEFERRED_TO_STAGE_4 / 11 SUPERSEDED / 9 BLOCKED_ON_X / 13 other.
 
 *Per CHECKLIST #43/#46/#47/#51/#56 (4 deferrals applied)/#57.*
+
+---
+
+## AUDIT PASS 52 turn 61 — Theme X7 Smart Money + Regimes fully closed (8 of 8)
+
+Owner Pass 52 turn 61: "approve all recs."
+
+X7 SUB-DECISION CLOSURES (8 of 8) — all RESOLVED-DECIDED:
+
+Smart Money refinement (4):
+- DEC-071 (Officer roles + 10b5-1 filter) → RESOLVED-DECIDED, joint DEC-450 ~1d
+- DEC-072 (Separate WSB from smart money) → RESOLVED-DECIDED, refactor signal taxonomy ~1.5d
+- DEC-073 (Quiver pre-built composites?) → RESOLVED-DECIDED — DO NOT adopt; hand-roll for reproducibility + tunable weights; 0d
+- DEC-074 (Polygon block trades / dark pool) → RESOLVED-DECIDED — defer empirical evaluation to Phase 1B-α; sample analysis ~1d + 0-2d adoption decision
+
+Strategy class addition (1):
+- DEC-102 (Market-Level / Correlation-Factor strategies) → RESOLVED-DECIDED — absorbed by DEC-369 (Cross-Asset strategies, Theme X1); 0d new effort
+
+Regime classifier improvements (3):
+- DEC-106 (Regime inputs 2 → 8+) → RESOLVED-DECIDED, joint DEC-407+448/388/389-391, ~2d post-deps
+- DEC-107 (Regime probability not hard label) → RESOLVED-DECIDED with PHASED ROLLOUT (Phase A backwards-compatible ~1d, B per-strategy migration, C remove label)
+- DEC-108 (Regime persistence model) → RESOLVED-DECIDED with EXPONENTIAL SMOOTHING (HMM rejected — marginal benefit at scale); ~1d
+
+X7 IMPLEMENTATION EFFORT (Stage 2): ~7.5-9.5 engineering days
+
+X7 STATUS: 8 of 8 sub-decisions in terminal state. All Stage 2 scope (no #56 deferrals).
+
+KEY ARCHITECTURAL DECISIONS:
+- Hand-roll smart money composites (NOT Quiver pre-built) for reproducibility + tunable weights
+- Phased rollout for regime probability (avoids API break across all regime-conditional strategies)
+- Exponential smoothing for regime persistence (over HMM) for simplicity at current scale
+- DEC-102 substantively absorbed by DEC-369 (no new strategy class needed; DEC-369 already covers cross-asset)
+- Block trades / dark pool evaluation deferred to Phase 1B-α empirical assessment
+
+Counts: 461 / 168 PENDING / 235 RESOLVED-DECIDED / 17 DEFERRED_TO_STAGE_3 / 8 DEFERRED_TO_STAGE_4 / 11 SUPERSEDED / 9 BLOCKED_ON_X / 13 other.
+
+*Per CHECKLIST #43/#46/#47/#51 (explicit owner approval all 6 specific clarifications + per-rec batch)/#56/#57.*
