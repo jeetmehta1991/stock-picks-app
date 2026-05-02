@@ -23112,3 +23112,54 @@ Total strategies expansion: from current 60-strategy roster to ~70+ strategies p
 Counts: 461 / 212 PENDING / 208 RESOLVED-DECIDED / 11 SUPERSEDED / 10 DEFERRED_TO_STAGE_3 / 7 BLOCKED_ON_X / 13 other.
 
 *Per CHECKLIST #43/#46/#47/#51 (explicit owner approval for all 4 specific clarifications + per-rec batch approval)/#56/#57. Option C verification gate honored — owner pre-approved exact commit content turn 50; commit executed turn 51.*
+
+---
+
+## AUDIT PASS 52 turn 53 — STRATEGY_REGISTER.md created (Path B)
+
+Owner directives turn 53:
+1. Forget reconciliation (drop 60 vs 70 baseline forensics)
+2. Path B (build STRATEGY_REGISTER.md)
+3. Approved
+
+STRATEGY_REGISTER.md CREATED (~174 lines):
+
+LAYER 1 — Baseline 60 strategies per PROJECT_PLAN section 6 (7 categories: Momentum/Trend 12, Mean Reversion 10, Smart Money 8, Volatility 7, Fundamental 8, Macro/Regime 6, Event-Driven 9). Detailed enumeration in PROJECT_PLAN_ARCHIVE sections 5/6.
+
+LAYER 2 — Phase 0.D additions per DEC-045:
+- 2A: ICT/SMC strategies via smartmoneyconcepts library fork (DEC-259 enumerates 6 patterns: FVG, BOS, CHoCH, Order Blocks, Liquidity Grabs, Premium/Discount)
+- 2B: Earnings momentum strategies (custom build, ~3-5 classes estimated)
+- 2C: Calendar strategies (custom build, ~4-6 classes estimated)
+- Total Phase 0.D: ~13-17 strategy classes
+
+LAYER 3 — Pass 52 RESOLVED-DECIDED additions:
+- 3A: 8 chart pattern strategies (DEC-355-362)
+- 3B: ~22-27 strategies via 5 categories (DEC-367/368/369/370/371) with overlap caveat on DEC-368/Layer-2C
+- Total Pass 52: ~30-35 strategy classes
+
+LAYER 4 — PENDING strategy-additive (DEC-141/142/143/145/176): ~5-6 classes
+
+PROJECTED TOTAL AT FULL IMPLEMENTATION:
+- ~108-118 classes (counting unique entry/exit logic)
+- ~150-200+ variants (with long/short counted separately)
+- ~200-300+ variants (with multi-TF per DEC-350 counted)
+
+120+ STRATEGIES MATH RECONCILED:
+Owner's "120+" recollection is achievable when all 4 layers implemented + long/short variants counted + multi-TF variants partially counted. Class count maxes at ~118; variant counts go higher.
+
+OPEN ENUMERATION GAPS (to be closed during sprint planning):
+1. Layer 2A ICT/SMC patterns × variants = exact class count
+2. Layer 2B earnings momentum specific classes
+3. Layer 2C specific calendar strategies
+4. Layer 3B DEC-371 within-category catalog (≥10 not yet itemized)
+
+These gaps don't require new decisions — they require enumeration during Sprint 7 (Phase 0.D) and Sprint 8 (strategy categories) per ENGINEERING_REGISTER.md.
+
+COUNTING CONVENTION FORMALIZED:
+- "Class" = unique entry/exit logic
+- "Variant" = same class with parametric difference (long vs short, daily vs weekly)
+- Project's authoritative count uses CLASSES unless otherwise specified
+
+Counts unchanged this commit: 461 / 212 PENDING / 208 RESOLVED-DECIDED / 11 SUPERSEDED / 10 DEFERRED_TO_STAGE_3 / 7 BLOCKED_ON_X / 13 other.
+
+*Per CHECKLIST #43/#46/#47/#51/#56/#57. STRATEGY_REGISTER.md becomes single source-of-truth for project strategy enumeration.*
