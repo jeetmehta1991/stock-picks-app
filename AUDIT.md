@@ -23521,3 +23521,61 @@ Combined: 5-layer catch-mechanism defense + per-bug regression coverage.
 Counts: 461 / 154 PENDING / 244 RESOLVED-DECIDED / 17 DEFERRED_TO_STAGE_3 / 8 DEFERRED_TO_STAGE_4 / 16 SUPERSEDED (10 + 6 SUPERSEDED_BY_*) / 9 BLOCKED_ON_X / 13 other.
 
 *Per CHECKLIST #43 (overlap pre-flight caught 4 supersessions)/#46/#47/#51/#56/#57.*
+
+---
+
+## AUDIT PASS 52 turn 69 — Theme X5 Risk Management Extension fully closed (7 of 7) + 4 cascading + DEC-458 NEW lead-lag strategy
+
+Owner Pass 52 turn 66-69:
+- DEC-090 Path A REJECTED (owner risk philosophy: medium-high risk, stock diversification focus over strict sector concentration; 30% Tech cap too restrictive; REVISIT_DURING_STAGE_3)
+- All other X5 recs approved
+- Lead-lag intra-sector momentum gap identified by owner (Intel→NVDA/AMD example)
+- Option B (new DEC-458) + scope approved
+- Single combined commit
+
+X5 SUB-DECISION CLOSURES (7 of 7):
+
+Stage 2 RESOLVED-DECIDED (5):
+- DEC-086 (Fractional Kelly) → RESOLVED-DECIDED with PHASED ROLLOUT (Phase A parallel computation, Phase B opt-in, Phase C owner picks default post-empirical)
+- DEC-087 (Vol-targeted per-position) → RESOLVED-DECIDED, joint with DEC-023 SUPERSEDED ~1d
+- DEC-088 (Portfolio vol target 15%) → RESOLVED-DECIDED with REVISIT_AFTER_BACKTEST tag ~0.5d
+- DEC-089 (Max correlation cap 0.7) → RESOLVED-DECIDED, joint with DEC-015 standalone + DEC-024 SUPERSEDED ~2d
+- DEC-092 (Slippage f(ADV,vol)) → RESOLVED-DECIDED as parent of DEC-122/DEC-280; joint with DEC-446 calibration data ~3d post-deps
+
+REJECTED (1):
+- DEC-090 (Sector exposure cap) → REJECTED (Path A) — owner risk philosophy: stock diversification focus vs strict sector concentration; 30% Tech cap too restrictive; REVISIT_DURING_STAGE_3 flag
+
+BLOCKED (1):
+- DEC-091 (Drawdown re-sizing) → BLOCKED_ON_BUG-095, joint with DEC-022 SUPERSEDED; 10/20/30% DD tiered scaling; ~1d post-Portfolio class
+
+CASCADING SUPERSESSIONS (4):
+- DEC-015 (correlation methodology) → RESOLVED-DECIDED standalone (90-day rolling Pearson on daily returns; used by DEC-089) ~0.5d
+- DEC-022 (drawdown-aware sizing BUG-170) → SUPERSEDED_BY_DEC-091
+- DEC-023 (vol-targeted sizing BUG-168) → SUPERSEDED_BY_DEC-087
+- DEC-024 (correlation-adjusted limits BUG-169) → SUPERSEDED_BY_DEC-089
+
+DEC-458 NEW STRATEGY DECISION:
+Lead-lag intra-sector momentum strategy — owner-identified gap turn 68. Captures cluster-effect when sector leader breaks out and sympathetic moves spread to lagging peers in same correlation cluster (Intel→NVDA/AMD example). Distinct from sector rotation, pairs trading, stock-vs-sector filter, and cross-asset.
+- Scope: leader detection + correlation cluster (DEC-015 methodology) + lagging peer entry + 3-10d time-stop exit
+- Reversibility: Medium (new strategy class, additive)
+- Effort: ~3-5d
+- Joint with DEC-015/367/369
+
+X5 IMPLEMENTATION EFFORT (Stage 2): ~10d (some BLOCKED on Portfolio class)
+DEC-458 IMPLEMENTATION EFFORT: ~3-5d
+X5 STATUS: 7 of 7 in terminal state. + 4 cascading flips + 1 NEW strategy decision.
+
+KEY RISK MANAGEMENT ARCHITECTURE NOW DECIDED:
+- Position sizing: Fractional Kelly (DEC-086) + Vol-targeted (DEC-087) + Tiered baseline (existing 5/4/3/1.5%) — 3-way comparison via Phase 1B-α
+- Portfolio constraints: 15% vol target (DEC-088) + 0.7 correlation cap (DEC-089) — sector cap REJECTED in favor of correlation cap
+- Drawdown scaling: 10/20/30% DD tiered (DEC-091, post-Portfolio class)
+- Slippage modeling: f(ADV%, vol) base × exit multiplier × time multiplier (DEC-092 parent of DEC-122/280)
+
+NEW STRATEGY CLASS:
+- DEC-458 lead-lag intra-sector momentum joins DEC-355-362 chart pattern strategies as Pass 52 owner-directed strategy additions
+- Updates STRATEGY_REGISTER.md Layer 4 PENDING strategy-additive count: was 5 (DEC-141/142/143/145/176), still 5 PENDING after DEC-458 RESOLVED-DECIDED
+- STRATEGY_REGISTER will need update during sprint planning to reflect DEC-458 in Layer 3
+
+Counts: 462 / 143 PENDING / 251 RESOLVED-DECIDED / 17 DEFERRED_TO_STAGE_3 / 8 DEFERRED_TO_STAGE_4 / 16 SUPERSEDED (10 + 6 SUPERSEDED_BY) / 10 BLOCKED_ON_X / 14 other (incl 1 REJECTED).
+
+*Per CHECKLIST #43 (caught 4 cascading PENDING joint resolutions + lead-lag gap)/#46/#47/#51 (explicit owner approval per all 8 specific clarifications including DEC-090 override + DEC-458 scope)/#56 (all Stage 2)/#57.*
