@@ -23163,3 +23163,42 @@ COUNTING CONVENTION FORMALIZED:
 Counts unchanged this commit: 461 / 212 PENDING / 208 RESOLVED-DECIDED / 11 SUPERSEDED / 10 DEFERRED_TO_STAGE_3 / 7 BLOCKED_ON_X / 13 other.
 
 *Per CHECKLIST #43/#46/#47/#51/#56/#57. STRATEGY_REGISTER.md becomes single source-of-truth for project strategy enumeration.*
+
+---
+
+## AUDIT PASS 52 turn 54 — Theme X6 Exits + Circuit Breakers fully closed (9 of 9)
+
+Owner Pass 52 turn 54: "Yes to all" — approves cheap batch (6) + medium batch (3) + DEC-434 option (a) compound BLOCKED.
+
+X6 SUB-DECISION CLOSURES:
+
+Parents (3) → RESOLVED-DECIDED with sub-decision refs:
+- DEC-067 (Add 9 missing exit methods) → DEC-432/433/434
+- DEC-068 (Bootstrap CI + pairwise significance) → DEC-423 (Theme X4 closure)
+- DEC-075 (Adverse-Excursion-from-Peak diagnostic) → DEC-435
+
+Stage 2 sub-decisions (4):
+- DEC-078A (Stop-out cluster Stage 2 diagnostic) → RESOLVED-DECIDED ~1d
+- DEC-432 (DEC-067 Phase A — 3 indicators chandelier/PSAR/supertrend) → RESOLVED-DECIDED ~2-3d
+- DEC-433 (DEC-067 Phase B — 6 simple exit methods) → RESOLVED-DECIDED ~3-4d
+- DEC-435 (DEC-075 implementation — aep_pct metric) → RESOLVED-DECIDED ~0.5d
+
+Supersession (1):
+- DEC-424 (DEC-069 supersession bookkeeping) → SUPERSEDED_BY_DEC-422
+
+Blocked (1):
+- DEC-434 (DEC-067 Phase C — 2 dependent exit methods) → BLOCKED_ON_DEC-388_AND_DEC-409 (compound blocker per option (a)); ~1d post-deps
+
+X6 IMPLEMENTATION EFFORT:
+- DEC-432 indicators: ~2-3d
+- DEC-433 simple exits: ~3-4d
+- DEC-434 dependent exits: ~1d post-deps
+- DEC-435 AEP metric: ~0.5d
+- DEC-078A stop-out diagnostic: ~1d
+- Total Theme X6: ~7.5-9.5 engineering days
+
+X6 STATUS: 9 of 9 sub-decisions in terminal state.
+
+Counts: 461 / 203 PENDING / 215 RESOLVED-DECIDED / 10 SUPERSEDED / 1 SUPERSEDED_BY_DEC-422 / 10 DEFERRED_TO_STAGE_3 / 9 BLOCKED_ON_X / 13 other.
+
+*Per CHECKLIST #43/#46/#47/#51 (explicit owner approval Yes to all)/#56/#57. Option C verification gate honored.*
