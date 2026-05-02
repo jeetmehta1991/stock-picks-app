@@ -22545,3 +22545,27 @@ HONEST ACKNOWLEDGMENTS:
 - Stage 3+ APIs documented for inventory only
 
 *Per CHECKLIST #43/#46/#47/#51/#56-overridden-expiring/#57.*
+
+---
+
+## AUDIT PASS 52 — DEC-410 RESOLVED + 15 sub-decisions logged (DEC-442 through DEC-456)
+
+Owner Pass 52 turn 22: "Approve all recs" — batch approval of all 15 sub-decisions proposed in API_AUDIT.md.
+
+**DEC-410 status: PENDING → RESOLVED** with cross-references to all 15 sub-decisions.
+
+15 SUB-DECISIONS LOGGED (DEC-442 through DEC-456):
+- Polygon expansion: DEC-445/446/447 (precomputed indicators / intraday quotes / reference PIT)
+- yfinance demotion: DEC-442/443/444 (resolves BUG-218 CRITICAL + BUG-179/109/265/280/13)
+- FRED expansion: DEC-448/449 (SERIES_MAP +VIXCLS partial BUG-19 mitigation; ALFRED PIT validation)
+- Quiver expansion: DEC-450/451/452 (resolves BUG-190/284; conditional premium)
+- Finnhub deprecation: DEC-453 (final closure of BUG-053/181)
+- OpenBB removal: DEC-454 (resolves DEC-410 OpenBB consumption gap dual treatment)
+- Alpha Vantage deprecation: DEC-455 (timeline; joint with DEC-440)
+- SEC EDGAR: DEC-456 (DEC-439 layer 5 differential reference for fundamentals PIT)
+
+CHECKLIST #56 OVERRIDE EXPIRES post this commit. Going forward: standard scope filter resumes (Phase 0 + Stage 2 only).
+
+Counts: 445 → 460 (+15 sub-decisions). Pending: 326 → 340 (+14 net: +15 new -1 DEC-410 resolved). Resolved: 95 → 96.
+
+*Per CHECKLIST #43/#46/#47/#51 (explicit "Approve all recs")/#56-override-expired/#57.*
