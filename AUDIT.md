@@ -23629,3 +23629,51 @@ DEC-211 cost analysis caught a 100x cost differential between naive 7-arm scope 
 Counts: 462 / 136 PENDING / 258 RESOLVED-DECIDED / 17 DEFERRED_TO_STAGE_3 / 8 DEFERRED_TO_STAGE_4 / 16 SUPERSEDED / 10 BLOCKED_ON_X / 14 other.
 
 *Per CHECKLIST #43 (cost analysis from AUDIT data, not estimation)/#46/#47/#51 (explicit owner approval Option A + per-rec batch)/#56/#57.*
+
+---
+
+## AUDIT PASS 52 turn 77 — Theme X41 Phase 0.A Data Prefetch Gaps fully closed (6 of 6)
+
+Owner Pass 52 turn 76: walkthrough requested
+Owner Pass 52 turn 77: "Approve all recs"
+
+X41 SUB-DECISION CLOSURES (6 of 6) — all RESOLVED-DECIDED:
+
+Sprint 1 immediate work (4):
+- DEC-256 (Earnings calendar prefetch via Polygon) ~2d
+- DEC-257 (Quarterly fundamentals prefetch Polygon→yfinance fallback) ~3-4d
+- DEC-260 (Cache freshness assertion uniform across all caches) ~1d
+- DEC-261 (ICT/SMC PIT N+1 lag rule) ~0.5d
+
+Sprint 7 / Phase 0.D dependent (1):
+- DEC-259 (ICT/SMC signal pre-computation cache) ~3-4d post-Phase-0.D fork verification
+
+Implementation-deferred (1):
+- DEC-258 (Options chain snapshot cache) — scope decided RESOLVED-DECIDED in-scope Stage 2 per turn 32 reversal; implementation deferred until consumer exists; REVISIT trigger: any new strategy proposing per-ticker IV signal
+
+X41 IMPLEMENTATION EFFORT:
+- Sprint 1 portion: ~6.5-7.5d (DEC-256/257/260/261)
+- Deferred portion: ~5-7d when activated (DEC-258/259)
+X41 STATUS: 6 of 6 in terminal state.
+
+PATTERN OBSERVATION — STATUS DRIFT BOOKKEEPING FLIP:
+This theme exhibited the same status drift pattern as X53/X4/X1/X6: substantive Pass 52 owner-approved scope text already present in audit, but PENDING status. Bookkeeping flip needed, not new approvals. Per #43 precise grep — full implementation specs already in scope text per DEC-256/257/260/261; ENGINEERING_REGISTER Sprint 1 lists these explicitly.
+
+CRITICAL MILESTONE — SPRINT 1 IMPLEMENTATION-READY:
+Sprint 1 entry criteria fully met after this commit:
+- ✅ DEC-441 Polygon Stocks Starter $30/mo subscription (RESOLVED-DECIDED earlier)
+- ✅ DEC-256 Earnings calendar prefetch (this commit)
+- ✅ DEC-257 Quarterly fundamentals prefetch (this commit)
+- ✅ DEC-260 Cache freshness assertion (this commit)
+- ✅ DEC-261 ICT/SMC PIT N+1 lag rule (this commit)
+- ✅ DEC-440 Polygon news (absorbed in DEC-256 earlier)
+
+After this commit: Sprint 1 has zero audit-decision blockers. Implementation work can start.
+
+Required external action: owner subscribes to Polygon Stocks Starter $30/mo per DEC-441.
+
+Counts: 462 / 130 PENDING / 264 RESOLVED-DECIDED / 17 DEFERRED_TO_STAGE_3 / 8 DEFERRED_TO_STAGE_4 / 16 SUPERSEDED / 10 BLOCKED_ON_X / 14 other.
+
+Pending decisions now under 28% of total. Audit has crossed the 71% resolved threshold (326+6=332/462 = 71.9%).
+
+*Per CHECKLIST #43 (status drift pattern caught + Sprint 1 cross-check)/#46/#47/#51 (explicit owner approval all 3 specific clarifications + per-rec batch)/#56/#57.*
