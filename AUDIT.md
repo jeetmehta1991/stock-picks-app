@@ -23579,3 +23579,53 @@ NEW STRATEGY CLASS:
 Counts: 462 / 143 PENDING / 251 RESOLVED-DECIDED / 17 DEFERRED_TO_STAGE_3 / 8 DEFERRED_TO_STAGE_4 / 16 SUPERSEDED (10 + 6 SUPERSEDED_BY) / 10 BLOCKED_ON_X / 14 other (incl 1 REJECTED).
 
 *Per CHECKLIST #43 (caught 4 cascading PENDING joint resolutions + lead-lag gap)/#46/#47/#51 (explicit owner approval per all 8 specific clarifications including DEC-090 override + DEC-458 scope)/#56 (all Stage 2)/#57.*
+
+---
+
+## AUDIT PASS 52 turn 72 — Theme X32 Agent A/B Testing fully closed (7 of 7)
+
+Owner Pass 52 turn 70-72:
+- DEC-211 cost analysis requested (turn 70)
+- All other recs approved
+- DEC-211 Option A NARROW SCOPE selected (turn 72)
+
+X32 SUB-DECISION CLOSURES (7 of 7) — all RESOLVED-DECIDED:
+
+A/B Operational Infrastructure (5):
+- DEC-210 (Net Sharpe accounting) → RESOLVED-DECIDED, joint DEC-131/420 ~0.5d
+- DEC-212 (Agent disagreement decomp) → RESOLVED-DECIDED ~1d
+- DEC-213 (Both-rationales storage) → RESOLVED-DECIDED, joint DEC-189 ~1d
+- DEC-214 (Quarterly re-validation) → RESOLVED-DECIDED, joint DEC-290 quarterly cadence ~0.5d
+- DEC-215 (A/B result registry) → RESOLVED-DECIDED, joint DEC-096 reproducibility ~1d
+
+Hard reversibility (1):
+- DEC-216 (A/B orchestrator code) → RESOLVED-DECIDED with sandbox-prototype on 2-arm; joint DEC-211/096 ~3-4d
+
+Owner-direction-resolved cost-bound (1):
+- DEC-211 (Per-agent ablation) → RESOLVED-DECIDED Option A NARROW SCOPE
+  - 7-arm runs ONLY post-Phase 1B-α 4-arm completion
+  - Sample-bounded: top-20% strategies × ~5K representative trades
+  - Mandatory cost mitigations: post-Phase-1B-α timing + top-20% filter + 5K sample + aggressive caching
+  - Cost: ~$120 one-time + ~$30-60/month if quarterly re-validation
+  - vs naive 7-arm: $13,800 one-time + $40-119/month
+  - REVISIT_DURING_STAGE_3 if cost monitoring shows drift
+  - ~2d implementation
+
+X32 IMPLEMENTATION EFFORT (Stage 2): ~9-10 engineering days
+X32 STATUS: 7 of 7 in terminal state. All Stage 2 scope.
+
+KEY A/B TESTING ARCHITECTURE NOW DECIDED:
+- 4-arm baseline (rules / full / no-Risk / no-Bull-Bear) per DEC-205-209 RESOLVED earlier
+- 7-arm narrow ablation per DEC-211 Option A (post-Phase 1B-α, top-20% strategies, 5K sample)
+- Net Sharpe accounting per DEC-210 (cost-aware metric)
+- Quarterly re-validation per DEC-214 (joint DEC-290 cadence)
+- Versioned A/B artifacts per DEC-215 (joint DEC-096 reproducibility)
+- Deterministic orchestrator per DEC-216 (joint DEC-096; sandbox-prototype before full N-arm)
+- Disagreement event tagging per DEC-212
+
+COST DISCIPLINE DEMONSTRATED:
+DEC-211 cost analysis caught a 100x cost differential between naive 7-arm scope and Option A narrow scope. Per #43 precise grep on AUDIT.md cost data ($93-185/mo total live, $13-40/mo agent calls baseline) enabled informed scope decision. Without analysis: would have approved $13,800 one-time backtest cost without owner awareness.
+
+Counts: 462 / 136 PENDING / 258 RESOLVED-DECIDED / 17 DEFERRED_TO_STAGE_3 / 8 DEFERRED_TO_STAGE_4 / 16 SUPERSEDED / 10 BLOCKED_ON_X / 14 other.
+
+*Per CHECKLIST #43 (cost analysis from AUDIT data, not estimation)/#46/#47/#51 (explicit owner approval Option A + per-rec batch)/#56/#57.*
