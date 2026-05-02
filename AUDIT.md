@@ -22935,3 +22935,53 @@ THEME X4 STATUS post-this-commit:
 Counts: 461 / 304 PENDING / 122 RESOLVED / 10 DEFERRED_TO_STAGE_3 / 2 BLOCKED_ON_BUG-095 / 23 other.
 
 *Per CHECKLIST #43/#46/#47/#51 (explicit per-block approvals)/#56 (no deferrals — all Stage 2)/#57.*
+
+---
+
+## AUDIT PASS 52 turn 42 — Coordinated rollout: status taxonomy + engineering register + sprint roadmap
+
+Owner Pass 52 turn 41: "Agree with your recs" — adopting Option C verification gate + 5-layer implementation plan + 1-week sprints + owner-self engineer + Claude Code pair programming.
+
+STATUS TAXONOMY EXPANDED:
+- PENDING: not yet decided / awaiting owner direction
+- RESOLVED-DECIDED: owner-approved spec; engineering not yet complete
+- RESOLVED-IMPLEMENTED: engineering complete + tests passing per sub-decision Test Signals + verified
+- BLOCKED_ON_X: decided but waiting on prerequisite
+- DEFERRED: out of current scope per CHECKLIST #56
+
+(Old "RESOLVED" retired; semantically ambiguous. Migration applied below.)
+
+MIGRATION APPLIED THIS COMMIT:
+- 122 existing RESOLVED → RESOLVED-DECIDED (default-conservative; promotes to RESOLVED-IMPLEMENTED on engineering verification)
+- 61 sub-decisions PENDING → RESOLVED-DECIDED (X53/X1/X4/X56 sub-decisions whose specs are owner-approved)
+- DEC-411 PENDING → BLOCKED_ON_DEC-298 (was inadvertently flipped; corrected)
+- DEC-393 PENDING → BLOCKED_ON_DEC-257
+- DEC-395 PENDING → BLOCKED_ON_DEC-447
+- DEC-396 PENDING → BLOCKED_ON_DEC-450
+
+Net: 188 status migrations; 0 substantive scope changes.
+
+ENGINEERING_REGISTER.md CREATED (~202 lines):
+- 9-sprint roadmap with entry/exit criteria per sprint
+- Sub-decision tracking (DEC-N | branch | PR | test status | verified)
+- Verification gate process per sprint (engineer implements → CI tests → demo → owner approves → batch status flip)
+- Critical path gate explicitly documented (Sprint 1+2+3+partial-4+6 RESOLVED-IMPLEMENTED → Phase 1B-α can run)
+- Test signals from sub-decision text mapped to verification criteria
+
+CADENCE ADOPTED:
+- 1-week sprints
+- Owner-self as engineer + Claude Code pair programming
+- Per-sprint demo
+- Branch model: feature branch per sprint; PR to main; merge after owner approval
+
+OPTION C VERIFICATION GATE:
+- Cheap-to-reverse sub-decisions: rec includes outcome contract; on owner approval, I commit + push immediately
+- Medium/hard reversibility: owner pre-approves exact commit content before commit
+- This commit was Option C medium-reversibility precedent — owner pre-approved scope (turn 40 + turn 41 confirmation), I executed migration
+
+Counts: 461 / 238 PENDING / 183 RESOLVED-DECIDED / 0 RESOLVED-IMPLEMENTED (yet) / 7 BLOCKED_ON_X / 10 DEFERRED_TO_STAGE_3 / 23 other.
+
+CHANGE FROM PREVIOUS PASSES:
+This is the first commit in Pass 52 that establishes infrastructure for engineering execution as opposed to decision walkthrough. ENGINEERING_REGISTER.md becomes the source-of-truth for what's being built; AUDIT_INDEX.md remains source-of-truth for what's been decided.
+
+*Per CHECKLIST #43 (precise grep on actual statuses)/#46/#47/#51 (explicit owner approval Pass 52 turn 41)/#56/#57.*
