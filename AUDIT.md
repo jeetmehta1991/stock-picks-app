@@ -22115,3 +22115,93 @@ Pre-flight surfaced AEP is computable from existing MFE (already tracked in Open
 ### Pending count: 329 + 4 = 333 (DEC-070 status flipped PENDING → DEFERRED, so +3 net new PENDING)
 
 *Theme 7 batch 1 closure with proper L134/CHECKLIST #55 application (DEC-070 deferred as system-design-level rather than batched with patches). Pre-flight gate codified in CLAUDE.md as mandatory standard. BUG-285 surfaced from pre-flight verification, captures existing-code DEC-353 violation. Per CHECKLIST #43 (prior-art verified — DEC-353/388/409/422 + BUG-095 + Phase 0.B); #45 (compliance statement); #46 (three-source check); #47 (full-text grep); #48 (sub-decisions formally logged); #49+#50 (CAV-063/064 cross-referenced inline); #51 (explicit "Approve all your latest recommendations"); #52 (advancement parsed); #53 (grounded format applied per recommendation last turn); #54 (test signals specified); #55 (phase scope check applied — DEC-070 deferred for proper system-design walkthrough).*
+
+---
+
+## AUDIT PASS 52 — Owner scope filter "Phase 0 and 2 / Interpretation B" + DEC-417 layered-defense reframe + 4 NEW Phase 0.E catch-mechanism decisions (DEC-436-439) + L135/CHECKLIST #56
+
+**Owner directives Pass 52 across multiple turns:**
+- "log new and past decisions for CI/CD pipeline + property-based tests + characterization tests as Phase 0.E formalization"
+- "Yes [reframe DEC-417]"
+- "Its not a decision. I want all. And this exactly the kind of recommendations in need form you proactively." [all 5 mechanisms approved]
+- "You are right. All except 5." [exclude owner adversarial review formalization — already happens informally]
+- "in all decisions and bugs, we will only focus on those that affect phase 1 and 2 for the time being"
+- "Phase 0 and 2. Interpretation B" [clarification: Phase 0 sub-phases + Stage 2 only; Stage 3/4/5 deferred]
+- "Phase 0 and 2. Interpretation B" [repeated to ensure execution]
+
+### Owner scope filter applied — RETROACTIVE deferrals
+
+Per L135/CHECKLIST #56 (codified this turn), all decisions affecting Stage 3 paper trading, Stage 4 small live, or Stage 5 scaled live are DEFERRED_TO_STAGE_3 / DEFERRED_TO_STAGE_4 status. Original approved scope preserved for re-walk at Stage 3 prep theme.
+
+**Decisions retroactively deferred this turn:**
+
+| Decision | Original scope | Rationale for deferral |
+|---|---|---|
+| DEC-129 | Live-vs-backtest Sharpe equivalence (Stage 3→4 gate) | Stage 3+ scope; out of Phase 0+Stage 2 focus |
+| DEC-130 | Capacity stress 5× capital test (Stage 4 capital scale) | Stage 4 capital scope; out of focus |
+| DEC-132 | Annual Sharpe variance Stage 3→4 gate | Stage 3→4 gate; out of focus |
+| DEC-418 | DEC-129 implementation (Stage 3 module) | Sub-decision of deferred parent |
+| DEC-419 | DEC-130 implementation (capacity stress + slippage scaling) | Sub-decision of deferred parent |
+| DEC-421 | DEC-132 implementation (calendar-year Sharpe variance) | Sub-decision of deferred parent |
+
+**KEPT IN SCOPE (Stage 2 work):**
+- DEC-131 (Agent value-add ≥0.2 Sharpe — IS Stage 2 agent overlay scope)
+- DEC-420 (DEC-131 implementation)
+
+### DEC-417 reframed — layered defense
+
+**Reframed verbatim:** "DEC-417 is ONE LAYER in multi-layer defense, NOT THE catch mechanism."
+
+DEC-417 catches one error class (approval-vs-implementation gap). Other classes need other mechanisms. Sequence requirement preserved: AFTER full data prefetch (DEC-410, DEC-411) AND all themes reviewed → run limited-sample test → populate AUDIT_TEST_RUN_RESULTS.md per-decision validation. Effort revised from ~35hr (all 419 decisions) to ~30hr (~330 in-scope after Pass 52 deferrals).
+
+### NEW DEC-436-439 — Phase 0.E catch-mechanism formalization
+
+Layered defense (5 levels excluding informal owner adversarial review):
+
+| Layer | Mechanism | Decision | Catches | Misses |
+|---|---|---|---|---|
+| 1 | Pre-flight checklist | CLAUDE.md mandatory standard (codified prior turn) | Surface errors, scope/feasibility, framing | Errors in checklist itself |
+| 2 | CI/CD regression pipeline | **DEC-436 NEW** | Regressions, contract violations | Errors in tests themselves; uncovered code paths (CAV-065) |
+| 3 | Property-based testing (hypothesis) | **DEC-437 NEW** | Edge cases, boundary conditions | Bugs outside chosen properties (CAV-066) |
+| 4 | Characterization / golden-master | **DEC-438 NEW** | Silent behavior changes | Wrong-from-day-1 errors (CAV-067) |
+| 5 | Differential testing | **DEC-439 NEW** | Implementation bugs | Common-mode failures (CAV-068) |
+| Bonus | DEC-417 (test-run audit) | DEC-417 reframed | Approval-vs-implementation gap | Decision-logic errors |
+
+**Owner directive context:** "this exactly the kind of recommendations in need form you proactively" — owner explicitly asked for proactive recommendations of this caliber, not just answering direct questions. Formalizing this as standing expectation: when I see a missing systematic mechanism, propose it as a recommendation rather than waiting for owner question.
+
+### NEW PROCESS DISCIPLINE — L135 + CHECKLIST #56
+
+**Trigger:** This is the 7th Pass 52 process recurrence. Owner directive made implicit scope filter explicit. My L132/L134 lapses had not caught Theme 6 Stage 3+ scope errors; required new rule.
+
+**Rule (CHECKLIST #56 — Focus-phase scope filter):** Every decision walkthrough must explicitly check:
+1. What phase does this primarily affect? (Phase 0.A-E / Stage 1 / Stage 2 / Stage 3 / Stage 4 / Stage 5)
+2. Is that phase in current owner-defined focus?
+3. If NOT: DEFERRED_TO_<TARGET_STAGE>; do not approve in current batch
+4. If IN focus: proceed normally
+
+**Layered defense grew to 6 levels (adding informal owner adversarial review):**
+- #43/#46/#47: catch duplicates
+- #53: catch scope/feasibility errors
+- #54: catch empirical-failure errors
+- #55: catch architectural-framing errors (patch vs system-design)
+- **#56 (NEW): catch focus-phase scope-filter errors (forward-looking deferral)**
+- Owner adversarial review (informal, ongoing)
+
+### NEW CAVEATS LOGGED (CAV-065 through CAV-069)
+
+| CAV | Caveat |
+|---|---|
+| CAV-065 | CI/CD test coverage gaps blind spot for DEC-436 |
+| CAV-066 | Property completeness limits DEC-437 effectiveness |
+| CAV-067 | Golden master quality bounds DEC-438 test quality |
+| CAV-068 | Differential testing common-mode failure blind spot for DEC-439 |
+| CAV-069 | Pass 52 scope filter retroactive deferrals will need Stage 3 prep re-walk |
+
+### Counts
+
+- Total decisions: 437 + 4 new (DEC-436-439) = 441
+- Pending: ~324 (was 330; -6 deferred = 324; +4 new in-scope = 328; -4 deferrals net pending impact = 324 — verifying after commit)
+- DEFERRED_TO_STAGE_3: 7 (DEC-070 + DEC-129/130/132 + DEC-418/419/421)
+- Themes complete: 5 + Theme 7 batch 1 + Theme 8 dimensional framework + Theme 9 (NEW Phase 0.E catch-mechanism defense)
+
+*Per CHECKLIST #43 (prior-art verified — DEC-050 freezegun + DEC-417 + Theme 6 cross-references); #45 (compliance statement); #46 (three-source check applied); #47 (full-text grep applied); #48 (sub-decisions formally logged inline); #49+#50 (CAV-065-069 cross-referenced); #51 (explicit owner approvals — "All except 5" + scope filter directive verbatim); #52 (advancement parsed — "Phase 0 and 2. Interpretation B"); #53 (grounded format applied per recommendation in pre-flight blocks last turn); #54 (test signals specified per DEC-436-439); #55 (phase scope check — DEC-070 + DEC-129/130/132 system-design or Stage 3+; deferral applied); #56 (NEW focus-phase scope filter — applied retroactively to 6 decisions this turn).*

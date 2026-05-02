@@ -587,3 +587,45 @@ Cells with n<30 trades fall back to marginal-best (next-broader cell). Live deci
 - Default proposal: Path B with owner-configurable thresholds (warn 20%, freeze entries 25%, flatten 30%)
 **Operational impact:** No impact during Phase 1B-α (per-strategy independent evaluation). Owner direction needed at Stage 3 prep theme to resolve which path. Decision shapes whether the system's expressed risk philosophy ("buy crisis dips") is honored or overridden by capital-preservation logic.
 **Forward-link:** Resolved at Stage 3 prep theme (post BUG-095 portfolio class fix).
+
+## Section — Pass 52 Phase 0.E catch-mechanism defense + scope filter caveats
+
+### CAV-065 — CI/CD test coverage gaps are blind spot for DEC-436
+
+**Source:** DEC-436 PENDING (Pass 52)
+**Status:** ACTIVE
+**Caveat:** GitHub Actions regression pipeline only catches what tests assert. If a behavior is not tested, regression won't be caught. Initial test suite (`test_unit.py` 46KB, `test_integration.py` 6KB, `test_e2e.py` 9KB) covers ~30% of code paths estimated. Full coverage requires sustained test-writing effort beyond initial DEC-436 setup.
+**Operational impact:** DEC-436 is necessary but not sufficient. False sense of security risk: "CI passes" ≠ "code correct" — only "code passes existing tests." Mitigated by Layer 3 (DEC-437 property-based) which generates inputs beyond hand-written tests + Layer 4 (DEC-438 characterization) which catches silent behavior changes even without explicit tests.
+**Forward-link:** Coverage improvement is ongoing; track test coverage metric in CI dashboard; flag uncovered code paths during reviews.
+
+### CAV-066 — Property completeness limits DEC-437 effectiveness
+
+**Source:** DEC-437 PENDING (Pass 52)
+**Status:** ACTIVE
+**Caveat:** Property-based testing via `hypothesis` only catches bugs that violate the defined properties. If a bug exists in computation outside property scope (e.g., wrong sector aggregation that doesn't violate R:R or PIT properties), the bug is not detected by hypothesis. Properties chosen for initial implementation: R:R≥2, PIT correctness, Sharpe symmetry, position size monotonicity, stop direction invariance, FAIL_RR firing.
+**Operational impact:** Layer 3 of defense is strong for the 6 chosen invariants but blind to bugs outside them. Mitigation: review property list quarterly; expand as new high-stakes invariants emerge (e.g., when DEC-422 dimensional cube ships, add cube-cell verdict invariants). Combine with Layer 4 (DEC-438 characterization) which catches output changes regardless of whether properties are defined.
+**Forward-link:** Property list expansion as project evolves; aim for ~15-20 invariants by Stage 2 backtest run.
+
+### CAV-067 — Golden master quality bounds DEC-438 test quality
+
+**Source:** DEC-438 PENDING (Pass 52)
+**Status:** ACTIVE
+**Caveat:** Characterization tests (golden-master / snapshot) capture whatever the current system produces as the "correct" output. If the current system has a bug, the golden master encodes the bug. Future runs that "fix" the bug will be flagged as regressions and require manual review to update the master.
+**Operational impact:** Layer 4 catches silent behavior changes but cannot identify wrong-from-day-1 errors. Workflow requirement: golden masters must be reviewed by owner before being captured (not auto-captured); intentional changes require explicit approval to update master. Combine with Layer 3 (DEC-437 property-based) which catches bugs that violate invariants regardless of golden master state.
+**Forward-link:** Quarterly review of golden masters to verify they encode intended behavior; refresh masters after major intentional changes.
+
+### CAV-068 — Differential testing common-mode failure blind spot for DEC-439
+
+**Source:** DEC-439 PENDING (Pass 52)
+**Status:** ACTIVE
+**Caveat:** Differential testing compares two independent implementations and flags divergence. If both implementations have the same bug (common-mode failure — e.g., both use the same flawed library, both copy-paste from same wrong source), the divergence test passes while the bug persists. Risk highest when implementations are written by same person within short timeframe.
+**Operational impact:** Layer 5 valuable only for high-stakes computations and only when implementations are genuinely independent. Mitigation: where possible, use one implementation that's mathematically rigorous (numpy/scipy reference) vs one that's project-idiomatic (pandas DataFrame ops); if both implementations are written project-idiomatic, common-mode risk is high. Combine with Layer 1 (pre-flight checklist) which catches obvious errors regardless of implementation.
+**Forward-link:** Use established numerical libraries (numpy/scipy) where possible to reduce common-mode risk; periodic third-party review of high-stakes computations.
+
+### CAV-069 — Pass 52 scope filter retroactive deferrals may need re-walking at Stage 3 prep
+
+**Source:** Owner directive Pass 52 turn 8 ("Phase 0 and 2. Interpretation B")
+**Status:** ACTIVE
+**Caveat:** Multiple Pass 52 already-approved decisions retroactively deferred to Stage 3 scope per owner filter: DEC-129/130/132 (Theme 6 Validation criteria), DEC-070 (already DEFERRED prior turn), DEC-418/419/421 (sub-decisions). At Stage 3 prep theme, these will be re-walked with then-current code state; original approvals may need updating if system has evolved (similar to OBSOLETE_BY_TEST_RUN flag in CAV-057). Owner directive may surface additional Stage 3+ decisions that should also be deferred.
+**Operational impact:** Pending count drops as decisions move to DEFERRED status (counts: ~6 decisions deferred this turn). Active workload reduces; focus narrows to Phase 0 + Stage 2. At Stage 3 prep theme, re-walk batch will be substantial — these decisions accumulate unimplemented during the deferral window.
+**Forward-link:** Stage 3 prep theme will need its own focused walkthrough re-examining all DEFERRED_TO_STAGE_3 decisions with then-current system state.

@@ -502,3 +502,24 @@ State compliance visibly: "Checklist: ✅ [each item]"
     Past failures (Pass 52 4-turn recurrence): treating DEC-068/069 as patches when
     they were components of system-design-level DEC-422 dimensional framework. Owner
     caught after 4 consecutive turns.
+
+56. **Focus-phase scope filter (Pass 52 L135 — forward-looking deferral discipline):**
+    Per L135. Owner has defined current focus phases (Pass 52: Phase 0 + Stage 2);
+    decisions affecting other phases (Stage 3 paper / Stage 4 live / Stage 5 scaled)
+    must be deferred, not approved.
+    Per-decision scope-filter check (mandatory before approval):
+    a. **What phase does this primarily affect?** (Phase 0.A-E / Stage 1 / Stage 2 /
+       Stage 3 / Stage 4 / Stage 5)
+    b. **Is that phase in current owner-defined focus?**
+    c. **If NOT:** mark DEFERRED_TO_<TARGET_STAGE>; do not approve in current batch;
+       preserve original scope text for future re-walk
+    d. **If IN focus:** proceed with normal walkthrough
+    Layered defense expanded (Pass 52):
+    - #43/#46/#47: catch duplicates
+    - #53: catch scope/feasibility errors (grounded format)
+    - #54: catch empirical-failure errors (test-run audit)
+    - #55: catch architectural-framing errors (patch vs system-design)
+    - #56 (THIS): catch focus-phase scope-filter errors (forward-looking deferral)
+    Past failures (Pass 52 turn 8): Theme 6 DEC-129/130/132 approved as Stage 3→4
+    gates when scope filter was implicit. Owner directive made filter explicit;
+    these were retroactively deferred per L135.

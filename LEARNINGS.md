@@ -850,3 +850,40 @@ These four rules form the layered defense:
 4. CHECKLIST #55: phase scope check (catch architectural-framing errors)
 
 If this rule is itself followed by a fifth-class architectural recurrence, the right fix is probably "slow down on recommendations" not another checklist item.
+
+## L135 (Pass 52) — Phase scope filter discipline: only log decisions affecting current focus phases
+
+**Trigger:** Owner Pass 52 verbatim: "in all decisions and bugs, we will only focus on those that affect phase 1 and 2 for the time being" → clarified to "Phase 0 and 2. Interpretation B" (Phase 0 sub-phases + Stage 2; Stage 3/4/5 OUT of scope).
+
+Caught lapse: Theme 6 (DEC-129/130/132) approved as Stage 3→4 gates when scope filter was implicit. Same L132/L134 root pattern.
+
+**Why this matters:** L132/CHECKLIST #53 (grounded format) catches static scope errors. L134/CHECKLIST #55 (phase scope check) catches patch-vs-system-design errors. **L135/CHECKLIST #56 catches FORWARD-LOOKING vs CURRENT-FOCUS errors:** decisions that are technically correct for Stage 3+ but irrelevant to current Phase 0+Stage 2 focus.
+
+**Rule (CHECKLIST #56):** Every decision walkthrough must include explicit scope-filter check:
+1. **What phase does this decision primarily affect?** (Phase 0 sub-phase / Stage 1 / Stage 2 / Stage 3 / Stage 4 / Stage 5)
+2. **Is that phase in current owner-defined focus?** (current focus per Pass 52: Phase 0 + Stage 2)
+3. **If NOT in focus:** mark DEFERRED_TO_<TARGET_STAGE>; do not approve in current batch
+4. **If IN focus:** proceed with normal walkthrough
+
+**Catches:** Stage 3+ scope decisions getting batched with Phase 0/Stage 2 patches; future-deployment concerns leaking into current backtest validation work.
+
+**Layered defense expanded to 6 levels (Pass 52):**
+- CHECKLIST #43/#46/#47: catch duplicates (prior-art + three-source + full-text)
+- CHECKLIST #53: catch scope/feasibility errors (grounded-recommendation format)
+- CHECKLIST #54: catch empirical-failure errors (test-run audit gate)
+- CHECKLIST #55: catch architectural-framing errors (phase scope = patch vs system-design)
+- **CHECKLIST #56 (NEW): catch focus-phase scope-filter errors (Stage 3+ vs current Phase 0+Stage 2)**
+- Owner adversarial review (informal, ongoing): catches everything else
+
+**Pair:** L135 + CHECKLIST #56. Per owner standing exception for process-discipline files.
+
+**Honest meta-observation:** This is the seventh Pass 52 process recurrence (per L132 lineage). Pattern of process-discipline rules is now substantial:
+- L114-L131: logging discipline
+- L132: grounded-recommendation format (scope/feasibility)
+- L133: test-run audit gate (empirical validation)
+- L134: phase scope check (architectural framing)
+- **L135 (THIS): focus-phase scope filter (forward-looking deferral)**
+
+Each new rule addresses a different surface of the same underlying L132 root cause: pattern-matching to "what a good system should have" without checking what THIS system, at THIS phase, actually needs. Owner's catches are increasingly subtle scope errors that broader rules don't catch.
+
+If a 7th-class architectural recurrence emerges after L135, the right fix is no longer additional procedural rules — it's an explicit pre-walkthrough scope-clarification step where I ask owner before walking through any phase-deliverable decision: "what phases are in current focus?"
