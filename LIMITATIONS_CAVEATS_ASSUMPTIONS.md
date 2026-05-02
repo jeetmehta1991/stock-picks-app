@@ -566,3 +566,24 @@ Process: when populating validation table, mark obsolete decisions clearly; do n
 - 4D+ combinations infeasible without paid-tier data (longer history) or Bayesian shrinkage (engineering complexity)
 Cells with n<30 trades fall back to marginal-best (next-broader cell). Live decision lookup table includes fallback hierarchy. Strategies relying on 4D+ specific conditions ("crisis regime + tech sector + earnings-imminent + high VIX") will likely produce INSUFFICIENT_CONFIDENCE flags; verdict reverts to marginal best across one or two dimensions.
 **Forward-link:** Phase D refinement: implement Approach C (Bayesian shrinkage) for top-tier strategies after first Phase 1B-α run reveals which 4D+ cells matter most.
+
+## Section — Pass 52 Theme 7 batch 1 caveats
+
+### CAV-063 — DEC-067 partial implementation blocked on regime classifier + event calendar dependencies
+
+**Source:** DEC-067/DEC-432-434 PENDING (Pass 52)
+**Status:** ACTIVE
+**Caveat:** DEC-067 9 new exit methods include 2 with hard dependencies: `exit_volatility_regime` requires DEC-388 (VIX SMA + hysteresis regime classifier, currently PENDING); `exit_macro_event` requires DEC-409 (event-window tags, currently PENDING). Implementation order: methods 1-3 (chandelier/PSAR/supertrend) + indicator implementation first; methods 5-8 (volume_climax/rsi_extreme/partial_scaleout/kelly_target) second; methods 4 (vol_regime) + 9 (macro_event) deferred until deps land.
+**Operational impact:** Until DEC-388 + DEC-409 land, EXIT_STRATEGIES dict has 15 methods (8 existing - 1 violator + 1 fixed + 7 new) instead of full 17. Phase 1B-α dimensional framework (DEC-422) operates on 15-method universe initially; expands to 17 when deps land.
+**Forward-link:** Resolved when DEC-388 + DEC-409 implementations complete.
+
+### CAV-064 — DEC-070 portfolio-level exit philosophy tension
+
+**Source:** DEC-070 DEFERRED_TO_STAGE_3 (Pass 52)
+**Status:** ACTIVE
+**Caveat:** PROJECT_PLAN section 12 risk philosophy: "Buy dips in volatile and crisis markets. Most professional systems are forced out of crisis trades by drawdown rules; ours leans in within disciplined size constraints." DEC-070 portfolio drawdown limit (>30% flatten) is in tension with this philosophy. Two paths to reconcile at Stage 3 prep:
+- Path A: drawdown limit informational-only (logs warning); does not auto-flatten; owner manually overrides
+- Path B: hard limit at 30% auto-flattens regardless of regime; crisis dip-buying gated by current portfolio drawdown state
+- Default proposal: Path B with owner-configurable thresholds (warn 20%, freeze entries 25%, flatten 30%)
+**Operational impact:** No impact during Phase 1B-α (per-strategy independent evaluation). Owner direction needed at Stage 3 prep theme to resolve which path. Decision shapes whether the system's expressed risk philosophy ("buy crisis dips") is honored or overridden by capital-preservation logic.
+**Forward-link:** Resolved at Stage 3 prep theme (post BUG-095 portfolio class fix).

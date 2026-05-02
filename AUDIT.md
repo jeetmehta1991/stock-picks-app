@@ -22035,3 +22035,83 @@ No new decisions. No CAV updates. No process discipline changes. This is purely 
 ### Pending count: 329 (unchanged — correction only, no new decisions)
 
 *DEC-422 schema correction (Option A inline) per owner directive. 6th DEC-422 drafting lapse documented honestly. Per CHECKLIST #43 (prior-art verified — `metrics.py` schema + DEC-353 RESOLVED + DEC-081 Phase C + DEC-110); #45 (compliance statement); #46 (three-source check applied); #47 (full-text grep applied to metrics.py); #51 (explicit owner approvals on all 4 sub-questions); #53 (grounded format with explicit grep evidence); #54 (test signals updated for 5-gate verdict); #55 (system-design-level decision; correction is also system-design-level → inline edit per Option A keeps the architectural framing visible in the same entry).*
+
+---
+
+## AUDIT PASS 52 — Theme 7 batch 1 closure (DEC-067 revised + DEC-070 DEFERRED + DEC-075 derived) + BUG-285 (fixed_3r_2r DEC-353 violation) + CLAUDE.md mandatory pre-flight rule
+
+**Trigger:** Owner Pass 52 verbatim: "apply each checklist item as a pre-condition gate before stating each recommendation. Add in Claude md so its the mandatory standard going forward. Ensure that there are no exceptions. Understand that not each item is applicable to each reponse. Still mandatorily referring to checklist before each and every recommendation can not be skipped. Approve all your latest recommendations. What do you mean by DEC-417 retroactive run?"
+
+### CLAUDE.md mandatory pre-flight checklist rule added
+
+Codified in CLAUDE.md Critical Rules section (top of section, highest visibility):
+- Every recommendation must be preceded by visible pre-flight verification block applying full CHECKLIST.md (55 items)
+- Pre-flight executes BEFORE recommendation stated, not after
+- Each applicable item explicitly noted ✅ / ⚠ / 🔴 with brief evidence
+- N/A items must be explicitly marked (silent skipping not allowed)
+- 🔴 failures HALT — do not draft recommendation; report failure + ask direction
+- Critical findings from pre-flight reported BEFORE recommendation, with rec revised
+- End-of-response compliance statement (CHECKLIST #45) is per-response gate; does NOT replace per-recommendation pre-flight gates
+- Past failures: 6+ DEC-422 framework drafting lapses; owner caught all 6
+- Applies to: new recs, revisions, scope expansions, batch reviews, framework proposals, sub-decision logging, schema/field additions
+- Does NOT apply to: pure logging actions, git ops, simple acknowledgments, owner-direction clarifications
+
+### Theme 7 batch 1 status: 3 of 5 closed (DEC-068 expanded prior commit, DEC-069 SUPERSEDED prior commit, DEC-067/070/075 this commit)
+
+| Decision | Resolution | Sub-decisions | Status |
+|---|---|---|---|
+| DEC-068 | EXPANDED prior commit (DEC-423 per-cell bootstrap) | DEC-423 | PENDING |
+| DEC-069 | SUPERSEDED_BY_DEC-422 prior commit | DEC-424 | SUPERSEDED |
+| **DEC-067** | Owner-approved revised scope (~6-8 days, includes BUG-285 cleanup) | DEC-432/433/434 | PENDING |
+| **DEC-070** | DEFERRED_TO_STAGE_3 per L134/CHECKLIST #55 | — | DEFERRED |
+| **DEC-075** | Owner-approved derived-metric scope (~0.5 days) | DEC-435 | PENDING |
+
+### NEW BUG-285 — fixed_3r_2r exit method violates DEC-353 (HIGH)
+
+Surfaced during DEC-067 pre-flight Pass 52 turn 7:
+- `EXIT_STRATEGIES["fixed_3r_2r"] = lambda ...: exit_fixed_target(df, ed, ep, d, a, 3.0, 2.0)`
+- 3R target / 2R stop = **1.5:1 reward:risk**
+- DEC-353 RESOLVED (Pass 52): "NEVER test below 2:1 anywhere in the system"
+- **This is an existing-code violation.** Any prior backtest results that included `fixed_3r_2r` were computed with non-compliant exit method.
+- Fix per DEC-067 approval: modify to `fixed_4r_2r` (4R/2R = 2:1) OR remove from EXIT_STRATEGIES dict.
+- HIGH severity because it directly violates a HARD CONSTRAINT (DEC-353) and corrupts comparative backtest results.
+- Logged BUG-285; resolution joint with DEC-067 implementation.
+
+### DEC-067 implementation phases
+
+| Sub-decision | Phase | Effort | Dependencies |
+|---|---|---|---|
+| DEC-432 | Phase A: 3 new indicators (chandelier, PSAR, supertrend) | ~2-3 days | None |
+| DEC-433 | Phase B: 6 simple new exit methods (chandelier, psar, supertrend, vol_climax, rsi_extreme, partial_scaleout, kelly_target) + BUG-285 cleanup | ~3 days | DEC-432 |
+| DEC-434 | Phase C: 2 dependent exit methods (volatility_regime, macro_event) | ~1 day post-deps | DEC-388 + DEC-409 |
+
+Total: ~6-8 days (revised up from prior ~3-4 day estimate; pre-flight surfaced indicator-implementation requirement).
+
+### DEC-070 deferral rationale per L134/CHECKLIST #55
+
+Per phase scope check rule:
+- DEC-070 = system-design-level (portfolio architecture)
+- Cannot be batched with patch-level decisions
+- Must be deferred to focused walkthrough at Stage 3 prep theme
+- Sequencing: BUG-095 (CRITICAL OPEN) → DEC-024 (entry-side concentration) → DEC-070 (exit-side)
+- Status: DEFERRED_TO_STAGE_3
+- Owner direction recorded for future Stage 3 prep: Path A (informational drawdown limits) vs Path B (hard limits) — CAV-064 captures the philosophy tension
+
+### DEC-075 derived-metric simplification
+
+Pre-flight surfaced AEP is computable from existing MFE (already tracked in OpenTrade dataclass):
+- `aep_pct = (mfe - exit_pnl) / mfe` for winning trades only
+- None for losing trades (no peak to retrace from)
+- Per-strategy `mean_aep_pct` aggregate
+- POOR_EXIT_TIMING flag if mean > 0.5
+- Effort revised from ~1 day to ~0.5 days (no new tracking infrastructure)
+
+### Caveats added (CAV-063 + CAV-064)
+
+- **CAV-063** — DEC-067 partial implementation blocked on DEC-388 + DEC-409 dependencies; 15-method universe initially, expands to 17 when deps land
+- **CAV-064** — DEC-070 portfolio-level exit philosophy tension (PROJECT_PLAN buy-crisis-dips vs capital-preservation drawdown limit); owner direction needed at Stage 3 prep on Path A vs Path B
+
+### Total decisions logged this commit: 4 sub-decisions (DEC-432/433/434/435) + 1 BUG (BUG-285)
+### Pending count: 329 + 4 = 333 (DEC-070 status flipped PENDING → DEFERRED, so +3 net new PENDING)
+
+*Theme 7 batch 1 closure with proper L134/CHECKLIST #55 application (DEC-070 deferred as system-design-level rather than batched with patches). Pre-flight gate codified in CLAUDE.md as mandatory standard. BUG-285 surfaced from pre-flight verification, captures existing-code DEC-353 violation. Per CHECKLIST #43 (prior-art verified — DEC-353/388/409/422 + BUG-095 + Phase 0.B); #45 (compliance statement); #46 (three-source check); #47 (full-text grep); #48 (sub-decisions formally logged); #49+#50 (CAV-063/064 cross-referenced inline); #51 (explicit "Approve all your latest recommendations"); #52 (advancement parsed); #53 (grounded format applied per recommendation last turn); #54 (test signals specified); #55 (phase scope check applied — DEC-070 deferred for proper system-design walkthrough).*

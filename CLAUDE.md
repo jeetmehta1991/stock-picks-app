@@ -7,6 +7,17 @@
 
 ## Critical Rules
 
+- **MANDATORY PRE-FLIGHT CHECKLIST (Pass 52 owner directive — no exceptions):** Every recommendation in every response must be preceded by a visible pre-flight verification block applying the full CHECKLIST.md (currently 55 items). Format:
+  - Pre-flight executes BEFORE the recommendation is stated, not after
+  - Each applicable checklist item explicitly noted as ✅ / ⚠ / 🔴 with brief evidence (grep output, audit cross-reference, project scope check)
+  - Items NOT applicable to a given recommendation must be explicitly marked N/A — silent skipping is not allowed
+  - If ANY item fails (returns 🔴), HALT — do not draft the recommendation; report the failure and ask for direction
+  - Critical findings surfaced during pre-flight (existing-code violations, scope conflicts, prior-art duplicates, phase-scope errors) must be reported BEFORE the recommendation, with the recommendation revised to incorporate the finding
+  - End-of-response compliance statement (per CHECKLIST #45) is the per-response gate; it does NOT replace per-recommendation pre-flight gates
+  - Past failures: 6+ consecutive lapses in DEC-422 framework drafting (Pass 52 turns 1-6) where end-of-response self-check missed errors that pre-flight would have caught (sector concentration entry-vs-exit, phase scope, dynamic-vs-static framing, dimensional coverage gaps, hardcoded strategy count, hold-duration-as-input, schema missing R:R/ROI/profit factor, existing-code DEC-353 violation in fixed_3r_2r). Owner caught all 6 with common-sense questions. The pre-flight gate is the systematic fix.
+  - Applies to: new recommendations, revisions to prior recommendations, scope expansions, batch reviews, framework proposals, sub-decision logging, schema/field additions
+  - Does NOT apply to: pure logging actions (committing already-approved decisions to audit), git operations, simple acknowledgments, owner-direction responses where Claude is asking clarification rather than recommending
+
 - **ALL decisions need explicit owner approval before implementation. No exceptions.**
 - **All API runs costing money: small test batch → manual review → owner approval → scale. NEVER jump from "data ready" to "full run". Past mistakes (L86, L95) cost $150 in discarded work — same pattern, different operation, same outcome unless this discipline is mandatory. See CHECKLIST #13, #22, #23, #29.**
 - Never change rules, filters, thresholds, or parameters without approval. Recommend only.
@@ -164,3 +175,14 @@ All 9 must pass overall for a strategy to advance. Additionally, each strategy g
 ### Strategy Changes
 - No strategy or rule changes without explicit owner approval. Every threshold, filter, and parameter change requires sign-off.
 - The per-regime verdict system means a strategy that fails in one regime is NOT discarded — it is tagged for the regimes where it passes.
+
+### Pre-Recommendation Checklist Application (Pass 52 owner-mandated standing rule)
+**MANDATORY: Apply the full CHECKLIST.md as a pre-condition gate before stating EVERY recommendation. No exceptions.**
+
+- Before each recommendation in any response, explicitly reference and verify each applicable checklist item.
+- Items not applicable to a given recommendation must still be referenced (mark as N/A with reason). The act of referencing each item is what catches errors — skipping the reference is what allows pattern-match-without-verification failures.
+- Verification format: per-recommendation pre-flight block showing checklist items + status + evidence (grep output, cross-references, math). NOT deferred to end-of-response compliance statement.
+- End-of-response compliance statement (#45) remains required, but it is post-hoc. The pre-flight per-recommendation block is what actually catches errors before they become stated recommendations.
+- This rule applies to: recommendations, proposed schemas, threshold values, scope claims, framework designs, dimensional inventories, ANY assertion of "this is what we should do." Does NOT apply to: factual answers to direct questions, verification reports of code state, status updates.
+- Pattern lineage: 6 consecutive lapses in DEC-422 framework drafting (Pass 52) caught by owner because end-of-response compliance was post-hoc. Owner mandate: pre-flight per recommendation is the only way to make verification automatic.
+- If a checklist item flags an issue, the recommendation must be REVISED before stated. Surfacing findings in pre-flight is success, not failure — it's the system working.
