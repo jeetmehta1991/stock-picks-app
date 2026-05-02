@@ -22880,3 +22880,58 @@ IMPLEMENTATION_READINESS_DASHBOARD.md created (~265 lines):
 Counts unchanged this turn: 461 / 312 PENDING / 114 RESOLVED / 10 DEFERRED_TO_STAGE_3 / 2 BLOCKED_ON_BUG-095 / 23 other.
 
 *Per CHECKLIST #43/#46/#47/#56/#57.*
+
+---
+
+## AUDIT PASS 52 turn 37 — Theme X4 Statistical Methodology Blocks 1/2/3 closed
+
+Owner directive: Block 1 - Approve / Block 2 - approve your rec / Block 3 - Approve your rec.
+
+BLOCK 1 — 8 STATISTICAL METHODOLOGY PARENTS FLIPPED PENDING → RESOLVED:
+- DEC-080 (t-stat + Bonferroni) → DEC-400/401
+- DEC-081 (Sharpe + Sortino + tx cost sensitivity) → DEC-402/403/404
+- DEC-082 (Stress-test 2022 + crisis sub-periods Option A) → DEC-405
+- DEC-083 (Tiered min-trades 300/100/50 by strategy class) → DEC-406
+- DEC-085 (Macro correlation comprehensive) → DEC-407/408/409
+- DEC-109 (Rolling 5yr/1yr walk-forward) → DEC-411/412
+- DEC-110 (Deflated Sharpe / PSR Bailey formula) → DEC-413
+- DEC-111 (Stationarity tests: ADF + rolling + Chow) → DEC-414/415/416
+
+All 8 parents had Pass 52 owner-approved substantive scope; bookkeeping flip per status drift pattern caught from X53/X1 cleanups.
+
+BLOCK 2 — DEC-407 + DEC-448 MERGE DOCUMENTED:
+Both decisions add FRED series to SERIES_MAP — combined effort.
+- DEC-407 (DEC-085 Phase A): PAYEMS, MANEMP, UMCSENT, RSAFS, HOUST + 3 more = ~8 series
+- DEC-448 (DEC-410 audit): VIXCLS, DTWEXBGS, DGS2, HY spread, ICSA = 5 series
+- Combined: ~12-13 unique series (some overlap; verify during implementation)
+- Joint implementation effort: ~0.5-1d total
+- No formal status change; both stay PENDING with substantive scope intact; implementation engineer treats as single combined work item
+
+BLOCK 3 — REVISIT_AFTER_BACKTEST TAGS APPLIED (17 X4 sub-decisions):
+Per reversibility framework adopted Pass 52 turn 35 — most X4 sub-decisions are cheap-to-reverse (config values, threshold levels, reporting additions) tunable post-Phase 1B-α empirical results.
+Tagged: DEC-400/401/402/403/404/405/406/407/408/409/411/412/413/414/415/416/423
+
+Implementation roadmap (recommended order):
+1. Cheap stats additions: DEC-400/401/402/403/404 (~3d)
+2. DEC-406 tiered min-trades (~0.5d)
+3. DEC-414/415/416 stationarity tests (~1.5d)
+4. DEC-407+448 combined FRED expansion (~0.5-1d)
+5. DEC-413 Deflated Sharpe (~1d)
+6. DEC-405 stress test runner (~2d)
+7. DEC-408/409 macro correlations + event tags (~2.5d)
+8. DEC-412 rolling walk-forward (HARD — ~3-4d)
+9. DEC-423 per-cell bootstrap (HARD — ~3-4d)
+10. DEC-411 (BLOCKED on DEC-298 PIT cache rebuild)
+
+Total Theme X4 implementation effort: ~17-19 days.
+
+THEME X4 STATUS post-this-commit:
+- 8 parents → RESOLVED ✓
+- 17 sub-decisions → PENDING with REVISIT_AFTER_BACKTEST tags
+- 1 blocked (DEC-411 on DEC-298)
+- 1 hard-to-reverse joint pair (DEC-412 + DEC-423 affecting all strategy verdicts and cube cells)
+- All in Stage 2 scope; no #56 deferrals
+
+Counts: 461 / 304 PENDING / 122 RESOLVED / 10 DEFERRED_TO_STAGE_3 / 2 BLOCKED_ON_BUG-095 / 23 other.
+
+*Per CHECKLIST #43/#46/#47/#51 (explicit per-block approvals)/#56 (no deferrals — all Stage 2)/#57.*
