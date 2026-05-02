@@ -23025,3 +23025,35 @@ RETROACTIVE: 9 cheap items committed turn 46 without per-decision visibility for
 Counts: 461 / 226 PENDING / 194 RESOLVED-DECIDED / 10 SUPERSEDED / 10 DEFERRED_TO_STAGE_3 / 7 BLOCKED_ON_X / 14 other.
 
 *Per CHECKLIST #43/#46/#47/#51 (explicit approval per item)/#56/#57. New visibility standard adopted as behavioral discipline, not new rule.*
+
+---
+
+## AUDIT PASS 52 turn 50 — DEC-338 closed with owner sub-choice (A); Theme X55 walkthrough presented for owner review
+
+Owner Pass 52 turn 50: "DEC-338 - A; proceed with Batch X55"
+
+DEC-338 (Conversion logic semantics) → RESOLVED-DECIDED with sub-choice (A):
+Implement actual position open in opposite direction. Conversion event handler creates new opposite-direction trade in trade ledger with parent_trade_id cross-reference; preserves the converted label as audit trail.
+- Effort: ~1d
+- Test signal: conversion event creates new trade; parent marked closed-via-conversion; trade pair queryable
+
+X54 NOW FULLY COMPLETE: 13 of 13 sub-decisions in terminal state.
+
+THEME X55 WALKTHROUGH PRESENTED (this turn):
+13 sub-decisions across 2 sub-themes — Documentation Sync (DEC-343/344) + Strategy Coverage Gaps (DEC-350/352/354 umbrella + DEC-355-362 chart pattern strategies).
+
+Per-decision recommendations made per new visibility standard (turn 47-49). Owner direction required for Option C verification gate:
+- 2 cheap items (DEC-344, DEC-354) — auto-executable on rec approval
+- 8 medium items (DEC-343, DEC-352, DEC-355, DEC-356, DEC-357, DEC-359, DEC-360, DEC-362) — pre-approval needed
+- 3 hard items (DEC-350, DEC-358, DEC-361) — pre-approval with sandbox-prototype acknowledgment
+
+Owner direction also needed on:
+- DEC-350 scope limit (daily + weekly only)?
+- DEC-358 single sub-decision vs split into 3 (DEC-358a/b/c)?
+- DEC-343 joint-with-DEC-445 timing?
+
+Total Theme X55 implementation effort estimate: ~33-41 engineering days for full chart pattern roster expansion.
+
+Counts: 461 / 225 PENDING / 195 RESOLVED-DECIDED / 11 SUPERSEDED / 10 DEFERRED_TO_STAGE_3 / 7 BLOCKED_ON_X / 13 other.
+
+*Per CHECKLIST #43/#46/#47/#51/#56/#57. New visibility standard applied per item.*
