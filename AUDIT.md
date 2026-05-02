@@ -22224,3 +22224,17 @@ Owner approved 1-3; flagged 4 (DEC-079) as also unclear.
 Counts: 441 → 443 (+2 from bifurcation: DEC-078A + DEC-078B); pending 328 → 327 (DEC-076/077 lose PENDING; DEC-078A gains PENDING; DEC-078B doesn't count as PENDING; DEC-079 NEEDS_CLARIFICATION not PENDING). Deferred 7 → 9 (+ DEC-076 + DEC-078B). Theme 7 batch 2 complete.
 
 *Per CHECKLIST #43/#46/#47 (prior-art + three-source + full-text); #51 (explicit owner approvals 1-3); #55 (system-design flagged); #56 (focus-phase scope filter applied per decision); #57 candidate (bifurcation convention deferred pending pattern recurrence). Pre-flight applied internally per owner Pass 52 directive "no need to show checklist referral unless necessary."*
+
+---
+
+## AUDIT PASS 52 — Theme 6 leftover closure (DEC-131 + DEC-420)
+
+Owner approved both recommendations as proposed.
+
+**DEC-131** updated with two-gate logic: absolute Sharpe improvement ≥0.2 OR relative improvement ≥15% of baseline (whichever clears) + Bonferroni p<0.05. Catches both CAV-060 failure modes (low-baseline trap + high-baseline trap).
+
+**DEC-420** updated with three-case pairing: rules=Y/agent=Y paired diff; rules=Y/agent=N counter (agent saves/misses rules outcome); rules=N/agent=Y agent-originated; rules=N/agent=N skipped. Prevents disagreement under-counting bias. Effort revised ~2d → ~3d for three-case correctness.
+
+Theme 6 fully closed: DEC-129/130/132 DEFERRED_TO_STAGE_3 (prior turn); DEC-131/420 approved as in-scope Stage 2 work (this turn).
+
+*Per CHECKLIST #43/#46/#47/#51/#53/#54/#55/#56 — pre-flight applied internally per owner Pass 52 directive on conciseness.*
