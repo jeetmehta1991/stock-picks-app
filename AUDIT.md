@@ -24703,3 +24703,41 @@ Counts post-W4: 462 / 80 PENDING / 297 RESOLVED-DECIDED / 23 DEFERRED_TO_STAGE_3
 PENDING now under 18%. Audit at 82.7% resolved (382/462 in terminal states).
 
 *Per CHECKLIST #25 (honest correction X43 = Data History not Phase 0.B Portfolio Class)/#43 (pre-flight caught 2 supersessions)/#46/#47/#51 (explicit owner approval all 6 recs)/#56 (1 Stage 2 + 2 Stage 3 + 1 Stage 4)/#57 (use-case mapping: data-history cluster + production-control-plane cluster)/#58 (5-file atomic update demonstrated 4th time).*
+
+---
+
+## AUDIT PASS 52 turn 115 — Bulk-Sweep Batch B (Risk Management): 6 decisions
+
+Owner Pass 52 turn 114: "Approve your recs for all pending decisions" — full delegation across 80 PENDING (excl DEC-042)
+Owner directives: 1=B (theme-batched), 2=b (HARD-REVERSIBILITY flag-and-continue), 3=DEC-042 stays PENDING, 4=yes (bug priority — N/A as no bug-related PENDING)
+
+Beginning bulk sweep with theme-batched commits.
+
+BATCH B (Risk Management) — 6 decisions across 2 themes (X15 + Group C):
+
+RESOLVED-DECIDED (4):
+- DEC-018 Per-ticker stop-out cooldown 5d (Sprint 6 ~0.5d)
+- DEC-019 Liquidity filter timing entry-only + exit re-validate (Sprint 4 ~0.5d)
+- DEC-135 Per-ticker max-loss cap -10% rolling 30d (Sprint 6 ~1d)
+- DEC-136 Portfolio rebalancing threshold-based (Sprint 6 ~0.5d)
+
+SPLIT SCOPE (1):
+- DEC-134 USD/CAD FX exposure: tracking RESOLVED-DECIDED Stage 2 Sprint 6 ~1d + hedge implementation DEFERRED_TO_STAGE_4
+
+REJECTED (1):
+- DEC-133 Max gross long/short/net exposure caps — REJECTED + REVISIT_DURING_STAGE_3 (medium-high risk philosophy precedent DEC-090)
+
+Batch B effort: ~3.5d Stage 2 immediate (Sprint 4 +0.5d, Sprint 6 +3d)
+
+NO HARD-REVERSIBILITY FLAGGED — proceeded without owner halt.
+
+Counts post-Batch-B: 462 / 74 PENDING / 304 RESOLVED-DECIDED / 23 DEFERRED_TO_STAGE_3 / 11 DEFERRED_TO_STAGE_4 / 22 SUPERSEDED / 10 BLOCKED_ON_X / 14 other.
+
+CHECKLIST #58 invoked (5-file atomic):
+1. AUDIT_INDEX.md (6 flips)
+2. AUDIT.md (this narrative)
+3. ENGINEERING_REGISTER.md (Sprint 4 +DEC-019, Sprint 6 +DEC-018/134/135/136)
+4. DOCUMENTATION_REGISTER.md (Bucket D +DEC-134 Stage 4+ portion; Rejected +DEC-133)
+5. IMPLEMENTATION_READINESS_DASHBOARD.md (Sprint 4/6 effort delta)
+
+Next: Batch C (Code Quality + Defects) — 9 decisions across X27 + X47 + X39.

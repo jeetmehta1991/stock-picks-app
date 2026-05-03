@@ -472,3 +472,15 @@ DEC-138 cold-start CI test fits Sprint 6 architecture hygiene block; parallel-ab
 
 DEC-158 + DEC-266 + DEC-298 (BLOCKED) form coherent Stage 3+ data-history evaluation cluster. Empirical gate post-Phase-1B-α: does extending history beyond 2018-01-01 baseline improve walk-forward Sharpe stability materially? If yes → activate ~5-7d data-history extension. If no → DEC-109 Option B 2018-01-01 baseline remains canonical.
 
+
+---
+
+## Bulk Sweep Batch B (Risk Management) Updates (Pass 52 turn 115)
+
+| Sprint | Pre-B | Post-B | Delta |
+|---|---|---|---|
+| Sprint 4 | ~33.75-46.25d | ~34.25-46.75d | +0.5d |
+| Sprint 6 | ~39.25-48.75d | ~42.25-51.75d | +3d |
+
+Total Stage 2: ~271.5-341.5 → ~275-345 engineering days
+

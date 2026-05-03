@@ -317,3 +317,16 @@ Per CHECKLIST #58 — Bucket D additions for Walkthrough 4 deferred decisions.
 | DEC-158 | Extend backtest period to 2008-2024 (16 years for crisis coverage) — coordinated with DEC-266 | Stage 3 paper trading evaluation; gate via empirical Sharpe-stability evidence post-Phase-1B-α; joint cluster DEC-266/DEC-298; ~5-7d when activated |
 | DEC-266 | Data history extension (2020 → 2010 for walk-forward + crisis coverage) | Stage 3 paper trading evaluation; same boundary question as DEC-158; activates jointly; ~5-7d when activated |
 
+
+---
+
+## Batch B (Risk Management) Additions (Pass 52 turn 115)
+
+### Bucket D additions (1 — Stage 4+ deferred)
+| DEC | Description | Activation Trigger |
+|---|---|---|
+| DEC-134 (Stage 4+ portion) | FX hedge implementation (Stage 2 tracking-only portion in Sprint 6) | Stage 4+ live trading; joint DEC-255 Norbert Gambit; ~2-3d |
+
+### Rejected decisions (1)
+- DEC-133 REJECTED + REVISIT_DURING_STAGE_3: Max gross long/short/net exposure caps. Same precedent as DEC-090 sector cap REJECTED (owner medium-high risk philosophy)
+

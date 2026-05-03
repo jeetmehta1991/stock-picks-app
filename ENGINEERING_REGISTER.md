@@ -617,3 +617,22 @@ Sprint 6 effort revised: +1.5d → ~39.25-48.75d total
 - Total: **+1 ENG decision**
 
 (Other 5 decisions are supersessions/deferrals — 0 net-new ENG sprint-slot effort)
+
+---
+
+## Batch B (Risk Management) Additions (Pass 52 turn 115)
+
+Per CHECKLIST #58 — sprint-tracker assignment for 5 ENG decisions in Batch B.
+
+### Sprint 4 (+1)
+- DEC-019 (Liquidity filter timing) — joint DEC-321/366 ~0.5d
+
+### Sprint 6 (+4)
+- DEC-018 (Per-ticker stop-out cooldown 5d) ~0.5d
+- DEC-134 (USD/CAD FX exposure tracking — Stage 2 portion) ~1d
+- DEC-135 (Per-ticker cumulative max-loss cap rolling 30d) ~1d
+- DEC-136 (Portfolio rebalancing threshold-based) ~0.5d
+
+Sprint 4 effort: +0.5d → ~34.25-46.75d total
+Sprint 6 effort: +3d → ~42.25-51.75d total
+
