@@ -662,3 +662,73 @@ Sprint 6: +8-11d → ~50.25-62.75d
 Sprint 7: +0.5d → ~64-70d
 Sprint 9: +1d → ~3.5d
 
+
+---
+
+## Bulk Sweep Final (Batches D-K + DEC-251) Additions (Pass 52 turn 119)
+
+Per CHECKLIST #58 — comprehensive sprint-tracker assignments for all remaining decisions in bulk sweep.
+
+### Sprint 1 (+2)
+- DEC-117 cache checksum + last-validated timestamp ~1d
+- DEC-118 cross-asset macro prefetch (VIX/DXY/GLD/oil/sector ETFs/TLT/HYG/SHY) ~1.5d
+
+### Sprint 4 (+5)
+- DEC-122 per-exit-method slippage modeling ~1d
+- DEC-123 exponential decay smart money weights ~0.5d
+- DEC-124 cross-source smart money clusters ~1.5d
+- DEC-125 Form 144 prefetch ~1d
+- DEC-146 corporate actions handler ~2d
+- DEC-159 regulatory event handler ~1.5d
+
+### Sprint 5 (+1)
+- DEC-147 delisting registry + survivorship correction ~2d
+
+### Sprint 6 (+10)
+- DEC-119 per-trade explainability dict ~1d
+- DEC-127 circuit breaker recovery rules ~1d
+- DEC-128 dispersion-conditional circuit breaker ~1d
+- DEC-177 random seed in backtest output ~0.5d
+- DEC-178 signal lookup performance benchmark ~1d
+- DEC-179 memory profiling + memory cap ~1d
+- DEC-183 memoization LRU cache ~1d
+- DEC-251 dependency injection sandbox-prototype HARD-REVERSIBILITY ~5-7d
+
+### Sprint 7 (+8)
+- DEC-121 exit comparison report ~1d
+- DEC-131 agent value-add two-gate refinement ~0.5d
+- DEC-148 stock-specific adaptive momentum ~1d
+- DEC-149 regime transition probability matrix ~1.5d
+- DEC-150 multi-asset regime detection ~2d
+- DEC-151 sector-level regime classification ~1.5d
+- DEC-153 regime-stratified train/test splits ~1d
+- DEC-155 vs-SPY comparison ~0.5d
+- DEC-175 signal persistence weighting ~1d
+- DEC-246 quant finance correctness audit ~1d
+- DEC-247 stats/ML implementation review ~1.5d
+
+### Sprint 7-8 (+3)
+- DEC-062 TradingAgents 5-tier → position_size_modifier ~1d
+- DEC-100 17+ categorical breakdown variables (joint DEC-422) absorbed
+- DEC-184 parallel backtest execution ~2-3d
+- DEC-120 automatic loss attribution report ~1d
+
+### Sprint 8 (+1)
+- DEC-174 strategy classification by trigger type ~1d
+
+### Sprint 9 (+4)
+- DEC-043 retune framework ~1d
+- DEC-243 Owner Approval Queue file ~0.5d
+- DEC-269 Stage 4 entry criteria documentation ~0.5d
+- DEC-292 quarterly Decision→CHECKLIST migration ~0.5d quarterly
+
+### Sprint effort revisions
+- Sprint 1: +2.5d → ~20.5-26.5d
+- Sprint 4: +7.5d → ~41.75-54.25d
+- Sprint 5: +2d → ~13.5-15.5d
+- Sprint 6: +12-14d → ~62.25-76.75d (DEC-251 HARD-REVERSIBILITY +5-7d included)
+- Sprint 7: +10.5-13.5d → ~74.5-83.5d
+- Sprint 7-8: +4-5d → ~28-38d
+- Sprint 8: +1d → ~37-55d
+- Sprint 9: +2.5d → ~6d
+

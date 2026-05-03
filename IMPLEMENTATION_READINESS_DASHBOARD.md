@@ -498,3 +498,50 @@ Total Stage 2: ~271.5-341.5 → ~275-345 engineering days
 
 DEC-251 FLAGGED HARD-REVERSIBILITY — awaiting owner approval before sprint slot assignment.
 
+
+---
+
+## Bulk Sweep Final (Batches D-K + DEC-251) Updates (Pass 52 turn 119)
+
+### Sprint Effort Estimates (FINAL POST-SWEEP)
+
+| Sprint | Pre-Sweep | Post-Sweep | Total Delta from Pass 52 Start |
+|---|---|---|---|
+| Sprint 1 (Phase 0.A) | ~18-24d | ~20.5-26.5d | +13.5-17.5d (3x growth) |
+| Sprint 2 (Engine Bug Fixes) | ~25.5-30.5d | ~25.5-30.5d (unchanged) | +16.5-21.5d (3x) |
+| Sprint 3 (Portfolio class) | ~8-11d | ~8-11d | +3-4d |
+| Sprint 4 (DEC-410 audit) | ~34.25-46.75d | ~41.75-54.25d | +36.75-47.25d (8x growth) |
+| Sprint 5 (Universe management) | ~11.5-13.5d | ~13.5-15.5d | +8.5-7.5d |
+| Sprint 5 NEW Position Sizing | ~3.5d | ~3.5d | new |
+| Sprint 6 (Phase 0.E + Hygiene) | ~50.25-62.75d | ~62.25-76.75d | +55.25-66.75d (largest absolute, 6-7x) |
+| Sprint 7 (Statistical Methodology + A/B) | ~64-70d | ~74.5-83.5d | +57.5-64.5d (3-4x) |
+| Sprint 7-8 (Phase 1B-α Cube + Dashboards) | ~24-33d | ~28-38d | +25-33d |
+| Sprint 8 (Strategy categories) | ~36-54d | ~37-55d | +1d |
+| Sprint 9 (Phase 1B-α + ongoing) | ~3.5d | ~6d | new + 2.5d |
+
+### Total Stage 2 Implementation Effort (FINAL)
+
+- Pass 52 start: ~30-40d
+- Post-sweep: **~310-385 engineering days realistic**
+
+### Critical Path Reality Check (FINAL)
+
+- Pass 52 start: ~21-25d minimum
+- Post-sweep: **~125-160 engineering days minimum**
+
+### Total scope expansion vs original Pass 52 starting estimate
+
+- 8-10x scope expansion vs original ~30-40d estimate
+- Hidden in homeless + substantively-homeless decisions: ~280-345 days of engineering work
+
+### Owner Vindication
+
+Owner accountability call-out turn 98 + verification questions turn 108 + bug coverage question turn 110 + bulk-sweep delegation turn 114-118 together revealed:
+- True Stage 2 scope is 8-10x larger than original estimate
+- Hidden scope was distributed across:
+  * Homeless RESOLVED-DECIDED decisions (Phase 2 audit — 217 decisions)
+  * Substantively-homeless engineering decisions (Phase 2 cleanup — 22 decisions)
+  * Bug-decision linkage gap (BUG_REGISTER cross-reference — 148 bugs)
+  * 80 PENDING decisions converted to RESOLVED-DECIDED (this sweep — sprint slots assigned)
+- Going forward CHECKLIST #58 prevents recurrence at all 4 levels
+

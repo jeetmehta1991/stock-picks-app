@@ -330,3 +330,44 @@ Per CHECKLIST #58 — Bucket D additions for Walkthrough 4 deferred decisions.
 ### Rejected decisions (1)
 - DEC-133 REJECTED + REVISIT_DURING_STAGE_3: Max gross long/short/net exposure caps. Same precedent as DEC-090 sector cap REJECTED (owner medium-high risk philosophy)
 
+
+---
+
+## Bulk Sweep Final (Batches D-K + DEC-251) Additions (Pass 52 turn 119)
+
+### Bucket B additions (process methodology — 5)
+- DEC-038 Layered execution with iteration budgets (process methodology, operational across Pass 52)
+- DEC-161 Decision dependency graph (DAG) — graphviz visualization optional Sprint 9
+- DEC-163 Implementation cost estimate per decision — Phase 2 retroactive audit pattern
+- DEC-244 SESSION_START.md (already operational via CLAUDE.md)
+- DEC-292 Decision→CHECKLIST migration (quarterly cadence)
+
+### Bucket D additions (Stage 3+/4+ deferred — 13)
+- DEC-034 Daily loss limits (Stage 4)
+- DEC-035 Tax classification Canadian (Stage 4 + DEC-270 CPA)
+- DEC-157 Synthetic broker outage chaos (Stage 3)
+- DEC-160 Multi-vendor fallback chain (Stage 4)
+- DEC-166 HANDOFF.md template (Stage 3 owner-activated)
+- DEC-168 Incident postmortem template (Stage 3 first-incident)
+- DEC-176 Meta-strategies (Stage 3 post-base-validation)
+- DEC-180 Pre-market checklist (Stage 4 live ops)
+- DEC-181 EOD reconciliation report (Stage 3 paper)
+- DEC-182 Weekly performance review (Stage 3 paper)
+- DEC-185 Incremental backtest updates (Stage 3 daily)
+- DEC-267 Trade event store schema (Stage 3 SQLite, Stage 4 Postgres)
+- DEC-268 Paper-vs-backtest Bayesian comparison (Stage 3)
+- DEC-270 CPA consultation (Stage 4 owner action)
+- DEC-271 Real-time data feed cost (Stage 4)
+- DEC-272 Stage 4 hosting migration plan
+- DEC-273 Disaster recovery plan (Stage 4)
+
+### Bucket C additions (cross-reference / absorbed — 4)
+- DEC-014 Phase 1B passing criteria (absorbed by DEC-422 + DEC-426)
+- DEC-037 Characterization-test-first Phase A (absorbed by DEC-438)
+- DEC-100 17+ categorical breakdown variables (absorbed by DEC-422)
+- DEC-417 Test-run audit gate (already in Sprint 6)
+- DEC-420 DEC-131 implementation (absorbed by DEC-205-216 + DEC-211)
+
+### Rejected (1 + DEC-133 from Batch B)
+- DEC-133 Max gross long/short/net exposure caps — REJECTED per DEC-090 risk philosophy precedent
+
