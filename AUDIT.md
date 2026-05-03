@@ -24070,3 +24070,45 @@ Counts: 462 / 85 PENDING / 299 RESOLVED-DECIDED / 21 DEFERRED_TO_STAGE_3 / 10 DE
 Pending now under 19%. Audit at 81.6% resolved (377/462 in terminal states). Pass 52 has crossed 80% threshold.
 
 *Per CHECKLIST #43 (pre-flight caught 2 supersessions)/#46/#47/#51 (explicit owner approval all 7 specific clarifications + per-rec batch + DEC-220 inspection authorization)/#56 (7 Stage 2 + 1 Stage 3)/#57.*
+
+---
+
+## AUDIT PASS 52 turn 97 — DEC-217/218/219/220 added to Sprint 6 ENGINEERING_REGISTER for execution
+
+Owner Pass 52 turn 96: "Identified improvements (Stage 2 hygiene) - added for execution?"
+
+GAP CAUGHT BY OWNER:
+DEC-220 inspection turn 95 identified two improvements for execution (header comment + --no-ff merge strategy ~0.5d total). DEC-220 status flipped to RESOLVED-DECIDED but improvements lived ONLY in audit text — not in:
+- ENGINEERING_REGISTER.md (sprint roadmap)
+- IMPLEMENTATION_READINESS_DASHBOARD.md (sprint readiness)
+- CHECKLIST.md (task tracker)
+
+Same pattern (also caught) for DEC-217/218/219 — all four X33 architecture hygiene decisions RESOLVED-DECIDED but never added to a sprint slot for execution.
+
+ANTI-PATTERN PARALLEL:
+Same execution-tracking gap as DEC-417 test-run audit gate (which led to Pass 52 catch-mechanism defense framework) — decisions get approved but nobody implements them because they don't appear in any sprint plan.
+
+FIX EXECUTED:
+- ENGINEERING_REGISTER.md Sprint 6 expanded to include DEC-217/218/219/220 (X33 architecture hygiene) alongside catch-mechanism defense (DEC-417/436/437/438/439)
+- Sprint 6 renamed: "Phase 0.E Catch-Mechanism Defense + Architecture Hygiene"
+- DEC-220 priority HIGH within sprint (small effort ~0.5d, resolves governance clarity)
+- Sprint 6 effort revised: ~7-10d → ~14-19d
+- IMPLEMENTATION_READINESS_DASHBOARD.md Sprint 6 entry updated with same scope expansion + effort revision
+
+DEC-220 IMPROVEMENTS NOW TRACKED FOR EXECUTION:
+1. Add header comment to sync_from_claude.yml documenting governance model
+2. Replace --strategy-option=theirs with --no-ff to prevent silent overwrite of owner-edits to main
+
+DEC-217/218/219 ALSO TRACKED:
+- DEC-217 dead code audit (~3-5d)
+- DEC-218 documentation audit framework (~1-2d)
+- DEC-219 GitHub Actions audit (~2d)
+
+BEHAVIORAL TAKEAWAY:
+After flipping a decision RESOLVED-DECIDED with implementation work in scope text, immediately verify the work has a sprint home + task tracker entry. Otherwise the decision is "decided but homeless" — same anti-pattern that DEC-417 catch-mechanism framework was created to address.
+
+Counts unchanged: 462 / 85 PENDING / 299 RESOLVED-DECIDED / 21 DEFERRED_TO_STAGE_3 / 10 DEFERRED_TO_STAGE_4 / 20 SUPERSEDED / 10 BLOCKED_ON_X / 14 other.
+
+This commit modifies tracker docs (ENGINEERING_REGISTER + IMPLEMENTATION_READINESS_DASHBOARD) only; AUDIT_INDEX.md unchanged.
+
+*Per CHECKLIST #25 (honest acknowledgment of tracking gap)/#43 (precise grep across all 3 trackers caught absence)/#46/#47/#51 (owner-prompted execution-tracking)/#57.*

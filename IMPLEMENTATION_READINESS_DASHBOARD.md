@@ -206,9 +206,9 @@ DEC-442/443/444/445/446/447/448/449/450/451/453/454/455/456 (parallel where poss
 
 DEC-363/364/365/372/373/375/376/378/379/380/394/457
 
-### Sprint 6 (Phase 0.E catch mechanisms) — ~7-10 days
+### Sprint 6 (Phase 0.E catch mechanisms + Architecture Hygiene) — ~14-19 days
 
-DEC-417/436/437/438/439
+DEC-417/436/437/438/439 (catch mechanisms) + DEC-217/218/219/220 (X33 architecture hygiene Pass 52 turn 95). DEC-220 fix priority HIGH (~0.5d) — resolves Pass 52 parallel-session attribution + reduces silent-overwrite risk on main.
 
 ### Sprint 7 (Strategy categories) — ~14-18 days
 
@@ -232,7 +232,7 @@ Run actual backtest with full universe + agents + dimensional cube.
 - Sprint 3 (Phase 0.B Portfolio class): ~5-7 days (sequential after Sprint 2)
 - Sprint 4 (DEC-410 audit): ~5-7 days (parallel with Sprint 3)
 - Sprint 5 (Universe): ~5-8 days (parallel with Sprint 3)
-- Sprint 6 (Phase 0.E): ~7-10 days (parallel with Sprint 4-5)
+- Sprint 6 (Phase 0.E + Architecture Hygiene): ~14-19 days (parallel with Sprint 4-5)
 
 **Critical path:** Sprint 1 → Sprint 2 → Sprint 3 → Phase 1B-α run = **~21-25 days minimum**.
 

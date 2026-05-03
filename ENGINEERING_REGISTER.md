@@ -131,10 +131,11 @@ DEC-381/382/383/384/388/389/390/391/392/394/397/398/399 — all RESOLVED-DECIDED
 
 ---
 
-### Sprint 6 — Phase 0.E Catch-Mechanism Defense (Week 4-5, parallel)
+### Sprint 6 — Phase 0.E Catch-Mechanism Defense + Architecture Hygiene (Week 4-5, parallel)
 
-**Sub-decisions in scope (5):** DEC-417/436/437/438/439
+**Sub-decisions in scope (9):** DEC-417/436/437/438/439 (catch mechanisms) + DEC-217/218/219/220 (X33 architecture hygiene)
 
+**Catch-Mechanism Defense (5):**
 | DEC-N | Description |
 |---|---|
 | DEC-417 | Test-run audit gate retroactive validation |
@@ -143,8 +144,17 @@ DEC-381/382/383/384/388/389/390/391/392/394/397/398/399 — all RESOLVED-DECIDED
 | DEC-438 | Characterization tests for known-good behaviors |
 | DEC-439 | Differential testing (pandas vs numpy + Polygon vs SEC EDGAR) |
 
-**Effort:** ~7-10 engineering days
-**Critical-path:** Required for Phase 1B-α confidence
+**Architecture Hygiene — X33 closure (Pass 52 turn 95) (4):**
+| DEC-N | Description | Test signals |
+|---|---|---|
+| DEC-217 | Dead code audit + removal (engine.py vs engine/backtest.py duplication, vulture or similar tool) | vulture reports zero warnings post-cleanup; coverage ≥90% per DEC-098; golden master tests pass |
+| DEC-218 | Documentation audit (per-doc audience + currency + consolidation; deprecated docs → /docs/archive/) | All .md files at repo root have header documenting audience + status; archive/ created; README.md updated |
+| DEC-219 | GitHub Actions audit (6 workflows: prefetch_av_news/finnhub/quiver, sync_from_claude, update_stocks, validate_backtest) | Workflow inventory complete; zero hardcoded secrets per `gh secret list`; failure notification tested; idempotency verified |
+| DEC-220 | sync_from_claude.yml improvements per Pass 52 turn 95 inspection: (1) add header comment documenting governance model — "trigger ONLY when owner has reviewed and approved claude-updates branch content"; (2) replace `--strategy-option=theirs` with `--no-ff` to prevent silent overwrite of owner-edits to main | Header comment added; merge strategy changed; documentation reflects governance model; resolves Pass 52 parallel-session attribution mystery |
+
+**Effort:** ~14-19 engineering days (catch mechanisms ~7-10d + architecture hygiene ~7-9d)
+**Critical-path:** Catch mechanisms required for Phase 1B-α confidence; architecture hygiene parallel-able / non-blocking
+**DEC-220 priority within sprint:** HIGH — small effort (~0.5d) but resolves governance clarity + reduces future silent-overwrite risk on main branch
 
 ---
 
