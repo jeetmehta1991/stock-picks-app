@@ -406,3 +406,99 @@ Sprint 7-8 dashboard work: +7-9d for DEC-200/201 (was DEC-199 only absorbed in D
 Sprint 9 NEW additions: ~2.5d (DEC-211 + DEC-214 ongoing operational)
 
 Total project Stage 2 effort revised: previously ~60-75d → now ~95-115d realistic with full register population.
+
+---
+
+## Phase 2 Final Sweep Additions (Pass 52 turn 107) — 84 decisions
+
+Per CHECKLIST #58 — sprint-tracker assignment for ALL remaining homeless ENG decisions. **Final Phase 2 sweep complete.**
+
+### Sprint 1 additions (Phase 0.A foundation) — 11 decisions
+
+DEC-300 (yfinance earnings_dates tiered approach), DEC-304 (CPI/NFP/FOMC auto-extend from FRED+BLS), DEC-307 (cache get_ohlcv front-extension), DEC-308 (cache get_ohlcv_bulk min-floor flexibility), DEC-309 (cache ticker collision BRK-B/BRK.B), DEC-310 (cache zero-volume days preserved), DEC-318 (AAII pub-lag N+1 trading day shift), DEC-319 (AAII auto-refresh script in /scripts), DEC-320 (CNN F&G no interpolation), DEC-328 (cache filelock fail-fast), DEC-329 (multi-process safe globals)
+
+Sprint 1 effort revised: +6-9d → ~17.5-23.5d total
+
+### Sprint 2 additions (Engine Bug Fixes Tier A) — 14 decisions
+
+DEC-293 (close_trade days NameError), DEC-294 (duplicate ClosedTrade dataclass), DEC-295 (SHORT_BORROW_COST_PER_DAY units reconciliation), DEC-296 (test_e2e fixture undefined), DEC-297 (close_trade unit test), DEC-305 (PIT guard RAISE not WARNING), DEC-306 (get_news_sentiment path mismatch), DEC-311 (trailing-stop ATR daily refresh), DEC-312 (exit_hybrid_50pct max_days inconsistency), DEC-314 (Circuit breakers Level 3+4 implementation), DEC-315 (Circuit breakers checked sequentially), DEC-327 (short-borrow cost duplication single source), DEC-338 (Conversion logic actual position open Option A), DEC-340 (get_correlation_matrix variable history)
+
+Sprint 2 effort revised: +14-18d → ~23-27d total (was 9d baseline)
+
+### Sprint 3 additions (Phase 0.B Portfolio Class) — 2 decisions
+
+DEC-277 (Per-strategy promotion workflow HARD-REVERSIBILITY ~2-3d), DEC-339 (pnl_dollar dynamic notional via Portfolio class ~1d)
+
+Sprint 3 effort revised: +3-4d → ~8-11d total (was 5-7d)
+
+### Sprint 4 additions (DEC-410 Audit Findings) — 14 decisions
+
+DEC-253 (TSX/US routing rule), DEC-254 (Canadian ETF substitution), DEC-280 (time-of-day slippage layered with DEC-092), DEC-299 (yfinance .info sector snapshot+revisit), DEC-302 (VXX/UUP proxy tracking error quantification), DEC-316 (regime classifier missing-VIX abstain), DEC-317 (VIX SMA hysteresis joint DEC-388), DEC-322 (market_cap_pit joint DEC-393), DEC-323 (sector_history.csv joint DEC-394), DEC-324 (Congressional disclosure_date weighting), DEC-325 (13F filing_date PIT), DEC-332 (smart money composite weights → config), DEC-333 (sentiment thresholds match CNN bands), DEC-344 (slippage threshold ATR/price > 3% REVISIT_AFTER_BACKTEST)
+
+Sprint 4 effort revised: +14-19d → ~30-41d total (was 16-22d) — LARGEST SPRINT
+
+### Sprint 5 additions (Universe Management) — 2 decisions
+
+DEC-303 (S&P 500 historical_membership.csv ~2d), DEC-331 (ETF list fragmentation reconciliation ~1d)
+
+Sprint 5 effort revised: +3d → ~6.5d total (was 3.5d)
+
+### Sprint 6 additions (Phase 0.E + Architecture Hygiene) — 1 decision
+
+DEC-341 (universe.py docstring fix; per Pass 52 X33 architecture hygiene)
+
+Sprint 6 effort revised: +0.25d → ~37.75-47.25d total
+
+### Sprint 7 additions (Statistical Methodology + A/B operational + cluster) — 20 decisions
+
+DEC-262 (conditional candidate cap 10/15/20), DEC-263 (burst-day stress test), DEC-279 (P&L decomposition HARD-REVERSIBILITY ~3-4d), DEC-284 (borderline strategy STRICT-LESS-THAN policy), DEC-334 (composite_score actual ROI not win_rate), DEC-335 (composite_score weights configurable), DEC-348 (event-calendar suppression joint DEC-256/407+448), DEC-349 (asymmetric event window pre=1 post=3), DEC-401 (DEC-080 Phase B Holm-Bonferroni), DEC-402 (DEC-081 Phase A Sharpe canonicalization), DEC-403 (DEC-081 Phase B Sortino), DEC-404 (DEC-081 Phase C transaction cost sensitivity), DEC-405 (DEC-082 stress test runner Option A), DEC-406 (DEC-083 tiered min-trades enforcement), DEC-408 (DEC-085 Phase B macro correlation tags), DEC-409 (DEC-085 Phase C event-window tags), DEC-412 (DEC-109 Phase B walk-forward implementation), DEC-414 (DEC-111 Phase A ADF), DEC-415 (DEC-111 Phase B rolling Sharpe), DEC-416 (DEC-111 Phase C Chow)
+
+Sprint 7 effort revised: +18-22d → ~63.5-69.5d total (was 45.5-47.5d) — MASSIVE — statistical methodology + A/B + cluster work all converge
+
+### Sprint 7-8 additions (Phase 1B-α Dimensional Cube) — 5 decisions
+
+DEC-425 (Phase 1 dim_cube infrastructure HARD-REVERSIBILITY ~5-7d), DEC-427 (Phase 3 marginal heatmap ~2-3d), DEC-428 (Phase 4 3D combined ~3-4d), DEC-429 (Phase 5 live decision lookup ~2d), DEC-431 (Phase 7 validation test suite joint DEC-417 ~2-3d)
+
+Sprint 7-8 effort revised: +14-19d → ~24-33d total (was 10-14d)
+
+### Sprint 8 additions (Strategy Categories + Chart Patterns + Multi-TF) — 15 decisions
+
+DEC-345 (ICT/SMC timeframe scope), DEC-350 (Multi-TF non-ICT strategies extension), DEC-352 (13F price-level mapping), DEC-354 (Chart patterns parent reopened), DEC-355 (Trendline break + retest), DEC-356 (Channel breakout + retest), DEC-357 (Range breakout + retest), DEC-358 (Wedge/triangle/pennant), DEC-359 (H&S / inverse H&S), DEC-360 (Double top / double bottom), DEC-361 (Cup & handle), DEC-362 (Flag / pennant continuation), DEC-432 (DEC-067 Phase A 3 new indicators chandelier/psar/supertrend), DEC-433 (DEC-067 Phase B 6 new exit methods), DEC-435 (DEC-075 AEP implementation)
+
+Sprint 8 effort revised: NEW dedicated block ~30-45d (chart patterns are 8+ strategies × 2-4d each)
+
+### Phase 2 Final Sweep ENG totals
+
+| Sprint | Final Sweep additions |
+|---|---|
+| Sprint 1 | +11 decisions |
+| Sprint 2 | +14 decisions |
+| Sprint 3 | +2 decisions |
+| Sprint 4 | +14 decisions |
+| Sprint 5 | +2 decisions |
+| Sprint 6 | +1 decision |
+| Sprint 7 | +20 decisions |
+| Sprint 7-8 | +5 decisions |
+| Sprint 8 | +15 decisions |
+| **Total** | **+84 ENG decisions assigned** |
+
+## TOTAL PROJECT EFFORT POST-PHASE-2-FINAL-SWEEP
+
+| Sprint | Effort |
+|---|---|
+| Sprint 1 (Phase 0.A foundation) | ~17.5-23.5d |
+| Sprint 2 (Engine Bug Fixes Tier A) | ~23-27d |
+| Sprint 3 (Phase 0.B Portfolio Class) | ~8-11d |
+| Sprint 4 (DEC-410 Audit Findings) | ~30-41d |
+| Sprint 5 (Universe Management) | ~6.5d |
+| Sprint 5 NEW (Position Sizing) | ~3.5d |
+| Sprint 6 (Phase 0.E + Hygiene) | ~37.75-47.25d |
+| Sprint 7 (Statistical Methodology + A/B) | ~63.5-69.5d |
+| Sprint 7-8 (Phase 1B-α Dimensional Cube) | ~24-33d |
+| Sprint 8 (Strategy Categories) | ~30-45d |
+| Sprint 9 (Phase 1B-α run + ongoing) | ~2.5d |
+| **Total Stage 2 realistic** | **~247-313 engineering days** |
+
+CRITICAL PATH revised: ~46-56d → likely **~100-130 days minimum** post-Phase-2-Final-Sweep with full register population (Sprint 4 + Sprint 7 are now both critical-path heavy).
+
+This is a **major reality-check**: previous estimates of ~30-40 days realistic were significantly understating scope. True engineering work for Stage 2 is closer to ~250-300 engineering days.

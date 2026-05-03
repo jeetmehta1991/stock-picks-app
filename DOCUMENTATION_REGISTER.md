@@ -266,3 +266,39 @@ All Bucket D candidates were either Sprint 9 (post-Phase-1B-α) or already in Bu
 
 Phase 2 cadence: ~3 more batches at 30/turn cadence.
 
+
+---
+
+## Phase 2 Final Sweep — 3 decisions classified (Pass 52 turn 107)
+
+Owner Pass 52 turn 106: "Approve all remaining batches in phase 2"
+Owner Pass 52 turn 107: Final sweep across all 87 remaining homeless decisions
+
+### Bucket C additions (2 — cross-reference / absorbed)
+
+| DEC | Description | Tracked via |
+|---|---|---|
+| DEC-336 | info_cache.json never refreshed (stale market caps) | Likely SUPERSEDED_BY_DEC-443 (Polygon reference data covers sector + market_cap PIT, replacing yfinance .info) |
+| DEC-343 | Pandas-ta deprecation warning on pandas 4.0 | Joint with DEC-445 (TA-Lib evaluation; wait until DEC-445 reveals whether Polygon technical indicators sufficient as replacement) |
+
+### Bucket D additions (1 — Stage 3+ deferred-implementation)
+
+| DEC | Description | Stage / Activation Trigger |
+|---|---|---|
+| DEC-287 | Public site failure handling + freshness signal (last-updated timestamp prominent) | Stage 3+ web infrastructure (joint DEC-187/192/193 web architecture cluster) |
+
+---
+
+## Phase 2 Status After Final Sweep
+
+| Metric | Count |
+|---|---|
+| Total RESOLVED-DECIDED | 298 (unchanged) |
+| In ENGINEERING_REGISTER | 97 + 84 (Final Sweep ENG additions) = **181** |
+| In DOCUMENTATION_REGISTER | ~77 + 3 (Final Sweep DOC additions) = **~80** |
+| Truly homeless after Final Sweep | **0** ✓ |
+
+## PHASE 2 COMPLETE
+
+All RESOLVED-DECIDED decisions now have execution tracker assignments. Per CHECKLIST #58 framework, every status flip requires sprint-tracker assignment in same commit; this was retroactively applied to all pre-CHECKLIST-#58 decisions.
+

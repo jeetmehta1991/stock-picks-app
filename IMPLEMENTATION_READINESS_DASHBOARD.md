@@ -363,3 +363,48 @@ Critical path components affected by Batch 3:
 
 Critical path effort revised: previously ~37-45d minimum → ~46-56d minimum (post-Phase-2-Batch-3).
 
+
+---
+
+## Phase 2 Final Sweep Updates (Pass 52 turn 107)
+
+Per CHECKLIST #58 — sprint readiness updates for ALL remaining homeless decisions. **Phase 2 COMPLETE.**
+
+### Final Sprint Effort Estimates (Phase 2 Complete)
+
+| Sprint | Pre-Phase-2 | Post-Final-Sweep | Total Delta |
+|---|---|---|---|
+| Sprint 1 (Phase 0.A) | ~7-9d | ~17.5-23.5d | +10-15d |
+| Sprint 2 (Engine Bug Fixes Tier A) | ~9d | ~23-27d | +14-18d |
+| Sprint 3 (Phase 0.B Portfolio Class) | ~5-7d | ~8-11d | +3-4d |
+| Sprint 4 (DEC-410 Audit Findings) | ~5-7d | ~30-41d | +25-34d (LARGEST) |
+| Sprint 5 (Universe Management) | ~5-8d | ~6.5d | -ish (consolidation) |
+| Sprint 5 NEW (Position Sizing) | n/a | ~3.5d | new |
+| Sprint 6 (Phase 0.E + Hygiene) | ~7-10d | ~37.75-47.25d | +30-37d |
+| Sprint 7 (Statistical Methodology + A/B) | ~17-19d | ~63.5-69.5d | +46-50d (MASSIVE) |
+| Sprint 7-8 (Phase 1B-α Dimensional Cube) | gated | ~24-33d | new tracked |
+| Sprint 8 (Strategy Categories) | ~50-60d | ~30-45d | -ish (consolidation; some absorbed Sprint 7) |
+| Sprint 9 (Phase 1B-α run + ongoing) | n/a | ~2.5d | new |
+
+### Total Stage 2 Implementation Effort (FINAL)
+
+- Pre-Phase-2: ~30-40 engineering days
+- Post-Phase-2-Batch-1: ~50-65 engineering days
+- Post-Phase-2-Batch-2: ~60-75 engineering days
+- Post-Phase-2-Batch-3: ~95-115 engineering days
+- **Post-Phase-2-Final-Sweep: ~247-313 engineering days realistic**
+
+### Critical Path Reality Check
+
+Sprint 4 (DEC-410 + cost stack + reliability) and Sprint 7 (Statistical Methodology + A/B + cluster work) are now both critical-path heavy. Previous critical path estimate of ~21-25 days minimum was significantly understated.
+
+**Realistic critical path post-Phase-2-Final-Sweep: ~100-130 engineering days minimum.**
+
+### Implications
+
+This is a **major reality-check** for project timeline. The retroactive audit revealed that the true Stage 2 engineering scope was ~6-8x larger than the original ~30-40 day estimate suggested. The hidden scope was in homeless RESOLVED-DECIDED decisions that had implementation work in scope text but no sprint-tracker entry.
+
+Owner accountability call-out turn 98 was warranted — without retroactive audit, project would have entered Sprint 1 implementation with massively understated timeline expectations. With Phase 2 complete, sprint planning is now grounded in true scope.
+
+Going forward: CHECKLIST #58 prevents recurrence by requiring sprint-tracker assignment in same commit as RESOLVED-DECIDED status flip.
+

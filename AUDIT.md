@@ -24427,3 +24427,83 @@ Counts unchanged (Batch 3 is reclassification, not status flip):
 462 / 86 PENDING / 298 RESOLVED-DECIDED / 21 DEFERRED_TO_STAGE_3 / 10 DEFERRED_TO_STAGE_4 / 20 SUPERSEDED / 10 BLOCKED_ON_X / 14 other.
 
 *Per CHECKLIST #25 (honest about Stage 2 scope growing as register populated)/#43 (full description retrieval per item)/#51 (explicit owner approval all 7 clarifications + per-rec batch)/#57 (4-cluster use-case mapping)/#58 (5-file atomic update demonstrated 3rd time).*
+
+---
+
+## AUDIT PASS 52 turn 107 — Phase 2 Final Sweep: ALL 87 remaining homeless decisions classified — PHASE 2 COMPLETE
+
+Owner Pass 52 turn 106: "Approve all remaining batches in phase 2"
+Owner Pass 52 turn 107: Final sweep classification + atomic commit
+
+PHASE 2 FINAL SWEEP OUTCOMES (87 decisions):
+
+DOCUMENTATION_REGISTER additions (3):
+- Bucket C (2): DEC-336 (likely SUPERSEDED_BY_DEC-443), DEC-343 (joint DEC-445)
+- Bucket D (1): DEC-287 (Stage 3+ web infrastructure)
+
+ENGINEERING_REGISTER additions (84) distributed across 9 sprints:
+- Sprint 1 (Phase 0.A): +11 decisions (data quality + cache + sentiment + multiprocess)
+- Sprint 2 (Engine Bug Fixes Tier A): +14 decisions (close_trade + duplicates + circuit breakers + ATR/exit fixes + correlation)
+- Sprint 3 (Phase 0.B Portfolio Class): +2 decisions (DEC-277/339 promotion workflow + dynamic notional)
+- Sprint 4 (DEC-410 Audit Findings): +14 decisions (TSX/US routing + ETFs + slippage + sector PIT + 13F + smart money)
+- Sprint 5 (Universe Management): +2 decisions (historical_membership + ETF list reconciliation)
+- Sprint 6 (Phase 0.E + Hygiene): +1 decision (universe.py docstring)
+- Sprint 7 (Statistical Methodology + A/B): +20 decisions (Phase B/C of multiple parents + event suppression + composite score)
+- Sprint 7-8 (Phase 1B-α Dimensional Cube): +5 decisions (DEC-422 phases 1-7 implementation)
+- Sprint 8 (Strategy Categories): +15 decisions (chart pattern strategies + multi-TF + 13F price + DEC-067 indicator phases + DEC-075 AEP)
+
+PHASE 2 COMPLETE — ALL 226+ INITIALLY HOMELESS DECISIONS CLASSIFIED:
+- Phase 1 (turn 99): framework + initial ~40 items
+- Phase 2 Batch 1 (turn 101): 30 items
+- Phase 2 Batch 2 (turn 103): 30 items
+- Phase 2 Batch 3 (turn 105): 30 items
+- Phase 2 Final Sweep (turn 107): 87 items
+- TOTAL PHASE 2 CLASSIFIED: ~217 decisions across all batches
+
+VERIFICATION:
+- Truly homeless before Phase 1: 226-229
+- Truly homeless after Phase 2 Final Sweep: 0 ✓
+- ENGINEERING_REGISTER total: ~181 ENG decisions tracked
+- DOCUMENTATION_REGISTER total: ~80 DOC decisions tracked
+
+TOTAL PROJECT STAGE 2 EFFORT (FINAL):
+
+Pre-Phase-2: ~30-40d realistic
+Post-Final-Sweep: ~247-313 engineering days realistic
+
+CRITICAL PATH REALITY CHECK:
+Pre-Phase-2: ~21-25d minimum
+Post-Final-Sweep: ~100-130 engineering days minimum
+
+This is a 5-7x scope expansion vs original estimates. Hidden scope was in homeless RESOLVED-DECIDED decisions with implementation work in scope text but no sprint-tracker entry.
+
+OWNER ACCOUNTABILITY CALL-OUT VINDICATED:
+Owner turn 98 ("This is very basic stuff and we had already discussed this. you are simply not following it") was warranted. Without retroactive audit, project would have entered Sprint 1 with massively understated timeline expectations. With Phase 2 complete, sprint planning is now grounded in true scope.
+
+LARGEST SPRINTS POST-PHASE-2:
+- Sprint 4 (DEC-410 audit findings): ~30-41d
+- Sprint 6 (Phase 0.E + hygiene): ~37.75-47.25d
+- Sprint 7 (statistical methodology + A/B): ~63.5-69.5d
+- Sprint 8 (strategy categories): ~30-45d
+
+CHECKLIST #58 NOW FULLY OPERATIONAL:
+Every future RESOLVED-DECIDED status flip will include sprint-tracker assignment in same commit. Phase 2 fixed legacy gap; #58 prevents recurrence.
+
+CHECKLIST #58 INVOKED IN THIS COMMIT (4-file atomic update):
+1. AUDIT_INDEX.md (no status flips this batch — Phase 2 reclassification only)
+2. AUDIT.md (this narrative)
+3. DOCUMENTATION_REGISTER.md (3 new DOC additions; PHASE 2 COMPLETE marker added)
+4. ENGINEERING_REGISTER.md (84 new ENG additions across 9 sprints)
+5. IMPLEMENTATION_READINESS_DASHBOARD.md (final sprint readiness with reality-check totals)
+
+Counts unchanged (Phase 2 is reclassification not status flip):
+462 / 86 PENDING / 298 RESOLVED-DECIDED / 21 DEFERRED_TO_STAGE_3 / 10 DEFERRED_TO_STAGE_4 / 20 SUPERSEDED / 10 BLOCKED_ON_X / 14 other.
+
+PHASE 2 COMPLETE. RETROACTIVE SPRINT-TRACKING AUDIT FINISHED.
+
+Next steps available:
+1. Resume PENDING walkthroughs (X16/X43/X44 batched + others)
+2. Sprint 1 kickoff (Phase 0.A Polygon implementation)
+3. Owner direction
+
+*Per CHECKLIST #25 (full accountability for retroactive audit completion)/#43 (precise grep on all 87 homeless with full descriptions)/#51 (explicit owner approval — full delegation across remaining batches)/#57 (per-item bucket/sprint use-case mapping)/#58 (PHASE 2 COMPLETE — operational framework prevents recurrence).*
