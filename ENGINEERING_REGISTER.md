@@ -636,3 +636,29 @@ Per CHECKLIST #58 — sprint-tracker assignment for 5 ENG decisions in Batch B.
 Sprint 4 effort: +0.5d → ~34.25-46.75d total
 Sprint 6 effort: +3d → ~42.25-51.75d total
 
+
+---
+
+## Batch C (Code Quality + Defects) Additions (Pass 52 turn 117)
+
+### Sprint 1 (+1)
+- DEC-275 (requirements.txt audit) ~0.5d
+
+### Sprint 6 (+5)
+- DEC-170 (Type hints + mypy strict) ~3-5d
+- DEC-171 (Docstring standard + sphinx) ~2-3d
+- DEC-172 (Numerical constants → config; joint DEC-229) ~2d
+- DEC-173 (ruff + black + isort + mypy CI gates) ~1d
+- (DEC-274 absorbed by DEC-220, already in Sprint 6)
+
+### Sprint 7 (+1)
+- DEC-250 (Edge decay 20% default REVISIT_AFTER_BACKTEST) ~0.5d
+
+### Sprint 9 (+1)
+- DEC-249 (Strategy decay rolling 6mo Sharpe) ~1d
+
+Sprint 1: +0.5d → ~17.5-23.5d
+Sprint 6: +8-11d → ~50.25-62.75d
+Sprint 7: +0.5d → ~64-70d
+Sprint 9: +1d → ~3.5d
+

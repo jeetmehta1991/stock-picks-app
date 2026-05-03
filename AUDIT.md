@@ -24741,3 +24741,35 @@ CHECKLIST #58 invoked (5-file atomic):
 5. IMPLEMENTATION_READINESS_DASHBOARD.md (Sprint 4/6 effort delta)
 
 Next: Batch C (Code Quality + Defects) — 9 decisions across X27 + X47 + X39.
+
+---
+
+## AUDIT PASS 52 turn 117 — Bulk-Sweep Batch C (Code Quality + Defects): 8 of 9 + DEC-251 FLAGGED
+
+BATCH C — 9 decisions across X27 + X47 + X39:
+
+RESOLVED-DECIDED (8):
+- DEC-170 mypy strict CI (Sprint 6 ~3-5d)
+- DEC-171 sphinx docs (Sprint 6 ~2-3d)
+- DEC-172 numerical constants → config (Sprint 6 ~2d)
+- DEC-173 ruff/black/isort/mypy CI (Sprint 6 ~1d)
+- DEC-249 strategy decay metric (Sprint 9 ~1d)
+- DEC-250 edge decay 20% default (Sprint 7 ~0.5d)
+- DEC-274 absorbed by DEC-220 (0d new)
+- DEC-275 requirements.txt audit (Sprint 1 ~0.5d)
+
+HARD-REVERSIBILITY FLAGGED (1):
+- DEC-251 Dependency injection audit — refactor for testability with mocks
+  * Affects 100% of test infrastructure surface area
+  * Wrong-direction refactor = significant rollback cost
+  * No explicit owner-stated DI architecture preference
+  * RECOMMEND: sandbox-prototype on 1-2 modules first; owner reviews approach before full-codebase refactor
+  * AWAITING OWNER APPROVAL per directive #2 (flag-and-continue)
+
+Batch C effort: ~10-12d Stage 2 (Sprint 1 +0.5d, Sprint 6 +8-11d, Sprint 7 +0.5d, Sprint 9 +1d)
+
+Counts post-Batch-C: 462 / 66 PENDING / 312 RESOLVED-DECIDED / 23 DEFERRED_TO_STAGE_3 / 11 DEFERRED_TO_STAGE_4 / 22 SUPERSEDED / 10 BLOCKED_ON_X / 14 other.
+
+DEC-251 stays PENDING with flag note appended (NOT in this commit — will append on owner direction).
+
+Next: Batch D (SmartMoney + Universe + Regime).

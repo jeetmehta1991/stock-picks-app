@@ -484,3 +484,17 @@ DEC-158 + DEC-266 + DEC-298 (BLOCKED) form coherent Stage 3+ data-history evalua
 
 Total Stage 2: ~271.5-341.5 → ~275-345 engineering days
 
+
+---
+
+## Batch C Updates (Pass 52 turn 117)
+
+| Sprint | Pre-C | Post-C | Delta |
+|---|---|---|---|
+| Sprint 1 | ~17.5-23.5d | ~18-24d | +0.5d |
+| Sprint 6 | ~42.25-51.75d | ~50.25-62.75d | +8-11d (largest) |
+| Sprint 7 | ~63.5-69.5d | ~64-70d | +0.5d |
+| Sprint 9 | ~2.5d | ~3.5d | +1d |
+
+DEC-251 FLAGGED HARD-REVERSIBILITY — awaiting owner approval before sprint slot assignment.
+
