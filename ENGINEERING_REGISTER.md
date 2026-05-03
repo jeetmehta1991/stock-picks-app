@@ -596,3 +596,24 @@ Sprint 8 effort revised: +6-9d → ~36-54d total
 
 CRITICAL PATH revised: ~100-130d → likely **~110-145 days minimum** post-cleanup (Sprint 4 + Sprint 8 grew, both critical-path-relevant).
 
+
+---
+
+## Walkthrough 4 Additions (Pass 52 turn 113)
+
+Per CHECKLIST #58 — sprint-tracker assignment for Walkthrough 4 (X16 + X43) approved decisions.
+
+### Sprint 6 additions (Phase 0.E + Architecture Hygiene + new)
+
+| DEC-N | Description | Test signals | Effort |
+|---|---|---|---|
+| DEC-138 | Cold-start CI test (`.github/workflows/cold_start.yml` runs weekly + on dependency changes; clone → pip install → smoke test → assert <30min) — joint DEC-219 + DEC-436 | Cold-start workflow runs weekly; full pipeline completes <30min from fresh container; failure → alert via DEC-219 alerting infrastructure | ~1-2d |
+
+Sprint 6 effort revised: +1.5d → ~39.25-48.75d total
+
+### Walkthrough 4 ENG totals
+
+- Sprint 6: +1 decision (DEC-138)
+- Total: **+1 ENG decision**
+
+(Other 5 decisions are supersessions/deferrals — 0 net-new ENG sprint-slot effort)

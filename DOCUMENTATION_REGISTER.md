@@ -302,3 +302,18 @@ Owner Pass 52 turn 107: Final sweep across all 87 remaining homeless decisions
 
 All RESOLVED-DECIDED decisions now have execution tracker assignments. Per CHECKLIST #58 framework, every status flip requires sprint-tracker assignment in same commit; this was retroactively applied to all pre-CHECKLIST-#58 decisions.
 
+
+---
+
+## Walkthrough 4 Additions (Pass 52 turn 113)
+
+Per CHECKLIST #58 — Bucket D additions for Walkthrough 4 deferred decisions.
+
+### Bucket D additions (3 — Stage 3+/4+ deferred-implementation)
+
+| DEC | Description | Stage / Activation Trigger |
+|---|---|---|
+| DEC-139 | Remote kill switch (email-based STOP) — production-grade live trading control plane | Stage 4+ live trading; joint DEC-094 secrets manager + DEC-095 monitoring/alerting cluster; ~1-2d when activated |
+| DEC-158 | Extend backtest period to 2008-2024 (16 years for crisis coverage) — coordinated with DEC-266 | Stage 3 paper trading evaluation; gate via empirical Sharpe-stability evidence post-Phase-1B-α; joint cluster DEC-266/DEC-298; ~5-7d when activated |
+| DEC-266 | Data history extension (2020 → 2010 for walk-forward + crisis coverage) | Stage 3 paper trading evaluation; same boundary question as DEC-158; activates jointly; ~5-7d when activated |
+

@@ -24633,3 +24633,73 @@ Counts unchanged (this commit creates register, no decision flips):
 462 / 86 PENDING / 296 RESOLVED-DECIDED / 21 DEFERRED_TO_STAGE_3 / 10 DEFERRED_TO_STAGE_4 / 20 SUPERSEDED / 10 BLOCKED_ON_X / 14 other.
 
 *Per CHECKLIST #25 (honest scope correction during execution; initial framing of 144+ separate ENG entries was wrong; actual = 100% linked to existing decisions)/#43 (full Python analysis of bug-decision linkage on 148 canonical bugs)/#51 (owner approved 4-bucket rec; executed via cross-reference approach)/#57 (use-case mapping per bucket)/#58 (extended to bugs at register-cross-reference level).*
+
+---
+
+## AUDIT PASS 52 turn 113 — Walkthrough 4: X16 (4/4) + X43 (1/1) + DEC-158 coordinated bonus closure (6 decisions)
+
+Owner Pass 52 turn 110 (menu): Direction option 1 selected
+Owner Pass 52 turn 112: Walkthrough 4 (X16 + X43) presented (6 specific clarifications)
+Owner Pass 52 turn 113: "Approve your recs x16 and x43"
+
+WALKTHROUGH 4 OUTCOMES (6 decisions):
+
+X16 ARCHITECTURE EXTENSION CLOSURES (4/4):
+
+Stage 2 RESOLVED-DECIDED (1):
+- DEC-138 (Cold-start CI test fresh container <30 min) — Sprint 6, joint DEC-219/436 ~1-2d
+
+Supersessions (2):
+- DEC-137 (Backtest output schema versioning) → SUPERSEDED_BY_DEC-283 (canonical schema versioning RESOLVED Pass 52)
+- DEC-140 (Structured JSON logging standard) → SUPERSEDED_BY_DEC-230 (canonical logging RESOLVED Pass 52 Sprint 6)
+
+Stage 4 deferral (1):
+- DEC-139 (Remote kill switch email-based STOP) → DEFERRED_TO_STAGE_4 — production-grade live trading control plane; joint DEC-094/095 cluster
+
+X43 DATA HISTORY CLOSURE (1/1):
+
+Stage 3 deferral (1):
+- DEC-266 (Data history extension 2020 → 2010) → DEFERRED_TO_STAGE_3 — Stage 2 has DEC-109 Option B 2018-01-01 baseline sufficient for Phase 1B-α; Stage 3 evaluates if extension improves OOS Sharpe stability empirically
+
+DEC-158 COORDINATED BONUS DEFERRAL (1):
+- DEC-158 (Extend backtest period to 2008-2024) → DEFERRED_TO_STAGE_3 — same boundary question as DEC-266; coordinated joint deferral; cluster includes DEC-266/DEC-158/DEC-298 (BLOCKED) for unified Stage 3 empirical evaluation
+
+WALKTHROUGH 4 EFFORT: ~1-2 engineering days Stage 2 immediate (DEC-138 only)
+
+PRE-FLIGHT VALUE DEMONSTRATED:
+2 of 5 X16 items (40%) caught as supersessions:
+- DEC-137 → DEC-283 (schema versioning)
+- DEC-140 → DEC-230 (structured logging)
+
+Cumulative Pass 52 pre-flight effectiveness:
+- X34: 4/7 (57%)
+- X52: 2/4 (50%)
+- X42: 2/4 (50%)
+- Group D: 2/4 (50%)
+- X16: 2/4 (40%)
+Total: 12/23 = 52% supersession rate across pre-flighted items.
+
+HONEST CORRECTION (per #25):
+Turn 109 menu listed "X43 = Phase 0.B Portfolio Class" but actual X43 was "Data History" (1 PENDING DEC-266). Walkthrough 4 was 5 decisions not 8. No dedicated Phase 0.B Portfolio Class theme exists; tracked via DEC-070/076/091 (BLOCKED_ON_BUG-095) + Sprint 3 implementation work.
+
+DATA HISTORY CLUSTER NOW DECIDED:
+- DEC-109 (rolling 5yr/1yr walk-forward Option B 2018-01-01 baseline RESOLVED — current Stage 2 canonical)
+- DEC-266 (extension to 2010 DEFERRED_TO_STAGE_3 this commit)
+- DEC-158 (extension to 2008-2024 DEFERRED_TO_STAGE_3 this commit)
+- DEC-298 (PIT cache rebuild BLOCKED — gates DEC-377/411)
+Combined: Stage 2 uses 2018-01-01 baseline; Stage 3 evaluates post-Phase-1B-α empirically whether extension improves walk-forward stability.
+
+CHECKLIST #58 INVOKED IN THIS COMMIT (5-file atomic update):
+1. AUDIT_INDEX.md (6 status flips: 1 RESOLVED-DECIDED + 2 SUPERSEDED_BY + 2 DEFERRED_TO_STAGE_3 + 1 DEFERRED_TO_STAGE_4)
+2. AUDIT.md (this narrative)
+3. ENGINEERING_REGISTER.md (Sprint 6 + DEC-138)
+4. DOCUMENTATION_REGISTER.md (Bucket D + DEC-139/158/266)
+5. IMPLEMENTATION_READINESS_DASHBOARD.md (Sprint 6 effort revision)
+
+(BUG_REGISTER.md unchanged — no bugs touched this commit)
+
+Counts post-W4: 462 / 80 PENDING / 297 RESOLVED-DECIDED / 23 DEFERRED_TO_STAGE_3 / 11 DEFERRED_TO_STAGE_4 / 22 SUPERSEDED (10 + 12 SUPERSEDED_BY_*) / 10 BLOCKED_ON_X / 14 other.
+
+PENDING now under 18%. Audit at 82.7% resolved (382/462 in terminal states).
+
+*Per CHECKLIST #25 (honest correction X43 = Data History not Phase 0.B Portfolio Class)/#43 (pre-flight caught 2 supersessions)/#46/#47/#51 (explicit owner approval all 6 recs)/#56 (1 Stage 2 + 2 Stage 3 + 1 Stage 4)/#57 (use-case mapping: data-history cluster + production-control-plane cluster)/#58 (5-file atomic update demonstrated 4th time).*

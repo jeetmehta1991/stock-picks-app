@@ -446,3 +446,29 @@ Owner caught the substantive homelessness gap turn 108 ("Any resolved homeless d
 
 Pattern now resolved: every RESOLVED-DECIDED engineering decision has proper sprint-table entry with test signals + effort. Going forward, CHECKLIST #58 enforces this from creation, not just textual mention.
 
+
+---
+
+## Walkthrough 4 Updates (Pass 52 turn 113)
+
+Per CHECKLIST #58 — sprint readiness updates for Walkthrough 4 decisions.
+
+### Updated Sprint Effort Estimates
+
+| Sprint | Pre-W4 | Post-W4 | Delta | New decisions |
+|---|---|---|---|---|
+| Sprint 6 (Phase 0.E + Hygiene) | ~37.75-47.25d | ~39.25-48.75d | +1.5d | DEC-138 (cold-start CI test) |
+
+### Total Stage 2 Implementation Effort
+
+- Pre-W4: ~270-340 engineering days realistic
+- Post-W4: ~271.5-341.5 engineering days realistic (minimal change; W4 was mostly supersessions/deferrals)
+
+### Critical Path Implications
+
+DEC-138 cold-start CI test fits Sprint 6 architecture hygiene block; parallel-able / non-blocking. No critical path change.
+
+### Stage 3+ Deferred Cluster (data history)
+
+DEC-158 + DEC-266 + DEC-298 (BLOCKED) form coherent Stage 3+ data-history evaluation cluster. Empirical gate post-Phase-1B-α: does extending history beyond 2018-01-01 baseline improve walk-forward Sharpe stability materially? If yes → activate ~5-7d data-history extension. If no → DEC-109 Option B 2018-01-01 baseline remains canonical.
+
