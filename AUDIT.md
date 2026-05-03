@@ -23867,3 +23867,63 @@ Counts: 462 / 109 PENDING / 280 RESOLVED-DECIDED / 20 DEFERRED_TO_STAGE_3 / 10 D
 Pending now under 24%. Audit at 76.4% resolved (353/462 in terminal states).
 
 *Per CHECKLIST #43 (cross-theme dependency mapping)/#46/#47/#51 (explicit owner approval all 7 specific clarifications + per-rec batch)/#56 (9 Stage 2 + 1 Stage 3)/#57.*
+
+---
+
+## AUDIT PASS 52 turn 89 — Walkthrough 1: Theme X59 (4/4) + Theme X52 (4/4) combined closure (8 decisions)
+
+Owner Pass 52 turn 86: "1 and 2" — directs sequential walkthroughs
+Owner Pass 52 turn 87: "option b" — confirms 2 sequential 8-decision walkthroughs
+Owner Pass 52 turn 88: combined Walkthrough 1 (X59 + X52) presented (4 specific clarifications)
+Owner Pass 52 turn 89: "approve all"
+
+X59 PHASE 0.E CATCH-MECHANISM DEFENSE CLOSURES (4/4) — all RESOLVED-DECIDED bookkeeping flips per status drift:
+- DEC-436 (Layer 2 CI/CD regression pipeline) — GitHub Actions assertions ~2-3d
+- DEC-437 (Layer 3 hypothesis property-based) — 6 invariants ~3-5d
+- DEC-438 (Layer 4 golden master / characterization) — 4 snapshot outputs ~2-3d per output
+- DEC-439 (Layer 5 differential testing) — 3 high-stakes computations ~3-4d
+
+X52 ROUND 1 METHODOLOGY GAPS CLOSURES (4/4):
+
+SUPERSESSION (1):
+- DEC-346 (Multidimensional categorical verdict matrix) → SUPERSEDED_BY_DEC-422 (Phase 1B-α dimensional cube framework, RESOLVED Theme X58 — canonical multidimensional verdict framework)
+
+ABSORBED (1):
+- DEC-347 (Lagging-indicator dominance) → RESOLVED-DECIDED with cross-reference; both parts addressed by upstream RESOLVED decisions: Part 1 (add leading) absorbed by DEC-071/072/389-391; Part 2 (regime-condition lagging) joint with DEC-106/107. 0d new effort.
+
+NEW SHORT IMPLEMENTATIONS (2):
+- DEC-348 (Event-calendar suppression — FOMC/earnings/CPI date-aware gating) → RESOLVED-DECIDED, joint DEC-256/407/448 ~1d
+- DEC-349 (Asymmetric event window pre_days=1, post_days=3 + REVISIT) → RESOLVED-DECIDED, joint DEC-348 ~0.5d
+
+X59 TOTAL EFFORT (Stage 2): ~10-15 engineering days
+X52 NET-NEW EFFORT (DEC-348 + DEC-349): ~1.5d
+COMBINED EFFORT: ~11.5-16.5 engineering days for Stage 2 work
+
+5-LAYER CATCH-MECHANISM DEFENSE NOW FULLY DECIDED:
+- Layer 1: Pre-flight checklist (existing)
+- Layer 2: CI/CD regression pipeline (DEC-436 RESOLVED)
+- Layer 3: Property-based testing via hypothesis (DEC-437 RESOLVED)
+- Layer 4: Characterization / golden-master tests (DEC-438 RESOLVED)
+- Layer 5: Differential testing (DEC-439 RESOLVED)
+- Plus DEC-417 (test-run audit gate, RESOLVED earlier) covering approval-vs-implementation gap
+
+EVENT SUPPRESSION STACK NOW DECIDED:
+- DEC-256 (earnings calendar prefetch) ✓
+- DEC-407+448 (FRED expansion FOMC/CPI dates) ✓
+- DEC-348 (event suppression gate consumer) ✓ this commit
+- DEC-349 (asymmetric pre/post windows) ✓ this commit
+Combined: complete event-aware signal gating.
+
+PRE-FLIGHT VALUE DEMONSTRATED (X52):
+2 of 4 X52 items (50%) caught as supersession or absorption during pre-flight overlap analysis vs already-RESOLVED-DECIDED decisions:
+- DEC-346 → SUPERSEDED_BY_DEC-422
+- DEC-347 → absorbed by DEC-071/072/389-391/106/107
+Without overlap check, would have created parallel multidimensional verdict framework + redundant signal taxonomy work. Per #43 precise grep before claiming distinct scope.
+
+Counts: 462 / 101 PENDING / 287 RESOLVED-DECIDED / 20 DEFERRED_TO_STAGE_3 / 10 DEFERRED_TO_STAGE_4 / 17 SUPERSEDED (10 + 7 SUPERSEDED_BY_*) / 10 BLOCKED_ON_X / 14 other.
+
+Pending now under 22%. Audit at 78.1% resolved (361/462 in terminal states).
+
+Walkthrough 2 next: X42 + X40 (8 decisions).
+
+*Per CHECKLIST #43 (pre-flight caught 2 supersessions/absorptions in X52)/#46/#47/#51 (explicit owner approval all 4 specific clarifications + per-rec batch)/#56 (all Stage 2)/#57.*
