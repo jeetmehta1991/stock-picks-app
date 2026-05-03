@@ -23677,3 +23677,58 @@ Counts: 462 / 130 PENDING / 264 RESOLVED-DECIDED / 17 DEFERRED_TO_STAGE_3 / 8 DE
 Pending decisions now under 28% of total. Audit has crossed the 71% resolved threshold (326+6=332/462 = 71.9%).
 
 *Per CHECKLIST #43 (status drift pattern caught + Sprint 1 cross-check)/#46/#47/#51 (explicit owner approval all 3 specific clarifications + per-rec batch)/#56/#57.*
+
+---
+
+## AUDIT PASS 52 turn 79 — Dashboard Specifications fully closed (6 of 6)
+
+Owner Pass 52 turn 79: "Approve all recs"
+
+DASHBOARD SPECIFICATIONS CLOSURES (6 of 6):
+
+Stage 2 RESOLVED-DECIDED (3):
+- DEC-199 (Dashboard 1 — Phase 1B-α backtest analysis) — 5-section spec joint DEC-430 ~0d new (DEC-430 ~3-5d covers implementation)
+- DEC-200 (Dashboard 2 — ICT/SMC signal audit) — 5-section spec ~3-4d
+- DEC-201 (Dashboard 3 — Stage 2 agent overlay analysis) — 6-section spec ~4-5d
+
+Stage 3 deferred (2):
+- DEC-202 (Dashboard 4 — Stage 3 paper trading analytics) — premature without paper-broker decisions
+- DEC-204 (Dashboard 6 — cross-phase comparison waterfall) — needs Stage 3 data baseline
+
+Stage 4 deferred (1):
+- DEC-203 (Dashboard 5 — Stage 4 live trading analytics) — broker decision unmade; real-money concerns not yet specified
+
+DASHBOARD SPECS IMPLEMENTATION EFFORT (Stage 2):
+- DEC-199 0d (covered by DEC-430 ~3-5d implementation)
+- DEC-200 ~3-4d
+- DEC-201 ~4-5d
+Total Stage 2 dashboards: ~7-9d
+
+DASHBOARD SPECS STATUS: 6 of 6 in terminal state.
+
+KEY DASHBOARD ARCHITECTURE NOW DECIDED:
+Stage 2 has 3 owner-facing dashboards:
+- Dashboard 1 (DEC-199) — Phase 1B-α cube exploration + verdicts + regimes + A/B + live lookup
+- Dashboard 2 (DEC-200) — Phase 0.D ICT/SMC pre-validation gate
+- Dashboard 3 (DEC-201) — Agent value-add diagnostic with 6-section detail
+
+DASHBOARD SEQUENCING PER ENGINEERING_REGISTER:
+- DEC-200 sprint 7 alongside Phase 0.D fork verification — gates Phase 1B-α start
+- DEC-199 sprint 7-8 alongside DEC-430 Streamlit implementation — gates Phase 1B-α verdict review
+- DEC-201 post-Phase 1B-α — uses A/B artifacts produced by Phase 1B-α run
+
+JOINT DEPENDENCIES:
+- DEC-430 (Streamlit framework, RESOLVED-DECIDED Theme X58) provides implementation foundation for Dashboards 1, 2, 3
+- DEC-209 multi-regime verdicts → Dashboard 1 Section 3
+- DEC-426 5-gate validity tagging → Dashboard 1 Section 2
+- DEC-429 live decision lookup → Dashboard 1 Section 5
+- DEC-189 10-point trade rationale → Dashboard 1 drill-downs + Dashboard 3 Section 4
+- DEC-205-216 A/B test infrastructure → Dashboard 3 all sections
+- DEC-045 Phase 0.D fork → Dashboard 2 Sections 4, 5
+- DEC-259/261 ICT/SMC cache + PIT → Dashboard 2 Sections 1, 4
+
+Counts: 462 / 124 PENDING / 267 RESOLVED-DECIDED / 19 DEFERRED_TO_STAGE_3 / 9 DEFERRED_TO_STAGE_4 / 16 SUPERSEDED / 10 BLOCKED_ON_X / 14 other.
+
+Pending decisions now under 27% of total. Audit at 73% resolved (338/462 in terminal states).
+
+*Per CHECKLIST #43 (cross-check vs DEC-430 Streamlit framework + 8 joint dependencies)/#46/#47/#51 (explicit owner approval all 5 specific clarifications + per-rec batch)/#56 (3 Stage 2 + 3 stage-deferrals)/#57.*
