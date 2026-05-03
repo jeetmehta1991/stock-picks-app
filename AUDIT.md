@@ -23999,3 +23999,74 @@ Counts: 462 / 93 PENDING / 294 RESOLVED-DECIDED / 20 DEFERRED_TO_STAGE_3 / 10 DE
 Pending now under 21%. Audit at 79.9% resolved (369/462 in terminal states).
 
 *Per CHECKLIST #43 (pre-flight caught 2 supersessions/absorptions in X42)/#46/#47/#51 (explicit owner approval all 7 specific clarifications + per-rec batch)/#56 (7 Stage 2 + 1 Stage 4+)/#57.*
+
+---
+
+## AUDIT PASS 52 turn 95 — Walkthrough 3: Group D (4/4) + X33 Architecture Hygiene (4/4) combined closure (8 decisions) + DEC-220 INSPECTION
+
+Owner Pass 52 turn 92: "Walkthrough 3 batched: Group D + X33"
+Owner Pass 52 turn 93: combined walkthrough presented (7 specific clarifications)
+Owner Pass 52 turn 94: "Approve all recs / Dec 220 inspect now"
+Owner Pass 52 turn 95: DEC-220 inspection executed inline + commit
+
+GROUP D STRATEGY / REGIME ADAPTATION CLOSURES (4/4):
+
+Stage 2 RESOLVED-DECIDED (1):
+- DEC-021 (Tier system simplification 4-tier → 3-tier HIGH/MEDIUM/LOW = 5%/3%/1.5%) — joint DEC-086/087/088 ~0.5d
+
+Supersessions (2):
+- DEC-025 (Regime-conditional strategy weighting BUG-175) → SUPERSEDED_BY_DEC-422 (cube produces per-(strategy × regime) verdicts; weighting consequence of cube outputs via DEC-429 lookup)
+- DEC-026 (Walk-forward parameter re-optimization BUG-172) → SUPERSEDED_BY_DEC-109 (canonical 5yr/1yr methodology Pass 52 Option B)
+
+Stage 3 deferral (1):
+- DEC-027 (Online learning / feedback loop BUG-173) → DEFERRED_TO_STAGE_3 (Stage 2 has no live outcomes; DEC-109 walk-forward provides parameter adaptation via rolling windows)
+
+X33 ARCHITECTURE HYGIENE CLOSURES (4/4) — all RESOLVED-DECIDED:
+- DEC-217 (Audit and remove dead code) — joint DEC-098/438; engine.py vs engine/backtest.py duplication identified ~3-5d
+- DEC-218 (Documentation audit framework) — per-doc audience + currency + consolidation ~1-2d
+- DEC-219 (GitHub Actions audit) — 6 workflows inventoried during DEC-220 inspection; security + schedule + alerting + idempotency ~2d
+- DEC-220 (sync_from_claude.yml audit) — INSPECTION COMPLETE this turn; finding below
+
+DEC-220 INSPECTION FINDING (HONEST ATTRIBUTION CORRECTION):
+sync_from_claude.yml exists. Inspection reveals:
+- Trigger: workflow_dispatch ONLY (manual button-press in GitHub Actions UI)
+- NOT scheduled, NOT auto-run
+- Mandatory "description" input parameter (audit trail)
+- Validates imports post-merge
+
+Pass 52 parallel-session pattern (turns 58/65/81) RE-ATTRIBUTED:
+- Owner-triggered merges of claude-updates branch to main (not autonomous Claude action)
+- Other Claude sessions DO commit to claude-updates branch
+- When owner manually triggers sync_from_claude, those commits land on main between my git operations
+- Original "parallel Claude instance" attribution was technically correct but misleading — implied autonomous action; actual mechanism is owner-controlled tool
+
+DECISION: DO NOT DISABLE. Workflow has appropriate guardrails (manual trigger + mandatory description + validation step).
+
+Two improvements identified for future implementation:
+1. Documentation gap — add header comment explaining governance model: "trigger ONLY when owner has reviewed and approved claude-updates branch content"
+2. Strategy-option=theirs concern — replace force-override semantic with --no-ff or manual conflict-resolution to prevent silent overwrite of owner-edits made directly to main
+
+Effort: ~0.5d for both improvements (Stage 2 hygiene work).
+
+WALKTHROUGH 3 EFFORT (Stage 2 immediate): ~7-10 engineering days
+
+GOVERNANCE CLARITY MILESTONE:
+DEC-220 inspection resolves Pass 52 mystery — no autonomous-Claude bypass exists; owner retains full approval gate via manual workflow trigger. Behavioral takeaway: when sandbox state appears to change between my turns, it's because owner triggered sync_from_claude.yml between my turns, not because another Claude session is operating without owner oversight. Owner's Option C verification gate (Pass 52 turn 41) is intact at the architectural level.
+
+PRE-FLIGHT VALUE DEMONSTRATED (Group D):
+2 of 4 Group D items (50%) caught as supersession during pre-flight:
+- DEC-025 → SUPERSEDED_BY_DEC-422
+- DEC-026 → SUPERSEDED_BY_DEC-109
+
+Cumulative supersessions caught via pre-flight across Pass 52 walkthroughs:
+- X34: 4 supersessions (57%)
+- X52: 2 supersessions/absorptions (50%)
+- X42: 2 supersessions/absorptions (50%)
+- Group D: 2 supersessions (50%)
+Total: 10 parallel decisions prevented across 18 PENDING items examined = 56% rate
+
+Counts: 462 / 85 PENDING / 299 RESOLVED-DECIDED / 21 DEFERRED_TO_STAGE_3 / 10 DEFERRED_TO_STAGE_4 / 20 SUPERSEDED (10 + 10 SUPERSEDED_BY_*) / 10 BLOCKED_ON_X / 14 other.
+
+Pending now under 19%. Audit at 81.6% resolved (377/462 in terminal states). Pass 52 has crossed 80% threshold.
+
+*Per CHECKLIST #43 (pre-flight caught 2 supersessions)/#46/#47/#51 (explicit owner approval all 7 specific clarifications + per-rec batch + DEC-220 inspection authorization)/#56 (7 Stage 2 + 1 Stage 3)/#57.*
