@@ -1,0 +1,126 @@
+# DOCUMENTATION_REGISTER
+
+**Purpose:** Per owner Pass 52 turn 98 directive — track all RESOLVED-DECIDED decisions that are documentation-only / cross-reference / no-engineering-work-required, scheduled for execution AFTER decision-walkthrough phase completes.
+
+**Companion to:** ENGINEERING_REGISTER.md (engineering work) and IMPLEMENTATION_READINESS_DASHBOARD.md (sprint readiness gate).
+
+**Established:** Pass 52 turn 99 (retroactive sprint-tracking audit fix)
+
+---
+
+## Categories
+
+Documentation-only decisions fall into:
+
+1. **Cross-reference / absorbed** — work tracked via parent or joint decision; this entry is a documentation pointer
+2. **Foundational integrated** — early structural decisions (DEC-001 to DEC-010 era) already integrated into project structure; no separate execution needed
+3. **Stage-deferred operational** — Stage 3+ or Stage 4+ scope; document now for future-stage execution
+4. **Cross-reference enrichment** — adds context to existing decisions (e.g., supersession notes, joint references)
+5. **Methodology decisions** — pure decision text, no implementation artifact (e.g., "use library X over Y")
+
+## Execution Plan
+
+**Phase 1 (current):** Decision-walkthrough — Pass 52 working through PENDING decisions
+**Phase 2 (post-walkthrough):** Documentation-register cleanup pass — execute all documentation-only items in order
+**Phase 3 (parallel with Phase 2):** Sprint engineering work per ENGINEERING_REGISTER
+
+Phase 2 timing: trigger when PENDING decisions reach 0 or owner directs.
+
+---
+
+## DECISION INVENTORY
+
+*To be populated by retroactive sprint-tracking audit (Pass 52 turn 99 onward). Initial population covers homeless RESOLVED-DECIDED decisions found across all of Pass 52.*
+
+### Bucket A: Foundational / Already-Integrated (no separate execution work)
+
+These decisions were structural/foundational early-pass decisions already integrated into project shape (CLAUDE.md, PROJECT_PLAN.md content, etc.). No documentation-cleanup work required.
+
+| DEC | Description | Why no execution |
+|---|---|---|
+| DEC-001 | Quiver subscription cancellation timing | Operational; superseded by DEC-450 paid Quiver |
+| DEC-002 | Polygon News evaluation | Superseded by DEC-440/441 Polygon subscription |
+| DEC-003 | Phase 0 inclusion in PROJECT_PLAN | Structural — already in PROJECT_PLAN.md |
+| DEC-004 | Phase 0.A scope | Structural — defines project structure |
+| DEC-005 | Strategy count target — 130 strategies + OpenBB+Polygon fundamentals | Superseded by Layer 1-4 strategy roster (~109-119 classes) |
+| DEC-006 | Strategy families to defer to Phase 1F | Structural deferral; superseded by current Phase 0/1B-α structure |
+| DEC-007 | Phase 0 timeline (7-12 months path to live) | Aspirational target; tracking via sprint roadmap |
+| DEC-039 | Phase 0 parallelization (deferred) | Structural deferral |
+| DEC-041 | No Phase 0 compression | Structural |
+| DEC-046 | Drop CVD from Phase 0 | Structural decision (negative scope) |
+
+### Bucket B: Methodology / Library Choices (no incremental execution beyond making the choice)
+
+These decisions choose a library or methodology. The "execution" is using the chosen tool when relevant code is written, captured in respective sprint slots.
+
+| DEC | Description | Library/method | Already captured in |
+|---|---|---|---|
+| DEC-047 | QuantStats for performance analytics | QuantStats | (used during Phase 1B-α / Stage 3) |
+| DEC-048 | Streamlit for Stage 3+ dashboard | Streamlit | DEC-430 Sprint 7-8 dashboard |
+| DEC-049 | ib_async for IBKR integration | ib_async | Stage 4+ broker integration |
+| DEC-050 | freezegun for PIT regression tests | freezegun | DEC-437/439 in Sprint 6 |
+| DEC-052 | Fork S&P 500 historical dataset (CC0) | CC0 dataset | DEC-365/366 universe |
+| DEC-054 | IBKR for both paper and live | IBKR | Stage 3+/Stage 4+ broker setup |
+| DEC-055 | Cost-optimized TradingAgents config | config | DEC-051/058 agent setup |
+| DEC-056 | Skip TradingAgents CLI | architectural | DEC-051 baseline |
+| DEC-057 | Disable Social Analyst | architectural | DEC-051 baseline |
+| DEC-058 | GPT-5.4-mini for backtest, Anthropic for live | model selection | Stage 2/3 agent infrastructure |
+| DEC-061 | Tier mapping (Option 1) | mapping decision | absorbed into DEC-021 (3-tier simplification) |
+
+### Bucket C: Cross-Reference / Absorbed (work tracked via parent or joint decision)
+
+These decisions point to other decisions where the actual work lives. No separate execution.
+
+| DEC | Description | Tracked via |
+|---|---|---|
+| DEC-015 | Strategy correlation methodology | Used by DEC-089 Sprint 5+ / DEC-458 |
+| DEC-068 | Bootstrap CI + pairwise significance for exits | Expanded in DEC-423 → Sprint 7 statistical methodology |
+| DEC-073 | Hand-roll smart money composites (NOT Quiver pre-built) | Decision only — guides DEC-450 Quiver consumer code |
+| DEC-265 | Smoke test power analysis | Absorbed by DEC-080/400/083/110/413/426 → Sprint 7 |
+| DEC-347 | Lagging-indicator dominance | Absorbed by DEC-071/072/389-391/106/107 → various sprints |
+| DEC-126 | Document time-resolution limits of circuit breakers | Documentation in CAV-XXX |
+
+### Bucket D: Stage 3+ / Stage 4+ Operational (defer to that stage)
+
+These decisions are scoped to Stage 3 (paper trading) or Stage 4+ (live). Documented now for future-stage execution; NOT in current sprint roadmap.
+
+| DEC | Description | Stage |
+|---|---|---|
+| DEC-028 | Stage 3 paper trading duration (3 months) | Stage 3 entry criterion |
+| DEC-029 | Stage 4 starting capital (SPLIT into 029-A/B/C) | Stage 4 |
+| DEC-031 | Codespace through Phase 0, migrate to cloud before Stage 4 | Stage 3→4 transition |
+| DEC-051 | Staged TradingAgents adoption (REVISED-3) | Stage 2/3 phased |
+| DEC-053 | Defer Streamlit timing | Stage 3+ |
+| DEC-059 | $300 hard cap on Stage 2 backtest | Stage 2 budget guard |
+| DEC-060 | Smoke test gating before Stage 2 scale | Stage 2 entry |
+| DEC-255 | Norbert's Gambit at funding (DLR.TO/DLR.U.TO) | Stage 4+ operational |
+
+### Bucket E: To Be Classified
+
+(Populated as retroactive audit progresses. Decisions here need owner verification before bucket assignment.)
+
+---
+
+## Status Tracking
+
+| Metric | Count |
+|---|---|
+| Decisions in DOCUMENTATION_REGISTER (this file) | TBD post-classification |
+| Bucket A (foundational integrated) | ~10-15 |
+| Bucket B (methodology/library) | ~11-15 |
+| Bucket C (cross-reference/absorbed) | ~6-10 |
+| Bucket D (stage 3+/4+ operational) | ~8-12 |
+| Bucket E (TBC) | TBD |
+
+---
+
+## Next Actions (Phase 2 — post-walkthrough)
+
+1. Verify each bucket assignment with owner
+2. For Bucket D — confirm Stage 3/4 operational deferral vs needing Stage 2 documentation NOW
+3. For unclear cases — owner approval required before final categorization
+4. Final consolidation: documentation-only items execute in Phase 2 cleanup; engineering items execute per ENGINEERING_REGISTER sprints
+
+---
+
+*Per CHECKLIST #25 honest acknowledgment that retroactive audit was needed; per #51 owner-prompted execution-tracking; per #57 use-case mapping for each decision's correct register/bucket.*
