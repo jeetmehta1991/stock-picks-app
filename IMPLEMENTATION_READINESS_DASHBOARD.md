@@ -263,3 +263,37 @@ Run actual backtest with full universe + agents + dimensional cube.
 ---
 
 *Per CHECKLIST #43/#46/#47/#56/#57. Pass 52 turn 36. Generated with reversibility framework lens — implementation readiness scored on decision certainty + dependency-clear status.*
+
+---
+
+## Phase 2 Batch 1 Updates (Pass 52 turn 101)
+
+Per CHECKLIST #58 — sprint readiness updates for newly-tracked decisions.
+
+### Updated Sprint Effort Estimates
+
+| Sprint | Previous | Revised | Delta | New decisions |
+|---|---|---|---|---|
+| Sprint 1 (Phase 0.A foundation) | ~7-9d | ~9-12d | +2-3d | DEC-040 (PIT loader) |
+| Sprint 4 (DEC-410 audit findings) | ~5-7d | ~9-12d | +4-5d | DEC-072 (WSB sep), DEC-092 (slippage) |
+| Sprint 5 NEW (Position Sizing) | n/a | ~3.5d | +3.5d new | DEC-086/087/088 (Kelly/vol-targeted/portfolio vol) |
+| Sprint 6 (Phase 0.E + Hygiene + new) | ~14-19d | ~22-29d | +8-10d | DEC-067 (9 exits), DEC-075 (AEP), DEC-096 (reproducibility) |
+| Sprint 7 (Statistical Methodology) | ~17-19d | ~27-29d | +10d | DEC-081/082/083/085 + DEC-106 |
+
+### Total Stage 2 Implementation Effort
+
+- Previous estimate: ~30-40 engineering days realistic
+- Phase 2 Batch 1 revised: ~50-65 engineering days realistic
+- Anticipated further revisions in Batches 2-6 (158 decisions remaining unclassified)
+
+### Critical Path Implications
+
+Critical path remains Sprint 1 → Sprint 2 → Sprint 3 → Phase 1B-α run. Newly-added decisions parallel-able with critical path:
+- DEC-040 (Sprint 1) is on critical path; +2-3d delay
+- DEC-072/092 (Sprint 4) are parallel
+- Sprint 5 NEW block parallel with Sprints 4-5
+- Sprint 6 additions parallel
+- Sprint 7 additions on critical path before Phase 1B-α
+
+Critical path effort revised: previously ~21-25 days minimum → ~28-35 days minimum (post-Phase-2-Batch-1).
+

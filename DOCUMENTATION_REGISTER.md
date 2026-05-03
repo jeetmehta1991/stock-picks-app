@@ -124,3 +124,58 @@ These decisions are scoped to Stage 3 (paper trading) or Stage 4+ (live). Docume
 ---
 
 *Per CHECKLIST #25 honest acknowledgment that retroactive audit was needed; per #51 owner-prompted execution-tracking; per #57 use-case mapping for each decision's correct register/bucket.*
+
+---
+
+## Phase 2 Batch 1 — 13 decisions classified (Pass 52 turn 101)
+
+Owner Pass 52 turn 100: "Approve all"
+Owner Pass 52 turn 101: "Dec 042 pending / Approve all"
+
+### Bucket B additions (5 — methodology/library choices)
+
+| DEC | Description | Decision/Methodology | Notes |
+|---|---|---|---|
+| DEC-013 | earnings_tolerant strategy attribute (REVISED) | Strategy attribute design | Consumed by strategy code in Sprint 8 |
+| DEC-033 | Email approval system (REPLACED with notifications + summaries, no approval gateway) | Process architecture | Approval governance via Option C verification gate |
+| DEC-036 | Audit doc maintenance (trigger-only, not periodic) | Process methodology | AUDIT.md update cadence |
+| DEC-045 | Adopt fork-existing strategy across Phase 0 | Architecture choice | Library/code reuse vs greenfield |
+| DEC-084 | Audit flag at 65% win rate (lowered from 70%) | Threshold setting | Triggers audit review when strategy hits threshold |
+
+### Bucket C additions (8 — cross-reference / absorbed via children)
+
+| DEC | Description | Tracked via |
+|---|---|---|
+| DEC-063 | Universe refresh automation | Children: DEC-372/373/374/375/376/377/378/379/380 |
+| DEC-064 | Phase 0.A prefetch checklist | Children: DEC-256/257/258/259/260/261 |
+| DEC-065 | Validate stored data quality before Phase 1B-α | Children: DEC-410/260/417 |
+| DEC-099 | 11 missing strategy categories | Children: DEC-367/368/369/370/371 |
+| DEC-101 | Earnings strategies post-Phase 0.A | Parent: DEC-256 (Polygon earnings calendar prefetch) |
+| DEC-102 | Market-Level / Correlation-Factor strategies | Absorbed by: DEC-369 (Cross-Asset strategies) |
+| DEC-103 | Auto-populate Tier 2 universe | Children: DEC-372/373/374 |
+| DEC-104 | Auto-populate Tier 3 momentum watchlist | Children: DEC-364/375/376/377 |
+| DEC-105 | Spinoff detector | Children: DEC-378/379/380 |
+
+### Bucket D additions (1 — deferred-implementation)
+
+| DEC | Description | Activation trigger |
+|---|---|---|
+| DEC-074 | Polygon block trades / dark pool eval (defer empirical evaluation to Phase 1B-α) | Triggered when DEC-446 calibration runs ~1d sample analysis + 0-2d adoption decision |
+
+### Bucket E additions (0 this batch)
+
+DEC-042 was tagged for Bucket E in Phase 2 Batch 1 walkthrough but owner directed flip-back to PENDING for proper future walkthrough. Not added to DOCUMENTATION_REGISTER.
+
+---
+
+## Phase 2 Status After Batch 1
+
+| Metric | Count |
+|---|---|
+| Total RESOLVED-DECIDED | 298 (was 299; −1 DEC-042 flipped back) |
+| In ENGINEERING_REGISTER | 46 + 15 (Batch 1 ENG additions) = 61 |
+| In DOCUMENTATION_REGISTER | 0 + ~40 (Phase 1) + 13 (Batch 1) = ~53 |
+| Truly homeless after Batch 1 | 187 − 30 (Batch 1) + 1 (DEC-042 flip back, removed from homeless) = 158 |
+
+Phase 2 cadence: ~5 more batches to clear remaining 158 unclassified.
+

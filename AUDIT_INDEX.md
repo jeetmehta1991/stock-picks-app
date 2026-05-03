@@ -62,7 +62,7 @@
 | **DECISION-039** | Phase 0 parallelization (deferred) | RESOLVED-DECIDED | Phase 0 / Architecture | Pass 22 | 22 |
 | **DECISION-040** | PointInTimeLoader structural framework | RESOLVED-DECIDED | Phase 0 / Architecture | Pass 22 | 22 |
 | **DECISION-041** | No Phase 0 compression | RESOLVED-DECIDED | Phase 0 / Architecture | Pass 23 | 23 |
-| **DECISION-042** | AgentGateConfig spec (PARTIAL — needs revision) | RESOLVED-DECIDED | Phase 0 / Architecture | Pass 25 | 25 |
+| **DECISION-042** | AgentGateConfig spec (PARTIAL — needs revision) **Pass 52 turn 101 owner-directed FLIP-BACK to PENDING: Original "PARTIAL — needs revision" qualifier indicated unfinished work; classification as RESOLVED-DECIDED was premature. Owner directs status revision to PENDING for proper future walkthrough. AgentGateConfig spec needs full revision/specification before status flip to RESOLVED-DECIDED.** | PENDING | Phase 0 / Architecture | Pass 25 | 25 |
 | **DECISION-043** | Retune framework | PENDING | Process / Infrastructure (Group F) | Pass 25 | - |
 | **DECISION-044** | Phase 0.D scope — superseded by 045 | SUPERSEDED | SUPERSEDED | Pass 26 | 38 |
 | **DECISION-045** | Adopt fork-existing strategy across Phase 0 | RESOLVED-DECIDED | Phase 0 / Architecture | Pass 27 | 27 |

@@ -24171,3 +24171,85 @@ Counts unchanged: 462 / 85 PENDING / 294 RESOLVED-DECIDED / 21 DEFERRED_TO_STAGE
 This commit creates DOCUMENTATION_REGISTER.md (new file) + appends AUDIT.md narrative. AUDIT_INDEX.md unchanged (no status flips this turn).
 
 *Per CHECKLIST #25 (full owner-accountability acknowledgment of repeated failure)/#43 (Python-based gap analysis on 294 RESOLVED-DECIDED)/#51 (explicit owner-directed retroactive audit)/#57 (5-bucket use-case mapping for register assignment)/#58 PROPOSED (sprint-tracker assignment as RESOLVED-DECIDED commit requirement).*
+
+---
+
+## AUDIT PASS 52 turn 101 — Phase 2 Batch 1: 30 homeless decisions classified + DEC-042 PENDING revert
+
+Owner Pass 52 turn 100: "Approve all" (Phase 1 framework + 4 directives)
+Owner Pass 52 turn 101: "Dec 042 pending / Approve all" (Batch 1 30 classifications)
+
+PHASE 2 BATCH 1 OUTCOMES (30 decisions):
+
+DEC-042 STATUS REVERT (1):
+- DEC-042 (AgentGateConfig spec PARTIAL — needs revision) → RESOLVED-DECIDED reverted to PENDING
+- Original "PARTIAL — needs revision" qualifier indicated unfinished work; classification as RESOLVED-DECIDED was premature
+- Owner directs status revision for proper future walkthrough
+
+DOCUMENTATION_REGISTER additions (13):
+
+Bucket B — Methodology/Library (5):
+- DEC-013 earnings_tolerant strategy attribute
+- DEC-033 email approval system replaced with notifications
+- DEC-036 audit doc maintenance (trigger-only)
+- DEC-045 fork-existing strategy adoption
+- DEC-084 audit flag at 65% win rate threshold
+
+Bucket C — Cross-Reference / Absorbed (7 — actually 9 enumerated):
+- DEC-063 Universe refresh (children: DEC-372/373/374/375/376/377/378/379/380)
+- DEC-064 Phase 0.A prefetch checklist (children: DEC-256-261)
+- DEC-065 Validate stored data quality (children: DEC-410/260/417)
+- DEC-099 11 missing strategy categories (children: DEC-367-371)
+- DEC-101 Earnings strategies (parent: DEC-256)
+- DEC-102 Market-Level / Correlation-Factor (absorbed by: DEC-369)
+- DEC-103 Auto-populate Tier 2 universe (children: DEC-372-374)
+- DEC-104 Auto-populate Tier 3 momentum watchlist (children: DEC-364/375/376/377)
+- DEC-105 Spinoff detector (children: DEC-378/379/380)
+
+Bucket D — Deferred-Implementation (1):
+- DEC-074 Polygon block trades / dark pool (defer empirical to Phase 1B-α; activation trigger DEC-446 calibration)
+
+ENGINEERING_REGISTER additions (15 — assigned to specific sprints):
+
+Sprint 1 (+1): DEC-040 PointInTimeLoader structural framework
+Sprint 4 (+2): DEC-072 WSB separation, DEC-092 slippage model
+Sprint 5 NEW (+3): DEC-086 Fractional Kelly, DEC-087 Vol-targeted, DEC-088 Portfolio vol target 15%
+Sprint 6 (+3): DEC-067 9 exit methods, DEC-075 AEP breaker, DEC-096 reproducibility manifest
+Sprint 7 (+5): DEC-081 Sharpe+Sortino+cost, DEC-082 stress-test pass, DEC-083 min trades floor TIERED, DEC-085 macro correlation 9 series, DEC-106 regime inputs 8+
+
+SPRINT EFFORT REVISIONS:
+- Sprint 1: +2-3d → ~9-12d total
+- Sprint 4: +4-5d → ~9-12d total
+- Sprint 5 NEW position sizing block: ~3.5d
+- Sprint 6: +8-10d → ~22-29d total
+- Sprint 7: +10d → ~27-29d total
+
+CRITICAL PATH REVISED:
+- Previously ~21-25d minimum
+- Post-Phase-2-Batch-1: ~28-35d minimum
+- Total Stage 2: previously ~30-40d → revised ~50-65d (with further increases anticipated in Batches 2-6)
+
+PHASE 2 PROGRESS:
+- Batch 1 of ~5-6: COMPLETE (this commit)
+- Remaining unclassified: 158 (was 187 pre-Batch-1; −30 classified +1 DEC-042 reverted)
+- Pace: ~5 more batches at 30/turn cadence
+
+CHECKLIST #58 INVOKED IN THIS COMMIT:
+Per CHECKLIST #58 (added Pass 52 turn 100), sprint-tracker assignment is required in same commit as RESOLVED-DECIDED status flips. This commit modifies 5 files in single atomic action:
+1. AUDIT_INDEX.md (DEC-042 PENDING revert)
+2. AUDIT.md (this narrative)
+3. DOCUMENTATION_REGISTER.md (13 new DOC additions)
+4. ENGINEERING_REGISTER.md (15 new ENG additions with sprint assignments)
+5. IMPLEMENTATION_READINESS_DASHBOARD.md (sprint readiness updates with effort revisions)
+
+This is the new pattern: every status-flip commit synchronously updates all relevant trackers.
+
+OWNER SPRINT-SLOT CONFIRMATIONS:
+- DEC-067: Sprint 6 selected per owner "Approve all" (not Sprint 8); reassignable to Sprint 8 if owner prefers strategy-roster grouping
+- DEC-072: Sprint 4 selected per owner approval (signal taxonomy is data-layer work)
+
+Counts post-Batch-1: 462 / 86 PENDING / 298 RESOLVED-DECIDED / 21 DEFERRED_TO_STAGE_3 / 10 DEFERRED_TO_STAGE_4 / 20 SUPERSEDED / 10 BLOCKED_ON_X / 14 other.
+
+Note: PENDING +1 (DEC-042 revert), RESOLVED-DECIDED -1 (DEC-042 revert). Net zero status flips in this commit aside from DEC-042.
+
+*Per CHECKLIST #25 (honest acknowledgment of scope)/#43 (full description retrieval per item)/#51 (explicit owner approval all + DEC-042 directive)/#57 (5-bucket use-case mapping per item)/#58 (NEW — sprint-tracker assignment as RESOLVED-DECIDED commit requirement; 5-file atomic update demonstrated).*

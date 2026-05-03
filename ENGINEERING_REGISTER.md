@@ -210,3 +210,71 @@ Implementation per Theme X4 Block 3 sequencing in AUDIT_INDEX.md.
 ---
 
 *Per CHECKLIST #43/#46/#47/#56/#57. Pass 52 turn 42.*
+
+---
+
+## Phase 2 Batch 1 Additions (Pass 52 turn 101)
+
+Per CHECKLIST #58 — sprint-tracker assignment for RESOLVED-DECIDED decisions previously homeless. Adding 15 engineering decisions to existing sprints + sub-decisions table.
+
+### Sprint 1 / Sprint 2 additions (Phase 0.A foundation / engine bug fixes Tier A)
+
+| DEC-N | Description | Test signals | Effort |
+|---|---|---|---|
+| DEC-040 | PointInTimeLoader structural framework | freezegun-based `loader.fetch(as_of=D)` returns rows with date ≤ D; rejects rows with date > D | ~2-3d (Sprint 1 foundation; consumed by all PIT-aware fetchers) |
+
+### Sprint 4 additions (DEC-410 Audit Findings Sprint)
+
+| DEC-N | Description | Test signals | Effort |
+|---|---|---|---|
+| DEC-072 | Separate WSB from smart money — refactor signal taxonomy | smart_money_composite no longer includes WSB; new social_sentiment_score field | ~1.5d |
+| DEC-092 | Slippage model = f(size%ADV, vol) — base model with DEC-122/280 multipliers | trade at 0.5% ADV vol=20% → ~3bps; 5% ADV vol=50% → ~25bps; layered final = base × exit × time-of-day | ~3d post-DEC-446 calibration |
+
+### Sprint 5 additions (Position Sizing — NEW SPRINT block within Universe Management)
+
+Per Pass 52 X5 closure (DEC-086/087/088 + DEC-091 BLOCKED_ON_BUG-095). Position sizing methodology decisions:
+
+| DEC-N | Description | Test signals | Effort |
+|---|---|---|---|
+| DEC-086 | Fractional Kelly position sizing (PHASED ROLLOUT — Phase A parallel computation) | Synthetic strategy edge=10%, win_rate=55%, avg_win=2× avg_loss → Kelly=0.275; fractional=0.10; both sizes computed | ~2d Phase A |
+| DEC-087 | Vol-targeted sizing per-position | High-vol ticker (XOM during oil shock) gets smaller position than low-vol (KO consumer staple) at same edge level | ~1d (joint with DEC-023 SUPERSEDED) |
+| DEC-088 | Portfolio vol target 15% annualized | Synthetic backtest produces realized portfolio vol; if 15% systematically missed → REVISIT_AFTER_BACKTEST trigger | ~0.5d |
+
+### Sprint 6 additions (Phase 0.E + Architecture Hygiene)
+
+| DEC-N | Description | Test signals | Effort |
+|---|---|---|---|
+| DEC-067 | Add 9 missing exit methods (chandelier, psar, supertrend, etc.) | All 9 exits compliant with DEC-353 R:R≥2.0; chandelier ATR mult ≥ 2.5; supertrend signals match TradingView reference | ~5-7d |
+| DEC-075 | Adverse-excursion-from-peak (AEP) breaker — derived from MFE | Per-strategy `mean_aep_pct` computed; high-AEP trades flagged in retrospective analysis | ~1d (derived-metric, low-risk) |
+| DEC-096 | Backtest reproducibility manifest (code SHA + data version + config hash) | Joint with DEC-283 (output schema versioning) + DEC-330 (cache schema versioning); single coordinated reproducibility manifest written per backtest run | ~2d (joint with DEC-330 already RESOLVED) |
+
+### Sprint 7 additions (Statistical Methodology)
+
+| DEC-N | Description | Test signals | Effort |
+|---|---|---|---|
+| DEC-081 | Sharpe + Sortino + transaction cost sensitivity | Both `sharpe_per_trade` and `sharpe_daily = sqrt(252) × mean(daily_returns) / std`; Sortino with same daily mark-to-market; cost sensitivity at 0/5/10/20bps round-trip | ~3d |
+| DEC-082 | Stress-test pass requirements (Option A; 2022 Rate-Rise Bear) | Min Sharpe ≥ 0, Max DD ≤ 20%, Min Win Rate threshold per category | ~2d |
+| DEC-083 | Min trades floor (TIERED — daily/earnings/calendar=300, regime-gated/crisis-only=100) | Strategies under floor get INSUFFICIENT_OOS_DATA verdict per DEC-426 5-gate validity | ~1d |
+| DEC-085 | Define macro correlation precisely (REVISED COMPREHENSIVE — 9 FRED series) | All 9 series (VIX, DGS10, T10Y2Y, FEDFUNDS, UNRATE, CPIAUCSL, T10YIE, BAA10Y, DXY) Pearson + Spearman correlations computed per strategy | ~2d |
+| DEC-106 | Regime inputs 2 → 8+ (yield curve, HY spread, ICSA jobless, breadth, sector dispersion, AAII/CNN F&G) | Regime classifier consumes 8+ inputs; transition triggers depend on multiple inputs not just VIX | ~2d post-deps |
+
+### Phase 2 Batch 1 ENG totals
+
+- Sprint 1: +1 decision (DEC-040)
+- Sprint 4: +2 decisions (DEC-072, DEC-092)
+- Sprint 5: +3 decisions (DEC-086, DEC-087, DEC-088) — NEW dedicated position-sizing block
+- Sprint 6: +3 decisions (DEC-067, DEC-075, DEC-096)
+- Sprint 7: +5 decisions (DEC-081, DEC-082, DEC-083, DEC-085, DEC-106)
+- Total: **+14 ENG decisions assigned to sprints**
+
+(Note: DEC-067 originally proposed Sprint 8 but reassigned Sprint 6 since it's an exit-method engineering task adjacent to architecture hygiene; can move to Sprint 8 if owner prefers strategy-roster grouping.)
+
+(DEC-072 sprint: Sprint 4 selected per owner approval; signal-taxonomy refactor is data-layer work fitting DEC-410 audit findings sprint.)
+
+Sprint 1 effort revised: +2-3d for DEC-040 → ~9-12d total
+Sprint 4 effort revised: +4-5d for DEC-072/092 → ~9-12d total (was 5-7d)
+Sprint 5 NEW block: ~3.5d (DEC-086/087/088 position sizing parallel implementation)
+Sprint 6 effort revised: +8-10d for DEC-067/075/096 → ~22-29d total (was 14-19d)
+Sprint 7 effort revised: +10d for DEC-081-085 + DEC-106 → ~27-29d total (was 17-19d)
+
+Total project Stage 2 effort revised: previously ~30-40d realistic → ~50-65d realistic with full register population.
