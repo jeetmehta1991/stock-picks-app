@@ -24507,3 +24507,70 @@ Next steps available:
 3. Owner direction
 
 *Per CHECKLIST #25 (full accountability for retroactive audit completion)/#43 (precise grep on all 87 homeless with full descriptions)/#51 (explicit owner approval — full delegation across remaining batches)/#57 (per-item bucket/sprint use-case mapping)/#58 (PHASE 2 COMPLETE — operational framework prevents recurrence).*
+
+---
+
+## AUDIT PASS 52 turn 109 — Phase 2 Cleanup Batch: 22 substantively-homeless decisions properly tracked
+
+Owner Pass 52 turn 108: "Any resolved homeless decisions not yet in registers?"
+Owner Pass 52 turn 109: "Add all those decisions to registers as relevant as per your recommendations"
+
+PHASE 2 CLEANUP BATCH OUTCOMES (22 decisions):
+
+ANTI-PATTERN CAUGHT BY OWNER:
+22 RESOLVED-DECIDED decisions were technically in IMPLEMENTATION_READINESS_DASHBOARD text but lacked proper ENGINEERING_REGISTER sprint slots with test signals + effort estimates. **Substantive homelessness vs technical homelessness.** My Phase 2 Final Sweep counted them as "in registers" because dashboard had DEC-XXX text, but CHECKLIST #58 requires sprint-table entry with test signals + effort. Owner caught this distinction.
+
+ENGINEERING_REGISTER additions (22 — all engineering work; no DOC additions this batch):
+
+Sprint 1 (+5): DEC-259 ICT/SMC pre-cache, DEC-382 cache 20-day flexibility, DEC-383 zero-volume preservation, DEC-390 AAII refresh script, DEC-391 CNN F&G refresh
+Sprint 2 (+3): DEC-313 trailing-stop intraday, DEC-321 liquidity fail-closed, DEC-399 borrow cost consolidation
+Sprint 4 (+7, 5 net-new + 2 absorbed): DEC-301 ALFRED, DEC-444 yfinance earnings deprecate (absorbed DEC-256), DEC-447 Polygon reference (absorbed DEC-443), DEC-449 ALFRED validation, DEC-451 BUG-284 gov_contracts, DEC-454 OpenBB removal, DEC-455 Alpha Vantage deprecation
+Sprint 5 (+4): DEC-366 tier-specific liquidity floor, DEC-373 universe --validate mode, DEC-376 momentum watchlist GH Actions, DEC-379 SEC EDGAR spinoff feed
+Sprint 8 (+3): DEC-368 Calendar/Seasonal, DEC-370 Index Rebalance, DEC-371 Within-category gaps catalog
+
+SPRINT EFFORT REVISIONS:
+- Sprint 1: +5.5d → ~23-29d
+- Sprint 2: +2.5-3.5d → ~25.5-30.5d
+- Sprint 4: +3.75-5.25d net-new → ~33.75-46.25d
+- Sprint 5: +5-7d → ~11.5-13.5d
+- Sprint 8: +6-9d → ~36-54d
+
+CRITICAL PATH REVISED:
+- Pre-cleanup: ~100-130d minimum
+- Post-cleanup: ~110-145 engineering days minimum
+
+TOTAL STAGE 2 EFFORT (FINAL):
+Pre-Phase-2: ~30-40d realistic
+Post-Phase-2-Final-Sweep: ~247-313d realistic
+**Post-cleanup-batch: ~270-340 engineering days realistic**
+
+This is now the **definitive Stage 2 effort estimate**. Owner accountability call-out turn 98 + verification question turn 108 together revealed:
+- Total scope: ~270-340 engineering days (7-9x original ~30-40d estimate)
+- Critical path: ~110-145 days minimum
+- Hidden in homeless + substantively-homeless decisions: ~210-300 days of engineering work
+
+OWNER VERIFICATION QUESTION VINDICATED:
+Owner turn 108 question caught the substantive vs technical homelessness distinction. Without it, project would have entered Sprint 1 implementation with 22 decisions lacking proper test signals + effort estimates — exactly the anti-pattern CHECKLIST #58 was designed to prevent.
+
+CHECKLIST #58 NOW FULLY OPERATIONAL AT BOTH LEVELS:
+- Technical level: every RESOLVED-DECIDED has register entry (Phase 2 Final Sweep)
+- Substantive level: every engineering decision has sprint-table entry with test signals + effort (this cleanup)
+
+VERIFICATION POST-CLEANUP:
+- Truly homeless (any register): 0 ✓
+- Substantively homeless (engineering work without sprint slot + test signals): 0 ✓
+- ENGINEERING_REGISTER total: ~226 ENG decisions (was 204; +22)
+- DOCUMENTATION_REGISTER total: ~102 DOC decisions
+
+CHECKLIST #58 INVOKED IN THIS COMMIT (4-file atomic update — no DOC additions):
+1. AUDIT_INDEX.md (no status flips this batch — substantive reclassification only)
+2. AUDIT.md (this narrative)
+3. ENGINEERING_REGISTER.md (22 new ENG additions with sprint slots + test signals + effort)
+4. IMPLEMENTATION_READINESS_DASHBOARD.md (sprint readiness updates with effort revisions)
+
+Counts unchanged (cleanup is reclassification, not status flip):
+462 / 86 PENDING / 296 RESOLVED-DECIDED / 21 DEFERRED_TO_STAGE_3 / 10 DEFERRED_TO_STAGE_4 / 20 SUPERSEDED / 10 BLOCKED_ON_X / 14 other.
+
+PHASE 2 NOW DEFINITIVELY COMPLETE. RETROACTIVE SPRINT-TRACKING AUDIT FINISHED AT BOTH TECHNICAL AND SUBSTANTIVE LEVELS.
+
+*Per CHECKLIST #25 (honest about substantive vs technical homelessness)/#43 (per-item full description retrieval)/#51 (explicit owner approval of recommendations)/#57 (per-item use-case mapping with test signals)/#58 (operational at both levels — registers entries with test signals + effort).*

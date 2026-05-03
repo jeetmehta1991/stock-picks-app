@@ -408,3 +408,41 @@ Owner accountability call-out turn 98 was warranted — without retroactive audi
 
 Going forward: CHECKLIST #58 prevents recurrence by requiring sprint-tracker assignment in same commit as RESOLVED-DECIDED status flip.
 
+
+---
+
+## Phase 2 Cleanup Batch Updates (Pass 52 turn 109)
+
+Per CHECKLIST #58 — sprint readiness updates for 22 substantively-homeless decisions now properly tracked.
+
+### Updated Sprint Effort Estimates (Cleanup Batch)
+
+| Sprint | Pre-Cleanup | Post-Cleanup | Delta | New decisions |
+|---|---|---|---|---|
+| Sprint 1 (Phase 0.A) | ~17.5-23.5d | ~23-29d | +5.5d | DEC-259/382/383/390/391 |
+| Sprint 2 (Engine Bug Fixes Tier A) | ~23-27d | ~25.5-30.5d | +2.5-3.5d | DEC-313/321/399 |
+| Sprint 4 (DEC-410 Audit Findings) | ~30-41d | ~33.75-46.25d | +3.75-5.25d | DEC-301/449/451/454/455 (DEC-444/447 absorbed) |
+| Sprint 5 (Universe Management) | ~6.5d | ~11.5-13.5d | +5-7d | DEC-366/373/376/379 |
+| Sprint 8 (Strategy Categories) | ~30-45d | ~36-54d | +6-9d | DEC-368/370/371 |
+
+### Total Stage 2 Implementation Effort (FINAL POST-CLEANUP)
+
+- Pre-cleanup: ~247-313 engineering days realistic
+- **Post-cleanup: ~270-340 engineering days realistic**
+
+### Critical Path Reality Check (UPDATED)
+
+Critical path components affected by cleanup:
+- Sprint 1 +5.5d (Phase 0.A foundation; on critical path)
+- Sprint 4 +3.75-5.25d net-new (cost stack + DEC-410 cleanup; on critical path)
+- Sprint 5 +5-7d (universe management; partially critical-path)
+- Sprint 8 +6-9d (strategy categories; parallel-able)
+
+**Critical path effort revised: ~100-130d minimum → ~110-145 engineering days minimum.**
+
+### Substantive Homelessness Pattern Resolved
+
+Owner caught the substantive homelessness gap turn 108 ("Any resolved homeless decisions not yet in registers?") — 22 decisions were textually mentioned in IMPLEMENTATION_READINESS_DASHBOARD but lacked proper ENGINEERING_REGISTER sprint slots with test signals + effort estimates. This violated the spirit of CHECKLIST #58 even though they technically appeared in a register.
+
+Pattern now resolved: every RESOLVED-DECIDED engineering decision has proper sprint-table entry with test signals + effort. Going forward, CHECKLIST #58 enforces this from creation, not just textual mention.
+

@@ -502,3 +502,97 @@ Sprint 8 effort revised: NEW dedicated block ~30-45d (chart patterns are 8+ stra
 CRITICAL PATH revised: ~46-56d → likely **~100-130 days minimum** post-Phase-2-Final-Sweep with full register population (Sprint 4 + Sprint 7 are now both critical-path heavy).
 
 This is a **major reality-check**: previous estimates of ~30-40 days realistic were significantly understating scope. True engineering work for Stage 2 is closer to ~250-300 engineering days.
+
+---
+
+## Phase 2 Cleanup Batch (Pass 52 turn 109) — 22 substantively-homeless decisions added
+
+Per CHECKLIST #58 — these decisions were technically in IMPLEMENTATION_READINESS_DASHBOARD text but lacked proper ENGINEERING_REGISTER sprint slots with test signals + effort estimates. **Substantive homelessness fix.**
+
+### Sprint 1 additions (Phase 0.A foundation) — 5 decisions
+
+| DEC-N | Description | Test signals | Effort |
+|---|---|---|---|
+| DEC-259 | ICT/SMC signal pre-computation cache (FVG/BOS/CHoCH/order blocks) — joint DEC-045 (smartmoneyconcepts library) + DEC-261 (PIT lag rule); storage `backtest/data/cache/ictsmc/{TICKER}.parquet` | Per-ticker parquet populates with fvg_count/fvg_active_levels/bos_event/choch_event/order_block_levels/liquidity_grab_event; PIT-safe (no future bars referenced) | ~2-3d post-DEC-045 fork verification |
+| DEC-382 | DEC-308 implementation — `min(20, available_days)` cache floor + LIMITED_HISTORY result-schema flag; strategy-level (not cache) decides if data sufficient | Synthetic 15-day-history ticker returns LIMITED_HISTORY flag + 15 days of data; strategy can opt-out via flag | ~0.5d |
+| DEC-383 | DEC-310 implementation — remove `df = df[df["volume"] > 0]` from cache.py write; add derived `is_halted = (volume == 0) & (close == previous_close)` | Halted day preserved in cache with is_halted=True; existing cache forward-only migration; strategy-level filter respects flag | ~1d |
+| DEC-390 | DEC-319 implementation — `scripts/refresh_aaii_sentiment.py` HTML scrape + `.github/workflows/refresh_aaii.yml` Friday 14:00 UTC schedule + auto-PR weekly delta | AAII CSV refreshes weekly; validation gate (DEC-065) checks freshness; PR review precedes merge | ~1d |
+| DEC-391 | DEC-320 implementation — `(value, last_published_date, age_days)` tuple replaces interpolation; strategies filter `age_days ≤ 3`; new `scripts/refresh_cnn_fear_greed.py` | CNN F&G returns (value, last_published, age) tuple; historical CSV migrated with is_interpolated=True flag; refresh script populates daily | ~1d |
+
+Sprint 1 effort revised: +5.5d → ~23-29d total
+
+### Sprint 2 additions (Engine Bug Fixes Tier A) — 3 decisions
+
+| DEC-N | Description | Test signals | Effort |
+|---|---|---|---|
+| DEC-313 | update_trailing_stop intraday HIGH/LOW (PIT-honest stop trigger) — change signature to (trade, today_high, today_low, today_close, vix); use intraday extreme for highest_high/lowest_low; joint DEC-337 + BUG-232 | Synthetic intraday spike to stop level → exit at stop level same day (not close); CAV-038 acknowledged (yfinance high/low outliers) | ~1-2d |
+| DEC-321 | Liquidity filter fail-closed — missing/zero market_cap REJECTS ticker (returns False); LIQUIDITY_FILTER_FAIL_REASONS enum; joint BUG-238 + DEC-366 | Synthetic ticker with missing market_cap REJECTED with reason=missing_market_cap; CAV-043 monitoring on rejection rate | ~1d |
+| DEC-399 | DEC-327 Phase B — consolidate to shared `backtest.engine.costs.calculate_borrow_cost(trade, hold_days)`; both paths consume single source | Borrow cost charged exactly once per short trade in unit test; historical short-trade backtests rerun + document net PnL delta | ~0.5d |
+
+Sprint 2 effort revised: +2.5-3.5d → ~25.5-30.5d total
+
+### Sprint 4 additions (DEC-410 Audit Findings + cost stack) — 7 decisions
+
+| DEC-N | Description | Test signals | Effort |
+|---|---|---|---|
+| DEC-301 | FRED data revisions: switch to ALFRED (archival FRED) for vintage data — replaces non-vintage FRED that retroactively revises past values | get_fred_pit(series_id, as_of_date) returns vintage-as-of-date value; differs from current revised value for series with revisions | ~2-3d |
+| DEC-444 | Deprecate `days_to_next_earnings()` via yfinance live calls — route all lookups through DEC-256 Polygon earnings cache parquet; remove yfinance.earnings_dates live-call path | Zero yfinance live calls during backtest; resolves BUG-280 (silent None) + BUG-013 (~106K live calls); absorbed into DEC-256 implementation | absorbed in DEC-256 (no separate effort) |
+| DEC-447 | Polygon reference tickers PIT consumption — query pattern for `/v3/reference/tickers/{ticker}` with as-of-date semantics for sector + market_cap historical lookup; replaces yfinance .info live calls | PIT-correct sector + market_cap returnable for any (ticker, as_of_date) pair; joint DEC-443 (yfinance .info replacement) + DEC-322 (market_cap_pit) | absorbed in DEC-443 (no separate effort) |
+| DEC-449 | Validate DEC-301 ALFRED PIT mitigation produces materially different values — sample test on CPIAUCSL + FEDFUNDS across 2018-2024; if no difference, flag DEC-301 as over-engineered | Non-trivial difference exists between revised and vintage values for at least one series at multiple dates; documented in API_AUDIT.md | ~0.5d |
+| DEC-451 | Fix BUG-284 gov_contracts date filter — Quiver `/historical/govcontracts/` returns Date field but cache schema saved only Qtr+Year; re-prefetch with explicit Date preservation OR reconstruct synthetic date from Qtr+Year midpoint with caveat | gov_contracts date filter returns non-empty results for known recent contracts; filter does not silently drop matching rows; resolves BUG-284 MEDIUM OPEN | ~0.5d |
+| DEC-454 | Remove OpenBB from project scope — update PROJECT_PLAN section 10 to remove OpenBB row; Polygon DEC-441 + Quiver + FRED collectively cover all OpenBB Stage 0+Stage 2 use cases | PROJECT_PLAN section 10 updated; OpenBB references removed; future Phase 1C+ screener use cases revisitable | ~0.25d documentation |
+| DEC-455 | Alpha Vantage deprecation timeline — sequenced cleanup: (a) preserve existing AV cache parquet artifacts; (b) remove AV from active prefetch post-Polygon news prefetch validation; (c) mark ALPHAVANTAGE_API_KEY optional; (d) strip AV references from pipeline.py + smart_money.py post-Polygon stable run | AV code paths inactive; existing cache artifacts preserved; ALPHAVANTAGE_API_KEY no longer required; joint DEC-440 (already approved AV→Polygon supersession) | ~0.5d cleanup spread across migration phases |
+
+Sprint 4 effort revised: +3.75-5.25d (excluding absorbed DEC-444/447) → ~33.75-46.25d total
+
+### Sprint 5 additions (Universe Management) — 4 decisions
+
+| DEC-N | Description | Test signals | Effort |
+|---|---|---|---|
+| DEC-366 | Liquidity floor for universe inclusion (TIER-SPECIFIC FRAMEWORK) — Tier 1 (S&P 500): min_cap=$0, min_avg_dollar_volume=$10M, min_history=250d; Tier 2 (spinoffs/IPOs): min_cap=$2B, min_avg_dollar_volume=$5M, min_history=20d w/ LIMITED_HISTORY flag; Tier 3 (momentum top-100): min_cap=$300M, min_avg_dollar_volume=$5M, min_history=60d; Russell 1000 add: min_cap=$300M, min_avg_dollar_volume=$3M, min_history=250d | Each tier ticker passes/fails per tier-specific thresholds; joint DEC-321 (fail-closed enforcement); LIMITED_HISTORY flag respected by strategies | ~1-2d |
+| DEC-373 | DEC-103 Phase B — `--validate` mode flagging missing-data tickers (yfinance returning empty info) for manual review rather than silent drop | Synthetic SNDK-style edge case (yfinance lag for new listing) flagged for manual review with reason; not silently dropped | ~1d |
+| DEC-376 | DEC-104 Phase B — GitHub Actions monthly automation `.github/workflows/refresh_momentum_watchlist.yml` calling `build_momentum_watchlist.py --write` + commit via PR | Workflow runs monthly; produces PR with watchlist diff for owner review/merge; commit lineage preserved | ~1d |
+| DEC-379 | DEC-105 Phase 2 — SEC EDGAR Form 10-12B feed scraping for 30-90d spinoff lead time; RSS at sec.gov/cgi-bin/browse-edgar; HTML/PDF text extraction non-trivial; may defer if Phase 1 NASDAQ-diff catches enough | EDGAR feed produces spinoff candidates with 30-90d lead time; PR with proposed Tier 2 additions; may DEFER if Phase 1 sufficient | ~2-3d (or DEFER) |
+
+Sprint 5 effort revised: +5-7d → ~11.5-13.5d total
+
+### Sprint 8 additions (Strategy Categories) — 3 decisions
+
+| DEC-N | Description | Test signals | Effort |
+|---|---|---|---|
+| DEC-368 | DEC-099-B — Calendar / Seasonal strategies (Sell-in-May, January effect, Santa rally, FOMC drift, end-of-month rebalancing); date-of-year + days-to-event cube dims in DEC-422 already capture these; integration is logging strategies in roster + verifying cube dim populates | Seasonal strategy fires only in date-window-active period; cube dim correctly classifies historical bars by season; 4-5 calendar strategies operational | ~2-3d |
+| DEC-370 | DEC-099-D — Index Rebalance strategies — needs S&P/Russell adds-drops calendar; joint DEC-303 (historical_membership.csv) + DEC-394 (sector_history.csv Phase 1) + DEC-378 (NASDAQ symbol-directory weekly diff); Russell rebalance June; S&P quarterly | Historical index add events produce expected price drift in announcement→effective window (~3-7d); strategy entry timing tracks calendar | ~3-5d |
+| DEC-371 | DEC-099-E — Within-category gaps catalog (Russell rebalance for momentum, pairs reversion for mean reversion, dark pool prints for smart money [Quiver DEC-450 paid endpoint], gap-fade for breakout) — output: catalog document or appended to PROJECT_PLAN | Catalog covers ≥10 within-category gaps; each gap has explicit data-source path identified; sub-decisions per gap as scoped | ~1d cataloging |
+
+Sprint 8 effort revised: +6-9d → ~36-54d total
+
+### Phase 2 Cleanup Batch ENG totals
+
+| Sprint | Cleanup additions | Effort delta |
+|---|---|---|
+| Sprint 1 | +5 decisions | +5.5d |
+| Sprint 2 | +3 decisions | +2.5-3.5d |
+| Sprint 4 | +7 decisions (5 net-new + 2 absorbed) | +3.75-5.25d net-new |
+| Sprint 5 | +4 decisions | +5-7d |
+| Sprint 8 | +3 decisions | +6-9d |
+| **Total** | **+22 ENG decisions** | **+22.75-30.25d net-new effort** |
+
+## TOTAL PROJECT EFFORT POST-CLEANUP-BATCH
+
+| Sprint | Effort |
+|---|---|
+| Sprint 1 (Phase 0.A foundation) | ~23-29d |
+| Sprint 2 (Engine Bug Fixes Tier A) | ~25.5-30.5d |
+| Sprint 3 (Phase 0.B Portfolio Class) | ~8-11d |
+| Sprint 4 (DEC-410 Audit Findings) | ~33.75-46.25d |
+| Sprint 5 (Universe Management) | ~11.5-13.5d |
+| Sprint 5 NEW (Position Sizing) | ~3.5d |
+| Sprint 6 (Phase 0.E + Hygiene) | ~37.75-47.25d |
+| Sprint 7 (Statistical Methodology + A/B) | ~63.5-69.5d |
+| Sprint 7-8 (Phase 1B-α Dimensional Cube) | ~24-33d |
+| Sprint 8 (Strategy Categories) | ~36-54d |
+| Sprint 9 (Phase 1B-α run + ongoing) | ~2.5d |
+| **Total Stage 2 realistic** | **~270-340 engineering days** |
+
+CRITICAL PATH revised: ~100-130d → likely **~110-145 days minimum** post-cleanup (Sprint 4 + Sprint 8 grew, both critical-path-relevant).
+
