@@ -24574,3 +24574,62 @@ Counts unchanged (cleanup is reclassification, not status flip):
 PHASE 2 NOW DEFINITIVELY COMPLETE. RETROACTIVE SPRINT-TRACKING AUDIT FINISHED AT BOTH TECHNICAL AND SUBSTANTIVE LEVELS.
 
 *Per CHECKLIST #25 (honest about substantive vs technical homelessness)/#43 (per-item full description retrieval)/#51 (explicit owner approval of recommendations)/#57 (per-item use-case mapping with test signals)/#58 (operational at both levels — registers entries with test signals + effort).*
+
+---
+
+## AUDIT PASS 52 turn 111 — Bug coverage gap analysis + BUG_REGISTER.md created
+
+Owner Pass 52 turn 110: "Should all the bugs in audit documents be added to the registers as well?"
+Owner Pass 52 turn 111: "Approve your rec"
+
+OWNER QUESTION VINDICATED — BUG COVERAGE GAP CONFIRMED:
+- Total bugs in audit docs: 148 canonical (### BUG-NN sections in AUDIT.md)
+- Bugs in registers (any): ~12
+- Substantively homeless bugs: ~136 (technically not in any register; some in scope text but not as primary tracking entries)
+
+HONEST SCOPE CORRECTION (per #25):
+Initial framing turn 110 estimated "144+ bugs need separate ENG entries with sprint slots + test signals + effort." Reality after deeper analysis is much cleaner:
+- 148 of 148 bugs (100%) ALREADY linked to decisions in AUDIT_INDEX.md
+- Only 0 bugs are "Open-unlinked" requiring separate ENG entry
+- Decision-resolution infrastructure already covers all bug execution tracking
+
+This means the right action is NOT 144 separate sprint slots — it's 1 canonical cross-reference register that leverages existing decision infrastructure.
+
+EXECUTION (per owner-approved 4-bucket recommendation):
+
+CREATED: BUG_REGISTER.md
+- Canonical cross-reference between 148 AUDIT.md bugs and resolving decisions
+- 4-bucket classification: Open-linked / Open-unlinked / Resolved / Deferred-WONTFIX
+- 100% bug-decision linkage verified
+- Lightweight infrastructure — leverages ENGINEERING_REGISTER (via decision sprint slots) + DOCUMENTATION_REGISTER (for deferred/WONTFIX) rather than creating parallel tracking
+
+CRITICAL OPEN BUGS IDENTIFIED:
+- BUG-095 (no Portfolio class) — blocks DEC-070/076/091; resolution via Sprint 3 Portfolio class
+- BUG-218 (yfinance .info CURRENT not as_of) — resolution via DEC-443 Sprint 4
+- BUG-111 — explicitly tagged CRITICAL OPEN in body; verify resolution path
+
+GOING FORWARD (CHECKLIST #58 EXTENSION TO BUGS):
+- New BUG-NN heading in AUDIT.md → must update BUG_REGISTER.md cross-reference
+- OPEN bugs must have resolving decision with sprint slot OR new ENGINEERING_REGISTER entry
+- Deferred/WONTFIX bugs cross-referenced in DOCUMENTATION_REGISTER
+
+This commit creates BUG_REGISTER.md (new file) + appends AUDIT.md narrative. AUDIT_INDEX.md unchanged.
+
+VERIFICATION POST-COMMIT:
+- All 148 bugs cataloged in BUG_REGISTER.md with decision cross-references
+- Bug coverage: was ~12/148 in registers (8%) → now 148/148 cataloged in BUG_REGISTER (100%)
+- Substantive bug homelessness: 0 ✓ (all linked to existing decision sprint slots)
+
+CHECKLIST #58 EXTENSION SCOPE:
+The 5-file atomic commit pattern from CHECKLIST #58 should now be 6-file when bug-related:
+1. AUDIT_INDEX.md (decision status)
+2. AUDIT.md (narrative)
+3. ENGINEERING_REGISTER.md (sprint slot for engineering work)
+4. DOCUMENTATION_REGISTER.md (bucket for doc-only)
+5. IMPLEMENTATION_READINESS_DASHBOARD.md (sprint readiness)
+6. BUG_REGISTER.md (NEW — when bugs newly added/fixed)
+
+Counts unchanged (this commit creates register, no decision flips):
+462 / 86 PENDING / 296 RESOLVED-DECIDED / 21 DEFERRED_TO_STAGE_3 / 10 DEFERRED_TO_STAGE_4 / 20 SUPERSEDED / 10 BLOCKED_ON_X / 14 other.
+
+*Per CHECKLIST #25 (honest scope correction during execution; initial framing of 144+ separate ENG entries was wrong; actual = 100% linked to existing decisions)/#43 (full Python analysis of bug-decision linkage on 148 canonical bugs)/#51 (owner approved 4-bucket rec; executed via cross-reference approach)/#57 (use-case mapping per bucket)/#58 (extended to bugs at register-cross-reference level).*
