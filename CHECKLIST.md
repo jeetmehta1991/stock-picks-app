@@ -548,3 +548,38 @@ State compliance visibly: "Checklist: ✅ [each item]"
     - #55: architectural-framing (patch vs system-design)
     - #56: focus-phase scope-filter (forward-looking deferral)
     - #57 (THIS): use-case mapping (this-system vs generic-template)
+
+58. **Sprint-tracker assignment as RESOLVED-DECIDED commit requirement (Pass 52 L137 — execution-tracking discipline):**
+    Every RESOLVED-DECIDED status flip MUST include sprint-tracker assignment
+    in the SAME commit as the status flip. Audit-text alone is insufficient
+    documentation for execution.
+    Required propagation per RESOLVED-DECIDED commit:
+    - **AUDIT_INDEX.md:** status flip applied
+    - **AUDIT.md:** narrative section appended
+    - **ENGINEERING_REGISTER.md:** sprint slot assigned IF decision has implementation work
+    - **DOCUMENTATION_REGISTER.md:** bucket assigned IF documentation-only / cross-ref / methodology / stage-deferred
+    - **IMPLEMENTATION_READINESS_DASHBOARD.md:** sprint readiness updated IF sprint scope changed
+    Decision flow:
+    1. Does this decision require code changes (new module, refactor,
+       integration, test infrastructure)? → ENGINEERING_REGISTER sprint slot
+    2. Is this decision a methodology choice, library selection, cross-reference
+       to another decision, foundational/integrated, OR stage-3+/4+ operational?
+       → DOCUMENTATION_REGISTER bucket (A-E)
+    3. Both paths must result in tracker entry. None can be skipped.
+    Past failure (Pass 52 turns 65-95): flipped 294 RESOLVED-DECIDED across
+    walkthroughs; only 46 (15.6%) made it into ENGINEERING_REGISTER. Owner
+    caught structural gap turn 96 ("Identified improvements - added for
+    execution?") then turn 98 ("This is very basic stuff and we had already
+    discussed this. you are simply not following it").
+    Anti-pattern explanation: "decided but homeless" — RESOLVED-DECIDED status
+    without sprint home means no engineer (owner included) ever picks it up
+    for implementation. Decision graveyard.
+    Layered defense (Pass 52 expanded to 8 levels):
+    - #43/#46/#47: duplicates
+    - #53: scope/feasibility (grounded format)
+    - #54: empirical-failure (test-run gate)
+    - #55: architectural-framing (patch vs system-design)
+    - #56: focus-phase scope-filter (forward-looking deferral)
+    - #57: use-case mapping (this-system vs generic-template)
+    - #58 (THIS): execution-tracking discipline (sprint-tracker assignment
+      as RESOLVED-DECIDED commit requirement)
