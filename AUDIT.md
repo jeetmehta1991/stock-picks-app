@@ -24253,3 +24253,95 @@ Counts post-Batch-1: 462 / 86 PENDING / 298 RESOLVED-DECIDED / 21 DEFERRED_TO_ST
 Note: PENDING +1 (DEC-042 revert), RESOLVED-DECIDED -1 (DEC-042 revert). Net zero status flips in this commit aside from DEC-042.
 
 *Per CHECKLIST #25 (honest acknowledgment of scope)/#43 (full description retrieval per item)/#51 (explicit owner approval all + DEC-042 directive)/#57 (5-bucket use-case mapping per item)/#58 (NEW — sprint-tracker assignment as RESOLVED-DECIDED commit requirement; 5-file atomic update demonstrated).*
+
+---
+
+## AUDIT PASS 52 turn 103 — Phase 2 Batch 2: 30 homeless decisions classified
+
+Owner Pass 52 turn 102: Phase 2 Batch 2 walkthrough presented (7 specific clarifications)
+Owner Pass 52 turn 103: "Approve all"
+
+PHASE 2 BATCH 2 OUTCOMES (30 decisions):
+
+DOCUMENTATION_REGISTER additions (21 — incl DEC-113 split):
+
+Bucket B — Methodology/Library/Architecture (7):
+- DEC-156 commit message references
+- DEC-162 owner-approval-budget tracking
+- DEC-164 pairwise tradeoff matrix
+- DEC-167 retrospective cadence
+- DEC-169 owner skills gap audit
+- DEC-190 mobile-first design priority
+- DEC-197 hosting: Vercel + Codespace/Docker
+
+Bucket D — Stage 3+/4+ Deferred-Implementation (14):
+- DEC-113 (Stage 3+ portion) trade journal for paper trades
+- DEC-116 cash management to SGOV/T-bills
+- DEC-141 sector-neutral hedge overlay (deferred-implementation)
+- DEC-142 market-neutral construction (deferred-implementation)
+- DEC-145 IV pre-earnings delta signal (joint DEC-258)
+- DEC-187 two-property web architecture
+- DEC-188 public site card-based layout
+- DEC-191 publish timing pre-market 7-8am + post-close 4pm
+- DEC-192 actual paper trades not theoretical
+- DEC-193 open positions with mark-to-market P&L
+- DEC-194 push alert events
+- DEC-195 Telegram bot vs SMS
+- DEC-196 no auth on paper dashboard (revisit before live)
+- DEC-198 paper trading mirrors live algo exactly
+
+ENGINEERING_REGISTER additions (10 — assigned to specific sprints):
+
+Sprint 6 (+2): DEC-113 (Stage 2 portion ~0.5d), DEC-189 (10-pt rationale schema ~1d)
+Sprint 7 (+7): DEC-107 regime probability ~1d, DEC-108 regime smoothing ~1d, DEC-109 walk-forward ~2d, DEC-110 Deflated Sharpe PSR ~1.5d, DEC-111 stationarity tests ~2d, DEC-144 momentum delta breakdown ~1d, DEC-152 hold-out test period ~1d
+Sprint 7-8 (+1): DEC-199 Dashboard 1 spec (absorbed in DEC-430 implementation)
+
+SPRINT EFFORT REVISIONS:
+- Sprint 6: +1.5d → ~23.5-30.5d
+- Sprint 7: +9.5d → ~36.5-38.5d
+- Sprint 7-8: unchanged (DEC-199 absorbed)
+
+CRITICAL PATH REVISED:
+- Pre-Batch-2: ~28-35d minimum
+- Post-Batch-2: ~37-45d minimum
+- Total Stage 2: ~50-65d → ~60-75d realistic
+
+PHASE 2 PROGRESS:
+- Batch 1 of ~5-6: COMPLETE (turn 101)
+- Batch 2 of ~5-6: COMPLETE (this commit)
+- Remaining unclassified: 128 (was 158 pre-Batch-2; -30)
+- Pace: ~4 more batches at 30/turn cadence
+
+NOTABLE CLASSIFICATIONS:
+
+DEC-113 split scope (Stage 2 portion to Sprint 6 + Stage 3+ portion to Bucket D) — owner-approved pattern for phased decisions
+
+Web architecture cluster (DEC-187/188/190/191/192/193/194/195/196/197/198 — 11 decisions) coherent Stage 3+/4+ block:
+- DEC-187 two-property architecture as cluster anchor
+- DEC-188/190 layout/design principles
+- DEC-191 publish timing
+- DEC-192/193 paper trading display
+- DEC-194/195 alerting (Telegram chosen)
+- DEC-196 paper auth deferred
+- DEC-197 Vercel hosting
+- DEC-198 paper-mirrors-live principle
+
+Statistical methodology cluster (DEC-107-111 + DEC-144/152 — 7 decisions) Sprint 7 critical-path additions:
+- DEC-107/108 regime classifier improvements
+- DEC-109 walk-forward (canonical, BLOCKED on DEC-298)
+- DEC-110 Deflated Sharpe
+- DEC-111 stationarity tests
+- DEC-144 momentum delta cube dimension
+- DEC-152 hold-out test discipline
+
+CHECKLIST #58 INVOKED IN THIS COMMIT (5-file atomic update):
+1. AUDIT_INDEX.md (no status flips this batch — Phase 2 reclassification only)
+2. AUDIT.md (this narrative)
+3. DOCUMENTATION_REGISTER.md (21 new DOC additions)
+4. ENGINEERING_REGISTER.md (10 new ENG additions with sprint assignments)
+5. IMPLEMENTATION_READINESS_DASHBOARD.md (sprint readiness updates with effort revisions)
+
+Counts unchanged (Batch 2 is reclassification, not status flip):
+462 / 86 PENDING / 298 RESOLVED-DECIDED / 21 DEFERRED_TO_STAGE_3 / 10 DEFERRED_TO_STAGE_4 / 20 SUPERSEDED / 10 BLOCKED_ON_X / 14 other.
+
+*Per CHECKLIST #25 (honest about scope across 6 batches)/#43 (full description retrieval per item)/#51 (explicit owner approval all 7 clarifications + per-rec batch)/#57 (5-bucket use-case mapping with cluster recognition)/#58 (5-file atomic update demonstrated 2nd time).*

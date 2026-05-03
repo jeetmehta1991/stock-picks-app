@@ -297,3 +297,33 @@ Critical path remains Sprint 1 → Sprint 2 → Sprint 3 → Phase 1B-α run. Ne
 
 Critical path effort revised: previously ~21-25 days minimum → ~28-35 days minimum (post-Phase-2-Batch-1).
 
+
+---
+
+## Phase 2 Batch 2 Updates (Pass 52 turn 103)
+
+Per CHECKLIST #58 — sprint readiness updates for newly-tracked decisions.
+
+### Updated Sprint Effort Estimates
+
+| Sprint | Pre-Batch-2 | Post-Batch-2 | Delta | New decisions |
+|---|---|---|---|---|
+| Sprint 6 (Phase 0.E + Hygiene + new) | ~22-29d | ~23.5-30.5d | +1.5d | DEC-113 (Stage 2 portion ~0.5d), DEC-189 (~1d) |
+| Sprint 7 (Statistical Methodology) | ~27-29d | ~36.5-38.5d | +9.5d | DEC-107/108/109/110/111/144/152 |
+| Sprint 7-8 (Phase 1B-α / Strategy Categories) | unchanged | unchanged | absorbed | DEC-199 (Dashboard 1 spec absorbed in DEC-430) |
+
+### Total Stage 2 Implementation Effort
+
+- Pre-Batch-2: ~50-65 engineering days realistic
+- Post-Batch-2: ~60-75 engineering days realistic
+- Anticipated further revisions in Batches 3-6 (128 decisions remaining unclassified)
+
+### Critical Path Implications
+
+Critical path components affected by Batch 2:
+- Sprint 7 +9.5d on critical path (statistical methodology gates Phase 1B-α)
+- Sprint 6 +1.5d parallel (architecture hygiene non-blocking)
+- DEC-109 walk-forward BLOCKED on DEC-298 PIT cache rebuild
+
+Critical path effort revised: previously ~28-35d minimum → ~37-45d minimum (post-Phase-2-Batch-2).
+

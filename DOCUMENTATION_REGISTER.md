@@ -179,3 +179,57 @@ DEC-042 was tagged for Bucket E in Phase 2 Batch 1 walkthrough but owner directe
 
 Phase 2 cadence: ~5 more batches to clear remaining 158 unclassified.
 
+
+---
+
+## Phase 2 Batch 2 — 30 decisions classified (Pass 52 turn 103)
+
+Owner Pass 52 turn 102: Phase 2 Batch 2 walkthrough presented (7 specific clarifications)
+Owner Pass 52 turn 103: "Approve all"
+
+### Bucket B additions (7 — methodology/library/architecture choices)
+
+| DEC | Description | Decision/Methodology | Notes |
+|---|---|---|---|
+| DEC-156 | Commit messages reference CHECKLIST items followed | Process methodology | Commit hygiene; per-commit traceability |
+| DEC-162 | Per-decision time-to-approve estimate + owner-approval-budget tracking | Process methodology | Decision-making efficiency |
+| DEC-164 | Pairwise tradeoff matrix between decision batches (impact vs cost) | Process methodology | Decision-making framework |
+| DEC-167 | Retrospective cadence every 10 audit passes | Process methodology | Audit cadence |
+| DEC-169 | Owner skills gap audit (statistical, SRE, tax, etc.) | Process methodology | Owner self-assessment |
+| DEC-190 | Mobile-first design priority for both web sites | Architecture choice | Web design principle |
+| DEC-197 | Hosting: Vercel for web (free tier mobile-optimized); Codespace/Docker for backend | Architecture choice | Platform selection |
+
+### Bucket D additions (14 — Stage 3+/4+ deferred-implementation)
+
+| DEC | Description | Stage / Activation Trigger |
+|---|---|---|
+| DEC-113 (Stage 3+ portion) | Trade journal for paper trades (Stage 2 research/failure log already in Sprint 6) | Stage 3 paper trading |
+| DEC-116 | Cash management protocol (idle cash to SGOV/T-bills) | Stage 4+ live cash management |
+| DEC-141 | Sector-neutral hedge overlay | Activation trigger: any strategy proposes sector-neutral preference |
+| DEC-142 | Optional market-neutral construction | Activation trigger: any strategy proposes market-neutral preference |
+| DEC-145 | IV pre-earnings delta signal | Joint with DEC-258 options chain activation |
+| DEC-187 | Two-property web architecture (public site + private dashboard) | Stage 3+ web infrastructure |
+| DEC-188 | Public site card-based layout with track record (Sections A/B) | Stage 3+ depends on DEC-187 |
+| DEC-191 | Publish timing: pre-market 7-8am ET + post-close 4pm ET | Stage 3+ operational schedule |
+| DEC-192 | Site shows actual paper trades with slippage (not theoretical) | Stage 3 paper trading principle |
+| DEC-193 | Open positions displayed with mark-to-market unrealized P&L | Stage 3+ feature |
+| DEC-194 | Push alert events: stops, breakers, halts, daily P&L breach (-2%/-5%) | Stage 3+ alerting (joint DEC-095 monitoring) |
+| DEC-195 | Telegram bot for push alerts (vs SMS — free, richer formatting) | Stage 3+ alerting platform |
+| DEC-196 | No authentication on paper dashboard; revisit before live | Stage 3 paper specific; revisit Stage 4 |
+| DEC-198 | Paper trading mirrors live algo exactly (same logic/sizing/risk/exits) | Stage 3 paper trading principle |
+
+### Bucket E additions (0 this batch)
+
+---
+
+## Phase 2 Status After Batch 2
+
+| Metric | Count |
+|---|---|
+| Total RESOLVED-DECIDED | 298 (unchanged) |
+| In ENGINEERING_REGISTER | 61 + 9 (Batch 2 ENG additions) = 70 |
+| In DOCUMENTATION_REGISTER | ~53 + 21 (Batch 2 DOC additions, incl DEC-113 split) = ~74 |
+| Truly homeless after Batch 2 | 158 − 30 = 128 |
+
+Phase 2 cadence: ~4 more batches remaining at 30/turn.
+

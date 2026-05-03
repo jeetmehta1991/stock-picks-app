@@ -278,3 +278,49 @@ Sprint 6 effort revised: +8-10d for DEC-067/075/096 → ~22-29d total (was 14-19
 Sprint 7 effort revised: +10d for DEC-081-085 + DEC-106 → ~27-29d total (was 17-19d)
 
 Total project Stage 2 effort revised: previously ~30-40d realistic → ~50-65d realistic with full register population.
+
+---
+
+## Phase 2 Batch 2 Additions (Pass 52 turn 103)
+
+Per CHECKLIST #58 — sprint-tracker assignment for 9 ENG decisions previously homeless.
+
+### Sprint 6 additions
+
+| DEC-N | Description | Test signals | Effort |
+|---|---|---|---|
+| DEC-113 (Stage 2 portion) | Research log (every Phase 1B-α run + strategy hypothesis tested) + failure log (system errors + resolution); Stage 3+ trade journal portion in DOCUMENTATION_REGISTER Bucket D | Research log written per backtest run; failure log captures all system errors with resolution | ~0.5d (Stage 2 portion only) |
+| DEC-189 | Trade rationale 10-point depth standard (trigger/strategy/setup/smart-money/macro/agent/risk/expectancy/exit-plan/conviction) — schema layer consumed by DEC-213 (both-rationales storage) and DEC-278 (full execution context) | Every trade ledger row has 10-field rationale dict per schema; schema-foundational for trade journal stack | ~1d |
+
+### Sprint 7 additions
+
+| DEC-N | Description | Test signals | Effort |
+|---|---|---|---|
+| DEC-107 | Regime probability instead of hard label (PHASED ROLLOUT — Phase A backwards-compatible) | Regime classifier emits both `regime_label` and `regime_proba` fields; strategies opt-in to probability-based gating | ~1d Phase A |
+| DEC-108 | Regime persistence model (EXPONENTIAL SMOOTHING not HMM): `EMA_regime = 0.9 × prev + 0.1 × new` | Regime transitions don't flicker on single-day VIX spikes; transition takes ≥3 days of confirming signal | ~1d |
+| DEC-109 | Rolling 5yr/1yr walk-forward (Option B): Train 2018-2022 → OOS 2023; Train 2019-2023 → OOS 2024 = 2 OOS rolling windows | Joint with DEC-298 PIT cache rebuild (BLOCKED); supersedes DEC-326 4yr/1yr; canonical methodology used by DEC-026/264 supersessions | ~2d post-DEC-298 |
+| DEC-110 | Deflated Sharpe (Bailey PSR): PSR formula in metrics.py with SR* ≈ √(2·ln(72)) ≈ 2.92; threshold PSR ≥ 0.95 | Joint with DEC-080 Bonferroni + DEC-413 (5-gate validity per DEC-426) | ~1.5d |
+| DEC-111 | Stationarity / structural break tests: (1) ADF on equity curve; (2) Rolling 1-year Sharpe deviation >2σ flag; (3) Chow split-sample (n_trades ≥ 600 only; else INSUFFICIENT_SAMPLE) | `stats.py` produces all 3 test outputs per strategy; Chow respects sample-size gate | ~2d |
+| DEC-144 | Stock-vs-sector momentum delta as breakdown variable (cube dimension momentum_delta_band) | Joint with DEC-100/422 — observation-only, not strategy filter | ~1d |
+| DEC-152 | Hold-out final test period (never touched during audits) | Train/test split discipline; final 6-12 months reserved as untouched holdout; revealed only at Stage 2→Stage 3 transition | ~1d |
+
+### Sprint 7-8 additions (Phase 1B-α Dimensional Cube + Strategy Categories)
+
+| DEC-N | Description | Test signals | Effort |
+|---|---|---|---|
+| DEC-199 | Dashboard 1 detailed spec (5 sections: Cube Explorer / Per-strategy verdict cards / Regime breakdown / A/B comparison / Live decision lookup) | Joint with DEC-430 Streamlit implementation; owner can navigate to any strategy → see verdict + 5-gate detail + regime breakdown + A/B comparison + drill-down to trades | absorbed in DEC-430 ~3-5d |
+
+### Phase 2 Batch 2 ENG totals
+
+- Sprint 6: +2 decisions (DEC-113 Stage 2 portion, DEC-189)
+- Sprint 7: +7 decisions (DEC-107, DEC-108, DEC-109, DEC-110, DEC-111, DEC-144, DEC-152)
+- Sprint 7-8: +1 decision (DEC-199 absorbed in DEC-430)
+- Total: **+10 ENG decisions assigned to sprints**
+
+Wait — DEC-189 was discussed for Sprint 6 in Batch 2 walkthrough but DEC-199 is a Sprint 7-8 addition. Net 10 entries (DEC-113 Stage 2 portion counts as 1 entry).
+
+Sprint 6 effort revised: +1.5d (DEC-113 + DEC-189) → ~23.5-30.5d total (was 22-29d)
+Sprint 7 effort revised: +9.5d (DEC-107/108/109/110/111/144/152) → ~36.5-38.5d total (was 27-29d)
+Sprint 7-8 dashboard work absorbed in existing DEC-430 estimate
+
+Total project Stage 2 effort revised: previously ~50-65d → now ~60-75d realistic with full register population.
