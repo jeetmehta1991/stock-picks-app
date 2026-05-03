@@ -23804,3 +23804,66 @@ Counts: 462 / 119 PENDING / 271 RESOLVED-DECIDED / 19 DEFERRED_TO_STAGE_3 / 10 D
 Pending now under 26%. Audit at 74.2% resolved (343/462 in terminal states).
 
 *Per CHECKLIST #43 (count discrepancy caught parallel-instance state)/#46/#47/#51 (combined commit only after explicit owner clarification turn 82)/#56/#57.*
+
+---
+
+## AUDIT PASS 52 turn 85 — Theme X35 Reliability + Determinism (5/5) + Theme X17 Strategy extensions (5/5) combined closure (10 decisions)
+
+Owner Pass 52 turn 83: "X35 and X17. Lets do 10 decisions in a batch now"
+Owner Pass 52 turn 84: combined walkthrough presented (7 specific clarifications)
+Owner Pass 52 turn 85: "Approve all"
+
+X35 RELIABILITY + DETERMINISM CLOSURES (5/5) — all RESOLVED-DECIDED:
+
+Stage 2 RESOLVED-DECIDED (5):
+- DEC-228 (Fetcher reliability audit) — exponential backoff 1s/2s/4s/8s/16s max 5 retries; per-API token bucket; idempotency hash; joint DEC-410/441/256/257/440 ~3-4d
+- DEC-229 (Config pydantic upgrade) — HARD-REVERSIBILITY sandbox-prototype on 1-2 classes before full migration; joint DEC-096/216 ~3-5d
+- DEC-230 (Logging JSON standard) — python-json-logger library; daily rotation; structured fields; joint DEC-231 ~2d
+- DEC-231 (Bare-except audit) — WARNING+ logging with context; pre-commit lint; joint DEC-230/437 ~2d
+- DEC-232 (Determinism test) — byte-identical assertion; joint DEC-096/216/417 ~1d
+
+X17 STRATEGY EXTENSIONS CLOSURES (5/5):
+
+Stage 2 RESOLVED-DECIDED immediate (1):
+- DEC-144 (Stock-vs-sector momentum delta) — cube breakdown variable; joint DEC-100/422/458 ~1d
+
+Stage 2 RESOLVED-DECIDED implementation-deferred (3):
+- DEC-141 (Sector-neutral hedge overlay) — owner risk philosophy doesn't favor (DEC-090 REJECTED); spec decided, build when consumer requests; precedent DEC-074/258
+- DEC-142 (Market-neutral construction) — owner risk philosophy accepts market beta; spec decided, build when consumer requests; precedent DEC-074/258/141
+- DEC-145 (IV pre-earnings delta signal) — depends on DEC-258 options chain activation (~5-6d joint); 0d this sprint
+
+Stage 3 deferral (1):
+- DEC-143 (IPO/lockup framework) — DEFERRED_TO_STAGE_3 (specialized data needs; Stage 3 reveals consumers)
+
+X35 IMPLEMENTATION EFFORT (Stage 2): ~11-14 engineering days
+X17 IMPLEMENTATION EFFORT (Stage 2 immediate): ~1d
+X17 DEFERRED-WHEN-ACTIVATED EFFORT: ~6-9d (DEC-141/142/145 if activated)
+
+COMBINED EFFORT: ~12-15 engineering days for Stage 2 immediate work
+
+KEY INFRASTRUCTURE NOW DECIDED:
+
+X35 reliability stack:
+- DEC-228 fetcher resilience: standardized retry (exponential backoff) + rate-limit + idempotency across 17 APIs
+- DEC-229 config infrastructure: pydantic typed models + env overrides + change log
+- DEC-230 logging: structured JSON via python-json-logger; daily rotation; standard context fields
+- DEC-231 exception handling: WARNING+ logging with context for all bare except handlers
+- DEC-232 determinism: byte-identical regression test on every CI run
+
+X17 strategy roster updates:
+- DEC-144 cube dimension addition (momentum_delta_band) — observation-only, no strategy filter
+- DEC-141/142 hedge overlays — spec decided, deferred per owner risk philosophy
+- DEC-143 IPO framework — Stage 3 scope (specialized data)
+- DEC-145 IV signal — joint with DEC-258 options chain activation
+
+OWNER RISK PHILOSOPHY APPLIED:
+DEC-141/142 implementation-deferred per owner risk profile. DEC-090 REJECTED earlier established "stock diversification focus over strict sector concentration"; sector-neutral and market-neutral overlays are opposite directional commitments. Spec stays decided so future strategies can opt-in (RESOLVED-DECIDED), but no engineering invested without consumer (implementation-deferred). Same precedent as DEC-074 (block trades) and DEC-258 (options chain).
+
+PROCESS NOTE — BATCHED 10-DECISION FORMAT:
+Owner directed batched walkthrough turn 83. Successfully delivered 10-decision combined presentation with full per-decision visibility (Scope/Reversibility/Recommendation/Rationale/Test-signal per item) + cross-theme dependency mapping. Throughput 2x prior single-theme walkthrough rate without sacrificing depth. Behavioral takeaway: themes with similar treatment patterns (stub-entries needing fresh recs) batch effectively; themes with mixed status drift / supersession patterns may resist batching due to per-pattern verification needs.
+
+Counts: 462 / 109 PENDING / 280 RESOLVED-DECIDED / 20 DEFERRED_TO_STAGE_3 / 10 DEFERRED_TO_STAGE_4 / 16 SUPERSEDED / 10 BLOCKED_ON_X / 14 other.
+
+Pending now under 24%. Audit at 76.4% resolved (353/462 in terminal states).
+
+*Per CHECKLIST #43 (cross-theme dependency mapping)/#46/#47/#51 (explicit owner approval all 7 specific clarifications + per-rec batch)/#56 (9 Stage 2 + 1 Stage 3)/#57.*
