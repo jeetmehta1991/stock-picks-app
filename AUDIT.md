@@ -23732,3 +23732,75 @@ Counts: 462 / 124 PENDING / 267 RESOLVED-DECIDED / 19 DEFERRED_TO_STAGE_3 / 9 DE
 Pending decisions now under 27% of total. Audit at 73% resolved (338/462 in terminal states).
 
 *Per CHECKLIST #43 (cross-check vs DEC-430 Streamlit framework + 8 joint dependencies)/#46/#47/#51 (explicit owner approval all 5 specific clarifications + per-rec batch)/#56 (3 Stage 2 + 3 stage-deferrals)/#57.*
+
+---
+
+## AUDIT PASS 52 turn 82 — Dashboard Specs (6 of 6) + Theme X48 Professional Benchmark Gaps (5 of 5) combined closure
+
+Owner Pass 52 turn 78: Dashboard Specs walkthrough presented (5 specific clarifications)
+Owner Pass 52 turn 79: "Lets review X48" — intent (clarified turn 82): approval of Dashboard Specs recs + pivot
+Owner Pass 52 turn 80: X48 walkthrough presented (6 specific clarifications)
+Owner Pass 52 turn 81: "1. Agree / 2. Agree / 3. Agree / 4. Agree / 5. Agree / 6. Agree" — X48 approval
+Owner Pass 52 turn 82: "Option C" — confirms Dashboard Specs intent was approval; combined commit
+
+DASHBOARD SPECIFICATIONS CLOSURES (6 of 6):
+
+Stage 2 RESOLVED-DECIDED (3):
+- DEC-199 (Dashboard 1 — Phase 1B-α cube exploration) → RESOLVED-DECIDED with 5-section spec; joint DEC-430 implementation
+- DEC-200 (Dashboard 2 — Phase 0.D ICT/SMC signal audit) → RESOLVED-DECIDED with 5-section spec ~3-4d
+- DEC-201 (Dashboard 3 — Stage 2 agent overlay analysis) → RESOLVED-DECIDED with 6-section spec ~4-5d
+
+Stage deferrals (3):
+- DEC-202 (Dashboard 4 — paper trading analytics) → DEFERRED_TO_STAGE_3
+- DEC-203 (Dashboard 5 — live trading analytics) → DEFERRED_TO_STAGE_4
+- DEC-204 (Dashboard 6 — cross-phase comparison waterfall) → DEFERRED_TO_STAGE_3
+
+DASHBOARD IMPLEMENTATION EFFORT (Stage 2): ~7-9 engineering days (DEC-199 absorbed in DEC-430 ~3-5d; DEC-200 ~3-4d; DEC-201 ~4-5d)
+
+X48 PROFESSIONAL BENCHMARK GAPS CLOSURES (5 of 5):
+
+Stage 2 RESOLVED-DECIDED (4):
+- DEC-277 (Per-strategy promotion workflow) → RESOLVED-DECIDED with HARD-REVERSIBILITY sandbox-prototype on 3-strategy registry; joint DEC-422/353/426 ~2-3d
+- DEC-278 (Internal trade journal schema) → RESOLVED-DECIDED with 3-LAYER trade journal (DEC-189 rationale + DEC-213 dual-arm + DEC-278 full context); joint DEC-189/213 ~2d
+- DEC-279 (P&L decomposition) → RESOLVED-DECIDED with HARD-REVERSIBILITY sandbox-prototype + 5-COMPONENT ATTRIBUTION (signal/timing/exit/sizing/agent); joint DEC-210/208 ~3-4d
+- DEC-280 (Time-of-day slippage) → RESOLVED-DECIDED bookkeeping flip; parent ref DEC-092 ~0.5d additive
+
+Stage deferral (1):
+- DEC-276 (OMS vs IBKR algos) → DEFERRED_TO_STAGE_4 (depends on Stage 4 broker decision)
+
+X48 IMPLEMENTATION EFFORT (Stage 2): ~7.5-9.5 engineering days
+
+COMBINED IMPLEMENTATION EFFORT: ~14.5-18.5 engineering days for Stage 2 work
+
+KEY INFRASTRUCTURE NOW DECIDED:
+
+Dashboard stack (Stage 2):
+- Dashboard 1 (DEC-199 spec + DEC-430 Streamlit impl): Phase 1B-α cube exploration with 5 sections (cube explorer + verdict cards + regime breakdown + A/B comparison + live decision lookup)
+- Dashboard 2 (DEC-200): Phase 0.D ICT/SMC validation gate with 5 sections (signal viz + frequency stats + synthetic tests + PIT validation + library version manifest)
+- Dashboard 3 (DEC-201): Agent overlay diagnostic with 6 sections (A/B summary + disagreement events + per-agent ablation + both-rationales comparison + cost accounting + quarterly re-validation)
+
+Trade journal stack (3 layers):
+- DEC-189: 10-point trade rationale (decision logic)
+- DEC-213: Both-rationales storage (rules + agent comparison)
+- DEC-278: Full execution context (chart snapshot + agent transcripts + signal raw values + regime context + P&L outcome)
+
+Strategy lifecycle:
+- DEC-277 per-strategy promotion workflow (Stage 2 → 3 → 4 → 5 each strategy graduates independently per DEC-422/353/426 gates)
+
+Performance attribution:
+- DEC-279 5-component P&L decomposition (signal/timing/exit/sizing/agent contributions)
+
+Slippage stack complete:
+- DEC-092 (parent): base = α + β×(size_pct_ADV) + γ×(realized_vol)
+- DEC-122 (joint): exit-method multiplier (PENDING - sub of DEC-092)
+- DEC-280 (joint): time-of-day multiplier — first/last 30 min higher
+- final_slippage = base × exit_multiplier × time_multiplier
+
+PROCESS NOTE — TURN 79 STATE-TRACKING LAPSE RESOLVED:
+At turn 79, owner said "Lets review X48" after Dashboard Specs walkthrough. I interpreted as "skip Dashboard Specs, pivot to X48". A parallel Claude session interpreted as "approve Dashboard Specs recs and pivot to X48". My turn 81 X48 commit attempt detected the parallel-instance flips via #43 pre-flight (counts didn't match expected delta). Per #51 I held push and surfaced discrepancy turn 81. Owner turn 82 clarified intent was approval — confirming parallel instance was correct. This is the third such parallel-session state lapse in this Pass 52 (also turns 58, 65). Behavioral takeaway: "review next theme" directive after complete recs presentation can mean approve-and-pivot (not skip-and-pivot); ambiguity should trigger explicit clarification before proceeding to next walkthrough.
+
+Counts: 462 / 119 PENDING / 271 RESOLVED-DECIDED / 19 DEFERRED_TO_STAGE_3 / 10 DEFERRED_TO_STAGE_4 / 16 SUPERSEDED / 10 BLOCKED_ON_X / 14 other.
+
+Pending now under 26%. Audit at 74.2% resolved (343/462 in terminal states).
+
+*Per CHECKLIST #43 (count discrepancy caught parallel-instance state)/#46/#47/#51 (combined commit only after explicit owner clarification turn 82)/#56/#57.*
