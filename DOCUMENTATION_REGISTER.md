@@ -233,3 +233,36 @@ Owner Pass 52 turn 103: "Approve all"
 
 Phase 2 cadence: ~4 more batches remaining at 30/turn.
 
+
+---
+
+## Phase 2 Batch 3 — 30 decisions classified (Pass 52 turn 105)
+
+Owner Pass 52 turn 104: Phase 2 Batch 3 walkthrough presented (7 specific clarifications)
+Owner Pass 52 turn 105: "Approve all"
+
+### Bucket B additions (3 — methodology/architecture/process choices)
+
+| DEC | Description | Decision/Methodology | Notes |
+|---|---|---|---|
+| DEC-238 | Pre/after-hours policy (NO extended hours) | Architecture choice | Stage 2/3 policy decision; revisit if Stage 4 strategy requires it |
+| DEC-245 | Owner experience retrospective (periodic check-in on workflow productivity) | Process methodology | Owner self-assessment cadence |
+| DEC-248 | Owner pre-commitment doc (rules owner commits to before losses) | Process methodology / owner self-discipline | Mental model document; reduces emotional decision-making during drawdowns |
+
+### Bucket D additions (0 this batch)
+
+All Bucket D candidates were either Sprint 9 (post-Phase-1B-α) or already in Bucket D from prior batches.
+
+---
+
+## Phase 2 Status After Batch 3
+
+| Metric | Count |
+|---|---|
+| Total RESOLVED-DECIDED | 298 (unchanged) |
+| In ENGINEERING_REGISTER | 70 + 27 (Batch 3 ENG additions) = 97 |
+| In DOCUMENTATION_REGISTER | ~74 + 3 (Batch 3 DOC additions) = ~77 |
+| Truly homeless after Batch 3 | 128 − 30 = 98 |
+
+Phase 2 cadence: ~3 more batches at 30/turn cadence.
+

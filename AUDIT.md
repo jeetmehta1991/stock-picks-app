@@ -24345,3 +24345,85 @@ Counts unchanged (Batch 2 is reclassification, not status flip):
 462 / 86 PENDING / 298 RESOLVED-DECIDED / 21 DEFERRED_TO_STAGE_3 / 10 DEFERRED_TO_STAGE_4 / 20 SUPERSEDED / 10 BLOCKED_ON_X / 14 other.
 
 *Per CHECKLIST #25 (honest about scope across 6 batches)/#43 (full description retrieval per item)/#51 (explicit owner approval all 7 clarifications + per-rec batch)/#57 (5-bucket use-case mapping with cluster recognition)/#58 (5-file atomic update demonstrated 2nd time).*
+
+---
+
+## AUDIT PASS 52 turn 105 — Phase 2 Batch 3: 30 homeless decisions classified (largest batch yet)
+
+Owner Pass 52 turn 104: Phase 2 Batch 3 walkthrough presented (7 specific clarifications)
+Owner Pass 52 turn 105: "Approve all"
+
+PHASE 2 BATCH 3 OUTCOMES (30 decisions):
+
+DOCUMENTATION_REGISTER additions (3):
+Bucket B — Methodology/Architecture (3):
+- DEC-238 NO extended hours policy
+- DEC-245 owner experience retrospective
+- DEC-248 owner pre-commitment doc
+
+ENGINEERING_REGISTER additions (27 — assigned to specific sprints):
+Sprint 1 (+3): DEC-225/227/235 (cache eviction + size monitoring + NYSE calendar)
+Sprint 4 (+3): DEC-228/234/252 (fetcher reliability + ticker lifecycle + IBKR commission)
+Sprint 6 (+9): DEC-205/206 A/B foundation + DEC-222/229/230/231/232/233/241 (test/config/logging/exception/data-quality/time-in-market)
+Sprint 7 (+8): DEC-207-210/212/215/216/242 (A/B operational + distribution analysis)
+Sprint 7-8 (+2): DEC-200/201 (Dashboard 2 + 3 implementation)
+Sprint 9 (+2): DEC-211/214 (ablation post-Phase-1B-α + quarterly re-validation)
+
+SPRINT EFFORT REVISIONS (largest deltas yet):
+- Sprint 1: +2.5d → ~11.5-14.5d
+- Sprint 4: +7-10d → ~16-22d (HUGE — cost stack + reliability)
+- Sprint 6: +14-16.5d → ~37.5-47d (HUGE — A/B foundation + architecture hygiene)
+- Sprint 7: +9d → ~45.5-47.5d
+- Sprint 7-8: +7-9d → ~10-14d (was Dashboard 1 only)
+- Sprint 9 NEW: ~2.5d (operational ongoing)
+
+CRITICAL PATH REVISED:
+- Pre-Batch-3: ~37-45d minimum
+- Post-Batch-3: ~46-56d minimum
+- Total Stage 2: ~60-75d → ~95-115d realistic
+
+PHASE 2 PROGRESS:
+- Batch 1 of ~5-6: COMPLETE (turn 101)
+- Batch 2 of ~5-6: COMPLETE (turn 103)
+- Batch 3 of ~5-6: COMPLETE (this commit)
+- Remaining unclassified: 98 (was 128 pre-Batch-3; -30)
+- Pace: ~3 more batches at 30/turn cadence
+
+NOTABLE CLASSIFICATIONS:
+
+A/B Testing Cluster (DEC-205-216 + DEC-242 — 9 decisions across Sprint 6 + Sprint 7 + Sprint 9):
+- Foundation in Sprint 6 (DEC-205/206 4-arm + paired)
+- Operational in Sprint 7 (DEC-207-210/212/215/216 — sample size, multi-metric, regime, net Sharpe, disagreement, registry, orchestrator)
+- Distribution analysis Sprint 7 (DEC-242)
+- Post-Phase-1B-α in Sprint 9 (DEC-211 ablation, DEC-214 quarterly re-validation)
+Cluster forms complete agent-validation infrastructure.
+
+Test/Cache/Data Quality Cluster (DEC-222/225/227/229-235/241 — 11 decisions across Sprint 1 + Sprint 4 + Sprint 6):
+- Sprint 1 cache infrastructure (DEC-225/227)
+- Sprint 1 calendar (DEC-235)
+- Sprint 4 ticker lifecycle (DEC-234)
+- Sprint 6 architecture hygiene (DEC-222/229/230/231/232/233/241)
+Cluster forms complete data reliability + monitoring infrastructure.
+
+Cost Modeling Cluster (DEC-228/252 — Sprint 4):
+- DEC-228 fetcher reliability (retry/rate-limit/idempotency across 17 APIs)
+- DEC-252 IBKR commission model (Tiered default; HARD-REVERSIBILITY sandbox-prototype)
+Joint with DEC-410 audit findings sprint.
+
+Dashboard Cluster (DEC-200/201 — Sprint 7-8 with prior DEC-199):
+- DEC-199 Dashboard 1 (Phase 1B-α cube)
+- DEC-200 Dashboard 2 (Phase 0.D ICT/SMC audit)
+- DEC-201 Dashboard 3 (Stage 2 agent overlay analysis)
+3-dashboard suite for Phase 1B-α validation + agent diagnostics.
+
+CHECKLIST #58 INVOKED IN THIS COMMIT (4-file atomic update):
+1. AUDIT_INDEX.md (no status flips this batch — Phase 2 reclassification only)
+2. AUDIT.md (this narrative)
+3. DOCUMENTATION_REGISTER.md (3 new DOC additions)
+4. ENGINEERING_REGISTER.md (27 new ENG additions with sprint assignments)
+5. IMPLEMENTATION_READINESS_DASHBOARD.md (sprint readiness updates with effort revisions)
+
+Counts unchanged (Batch 3 is reclassification, not status flip):
+462 / 86 PENDING / 298 RESOLVED-DECIDED / 21 DEFERRED_TO_STAGE_3 / 10 DEFERRED_TO_STAGE_4 / 20 SUPERSEDED / 10 BLOCKED_ON_X / 14 other.
+
+*Per CHECKLIST #25 (honest about Stage 2 scope growing as register populated)/#43 (full description retrieval per item)/#51 (explicit owner approval all 7 clarifications + per-rec batch)/#57 (4-cluster use-case mapping)/#58 (5-file atomic update demonstrated 3rd time).*

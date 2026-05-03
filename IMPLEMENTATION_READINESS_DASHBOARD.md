@@ -327,3 +327,39 @@ Critical path components affected by Batch 2:
 
 Critical path effort revised: previously ~28-35d minimum → ~37-45d minimum (post-Phase-2-Batch-2).
 
+
+---
+
+## Phase 2 Batch 3 Updates (Pass 52 turn 105)
+
+Per CHECKLIST #58 — sprint readiness updates for newly-tracked decisions. **Largest delta yet.**
+
+### Updated Sprint Effort Estimates
+
+| Sprint | Pre-Batch-3 | Post-Batch-3 | Delta | New decisions |
+|---|---|---|---|---|
+| Sprint 1 (Phase 0.A foundation) | ~9-12d | ~11.5-14.5d | +2.5d | DEC-225/227/235 (cache + calendar) |
+| Sprint 4 (DEC-410 audit findings) | ~9-12d | ~16-22d | +7-10d | DEC-228/234/252 (fetcher + ticker lifecycle + IBKR commission) |
+| Sprint 5 NEW position sizing | ~3.5d | ~3.5d | unchanged | (no Batch 3 additions) |
+| Sprint 6 (Phase 0.E + Hygiene + new) | ~23.5-30.5d | ~37.5-47d | +14-16.5d | DEC-205/206 (A/B foundation), DEC-222/229/230/231/232/233/241 (test/config/logging/exception/data-quality/time-in-market) |
+| Sprint 7 (Statistical Methodology + A/B operational) | ~36.5-38.5d | ~45.5-47.5d | +9d | DEC-207-210/212/215/216/242 (A/B operational + distribution analysis) |
+| Sprint 7-8 (Phase 1B-α Dashboard + Strategies) | ~3-5d (Dashboard 1 only) | ~10-14d | +7-9d | DEC-200 (Dashboard 2 ~3-4d) + DEC-201 (Dashboard 3 ~4-5d) |
+| Sprint 9 (Phase 1B-α run + ongoing) | n/a | ~2.5d | +2.5d new | DEC-211 ablation post-Phase-1B-α + DEC-214 quarterly re-validation |
+
+### Total Stage 2 Implementation Effort
+
+- Pre-Batch-3: ~60-75 engineering days realistic
+- Post-Batch-3: ~95-115 engineering days realistic
+- Anticipated further revisions in Batches 4-6 (98 decisions remaining unclassified)
+
+### Critical Path Implications
+
+Critical path components affected by Batch 3:
+- Sprint 4 +7-10d on critical path (cost stack + reliability)
+- Sprint 6 +14-16.5d parallel (architecture hygiene + A/B foundation non-blocking)
+- Sprint 7 +9d on critical path (A/B operational gates Phase 1B-α verdict interpretation)
+- Sprint 9 NEW (~2.5d) post-Phase-1B-α run scope
+- DEC-211 ablation + DEC-214 quarterly re-validation are operational, not critical-path-blocking
+
+Critical path effort revised: previously ~37-45d minimum → ~46-56d minimum (post-Phase-2-Batch-3).
+

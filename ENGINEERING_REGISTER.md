@@ -324,3 +324,85 @@ Sprint 7 effort revised: +9.5d (DEC-107/108/109/110/111/144/152) → ~36.5-38.5d
 Sprint 7-8 dashboard work absorbed in existing DEC-430 estimate
 
 Total project Stage 2 effort revised: previously ~50-65d → now ~60-75d realistic with full register population.
+
+---
+
+## Phase 2 Batch 3 Additions (Pass 52 turn 105)
+
+Per CHECKLIST #58 — sprint-tracker assignment for 27 ENG decisions previously homeless. **Largest batch yet** — multiple clusters captured.
+
+### Sprint 1 additions (Phase 0.A foundation)
+
+| DEC-N | Description | Test signals | Effort |
+|---|---|---|---|
+| DEC-225 | Cache eviction policy: tag entries cache_class=prefetched/computed/derived; never evict prefetched (expensive refetch); evict computed/derived only on disk pressure | Synthetic disk-pressure scenario evicts computed first; prefetched preserved; eviction logged | ~1d (joint DEC-227) |
+| DEC-227 | Cache size monitoring: cache_size_gb metric via du -sh; 80% disk threshold triggers DEC-225 eviction + log warning; Stage 4+ alerting via DEC-095 | Cache size metric correct; 80% threshold triggers eviction + warning | ~0.5d (Stage 2 portion only) |
+| DEC-235 | NYSE/NASDAQ calendar handling via pandas_market_calendars (industry-standard library replacing hand-rolled date logic) | Black Friday correctly half-day; DST transitions don't shift bar timestamps; Sept 11 2001 closure handled | ~1d |
+
+### Sprint 4 additions (DEC-410 Audit Findings + cost stack)
+
+| DEC-N | Description | Test signals | Effort |
+|---|---|---|---|
+| DEC-228 | Fetcher reliability audit: per-API standard retry exp backoff (1s/2s/4s/8s/16s) max 5; rate-limit token bucket; idempotency hash | Synthetic 503 → exp backoff retry; 429 → wait until reset; same-range refetch identical hash | ~3-4d |
+| DEC-234 | Ticker lifecycle event handler (CUSIP/ISIN tracking across renames/mergers); joint DEC-380 Polygon corporate-actions | Synthetic FB→META rename preserves price continuity; backtest treats single ticker history | ~2-3d post-DEC-380 |
+| DEC-252 | IBKR commission model TIERED default: $0.0035/share min $0.35 max 1% trade value + exchange fees; joint DEC-054/092 | Synthetic 100-share trade @ $50 → ~$0.40 IBKR Tiered commission; backtest applies per-trade vs static $1 baseline | ~2-3d (HARD-REVERSIBILITY sandbox-prototype) |
+
+### Sprint 6 additions (Phase 0.E + Architecture Hygiene + new)
+
+| DEC-N | Description | Test signals | Effort |
+|---|---|---|---|
+| DEC-205 | A/B test 4-arm design (rules / full-agents / no-Risk / no-Bull-Bear) — A/B framework foundation | 4-arm config defined; orchestrator (DEC-216) supports arm enumeration | ~1d |
+| DEC-206 | Paired A/B design (every trade evaluated by every arm in parallel) | Single trade decision produces 4 verdicts (one per arm); paired comparison enabled | ~1d (joint DEC-205) |
+| DEC-222 | Test naming + regression tests for top-20 CRITICAL bugs (BUG-095 Portfolio missing, BUG-218 yfinance .info, BUG-232 trailing stop lookahead, etc.); joint DEC-438 | Each top-20 CRITICAL bug has regression test that would have caught the bug | ~3-4d |
+| DEC-229 | Config pydantic upgrade (HARD-REVERSIBILITY sandbox-prototype on 1-2 classes); joint DEC-096/216 | Typed config raises ValidationError on bad input; env override works; config change log | ~3-5d |
+| DEC-230 | Logging JSON standard (python-json-logger library, daily rotation, standardized levels DEBUG/INFO/WARNING/ERROR/CRITICAL) | Every log entry parses as valid JSON with required fields; daily rotation at midnight UTC | ~2d |
+| DEC-231 | Bare-except audit (WARNING+ logging with context); joint DEC-230/437 | grep -r "except Exception" returns count; each occurrence audited; pre-commit lint warning for new bare except | ~2d |
+| DEC-232 | Determinism test (byte-identical regression on 2 identical runs); joint DEC-096/216/417 | 2 identical runs produce byte-identical trade ledgers; CI gate fails on diff | ~1d |
+| DEC-233 | Daily data quality monitoring (per-ticker NaN/missing/anomaly detection); joint DEC-260 | Synthetic NaN day → DataQualityWarning; price gap > 50% → anomaly flag | ~1d |
+| DEC-241 | Time-in-market metric (% in any position, % long, % short, % cash) — pure additive trade-ledger metric | 100 trades over 252 days, average hold 5d → time_in_market ≈ 2% if non-overlapping | ~0.5d |
+
+### Sprint 7 additions (Statistical Methodology + A/B operational + 3rd cluster)
+
+| DEC-N | Description | Test signals | Effort |
+|---|---|---|---|
+| DEC-207 | Pre-commit minimum sample size 300 paired trades per arm before declaring winner | A/B with n<300 paired returns INSUFFICIENT_SAMPLE_FOR_ARM_COMPARISON | ~0.5d |
+| DEC-208 | Multi-metric A/B comparison (Sharpe + Sortino + DD + win_rate + PF + CVaR + cost) | All 7 metrics computed per arm; composite verdict matrix | ~1.5d |
+| DEC-209 | Per-regime A/B verdicts (agents pass/fail separately per regime per DEC-422 cube) | Per-regime arm comparison shows different verdicts per regime; documented in cube | ~1d (joint DEC-422 cube) |
+| DEC-210 | Net Sharpe contribution accounting (gross lift minus annualized agent cost); joint DEC-131/420 | Synthetic agent run with $1000/mo LLM cost on $100K portfolio → 1.0 Sharpe drag; agent must clear 1.2 gross to meet DEC-131 0.2 net | ~0.5d |
+| DEC-212 | Agent-disagreement decomposition (Bull vs Bear, Risk override events) | Synthetic Bull=BUY Bear=HOLD Risk=APPROVE → tagged AGENT_DISAGREEMENT_BULL_BEAR; aggregated per regime/strategy | ~1d |
+| DEC-215 | A/B test result registry (versioned JSON/parquet artifacts in repo with timestamp/dataset hash/agent versions); joint DEC-096 | Each A/B run produces ab_results/YYYY-MM-DD_HHMM_runhash.json; queryable across history | ~1d |
+| DEC-216 | A/B orchestrator code module backtest/ab_orchestrator.py (HARD-REVERSIBILITY sandbox-prototype on 2-arm before N-arm); joint DEC-211/096 | Same A/B config + seed = bit-identical results; parallel doesn't introduce non-determinism; 4-arm and 7-arm work | ~3-4d |
+| DEC-242 | Distribution analysis (skewness, kurtosis, max single-trade contribution); joint DEC-413 PSR | Skewed PnL series produces correct skewness/kurtosis; max_single_trade_contribution = max(trade_pnl) / total_pnl | ~0.5d |
+
+### Sprint 7-8 additions (Phase 1B-α Dashboard + Strategy Categories)
+
+| DEC-N | Description | Test signals | Effort |
+|---|---|---|---|
+| DEC-200 | Dashboard 2 spec (Phase 0.D ICT/SMC signal audit) — 5 sections (signal viz, frequency stats, synthetic tests, PIT validation, library version manifest) | Dashboard launches; all 5 sections populate; synthetic FVG case displays expected pattern | ~3-4d (Streamlit; plotly candlestick + overlay) |
+| DEC-201 | Dashboard 3 spec (Stage 2 agent overlay analysis) — 6 sections (A/B summary, disagreement events, per-agent ablation post-DEC-211, both-rationales, cost accounting, quarterly re-validation) | Dashboard launches from DEC-215 versioned artifacts; cost-trend graph reflects DEC-210 calculations | ~4-5d (multi-section Streamlit) |
+
+### Sprint 9 additions (Phase 1B-α run + ongoing)
+
+| DEC-N | Description | Test signals | Effort |
+|---|---|---|---|
+| DEC-211 | Per-agent ablation studies (Option A NARROW SCOPE) — 7-arm runs ONLY post-Phase 1B-α 4-arm completion; sample-bounded top-20% strategies × ~5K trades | 7-arm ablation produces per-agent marginal Sharpe contributions on top-20% strategies sample; cost stays within ~$120 one-time + ~$30-60/month | ~2d post-Phase-1B-α |
+| DEC-214 | Quarterly re-validation A/B test (model drift / cost drift); joint DEC-290 quarterly cadence | Quarterly cron re-runs A/B over rolling 90 days; net Sharpe < 0.2 → ALERT_AGENT_DECAY | ~0.5d (script + cron + alerting) |
+
+### Phase 2 Batch 3 ENG totals
+
+- Sprint 1: +3 decisions (DEC-225/227/235)
+- Sprint 4: +3 decisions (DEC-228/234/252)
+- Sprint 6: +9 decisions (DEC-205/206/222/229/230/231/232/233/241)
+- Sprint 7: +8 decisions (DEC-207/208/209/210/212/215/216/242)
+- Sprint 7-8: +2 decisions (DEC-200/201)
+- Sprint 9: +2 decisions (DEC-211/214)
+- Total: **+27 ENG decisions assigned to sprints**
+
+Sprint 1 effort revised: +2.5d → ~11.5-14.5d total (was 9-12d)
+Sprint 4 effort revised: +7-10d → ~16-22d total (was 9-12d)
+Sprint 6 effort revised: +14-16.5d → ~37.5-47d total (was 23.5-30.5d)
+Sprint 7 effort revised: +9d → ~45.5-47.5d total (was 36.5-38.5d)
+Sprint 7-8 dashboard work: +7-9d for DEC-200/201 (was DEC-199 only absorbed in DEC-430)
+Sprint 9 NEW additions: ~2.5d (DEC-211 + DEC-214 ongoing operational)
+
+Total project Stage 2 effort revised: previously ~60-75d → now ~95-115d realistic with full register population.
