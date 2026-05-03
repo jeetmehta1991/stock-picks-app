@@ -23927,3 +23927,75 @@ Pending now under 22%. Audit at 78.1% resolved (361/462 in terminal states).
 Walkthrough 2 next: X42 + X40 (8 decisions).
 
 *Per CHECKLIST #43 (pre-flight caught 2 supersessions/absorptions in X52)/#46/#47/#51 (explicit owner approval all 4 specific clarifications + per-rec batch)/#56 (all Stage 2)/#57.*
+
+---
+
+## AUDIT PASS 52 turn 91 — Walkthrough 2: Theme X42 (4/4) + Theme X40 (4/4) combined closure (8 decisions)
+
+Owner Pass 52 turn 90: Walkthrough 2 (X42 + X40) presented (7 specific clarifications)
+Owner Pass 52 turn 91: "Approve all"
+
+X42 PHASE 1B-α STRESS CLOSURES (4/4):
+
+Stage 2 RESOLVED-DECIDED immediate (2):
+- DEC-262 (Daily candidate cap conditional 10/15/20) — normal/high-vol/crisis ~0.5d
+- DEC-263 (Burst-day stress test top-20 high-vol days) — joint DEC-405/233 ~1-2d
+
+Cross-reference (1):
+- DEC-265 (Smoke test power analysis) → RESOLVED-DECIDED absorbed by DEC-080/400/083/110/413/426 (5-gate validity); 0d new
+
+Supersession (1):
+- DEC-264 (Walk-forward window count) → SUPERSEDED_BY_DEC-109 (rolling 5yr/1yr canonical methodology)
+
+X40 COST MODELING ACCURACY CLOSURES (4/4):
+
+Stage 2 RESOLVED-DECIDED immediate (3):
+- DEC-252 (IBKR commission model TIERED default) — HARD-REVERSIBILITY sandbox-prototype on 100-trade sample; joint DEC-054/092 ~2-3d
+- DEC-253 (TSX/US routing rule — TSX if interlisted + ≤$50K + ≥100K vol; else US) — joint DEC-054/254 ~1-2d
+- DEC-254 (Canadian ETF substitution UNHEDGED default — XUU/XQQ/XSU/VUN) — joint DEC-090 risk philosophy ~1d
+
+Stage 4+ scope (1):
+- DEC-255 (Norbert\'s Gambit at funding DLR.TO/DLR.U.TO) — Stage 4+ operational; ~0.5d Stage 3 documentation; 0d Stage 2
+
+WALKTHROUGH 2 EFFORT:
+- X42 Stage 2 immediate: ~1.5-2.5d (DEC-262 + DEC-263)
+- X40 Stage 2 immediate: ~4-6d (DEC-252 + DEC-253 + DEC-254)
+- COMBINED: ~5.5-8.5 engineering days
+
+CANADIAN-RESIDENT IBKR COST STACK NOW DECIDED:
+- DEC-252 (commission model IBKR Tiered) ✓
+- DEC-253 (TSX vs US routing rule) ✓
+- DEC-254 (Canadian ETF substitution unhedged default) ✓
+- DEC-255 (Norbert\'s Gambit Stage 4+) ✓
+- DEC-054 (IBKR for paper + live, RESOLVED earlier) ✓
+- DEC-049 (ib_async integration, RESOLVED earlier) ✓
+- DEC-092 (slippage f(ADV%, vol), RESOLVED earlier) ✓
+- DEC-280 (time-of-day slippage, RESOLVED earlier) ✓
+Combined: comprehensive Canadian-resident cost-aware backtest infrastructure.
+
+PHASE 1B-α STRESS METHODOLOGY NOW COMPLETE:
+- DEC-262 (regime-conditional candidate cap)
+- DEC-263 (burst-day stress test)
+- DEC-264 → DEC-109 (walk-forward 5yr/1yr 4-5 OOS folds)
+- DEC-265 → DEC-426 (5-gate validity covers power)
+- DEC-405 (DEC-082 stress test runner, RESOLVED earlier)
+- DEC-233 (data quality monitoring, RESOLVED earlier)
+Combined: stress-tested Phase 1B-α verdicts before trusting cube outputs.
+
+PRE-FLIGHT VALUE DEMONSTRATED (X42):
+2 of 4 X42 items (50%) caught as supersession or absorption:
+- DEC-264 → SUPERSEDED_BY_DEC-109
+- DEC-265 → absorbed by DEC-080/400/083/110/413/426
+Without overlap check, would have created parallel walk-forward + power analysis frameworks. Per #43.
+
+OWNER RISK PHILOSOPHY APPLIED:
+DEC-254 unhedged default per medium-high risk profile (consistent with DEC-090 REJECTED — owner accepts concentration/exposure risks). XUU (unhedged) over XSP (hedged) for SPY substitution.
+
+WALKTHROUGH 1 + 2 COMBINED RESULT:
+Owner directive turn 86 ("1 and 2") delivered 16 decisions across 4 themes (X59 + X52 + X42 + X40) in 2 commits. Throughput 4x prior single-theme rate. 5 supersessions/absorptions caught via pre-flight (DEC-346/347/264/265 + 1 X40 zero superseded). Net-new effort identified: ~17-25 engineering days for Stage 2 work across all 4 themes.
+
+Counts: 462 / 93 PENDING / 294 RESOLVED-DECIDED / 20 DEFERRED_TO_STAGE_3 / 10 DEFERRED_TO_STAGE_4 / 18 SUPERSEDED (10 + 8 SUPERSEDED_BY_*) / 10 BLOCKED_ON_X / 14 other.
+
+Pending now under 21%. Audit at 79.9% resolved (369/462 in terminal states).
+
+*Per CHECKLIST #43 (pre-flight caught 2 supersessions/absorptions in X42)/#46/#47/#51 (explicit owner approval all 7 specific clarifications + per-rec batch)/#56 (7 Stage 2 + 1 Stage 4+)/#57.*
