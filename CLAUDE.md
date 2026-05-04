@@ -163,7 +163,7 @@ All 9 must pass overall for a strategy to advance. Additionally, each strategy g
 - **Recovery if PAT compromised:** owner revokes PAT at github.com/settings/personal-access-tokens. Issues new one. Repaste in new session.
 
 ### Data Sources
-- **NEVER use Wikipedia.** Blocked in Codespaces, not point-in-time, fragile (L88).
+- **NEVER use Wikipedia.** Historically blocked in Codespaces; not point-in-time; fragile (L88). Same fragility applies on local VS Code.
   - S&P 500 → `backtest/data/sp500_tickers.csv` refreshed quarterly via `scripts/refresh_sp500_universe.py` on LAPTOP using slickcharts.com
   - Never propose `pd.read_html('https://en.wikipedia.org/...')` for any purpose.
 

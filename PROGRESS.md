@@ -158,9 +158,9 @@ Stage 2 → Stage 3 GO/NO-GO decision
 | Item | Status | Owner action |
 |---|---|---|
 | Polygon Stocks Starter $29/mo subscription | PENDING | Subscribe tonight |
-| API key configured in Codespace `.env` | PENDING | Add post-subscription |
-| AAII URL accessible from Codespace allowlist | UNVERIFIED | Verify Sprint 0 Day 1 |
-| CNN F&G URL accessible from Codespace allowlist | UNVERIFIED | Verify Sprint 0 Day 1 |
+| API key configured in local VS Code `.env` | PENDING | Add post-subscription |
+| AAII URL accessible from local VS Code | UNVERIFIED | Verify Sprint 0 Day 1 |
+| CNN F&G URL accessible from local VS Code | UNVERIFIED | Verify Sprint 0 Day 1 |
 | SEC EDGAR domain accessible (for DEC-484 Sprint 4 + DEC-368 Sprint 5) | UNVERIFIED | Verify Sprint 0 Day 1 |
 | BUG-007 API key guard verified for `--no-agents` | OPEN | Resolution before Sprint 6.5 (NOT Sprint 1 blocker) |
 

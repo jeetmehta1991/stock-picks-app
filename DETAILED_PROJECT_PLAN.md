@@ -143,9 +143,9 @@ GitHub: `jeetmehta1991/stock-picks-app`
 
 - Canadian resident (Willowdale, Ontario)
 - IBKR (Interactive Brokers) account holder
-- Personal Windows laptop + GitHub Codespace ("vigilant system") for development
+- Personal Windows laptop + VS Code + Claude Code (Pass 53 update — was: GitHub Codespace "vigilant system"; owner switched to local VS Code) for development
 - VS Code + Claude Code for browsing and code review
-- Codespace terminal for Python execution
+- VS Code integrated terminal for Python execution (local Windows laptop)
 - Solo operator — no team, no fund structure
 - Approval cadence: explicit per-decision approval required (Option C verification gate per CHECKLIST #51)
 - Time budget: variable; project has been ~12+ months of audit/planning iteration; implementation begins Pass 53
@@ -247,10 +247,10 @@ Every phase has 15 sections (per Q2 owner directive turn 134):
 - `fetch_stocks.py` — Python script that fetches US top gainers + TSX quotes via Alpha Vantage
 - `index.html` — dark-themed daily snapshot rendered from fetched data
 - GitHub Actions cron at 06:00 UTC committing `index.html` updates
-- Static committed CSV of S&P 500 constituents (482 tickers — Wikipedia scraping was blocked by Codespace network allowlist; CSV was the workaround)
+- Static committed CSV of S&P 500 constituents (482 tickers — Wikipedia scraping was unreliable historically (Codespace allowlist blocks); CSV remains the workaround for reliability)
 
 **Key lessons preserved into Stage 2 architecture:**
-1. Wikipedia scraping is unreliable in Codespace (network allowlist blocks); use static committed reference data or paid APIs
+1. Wikipedia scraping is unreliable historically (was blocked in prior Codespace setup; local VS Code has no such restriction but Wikipedia remains fragile per L88); use static committed reference data or paid APIs
 2. GitHub Actions cron + commit pattern works for low-frequency data refresh
 3. `index.html` rendering proves the front-end → back-end → data pipeline works end-to-end (small but real)
 4. Alpha Vantage was sufficient for proof-of-concept but is being demoted in Stage 2 (Polygon replaces it per DEC-441/455)
@@ -339,7 +339,7 @@ Every phase has 15 sections (per Q2 owner directive turn 134):
 - Remote kill switch via email operational (DEC-139) — owner can halt the algo from anywhere
 - Daily loss limits operational (DEC-034) — algo halts at -X% daily P&L
 - Norbert's Gambit operational for CAD→USD funding (DEC-255) — for capital deployment
-- Cloud hosting migration complete (DEC-272) — Codespace is dev only, not production
+- Cloud hosting migration complete (DEC-272) — Local VS Code (was: Codespace) is dev only, not production
 - Disaster recovery plan in place (DEC-273) — backup, restoration, runbook
 - IBKR market data subscriptions active (~$10-30/mo per DEC-271) — real-time bid/ask required
 - Polygon Stocks Advanced (or equivalent) for real-time data — if continuing Polygon (per DEC-478 tier upgrade)
@@ -750,7 +750,7 @@ STAGE 2 → STAGE 3 GO/NO-GO (Part 13)
 - Cube + verdict + dashboards: ~15 hours additional
 - Total Phase 1B-α run: ~37-40 hours wall time (per Sprint 9 compute estimate Part 9 §9.7)
 
-**Codespace 8-core machine sufficient** with parallel folds; no cloud migration needed for Stage 2 (cloud begins Stage 4 per DEC-272).
+**Local VS Code on Windows laptop (multi-core) sufficient** with parallel folds; no cloud migration needed for Stage 2 (cloud begins Stage 4 per DEC-272).
 
 ---
 
@@ -774,7 +774,7 @@ Concrete deliverables:
 
 6. **FRED expansion to 9+ series (DEC-407+448)** — `backtest/data/fred_client.py` fetches VIX, DGS10 (10y treasury), T10Y2Y (yield curve), FEDFUNDS, UNRATE, CPIAUCSL, T10YIE (breakeven inflation), BAA10Y (HY spread proxy), DXY. ALFRED used for vintage PIT correction.
 
-7. **AAII + CNN F&G refresh scripts** — `.github/workflows/refresh_aaii.yml` and `.github/workflows/refresh_cnn_fg.yml` cron jobs (weekly Thursday for AAII; daily for CNN F&G with 1-day lag respected per DEC-320). Output committed to `data/sentiment/aaii.parquet` and `data/sentiment/cnn_fg.parquet`. Codespace network allowlist verified working for AAII/CNN F&G domains pre-commit (per Sprint 0 action).
+7. **AAII + CNN F&G refresh scripts** — `.github/workflows/refresh_aaii.yml` and `.github/workflows/refresh_cnn_fg.yml` cron jobs (weekly Thursday for AAII; daily for CNN F&G with 1-day lag respected per DEC-320). Output committed to `data/sentiment/aaii.parquet` and `data/sentiment/cnn_fg.parquet`. AAII/CNN F&G domains accessible from local VS Code (no allowlist needed); historical Codespace allowlist concern moot.
 
 8. **Polygon reference replacing yfinance.info (DEC-443)** — sector classification, market cap, exchange, listing dates pulled from Polygon Reference Data endpoint instead of yfinance.info (which has no as_of date support and BUG-218 returns CURRENT not as_of).
 
@@ -874,7 +874,7 @@ Strategy gets DataFrame; computes signal
 | 5 | Cache hygiene + disk monitor + LRU exemption | Day 4 |
 | 6-7 | S&P 500 bulk prefetch + verification | Day 5 |
 | 8 | FRED + ALFRED 9+ series cache | parallel with prefetch |
-| 9 | AAII + CNN F&G refresh scripts + workflow | parallel; verify Codespace allowlist |
+| 9 | AAII + CNN F&G refresh scripts + workflow | parallel; (Codespace allowlist concern moot — running locally on VS Code) |
 | 10 | Polygon earnings cache | Day 6 |
 | 11 | Polygon reference replacing yfinance.info | Day 6 |
 | 12-14 | Edge case tests (weekend/holiday/pre-IPO/post-delist/partial cache) | Day 5 |
@@ -924,9 +924,9 @@ Sprint 1 is RESOLVED-IMPLEMENTED when ALL of these are demonstrably true:
 - Mitigation: DEC-478 owner decision to upgrade to Stocks Developer ($79/mo, 10 years) covering 2016-2026 for OOS folds 2021-2026
 - If owner declines upgrade: walk-forward train window must reduce; this is a Sprint 7 architectural change
 
-**Risk R-3: AAII or CNN F&G domains blocked by Codespace allowlist**
+**Risk R-3: AAII or CNN F&G domains intermittently fail to load (network/site issues, not allowlist — running locally on VS Code now)**
 - Stage 1 lesson: Wikipedia was blocked
-- Mitigation: Sprint 0 Day 1 verification — `curl https://www.aaii.com/...` and `https://production.dataviz.cnn.io/...` from Codespace; if fails, network settings update needed
+- Mitigation: Sprint 0 Day 1 verification — `curl https://www.aaii.com/...` and `https://production.dataviz.cnn.io/...` from local VS Code; if fails, investigate site availability or DNS
 - If still blocked: scrape locally on Windows laptop, commit Parquet to repo (manual refresh)
 
 **Risk R-4: PIT correctness regression during cache writes**

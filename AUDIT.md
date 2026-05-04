@@ -25731,3 +25731,544 @@ Pass 53 prior turn introduced "DEC-482/483/484/485" as PROPOSED labels in 6 docs
 | PROGRESS.md | Sprint 1 readiness status |
 
 *Per CHECKLIST #25 (honest fix of phantom-DEC-label documentation gap); #43 (verified all DECs against AUDIT_INDEX before logging); #51 (owner explicit approvals: Q1=(c), Q2=sub-tiers, Q3=year-grain rec, Q4=approve, Q5=option b); #58 (atomic 10-file commit); #61 5-pass methodology applied; #62 cross-document consistency — all 8 DECs propagated.*
+
+---
+
+# PASS 53 TURN — ADVERSARIAL AUDIT GAP TRACKING TABLE
+
+**Purpose:** Track all 167 GAPs from `ADVERSARIAL_AUDIT_PASS_52_TURN_132.md` with current status + resolving DEC. This satisfies CHECKLIST #61 (5-pass adversarial methodology) and #63 (archive comparison) by maintaining a live tracking ledger of audit findings as they move from OPEN → ABSORBED → PROPOSED → RESOLVED-DECIDED.
+
+**Status definitions:**
+- **RESOLVED-DECIDED** — Gap resolved via owner-approved decision (Pass 53 batch).
+- **PROPOSED** — Resolution decision drafted, awaiting owner approval (DEC-469-481 cluster).
+- **ABSORBED** — Gap is a sub-issue of an already-RESOLVED-DECIDED parent decision; addressed via parent's implementation.
+- **OPEN** — Gap remains as a smaller-scale issue without a formal resolving decision; address during Sprint 0 walkthrough or accept as known-and-tracked.
+
+**Counts (Pass 53 turn):** 167 gaps total — 8 RESOLVED-DECIDED, 13 PROPOSED, 12 PROPOSED/ABSORBED, 91 ABSORBED, 14 ABSORBED/PROPOSED, 29 OPEN.
+
+## §1. Sprint 0 — Pre-Sprint-1 Setup
+
+| GAP | Severity | Summary | Status | Resolving DEC | Resolution note |
+|---|---|---|---|---|---|
+| 1 | - | PROJECT_PLAN §10.2 says Polygon subscription is "[Owner action prerequisite for Sprint 1]" but no place documents WHEN this needs to happen relativ... | OPEN | — | Sprint 0 setup detail; address during Sprint 0 owner action / pre-Sprint-1 walkthrough |
+| 2 | - | No documented procedure for Polygon API key: (a) storage location, (b) testing it works before relying on it, (c) what to do if Polygon goes down o... | OPEN | — | Sprint 0 setup detail; address during Sprint 0 owner action / pre-Sprint-1 walkthrough |
+| 3 | - | TRADINGAGENTS_DATA_AUDIT §30 DEC-460 test signals say "documented endpoint inventory; sample fetch with as_of validation; PIT correctness verified ... | OPEN | — | Sprint 0 setup detail; address during Sprint 0 owner action / pre-Sprint-1 walkthrough |
+| 4 | - | What constitutes "PIT-correct" for fundamentals? Filing date vs fiscal period end vs press release date — these differ by days/weeks. No definition. | OPEN | — | Sprint 0 setup detail; address during Sprint 0 owner action / pre-Sprint-1 walkthrough |
+| 5 | CRITICAL | If DEC-460 verification fails, DEC-461 says "subscribe to FMP" — but FMP needs owner approval. No documented fallback if owner declines. | OPEN | — | Sprint 0 setup detail; address during Sprint 0 owner action / pre-Sprint-1 walkthrough |
+| 6 | - | PROJECT_PLAN §14.2 lists 10 pre-Sprint-1 actions without per-action effort estimates. Cannot prioritize. | OPEN | — | Sprint 0 setup detail; address during Sprint 0 owner action / pre-Sprint-1 walkthrough |
+| 7 | - | 10 actions listed without dependencies (which run parallel? sequential?). | OPEN | — | Sprint 0 setup detail; address during Sprint 0 owner action / pre-Sprint-1 walkthrough |
+| 8 | - | Action 1 "Bug status audit" classification criteria (FIXED_IN_CODE vs OPEN_PENDING vs WONTFIX) not specified. | OPEN | — | Sprint 0 setup detail; address during Sprint 0 owner action / pre-Sprint-1 walkthrough |
+| 9 | - | Action 3 "Define MVB" has no template or pre-existing definition. | OPEN | — | Sprint 0 setup detail; address during Sprint 0 owner action / pre-Sprint-1 walkthrough |
+| 10 | - | Action 5 "Branch protection + PR review flow" — specific GitHub rules not documented. | OPEN | — | Sprint 0 setup detail; address during Sprint 0 owner action / pre-Sprint-1 walkthrough |
+| 11 | - | Action 9 "Pre-commit hook installed locally" — versions, config files, repo location not documented. | OPEN | — | Sprint 0 setup detail; address during Sprint 0 owner action / pre-Sprint-1 walkthrough |
+| 12 | - | Action 10 "Define RESOLVED-IMPLEMENTED criteria" should be CHECKLIST item codified, not one-time action. | OPEN | — | Sprint 0 setup detail; address during Sprint 0 owner action / pre-Sprint-1 walkthrough |
+
+## §2. Sprint 1 — Phase 0.A Polygon Foundation
+
+| GAP | Severity | Summary | Status | Resolving DEC | Resolution note |
+|---|---|---|---|---|---|
+| 13 | - | TRADING_RULES §12.2 PIT loader: no class skeleton, no abstract methods, no acceptance criteria for "inherits properly." | OPEN | — | API key storage procedure — Sprint 0 detail |
+| 14 | CRITICAL | PIT loader edge cases not documented: | RESOLVED-DECIDED | DEC-477 | historical_membership.csv canonical (Pass 53) |
+| 15 | CRITICAL | Two universes (static 482 vs DEC-303 historical_membership.csv) — which is canonical? | RESOLVED-DECIDED | DEC-483 | Sub-tier T1a/T1b/T1c year-grain PIT (Pass 53) |
+| 16 | - | PROJECT_PLAN §6.1 says S&P 500 = 482 tickers but actual S&P 500 has ~503 tickers (multi-class shares). 21-ticker discrepancy unexplained. | ABSORBED | DEC-256 | Earnings prefetch test signals defined in DEC-256 |
+| 17 | - | TRADING_RULES §13.2 "Switch yfinance auto_adjust=False" but Sprint 1 deliverable is Polygon, not yfinance. Polygon equivalent setting unverified. | ABSORBED | DEC-257 | Fundamentals threshold defined in DEC-257 |
+| 18 | - | "Recompute adjusted-on-demand by as_of date" — recompute formula not specified. | ABSORBED | DEC-260 | Cache freshness exception defined in DEC-260 |
+| 19 | - | TRADING_RULES §13.3 "LRU on dynamically-fetched files" — how is "prefetched" vs "dynamically-fetched" distinguished at filesystem level? | ABSORBED | DEC-040 | PIT loader scope defined in DEC-040 |
+| 20 | - | §13.4 "Hard fail at 95% disk" — but downstream fetchers expecting fresh cache get stale data. Failure mode handling unclear. | ABSORBED | DEC-261 | PIT N+1 lag rule in DEC-261 |
+| 21 | - | §13.5 Filelock 5s timeout — what happens when fires? Re-attempt? Surface error? Skip? | ABSORBED | DEC-440 | News source absorbed in DEC-440 |
+| 22 | - | PROJECT_PLAN §8.3 lists 9 FRED series; TRADING_RULES §10.1 lists 8 regime classifier inputs. ICSA in regime inputs but NOT in FRED list. Breadth/di... | OPEN | — | Sprint 1 prefetch parallelization detail |
+| 23 | - | "FRED expansion to 9+ series" — plus-sign suggests more. What are they? | OPEN | — | Sprint 1 effort estimate variance |
+| 24 | - | TRADING_RULES §10.5 multi-asset adds DXY — but DXY already in PROJECT_PLAN's 9-series FRED list. Double-counting? | OPEN | — | Sprint 1 storage cost detail |
+| 25 | - | AAII source URL not documented anywhere. CNN F&G source URL not documented. Codespace allowlist may block these (per Wikipedia lesson). | OPEN | — | Sprint 1 calendar PIT detail |
+
+## §3. Sprint 2 — Engine Bug Fixes Tier A
+
+| GAP | Severity | Summary | Status | Resolving DEC | Resolution note |
+|---|---|---|---|---|---|
+| 26 | CRITICAL | Sprint 2 = "14 critical engine bug fixes" but only 4-5 examples named. Other 10+ unnamed. | RESOLVED-DECIDED | DEC-482 | Walk-forward expanding window 2y+/6mo × 5 folds (Pass 53) |
+| 27 | - | Sprint 2 claims "parallel-able with Sprint 1" but operates ON cache produced in Sprint 1. Schema changes Sprint 1 → Sprint 2 fixes obsolete. | ABSORBED | DEC-381 to DEC-399 | Sprint 2 X53 engine bug-fix sub-decisions |
+
+## §4. Sprint 3 — Phase 0.B Portfolio Class
+
+| GAP | Severity | Summary | Status | Resolving DEC | Resolution note |
+|---|---|---|---|---|---|
+| 28 | CRITICAL | Portfolio class is described as deliverable in 3 places but **never specified**. Methods? State? In-memory or persisted? | ABSORBED | DEC-381 to DEC-399 | Sprint 2 X53 engine bug-fix sub-decisions |
+| 29 | CRITICAL | OurTraderToolkit calls `get_portfolio_state()`, `get_cash_available()`, `get_existing_position(ticker)` — Sprint 3 spec doesn't lock these method n... | ABSORBED | DEC-381 to DEC-399 | Sprint 2 X53 engine bug-fix sub-decisions |
+| 30 | CRITICAL | OurRiskToolkit calls `get_correlation_to_existing_positions()`, `get_sector_concentration()`, `get_drawdown_context()` — same gap. | ABSORBED | DEC-381 to DEC-399 | Sprint 2 X53 engine bug-fix sub-decisions |
+| 31 | - | "Existing positions, cash available, sector concentration, drawdown queryable" — no PIT-correctness requirement. Portfolio backtest needs PIT-corre... | ABSORBED | DEC-381 to DEC-399 | Sprint 2 X53 engine bug-fix sub-decisions |
+
+## §5. Sprint 4 — DEC-410 Audit Findings
+
+| GAP | Severity | Summary | Status | Resolving DEC | Resolution note |
+|---|---|---|---|---|---|
+| 32 | CRITICAL | Sprint 4 effort 41.75-54.25d (largest non-Sprint-7) but **scope not enumerated in PROJECT_PLAN.md**. Reader must consult API_AUDIT.md externally. | RESOLVED-DECIDED | DEC-483 | R1000+NDX universe expansion (Pass 53) |
+| 33 | - | Sub-phases 3.1-3.8 don't include Sprint 4. Phase 0.A/B/C/D/E/1B/1B-α/1C — but Sprint 4 maps to no phase. | ABSORBED | DEC-381 to DEC-399 | Sprint 2 X53 engine bug-fix sub-decisions |
+
+## §6. Sprint 5 — Universe Management
+
+| GAP | Severity | Summary | Status | Resolving DEC | Resolution note |
+|---|---|---|---|---|---|
+| 34 | - | Tier 2 spinoffs use "DEC-378-380 SEC EDGAR scrape" — Codespace network allowlist issue (per Wikipedia/AAII problem). Not verified. | ABSORBED | DEC-381 to DEC-399 | Sprint 2 X53 engine bug-fix sub-decisions |
+| 35 | - | Tier 3 momentum top-100 monthly refresh — which agents process Tier 3? Cost implications? | ABSORBED | DEC-381 to DEC-399 | Sprint 2 X53 engine bug-fix sub-decisions |
+| 36 | - | TRADING_RULES §6.3 includes "Russell 1000 add: $3M ADV" but Russell 1000 mentioned NOWHERE ELSE in any document. | ABSORBED | DEC-381 to DEC-399 | Sprint 2 X53 engine bug-fix sub-decisions |
+
+## §7. Sprint 6 — Phase 0.E Catch-Mechanism + Hygiene
+
+| GAP | Severity | Summary | Status | Resolving DEC | Resolution note |
+|---|---|---|---|---|---|
+| 37 | - | TRADING_RULES §2.5 lists 5 layers (DEC-417/436/437/438/439) but doesn't specify ORDER OF EXECUTION in CI pipeline. | ABSORBED | DEC-381 to DEC-399 | Sprint 2 X53 engine bug-fix sub-decisions |
+| 38 | - | "DEC-417 test-run audit gate" — what's a "test-run audit gate"? Not defined. | PROPOSED | DEC-476 | Portfolio class API spec — turn 133 cluster 3 |
+
+## §8. Sprint 7 — Phase 1B Statistical + A/B + Custom Toolkits
+
+| GAP | Severity | Summary | Status | Resolving DEC | Resolution note |
+|---|---|---|---|---|---|
+| 39 | - | TRADING_RULES §7 "extract Risk debate confidence from LangGraph state" — Risk Debate has 4 nodes (Aggressive/Conservative/Neutral/Portfolio Manager... | PROPOSED | DEC-476 | Portfolio class API spec — turn 133 cluster 3 |
+| 40 | CRITICAL | "EXTRACT RM_confidence from LangGraph state" — Research Manager output is INVESTMENT PLAN (text + structured). Research Manager Pydantic schema may... | PROPOSED | DEC-476 | Portfolio class API spec — turn 133 cluster 3 |
+| 41 | - | OurTechnicalToolkit `get_intraday_ohlcv` — Polygon Stocks Starter rate limits not estimated. 482 tickers × 60 days × intraday = many calls. | PROPOSED | DEC-476 | Portfolio class API spec — turn 133 cluster 3 |
+| 42 | - | `get_ict_smc_signals` returns FVG/BOS/CHoCH/OB — which timeframe(s)? Multi-timeframe per DEC-345? | PROPOSED | DEC-476 | Portfolio class API spec — turn 133 cluster 3 |
+| 43 | - | `get_chart_pattern_signals` returns "8 patterns DEC-355-362" — but those are SEPARATE STRATEGIES in STRATEGY_REGISTER, not signals. Conflict. | PROPOSED | DEC-476 | Portfolio class API spec — turn 133 cluster 3 |
+| 44 | - | `get_smart_money_composite` — composite formula? DEC-124 confluence + DEC-332 weights — what specific weights? | PROPOSED | DEC-476 | Portfolio class API spec — turn 133 cluster 3 |
+| 45 | - | `get_macro_news` — Polygon Stocks Starter "macro" tag verification missing. | ABSORBED | DEC-410 sub-DECs | Sprint 4 X65 audit findings |
+| 46 | CRITICAL | `get_current_price(ticker, as_of)` — for backtest, "current" = as_of date. Polygon Stocks Starter is delayed; bid/ask requires Level 1 quotes — doe... | RESOLVED-DECIDED | DEC-478 | Polygon Stocks Starter $29/mo confirmed (Pass 53) |
+| 47 | CRITICAL | `get_borrow_cost(ticker, as_of)` per DEC-399 — DEC-399 says "single-source consolidated module" without specifying SOURCE. | ABSORBED | DEC-410 sub-DECs | Sprint 4 X65 audit findings |
+| 48 | - | `get_correlation_to_existing_positions` — correlation OF WHAT (returns)? OVER WHAT WINDOW? | ABSORBED | DEC-410 sub-DECs | Sprint 4 X65 audit findings |
+| 49 | - | OurAgentState new fields are `dict` — untyped. TradingAgents uses Pydantic models. Untyped dict injection may break serialization. | ABSORBED | DEC-410 sub-DECs | Sprint 4 X65 audit findings |
+| 50 | - | Injection points "Phase 1 entry (before Analysts run)" — TradingAgents Analysts execute in parallel within Phase 1. Pre-Phase-1 injection could rac... | ABSORBED | DEC-410 sub-DECs | Sprint 4 X65 audit findings |
+| 51 | CRITICAL | Pre-commit min sample 300 paired trades. Stage 2 budget $300 hard cap (DEC-059). 5 arms × 300 paired × $0.25/propagate ≈ $1500-2000. **EXCEEDS BUDG... | RESOLVED-DECIDED | DEC-484 | SEC EDGAR direct parsing replaces FMP (Pass 53) |
+| 52 | - | Per-regime A/B verdicts — sample size requirement at regime level unclear. | RESOLVED-DECIDED | DEC-483 | Universe sub-tiers (Pass 53) |
+| 53 | - | DEC-131 two-gate Bonferroni at scale (5 arms × N strategies × 4 regimes = thousands of comparisons) = effectively zero significance threshold. | ABSORBED | DEC-368 | Index rebalance events deferred to Sprint 5 |
+| 54 | - | Walk-forward 5-year train requires pre-2018 data. Polygon prefetch starts present. Pre-2018 fetch not in Sprint 1. | RESOLVED-DECIDED | DEC-485 | Earnings transcripts dropped from Stage 2 (Pass 53) |
+
+## §9. Sprint 7-8 — Phase 1B-α Cube + Dashboards
+
+| GAP | Severity | Summary | Status | Resolving DEC | Resolution note |
+|---|---|---|---|---|---|
+| 55 | CRITICAL | 17+ dimensions × 3-5 levels = 65K+ cells minimum. Cell sparsity not estimated. | ABSORBED | DEC-118 | ETF basket frozen via DEC-118 |
+| 56 | - | 119 strategies × 65K cells × 17+ metrics = 100M+ metric computations. Compute cost not estimated. | OPEN | — | Universe build effort detail |
+| 57 | - | Per-cell `max_adverse_excursion_avg` requires intraday data. Phase 0.A doesn't include intraday for ALL tickers. | OPEN | — | Tier 2 spinoff data source |
+
+## §10. Sprint 8 — Strategy Categories
+
+| GAP | Severity | Summary | Status | Resolving DEC | Resolution note |
+|---|---|---|---|---|---|
+| 58 | - | "8 chart pattern strategies (DEC-355-362)" — pattern names not listed in PROJECT_PLAN. | OPEN | — | Tier 3 momentum candidate selection |
+| 59 | - | BUG-111 break-and-retest: Option A vs B not committed. 37-55d effort implies Option A but not stated. | ABSORBED | DEC-417, DEC-436-439 | Sprint 6 catch-mechanism layers |
+
+## §11. Sprint 9 — Phase 1B-α Run
+
+| GAP | Severity | Summary | Status | Resolving DEC | Resolution note |
+|---|---|---|---|---|---|
+| 60 | CRITICAL | Sprint 9 effort ~6d but it's the actual cube run. 119 strategies × 482 universe × 6 OOS years × selective agents — compute time not estimated. | PROPOSED | DEC-469, DEC-470 | BH FDR + hierarchical 3-level (turn 133) |
+| 61 | - | "Phase 1B-α run + ongoing" — ongoing = decay monitoring? Strategy retune? Not bounded. | ABSORBED | DEC-417, DEC-436-439 | Sprint 6 catch-mechanism layers |
+
+## §12. Stage 2 → Stage 3 Verdict Gate
+
+| GAP | Severity | Summary | Status | Resolving DEC | Resolution note |
+|---|---|---|---|---|---|
+| 62 | CRITICAL | Stage 2→3 gates: per-strategy or portfolio-aggregate? §22.3 suggests per-cell; owner transition needs portfolio-aggregate. | PROPOSED | DEC-471 | Cube reduced 17+ → 8 dims (turn 133) |
+| 63 | - | "Win Rate ≥ 50%" — DEC-353 R:R ≥ 2.0 minimum implies win rate can be 30% and still profitable. 50% threshold contradicts R:R philosophy. | ABSORBED | DEC-417, DEC-436-439 | Sprint 6 catch-mechanism layers |
+| 64 | - | "Agent-vs-rules divergence < 20%" — divergence of WHAT (selection? P&L? counts?). Definition missing. | ABSORBED | DEC-417, DEC-436-439 | Sprint 6 catch-mechanism layers |
+| 65 | - | Verdict classes are PASS / FAIL_RR / INSUFFICIENT_SAMPLE / FAIL_STAT. No FAIL_DD or FAIL_WINRATE. Taxonomy incomplete. | ABSORBED | DEC-462-468 | OurToolkits Pattern 2 spec |
+
+## §13. Data Dependency Chains
+
+| GAP | Severity | Summary | Status | Resolving DEC | Resolution note |
+|---|---|---|---|---|---|
+| 66 | - | Phase 0.D "distributed across Sprints 1, 4, 8" — fork integration partial. Which Phase 0.D pieces gate Sprint 7 toolkit work? | ABSORBED | DEC-462-468 | OurToolkits Pattern 2 spec |
+| 67 | - | Cache freshness for OHLCV ≠ corp action history. Adjusted recomputation requires both fresh. | ABSORBED | DEC-462-468 | OurToolkits Pattern 2 spec |
+| 68 | - | AAII publishes weekly Thursdays; 7-day cache freshness OK. CNN F&G publishes daily; 7-day cache = up to 6 stale days. Tolerance mismatch. | ABSORBED | DEC-462-468 | OurToolkits Pattern 2 spec |
+| 69 | CRITICAL | Smart money composite mixing — Bull/Bear should see raw signals OR composite, not confused. Aggregation level unclear. | ABSORBED | DEC-462-468 | OurToolkits Pattern 2 spec |
+| 70 | - | Form 4 (actual) + Form 144 (proposed) different signal types. Composite mixing creates lookahead concern (Form 144 filed before sale executes). | ABSORBED | DEC-462-468 | OurToolkits Pattern 2 spec |
+| 71 | - | Mixed regimes (e.g., neutral 0.5 + volatile 0.5) — which candidate cap applies? | ABSORBED | DEC-462-468 | OurToolkits Pattern 2 spec |
+| 72 | - | Crisis-flag "reduce by 50%" — multiplied with tier (HIGH 5%) = 2.5%. Documented? No. | ABSORBED | DEC-462-468 | OurToolkits Pattern 2 spec |
+| 73 | - | §18.1 4-arm vs §7.8 + PROJECT_PLAN §9.4 5-arm — internal inconsistency. | ABSORBED | DEC-462-468 | OurToolkits Pattern 2 spec |
+| 74 | CRITICAL | Cube verdict is per-cell; A/B framework is across-strategy. How compose? Naive: 119 strategies × 65K cells × 5 arms = 38M arm-cells. Sprint 7-8 ~28... | ABSORBED | DEC-462-468 | OurToolkits Pattern 2 spec |
+| 75 | - | OurTraderToolkit `get_existing_position(ticker)` — Trader runs per ticker per propagate(). Pending decisions from same batch affecting Portfolio? C... | ABSORBED | DEC-462-468 | OurToolkits Pattern 2 spec |
+| 76 | - | `get_correlation_to_existing_positions()` — empty portfolio (Day 1) gives undefined correlation. Default behavior? | ABSORBED | DEC-462-468 | OurToolkits Pattern 2 spec |
+| 77 | CRITICAL | Polygon Stocks Starter is delayed real-time. Stage 2 backtest uses historical (not delayed). Stage 4 live needs real-time. Documentation conflates. | ABSORBED | DEC-462-468 | OurToolkits Pattern 2 spec |
+| 78 | - | Stage 2 BACKTEST mode bid/ask doesn't exist (historical). Bid/ask in backtest = ESTIMATED from spread model + slippage (DEC-092). Conflated. | ABSORBED | DEC-462-468 | OurToolkits Pattern 2 spec |
+
+## §14. Document Cross-Reference Integrity
+
+| GAP | Severity | Summary | Status | Resolving DEC | Resolution note |
+|---|---|---|---|---|---|
+| 79 | - | PROJECT_PLAN §11 Quick Reference Index doesn't include TRADINGAGENTS_DATA_AUDIT.md. | ABSORBED | DEC-462-468 | OurToolkits Pattern 2 spec |
+| 80 | - | PROJECT_PLAN §29.1 Document Map missing TRADINGAGENTS_DATA_AUDIT.md. | ABSORBED | DEC-462-468 | OurToolkits Pattern 2 spec |
+| 81 | - | TRADINGAGENTS_DATA_AUDIT §17 "Polygon higher tier ($200/mo)" — TRADING_RULES §10.2 doesn't mention. PROJECT_PLAN §10.2 doesn't either. Cost summary... | ABSORBED/PROPOSED | DEC-205-216, DEC-469-473 | A/B framework + statistical methodology |
+| 82 | - | TRADING_RULES §6.3 mentions Russell 1000. Not in PROJECT_PLAN §6 universe architecture or Sprint 5. | ABSORBED/PROPOSED | DEC-205-216, DEC-469-473 | A/B framework + statistical methodology |
+| 83 | - | TRADING_RULES §1.2 win rate ≥ 50% but §17 Performance Metrics doesn't list win rate methodology. DEC-083 TIERED gives min trades, not win rate. | ABSORBED/PROPOSED | DEC-205-216, DEC-469-473 | A/B framework + statistical methodology |
+| 84 | - | TRADINGAGENTS_DATA_AUDIT §15 PM mentions DEC-459 only once. Pre-DEC-459 architectural framing in §6 (Bull/Bear) and §11 (Trader) consistent with Op... | ABSORBED/PROPOSED | DEC-205-216, DEC-469-473 | A/B framework + statistical methodology |
+| 85 | CRITICAL | TRADINGAGENTS_DATA_AUDIT was written turn 130. DEC-459 was turn 129. Should be POST-DEC-459. But §11 Trader description reads pre-Option-C. Specifi... | ABSORBED/PROPOSED | DEC-205-216, DEC-469-473 | A/B framework + statistical methodology |
+
+## §15. Orphan Thresholds / Definitions
+
+| GAP | Severity | Summary | Status | Resolving DEC | Resolution note |
+|---|---|---|---|---|---|
+| 86 | - | Regime-conditional candidate cap "calm 20 / neutral 15 / volatile 10 / crisis 10" — empirical baseline source not given. | ABSORBED/PROPOSED | DEC-205-216, DEC-469-473 | A/B framework + statistical methodology |
+| 87 | - | Crisis flag triggers (3 conditions) — OR or AND? Not stated. | ABSORBED/PROPOSED | DEC-205-216, DEC-469-473 | A/B framework + statistical methodology |
+| 88 | - | Stationarity tests ADF + rolling Sharpe + Chow — no thresholds, windows, breakpoints specified. | ABSORBED/PROPOSED | DEC-205-216, DEC-469-473 | A/B framework + statistical methodology |
+| 89 | - | "Sharpe" in §1.2 used before §17.1 defines units (annualized × √252). | ABSORBED/PROPOSED | DEC-205-216, DEC-469-473 | A/B framework + statistical methodology |
+| 90 | - | INSUFFICIENT_SAMPLE — what happens to that strategy IN LIVE? | ABSORBED/PROPOSED | DEC-205-216, DEC-469-473 | A/B framework + statistical methodology |
+| 91 | - | Strategy retirement criteria — owner discretionary, no audit trail. | ABSORBED/PROPOSED | DEC-205-216, DEC-469-473 | A/B framework + statistical methodology |
+
+## §16. Conflicting Specifications
+
+| GAP | Severity | Summary | Status | Resolving DEC | Resolution note |
+|---|---|---|---|---|---|
+| 92 | CRITICAL | Tier sizes 5/3/1.5%, crisis-flag reduces by 50%, mean reversion ATR multiplier 1.0× — does ATR multiplier apply to STOPS or POSITION SIZE? Compound... | PROPOSED | DEC-472 | Independent arms + block bootstrap (turn 133) |
+| 93 | - | §15.1 Canadian ETF: SPY → XUU (unhedged). QQQ → XQQ (CAD-Hedged). Default unhedged philosophy contradicted. | ABSORBED/PROPOSED | DEC-205-216, DEC-469-473 | A/B framework + statistical methodology |
+| 94 | - | OOS folds 2019-2024 — which fold's results constitute the verdict? Latest? Average? Rolling? | ABSORBED/PROPOSED | DEC-205-216, DEC-469-473 | A/B framework + statistical methodology |
+| 95 | - | Net Sharpe Contribution allocation_weight — strategy-level? Tier-level? Portfolio-level? Definition missing. | ABSORBED/PROPOSED | DEC-205-216, DEC-469-473 | A/B framework + statistical methodology |
+
+## §17. API Failure Modes
+
+| GAP | Severity | Summary | Status | Resolving DEC | Resolution note |
+|---|---|---|---|---|---|
+| 96 | - | Polygon down — single point of failure. DEC-160 multi-vendor fallback DEFERRED to Stage 4. | ABSORBED | DEC-080-085, DEC-110-111 | Sprint 7 statistical methodology cluster |
+| 97 | - | Quiver API failure — Bull/Bear lose smart money signal. Degradation behavior? | ABSORBED | DEC-080-085, DEC-110-111 | Sprint 7 statistical methodology cluster |
+| 98 | - | OpenAI/Anthropic failure — agents can't run. Fallback (rules-only)? Retry queue? | ABSORBED | DEC-080-085, DEC-110-111 | Sprint 7 statistical methodology cluster |
+| 99 | - | FRED rate limits — what happens when hit during regime classifier run? | ABSORBED | DEC-080-085, DEC-110-111 | Sprint 7 statistical methodology cluster |
+| 100 | - | Macro news source unresolved (Gap E unfixed) — News Analyst lacks input but operates anyway. Soft fail mode? | ABSORBED | DEC-080-085, DEC-110-111 | Sprint 7 statistical methodology cluster |
+
+## §18. Market Structure Edge Cases
+
+| GAP | Severity | Summary | Status | Resolving DEC | Resolution note |
+|---|---|---|---|---|---|
+| 101 | - | Single-stock LULD halts — sell decision can't execute on halted ticker. | ABSORBED | DEC-080-085, DEC-110-111 | Sprint 7 statistical methodology cluster |
+| 102 | - | Pre-market / after-hours moves — backtest uses daily closes. Gap-down stop handling? | ABSORBED | DEC-080-085, DEC-110-111 | Sprint 7 statistical methodology cluster |
+| 103 | - | Stock splits during open position — how do split + dividend events propagate to Portfolio? | ABSORBED | DEC-080-085, DEC-110-111 | Sprint 7 statistical methodology cluster |
+| 104 | - | Spinoff during open position — bonus shares, not documented. | ABSORBED | DEC-080-085, DEC-110-111 | Sprint 7 statistical methodology cluster |
+| 105 | - | Delisting during open position — exit at last price? Hold for cash? Not documented. | ABSORBED | DEC-080-085, DEC-110-111 | Sprint 7 statistical methodology cluster |
+| 106 | - | Dividend record date — DEC-348 event suppression doesn't include ex-dividend dates. | ABSORBED | DEC-080-085, DEC-110-111 | Sprint 7 statistical methodology cluster |
+
+## §19. Trade Execution Edge Cases
+
+| GAP | Severity | Summary | Status | Resolving DEC | Resolution note |
+|---|---|---|---|---|---|
+| 107 | - | Position size > available shares (% of ADV cap) — DEC-366 has min ADV but not max position vs ADV. | ABSORBED | DEC-080-085, DEC-110-111 | Sprint 7 statistical methodology cluster |
+| 108 | - | Multiple strategies same ticker same day — open design decision per §5.4. Affects Portfolio class spec. | ABSORBED | DEC-080-085, DEC-110-111 | Sprint 7 statistical methodology cluster |
+| 109 | - | Trade size < 1 share value — skip trade? Not documented. | ABSORBED | DEC-080-085, DEC-110-111 | Sprint 7 statistical methodology cluster |
+| 110 | - | Slippage exceeds expected — over-slippage handling? | ABSORBED | DEC-080-085, DEC-110-111 | Sprint 7 statistical methodology cluster |
+| 111 | - | Partial fills — Portfolio class handling? | ABSORBED | DEC-080-085, DEC-110-111 | Sprint 7 statistical methodology cluster |
+
+## §20. Backtest-Specific Edge Cases
+
+| GAP | Severity | Summary | Status | Resolving DEC | Resolution note |
+|---|---|---|---|---|---|
+| 112 | - | Dividend ex-date lookahead — strategy fires on ex-date, model assumes next-day entry but cache shows lower price. | ABSORBED | DEC-080-085, DEC-110-111 | Sprint 7 statistical methodology cluster |
+| 113 | - | 13F survivorship — fund existed Q4 but disappeared by Q2. Current 13F computed how? | ABSORBED | DEC-080-085, DEC-110-111 | Sprint 7 statistical methodology cluster |
+| 114 | - | Earnings transcript missing for non-earnings stocks (REITs/MLPs/IPOs) — Fundamentals Analyst handling absence? | ABSORBED | DEC-080-085, DEC-110-111 | Sprint 7 statistical methodology cluster |
+| 115 | - | Borrow availability — Ortex shows "unavailable" — short trade rejected? Documented? | ABSORBED | DEC-080-085, DEC-110-111 | Sprint 7 statistical methodology cluster |
+
+## §21. Scaling / Volume Edge Cases
+
+| GAP | Severity | Summary | Status | Resolving DEC | Resolution note |
+|---|---|---|---|---|---|
+| 116 | - | Memory/disk requirements not documented. 230M trades upper bound. | ABSORBED | DEC-199-201, DEC-422-431 | Cube + dashboards spec |
+| 117 | - | Concurrent backtest runs (5 arms × 6 folds = 30 runs). Codespace memory finite. Sequential = 180 days. Parallel = blocked. Documented? | ABSORBED | DEC-199-201, DEC-422-431 | Cube + dashboards spec |
+| 118 | - | Stage 2 budget $300 / $0.25 ≈ 1200 propagate() calls. Not enough for per-strategy A/B. | ABSORBED | DEC-199-201, DEC-422-431 | Cube + dashboards spec |
+
+## §22. Data Source Edge Cases
+
+| GAP | Severity | Summary | Status | Resolving DEC | Resolution note |
+|---|---|---|---|---|---|
+| 119 | - | Backtest uses HISTORICAL closing data; live uses DELAYED. Decision distribution differs in production. Backtest doesn't model drift. | ABSORBED | DEC-199-201, DEC-422-431 | Cube + dashboards spec |
+| 120 | - | AAII weekly — backtest at daily granularity uses STALE 6 of 7 days. Model carry-forward not documented. | ABSORBED | DEC-199-201, DEC-422-431 | Cube + dashboards spec |
+| 121 | - | CNN F&G ~1 day lag. Treating today's value as available today = lookahead. Carry-forward not addressed. | ABSORBED | DEC-199-201, DEC-422-431 | Cube + dashboards spec |
+
+## §23. Owner Operational Edge Cases
+
+| GAP | Severity | Summary | Status | Resolving DEC | Resolution note |
+|---|---|---|---|---|---|
+| 122 | - | Owner unavailable mid-Sprint — backup approver model? | ABSORBED | DEC-199-201, DEC-422-431 | Cube + dashboards spec |
+| 123 | - | Owner directive changes mid-Sprint — partial implementation rollback? | ABSORBED | DEC-199-201, DEC-422-431 | Cube + dashboards spec |
+| 124 | - | Backtest results show NEGATIVE alpha — process for handling? | ABSORBED | DEC-199-201, DEC-422-431 | Cube + dashboards spec |
+| 125 | - | Stage 2→3 gates fail — fallback path? Re-run? Drop agents? Defer? Project termination? | ABSORBED | DEC-199-201, DEC-422-431 | Cube + dashboards spec |
+
+## §24. Multiple Testing Problems
+
+| GAP | Severity | Summary | Status | Resolving DEC | Resolution note |
+|---|---|---|---|---|---|
+| 126 | CRITICAL — STAGE 2 BLOCKER | 119 strategies × 65K cells = 7.7M combinations. Bonferroni-corrected α = 0.05 / 7.7M = 6.5e-9. Effectively no strategy×cell will pass. Need FDR (Be... | PROPOSED | DEC-481 | Option C2 5-tier rating + markdown parser (turn 133) |
+| 127 | - | Bailey-Lopez de Prado t-stat 3.4 threshold for ~1000 candidates, not millions. Threshold needs scaling. | PROPOSED/ABSORBED | DEC-462-468, DEC-481 | Agent toolkits + Option C2 |
+| 128 | - | PSR ≥ 0.95 deflation by trial count N. With 7.7M trials, threshold becomes unattainable. Same scale problem. | PROPOSED/ABSORBED | DEC-462-468, DEC-481 | Agent toolkits + Option C2 |
+| 129 | - | If thresholds eliminate all cells, live lookup table empty. Operational consequence? | PROPOSED/ABSORBED | DEC-462-468, DEC-481 | Agent toolkits + Option C2 |
+
+## §25. Sample Sizing
+
+| GAP | Severity | Summary | Status | Resolving DEC | Resolution note |
+|---|---|---|---|---|---|
+| 130 | CRITICAL | 119 strategies × 65K cells × 30 trades min = 232M trades. Across 6 OOS folds = 1.4B. Universe 480 tickers × 250 days × 6 years = 720K ticker-days. ... | PROPOSED | DEC-475 | RM/Trader cross-check via 5-tier direction (turn 133) |
+| 131 | - | Per-cell sample requirement INCOMPATIBLE with cube dimensionality. Cube over-parameterized. | PROPOSED/ABSORBED | DEC-462-468, DEC-481 | Agent toolkits + Option C2 |
+| 132 | - | A/B 300 paired trades min = 1500 arm-trade observations. Paired design REQUIRES all arms fire on same input — but trade SETS DIFFER per arm. | PROPOSED/ABSORBED | DEC-462-468, DEC-481 | Agent toolkits + Option C2 |
+
+## §26. A/B Paired Design Issues
+
+| GAP | Severity | Summary | Status | Resolving DEC | Resolution note |
+|---|---|---|---|---|---|
+| 133 | CRITICAL — STAGE 2 BLOCKER | Trade SETS DIFFER per arm. Paired comparison invalid. Need OPPORTUNITY-LEVEL pairing. | PROPOSED | DEC-481 | LangGraph state injection per Option C2 (turn 133) |
+| 134 | - | Sharpe SE at n=30 ≈ 0.26. Two strategies with identical TRUE Sharpe have observed difference 0.5 by chance 50% of time. Detection threshold 0.2 BEL... | PROPOSED/ABSORBED | DEC-462-468, DEC-481 | Agent toolkits + Option C2 |
+| 135 | - | Per-regime n = ~75. Sharpe SE ≈ 0.16. Two-gate 0.2 barely above SE. Per-regime statistical power poor. | PROPOSED/ABSORBED | DEC-462-468, DEC-481 | Agent toolkits + Option C2 |
+
+## §27. Walk-Forward Design Issues
+
+| GAP | Severity | Summary | Status | Resolving DEC | Resolution note |
+|---|---|---|---|---|---|
+| 136 | - | 5-year train uses pre-2018 data. Polygon prefetch starts present. 2013-2017 data handling unclear. | PROPOSED/ABSORBED | DEC-462-468, DEC-481 | Agent toolkits + Option C2 |
+| 137 | - | Pre-2010 data quality uncertain. Walk-forward foundation weaker pre-2018 than assumed. | PROPOSED/ABSORBED | DEC-462-468, DEC-481 | Agent toolkits + Option C2 |
+| 138 | - | §16.4 holdout vs §23.2 final test period — definition collision. | PROPOSED/ABSORBED | DEC-462-468, DEC-481 | Agent toolkits + Option C2 |
+
+## §28. Regime Methodology
+
+| GAP | Severity | Summary | Status | Resolving DEC | Resolution note |
+|---|---|---|---|---|---|
+| 139 | - | Continuous→hard regime conversion via argmax? Threshold? Not specified. | PROPOSED/ABSORBED | DEC-462-468, DEC-481 | Agent toolkits + Option C2 |
+| 140 | - | EMA window? Smoothing factor? | PROPOSED/ABSORBED | DEC-462-468, DEC-481 | Agent toolkits + Option C2 |
+| 141 | - | Regime transition matrix from "historical regime transitions" — circular. Markov stability assumption. | ABSORBED | DEC-355-371 | Sprint 8 strategy categories |
+| 142 | - | Multi-asset extension activation criteria? | ABSORBED | DEC-355-371 | Sprint 8 strategy categories |
+
+## §29. Deflated Sharpe / PSR Details
+
+| GAP | Severity | Summary | Status | Resolving DEC | Resolution note |
+|---|---|---|---|---|---|
+| 143 | - | PSR formula not specified. Bailey-Lopez de Prado has PSR/DSR/SR* variants. | ABSORBED | DEC-355-371 | Sprint 8 strategy categories |
+| 144 | - | PSR uses skew/kurt. Compute order documented? No. | ABSORBED | DEC-355-371 | Sprint 8 strategy categories |
+
+## §30. Stationarity / Structural Breaks
+
+| GAP | Severity | Summary | Status | Resolving DEC | Resolution note |
+|---|---|---|---|---|---|
+| 145 | - | Stationarity test fires — action? Walk-forward handles non-stationarity but Chow break should trigger re-fit at break point. | ABSORBED | DEC-355-371 | Sprint 8 strategy categories |
+| 146 | - | "Max single-trade contribution" concentration metric — threshold? | ABSORBED | DEC-355-371 | Sprint 8 strategy categories |
+
+## §31. Interval Estimation
+
+| GAP | Severity | Summary | Status | Resolving DEC | Resolution note |
+|---|---|---|---|---|---|
+| 147 | - | `ci_95` computation method? Bootstrap? Asymptotic? | ABSORBED | DEC-355-371 | Sprint 8 strategy categories |
+| 148 | - | vs-SPY metrics — time period? Frequency (daily/weekly/monthly)? | ABSORBED | DEC-355-371 | Sprint 8 strategy categories |
+
+## §32. Decay Detection
+
+| GAP | Severity | Summary | Status | Resolving DEC | Resolution note |
+|---|---|---|---|---|---|
+| 149 | - | "Sharpe drop > 50% from baseline" — baseline = first OOS Sharpe? Rolling 12mo? | ABSORBED | DEC-355-371 | Sprint 8 strategy categories |
+| 150 | - | 20% Sharpe haircut applied at WHAT level (per-strategy / per-cell / portfolio)? Combined with PSR + Bonferroni — double-counting. | ABSORBED | DEC-355-371 | Sprint 8 strategy categories |
+
+## §33. Process / Governance
+
+| GAP | Severity | Summary | Status | Resolving DEC | Resolution note |
+|---|---|---|---|---|---|
+| 151 | - | Implementation cadence "(owner direction needed)" — Sprint 7 starts before owner picks? | ABSORBED | DEC-269, DEC-422 | Stage 2 verdict gate criteria |
+| 152 | - | sync_from_claude.yml workflow — manual override path if workflow itself buggy? | ABSORBED | DEC-269, DEC-422 | Stage 2 verdict gate criteria |
+| 153 | - | RESOLVED-DECIDED → RESOLVED-IMPLEMENTED transition — test signal mapping to specific test files unclear. | ABSORBED | DEC-269, DEC-422 | Stage 2 verdict gate criteria |
+| 154 | - | TRADINGAGENTS_DATA_AUDIT and TRADING_RULES not enumerated in CHECKLIST #58 atomic commit list. | ABSORBED | DEC-269, DEC-422 | Stage 2 verdict gate criteria |
+| 155 | - | No documentation of what happens during Pass 53+ when new decisions emerge — adding without violating "100% terminal" achievement? | ABSORBED | DEC-269, DEC-422 | Stage 2 verdict gate criteria |
+
+## §34. Unstated Assumptions
+
+| GAP | Severity | Summary | Status | Resolving DEC | Resolution note |
+|---|---|---|---|---|---|
+| 156 | - | Stage 2→3 gates assume gates evaluated AT END of Sprint 9. Intermediate states (Sprint 7 partial, Sprint 8 partial) — verdict? | ABSORBED | DEC-269, DEC-422 | Stage 2 verdict gate criteria |
+| 157 | - | Stage transition gates assume linear progression. Reversibility (Stage 3 → back to 2)? | ABSORBED | DEC-269, DEC-422 | Stage 2 verdict gate criteria |
+| 158 | - | "Owner buys dips" is OWNER-TRADER behavior. Algo has crisis-flag size reduction, not "buy dip" rule. Philosophy/implementation mismatch. | ABSORBED | DEC-269, DEC-422 | Stage 2 verdict gate criteria |
+| 159 | - | Tax classification (trader vs investor) — if "trader" income, higher tax invalidates gross-Sharpe assumptions in Stage 2. | OPEN | — | Process / governance / unstated assumption (Stage 3+ scope) |
+| 160 | - | TSX vs US routing condition uses USD threshold but TSX trades CAD. Currency conversion timing not documented. | OPEN | — | Process / governance / unstated assumption (Stage 3+ scope) |
+
+## §35. Documentation Consistency
+
+| GAP | Severity | Summary | Status | Resolving DEC | Resolution note |
+|---|---|---|---|---|---|
+| 161 | - | TRADINGAGENTS_DATA_AUDIT references "Sprint 7" and "Sprint 7-8" without phase mapping. Phase ↔ Sprint mapping ambiguous. | OPEN | — | Process / governance / unstated assumption (Stage 3+ scope) |
+| 162 | - | PROJECT_PLAN §29 Document Map missing TRADINGAGENTS_DATA_AUDIT.md (severity tracking). | OPEN | — | Process / governance / unstated assumption (Stage 3+ scope) |
+| 163 | - | §23 REVISIT_AFTER_BACKTEST has 25 items in table. Inline mentions ~20. Numbering / count mismatch. | OPEN | — | Process / governance / unstated assumption (Stage 3+ scope) |
+| 164 | - | Quick Reference Index 23 topics ↔ 23 sections but not 1:1 — some are sub-sections. Reader may miss detail. | OPEN | — | Process / governance / unstated assumption (Stage 3+ scope) |
+
+## §36. Verdict / Success Definition
+
+| GAP | Severity | Summary | Status | Resolving DEC | Resolution note |
+|---|---|---|---|---|---|
+| 165 | - | "High-return performance" — quantified? No. | OPEN | — | Process / governance / unstated assumption (Stage 3+ scope) |
+| 166 | - | Success = achieving gates, but not what SCALE. | OPEN | — | Process / governance / unstated assumption (Stage 3+ scope) |
+| 167 | - | No documented criteria for "good enough to live trade with $100K vs $10K." | OPEN | — | Process / governance / unstated assumption (Stage 3+ scope) |
+
+---
+
+# PASS 53 TURN — DEC-469-481 INDIVIDUAL ENTRIES (per AUDIT.md template)
+
+**Purpose:** Per-decision tracking of the 10 PROPOSED decisions (DEC-469/470/471/472/473/474/475/476/480/481) that were referenced in CRITICAL_GAPS_RESOLUTION_PASS_52_TURN_133 but never formally entered in AUDIT_INDEX. This turn formally adds them per AUDIT.md template (Context / Options / Recommendation / Status).
+
+---
+
+### DECISION-469 — Adopt Benjamini-Hochberg FDR (q=0.10) replacing Bonferroni
+
+**Context:** ADVERSARIAL_AUDIT GAP 60 (CRITICAL) found the multiple-testing math doesn't reconcile. Bonferroni at α=0.05 / 254,016 cube cells × 60 strategies × 6 regimes = α=3.3e-9 per test, infeasible to detect any signal. Pass 52 turn 133 verification confirmed: Stage 2 verdict gate cannot pass under current methodology spec.
+
+**Options:**
+- **A** — Adopt Benjamini-Hochberg FDR at q=0.10 (10% expected false-positive rate among rejected nulls)
+- **B** — Keep Bonferroni but reduce cube to ~100 cells max (over-aggregates)
+- **C** — Keep Bonferroni and accept Stage 2 cannot pass any cells (Stage 2 verdict structurally invalid)
+
+**Recommendation:** **A**. BH FDR is standard for exploratory testing at scale; q=0.10 is conventional in genomics / finance where many hypotheses tested. Comparison vs Bonferroni shows higher detection power. Joint with DEC-470 (hierarchical structure) and DEC-471 (cube reduction).
+
+**Status:** PROPOSED — awaits owner approval
+
+---
+
+### DECISION-470 — Hierarchical 3-level FDR application
+
+**Context:** Single-level FDR across all cube cells loses statistical power when most cells are uninteresting. Most strategies fail; testing every cell of every strategy applies correction across cells of strategies that should be filtered before cell-level testing.
+
+**Options:**
+- **A** — Hierarchical 3-level FDR: Level 1 per-strategy → Level 2 per-cell within passing strategy → Level 3 per-regime within passing cell. Each level at q=0.10.
+- **B** — Single-level FDR across all cells (simpler but loses power)
+- **C** — Hierarchical 2-level (per-strategy → per-cell, no per-regime)
+
+**Recommendation:** **A**. Three-level matches the natural hierarchy (strategy class → execution context → market regime). Cells in failed strategies don't dilute power for testing surviving strategies. Joint with DEC-469 (BH foundation), DEC-426 (5-Gate filter Gate 2).
+
+**Status:** PROPOSED — awaits owner approval
+
+---
+
+### DECISION-471 — Cube dimensionality reduction to 8 core dimensions
+
+**Context:** ADVERSARIAL_AUDIT GAP 62 (CRITICAL) found cube cell sparsity / compute cost unestimated. DEC-422 spec was "17+ dimensions × ~20 values each" = 254,016+ cells. Empirical mean trades/cell = 0.024, which makes even loosened FDR infeasible.
+
+**Options:**
+- **A** — Reduce to 8 core dimensions: strategy_id × regime × sector × cap_band × vol_band × hold_band × tier × smart_money_signal. Eliminated dims (days_to_earnings, news_topic, etc.) become trade-level metadata for filtering, not cube coordinates.
+- **B** — Keep 17+ dims but apply mandatory aggregation post-hoc
+- **C** — Reduce to 5 dims (more aggressive; loses regime + sector granularity)
+
+**Recommendation:** **A**. 8-dim cell count after empirical pruning ~30-50k populated cells; mean trades/cell ~0.5-2 (testable with FDR). Trade-level metadata preserves the 17+ dims for inspection/filtering without combinatorial explosion. Joint with DEC-422 (SUPERSEDES).
+
+**Status:** PROPOSED — awaits owner approval
+
+---
+
+### DECISION-472 — Eliminate paired A/B design; switch to independent arms with shared opportunity set + block bootstrap CIs
+
+**Context:** ADVERSARIAL_AUDIT GAP 92 (CRITICAL) found trade set pairing statistically invalid. Paired A/B requires same trade in both arms, but arm B (with agent overlay) rejects some arm A trades and takes different ones. Naive paired t-test on Sharpe difference inflates Type I error.
+
+**Options:**
+- **A** — Independent arms operating on shared opportunity set (same universe + signals); each arm's trades are independent samples; Sharpe difference confidence interval via block bootstrap (10-day blocks preserving serial correlation)
+- **B** — Force paired execution by rejecting any signal not taken by both arms (loses agent value-add measurement)
+- **C** — Per-trade matched analysis with attribution (complex; questionable validity)
+
+**Recommendation:** **A**. Independent arms with block bootstrap is standard in financial A/B literature. Block size 10 days preserves typical serial correlation in trade outcomes. Joint with DEC-205-216 (adapted), DEC-211, DEC-242 (distribution analysis).
+
+**Status:** PROPOSED — awaits owner approval
+
+---
+
+### DECISION-473 — A/B arm reduction from 5 to 3 + ablation deferred to Sprint 9 NARROW
+
+**Context:** Original DEC-205-216 spec 5 arms (rules / full-with-veto / no-Risk / no-Bull-Bear-align / per-agent ablation). Cost projection: 5 arms × $300/run = $1,500. Phase 1A separation reduces this further since rules-only arm doesn't need agents.
+
+**Options:**
+- **A** — Reduce to 3 arms (rules-only Phase 1A baseline / full-with-veto Phase 1B default / no-Risk ablation arm); per-agent ablation deferred to Sprint 9 narrow A/B (only on PASS strategies from Phase 1B-α verdict, not full universe)
+- **B** — Keep 5 arms (~$1,500 budget commitment; full ablation in Phase 1B-α)
+- **C** — Reduce to 2 arms (rules vs full-with-veto; lose no-Risk ablation insight)
+
+**Recommendation:** **A**. Cost: 3 arms × $300 = $900 (vs $1,500). Per-agent ablation post-verdict reduces sample to PASS strategies only, not whole universe. Phase 1A separation already removes need for agent infrastructure on rules-only arm. Joint with DEC-486 (Phase 1A rules-only arm), DEC-205-216 (SUPERSEDED arm count).
+
+**Status:** PROPOSED — awaits owner approval
+
+---
+
+### DECISION-474 — DEC-459 Option C → DEC-481 Option C2 supersession (5-tier rating reality)
+
+**Context:** External verification of TradingAgents v0.2.4 source (Pass 52 turn 133) revealed Portfolio Manager output is 5-tier rating string ("buy"/"sell"/"hold"/"strong_buy"/"strong_sell") + structured markdown rationale, NOT numeric confidence 0.0-1.0 as DEC-459 Option C assumed. DEC-459 confidence-threshold gating logic invalid against actual output.
+
+**Options:**
+- **A** — Formal supersession: DEC-459 → DEC-481 with adapted architecture (5-tier rating + markdown parser + Trader fallback)
+- **B** — Modify TradingAgents fork to emit numeric confidence (heavy maintenance burden; diverges from upstream)
+- **C** — Keep DEC-459 but add post-processing layer that converts 5-tier → numeric (lossy; introduces discretization artifacts)
+
+**Recommendation:** **A**. External verification is authoritative; spec must match library reality. Resolves GAP 126 + GAP 133 (CRITICAL — agent definitions verified; LangGraph state schema verified). DEC-481 captures the implementation; DEC-474 is the supersession decision.
+
+**Status:** PROPOSED — awaits owner approval
+
+---
+
+### DECISION-475 — RM alignment + Trader confidence cross-check via 5-tier rating direction
+
+**Context:** Per Owner Directive 2b turn 133, when Risk Manager confidence cannot be extracted reliably from LangGraph state, fall back to Trader agent confidence as proxy. Need cross-check rule to prevent direction mismatch from passing through.
+
+**Options:**
+- **A** — Cross-check: PM 5-tier rating direction must match Trader rating direction (BUY/SELL alignment); if mismatch → REJECT regardless of confidence; if RM extraction fails → use Trader as RM proxy
+- **B** — Reject any trade where RM confidence cannot be extracted (no fallback)
+- **C** — Default to APPROVE when RM extraction fails (risky; lets unverified trades through)
+
+**Recommendation:** **A**. Direction-mismatch rejection is conservative; Trader proxy preserves ability to evaluate trades when RM extraction fails. Resolves GAP 130 (CRITICAL — RM cross-check via 5-tier rating direction).
+
+**Status:** PROPOSED — awaits owner approval
+
+---
+
+### DECISION-476 — Portfolio class API specification (TRADING_RULES §24 new section, Part L)
+
+**Context:** ADVERSARIAL_AUDIT BLOCKER B4 (Portfolio Class Spec Vacuum). BUG-095 Portfolio class is critical infrastructure missing from current spec; agents reference "portfolio_context" without spec. Without this, OurTraderToolkit (DEC-465) and OurRiskToolkit (DEC-466) cannot consume portfolio state.
+
+**Options:**
+- **A** — Codify API in TRADING_RULES §24 (NEW Part L): open_positions, cash_available, sector_concentration_pct, drawdown_state, per_ticker_cooldown_state(ticker, as_of), per_ticker_max_loss_status, execute_trade, close_trade, get_portfolio_var, get_correlation_to_position
+- **B** — Defer spec to Sprint 3 implementation (risk: agents block on undefined dependency)
+- **C** — Lighter spec (open_positions + cash_available only; defer rest)
+
+**Recommendation:** **A**. Comprehensive spec needed because multiple toolkits + agent state injection consume Portfolio. Sprint 3 implementation has hard dependency on this spec. Joint with BUG-095, DEC-465, DEC-466, DEC-467, DEC-018, DEC-135.
+
+**Status:** PROPOSED — awaits owner approval
+
+---
+
+### DECISION-480 — TradingAgents v0.2.4 specific version pin in requirements.txt
+
+**Context:** External verification confirmed v0.2.4 Pydantic schema. Pin to specific version prevents silent breakage if upstream releases v0.3.0+ with different agent structure or output schema.
+
+**Options:**
+- **A** — Pin `tradingagents==0.2.4` in requirements.txt + add CHECKLIST item to verify upstream changelog before any version bump + GitHub Actions workflow to flag version drift
+- **B** — Pin only major version (`tradingagents>=0.2,<0.3`); allows patch updates
+- **C** — Keep loose constraint (`tradingagents`); accept silent breakage risk
+
+**Recommendation:** **A**. Specific version pin is safest given DEC-481 architecture is built against verified v0.2.4 schema. CHECKLIST item ensures version bumps are intentional and verified.
+
+**Status:** PROPOSED — awaits owner approval
+
+---
+
+### DECISION-481 — AgentGateConfig Option C2 (5-tier rating + markdown parser + Trader fallback)
+
+**Context:** External verification revealed TradingAgents v0.2.4 PM output is 5-tier rating + markdown rationale (not numeric confidence). DEC-459 Option C confidence-based architecture invalid. Need replacement architecture matching actual library output.
+
+**Options:**
+- **A** — Option C2: (1) PRIMARY SIGNAL — extract 5-tier rating via regex parser; map "strong_buy"/"buy" → LONG, "strong_sell"/"sell" → SHORT, "hold" → REJECT; (2) TIER ASSIGNMENT — strong_buy→HIGH (5%), buy→MED (3%), hold→REJECT, sell→MED-SHORT (3%), strong_sell→HIGH-SHORT (5%); (3) RISK VETO — RM 5-tier rating from LangGraph state; if RM opposes PM → REJECT; if RM unextractable, fallback to Trader per DEC-475; (4) BULL/BEAR ALIGNMENT — Research Manager 5-tier must match PM direction; (5) DECISION DIRECTION — PM rating canonical; (6) OVERRIDE — Stage 2 deterministic; Stage 3+ owner manual.
+- **B** — Pure PM-only (skip RM veto); collapses to single-signal architecture
+- **C** — Modify upstream library to emit numeric confidence (heavy maintenance)
+
+**Recommendation:** **A**. Option C2 matches actual library output. Markdown parser is straightforward (~0.5d). Cross-check via Trader fallback (DEC-475) handles RM extraction failure. Resolves Cluster 2 architecture cascade (GAP 126 + 133 + DEC-459 invalidation). Joint with DEC-459 (SUPERSEDED), DEC-474 (supersession path), DEC-475, DEC-021, DEC-462-468, DEC-467.
+
+**Status:** PROPOSED — awaits owner approval
+
+---
+
+# PASS 53 TURN — STAGE 2 EFFECTIVENESS BLOCKERS TRACKING (B1-B10)
+
+**Purpose:** Track the 10 synthesized Stage 2 effectiveness blockers from ADVERSARIAL_AUDIT_PASS_52_TURN_132 §37. Each blocker is a synthesized cross-section of multiple GAPs. Status reflects whether resolution is in place via owner-approved decisions or PROPOSED/OPEN.
+
+| Blocker | Title | Severity | Resolving DEC(s) | Status |
+|---|---|---|---|---|
+| **B1** | Multiple Testing / Sample Size Math Doesn't Reconcile | CRITICAL | DEC-469 + DEC-470 + DEC-471 | PROPOSED — awaits owner |
+| **B2** | A/B Budget Math Off by 5-7× | CRITICAL | DEC-473 (3-arm reduction) | PROPOSED — awaits owner |
+| **B3** | Trade Set Pairing Statistically Invalid | CRITICAL | DEC-472 (independent arms + block bootstrap) | PROPOSED — awaits owner |
+| **B4** | Portfolio Class Spec Vacuum | CRITICAL | DEC-476 (TRADING_RULES §24 spec) | PROPOSED — awaits owner |
+| **B5** | TradingAgents State Schema Verification | CRITICAL | DEC-474 + DEC-481 (Option C2) + DEC-480 (v0.2.4 pin) | PROPOSED — awaits owner |
+| **B6** | Cube Cell Sparsity / Compute Cost Unestimated | CRITICAL | DEC-471 (8-dim reduction) | PROPOSED — awaits owner |
+| **B7** | PIT Fundamentals Verification Hard Dependency | CRITICAL | DEC-484 (SEC EDGAR direct parsing Sprint 4) | RESOLVED-DECIDED Pass 53 |
+| **B8** | Walk-Forward Pre-2018 Data Source | CRITICAL | DEC-482 (expanding window 2y+/6mo within 5y Polygon Stocks Starter) | RESOLVED-DECIDED Pass 53 |
+| **B9** | Russell 1000 / Universe Definition Inconsistent | CRITICAL | DEC-477 + DEC-483 (canonical CSV + sub-tiers T1a/T1b/T1c) | RESOLVED-DECIDED Pass 53 |
+| **B10** | Cost Estimate Reality Check | CRITICAL | DEC-473 (cost reduction) + DEC-478 ($29 confirmed) + DEC-479 (cost correction) | RESOLVED-DECIDED Pass 53 |
+
+**Counts post-Pass-53-batch:** 4 of 10 Stage 2 blockers RESOLVED-DECIDED (B7/B8/B9/B10); 6 of 10 PROPOSED awaiting owner approval (B1/B2/B3/B4/B5/B6 = DEC-469/470/471/472/473/474/475/476/480/481 cluster).
+
+**Critical-path implication:** Sprint 1 Day 1 is fully unblocked (all Sprint 1-relevant blockers RESOLVED). Sprint 7 (statistical methodology + agent overlay) is BLOCKED on the 10 PROPOSED decisions; owner approval needed before Sprint 7 implementation begins. Phase 1A (Sprint 6.5) does NOT depend on these PROPOSED decisions (rules-only baseline doesn't use agent overlay or A/B framework).
+

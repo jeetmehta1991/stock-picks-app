@@ -39,7 +39,7 @@ Per Pass 52 owner-confirmed precedent (DEC-090 REJECTED, DEC-133 REJECTED, DEC-2
 - Canadian resident (Ontario)
 - IBKR (Interactive Brokers) Tiered commission account
 - Swing trading horizon (multi-day to multi-week holds)
-- Personal Windows laptop + VS Code + Claude Code + GitHub Codespace ("vigilant system") for development
+- Personal Windows laptop + VS Code + Claude Code (Pass 53 update — was: GitHub Codespace "vigilant system"; owner switched to local VS Code) for development
 - Approval cycle: explicit owner approval per decision via Option C verification gate
 
 ### 1.4 Out of scope (explicit)
@@ -752,7 +752,7 @@ Detail: LEARNINGS.md.
 | Language | Python 3.11+ | |
 | Data persistence | Parquet via pyarrow | Cache layer per DEC-260+ |
 | Workflow orchestration | GitHub Actions | + sync_from_claude.yml owner-controlled (DEC-220) |
-| Dev environment | GitHub Codespaces ("vigilant system") + VS Code + Claude Code | Owner uses Windows laptop |
+| Dev environment | VS Code on Windows laptop + Claude Code (Pass 53 update — was: GitHub Codespace "vigilant system") | Owner uses Windows laptop |
 | Backend (Stage 4+) | TBD cloud platform per DEC-272 | |
 | Web hosting | Vercel for public + private dashboard per DEC-197 | Mobile-first per DEC-190 |
 | Backtest framework | Custom `backtest/` module | engine.py being audited per DEC-217 |

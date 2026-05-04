@@ -25,9 +25,9 @@
 
 **Entry criteria:**
 - Polygon Stocks Starter $29/mo subscription active (DEC-441/478/479 owner-action: subscribe; cost corrected from $30/mo)
-- API key in `.env` and Codespaces secret
+- API key in `.env` (local VS Code on Windows laptop)
 - main branch in clean state
-- Sprint 0 verified: AAII + CNN F&G + SEC EDGAR domains in Codespace allowlist
+- Sprint 0 verified: AAII + CNN F&G + SEC EDGAR domains reachable from local VS Code (Codespace allowlist concern moot since running locally Pass 53)
 
 **Universe scope (DEC-483 RESOLVED-DECIDED Pass 53):**
 - Tier 1a: S&P 500 (~503 tickers; day-grain PIT via DEC-303 historical_membership.csv per DEC-477)

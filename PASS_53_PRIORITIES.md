@@ -349,6 +349,6 @@ Owner directs Pass 53 priorities. My recommendations based on Pass 52 final stat
 
 **Sprint 1 Day 1 BLOCKED only by:**
 1. Owner Polygon Stocks Starter subscription (tonight per directive)
-2. Sprint 0 Codespace allowlist verification (AAII + CNN F&G + SEC EDGAR)
+2. Sprint 0 verification on local VS Code (AAII + CNN F&G + SEC EDGAR domain reachability)
 3. BUG-007 verification — affects Sprint 6.5 Day 1 NOT Sprint 1 Day 1 (Phase 1A `--no-agents` flag)
 
