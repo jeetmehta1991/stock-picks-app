@@ -8,6 +8,8 @@ Each row: published_utc, ticker, title, description, article_url, publisher, sen
 
 Run from laptop:
   python scripts/prefetch_polygon_news.py
+  python scripts/prefetch_polygon_news.py --limit-tickers 5    # test
+  python scripts/prefetch_polygon_news.py --tickers AAPL MSFT  # explicit list
 
 Estimated wall time: ~3-5 hours for 484 tickers (news endpoint paginates heavily).
 
@@ -18,6 +20,7 @@ import os
 import sys
 import time
 import json
+import argparse
 import requests
 import pandas as pd
 from pathlib import Path
@@ -137,17 +140,36 @@ def fetch_news_for_ticker(ticker: str) -> pd.DataFrame:
 
 
 def main():
+    ap = argparse.ArgumentParser(description="Polygon news prefetch")
+    ap.add_argument("--limit-tickers", type=int, default=None,
+                    help="Only fetch first N tickers. For testing.")
+    ap.add_argument("--tickers", nargs="+", default=None,
+                    help="Explicit ticker list. For testing.")
+    args = ap.parse_args()
+
     print(f"=== Polygon News Prefetch ===")
     print(f"Window: {START_DATE} to {END_DATE}")
     print(f"Output: {CACHE_DIR}/")
+    if args.tickers:
+        print(f"Mode:   EXPLICIT TICKERS ({len(args.tickers)})")
+    elif args.limit_tickers:
+        print(f"Mode:   LIMITED ({args.limit_tickers} tickers — TEST RUN)")
+    else:
+        print(f"Mode:   FULL UNIVERSE")
     print()
 
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
-    tickers = load_universe()
+    if args.tickers:
+        tickers = sorted(t.upper() for t in args.tickers)
+    else:
+        tickers = load_universe()
+        if args.limit_tickers:
+            tickers = tickers[:args.limit_tickers]
+
     completed = load_checkpoint()
     todo = [t for t in tickers if t not in completed]
 
-    print(f"Total: {len(tickers)} | Done: {len(completed)} | Todo: {len(todo)}")
+    print(f"Total: {len(tickers)} | Done: {len(completed) if not args.tickers else 'N/A'} | Todo: {len(todo)}")
     print()
 
     if not todo:

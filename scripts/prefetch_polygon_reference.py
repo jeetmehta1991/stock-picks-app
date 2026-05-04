@@ -12,6 +12,8 @@ Single combined index: backtest/data/cache/polygon/reference_index.parquet
 
 Run from laptop:
   python scripts/prefetch_polygon_reference.py
+  python scripts/prefetch_polygon_reference.py --limit-tickers 5    # test
+  python scripts/prefetch_polygon_reference.py --tickers AAPL MSFT  # explicit list
 
 Estimated wall time: ~5-10 minutes for 484 tickers.
 """
@@ -20,6 +22,7 @@ import os
 import sys
 import time
 import json
+import argparse
 import requests
 import pandas as pd
 from pathlib import Path
@@ -81,14 +84,33 @@ def fetch_ticker_reference(ticker: str) -> dict:
 
 
 def main():
+    ap = argparse.ArgumentParser(description="Polygon reference prefetch")
+    ap.add_argument("--limit-tickers", type=int, default=None,
+                    help="Only fetch first N tickers. For testing.")
+    ap.add_argument("--tickers", nargs="+", default=None,
+                    help="Explicit ticker list. For testing.")
+    args = ap.parse_args()
+
     print(f"=== Polygon Reference Prefetch ===")
     print(f"Universe: {UNIVERSE_CSV}")
     print(f"Output:   {CACHE_DIR}/ + {INDEX_FILE}")
+    if args.tickers:
+        print(f"Mode:     EXPLICIT TICKERS ({len(args.tickers)})")
+    elif args.limit_tickers:
+        print(f"Mode:     LIMITED ({args.limit_tickers} tickers — TEST RUN)")
+    else:
+        print(f"Mode:     FULL UNIVERSE")
     print()
 
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
-    df_uni = pd.read_csv(UNIVERSE_CSV)
-    tickers = sorted(df_uni["Symbol"].dropna().str.strip().str.upper().unique())
+
+    if args.tickers:
+        tickers = sorted(t.upper() for t in args.tickers)
+    else:
+        df_uni = pd.read_csv(UNIVERSE_CSV)
+        tickers = sorted(df_uni["Symbol"].dropna().str.strip().str.upper().unique())
+        if args.limit_tickers:
+            tickers = tickers[:args.limit_tickers]
     print(f"Tickers: {len(tickers)}")
 
     rows = []

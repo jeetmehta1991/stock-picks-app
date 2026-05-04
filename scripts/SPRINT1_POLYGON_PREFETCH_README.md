@@ -41,34 +41,57 @@ pip install pyarrow python-dotenv requests pandas
 
 ## How to run
 
-### Option 1 — Orchestrator (recommended)
+### Step 1 — Smoke test (5 minutes)
+
+```bash
+python scripts/smoke_test_polygon.py
+```
+
+Verifies all 5 endpoints respond HTTP 200. Required first step.
+
+### Step 2 — Small-scale 5-ticker test (10-15 minutes) **[REQUIRED before full prefetch]**
+
+Per CHECKLIST #64 (artifact-state verification): test the full prefetch+write+checkpoint pipeline on 5 real tickers (AAPL, MSFT, GOOGL, JPM, XOM) before scaling to 484.
+
+```bash
+bash scripts/run_polygon_5ticker_test.sh
+```
+
+Then verify the output:
+
+```bash
+python scripts/verify_polygon_test_output.py
+```
+
+The verification script runs ~30 checks (file counts, schema integrity, content sanity, pagination evidence, checkpoint validity). Exits 0 only if all pass.
+
+**Do NOT run full prefetch until the verification script returns ✅ ALL CHECKS PASSED and owner reviews the output.**
+
+### Step 3 — Full prefetch (4-7 hours) — only after Step 2 passes
+
+#### Option 3a — Orchestrator (recommended)
 
 ```bash
 bash scripts/run_polygon_prefetch_all.sh
 ```
 
-Runs smoke test → OHLCV → reference → corp actions → news, in order. Stops on any failure. Total ~4-7 hours wall time.
-
-### Option 2 — Individual scripts
+#### Option 3b — Individual scripts
 
 ```bash
-# 1. Verify API access (5 min)
-python scripts/smoke_test_polygon.py
-
-# 2. Daily OHLCV — main backbone (~30-60 min)
+# Daily OHLCV — main backbone (~30-60 min)
 python scripts/prefetch_polygon_ohlcv_daily.py
 
-# 3. Reference details (~5-10 min)
+# Reference details (~5-10 min)
 python scripts/prefetch_polygon_reference.py
 
-# 4. Corporate actions (~5-10 min)
+# Corporate actions (~5-10 min)
 python scripts/prefetch_polygon_corp_actions.py
 
-# 5. News (~3-5 hours)
+# News (~3-5 hours)
 python scripts/prefetch_polygon_news.py
 ```
 
-All scripts are checkpointed — safe to interrupt and resume.
+All scripts are checkpointed — safe to interrupt and resume. Note: if you've already run the small-scale test, the OHLCV + News scripts will skip the 5 test tickers (already in checkpoint). Only the remaining 479 will be fetched.
 
 ## Output structure
 

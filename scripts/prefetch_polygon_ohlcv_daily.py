@@ -11,6 +11,8 @@ Hybrid Path A scope (Pass 53 turn — universe build deferred to tomorrow):
 
 Run from laptop:
   python scripts/prefetch_polygon_ohlcv_daily.py
+  python scripts/prefetch_polygon_ohlcv_daily.py --limit-tickers 5    # small-scale test
+  python scripts/prefetch_polygon_ohlcv_daily.py --tickers AAPL MSFT  # explicit list
 
 Estimated wall time: ~30-60 minutes for 484 tickers (Stocks Starter unlimited rate).
 
@@ -21,6 +23,7 @@ import os
 import sys
 import time
 import json
+import argparse
 import requests
 import pandas as pd
 from pathlib import Path
@@ -136,19 +139,39 @@ def fetch_ticker_ohlcv(ticker: str) -> pd.DataFrame:
 
 
 def main():
+    ap = argparse.ArgumentParser(description="Polygon daily OHLCV prefetch")
+    ap.add_argument("--limit-tickers", type=int, default=None,
+                    help="Only fetch first N tickers (alphabetical). For testing.")
+    ap.add_argument("--tickers", nargs="+", default=None,
+                    help="Explicit ticker list (overrides universe CSV). For testing.")
+    args = ap.parse_args()
+
     print(f"=== Polygon Daily OHLCV Prefetch ===")
     print(f"Universe: {UNIVERSE_CSV}")
     print(f"Window:   {START_DATE} to {END_DATE} (~5 years)")
     print(f"Output:   {CACHE_DIR}/")
+    if args.tickers:
+        print(f"Mode:     EXPLICIT TICKERS ({len(args.tickers)}: {args.tickers})")
+    elif args.limit_tickers:
+        print(f"Mode:     LIMITED ({args.limit_tickers} tickers — TEST RUN)")
+    else:
+        print(f"Mode:     FULL UNIVERSE")
     print()
 
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
-    tickers = load_universe()
+
+    if args.tickers:
+        tickers = sorted(t.upper() for t in args.tickers)
+    else:
+        tickers = load_universe()
+        if args.limit_tickers:
+            tickers = tickers[:args.limit_tickers]
+
     completed = load_checkpoint()
     todo = [t for t in tickers if t not in completed]
 
     print(f"Total tickers: {len(tickers)}")
-    print(f"Already done:  {len(completed)}")
+    print(f"Already done:  {len(completed) if not args.tickers else 'N/A (explicit list)'}")
     print(f"To fetch:      {len(todo)}")
     print()
 

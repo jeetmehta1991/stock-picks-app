@@ -11,6 +11,7 @@ Polygon /v3/reference/splits and /v3/reference/dividends are universe-wide endpo
 
 Run from laptop:
   python scripts/prefetch_polygon_corp_actions.py
+  python scripts/prefetch_polygon_corp_actions.py --tickers AAPL MSFT GOOGL  # filter for test
 
 Estimated wall time: ~5-10 minutes (paginated; thousands of records).
 """
@@ -18,6 +19,7 @@ Estimated wall time: ~5-10 minutes (paginated; thousands of records).
 import os
 import sys
 import time
+import argparse
 import requests
 import pandas as pd
 from pathlib import Path
@@ -77,52 +79,68 @@ def fetch_paginated(endpoint: str, params: dict) -> list:
 
 
 def main():
+    ap = argparse.ArgumentParser(description="Polygon corp actions prefetch")
+    ap.add_argument("--tickers", nargs="+", default=None,
+                    help="Filter to specific tickers (universe-wide if omitted). For testing.")
+    ap.add_argument("--test-suffix", type=str, default=None,
+                    help="Append suffix to output filenames (e.g., '_test') for test runs.")
+    args = ap.parse_args()
+
     print(f"=== Polygon Corporate Actions Prefetch ===")
     print(f"Window: {START_DATE} to {END_DATE} (~5 years)")
+    if args.tickers:
+        print(f"Filter: {args.tickers}")
     print()
+
+    # Build common params; add ticker filter if provided
+    splits_params = {
+        "apiKey": POLYGON_KEY,
+        "execution_date.gte": str(START_DATE),
+        "execution_date.lte": str(END_DATE),
+        "limit": 1000,
+        "order": "asc",
+        "sort": "execution_date",
+    }
+    divs_params = {
+        "apiKey": POLYGON_KEY,
+        "ex_dividend_date.gte": str(START_DATE),
+        "ex_dividend_date.lte": str(END_DATE),
+        "limit": 1000,
+        "order": "asc",
+        "sort": "ex_dividend_date",
+    }
+    if args.tickers:
+        # Polygon supports ticker.in= for multiple tickers
+        ticker_filter = ",".join(t.upper() for t in args.tickers)
+        splits_params["ticker.in"] = ticker_filter
+        divs_params["ticker.in"] = ticker_filter
+
+    suffix = args.test_suffix or ""
 
     # SPLITS
     print("[1/2] Fetching splits...")
     SPLITS_DIR.mkdir(parents=True, exist_ok=True)
-    splits = fetch_paginated(
-        "/v3/reference/splits",
-        {
-            "apiKey": POLYGON_KEY,
-            "execution_date.gte": str(START_DATE),
-            "execution_date.lte": str(END_DATE),
-            "limit": 1000,
-            "order": "asc",
-            "sort": "execution_date",
-        },
-    )
+    splits = fetch_paginated("/v3/reference/splits", splits_params)
     if splits:
         df_splits = pd.DataFrame(splits)
         # Schema: ticker, execution_date, split_from, split_to
-        df_splits.to_parquet(SPLITS_DIR / "all_splits.parquet", compression="snappy", index=False)
-        print(f"  Splits: {len(df_splits)} records → {SPLITS_DIR / 'all_splits.parquet'}")
+        out_path = SPLITS_DIR / f"all_splits{suffix}.parquet"
+        df_splits.to_parquet(out_path, compression="snappy", index=False)
+        print(f"  Splits: {len(df_splits)} records → {out_path}")
     else:
-        print(f"  WARNING: no splits returned")
+        print(f"  WARNING: no splits returned (filter={args.tickers if args.tickers else 'none'})")
 
     # DIVIDENDS
     print("\n[2/2] Fetching dividends...")
     DIVIDENDS_DIR.mkdir(parents=True, exist_ok=True)
-    divs = fetch_paginated(
-        "/v3/reference/dividends",
-        {
-            "apiKey": POLYGON_KEY,
-            "ex_dividend_date.gte": str(START_DATE),
-            "ex_dividend_date.lte": str(END_DATE),
-            "limit": 1000,
-            "order": "asc",
-            "sort": "ex_dividend_date",
-        },
-    )
+    divs = fetch_paginated("/v3/reference/dividends", divs_params)
     if divs:
         df_divs = pd.DataFrame(divs)
-        df_divs.to_parquet(DIVIDENDS_DIR / "all_dividends.parquet", compression="snappy", index=False)
-        print(f"  Dividends: {len(df_divs)} records → {DIVIDENDS_DIR / 'all_dividends.parquet'}")
+        out_path = DIVIDENDS_DIR / f"all_dividends{suffix}.parquet"
+        df_divs.to_parquet(out_path, compression="snappy", index=False)
+        print(f"  Dividends: {len(df_divs)} records → {out_path}")
     else:
-        print(f"  WARNING: no dividends returned")
+        print(f"  WARNING: no dividends returned (filter={args.tickers if args.tickers else 'none'})")
 
     print()
     print("Next: python scripts/prefetch_polygon_news.py")
