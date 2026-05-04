@@ -24865,3 +24865,96 @@ Counts post-sweep: 462 / 1 PENDING (DEC-042 only) / 357 RESOLVED-DECIDED / 32 DE
 PENDING under 0.3% (DEC-042 only). Audit at 99.8% in terminal states (461/462).
 
 *Per CHECKLIST #25 (honest about sweep pace + DEC-042 stays PENDING)/#43 (per-batch pre-flight)/#51 (full owner delegation accepted with HARD-REVERSIBILITY exception)/#57 (use-case mapping per item with cluster recognition)/#58 (5-file atomic commit demonstrated 5th-7th times across sweep).*
+
+---
+
+## AUDIT PASS 52 turn 121 — DEC-042 AgentGateConfig spec RESOLVED with WEIGHTED CONTINUOUS-SCORE GATE ARCHITECTURE — PASS 52 AUDIT 100% TERMINAL
+
+Owner Pass 52 turn 120: DEC-042 walkthrough presented (7 specific clarifications + 1 per-rec batch)
+Owner Pass 52 turn 121: All 7 directives received:
+1. A (define now with defaults)
+2. weighted (not majority)
+3. Risk APPROVE required + continuous-score testing extensively
+4. continuous score (0.0-1.0)
+5. must align (Bull-vs-Bear)
+6. approved (DEC-021 3-tier modifier)
+7. Sprint 7
+
+DEC-042 RESOLVED: AgentGateConfig spec — WEIGHTED CONTINUOUS-SCORE GATE ARCHITECTURE
+
+FULL SPECIFICATION:
+1. APPROVAL RULE: Weighted aggregate gate_score = w_bull*s_bull + w_bear*s_bear + w_risk*s_risk + w_chart*s_chart; weights sum to 1.0; default equal weights 0.25 each (REVISIT_AFTER_BACKTEST)
+2. RISK VETO: s_risk ≥ 0.5 hard gate required (Risk APPROVE necessary regardless of others); continuous-Risk-score testing required extensively per owner directive #3
+3. CONFIDENCE: Continuous score 0.0-1.0 per agent (replaces binary)
+4. BULL/BEAR: Must align direction (s_bull > 0.5 AND s_bear > 0.5 for long; both < 0.5 for short); disagreement → REJECT
+5. TIER MAPPING: DEC-021 3-tier (HIGH ≥0.8 = 5%; MED 0.65-0.8 = 3%; LOW 0.5-0.65 = 1.5%)
+6. OVERRIDE: Stage 2 deterministic; Stage 3+ owner manual via dashboard
+
+JOINT WITH:
+- DEC-021 3-tier sizing (modifier consumer)
+- DEC-051 TradingAgents staged adoption
+- DEC-058 GPT-5.4-mini for backtest, Anthropic for live
+- DEC-062 TradingAgents 5-tier → position_size_modifier
+- DEC-131 Agent value-add ≥0.2 net Sharpe two-gate
+- DEC-205-216 A/B Testing cluster (full-agents arm consumes default config)
+- DEC-211 Per-agent ablation (varies weights per arm)
+
+OWNER DIRECTIVE #3 SPECIAL REQUIREMENT (Risk continuous-score testing extensively):
+A/B arm structure expanded to test:
+(a) Binary Risk veto (current default): s_risk ≥ 0.5 → APPROVE; otherwise REJECT
+(b) Continuous Risk gating: Risk weighted into aggregate score (no separate veto)
+A/B framework (DEC-205-216) measures empirical Sharpe delta between (a) and (b); empirical evidence determines production architecture.
+
+REVISIT_AFTER_BACKTEST TAGS (4):
+(i) Default weights 0.25 each — empirical tune
+(ii) Gate score threshold 0.5 — empirical tune
+(iii) Tier thresholds 0.5/0.65/0.8 — empirical tune
+(iv) Continuous-Risk vs binary-veto — extensive A/B per owner directive
+
+EFFORT: Sprint 7 ~1-2d
+- Config dataclass + defaults
+- Integration with DEC-216 A/B orchestrator
+- Risk continuous-score test infrastructure (per owner directive #3)
+
+PASS 52 FINAL STATE — AUDIT 100% TERMINAL:
+
+Counts: 462 / 0 PENDING / 358 RESOLVED-DECIDED / 32 DEFERRED_TO_STAGE_3 / 19 DEFERRED_TO_STAGE_4 / 22 SUPERSEDED + 5 SUPERSEDED_BY_DEC-422 + 2 SUPERSEDED_BY_DEC-109 = 29 SUPERSEDED total / 10 BLOCKED_ON_X / 14 other.
+
+PENDING = 0. Audit at 100% terminal state.
+
+PASS 52 ACHIEVEMENTS SUMMARY:
+1. PENDING resolution: 60% → 0% (~280 decisions resolved)
+2. Phase 2 retroactive sprint-tracking audit (Phase 1 + 4 batches + cleanup) — 226+ decisions classified
+3. Substantive-homelessness audit — 22 decisions tracked
+4. Bug coverage gap closed — 148 bugs in BUG_REGISTER cross-reference
+5. Bulk sweep — 80 PENDING decisions converted to terminal states
+6. CHECKLIST #58 created and operational at all 4 levels (technical homelessness, substantive homelessness, bug coverage, RESOLVED-DECIDED→sprint-tracker discipline)
+
+CRITICAL OPEN BUGS (verification path tracking):
+- BUG-095 (no Portfolio class) → resolution Sprint 3 (~8-11d)
+- BUG-218 (yfinance .info CURRENT not as_of) → resolution DEC-443 Sprint 4 (absorbed)
+- BUG-111 (CRITICAL OPEN) → still requires explicit resolution path verification
+
+TOTAL STAGE 2 EFFORT (DEFINITIVE):
+~310-385 engineering days realistic
+~125-160 engineering days minimum critical path
+
+8-10x scope expansion vs original Pass 52 starting estimate (~30-40d realistic; ~21-25d critical path).
+
+CHECKLIST #58 INVOKED (4-file atomic — no DOC additions, engineering work only):
+1. AUDIT_INDEX.md (DEC-042 PENDING → RESOLVED-DECIDED with full spec)
+2. AUDIT.md (this narrative + Pass 52 closure marker)
+3. ENGINEERING_REGISTER.md (Sprint 7 +DEC-042)
+4. IMPLEMENTATION_READINESS_DASHBOARD.md (Sprint 7 effort delta +1.5d)
+
+DEC-042 was the original premature-flip caught by owner turn 101 that triggered creation of CHECKLIST #58. Fitting that it's the final PENDING decision resolved with full rigor.
+
+PASS 52 AUDIT COMPLETE.
+
+Next steps available:
+1. Pass 53 closure (comprehensive Pass 52 retrospective + Pass 53 priorities)
+2. Sprint 1 kickoff (Phase 0.A Polygon foundation implementation)
+3. BUG-111 verification (only CRITICAL OPEN bug without clear resolution path)
+4. Owner direction
+
+*Per CHECKLIST #25 (honest about DEC-042 history including turn 101 premature flip)/#43 (full DEC-042 history retrieval + cluster cross-check)/#51 (explicit owner approval per all 7 directives)/#57 (use-case mapping with cluster recognition: A/B framework consumer + ablation arm parameterization + Risk veto special handling)/#58 (4-file atomic — final invocation Pass 52).*

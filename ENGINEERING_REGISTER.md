@@ -732,3 +732,22 @@ Per CHECKLIST #58 — comprehensive sprint-tracker assignments for all remaining
 - Sprint 8: +1d → ~37-55d
 - Sprint 9: +2.5d → ~6d
 
+
+---
+
+## DEC-042 AgentGateConfig Spec (Pass 52 turn 121) — FINAL PENDING DECISION RESOLVED
+
+Per CHECKLIST #58 — sprint-tracker assignment for DEC-042.
+
+### Sprint 7 (+1 — final ENG addition Pass 52)
+
+| DEC-N | Description | Test signals | Effort |
+|---|---|---|---|
+| DEC-042 | AgentGateConfig spec — WEIGHTED CONTINUOUS-SCORE GATE ARCHITECTURE: (1) WEIGHTED approval rule with continuous score 0.0-1.0 per agent; default equal weights 0.25 each REVISIT_AFTER_BACKTEST; (2) Risk Manager veto required (s_risk ≥ 0.5 hard gate) + continuous-Risk-score testing extensively per owner directive #3; (3) gate_score ≥ 0.5 enters trade pre-Risk-veto; (4) Bull-vs-Bear must align (s_bull > 0.5 AND s_bear > 0.5 for long; both < 0.5 for short); (5) Tier mapping ≥0.8 HIGH, 0.65-0.8 MED, 0.5-0.65 LOW per DEC-021 3-tier (5%/3%/1.5%); (6) Stage 2 deterministic, Stage 3+ owner override. Joint DEC-021/051/058/062/131/205-216/211 cluster. | (a) AgentGateConfig dataclass typed; weights sum to 1.0 invariant; scores 0.0-1.0 invariant; (b) Bull=0.8 Bear=0.7 Risk=0.6 Chart=0.5 → gate_score=0.65 + Risk≥0.5 + align → MED-tier entry; (c) Risk=0.4 below veto → REJECT; (d) Bull=0.8 Bear=0.3 disagreement → REJECT; (e) continuous-Risk A/B arm vs binary-veto arm produces measurable Sharpe delta; (f) DEC-216 A/B orchestrator passes config per arm | ~1-2d (config dataclass + defaults + integration with DEC-216 A/B orchestrator + Risk continuous-score test infra) |
+
+Sprint 7 effort revised: +1.5d → ~76-85d total (was 74.5-83.5d)
+
+### Pass 52 Final ENGINEERING_REGISTER Coverage
+
+Per CHECKLIST #58 — all RESOLVED-DECIDED engineering decisions now have sprint slots with test signals + effort estimates. Substantively-homeless count: 0 ✓.
+

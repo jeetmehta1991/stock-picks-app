@@ -545,3 +545,28 @@ Owner accountability call-out turn 98 + verification questions turn 108 + bug co
   * 80 PENDING decisions converted to RESOLVED-DECIDED (this sweep — sprint slots assigned)
 - Going forward CHECKLIST #58 prevents recurrence at all 4 levels
 
+
+---
+
+## DEC-042 Updates (Pass 52 turn 121) — PASS 52 AUDIT COMPLETE
+
+| Sprint | Pre-DEC-042 | Post-DEC-042 | Delta |
+|---|---|---|---|
+| Sprint 7 (Statistical Methodology + A/B + AgentGateConfig) | ~74.5-83.5d | ~76-85d | +1.5d |
+
+### Total Stage 2 Implementation Effort (FINAL POST-PASS-52)
+
+- Pass 52 start: ~30-40d
+- **Pass 52 end: ~311.5-386.5 engineering days realistic**
+
+### Critical Path (FINAL)
+
+- Pass 52 start: ~21-25d minimum
+- Pass 52 end: ~125-160 engineering days minimum
+
+### PASS 52 AUDIT MILESTONE: 100% Terminal State
+
+PENDING = 0. All 462 decisions in terminal states (RESOLVED-DECIDED, DEFERRED, SUPERSEDED, BLOCKED, REJECTED, etc.). CHECKLIST #58 operational at all 4 levels prevents recurrence.
+
+DEC-042 specifically: AgentGateConfig spec was the trigger decision for CHECKLIST #58 framework (premature flip caught by owner turn 101 → flip back to PENDING → bulk sweep delegation excluded it → final walkthrough turn 120-121 with full owner-specified architecture). Fitting closure.
+
