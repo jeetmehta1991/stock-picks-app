@@ -194,3 +194,15 @@ We'll work through these next session — same chat-driven flow.
 - I committed locally in the sandbox to generate a clean patch; that commit (13268885) does NOT exist on origin and dies when this sandbox ends.
 - The diff in the patch is the source of truth; the sandbox commit hash is irrelevant.
 - All verification I ran was in this sandbox against the cloned repo. Real pytest results on your laptop may differ if the laptop has unflushed state — the pre-flight `git log origin/main..main` check catches this.
+
+---
+
+## PASS 53 RETROSPECTIVE NOTE — Phase 1A Discovery
+
+**Added Pass 53:** Pass 52 closure ("PASS 52 100% TERMINAL") missed an important meta-fact: Phase 1A reference had been inadvertently dropped from PROJECT_PLAN §3 sub-phases when DEC-014 was absorbed into DEC-422+426 (Pass 52 turn 119). PROJECT_PLAN_ARCHIVE.md preserved Phase 1A v3 results (67 instruments × 4yr × 6,942 trades; atr_trail_1x confirmed). ADVERSARIAL_AUDIT (Pass 52 turn 132) compared current docs vs current docs only — Phase 1A was invisible.
+
+**Pass 53 owner question** ("Why was phase 1A dropped. Even phase 1A had alpha and beta. same as phase 1B.") triggered restoration via DEC-486/487/488 PROPOSED + DEC-489 RESOLVED-DECIDED + CHECKLIST #63 + L142.
+
+**Implication for HANDOFF_PASS52 closure claim:** Pass 52 was 100% terminal in the sense that PENDING decisions reached 0 and all known DECs were resolved. But "100% terminal" did not mean "100% complete" — Phase 1A omission was a documentation-completeness gap that surfaced later. The closure pattern remains valid (PENDING=0 is still a meaningful milestone) but should be caveated: "100% terminal on KNOWN scope; archive-comparison gap caught Pass 53."
+
+**For future handoff/closure:** Apply CHECKLIST #63 archive comparison before claiming closure status. Codified.

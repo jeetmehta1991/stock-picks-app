@@ -645,3 +645,21 @@ Cells with n<30 trades fall back to marginal-best (next-broader cell). Live deci
 **Caveat:** During DEC-410 audit Batch 2, I (Claude) classified Quiver as "free tier" based on `backtest/data/smart_money.py` line 5 comment ("Quiver Quantitative free tier: congressional, insider, 13F, analyst revisions"). AUDIT.md substantive history has multiple references confirming Quiver paid subscription was active. Owner had to correct the audit. **The code comment was authoritative at time of writing (Pass <X>) but became stale when subscription tier changed; my pre-flight grep on smart_money.py preferred the code comment over AUDIT.md history.**
 **Operational impact:** Future API tier audits must grep BOTH code comments AND AUDIT.md substantive history; AUDIT.md takes precedence per audit-as-source-of-truth principle (DEC-410 + DEC-441 + Pass 52 owner directive). When code comment and AUDIT.md disagree, AUDIT.md wins; flag the code comment for update.
 **Forward-link:** smart_money.py line 5 comment should be updated post-DEC-450 implementation to reflect paid-tier consumption pattern.
+
+### CAV-072 — Phase 1A omission via DEC-014 absorption (Pass 53 discovery)
+
+**Source:** Pass 53 owner question "Why was phase 1A dropped"
+**Status:** RESOLVED via DEC-486/487/488 PROPOSED
+**Caveat:** PROJECT_PLAN_ARCHIVE.md confirmed Phase 1A v3 was COMPLETE — 67 instruments × 4 years × 6,942 trades; `atr_trail_1x` confirmed primary exit (20/29 strategy comparisons); 4 strategies flagged WEAK on OOS-2024-only. Pass 52 turn 119 absorbed DEC-014 (Phase 1B passing criteria) into DEC-422 (cube) + DEC-426 (5-gate validity); during this absorption, Phase 1A reference inadvertently dropped from PROJECT_PLAN §3 sub-phases. ADVERSARIAL_AUDIT (Pass 52 turn 132) didn't catch the omission because 5-pass methodology compared current docs against current docs, NOT against archive.
+**Operational impact:** Without Phase 1A, A/B Arm A (rules-only) baseline would not have independent validation before agent overlay added in Phase 1B. Phase 1B-α $300 budget could commit before owner knows whether rules-only baseline is viable. Cube methodology bugs would surface during $300 run instead of zero-cost rules-only run preceding it.
+**Resolution Pass 53:** DEC-486/487/488 PROPOSED restore Phase 1A as 3 distinct sub-phases (1A baseline → 1A-α rules-only cube → 1A-β scale validation). DEC-489 RESOLVED-DECIDED + CHECKLIST #63 + L142 codify methodology learning that adversarial audit must include archive comparison.
+**Forward-link:** All future doc refactors that absorb prior phases must run archive-comparison check per CHECKLIST #63 before declaring "complete." Pattern signature: "DEC-X SUPERSEDED by DEC-Y" + multi-doc refactor = HIGH RISK for archival drop.
+
+### CAV-073 — Audit methodology blind spot during phase compression refactors
+
+**Source:** Pass 53 meta-failure analysis
+**Status:** ACTIVE — methodological caveat
+**Caveat:** When canonical phase taxonomy compresses (e.g., Phase 1A→1B→1C→1D becomes Phase 0→1B→1B-α→1C+), there's risk that absorbed phase content drops without audit detection. Pre-Pass-53 audit methodology (5-pass adversarial review) compared current docs against current docs — phases archived during compression were invisible.
+**Operational impact:** Any phase, sub-phase, or DEC archived during a methodology refactor becomes invisible to within-current-doc audit. Absorbed content lives only in `*_ARCHIVE.md` files; current docs may reference DEC-X as "absorbed by DEC-Y" without flagging which content was absorbed (e.g., empirical results, decision history, methodology notes).
+**Resolution:** CHECKLIST #63 (Pass 53) requires archive comparison as standard step in audit methodology. L142 codifies the learning. Future refactors that absorb prior phases must explicitly enumerate what content from absorbed phase is preserved vs dropped.
+**Forward-link:** Pattern to watch: any commit message containing "absorbed" + phase reference. Apply CHECKLIST #63 archive comparison before merging.

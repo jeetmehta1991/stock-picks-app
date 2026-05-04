@@ -222,3 +222,23 @@ This BUG_REGISTER.md serves as the canonical cross-reference. Detail lives in AU
 ---
 
 *Per CHECKLIST #25 (honest scope correction — initial framing of "144+ bugs need separate ENG entries" was wrong; reality is 100% linked to decisions); #43 (full Python analysis on 148 canonical bugs); #51 (owner approved 4-bucket recommendation); #57 (use-case mapping per bucket); #58 (operational at bug-level: cross-reference register with execution tracking via existing decision infrastructure).*
+
+---
+
+## Pass 53 Update — Phase 1A Restoration Bug-Decision Mapping
+
+**Trigger:** Phase 1A restoration (DEC-486/487/488 PROPOSED Pass 53).
+
+No new bugs introduced. Existing bug-to-decision mappings remain valid. Phase 1A restoration is purely architectural (sub-phase taxonomy clarification + cube infrastructure phasing); no engine bugs depend on phase taxonomy.
+
+**Bugs whose resolution sprint may shift due to Phase 1A insertion:**
+
+| Bug | Resolving DEC | Original sprint | Pass 53 update |
+|---|---|---|---|
+| BUG-095 | Portfolio class | Sprint 3 | UNCHANGED (Sprint 3 still pre-Phase-1A) |
+| BUG-111 | Break-and-retest primitive | Sprint 8 | UNCHANGED (Phase 1C+ post-1B-α) |
+| BUG-218 | yfinance .info CURRENT-not-as_of | Sprint 4 (DEC-443) | UNCHANGED (Sprint 4 pre-Phase-1A) |
+| BUG-007 | API key guard blocks no-agent Phase 1B run | DEC-458 | **CRITICAL Phase 1A dependency** — Phase 1A runs `--no-agents` flag; if API key guard fires when no agents needed, Phase 1A blocked. Verify resolution before Sprint 6.5. |
+
+**BUG-007 elevated priority Pass 53:** original framing was "Phase 1B run with `--no-agents` flag"; Pass 53 restoration makes Phase 1A v3-style `--no-agents` execution a separate sprint deliverable. BUG-007 must be resolved BEFORE Sprint 6.5 starts or Phase 1A blocked at Day 1.
+

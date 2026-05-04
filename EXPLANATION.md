@@ -2,6 +2,7 @@
 ## Everything you need to understand, with examples — up to end of Phase 1C
 
 **Last updated:** April 2026
+**Pass 53 update:** Phase 1A architecture restored across canonical docs. EXPLANATION.md content below describes the original Phase 1A/1B/1C/1D taxonomy (which is preserved as the primary mental model). The Pass 52 → 53 evolution: original Phase 1A → 1B → 1C → 1D got compressed during Pass 52 turn 119 (DEC-014 absorbed by DEC-422+426); Pass 53 restored Phase 1A as 3 distinct sub-phases (1A baseline → 1A-α rules-only cube → 1A-β scale validation) preceding Phase 1B agent overlay. For canonical taxonomy see PROJECT_PLAN.md §3.6-3.10. EXPLANATION.md retains plain-English flavor of original phasing for reader continuity.
 
 ---
 

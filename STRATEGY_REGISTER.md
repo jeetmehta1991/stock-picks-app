@@ -172,3 +172,24 @@ These gaps will be closed during sprint planning for Phase 0.D (Sprint 7 in ENGI
 ---
 
 *Per CHECKLIST #43/#46/#47/#56/#57. Pass 52 turn 53.*
+
+---
+
+## Pass 53 Update — Phase 1A Strategy Scope Clarification
+
+**Trigger:** Phase 1A restoration (DEC-486/487/488 PROPOSED).
+
+**Strategy roster scope per phase:**
+
+| Phase | Strategy roster | Agent overlay | Smart money signals |
+|---|---|---|---|
+| Phase 1A (rules-only baseline, Sprint 6.5) | Full Layer 1+2+3+4 (~109-119 classes) | NO | YES — DEC-124 confluence + DEC-332 weights |
+| Phase 1A-α (rules-only cube, Sprint 6.5-7) | Same as 1A — analyzes 1A trade outcomes | NO | (signals already in 1A trades) |
+| Phase 1A-β (full-scale dry-run, Sprint 7 D1) | Same as 1A — production scale | NO | (signals already in 1A trades) |
+| Phase 1B (agent overlay, Sprint 7) | Same as 1A — agent layer added on top | YES — TradingAgents 12-agent pipeline | (signals enriched via OurFundamentalsToolkit) |
+| Phase 1B-α (combined cube, Sprint 7-8) | Aggregates 1A + 1B trade outcomes across 3 A/B arms | (varies per arm) | (varies per arm) |
+
+**Implication:** Strategy roster does NOT change between Phase 1A and Phase 1B. Same ~109-119 strategy classes fire in both. The DIFFERENCE between phases is whether agent overlay sits on top of rules+smart-money output, NOT which strategies fire.
+
+**Smart money clarification:** Smart money signals (DEC-124 cross-source confluence; DEC-332 weights; DEC-450 Quiver paid endpoints) are part of RULES-BASED screening, NOT agent overlay. They feed strategy entry signals + tier preliminary assignment in BOTH Phase 1A and Phase 1B. This is preserved from PROJECT_PLAN_ARCHIVE Phase 1A v3 architecture: "We ran all 60 strategies on a small universe of 67 instruments to make sure the pipeline works correctly" — strategies fired without agents in 1A v3, same pattern preserved Pass 53.
+

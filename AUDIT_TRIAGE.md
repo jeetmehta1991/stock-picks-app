@@ -770,3 +770,27 @@ Significant clusters now visible:
 **Remaining for future batches:** ~420 of ~520 items still unmapped (~81%). Continuing in subsequent passes.
 
 *Dependency mapping batch 2 added Pass 52. Cumulative ~19% coverage. Cluster patterns emerging give clear sequencing for focused-batch resolution session.*
+
+---
+
+## Pass 53 Update — Phase 1A Restoration Triage Impact
+
+**Trigger:** Phase 1A restoration (DEC-486/487/488 PROPOSED Pass 53).
+
+**New high-priority decisions for triage:**
+
+| DEC | Status | Impact | Why approve immediately |
+|---|---|---|---|
+| DEC-486 (Phase 1A restoration) | PROPOSED | 10 (Stage 2 effectiveness) | Phase 1B agent overlay cannot run without Phase 1A baseline; gates entire downstream Sprint 7+ work |
+| DEC-487 (Phase 1A-α cube) | PROPOSED | 10 (Stage 2 effectiveness) | Cube methodology must be built before $300 1B-α run; pre-agent baseline gate prevents wasted budget |
+| DEC-488 (Phase 1A-β scale validation) | PROPOSED | 9 (insurance) | $0 API cost insurance against $300 + 37-40h re-run cost if 1B-α infrastructure failure |
+
+**Impact on existing pending counts:**
+
+PROPOSED count update post Pass 53 turn:
+- Pre-Pass-53: 13 PROPOSED (DEC-469-481)
+- Post-Pass-53: 16 PROPOSED (DEC-469-481 + DEC-486-488)
+- Pass 53 batch should approve all 16 together for atomic Sprint 0 readiness
+
+**Triage recommendation:** Owner approve DEC-486/487/488 alongside DEC-482/483/484/485 (walk-forward + universe + FMP-alternative) as single batch to unblock Sprint 6.5 + Sprint 1 Day 1 simultaneously. All 16 PROPOSED decisions block Stage 2 substantive work.
+

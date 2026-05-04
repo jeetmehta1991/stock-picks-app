@@ -362,7 +362,7 @@ Per CHECKLIST #58 — Bucket D additions for Walkthrough 4 deferred decisions.
 - DEC-273 Disaster recovery plan (Stage 4)
 
 ### Bucket C additions (cross-reference / absorbed — 4)
-- DEC-014 Phase 1B passing criteria (absorbed by DEC-422 + DEC-426)
+- DEC-014 Phase 1B passing criteria (absorbed by DEC-422 + DEC-426) — **Pass 53 NOTE: this absorption inadvertently caused Phase 1A reference to drop from PROJECT_PLAN §3 sub-phases. Phase 1A restored via DEC-486/487/488 PROPOSED Pass 53; methodology learning DEC-489 RESOLVED-DECIDED + CHECKLIST #63 prevent recurrence.**
 - DEC-037 Characterization-test-first Phase A (absorbed by DEC-438)
 - DEC-100 17+ categorical breakdown variables (absorbed by DEC-422)
 - DEC-417 Test-run audit gate (already in Sprint 6)
@@ -370,4 +370,50 @@ Per CHECKLIST #58 — Bucket D additions for Walkthrough 4 deferred decisions.
 
 ### Rejected (1 + DEC-133 from Batch B)
 - DEC-133 Max gross long/short/net exposure caps — REJECTED per DEC-090 risk philosophy precedent
+
+
+---
+
+## Pass 53 Turn — Phase 1A Restoration Cross-Reference
+
+**Trigger:** Owner Pass 53: "Why was phase 1A dropped. Even phase 1A had alpha and beta. same as phase 1B."
+
+**4 new decisions added to canonical inventory:**
+
+| DEC | Description | Bucket | Status |
+|---|---|---|---|
+| DEC-486 | Phase 1A restoration as distinct sub-phase (Sprint 6.5) | Cross-reference / new sprint scope | PROPOSED |
+| DEC-487 | Phase 1A-α restoration as distinct sub-phase (Sprint 6.5-7) | Cross-reference / new sprint scope | PROPOSED |
+| DEC-488 | Phase 1A-β restoration as distinct sub-phase (Sprint 7 Day 1) | Cross-reference / new sprint scope | PROPOSED |
+| DEC-489 | Adversarial audit must include archive comparison | Methodology learning | RESOLVED-DECIDED |
+
+**9 canonical docs updated by atomic Pass 53 turn commit (`0d5182c2`):**
+1. PROJECT_PLAN.md
+2. TRADING_RULES_AND_INFORMATION.md
+3. DETAILED_PROJECT_PLAN.md
+4. CLAUDE.md
+5. ENGINEERING_REGISTER.md
+6. AUDIT.md
+7. AUDIT_INDEX.md
+8. CHECKLIST.md
+9. LEARNINGS.md
+
+**Subsequent dependency-sweep commit (this turn) updates:**
+- DOCUMENTATION_REGISTER.md (this entry)
+- IMPLEMENTATION_READINESS_DASHBOARD.md (Sprint 6.5 readiness gate)
+- PASS_53_PRIORITIES.md (Phase 1A work added to priorities)
+- LIMITATIONS_CAVEATS_ASSUMPTIONS.md (Phase 1A scope caveats)
+- HANDOFF_PASS52.md (closure note acknowledging Phase 1A omission caught Pass 53)
+- STRATEGY_REGISTER.md (strategy fire scope per phase)
+- BUG_REGISTER.md (Phase 1A scope notes)
+- PROGRESS.md (progress tracker)
+- README.md (top-level project description)
+- EXPLANATION.md (project explanation)
+- TRADINGAGENTS_DATA_AUDIT.md (toolkit phase scope)
+- UNIVERSAL_LEARNINGS.md (Pass 53 learning)
+- API_AUDIT.md (Sprint 4 dependencies)
+- AUDIT_TRIAGE.md (decision triage update)
+- THEME_X53_SEQUENCING.md (sequencing note)
+
+**Total docs touched across both Pass 53 turn commits: 24 of 27 (3 historical-immutable docs untouched: PROJECT_PLAN_ARCHIVE.md, ADVERSARIAL_AUDIT_PASS_52_TURN_132.md, CRITICAL_GAPS_RESOLUTION_PASS_52_TURN_133.md).**
 

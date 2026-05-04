@@ -77,3 +77,16 @@ Optimized for compound impact:
 These don't need re-approval — parents already approved Pass 52. They need to land as code changes in chronological/dependency order above. Owner can reference this document during implementation phase to track progress.
 
 *Per CHECKLIST #43/#46/#47/#56/#57. Pass 52 turn 26 execution per owner directive "Approve your recs."*
+
+---
+
+## Pass 53 Update — Phase 1A Restoration Sequencing Impact
+
+**Trigger:** Phase 1A restoration (DEC-486/487/488 PROPOSED Pass 53).
+
+**Impact on Theme X53 sub-decisions:** TIMING UNCHANGED. All X53 engine bug fixes happen in Sprint 2 (Phase 0.C) per original sequencing. Phase 1A baseline (Sprint 6.5) operates on engine that has already had Sprint 2 fixes applied. No X53 sub-decision shifts due to Phase 1A insertion.
+
+**Phase 1A runs against POST-X53 engine state:** This is intentional — Phase 1A is the empirical re-validation that engine fixes (Sprint 2) + Portfolio class (Sprint 3) + cache (Sprint 1) + universe (Sprint 5) + catch-mechanism (Sprint 6) all integrate correctly. If X53 fixes have residual bugs, Phase 1A surfaces them at scale before Phase 1B agent layer adds complexity.
+
+**No new X53 work introduced by Phase 1A restoration.**
+

@@ -210,6 +210,16 @@ DEC-363/364/365/372/373/375/376/378/379/380/394/457
 
 DEC-417/436/437/438/439 (catch mechanisms) + DEC-217/218/219/220 (X33 architecture hygiene Pass 52 turn 95). DEC-220 fix priority HIGH (~0.5d) — resolves Pass 52 parallel-session attribution + reduces silent-overwrite risk on main.
 
+### Sprint 6.5 (Phase 1A baseline + 1A-α cube + 1A-β scale validation) — ~19-27 days [NEW Pass 53]
+
+DEC-486/487/488 PROPOSED restoration of Phase 1A as distinct sub-phase preceding Phase 1B agent overlay. Origin: Pass 52 turn 119 absorbed DEC-014 into DEC-422+426 and inadvertently dropped Phase 1A reference; Pass 53 owner directive restored.
+
+- Phase 1A (~6-8d engineering + ~20-25h compute): rules-based + smart money baseline; --no-agents flag; produces baseline trade outcomes for A/B Arm A
+- Phase 1A-α (~10-14d engineering): rules-only dimensional cube + dashboards + verdict; cube methodology BUILT here, REUSED by Phase 1B-α; owner Sharpe ≥ 0.7 OOS gate before Phase 1B agent layer commits
+- Phase 1A-β (~3-5d engineering + ~6-8h compute): production-scale dry-run on full ~1015-ticker universe; $0 API spend; pipeline integrity validation before $300 1B-α budget commits
+
+**Critical-path:** Phase 1A-α gate must pass before Phase 1B agent overlay work begins; Phase 1A-β must pass before Phase 1B-α $300 budget commits.
+
 ### Sprint 7 (Strategy categories) — ~14-18 days
 
 DEC-368/371 (cheap first), then DEC-367/369/370 (heavier)
@@ -218,9 +228,9 @@ DEC-368/371 (cheap first), then DEC-367/369/370 (heavier)
 
 Themes not fully walked: X4 Statistical Methodology (~25 PENDING), X54 Medium-Severity (~13), X55 Strategy Coverage (~11), X49 Thin Areas (~9), X36 Data Quality (~9), X3 Architecture (~9), X7 Smart Money + Regimes (~8), X58 Phase 1B-α Dimensional (~7)
 
-### Sprint 9 (Phase 1B-α run) — gated by Sprints 1-6 completion
+### Sprint 9 (Phase 1B-α run) — gated by Sprints 1-6.5 completion
 
-Run actual backtest with full universe + agents + dimensional cube.
+Run actual backtest with full universe + agents + dimensional cube. **Pass 53 update:** Sprint 9 now ALSO gated by Sprint 6.5 (Phase 1A-α gate + Phase 1A-β scale validation) — owner authorizes Phase 1B-α $300 budget only after 1A-β confirms infrastructure integrity.
 
 ---
 
@@ -233,10 +243,11 @@ Run actual backtest with full universe + agents + dimensional cube.
 - Sprint 4 (DEC-410 audit): ~5-7 days (parallel with Sprint 3)
 - Sprint 5 (Universe): ~5-8 days (parallel with Sprint 3)
 - Sprint 6 (Phase 0.E + Architecture Hygiene): ~14-19 days (parallel with Sprint 4-5)
+- **Sprint 6.5 (Phase 1A + 1A-α + 1A-β baseline + cube + scale validation): ~19-27 days [NEW Pass 53]**
 
-**Critical path:** Sprint 1 → Sprint 2 → Sprint 3 → Phase 1B-α run = **~21-25 days minimum**.
+**Critical path (updated Pass 53):** Sprint 1 → Sprint 2 → Sprint 3 → Sprint 6 → **Sprint 6.5 (Phase 1A + 1A-α + 1A-β)** → Sprint 7 (Phase 1B agents) → Phase 1B-α run = **~50-65 days minimum**. (Was ~21-25 days minimum pre-Phase-1A-restoration; Phase 1A introduces ~19-27 days of pre-agent-overlay validation work that protects $300 budget.)
 
-**Realistic timeline accounting for parallelism:** ~30-40 engineering days from Sprint 1 start to Phase 1B-α-ready state.
+**Realistic timeline accounting for parallelism:** ~50-70 engineering days from Sprint 1 start to Phase 1B-α-ready state. Pass 53 update increased estimate by ~20-30 days due to Phase 1A restoration; rationale: pre-agent baseline validation prevents $300 1B-α re-run from infrastructure failures + provides owner gate to halt before agent overlay if rules-only baseline too weak.
 
 **Total work scope (everything PENDING):** much larger; Sprint 7-8 strategy categories + remaining themes can run during/after first Phase 1B-α run.
 

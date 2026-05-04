@@ -926,3 +926,30 @@ Per L131 / CHECKLIST #51 — sub-decisions PROPOSED here, **not yet LOGGED as DE
 *End of TRADINGAGENTS_DATA_AUDIT.md*
 
 *Per CHECKLIST #25 (honest accountability for Pass 25-31 omission); #43 (precise grep on TradingAgents agent definitions + per-agent dependencies + current API_AUDIT.md coverage); #51 (recommended decisions PROPOSED not LOGGED — owner approves each); #57 (use-case mapping per agent); #58 (atomic commit invoked when sub-decisions logged); #59 (architectural assumption verification applied PROACTIVELY this time); #60 NEW (data dependency verification on architectural decisions).*
+
+---
+
+## Pass 53 Update — Phase 1A Restoration Impact on Toolkits
+
+**Trigger:** Phase 1A restoration (DEC-486/487/488 PROPOSED Pass 53).
+
+**Impact on Sprint 7 toolkit deliverables (DEC-462-468):** TIMING CHANGES, scope unchanged.
+
+| Toolkit | Original Sprint | Pass 53 Update |
+|---|---|---|
+| OurTechnicalToolkit (DEC-462) | Sprint 7 | Sprint 7 — unchanged. Phase 1A baseline (Sprint 6.5) does NOT use TradingAgents toolkits. Phase 1A rules-only screener uses standalone smart money signals + technical indicators directly. |
+| OurFundamentalsToolkit (DEC-463) | Sprint 7 | Sprint 7 — unchanged. Phase 1A baseline uses smart money confluence (DEC-124) directly without agent layer. |
+| OurNewsToolkit (DEC-464) | Sprint 7 | Sprint 7 — unchanged. Phase 1A does not use news (smart money handles equivalent signal). |
+| OurTraderToolkit (DEC-465) | Sprint 7 — HARD DEP on Sprint 3 (BUG-095) | Sprint 7 — unchanged. Phase 1A uses Portfolio class directly, not via toolkit. |
+| OurRiskToolkit (DEC-466) | Sprint 7 — HARD DEP on Sprint 3 + DEC-189 | Sprint 7 — unchanged. Phase 1A uses Portfolio + Risk gates directly. |
+| OurAgentState (DEC-467) | Sprint 7 | Sprint 7 — unchanged. Phase 1A doesn't use LangGraph state (no agents). |
+| Ortex wiring (DEC-468) | Sprint 7 | Sprint 7 — unchanged. Phase 1A uses Ortex via Quiver paid endpoints (DEC-450) directly in screener if signal fires. |
+
+**Phase scope clarification:**
+- **Phase 1A (Sprint 6.5):** Rules-only screening + smart money confluence + per-ticker risk gates. No TradingAgents toolkits invoked. `--no-agents` flag bypasses all agent infrastructure.
+- **Phase 1B (Sprint 7):** Adds agent overlay via TradingAgents.propagate(); custom toolkits (DEC-462-468) operate here.
+- **Phase 1B-α (Sprint 7-8):** Combined cube run; reuses Phase 1A-α infrastructure with agent arms added.
+
+**Effort impact:** None for individual toolkit deliverables. Sprint 7 toolkit work continues per original timing. New Sprint 6.5 (Phase 1A baseline) is parallel-able with Sprint 7 (toolkit build) — Phase 1A doesn't need toolkits.
+
+**Architectural clarity:** Smart money signals in Phase 1A (rules-based screener consumption) and smart money signals in Phase 1B (OurFundamentalsToolkit consumption) are the SAME data source (DEC-450 Quiver paid + DEC-124 confluence), accessed via DIFFERENT consumption paths. Phase 1A reads from cache directly; Phase 1B reads via toolkit method `get_smart_money_composite()`.

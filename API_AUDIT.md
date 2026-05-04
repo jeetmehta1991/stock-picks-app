@@ -1702,3 +1702,46 @@ If batch-approve all 15: I log all sub-decisions, mark DEC-410 RESOLVED, commit 
 
 If selective: please specify which to approve, defer, or reject.
 
+
+---
+
+## Pass 53 Update — API Audit Phase Mapping Update
+
+**Trigger:** Phase 1A restoration (DEC-486/487/488 PROPOSED Pass 53).
+
+**Phase mapping clarifications:**
+
+API_AUDIT.md uses original Phase 1A/1B/1C/1D taxonomy from PROJECT_PLAN_ARCHIVE. Pass 53 restoration introduces sub-phase distinction:
+
+| Reference in this doc | Pass 53 canonical mapping |
+|---|---|
+| "Phase 1B" (in subscription consumption notes) | Now refers to Phase 1B (agent overlay, Sprint 7); PRIOR rules-only phase = Phase 1A (Sprint 6.5) |
+| "Phase 1C+" (in deferral notes) | Now refers to Phase 1C+ (Sprint 8 strategy categories); unchanged |
+| "Stage 3+" (in deferral notes) | Unchanged |
+
+**Subscription scope per phase (Pass 53):**
+
+| API | Phase 1A (Sprint 6.5, rules-only) | Phase 1B (Sprint 7, agent overlay) | Phase 1B-α (Sprint 7-8, combined) |
+|---|---|---|---|
+| Polygon Stocks Starter (DEC-441/479 — $29/mo) | YES (OHLCV + reference) | YES | YES |
+| Quiver paid (DEC-450 — ~$50-100/mo) | YES (smart money confluence) | YES (also via OurFundamentalsToolkit) | YES |
+| FRED + ALFRED (free) | YES (regime classifier) | YES | YES |
+| AAII + CNN F&G (free scrape) | YES | YES | YES |
+| Anthropic API (DEC-058 LLM) | NO (--no-agents flag) | YES (~$50-100 dev cost) | YES (~$300 1B-α budget per DEC-059) |
+| FMP (DEC-461) | NO | YES (toolkit consumption) | YES |
+| Ortex (DEC-468) | YES (smart money signal direct read) | YES (toolkit consumption) | YES |
+| Unusual Whales (DEFERRED_TO_STAGE_3) | NO | NO | NO |
+
+**Phase 1A subscription pre-requisites (Sprint 6.5 entry):**
+- Polygon Stocks Starter active ($29/mo)
+- Quiver paid active (DEC-450)
+- FRED API key configured (free)
+- AAII + CNN F&G workflows operational from Sprint 1
+- Anthropic API key NOT YET required (Phase 1A is `--no-agents`)
+
+**Phase 1B subscription pre-requisites (Sprint 7 entry):**
+- All Phase 1A subscriptions active
+- Anthropic API key configured + budget pre-loaded
+- FMP active (per Pass 52 turn 133 verification of DEC-460 negative — FMP mandatory)
+- Ortex wired (DEC-468 implementation)
+

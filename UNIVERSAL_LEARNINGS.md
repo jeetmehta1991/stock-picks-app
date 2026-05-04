@@ -177,3 +177,25 @@ A project plan documents intent. Code implements reality. When they diverge, the
 8. **git status before git reset --hard — always**
 9. **Never run parallel workflows that push to the same branch**
 10. **Write tests after audit 1, not after audit 4**
+
+---
+
+## PRINCIPLE 8 — Documentation Refactors and Archive Comparison (Pass 53)
+
+### Refactors that absorb prior phases must explicitly enumerate preserved vs dropped content.
+
+When a methodology decision absorbs prior phase content (e.g., DEC-014 Phase 1B passing criteria absorbed by DEC-422 cube + DEC-426 5-gate validity), there is high risk that the prior phase reference disappears from current documentation while only living in archives. Pass 52 turn 119 absorbed DEC-014 cleanly per methodology, but inadvertently dropped Phase 1A reference from PROJECT_PLAN §3 sub-phases. The archive (PROJECT_PLAN_ARCHIVE.md) preserved Phase 1A v3 as COMPLETE (67 instruments × 4yr × 6,942 trades), but the current docs no longer mentioned Phase 1A.
+
+**Rule:** Any commit message containing "absorbed" or "supersession" or phase-taxonomy refactor must trigger an archive-comparison check. List what existed in archive before the refactor; list what exists in current docs after; flag every item not in the post-refactor docs as a deliberate-drop-with-justification or restore it. Codified in CHECKLIST #63.
+
+### Adversarial audits must include archive comparison.
+
+5-pass adversarial document review (Pass 52 turn 132) compared current PROJECT_PLAN against current TRADING_RULES against current TRADINGAGENTS_DATA_AUDIT — found 167 gaps. But it didn't compare against PROJECT_PLAN_ARCHIVE.md, so Phase 1A omission was invisible. This is a meta-failure of audit methodology, not just a content failure.
+
+**Rule:** Archive comparison ("what was in old doc that's missing from new doc?") is a standard adversarial audit step, not optional. Apply at every adversarial audit pass; before declaring documentation canonical; especially when refactoring methodology that absorbs prior phases.
+
+### The pattern: owner catches gaps audit missed.
+
+4 instances during Pass 52-53 where owner question surfaced a gap that Claude's adversarial audit missed (DEC-042 architectural fit, DEC-051 data dependencies, 167 gaps in Pass 52 turn 132 — caught by Claude proactively, and Phase 1A omission). The pattern of owner-as-error-catcher is stable. Claude meta-audit methodology has blind spots that owner familiarity with project history reveals.
+
+**Rule:** Treat owner's questions about "where did X go?" or "why isn't Y in here?" as high-priority signal. Owner has historical context that Claude's recent-conversation-window doesn't. Don't dismiss; verify against archives + history before responding.

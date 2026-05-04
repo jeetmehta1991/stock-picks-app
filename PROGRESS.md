@@ -94,3 +94,53 @@ python scripts/validate_phase1b_data.py
 nohup python backtest/run_phase1a.py --phase 1b --output-dir output_1b_test --start 2022-01-01 --end 2022-01-31 > batch_test.log 2>&1 &
 tail -f batch_test.log
 ```
+
+---
+
+## PASS 53 STATUS UPDATE (Phase 1A Restoration)
+
+**Discovery:** Phase 1A reference was inadvertently dropped from PROJECT_PLAN §3 sub-phases when Pass 52 turn 119 absorbed DEC-014 into DEC-422+426. PROJECT_PLAN_ARCHIVE.md confirmed Phase 1A v3 was COMPLETE (67 instruments × 4yr × 6,942 trades).
+
+**Resolution:** DEC-486/487/488 PROPOSED + DEC-489 RESOLVED-DECIDED restore Phase 1A as 3 distinct sub-phases (1A baseline → 1A-α rules-only cube → 1A-β scale validation) preceding Phase 1B agent overlay.
+
+**Updated Stage 2 sprint sequence:**
+
+```
+Sprint 0 (pre-flight) — owner subscriptions + DEC approvals
+       ↓
+Sprint 1 (Phase 0.A Polygon foundation, ~7-9d)
+       ↓
+Sprint 2 (Engine bug fixes Tier A, ~9d, parallel with Sprint 1)
+       ↓
+Sprint 3 (Phase 0.B Portfolio class, ~5-7d, sequential after Sprint 2)
+       ↓
+Sprint 4 (DEC-410 audit findings, ~5-7d, parallel with Sprint 3)
+Sprint 5 (Universe management, ~5-8d, parallel with Sprint 3)
+       ↓
+Sprint 6 (Phase 0.E catch-mechanism, ~14-19d, parallel with Sprint 4-5)
+       ↓
+Sprint 6.5 — NEW Pass 53 (~19-27d engineering + ~26-33h compute):
+  - Phase 1A: rules-only baseline (~6-8d + ~20-25h compute)
+  - Phase 1A-α: rules-only cube + verdict + dashboards (~10-14d) ← Owner gate Sharpe ≥ 0.7 OOS
+  - Phase 1A-β: production-scale dry-run (~3-5d + ~6-8h compute) ← Owner gate to commit $300 1B-α budget
+       ↓
+Sprint 7 (Phase 1B agent overlay, gated by Sprint 6.5 Phase 1A-α gate)
+       ↓
+Sprint 7-8 (Phase 1B-α combined cube run, gated by Sprint 6.5 Phase 1A-β cleared)
+       ↓
+Sprint 9 (Phase 1B-α verdict + dashboards review)
+       ↓
+Stage 2 → Stage 3 GO/NO-GO decision
+```
+
+**Pass 53 priorities pre-Sprint-1 (NOW):**
+1. Owner approval of DEC-486/487/488 (Phase 1A restoration)
+2. Owner approval of DEC-482 (walk-forward 2y/6mo × 4 folds for 5y Polygon Stocks Starter window)
+3. Owner approval of DEC-483 (R1000 + NDX universe expansion)
+4. Owner decision on DEC-484/485 (FMP free alternative — SEC EDGAR direct vs drop financials)
+5. Owner Polygon Stocks Starter subscription (per directive: "tonight")
+6. Verify BUG-007 (API key guard blocks no-agent run) is resolved before Sprint 6.5 starts
+7. Sprint 1 Day 1 begins after above complete
+
+**Estimated total Stage 2 effort post-Phase-1A-restoration:** ~50-70 engineering days from Sprint 1 start to Phase 1B-α-ready (was ~30-40d pre-restoration).
+

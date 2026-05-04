@@ -259,3 +259,56 @@ Owner directs Pass 53 priorities. My recommendations based on Pass 52 final stat
 ---
 
 *Per CHECKLIST #25 (honest retrospective acknowledging both wins and losses)/#43 (precise grep on Pass 52 commits + state metrics)/#51 (recommendations are recommendations; owner decides Pass 53 priorities)/#57 (use-case mapping per priority area with critical-path analysis)/#58 (Pass 52 framework operational and ready for Pass 53 enforcement during implementation).*
+
+---
+
+## PASS 53 EVENT — PHASE 1A RESTORATION (mid-pass discovery)
+
+**Owner directive:** "Why was phase 1A dropped. Even phase 1A had alpha and beta. same as phase 1B."
+
+**Discovery:** PROJECT_PLAN_ARCHIVE.md showed Phase 1A v3 was COMPLETE (67 instruments × 4yr × 6,942 trades; atr_trail_1x confirmed primary exit). Pass 52 turn 119 absorbed DEC-014 Phase 1B passing criteria into DEC-422+426; Phase 1A reference inadvertently dropped from PROJECT_PLAN §3 sub-phases.
+
+**Meta-failure of audit methodology:** ADVERSARIAL_AUDIT (Pass 52 turn 132) compared current docs vs current docs but didn't compare against PROJECT_PLAN_ARCHIVE. Phase 1A was archived; thus invisible to gap detection.
+
+**Resolution Pass 53 (this pass):**
+- 4 new decisions logged: DEC-486/487/488 PROPOSED + DEC-489 RESOLVED-DECIDED
+- 9 canonical docs updated atomic commit (`0d5182c2`) — PROJECT_PLAN, TRADING_RULES, DETAILED_PROJECT_PLAN, CLAUDE, ENGINEERING_REGISTER, AUDIT, AUDIT_INDEX, CHECKLIST, LEARNINGS
+- Subsequent dependency-sweep commit (this turn) updates remaining 15 docs
+- New CHECKLIST #63 + L142 codify the methodology learning
+
+**Updated Pass 53 priorities (post-restoration):**
+
+| # | Original priority | Pass 53 update |
+|---|---|---|
+| 1 | Sprint 1 (Phase 0.A Polygon) | UNCHANGED — Sprint 1 starts immediately |
+| 2 | Sprint 3 (Phase 0.B Portfolio) | UNCHANGED |
+| 3 | Sprint 4 (DEC-410 cleanup) | UNCHANGED |
+| 4 | Sprint 5 (Universe management) | UNCHANGED |
+| 5 | Sprint 6 (Phase 0.E catch-mechanism) | UNCHANGED |
+| **5.5** | **NEW: Sprint 6.5 (Phase 1A + 1A-α + 1A-β baseline)** | **~19-27d engineering + ~26-33h compute** |
+| 6 | Sprint 7 (Phase 1B agent overlay) | NOW gated by Sprint 6.5 Phase 1A-α owner Sharpe ≥ 0.7 OOS gate |
+| 7 | Sprint 7-8 (Phase 1B-α dimensional cube) | NOW gated by Sprint 6.5 Phase 1A-β scale validation passing |
+| 8 | Sprint 9 (Phase 1B-α run) | NOW reuses cube infrastructure built in Phase 1A-α; $300 budget commits only after 1A-β cleared |
+
+**New owner approval items added by Pass 53 turn:**
+
+| DEC | Description | Status |
+|---|---|---|
+| DEC-486 | Phase 1A restoration | PROPOSED — awaits owner approval |
+| DEC-487 | Phase 1A-α restoration | PROPOSED — awaits owner approval |
+| DEC-488 | Phase 1A-β restoration | PROPOSED — awaits owner approval |
+| DEC-482 | Walk-forward compressed 2y/6mo × 4 folds (per Polygon Stocks Starter 5y window) | PROPOSED — awaits owner approval |
+| DEC-483 | Universe expansion R1000 + NDX added to Sprint 1 | PROPOSED — awaits owner approval |
+| DEC-484 | Free FMP alternative — SEC EDGAR direct parsing for financials | PROPOSED — awaits owner approval (Q3 from prior turn unanswered) |
+| DEC-485 | Earnings transcripts dropped from Stage 2 scope OR alternative | PROPOSED — awaits owner answer |
+
+**Pass 53 priorities pre-Sprint-1 (now):**
+1. Owner approval of DEC-486/487/488 (Phase 1A restoration)
+2. Owner approval of DEC-482 (walk-forward configuration)
+3. Owner approval of DEC-483 (R1000 + NDX universe expansion)
+4. Owner decision on DEC-484/485 (FMP free alternative + earnings transcripts scope)
+5. Owner Polygon subscription tonight (Stocks Starter $29/mo per directive)
+6. THEN Sprint 1 Day 1 begins
+
+**Estimated Pass 53 duration (revised post-Phase-1A-restoration):** 50-70 engineering days from Sprint 1 start to Phase 1B-α-ready state (was 30-40d pre-restoration). Phase 1A introduces ~19-27 days of pre-agent-overlay validation work but protects $300 1B-α budget from infrastructure failures.
+
