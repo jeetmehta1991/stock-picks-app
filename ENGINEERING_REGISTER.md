@@ -158,6 +158,22 @@ DEC-381/382/383/384/388/389/390/391/392/394/397/398/399 — all RESOLVED-DECIDED
 
 ---
 
+### Sprint 6.5 — Phase 1A Rules-Only Baseline + 1A-α Cube + 1A-β Scale Validation (NEW Pass 53)
+
+**Sub-decisions in scope:** DEC-486/487/488 PROPOSED (Phase 1A / 1A-α / 1A-β restoration); DEC-018/124/135/332/348/366/450/477 (rules-only baseline dependencies); DEC-199/200 (cube + ICT/SMC dashboards)
+
+**Why this sprint exists Pass 53:** PROJECT_PLAN_ARCHIVE Phase 1A v3 was COMPLETE (67 instruments × 4 years × 6,942 trades, atr_trail_1x confirmed). When Pass 52 turn 119 absorbed DEC-014 Phase 1B passing criteria into DEC-422 + DEC-426, Phase 1A reference was inadvertently dropped from §3 sub-phases. Pass 53 restores Phase 1A as distinct sub-phase preceding Phase 1B agent overlay; 1A-α + 1A-β added symmetric to 1B-α to provide pre-agent owner gate.
+
+**Phase 1A:** Rules-based + smart money baseline (no agents) on full universe; ~6-8d engineering + ~20-25h compute
+**Phase 1A-α:** Rules-only cube + dashboards + verdict; owner Sharpe-≥-0.7-OOS gate; ~10-14d engineering
+**Phase 1A-β:** Production-scale dry-run on 1B-α infrastructure; $0 API spend; ~3-5d engineering + ~6-8h compute
+
+**Effort:** ~19-27 engineering days total + ~26-33h compute wall time
+
+**Critical-path:** Phase 1A-α gate must pass before Phase 1B agent overlay work begins; Phase 1A-β must pass before Phase 1B-α $300 budget commits
+
+---
+
 ### Sprint 7 — Statistical Methodology (Week 5-6, parallel)
 
 **Sub-decisions in scope (16):** DEC-400/401/402/403/404/405/406/407/408/409/412/413/414/415/416/423 (+ DEC-411 blocked on DEC-298)

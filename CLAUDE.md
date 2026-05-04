@@ -105,7 +105,8 @@ All 9 must pass overall for a strategy to advance. Additionally, each strategy g
 - **Regime classification (real-time):** bull/neutral/bear/crisis via 20-day realised vol + SPY vs 200 EMA
 - **Per-regime strategy library:** different strategies for different regimes — not universal strategies
 - **Position sizing:** EXCEPTIONAL 5%, VERY HIGH 4%, HIGH 3%, MEDIUM-HIGH 1.5%, MEDIUM 0.75%, LOW skip
-- **Exit:** atr_trail_1x (1× ATR trailing stop, checked against intraday low) — won 20/29 in Phase 1A
+- **Exit:** atr_trail_1x (1× ATR trailing stop, checked against intraday low) — won 20/29 in Phase 1A v3 archive
+- **Phase 1A restored Pass 53:** rules + smart money baseline (no agents) precedes Phase 1B agent overlay. Phase 1A → 1A-α (rules-only cube) → 1A-β (full-scale dry-run) → 1B (agents added) → 1B-α (combined cube). Owner gate at 1A-α (rules-only Sharpe ≥ 0.7 OOS) before $300 1B-α budget commits. See PROJECT_PLAN §3.6-3.10 + DETAILED_PROJECT_PLAN Parts 7.5/7.6/7.7.
 - **Email** (not Telegram) for all trade approvals in Stage 4
 - **Intraday trading:** completely separate future project — out of scope
 - **Agent pipeline:** 6 agents (Technical, Fundamental, Sentiment, Risk, Bull/Bear Debate, Decision) at temperature=0. Haiku for Phase 1B (~$116 CAD). Sonnet for Phase 1C+.

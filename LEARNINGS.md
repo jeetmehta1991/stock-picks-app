@@ -1057,3 +1057,33 @@ Lesson: Before finalizing statistical methodology, verify capacity: (a) trial co
 Resolution path: Switch from Bonferroni to FDR (Benjamini-Hochberg); apply hierarchical correction (strategy-level then cell-level); reduce cube dimensionality; revise n-threshold to fit data volume. Formal resolution deferred to Sprint 7 statistical methodology block per ADVERSARIAL_AUDIT.
 
 Codified in CHECKLIST #62 paragraph + part of #61 5-pass methodology Pass 4 (statistical / methodological rigor).
+
+---
+
+## L142 — Adversarial audit must include archive comparison (Pass 53)
+
+**Source trigger:** Owner Pass 53: "Why was phase 1A dropped. Even phase 1A had alpha and beta. same as phase 1B."
+
+**Discovery:** PROJECT_PLAN_ARCHIVE.md showed Phase 1A v3 was COMPLETE — 67 instruments × 4 years × 6,942 trades closed, `atr_trail_1x` confirmed as primary exit (20/29 strategy comparisons), 4 strategies flagged WEAK on OOS-2024-only. This was a documented empirical achievement that fed downstream design.
+
+**How it got dropped:**
+- Pass 52 turn 119: DEC-014 (Phase 1B passing criteria) was SUPERSEDED by DEC-422 (cube) + DEC-426 (5-gate validity)
+- During the absorption, the Phase 1A → 1B → 1C → 1D progression compressed to Phase 0 → 1B → 1B-α → 1C+
+- Phase 1A reference inadvertently dropped from PROJECT_PLAN.md §3 sub-phases
+- TRADING_RULES §2 phase acceptance criteria similarly omitted Phase 1A
+
+**Why ADVERSARIAL_AUDIT didn't catch:**
+- Pass 52 turn 132 5-pass audit reviewed current PROJECT_PLAN vs current TRADING_RULES vs current TRADINGAGENTS_DATA_AUDIT
+- 167 gaps found within-current-docs
+- Audit did NOT compare current docs against archived/historical docs (PROJECT_PLAN_ARCHIVE.md)
+- Phase 1A was archived; thus invisible to gap detection
+- This is a meta-failure of audit methodology, not just a content failure
+
+**Lesson:** When refactoring methodology that absorbs prior phases (e.g., DEC-014 absorbed by DEC-422+426), there is high risk that archived phase references silently drop. Adversarial audit must explicitly compare against archive ("what was in old doc that's missing from new doc?") to catch these. Apply at every adversarial audit pass; before declaring documentation canonical; when refactoring methodology that absorbs prior phases.
+
+**Codified in:**
+- CHECKLIST #63 (NEW Pass 53)
+- DEC-489 RESOLVED-DECIDED (methodology learning)
+- Restoration: DEC-486/487/488 PROPOSED (Phase 1A / 1A-α / 1A-β)
+
+**Owner accountability:** Same pattern as Pass 52 turn 128 (owner caught DEC-042 architectural-fit gap), Pass 52 turn 130 (owner caught DEC-051 data-dependency gap), Pass 52 turn 132 (Claude proactively surfaced 167 gaps). Pass 53 turn (this) is the 4th instance where owner caught a Claude-missed gap. Pattern of owner-as-error-catcher remains stable; Claude meta-audit methodology still has blind spots.

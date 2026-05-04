@@ -225,39 +225,88 @@
 - [ ] Random seed in backtest output (DEC-177)
 - [ ] Dependency injection sandbox-prototype on 1-2 modules (DEC-251 HARD-REVERSIBILITY)
 
-### 2.6 Phase 1B — Statistical Methodology + A/B (Sprint 7)
+### 2.6 Phase 1A — Rules-Based + Smart Money Baseline (Sprint 6.5)
+
+**Effort target:** ~6-8 engineering days
+
+**Acceptance criteria:**
+- [ ] Rules-based screener executes full ~109-119 strategy roster on full universe (per DEC-477 historical_membership.csv + DEC-483 PROPOSED R1000 + NDX expansion)
+- [ ] Smart money signals operational (DEC-124 confluence + DEC-332 weights + DEC-450 Quiver paid endpoints)
+- [ ] `--no-agents` flag preserved from Phase 1A v3 archive — no TradingAgents.propagate calls
+- [ ] Trade outcome log produced for full universe per DEC-189 schema; baseline trades tagged `arm=A_rules_only`
+- [ ] Walk-forward folds executed per DEC-482 PROPOSED (compressed 2y train + 6mo OOS × 4 folds within Polygon Stocks Starter 5y window)
+- [ ] Liquidity floor applied per DEC-366 + tier-specific ADV thresholds
+- [ ] Per-ticker risk gates enforced (DEC-018 cooldown + DEC-135 max-loss cap)
+- [ ] Trade outcomes ready as input to Phase 1A-α cube populator
+
+### 2.7 Phase 1A-α — Rules-Only Dimensional Cube + Dashboards (Sprint 6.5-7)
+
+**Effort target:** ~10-14 engineering days
+
+**Acceptance criteria:**
+- [ ] Dimensional cube infrastructure built (cube populator + 5-Gate verdict per DEC-426 + verdict.parquet)
+- [ ] Cube populated from Phase 1A trade outcomes ONLY (single arm — rules-only)
+- [ ] 5-Gate filter applied per DEC-426 + DEC-469/470 PROPOSED (FDR replacing Bonferroni; hierarchical 3-level)
+- [ ] Per-cell verdicts (PASS/FAIL_RR/INSUFFICIENT_SAMPLE/FAIL_STAT) computed from rules-only data
+- [ ] Cube Explorer dashboard operational with rules-only filter (DEC-199 — Phase 1A-α view)
+- [ ] ICT/SMC Audit dashboard operational on rules-only signals (DEC-200)
+- [ ] Live decision lookup table v1 populated from rules-only PASS cells (DEC-429 — pre-agent baseline)
+- [ ] Owner reviews 1A-α verdict; rules-only Sharpe ≥ 0.7 OOS gate (else evaluate whether Phase 1B agent overlay is justified)
+- [ ] Cube methodology validated at this scale before $300 budget commits in Phase 1B-α
+
+### 2.8 Phase 1A-β — Production-Scale Validation Run (Sprint 7 Day 1)
+
+**Effort target:** ~3-5 engineering days + ~6-8h compute wall time
+
+**Acceptance criteria:**
+- [ ] Full universe scale test (~1015 tickers per DEC-483 PROPOSED) WITHOUT agents; pipeline integrity validated
+- [ ] No PIT regression detected (freezegun verifies)
+- [ ] No multi-process race conditions (filelock + cache integrity passes)
+- [ ] Memory ceiling not exceeded (cube populate handles full universe scale)
+- [ ] Walk-forward folds remain non-contaminated (no train→OOS data leakage)
+- [ ] Cache hygiene metrics within thresholds (DEC-243 disk monitor + DEC-244 LRU exemption)
+- [ ] Engine output schema validated against DEC-189 reflection log spec
+- [ ] Owner reviews 1A-β output before authorizing Phase 1B-α $300 budget commit
+- [ ] Catches infrastructure failures at zero API spend; cost of catching here = ~6-8h wall vs $300 + 37-40h re-run if caught mid-1B-α
+
+### 2.9 Phase 1B — Statistical Methodology + A/B (Sprint 7)
 
 **Effort target:** ~76-85 engineering days (largest sprint by total effort)
 
+**Entry criteria:** Phase 1A + 1A-α + 1A-β complete with rules-only Sharpe ≥ 0.7 OOS (else owner reviews whether agent overlay justified at all).
+
 **Acceptance criteria:**
-- [ ] Walk-forward validation operational with 2018-01-01 baseline (DEC-109 Option B)
+- [ ] Walk-forward validation operational per DEC-482 PROPOSED (compressed 2y/6mo within 5y Polygon window)
 - [ ] Deflated Sharpe / PSR computation operational (DEC-110)
 - [ ] Stationarity tests operational (ADF + rolling Sharpe + Chow per DEC-111)
 - [ ] Distribution analysis operational (DEC-242)
-- [ ] A/B testing framework operational with 4 arms (DEC-205-216)
-- [ ] AgentGateConfig spec implemented per §7 (DEC-459 Option C Hybrid; supersedes DEC-042 turn 129)
-- [ ] Continuous-Risk vs binary-veto A/B arm operational (DEC-459 carrying DEC-042 turn 121 directive #3 forward)
+- [ ] A/B testing framework operational with 3 arms per DEC-473 PROPOSED (rules-only / full-with-veto / no-Risk)
+- [ ] AgentGateConfig spec implemented per §7 (DEC-481 PROPOSED Option C2; supersedes DEC-459 turn 133)
 - [ ] Custom toolkits operational per TRADINGAGENTS_DATA_AUDIT.md Part D (DEC-462-468 Pattern 2)
 - [ ] OurAgentState schema + LangGraph injection points operational (DEC-467)
 - [ ] LangGraph state augmentation per TRADINGAGENTS_DATA_AUDIT.md Part E (smart_money_signal / regime_context / portfolio_context / event_proximity / sector_context / short_interest_signal / historical_outcomes)
 - [ ] Regime methodology operational (DEC-106-108, DEC-149-151)
 - [ ] vs-SPY comparison in all reports (DEC-155)
+- [ ] Agent overlay decisions logged for candidates that passed Phase 1A baseline gates
 
-### 2.7 Phase 1B-α — Dimensional Cube + Dashboards (Sprint 7-8)
+### 2.10 Phase 1B-α — Combined Dimensional Cube + Dashboards (Sprint 7-8)
 
 **Effort target:** ~28-38 engineering days
 
-**Acceptance criteria:**
-- [ ] Dimensional verdict cube infrastructure operational (DEC-422 phases 1-7 = DEC-425-431)
-- [ ] 17+ cube dimensions operational
-- [ ] 5-gate validity filter operational (DEC-426)
-- [ ] Per-cell verdicts (PASS/FAIL_RR/INSUFFICIENT_SAMPLE) computed (DEC-426)
-- [ ] Live decision lookup table populated (DEC-429)
-- [ ] Cube explorer dashboard operational (DEC-199)
-- [ ] ICT/SMC audit dashboard operational (DEC-200)
-- [ ] Agent overlay analysis dashboard operational (DEC-201)
+**Note:** Cube infrastructure (populator + 5-Gate verdict) was BUILT in Phase 1A-α; Phase 1B-α REUSES infrastructure and EXTENDS with agent arms.
 
-### 2.8 Phase 1C+ — Strategy Categories Expansion (Sprint 8)
+**Acceptance criteria:**
+- [ ] Cube populated with all 3 arms (rules-only from Phase 1A + full-with-veto + no-Risk from Phase 1B agent overlay)
+- [ ] 17+ cube dimensions operational (revised to 8 core per DEC-471 PROPOSED)
+- [ ] 5-gate validity filter operational across all arms (DEC-426)
+- [ ] Per-cell per-arm verdicts computed (DEC-426)
+- [ ] A/B comparison operational with block-bootstrap CIs per DEC-472 PROPOSED
+- [ ] Live decision lookup table v2 updated with full 3-arm verdict (DEC-429)
+- [ ] Agent overlay analysis dashboard operational (DEC-201)
+- [ ] Stage 2 verdict (Phase 1B-α) per DEC-269: Sharpe ≥ 1.0 OOS, max DD ≤ 25%, win rate ≥ 50%, A/B clear
+- [ ] Owner reviews dashboards; Stage 2 → Stage 3 GO/NO-GO decision
+
+### 2.11 Phase 1C+ — Strategy Categories Expansion (Sprint 8)
 
 **Effort target:** ~37-55 engineering days
 

@@ -166,23 +166,57 @@ Stage 2 is the largest scope phase. Decomposed into sub-phases corresponding to 
 
 **Detail:** ENGINEERING_REGISTER.md → Sprint 6.
 
-### 3.6 Phase 1B — Statistical Methodology + A/B (Sprint 7)
+### 3.6 Phase 1A — Rules-Based + Smart Money Baseline (Sprint 6.5)
+
+**Scope:** Rules-only execution layer running the full strategy roster on the full universe with smart money signals, NO agent overlay (`--no-agents` flag preserved from Phase 1A v3 archive). Produces baseline trade outcomes that feed A/B Arm A (rules-only) downstream. Smart money signals (DEC-124 confluence + DEC-332 weights + DEC-450 Quiver paid endpoints) are part of rules-based screening, not agents.
+
+**Why this phase exists:** Original Phase 1A (PROJECT_PLAN_ARCHIVE) ran rules-only on 67 instruments × 4 years validating pipeline cleanliness + confirming `atr_trail_1x` as primary exit (20/29 strategy comparisons). Phase 1A in this restored framing extends that pattern: rules + smart money baseline must be validated BEFORE agent overlay layer is added in Phase 1B. Skipping this phase would mean A/B Arm A has no independently-validated baseline.
+
+**Effort:** ~6-8 engineering days (most infrastructure already exists from prior Phase 1A v3 work; this is re-execution on new Sprint 1 cache + DEC-477 universe + Sprint 5 tier definitions).
+
+**Detail:** ENGINEERING_REGISTER.md → Sprint 6.5 (NEW).
+
+### 3.7 Phase 1A-α — Rules-Only Dimensional Cube + Dashboards (Sprint 6.5-7)
+
+**Scope:** Cube populator + 5-Gate verdict + Dashboard 1 (Cube Explorer DEC-199 — rules-only view) + Dashboard 2 (ICT/SMC Audit DEC-200) consuming Phase 1A trade outcomes ONLY (no agent arms). Identifies which strategies pass without agents — establishes the pre-agent baseline verdict per strategy × regime × cell. Mirrors Phase 1B-α structure but applied to single-arm rules-only data.
+
+**Why separate from 1B-α:** Allows owner to evaluate rules-only verdict BEFORE committing $300 budget for full agent-overlay run (Phase 1B-α). If rules-only baseline is weak (Sharpe < 0.7 OOS, no PASS cells), agent overlay justification drops sharply — possibly avoid running 1B at all.
+
+**Effort:** ~10-14 engineering days (cube infrastructure built here; Phase 1B-α reuses).
+
+**Detail:** ENGINEERING_REGISTER.md → Sprint 6.5-7.
+
+### 3.8 Phase 1A-β — Production-Scale Validation Run (Sprint 7 Day 1)
+
+**Scope:** Pre-cube validation run on full universe (~1015 tickers per DEC-483 PROPOSED) without agents. Verifies pipeline integrity at scale BEFORE Phase 1B-α $300 cube run. Catches: cache corruption, PIT regression, multi-process race conditions, memory ceiling issues, walk-forward fold contamination. Inherits Phase 1B-α infrastructure but runs in dry-run mode (no agent API spend).
+
+**Why this phase exists:** Phase 1A-α validates rules-only cube methodology on prior cache scope; Phase 1A-β validates that same methodology survives full universe scale. Catching infrastructure failures here costs ~6-8 hours wall time; catching them mid-Phase-1B-α costs $300 + 37-40h re-run.
+
+**Effort:** ~3-5 engineering days + ~6-8h compute wall time.
+
+**Detail:** ENGINEERING_REGISTER.md → Sprint 7 Day 1.
+
+### 3.9 Phase 1B — Statistical Methodology + A/B (Sprint 7)
 
 **Scope:** Statistical methodology cluster (DEC-080-085 phases + DEC-107-111 + DEC-144/152/153/155) + A/B operational (DEC-207-216 + DEC-242) + Distribution analysis + AgentGateConfig (DEC-459 Option C Hybrid; supersedes DEC-042) + Custom Toolkit + LangGraph state augmentation (DEC-462-468 per TRADINGAGENTS_DATA_AUDIT.md) + Performance metrics canonicalization + Regime classifier improvements.
+
+**Entry criteria:** Phase 1A + 1A-α complete with non-trivial PASS cell count; rules-only baseline Sharpe ≥ 0.7 OOS (else owner reviews whether agent overlay justified).
 
 **Effort:** ~76-85 engineering days (LARGEST sprint).
 
 **Detail:** ENGINEERING_REGISTER.md → Sprint 7.
 
-### 3.7 Phase 1B-α — Dimensional Cube + Dashboards (Sprint 7-8)
+### 3.10 Phase 1B-α — Combined Dimensional Cube + Dashboards (Sprint 7-8)
 
-**Scope:** DEC-422 Phase 1B-α dimensional cube infrastructure (DEC-425/427/428/429/431) + Dashboard 1 spec (DEC-199) + Dashboard 2 spec (DEC-200) + Dashboard 3 spec (DEC-201) + parallel backtest execution (DEC-184) + per-trade explainability (DEC-119) + loss attribution (DEC-120) + 17+ categorical breakdown variables (DEC-100/144) + TradingAgents 5-tier→size (DEC-062).
+**Scope:** DEC-422 Phase 1B-α dimensional cube infrastructure (DEC-425/427/428/429/431) + Dashboard 3 spec (DEC-201 — agent overlay analysis) + parallel backtest execution (DEC-184) + per-trade explainability (DEC-119) + loss attribution (DEC-120) + 17+ categorical breakdown variables (DEC-100/144) + TradingAgents 5-tier→size (DEC-062). Combines Phase 1A baseline + Phase 1B agent-overlay arms (full-with-veto, no-Risk) into single 3-arm cube.
+
+**Note:** Cube infrastructure (populator + 5-Gate verdict logic) was built in Phase 1A-α; Phase 1B-α reuses and extends with agent arms.
 
 **Effort:** ~28-38 engineering days.
 
 **Detail:** ENGINEERING_REGISTER.md → Sprint 7-8.
 
-### 3.8 Phase 1C+ — Strategy Categories Expansion (Sprint 8)
+### 3.11 Phase 1C+ — Strategy Categories Expansion (Sprint 8)
 
 **Scope:** Strategy roster additions: chart pattern strategies (DEC-355-362) + DEC-067 9 exit methods + DEC-075 AEP + DEC-368 Calendar/Seasonal + DEC-370 Index Rebalance + DEC-371 within-category gaps + DEC-352 13F price-level + DEC-174 strategy classification + DEC-175 signal persistence + DEC-076-079 (deferred sub-decisions per Pass 52 #56 scope filter) + multi-TF (DEC-350) + ICT/SMC (DEC-345).
 

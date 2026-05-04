@@ -25537,3 +25537,109 @@ Counts unchanged: 472 / 0 PENDING / 367 RESOLVED-DECIDED.
 PASS 52 REMAINS 100% TERMINAL.
 
 *Per CHECKLIST #25 (honest external verification findings — DEC-459 architecturally flawed; DEC-441 cost incorrect; DEC-460 verification negative); #43 (precise grep on TradingAgents v0.2.4 CHANGELOG + polygon.io/pricing); #51 (13 PROPOSED await owner approval); #57 (use-case mapping per cluster); #58 (2-file atomic commit); #59 (architectural assumption verification — DEC-459 + DEC-441 verified against actual source); #60 (data dependency verification — Polygon coverage verified); #61 (cross-doc consistency — DEC-459/441/460/461/481 reconciliation pending owner approval); #62 (cross-document consistency).*
+
+---
+
+# PASS 53 TURN — PHASE 1A RESTORATION (Owner-directed)
+
+## Context
+
+Owner directive Pass 53: "Why was phase 1A dropped. Even phase 1A had alpha and beta. same as phase 1B. add it back for older documents."
+
+## Root cause investigation
+
+**PROJECT_PLAN_ARCHIVE.md confirmed Phase 1A v3 was COMPLETE:**
+- 67 instruments (S&P 500 + 17 ETFs)
+- 4 years (Jan 2022 – Mar 2026)
+- 6,942 trades closed; 50/60 strategies fired
+- `atr_trail_1x` confirmed as primary exit (20/29 strategy comparisons)
+- 4 strategies flagged WEAK on OOS-2024-only
+
+**How Phase 1A got dropped:**
+- Pass 52 turn 119: DEC-014 (Phase 1B passing criteria) absorbed by DEC-422 (cube) + DEC-426 (5-gate validity)
+- In absorbing methodology, Phase 1A → 1B → 1C → 1D progression compressed to Phase 0 → 1B → 1B-α → 1C+
+- Phase 1A reference inadvertently dropped from PROJECT_PLAN.md §3 sub-phases
+- ADVERSARIAL_AUDIT (Pass 52 turn 132) reviewed §3 against TRADING_RULES §2 but didn't compare against PROJECT_PLAN_ARCHIVE
+
+## Meta-failure
+
+**ADVERSARIAL_AUDIT methodology gap:** 5-pass review compared current docs against current docs but didn't verify against historical archive (PROJECT_PLAN_ARCHIVE.md). Phase 1A was archived; thus invisible to gap detection.
+
+**LEARNING:** Adversarial review must include archive comparison ("what was in old doc that's missing from new doc?") not just within-current-doc consistency.
+
+## Resolution
+
+Phase 1A restored as 3 distinct sub-phases per owner directive (1A had alpha + beta, same as 1B):
+
+**Phase 1A** (Sprint 6.5) — Rules-based + smart money baseline; NO agent overlay; `--no-agents` flag preserved from archive
+**Phase 1A-α** (Sprint 6.5-7) — Rules-only dimensional cube + dashboards + verdict; owner Sharpe-≥-0.7-OOS gate before Phase 1B
+**Phase 1A-β** (Sprint 7 Day 1) — Production-scale dry-run on full universe; $0 API spend; pipeline integrity validation before $300 1B-α commit
+
+Cube infrastructure (populator + 5-Gate verdict + dashboards) BUILT in Phase 1A-α; Phase 1B-α REUSES and EXTENDS with agent arms.
+
+## DEC-486 PROPOSED — Phase 1A restoration
+
+Restore Phase 1A as distinct sub-phase preceding Phase 1B. Rules-based screener + smart money confluence (DEC-124 + DEC-332 + DEC-450) executes full strategy roster on full universe with `--no-agents` flag. Produces baseline trade outcomes feeding A/B Arm A. Effort: ~6-8d + ~20-25h compute.
+
+**Test signals:**
+- Rules screener fires correctly on full universe
+- Smart money confluence operational
+- `--no-agents` flag bypasses TradingAgents.propagate
+- Trade log produced with `arm=A_rules_only` tag
+- Phase 1A v3 67-instrument regression confirms `atr_trail_1x` primacy
+
+**Awaits owner approval.**
+
+## DEC-487 PROPOSED — Phase 1A-α restoration
+
+Phase 1A-α — rules-only dimensional cube + dashboards + verdict. Cube methodology built here once; Phase 1B-α reuses. Owner reviews rules-only Sharpe ≥ 0.7 OOS before Phase 1B agent layer commits. Effort: ~10-14d.
+
+**Test signals:**
+- cube.parquet populated from Phase 1A trades
+- 5-Gate verdict labels every populated cell
+- Cube Explorer + ICT/SMC Audit dashboards render
+- Live decision lookup table v1 (pre-agent baseline) exported
+- Owner gate decision documented
+
+**Awaits owner approval.**
+
+## DEC-488 PROPOSED — Phase 1A-β restoration
+
+Phase 1A-β — production-scale validation run. Full universe (~1015 tickers) dry-run with `--no-agents --dry-run` flags. Catches infrastructure failures (cache corruption / PIT regression / race conditions / memory ceiling / schema mismatches) at zero API spend. Effort: ~3-5d + ~6-8h compute.
+
+**Test signals:**
+- Full universe scale test passes
+- Cube populator scales without memory ceiling
+- Walk-forward fold non-contamination at full scope
+- Budget tracker confirms $0 API spend
+- Owner authorization to commit Phase 1B-α $300 budget
+
+**Awaits owner approval.**
+
+## DEC-489 NEW — Adversarial audit methodology must include archive comparison
+
+CHECKLIST item #63 added: "Adversarial audit must compare current docs against archived/historical docs ('what was in old doc that's missing from new doc?') not just within-current-doc consistency."
+
+This learning prevents future Phase-1A-style omissions where content gets archived during refactoring and disappears from gap detection.
+
+## Files updated this turn
+
+1. `PROJECT_PLAN.md` — §3.6/3.7/3.8 NEW (Phase 1A/1A-α/1A-β); §3.9/3.10/3.11 renumbered (was §3.6/3.7/3.8)
+2. `TRADING_RULES_AND_INFORMATION.md` — §2.6/2.7/2.8 NEW; §2.9/2.10/2.11 renumbered
+3. `DETAILED_PROJECT_PLAN.md` — Parts 7.5/7.6/7.7 inserted (15 sections each per Q2=ALL); duplicate Parts 9-12 removed (lines 3070-4366 of pre-edit state); TOC updated
+4. `CLAUDE.md` — Phase 1A restoration line added
+5. `ENGINEERING_REGISTER.md` — Sprint 6.5 entry added between Sprint 6 and Sprint 7
+6. `AUDIT.md` — this Pass 53 turn entry + DEC-486/487/488/489
+7. `AUDIT_INDEX.md` — DEC-486/487/488/489 rows added
+
+## Counts after Pass 53 turn
+
+- Total decisions: 472 → 476 (DEC-486/487/488/489 added)
+- PROPOSED: was 13 → 16 (DEC-486/487/488 added)
+- RESOLVED-DECIDED: 367 → 368 (DEC-489 added as RESOLVED-DECIDED — methodology learning)
+- PENDING: 0 (unchanged)
+
+PASS 53 SUBSTANTIVE WORK BEGINS. Owner approvals on PROPOSED decisions accumulate.
+
+*Per CHECKLIST #25 (honest acknowledgment Phase 1A was dropped — serious mistake); #43 (grep across all .md files including ARCHIVE before responding); #51 (refused to fabricate 1A-α/1A-β definitions; offered Option 2 owner-approved structure); #58 (atomic commit pending); #59 + #60 PROACTIVELY APPLIED (verifying archive vs current docs); #62 (cross-document consistency — restoration propagated to PROJECT_PLAN + TRADING_RULES + DETAILED_PROJECT_PLAN + ENGINEERING_REGISTER + CLAUDE + AUDIT + AUDIT_INDEX).*
+

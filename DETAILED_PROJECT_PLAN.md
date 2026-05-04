@@ -63,10 +63,19 @@
 **Part 7 — Phase 0.E: Catch-Mechanism Defense + Architecture Hygiene**
 (15 sections)
 
+**Part 7.5 — Phase 1A: Rules-Based + Smart Money Baseline (Sprint 6.5)**
+(15 sections)
+
+**Part 7.6 — Phase 1A-α: Rules-Only Dimensional Cube + Dashboards (Sprint 6.5-7)**
+(15 sections)
+
+**Part 7.7 — Phase 1A-β: Production-Scale Validation Run (Sprint 7 Day 1)**
+(15 sections)
+
 **Part 8 — Phase 1B: Statistical Methodology + A/B + Custom Toolkits**
 (15 sections)
 
-**Part 9 — Phase 1B-α: Dimensional Cube + Dashboards**
+**Part 9 — Phase 1B-α: Combined Dimensional Cube + Dashboards (3-arm)**
 (15 sections)
 
 **Part 10 — Phase 1C+: Strategy Categories Expansion**
@@ -2622,6 +2631,598 @@ Bug caught at PR-time, not after. Sprint 7 effort preserved.
 
 ---
 
+# PART 7.5 — PHASE 1A: RULES-BASED + SMART MONEY BASELINE (Sprint 6.5)
+
+## §7.5.1 What — concrete deliverable in plain English
+
+Phase 1A is the **rules-only execution layer** running the full strategy roster on the full universe with smart money signals, NO agent overlay. This produces baseline trade outcomes that feed A/B Arm A (rules-only) downstream and constitutes the **first half of the original Phase 1A v3 archive's empirical-validation-without-agents pattern** restored to current Stage 2 architecture.
+
+**Why "restored"?** The original PROJECT_PLAN_ARCHIVE Phase 1A ran rules-only on 67 instruments × 4 years (Jan 2022 – Mar 2026), producing 6,942 trades closed and confirming `atr_trail_1x` as primary exit (20/29 strategy comparisons). When Pass 52 turn 119 absorbed Phase 1B passing criteria into DEC-422 dimensional cube + DEC-426 5-gate validity, the Phase 1A → 1B → 1C → 1D progression got compressed and **Phase 1A was inadvertently dropped from PROJECT_PLAN.md §3 sub-phases**. Pass 53 turn (this) restores Phase 1A as a distinct phase preceding Phase 1B agent overlay.
+
+Concrete deliverables:
+
+1. **Rules-based screener executes on full universe** — all ~109-119 strategies fire on the universe defined by `historical_membership.csv` (DEC-477) + Russell 1000 + NASDAQ 100 (DEC-483 PROPOSED) + ETFs (DEC-118), totaling ~1015 tickers
+2. **Smart money signals integrated** — DEC-124 cross-source confluence + DEC-332 weights + DEC-450 Quiver paid (insider/congressional/13F/analyst-changes/gov-contracts) feed into screener; smart money is a SIGNAL not an agent
+3. **Liquidity floor applied** — DEC-366 ADV thresholds; tier-specific ($10M Tier 1 / $5M Tier 2 / $5M Tier 3)
+4. **Per-ticker risk gates enforced** — DEC-018 5-day cooldown + DEC-135 -10% rolling 30d max-loss cap
+5. **Walk-forward folds executed** — per DEC-482 PROPOSED (compressed 2y train + 6mo OOS × 4 folds within Polygon Stocks Starter 5y window) since DEC-109 (5y/1y) doesn't fit
+6. **`--no-agents` flag preserved** — explicit code path that bypasses all TradingAgents.propagate calls; rules-only screener output goes directly to trade execution
+7. **Trade outcome log produced** — per DEC-189 schema with `arm=A_rules_only` tag; Parquet written for Phase 1A-α cube populator
+8. **Hand-validation against Phase 1A v3 archive** — re-run a subset of Phase 1A v3 67-instrument scenario; confirm `atr_trail_1x` still wins ~20/29 strategy comparisons (regression sanity check)
+
+## §7.5.2 Why — how this advances Stage 2 toward verdict
+
+Phase 1A exists because **the agent overlay must be evaluated against an independently-validated rules-only baseline.** Without Phase 1A:
+
+- A/B Arm A (rules-only) has no production-grade pre-validation — it would be created in parallel with full-with-veto Arm B inside Phase 1B, with no opportunity for owner to evaluate baseline alone before committing to agent layer
+- Phase 1B-α $300 budget commits before owner knows whether rules-only baseline is viable — risks $300 spent discovering rules baseline is too weak for agent overlay to even matter
+- The Phase 1A v3 archive's empirical findings (`atr_trail_1x` primacy, WEAK strategies on OOS-2024-only, pipeline correctness) cannot be re-validated on the new Sprint 1+5+4 cache scope before agent layer sits on top
+- Stage 2 effectiveness Blocker B11 (newly identified): "Agent overlay evaluated against unvalidated rules-only baseline; if rules-only is broken, A/B comparison meaningless"
+
+Phase 1A is the empirical floor that Phase 1B agent overlay must beat. If rules-only Sharpe ≥ 0.7 OOS, agent overlay has a fighting chance to add 0.2 absolute Sharpe (DEC-131 gate). If rules-only Sharpe < 0.5 OOS, agent overlay starts behind and may not justify cost.
+
+## §7.5.3 How — components, data flow, dependencies
+
+**Component diagram:**
+
+```
+backtest/
+├── phase_1a/
+│   ├── orchestrator.py              ★ NEW Sprint 6.5 (Phase 1A run driver)
+│   ├── rules_screener.py            ⊠ ENHANCED (loads strategy roster; --no-agents flag)
+│   ├── smart_money_integration.py   ⊠ ENHANCED (DEC-124 confluence)
+│   └── trade_outcome_logger.py      ⊠ ENHANCED (arm=A_rules_only tag)
+```
+
+**Data flow:**
+
+```
+Phase 1A orchestrator starts
+        │
+        ▼
+For each walk-forward fold (per DEC-482 PROPOSED):
+    For each trading day in OOS period:
+        Load OHLCV + signal universe (Sprint 1 cache)
+        Build daily universe (Sprint 5 tier definitions)
+        Run rules-based screen (full strategy roster)
+        Apply liquidity + event suppression + per-ticker risk gates
+        Compute smart money signals (DEC-124 confluence)
+        Apply preliminary tier from rules + smart money confluence
+        Engine executes (single Portfolio instance — Arm A only)
+        Log trade outcome with arm=A_rules_only tag
+        │
+        ▼
+End of fold: close remaining positions; persist trade log
+        │
+        ▼
+End of all folds: Phase 1A trade_log.parquet ready for Phase 1A-α cube populator
+```
+
+**Dependencies:**
+- Sprint 1 (Phase 0.A) cache complete
+- Sprint 2 (Phase 0.C) engine bug fixes complete
+- Sprint 3 (Phase 0.B) Portfolio class operational
+- Sprint 4 (DEC-410) data layer cleanup; smart money endpoints (Quiver paid)
+- Sprint 5 (universe management) Tier 1/2/3 build functions ready
+- Sprint 6 (Phase 0.E) catch-mechanism layers operational (CI gates protect Phase 1A run integrity)
+
+## §7.5.4 When — sequence
+
+**Sequence within Sprint 6.5 (~6-8d):**
+
+| Day | Task |
+|---|---|
+| 1 | Phase 1A orchestrator skeleton; --no-agents flag wiring through engine |
+| 2 | Rules-based screener integration with full strategy roster; smart money confluence |
+| 3 | Walk-forward fold integration (DEC-482 compressed 2y/6mo × 4 folds) |
+| 4 | Trade outcome logger with arm=A_rules_only tag |
+| 5 | Smoke test 1 fold × 50 candidates; verify pipeline end-to-end |
+| 6 | Hand-validation regression: re-run Phase 1A v3 67-instrument subset; verify atr_trail_1x still wins |
+| 7 | Full Phase 1A run (all 4 folds × full universe ~1015 tickers) — wall time ~20-25h |
+| 8 | Trade log validation; Phase 1A-α handoff |
+
+**Total: ~6-8 engineering days + ~20-25h compute wall time.**
+
+**Blockers:**
+- Sprints 1-6 must be RESOLVED-IMPLEMENTED
+- DEC-482 PROPOSED walk-forward configuration approved
+- DEC-483 PROPOSED universe expansion approved
+
+## §7.5.5 Done criteria
+
+- [ ] All ~109-119 strategies fire correctly across walk-forward folds with --no-agents flag
+- [ ] Smart money confluence operational (DEC-124 + DEC-332 + DEC-450)
+- [ ] Liquidity floor + event suppression + per-ticker risk gates enforced
+- [ ] Trade outcome log produced with `arm=A_rules_only` tag; Parquet ready for Phase 1A-α
+- [ ] Hand-validation regression: Phase 1A v3 67-instrument re-run confirms atr_trail_1x primacy
+- [ ] No agent API spend during Phase 1A run (verified via budget tracker $0)
+- [ ] Phase 1A PR merged; CI green
+
+## §7.5.6 Risks
+
+**Risk R-1: Phase 1A v3 regression fails**
+- atr_trail_1x may not win on new universe scope (R1000 + NDX add midcaps with different volatility profiles)
+- Mitigation: regression run on EXACT v3 67-instrument scope first; if reproduces, proceed; if not, debug before full run
+
+**Risk R-2: Rules-only Sharpe too low to justify Phase 1B**
+- If Phase 1A produces Sharpe < 0.5 OOS, agent overlay can't realistically add 0.2 to clear DEC-131 gate
+- Mitigation: this is a legitimate empirical outcome — owner may decide to revisit strategy roster before committing $300 to agent layer
+- Not a bug — Phase 1A's PURPOSE is to produce this signal early
+
+**Risk R-3: Walk-forward fold contamination on compressed window**
+- DEC-482 PROPOSED 2y/6mo windows are tighter than original DEC-109 5y/1y; fold boundaries closer
+- Mitigation: explicit fold boundary tests in Phase 0.E catch-mechanism (Sprint 6); PIT regression suite
+
+**Risk R-4: Phase 1A run wall time exceeds estimate**
+- 4 folds × 1015 tickers × 119 strategies = potentially 30-40h wall time, not 20-25h
+- Mitigation: parallel folds (Codespace 8-core); progress monitor with ETA
+
+## §7.5.7 Cost
+
+**Engineering effort:** ~6-8d
+**Compute wall time:** ~20-25h
+**Dollar cost:** $0 — no agent API spend; rules + smart money already cached from Sprint 1+4
+
+## §7.5.8 Decisions in scope
+
+| DEC | Title | Status |
+|---|---|---|
+| 018 | 5-day stop-out cooldown | RESOLVED-DECIDED |
+| 124 | Smart money cross-source confluence | RESOLVED-DECIDED |
+| 135 | -10% rolling 30d max-loss cap | RESOLVED-DECIDED |
+| 332 | Smart money composite weights | RESOLVED-DECIDED |
+| 348 | Event suppression asymmetric | RESOLVED-DECIDED |
+| 366 | Liquidity floor ADV-based | RESOLVED-DECIDED |
+| 450 | Quiver paid endpoints scope | RESOLVED-DECIDED |
+| 477 | historical_membership.csv canonical | RESOLVED-DECIDED |
+| 482 PROPOSED | Walk-forward compressed 2y/6mo × 4 folds | Awaits owner approval |
+| 483 PROPOSED | Universe expansion R1000 + NDX added to Sprint 1 | Awaits owner approval |
+| 486 PROPOSED | Phase 1A restored as distinct sub-phase | Awaits owner approval |
+
+## §7.5.9 Test approach
+
+- Pre-run smoke test on 1 fold × 50 candidates
+- Phase 1A v3 67-instrument regression (atr_trail_1x primacy reproduces)
+- PIT regression via freezegun (system time variation produces same trade log)
+- Trade log schema validation against DEC-189
+- Walk-forward fold boundary verification (no train→OOS leakage)
+
+## §7.5.10 Data dependencies
+
+**Inputs:**
+- Sprint 1 OHLCV + reference + corp actions cache
+- Sprint 4 Quiver paid (insider/congressional/13F/analyst/gov-contracts)
+- Sprint 4 FRED + AAII + CNN F&G sentiment
+- Sprint 5 universe build (Tier 1/2/3 with PIT correctness)
+
+**Outputs:**
+- `data/phase_1a/trade_log/fold_{N}/trades.parquet` — consumed by Phase 1A-α
+- Trade log includes all 8 cube cell coordinate fields (DEC-471 PROPOSED) + `arm=A_rules_only`
+
+## §7.5.11 Operational checklist
+
+(See §7.5.4 day-by-day.)
+
+## §7.5.12 Open issues — gaps from ADVERSARIAL_AUDIT relevant to this phase
+
+Phase 1A omission was the **meta-failure of ADVERSARIAL_AUDIT itself** — the audit reviewed PROJECT_PLAN.md §3 sub-phases (which had Phase 0.A → 0.B → 0.C → 0.D → 0.E → 1B → 1B-α → 1C+) and didn't flag the missing Phase 1A. New blocker logged:
+
+- **GAP B11 (NEW CRITICAL):** Phase 1A absent from PROJECT_PLAN §3 / TRADING_RULES §2; A/B Arm A rules-only baseline had no independent validation before agent overlay added in Phase 1B
+  - Resolution: this Part 7.5 + Part 7.6 (1A-α) + Part 7.7 (1A-β) restore the phase; CHECKLIST item TBD added: "Phase coverage check — verify all phases enumerated in PROJECT_PLAN match TRADING_RULES match DETAILED_PROJECT_PLAN"
+
+## §7.5.13 Decision history
+
+- **PROJECT_PLAN_ARCHIVE Phase 1A v3 (Final):** Complete; 67 instruments × 4 years; 6,942 trades; atr_trail_1x confirmed primary exit
+- **Pass 52 turn 119:** DEC-014 Phase 1B passing criteria SUPERSEDED by DEC-422+DEC-426; in absorption, Phase 1A reference dropped from §3 sub-phases (inadvertent)
+- **Pass 52 turn 132:** ADVERSARIAL_AUDIT didn't flag Phase 1A omission (meta-failure)
+- **Pass 53 turn (this):** Phase 1A restored per owner directive ("Forget stages 3-5 for now. Why was phase 1A dropped. Even phase 1A had alpha and beta. same as phase 1B")
+
+## §7.5.14 File / module structure
+
+(See §7.5.3 component diagram.)
+
+## §7.5.15 Example walkthrough
+
+**Scenario:** Phase 1A executes 2024 OOS fold (DEC-482 PROPOSED config). AAPL candidate fires 2024-06-15 from `RSI_Mean_Reversion_30_70` strategy.
+
+**Step 1:** Rules screener compute_signal returns ENTRY LONG @ 2024-06-15 close.
+
+**Step 2:** Smart money confluence check (DEC-124):
+```python
+sm = compute_smart_money_composite('AAPL', '2024-06-15')
+# Insider net buying 30d: True (Form 4 actuals only — no Form 144 forward-looking)
+# Congressional disclosures last 30d: 0 (no disclosure)
+# 13F institutional Q-over-Q delta: +0.3% (mild buying)
+# Composite weighted score (DEC-332): 0.55 (moderate confluence)
+```
+
+**Step 3:** Per-ticker risk gates (Portfolio class):
+```python
+cooldown = portfolio.get_per_ticker_cooldown_state('AAPL', '2024-06-15')
+# CooldownState(blocked=False)
+max_loss = portfolio.get_per_ticker_max_loss_status('AAPL', '2024-06-15')
+# MaxLossState(blocked=False)
+```
+
+**Step 4:** Liquidity + event suppression:
+- AAPL ADV $1.2B >> $10M Tier 1 floor → pass
+- Days to next earnings: 14 → outside DEC-348 suppression window → pass
+
+**Step 5:** Engine executes Arm A (rules-only) trade:
+```python
+trade = Trade(ticker='AAPL', strategy_id='RSI_MR_30_70',
+              entry_date='2024-06-15', shares=100, price=189.50,
+              tier='MEDIUM',  # rules+smart money preliminary tier
+              arm='A_rules_only')
+portfolio.execute_trade(trade, '2024-06-15')
+```
+
+**Step 6:** Trade closes 2024-07-22 at $205.40 (TP_HIT exit method per `atr_trail_1x`).
+
+**Step 7:** Trade outcome logged with cube cell coordinates:
+```python
+ClosedTrade(
+    arm='A_rules_only',
+    cube_cell={
+        'strategy_id': 'RSI_MR_30_70',
+        'regime': 'neutral',  # 2024-06-15 VIX moderate
+        'sector': 'Technology',
+        'cap_band': 'mega',
+        'vol_band': 'medium',
+        'hold_band': 'medium 4-10d... actually 26d so long',
+        'tier': 1,
+        'smart_money_signal': True  # composite > 0.5
+    },
+    realized_pnl=1590.00,
+    exit_reason='TP_HIT',
+    holding_days=26
+)
+```
+
+**Step 8:** This trade contributes to Phase 1A-α cube cell coordinates above (rules-only arm only). Compared in Phase 1B-α against agent-overlay arms for same/similar candidates.
+
+**Without Phase 1A:** This trade would be created inside Phase 1B with agent overlay; rules-only baseline would be a parallel branch within Phase 1B, never independently validated. Owner couldn't evaluate rules-only Sharpe before committing $300 to agent overlay.
+
+---
+
+# PART 7.6 — PHASE 1A-α: RULES-ONLY DIMENSIONAL CUBE + DASHBOARDS (Sprint 6.5-7)
+
+## §7.6.1 What — concrete deliverable in plain English
+
+Phase 1A-α produces the **first cube + dashboard pass** using ONLY Phase 1A trade outcomes (rules-only, no agents). It builds the dimensional cube infrastructure (populator + 5-Gate verdict per DEC-426 + dashboards) that Phase 1B-α will later reuse and extend with agent arms.
+
+This phase's purpose is twofold:
+1. **Build cube methodology** — populator, verdict logic, dashboards — once; Phase 1B-α reuses, doesn't rebuild
+2. **Produce rules-only verdict** — rules-only Sharpe / DD / win rate / PASS cell count — owner reviews BEFORE committing $300 to Phase 1B-α agent overlay
+
+Concrete deliverables:
+
+1. **Cube populator** — `backtest/cube/populator.py` groups Phase 1A trades by 8-dim cell coordinates per DEC-471 PROPOSED; computes per-cell metric suite per DEC-422
+2. **5-Gate verdict** — `backtest/cube/verdict.py` applies Gate 1 (n≥30) + Gate 2 (FDR q<0.10 hierarchical per DEC-470 PROPOSED) + Gate 3 (PSR≥0.95) + Gate 4 (t-stat≥3.4) + Gate 5 (R:R≥2.0) per DEC-426
+3. **Cube Explorer dashboard — rules-only filter (DEC-199)** — interactive dashboard letting owner slice cube; "Phase 1A-α view" filter restricts to `arm=A_rules_only`
+4. **ICT/SMC Audit dashboard (DEC-200)** — focused view on Phase 0.D primitives; verifies SMC strategies firing correctly in rules-only context
+5. **Live decision lookup table v1** — populated from Phase 1A-α PASS cells; this is the pre-agent baseline lookup that Phase 1B-α extends or replaces
+6. **Verdict report `phase_1a_alpha_summary.md`** — rules-only Sharpe, DD, win rate, PASS cell count, FAIL_RR/INSUFFICIENT_SAMPLE/FAIL_STAT breakdown
+7. **Owner gate review** — owner inspects dashboards + summary; decides whether rules-only Sharpe ≥ 0.7 OOS justifies committing $300 to Phase 1B-α agent overlay; if rules-only is too weak, may revisit strategy roster before agent layer
+8. **Cube infrastructure handoff to Phase 1B-α** — populator + verdict + dashboards reused; Phase 1B-α extends with multi-arm comparison + DEC-201 Agent Overlay Analysis dashboard
+
+## §7.6.2 Why — how this advances Stage 2 toward verdict
+
+Phase 1A-α serves three roles:
+
+1. **Methodology validation** — cube populator + 5-Gate verdict + dashboards must work correctly on single-arm data BEFORE handling 3-arm data. Catches methodology bugs early when they're cheap to fix.
+2. **Pre-agent verdict gate** — rules-only Sharpe ≥ 0.7 OOS is the "go ahead and try agent overlay" gate. If rules-only Sharpe < 0.5, agent overlay justification drops sharply and owner may revisit roster.
+3. **Live decision lookup v1** — even if Phase 1B-α agent overlay fails verdict, a rules-only lookup table from 1A-α PASS cells exists for Stage 3 paper trading. Stage 2 isn't a total loss if agent overlay fails.
+
+Without 1A-α: cube methodology developed inside 1B-α concurrently with agent arms; methodology bugs discovered during $300 run cost re-spend; rules-only baseline never independently surfaced.
+
+## §7.6.3 How — components, data flow, dependencies
+
+```
+backtest/cube/
+├── populator.py                     ★ NEW (built here; Phase 1B-α reuses)
+├── verdict.py                       ★ NEW (5-Gate filter built here; Phase 1B-α reuses)
+├── coordinates.py                   ★ NEW (cell coordinate library; shared with dashboards)
+└── live_decision_lookup.py          ★ NEW (v1 from 1A-α; v2 from 1B-α)
+
+dashboards/
+├── cube_explorer/                   ★ NEW (DEC-199; rules-only filter built first)
+└── ict_smc_audit/                   ★ NEW (DEC-200)
+
+data/phase_1a_alpha/
+├── cube/cube.parquet                ★ Phase 1A-α populator output
+├── verdict/verdict.parquet          ★ 5-Gate filter output
+├── live_decision_lookup/v1.parquet  ★ Pre-agent baseline lookup
+└── summary/phase_1a_alpha_summary.md
+```
+
+**Data flow:**
+
+```
+Phase 1A trade_log.parquet
+        │
+        ▼
+populator.py — group by 8-dim cell coordinates
+        │
+        ▼
+cube.parquet (rules-only single arm)
+        │
+        ▼
+verdict.py — 5-Gate filter
+        │
+        ▼
+verdict.parquet (PASS / FAIL_RR / INSUFFICIENT_SAMPLE / FAIL_STAT per cell)
+        │
+        ▼
+live_decision_lookup.py — extract PASS cells
+        │
+        ▼
+v1.parquet (pre-agent baseline lookup)
+        │
+        ▼
+Dashboards consume cube + verdict + lookup; render owner-facing view
+        │
+        ▼
+Owner reviews; rules-only Sharpe ≥ 0.7 OOS gate decision → proceed to Phase 1A-β + 1B
+```
+
+## §7.6.4 When — sequence
+
+**Sequence (~10-14d):**
+
+| Day | Task |
+|---|---|
+| 1-2 | populator.py + coordinates.py |
+| 3-4 | verdict.py 5-Gate filter |
+| 5-6 | live_decision_lookup.py v1 |
+| 7-9 | DEC-199 Cube Explorer dashboard (rules-only view) |
+| 10-11 | DEC-200 ICT/SMC Audit dashboard |
+| 12 | summary generator |
+| 13 | Phase 1A-α end-to-end test on Phase 1A trade log |
+| 14 | Owner review + gate decision |
+
+## §7.6.5 Done criteria
+
+- [ ] cube.parquet populated from Phase 1A trades
+- [ ] verdict.parquet has every populated cell labeled
+- [ ] PASS cell count > 0 (otherwise rules-only baseline is empty — Stage 2 has structural failure pre-agent layer)
+- [ ] live_decision_lookup v1 exported
+- [ ] Cube Explorer dashboard renders; rules-only filter functional
+- [ ] ICT/SMC Audit dashboard renders; primitives validated
+- [ ] phase_1a_alpha_summary.md owner-readable
+- [ ] Owner reviews; rules-only Sharpe ≥ 0.7 OOS gate decision documented
+- [ ] If gate passes: proceed to Phase 1A-β + 1B; if fails: revisit roster before agent overlay
+
+## §7.6.6 Risks
+
+**Risk R-1: Cube methodology bugs surface late**
+- Mitigation: 1A-α IS the methodology validation; bugs caught here are cheap
+
+**Risk R-2: Rules-only Sharpe < 0.7 OOS gate fails**
+- Mitigation: this is a legitimate empirical outcome; owner gate decision protects $300 budget
+
+**Risk R-3: Cube populator memory at full universe scale**
+- 1015 tickers × 119 strategies × ~100 trades each = potential memory pressure
+- Mitigation: streaming aggregation; incremental writes
+
+## §7.6.7 Cost
+
+**Engineering:** ~10-14d
+**Dollars:** $0 (no agent API spend in 1A-α)
+
+## §7.6.8 Decisions in scope
+
+| DEC | Title |
+|---|---|
+| 199 | Cube Explorer dashboard |
+| 200 | ICT/SMC Audit dashboard |
+| 422 | Cube 17+ dim (revised to 8 per DEC-471 PROPOSED) |
+| 426 | 5-Gate verdict filter |
+| 429 | Live decision lookup |
+| 469 PROPOSED | BH FDR replacing Bonferroni |
+| 470 PROPOSED | Hierarchical 3-level FDR |
+| 471 PROPOSED | Cube dim reduction 17+ → 8 |
+| 487 PROPOSED | Phase 1A-α restored as distinct sub-phase | 
+
+## §7.6.9 Test approach
+
+- Cube populator unit tests (small synthetic dataset)
+- 5-Gate verdict tests (synthetic cells with known PASS/FAIL outcomes)
+- Dashboard end-to-end render tests
+- Phase 1A trade log sanity check before populate
+- Owner acceptance review
+
+## §7.6.10 Data dependencies
+
+**Inputs:** Phase 1A trade_log.parquet
+**Outputs:** Cube infrastructure reused by Phase 1B-α; pre-agent baseline lookup for Stage 3 fallback
+
+## §7.6.11 Operational checklist
+
+(See §7.6.4 day-by-day.)
+
+## §7.6.12 Open issues — gaps from ADVERSARIAL_AUDIT
+
+- **GAP 199 (NEW):** "1A-α dashboard view filter — rules-only specific" — not in original DEC-199 spec; resolution: §7.6.1 deliverable #3 explicitly adds rules-only filter
+- **GAP 144 (existing):** What if all PASS cells are in INSUFFICIENT_SAMPLE band — same handling as Phase 1B-α; Gate 1 mutually exclusive precedence
+
+## §7.6.13 Decision history
+
+- Pass 52 turn 119: DEC-014 absorbed into DEC-422 + DEC-426 (cube methodology becomes single phase 1B-α)
+- Pass 53 turn (this): Phase 1A-α restored as distinct sub-phase preceding 1B-α; cube infrastructure built once, reused
+
+## §7.6.14 File / module structure
+
+(See §7.6.3 component diagram.)
+
+## §7.6.15 Example walkthrough
+
+**Scenario:** Phase 1A produced 4,873 trades across 4 OOS folds. Phase 1A-α populates cube.
+
+**Step 1:** populator.py groups trades:
+```
+Phase 1A trades: 4,873
+  - Distinct strategies fired: 87 / 119 (32 strategies didn't fire — too narrow regime/cap criteria)
+  - Cube cells populated: 1,247 / 254,016 max (0.49%)
+```
+
+**Step 2:** verdict.py applies 5-Gate filter:
+```
+Cell verdict breakdown:
+  PASS: 89 (7.1%)
+  FAIL_RR: 218 (17.5%)
+  INSUFFICIENT_SAMPLE: 743 (59.6%)
+  FAIL_STAT: 197 (15.8%)
+```
+
+**Step 3:** Owner reviews summary:
+```
+Rules-only verdict (Phase 1A-α):
+  Aggregate Sharpe (rules-only, OOS): 0.81
+  Max DD (rules-only, OOS): -18%
+  Win rate: 53%
+  PASS cell count: 89 (covers 6 strategies × 4 regimes × diverse sectors)
+```
+
+**Step 4:** Owner gate decision:
+- Sharpe 0.81 > 0.7 OOS gate ✓
+- Max DD -18% < 25% ✓
+- Win rate 53% > 50% ✓
+- PASS cell count 89 → diverse enough to support live trading on rules alone if agent overlay fails
+- **Decision: PROCEED** to Phase 1A-β + Phase 1B
+
+**Step 5:** v1.parquet exported as fallback live decision lookup. If Phase 1B-α agent overlay fails verdict, Stage 3 paper trading begins with v1 (rules-only) instead.
+
+**Without Phase 1A-α:** Cube methodology built inside 1B-α concurrently; rules-only verdict only emerges when full 3-arm analysis done at end of $300 run; owner has no early gate to halt work on weak baseline.
+
+---
+
+# PART 7.7 — PHASE 1A-β: PRODUCTION-SCALE VALIDATION RUN (Sprint 7 Day 1)
+
+## §7.7.1 What — concrete deliverable in plain English
+
+Phase 1A-β is a **dry-run on full universe** that validates pipeline integrity at production scale BEFORE Phase 1B-α commits the $300 agent API budget. Inherits Phase 1B-α infrastructure but runs in `--no-agents --dry-run` mode. Catches infrastructure failures (cache corruption, PIT regression, multi-process race conditions, memory ceiling, walk-forward fold contamination, schema mismatches) at zero API spend.
+
+Concrete deliverables:
+
+1. **Full universe dry-run** — all ~1015 tickers × 4 walk-forward folds with `--no-agents` flag; engine produces same trades as Phase 1A but on full universe scope (Phase 1A operates on Phase 1A v3 67-instrument-equivalent subset for hand-validation; 1A-β scales to full)
+2. **Pipeline integrity verification** — explicit checks: no PIT regression, no race conditions, no memory ceiling, no schema mismatches
+3. **Cache hygiene under load** — disk monitor + LRU eviction + filelock work correctly during full-scale run
+4. **Walk-forward fold non-contamination** — explicit train→OOS leakage tests pass at full scope
+5. **Cube populator scales** — Phase 1B-α populator (built in 1A-α) successfully aggregates full 1015-ticker output without memory ceiling
+6. **Owner gate decision** — owner reviews dry-run output before authorizing Phase 1B-α $300 budget commit
+
+## §7.7.2 Why — how this advances Stage 2 toward verdict
+
+Phase 1A-β catches infrastructure failures at zero API cost. Without it:
+- Cache bug discovered mid-1B-α run = $300 + 37-40h re-run after fix
+- PIT regression discovered mid-1B-α = same
+- Memory ceiling crash mid-1B-α = same
+
+1A-β cost: ~6-8h wall + 0 API spend. Insurance value: $300 + 37-40h potential re-run cost. **ROI overwhelming.**
+
+## §7.7.3 How
+
+```
+backtest/phase_1a_beta/
+├── orchestrator.py             ★ NEW (calls Phase 1B-α infra in --dry-run --no-agents mode)
+└── integrity_checks.py         ★ NEW (explicit invariant verification)
+```
+
+**Data flow:** Same as Phase 1B-α run, but:
+- `--no-agents` flag bypasses TradingAgents.propagate
+- `--dry-run` flag may skip trade execution if owner prefers (vs full execution to validate Portfolio at scale — recommend full execution)
+- Budget tracker confirms $0 spend
+- Integrity checks run continuously during execution
+
+## §7.7.4 When
+
+**Sequence (~3-5d + 6-8h compute):**
+
+| Day | Task |
+|---|---|
+| 1 | Phase 1A-β orchestrator (thin wrapper on 1B-α infrastructure) |
+| 2 | Integrity check suite |
+| 3 | Pre-run smoke test (1 fold × 100 candidates) |
+| 4 | Full Phase 1A-β run; ~6-8h wall time |
+| 5 | Owner gate review; authorize Phase 1B-α $300 spend |
+
+## §7.7.5 Done criteria
+
+- [ ] Full universe scale test passes; no PIT/race/memory/schema failures
+- [ ] Cube populator scales successfully on full output
+- [ ] Walk-forward fold non-contamination verified at full scope
+- [ ] Budget tracker confirms $0 API spend during 1A-β
+- [ ] Owner reviews; authorizes Phase 1B-α $300 budget
+
+## §7.7.6 Risks
+
+**Risk R-1: Infrastructure failure surfaces at full scale**
+- This IS the purpose of 1A-β; failure here = success of 1A-β catching it
+
+**Risk R-2: Wall time exceeds 6-8h estimate**
+- Mitigation: progress monitor with ETA; parallel folds across Codespace cores
+
+## §7.7.7 Cost
+
+**Engineering:** ~3-5d
+**Compute:** ~6-8h wall
+**Dollars:** $0
+
+## §7.7.8 Decisions in scope
+
+| DEC | Title |
+|---|---|
+| 488 PROPOSED | Phase 1A-β restored as distinct sub-phase |
+
+## §7.7.9 Test approach
+
+Phase 1A-β IS the integration test for the Phase 1B-α infrastructure.
+
+## §7.7.10 Data dependencies
+
+**Inputs:** Phase 1A-α infrastructure (populator, verdict, dashboards) reused
+**Outputs:** Validation log; cleared infrastructure for Phase 1B-α
+
+## §7.7.11 Operational checklist
+
+- [ ] Orchestrator + integrity checks built
+- [ ] Pre-run smoke test
+- [ ] Full run wall time ~6-8h
+- [ ] Owner gate
+
+## §7.7.12 Open issues
+
+- **GAP 489 (NEW):** Original PROJECT_PLAN had no scale-validation phase between 1A-α and 1B-α; resolution: this Part 7.7 introduces it explicitly
+
+## §7.7.13 Decision history
+
+- Pass 53 turn (this): Phase 1A-β added as scale-validation gate per owner directive symmetric to Phase 1B-α structure
+
+## §7.7.14 File / module structure
+
+(See §7.7.3 component diagram.)
+
+## §7.7.15 Example walkthrough
+
+**Scenario:** Phase 1A-α gate passed (rules-only Sharpe 0.81). Phase 1A-β runs on full 1015 tickers.
+
+**Step 1:** Orchestrator launches 4 parallel fold processes; integrity checks running.
+
+**Step 2:** Hour 3: integrity check fires — `cache_ohlcv` Parquet corrupt for ticker JBLU (memory pressure caused write failure during prefetch). Halt at fold boundary.
+
+**Step 3:** Owner notified; cache rebuilt for JBLU; resume from last fold boundary.
+
+**Step 4:** Hour 7: full run completes. Cube populator scales to full 1015-ticker output without memory ceiling.
+
+**Step 5:** Budget tracker confirms $0 API spend (no agent calls).
+
+**Step 6:** Owner reviews 1A-β report; authorizes Phase 1B-α $300 budget commitment.
+
+**Without Phase 1A-β:** JBLU cache corruption discovered mid-1B-α with $147 spent + 23h wall time invested. Re-run cost ~$300 + 37-40h.
+
+---
+
 # PART 8 — PHASE 1B: STATISTICAL METHODOLOGY + A/B + CUSTOM TOOLKITS (Sprint 7)
 
 ## §8.1 What — concrete deliverable in plain English
@@ -3055,1303 +3656,6 @@ state = OurAgentState(
 **Step 10:** A/B comparison: Arm B Sharpe 1.4 vs Arm A Sharpe 1.1 = +0.3 absolute → Arm B beats Arm A by 0.3 (above DEC-131 threshold 0.2 absolute) → **agent overlay justified for this regime/sector cell**.
 
 **This entire trace requires Sprint 7 done.** Without it: no toolkit calls, no agent rating extraction, no A/B framework, no cube, no verdict.
-
----
-
-# PART 9 — PHASE 1B-α: DIMENSIONAL CUBE + DASHBOARDS (Sprint 7-8)
-
-## §9.1 What — concrete deliverable in plain English
-
-Phase 1B-α is the **Stage 2 verdict run plus owner-facing dashboards**. By end of this phase:
-
-- The 8-dim cube (revised per DEC-471 PROPOSED from 17+ to 8 core dims, eliminated dims become trade-level metadata) is fully populated from walk-forward backtest trades across 6 OOS folds covering 2018-2026 (depth depends on Polygon tier per DEC-478)
-- All cells have 5-Gate filter applied (DEC-426); each cell tagged PASS / FAIL_RR / INSUFFICIENT_SAMPLE / FAIL_STAT
-- A/B framework verdict produced (3 arms compared via block bootstrap CIs per DEC-472 PROPOSED)
-- 3 owner-facing dashboards rendered (DEC-199 Cube Explorer, DEC-200 ICT/SMC Audit, DEC-201 Agent Overlay Analysis) — interactive HTML or Streamlit
-- Live decision lookup table generated from PASS cells (DEC-429)
-- Stage 2 → 3 transition documentation auto-generated for owner review
-
-This is the moment Stage 2 produces its actual deliverable: a populated cube + dashboards + verdict.
-
-Concrete deliverables:
-
-1. **Cube populator integration** (Sprint 7 already built; Sprint 7-8 transition runs at scale)
-2. **Sprint 9 — full backtest run** — execute walk-forward across 6 OOS folds; 119 strategies × 509 Tier 1 + variable Tier 2/3; estimated wall time 37-40 hours
-3. **Cube full population** — every trade attributed to its 8-dim cell; per-cell metrics computed
-4. **5-Gate filter execution** — per-cell verdict assignment
-5. **Live decision lookup table** — PASS cells rendered as queryable table for Stage 3
-6. **A/B verdict** — block bootstrap CIs across 3 arms; per-regime comparison
-7. **DEC-199 Cube Explorer dashboard** — owner can drill down: select strategy → regime → sector → cap → vol → tier → smart-money; see per-cell metrics
-8. **DEC-200 ICT/SMC Audit dashboard** — focused review of SMC strategies; FVG/BOS/CHoCH/OB hit-rate by regime
-9. **DEC-201 Agent Overlay Analysis dashboard** — A/B comparison visualizations: Arm Sharpe distributions, per-arm trade outcomes, agent reasoning logs (sampled), Risk veto frequency, Trader cross-check downgrade frequency
-10. **Stage 2 → 3 transition packet** — auto-generated markdown summarizing: Stage 2 numeric gates met/missed, A/B verdict (justify agent overlay or not), top-N PASS strategies, cube coverage stats, recommendations
-
-## §9.2 Why — how this advances Stage 2 toward verdict
-
-Phase 1B-α IS the Stage 2 verdict. Without it:
-
-- **No cube populated** → no validity assessment per strategy/regime/cell
-- **No live decision lookup table** → Stage 3 paper trading has no rules to execute
-- **No A/B verdict** → no answer to "should we deploy agent overlay or not?"
-- **No dashboards** → owner can't review and approve Stage 2 → 3 transition
-
-This is the moment the project either succeeds or fails Stage 2.
-
-## §9.3 How — components, data flow, dependencies
-
-**Component diagram:**
-
-```
-backtest/
-├── runner/
-│   ├── phase_1b_alpha.py          ★ NEW Sprint 9 (orchestrator)
-│   ├── walk_forward_runner.py     ★ NEW Sprint 9 (per-fold execution)
-│   └── parallel_fold_pool.py      ★ NEW Sprint 9 (multi-process fold pool)
-├── cube/
-│   ├── populator.py               (Sprint 7 deliverable)
-│   ├── verdict.py                 (Sprint 7 deliverable)
-│   └── live_decision_lookup.py    (Sprint 7 deliverable)
-└── dashboards/
-    ├── cube_explorer.py           ★ NEW (DEC-199) — Streamlit or interactive HTML
-    ├── ict_smc_audit.py            ★ NEW (DEC-200)
-    └── agent_overlay_analysis.py   ★ NEW (DEC-201)
-
-reports/
-├── stage_2_verdict_packet.md       ★ NEW Sprint 9 — auto-generated
-├── stage_2_transition_decision.md  ★ NEW Sprint 9 — owner approval template
-└── stage_2_dashboards/             ★ NEW Sprint 9 — exported HTML dashboards
-```
-
-**Data flow during Phase 1B-α run:**
-
-```
-Phase 1B-α orchestrator started
-        │
-        ▼
-For each of 6 OOS folds (2018-19, 2019-20, 2020-21, 2021-22, 2022-23, 2023-24+):
-        │
-        ▼ launch fold worker process (parallelized)
-        │
-        ▼ Within fold:
-        │   For each trading day in OOS year:
-        │       Engine runs daily scan
-        │       Strategies fire candidates
-        │       Per-ticker risk gates applied
-        │       Selective agent overlay (Sprint 7 toolkits + DEC-481 Option C2)
-        │       A/B 3-arm split
-        │       Per-arm Portfolio executes trades
-        │       Trade outcomes logged with cube cell coordinates
-        │
-        ▼ End of fold:
-        │   Trade outcomes streamed to fold's Parquet
-        │
-        ▼
-All folds complete; orchestrator aggregates
-        │
-        ▼
-cube/populator.py groups all trades by 8-dim cell
-        │
-        ▼
-Per-cell metrics suite computed (sharpe, sortino, ROI, win rate, etc. per DEC-422)
-        │
-        ▼
-verdict.py applies 5-Gate filter:
-        - Gate 1: n ≥ 30 → INSUFFICIENT_SAMPLE if not
-        - Gate 2: FDR q < 0.10 (hierarchical, DEC-470) → FAIL_STAT if not
-        - Gate 3: PSR ≥ 0.95 → FAIL_STAT if not
-        - Gate 4: t-stat ≥ 3.4 → FAIL_STAT if not
-        - Gate 5: R:R ≥ 2.0 → FAIL_RR if not
-        Verdict tagged
-        │
-        ▼
-PASS cells extracted → live_decision_lookup.py table
-        │
-        ▼
-A/B comparison: ab/comparison.py runs block bootstrap CIs
-        Per-regime comparisons: each arm's Sharpe distribution per regime
-        Per-strategy comparisons: each arm's per-strategy outcomes
-        Aggregate verdict: Arm B (full) Sharpe vs Arm A (rules-only) Sharpe
-        DEC-131 thresholds applied: ≥ 0.2 absolute OR ≥ 0.15 relative
-        │
-        ▼
-Dashboards generate from cube + A/B output:
-        DEC-199 Cube Explorer: drill-down filterable view
-        DEC-200 ICT/SMC Audit: SMC strategy focus
-        DEC-201 Agent Overlay: A/B visualization + agent reasoning samples
-        │
-        ▼
-stage_2_verdict_packet.md auto-generated:
-        Summary stats: total trades, total cells, PASS / FAIL_RR / INSUFF / FAIL_STAT counts
-        Top-N PASS strategies with Sharpe / DD / R:R
-        A/B verdict per regime
-        Stage 2 numeric gates: pass/fail per DEC-269
-        Recommendations: deploy / iterate / reject
-        │
-        ▼
-Owner reviews; approves Stage 2 → 3 OR requests further iteration
-```
-
-**Dependencies:**
-- Sprints 1-7 complete
-- DEC-478 PROPOSED Polygon tier decided (cache depth determines OOS fold range)
-- DEC-481 PROPOSED AgentGateConfig Option C2 approved
-- DEC-469-475, 480 PROPOSED — methodology decisions approved
-
-**Library dependencies:**
-- All Sprint 7 deps
-- `streamlit` or `plotly`+`dash` for dashboards
-- `quantstats` for tear sheet generation in dashboards
-- `multiprocessing` or `dask` for parallel fold execution
-
-## §9.4 When
-
-**Sequence within Phase 1B-α (Sprint 7-8 boundary; Sprint 9 actually runs it):**
-
-| Day | Task |
-|---|---|
-| 1 | Phase 1B-α dry run setup: 1 fold, 10 candidates, end-to-end smoke |
-| 2-3 | Resolve dry-run issues; tune parallelism + memory |
-| 4 | DEC-199 Cube Explorer dashboard — first iteration |
-| 5 | DEC-200 ICT/SMC Audit dashboard |
-| 6 | DEC-201 Agent Overlay Analysis dashboard |
-| 7-8 | Dashboard iteration based on owner feedback (small dry run) |
-| 9 | Pre-flight check: Sprint 7 + 8 deliverables green; cache populated; budget tracker reset |
-| 10 | **Phase 1B-α full run launch** |
-| 10-12 | Wall time: 37-40 hours across 6 folds (parallel = 6-8h wall, serial = 40h+) |
-| 13 | Cube populate + verdict + A/B comparison |
-| 14 | Dashboard generation; live decision lookup table |
-| 15 | stage_2_verdict_packet.md auto-gen + owner review session |
-
-**Total: ~15 days from dry-run to verdict packet.**
-
-**Compute estimate (per ADVERSARIAL_AUDIT B6 resolution):**
-- 6 folds × 250 days × 509 Tier 1 + variable Tier 2/3 ≈ 800K ticker-days
-- Strategy fires + risk gates + agent overlay (selective): est. ~5-8h wall per fold serial
-- 6 folds parallel on 8-core machine: ~6-10h wall total
-- Cube populate + verdict + dashboards: additional ~6-8h
-- **Total: ~12-18h wall time on Codespace 8-core; budget 24h with safety margin**
-
-(Earlier 37-40h estimate was for Stocks Starter 5yr cache; Stocks Developer 10yr cache = more historical data but still manageable parallelism.)
-
-**Blockers:**
-- Sprint 7 PR merged
-- Sprint 8 strategy categories complete (all 109-119 strategies fire in run)
-- Cache fully populated (Sprint 1 prefetch)
-- 13 PROPOSED DECs approved (DEC-469 through DEC-481)
-- Owner $300 API budget release
-
-**Parallel-ability:**
-- Phase 1B-α run is sequential and resource-intensive
-- During the run, no other development should consume Codespace compute
-
-## §9.5 Done criteria
-
-- [ ] Phase 1B-α dry run smoke test successful (1 fold, 10 candidates)
-- [ ] Full Phase 1B-α run completes without crashes
-- [ ] All 6 OOS folds produce trade outcomes (no fold left with empty Parquet)
-- [ ] Cube fully populated; cell count > 0 across all 8 dimensions
-- [ ] Per-cell metrics suite computed for all populated cells
-- [ ] 5-Gate filter applied; verdict tagged on every cell
-- [ ] PASS cells > 0 (cube didn't reject everything)
-- [ ] Live decision lookup table populated; queryable
-- [ ] A/B comparison produced; per-regime verdicts assigned
-- [ ] DEC-199, 200, 201 dashboards rendered and viewable
-- [ ] stage_2_verdict_packet.md generated with all required sections
-- [ ] Owner reviews dashboards + packet; approves OR rejects Stage 2 → 3 transition
-- [ ] If approved: live decision lookup table committed; transition documentation merged
-- [ ] If rejected: gap analysis produced; iteration plan drafted
-
-## §9.6 Risks
-
-**Risk R-1: Compute exceeds estimate**
-- 6 folds × 800K ticker-days could surprise with longer-than-expected per-trade computation if agents called too often
-- Mitigation: budget tracker enforces $300 cap (DEC-059); selective agent overlay (top candidates only); fold parallelism throttled if memory pressure
-
-**Risk R-2: Cube too sparse**
-- 254K cells × 30-trade-min sample × 6 folds requires substantial trade volume; if reality is < expected, INSUFFICIENT_SAMPLE rate dominates
-- Mitigation: DEC-471 PROPOSED already reduced from 17+ to 8 dims; if still sparse, accept some cells suspended; iterate
-
-**Risk R-3: A/B verdict inconclusive**
-- Block bootstrap CIs may overlap if sample insufficient
-- Mitigation: per-regime verdicts may be stronger than aggregate; document inconclusive verdicts as data, not failure
-
-**Risk R-4: Dashboard rendering slow**
-- Streamlit / Plotly with 250K-cell cube + thousands of trades = slow render
-- Mitigation: data aggregation upstream; cube_explorer caches summaries; drill-down lazy-loads
-
-**Risk R-5: Verdict invalidates Stage 2 entirely**
-- Sharpe < 1.0, max DD > 25%, win rate < 50%, A/B null, PASS cells < threshold → Stage 2 fails
-- Mitigation: §9.10 Open issues addresses what-if; Part 13.3 covers Stage 2 fail recovery
-- Owner decides: iterate (more strategies, different methodology) OR pause project
-
-**Risk R-6: Owner rejects dashboards as confusing**
-- Dashboards may not match owner intuition; redesign needed
-- Mitigation: dry-run at small scale (Days 4-8); incorporate feedback before full run
-
-**Risk R-7: Live decision lookup table format friction with Stage 3**
-- Stage 3 paper trading must consume the table; format must be operational
-- Mitigation: Stage 3 design starts at end of Phase 1B-α run; table format reviewed in transition packet
-
-## §9.7 Cost
-
-**Engineering effort:** ~15d for orchestration + dashboards + verdict packet (Sprint 9)
-**Compute cost (one-time Phase 1B-α run):**
-- Codespace 8-core hours: ~12-18h wall time included in Codespace subscription
-- Anthropic API for agent calls during run: $75-225 per DEC-472 PROPOSED corrected estimate; under $300 cap (DEC-059)
-- Total compute: ~$75-225
-
-**Subscription costs already-paid (Sprint 1-7):**
-- Polygon $29-79/mo
-- FMP $14-50/mo
-- Quiver $50-100/mo
-- Ortex $50-100/mo
-- Total: $143-329/mo (revised per DEC-478)
-
-## §9.8 Decisions in scope
-
-| DEC | Title |
-|---|---|
-| 029 | Stage 2 → 3 transition criteria |
-| 109 | Walk-forward 5y/1y/6 folds |
-| 131 | A/B Sharpe ≥ 0.2 absolute or ≥ 0.15 relative |
-| 199 | Cube Explorer dashboard |
-| 200 | ICT/SMC Audit dashboard |
-| 201 | Agent Overlay Analysis dashboard |
-| 269 | Stage 2 numeric gates (Sharpe/DD/win rate/divergence/A/B) |
-| 422 | Cube 17+ dimensions (revised to 8 per DEC-471) |
-| 426 | 5-Gate verdict filter |
-| 429 | Live decision lookup |
-| 469-475 PROPOSED | Statistical + A/B methodology corrections |
-
-## §9.9 Test approach
-
-**Pre-run dry test:**
-- 1 fold × 10 candidates × 3 arms × 1 strategy class
-- Verify end-to-end pipeline succeeds before launching full run
-
-**Run monitoring:**
-- Real-time progress dashboard: folds completed, trades executed, API spend
-- Auto-halt if API spend > $290 (10% safety margin under $300 cap)
-
-**Post-run validation:**
-- Cube cell count sanity check (> 0 PASS cells; not all INSUFFICIENT)
-- Sample-trace 5 PASS cells; manually verify trade outcomes match cell metrics
-- Differential check: rules-only arm vs Sprint 7 unit test expected output
-
-**Acceptance:**
-- Owner reviews packet + 3 dashboards; declares Stage 2 → 3 GO or NO-GO
-
-## §9.10 Data dependencies
-
-**Inputs:** All Sprint 1-8 deliverables
-**Outputs:**
-- Populated cube (Parquet)
-- Live decision lookup table (Parquet + JSON for Stage 3 consumption)
-- 3 dashboard HTML/Streamlit apps
-- stage_2_verdict_packet.md
-- DEC-189 reflection log entries (final populated)
-
-**Downstream consumer:** Stage 3 paper trading
-
-## §9.11 Operational checklist
-
-(See §9.4 day-by-day.)
-
-## §9.12 Open issues — gaps from ADVERSARIAL_AUDIT
-
-- **GAP B6 (CRITICAL — Blocker):** Cube cell sparsity / compute cost — RESOLVED via DEC-471 PROPOSED 8-dim reduction + compute estimate
-- **GAP 168:** Phase 1B-α budget owner-controlled — addressed via DEC-059 $300 cap + budget tracker auto-halt
-- **GAP 169:** Dashboard format unspecified — §9.3 specifies Streamlit or interactive HTML; flexibility per owner preference
-
-**What if Stage 2 fails:**
-- Per Part 13.3 (Stage 2 → 3 if rejected): owner reviews packet; gap analysis identifies which strategies/regimes failed; iteration plan drafted
-- Iterate options: (a) more strategies, (b) different statistical methodology, (c) different agent prompts, (d) different cube dimensions, (e) more historical data (Polygon tier upgrade)
-- Owner approves iteration scope; new Phase 1B-α planned
-
-## §9.13 Decision history
-
-- DEC-199-201 (Pass ~30): dashboard cluster
-- DEC-269 (Pass ~35): Stage 2 numeric gates
-- DEC-422-429 (Pass ~42): cube + verdict + lookup cluster
-- DEC-469-475 PROPOSED (Pass 52 turn 133): methodology corrections
-
-## §9.14 File / module structure
-
-(See §9.3 component diagram.)
-
-## §9.15 Example walkthrough
-
-**Scenario:** Phase 1B-α run completes. Owner opens DEC-199 Cube Explorer.
-
-**Step 1:** Dashboard loads showing summary:
-```
-Cube cells populated: 47,328 of 254,016 max (18.6%)
-PASS: 312
-FAIL_RR: 1,245
-INSUFFICIENT_SAMPLE: 38,907
-FAIL_STAT: 6,864
-```
-
-**Step 2:** Owner clicks "Drill down by strategy" → selects "ICT_FVG_Long_Tier1":
-- Cells where this strategy fires: 142
-- PASS: 23
-- INSUFFICIENT: 87
-- FAIL_RR: 18
-- FAIL_STAT: 14
-
-**Step 3:** Owner filters PASS cells by regime → "volatile":
-- 11 PASS cells in volatile regime
-- Best cell (Tech / mega / high-vol / smart-money-yes / Tier 1): Sharpe 1.8, R:R 2.4, win rate 62%, n=47
-
-**Step 4:** Owner switches to DEC-201 Agent Overlay Analysis:
-```
-Aggregate A/B verdict:
-  Arm A (Rules-only): Sharpe 1.05 ± 0.18 (95% CI)
-  Arm B (Full-with-veto): Sharpe 1.32 ± 0.21 (95% CI)
-  Arm C (No-Risk): Sharpe 1.18 ± 0.20 (95% CI)
-  
-Sharpe delta B - A = +0.27 (CI [0.09, 0.45]) — passes DEC-131 ≥ 0.2 absolute
-Risk veto fired 18% of candidates; downstream Sharpe impact +0.14
-Trader cross-check downgraded 12% from HIGH→MEDIUM; no Sharpe impact (neutral)
-```
-
-**Step 5:** stage_2_verdict_packet.md states:
-> Stage 2 numeric gates: PASS (Sharpe 1.32 > 1.0; DD -18% < 25%; win rate 56% > 50%; A/B clear +0.27)
-> 
-> Recommendation: Stage 2 → 3 transition APPROVED contingent on owner review of 312 PASS cells.
-> 
-> Top-N PASS strategies (by aggregate Sharpe):
-> 1. ICT_FVG_Long_Tier1 — Sharpe 1.65
-> 2. RSI_Mean_Reversion_30_70 — Sharpe 1.48
-> 3. Earnings_Drift_Post — Sharpe 1.42
-> ...
-
-**Step 6:** Owner approves Stage 2 → 3 transition. Live decision lookup table merged. Stage 3 paper trading planning begins.
-
-**Without Phase 1B-α:** No cube, no verdict, no dashboards, no go/no-go decision. Stage 2 has no terminal output.
-
----
-
-# PART 10 — PHASE 1C+: STRATEGY CATEGORIES EXPANSION (Sprint 8)
-
-## §10.1 What — concrete deliverable in plain English
-
-Phase 1C+ produces the **strategy roster expansion** that takes the strategy count from baseline 60 (Layer 1) up to ~109-119 (Layer 1+2+3+4). This sprint runs in parallel with Sprint 7 toolkit work; deliverables enter the cube via the Phase 1B-α run (Part 9).
-
-Concrete deliverables:
-
-**Layer 3A — 8 chart-pattern strategies (DEC-355-362):**
-1. **DEC-355 — Head and Shoulders** (top + bottom; bearish + bullish reversal)
-2. **DEC-356 — Double Top / Double Bottom**
-3. **DEC-357 — Triple Top / Triple Bottom**
-4. **DEC-358 — Ascending Triangle / Descending Triangle / Symmetrical Triangle**
-5. **DEC-359 — Cup and Handle**
-6. **DEC-360 — Flag and Pennant**
-7. **DEC-361 — Wedge (Rising / Falling)**
-8. **DEC-362 — Channel (Ascending / Descending / Horizontal)**
-
-Each has:
-- Detection algorithm (pattern recognition on OHLCV; uses `smartmoneyconcepts` + custom pattern detection)
-- Entry trigger (e.g., breakout above neckline for H&S, with volume confirmation)
-- Stop placement (e.g., below right shoulder for H&S top)
-- Target (e.g., measured move from pattern height)
-- Confidence score (0-1; pattern quality)
-
-**Layer 3B — 5 strategy categories (DEC-367-371):**
-9. **DEC-367 — Calendar Effects** (turn-of-month, day-of-week, FOMC week, post-CPI release)
-10. **DEC-368 — Index Rebalance** (S&P 500 add/drop trades; Russell rebalance; per DEC-377)
-11. **DEC-369 — Within-Category Momentum** (best-in-sector momentum; long sector leader, short laggard)
-12. **DEC-370 — Earnings Quality Surprise** (large EPS surprise + analyst estimate revision; per DEC-256/444 Polygon earnings)
-13. **DEC-371 — Insider Cluster Trade** (top-N insiders all buying within 30d; per DEC-450 Quiver paid)
-
-**Layer 4 — Exit method variants (DEC-432/433):**
-14-22. **9 new exit method variants:**
-- chandelier (DEC-432) — trailing ATR-based on highest high
-- psar (DEC-433) — Parabolic SAR exit
-- supertrend (DEC-433) — supertrend trailing
-- volatility_regime (DEC-433) — exit when vol regime changes
-- volume_climax (DEC-433) — exit on extreme volume bar
-- rsi_extreme (DEC-433) — exit on RSI > 80 long, RSI < 20 short
-- partial_scaleout (DEC-433) — sell partial at 1R, hold rest to higher target
-- kelly_target (DEC-433) — exit at Kelly-criterion-derived target
-- macro_event (DEC-433) — exit before known macro event (FOMC/NFP)
-
-**Layer 4 — AEP breaker (DEC-435):**
-23. **AEP breaker strategy** — Aggregate Equity Position breaker; if portfolio drawdown crosses threshold, all-positions exit
-
-**Plus BUG-111 architectural decision (deferred from Pass 52):**
-- 25 existing breakout strategies in `screener.py` may want break-and-retest variants
-- Option A — shared retest primitive (~5-10d) recommended
-- Option B — per-strategy variants (~25-30d)
-- Decision deferred to Sprint 8 implementation start
-
-## §10.2 Why — how this advances Stage 2 toward verdict
-
-Strategy roster expansion is what gives the cube **breadth of signals to test**. Without Layer 3+4:
-- Only 60 strategies in cube → cube under-explores signal space
-- Chart pattern strategies absent → pattern-based traders' signals not represented
-- Calendar / index-rebalance / earnings-quality / insider-cluster strategies absent → category-specific edges untested
-- Exit method variants absent → exit dynamics unexplored; some strategies may have asymmetric edge based on exit
-- AEP breaker absent → aggregate risk control untested at portfolio level
-
-Adversarial GAP 130 noted: 119 strategies × cube = math feasibility (post-DEC-471 reduction). Without 119 strategies, cube is sparse and verdict is shallow.
-
-## §10.3 How — components, data flow, dependencies
-
-**Component diagram:**
-
-```
-backtest/
-├── strategies/
-│   ├── chart_patterns/                  ★ NEW Sprint 8 (DEC-355-362)
-│   │   ├── head_and_shoulders.py
-│   │   ├── double_top_bottom.py
-│   │   ├── triple_top_bottom.py
-│   │   ├── triangles.py
-│   │   ├── cup_and_handle.py
-│   │   ├── flag_pennant.py
-│   │   ├── wedge.py
-│   │   └── channel.py
-│   ├── categories/                       ★ NEW Sprint 8 (DEC-367-371)
-│   │   ├── calendar_effects.py
-│   │   ├── index_rebalance.py
-│   │   ├── within_category_momentum.py
-│   │   ├── earnings_quality_surprise.py
-│   │   └── insider_cluster_trade.py
-│   ├── ict_smc/                          (Phase 0.D Sprint 1 + here Sprint 8)
-│   │   ├── fvg_fill.py
-│   │   ├── bos_direction.py
-│   │   ├── choch_reversal.py
-│   │   └── ob_zone_bounce.py
-│   ├── breakout_with_retest/             ★ NEW Sprint 8 (BUG-111 Option A)
-│   │   ├── retest_primitive.py
-│   │   └── (existing 25 breakouts adopt primitive)
-│   └── aep_breaker.py                    ★ NEW Sprint 8 (DEC-435)
-
-backtest/engine/exit_methods/             ⊠ Sprint 8 EXTENDED (DEC-432/433)
-├── chandelier.py                         ★ NEW
-├── psar.py                               ★ NEW
-├── supertrend.py                         ★ NEW
-├── volatility_regime.py                  ★ NEW
-├── volume_climax.py                      ★ NEW (also in Sprint 2 Bug 12)
-├── rsi_extreme.py                        ★ NEW (also in Sprint 2 Bug 14)
-├── partial_scaleout.py                   ★ NEW
-├── kelly_target.py                       ★ NEW
-└── macro_event.py                        ★ NEW
-```
-
-**Data flow:**
-
-```
-OHLCV cache (Sprint 1) + corp actions
-        │
-        ▼
-chart_pattern detection algorithms (Layer 3A)
-        - Compute swing highs/lows
-        - Detect H&S formation
-        - Score pattern quality
-        │
-        ▼ Pattern detected on AAPL 2022-06-15
-        │
-        ▼
-Strategy `Head_and_Shoulders_Top_Tier1` fires → ENTRY SHORT signal
-        │
-        ▼
-Layer 3B categories also produce candidates (calendar / index rebalance / earnings / insider cluster)
-        │
-        ▼
-All candidates feed into engine; risk gates + agent overlay (selective) + A/B
-        │
-        ▼
-Trade outcomes recorded with cube cell coordinates including exit method (Layer 4 variants tested)
-        │
-        ▼
-Cube populates with broader signal coverage
-```
-
-**Dependencies:**
-- Sprint 1 (OHLCV + reference + corp actions)
-- Sprint 4 (Quiver paid, FMP financials, Polygon earnings)
-- Phase 0.D (smartmoneyconcepts library) for SMC strategies
-- Sprint 2 (engine bug fixes — exit methods variants 12, 14 already added in Sprint 2; here Sprint 8 adds the rest)
-
-**Library dependencies:**
-- `pandas-ta` (Bollinger / RSI / etc.)
-- `scipy.signal` (peak finding for swing high/low detection)
-- `smartmoneyconcepts` (forked Phase 0.D)
-
-## §10.4 When
-
-**Sequence within Sprint 8 (~37-55d):**
-
-| Week | Focus |
-|---|---|
-| Week 1 | BUG-111 architectural decision; pick Option A (shared retest primitive) |
-| Week 1 | Build retest primitive; refactor 25 existing breakouts to use it |
-| Week 2-3 | Layer 3A: 8 chart pattern strategies (3-5d each; parallel-able) |
-| Week 4 | Layer 3B: calendar effects + index rebalance |
-| Week 5 | Layer 3B: within-category momentum + earnings quality + insider cluster |
-| Week 6 | Layer 4: 7 exit method variants (chandelier, psar, supertrend, volatility_regime, partial_scaleout, kelly_target, macro_event) |
-| Week 7 | Layer 4: AEP breaker (DEC-435) |
-| Week 8 | Multi-timeframe SMC strategies (Phase 0.D Sprint 8 component) |
-| Week 9-10 | Integration tests + acceptance + PR review |
-
-**Total: ~37-55d realistic.**
-
-**Parallel-ability:**
-- Sprint 8 ↔ Sprint 7: **parallel** — Sprint 8 strategies are independent of Sprint 7 toolkit work
-- Sprint 8 ↔ Phase 1B-α run: **sequential** — Sprint 8 must complete before Phase 1B-α can include these strategies in cube
-
-## §10.5 Done criteria
-
-- [ ] BUG-111 decision made; Option A implemented (or B if owner chooses)
-- [ ] All 25 breakouts use shared retest primitive (Option A) OR have own variants (Option B)
-- [ ] All 8 chart pattern strategies implemented; pattern detection unit-tested with synthetic + real examples
-- [ ] All 5 strategy categories implemented; can fire on Tier 1/2/3 universe
-- [ ] All 9 exit method variants available; strategies that reference them execute correctly
-- [ ] AEP breaker implemented; threshold parameter (e.g., portfolio DD -15%) triggers all-position exit
-- [ ] 4 SMC strategies implemented (FVG fill, BOS direction, CHoCH reversal, OB zone bounce)
-- [ ] Multi-timeframe regime confirmation per DEC-345 operational
-- [ ] Strategy roster count = 109-119 (depends on retest primitive adoption — Option A counts breakouts as 25 with retest primitive variant; Option B counts as 50)
-- [ ] STRATEGY_REGISTER.md updated with all new strategies
-- [ ] CI green; integration tests pass
-
-## §10.6 Risks
-
-**Risk R-1: Pattern detection false positives**
-- H&S detection on small swings → too many candidates → noise
-- Mitigation: minimum swing size threshold; pattern quality scoring; manual validation on 5-10 examples per pattern
-
-**Risk R-2: BUG-111 architectural choice wrong**
-- Owner might prefer Option B (per-strategy variants) for testing flexibility; Option A simpler
-- Mitigation: DEC TBD owner decision Sprint 8 Week 1; documented analysis of trade-offs
-
-**Risk R-3: Calendar effects spurious in walk-forward**
-- Calendar strategies often have small Sharpe; walk-forward may not validate
-- Mitigation: accept that some Layer 3B strategies may FAIL_STAT; document rather than retire pre-emptively
-
-**Risk R-4: Index rebalance dates need historical accuracy**
-- DEC-377 requires PIT-correct S&P/Russell rebalance dates
-- Mitigation: source from public archives (Wikipedia / S&P press releases); manually validate sample
-
-**Risk R-5: Insider cluster strategy data freshness**
-- DEC-450 Quiver paid endpoint; Form 4 filings can be late
-- Mitigation: use filing_date not transaction_date for PIT correctness; document lag in LIMITATIONS_CAVEATS_ASSUMPTIONS.md
-
-**Risk R-6: AEP breaker over-trades**
-- Threshold tuning (-15% portfolio DD) may trigger too often or too rarely
-- Mitigation: Phase 1B-α verdict tests multiple thresholds; owner approves final per backtest
-
-**Risk R-7: Multi-timeframe strategy compute cost**
-- Daily + hourly + minute timeframes per ticker per day → high compute
-- Mitigation: cache intermediate timeframe aggregates; precompute multi-TF regime at Sprint 8 setup
-
-## §10.7 Cost
-
-**Engineering effort:** ~37-55d
-**Subscription cost:** $0 incremental (uses Sprint 1-4 data sources)
-
-## §10.8 Decisions in scope
-
-| DEC | Title |
-|---|---|
-| 067 | 17 exit methods canonical |
-| 075 | Exit classification (signal vs time) |
-| 256 | Polygon earnings cache |
-| 332 | Smart money composite |
-| 345 | Multi-timeframe regime confirmation |
-| 348 | Event suppression asymmetric |
-| 355-362 | 8 chart pattern strategies |
-| 367-371 | 5 strategy categories |
-| 377 | Index rebalance PIT historical dates |
-| 432 | Exit method variants additive |
-| 433 | 9 new exit method variant set |
-| 435 | AEP breaker strategy |
-| 444 | Polygon earnings replacing yfinance |
-| 450 | Quiver paid endpoint expansion |
-| BUG-111 | Break-and-retest architecture (Option A or B) |
-
-## §10.9 Test approach
-
-- Unit tests per pattern detection algorithm (synthetic OHLCV + real examples)
-- Integration tests: each strategy fires on Tier 1 universe; produces expected candidate count
-- Acceptance: owner reviews 3-5 candidates per pattern manually; confirms detection quality
-
-## §10.10 Data dependencies
-
-**Inputs:** Sprint 1 OHLCV + Sprint 4 Quiver/FMP/Polygon earnings + Phase 0.D SMC primitives
-**Outputs:** Strategy roster expansion → Phase 1B-α cube broader signal coverage
-
-## §10.11 Operational checklist
-
-(See §10.4 week-by-week.)
-
-## §10.12 Open issues — gaps from ADVERSARIAL_AUDIT
-
-- **GAP 56-58:** Sprint 8 strategy variant counts unclear (60 baseline → 109-119)
-  - Resolution: §10.1 enumerates explicit additions; total reconciled
-- **GAP 81:** BUG-111 break-and-retest unresolved
-  - Resolution: §10.4 Week 1 explicit decision point; recommendation Option A
-- **GAP 152, 153:** Pattern detection libraries / algorithms specified
-  - Resolution: §10.3 component diagram + scipy.signal + smartmoneyconcepts integration
-
-## §10.13 Decision history
-
-- DEC-067 (Pass ~25): 17 exit methods baseline canonical
-- DEC-345 (Pass ~38): multi-timeframe regime
-- DEC-355-362 (Pass ~42): 8 chart patterns
-- DEC-367-371 (Pass ~45): 5 categories
-- DEC-432-435 (Pass 51): exit variants + AEP
-- BUG-111 (Pass 52 logged; Sprint 8 resolves)
-
-## §10.14 File / module structure
-
-(See §10.3 component diagram.)
-
-## §10.15 Example walkthrough
-
-**Scenario:** AAPL on 2022-08-15 forms a Head & Shoulders Top pattern.
-
-**Step 1:** `head_and_shoulders.py` runs on AAPL daily OHLCV:
-- Identifies left shoulder (peak 2022-06-12, $148)
-- Identifies head (peak 2022-07-08, $159)
-- Identifies right shoulder (peak 2022-08-10, $151)
-- Identifies neckline (low 2022-06-25, $137 + low 2022-07-22, $138; trendline)
-- Pattern quality score: 0.78 (good symmetry, volume profile decreasing through pattern)
-- Confirmation trigger: close below neckline ~$135
-
-**Step 2:** 2022-08-18, AAPL closes at $133 → confirms breakdown:
-- Strategy `Head_and_Shoulders_Top_Tier1` fires SHORT signal at $133
-- Stop: above right shoulder $151
-- Target: measured move = head - neckline = $159 - $137 = $22 → target $135 - $22 = $113
-
-**Step 3:** Engine + agent overlay process (per Part 8 walkthrough):
-- Risk gates clear
-- Agent overlay (Sprint 7): Market Analyst notes pattern via OurTechnicalToolkit.get_chart_pattern()
-- Bull/Bear debate factors pattern + earnings calendar + macro context
-- PM final rating: Underweight → SHORT entry candidate, MEDIUM tier
-- DEC-481 Option C2 gate: PM Underweight → REJECT for long; SHORT entry MEDIUM tier (3% short sizing)
-
-**Step 4:** SHORT executed at $133, 100 shares. Borrow cost daily accrual.
-
-**Step 5:** 2022-09-30, AAPL at $115 — partial target. Trade closes via `partial_scaleout` exit method (Layer 4 variant): 50 shares @ $115, hold 50 shares to lower target.
-
-**Step 6:** 2022-10-15, AAPL at $113 — full target. Remaining 50 shares closed.
-
-**Step 7:** ClosedTrade logged with cube cell coordinates:
-```
-strategy='Head_and_Shoulders_Top_Tier1'
-regime='volatile' (high VIX)
-sector='Technology'
-cap_band='mega'
-vol_band='high'
-hold_band='long' (60 days)
-tier=1
-smart_money_signal=False
-```
-
-**Step 8:** Cube cell `(H&S_Top_Tier1, volatile, Tech, mega, high, long, T1, no_SM)` populated; aggregates 23 trades; per-cell metrics computed.
-
-**Step 9:** 5-Gate filter: n=23 < 30 → INSUFFICIENT_SAMPLE → cell suspended pending more trades.
-
-**Without Sprint 8:** Strategy `Head_and_Shoulders_Top_Tier1` doesn't exist → no signal → no trade → cell empty → cube under-populated.
-
----
-
-# PART 11 — SPRINT 4: DEC-410 API AUDIT FINDINGS (Parallel)
-
-## §11.1 What — concrete deliverable in plain English
-
-Sprint 4 is **the cleanup sprint for the data layer** based on findings from DEC-410 API audit (17-API comprehensive review conducted Pass 51). The audit identified ~15 specific issues with our data sources — yfinance unreliability, missing Polygon adoption, conditional FMP need, Quiver paid endpoint expansion, Finnhub/OpenBB/AV deprecation candidates. Sprint 4 resolves these findings.
-
-This sprint runs **in parallel with Sprint 3** (Portfolio class) starting Week 2-3 of overall implementation timeline. It's a "cleanup" sprint — no new strategies or methodology; just data layer hygiene to prepare for Sprint 7 toolkit work.
-
-Concrete deliverables (15 sub-decisions per ENGINEERING_REGISTER):
-
-1. **DEC-441 verification** — confirm Polygon Stocks Starter cost = $29 (not $30 originally stated); update DEC-479 PROPOSED to reflect; this depends on DEC-478 PROPOSED tier choice
-2. **DEC-442 — yfinance demoted to fallback** — yfinance is removed from production paths; only used for fallback comparisons; deprecation warnings added; removed entirely from Sprint 7 toolkit work
-3. **DEC-443 — Polygon reference data replaces yfinance.info** — sector / market cap / exchange / listing dates fetched from Polygon Reference; resolves BUG-218 (yfinance.info returns CURRENT not as_of)
-4. **DEC-444 — Polygon earnings replaces yfinance earnings** — earnings dates + EPS actuals + estimates from Polygon (cached per Sprint 1 deliverable); yfinance earnings deprecated
-5. **DEC-445 — Polygon news replaces Finnhub** — news endpoint from Polygon; Finnhub deprecated per DEC-440
-6. **DEC-446 — Polygon technical indicators replace pandas-ta for selected indicators** — Polygon offers RSI/MACD/SMA via API; use Polygon for Tier 1 universe; pandas-ta for Tier 2/3 (cost optimization)
-7. **DEC-447 — Polygon options data evaluation** — DEC-145 deferred-implementation; Sprint 4 evaluates Polygon options API; document findings
-8. **DEC-448 — FRED expansion to 9+ series** — already in Sprint 1 deliverables; here Sprint 4 confirms ALFRED PIT validation across all 9 series
-9. **DEC-449 — FRED expansion fully wired into agent toolkits** — Sprint 4 verifies FRED data flows into OurFundamentalsToolkit / OurNewsToolkit (Sprint 7) macro signals
-10. **DEC-450 — Quiver paid endpoint expansion (insider, congressional, 13F)** — full subscription ~$50-100/mo; all paid endpoints prefetched; gov_contracts date filter validated
-11. **DEC-451 — Quiver retail flow / wallstreet bets (free) decommissioned** — free Quiver endpoints unreliable; rely on paid only
-12. **DEC-453 — Finnhub fully decommissioned** — remove all Finnhub code paths; deprecation warnings; CI lint blocks new imports
-13. **DEC-454 — OpenBB fully decommissioned** — same as Finnhub; OpenBB removed
-14. **DEC-455 — Alpha Vantage fully decommissioned** — Stage 1 legacy; Sprint 4 removes all production code paths; CI lint blocks new imports
-15. **DEC-456 — TradingView library removed** — never adopted; cleanup
-16. **DEC-461 (NEW; conditional)** — FMP subscription becomes MANDATORY (DEC-460 verification negative confirmed Pass 52 turn 133)
-17. **DEC-468 — Ortex wired** — confirmed in Sprint 7 explicitly; Sprint 4 prepares the data path
-
-(15 sub-decisions per ENGINEERING_REGISTER count of "DEC-442/443/444/445/446/447/448/449/450/451/453/454/455/456 + DEC-441 verification" = 15.)
-
-## §11.2 Why — how this advances Stage 2 toward verdict
-
-Sprint 4 doesn't add new strategies or methodology; it **cleans up the data layer so Sprint 7 toolkit work doesn't accumulate technical debt**. Specifically:
-
-- **Sprint 7 toolkit OurFundamentalsToolkit (DEC-463)** — needs FMP for transcripts + analyst estimates + financials (Polygon Stocks Starter shortfall confirmed). Without DEC-461 FMP subscription, OurFundamentalsToolkit is degraded
-- **Sprint 7 toolkit OurNewsToolkit (DEC-464)** — needs Polygon news (DEC-445) replacing Finnhub
-- **Sprint 7 toolkit OurTechnicalToolkit (DEC-462)** — needs Polygon technical indicators or pandas-ta (DEC-446)
-- **Phase 1B-α run** — needs all data sources cached, deprecated APIs removed, deterministic data layer
-- **PIT correctness** — yfinance.info CURRENT-only contaminated multiple downstream queries; DEC-443 closes this contamination vector
-
-Sprint 4 is a precondition for Sprint 7 effectiveness.
-
-## §11.3 How — components, data flow, dependencies
-
-**Component-level changes:**
-
-```
-backtest/data/
-├── polygon_news.py            ★ NEW Sprint 4 (DEC-445)
-├── polygon_technicals.py      ★ NEW Sprint 4 (DEC-446) — for Tier 1
-├── polygon_options.py         ★ NEW Sprint 4 (DEC-447) — evaluation only
-├── fmp_client.py              ★ NEW Sprint 4 (DEC-461 mandatory)
-├── fmp_financials.py          ★ NEW Sprint 4 (PIT-correct fundamentals)
-├── fmp_transcripts.py         ★ NEW Sprint 4 (earnings call transcripts)
-├── fmp_analyst_estimates.py   ★ NEW Sprint 4
-├── quiver_paid_client.py      ⊠ EXTEND Sprint 4 (DEC-450)
-├── _legacy/                    ⊠ Sprint 4 SCAFFOLD
-│   ├── yfinance_info.py        (replaced by polygon_reference.py)
-│   ├── yfinance_earnings.py    (replaced by polygon_earnings.py)
-│   ├── finnhub_news.py         (replaced by polygon_news.py)
-│   ├── openbb_*.py             (decommissioned)
-│   ├── alpha_vantage_*.py      (decommissioned)
-│   └── tradingview_*.py        (decommissioned)
-
-requirements.txt               ⊠ UPDATED Sprint 4
-    - yfinance>=...             # demoted but retained for fallback
-    + financial-modeling-prep
-    + (Polygon already in)
-    - finnhub-python              # REMOVED
-    - openbb                      # REMOVED
-    - alpha-vantage              # REMOVED
-
-.github/workflows/lint.yml      ⊠ UPDATED Sprint 4 — block import of decommissioned libs
-```
-
-**Data flow during a Sprint 7+ toolkit query (example — fundamentals):**
-
-```
-OurFundamentalsToolkit.get_financials("AAPL", "2022-06-15")
-        │
-        ▼
-fmp_financials.fetch_financial_statements("AAPL", as_of="2022-06-15")
-        │
-        ▼ checks cache_fundamentals.parquet
-        │
-        ├── HIT → return rows where filing_date ≤ "2022-06-15"
-        │
-        └── MISS → fmp_client.get_income_statement(...)
-                  fmp_client.get_balance_sheet(...)
-                  fmp_client.get_cash_flow(...)
-                  → cache, return PIT-sliced
-```
-
-**Dependencies:**
-- Sprint 1 substantially complete (Polygon foundation)
-- Sprint 3 mid-point (Portfolio class for context if needed; not strict)
-- DEC-478 PROPOSED Polygon tier choice
-- DEC-461 PROPOSED FMP subscription
-- DEC-468 Ortex wiring path
-
-## §11.4 When
-
-**Sequence within Sprint 4 (~41.75-54.25d, parallel with Sprints 3+5+6):**
-
-| Week | Focus |
-|---|---|
-| Week 1 | DEC-461 FMP subscription + smoke test; FMP financials cache |
-| Week 1-2 | DEC-450 Quiver paid endpoint expansion + cache extension |
-| Week 2 | DEC-443 Polygon reference replacing yfinance.info wired into engine |
-| Week 2-3 | DEC-444 Polygon earnings replacing yfinance earnings |
-| Week 3 | DEC-445 Polygon news replacing Finnhub |
-| Week 4 | DEC-446 Polygon technical indicators (Tier 1) + pandas-ta (Tier 2/3) |
-| Week 4 | DEC-447 Polygon options evaluation; document findings |
-| Week 5 | DEC-441 verification + DEC-479 cost correction documentation |
-| Week 5 | DEC-448/449 FRED expansion + ALFRED PIT validation |
-| Week 6 | DEC-451 Quiver free decommission + DEC-468 Ortex wiring |
-| Week 6-7 | DEC-453/454/455/456 — Finnhub/OpenBB/AV/TradingView decommissioning + lint blocks |
-| Week 7 | yfinance demotion to fallback (DEC-442) |
-| Week 8 | Integration tests + acceptance + PR review |
-
-**Total: ~41.75-54.25d realistic.**
-
-**Parallel-ability:**
-- Sprint 4 ↔ Sprint 1: **partial parallel** — Sprint 4 uses Sprint 1's Polygon foundation; can start Week 2 of Sprint 1
-- Sprint 4 ↔ Sprint 3: **parallel** — Sprint 3 builds Portfolio; Sprint 4 builds data layer; orthogonal
-- Sprint 4 ↔ Sprint 5/6: **parallel** — independent concerns
-
-**Blockers:**
-- DEC-478 PROPOSED Polygon tier choice (impacts which Polygon endpoints available)
-- DEC-461 PROPOSED FMP subscription (impacts OurFundamentalsToolkit)
-- Sprint 1 substantially complete (Polygon foundation)
-
-## §11.5 Done criteria
-
-- [ ] FMP subscription active; smoke test successful; financials + transcripts + analyst estimates cached
-- [ ] Polygon reference data replaces yfinance.info; CI tests verify sector/cap/exchange come from Polygon (BUG-218 closed)
-- [ ] Polygon earnings cached; yfinance earnings deprecated; deprecation warning fires on import
-- [ ] Polygon news replaces Finnhub; news available for all Tier 1 tickers
-- [ ] Polygon technical indicators wired for Tier 1; pandas-ta for Tier 2/3
-- [ ] Polygon options evaluation document complete; recommend implementation or defer
-- [ ] DEC-441 cost reconciled; DEC-479 PROPOSED merged
-- [ ] FRED 9+ series cached; ALFRED PIT validated for all series
-- [ ] Quiver paid expansion: insider + congressional + 13F + analyst rating changes + government contracts all cached
-- [ ] Quiver free endpoints decommissioned
-- [ ] Ortex API wired; short interest cached for Tier 1 tickers
-- [ ] Finnhub / OpenBB / Alpha Vantage / TradingView code paths removed
-- [ ] Lint rules block new imports of decommissioned libraries
-- [ ] yfinance demoted to fallback only; not used in production paths
-- [ ] All BUG_REGISTER bugs related to data layer closed
-- [ ] Sprint 4 PR merged; CI green
-
-## §11.6 Risks
-
-**Risk R-1: FMP subscription cost overrun**
-- $14-50/mo per FMP tier; if upgrade needed for endpoints, overrun
-- Mitigation: Sprint 4 Week 1 verifies tier; budget $50/mo conservative
-
-**Risk R-2: Polygon news endpoint quality lower than Finnhub**
-- News API quality varies; Finnhub may be better in some respects
-- Mitigation: cross-reference 5-10 examples; if Polygon insufficient, defer Finnhub decommission to Sprint 7 with rationale
-
-**Risk R-3: yfinance fallback paths trigger silently**
-- Code might silently fall back to yfinance; contamination risk
-- Mitigation: lint enforces explicit import; CI blocks new yfinance.info / yfinance.earnings imports; deprecation warnings on existing paths
-
-**Risk R-4: Ortex API contract surprises**
-- Untested in production
-- Mitigation: smoke test Week 6; if API issues, defer Ortex to Sprint 7 Week 14 explicitly
-
-**Risk R-5: Quiver paid endpoint rate limits**
-- Paid tier rate limits TBD
-- Mitigation: smoke test Week 1; throttle ingest if rate limits enforce
-
-**Risk R-6: Polygon options data depth varies by tier**
-- Stocks Starter may not include options; Stocks Developer may
-- Mitigation: DEC-447 evaluation explicitly tests at chosen tier; document findings; defer implementation if insufficient
-
-## §11.7 Cost
-
-**Engineering effort:** ~41.75-54.25d
-**Subscription cost:**
-- FMP $14-50/mo (DEC-461 mandatory now)
-- Polygon (Sprint 1 already counted)
-- Quiver paid expansion $50-100/mo (already DEC-450 Sprint 1 baseline)
-- Ortex $50-100/mo (DEC-468 Sprint 7 baseline)
-
-**Sprint 4 incremental monthly subscriptions: $14-50/mo (FMP).**
-
-## §11.8 Decisions in scope
-
-| DEC | Title | Status |
-|---|---|---|
-| 410 | API audit (17-API comprehensive) parent decision | RESOLVED-DECIDED |
-| 440 | Finnhub decommission scoping | RESOLVED-DECIDED |
-| 441 | Polygon Stocks Starter $29 baseline | RESOLVED-DECIDED |
-| 442 | yfinance demoted to fallback | RESOLVED-DECIDED |
-| 443 | Polygon reference replaces yfinance.info | RESOLVED-DECIDED |
-| 444 | Polygon earnings replaces yfinance earnings | RESOLVED-DECIDED |
-| 445 | Polygon news replaces Finnhub | RESOLVED-DECIDED |
-| 446 | Polygon technical indicators (Tier 1) | RESOLVED-DECIDED |
-| 447 | Polygon options evaluation | RESOLVED-DECIDED |
-| 448 | FRED 9+ series expansion | RESOLVED-DECIDED |
-| 449 | FRED + ALFRED PIT validation | RESOLVED-DECIDED |
-| 450 | Quiver paid endpoint expansion | RESOLVED-DECIDED |
-| 451 | Quiver free decommissioned | RESOLVED-DECIDED |
-| 453 | Finnhub fully decommissioned | RESOLVED-DECIDED |
-| 454 | OpenBB fully decommissioned | RESOLVED-DECIDED |
-| 455 | Alpha Vantage fully decommissioned | RESOLVED-DECIDED |
-| 456 | TradingView removed | RESOLVED-DECIDED |
-| 461 | FMP MANDATORY (per DEC-460 negative) | RESOLVED-DECIDED conditional |
-| 468 | Ortex wired | RESOLVED-DECIDED |
-| 478 PROPOSED | Polygon tier upgrade decision | Awaits owner approval |
-| 479 PROPOSED | DEC-441 cost correction $30→$29 | Awaits owner approval |
-
-## §11.9 Test approach
-
-- Unit tests: each new client (FMP, Polygon news, Polygon technicals, Polygon options eval, Ortex)
-- Integration: data flows from each source to cache to query layer
-- PIT regression: same as_of date returns same data regardless of system time
-- Lint: enforces decommission
-
-**Acceptance:** Sprint 4 PR review; verify lint rules + CI tests pass; manual spot-check on 5 Tier 1 tickers across all data sources
-
-## §11.10 Data dependencies
-
-**Inputs:** Sprint 1 Polygon foundation
-**Outputs:** Cleaned data layer for Sprint 7 toolkit work; Sprint 8 strategy categories that depend on FMP/Polygon earnings
-
-## §11.11 Operational checklist
-
-(See §11.4 week-by-week.)
-
-## §11.12 Open issues — gaps from ADVERSARIAL_AUDIT
-
-- **GAP 9:** Quiver paid scope (which endpoints)
-  - Resolution: §11.1 deliverable #10 — insider + congressional + 13F + analyst rating changes + government contracts
-- **GAP 10:** Quiver paid rate limits unverified
-  - Resolution: Sprint 4 Week 1 smoke test explicitly verifies
-- **GAP 11:** Ortex specific endpoints used unspecified
-  - Resolution: short interest + days to cover + borrow cost; Sprint 4 Week 6 smoke test verifies
-- **GAP 12:** Ortex API quirks
-  - Resolution: §11.6 R-4 — smoke test; if quirks, defer to Sprint 7
-
-## §11.13 Decision history
-
-- DEC-410 (Pass 51): API audit parent decision; identified 17 APIs across project
-- DEC-440-456 (Pass 51): individual decommissioning + replacement decisions
-- DEC-460-461 (Pass 52 turn 130): conditional FMP subscription
-- Pass 52 turn 133: DEC-460 verification negative confirmed; DEC-461 NOW MANDATORY
-
-## §11.14 File / module structure
-
-(See §11.3 component diagram.)
-
-## §11.15 Example walkthrough
-
-**Scenario:** Sprint 7 builds OurFundamentalsToolkit; method `get_recent_earnings_call_transcript("AAPL", "2022-06-15")` is called.
-
-**Without Sprint 4 (no FMP):**
-- yfinance has no transcripts
-- Polygon Stocks Starter has no transcripts
-- Toolkit method returns empty / error → agent reasoning degraded → Phase 1B-α A/B comparison less informative
-
-**With Sprint 4 (FMP subscribed per DEC-461):**
-- `fmp_transcripts.fetch_transcript("AAPL", quarter="Q1_2022", filing_date_le="2022-06-15")` returns transcript
-- Toolkit method returns transcript text → Fundamentals Analyst incorporates into reasoning → agent overlay value-add increased
-
-**Similarly DEC-443 (Polygon reference replacing yfinance.info):**
-
-**Without Sprint 4:**
-- yfinance.info on AAPL returns CURRENT sector "Technology"
-- 2022-06-15 query: yfinance.info has no as_of capability → returns CURRENT sector
-- BUG-218 contamination: portfolio sector concentration computed on CURRENT sector → wrong if any reclassification happened post-2022-06-15
-
-**With Sprint 4:**
-- polygon_reference.get_sector("AAPL", as_of="2022-06-15") returns sector AS OF 2022-06-15
-- BUG-218 closed; sector concentration computed correctly
-
-**Sprint 4 isn't glamorous but is essential for Stage 2 verdict integrity.**
-
----
-
-# PART 12 — SPRINT 5: UNIVERSE MANAGEMENT (Parallel)
-
-## §12.1 What — concrete deliverable in plain English
-
-Sprint 5 produces the **3-tier universe construction logic** that determines which tickers are eligible to trade on any given date in the backtest (and later, in live). This is the build pipeline behind the universe architecture described in Part 2 §2.3.
-
-This sprint runs in parallel with Sprints 3+4+6 because universe management is orthogonal to data layer cleanup, Portfolio class, and engine work.
-
-Concrete deliverables:
-
-**Tier 1 — S&P 500 + Selected ETFs build pipeline:**
-1. **`universe/tier_1_sp500.py`** — daily build using `historical_membership.csv` (per DEC-303 + DEC-477 PROPOSED canonical) + selected ETFs (DEC-118: VIX, DXY, GLD, oil, sector ETFs, TLT, HYG, SHY)
-2. **PIT correctness** — at as_of=2020-06-15, Tier 1 = S&P 500 membership AS OF 2020-06-15; not current; resolves ADVERSARIAL_AUDIT GAP 36 (Russell 1000 inconsistency, GAP B9)
-3. **Liquidity floor enforcement** — $10M ADV minimum; tickers below floor flagged but kept in universe with reduced sizing per DEC-321/366
-4. **History requirement enforcement** — 250-day minimum history; new IPOs to S&P 500 wait period before Tier 1 eligibility
-
-**Tier 2 — Spinoffs / IPOs build pipeline:**
-5. **`universe/tier_2_spinoffs.py`** — SEC EDGAR scrape for Form 10-12B filings (per DEC-378-380); detects spinoffs from parent company; tracks spinoff event dates
-6. **`universe/tier_2_ipos.py`** — recent IPOs identified via Polygon listings (or alternative source); cap minimum $2B; history minimum 20 trading days
-7. **`LIMITED_HISTORY` flag** — strategies that need long history check this flag and skip; strategies designed for short-history (e.g., post-IPO drift, post-spinoff opportunity) explicitly opt-in
-8. **Refresh frequency** — daily refresh; new spinoffs/IPOs added; aged out (>2 years post-spinoff event) graduate to Tier 1 if S&P 500 member
-
-**Tier 3 — Momentum Top-100 build pipeline:**
-9. **`universe/tier_3_momentum.py`** — monthly refresh on the 1st trading day; ranks all universe candidates by 6-month total return + relative strength; selects top 100; subject to liquidity floor + market cap floor
-10. **`.github/workflows/refresh_momentum_watchlist.yml`** — cron monthly first-trading-day; commits updated `data/universe/tier_3_momentum.csv`
-11. **PIT correctness** — refresh date is recorded; at backtest as_of, use Tier 3 list AS OF that date (not current)
-
-**Universe orchestration:**
-12. **`universe/universe_builder.py`** — single entry point; given as_of_date, returns dict `{tier_1: [...], tier_2: [...], tier_3: [...]}`; backtest engine uses this for daily scan
-13. **Universe diff tracking** — daily log of universe additions / removals with reasons; supports Phase 1B-α verdict context (which tickers entered/exited cube during run)
-14. **Russell 1000 reconciliation per ADVERSARIAL GAP B9** — explicit decision: Stage 2 universe = S&P 500 only (Tier 1) per DEC-477 PROPOSED; Russell 1000 mention from prior docs deprecated; if owner wants Russell 1000 expansion, that's a Stage 2 scope expansion per Part 13 owner review
-
-## §12.2 Why — how this advances Stage 2 toward verdict
-
-Universe management determines **which trades are even possible** in the backtest. Without Sprint 5:
-
-- Tier 1 is just a static list (the 482-ticker CSV) → not PIT-correct → tickers in S&P 500 today but not in 2020 are mistakenly included; tickers removed from S&P 500 in 2022 mistakenly excluded from 2020 trades → cube populated on wrong universe → verdict invalid
-- Tier 2 doesn't exist → spinoff/IPO strategies have no candidates → cube under-populated for those signal classes
-- Tier 3 doesn't refresh → momentum strategies operate on stale candidate pool → verdict missing real momentum dynamics
-- Survivorship bias contamination — including only currently-extant tickers → backtest looks better than reality
-
-Sprint 5 ensures the cube is populated with PIT-correct universe, which is foundational to Stage 2 verdict validity.
-
-## §12.3 How — components, data flow, dependencies
-
-**Component diagram:**
-
-```
-backtest/
-├── universe/
-│   ├── __init__.py
-│   ├── universe_builder.py            ★ NEW Sprint 5 (orchestrator)
-│   ├── tier_1_sp500.py                ★ NEW Sprint 5
-│   ├── tier_2_spinoffs.py             ★ NEW Sprint 5
-│   ├── tier_2_ipos.py                 ★ NEW Sprint 5
-│   ├── tier_3_momentum.py             ★ NEW Sprint 5
-│   ├── liquidity_floor.py             ★ NEW Sprint 5 (DEC-366)
-│   ├── history_requirement.py         ★ NEW Sprint 5
-│   └── universe_diff.py                ★ NEW Sprint 5
-
-data/universe/
-├── historical_membership.csv          (Sprint 1 deliverable; canonical per DEC-477)
-├── selected_etfs.csv                   ★ NEW Sprint 5
-├── tier_2_spinoffs.parquet             ★ NEW Sprint 5 (refreshed daily)
-├── tier_2_ipos.parquet                 ★ NEW Sprint 5 (refreshed daily)
-└── tier_3_momentum.parquet             ★ NEW Sprint 5 (refreshed monthly)
-
-.github/workflows/
-├── refresh_tier_2_spinoffs.yml         ★ NEW Sprint 5 (daily cron)
-├── refresh_tier_2_ipos.yml             ★ NEW Sprint 5 (daily cron)
-└── refresh_momentum_watchlist.yml      ★ NEW Sprint 5 (monthly cron)
-```
-
-**Data flow at backtest start:**
-
-```
-Engine: "I need universe for as_of=2022-06-15"
-        │
-        ▼
-universe_builder.build(as_of_date=2022-06-15)
-        │
-        ├── tier_1_sp500.build(as_of_date)
-        │       reads historical_membership.csv
-        │       filters to members at as_of_date
-        │       adds selected_etfs.csv (DEC-118)
-        │       liquidity_floor.apply($10M ADV)
-        │       history_requirement.apply(250 days)
-        │       returns ~509 tickers
-        │
-        ├── tier_2_spinoffs.build(as_of_date)
-        │       reads tier_2_spinoffs.parquet (filed_date ≤ as_of)
-        │       filters to within 2-year spinoff window
-        │       liquidity_floor.apply($5M ADV)
-        │       returns variable count
-        │
-        ├── tier_2_ipos.build(as_of_date)
-        │       reads tier_2_ipos.parquet (ipo_date ≤ as_of)
-        │       filters to within 1-year IPO window + cap ≥ $2B + history ≥ 20d
-        │       returns variable count
-        │
-        └── tier_3_momentum.build(as_of_date)
-                reads tier_3_momentum.parquet
-                finds most-recent monthly refresh ≤ as_of_date
-                returns top 100 from that month
-        │
-        ▼
-returns {tier_1: [...], tier_2: [...], tier_3: [...]}
-        │
-        ▼
-Engine fires strategies on each tier (strategies declare which tier they target)
-```
-
-**Dependencies:**
-- Sprint 1: `historical_membership.csv` canonicalized; OHLCV cache for liquidity computation
-- Sprint 4 (mid-point): SEC EDGAR scrape capability tested; Polygon listings endpoint operational
-- DEC-477 PROPOSED — historical_membership.csv canonical
-- DEC-104/375-377 — momentum top-100 specs
-
-**Library dependencies:**
-- `requests` + `lxml` (SEC EDGAR scraping)
-- `pandas`, `numpy` (computation)
-- Polygon listings endpoint via existing client
-
-## §12.4 When
-
-**Sequence within Sprint 5 (~13.5-15.5d, parallel with Sprints 3+4+6):**
-
-| Day | Task |
-|---|---|
-| 1 | universe_builder.py orchestrator + tier_1_sp500.py |
-| 2 | liquidity_floor.py + history_requirement.py |
-| 3 | selected_etfs.csv definition + integration |
-| 4 | tier_2_spinoffs.py + SEC EDGAR scrape pilot |
-| 5 | tier_2_ipos.py + Polygon listings integration |
-| 6-7 | tier_3_momentum.py + monthly refresh logic |
-| 8 | Refresh workflows (3 GitHub Actions cron jobs) |
-| 9 | universe_diff.py tracking |
-| 10 | Russell 1000 reconciliation documentation per GAP B9 |
-| 11-12 | Integration tests + PIT correctness verification |
-| 13-14 | Sprint 5 PR review + merge |
-
-**Total: ~13.5-15.5d realistic.**
-
-**Parallel-ability:**
-- Sprint 5 ↔ Sprint 3: parallel
-- Sprint 5 ↔ Sprint 4: parallel (slightly dependent on Sprint 4 Polygon listings)
-- Sprint 5 ↔ Sprint 6: parallel
-
-**Blockers:**
-- Sprint 1 historical_membership.csv canonicalized (DEC-477 PROPOSED approval)
-- DEC-378-380 SEC EDGAR scrape feasibility verified (likely fine; SEC EDGAR is public)
-
-## §12.5 Done criteria
-
-- [ ] universe_builder.py returns dict for any as_of date in cache window
-- [ ] Tier 1 returns ~509 tickers for current as_of; varies historically per S&P 500 membership
-- [ ] Tier 2 spinoffs daily refresh produces sensible candidate count (typically 5-30 active spinoffs)
-- [ ] Tier 2 IPOs daily refresh produces sensible candidate count (typically 5-20 active IPOs)
-- [ ] Tier 3 momentum monthly refresh produces 100 tickers each refresh
-- [ ] PIT correctness: as_of=2020-06-15 returns S&P 500 membership AS OF 2020-06-15 (not current)
-- [ ] Liquidity floor enforced: tickers below $10M ADV (Tier 1) / $5M ADV (Tier 2/3) flagged
-- [ ] History requirement enforced: tickers with < 250 days history excluded from Tier 1 (or 20 days for IPOs in Tier 2 with LIMITED_HISTORY flag)
-- [ ] Russell 1000 reconciliation documented; Stage 2 scope = S&P 500 + selected ETFs (Tier 1) confirmed
-- [ ] Universe diff log committed daily; supports Phase 1B-α verdict context
-- [ ] 3 refresh workflows running successfully in GitHub Actions
-- [ ] Sprint 5 PR merged; CI green; PIT regression tests pass
-
-## §12.6 Risks
-
-**Risk R-1: SEC EDGAR scrape unreliable in Codespace**
-- Allowlist may block SEC EDGAR (Wikipedia precedent)
-- Mitigation: Sprint 5 Day 4 pilot test; if blocked, owner approves allowlist update OR scrape locally on Windows laptop and commit
-
-**Risk R-2: Form 10-12B parsing complex**
-- SEC filings have nested XBRL; parsing requires care
-- Mitigation: existing libraries (sec-edgar-downloader, edgar) handle parsing; budget extra day if custom parsing
-
-**Risk R-3: Tier 3 momentum refresh on stale data**
-- Monthly refresh first-trading-day; if cron fails, stale list used
-- Mitigation: cron failure alerts; manual refresh trigger; freshness check at as_of build
-
-**Risk R-4: historical_membership.csv coverage gaps**
-- DEC-303 csv may have gaps for certain dates (especially pre-2010)
-- Mitigation: validation pass during Sprint 5; flag gaps; document in LIMITATIONS
-
-**Risk R-5: IPO date PIT correctness**
-- Polygon listings endpoint may not have historical IPO date with as_of context
-- Mitigation: SEC EDGAR S-1 filing date is canonical IPO date; cross-reference
-
-**Risk R-6: Selected ETFs PIT correctness**
-- Some ETFs were created within cache window (e.g., XLY came in 1998, well before; but some sector ETFs are newer)
-- Mitigation: each ETF has earliest_date; tier_1 filters to ETFs that exist at as_of
-
-## §12.7 Cost
-
-**Engineering effort:** ~13.5-15.5d
-**Subscription cost:** $0 incremental (uses Sprint 1 + 4 data sources)
-
-## §12.8 Decisions in scope
-
-| DEC | Title |
-|---|---|
-| 103 | IPO universe ≥$2B + 20-day-min history |
-| 104 | Momentum top-100 watchlist refresh monthly |
-| 118 | Tier 1 includes selected ETFs |
-| 303 | historical_membership.csv (PIT S&P 500) |
-| 321 | Liquidity filter fail-closed |
-| 366 | Liquidity floor $10M Tier 1 / $5M Tier 2/3 |
-| 375 | Tier 3 refresh script |
-| 376 | Tier 3 refresh workflow |
-| 377 | Index rebalance PIT historical dates |
-| 378 | Tier 2 spinoffs SEC EDGAR scrape |
-| 379 | SEC EDGAR Form 10-12B detection |
-| 380 | Spinoff event date tracking |
-| 477 PROPOSED | historical_membership.csv canonical | Awaits owner approval |
-| GAP B9 (resolution) | Russell 1000 reconciliation — Stage 2 = S&P 500 only |
-
-## §12.9 Test approach
-
-- Unit tests: each tier builder; PIT correctness via freezegun; liquidity / history floor enforcement
-- Integration: universe_builder returns expected counts for known historical dates
-- Acceptance: owner spot-checks 5 historical dates; confirms Tier 1 membership matches S&P 500 archive
-
-## §12.10 Data dependencies
-
-**Inputs:** Sprint 1 historical_membership.csv + OHLCV; SEC EDGAR + Polygon listings
-**Outputs:** Universe dict per as_of → consumed by Phase 1B-α run
-
-## §12.11 Operational checklist
-
-(See §12.4 day-by-day.)
-
-## §12.12 Open issues — gaps from ADVERSARIAL_AUDIT
-
-- **GAP B9 (CRITICAL — Blocker):** Russell 1000 / universe definition inconsistent
-  - Resolution: §12.1 deliverable #14 — Stage 2 = S&P 500 + selected ETFs (Tier 1) per DEC-477 PROPOSED; Russell 1000 expansion deferred to potential Stage 2 scope expansion via owner review
-- **GAP 36:** historical_membership.csv vs static 482-CSV
-  - Resolution: §12.1 deliverable #1 — DEC-477 PROPOSED canonicalizes historical_membership.csv; static deprecated
-- **GAP 154-156:** Spinoff / IPO detection sources unspecified
-  - Resolution: §12.3 component diagram — SEC EDGAR Form 10-12B + Polygon listings + S-1 filings
-- **GAP 157:** Tier 3 momentum refresh failure handling
-  - Resolution: §12.6 R-3 — alerts + manual fallback + freshness check
-
-## §12.13 Decision history
-
-- DEC-103/104 (Pass ~25): Tier 2/3 universe specs
-- DEC-303 (Pass ~30): historical_membership.csv approach
-- DEC-321/366 (Pass ~35): liquidity filter
-- DEC-375-380 (Pass ~42): Tier 2/3 refresh + spinoffs SEC EDGAR
-- DEC-477 PROPOSED (Pass 52 turn 133): canonicalization of historical_membership.csv
-
-## §12.14 File / module structure
-
-(See §12.3 component diagram.)
-
-## §12.15 Example walkthrough
-
-**Scenario:** Backtest fold 2020 starts. Engine needs universe for 2020-06-15.
-
-**Step 1:** `universe_builder.build(as_of_date='2020-06-15')` called.
-
-**Step 2:** Tier 1:
-- `tier_1_sp500.build('2020-06-15')` reads historical_membership.csv
-- Filters to S&P 500 members AS OF 2020-06-15 → 505 tickers (including TSLA which was added later 2020-12-21 — TSLA NOT in this universe yet)
-- Adds selected ETFs that exist at 2020-06-15 → +12 ETFs
-- Applies liquidity floor $10M ADV using Sprint 1 OHLCV → drops 0 (all S&P 500 + ETFs liquid)
-- Applies history floor 250 days → drops 0
-- Returns 517 tickers
-
-**Step 3:** Tier 2:
-- `tier_2_spinoffs.build('2020-06-15')` reads tier_2_spinoffs.parquet
-- Filters: spinoff_date within 2 years of 2020-06-15 (i.e., spinoffs from 2018-06-15 onwards)
-- Returns ~15 active spinoff candidates (e.g., ADT spinoff from State Industries, MGM spinoff from MGM Mirage, etc.)
-- Liquidity floor $5M; history flag LIMITED_HISTORY for those <250 days
-
-- `tier_2_ipos.build('2020-06-15')` reads tier_2_ipos.parquet
-- Filters: IPO within 1 year of 2020-06-15 (IPOs since 2019-06-15) + cap ≥ $2B + history ≥ 20d
-- Returns ~12 IPOs (e.g., Uber Q2 2019 IPO, Lyft 2019, etc.)
-
-**Step 4:** Tier 3:
-- `tier_3_momentum.build('2020-06-15')` reads tier_3_momentum.parquet
-- Finds most-recent monthly refresh ≤ 2020-06-15 → 2020-06-01 refresh
-- Returns 100 tickers from 2020-06-01 momentum top-100
-- (TSLA in this list since pre-S&P-500 inclusion, momentum top-100 captured high-momentum names)
-
-**Step 5:** universe_builder returns:
-```python
-{
-    'tier_1': [517 tickers],
-    'tier_2': [27 tickers (15 spinoffs + 12 IPOs)],
-    'tier_3': [100 tickers]
-}
-```
-
-**Step 6:** Engine fires strategies:
-- Tier-1-only strategies (e.g., RSI_Mean_Reversion_30_70) iterate over 517 tickers
-- Tier-2-only strategies (e.g., Post_Spinoff_Momentum) iterate over 27 tickers
-- Tier-3-only strategies (e.g., Momentum_Top_N_Trend) iterate over 100 tickers
-- Multi-tier strategies (e.g., Earnings_Drift_Post) iterate over union (excluding ETFs)
-
-**Step 7:** Universe diff log records:
-- Today's tier_1 count: 517
-- Today's tier_2 count: 27
-- Today's tier_3 count: 100
-- Additions from yesterday: ABC Corp (new Tier 2 IPO; price first available)
-- Removals from yesterday: XYZ Inc (failed liquidity floor due to volume drop)
-
-**Without Sprint 5:**
-- Static 482-CSV used for Tier 1 → TSLA included in 2020-06-15 (wrong; TSLA not in S&P 500 until Dec 2020) → contaminates trades
-- Tier 2 doesn't exist → spinoff/IPO strategies have no candidates → cube empty for those cells
-- Tier 3 doesn't refresh → momentum strategies operate on stale or current list → not PIT
-- Cube under-populated AND contaminated → verdict invalid
 
 ---
 
