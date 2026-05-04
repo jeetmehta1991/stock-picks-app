@@ -3,7 +3,9 @@
 **Document role:** Canonical home for all trading rules, thresholds, criteria, benchmarks, and parameters across all 5 stages of the project. ENGINEERING_REGISTER references this document instead of duplicating thresholds inline.
 
 **Created:** Pass 52 turn 128
+**Last updated:** Pass 52 turn 131 (surgical update — DEC-042 SUPERSEDED_BY_DEC-459 Option C Hybrid Architecture; Custom Toolkit (DEC-462-468) + LangGraph state augmentation cross-references added per TRADINGAGENTS_DATA_AUDIT.md)
 **Companion canonical doc:** PROJECT_PLAN.md (project overview entry point)
+**Companion data audit doc:** TRADINGAGENTS_DATA_AUDIT.md (per-agent data input requirements; gap analysis; Custom Toolkit + LangGraph state augmentation specs)
 **Single Source of Truth:** This document holds canonical thresholds; if any specialized register or code differs, this document wins.
 
 **Per owner directive #3:** Detail level is exhaustive — all information present, no abbreviation for brevity.
@@ -233,8 +235,11 @@
 - [ ] Stationarity tests operational (ADF + rolling Sharpe + Chow per DEC-111)
 - [ ] Distribution analysis operational (DEC-242)
 - [ ] A/B testing framework operational with 4 arms (DEC-205-216)
-- [ ] AgentGateConfig spec implemented per §7 (DEC-042)
-- [ ] Continuous-Risk vs binary-veto A/B arm operational (DEC-042 directive #3)
+- [ ] AgentGateConfig spec implemented per §7 (DEC-459 Option C Hybrid; supersedes DEC-042 turn 129)
+- [ ] Continuous-Risk vs binary-veto A/B arm operational (DEC-459 carrying DEC-042 turn 121 directive #3 forward)
+- [ ] Custom toolkits operational per TRADINGAGENTS_DATA_AUDIT.md Part D (DEC-462-468 Pattern 2)
+- [ ] OurAgentState schema + LangGraph injection points operational (DEC-467)
+- [ ] LangGraph state augmentation per TRADINGAGENTS_DATA_AUDIT.md Part E (smart_money_signal / regime_context / portfolio_context / event_proximity / sector_context / short_interest_signal / historical_outcomes)
 - [ ] Regime methodology operational (DEC-106-108, DEC-149-151)
 - [ ] vs-SPY comparison in all reports (DEC-155)
 
@@ -386,7 +391,7 @@ A strategy is **VALID** if and only if it passes ALL 5 gates per dimensional cub
 
 | Tier | Position Size | Trigger Condition |
 |---|---|---|
-| **HIGH** | 5% of portfolio | gate_score ≥ 0.8 (DEC-042) |
+| **HIGH** | 5% of portfolio | PM confidence ≥ 0.8 (DEC-459) |
 | **MEDIUM** | 3% of portfolio | gate_score 0.65 - 0.8 |
 | **LOW** | 1.5% of portfolio | gate_score 0.5 - 0.65 |
 
@@ -396,7 +401,7 @@ A strategy is **VALID** if and only if it passes ALL 5 gates per dimensional cub
 
 **Source:** DEC-021
 
-### 5.2 Tier Mapping from Agent Gate Score (per DEC-042)
+### 5.2 Tier Mapping from PM Confidence (per DEC-459 — supersedes DEC-042)
 
 ```
 if gate_score >= 0.8 and Risk approves and Bull/Bear align:
@@ -414,7 +419,7 @@ else:
 
 **REVISIT_AFTER_BACKTEST:** Tier thresholds (0.5/0.65/0.8) tunable empirically.
 
-**Source:** DEC-042 (turn 121 closure)
+**Source:** DEC-459 (Pass 52 turn 129; supersedes DEC-042 turn 121 closure)
 
 ### 5.3 Fractional Kelly Position Sizing (per DEC-086 — Phased Rollout)
 
@@ -526,72 +531,82 @@ if ticker_30d_pnl <= -0.10 × initial_portfolio:
 
 # PART C — AGENT GATE RULES
 
-## 7. AgentGateConfig (per DEC-042 — RESOLVED Pass 52 turn 121)
+## 7. AgentGateConfig (per DEC-459 Option C Hybrid Architecture — supersedes DEC-042)
 
-### 7.1 Approval Rule: WEIGHTED CONTINUOUS-SCORE
+**Status:** RESOLVED-DECIDED Pass 52 turn 129 (DEC-042 SUPERSEDED_BY_DEC-459)
+**Origin:** Pass 52 turn 128 owner accountability question identified that DEC-042 turn 121 spec referenced agents (Bull/Bear/Risk/ChartAnalyst as parallel voters) that did not match actual TradingAgents architecture (sequential debate-and-synthesize through Portfolio Manager). Specifically: ChartAnalyst is NOT in 11-agent roster; framework produces ONE structured Pydantic decision from Portfolio Manager, not parallel votes.
+**Resolution:** DEC-459 Option C Hybrid Architecture — TradingAgents Portfolio Manager native confidence as primary signal + separate Risk veto layer + Research Manager synthesis-level alignment check.
 
-```
-gate_score = w_bull × s_bull + w_bear × s_bear + w_risk × s_risk + w_chart × s_chart
-```
+### 7.1 Architecture Overview
 
-**Constraints:**
-- Each agent emits continuous confidence score `s_i ∈ [0.0, 1.0]`
-- Weights `w_i ∈ [0, 1]`; sum to 1.0 invariant
-- **Default weights:** 0.25 each (REVISIT_AFTER_BACKTEST)
-
-**Source:** DEC-042
-
-### 7.2 Risk Manager Veto
-
-**Rule:** **Risk APPROVE required regardless of others.**
-
-```
-if s_risk < 0.5:
-    REJECT  # Risk veto fires; no entry
+**Primary signal:** TradingAgents Portfolio Manager native structured Pydantic decision per `propagate()`:
+```python
+{
+    decision: BUY | HOLD | SELL,
+    confidence: float,  # 0.0 to 1.0
+    rationale: str,
+    structured_fields: {...}
+}
 ```
 
-**Hard gate:** This is a gate condition, not just a weighted vote. Even if all other agents emit s_i = 1.0, low Risk score rejects entry.
+PM confidence consumed directly as primary gate signal — **NOT re-aggregated** from intermediate agent scores. The TradingAgents framework already performs synthesis through Research Manager (Bull/Bear debate) + Portfolio Manager (Risk debate); re-aggregating these would duplicate work and lose debate richness.
 
-**Continuous-score testing extensively (per owner directive #3):**
+**Source:** DEC-459
+
+### 7.2 Risk Veto Layer
+
+**Rule:** Separate Risk veto evaluated AFTER PM confidence threshold passed.
+
+**Implementation (DEC-459 implementation option 7a recommended):** Extract Risk debate confidence from LangGraph state via state hook. Alternative options 7b (separate Risk Manager call) and 7c (collapse to pure PM-native) deferred to Sprint 7 implementation start.
+
+```
+EXTRACT s_risk from LangGraph state (Risk debate confidence aggregate)
+IF s_risk < 0.5: REJECT (Risk veto fires regardless of PM confidence)
+```
+
+**Continuous-score testing extensively (DEC-459 carrying DEC-042 turn 121 directive #3 forward):**
 - A/B framework includes parallel arms:
-  - **Arm: Binary Risk veto** (current default per above)
-  - **Arm: Continuous Risk gating** (Risk weighted into aggregate score; no separate veto)
+  - **Arm B (default):** PM confidence + Risk veto layer (binary)
+  - **Arm C (no-Risk):** Risk veto disabled; collapses to Option B Pure-PM-native
+  - **Continuous-Risk variant:** Risk weighted into PM confidence by extending OurAgentState with `s_risk_weighted` field; tests whether continuous outperforms binary
 - Empirical Sharpe delta determines production architecture
 - REVISIT_AFTER_BACKTEST tag: continuous-Risk vs binary-veto
 
-**Source:** DEC-042 (turn 121 directive #3)
+**Source:** DEC-459 (carrying DEC-042 turn 121 directive #3 forward)
 
-### 7.3 Confidence Score Format
+### 7.3 PM Confidence Threshold
 
-**Rule:** Continuous score **0.0 to 1.0** per agent (replaces binary {APPROVE, HOLD, REJECT}).
+**Rule:** PM confidence ≥ 0.5 required to enter trade pre-Risk-veto.
 
-**Aggregate gate test:** `gate_score ≥ 0.5` required to enter trade pre-Risk-veto.
+```
+IF PM.decision == HOLD: REJECT
+IF PM.confidence < 0.5: REJECT
+```
 
 **REVISIT_AFTER_BACKTEST:** 0.5 threshold tunable empirically.
 
-**Source:** DEC-042
+**Source:** DEC-459
 
-### 7.4 Bull-vs-Bear Must Align
+### 7.4 Bull-vs-Bear Alignment via Research Manager (Synthesis-Level)
 
-**Rule:** Bull and Bear agents must **agree on direction** for entry.
+**Rule:** Bull and Bear alignment check applied at debate-level via Research Manager synthesis (NOT raw parallel voting).
 
-**For long entry:**
+**Operationalization:**
 ```
-require: s_bull > 0.5 AND s_bear > 0.5
+EXTRACT RM_confidence from LangGraph state (Research Manager output)
+EXTRACT RM_direction from Research Manager output
+
+IF RM_confidence < 0.5: REJECT (debate contested; no clear consensus)
+IF RM_direction does NOT match PM.decision direction: REJECT (misaligned)
 ```
 
-**For short entry:**
-```
-require: s_bull < 0.5 AND s_bear < 0.5
-```
+**Why synthesis-level not raw votes:** Research Manager already synthesizes Bull/Bear debate through `max_debate_rounds` iterations. Raw Bull/Bear voting (DEC-042 spec) double-counted what RM already produces. Owner directive turn 121 #5 (must align) carried forward but applied at correct architectural layer.
 
-**Disagreement (`(s_bull > 0.5) != (s_bear > 0.5)`):** REJECT (no trade).
+**Source:** DEC-459 (carrying DEC-042 turn 121 directive #5 forward, adapted)
 
-**Source:** DEC-042
+### 7.5 Tier Mapping from PM Confidence (per DEC-459 + DEC-021 3-tier)
 
-### 7.5 Tier Mapping (per DEC-042 + DEC-021 3-tier)
-
-| gate_score | Tier | Position Size |
+| PM confidence | Tier | Position Size |
 |---|---|---|
 | ≥ 0.8 | HIGH | 5% per DEC-021 |
 | 0.65 - 0.8 | MEDIUM | 3% |
@@ -600,7 +615,7 @@ require: s_bull < 0.5 AND s_bear < 0.5
 
 **REVISIT_AFTER_BACKTEST:** All tier threshold cuts tunable.
 
-**Source:** DEC-042 + DEC-021
+**Source:** DEC-459 + DEC-021
 
 ### 7.6 Override
 
@@ -608,29 +623,103 @@ require: s_bull < 0.5 AND s_bear < 0.5
 
 **Stage 3+ (paper / live):** Owner manual override via dashboard.
 
-**Source:** DEC-042
+**Source:** DEC-459 (carrying DEC-042 turn 121 directive #6 forward)
 
-### 7.7 A/B Framework Arms
+### 7.7 Complete Gate Logic — Sequential Checks
 
-The A/B testing framework (DEC-205-216) tests AgentGateConfig variants:
+```
+INPUT: TradingAgents propagate() output
+
+CHECK 1 — Decision direction
+  IF PM.decision == HOLD → REJECT
+  IF PM.decision == BUY: long candidate
+  IF PM.decision == SELL: short candidate
+
+CHECK 2 — PM confidence threshold (§7.3)
+  IF PM.confidence < 0.5 → REJECT
+  ELSE proceed
+
+CHECK 3 — Risk veto layer (§7.2)
+  EXTRACT s_risk from LangGraph state
+  IF s_risk < 0.5 → REJECT (Risk veto)
+
+CHECK 4 — Bull/Bear alignment via Research Manager (§7.4)
+  EXTRACT RM_confidence from LangGraph state
+  EXTRACT RM_direction from Research Manager output
+  IF RM_confidence < 0.5 → REJECT (debate contested)
+  IF RM_direction != PM.decision direction → REJECT (misaligned)
+
+CHECK 5 — Tier assignment (§7.5)
+  IF PM.confidence ≥ 0.8 → HIGH tier (5% position)
+  ELIF 0.65 ≤ PM.confidence < 0.8 → MEDIUM tier (3% position)
+  ELIF 0.5 ≤ PM.confidence < 0.65 → LOW tier (1.5% position)
+
+ENTRY APPROVED at assigned tier
+```
+
+### 7.8 A/B Framework Arms
+
+The A/B testing framework (DEC-205-216) tests AgentGateConfig variants per DEC-459:
 
 | Arm | Description |
 |---|---|
-| **rules-only** | No agent gate; pure rules-based decisions |
-| **full-agents** | Default AgentGateConfig per above |
-| **no-Risk** | Risk gate disabled; aggregate score gates only |
-| **no-Bull-Bear** | Bull/Bear alignment requirement disabled |
-| **continuous-Risk** | Risk weighted into aggregate (no veto) — per directive #3 |
+| **A — rules-only** | No agent gate; pure rules-based decisions |
+| **B — full-agents-with-veto** | PM confidence + Risk veto + RM alignment (default config) |
+| **C — no-Risk** | Risk veto disabled (collapses to Option B Pure-PM-native) |
+| **D — no-Bull-Bear-align** | Research Manager alignment check disabled |
+| **E — ablation per DEC-211** | Per-phase weight variations on intermediate scores; NARROW SCOPE (~$120 vs $13,800 naive) |
 
-**Source:** DEC-205-216 + DEC-042
+**Source:** DEC-205-216 + DEC-459 + DEC-211
 
-### 7.8 Test Signals
+### 7.9 Custom Toolkit + State Augmentation Dependencies
 
-- AgentGateConfig dataclass typed; weights sum to 1.0 invariant; scores 0.0-1.0 invariant
-- Bull=0.8 Bear=0.7 Risk=0.6 Chart=0.5 → `gate_score=0.65` + Risk≥0.5 + align → MED-tier entry
-- Risk=0.4 (below 0.5 veto) → REJECT regardless of others
-- Bull=0.8 Bear=0.3 (disagreement) → REJECT (must align)
-- DEC-216 A/B orchestrator passes config per arm
+Per TRADINGAGENTS_DATA_AUDIT.md Part D + Part E (Pass 52 turn 130 — DEC-462 through DEC-468):
+
+**Custom toolkits required (Pattern 2 implementation):**
+- OurTechnicalToolkit (DEC-462) — Market Analyst tool set
+- OurFundamentalsToolkit (DEC-463) — Fundamentals Analyst tool set
+- OurNewsToolkit (DEC-464) — News Analyst tool set
+- OurTraderToolkit (DEC-465 — NEW class) — Trader tool set; HARD DEPENDENCY on Sprint 3 Portfolio class (BUG-095)
+- OurRiskToolkit (DEC-466 — NEW class) — Risk Debaters tool set; HARD DEPENDENCY on Sprint 3 + DEC-189 reflection log
+
+**LangGraph state augmentation required (DEC-467):**
+- 7 new state fields injected at Phase 1/2/3 entry points:
+  - `smart_money_signal` (DEC-124 confluence)
+  - `regime_context` (DEC-106 + crisis flags)
+  - `portfolio_context` (Sprint 3 Portfolio class)
+  - `event_proximity` (DEC-348 event suppression)
+  - `sector_context` (DEC-151 sector regime)
+  - `short_interest_signal` (Ortex per DEC-468)
+  - `historical_outcomes` (DEC-189 reflection log)
+
+**Without these:** AgentGateConfig operates on degraded data; PM confidence reflects shallow input; Stage 2 A/B verdict invalid (per L139 / CHECKLIST #60 — data dependency verification).
+
+**Source:** DEC-462 through DEC-468 (TRADINGAGENTS_DATA_AUDIT.md Part D + E)
+
+### 7.10 Test Signals
+
+- (a) AgentGateConfig dataclass typed (PM confidence 0.0-1.0 invariant)
+- (b) Synthetic `PM(BUY, conf=0.85) + RM(align long, conf=0.7) + Risk(conf=0.6)` → HIGH-tier 5% entry
+- (c) Synthetic `PM(BUY, conf=0.85) + Risk(conf=0.4)` → Risk veto → REJECT regardless of PM confidence
+- (d) Synthetic `PM(BUY, conf=0.7) + RM(contested, conf=0.4)` → align fail → REJECT
+- (e) Synthetic `PM(HOLD)` → REJECT (decision direction)
+- (f) DEC-216 A/B orchestrator passes config per arm: full-with-veto = default; no-Risk = veto disabled; no-align = alignment disabled
+- (g) Continuous-Risk vs binary-veto A/B arm produces measurable Sharpe delta documenting which is empirically better
+- (h) LangGraph state extraction unit tests verify Risk debate confidence + Research Manager confidence reachable from PM decision output
+
+### 7.11 Effort and Sprint
+
+**Effort:** Sprint 7 ~2-3 days (revised from DEC-042 ~1-2d; +1d delta)
+- Config dataclass 0.5d
+- LangGraph state extraction (Risk debate + Research Manager confidence) 1d
+- DEC-216 A/B orchestrator integration 0.5d
+- Risk continuous-score test infrastructure 0.5d
+
+**Plus:** Custom toolkit work (DEC-462-468) ~19-22.5d adds to Sprint 7 total.
+
+**Sprint 7 total effort impact:** 77-86d → 96-108.5d (+19-22.5d, ~25-28% increase per TRADINGAGENTS_DATA_AUDIT.md).
+
+**Source:** DEC-459 + DEC-462-468
 
 ---
 
@@ -1332,7 +1421,7 @@ Where:
 | **no-Risk** | Risk gate disabled |
 | **no-Bull-Bear** | Bull/Bear alignment requirement disabled |
 
-**Plus:** Continuous-Risk arm per DEC-042 directive #3 (5th arm — total 5 arms).
+**Plus:** Continuous-Risk arm per DEC-459 (carrying DEC-042 turn 121 directive #3 forward) — 5th arm — total 5 arms.
 
 **Source:** DEC-205-206
 
@@ -1564,10 +1653,11 @@ Per owner directive #8 — dedicated section listing all empirical-tune items in
 |---|---|---|---|---|
 | 1 | **Per-ticker max-loss cap** | -10% rolling 30-day | §6.2 | DEC-135 |
 | 2 | **Edge decay percentage** | 20% Sharpe haircut | §4.2 | DEC-250 |
-| 3 | **AgentGate default weights** | 0.25 each (equal) | §7.1 | DEC-042 |
-| 4 | **AgentGate score threshold** | 0.5 (entry pre-Risk-veto) | §7.3 | DEC-042 |
-| 5 | **AgentGate tier thresholds** | 0.5 / 0.65 / 0.8 | §7.5 | DEC-042 |
-| 6 | **Continuous-Risk vs binary-veto** | Binary veto current default | §7.2 | DEC-042 |
+| 3 | **PM confidence threshold** | 0.5 (entry pre-Risk-veto) | §7.3 | DEC-459 (supersedes DEC-042) |
+| 4 | **Tier thresholds (PM confidence)** | 0.5 / 0.65 / 0.8 | §7.5 | DEC-459 (supersedes DEC-042) |
+| 5 | **Risk veto threshold** | 0.5 (binary current default) | §7.2 | DEC-459 (supersedes DEC-042) |
+| 6 | **Continuous-Risk vs binary-veto** | Binary veto current default | §7.2 | DEC-459 (carries DEC-042 turn 121 directive #3) |
+| 6a | **Research Manager alignment check on/off** | On default; A/B arm tests off | §7.4 | DEC-459 |
 | 7 | **Slippage threshold ATR/price** | 3% (triggers 2.0× multiplier) | §14.5 | DEC-344 |
 | 8 | **Event window pre/post** | pre=1, post=3 days | §19.2 | DEC-349 |
 | 9 | **Regime candidate cap (Bull)** | 20 candidates/day | §11.3 | DEC-262 |
