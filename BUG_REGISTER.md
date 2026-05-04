@@ -146,7 +146,7 @@ The following table maps every bug in AUDIT.md to the decision(s) that reference
 | BUG-108 | MEDIUM — Agent context built with `.get(key, default)` masks missing data; agent | DEC-458 | (see linked DEC sprint) |
 | BUG-109 | HIGH — yfinance auto_adjust causes data drift; backtest results not reproducible | DEC-442, DEC-458 | (see linked DEC sprint) |
 | BUG-110 | HIGH — Entry gap filter not enforced; trades opened despite exceeding ATR limit | DEC-458 | (see linked DEC sprint) |
-| BUG-111 | MEDIUM — No break-and-retest variants of breakout strategies | DEC-458 | (see linked DEC sprint) |
+| BUG-111 | **CRITICAL** — No break-and-retest variants of breakout strategies (severity: MEDIUM→HIGH→CRITICAL across Pass 52) | DEC-354 (parent umbrella reopened) + DEC-355/356/357 (3 retest-variant strategies) + DEC-358/359/360/361/362 (5 chart pattern strategies; retest-cross-cutting) | Sprint 8 (DEC-355-362) + open scope: 25 existing breakout strategies in screener.py potentially need retest variants — verification needed |
 | BUG-112 | LOW — No ICT/SMC concepts implemented | DEC-458 | (see linked DEC sprint) |
 | BUG-113 | HIGH — Agent action/sizing/exit recommendations ignored by engine | DEC-008, DEC-458 | (see linked DEC sprint) |
 | BUG-113 | HIGH — Agent action/sizing/exit recommendations ignored by engine | DEC-008, DEC-458 | (see linked DEC sprint) |
@@ -192,7 +192,7 @@ Per project memory + Pass 52 audit findings:
 
 - **BUG-095** (no Portfolio class) — CRITICAL OPEN; blocks DEC-070/076/091; resolution via Sprint 3 (Phase 0.B Portfolio class implementation, ~8-11d)
 - **BUG-218** (yfinance fetch_info CURRENT not as_of) — CRITICAL OPEN; resolution via DEC-443 (Sprint 4)
-- **BUG-111** — explicitly tagged CRITICAL OPEN in audit body (verify resolution path)
+- **BUG-111** (No break-and-retest variants of breakout strategies) — Severity escalated MEDIUM→HIGH→CRITICAL across Pass 52. Sprint 8 resolves via DEC-355-362 chart pattern strategies (retest cross-cutting primitive). **Open scope verified Pass 52 turn 123:** 25 existing breakout strategies in screener.py (Breakout 6 + Pivot Based 10 + Confluence 9 categories) may also need `_retest` suffixed variants. Owner direction needed at Sprint 8 implementation time: (a) shared retest entry-signal primitive any breakout strategy opts into, OR (b) explicit `_retest` variant per existing breakout strategy = ~25 new strategies. Effort: ~5-10d (a); ~25-30d (b).
 
 ## Deferred / WONTFIX bugs (Bucket 4)
 

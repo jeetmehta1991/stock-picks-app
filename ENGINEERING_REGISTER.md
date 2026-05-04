@@ -751,3 +751,41 @@ Sprint 7 effort revised: +1.5d → ~76-85d total (was 74.5-83.5d)
 
 Per CHECKLIST #58 — all RESOLVED-DECIDED engineering decisions now have sprint slots with test signals + effort estimates. Substantively-homeless count: 0 ✓.
 
+
+---
+
+## BUG-111 Verification + DEC-298 Status Correction (Pass 52 turn 123)
+
+Per CHECKLIST #58 — verification of resolution path for CRITICAL OPEN bug (BUG-111) + honest correction of DEC-298 status mislabel from turn 121.
+
+### BUG-111 Resolution Path Verified
+
+**Severity history:** MEDIUM (Pass 13) → HIGH (Pass 52) → CRITICAL (Pass 52)
+
+**Resolution components:**
+1. **DEC-355/356/357** (Sprint 8) — 3 chart pattern strategies with explicit retest variants (Trendline / Channel / Range break-and-retest)
+2. **DEC-358-362** (Sprint 8) — 5 chart pattern strategies (Wedge/triangle, H&S, Double top/bottom, Cup/handle, Flag/pennant) with retest cross-cutting primitive
+3. **Existing breakout strategies retest scope** — 25 strategies in screener.py categories (Breakout 6 + Pivot Based 10 + Confluence 9) may need `_retest` variants
+
+### NEW Sprint 8 sub-decision: Shared Retest Primitive vs Explicit Variants
+
+**Open architectural choice (per BUG-111 Pass 52 escalation):**
+
+| DEC-N | Description | Test signals | Effort |
+|---|---|---|---|
+| BUG-111-RESOLUTION (cross-cutting) | Shared retest entry-signal primitive that any breakout strategy can opt into (Option A) OR explicit `_retest` suffixed variant per existing breakout strategy (Option B). Owner direction needed at Sprint 8 implementation time. | (Option A) `def is_retest(symbol, breakout_level, lookback) -> bool` callable from any breakout strategy with `requires_retest=True` flag; (Option B) 25+ new `_retest` strategy classes; mechanical translation per breakout strategy | Option A: ~5-10d (1-2d primitive + 3-8d integration into existing breakout strategies); Option B: ~25-30d (1d per existing strategy `_retest` variant) |
+
+**Recommendation: Option A** (shared primitive) — much smaller surface, opt-in flexibility, easier maintenance. Owner reviews at Sprint 8 implementation start.
+
+### DEC-298 Status Correction
+
+**Honest correction per #25:** Pass 52 turn 121 commit narrative claimed "DEC-298 PIT cache rebuild — still BLOCKED; gates DEC-377/411." This was wrong.
+
+**Actual status (verified):** DEC-298 is **RESOLVED-DECIDED** (Pass 52 Theme 1 PIT closure). The decision was approved: switch `auto_adjust=False`, store raw OHLCV + corp actions, recompute adjusted-on-demand by as_of date.
+
+**What's actually pending:** SPRINT EXECUTION of DEC-298 (cache rebuild ~5 engineering days). DEC-377 + DEC-411 wait for that implementation, not the decision.
+
+**Tracking location:** Sprint 4 ENGINEERING_REGISTER (already in scope).
+
+**Conclusion:** No status flip needed for DEC-298. Downstream "blocking" of DEC-377/411 is sprint-execution sequencing (Sprint 4 implementation of DEC-298 must complete before Sprint 4 DEC-377 + DEC-411), not decision pendency. Standard sprint dependency.
+

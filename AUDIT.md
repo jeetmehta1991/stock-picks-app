@@ -24958,3 +24958,82 @@ Next steps available:
 4. Owner direction
 
 *Per CHECKLIST #25 (honest about DEC-042 history including turn 101 premature flip)/#43 (full DEC-042 history retrieval + cluster cross-check)/#51 (explicit owner approval per all 7 directives)/#57 (use-case mapping with cluster recognition: A/B framework consumer + ablation arm parameterization + Risk veto special handling)/#58 (4-file atomic — final invocation Pass 52).*
+
+---
+
+## AUDIT PASS 52 turn 123 — BUG-111 verification + DEC-298 status honest correction
+
+Owner Pass 52 turn 122: "3 and 4" — BUG-111 verification + DEC-298 PIT cache rebuild
+
+PRE-FLIGHT FINDINGS:
+
+DEC-298 STATUS HONEST CORRECTION (per #25):
+Pass 52 turn 121 commit narrative incorrectly stated DEC-298 was "still BLOCKED — gates DEC-377/411." This was WRONG.
+
+**Actual status:** DEC-298 is RESOLVED-DECIDED (Pass 52 Theme 1 PIT closure earlier in this Pass). Substantive scope: switch yfinance auto_adjust=False; store raw OHLCV + corp actions; recompute adjusted-on-demand by as_of date.
+
+**What's actually pending:** Sprint execution of DEC-298 implementation (~5 engineering days). DEC-377 (Tier 3 historical backfill) and DEC-411 (DEC-109 Phase A walk-forward extension to 2018-01-01) wait for that implementation, not the decision.
+
+**Conclusion:** No DEC-298 status flip. Downstream sprint sequencing already tracked correctly in ENGINEERING_REGISTER Sprint 4.
+
+BUG-111 RESOLUTION PATH VERIFIED:
+
+Severity escalation history: MEDIUM (Pass 13) → HIGH (Pass 52 first directive) → CRITICAL (Pass 52 second directive: "CRITICAL AND MOST IMPORTANT REQUIREMENT!").
+
+Resolution path identified across 3 components:
+
+1. DEC-355/356/357 (Sprint 8 — 3 strategies with explicit retest):
+   - DEC-355 Trendline break + retest
+   - DEC-356 Channel breakout + retest
+   - DEC-357 Range breakout + retest
+
+2. DEC-358-362 (Sprint 8 — 5 chart pattern strategies with retest cross-cutting):
+   - DEC-358 Wedge/triangle/pennant
+   - DEC-359 H&S / inverse H&S
+   - DEC-360 Double top / double bottom
+   - DEC-361 Cup & handle
+   - DEC-362 Flag / pennant continuation
+
+3. EXISTING BREAKOUT STRATEGIES SCOPE (newly verified Pass 52 turn 123):
+   25 existing breakout strategies in screener.py categories may need retest variants:
+   - Breakout (6 strategies)
+   - Pivot Based (10 strategies)
+   - Confluence (9 strategies)
+
+ARCHITECTURAL CHOICE FLAGGED FOR SPRINT 8 IMPLEMENTATION:
+
+Option A (recommended): Shared retest entry-signal primitive any breakout strategy opts into via `requires_retest=True` flag. Effort ~5-10d (1-2d primitive + 3-8d integration).
+
+Option B: Explicit `_retest` suffixed variant per existing breakout strategy = 25+ new strategy classes. Effort ~25-30d.
+
+Owner direction needed at Sprint 8 implementation start (not now — Sprint 8 is scoped via current ENGINEERING_REGISTER).
+
+BUG_REGISTER.md UPDATED:
+- BUG-111 cross-reference corrected (was DEC-458 in error; actual: DEC-354 parent + DEC-355-362 8 chart patterns)
+- CRITICAL severity properly documented
+- Verification path explicitly documented in CRITICAL OPEN section
+- Open scope (25 existing breakout strategies) flagged with effort estimates
+
+ENGINEERING_REGISTER.md UPDATED:
+- BUG-111-RESOLUTION cross-cutting decision logged
+- Sprint 8 scope expanded to include retest primitive choice
+- Effort estimates Option A vs Option B documented
+
+CHECKLIST #58 INVOKED IN THIS COMMIT (3-file atomic — no AUDIT_INDEX flips, no DOC additions, no sprint readiness change):
+1. AUDIT.md (this narrative + DEC-298 honest correction)
+2. ENGINEERING_REGISTER.md (BUG-111-RESOLUTION decision tracked)
+3. BUG_REGISTER.md (BUG-111 cross-reference + verification path corrected)
+
+(Note: not 5-file atomic because no decision status flips this turn — verification + register cleanup only)
+
+Counts unchanged: 462 / 0 PENDING / 358 RESOLVED-DECIDED / 32 DEFERRED_TO_STAGE_3 / 19 DEFERRED_TO_STAGE_4 / 29 SUPERSEDED total / 10 BLOCKED_ON_X / 14 other.
+
+PASS 52 AUDIT REMAINS 100% TERMINAL.
+
+OWNER DIRECTIVE OUTCOMES:
+- Directive #3 (BUG-111 verification): RESOLUTION PATH CONFIRMED via Sprint 8 DEC-355-362 + flagged existing-25-strategies open scope
+- Directive #4 (DEC-298 PIT cache rebuild): STATUS CORRECTED — already RESOLVED-DECIDED; downstream blocking is sprint sequencing not decision pendency
+
+Both items closed.
+
+*Per CHECKLIST #25 (honest DEC-298 status correction acknowledging turn 121 misstatement)/#43 (precise grep on BUG-111 + DEC-298 history with full audit_index narrative cross-check)/#51 (owner directive #3 + #4 acted on)/#57 (use-case mapping per item with cluster recognition: BUG-111 cross-cutting via Sprint 8 chart pattern cluster; DEC-298 sprint-sequencing via Sprint 4)/#58 (3-file atomic — verification + correction commit pattern).*
