@@ -24,7 +24,7 @@ These have been decided, scoped, and have no upstream blockers. Owner can hand t
 
 | Decision | Scope | Effort | Resolves |
 |---|---|---|---|
-| **DEC-441** | Polygon Stocks Starter $30/mo subscription setup | 0.5d | Unblocks all Polygon work |
+| **DEC-441** | Polygon Stocks Starter $29/mo subscription setup | 0.5d | Unblocks all Polygon work |
 | **DEC-256** | Earnings calendar prefetch via Polygon events endpoint | ~2d | BUG-013, BUG-280, days_to_earnings cube dim |
 | **DEC-257** | Quarterly fundamentals prefetch (Polygon→yfinance fallback) | ~3-4d | Unblocks DEC-393 (market_cap_pit) |
 | **DEC-440** | Polygon news endpoint integration (replaces broken Finnhub) | absorbed in DEC-256 | BUG-053, BUG-181, sentiment cube |
@@ -175,16 +175,29 @@ None currently — all open Pass 52 owner-decision items closed.
 
 ## Implementation sequencing (recommended order)
 
-### Sprint 1 (Phase 0.A foundation) — ~7-9 days
+### Sprint 1 (Phase 0.A foundation) — ~25-35 days [Pass 53 expanded scope]
 
-1. DEC-441 Polygon subscription setup
+1. DEC-441 Polygon subscription setup ($29/mo Stocks Starter per DEC-478/479)
 2. DEC-256 Polygon earnings prefetch
-3. DEC-257 Polygon fundamentals prefetch
+3. DEC-257 Polygon fundamentals prefetch (consumer is Phase 1B not Phase 1A)
 4. DEC-440 Polygon news (absorbed)
 5. DEC-260 Cache freshness assertion
 6. DEC-261 ICT/SMC PIT lag rule
+7. **DEC-477 historical_membership.csv canonical universe (NEW Pass 53)**
+8. **DEC-478 Polygon Stocks Starter $29/mo selected (NEW Pass 53)**
+9. **DEC-479 Cost correction $30→$29 (NEW Pass 53)**
+10. **DEC-483 Tier 1 sub-tiers T1a/T1b/T1c with year-grain PIT for R1000+NDX (NEW Pass 53)**
 
-**Unblocks:** DEC-393, DEC-444 (yfinance earnings deprecation), Polygon-dependent work
+**Pass 53 universe scope expansion:**
+- T1a (S&P 500): ~503 tickers; day-grain PIT via DEC-303 historical_membership.csv (DEC-477)
+- T1b (R1000-non-S&P): ~497 net new tickers; year-grain PIT via FTSE Russell annual reconstitution
+- T1c (NDX-non-S&P): ~15 net new tickers; year-grain PIT via Nasdaq annual reconstitution
+- Total: ~1015 unique Tier 1 tickers
+- Cache size: ~16-24 GB; prefetch wall ~2 days
+
+**Pass 53 walk-forward note:** Sprint 1 cache must support DEC-482 expanding window 2y+/6mo × 5 folds within 5y Polygon Stocks Starter window (May 2021 → May 2026). Implementation in Sprint 7 walk_forward.py.
+
+**Unblocks:** DEC-393, DEC-444 (yfinance earnings deprecation), Polygon-dependent work, Phase 1A Sprint 6.5 baseline (cache must be complete + universe sub-tiers built)
 
 ### Sprint 2 (Engine bug fixes Tier A) — ~9 days
 

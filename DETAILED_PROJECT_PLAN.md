@@ -342,7 +342,7 @@ Every phase has 15 sections (per Q2 owner directive turn 134):
 - Cloud hosting migration complete (DEC-272) — Codespace is dev only, not production
 - Disaster recovery plan in place (DEC-273) — backup, restoration, runbook
 - IBKR market data subscriptions active (~$10-30/mo per DEC-271) — real-time bid/ask required
-- Polygon Stocks Advanced (or equivalent) for real-time data — if continuing Polygon (per DEC-478 PROPOSED tier upgrade)
+- Polygon Stocks Advanced (or equivalent) for real-time data — if continuing Polygon (per DEC-478 tier upgrade)
 
 **Activities (planning level):**
 - Live execution at small capital
@@ -371,7 +371,7 @@ Every phase has 15 sections (per Q2 owner directive turn 134):
 - Capital scaling per owner-approved plan
 - Continuous A/B and ablation testing in live (DEC-211 evolved into ongoing)
 - Strategy retirement and addition workflow operational (DEC-249/214/043)
-- Full API stack operational (~$263 CAD/mo baseline per project memory; revised to $93-200+/mo per DEC-478 PROPOSED tier choice)
+- Full API stack operational (~$263 CAD/mo baseline per project memory; revised to $93-200+/mo per DEC-478 tier choice)
 
 ## §1.7 Stage transition gates (summary table)
 
@@ -459,7 +459,7 @@ The cube is the heart of Stage 2. Every other phase serves the cube either by fe
 The universe defines the trading population — which tickers are even eligible to be traded. 3 tiers exist because liquidity, history, and efficiency differ enough to warrant different rules.
 
 **Tier 1 — S&P 500 + Selected ETFs (~509 tickers):**
-- Composition: S&P 500 constituents per `historical_membership.csv` (DEC-303 — PIT-correct historical membership; supersedes static 482-ticker CSV per DEC-477 PROPOSED) + selected sector/macro ETFs (per DEC-118: VIX, DXY, GLD, oil, sector ETFs, TLT, HYG, SHY)
+- Composition: S&P 500 constituents per `historical_membership.csv` (DEC-303 — PIT-correct historical membership; supersedes static 482-ticker CSV per DEC-477) + selected sector/macro ETFs (per DEC-118: VIX, DXY, GLD, oil, sector ETFs, TLT, HYG, SHY)
 - Liquidity floor: $10M ADV (per DEC-366)
 - History requirement: 250 trading days
 - Why this tier: most-liquid US equities; highest signal-to-noise for technical strategies
@@ -651,7 +651,7 @@ The key insight: TradingAgents `propagate()` is ONE call per candidate. A/B arms
 
 ## §2.7 Data sources required for Stage 2
 
-Stage 2 requires the following data sources. Polygon tier choice (Stocks Starter $29/mo vs Developer $79/mo vs Advanced $199/mo) is open per DEC-478 PROPOSED. My recommendation Pass 52 turn 133: Stocks Developer $79/mo + FMP $14-50/mo = $93-129/mo total.
+Stage 2 requires the following data sources. Polygon tier choice (Stocks Starter $29/mo vs Developer $79/mo vs Advanced $199/mo) is open per DEC-478. My recommendation Pass 52 turn 133: Stocks Developer $79/mo + FMP $14-50/mo = $93-129/mo total.
 
 **Confirmed sources:**
 
@@ -888,10 +888,10 @@ Strategy gets DataFrame; computes signal
 - Sprint 1 ↔ Sprint 3 (Portfolio class): **sequential** — Sprint 3 needs Sprint 1's PriceLoader; Sprint 3 starts after Sprint 1 Day 5
 
 **Blockers (must resolve before Sprint 1 starts):**
-1. Owner subscribes to Polygon (Sprint 0 action; tier per DEC-478 PROPOSED owner decision)
+1. Owner subscribes to Polygon (Sprint 0 action; tier per DEC-478 owner decision)
 2. DEC-460 verification: does Polygon Stocks Starter cover PIT fundamentals? (Pre-Sprint-1 verification; result Pass 52 turn 133 = NEGATIVE)
 3. DEC-461 conditional FMP subscription (now MANDATORY per DEC-460 verification negative)
-4. Universe definition resolved: 482-CSV vs `historical_membership.csv` (DEC-477 PROPOSED owner approval)
+4. Universe definition resolved: 482-CSV vs `historical_membership.csv` (DEC-477 owner approval)
 
 ## §3.5 Done criteria — verifiable acceptance
 
@@ -921,7 +921,7 @@ Sprint 1 is RESOLVED-IMPLEMENTED when ALL of these are demonstrably true:
 **Risk R-2: Polygon historical depth shorter than expected**
 - Stocks Starter = 5 years per polygon.io/pricing verification
 - 5 years from May 2026 = May 2021 onwards; insufficient for DEC-109 walk-forward 5-year-train pre-2021 OOS folds
-- Mitigation: DEC-478 PROPOSED owner decision to upgrade to Stocks Developer ($79/mo, 10 years) covering 2016-2026 for OOS folds 2021-2026
+- Mitigation: DEC-478 owner decision to upgrade to Stocks Developer ($79/mo, 10 years) covering 2016-2026 for OOS folds 2021-2026
 - If owner declines upgrade: walk-forward train window must reduce; this is a Sprint 7 architectural change
 
 **Risk R-3: AAII or CNN F&G domains blocked by Codespace allowlist**
@@ -1115,7 +1115,7 @@ From `ADVERSARIAL_AUDIT_PASS_52_TURN_132.md`, gaps directly affecting Phase 0.A:
 - **GAP 14 (CRITICAL):** PIT loader edge cases not documented
   - Resolution: §3.1 deliverable #2 explicitly lists 5 edge cases (weekend/pre-IPO/post-delist/partial-cache); §3.5 done criteria gates them
 - **GAP 15 (CRITICAL):** Two universes (482 vs `historical_membership.csv`)
-  - Resolution: DEC-477 PROPOSED — `historical_membership.csv` canonical; static 482-CSV deprecated. Sprint 1 Day 19 deprecation warning added.
+  - Resolution: DEC-477 — `historical_membership.csv` canonical; static 482-CSV deprecated. Sprint 1 Day 19 deprecation warning added.
 - **GAP 17:** Polygon raw vs adjusted — equivalent of `yfinance auto_adjust=False`
   - Resolution: §3.1 deliverable #3 — raw OHLCV stored; adjusted-on-demand recomputation per DEC-298
 - **GAP 18:** Adjusted recompute formula not specified
@@ -1129,7 +1129,7 @@ From `ADVERSARIAL_AUDIT_PASS_52_TURN_132.md`, gaps directly affecting Phase 0.A:
 - **GAP 22-25:** FRED + AAII + CNN F&G source URLs and reconciliation
   - Resolution: §3.1 deliverable #6/#7 explicitly enumerates sources; Sprint 0 verifies allowlist
 - **GAP 54 / 136 / 137 (CRITICAL):** Pre-2018 historical data — depends on DEC-478 tier
-  - Resolution: DEC-478 PROPOSED owner decision; if Stocks Developer chosen, 10-year coverage 2016+
+  - Resolution: DEC-478 owner decision; if Stocks Developer chosen, 10-year coverage 2016+
 
 ## §3.13 Decision history — what changed and why
 
@@ -1143,9 +1143,9 @@ From `ADVERSARIAL_AUDIT_PASS_52_TURN_132.md`, gaps directly affecting Phase 0.A:
 - DEC-461 — subscribe FMP if Polygon insufficient (RESULT: now MANDATORY)
 
 **Pass 52 turn 133 (critical gaps resolution):**
-- DEC-477 PROPOSED — `historical_membership.csv` canonical; supersedes static 482-CSV
-- DEC-478 PROPOSED — Polygon tier upgrade decision pending owner approval (recommend Stocks Developer $79/mo + FMP $14-50/mo)
-- DEC-479 PROPOSED — DEC-441 cost correction $30 → $29
+- DEC-477 — `historical_membership.csv` canonical; supersedes static 482-CSV
+- DEC-478 — Polygon tier upgrade decision pending owner approval (recommend Stocks Developer $79/mo + FMP $14-50/mo)
+- DEC-479 — DEC-441 cost correction $30 → $29
 
 **Why these supersession patterns:**
 - Original assumption (Stocks Starter sufficient) was unverified — adversarial review (Pass 52 turn 132) caught the gap; verification (turn 133) confirmed insufficiency
@@ -1185,7 +1185,7 @@ data/
 │   ├── aaii.parquet
 │   └── cnn_fg.parquet
 └── universe/
-    └── historical_membership.csv    ★ canonical (DEC-303 + DEC-477 PROPOSED)
+    └── historical_membership.csv    ★ canonical (DEC-303 + DEC-477)
 
 .github/workflows/
 ├── refresh_aaii.yml                 ★ NEW Sprint 1
@@ -2641,11 +2641,11 @@ Phase 1A is the **rules-only execution layer** running the full strategy roster 
 
 Concrete deliverables:
 
-1. **Rules-based screener executes on full universe** — all ~109-119 strategies fire on the universe defined by `historical_membership.csv` (DEC-477) + Russell 1000 + NASDAQ 100 (DEC-483 PROPOSED) + ETFs (DEC-118), totaling ~1015 tickers
+1. **Rules-based screener executes on full universe** — all ~109-119 strategies fire on the universe defined by `historical_membership.csv` (DEC-477) + Russell 1000 + NASDAQ 100 (DEC-483) + ETFs (DEC-118), totaling ~1015 tickers
 2. **Smart money signals integrated** — DEC-124 cross-source confluence + DEC-332 weights + DEC-450 Quiver paid (insider/congressional/13F/analyst-changes/gov-contracts) feed into screener; smart money is a SIGNAL not an agent
 3. **Liquidity floor applied** — DEC-366 ADV thresholds; tier-specific ($10M Tier 1 / $5M Tier 2 / $5M Tier 3)
 4. **Per-ticker risk gates enforced** — DEC-018 5-day cooldown + DEC-135 -10% rolling 30d max-loss cap
-5. **Walk-forward folds executed** — per DEC-482 PROPOSED (compressed 2y train + 6mo OOS × 4 folds within Polygon Stocks Starter 5y window) since DEC-109 (5y/1y) doesn't fit
+5. **Walk-forward folds executed** — per DEC-482 (expanding window 2y+ train + 6mo OOS × 5 folds within Polygon Stocks Starter 5y window) since DEC-109 (5y/1y) doesn't fit
 6. **`--no-agents` flag preserved** — explicit code path that bypasses all TradingAgents.propagate calls; rules-only screener output goes directly to trade execution
 7. **Trade outcome log produced** — per DEC-189 schema with `arm=A_rules_only` tag; Parquet written for Phase 1A-α cube populator
 8. **Hand-validation against Phase 1A v3 archive** — re-run a subset of Phase 1A v3 67-instrument scenario; confirm `atr_trail_1x` still wins ~20/29 strategy comparisons (regression sanity check)
@@ -2680,7 +2680,7 @@ backtest/
 Phase 1A orchestrator starts
         │
         ▼
-For each walk-forward fold (per DEC-482 PROPOSED):
+For each walk-forward fold (per DEC-482):
     For each trading day in OOS period:
         Load OHLCV + signal universe (Sprint 1 cache)
         Build daily universe (Sprint 5 tier definitions)
@@ -2714,7 +2714,7 @@ End of all folds: Phase 1A trade_log.parquet ready for Phase 1A-α cube populato
 |---|---|
 | 1 | Phase 1A orchestrator skeleton; --no-agents flag wiring through engine |
 | 2 | Rules-based screener integration with full strategy roster; smart money confluence |
-| 3 | Walk-forward fold integration (DEC-482 compressed 2y/6mo × 4 folds) |
+| 3 | Walk-forward fold integration (DEC-482 expanding window 2y+/6mo × 5 folds) |
 | 4 | Trade outcome logger with arm=A_rules_only tag |
 | 5 | Smoke test 1 fold × 50 candidates; verify pipeline end-to-end |
 | 6 | Hand-validation regression: re-run Phase 1A v3 67-instrument subset; verify atr_trail_1x still wins |
@@ -2725,8 +2725,8 @@ End of all folds: Phase 1A trade_log.parquet ready for Phase 1A-α cube populato
 
 **Blockers:**
 - Sprints 1-6 must be RESOLVED-IMPLEMENTED
-- DEC-482 PROPOSED walk-forward configuration approved
-- DEC-483 PROPOSED universe expansion approved
+- DEC-482 walk-forward configuration approved
+- DEC-483 universe expansion approved
 
 ## §7.5.5 Done criteria
 
@@ -2750,7 +2750,7 @@ End of all folds: Phase 1A trade_log.parquet ready for Phase 1A-α cube populato
 - Not a bug — Phase 1A's PURPOSE is to produce this signal early
 
 **Risk R-3: Walk-forward fold contamination on compressed window**
-- DEC-482 PROPOSED 2y/6mo windows are tighter than original DEC-109 5y/1y; fold boundaries closer
+- DEC-482 2y/6mo windows are tighter than original DEC-109 5y/1y; fold boundaries closer
 - Mitigation: explicit fold boundary tests in Phase 0.E catch-mechanism (Sprint 6); PIT regression suite
 
 **Risk R-4: Phase 1A run wall time exceeds estimate**
@@ -2775,7 +2775,7 @@ End of all folds: Phase 1A trade_log.parquet ready for Phase 1A-α cube populato
 | 366 | Liquidity floor ADV-based | RESOLVED-DECIDED |
 | 450 | Quiver paid endpoints scope | RESOLVED-DECIDED |
 | 477 | historical_membership.csv canonical | RESOLVED-DECIDED |
-| 482 PROPOSED | Walk-forward compressed 2y/6mo × 4 folds | Awaits owner approval |
+| 482 PROPOSED | Walk-forward expanding window 2y+/6mo × 5 folds | Awaits owner approval |
 | 483 PROPOSED | Universe expansion R1000 + NDX added to Sprint 1 | Awaits owner approval |
 | 486 PROPOSED | Phase 1A restored as distinct sub-phase | Awaits owner approval |
 
@@ -2823,7 +2823,7 @@ Phase 1A omission was the **meta-failure of ADVERSARIAL_AUDIT itself** — the a
 
 ## §7.5.15 Example walkthrough
 
-**Scenario:** Phase 1A executes 2024 OOS fold (DEC-482 PROPOSED config). AAPL candidate fires 2024-06-15 from `RSI_Mean_Reversion_30_70` strategy.
+**Scenario:** Phase 1A executes 2024 OOS fold (DEC-482 config). AAPL candidate fires 2024-06-15 from `RSI_Mean_Reversion_30_70` strategy.
 
 **Step 1:** Rules screener compute_signal returns ENTRY LONG @ 2024-06-15 close.
 
@@ -3440,7 +3440,7 @@ ab/comparison.py — block bootstrap CIs across arms; per-regime verdicts
 This is the longest sprint by ~30% over Sprint 6. Resources should be focused; calendar can stretch to ~5 calendar months at typical solo developer cadence.
 
 **Blockers:**
-- DEC-478 PROPOSED — Polygon tier upgrade decision (FMP availability for OurFundamentalsToolkit)
+- DEC-478 — Polygon tier upgrade decision (FMP availability for OurFundamentalsToolkit)
 - DEC-481 PROPOSED — AgentGateConfig Option C2 approval
 - Sprints 1-6 substantially complete
 
@@ -4291,7 +4291,7 @@ Each new strategy follows existing strategy interface:
 - Mitigation: cube tests this empirically — if effect decayed, FAIL_STAT verdict; this is the correct outcome of empirical validation, not a bug
 
 **Risk R-3: Index rebalance requires reliable PIT membership data**
-- DEC-303 + DEC-477 PROPOSED `historical_membership.csv` — must include effective dates for adds/deletes
+- DEC-303 + DEC-477 `historical_membership.csv` — must include effective dates for adds/deletes
 - Mitigation: Sprint 5 universe management ensures PIT correctness; Phase 1C+ depends on Sprint 5
 
 **Risk R-4: BUG-111 Option A shared primitive too generic**
@@ -4367,7 +4367,7 @@ Each new strategy follows existing strategy interface:
 - **GAP 89:** Calendar strategies — overlap with regime-conditional behavior
   - Resolution: calendar strategies are independent strategy_ids in roster; cube cell coordinates capture overlap empirically
 - **GAP 90:** Index rebalance — Russell 1000 inclusion (B9 from blockers)
-  - Resolution: DEC-477 PROPOSED `historical_membership.csv` canonical for S&P 500; Russell 1000 add deferred to Stage 3+ if needed
+  - Resolution: DEC-477 `historical_membership.csv` canonical for S&P 500; Russell 1000 add deferred to Stage 3+ if needed
 - **GAP 91:** Exit method variants — interaction with circuit breakers
   - Resolution: exit methods + circuit breakers are layered; circuit breakers operate at portfolio level (per Sprint 2 Phase 0.C); exit methods at trade level; orthogonal
 
@@ -4441,7 +4441,7 @@ Concrete deliverables (17 sub-decisions):
 13. **DEC-449** — ALFRED PIT-vintage validation across 3+ key series
 
 **Polygon expansion:**
-14. **DEC-441 verification** — Polygon Stocks Starter $30/mo (corrected to $29 per DEC-479 PROPOSED)
+14. **DEC-441 verification** — Polygon Stocks Starter $29/mo (corrected to $29 per DEC-479)
 15. **DEC-456** — Polygon news endpoint integration: ticker-tagged news with timestamp filtering
 
 **FMP integration (NEW Pass 52 turn 130):**
@@ -4664,7 +4664,7 @@ Same pattern for Polygon news / FMP / FRED ALFRED.
 - DEC-441-456 Pass ~40-44 — sub-decisions logged
 - DEC-461 Pass 52 turn 130 — FMP added per TradingAgents data audit
 - DEC-460 Pass 52 turn 130 — Polygon Starter PIT verification (RESULT: NEGATIVE Pass 52 turn 133)
-- DEC-479 PROPOSED Pass 52 turn 133 — $30→$29 cost correction
+- DEC-479 Pass 52 turn 133 — $30→$29 cost correction
 
 ## §11.14 File / module structure
 
@@ -4702,7 +4702,7 @@ This sprint runs **parallel to Sprints 3 and 4** because universe is its own con
 Concrete deliverables:
 
 **Tier 1 — S&P 500 + ETFs (~3-4d):**
-1. **`historical_membership.csv` canonical** (DEC-303 + DEC-477 PROPOSED) — PIT-correct S&P 500 membership history with effective_date for adds/deletes; sourced from SEC 10-K filings + Wayback Machine archive of Wikipedia
+1. **`historical_membership.csv` canonical** (DEC-303 + DEC-477) — PIT-correct S&P 500 membership history with effective_date for adds/deletes; sourced from SEC 10-K filings + Wayback Machine archive of Wikipedia
 2. **Tier 1 build function** — `backtest/universe/tier_1.py` produces eligible ticker list for any as_of date
 3. **Selected ETFs append** — VIX/DXY/GLD/oil/sector ETFs/TLT/HYG/SHY per DEC-118
 4. **Liquidity floor enforcement** — $10M ADV per DEC-366 (fail-closed; no trades on illiquid Tier 1 tickers)
@@ -4822,7 +4822,7 @@ Engine iterates eligible tickers; runs strategies
 
 | Day | Task |
 |---|---|
-| 1 | DEC-477 PROPOSED owner approval; canonicalize historical_membership.csv |
+| 1 | DEC-477 owner approval; canonicalize historical_membership.csv |
 | 1-2 | Tier 1 build function + selected ETFs + liquidity floor |
 | 3-4 | Tier 1 testing across 6 OOS folds; PIT verification |
 | 5-6 | SEC EDGAR Form 10-12B scrape; spinoffs.parquet output |
@@ -4844,7 +4844,7 @@ Engine iterates eligible tickers; runs strategies
 
 **Blockers:**
 - Sprint 1 OHLCV cache available (for ADV computation)
-- DEC-477 PROPOSED owner approval
+- DEC-477 owner approval
 - SEC EDGAR allowlist verified in Codespace network settings
 
 ## §12.5 Done criteria
@@ -4957,7 +4957,7 @@ Engine iterates eligible tickers; runs strategies
 - DEC-366 Pass ~38: Liquidity floor
 - DEC-373-377 Pass ~40: Momentum screen detail
 - DEC-378-380 Pass ~42: Spinoff via SEC EDGAR
-- DEC-477 PROPOSED Pass 52 turn 133: canonicalize membership; deprecate 482-CSV
+- DEC-477 Pass 52 turn 133: canonicalize membership; deprecate 482-CSV
 
 ## §12.14 File / module structure
 

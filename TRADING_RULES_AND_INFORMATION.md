@@ -133,7 +133,7 @@
 **Time-boxed first deliverable:** 1-2 weeks for "S&P 500 OHLCV cache populated + first PIT loader test passing"
 
 **Acceptance criteria:**
-- [ ] Polygon Stocks Starter $30/mo subscription active (owner action prerequisite per DEC-441)
+- [ ] Polygon Stocks Starter $29/mo subscription active (owner action prerequisite per DEC-441)
 - [ ] S&P 500 universe (482 tickers) OHLCV fully cached with raw OHLCV (auto_adjust=False per DEC-298)
 - [ ] PointInTimeLoader implementation passes freezegun-based regression tests (DEC-040 + DEC-050)
 - [ ] FRED 9+ macro series prefetched (DEC-407+448)
@@ -230,11 +230,11 @@
 **Effort target:** ~6-8 engineering days
 
 **Acceptance criteria:**
-- [ ] Rules-based screener executes full ~109-119 strategy roster on full universe (per DEC-477 historical_membership.csv + DEC-483 PROPOSED R1000 + NDX expansion)
+- [ ] Rules-based screener executes full ~109-119 strategy roster on full universe (per DEC-477 historical_membership.csv + DEC-483 R1000 + NDX expansion)
 - [ ] Smart money signals operational (DEC-124 confluence + DEC-332 weights + DEC-450 Quiver paid endpoints)
 - [ ] `--no-agents` flag preserved from Phase 1A v3 archive — no TradingAgents.propagate calls
 - [ ] Trade outcome log produced for full universe per DEC-189 schema; baseline trades tagged `arm=A_rules_only`
-- [ ] Walk-forward folds executed per DEC-482 PROPOSED (compressed 2y train + 6mo OOS × 4 folds within Polygon Stocks Starter 5y window)
+- [ ] Walk-forward folds executed per DEC-482 (expanding window 2y+ train + 6mo OOS × 5 folds within Polygon Stocks Starter 5y window)
 - [ ] Liquidity floor applied per DEC-366 + tier-specific ADV thresholds
 - [ ] Per-ticker risk gates enforced (DEC-018 cooldown + DEC-135 max-loss cap)
 - [ ] Trade outcomes ready as input to Phase 1A-α cube populator
@@ -259,7 +259,7 @@
 **Effort target:** ~3-5 engineering days + ~6-8h compute wall time
 
 **Acceptance criteria:**
-- [ ] Full universe scale test (~1015 tickers per DEC-483 PROPOSED) WITHOUT agents; pipeline integrity validated
+- [ ] Full universe scale test (~1015 tickers per DEC-483) WITHOUT agents; pipeline integrity validated
 - [ ] No PIT regression detected (freezegun verifies)
 - [ ] No multi-process race conditions (filelock + cache integrity passes)
 - [ ] Memory ceiling not exceeded (cube populate handles full universe scale)
@@ -276,7 +276,7 @@
 **Entry criteria:** Phase 1A + 1A-α + 1A-β complete with rules-only Sharpe ≥ 0.7 OOS (else owner reviews whether agent overlay justified at all).
 
 **Acceptance criteria:**
-- [ ] Walk-forward validation operational per DEC-482 PROPOSED (compressed 2y/6mo within 5y Polygon window)
+- [ ] Walk-forward validation operational per DEC-482 (expanding window 2y+/6mo OOS × 5 folds within 5y Polygon Stocks Starter window)
 - [ ] Deflated Sharpe / PSR computation operational (DEC-110)
 - [ ] Stationarity tests operational (ADF + rolling Sharpe + Chow per DEC-111)
 - [ ] Distribution analysis operational (DEC-242)
@@ -1578,7 +1578,7 @@ See §17.8 above.
 ### 19.3 Event Source Priority (per DEC-348 + DEC-407+448)
 
 **Priority:**
-1. Polygon earnings (Stocks Starter $30/mo subscription provides this)
+1. Polygon earnings (Stocks Starter $29/mo subscription provides this)
 2. FRED FOMC + CPI calendars
 3. yfinance earnings_dates (deprecating per DEC-013/444)
 

@@ -159,7 +159,7 @@ NO meaningfully. The fundamental issue is reliability (BUG-19 Codespaces blockin
 ## 2. Polygon — Just-approved $30/mo subscription (DEC-441)
 
 ### Subscription tier
-- **Stocks Starter $30/month** (per DEC-441)
+- **Stocks Starter $29/month** (per DEC-441)
 - Rate limits: typically 5 calls/sec or unlimited per-minute on most endpoints; verify on signup
 - Historical depth: 5+ years included on most endpoints; 15min delayed real-time
 

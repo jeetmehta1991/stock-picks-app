@@ -193,3 +193,34 @@ These gaps will be closed during sprint planning for Phase 0.D (Sprint 7 in ENGI
 
 **Smart money clarification:** Smart money signals (DEC-124 cross-source confluence; DEC-332 weights; DEC-450 Quiver paid endpoints) are part of RULES-BASED screening, NOT agent overlay. They feed strategy entry signals + tier preliminary assignment in BOTH Phase 1A and Phase 1B. This is preserved from PROJECT_PLAN_ARCHIVE Phase 1A v3 architecture: "We ran all 60 strategies on a small universe of 67 instruments to make sure the pipeline works correctly" — strategies fired without agents in 1A v3, same pattern preserved Pass 53.
 
+
+---
+
+## Pass 53 Update Continuation — Phase 1A Skipped Strategies (DEC-490 RESOLVED-DECIDED)
+
+**Per DEC-484 (financials deferred to Sprint 4 SEC EDGAR) + DEC-485 (transcripts dropped from Stage 2), 2 Layer 1 Fundamental strategies SKIP in Phase 1A:**
+
+| Strategy ID | Reason for skip | Phase 1B status | Stage 3 status |
+|---|---|---|---|
+| `buyback_announcements` | Needs 10-Q/10-K share-count delta from full financials (DEC-484) | ACTIVATES once SEC EDGAR financials cache operational (Sprint 4 → Sprint 7 chain) | Active |
+| `guidance_driven_momentum` | Needs earnings call transcripts for guidance language (DEC-485 dropped) | REMAINS SKIPPED through Stage 2 | REVISIT — owner may subscribe FMP $14-50/mo if Stage 2 verdict warrants transcripts re-introduction |
+
+**Phase 1A trade log behavior:**
+- These 2 strategies tagged `SKIPPED_NO_FUNDAMENTALS_PHASE_1A` flag
+- Zero Phase 1A trade entries for buyback_announcements or guidance_driven_momentum strategy_id
+- Cube cells for these 2 strategies remain INSUFFICIENT_SAMPLE in Phase 1A-α verdict
+
+**Layer 1 Fundamental category effective Phase 1A roster: 6 of 8 strategies fire.**
+- ✓ Earnings momentum (uses Polygon earnings dates + EPS)
+- ✓ Analyst upgrade clusters (uses Quiver paid analyst rating changes)
+- ✗ Buyback announcements (SKIPPED — needs SEC EDGAR Sprint 4)
+- ✓ Post-earnings PEAD (uses Polygon earnings + EPS surprise)
+- ✓ Pre-earnings positioning (uses Polygon earnings + IV)
+- ✗ Guidance-driven momentum (SKIPPED — transcripts dropped DEC-485)
+- ✓ Surprise-driven momentum (uses Polygon EPS surprise)
+- ✓ Earnings season pre/post (uses Polygon earnings dates)
+
+**Layer 2 Earnings Momentum (DEC-045) effective Phase 1A roster:** Same logic. Strategies that fire on earnings dates + EPS = active. Strategies that fire on transcript guidance = SKIPPED.
+
+**Total Phase 1A active strategy count:** ~117 of ~119 classes fire (2 skipped per DEC-490).
+

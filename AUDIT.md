@@ -25643,3 +25643,91 @@ PASS 53 SUBSTANTIVE WORK BEGINS. Owner approvals on PROPOSED decisions accumulat
 
 *Per CHECKLIST #25 (honest acknowledgment Phase 1A was dropped — serious mistake); #43 (grep across all .md files including ARCHIVE before responding); #51 (refused to fabricate 1A-α/1A-β definitions; offered Option 2 owner-approved structure); #58 (atomic commit pending); #59 + #60 PROACTIVELY APPLIED (verifying archive vs current docs); #62 (cross-document consistency — restoration propagated to PROJECT_PLAN + TRADING_RULES + DETAILED_PROJECT_PLAN + ENGINEERING_REGISTER + CLAUDE + AUDIT + AUDIT_INDEX).*
 
+
+---
+
+# PASS 53 TURN — SPRINT 1 PRE-FLIGHT BATCH APPROVAL
+
+## Context
+
+Owner Pass 53 mid-pass directive: approve all Sprint 0/Sprint 1 pre-flight decisions to unblock Sprint 1 Day 1 work after Polygon subscription tonight.
+
+## Owner answers
+
+**Q1 — Walk-forward configuration (5y Polygon Stocks Starter window):** Q1 = (c) Expanding window 2y+ / 6mo OOS × 4-5 folds
+**Q2 — Russell 1000 + NASDAQ 100 universe expansion:** Sub-tiers for tracking (T1a/T1b/T1c)
+**Q3 — Year-grain PIT for R1000 + NDX:** Owner approved my recommendation (year-grain default + day-grain via SEC EDGAR for DEC-368 only)
+**Q4 — DEC-477 + DEC-479:** Owner agreed (RESOLVED-DECIDED)
+**Q5 — FMP free alternative:** Owner directed "Skip 2 strategies that need full financials. option b sounds good" → SEC EDGAR direct parsing for Sprint 4; Phase 1A skips 2 strategies
+
+## Decisions logged
+
+**Phase 1A restoration flipped from PROPOSED → RESOLVED-DECIDED:**
+- DEC-486 — Phase 1A restoration (Sprint 6.5 baseline)
+- DEC-487 — Phase 1A-α restoration (rules-only cube)
+- DEC-488 — Phase 1A-β restoration (scale validation)
+
+**Pre-flight cluster RESOLVED-DECIDED Pass 53:**
+- DEC-477 — historical_membership.csv canonical (Q4 "approve")
+- DEC-478 — Polygon Stocks Starter $29/mo selected (owner: "starter pack only")
+- DEC-479 — DEC-441 cost correction $30→$29 (Q4 "approve")
+- DEC-482 — Walk-forward expanding window 2y+/6mo × 4-5 folds (Q1 = c) — SUPERSEDES DEC-109
+- DEC-483 — Universe expansion T1a/T1b/T1c with year-grain PIT (Q2 + Q3)
+- DEC-484 — SEC EDGAR direct parsing Sprint 4; Phase 1A skips 2 strategies (Q5 option b) — SUPERSEDES DEC-461
+- DEC-485 — Earnings transcripts dropped from Stage 2 (Q5)
+- DEC-490 — Phase 1A skipped strategies enumerated (buyback_announcements + guidance_driven_momentum)
+
+## Cumulative state after Pass 53 batch
+
+| Status | Pre-batch | Post-batch | Delta |
+|---|---|---|---|
+| Total decisions | 476 | 484 | +8 (DEC-478 + DEC-482-485 + DEC-490) |
+| RESOLVED-DECIDED | 368 | 379 | +11 (the 8 new + DEC-486/487/488 flipped) |
+| PROPOSED | 16 | 13 | -3 (DEC-486/487/488 flipped to RESOLVED-DECIDED) |
+| SUPERSEDED | (existing) | +2 (DEC-109 by DEC-482; DEC-461 by DEC-484) | |
+| PENDING | 0 | 0 | unchanged |
+
+## Sprint 1 readiness post-batch
+
+**Sprint 1 Day 1 BLOCKED only by:**
+1. Owner Polygon subscription (tonight per directive)
+2. BUG-007 verification (API key guard for --no-agents) — affects Sprint 6.5 Day 1, NOT Sprint 1 Day 1
+3. Sprint 0 Codespace allowlist verification for AAII + CNN F&G + SEC EDGAR
+
+**Sprint 1 Day 1 NO LONGER BLOCKED on:**
+- Walk-forward configuration (DEC-482 RESOLVED)
+- Universe expansion (DEC-483 RESOLVED)
+- Universe canonical CSV (DEC-477 RESOLVED)
+- Polygon tier selection (DEC-478 RESOLVED)
+- FMP question (DEC-484 RESOLVED — deferred to Sprint 4)
+- Earnings transcripts question (DEC-485 RESOLVED — dropped from Stage 2)
+
+## Remaining 13 PROPOSED decisions (NOT Sprint 1 blockers)
+
+These remain PROPOSED awaiting owner approval but do NOT block Sprint 1:
+- DEC-469-481 — Statistical methodology + A/B + Pattern 2 toolkits (Sprint 7 deliverables; can be approved later)
+
+## Documentation integrity gap fixed
+
+Pass 53 prior turn introduced "DEC-482/483/484/485" as PROPOSED labels in 6 docs but never formally created the AUDIT entries. Pass 53 this turn:
+- DEC-482-485 + DEC-490 formally created in AUDIT_INDEX master decision table
+- DEC-486-488 flipped to RESOLVED-DECIDED
+- DEC-477 + DEC-478 + DEC-479 added/flipped to RESOLVED-DECIDED
+- All 8 DECs cross-referenced in JOINT fields
+
+## Files updated this commit
+
+| File | Change |
+|---|---|
+| AUDIT_INDEX.md | 8 new RESOLVED-DECIDED rows; 3 PROPOSED→RESOLVED-DECIDED flips |
+| AUDIT.md | This Pass 53 turn entry |
+| ENGINEERING_REGISTER.md | Sprint 1 entry criteria updated; Sprint 5 index_rebalance_events.parquet deliverable added; cost reference $30→$29 |
+| PROJECT_PLAN.md | Sprint 1 cost reference updated; Tier 1 sub-tier description added |
+| TRADING_RULES_AND_INFORMATION.md | §16 walk-forward updated to DEC-482; §6.1 Tier 1 sub-tier description |
+| DETAILED_PROJECT_PLAN.md | Phase 1A part updated to reference RESOLVED DECs; sub-tier scope added |
+| DOCUMENTATION_REGISTER.md | Pass 53 turn batch entry |
+| IMPLEMENTATION_READINESS_DASHBOARD.md | Sprint 1 entry criteria updated |
+| PASS_53_PRIORITIES.md | Owner approval items list updated |
+| PROGRESS.md | Sprint 1 readiness status |
+
+*Per CHECKLIST #25 (honest fix of phantom-DEC-label documentation gap); #43 (verified all DECs against AUDIT_INDEX before logging); #51 (owner explicit approvals: Q1=(c), Q2=sub-tiers, Q3=year-grain rec, Q4=approve, Q5=option b); #58 (atomic 10-file commit); #61 5-pass methodology applied; #62 cross-document consistency — all 8 DECs propagated.*

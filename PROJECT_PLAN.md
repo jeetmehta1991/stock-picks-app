@@ -126,7 +126,7 @@ Stage 2 is the largest scope phase. Decomposed into sub-phases corresponding to 
 
 ### 3.1 Phase 0.A — Polygon Foundation (Sprint 1)
 
-**Owner action prerequisite:** Subscribe to Polygon Stocks Starter $30/mo per DEC-441.
+**Owner action prerequisite:** Subscribe to Polygon Stocks Starter $29/mo per DEC-441/478/479 (Pass 53 RESOLVED-DECIDED — cost corrected from $30, tier confirmed as Stocks Starter).
 
 **Scope:** Build PIT-correct foundational data infrastructure on Polygon (replacing Alpha Vantage). PIT loader (DEC-040), cache fixes (DEC-307-310), prefetch checklist (DEC-256-261), NYSE calendar (DEC-235), data integrity (DEC-117-118), sentiment refresh (DEC-318-320 + DEC-390-391), multiprocess safety (DEC-328-329).
 
@@ -188,7 +188,7 @@ Stage 2 is the largest scope phase. Decomposed into sub-phases corresponding to 
 
 ### 3.8 Phase 1A-β — Production-Scale Validation Run (Sprint 7 Day 1)
 
-**Scope:** Pre-cube validation run on full universe (~1015 tickers per DEC-483 PROPOSED) without agents. Verifies pipeline integrity at scale BEFORE Phase 1B-α $300 cube run. Catches: cache corruption, PIT regression, multi-process race conditions, memory ceiling issues, walk-forward fold contamination. Inherits Phase 1B-α infrastructure but runs in dry-run mode (no agent API spend).
+**Scope:** Pre-cube validation run on full universe (~1015 tickers per DEC-483) without agents. Verifies pipeline integrity at scale BEFORE Phase 1B-α $300 cube run. Catches: cache corruption, PIT regression, multi-process race conditions, memory ceiling issues, walk-forward fold contamination. Inherits Phase 1B-α infrastructure but runs in dry-run mode (no agent API spend).
 
 **Why this phase exists:** Phase 1A-α validates rules-only cube methodology on prior cache scope; Phase 1A-β validates that same methodology survives full universe scale. Catching infrastructure failures here costs ~6-8 hours wall time; catching them mid-Phase-1B-α costs $300 + 37-40h re-run.
 
@@ -468,7 +468,7 @@ Detail: TRADING_RULES_AND_INFORMATION.md Section 18.
 
 ### 10.2 Stage 2
 
-- **Polygon Stocks Starter $30/mo** (per DEC-441) — replaces Alpha Vantage
+- **Polygon Stocks Starter $29/mo** (per DEC-441) — replaces Alpha Vantage
 - **FRED + ALFRED** (free tier; archival via ALFRED per DEC-301)
 - **Quiver Quantitative** (paid tier ALL endpoints per DEC-450)
 - **Finnhub** (free + selected paid)

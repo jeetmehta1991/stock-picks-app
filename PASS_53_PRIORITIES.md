@@ -169,7 +169,7 @@ Owner directs Pass 53 priorities. My recommendations based on Pass 52 final stat
 
 - 17.5-23.5 engineering days estimate
 - Critical path for Phase 1B-α
-- Owner action prerequisite: subscribe to Polygon Stocks Starter ($30/mo)
+- Owner action prerequisite: subscribe to Polygon Stocks Starter ($29/mo)
 - Decisions ready: DEC-040 (PIT loader), DEC-256-261 (prefetch checklist), DEC-307-310 (cache fixes), DEC-225/227/235 (cache + calendar), DEC-275 (requirements.txt), DEC-318-320/390/391 (sentiment refresh), DEC-328/329 (multiprocess), DEC-117/118 (data integrity + macro)
 
 **Why first:** All other sprints depend on Sprint 1 cache + data infrastructure. Maximum ROI on critical path.
@@ -221,7 +221,7 @@ Owner directs Pass 53 priorities. My recommendations based on Pass 52 final stat
 **Recommendation:** Sprint 1 kickoff with Polygon subscription owner action.
 
 **Sequence:**
-1. Owner subscribes to Polygon Stocks Starter ($30/mo) per DEC-441
+1. Owner subscribes to Polygon Stocks Starter ($29/mo) per DEC-441
 2. Verify subscription active in API_AUDIT.md
 3. Begin Sprint 1 implementation per ENGINEERING_REGISTER scope
 4. CHECKLIST #58 enforced for any decision changes during implementation
@@ -297,7 +297,7 @@ Owner directs Pass 53 priorities. My recommendations based on Pass 52 final stat
 | DEC-486 | Phase 1A restoration | PROPOSED — awaits owner approval |
 | DEC-487 | Phase 1A-α restoration | PROPOSED — awaits owner approval |
 | DEC-488 | Phase 1A-β restoration | PROPOSED — awaits owner approval |
-| DEC-482 | Walk-forward compressed 2y/6mo × 4 folds (per Polygon Stocks Starter 5y window) | PROPOSED — awaits owner approval |
+| DEC-482 | Walk-forward expanding window 2y+/6mo × 5 folds (per Polygon Stocks Starter 5y window) | PROPOSED — awaits owner approval |
 | DEC-483 | Universe expansion R1000 + NDX added to Sprint 1 | PROPOSED — awaits owner approval |
 | DEC-484 | Free FMP alternative — SEC EDGAR direct parsing for financials | PROPOSED — awaits owner approval (Q3 from prior turn unanswered) |
 | DEC-485 | Earnings transcripts dropped from Stage 2 scope OR alternative | PROPOSED — awaits owner answer |
@@ -311,4 +311,44 @@ Owner directs Pass 53 priorities. My recommendations based on Pass 52 final stat
 6. THEN Sprint 1 Day 1 begins
 
 **Estimated Pass 53 duration (revised post-Phase-1A-restoration):** 50-70 engineering days from Sprint 1 start to Phase 1B-α-ready state (was 30-40d pre-restoration). Phase 1A introduces ~19-27 days of pre-agent-overlay validation work but protects $300 1B-α budget from infrastructure failures.
+
+
+---
+
+## PASS 53 BATCH APPROVAL COMPLETED (this turn)
+
+**Owner Q1-Q5 + Q3 explanation answered + approved.**
+
+| Q | Owner answer | Decision logged |
+|---|---|---|
+| Q1 walk-forward | (c) Expanding window 2y+/6mo × 4-5 folds | DEC-482 RESOLVED-DECIDED |
+| Q2 R1000+NDX | Sub-tiers for tracking | DEC-483 RESOLVED-DECIDED |
+| Q3 PIT grain | My recommendation approved (year-grain default + day-grain via SEC EDGAR for DEC-368) | DEC-483 RESOLVED-DECIDED |
+| Q4 DEC-477+479 | Agree | DEC-477 + DEC-479 RESOLVED-DECIDED |
+| Q5 FMP alternative | Skip 2 strategies that need full financials, option b sounds good | DEC-484 + DEC-485 + DEC-490 RESOLVED-DECIDED |
+
+**Plus auto-flipped (owner directive prior turn was "restore phase 1A"):**
+- DEC-486/487/488 PROPOSED → RESOLVED-DECIDED
+
+**Plus added (logically derived from owner answers):**
+- DEC-478 RESOLVED-DECIDED (Polygon Stocks Starter $29/mo per "starter pack only")
+- DEC-490 RESOLVED-DECIDED (Phase 1A skipped strategies enumerated)
+
+**Total: 11 decisions logged this batch.**
+
+**Sprint 1 Day 1 readiness post-batch:**
+- ✅ Walk-forward configuration (DEC-482)
+- ✅ Universe expansion (DEC-483)
+- ✅ Universe canonical CSV (DEC-477)
+- ✅ Polygon tier (DEC-478)
+- ✅ Cost reference (DEC-479)
+- ✅ FMP alternative (DEC-484)
+- ✅ Earnings transcripts (DEC-485)
+- ✅ Phase 1A architecture (DEC-486/487/488)
+- ✅ Phase 1A skipped strategies (DEC-490)
+
+**Sprint 1 Day 1 BLOCKED only by:**
+1. Owner Polygon Stocks Starter subscription (tonight per directive)
+2. Sprint 0 Codespace allowlist verification (AAII + CNN F&G + SEC EDGAR)
+3. BUG-007 verification — affects Sprint 6.5 Day 1 NOT Sprint 1 Day 1 (Phase 1A `--no-agents` flag)
 

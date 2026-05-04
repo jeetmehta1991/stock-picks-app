@@ -457,7 +457,7 @@ Phase 5: REFLECTION (post-decision)
 ### Gap A: PIT-Correct Fundamentals
 **Affects:** Fundamentals Analyst (Agent 2), Bull Researcher (Agent 5), Bear Researcher (Agent 6), Risk Debaters (Agents 9-11)
 **Severity:** CRITICAL
-**Issue:** TradingAgents default uses yfinance/simfin which are CURRENT not as-of. Polygon Stocks Starter $30/mo coverage of fundamentals (income / balance sheet / cash flow) at PIT timestamps is **not yet verified**.
+**Issue:** TradingAgents default uses yfinance/simfin which are CURRENT not as-of. Polygon Stocks Starter $29/mo coverage of fundamentals (income / balance sheet / cash flow) at PIT timestamps is **not yet verified**.
 **Impact if unresolved:** Lookahead bias in Stage 2 backtest agent decisions; A/B verdict invalid; DEC-131 ≥0.2 net Sharpe gate becomes meaningless.
 **Resolution candidates:**
 - Polygon Stocks Starter scope verification (may already cover at $30/mo)
@@ -554,7 +554,7 @@ Based on Gap A-E analysis:
 
 **Total cost delta:** +$14-50/mo over current $263 CAD/mo baseline. Per owner directive turn 130 ("Happy to upgrade") — recommend evaluating FMP scope before Sprint 1 start.
 
-**Alternative:** Verify Polygon Stocks Starter $30/mo coverage of all three first; if covered, no upgrade needed.
+**Alternative:** Verify Polygon Stocks Starter $29/mo coverage of all three first; if covered, no upgrade needed.
 
 ---
 
@@ -813,7 +813,7 @@ Per L131 / CHECKLIST #51 — sub-decisions PROPOSED here, **not yet LOGGED as DE
 ## 30. Sub-decision Candidates
 
 ### DEC-460 PROPOSED — Verify Polygon Stocks Starter PIT fundamentals coverage
-**Scope:** Pre-Sprint-1 verification: confirm whether Polygon Stocks Starter $30/mo includes income statement / balance sheet / cash flow at PIT timestamps. Resolves Gap A if covered.
+**Scope:** Pre-Sprint-1 verification: confirm whether Polygon Stocks Starter $29/mo includes income statement / balance sheet / cash flow at PIT timestamps. Resolves Gap A if covered.
 **Effort:** ~0.5d
 **Test signals:** (a) Documented endpoint inventory; (b) sample fetch with as_of date validation; (c) PIT correctness verified via freezegun.
 **Sprint:** Pre-Sprint-1

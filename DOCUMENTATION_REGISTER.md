@@ -417,3 +417,35 @@ Per CHECKLIST #58 — Bucket D additions for Walkthrough 4 deferred decisions.
 
 **Total docs touched across both Pass 53 turn commits: 24 of 27 (3 historical-immutable docs untouched: PROJECT_PLAN_ARCHIVE.md, ADVERSARIAL_AUDIT_PASS_52_TURN_132.md, CRITICAL_GAPS_RESOLUTION_PASS_52_TURN_133.md).**
 
+
+---
+
+## Pass 53 Turn (this) — Sprint 1 Pre-Flight Batch
+
+**Trigger:** Owner Pass 53 batch approval Q1-Q5 + Q3 explanation approved.
+
+**11 decisions logged this turn:**
+
+| DEC | Description | Status |
+|---|---|---|
+| DEC-486 → RESOLVED-DECIDED | Phase 1A restoration (was PROPOSED prior turn) | FLIPPED |
+| DEC-487 → RESOLVED-DECIDED | Phase 1A-α restoration | FLIPPED |
+| DEC-488 → RESOLVED-DECIDED | Phase 1A-β restoration | FLIPPED |
+| DEC-477 RESOLVED-DECIDED | historical_membership.csv canonical | NEW |
+| DEC-478 RESOLVED-DECIDED | Polygon Stocks Starter $29/mo | NEW |
+| DEC-479 RESOLVED-DECIDED | Cost correction $30→$29 | NEW |
+| DEC-482 RESOLVED-DECIDED | Walk-forward expanding window 2y+/6mo × 5 folds (SUPERSEDES DEC-109) | NEW |
+| DEC-483 RESOLVED-DECIDED | Universe T1a/T1b/T1c with year-grain PIT for R1000+NDX | NEW |
+| DEC-484 RESOLVED-DECIDED | SEC EDGAR direct parsing Sprint 4 (SUPERSEDES DEC-461 FMP) | NEW |
+| DEC-485 RESOLVED-DECIDED | Earnings transcripts dropped from Stage 2 | NEW |
+| DEC-490 RESOLVED-DECIDED | Phase 1A skipped strategies enumerated (buyback + guidance) | NEW |
+
+**State after Pass 53 batch:**
+- Total decisions: 484 (was 472 pre-Pass-53; +12 net = +11 new + DEC-489 from prior turn)
+- RESOLVED-DECIDED: 379 (was 367)
+- PROPOSED: 13 (was 13 — DEC-486/487/488 flipped to RESOLVED-DECIDED; counts unchanged because new DECs added were RESOLVED not PROPOSED)
+- SUPERSEDED: +2 (DEC-109 by DEC-482; DEC-461 by DEC-484)
+- PENDING: 0 (unchanged)
+
+**Documentation integrity gap fixed:** Prior turn introduced "DEC-482/483/484/485 PROPOSED" labels in 6 docs without formal AUDIT_INDEX entries. This turn formally created all 4 + DEC-490 in master decision table.
+

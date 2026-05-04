@@ -24,26 +24,45 @@
 ### Sprint 1 — Phase 0.A Polygon Foundation (Week 1)
 
 **Entry criteria:**
-- Polygon Stocks Starter $30/mo subscription active (DEC-441 owner-action: subscribe)
+- Polygon Stocks Starter $29/mo subscription active (DEC-441/478/479 owner-action: subscribe; cost corrected from $30/mo)
 - API key in `.env` and Codespaces secret
 - main branch in clean state
+- Sprint 0 verified: AAII + CNN F&G + SEC EDGAR domains in Codespace allowlist
+
+**Universe scope (DEC-483 RESOLVED-DECIDED Pass 53):**
+- Tier 1a: S&P 500 (~503 tickers; day-grain PIT via DEC-303 historical_membership.csv per DEC-477)
+- Tier 1b: Russell 1000-non-S&P (~497 net new tickers; year-grain PIT via FTSE Russell annual reconstitution)
+- Tier 1c: NASDAQ 100-non-S&P (~15 net new tickers; year-grain PIT via Nasdaq annual reconstitution)
+- Total: ~1015 unique Tier 1 tickers (was ~509 pre-Pass-53)
+- Cache size impact: ~16-24 GB (was ~8-12 GB); prefetch wall ~2 days (was ~1 day)
+- Sprint 1 effort: ~25-35d (was 20-28d; +5-7d for sub-tier expansion)
+
+**Walk-forward configuration (DEC-482 RESOLVED-DECIDED Pass 53; SUPERSEDES DEC-109):**
+- Expanding window 2y+/6mo OOS × 5 folds within 5y Polygon Stocks Starter window
+- Total OOS coverage: 2.5yr across folds
+- Implementation deferred to Sprint 7 walk_forward.py refactor
 
 **Sub-decisions in scope:**
 | DEC-N | Description | Test signals (verification criteria) | Branch | PR | Status |
 |---|---|---|---|---|---|
-| DEC-441 | Polygon $30/mo subscription | API key configured; sample fetch returns non-empty | (no code) | (owner action) | RESOLVED-DECIDED |
+| DEC-441 | Polygon $29/mo subscription | API key configured; sample fetch returns non-empty | (no code) | (owner action) | RESOLVED-DECIDED |
 | DEC-256 | Polygon earnings prefetch | Non-empty parquet ≥95% S&P 500; days_to_earnings computable; PIT loader rejects EPS_actual queries with as_of < report_date | sprint1/dec-256 | - | RESOLVED-DECIDED |
-| DEC-257 | Polygon→yfinance fundamentals | All 15 required fields ≥90% S&P 500 × 20 quarters; PIT loader rejects fields with as_of < estimated filing_date | sprint1/dec-257 | - | RESOLVED-DECIDED |
+| DEC-257 | Polygon→yfinance fundamentals | All 15 required fields ≥90% S&P 500 × 20 quarters; PIT loader rejects fields with as_of < estimated filing_date. **NOTE Pass 53:** consumer is Phase 1B (OurFundamentalsToolkit), not Phase 1A; full financials deferred to Sprint 4 SEC EDGAR (DEC-484) | sprint1/dec-257 | - | RESOLVED-DECIDED |
 | DEC-440 | Polygon news endpoint | Non-empty news cache for sample; sentiment score field populates | absorbed in DEC-256 | - | RESOLVED-DECIDED |
 | DEC-261 | ICT/SMC PIT N+1 lag rule | Synthetic FVG forms at bar 100 → strategy entry at bar 101 open | sprint1/dec-261 | - | RESOLVED-DECIDED |
 | DEC-260 | Cache freshness assertion | Synthetic stale cache raises CacheStaleError; fresh cache passes; allow-listed stale ticker passes with warning | sprint1/dec-260 | - | RESOLVED-DECIDED |
+| DEC-477 | historical_membership.csv canonical universe | Static 482-CSV deprecation warning fires; canonical csv loaded for T1a | sprint1/dec-477 | - | RESOLVED-DECIDED |
+| DEC-478 | Polygon Stocks Starter $29/mo selected | Subscription verified; 5y history available | (subscription) | - | RESOLVED-DECIDED |
+| DEC-479 | Cost correction $30→$29 | Cost references updated across 6 docs | (doc-only) | - | RESOLVED-DECIDED |
+| DEC-483 | Universe sub-tiers T1a/T1b/T1c | T1a returns 503; T1b returns ~497 net new; T1c returns ~15 net new; year-grain PIT correct for any 2023 date returns 2023 R1000 list | sprint1/dec-483 | - | RESOLVED-DECIDED |
 
 **Exit criteria:**
-- All 6 sub-decisions' test signals pass
+- All sub-decisions' test signals pass
 - Sample backtest run uses Polygon as primary source for OHLCV/earnings/fundamentals
-- All 6 promoted to RESOLVED-IMPLEMENTED on owner approval
+- T1a + T1b + T1c universe builds operational with PIT correctness
+- All promoted to RESOLVED-IMPLEMENTED on owner approval
 
-**Effort:** ~7-9 engineering days
+**Effort:** ~25-35 engineering days (was ~7-9d pre-Pass-53; +5-7d for sub-tier expansion + universe build PIT correctness)
 **Critical-path:** YES
 
 ---

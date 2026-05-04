@@ -135,7 +135,7 @@ Stage 2 → Stage 3 GO/NO-GO decision
 
 **Pass 53 priorities pre-Sprint-1 (NOW):**
 1. Owner approval of DEC-486/487/488 (Phase 1A restoration)
-2. Owner approval of DEC-482 (walk-forward 2y/6mo × 4 folds for 5y Polygon Stocks Starter window)
+2. Owner approval of DEC-482 (walk-forward expanding window 2y+/6mo × 5 folds for 5y Polygon Stocks Starter window)
 3. Owner approval of DEC-483 (R1000 + NDX universe expansion)
 4. Owner decision on DEC-484/485 (FMP free alternative — SEC EDGAR direct vs drop financials)
 5. Owner Polygon Stocks Starter subscription (per directive: "tonight")
@@ -143,4 +143,37 @@ Stage 2 → Stage 3 GO/NO-GO decision
 7. Sprint 1 Day 1 begins after above complete
 
 **Estimated total Stage 2 effort post-Phase-1A-restoration:** ~50-70 engineering days from Sprint 1 start to Phase 1B-α-ready (was ~30-40d pre-restoration).
+
+
+---
+
+## PASS 53 SPRINT 1 READINESS (post-batch approval)
+
+**Pass 53 batch decision approval completed this turn (11 decisions).**
+
+**Sprint 1 has zero formally-PENDING decisions.** It is genuinely ready to start once Polygon subscription is active.
+
+**Pre-flight checklist for Sprint 1 Day 1:**
+
+| Item | Status | Owner action |
+|---|---|---|
+| Polygon Stocks Starter $29/mo subscription | PENDING | Subscribe tonight |
+| API key configured in Codespace `.env` | PENDING | Add post-subscription |
+| AAII URL accessible from Codespace allowlist | UNVERIFIED | Verify Sprint 0 Day 1 |
+| CNN F&G URL accessible from Codespace allowlist | UNVERIFIED | Verify Sprint 0 Day 1 |
+| SEC EDGAR domain accessible (for DEC-484 Sprint 4 + DEC-368 Sprint 5) | UNVERIFIED | Verify Sprint 0 Day 1 |
+| BUG-007 API key guard verified for `--no-agents` | OPEN | Resolution before Sprint 6.5 (NOT Sprint 1 blocker) |
+
+**Sprint 1 effort: ~25-35 engineering days (was ~7-9d pre-Pass-53; expanded by sub-tier universe scope + walk-forward driver)**
+
+**After Sprint 1 cache complete + Sprints 2-6 Tier A bug fixes + catch mechanisms:**
+→ Sprint 6.5 Phase 1A baseline run (~6-8d + ~20-25h compute)
+→ Sprint 6.5-7 Phase 1A-α rules-only cube + dashboards (~10-14d)
+→ Sprint 7 Day 1 Phase 1A-β scale validation (~3-5d + ~6-8h compute)
+→ Owner gate: rules-only Sharpe ≥ 0.7 OOS authorizes Phase 1B agent overlay
+→ Sprint 7 Phase 1B agent overlay
+→ Sprint 7-8 Phase 1B-α $300 cube run
+→ Stage 2 → Stage 3 GO/NO-GO
+
+**Total path Sprint 1 Day 1 → Stage 2 verdict: ~50-70 engineering days realistic**
 
