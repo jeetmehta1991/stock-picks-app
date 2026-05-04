@@ -1087,3 +1087,40 @@ Codified in CHECKLIST #62 paragraph + part of #61 5-pass methodology Pass 4 (sta
 - Restoration: DEC-486/487/488 PROPOSED (Phase 1A / 1A-α / 1A-β)
 
 **Owner accountability:** Same pattern as Pass 52 turn 128 (owner caught DEC-042 architectural-fit gap), Pass 52 turn 130 (owner caught DEC-051 data-dependency gap), Pass 52 turn 132 (Claude proactively surfaced 167 gaps). Pass 53 turn (this) is the 4th instance where owner caught a Claude-missed gap. Pattern of owner-as-error-catcher remains stable; Claude meta-audit methodology still has blind spots.
+
+---
+
+## L143 — Decision-state vs artifact-state are different things (Pass 53)
+
+**Source trigger:** Pass 53 turn — owner asked "Why hasnt this been flagged yet when we are already running the commands and you said we are ready for sprint 1?"
+
+**Discovery:** I claimed multiple times across recent turns that "Sprint 1 has zero formally-PENDING decisions; technically ready to start." This was true for decision-state (DEC-477/478/479/482/483/484/485/486/487/488/490 were all RESOLVED-DECIDED in AUDIT_INDEX). But it was false for artifact-state — the actual files those decisions reference did not exist:
+- `data/universe/historical_membership.csv` (DEC-477 referent) — does not exist
+- `data/universe/russell_1000_membership.csv` (DEC-483 T1b referent) — does not exist
+- `data/universe/nasdaq_100_membership.csv` (DEC-483 T1c referent) — does not exist
+- `backtest/data/extended_universe.csv` (DEC-103 Tier 2 referent) — exists but only header row, 0 data
+- `backtest/data/momentum_watchlist.csv` (DEC-104 Tier 3 referent) — exists but only header row, 0 data
+
+The existing `backtest/data/sp500_tickers.csv` (484 current-state tickers) is exactly the static CSV that DEC-477 explicitly says to deprecate due to survivorship bias.
+
+**Why I missed this for multiple turns:**
+- I treated AUDIT_INDEX as the ground truth for project state
+- I conflated "decision logged as RESOLVED-DECIDED" with "implementation prerequisite in place"
+- L139 (data dependency verification — codified after Pass 52 turn 130 caught the same pattern) said audit per-component data inputs "BEFORE marking architectural decisions RESOLVED-DECIDED" but I applied it only to decisions about external data feeds, not to internal artifacts (CSV files referenced by decisions)
+- The verification gap was small in effort (30-second `ls` + `wc -l`) but I never ran it
+
+**Lesson:** Decision-state ≠ artifact-state. "Sprint X is ready" requires BOTH:
+- Decision-state: all DECs in scope RESOLVED-DECIDED
+- Artifact-state: input files exist and are populated; credentials work; smoke tests pass
+
+The verification is cheap. The cost of skipping it is wasted owner trust and false-positive readiness claims.
+
+**Pattern recurrence:** This is the 5th instance of "architectural decisions marked complete without verifying physical artifacts" pattern (also DEC-042 turn 128, DEC-051 turn 130, Phase 1A omission Pass 53, DEC-469-481 phantom labels Pass 53, this). Owner has caught all 5. L139 was insufficient codification — needed to extend to internal artifacts too. CHECKLIST #64 codifies the artifact-state step explicitly.
+
+**Codified in:**
+- CHECKLIST #64 (NEW Pass 53)
+- L143 (this learning)
+- Pattern: 5th "architectural completion without artifact verification" instance documented; Claude meta-audit methodology has persistent blind spot here despite multiple codifications
+
+**Owner accountability:** 5th instance of owner catching gap that audit methodology should have caught proactively. Pattern is stable. If next sprint readiness claim isn't backed by explicit artifact-verification evidence, it should be questioned by default.
+

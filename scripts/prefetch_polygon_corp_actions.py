@@ -1,0 +1,133 @@
+"""
+scripts/prefetch_polygon_corp_actions.py — Pre-fetch Polygon splits + dividends for Sprint 1 universe.
+
+Per DEC-441 + DEC-302 (raw OHLCV + adjusted-on-demand requires corp actions cache).
+
+Splits cache: backtest/data/cache/polygon/splits/all_splits.parquet (single file — paginated all)
+Dividends cache: backtest/data/cache/polygon/dividends/all_dividends.parquet (single file — paginated all)
+
+Polygon /v3/reference/splits and /v3/reference/dividends are universe-wide endpoints
+(no per-ticker filter needed); paginate to get all events in our 5y window.
+
+Run from laptop:
+  python scripts/prefetch_polygon_corp_actions.py
+
+Estimated wall time: ~5-10 minutes (paginated; thousands of records).
+"""
+
+import os
+import sys
+import time
+import requests
+import pandas as pd
+from pathlib import Path
+from datetime import date, timedelta
+
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
+POLYGON_KEY = os.environ.get("POLYGON_API_KEY", "")
+if not POLYGON_KEY:
+    print("ERROR: POLYGON_API_KEY not set")
+    sys.exit(1)
+
+BASE_URL = "https://api.polygon.io"
+SPLITS_DIR = Path("backtest/data/cache/polygon/splits")
+DIVIDENDS_DIR = Path("backtest/data/cache/polygon/dividends")
+
+# 5y window per DEC-482
+END_DATE = date.today()
+START_DATE = END_DATE - timedelta(days=5 * 365 + 30)
+
+TIMEOUT = 60
+
+
+def fetch_paginated(endpoint: str, params: dict) -> list:
+    """Paginate through Polygon endpoint until next_url is None."""
+    url = f"{BASE_URL}{endpoint}"
+    all_results = []
+    page = 0
+    while True:
+        page += 1
+        try:
+            r = requests.get(url, params=params, timeout=TIMEOUT)
+        except requests.RequestException as e:
+            print(f"    Page {page} failed: {e}")
+            break
+        if r.status_code != 200:
+            print(f"    Page {page} HTTP {r.status_code}: {r.text[:200]}")
+            break
+        data = r.json()
+        results = data.get("results", []) or []
+        all_results.extend(results)
+        next_url = data.get("next_url")
+        if not next_url:
+            break
+        url = next_url
+        params = {"apiKey": POLYGON_KEY}
+        if page > 100:
+            print(f"    Aborting: >100 pages")
+            break
+        print(f"    Page {page}: {len(results)} records (cumulative: {len(all_results)})")
+        time.sleep(0.05)
+    return all_results
+
+
+def main():
+    print(f"=== Polygon Corporate Actions Prefetch ===")
+    print(f"Window: {START_DATE} to {END_DATE} (~5 years)")
+    print()
+
+    # SPLITS
+    print("[1/2] Fetching splits...")
+    SPLITS_DIR.mkdir(parents=True, exist_ok=True)
+    splits = fetch_paginated(
+        "/v3/reference/splits",
+        {
+            "apiKey": POLYGON_KEY,
+            "execution_date.gte": str(START_DATE),
+            "execution_date.lte": str(END_DATE),
+            "limit": 1000,
+            "order": "asc",
+            "sort": "execution_date",
+        },
+    )
+    if splits:
+        df_splits = pd.DataFrame(splits)
+        # Schema: ticker, execution_date, split_from, split_to
+        df_splits.to_parquet(SPLITS_DIR / "all_splits.parquet", compression="snappy", index=False)
+        print(f"  Splits: {len(df_splits)} records → {SPLITS_DIR / 'all_splits.parquet'}")
+    else:
+        print(f"  WARNING: no splits returned")
+
+    # DIVIDENDS
+    print("\n[2/2] Fetching dividends...")
+    DIVIDENDS_DIR.mkdir(parents=True, exist_ok=True)
+    divs = fetch_paginated(
+        "/v3/reference/dividends",
+        {
+            "apiKey": POLYGON_KEY,
+            "ex_dividend_date.gte": str(START_DATE),
+            "ex_dividend_date.lte": str(END_DATE),
+            "limit": 1000,
+            "order": "asc",
+            "sort": "ex_dividend_date",
+        },
+    )
+    if divs:
+        df_divs = pd.DataFrame(divs)
+        df_divs.to_parquet(DIVIDENDS_DIR / "all_dividends.parquet", compression="snappy", index=False)
+        print(f"  Dividends: {len(df_divs)} records → {DIVIDENDS_DIR / 'all_dividends.parquet'}")
+    else:
+        print(f"  WARNING: no dividends returned")
+
+    print()
+    print("Next: python scripts/prefetch_polygon_news.py")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

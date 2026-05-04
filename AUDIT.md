@@ -26272,3 +26272,91 @@ Pass 53 prior turn introduced "DEC-482/483/484/485" as PROPOSED labels in 6 docs
 
 **Critical-path implication:** Sprint 1 Day 1 is fully unblocked (all Sprint 1-relevant blockers RESOLVED). Sprint 7 (statistical methodology + agent overlay) is BLOCKED on the 10 PROPOSED decisions; owner approval needed before Sprint 7 implementation begins. Phase 1A (Sprint 6.5) does NOT depend on these PROPOSED decisions (rules-only baseline doesn't use agent overlay or A/B framework).
 
+
+---
+
+# PASS 53 TURN — PROCESS FAILURE: DECISION-STATE vs ARTIFACT-STATE GAP
+
+## Context
+
+Owner directive: "Has the universe been populated?... Why hasnt this been flagged yet when we are already running the commands and you said we are ready for sprint 1?"
+
+## Honest accounting
+
+Multiple times across recent Pass 53 turns, I claimed:
+- "Sprint 1 has zero formally-PENDING decisions"
+- "Sprint 1 Day 1 is fully unblocked"
+- "No more decision blockers"
+
+These claims were true for **decision-state** (DEC-477/478/479/482/483/484/485/486/487/488/490 all RESOLVED-DECIDED in AUDIT_INDEX) but false for **artifact-state**:
+
+| Decision | Artifact referenced | Actual state |
+|---|---|---|
+| DEC-477 | `data/universe/historical_membership.csv` (S&P 500 day-grain PIT) | DOES NOT EXIST |
+| DEC-483 T1a | S&P 500 PIT-correct universe | Existing static CSV (484 current-state tickers) — survivorship-biased per DEC-477 |
+| DEC-483 T1b | `data/universe/russell_1000_membership.csv` (year-grain PIT) | DOES NOT EXIST |
+| DEC-483 T1c | `data/universe/nasdaq_100_membership.csv` (year-grain PIT) | DOES NOT EXIST |
+| DEC-103 Tier 2 | `backtest/data/extended_universe.csv` | Exists but header-only, 0 data rows |
+| DEC-104 Tier 3 | `backtest/data/momentum_watchlist.csv` | Exists but header-only, 0 data rows |
+
+## Pattern: 5th instance of architectural decision marked complete without artifact verification
+
+| Instance | Pass | Description | Owner caught proactively (P) or reactively (R)? |
+|---|---|---|---|
+| 1 | 52 turn 128 | DEC-042 architectural fit (named agents didn't match TradingAgents reality) | R |
+| 2 | 52 turn 130 | DEC-051 data dependency chain (per-agent data inputs not audited) | R |
+| 3 | 53 turn — Phase 1A | Phase 1A absorbed by DEC-422+426 silently dropped from PROJECT_PLAN §3 | R |
+| 4 | 53 turn — DEC-469-481 phantom | DEC-477/478/479/482/483/484/485 referenced as PROPOSED in 6 docs but never logged in AUDIT_INDEX master table | R |
+| 5 | **53 turn (this)** | **Universe artifacts referenced by RESOLVED-DECIDED DECs do not exist on disk** | **R** |
+
+5/5 caught reactively by owner, 0/5 caught proactively by my own audit methodology.
+
+## Root cause
+
+I treated AUDIT_INDEX (decision-state ground truth) as the project's overall ground truth. I never ran the verification "does the artifact this decision references actually exist on disk?"
+
+L139 codified after Pass 52 turn 130 said "audit per-component data inputs BEFORE marking architectural decisions RESOLVED-DECIDED." I applied this to external data feeds (Polygon coverage, FMP availability, Quiver tier verification) but not to internal artifacts (CSV files referenced by decisions). The codification was insufficient to prevent the same pattern recurring with internal artifacts.
+
+## Resolution
+
+**CHECKLIST #64 codified Pass 53 (this turn):** Sprint readiness requires both decision-state AND artifact-state verification. The verification is cheap (~30 seconds of `ls` + `wc -l`). Decision-state alone is insufficient.
+
+**L143 codified Pass 53 (this turn):** Decision-state vs artifact-state are different things. The codification of L139 was insufficient because it focused on external data feeds, not internal artifacts.
+
+## What changes going forward
+
+Owner should mistrust "Sprint X is ready" claims unless I provide explicit artifact-verification evidence. From now on:
+
+- Every sprint-ready claim must include: `ls`/`wc -l` output of input files; smoke test result; sample data shape; credentials verified
+- Every "no blockers" statement must be backed by precondition-audit script output
+- 5th-instance pattern logged; if 6th instance happens, deeper methodology revision needed (not just adding CHECKLIST items)
+
+## Files updated this turn (Pass 53 process-failure-acknowledgment commit)
+
+1. `scripts/smoke_test_polygon.py` — NEW
+2. `scripts/prefetch_polygon_ohlcv_daily.py` — NEW
+3. `scripts/prefetch_polygon_reference.py` — NEW
+4. `scripts/prefetch_polygon_corp_actions.py` — NEW
+5. `scripts/prefetch_polygon_news.py` — NEW
+6. `scripts/run_polygon_prefetch_all.sh` — NEW orchestrator
+7. `scripts/SPRINT1_POLYGON_PREFETCH_README.md` — NEW (with explicit hybrid-path scope flag)
+8. `CHECKLIST.md` — added #64
+9. `LEARNINGS.md` — added L143
+10. `AUDIT.md` — this entry
+
+## Hybrid path scope clarification
+
+**Tonight (Path A — pragmatic):**
+- Prefetch on existing `backtest/data/sp500_tickers.csv` (484 current-state tickers) with explicit acknowledgment of survivorship bias
+- Output to `backtest/data/cache/polygon/{ohlcv_daily,reference,splits,dividends,news}/`
+- Wall time ~4-7 hours on owner's laptop
+- Commit results to main
+
+**Tomorrow (Path B — universe build):**
+- Build `data/universe/historical_membership.csv` (DEC-477 day-grain PIT)
+- Build R1000 + NDX year-grain PIT files (DEC-483 T1b + T1c)
+- Supplementary Polygon prefetch for ~531 net-new tickers
+- Quiver paid endpoints prefetch (all 13)
+- After all complete: Sprint 1 properly RESOLVED-IMPLEMENTED
+
+*Per CHECKLIST #25 (honest acknowledgment of 5th-instance recurrence; not minimizing); #43 (verified actual file states with ls/wc/find before answering); #59/60 (belatedly applied to internal artifacts; codified via #64 to prevent 6th recurrence); #64 NEW (artifact-state verification mandatory); L143 NEW (decision-state ≠ artifact-state).*
