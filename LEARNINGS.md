@@ -997,3 +997,63 @@ Pass 52 owner accountability cycle (6 instances):
 - Turn 130: data dependency chain not verified (this learning)
 
 Common thread: Claude's confidence in surface-level completion outpaces underlying-state verification. Owner verification questions catch these. Going forward, pre-flight discipline must extend to data-feed dependency verification on every architectural/framework adoption decision.
+
+L140 — Documentation review must include adversarial simulation (Pass 52 turn 132):
+
+Trigger: Owner Pass 52 turn 132 directive — "Do an adversarial review of the project plan and decisions and point out all gaps. Simulate every step and every micro step from current phase to end. Point out everything wrong or not done well. ... 5 passes automatically without my prompt. ... Be detailed. I don't care about time it takes but get it right."
+
+Outcome: 167 gaps identified across 3 canonical documents (PROJECT_PLAN + TRADINGAGENTS_DATA_AUDIT + TRADING_RULES). 10 Stage 2 effectiveness blockers synthesized. Without this audit, Stage 2 backtest infrastructure (Sprint 1-9, ~310-385d) was at risk of producing invalid verdicts regardless of execution quality.
+
+Failure mode caught: Documentation appearing complete and internally consistent on linear read, but containing mathematical impossibilities, architectural mismatches, and unstated assumptions that would manifest as Stage 2 verdict invalidity. Linear review = grammar/typos. Adversarial simulation = architectural gaps.
+
+Top blockers identified that linear review missed:
+- B1 Multiple testing math: 119 strategies × 65K cells = 7.7M combinations; Bonferroni α = 6.5e-9; no cell can pass
+- B2 A/B budget math: $300 cap vs $1500-2000 needed (5-7× off)
+- B3 Paired design invalid: trade SETS differ per arm, statistical comparison meaningless
+- B4 Portfolio class spec vacuum: Sprint 7 toolkit methods reference unspecified Sprint 3 methods
+- B5 TradingAgents Pydantic schema verification: Research Manager `confidence` field may not exist
+- B6 Cube compute cost unestimated: 100M+ metric computations across 6 walk-forward folds
+- B7 PIT fundamentals verification still pending DEC-460
+- B8 Walk-forward pre-2018 data source not in Sprint 1 scope
+- B9 Russell 1000 referenced inconsistently across docs
+- B10 Cost estimate $263 CAD/mo doesn't include contingencies — real cost likely $500-1000+
+
+Lesson: Canonical document review must include adversarial 5-pass simulation: execution simulation / data dependencies / edge cases / statistical rigor / governance assumptions. Linear linear-read review insufficient — gaps emerge from "what happens when X" probing.
+
+Codified in CHECKLIST #61 (adversarial document review before declaring canonical documentation complete).
+
+Pass 52 owner accountability cycle (7 instances):
+- Turn 98: substantive vs declared completeness (homeless decisions)
+- Turn 108: substantive vs declared completeness (engineering decisions)
+- Turn 110: coverage gaps (bugs)
+- Turn 114-118: quality vs delegated bulk (sweep)
+- Turn 128: architectural fit not verified (DEC-042 → DEC-459)
+- Turn 130: data dependency chain not verified (DEC-460-468)
+- Turn 132: **documentation rigor gaps not verified (this learning — 167 gaps + 10 blockers)**
+
+Pattern continuity:
+- L138 (turn 129): directive execution does not override flagging duty
+- L139 (turn 130): decision resolution must include data-input dependency verification
+- L140 (turn 132): documentation review must include adversarial simulation
+- L141 (turn 132): statistical methodology requires capacity check (see L141 below)
+
+Common thread: Claude's confidence in surface completion outpaces underlying-state verification. Each owner-driven catch surfaces a deeper layer:
+- L138: surface = directives executed; underlying = architectural assumptions unverified
+- L139: surface = framework adopted; underlying = data dependencies unmapped
+- L140: surface = documentation complete; underlying = adversarial scenarios un-simulated
+
+Owner directive turn 132 was PROACTIVE (asked for comprehensive simulation). Going forward, this discipline should be self-applied without owner prompt on every canonical documentation milestone.
+
+L141 — Statistical methodology requires capacity check (Pass 52 turn 132):
+
+Trigger: Pass 52 turn 132 adversarial audit Pass 4 found that TRADING_RULES §3 5-Gate Filter (Bonferroni p < 0.05, PSR ≥ 0.95, t-stat ≥ 3.4) combined with §22 Cube architecture (17+ dimensions × 119 strategies) produces 7.7M test combinations. Bonferroni-corrected α = 0.05 / 7.7M = 6.5e-9 — effectively unattainable. PSR formula deflates by trial count N — same scale problem.
+
+Sample size requirement (n ≥ 30 per cell × 65K cells × 119 strategies × 6 walk-forward folds) requires 1.4 BILLION trades. Universe (~480 tickers × 250 days × 6 years) provides 720K ticker-days. Trade frequency >>> ticker-day observations. Mathematically impossible to populate cube at significance threshold.
+
+Failure mode caught: Statistical methodology specified WITHOUT verifying that sample size × dimensions × multiple-testing correction × data volume reconcile. Methodology designed in isolation; integration check missed.
+
+Lesson: Before finalizing statistical methodology, verify capacity: (a) trial count × correction → significance threshold attainability; (b) sample size requirement × cell count → required trade volume; (c) required trade volume × OOS folds → required ticker-day coverage; (d) reconcile against actual data availability.
+
+Resolution path: Switch from Bonferroni to FDR (Benjamini-Hochberg); apply hierarchical correction (strategy-level then cell-level); reduce cube dimensionality; revise n-threshold to fit data volume. Formal resolution deferred to Sprint 7 statistical methodology block per ADVERSARIAL_AUDIT.
+
+Codified in CHECKLIST #62 paragraph + part of #61 5-pass methodology Pass 4 (statistical / methodological rigor).

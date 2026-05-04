@@ -25368,3 +25368,80 @@ Counts post-commit:
 PASS 52 AUDIT REMAINS 100% TERMINAL (PENDING = 0).
 
 *Per CHECKLIST #25 (honest accountability for Pass 25-31 omission)/#43 (precise grep on TradingAgents agent dependencies)/#51 (PROPOSED→approved per individual owner directive #6)/#57 (use-case mapping per agent)/#58 (6-file atomic commit demonstrated)/#59 (architectural assumption verification applied PROACTIVELY this time)/#60 NEW (data dependency verification on architectural decisions).*
+
+---
+
+## AUDIT PASS 52 turn 132 — Adversarial 5-Pass Document Review + L140 + L141 + CHECKLIST #61 + #62
+
+Owner Pass 52 turn 132: "Do an adversarial review of the project plan and decisions and point out all gaps. Simulate every step and every micro step from current phase to end. Point out everything wrong or not done well. This one is a key architectural gap. Point out each and every thing that can hinder the effectiveness of stage 2 backtesting. Now create a new audit document. Do not review code. Just the project plan, trading agents audit, and trading rules md file. Go through each and every word and iteratively make 5 passes automatically without my prompt. Think of execution and results perspectives. Be detailed. I don't care about time it takes but get it right. ... Think simulate execution from start to finish."
+
+DOCUMENTS REVIEWED (3,538 lines total):
+- PROJECT_PLAN.md (869 lines)
+- TRADINGAGENTS_DATA_AUDIT.md (928 lines)
+- TRADING_RULES_AND_INFORMATION.md (1741 lines)
+
+5-PASS METHODOLOGY APPLIED:
+- Pass 1: Execution simulation Sprint 0 → Stage 2→3 verdict gate (65 gaps)
+- Pass 2: Data dependencies + cross-document coherence (30 gaps, 66-95)
+- Pass 3: Edge cases + failure modes + real-world ops (30 gaps, 96-125)
+- Pass 4: Statistical / methodological rigor (25 gaps, 126-150)
+- Pass 5: Process / governance / unstated assumptions (17 gaps, 151-167)
+
+TOTAL: 167 GAPS + 10 STAGE 2 EFFECTIVENESS BLOCKERS
+
+10 STAGE 2 BLOCKERS (synthesized):
+- B1: Multiple testing math doesn't reconcile (Bonferroni α 6.5e-9)
+- B2: A/B budget off by 5-7× ($300 cap vs $1500-2000 needed)
+- B3: Paired design statistically invalid (trade SETS differ per arm)
+- B4: Portfolio class spec vacuum (Sprint 7 toolkits depend on undocumented Sprint 3 methods)
+- B5: TradingAgents Pydantic schema verification (RM `confidence` may not exist)
+- B6: Cube compute cost unestimated (100M+ metrics × 6 folds in Codespace)
+- B7: PIT fundamentals verification (DEC-460 still pending)
+- B8: Walk-forward pre-2018 data not in Sprint 1 scope
+- B9: Russell 1000 referenced inconsistently
+- B10: Cost estimate $263 CAD/mo doesn't include contingencies
+
+PROCESS LEARNINGS L140 + L141 (NEW Pass 52 turn 132):
+L140: Documentation review must include adversarial simulation. Linear review catches grammar; simulation catches architecture.
+L141: Statistical methodology requires capacity check. Sample × dimensions × correction × data volume must reconcile BEFORE methodology finalized.
+
+CHECKLIST #61 + #62 NEW (Pass 52 turn 132):
+#61: Adversarial document review before declaring canonical documentation complete (5-pass methodology codified).
+#62: Cross-document consistency verification on canonical doc updates.
+
+OWNER ACCOUNTABILITY VINDICATION (7th instance Pass 52, but PROACTIVE this time):
+1. Turn 98: homeless decisions
+2. Turn 108: substantively-homeless engineering decisions
+3. Turn 110: bug-decision linkage gap
+4. Turn 114-118: 80 PENDING delegation
+5. Turn 128: architectural fit (DEC-042 → DEC-459)
+6. Turn 130: data dependency chain (DEC-460-468)
+7. Turn 132: documentation rigor (167 gaps + 10 blockers)
+
+Critical observation: Without this audit, Stage 2 backtest infrastructure (Sprint 1-9, ~310-385d effort) was at risk of producing invalid verdicts regardless of execution quality. The 10 blockers are PLANNING issues, not implementation issues — they would have wasted ~150-200 days of Sprint 1-9 effort before being discovered through failed Phase 1B-α verdict.
+
+NO NEW DECISIONS LOGGED IN THIS PASS:
+This audit produces RECOMMENDATIONS, not decisions. Per L131 / CHECKLIST #51 — sub-decisions PROPOSED in ADVERSARIAL_AUDIT Part G, not LOGGED as DECISIONs until owner explicitly approves each. The recommendation set is large (~30+ candidate decisions). Owner approves in batches.
+
+NEW CANONICAL DOCUMENT: ADVERSARIAL_AUDIT_PASS_52_TURN_132.md (~580 lines)
+- Part A: Pass 1 Execution Simulation (gaps 1-65)
+- Part B: Pass 2 Data Dependencies + Cross-Doc Coherence (gaps 66-95)
+- Part C: Pass 3 Edge Cases + Failure Modes (gaps 96-125)
+- Part D: Pass 4 Statistical / Methodological Rigor (gaps 126-150)
+- Part E: Pass 5 Process / Governance / Assumptions (gaps 151-167)
+- Part F: Stage 2 Effectiveness Blockers (10 ranked)
+- Part G: Recommended Resolution Sequencing (Tier 1/2/3 fixes)
+
+CHECKLIST #58 INVOKED IN THIS COMMIT (4-file atomic with new audit doc):
+1. AUDIT.md (this narrative + L140 + L141)
+2. CHECKLIST.md (NEW #61 + #62)
+3. LEARNINGS.md (NEW L140 + L141)
+4. ADVERSARIAL_AUDIT_PASS_52_TURN_132.md (NEW canonical audit document)
+
+(AUDIT_INDEX.md NOT touched — no decisions logged this turn; recommendations only)
+
+Counts unchanged: 472 / 0 PENDING / 367 RESOLVED-DECIDED / 30 SUPERSEDED total / 32 DEF_3 / 19 DEF_4 / 10 BLOCKED / 14 other.
+
+PASS 52 REMAINS 100% TERMINAL.
+
+*Per CHECKLIST #25 (honest accountability for documentation rigor); #43 (precise grep across all 3 documents + cross-reference with AUDIT decisions); #51 (no decisions logged — recommendations only, owner approves each); #57 (use-case mapping per simulation step + per gap); #58 (4-file atomic commit demonstrated 11th time across Pass 52); #59 (architectural assumption verification applied PROACTIVELY at documentation level); #60 (data dependency verification applied to spec coherence); #61 NEW (adversarial document review with 5-pass methodology); #62 NEW (cross-document consistency verification).*
