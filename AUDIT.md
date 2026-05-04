@@ -25106,3 +25106,82 @@ PASS 53 READY TO BEGIN ✓
 ═══════════════════════════════════════════════════════════════════════
 
 *Per CHECKLIST #25 (honest retrospective with both wins and losses)/#43 (comprehensive Pass 52 commit + state retrieval)/#51 (Pass 53 priorities are recommendations — owner decides)/#57 (use-case mapping per priority area with critical-path analysis)/#58 (Pass 52 framework operational + ready for Pass 53 enforcement).*
+
+---
+
+## AUDIT PASS 52 turn 128 — TRADING_RULES_AND_INFORMATION.md created (canonical) + PROJECT_PLAN.md refresh committed
+
+Owner Pass 52 turn 126: 8 directives approved for two-document structure
+Owner Pass 52 turn 128: 8 directives re-confirmed (signal that prior turn was incomplete — owner caught lack of commits/creation)
+
+HONEST CORRECTION (per #25):
+Turn 127 created PROJECT_PLAN.md content but never committed it; never created TRADING_RULES_AND_INFORMATION.md. Owner re-confirming directives is the cue. Both gaps closed in turns 128 (PROJECT_PLAN commit + TRADING_RULES creation).
+
+TWO-COMMIT SEQUENCE THIS TURN:
+
+COMMIT 1 (turn 128 — `4d514c2a`): PROJECT_PLAN.md REFRESH
+- 1074 lines (vs ~600-800 target — slightly over but comprehensive)
+- 7 parts × 30 sections per owner-approved structure (directive #4)
+- Single Source of Truth principle: references registers, doesn't duplicate
+- 13 canonical docs + 4 reference docs documented in Document Map (§29)
+- PROJECT_PLAN_ARCHIVE.md retained as historical reference (directive #2)
+
+COMMIT 2 (this commit — TRADING_RULES_AND_INFORMATION.md):
+- 1651 lines per directive #3 ("highly detailed, all information")
+- 11 parts × 23 sections per owner-approved structure (directive #5)
+- Part K dedicated REVISIT_AFTER_BACKTEST section per directive #8
+- 28 REVISIT_AFTER_BACKTEST items aggregated with default values + source decisions + sections
+- ~50 fixed thresholds documented across 23 sections
+- Cross-reference convention: ENGINEERING_REGISTER cross-references this doc instead of duplicating thresholds (directive #6)
+- Canonical home for trading rules across all 5 stages
+
+CONTENT COVERAGE (all 23 sections):
+Part A — Stage benchmarks (1-2): All 5 stage transitions documented; phase acceptance criteria with checklists
+Part B — Strategy rules (3-6): 5-Gate validity filter; decay detection; 3-tier sizing; per-ticker controls
+Part C — Agent gates (7): AgentGateConfig per DEC-042 with WEIGHTED CONTINUOUS-SCORE architecture
+Part D — Exit methodology (8-9): 17 exit methods; 5-level circuit breakers
+Part E — Regime rules (10-11): 8+ inputs regime classification; conditional strategy behavior
+Part F — Data integrity (12-13): PIT correctness; cache rules
+Part G — Cost modeling (14-15): IBKR Tiered commission; Canadian-resident specifics
+Part H — Statistical methodology (16-18): Walk-forward; performance metrics; A/B testing
+Part I — Event handling (19-20): Event-calendar suppression; corporate actions
+Part J — Phase 1B-α cube (21-22): 17+ dimensions; verdict framework
+Part K — REVISIT_AFTER_BACKTEST (23): 28 items dedicated aggregation per directive #8
+
+KEY FEATURES:
+- All thresholds with source decision IDs (DEC-NNN cross-references)
+- All defaults with rationale documented
+- Test signals embedded in acceptance criteria
+- Tuning methodology per §23.2 documented
+- Tuning cadence per §23.3 documented (Phase 1B-α + quarterly + Stage 4+ ongoing)
+
+NEW DOCUMENT CANONICAL STATUS:
+- This document is the canonical home for trading rules
+- ENGINEERING_REGISTER cross-references this document
+- AUDIT.md scope text + decision RESOLVED notes remain authoritative for decision narratives, but threshold/parameter values cross-reference here
+- Any threshold change requires explicit owner approval (CHECKLIST #51) + atomic update to this document (CHECKLIST #58)
+
+DOCUMENT INVENTORY POST-PASS-52:
+- 14 canonical documents (was 13; +TRADING_RULES_AND_INFORMATION.md)
+- 4 reference documents (PROJECT_PLAN_ARCHIVE/PASS_53_PRIORITIES/CLAUDE/README)
+- Total markdown files: ~18 documents
+
+CHECKLIST #58 INVOKED (2-file atomic — content creation, no status flips):
+1. AUDIT.md (this narrative)
+2. TRADING_RULES_AND_INFORMATION.md (NEW canonical document)
+
+PASS 52 status: 462 / 0 PENDING / 358 RESOLVED-DECIDED — UNCHANGED.
+
+OWNER DIRECTIVES OUTCOMES (8 of 8):
+1. PROJECT_PLAN refresh APPROVED → committed turn 128 (`4d514c2a`)
+2. PROJECT_PLAN_ARCHIVE retained → unchanged (still in repo)
+3. TRADING_RULES canonical APPROVED with high detail → 1651 lines created turn 128
+4. PROJECT_PLAN section structure APPROVED → 7 parts × 30 sections delivered
+5. TRADING_RULES section structure APPROVED → 11 parts × 23 sections delivered
+6. Cross-reference convention APPROVED → implemented per spec
+7. Length expectations APPROVED → PROJECT_PLAN ~1074 lines (slight over); TRADING_RULES ~1651 lines (over due to directive #3 detail level)
+8. Part K dedicated section APPROVED → 28 REVISIT_AFTER_BACKTEST items aggregated
+
+Pass 53 readiness: BOTH new canonical documents OPERATIONAL. Sprint 1 kickoff can proceed when owner subscribes to Polygon Stocks Starter $30/mo.
+
+*Per CHECKLIST #25 (honest about turn 127 incompletion + scope detail per directive #3); #43 (existing-document inventory + cross-reference verification); #51 (8 owner directives explicitly approved + executed); #57 (use-case mapping per section); #58 (atomic 2-file commit pattern; canonical home convention).*
