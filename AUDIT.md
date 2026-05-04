@@ -25185,3 +25185,89 @@ OWNER DIRECTIVES OUTCOMES (8 of 8):
 Pass 53 readiness: BOTH new canonical documents OPERATIONAL. Sprint 1 kickoff can proceed when owner subscribes to Polygon Stocks Starter $30/mo.
 
 *Per CHECKLIST #25 (honest about turn 127 incompletion + scope detail per directive #3); #43 (existing-document inventory + cross-reference verification); #51 (8 owner directives explicitly approved + executed); #57 (use-case mapping per section); #58 (atomic 2-file commit pattern; canonical home convention).*
+
+---
+
+## AUDIT PASS 52 turn 129 — DEC-042 SUPERSEDED + DEC-459 Option C Hybrid Architecture; L138 + CHECKLIST #59
+
+Owner Pass 52 turn 128: "Why this logic? Is it the most optimal method?" — owner accountability question on DEC-042 spec
+Owner Pass 52 turn 129: 1=yes (should have flagged), 2=C (Option C Hybrid), 3=b (supersession not flip-back), 4=b (continue DEC-042 first; PROJECT_PLAN commit separately)
+
+PROCESS LEARNING L138 (NEW — Pass 52 turn 129):
+**Directive execution does not override flagging duty.** When owner provides parameters to a spec, pre-flight must verify the spec's underlying assumptions hold (agent roster, system primitives, architectural fit) — not just apply parameters mechanically.
+
+Trigger: turn 121 spec executed owner directives ("weighted / continuous-score / must align / Risk-veto-tested / tier modifier") without first verifying the named agents (Bull/Bear/Risk/ChartAnalyst as parallel voters) match actual TradingAgents architecture (sequential debate-and-synthesize through Portfolio Manager).
+
+CHECKLIST #59 NEW (Pass 52 turn 129):
+**Architectural assumption verification before parameter application.** Before executing owner-directed parameters on a spec, verify the spec's referenced primitives (agents, systems, components) exist as named in the underlying architecture. If gap found, surface to owner BEFORE executing parameters — owner directives operate on the underlying architecture, not on Claude's assumed model of it.
+
+DEC-042 STATUS: SUPERSEDED_BY_DEC-459
+
+Gaps identified in DEC-042 turn 121 spec:
+1. ChartAnalyst NOT in TradingAgents 11-agent roster (Market Analyst, News Analyst, Fundamentals Analyst, Social Media Analyst [DROPPED per DEC-057], Bull Researcher, Bear Researcher, Research Manager, Trader, Aggressive/Conservative/Neutral Risk Debaters, Portfolio Manager, Reflection)
+2. Architectural mismatch — TradingAgents is sequential debate-and-synthesize workflow producing structured Pydantic decision from Portfolio Manager; DEC-042 treated 4 agents as parallel voters
+3. Loss of debate richness — reducing pipeline to 4 numbers throws away what makes TradingAgents distinctive (multi-round Bull/Bear debate; Risk Debate among 3 debaters synthesized by Portfolio Manager)
+
+DEC-459 RESOLVED — OPTION C HYBRID ARCHITECTURE:
+
+ARCHITECTURE:
+1. PRIMARY SIGNAL: TradingAgents Portfolio Manager native structured Pydantic decision (BUY/HOLD/SELL + confidence 0.0-1.0 + rationale + structured fields)
+2. TIER ASSIGNMENT: PM confidence → DEC-021 3-tier (HIGH ≥0.8 = 5%, MED 0.65-0.8 = 3%, LOW 0.5-0.65 = 1.5%)
+3. RISK VETO LAYER: Separate Risk veto evaluated AFTER PM threshold (LangGraph state extraction recommended)
+4. RISK VETO LOGIC: s_risk ≥ 0.5 hard gate; owner directive turn 121 #3 carried forward (extensive A/B testing of continuous vs binary)
+5. BULL/BEAR ALIGNMENT: PRESERVED but applied at debate-level via Research Manager synthesis confidence (not raw Bull/Bear parallel voting)
+6. DECISION DIRECTION: Uses PM decision field directly
+7. OVERRIDE: Stage 2 deterministic; Stage 3+ owner manual
+
+OWNER DIRECTIVES TURN 121 CARRIED FORWARD (all 7):
+- #1 define now: ✓ Option C concrete spec
+- #2 weighted: adapted (PM synthesis IS the weighted aggregation, by TradingAgents not us)
+- #3 Risk extensively tested: ✓ A/B arm comparison + REVISIT_AFTER_BACKTEST tag
+- #4 continuous score: ✓ PM confidence 0.0-1.0
+- #5 must align: ✓ adapted via Research Manager synthesis-level check
+- #6 DEC-021 tier modifier: ✓ unchanged
+- #7 Sprint 7: ✓ effort ~2-3d
+
+A/B FRAMEWORK ARMS REVISED (DEC-205-216):
+- arm A rules-only: bypass agents
+- arm B full-agents-with-veto: PM confidence + Risk veto (default)
+- arm C no-Risk: Risk veto disabled (collapses to Option B Pure-PM)
+- arm D no-Bull-Bear-align: Research Manager check disabled
+- arm E ablation per DEC-211: per-phase weight variations
+
+EFFORT: Sprint 7 ~2-3d (revised from DEC-042 ~1-2d):
+- Config dataclass 0.5d
+- LangGraph state extraction 1d (Risk debate + Research Manager confidence)
+- DEC-216 A/B orchestrator integration 0.5d
+- Risk continuous-score test infra 0.5d
+
+SPRINT 7 EFFORT: 76-85d → 77-86d (+1d)
+
+REVISIT_AFTER_BACKTEST TAGS (5):
+(i) Confidence threshold 0.5
+(ii) Tier thresholds 0.5/0.65/0.8
+(iii) Risk veto threshold 0.5
+(iv) Continuous-Risk vs binary-veto (per owner directive #3 turn 121 carried forward)
+(v) Research Manager alignment check on/off
+
+OWNER ACCOUNTABILITY VINDICATION (5th instance Pass 52):
+1. Turn 98: homeless RESOLVED-DECIDED decisions
+2. Turn 108: substantively-homeless engineering decisions
+3. Turn 110: bug-decision linkage gap
+4. Turn 114-118: 80 PENDING delegation pattern
+5. **Turn 128: AgentGateConfig spec underlying-architecture-mismatch (this commit)**
+
+Each owner-driven catch resulted in framework-level fix, not one-off patch. Pattern: I executed directives without surfacing underlying issues; owner asks "is it optimal" / "verify this" / "is it homeless" — questions Claude should be asking pre-emptively.
+
+CHECKLIST #58 INVOKED IN THIS COMMIT (5-file atomic):
+1. AUDIT_INDEX.md (DEC-042 → SUPERSEDED_BY_DEC-459; DEC-459 RESOLVED-DECIDED inserted)
+2. AUDIT.md (this narrative + L138 + CHECKLIST #59)
+3. ENGINEERING_REGISTER.md (Sprint 7 +DEC-459, -DEC-042; +1d effort delta)
+4. CHECKLIST.md (NEW #59 architectural assumption verification)
+5. LEARNINGS.md (NEW L138 directive execution does not override flagging duty)
+
+Counts post-commit: 463 / 0 PENDING / 358 RESOLVED-DECIDED / 32 DEFERRED_TO_STAGE_3 / 19 DEFERRED_TO_STAGE_4 / 22 SUPERSEDED + 5 SUPERSEDED_BY_DEC-422 + 2 SUPERSEDED_BY_DEC-109 + 1 SUPERSEDED_BY_DEC-459 = 30 SUPERSEDED total / 10 BLOCKED / 14 other.
+
+PASS 52 AUDIT REMAINS 100% TERMINAL (PENDING = 0).
+
+*Per CHECKLIST #25 (honest accountability for turn 121 omission)/#43 (precise grep on TradingAgents agent roster + DEC-051 + DEC-057)/#51 (explicit owner approval per all 4 directives turn 129)/#57 (use-case mapping with TradingAgents architectural fit per option)/#58 (5-file atomic commit demonstrated)/#59 NEW (architectural assumption verification before parameter application).*

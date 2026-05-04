@@ -930,3 +930,28 @@ If a 9th-class error emerges after L136, the right fix is no longer additional r
 - #56: catch focus-phase scope-filter errors (forward-looking deferral)
 - **#57 (NEW): catch use-case mapping errors (this system vs generic template)**
 - Owner adversarial review (informal, ongoing) — has caught all 8 errors in pattern lineage
+
+L138 — Directive execution does not override flagging duty (Pass 52 turn 129):
+
+Trigger: Pass 52 turn 121 owner provided 7 directives for DEC-042 AgentGateConfig spec ("1. A define now / 2. weighted / 3. Risk extensively tested / 4. continuous score / 5. must align / 6. tier modifier approved / 7. Sprint 7"). Claude executed all 7 directives mechanically without first verifying that the spec's named agents (Bull/Bear/Risk/ChartAnalyst as parallel voters) matched the actual TradingAgents 11-agent architecture (sequential debate-and-synthesize through Portfolio Manager + Research Manager + Risk debate among 3 debaters synthesized by Portfolio Manager).
+
+Owner accountability question turn 128: "Why this logic? Is it the most optimal method?" surfaced two architectural gaps:
+1. ChartAnalyst is NOT in the TradingAgents 11-agent roster
+2. Parallel-voting interpretation mismatches the framework's sequential synthesis workflow
+
+Owner directive turn 129: directive execution should not have happened without first flagging these gaps.
+
+Lesson: When owner provides parameters/directives for a spec, Claude must pre-flight that the spec's underlying assumptions hold before executing. Parameter execution operates on architectural assumptions; if assumptions are wrong, parameters apply to a wrong model. Owner directives in this scenario were operating on a phantom architecture (parallel-voter model) Claude assumed but didn't verify.
+
+This is distinct from #51 (don't infer approval) — owner provided explicit directives. The failure was earlier: pre-flight verification of architectural alignment didn't happen. Per L138, this verification step is mandatory before parameter application.
+
+Codified in CHECKLIST #59 (architectural assumption verification before parameter application).
+
+Pattern alignment with Pass 52 owner accountability cycle (5th instance):
+- Turn 98: Substantive vs declared completeness (homeless decisions)
+- Turn 108: Substantive vs declared completeness (engineering decisions in registers)
+- Turn 110: Coverage gaps in cross-references (bugs not in registers)
+- Turn 114-118: Quality vs delegated bulk (sweep with HARD-REVERSIBILITY flag)
+- Turn 128: **Architectural fit not verified before parameter application (this learning)**
+
+Common thread: Claude's confidence in surface-level execution outpaces underlying-state verification. Owner verification questions catch these. Going forward, pre-flight discipline must extend to architectural-fit verification on every spec touching system primitives.

@@ -789,3 +789,37 @@ Per CHECKLIST #58 — verification of resolution path for CRITICAL OPEN bug (BUG
 
 **Conclusion:** No status flip needed for DEC-298. Downstream "blocking" of DEC-377/411 is sprint-execution sequencing (Sprint 4 implementation of DEC-298 must complete before Sprint 4 DEC-377 + DEC-411), not decision pendency. Standard sprint dependency.
 
+
+---
+
+## DEC-459 (Pass 52 turn 129) — AgentGateConfig Option C Hybrid Architecture (SUPERSEDES DEC-042)
+
+Per CHECKLIST #58 — sprint-tracker assignment for revised AgentGateConfig spec.
+
+### Sprint 7 (REVISED — DEC-042 removed, DEC-459 added)
+
+| DEC-N | Description | Test signals | Effort |
+|---|---|---|---|
+| DEC-459 | AgentGateConfig — Option C Hybrid: TradingAgents Portfolio Manager native confidence as primary signal + separate Risk veto layer + Research Manager alignment check + DEC-021 tier mapping. Implements owner directives turn 121 (continuous-score, alignment, Risk extensive testing, tier modifier) carried forward but adapted to actual TradingAgents architecture. | (i) Dataclass typed (PM confidence 0.0-1.0); (ii) PM(BUY,0.85) + RM(align,0.7) + Risk(0.6) → HIGH-tier 5%; (iii) PM(BUY,0.85) + Risk(0.4) → veto REJECT; (iv) PM(BUY,0.7) + RM(contested,0.4) → align fail REJECT; (v) PM(HOLD) → REJECT; (vi) DEC-216 A/B arms full-with-veto/no-Risk/no-align config-driven; (vii) Continuous-Risk vs binary-veto A/B Sharpe delta measurable; (viii) LangGraph state extraction reachable. | ~2-3d (config dataclass 0.5d + LangGraph state extraction 1d + DEC-216 integration 0.5d + Risk continuous-score test infra 0.5d) |
+
+(DEC-042 entry from earlier sprint-tracker assignment removed Pass 52 turn 129 per supersession by DEC-459)
+
+### Sprint 7 effort revised
+
+| Pre-supersession | Post-supersession | Delta |
+|---|---|---|
+| ~76-85d (DEC-042 ~1-2d included) | ~77-86d (DEC-459 ~2-3d, DEC-042 removed) | +1d |
+
+### Implementation options within Option C (Sprint 7 implementation start)
+
+(7a) Risk signal extraction method:
+- LangGraph state hook (recommended; ~1d implementation)
+- Separate Risk Manager call (cost+latency overhead; ~0.5d but ongoing cost penalty)
+- PM risk-adjusted confidence only (collapses to pure Option B; no separate veto)
+
+(7b) Research Manager alignment threshold: 0.5 default
+
+(7c) Whether to log intermediate agent debate transcripts (per DEC-189 + DEC-200 Dashboard 2)
+
+Owner direction needed at Sprint 7 implementation start.
+
