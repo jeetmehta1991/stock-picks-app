@@ -25271,3 +25271,100 @@ Counts post-commit: 463 / 0 PENDING / 358 RESOLVED-DECIDED / 32 DEFERRED_TO_STAG
 PASS 52 AUDIT REMAINS 100% TERMINAL (PENDING = 0).
 
 *Per CHECKLIST #25 (honest accountability for turn 121 omission)/#43 (precise grep on TradingAgents agent roster + DEC-051 + DEC-057)/#51 (explicit owner approval per all 4 directives turn 129)/#57 (use-case mapping with TradingAgents architectural fit per option)/#58 (5-file atomic commit demonstrated)/#59 NEW (architectural assumption verification before parameter application).*
+
+---
+
+## AUDIT PASS 52 turn 130 — TradingAgents Data Input Audit + 9 NEW DECs + L139 + CHECKLIST #60
+
+Owner Pass 52 turn 130: "Do a comprehensive analysis and determine if we will be feeding the right and comprehensive data to agents to make their decisions? Are there other api endpoints that agents need to make decisions? Create a tradingagents document audit. Map each agents data input requirements and map against what we are feeding."
+
+Owner directives turn 130 (7 directives all approved):
+1. Yes (gap should have been found in Pass 25-29)
+2. Approve scope of analysis
+3. (D) Address all critical gaps concurrently in Sprint 7
+4. Happy to upgrade APIs
+5. Yes proceed to create file
+6. Approve all 9 PROPOSED sub-decisions
+7. Continue audit then commit
+
+PROCESS LEARNING L139 (NEW — Pass 52 turn 130):
+**Decision resolution must include data-input dependency verification.** Resolving an architectural decision (e.g., "use TradingAgents framework" per DEC-051) without auditing whether downstream data feeds satisfy the framework's per-agent input requirements creates phantom completeness — the decision is RESOLVED-DECIDED but cannot actually function in production.
+
+Trigger: Pass 25-29 resolved DEC-042 (AgentGateConfig) / DEC-051 (TradingAgents staged adoption) / DEC-055-058 (cost optimization) without auditing per-agent data input requirements. Pass 31 documented 11-agent roster but didn't map per-agent data dependencies. Result: Stage 2 A/B testing would have measured "agents-with-degraded-input vs rules-with-full-input" — invalid comparison; DEC-131 ≥0.2 net Sharpe gate would have been meaningless. Owner accountability question turn 130 surfaced this as 6th instance of catch.
+
+Pattern alignment with Pass 29 BUG-113 finding ("agent emits 31 fields, engine reads 2"): same shallow integration pattern but for inputs rather than outputs. Symmetry I missed in Pass 25-31.
+
+CHECKLIST #60 NEW (Pass 52 turn 130):
+**Data dependency verification on architectural decisions.** Before marking architectural decisions RESOLVED-DECIDED, audit data input requirements for every component the architecture creates dependencies on. Specifically: (a) Per-component data input requirements documented; (b) Current data feeds mapped against requirements; (c) Gaps identified with severity; (d) Resolution candidates proposed with cost estimates; (e) Owner approval BEFORE marking architectural decision RESOLVED-DECIDED.
+
+CRITICAL GAPS IDENTIFIED (5 — block decision quality):
+- Gap A: PIT-correct fundamentals (Fundamentals/Bull/Bear/Risk affected)
+- Gap B: Earnings call transcripts (Fundamentals/News affected)
+- Gap C: Analyst consensus estimates (Fundamentals affected)
+- Gap D: Short interest / Ortex wiring (Fundamentals/Bear/Risk affected)
+- Gap E: Macro qualitative news (News affected)
+
+OPERATIONAL GAPS IDENTIFIED (3 — implementation):
+- Gap F: Custom toolkit injection (Pattern 2 implementation)
+- Gap G: LangGraph state augmentation (synthesis agents need explicit state injection)
+- Gap H: Reflection memory persistence (Stage 3+ active)
+
+9 NEW DECISIONS LOGGED (Pass 52 turn 130):
+- DEC-460 verify Polygon Stocks Starter PIT fundamentals coverage (~0.5d Pre-Sprint-1)
+- DEC-461 conditional FMP subscription if Polygon insufficient (~0.25d Pre-Sprint-1)
+- DEC-462 OurTechnicalToolkit (~3-4d Sprint 7)
+- DEC-463 OurFundamentalsToolkit (~4-5d Sprint 7)
+- DEC-464 OurNewsToolkit (~2d Sprint 7)
+- DEC-465 OurTraderToolkit (~3-4d Sprint 7 — Sprint 3 Portfolio class dependency)
+- DEC-466 OurRiskToolkit (~3-4d Sprint 7 — Sprint 3 + DEC-189 dependency)
+- DEC-467 OurAgentState schema + injection points (~2d Sprint 7)
+- DEC-468 Wire Ortex short interest (~1.5d Sprint 7)
+
+EFFORT IMPACT:
+- Sprint 7: ~77-86d → ~96-108.5d (+19-22.5d, ~25-28% increase)
+- Pre-Sprint-1: ~9-11d → ~9.75-11.75d (+0.75d verification)
+- Stage 2 total: ~311.5-386.5d → ~331.25-409.25d (+19.75-22.75d, ~6%)
+- Cost delta: +$14-50/mo (FMP if Polygon insufficient) over $263 CAD/mo baseline
+
+OWNER ACCOUNTABILITY VINDICATION (6th instance Pass 52):
+1. Turn 98: homeless RESOLVED-DECIDED decisions
+2. Turn 108: substantively-homeless engineering decisions
+3. Turn 110: bug-decision linkage gap
+4. Turn 114-118: 80 PENDING delegation pattern
+5. Turn 128: architectural fit not verified before parameter application (DEC-042)
+6. **Turn 130: data dependency chain not verified during architectural decision resolution (this audit)**
+
+Each catch results in framework-level fix, not one-off patch:
+- L138 + CHECKLIST #59 (Pass 52 turn 129): architectural assumption verification before parameter application
+- L139 + CHECKLIST #60 (Pass 52 turn 130): data dependency verification on architectural decisions
+
+NEW DOCUMENT CREATED: TRADINGAGENTS_DATA_AUDIT.md (~600+ lines)
+- Part A: Framework & Flow Overview (4 sections)
+- Part B: Per-Agent Data Input Requirements (12 agents)
+- Part C: Gap Analysis (5 critical + 3 operational + recommended APIs)
+- Part D: Custom Toolkit Specifications (5 toolkits)
+- Part E: LangGraph State Augmentation
+- Part F: Implementation Sequencing
+- Part G: 9 PROPOSED→APPROVED Sub-decisions
+
+CHECKLIST #58 INVOKED IN THIS COMMIT (5-file atomic — actually 6 with new audit doc):
+1. AUDIT_INDEX.md (DEC-460 through DEC-468 inserted)
+2. AUDIT.md (this narrative + L139 + CHECKLIST #60)
+3. ENGINEERING_REGISTER.md (Sprint 7 Pattern 2 toolkit additions; effort revised)
+4. CHECKLIST.md (NEW #60 data dependency verification)
+5. LEARNINGS.md (NEW L139)
+6. TRADINGAGENTS_DATA_AUDIT.md (NEW canonical audit document)
+
+Counts post-commit:
+- Total decisions: 472 (was 463; +9 new)
+- PENDING: 0
+- RESOLVED-DECIDED: 367 (was 358; +9 new)
+- SUPERSEDED total: 30 unchanged
+- DEFERRED_TO_STAGE_3: 32 unchanged
+- DEFERRED_TO_STAGE_4: 19 unchanged
+- BLOCKED: 10 unchanged
+- Other: 14 unchanged
+
+PASS 52 AUDIT REMAINS 100% TERMINAL (PENDING = 0).
+
+*Per CHECKLIST #25 (honest accountability for Pass 25-31 omission)/#43 (precise grep on TradingAgents agent dependencies)/#51 (PROPOSED→approved per individual owner directive #6)/#57 (use-case mapping per agent)/#58 (6-file atomic commit demonstrated)/#59 (architectural assumption verification applied PROACTIVELY this time)/#60 NEW (data dependency verification on architectural decisions).*

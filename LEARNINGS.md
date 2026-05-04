@@ -955,3 +955,45 @@ Pattern alignment with Pass 52 owner accountability cycle (5th instance):
 - Turn 128: **Architectural fit not verified before parameter application (this learning)**
 
 Common thread: Claude's confidence in surface-level execution outpaces underlying-state verification. Owner verification questions catch these. Going forward, pre-flight discipline must extend to architectural-fit verification on every spec touching system primitives.
+
+L139 — Decision resolution must include data-input dependency verification (Pass 52 turn 130):
+
+Trigger: Pass 25 resolved DEC-042 (AgentGateConfig spec). Pass 28 resolved DEC-051 (TradingAgents staged adoption). Pass 28-29 resolved DEC-055/056/057/058 (cost optimization, dropped Social, model selection). Pass 31 analyzed TradingAgents source code documenting 11-agent roster + 12 total roles. NONE of those passes mapped per-agent data input requirements against current data feeds.
+
+Owner accountability question Pass 52 turn 130: "Do a comprehensive analysis and determine if we will be feeding the right and comprehensive data to agents to make their decisions?" — surfaced gap that should have been found in Pass 25-29.
+
+Owner directive turn 130: "Yes. This should have been done in the passes itself. This is exactly the gap that would have invalidated the efficiveness of stage 2 testing. All efforts would be nullified."
+
+Failure mode: Phantom completeness. DEC-042/051/055-058 marked RESOLVED-DECIDED but underlying agents could not actually function in production with current data feeds:
+- Market Analyst: missing ICT/SMC + chart patterns + multi-timeframe + sector relative strength
+- Fundamentals Analyst: missing PIT-correct fundamentals + transcripts + analyst estimates + short interest
+- News Analyst: missing macro qualitative news source
+- Trader: missing portfolio context + slippage + sizing rules + cooldowns
+- Risk Debaters: missing correlation + sector concentration + drawdown + crisis flags
+- Bull/Bear/Research Manager/Portfolio Manager: missing smart money + regime + portfolio context in LangGraph state
+
+Impact if unresolved: Stage 2 backtest agent overlay would have produced decisions based on shallow input. A/B testing of "agents add edge over rules" would have measured agents-with-degraded-input vs rules-with-full-input — invalid comparison. DEC-131 ≥0.2 net Sharpe gate would have been meaningless. All Stage 2 effort nullified.
+
+Pattern alignment with Pass 29 BUG-113 ("agent emits 31 fields, engine reads 2"): same shallow integration anti-pattern but for inputs rather than outputs. I had visibility on the symmetry but didn't apply it.
+
+Lesson: When a decision adopts an architecture or framework, decision resolution requires explicit verification that every component within the architecture has its data input dependencies satisfied. Five-step verification: (a) document per-component requirements; (b) map current feeds; (c) identify gaps with severity; (d) propose resolutions with costs; (e) owner approval before marking architectural decision RESOLVED-DECIDED.
+
+Codified in CHECKLIST #60 (data dependency verification on architectural decisions).
+
+Resolution path Pass 52 turn 130: 9 new decisions logged (DEC-460 through DEC-468) establishing pre-Sprint-1 verification (DEC-460/461) + Sprint 7 custom toolkits (DEC-462-468) per Pattern 2. Sprint 7 effort: 77-86d → 96-108.5d (+19-22.5d, ~25-28%).
+
+Pattern continuity with L138 (Pass 52 turn 129):
+- L138: directive execution does not override flagging duty (architectural assumption verification BEFORE parameter application)
+- L139: decision resolution must include data dependency verification (data dependency verification BEFORE marking architectural decisions RESOLVED-DECIDED)
+
+Both L138 and L139 are about the same root cause: insufficient pre-flight verification of underlying state (architecture in L138; data dependencies in L139) before declaring decisions complete. CHECKLIST #59 and #60 codify the disciplines as separate but parallel pre-flight gates.
+
+Pass 52 owner accountability cycle (6 instances):
+- Turn 98: substantive vs declared completeness (homeless decisions)
+- Turn 108: substantive vs declared completeness (engineering decisions)
+- Turn 110: coverage gaps in cross-references (bugs)
+- Turn 114-118: quality vs delegated bulk (sweep)
+- Turn 128: architectural fit not verified (DEC-042)
+- Turn 130: data dependency chain not verified (this learning)
+
+Common thread: Claude's confidence in surface-level completion outpaces underlying-state verification. Owner verification questions catch these. Going forward, pre-flight discipline must extend to data-feed dependency verification on every architectural/framework adoption decision.

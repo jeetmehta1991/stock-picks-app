@@ -823,3 +823,69 @@ Per CHECKLIST #58 — sprint-tracker assignment for revised AgentGateConfig spec
 
 Owner direction needed at Sprint 7 implementation start.
 
+
+---
+
+## Sprint 7 — Pattern 2 Custom Toolkit Build (Pass 52 turn 130 — DEC-460 through DEC-468)
+
+Per CHECKLIST #58 + #60 NEW (data dependency verification on architectural decisions).
+
+Origin: TRADINGAGENTS_DATA_AUDIT.md (Pass 52 turn 130) identified critical data input gaps that would have invalidated Stage 2 A/B testing efficacy.
+
+### Pre-Sprint-1 additions
+
+| DEC-N | Description | Test signals | Effort |
+|---|---|---|---|
+| DEC-460 | Verify Polygon Stocks Starter PIT fundamentals coverage | Documented endpoint inventory; sample fetch with as_of validation; freezegun PIT verification | ~0.5d |
+| DEC-461 | (conditional on DEC-460) Subscribe to FMP $14-50/mo if Polygon insufficient | FMP API keys configured; sample fetch validated | ~0.25d (subscription only) |
+
+### Sprint 7 Pattern 2 toolkit additions
+
+| DEC-N | Description | Test signals | Effort |
+|---|---|---|---|
+| DEC-462 | OurTechnicalToolkit (extends TechnicalToolkit) — Polygon OHLCV + ICT/SMC + chart patterns + multi-timeframe regime + sector relative strength + liquidity + break-and-retest | Each method properly typed; PIT correctness via freezegun; ICT/SMC matches smartmoneyconcepts; multi-timeframe matches DEC-106 | ~3-4d |
+| DEC-463 | OurFundamentalsToolkit (extends FundamentalsToolkit) — PIT financials + earnings transcripts + analyst estimates + Quiver smart money + Ortex short interest + government contracts + SEC filings + industry comparables | PIT correctness on every method; smart money composite matches DEC-124; Ortex date filter correct | ~4-5d |
+| DEC-464 | OurNewsToolkit (extends NewsToolkit) — Polygon news + macro feed + FRED event calendar + Quiver analyst rating changes | Polygon news date ≤ as_of; event calendar respects DEC-349 asymmetric window | ~2d |
+| DEC-465 | OurTraderToolkit (NEW) — current price + bid/ask + liquidity + DEC-021 sizing + DEC-092 slippage + DEC-399 borrow + portfolio state + cash + per-ticker cooldown DEC-018 + max-loss DEC-135 | Sizing matches DEC-021 exactly; slippage combines DEC-092+122+280; portfolio state from Portfolio class | ~3-4d |
+| DEC-466 | OurRiskToolkit (NEW) — vol regime + ATR + correlation + sector concentration + drawdown + macro stress + event proximity + crisis flags + similar-setup outcomes | Correlation valid pairwise; sector concentration matches portfolio; crisis flags fire per DEC-262 | ~3-4d |
+| DEC-467 | OurAgentState schema extension — 7 new state fields + Phase 1/2/3 injection points | State extends default cleanly; injection at correct LangGraph nodes; downstream agents can read | ~2d |
+| DEC-468 | Wire Ortex short interest into OurFundamentalsToolkit + state injection for Bear/Risk Debaters | Ortex API keys configured; date filter correct; state injection works | ~1.5d |
+| **Sub-total Sprint 7 toolkit additions** | | | **~19-22.5d** |
+
+### Hard dependencies
+
+- **DEC-465 OurTraderToolkit + DEC-466 OurRiskToolkit + DEC-467 portfolio_context state field:** Sprint 3 Portfolio class (BUG-095) MUST land first.
+- **DEC-466 OurRiskToolkit + DEC-467 historical_outcomes state field:** DEC-189 reflection log (Sprint 7-8) — partial circular; start without, add later.
+- **DEC-462 OurTechnicalToolkit:** Sprint 1 Polygon prefetch + Phase 0.D ICT/SMC fork (DEC-045).
+- **DEC-463 OurFundamentalsToolkit:** DEC-460 verification + DEC-461 conditional FMP.
+
+### Sprint 7 effort revised
+
+| Pre-toolkit | Post-toolkit | Delta |
+|---|---|---|
+| ~77-86d (after DEC-459 +1d) | **~96-108.5d** | **+19-22.5d (~25-28%)** |
+
+### Pre-Sprint-1 effort revised
+
+| Pre-additions | Post-additions | Delta |
+|---|---|---|
+| ~9-11d (10 actions per Pass 52 turn 125) | **~9.75-11.75d** | **+0.75d (verification work)** |
+
+### Sequencing recommendation
+
+Sprint 7 Day 1 (parallel-able with Sprint 3 Portfolio class build):
+- Start DEC-462 OurTechnicalToolkit
+- Start DEC-463 OurFundamentalsToolkit (after DEC-460/461 resolution)
+- Start DEC-464 OurNewsToolkit
+- Start DEC-467 OurAgentState (partial — schema definition)
+
+Sprint 7 after Portfolio class lands (Sprint 3 completion):
+- DEC-465 OurTraderToolkit
+- DEC-466 OurRiskToolkit
+- DEC-467 OurAgentState (complete — portfolio_context wiring)
+- DEC-468 Ortex wiring
+
+### Critical path implication
+
+Sprint 7 cannot fully complete until Sprint 3 Portfolio class (BUG-095) resolves. Same critical path dependency as before but now explicit: agent toolkit work has 3 distinct phases (parallel-able / Portfolio-blocked / DEC-189-blocked).
+
