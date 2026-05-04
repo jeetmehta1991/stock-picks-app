@@ -1,0 +1,261 @@
+# PASS 52 RETROSPECTIVE + PASS 53 PRIORITIES
+
+**Created:** Pass 52 turn 124
+**Pass 52 final commit:** `4b2bd662` (BUG-111 verification + DEC-298 honest correction)
+**Pass 53 status:** READY TO BEGIN
+
+---
+
+## EXECUTIVE SUMMARY
+
+Pass 52 was the **completion pass**: brought audit from 60% PENDING to 100% terminal state across 462 decisions, fixed structural gaps in execution tracking, and surfaced the true scope of Stage 2 implementation work (8-10x larger than original estimate).
+
+**Key achievements:**
+- PENDING resolution: 60% → 0% (~280 decisions resolved)
+- Phase 2 retroactive sprint-tracking audit: ~239 decisions classified across 5 batches + cleanup
+- Bug coverage gap closed: BUG_REGISTER.md created (148 bugs cross-referenced)
+- Bulk sweep: 80 PENDING decisions converted to terminal states with HARD-REVERSIBILITY flag-and-continue pattern
+- CHECKLIST #58 created and operational at 4 levels
+- Engineering effort reality check: ~30-40d → ~310-385d (8-10x growth surfaced)
+
+**Key process improvements:**
+- 5-file atomic commit pattern (CHECKLIST #58)
+- 4-bucket decision classification (DOCUMENTATION_REGISTER.md)
+- Theme-batched walkthrough format proven at 4-8 decisions/turn
+- Pre-flight cross-check methodology caught 52% supersession rate
+
+---
+
+## PASS 52 — DETAILED RETROSPECTIVE
+
+### What went well
+
+**1. Theme-batched walkthroughs at scale**
+- 4 walkthroughs delivered 24 decisions across 6 themes (X16 + X33 + X40 + X42 + X43 + X52 + X59 + Group D + DEC-158 bonus)
+- Per-theme pre-flight caught 52% supersession rate (12 of 23 items) — significant scope reduction vs creating parallel decisions
+- Owner approval flow worked cleanly: walkthrough → 7 specific clarifications → "approve all" → atomic commit
+
+**2. CHECKLIST #58 operational discipline**
+- 5-file atomic commit pattern enforced consistency: AUDIT_INDEX + AUDIT + ENGINEERING_REGISTER + DOCUMENTATION_REGISTER + IMPLEMENTATION_READINESS_DASHBOARD all updated synchronously
+- Phase 2 retroactive audit fixed legacy gap (~239 homeless decisions); #58 prevents recurrence
+- Bug coverage gap (148 bugs) closed via BUG_REGISTER.md cross-reference (not parallel infrastructure)
+
+**3. Owner accountability cycle**
+- Owner caught 4 distinct anti-patterns: homeless decisions (turn 98), substantively-homeless decisions (turn 108), bug coverage gap (turn 110), 80 PENDING delegation (turn 114-118)
+- Each catch led to framework-level fix, not one-off patch
+- DEC-298 correction at turn 122 surfaced via owner verification question — caught my turn 121 misstatement within 1 turn
+
+**4. Bulk sweep with HARD-REVERSIBILITY flag-and-continue**
+- 80 PENDING decisions processed across 4 commits (turns 115-119) without quality degradation
+- DEC-251 (dependency injection refactor) properly flagged for owner review per directive #2
+- 3 supersessions caught even in bulk format (DEC-016/066/020 → DEC-422/422/441)
+
+### What didn't go well
+
+**1. Premature RESOLVED-DECIDED flips before owner walkthrough**
+- DEC-042 (turn 101): I prematurely flipped to RESOLVED-DECIDED in Phase 2 Batch 1; owner caught and reverted
+- This was the trigger for CHECKLIST #58 framework
+- Pattern: I treated "PARTIAL — needs revision" qualifier as RESOLVED equivalent. Should have stayed PENDING for proper walkthrough.
+
+**2. Misstating decision status in commit narratives**
+- Turn 121: claimed DEC-298 was "still BLOCKED — gates DEC-377/411"
+- Reality: DEC-298 is RESOLVED-DECIDED; downstream is sprint sequencing
+- Owner verification turn 122 caught it; corrected turn 123
+
+**3. X43 theme misidentification**
+- Turn 109 menu listed "X43 = Phase 0.B Portfolio Class" 
+- Actual X43 = Data History (1 PENDING DEC-266)
+- No dedicated Phase 0.B Portfolio Class theme exists
+- Walkthrough 4 ended up being 5 decisions not 8
+
+**4. Initial bug coverage scope overestimation**
+- Turn 110: framed bug coverage as "144+ bugs need separate ENG entries"
+- Reality: 148/148 bugs already linked to decisions; right action was lightweight cross-reference
+- Course-corrected during execution turn 111 (avoided weeks of unnecessary work)
+
+**5. Sweep pre-flight effectiveness diminished in bulk**
+- Per-theme walkthroughs: 52% supersession-catch rate
+- Bulk sweep (Batches B-K): 4% supersession-catch rate (3 of 80)
+- Trade-off: bulk speed vs per-theme rigor; owner aware via path-A/B/C presentation turn 114
+
+### Process gaps that emerged
+
+**1. Sprint-tracker assignment was not enforced before #58**
+- Pre-Pass 52 turn 96: 294 RESOLVED-DECIDED decisions; only 46 (15.6%) in ENGINEERING_REGISTER
+- Owner accountability call-out turn 98: "this is very basic stuff and we had already discussed this. you are simply not following it"
+- Fix: CHECKLIST #58 + Phase 2 retroactive audit
+
+**2. Substantive vs technical homelessness**
+- Phase 2 Final Sweep declared "0 homeless" based on textual register mention
+- Owner verification turn 108 caught 22 decisions with textual mention but no proper sprint-table entry
+- Fix: cleanup batch turn 109 + #58 enforcement at substantive level
+
+**3. Bug-decision linkage scattered across audit text**
+- Pre-Pass 52: bugs documented in AUDIT.md ### BUG-NN sections
+- Cross-references with decisions only in inline scope text
+- No canonical lookup
+- Fix: BUG_REGISTER.md created turn 111
+
+---
+
+## PASS 52 — FINAL STATE METRICS
+
+### Decisions
+
+| Status | Count | % |
+|---|---|---|
+| Total decisions | 462 | 100% |
+| **PENDING** | **0** | **0% ✓** |
+| RESOLVED-DECIDED | 358 | 77.5% |
+| DEFERRED_TO_STAGE_3 | 32 | 6.9% |
+| DEFERRED_TO_STAGE_4 | 19 | 4.1% |
+| SUPERSEDED (total) | 29 | 6.3% |
+| BLOCKED_ON_X | 10 | 2.2% |
+| REJECTED | 2 | 0.4% |
+| Other (PARTIAL/OBSOLETE) | 12 | 2.6% |
+
+### Bugs
+
+| Status | Count |
+|---|---|
+| Total canonical bugs | 148 |
+| In BUG_REGISTER cross-reference | 148 (100%) |
+| CRITICAL OPEN | 3 (BUG-095, BUG-218, BUG-111) |
+| Resolution path verified | 3 (Sprint 3, DEC-443 absorbed Sprint 4, Sprint 8) |
+
+### Engineering effort (FINAL)
+
+| Sprint | Pass 52 Start | Pass 52 End | Growth |
+|---|---|---|---|
+| Sprint 1 (Phase 0.A) | ~7-9d | ~20.5-26.5d | 3x |
+| Sprint 2 (Engine Bug Fixes Tier A) | ~9d | ~25.5-30.5d | 3x |
+| Sprint 3 (Portfolio class) | ~5-7d | ~8-11d | ~1.5x |
+| Sprint 4 (DEC-410 audit) | ~5-7d | ~41.75-54.25d | **8x (largest growth)** |
+| Sprint 5 (Universe management) | ~5-8d | ~13.5-15.5d | 2x |
+| Sprint 5 NEW (Position Sizing) | n/a | ~3.5d | new |
+| Sprint 6 (Phase 0.E + Hygiene) | ~7-10d | ~62.25-76.75d | **7x (largest absolute)** |
+| Sprint 7 (Statistical Methodology + A/B + AgentGate) | ~17-19d | ~76-85d | **4-5x (largest sprint)** |
+| Sprint 7-8 (Dimensional Cube + Dashboards) | gated | ~28-38d | new tracked |
+| Sprint 8 (Strategy categories) | ~50-60d | ~37-55d | consolidation |
+| Sprint 9 (Phase 1B-α run + ongoing) | n/a | ~6d | new |
+| **Critical path minimum** | **~21-25d** | **~125-160d** | **6x** |
+| **Total Stage 2 realistic** | **~30-40d** | **~311.5-386.5d** | **8-10x** |
+
+### Frameworks operational
+
+| Framework | Status |
+|---|---|
+| AUDIT.md (decision detail) | Canonical |
+| AUDIT_INDEX.md (status table) | Canonical |
+| ENGINEERING_REGISTER.md (sprint roadmap) | Operational since turn 99 |
+| DOCUMENTATION_REGISTER.md (5-bucket DOC tracker) | NEW Pass 52 turn 99 |
+| BUG_REGISTER.md (148-bug cross-reference) | NEW Pass 52 turn 111 |
+| IMPLEMENTATION_READINESS_DASHBOARD.md (sprint readiness) | Canonical |
+| CHECKLIST.md (process discipline) | 58 items operational |
+| LEARNINGS.md (L1-L137) | 137 learnings |
+| LIMITATIONS_CAVEATS_ASSUMPTIONS.md | CAV-001 through CAV-071+ |
+| API_AUDIT.md | DEC-410 17-API audit complete |
+| STRATEGY_REGISTER.md | Tracks strategy-level decisions |
+
+---
+
+## PASS 53 PRIORITIES — RECOMMENDED
+
+Owner directs Pass 53 priorities. My recommendations based on Pass 52 final state:
+
+### Priority 1: Sprint 1 Kickoff (HIGHEST PRIORITY)
+
+**Phase 0.A Polygon foundation implementation per DEC-441 ($30/mo subscription)**
+
+- 17.5-23.5 engineering days estimate
+- Critical path for Phase 1B-α
+- Owner action prerequisite: subscribe to Polygon Stocks Starter ($30/mo)
+- Decisions ready: DEC-040 (PIT loader), DEC-256-261 (prefetch checklist), DEC-307-310 (cache fixes), DEC-225/227/235 (cache + calendar), DEC-275 (requirements.txt), DEC-318-320/390/391 (sentiment refresh), DEC-328/329 (multiprocess), DEC-117/118 (data integrity + macro)
+
+**Why first:** All other sprints depend on Sprint 1 cache + data infrastructure. Maximum ROI on critical path.
+
+### Priority 2: BUG-095 + Sprint 3 (HIGH PRIORITY)
+
+**Phase 0.B Portfolio class implementation**
+
+- 8-11 engineering days estimate
+- Resolves BUG-095 (CRITICAL OPEN) which blocks DEC-070/076/091
+- Required for proper position sizing per DEC-086/087/088 (Kelly + vol-targeted + portfolio vol target)
+
+**Why second:** Portfolio class is foundational architecture; multiple downstream decisions wait on it. BUG-095 is one of 3 CRITICAL OPEN bugs.
+
+### Priority 3: DEC-410 Audit Findings Implementation (Sprint 4)
+
+**Cost stack + reliability + DEC-410 cleanup** — ~30-41 engineering days
+
+- Largest growth sprint (8x); now critical path
+- Resolves 14 audit findings (BUG-218 absorbed via DEC-443)
+- Includes Canadian-IBKR cost stack, ticker lifecycle, slippage model, smart money refinement
+
+**Why third:** Sprint 4 work is largely parallel-able with Sprints 1+2; can run in parallel once Sprint 1 cache infrastructure established.
+
+### Priority 4: BUG-111 Architectural Choice + Sprint 8
+
+**Retest cross-cutting primitive vs explicit variants**
+
+- Owner decision needed at Sprint 8 implementation start: Option A (shared primitive ~5-10d) vs Option B (per-strategy variants ~25-30d)
+- BUG-111 is third CRITICAL OPEN bug
+- Recommendation: Option A (smaller surface, opt-in flexibility)
+
+### Priority 5: Documentation cleanup batch
+
+**DOC Bucket B/C decisions execution** (Phase 2 retroactive cleanup)
+
+- ~80 documentation-only decisions in DOCUMENTATION_REGISTER
+- Bucket A foundational/integrated: ~10-15 (no work needed; historical)
+- Bucket B methodology/library: ~15-20 (process documentation updates)
+- Bucket C cross-reference/absorbed: ~6-10 (ensure cross-refs consistent)
+- Bucket D Stage 3+/4+: documented; defer to Stage 3+ activation
+
+**Why last:** Documentation execution is parallel-able with engineering work; not critical path.
+
+---
+
+## PASS 53 — RECOMMENDED OPENING DIRECTIVE
+
+**Recommendation:** Sprint 1 kickoff with Polygon subscription owner action.
+
+**Sequence:**
+1. Owner subscribes to Polygon Stocks Starter ($30/mo) per DEC-441
+2. Verify subscription active in API_AUDIT.md
+3. Begin Sprint 1 implementation per ENGINEERING_REGISTER scope
+4. CHECKLIST #58 enforced for any decision changes during implementation
+5. Pass 53 closes once Sprint 1 reaches first measurable milestone (e.g., S&P 500 OHLCV fully cached + first PIT loader test passing)
+
+**Estimated Pass 53 duration:** 17.5-23.5 engineering days for Sprint 1 + parallel BUG-095 work in Sprint 3 = ~25-35 calendar days realistic.
+
+---
+
+## OPEN OWNER QUESTIONS FOR PASS 53
+
+1. **Which priority order?** My recommendation: Sprint 1 (Polygon foundation) → Sprint 3 (Portfolio + BUG-095) → Sprint 4 (DEC-410 cleanup). Owner direction welcome.
+
+2. **Polygon subscription timing?** Sprint 1 cannot fully proceed without active subscription. Owner action required.
+
+3. **BUG-111 architectural choice (Option A vs B)?** Owner reviews at Sprint 8 implementation start (not now). Pre-flag noted.
+
+4. **Pass 53 cadence?** Per-decision walkthroughs in Pass 52 worked well. Pass 53 will be implementation-heavy — different cadence (per-PR review? per-sprint-milestone review?). Owner preference.
+
+5. **CHECKLIST #58 enforcement during implementation?** Any RESOLVED-DECIDED-to-RESOLVED-IMPLEMENTED status flips will need #58 atomic commits. Owner confirms approach.
+
+---
+
+## CONTINUITY ITEMS FROM PASS 52
+
+| Item | Status | Pass 53 action |
+|---|---|---|
+| DEC-251 sandbox-prototype | Owner-approved Sprint 6 ~5-7d | Execute when Sprint 6 begins |
+| DEC-298 implementation | RESOLVED-DECIDED, sprint sequencing | Sprint 4 implementation ~5d |
+| BUG-095 Portfolio class | CRITICAL OPEN; Sprint 3 resolution | Sprint 3 implementation ~8-11d |
+| BUG-111 retest primitive | CRITICAL OPEN; Sprint 8 with architectural choice | Sprint 8 owner direction at start |
+| BUG-218 yfinance .info | CRITICAL OPEN; absorbed via DEC-443 | Sprint 4 implementation |
+| API subscriptions | DEC-441 Polygon $30/mo + DEC-450 Quiver paid + others ~$263 CAD/mo total | Owner action sequenced |
+
+---
+
+*Per CHECKLIST #25 (honest retrospective acknowledging both wins and losses)/#43 (precise grep on Pass 52 commits + state metrics)/#51 (recommendations are recommendations; owner decides Pass 53 priorities)/#57 (use-case mapping per priority area with critical-path analysis)/#58 (Pass 52 framework operational and ready for Pass 53 enforcement during implementation).*
