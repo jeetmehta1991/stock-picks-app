@@ -26440,3 +26440,33 @@ Owner should mistrust "Sprint X is ready" claims unless I provide explicit artif
 3. `AUDIT.md` — this entry
 
 *Per CHECKLIST #32 (verbatim "approved" + "Yes commit and push" + "Please add, commit and push to engineering register" received before execution); #43 (cross-doc consistency PROJECT_PLAN §21.1/§22.1 ↔ ENGINEERING_REGISTER cadence + sprint fields); #45 (pre-flight per recommendation prior to edit, surfaced in chat); #58 (atomic 3-file commit, no half-state); #65 (roster definitional check — pyramid layers and sprint workflow are different axes; reference is not lumping); L144 (category boundary discipline applied).*
+
+---
+
+## Pass 53 — Pyramid layer assignment Sprints 1-9 + Sprint 9 minimal-fill + Option A retrofit policy
+
+**Trigger:** Owner approval Pass 53 — three items: (1) approve proposed pyramid layers for Sprint 1 + Sprint 2 + Sprint 6 + Sprints 7-9 inherit-availability framing; (2) approve Sprint 9 minimal-fill (sub-decisions, effort, critical-path, exit criteria, test signals); (3) Option A — Sprints 1-5 retrofit layers 3-5 at Sprint 6 once framework lands (DEC-437 hypothesis, DEC-438 golden-master, DEC-439 differential).
+
+**Discovery context:** Following the Pass 53 doc commit `88154d79` that added the per-sprint pyramid field with `TBD per sprint plan` placeholder across all 10 sprints, owner approved concrete layer assignments. Pre-existing constraint surfaced: layers 3-5 framework arrives in Sprint 6 (DEC-437/438/439), so Sprints 1-5 are infrastructure-bound to unit + integration; layers 3-5 must be either (Option A) deferred to Sprint 6 retrofit or (Option B) implemented as informal fixtures pre-framework. Owner chose Option A.
+
+**Resolution applied this turn:**
+
+1. **`ENGINEERING_REGISTER.md`** — pyramid field on each sprint replaced from `TBD per sprint plan` placeholder to concrete assignment:
+   - **Sprints 1-5** (Sprint 1 Polygon Foundation; Sprint 2 Engine Bug Fixes Tier A; Sprint 3 Phase 0.B Portfolio; Sprint 4 DEC-410 Audit Findings; Sprint 5 Universe Management): `unit + integration. Layers 3-5 (property / characterization / differential) deferred to Sprint 6 retrofit per Option A — framework built in DEC-437/438/439`
+   - **Sprint 6** (Phase 0.E Catch-Mechanism Defense + Architecture Hygiene): `all 5 layers (unit + integration + property + characterization + differential). Sprint 6 BUILDS the framework for layers 3-5 (DEC-437 hypothesis, DEC-438 golden-master, DEC-439 differential) and retrofits Sprints 1-5 tests against it per Option A`
+   - **Sprints 6.5, 7, 8** (Phase 1A baseline + 1A-α; Statistical Methodology; Strategy Categories): `all 5 layers available (post-Sprint-6 framework); specific layer mix TBD per sprint plan` — concrete mix deferred until each sprint's planning since they're not active yet
+   - **Sprint 9** (Phase 1B-α Run): `all 5 layers available (post-Sprint-6); execution sprint — primary use is integration + characterization (golden master vs Sprint 6.5 Phase 1A baseline) + property (per-cell verdict invariants); unit minimal (existing tested code paths); differential not in immediate scope`
+
+2. **`ENGINEERING_REGISTER.md` Sprint 9 minimal fill** — Sprint 9 expanded from Entry-criteria + Output (thin scope) to include Sub-decisions in scope (DEC-422 cube driver, DEC-426 passing criteria, DEC-486/487/488 PROPOSED), Test signals (cube row count, per-cell trade_log + metrics + verdict, A/B differential populated), Exit criteria (cube populated, verdicts produced, owner gate review, status flip), Effort (~3-5 engineering days + ~$300 API spend + ~24-48h compute wall time), Critical-path (YES — Phase 1B-α gate determines Phase 1B full-scale go/no-go), and the concrete pyramid layer assignment.
+
+3. **`AUDIT.md`** — this entry.
+
+**Option A retrofit obligation (queued, not gating Sprints 1-5):** Sprint 6 must add property tests via hypothesis (DEC-437) for trailing-stop monotonicity, VIX hysteresis state-machine invariants, PIT loader rejection invariants, ICT/SMC N+1 lag rule; characterization tests via golden-master (DEC-438) for T1a/T1b/T1c PIT correctness, trailing-stop output on canonical fixtures; differential tests via DEC-439 framework as scope dictates. Effort budget for Sprint 6 already includes ~7-10d for catch mechanisms — retrofit work assumed within this allocation; if not, escalate as scope creep at sprint planning.
+
+**Decision impact:** No DEC state changes. Sprint 6 effort estimate unchanged (retrofit assumed within existing ~7-10d catch-mechanisms allocation). Sprint 9 critical-path declaration formalized (was implicit). Per-sprint pyramid coverage gate now actionable across all 10 sprints (no TBD placeholders for active sprints; "specific mix TBD" remains for Sprints 6.5/7/8 as deliberate underspecification pending those sprints' planning).
+
+**Files updated this turn:**
+1. `ENGINEERING_REGISTER.md` — 10 pyramid lines replaced + Sprint 9 minimal fill
+2. `AUDIT.md` — this entry
+
+*Per CHECKLIST #32 (verbatim "Approve / Approve / Option A" received before execution); #25 (honest categorization — explicit Option A retrofit obligation surfaced not hidden; framework-availability constraint documented in Sprints 1-5 lines so future readers understand the deferral); #43 (cross-doc consistency: pyramid layers cite PROJECT_PLAN §21.1; retrofit cites Sprint 6 DECs 437/438/439 already in scope per ENGINEERING_REGISTER); #45 (pre-flight surfaced before edits); #58 (atomic 2-file commit, no half-state); #65 (no new categories — same 5 layers, just per-sprint assignment).*

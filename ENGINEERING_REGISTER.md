@@ -65,7 +65,7 @@
 
 **Effort:** ~25-35 engineering days (was ~7-9d pre-Pass-53; +5-7d for sub-tier expansion + universe build PIT correctness)
 **Critical-path:** YES
-**Pyramid layers touched:** TBD per sprint plan (per PROJECT_PLAN.md §22.1; layers per §21.1)
+**Pyramid layers touched:** unit + integration. Layers 3-5 (property / characterization / differential) deferred to Sprint 6 retrofit per Option A — framework built in DEC-437/438/439
 
 ---
 
@@ -91,7 +91,7 @@ DEC-381/382/383/384/388/389/390/391/392/394/397/398/399 — all RESOLVED-DECIDED
 **Exit criteria:** all 13 test signals pass; promote to RESOLVED-IMPLEMENTED.
 **Effort:** ~9 engineering days
 **Critical-path:** YES (cache/stops are foundational)
-**Pyramid layers touched:** TBD per sprint plan (per PROJECT_PLAN.md §22.1; layers per §21.1)
+**Pyramid layers touched:** unit + integration. Layers 3-5 (property / characterization / differential) deferred to Sprint 6 retrofit per Option A — framework built in DEC-437/438/439
 
 ---
 
@@ -114,7 +114,7 @@ DEC-381/382/383/384/388/389/390/391/392/394/397/398/399 — all RESOLVED-DECIDED
 
 **Effort:** ~5-7 engineering days
 **Critical-path:** YES (blocks Phase 1B-α run)
-**Pyramid layers touched:** TBD per sprint plan (per PROJECT_PLAN.md §22.1; layers per §21.1)
+**Pyramid layers touched:** unit + integration. Layers 3-5 (property / characterization / differential) deferred to Sprint 6 retrofit per Option A — framework built in DEC-437/438/439
 
 ---
 
@@ -133,7 +133,7 @@ DEC-381/382/383/384/388/389/390/391/392/394/397/398/399 — all RESOLVED-DECIDED
 
 **Effort:** ~5-7 engineering days
 **Critical-path:** Some items (DEC-443 BUG-218 fix) yes; others parallel-friendly
-**Pyramid layers touched:** TBD per sprint plan (per PROJECT_PLAN.md §22.1; layers per §21.1)
+**Pyramid layers touched:** unit + integration. Layers 3-5 (property / characterization / differential) deferred to Sprint 6 retrofit per Option A — framework built in DEC-437/438/439
 
 ---
 
@@ -152,7 +152,7 @@ DEC-381/382/383/384/388/389/390/391/392/394/397/398/399 — all RESOLVED-DECIDED
 
 **Effort:** ~5-8 engineering days
 **Critical-path:** Tier 2 & 3 + Russell 1000 needed for full universe; can defer DEC-374 (historical backfill)
-**Pyramid layers touched:** TBD per sprint plan (per PROJECT_PLAN.md §22.1; layers per §21.1)
+**Pyramid layers touched:** unit + integration. Layers 3-5 (property / characterization / differential) deferred to Sprint 6 retrofit per Option A — framework built in DEC-437/438/439
 
 ---
 
@@ -180,7 +180,7 @@ DEC-381/382/383/384/388/389/390/391/392/394/397/398/399 — all RESOLVED-DECIDED
 **Effort:** ~14-19 engineering days (catch mechanisms ~7-10d + architecture hygiene ~7-9d)
 **Critical-path:** Catch mechanisms required for Phase 1B-α confidence; architecture hygiene parallel-able / non-blocking
 **DEC-220 priority within sprint:** HIGH — small effort (~0.5d) but resolves governance clarity + reduces future silent-overwrite risk on main branch
-**Pyramid layers touched:** TBD per sprint plan (per PROJECT_PLAN.md §22.1; layers per §21.1)
+**Pyramid layers touched:** all 5 layers (unit + integration + property + characterization + differential). Sprint 6 BUILDS the framework for layers 3-5 (DEC-437 hypothesis, DEC-438 golden-master, DEC-439 differential) and retrofits Sprints 1-5 tests against it per Option A
 
 ---
 
@@ -197,7 +197,7 @@ DEC-381/382/383/384/388/389/390/391/392/394/397/398/399 — all RESOLVED-DECIDED
 **Effort:** ~19-27 engineering days total + ~26-33h compute wall time
 
 **Critical-path:** Phase 1A-α gate must pass before Phase 1B agent overlay work begins; Phase 1A-β must pass before Phase 1B-α $300 budget commits
-**Pyramid layers touched:** TBD per sprint plan (per PROJECT_PLAN.md §22.1; layers per §21.1)
+**Pyramid layers touched:** all 5 layers available (post-Sprint-6 framework); specific layer mix TBD per sprint plan
 
 ---
 
@@ -208,7 +208,7 @@ DEC-381/382/383/384/388/389/390/391/392/394/397/398/399 — all RESOLVED-DECIDED
 Implementation per Theme X4 Block 3 sequencing in AUDIT_INDEX.md.
 
 **Effort:** ~17-19 engineering days
-**Pyramid layers touched:** TBD per sprint plan (per PROJECT_PLAN.md §22.1; layers per §21.1)
+**Pyramid layers touched:** all 5 layers available (post-Sprint-6 framework); specific layer mix TBD per sprint plan
 
 ---
 
@@ -217,7 +217,7 @@ Implementation per Theme X4 Block 3 sequencing in AUDIT_INDEX.md.
 **Sub-decisions in scope (5):** DEC-367/368/369/370/371
 
 **Effort:** ~14-18 engineering days
-**Pyramid layers touched:** TBD per sprint plan (per PROJECT_PLAN.md §22.1; layers per §21.1)
+**Pyramid layers touched:** all 5 layers available (post-Sprint-6 framework); specific layer mix TBD per sprint plan
 
 ---
 
@@ -227,8 +227,17 @@ Implementation per Theme X4 Block 3 sequencing in AUDIT_INDEX.md.
 - Sprints 1-6 RESOLVED-IMPLEMENTED
 - Universe stable; cube populating per DEC-422
 
+**Sub-decisions in scope:** DEC-422 (cube driver), DEC-426 (passing criteria), DEC-486/487/488 PROPOSED (post-Phase-1A gates already passed via Sprint 6.5)
+
 **Output:** Phase 1B-α backtest results across 60 strategies × dimensional cube cells
-**Pyramid layers touched:** TBD per sprint plan (per PROJECT_PLAN.md §22.1; layers per §21.1)
+
+**Test signals:** Cube row count = expected (60 strategies × dimensional cells); each cell has trade_log + metrics + verdict; A/B differential analysis non-empty for cells with both arms
+
+**Exit criteria:** Cube populated; per-strategy × per-cell verdicts produced; owner gate review completed; status flips to RESOLVED-IMPLEMENTED on owner approval
+
+**Effort:** ~3-5 engineering days + ~$300 API spend + ~24-48h compute wall time
+**Critical-path:** YES (Phase 1B-α gate determines Phase 1B full-scale go/no-go)
+**Pyramid layers touched:** all 5 layers available (post-Sprint-6); execution sprint — primary use is integration + characterization (golden master vs Sprint 6.5 Phase 1A baseline) + property (per-cell verdict invariants); unit minimal (existing tested code paths); differential not in immediate scope
 
 ---
 
