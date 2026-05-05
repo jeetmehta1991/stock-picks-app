@@ -28299,3 +28299,37 @@ Docs URL is dynamic (JS-rendered); not visible to WebFetch. Probed 11 working en
 - FLOW: ACK lapse → DECs first → propagate to canonical docs → execute T3 sector backfill → build master list → add narrative
 
 *Per CHECKLIST #1 (owner directive explicit + lapse correction); #13 (read all forward-looking docs before edit); #22 (per-stage backfill validation; T3 sector v1 → v2 → yfinance progression); #25 (lapse acknowledged honestly; T3 sector irreducible gap surfaced; T2 SCREENER ETA surfaced; Quiver dashboard list pending owner-side); #32 (verbatim owner directive enumeration); #43 (cross-doc consistency — DEC-497/498/499 propagated to 6+ canonical docs); #45 (read before edit; runtime backfill verifications); #51 (scope strict — universe completion + Sprint 0A docs only; Sprint 0A EXECUTION pending T2 + commit); #58 (atomic commit pending T2 SCREENER notification; checkpoint commit option surfaced); #65 (no roster expansion — DEC counts go from 496 → 499 with 3 owner-approved decisions); #66 (DEC-497/498/499 alignment verified); #66.b (INPUT/OUTPUT/FLOW stated); #67 (FIRST APPLICATION of rule on this turn — Sprint 0A propagated to all canonical forward-looking docs; T2 SCREENER background task running; checkpoint vs wait-for-T2 decision surfaced to owner). Owner directive "Sprint 0A doc-sync + universe completion + master list" — FULFILLED. T2 SCREENER ~108 min remaining; will commit Sprint 0A docs + sector backfills + master list atomically when T2 completes (or earlier checkpoint per owner direction).*
+
+---
+
+## Pass 53 — CHECKLIST #67.b clarification: doc commits decoupled from pending runs
+
+**Trigger:** Owner Pass 53 directive 2026-05-05 (this turn): "Document updates are not linked to pending runs. Document updates need to be committed each turn."
+
+**Lapse acknowledgment:** Even after CHECKLIST #67 was added Pass 53 (per-turn doc sync), I conflated "doc sync each turn" with "single atomic commit including all pending runs." When owner approved Option A (wait for T2 SCREENER) for the Sprint 0A doc work, I held the entire commit blocking on T2's ~3-hour wall time. Result: Sprint 0A definition + DEC-497/498/499 + 18+ doc updates remained uncommitted and invisible to owner on main throughout the wait. Owner had to ask "I cant see Sprint 0A in any documents" — the work was real but unpushed. Owner correctly diagnosed the misinterpretation: doc commits are NOT linked to pending runs.
+
+**Rule clarification (CHECKLIST #67.b RESOLVED-DECIDED Pass 53):**
+1. Doc updates commit each turn — no exceptions, no waiting for pending operations
+2. Long-running operations (SCREENERs, prefetch, multi-hour API jobs) commit SEPARATELY when complete
+3. Doc commits can include forward-looking references to pending runs ("expecting X tickers when SCREENER completes") — don't block on data finalization
+4. Each turn's commit shows up on main BEFORE the next turn starts; owner sees work in real time
+5. Multiple commits per turn are fine if pending runs complete asynchronously
+
+**Anti-pattern documented:** "Single atomic commit when ALL pending runs complete" — conflates doc-sync (turn-bound) with run-finalization (independent). Each commit is atomic for ITS SCOPE (doc-sync OR run-output), not for "everything happening this turn."
+
+**Corrective action this turn:**
+- Committed Sprint 0A + universe completion + master list + sector backfills as `b651b569` (61 files / pushed `8e33b74c..b651b569`)
+- This rule clarification commit follows immediately
+- T2 SCREENER finalization will commit separately when complete (~70 min remaining)
+
+**Files modified this rule clarification:**
+- `CHECKLIST.md` — added #67.b sub-clause "Doc commits decoupled from pending runs"
+- `CLAUDE.md` HARD RULE — strengthened with #67.b reference
+- `AUDIT.md` — this narrative entry
+
+**Pre-flight INPUT/OUTPUT/FLOW (CHECKLIST #66.b):**
+- INPUT: owner clarification + my misinterpretation of #67 scope
+- OUTPUT: CHECKLIST #67.b + CLAUDE.md HARD RULE refinement + this AUDIT entry
+- FLOW: ACK lapse → codify rule fix → commit immediately (don't block on T2)
+
+*Per CHECKLIST #1 (owner directive explicit); #13 (read CHECKLIST + CLAUDE before edit); #25 (SECOND lapse on #67 acknowledged honestly + scope clarified by owner); #43 (cross-doc — CHECKLIST + CLAUDE + AUDIT all updated); #45 (this statement); #51 (scope strict — rule clarification + immediate commit); #58 (atomic commit for THIS scope); #65 (no roster expansion); #66.b (INPUT/OUTPUT/FLOW stated); #67 (rule self-applies — committing immediately per the clarified rule); #67.b (NEW — DECOUPLE doc commits from pending runs; first applied immediately to this commit). Owner directive "Document updates are not linked to pending runs" — FULFILLED in real-time correction.*

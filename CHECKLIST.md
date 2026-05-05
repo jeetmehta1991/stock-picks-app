@@ -661,6 +661,16 @@ State compliance visibly: "Checklist: ✅ [each item]"
 
     **Past failure pattern (motivating rule):** Pass 53 owner repeatedly observed deferred-doc-sweep debt: rename happens in commit N, code/critical docs updated, but ~9 forward-looking docs left with stale references "deferred to a later commit." Owner directive 2026-05-05: this debt accumulates and creates inconsistency between turns. Going forward, NO debt — every turn ends with all docs in sync. Apply checklist: before drafting end-of-turn commit message, run grep-sweep verification. If ANY forward-looking doc has stale ref, it's included in commit. Period.
 
+    **67.b — Doc commits decoupled from pending runs (Pass 53 owner clarification 2026-05-05):** Document updates MUST commit each turn regardless of pending long-running operations (background SCREENERs, prefetch tasks, multi-hour API jobs). Past failure pattern: I held the entire commit waiting for T2 SCREENER (~3 hour run) to complete, leaving Sprint 0A definition + DEC-497/498/499 + 18+ doc updates uncommitted and invisible to owner on main. Owner-flagged 2026-05-05: "Document updates are not linked to pending runs. Document updates need to be committed each turn."
+
+    **Workflow (corrected):**
+    1. Doc updates committed at end of every turn (atomic with code/data changes that ARE complete)
+    2. Long-running operations commit SEPARATELY when complete (follow-up commit; not blocked by pending docs)
+    3. If a pending run produces data that needs to be referenced in docs, the docs can include forward-looking references ("expecting X tickers; will commit final state when SCREENER completes") — don't block the doc commit on data finalization
+    4. Each turn's commit shows up on main BEFORE the next turn begins; owner sees the work in real time
+
+    **Anti-pattern to avoid:** "Single atomic commit when ALL pending runs complete" — this conflates doc-sync (turn-bound) with run-finalization (independent). Multiple commits per turn are fine if pending runs complete asynchronously. Each commit is atomic for its scope (doc-sync OR run-output), not for "everything happening this turn."
+
 68. **Smoke → demo → full execution protocol for ALL multi-call API operations (Pass 53 owner directive 2026-05-05; codified after T2 SCREENER batching violation):**
     For ANY operation that issues N>10 API calls (prefetch, screener, bulk fetch, mass refresh), execute in three explicit stages with verification gates between each:
 
