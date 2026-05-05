@@ -792,7 +792,7 @@ PROPOSED count update post Pass 53 turn:
 - Post-Pass-53: 16 PROPOSED (DEC-469-481 + DEC-486-488)
 - Pass 53 batch should approve all 16 together for atomic Sprint 0 readiness
 
-**Triage recommendation:** Owner approve DEC-486/487/488 alongside DEC-482/483/484/485 (walk-forward + universe + FMP-alternative) as single batch to unblock Sprint 6.5 + Sprint 1 Day 1 simultaneously. All 16 PROPOSED decisions block Stage 2 substantive work.
+**Triage recommendation:** Owner approve DEC-486/487/488 alongside DEC-482/483/484/485 (walk-forward + universe + FMP-alternative) as single batch to unblock Sprint 6.5 + Sprint 0A Day 1 simultaneously. All 16 PROPOSED decisions block Stage 2 substantive work.
 
 ---
 
@@ -815,9 +815,9 @@ Pass 53 progression after the prior triage entry — DEC-486/487/488 owner-appro
 | DEC-491 | PROPOSED | Sprint 2 | Trade-capture fragility — Parquet format. Awaits owner approval on parquet-only vs hybrid. |
 | DEC-492 | PROPOSED | Sprint 2 (HARD-COUPLED to DEC-491) | signals_at_entry filter removal — preserve string/list signals. Awaits owner approval on filter removal scope. |
 | DEC-493 | PROPOSED | Sprint 2 | trade_id schema field. Awaits owner approval on format choice. |
-| DEC-494 | RESOLVED-DECIDED | Sprint 1 | Tier 2 / refresh_extended_universe.py alignment with DEC-483. NDX-non-S&P moved to T1c per DEC-483; refresh script docstring/logic updates. |
+| DEC-494 | RESOLVED-DECIDED | Sprint 0A | Tier 2 / refresh_extended_universe.py alignment with DEC-483. NDX-non-S&P moved to T1c per DEC-483; refresh script docstring/logic updates. |
 | DEC-495 | RESOLVED-DECIDED | Stage 3+ implementation | Stage 3+ archived watchlist for tickers rotating out of all 5 buckets. Spec locked; implementation Stage 3+. |
-| DEC-496 | RESOLVED-DECIDED | Sprint 1 (historical) + Sprint 5 (ongoing) | Tier 3 momentum methodology — Jegadeesh-Titman 12-1 month classic. |
+| DEC-496 | RESOLVED-DECIDED | Sprint 0A (historical) + Sprint 5 (ongoing) | Tier 3 momentum methodology — Jegadeesh-Titman 12-1 month classic. |
 
 **Pass 53 DEC body updates (no status change — clarifications):**
 - DEC-303 — source clarification (S&P DJI primary; Wikipedia + browse fallback under L88 exception)
@@ -830,11 +830,11 @@ Pass 53 progression after the prior triage entry — DEC-486/487/488 owner-appro
 - DEC-469-481 (13) — pre-Pass-53 cluster, unchanged status
 - DEC-491/492/493 (3) — Sprint 2 trade-capture fragility, awaits implementation specifics
 
-**Triage recommendation Pass 53 cumulative:** DEC-486/487/488 + DEC-482/483/484/485/490 + DEC-494/495/496 already RESOLVED-DECIDED Pass 53 — the previously-blocking Sprint 6.5 / Sprint 1 / Sprint 5 critical-path is unblocked. Remaining 16 PROPOSED are: (a) DEC-469-481 cluster — Pre-Pass-53 enterprise architecture work (Sprint 7 statistical methodology + AgentGateConfig); (b) DEC-491/492/493 — Sprint 2 trade-capture fragility (additive improvements; no critical-path block).
+**Triage recommendation Pass 53 cumulative:** DEC-486/487/488 + DEC-482/483/484/485/490 + DEC-494/495/496 already RESOLVED-DECIDED Pass 53 — the previously-blocking Sprint 6.5 / Sprint 0A / Sprint 5 critical-path is unblocked. Remaining 16 PROPOSED are: (a) DEC-469-481 cluster — Pre-Pass-53 enterprise architecture work (Sprint 7 statistical methodology + AgentGateConfig); (b) DEC-491/492/493 — Sprint 2 trade-capture fragility (additive improvements; no critical-path block).
 
 **Cross-references:**
 - AUDIT.md Pass 53 narrative entries
 - AUDIT_INDEX.md DEC-491-496 rows
-- ENGINEERING_REGISTER.md Sprint 1/2/5 additions blocks
+- ENGINEERING_REGISTER.md Sprint 0A/2/5 additions blocks
 - DOCUMENTATION_REGISTER.md Pass 53 post-pre-flight entry
 

@@ -86,7 +86,7 @@ These don't need re-approval — parents already approved Pass 52. They need to 
 
 **Impact on Theme X53 sub-decisions:** TIMING UNCHANGED. All X53 engine bug fixes happen in Sprint 2 (Phase 0.C) per original sequencing. Phase 1A baseline (Sprint 6.5) operates on engine that has already had Sprint 2 fixes applied. No X53 sub-decision shifts due to Phase 1A insertion.
 
-**Phase 1A runs against POST-X53 engine state:** This is intentional — Phase 1A is the empirical re-validation that engine fixes (Sprint 2) + Portfolio class (Sprint 3) + cache (Sprint 1) + universe (Sprint 5) + catch-mechanism (Sprint 6) all integrate correctly. If X53 fixes have residual bugs, Phase 1A surfaces them at scale before Phase 1B agent layer adds complexity.
+**Phase 1A runs against POST-X53 engine state:** This is intentional — Phase 1A is the empirical re-validation that engine fixes (Sprint 2) + Portfolio class (Sprint 3) + cache (Sprint 0A) + universe (Sprint 5) + catch-mechanism (Sprint 6) all integrate correctly. If X53 fixes have residual bugs, Phase 1A surfaces them at scale before Phase 1B agent layer adds complexity.
 
 **No new X53 work introduced by Phase 1A restoration.**
 

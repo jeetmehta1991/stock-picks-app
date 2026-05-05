@@ -1,5 +1,5 @@
 # Stock Picks & Automated Trading System
-**Stage:** 2 — Strategy Validation | **Phase:** 1B — Full backtest in progress
+**Stage:** 2 — Strategy Validation | **Phase:** 0A — Multi-API prefetch + universe build (Pass 53; DEC-497)
 **Repo:** jeetmehta1991/stock-picks-app
 **Docs:** `PROJECT_PLAN.md` (full detail) | `CHECKLIST.md` (pre-action) | `LEARNINGS.md` (lessons)
 
@@ -28,6 +28,7 @@
 - **Never use `git reset --hard` without running `git status` first. This has destroyed data twice (L49, L77).**
 - **Run CHECKLIST.md before every suggestion or execution.**
 - **MANDATORY (Pass 52): every response must end with a visible CHECKLIST compliance statement enumerating which items applied and were satisfied. No exceptions. If checklist was not consulted before responding, the response itself is non-compliant. Owner has authorized ending conversation if this rule is repeatedly violated.**
+- **MANDATORY (Pass 53 owner directive 2026-05-05): every turn that produces meaningful changes ends with a per-turn document sync sweep — see CHECKLIST #67. All forward-looking documents outside `archive/` folder must be updated in the SAME atomic commit as the originating change. No deferred-doc-sweep debt. If end-of-turn shows stale references in any non-archive doc, the response is non-compliant. Excludes: `archive/**`, `AUDIT.md` historical narrative entries (per L143), Pass-specific snapshot docs.**
 - For every proposed change, always provide a recommendation with clear reasoning and tradeoffs before waiting for approval.
 - After every audit, validate by RUNNING CODE — not reading it.
 - Run `backtest/tests/test_integration.py` and `backtest/tests/test_unit.py` before every phase run and after every significant code change (36/36 must pass).
@@ -169,6 +170,23 @@ All 9 must pass overall for a strategy to advance. Additionally, each strategy g
 - **Push cadence:** at meaningful checkpoints (theme closures, significant work milestones), not after every commit. Reduces re-issuance friction.
 - **If push is rejected (remote ahead):** `git fetch origin main` → review remote commits → `git rebase origin/main` if file-change sets disjoint → push again. NEVER force-push without explicit owner approval.
 - **Recovery if PAT compromised:** owner revokes PAT at github.com/settings/personal-access-tokens. Issues new one. Repaste in new session.
+
+### Sprint Structure (Pass 53 Sprint 0A active per DEC-497)
+
+**Active Sprint:** Sprint 0A — Full multi-API prefetch + universe build + Stage 2 NO-LIVE-API refactor.
+- Universe build: T1a (614) + T1c (161) + T1 ETFs (27) + T2 (10 baseline; full SCREENER pending) + T3 (1999 period rows / 1220 unique) — IMPLEMENTED Pass 53
+- Sector normalization: 18-classifier set per DEC-499 (GICS-11 + Fixed Income, Commodities, Volatility, Broad Market, International, Emerging Markets, Small Cap)
+- Polygon Stocks Starter prefetch: 1,821 OHLCV cached (extension to news/indicators/financials/events/NBBO pending)
+- API scope (8 APIs): Polygon, Quiver Trader, FRED, ALFRED, AAII, CNN F&G (composite + 7 sub-components), CFTC COT, SEC EDGAR (structured per DEC-456)
+- HARD CUT — NO LIVE API CALLS in Stage 2 backtest (owner directive 2026-05-05). yfinance permitted for one-time SETUP only.
+- Folder: `data_prefetch/<api_name>/<endpoint>/...` (Polygon cache to be moved from `backtest/data/cache/polygon/` post-universe-validation)
+- Smoke + demo tests per API (separate test files)
+
+**Sprint 1 RENAMED → Sprint 0A** Pass 53 owner directive 2026-05-05. Prior Sprint 1 work absorbed into Sprint 0A naming.
+
+**Sprint 2** — Engine bug fixes (DEC-491-493 trade_log Parquet + signals_at_entry filter + trade_id schema). Unchanged.
+**Sprint 5** — Index rebalance + archived watchlist + monthly automation. Unchanged.
+**Sprint 9** — Cube Explorer dashboard. Unchanged.
 
 ### Data Sources
 - **NEVER use Wikipedia.** Historically blocked in Codespaces; not point-in-time; fragile (L88). Same fragility applies on local VS Code.

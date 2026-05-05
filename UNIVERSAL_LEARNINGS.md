@@ -206,7 +206,7 @@ When a methodology decision absorbs prior phase content (e.g., DEC-014 Phase 1B 
 
 ### CSV-first data architecture is non-negotiable.
 
-Pass 53 owner directive: all input/output data lives in CSV files; no exclusively-codebase data. Past violation corrected: `ETFS_FULL` hardcoded list in `universe.py` migrated to `tier1_etfs.csv` (DEC-494). Distinction: lists/mappings/records → CSV; thresholds/formulas/parameters → code. The line: if you find yourself typing a Python list of tickers or a dict of attributes longer than 5 entries, stop and put it in a CSV instead. Codified in CLAUDE.md HARD RULES.
+Pass 53 owner directive: all input/output data lives in CSV files; no exclusively-codebase data. Past violation corrected: `ETFS_FULL` hardcoded list in `universe.py` migrated to `Tier 1 ETFs Universe_Sector and Broad-Market ETFs_May 2026.csv` (DEC-494). Distinction: lists/mappings/records → CSV; thresholds/formulas/parameters → code. The line: if you find yourself typing a Python list of tickers or a dict of attributes longer than 5 entries, stop and put it in a CSV instead. Codified in CLAUDE.md HARD RULES.
 
 **Rule:** Before writing any module that introduces hardcoded ticker lists, sector dicts, event calendars, or known-good-output lists, check CLAUDE.md CSV-first HARD RULE. If the content is data (not configuration), it goes in a CSV.
 

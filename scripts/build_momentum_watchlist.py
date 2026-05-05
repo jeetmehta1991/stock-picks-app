@@ -23,7 +23,7 @@ USAGE:
     python scripts/build_momentum_watchlist.py --add TICKER1 TICKER2  # force-add
 
 RUN ON: laptop (no network restrictions) — monthly
-OUTPUT: backtest/data/momentum_watchlist.csv (Symbol, Company, Sector, MomentumScore, MarketCapB, AddedDate)
+OUTPUT: backtest/data/Tier 3 Universe_Momentum Top-100_Jun 2022 to May 2026.csv (Symbol, Company, Sector, MomentumScore, MarketCapB, AddedDate)
 """
 import argparse
 import sys
@@ -34,8 +34,8 @@ import pandas as pd
 import yfinance as yf
 
 # ── Config ──────────────────────────────────────────────────────────────────
-CSV_PATH   = Path(__file__).parent.parent / "Backtesting universe" / "momentum_watchlist.csv"
-SP500_CSV  = Path(__file__).parent.parent / "Backtesting universe" / "sp500_tickers.csv"
+CSV_PATH   = Path(__file__).parent.parent / "Backtesting universe" / "Tier 3 Universe_Momentum Top-100_Jun 2022 to May 2026.csv"
+SP500_CSV  = Path(__file__).parent.parent / "Backtesting universe" / "Current Snapshot_SP500 Tickers_May 2026.csv"
 MAX_TICKERS = 50          # top N by momentum
 MIN_PRICE   = 10.0        # USD
 MIN_AVG_VOL = 500_000     # shares/day
@@ -234,7 +234,7 @@ def main():
     print(f"\n✅ Written: {CSV_PATH}")
     print(f"   {len(final_df)} tickers in Tier 3 momentum watchlist")
     print(f"\nNext steps:")
-    print(f"  git add backtest/data/momentum_watchlist.csv")
+    print(f"  git add backtest/data/Tier 3 Universe_Momentum Top-100_Jun 2022 to May 2026.csv")
     print(f"  git commit -m 'Tier 3 momentum watchlist: monthly refresh {date.today()}'")
     print(f"  git push origin main")
     print(f"\nSchedule: run monthly at start of each month on laptop.")

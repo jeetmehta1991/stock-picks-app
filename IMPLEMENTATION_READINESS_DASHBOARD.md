@@ -183,13 +183,13 @@ None currently — all open Pass 52 owner-decision items closed.
 4. DEC-440 Polygon news (absorbed)
 5. DEC-260 Cache freshness assertion
 6. DEC-261 ICT/SMC PIT lag rule
-7. **DEC-477 historical_membership.csv canonical universe (NEW Pass 53)**
+7. **DEC-477 Tier 1A Universe_SP500 Tickers_Jan 2020 to May 2026.csv canonical universe (NEW Pass 53)**
 8. **DEC-478 Polygon Stocks Starter $29/mo selected (NEW Pass 53)**
 9. **DEC-479 Cost correction $30→$29 (NEW Pass 53)**
 10. **DEC-483 Tier 1 sub-tiers T1a/T1b/T1c with year-grain PIT for R1000+NDX (NEW Pass 53)**
 
 **Pass 53 universe scope expansion:**
-- T1a (S&P 500): ~503 active / ~550-600 unique across 5y testing window; PIT via DEC-303 historical_membership.csv (DEC-477) — B++ format Pass 53: single static CSV with `added_date`/`removed_date` columns; loader filters by `(added_date IS NULL OR added_date ≤ as_of) AND (removed_date IS NULL OR removed_date > as_of)`. Source: S&P Dow Jones Indices press releases primary; Wikipedia + internet browse fallback under Pass 53 one-time L88 exception. Mapping timeframe: 2020-01-01 → today + ongoing.
+- T1a (S&P 500): ~503 active / ~550-600 unique across 5y testing window; PIT via DEC-303 Tier 1A Universe_SP500 Tickers_Jan 2020 to May 2026.csv (DEC-477) — B++ format Pass 53: single static CSV with `added_date`/`removed_date` columns; loader filters by `(added_date IS NULL OR added_date ≤ as_of) AND (removed_date IS NULL OR removed_date > as_of)`. Source: S&P Dow Jones Indices press releases primary; Wikipedia + internet browse fallback under Pass 53 one-time L88 exception. Mapping timeframe: 2020-01-01 → today + ongoing.
 - T1b (R1000-non-S&P): ~497 net new tickers; same B++ format with year-grain dates from FTSE Russell annual reconstitution
 - T1c (NDX-non-S&P): ~15 net new tickers; same B++ format with year-grain dates from Nasdaq annual reconstitution
 - Total: ~1015 unique Tier 1 tickers
@@ -594,3 +594,22 @@ PENDING = 0. All 462 decisions in terminal states (RESOLVED-DECIDED, DEFERRED, S
 
 DEC-042 specifically: AgentGateConfig spec was the trigger decision for CHECKLIST #58 framework (premature flip caught by owner turn 101 → flip back to PENDING → bulk sweep delegation excluded it → final walkthrough turn 120-121 with full owner-specified architecture). Fitting closure.
 
+## Sprint 0A — IMPLEMENTATION-IN-PROGRESS Pass 53 (DEC-497)
+
+| Sub-phase | Status | Wall time |
+|---|---|---|
+| 0A.0 Quiver Trader-tier endpoint enum | OWNER-side: dashboard list pending | 5 min owner |
+| 0A.1 Polygon extension (news/indicators/NBBO/financials) | PENDING | 16-20 hr |
+| 0A.2 FRED + ALFRED prefetch | PENDING | 30 min |
+| 0A.3 AAII + CNN F&G | PENDING | 30 min |
+| 0A.4 CFTC COT | PENDING | 15 min |
+| 0A.5 Quiver full Trader-tier | PENDING (Quiver key in `.env`) | 1-3 hr |
+| 0A.6 SEC EDGAR structured | PENDING | 3-5 hr |
+| 0A.7 Smoke + demo tests per API | PENDING | 2 days code |
+| 0A.8 Refactor fetcher/macro/sentiment/smart_money | PENDING | 3-5 days code |
+| 0A.9 Move Polygon cache to `data_prefetch/polygon/` | PENDING | 5 min |
+| 0A.10 Doc sync per CHECKLIST #67 | DEC-498 codified Pass 53 | continuous |
+
+**Universe build (Sprint 0A subset):** ✅ COMPLETE Pass 53 (614 T1a + 161 T1c + 27 ETFs + 10 T2 baseline + 1999 T3 period rows; 100% T1 sector + partial T3 sector pending yfinance one-time fallback).
+
+**Total Sprint 0A wall time:** ~6-10 days code + ~25 hours prefetch.

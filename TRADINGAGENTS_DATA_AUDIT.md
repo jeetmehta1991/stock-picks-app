@@ -552,7 +552,7 @@ Based on Gap A-E analysis:
 - Earnings call transcripts (Gap B)
 - Analyst consensus estimates (Gap C)
 
-**Total cost delta:** +$14-50/mo over current $263 CAD/mo baseline. Per owner directive turn 130 ("Happy to upgrade") — recommend evaluating FMP scope before Sprint 1 start.
+**Total cost delta:** +$14-50/mo over current $263 CAD/mo baseline. Per owner directive turn 130 ("Happy to upgrade") — recommend evaluating FMP scope before Sprint 0A start.
 
 **Alternative:** Verify Polygon Stocks Starter $29/mo coverage of all three first; if covered, no upgrade needed.
 
@@ -774,7 +774,7 @@ class OurAgentState(TradingAgentsState):  # extends default
 
 | Toolkit | Effort | Dependencies |
 |---|---|---|
-| OurTechnicalToolkit | ~3-4d | Polygon prefetch (Sprint 1); ICT/SMC fork (DEC-045 Phase 0.D) |
+| OurTechnicalToolkit | ~3-4d | Polygon prefetch (Sprint 0A); ICT/SMC fork (DEC-045 Phase 0.D) |
 | OurFundamentalsToolkit | ~4-5d | Gap A resolution; Quiver paid (already); Ortex wiring |
 | OurNewsToolkit | ~2d | Polygon news (DEC-440); FRED event calendar |
 | OurTraderToolkit | ~3-4d | **Portfolio class (Sprint 3 BUG-095)** |
@@ -793,7 +793,7 @@ class OurAgentState(TradingAgentsState):  # extends default
 ## 29. Cross-Sprint Dependencies
 
 ```
-Sprint 1 (Polygon foundation) ──► Sprint 7 (toolkits depend on Polygon)
+Sprint 0A (Polygon foundation) ──► Sprint 7 (toolkits depend on Polygon)
 Sprint 3 (Portfolio class) ──────► Sprint 7 (Trader/Risk toolkits depend on Portfolio)
 Sprint 4 (DEC-298 raw OHLCV) ────► Sprint 7 (PIT fundamentals depend on cache)
 Phase 0.D (ICT/SMC fork DEC-045) ► Sprint 7 (Technical toolkit depends on fork)
@@ -980,7 +980,7 @@ Both Sprint 2 implementation; affect Phase 1B+ agent overlay quality.
 
 Pass 53 introduced 5-bucket universe model:
 - T1a (S&P 500), T1b (R1000-non-S&P), T1c (NDX-non-S&P) per DEC-483
-- Tier 1 ETFs (DEC-118) — 27 ETFs in `tier1_etfs.csv` (Pass 53 migration from hardcoded list)
+- Tier 1 ETFs (DEC-118) — 27 ETFs in `Tier 1 ETFs Universe_Sector and Broad-Market ETFs_May 2026.csv` (Pass 53 migration from hardcoded list)
 - T2 spinoffs/IPOs (DEC-103); T3 momentum (DEC-104; methodology DEC-496 J-T 12-1)
 - DEC-495 archived watchlist for tickers rotating out of all 5 buckets (Stage 3+ scope)
 
@@ -996,4 +996,4 @@ Toolkits consuming universe context (DEC-465 OurTraderToolkit `existing position
 - DOCUMENTATION_REGISTER.md Pass 53 turn entries (post Sprint-1-Pre-Flight)
 - AUDIT.md Pass 53 narrative entries (per-commit detail)
 - DEC-491/492/493 (Sprint 2 trade-capture fragility) — affect agent_reasoning serialization
-- DEC-494/495/496 (Sprint 1 / Stage 3+ / Sprint 1-5 — universe + watchlist + momentum methodology)
+- DEC-494/495/496 (Sprint 0A / Stage 3+ / Sprint 1-5 — universe + watchlist + momentum methodology)

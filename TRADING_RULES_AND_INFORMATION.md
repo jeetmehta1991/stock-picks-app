@@ -128,7 +128,7 @@
 
 ## 2. Phase-by-Phase Acceptance Criteria
 
-### 2.1 Phase 0.A — Polygon Foundation (Sprint 1)
+### 2.1 Phase 0.A — Polygon Foundation (Sprint 0A)
 
 **Effort target:** ~20.5-26.5 engineering days
 **Time-boxed first deliverable:** 1-2 weeks for "S&P 500 OHLCV cache populated + first PIT loader test passing"
@@ -156,7 +156,7 @@
 - Synthetic ticker BRK.B and BRK-B resolve to canonical ticker ID (DEC-309)
 - Synthetic zero-volume day on 2020-03-09 preserved with `is_halted=True` flag (DEC-310)
 
-**Dashboards (Pass 53):** Prefetch Coverage Report (Tier 1, ~0.5d Sprint 1) — auto-emitted post-prefetch HTML showing ticker × source × hit-rate matrix; verifies S&P 500 coverage ≥ 95%. Adaptation of `backtest_report.html` static HTML pattern; no new DEC. See DETAILED_PROJECT_PLAN.md Part 2.5.
+**Dashboards (Pass 53):** Prefetch Coverage Report (Tier 1, ~0.5d Sprint 0A) — auto-emitted post-prefetch HTML showing ticker × source × hit-rate matrix; verifies S&P 500 coverage ≥ 95%. Adaptation of `backtest_report.html` static HTML pattern; no new DEC. See DETAILED_PROJECT_PLAN.md Part 2.5.
 
 ### 2.2 Phase 0.B — Portfolio Class (Sprint 3)
 
@@ -241,7 +241,7 @@
 **Effort target:** ~6-8 engineering days
 
 **Acceptance criteria:**
-- [ ] Rules-based screener executes full ~109-119 strategy roster on full universe (per DEC-477 historical_membership.csv + DEC-483 R1000 + NDX expansion)
+- [ ] Rules-based screener executes full ~109-119 strategy roster on full universe (per DEC-477 Tier 1A Universe_SP500 Tickers_Jan 2020 to May 2026.csv + DEC-483 R1000 + NDX expansion)
 - [ ] Smart money signals operational (DEC-124 confluence + DEC-332 weights + DEC-450 Quiver paid endpoints)
 - [ ] `--no-agents` flag preserved from Phase 1A v3 archive — no TradingAgents.propagate calls
 - [ ] Trade outcome log produced for full universe per DEC-189 schema; baseline trades tagged `arm=A_rules_only`
@@ -1411,6 +1411,20 @@ def test_loader_pit():
 
 Comprehensive inventory of external endpoints consumed by the system. PIT lag = how stale the data is when first available (e.g., 13F filings have a 45-day SEC filing deadline). Status reflects post-Pass-53 deprecation cleanup direction (Sprint 4 DEC-453/454/455).
 
+**Sprint 0A scope (DEC-497 RESOLVED-DECIDED Pass 53 owner directive 2026-05-05):** ALL endpoints from ALL planned APIs are prefetched for ALL universe tickers within testing date range 2020-01-01 → today. NO LIVE API CALLS in Stage 2 backtest (HARD CUT — owner Q8). yfinance permitted for one-time setup only.
+
+**Eight APIs in Sprint 0A scope:**
+1. **Polygon Stocks Starter** ($29/mo, DEC-441) — 16+ endpoints: aggregates daily/grouped, reference tickers/events/financials, news, splits, dividends, indicators (SMA/EMA/RSI/MACD), NBBO quotes selective per DEC-446
+2. **FRED + ALFRED** (free) — ~52 series across 14 categories (yield curve, inflation, employment, GDP, credit spreads, money supply, industrial activity, housing, consumer, FX, commodities, volatility VIXCLS replaces yfinance ^VIX, financial conditions, recession indicators) — owner-confirmed full 52 Pass 53
+3. **Quiver Trader tier** (DEC-450) — 11+ endpoints confirmed via probing: congresstrading, senatetrading, housetrading, govcontracts, lobbying, offexchange, politicalbeta, wallstreetbets, insiders bulk, twitter, politicalbeta live (owner-side dashboard list pending for full inventory)
+4. **AAII** (free) — single CSV (5 fields: bullish/neutral/bearish/spread/MA8)
+5. **CNN Fear & Greed** (free) — composite + 7 sub-components (owner-approved Pass 53)
+6. **CFTC COT** (free) — IN scope per Pass 53 owner approval; weekly futures-only + disaggregated + financial futures + combined
+7. **SEC EDGAR** (free, DEC-484/456) — structured data only via `edgartools`: 10-K/10-Q financials + Form 4 + 13F + 8-K events
+8. **yfinance** — DEPRECATED from runtime; one-time setup OK for sector backfill of tickers Polygon doesn't cover (per Pass 53 owner Q1 approval)
+
+**Folder structure:** `data_prefetch/<api_name>/<endpoint>/...` — Parquet for OHLCV+news+nested per DEC-491 exception; CSV for universe lists + flat row data per DEC-499 18-classifier sector normalization.
+
 **Status legend:**
 - `PRIMARY` — canonical source post-Sprint-4
 - `FALLBACK` — used only if primary unavailable
@@ -1894,7 +1908,7 @@ See §17.8 above.
 
 **Why:** Backtest universe at any historical date includes tickers active then but later delisted (avoid survivorship bias).
 
-**Joint:** DEC-303 historical_membership.csv + DEC-052 CC0 dataset.
+**Joint:** DEC-303 Tier 1A Universe_SP500 Tickers_Jan 2020 to May 2026.csv + DEC-052 CC0 dataset.
 
 **Test signal:** Lehman Brothers 2008 backtest has LEH ticker available pre-delisting; absence post-Sep 2008.
 

@@ -29,7 +29,7 @@ It is a **swing trading** system — meaning it holds positions for days to week
 | 4 | Live trading small — $500-1000 CAD with email approval | ~$300 CAD |
 | 5 | Full automation — autonomous trading | ~$350 CAD |
 
-We are currently in **Stage 2 — Strategy Validation** (Pass 53; Sprint 1 pending Polygon prefetch). Phase 1A baseline is the next gate before agent overlay (Phase 1B).
+We are currently in **Stage 2 — Strategy Validation** (Pass 53; Sprint 0A pending Polygon prefetch). Phase 1A baseline is the next gate before agent overlay (Phase 1B).
 
 ---
 

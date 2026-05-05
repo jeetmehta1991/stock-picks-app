@@ -70,7 +70,7 @@ Built a complete Finnhub news sentiment pipeline before checking whether Alpha V
 **Rule:** Before adding any new external dependency, audit every existing integration for additional capabilities. Maintain a capability inventory of every active API.
 
 ### Static committed files beat live API calls for stable reference data.
-Multiple attempts to fetch the S&P 500 constituent list dynamically failed in different environments. Committing `sp500_tickers.csv` as a static file took 5 minutes and worked everywhere.
+Multiple attempts to fetch the S&P 500 constituent list dynamically failed in different environments. Committing `Current Snapshot_SP500 Tickers_May 2026.csv` as a static file took 5 minutes and worked everywhere.
 **Rule:** If data changes less than monthly, use a committed static file. It works offline, in all environments, is version-controlled, and is instant to read.
 
 ### Never assume data quality. Verify every source.
@@ -307,7 +307,7 @@ Win rates were reported as single numbers (55.3%) without confidence intervals. 
 ### L88 — NEVER USE WIKIPEDIA AS A DATA SOURCE [infrastructure]
 **Mistake:** Wikipedia was used (and proposed multiple times) as the source for S&P 500 constituent lists.
 **Why it fails:** Blocked in Codespaces (HTTP 403). No API — HTML scraping breaks on page restructuring. Not a primary source — Wikipedia itself copies from S&P press releases. No historical point-in-time data. Rate limited with no SLA.
-**Fix:** Use slickcharts.com (free, stable, no auth), S&P official press releases (authoritative, free), or a paid provider (Quiver, Polygon) for production. The static committed CSV (`sp500_tickers.csv`) refreshed quarterly via slickcharts.com is the correct pattern.
+**Fix:** Use slickcharts.com (free, stable, no auth), S&P official press releases (authoritative, free), or a paid provider (Quiver, Polygon) for production. The static committed CSV (`Current Snapshot_SP500 Tickers_May 2026.csv`) refreshed quarterly via slickcharts.com is the correct pattern.
 **Rule:** Wikipedia is never a valid data source for any production pipeline. Document in CLAUDE.md and refuse any future proposal that uses Wikipedia for data.
 
 ### L89 — Universe staleness is a systematic blind spot, not a one-time fix [architecture]
@@ -1014,7 +1014,7 @@ Top blockers identified that linear review missed:
 - B5 TradingAgents Pydantic schema verification: Research Manager `confidence` field may not exist
 - B6 Cube compute cost unestimated: 100M+ metric computations across 6 walk-forward folds
 - B7 PIT fundamentals verification still pending DEC-460
-- B8 Walk-forward pre-2018 data source not in Sprint 1 scope
+- B8 Walk-forward pre-2018 data source not in Sprint 0A scope
 - B9 Russell 1000 referenced inconsistently across docs
 - B10 Cost estimate $263 CAD/mo doesn't include contingencies — real cost likely $500-1000+
 
@@ -1094,14 +1094,14 @@ Codified in CHECKLIST #62 paragraph + part of #61 5-pass methodology Pass 4 (sta
 
 **Source trigger:** Pass 53 turn — owner asked "Why hasnt this been flagged yet when we are already running the commands and you said we are ready for sprint 1?"
 
-**Discovery:** I claimed multiple times across recent turns that "Sprint 1 has zero formally-PENDING decisions; technically ready to start." This was true for decision-state (DEC-477/478/479/482/483/484/485/486/487/488/490 were all RESOLVED-DECIDED in AUDIT_INDEX). But it was false for artifact-state — the actual files those decisions reference did not exist:
-- `data/universe/historical_membership.csv` (DEC-477 referent) — does not exist
+**Discovery:** I claimed multiple times across recent turns that "Sprint 0A has zero formally-PENDING decisions; technically ready to start." This was true for decision-state (DEC-477/478/479/482/483/484/485/486/487/488/490 were all RESOLVED-DECIDED in AUDIT_INDEX). But it was false for artifact-state — the actual files those decisions reference did not exist:
+- `data/universe/Tier 1A Universe_SP500 Tickers_Jan 2020 to May 2026.csv` (DEC-477 referent) — does not exist
 - `data/universe/russell_1000_membership.csv` (DEC-483 T1b referent) — does not exist
-- `data/universe/nasdaq_100_membership.csv` (DEC-483 T1c referent) — does not exist
-- `backtest/data/extended_universe.csv` (DEC-103 Tier 2 referent) — exists but only header row, 0 data
-- `backtest/data/momentum_watchlist.csv` (DEC-104 Tier 3 referent) — exists but only header row, 0 data
+- `data/universe/Tier 1C Universe_NASDAQ-100 Tickers_Jan 2020 to May 2026.csv` (DEC-483 T1c referent) — does not exist
+- `backtest/data/Tier 2 Universe_Spinoffs and Recent IPOs_Sep 2014 to May 2026.csv` (DEC-103 Tier 2 referent) — exists but only header row, 0 data
+- `backtest/data/Tier 3 Universe_Momentum Top-100_Jun 2022 to May 2026.csv` (DEC-104 Tier 3 referent) — exists but only header row, 0 data
 
-The existing `backtest/data/sp500_tickers.csv` (484 current-state tickers) is exactly the static CSV that DEC-477 explicitly says to deprecate due to survivorship bias.
+The existing `backtest/data/Current Snapshot_SP500 Tickers_May 2026.csv` (484 current-state tickers) is exactly the static CSV that DEC-477 explicitly says to deprecate due to survivorship bias.
 
 **Why I missed this for multiple turns:**
 - I treated AUDIT_INDEX as the ground truth for project state

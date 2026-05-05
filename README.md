@@ -1,6 +1,6 @@
 # Stock Picks & Automated Trading System
 
-**Stage 2 — Strategy Validation** | Phase 1A pending Sprint 1 Polygon prefetch | Pass 53 in progress
+**Stage 2 — Strategy Validation** | Phase 0A — Sprint 0A active (DEC-497 multi-API prefetch + universe build complete + Stage 2 NO-LIVE-API refactor pending) | Pass 53 in progress
 
 A multi-stage swing trading system: rule-based + smart money + multi-agent architecture validating strategies on historical data before any real money risked.
 
@@ -73,5 +73,5 @@ Pass 53 universe-build effort completed:
 - ✅ Universe folder migration to top-level `Backtesting universe/`
 - ✅ T1a `Tier 1A Universe_SP500 Tickers_Jan 2020 to May 2026.csv` (Pass 53 RESOLVED-IMPLEMENTED — 614 rows from Wikipedia rebuild + 4/4 S&P DJI spot-check; renamed Pass 53 from `historical_membership.csv`)
 - ⏸ T1b russell_1000_membership.csv (DEFERRED TO STAGE 3 per Pass 53 — LSEG paywall; T1a 503 + T1c 101 + ETFs sufficient for Stage 2)
-- 🔄 T2 + T3 historical populate (Phase 3+4 in flight — T2 10 seeds + T3 1220 unique non-T1 tickers via SCREENER-FIRST)
-- ✅ Sprint 1 Polygon Stocks Starter ($29/mo) active; OHLCV + reference + corp-actions cache populated
+- ✅ T2 + T3 historical populate (Pass 53 Phase 3+4 done; T2 baseline 10 tickers, full SCREENER pending; T3 1999 period rows / 1220 unique — T2 10 seeds + T3 1220 unique non-T1 tickers via SCREENER-FIRST)
+- ✅ Sprint 0A Polygon Stocks Starter ($29/mo) active; OHLCV + reference + corp-actions cache populated

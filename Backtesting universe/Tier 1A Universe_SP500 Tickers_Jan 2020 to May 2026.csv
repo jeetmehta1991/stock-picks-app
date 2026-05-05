@@ -12,7 +12,7 @@ AAL,,Industrials,,2024-09-23
 AAP,,Consumer Discretionary,,2023-08-25
 AAPL,Apple Inc.,Information Technology,,
 ABBV,AbbVie,Health Care,,
-ABMD,,,,2022-12-22
+ABMD,,Health Care,,2022-12-22
 ABNB,Airbnb,Consumer Discretionary,2023-09-18,
 ABT,Abbott Laboratories,Health Care,,
 ACGL,Arch Capital Group,Financials,2022-11-01,
@@ -21,13 +21,13 @@ ADBE,Adobe Inc.,Information Technology,,
 ADI,Analog Devices,Information Technology,,
 ADM,Archer Daniels Midland,Consumer Staples,,
 ADP,Automatic Data Processing,Industrials,,
-ADS,,,,2020-06-22
+ADS,,Financials,,2020-06-22
 ADSK,Autodesk,Information Technology,,
 AEE,Ameren,Utilities,,
 AEP,American Electric Power,Utilities,,
 AES,AES Corporation,Utilities,,
 AFL,Aflac,Financials,,
-AGN,,,,2020-05-12
+AGN,,Health Care,,2020-05-12
 AIG,American International Group,Financials,,
 AIV,,Financials,,2020-12-21
 AIZ,Assurant,Financials,,
@@ -38,7 +38,7 @@ ALGN,Align Technology,Health Care,,
 ALK,,Industrials,,2023-12-18
 ALL,Allstate,Financials,,
 ALLE,Allegion,Industrials,,
-ALXN,,,,2021-07-21
+ALXN,,Health Care,,2021-07-21
 AMAT,Applied Materials,Information Technology,,
 AMCR,Amcor,Materials,,
 AMD,Advanced Micro Devices,Information Technology,,
@@ -46,10 +46,10 @@ AME,Ametek,Industrials,,
 AMGN,Amgen,Health Care,,
 AMP,Ameriprise Financial,Financials,,
 AMT,American Tower,Real Estate,,
-AMTM,,,2024-09-30,2024-12-23
+AMTM,,Industrials,2024-09-30,2024-12-23
 AMZN,Amazon,Consumer Discretionary,,
 ANET,Arista Networks,Information Technology,,
-ANSS,,,,2025-07-18
+ANSS,,Information Technology,,2025-07-18
 AON,Aon plc,Financials,,
 AOS,A. O. Smith,Industrials,,
 APA,APA Corporation,Energy,,
@@ -60,9 +60,9 @@ APP,AppLovin,Information Technology,2025-09-22,
 APTV,Aptiv,Consumer Discretionary,,
 ARE,Alexandria Real Estate Equities,Real Estate,,
 ARES,Ares Management,Financials,2025-12-11,
-ARNC,,,,2020-04-01
+ARNC,,Industrials,,2020-04-01
 ATO,Atmos Energy,Utilities,,
-ATVI,,,,2023-10-18
+ATVI,,Communication Services,,2023-10-18
 AVB,AvalonBay Communities,Real Estate,,
 AVGO,Broadcom,Information Technology,,
 AVY,Avery Dennison,Materials,,
@@ -81,7 +81,7 @@ BEN,Franklin Resources,Financials,,
 BF-B,Brown–Forman,Consumer Staples,,
 BG,Bunge Global,Consumer Staples,2023-03-15,
 BIIB,Biogen,Health Care,,
-BIO,,,2020-06-22,2024-09-23
+BIO,,Health Care,2020-06-22,2024-09-23
 BK,BNY Mellon,Financials,,
 BKNG,Booking Holdings,Consumer Discretionary,,
 BKR,Baker Hughes,Energy,,
@@ -92,7 +92,7 @@ BR,Broadridge Financial Solutions,Industrials,,
 BRK-B,Berkshire Hathaway,Financials,,
 BRO,Brown & Brown,Financials,2021-09-20,
 BSX,Boston Scientific,Health Care,,
-BWA,,,,2025-03-24
+BWA,,Consumer Discretionary,,2025-03-24
 BX,Blackstone Inc.,Financials,2023-09-18,
 BXP,"BXP, Inc.",Real Estate,,
 C,Citigroup,Financials,,
@@ -110,7 +110,7 @@ CDNS,Cadence Design Systems,Information Technology,,
 CDW,CDW Corporation,Information Technology,,
 CE,,Materials,,2025-03-24
 CEG,Constellation Energy,Utilities,2022-02-02,
-CERN,,,,2022-06-08
+CERN,,Health Care,,2022-06-08
 CF,CF Industries,Materials,,
 CFG,Citizens Financial Group,Financials,,
 CHD,Church & Dwight,Consumer Staples,,
@@ -121,7 +121,7 @@ CIEN,Ciena,Information Technology,2026-02-09,
 CINF,Cincinnati Financial,Financials,,
 CL,Colgate-Palmolive,Consumer Staples,,
 CLX,Clorox,Consumer Staples,,
-CMA,,,,2024-06-24
+CMA,,Financials,,2024-06-24
 CMCSA,Comcast,Communication Services,,
 CME,CME Group,Financials,,
 CMG,Chipotle Mexican Grill,Consumer Discretionary,,
@@ -136,10 +136,10 @@ COO,Cooper Companies (The),Health Care,,
 COP,ConocoPhillips,Energy,,
 COR,Cencora,Health Care,,
 COST,Costco,Consumer Staples,,
-COTY,,,,2020-09-21
+COTY,,Consumer Staples,,2020-09-21
 CPAY,Corpay,Financials,,
 CPB,Campbell's Company (The),Consumer Staples,,
-CPRI,,,,2020-05-12
+CPRI,,Consumer Discretionary,,2020-05-12
 CPRT,Copart,Industrials,,
 CPT,Camden Property Trust,Real Estate,2022-04-04,
 CRH,CRH plc,Materials,2025-12-22,
@@ -150,41 +150,41 @@ CSCO,Cisco,Information Technology,,
 CSGP,CoStar Group,Real Estate,2022-09-19,
 CSX,CSX Corporation,Industrials,,
 CTAS,Cintas,Industrials,,
-CTLT,,,2020-09-21,2024-12-23
+CTLT,,Health Care,2020-09-21,2024-12-23
 CTRA,Coterra,Energy,,
 CTSH,Cognizant,Information Technology,,
 CTVA,Corteva,Materials,,
-CTXS,,,,2022-10-03
+CTXS,,Information Technology,,2022-10-03
 CVNA,Carvana,Consumer Discretionary,2025-12-22,
 CVS,CVS Health,Health Care,,
 CVX,Chevron Corporation,Energy,,
-CXO,,,,2021-01-21
+CXO,,Energy,,2021-01-21
 CZR,,Consumer Discretionary,2021-03-22,2025-09-22
 D,Dominion Energy,Utilities,,
 DAL,Delta Air Lines,Industrials,,
 DASH,DoorDash,Consumer Discretionary,2025-03-24,
-DAY,,,2021-09-20,2026-02-09
+DAY,,Industrials,2021-09-20,2026-02-09
 DD,DuPont,Materials,,
 DDOG,Datadog,Information Technology,2025-07-09,
 DE,Deere & Company,Industrials,,
 DECK,Deckers Brands,Consumer Discretionary,2024-03-18,
 DELL,Dell Technologies,Information Technology,2024-09-23,
-DFS,,,,2025-05-19
+DFS,,Financials,,2025-05-19
 DG,Dollar General,Consumer Staples,,
 DGX,Quest Diagnostics,Health Care,,
 DHI,D. R. Horton,Consumer Discretionary,,
 DHR,Danaher Corporation,Health Care,,
 DIS,Walt Disney Company (The),Communication Services,,
-DISCA,,,,2022-04-11
-DISCK,,,,2022-04-11
-DISH,,,,2023-06-20
+DISCA,,Communication Services,,2022-04-11
+DISCK,,Communication Services,,2022-04-11
+DISH,,Communication Services,,2023-06-20
 DLR,Digital Realty,Real Estate,,
 DLTR,Dollar Tree,Consumer Staples,,
 DOC,Healthpeak Properties,Real Estate,,
 DOV,Dover Corporation,Industrials,,
 DOW,Dow Inc.,Materials,,
 DPZ,Domino's,Consumer Discretionary,2020-05-12,
-DRE,,,,2022-10-03
+DRE,,Real Estate,,2022-10-03
 DRI,Darden Restaurants,Consumer Discretionary,,
 DTE,DTE Energy,Utilities,,
 DUK,Duke Energy,Utilities,,
@@ -213,10 +213,10 @@ EQT,EQT Corporation,Energy,2022-10-03,
 ERIE,Erie Indemnity,Financials,2024-09-23,
 ES,Eversource Energy,Utilities,,
 ESS,Essex Property Trust,Real Estate,,
-ETFC,,,,2020-10-07
+ETFC,,Financials,,2020-10-07
 ETN,Eaton Corporation,Industrials,,
 ETR,Entergy,Utilities,,
-ETSY,,,2020-09-21,2024-09-23
+ETSY,,Industrials,2020-09-21,2024-09-23
 EVRG,Evergy,Utilities,,
 EW,Edwards Lifesciences,Health Care,,
 EXC,Exelon,Utilities,,
@@ -227,7 +227,7 @@ EXR,Extra Space Storage,Real Estate,,
 F,Ford Motor Company,Consumer Discretionary,,
 FANG,Diamondback Energy,Energy,,
 FAST,Fastenal,Industrials,,
-FBHS,,,,2022-12-19
+FBHS,,Consumer Discretionary,,2022-12-19
 FCX,Freeport-McMoRan,Materials,,
 FDS,FactSet,Financials,2021-12-20,
 FDX,FedEx,Industrials,,
@@ -238,12 +238,12 @@ FIS,Fidelity National Information Services,Financials,,
 FISV,Fiserv,Financials,,
 FITB,Fifth Third Bancorp,Financials,,
 FIX,Comfort Systems USA,Industrials,2025-12-22,
-FLIR,,,,2021-05-14
-FLS,,,,2021-03-22
+FLIR,,Industrials,,2021-05-14
+FLS,,Industrials,,2021-03-22
 FMC,,Materials,,2025-03-24
 FOX,Fox Corporation (Class B),Communication Services,,
 FOXA,Fox Corporation (Class A),Communication Services,,
-FRC,,,,2023-05-04
+FRC,,Financials,,2023-05-04
 FRT,Federal Realty Investment Trust,Real Estate,,
 FSLR,First Solar,Information Technology,2022-12-19,
 FTI,,Energy,,2021-02-12
@@ -265,29 +265,29 @@ GOOG,Alphabet Inc. (Class C),Communication Services,,
 GOOGL,Alphabet Inc. (Class A),Communication Services,,
 GPC,Genuine Parts Company,Consumer Discretionary,,
 GPN,Global Payments,Financials,,
-GPS,,,,2022-02-03
+GPS,,Consumer Discretionary,,2022-02-03
 GRMN,Garmin,Consumer Discretionary,,
 GS,Goldman Sachs,Financials,,
 GWW,W. W. Grainger,Industrials,,
 HAL,Halliburton,Energy,,
 HAS,Hasbro,Consumer Discretionary,,
 HBAN,Huntington Bancshares,Financials,,
-HBI,,,,2021-12-20
+HBI,,Consumer Discretionary,,2021-12-20
 HCA,HCA Healthcare,Health Care,,
 HD,Home Depot (The),Consumer Discretionary,,
-HES,,,,2025-07-23
-HFC,,,,2021-06-04
+HES,,Energy,,2025-07-23
+HFC,,Energy,,2021-06-04
 HIG,Hartford (The),Financials,,
 HII,Huntington Ingalls Industries,Industrials,,
 HLT,Hilton Worldwide,Consumer Discretionary,,
-HOG,,,,2020-06-22
-HOLX,,,,2026-04-09
+HOG,,Consumer Discretionary,,2020-06-22
+HOLX,,Health Care,,2026-04-09
 HON,Honeywell,Industrials,,
 HOOD,Robinhood Markets,Financials,2025-09-22,
 HP,,Energy,,2020-05-22
 HPE,Hewlett Packard Enterprise,Information Technology,,
 HPQ,HP Inc.,Information Technology,,
-HRB,,,,2020-09-21
+HRB,,Consumer Discretionary,,2020-09-21
 HRL,Hormel Foods,Consumer Staples,,
 HSIC,Henry Schein,Health Care,,
 HST,Host Hotels & Resorts,Real Estate,,
@@ -301,14 +301,14 @@ ICE,Intercontinental Exchange,Financials,,
 IDXX,Idexx Laboratories,Health Care,,
 IEX,IDEX Corporation,Industrials,,
 IFF,International Flavors & Fragrances,Materials,,
-ILMN,,,,2024-06-24
+ILMN,,Health Care,,2024-06-24
 INCY,Incyte,Health Care,,
-INFO,,,,2022-03-02
+INFO,,Industrials,,2022-03-02
 INTC,Intel,Information Technology,,
 INTU,Intuit,Information Technology,,
 INVH,Invitation Homes,Real Estate,2022-09-19,
 IP,International Paper,Materials,,
-IPG,,,,2025-11-28
+IPG,,Communication Services,,2025-11-28
 IPGP,,Information Technology,,2022-06-21
 IQV,IQVIA,Health Care,,
 IR,Ingersoll Rand,Industrials,2020-03-02,
@@ -323,10 +323,10 @@ JBL,Jabil,Information Technology,2023-12-18,
 JCI,Johnson Controls,Industrials,,
 JKHY,Jack Henry & Associates,Financials,,
 JNJ,Johnson & Johnson,Health Care,,
-JNPR,,,,2025-07-09
+JNPR,,Information Technology,,2025-07-09
 JPM,JPMorgan Chase,Financials,,
-JWN,,,,2020-06-22
-K,,,,2025-12-11
+JWN,,Consumer Discretionary,,2020-06-22
+K,,Consumer Staples,,2025-12-11
 KDP,Keurig Dr Pepper,Consumer Staples,2022-06-21,
 KEY,KeyCorp,Financials,,
 KEYS,Keysight Technologies,Information Technology,,
@@ -340,7 +340,7 @@ KMX,,Consumer Discretionary,,2025-10-31
 KO,Coca-Cola Company (The),Consumer Staples,,
 KR,Kroger,Consumer Staples,,
 KSS,,Consumer Discretionary,,2020-09-21
-KSU,,,,2021-12-14
+KSU,,Industrials,,2021-12-14
 KVUE,Kenvue,Consumer Staples,2023-08-25,
 L,Loews Corporation,Financials,,
 LDOS,Leidos,Industrials,,
@@ -351,7 +351,7 @@ LHX,L3Harris,Industrials,,
 LII,Lennox International,Industrials,2024-12-23,
 LIN,Linde plc,Materials,,
 LITE,Lumentum,Information Technology,2026-03-23,
-LKQ,,,,2025-12-22
+LKQ,,Consumer Discretionary,,2025-12-22
 LLY,Lilly (Eli),Health Care,,
 LMT,Lockheed Martin,Industrials,,
 LNC,,Financials,,2023-09-18
@@ -359,7 +359,7 @@ LNT,Alliant Energy,Utilities,,
 LOW,Lowe's,Consumer Discretionary,,
 LRCX,Lam Research,Information Technology,,
 LULU,Lululemon Athletica,Consumer Discretionary,2023-10-18,
-LUMN,,,,2023-03-20
+LUMN,,Communication Services,,2023-03-20
 LUV,Southwest Airlines,Industrials,,
 LVS,Las Vegas Sands,Consumer Discretionary,,
 LW,,Consumer Staples,,2026-03-23
@@ -380,9 +380,9 @@ MDT,Medtronic,Health Care,,
 MET,MetLife,Financials,,
 META,Meta Platforms,Communication Services,,
 MGM,MGM Resorts,Consumer Discretionary,,
-MHK,,,,2025-12-22
+MHK,,Consumer Discretionary,,2025-12-22
 MKC,McCormick & Company,Consumer Staples,,
-MKTX,,,,2025-09-22
+MKTX,,Financials,,2025-09-22
 MLM,Martin Marietta Materials,Materials,,
 MMM,3M,Industrials,,
 MNST,Monster Beverage,Consumer Staples,,
@@ -393,7 +393,7 @@ MPC,Marathon Petroleum,Energy,,
 MPWR,Monolithic Power Systems,Information Technology,2021-02-12,
 MRK,Merck & Co.,Health Care,,
 MRNA,Moderna,Health Care,2021-07-21,
-MRO,,,,2024-11-26
+MRO,,Energy,,2024-11-26
 MRSH,Marsh McLennan,Financials,,
 MS,Morgan Stanley,Financials,,
 MSCI,MSCI Inc.,Financials,,
@@ -403,8 +403,8 @@ MTB,M&T Bank,Financials,,
 MTCH,,Information Technology,2021-09-20,2026-03-23
 MTD,Mettler Toledo,Health Care,,
 MU,Micron Technology,Information Technology,,
-MXIM,,,,2021-08-30
-NBL,,,,2020-10-12
+MXIM,,Information Technology,,2021-08-30
+NBL,,Energy,,2020-10-12
 NCLH,Norwegian Cruise Line Holdings,Consumer Discretionary,,
 NDAQ,"Nasdaq, Inc.",Financials,,
 NDSN,Nordson Corporation,Industrials,2022-02-15,
@@ -413,7 +413,7 @@ NEM,Newmont,Materials,,
 NFLX,Netflix,Communication Services,,
 NI,NiSource,Utilities,,
 NKE,"Nike, Inc.",Consumer Discretionary,,
-NLSN,,,,2022-10-12
+NLSN,,Industrials,,2022-10-12
 NOC,Northrop Grumman,Industrials,,
 NOV,,Energy,,2021-09-20
 NOW,ServiceNow,Information Technology,,
@@ -441,7 +441,7 @@ OXY,Occidental Petroleum,Energy,,
 PANW,Palo Alto Networks,Information Technology,2023-06-20,
 PAYC,,Information Technology,2020-01-28,2026-03-23
 PAYX,Paychex,Industrials,,
-PBCT,,,,2022-04-04
+PBCT,,Financials,,2022-04-04
 PCAR,Paccar,Industrials,,
 PCG,PG&E Corporation,Utilities,2022-10-03,
 PEG,Public Service Enterprise Group,Utilities,,
@@ -470,9 +470,9 @@ PSA,Public Storage,Real Estate,,
 PSKY,Paramount Skydance Corporation,Communication Services,,
 PSX,Phillips 66,Energy,,
 PTC,PTC Inc.,Information Technology,2021-04-20,
-PVH,,,,2022-09-19
+PVH,,Consumer Discretionary,,2022-09-19
 PWR,Quanta Services,Industrials,,
-PXD,,,,2024-05-08
+PXD,,Energy,,2024-05-08
 PYPL,PayPal,Financials,,
 Q,Qnity Electronics,Information Technology,2025-11-03,
 QCOM,Qualcomm,Information Technology,,
@@ -481,7 +481,7 @@ RCL,Royal Caribbean Group,Consumer Discretionary,,
 REG,Regency Centers,Real Estate,,
 REGN,Regeneron Pharmaceuticals,Health Care,,
 RF,Regions Financial Corporation,Financials,,
-RHI,,,,2024-06-24
+RHI,,Industrials,,2024-06-24
 RJF,Raymond James Financial,Financials,,
 RL,Ralph Lauren Corporation,Consumer Discretionary,,
 RMD,ResMed,Health Care,,
@@ -490,18 +490,18 @@ ROL,"Rollins, Inc.",Industrials,,
 ROP,Roper Technologies,Information Technology,,
 ROST,Ross Stores,Consumer Discretionary,,
 RSG,Republic Services,Industrials,,
-RTN,,,,2020-04-06
+RTN,,Industrials,,2020-04-06
 RTX,RTX Corporation,Industrials,,
 RVTY,Revvity,Health Care,,
 SATS,EchoStar,Communication Services,2026-03-23,
 SBAC,SBA Communications,Real Estate,,
-SBNY,,,2021-12-20,2023-03-15
+SBNY,,Financials,2021-12-20,2023-03-15
 SBUX,Starbucks,Consumer Discretionary,,
 SCHW,Charles Schwab Corporation,Financials,,
 SEDG,,Information Technology,2021-12-20,2023-12-18
-SEE,,,,2023-12-18
+SEE,,Materials,,2023-12-18
 SHW,Sherwin-Williams,Materials,,
-SIVB,,,,2023-03-15
+SIVB,,Financials,,2023-03-15
 SJM,J.M. Smucker Company (The),Consumer Staples,,
 SLB,Schlumberger,Energy,,
 SLG,,Financials,,2021-03-22
@@ -536,7 +536,7 @@ TER,Teradyne,Information Technology,2020-09-21,
 TFC,Truist Financial,Financials,,
 TFX,,Health Care,,2025-03-24
 TGT,Target Corporation,Consumer Staples,,
-TIF,,,,2021-01-07
+TIF,,Consumer Discretionary,,2021-01-07
 TJX,TJX Companies,Consumer Discretionary,,
 TKO,TKO Group Holdings,Communication Services,2025-03-24,
 TMO,Thermo Fisher Scientific,Health Care,,
@@ -553,7 +553,7 @@ TSN,Tyson Foods,Consumer Staples,,
 TT,Trane Technologies,Industrials,,
 TTD,Trade Desk (The),Communication Services,2025-07-18,
 TTWO,Take-Two Interactive,Communication Services,,
-TWTR,,,,2022-11-01
+TWTR,,Communication Services,,2022-11-01
 TXN,Texas Instruments,Information Technology,,
 TXT,Textron,Industrials,,
 TYL,Tyler Technologies,Information Technology,2020-06-22,
@@ -571,14 +571,14 @@ UPS,United Parcel Service,Industrials,,
 URI,United Rentals,Industrials,,
 USB,U.S. Bancorp,Financials,,
 V,Visa Inc.,Financials,,
-VAR,,,,2021-04-20
-VFC,,,,2024-04-03
+VAR,,Health Care,,2021-04-20
+VFC,,Consumer Discretionary,,2024-04-03
 VICI,Vici Properties,Real Estate,2022-06-08,
 VLO,Valero Energy,Energy,,
 VLTO,Veralto,Industrials,2023-10-02,
 VMC,Vulcan Materials Company,Materials,,
 VNO,,Financials,,2023-01-05
-VNT,,,2020-10-09,2021-03-22
+VNT,,Industrials,2020-10-09,2021-03-22
 VRSK,Verisk Analytics,Industrials,,
 VRSN,Verisign,Information Technology,,
 VRT,Vertiv,Industrials,2026-03-23,
@@ -589,9 +589,9 @@ VTRS,Viatris,Health Care,,
 VZ,Verizon,Communication Services,,
 WAB,Wabtec,Industrials,,
 WAT,Waters Corporation,Health Care,,
-WBA,,,,2025-08-28
+WBA,,Consumer Staples,,2025-08-28
 WBD,Warner Bros. Discovery,Communication Services,2022-04-11,
-WCG,,,,2020-01-28
+WCG,,Health Care,,2020-01-28
 WDAY,"Workday, Inc.",Information Technology,2024-12-23,
 WDC,Western Digital,Information Technology,,
 WEC,WEC Energy Group,Utilities,,
@@ -605,14 +605,14 @@ WRB,W. R. Berkley Corporation,Financials,,
 WSM,"Williams-Sonoma, Inc.",Consumer Discretionary,2025-03-24,
 WST,West Pharmaceutical Services,Health Care,2020-05-22,
 WTW,Willis Towers Watson,Financials,,
-WU,,,,2021-12-20
+WU,,Industrials,,2021-12-20
 WY,Weyerhaeuser,Real Estate,,
 WYNN,Wynn Resorts,Consumer Discretionary,,
-XEC,,,,2020-03-02
+XEC,,Energy,,2020-03-02
 XEL,Xcel Energy,Utilities,,
-XLNX,,,,2022-02-15
+XLNX,,Information Technology,,2022-02-15
 XOM,ExxonMobil,Energy,,
-XRAY,,,,2024-04-03
+XRAY,,Health Care,,2024-04-03
 XRX,,Information Technology,,2021-03-22
 XYL,Xylem Inc.,Industrials,,
 XYZ,"Block, Inc.",Financials,2025-07-23,

@@ -253,7 +253,7 @@ No new bugs introduced Pass 53 post-pre-flight. DEC-491/492/493 PROPOSED (Sprint
 - BUG-111 (break-and-retest primitive) — Sprint 8 unchanged
 - BUG-218 (yfinance .info CURRENT-not-as_of) — Sprint 4 unchanged (DEC-443)
 - BUG-007 (API key guard `--no-agents`) — Sprint 6.5 dependency unchanged
-- BUG-284 (govcontracts) — referenced in DEC-494 body; Sprint 1 alignment with `refresh_extended_universe.py` cleanup
+- BUG-284 (govcontracts) — referenced in DEC-494 body; Sprint 0A alignment with `refresh_extended_universe.py` cleanup
 
 **Pass 53 universe folder move (commit `c7f5580f`) — bug-impact none:**
 Universe CSV reads abstracted through `backtest.data.universe` module functions (`get_sp500_constituents`, `get_etfs_full`, `get_extended_universe`, `get_momentum_watchlist`). Module-level `UNIVERSE_DIR` constant centralizes path. No bug introduced; no bug resolved.

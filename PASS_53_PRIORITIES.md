@@ -375,7 +375,7 @@ Owner directs Pass 53 priorities. My recommendations based on Pass 52 final stat
 - ✅ T1c populated (157 rows; multi-period entries)
 - ✅ T2/T3 schema migrated to B++ format
 - ✅ Universe folder moved to top-level `Backtesting universe/`
-- ⏸ T1a `historical_membership.csv` (Sprint 1)
+- ⏸ T1a `Tier 1A Universe_SP500 Tickers_Jan 2020 to May 2026.csv` (Sprint 1)
 - ⏸ T1b `russell_1000_membership.csv` (Sprint 1 procurement; LSEG paywall surfaced)
 - ⏸ T2 historical populate (Sprint 1 post-prefetch)
 - ⏸ T3 historical populate (Sprint 1 post-prefetch)
@@ -410,3 +410,25 @@ Sprint 1 Day 1 readiness UNCHANGED — same 3 blockers from prior batch (Polygon
 - DOCUMENTATION_REGISTER.md Pass 53 post-pre-flight entry
 - AUDIT_TRIAGE.md Pass 53 post-pre-flight decision count delta
 
+## Sprint 0A active (Pass 53 owner directive 2026-05-05 — DEC-497)
+
+**Title:** Sprint 0A — Full multi-API prefetch + universe build + Stage 2 NO-LIVE-API refactor.
+**Renames:** Sprint 1 → Sprint 0A (absorbs prior Sprint 1 work).
+**Status:** Universe build IMPLEMENTED Pass 53; multi-API prefetch + refactor PENDING (after universe validation).
+
+**Phasing (Sprint 0A.0-0A.10):**
+- 0A.0 — Quiver API key + Trader-tier endpoint enumeration (owner-side dashboard list pending)
+- 0A.1 — Polygon EXTENSION: news for full universe (~15 hr), indicators (SMA/EMA/RSI/MACD), financials, events, NBBO selective
+- 0A.2 — FRED + ALFRED prefetch (~50 series, all 11 macro categories)
+- 0A.3 — AAII + CNN F&G prefetch (composite + 7 CNN sub-components)
+- 0A.4 — CFTC COT prefetch (weekly historical 2020+)
+- 0A.5 — Quiver full Trader-tier prefetch (11+ endpoints discovered; await dashboard list)
+- 0A.6 — SEC EDGAR structured prefetch (10-K/10-Q financials + Form 4 + 13F + 8-K events via edgartools per DEC-456)
+- 0A.7 — Smoke + demo tests per API (separate test files for 8 APIs)
+- 0A.8 — Refactor `backtest/data/{fetcher,macro,sentiment,smart_money}.py` to read from `data_prefetch/` ONLY (HARD CUT no live API)
+- 0A.9 — Move `backtest/data/cache/polygon/` → `data_prefetch/polygon/` (after universe validated)
+- 0A.10 — Doc sync per CHECKLIST #67 (DEC-498)
+
+**Universe state (Pass 53 IMPLEMENTED):** T1a 614 / T1c 161 / T1 ETFs 27 / T2 10 (full SCREENER restart in flight) / T3 1999 period rows (1220 unique). Sector backfill: T1a 70/70 + T3 partial (Polygon SIC + pending yfinance one-time fallback for ADRs/foreign per Q1 2026-05-05).
+
+**Excluded from Sprint 0A:** dashboards (DEC-199/200/201), engine bugs (DEC-491-493 → Sprint 2), T1b R1000 (DEC-365 deferred Stage 3), strategy compute.

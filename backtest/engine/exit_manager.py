@@ -38,7 +38,7 @@ class OpenTrade:
     direction:          str           # 'long' or 'short'
     strategy:           str
     category:           str
-    sector:             str           # from sp500_tickers.csv
+    sector:             str           # from Current Snapshot_SP500 Tickers_May 2026.csv
     initial_stop:       float         # 10% from entry
     trailing_stop:      float         # current trailing stop (moves in favour)
     highest_close:      float         # highest close seen (long) / lowest (short)

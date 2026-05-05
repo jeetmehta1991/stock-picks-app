@@ -84,7 +84,7 @@ def get_sp500_constituents() -> list[str]:
     """
     Load S&P 500 constituents from the committed CSV file.
     NEVER use Wikipedia — blocked in Codespaces, not point-in-time, fragile (L88).
-    Refresh backtest/data/sp500_tickers.csv quarterly via scripts/refresh_sp500_universe.py.
+    Refresh backtest/data/Current Snapshot_SP500 Tickers_May 2026.csv quarterly via scripts/refresh_sp500_universe.py.
     """
     from backtest.data.universe import get_sp500_constituents as _get
     return _get()

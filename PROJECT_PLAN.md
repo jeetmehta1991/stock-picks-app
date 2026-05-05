@@ -77,7 +77,7 @@ Per Pass 52 owner-confirmed precedent (DEC-090 REJECTED, DEC-133 REJECTED, DEC-2
 
 **Sub-phases:** See Section 3 (Stage 2 Sub-Phases) below.
 
-**Critical path:** Sprint 1 (Phase 0.A) → Sprint 2 (Engine Bug Fixes) → Sprint 3 (Portfolio Class) → Sprint 7 (Statistical Methodology) → Sprint 7-8 (Phase 1B-α Run).
+**Critical path:** Sprint 0A (Phase 0.A) → Sprint 2 (Engine Bug Fixes) → Sprint 3 (Portfolio Class) → Sprint 7 (Statistical Methodology) → Sprint 7-8 (Phase 1B-α Run).
 
 **Stage 2 success criteria:** See Section 5 + TRADING_RULES_AND_INFORMATION.md Section 1.2.
 
@@ -132,7 +132,7 @@ Stage 2 is the largest scope phase. Decomposed into sub-phases corresponding to 
 
 **Effort:** ~20.5-26.5 engineering days post-Phase-2-cleanup-batch.
 
-**Detail:** ENGINEERING_REGISTER.md → Sprint 1.
+**Detail:** ENGINEERING_REGISTER.md → Sprint 0A.
 
 ### 3.2 Phase 0.B — Portfolio Class (Sprint 3)
 
@@ -172,7 +172,7 @@ Stage 2 is the largest scope phase. Decomposed into sub-phases corresponding to 
 
 **Why this phase exists:** Original Phase 1A (PROJECT_PLAN_ARCHIVE) ran rules-only on 67 instruments × 4 years validating pipeline cleanliness + confirming `atr_trail_1x` as primary exit (20/29 strategy comparisons). Phase 1A in this restored framing extends that pattern: rules + smart money baseline must be validated BEFORE agent overlay layer is added in Phase 1B. Skipping this phase would mean A/B Arm A has no independently-validated baseline.
 
-**Effort:** ~6-8 engineering days (most infrastructure already exists from prior Phase 1A v3 work; this is re-execution on new Sprint 1 cache + DEC-477 universe + Sprint 5 tier definitions).
+**Effort:** ~6-8 engineering days (most infrastructure already exists from prior Phase 1A v3 work; this is re-execution on new Sprint 0A cache + DEC-477 universe + Sprint 5 tier definitions).
 
 **Detail:** ENGINEERING_REGISTER.md → Sprint 6.5 (NEW).
 
@@ -226,6 +226,19 @@ Stage 2 is the largest scope phase. Decomposed into sub-phases corresponding to 
 
 ---
 
+
+
+## Sprint 0A note (Pass 53 owner directive 2026-05-05; DEC-497)
+
+Sprint 1 has been **renamed → Sprint 0A** with materially expanded scope:
+- **Multi-API prefetch** — all 8 planned APIs (Polygon, Quiver Trader, FRED, ALFRED, AAII, CNN F&G, CFTC COT, SEC EDGAR), not Polygon-only
+- **Universe build absorbed** — Pass 53 IMPLEMENTED (614 T1a + 161 T1c + 27 ETFs + T2/T3 SCREENERs)
+- **Stage 2 NO-LIVE-API refactor** — backtest reads from `data_prefetch/` only; HARD CUT (owner directive Q8)
+- **Smoke + demo tests per API** — 16 test files (8 smoke + 8 demo), separate per API per owner directive
+- **18-classifier sector normalization** (DEC-499) — GICS-11 + Fixed Income/Commodities/Volatility/Broad Market/International/Emerging Markets/Small Cap
+
+Phasing: Sprint 0A.0-0A.10 (see ENGINEERING_REGISTER for sub-phase detail). Effort: ~6-10 days code + ~25 hours prefetch wall time. Excluded: dashboards (DEC-199/200/201 → Sprint 9), engine bugs (DEC-491-493 → Sprint 2), T1b R1000 (deferred Stage 3 per DEC-365), strategy compute.
+
 ## 4. Sprint Roadmap Index
 
 **Canonical detail:** ENGINEERING_REGISTER.md (~226 ENG decisions tracked across 9 sprints + sub-sprint blocks).
@@ -233,7 +246,7 @@ Stage 2 is the largest scope phase. Decomposed into sub-phases corresponding to 
 ### 4.1 Sprint dependency graph
 
 ```
-                Phase 0.A Polygon Foundation (Sprint 1)
+                Phase 0.A Multi-API Prefetch (Sprint 0A)
                             |
             +---------------+---------------+
             |               |               |
@@ -257,7 +270,7 @@ Stage 2 is the largest scope phase. Decomposed into sub-phases corresponding to 
 
 | Sprint | Name | Effort (post-Phase-2) | Critical Path? |
 |---|---|---|---|
-| Sprint 1 | Phase 0.A Polygon Foundation | ~20.5-26.5d | YES |
+| Sprint 0A | Phase 0.A Multi-API Prefetch + Polygon Foundation | ~20.5-26.5d | YES |
 | Sprint 2 | Engine Bug Fixes Tier A | ~25.5-30.5d | YES |
 | Sprint 3 | Phase 0.B Portfolio Class | ~8-11d | YES (BUG-095) |
 | Sprint 4 | DEC-410 Audit Findings | ~41.75-54.25d | YES (largest growth) |
@@ -271,11 +284,11 @@ Stage 2 is the largest scope phase. Decomposed into sub-phases corresponding to 
 
 ### 4.3 Critical path
 
-Sprint 1 → Sprint 3 (BUG-095) → Sprint 7 (statistical methodology) → Sprint 7-8 (Phase 1B-α verdict). Total critical path: **~125-160 engineering days minimum**.
+Sprint 0A → Sprint 3 (BUG-095) → Sprint 7 (statistical methodology) → Sprint 7-8 (Phase 1B-α verdict). Total critical path: **~125-160 engineering days minimum**.
 
 ### 4.4 Parallel-able sprints
 
-Sprints 4, 6 partially parallel with Sprints 1-3 once foundations established. Sprint 5 partially parallel after Sprint 1. Sprint 8 fully parallel after Sprint 1.
+Sprints 4, 6 partially parallel with Sprints 1-3 once foundations established. Sprint 5 partially parallel after Sprint 0A. Sprint 8 fully parallel after Sprint 0A.
 
 ### 4.5 Detail
 
@@ -284,7 +297,7 @@ ENGINEERING_REGISTER.md is canonical for sprint-by-sprint decisions, test signal
 ### 4.6 Dashboard coverage across phases (Pass 53)
 
 Stage 2 dashboard coverage spans all 11 phases per [DETAILED_PROJECT_PLAN.md Part 2.5](DETAILED_PROJECT_PLAN.md). Three tiers:
-- **Tier 1 (engineering verification):** Phase 0.A Prefetch Coverage Report (NEW Sprint 1, ~0.5d). Phases 0.B/0.C/0.E marked N/A — verification via CI test signals + sprint demo.
+- **Tier 1 (engineering verification):** Phase 0.A Prefetch Coverage Report (NEW Sprint 0A, ~0.5d). Phases 0.B/0.C/0.E marked N/A — verification via CI test signals + sprint demo.
 - **Tier 2 (analytical baseline):** Phase 1A Trade Summary Dashboard (NEW Sprint 6.5, ~2-3d) + Phase 1B Trade Summary Dashboard (NEW Sprint 7, ~2-3d). Both Streamlit ports of legacy `analysis_dashboard_1a/1b.html` 9-tab archive — adaptations of DEC-199 family (no new DECs).
 - **Tier 3 (cube + verdict):** DEC-199 Cube Explorer + DEC-200 ICT/SMC Audit (Phase 1A-α + 1B-α + reused 1A-β + 1C+) + DEC-201 Agent Overlay Analysis (Phase 1B-α only).
 
@@ -324,7 +337,7 @@ Reference: STRATEGY_REGISTER.md + ENGINEERING_REGISTER.md decisions DEC-303/331/
 
 ### 6.1 Tier 1: S&P 500 + Selected ETFs
 
-- **Source:** S&P 500 historical_membership.csv per DEC-303 (CC0 dataset DEC-052)
+- **Source:** S&P 500 Tier 1A Universe_SP500 Tickers_Jan 2020 to May 2026.csv per DEC-303 (CC0 dataset DEC-052)
 - **Liquidity floor:** $10M ADV per DEC-366
 - **History minimum:** 250 trading days
 - **Primary backtest universe**

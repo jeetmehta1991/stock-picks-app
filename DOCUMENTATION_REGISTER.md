@@ -431,7 +431,7 @@ Per CHECKLIST #58 — Bucket D additions for Walkthrough 4 deferred decisions.
 | DEC-486 → RESOLVED-DECIDED | Phase 1A restoration (was PROPOSED prior turn) | FLIPPED |
 | DEC-487 → RESOLVED-DECIDED | Phase 1A-α restoration | FLIPPED |
 | DEC-488 → RESOLVED-DECIDED | Phase 1A-β restoration | FLIPPED |
-| DEC-477 RESOLVED-DECIDED | historical_membership.csv canonical | NEW |
+| DEC-477 RESOLVED-DECIDED | Tier 1A Universe_SP500 Tickers_Jan 2020 to May 2026.csv canonical | NEW |
 | DEC-478 RESOLVED-DECIDED | Polygon Stocks Starter $29/mo | NEW |
 | DEC-479 RESOLVED-DECIDED | Cost correction $30→$29 | NEW |
 | DEC-482 RESOLVED-DECIDED | Walk-forward expanding window 2y+/6mo × 5 folds (SUPERSEDES DEC-109) | NEW |
@@ -506,8 +506,8 @@ Per CHECKLIST #58 — Bucket D additions for Walkthrough 4 deferred decisions.
 
 - 5-bucket universe model documented (T1a + T1b + T1c sub-tiers + Tier 1 ETFs + T2 + T3) per DEC-118 + DEC-483
 - 5 universe CSVs moved to top-level `Backtesting universe/` folder (commit `c7f5580f`)
-- Tier 1 ETFs migrated from hardcoded `ETFS_FULL` Python list → `tier1_etfs.csv` (DEC-494 / commit `e257d160`)
-- T1c (`nasdaq_100_membership.csv`) populated 157 rows via Wikipedia + Nasdaq IR (commits `cf1c0762` + `41659bd3`)
+- Tier 1 ETFs migrated from hardcoded `ETFS_FULL` Python list → `Tier 1 ETFs Universe_Sector and Broad-Market ETFs_May 2026.csv` (DEC-494 / commit `e257d160`)
+- T1c (`Tier 1C Universe_NASDAQ-100 Tickers_Jan 2020 to May 2026.csv`) populated 157 rows via Wikipedia + Nasdaq IR (commits `cf1c0762` + `41659bd3`)
 - T1b Russell 1000 deferred to Sprint 1 procurement (LSEG paywall surfaced, commit `741bfa8b`)
 - T2 + T3 schemas migrated to B++ format with `added_date`/`removed_date` columns (commit `549c0a65`)
 - T2 + T3 historical populate moved to Sprint 1 post-Polygon-prefetch (commit `b6605d62`)
@@ -540,3 +540,28 @@ Approximately 22 commits across this Pass session. See AUDIT.md narrative entrie
 - New universe CSVs populated: T1c (157 rows) + Tier 1 ETFs (27 entries)
 - Schema migrations: T2/T3 to B++ format (header-only; populate Sprint 1)
 
+## Pass 53 Turn (this) — Sprint 0A registration (DEC-497/498/499)
+
+Per CHECKLIST #67 / DEC-498 per-turn doc sync rule: Sprint 0A documentation registered this Pass 53 turn (2026-05-05).
+
+**New DECs (Pass 53 owner-approved):**
+- **DEC-497** Sprint 0A definition (full multi-API prefetch + universe build absorbed + Stage 2 NO-LIVE-API refactor; renames Sprint 1)
+- **DEC-498** Per-turn document synchronization mandatory rule (CHECKLIST #67 codified)
+- **DEC-499** 18-classifier sector normalization (GICS-11 + 7 ETF asset/style classes)
+
+**Universe artifacts registered Pass 53:**
+- `Backtesting universe/Tier 1A Universe_SP500 Tickers_Jan 2020 to May 2026.csv` (614 rows; DEC-477 RESOLVED-IMPLEMENTED)
+- `Backtesting universe/Tier 1C Universe_NASDAQ-100 Tickers_Jan 2020 to May 2026.csv` (161 rows)
+- `Backtesting universe/Tier 1 ETFs Universe_Sector and Broad-Market ETFs_May 2026.csv` (27 rows)
+- `Backtesting universe/Tier 2 Universe_Spinoffs and Recent IPOs_Sep 2014 to May 2026.csv` (10 baseline; full SCREENER pending)
+- `Backtesting universe/Tier 3 Universe_Momentum Top-100_Jun 2022 to May 2026.csv` (1999 period rows / 1220 unique)
+- `Backtesting universe/Current Snapshot_SP500 Tickers_May 2026.csv` (503 rows)
+- `Backtesting universe/Master Universe_Deduplicated_All Tiers_May 2026.csv` (1855 unique tickers, full dimensional metadata) — NEW Pass 53
+
+**New scripts registered Pass 53:**
+- `scripts/build_tier2_screener.py` (curated seed-based; 10 baseline)
+- `scripts/build_tier2_screener_full.py` (full global SCREENER via Polygon /v3/reference/tickers paginated; in-flight)
+- `scripts/build_tier3_screener.py` (J-T 12-1 momentum monthly snapshots)
+
+**Archive:**
+- 3 docs moved to `archive/2026-05-05-pass-53-archive-docs/` (PROJECT_HANDOFF_2026-05-04.md / ADVERSARIAL_AUDIT_PASS_52_TURN_132.md / CRITICAL_GAPS_RESOLUTION_PASS_52_TURN_133.md)

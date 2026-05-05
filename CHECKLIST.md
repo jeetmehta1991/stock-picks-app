@@ -616,3 +616,71 @@ State compliance visibly: "Checklist: ✅ [each item]"
     **Pass 53 refinement — universe-tier categorization (sister axis to DEC-attribution):** The same scope-alignment discipline applies when characterizing universe tiers (Tier 1/2/3, T1a/T1b/T1c sub-tiers per DEC-483, ETFs per DEC-118, spinoffs/IPOs per DEC-103/104). Before claiming "Tier N = X" or "T1x covers Y", verify against (a) the actual file contents (e.g., `head extended_universe.csv` to see schema; `head momentum_watchlist.csv`); (b) the refresh script docstring (e.g., `scripts/refresh_extended_universe.py:1-20`) which states the inclusion criteria; (c) the canonical DEC body (DEC-483 for sub-tier definition, DEC-118 for ETF placement, DEC-103/104 for Tier 2/3 universe parents). Memory of "what tier contains what" drifts between sessions and across rule changes — verification against actual artifacts is required, not assumption. Example trigger: Pass 53 turn (this) — characterized "Tier 2 = ETFs/sector funds" in commit 6d4b5303's AUDIT.md entry. Wrong: ETFs are in Tier 1 per DEC-118 (separate bucket alongside S&P stocks); Tier 2 = spinoffs + recent IPOs per refresh_extended_universe.py:7-9. Owner caught via direct fact-check question. Bonus catch: revealed implementation drift — DEC-483 Pass 53 moved NDX-non-S&P from Tier 2 → T1c, but refresh_extended_universe.py still lists Nasdaq 100 non-S&P as Tier 2 inclusion criterion (DEC-494 PROPOSED to fix). Apply: (1) any "Tier N = ..." / "T1x covers ..." claim; (2) before stating which file holds which content; (3) when explaining universe architecture in narrative or commit messages; (4) when introducing new tier additions or restructuring. The verification is `head <file>.csv` + reading the refresh script's first 20 lines + checking the relevant DEC body — under 30 seconds.
 
     **66.b Pass 53 sub-clause — data flow verification (input universe ≠ output universe; Pass 53 owner Q-D codified):** For any recommendation involving a universe-construction step, signal computation, screener, or filter, EXPLICITLY state and verify three properties at recommendation time: (a) input universe source — broad market vs T1 vs T2 vs single ticker (e.g., "input = Polygon `/v2/aggs/grouped/locale/us/market/stocks/{date}` for ~6000-8000 listed equities" NOT "input = T1 cache"); (b) output universe target — which tier/file/cube cell receives the output (e.g., "output = top 100 non-T1 ranked → `Backtesting universe/momentum_watchlist.csv` rows"); (c) data-flow direction matches the stated purpose (e.g., "T3 = top 100 NON-T1 momentum names" requires INPUT outside T1, not re-rank of T1 cache). Skipping (a)/(b)/(c) verification = pre-flight failure regardless of methodology correctness. Methodology spec (e.g., J-T 12-1 formula) without data-flow spec is necessary but not sufficient. Pattern lineage (4 Pass 53 catches with same signature): DEC-476 vs DEC-332 (right methodology, wrong DEC target); DEC-368 vs DEC-370 (right methodology, wrong DEC target); Tier 2 = ETFs (right tier reference, wrong content type); DEC-496 T3 (right J-T formula, wrong input universe — implicit T1 cache instead of broad-market screener). All four = methodology-correct + data-flow-wrong. Owner Q-D approved Pass 53 codification. Apply: (1) any universe-build / screener / filter / signal-compute recommendation; (2) before drafting any DEC body that proposes a methodology; (3) when characterizing which data feeds which downstream consumer; (4) cross with #66 universe-tier sub-clause for tier-identity verification. Verification format: 3-property block in pre-flight — "INPUT: {source}; OUTPUT: {target}; FLOW: {input → ... → output matches stated purpose}". 30 seconds; not optional.
+
+67. **Per-turn document sync sweep (Pass 53 owner directive 2026-05-05 — MANDATORY end-of-turn rule):**
+    At the end of EVERY turn that produces meaningful changes (renames, RESOLVED-IMPLEMENTED status flips, new DEC bodies, new universe data, schema migrations, code refactors, count changes, etc.), sweep ALL forward-looking documents outside the archive folder for necessary modifications and update them in the same atomic commit. The intent: at end of every turn, all documents are in sync — no deferred-doc-sweep debt, no stale references.
+
+    **Scope — what gets swept:**
+    - All `*.md` files at repo root EXCEPT those in `archive/` folder (point-in-time snapshots — see L143)
+    - All `*.md` files under `scripts/`, `backtest/`, etc. that are forward-looking (READMEs, design docs)
+    - `CLAUDE.md`, `AUDIT_INDEX.md` (DEC bodies — current canonical state), `CHECKLIST.md`, `LEARNINGS.md`, `PROJECT_PLAN.md`, `DETAILED_PROJECT_PLAN.md`, `TRADING_RULES_AND_INFORMATION.md`, `STRATEGY_REGISTER.md`, `BUG_REGISTER.md`, `ENGINEERING_REGISTER.md`, `DOCUMENTATION_REGISTER.md`, `IMPLEMENTATION_READINESS_DASHBOARD.md`, `PASS_NN_PRIORITIES.md` (current Pass), `EXPLANATION.md`, `README.md`, `UNIVERSAL_LEARNINGS.md`, `AUDIT_TRIAGE.md`, etc.
+
+    **Scope — what is EXCLUDED (per L143 don't-rewrite-history):**
+    - `archive/**` (literal archive folder — point-in-time snapshots stored here are immutable)
+    - `AUDIT.md` historical narrative entries (per-turn entries describing past actions are immutable; new entries appended each turn but old entries NOT modified)
+    - Pass-specific archive docs (e.g., `PROJECT_HANDOFF_YYYY-MM-DD.md`, `*_PASS_NN_TURN_NN.md`, `CRITICAL_GAPS_RESOLUTION_PASS_NN_*.md`, `ADVERSARIAL_AUDIT_PASS_NN_*.md`) — these are point-in-time snapshots and belong in `archive/`
+
+    **What counts as "necessary modifications":**
+    - (a) Stale filename/path references → UPDATE to new canonical name
+    - (b) Status field changes (e.g., "Sprint 1 pending" → "RESOLVED-IMPLEMENTED") → UPDATE
+    - (c) Count/threshold/ticker-number changes (e.g., "484 tickers" → "503 tickers") → UPDATE
+    - (d) Cross-references to renamed entities (DEC numbers, file paths, schema names, universe-tier identifiers) → UPDATE
+    - (e) Forward-looking task lists, pending items, owner blockers → UPDATE to current state
+    - (f) Decision body content in `AUDIT_INDEX.md` reflecting current canonical state → UPDATE
+    - (g) New checklist items, new DEC bodies, new lessons → APPEND
+    - (h) Sprint-progress trackers (PASS_NN_PRIORITIES, IMPLEMENTATION_READINESS_DASHBOARD) → UPDATE per current state
+
+    **Workflow:**
+    1. Before drafting end-of-turn commit: `grep -l "<old_pattern>"` across all forward-looking docs to identify references needing update
+    2. Apply updates in bulk (`sed`-like or Python find-replace for mass renames; manual Edit for nuanced changes)
+    3. Verify: `grep -L "<new_pattern>"` returns expected files; `grep "<old_pattern>"` returns only `archive/**` + AUDIT.md historical entries
+    4. Include all updated docs in the SAME commit as the originating change (atomic; no "doc-sweep follow-up" deferred commits)
+    5. End-of-response compliance statement (#45) explicitly notes which docs were swept this turn
+
+    **Triggers (apply rule at end of turn that includes any of):**
+    - File rename (renames trigger reference updates across all docs)
+    - DEC status flip (RESOLVED-DECIDED → RESOLVED-IMPLEMENTED, etc.)
+    - New DEC body added
+    - Schema migration (column rename, column add/remove)
+    - Cache/data milestone (e.g., universe build → "complete" state)
+    - Sprint/Phase status change
+    - Count/threshold value change in any spec
+    - New CHECKLIST/LEARNINGS entry being added
+
+    **Exception/grace:** Pure logging actions (committing already-approved decisions to AUDIT) and trivial edits (typo fixes, single-line additions to AUDIT narrative) DO NOT trigger full sweep — but if those touch a doc with stale refs to recently-renamed files/concepts, the touch DOES trigger inclusion in sweep.
+
+    **Past failure pattern (motivating rule):** Pass 53 owner repeatedly observed deferred-doc-sweep debt: rename happens in commit N, code/critical docs updated, but ~9 forward-looking docs left with stale references "deferred to a later commit." Owner directive 2026-05-05: this debt accumulates and creates inconsistency between turns. Going forward, NO debt — every turn ends with all docs in sync. Apply checklist: before drafting end-of-turn commit message, run grep-sweep verification. If ANY forward-looking doc has stale ref, it's included in commit. Period.
+
+68. **Smoke → demo → full execution protocol for ALL multi-call API operations (Pass 53 owner directive 2026-05-05; codified after T2 SCREENER batching violation):**
+    For ANY operation that issues N>10 API calls (prefetch, screener, bulk fetch, mass refresh), execute in three explicit stages with verification gates between each:
+
+    **Stage 1 — Smoke (1-5 calls):** verify auth + endpoint URL + schema + non-empty response. Wall time: 1-5 min. Success = HTTP 200 + parseable response + expected schema fields. If ANY fail → halt + investigate.
+
+    **Stage 2 — Demo (small batch, 50-500 calls):** run with `--max-N` flag at small size; verify rate, schema integrity, output format, edge cases (empty results, 404s, rate limit). Wall time: 5-30 min. Verifier script asserts schema + sample content sanity. If failures > expected threshold → halt + investigate.
+
+    **Stage 3 — Full scale:** only after Stages 1+2 PASS. Owner approval gate before launch if wall time > 30 min OR API has per-call cost. Run with progress reporting (`python -u` for unbuffered stdout; print every N=50 or 100 calls).
+
+    **Trigger conditions:**
+    - Any prefetch script for N>10 tickers
+    - Any SCREENER walking all of universe
+    - Any global pagination (e.g., /v3/reference/dividends without ticker filter)
+    - Any backfill where N>10 entities
+
+    **Required CLI flags on prefetch / screener scripts:**
+    - `--limit-tickers N` or `--max-candidates N` for demo gate
+    - `--tickers T1 T2 ...` explicit list for smoke
+    - Default to demo size if neither flag provided (safer than default-full)
+
+    **Past failure pattern (motivating rule):** Pass 53 T2 full SCREENER (`scripts/build_tier2_screener_full.py`) ran with no batching, scanned all 15,401 Polygon tickers in single foreground run; original task hung 50+ min with no stdout (Python buffering through `tee`); restart with `python -u` revealed ETA ~108 min total. Pre-existing `--max-candidates` flag was IGNORED on first run despite being there for batching purposes. Owner-flagged 2026-05-05: "Why so much time? Why restart? I thought the directive was to run in batches." Going forward, every multi-call API operation is staged smoke → demo → full WITH per-stage owner approval gate. NO exceptions, even if API has zero per-call cost (because wall-time + risk-of-failure compound at scale).
+
+    **Verification format in pre-flight:** state explicitly "Stage 1 smoke completed (X PASS); Stage 2 demo completed (Y PASS); proceeding to Stage 3 full scale at owner approval." If skipping any stage, surface why + get owner approval.

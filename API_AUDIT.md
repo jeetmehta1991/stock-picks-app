@@ -1738,7 +1738,7 @@ API_AUDIT.md uses original Phase 1A/1B/1C/1D taxonomy from PROJECT_PLAN_ARCHIVE.
 - Polygon Stocks Starter active ($29/mo)
 - Quiver paid active (DEC-450)
 - FRED API key configured (free)
-- AAII + CNN F&G workflows operational from Sprint 1
+- AAII + CNN F&G workflows operational from Sprint 0A
 - Anthropic API key NOT YET required (Phase 1A is `--no-agents`)
 
 **Phase 1B subscription pre-requisites (Sprint 7 entry):**

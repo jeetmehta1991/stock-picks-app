@@ -22,7 +22,48 @@
 
 ## Sprint Roadmap
 
-### Sprint 1 — Phase 0.A Polygon Foundation (Week 1)
+### Sprint 0A — Phase 0.A Multi-API Prefetch + Universe Build + Stage 2 NO-LIVE-API Refactor (RENAMED Pass 53 from Sprint 1 per DEC-497 owner directive 2026-05-05)
+
+**Renames notice:** Sprint 1 → **Sprint 0A** Pass 53 owner directive 2026-05-05. Prior Sprint 1 work fully absorbed into Sprint 0A naming. Per DEC-497, Sprint 0A is materially expanded beyond original Sprint 1 Polygon-only scope to cover ALL 8 planned APIs (Polygon, Quiver Trader, FRED, ALFRED, AAII, CNN F&G, CFTC COT, SEC EDGAR), full universe prefetch, smoke + demo tests per API, and code refactor to read-only-prefetch with HARD CUT no-live-API in Stage 2 backtest.
+
+**Phasing (Sprint 0A.0-0A.10 — DEC-497):**
+- 0A.0 — Quiver Trader-tier endpoint enumeration (owner-side dashboard list pending — 11+ endpoints discovered via probing)
+- 0A.1 — Polygon EXTENSION: news for full universe (~15 hr), indicators (SMA/EMA/RSI/MACD per ticker — DEC-445 PROPOSED), financials (DEC-257), events, NBBO selective (DEC-446 PROPOSED 20 tickers × 30d)
+- 0A.2 — FRED + ALFRED prefetch (~50 series scoped: yield curve, inflation, employment, GDP, credit, money, IP, housing, consumer, FX, commodities, sentiment, financial conditions, recession indicators)
+- 0A.3 — AAII (single CSV) + CNN F&G (composite + 7 sub-components per Pass 53 owner approval)
+- 0A.4 — CFTC COT (Pass 53 owner approval IN scope; weekly historical 2020+; futures-only + disaggregated + financial futures)
+- 0A.5 — Quiver full Trader-tier prefetch (11+ endpoints discovered; congresstrading, senatetrading, housetrading, govcontracts, lobbying, offexchange, politicalbeta, wallstreetbets, insiders bulk, twitter; FDA/patents/13F/analyst paths pending owner-side dashboard)
+- 0A.6 — SEC EDGAR structured prefetch (10-K/10-Q financials + Form 4 + 13F + 8-K events via `edgartools` library per DEC-456; structured data only — owner Q1.F approved)
+- 0A.7 — Smoke + demo tests per API (16 test files: 8 smoke + 8 demo, separate per API per owner directive)
+- 0A.8 — Refactor `backtest/data/{fetcher,macro,sentiment,smart_money}.py` to read from `data_prefetch/<api>/` ONLY (HARD CUT no live API in Stage 2 — owner Q8 directive 2026-05-05)
+- 0A.9 — Move existing `backtest/data/cache/polygon/` → `data_prefetch/polygon/` (after universe validated)
+- 0A.10 — Doc sync per CHECKLIST #67 / DEC-498 — applied continuously, not deferred
+
+**Universe build (Pass 53 IMPLEMENTED — Sprint 0A subset):**
+- T1a (Tier 1A Universe_SP500 Tickers_Jan 2020 to May 2026.csv): 614 rows = 503 active + 111 historical removed-during-window. 100% Sector populated (DEC-499 18-classifier set; T1a uses GICS-11 only). 8 unrecoverable tickers retained per Q2=B owner approval (PIT integrity).
+- T1c (Tier 1C Universe_NASDAQ-100 Tickers_Jan 2020 to May 2026.csv): 161 rows = 101 active + 60 historical. 100% GICS Sector.
+- T1 ETFs (Tier 1 ETFs Universe_Sector and Broad-Market ETFs_May 2026.csv): 27 rows. 18-classifier set including 7 ETF asset/style classes.
+- T2 (Tier 2 Universe_Spinoffs and Recent IPOs_Sep 2014 to May 2026.csv): 10 rows baseline (full SCREENER restart in flight; expecting 50-150 final).
+- T3 (Tier 3 Universe_Momentum Top-100_Jun 2022 to May 2026.csv): 1999 period rows / 1220 unique tickers across 48 monthly snapshots. Sector partial (Polygon SIC + yfinance one-time fallback per Q1 owner approval 2026-05-05).
+- Cache: 1,821 OHLCV parquets (T1a + T1c + T1 ETFs + T2 + T3); 599 reference; 6,520 splits + 988,496 dividends global; 5 ticker news (full universe expansion pending Sprint 0A.1).
+
+**Universe scope (DEC-483 RESOLVED-DECIDED Pass 53; T1b deferred Stage 3 per DEC-365):**
+- Tier 1a: S&P 500 (503 active + 111 historical via DEC-477 — RESOLVED-IMPLEMENTED Pass 53; 614-row B++ CSV; 4/4 high-impact spot-check vs S&P DJI press releases)
+- ~~Tier 1b: Russell 1000-non-S&P~~ — DEFERRED TO STAGE 3 per DEC-365 Pass 53 revision (LSEG paywall; Stage 2 universe sufficient at 631 instruments)
+- Tier 1c: NASDAQ 100-non-S&P (101 active + 60 historical via DEC-303 B++ — RESOLVED-IMPLEMENTED Pass 53; 3-way Slickcharts + Wikipedia + Nasdaq IR cross-check)
+- Tier 1 ETFs: 27 reference instruments (DEC-118)
+- Tier 2: spinoffs + recent IPOs (DEC-103/494; SCREENER-FIRST architecture per DEC-380 corp-actions feed)
+- Tier 3: top-100 non-T1 momentum per J-T 12-1 (DEC-496; 48 valid monthly snapshots 2022-06 to 2026-05)
+- Total Stage 2 active universe: 503 + 101 + 27 + 10 (T2 baseline) + 100 (T3 currently active) = 631-741 active instruments
+- Cache size impact: ~183 MB current; ~250-400 MB after Sprint 0A.1-0A.6 expansion
+
+---
+
+### Sprint 1 — RETIRED Pass 53 (renamed → Sprint 0A per DEC-497)
+
+(Original Sprint 1 — Phase 0.A Polygon Foundation — content RETAINED below for historical reference only. All forward-looking work superseded by Sprint 0A above. Status of original Sprint 1 sub-decisions — DEC-441/256/257/440/261/260/477/478/479/483 — preserved as RESOLVED-DECIDED but EXECUTION absorbed into Sprint 0A phasing.)
+
+**Original Sprint 1 — Phase 0.A Polygon Foundation (Week 1) — RETIRED Pass 53**
 
 **Entry criteria:**
 - Polygon Stocks Starter $29/mo subscription active (DEC-441/478/479 owner-action: subscribe; cost corrected from $30/mo)
@@ -31,7 +72,7 @@
 - Sprint 0 verified: AAII + CNN F&G + SEC EDGAR domains reachable from local VS Code (Codespace allowlist concern moot since running locally Pass 53)
 
 **Universe scope (DEC-483 RESOLVED-DECIDED Pass 53):**
-- Tier 1a: S&P 500 (~503 active; ~550-600 unique across 5y testing window; PIT via DEC-303 historical_membership.csv per DEC-477 — B++ format: single static CSV with `added_date`/`removed_date` columns; loader filters by `(added_date IS NULL OR added_date ≤ as_of) AND (removed_date IS NULL OR removed_date > as_of)`. Source: S&P Dow Jones Indices press releases primary; Wikipedia + internet browse fallback under one-time L88 exception per Pass 53. Mapping timeframe: 2020-01-01 → today + ongoing; pre-2020 active tickers have NULL `added_date`)
+- Tier 1a: S&P 500 (~503 active; ~550-600 unique across 5y testing window; PIT via DEC-303 Tier 1A Universe_SP500 Tickers_Jan 2020 to May 2026.csv per DEC-477 — B++ format: single static CSV with `added_date`/`removed_date` columns; loader filters by `(added_date IS NULL OR added_date ≤ as_of) AND (removed_date IS NULL OR removed_date > as_of)`. Source: S&P Dow Jones Indices press releases primary; Wikipedia + internet browse fallback under one-time L88 exception per Pass 53. Mapping timeframe: 2020-01-01 → today + ongoing; pre-2020 active tickers have NULL `added_date`)
 - Tier 1b: Russell 1000-non-S&P (~497 net new tickers; same B++ format with year-grain dates from FTSE Russell annual reconstitution)
 - Tier 1c: NASDAQ 100-non-S&P (~15 net new tickers; same B++ format with year-grain dates from Nasdaq annual reconstitution)
 - Total: ~1015 unique Tier 1 tickers (was ~509 pre-Pass-53)
@@ -52,7 +93,7 @@
 | DEC-440 | Polygon news endpoint | Non-empty news cache for sample; sentiment score field populates | absorbed in DEC-256 | - | RESOLVED-DECIDED |
 | DEC-261 | ICT/SMC PIT N+1 lag rule | Synthetic FVG forms at bar 100 → strategy entry at bar 101 open | sprint1/dec-261 | - | RESOLVED-DECIDED |
 | DEC-260 | Cache freshness assertion | Synthetic stale cache raises CacheStaleError; fresh cache passes; allow-listed stale ticker passes with warning | sprint1/dec-260 | - | RESOLVED-DECIDED |
-| DEC-477 | historical_membership.csv canonical universe | Static 482-CSV deprecation warning fires; canonical csv loaded for T1a | sprint1/dec-477 | - | RESOLVED-DECIDED |
+| DEC-477 | Tier 1A Universe_SP500 Tickers_Jan 2020 to May 2026.csv canonical universe | Static 482-CSV deprecation warning fires; canonical csv loaded for T1a | sprint1/dec-477 | - | RESOLVED-DECIDED |
 | DEC-478 | Polygon Stocks Starter $29/mo selected | Subscription verified; 5y history available | (subscription) | - | RESOLVED-DECIDED |
 | DEC-479 | Cost correction $30→$29 | Cost references updated across 6 docs | (doc-only) | - | RESOLVED-DECIDED |
 | DEC-483 | Universe sub-tiers T1a/T1b/T1c | T1a returns 503; T1b returns ~497 net new; T1c returns ~15 net new; year-grain PIT correct for any 2023 date returns 2023 R1000 list | sprint1/dec-483 | - | RESOLVED-DECIDED |
@@ -489,7 +530,7 @@ Discovered Pass 53 turn (this) via owner fact-check question on tier classificat
 
 | DEC-N | Description | Test signal | Effort |
 |---|---|---|---|
-| DEC-494 | Tier 2 / refresh_extended_universe.py alignment with DEC-483 — remove NDX-non-S&P from Tier 2 inclusion (now T1c) | refresh_extended_universe.py docstring + logic exclude NDX-non-S&P; extended_universe.csv contains only spinoffs + recent IPOs; T1c (nasdaq_100_membership.csv) canonical NDX-non-S&P source | ~0.5-1d |
+| DEC-494 | Tier 2 / refresh_extended_universe.py alignment with DEC-483 — remove NDX-non-S&P from Tier 2 inclusion (now T1c) | refresh_extended_universe.py docstring + logic exclude NDX-non-S&P; Tier 2 Universe_Spinoffs and Recent IPOs_Sep 2014 to May 2026.csv contains only spinoffs + recent IPOs; T1c (Tier 1C Universe_NASDAQ-100 Tickers_Jan 2020 to May 2026.csv) canonical NDX-non-S&P source | ~0.5-1d |
 | DEC-495 | Stage 3+ archived watchlist for tickers falling out of all 5 universe buckets (T1a/T1b/T1c/T2/T3); `archived_watchlist.csv` schema + daily reconciliation job + close-out / re-entry tracking | Diff job correctly identifies tickers leaving union(T1)+T2+T3; archived rows auto-created with last_tier + last_active_date + reason; rejoined tickers tracked | ~2-3d Sprint 5 implementation |
 | DEC-496 | Tier 3 momentum methodology — Jegadeesh-Titman 12-1 (252-day lookback, 21-day skip; rank top 100 non-T1 by `(price[D-21]/price[D-252])-1`) | Synthetic returns produce expected ranking; PIT loader returns correct top-100 for any as_of D; monthly refresh handles list churn | ~1d methodology + ~1-2d historical compute (folded into DEC-375/376/377) |
 
@@ -499,8 +540,8 @@ Discovered Pass 53 turn (this) via owner fact-check question on tier classificat
 - DEC-496 RESOLVED-DECIDED Sprint 1 (historical populate) + Sprint 5 (ongoing automation) — classic defaults: 252/21 windows, risk-adjustment OFF, tie-breakers vol-asc→ADV-desc.
 
 **Sprint 1 added scope (Pass 53):**
-- T2 historical populate via Polygon corporate actions DEC-380 (post-prefetch) — produces `extended_universe.csv` 2020-2026 spinoffs + IPOs + add/remove dates
-- T3 historical populate via Jegadeesh-Titman 12-1 from Polygon OHLCV cache (post-prefetch) — produces `momentum_watchlist.csv` 2020-2026 monthly snapshots
+- T2 historical populate via Polygon corporate actions DEC-380 (post-prefetch) — produces `Tier 2 Universe_Spinoffs and Recent IPOs_Sep 2014 to May 2026.csv` 2020-2026 spinoffs + IPOs + add/remove dates
+- T3 historical populate via Jegadeesh-Titman 12-1 from Polygon OHLCV cache (post-prefetch) — produces `Tier 3 Universe_Momentum Top-100_Jun 2022 to May 2026.csv` 2020-2026 monthly snapshots
 - Sprint 1 effort revised: ~25.5-35.5d → ~28-39d (+~2.5-3.5d for T2/T3 historical populate work; folded into existing Sprint 1 budget)
 - Sprint 5 phased automation (DEC-372/373/374 + DEC-375/376/377) UNCHANGED — handles ongoing live monthly refresh post-Sprint-1 historical baseline.
 
@@ -537,7 +578,7 @@ Sprint 4 effort revised: +14-19d → ~30-41d total (was 16-22d) — LARGEST SPRI
 
 ### Sprint 5 additions (Universe Management) — 2 decisions
 
-DEC-303 (S&P 500 historical_membership.csv ~2d), DEC-331 (ETF list fragmentation reconciliation ~1d)
+DEC-303 (S&P 500 Tier 1A Universe_SP500 Tickers_Jan 2020 to May 2026.csv ~2d), DEC-331 (ETF list fragmentation reconciliation ~1d)
 
 Sprint 5 effort revised: +3d → ~6.5d total (was 3.5d)
 
@@ -659,7 +700,7 @@ Sprint 5 effort revised: +5-7d → ~11.5-13.5d total
 | DEC-N | Description | Test signals | Effort |
 |---|---|---|---|
 | DEC-368 | DEC-099-B — Calendar / Seasonal strategies (Sell-in-May, January effect, Santa rally, FOMC drift, end-of-month rebalancing); date-of-year + days-to-event cube dims in DEC-422 already capture these; integration is logging strategies in roster + verifying cube dim populates | Seasonal strategy fires only in date-window-active period; cube dim correctly classifies historical bars by season; 4-5 calendar strategies operational | ~2-3d |
-| DEC-370 | DEC-099-D — Index Rebalance strategies — needs S&P/Russell adds-drops calendar; joint DEC-303 (historical_membership.csv) + DEC-394 (sector_history.csv Phase 1) + DEC-378 (NASDAQ symbol-directory weekly diff); Russell rebalance June; S&P quarterly | Historical index add events produce expected price drift in announcement→effective window (~3-7d); strategy entry timing tracks calendar | ~3-5d |
+| DEC-370 | DEC-099-D — Index Rebalance strategies — needs S&P/Russell adds-drops calendar; joint DEC-303 (Tier 1A Universe_SP500 Tickers_Jan 2020 to May 2026.csv) + DEC-394 (sector_history.csv Phase 1) + DEC-378 (NASDAQ symbol-directory weekly diff); Russell rebalance June; S&P quarterly | Historical index add events produce expected price drift in announcement→effective window (~3-7d); strategy entry timing tracks calendar | ~3-5d |
 | DEC-371 | DEC-099-E — Within-category gaps catalog (Russell rebalance for momentum, pairs reversion for mean reversion, dark pool prints for smart money [Quiver DEC-450 paid endpoint], gap-fade for breakout) — output: catalog document or appended to PROJECT_PLAN | Catalog covers ≥10 within-category gaps; each gap has explicit data-source path identified; sub-decisions per gap as scoped | ~1d cataloging |
 
 Sprint 8 effort revised: +6-9d → ~36-54d total

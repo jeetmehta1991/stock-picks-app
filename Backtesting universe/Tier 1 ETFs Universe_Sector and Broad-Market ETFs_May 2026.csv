@@ -4,7 +4,7 @@
 # NOTE: ETFs are reference instruments (not membership-driven like S&P 500). Schema columns added for cross-tier consistency per Pass 53 owner directive.
 Symbol,Company,Sector,added_date,removed_date,Category
 SPY,SPDR S&P 500 ETF Trust,Broad Market,,,Broad Market
-QQQ,Invesco QQQ Trust,Technology,,,Broad Market
+QQQ,Invesco QQQ Trust,Information Technology,,,Broad Market
 IWM,iShares Russell 2000 ETF,Small Cap,,,Broad Market
 DIA,SPDR Dow Jones Industrial Average ETF,Broad Market,,,Broad Market
 VTI,Vanguard Total Stock Market ETF,Broad Market,,,Broad Market

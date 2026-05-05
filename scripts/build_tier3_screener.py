@@ -70,6 +70,84 @@ MIN_DOLLAR_VOLUME = 5_000_000.0
 
 TIMEOUT = 60
 GROUPED_CACHE: dict[str, dict] = {}  # date_iso -> {ticker: {close, volume, dollar_vol}}
+CS_WHITELIST: set[str] = set()  # populated at startup from /v3/reference/tickers?type=CS
+
+# Pass 53 owner-flagged 2026-05-05 — explicit leveraged ETF blocklist (belt-and-suspenders alongside CS whitelist).
+# These are 2x/3x leveraged ETFs that should NEVER appear in T3 momentum (volatility decay
+# distorts momentum signal; CLAUDE.md tier1_etfs.csv explicitly excludes leveraged ETFs).
+LEVERAGED_ETF_BLOCKLIST = {
+    # Direxion 3x Bull/Bear
+    "SOXL", "SOXS", "SPXL", "SPXS", "TQQQ", "SQQQ", "UPRO", "SPXU",
+    "TNA", "TZA", "FAS", "FAZ", "NUGT", "DUST", "JNUG", "JDST",
+    "ERX", "ERY", "LABU", "LABD", "TECL", "TECS", "DPST", "DRN", "DRV",
+    "BNKD", "BNKU", "INDL", "BRZU", "KORU", "DRIP", "GUSH", "RUSL",
+    "WEBL", "WEBS", "YINN", "YANG", "EDC", "EDZ", "DOZR", "CURE",
+    "PILL", "NAIL", "MIDU", "MIDZ", "LBJ", "FNGU", "FNGD",
+    # ProShares 2x Ultra
+    "SSO", "SDS", "QLD", "QID", "DIG", "DUG", "UWM", "TWM", "DDM", "DXD",
+    "UVXY", "SVXY", "BOIL", "KOLD", "UCO", "SCO", "AGQ", "ZSL",
+    "DGP", "DZZ", "UYG", "SKF", "ROM", "REW", "USD", "SSG",
+    # ProShares 3x UltraPro
+    "UDOW", "SDOW", "URTY", "SRTY", "BIB", "BIS", "TYD", "TYO",
+    # Single-stock 2x leveraged (Direxion / GraniteShares / T-Rex / Tradr / etc.)
+    "AMDL", "AMDS", "NVDX", "NVDU", "NVDS", "NVDD", "NVDQ", "TSMX", "TSMZ",
+    "AAPU", "AAPD", "TSLL", "TSLS", "TSLT", "TSDD", "MSFU", "MSFD", "MSFL",
+    "GOOX", "AMZU", "AMZD", "METU", "METD", "INTW", "INTU",
+    "BIDU", "BABL", "BABZ", "ELIL", "PYPL", "ROKU", "SNOL", "SNOX",
+    "DISL", "PLTU", "PLTD", "BACU", "BACD", "JPMQ", "WMTL",
+    # Crypto leveraged
+    "BTCL", "BTCS", "BITX", "BITU", "BITI", "ETHU", "ETHD", "BFOR",
+    # 1.5x and other leverage
+    "QQQU", "SPYL",
+    # Short ETFs (inverse 1x — also distort momentum)
+    "SH", "PSQ", "DOG", "RWM", "EFZ", "EUM", "MZZ", "MYY",
+}
+
+
+def fetch_cs_whitelist() -> set[str]:
+    """Fetch full Polygon CS-only ticker whitelist via /v3/reference/tickers?type=CS.
+    Filters T3 candidates to common stocks only (excludes ETFs, ADRs, warrants, etc.).
+
+    Note: per Polygon, type=CS returns common stock; ADRC (ADR Common) is separate
+    type and would need to be added if we want ADRs in T3 universe.
+    """
+    print("Fetching CS-only ticker whitelist from Polygon...")
+    cs = set()
+    for active in ["true", "false"]:
+        params = {
+            "apiKey": POLYGON_KEY,
+            "type": "CS",
+            "active": active,
+            "limit": 1000,
+            "order": "asc",
+            "sort": "ticker",
+        }
+        url = f"{BASE_URL}/v3/reference/tickers"
+        page = 0
+        while True:
+            page += 1
+            try:
+                r = requests.get(url, params=params, timeout=TIMEOUT)
+                if r.status_code != 200:
+                    break
+                data = r.json()
+                results = data.get("results", []) or []
+                for x in results:
+                    t = (x.get("ticker") or "").strip().upper()
+                    if t:
+                        cs.add(t)
+                next_url = data.get("next_url")
+                if not next_url:
+                    break
+                url = next_url
+                params = {"apiKey": POLYGON_KEY}
+                if page % 5 == 0:
+                    print(f"  active={active} page {page}: cumulative {len(cs)} CS tickers")
+                time.sleep(0.05)
+            except Exception:
+                break
+    print(f"CS-only whitelist: {len(cs)} tickers")
+    return cs
 
 
 def fetch_grouped_daily(d: date) -> dict:
@@ -190,6 +268,12 @@ def compute_t3_for_snapshot(snapshot_date: date, t1_df: pd.DataFrame) -> list[di
             continue
         if ticker.endswith("R") and len(ticker) > 4:  # rights
             continue
+        # Pass 53 owner-flagged 2026-05-05: exclude leveraged ETFs (volatility decay
+        # invalidates momentum signal). Belt-and-suspenders: CS-only whitelist + explicit blocklist.
+        if CS_WHITELIST and ticker not in CS_WHITELIST:
+            continue
+        if ticker in LEVERAGED_ETF_BLOCKLIST:
+            continue
         b252 = bars_d252.get(ticker)
         if not b252:
             continue
@@ -251,6 +335,11 @@ def main():
 
     t1_df = load_t1_pit()
     print(f"T1 PIT membership: {len(t1_df)} rows (T1a + T1c)")
+
+    # Pass 53 owner-flagged 2026-05-05 — fetch CS-only whitelist for T3 candidate filter
+    global CS_WHITELIST
+    CS_WHITELIST = fetch_cs_whitelist()
+    print(f"Leveraged ETF blocklist: {len(LEVERAGED_ETF_BLOCKLIST)} entries (belt-and-suspenders)")
 
     # Walk monthly snapshots; track per-ticker active periods
     all_periods = defaultdict(list)  # symbol -> [{added_date, removed_date}]
