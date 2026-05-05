@@ -1042,7 +1042,7 @@ These signals are computed alongside the smart money composite but are NOT inclu
 
 | Signal | Source | Endpoint / cache | Lookback | Signal logic |
 |---|---|---|---|---|
-| **News sentiment** | Alpha Vantage / Finnhub | cache: `cache/av_news/{ticker}.parquet` (preferred); fallback `cache/finnhub_news/{ticker}.parquet` | 7 days | `score ≥ 0.15` → bullish; `≤ -0.15` → bearish; else neutral. Prefers `sentiment_weighted` (relevance-weighted) over `sentiment_mean`. |
+| **News sentiment** | Polygon news (PRIMARY post-Sprint-4 per DEC-440) | `/v2/reference/news?ticker=...` | 7 days | `score ≥ 0.15` → bullish; `≤ -0.15` → bearish; else neutral. **Migration note Pass 53:** current code at `smart_money.py:545-615` reads from `cache/av_news/{ticker}.parquet` then falls back to `cache/finnhub_news/{ticker}.parquet`; Sprint 4 (DEC-454/455 deprecation cleanup) replaces both with the Polygon news endpoint. Code path lags this spec until Sprint 4. |
 | **Government contracts** | Quiver prefetch | `cache/quiver/gov_contracts/{ticker}.parquet` | 365 days | `total_amount > 0` → bullish; `recent_win` flag if any win in last 90 days; trend = growing/stable. |
 | **Lobbying** | Quiver prefetch | `cache/quiver/lobbying/{ticker}.parquet` | 365 days | `total_spend > $1M` → high_spend; `> $100k` → moderate; else low. |
 | **Analyst data** | yfinance `Ticker.info` + `recommendations` + `upgrades_downgrades` + Quiver `/historical/analystestimates/{ticker}` | live yfinance + Quiver API | 30 days for upgrades/downgrades window | **LIVE-ONLY WARNING per DEC-299/443:** `recommendationMean`, `targetMeanPrice`, EPS estimates always return CURRENT not as-of values — used for site card display ONLY; do NOT affect tier or pass/fail criteria. PIT enforced on `recommendations` history and upgrades/downgrades window only. |
@@ -1272,9 +1272,7 @@ Comprehensive inventory of external endpoints consumed by the system. PIT lag = 
 | 13F institutional | Quiver | `/beta/historical/institutionalholdings/{ticker}` | quarter_end + 45 days | API key | ACTIVE (paid per DEC-450) | DEC-124/325/450 |
 | Government contracts | Quiver prefetch | `cache/quiver/gov_contracts/{ticker}.parquet` (script: `scripts/prefetch_quiver.py`) | per-row Date | n/a (cached) | PREFETCH-ONLY (paid per DEC-450) | DEC-450 / BUG-284 |
 | Lobbying | Quiver prefetch | `cache/quiver/lobbying/{ticker}.parquet` | per-row Date | n/a (cached) | PREFETCH-ONLY (paid per DEC-450) | DEC-450 |
-| News (per ticker) | Polygon Stocks Starter | `/v2/reference/news?ticker=...` | None | API key | PRIMARY | DEC-440 |
-| News sentiment (legacy) | Alpha Vantage | `https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers=...` (cached `cache/av_news/{ticker}.parquet`) | None | API key | DEPRECATED (Sprint 4 removal) | DEC-454 |
-| News sentiment (legacy) | Finnhub | `https://finnhub.io/api/v1/company-news?symbol=...&from=...&to=...` (cached `cache/finnhub_news/{ticker}.parquet`) | None | API key | DEPRECATED (Sprint 4 removal) | DEC-455 |
+| News (per ticker) | Polygon Stocks Starter | `/v2/reference/news?ticker=...` | None | API key | PRIMARY (post-Sprint-4 — replaces AV+Finnhub per DEC-440/454/455) | DEC-440 |
 | Macro / FRED | FRED | `https://api.stlouisfed.org/fred/series/observations?series_id=...` | publication date varies | API key | ACTIVE | DEC-407+448 |
 | Macro / ALFRED (vintage) | FRED | same base + `realtime_start` / `realtime_end` params | true PIT vintage | API key | ACTIVE (PIT-correct per DEC-301) | DEC-301 |
 | AAII sentiment survey | AAII | manual CSV from `aaii.com/sentimentsurvey/sent_results` (committed to repo) | weekly publication; pub-lag 1 day per DEC-389 | none | MANUAL (refreshed via GH Actions per DEC-390) | DEC-389/390 |

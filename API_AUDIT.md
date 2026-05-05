@@ -4,6 +4,8 @@
 **Scope:** ALL APIs across all phases (Pass 52 turn 19 owner-approved one-time CHECKLIST #56 override)
 **Deliverable:** sub-decisions DEC-442+ logged based on findings; OpenBB consumption gap resolution; consolidation/deprecation recommendations
 
+**Doc role (Pass 53 clarification):** This is the **audit/decision-history view** — per-source deep-dive on subscription tier, available endpoints, gaps, hypotheses, sub-decision candidates, and verdicts. Sister doc to `TRADING_RULES_AND_INFORMATION.md §13.12` which is the **rule/spec view** (what's used, status, PIT lag, DEC refs in a single canonical table). Use §13.12 for "what does the system use today and how" reference; use this doc for "why did we pick this source, what alternatives did we consider, what sub-decisions emerged" audit/research.
+
 ---
 
 ## Audit framework

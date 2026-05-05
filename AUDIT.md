@@ -26534,3 +26534,57 @@ Owner should mistrust "Sprint X is ready" claims unless I provide explicit artif
 - Sprint 4 removal of AV / Finnhub / OpenBB (DEC-453/454/455 — endpoints marked DEPRECATED in §13.12 will be deleted then; row removal deferred to that sprint)
 
 *Per CHECKLIST #32 (verbatim "1. option 2 / 3. All endpoints / 4 A+B together" + "b1" received before execution); #25 (own pre-recommendation category error caught and surfaced before introducing wrong-DEC resolution; B1 honesty check applied to weight numbers — extracted from code not invented); #43 (cross-doc consistency: TRADING_RULES.md ↔ smart_money.py ↔ AUDIT_INDEX DEC-332 ↔ AUDIT.md narrative); #45 (pre-flight per recommendation; corrected mid-stream when DEC-476 mismatch detected — exactly the kind of catch the gate is designed for); #58 (atomic 3-file commit, no half-state); #65 (smart money correctly placed as input-signal §10.x sister to regime classification, not as strategy or exit method); L143 (decision-state vs artifact-state gap closed for smart money composite); L144 (category boundary check — smart money is signal not strategy not exit method).*
+
+---
+
+## Pass 53 — Smart money follow-ups: AV/Finnhub deprecated rows deleted, API_AUDIT role clarified, CHECKLIST #66 added (DEC target alignment verification)
+
+**Trigger:** Owner direction Pass 53 — four follow-up items on the prior smart money / API endpoint commit (`c3e132e5`):
+1. "ok" — smart money weight validation (no action; queued as REVISIT_AFTER_BACKTEST per DEC-072/123)
+2. "Delete" — AV/Finnhub deprecated rows in §13.12
+3. "Your recommendation" — API_AUDIT.md ↔ §13.12 reconciliation
+4. "add to checklist" — formalize the DEC target alignment pre-flight catch
+
+**Resolution applied this turn:**
+
+1. **Item 1 — no action.** Smart money weight tunability already tracked via DEC-072 (post-Phase-1B-α tuning) and §23.1 #15 REVISIT_AFTER_BACKTEST tag. No code/doc change needed.
+
+2. **Item 2 — `TRADING_RULES_AND_INFORMATION.md` deletions:**
+   - §13.12: deleted Alpha Vantage news sentiment row (was `DEPRECATED Sprint 4 removal — DEC-454`)
+   - §13.12: deleted Finnhub news sentiment row (was `DEPRECATED Sprint 4 removal — DEC-455`)
+   - §13.12: updated Polygon news row status to clarify it replaces AV+Finnhub per DEC-440/454/455
+   - §10.9: rewrote News sentiment row — source is now `Polygon news (PRIMARY post-Sprint-4 per DEC-440)` with explicit "Migration note Pass 53" indicating current code at `smart_money.py:545-615` still reads AV/Finnhub cache as fallback until Sprint 4 deprecation cleanup
+   - **Doc-vs-code gap (intentional):** §13.12 is now forward-looking spec; code lags briefly until Sprint 4 (DEC-453/454/455) actually removes AV/Finnhub references in `smart_money.py`. Owner approved this asymmetry by saying "Delete" — canonical doc no longer carries deprecated rows; code cleanup happens in Sprint 4 as already planned.
+
+3. **Item 3 — `API_AUDIT.md` header clarification (recommendation = keep separate):**
+   - Added "Doc role (Pass 53 clarification)" paragraph to top of API_AUDIT.md noting it is the **audit/decision-history view** sister to TRADING_RULES.md §13.12 which is the **rule/spec view**
+   - Recommendation rationale: API_AUDIT.md contains heavy audit-research content (per-source subscription tiers, hypothesis lists, sub-decision candidates, verdicts) that doesn't belong in canonical trading rules; §13.12 needs to stay tight and rule-focused. Different audiences, different content density. Folding API_AUDIT.md into §13.12 would bloat TRADING_RULES.md. Cross-reference path already in place (§13.12 cites API_AUDIT.md for rate-limit specifics).
+
+4. **Item 4 — `CHECKLIST.md` #66 added:**
+   - "DEC target alignment verification before claiming resolution (Pass 53 — pre-flight catch instance)"
+   - Codifies the DEC-476 mistake-catch from the prior commit: before stating "DEC-X resolves Y" / "DEC-X covers Y" / "this implements DEC-X", grep AUDIT_INDEX.md for DEC-X and confirm its scope matches. Audit-row DEC tags can be cluster references, not decision-targets.
+   - Distinct from #64 (sprint-scope DEC existence) — this checks DEC scope alignment, not existence.
+   - Apply triggers: any DEC resolution claim, status flips, commit message DEC refs, audit-row DEC tag interpretation.
+   - Verification cost: 15 seconds (single grep + 1-line skim).
+   - Ties: #43, #62, L143; complements #64.
+
+5. **`AUDIT.md`** — this entry.
+
+**Decision impact:**
+- No DEC state changes. DEC-440 / DEC-454 / DEC-455 unchanged (Sprint 4 still owns the code-removal step).
+- DEC-332 body remains as completed in prior commit `c3e132e5`.
+- CHECKLIST item count: 65 → 66.
+- §13.12 endpoint inventory tightened (~30 → ~28 rows) by removing forward-deprecated entries.
+- API_AUDIT.md role formalized; no content reorganization.
+
+**Files updated this turn:**
+1. `CHECKLIST.md` — #66 added (DEC target alignment verification)
+2. `TRADING_RULES_AND_INFORMATION.md` — §13.12 AV/Finnhub rows deleted + Polygon news row status updated; §10.9 news sentiment row rewritten
+3. `API_AUDIT.md` — role-clarification header added (doc-role paragraph)
+4. `AUDIT.md` — this entry
+
+**Not done (intentionally out of scope):**
+- Code removal of AV/Finnhub references in `smart_money.py` (Sprint 4 work per DEC-453/454/455; documenting forward state in canonical rules now does not preempt sprint-time code cleanup)
+- §10.9 news sentiment migration to Polygon endpoint (same Sprint 4 scope)
+
+*Per CHECKLIST #32 (verbatim "1. ok / 2. Delete / 3. Your recommendation / 4. add to checklist"); #25 (intentional doc-vs-code asymmetry surfaced explicitly rather than papered over; recommendation #3 picked transparently with rationale); #43 (cross-doc: §13.12 ↔ §10.9 ↔ smart_money.py code path migration documented); #45 (pre-flight surfaced before edits — including catch that §10.9 also needed update for #2, not just §13.12); #58 (atomic 4-file commit, no half-state); #65 (no roster lumping — added a CHECKLIST item parallel to existing #64, distinct axis); #66 NEW (this commit creates the rule that catches the DEC-476 / DEC-332 mismatch pattern from the prior commit).*
