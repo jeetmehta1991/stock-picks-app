@@ -27798,3 +27798,53 @@ Initial drift scan via grep across all non-archive `*.md` files for known Pass 5
 3. BUG-007 verification (Sprint 6.5 dependency, not Sprint 1 Day 1)
 
 *Per CHECKLIST #32 (verbatim "continue" — Chunk D execution + Stream 3 closure); #25 (residual drift findings honest — distinguished forward-looking docs that need fix from historical/archive docs preserved per L143; final grep verification proves zero old-path references in forward-looking docs); #43 (cross-doc consistency = explicit focus of Chunk D; achieved across all ~25 non-archive docs); #45 (final grep verification before declaring Stream 3 closed; verified each spot-fix is correct before commit); #51 (Chunk D scope strict — 4 file path fixes only; no scope-creep beyond residual drift cleanup); #58 (atomic 4-file commit closing Stream 3); #65 (no roster expansions); #66 (DEC-494 body update reflects current canonical path; preserved DEC scope alignment per #66 rule). Pass 53 directive "Update all documents not in the archive folder. Be comprehensive. Do a deep audit and ensure logic, flow and canonical alignment" — FULFILLED across 5 sequential chunks.*
+
+---
+
+## Pass 53 — DEC-496 + DEC-103 SCREENER-FIRST correction (T3 + T2 universe construction)
+
+**Trigger:** Owner caught a critical conceptual gap in the just-approved DEC-496 (T3 momentum methodology) immediately after RESOLVED-DECIDED logging:
+> "Hold on. You should have flagged this obvious gap. If we run tier 3 calculations on sp500, how are we serving the purpose. Needs to be a market screener and from the tickers identified we will need to pull polygon end points. Same issue with t2."
+
+**Why this is the 4th tier-data error owner caught Pass 53:**
+1. DEC-476 vs DEC-332 mis-attribution (smart money formula gap target) — pre-edit catch
+2. DEC-368 vs DEC-370 mis-attribution (Index Rebalance vs Calendar/Seasonal) — pre-edit catch
+3. Tier 2 = ETFs mis-characterization (DEC-118 Tier 1 ETFs vs DEC-103 Tier 2 spinoffs/IPOs) — owner caught post-commit, corrigendum committed `2f120dec`
+4. **THIS turn — T3/T2 = re-rank of T1 cache vs market screener** — owner caught post-DEC-496-approval
+
+**Conceptual error in initial DEC-496 spec:** I described J-T 12-1 momentum methodology correctly (lookback=252, skip=21, classic risk-adjustment OFF, tie-breakers vol-asc → ADV-desc) — but implicitly assumed input universe = existing T1 cache. Top 100 NON-T1 momentum names cannot be identified by ranking only T1 tickers. The whole purpose of T3 is to surface tickers OUTSIDE T1 — running J-T against T1-only defeats the purpose. Same logic applies to T2 spinoffs/IPOs: pre-Pass-53 `refresh_extended_universe.py` reads yfinance ticker info, which lags new listings (L89 SNDK 9-month example) — Pass 53 corrected approach is Polygon corporate-actions feed as primary screener, not yfinance re-rank.
+
+**Corrected SCREENER-FIRST two-step architecture (owner Q-A approved):**
+
+**T3 (Tier 3 momentum) — Step 1 Screener:** at each monthly snapshot date D in 2020-2026, fetch Polygon `/v2/aggs/grouped/locale/us/market/stocks/{date}` daily-bar grouped endpoint covering full lookback (D-252 through D-21) for all ~6000-8000 listed US equities (common stock + active per `/v3/reference/tickers` filter); apply DEC-321/366 Tier 3 liquidity floor (min_cap=$300M, min_avg_dollar_volume=$5M, min_history=60d); compute `momentum_score = (price[D-21] / price[D-252]) - 1`; exclude T1a/T1b/T1c sub-tier members at as_of D; rank descending; take top 100 = monthly Tier 3 snapshot. **Step 2 Prefetch:** identified non-T1 union (~500-1000 unique tickers across 72 monthly snapshots per owner Q-C full historical scope) gets OHLCV-prefetched via standard `/v2/aggs/ticker/{ticker}/range/...` calls.
+
+**T2 (Tier 2 spinoffs/IPOs) — Step 1 Screener:** at each calendar date D in 2010-2026, fetch Polygon `/v3/reference/dividends` (special-distribution / spinoff dividend type) + `/v3/reference/splits` (parent-child relationship indicating spinoff) + `/v3/reference/tickers` (list_date for IPO identification, full active+delisted listing); filter spinoff events where child-ticker market_cap >$5B within 12 months of separation (per DEC-103 criterion via `/v3/reference/tickers/{ticker}` market_cap field at D+10 days); filter IPO events where issuer market_cap >$10B with ≥90 days history; emit B++ row per qualifying event. **Step 2 Prefetch:** identified Tier 2 universe (50-150 unique tickers across 2010-2026) prefetched standard.
+
+**Owner approvals (Pass 53 turn after DEC-496 logging):**
+- Q-A SCREENER-FIRST architecture: APPROVED for both T3 and T2
+- Q-B Sprint 1 effort revision ~28-39d → ~35-50d: APPROVED
+- Q-C T3 historical scope (full 2020-2026 monthly snapshots): APPROVED FULL HISTORICAL SCOPE
+- Q-D Log gap as new CHECKLIST sub-clause + UNIVERSAL_LEARNINGS entry: APPROVED YES
+
+**Documents updated this turn:**
+1. `AUDIT_INDEX.md` — DEC-496 body updated with screener-first two-step flow + corrected Step 1 / Step 2 architecture; DEC-103 body updated with corp-actions screener-first; DEC-494 body amended to align refresh_extended_universe.py methodology with DEC-103 corrected approach
+2. `AUDIT.md` — this Pass 53 narrative entry (provenance + corrected architecture spec + owner approval matrix)
+3. `scripts/SPRINT1_POLYGON_PREFETCH_README.md` — Sprint 1 prefetch flow updated to two-step (screener → prefetch) for T2/T3
+4. `CLAUDE.md` — Universe Management HARD RULES section updated to specify screener-first for T2/T3
+5. `CHECKLIST.md` — new sub-clause #66.b: verify-data-flow-not-just-methodology pattern for any universe-tier or input-data spec
+6. `UNIVERSAL_LEARNINGS.md` — Principle 9 new sub-rule: data flow (input universe + output universe) must be specified explicitly when proposing any methodology, not inferred from context
+
+**Why pre-flight didn't catch this (root cause):**
+- CHECKLIST #66 Pass 53 added universe-tier categorization sub-clause covering "DEC alignment + tier identity verification" — but did NOT explicitly require verification of input-data flow. Methodology spec (J-T formula) was correct in isolation; the gap was at the data-pipeline boundary (where does input universe come from).
+- Pre-flight verification I performed for DEC-496 confirmed: methodology correct, defaults defensible, PIT correctness, DEC parent linkage. It did NOT confirm: input universe ≠ implicit T1 cache.
+- This is the 4th instance of input-or-target verification gap in Pass 53. The pattern is consistent: I verify the methodology / formula / target DEC but skip verification of "where does the data feeding this come from / which universe is this serving".
+
+**Codified fix (per owner Q-D approval):**
+- CHECKLIST.md sub-clause #66.b: For any recommendation involving a universe-construction step, signal computation, screener, or filter, EXPLICITLY state and verify (a) input universe source — broad market vs T1 vs T2 vs single ticker, (b) output universe target — which tier/file/cube cell receives output, (c) data-flow direction matches the purpose stated. Skipping (a)-(b)-(c) verification = pre-flight failure.
+- UNIVERSAL_LEARNINGS Principle 9 new sub-rule (8th): Data flow (input universe + output universe) must be specified at recommendation time. Methodology spec without data-flow spec is necessary but not sufficient. The 4 Pass 53 catches (DEC-476/332, DEC-368/370, Tier 2 ETF, DEC-496 T1-input) all share this signature: methodology was right, data flow was wrong.
+
+**Sprint 1 effort revised (per Q-B approval):** ~28-39d → ~35-50d (+~7-11d for screener + monthly compute + ticker-union prefetch). Cache size 2-3× larger than T1-only baseline. T3 historical universe ~500-1000 unique tickers (vs ~509 T1a alone).
+
+**No code changes this turn — body-update only on forward-looking specs (in-window per L143 since DEC-496 was just-logged Pass 53; this is a same-Pass correction, not history rewrite).**
+
+*Per CHECKLIST #32 (owner approval matrix A/B/C/D received — multi-question response with explicit-letter answers); #25 (drift surfacing honest — root cause analysis distinguishes methodology-correct vs data-flow-wrong gap; named pattern across 4 Pass 53 catches); #43 (cross-doc consistency: 6 docs updated as a unit — DEC-496/103/494 bodies + AUDIT narrative + SPRINT1 README + CLAUDE.md + CHECKLIST + UNIVERSAL_LEARNINGS); #45 (read each doc before editing; verified DEC-496 body content via grep before modifying); #51 (scope strict — screener-first correction only; not expanding to T1 sub-tier work or DEC-491/492/493 trade-capture work this turn); #58 (atomic commit grouping all 7 doc updates as Pass 53 screener-first correction); #65 (no roster expansions; no new DECs — all body updates to existing DECs per "this is a same-Pass correction" framing); #66 (DEC target alignment verified: DEC-496 = T3 momentum, DEC-103 = T2 spinoffs/IPOs, DEC-494 = refresh_extended_universe.py alignment — all confirmed). Owner directive "Update all documents" (this turn) — FULFILLED.*

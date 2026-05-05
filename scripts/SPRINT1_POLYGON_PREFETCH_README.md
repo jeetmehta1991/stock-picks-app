@@ -2,6 +2,13 @@
 
 **Pass 53 turn — hybrid path (Path A tonight + Path B tomorrow).**
 
+**Pass 53 SCREENER-FIRST CORRECTION (post-DEC-496-approval):** T2 and T3 universe construction is a two-step screener-first flow (NOT a re-rank of existing T1 cache). Owner caught the conceptual gap: T3 = top 100 NON-T1 momentum names cannot be identified by ranking only T1 tickers. Same applies to T2 spinoffs/IPOs — yfinance ticker info lags new listings (L89 SNDK 9-month example), Polygon corporate-actions feed is the canonical screener source.
+
+- **Step 1 (Screener):** broad-market scan via Polygon endpoints — `/v2/aggs/grouped/locale/us/market/stocks/{date}` for T3 monthly J-T momentum compute; `/v3/reference/dividends|splits|tickers` for T2 spinoff/IPO event identification.
+- **Step 2 (Prefetch):** identified non-T1 tickers (T3 ~500-1000 unique, T2 ~50-150 unique across full historical scope) get OHLCV-prefetched via standard `/v2/aggs/ticker/{ticker}/range/...` calls (same pipeline as T1 below).
+
+Sprint 1 effort REVISED Pass 53 owner-approved: ~28-39d → ~35-50d (+~7-11d for screener step + monthly compute + ticker-union prefetch). Cache size 2-3× larger than T1-only baseline. T3 historical scope = full 2020-2026 monthly snapshots (Pass 53 owner Q-C approved FULL).
+
 ## Honest scope flag
 
 This prefetch operates on `Backtesting universe/sp500_tickers.csv` (484 current-state S&P 500 tickers; folder move Pass 53 per commit `c7f5580f`), NOT the full DEC-483 universe (T1a + T1b + T1c = ~1015 tickers).
@@ -230,18 +237,21 @@ After Polygon prefetch is committed to main, next session:
      - **Fallback source:** Wikipedia "NASDAQ-100" + general internet browse (under same Pass 53 one-time L88 exception, scoped: laptop-local; fallback-only; manual verification)
      - **Mapping timeframe:** 2020-01-01 → today + ongoing (matches T1a)
      - **Pre-2020 active tickers:** `added_date` NULL (matches T1a option-β)
-   - `Backtesting universe/extended_universe.csv` (T2 — Pass 53 Sprint 1 historical populate per owner directive; same B++ format as T1a/T1c plus extension columns `MarketCapB`, `Tier2Reason`)
-     - **Source:** Polygon Stocks Starter corporate actions endpoint per DEC-380 (already paid; spinoff effective dates) + Polygon reference data for IPO listing dates + market cap filter (>$5B spinoffs / >$10B IPOs per refresh_extended_universe.py:7-9 and CLAUDE.md universe rules)
+   - `Backtesting universe/extended_universe.csv` (T2 — Pass 53 Sprint 1 historical populate per owner directive; same B++ format as T1a/T1c plus extension columns `MarketCapB`, `Tier2Reason`) — **SCREENER-FIRST architecture per DEC-103/DEC-494 corrections Pass 53**
+     - **Step 1 (Screener):** at each calendar date D in 2010-2026, fetch Polygon `/v3/reference/dividends` (special-distribution / spinoff dividend type) + `/v3/reference/splits` (parent-child relationship indicating spinoff) + `/v3/reference/tickers` (list_date for IPO identification, full active+delisted listing pull); filter spinoff events where child-ticker market_cap >$5B within 12 months of separation per DEC-103 criterion (use `/v3/reference/tickers/{ticker}` market_cap field at D+10 days post-listing); filter IPO events where issuer market_cap >$10B with ≥90 days history per DEC-103/DEC-366 Tier 2 floor; emit B++ row per qualifying event.
+     - **Step 2 (Prefetch):** identified Tier 2 universe (50-150 unique tickers across 2010-2026) prefetched via standard `/v2/aggs/ticker/{ticker}/range/...` (same pipeline as T1).
      - **Why Sprint 1 not Sprint 5:** owner directive Pass 53 — populate immediately after Polygon OHLCV prefetch since corporate actions data lives in same Polygon subscription; defer ongoing GH Actions automation (DEC-372/373/374) to Sprint 5
-     - **Mapping timeframe:** 2020-01-01 → today + ongoing for Stage 3 (matches T1a/T1c)
-     - **Schema:** `Symbol, Company, Sector, added_date, removed_date, MarketCapB, Tier2Reason` — added_date = effective spinoff/IPO date; removed_date populated when ticker rotates to T1a/T1b/T1c (S&P/R1000/NDX inclusion) or delists
-   - `Backtesting universe/momentum_watchlist.csv` (T3 — Pass 53 Sprint 1 historical populate per owner directive; methodology DEC-496 RESOLVED-DECIDED)
-     - **Source:** Polygon OHLCV cache (populated by Sprint 1 prefetch — strict precondition); compute Jegadeesh-Titman 12-1 momentum score per DEC-496 for all non-T1 tickers passing DEC-321/366 liquidity floor; rank descending; top 100 (per DEC-364) = Tier 3 at each as_of date
-     - **Methodology:** `momentum_score = (price[D-21] / price[D-252]) - 1` per DEC-496. Lookback 252 trading days; skip 21 trading days. Risk-adjustment OFF (classic). Tie-breakers: 6-month volatility ascending → ADV descending.
-     - **Refresh cadence:** monthly (1st of each month from prior month-end); for backtest static at run start (no lookahead).
-     - **Mapping timeframe:** 2020-01-01 → today + ongoing for Stage 3 (matches T1a/T1c). For 2020-2021 dates: requires 252-day lookback BEFORE 2020-01-01 → cache window must extend to ~2019-01-01 minimum. Polygon Stocks Starter 5-year window covers this only if we're in 2024+.
-     - **Schema:** `Symbol, Company, Sector, added_date, removed_date, MomentumScore, MarketCapB, LastPrice` — added_date = first day in top 100; removed_date = first day fell out
-     - **Why Sprint 1 not Sprint 5:** strict precondition is Polygon OHLCV cache populated; momentum compute is data-derived, no external scrape needed; defer ongoing monthly automation (DEC-375/376/377) to Sprint 5
+     - **Mapping timeframe:** 2010-01-01 → today + ongoing for Stage 3 (full Pass 53 owner Q-C historical scope; 10y backward buffer for any pre-2020 strategies)
+     - **Schema:** `Symbol, Company, Sector, added_date, removed_date, MarketCapB, Tier2Reason` — added_date = effective spinoff/IPO date; removed_date populated when ticker rotates to T1a/T1b/T1c (S&P/R1000/NDX inclusion) or 12-month spinoff window expires or market_cap falls below floor or delists
+     - **Why screener-first (Pass 53 correction):** pre-Pass-53 `refresh_extended_universe.py` reads from yfinance ticker info — yfinance lags new listings (L89 SNDK 9-month example). Polygon corporate-actions feed is canonical and timely.
+   - `Backtesting universe/momentum_watchlist.csv` (T3 — Pass 53 Sprint 1 historical populate per owner directive; methodology DEC-496 RESOLVED-DECIDED) — **SCREENER-FIRST architecture per DEC-496 correction Pass 53**
+     - **Step 1 (Screener):** at each monthly snapshot date D in 2020-2026, fetch Polygon `/v2/aggs/grouped/locale/us/market/stocks/{date}` daily-bar grouped endpoint covering full lookback window (D-252 through D-21) for ~6000-8000 listed US equities (common stock + active per `/v3/reference/tickers` filter); apply DEC-321/366 Tier 3 liquidity floor (min_cap=$300M, min_avg_dollar_volume=$5M, min_history=60d); compute `momentum_score = (price[D-21] / price[D-252]) - 1` per ticker (J-T classic, risk-adjustment OFF); exclude T1a/T1b/T1c sub-tier members at as_of D; rank descending; take top 100 = monthly Tier 3 snapshot. Tie-breakers: 6-month volatility ascending → ADV descending.
+     - **Step 2 (Prefetch):** identified non-T1 union (~500-1000 unique tickers across 72 monthly snapshots; Pass 53 owner Q-C full historical scope) prefetched via standard `/v2/aggs/ticker/{ticker}/range/...` (same pipeline as T1).
+     - **Refresh cadence:** monthly (1st of each month from prior month-end); for backtest static at each monthly snapshot date (no lookahead).
+     - **Mapping timeframe:** 2020-01-01 → today + ongoing for Stage 3 (matches T1a/T1c). For 2020-2021 dates: requires 252-day lookback BEFORE 2020-01-01 → grouped endpoint scan window must extend to ~2019-01-01 minimum. Polygon Stocks Starter 5-year window covers this only if we're in 2024+.
+     - **Schema:** `Symbol, Company, Sector, added_date, removed_date, MomentumScore, MarketCapB, LastPrice` — added_date = first month rank ≤100; removed_date = first month rank >100
+     - **Why screener-first (Pass 53 correction):** owner caught initial DEC-496 spec gap — running J-T against existing T1 cache defeats T3's purpose (T3 = top 100 NON-T1 names). Top 100 non-T1 momentum names cannot be identified by ranking only T1. Polygon grouped endpoint = broad-market scan source.
+     - **Why Sprint 1 not Sprint 5:** strict precondition is broad-market grouped-endpoint screener data + DEC-321/366 liquidity floor application; full historical screener compute lives in Sprint 1 alongside T1 prefetch; defer ongoing monthly automation (DEC-375/376/377) to Sprint 5
    - `data/universe/index_rebalance_events.parquet` (day-grain effective dates for **DEC-370** Index Rebalance strategies — **NOT DEC-368** Calendar/Seasonal; mis-attribution corrected Pass 53 via CHECKLIST #66 catch)
      - **Primary source:** S&P Dow Jones Indices press releases (same source as `historical_membership.csv` — S&P DJI publishes announcement-date AND effective-date for every S&P 500 add/remove)
      - **Fallback source:** Wikipedia + general internet browse (under same Pass 53 one-time L88 exception, scoped: laptop-local; fallback-only; manual verification)
