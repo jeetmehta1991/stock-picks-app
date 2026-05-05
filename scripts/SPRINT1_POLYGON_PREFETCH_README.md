@@ -214,11 +214,17 @@ After Polygon prefetch is committed to main, next session:
      - **Fallback source (Pass 53 one-time L88 exception, owner-granted):** Wikipedia "List of S&P 500 companies" Selected-changes table + general internet browse — used only if S&P DJI archives have gaps; manual verification before commit
      - **Mapping timeframe:** 2020-01-01 → today + ongoing for Stage 3 (Polygon Stocks Starter cache window is 5y backward = 2021-05; 1-year buffer ensures every ticker active in cache window has a verifiable `added_date`)
      - **Pre-2020 active tickers** (e.g., MMM/JNJ/KO): leave `added_date` NULL — meaning "in S&P prior to mapping window"; PIT loader handles null via the filter expression above (Pass 53 option-β)
-   - `data/universe/russell_1000_membership.csv` (T1b — populate in **same B++ format as T1a** per Pass 53 owner directive: `Symbol, Company, Sector, added_date, removed_date`; PIT loader filters by `(added_date IS NULL OR added_date ≤ as_of) AND (removed_date IS NULL OR removed_date > as_of)`)
-     - **Primary source:** FTSE Russell annual reconstitution data (June reconstitution; `ftserussell.com` index governance documents)
-     - **Fallback source:** Wikipedia "Russell 1000 Index" + general internet browse (under same Pass 53 one-time L88 exception, scoped: laptop-local; fallback-only; manual verification)
-     - **Mapping timeframe:** 2020-01-01 → today + ongoing (matches T1a)
-     - **Pre-2020 active tickers:** `added_date` NULL (matches T1a option-β)
+   - `data/universe/russell_1000_membership.csv` (T1b — **DEFERRED to Sprint 1 procurement** per Pass 53 owner option-2 decision; will populate in same B++ format as T1a once data source secured: `Symbol, Company, Sector, added_date, removed_date`; PIT loader filters by `(added_date IS NULL OR added_date ≤ as_of) AND (removed_date IS NULL OR removed_date > as_of)`)
+     - **Sourcing wall surfaced Pass 53:** Wikipedia article truncated mid-page (~300-400 of ~1000 members) and has no reconstitution history. FTSE Russell official site redirected through 3 hops to LSEG. LSEG free public access provides only current 2025 reconstitution PDFs (Russell 3000 pooled); historical 2020-2024 reconstitution archives behind LSEG Research Portal subscription.
+     - **Sprint 1 owner-side action items:**
+       1. Attempt free LSEG Research Portal registration (URL: `https://www.lseg.com/en/ftse-russell/index-resources/notices`; subscribe free if available).
+       2. If free tier insufficient, evaluate paid subscription cost vs alternatives (Bloomberg Terminal, Refinitiv, FactSet, S&P Capital IQ — all enterprise-priced).
+       3. **Alternative scope-cut decision point:** consider deferring R1000 expansion entirely to Stage 3 — Phase 1A v3 archive used 67 instruments and produced 6,942 trades; T1a (~503 active + ~50 historical) + 27 ETFs = ~580 instruments, far above archive baseline. T1b/T1c expansion was DEC-483 Pass 53 scope expansion that may be premature for Stage 2 backtest validity.
+     - **Primary source (target):** FTSE Russell official reconstitution archives via LSEG Research Portal (post-procurement)
+     - **Fallback source (target):** Wikipedia + internet browse under Pass 53 one-time L88 exception, manual verification — ONLY for spot-fills if LSEG archives have gaps; not viable as primary per Pass 53 investigation
+     - **Mapping timeframe (target):** 2020-01-01 → today + ongoing (matches T1a)
+     - **Pre-2020 active tickers (target):** `added_date` NULL (matches T1a option-β)
+     - **Refusal to populate with current snapshot only:** would re-introduce survivorship bias for 2020-2024 backtest dates — same problem we fixed for T1a in commits `c3e132e5` / `cf1c0762`. Owner Pass 53 declined this path.
    - `data/universe/nasdaq_100_membership.csv` (T1c — populate in **same B++ format as T1a** per Pass 53 owner directive: same schema and filter)
      - **Primary source:** Nasdaq annual reconstitution data (December reconstitution; `nasdaq.com` index governance announcements)
      - **Fallback source:** Wikipedia "NASDAQ-100" + general internet browse (under same Pass 53 one-time L88 exception, scoped: laptop-local; fallback-only; manual verification)

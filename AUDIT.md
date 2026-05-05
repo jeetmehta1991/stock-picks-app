@@ -27091,3 +27091,46 @@ This is the second tier-categorization error I made this Pass — first was assu
 **Pattern note (#25 honest meta-finding):** Russell 1000 sourcing exposed that "Wikipedia primary, S&P DJI fallback" pattern from prior commits doesn't generalize cleanly. NDX has rich Wikipedia coverage; Russell 1000 doesn't. Sister-index files have meaningfully different source quality. The Pass 53 L88 exception language in CLAUDE.md / DEC-303 / DEC-477 should likely note this — different sister files have different optimal primary sources. Worth refining if owner picks source approach in next turn.
 
 *Per CHECKLIST #32 (verbatim 4 directives — CLAUDE.md rule add, NDX matches confirm, GICS remap, multi-period verify, Russell 1000 in parallel); #25 (Russell 1000 sourcing wall surfaced honestly; T1c GICS remap details disclosed including 2018 GICS reclassification of media/entertainment to Communication Services; uncertain rows for PTON/NTES/WMT flagged for owner verification rather than silently committed); #43 (T1c CSV ↔ DEC-303 schema ↔ DEC-483 sub-tier spec aligned; CLAUDE.md HARD RULE additions cross-reference DEC-491 Parquet for nested data); #45 (PIT loader filter verified via 3 test cases for multi-period rows BEFORE writing CSV; CLAUDE.md HARD RULE addition surfaces past violations being corrected explicitly to set scope boundary); #51 (default lower-impact: Russell 1000 NOT auto-fetched after Wikipedia inadequate result; surfaced 5 source options A-E rather than assuming any; sourcing wall preserves owner authority on Sprint 1 source procurement decision); #58 (atomic 3-file commit; Russell 1000 deferred to follow-up commit); #65 (no new roster items — T1c CSV is data file, not roster category); #66 (verified DEC-303 schema, DEC-483 sub-tier spec, GICS sector classifications via cross-reference rather than memory; PIT filter logic verified against actual SQL/pandas semantics not assumed). L88 exception HONORED — manual verification clause respected via owner verbal "1. Matches" before T1c CSV write; CLAUDE.md HARD RULE codifies the exception scope going forward.*
+
+---
+
+## Pass 53 — Russell 1000 (T1b) deferred to Sprint 1 procurement (owner option-2; LSEG paywall + Polygon ruled out)
+
+**Trigger:** Owner Pass 53 directive: "2" — defer T1b to Sprint 1 formal procurement, after investigation surfaced that no free authoritative source exists for Russell 1000 historical reconstitution data 2020-2024.
+
+**Investigation summary (this turn):**
+- **Polygon documentation check** (per owner direction "check polygon documentation"): WebFetch on `polygon.io/docs/stocks` → redirect to `massive.com/docs/stocks` (Polygon rebranded). Direct documentation index check via `massive.com/docs/llms.txt` confirmed: NO index membership endpoints for S&P 500, Russell 1000, or NASDAQ-100. Available reference data is OHLCV / fundamentals / news / corporate actions / market metadata only. **Option C (Polygon) ruled out.**
+- **LSEG fetch** (per owner direction "b"): WebFetch chain — `ftse.com/products/indices/russell-us` → 301 → `ftserussell.com/products/indices/russell-us` → 301 → `lseg.com/en/ftse-russell/indices/russell-us`. The reconstitution page (`/en/ftse-russell/russell-reconstitution`) provides only 2025 free PDFs (Russell 3000 pooled — includes Russell 1000 + Russell 2000). Historical 2020-2024 reconstitution archives at `/en/ftse-russell/index-resources/notices` are behind Research Portal subscription.
+- **Result:** No free authoritative source exists for Russell 1000 historical add/remove dates 2020-2024 within Pass 53 turn budget. Building a current-snapshot-only T1b CSV would re-introduce survivorship bias for 2020-2024 backtest dates — the exact problem fixed for T1a in commits `c3e132e5` / `cf1c0762`. Refused.
+
+**Resolution applied this turn:**
+
+1. **`scripts/SPRINT1_POLYGON_PREFETCH_README.md`** — T1b sub-bullet block updated:
+   - Status: DEFERRED to Sprint 1 procurement (owner option-2 Pass 53)
+   - Sourcing wall documented: Wikipedia truncated, FTSE Russell paywalled, Polygon doesn't have membership endpoints
+   - Sprint 1 owner-side action items added: (i) attempt free LSEG Research Portal registration; (ii) evaluate paid subscription vs alternatives (Bloomberg / Refinitiv / FactSet / S&P Capital IQ — all enterprise-priced); (iii) consider scope-cut alternative — drop T1b/T1c expansion entirely from Stage 2 since Phase 1A v3 archive used 67 instruments successfully and current T1a + ETFs = ~580 instruments (far above archive baseline)
+   - Refusal to populate with current snapshot only: explicit note that survivorship bias would re-introduce the problem we just fixed
+   - Target spec preserved (post-procurement): same B++ schema, same filter, same mapping timeframe, same NULL convention as T1a/T1c
+
+2. **`AUDIT.md`** — this entry.
+
+**Decision impact:**
+- T1b populate scope removed from current Pass 53 turn budget. Sprint 1 owner-side procurement action becomes a precondition for T1b CSV write.
+- DEC-483 (sub-tier expansion) status unchanged — RESOLVED-DECIDED. T1b/T1c sub-tiers still in scope for Stage 2 in principle; just T1b's data acquisition deferred.
+- T1c (NDX) committed in commit `cf1c0762` — unaffected by T1b deferral.
+- **Scope-cut option flagged for owner consideration:** if Sprint 1 procurement reveals Russell 1000 historical data costs are prohibitive (paid subscription + manual reconstruction overhead exceeds value), Stage 2 backtest can run on T1a + ETFs alone (~580 instruments) per Phase 1A v3 archive precedent. Owner-side strategic decision; not requesting now.
+
+**Pattern note (#25 honest meta-finding):** This Pass 53 universe-build effort revealed that "all three sub-tiers built same way" assumption from DEC-483 is not actually feasible at zero cost. T1a (S&P DJI) free; T1c (Wikipedia NDX article) free with rich coverage; T1b (Russell 1000) effectively paywalled. Sub-tier sources have asymmetric availability — DEC-483 spec assumed symmetric treatment which doesn't hold for free public sourcing. Worth refining DEC-483 with a Sprint 1 sub-decision noting per-sub-tier source procurement asymmetry if scope-cut option is rejected.
+
+**Files updated this turn:**
+1. `scripts/SPRINT1_POLYGON_PREFETCH_README.md` — T1b deferral + Sprint 1 owner-side action items
+2. `AUDIT.md` — this entry
+
+**Out of scope this turn (Sprint 1 owner-side procurement):**
+- LSEG Research Portal registration attempt (free or paid evaluation)
+- Alternative paid index data vendor evaluation (Bloomberg / Refinitiv / FactSet / S&P Capital IQ)
+- Scope-cut decision (drop T1b/T1c from Stage 2; defer to Stage 3 live trading)
+- T1b CSV write (depends on procurement outcome)
+- Identical considerations apply to T1c future-maintenance for Stage 3 ongoing reconstitution updates (Wikipedia is currently sufficient for the static 2020-2026 historical build; Stage 3 dynamic updates may need a different source if Wikipedia lag becomes an issue)
+
+*Per CHECKLIST #32 (verbatim "2" — defer T1b to Sprint 1 procurement); #25 (refused to commit survivorship-biased CSV that would re-introduce the very bias we fixed for T1a; surfaced LSEG paywall + Polygon endpoint absence honestly via direct documentation fetch; flagged scope-cut alternative as legitimate per Phase 1A archive precedent); #43 (SPRINT1 README ↔ DEC-483 ↔ AUDIT narrative aligned; T1c commit `cf1c0762` referenced); #45 (pre-flight halted before producing biased CSV; investigation budget respected — 2 sequential WebFetch chains then halt); #51 (default lower-impact: option-2 deferral preserves Sprint 1 procurement decision-space; refused to scope-creep by attempting more obscure sources); #58 (atomic 2-file commit; T1b waits for owner procurement); #65 (no new roster items); #66 (Polygon endpoint scope verified per `llms.txt` not memory; LSEG access boundaries verified per direct fetch). L88 exception scope HONORED — refusal to commit unverified data when no clean source exists is exactly what the manual-verification clause protects against.*
