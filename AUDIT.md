@@ -26411,3 +26411,32 @@ Owner should mistrust "Sprint X is ready" claims unless I provide explicit artif
 **Decision impact:** No DEC state changes. DEC-067/075/432/433/435/141/142/143/145/176 unaffected in AUDIT_INDEX.md. Categorization and count claims corrected; canonical source assignments (TRADING_RULES.md §8 for exits, STRATEGY_REGISTER.md for strategies) reaffirmed.
 
 *Per CHECKLIST #25 (honest categorization fix; flagged inconsistencies not minimized); #32 (verbatim "approved + audit" received before execution); #58 (atomic 5-file commit, no half-state); #62 (cross-document consistency restored across DETAILED/PROJECT_PLAN/STRATEGY_REGISTER/TRADING_RULES); #65 NEW (roster definitional check); L144 NEW (category boundary discipline).*
+
+---
+
+## Pass 53 — Test pyramid coverage gate added to per-sprint workflow + ENGINEERING_REGISTER per-sprint field
+
+**Trigger:** Owner question Pass 53 — *"Test pyramid will be applied to all sprints? Why is it not a part of per sprint workflow?"*
+
+**Discovery:** `PROJECT_PLAN.md §21.1` defines the test pyramid (70% unit / 20% integration / 5% characterization / 3% property / 2% differential) as a project-wide aggregate target. `§22.1 Per-sprint workflow` only enforced "test-first discipline" + pytest CI gate; pyramid composition was tracked indirectly via per-decision Test Signals in `ENGINEERING_REGISTER.md` but no per-sprint gate ensured layer coverage matched the work scope. A sprint could ship 100% unit tests with zero integration / characterization coverage and the project-wide ratio would still look fine retroactively.
+
+**Resolution applied this turn:**
+
+1. **`PROJECT_PLAN.md` §22.1** — added new bullet: *"Test pyramid coverage: each sprint's acceptance criteria enumerates which pyramid layers (per §21.1) it touches and asserts test signals at the matching layer."*
+
+2. **`ENGINEERING_REGISTER.md`**:
+   - Cadence section — added bullet documenting that each sprint declares which pyramid layers its tests touch (cross-references PROJECT_PLAN.md §21.1 + §22.1)
+   - Each of 10 sprint definitions (Sprint 1, 2, 3, 4, 5, 6, 6.5, 7, 8, 9) — added `**Pyramid layers touched:**` field with `TBD per sprint plan` placeholder pending owner per-sprint layer enumeration
+
+3. **`AUDIT.md`** — this entry
+
+**Owner-side follow-up (queued, not gating any current work):** Replace the `TBD per sprint plan` placeholder on each sprint with the actual layer set during that sprint's planning. Sprint 1 (Phase 0.A Polygon Foundation, active) and Sprint 2 (Engine Bug Fixes Tier A, parallel start) are most imminent.
+
+**Decision impact:** No DEC state changes. Process gate added between project-wide pyramid (§21.1) and per-sprint execution (§22.1). The per-decision Test Signals in ENGINEERING_REGISTER tables remain the unit of test-existence verification; the new per-sprint field is the unit of *layer-mix verification* across those test signals.
+
+**Files updated this turn:**
+1. `PROJECT_PLAN.md` — §22.1 new bullet
+2. `ENGINEERING_REGISTER.md` — Cadence bullet + 10 sprint pyramid-layer fields (placeholder)
+3. `AUDIT.md` — this entry
+
+*Per CHECKLIST #32 (verbatim "approved" + "Yes commit and push" + "Please add, commit and push to engineering register" received before execution); #43 (cross-doc consistency PROJECT_PLAN §21.1/§22.1 ↔ ENGINEERING_REGISTER cadence + sprint fields); #45 (pre-flight per recommendation prior to edit, surfaced in chat); #58 (atomic 3-file commit, no half-state); #65 (roster definitional check — pyramid layers and sprint workflow are different axes; reference is not lumping); L144 (category boundary discipline applied).*

@@ -681,6 +681,7 @@ ENGINEERING_REGISTER.md Sprint 6 captures full test infrastructure scope.
 - **CI gates:** ruff + black + isort + mypy + pytest must pass before merge (per DEC-173)
 - **Cold-start CI test:** weekly + on dependency changes (per DEC-138)
 - **Test-first discipline:** failing test linked to decision before code change
+- **Test pyramid coverage:** each sprint's acceptance criteria enumerates which pyramid layers (per §21.1) it touches and asserts test signals at the matching layer
 - **Owner PR review:** per-PR review before merge (not retroactively post-push)
 
 ### 22.2 Acceptance criteria template per sprint

@@ -16,6 +16,7 @@
 - **Owner reviews demo** + approves batch status flip RESOLVED-DECIDED → RESOLVED-IMPLEMENTED for completed sub-decisions
 - **Engineer:** owner-self with Claude Code pair programming
 - **Branch model:** feature branch per sprint; PR to main; merge after owner approval
+- **Pyramid layers per sprint:** each sprint declares which test pyramid layers (per PROJECT_PLAN.md §21.1: unit / integration / characterization / property / differential) its tests touch — surfaced in the `**Pyramid layers touched:**` field on each sprint header below (per PROJECT_PLAN.md §22.1)
 
 ---
 
@@ -64,6 +65,7 @@
 
 **Effort:** ~25-35 engineering days (was ~7-9d pre-Pass-53; +5-7d for sub-tier expansion + universe build PIT correctness)
 **Critical-path:** YES
+**Pyramid layers touched:** TBD per sprint plan (per PROJECT_PLAN.md §22.1; layers per §21.1)
 
 ---
 
@@ -89,6 +91,7 @@ DEC-381/382/383/384/388/389/390/391/392/394/397/398/399 — all RESOLVED-DECIDED
 **Exit criteria:** all 13 test signals pass; promote to RESOLVED-IMPLEMENTED.
 **Effort:** ~9 engineering days
 **Critical-path:** YES (cache/stops are foundational)
+**Pyramid layers touched:** TBD per sprint plan (per PROJECT_PLAN.md §22.1; layers per §21.1)
 
 ---
 
@@ -111,6 +114,7 @@ DEC-381/382/383/384/388/389/390/391/392/394/397/398/399 — all RESOLVED-DECIDED
 
 **Effort:** ~5-7 engineering days
 **Critical-path:** YES (blocks Phase 1B-α run)
+**Pyramid layers touched:** TBD per sprint plan (per PROJECT_PLAN.md §22.1; layers per §21.1)
 
 ---
 
@@ -129,6 +133,7 @@ DEC-381/382/383/384/388/389/390/391/392/394/397/398/399 — all RESOLVED-DECIDED
 
 **Effort:** ~5-7 engineering days
 **Critical-path:** Some items (DEC-443 BUG-218 fix) yes; others parallel-friendly
+**Pyramid layers touched:** TBD per sprint plan (per PROJECT_PLAN.md §22.1; layers per §21.1)
 
 ---
 
@@ -147,6 +152,7 @@ DEC-381/382/383/384/388/389/390/391/392/394/397/398/399 — all RESOLVED-DECIDED
 
 **Effort:** ~5-8 engineering days
 **Critical-path:** Tier 2 & 3 + Russell 1000 needed for full universe; can defer DEC-374 (historical backfill)
+**Pyramid layers touched:** TBD per sprint plan (per PROJECT_PLAN.md §22.1; layers per §21.1)
 
 ---
 
@@ -174,6 +180,7 @@ DEC-381/382/383/384/388/389/390/391/392/394/397/398/399 — all RESOLVED-DECIDED
 **Effort:** ~14-19 engineering days (catch mechanisms ~7-10d + architecture hygiene ~7-9d)
 **Critical-path:** Catch mechanisms required for Phase 1B-α confidence; architecture hygiene parallel-able / non-blocking
 **DEC-220 priority within sprint:** HIGH — small effort (~0.5d) but resolves governance clarity + reduces future silent-overwrite risk on main branch
+**Pyramid layers touched:** TBD per sprint plan (per PROJECT_PLAN.md §22.1; layers per §21.1)
 
 ---
 
@@ -190,6 +197,7 @@ DEC-381/382/383/384/388/389/390/391/392/394/397/398/399 — all RESOLVED-DECIDED
 **Effort:** ~19-27 engineering days total + ~26-33h compute wall time
 
 **Critical-path:** Phase 1A-α gate must pass before Phase 1B agent overlay work begins; Phase 1A-β must pass before Phase 1B-α $300 budget commits
+**Pyramid layers touched:** TBD per sprint plan (per PROJECT_PLAN.md §22.1; layers per §21.1)
 
 ---
 
@@ -200,6 +208,7 @@ DEC-381/382/383/384/388/389/390/391/392/394/397/398/399 — all RESOLVED-DECIDED
 Implementation per Theme X4 Block 3 sequencing in AUDIT_INDEX.md.
 
 **Effort:** ~17-19 engineering days
+**Pyramid layers touched:** TBD per sprint plan (per PROJECT_PLAN.md §22.1; layers per §21.1)
 
 ---
 
@@ -208,6 +217,7 @@ Implementation per Theme X4 Block 3 sequencing in AUDIT_INDEX.md.
 **Sub-decisions in scope (5):** DEC-367/368/369/370/371
 
 **Effort:** ~14-18 engineering days
+**Pyramid layers touched:** TBD per sprint plan (per PROJECT_PLAN.md §22.1; layers per §21.1)
 
 ---
 
@@ -218,6 +228,7 @@ Implementation per Theme X4 Block 3 sequencing in AUDIT_INDEX.md.
 - Universe stable; cube populating per DEC-422
 
 **Output:** Phase 1B-α backtest results across 60 strategies × dimensional cube cells
+**Pyramid layers touched:** TBD per sprint plan (per PROJECT_PLAN.md §22.1; layers per §21.1)
 
 ---
 
