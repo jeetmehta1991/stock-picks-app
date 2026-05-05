@@ -1,14 +1,19 @@
 """
 scripts/refresh_extended_universe.py
-Build and refresh Tier 2 extended universe — spinoffs, large non-S&P stocks, 
-Nasdaq 100 non-S&P members above $10B market cap.
+Build and refresh Tier 2 extended universe — spinoffs + recent IPOs above
+$5B/$10B market cap respectively (DEC-103).
 
-TIER 2 DESIGN:
-- Spinoffs: any company above $5B market cap within 12 months of spinoff
-- Nasdaq 100 non-S&P: large liquid names not yet in S&P 500
-- Recent IPOs: above $10B market cap with 90+ days of trading history
+TIER 2 DESIGN (Pass 53 DEC-494 corrected — NDX-non-S&P removed; now T1c per DEC-483):
+- Spinoffs: any company above $5B market cap within 12 months of spinoff (DEC-103)
+- Recent IPOs: above $10B market cap with 90+ days of trading history (DEC-103)
 - Update frequency: MONTHLY for live trading (Stage 3+)
                     NOT needed for backtesting
+
+NOTE Pass 53 SCREENER-FIRST architecture (DEC-103/DEC-494/DEC-380):
+This script's pre-Pass-53 approach (yfinance-based seed list + market cap validation)
+is preserved as a stop-gap for laptop-local monthly refresh. Sprint 1 follow-up
+will replace this with Polygon `/v3/reference/dividends|splits|tickers` corp-actions
+feed as primary screener (yfinance lags new listings — L89 SNDK 9-month example).
 
 MONTHLY RATIONALE (vs semi-annual):
 - Spinoffs are added to Tier 2 immediately after listing (no waiting)
@@ -24,7 +29,7 @@ USAGE:
     python scripts/refresh_extended_universe.py --add SNDK GEV --write  # immediate spinoff add
 
 RUN ON: laptop monthly. Immediate run after any major spinoff announcement.
-OUTPUT: backtest/data/extended_universe.csv (Symbol, Company, Sector, MarketCapB, Tier2Reason, AddedDate)
+OUTPUT: Backtesting universe/extended_universe.csv (B++ schema: Symbol, Company, Sector, added_date, removed_date, MarketCapB, Tier2Reason)
 """
 import argparse
 import sys
@@ -36,35 +41,31 @@ import pandas as pd
 import yfinance as yf
 
 # ── Config ──────────────────────────────────────────────────────────────────
+# Pass 53 folder move: universe CSVs live in top-level "Backtesting universe/"
 CSV_PATH   = Path(__file__).parent.parent / "Backtesting universe" / "extended_universe.csv"
-SP500_CSV  = Path(__file__).parent.parent / "backtest" / "data" / "sp500_tickers.csv"
-MIN_MKTCAP_SPINOFF_B = 5.0   # spinoffs above $5B
-MIN_MKTCAP_GENERAL_B = 10.0  # general Tier 2 additions above $10B
+SP500_CSV  = Path(__file__).parent.parent / "Backtesting universe" / "sp500_tickers.csv"
+MIN_MKTCAP_SPINOFF_B = 5.0   # spinoffs above $5B (DEC-103)
+MIN_MKTCAP_IPO_B     = 10.0  # recent IPOs above $10B (DEC-103)
 MIN_PRICE   = 5.0
 MIN_AVG_VOL = 200_000
 
-# Seed list — major non-S&P stocks warranting Tier 2 inclusion
-# This is curated by the monthly review, not auto-generated
-# Includes: known spinoffs, large Nasdaq/NYSE non-S&P names, major ETFs already in ETFS_FULL
+# Seed list — Tier 2 candidates: SPINOFFS + RECENT IPOs only (DEC-494 Pass 53 — NDX-non-S&P removed; now T1c per DEC-483).
+# Curated by monthly review until Sprint 1 SCREENER-FIRST refactor (Polygon corp-actions feed) lands.
 TIER2_SEEDS = {
-    # Recent spinoffs (2024-2026) — should be in Tier 2 immediately
+    # Recent spinoffs (2023-2026) — should be in Tier 2 immediately
     "SNDK":  "spinoff_from_WDC_2025",
     "GEV":   "spinoff_from_GE_2024",
     "SOLV":  "spinoff_from_Honeywell_2024",
     "KVUE":  "spinoff_from_JNJ_2023",
 
-    # Large Nasdaq non-S&P (Nasdaq 100 members above $50B not in S&P 500)
-    "MELI":  "nasdaq100_non_sp500",
-    "ASML":  "nasdaq100_non_sp500",
-
-    # High-momentum non-S&P names above $10B (add as discovered)
+    # High-momentum non-S&P names above $10B (add as discovered; verify they qualify as recent IPO or spinoff per DEC-103)
     "VST":   "high_momentum_energy",
     "SMCI":  "ai_infrastructure",
 }
 
 
 def get_sp500_tickers() -> set:
-    df = pd.read_csv(SP500_CSV)
+    df = pd.read_csv(SP500_CSV, comment='#')
     return set(df["Symbol"].str.strip().tolist())
 
 
@@ -126,8 +127,11 @@ def main():
     # Load existing CSV if present
     existing_df = pd.DataFrame()
     if CSV_PATH.exists():
-        existing_df = pd.read_csv(CSV_PATH)
-        existing_tickers = set(existing_df["Symbol"].tolist())
+        existing_df = pd.read_csv(CSV_PATH, comment='#')
+        if "Symbol" in existing_df.columns:
+            existing_tickers = set(existing_df["Symbol"].dropna().tolist())
+        else:
+            existing_tickers = set()
         print(f"Existing Tier 2 CSV: {len(existing_tickers)} tickers")
     else:
         existing_tickers = set()
@@ -147,10 +151,13 @@ def main():
         result = validate_ticker(ticker, sp500)
         if result:
             result["Tier2Reason"] = reason
-            result["AddedDate"]   = (
-                existing_df[existing_df["Symbol"] == ticker]["AddedDate"].values[0]
-                if ticker in existing_tickers else date.today().isoformat()
-            )
+            # Pass 53 B++ schema: added_date / removed_date (lowercase per standardization)
+            if ticker in existing_tickers and "added_date" in existing_df.columns:
+                prior = existing_df[existing_df["Symbol"] == ticker]["added_date"].values
+                result["added_date"] = prior[0] if len(prior) else date.today().isoformat()
+            else:
+                result["added_date"] = date.today().isoformat()
+            result["removed_date"] = ""  # NULL = currently active in Tier 2
             valid_rows.append(result)
             status = "existing" if ticker in existing_tickers else "NEW"
             print(f"  {ticker}: ✅ ${result['MarketCapB']:.1f}B  [{result['Sector']}]  ({status})")
@@ -177,7 +184,8 @@ def main():
         print(f"\nDry run — use --write to save to {CSV_PATH}")
         return
 
-    cols = ["Symbol","Company","Sector","MarketCapB","Tier2Reason","AddedDate"]
+    # Pass 53 B++ canonical column order: Symbol,Company,Sector,added_date,removed_date,<extension cols>
+    cols = ["Symbol","Company","Sector","added_date","removed_date","MarketCapB","Tier2Reason"]
     result_df = result_df[[c for c in cols if c in result_df.columns]]
     result_df.to_csv(CSV_PATH, index=False)
     print(f"\n✅ Written: {CSV_PATH} ({len(result_df)} tickers)")

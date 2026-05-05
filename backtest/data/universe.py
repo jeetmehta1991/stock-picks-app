@@ -91,6 +91,131 @@ def get_sp500_constituents(max_tickers: int = 500) -> list[str]:
         return []
 
 
+# ── Pass 53 PIT loader (DEC-040 / DEC-477) ────────────────────────────────────
+# B++ schema universe CSVs use `added_date` / `removed_date` columns; PIT filter
+# resolves the active member set at any `as_of` date without survivorship bias.
+#
+# PIT FILTER: (added_date IS NULL OR added_date <= as_of)
+#         AND (removed_date IS NULL OR removed_date > as_of)
+#
+# Multi-period rows (ticker re-entry — e.g., NDX WDC/CSGP/TTWO/SPLK) are
+# handled via standard pandas OR semantics: each row is filtered independently;
+# union of passing rows is the active set at `as_of`.
+
+def _filter_pit(df: pd.DataFrame, as_of: date) -> pd.DataFrame:
+    """
+    Apply B++ PIT filter to a DataFrame with `added_date` and `removed_date` columns.
+    Returns rows active at `as_of`.
+    """
+    if "added_date" not in df.columns or "removed_date" not in df.columns:
+        # File predates B++ migration — treat all rows as active (current snapshot semantics)
+        return df
+
+    as_of_ts = pd.Timestamp(as_of)
+    added = pd.to_datetime(df["added_date"], errors="coerce")
+    removed = pd.to_datetime(df["removed_date"], errors="coerce")
+    # NULL added_date → "in index prior to mapping window" → always passes left side
+    # NULL removed_date → "currently active" → always passes right side
+    left_ok = added.isna() | (added <= as_of_ts)
+    right_ok = removed.isna() | (removed > as_of_ts)
+    return df[left_ok & right_ok]
+
+
+def get_sp500_constituents_pit(as_of: date) -> list[str]:
+    """
+    PIT-correct S&P 500 constituents at `as_of` date (DEC-040 / DEC-477).
+
+    Reads `Backtesting universe/historical_membership.csv` (B++ schema) and
+    applies the PIT filter. Falls back to `sp500_tickers.csv` current snapshot
+    if the historical file is missing.
+
+    Pass 53 BASELINE-ONLY caveat: until 2020-2026 historical event backfill
+    completes, this returns the current 484 members regardless of `as_of`
+    (because all `added_date` / `removed_date` are NULL on baseline rows).
+    """
+    csv_path = UNIVERSE_DIR / "historical_membership.csv"
+    if not csv_path.exists():
+        logger.warning("historical_membership.csv missing — falling back to sp500_tickers.csv current snapshot")
+        return get_sp500_constituents()
+    try:
+        df = pd.read_csv(csv_path, comment='#')
+        active = _filter_pit(df, as_of)
+        tickers = active["Symbol"].drop_duplicates().tolist()
+        logger.info("PIT S&P 500 at %s: %d active members", as_of, len(tickers))
+        return tickers
+    except Exception as exc:
+        logger.error("Could not read historical_membership.csv: %s", exc)
+        return []
+
+
+def get_ndx_constituents_pit(as_of: date) -> list[str]:
+    """PIT-correct NASDAQ 100 (T1c) constituents at `as_of` (DEC-303 / DEC-483 T1c)."""
+    csv_path = UNIVERSE_DIR / "nasdaq_100_membership.csv"
+    if not csv_path.exists():
+        return []
+    try:
+        df = pd.read_csv(csv_path, comment='#')
+        active = _filter_pit(df, as_of)
+        return active["Symbol"].drop_duplicates().tolist()
+    except Exception as exc:
+        logger.error("Could not read nasdaq_100_membership.csv: %s", exc)
+        return []
+
+
+def get_extended_universe_pit(as_of: date) -> list[str]:
+    """PIT-correct Tier 2 (spinoffs + recent IPOs) constituents at `as_of` (DEC-103 / DEC-494)."""
+    csv_path = UNIVERSE_DIR / "extended_universe.csv"
+    if not csv_path.exists():
+        return []
+    try:
+        df = pd.read_csv(csv_path, comment='#')
+        if df.empty or "Symbol" not in df.columns:
+            return []
+        active = _filter_pit(df, as_of)
+        return active["Symbol"].dropna().drop_duplicates().tolist()
+    except Exception as exc:
+        logger.error("Could not read extended_universe.csv: %s", exc)
+        return []
+
+
+def get_momentum_watchlist_pit(as_of: date) -> list[str]:
+    """PIT-correct Tier 3 (momentum top 100 non-T1) constituents at `as_of` (DEC-104 / DEC-364 / DEC-496)."""
+    csv_path = UNIVERSE_DIR / "momentum_watchlist.csv"
+    if not csv_path.exists():
+        return []
+    try:
+        df = pd.read_csv(csv_path, comment='#')
+        if df.empty or "Symbol" not in df.columns:
+            return []
+        active = _filter_pit(df, as_of)
+        return active["Symbol"].dropna().drop_duplicates().tolist()
+    except Exception as exc:
+        logger.error("Could not read momentum_watchlist.csv: %s", exc)
+        return []
+
+
+def union_universe(as_of: date, include_etfs: bool = True) -> list[str]:
+    """
+    Union of all 5 universe buckets at `as_of` (DEC-040 cross-tier loader).
+
+    Returns deduplicated ticker list combining:
+      T1a (S&P 500 — historical_membership.csv PIT)
+      T1c (NASDAQ 100 non-S&P — nasdaq_100_membership.csv PIT)
+      T2  (spinoffs + recent IPOs — extended_universe.csv PIT)
+      T3  (momentum top 100 non-T1 — momentum_watchlist.csv PIT)
+      ETFs (Tier 1 ETFs — tier1_etfs.csv, always-active)
+
+    T1b (Russell 1000 non-S&P) deferred to Sprint 1 procurement (LSEG paywall).
+    """
+    members = set(get_sp500_constituents_pit(as_of))
+    members |= set(get_ndx_constituents_pit(as_of))
+    members |= set(get_extended_universe_pit(as_of))
+    members |= set(get_momentum_watchlist_pit(as_of))
+    if include_etfs:
+        members |= set(get_etfs_full())
+    return sorted(members)
+
+
 def apply_liquidity_filter(
     tickers: list[str],
     ohlcv_dict: dict[str, pd.DataFrame],

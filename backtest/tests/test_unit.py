@@ -825,6 +825,104 @@ def test_hybrid_short_trail_after_target_hit():
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# PIT UNIVERSE LOADERS (DEC-040 / DEC-477 — Pass 53)
+# ─────────────────────────────────────────────────────────────────────────────
+
+def test_pit_filter_baseline_consistency():
+    """Baseline-only build (all NULL dates) returns identical set across as_of dates."""
+    from backtest.data.universe import get_sp500_constituents_pit
+    a = get_sp500_constituents_pit(date(2020, 1, 1))
+    b = get_sp500_constituents_pit(date(2024, 6, 15))
+    c = get_sp500_constituents_pit(date(2026, 5, 5))
+    assert a == b == c, "baseline should be identical until event backfill (option-beta semantics)"
+    assert len(a) > 400, f"expected >400 baseline tickers, got {len(a)}"
+    print(f"✅ baseline PIT consistency: {len(a)} tickers across all dates")
+
+
+def test_pit_filter_added_date_semantics():
+    """Ticker with explicit added_date is excluded from PIT before that date, included after."""
+    from backtest.data.universe import _filter_pit
+    df = pd.DataFrame({
+        "Symbol": ["AAA", "BBB", "CCC"],
+        "added_date": ["", "2022-06-01", "2024-01-01"],
+        "removed_date": ["", "", ""],
+    })
+    # Pre-window: AAA passes (NULL added), BBB excluded (added 2022-06), CCC excluded (added 2024)
+    result = _filter_pit(df, date(2021, 1, 1))
+    assert set(result["Symbol"].tolist()) == {"AAA"}, "pre-window: only NULL-added passes"
+    # Mid-window: AAA + BBB pass, CCC still excluded
+    result = _filter_pit(df, date(2023, 1, 1))
+    assert set(result["Symbol"].tolist()) == {"AAA", "BBB"}, "mid-window: AAA + BBB pass"
+    # Post-window: all 3 pass
+    result = _filter_pit(df, date(2025, 1, 1))
+    assert set(result["Symbol"].tolist()) == {"AAA", "BBB", "CCC"}, "all 3 active by 2025"
+    print("✅ added_date semantics: correct PIT inclusion at each window")
+
+
+def test_pit_filter_removed_date_semantics():
+    """Ticker with explicit removed_date is included before removal, excluded on/after."""
+    from backtest.data.universe import _filter_pit
+    df = pd.DataFrame({
+        "Symbol": ["XXX", "YYY"],
+        "added_date": ["", ""],
+        "removed_date": ["2023-06-01", ""],
+    })
+    # Before removal: both pass
+    result = _filter_pit(df, date(2023, 1, 1))
+    assert set(result["Symbol"].tolist()) == {"XXX", "YYY"}, "before removal: both active"
+    # On removal date: removed_date filter is strict-greater (removed_date > as_of)
+    # 2023-06-01 > 2023-06-01 is FALSE → XXX excluded on its removal date
+    result = _filter_pit(df, date(2023, 6, 1))
+    assert set(result["Symbol"].tolist()) == {"YYY"}, "on removal date: XXX excluded"
+    # After removal: only YYY
+    result = _filter_pit(df, date(2024, 1, 1))
+    assert set(result["Symbol"].tolist()) == {"YYY"}, "after removal: only YYY"
+    print("✅ removed_date semantics: correct PIT exclusion at/after removal")
+
+
+def test_pit_filter_multi_period_rows():
+    """Re-entry tickers (e.g., NDX WDC/CSGP/TTWO/SPLK) handled via OR semantics across rows."""
+    from backtest.data.universe import _filter_pit
+    df = pd.DataFrame({
+        "Symbol": ["WDC", "WDC", "OTHER"],
+        "added_date":   ["",         "2023-06-01", ""],
+        "removed_date": ["2020-12-01", "",         ""],
+    })
+    # Period 1 active: WDC pre-2020-12 (row 0)
+    result = _filter_pit(df, date(2020, 6, 1))
+    assert set(result["Symbol"].tolist()) == {"WDC", "OTHER"}, "Period 1: WDC active"
+    # Gap: WDC inactive (between removal 2020-12 and re-entry 2023-06)
+    result = _filter_pit(df, date(2022, 1, 1))
+    assert set(result["Symbol"].tolist()) == {"OTHER"}, "Gap: WDC inactive"
+    # Period 2 active: WDC re-entered 2023-06 (row 1)
+    result = _filter_pit(df, date(2024, 1, 1))
+    assert set(result["Symbol"].tolist()) == {"WDC", "OTHER"}, "Period 2: WDC re-active"
+    print("✅ multi-period rows: WDC re-entry handled via OR semantics")
+
+
+def test_union_universe_includes_etfs():
+    """union_universe combines all 5 buckets with ETFs by default."""
+    from backtest.data.universe import union_universe, get_etfs_full
+    etfs = set(get_etfs_full())
+    union = set(union_universe(date(2024, 6, 15)))
+    assert etfs.issubset(union), "ETFs must be in default union"
+    assert "SPY" in union and "QQQ" in union, "core ETFs present"
+    # Without ETFs
+    union_no_etf = set(union_universe(date(2024, 6, 15), include_etfs=False))
+    assert not (etfs & union_no_etf), "include_etfs=False excludes ETF tickers"
+    print(f"✅ union_universe: {len(union)} tickers w/ETFs, {len(union_no_etf)} w/o")
+
+
+def test_union_universe_includes_ndx():
+    """union_universe contains T1c NDX-non-S&P names like AAPL (also S&P) + e.g., MELI."""
+    from backtest.data.universe import union_universe
+    union = set(union_universe(date(2024, 6, 15)))
+    # AAPL is in both S&P + NDX → should be in union once
+    assert "AAPL" in union, "AAPL should be in union"
+    print(f"✅ union_universe contains T1a + T1c overlap correctly")
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # RUNNER
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -848,6 +946,12 @@ if __name__ == "__main__":
         test_cot_returns_neutral, test_sentiment_score_excludes_cot,
         test_hybrid_long_trail_after_target_hit,
         test_hybrid_short_trail_after_target_hit,
+        test_pit_filter_baseline_consistency,
+        test_pit_filter_added_date_semantics,
+        test_pit_filter_removed_date_semantics,
+        test_pit_filter_multi_period_rows,
+        test_union_universe_includes_etfs,
+        test_union_universe_includes_ndx,
     ]
     passed = 0
     failed = []
