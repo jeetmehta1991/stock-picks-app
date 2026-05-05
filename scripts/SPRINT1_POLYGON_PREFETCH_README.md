@@ -209,7 +209,11 @@ GitHub note: cache is ~7-12 GB total. GitHub allows 100 GB per repo, individual 
 After Polygon prefetch is committed to main, next session:
 
 1. **Build universe files (DEC-477 + DEC-483 — B++ format Pass 53):**
-   - `data/universe/historical_membership.csv` (S&P 500 — single CSV, columns `Symbol, Company, Sector, added_date, removed_date`; PIT loader filters by `(added_date ≤ as_of) AND (removed_date IS NULL OR removed_date > as_of)`)
+   - `data/universe/historical_membership.csv` (S&P 500 — single CSV, columns `Symbol, Company, Sector, added_date, removed_date`; PIT loader filters by `(added_date IS NULL OR added_date ≤ as_of) AND (removed_date IS NULL OR removed_date > as_of)`)
+     - **Primary source:** S&P Dow Jones Indices press releases (`spglobal.com/spdji` — authoritative for every S&P 500 add/remove with effective dates)
+     - **Fallback source (Pass 53 one-time L88 exception, owner-granted):** Wikipedia "List of S&P 500 companies" Selected-changes table + general internet browse — used only if S&P DJI archives have gaps; manual verification before commit
+     - **Mapping timeframe:** 2020-01-01 → today + ongoing for Stage 3 (Polygon Stocks Starter cache window is 5y backward = 2021-05; 1-year buffer ensures every ticker active in cache window has a verifiable `added_date`)
+     - **Pre-2020 active tickers** (e.g., MMM/JNJ/KO): leave `added_date` NULL — meaning "in S&P prior to mapping window"; PIT loader handles null via the filter expression above (Pass 53 option-β)
    - `data/universe/russell_1000_membership.csv` (T1b — same B++ format with year-grain dates from FTSE Russell)
    - `data/universe/nasdaq_100_membership.csv` (T1c — same B++ format with year-grain dates from Nasdaq)
    - `data/universe/index_rebalance_events.parquet` (day-grain via SEC EDGAR for DEC-368 — separate file since rebalance events strategy needs effective-date grain)

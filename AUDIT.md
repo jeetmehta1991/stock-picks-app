@@ -26777,3 +26777,64 @@ B++ and day-grain have identical correctness; B++ has simpler file format. Owner
 - `refresh_sp500_universe.py` extension for Stage 3 dynamic append-on-admission / update-on-removal (Stage 3 scope, not Stage 2 backtest)
 
 *Per CHECKLIST #32 (verbatim "option b++"); #25 (honest categorization — pre-existing 484-CSV bias surfaced via fact-check rather than minimized; DEC-303 vs DEC-477/483 phrasing drift acknowledged honestly); #43 (cross-doc consistency: AUDIT_INDEX DEC-477/483 ↔ ENG_REGISTER Sprint 1 ↔ DETAILED §2.4.6 ↔ IMPLEMENTATION_READINESS_DASHBOARD ↔ SPRINT1 README — all forward-looking docs aligned to B++ phrasing); #45 (pre-flight halted on first interpretation; verified `refresh_sp500_universe.py` actually fetches current snapshot before recommending; surfaced two interpretations of "simplify" before owner picked B++); #51 (default lower-impact: clarification not supersession; no new DECs created since DEC-303 spec was already B++); #58 (atomic 6-file commit covering canonical docs + Sprint 1 implementation guide); #65 (file format clarification doesn't add new roster items — same DEC-303/477/483 decisions, body text aligned to actual spec); #66 (DEC-303 verified as parent spec authority; DEC-477 + DEC-483 verified as descendants whose body text was drifting from DEC-303 — corrected); L143 (decision-state vs artifact-state: addressed — DEC-303 always specified B++; downstream prose drift now reconciled).*
+
+---
+
+## Pass 53 — historical_membership.csv source decision (S&P DJI primary; Wikipedia/internet-browse fallback under one-time L88 exception) + timeframe + null-treatment for pre-window tickers
+
+**Trigger:** Owner direction Pass 53 — Q-A sequence:
+- Owner: *"How did the tier 1 list get populated? Whats the source?"* — investigation revealed current 484-CSV originated from Wikipedia migration (commit `5734bdaf` Apr 2026) and is now refreshed quarterly from slickcharts.com (current snapshot, not PIT).
+- Owner: *"Not wayback machine. In this case use wikipedia or browse internet"* — directed source change for B++ historical_membership.csv build.
+- Owner: *"S&P Dow Jones Indices press releases is best. What will be the timeframe of mapping?"* — refined source choice; asked for timeframe recommendation.
+- Owner: *"Approve all recs"* — covering Q1 (S&P DJI primary, Wikipedia + internet browse fallback under one-time exception), Q2 (a) (no CLAUDE.md HARD RULE amendment; log exception in DEC + AUDIT only), Q3 (β) (NULL `added_date` for pre-2020 active tickers), Q4 (mapping timeframe 2020-01-01 → today + ongoing), Q5 (commit scope expanded to 7 files for cross-doc consistency per #43).
+
+**Discovery (HARD RULE conflict surfaced before edits):** CLAUDE.md "HARD RULES — Never Violate" section explicitly states *"NEVER use Wikipedia. Historically blocked in Codespaces; not point-in-time; fragile (L88). Same fragility applies on local VS Code."* Owner's Q1 direction would override this for the universe-build use case. Pre-flight surfaced the conflict; owner picked option (a) — log scoped exception, do not amend the HARD RULE. The exception applies strictly to: (i) one-time historical scrape (not runtime), (ii) local laptop only, (iii) manual verification before commit, (iv) fallback only — primary remains S&P Dow Jones Indices press releases. Future runtime Wikipedia use stays banned.
+
+**Resolution applied this turn:**
+
+1. **`AUDIT_INDEX.md` DEC-303 body** — added Pass 53 source clarification block. Wikipedia source from Pass 48 spec marked SUPERSEDED; primary = S&P DJI press releases; fallback = Wikipedia + internet browse under one-time L88 exception. Mapping timeframe 2020-01-01 → today + ongoing. Pre-2020 active tickers: NULL `added_date` (option β); PIT loader filter handles null. Last-pass column updated 52 → 53.
+
+2. **`AUDIT_INDEX.md` DEC-477 body** — updated PIT loader filter to handle NULL `added_date`: `(added_date IS NULL OR added_date ≤ as_of) AND (removed_date IS NULL OR removed_date > as_of)`. Cross-referenced DEC-303 source. Status unchanged.
+
+3. **`ENGINEERING_REGISTER.md` Sprint 1 universe scope T1a line** — updated filter expression with NULL handling; added source citation + timeframe + pre-2020 NULL convention.
+
+4. **`DETAILED_PROJECT_PLAN.md` §2.4.6 universe membership PIT entry** — same filter + source + timeframe + NULL convention update.
+
+5. **`IMPLEMENTATION_READINESS_DASHBOARD.md` Pass 53 universe scope expansion T1a line** — same updates.
+
+6. **`scripts/SPRINT1_POLYGON_PREFETCH_README.md` next-steps section** — expanded `historical_membership.csv` bullet with sub-bullets covering primary source / fallback source (with one-time exception note) / mapping timeframe / pre-2020 NULL convention. Sprint 1 implementation guide now self-contained.
+
+7. **`AUDIT.md`** — this entry.
+
+**Decision impact:**
+- DEC-303 body: source clarified (Pass 48 Wikipedia source SUPERSEDED by S&P DJI primary). Status RESOLVED-DECIDED unchanged.
+- DEC-477 body: filter expression updated with NULL handling. Status unchanged.
+- No new DECs created.
+- Sprint 1 effort: UNCHANGED (~25.5-35.5d). Source change does not affect data sourcing scope — S&P DJI press releases are the same effort to scrape as Wikipedia tables, both are one-time historical assembly.
+- HARD RULE state: CLAUDE.md "NEVER use Wikipedia" preserved verbatim. Pass 53 Wikipedia use logged as scoped one-time exception in DEC-303 body + this AUDIT entry.
+- Filter expression now consistent across 5 forward-looking docs (AUDIT_INDEX DEC-477 + ENGINEERING_REGISTER + DETAILED §2.4.6 + IMPLEMENTATION_READINESS_DASHBOARD + SPRINT1 README).
+
+**Mapping timeframe rationale (Q4 = 2020-01-01 → today + ongoing):**
+- Polygon Stocks Starter cache window = 5y backward from today = 2021-05-05 onwards
+- DEC-482 walk-forward = 2y train + 6mo OOS × 5 folds within 5y window — first fold's training start ≥ 2022-01
+- Phase 1A v3 archive used Jan 2022 — Mar 2026; 1-year buffer pre-cache ensures every active-during-cache ticker has verifiable `added_date`
+- Stage 3 forward: append rows continuously per S&P DJI announcement
+
+**Q3 = β (NULL pre-window) rationale:** Tickers in S&P prior to 2020-01-01 (e.g., MMM 1976, JNJ 1973, KO 1957) — recording original add date is full provenance (option α) but adds data-sourcing effort with no correctness gain for our 2020+ testing window. Option β leaves `added_date` NULL with PIT loader treating NULL as "in S&P prior to mapping window". Saves Sprint 1 effort with zero correctness loss.
+
+**Files updated this turn:**
+1. `AUDIT_INDEX.md` — DEC-303 + DEC-477 body updates
+2. `ENGINEERING_REGISTER.md` — Sprint 1 universe scope T1a line
+3. `DETAILED_PROJECT_PLAN.md` — §2.4.6 universe membership entry
+4. `IMPLEMENTATION_READINESS_DASHBOARD.md` — Pass 53 universe scope expansion T1a line
+5. `scripts/SPRINT1_POLYGON_PREFETCH_README.md` — next-steps section
+6. `AUDIT.md` — this entry
+
+**Out of scope this turn (queued for Sprint 1 implementation):**
+- Actual scrape of S&P Dow Jones Indices press releases for 2020-01-01 → today add/remove events (Sprint 1 work, ~1-2d)
+- Manual verification step before committing the assembled CSV (Sprint 1 work)
+- Wikipedia / internet-browse fallback usage if S&P DJI archives have gaps (only if needed; manual verification required either way)
+- `universe.py` loader implementation of NULL-aware filter expression (Sprint 1 work)
+- Sister files for R1000 (FTSE Russell annual reconstitution) + NDX (Nasdaq annual reconstitution) — same B++ format with year-grain dates
+
+*Per CHECKLIST #32 (verbatim "Approve all recs" covering Q1-Q5; #25 honest categorization — HARD RULE conflict surfaced explicitly before edits, scope of exception narrowed to (i) one-time, (ii) laptop-local, (iii) fallback-only, (iv) manual verification — not silently overridden); #43 (cross-doc consistency: filter expression updated in 5 forward-looking docs in same commit to prevent drift); #45 (pre-flight halted twice — first on Wikipedia HARD RULE, second on commit-scope expansion when filter NULL-handling needed propagation; both surfaced for explicit owner direction before proceeding); #51 (default lower-impact: option (a) no-CLAUDE.md-amendment per owner pick — preserves HARD RULE for future readers; option (β) NULL pre-window per owner pick — saves Sprint 1 effort); #58 (atomic 6-file commit covering all docs that mention the filter expression or universe-build source); #65 (no new roster items — DEC-303/477 body updates only); #66 (DEC-303 verified as parent source decision; DEC-477 verified as B++ format descendant; both correctly targeted for body update). HARD RULE Wikipedia ban preserved verbatim in CLAUDE.md per Q2(a); scoped exception logged here for future reader auditability.*

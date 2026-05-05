@@ -31,7 +31,7 @@
 - Sprint 0 verified: AAII + CNN F&G + SEC EDGAR domains reachable from local VS Code (Codespace allowlist concern moot since running locally Pass 53)
 
 **Universe scope (DEC-483 RESOLVED-DECIDED Pass 53):**
-- Tier 1a: S&P 500 (~503 active; ~550-600 unique across 5y testing window; PIT via DEC-303 historical_membership.csv per DEC-477 — B++ format: single static CSV with `added_date`/`removed_date` columns; loader filters by `added_date ≤ as_of < removed_date OR removed_date IS NULL`)
+- Tier 1a: S&P 500 (~503 active; ~550-600 unique across 5y testing window; PIT via DEC-303 historical_membership.csv per DEC-477 — B++ format: single static CSV with `added_date`/`removed_date` columns; loader filters by `(added_date IS NULL OR added_date ≤ as_of) AND (removed_date IS NULL OR removed_date > as_of)`. Source: S&P Dow Jones Indices press releases primary; Wikipedia + internet browse fallback under one-time L88 exception per Pass 53. Mapping timeframe: 2020-01-01 → today + ongoing; pre-2020 active tickers have NULL `added_date`)
 - Tier 1b: Russell 1000-non-S&P (~497 net new tickers; same B++ format with year-grain dates from FTSE Russell annual reconstitution)
 - Tier 1c: NASDAQ 100-non-S&P (~15 net new tickers; same B++ format with year-grain dates from Nasdaq annual reconstitution)
 - Total: ~1015 unique Tier 1 tickers (was ~509 pre-Pass-53)

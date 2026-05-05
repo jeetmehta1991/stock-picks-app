@@ -189,7 +189,7 @@ None currently — all open Pass 52 owner-decision items closed.
 10. **DEC-483 Tier 1 sub-tiers T1a/T1b/T1c with year-grain PIT for R1000+NDX (NEW Pass 53)**
 
 **Pass 53 universe scope expansion:**
-- T1a (S&P 500): ~503 active / ~550-600 unique across 5y testing window; PIT via DEC-303 historical_membership.csv (DEC-477) — B++ format Pass 53: single static CSV with `added_date`/`removed_date` columns; loader filters by `(added_date ≤ as_of) AND (removed_date IS NULL OR removed_date > as_of)`
+- T1a (S&P 500): ~503 active / ~550-600 unique across 5y testing window; PIT via DEC-303 historical_membership.csv (DEC-477) — B++ format Pass 53: single static CSV with `added_date`/`removed_date` columns; loader filters by `(added_date IS NULL OR added_date ≤ as_of) AND (removed_date IS NULL OR removed_date > as_of)`. Source: S&P Dow Jones Indices press releases primary; Wikipedia + internet browse fallback under Pass 53 one-time L88 exception. Mapping timeframe: 2020-01-01 → today + ongoing.
 - T1b (R1000-non-S&P): ~497 net new tickers; same B++ format with year-grain dates from FTSE Russell annual reconstitution
 - T1c (NDX-non-S&P): ~15 net new tickers; same B++ format with year-grain dates from Nasdaq annual reconstitution
 - Total: ~1015 unique Tier 1 tickers
