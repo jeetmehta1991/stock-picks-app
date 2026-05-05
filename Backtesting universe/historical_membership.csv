@@ -1,3 +1,10 @@
+# T1a S&P 500 historical_membership.csv — DEC-477 canonical PIT-correct universe file
+# Pass 53 BASELINE-ONLY BUILD (owner directive "execute now even if null"): all 484 current S&P 500 members emitted with NULL added_date/removed_date.
+# NULL added_date = ticker in S&P prior to mapping window 2020-01-01 (Pass 53 option-beta semantics; PIT loader treats NULL as "always-true left-side").
+# NULL removed_date = ticker currently active in S&P 500.
+# GAP: historical events (additions + removals 2020-01-01 -> today) NOT YET BACKFILLED. Sprint 1 follow-up: scrape S&P DJI press releases (primary) / Wikipedia changes table (L88 fallback under owner-granted one-time exception, manual verification before commit).
+# SCHEMA: Symbol, Company, Sector (GICS post-2018 reclassification), added_date, removed_date
+# PIT FILTER: (added_date IS NULL OR added_date <= as_of) AND (removed_date IS NULL OR removed_date > as_of). Multi-period rows supported via standard pandas/SQL OR semantics.
 Symbol,Company,Sector,added_date,removed_date
 MMM,3M,Industrials,,
 AOS,A. O. Smith,Industrials,,

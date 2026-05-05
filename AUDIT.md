@@ -27848,3 +27848,65 @@ Initial drift scan via grep across all non-archive `*.md` files for known Pass 5
 **No code changes this turn — body-update only on forward-looking specs (in-window per L143 since DEC-496 was just-logged Pass 53; this is a same-Pass correction, not history rewrite).**
 
 *Per CHECKLIST #32 (owner approval matrix A/B/C/D received — multi-question response with explicit-letter answers); #25 (drift surfacing honest — root cause analysis distinguishes methodology-correct vs data-flow-wrong gap; named pattern across 4 Pass 53 catches); #43 (cross-doc consistency: 6 docs updated as a unit — DEC-496/103/494 bodies + AUDIT narrative + SPRINT1 README + CLAUDE.md + CHECKLIST + UNIVERSAL_LEARNINGS); #45 (read each doc before editing; verified DEC-496 body content via grep before modifying); #51 (scope strict — screener-first correction only; not expanding to T1 sub-tier work or DEC-491/492/493 trade-capture work this turn); #58 (atomic commit grouping all 7 doc updates as Pass 53 screener-first correction); #65 (no roster expansions; no new DECs — all body updates to existing DECs per "this is a same-Pass correction" framing); #66 (DEC target alignment verified: DEC-496 = T3 momentum, DEC-103 = T2 spinoffs/IPOs, DEC-494 = refresh_extended_universe.py alignment — all confirmed). Owner directive "Update all documents" (this turn) — FULFILLED.*
+
+---
+
+## Pass 53 — T1a historical_membership.csv baseline-only build + B++ schema standardization across all 5 universe CSVs
+
+**Trigger:** Owner Pass 53 directive: "T1a S&P 500 historical_membership.csv execute now. Even if null, all the files in the backtesting universe need to use a standardized schema. Tier 1 ETF uses a different scheme. Please rectify."
+
+**Two parallel tasks executed this turn:**
+
+**Task 1 — T1a historical_membership.csv baseline-only build (DEC-477 partial-resolution Sprint 1 Day 1):**
+- Owner directive "execute now even if null" interpreted as: build baseline-only file immediately (current 484 S&P 500 members with NULL added_date / NULL removed_date) and surface the historical-event-backfill gap explicitly.
+- New file `Backtesting universe/historical_membership.csv` written: 7 header comment lines (provenance + schema + PIT filter + gap acknowledgment) + 484 data rows (B++ schema `Symbol,Company,Sector,added_date,removed_date` with all dates blank).
+- NULL added_date semantics: Pass 53 option-β — "ticker in S&P prior to mapping window 2020-01-01"; PIT loader treats `(added_date IS NULL OR added_date <= as_of)` as always-true left-side per existing nasdaq_100_membership.csv pattern.
+- NULL removed_date semantics: ticker currently active in S&P 500.
+- **Explicit gap surfaced (not silently deferred):** historical events 2020-01-01 → today are NOT YET BACKFILLED. Sprint 1 follow-up = scrape S&P DJI press releases (primary) / Wikipedia changes table (L88 fallback under owner-granted one-time exception, manual verification before commit). The L88 exception was granted for ONE-TIME historical scrape (laptop-local, fallback-only, manual verification, not runtime); this turn does not invoke the exception (baseline-only build has no scrape need).
+- L143 don't-rewrite-history compliant: this is a NEW file creation, not an existing-history rewrite.
+
+**Task 2 — B++ schema standardization across all 5 universe CSVs:**
+Pre-Pass-53 schema audit (this turn) revealed inconsistency:
+
+| File | Pre-Pass-53 schema | Post-Pass-53 standardized |
+|---|---|---|
+| `sp500_tickers.csv` | `Symbol,Company,Sector` (no dates) | B++ added: `Symbol,Company,Sector,added_date,removed_date` (NULL on baseline) |
+| `tier1_etfs.csv` | `Symbol,Name,Category,Sector` (Name vs Company; no dates) | B++ + extension: `Symbol,Company,Sector,added_date,removed_date,Category` (NULL dates = always-active reference instrument) |
+| `nasdaq_100_membership.csv` | `Symbol,Company,Sector,added_date,removed_date` (B++ since DEC-303) | unchanged ✅ |
+| `extended_universe.csv` | `Symbol,Company,Sector,added_date,removed_date,MarketCapB,Tier2Reason` (B++ + extension) | unchanged ✅ |
+| `momentum_watchlist.csv` | `Symbol,Company,Sector,added_date,removed_date,MomentumScore,MarketCapB,LastPrice` (B++ + extension) | unchanged ✅ |
+| `historical_membership.csv` | (did not exist) | NEW: B++ baseline-only |
+
+**Pattern across migrated files:**
+- 5 core columns ALWAYS in this order: `Symbol, Company, Sector, added_date, removed_date`
+- Tier-specific extension columns AFTER core columns (Category for ETFs; MarketCapB+Tier2Reason for T2; MomentumScore+MarketCapB+LastPrice for T3)
+- PIT filter expression `(added_date IS NULL OR added_date ≤ as_of) AND (removed_date IS NULL OR removed_date > as_of)` is universal across all files
+- `comment='#'` loader-side support for header documentation (already in place per universe.py:59,84,168,233,254)
+
+**Code changes this turn:**
+
+| File | Change |
+|---|---|
+| `Backtesting universe/historical_membership.csv` | NEW file (484 rows + 7 header comments) |
+| `Backtesting universe/sp500_tickers.csv` | Schema migration: 3 → 5 columns (added_date/removed_date appended NULL) |
+| `Backtesting universe/tier1_etfs.csv` | Schema migration: 4 → 6 columns; Name → Company rename; Category column moved to extension position; 4 header comment lines added |
+| `scripts/refresh_sp500_universe.py` | (1) Read with `comment='#'` for future-proof header support; (2) Auto-add B++ columns if missing in current CSV; (3) New additions get `added_date = today's ISO date`; (4) B++ canonical column order enforced on output via `b_plus_plus_cols + extra_cols` reorder before to_csv |
+| `backtest/data/universe.py` | NO CHANGE — loaders use `df["Symbol"]` only; extra columns ignored gracefully (verified via runtime test: ETFs=27, S&P=482 unique post-dedupe) |
+| `CLAUDE.md` | Repo Structure block updated: standardized B++ schema callout; historical_membership.csv promoted from FUTURE to current with baseline-only annotation; sp500_tickers.csv schema annotation; tier1_etfs.csv extension column documented |
+
+**Verification:**
+- Runtime loader test: `from backtest.data.universe import get_etfs_full, get_sp500_constituents, ETFS_FULL` — all loaders return correct counts (27 ETFs, 482 S&P unique post-drop_duplicates from 484 raw rows). PASS.
+- Schema verification: head of all 5 files confirms canonical column order; nasdaq_100_membership.csv unchanged (already B++); extended_universe.csv + momentum_watchlist.csv header-only unchanged (already B++ + extension).
+- File line counts: sp500_tickers 485 lines (1 header + 484 data); historical_membership 492 lines (7 comment + 1 header + 484 data); tier1_etfs 33 lines (4 comment + 1 header + 27 data + 1 trailing); nasdaq_100_membership 165; extended_universe 1; momentum_watchlist 1.
+
+**Sprint 1 implications:**
+- T1a historical_membership.csv now exists; PIT loader integration (DEC-040) can begin reading from this file. CAVEAT: until historical event backfill, queries with as_of < 2020-01-01 return same 484 baseline regardless (because all added_date NULL). Backfill is the next Sprint 1 priority.
+- Schema standardization unblocks cross-tier loaders (e.g., union_universe(as_of) function that PIT-merges T1a + T1b + T1c + T2 + T3 + ETFs has consistent column shape).
+- DEC-477 partial-resolution: spec was RESOLVED-DECIDED Pass 53; baseline build in this turn = first artifact-state milestone toward RESOLVED-IMPLEMENTED.
+
+**Pre-flight CHECKLIST #66.b applied at recommendation time:**
+- INPUT: existing `Backtesting universe/sp500_tickers.csv` (484 current S&P 500 rows; quarterly refresh source per refresh_sp500_universe.py)
+- OUTPUT: new `Backtesting universe/historical_membership.csv` (B++ baseline-only) + migrated `sp500_tickers.csv` (B++ current snapshot) + migrated `tier1_etfs.csv` (B++ + Category extension)
+- FLOW: current snapshot rows → emit with NULL dates per Pass 53 option-β semantics (matches T1c nasdaq_100_membership.csv NULL-pre-window pattern); ETF reference instruments → emit with NULL dates (always-active semantics). Matches "execute now even if null" purpose ✅. Does NOT invoke L88 Wikipedia exception this turn (no scrape).
+
+*Per CHECKLIST #1 (owner approval received — "execute now" + "rectify" explicit); #13 (read-before-edit verified for all migrated files + universe.py + refresh script via grep + Read); #25 (gap surfaced honest — historical event backfill explicitly named as Sprint 1 follow-up, not silently deferred); #32 (verbatim owner directive enumeration); #43 (cross-doc consistency — CLAUDE.md repo structure updated to match new file layout); #45 (read each doc before editing); #51 (scope strict — schema migration + baseline build only; PIT loader integration deferred to Sprint 1 implementation); #58 (atomic commit grouping all 6 file changes); #65 (no roster expansions — schema migration is structural; no new DECs); #66 (DEC target alignment verified — DEC-477 = T1a historical_membership.csv canonical, DEC-118 = Tier 1 ETFs); #66.b (data flow INPUT/OUTPUT/FLOW block stated above pre-edit). Owner directive "execute now ... standardized schema ... rectify" — FULFILLED. Historical event backfill (S&P DJI press release scrape) explicitly flagged as remaining Sprint 1 work; awaits owner direction on when to invoke L88 exception.*

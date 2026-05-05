@@ -38,14 +38,14 @@
 ## Repo Structure
 
 ```
-Backtesting universe/    # Top-level folder for ALL universe CSVs (Pass 53 owner directive — single visible folder)
-  sp500_tickers.csv          # T1a snapshot — quarterly refresh; Sprint 1 historical_membership.csv replaces
-  tier1_etfs.csv             # Tier 1 ETFs (27) — DEC-118 / DEC-494 (Pass 53 migration from hardcoded ETFS_FULL)
+Backtesting universe/    # Top-level folder for ALL universe CSVs (Pass 53 owner directive — single visible folder). ALL files use standardized B++ schema: `Symbol, Company, Sector, added_date, removed_date` + tier-specific extension columns (Pass 53 schema standardization).
+  sp500_tickers.csv          # T1a current snapshot — quarterly refresh; B++ schema (Pass 53 standardized; added/removed_date NULL on baseline)
+  historical_membership.csv  # T1a B++ canonical PIT file (DEC-477) — Pass 53 baseline-only build (484 current members, all dates NULL); historical events 2020-2026 backfill = Sprint 1 follow-up via S&P DJI press release scrape (primary) + Wikipedia changes table (L88 fallback)
+  tier1_etfs.csv             # Tier 1 ETFs (27) — DEC-118 / DEC-494; B++ schema + Category extension column (Pass 53 standardized; ETFs are reference instruments — added/removed_date NULL = always-active)
   nasdaq_100_membership.csv  # T1c — 157 rows B++ schema (DEC-303); GICS sectors; multi-period rows
-  extended_universe.csv      # T2 — DEC-103; populate Sprint 1 post-Polygon-prefetch via DEC-380 corp actions
-  momentum_watchlist.csv     # T3 — DEC-104/364; populate Sprint 1 post-Polygon-prefetch via DEC-496 J-T 12-1
-  # FUTURE (Sprint 1):
-  # historical_membership.csv      # T1a B++ format — S&P DJI press release scrape (DEC-303 + DEC-477)
+  extended_universe.csv      # T2 — DEC-103; populate Sprint 1 post-Polygon-prefetch via DEC-380 corp actions screener (per Pass 53 SCREENER-FIRST correction)
+  momentum_watchlist.csv     # T3 — DEC-104/364; populate Sprint 1 post-Polygon-prefetch via DEC-496 J-T 12-1 broad-market screener (per Pass 53 SCREENER-FIRST correction)
+  # FUTURE (Sprint 1+):
   # russell_1000_membership.csv    # T1b — deferred to Sprint 1 procurement (LSEG paywall)
   # archived_watchlist.csv         # DEC-495 RESOLVED-DECIDED Stage 3+ — tickers rotating out of all 5 buckets
   # index_rebalance_events.parquet # DEC-370 — Sprint 5 day-grain effective dates for index rebalance strategies

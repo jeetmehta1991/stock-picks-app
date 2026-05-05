@@ -103,7 +103,12 @@ def main():
     if not CSV_PATH.exists():
         print(f"ERROR: {CSV_PATH} not found")
         sys.exit(1)
-    current_df = pd.read_csv(CSV_PATH)
+    current_df = pd.read_csv(CSV_PATH, comment='#')
+    # Pass 53 schema standardization — ensure B++ columns present (added_date/removed_date)
+    if "added_date" not in current_df.columns:
+        current_df["added_date"] = ""
+    if "removed_date" not in current_df.columns:
+        current_df["removed_date"] = ""
     current_tickers = set(current_df["Symbol"].tolist())
     print(f"\nCurrent CSV: {len(current_tickers)} tickers (last updated: check git log)")
 
@@ -167,12 +172,20 @@ def main():
     # Fetch sectors for new additions
     if additions and args.write:
         print(f"\nFetching sectors for {len(additions)} new tickers (yfinance)...")
+        today_iso = date.today().isoformat()
         new_rows = []
         for i, ticker in enumerate(sorted(additions)):
             sector = get_sector_from_yfinance(ticker)
             company_row = new_df[new_df["Symbol"] == ticker]
             company = company_row["Company"].values[0] if len(company_row) > 0 else ticker
-            new_rows.append({"Symbol": ticker, "Company": company, "Sector": sector})
+            # Pass 53 B++ schema: set added_date for new entries; removed_date NULL until removed
+            new_rows.append({
+                "Symbol": ticker,
+                "Company": company,
+                "Sector": sector,
+                "added_date": today_iso,
+                "removed_date": "",
+            })
             print(f"  {ticker}: {sector}")
             if i < len(additions) - 1:
                 time.sleep(0.5)
@@ -184,6 +197,10 @@ def main():
     # ── 5. Write or report ────────────────────────────────────────────────
     if args.write:
         updated_df = updated_df.sort_values("Symbol").reset_index(drop=True)
+        # Pass 53 B++ schema — enforce canonical column order on output
+        b_plus_plus_cols = ["Symbol", "Company", "Sector", "added_date", "removed_date"]
+        extra_cols = [c for c in updated_df.columns if c not in b_plus_plus_cols]
+        updated_df = updated_df[b_plus_plus_cols + extra_cols]
         updated_df.to_csv(CSV_PATH, index=False)
         print(f"\n✅ Written: {CSV_PATH}")
         print(f"   {len(current_tickers)} → {len(updated_df)} tickers")
