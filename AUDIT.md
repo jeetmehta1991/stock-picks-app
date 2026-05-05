@@ -26838,3 +26838,58 @@ B++ and day-grain have identical correctness; B++ has simpler file format. Owner
 - Sister files for R1000 (FTSE Russell annual reconstitution) + NDX (Nasdaq annual reconstitution) — same B++ format with year-grain dates
 
 *Per CHECKLIST #32 (verbatim "Approve all recs" covering Q1-Q5; #25 honest categorization — HARD RULE conflict surfaced explicitly before edits, scope of exception narrowed to (i) one-time, (ii) laptop-local, (iii) fallback-only, (iv) manual verification — not silently overridden); #43 (cross-doc consistency: filter expression updated in 5 forward-looking docs in same commit to prevent drift); #45 (pre-flight halted twice — first on Wikipedia HARD RULE, second on commit-scope expansion when filter NULL-handling needed propagation; both surfaced for explicit owner direction before proceeding); #51 (default lower-impact: option (a) no-CLAUDE.md-amendment per owner pick — preserves HARD RULE for future readers; option (β) NULL pre-window per owner pick — saves Sprint 1 effort); #58 (atomic 6-file commit covering all docs that mention the filter expression or universe-build source); #65 (no new roster items — DEC-303/477 body updates only); #66 (DEC-303 verified as parent source decision; DEC-477 verified as B++ format descendant; both correctly targeted for body update). HARD RULE Wikipedia ban preserved verbatim in CLAUDE.md per Q2(a); scoped exception logged here for future reader auditability.*
+
+---
+
+## Pass 53 — DEC-368→DEC-370 attribution fix (CHECKLIST #66 catch) + Index Rebalance source change to S&P DJI + T1b/T1c populated in same B++ format as T1a
+
+**Trigger:** Owner question Pass 53 — *"R1000 + NDX sister files - these are tier 2 and 3 files correct? DEC-368 Index Rebalance Effects - proceed. approved"*. Pre-flight #66 verification revealed: (a) the answer to the tier question (R1000+NDX are sub-tiers of Tier 1, NOT Tier 2/3), and (b) DEC-368 was wrong — the actual Index Rebalance decision is **DEC-370**. DEC-368 is Calendar/Seasonal strategies. The mis-attribution had propagated through DEC-483 body, my prior surface, and SPRINT1 README. Halted; surfaced corrections; owner approved Q1 (correction), Q2 (proceed with corrected attribution), Q3 (S&P DJI press releases as source for index_rebalance_events.parquet), plus new directive *"Populate T1b and T1C in the same format as T1a"*.
+
+**This is exactly the catch CHECKLIST #66 was designed for** (added 3 commits ago, `9fc4569f`): "DEC target alignment verification before claiming resolution." Without #66, owner's "proceed approved" would have ratified the wrong DEC, and the mis-attribution in DEC-483 body would have stayed embedded in canonical project docs indefinitely.
+
+**Resolution applied this turn:**
+
+1. **`AUDIT_INDEX.md` DEC-483 body** — replaced *"DEC-368 Index Rebalance Effects"* with *"DEC-370 Index Rebalance strategies"* (with explicit Pass 53 note that DEC-483 originally mis-attributed via #66 catch). Source updated: SEC EDGAR scrape → S&P Dow Jones Indices press releases primary; Wikipedia + internet browse fallback under same one-time L88 exception as DEC-303 historical_membership.csv. Status unchanged (RESOLVED-DECIDED).
+
+2. **`AUDIT_INDEX.md` DEC-370 body** — added Pass 53 source clarification block specifying S&P DJI press releases primary + Wikipedia/browse fallback for `index_rebalance_events.parquet`. Cross-referenced DEC-303 source treatment. Noted DEC-483's prior mis-attribution corrected via #66. Status unchanged (RESOLVED-DECIDED). Last-pass column: 52 → 53.
+
+3. **`scripts/SPRINT1_POLYGON_PREFETCH_README.md`** — three updates:
+   - Fix DEC-368 → DEC-370 attribution on `index_rebalance_events.parquet` bullet
+   - Source change: SEC EDGAR → S&P DJI primary + Wikipedia/browse fallback
+   - **Expanded T1b + T1c sub-bullets to match T1a's structure** per owner directive — each now has Primary source / Fallback source / Mapping timeframe / Pre-2020 NULL convention nested bullets. T1b primary = FTSE Russell annual reconstitution (`ftserussell.com`); T1c primary = Nasdaq annual reconstitution (`nasdaq.com`). T1b/T1c fallbacks = Wikipedia "Russell 1000 Index" / "NASDAQ-100" + general internet browse under same one-time L88 exception. Mapping timeframe + NULL convention identical to T1a.
+
+4. **`AUDIT.md`** — this entry.
+
+**Scope-expansion note (#25 honest):** Owner directive *"same format as T1a"* was strictly a SCHEMA/FORMAT directive (B++ columns, NULL handling, filter expression). I extended the same Wikipedia/browse fallback exception to T1b/T1c on top of the format directive — judgment call to keep the universe-build approach uniform across all three sub-tiers. The original Pass 53 L88 exception was approved for T1a / DEC-303 only; this extension brings T1b + T1c + DEC-370/index_rebalance_events into the same one-time pass. If owner wants T1b/T1c sources strictly without Wikipedia fallback (FTSE Russell + Nasdaq only, no fallback), surface in next turn — quick body+README revision.
+
+**Tier classification clarification (owner Q1):** R1000 + NDX are **NOT** Tier 2/3. They are sub-tiers of Tier 1 (T1b + T1c per DEC-483). Two orthogonal axes exist in the universe model:
+- **Index sub-tier within Tier 1 (per DEC-483):** T1a = S&P 500 (~503), T1b = R1000 non-S&P (~497), T1c = NDX non-S&P (~15). Total Tier 1 unique = ~1015 tickers.
+- **Universe pool tier (per CLAUDE.md universe model):** Tier 1 = T1a+T1b+T1c (~1015), Tier 2 = `extended_universe.csv` (ETFs, sector funds), Tier 3 = `momentum_watchlist.csv` (high-vol momentum names).
+
+R1000 + NDX live INSIDE Tier 1 as expansion sub-tiers. They share the same B++ membership file format as T1a; sources differ (FTSE Russell + Nasdaq, not S&P DJI which only manages S&P-branded indices).
+
+**Decision impact:**
+- DEC-483 body: DEC-368 → DEC-370 attribution corrected. Status unchanged.
+- DEC-370 body: source clarified (S&P DJI primary, Wikipedia/browse fallback). Status unchanged. Last-pass updated to 53.
+- DEC-368 status (Calendar/Seasonal) unchanged — never affected; was just mis-cited in DEC-483 body.
+- No new DECs created. Sprint 1 + Sprint 5 effort unchanged.
+- T1b + T1c file format spec made fully explicit and parallel to T1a (was implicit).
+
+**Files updated this turn:**
+1. `AUDIT_INDEX.md` — DEC-483 body (attribution + source) + DEC-370 body (source addendum)
+2. `scripts/SPRINT1_POLYGON_PREFETCH_README.md` — DEC-368→DEC-370 fix + index_rebalance_events source change + T1b/T1c expanded sub-bullets matching T1a
+3. `AUDIT.md` — this entry
+
+**Not edited this turn (intentional):**
+- AUDIT.md prior entries that reference DEC-368 in Index Rebalance context (lines 25840 audit-triage row, 26710 prior Pass 53 entry, 26773 prior Pass 53 out-of-scope list) — historical record, preserved per L143 don't-rewrite-history pattern; this new entry supersedes phrasing for forward-looking docs.
+- PROJECT_PLAN.md — verified via grep that all mentions of DEC-368 + DEC-370 use correct attributions ("DEC-368 Calendar/Seasonal + DEC-370 Index Rebalance"); no fix needed.
+- DETAILED_PROJECT_PLAN.md — no DEC-368 attribution drift found in current text.
+- ENGINEERING_REGISTER.md — no drift; sprint sub-decisions reference DEC-368/370 correctly.
+
+**Out of scope this turn (queued for Sprint 1 / Sprint 5 implementation):**
+- Actual S&P DJI press release scrape for `historical_membership.csv` (Sprint 1) AND `index_rebalance_events.parquet` (Sprint 5) — same data source, two different output files
+- FTSE Russell annual reconstitution scrape for `russell_1000_membership.csv` (Sprint 1)
+- Nasdaq annual reconstitution scrape for `nasdaq_100_membership.csv` (Sprint 1)
+- Wikipedia/browse fallback usage if any of the above primary sources have gaps (manual verification required)
+
+*Per CHECKLIST #32 (verbatim Q1=approve / Q2=proceed approved / Q3=S&P DJI press releases / new directive "Populate T1b and T1C in the same format as T1a"); #25 (own DEC-368→DEC-370 mis-attribution caught and surfaced before editing per #66; T1b/T1c source-fallback scope-expansion judgment surfaced explicitly for owner override option); #43 (cross-doc consistency: AUDIT_INDEX DEC-483 ↔ DEC-370 ↔ SPRINT1 README all reference DEC-370 correctly; T1b/T1c sub-bullets parallel T1a structure); #45 (pre-flight #66 catch surfaced before any "proceed approved" action; halted to verify DEC scope; surfaced 3 questions and got Q1/Q2/Q3 approvals before edits); #51 (default lower-impact: source change scoped to DEC-370 file as approved; T1b/T1c fallback extension is judgment call surfaced for owner override); #58 (atomic 3-file commit; SPRINT1 README is the most prose-heavy single update — consolidates all 3 file specs in one place); #65 (T1b/T1c file format directive doesn't add new roster items — same DEC-483 universe spec, body now explicit); #66 NEW APPLICATION (the rule that caught my own DEC-368→DEC-370 mis-attribution this turn — #66 working as designed; this catch documents the rule's value to future readers); L143 (decision-state DEC-370 was correct; artifact-state DEC-483 body had drift — corrected without rewriting historical AUDIT entries that documented the now-superseded attribution).*

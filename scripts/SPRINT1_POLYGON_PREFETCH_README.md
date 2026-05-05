@@ -214,9 +214,21 @@ After Polygon prefetch is committed to main, next session:
      - **Fallback source (Pass 53 one-time L88 exception, owner-granted):** Wikipedia "List of S&P 500 companies" Selected-changes table + general internet browse — used only if S&P DJI archives have gaps; manual verification before commit
      - **Mapping timeframe:** 2020-01-01 → today + ongoing for Stage 3 (Polygon Stocks Starter cache window is 5y backward = 2021-05; 1-year buffer ensures every ticker active in cache window has a verifiable `added_date`)
      - **Pre-2020 active tickers** (e.g., MMM/JNJ/KO): leave `added_date` NULL — meaning "in S&P prior to mapping window"; PIT loader handles null via the filter expression above (Pass 53 option-β)
-   - `data/universe/russell_1000_membership.csv` (T1b — same B++ format with year-grain dates from FTSE Russell)
-   - `data/universe/nasdaq_100_membership.csv` (T1c — same B++ format with year-grain dates from Nasdaq)
-   - `data/universe/index_rebalance_events.parquet` (day-grain via SEC EDGAR for DEC-368 — separate file since rebalance events strategy needs effective-date grain)
+   - `data/universe/russell_1000_membership.csv` (T1b — populate in **same B++ format as T1a** per Pass 53 owner directive: `Symbol, Company, Sector, added_date, removed_date`; PIT loader filters by `(added_date IS NULL OR added_date ≤ as_of) AND (removed_date IS NULL OR removed_date > as_of)`)
+     - **Primary source:** FTSE Russell annual reconstitution data (June reconstitution; `ftserussell.com` index governance documents)
+     - **Fallback source:** Wikipedia "Russell 1000 Index" + general internet browse (under same Pass 53 one-time L88 exception, scoped: laptop-local; fallback-only; manual verification)
+     - **Mapping timeframe:** 2020-01-01 → today + ongoing (matches T1a)
+     - **Pre-2020 active tickers:** `added_date` NULL (matches T1a option-β)
+   - `data/universe/nasdaq_100_membership.csv` (T1c — populate in **same B++ format as T1a** per Pass 53 owner directive: same schema and filter)
+     - **Primary source:** Nasdaq annual reconstitution data (December reconstitution; `nasdaq.com` index governance announcements)
+     - **Fallback source:** Wikipedia "NASDAQ-100" + general internet browse (under same Pass 53 one-time L88 exception, scoped: laptop-local; fallback-only; manual verification)
+     - **Mapping timeframe:** 2020-01-01 → today + ongoing (matches T1a)
+     - **Pre-2020 active tickers:** `added_date` NULL (matches T1a option-β)
+   - `data/universe/index_rebalance_events.parquet` (day-grain effective dates for **DEC-370** Index Rebalance strategies — **NOT DEC-368** Calendar/Seasonal; mis-attribution corrected Pass 53 via CHECKLIST #66 catch)
+     - **Primary source:** S&P Dow Jones Indices press releases (same source as `historical_membership.csv` — S&P DJI publishes announcement-date AND effective-date for every S&P 500 add/remove)
+     - **Fallback source:** Wikipedia + general internet browse (under same Pass 53 one-time L88 exception, scoped: laptop-local; fallback-only; manual verification)
+     - **Mapping timeframe:** 2020-01-01 → today + ongoing (matches T1a/T1b/T1c)
+     - **Schema:** `effective_date, ticker, action (added/removed), index_name (S&P 500/R1000/NDX), announcement_date` — separate from membership CSVs because rebalance-events strategy specifically consumes the announcement→effective window for frontrun signals
 
 2. **Supplementary Polygon prefetch** for T1b + T1c + historical-S&P-delisted (~531 net new tickers)
 
