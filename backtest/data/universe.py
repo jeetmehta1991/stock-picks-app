@@ -56,7 +56,7 @@ def get_etfs_full() -> list[str]:
     """
     csv_path = UNIVERSE_DIR / "tier1_etfs.csv"
     try:
-        df = pd.read_csv(csv_path)
+        df = pd.read_csv(csv_path, comment='#')
         tickers = df["Symbol"].drop_duplicates().tolist()
         logger.info("Loaded %d Tier 1 ETFs from tier1_etfs.csv", len(tickers))
         return tickers
@@ -81,7 +81,7 @@ def get_sp500_constituents(max_tickers: int = 500) -> list[str]:
     """
     csv_path = UNIVERSE_DIR / "sp500_tickers.csv"
     try:
-        df = pd.read_csv(csv_path)
+        df = pd.read_csv(csv_path, comment='#')
         # Remove duplicates (companies with two share classes)
         tickers = df["Symbol"].drop_duplicates().tolist()
         logger.info("Loaded %d S&P 500 constituents from sp500_tickers.csv", len(tickers))
@@ -165,7 +165,7 @@ def get_sector_map(tickers: list[str], info_dict: dict[str, dict] = None) -> dic
 
     # Load from CSV
     try:
-        df = pd.read_csv(csv_path)
+        df = pd.read_csv(csv_path, comment='#')
         df = df.drop_duplicates(subset=["Symbol"])
         sector_map = dict(zip(df["Symbol"], df["Sector"]))
     except Exception:
@@ -230,7 +230,7 @@ def get_extended_universe() -> list[str]:
     """
     csv_path = UNIVERSE_DIR / "extended_universe.csv"
     try:
-        df = pd.read_csv(csv_path)
+        df = pd.read_csv(csv_path, comment='#')
         if df.empty:
             return []
         tickers = df["Symbol"].drop_duplicates().tolist()
@@ -251,7 +251,7 @@ def get_momentum_watchlist() -> list[str]:
     """
     csv_path = UNIVERSE_DIR / "momentum_watchlist.csv"
     try:
-        df = pd.read_csv(csv_path)
+        df = pd.read_csv(csv_path, comment='#')
         if df.empty:
             return []
         tickers = df["Symbol"].drop_duplicates().tolist()

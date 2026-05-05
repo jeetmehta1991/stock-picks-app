@@ -1,3 +1,6 @@
+# CAVEAT (Pass 53): This file has 102 currently-active rows (NULL removed_date) vs Nasdaq official 101 components as of 5/4/2026. Likely cause is dual-class share counting (GOOG + GOOGL = 2 securities, 1 company). Source: Wikipedia "Nasdaq-100" article + owner Nasdaq IR press release verification (WMT/PTON/NTES). Verification iterations 1-5 against external sources (15 fetches) found no clean machine-fetchable timeline outside Wikipedia + Nasdaq IR; per-event Nasdaq IR is the spot-check tool for individual rows. Loaders read with comment='#' to skip this caveat.
+# SCHEMA: Symbol, Company, Sector (GICS post-2018 reclassification), added_date (NULL = in NDX prior to mapping window 2020-01-01), removed_date (NULL = currently active)
+# PIT FILTER: (added_date IS NULL OR added_date <= as_of) AND (removed_date IS NULL OR removed_date > as_of). Multi-period rows (e.g., WDC, CSGP, TTWO, SPLK) handled via standard pandas/SQL OR semantics.
 Symbol,Company,Sector,added_date,removed_date
 AAPL,Apple Inc.,Information Technology,,
 ABNB,Airbnb,Consumer Discretionary,2021-12-20,

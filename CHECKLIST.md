@@ -42,24 +42,26 @@ State compliance visibly: "Checklist: ✅ [each item]"
 19. QUARTERLY — S&P 500 universe refresh (run on laptop, NOT Codespaces):
     a. python scripts/refresh_sp500_universe.py               # review diff
     b. python scripts/refresh_sp500_universe.py --write       # apply
-    c. git diff backtest/data/sp500_tickers.csv               # verify changes
-    d. git add backtest/data/sp500_tickers.csv
+    c. git diff "Backtesting universe/sp500_tickers.csv"      # verify changes
+    d. git add "Backtesting universe/sp500_tickers.csv"
     e. git commit -m "Universe refresh: QX YYYY S&P 500 update"
     f. git push origin main
-    Source: slickcharts.com (NEVER Wikipedia — blocked, fragile, not point-in-time — L88)
+    Source: slickcharts.com (NEVER Wikipedia — blocked, fragile, not point-in-time — L88; one-time historical scrape exception per Pass 53 for universe-build CSVs only — see CLAUDE.md Data Sources subsection)
     Schedule: January, April, July, October. Add to calendar.
     Immediate spinoff: python scripts/refresh_extended_universe.py --add TICKER --reason spinoff_from_PARENT --write
+    Note: Pass 53 universe CSVs moved from backtest/data/ to top-level "Backtesting universe/" folder per owner directive (commit `c7f5580f`). Update any older runbooks accordingly.
 
 20. MONTHLY (live Stage 3+) — Tier 2 extended universe refresh:
     python scripts/refresh_extended_universe.py --write
-    git add backtest/data/extended_universe.csv && git commit && git push
+    git add "Backtesting universe/extended_universe.csv" && git commit && git push
     Run immediately after any major spinoff announcement (>$5B market cap).
 
 21. MONTHLY (live Stage 3+) — Tier 3 momentum watchlist refresh:
     python scripts/build_momentum_watchlist.py --write
-    git add backtest/data/momentum_watchlist.csv && git commit && git push
+    git add "Backtesting universe/momentum_watchlist.csv" && git commit && git push
     Out-of-cycle (stock >50% in 30 days): --out-of-cycle --write flag.
     NEVER run momentum watchlist for backtesting — use static snapshot from run start.
+    Methodology per DEC-496 RESOLVED-DECIDED: Jegadeesh-Titman 12-1 (252-day lookback, 21-day skip; rank top 100 non-T1 by `(price[D-21]/price[D-252])-1`; classic risk-adjustment OFF; tie-breakers vol-asc → ADV-desc).
 
 22. MANDATORY COST ESTIMATE before any API run:
     a. Compute: screener_pass_rate × trading_days × tickers × agents × token_cost = total_cost

@@ -27483,3 +27483,83 @@ Resolution paths surfaced for owner pick:
 - Stream 3 comprehensive ~22-doc audit (queued per priority order)
 
 *Per CHECKLIST #32 (verbatim "iterate" directive — 5 iteration batches × 2-3 sources per batch executed); #25 (verification reality surfaced honestly — 13 of 15 attempts returned no useful data; 5-iteration directive completed in form but free-source coverage genuinely limited; refused to fabricate "verification" against sources that don't exist or are paywalled); #43 (iteration log cross-references prior commits c3e132e5 / cf1c0762 / 41659bd3 + indexes.nasdaqomx.com as new authoritative source candidate); #45 (multi-batch parallel fetches per owner directive 2-3/turn; surfaced discrepancy + 3 resolution paths rather than auto-fix); #51 (default lower-impact: NO CSV changes without owner direction on 102-vs-101; 3 paths surfaced for owner pick); #58 (1-file AUDIT-only commit; no half-state introduced); #65 (no roster changes); #66 (verification scope checked against actual external availability not assumed; iteration log honest about each fetch result). L88 exception scope respected throughout — used only for original T1c build (commit cf1c0762); this verification batch attempted ONLY non-Wikipedia/non-Nasdaq-IR sources per owner directive "outside of sources you have already used".*
+
+---
+
+## Pass 53 — Path 1 CAVEAT to NDX CSV + Stream 3 audit triage report (chunk 1 — CHECKLIST.md path drift fixed)
+
+**Trigger:** Owner Pass 53 directive: "1+3" — accept 102-vs-101 variance with caveat note + pivot to Stream 3 comprehensive audit.
+
+**Resolution applied this turn:**
+
+### Path 1 — CAVEAT note added to NDX CSV
+
+1. **`Backtesting universe/nasdaq_100_membership.csv`** — added 3 leading `#` comment lines documenting:
+   - 102-vs-101 variance (likely dual-class GOOG/GOOGL counting)
+   - Source: Wikipedia + owner Nasdaq IR per-event verification (WMT/PTON/NTES)
+   - Verification iterations 1-5 result (15 fetches, no clean external timeline)
+   - Schema reference (Symbol, Company, Sector GICS post-2018, added_date, removed_date)
+   - PIT loader filter expression
+   - Multi-period row handling
+
+2. **`backtest/data/universe.py`** — all 5 `pd.read_csv(csv_path)` calls updated to `pd.read_csv(csv_path, comment='#')` for forward-compat with caveat-headered CSVs. No-op for CSVs without `#` lines (sp500_tickers, extended_universe, momentum_watchlist, tier1_etfs all have no comments currently).
+
+### Stream 3 — comprehensive ~22-doc audit triage
+
+Initial drift scan via grep across all non-archive `*.md` files for known Pass 53 change signatures. Findings:
+
+| Doc | Pass 53 status | Drift indicator | Priority |
+|---|---|---|---|
+| `CLAUDE.md` | ✅ Updated (commit `c7f5580f`) | Repo structure section reworked | NONE — done |
+| `AUDIT.md` | ✅ Active updates this Pass | — | NONE — already canonical |
+| `AUDIT_INDEX.md` | ✅ Active updates this Pass | — | NONE — already canonical |
+| `TRADING_RULES_AND_INFORMATION.md` | ✅ Multiple updates (§2A, §10.8/9, §13.12, §22.1) | — | NONE — already canonical |
+| `DETAILED_PROJECT_PLAN.md` | ✅ Part 2.5 dashboard map + universe section | — | NONE — already canonical |
+| `PROJECT_PLAN.md` | ✅ Test pyramid §22.1, dashboard §4.6 | — | NONE — already canonical |
+| `ENGINEERING_REGISTER.md` | ✅ Sprint 1/5 additions + DEC-491-496 | — | NONE — already canonical |
+| `IMPLEMENTATION_READINESS_DASHBOARD.md` | ✅ Universe scope expansion updated | — | NONE — already canonical |
+| `scripts/SPRINT1_POLYGON_PREFETCH_README.md` | ✅ T2/T3 sub-bullets + path updates | — | NONE — already canonical |
+| **`CHECKLIST.md`** | ⚠ Drift FOUND + FIXED this turn | Items 19-21 referenced old `backtest/data/` paths → updated to `Backtesting universe/`; added Pass 53 universe folder note + DEC-496 J-T methodology reference for Tier 3 refresh | ✅ **FIXED this turn** |
+| `LEARNINGS.md` | Historical L143 entry references old paths (correct as historical state per L143 don't-rewrite-history) | NO ACTION — preserved per L143 | NONE |
+| `LIMITATIONS_CAVEATS_ASSUMPTIONS.md` | CAV-030 lists ETFs separately from Tier 2 (correct) | NO ACTION — already correct | NONE |
+| `STRATEGY_REGISTER.md` | Canonical roster — referenced extensively this Pass; no drift detected in scan | TBD — needs deep read for cross-doc alignment | LOW |
+| `BUG_REGISTER.md` | Not updated this Pass; may have stale BUG entries | TBD — needs read | LOW |
+| `DOCUMENTATION_REGISTER.md` | Not updated this Pass; may not list new sections | TBD — likely missing §2A registration, Part 2.5 registration | MEDIUM |
+| `API_AUDIT.md` | ✅ Doc role clarified prior commit `9fc4569f` | — | NONE — done |
+| `TRADINGAGENTS_DATA_AUDIT.md` | Referenced in many DECs (DEC-462-468); may be stale on Pass 53 universe + signal expansions | TBD — needs deep read | MEDIUM |
+| `THEME_X53_SEQUENCING.md` | Pass 53 historical sequencing record | NO ACTION — historical | NONE |
+| `ADVERSARIAL_AUDIT_PASS_52_TURN_132.md` | Pass 52 historical record | NO ACTION — historical | NONE |
+| `CRITICAL_GAPS_RESOLUTION_PASS_52_TURN_133.md` | Pass 52 historical record | NO ACTION — historical | NONE |
+| `PASS_53_PRIORITIES.md` | Pass 53 priorities snapshot — likely partially stale given Pass 53 progression | TBD — needs read | LOW (historical) |
+| `PROJECT_HANDOFF_2026-05-04.md` | Pass 53 starting handoff record | NO ACTION — handoff snapshot | NONE |
+| `AUDIT_TRIAGE.md` | Audit triage tracking | TBD — needs read | LOW |
+| `EXPLANATION.md` | Project narrative | TBD — likely needs Pass 53 update | LOW |
+| `UNIVERSAL_LEARNINGS.md` | Cross-project learnings | TBD — likely no Pass 53 drift | LOW |
+| `README.md` | Repo entry point | TBD — likely STALE Stage 1 era | MEDIUM |
+
+**Summary:** Of ~25 non-archive `*.md` docs:
+- 9 already canonical (updated this Pass — high-priority docs done)
+- 1 drift FIXED this turn (CHECKLIST.md items 19-21 paths)
+- 4 historical pass records (NO ACTION per L143)
+- 11 TBD — need deeper read for proper assessment
+
+### Proposed chunked execution for Stream 3 remainder
+
+| Chunk | Docs | Effort |
+|---|---|---|
+| **A** | `DOCUMENTATION_REGISTER.md` + `TRADINGAGENTS_DATA_AUDIT.md` (medium-priority) | 1 turn |
+| **B** | `STRATEGY_REGISTER.md` + `BUG_REGISTER.md` + `AUDIT_TRIAGE.md` (low-priority but canonical-adjacent) | 1 turn |
+| **C** | `README.md` + `EXPLANATION.md` + `PASS_53_PRIORITIES.md` + `UNIVERSAL_LEARNINGS.md` (likely-stale narrative docs) | 1 turn |
+| **D** | Cross-doc consistency final pass — verify Pass 53 changes referenced consistently across all docs | 1 turn |
+
+**Files updated this turn:**
+1. `Backtesting universe/nasdaq_100_membership.csv` — 3-line `#` CAVEAT header added
+2. `backtest/data/universe.py` — 5 read_csv calls updated with `comment='#'` (no-op for current CSVs without `#` lines; forward-compat for caveat headers)
+3. `CHECKLIST.md` — items 19-21 path drift fixed (`backtest/data/` → `Backtesting universe/`); added DEC-496 J-T methodology reference for Tier 3 refresh; noted Pass 53 universe folder migration
+4. `AUDIT.md` — this entry (Path 1 + Stream 3 triage report)
+
+**Out of scope this turn:**
+- Chunks A-D of Stream 3 — owner pick priority order or sequential execution
+- 1-ticker NDX discrepancy resolution beyond CAVEAT (owner can spot-check via Nasdaq IR pattern when convenient)
+
+*Per CHECKLIST #32 (verbatim "1+3"); #25 (drift triage scan honest — distinguished docs that ARE canonical from docs UNAUDITED-this-Pass; CHECKLIST.md fix surfaced as discovered drift not silently corrected); #43 (CAVEAT cross-references prior commits c3e132e5/cf1c0762/41659bd3/d8890a5b; CHECKLIST.md path update aligns with universe folder move commit `c7f5580f`); #45 (verified universe.py read_csv call sites before adding comment='#' to confirm no-op for non-headered CSVs; verified CHECKLIST.md items 19-21 actual paths before edit); #51 (Stream 3 chunked into A/B/C/D rather than attempting all ~25 docs in one turn); #58 (atomic 4-file commit covering Path 1 + Stream 3 chunk 1 + AUDIT narrative; no half-state); #65 (no roster changes); #66 (DEC-496 referenced per actual body content; CHECKLIST item numbering preserved per existing structure). Stream 3 deliberately chunked for owner-paced execution per scope-realism discipline.*
