@@ -27134,3 +27134,40 @@ This is the second tier-categorization error I made this Pass — first was assu
 - Identical considerations apply to T1c future-maintenance for Stage 3 ongoing reconstitution updates (Wikipedia is currently sufficient for the static 2020-2026 historical build; Stage 3 dynamic updates may need a different source if Wikipedia lag becomes an issue)
 
 *Per CHECKLIST #32 (verbatim "2" — defer T1b to Sprint 1 procurement); #25 (refused to commit survivorship-biased CSV that would re-introduce the very bias we fixed for T1a; surfaced LSEG paywall + Polygon endpoint absence honestly via direct documentation fetch; flagged scope-cut alternative as legitimate per Phase 1A archive precedent); #43 (SPRINT1 README ↔ DEC-483 ↔ AUDIT narrative aligned; T1c commit `cf1c0762` referenced); #45 (pre-flight halted before producing biased CSV; investigation budget respected — 2 sequential WebFetch chains then halt); #51 (default lower-impact: option-2 deferral preserves Sprint 1 procurement decision-space; refused to scope-creep by attempting more obscure sources); #58 (atomic 2-file commit; T1b waits for owner procurement); #65 (no new roster items); #66 (Polygon endpoint scope verified per `llms.txt` not memory; LSEG access boundaries verified per direct fetch). L88 exception scope HONORED — refusal to commit unverified data when no clean source exists is exactly what the manual-verification clause protects against.*
+
+---
+
+## Pass 53 — T1c PTON + NTES corrections (owner Nasdaq IR verification + parsing error caught)
+
+**Trigger:** Owner Pass 53 verification: (1) PTON removed effective 2022-01-24 (not estimated 2022-12-19); (2) NTES removed effective 2022-12-19 (not added 2022-12-19 then removed 2024-12-23 as I had written).
+
+**Resolution applied this turn:**
+
+1. **PTON row** (`backtest/data/nasdaq_100_membership.csv`):
+   - Was: `PTON,Peloton,Consumer Discretionary,2020-12-21,2022-12-19` (estimated)
+   - Now: `PTON,Peloton,Consumer Discretionary,2020-12-21,2022-01-24` (verified)
+   - PTON was added at 2020-12-21 reconstitution (replacing TTWO) and removed mid-cycle 2022-01-24 due to weight requirements failure. The 11-month membership window now correctly captured.
+
+2. **NTES row** — **parsing error correction:**
+   - Was: `NTES,NetEase,Communication Services,2022-12-19,2024-12-23` (incorrect — assumed added at 2022-12-19, removed in 2024 reconstitution)
+   - Now: `NTES,NetEase,Communication Services,,2022-12-19` (verified — pre-2020 NULL added_date; removed 2022-12-19)
+   - **Root cause:** Wikipedia "selected changes" table for 2022-12-19 reconstitution had ambiguous formatting for NTES — listed under "Added" column with `(removed)` marker in the "Removed" column. I parsed this as "NTES added; counter-ticker `(removed)` placeholder" when it actually meant "NTES being removed at the 2022-12-19 reconstitution."
+   - This is a Wikipedia table-parsing edge case; owner Nasdaq IR verification was needed to catch.
+
+**Pattern note (#25 honest meta-finding):** This is the third tier-data error I made this Pass that owner caught (after 484-CSV during-testing assumption, Tier 2 = ETFs mis-characterization). The NTES error was a structural parsing issue rather than memory — the Wikipedia source was ambiguous and I made an incorrect inference. Lesson: when Wikipedia table format has ambiguous `(removed)` / `(added)` markers, treat the row as needing explicit owner verification rather than guessing the intent. CHECKLIST #66's universe-tier refinement covers artifact verification but doesn't yet codify "ambiguous source rows must be flagged not inferred." Possible #66 sub-clause for next Pass refinement.
+
+**Decision impact:**
+- T1c CSV: 2 row corrections. Schema unchanged. Multi-period rows for CSGP/TTWO/WDC/SPLK unaffected. Total row count unchanged at 157.
+- No DEC status changes.
+- Anomaly verification status: WMT ✅ verified (commit `741bfa8b` thread), PTON ✅ verified this turn, NTES ✅ verified this turn. All three flagged anomalies now resolved.
+
+**Files updated this turn:**
+1. `backtest/data/nasdaq_100_membership.csv` — PTON + NTES row corrections (2 single-row Edits)
+2. `AUDIT.md` — this entry
+
+**Out of scope this turn:**
+- Other potentially-incorrect rows in T1c CSV — owner has verified the 3 explicitly-flagged anomalies; remaining rows assumed correct unless owner spot-checks more
+- Wikipedia-source-quality lessons captured but no CHECKLIST #66 refinement edit this turn
+- T1b Russell 1000 still deferred per `741bfa8b`
+
+*Per CHECKLIST #32 (verbatim PTON + NTES corrections via owner Nasdaq IR direct knowledge); #25 (own NTES parsing error acknowledged honestly — third tier-data error this Pass caught by owner; pattern note about Wikipedia ambiguous-marker rows captured for future #66 refinement); #43 (T1c CSV row count unchanged at 157; multi-period schema preserved); #45 (pre-flight verified the corrections via grep before committing; ensured no other PTON/NTES rows existed elsewhere in CSV); #51 (lowest-impact: 2 spot-fix edits + AUDIT entry; no scope expansion); #58 (atomic 2-file commit); #65 (no roster changes); #66 (owner verification of authoritative Nasdaq IR source — exactly the artifact-verification discipline; my parsing error reveals the rule needs sub-clause for ambiguous-source-rows handling). L88 exception HONORED — owner manual-verification gate caught the parsing error pre-implementation.*
