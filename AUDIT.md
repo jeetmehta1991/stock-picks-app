@@ -27993,3 +27993,60 @@ Net change 2020 → 2026: -2 (matches event categorization: 13 add-only events �
 - FLOW: scrape → spot-check → walk events → apply rename map → emit B++ → runtime verify → tests pass
 
 *Per CHECKLIST #1 (owner approval received — Q1/Q2/Q3/Q4/Q5 explicit answers); #13 (read-before-edit verified — read AUDIT_INDEX DEC-477 body, universe.py get_sp500_constituents, test_unit.py test functions before editing); #22 (small-batch validation — 4/4 spot-check before scaling; runtime PIT verification before commit; full unit test suite before push); #25 (drift surfaced honest — 481 baseline staleness exposed, CDAY→DAY rename caught, blank Sector follow-up named as remaining gap); #32 (verbatim owner approval enumeration Q1-Q5); #43 (cross-doc consistency — DEC-477 body update + AUDIT narrative + test suite + universe.py docstring all aligned); #45 (read before edit; runtime verification before commit); #51 (scope strict — Item 2 only; not expanding to T1b/T1c/T2/T3 this turn); #58 (atomic commit covering rebuild + sync + cap fix + tests + DEC-477 update + AUDIT narrative); #65 (no roster expansion — same DEC-477, status flip + body update); #66 (DEC target alignment verified — DEC-477 = T1a historical_membership.csv); #66.b (INPUT/OUTPUT/FLOW stated pre-edit, verified post-build). **L88 exception conditions: (i) laptop-local ✅, (ii) Wikipedia fallback after S&P DJI primary attempt ✅, (iii) manual verification — owner Q5 spot-check 4/4 events ✅, (iv) pre-Sprint-1 not runtime ✅.** Owner directive "Q1 Approach A / Q2 Use wiki GICS / Q3 NULL / Q4 Approved Proceed with sync / Q5 Yes" — FULFILLED. T1a historical_membership.csv = RESOLVED-IMPLEMENTED. DEC-040 PIT loader integration also IMPLEMENTED via get_sp500_constituents_pit + union_universe (committed Pass 53 prior turn `ffc358f4`).*
+
+---
+
+## Pass 53 — T1b deferred to Stage 3 + T1c CAVEAT resolved (universe-build cleanup)
+
+**Trigger:** Owner Pass 53 directive (this turn): "T1b - defer to stage 3 / T1C - Resolve now / T2 T3 wont we need a list of tickers to fetch data from polygon? / I already have bought polygon and API in env file"
+
+**Three things this turn:**
+
+**1. T1b deferred to Stage 3 (DEC-365 / DEC-483 revision):**
+- Owner-decided based on Pass 53 procurement investigation revealing LSEG free tier inadequate for historical Russell 1000 reconstitutions; LSEG Research Portal subscription paywalled; alternatives (Bloomberg/Refinitiv/FactSet/S&P Capital IQ) all enterprise-priced
+- Stage 2 universe sufficient at T1a 503 + T1c 101 + ETFs 27 + T2 (~50-150) + T3 (~500-1000) without T1b
+- T1a baseline alone (503) + T1c (101) = 604 unique Tier 1 tickers, 9× Phase 1A v3 archive baseline (67 instruments) — DEC-422 statistical gates achievable without T1b
+- Reactivate T1b at Stage 3 papertrading when capacity known + procurement budget evaluated
+- DEC-365 status: RESOLVED-DECIDED → RESOLVED-DECIDED-DEFERRED (Stage 3+)
+- DEC-483 status: RESOLVED-DECIDED → RESOLVED-IMPLEMENTED-T1a-T1c (T1a + T1c IMPLEMENTED Pass 53; T1b component DEFERRED)
+- Sprint 1 effort impact: -3 to -5d (T1b procurement + B++ build + integration tests no longer in scope)
+- Cube cell coordinate `tier_subdim` values: {T1a, T1c, T2, T3} (T1b removed)
+
+**2. T1c CAVEAT resolved (3-way cross-check confirms 101 = official 101):**
+- Pre-existing CAVEAT in nasdaq_100_membership.csv claimed "102 currently-active rows vs Nasdaq official 101 components" with hypothesis of GOOG/GOOGL dual-class miscount
+- This turn re-verified: file actually has **101 currently active** (not 102 as CAVEAT claimed); GOOG and GOOGL both correctly counted as 2 separate securities per Nasdaq's official methodology
+- 3-way cross-check verification (this turn):
+  - Slickcharts.com/nasdaq100: 101 components
+  - Wikipedia "Nasdaq-100" article Table 5: 101 components
+  - Our nasdaq_100_membership.csv currently active: 101 components
+  - Set diff: zero in either direction across all 3 pairs (perfect match)
+- CAVEAT was stale/wrong — likely written under earlier file state before a removal event was processed, or simply miscounted
+- File header CAVEAT updated to RESOLVED status: "101 = 101 confirmed via 3-way cross-check; both GOOG and GOOGL are correctly 2 of 101 per Nasdaq official methodology"
+- Net file structure: 161 total rows = 101 active + 60 historical (removed during 2020-2026 window, multi-period rows for CSGP/TTWO/WDC/SPLK)
+
+**3. T2/T3 Polygon ticker-list architectural clarification (owner asked: "wont we need a list of tickers to fetch data from polygon?"):**
+- **No external ticker list needed for T2/T3 screener step.** Polygon's reference + grouped endpoints are GLOBAL queries that return data across the entire US equities database without an input ticker filter.
+- T2 SCREENER endpoints (DEC-103/DEC-494): `/v3/reference/dividends` (global spinoff-type events), `/v3/reference/splits` (global split events with parent-child ratios), `/v3/reference/tickers` (global active+delisted listing with list_date) — these return event/listing data spanning ALL Polygon-tracked tickers (~10-15k historical). The screener filters/aggregates this output to identify 50-150 qualifying spinoff/IPO tickers.
+- T3 SCREENER endpoint (DEC-496): `/v2/aggs/grouped/locale/us/market/stocks/{date}` — returns daily aggregate bars for ALL ~6000-8000 listed US equities on a given date. For each monthly snapshot D in 2020-2026, fetch grouped bars for D-252 + D-21 (2 calls per snapshot × 72 monthly snapshots = 144 endpoint calls total). Per ticker present in both calls + meeting DEC-321/366 liquidity floor + not in T1: compute J-T 12-1 momentum score; rank desc; top 100 = monthly Tier 3 snapshot. Union across 72 snapshots = 500-1000 unique non-T1 tickers identified.
+- The screener step IS the ticker discovery; the prefetch step (Step 2) consumes the discovered list. SCREENER-FIRST architecture per DEC-103/494/496 is exactly this two-step flow.
+- Polygon Stocks Starter unlimited rate per minute makes 144-call screener step fast (~minutes, not hours).
+
+**Polygon active unlock:** Owner confirmed "I already have bought polygon and API in env file" — Sprint 1 implementation work fully unblocked. Next major step: T1a + T1c OHLCV prefetch + T2/T3 SCREENER-FIRST builds. Detailed proposal surfaced this turn.
+
+**Files modified this turn:**
+
+| File | Change |
+|---|---|
+| `Backtesting universe/nasdaq_100_membership.csv` | Header CAVEAT updated to RESOLVED status with 3-way cross-check verification (Slickcharts + Wikipedia + Nasdaq IR all 101); GOOG/GOOGL correctly counted as 2 of 101 noted |
+| `AUDIT_INDEX.md` | DEC-365 body — T1b DEFERRED-TO-STAGE-3 with rationale; DEC-483 body — RESOLVED-IMPLEMENTED-T1a-T1c with revised cube tier_subdim {T1a, T1c, T2, T3} |
+| `CLAUDE.md` | Repo Structure block — T1c annotation updated (101 active = official); T1b annotation updated (DEFERRED TO STAGE 3 from FUTURE Sprint 1) |
+| `scripts/SPRINT1_POLYGON_PREFETCH_README.md` | T1b sub-bullet updated — DEFERRED TO STAGE 3 supersedes "deferred to Sprint 1 procurement" |
+| `AUDIT.md` | This narrative entry |
+
+**No code changes this turn (data + doc only).**
+
+**Pre-flight INPUT/OUTPUT/FLOW (CHECKLIST #66.b):**
+- T1b deferral: INPUT=DEC-365 procurement investigation findings + owner directive; OUTPUT=DEC-365/DEC-483 body updates + CLAUDE/SPRINT1 annotations; FLOW=spec → status flip → cross-doc propagation
+- T1c CAVEAT: INPUT=nasdaq_100_membership.csv current state (101 active) + Slickcharts 101 + Wiki Nasdaq-100 article 101 + Nasdaq IR per-event spot-checks; OUTPUT=updated CAVEAT header noting RESOLVED + CLAUDE.md count refresh; FLOW=read file → fetch authoritative sources → 3-way cross-check → set diff (zero in all directions) → resolve CAVEAT
+
+*Per CHECKLIST #1 (owner approval received — "T1b defer / T1c resolve / T2 T3 question / Polygon active" all explicit); #13 (read-before-edit — read nasdaq_100_membership.csv header + AUDIT_INDEX DEC-365 + DEC-483 + CLAUDE.md repo structure block before editing); #25 (CAVEAT staleness exposed honestly — earlier 102-vs-101 hypothesis was wrong; file actually 101 = 101 with no discrepancy); #32 (verbatim owner directive enumeration); #43 (cross-doc consistency — DEC-365 + DEC-483 + CLAUDE.md + SPRINT1 README + AUDIT all updated as a unit); #45 (read before edit; runtime cross-check 3 sources before declaring CAVEAT resolved); #51 (scope strict — T1b deferral + T1c CAVEAT + T2/T3 architectural answer + Polygon-unlock surfacing only; not expanding to actual Polygon prefetch this turn); #58 (atomic commit grouping all 5 file changes); #65 (no roster expansion — DEC-365 status revision, DEC-483 status flip, T1c CAVEAT resolution); #66 (DEC alignment verified — DEC-365 = T1b parent, DEC-483 = sub-tier expansion, DEC-303 = T1c B++ schema parent); #66.b (INPUT/OUTPUT/FLOW stated for both T1b deferral and T1c CAVEAT resolution). Owner directive "T1b defer / T1c resolve / T2 T3 question / Polygon active" — FULFILLED. T1b DEFERRED to Stage 3; T1c CAVEAT RESOLVED; T2/T3 architecture clarified (Polygon endpoints provide ticker discovery globally — no seed list needed); Polygon-active Sprint 1 unlock surfaced for next-step proposal.*

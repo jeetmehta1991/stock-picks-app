@@ -42,11 +42,11 @@ Backtesting universe/    # Top-level folder for ALL universe CSVs (Pass 53 owner
   sp500_tickers.csv          # T1a current snapshot — Wiki Table 0 ground truth (503 rows, B++ schema; Pass 53 sync replaced 481 stale slickcharts)
   historical_membership.csv  # T1a B++ canonical PIT file (DEC-477) RESOLVED-IMPLEMENTED Pass 53 — 614 rows (503 active + 111 historical removed-during-window); 124 events 2020-01-01 → 2026-04-09 from Wikipedia Table 1 under L88 exception (4/4 high-impact spot-check verified vs S&P DJI press releases); CDAY→DAY rename map applied; remaining gap = 111 historical rows have blank Sector pending supplementary GICS lookup
   tier1_etfs.csv             # Tier 1 ETFs (27) — DEC-118 / DEC-494; B++ schema + Category extension column (Pass 53 standardized; ETFs are reference instruments — added/removed_date NULL = always-active)
-  nasdaq_100_membership.csv  # T1c — 157 rows B++ schema (DEC-303); GICS sectors; multi-period rows
+  nasdaq_100_membership.csv  # T1c — 161 rows B++ schema (DEC-303); 101 currently active = Nasdaq official 101 (Pass 53 CAVEAT RESOLVED 2026-05-05 — 3-way cross-check Slickcharts + Wikipedia + Nasdaq IR all match exactly); 60 historical removed-during-window; GICS sectors; multi-period rows (CSGP/TTWO/WDC/SPLK)
   extended_universe.csv      # T2 — DEC-103; populate Sprint 1 post-Polygon-prefetch via DEC-380 corp actions screener (per Pass 53 SCREENER-FIRST correction)
   momentum_watchlist.csv     # T3 — DEC-104/364; populate Sprint 1 post-Polygon-prefetch via DEC-496 J-T 12-1 broad-market screener (per Pass 53 SCREENER-FIRST correction)
-  # FUTURE (Sprint 1+):
-  # russell_1000_membership.csv    # T1b — deferred to Sprint 1 procurement (LSEG paywall)
+  # FUTURE:
+  # russell_1000_membership.csv    # T1b — DEFERRED TO STAGE 3 (Pass 53 owner-decided 2026-05-05 — LSEG free tier inadequate; T1a 503 + T1c 101 + ETFs 27 = ~632 instruments already 9× Phase 1A v3 archive baseline; T1b expansion premature for Stage 2 backtest validity. Revisit at Stage 3 papertrading.)
   # archived_watchlist.csv         # DEC-495 RESOLVED-DECIDED Stage 3+ — tickers rotating out of all 5 buckets
   # index_rebalance_events.parquet # DEC-370 — Sprint 5 day-grain effective dates for index rebalance strategies
 backtest/
