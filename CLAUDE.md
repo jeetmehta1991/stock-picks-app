@@ -172,7 +172,7 @@ All 9 must pass overall for a strategy to advance. Additionally, each strategy g
 
 ### Data Sources
 - **NEVER use Wikipedia.** Historically blocked in Codespaces; not point-in-time; fragile (L88). Same fragility applies on local VS Code.
-  - S&P 500 → `backtest/data/sp500_tickers.csv` refreshed quarterly via `scripts/refresh_sp500_universe.py` on LAPTOP using slickcharts.com
+  - S&P 500 → `Backtesting universe/sp500_tickers.csv` (Pass 53 folder move per `c7f5580f`) refreshed quarterly via `scripts/refresh_sp500_universe.py` on LAPTOP using slickcharts.com
   - Never propose `pd.read_html('https://en.wikipedia.org/...')` for any purpose.
   - **One-time historical scrape exception (Pass 53 owner-granted, scoped):** Wikipedia + general internet browsing is permitted for ONE-TIME assembly of historical universe membership files (`historical_membership.csv`, `russell_1000_membership.csv`, `nasdaq_100_membership.csv`, `index_rebalance_events.parquet`) under these conditions: (i) laptop-local execution only, (ii) fallback source — primary is S&P DJI press releases / FTSE Russell / Nasdaq, (iii) manual verification before commit, (iv) not runtime — these scrapes happen pre-Sprint-1 to assemble static CSV inputs, never inside the backtest hot path. See AUDIT.md Pass 53 entries for exception scope details.
 

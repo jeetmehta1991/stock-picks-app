@@ -4,7 +4,7 @@
 
 ## Honest scope flag
 
-This prefetch operates on `backtest/data/sp500_tickers.csv` (484 current-state S&P 500 tickers), NOT the full DEC-483 universe (T1a + T1b + T1c = ~1015 tickers).
+This prefetch operates on `Backtesting universe/sp500_tickers.csv` (484 current-state S&P 500 tickers; folder move Pass 53 per commit `c7f5580f`), NOT the full DEC-483 universe (T1a + T1b + T1c = ~1015 tickers).
 
 The proper universe build (DEC-477 historical_membership.csv B++ format — single static CSV with `added_date`/`removed_date` columns + R1000 + NDX same format with year-grain dates) is deferred to a separate work session per Pass 53 turn discussion. **This is acknowledged survivorship bias for the data cache built tonight** — addressed in tomorrow's universe-build session.
 
@@ -230,12 +230,12 @@ After Polygon prefetch is committed to main, next session:
      - **Fallback source:** Wikipedia "NASDAQ-100" + general internet browse (under same Pass 53 one-time L88 exception, scoped: laptop-local; fallback-only; manual verification)
      - **Mapping timeframe:** 2020-01-01 → today + ongoing (matches T1a)
      - **Pre-2020 active tickers:** `added_date` NULL (matches T1a option-β)
-   - `backtest/data/extended_universe.csv` (T2 — Pass 53 Sprint 1 historical populate per owner directive; same B++ format as T1a/T1c plus extension columns `MarketCapB`, `Tier2Reason`)
+   - `Backtesting universe/extended_universe.csv` (T2 — Pass 53 Sprint 1 historical populate per owner directive; same B++ format as T1a/T1c plus extension columns `MarketCapB`, `Tier2Reason`)
      - **Source:** Polygon Stocks Starter corporate actions endpoint per DEC-380 (already paid; spinoff effective dates) + Polygon reference data for IPO listing dates + market cap filter (>$5B spinoffs / >$10B IPOs per refresh_extended_universe.py:7-9 and CLAUDE.md universe rules)
      - **Why Sprint 1 not Sprint 5:** owner directive Pass 53 — populate immediately after Polygon OHLCV prefetch since corporate actions data lives in same Polygon subscription; defer ongoing GH Actions automation (DEC-372/373/374) to Sprint 5
      - **Mapping timeframe:** 2020-01-01 → today + ongoing for Stage 3 (matches T1a/T1c)
      - **Schema:** `Symbol, Company, Sector, added_date, removed_date, MarketCapB, Tier2Reason` — added_date = effective spinoff/IPO date; removed_date populated when ticker rotates to T1a/T1b/T1c (S&P/R1000/NDX inclusion) or delists
-   - `backtest/data/momentum_watchlist.csv` (T3 — Pass 53 Sprint 1 historical populate per owner directive; methodology DEC-496 RESOLVED-DECIDED)
+   - `Backtesting universe/momentum_watchlist.csv` (T3 — Pass 53 Sprint 1 historical populate per owner directive; methodology DEC-496 RESOLVED-DECIDED)
      - **Source:** Polygon OHLCV cache (populated by Sprint 1 prefetch — strict precondition); compute Jegadeesh-Titman 12-1 momentum score per DEC-496 for all non-T1 tickers passing DEC-321/366 liquidity floor; rank descending; top 100 (per DEC-364) = Tier 3 at each as_of date
      - **Methodology:** `momentum_score = (price[D-21] / price[D-252]) - 1` per DEC-496. Lookback 252 trading days; skip 21 trading days. Risk-adjustment OFF (classic). Tie-breakers: 6-month volatility ascending → ADV descending.
      - **Refresh cadence:** monthly (1st of each month from prior month-end); for backtest static at run start (no lookahead).
