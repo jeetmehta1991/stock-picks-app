@@ -27171,3 +27171,94 @@ This is the second tier-categorization error I made this Pass — first was assu
 - T1b Russell 1000 still deferred per `741bfa8b`
 
 *Per CHECKLIST #32 (verbatim PTON + NTES corrections via owner Nasdaq IR direct knowledge); #25 (own NTES parsing error acknowledged honestly — third tier-data error this Pass caught by owner; pattern note about Wikipedia ambiguous-marker rows captured for future #66 refinement); #43 (T1c CSV row count unchanged at 157; multi-period schema preserved); #45 (pre-flight verified the corrections via grep before committing; ensured no other PTON/NTES rows existed elsewhere in CSV); #51 (lowest-impact: 2 spot-fix edits + AUDIT entry; no scope expansion); #58 (atomic 2-file commit); #65 (no roster changes); #66 (owner verification of authoritative Nasdaq IR source — exactly the artifact-verification discipline; my parsing error reveals the rule needs sub-clause for ambiguous-source-rows handling). L88 exception HONORED — owner manual-verification gate caught the parsing error pre-implementation.*
+
+---
+
+## Pass 53 — T2/T3 schema migration + DEC-495 archived watchlist + DEC-496 T3 momentum methodology + T2 Wikipedia attempt halted (sourcing wall)
+
+**Trigger:** Owner Pass 53 directives:
+1. "Populate tier 2 and tier 3 buckets in the same way in respective CSV files."
+2. "In papertrading and further stages, for tickers that fall out of all three tiers, I need to track them in an archived watchlist document."
+3. "modify all dependencies and update all documents."
+4. "Mark Stage 3+ decisions as pending."
+
+Then refined:
+5. "t3 will need to be calculated from polygon data download. should be updated right after polygon data prefetch. suggest the right methodology for it as per market standards."
+6. "t2 attempt now populate via Wikipedia/news"
+
+**Resolution applied this turn:**
+
+1. **Schema migration for T2 + T3 CSVs (B++ alignment):**
+   - `extended_universe.csv`: header changed `Symbol,Company,Sector,MarketCapB,Tier2Reason,AddedDate` → `Symbol,Company,Sector,added_date,removed_date,MarketCapB,Tier2Reason`. Renamed `AddedDate` → `added_date` for B++ consistency; added `removed_date` column; preserved `MarketCapB` + `Tier2Reason` as right-side B++ extensions.
+   - `momentum_watchlist.csv`: header changed `Symbol,Company,Sector,MomentumScore,MarketCapB,LastPrice,AddedDate` → `Symbol,Company,Sector,added_date,removed_date,MomentumScore,MarketCapB,LastPrice`. Same pattern.
+   - Both CSVs remain header-only (empty body) — programmatic-populate model per DEC-103/104.
+   - PIT loader filter unchanged — same expression as T1a/T1c works.
+   - `universe.py:get_extended_universe()` + `get_momentum_watchlist()` read `Symbol` column only — no code change needed; schema additions are forward-compatible.
+
+2. **DEC-495 PROPOSED — Stage 3+ archived watchlist** (Pass 53 directive 2 + 4):
+   - Status: PROPOSED, Stage 3+ scope (papertrading + live trading).
+   - Artifact: `backtest/data/archived_watchlist.csv` — schema `Symbol, Company, Last_Tier (T1a/T1b/T1c/T2/T3), Last_Active_Date, Removal_Reason, Notes`.
+   - Trigger: Sprint 5 daily reconciliation job — diff prior-day-vs-current-day across union(T1)+T2+T3 buckets; tickers rotating out all 5 buckets get auto-archived.
+   - Use cases: position close-out reference, re-entry monitoring, historical reanalysis.
+   - AWAITS OWNER APPROVAL on schema fields, trigger logic (daily vs monthly), retention, Stage 2 backfill toggle.
+
+3. **DEC-496 PROPOSED — Tier 3 momentum methodology** (Pass 53 directive 5):
+   - Status: PROPOSED. Methodology spec required before Sprint 5 implementation (DEC-104/364/375/376/377).
+   - **Recommended methodology — Jegadeesh-Titman 12-1 month price momentum** (academic standard published 1993, used by AQR / MSCI / FTSE Russell momentum factor indices):
+     - For each non-T1 ticker at as_of D: `momentum_score = (price[D-21] / price[D-252]) - 1`
+     - Lookback 252 trading days (~12 months); skip recent 21 trading days (~1 month) to avoid short-term mean reversion (academic finding).
+     - Optional risk-adjustment (Sharpe-momentum variant per AQR): divide by 12-month rolling volatility.
+   - Universe: all non-T1 tickers passing DEC-321/366 liquidity floor; rank descending; top 100 (per DEC-364) become Tier 3.
+   - Refresh cadence: monthly (CLAUDE.md universe rules); for backtest, computed at first-of-month from prior month-end.
+   - PIT correctness: each Tier 3 entry has `added_date` (first day in top 100) + `removed_date` (first day fell out) — B++ schema same as T1a/T1c.
+   - Update timing: right after Polygon prefetch (Sprint 1) — needs OHLCV cache before momentum computable.
+   - Tie-breakers: secondary by 6-month volatility ascending (lower-vol momentum preferred); tertiary by ADV descending (more liquid preferred).
+   - AWAITS OWNER APPROVAL on (a) lookback/skip windows (252/21 default), (b) risk-adjustment toggle (default OFF per Jegadeesh-Titman classic), (c) tie-breaker order.
+
+4. **Tier 2 Wikipedia populate attempt — HALTED (sourcing wall, same as T1b)** (Pass 53 directive 6):
+   - WebFetch `en.wikipedia.org/wiki/List_of_corporate_spin-offs` → 404 (page doesn't exist with that name).
+   - WebFetch `en.wikipedia.org/wiki/List_of_largest_IPOs` → 404 (same).
+   - Fallback `en.wikipedia.org/wiki/Corporate_spin-off`: returned no structured table; "Examples" section lists 2 spinoffs (Starz, Versant) without tickers / market caps / dates / sectors. Inadequate for T2 populate.
+   - Fallback `en.wikipedia.org/wiki/Initial_public_offering`: returned no comprehensive 2020-2026 IPO table; "Largest IPOs" table is global (Saudi Aramco, Alibaba) — outside our scope.
+   - **Wikipedia is inadequate for T2 populate.** Same sourcing wall as T1b Russell 1000.
+   - **Refused to manually curate from training-data memory** — would risk fabricating data without authoritative source verification (matches L143 decision-state vs artifact-state discipline).
+   - **Recommendation:** Defer T2 populate to Sprint 5 per DEC-103 phased implementation (DEC-372 GH Actions monthly automation + DEC-380 Polygon corporate actions for spinoffs + DEC-378 NASDAQ symbol-directory for IPOs). Polygon corporate actions endpoint (already paid for via Stocks Starter) is the authoritative source for spinoff effective dates. Sprint 5 work item.
+
+5. **`CLAUDE.md` Universe Management section updated:**
+   - 5-bucket architecture (T1a/T1b/T1c/T2/T3) explicitly documented.
+   - All universe CSVs use B++ schema with `added_date`/`removed_date` columns + standard PIT loader filter.
+   - Tier 3 momentum methodology referenced (DEC-496 PROPOSED — Jegadeesh-Titman 12-1).
+   - Stage 3+ archived watchlist requirement (DEC-495 PROPOSED) documented.
+   - Spinoff threshold corrected from $10B → $5B (was incorrect in prior CLAUDE.md text per refresh_extended_universe.py:7 "above $5B market cap").
+
+6. **`ENGINEERING_REGISTER.md` Sprint 1/5 additions block:**
+   - Added DEC-495 + DEC-496 rows alongside existing DEC-494.
+   - Status notes updated: DEC-494 RESOLVED-DECIDED Sprint 1; DEC-495 + DEC-496 PROPOSED Stage 3+ pending.
+
+7. **`AUDIT.md`** — this entry.
+
+**Decision impact:**
+- Two new DECs registered: DEC-495 + DEC-496, both PROPOSED, Stage 3+ pending.
+- Schema migration applied to T2 + T3 CSVs — backwards-compatible for current universe.py loaders.
+- T2 populate remains deferred (Wikipedia inadequate; Sprint 5 Polygon path proper).
+- T3 populate remains deferred (methodology DEC-496 PROPOSED; Sprint 1 prefetch precondition; Sprint 5 implementation).
+- 5-bucket universe architecture now explicit in CLAUDE.md — was scattered across DEC-118/103/104/483/494 previously.
+
+**Files updated this turn:**
+1. `backtest/data/extended_universe.csv` — header schema migration (added_date / removed_date)
+2. `backtest/data/momentum_watchlist.csv` — same
+3. `AUDIT_INDEX.md` — DEC-495 + DEC-496 PROPOSED rows
+4. `ENGINEERING_REGISTER.md` — Sprint 1/5 block updated with DEC-495 + DEC-496
+5. `CLAUDE.md` — Universe Management section updated (5-bucket arch + B++ schema + DEC-495/496 references)
+6. `AUDIT.md` — this entry
+
+**Out of scope this turn (queued):**
+- T2 populate — Sprint 5 per DEC-103/372/373/374/378/380 (Polygon corporate actions + SEC EDGAR + NASDAQ symbol-directory)
+- T3 populate — Sprint 1 prefetch precondition + Sprint 5 DEC-104/375/376/377 implementation; methodology spec via DEC-496 PROPOSED needs owner approval first
+- Archived watchlist implementation — Sprint 5 per DEC-495 PROPOSED; needs owner approval on schema + trigger + retention
+- T1b populate — still deferred per `741bfa8b` (Sprint 1 procurement)
+- T1a populate — Sprint 1 (S&P DJI press release scrape)
+
+**Pattern note (#25 honest meta-finding):** Wikipedia is great for index constituent lists (S&P 500, NASDAQ-100) where structured tables exist. Wikipedia is inadequate for ad-hoc events (spinoffs, IPOs) which lack centralized lists. This Pass 53 universe-build effort surfaced asymmetric Wikipedia coverage as a real constraint — the L88 exception scope works for indices but fails for events. Sprint 5 procurement (Polygon corporate actions + SEC EDGAR + NASDAQ symbol-directory) is the proper path for events. Worth refining DEC-103 sub-decisions or CLAUDE.md "Data Sources" if owner picks scope-cut alternative.
+
+*Per CHECKLIST #32 (verbatim 6 directives — populate T2/T3, archived watchlist Stage 3+, modify dependencies, Stage 3+ pending, T3 methodology suggestion, T2 Wikipedia attempt); #25 (T2 Wikipedia sourcing wall surfaced honestly with 4 WebFetch attempts; refused to fabricate T2 data from training memory per L143; T3 methodology recommendation grounded in academic standard with citation lineage Jegadeesh-Titman 1993 / AQR / MSCI / FTSE Russell); #43 (CLAUDE.md ↔ AUDIT_INDEX DEC-495/496 ↔ ENG_REGISTER Sprint 1/5 block ↔ T2/T3 CSV headers ↔ AUDIT.md narrative all aligned); #45 (pre-flight verified DEC-103/104 parent decisions, DEC-103 phased Sprint 5 children, next DEC numbers, T2/T3 CSV current state EMPTY before schema migration); #51 (default lower-impact: refused to populate T2 from imperfect Wikipedia source; surfaced sourcing wall + Sprint 5 Polygon path; DEC-495/496 PROPOSED Stage 3+ pending per "Mark Stage 3+ decisions as pending" directive); #58 (atomic 6-file commit covering schema migration + 2 DECs + CLAUDE.md + ENG_REGISTER + AUDIT); #65 (T2/T3 schemas preserved extra fields as B++ extensions, not lumped or dropped); #66 (DEC-103/104 verified as parent decisions; DEC-372-377 children verified for Sprint 5; DEC-118 verified for Tier 1 ETFs; next DEC-495/496 confirmed via grep). L88 exception HONORED — Wikipedia attempted, found inadequate, refused to fabricate data when source insufficient.*

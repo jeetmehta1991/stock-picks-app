@@ -1,1 +1,1 @@
-Symbol,Company,Sector,MomentumScore,MarketCapB,LastPrice,AddedDate
+Symbol,Company,Sector,added_date,removed_date,MomentumScore,MarketCapB,LastPrice

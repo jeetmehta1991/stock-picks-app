@@ -177,9 +177,12 @@ All 9 must pass overall for a strategy to advance. Additionally, each strategy g
 
 ### Universe Management
 - `sp500_tickers.csv` must be refreshed quarterly (CHECKLIST item 19). If last commit >90 days old, flag before any run.
-- New spinoffs above $10B market cap → add to Tier 2 immediately, don't wait for S&P 500 inclusion (SNDK waited 9 months — L89).
-- Tier 2 (extended universe): monthly refresh in live trading.
-- Tier 3 (momentum watchlist): monthly refresh in live trading, static for backtesting.
+- New spinoffs above $5B market cap → add to Tier 2 immediately, don't wait for S&P 500 inclusion (SNDK waited 9 months — L89).
+- **5-bucket architecture (Pass 53):** Tier 1 sub-tiers (T1a S&P 500 / T1b R1000-non-S&P / T1c NDX-non-S&P per DEC-483) + Tier 1 ETFs (per DEC-118 — `tier1_etfs.csv` post DEC-494) + Tier 2 (`extended_universe.csv` — spinoffs + recent IPOs per DEC-103) + Tier 3 (`momentum_watchlist.csv` — top 100 non-T1 momentum names per DEC-104/364).
+- **All universe CSVs use B++ schema** with `added_date` / `removed_date` columns (per DEC-303); PIT loader filters by `(added_date IS NULL OR added_date ≤ as_of) AND (removed_date IS NULL OR removed_date > as_of)`.
+- Tier 2 (extended universe — spinoffs + recent IPOs): monthly refresh in live trading per DEC-372/373/374 (Sprint 5 phased).
+- Tier 3 (momentum watchlist): monthly refresh in live trading per DEC-104/364/375/376/377 (Sprint 5 phased). Methodology = Jegadeesh-Titman 12-1 month price momentum per DEC-496 PROPOSED (252-day lookback, 21-day skip; top 100 by score; computed from Polygon OHLCV cache after Sprint 1 prefetch). Static for backtesting (computed at run start; not lookahead).
+- **Stage 3+ archived watchlist (DEC-495 PROPOSED):** When a ticker rotates out of all 5 buckets (T1a/T1b/T1c/T2/T3), it must be tracked in `archived_watchlist.csv` for close-out reference + re-entry monitoring + historical reanalysis. Daily reconciliation job (Sprint 5) populates the file. Stage 2 backfill TBD per owner approval.
 
 ### Strategy Changes
 - No strategy or rule changes without explicit owner approval. Every threshold, filter, and parameter change requires sign-off.

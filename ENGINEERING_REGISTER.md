@@ -490,8 +490,10 @@ Discovered Pass 53 turn (this) via owner fact-check question on tier classificat
 | DEC-N | Description | Test signal | Effort |
 |---|---|---|---|
 | DEC-494 | Tier 2 / refresh_extended_universe.py alignment with DEC-483 — remove NDX-non-S&P from Tier 2 inclusion (now T1c) | refresh_extended_universe.py docstring + logic exclude NDX-non-S&P; extended_universe.csv contains only spinoffs + recent IPOs; T1c (nasdaq_100_membership.csv) canonical NDX-non-S&P source | ~0.5-1d |
+| DEC-495 | Stage 3+ archived watchlist for tickers falling out of all 5 universe buckets (T1a/T1b/T1c/T2/T3); `archived_watchlist.csv` schema + daily reconciliation job + close-out / re-entry tracking | Diff job correctly identifies tickers leaving union(T1)+T2+T3; archived rows auto-created with last_tier + last_active_date + reason; rejoined tickers tracked | ~2-3d Sprint 5 implementation |
+| DEC-496 | Tier 3 momentum methodology — Jegadeesh-Titman 12-1 (252-day lookback, 21-day skip; rank top 100 non-T1 by `(price[D-21]/price[D-252])-1`) | Synthetic returns produce expected ranking; PIT loader returns correct top-100 for any as_of D; monthly refresh handles list churn | ~1d methodology + ~1-2d historical compute (folded into DEC-375/376/377) |
 
-**Status:** RESOLVED-DECIDED Pass 53 owner-approved. Sprint placement: **Sprint 1** (universe-build alignment alongside historical_membership.csv work).
+**Status:** DEC-494 RESOLVED-DECIDED Pass 53 owner-approved Sprint 1. DEC-495 + DEC-496 PROPOSED Pass 53 (Stage 3+ pending) — DEC-495 awaits owner approval on schema/trigger/retention; DEC-496 awaits owner approval on lookback windows + risk-adjustment toggle + tie-breakers.
 
 ---
 
