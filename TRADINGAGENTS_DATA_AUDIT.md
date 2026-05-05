@@ -953,3 +953,47 @@ Per L131 / CHECKLIST #51 — sub-decisions PROPOSED here, **not yet LOGGED as DE
 **Effort impact:** None for individual toolkit deliverables. Sprint 7 toolkit work continues per original timing. New Sprint 6.5 (Phase 1A baseline) is parallel-able with Sprint 7 (toolkit build) — Phase 1A doesn't need toolkits.
 
 **Architectural clarity:** Smart money signals in Phase 1A (rules-based screener consumption) and smart money signals in Phase 1B (OurFundamentalsToolkit consumption) are the SAME data source (DEC-450 Quiver paid + DEC-124 confluence), accessed via DIFFERENT consumption paths. Phase 1A reads from cache directly; Phase 1B reads via toolkit method `get_smart_money_composite()`.
+
+---
+
+## Pass 53 Addendum — TRADING_RULES.md canonical signal references
+
+Pass 53 added comprehensive signal documentation in TRADING_RULES.md. Reference these canonical sections when implementing toolkits (DEC-462-468):
+
+| Section | Content | Toolkit consumption |
+|---|---|---|
+| **TRADING_RULES §2A** (Pass 53 NEW) | Signal Universe Catalogue — 6 categories (Technical / Smart Money / Options / Macro / Sentiment / Company); ~265-275 active signal fields; source code paths per category | All toolkits — canonical reference for "what signals exist" |
+| **TRADING_RULES §10.8** (Pass 53 NEW) | Smart Money Composite Score — per-source signal labels (congressional / insider / 13F) + composite weights matrix (`+4/+2/-3` etc.) + veto + composite labels by score + 90-day decay | OurFundamentalsToolkit `get_smart_money_composite()` (DEC-463) |
+| **TRADING_RULES §10.9** (Pass 53 NEW) | Smart Money-Adjacent Signals (news / gov_contracts / lobbying / analyst LIVE-ONLY warning per DEC-299/443) | OurFundamentalsToolkit + OurNewsToolkit |
+| **TRADING_RULES §13.12** (Pass 53 NEW) | API Endpoint Inventory — comprehensive table (~30 endpoints across 16 sources) | All toolkits — canonical reference for "what API endpoints to consume" |
+
+### Pass 53 trade-capture format changes — Sprint 2 dependency
+
+DEC-491 + DEC-492 PROPOSED Sprint 2 affect what data agents see in trade history:
+
+- **DEC-491** trade_log Parquet format (vs CSV `str(dict)` fragility) — `agent_reasoning` dict will round-trip cleanly post-DEC-491. Toolkits that consume historical trade reasoning (e.g., reflection node retrieval) benefit.
+- **DEC-492** signals_at_entry filter removed — string/list signals (regime tags, ICT/SMC labels per DEC-261/345, chart pattern names per DEC-355-362) will be preserved in trade rows. Post-hoc agent analysis of "what signals fired this trade" gains visibility into non-numeric signals.
+
+Both Sprint 2 implementation; affect Phase 1B+ agent overlay quality.
+
+### Universe architecture Pass 53 — toolkit context
+
+Pass 53 introduced 5-bucket universe model:
+- T1a (S&P 500), T1b (R1000-non-S&P), T1c (NDX-non-S&P) per DEC-483
+- Tier 1 ETFs (DEC-118) — 27 ETFs in `tier1_etfs.csv` (Pass 53 migration from hardcoded list)
+- T2 spinoffs/IPOs (DEC-103); T3 momentum (DEC-104; methodology DEC-496 J-T 12-1)
+- DEC-495 archived watchlist for tickers rotating out of all 5 buckets (Stage 3+ scope)
+
+Universe CSVs live in top-level `Backtesting universe/` folder (Pass 53 commit `c7f5580f`); B++ schema with `added_date`/`removed_date` columns; PIT loader filter handles NULL pre-window dates.
+
+Toolkits consuming universe context (DEC-465 OurTraderToolkit `existing positions` field; DEC-466 OurRiskToolkit; portfolio_context per DEC-467) should use `backtest.data.universe` module loaders — these read from the new folder path via `UNIVERSE_DIR` constant.
+
+### Cross-references
+
+- TRADING_RULES.md §2A signal universe catalogue
+- TRADING_RULES.md §10.8/10.9 smart money composite + adjacent
+- TRADING_RULES.md §13.12 API endpoint inventory
+- DOCUMENTATION_REGISTER.md Pass 53 turn entries (post Sprint-1-Pre-Flight)
+- AUDIT.md Pass 53 narrative entries (per-commit detail)
+- DEC-491/492/493 (Sprint 2 trade-capture fragility) — affect agent_reasoning serialization
+- DEC-494/495/496 (Sprint 1 / Stage 3+ / Sprint 1-5 — universe + watchlist + momentum methodology)

@@ -27563,3 +27563,51 @@ Initial drift scan via grep across all non-archive `*.md` files for known Pass 5
 - 1-ticker NDX discrepancy resolution beyond CAVEAT (owner can spot-check via Nasdaq IR pattern when convenient)
 
 *Per CHECKLIST #32 (verbatim "1+3"); #25 (drift triage scan honest — distinguished docs that ARE canonical from docs UNAUDITED-this-Pass; CHECKLIST.md fix surfaced as discovered drift not silently corrected); #43 (CAVEAT cross-references prior commits c3e132e5/cf1c0762/41659bd3/d8890a5b; CHECKLIST.md path update aligns with universe folder move commit `c7f5580f`); #45 (verified universe.py read_csv call sites before adding comment='#' to confirm no-op for non-headered CSVs; verified CHECKLIST.md items 19-21 actual paths before edit); #51 (Stream 3 chunked into A/B/C/D rather than attempting all ~25 docs in one turn); #58 (atomic 4-file commit covering Path 1 + Stream 3 chunk 1 + AUDIT narrative; no half-state); #65 (no roster changes); #66 (DEC-496 referenced per actual body content; CHECKLIST item numbering preserved per existing structure). Stream 3 deliberately chunked for owner-paced execution per scope-realism discipline.*
+
+---
+
+## Pass 53 — Stream 3 Chunk A complete (DOCUMENTATION_REGISTER.md + TRADINGAGENTS_DATA_AUDIT.md updated)
+
+**Trigger:** Owner Pass 53 directive: "sequential" — execute Stream 3 chunks A/B/C/D in order.
+
+**Chunk A scope:** medium-priority docs likely missing Pass 53 references — DOCUMENTATION_REGISTER.md (DEC-491-496 not registered) + TRADINGAGENTS_DATA_AUDIT.md (Pass 53 TRADING_RULES additions not cross-referenced).
+
+**Resolution applied this turn:**
+
+1. **`DOCUMENTATION_REGISTER.md`** — added new "Pass 53 Turn — Post Sprint-1-Pre-Flight Work (Stream 3 chunk A registration)" entry covering:
+   - 6 NEW decisions (DEC-491/492/493/494/495/496) with status + Sprint placement
+   - 5 DEC body updates with no status change (DEC-303/332/477/483/370 clarifications)
+   - 6 TRADING_RULES.md NEW sections (§2A signal universe; §10.8 smart money composite; §10.9 adjacent signals; §13.12 API endpoint inventory; §22.1 test pyramid bullet; PROJECT_PLAN §4.6 dashboard summary)
+   - 3 DETAILED_PROJECT_PLAN.md NEW sections (Part 2.5 dashboard map; §2.4.5 exits; §2.4.6 pre-trade filters)
+   - CHECKLIST.md additions (#66 + universe-tier refinement)
+   - Universe architecture changes (5-bucket model + folder move + T1c populate + T1b deferral + T2/T3 schema migration + T2/T3 Sprint 1 placement)
+   - Code changes (UNIVERSE_DIR constant + comment='#' loader support)
+   - CLAUDE.md HARD RULE additions (CSV-first data architecture; L88 exception scope)
+   - ~22 cumulative commits referenced
+   - State count delta (490 total decisions, +6 from prior batch)
+
+2. **`TRADINGAGENTS_DATA_AUDIT.md`** — appended "Pass 53 Addendum — TRADING_RULES.md canonical signal references" section covering:
+   - Cross-reference table mapping Pass 53 NEW TRADING_RULES sections (§2A, §10.8, §10.9, §13.12) to consuming custom toolkits (DEC-462-468)
+   - Pass 53 trade-capture format changes (DEC-491/492 PROPOSED Sprint 2) and how they affect agent_reasoning serialization + post-hoc agent visibility into trade history
+   - Pass 53 universe architecture context (5-bucket model + folder move + B++ schema) and how toolkits consuming universe data should use `backtest.data.universe` module loaders via `UNIVERSE_DIR` constant
+   - Cross-reference list to canonical sections + DOCUMENTATION_REGISTER + AUDIT narrative
+
+3. **`AUDIT.md`** — this entry.
+
+**Drift findings (per #25 honest scan):**
+- DOCUMENTATION_REGISTER.md: had ZERO entries for DEC-491-496 + Pass 53 work after the prior Sprint-1 Pre-Flight Batch entry. Fixed.
+- TRADINGAGENTS_DATA_AUDIT.md: NO drift on paths/attributions/DEC misuse (clean grep result). Only addition needed: forward-references to new TRADING_RULES sections that toolkits will consume.
+
+**Files updated this turn:**
+1. `DOCUMENTATION_REGISTER.md` — comprehensive Pass 53 post-pre-flight entry
+2. `TRADINGAGENTS_DATA_AUDIT.md` — Pass 53 addendum with TRADING_RULES cross-references
+3. `AUDIT.md` — this entry
+
+**Stream 3 progress:**
+- Chunk 1 (CHECKLIST.md drift fix): ✅ commit `654e610e`
+- **Chunk A (DOCUMENTATION_REGISTER + TRADINGAGENTS_DATA_AUDIT): ✅ this turn**
+- Chunk B (STRATEGY_REGISTER + BUG_REGISTER + AUDIT_TRIAGE): next turn
+- Chunk C (README + EXPLANATION + PASS_53_PRIORITIES + UNIVERSAL_LEARNINGS): turn after
+- Chunk D (final cross-doc consistency pass): final turn
+
+*Per CHECKLIST #32 (verbatim "sequential" — Chunk A execution); #25 (drift scan honest — confirmed DOCUMENTATION_REGISTER had zero post-batch entries; TRADINGAGENTS_DATA_AUDIT had no path/attribution drift); #43 (DOCUMENTATION_REGISTER entry cross-references AUDIT narrative entries + commit hashes; TRADINGAGENTS addendum cross-references TRADING_RULES §2A/§10.8/§10.9/§13.12); #45 (read both docs before editing; verified DEC numbers + section names against canonical sources); #51 (Chunk A scope strict — only 2 medium-priority docs touched; refused scope-creep into Chunk B); #58 (atomic 3-file commit); #65 (no roster expansions; entries are registrations of work done elsewhere); #66 (DEC-491/492/493/494/495/496 referenced per actual AUDIT_INDEX entries; section numbers verified against TRADING_RULES TOC). Stream 3 sequential execution per owner directive.*

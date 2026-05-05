@@ -449,3 +449,94 @@ Per CHECKLIST #58 — Bucket D additions for Walkthrough 4 deferred decisions.
 
 **Documentation integrity gap fixed:** Prior turn introduced "DEC-482/483/484/485 PROPOSED" labels in 6 docs without formal AUDIT_INDEX entries. This turn formally created all 4 + DEC-490 in master decision table.
 
+
+---
+
+## Pass 53 Turn — Post Sprint-1-Pre-Flight Work (Stream 3 chunk A registration)
+
+**Trigger:** Owner Pass 53 directive `sequential` execution of Stream 3 chunk A — DOCUMENTATION_REGISTER.md needs registration of all Pass 53 work after the prior batch entry above.
+
+### 6 NEW decisions added Pass 53 (post Sprint-1 pre-flight)
+
+| DEC | Description | Status | Sprint |
+|---|---|---|---|
+| DEC-491 | trade_log Parquet format (preserves nested types vs CSV str(dict) fragility) | PROPOSED | Sprint 2 |
+| DEC-492 | signals_at_entry filter removed (preserve string/list signals) | PROPOSED | Sprint 2 (HARD-COUPLED to DEC-491) |
+| DEC-493 | trade_id schema field (uniqueness key) | PROPOSED | Sprint 2 |
+| DEC-494 | Tier 2 / refresh_extended_universe.py alignment with DEC-483 (NDX-non-S&P moved to T1c) | RESOLVED-DECIDED | Sprint 1 |
+| DEC-495 | Stage 3+ archived watchlist for tickers rotating out of all 5 buckets | RESOLVED-DECIDED | Stage 3+ implementation |
+| DEC-496 | Tier 3 momentum methodology — Jegadeesh-Titman 12-1 month price momentum (classic; risk-adjustment OFF) | RESOLVED-DECIDED | Sprint 1 historical + Sprint 5 ongoing |
+
+### DEC body updates Pass 53 (no status change — clarifications)
+
+| DEC | Update |
+|---|---|
+| DEC-303 | Source clarification: S&P DJI press releases primary; Wikipedia + browse fallback under one-time L88 exception; B++ format already specified in original Pass 48 spec |
+| DEC-332 | Smart money composite weights body completed (was truncated at "move to config with d" since Pass 48); +4/+2/-3 matrix + veto + composite labels by score |
+| DEC-477 | B++ format clarification: single static CSV with `added_date`/`removed_date` columns; PIT loader filter expression with NULL handling for pre-window tickers |
+| DEC-483 | (a) DEC-368→DEC-370 attribution fix in body (Index Rebalance, not Calendar/Seasonal); (b) source change SEC EDGAR → S&P DJI press releases for `index_rebalance_events.parquet` |
+| DEC-370 | Source spec added: S&P DJI primary; Wikipedia/browse fallback |
+
+### TRADING_RULES.md NEW sections (6)
+
+| Section | Content |
+|---|---|
+| §2A | Signal Universe Catalogue — 6 categories (Technical / Smart Money / Options / Macro / Sentiment / Company); ~265-275 active signals; source code paths |
+| §10.8 | Smart Money Composite Score — 3 per-source signal label rules + composite scoring matrix + veto + labels by score + 90-day decay |
+| §10.9 | Smart Money-Adjacent Signals (news / gov_contracts / lobbying / analyst LIVE-ONLY warning) |
+| §13.12 | API Endpoint Inventory — comprehensive table across 16 sources (~30 endpoints) |
+| §22.1 (added bullet) | Test pyramid coverage gate per sprint |
+| §4.6 (PROJECT_PLAN) | Dashboard coverage three-tier summary |
+
+### DETAILED_PROJECT_PLAN.md NEW sections (3)
+
+| Section | Content |
+|---|---|
+| Part 2.5 | Stage 2 Dashboard Coverage Map — per-phase dashboards table |
+| §2.4.5 | Exit method roster — canonical reference to TRADING_RULES §8 |
+| §2.4.6 | Pre-trade filters — 7 filters enumerated |
+
+### CHECKLIST.md additions
+
+| Item | Content |
+|---|---|
+| #66 | DEC target alignment verification before claiming resolution (Pass 53 catch from DEC-476/DEC-332 mismatch) + universe-tier categorization sub-clause refinement |
+
+### Universe architecture changes Pass 53
+
+- 5-bucket universe model documented (T1a + T1b + T1c sub-tiers + Tier 1 ETFs + T2 + T3) per DEC-118 + DEC-483
+- 5 universe CSVs moved to top-level `Backtesting universe/` folder (commit `c7f5580f`)
+- Tier 1 ETFs migrated from hardcoded `ETFS_FULL` Python list → `tier1_etfs.csv` (DEC-494 / commit `e257d160`)
+- T1c (`nasdaq_100_membership.csv`) populated 157 rows via Wikipedia + Nasdaq IR (commits `cf1c0762` + `41659bd3`)
+- T1b Russell 1000 deferred to Sprint 1 procurement (LSEG paywall surfaced, commit `741bfa8b`)
+- T2 + T3 schemas migrated to B++ format with `added_date`/`removed_date` columns (commit `549c0a65`)
+- T2 + T3 historical populate moved to Sprint 1 post-Polygon-prefetch (commit `b6605d62`)
+
+### Code changes (universe.py + scripts)
+
+- `backtest/data/universe.py` — UNIVERSE_DIR module constant; `pd.read_csv(comment='#')` for caveat-headered CSVs
+- 6 prefetch + refresh scripts updated for new universe folder paths
+
+### CLAUDE.md HARD RULE additions Pass 53
+
+- CSV-first data architecture HARD RULE (all input/output data lives in CSV; no exclusively-codebase data)
+- One-time L88 Wikipedia exception scope codified (laptop-local, manual verification, fallback only, not runtime)
+
+### Pass 53 cumulative commit count
+
+Approximately 22 commits across this Pass session. See AUDIT.md narrative entries for per-commit detail. Major commits:
+- `843344b7` — Pass 51b BUG-270a/270b hybrid trail bugs
+- `0d5182c2` — Phase 1A restoration cross-doc
+- `c3e132e5` — Smart money + API endpoint inventory
+- `c7f5580f` — Universe folder move
+- `b6d6d78c` — Signal universe §2A
+- `654e610e` — Path 1 CAVEAT + Stream 3 chunk 1
+
+### State after Pass 53 cumulative
+
+- Total decisions: 490 (was 484 post-prior-batch; +6 new = DEC-491/492/493/494/495/496)
+- RESOLVED-DECIDED: ~382 (added DEC-494/495/496 RESOLVED + maintained DEC-489 from prior turn)
+- PROPOSED: ~14 (DEC-491/492/493 added; DEC-486/487/488 flipped prior turn cancels out)
+- New universe CSVs populated: T1c (157 rows) + Tier 1 ETFs (27 entries)
+- Schema migrations: T2/T3 to B++ format (header-only; populate Sprint 1)
+
