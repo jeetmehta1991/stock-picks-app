@@ -87,9 +87,22 @@ def save_checkpoint(completed: set):
         json.dump({"completed": sorted(completed), "last_updated": str(date.today())}, f, indent=2)
 
 
+def _polygon_ticker(ticker: str) -> str:
+    """Convert dash-format dual-class tickers (CSV convention: BRK-B) to dot-format
+    used by Polygon API (BRK.B). Pass 53 fix — verified 2026-05-05 that Polygon
+    returns 0 results for dash form but full data for dot form on BRK-B / BF-B."""
+    if "-" in ticker:
+        # Common dual-class: ABC-A / ABC-B → ABC.A / ABC.B (last segment after dash)
+        prefix, _, suffix = ticker.rpartition("-")
+        if len(suffix) == 1 and suffix.isalpha():
+            return f"{prefix}.{suffix}"
+    return ticker
+
+
 def fetch_ticker_ohlcv(ticker: str) -> pd.DataFrame:
     """Fetch daily aggregates for one ticker, full window. Handles pagination."""
-    url = f"{BASE_URL}/v2/aggs/ticker/{ticker}/range/1/day/{START_DATE}/{END_DATE}"
+    api_ticker = _polygon_ticker(ticker)
+    url = f"{BASE_URL}/v2/aggs/ticker/{api_ticker}/range/1/day/{START_DATE}/{END_DATE}"
     params = {
         "apiKey": POLYGON_KEY,
         "adjusted": "true",

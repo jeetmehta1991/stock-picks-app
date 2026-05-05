@@ -51,9 +51,19 @@ RATE_LIMIT_SLEEP = 0.05
 TIMEOUT = 30
 
 
+def _polygon_ticker(ticker: str) -> str:
+    """Dash→dot for dual-class tickers (BRK-B → BRK.B). Pass 53 fix; consistent with prefetch_polygon_ohlcv_daily.py."""
+    if "-" in ticker:
+        prefix, _, suffix = ticker.rpartition("-")
+        if len(suffix) == 1 and suffix.isalpha():
+            return f"{prefix}.{suffix}"
+    return ticker
+
+
 def fetch_ticker_reference(ticker: str) -> dict:
     """Fetch /v3/reference/tickers/{ticker} — full reference detail."""
-    url = f"{BASE_URL}/v3/reference/tickers/{ticker}"
+    api_ticker = _polygon_ticker(ticker)
+    url = f"{BASE_URL}/v3/reference/tickers/{api_ticker}"
     try:
         r = requests.get(url, params={"apiKey": POLYGON_KEY}, timeout=TIMEOUT)
     except requests.RequestException as e:
@@ -127,7 +137,8 @@ def main():
             # Write per-ticker file
             pd.DataFrame([ref]).to_parquet(CACHE_DIR / f"{ticker}.parquet", compression="snappy", index=False)
             rows.append(ref)
-            print(f"OK ({ref.get('sic_description', 'n/a')[:40]})")
+            sic = ref.get('sic_description') or 'n/a'
+            print(f"OK ({sic[:40]})")
         time.sleep(RATE_LIMIT_SLEEP)
 
     if rows:

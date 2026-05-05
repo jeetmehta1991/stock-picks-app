@@ -71,7 +71,7 @@ Pass 53 universe-build effort completed:
 - ✅ Comprehensive signal universe documented (TRADING_RULES §2A — 6 categories, ~265-275 fields)
 - ✅ API endpoint inventory (TRADING_RULES §13.12 — 16 sources)
 - ✅ Universe folder migration to top-level `Backtesting universe/`
-- ⏸ T1a historical_membership.csv (Sprint 1 — S&P DJI press release scrape)
-- ⏸ T1b russell_1000_membership.csv (Sprint 1 procurement — LSEG paywall)
-- ⏸ T2 + T3 historical populate (Sprint 1 — post-Polygon-prefetch)
-- ⏸ Sprint 1 Polygon prefetch (~$29/mo subscription owner action)
+- ✅ T1a `Tier 1A Universe_S&P 500 Tickers_Jan 2020 to May 2026.csv` (Pass 53 RESOLVED-IMPLEMENTED — 614 rows from Wikipedia rebuild + 4/4 S&P DJI spot-check; renamed Pass 53 from `historical_membership.csv`)
+- ⏸ T1b russell_1000_membership.csv (DEFERRED TO STAGE 3 per Pass 53 — LSEG paywall; T1a 503 + T1c 101 + ETFs sufficient for Stage 2)
+- 🔄 T2 + T3 historical populate (Phase 3+4 in flight — T2 10 seeds + T3 1220 unique non-T1 tickers via SCREENER-FIRST)
+- ✅ Sprint 1 Polygon Stocks Starter ($29/mo) active; OHLCV + reference + corp-actions cache populated

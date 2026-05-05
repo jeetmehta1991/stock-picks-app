@@ -134,14 +134,19 @@ def get_sp500_constituents_pit(as_of: date) -> list[str]:
     applies the PIT filter. Falls back to `sp500_tickers.csv` current snapshot
     if the historical file is missing.
 
-    Pass 53 BASELINE-ONLY caveat: until 2020-2026 historical event backfill
-    completes, this returns the current 484 members regardless of `as_of`
-    (because all `added_date` / `removed_date` are NULL on baseline rows).
+    Pass 53 SCRAPE-COMPLETE: 614 rows from Wikipedia (124 events 2020-2026 +
+    503 currently active). File renamed Pass 53 (commit pending) from
+    `historical_membership.csv` to `Tier 1A Universe_S&P 500 Tickers_Jan 2020 to May 2026.csv`.
     """
-    csv_path = UNIVERSE_DIR / "historical_membership.csv"
+    csv_path = UNIVERSE_DIR / "Tier 1A Universe_S&P 500 Tickers_Jan 2020 to May 2026.csv"
+    # Backwards-compat fallback during transition
     if not csv_path.exists():
-        logger.warning("historical_membership.csv missing — falling back to sp500_tickers.csv current snapshot")
-        return get_sp500_constituents()
+        legacy = UNIVERSE_DIR / "historical_membership.csv"
+        if legacy.exists():
+            csv_path = legacy
+        else:
+            logger.warning("T1a historical CSV missing — falling back to sp500_tickers.csv current snapshot")
+            return get_sp500_constituents()
     try:
         df = pd.read_csv(csv_path, comment='#')
         active = _filter_pit(df, as_of)
@@ -149,7 +154,7 @@ def get_sp500_constituents_pit(as_of: date) -> list[str]:
         logger.info("PIT S&P 500 at %s: %d active members", as_of, len(tickers))
         return tickers
     except Exception as exc:
-        logger.error("Could not read historical_membership.csv: %s", exc)
+        logger.error("Could not read T1a historical CSV: %s", exc)
         return []
 
 

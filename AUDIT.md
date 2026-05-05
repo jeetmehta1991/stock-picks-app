@@ -28050,3 +28050,113 @@ Net change 2020 → 2026: -2 (matches event categorization: 13 add-only events �
 - T1c CAVEAT: INPUT=nasdaq_100_membership.csv current state (101 active) + Slickcharts 101 + Wiki Nasdaq-100 article 101 + Nasdaq IR per-event spot-checks; OUTPUT=updated CAVEAT header noting RESOLVED + CLAUDE.md count refresh; FLOW=read file → fetch authoritative sources → 3-way cross-check → set diff (zero in all directions) → resolve CAVEAT
 
 *Per CHECKLIST #1 (owner approval received — "T1b defer / T1c resolve / T2 T3 question / Polygon active" all explicit); #13 (read-before-edit — read nasdaq_100_membership.csv header + AUDIT_INDEX DEC-365 + DEC-483 + CLAUDE.md repo structure block before editing); #25 (CAVEAT staleness exposed honestly — earlier 102-vs-101 hypothesis was wrong; file actually 101 = 101 with no discrepancy); #32 (verbatim owner directive enumeration); #43 (cross-doc consistency — DEC-365 + DEC-483 + CLAUDE.md + SPRINT1 README + AUDIT all updated as a unit); #45 (read before edit; runtime cross-check 3 sources before declaring CAVEAT resolved); #51 (scope strict — T1b deferral + T1c CAVEAT + T2/T3 architectural answer + Polygon-unlock surfacing only; not expanding to actual Polygon prefetch this turn); #58 (atomic commit grouping all 5 file changes); #65 (no roster expansion — DEC-365 status revision, DEC-483 status flip, T1c CAVEAT resolution); #66 (DEC alignment verified — DEC-365 = T1b parent, DEC-483 = sub-tier expansion, DEC-303 = T1c B++ schema parent); #66.b (INPUT/OUTPUT/FLOW stated for both T1b deferral and T1c CAVEAT resolution). Owner directive "T1b defer / T1c resolve / T2 T3 question / Polygon active" — FULFILLED. T1b DEFERRED to Stage 3; T1c CAVEAT RESOLVED; T2/T3 architecture clarified (Polygon endpoints provide ticker discovery globally — no seed list needed); Polygon-active Sprint 1 unlock surfaced for next-step proposal.*
+
+---
+
+## Pass 53 — Sprint 1 Phases 2-4 EXECUTED + T1a file rename (Polygon prefetch + SCREENERS + cache 183 MB)
+
+**Trigger:** Owner approved Option B "full Phases 2 + 3 + 4 sequential" with directive "Keep checking regularly to identify issues on the go". Polygon Stocks Starter $29/mo subscription active + API key in `.env`. Subsequently: "Rename historical membership csv as 'Tier 1A Universe_S&P 500 Tickers_Jan 2020 to May 2026'."
+
+**Phase 1 (gate cleared prior turn `60619c05`):** smoke test 14/14 + 5-ticker test 9m 4s + verifier 63/63 PASS.
+
+**Phase 2 — T1a + T1c OHLCV/reference/corp-actions prefetch:**
+
+Phase 2A OHLCV: 637/645 tickers cached in 12.9 min.
+- 8 unrecoverable failures: AGN, RTN, WCG, NBL, ETFC, CXO, TIF, VAR — all delisted PRE-2021-05-05 (Polygon Stocks Starter 5y window starts 2021-05; no data for tickers active only earlier)
+- 2 dual-class fix: BRK-B and BF-B initially failed (Polygon uses dot format `BRK.B` not dash); added `_polygon_ticker()` helper converting dash→dot at API call time; 1255 rows each post-fix
+
+Phase 2B Reference: 599/650 tickers cached in 9.3 min.
+- 51 delisted-ticker failures (Polygon /v3/reference/tickers returns 404 for currently-delisted tickers — different storage from OHLCV which retains 5y of historical-during-window data)
+- Fixed `None[:40]` slice crash on `sic_description` for ARM (None-safe print)
+
+Phase 2C Corp Actions GLOBAL: 6,520 splits + 988,496 dividends across 56,285 unique tickers in ~10 min.
+- Pagination cap raised 100→1000 pages (default; configurable via --max-pages); 988k records fit in 988 pages
+- Dividend type breakdown: CD=982,923 (regular cash) / SC=5,573 (special cash, mostly foreign currency one-offs); NO `SD` (special distribution) type at all in Polygon data — discovered Pass 53 (this Pass)
+- Implication for T2 SCREENER: cannot use SD-type filter for spinoff identification; must use list_date or external curated seeds
+
+T1a 111 historical-only sectors backfill (loose end from prior turn): 41/111 GICS Sectors filled via Polygon `/v3/reference/tickers/{ticker}` SIC→GICS mapping; 70 unrecoverable (33 delisted = no SIC; 37 unmappable SIC codes through current rule set).
+
+**Phase 3 — T2 SCREENER (DEC-103/494 SCREENER-FIRST architecture):**
+
+Initial Polygon API quirk findings:
+- `/v3/reference/tickers` listing endpoint does NOT populate `list_date` field in listing rows (only in per-ticker detail)
+- `list_date.gte`/`list_date.lte` filter is silently ignored
+- `sort=list_date` returns HTTP 400 "Invalid sort field"
+
+Pragmatic implementation (Pass 53 minimum viable):
+- Curated seeds: 45 known spinoff + recent-IPO tickers from refresh_extended_universe.py + manual curation
+- Validate each via `/v3/reference/tickers/{ticker}` per-ticker detail (DEC-103 thresholds: spinoff cap >$5B / IPO cap >$10B + ≥90d history)
+- Cache discovery: scan OHLCV cache for tickers with first_bar ≥ 2021-06-01 (Polygon 5y window edge + buffer); 0 found because all cached tickers are T1 with truncated first_bar at window start
+
+Result: **10 qualifying T2 tickers** (BABA $319B, BNTX $25B, TWLO $29B, NET $79B, PINS $12B, SNOW $50B, U $12B, AFRM $22B, TOST $17B, RDDT $33B). 35 seeds excluded as already in T1 (S&P inclusion since seed creation) or fail cap. T2 OHLCV prefetched for all 10 (~13 sec wall time).
+
+Full global SCREENER (paginate ALL Polygon tickers + per-ticker list_date lookup) = Sprint 1+ follow-up.
+
+**Phase 4 — T3 SCREENER (DEC-496 J-T 12-1 momentum):**
+
+Quality filters added (post-quick-run review):
+- Exclude warrants (`.WS`, trailing W with len>4), units (`.U`), rights (`R` suffix len>4), preferred (`.P`)
+- Exclude ticker symbols >5 chars (typically non-CS)
+- Exclude moonshots with momentum >5x or <-95% (J-T classic assumes typical equity returns; outliers contaminate signal)
+- Exclude prices <$5 (microcap manipulation susceptibility)
+- $5M minimum daily dollar volume (DEC-321/366 T3 liquidity proxy)
+
+Full 2020-2026 monthly snapshots: **77 attempted, 48 valid, 29 SKIPPED** (Polygon HTTP 403 "data past historical entitlements" — confirms 5y window limit; safe T3 start = 2022-06 where D-252 lookback lands inside 5y window).
+
+Result: **1,221 unique non-T1 tickers identified** across 48 valid monthly snapshots; 1,999 total period rows (multi-period for entrants/exits — capturing rotation in/out of top-100 each month); 100 currently active in 2026-05 snapshot. Top names by recent momentum: CELC, RHLD, RAIL, AEYE, NKTR, NBIS — all real listed names post-quality-filters.
+
+T3 OHLCV prefetch: 1,169/1,170 net-new tickers cached in 21.1 min (1 microcap failure NGLPB). Total unique cached tickers post-Phase-4: ~1,821.
+
+**T1a file RENAME (Pass 53 owner directive 2026-05-05):**
+
+`Backtesting universe/historical_membership.csv` → `Backtesting universe/Tier 1A Universe_S&P 500 Tickers_Jan 2020 to May 2026.csv`. Renamed via `git mv` to preserve git history. Critical references updated:
+- `backtest/data/universe.py` `get_sp500_constituents_pit()` (with backwards-compat fallback to legacy filename during transition)
+- `scripts/build_tier2_screener.py` + `scripts/build_tier3_screener.py` T1A_CSV constants
+- `CLAUDE.md` Repo Structure block
+- `AUDIT_INDEX.md` DEC-477 body deliverables
+- `scripts/SPRINT1_POLYGON_PREFETCH_README.md` (4 occurrences)
+- `README.md` Sprint 1 status line (also updated to RESOLVED-IMPLEMENTED)
+- File header self-reference + date-range maintenance note
+
+Filename date-range "Jan 2020 to May 2026" reflects content as of 2026-05-05; will go stale on next monthly refresh — owner-acknowledged maintenance task documented in file header.
+
+L143 don't-rewrite-history compliant: historical AUDIT.md narrative entries + Pass 52 archive docs + incidental DEC body refs (DEC-303/147/370/483/494) NOT updated; reference old filename as point-in-time fact. ~9 forward-looking docs (DOCUMENTATION_REGISTER, TRADING_RULES, ENGINEERING_REGISTER, IMPLEMENTATION_READINESS_DASHBOARD, DETAILED_PROJECT_PLAN, PROJECT_PLAN, LEARNINGS, PASS_53_PRIORITIES, CHECKLIST) have incidental references awaiting separate doc-sweep commit (owner-deferred).
+
+**Final Phase 2-4 cache + universe state:**
+
+| Component | Files | Size |
+|---|---|---|
+| OHLCV daily cache | 1,821 parquet | 104.9 MB |
+| Reference cache | 599 parquet | 5.8 MB |
+| Splits global | 6,520 records | 0.5 MB |
+| Dividends global | 988,496 records | 71.6 MB |
+| **Total cache** | **2,424 files** | **183 MB** |
+
+| Universe File | Rows | State |
+|---|---|---|
+| `Tier 1A Universe_S&P 500 Tickers_Jan 2020 to May 2026.csv` | 614 | T1a B++ (renamed Pass 53) |
+| `nasdaq_100_membership.csv` | 161 | T1c B++ |
+| `tier1_etfs.csv` | 27 | T1 ETFs B++ |
+| `extended_universe.csv` | 10 | T2 SCREENER output |
+| `momentum_watchlist.csv` | 1,999 | T3 SCREENER output (1,220 unique non-T1) |
+| `sp500_tickers.csv` | 503 | Current snapshot |
+
+Cross-tier UNION (post-rename, runtime verified):
+- 2022-06-01: 664 unique
+- 2024-06-15: 655 unique
+- 2026-05-05: 653 unique
+
+**Verification:** 62/62 unit tests PASS post all changes including PIT loader read of renamed file.
+
+**Polygon API quirks codified Pass 53 (incremental learnings during execution):**
+1. Dual-class tickers use DOT format (BRK.B not BRK-B) on `/v2/aggs/ticker/...` endpoint
+2. `/v3/reference/dividends` and `/v3/reference/splits` silently ignore `ticker.in=` filter (per-ticker loop required for filtered fetches)
+3. `/v3/reference/tickers` listing endpoint does NOT populate `list_date` (per-ticker detail required)
+4. `/v3/reference/tickers` `list_date.gte/.lte` filter silently ignored
+5. `/v3/reference/tickers` `sort=list_date` returns HTTP 400 (use `sort=ticker` instead)
+6. Polygon dividend_type codes: CD (cash), SC (special cash, mostly foreign one-offs); NO `SD` (special distribution) type — spinoffs not detectable via dividend type filter
+7. Polygon Stocks Starter 5y window: hard cutoff for OHLCV grouped + per-ticker (HTTP 403 "data past historical entitlements" beyond 2021-05); `/v3/reference/tickers/{ticker}` returns 404 for currently-delisted tickers
+
+These quirks should be added to `LEARNINGS.md` Pass 53 lessons as Polygon-API-specific gotchas for future Sprint work.
+
+*Per CHECKLIST #1 (owner approval explicit "B" + "Keep checking regularly" + "Rename historical membership csv as..."); #13 (read-before-edit verified for all Phase 2-4 modified files + grep of 23 references before rename); #22 (small-batch validation re-applied — Phase 1 gate held; T3 quick run dry before full); #23 (API cost gate held — Phase 1 verifier 63/63 before Phase 2; Phase 2 sample tests before scaling); #25 (failures surfaced honestly — 8 OHLCV delisted, 51 reference delisted, 1 T3 microcap, 6 Polygon API quirks all named explicitly with root causes); #29 (small-test-batch protocol respected); #32 (verbatim owner directive enumeration); #43 (cross-doc consistency — DEC-477 body + CLAUDE.md + SPRINT1 + README + file header all updated as a unit); #45 (read before edit; runtime tests verifying 62/62 post each major change); #51 (scope strict — Phase 2-4 + rename only; broader doc-sweep deferred per owner approval); #58 (single atomic commit grouping all Phase 2-4 work + rename); #65 (no roster expansion); #66 (DEC alignment verified — DEC-103/104/477/494/496 all referenced correctly); #66.b (INPUT/OUTPUT/FLOW stated for each phase). Owner directive "Phase 2-4 sequential" — FULFILLED. T1a/T1c OHLCV cached, T2 baseline (10 tickers) cached, T3 1221 tickers cached. Sprint 1 universe-build artifact-state milestone reached.*
