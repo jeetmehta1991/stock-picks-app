@@ -27262,3 +27262,63 @@ Then refined:
 **Pattern note (#25 honest meta-finding):** Wikipedia is great for index constituent lists (S&P 500, NASDAQ-100) where structured tables exist. Wikipedia is inadequate for ad-hoc events (spinoffs, IPOs) which lack centralized lists. This Pass 53 universe-build effort surfaced asymmetric Wikipedia coverage as a real constraint — the L88 exception scope works for indices but fails for events. Sprint 5 procurement (Polygon corporate actions + SEC EDGAR + NASDAQ symbol-directory) is the proper path for events. Worth refining DEC-103 sub-decisions or CLAUDE.md "Data Sources" if owner picks scope-cut alternative.
 
 *Per CHECKLIST #32 (verbatim 6 directives — populate T2/T3, archived watchlist Stage 3+, modify dependencies, Stage 3+ pending, T3 methodology suggestion, T2 Wikipedia attempt); #25 (T2 Wikipedia sourcing wall surfaced honestly with 4 WebFetch attempts; refused to fabricate T2 data from training memory per L143; T3 methodology recommendation grounded in academic standard with citation lineage Jegadeesh-Titman 1993 / AQR / MSCI / FTSE Russell); #43 (CLAUDE.md ↔ AUDIT_INDEX DEC-495/496 ↔ ENG_REGISTER Sprint 1/5 block ↔ T2/T3 CSV headers ↔ AUDIT.md narrative all aligned); #45 (pre-flight verified DEC-103/104 parent decisions, DEC-103 phased Sprint 5 children, next DEC numbers, T2/T3 CSV current state EMPTY before schema migration); #51 (default lower-impact: refused to populate T2 from imperfect Wikipedia source; surfaced sourcing wall + Sprint 5 Polygon path; DEC-495/496 PROPOSED Stage 3+ pending per "Mark Stage 3+ decisions as pending" directive); #58 (atomic 6-file commit covering schema migration + 2 DECs + CLAUDE.md + ENG_REGISTER + AUDIT); #65 (T2/T3 schemas preserved extra fields as B++ extensions, not lumped or dropped); #66 (DEC-103/104 verified as parent decisions; DEC-372-377 children verified for Sprint 5; DEC-118 verified for Tier 1 ETFs; next DEC-495/496 confirmed via grep). L88 exception HONORED — Wikipedia attempted, found inadequate, refused to fabricate data when source insufficient.*
+
+---
+
+## Pass 53 — DEC-495 + DEC-496 owner-approved RESOLVED-DECIDED + T2/T3 historical populate moved to Sprint 1 (post-Polygon-prefetch)
+
+**Trigger:** Owner Pass 53 directive: "t2 differ to sprint 1 after we do polygon data pre-fetch. same as T3. After sprint 1, the applicable universe files to be updated. Approve all other recs"
+
+**Resolution applied this turn:**
+
+1. **DEC-496 status flip:** PROPOSED → **RESOLVED-DECIDED** with classic Jegadeesh-Titman defaults locked: 252-day lookback / 21-day skip / risk-adjustment=OFF / tie-breakers=(volatility ascending → ADV descending). Sprint placement: Sprint 1 historical populate (post-Polygon-prefetch) for 2020-2026 backfill; Sprint 5 phased automation per DEC-104/375/376/377 for ongoing monthly refresh.
+
+2. **DEC-495 status flip:** PROPOSED → **RESOLVED-DECIDED** with spec locked: schema = `Symbol, Company, Last_Tier, Last_Active_Date, Removal_Reason, Notes`; cadence = daily reconciliation; backfill = forward-only Stage 3 (default-applied per Q6 ambiguity — owner did not explicitly request Stage 2 retroactive backfill, so defaulted to forward-only matching Stage 3+ scope framing). Implementation deferred to Stage 3+ start (papertrading scope) — RESOLVED-DECIDED status reflects spec approval, not implementation start.
+
+3. **T2/T3 historical populate moved to Sprint 1** (Pass 53 owner directive — supersedes prior Sprint 5 deferral for historical populate work):
+   - **T2 (`extended_universe.csv`)**: populate via Polygon Stocks Starter corporate actions endpoint (DEC-380, already paid) post-prefetch. Spinoff effective dates + IPO listing dates filtered to >$5B / >$10B per refresh_extended_universe.py:7-9 thresholds. Same B++ schema as T1a/T1c plus extension columns `MarketCapB`, `Tier2Reason`.
+   - **T3 (`momentum_watchlist.csv`)**: populate via Polygon OHLCV cache (Sprint 1 prefetch is strict precondition) using Jegadeesh-Titman 12-1 momentum per DEC-496. Monthly snapshots 2020-2026; top 100 non-T1 tickers per DEC-364.
+   - **Sprint 5 phased automation (DEC-372/373/374 + DEC-375/376/377) UNCHANGED** — handles ongoing live monthly refresh post-Sprint-1 historical baseline. Sprint 5 scope is now "ongoing automation atop Sprint 1 historical seed" rather than "phased historical implementation from scratch".
+
+4. **`scripts/SPRINT1_POLYGON_PREFETCH_README.md`** — added two new sub-bullet blocks for `extended_universe.csv` (T2) and `momentum_watchlist.csv` (T3) under the universe-build next-steps section. Each block specifies source (Polygon corporate actions for T2; Polygon OHLCV + Jegadeesh-Titman for T3), schema, methodology defaults, mapping timeframe, and "why Sprint 1 not Sprint 5" rationale.
+
+5. **`ENGINEERING_REGISTER.md`** — Sprint 1/5 additions block updated:
+   - DEC-495 status flip noted (RESOLVED-DECIDED, Stage 3+ scope, deferred implementation).
+   - DEC-496 status flip noted (RESOLVED-DECIDED, Sprint 1 + Sprint 5 split).
+   - Sprint 1 added scope: T2 + T3 historical populate (~2.5-3.5d folded into existing Sprint 1 budget).
+   - Sprint 1 effort revised: ~25.5-35.5d → ~28-39d.
+
+6. **`CLAUDE.md` Universe Management section updated:**
+   - T2 / T3 lines reworked: Sprint 1 historical populate explicitly noted; Sprint 5 limited to "ongoing automation".
+   - DEC-496 status updated PROPOSED → RESOLVED-DECIDED with classic methodology details inline.
+   - DEC-495 status updated PROPOSED → RESOLVED-DECIDED with schema + forward-only Stage 3 backfill detail.
+
+7. **`AUDIT.md`** — this entry.
+
+**Q6 default-application disclosure (#25 honest):** my prior turn's question 6 was "DEC-495 Stage 2 backfill — TBD: backfill from Sprint 1 universe-build, OR Stage 3 forward-only?" — no explicit recommendation in my message. Owner responded "Approve all other recs" without specifying Q6. Defaulted to **forward-only Stage 3** based on:
+- DEC-495 framing as Stage 3+ scope (owner-stated "papertrading and further stages")
+- Default-lower-impact discipline per CHECKLIST #51 — forward-only is smaller scope than retroactive backfill
+- Owner can override in subsequent turn if backfill desired (would just need a Sprint 1 historical seed against the universe-build outputs)
+
+If owner intended Stage 2 retroactive backfill (compute archived rows from Sprint 1 historical universe data going back to 2020-01-01), this can be added in a follow-up turn — flag in CLAUDE.md noted "no Stage 2 retroactive backfill per Pass 53 default".
+
+**Decision impact:**
+- DEC-495 + DEC-496 status flipped PROPOSED → RESOLVED-DECIDED. Both with spec locked + Sprint placement.
+- Sprint 1 effort: ~25.5-35.5d → ~28-39d (+~2.5-3.5d for T2/T3 historical populate).
+- Sprint 5 phased automation scope unchanged — still owns ongoing live refresh + GH Actions monthly cadence.
+- 5-bucket universe architecture now has clear Sprint 1 historical seed + Sprint 5 live automation split.
+
+**Files updated this turn:**
+1. `AUDIT_INDEX.md` — DEC-495 + DEC-496 status flips
+2. `scripts/SPRINT1_POLYGON_PREFETCH_README.md` — T2 + T3 post-prefetch populate sub-bullets added
+3. `ENGINEERING_REGISTER.md` — Sprint 1/5 block status updates + Sprint 1 effort revision
+4. `CLAUDE.md` — Universe Management section reworked
+5. `AUDIT.md` — this entry
+
+**Out of scope this turn (Sprint 1 implementation work):**
+- Actual Polygon corporate actions scrape for T2 historical populate
+- Actual Jegadeesh-Titman compute for T3 historical populate (depends on Polygon OHLCV cache)
+- Validation: T2 row count expected ~30-60 spinoffs + IPOs above thresholds for 2020-2026 (rough estimate)
+- Validation: T3 row count = 100 monthly × ~72 months × ~50% churn = ~3500-5000 rows in CSV (multi-period rows for tickers entering/exiting top-100)
+
+*Per CHECKLIST #32 (verbatim "t2 differ to sprint 1... same as T3... approve all other recs"); #25 (Q6 default-application disclosed honestly — owner ambiguity acknowledged + default rationale provided + override path noted); #43 (CLAUDE.md ↔ AUDIT_INDEX DEC-495/496 ↔ ENG_REGISTER ↔ SPRINT1 README ↔ AUDIT.md narrative all aligned); #45 (pre-flight verified DEC-103/104 parent scope before claiming sub-DEC Sprint 5 phasing remained intact; verified Sprint 1 effort delta math); #51 (forward-only Stage 3 backfill chosen as default per lower-impact discipline; deferred Stage 3+ implementation rather than starting now); #58 (atomic 5-file commit; T1b status unchanged from `741bfa8b`); #65 (no roster expansions); #66 (verified DEC-103/104 + DEC-372-377 + DEC-380 scope alignment per artifact-not-memory). #58 NEW APPLICATION — DEC-495 + DEC-496 spec approved without implementation start; status RESOLVED-DECIDED reflects decision-state per CHECKLIST #58 RESOLVED-DECIDED → RESOLVED-IMPLEMENTED transition framing.*

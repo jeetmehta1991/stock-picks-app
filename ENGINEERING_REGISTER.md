@@ -493,7 +493,16 @@ Discovered Pass 53 turn (this) via owner fact-check question on tier classificat
 | DEC-495 | Stage 3+ archived watchlist for tickers falling out of all 5 universe buckets (T1a/T1b/T1c/T2/T3); `archived_watchlist.csv` schema + daily reconciliation job + close-out / re-entry tracking | Diff job correctly identifies tickers leaving union(T1)+T2+T3; archived rows auto-created with last_tier + last_active_date + reason; rejoined tickers tracked | ~2-3d Sprint 5 implementation |
 | DEC-496 | Tier 3 momentum methodology — Jegadeesh-Titman 12-1 (252-day lookback, 21-day skip; rank top 100 non-T1 by `(price[D-21]/price[D-252])-1`) | Synthetic returns produce expected ranking; PIT loader returns correct top-100 for any as_of D; monthly refresh handles list churn | ~1d methodology + ~1-2d historical compute (folded into DEC-375/376/377) |
 
-**Status:** DEC-494 RESOLVED-DECIDED Pass 53 owner-approved Sprint 1. DEC-495 + DEC-496 PROPOSED Pass 53 (Stage 3+ pending) — DEC-495 awaits owner approval on schema/trigger/retention; DEC-496 awaits owner approval on lookback windows + risk-adjustment toggle + tie-breakers.
+**Status update Pass 53 owner approvals:**
+- DEC-494 RESOLVED-DECIDED Sprint 1 (universe-build alignment) — unchanged.
+- DEC-495 RESOLVED-DECIDED Stage 3+ scope — schema locked (`Symbol, Company, Last_Tier, Last_Active_Date, Removal_Reason, Notes`); daily reconciliation; forward-only Stage 3 backfill. Implementation deferred to Stage 3+ start.
+- DEC-496 RESOLVED-DECIDED Sprint 1 (historical populate) + Sprint 5 (ongoing automation) — classic defaults: 252/21 windows, risk-adjustment OFF, tie-breakers vol-asc→ADV-desc.
+
+**Sprint 1 added scope (Pass 53):**
+- T2 historical populate via Polygon corporate actions DEC-380 (post-prefetch) — produces `extended_universe.csv` 2020-2026 spinoffs + IPOs + add/remove dates
+- T3 historical populate via Jegadeesh-Titman 12-1 from Polygon OHLCV cache (post-prefetch) — produces `momentum_watchlist.csv` 2020-2026 monthly snapshots
+- Sprint 1 effort revised: ~25.5-35.5d → ~28-39d (+~2.5-3.5d for T2/T3 historical populate work; folded into existing Sprint 1 budget)
+- Sprint 5 phased automation (DEC-372/373/374 + DEC-375/376/377) UNCHANGED — handles ongoing live monthly refresh post-Sprint-1 historical baseline.
 
 ---
 

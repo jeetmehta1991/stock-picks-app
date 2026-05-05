@@ -230,6 +230,18 @@ After Polygon prefetch is committed to main, next session:
      - **Fallback source:** Wikipedia "NASDAQ-100" + general internet browse (under same Pass 53 one-time L88 exception, scoped: laptop-local; fallback-only; manual verification)
      - **Mapping timeframe:** 2020-01-01 → today + ongoing (matches T1a)
      - **Pre-2020 active tickers:** `added_date` NULL (matches T1a option-β)
+   - `backtest/data/extended_universe.csv` (T2 — Pass 53 Sprint 1 historical populate per owner directive; same B++ format as T1a/T1c plus extension columns `MarketCapB`, `Tier2Reason`)
+     - **Source:** Polygon Stocks Starter corporate actions endpoint per DEC-380 (already paid; spinoff effective dates) + Polygon reference data for IPO listing dates + market cap filter (>$5B spinoffs / >$10B IPOs per refresh_extended_universe.py:7-9 and CLAUDE.md universe rules)
+     - **Why Sprint 1 not Sprint 5:** owner directive Pass 53 — populate immediately after Polygon OHLCV prefetch since corporate actions data lives in same Polygon subscription; defer ongoing GH Actions automation (DEC-372/373/374) to Sprint 5
+     - **Mapping timeframe:** 2020-01-01 → today + ongoing for Stage 3 (matches T1a/T1c)
+     - **Schema:** `Symbol, Company, Sector, added_date, removed_date, MarketCapB, Tier2Reason` — added_date = effective spinoff/IPO date; removed_date populated when ticker rotates to T1a/T1b/T1c (S&P/R1000/NDX inclusion) or delists
+   - `backtest/data/momentum_watchlist.csv` (T3 — Pass 53 Sprint 1 historical populate per owner directive; methodology DEC-496 RESOLVED-DECIDED)
+     - **Source:** Polygon OHLCV cache (populated by Sprint 1 prefetch — strict precondition); compute Jegadeesh-Titman 12-1 momentum score per DEC-496 for all non-T1 tickers passing DEC-321/366 liquidity floor; rank descending; top 100 (per DEC-364) = Tier 3 at each as_of date
+     - **Methodology:** `momentum_score = (price[D-21] / price[D-252]) - 1` per DEC-496. Lookback 252 trading days; skip 21 trading days. Risk-adjustment OFF (classic). Tie-breakers: 6-month volatility ascending → ADV descending.
+     - **Refresh cadence:** monthly (1st of each month from prior month-end); for backtest static at run start (no lookahead).
+     - **Mapping timeframe:** 2020-01-01 → today + ongoing for Stage 3 (matches T1a/T1c). For 2020-2021 dates: requires 252-day lookback BEFORE 2020-01-01 → cache window must extend to ~2019-01-01 minimum. Polygon Stocks Starter 5-year window covers this only if we're in 2024+.
+     - **Schema:** `Symbol, Company, Sector, added_date, removed_date, MomentumScore, MarketCapB, LastPrice` — added_date = first day in top 100; removed_date = first day fell out
+     - **Why Sprint 1 not Sprint 5:** strict precondition is Polygon OHLCV cache populated; momentum compute is data-derived, no external scrape needed; defer ongoing monthly automation (DEC-375/376/377) to Sprint 5
    - `data/universe/index_rebalance_events.parquet` (day-grain effective dates for **DEC-370** Index Rebalance strategies — **NOT DEC-368** Calendar/Seasonal; mis-attribution corrected Pass 53 via CHECKLIST #66 catch)
      - **Primary source:** S&P Dow Jones Indices press releases (same source as `historical_membership.csv` — S&P DJI publishes announcement-date AND effective-date for every S&P 500 add/remove)
      - **Fallback source:** Wikipedia + general internet browse (under same Pass 53 one-time L88 exception, scoped: laptop-local; fallback-only; manual verification)
