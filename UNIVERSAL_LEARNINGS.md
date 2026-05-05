@@ -199,3 +199,55 @@ When a methodology decision absorbs prior phase content (e.g., DEC-014 Phase 1B 
 4 instances during Pass 52-53 where owner question surfaced a gap that Claude's adversarial audit missed (DEC-042 architectural fit, DEC-051 data dependencies, 167 gaps in Pass 52 turn 132 — caught by Claude proactively, and Phase 1A omission). The pattern of owner-as-error-catcher is stable. Claude meta-audit methodology has blind spots that owner familiarity with project history reveals.
 
 **Rule:** Treat owner's questions about "where did X go?" or "why isn't Y in here?" as high-priority signal. Owner has historical context that Claude's recent-conversation-window doesn't. Don't dismiss; verify against archives + history before responding.
+
+---
+
+## PRINCIPLE 9 — Pass 53 Cumulative Learnings (universe-build effort + comprehensive doc audit)
+
+### CSV-first data architecture is non-negotiable.
+
+Pass 53 owner directive: all input/output data lives in CSV files; no exclusively-codebase data. Past violation corrected: `ETFS_FULL` hardcoded list in `universe.py` migrated to `tier1_etfs.csv` (DEC-494). Distinction: lists/mappings/records → CSV; thresholds/formulas/parameters → code. The line: if you find yourself typing a Python list of tickers or a dict of attributes longer than 5 entries, stop and put it in a CSV instead. Codified in CLAUDE.md HARD RULES.
+
+**Rule:** Before writing any module that introduces hardcoded ticker lists, sector dicts, event calendars, or known-good-output lists, check CLAUDE.md CSV-first HARD RULE. If the content is data (not configuration), it goes in a CSV.
+
+### Free historical financial data is genuinely scarce — accept the verification reality.
+
+Pass 53 universe-build effort attempted to verify NDX 157-row CSV against external sources outside Wikipedia + Nasdaq IR (already used). 5 iteration batches × 2-3 sources/batch = 15 external fetches. Result: **2 useful sources, 13 dead ends**. Most secondary aggregators are paywalled past top-25 (stockanalysis.com Pro), Cloudflare-blocked for automated fetches (etfdb / barchart / yahoo / cnbc), marketing pages without raw data (Invesco), or 404s (URL drift over years). Same pattern for T1b Russell 1000 — Wikipedia inadequate, FTSE Russell paywalled via LSEG migration, Polygon doesn't have index membership endpoints.
+
+**Rule:** When verifying external data, surface the verification reality honestly rather than continuing to fabricate fetches against dead URLs. Wikipedia + per-event press release sites (Nasdaq IR, S&P DJI, FTSE Russell free tier) are the practical free verification sources for indices. For paid-source-only data (Russell 1000 historical), defer to formal Sprint procurement rather than build with biased current-snapshot-only data.
+
+### Sourcing wall pattern: Wikipedia adequate for indices, inadequate for events.
+
+Pass 53 attempted Wikipedia for both Tier 1c (NDX-100 — adequate, rich changes table) and Tier 2 (spinoffs + IPOs — inadequate, no centralized list). Asymmetric Wikipedia coverage is a real constraint. Indices (S&P 500, NASDAQ-100) have community-maintained changes tables; ad-hoc events (spinoffs, IPOs, corporate actions) require per-event sources.
+
+**Rule:** Wikipedia under L88 one-time scrape exception works for indices with structured changes tables. For events (spinoffs, IPOs, corporate actions, rebalance events), defer to authoritative event sources (Polygon corporate actions, SEC EDGAR Form 8-K, S&P DJI press releases per-event) — not Wikipedia.
+
+### Scope realism — multi-stream owner directives need decomposition.
+
+Pass 53 owner directive containing "Move folder + 5-iteration verification + 22-doc audit + TRADING_RULES expansion" was decomposed into 4 work streams; only Stream 1 (folder move) and Stream 4 (signal universe expansion) fit cleanly into single turns; Stream 2 (verification) ran 5 iterations across multiple turns; Stream 3 (audit) chunked into A/B/C/D for owner-paced execution. Trying to do all 4 streams in one turn would have produced shallow work on each.
+
+**Rule:** When owner directive contains multiple substantive work streams, decompose explicitly + surface plan + execute one stream at a time. Don't conflate scope. Per CHECKLIST #51 default lower-impact, surface decomposition before action when unsure.
+
+### Universe-tier categorization needs artifact verification, not memory.
+
+Pass 53 made TWO tier-categorization errors: (1) assumed 484-CSV was during-testing-period intersection (caught by my own pre-flight via `refresh_sp500_universe.py` inspection); (2) characterized Tier 2 as "ETFs / sector funds" in commit `6d4b5303` (caught by owner via direct fact-check question). Both errors stemmed from relying on memory rather than verifying against actual file contents + refresh script docstrings.
+
+**Rule:** Before claiming "Tier N = X" or "T1x covers Y", verify against (a) the actual CSV header/contents (`head <file>.csv`); (b) the refresh script docstring; (c) the canonical DEC body. Memory of "what tier contains what" drifts between sessions and across rule changes — verification against actual artifacts is required, not assumption. Codified in CHECKLIST #66 universe-tier refinement.
+
+### DEC scope alignment must be verified before claiming resolution.
+
+Pass 53 caught the DEC-476/DEC-332 attribution mistake (almost recommended "resolve DEC-476" for the smart money composite gap when DEC-476 is actually Portfolio class API spec — DEC-332 is the smart money composite decision). Caught by my own pre-flight grep against AUDIT_INDEX before edits.
+
+**Rule:** Before stating "DEC-X resolves Y" / "this implements DEC-X" / "DEC-X covers Y", grep AUDIT_INDEX.md for DEC-X's actual decision title + body. Audit-row DEC tags can be cluster references, not decision-targets. Verification cost: 15 seconds. Codified in CHECKLIST #66.
+
+### Multi-period schema rows handle re-entries naturally.
+
+Pass 53 T1c CSV needs multi-period rows for tickers that left and re-joined NDX during 2020-2026 (CSGP, TTWO, WDC, SPLK). B++ schema with per-period rows + standard PIT loader filter `(added_date IS NULL OR added_date ≤ as_of) AND (removed_date IS NULL OR removed_date > as_of)` handles this naturally via SQL/pandas OR semantics. No code change needed. Verified via 3 test cases (period 1, gap, period 2).
+
+**Rule:** When designing membership-history schema, multi-period rows per ticker are the correct representation — don't try to compress into single-row-per-ticker; standard OR-across-rows filter logic handles all the cases naturally.
+
+### Owner manual-verification clause as L88 exception scope.
+
+Pass 53 granted one-time L88 Wikipedia exception for universe-build scrape, scoped to (i) one-time historical, (ii) laptop-local, (iii) fallback only — primary remains authoritative source per index, (iv) manual verification before commit. The owner verification step (e.g., owner spot-checked WMT/PTON/NTES via Nasdaq IR press releases) is the gate that catches data quality issues before they're committed.
+
+**Rule:** When granting an exception to a HARD RULE, scope it explicitly with manual-verification clause. The owner's spot-check authority is the actual safety mechanism, not the source itself.

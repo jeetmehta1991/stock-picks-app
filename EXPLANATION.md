@@ -1,8 +1,8 @@
 # Plain-English Guide to the Trading System
 ## Everything you need to understand, with examples — up to end of Phase 1C
 
-**Last updated:** April 2026
-**Pass 53 update:** Phase 1A architecture restored across canonical docs. EXPLANATION.md content below describes the original Phase 1A/1B/1C/1D taxonomy (which is preserved as the primary mental model). The Pass 52 → 53 evolution: original Phase 1A → 1B → 1C → 1D got compressed during Pass 52 turn 119 (DEC-014 absorbed by DEC-422+426); Pass 53 restored Phase 1A as 3 distinct sub-phases (1A baseline → 1A-α rules-only cube → 1A-β scale validation) preceding Phase 1B agent overlay. For canonical taxonomy see PROJECT_PLAN.md §3.6-3.10. EXPLANATION.md retains plain-English flavor of original phasing for reader continuity.
+**Last updated:** May 2026 (Pass 53 cumulative)
+**Pass 53 update:** Phase 1A architecture restored across canonical docs. Pass 53 also added: comprehensive signal universe documentation (TRADING_RULES §2A — 6 categories, ~265-275 fields); smart money composite formula with weights matrix (TRADING_RULES §10.8 — was missing pre-Pass-53); API endpoint inventory (TRADING_RULES §13.12 — 16 sources); 5-bucket universe model with B++ schema (T1a/T1b/T1c sub-tiers + Tier 1 ETFs + T2 + T3); universe CSVs moved to top-level `Backtesting universe/` folder; CLAUDE.md HARD RULE for CSV-first data architecture. EXPLANATION.md content below describes the original Phase 1A/1B/1C/1D taxonomy (preserved as primary mental model). The Pass 52 → 53 evolution: original Phase 1A → 1B → 1C → 1D got compressed during Pass 52 turn 119 (DEC-014 absorbed by DEC-422+426); Pass 53 restored Phase 1A as 3 distinct sub-phases (1A baseline → 1A-α rules-only cube → 1A-β scale validation) preceding Phase 1B agent overlay. For canonical taxonomy see PROJECT_PLAN.md §3.6-3.10. EXPLANATION.md retains plain-English flavor of original phasing for reader continuity.
 
 ---
 
@@ -19,17 +19,17 @@ It is a **swing trading** system — meaning it holds positions for days to week
 
 ---
 
-## The Five Stages (big picture)
+## The Five Stages (big picture — canonical per CLAUDE.md)
 
 | Stage | What happens | Cost per month |
 |---|---|---|
-| 1 | Build and backtest — test strategies on historical data | ~$0–$150 CAD (one-time) |
-| 2 | Paper trading — run live but with fake money | ~$100 CAD |
-| 3 | Real money, small sizes, email approval required | ~$200 CAD |
-| 4 | Real money, automated, IBKR Canada | ~$300 CAD |
-| 5 | Full automation, no approvals needed | ~$350 CAD |
+| 1 | Proof of concept — webpage with daily picks | ~$0 (COMPLETE; retired) |
+| 2 | Strategy validation — backtest all signals across historical regimes | ~$29/mo Polygon + ~$300 one-time Phase 1B-α API budget |
+| 3 | Paper trading — validate live with fake money | ~$200 CAD |
+| 4 | Live trading small — $500-1000 CAD with email approval | ~$300 CAD |
+| 5 | Full automation — autonomous trading | ~$350 CAD |
 
-We are currently in **Stage 1, Phase 1B** — building and backtesting.
+We are currently in **Stage 2 — Strategy Validation** (Pass 53; Sprint 1 pending Polygon prefetch). Phase 1A baseline is the next gate before agent overlay (Phase 1B).
 
 ---
 
@@ -46,7 +46,9 @@ A backtest does NOT guarantee future results. But if a strategy fails the backte
 
 ---
 
-## What are strategies? (we have 72)
+## What are strategies? (we have ~119)
+
+(Pass 53 update: ~119 strategy classes total per STRATEGY_REGISTER.md across Layers 1-4. Phase 1A active count: ~117 of ~119 — 2 strategies skipped per DEC-490 because they need data Stage 2 doesn't have yet (`buyback_announcements` needs SEC EDGAR fundamentals Sprint 4; `guidance_driven_momentum` needs earnings transcripts which were dropped per DEC-485).)
 
 A strategy is a specific set of rules that says "enter a trade when conditions X, Y, and Z are all true at the same time."
 

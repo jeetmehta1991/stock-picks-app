@@ -352,3 +352,61 @@ Owner directs Pass 53 priorities. My recommendations based on Pass 52 final stat
 2. Sprint 0 verification on local VS Code (AAII + CNN F&G + SEC EDGAR domain reachability)
 3. BUG-007 verification — affects Sprint 6.5 Day 1 NOT Sprint 1 Day 1 (Phase 1A `--no-agents` flag)
 
+---
+
+## Pass 53 Post-Pre-Flight Update (Stream 3 chunk C)
+
+**Trigger:** Owner Pass 53 directive: "sequential" — Stream 3 chunk C registration of Pass 53 work after the Sprint-1 Pre-Flight Batch above.
+
+### Decisions added Pass 53 post-pre-flight (6 NEW):
+
+| DEC | Status | Sprint | Description |
+|---|---|---|---|
+| DEC-491 | PROPOSED | Sprint 2 | trade_log Parquet format (preserves nested types) |
+| DEC-492 | PROPOSED | Sprint 2 | signals_at_entry filter removed (preserve string/list signals) |
+| DEC-493 | PROPOSED | Sprint 2 | trade_id schema field |
+| DEC-494 | RESOLVED-DECIDED | Sprint 1 | Tier 2 / refresh_extended_universe.py alignment (DEC-368→DEC-370 attribution fix; NDX-non-S&P → T1c) |
+| DEC-495 | RESOLVED-DECIDED | Stage 3+ | archived watchlist for tickers rotating out of all 5 buckets |
+| DEC-496 | RESOLVED-DECIDED | Sprint 1 + Sprint 5 | Tier 3 momentum methodology (Jegadeesh-Titman 12-1 classic) |
+
+### Universe-build progress Pass 53 cumulative:
+
+- ✅ Tier 1 ETFs CSV migration (27 ETFs)
+- ✅ T1c populated (157 rows; multi-period entries)
+- ✅ T2/T3 schema migrated to B++ format
+- ✅ Universe folder moved to top-level `Backtesting universe/`
+- ⏸ T1a `historical_membership.csv` (Sprint 1)
+- ⏸ T1b `russell_1000_membership.csv` (Sprint 1 procurement; LSEG paywall surfaced)
+- ⏸ T2 historical populate (Sprint 1 post-prefetch)
+- ⏸ T3 historical populate (Sprint 1 post-prefetch)
+- ⏸ DEC-495 archived watchlist (Stage 3+)
+
+### TRADING_RULES.md NEW sections Pass 53 cumulative:
+
+- §2A Signal Universe Catalogue (6 categories, ~265-275 fields)
+- §10.8 Smart Money Composite Score (weights matrix + labels)
+- §10.9 Smart Money-Adjacent Signals
+- §13.12 API Endpoint Inventory (16 sources)
+- §22.1 — test pyramid coverage gate per sprint
+
+### State after Pass 53 cumulative:
+
+- Total decisions: 490 (+18 from pre-Pass-53 baseline)
+- RESOLVED-DECIDED: ~384
+- PROPOSED: 16 (DEC-469-481 + DEC-491-493)
+- Universe CSVs populated: 2 of 5; 3 pending Sprint 1
+- Cumulative commits this Pass: ~25
+
+### Sprint 1 effort revised post-Pass-53:
+
+~25.5-35.5d → ~28-39d (+~2.5-3.5d for T2/T3 historical populate per DEC-494/496).
+
+Sprint 1 Day 1 readiness UNCHANGED — same 3 blockers from prior batch (Polygon subscription + Sprint 0 verification + BUG-007 for Sprint 6.5 not Sprint 1).
+
+### Cross-references:
+
+- AUDIT.md Pass 53 narrative entries
+- AUDIT_INDEX.md DEC-491-496 rows
+- DOCUMENTATION_REGISTER.md Pass 53 post-pre-flight entry
+- AUDIT_TRIAGE.md Pass 53 post-pre-flight decision count delta
+
