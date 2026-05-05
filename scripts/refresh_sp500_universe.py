@@ -28,7 +28,7 @@ from pathlib import Path
 import pandas as pd
 
 # ── Config ─────────────────────────────────────────────────────────────────
-CSV_PATH  = Path(__file__).parent.parent / "backtest" / "data" / "sp500_tickers.csv"
+CSV_PATH  = Path(__file__).parent.parent / "Backtesting universe" / "sp500_tickers.csv"
 SLICK_URL = "https://www.slickcharts.com/sp500"
 
 # ETF sector labels for any ETF that makes it into the list by mistake

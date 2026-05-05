@@ -42,7 +42,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 BASE_URL = "https://api.polygon.io"
 CACHE_DIR = Path("backtest/data/cache/polygon/news")
 CHECKPOINT_FILE = Path("backtest/data/cache/polygon/_checkpoint_news.json")
-UNIVERSE_CSV = Path("backtest/data/sp500_tickers.csv")
+UNIVERSE_CSV = Path("Backtesting universe/sp500_tickers.csv")
 
 # 5y window per DEC-482
 END_DATE = date.today()

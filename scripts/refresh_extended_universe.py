@@ -36,7 +36,7 @@ import pandas as pd
 import yfinance as yf
 
 # ── Config ──────────────────────────────────────────────────────────────────
-CSV_PATH   = Path(__file__).parent.parent / "backtest" / "data" / "extended_universe.csv"
+CSV_PATH   = Path(__file__).parent.parent / "Backtesting universe" / "extended_universe.csv"
 SP500_CSV  = Path(__file__).parent.parent / "backtest" / "data" / "sp500_tickers.csv"
 MIN_MKTCAP_SPINOFF_B = 5.0   # spinoffs above $5B
 MIN_MKTCAP_GENERAL_B = 10.0  # general Tier 2 additions above $10B

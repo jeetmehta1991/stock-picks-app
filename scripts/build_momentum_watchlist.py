@@ -34,8 +34,8 @@ import pandas as pd
 import yfinance as yf
 
 # ── Config ──────────────────────────────────────────────────────────────────
-CSV_PATH   = Path(__file__).parent.parent / "backtest" / "data" / "momentum_watchlist.csv"
-SP500_CSV  = Path(__file__).parent.parent / "backtest" / "data" / "sp500_tickers.csv"
+CSV_PATH   = Path(__file__).parent.parent / "Backtesting universe" / "momentum_watchlist.csv"
+SP500_CSV  = Path(__file__).parent.parent / "Backtesting universe" / "sp500_tickers.csv"
 MAX_TICKERS = 50          # top N by momentum
 MIN_PRICE   = 10.0        # USD
 MIN_AVG_VOL = 500_000     # shares/day

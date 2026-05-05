@@ -31,6 +31,10 @@ from backtest.config import SP50, ETFS, LIQUIDITY
 
 logger = logging.getLogger(__name__)
 
+# Universe CSVs moved to top-level "Backtesting universe/" folder (Pass 53 owner directive)
+# for repo-wide visibility. Path resolves from backtest/data/universe.py → repo root.
+UNIVERSE_DIR = Path(__file__).parent.parent.parent / "Backtesting universe"
+
 # Full ETF list for Phase 1B+
 # Per DEC-494 / Pass 53 owner directive: ETFs migrated from hardcoded list to
 # `backtest/data/tier1_etfs.csv` (Item 4 (ii) CSV + code migration). Module-level
@@ -50,7 +54,7 @@ def get_etfs_full() -> list[str]:
     Returns list of ticker symbols. Falls back to empty list on read failure
     (callers should treat empty as a catastrophic config error).
     """
-    csv_path = Path(__file__).parent / "tier1_etfs.csv"
+    csv_path = UNIVERSE_DIR / "tier1_etfs.csv"
     try:
         df = pd.read_csv(csv_path)
         tickers = df["Symbol"].drop_duplicates().tolist()
@@ -75,7 +79,7 @@ def get_sp500_constituents(max_tickers: int = 500) -> list[str]:
     Update sp500_tickers.csv manually when index membership changes
     (typically 10-20 changes per year).
     """
-    csv_path = Path(__file__).parent / "sp500_tickers.csv"
+    csv_path = UNIVERSE_DIR / "sp500_tickers.csv"
     try:
         df = pd.read_csv(csv_path)
         # Remove duplicates (companies with two share classes)
@@ -156,7 +160,7 @@ def get_sector_map(tickers: list[str], info_dict: dict[str, dict] = None) -> dic
     Reads from sp500_tickers.csv first (fast, no network).
     Falls back to info_dict if ticker not in CSV (e.g. ETFs).
     """
-    csv_path = Path(__file__).parent / "sp500_tickers.csv"
+    csv_path = UNIVERSE_DIR / "sp500_tickers.csv"
     sector_map = {}
 
     # Load from CSV
@@ -224,7 +228,7 @@ def get_extended_universe() -> list[str]:
     Refreshed monthly via scripts/refresh_extended_universe.py (Stage 3+ only).
     Empty CSV = Tier 2 not yet populated (Phase 1B/1C/1D use Tier 1 only).
     """
-    csv_path = Path(__file__).parent / "extended_universe.csv"
+    csv_path = UNIVERSE_DIR / "extended_universe.csv"
     try:
         df = pd.read_csv(csv_path)
         if df.empty:
@@ -245,7 +249,7 @@ def get_momentum_watchlist() -> list[str]:
     For live: recomputed monthly, updated at month-end.
     Empty CSV = Tier 3 not yet populated.
     """
-    csv_path = Path(__file__).parent / "momentum_watchlist.csv"
+    csv_path = UNIVERSE_DIR / "momentum_watchlist.csv"
     try:
         df = pd.read_csv(csv_path)
         if df.empty:

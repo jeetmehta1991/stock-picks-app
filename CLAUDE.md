@@ -38,15 +38,23 @@
 ## Repo Structure
 
 ```
+Backtesting universe/    # Top-level folder for ALL universe CSVs (Pass 53 owner directive — single visible folder)
+  sp500_tickers.csv          # T1a snapshot — quarterly refresh; Sprint 1 historical_membership.csv replaces
+  tier1_etfs.csv             # Tier 1 ETFs (27) — DEC-118 / DEC-494 (Pass 53 migration from hardcoded ETFS_FULL)
+  nasdaq_100_membership.csv  # T1c — 157 rows B++ schema (DEC-303); GICS sectors; multi-period rows
+  extended_universe.csv      # T2 — DEC-103; populate Sprint 1 post-Polygon-prefetch via DEC-380 corp actions
+  momentum_watchlist.csv     # T3 — DEC-104/364; populate Sprint 1 post-Polygon-prefetch via DEC-496 J-T 12-1
+  # FUTURE (Sprint 1):
+  # historical_membership.csv      # T1a B++ format — S&P DJI press release scrape (DEC-303 + DEC-477)
+  # russell_1000_membership.csv    # T1b — deferred to Sprint 1 procurement (LSEG paywall)
+  # archived_watchlist.csv         # DEC-495 RESOLVED-DECIDED Stage 3+ — tickers rotating out of all 5 buckets
+  # index_rebalance_events.parquet # DEC-370 — Sprint 5 day-grain effective dates for index rebalance strategies
 backtest/
   config.py              # universe, regimes, thresholds, position sizing
   run_phase1a.py         # entry point — --phase, --tickers, --no-news, --no-git flags
   data/
     cache.py             # Parquet cache + filelock for parallel writes
-    universe.py          # 3-tier universe: get_sp500_constituents, get_extended_universe, get_full_live_universe
-    sp500_tickers.csv    # Tier 1 — quarterly refresh via scripts/refresh_sp500_universe.py
-    extended_universe.csv # Tier 2 — monthly refresh (Stage 3+)
-    momentum_watchlist.csv # Tier 3 — monthly refresh (Stage 3+)
+    universe.py          # 5-bucket universe loader (T1a/T1b/T1c/T2/T3 + ETFs); reads from "Backtesting universe/" via UNIVERSE_DIR
     fetcher.py           # yfinance OHLCV + fundamentals (Wikipedia REMOVED — L88)
     macro.py             # FRED yield curve, VIX (from OHLCV cache), DXY (UUP proxy)
     sentiment.py         # AAII, CNN Fear & Greed
