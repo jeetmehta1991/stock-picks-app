@@ -6,7 +6,7 @@
 
 This prefetch operates on `backtest/data/sp500_tickers.csv` (484 current-state S&P 500 tickers), NOT the full DEC-483 universe (T1a + T1b + T1c = ~1015 tickers).
 
-The proper universe build (DEC-477 historical_membership.csv day-grain PIT + R1000 + NDX year-grain) is deferred to a separate work session per Pass 53 turn discussion. **This is acknowledged survivorship bias for the data cache built tonight** — addressed in tomorrow's universe-build session.
+The proper universe build (DEC-477 historical_membership.csv B++ format — single static CSV with `added_date`/`removed_date` columns + R1000 + NDX same format with year-grain dates) is deferred to a separate work session per Pass 53 turn discussion. **This is acknowledged survivorship bias for the data cache built tonight** — addressed in tomorrow's universe-build session.
 
 When the proper universe files are built, an additional ~531 tickers (T1b R1000-non-S&P + T1c NDX-non-S&P + historical-S&P-delisted) will need supplementary prefetch.
 
@@ -208,11 +208,11 @@ GitHub note: cache is ~7-12 GB total. GitHub allows 100 GB per repo, individual 
 
 After Polygon prefetch is committed to main, next session:
 
-1. **Build universe files (DEC-477 + DEC-483):**
-   - `data/universe/historical_membership.csv` (day-grain PIT S&P 500)
-   - `data/universe/russell_1000_membership.csv` (year-grain T1b)
-   - `data/universe/nasdaq_100_membership.csv` (year-grain T1c)
-   - `data/universe/index_rebalance_events.parquet` (day-grain via SEC EDGAR for DEC-368)
+1. **Build universe files (DEC-477 + DEC-483 — B++ format Pass 53):**
+   - `data/universe/historical_membership.csv` (S&P 500 — single CSV, columns `Symbol, Company, Sector, added_date, removed_date`; PIT loader filters by `(added_date ≤ as_of) AND (removed_date IS NULL OR removed_date > as_of)`)
+   - `data/universe/russell_1000_membership.csv` (T1b — same B++ format with year-grain dates from FTSE Russell)
+   - `data/universe/nasdaq_100_membership.csv` (T1c — same B++ format with year-grain dates from Nasdaq)
+   - `data/universe/index_rebalance_events.parquet` (day-grain via SEC EDGAR for DEC-368 — separate file since rebalance events strategy needs effective-date grain)
 
 2. **Supplementary Polygon prefetch** for T1b + T1c + historical-S&P-delisted (~531 net new tickers)
 

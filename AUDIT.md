@@ -26704,3 +26704,76 @@ Followed by 4-item approval: (1) per-phase mapping table approved as drafted; (2
 - DEC-189 reflection log dependency for Phase 1B agent analysis tab (handled within DEC-189 sprint scope)
 
 *Per CHECKLIST #32 (verbatim "1. Approve / 2. Option A / 3. Treat as adaptation / 4. Confirm edits"); #25 (honest categorization — not all phases need dashboards; 4 phases marked legitimately N/A with reason rather than force-fitting; legacy dashboards adapted not replaced because they're a different abstraction layer than DEC-199); #43 (cross-doc consistency: DETAILED §2.5 ↔ TRADING_RULES §2.1-§2.11 ↔ PROJECT_PLAN §4.6 ↔ ENG_REGISTER Sprint 1/6.5/7 ↔ AUDIT.md narrative — all 5 docs reference each other correctly); #45 (pre-flight surfaced full inventory + gap analysis + 5 open questions before any edits); #51 (default lower-impact: no new DECs created — owner picked adaptation path, honored that choice); #58 (atomic 5-file commit, no half-state); #65 (dashboards correctly categorized as deliverables/artifacts — not strategies/exits/breakers — and the new Tier 1/2/3 framework respects existing roster boundaries); #66 (DEC-199/200/201/430 verified against AUDIT_INDEX as actual dashboard decisions; no DEC-494/495 created per owner direction).*
+
+---
+
+## Pass 53 — historical_membership.csv format clarification (B++ owner-approved): single static CSV with `added_date`/`removed_date` columns
+
+**Trigger:** Owner clarification Pass 53 — *"Does the original deprecated the static 482-CSV approach in favor of historical_membership.csv (day-grain PIT) make more sense? I assume these 482 stocks were always in SP500 throughout the testing period?"* + verbatim approval `option b++`.
+
+**Discovery (investigation pass before edits):**
+
+Verified the existing 484-row `backtest/data/sp500_tickers.csv` is a **CURRENT-state snapshot**, not a during-testing-period intersection. [scripts/refresh_sp500_universe.py](scripts/refresh_sp500_universe.py) fetches today's S&P 500 list from slickcharts.com and overwrites the CSV. Schema is `Symbol,Company,Sector` — no date columns. Original static approach has TWO biases: (1) **survivorship** (companies removed during testing period are missing — SVB, FRC, BBBY, etc.), (2) **look-ahead** (companies admitted during testing period appear in the snapshot, including for backtest dates before their admission — e.g., GEV, VST, SMCI, SNDK).
+
+Owner's "B++" proposal: single static CSV with `added_date`/`removed_date` columns; PIT loader filters by `(added_date ≤ as_of) AND (removed_date IS NULL OR removed_date > as_of)`. Identical correctness to day-grain interpretation; simpler file format owner-preferred for backtest. Stage 3 dynamic update = append rows for new admissions, populate `removed_date` on removals.
+
+**Critical finding during investigation:** DEC-303 (Pass 48 RESOLVED-DECIDED) ALREADY specifies B++ format: `"modify get_sp500_constituents(as_of) to filter by added_date/removed_date"`. The "day-grain" phrasing that crept into DEC-477 + DEC-483 + downstream docs (TRADING_RULES, ENGINEERING_REGISTER, IMPLEMENTATION_READINESS_DASHBOARD, SPRINT1 README, DETAILED_PROJECT_PLAN) was inconsistent with DEC-303's actual spec — likely an informal abbreviation that got literalized over time. Owner's B++ approval = confirm DEC-303 original intent + correct downstream phrasing.
+
+**Resolution applied this turn:**
+
+1. **`AUDIT_INDEX.md` DEC-477 body** — added Pass 53 B++ clarification block specifying single-CSV format with `added_date`/`removed_date` columns; PIT filter expression; Stage 3 dynamic update path. Status unchanged (RESOLVED-DECIDED).
+
+2. **`AUDIT_INDEX.md` DEC-483 body** — replaced "(DEC-477 day-grain)" with "(DEC-477 B++ format — single CSV with added_date/removed_date columns per DEC-303)". T1b + T1c language updated to "same B++ format with year-grain dates" instead of "year-grain reconstitution data". Status unchanged.
+
+3. **`TRADING_RULES_AND_INFORMATION.md`** — no edit needed (only reference was on line 1303 which is the API endpoint inventory row for slickcharts; no day-grain claim there).
+
+4. **`ENGINEERING_REGISTER.md` Sprint 1 universe scope** — replaced "day-grain PIT via DEC-303 historical_membership.csv per DEC-477" with B++ format spec on Tier 1a; T1b/T1c updated to "same B++ format with year-grain dates".
+
+5. **`DETAILED_PROJECT_PLAN.md`** — fixed pre-trade filter §2.4.6 entry "historical_membership.csv day-grain S&P 500 + year-grain R1000/NDX" → B++ format spec with explicit filter expression.
+
+6. **`IMPLEMENTATION_READINESS_DASHBOARD.md`** — fixed Pass 53 universe scope expansion section (T1a/T1b/T1c lines).
+
+7. **`scripts/SPRINT1_POLYGON_PREFETCH_README.md`** — fixed two day-grain references in honest scope flag + next steps section. Sprint 1 implementation guide now reflects B++ format unambiguously.
+
+8. **`AUDIT.md`** — this entry.
+
+**Not edited (intentional):**
+- `PROJECT_HANDOFF_2026-05-04.md` (historical handoff record; preserves original Pass 53 turn-time framing)
+- `PASS_53_PRIORITIES.md` (historical priorities snapshot)
+- `AUDIT.md:25659/26295/26356` (prior Pass 53 entries that documented day-grain at the time; new entry supersedes phrasing without rewriting history)
+
+**Effort impact:** Sprint 1 effort UNCHANGED. The data sourcing work (assembling the 5-year union with add/remove dates) is the same regardless of file format; B++ vs day-grain is a format spec swap, not a scope change. ~25.5-35.5d Sprint 1 effort holds.
+
+**Bias matrix (per Pass 53 investigation):**
+
+| Approach | Survivorship bias | Look-ahead bias | Setup cost |
+|---|---|---|---|
+| Original 484-CSV (current snapshot) | 🔴 yes | 🔴 yes | 0d |
+| B++ format (PIT loader filters by date columns) | ✅ no | ✅ no | ~2-3d data sourcing (Sprint 1 scope, unchanged) |
+| Day-grain rows (formerly assumed format) | ✅ no | ✅ no | ~2-3d (same data sourcing, just heavier file) |
+
+B++ and day-grain have identical correctness; B++ has simpler file format. Owner picked B++ for the simplification.
+
+**Decision impact:**
+- DEC-477 body clarified (B++ format made explicit). Status RESOLVED-DECIDED unchanged.
+- DEC-483 body clarified ("day-grain" replaced with B++ format reference). Status unchanged.
+- DEC-303 (parent) confirmed as the canonical implementation spec — B++ was always its intent.
+- No new DECs created (clarification not supersession, per owner approval pattern).
+- Sprint 1 effort: ~25.5-35.5d unchanged.
+- L143 decision-state vs artifact-state: addressed — DEC-303 spec was correct, downstream phrasing drift is now corrected.
+
+**Files updated this turn:**
+1. `AUDIT_INDEX.md` — DEC-477 + DEC-483 body clarifications
+2. `ENGINEERING_REGISTER.md` — Sprint 1 universe scope T1a/T1b/T1c lines
+3. `DETAILED_PROJECT_PLAN.md` — pre-trade filter §2.4.6 universe membership entry
+4. `IMPLEMENTATION_READINESS_DASHBOARD.md` — Pass 53 universe scope expansion section
+5. `scripts/SPRINT1_POLYGON_PREFETCH_README.md` — honest scope flag + next steps section
+6. `AUDIT.md` — this entry
+
+**Not in scope this turn (queued for Sprint 1 implementation):**
+- Actual data sourcing for `historical_membership.csv` (Sprint 1 work — needs quarterly historical S&P 500 lists from slickcharts archive / Wayback Machine / SEC filings to build add/remove date columns)
+- Actual data sourcing for `russell_1000_membership.csv` + `nasdaq_100_membership.csv` (Sprint 1 work — annual reconstitution data)
+- `universe.py` loader implementation of B++ filter expression (Sprint 1 work — change `get_sp500_constituents(as_of)` to filter by `added_date`/`removed_date`)
+- `refresh_sp500_universe.py` extension for Stage 3 dynamic append-on-admission / update-on-removal (Stage 3 scope, not Stage 2 backtest)
+
+*Per CHECKLIST #32 (verbatim "option b++"); #25 (honest categorization — pre-existing 484-CSV bias surfaced via fact-check rather than minimized; DEC-303 vs DEC-477/483 phrasing drift acknowledged honestly); #43 (cross-doc consistency: AUDIT_INDEX DEC-477/483 ↔ ENG_REGISTER Sprint 1 ↔ DETAILED §2.4.6 ↔ IMPLEMENTATION_READINESS_DASHBOARD ↔ SPRINT1 README — all forward-looking docs aligned to B++ phrasing); #45 (pre-flight halted on first interpretation; verified `refresh_sp500_universe.py` actually fetches current snapshot before recommending; surfaced two interpretations of "simplify" before owner picked B++); #51 (default lower-impact: clarification not supersession; no new DECs created since DEC-303 spec was already B++); #58 (atomic 6-file commit covering canonical docs + Sprint 1 implementation guide); #65 (file format clarification doesn't add new roster items — same DEC-303/477/483 decisions, body text aligned to actual spec); #66 (DEC-303 verified as parent spec authority; DEC-477 + DEC-483 verified as descendants whose body text was drifting from DEC-303 — corrected); L143 (decision-state vs artifact-state: addressed — DEC-303 always specified B++; downstream prose drift now reconciled).*

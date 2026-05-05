@@ -552,7 +552,7 @@ Pre-trade filters are gates that decide whether ANY strategy can open a position
 **Filter list:**
 
 1. **Liquidity filter (DEC-321/366)** — fail-closed; tier-specific 20-day ADV floors. Universe member with ADV below tier floor → blocked from entry that day.
-2. **Universe membership PIT (DEC-477/483)** — `historical_membership.csv` day-grain S&P 500 + year-grain R1000/NDX. Ticker not in universe on `as_of` → blocked.
+2. **Universe membership PIT (DEC-477/483 — B++ format Pass 53)** — `historical_membership.csv` is a single static CSV with `added_date`/`removed_date` columns per DEC-303 (S&P 500) + sister files for R1000/NDX. Loader filters by `(added_date ≤ as_of) AND (removed_date IS NULL OR removed_date > as_of)`. Ticker not in universe on `as_of` → blocked.
 3. **Regime fail-closed (DEC-316)** — `classify_regime` returns `'unknown'` on missing VIX data; `REGIME_FILTER['unknown']` blocks all new entries. Existing positions continue under their original stop logic.
 4. **CooldownState (DEC-018, post-stop-out cooldown)** — after a stop-out on (ticker, strategy), block re-entry on same combo for N bars. Spec per DEC-018 (still PENDING).
 5. **MaxLossState (DEC-135)** — per-ticker rolling 30-day cumulative loss cap. Once breached, ticker blocked for the cap window.

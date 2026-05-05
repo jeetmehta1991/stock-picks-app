@@ -31,9 +31,9 @@
 - Sprint 0 verified: AAII + CNN F&G + SEC EDGAR domains reachable from local VS Code (Codespace allowlist concern moot since running locally Pass 53)
 
 **Universe scope (DEC-483 RESOLVED-DECIDED Pass 53):**
-- Tier 1a: S&P 500 (~503 tickers; day-grain PIT via DEC-303 historical_membership.csv per DEC-477)
-- Tier 1b: Russell 1000-non-S&P (~497 net new tickers; year-grain PIT via FTSE Russell annual reconstitution)
-- Tier 1c: NASDAQ 100-non-S&P (~15 net new tickers; year-grain PIT via Nasdaq annual reconstitution)
+- Tier 1a: S&P 500 (~503 active; ~550-600 unique across 5y testing window; PIT via DEC-303 historical_membership.csv per DEC-477 — B++ format: single static CSV with `added_date`/`removed_date` columns; loader filters by `added_date ≤ as_of < removed_date OR removed_date IS NULL`)
+- Tier 1b: Russell 1000-non-S&P (~497 net new tickers; same B++ format with year-grain dates from FTSE Russell annual reconstitution)
+- Tier 1c: NASDAQ 100-non-S&P (~15 net new tickers; same B++ format with year-grain dates from Nasdaq annual reconstitution)
 - Total: ~1015 unique Tier 1 tickers (was ~509 pre-Pass-53)
 - Cache size impact: ~16-24 GB (was ~8-12 GB); prefetch wall ~2 days (was ~1 day)
 - Sprint 1 effort: ~25-35d (was 20-28d; +5-7d for sub-tier expansion)
