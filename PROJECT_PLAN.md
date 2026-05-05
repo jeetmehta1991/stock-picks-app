@@ -281,6 +281,15 @@ Sprints 4, 6 partially parallel with Sprints 1-3 once foundations established. S
 
 ENGINEERING_REGISTER.md is canonical for sprint-by-sprint decisions, test signals, effort breakdowns. IMPLEMENTATION_READINESS_DASHBOARD.md is canonical for sprint readiness gates.
 
+### 4.6 Dashboard coverage across phases (Pass 53)
+
+Stage 2 dashboard coverage spans all 11 phases per [DETAILED_PROJECT_PLAN.md Part 2.5](DETAILED_PROJECT_PLAN.md). Three tiers:
+- **Tier 1 (engineering verification):** Phase 0.A Prefetch Coverage Report (NEW Sprint 1, ~0.5d). Phases 0.B/0.C/0.E marked N/A — verification via CI test signals + sprint demo.
+- **Tier 2 (analytical baseline):** Phase 1A Trade Summary Dashboard (NEW Sprint 6.5, ~2-3d) + Phase 1B Trade Summary Dashboard (NEW Sprint 7, ~2-3d). Both Streamlit ports of legacy `analysis_dashboard_1a/1b.html` 9-tab archive — adaptations of DEC-199 family (no new DECs).
+- **Tier 3 (cube + verdict):** DEC-199 Cube Explorer + DEC-200 ICT/SMC Audit (Phase 1A-α + 1B-α + reused 1A-β + 1C+) + DEC-201 Agent Overlay Analysis (Phase 1B-α only).
+
+Phase 0.D ICT/SMC primitive verification folded into DEC-200. Total NEW dashboard effort: ~5-7 engineering days. See [TRADING_RULES.md §2.1-§2.11](TRADING_RULES_AND_INFORMATION.md) for per-phase dashboard callouts.
+
 ---
 
 ## 5. Stage 2 Success Criteria

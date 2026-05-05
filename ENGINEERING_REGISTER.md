@@ -63,9 +63,10 @@
 - T1a + T1b + T1c universe builds operational with PIT correctness
 - All promoted to RESOLVED-IMPLEMENTED on owner approval
 
-**Effort:** ~25-35 engineering days (was ~7-9d pre-Pass-53; +5-7d for sub-tier expansion + universe build PIT correctness)
+**Effort:** ~25.5-35.5 engineering days (was ~7-9d pre-Pass-53; +5-7d for sub-tier expansion + universe build PIT correctness; +0.5d Pass 53 for Phase 0.A Prefetch Coverage Report HTML per DETAILED §2.5)
 **Critical-path:** YES
 **Pyramid layers touched:** unit + integration. Layers 3-5 (property / characterization / differential) deferred to Sprint 6 retrofit per Option A — framework built in DEC-437/438/439
+**Dashboards (Pass 53):** Phase 0.A Prefetch Coverage Report — auto-emitted post-prefetch HTML showing ticker × source × hit-rate matrix; verifies S&P 500 coverage ≥ 95%. Adaptation of `backtest_report.html` static HTML pattern (no new DEC). Effort included above.
 
 ---
 
@@ -194,10 +195,11 @@ DEC-381/382/383/384/388/389/390/391/392/394/397/398/399 — all RESOLVED-DECIDED
 **Phase 1A-α:** Rules-only cube + dashboards + verdict; owner Sharpe-≥-0.7-OOS gate; ~10-14d engineering
 **Phase 1A-β:** Production-scale dry-run on 1B-α infrastructure; $0 API spend; ~3-5d engineering + ~6-8h compute
 
-**Effort:** ~19-27 engineering days total + ~26-33h compute wall time
+**Effort:** ~21-30 engineering days total + ~26-33h compute wall time (was ~19-27d pre-Pass-53; +2-3d Pass 53 for Phase 1A Trade Summary Dashboard Streamlit port per DETAILED §2.5)
 
 **Critical-path:** Phase 1A-α gate must pass before Phase 1B agent overlay work begins; Phase 1A-β must pass before Phase 1B-α $300 budget commits
 **Pyramid layers touched:** all 5 layers available (post-Sprint-6 framework); specific layer mix TBD per sprint plan
+**Dashboards (Pass 53):** Phase 1A Trade Summary Dashboard — Streamlit port of legacy `analysis_dashboard_1a.html` 9-tab structure (per-strategy ranking / regime heatmap / MAE-MFE distribution / equity curve / walk-forward / smart money lift / sector / skipped / circuit breaker). Adaptation of DEC-199 family (no new DEC); precedes 1A-α cube layer. Effort ~2-3d included above. Plus DEC-199 + DEC-200 cube dashboards at 1A-α (existing).
 
 ---
 
@@ -207,8 +209,9 @@ DEC-381/382/383/384/388/389/390/391/392/394/397/398/399 — all RESOLVED-DECIDED
 
 Implementation per Theme X4 Block 3 sequencing in AUDIT_INDEX.md.
 
-**Effort:** ~17-19 engineering days
+**Effort:** ~19-22 engineering days (was ~17-19d pre-Pass-53; +2-3d Pass 53 for Phase 1B Trade Summary Dashboard Streamlit port per DETAILED §2.5)
 **Pyramid layers touched:** all 5 layers available (post-Sprint-6 framework); specific layer mix TBD per sprint plan
+**Dashboards (Pass 53):** Phase 1B Trade Summary Dashboard — Streamlit port of legacy `analysis_dashboard_1b.html` 9-tab structure including agent analysis tab (per-arm Sharpe / DD / win rate / debate transcripts where DEC-189 logging operational). Adaptation of DEC-199 family (no new DEC); precedes 1B-α cube view. Effort ~2-3d included above. Plus DEC-201 Agent Overlay Analysis at 1B-α (existing).
 
 ---
 

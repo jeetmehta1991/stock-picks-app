@@ -26635,3 +26635,72 @@ Three fragility items surfaced during investigation:
 - Schema migration plan for in-flight test fixtures and golden masters — TBD per DEC-493 trade_id introduction
 
 *Per CHECKLIST #32 (verbatim "log as sprint 2 sub decisions" — owner approved logging, not implementation specifics); #51 (default lower-impact: status PROPOSED not RESOLVED-DECIDED since implementation choices not approved); #25 (honest categorization: ClosedTrade IS comprehensive ~40 fields; the gaps are real but not catastrophic — surfaced specifically rather than dramatized); #43 (cross-doc: AUDIT_INDEX roster ↔ ENGINEERING_REGISTER Sprint 2 ↔ AUDIT.md narrative); #45 (pre-flight surfaced including Sprint 2 effort delta and DEC dependency coupling); #58 (atomic 3-file commit; new DECs include sprint slot + test signals + effort estimate per requirement); #65 (each DEC qualifies as a real decision — output format / behavior / schema field — not just a finding); #66 (DEC numbers verified against AUDIT_INDEX max — DEC-490 last existing, so 491/492/493 are next); L143 (decision-state vs artifact-state: code captures comprehensive metadata; doc didn't reflect this until Pass 53 owner question forced the verification — closing the gap with these DECs).*
+
+---
+
+## Pass 53 — Stage 2 dashboard coverage map (per-phase mention + adaptation of past dashboards) — DETAILED §2.5 + TRADING_RULES §2.1-§2.11 + PROJECT_PLAN §4.6 + ENG_REGISTER effort delta
+
+**Trigger:** Owner direction Pass 53 — *"Mention dashboards at each phase in stage 2. Analyze and adapt existing dashboards or past dashboard documentation. Add to detailed project plan and all other relevant docs."*
+
+Followed by 4-item approval: (1) per-phase mapping table approved as drafted; (2) Option A — port 9-tab to Streamlit; (3) Phase 0.D folded into DEC-200 (no separate dashboard); (4) confirm full doc-scope edits + treat as adaptation of DEC-199 family (no new DEC-494/495).
+
+**Discovery (investigation pass before edits):** Inventoried existing dashboards across 4 categories — production-spec DEC'd (DEC-199 Cube Explorer, DEC-200 ICT/SMC Audit, DEC-201 Agent Overlay Analysis, DEC-430 Streamlit framework choice); past archived (`analysis_dashboard_1a.html` Phase 1A 9-tab, `analysis_dashboard_1b.html` Phase 1B 9-tab + agent tab, `backtest_report.html` auto-emitted); governance (IMPLEMENTATION_READINESS_DASHBOARD.md sprint readiness gates); Stage 3+ planned (out of scope). Found gap: 9 of 11 Stage 2 phases lacked explicit dashboard coverage mention; legacy 9-tab archived dashboards had no Streamlit successors at Phase 1A and 1B (pre-cube layer).
+
+**Resolution applied this turn:**
+
+1. **`DETAILED_PROJECT_PLAN.md` Part 2.5 NEW** — Stage 2 Dashboard Coverage Map. New Part inserted between Part 2 (Architecture Overview) and Part 3 (Phase 0.A). Contents:
+   - §2.5.1 — why this section exists (Pass 53 owner direction)
+   - §2.5.2 — three tiers of dashboard coverage (engineering verification / analytical baseline / cube + verdict)
+   - §2.5.3 — per-phase coverage table (11 rows × dashboard name × tier × effort × source)
+   - §2.5.4 — adapt-vs-replace decisions for archived dashboards (4 artifacts)
+   - §2.5.5 — cross-references to TRADING_RULES, ENGINEERING_REGISTER, AUDIT, related Parts
+
+2. **`TRADING_RULES_AND_INFORMATION.md` §2.1-§2.11** — added `**Dashboards (Pass 53):**` callout to 9 phase subsections (skipped §2.7 + §2.10 which already mention DEC-199/200/201 substantively in their acceptance criteria). Each callout: 1-2 sentence summary citing DETAILED §2.5 for full detail. Coverage:
+   - 2.1 Phase 0.A → Prefetch Coverage Report (NEW Sprint 1, ~0.5d)
+   - 2.2 Phase 0.B → N/A (Portfolio consumed downstream)
+   - 2.3 Phase 0.C → N/A (CI test signals)
+   - 2.4 Phase 0.D → folded into DEC-200
+   - 2.5 Phase 0.E → N/A (test pyramid in ENG_REGISTER)
+   - 2.6 Phase 1A → Phase 1A Trade Summary Dashboard (NEW Sprint 6.5, ~2-3d)
+   - 2.8 Phase 1A-β → REUSE
+   - 2.9 Phase 1B → Phase 1B Trade Summary Dashboard (NEW Sprint 7, ~2-3d)
+   - 2.11 Phase 1C+ → REUSE
+
+3. **`PROJECT_PLAN.md` §4.6 NEW** — added "Dashboard coverage across phases (Pass 53)" sub-section after §4.5 Detail. Three-tier summary + cross-reference to DETAILED §2.5 and TRADING_RULES §2.1-§2.11.
+
+4. **`ENGINEERING_REGISTER.md` Sprint 1 / 6.5 / 7 effort updates:**
+   - Sprint 1: ~25-35d → ~25.5-35.5d (+0.5d for Phase 0.A Prefetch Coverage Report)
+   - Sprint 6.5: ~19-27d → ~21-30d (+2-3d for Phase 1A Trade Summary Dashboard port)
+   - Sprint 7: ~17-19d → ~19-22d (+2-3d for Phase 1B Trade Summary Dashboard port)
+   - Each sprint's `**Dashboards (Pass 53):**` callout added under existing pyramid-layers field
+   - Total NEW dashboard effort: ~5-7d
+
+5. **`AUDIT.md`** — this entry.
+
+**Adaptation strategy applied:**
+- Treated as adaptation of DEC-199 family per owner direction — no new DECs. Phase 1A and Phase 1B Trade Summary Dashboards are Streamlit ports of the legacy 9-tab HTML structure that pre-Pass-53 archive runs proved valuable.
+- Phase 0.D ICT/SMC primitive verification folded into DEC-200 ICT/SMC Audit dashboard at Phase 1A-α (no separate Phase 0.D dashboard).
+- Phase 0.A Prefetch Coverage Report adapted from `backtest/results/writer.py:_write_html()` static HTML pattern; auto-emitted post-prefetch.
+- `analysis_dashboard_1a.html` + `analysis_dashboard_1b.html` legacy artifacts: ported (not replaced) — DEC-199/200/201 are *cube-level* views (per-cell aggregates), the legacy 9-tab is *per-strategy/per-trade* analytical view (different abstraction layer).
+- `backtest_report.html` (auto-emitted) + `IMPLEMENTATION_READINESS_DASHBOARD.md` (sprint readiness governance): both kept as-is (no change).
+
+**Decision impact:**
+- No new DECs (adaptation of DEC-199 family per owner direction).
+- Sprint 1 effort: +0.5d. Sprint 6.5 effort: +2-3d. Sprint 7 effort: +2-3d.
+- Total NEW dashboard work: ~5-7d.
+- Per-phase dashboard coverage now explicit across all 11 Stage 2 phases.
+
+**Files updated this turn:**
+1. `DETAILED_PROJECT_PLAN.md` — Part 2.5 NEW (Stage 2 Dashboard Coverage Map)
+2. `TRADING_RULES_AND_INFORMATION.md` — §2.1-§2.11 (9 of 11 phases gained Dashboards callout; 2.7 + 2.10 already had sufficient mentions)
+3. `PROJECT_PLAN.md` — §4.6 NEW (Dashboard coverage sub-section)
+4. `ENGINEERING_REGISTER.md` — Sprint 1/6.5/7 effort + Dashboards callout
+5. `AUDIT.md` — this entry
+
+**Out of scope this turn (queued for natural sprint-time work):**
+- Implementation of Phase 0.A Prefetch Coverage Report (Sprint 1 work)
+- Implementation of Phase 1A + Phase 1B Trade Summary Dashboards (Sprint 6.5 + Sprint 7 work)
+- Per-tab specification deep-dive for the ported 9-tab structures (deferred to sprint planning when owner picks specific charts/metrics per tab — Pass 53 commits the structural decision, not the visual spec)
+- DEC-189 reflection log dependency for Phase 1B agent analysis tab (handled within DEC-189 sprint scope)
+
+*Per CHECKLIST #32 (verbatim "1. Approve / 2. Option A / 3. Treat as adaptation / 4. Confirm edits"); #25 (honest categorization — not all phases need dashboards; 4 phases marked legitimately N/A with reason rather than force-fitting; legacy dashboards adapted not replaced because they're a different abstraction layer than DEC-199); #43 (cross-doc consistency: DETAILED §2.5 ↔ TRADING_RULES §2.1-§2.11 ↔ PROJECT_PLAN §4.6 ↔ ENG_REGISTER Sprint 1/6.5/7 ↔ AUDIT.md narrative — all 5 docs reference each other correctly); #45 (pre-flight surfaced full inventory + gap analysis + 5 open questions before any edits); #51 (default lower-impact: no new DECs created — owner picked adaptation path, honored that choice); #58 (atomic 5-file commit, no half-state); #65 (dashboards correctly categorized as deliverables/artifacts — not strategies/exits/breakers — and the new Tier 1/2/3 framework respects existing roster boundaries); #66 (DEC-199/200/201/430 verified against AUDIT_INDEX as actual dashboard decisions; no DEC-494/495 created per owner direction).*

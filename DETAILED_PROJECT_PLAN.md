@@ -800,6 +800,63 @@ STAGE 2 → STAGE 3 GO/NO-GO (Part 13)
 
 ---
 
+# PART 2.5 — STAGE 2 DASHBOARD COVERAGE MAP (Pass 53)
+
+## §2.5.1 Why this section exists
+
+Stage 2 has 11 phases (0.A through 1C+). Dashboards historically were mentioned only at phases that explicitly produce dashboards as deliverables (1A-α, 1B-α). Pass 53 owner direction: every phase should explicitly state its dashboard coverage — either the dashboard produced/used at that phase, or "N/A" with reason. This section is the canonical cross-phase coverage map. Per-phase mentions live in TRADING_RULES.md §2.1-§2.11 (acceptance criteria) and in the relevant Part of this doc.
+
+## §2.5.2 Three tiers of dashboard coverage
+
+**Tier 1 — Engineering verification dashboards (Phases 0.A-0.E):** infrastructure builds; "dashboard" at most phases is sprint demo + CI test signals, not a Streamlit visualization. Phase 0.A is the exception (Prefetch Coverage Report) since it produces a verifiable artifact (universe × source × hit-rate matrix) that benefits from a one-page HTML view.
+
+**Tier 2 — Analytical baseline dashboards (Phases 1A, 1B):** trade outcomes exist but cube layer not yet built. Each ports the legacy 9-tab interactive dashboard structure (`analysis_dashboard_1a.html` / `analysis_dashboard_1b.html` archived pre-Pass-53) into Streamlit per DEC-430 framework choice — preserves the per-strategy / per-regime / per-trade analytical layer that historical runs proved valuable. Treated as adaptation of DEC-199 family (no new DECs per Pass 53 owner direction).
+
+**Tier 3 — Cube + verdict dashboards (Phases 1A-α, 1B-α, 1C+):** production-spec, already DEC'd:
+- DEC-199 Cube Explorer — interactive 8-dimensional cube slice + per-cell drilldown
+- DEC-200 ICT/SMC Audit — FVG/BOS/CHoCH/OB validation per ticker per timeframe
+- DEC-201 Agent Overlay Analysis — 3-arm A/B comparison + cost vs $300 budget (1B-α only)
+
+## §2.5.3 Per-phase coverage table
+
+| Phase | Sprint | Dashboard | Tier | Effort | Source |
+|---|---|---|---|---|---|
+| 0.A — Polygon Foundation | 1 | Prefetch Coverage Report (HTML one-off — ticker × source × hit-rate matrix; verifies S&P 500 coverage ≥ 95%; auto-emitted post-prefetch) | Tier 1 | ~0.5d | NEW Pass 53 — adaptation of `backtest_report.html` static HTML pattern (no new DEC) |
+| 0.B — Portfolio Class | 3 | **N/A** — Portfolio class is consumed by downstream dashboards (DEC-199/200/201, DEC-476 spec); no own dashboard at this phase | — | 0d | Verification via integration test signals |
+| 0.C — Engine Bug Fixes Tier A | 2 | **N/A** — bug fixes verified via CI test signals + sprint demo | — | 0d | Test signals are the verification |
+| 0.D — ICT/SMC Fork Integration | 1/4/8 distributed | **Folded into DEC-200** at Phase 1A-α (no separate Phase 0.D dashboard per Pass 53 owner direction) | Tier 3 (consumed) | 0d (folded) | Pass 53 — adaptation of DEC-200 |
+| 0.E — Catch-Mechanism Defense + Architecture Hygiene | 6 | **N/A** — pyramid coverage tracked in ENGINEERING_REGISTER per Pass 53 (Sprint 6 owns DEC-437/438/439 framework build); test infrastructure IS the verification | — | 0d | Pass 53 ENGINEERING_REGISTER pyramid-layers field |
+| 1A — Rules-Based + Smart Money Baseline | 6.5 | **Phase 1A Trade Summary Dashboard** — Streamlit port of legacy `analysis_dashboard_1a.html` 9-tab structure: (1) per-strategy ranking, (2) regime heatmap, (3) MAE/MFE distribution, (4) equity curve, (5) walk-forward, (6) smart money lift, (7) sector breakdown, (8) skipped trades, (9) circuit breaker log. Precedes cube layer at 1A-α. | Tier 2 | ~2-3d | NEW Sprint 6.5 Pass 53 — adaptation of DEC-199 family (no new DEC) |
+| 1A-α — Rules-Only Cube + Dashboards | 6.5-7 | DEC-199 Cube Explorer (rules-only filter) + DEC-200 ICT/SMC Audit | Tier 3 | EXISTING | DEC-199, DEC-200, DEC-487 |
+| 1A-β — Production-Scale Validation Run | 7 Day 1 | **REUSE** — DEC-199 + DEC-200 with β-arm filter; no new dashboard | Tier 3 (reuse) | 0d | Reuse of existing |
+| 1B — Statistical Methodology + A/B | 7 | **Phase 1B Trade Summary Dashboard** — Streamlit port of legacy `analysis_dashboard_1b.html` 9-tab structure including agent analysis tab (per-arm Sharpe / DD / win rate / debate transcripts where DEC-189 logging operational). Precedes 1B-α cube view. | Tier 2 | ~2-3d | NEW Sprint 7 Pass 53 — adaptation of DEC-199 family (no new DEC) |
+| 1B-α — Combined Cube + Dashboards | 7-8 | DEC-201 Agent Overlay Analysis + DEC-199 (3-arm) + DEC-200 (3-arm) | Tier 3 | EXISTING | DEC-201, DEC-199, DEC-200 |
+| 1C+ — Strategy Categories Expansion | 8 | **REUSE** — DEC-199/200/201 with new strategy roster populating cube; no new dashboard | Tier 3 (reuse) | 0d | Reuse of existing |
+
+**Total NEW dashboard effort introduced Pass 53:** ~5-7 engineering days (Phase 0.A: ~0.5d, Phase 1A: ~2-3d, Phase 1B: ~2-3d).
+
+## §2.5.4 Adapt-vs-replace decisions for archived dashboards
+
+| Archived artifact | Decision | Rationale |
+|---|---|---|
+| `analysis_dashboard_1a.html` (Phase 1A 9-tab interactive) | **Adapt** — port 9-tab structure to Streamlit | Pre-Pass-53 archive showed the 9-tab analytical layer was valuable; rebuilding in Streamlit (per DEC-430 framework) preserves consistency with DEC-199/200/201 |
+| `analysis_dashboard_1b.html` (Phase 1B 9-tab + agent analysis tab) | **Adapt** — port 9-tab to Streamlit | Same rationale; agent analysis tab requires DEC-189 reflection log to be operational |
+| `backtest_report.html` (auto-emitted dark-themed report) | **Keep as-is** — no change | Already produced by `writer.py:_write_html()` every backtest run; sprint-demo-friendly artifact at zero adaptation cost |
+| `IMPLEMENTATION_READINESS_DASHBOARD.md` | **Keep as-is** — separate concern | Sprint readiness governance doc, NOT runtime dashboard. Sister to ENGINEERING_REGISTER for sprint planning, distinct from Stage 2 analytical dashboards |
+
+## §2.5.5 Cross-references
+
+- TRADING_RULES.md §2.1-§2.11 — per-phase acceptance criteria including "Dashboards:" callout
+- TRADING_RULES.md §2.12 — concise version of this coverage table for quick reference
+- ENGINEERING_REGISTER.md Sprint 1 / 6.5 / 7 — effort delta for new dashboard work
+- DETAILED_PROJECT_PLAN.md Part 7.6 — Phase 1A-α Cube Explorer detailed spec (DEC-199)
+- DETAILED_PROJECT_PLAN.md Part 9 — Phase 1B-α dashboards detailed spec (DEC-201)
+- AUDIT.md — Pass 53 entry documenting this section's creation
+
+**Source:** Pass 53 owner direction "Mention dashboards at each phase in stage 2. Analyze and adapt existing dashboards or past dashboard documentation." Approved (1) per-phase mapping, (2) Option A — port 9-tab to Streamlit, (3) fold Phase 0.D into DEC-200, (4) treat as adaptation of DEC-199 family (no new DEC-494/495).
+
+---
+
 # PART 3 — PHASE 0.A: POLYGON FOUNDATION (Sprint 1)
 
 ## §3.1 What — concrete deliverable in plain English

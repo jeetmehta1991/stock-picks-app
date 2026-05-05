@@ -155,6 +155,8 @@
 - Synthetic ticker BRK.B and BRK-B resolve to canonical ticker ID (DEC-309)
 - Synthetic zero-volume day on 2020-03-09 preserved with `is_halted=True` flag (DEC-310)
 
+**Dashboards (Pass 53):** Prefetch Coverage Report (Tier 1, ~0.5d Sprint 1) — auto-emitted post-prefetch HTML showing ticker × source × hit-rate matrix; verifies S&P 500 coverage ≥ 95%. Adaptation of `backtest_report.html` static HTML pattern; no new DEC. See DETAILED_PROJECT_PLAN.md Part 2.5.
+
 ### 2.2 Phase 0.B — Portfolio Class (Sprint 3)
 
 **Effort target:** ~8-11 engineering days
@@ -168,6 +170,8 @@
 - [ ] BUG-095 closed
 - [ ] Portfolio-level position aggregation passes integration test
 - [ ] Portfolio cash invariant (cash + position values = total NAV) passes property-based test (DEC-437)
+
+**Dashboards (Pass 53):** N/A — Portfolio class is consumed by downstream dashboards (DEC-199/200/201, DEC-476 spec); no own dashboard at this phase. Verification via integration test signals. See DETAILED_PROJECT_PLAN.md Part 2.5.
 
 ### 2.3 Phase 0.C — Engine Bug Fixes Tier A (Sprint 2)
 
@@ -187,6 +191,8 @@
 - [ ] DEC-338 exit_hybrid_50pct max_days inconsistency
 - [ ] DEC-340 (additional Tier A fix)
 
+**Dashboards (Pass 53):** N/A — bug fixes verified via CI test signals + sprint demo. No analytical dashboard at this phase. See DETAILED_PROJECT_PLAN.md Part 2.5.
+
 ### 2.4 Phase 0.D — ICT/SMC Fork Integration
 
 **Effort target:** Distributed across Sprints 1, 4, 8
@@ -200,6 +206,8 @@
 - [ ] Liquidity sweep detection operational
 - [ ] swing_highs_lows primitive shared across strategies (DEC-345)
 - [ ] Layer 2 strategies in STRATEGY_REGISTER operational
+
+**Dashboards (Pass 53):** ICT/SMC primitive verification folded into DEC-200 ICT/SMC Audit dashboard at Phase 1A-α (no separate Phase 0.D dashboard per Pass 53 owner direction). See DETAILED_PROJECT_PLAN.md Part 2.5.
 
 ### 2.5 Phase 0.E — Catch-Mechanism Defense + Architecture Hygiene (Sprint 6)
 
@@ -225,6 +233,8 @@
 - [ ] Random seed in backtest output (DEC-177)
 - [ ] Dependency injection sandbox-prototype on 1-2 modules (DEC-251 HARD-REVERSIBILITY)
 
+**Dashboards (Pass 53):** N/A — pyramid coverage tracked in ENGINEERING_REGISTER per Pass 53 (Sprint 6 owns DEC-437/438/439 framework build); test infrastructure IS the verification at this phase. See DETAILED_PROJECT_PLAN.md Part 2.5.
+
 ### 2.6 Phase 1A — Rules-Based + Smart Money Baseline (Sprint 6.5)
 
 **Effort target:** ~6-8 engineering days
@@ -238,6 +248,8 @@
 - [ ] Liquidity floor applied per DEC-366 + tier-specific ADV thresholds
 - [ ] Per-ticker risk gates enforced (DEC-018 cooldown + DEC-135 max-loss cap)
 - [ ] Trade outcomes ready as input to Phase 1A-α cube populator
+
+**Dashboards (Pass 53):** **Phase 1A Trade Summary Dashboard** (Tier 2, ~2-3d Sprint 6.5) — Streamlit port of legacy `analysis_dashboard_1a.html` 9-tab structure: per-strategy ranking / regime heatmap / MAE-MFE distribution / equity curve / walk-forward / smart money lift / sector breakdown / skipped trades / circuit breaker log. Adaptation of DEC-199 family (no new DEC). Precedes the cube layer at 1A-α. See DETAILED_PROJECT_PLAN.md Part 2.5.
 
 ### 2.7 Phase 1A-α — Rules-Only Dimensional Cube + Dashboards (Sprint 6.5-7)
 
@@ -269,6 +281,8 @@
 - [ ] Owner reviews 1A-β output before authorizing Phase 1B-α $300 budget commit
 - [ ] Catches infrastructure failures at zero API spend; cost of catching here = ~6-8h wall vs $300 + 37-40h re-run if caught mid-1B-α
 
+**Dashboards (Pass 53):** REUSE — DEC-199 + DEC-200 with β-arm filter; no new dashboard at this phase. See DETAILED_PROJECT_PLAN.md Part 2.5.
+
 ### 2.9 Phase 1B — Statistical Methodology + A/B (Sprint 7)
 
 **Effort target:** ~76-85 engineering days (largest sprint by total effort)
@@ -288,6 +302,8 @@
 - [ ] Regime methodology operational (DEC-106-108, DEC-149-151)
 - [ ] vs-SPY comparison in all reports (DEC-155)
 - [ ] Agent overlay decisions logged for candidates that passed Phase 1A baseline gates
+
+**Dashboards (Pass 53):** **Phase 1B Trade Summary Dashboard** (Tier 2, ~2-3d Sprint 7) — Streamlit port of legacy `analysis_dashboard_1b.html` 9-tab structure including agent analysis tab (per-arm Sharpe / DD / win rate / debate transcripts where DEC-189 logging operational). Adaptation of DEC-199 family (no new DEC). Precedes the 1B-α cube view. See DETAILED_PROJECT_PLAN.md Part 2.5.
 
 ### 2.10 Phase 1B-α — Combined Dimensional Cube + Dashboards (Sprint 7-8)
 
@@ -320,6 +336,8 @@
 - [ ] 9 new exit methods (DEC-067 phases A+B = DEC-432/433)
 - [ ] AEP breaker (DEC-435)
 - [ ] Total strategy roster ~109-119 strategies operational
+
+**Dashboards (Pass 53):** REUSE — DEC-199/200/201 with new strategy roster populating cube; no new dashboard at this phase. See DETAILED_PROJECT_PLAN.md Part 2.5.
 
 ---
 
