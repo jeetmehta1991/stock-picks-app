@@ -42,7 +42,9 @@
 - §2.1 What Stage 2 is trying to achieve
 - §2.2 The dimensional verdict cube (the central artifact)
 - §2.3 Universe architecture (3 tiers)
-- §2.4 Strategy roster (4 layers, ~109-119 strategies)
+- §2.4 Strategy roster (4 layers, ~108-118 strategies)
+- §2.4.5 Exit method roster (DEC-067 canonical, 17 methods)
+- §2.4.6 Pre-trade filters
 - §2.5 Signal universe (~220 fields per ticker per day)
 - §2.6 Agent overlay architecture (TradingAgents Pattern 2)
 - §2.7 Data sources required for Stage 2
@@ -481,7 +483,7 @@ The universe defines the trading population — which tickers are even eligible 
 
 **Universe build pipeline (Sprint 5, Part 12):** Each tier has a build function that runs at backtest start (or daily in live) producing a list of tickers eligible for that tier on that as_of date. PIT-correctness applies — at as_of=2020-06-15, Tier 1 should reflect S&P 500 membership AS OF that date, not current.
 
-## §2.4 Strategy roster (4 layers, ~109-119 strategies)
+## §2.4 Strategy roster (4 layers, ~108-118 strategies)
 
 The strategy roster is the COMPLETE LIST of distinct strategies that fire on the universe. Each strategy is a self-contained signal generator with entry/exit/sizing rules.
 
@@ -507,15 +509,59 @@ Per DEC-045 (fork-existing strategy across Phase 0) and DEC-259/345/352:
 - Layer 3A: 8 Chart Pattern Strategies (DEC-355-362 — head-and-shoulders, double-top, triangles, cup-and-handle, etc.)
 - Layer 3B: 5 Strategy Categories (DEC-367-371 — calendar/index-rebalance/within-category extensions)
 
-**Layer 4 — Sub-decisions and additive (DEC-432/433/435 from DEC-067/075):**
-- 9 new exit method variants (DEC-432/433 — chandelier, psar, supertrend, volatility_regime, volume_climax, rsi_extreme, partial_scaleout, kelly_target, macro_event)
-- AEP breaker strategy (DEC-435)
+**Layer 4 — PENDING Strategy-Additive Sub-Decisions (per STRATEGY_REGISTER.md):**
+- DEC-141 — Sector-neutral hedge overlay (1 overlay variant)
+- DEC-142 — Market-neutral construction (long stock + short SPY at beta) (1 overlay variant)
+- DEC-143 — IPO/lockup/secondary offering systematic framework (2-3 classes)
+- DEC-145 — IV delta vs historical pre-earnings pattern (1 class)
+- DEC-176 — Meta-strategies (boolean AND/OR) — multiplier on existing, not additive class
+- Layer 4 subtotal: ~5-6 classes (DEC-176 not counted)
 
-**Total strategy roster:** ~109-119 strategy classes when Layer 1+2+3+4 fully implemented.
+**Total strategy roster:** ~108-118 strategy classes when Layer 1+2+3+4 fully implemented. Aligns with STRATEGY_REGISTER.md "Total Roster Summary" (line 133).
+
+Note: prior versions of this section listed exit methods (DEC-432/433) and the AEP breaker (DEC-435) in Layer 4, inflating the count by ~9-10. Exit methods are reusable components consumed by strategies, not strategies themselves; they live in §2.4.5 (canonical source: TRADING_RULES.md §8). The AEP breaker is a portfolio-level guard; it lives with circuit breakers (TRADING_RULES.md §9), not the strategy roster. Counts corrected per LEARNINGS L144 / CHECKLIST #65.
 
 **BUG-111 architectural choice (deferred):** Existing 25 breakout strategies in `screener.py` may need break-and-retest variants. Option A (shared retest primitive ~5-10d) recommended over Option B (per-strategy variants ~25-30d). Decision deferred to Sprint 8 implementation start (Part 10).
 
 **STRATEGY_REGISTER.md is the canonical roster** — when this plan adds/changes strategies, that doc is updated atomically.
+
+## §2.4.5 Exit method roster (DEC-067 canonical, 17 methods)
+
+Exit methods are reusable components that determine WHEN to leave a position. They are orthogonal to strategies (entry signal generators); any strategy can be paired with any exit method. The strategy declares which exit method it uses; the engine resolves and applies the method.
+
+**Canonical source:** `TRADING_RULES_AND_INFORMATION.md` §8 — full enumeration of the 17 exit methods, parameter spec per method, and R:R floor (≥2.0 per Gate 5 in §3.5).
+
+**Decision lineage:**
+- DEC-067 — 17 exit methods canonical list (RESOLVED-DECIDED, Pass 39)
+- DEC-432 (Phase A) — first batch of additive variants
+- DEC-433 (Phase B) — second batch (6 net new after 1 was dropped from initial 9)
+- DEC-075 — exit method classification (signal-based vs time-based)
+
+**Implementation reference:** `backtest/engine/exit_strategies.py` — current `EXIT_STRATEGIES` registry has 12 keys (subset of canonical 17). Sprint 2 (Phase 0.C) bug list covers `volume_climax` (DEC-327) and `rsi_extreme` (DEC-340) which are listed canonical but missing implementation.
+
+**Open inconsistency to reconcile:** Counts differ across sources — prior §2.4 cited "9 new variants", TRADING_RULES §8 says "6 new (1 dropped)", and the engine registry has 12 total. A reconciliation pass is queued for Sprint 2 alongside the missing-implementation bug fixes; until then, treat TRADING_RULES §8 as the authoritative spec.
+
+**Selection per strategy:** see STRATEGY_REGISTER.md per-strategy `default_exit` field. Exit method choice is part of the strategy spec, but the method itself lives in this roster, not the strategy roster.
+
+## §2.4.6 Pre-trade filters
+
+Pre-trade filters are gates that decide whether ANY strategy can open a position on a given (ticker, day, direction) combo. They run before the strategy roster screen and can reject candidates regardless of signal strength. Filters are universal — not per-strategy.
+
+**Canonical source:** `TRADING_RULES_AND_INFORMATION.md` (relevant sub-sections on liquidity, regime, cooldown). This section is a roster pointer, not a re-spec.
+
+**Filter list:**
+
+1. **Liquidity filter (DEC-321/366)** — fail-closed; tier-specific 20-day ADV floors. Universe member with ADV below tier floor → blocked from entry that day.
+2. **Universe membership PIT (DEC-477/483)** — `historical_membership.csv` day-grain S&P 500 + year-grain R1000/NDX. Ticker not in universe on `as_of` → blocked.
+3. **Regime fail-closed (DEC-316)** — `classify_regime` returns `'unknown'` on missing VIX data; `REGIME_FILTER['unknown']` blocks all new entries. Existing positions continue under their original stop logic.
+4. **CooldownState (DEC-018, post-stop-out cooldown)** — after a stop-out on (ticker, strategy), block re-entry on same combo for N bars. Spec per DEC-018 (still PENDING).
+5. **MaxLossState (DEC-135)** — per-ticker rolling 30-day cumulative loss cap. Once breached, ticker blocked for the cap window.
+6. **Crisis-regime exclusion list (`CRISIS_LONG_EXCLUSIONS` in `config.py`)** — data-confirmed wrong-directional tickers in crisis regime (VXX, TLT, EEM); blocked from longs in crisis regime only.
+7. **Earnings proximity (DEC-013-revised, NOT a hard block)** — earnings in next N days reduces position size but does NOT block. Listed here for completeness; functionally a sizing modifier, not a filter.
+
+**Implementation locations:** `backtest/engine/backtest.py:_process_day` gates the screener output through items 1, 3, 6, 7 today. Items 2, 4, 5 are pending implementation per their respective decisions.
+
+**Out of scope here:** circuit breakers (intraday/post-entry guards — see TRADING_RULES §9), and AEP breaker (DEC-435 portfolio-level guard).
 
 ## §2.5 Signal universe (~220 fields per ticker per day)
 

@@ -26360,3 +26360,54 @@ Owner should mistrust "Sprint X is ready" claims unless I provide explicit artif
 - After all complete: Sprint 1 properly RESOLVED-IMPLEMENTED
 
 *Per CHECKLIST #25 (honest acknowledgment of 5th-instance recurrence; not minimizing); #43 (verified actual file states with ls/wc/find before answering); #59/60 (belatedly applied to internal artifacts; codified via #64 to prevent 6th recurrence); #64 NEW (artifact-state verification mandatory); L143 NEW (decision-state ≠ artifact-state).*
+
+---
+
+## AUDIT PASS 53 — Strategy roster categorization fix (DETAILED §2.4 Layer 4 + new §2.4.5/§2.4.6 + cross-doc)
+
+**Owner trigger:** "§2.4 Strategy roster (4 layers, ~109-119 strategies) - Why are exists part of the strategy roster? Add a exit strategies roster in the detailed project plan / Pre-trade filters in detailed project plan"
+
+**Discovery:** `DETAILED_PROJECT_PLAN.md §2.4` Layer 4 listed 9 exit method variants (DEC-432/433) + AEP breaker (DEC-435) as strategies. The section's own definition (line 486) — *"each strategy is a self-contained signal generator with entry/exit/sizing rules"* — excludes them. Exit methods are reusable components consumed by strategies; AEP breaker is a portfolio-level guard. Inflation of ~9-10 in the strategy count.
+
+**Cross-doc propagation:**
+- `DETAILED_PROJECT_PLAN.md §2.4` total cited as ~109-119 (inflated)
+- `PROJECT_PLAN.md §7.2` count formula explicitly referenced "DEC-067 9 exit methods" — same inflation
+- `STRATEGY_REGISTER.md` Layer 4 was correct (5-6 pending strategies: DEC-141/142/143/145/176); did not propagate the error
+- `TRADING_RULES.md §8` (canonical exit-methods spec) was unaffected
+
+**Resolution applied this turn:**
+
+1. **`DETAILED_PROJECT_PLAN.md`**:
+   - §0.5 TOC line 45 — replaced single entry with three (§2.4 corrected, §2.4.5 new, §2.4.6 new)
+   - §2.4 heading — count corrected to ~108-118
+   - §2.4 Layer 4 — replaced exit-methods/breaker entry with the correct STRATEGY_REGISTER.md-aligned PENDING strategy-additive sub-decisions list (DEC-141/142/143/145/176, ~5-6 classes)
+   - §2.4 — added explanatory note about prior inflation and why exits/breaker now live in §2.4.5 / TRADING_RULES §9
+   - §2.4.5 NEW — Exit method roster section. Canonical source: TRADING_RULES.md §8. Lineage DEC-067/432/433/075. References engine `EXIT_STRATEGIES` registry (12 keys) and flags the count discrepancy (9 vs 17 vs ≤8 vs 12) as Sprint 2 reconciliation item
+   - §2.4.6 NEW — Pre-trade filters section. 7 filters enumerated: liquidity (DEC-321/366), universe membership PIT (DEC-477/483), regime fail-closed (DEC-316), CooldownState (DEC-018), MaxLossState (DEC-135), CRISIS_LONG_EXCLUSIONS, earnings proximity (DEC-013-revised, sizing not block). Implementation locations cross-referenced
+
+2. **`PROJECT_PLAN.md`**:
+   - §7.1 Layer 4 row — replaced "Strategy-additive sub-decisions tracked / TBD" with "PENDING strategy-additive sub-decisions (DEC-141/142/143/145/176 per STRATEGY_REGISTER.md Layer 4) / ~5-6"
+   - §7.2 — count corrected to ~108-118; removed "+ DEC-067 9 exit methods" from formula; added cross-references to DETAILED §2.4.5, TRADING_RULES §8 (exits) and TRADING_RULES §9 (AEP breaker)
+
+3. **`LEARNINGS.md`**:
+   - Added L144 — Category boundary check: don't lump orthogonal components into a roster
+
+4. **`CHECKLIST.md`**:
+   - Added #65 — Roster definitional check before adding items
+
+5. **`AUDIT.md`** — this entry.
+
+**Inconsistencies surfaced but NOT resolved this turn (intentionally out of scope):**
+- Exit method count: DEC-067 says 17 canonical, TRADING_RULES §8 says 6 net new (1 dropped from 9), engine has 12 implementations. Reconciliation queued for Sprint 2 alongside missing-implementation bug fixes (volume_climax DEC-327, rsi_extreme DEC-340).
+- `STRATEGY_REGISTER.md` line 12 wording "Strategy class = unique entry/exit logic" technically conflates entry-strategy and exit-method axes. Tightening this is a definitional decision, not a categorization fix; left for future pass.
+
+**Files updated this turn:**
+1. `DETAILED_PROJECT_PLAN.md` — §0.5 TOC + §2.4 + new §2.4.5 + new §2.4.6
+2. `PROJECT_PLAN.md` — §7.1 Layer 4 row + §7.2 count formula
+3. `LEARNINGS.md` — L144 added
+4. `CHECKLIST.md` — #65 added
+5. `AUDIT.md` — this entry
+
+**Decision impact:** No DEC state changes. DEC-067/075/432/433/435/141/142/143/145/176 unaffected in AUDIT_INDEX.md. Categorization and count claims corrected; canonical source assignments (TRADING_RULES.md §8 for exits, STRATEGY_REGISTER.md for strategies) reaffirmed.
+
+*Per CHECKLIST #25 (honest categorization fix; flagged inconsistencies not minimized); #32 (verbatim "approved + audit" received before execution); #58 (atomic 5-file commit, no half-state); #62 (cross-document consistency restored across DETAILED/PROJECT_PLAN/STRATEGY_REGISTER/TRADING_RULES); #65 NEW (roster definitional check); L144 NEW (category boundary discipline).*

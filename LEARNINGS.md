@@ -1124,3 +1124,27 @@ The verification is cheap. The cost of skipping it is wasted owner trust and fal
 
 **Owner accountability:** 5th instance of owner catching gap that audit methodology should have caught proactively. Pattern is stable. If next sprint readiness claim isn't backed by explicit artifact-verification evidence, it should be questioned by default.
 
+---
+
+## L144 — Category boundary check: don't lump orthogonal components into a roster (Pass 53)
+
+**Source trigger:** Owner question on `DETAILED_PROJECT_PLAN.md §2.4`: "Why are exits part of the strategy roster?"
+
+**Discovery:** §2.4 Layer 4 listed exit methods (DEC-432/433) and the AEP circuit breaker (DEC-435) inside the strategy roster, because they were sub-decisions of strategy-related parents (DEC-067/075). This inflated the strategy class count by ~9-10 and contradicted the section's own definition: *"each strategy is a self-contained signal generator with entry/exit/sizing rules"*. Exit methods are reusable components consumed by strategies (any strategy can pair with any exit method); a circuit breaker is a portfolio-level guard. Neither meets the strategy-class definition.
+
+**Where it propagated:**
+- `DETAILED_PROJECT_PLAN.md §2.4` — Layer 4 wrong, total ~109-119 (inflated)
+- `PROJECT_PLAN.md §7.2` — count formula explicitly added "+ DEC-067 9 exit methods", same inflation
+- `STRATEGY_REGISTER.md` Layer 4 — was correct (5-6 classes of pending strategies); did not propagate the error
+
+**Why it matters:** Roster counts feed sample-size and statistical-correction calculations (Bonferroni, FDR per DEC-469, PSR thresholds). Inflated counts create downstream errors in those calculations. Also: definitional drift in canonical docs erodes trust — STRATEGY_REGISTER.md and DETAILED_PROJECT_PLAN.md disagreeing on what Layer 4 means is a CHECKLIST #62 violation that pre-existed.
+
+**Lesson:** Before adding an item to a roster, check it meets the roster's stated definition. If a sub-decision adds something that doesn't match, it goes in a sibling roster, not the same one. Cross-check with STRATEGY_REGISTER.md (or whichever doc is canonical for the relevant axis) before propagating count claims.
+
+**Codified:**
+- L144 (this learning)
+- CHECKLIST #65 (NEW Pass 53)
+- DETAILED_PROJECT_PLAN.md §2.4 corrected; new §2.4.5 (exit method roster) and §2.4.6 (pre-trade filters) added as sibling rosters
+- PROJECT_PLAN.md §7.2 count formula corrected
+
+**Pattern relation:** This is a category-boundary failure, distinct from the artifact-state failure of L143. Both are roster-hygiene gaps, just on different axes (definition fidelity vs implementation existence). Together they suggest a generalised "roster integrity" discipline that CHECKLIST #65 starts to formalise.

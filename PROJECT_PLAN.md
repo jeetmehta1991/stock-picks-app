@@ -355,11 +355,11 @@ Detail: ENGINEERING_REGISTER.md Sprint 5 + STRATEGY_REGISTER.md.
 | Layer 1 | Baseline roster (60 strategy classes per archived PROJECT_PLAN section 6) | 60 |
 | Layer 2 | Phase 0.D additions (ICT/SMC + Earnings Momentum + Calendar) | TBD |
 | Layer 3 | Pass 52 RESOLVED-DECIDED additions (chart patterns DEC-355-362 + categories DEC-367-371) | 13 |
-| Layer 4 | Strategy-additive sub-decisions tracked | TBD |
+| Layer 4 | PENDING strategy-additive sub-decisions (DEC-141/142/143/145/176 per STRATEGY_REGISTER.md Layer 4) | ~5-6 |
 
 ### 7.2 Total strategy count
 
-Approximately **~109-119 classes** post-Phase-1C (per BUG-111 resolution Sprint 8 + DEC-067 9 exit methods + DEC-355-362 chart patterns + DEC-368/370/371 category additions).
+Approximately **~108-118 classes** post-Phase-1C (per BUG-111 resolution Sprint 8 + DEC-355-362 chart patterns + DEC-368/370/371 category additions + Layer 4 pending). Exit methods (DEC-067) are tracked separately — see DETAILED_PROJECT_PLAN.md §2.4.5 and TRADING_RULES.md §8. The AEP breaker (DEC-435) is a portfolio guard, not a strategy — see TRADING_RULES.md §9.
 
 ### 7.3 Detail
 
