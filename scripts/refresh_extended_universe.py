@@ -29,7 +29,7 @@ USAGE:
     python scripts/refresh_extended_universe.py --add SNDK GEV --write  # immediate spinoff add
 
 RUN ON: laptop monthly. Immediate run after any major spinoff announcement.
-OUTPUT: Backtesting universe/extended_universe.csv (B++ schema: Symbol, Company, Sector, added_date, removed_date, MarketCapB, Tier2Reason)
+OUTPUT: Backtesting universe/Tier 2 Universe_Spinoffs and Recent IPOs_Sep 2014 to May 2026.csv (B++ schema: Symbol, Company, Sector, added_date, removed_date, MarketCapB, Tier2Reason)
 """
 import argparse
 import sys
@@ -42,8 +42,8 @@ import yfinance as yf
 
 # ── Config ──────────────────────────────────────────────────────────────────
 # Pass 53 folder move: universe CSVs live in top-level "Backtesting universe/"
-CSV_PATH   = Path(__file__).parent.parent / "Backtesting universe" / "extended_universe.csv"
-SP500_CSV  = Path(__file__).parent.parent / "Backtesting universe" / "sp500_tickers.csv"
+CSV_PATH   = Path(__file__).parent.parent / "Backtesting universe" / "Tier 2 Universe_Spinoffs and Recent IPOs_Sep 2014 to May 2026.csv"
+SP500_CSV  = Path(__file__).parent.parent / "Backtesting universe" / "Current Snapshot_SP500 Tickers_May 2026.csv"
 MIN_MKTCAP_SPINOFF_B = 5.0   # spinoffs above $5B (DEC-103)
 MIN_MKTCAP_IPO_B     = 10.0  # recent IPOs above $10B (DEC-103)
 MIN_PRICE   = 5.0
@@ -190,7 +190,7 @@ def main():
     result_df.to_csv(CSV_PATH, index=False)
     print(f"\n✅ Written: {CSV_PATH} ({len(result_df)} tickers)")
     print(f"\nNext steps:")
-    print(f"  git add backtest/data/extended_universe.csv")
+    print(f"  git add backtest/data/Tier 2 Universe_Spinoffs and Recent IPOs_Sep 2014 to May 2026.csv")
     print(f"  git commit -m 'Tier 2 extended universe: monthly refresh {date.today()}'")
     print(f"  git push origin main")
     print(f"\nSchedule: run monthly. Run immediately after any major spinoff announcement.")

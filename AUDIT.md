@@ -28160,3 +28160,61 @@ Cross-tier UNION (post-rename, runtime verified):
 These quirks should be added to `LEARNINGS.md` Pass 53 lessons as Polygon-API-specific gotchas for future Sprint work.
 
 *Per CHECKLIST #1 (owner approval explicit "B" + "Keep checking regularly" + "Rename historical membership csv as..."); #13 (read-before-edit verified for all Phase 2-4 modified files + grep of 23 references before rename); #22 (small-batch validation re-applied — Phase 1 gate held; T3 quick run dry before full); #23 (API cost gate held — Phase 1 verifier 63/63 before Phase 2; Phase 2 sample tests before scaling); #25 (failures surfaced honestly — 8 OHLCV delisted, 51 reference delisted, 1 T3 microcap, 6 Polygon API quirks all named explicitly with root causes); #29 (small-test-batch protocol respected); #32 (verbatim owner directive enumeration); #43 (cross-doc consistency — DEC-477 body + CLAUDE.md + SPRINT1 + README + file header all updated as a unit); #45 (read before edit; runtime tests verifying 62/62 post each major change); #51 (scope strict — Phase 2-4 + rename only; broader doc-sweep deferred per owner approval); #58 (single atomic commit grouping all Phase 2-4 work + rename); #65 (no roster expansion); #66 (DEC alignment verified — DEC-103/104/477/494/496 all referenced correctly); #66.b (INPUT/OUTPUT/FLOW stated for each phase). Owner directive "Phase 2-4 sequential" — FULFILLED. T1a/T1c OHLCV cached, T2 baseline (10 tickers) cached, T3 1221 tickers cached. Sprint 1 universe-build artifact-state milestone reached.*
+
+---
+
+## Pass 53 — Universe CSV naming convention standardization (Pattern A renames + SP correction)
+
+**Trigger:** Owner Pass 53 directive (this turn): "Before we update the forward looking docs, want to rename all the universe csv files. Current naming isnt logical. Rename sp500_tickers csv as 'Current Snapshot_May 2026_SP500 Tickers'. Suggest names for the remaining files." Followed by approval matrix Q1-Q6:
+- Q1 Pattern A (date last)
+- Q2 SP without ampersand
+- Q3 Keep current readable date style
+- Q4 Actual starting date (rename file again if start date changes)
+- Q5 "Momentum Top-100" + "Sector and Broad-Market ETFs"
+- Q6 Single atomic commit
+
+**Renames applied (6 files via `git mv` to preserve history):**
+
+| Old | New |
+|---|---|
+| `Tier 1A Universe_S&P 500 Tickers_Jan 2020 to May 2026.csv` (just renamed prior turn `fc10ca8e`) | `Tier 1A Universe_SP500 Tickers_Jan 2020 to May 2026.csv` (Q2 ampersand removed) |
+| `sp500_tickers.csv` | `Current Snapshot_SP500 Tickers_May 2026.csv` |
+| `nasdaq_100_membership.csv` | `Tier 1C Universe_NASDAQ-100 Tickers_Jan 2020 to May 2026.csv` |
+| `tier1_etfs.csv` | `Tier 1 ETFs Universe_Sector and Broad-Market ETFs_May 2026.csv` |
+| `extended_universe.csv` | `Tier 2 Universe_Spinoffs and Recent IPOs_Sep 2014 to May 2026.csv` |
+| `momentum_watchlist.csv` | `Tier 3 Universe_Momentum Top-100_Jun 2022 to May 2026.csv` |
+
+**Pattern A spec (codified Pass 53):**
+- Tier files (with history): `Tier <X> Universe_<Description>_<DateRange>.csv`
+- Snapshot files: `Current Snapshot_<Description>_<AsOf Date>.csv`
+- All names use SP (no ampersand) for shell-quote safety
+- Date format: human-readable "Jan 2020 to May 2026" (not ISO)
+- Date range = ACTUAL data start (T2 = Sep 2014 BABA earliest list_date; T3 = Jun 2022 earliest valid Polygon snapshot post-5y-window cutoff); rename when start date changes
+
+**References updated (10 forward-looking files via Python bulk find-replace):**
+- `backtest/data/universe.py` (PIT loader + ETF loader paths + module docstrings)
+- `scripts/build_tier2_screener.py` (T1A_CSV / T1C_CSV / T2_CSV constants)
+- `scripts/build_tier3_screener.py` (T1A_CSV / T1C_CSV / T3_CSV constants)
+- `scripts/prefetch_polygon_ohlcv_daily.py` (UNIVERSE_CSV path)
+- `scripts/prefetch_polygon_reference.py` (UNIVERSE_CSV path)
+- `scripts/refresh_sp500_universe.py` (CSV_PATH)
+- `scripts/refresh_extended_universe.py` (CSV_PATH + SP500_CSV)
+- `scripts/SPRINT1_POLYGON_PREFETCH_README.md` (5 occurrences across 4 patterns)
+- `CLAUDE.md` (repo structure block — 6 occurrences across 6 patterns)
+- `README.md` (Sprint 1 status line)
+- `AUDIT_INDEX.md` (DEC-477 body deliverables)
+
+**File header self-references updated in 5 CSVs** (T1a SP correction; T1 ETFs/T1c/T2/T3 generic-name → canonical-name update + Pass 53 rename note).
+
+**L143 don't-rewrite-history compliant:** historical AUDIT.md narrative entries (Pass 52 + earlier Pass 53 narrative entries this Pass) NOT updated; reference old filenames as point-in-time facts. Pass 52 archive docs (PROJECT_HANDOFF_2026-05-04, ADVERSARIAL_AUDIT_PASS_52_TURN_132, CRITICAL_GAPS_RESOLUTION_PASS_52_TURN_133) NOT updated. Other forward-looking docs (DOCUMENTATION_REGISTER, TRADING_RULES, ENGINEERING_REGISTER, IMPLEMENTATION_READINESS_DASHBOARD, DETAILED_PROJECT_PLAN, PROJECT_PLAN, LEARNINGS, PASS_53_PRIORITIES, CHECKLIST, EXPLANATION) have residual references awaiting separate forward-looking-doc-sweep commit per owner deferral.
+
+**Verification:**
+- 62/62 unit tests PASS post-rename
+- Runtime PIT loader output stable: T1a 503 / T1c 101 / T2 10 / T3 100 / ETFs 27 / UNION 655 @ 2024-06-15
+
+**Pre-flight INPUT/OUTPUT/FLOW (CHECKLIST #66.b):**
+- INPUT: 6 current filenames + Pattern A spec from Q1-Q6 + owner literal directive on sp500
+- OUTPUT: 6 renamed CSVs + 10 code/doc references updated + 5 file header self-refs updated + AUDIT_INDEX DEC-477 body
+- FLOW: git mv (preserve history) → bulk Python find-replace across 10 files → file header surgical edits → runtime test verification → atomic commit
+
+*Per CHECKLIST #1 (owner approval Q1-Q6 explicit); #13 (read-before-edit verified for each modified file; grep of references before bulk replace); #22 (62/62 tests + runtime verification before commit); #25 (drift surfaced honest — flagged 2-pattern inconsistency proactively, surfaced T3 actual-vs-aspirational date range tradeoff, listed 9 deferred forward-looking docs explicitly); #32 (verbatim Q1-Q6 enumeration); #43 (cross-doc consistency — code + 4 critical forward-looking docs + 5 file headers all updated as a unit); #45 (read before edit; runtime tests post each phase); #51 (scope strict — rename + critical refs only; non-critical forward-looking doc-sweep deferred per owner Q6 single-atomic-commit framing); #58 (single atomic commit grouping git mv + bulk replace + headers + AUDIT); #65 (no roster expansion); #66 (DEC-477 = T1a canonical; updated body deliverables); #66.b (INPUT/OUTPUT/FLOW stated). Owner directive "rename + Pattern A + SP no ampersand + actual date + atomic commit" — FULFILLED. Universe naming convention now consistent across 6 files; ready for forward-looking doc-sweep next turn.*

@@ -1,4 +1,4 @@
-# T2 extended_universe.csv — DEC-103/494 Pass 53 SCREENER-FIRST output
+# Tier 2 Universe — Spinoffs and Recent IPOs Sep 2014 to May 2026 — DEC-103/494 Pass 53 SCREENER-FIRST output (renamed Pass 53 from extended_universe.csv per owner directive 2026-05-05)
 # Built: 2026-05-05 via Polygon /v3/reference/tickers/{ticker} per-ticker detail + OHLCV cache discovery
 # Approach: curated TIER2_SEEDS validated against Polygon detail endpoint + cache-discovery (tickers whose first OHLCV bar >= 2021-06-01 are de facto recent listings within Polygon Stocks Starter 5y window).
 # DEC-103 thresholds: spinoff cap >$5.0B / IPO cap >$10.0B + ≥90d history

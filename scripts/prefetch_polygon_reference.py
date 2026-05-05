@@ -45,7 +45,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 BASE_URL = "https://api.polygon.io"
 CACHE_DIR = Path("backtest/data/cache/polygon/reference")
 INDEX_FILE = Path("backtest/data/cache/polygon/reference_index.parquet")
-UNIVERSE_CSV = Path("Backtesting universe/sp500_tickers.csv")
+UNIVERSE_CSV = Path("Backtesting universe/Current Snapshot_SP500 Tickers_May 2026.csv")
 
 RATE_LIMIT_SLEEP = 0.05
 TIMEOUT = 30

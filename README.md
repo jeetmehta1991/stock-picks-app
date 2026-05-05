@@ -8,7 +8,7 @@ A multi-stage swing trading system: rule-based + smart money + multi-agent archi
 
 - **5-bucket universe** (DEC-118 + DEC-483 Pass 53):
   - Tier 1 sub-tiers — T1a S&P 500 (~503) + T1b Russell 1000-non-S&P (~497) + T1c NDX-non-S&P (~15) = ~1015 unique tickers
-  - Tier 1 ETFs — 27 sector + macro ETFs ([Backtesting universe/tier1_etfs.csv](Backtesting%20universe/tier1_etfs.csv))
+  - Tier 1 ETFs — 27 sector + macro ETFs ([Backtesting universe/Tier 1 ETFs Universe_Sector and Broad-Market ETFs_May 2026.csv](Backtesting%20universe/Tier 1 ETFs Universe_Sector and Broad-Market ETFs_May 2026.csv))
   - Tier 2 — spinoffs >$5B + recent IPOs >$10B
   - Tier 3 — Top 100 non-T1 momentum names per Jegadeesh-Titman 12-1 (DEC-496)
 - **All universe CSVs in [`Backtesting universe/`](Backtesting%20universe/) folder** with B++ schema (`Symbol, Company, Sector, added_date, removed_date`); PIT loader filters by date with NULL-pre-window handling.
@@ -71,7 +71,7 @@ Pass 53 universe-build effort completed:
 - ✅ Comprehensive signal universe documented (TRADING_RULES §2A — 6 categories, ~265-275 fields)
 - ✅ API endpoint inventory (TRADING_RULES §13.12 — 16 sources)
 - ✅ Universe folder migration to top-level `Backtesting universe/`
-- ✅ T1a `Tier 1A Universe_S&P 500 Tickers_Jan 2020 to May 2026.csv` (Pass 53 RESOLVED-IMPLEMENTED — 614 rows from Wikipedia rebuild + 4/4 S&P DJI spot-check; renamed Pass 53 from `historical_membership.csv`)
+- ✅ T1a `Tier 1A Universe_SP500 Tickers_Jan 2020 to May 2026.csv` (Pass 53 RESOLVED-IMPLEMENTED — 614 rows from Wikipedia rebuild + 4/4 S&P DJI spot-check; renamed Pass 53 from `historical_membership.csv`)
 - ⏸ T1b russell_1000_membership.csv (DEFERRED TO STAGE 3 per Pass 53 — LSEG paywall; T1a 503 + T1c 101 + ETFs sufficient for Stage 2)
 - 🔄 T2 + T3 historical populate (Phase 3+4 in flight — T2 10 seeds + T3 1220 unique non-T1 tickers via SCREENER-FIRST)
 - ✅ Sprint 1 Polygon Stocks Starter ($29/mo) active; OHLCV + reference + corp-actions cache populated

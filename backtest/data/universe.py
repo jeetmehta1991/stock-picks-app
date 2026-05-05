@@ -2,7 +2,7 @@
 data/universe.py — Instrument manager.
 
 Handles:
-  - Loading S&P 500 constituent list from committed static CSV (sp500_tickers.csv)
+  - Loading S&P 500 constituent list from committed static CSV (Current Snapshot_SP500 Tickers_May 2026.csv)
     The CSV is refreshed quarterly via slickcharts.com (or S&P press releases).
     See LEARNINGS L88: Wikipedia is unreliable as a runtime data source — the
     static CSV pattern is the correct approach.
@@ -37,7 +37,7 @@ UNIVERSE_DIR = Path(__file__).parent.parent.parent / "Backtesting universe"
 
 # Full ETF list for Phase 1B+
 # Per DEC-494 / Pass 53 owner directive: ETFs migrated from hardcoded list to
-# `backtest/data/tier1_etfs.csv` (Item 4 (ii) CSV + code migration). Module-level
+# `backtest/data/Tier 1 ETFs Universe_Sector and Broad-Market ETFs_May 2026.csv` (Item 4 (ii) CSV + code migration). Module-level
 # ETFS_FULL is computed at import time from the CSV via get_etfs_full() so that
 # legacy callers (universe.py functions, agents, tests) continue to work without
 # refactor. CSV is the source of truth; updates flow through the CSV, not this
@@ -45,7 +45,7 @@ UNIVERSE_DIR = Path(__file__).parent.parent.parent / "Backtesting universe"
 
 def get_etfs_full() -> list[str]:
     """
-    Load Tier 1 ETF list from `backtest/data/tier1_etfs.csv`.
+    Load Tier 1 ETF list from `backtest/data/Tier 1 ETFs Universe_Sector and Broad-Market ETFs_May 2026.csv`.
 
     Per DEC-494 (Pass 53 owner-approved Sprint 1) — ETFs are now declared in
     a CSV file alongside T1a/T1b/T1c membership files for consistency.
@@ -54,19 +54,19 @@ def get_etfs_full() -> list[str]:
     Returns list of ticker symbols. Falls back to empty list on read failure
     (callers should treat empty as a catastrophic config error).
     """
-    csv_path = UNIVERSE_DIR / "tier1_etfs.csv"
+    csv_path = UNIVERSE_DIR / "Tier 1 ETFs Universe_Sector and Broad-Market ETFs_May 2026.csv"
     try:
         df = pd.read_csv(csv_path, comment='#')
         tickers = df["Symbol"].drop_duplicates().tolist()
-        logger.info("Loaded %d Tier 1 ETFs from tier1_etfs.csv", len(tickers))
+        logger.info("Loaded %d Tier 1 ETFs from Tier 1 ETFs Universe_Sector and Broad-Market ETFs_May 2026.csv", len(tickers))
         return tickers
     except Exception as exc:
-        logger.error("Could not read tier1_etfs.csv: %s", exc)
+        logger.error("Could not read Tier 1 ETFs Universe_Sector and Broad-Market ETFs_May 2026.csv: %s", exc)
         return []
 
 
 # Computed at module import time — preserves legacy `from universe import ETFS_FULL`
-# callers. CSV-backed; update tier1_etfs.csv to change the list.
+# callers. CSV-backed; update Tier 1 ETFs Universe_Sector and Broad-Market ETFs_May 2026.csv to change the list.
 ETFS_FULL = get_etfs_full()
 
 
@@ -74,25 +74,25 @@ def get_sp500_constituents(max_tickers: int | None = None) -> list[str]:
     """
     Load S&P 500 constituent list from the committed CSV file.
 
-    Uses Backtesting universe/sp500_tickers.csv — a maintained static file
+    Uses Backtesting universe/Current Snapshot_SP500 Tickers_May 2026.csv — a maintained static file
     (Pass 53 folder move). Synced to Wikipedia Table 0 ground truth (503).
     No network calls, no rate limiting, works in all environments.
-    Update sp500_tickers.csv manually when index membership changes
+    Update Current Snapshot_SP500 Tickers_May 2026.csv manually when index membership changes
     (typically 10-20 changes per year).
 
     Per Pass 53: actual S&P 500 has ~503 securities (500 companies + dual-class).
     Default `max_tickers=None` returns all members. Pass an explicit cap only
     for tests or constrained-universe scenarios.
     """
-    csv_path = UNIVERSE_DIR / "sp500_tickers.csv"
+    csv_path = UNIVERSE_DIR / "Current Snapshot_SP500 Tickers_May 2026.csv"
     try:
         df = pd.read_csv(csv_path, comment='#')
         # Remove duplicates by Symbol (defensive — file should already be unique by symbol)
         tickers = df["Symbol"].drop_duplicates().tolist()
-        logger.info("Loaded %d S&P 500 constituents from sp500_tickers.csv", len(tickers))
+        logger.info("Loaded %d S&P 500 constituents from Current Snapshot_SP500 Tickers_May 2026.csv", len(tickers))
         return tickers[:max_tickers] if max_tickers else tickers
     except Exception as exc:
-        logger.error("Could not read sp500_tickers.csv: %s", exc)
+        logger.error("Could not read Current Snapshot_SP500 Tickers_May 2026.csv: %s", exc)
         return []
 
 
@@ -131,21 +131,21 @@ def get_sp500_constituents_pit(as_of: date) -> list[str]:
     PIT-correct S&P 500 constituents at `as_of` date (DEC-040 / DEC-477).
 
     Reads `Backtesting universe/historical_membership.csv` (B++ schema) and
-    applies the PIT filter. Falls back to `sp500_tickers.csv` current snapshot
+    applies the PIT filter. Falls back to `Current Snapshot_SP500 Tickers_May 2026.csv` current snapshot
     if the historical file is missing.
 
     Pass 53 SCRAPE-COMPLETE: 614 rows from Wikipedia (124 events 2020-2026 +
     503 currently active). File renamed Pass 53 (commit pending) from
-    `historical_membership.csv` to `Tier 1A Universe_S&P 500 Tickers_Jan 2020 to May 2026.csv`.
+    `historical_membership.csv` to `Tier 1A Universe_SP500 Tickers_Jan 2020 to May 2026.csv`.
     """
-    csv_path = UNIVERSE_DIR / "Tier 1A Universe_S&P 500 Tickers_Jan 2020 to May 2026.csv"
+    csv_path = UNIVERSE_DIR / "Tier 1A Universe_SP500 Tickers_Jan 2020 to May 2026.csv"
     # Backwards-compat fallback during transition
     if not csv_path.exists():
         legacy = UNIVERSE_DIR / "historical_membership.csv"
         if legacy.exists():
             csv_path = legacy
         else:
-            logger.warning("T1a historical CSV missing — falling back to sp500_tickers.csv current snapshot")
+            logger.warning("T1a historical CSV missing — falling back to Current Snapshot_SP500 Tickers_May 2026.csv current snapshot")
             return get_sp500_constituents()
     try:
         df = pd.read_csv(csv_path, comment='#')
@@ -160,7 +160,7 @@ def get_sp500_constituents_pit(as_of: date) -> list[str]:
 
 def get_ndx_constituents_pit(as_of: date) -> list[str]:
     """PIT-correct NASDAQ 100 (T1c) constituents at `as_of` (DEC-303 / DEC-483 T1c)."""
-    csv_path = UNIVERSE_DIR / "nasdaq_100_membership.csv"
+    csv_path = UNIVERSE_DIR / "Tier 1C Universe_NASDAQ-100 Tickers_Jan 2020 to May 2026.csv"
     if not csv_path.exists():
         return []
     try:
@@ -168,13 +168,13 @@ def get_ndx_constituents_pit(as_of: date) -> list[str]:
         active = _filter_pit(df, as_of)
         return active["Symbol"].drop_duplicates().tolist()
     except Exception as exc:
-        logger.error("Could not read nasdaq_100_membership.csv: %s", exc)
+        logger.error("Could not read Tier 1C Universe_NASDAQ-100 Tickers_Jan 2020 to May 2026.csv: %s", exc)
         return []
 
 
 def get_extended_universe_pit(as_of: date) -> list[str]:
     """PIT-correct Tier 2 (spinoffs + recent IPOs) constituents at `as_of` (DEC-103 / DEC-494)."""
-    csv_path = UNIVERSE_DIR / "extended_universe.csv"
+    csv_path = UNIVERSE_DIR / "Tier 2 Universe_Spinoffs and Recent IPOs_Sep 2014 to May 2026.csv"
     if not csv_path.exists():
         return []
     try:
@@ -184,13 +184,13 @@ def get_extended_universe_pit(as_of: date) -> list[str]:
         active = _filter_pit(df, as_of)
         return active["Symbol"].dropna().drop_duplicates().tolist()
     except Exception as exc:
-        logger.error("Could not read extended_universe.csv: %s", exc)
+        logger.error("Could not read Tier 2 Universe_Spinoffs and Recent IPOs_Sep 2014 to May 2026.csv: %s", exc)
         return []
 
 
 def get_momentum_watchlist_pit(as_of: date) -> list[str]:
     """PIT-correct Tier 3 (momentum top 100 non-T1) constituents at `as_of` (DEC-104 / DEC-364 / DEC-496)."""
-    csv_path = UNIVERSE_DIR / "momentum_watchlist.csv"
+    csv_path = UNIVERSE_DIR / "Tier 3 Universe_Momentum Top-100_Jun 2022 to May 2026.csv"
     if not csv_path.exists():
         return []
     try:
@@ -200,7 +200,7 @@ def get_momentum_watchlist_pit(as_of: date) -> list[str]:
         active = _filter_pit(df, as_of)
         return active["Symbol"].dropna().drop_duplicates().tolist()
     except Exception as exc:
-        logger.error("Could not read momentum_watchlist.csv: %s", exc)
+        logger.error("Could not read Tier 3 Universe_Momentum Top-100_Jun 2022 to May 2026.csv: %s", exc)
         return []
 
 
@@ -210,10 +210,10 @@ def union_universe(as_of: date, include_etfs: bool = True) -> list[str]:
 
     Returns deduplicated ticker list combining:
       T1a (S&P 500 — historical_membership.csv PIT)
-      T1c (NASDAQ 100 non-S&P — nasdaq_100_membership.csv PIT)
-      T2  (spinoffs + recent IPOs — extended_universe.csv PIT)
-      T3  (momentum top 100 non-T1 — momentum_watchlist.csv PIT)
-      ETFs (Tier 1 ETFs — tier1_etfs.csv, always-active)
+      T1c (NASDAQ 100 non-S&P — Tier 1C Universe_NASDAQ-100 Tickers_Jan 2020 to May 2026.csv PIT)
+      T2  (spinoffs + recent IPOs — Tier 2 Universe_Spinoffs and Recent IPOs_Sep 2014 to May 2026.csv PIT)
+      T3  (momentum top 100 non-T1 — Tier 3 Universe_Momentum Top-100_Jun 2022 to May 2026.csv PIT)
+      ETFs (Tier 1 ETFs — Tier 1 ETFs Universe_Sector and Broad-Market ETFs_May 2026.csv, always-active)
 
     T1b (Russell 1000 non-S&P) deferred to Sprint 1 procurement (LSEG paywall).
     """
@@ -292,10 +292,10 @@ def apply_liquidity_filter(
 def get_sector_map(tickers: list[str], info_dict: dict[str, dict] = None) -> dict[str, str]:
     """
     Return {ticker: sector} mapping.
-    Reads from sp500_tickers.csv first (fast, no network).
+    Reads from Current Snapshot_SP500 Tickers_May 2026.csv first (fast, no network).
     Falls back to info_dict if ticker not in CSV (e.g. ETFs).
     """
-    csv_path = UNIVERSE_DIR / "sp500_tickers.csv"
+    csv_path = UNIVERSE_DIR / "Current Snapshot_SP500 Tickers_May 2026.csv"
     sector_map = {}
 
     # Load from CSV
@@ -363,7 +363,7 @@ def get_extended_universe() -> list[str]:
     Refreshed monthly via scripts/refresh_extended_universe.py (Stage 3+ only).
     Empty CSV = Tier 2 not yet populated (Phase 1B/1C/1D use Tier 1 only).
     """
-    csv_path = UNIVERSE_DIR / "extended_universe.csv"
+    csv_path = UNIVERSE_DIR / "Tier 2 Universe_Spinoffs and Recent IPOs_Sep 2014 to May 2026.csv"
     try:
         df = pd.read_csv(csv_path, comment='#')
         if df.empty:
@@ -372,7 +372,7 @@ def get_extended_universe() -> list[str]:
         logger.info("Loaded %d Tier 2 extended universe tickers", len(tickers))
         return tickers
     except Exception as exc:
-        logger.debug("extended_universe.csv not found or empty: %s", exc)
+        logger.debug("Tier 2 Universe_Spinoffs and Recent IPOs_Sep 2014 to May 2026.csv not found or empty: %s", exc)
         return []
 
 
@@ -384,7 +384,7 @@ def get_momentum_watchlist() -> list[str]:
     For live: recomputed monthly, updated at month-end.
     Empty CSV = Tier 3 not yet populated.
     """
-    csv_path = UNIVERSE_DIR / "momentum_watchlist.csv"
+    csv_path = UNIVERSE_DIR / "Tier 3 Universe_Momentum Top-100_Jun 2022 to May 2026.csv"
     try:
         df = pd.read_csv(csv_path, comment='#')
         if df.empty:
@@ -393,7 +393,7 @@ def get_momentum_watchlist() -> list[str]:
         logger.info("Loaded %d Tier 3 momentum watchlist tickers", len(tickers))
         return tickers
     except Exception as exc:
-        logger.debug("momentum_watchlist.csv not found or empty: %s", exc)
+        logger.debug("Tier 3 Universe_Momentum Top-100_Jun 2022 to May 2026.csv not found or empty: %s", exc)
         return []
 
 

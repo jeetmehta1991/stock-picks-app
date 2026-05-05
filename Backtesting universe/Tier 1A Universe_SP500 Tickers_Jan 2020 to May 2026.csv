@@ -1,4 +1,4 @@
-# T1a Universe - S&P 500 Tickers Jan 2020 to May 2026 - DEC-477 canonical PIT-correct universe file (Pass 53 SCRAPE-COMPLETE; renamed from historical_membership.csv per Pass 53 owner directive 2026-05-05)
+# T1a Universe - SP500 Tickers Jan 2020 to May 2026 - DEC-477 canonical PIT-correct universe file (Pass 53 SCRAPE-COMPLETE; renamed from historical_membership.csv per Pass 53 owner directive 2026-05-05)
 # Built 2026-05-05 from Wikipedia List_of_S&P_500_companies. 124 events 2020-01-01 to 2026-04-09 + Table 0 current 503 components.
 # FILENAME DATE-RANGE NOTE: "Jan 2020 to May 2026" reflects file content as of 2026-05-05. On next monthly refresh (or significant S&P event addition), rename to extend the range (e.g., "Jan 2020 to Jun 2026") to keep filename accurate.
 # L88 fallback exception conditions met: (i) laptop-local, (ii) Wikipedia fallback after S&P DJI primary attempt, (iii) owner spot-checked 4 of 4 high-impact events vs S&P DJI press releases (TSLA 2020-12-21, KVUE 2023-08-25, SNDK 2025-11-28, PAYC 2026-03-23 - all confirmed), (iv) pre-Sprint-1 static CSV assembly (not runtime).

@@ -9,7 +9,7 @@ Pipeline:
   daily bars for D-21 and D-252 (Polygon /v2/aggs/grouped/locale/us/market/stocks/{date});
   compute momentum_score = (price[D-21] / price[D-252]) - 1; apply DEC-321/366 T3
   liquidity floor; exclude T1a/T1c at as_of D; rank desc; top 100 = monthly snapshot.
-  Union across all monthly snapshots → emit B++ rows to momentum_watchlist.csv.
+  Union across all monthly snapshots → emit B++ rows to Tier 3 Universe_Momentum Top-100_Jun 2022 to May 2026.csv.
 
   Step 2 (separate run): use the identified ticker list as input to
   prefetch_polygon_ohlcv_daily.py for OHLCV cache.
@@ -25,7 +25,7 @@ DEC-321/366 T3 liquidity floor:
   min_avg_dollar_volume:  $5M (proxied by close × volume on D-21 grouped endpoint)
   min_history:            60 days (implicit — must be present in both D-21 and D-252)
 
-Output: Backtesting universe/momentum_watchlist.csv (B++ schema:
+Output: Backtesting universe/Tier 3 Universe_Momentum Top-100_Jun 2022 to May 2026.csv (B++ schema:
   Symbol, Company, Sector, added_date, removed_date, MomentumScore, MarketCapB, LastPrice)
 
 Usage:
@@ -56,9 +56,9 @@ if not POLYGON_KEY:
 
 BASE_URL = "https://api.polygon.io"
 REPO = Path(__file__).resolve().parent.parent
-T3_CSV = REPO / "Backtesting universe" / "momentum_watchlist.csv"
-T1A_CSV = REPO / "Backtesting universe" / "Tier 1A Universe_S&P 500 Tickers_Jan 2020 to May 2026.csv"
-T1C_CSV = REPO / "Backtesting universe" / "nasdaq_100_membership.csv"
+T3_CSV = REPO / "Backtesting universe" / "Tier 3 Universe_Momentum Top-100_Jun 2022 to May 2026.csv"
+T1A_CSV = REPO / "Backtesting universe" / "Tier 1A Universe_SP500 Tickers_Jan 2020 to May 2026.csv"
+T1C_CSV = REPO / "Backtesting universe" / "Tier 1C Universe_NASDAQ-100 Tickers_Jan 2020 to May 2026.csv"
 
 WINDOW_START = date(2020, 1, 1)
 WINDOW_END = date.today()
@@ -319,7 +319,7 @@ def main():
         df = df[[c for c in cols if c in df.columns]]
         # Header comments
         header_lines = [
-            "# T3 momentum_watchlist.csv — DEC-496 Pass 53 SCREENER-FIRST output",
+            "# T3 Tier 3 Universe_Momentum Top-100_Jun 2022 to May 2026.csv — DEC-496 Pass 53 SCREENER-FIRST output",
             f"# Built: {date.today().isoformat()} via Polygon /v2/aggs/grouped/locale/us/market/stocks/{{date}}",
             f"# Methodology: J-T 12-1 (lookback {LOOKBACK_DAYS}d, skip {SKIP_DAYS}d, risk-adj OFF, tie-breakers vol-asc → ADV-desc)",
             f"# Window: {start} to {end} ({len(snapshots)} monthly snapshots)",

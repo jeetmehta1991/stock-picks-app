@@ -4,7 +4,7 @@ scripts/prefetch_polygon_ohlcv_daily.py — Pre-fetch Polygon daily OHLCV for Sp
 Per DEC-441 (Polygon Stocks Starter $29/mo) + DEC-256/440 + DEC-482 (5y window May 2021 → May 2026).
 
 Hybrid Path A scope (Pass 53 turn — universe build deferred to tomorrow):
-  - Universe: backtest/data/sp500_tickers.csv (484 current-state S&P 500)
+  - Universe: backtest/data/Current Snapshot_SP500 Tickers_May 2026.csv (484 current-state S&P 500)
   - Cache output: backtest/data/cache/polygon/ohlcv_daily/{TICKER}.parquet
   - Date range: ~5 years backward from today (per DEC-482 Polygon Stocks Starter window)
   - Adjusted=true (per Polygon default; DEC-302 raw OHLCV stored separately if needed Stage 2 walk-back)
@@ -48,7 +48,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 BASE_URL = "https://api.polygon.io"
 CACHE_DIR = Path("backtest/data/cache/polygon/ohlcv_daily")
 CHECKPOINT_FILE = Path("backtest/data/cache/polygon/_checkpoint_ohlcv.json")
-UNIVERSE_CSV = Path("Backtesting universe/sp500_tickers.csv")
+UNIVERSE_CSV = Path("Backtesting universe/Current Snapshot_SP500 Tickers_May 2026.csv")
 
 # 5-year window per DEC-482 (Polygon Stocks Starter limit)
 END_DATE = date.today()

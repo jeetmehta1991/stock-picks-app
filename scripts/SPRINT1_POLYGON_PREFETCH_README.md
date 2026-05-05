@@ -11,9 +11,9 @@ Sprint 1 effort REVISED Pass 53 owner-approved: ~28-39d → ~35-50d (+~7-11d for
 
 ## Honest scope flag
 
-This prefetch operates on `Backtesting universe/sp500_tickers.csv` (484 current-state S&P 500 tickers; folder move Pass 53 per commit `c7f5580f`), NOT the full DEC-483 universe (T1a + T1b + T1c = ~1015 tickers).
+This prefetch operates on `Backtesting universe/Current Snapshot_SP500 Tickers_May 2026.csv` (484 current-state S&P 500 tickers; folder move Pass 53 per commit `c7f5580f`), NOT the full DEC-483 universe (T1a + T1b + T1c = ~1015 tickers).
 
-The proper universe build (DEC-477 Tier 1A Universe_S&P 500 Tickers_Jan 2020 to May 2026.csv B++ format — single static CSV with `added_date`/`removed_date` columns + R1000 + NDX same format with year-grain dates) is deferred to a separate work session per Pass 53 turn discussion. **This is acknowledged survivorship bias for the data cache built tonight** — addressed in tomorrow's universe-build session.
+The proper universe build (DEC-477 Tier 1A Universe_SP500 Tickers_Jan 2020 to May 2026.csv B++ format — single static CSV with `added_date`/`removed_date` columns + R1000 + NDX same format with year-grain dates) is deferred to a separate work session per Pass 53 turn discussion. **This is acknowledged survivorship bias for the data cache built tonight** — addressed in tomorrow's universe-build session.
 
 When the proper universe files are built, an additional ~531 tickers (T1b R1000-non-S&P + T1c NDX-non-S&P + historical-S&P-delisted) will need supplementary prefetch.
 
@@ -30,7 +30,7 @@ Per Sprint 1 ENGINEERING_REGISTER scope:
 | DEC-260 | Cache freshness assertion | Cache populated; assertion logic in code (separate ticket) |
 | DEC-261 | ICT/SMC PIT N+1 lag rule | Not consumed by prefetch; consumed by strategy code |
 | DEC-040 | PointInTimeLoader structural framework | Not consumed by prefetch; depends on this cache as input |
-| DEC-477 | Tier 1A Universe_S&P 500 Tickers_Jan 2020 to May 2026.csv canonical | **DEFERRED to tomorrow** — using sp500_tickers.csv tonight |
+| DEC-477 | Tier 1A Universe_SP500 Tickers_Jan 2020 to May 2026.csv canonical | **DEFERRED to tomorrow** — using Current Snapshot_SP500 Tickers_May 2026.csv tonight |
 | DEC-478 | Polygon Stocks Starter $29/mo | ✅ |
 | DEC-479 | Cost correction $30→$29 | ✅ Documentation only |
 | DEC-483 | T1a/T1b/T1c sub-tiers | **DEFERRED to tomorrow** — T1a only tonight |
@@ -216,7 +216,7 @@ GitHub note: cache is ~7-12 GB total. GitHub allows 100 GB per repo, individual 
 After Polygon prefetch is committed to main, next session:
 
 1. **Build universe files (DEC-477 + DEC-483 — B++ format Pass 53):**
-   - `data/universe/Tier 1A Universe_S&P 500 Tickers_Jan 2020 to May 2026.csv` (S&P 500 — single CSV, columns `Symbol, Company, Sector, added_date, removed_date`; PIT loader filters by `(added_date IS NULL OR added_date ≤ as_of) AND (removed_date IS NULL OR removed_date > as_of)`)
+   - `data/universe/Tier 1A Universe_SP500 Tickers_Jan 2020 to May 2026.csv` (S&P 500 — single CSV, columns `Symbol, Company, Sector, added_date, removed_date`; PIT loader filters by `(added_date IS NULL OR added_date ≤ as_of) AND (removed_date IS NULL OR removed_date > as_of)`)
      - **Primary source:** S&P Dow Jones Indices press releases (`spglobal.com/spdji` — authoritative for every S&P 500 add/remove with effective dates)
      - **Fallback source (Pass 53 one-time L88 exception, owner-granted):** Wikipedia "List of S&P 500 companies" Selected-changes table + general internet browse — used only if S&P DJI archives have gaps; manual verification before commit
      - **Mapping timeframe:** 2020-01-01 → today + ongoing for Stage 3 (Polygon Stocks Starter cache window is 5y backward = 2021-05; 1-year buffer ensures every ticker active in cache window has a verifiable `added_date`)
@@ -232,19 +232,19 @@ After Polygon prefetch is committed to main, next session:
      - **Mapping timeframe (target):** 2020-01-01 → today + ongoing (matches T1a)
      - **Pre-2020 active tickers (target):** `added_date` NULL (matches T1a option-β)
      - **Refusal to populate with current snapshot only:** would re-introduce survivorship bias for 2020-2024 backtest dates — same problem we fixed for T1a in commits `c3e132e5` / `cf1c0762`. Owner Pass 53 declined this path.
-   - `data/universe/nasdaq_100_membership.csv` (T1c — populate in **same B++ format as T1a** per Pass 53 owner directive: same schema and filter)
+   - `data/universe/Tier 1C Universe_NASDAQ-100 Tickers_Jan 2020 to May 2026.csv` (T1c — populate in **same B++ format as T1a** per Pass 53 owner directive: same schema and filter)
      - **Primary source:** Nasdaq annual reconstitution data (December reconstitution; `nasdaq.com` index governance announcements)
      - **Fallback source:** Wikipedia "NASDAQ-100" + general internet browse (under same Pass 53 one-time L88 exception, scoped: laptop-local; fallback-only; manual verification)
      - **Mapping timeframe:** 2020-01-01 → today + ongoing (matches T1a)
      - **Pre-2020 active tickers:** `added_date` NULL (matches T1a option-β)
-   - `Backtesting universe/extended_universe.csv` (T2 — Pass 53 Sprint 1 historical populate per owner directive; same B++ format as T1a/T1c plus extension columns `MarketCapB`, `Tier2Reason`) — **SCREENER-FIRST architecture per DEC-103/DEC-494 corrections Pass 53**
+   - `Backtesting universe/Tier 2 Universe_Spinoffs and Recent IPOs_Sep 2014 to May 2026.csv` (T2 — Pass 53 Sprint 1 historical populate per owner directive; same B++ format as T1a/T1c plus extension columns `MarketCapB`, `Tier2Reason`) — **SCREENER-FIRST architecture per DEC-103/DEC-494 corrections Pass 53**
      - **Step 1 (Screener):** at each calendar date D in 2010-2026, fetch Polygon `/v3/reference/dividends` (special-distribution / spinoff dividend type) + `/v3/reference/splits` (parent-child relationship indicating spinoff) + `/v3/reference/tickers` (list_date for IPO identification, full active+delisted listing pull); filter spinoff events where child-ticker market_cap >$5B within 12 months of separation per DEC-103 criterion (use `/v3/reference/tickers/{ticker}` market_cap field at D+10 days post-listing); filter IPO events where issuer market_cap >$10B with ≥90 days history per DEC-103/DEC-366 Tier 2 floor; emit B++ row per qualifying event.
      - **Step 2 (Prefetch):** identified Tier 2 universe (50-150 unique tickers across 2010-2026) prefetched via standard `/v2/aggs/ticker/{ticker}/range/...` (same pipeline as T1).
      - **Why Sprint 1 not Sprint 5:** owner directive Pass 53 — populate immediately after Polygon OHLCV prefetch since corporate actions data lives in same Polygon subscription; defer ongoing GH Actions automation (DEC-372/373/374) to Sprint 5
      - **Mapping timeframe:** 2010-01-01 → today + ongoing for Stage 3 (full Pass 53 owner Q-C historical scope; 10y backward buffer for any pre-2020 strategies)
      - **Schema:** `Symbol, Company, Sector, added_date, removed_date, MarketCapB, Tier2Reason` — added_date = effective spinoff/IPO date; removed_date populated when ticker rotates to T1a/T1b/T1c (S&P/R1000/NDX inclusion) or 12-month spinoff window expires or market_cap falls below floor or delists
      - **Why screener-first (Pass 53 correction):** pre-Pass-53 `refresh_extended_universe.py` reads from yfinance ticker info — yfinance lags new listings (L89 SNDK 9-month example). Polygon corporate-actions feed is canonical and timely.
-   - `Backtesting universe/momentum_watchlist.csv` (T3 — Pass 53 Sprint 1 historical populate per owner directive; methodology DEC-496 RESOLVED-DECIDED) — **SCREENER-FIRST architecture per DEC-496 correction Pass 53**
+   - `Backtesting universe/Tier 3 Universe_Momentum Top-100_Jun 2022 to May 2026.csv` (T3 — Pass 53 Sprint 1 historical populate per owner directive; methodology DEC-496 RESOLVED-DECIDED) — **SCREENER-FIRST architecture per DEC-496 correction Pass 53**
      - **Step 1 (Screener):** at each monthly snapshot date D in 2020-2026, fetch Polygon `/v2/aggs/grouped/locale/us/market/stocks/{date}` daily-bar grouped endpoint covering full lookback window (D-252 through D-21) for ~6000-8000 listed US equities (common stock + active per `/v3/reference/tickers` filter); apply DEC-321/366 Tier 3 liquidity floor (min_cap=$300M, min_avg_dollar_volume=$5M, min_history=60d); compute `momentum_score = (price[D-21] / price[D-252]) - 1` per ticker (J-T classic, risk-adjustment OFF); exclude T1a/T1b/T1c sub-tier members at as_of D; rank descending; take top 100 = monthly Tier 3 snapshot. Tie-breakers: 6-month volatility ascending → ADV descending.
      - **Step 2 (Prefetch):** identified non-T1 union (~500-1000 unique tickers across 72 monthly snapshots; Pass 53 owner Q-C full historical scope) prefetched via standard `/v2/aggs/ticker/{ticker}/range/...` (same pipeline as T1).
      - **Refresh cadence:** monthly (1st of each month from prior month-end); for backtest static at each monthly snapshot date (no lookahead).
@@ -253,7 +253,7 @@ After Polygon prefetch is committed to main, next session:
      - **Why screener-first (Pass 53 correction):** owner caught initial DEC-496 spec gap — running J-T against existing T1 cache defeats T3's purpose (T3 = top 100 NON-T1 names). Top 100 non-T1 momentum names cannot be identified by ranking only T1. Polygon grouped endpoint = broad-market scan source.
      - **Why Sprint 1 not Sprint 5:** strict precondition is broad-market grouped-endpoint screener data + DEC-321/366 liquidity floor application; full historical screener compute lives in Sprint 1 alongside T1 prefetch; defer ongoing monthly automation (DEC-375/376/377) to Sprint 5
    - `data/universe/index_rebalance_events.parquet` (day-grain effective dates for **DEC-370** Index Rebalance strategies — **NOT DEC-368** Calendar/Seasonal; mis-attribution corrected Pass 53 via CHECKLIST #66 catch)
-     - **Primary source:** S&P Dow Jones Indices press releases (same source as `Tier 1A Universe_S&P 500 Tickers_Jan 2020 to May 2026.csv` — S&P DJI publishes announcement-date AND effective-date for every S&P 500 add/remove)
+     - **Primary source:** S&P Dow Jones Indices press releases (same source as `Tier 1A Universe_SP500 Tickers_Jan 2020 to May 2026.csv` — S&P DJI publishes announcement-date AND effective-date for every S&P 500 add/remove)
      - **Fallback source:** Wikipedia + general internet browse (under same Pass 53 one-time L88 exception, scoped: laptop-local; fallback-only; manual verification)
      - **Mapping timeframe:** 2020-01-01 → today + ongoing (matches T1a/T1b/T1c)
      - **Schema:** `effective_date, ticker, action (added/removed), index_name (S&P 500/R1000/NDX), announcement_date` — separate from membership CSVs because rebalance-events strategy specifically consumes the announcement→effective window for frontrun signals

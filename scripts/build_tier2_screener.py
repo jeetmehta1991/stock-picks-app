@@ -15,7 +15,7 @@ Pragmatic Pass 53 T2 build:
     those are de facto recent listings within our backtest window. Cross-reference
     with /v3/reference/tickers/{ticker} for cap + name + sector.
   Step 3 (filter): apply DEC-103 thresholds (spinoff >$5B / IPO >$10B + ≥90d).
-  Output: B++ rows to extended_universe.csv
+  Output: B++ rows to Tier 2 Universe_Spinoffs and Recent IPOs_Sep 2014 to May 2026.csv
 
 Future Sprint 1+: Full global SCREENER via paginated /v3/reference/tickers with
 per-ticker detail lookup for list_date. Wall time ~30-60 min for ~10k tickers.
@@ -26,7 +26,7 @@ DEC-103 inclusion criteria:
   Spinoff: child ticker market_cap > $5B within 12 months of separation.
   IPO:     issuer market_cap > $10B with ≥90 days trading history.
 
-Output: Backtesting universe/extended_universe.csv (B++ schema:
+Output: Backtesting universe/Tier 2 Universe_Spinoffs and Recent IPOs_Sep 2014 to May 2026.csv (B++ schema:
   Symbol, Company, Sector, added_date, removed_date, MarketCapB, Tier2Reason)
 
 Usage:
@@ -55,9 +55,9 @@ if not POLYGON_KEY:
 
 BASE_URL = "https://api.polygon.io"
 REPO = Path(__file__).resolve().parent.parent
-T2_CSV = REPO / "Backtesting universe" / "extended_universe.csv"
-T1A_CSV = REPO / "Backtesting universe" / "Tier 1A Universe_S&P 500 Tickers_Jan 2020 to May 2026.csv"
-T1C_CSV = REPO / "Backtesting universe" / "nasdaq_100_membership.csv"
+T2_CSV = REPO / "Backtesting universe" / "Tier 2 Universe_Spinoffs and Recent IPOs_Sep 2014 to May 2026.csv"
+T1A_CSV = REPO / "Backtesting universe" / "Tier 1A Universe_SP500 Tickers_Jan 2020 to May 2026.csv"
+T1C_CSV = REPO / "Backtesting universe" / "Tier 1C Universe_NASDAQ-100 Tickers_Jan 2020 to May 2026.csv"
 OHLCV_DIR = REPO / "backtest" / "data" / "cache" / "polygon" / "ohlcv_daily"
 
 WINDOW_START = date(2010, 1, 1)
@@ -301,7 +301,7 @@ def main():
         cols = ["Symbol", "Company", "Sector", "added_date", "removed_date", "MarketCapB", "Tier2Reason"]
         df = df[[c for c in cols if c in df.columns]]
         header_lines = [
-            "# T2 extended_universe.csv — DEC-103/494 Pass 53 SCREENER-FIRST output",
+            "# T2 Tier 2 Universe_Spinoffs and Recent IPOs_Sep 2014 to May 2026.csv — DEC-103/494 Pass 53 SCREENER-FIRST output",
             f"# Built: {date.today().isoformat()} via Polygon /v3/reference/tickers/{{ticker}} per-ticker detail + OHLCV cache discovery",
             "# Approach: curated TIER2_SEEDS validated against Polygon detail endpoint + cache-discovery (tickers whose first OHLCV bar >= 2021-06-01 are de facto recent listings within Polygon Stocks Starter 5y window).",
             f"# DEC-103 thresholds: spinoff cap >${MIN_SPINOFF_CAP_B}B / IPO cap >${MIN_IPO_CAP_B}B + ≥{MIN_IPO_DAYS}d history",

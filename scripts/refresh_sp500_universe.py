@@ -1,6 +1,6 @@
 """
 scripts/refresh_sp500_universe.py
-Refresh backtest/data/sp500_tickers.csv with current S&P 500 constituents.
+Refresh backtest/data/Current Snapshot_SP500 Tickers_May 2026.csv with current S&P 500 constituents.
 
 MUST RUN ON LAPTOP (unrestricted network). NOT for Codespaces.
 Source: slickcharts.com — free, stable, no auth, updated same day as S&P announcements.
@@ -11,8 +11,8 @@ Usage:
     python scripts/refresh_sp500_universe.py --write    # write and stage for commit
 
 After running:
-    git diff backtest/data/sp500_tickers.csv            # review changes
-    git add backtest/data/sp500_tickers.csv
+    git diff backtest/data/Current Snapshot_SP500 Tickers_May 2026.csv            # review changes
+    git add backtest/data/Current Snapshot_SP500 Tickers_May 2026.csv
     git commit -m "Universe refresh: quarterly S&P 500 update YYYY-MM-DD"
     git push origin main
 
@@ -28,7 +28,7 @@ from pathlib import Path
 import pandas as pd
 
 # ── Config ─────────────────────────────────────────────────────────────────
-CSV_PATH  = Path(__file__).parent.parent / "Backtesting universe" / "sp500_tickers.csv"
+CSV_PATH  = Path(__file__).parent.parent / "Backtesting universe" / "Current Snapshot_SP500 Tickers_May 2026.csv"
 SLICK_URL = "https://www.slickcharts.com/sp500"
 
 # ETF sector labels for any ETF that makes it into the list by mistake
@@ -205,8 +205,8 @@ def main():
         print(f"\n✅ Written: {CSV_PATH}")
         print(f"   {len(current_tickers)} → {len(updated_df)} tickers")
         print(f"\nNext steps:")
-        print(f"  git diff backtest/data/sp500_tickers.csv   # review")
-        print(f"  git add backtest/data/sp500_tickers.csv")
+        print(f"  git diff backtest/data/Current Snapshot_SP500 Tickers_May 2026.csv   # review")
+        print(f"  git add backtest/data/Current Snapshot_SP500 Tickers_May 2026.csv")
         print(f"  git commit -m 'Universe refresh: Q{(date.today().month-1)//3+1} {date.today().year} S&P 500 update'")
         print(f"  git push origin main")
     else:

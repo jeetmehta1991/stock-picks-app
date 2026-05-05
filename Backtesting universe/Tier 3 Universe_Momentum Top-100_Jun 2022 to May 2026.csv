@@ -1,4 +1,4 @@
-# T3 momentum_watchlist.csv — DEC-496 Pass 53 SCREENER-FIRST output
+# Tier 3 Universe — Momentum Top-100 Jun 2022 to May 2026 — DEC-496 Pass 53 SCREENER-FIRST output (renamed Pass 53 from momentum_watchlist.csv per owner directive 2026-05-05)
 # Built: 2026-05-05 via Polygon /v2/aggs/grouped/locale/us/market/stocks/{date}
 # Methodology: J-T 12-1 (lookback 252d, skip 21d, risk-adj OFF, tie-breakers vol-asc → ADV-desc)
 # Window: 2020-01-01 to 2026-05-05 (77 monthly snapshots)

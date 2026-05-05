@@ -1,4 +1,4 @@
-# Tier 1 ETFs (DEC-118 / DEC-494). Pass 53 schema standardization — migrated to B++ format alongside other universe CSVs.
+# Tier 1 ETFs Universe - Sector and Broad-Market ETFs May 2026 (DEC-118 / DEC-494). Pass 53 schema standardization + Pass 53 turn rename from tier1_etfs.csv per owner directive 2026-05-05 — migrated to B++ format alongside other universe CSVs.
 # SCHEMA: Symbol, Company, Sector (asset-class label), added_date (NULL = always-active reference instrument), removed_date (NULL = currently active), Category (extension column — Broad Market / Sector / Bonds / Commodities / Volatility / International)
 # PIT FILTER: (added_date IS NULL OR added_date <= as_of) AND (removed_date IS NULL OR removed_date > as_of). For ETFs all dates NULL = always available.
 # NOTE: ETFs are reference instruments (not membership-driven like S&P 500). Schema columns added for cross-tier consistency per Pass 53 owner directive.
