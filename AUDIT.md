@@ -26470,3 +26470,67 @@ Owner should mistrust "Sprint X is ready" claims unless I provide explicit artif
 2. `AUDIT.md` — this entry
 
 *Per CHECKLIST #32 (verbatim "Approve / Approve / Option A" received before execution); #25 (honest categorization — explicit Option A retrofit obligation surfaced not hidden; framework-availability constraint documented in Sprints 1-5 lines so future readers understand the deferral); #43 (cross-doc consistency: pyramid layers cite PROJECT_PLAN §21.1; retrofit cites Sprint 6 DECs 437/438/439 already in scope per ENGINEERING_REGISTER); #45 (pre-flight surfaced before edits); #58 (atomic 2-file commit, no half-state); #65 (no new categories — same 5 layers, just per-sprint assignment).*
+
+---
+
+## Pass 53 — Smart money composite formula + comprehensive API endpoint inventory documented (TRADING_RULES §10.8/10.9/13.12) + DEC-332 body completed (B1)
+
+**Trigger:** Owner question Pass 53 — *"Smart money signals, all API endpoints need to be a part of trading rules md file. How is smart money weighted and computed? There is no mention of that in any document."*
+
+**Discovery:**
+- Verified claim: smart money composite weighting/computation NOT documented in any project doc; the `+4/+2/-3` weights exist only in `backtest/data/smart_money.py:495-505` (artifact-state).
+- DEC-332 (Smart money composite scoring weights) was logged RESOLVED-DECIDED Pass 48 but the AUDIT_INDEX.md row 356 entry was *truncated mid-sentence* at "move to config with d" (line genuinely 194 chars; not a display artifact). Decision body was incomplete since Pass 48.
+- API endpoints scattered across `backtest/data/*.py` and `scripts/prefetch_*.py` with no consolidated inventory in trading rules.
+- Pass 52 turn 133 audit row 44 (AUDIT.md:25831) had flagged this gap but mistagged the resolution target as DEC-476 (which is actually Portfolio class API spec, unrelated to smart money) — surfaced and corrected this turn before any edits via pre-flight #43 cross-check.
+
+**Resolution applied this turn (Option 2 placement + comprehensive endpoints + B1 path per owner approval):**
+
+1. **`TRADING_RULES_AND_INFORMATION.md` §10.8 NEW** — Smart Money Composite Score:
+   - Three per-source signal label rules (congressional age-weighted by transaction date per DEC-324; insider with non-discretionary transaction exclusions; institutional 13F with 45-day filing lag per DEC-325)
+   - Composite scoring matrix (additive +4 / +2 / +1 / -3 / -1 by source × signal-strength)
+   - Veto case (`cong=sell` + `ins=cluster_sell` → score=-5)
+   - Composite labels by score (`≥6=congressional+insider_cluster`, `≥4=congressional_or_insider`, `≥2=any_buy`, `≥1=weak_buy`, `0=none`, `<0=negative`, `≤-4=congressional_sell+insider_cluster_sell`)
+   - 90-day decay half-life cross-reference to DEC-123
+   - Implementation pointer to `smart_money.py:470-529`
+
+2. **`TRADING_RULES_AND_INFORMATION.md` §10.9 NEW** — Smart Money-Adjacent Signals (NOT in composite):
+   - News sentiment (AV / Finnhub cache, 7-day window, ≥0.15 / ≤-0.15 thresholds)
+   - Gov contracts (Quiver prefetch, 365-day, total_amount > 0 → bullish)
+   - Lobbying (Quiver prefetch, 365-day, $1M / $100k tiers)
+   - Analyst data (yfinance + Quiver) with explicit LIVE-ONLY display-only warning per DEC-299/443
+
+3. **`TRADING_RULES_AND_INFORMATION.md` §13.12 NEW** — API Endpoint Inventory:
+   - Comprehensive table: ~30 endpoint rows across 16 sources (Polygon Starter, yfinance, Quiver, FRED/ALFRED, Alpha Vantage, Finnhub, AAII, CNN F&G, BLS, Fed, CFTC, SEC EDGAR, Ortex, NASDAQ, slickcharts, FTSE Russell)
+   - Per-row schema: domain, source, endpoint URL or mechanism, PIT lag, auth requirement, status (PRIMARY/FALLBACK/DEPRECATED/PREFETCH-ONLY/MANUAL/PLANNED/DISPLAY-ONLY), DEC references
+   - Status reflects post-Sprint-4 deprecation direction (DEC-453/454/455 cleanup)
+
+4. **`AUDIT_INDEX.md` line 356** — DEC-332 body completed (B1 per owner approval):
+   - Replaced truncated 194-char entry with completed body containing actual weight matrix, veto case, composite labels by score, joint DECs (DEC-072/073/123/124/324/325), implementation pointer, canonical doc reference (TRADING_RULES.md §10.8)
+   - Status remains RESOLVED-DECIDED (no new approval needed; body fill only)
+   - Last-pass column updated `-` → `53`
+   - Ratifies current code as canonical pending Phase-1B-α empirical tuning per DEC-072
+
+5. **`AUDIT.md`** — this entry.
+
+**B1 honesty check (per CHECKLIST #25):** the `+4/+2/-3` numbers added to DEC-332's body are extracted directly from current `smart_money.py:495-505` — not invented. DEC-332's original RESOLVED-DECIDED status (Pass 48) referenced these specific values ("4/2/-3 etc"), so the body completion is *filling in what was always meant to be there*, not retroactive decision-making. Empirical tuning of these values remains a §23.1 #15 REVISIT_AFTER_BACKTEST item per DEC-072/123.
+
+**Pre-flight catch (per CHECKLIST #45):** initial recommendation referenced "DEC-476" as the smart money formula resolution target. Pre-flight #43 cross-check against AUDIT_INDEX.md:512 revealed DEC-476 is actually the Portfolio class API specification (open_positions / cash_available / sector_concentration / etc) — completely unrelated to smart money. Halted before edits, surfaced the error to owner with corrected B1/B2/B3 options. Owner picked B1 (update DEC-332 body, the actual smart money decision). This is the L143 decision-state vs artifact-state pattern — exactly what the pre-flight gate is designed to catch.
+
+**Decision impact:**
+- DEC-332 body completed; status unchanged (RESOLVED-DECIDED).
+- No new DEC created.
+- Documentation gap closed at canonical location (TRADING_RULES.md).
+- L143 decision-state vs artifact-state mismatch resolved for smart money composite.
+- Pass 52 turn 133 audit row 44 implicitly resolved (no longer "PROPOSED — what specific weights?" — answer is in §10.8 + DEC-332 body).
+
+**Files updated this turn:**
+1. `TRADING_RULES_AND_INFORMATION.md` — §10.8, §10.9, §13.12 new sections
+2. `AUDIT_INDEX.md` — DEC-332 row body completed
+3. `AUDIT.md` — this entry
+
+**Out of scope this turn (queued, not blocking):**
+- Empirical tuning of smart money weights against Phase-1B-α outcomes (§23.1 #15 REVISIT_AFTER_BACKTEST per DEC-072/123)
+- Per-API rate-limit specifics (lives in `API_AUDIT.md`; cross-referenced from §13.12)
+- Sprint 4 removal of AV / Finnhub / OpenBB (DEC-453/454/455 — endpoints marked DEPRECATED in §13.12 will be deleted then; row removal deferred to that sprint)
+
+*Per CHECKLIST #32 (verbatim "1. option 2 / 3. All endpoints / 4 A+B together" + "b1" received before execution); #25 (own pre-recommendation category error caught and surfaced before introducing wrong-DEC resolution; B1 honesty check applied to weight numbers — extracted from code not invented); #43 (cross-doc consistency: TRADING_RULES.md ↔ smart_money.py ↔ AUDIT_INDEX DEC-332 ↔ AUDIT.md narrative); #45 (pre-flight per recommendation; corrected mid-stream when DEC-476 mismatch detected — exactly the kind of catch the gate is designed for); #58 (atomic 3-file commit, no half-state); #65 (smart money correctly placed as input-signal §10.x sister to regime classification, not as strategy or exit method); L143 (decision-state vs artifact-state gap closed for smart money composite); L144 (category boundary check — smart money is signal not strategy not exit method).*

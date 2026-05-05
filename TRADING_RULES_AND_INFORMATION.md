@@ -994,6 +994,63 @@ regime_prob_smoothed[t] = α × regime_prob_raw[t] + (1-α) × regime_prob_smoot
 
 **Source:** DEC-317
 
+### 10.8 Smart Money Composite Score (per DEC-124 + DEC-332 + DEC-450)
+
+**Per-source signal labels:**
+
+| Source | Lookback | PIT enforcement | Signal logic |
+|---|---|---|---|
+| **Congressional** (Quiver `/historical/congresstrading/{ticker}`) | 45 days, age-weighted by *transaction* date: <30d=1.0× / 30-60d=0.5× / >60d excluded | STOCK Act 45-day disclosure lag — filter to `disclosure_date ≤ as_of` (per DEC-324 fix Pass 51 — age-weight by transaction date, PIT-filter by disclosure date) | `sells > buys & sells ≥ 2` → `sell`; `senate_buys ≥ 2` OR `cluster_buy (≥3 unique representatives)` → `strong_buy`; `buys ≥ 1` → `buy`; else `none` |
+| **Insider** (Quiver `/historical/insidertrading/{ticker}`) | 30 days | `filing_date ≤ as_of`. EXCLUDES non-discretionary transactions: Option / Exercise / 10b5-1 / Gift / Transfer | `unique_sell_insiders ≥ 3` → `cluster_sell`; `CEO_buy & cluster (≥3 unique buyers)` → `strong_buy`; `CEO_buy OR cluster` → `buy`; `buys ≥ 1` → `weak_buy`; else `none` |
+| **Institutional / 13F** (Quiver `/historical/institutionalholdings/{ticker}`) | latest available quarter | `available_after = quarter_end + 45 days` (SEC filing deadline per DEC-325) ≤ as_of | `new_pos ≥ 3` OR `(new_pos ≥ 1 & increased ≥ 2)` → `strong_buy`; `new_pos ≥ 1` OR `increased ≥ 2` → `buy`; `decreased > increased` → `negative`; else `none` |
+
+**Composite scoring (additive with one veto):**
+
+VETO CASE — `congressional == sell` AND `insider == cluster_sell` → `score = -5`, composite = `congressional_sell+insider_cluster_sell` (skips additive math entirely).
+
+OTHERWISE additive per source:
+
+| Source | strong_buy | buy | weak_buy | sell | cluster_sell | negative |
+|---|---|---|---|---|---|---|
+| Congressional | +4 | +2 | — | -3 | — | — |
+| Insider | +4 | +2 | +1 | — | -3 | — |
+| Institutional | +2 | +1 | — | — | — | -1 |
+
+**Composite label by score:**
+
+| Score | Label |
+|---|---|
+| ≥ 6 | `congressional+insider_cluster` |
+| ≥ 4 | `congressional_or_insider` |
+| ≥ 2 | `any_buy` |
+| ≥ 1 | `weak_buy` |
+| 0 | `none` |
+| < 0 | `negative` |
+| ≤ -4 | `congressional_sell+insider_cluster_sell` |
+
+**Decay weighting:** smart money signals decay with 90-day half-life per DEC-123 (REVISIT_AFTER_BACKTEST tag in §23.1 #15).
+
+**Tunability:** weights are tagged tunable post-Phase-1B-α per DEC-072. Treat current values as baseline pending empirical tuning per §23 methodology.
+
+**Source:** DEC-124 (cross-source confluence); DEC-332 (composite weights — RESOLVED-DECIDED Pass 48, body completed Pass 53 with the current numeric values per B1); DEC-450 (Quiver paid endpoints); DEC-123 (90-day decay half-life); DEC-072 (smart money scope = congressional + insider + 13F; WSB separate); DEC-073 (hand-roll composites, not Quiver pre-built); DEC-324 (PIT fix: disclosure-date filter, transaction-date age-weight); DEC-325 (13F filing-date PIT lag).
+
+**Implementation:** `backtest/data/smart_money.py:470-529` (composite); `:317-374` (congressional); `:381-421` (insider); `:428-463` (institutional).
+
+### 10.9 Smart Money-Adjacent Signals
+
+These signals are computed alongside the smart money composite but are NOT included in the composite score. Each produces its own signal label consumed by agents and screener separately.
+
+| Signal | Source | Endpoint / cache | Lookback | Signal logic |
+|---|---|---|---|---|
+| **News sentiment** | Alpha Vantage / Finnhub | cache: `cache/av_news/{ticker}.parquet` (preferred); fallback `cache/finnhub_news/{ticker}.parquet` | 7 days | `score ≥ 0.15` → bullish; `≤ -0.15` → bearish; else neutral. Prefers `sentiment_weighted` (relevance-weighted) over `sentiment_mean`. |
+| **Government contracts** | Quiver prefetch | `cache/quiver/gov_contracts/{ticker}.parquet` | 365 days | `total_amount > 0` → bullish; `recent_win` flag if any win in last 90 days; trend = growing/stable. |
+| **Lobbying** | Quiver prefetch | `cache/quiver/lobbying/{ticker}.parquet` | 365 days | `total_spend > $1M` → high_spend; `> $100k` → moderate; else low. |
+| **Analyst data** | yfinance `Ticker.info` + `recommendations` + `upgrades_downgrades` + Quiver `/historical/analystestimates/{ticker}` | live yfinance + Quiver API | 30 days for upgrades/downgrades window | **LIVE-ONLY WARNING per DEC-299/443:** `recommendationMean`, `targetMeanPrice`, EPS estimates always return CURRENT not as-of values — used for site card display ONLY; do NOT affect tier or pass/fail criteria. PIT enforced on `recommendations` history and upgrades/downgrades window only. |
+
+**Source:** DEC-450 (Quiver paid: gov_contracts + lobbying); DEC-299/443 (yfinance .info LIVE-ONLY warning); DEC-440 (news endpoint).
+
+**Implementation:** `backtest/data/smart_money.py:618-705` (gov_contracts + lobbying); `:549-615` (news); `:88-253` (analyst).
+
 ---
 
 ## 11. Regime-Conditional Strategy Behavior
@@ -1184,6 +1241,66 @@ def test_loader_pit():
 **Rule:** Cache files have file-level checksum (SHA256) to detect corruption.
 
 **Source:** DEC-117
+
+### 13.12 API Endpoint Inventory
+
+Comprehensive inventory of external endpoints consumed by the system. PIT lag = how stale the data is when first available (e.g., 13F filings have a 45-day SEC filing deadline). Status reflects post-Pass-53 deprecation cleanup direction (Sprint 4 DEC-453/454/455).
+
+**Status legend:**
+- `PRIMARY` — canonical source post-Sprint-4
+- `FALLBACK` — used only if primary unavailable
+- `DEPRECATED` — scheduled for removal per Sprint 4 cleanup
+- `PREFETCH-ONLY` — no live calls in backtest; populated by `scripts/prefetch_*.py`
+- `MANUAL` — static file or scheduled refresh script (no live API in run loop)
+- `PLANNED` — not yet implemented; sub-decision approved
+- `DISPLAY-ONLY` — site card / dashboard use only; does NOT affect tier or pass/fail
+
+| Domain | Source | Endpoint / mechanism | PIT lag | Auth | Status | DECs |
+|---|---|---|---|---|---|---|
+| OHLCV daily | Polygon Stocks Starter | `https://api.polygon.io/v2/aggs/ticker/{ticker}/range/1/day/{from}/{to}` | None | API key | PRIMARY | DEC-441/478/479 |
+| OHLCV daily (legacy) | yfinance | `Ticker(symbol).history(period=...)` | None | None | FALLBACK | DEC-442 (demoted) |
+| OHLCV intraday | Polygon Stocks Starter | `/v2/aggs/ticker/{ticker}/range/{multiplier}/{timespan}/...` | None | API key | PRIMARY | DEC-446 |
+| Earnings (PIT) | Polygon Stocks Starter | `/v3/reference/financials?ticker=...` | report_date filing | API key | PRIMARY | DEC-256 |
+| Earnings (current) | yfinance | `Ticker.earnings_dates`, `Ticker.earnings` | LIVE-ONLY | None | DEPRECATED for backtest (replaced by Polygon DEC-256) | DEC-443 (BUG-218) |
+| Fundamentals (PIT) | Polygon Stocks Starter | `/v3/reference/financials` (income/balance/cashflow) | filing date | API key | PRIMARY (Phase 1B per DEC-484); SEC EDGAR replaces if Polygon insufficient | DEC-257/484 |
+| Fundamentals (current) | yfinance | `Ticker.info`, `Ticker.financials`, `.balance_sheet`, `.cashflow` | LIVE-ONLY | None | DEPRECATED for backtest tier/pass-fail; OK for display | DEC-299/443 |
+| Analyst consensus | yfinance | `Ticker.info` `recommendationMean` / `targetMeanPrice` / EPS estimates | LIVE-ONLY | None | DISPLAY-ONLY (does NOT affect tier or pass/fail) | DEC-299/443 |
+| Analyst recommendations history (PIT) | yfinance | `Ticker.recommendations`, `Ticker.upgrades_downgrades` | None (date-filtered) | None | ACTIVE (PIT-correct via `as_of` filter) | — |
+| Analyst revisions | Quiver | `https://api.quiverquant.com/beta/historical/analystestimates/{ticker}` | per-row Date | API key | ACTIVE (paid per DEC-450) | DEC-450 |
+| Congressional trades | Quiver | `/beta/historical/congresstrading/{ticker}` | STOCK Act 45-day disclosure | API key | ACTIVE (paid per DEC-450) | DEC-124/324/450 |
+| Insider trades | Quiver | `/beta/historical/insidertrading/{ticker}` | filing date | API key | ACTIVE (paid per DEC-450) | DEC-124/125/450 |
+| 13F institutional | Quiver | `/beta/historical/institutionalholdings/{ticker}` | quarter_end + 45 days | API key | ACTIVE (paid per DEC-450) | DEC-124/325/450 |
+| Government contracts | Quiver prefetch | `cache/quiver/gov_contracts/{ticker}.parquet` (script: `scripts/prefetch_quiver.py`) | per-row Date | n/a (cached) | PREFETCH-ONLY (paid per DEC-450) | DEC-450 / BUG-284 |
+| Lobbying | Quiver prefetch | `cache/quiver/lobbying/{ticker}.parquet` | per-row Date | n/a (cached) | PREFETCH-ONLY (paid per DEC-450) | DEC-450 |
+| News (per ticker) | Polygon Stocks Starter | `/v2/reference/news?ticker=...` | None | API key | PRIMARY | DEC-440 |
+| News sentiment (legacy) | Alpha Vantage | `https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers=...` (cached `cache/av_news/{ticker}.parquet`) | None | API key | DEPRECATED (Sprint 4 removal) | DEC-454 |
+| News sentiment (legacy) | Finnhub | `https://finnhub.io/api/v1/company-news?symbol=...&from=...&to=...` (cached `cache/finnhub_news/{ticker}.parquet`) | None | API key | DEPRECATED (Sprint 4 removal) | DEC-455 |
+| Macro / FRED | FRED | `https://api.stlouisfed.org/fred/series/observations?series_id=...` | publication date varies | API key | ACTIVE | DEC-407+448 |
+| Macro / ALFRED (vintage) | FRED | same base + `realtime_start` / `realtime_end` params | true PIT vintage | API key | ACTIVE (PIT-correct per DEC-301) | DEC-301 |
+| AAII sentiment survey | AAII | manual CSV from `aaii.com/sentimentsurvey/sent_results` (committed to repo) | weekly publication; pub-lag 1 day per DEC-389 | none | MANUAL (refreshed via GH Actions per DEC-390) | DEC-389/390 |
+| CNN Fear & Greed | CNN | scrape (last-published with `age_days` per DEC-391) | last published | none | ACTIVE | DEC-391 |
+| SEC EDGAR — fundamentals | SEC | `https://data.sec.gov/api/xbrl/companyfacts/CIK{cik}.json` | 10-K/10-Q filing date | none | PLANNED Sprint 4 (replaces Polygon if insufficient) | DEC-484 |
+| SEC EDGAR — Form 4 / 13D/13G | SEC | EDGAR full-text search | filing date | none | PLANNED (OpenInsider mentioned in code docstring but unused) | DEC-125 |
+| SEC EDGAR — spinoffs (Form 10-12B) | SEC | EDGAR Form 10-12B query | filing date | none | PLANNED Sprint 5 | DEC-378-380 |
+| NASDAQ symbol diff (spinoffs) | NASDAQ | scraped symbol listing | daily | none | PLANNED Sprint 5 | DEC-378 |
+| Polygon corporate actions | Polygon Stocks Starter | `/v3/reference/dividends`, `/v3/reference/splits` | event date | API key | ACTIVE | DEC-380 |
+| S&P 500 reference (universe Tier 1a) | slickcharts.com | scrape `https://www.slickcharts.com/sp500` (laptop-only) | quarterly refresh | none | MANUAL (laptop-only refresh per `scripts/refresh_sp500_universe.py`; quarterly cadence per CHECKLIST #19) | L88/DEC-477 |
+| Russell 1000 reconstitution (Tier 1b) | FTSE Russell | annual reconstitution data | year-grain | none | MANUAL (Tier 1b per DEC-483) | DEC-483 |
+| NASDAQ 100 reconstitution (Tier 1c) | Nasdaq | annual reconstitution | year-grain | none | MANUAL (Tier 1c per DEC-483) | DEC-483 |
+| BLS CPI schedule | BLS | `https://www.bls.gov/schedule/news_release/cpi.htm` | future-dated calendar | none | ACTIVE (event suppression per DEC-348) | DEC-348 |
+| BLS employment schedule | BLS | `https://www.bls.gov/schedule/news_release/empsit.htm` | future-dated calendar | none | ACTIVE | DEC-348 |
+| Federal Reserve meetings | Fed | `https://www.federalreserve.gov/json/ne-meetings.json` | future-dated calendar | none | ACTIVE | DEC-348 |
+| CFTC Commitments of Traders | CFTC | `https://www.cftc.gov/MarketReports/CommitmentsofTraders/` | weekly publication | none | ACTIVE (macro signal per DEC-407+448) | DEC-407+448 |
+| Ortex short interest | Ortex (planned) | TBD | filing date | API key (TBD) | PLANNED Sprint 7 | DEC-468 |
+
+**Cross-references:**
+- Cache rules per source: §13.1-13.11 above
+- PIT enforcement (DEC-305 RAISE not WARNING): §12.2
+- Source priority hierarchy for events: §19.3
+- Smart money signal computation using these endpoints: §10.8 / §10.9
+- Per-source rate limits + quotas: tracked separately in `API_AUDIT.md`
+
+**Source:** DEC-441/478/479 (Polygon Starter); DEC-442-444 (yfinance demotion); DEC-450 (Quiver paid); DEC-301/407/448 (FRED+ALFRED); DEC-453-455 (deprecation cleanup Sprint 4); DEC-389-391 (sentiment); DEC-348/349 (events); DEC-477/483 (universe); DEC-484 (SEC EDGAR); L88 (no Wikipedia).
 
 ---
 
