@@ -27427,3 +27427,59 @@ If owner intended Stage 2 retroactive backfill (compute archived rows from Sprin
 - Smart money composite expansion (§10.8 expansion if owner returns and requests) — pending owner re-review per "§10.8 — missed it. will get back."
 
 *Per CHECKLIST #32 (verbatim 4 directives — §10.8 sufficient for now, signal universe by category, priority approved, 2-3 parallel verification next turn); #25 (signal counts grounded in actual code source — `compute_all_signals()` aggregator at line 858-892 per direct read; ~220 technical signals counted by docstring claim "~220 technical signals"; total ~265-275 reconciled with CLAUDE.md "274 signal fields" reference); #43 (TRADING_RULES.md §2A cross-references §10.8 + §10.9 + §13.12 + §10 + §21 + §12 + STRATEGY_REGISTER + DEC-453/454/455/440/484; signals/technical.py + smart_money.py + macro.py + sentiment.py source paths cited); #45 (read signals/technical.py for actual function inventory before drafting; verified TOC structure before insertion location); #51 (Stream 4 only this turn per owner priority order; refused scope-creep into Stream 2/3); #58 (atomic 2-file commit; no implementation changes); #65 (signal categories preserved per existing 6-category taxonomy from CLAUDE.md original Stage 1 docs; no new categories invented); #66 (function names + line numbers verified per direct file read; FRED series IDs cited per DEC body; no DEC scope claims without verification). L88 N/A (no Wikipedia for this turn).*
+
+---
+
+## Pass 53 — Stream 2 NDX verification — 5 iteration batches complete (15 external fetches; 2 useful data points; 1 minor discrepancy surfaced)
+
+**Trigger:** Owner Pass 53 directive: "iterate" — execute Stream 2 verification iterations 2-3 parallel per turn per prior approval.
+
+**Iteration log (15 external fetch attempts across 5 batches):**
+
+| Iter | Source URL | Result |
+|---|---|---|
+| 1 | `slickcharts.com/nasdaq100` | 403 Forbidden |
+| 1 | `stockanalysis.com/list/nasdaq-100-stocks/changes/` | 404 Not Found |
+| 1 | `invesco.com/qqq-etf/en/about.html` | Marketing page; no raw data |
+| 2 | `stockanalysis.com/etf/qqq/` | Top 10 only; pointers to /holdings/ + /history/ subpages |
+| 2 | `stockanalysis.com/list/nasdaq-100-stocks/` | ✅ Useful: 101 current constituents (validates ~100 NDX size) |
+| 2 | `companiesmarketcap.com/nasdaq-100/` | 404 Not Found |
+| 3 | `stockanalysis.com/etf/qqq/history/` | Performance history only; NOT constituent changes |
+| 3 | `stockanalysis.com/etf/qqq/holdings/` | Paywalled past top-25 ("Subscribe to see full list") |
+| 3 | `invesco.com/.../holdings?ticker=QQQ` | Marketing content; no holdings list |
+| 4 | `etfdb.com/etf/QQQ/` | 403 Forbidden (Cloudflare) |
+| 4 | `finance.yahoo.com/quote/^NDX/components` | 503 Service Unavailable (rate limit / scraping protection) |
+| 4 | `barchart.com/stocks/quotes/$NDX/constituents` | 404 Not Found |
+| 5 | `nasdaq.com/market-activity/quotes/nasdaq-ndx-index` | 60s timeout |
+| 5 | **`indexes.nasdaqomx.com/Index/Overview/NDX`** | ✅ **Useful:** Nasdaq's official index data site — 101 components 5/4/2026; reconstitution PDFs available (`/docs/202601 NDX Reconstitution and Performance Highlights.pdf`); methodology change log; 2026 May Changes FAQ |
+| 5 | `cnbc.com/quotes/.NDX` | 403 Forbidden |
+
+**Useful sources discovered: 2 of 15 attempts.** Both confirm current snapshot ~101 ticker count. None provide clean external timeline of 2020-2026 add/remove dates outside what was already used (Wikipedia + Nasdaq IR).
+
+**Honest verification reality (#25):**
+- Free historical NDX changes data is genuinely scarce in machine-fetchable form. Wikipedia + Nasdaq IR press releases (sources I used originally) ARE the best free sources.
+- Other secondary aggregators are paywalled past top-25 (stockanalysis.com Pro), Cloudflare-blocked for automated fetches (etfdb / barchart / yahoo / cnbc), marketing pages without raw data (Invesco), or 404s (URL drift over years).
+- The Pass 53 L88 exception scope was correct — Wikipedia is the right source for one-time historical scrape, and Nasdaq IR per-event verification (owner's pattern for WMT/PTON/NTES) is the practical path for spot-checks.
+
+**Single discrepancy surfaced (not auto-fixed — surfaced for owner direction):**
+
+My T1c CSV has **102 currently active** rows (NULL removed_date) vs Nasdaq official **101 components** as of 5/4/2026 (1-day prior to today). Possible causes:
+- Dual-class share counting: GOOG + GOOGL = 2 securities, 1 company. Both currently active in my CSV. Nasdaq may be counting differently.
+- Recent admission timing: SNDK added 2026-04-20 may or may not be in Nasdaq's 5/4/2026 snapshot
+- One of my multi-period tickers might have a missing `removed_date` I didn't catch
+
+Resolution paths surfaced for owner pick:
+1. **Accept** — 1-ticker variance likely dual-class counting; document caveat; close iteration loop. Owner pattern (per-event Nasdaq IR for specific concerns like WMT/PTON/NTES) remains the spot-check tool.
+2. **Spot-check via Nasdaq PDFs** — fetch `indexes.nasdaqomx.com/docs/202601 NDX Reconstitution and Performance Highlights.pdf` + `2026_May_NDX_Changes_FAQ.pdf` for authoritative cross-reference. PDF parsing risk; could reveal exact discrepancy source.
+3. **Halt verification; pivot to Stream 3** — comprehensive ~22-doc audit (per prior priority order; Stream 2 is fundamentally bounded by free-source availability).
+
+**Files updated this turn:**
+1. `AUDIT.md` — this entry (verification iteration log + reality assessment)
+
+**No CSV changes this turn.** No DEC status changes. No code changes. Verification iterations are documentation-only work surfacing the verification reality rather than introducing data fixes without owner direction on the 1-ticker discrepancy.
+
+**Out of scope this turn (queued):**
+- Spot-check resolution of 102-vs-101 discrepancy (path 1 / 2 above)
+- Stream 3 comprehensive ~22-doc audit (queued per priority order)
+
+*Per CHECKLIST #32 (verbatim "iterate" directive — 5 iteration batches × 2-3 sources per batch executed); #25 (verification reality surfaced honestly — 13 of 15 attempts returned no useful data; 5-iteration directive completed in form but free-source coverage genuinely limited; refused to fabricate "verification" against sources that don't exist or are paywalled); #43 (iteration log cross-references prior commits c3e132e5 / cf1c0762 / 41659bd3 + indexes.nasdaqomx.com as new authoritative source candidate); #45 (multi-batch parallel fetches per owner directive 2-3/turn; surfaced discrepancy + 3 resolution paths rather than auto-fix); #51 (default lower-impact: NO CSV changes without owner direction on 102-vs-101; 3 paths surfaced for owner pick); #58 (1-file AUDIT-only commit; no half-state introduced); #65 (no roster changes); #66 (verification scope checked against actual external availability not assumed; iteration log honest about each fetch result). L88 exception scope respected throughout — used only for original T1c build (commit cf1c0762); this verification batch attempted ONLY non-Wikipedia/non-Nasdaq-IR sources per owner directive "outside of sources you have already used".*
