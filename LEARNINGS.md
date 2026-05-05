@@ -1148,3 +1148,45 @@ The verification is cheap. The cost of skipping it is wasted owner trust and fal
 - PROJECT_PLAN.md §7.2 count formula corrected
 
 **Pattern relation:** This is a category-boundary failure, distinct from the artifact-state failure of L143. Both are roster-hygiene gaps, just on different axes (definition fidelity vs implementation existence). Together they suggest a generalised "roster integrity" discipline that CHECKLIST #65 starts to formalise.
+
+---
+
+## L145 — Silent-gap pattern: working endpoint validates wrong assumption (Pass 53 2026-05-05)
+
+**Pattern:** When a small subset of endpoints/features works correctly, that "evidence of working" can mask a much larger silent failure across sibling endpoints. Tests focused on the working endpoint provide false confidence — and the broken siblings remain undetected for arbitrarily long periods.
+
+**Discovery (Pass 53 turn 2026-05-05):** Smoke probe of 4 Quiver endpoints in `backtest/data/smart_money.py` revealed:
+- `historical/congresstrading/{ticker}` ✅ works (1,088 rows for AAPL)
+- `historical/insidertrading/{ticker}` 🔴 404 (NOT IN TRADER TIER)
+- `historical/institutionalholdings/{ticker}` 🔴 404 (NOT IN TIER)
+- `historical/analystestimates/{ticker}` 🔴 404 (NOT IN TIER)
+
+`smart_money_score` composite (DEC-332) has been computing on **1-of-4 inputs** for an undetermined period (likely all Phase 1A v3 archive results). Insider + institutional + analyst-revisions silently zeroed. Smart-money confluence dimension (cube #8 in DEC-471 reduced cube) operates on degraded inputs.
+
+**Why it went undetected:**
+1. Tests focused on `congresstrading` (which works) — gave false signal that "Quiver integration is fine"
+2. `insider_signal()` and `institutional_signal()` return graceful empty dicts on 404, not errors → no traceback, no logs
+3. Composite scoring tolerates missing components (returns 0 contribution); didn't surface as anomaly
+4. Subscription-tier expectations not validated against actual dashboard inventory until Pass 53
+
+**Root cause:** Endpoint paths assumed without verification against subscription tier. `historical/X` URL pattern works for some endpoints (congresstrading/lobbying/govcontracts) but NOT for others (insidertrading/sec13f/analystestimates). Trader-tier dashboard lists them only as "Live" variants. The pattern was unverifiable from Quiver public docs (JS-rendered, empty HTML response) until owner shared dashboard screenshots.
+
+**Codified:**
+- BUG-271/272/273 (smart_money silent-gap entries)
+- DEC-503 (test pyramid mandate — comprehensive coverage would have caught this)
+- CHECKLIST #69 (test pyramid HARD RULE codification)
+
+**Apply when:**
+- Integrating a third-party API where docs are JS-rendered or unreliable
+- Composite scoring functions that aggregate multiple sub-signals (any sub-signal silently failing leaves composite degraded but plausible)
+- Subscription-tier-conditional endpoints (different tiers expose different paths)
+- Migration from one API tier to another (path conventions may not match)
+
+**Mitigation pattern (going forward):**
+1. **Test every endpoint individually** — never assume sibling endpoints work because one does
+2. **Log empty responses with context** — `if df.empty: logger.warning(f"{endpoint} returned empty for {ticker}")` so silent zeros surface
+3. **Cross-check against subscription dashboard** — never assume endpoint exists; verify against owner's tier inventory
+4. **Composite scoring sanity check** — if 3+ inputs and 2+ are zero across 100% of tickers, flag as suspect
+5. **Test pyramid on integration code** — per CHECKLIST #69, every endpoint integration gets unit + smoke + integration + system test coverage
+
+**Pattern relation:** Sibling to L143 (don't-rewrite-history) and L144 (roster category-boundary) — all three are integrity failures around assumptions about systems that "look fine" but have hidden gaps.

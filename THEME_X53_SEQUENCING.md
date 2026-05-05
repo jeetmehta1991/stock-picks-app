@@ -90,3 +90,52 @@ These don't need re-approval — parents already approved Pass 52. They need to 
 
 **No new X53 work introduced by Phase 1A restoration.**
 
+---
+
+## Pass 53 Sprint 0A.0-0A.10 sub-phase detail (DEC-497 + DEC-500/501/502/503 scope)
+
+**Sprint 0A.0** — Quiver Trader-tier endpoint enumeration confirmed via owner dashboard (Pass 53 2026-05-05); 28 unique endpoints across Public + Tier 1 + Tier 2; 8 endpoint groups scoped-in per DEC-502 (App Ratings + Patent Drift dropped per Q1).
+
+**Sprint 0A.1** — Polygon EXTENSION prefetch (news / financials / events / NBBO daily-close); owner-gated per CHECKLIST #68 smoke→demo→full protocol. Excludes options data per DEC-501 (defer Stage 3).
+
+**Sprint 0A.2** — FRED + ALFRED 52-series prefetch curating to ~15-20 high-signal subset (Pass 53 turn analysis recommendation). High-value adds: BAMLH0A0HYM2 (HY OAS), STLFSI4 (financial stress), RECPROUSM156N (recession prob), T10Y3M (alt yield curve). ALFRED vintage realtime_end PIT correction per DEC-301.
+
+**Sprint 0A.3** — AAII + CNN F&G prefetch with composite (current) + 7 sub-components (Pass 53 owner-approved expansion): junk-bond demand spread, put/call ratio, market momentum, stock breadth, safe-haven demand, market vol, stock-price strength.
+
+**Sprint 0A.4** — CFTC COT prefetch (commercial vs speculative positioning, CME E-mini S&P 500); wires existing stub `sentiment.get_cot_report` (which currently returns `not_available`).
+
+**Sprint 0A.5** — Quiver Trader-tier prefetch with **silent-gap fix** (BUG-271/272/273) as prerequisite. 8 endpoint groups + bulk migration:
+- Live Quiver News (paginated)
+- Off-Exchange Historical (per-ticker; 3,937 rows AAPL confirmed)
+- Live Top Shareholders (per-ticker)
+- Live ETF Holdings (query-param form)
+- Live SEC13F + Live SEC13F Changes (10,000-row paginated bulk)
+- Patents Historical + Recent + Patent Momentum (URL paths TBD smoke kickoff)
+- Historical Executive Compensation (paginated bulk)
+- Corporate Donors Bulk + Historical-by-ticker
+- Migration: per-ticker → bulk where dashboard provides Bulk variant (Q3 owner-approved 2026-05-05)
+- Smart_money silent-gap fix: REMOVE Quiver branch from `get_analyst_data` (BUG-271); migrate `insider_signal` to `live/insidertrading` (BUG-272); migrate `institutional_signal` to `live/sec13f` (BUG-273); per CHECKLIST #69 full test pyramid.
+
+**Sprint 0A.6** — SEC EDGAR structured prefetch via edgartools library: Form 4 (insider direct, vs Quiver reformat), 8-K (material events for Risk Agent), 10-Q/K (financials, complementary to Polygon `/vX/reference/financials`).
+
+**Sprint 0A.7** — Free social sentiment supplementary sources (Pass 53 Q2 owner-approved 2026-05-05; DEC-502 supplement):
+- **Apewisdom** (apewisdom.io) — Free, daily WSB+r/stocks ticker mentions, 2021-present
+- **pytrends** (Google Trends Python wrapper) — Free, search-volume index per ticker, 2004-present
+- Combined coverage 2020-2026 (Apewisdom 2020 gap filled by pytrends)
+- Sentiment Agent integration with bullish/bearish/neutral classification
+
+**Sprint 0A.8** — Stage 2 NO-LIVE-API HARD CUT refactor (DEC-497 owner directive Q8). All `backtest/data/{fetcher,macro,sentiment,smart_money}.py` migrated to read from `data_prefetch/<api_name>/<endpoint>/...` only. yfinance permitted for one-time SETUP only (e.g., universe-build T3 sector backfill); not in runtime hot path.
+
+**Sprint 0A.9** — **Polygon ticker events integration (DEC-500 Pass 53 owner directive 2026-05-05)** — `https://api.polygon.io/vX/reference/tickers/{ticker}/events` (Reference Data, included in Stocks Starter). Event types: ticker_change, ticker_split, name_change, listing_change, exchange_change, delisting, new_listing. Cache: `data_prefetch/polygon/events/{ticker}.parquet`. Feeds all 6 TradingAgents (Risk, Fundamental, Sentiment, Technical, Bull/Bear Debate, Decision) + T2 SCREENER per DEC-380.
+
+**Sprint 0A.10** — Smoke + demo + full tests per API (16 test files: 8 smoke + 8 demo + per CHECKLIST #68); full test pyramid per CHECKLIST #69 (DEC-503): unit + smoke + integration + system + functional + regression + data integrity + performance + acceptance.
+
+**Sprint 0A scope-out (per Pass 53 owner directives 2026-05-05):**
+- Polygon Options Starter — DEFERRED to Stage 3 / Phase 1C per DEC-501 (owner Q1=C declined Stocks Starter upgrade)
+- Polygon SMA/EMA/RSI/MACD indicator endpoints — DROPPED (duplicates local pandas-ta)
+- Polygon NBBO intraday quotes / snapshots / market-status / tick trades — DEFERRED to Stage 3+ live trading
+- Quiver App Ratings + Patent Drift — DROPPED per Q1 (low-novelty for regime taxonomy)
+- WSB / Twitter / Reddit Quiver endpoints — NOT IN TRADER TIER (filled by Apewisdom + pytrends free alternatives)
+
+**Cross-references:** DETAILED_PROJECT_PLAN.md Part 2.6 (Sprint-Sequenced Index) + Part 3 §3.16-§3.17 (Sprint 0A expanded scope detail); AUDIT_INDEX.md DEC-497-503; AUDIT.md Pass 53 narrative; BUG_REGISTER.md BUG-271/272/273.
+

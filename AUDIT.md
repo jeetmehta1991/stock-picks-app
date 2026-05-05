@@ -28333,3 +28333,110 @@ Docs URL is dynamic (JS-rendered); not visible to WebFetch. Probed 11 working en
 - FLOW: ACK lapse → codify rule fix → commit immediately (don't block on T2)
 
 *Per CHECKLIST #1 (owner directive explicit); #13 (read CHECKLIST + CLAUDE before edit); #25 (SECOND lapse on #67 acknowledged honestly + scope clarified by owner); #43 (cross-doc — CHECKLIST + CLAUDE + AUDIT all updated); #45 (this statement); #51 (scope strict — rule clarification + immediate commit); #58 (atomic commit for THIS scope); #65 (no roster expansion); #66.b (INPUT/OUTPUT/FLOW stated); #67 (rule self-applies — committing immediately per the clarified rule); #67.b (NEW — DECOUPLE doc commits from pending runs; first applied immediately to this commit). Owner directive "Document updates are not linked to pending runs" — FULFILLED in real-time correction.*
+
+---
+
+## Pass 53 — Multi-API Sprint 0A Scope Expansion + Silent-Gap Discovery + Test Pyramid Mandate (2026-05-05)
+
+**Context:** Pass 53 turn 2026-05-05 — owner directed scope analysis of Sprint 0A prefetch endpoints, agent-context value of options + previously-dropped data, free social sentiment alternatives, and test discipline standing rule. Owner approved 4 new DECs (500/501/502/503) + restructure of DETAILED_PROJECT_PLAN.md (sprint-sequenced + missing Parts 13-18 added).
+
+### Endpoint utility analysis (claude → owner)
+
+Mapped current Stage 2 backtest data consumption (`fetcher.py` / `macro.py` / `sentiment.py` / `smart_money.py` / `technical.py` / `pipeline.py`) against Sprint 0A 8-API prefetch scope. Surfaced:
+- 15 endpoints currently consumed (must prefetch)
+- 11 endpoints not consumed; some recommended DROP (Polygon SMA/EMA/RSI/MACD duplicates local pandas-ta; intraday quotes / snapshots / ticks not Stage-2 relevant), some recommended ADD (CFTC COT, CNN F&G 7 sub-components, Polygon financials, Polygon ticker events).
+
+### Owner pushback: agent-context value of options + dropped endpoints
+
+Owner: "Options OHLC, OI, IV data which we dropped from polygon endpoint can be used by one of the agents to get more context?"
+
+Reframed analysis around forward-looking agent context. Per-agent enumeration:
+- **Sentiment Agent (biggest unlock):** Put/Call ratios, options OI, skew, unusual options activity, dark pool flow
+- **Risk Agent (second unlock):** ATM IV (1M, 3M), IV term structure, max-pain, dealer gamma, SEC 8-K material events
+- **Fundamental Agent:** Polygon financials (EPS / revenue / margins), pre-earnings IV ramp, Form 4 direct from EDGAR
+- **Technical Agent:** IV rank vs HV (cheap/expensive vol context)
+
+### Owner directives
+
+1. **DEC-500** — Polygon ticker events INTEGRATE (key price-move trigger for analysis): "polygon ticker events will be highly useful for analysis and its a key trigger for price movement. Needs to be integrated."
+2. **DEC-501** — Polygon Options NOT upgraded (Q1=C: defer to Stage 3 / Phase 1C). Owner declined Stocks Starter upgrade; Options is separate subscription.
+3. **DEC-502** — Quiver Trader-tier expansion (Q2=YES): owner shared full dashboard inventory (28 unique endpoints across Public + Tier 1 + Tier 2). 8 endpoint groups scoped-in (App Ratings + Patent Drift dropped per Q1); Q3 bulk-migration architecture approved.
+4. **DEC-503** — Comprehensive test pyramid before every code push (HARD RULE).
+
+### Critical silent-gap discovery (Q2 smoke test execution)
+
+Probed 26 Quiver endpoints + 30 alternative URL paths for AAPL. Confirmed:
+
+| Endpoint | Result | Bug ID |
+|---|---|---|
+| `historical/analystestimates/{ticker}` | 404 — NOT IN TRADER TIER | BUG-271 |
+| `historical/insidertrading/{ticker}` | 404 — only `Live Insider Trading` exists | BUG-272 |
+| `historical/institutionalholdings/{ticker}` | 404 — only `Live SEC13F` + `Live SEC13F Changes` exist | BUG-273 |
+
+**Impact:** `smart_money_score` composite (DEC-332 weights) has been computing on **1-of-3 inputs** (only congressional). Insider + institutional silently zeroed across all Phase 1A v3 archive backtest results. Smart-money confluence dimension (cube #8) operates on degraded inputs.
+
+**Working URL paths discovered (for migration):**
+- `live/insidertrading` (bulk feed; client-side ticker filter) → BUG-272 fix
+- `live/sec13f` (10,000-row paginated bulk; cols Date/ReportPeriod/Name/Ticker) → BUG-273 fix
+- For BUG-271: REMOVE Quiver branch; rely on Polygon financials per DEC-497 HARD CUT
+- `historical/offexchange/{ticker}` (3,937 rows AAPL; cols Ticker/Date/OTC_Short/OTC_Total/DPI) → DEC-502 scope-in
+- `live/topshareholders/{ticker}` → DEC-502 scope-in
+- `historical/corporatedonors/{ticker}` + `bulk/corporatedonors` → DEC-502 scope-in
+- `historical/executivecompensation` (paginated) → DEC-502 scope-in
+- `live/quivernews` (paginated) → DEC-502 scope-in
+
+### Free social sentiment alternatives (Q2 owner-approved supplement)
+
+Trader tier has NO WSB / Twitter / Reddit endpoints. Free alternatives:
+- **Apewisdom (apewisdom.io)** — Free, daily WSB+r/stocks ticker mentions, 2021-present. Limitation: no 2020 coverage.
+- **Google Trends via pytrends** — Free, search-volume index per ticker, 2004-present. Quirk: normalization differs across query windows.
+- **StockTwits API** — DEFER (custom historical scrape required).
+- **Reddit PRAW** — DEFER (low-volume rate limit; requires custom aggregator).
+
+Owner approved Apewisdom + pytrends as Sprint 0A.7 supplement. Combined coverage 2020-2026 with Apewisdom 2020 gap filled by pytrends.
+
+### Test discipline standing rule (DEC-503)
+
+Owner directive 2026-05-05: "we will need to do unit tests, smoketests, integration Testing, system testing, all types of regression testing, functional testing, etc. Just dont do a few limited tests."
+
+Codified as CHECKLIST #69 + CLAUDE.md HARD RULE. Test pyramid: Unit + Smoke + Integration + System + Functional + Regression + Data integrity + Performance + Acceptance. Partial coverage non-compliant.
+
+**First application:** smart_money silent-gap fix (BUG-271/272/273) next turn — full test pyramid required.
+
+### DETAILED_PROJECT_PLAN.md restructure (per Pass 53 owner directive 2026-05-05)
+
+Owner: "In the detailed project plan i need specific sections on each phase and each sprint. I believe it was there earlier and now its missing. The current detailed project plan is not very readable. Needs to read sequentially. Be comprehensive and DO NOT eliminate anything."
+
+**Restructure executed (additive, no eliminations):**
+- ADDED **Part 2.6 — Sprint-Sequenced Index** (chronological sprint flow Sprint 0A → Sprint 9 with cross-references to Phase Parts; Sprint 0A.0-0A.10 sub-phase breakdown)
+- RENAMED **Part 3 header** to lead with Sprint 0A and reflect expanded scope (Polygon Foundation + Multi-API Prefetch + Universe Build + NO-LIVE-API Refactor)
+- ADDED **§3.16 Sprint 0A expanded-scope coverage**: universe build IMPLEMENTED status, multi-API scope table, NO-LIVE-API HARD CUT refactor, smoke→demo→full protocol, comprehensive test pyramid, silent-gap critical finding, Polygon ticker events integration, Pass 53 status snapshot
+- ADDED **§3.17 Sprint 0A decisions in scope** (DECs 497-503 table)
+- ADDED **MISSING Parts 13-18** (TOC referenced them but body absent):
+  - Part 13 — Stage 2 Verdict & Stage 2 → 3 Transition
+  - Part 14 — Stage 3 Paper Trading (planning level)
+  - Part 15 — Stage 4 Live Trading Small Scale (planning level)
+  - Part 16 — Stage 5 Full Automation (planning level)
+  - Part 17 — Cross-Cutting Concerns (PIT, cost, tech stack, governance, open architectural decisions)
+  - Part 18 — Reading Guide & Maintenance (15-section template, update protocol, cross-document map)
+
+**Original 5,116-line content preserved in full.** Net additions: ~1,000 lines.
+
+### Pre-flight CHECKLIST applied
+- ✅ #1/#45 — every recommendation gated; final compliance below
+- ✅ Pre-flight per recommendation — DEC-500/501/502/503 each owner-gated
+- ✅ #66.b — N/A (analysis + doc sync; no new screener code)
+- ✅ #13/#22/#23/#29 — smoke spend ≈56 Quiver calls + ≈0 cost (Q2 authorized)
+- ✅ #67/#67.b — doc sweep this turn, decoupled from T2 SCREENER background task
+- ✅ #68 — smoke + alt-URL discovery only; no full pull
+- ✅ #69 — N/A this turn (no code push; only doc edits + smoke probes)
+
+### Cross-references
+- **CHECKLIST.md #69** — test pyramid mandate (DEC-503 codification)
+- **CLAUDE.md HARD RULE** — test pyramid + Sprint 0A reference (DEC-503 + DEC-497)
+- **AUDIT_INDEX.md DEC-500/501/502/503** — full body entries
+- **BUG_REGISTER.md BUG-271/272/273** — smart_money silent-gap entries
+- **DETAILED_PROJECT_PLAN.md Part 2.6 + §3.16 + Parts 13-18** — Sprint-sequenced restructure
+- **temp_staging/smoke_quiver_silent_gap_endpoints.py** + **smoke_quiver_url_discovery.py** — empirical evidence
+
+*Per CHECKLIST #1 (owner directives Q1+Q2+Q3 + Q1=All except App Ratings + Patent Drift, Q2 silent-gap smoke this turn, Q3 bulk migration agreed); #13 (CHECKLIST + CLAUDE re-read); #25 (silent-gap honest acknowledgment); #43 (cross-doc); #45 (this statement); #51 (scope strict per owner directives); #58 (atomic commit); #66.b (INPUT smoke + URL probes; OUTPUT 4 DECs + restructure + bug entries; FLOW analysis → smoke → owner-gate → doc sweep → commit); #67 (rule applies); #67.b (decouple from T2 SCREENER); #68 (smoke + URL discovery only); #69 (next turn first application: smart_money fix). Owner directive Q3 = doc sweep first, then full test pyramid fix next turn.*

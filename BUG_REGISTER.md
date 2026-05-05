@@ -263,3 +263,83 @@ Universe CSV reads abstracted through `backtest.data.universe` module functions 
 - AUDIT.md Pass 53 narrative entries
 - DOCUMENTATION_REGISTER.md Pass 53 post-pre-flight entry
 
+---
+
+## Pass 53 — Smart Money Silent-Gap Bugs (Discovered 2026-05-05 via Quiver smoke test)
+
+### BUG-271 — `smart_money.py` historical/analystestimates endpoint 404 (Quiver-enhanced analyst-revisions silently dead)
+
+**Severity:** HIGH — affects all Phase 1A v3 archive smart-money scoring + agent analyst input
+**Module:** `backtest/data/smart_money.py:215`
+**Function:** `get_analyst_data` (Quiver enhancement branch)
+
+**Description:**
+Code calls `https://api.quiverquant.com/beta/historical/analystestimates/{ticker}` which returns HTTP 404. Endpoint NOT in Trader-tier subscription per dashboard inventory (Pass 53 owner-confirmed 2026-05-05). Smart-money composite has been silently computing on partial inputs — Quiver-enhanced analyst-revisions branch dead since at least Pass 48.
+
+**Impact:**
+- `get_analyst_data` Quiver enhancement returns no data → `recent_upgrades` / `recent_downgrades` / `revision_direction` populated only from yfinance (which is itself being demoted per DEC-497 HARD CUT)
+- Agent pipeline (Fundamental Agent, Decision Agent) operates on degraded analyst-revision signal
+- All Phase 1A v3 archive backtest results silently affected
+
+**Migration:**
+REMOVE Quiver branch entirely from `get_analyst_data`. Rely on Polygon `/vX/reference/financials` for analyst consensus + EPS estimates per DEC-497 HARD CUT. yfinance branch must also go (NO LIVE API in Stage 2). Polygon financials covers equivalent data.
+
+**Fix scheduled:** next turn after Pass 53 doc sweep, with full test pyramid per DEC-503.
+
+**Discovery:** smoke probe `temp_staging/smoke_quiver_silent_gap_endpoints.py` Pass 53 turn 2026-05-05 confirmed 404 for `historical/analystestimates/AAPL`.
+
+**Joint:** DEC-450 (Quiver Trader paid), DEC-497 (NO LIVE API HARD CUT), DEC-502 (Quiver scope reset; analyst data dropped from Quiver), DEC-503 (test pyramid for fix), L145 (silent-gap pattern).
+
+---
+
+### BUG-272 — `smart_money.py` historical/insidertrading endpoint 404 (insider_signal silently zeroed)
+
+**Severity:** HIGH — affects all Phase 1A v3 archive smart-money scoring + agent insider input
+**Module:** `backtest/data/smart_money.py:382`
+**Function:** `insider_signal`
+
+**Description:**
+Code calls `https://api.quiverquant.com/beta/historical/insidertrading/{ticker}` which returns HTTP 404. Trader-tier dashboard lists only "Live Insider Trading" — no Historical variant.
+
+**Impact:**
+- `insider_signal` returns `{"signal": "none", "buy_count": 0, "sell_count": 0}` for every ticker every backtest day
+- `smart_money_score` composite computes on 1-of-3 inputs (only congressional works)
+- All Phase 1A v3 archive backtest results show ZERO insider signal contribution
+- CEO buy / cluster buy / cluster sell signal dimension entirely absent
+
+**Migration:**
+Replace `historical/insidertrading/{ticker}` per-ticker call with bulk `live/insidertrading` endpoint (paginated feed; client-side ticker filter). Smoke confirmed working via `temp_staging/smoke_quiver_url_discovery.py`. Cache to `data_prefetch/quiver/insidertrading/global.parquet`; smart_money.py reads + filters by Ticker column.
+
+**Fix scheduled:** next turn after Pass 53 doc sweep, with full test pyramid per DEC-503.
+
+**Joint:** DEC-450, DEC-497, DEC-502, DEC-503, L145.
+
+---
+
+### BUG-273 — `smart_money.py` historical/institutionalholdings endpoint 404 (institutional_signal silently zeroed)
+
+**Severity:** HIGH — affects all Phase 1A v3 archive smart-money scoring + agent institutional input
+**Module:** `backtest/data/smart_money.py:429`
+**Function:** `institutional_signal`
+
+**Description:**
+Code calls `https://api.quiverquant.com/beta/historical/institutionalholdings/{ticker}` which returns HTTP 404. Trader-tier dashboard lists only "Live SEC13F" + "Live SEC13F Changes" — no Historical Institutional Holdings.
+
+**Impact:**
+- `institutional_signal` returns `{"signal": "none"}` for every ticker every backtest day
+- `smart_money_score` 13F dimension absent
+- All Phase 1A v3 archive backtest results show ZERO institutional signal contribution
+- new_positions / increased / decreased signal entirely absent
+
+**Migration:**
+Replace `historical/institutionalholdings/{ticker}` per-ticker call with bulk `live/sec13f` endpoint (10,000-row paginated feed confirmed Pass 53 smoke; cols: Date/ReportPeriod/Name/Ticker). Cache to `data_prefetch/quiver/sec13f/global.parquet`; smart_money.py filters by Ticker. Also scope-in `live/sec13fchanges` for delta signal.
+
+**Fix scheduled:** next turn after Pass 53 doc sweep, with full test pyramid per DEC-503.
+
+**Joint:** DEC-450, DEC-497, DEC-502, DEC-503, L145.
+
+---
+
+**Combined impact statement (BUG-271/272/273):**
+The composite `smart_money_score` function (DEC-332 weights: congressional + insider + institutional) has been computing on **1-of-3 inputs** (only congressional works) for an undetermined period (likely all Phase 1A v3 archive results). Smart-money confluence signal (DEC-124) — a primary dimension in the verdict cube (Part 2 §2.2 dimension #8 "Smart money signal present") — operates on degraded inputs. Pass 53 owner directive Q3 = doc sweep first, then full test pyramid fix next turn (DEC-503 first application).
+

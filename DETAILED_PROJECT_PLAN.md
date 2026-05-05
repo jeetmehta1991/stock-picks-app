@@ -869,7 +869,138 @@ Stage 2 has 11 phases (0.A through 1C+). Dashboards historically were mentioned 
 
 ---
 
-# PART 3 — PHASE 0.A: POLYGON FOUNDATION (Sprint 1)
+# PART 2.6 — SPRINT-SEQUENCED INDEX (Pass 53)
+
+## §2.6.1 Why this section exists
+
+Owner directive Pass 53 turn 2026-05-05: "I need specific sections on each phase and each sprint... read sequentially. Be comprehensive and DO NOT eliminate anything." This index sits between the Stage 2 architecture (Part 2) and the per-phase detail (Parts 3-12) to provide a **chronological sprint flow** that reads top-to-bottom. Existing Phase Parts 3-12 are not renumbered — this index cross-references them. Parts 13-18 (Stage transitions + Cross-cutting + Reading Guide) follow the per-phase parts.
+
+## §2.6.2 Sprint chronology at a glance
+
+```
+Foundation    ┌── Sprint 0A ──┐  Multi-API Prefetch + Universe Build + NO-LIVE-API Refactor
+              │              │  (Phase 0.A — see Part 3; Pass 53 RENAMED from Sprint 1 per DEC-497)
+              │              ▼
+Bug fixes     │     Sprint 2   Engine Bug Fixes Tier A
+              │              │  (Phase 0.C — see Part 5)
+              │              ▼
+Risk infra    │     Sprint 3   Portfolio Class
+              │              │  (Phase 0.B — see Part 4)
+              │              ▼
+API hardening │     Sprint 4   DEC-410 API Audit Findings
+              │              │  (see Part 11)
+              │              ▼
+Universe ops  │     Sprint 5   Universe Management automation
+              │              │  (see Part 12)
+              │              ▼
+Defense       │     Sprint 6   Catch-Mechanism Defense + Architecture Hygiene
+              │              │  (Phase 0.E — see Part 7)
+              │              ▼
+1A baseline   │     Sprint 6.5 Phase 1A Rules-Based + Smart Money Baseline
+              │              │  (see Parts 7.5, 7.6 — overlaps Sprint 7)
+              │              ▼
+Statistical   │     Sprint 7   Phase 1A-β + Phase 1B Stat methodology + A/B + Toolkits
+              │              │  (see Parts 7.7, 8, 9 dashboards portion)
+              │              ▼
+Categories    │     Sprint 8   Phase 1C+ Strategy Categories Expansion
+              │              │  (see Part 10; ICT/SMC final integration via Part 6 distributed)
+              │              ▼
+1B-α Run      │     Sprint 9   Phase 1B-α Cube Populate + Verdict Run
+              │              │  (see Part 9 run portion + Cube Explorer DEC-199)
+Verdict gate  └──────────────▶  Stage 2 → 3 transition (see Part 13)
+```
+
+**Sprint 0A naming note (DEC-497, Pass 53 owner directive 2026-05-05):** "Sprint 1" was renamed to "Sprint 0A" to reflect materially expanded scope (multi-API prefetch + universe build absorbed + Stage 2 NO-LIVE-API HARD CUT refactor). Cross-references in Parts 3-12 that say "Sprint 1" are interpreted as Sprint 0A. The Sprint 0A.0-0A.10 sub-phase numbering captures internal sequencing.
+
+## §2.6.3 Sprint-by-sprint table
+
+| Sprint | Phase Mapping | Part | Owner of (deliverable) | Effort | Status (Pass 53) |
+|---|---|---|---|---|---|
+| **0A** | Phase 0.A | Part 3 | Multi-API prefetch, 5-tier universe build, sector normalization, NO-LIVE-API refactor | ~20.5–26.5d | UNIVERSE BUILD IMPLEMENTED 2026-05-05 (T1a 614, T1c 161, T1 ETFs 27, T2 SCREENER pending, T3 1924); prefetch extension PENDING |
+| **2** | Phase 0.C | Part 5 | Engine Bug Fixes Tier A (DEC-491-493 trade_log Parquet, signals_at_entry filter, trade_id schema) | ~25.5–30.5d | NOT STARTED |
+| **3** | Phase 0.B | Part 4 | Portfolio class API + state mgmt (DEC-476) | ~8–11d | NOT STARTED |
+| **4** | — (cross-cutting) | Part 11 | DEC-410 API audit fixes (yfinance demotion, FMP integration) | ~41.75–54.25d | NOT STARTED |
+| **5** | — (cross-cutting) | Part 12 | Universe management automation (monthly refresh workflows for T1a/T1c/T2/T3) | ~13.5–15.5d | PARTIAL — universe-build content done in 0A; ongoing automation pending |
+| **6** | Phase 0.E | Part 7 | Catch-Mechanism Defense + Architecture Hygiene (test pyramid framework DEC-437/438/439) | ~62.25–76.75d | NOT STARTED |
+| **6.5** | Phase 1A + 1A-α | Parts 7.5, 7.6 | Rules-Based + Smart Money Baseline + Rules-Only Cube + Dashboards | ~25–30d | NOT STARTED |
+| **7** | Phase 1A-β + 1B | Parts 7.7, 8 | Phase 1A-β Production-Scale Validation + Phase 1B Statistical + A/B + Custom Toolkits | ~96–108.5d | NOT STARTED |
+| **8** | Phase 1C+ + ICT/SMC | Parts 10, 6 (distributed) | Strategy Categories Expansion + ICT/SMC final fork integration | ~37–55d | NOT STARTED |
+| **9** | Phase 1B-α run + Cube Explorer | Part 9 (run portion) | 1B-α verdict run + Cube Explorer dashboard (DEC-199) | ~6d engineering + ~37–40h compute wall | NOT STARTED |
+
+## §2.6.4 Sprint 0A — Multi-API Prefetch + Universe Build + NO-LIVE-API Refactor
+
+**Owner directive 2026-05-05 (DEC-497):** Sprint 1 renamed → Sprint 0A with materially expanded scope. Sprint 0A is the primary active sprint of Pass 53. Detail in Part 3.
+
+**Sprint 0A sub-phase breakdown (0A.0 - 0A.10):**
+
+| Sub-phase | Deliverable | Status (Pass 53) |
+|---|---|---|
+| **0A.0** | Universe build: T1a S&P 500 (614 rows: 503 active + 111 historical), T1c NASDAQ-100 (161 rows: 101 active + 60 historical), T1 ETFs (27), T2 spinoffs/IPOs (SCREENER global pull pending), T3 momentum top-100 (1924 rows after leveraged-ETF blocklist fix) | IMPLEMENTED 2026-05-05; T2 final state pending background SCREENER completion |
+| **0A.1** | Polygon EXTENSION prefetch — news / financials / events / NBBO daily-close | NOT STARTED — owner-gated per CHECKLIST #68 smoke→demo→full protocol |
+| **0A.2** | FRED + ALFRED 52-series prefetch (curating to ~15-20 high-signal subset per Pass 53 turn analysis) | NOT STARTED |
+| **0A.3** | AAII + CNN F&G prefetch (composite + 7 sub-components per owner direction Pass 53) | NOT STARTED |
+| **0A.4** | CFTC COT prefetch (commercial vs speculative positioning) | NOT STARTED |
+| **0A.5** | Quiver Trader-tier prefetch — 10 endpoint groups (DEC-502: news, off-exchange, top-shareholders, ETF holdings, SEC13F, patents, exec comp, corporate donors, congress politicians, off-exchange-historical); BULK migration where dashboard provides Bulk variant; per CHECKLIST #68 protocol | NOT STARTED — silent-gap fix for `historical/insidertrading` + `historical/institutionalholdings` URL paths required first (smart_money.py fix; Pass 53 turn 2026-05-05 finding) |
+| **0A.6** | SEC EDGAR structured prefetch via edgartools (Form 4, 8-K, 10-Q/K) | NOT STARTED |
+| **0A.7** | Free social sentiment supplementary sources — **Apewisdom** (WSB/Reddit ticker mentions, 2021-present, daily) + **Google Trends via pytrends** (search-volume index by ticker, 2004-present); approved Pass 53 owner Q2 2026-05-05 (DEC-502 supplement) | NOT STARTED |
+| **0A.8** | Stage 2 NO-LIVE-API refactor — `backtest/data/{fetcher,macro,sentiment,smart_money}.py` migration to read from `data_prefetch/` only; HARD CUT (DEC-497 Q8 owner directive) | NOT STARTED |
+| **0A.9** | Polygon ticker events integration (DEC-500 Pass 53 owner directive — corp action triggers as agent context: splits / mergers / name changes / listing changes / delistings / exchange changes); Polygon `/vX/reference/tickers/{ticker}/events`; feeds T2 SCREENER + Risk Agent + Sentiment Agent + Fundamental Agent | NOT STARTED |
+| **0A.10** | Smoke + demo + full tests per API (16 test files: 8 smoke + 8 demo) per CHECKLIST #68 protocol; full test pyramid per CHECKLIST #69 (DEC-503) | NOT STARTED |
+
+**Sprint 0A scope-out (per Pass 53 owner Q1 directive 2026-05-05):**
+- Polygon Options Starter — DEFERRED to Stage 3 / Phase 1C (DEC-501; owner declined Stocks Starter upgrade)
+- Polygon SMA/EMA/RSI/MACD indicator endpoints — DROPPED (duplicates local pandas-ta; Risk Agent uses ATR backward-looking until options scope-in)
+- Polygon NBBO intraday quotes / snapshots / market-status / tick trades — DEFERRED to Stage 3+ live trading
+
+**Critical silent-gap finding (Pass 53 smoke test 2026-05-05):**
+3 Quiver endpoints in current code return HTTP 404 for AAPL — **smart_money.py has been silently broken**:
+- `historical/analystestimates/{ticker}` → NOT IN TRADER TIER. Smart_money.get_analyst_data Quiver-enhancement branch dead. Migration: REMOVE Quiver branch; rely on Polygon financials (per DEC-497 HARD CUT). Logged as BUG-271.
+- `historical/insidertrading/{ticker}` → NOT IN TIER under this path. Migration: `live/insidertrading` (bulk feed; client-side ticker filter). Logged as BUG-272.
+- `historical/institutionalholdings/{ticker}` → NOT IN TIER. Migration: `live/sec13f` (10,000-row paginated bulk feed). Logged as BUG-273.
+
+**Impact:** smart_money_score has been computing on 1-of-3 inputs (only congressional). Insider + institutional silently zeroed across all Phase 1A v3 archive results. Fix scheduled next turn with full test pyramid per DEC-503.
+
+## §2.6.5 Sprint dependencies
+
+```
+Sprint 0A ──┬──► Sprint 2 (engine fixes operate on cache produced by Sprint 0A)
+            ├──► Sprint 3 (Portfolio class queries OHLCV via Sprint 0A cache)
+            ├──► Sprint 4 (DEC-410 audit assumes Sprint 0A polygon_client exists)
+            └──► Sprint 5 (universe automation; T1a/T1c/T2/T3 schemas locked in 0A)
+
+Sprint 2 ────► Sprint 6 (catch-mechanism operates on stable engine surface)
+
+Sprint 3 ────► Sprint 6.5 (Portfolio class consumed by Phase 1A baseline run)
+
+Sprint 6 ────► Sprint 7 (architecture hygiene + custom toolkits in tandem)
+
+Sprint 6.5 ──► Sprint 7 (Phase 1A baseline → 1A-β + 1B advanced; some overlap)
+
+Sprint 7 ────► Sprint 8 (Phase 1B + Strategy Categories Expansion overlap)
+              └─► Sprint 9 (cube populate run after toolkits + statistical methodology stable)
+
+Sprint 8 ────► Sprint 9 (Phase 1C+ rosters fold into 1B-α run)
+
+Sprint 9 verdict ──► Stage 2 → 3 transition (Part 13)
+```
+
+## §2.6.6 Cross-document map
+
+- **PROJECT_PLAN.md** — quick-reference card; original index
+- **CHECKLIST.md** — 69 items including new #69 (test pyramid per DEC-503), #68 (smoke→demo→full protocol), #67 (per-turn doc sync)
+- **AUDIT_INDEX.md** — DEC list (currently DEC-001 through DEC-503)
+- **AUDIT.md** — full decision narrative + Pass 53 events
+- **TRADING_RULES_AND_INFORMATION.md** — canonical thresholds + per-phase acceptance criteria §2.1-§2.11
+- **TRADINGAGENTS_DATA_AUDIT.md** — agent data dependency mapping (revised Pass 53 for new endpoint scope)
+- **API_AUDIT.md** — per-API endpoint inventory (Polygon, Quiver Trader, FRED/ALFRED, AAII, CNN F&G, CFTC COT, SEC EDGAR, Apewisdom, pytrends)
+- **THEME_X53_SEQUENCING.md** — Pass 53 sequencing detail (Sprint 0A.0-0A.10)
+- **STRATEGY_REGISTER.md** — strategy roster (Layer 1+2+3+4, ~108-118 strategies)
+- **ENGINEERING_REGISTER.md** — sprint planning, effort estimates, pyramid coverage
+- **BUG_REGISTER.md** — bug log including BUG-271/272/273 (smart_money silent gaps Pass 53)
+
+---
+
+# PART 3 — SPRINT 0A: PHASE 0.A POLYGON FOUNDATION + MULTI-API PREFETCH + UNIVERSE BUILD + NO-LIVE-API REFACTOR (DEC-497 expanded scope)
 
 ## §3.1 What — concrete deliverable in plain English
 
@@ -1397,6 +1528,204 @@ trade_log.append({
 - OR cache reads ignore filelock → race condition → corrupt parquet → test failure
 
 **Phase 0.A is the foundation that makes the trace above CORRECT.**
+
+## §3.16 Sprint 0A expanded-scope coverage (Pass 53; DEC-497)
+
+This section captures the Pass 53 owner-directed scope expansion of Sprint 0A beyond the original Polygon-only Phase 0.A. The original §3.1-§3.15 sections cover the Phase 0.A Polygon foundation; this §3.16 adds the expanded-scope deliverables.
+
+### §3.16.1 Universe build (IMPLEMENTED 2026-05-05)
+
+5-tier universe per DEC-477/483/494/495/103/104 with B++ schema (`Symbol, Company, Sector, added_date, removed_date` + tier-specific extension columns):
+
+- **T1a S&P 500 historical** — 614 rows (503 active + 111 historical removed-during-window 2020-01-01 → 2026-04-09); CDAY→DAY rename map applied; Wikipedia Table 1 used under L88 one-time exception with 4/4 high-impact spot-check verified vs S&P DJI press releases; canonical PIT file per DEC-477. File: `Backtesting universe/Tier 1A Universe_SP500 Tickers_Jan 2020 to May 2026.csv`
+- **T1c NASDAQ-100** — 161 rows (101 active matching Nasdaq IR official 101 via 3-way Slickcharts+Wiki+Nasdaq cross-check + 60 historical); multi-period rows for re-entry (CSGP/SPLK/TTWO/WDC). File: `Backtesting universe/Tier 1C Universe_NASDAQ-100 Tickers_Jan 2020 to May 2026.csv`
+- **T1 ETFs** — 27 ETFs (DEC-118 selected sector + macro + volatility + broad-market); QQQ "Technology"→"Information Technology" GICS canonical normalization. File: `Backtesting universe/Tier 1 ETFs Universe_Sector and Broad-Market ETFs_May 2026.csv`
+- **T2 Spinoffs/IPOs** — 10 baseline (full SCREENER global pull background-running 2026-05-05; expected 100-200 qualifying tickers). File: `Backtesting universe/Tier 2 Universe_Spinoffs and Recent IPOs_Sep 2014 to May 2026.csv`
+- **T3 Momentum Top-100** — 1924 rows (1999 minus 75 removed via leveraged-ETF blocklist; 271 sector="Unknown" tagging; 100% sector populated post Polygon SIC + yfinance one-time fallback). File: `Backtesting universe/Tier 3 Universe_Momentum Top-100_Jun 2022 to May 2026.csv`
+
+**Master deduplicated list:** `Backtesting universe/Master Universe_Deduplicated_All Tiers_May 2026.csv` — 1,775 unique tickers with full dimensional metadata: Symbol, Company, Sector (18-classifier per DEC-499), Tier_membership, currently_active, T1a/T1c/T1ETF/T2/T3 status + per-tier dates + extension columns. Built Pass 53 owner directive 2026-05-05.
+
+**18-classifier sector taxonomy (DEC-499):** GICS-11 + 7 ETF asset classes (Fixed Income, Commodities, Volatility, Broad Market, International, Emerging Markets, Small Cap). Sector source priority: T1a > T1c > T2 > T3 > T1 ETF (most-curated authoritative source).
+
+**T3 leveraged-ETF blocklist fix (Pass 53 turn 2026-05-05):** Owner-flagged after seeing SOXL/AMDL/INTW/TSMX in currently-active T3 momentum members. 3x-leveraged ETFs distort momentum signal via daily compounding. Fixed by: (a) CS-only whitelist via Polygon `/v3/reference/tickers?type=CS active=true|false` + (b) hardcoded LEVERAGED_ETF_BLOCKLIST (~110 entries) in `scripts/build_tier3_screener.py`. Smoke-tested top-20 cleaned (CELC/RHLD/RAIL/AEYE/NKTR/PL/LBPH/RGTI/ALMS/RCMT — real momentum names).
+
+### §3.16.2 Multi-API prefetch scope (8 APIs, Pass 53 owner-directed)
+
+| API | Scope | Sub-phase | Status |
+|---|---|---|---|
+| **Polygon Stocks Starter** | OHLCV (DONE 1,821 cached) + EXTENSION (news, financials, events including ticker events DEC-500, NBBO daily-close) | 0A.1, 0A.9 | OHLCV DONE; EXTENSION pending |
+| **FRED + ALFRED** | 52 series → curating to ~15-20 high-signal subset (Pass 53 turn analysis); ALFRED vintage realtime_end PIT correction per DEC-301 | 0A.2 | NOT STARTED |
+| **AAII** | Weekly Bull/Bear/Neutral sentiment readings; 325 readings 2020-2026 | 0A.3 | NOT STARTED |
+| **CNN F&G** | Composite (0-100) + 7 sub-components (junk-bond demand, put/call, market momentum, stock breadth, safe-haven, market vol, stock-price strength) | 0A.3 | NOT STARTED |
+| **CFTC COT** | Weekly commercial vs speculative positioning; CME E-mini S&P 500 | 0A.4 | NOT STARTED — wires existing stub `sentiment.get_cot_report` |
+| **Quiver Trader** | 10 endpoint groups (DEC-502, owner approved Pass 53): congresstrading + housetrading + senatetrading + lobbying + govcontracts + offexchange + topshareholders + etfholdings + sec13f + corporatedonors + execcomp + congresspoliticians + quivernews + patents (excluding App Ratings + Patent Drift per Q1 drop); BULK migration where dashboard provides Bulk variant; per CHECKLIST #68 | 0A.5 | NOT STARTED — silent-gap fix required first |
+| **SEC EDGAR** | Form 4 (insider direct, vs Quiver reformat); 8-K (material events); 10-Q/K (financials); via edgartools library | 0A.6 | NOT STARTED |
+| **Apewisdom + pytrends** | Free supplementary social sentiment — Apewisdom WSB/Reddit ticker mentions (2021-present, daily); pytrends Google Trends search-volume index by ticker (2004-present); Pass 53 Q2 owner-approved 2026-05-05 | 0A.7 | NOT STARTED |
+
+### §3.16.3 NO-LIVE-API HARD CUT refactor (DEC-497 owner directive Q8)
+
+Stage 2 backtest must read from `data_prefetch/<api_name>/<endpoint>/...` only. NO live API calls during backtest. yfinance permitted for one-time SETUP only (e.g., universe-build Pass 53 fallback for T3 sector backfill); not in runtime hot path.
+
+**Affected modules (must be refactored in 0A.8):**
+- `backtest/data/fetcher.py` — yfinance OHLCV/info/earnings calls → read from `data_prefetch/polygon/{aggs,reference,financials,events}/`
+- `backtest/data/macro.py` — FRED API calls → read from `data_prefetch/fred/observations/`; `_fred_series` already has prefetch path; finalize HARD CUT
+- `backtest/data/sentiment.py` — AAII / CNN F&G CSV reads OK (already prefetch-style); CFTC COT stub → read from `data_prefetch/cftc/cot/`
+- `backtest/data/smart_money.py` — Quiver calls → read from `data_prefetch/quiver/{endpoint}/`; silent-gap fix (BUG-271/272/273) integrates with NO-LIVE-API cleanup
+
+**Folder structure:**
+```
+data_prefetch/
+├── polygon/
+│   ├── aggs/{ticker}.parquet       # OHLCV (existing)
+│   ├── reference/{ticker}.parquet  # market cap, sector, IPO date
+│   ├── news/{ticker}.parquet       # news articles + sentiment
+│   ├── financials/{ticker}.parquet # EPS, revenue, margins
+│   ├── events/{ticker}.parquet     # ticker events DEC-500
+│   ├── splits/{ticker}.parquet     # corp actions
+│   └── dividends/{ticker}.parquet  # dividend history
+├── fred/
+│   └── observations/{series_id}.parquet
+├── alfred/
+│   └── vintage/{series_id}_{realtime_end}.parquet
+├── aaii/
+│   └── weekly_sentiment.parquet
+├── cnn_fg/
+│   └── daily.parquet (composite)
+│   └── components/{component_name}.parquet (7 sub-components)
+├── cftc/
+│   └── cot_emini_sp500.parquet
+├── quiver/
+│   ├── congresstrading/{ticker}.parquet (or bulk)
+│   ├── insidertrading/global.parquet (live/insidertrading bulk)
+│   ├── sec13f/global.parquet (live/sec13f bulk)
+│   ├── offexchange/{ticker}.parquet
+│   ├── topshareholders/{ticker}.parquet
+│   ├── etfholdings/{ticker}.parquet
+│   ├── execcomp/global.parquet
+│   ├── corporatedonors/{ticker}.parquet
+│   ├── lobbying/{ticker}.parquet
+│   ├── govcontracts/{ticker}.parquet
+│   ├── quivernews/global.parquet
+│   ├── patents/{ticker}.parquet
+│   └── housetrading_senatetrading/{ticker}.parquet
+├── sec_edgar/
+│   ├── form4/{ticker}.parquet
+│   ├── 8k/{ticker}.parquet
+│   └── 10qk/{ticker}.parquet
+├── apewisdom/
+│   └── ticker_mentions/{ticker}.parquet
+└── pytrends/
+    └── search_volume/{ticker}.parquet
+```
+
+### §3.16.4 Smoke + demo + full test protocol (CHECKLIST #68)
+
+Per Pass 53 owner directive, every multi-call API operation in Sprint 0A.1-0A.7 follows the **smoke → demo → full** protocol:
+
+1. **Smoke** — 1-3 API calls; verify endpoint reachable, schema matches expectation, PAT auth works, response shape sane. ≤30 seconds wall time. Owner-gate before next stage.
+2. **Demo** — 5-10% sample (e.g., 100 of 1,820 tickers); verify rate-limit handling, parallelism, cache write atomicity, error recovery. Owner-gate before next stage.
+3. **Full** — entire scope (e.g., all 1,820 tickers × all required dates). Background task with progress logging.
+
+**Trigger conditions:** ANY API operation costing money, hitting rate limits, or producing >1,000 cache files. Past failures: T2 SCREENER 15,401-call full pull executed without smoke→demo gate (Pass 53 turn 2026-05-05); owner correction codified as #68. Codified in CHECKLIST #68.
+
+### §3.16.5 Comprehensive test pyramid per push (CHECKLIST #69, DEC-503)
+
+Per Pass 53 owner directive 2026-05-05: every code push (Sprint 0A and beyond) must execute the FULL test pyramid:
+- **Unit** — individual function correctness with mocked dependencies
+- **Smoke** — basic happy-path on real data (≤30s)
+- **Integration** — module-to-module data flow (fetcher → cache → signals → screener)
+- **System** — end-to-end (full prefetch → universe load → backtest → report)
+- **Functional** — feature behavior matches spec
+- **Regression** — full `backtest/tests/test_unit.py` + `test_integration.py` (36/36 must pass)
+- **Data integrity** — schema validation, PIT semantics, completeness gates
+- **Performance / load** — for prefetch + heavy-data code (rate limits, memory, wall-time budgets)
+- **Acceptance** — owner-defined pass criteria for the change
+
+**Past failure pattern:** Prior pushes used limited test subsets. Smart_money silent-gap (BUG-271/272/273) went undetected because tests focused on `congresstrading` (which works) and skipped `insidertrading` + `institutionalholdings` + `analystestimates` (which silently 404). Comprehensive coverage would have caught this. Codified in CHECKLIST #69.
+
+### §3.16.6 Critical silent-gap finding from Pass 53 smoke test 2026-05-05
+
+3 Quiver endpoints in current `backtest/data/smart_money.py` return HTTP 404 against Trader-tier subscription:
+
+| Code call | Smoke result | Migration | Bug ID |
+|---|---|---|---|
+| `historical/analystestimates/{ticker}` | 404 — NOT IN TRADER TIER | REMOVE Quiver branch in `get_analyst_data`; rely on Polygon financials per DEC-497 HARD CUT | BUG-271 |
+| `historical/insidertrading/{ticker}` | 404 | Replace with `live/insidertrading` (bulk feed; client-side ticker filter) | BUG-272 |
+| `historical/institutionalholdings/{ticker}` | 404 | Replace with `live/sec13f` (10,000-row paginated bulk feed; or `live/sec13f/{ticker}` per-ticker variant if it exists) | BUG-273 |
+
+**Discovery method:** Probe matrix smoke test in `temp_staging/smoke_quiver_silent_gap_endpoints.py` and `temp_staging/smoke_quiver_url_discovery.py` (Pass 53 turn 2026-05-05). 26 + 30 = 56 endpoint variants probed; 4 working endpoints + URL conventions identified.
+
+**Working URL paths newly discovered:**
+- `historical/offexchange/{ticker}` — 3,937 rows AAPL; cols: Ticker/Date/OTC_Short/OTC_Total/DPI
+- `live/topshareholders/{ticker}` — dict response, schema TBD
+- `historical/corporatedonors/{ticker}` — dict response (also bulk variant `bulk/corporatedonors`)
+- `historical/executivecompensation` (no ticker, paginated `data` + `pagination`)
+- `live/sec13f` (no ticker, 10,000 rows confirmed; cols: Date/ReportPeriod/Name/Ticker)
+- `live/quivernews` (no ticker, paginated `data` array)
+- `live/etfholdings?ticker={t}` (query-param form; 500 without param)
+- `bulk/corporatedonors` (no ticker, dict response)
+
+**Unresolved at Pass 53 turn 2026-05-05:** Patent endpoint paths (Historical Patents / Recent Patents / Patent Momentum); resolved during Sprint 0A.5 kickoff smoke probes.
+
+### §3.16.7 Polygon ticker events integration (DEC-500 Pass 53 owner directive)
+
+**Owner directive 2026-05-05:** "polygon ticker events will be highly useful for analysis and its a key trigger for price movement. Needs to be integrated."
+
+**Endpoint:** `https://api.polygon.io/vX/reference/tickers/{ticker}/events` (Reference Data — included in Polygon Stocks Starter subscription, no upgrade needed).
+
+**Event types captured:** ticker_change, ticker_split, name_change, listing_change, exchange_change, delisting, new_listing.
+
+**Agent consumption (all 6 agents):**
+- **Risk Agent** — material-event risk gate (analogous to SEC 8-K)
+- **Fundamental Agent** — M&A as fundamental thesis trigger (acquirer/target context)
+- **Sentiment Agent** — event-driven flow surge detection
+- **Technical Agent** — split/dividend adjustments + ticker_change continuity
+- **Bull/Bear Debate** — debate quality enhanced by event context
+- **Decision Agent** — final synthesis includes event timing
+
+**Cache schema:**
+```
+data_prefetch/polygon/events/{ticker}.parquet
+columns: ticker, event_type, event_date, details_json, fetched_at
+```
+
+**Also feeds T2 SCREENER per DEC-380** (corp actions for spinoff/IPO universe construction).
+
+### §3.16.8 Pass 53 Sprint 0A status snapshot 2026-05-05
+
+| Item | Status | Detail |
+|---|---|---|
+| Universe build | ✅ IMPLEMENTED | 614 T1a + 161 T1c + 27 T1 ETFs + 1924 T3 + 10 T2 baseline (full SCREENER pending) + Master 1,775 |
+| Sector normalization 18-classifier | ✅ IMPLEMENTED | DEC-499; T1a 100% / T1c 100% / T2 100% / T3 100% (271 "Unknown") / ETFs 100% |
+| T3 leveraged-ETF blocklist | ✅ FIXED | CS whitelist + 110-entry blocklist; SOXL/AMDL/INTW/TSMX excluded |
+| Polygon Stocks Starter OHLCV | ✅ 1,821 cached | Pre-Pass-53 baseline |
+| Polygon EXTENSION (news/financials/events/NBBO) | ⏸ PENDING | Sprint 0A.1; owner-gated per #68 |
+| FRED 52-series | ⏸ PENDING | Sprint 0A.2; curating to ~15-20 |
+| AAII + CNN F&G prefetch | ⏸ PENDING | Sprint 0A.3 |
+| CFTC COT prefetch | ⏸ PENDING | Sprint 0A.4 |
+| Quiver Trader 10 endpoint groups | ⏸ PENDING | Sprint 0A.5; silent-gap fix required first |
+| SEC EDGAR structured | ⏸ PENDING | Sprint 0A.6 |
+| Apewisdom + pytrends | ⏸ PENDING | Sprint 0A.7 (DEC-502 supplement, owner-approved Pass 53) |
+| NO-LIVE-API refactor | ⏸ PENDING | Sprint 0A.8; HARD CUT (DEC-497) |
+| Polygon ticker events | ⏸ PENDING | Sprint 0A.9; DEC-500 owner directive |
+| Smoke + demo + full tests | ⏸ PENDING | Sprint 0A.10; CHECKLIST #68 + #69 |
+
+**Critical bugs surfaced Pass 53 (queued for next-turn fix with DEC-503 test pyramid):**
+- BUG-271: smart_money.py historical/analystestimates → 404 (silently broken)
+- BUG-272: smart_money.py historical/insidertrading → 404 (silently broken)
+- BUG-273: smart_money.py historical/institutionalholdings → 404 (silently broken)
+
+## §3.17 Sprint 0A decisions in scope (DECs 497-503 Pass 53 additions)
+
+| DEC | Title | Scope | Status |
+|---|---|---|---|
+| **497** | Sprint 0A scope expansion (multi-API prefetch + universe absorbed + NO-LIVE-API HARD CUT + 16 test files) | Sprint 0A | RESOLVED-DECIDED Pass 53 turn 2026-05-05 |
+| **498** | Per-turn doc sync rule (CHECKLIST #67 + #67.b) — every turn with meaningful changes ends with doc sweep; decoupled from pending runs | Cross-cutting | RESOLVED-DECIDED Pass 53 |
+| **499** | 18-classifier sector taxonomy (GICS-11 + 7 ETF asset classes) | Universe + Cube | RESOLVED-DECIDED Pass 53 |
+| **500** | Polygon ticker events integration as agent context (price-move trigger) | Sprint 0A.9 | RESOLVED-DECIDED Pass 53 |
+| **501** | Polygon Options NOT upgraded; OHLC/OI/IV/chain deferred Stage 3/Phase 1C | Sprint 0A scope-out | RESOLVED-DECIDED Pass 53 |
+| **502** | Quiver Trader-tier agent-input expansion (8 endpoint groups; App Ratings + Patent Drift dropped per Q1; Apewisdom + pytrends added per Q2) | Sprint 0A.5, 0A.7 | RESOLVED-DECIDED Pass 53 |
+| **503** | Comprehensive test pyramid before every code push (CHECKLIST #69; HARD RULE) | Cross-cutting | RESOLVED-DECIDED Pass 53 |
 
 ---
 
@@ -5111,6 +5440,472 @@ Engine iterates eligible tickers; runs strategies
 - Tier 2 absent → spinoff strategies have no candidates → 8-12 strategies inactive
 - Tier 3 absent → momentum strategies operate on Tier 1 only → narrowed signal class
 - Cube cells under-populated → verdict on weaker roster
+
+---
+
+# PART 13 — STAGE 2 VERDICT & STAGE 2 → 3 TRANSITION
+
+## §13.1 Phase 1B-α verdict gate
+
+The Phase 1B-α run (Sprint 9) produces the verdict cube + 3-arm A/B comparison. Stage 2 → 3 transition requires ALL of the following gates to clear:
+
+**Numerical gates (per DEC-269 + DEC-353):**
+
+| Gate | Threshold | Source | Reasoning |
+|---|---|---|---|
+| **Sharpe** | ≥ 1.0 OOS aggregate | Aggregate metric across all PASS cells weighted by trade count | Baseline acceptable risk-adjusted return |
+| **Max DD** | ≤ 25% peak-to-trough | Computed across walk-forward equity curve | Owner risk tolerance ceiling |
+| **Win rate** | ≥ 50% (overall); ≥ 40% in crisis regime | Per per-regime verdict matrix | Reconciled with DEC-353 R:R ≥ 2.0 floor |
+| **Profit factor** | > 1.3 (high-vol sectors > 1.2) | Cube cell-level | Edge after drag |
+| **Per-regime PASS** | ≥ 1 regime PASS per strategy | Per-regime verdict matrix | Strategy validity is regime-specific |
+
+**Statistical gates (per DEC-426 + DEC-469/470 PROPOSED):**
+
+| Gate | Threshold | Reasoning |
+|---|---|---|
+| **Sample size** | n ≥ 30 trades per cell | Statistical inference floor |
+| **FDR q** | < 0.10 (Benjamini-Hochberg hierarchical) | Multiple-testing correction at cube scale |
+| **PSR** | Probabilistic Sharpe Ratio ≥ 0.95 | Deflated Sharpe accounting for non-normality + multiple testing |
+| **t-stat** | ≥ 3.4 | Bailey-Lopez de Prado discovery threshold |
+| **R:R** | reward_risk_ratio ≥ 2.0 | Hard owner directive (DEC-353) |
+
+**A/B framework gate (per DEC-131 + DEC-472 PROPOSED):**
+
+| Gate | Threshold | Reasoning |
+|---|---|---|
+| **A/B Sharpe delta** | full-agents Sharpe − rules-only Sharpe ≥ 0.2 absolute OR ≥ 0.15 relative | Justifies $300 agent-overlay budget per DEC-059 |
+| **Block-bootstrap CI** | 95% CI on Sharpe delta excludes zero | Statistical confidence in agent edge |
+| **No-Risk arm comparison** | Risk veto adds incremental Sharpe ≥ 0.05 | Justifies Risk debate complexity |
+
+**Owner approval gate:**
+- Owner reviews Phase 1B-α dashboards (DEC-199 Cube Explorer + DEC-200 ICT/SMC Audit + DEC-201 Agent Overlay Analysis)
+- Owner-witnessed inspection of per-cell verdicts + per-regime matrix + A/B Sharpe distribution
+- Owner approves transition to Stage 3 OR requests methodology revision OR rejects + back to Phase 1B refinement
+
+## §13.2 Stage 2 → Stage 3 transition criteria
+
+Owner-explicit Stage 3 authorization requires (in addition to §13.1 numerical gates):
+
+1. **Phase 1B-α dashboards reviewed** — DEC-199/200/201 dashboards available, owner-walked-through with claude-narrated explanation
+2. **Live decision lookup table populated** — DEC-429; PASS cells form the canonical lookup that Stage 3 paper trading consults
+3. **Walk-forward methodology validated** — 6 OOS folds (DEC-109) ran end-to-end without data leakage; no spurious lookahead surfaced in PIT regression suite
+4. **Reproducibility verified** — Phase 1B-α run reproduced bit-exact on second invocation (DEC-218 numerical tolerance)
+5. **Test pyramid green** — full CHECKLIST #69 test pyramid passing (unit + smoke + integration + system + functional + regression + data integrity + performance + acceptance)
+6. **CPA consultation initiated** — Canadian tax classification (trader vs investor) per DEC-035/270 underway (need not be complete by Stage 3 entry; must be complete by Stage 4)
+
+**Trigger:** Owner pulls trigger; no automated transition. Per CLAUDE.md HARD RULE "ALL decisions need explicit owner approval."
+
+## §13.3 What happens if Stage 2 fails
+
+If §13.1 gates fail, three branch points:
+
+**Branch A — Numerical fail (Sharpe / DD / win rate below threshold):**
+- Strategy roster too weak OR cube methodology too strict
+- Diagnosis: review per-strategy + per-regime verdict matrix; identify which strategies passed which regimes
+- Action: trim strategy roster to PASS-only set; re-run with reduced roster; OR add new strategy categories (Phase 1C+)
+
+**Branch B — Statistical fail (FDR / PSR / t-stat below threshold):**
+- Multiple-testing penalty too severe → too many strategies tested
+- Diagnosis: review FDR threshold, hierarchical structure, n_trades per cell
+- Action: reduce cube dimensionality (e.g., merge sector × cap_band into 7 super-buckets); OR widen sample period; OR reduce strategy count
+
+**Branch C — A/B fail (agent overlay no edge):**
+- TradingAgents debate doesn't add Sharpe over rules-only
+- Diagnosis: review Risk Debate veto rates, Bull/Bear alignment rates, RM/PM rating distribution
+- Action 1: refine custom toolkits (DEC-462-466) — agent reasoning may be limited by data, not architecture
+- Action 2: alternative agent prompt engineering or temperature adjustment (DEC-058)
+- Action 3: drop agent overlay entirely; proceed to Stage 3 with rules-only stack (Phase 1A baseline)
+- Action 4: declare "agents not yet ready for this stack"; revisit at higher-resolution data tier (Phase 1C+)
+
+**Owner authority:** branch decision is owner's, informed by claude diagnosis + dashboard review. No automatic fallback.
+
+## §13.4 Owner approval flow
+
+```
+Phase 1B-α run completes
+        │
+        ▼
+Cube populated + verdict assigned + dashboards rendered
+        │
+        ▼
+Claude generates Stage 2 verdict report (markdown + dashboard pointers)
+        │
+        ▼
+Owner reviews report + dashboards (1-2 sessions)
+        │
+        ▼
+┌────────────┬────────────┬────────────┐
+│ APPROVE    │ REVISE     │ REJECT     │
+│            │            │            │
+▼            ▼            ▼
+Stage 3      Phase 1B     Branch A/B/C
+paper        refinement   per §13.3
+trading      (DEC change) (back to
+begins       owner-       earlier phase
+             gated)       per diagnosis)
+```
+
+**Stage 3 entry deliverables (handoff package):**
+- Live decision lookup table (Parquet) — PASS cells with metadata
+- Strategy roster (validated subset)
+- Per-regime verdict matrix
+- Phase 1B-α dashboard URLs (running locally on owner laptop or hosted)
+- A/B verdict summary (Sharpe deltas + CI + per-regime)
+- Reproducibility seed + run-config (so Stage 3 can replay if needed)
+- CPA consultation status
+
+---
+
+# PART 14 — STAGE 3: PAPER TRADING (PLANNING LEVEL)
+
+**Status:** Planning level. Real design begins after Stage 2 verdict.
+
+## §14.1 Goal
+
+Run the Stage-2-validated stack against live market data in paper-trading mode (no real capital) for ≥3 months. Verify operational + behavioral fidelity:
+
+- Live execution matches backtest expectations within DEC-269 divergence threshold (< 20%)
+- Agent decisions in real-time produce same Sharpe distribution as backtest
+- No infrastructure failures over sustained 3-month period
+- Operational reliability — data freshness, kill switch, reconciliation
+
+## §14.2 Duration and prerequisites
+
+**Duration:** 3 months minimum (DEC-028)
+
+**Prerequisites (Part 13 §13.2 transition criteria + the following Stage 3-specific items):**
+
+| Prereq | Decision | Status |
+|---|---|---|
+| Paper trades mirror live algo exactly | DEC-198 | Confirmed at design |
+| SQLite trade event store | DEC-267 (Postgres deferred Stage 4) | Designed, not built |
+| End-of-day reconciliation reports | DEC-181 | Designed, not built |
+| Weekly auto-generated performance review | DEC-182 | Designed, not built |
+| Live decision lookup table populated | DEC-429 | Sprint 9 deliverable |
+| Daily monitoring dashboards | DEC-199/200/201 (from Phase 1B-α) | Sprint 9 deliverable |
+| Email notifications for trade entries/exits | DEC-194/195 | Stage 3+ infrastructure |
+| Polygon Stocks Advanced subscription | DEC-478 (or equivalent real-time) | Pending tier choice |
+| IBKR market data subscriptions | ~$10-30/mo per DEC-271 | Subscription pending |
+
+## §14.3 Activities
+
+**Daily routine:**
+- Pre-market: data freshness check, kill switch verification, calendar event review
+- Market hours: paper algo executes per live decision lookup; positions tracked in Portfolio class
+- Close: end-of-day reconciliation report; live-vs-backtest divergence computed
+- Owner reviews EOD report (10-15 min)
+
+**Weekly routine:**
+- Auto-generated QuantStats performance review
+- Cube cell hit-rate analysis (which PASS cells fired this week, which FAIL_RR cells fortunately did not)
+- A/B framework live behavior tracking
+
+**Monthly routine:**
+- Strategy decay re-validation (DEC-214) — has any strategy that PASSed in Stage 2 started failing live?
+- Tax tracking (informational; CRA reporting only required for live capital)
+
+## §14.4 Stage 3 → Stage 4 transition criteria
+
+Per DEC-269 + Part 14:
+
+1. **3 months paper trading complete** — calendar-elapsed
+2. **Live-vs-backtest divergence < 20%** — sustained across 3 months (not just one week)
+3. **Numeric gates met during paper period** — Sharpe / DD / win rate within DEC-269 thresholds
+4. **CPA consultation complete** — Canadian tax classification finalized (DEC-270)
+5. **Multi-vendor data fallback operational** — DEC-160; single-API-down doesn't kill live
+6. **Remote kill switch via email operational** — DEC-139; owner can halt the algo from anywhere
+7. **Daily loss limits operational** — DEC-034; algo halts at -X% daily P&L
+8. **Norbert's Gambit operational for CAD→USD funding** — DEC-255
+9. **Cloud hosting migration complete** — DEC-272; local laptop is dev only
+10. **Disaster recovery plan in place** — DEC-273
+11. **Owner explicit Stage 4 approval** — informed by all above
+
+---
+
+# PART 15 — STAGE 4: LIVE TRADING SMALL SCALE (PLANNING LEVEL)
+
+**Status:** Planning level. Real design at Stage 4 entry.
+
+## §15.1 Goal
+
+Trade real capital at small scale ($10K-50K range, owner choice) for ≥6 months. Validate everything Stage 3 paper showed against actual fills, FX conversion costs, tax events, and operational issues that don't show in paper mode.
+
+## §15.2 Prerequisites
+
+All Stage 3 → Stage 4 transition criteria (Part 14 §14.4) must hold. Plus:
+
+- Live brokerage account funded (IBKR confirmed account holder per CLAUDE.md)
+- Live capital authorization explicit from owner — written confirmation
+- IBKR API credentials configured + tested
+- Kill switch tested with real-money paper-equivalent (post-Stage-3 dry-run)
+
+## §15.3 Activities
+
+**Daily routine:**
+- Pre-market: same as Stage 3 + capital balance check
+- Market hours: live algo executes; real money flows
+- Close: same as Stage 3 + actual fill quality review (slippage tracking per DEC-092/122/280)
+- Owner reviews EOD report (15-20 min); reconciles broker statement
+
+**Weekly routine:**
+- Performance review with QuantStats (live-money version)
+- Slippage / commission / borrow cost tracking
+- A/B framework live behavior — does the verdict cube live-up to its predictions?
+
+**Monthly routine:**
+- Tax tracking (CRA-compliant; T5008 / capital gains accumulation)
+- Quarterly strategy decay re-validation (DEC-214)
+- CPA review (quarterly)
+
+**Quarterly:**
+- Strategy retirement review per DEC-249/214/043 — strategies that have decayed retired from roster
+- Strategy addition review — new candidate strategies considered for next Stage iteration
+
+## §15.4 Stage 4 → Stage 5 transition criteria
+
+Per DEC-028 + DEC-029:
+
+1. **Stage 4 stable ≥ 6 months** — calendar-elapsed without major incident
+2. **Cumulative P&L positive** — net of slippage / commission / borrow / FX
+3. **No major operational incidents** — definition: data outage > 4 hours, wrong-side trade, kill switch failure, unauthorized capital deployment
+4. **Owner-approved scaling plan** — written; specifies capital ramp curve
+5. **Compliance + tax tracking operational** — at owner satisfaction
+6. **Owner explicit Stage 5 approval** — automation authorization
+
+---
+
+# PART 16 — STAGE 5: FULL AUTOMATION (PLANNING LEVEL)
+
+**Status:** Planning level. Real design at Stage 5 entry.
+
+## §16.1 Goal
+
+Stage 4 deliverables operating autonomously with minimal owner intervention. Owner role shifts from operator to monitor + strategist.
+
+## §16.2 Activities
+
+**Owner role at Stage 5:**
+- Weekly performance review (15 min)
+- Monthly strategy health review (1 hour)
+- Quarterly capital scaling decisions
+- Annual strategy retirement / addition cycle
+- Incident response (rare; algo runs unattended)
+
+**Algo role at Stage 5:**
+- All Stage 4 capabilities running unattended
+- Self-monitoring with owner alert escalation
+- Continuous A/B + ablation testing in live (DEC-211 evolved to ongoing)
+- Strategy retirement/addition workflow operational (DEC-249/214/043)
+
+**Cost at Stage 5:**
+- Full API stack operational (~$93-263 CAD/mo per project memory; revised to $93-200+/mo per DEC-478 tier choice)
+- Cloud hosting recurring
+- IBKR market data subscriptions
+- CPA fees
+
+---
+
+# PART 17 — CROSS-CUTTING CONCERNS
+
+## §17.1 PIT correctness discipline (applies all stages)
+
+Point-in-time correctness is non-negotiable. Every backtest data fetch must respect `as_of` cutoff. Violations are CRITICAL bugs.
+
+**Enforcement layers:**
+
+1. **`PointInTimeLoader` ABC contract (DEC-040)** — every fetcher inherits; `fetch(ticker, as_of, ...)` returns rows where `published_date ≤ as_of`.
+2. **PIT regression suite (DEC-417 + Sprint 6 catch mechanism)** — `test_pit_regression.py` runs same backtest with different system times via freezegun; results MUST be bit-identical.
+3. **PIT guard RAISE not WARN (DEC-305 Pass 50)** — `_assert_no_lookahead` raises `LookAheadBiasError` instead of warning. Bypass via `ALLOW_LOOKAHEAD_LEAK=1` for explicit debug only.
+4. **ALFRED vintage realtime_end (DEC-301 Pass 50)** — FRED revisions caught with vintage-aware queries. UNRATE / CPI / GDP routinely revised 6+ months after first publication; without ALFRED, backtests leak future revisions.
+5. **Smart money date semantics (DEC-324 Pass 51)** — congressional/insider trades age-weighted by TRANSACTION date, not DISCLOSURE date. Disclosure provides PIT availability gate; transaction provides signal-value timestamp.
+
+**PIT-related decisions:**
+
+| DEC | Title | Status |
+|---|---|---|
+| 040 | PointInTimeLoader ABC | RESOLVED-DECIDED |
+| 295 | T2 IPO eligibility on listing date (PIT-correct) | RESOLVED Pass 50 |
+| 301 | ALFRED vintage values for revised series | RESOLVED Pass 50 |
+| 302 | ^VIX canonical preferred over VXX proxy | RESOLVED Pass 50 |
+| 304 | Economic calendar JSON (no hardcoded staleness) | RESOLVED Pass 50 |
+| 305 | PIT guard RAISE not WARN | RESOLVED Pass 50 |
+| 309 | Volatility lookback PIT-correct | RESOLVED Pass 50 |
+| 311 | Trade exit timing PIT-correct | RESOLVED Pass 50 |
+| 312 | Rolling stat windows PIT-correct | RESOLVED Pass 50 |
+| 315 | Universe-membership PIT filter | RESOLVED Pass 50 |
+| 316 | Regime classifier fail-closed on missing VIX | RESOLVED Pass 50 |
+| 324 | Congressional trade transaction-date age-weighting | RESOLVED Pass 51 |
+| 325 | 13F filing-date PIT not quarter-end | RESOLVED |
+| 477 | Tier 1A historical_membership.csv canonical PIT | RESOLVED-IMPLEMENTED Pass 53 |
+
+## §17.2 Cost summary (all stages)
+
+**Stage 2 monthly recurring:**
+- Polygon Stocks Starter: $29/mo (current; $79 Developer or $199 Advanced if DEC-478 owner upgrade)
+- Quiver Quantitative paid (Trader tier): $50-100/mo (DEC-450)
+- FMP if DEC-461 approved: $14-50/mo (Sprint 4 onward)
+- FRED + ALFRED + AAII + CNN F&G + CFTC COT + Apewisdom + pytrends: free
+- SEC EDGAR via edgartools: free
+
+**Stage 2 one-time:**
+- TradingAgents v0.2.4 fork integration: 0 (open-source, Apache 2.0)
+- smartmoneyconcepts library: 0 (open-source)
+- Phase 1B-α agent overlay budget: $300 cap (DEC-059)
+
+**Stage 3 monthly recurring:**
+- All Stage 2 + cloud hosting (~$10-30/mo) + email infrastructure (~$5/mo)
+
+**Stage 4 monthly recurring:**
+- All Stage 3 + IBKR market data ($10-30/mo) + CPA consultation (variable)
+
+**Stage 5 monthly recurring:**
+- All Stage 4 + scale-dependent additions
+
+## §17.3 Tech stack
+
+**Languages + frameworks:**
+- Python 3.10+ (primary)
+- pandas / numpy / pyarrow (data)
+- pandas-ta (technical indicators)
+- pandas-market-calendars (DEC-235)
+- requests / polygon-api-client / fredapi (API clients)
+- filelock (multi-process safety)
+- freezegun (PIT testing)
+- pytest + pytest-xdist (test framework)
+- LangGraph (TradingAgents orchestration)
+- Anthropic SDK (Claude Haiku Phase 1B; Sonnet Phase 1C+)
+
+**Forked libraries (per DEC-045 fork-first architecture):**
+- smartmoneyconcepts (ICT/SMC primitives)
+- TradingAgents v0.2.4 (multi-agent framework)
+- QuantStats (analytics)
+- Streamlit (dashboards per DEC-430)
+- ib_async (IBKR live; Stage 4)
+- edgartools (SEC EDGAR; Sprint 0A.6)
+- pytrends (Google Trends; Sprint 0A.7)
+
+**Storage:**
+- Parquet for OHLCV + cache (DEC-491 — nested/binary data via Parquet, flat data via CSV)
+- SQLite for trade event store (DEC-267; Postgres deferred Stage 4)
+- CSV for universe + reference data (CLAUDE.md HARD RULE: data lives in CSV files, code pulls from CSV)
+
+**Infrastructure:**
+- Local Windows laptop + VS Code + Claude Code (Pass 53 update; was Codespaces)
+- GitHub Actions for cron jobs (universe refresh, daily snapshot, sentiment refresh)
+- Polygon API + Quiver API + FRED API + supplementary free sources
+
+## §17.4 Process and governance
+
+**Approval cadence:**
+- ALL decisions need explicit owner approval before implementation (CLAUDE.md HARD RULE)
+- Per CHECKLIST #51 — Option C verification gate
+- Per CHECKLIST #67 — every turn with meaningful changes ends with doc sweep
+- Per CHECKLIST #68 — smoke→demo→full for any multi-call API operation
+- Per CHECKLIST #69 — full test pyramid before every code push (DEC-503 Pass 53)
+
+**Decision tracking:**
+- AUDIT_INDEX.md — DEC list (currently DEC-001 through DEC-503)
+- AUDIT.md — full decision narrative
+- BUG_REGISTER.md — bug log
+- LEARNINGS.md — lessons learned (currently L1-L144)
+
+**Test discipline (Pass 53 DEC-503 + CHECKLIST #69):**
+- Unit + smoke + integration + system + functional + regression + data integrity + performance + acceptance per push
+- 36/36 existing tests must pass (`backtest/tests/test_unit.py` + `backtest/tests/test_integration.py`)
+- Partial coverage non-compliant
+
+## §17.5 Open architectural decisions
+
+As of Pass 53 turn 2026-05-05, awaiting owner action:
+
+| DEC | Title | Decision needed |
+|---|---|---|
+| 461 | FMP subscription | Pre-Sprint-4 owner action (now MANDATORY per DEC-460 verification negative) |
+| 469 | FDR replacing Bonferroni | Methodology approval |
+| 470 | Hierarchical FDR structure | Per-strategy / per-cell / per-regime tree |
+| 471 | Cube reduction 17→8 dims | Approved Pass 52; implementation pending |
+| 472 | Block bootstrap replacing paired design | A/B methodology |
+| 473 | A/B 5-arm → 3-arm reduction | Cost-driven |
+| 478 | Polygon tier upgrade choice | $29 Starter / $79 Developer / $199 Advanced |
+| 481 | AgentGateConfig Option C2 | 5-tier rating + markdown parser |
+
+(Full list in AUDIT_INDEX.md PROPOSED status.)
+
+---
+
+# PART 18 — READING GUIDE & MAINTENANCE
+
+## §18.1 Section template (per phase 15-section pattern)
+
+Every Stage 2 phase part (Parts 3-12) follows the same 15-section pattern per Q2 owner directive Pass 52 turn 134:
+
+| Section | Purpose |
+|---|---|
+| .1 What | Concrete deliverable in plain English |
+| .2 Why | How this advances Stage 2 toward verdict |
+| .3 How | Components, data flow, dependencies (technical body) |
+| .4 When | Sequence, blockers, parallel-ability |
+| .5 Done criteria | Verifiable acceptance (not "see other doc") |
+| .6 Risks | What could go wrong specifically |
+| .7 Cost | Engineering days + dollars (subscriptions, API calls) |
+| .8 Decisions in scope | List with one-line summaries |
+| .9 Test approach | How the deliverable is verified |
+| .10 Data dependencies | What feeds in, where it comes from, what's downstream |
+| .11 Operational checklist | Week-by-week or day-by-day breakdown |
+| .12 Open issues | Gaps from ADVERSARIAL_AUDIT relevant to this phase |
+| .13 Decision history | What changed and why; key supersessions |
+| .14 File/module structure | Where in `backtest/` each component lives |
+| .15 Example walkthrough | Concrete trace of one trade through this phase's logic |
+
+**Pass 53 additions:** Part 3 (Sprint 0A) extends with §3.16 (expanded scope) + §3.17 (DEC-497-503 scope) per owner directive 2026-05-05.
+
+## §18.2 How to update this document
+
+**When this document and others diverge, THIS document is canonical.** Other docs become reference appendices.
+
+**Update triggers:**
+- Owner directive (Pass-tagged with date)
+- New DEC entry referenced from this doc
+- Sprint completion → update §X.13 decision history + §X.16/§X.17 status snapshots
+- Adversarial audit finding (DEC-417 / Sprint 6 catch mechanism) → update §X.12 open issues
+- Test pyramid revision (CHECKLIST #69 / DEC-503) → update §X.9 test approach + §17.4 governance
+
+**Update protocol (per CHECKLIST #67 + #67.b):**
+1. Identify trigger (owner directive / DEC / sprint event)
+2. Identify affected sections in this doc
+3. Edit sections preserving existing content (HARD RULE: don't eliminate)
+4. Cross-reference to AUDIT.md / AUDIT_INDEX.md / BUG_REGISTER.md / LEARNINGS.md / TRADING_RULES_AND_INFORMATION.md as needed
+5. Commit + push same turn (decoupled from pending API runs per #67.b)
+
+**Pass 53 owner directive (CHECKLIST #67 codified 2026-05-05):**
+> Going forward, at the end of every turn, you need to update all documents outside of `archive/` folder with necessary modifications.
+
+> Document updates are not linked to pending runs. Document updates need to be committed each turn.
+
+## §18.3 Cross-document map
+
+| Doc | Role | Update cadence |
+|---|---|---|
+| **DETAILED_PROJECT_PLAN.md (this doc)** | Canonical project plan; every phase + sprint elaborated | Every meaningful change |
+| **PROJECT_PLAN.md** | Quick-reference card | Every meaningful change (compressed) |
+| **TRADING_RULES_AND_INFORMATION.md** | Canonical thresholds + per-phase acceptance criteria | When thresholds change |
+| **TRADINGAGENTS_DATA_AUDIT.md** | Agent data dependency mapping | When data sources change |
+| **CHECKLIST.md** | Pre-action checklist (currently 69 items) | When new rules added |
+| **CLAUDE.md** | Project instructions for claude code | When HARD RULES change |
+| **AUDIT.md** | Full decision narrative | Per-decision; per-pass |
+| **AUDIT_INDEX.md** | DEC list + status (currently 1-503) | Per new DEC |
+| **BUG_REGISTER.md** | Bug log (BUG-001 - BUG-273) | Per new bug |
+| **LEARNINGS.md** | Lessons learned (L1 - L144) | Per significant lesson |
+| **STRATEGY_REGISTER.md** | Strategy roster Layer 1+2+3+4 | When strategies added |
+| **ENGINEERING_REGISTER.md** | Sprint planning + effort estimates + pyramid coverage | Per sprint planning iteration |
+| **API_AUDIT.md** | Per-API endpoint inventory | When endpoint scope changes |
+| **THEME_X53_SEQUENCING.md** | Pass 53 Sprint 0A sub-phase detail | When Sprint 0A sequence changes |
+
+**Reading paths:**
+- **First-time reader (1 hour)** — this doc Parts 0-2.6 + Part 13 (verdict) + Part 17 (cross-cutting) — gives full context
+- **Active sprint review (15 min)** — this doc Part X for current sprint + AUDIT.md latest pass entries
+- **Decision review (10 min)** — AUDIT_INDEX.md → specific DEC → AUDIT.md narrative + cross-references
+- **Bug investigation** — BUG_REGISTER.md → specific BUG → AUDIT.md if architectural; LEARNINGS.md if pattern-level
 
 ---
 

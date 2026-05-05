@@ -924,3 +924,55 @@ PROJECT_PLAN_ARCHIVE.md contains the pre-April-2026 PROJECT_PLAN reference, usef
 ---
 
 *This document is canonical for project overview. All section detail lives in specialized registers per the Document Map (Section 29). Per CHECKLIST #58 + Single Source of Truth principle.*
+
+---
+
+## 31. Pass 53 Sprint 0A status snapshot (2026-05-05)
+
+### 31.1 Active sprint
+
+**Sprint 0A** (Pass 53 owner-renamed from Sprint 1 per DEC-497) — Multi-API Prefetch + Universe Build + Stage 2 NO-LIVE-API Refactor.
+
+### 31.2 Sub-phase status (Sprint 0A.0 - 0A.10)
+
+| Sub-phase | Deliverable | Status |
+|---|---|---|
+| 0A.0 | Universe build (5 tiers + sector normalization + Master dedup) | ✅ IMPLEMENTED 2026-05-05 |
+| 0A.1 | Polygon EXTENSION (news/financials/events/NBBO daily-close) | ⏸ Pending owner gate |
+| 0A.2 | FRED + ALFRED 52-series (curating ~15-20) | ⏸ Pending |
+| 0A.3 | AAII + CNN F&G (composite + 7 sub-components) | ⏸ Pending |
+| 0A.4 | CFTC COT prefetch | ⏸ Pending |
+| 0A.5 | Quiver Trader 8 endpoint groups + silent-gap fix (BUG-271/272/273) | ⏸ Pending — silent-gap fix first |
+| 0A.6 | SEC EDGAR structured (Form 4, 8-K, 10-Q/K via edgartools) | ⏸ Pending |
+| 0A.7 | Apewisdom + pytrends (free social sentiment supplement; DEC-502) | ⏸ Pending |
+| 0A.8 | NO-LIVE-API HARD CUT refactor (`fetcher/macro/sentiment/smart_money.py`) | ⏸ Pending |
+| 0A.9 | Polygon ticker events integration (DEC-500) | ⏸ Pending |
+| 0A.10 | Smoke + demo + full tests per API + full test pyramid (DEC-503) | ⏸ Pending |
+
+### 31.3 New DECs Pass 53 (497-503)
+
+- **DEC-497** — Sprint 0A scope expansion + NO-LIVE-API HARD CUT (RESOLVED-DECIDED)
+- **DEC-498** — Per-turn doc sync rule (CHECKLIST #67 + #67.b codified)
+- **DEC-499** — 18-classifier sector taxonomy (GICS-11 + 7 ETF asset classes)
+- **DEC-500** — Polygon ticker events integration as agent context (RESOLVED-DECIDED)
+- **DEC-501** — Polygon Options NOT upgraded; deferred Stage 3/Phase 1C
+- **DEC-502** — Quiver Trader-tier 8 endpoint groups + Apewisdom + pytrends supplement
+- **DEC-503** — Comprehensive test pyramid before every code push (HARD RULE; CHECKLIST #69)
+
+### 31.4 Critical bugs surfaced Pass 53 (BUG-271/272/273)
+
+`backtest/data/smart_money.py` has 3 silent gaps — Quiver endpoints returning HTTP 404 against Trader-tier subscription, silently zeroing insider + institutional + analyst-revisions inputs of the smart_money composite. Logged to BUG_REGISTER.md. Fix scheduled next turn with full DEC-503 test pyramid.
+
+### 31.5 Universe build (Sprint 0A.0) deliverables
+
+5-tier B++ schema universe:
+- T1a S&P 500 historical: 614 rows (Jan 2020 → May 2026)
+- T1c NASDAQ-100: 161 rows (101 active + 60 historical)
+- T1 ETFs: 27 (DEC-118)
+- T2 Spinoffs/IPOs: 10 baseline (full SCREENER global pull pending)
+- T3 Momentum Top-100: 1924 rows (after leveraged-ETF blocklist fix)
+- Master Universe Deduplicated: 1,775 unique tickers with full dimensional metadata
+
+### 31.6 Reading guide
+
+Full Sprint 0A detail in **DETAILED_PROJECT_PLAN.md Part 2.6 (Sprint-Sequenced Index) + Part 3 §3.16-§3.17 (expanded scope)**. Cross-document navigation in DETAILED_PROJECT_PLAN.md Part 18.

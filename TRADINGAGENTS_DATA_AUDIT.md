@@ -997,3 +997,63 @@ Toolkits consuming universe context (DEC-465 OurTraderToolkit `existing position
 - AUDIT.md Pass 53 narrative entries (per-commit detail)
 - DEC-491/492/493 (Sprint 2 trade-capture fragility) — affect agent_reasoning serialization
 - DEC-494/495/496 (Sprint 0A / Stage 3+ / Sprint 1-5 — universe + watchlist + momentum methodology)
+
+---
+
+## Pass 53 update — Per-agent input matrix revised (2026-05-05)
+
+### Sprint 0A scope changes affecting agent inputs
+
+**DEC-500 — Polygon ticker events as agent context (NEW; all 6 agents):**
+- **Risk Agent** — material-event risk gating (corp action triggers analogous to SEC 8-K)
+- **Fundamental Agent** — M&A as fundamental thesis trigger (acquirer/target context); split/dividend continuity
+- **Sentiment Agent** — event-driven flow surge detection
+- **Technical Agent** — split/dividend adjustments + ticker_change continuity
+- **Bull/Bear Debate** — debate quality enhanced by event context
+- **Decision Agent** — final synthesis includes event timing
+
+**DEC-501 — Polygon Options NOT upgraded; agent inputs that DON'T arrive (deferred Stage 3/Phase 1C):**
+- IV rank / IV percentile (Technical + Risk Agent forward-looking risk)
+- IV term structure (Risk Agent near-term stress)
+- Put/Call OI ratio (Sentiment Agent positioning)
+- Skew + put-spread cost (Risk Agent tail-risk pricing)
+- Max-pain / dealer gamma (Risk Agent pin/squeeze risk)
+- Stage-2 Risk Agent operates on ATR (backward-looking) only
+
+**DEC-502 — Quiver Trader-tier 8 endpoint groups (agent-input expansion):**
+
+| Endpoint | Sentiment Agent | Risk Agent | Fundamental Agent |
+|---|---|---|---|
+| Live Quiver News | News-flow tape (alternative to Polygon News) | — | — |
+| Off-Exchange Historical | Dark-pool / off-lit institutional flow | — | — |
+| Live Top Shareholders | — | Concentration / forced-liquidation risk | — |
+| Live ETF Holdings | — | Passive-flow exposure (high-ETF-weight names face systematic flow) | — |
+| Live SEC13F + Changes | — | Institutional positioning delta | — |
+| Patents (Historical + Recent + Momentum) | — | — | Innovation pipeline / IP signal |
+| Historical Executive Compensation | — | — | Governance / alignment signal |
+| Corporate Donors (Bulk + Historical) | — | Political/regulatory exposure | Political/regulatory exposure |
+| Congress Politicians (Bulk + Live) | Politician metadata enriches existing congresstrading per-trade context | — | — |
+
+**DEC-502 supplement — Apewisdom + pytrends (Sentiment Agent):**
+- **Apewisdom** — daily WSB+r/stocks ticker mentions (free, 2021-present)
+- **pytrends** — Google Trends search-volume index per ticker (free, 2004-present)
+- Combined coverage 2020-2026 with Apewisdom 2020 gap filled by pytrends
+- Sentiment Agent gains real social signal vs. current zero coverage
+
+**DEC-503 — Test pyramid mandate (cross-cutting):**
+Every code push affecting agent inputs must execute full test pyramid: unit + smoke + integration + system + functional + regression + data integrity + performance + acceptance. Partial coverage non-compliant. First application: smart_money silent-gap fix (BUG-271/272/273) next turn.
+
+### Critical silent-gap finding (BUG-271/272/273)
+
+`smart_money_score` composite has been computing on **1-of-3 inputs** (only congressional works) since at least Pass 48. Insider + institutional + analyst-revisions silently zeroed. Smart-money confluence dimension (cube #8 per DEC-471) operates on degraded inputs. Affects all agents that consume `smart_money_score` as context (Fundamental Agent, Risk Agent, Decision Agent, Bull/Bear Debate).
+
+**Fix:** next turn with full DEC-503 test pyramid:
+- BUG-271 → REMOVE Quiver branch in `get_analyst_data`; rely on Polygon financials
+- BUG-272 → migrate `insider_signal` to `live/insidertrading` bulk feed
+- BUG-273 → migrate `institutional_signal` to `live/sec13f` bulk feed
+
+### Free social sentiment alternatives confirmed
+
+Trader tier has NO WSB/Twitter/Reddit endpoints (my prior assumption Pass 53 turn 2026-05-05 was wrong). Apewisdom + pytrends fills this gap.
+
+**Cross-references:** AUDIT_INDEX.md DEC-500/501/502/503; AUDIT.md Pass 53 narrative; BUG_REGISTER.md BUG-271/272/273; API_AUDIT.md Pass 53 endpoint inventory; DETAILED_PROJECT_PLAN.md §3.16.

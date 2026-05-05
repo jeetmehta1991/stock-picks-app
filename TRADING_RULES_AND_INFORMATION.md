@@ -2082,3 +2082,50 @@ When tuned, ENGINEERING_REGISTER and AUDIT.md narrative entries cross-reference 
 
 *End of TRADING_RULES_AND_INFORMATION.md*
 *Per CHECKLIST #25 (highly detailed per owner directive #3); #43 (cross-references verified to source decisions); #51 (owner-approved structure executed); #57 (use-case mapping per section); #58 (canonical home for thresholds; ENGINEERING_REGISTER cross-references this document instead of duplicating).*
+
+---
+
+## Pass 53 Sprint 0A data sources update (2026-05-05)
+
+### Stage 2 NO-LIVE-API HARD CUT (DEC-497)
+
+Stage 2 backtest reads from `data_prefetch/<api_name>/<endpoint>/...` only. NO live API calls during backtest. yfinance permitted for one-time SETUP only (e.g., universe-build T3 sector backfill); not in runtime hot path. Affected modules (refactored Sprint 0A.8): `backtest/data/{fetcher,macro,sentiment,smart_money}.py`.
+
+### Sprint 0A confirmed data sources (8 APIs)
+
+| API | Subscription | Cost | Sub-phase | Status |
+|---|---|---|---|---|
+| Polygon Stocks Starter | Owner subscribed | $29/mo | 0A.1 + 0A.9 | OHLCV done; EXTENSION pending |
+| FRED + ALFRED | Free | $0 | 0A.2 | Curating to ~15-20 series |
+| AAII | Free | $0 | 0A.3 | Pending |
+| CNN F&G (composite + 7 sub-components) | Free | $0 | 0A.3 | Pending — 7 sub-components Pass 53 expansion |
+| CFTC COT (CME E-mini S&P 500) | Free | $0 | 0A.4 | Pending — wires existing stub |
+| Quiver Trader 8 endpoint groups (DEC-502) | Owner subscribed | $50-100/mo | 0A.5 | Pending — silent-gap fix first |
+| SEC EDGAR via edgartools (Form 4, 8-K, 10-Q/K) | Free | $0 | 0A.6 | Pending |
+| Apewisdom + pytrends (free social sentiment) | Free | $0 | 0A.7 | Pending — DEC-502 supplement |
+
+### Polygon ticker events integration (DEC-500 owner directive 2026-05-05)
+
+`https://api.polygon.io/vX/reference/tickers/{ticker}/events` (Reference Data, included in Stocks Starter).
+
+Event types: ticker_change, ticker_split, name_change, listing_change, exchange_change, delisting, new_listing.
+
+Cache: `data_prefetch/polygon/events/{ticker}.parquet`.
+
+Feeds all 6 TradingAgents (Risk, Fundamental, Sentiment, Technical, Bull/Bear Debate, Decision) + T2 SCREENER per DEC-380.
+
+### Polygon Options NOT upgraded (DEC-501 owner directive 2026-05-05)
+
+Owner Q1=C declined Stocks Starter upgrade; Polygon Options is separate subscription. Stage-2 Risk Agent operates on ATR (backward-looking) only. Stage-3 / Phase 1C revisit.
+
+### Critical silent-gap bugs (BUG-271/272/273; smart_money silent-gap)
+
+3 endpoints in current code 404 against Trader subscription. `smart_money_score` composite computing on 1-of-3 inputs. Fix scheduled next turn with full DEC-503 test pyramid.
+
+### CHECKLIST additions Pass 53
+
+- **#67 / #67.b** — per-turn doc sync (decoupled from pending runs); DEC-498
+- **#68** — smoke→demo→full execution protocol for multi-call API operations
+- **#69** — comprehensive test pyramid before every code push (DEC-503 HARD RULE)
+
+**Cross-references:** AUDIT_INDEX.md DEC-497-503; AUDIT.md Pass 53 narrative; BUG_REGISTER.md BUG-271/272/273; DETAILED_PROJECT_PLAN.md Part 2.6 + §3.16; THEME_X53_SEQUENCING.md Sprint 0A.0-0A.10; API_AUDIT.md Pass 53 endpoint inventory.

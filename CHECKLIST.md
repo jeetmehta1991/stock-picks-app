@@ -694,3 +694,28 @@ State compliance visibly: "Checklist: ✅ [each item]"
     **Past failure pattern (motivating rule):** Pass 53 T2 full SCREENER (`scripts/build_tier2_screener_full.py`) ran with no batching, scanned all 15,401 Polygon tickers in single foreground run; original task hung 50+ min with no stdout (Python buffering through `tee`); restart with `python -u` revealed ETA ~108 min total. Pre-existing `--max-candidates` flag was IGNORED on first run despite being there for batching purposes. Owner-flagged 2026-05-05: "Why so much time? Why restart? I thought the directive was to run in batches." Going forward, every multi-call API operation is staged smoke → demo → full WITH per-stage owner approval gate. NO exceptions, even if API has zero per-call cost (because wall-time + risk-of-failure compound at scale).
 
     **Verification format in pre-flight:** state explicitly "Stage 1 smoke completed (X PASS); Stage 2 demo completed (Y PASS); proceeding to Stage 3 full scale at owner approval." If skipping any stage, surface why + get owner approval.
+
+69. **Comprehensive test pyramid before every code push (Pass 53 owner directive 2026-05-05; DEC-503 HARD RULE).**
+    Every code push (new feature / bug fix / refactor / schema change / data-source migration) must execute and pass ALL applicable test types:
+
+    - **Unit** — individual function correctness with mocked dependencies
+    - **Smoke** — basic happy-path verification on real data (≤30s)
+    - **Integration** — module-to-module data flow (e.g., fetcher → cache → signals → screener)
+    - **System** — end-to-end workflow (full prefetch → universe load → backtest → report)
+    - **Functional** — feature behavior matches spec
+    - **Regression** — full `backtest/tests/test_unit.py` + `backtest/tests/test_integration.py` (36/36 must pass)
+    - **Data integrity** — schema validation, PIT semantics, completeness gates
+    - **Performance / load** — for prefetch + heavy-data code (rate-limit handling, memory bounds, wall-time budgets)
+    - **Acceptance** — owner-defined pass criteria for the specific change
+
+    **Trigger:** ANY code push — including doc-only repos that touch executable scripts. Includes Sprint 0A and beyond.
+
+    **Partial coverage non-compliant.** "Just unit tests" or "just smoke + integration" does NOT satisfy this rule. If a test type doesn't apply to a specific change (e.g., performance tests for a typo fix), the pre-flight block must explicitly mark that test type N/A with reason — silent skipping is non-compliant.
+
+    **Past failure pattern (motivating rule):** Silent-gap finding (BUG-271/272/273 — `smart_money.py` has been silently broken for 3 of 4 Quiver endpoints across all Phase 1A v3 archive results) went undetected because tests focused on `congresstrading` (which works) and skipped `insidertrading` + `institutionalholdings` + `analystestimates` (which silently 404). Owner directive 2026-05-05: "we will need to do unit tests, smoketests, integration Testing, system testing, all types of regression testing, functional testing, etc. Just dont do a few limited tests." Comprehensive coverage would have caught this. Codified as DEC-503 + this checklist item.
+
+    **Verification format in pre-flight:** for any code push, state explicitly: "Test pyramid coverage: Unit ✅ / Smoke ✅ / Integration ✅ / System ✅ / Functional ✅ / Regression ✅ (36/36) / Data integrity ✅ / Performance N/A (typo fix; no perf surface change) / Acceptance ✅ (owner-defined: <criteria>)." Each line shows actual status; N/A items state reason.
+
+    **First application:** smart_money silent-gap fix (BUG-271/272/273) next turn — full test pyramid required before commit.
+
+    **Joint:** DEC-097 (90% test coverage minimum), DEC-098 (hot-path 100% coverage), DEC-503 (this rule's parent decision), L145 (silent-gap lesson).

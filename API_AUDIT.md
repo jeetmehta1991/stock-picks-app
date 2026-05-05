@@ -1747,3 +1747,78 @@ API_AUDIT.md uses original Phase 1A/1B/1C/1D taxonomy from PROJECT_PLAN_ARCHIVE.
 - FMP active (per Pass 52 turn 133 verification of DEC-460 negative — FMP mandatory)
 - Ortex wired (DEC-468 implementation)
 
+---
+
+## Pass 53 update — API endpoint inventory revised (2026-05-05)
+
+### Quiver Quantitative Trader-tier confirmed inventory (28 unique endpoints across Public + Tier 1 + Tier 2)
+
+Owner-shared dashboard screenshots Pass 53 turn 2026-05-05 confirmed:
+
+**Public tier:** Bulk Congress Politicians, Bulk Congress Trading, Bulk Corporate Donors, Historical Patents, Historical Congress Trading, Historical Corporate Donors by Ticker, Historical Executive Compensation, Historical Gov Contracts, Historical Gov Contracts All, Historical House Trading, Historical Lobbying, Historical Off-Exchange, Historical Senate Trading, Recent Patents, App Ratings, Live Congress Politicians, Live ETF Holdings, Recent Gov Contracts, Recent Gov Contracts All, Recent House Trading, Live Insider Trading, Live Lobbying, Live Off-Exchange, Patent Drift, Patent Momentum, Live Quiver News, Live SEC13F, Live SEC13F Changes, Recent Senate Trading, Live Top Shareholders.
+
+**NOT in Trader tier:** WallStreetBets, Twitter, Reddit, Wikipedia (premium-tier or removed).
+
+### Pass 53 silent-gap discovery (BUG-271/272/273)
+
+3 endpoints in `backtest/data/smart_money.py` return HTTP 404 against Trader subscription:
+
+| Code call | Result | Migration |
+|---|---|---|
+| `historical/analystestimates/{ticker}` | 404 NOT IN TIER | REMOVE Quiver branch in `get_analyst_data` (BUG-271); rely on Polygon financials per DEC-497 HARD CUT |
+| `historical/insidertrading/{ticker}` | 404 — only Live variant exists | Migrate to `live/insidertrading` bulk feed (BUG-272) |
+| `historical/institutionalholdings/{ticker}` | 404 — only Live SEC13F variants exist | Migrate to `live/sec13f` bulk feed (BUG-273) |
+
+### Pass 53 working URL paths discovered
+
+- `historical/offexchange/{ticker}` (3,937 rows AAPL; cols Ticker/Date/OTC_Short/OTC_Total/DPI)
+- `live/topshareholders/{ticker}` (dict response)
+- `historical/corporatedonors/{ticker}` + `bulk/corporatedonors`
+- `historical/executivecompensation` (paginated `data` + `pagination`)
+- `live/sec13f` (10,000 rows paginated; cols Date/ReportPeriod/Name/Ticker)
+- `live/quivernews` (paginated `data` array)
+- `live/etfholdings?ticker={t}` (query-param form)
+- `bulk/corporatedonors` (no ticker, dict response)
+
+### Pass 53 Sprint 0A scope-in (DEC-502)
+
+8 endpoint groups owner-approved (App Ratings + Patent Drift dropped per Q1):
+1. Live Quiver News
+2. Off-Exchange Historical
+3. Live Top Shareholders
+4. Live ETF Holdings
+5. Live SEC13F + Live SEC13F Changes
+6. Patents Historical + Recent + Patent Momentum
+7. Historical Executive Compensation
+8. Corporate Donors Bulk + Historical-by-ticker
++ Congress Politicians Bulk + Live
++ Bulk migration where dashboard provides Bulk variant (Q3)
+
+### Polygon ticker events (DEC-500)
+
+`https://api.polygon.io/vX/reference/tickers/{ticker}/events` — Reference Data, included in Stocks Starter. Event types: ticker_change, ticker_split, name_change, listing_change, exchange_change, delisting, new_listing. Cache: `data_prefetch/polygon/events/{ticker}.parquet`. Feeds all 6 TradingAgents + T2 SCREENER per DEC-380.
+
+### Polygon Options NOT upgraded (DEC-501)
+
+Owner Q1=C declined Stocks Starter upgrade; Options is separate subscription (~$29/mo). Deferred to Stage 3 / Phase 1C revisit.
+
+### Free social sentiment supplements (DEC-502 supplement; Sprint 0A.7)
+
+- **Apewisdom** (apewisdom.io) — Free, daily WSB + r/stocks ticker mentions, 2021-present
+- **pytrends** — Free Google Trends Python wrapper, search-volume index by ticker, 2004-present
+- StockTwits + Reddit PRAW — DEFERRED
+
+### CFTC COT scope IN (Pass 53 owner-approved)
+
+CME E-mini S&P 500 futures (CFTC code 13874+); commercial vs speculative positioning; weekly Friday release. Wires existing stub `sentiment.get_cot_report`.
+
+### CNN F&G — composite + 7 sub-components (Pass 53 owner-approved expansion)
+
+7 sub-components: junk-bond demand spread, put/call ratio, market momentum, stock breadth, safe-haven demand, market vol, stock-price strength.
+
+### FRED 52-series curated to ~15-20 high-signal subset
+
+High-value adds: BAMLH0A0HYM2 (HY OAS), STLFSI4 (financial stress), RECPROUSM156N (recession prob), T10Y3M (alt yield curve). Low-value drops: M2 money supply, weekly Treasury auctions, durable goods.
+
+**Cross-references:** AUDIT_INDEX.md DEC-500/501/502/503; AUDIT.md Pass 53 narrative; BUG_REGISTER.md BUG-271/272/273; DETAILED_PROJECT_PLAN.md §3.16; THEME_X53_SEQUENCING.md Sprint 0A.0-0A.10.
+
