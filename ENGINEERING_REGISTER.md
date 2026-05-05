@@ -480,6 +480,23 @@ DEC-293 (close_trade days NameError), DEC-294 (duplicate ClosedTrade dataclass),
 
 Sprint 2 effort revised: +14-18d → ~23-27d total (was 9d baseline)
 
+### Sprint 2 additions (Pass 53 — trade-capture fragility) — 3 decisions PROPOSED
+
+Discovered Pass 53 turn (this) during owner question on trade metadata capture. ClosedTrade dataclass at exit_manager.py:80-135 captures ~40 fields per trade and serializes to `output/trade_log.csv` via writer.py:33. Three fragility items surfaced; logged as Sprint 2 sub-decisions awaiting owner approval on implementation specifics.
+
+| DEC-N | Description | Test signal | Effort |
+|---|---|---|---|
+| DEC-491 | trade_log serialization format — Parquet primary (preserves nested dict/list types vs CSV `str(dict)` fragility) | round-trip test recovers nested types without literal_eval; Phase 1B-α agent_reasoning (>50 keys) survives | ~0.5-1d |
+| DEC-492 | signals_at_entry filter removed — preserve string/list signals (regime tags, ICT/SMC FVG/BOS/CHoCH/OB labels, chart pattern names) | synthetic trade with FVG + chart_pattern_str + regime_tag round-trips with all three preserved | ~0.25-0.5d (HARD-COUPLED to DEC-491 — must land same commit or after) |
+| DEC-493 | trade_id schema field — schema-level uniqueness key (vs (ticker, entry_date, strategy) tuple) | every closed_trade has unique trade_id; collision test on 10k synthetic trades | ~0.5d |
+
+Sprint 2 effort revised: +1.25-2d → ~24.25-29d total (was 23-27d post turn-107 additions). Critical-path: DEC-491 + DEC-492 should land together (DEC-492 depends on parquet format); DEC-493 independent.
+
+**Status:** all three PROPOSED; AWAITS OWNER APPROVAL on:
+- DEC-491: parquet-only vs parquet+CSV hybrid
+- DEC-492: confirm filter removal scope (all non-numeric, or specific allowlist?)
+- DEC-493: trade_id format (uuid4 / time-ordered / human-readable composite)
+
 ### Sprint 3 additions (Phase 0.B Portfolio Class) — 2 decisions
 
 DEC-277 (Per-strategy promotion workflow HARD-REVERSIBILITY ~2-3d), DEC-339 (pnl_dollar dynamic notional via Portfolio class ~1d)

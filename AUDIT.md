@@ -26588,3 +26588,50 @@ Owner should mistrust "Sprint X is ready" claims unless I provide explicit artif
 - §10.9 news sentiment migration to Polygon endpoint (same Sprint 4 scope)
 
 *Per CHECKLIST #32 (verbatim "1. ok / 2. Delete / 3. Your recommendation / 4. add to checklist"); #25 (intentional doc-vs-code asymmetry surfaced explicitly rather than papered over; recommendation #3 picked transparently with rationale); #43 (cross-doc: §13.12 ↔ §10.9 ↔ smart_money.py code path migration documented); #45 (pre-flight surfaced before edits — including catch that §10.9 also needed update for #2, not just §13.12); #58 (atomic 4-file commit, no half-state); #65 (no roster lumping — added a CHECKLIST item parallel to existing #64, distinct axis); #66 NEW (this commit creates the rule that catches the DEC-476 / DEC-332 mismatch pattern from the prior commit).*
+
+---
+
+## Pass 53 — Trade-capture fragility logged as Sprint 2 sub-decisions (DEC-491/492/493 PROPOSED)
+
+**Trigger:** Owner question Pass 53 — *"How are we capturing all trades (trade metadata) in backtest? Cube is still an aggregate"* + follow-up *"log as sprint 2 sub decisions"*.
+
+**Discovery:** Investigation of trade-capture path confirmed comprehensive per-trade metadata IS captured (~40 fields per `ClosedTrade` dataclass at `exit_manager.py:80-135` → serialized to `output/trade_log.csv` via `writer.py:33` calling `pd.DataFrame([asdict(t) for t in self.closed_trades])` from `backtest.py:572`). Cube (DEC-422 / DEC-471) is a derived per-cell aggregate VIEW; trade_log is the source of truth. Owner's observation was correct: cube is aggregate, trade_log is per-trade — both exist, neither replaces the other.
+
+Three fragility items surfaced during investigation:
+
+1. **Dict columns serialized as Python repr in CSV** — `signals_at_entry`, `agent_reasoning`, `context_bullets` are dicts/lists; written as `str(dict)` in CSV cells; require `ast.literal_eval` to re-parse and break on internal commas/quotes. Phase 1B-α agent_reasoning will be rich (>50 keys per trade) → high failure risk for post-hoc analysis tooling.
+
+2. **`signals_at_entry` filter drops non-numeric signals** — backtest.py:430-431 applies `isinstance(v, (bool, int, float))` filter at trade-record time, dropping string regime tags, list of detected ICT/SMC patterns (FVG/BOS/CHoCH/OB per DEC-261/345), chart-pattern labels (DEC-355-362). Trade row is silently a SUBSET of what fired the candidate. Post-hoc "why did this trade fire" analysis can't recover these signals — they exist only in the transient candidate dict.
+
+3. **No `trade_id` schema field** — trades keyed by `(ticker, entry_date, strategy)` tuple. Dedup logic (backtest.py:309-321) prevents conflicts but no schema-level guarantee. Re-ranking trades, joining audit traces, cross-reference from `agent_reasoning` back to trade rows, post-hoc Phase-1A baseline comparisons all benefit from a stable id.
+
+**Resolution applied this turn (logging only — no code changes):**
+
+1. **`AUDIT_INDEX.md`** — three new DEC rows logged:
+   - **DEC-491** PROPOSED — trade_log serialization format (Parquet primary, preserves nested types). Effort ~0.5-1d. AWAITS OWNER APPROVAL on parquet-only vs parquet+CSV hybrid.
+   - **DEC-492** PROPOSED — signals_at_entry filter removed (preserve string/list signals). Effort ~0.25-0.5d. HARD-COUPLED to DEC-491. AWAITS OWNER APPROVAL on filter removal scope.
+   - **DEC-493** PROPOSED — trade_id schema field added to OpenTrade + ClosedTrade. Effort ~0.5d. AWAITS OWNER APPROVAL on format choice (uuid4 / time-ordered / human-readable composite).
+
+2. **`ENGINEERING_REGISTER.md`** — new "Sprint 2 additions (Pass 53 — trade-capture fragility)" block added after the Pass 52 turn 107 additions block. Three-row table with description + test signals + effort. Sprint 2 effort revised: 23-27d → 24.25-29d (was 9d baseline pre-additions). Critical-path note: DEC-491 + DEC-492 must land together; DEC-493 independent.
+
+3. **`AUDIT.md`** — this entry.
+
+**Status semantics:** PROPOSED (not RESOLVED-DECIDED) — owner approved *logging* the items, not the specific implementation choices (parquet-only vs hybrid; filter removal scope; trade_id format). Per CHECKLIST #51 lower-impact default, status remains PROPOSED until owner picks the implementation specifics. This matches the DEC-486/487/488 PROPOSED pattern from earlier in Pass 53.
+
+**Decision impact:**
+- Three new DECs added to roster: DEC-491/492/493 (PROPOSED).
+- Sprint 2 effort: 23-27d → 24.25-29d.
+- No code changes this turn.
+- Cube vs trade_log relationship explicitly documented (cube = aggregate VIEW; trade_log = source of truth) — closes confusion gap implicit in owner's question.
+
+**Files updated this turn:**
+1. `AUDIT_INDEX.md` — DEC-491/492/493 rows added
+2. `ENGINEERING_REGISTER.md` — Sprint 2 Pass 53 additions block added
+3. `AUDIT.md` — this entry
+
+**Out of scope this turn (queued for owner direction):**
+- Implementation of any of DEC-491/492/493 — pending specific approval on each
+- Backwards compat for existing `output/trade_log.csv` consumers (if any) — TBD per DEC-491 hybrid choice
+- Schema migration plan for in-flight test fixtures and golden masters — TBD per DEC-493 trade_id introduction
+
+*Per CHECKLIST #32 (verbatim "log as sprint 2 sub decisions" — owner approved logging, not implementation specifics); #51 (default lower-impact: status PROPOSED not RESOLVED-DECIDED since implementation choices not approved); #25 (honest categorization: ClosedTrade IS comprehensive ~40 fields; the gaps are real but not catastrophic — surfaced specifically rather than dramatized); #43 (cross-doc: AUDIT_INDEX roster ↔ ENGINEERING_REGISTER Sprint 2 ↔ AUDIT.md narrative); #45 (pre-flight surfaced including Sprint 2 effort delta and DEC dependency coupling); #58 (atomic 3-file commit; new DECs include sprint slot + test signals + effort estimate per requirement); #65 (each DEC qualifies as a real decision — output format / behavior / schema field — not just a finding); #66 (DEC numbers verified against AUDIT_INDEX max — DEC-490 last existing, so 491/492/493 are next); L143 (decision-state vs artifact-state: code captures comprehensive metadata; doc didn't reflect this until Pass 53 owner question forced the verification — closing the gap with these DECs).*
