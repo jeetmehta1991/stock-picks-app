@@ -491,7 +491,7 @@ Discovered Pass 53 turn (this) via owner fact-check question on tier classificat
 |---|---|---|---|
 | DEC-494 | Tier 2 / refresh_extended_universe.py alignment with DEC-483 — remove NDX-non-S&P from Tier 2 inclusion (now T1c) | refresh_extended_universe.py docstring + logic exclude NDX-non-S&P; extended_universe.csv contains only spinoffs + recent IPOs; T1c (nasdaq_100_membership.csv) canonical NDX-non-S&P source | ~0.5-1d |
 
-**Status:** PROPOSED. AWAITS OWNER APPROVAL on Sprint placement: (a) Sprint 1 universe-build alignment (alongside historical_membership.csv work); (b) Sprint 5 universe management refresh; (c) both.
+**Status:** RESOLVED-DECIDED Pass 53 owner-approved. Sprint placement: **Sprint 1** (universe-build alignment alongside historical_membership.csv work).
 
 ---
 

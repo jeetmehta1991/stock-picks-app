@@ -1,0 +1,28 @@
+Symbol,Name,Category,Sector
+SPY,SPDR S&P 500 ETF Trust,Broad Market,Broad Market
+QQQ,Invesco QQQ Trust,Broad Market,Technology
+IWM,iShares Russell 2000 ETF,Broad Market,Small Cap
+DIA,SPDR Dow Jones Industrial Average ETF,Broad Market,Broad Market
+VTI,Vanguard Total Stock Market ETF,Broad Market,Broad Market
+XLK,Technology Select Sector SPDR Fund,Sector,Information Technology
+XLF,Financial Select Sector SPDR Fund,Sector,Financials
+XLE,Energy Select Sector SPDR Fund,Sector,Energy
+XLV,Health Care Select Sector SPDR Fund,Sector,Health Care
+XLI,Industrial Select Sector SPDR Fund,Sector,Industrials
+XLY,Consumer Discretionary Select Sector SPDR Fund,Sector,Consumer Discretionary
+XLP,Consumer Staples Select Sector SPDR Fund,Sector,Consumer Staples
+XLU,Utilities Select Sector SPDR Fund,Sector,Utilities
+XLB,Materials Select Sector SPDR Fund,Sector,Materials
+XLRE,Real Estate Select Sector SPDR Fund,Sector,Real Estate
+VXX,iPath Series B S&P 500 VIX Short-Term Futures ETN,Volatility,Volatility
+TLT,iShares 20+ Year Treasury Bond ETF,Bonds,Fixed Income
+HYG,iShares iBoxx High Yield Corporate Bond ETF,Bonds,Fixed Income
+LQD,iShares iBoxx Investment Grade Corporate Bond ETF,Bonds,Fixed Income
+IEF,iShares 7-10 Year Treasury Bond ETF,Bonds,Fixed Income
+SHY,iShares 1-3 Year Treasury Bond ETF,Bonds,Fixed Income
+GLD,SPDR Gold Shares,Commodities,Commodities
+SLV,iShares Silver Trust,Commodities,Commodities
+GDX,VanEck Gold Miners ETF,Commodities,Commodities
+USO,United States Oil Fund LP,Commodities,Commodities
+EEM,iShares MSCI Emerging Markets ETF,International,Emerging Markets
+EFA,iShares MSCI EAFE ETF,International,International

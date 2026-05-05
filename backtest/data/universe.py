@@ -32,21 +32,38 @@ from backtest.config import SP50, ETFS, LIQUIDITY
 logger = logging.getLogger(__name__)
 
 # Full ETF list for Phase 1B+
-ETFS_FULL = [
-    # Broad market
-    "SPY", "QQQ", "IWM", "DIA", "VTI",
-    # Sector
-    "XLK", "XLF", "XLE", "XLV", "XLI", "XLY", "XLP", "XLU", "XLB", "XLRE",
-    # Volatility
-    "VXX",
-    # Bonds
-    "TLT", "HYG", "LQD", "IEF", "SHY",
-    # Commodities
-    "GLD", "SLV", "GDX", "USO",
-    # International
-    "EEM", "EFA",
-    # No leveraged ETFs — volatility decay invalidates results
-]
+# Per DEC-494 / Pass 53 owner directive: ETFs migrated from hardcoded list to
+# `backtest/data/tier1_etfs.csv` (Item 4 (ii) CSV + code migration). Module-level
+# ETFS_FULL is computed at import time from the CSV via get_etfs_full() so that
+# legacy callers (universe.py functions, agents, tests) continue to work without
+# refactor. CSV is the source of truth; updates flow through the CSV, not this
+# module.
+
+def get_etfs_full() -> list[str]:
+    """
+    Load Tier 1 ETF list from `backtest/data/tier1_etfs.csv`.
+
+    Per DEC-494 (Pass 53 owner-approved Sprint 1) — ETFs are now declared in
+    a CSV file alongside T1a/T1b/T1c membership files for consistency.
+    No leveraged ETFs included — volatility decay invalidates backtest results.
+
+    Returns list of ticker symbols. Falls back to empty list on read failure
+    (callers should treat empty as a catastrophic config error).
+    """
+    csv_path = Path(__file__).parent / "tier1_etfs.csv"
+    try:
+        df = pd.read_csv(csv_path)
+        tickers = df["Symbol"].drop_duplicates().tolist()
+        logger.info("Loaded %d Tier 1 ETFs from tier1_etfs.csv", len(tickers))
+        return tickers
+    except Exception as exc:
+        logger.error("Could not read tier1_etfs.csv: %s", exc)
+        return []
+
+
+# Computed at module import time — preserves legacy `from universe import ETFS_FULL`
+# callers. CSV-backed; update tier1_etfs.csv to change the list.
+ETFS_FULL = get_etfs_full()
 
 
 def get_sp500_constituents(max_tickers: int = 500) -> list[str]:
