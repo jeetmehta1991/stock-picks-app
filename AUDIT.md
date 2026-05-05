@@ -27383,3 +27383,47 @@ If owner intended Stage 2 retroactive backfill (compute archived rows from Sprin
 - (d) All in parallel via multi-turn execution — owner approves chunks per turn
 
 *Per CHECKLIST #32 (verbatim folder move directive); #25 (scope realism — split 4 work streams; surfaced rather than over-promised single-turn coverage; smart money composite §10.8 existence flagged for owner clarification); #43 (cross-file path updates: 7 code files + CLAUDE.md ↔ folder location all aligned); #45 (verified all 5 universe CSVs identified before move; verified path patterns in each script before edit; ran git mv to preserve history not delete + recreate); #51 (default lower-impact: surfaced multi-turn plan for streams 2/3/4 rather than over-extending single turn); #58 (atomic commit covering folder move + all code path updates + CLAUDE.md repo structure + AUDIT narrative — no half-state); #65 (folder organization is structural, no roster category changes); #66 (Path patterns verified per file-read before edit, not assumed). Folder name "Backtesting universe" with space honored exactly as owner specified — usable in shell with quoting + Python with proper Path objects.*
+
+---
+
+## Pass 53 — TRADING_RULES §2A Signal Universe Catalogue NEW (Stream 4 — owner approved priority)
+
+**Trigger:** Owner Pass 53 directives:
+1. "§10.8 — missed it. will get back." → Smart money composite §10.8 sufficient as-is for now; expansion deferred until owner reviews.
+2. "Expand universe signal grouped by category" → Stream 4 — add detailed signal universe to TRADING_RULES.md grouped by 6 canonical categories.
+3. "Approve priority order" → execute Stream 4 first (this turn), then Stream 2 (5-iteration NDX verification, 2-3 parallel per turn), then Stream 3 (comprehensive ~22-doc audit).
+4. "D — attempt 2-3 in parallel per turn" → Stream 2 verification iterations batched 2-3 per turn (next turn).
+
+**Resolution applied this turn (Stream 4 only):**
+
+1. **`TRADING_RULES_AND_INFORMATION.md` §2A NEW — Signal Universe Catalogue:**
+   - Inserted between current §2 (Phase-by-Phase Acceptance Criteria) and Part B (Strategy-Level Rules) — placed as foundational reference between process and strategy logic.
+   - TOC updated to reference §2A.
+   - **§2A.1 Category 1 — Technical Indicators (~220 fields)** — sourced from `backtest/signals/technical.py:858-892` (`compute_all_signals()` aggregator). 26 sub-functions enumerated across 6 sub-categories: Pivots & Price Levels (§2A.1.1), Momentum (§2A.1.2), Trend (§2A.1.3), Volatility/Bands (§2A.1.4), Volume (§2A.1.5), Candle Patterns (§2A.1.6). Each function listed with parameters and signal types produced.
+   - **§2A.2 Category 2 — Smart Money Signals** — sourced from `backtest/data/smart_money.py:470-529`. Per-source raw signals (congressional / insider / 13F) summarized with cross-reference to §10.8 for full composite formula. Adjacent signals (news / gov_contracts / lobbying / analyst) cross-referenced to §10.9. Composite weights matrix and labels-by-score noted with §10.8 pointer. LIVE-ONLY warning (DEC-299/443) for analyst data flagged.
+   - **§2A.3 Category 3 — Options Intelligence (Stage 3+ scope)** — Put/Call ratio + IV rank + IV skew planned. Stage 2 deferral rationale documented.
+   - **§2A.4 Category 4 — Macro Filters** — sourced from `backtest/data/macro.py` + FRED/ALFRED. Yield curve, VIX, DXY, economic calendar, Fed rate, cross-asset (DEC-118), live breadth (Stage 3+). FRED series IDs cited (DGS2, DGS10, FEDFUNDS).
+   - **§2A.5 Category 5 — Sentiment Signals** — sourced from `backtest/data/sentiment.py`. AAII (DEC-389/390 + auto-refresh), CNN F&G (DEC-333/391 + thresholds 20/35/65/80), COT (DEC-407+448).
+   - **§2A.6 Category 6 — Company / Fundamental Signals** — sourced from `smart_money.py:88-253` (analyst) + Polygon `/v3/reference/financials` + SEC EDGAR (DEC-484 Sprint 4). Analyst consensus (LIVE-ONLY display-only), revisions, earnings calendar (DEC-256), buybacks (DEC-484), dividends, fundamentals (Sprint 4 SEC EDGAR delivery).
+   - **§2A.7 Signal Universe Totals** — table aggregating ~265-275 active signal fields in Stage 2 backtest. Validates "274 signal fields" reference in CLAUDE.md repo structure docstring.
+   - **§2A.8 Cross-References** — links to §10.8 (smart money composite), §10.9 (smart money adjacent), §13.12 (API endpoints), §10 (regime), §21 (cube), §12 (PIT), DEC-453/454/455/440/484 (signal cleanup decisions). Source code paths per category for engineering verification.
+
+2. **TOC updated** — added §2A reference under Part A (Stage-by-Stage Benchmarks) since signal universe is a foundational reference for both Part A phase work and Part B strategy logic.
+
+3. **`AUDIT.md`** — this entry.
+
+**Decision impact:**
+- TRADING_RULES.md gains a comprehensive signal universe reference section that previously was scattered across CLAUDE.md docstrings, code comments, and DEC bodies.
+- ~265-275 signal fields now documented with category groupings + source-of-truth code paths.
+- No new DECs created. No DEC status changes. No code changes.
+
+**Files updated this turn:**
+1. `TRADING_RULES_AND_INFORMATION.md` — §2A NEW (~150 lines) + TOC entry
+2. `AUDIT.md` — this entry
+
+**Out of scope this turn (queued per priority order):**
+- **Stream 2:** 5-iteration external NDX verification (2-3 parallel per turn). Sources to attempt: Invesco QQQ holdings (qqq.com), stockanalysis.com NDX-100 changes, SEC EDGAR Form 8-K archive (companies file 8-K when joining/leaving major indices), financial news archives (Reuters / CNBC / WSJ), index ETF holdings comparisons (QQQ vs QQQE).
+- **Stream 3:** Comprehensive ~22-doc audit + canonical alignment (CLAUDE.md, AUDIT.md/_INDEX, DETAILED_PROJECT_PLAN, PROJECT_PLAN, TRADING_RULES, ENGINEERING_REGISTER, STRATEGY_REGISTER, CHECKLIST, LEARNINGS, IMPLEMENTATION_READINESS_DASHBOARD, DOCUMENTATION_REGISTER, BUG_REGISTER, API_AUDIT, LIMITATIONS_CAVEATS_ASSUMPTIONS, THEME_X53_SEQUENCING, ADVERSARIAL_AUDIT_PASS_52_TURN_132, CRITICAL_GAPS_RESOLUTION_PASS_52_TURN_133, AUDIT_TRIAGE, PASS_53_PRIORITIES, PROJECT_HANDOFF_2026-05-04, TRADINGAGENTS_DATA_AUDIT, scripts/SPRINT1_POLYGON_PREFETCH_README).
+- Smart money composite expansion (§10.8 expansion if owner returns and requests) — pending owner re-review per "§10.8 — missed it. will get back."
+
+*Per CHECKLIST #32 (verbatim 4 directives — §10.8 sufficient for now, signal universe by category, priority approved, 2-3 parallel verification next turn); #25 (signal counts grounded in actual code source — `compute_all_signals()` aggregator at line 858-892 per direct read; ~220 technical signals counted by docstring claim "~220 technical signals"; total ~265-275 reconciled with CLAUDE.md "274 signal fields" reference); #43 (TRADING_RULES.md §2A cross-references §10.8 + §10.9 + §13.12 + §10 + §21 + §12 + STRATEGY_REGISTER + DEC-453/454/455/440/484; signals/technical.py + smart_money.py + macro.py + sentiment.py source paths cited); #45 (read signals/technical.py for actual function inventory before drafting; verified TOC structure before insertion location); #51 (Stream 4 only this turn per owner priority order; refused scope-creep into Stream 2/3); #58 (atomic 2-file commit; no implementation changes); #65 (signal categories preserved per existing 6-category taxonomy from CLAUDE.md original Stage 1 docs; no new categories invented); #66 (function names + line numbers verified per direct file read; FRED series IDs cited per DEC body; no DEC scope claims without verification). L88 N/A (no Wikipedia for this turn).*

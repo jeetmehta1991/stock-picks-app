@@ -17,6 +17,7 @@
 **Part A — Stage-by-Stage Benchmarks**
 1. Stage Transition Criteria
 2. Phase-by-Phase Acceptance Criteria
+2A. Signal Universe Catalogue (Pass 53 NEW — comprehensive 6-category reference)
 
 **Part B — Strategy-Level Rules**
 3. Strategy Validity Gates (5-Gate Filter)
@@ -338,6 +339,152 @@
 - [ ] Total strategy roster ~109-119 strategies operational
 
 **Dashboards (Pass 53):** REUSE — DEC-199/200/201 with new strategy roster populating cube; no new dashboard at this phase. See DETAILED_PROJECT_PLAN.md Part 2.5.
+
+---
+
+## 2A. Signal Universe Catalogue (Pass 53 NEW)
+
+This section catalogues ALL signals consumed by strategies, agents, and the screener. Grouped by 6 canonical categories matching the project's signal architecture. Source-of-truth code references provided per category for engineering verification. Total active signal fields in Stage 2 backtest: **~265-275** (validates the "274 signal fields" reference in CLAUDE.md repo structure docstring).
+
+### 2A.1 Category 1 — Technical Indicators (~220 fields)
+
+**Source-of-truth:** [backtest/signals/technical.py:858-892](backtest/signals/technical.py) — `compute_all_signals(df)` aggregates 26 sub-functions.
+
+**Computation:** PIT-correct from cached OHLCV; df sliced to `as_of` date by fetcher before signal computation.
+
+#### 2A.1.1 Pivots & Price Levels
+- `compute_pivots(df)` — daily / weekly / monthly pivots (R1/R2/R3 + S1/S2/S3); Camarilla; Woodie's
+- `compute_fibonacci(df, lookback=50)` — 23.6 / 38.2 / 50 / 61.8 / 78.6% retracements + extensions
+- `compute_vwap(df)` — VWAP + 1σ / 2σ deviation bands
+- Previous Day High / Low / Close (from raw OHLCV — no compute fn needed)
+
+#### 2A.1.2 Momentum
+- `compute_rsi(df)` — RSI(9 / 14 / 21)
+- `compute_stochrsi(df, period=14)` — Stochastic RSI
+- `compute_stochastic(df)` — Stochastic Fast/Slow (%K, %D)
+- `compute_macd(df)` — MACD(12,26,9) + MACD(8,21,5) variants; histogram + signal line cross
+- `compute_ppo(df, fast=12, slow=26, sig=9)` — Percent Price Oscillator
+- `compute_williams_r(df, period=14)` — Williams %R
+- `compute_roc(df, period=12)` — Rate of Change
+- `compute_awesome_oscillator(df)` — Awesome Oscillator (Bill Williams)
+- `compute_ultimate_oscillator(df)` — Ultimate Oscillator (Larry Williams)
+
+#### 2A.1.3 Trend
+- `compute_ema_sma(df)` — EMA & SMA crossovers (9/21 + 20/50 + 50/200) + EMA distance percentages
+- `compute_dema_tema(df, period=20)` — Double + Triple Exponential Moving Average
+- `compute_adx(df, period=14)` — ADX strength + DI+/DI-
+- `compute_parabolic_sar(df)` — PSAR with acceleration factor
+- `compute_ichimoku(df)` — Ichimoku Cloud full 5 lines (Tenkan, Kijun, Senkou A, Senkou B, Chikou)
+- `compute_supertrend(df, period=7, mult=3.0)` — Supertrend
+- `compute_hull_ma(df, period=20)` — Hull Moving Average
+
+#### 2A.1.4 Volatility / Bands
+- `compute_bollinger(df)` — Bollinger Bands variants: (20, 2σ) + (20, 1.5σ) + (10, 2σ); %B + bandwidth
+- `compute_keltner(df, period=20, mult=2.0)` — Keltner Channels
+- `compute_donchian(df)` — Donchian Channels (period 20 high / low)
+- `compute_atr_levels(df, period=14)` — ATR + ATR-stop levels
+- `compute_squeeze(df)` — Bollinger inside Keltner squeeze indicator (LazyBear)
+
+#### 2A.1.5 Volume
+- `compute_volume(df)` — OBV + A/D Line + Chaikin Money Flow + MFI + Force Index + volume spikes (2× / 3× avg) + VWAP deviation
+
+#### 2A.1.6 Candle Patterns
+- `compute_candles(df)` — engulfing, pin bars, hammer, shooting star, doji, morning star, evening star, inside bar, outside bar, harami
+
+### 2A.2 Category 2 — Smart Money Signals
+
+**Source-of-truth:** [backtest/data/smart_money.py:470-529](backtest/data/smart_money.py) — `smart_money_score(ticker, as_of, ...)` composite.
+
+**Per-source raw signals** (full per-source rules: see §10.8):
+- **Congressional trades** — Quiver `/historical/congresstrading/{ticker}` (DEC-450 paid). 45-day lookback, age-weighted by transaction date (<30d=1.0× / 30-60d=0.5× / >60d excluded). PIT via STOCK Act 45-day disclosure lag (DEC-324 fix Pass 51).
+- **Insider trades** — Quiver `/historical/insidertrading/{ticker}`. 30-day lookback. EXCLUDES non-discretionary: Option / Exercise / 10b5-1 / Gift / Transfer.
+- **Institutional / 13F** — Quiver `/historical/institutionalholdings/{ticker}`. Latest available quarter; SEC 45-day filing deadline lag (DEC-325).
+
+**Composite formula** (canonical — see §10.8 for full detail):
+- Veto case: `cong=sell AND ins=cluster_sell` → score = -5 (overrides additive math)
+- Otherwise additive per source × signal-strength matrix (congressional `+4/+2/-3`, insider `+4/+2/+1/-3`, institutional `+2/+1/-1`)
+- Composite labels by score: ≥6 / ≥4 / ≥2 / ≥1 / 0 / <0 / ≤-4
+- 90-day decay half-life per DEC-123 (REVISIT_AFTER_BACKTEST §23.1 #15)
+- Tunable post-Phase-1B-α per DEC-072
+
+**Adjacent signals (NOT in composite — see §10.9):**
+- **News sentiment** — Polygon news (PRIMARY post-Sprint-4 per DEC-440) replacing AV/Finnhub legacy (DEC-454/455). 7-day window. `score ≥ 0.15` → bullish; `≤ -0.15` → bearish.
+- **Government contracts** — Quiver prefetch `cache/quiver/gov_contracts/`. 365-day window. `total_amount > 0` → bullish; `recent_win` if last 90 days.
+- **Lobbying** — Quiver prefetch `cache/quiver/lobbying/`. 365-day spend. `>$1M` → high_spend; `>$100k` → moderate.
+- **Analyst data** — yfinance + Quiver `/historical/analystestimates/{ticker}`. **LIVE-ONLY warning per DEC-299/443** for `Ticker.info` fields (recommendationMean / targetMeanPrice / EPS estimates) — display-only, do NOT affect tier or pass/fail. PIT enforced on `recommendations` history + `upgrades_downgrades` window.
+
+### 2A.3 Category 3 — Options Intelligence (Stage 3+ scope)
+
+**Status:** Stage 3+ live trading scope — NOT consumed in Stage 2 backtest.
+
+**Sources (planned):**
+- Put/Call ratio (CBOE free)
+- IV rank (for earnings strategy selection — Stage 4+ option strategies per DEC-035 future scope)
+- Implied volatility skew
+
+**Stage 2 deferral rationale:** Phase 1A v3 archive validated rules + smart money baseline at 67 instruments without options data. Adding options-driven signals belongs to Stage 3+ when paper trading begins live options strategies.
+
+### 2A.4 Category 4 — Macro Filters
+
+**Source-of-truth:** [backtest/data/macro.py](backtest/data/macro.py) + FRED/ALFRED endpoints (per §13.12 + DEC-301/407+448).
+
+- **Yield curve** — 2yr/10yr Treasury spread (FRED series `DGS2` + `DGS10`); inversion flag
+- **VIX** — 20-day realised volatility + classification thresholds (real-time per regime classifier §10); also used in regime hysteresis per DEC-317 (5-day SMA, ≥40 enter / <35 exit)
+- **DXY** — US Dollar Index (UUP ETF proxy from OHLCV cache — direct DXY from yfinance/Polygon when available)
+- **Economic calendar** — CPI / NFP / FOMC dates per DEC-348 event suppression (BLS `news_release/cpi.htm` + `empsit.htm` + Fed `ne-meetings.json`)
+- **Fed rate direction** — Federal Funds rate level + change YoY (FRED `FEDFUNDS`)
+- **Cross-asset macro (per DEC-118):** GLD (gold), USO (oil), TLT / HYG / SHY / IEF (bonds), GDX (gold miners), EEM / EFA (international) — sector & cross-asset breadth signals
+- **Live breadth (Stage 3+ per DEC-447):** PCT_ABOVE_50EMA, PCT_ABOVE_200EMA, new high / low ratio (computed daily from cached OHLCV in Stage 3 live)
+
+### 2A.5 Category 5 — Sentiment Signals
+
+**Source-of-truth:** [backtest/data/sentiment.py](backtest/data/sentiment.py).
+
+- **AAII Sentiment Survey** — weekly bullish / bearish / neutral percentages. Source: `aaii.com/sentimentsurvey/sent_results` manual CSV download committed to repo. Pub-lag 1 day per DEC-389. Auto-refresh per DEC-390 (GH Actions).
+- **CNN Fear & Greed Index** — daily index 0-100 (scrape). Thresholds 20 / 35 / 65 / 80 per DEC-333. Last-published date with `age_days` per DEC-391.
+- **COT Report (CFTC)** — weekly Commitments of Traders report (`cftc.gov/MarketReports/CommitmentsofTraders/`). Macro signal per DEC-407+448.
+
+### 2A.6 Category 6 — Company / Fundamental Signals
+
+**Source-of-truth:** [backtest/data/smart_money.py:88-253](backtest/data/smart_money.py) (analyst data) + Polygon Stocks Starter `/v3/reference/financials` (DEC-256 / DEC-257) + SEC EDGAR direct parsing (DEC-484 Sprint 4).
+
+- **Analyst consensus** — recommendation mean (1-5 scale), price target (mean / high / low) + upside %, EPS estimates (next quarter / next year). **LIVE-ONLY warning per DEC-299/443** for yfinance `Ticker.info` — display-only on site card, NOT affecting confidence tier or pass/fail.
+- **Analyst rating revisions** — upgrades / downgrades 30-day window (yfinance `upgrades_downgrades` PIT-filtered + Quiver `analystestimates`)
+- **Earnings calendar** — report dates from Polygon Stocks Starter (DEC-256); `days_to_earnings` per DEC-013-revised (sizing context, NOT block — Phase 1B)
+- **Buybacks** — SEC EDGAR 10-Q / 10-K share-count delta (Sprint 4 DEC-484 SEC EDGAR fundamentals replaces FMP per Pass 53)
+- **Dividend changes** — Polygon `/v3/reference/dividends` — yield, growth rate, special dividends
+- **Fundamentals (Phase 1B)** — income / balance sheet / cashflow per DEC-484 (SEC EDGAR direct parsing); operating margin, debt/equity, FCF, ROIC, EBITDA margin, etc. Full set TBD per Sprint 4 SEC EDGAR delivery.
+
+### 2A.7 Signal Universe Totals
+
+| Category | Count | Status |
+|---|---|---|
+| 1. Technical Indicators | ~220 | ✅ ACTIVE Stage 2 (DEC-298 raw OHLCV cache) |
+| 2. Smart Money composite + adjacents | ~10 composite/raw labels | ✅ ACTIVE Stage 2 (DEC-450 Quiver paid) |
+| 3. Options Intelligence | ~5 planned | ⏸ Stage 3+ scope |
+| 4. Macro Filters | ~15 | ✅ ACTIVE Stage 2 (DEC-301/407+448 FRED+ALFRED) |
+| 5. Sentiment Signals | ~5 | ✅ ACTIVE Stage 2 (DEC-389/390/391/333/407+448) |
+| 6. Company / Fundamental Signals | ~15 (full set Sprint 4) | ⏸ PARTIAL Stage 2 — full Sprint 4 DEC-484 |
+
+**Total active in Stage 2 backtest:** ~265-275 signal fields (matches CLAUDE.md "274 signal fields" reference). Stage 3+ adds Category 3 options + completes Category 6 fundamentals.
+
+### 2A.8 Cross-References
+
+- **Smart money composite formula (canonical):** §10.8
+- **Smart money adjacent signals (canonical):** §10.9
+- **API endpoint inventory per source:** §13.12
+- **Regime classification using macro signals:** §10
+- **Strategy roster consumption of signals:** STRATEGY_REGISTER.md
+- **Cube dimensions consuming signals as filters:** §21
+- **PIT enforcement for all signals:** §12 (DEC-305 RAISE not WARNING)
+- **Signal-cleanup decisions:** DEC-453 (OpenBB), DEC-454 (Alpha Vantage), DEC-455 (Finnhub) — Sprint 4 deprecation cleanup; DEC-440 (Polygon news replaces AV+Finnhub); DEC-484 (SEC EDGAR replaces FMP for fundamentals)
+
+**Source code paths (engineering verification):**
+- Category 1: `backtest/signals/technical.py` (26 fns aggregated by `compute_all_signals()`)
+- Category 2: `backtest/data/smart_money.py:470-529` (composite); `:317-374` (congressional); `:381-421` (insider); `:428-463` (institutional); `:549-705` (adjacent: news, gov_contracts, lobbying); `:88-253` (analyst)
+- Category 4: `backtest/data/macro.py`
+- Category 5: `backtest/data/sentiment.py`
+- Category 6: distributed across `smart_money.py:88-253` (analyst) + `fetcher.py` (yfinance fundamentals — DEPRECATED per DEC-443) + Sprint 4 SEC EDGAR build
 
 ---
 
