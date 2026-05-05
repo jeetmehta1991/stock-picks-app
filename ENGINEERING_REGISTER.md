@@ -483,6 +483,18 @@ DEC-293 (close_trade days NameError), DEC-294 (duplicate ClosedTrade dataclass),
 
 Sprint 2 effort revised: +14-18d → ~23-27d total (was 9d baseline)
 
+### Sprint 1 / Sprint 5 additions (Pass 53 — Tier 2 implementation alignment) — 1 decision PROPOSED
+
+Discovered Pass 53 turn (this) via owner fact-check question on tier classification ("Isnt tier 2 spin offs and not ETFs?"). DEC-483 Pass 53 introduced T1c = NDX-non-S&P as Tier 1 sub-tier; refresh_extended_universe.py:7-9 still lists "Nasdaq 100 non-S&P" as Tier 2 inclusion criterion → overlap to be removed.
+
+| DEC-N | Description | Test signal | Effort |
+|---|---|---|---|
+| DEC-494 | Tier 2 / refresh_extended_universe.py alignment with DEC-483 — remove NDX-non-S&P from Tier 2 inclusion (now T1c) | refresh_extended_universe.py docstring + logic exclude NDX-non-S&P; extended_universe.csv contains only spinoffs + recent IPOs; T1c (nasdaq_100_membership.csv) canonical NDX-non-S&P source | ~0.5-1d |
+
+**Status:** PROPOSED. AWAITS OWNER APPROVAL on Sprint placement: (a) Sprint 1 universe-build alignment (alongside historical_membership.csv work); (b) Sprint 5 universe management refresh; (c) both.
+
+---
+
 ### Sprint 2 additions (Pass 53 — trade-capture fragility) — 3 decisions PROPOSED
 
 Discovered Pass 53 turn (this) during owner question on trade metadata capture. ClosedTrade dataclass at exit_manager.py:80-135 captures ~40 fields per trade and serializes to `output/trade_log.csv` via writer.py:33. Three fragility items surfaced; logged as Sprint 2 sub-decisions awaiting owner approval on implementation specifics.

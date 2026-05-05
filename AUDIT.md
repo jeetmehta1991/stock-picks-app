@@ -26893,3 +26893,54 @@ R1000 + NDX live INSIDE Tier 1 as expansion sub-tiers. They share the same B++ m
 - Wikipedia/browse fallback usage if any of the above primary sources have gaps (manual verification required)
 
 *Per CHECKLIST #32 (verbatim Q1=approve / Q2=proceed approved / Q3=S&P DJI press releases / new directive "Populate T1b and T1C in the same format as T1a"); #25 (own DEC-368→DEC-370 mis-attribution caught and surfaced before editing per #66; T1b/T1c source-fallback scope-expansion judgment surfaced explicitly for owner override option); #43 (cross-doc consistency: AUDIT_INDEX DEC-483 ↔ DEC-370 ↔ SPRINT1 README all reference DEC-370 correctly; T1b/T1c sub-bullets parallel T1a structure); #45 (pre-flight #66 catch surfaced before any "proceed approved" action; halted to verify DEC scope; surfaced 3 questions and got Q1/Q2/Q3 approvals before edits); #51 (default lower-impact: source change scoped to DEC-370 file as approved; T1b/T1c fallback extension is judgment call surfaced for owner override); #58 (atomic 3-file commit; SPRINT1 README is the most prose-heavy single update — consolidates all 3 file specs in one place); #65 (T1b/T1c file format directive doesn't add new roster items — same DEC-483 universe spec, body now explicit); #66 NEW APPLICATION (the rule that caught my own DEC-368→DEC-370 mis-attribution this turn — #66 working as designed; this catch documents the rule's value to future readers); L143 (decision-state DEC-370 was correct; artifact-state DEC-483 body had drift — corrected without rewriting historical AUDIT entries that documented the now-superseded attribution).*
+
+---
+
+## Pass 53 — Tier 2 characterization corrigendum + DEC-494 PROPOSED (NDX-non-S&P drift fix) + CHECKLIST #66 universe-tier refinement
+
+**Trigger:** Owner fact-check Pass 53 — *"Isnt tier 2 spin offs and not ETFs?"*. Owner caught my tier-classification error in commit `6d4b5303`'s AUDIT.md entry (which characterized Tier 2 as "ETFs / sector funds"). Verification against [refresh_extended_universe.py:1-19](scripts/refresh_extended_universe.py#L1-L19) and [extended_universe.csv schema](backtest/data/extended_universe.csv) confirmed: **Tier 2 = spinoffs above $5B + recent IPOs above $10B + (historically NDX-non-S&P pre-Pass-53)**. ETFs are in Tier 1 per DEC-118 as a separate bucket alongside S&P stocks (hardcoded in `universe.py` `ETFS_FULL`).
+
+This is the second tier-categorization error I made this Pass — first was assuming the 484-CSV was a "during-testing-period intersection" (corrected via [refresh_sp500_universe.py](scripts/refresh_sp500_universe.py) inspection). Pattern: I rely on memory/context for tier characterization rather than verifying against actual file contents and refresh scripts. CHECKLIST #66 refinement this turn addresses this pattern.
+
+**Bonus catch surfaced by owner question:** DEC-483 Pass 53 introduced T1c = NDX-non-S&P as Tier 1 sub-tier, but [refresh_extended_universe.py:7-9](scripts/refresh_extended_universe.py#L7-L9) still lists "Nasdaq 100 non-S&P" as Tier 2 inclusion criterion. Implementation drift between spec (DEC-483) and refresh script. Logged as DEC-494 PROPOSED.
+
+**Resolution applied this turn:**
+
+1. **`AUDIT_INDEX.md` DEC-494 NEW PROPOSED row** — Tier 2 / refresh_extended_universe.py implementation alignment with DEC-483 (remove NDX-non-S&P from Tier 2 inclusion). Effort ~0.5-1d. Sprint placement TBD per owner (Sprint 1 / Sprint 5 / both). AWAITS OWNER APPROVAL on placement; substantive scope captured in DEC body.
+
+2. **`ENGINEERING_REGISTER.md` Sprint 1 / Sprint 5 additions block** — added new "Pass 53 — Tier 2 implementation alignment" sub-block above the Sprint 2 trade-capture additions block. Single-row table for DEC-494 with description + test signal + effort. Status PROPOSED awaiting Sprint placement.
+
+3. **`CHECKLIST.md` #66 refinement** — added Pass 53 refinement paragraph extending the rule to universe-tier categorization (sister axis to DEC-attribution). Verification steps now include `head <file>.csv` + reading refresh script's first 20 lines + checking canonical DEC body (DEC-483/DEC-118/DEC-103/DEC-104). Apply triggers: any "Tier N = ..." / "T1x covers ..." claim; before stating which file holds which content; when explaining universe architecture in narrative; when introducing new tier additions. Verification cost: under 30 seconds.
+
+4. **Corrigendum reference for commit `6d4b5303`'s AUDIT.md entry** — that entry's "Tier classification clarification" block characterized Tier 2 as "ETFs / sector funds". This characterization is **superseded** by this entry. Other content in `6d4b5303`'s entry (DEC-368→DEC-370 fix, S&P DJI source for index_rebalance_events, T1b/T1c B++ format spec) **remains canonical** and is unaffected by this correction. Per L143, the prior entry is preserved as historical record; this entry supersedes phrasing for forward-looking docs.
+
+**Correct tier classification (canonical):**
+
+| Tier | Content | File | Source |
+|---|---|---|---|
+| Tier 1 sub-tiers (DEC-483) | T1a S&P 500 (~503) + T1b R1000-non-S&P (~497) + T1c NDX-non-S&P (~15) | per-tier `_membership.csv` | S&P DJI (T1a + DEC-370 events) / FTSE Russell (T1b) / Nasdaq (T1c) |
+| Tier 1 ETFs (DEC-118) | Selected sector + macro ETFs (XLK/XLF/.../VIX/DXY/GLD/TLT/HYG/SHY etc.) — *inside Tier 1, separate bucket* | hardcoded `universe.py` `ETFS_FULL` | static in code |
+| **Tier 2** | **Spinoffs above $5B within 12 months of spinoff + recent IPOs above $10B with 90+ days history** (NDX-non-S&P removed per DEC-494 PROPOSED — was here pre-Pass-53) | `extended_universe.csv` (`Symbol, Company, Sector, MarketCapB, Tier2Reason, AddedDate`) | `refresh_extended_universe.py` (laptop monthly) |
+| Tier 3 | Momentum watchlist — high-vol momentum names | `momentum_watchlist.csv` (`Symbol, Company, Sector, MomentumScore, MarketCapB, LastPrice, AddedDate`) | `build_momentum_watchlist.py` (laptop monthly) |
+
+**Decision impact:**
+- DEC-494 PROPOSED added to AUDIT_INDEX. Status: AWAITS OWNER APPROVAL on Sprint placement.
+- ENGINEERING_REGISTER Sprint 1 / Sprint 5 additions block: 1 new row.
+- CHECKLIST #66 refinement: existing item body extended with universe-tier categorization clause; #66 number unchanged.
+- Prior commit `6d4b5303` AUDIT.md entry: superseded for tier characterization specifically; other content remains canonical.
+- No DEC-status flips. No new HARD RULE additions or amendments.
+
+**Files updated this turn:**
+1. `AUDIT_INDEX.md` — DEC-494 PROPOSED row added
+2. `ENGINEERING_REGISTER.md` — Sprint 1/5 Pass 53 additions block (1 row)
+3. `CHECKLIST.md` — #66 refinement paragraph
+4. `AUDIT.md` — this entry (corrigendum + DEC-494 registration + #66 refinement note)
+
+**Out of scope this turn (queued):**
+- Implementation of DEC-494 fix (refresh_extended_universe.py docstring + logic update; extended_universe.csv NDX-non-S&P scan) — Sprint 1 / Sprint 5 work pending Sprint placement approval.
+- Verification scan of current `extended_universe.csv` for any NDX-non-S&P entries that should move to T1c (likely empty given file is currently spinoff/IPO focused, but verify).
+- Documentation drift sweep beyond this turn — possible Tier 2 mis-characterizations in older AUDIT entries or DETAILED_PROJECT_PLAN — preserved per L143 don't-rewrite-history pattern; corrigendum reference here is sufficient for forward-looking discoverability.
+
+**Pattern note (#25 honest meta-finding):** I made tier-categorization errors twice this Pass: (a) assumed 484-CSV was during-testing intersection, caught via investigation pre-edit; (b) characterized Tier 2 as ETFs in `6d4b5303`, caught by owner post-commit. The first was caught by my own pre-flight; the second slipped through. CHECKLIST #66 refinement is the systemic fix — universe-tier claims now require artifact verification, not memory. Future-me should treat tier characterization as a class of claim that needs the same scope-alignment discipline as DEC-attribution.
+
+*Per CHECKLIST #32 (verbatim Q1=Approve / Q2=Approve do it this turn / Q3=Approve covering corrigendum + DEC-494 registration + #66 refinement); #25 (own tier-classification error caught by owner; surfaced honestly with pattern observation about reliance on memory vs artifact verification; second tier error this Pass — pattern documented for systemic fix); #43 (cross-doc consistency: AUDIT_INDEX DEC-494 ↔ ENGINEERING_REGISTER Sprint 1/5 additions ↔ CHECKLIST #66 refinement ↔ AUDIT.md narrative all align); #45 (pre-flight verified DEC-494 next available, ETF placement per DEC-118, Tier 2 content per refresh_extended_universe.py and CSV schema before edits); #51 (default lower-impact: corrigendum approach preserves prior commit's AUDIT entry per L143 don't-rewrite-history; #66 refinement extends existing item rather than creating #67 — preserves roster size); #58 (atomic 4-file commit covering all three approvals); #65 (no new roster categories — DEC-494 is Tier 2 alignment with existing categories; #66 refinement is body extension); #66 (this turn extends #66 to cover universe-tier categorization sister-axis — the rule self-applies to its own scope-expansion).*
