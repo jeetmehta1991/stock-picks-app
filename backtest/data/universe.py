@@ -70,22 +70,27 @@ def get_etfs_full() -> list[str]:
 ETFS_FULL = get_etfs_full()
 
 
-def get_sp500_constituents(max_tickers: int = 500) -> list[str]:
+def get_sp500_constituents(max_tickers: int | None = None) -> list[str]:
     """
     Load S&P 500 constituent list from the committed CSV file.
 
-    Uses backtest/data/sp500_tickers.csv — a maintained static file.
+    Uses Backtesting universe/sp500_tickers.csv — a maintained static file
+    (Pass 53 folder move). Synced to Wikipedia Table 0 ground truth (503).
     No network calls, no rate limiting, works in all environments.
     Update sp500_tickers.csv manually when index membership changes
     (typically 10-20 changes per year).
+
+    Per Pass 53: actual S&P 500 has ~503 securities (500 companies + dual-class).
+    Default `max_tickers=None` returns all members. Pass an explicit cap only
+    for tests or constrained-universe scenarios.
     """
     csv_path = UNIVERSE_DIR / "sp500_tickers.csv"
     try:
         df = pd.read_csv(csv_path, comment='#')
-        # Remove duplicates (companies with two share classes)
+        # Remove duplicates by Symbol (defensive — file should already be unique by symbol)
         tickers = df["Symbol"].drop_duplicates().tolist()
         logger.info("Loaded %d S&P 500 constituents from sp500_tickers.csv", len(tickers))
-        return tickers[:max_tickers]
+        return tickers[:max_tickers] if max_tickers else tickers
     except Exception as exc:
         logger.error("Could not read sp500_tickers.csv: %s", exc)
         return []

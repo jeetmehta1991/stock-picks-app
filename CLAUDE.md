@@ -39,8 +39,8 @@
 
 ```
 Backtesting universe/    # Top-level folder for ALL universe CSVs (Pass 53 owner directive — single visible folder). ALL files use standardized B++ schema: `Symbol, Company, Sector, added_date, removed_date` + tier-specific extension columns (Pass 53 schema standardization).
-  sp500_tickers.csv          # T1a current snapshot — quarterly refresh; B++ schema (Pass 53 standardized; added/removed_date NULL on baseline)
-  historical_membership.csv  # T1a B++ canonical PIT file (DEC-477) — Pass 53 baseline-only build (484 current members, all dates NULL); historical events 2020-2026 backfill = Sprint 1 follow-up via S&P DJI press release scrape (primary) + Wikipedia changes table (L88 fallback)
+  sp500_tickers.csv          # T1a current snapshot — Wiki Table 0 ground truth (503 rows, B++ schema; Pass 53 sync replaced 481 stale slickcharts)
+  historical_membership.csv  # T1a B++ canonical PIT file (DEC-477) RESOLVED-IMPLEMENTED Pass 53 — 614 rows (503 active + 111 historical removed-during-window); 124 events 2020-01-01 → 2026-04-09 from Wikipedia Table 1 under L88 exception (4/4 high-impact spot-check verified vs S&P DJI press releases); CDAY→DAY rename map applied; remaining gap = 111 historical rows have blank Sector pending supplementary GICS lookup
   tier1_etfs.csv             # Tier 1 ETFs (27) — DEC-118 / DEC-494; B++ schema + Category extension column (Pass 53 standardized; ETFs are reference instruments — added/removed_date NULL = always-active)
   nasdaq_100_membership.csv  # T1c — 157 rows B++ schema (DEC-303); GICS sectors; multi-period rows
   extended_universe.csv      # T2 — DEC-103; populate Sprint 1 post-Polygon-prefetch via DEC-380 corp actions screener (per Pass 53 SCREENER-FIRST correction)

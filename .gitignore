@@ -34,3 +34,6 @@ venv/
 output_1b_batch*/trade_log_checkpoint.csv
 output_1b_batch*_test/trade_log_checkpoint.csv
 *.log
+
+# Pass 53 universe-build intermediate artifacts (kept local for audit trail; canonical output is in Backtesting universe/)
+temp_staging/

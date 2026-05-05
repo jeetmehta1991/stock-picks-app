@@ -828,15 +828,38 @@ def test_hybrid_short_trail_after_target_hit():
 # PIT UNIVERSE LOADERS (DEC-040 / DEC-477 — Pass 53)
 # ─────────────────────────────────────────────────────────────────────────────
 
-def test_pit_filter_baseline_consistency():
-    """Baseline-only build (all NULL dates) returns identical set across as_of dates."""
+def test_pit_filter_event_driven_changes():
+    """Post-rebuild T1a (Pass 53 Wikipedia 124 events): PIT counts vary across as_of dates.
+
+    Spot-checks specific known events:
+      - TSLA added 2020-12-21 (replaces AIV)
+      - SNDK added 2025-11-28 (replaces IPG; WDC spinoff)
+      - DAY removed 2026-02-09 (CDAY-renamed-DAY post-merger)
+    """
     from backtest.data.universe import get_sp500_constituents_pit
-    a = get_sp500_constituents_pit(date(2020, 1, 1))
-    b = get_sp500_constituents_pit(date(2024, 6, 15))
-    c = get_sp500_constituents_pit(date(2026, 5, 5))
-    assert a == b == c, "baseline should be identical until event backfill (option-beta semantics)"
-    assert len(a) > 400, f"expected >400 baseline tickers, got {len(a)}"
-    print(f"✅ baseline PIT consistency: {len(a)} tickers across all dates")
+    pre_tsla = set(get_sp500_constituents_pit(date(2020, 12, 20)))
+    post_tsla = set(get_sp500_constituents_pit(date(2020, 12, 21)))
+    assert "TSLA" not in pre_tsla, "TSLA should NOT be in S&P pre-2020-12-21"
+    assert "TSLA" in post_tsla, "TSLA SHOULD be in S&P from 2020-12-21"
+    assert "AIV" in pre_tsla, "AIV should be in S&P pre-2020-12-21"
+    assert "AIV" not in post_tsla, "AIV should NOT be in S&P from 2020-12-21"
+
+    pre_sndk = set(get_sp500_constituents_pit(date(2025, 11, 27)))
+    post_sndk = set(get_sp500_constituents_pit(date(2025, 11, 28)))
+    assert "SNDK" not in pre_sndk and "SNDK" in post_sndk, "SNDK inclusion 2025-11-28 not handled"
+    assert "IPG" in pre_sndk and "IPG" not in post_sndk, "IPG removal 2025-11-28 not handled"
+
+    pre_day_remove = set(get_sp500_constituents_pit(date(2026, 2, 8)))
+    post_day_remove = set(get_sp500_constituents_pit(date(2026, 2, 10)))
+    assert "DAY" in pre_day_remove, "DAY should be active 2026-02-08"
+    assert "DAY" not in post_day_remove, "DAY should be removed by 2026-02-10"
+
+    # CDAY → DAY rename map: CDAY should never appear in PIT results
+    sample_2024 = set(get_sp500_constituents_pit(date(2024, 6, 1)))
+    assert "CDAY" not in sample_2024, "CDAY should be remapped to DAY (rename map)"
+    assert "DAY" in sample_2024, "DAY should be active under post-rename ticker"
+
+    print("✅ event-driven PIT: TSLA + SNDK + IPG + DAY transitions verified")
 
 
 def test_pit_filter_added_date_semantics():
@@ -946,7 +969,7 @@ if __name__ == "__main__":
         test_cot_returns_neutral, test_sentiment_score_excludes_cot,
         test_hybrid_long_trail_after_target_hit,
         test_hybrid_short_trail_after_target_hit,
-        test_pit_filter_baseline_consistency,
+        test_pit_filter_event_driven_changes,
         test_pit_filter_added_date_semantics,
         test_pit_filter_removed_date_semantics,
         test_pit_filter_multi_period_rows,

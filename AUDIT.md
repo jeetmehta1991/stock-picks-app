@@ -27910,3 +27910,86 @@ Pre-Pass-53 schema audit (this turn) revealed inconsistency:
 - FLOW: current snapshot rows → emit with NULL dates per Pass 53 option-β semantics (matches T1c nasdaq_100_membership.csv NULL-pre-window pattern); ETF reference instruments → emit with NULL dates (always-active semantics). Matches "execute now even if null" purpose ✅. Does NOT invoke L88 Wikipedia exception this turn (no scrape).
 
 *Per CHECKLIST #1 (owner approval received — "execute now" + "rectify" explicit); #13 (read-before-edit verified for all migrated files + universe.py + refresh script via grep + Read); #25 (gap surfaced honest — historical event backfill explicitly named as Sprint 1 follow-up, not silently deferred); #32 (verbatim owner directive enumeration); #43 (cross-doc consistency — CLAUDE.md repo structure updated to match new file layout); #45 (read each doc before editing); #51 (scope strict — schema migration + baseline build only; PIT loader integration deferred to Sprint 1 implementation); #58 (atomic commit grouping all 6 file changes); #65 (no roster expansions — schema migration is structural; no new DECs); #66 (DEC target alignment verified — DEC-477 = T1a historical_membership.csv canonical, DEC-118 = Tier 1 ETFs); #66.b (data flow INPUT/OUTPUT/FLOW block stated above pre-edit). Owner directive "execute now ... standardized schema ... rectify" — FULFILLED. Historical event backfill (S&P DJI press release scrape) explicitly flagged as remaining Sprint 1 work; awaits owner direction on when to invoke L88 exception.*
+
+---
+
+## Pass 53 — T1a historical_membership.csv RESOLVED-IMPLEMENTED (Wikipedia rebuild + 4/4 spot-check + sp500_tickers.csv sync)
+
+**Trigger:** Owner Pass 53 directive (this turn): "Q1 Approach A / Q2 Use wiki GICS / Q3 NULL / Q4 Approved. Proceed with sync / Q5 Yes for high impact events" — full approval matrix for Item 2 T1a historical event backfill from prior verification gate.
+
+**Workflow executed (under L88 fallback exception with all 4 conditions met):**
+
+**Step 1 — High-impact event spot-check (per owner Q5 condition iii of L88):**
+4 high-impact events verified vs S&P DJI press releases (authoritative primary source) before any write to historical_membership.csv:
+
+| Event | Wikipedia | S&P DJI press release | Match |
+|---|---|---|---|
+| TSLA inclusion 2020-12-21 (replaces AIV) | confirmed | spglobal.com/spdji/.../1258362_tdec215addconsult.pdf | ✅ |
+| KVUE inclusion 2023-08-25 (replaces AAP — JNJ spinoff) | confirmed | press.spglobal.com/2023-08-09-Kenvue | ✅ |
+| SNDK inclusion 2025-11-28 (replaces IPG — WDC spinoff) | confirmed | press.spglobal.com/2025-11-24-Sandisk | ✅ |
+| PAYC removal 2026-03-23 (March 2026 rebalance) | confirmed | press.spglobal.com/2026-03-06-Vertiv... | ✅ |
+
+Confidence in Wikipedia source: HIGH (4/4 high-impact spot-check match).
+
+**Step 2 — Wikipedia scrape (Approach A Wikipedia-authoritative rebuild per owner Q1):**
+- Fetched `en.wikipedia.org/wiki/List_of_S&P_500_companies`
+- Table 0: 503 current S&P 500 components (with GICS Sector + Sub-Industry per owner Q2)
+- Table 1: 124 events 2020-01-01 → 2026-04-09 (Selected changes table)
+
+**Step 3 — Build historical_membership.csv (614 rows total):**
+- Walked 124 events chronologically; emitted B++ rows per ticker
+- Currently active (Wiki Table 0): 503 rows (added_date set if added during window, else NULL per owner Q3 option-β)
+- Historical (removed during window, not in Table 0): 111 rows (added_date NULL, removed_date set)
+- Mid-period rename map applied: CDAY → DAY (Ceridian renamed to Dayforce 2024-01-11; Wikipedia events table doesn't track renames; without map, CDAY would falsely appear as currently-active)
+- 0 multi-period rows in actual data (Wiki events table doesn't show any 2020-2026 ticker re-entries within window)
+
+**Step 4 — sp500_tickers.csv sync per owner Q4:**
+- Replaced prior 481-row stale slickcharts snapshot with Wikipedia Table 0 503-row ground truth
+- Schema unchanged (B++); only data refreshed
+- `get_sp500_constituents()` default `max_tickers` cap removed (was 500 — silently truncated current 503; now `None` returns all)
+
+**Step 5 — Verification:**
+
+Runtime PIT semantics tests (specific events):
+- TSLA 2020-12-20 → not in S&P; 2020-12-21 → in S&P ✅
+- AIV 2020-12-20 → in S&P; 2020-12-21 → not in S&P ✅
+- SNDK 2025-11-27 → not in S&P; 2025-11-28 → in S&P ✅
+- IPG 2025-11-27 → in S&P; 2025-11-28 → not in S&P ✅
+- DAY 2026-02-08 → in S&P; 2026-02-10 → not in S&P ✅
+- CDAY → never appears (rename map remaps to DAY) ✅
+
+PIT counts by year (verifying event-driven membership variation):
+- 2020-01-01: 505 active members
+- 2020-12-21: 505
+- 2022-06-15: 504
+- 2024-01-01: 503
+- 2026-05-05: 503
+
+Net change 2020 → 2026: -2 (matches event categorization: 13 add-only events − 15 remove-only events = -2).
+
+**Test suite:** 62/62 unit tests passing. `test_pit_filter_baseline_consistency` (obsoleted by event-driven data) replaced with `test_pit_filter_event_driven_changes` asserting specific TSLA/AIV/SNDK/IPG/DAY transitions + CDAY→DAY rename.
+
+**Files modified this turn:**
+
+| File | Change |
+|---|---|
+| `Backtesting universe/historical_membership.csv` | REBUILT 484 → 614 rows (503 active + 111 historical); GICS Sector populated for 503 active; 7 header comment lines updated with provenance + L88 conditions met + spot-check verification |
+| `Backtesting universe/sp500_tickers.csv` | RESYNCED 481 → 503 rows from Wikipedia Table 0 ground truth (Approach A replacement, not augmentation) |
+| `backtest/data/universe.py` | `get_sp500_constituents()` default cap changed `max_tickers=500` → `max_tickers=None`; updated docstring |
+| `backtest/tests/test_unit.py` | `test_pit_filter_baseline_consistency` → `test_pit_filter_event_driven_changes` (event-driven assertions for TSLA/AIV/SNDK/IPG/DAY transitions + CDAY→DAY rename) |
+| `temp_staging/build_t1a_historical.py` | NEW — Pass 53 build script (RENAMES map + Wiki scrape + B++ emission); kept under temp_staging for reference |
+| `temp_staging/sp500_changes_2020_2026.csv` | NEW — 124-event source data (intermediate artifact for verification trail) |
+| `temp_staging/sp500_current_wikipedia_503.csv` | NEW — Wiki Table 0 snapshot (intermediate artifact) |
+| `AUDIT_INDEX.md` | DEC-477 status RESOLVED-DECIDED → RESOLVED-IMPLEMENTED with full execution body |
+| `AUDIT.md` | This narrative entry |
+
+**Open follow-up: 111 historical-only rows have blank Sector** — Wikipedia Table 0 (current 503) doesn't have GICS for tickers that left the index. Supplementary lookup (e.g., last-known GICS from yfinance or Polygon reference data) is a follow-up Sprint 1 task. Until then, sector-based filters at PIT lookups for as_of dates that include removed tickers will see those rows with blank Sector.
+
+**L88 exception scope: spent — for T1a only.** L88 is a one-time exception per universe file. Subsequent universe-build files (T1b russell_1000_membership.csv, T1c nasdaq_100_membership.csv updates, index_rebalance_events.parquet) will need separate per-file exception scope decisions if Wikipedia is the primary source.
+
+**Pre-flight INPUT/OUTPUT/FLOW (CHECKLIST #66.b):**
+- INPUT: Wikipedia Table 0 (503 current with GICS) + Wikipedia Table 1 (124 events 2020-2026); cross-checked vs 4/4 high-impact S&P DJI press releases (TSLA / KVUE / SNDK / PAYC)
+- OUTPUT: `Backtesting universe/historical_membership.csv` (614 B++ rows) + `Backtesting universe/sp500_tickers.csv` (503 currently-active synced) + `backtest/data/universe.py` (cap removal) + test suite update
+- FLOW: scrape → spot-check → walk events → apply rename map → emit B++ → runtime verify → tests pass
+
+*Per CHECKLIST #1 (owner approval received — Q1/Q2/Q3/Q4/Q5 explicit answers); #13 (read-before-edit verified — read AUDIT_INDEX DEC-477 body, universe.py get_sp500_constituents, test_unit.py test functions before editing); #22 (small-batch validation — 4/4 spot-check before scaling; runtime PIT verification before commit; full unit test suite before push); #25 (drift surfaced honest — 481 baseline staleness exposed, CDAY→DAY rename caught, blank Sector follow-up named as remaining gap); #32 (verbatim owner approval enumeration Q1-Q5); #43 (cross-doc consistency — DEC-477 body update + AUDIT narrative + test suite + universe.py docstring all aligned); #45 (read before edit; runtime verification before commit); #51 (scope strict — Item 2 only; not expanding to T1b/T1c/T2/T3 this turn); #58 (atomic commit covering rebuild + sync + cap fix + tests + DEC-477 update + AUDIT narrative); #65 (no roster expansion — same DEC-477, status flip + body update); #66 (DEC target alignment verified — DEC-477 = T1a historical_membership.csv); #66.b (INPUT/OUTPUT/FLOW stated pre-edit, verified post-build). **L88 exception conditions: (i) laptop-local ✅, (ii) Wikipedia fallback after S&P DJI primary attempt ✅, (iii) manual verification — owner Q5 spot-check 4/4 events ✅, (iv) pre-Sprint-1 not runtime ✅.** Owner directive "Q1 Approach A / Q2 Use wiki GICS / Q3 NULL / Q4 Approved Proceed with sync / Q5 Yes" — FULFILLED. T1a historical_membership.csv = RESOLVED-IMPLEMENTED. DEC-040 PIT loader integration also IMPLEMENTED via get_sp500_constituents_pit + union_universe (committed Pass 53 prior turn `ffc358f4`).*
