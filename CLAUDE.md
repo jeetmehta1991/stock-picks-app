@@ -166,6 +166,14 @@ All 9 must pass overall for a strategy to advance. Additionally, each strategy g
 - **NEVER use Wikipedia.** Historically blocked in Codespaces; not point-in-time; fragile (L88). Same fragility applies on local VS Code.
   - S&P 500 → `backtest/data/sp500_tickers.csv` refreshed quarterly via `scripts/refresh_sp500_universe.py` on LAPTOP using slickcharts.com
   - Never propose `pd.read_html('https://en.wikipedia.org/...')` for any purpose.
+  - **One-time historical scrape exception (Pass 53 owner-granted, scoped):** Wikipedia + general internet browsing is permitted for ONE-TIME assembly of historical universe membership files (`historical_membership.csv`, `russell_1000_membership.csv`, `nasdaq_100_membership.csv`, `index_rebalance_events.parquet`) under these conditions: (i) laptop-local execution only, (ii) fallback source — primary is S&P DJI press releases / FTSE Russell / Nasdaq, (iii) manual verification before commit, (iv) not runtime — these scrapes happen pre-Sprint-1 to assemble static CSV inputs, never inside the backtest hot path. See AUDIT.md Pass 53 entries for exception scope details.
+
+### CSV-first data architecture (Pass 53 owner directive — HARD RULE)
+- **All input data and output data must live in CSV files (or Parquet for nested/binary data per DEC-491). No data should live exclusively in the codebase.** The code pulls data from CSV files; CSV is the source of truth.
+- **Applies to:** universe lists (T1a/T1b/T1c/T2/T3 + ETFs), sector mappings, ticker overrides, calendar events, trade outputs, metrics outputs, regime classifications, strategy registers — anything that is data rather than parameter/logic/threshold.
+- **Distinction from configuration:** Numerical thresholds (TRAILING_STOP percent, LIQUIDITY mins, position sizing tiers, slippage bps) and methodological choices (regime classifier formulas, statistical gates) ARE configuration/logic, NOT data — these can stay in code/config files. The line: if it's a *list of items*, *map of attributes*, or *historical record*, it's data → CSV. If it's a *behavior parameter* or *formula*, it's logic → code/config.
+- **Past violations being corrected:** `ETFS_FULL` hardcoded in `universe.py` → `tier1_etfs.csv` (DEC-494 / commit `e257d160`). `etf_sectors` dict in `universe.py:get_sector_map()` → migrate to read from `tier1_etfs.csv` Sector column (queued). `SECTOR_OVERRIDES` dict in `scripts/refresh_sp500_universe.py` → could move to CSV (queued).
+- **Apply when:** writing new modules that introduce hardcoded ticker lists / sector dicts / event calendars / known-good outputs; reviewing existing modules during sprint planning; adding new universe tiers or strategy categories. If you find yourself typing a Python list of tickers or a dict of attributes longer than 5 entries, stop and put it in a CSV instead.
 
 ### Universe Management
 - `sp500_tickers.csv` must be refreshed quarterly (CHECKLIST item 19). If last commit >90 days old, flag before any run.

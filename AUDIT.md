@@ -27008,3 +27008,86 @@ This is the second tier-categorization error I made this Pass — first was assu
 - `universe.py:get_sector_map()` migration to read sectors from new tier1_etfs.csv (cosmetic, not functional)
 
 *Per CHECKLIST #32 (verbatim 4 directives — no Greek / Items 1+2 approved / Item 3 beta with thorough cross-check / Item 4 (ii) CSV+code migration); #25 (NDX assembly surfaced for owner verification rather than auto-committed — respects L88 exception scope manual-verification clause; ETF migration limited to ETFS_FULL replacement, sector_map migration deferred for owner direction); #43 (cross-doc: AUDIT_INDEX DEC-494 ↔ ENG_REGISTER ↔ universe.py ↔ tier1_etfs.csv all aligned); #45 (pre-flight verified ETFS_FULL contents match Wikipedia ETF descriptions before CSV write; verified DEC-494 next-action; verified Tier 2 sweep grep result before declaring "no older drift"); #51 (default lower-impact: T1b/T1c CSV writes deferred for owner verification turn rather than auto-committing; sector_map migration deferred); #58 (atomic 5-file commit + memory; T1b/T1c CSV creation surfaces for follow-up commit after verification); #65 (no new roster items; ETF migration is implementation refactor); #66 (verified DEC-494 / DEC-118 / Tier 2 contents per artifact-not-memory); #45 NEW APPLICATION — feedback memory saved per CLAUDE.md memory rules; not optional. L88 exception (Wikipedia for one-time historical scrape) HONORED via "manual verification before commit" — fetched data surfaced for owner review, not silently committed.*
+
+---
+
+## Pass 53 — CSV-first HARD RULE added to CLAUDE.md + T1c CSV (NDX 2020-2026) committed + Russell 1000 sourcing wall (T1b deferred)
+
+**Trigger:** Owner Pass 53 directives:
+1. Add CLAUDE.md HARD RULE: "All input data and output data should be outputted to CSV files. No data should live exclusively in the codebase."
+2. NDX matches verification — proceed with T1c CSV write.
+3. Q2: Remap to GICS (vs Wikipedia ICB).
+4. Q3: Confirm multi-period rows; ensure no errors in PIT loader filter.
+5. Q4: Russell 1000 fetch in parallel.
+
+**Resolution applied this turn:**
+
+1. **`CLAUDE.md` HARD RULE addition (Pass 53 directive 1):**
+   - Added "CSV-first data architecture" subsection under HARD RULES — Never Violate.
+   - Rule scope: input data + output data live in CSV/Parquet, NOT exclusively in codebase. Code pulls from CSV.
+   - Distinction codified: data (lists / mappings / records) → CSV; configuration (thresholds / formulas / parameters) → code/config.
+   - Past violations being corrected explicitly listed: ETFS_FULL hardcoded → tier1_etfs.csv (commit `e257d160`). Cosmetic items queued: etf_sectors dict, SECTOR_OVERRIDES dict.
+   - Apply trigger: any new module introducing hardcoded ticker lists / sector dicts / event calendars longer than 5 entries → put in CSV.
+   - Also under "Data Sources" subsection: codified Pass 53 one-time L88 exception scope (Wikipedia + browse permitted for one-time historical universe-build scrapes; never runtime).
+
+2. **`backtest/data/nasdaq_100_membership.csv` NEW (T1c populate, Pass 53 directive 2-4):**
+   - 157 rows covering all unique NDX members 2020-2026.
+   - Schema: Symbol, Company, Sector, added_date, removed_date (B++ format per DEC-303).
+   - **Multi-period tickers** (each gets multiple rows, one per period):
+     - CSGP (in pre-2020 → out 2020-07-20 → in 2022-12-19, currently active)
+     - TTWO (in pre-2020 → out 2020-12-21 → in 2023-12-14, currently active)
+     - WDC (in pre-2020 → out 2020-10-19 → in 2025-12-22, currently active)
+     - CDW (in 2021-12-20 → out 2025-12-22) — single period; not multi-row but documented for clarity
+     - SPLK (in pre-2020 → out 2022-12-19 → in 2023-12-18 → out 2024-03-18; two CSV rows)
+   - **GICS sectors** (per Q2 owner directive — remapped from Wikipedia ICB):
+     - Technology (ICB) → Information Technology (GICS): AAPL, MSFT, NVDA, AVGO, INTC, etc.
+     - Telecommunications (ICB) → Communication Services (GICS): TMUS, CHTR, CMCSA
+     - Wikipedia "Technology" classification corrected per GICS 2018 reclassification: META, NFLX, GOOG, GOOGL, EA, TTWO → Communication Services (Interactive Home Entertainment / Interactive Media)
+     - Costco (COST) → Consumer Staples (not Consumer Discretionary as Wikipedia ICB implied for some retailers)
+     - PYPL → Financials (FinTech under GICS), not Industrials as Wikipedia ICB
+   - **Pre-2020 active tickers** (in NDX prior to mapping window, currently still in): NULL `added_date`, NULL `removed_date`. Per DEC-303 / DEC-477 option-β.
+   - **Anomaly flagged for owner review:** WMT (Walmart) entry shows `added_date=2026-01-20` per Wikipedia — Walmart transferred from NYSE to NASDAQ exchange listing. Unusual for an NDX entry but Wikipedia documents the transfer. Owner should verify before relying on this row.
+   - **Uncertain dates flagged:**
+     - PTON (Peloton) removal date: Wikipedia didn't have explicit date; estimated 2022-12-19 reconstitution based on broader context. Owner verify.
+     - NTES (NetEase) removal date: same situation; estimated 2024-12-23 reconstitution. Owner verify.
+
+3. **PIT loader filter verification for multi-period rows (Q3):**
+   - Filter expression: `(added_date IS NULL OR added_date ≤ as_of) AND (removed_date IS NULL OR removed_date > as_of)`.
+   - Test case 1 (WDC, as_of=2020-05-01, expected: in NDX): row 1 (NULL,2020-10-19) → both clauses pass, row PASSES; row 2 (2025-12-22,NULL) → first clause fails, row REJECTED. Result: WDC found in 1 of 2 rows → in universe ✅
+   - Test case 2 (WDC, as_of=2023-06-15, expected: NOT in NDX, between periods): row 1 → second clause fails (2020-10-19 ≤ 2023-06-15), row REJECTED. Row 2 → first clause fails (2025-12-22 > 2023-06-15), row REJECTED. Result: WDC found in 0 rows → not in universe ✅
+   - Test case 3 (WDC, as_of=2026-01-15, expected: in NDX, second period): row 1 → second clause fails, REJECTED. Row 2 → first clause passes (2025-12-22 ≤ 2026-01-15), second clause passes (NULL → currently active), PASSES. Result: WDC found → in universe ✅
+   - Loader logic: `df[(filter_expr)]` returns all matching rows; `ticker in result['Symbol'].values` answers "is X in universe at as_of". Multi-period rows handled correctly via standard pandas/SQL OR semantics (any matching row → ticker in universe).
+   - Filter expression unchanged from prior commits; no code change needed for multi-period support — schema naturally accommodates.
+
+4. **Russell 1000 (T1b) fetch attempt — sourcing wall, deferred (Q4):**
+   - Wikipedia "Russell 1000 Index" article: returned partial member list (~300-400 of ~1000, truncated mid-entry); NO reconstitution history; no add/remove timeline.
+   - Attempted FTSE Russell official: `ftse.com/products/indices/russell-us` → 301 redirect → `ftserussell.com/products/indices/russell-us` → 301 redirect → `lseg.com/en/ftse-russell/indices/russell-us`. Three-redirect chain; halted before more WebFetch calls drift the turn off-task.
+   - **T1b populate deferred to next turn.** Owner direction needed on source approach.
+   - **Source options surfaced for owner direction:**
+     - (A) iShares IWB ETF holdings — IWB tracks Russell 1000; iShares.com publishes daily holdings as downloadable CSV. Provides current snapshot only; historical add/remove dates require multi-year snapshot diff.
+     - (B) LSEG.com (FTSE Russell new home) — would need to follow the redirect chain into LSEG to find downloadable lists; uncertainty about whether free or paywalled.
+     - (C) Polygon Stocks Starter reference data — already paid for ($29/mo per DEC-441/478); may have index membership endpoint. Worth checking before paying for another source.
+     - (D) Manual reconstruction from press releases — Russell reconstitution announcements are dated June each year; FTSE publishes press releases. Tedious but reliable. Could automate via WebFetch on each year's announcement page.
+     - (E) Defer T1b to formal Sprint 1 procurement — assemble proper data source as part of Sprint 1 work with Polygon reference data investigation + iShares download.
+
+5. **`AUDIT.md`** — this entry.
+
+**Files updated this turn:**
+1. `CLAUDE.md` — HARD RULE addition (CSV-first data architecture) + Pass 53 L88 exception scope codified
+2. `backtest/data/nasdaq_100_membership.csv` — NEW T1c populate (157 rows)
+3. `AUDIT.md` — this entry
+
+**Files NOT updated this turn:**
+- `backtest/data/russell_1000_membership.csv` — sourcing wall; deferred for owner direction on source approach
+- `backtest/data/historical_membership.csv` (T1a) — Sprint 1 implementation work; same source pattern (S&P DJI press releases) applies but not started this turn
+
+**Out of scope this turn:**
+- Russell 1000 (T1b) population — needs owner direction on Source A/B/C/D/E
+- T1a S&P 500 historical_membership.csv build — Sprint 1 work
+- DEC-494 implementation (refresh_extended_universe.py docstring + logic update) — Sprint 1 work
+- universe.py `get_sector_map()` migration to read from CSV (per new HARD RULE; cosmetic / queued)
+- `SECTOR_OVERRIDES` in scripts/refresh_sp500_universe.py migration to CSV (per new HARD RULE; queued)
+
+**Pattern note (#25 honest meta-finding):** Russell 1000 sourcing exposed that "Wikipedia primary, S&P DJI fallback" pattern from prior commits doesn't generalize cleanly. NDX has rich Wikipedia coverage; Russell 1000 doesn't. Sister-index files have meaningfully different source quality. The Pass 53 L88 exception language in CLAUDE.md / DEC-303 / DEC-477 should likely note this — different sister files have different optimal primary sources. Worth refining if owner picks source approach in next turn.
+
+*Per CHECKLIST #32 (verbatim 4 directives — CLAUDE.md rule add, NDX matches confirm, GICS remap, multi-period verify, Russell 1000 in parallel); #25 (Russell 1000 sourcing wall surfaced honestly; T1c GICS remap details disclosed including 2018 GICS reclassification of media/entertainment to Communication Services; uncertain rows for PTON/NTES/WMT flagged for owner verification rather than silently committed); #43 (T1c CSV ↔ DEC-303 schema ↔ DEC-483 sub-tier spec aligned; CLAUDE.md HARD RULE additions cross-reference DEC-491 Parquet for nested data); #45 (PIT loader filter verified via 3 test cases for multi-period rows BEFORE writing CSV; CLAUDE.md HARD RULE addition surfaces past violations being corrected explicitly to set scope boundary); #51 (default lower-impact: Russell 1000 NOT auto-fetched after Wikipedia inadequate result; surfaced 5 source options A-E rather than assuming any; sourcing wall preserves owner authority on Sprint 1 source procurement decision); #58 (atomic 3-file commit; Russell 1000 deferred to follow-up commit); #65 (no new roster items — T1c CSV is data file, not roster category); #66 (verified DEC-303 schema, DEC-483 sub-tier spec, GICS sector classifications via cross-reference rather than memory; PIT filter logic verified against actual SQL/pandas semantics not assumed). L88 exception HONORED — manual verification clause respected via owner verbal "1. Matches" before T1c CSV write; CLAUDE.md HARD RULE codifies the exception scope going forward.*

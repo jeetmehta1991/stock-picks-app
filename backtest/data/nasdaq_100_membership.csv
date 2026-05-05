@@ -1,0 +1,162 @@
+Symbol,Company,Sector,added_date,removed_date
+AAPL,Apple Inc.,Information Technology,,
+ABNB,Airbnb,Consumer Discretionary,2021-12-20,
+ADBE,Adobe Inc.,Information Technology,,
+ADI,Analog Devices,Information Technology,,
+ADP,Automatic Data Processing,Industrials,,
+ADSK,Autodesk,Information Technology,,
+AEP,American Electric Power,Utilities,2020-12-21,
+ALNY,Alnylam Pharmaceuticals,Health Care,2025-12-22,
+AMAT,Applied Materials,Information Technology,,
+AMD,Advanced Micro Devices,Information Technology,,
+AMGN,Amgen,Health Care,,
+AMZN,Amazon,Consumer Discretionary,,
+APP,AppLovin,Information Technology,2024-11-18,
+ARM,Arm Holdings,Information Technology,2024-06-24,
+ASML,ASML Holding,Information Technology,,
+AVGO,Broadcom,Information Technology,,
+AXON,Axon Enterprise,Industrials,2024-12-23,
+BKNG,Booking Holdings,Consumer Discretionary,,
+BKR,Baker Hughes,Energy,2022-12-19,
+CCEP,Coca-Cola Europacific Partners,Consumer Staples,2023-12-18,
+CDNS,Cadence Design Systems,Information Technology,,
+CEG,Constellation Energy,Utilities,2022-02-02,
+CHTR,Charter Communications,Communication Services,,
+CMCSA,Comcast,Communication Services,,
+COST,Costco,Consumer Staples,,
+CPRT,Copart,Consumer Discretionary,,
+CRWD,CrowdStrike,Information Technology,2021-08-26,
+CSCO,Cisco,Information Technology,,
+CSGP,CoStar Group,Real Estate,,2020-07-20
+CSGP,CoStar Group,Real Estate,2022-12-19,
+CSX,CSX Corporation,Industrials,,
+CTAS,Cintas,Industrials,,
+CTSH,Cognizant,Information Technology,,
+DASH,DoorDash,Consumer Discretionary,2023-12-18,
+DDOG,Datadog,Information Technology,2021-12-20,
+DXCM,DexCom,Health Care,2020-04-20,
+EA,Electronic Arts,Communication Services,,
+EXC,Exelon,Utilities,,
+FANG,Diamondback Energy,Energy,2022-12-19,
+FAST,Fastenal,Industrials,,
+FER,Ferrovial,Industrials,2025-12-22,
+FTNT,Fortinet,Information Technology,2021-12-20,
+GEHC,GE HealthCare,Health Care,2023-06-07,
+GILD,Gilead Sciences,Health Care,,
+GOOG,Alphabet Inc. (Class C),Communication Services,,
+GOOGL,Alphabet Inc. (Class A),Communication Services,,
+HON,Honeywell,Industrials,2021-07-21,
+IDXX,Idexx Laboratories,Health Care,,
+INSM,Insmed Incorporated,Health Care,2025-12-22,
+INTC,Intel,Information Technology,,
+INTU,Intuit,Information Technology,,
+ISRG,Intuitive Surgical,Health Care,,
+KDP,Keurig Dr Pepper,Consumer Staples,2020-10-19,
+KHC,Kraft Heinz,Consumer Staples,,
+KLAC,KLA Corporation,Information Technology,,
+LIN,Linde plc,Materials,2024-03-18,
+LRCX,Lam Research,Information Technology,,
+MAR,Marriott International,Consumer Discretionary,,
+MCHP,Microchip Technology,Information Technology,,
+MDLZ,Mondelez International,Consumer Staples,,
+MELI,Mercado Libre,Consumer Discretionary,,
+META,Meta Platforms,Communication Services,,
+MNST,Monster Beverage,Consumer Staples,,
+MPWR,Monolithic Power Systems,Information Technology,2025-12-22,
+MRVL,Marvell Technology,Information Technology,2020-12-21,
+MSFT,Microsoft,Information Technology,,
+MSTR,MicroStrategy,Information Technology,2024-12-23,
+MU,Micron Technology,Information Technology,,
+NFLX,Netflix Inc.,Communication Services,,
+NVDA,Nvidia,Information Technology,,
+NXPI,NXP Semiconductors,Information Technology,,
+ODFL,Old Dominion Freight Line,Industrials,,
+ORLY,O'Reilly Automotive,Consumer Discretionary,,
+PANW,Palo Alto Networks,Information Technology,2021-12-20,
+PAYX,Paychex,Industrials,,
+PCAR,Paccar,Industrials,,
+PDD,PDD Holdings,Consumer Discretionary,2020-08-24,
+PEP,PepsiCo,Consumer Staples,,
+PLTR,Palantir Technologies,Information Technology,2024-12-23,
+PYPL,PayPal,Financials,,
+QCOM,Qualcomm,Information Technology,,
+REGN,Regeneron Pharmaceuticals,Health Care,,
+ROP,Roper Technologies,Industrials,2023-12-18,
+ROST,Ross Stores,Consumer Discretionary,,
+SBUX,Starbucks,Consumer Discretionary,,
+SHOP,Shopify,Information Technology,2025-05-19,
+SNDK,Sandisk,Information Technology,2026-04-20,
+SNPS,Synopsys,Information Technology,,
+STX,Seagate Technology,Information Technology,2025-12-22,
+TMUS,T-Mobile US,Communication Services,,
+TRI,Thomson Reuters,Industrials,2025-07-17,
+TSLA,Tesla Inc.,Consumer Discretionary,,
+TTWO,Take-Two Interactive,Communication Services,,2020-12-21
+TTWO,Take-Two Interactive,Communication Services,2023-12-14,
+TXN,Texas Instruments,Information Technology,,
+VRSK,Verisk Analytics,Industrials,,
+VRTX,Vertex Pharmaceuticals,Health Care,,
+WBD,Warner Bros. Discovery,Communication Services,2022-12-19,
+WDAY,Workday Inc.,Information Technology,,
+WDC,Western Digital,Information Technology,,2020-10-19
+WDC,Western Digital,Information Technology,2025-12-22,
+WMT,Walmart,Consumer Staples,2026-01-20,
+XEL,Xcel Energy,Utilities,,
+ZS,Zscaler,Information Technology,2021-12-20,
+AAL,American Airlines,Industrials,,2020-04-20
+ALGN,Align Technology,Health Care,,2023-12-18
+ALXN,Alexion Pharmaceuticals,Health Care,,2021-07-21
+ANSS,Ansys,Information Technology,,2025-07-17
+ATVI,Activision Blizzard,Communication Services,,2023-07-17
+AZN,AstraZeneca,Health Care,2022-02-22,2026-01-20
+BIDU,Baidu,Communication Services,,2022-12-19
+BIIB,Biogen,Health Care,,2025-12-22
+BMRN,BioMarin Pharmaceutical,Health Care,,2020-12-21
+CDW,CDW,Information Technology,2021-12-20,2025-12-22
+CERN,Cerner,Health Care,,2021-12-20
+CHKP,Check Point Software,Information Technology,,2021-12-20
+CTXS,Citrix Systems,Information Technology,,2020-12-21
+DLTR,Dollar Tree,Consumer Discretionary,,2024-11-18
+DOCU,DocuSign,Information Technology,2020-06-22,2022-12-19
+EBAY,eBay,Consumer Discretionary,,2023-12-18
+ENPH,Enphase Energy,Information Technology,2022-11-21,2023-12-18
+EXPE,Expedia Group,Consumer Discretionary,,2020-12-21
+FI,Fiserv,Financials,,2023-06-07
+FOX,Fox Corporation Class B,Communication Services,,2021-12-20
+FOXA,Fox Corporation Class A,Communication Services,,2021-12-20
+GFS,GlobalFoundries,Information Technology,2022-12-19,2025-12-22
+ILMN,Illumina,Health Care,,2024-12-23
+INCY,Incyte,Health Care,,2021-12-20
+JD,JD.com,Consumer Discretionary,,2023-12-18
+LBTYA,Liberty Global Class A,Communication Services,,2020-12-21
+LBTYK,Liberty Global Class C,Communication Services,,2020-12-21
+LCID,Lucid Group,Consumer Discretionary,2021-12-20,2023-12-18
+LULU,Lululemon,Consumer Discretionary,,2025-12-22
+MDB,MongoDB,Information Technology,2023-12-18,2025-05-19
+MRNA,Moderna,Health Care,2020-07-20,2024-12-23
+MTCH,Match Group,Communication Services,2020-12-21,2022-12-19
+MXIM,Maxim Integrated Products,Information Technology,,2021-08-26
+NTAP,NetApp,Information Technology,,2020-08-24
+NTES,NetEase,Communication Services,2022-12-19,2024-12-23
+OKTA,Okta,Information Technology,2020-12-21,2022-11-21
+ON,ON Semiconductor,Information Technology,2023-06-20,2025-12-22
+PTON,Peloton,Consumer Discretionary,2020-12-21,2022-12-19
+RIVN,Rivian Automotive,Consumer Discretionary,2022-12-19,2023-06-20
+SGEN,Seagen,Health Care,,2023-12-14
+SIRI,Sirius XM,Communication Services,,2024-06-24
+SMCI,Super Micro Computer,Information Technology,2024-07-22,2024-12-23
+SOLS,Solstice Advanced Materials,Materials,2025-10-30,2025-11-06
+SPLK,Splunk,Information Technology,,2022-12-19
+SPLK,Splunk,Information Technology,2023-12-18,2024-03-18
+SWKS,Skyworks Solutions,Information Technology,,2022-12-19
+TCOM,Trip.com Group,Consumer Discretionary,,2021-12-20
+TEAM,Atlassian,Information Technology,2020-12-21,2026-04-20
+TTD,The Trade Desk,Information Technology,2023-07-17,2025-12-22
+UAL,United Airlines Holdings,Industrials,,2020-06-22
+ULTA,Ulta Beauty,Consumer Discretionary,,2020-12-21
+VRSN,VeriSign,Information Technology,,2022-12-19
+VSNT,Versant,Communication Services,2026-01-05,2026-01-09
+WBA,Walgreens Boots Alliance,Consumer Staples,,2024-07-22
+WTW,Willis Towers Watson,Financials,,2020-04-30
+XLNX,Xilinx,Information Technology,,2022-02-22
+ZM,Zoom Video Communications,Information Technology,2020-04-30,2023-12-18
