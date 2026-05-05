@@ -27611,3 +27611,47 @@ Initial drift scan via grep across all non-archive `*.md` files for known Pass 5
 - Chunk D (final cross-doc consistency pass): final turn
 
 *Per CHECKLIST #32 (verbatim "sequential" — Chunk A execution); #25 (drift scan honest — confirmed DOCUMENTATION_REGISTER had zero post-batch entries; TRADINGAGENTS_DATA_AUDIT had no path/attribution drift); #43 (DOCUMENTATION_REGISTER entry cross-references AUDIT narrative entries + commit hashes; TRADINGAGENTS addendum cross-references TRADING_RULES §2A/§10.8/§10.9/§13.12); #45 (read both docs before editing; verified DEC numbers + section names against canonical sources); #51 (Chunk A scope strict — only 2 medium-priority docs touched; refused scope-creep into Chunk B); #58 (atomic 3-file commit); #65 (no roster expansions; entries are registrations of work done elsewhere); #66 (DEC-491/492/493/494/495/496 referenced per actual AUDIT_INDEX entries; section numbers verified against TRADING_RULES TOC). Stream 3 sequential execution per owner directive.*
+
+---
+
+## Pass 53 — Stream 3 Chunk B complete (STRATEGY_REGISTER + BUG_REGISTER + AUDIT_TRIAGE)
+
+**Trigger:** Owner Pass 53 directive: "continue" — Chunk B execution per sequential plan.
+
+**Drift scan result (per #25 honest):** Grep across all 3 docs for known Pass 53 drift indicators (old paths, Tier 2 ETF mis-characterization, DEC-368 mis-attribution, DEC-491-496 references, TRADING_RULES new section refs) returned **ZERO matches** in any of the 3 files. None had drift; all needed ADDITIVE Pass 53 post-pre-flight registration.
+
+**Resolution applied this turn:**
+
+1. **`STRATEGY_REGISTER.md`** — appended "Pass 53 Addendum — Post Sprint-1-Pre-Flight (Stream 3 chunk B)" section:
+   - Strategy roster size unchanged (~119 classes; ~117 active in Phase 1A per DEC-490 prior turn)
+   - Pass 53 changes documented as execution-context updates (NOT roster size changes): §2A signal universe, §10.8 smart money composite, §13.12 API endpoint inventory, DEC-494 Tier 2 alignment effect on DEC-370 strategies, DEC-496 momentum methodology, DEC-491-493 trade-capture format (post-execution analysis only), folder move (no code change for strategies using existing `get_*` loader functions)
+   - Cross-references to canonical sections added
+
+2. **`BUG_REGISTER.md`** — appended "Pass 53 Addendum — Post Sprint-1-Pre-Flight (Stream 3 chunk B)" section:
+   - **No new bugs introduced Pass 53 post-pre-flight.** DEC-491/492/493 PROPOSED Sprint 2 are improvements/refactors (existing CSV serialization works; just brittle for nested dicts) — properly tracked in ENGINEERING_REGISTER additions block, not BUG_REGISTER.
+   - Bug-to-decision mappings unchanged (BUG-095/111/218/007/284 — Sprint placements + dependencies preserved).
+   - Universe folder move (`c7f5580f`) — bug-impact none; loaders abstracted through `backtest.data.universe` module, centralized via `UNIVERSE_DIR` constant.
+
+3. **`AUDIT_TRIAGE.md`** — appended "Pass 53 Addendum — Post Sprint-1-Pre-Flight Decision Batch (Stream 3 chunk B)" section:
+   - Decision count delta table: 472 → 484 (Sprint-1 Pre-Flight Batch) → 490 (post-pre-flight cumulative)
+   - 6 NEW DECs Pass 53 post-pre-flight (DEC-491-496) with status + sprint + triage priority
+   - 5 DEC body updates (DEC-303/332/477/483/370 clarifications)
+   - PROPOSED count: 13 (pre-Pass-53) → 13 (post-pre-flight batch — DEC-486/487/488 flipped) → 16 (current — DEC-491/492/493 added Sprint 2)
+   - **Triage recommendation revision:** DEC-486-488 + DEC-482-485/490 + DEC-494/495/496 RESOLVED-DECIDED — Sprint 6.5/1/5 critical-path UNBLOCKED. Remaining 16 PROPOSED: DEC-469-481 enterprise architecture cluster (Sprint 7) + DEC-491-493 trade-capture fragility (Sprint 2 additive improvements; no critical-path block).
+
+4. **`AUDIT.md`** — this entry.
+
+**Files updated this turn:**
+1. `STRATEGY_REGISTER.md` — Pass 53 addendum (no roster size change)
+2. `BUG_REGISTER.md` — Pass 53 addendum (no new bugs)
+3. `AUDIT_TRIAGE.md` — Pass 53 addendum (decision count delta + triage update)
+4. `AUDIT.md` — this entry
+
+**Stream 3 progress:**
+- Chunk 1 (CHECKLIST.md drift fix): ✅ commit `654e610e`
+- Chunk A (DOCUMENTATION_REGISTER + TRADINGAGENTS_DATA_AUDIT): ✅ commit `bd36c414`
+- **Chunk B (STRATEGY_REGISTER + BUG_REGISTER + AUDIT_TRIAGE): ✅ this turn**
+- Chunk C (README + EXPLANATION + PASS_53_PRIORITIES + UNIVERSAL_LEARNINGS): next turn
+- Chunk D (final cross-doc consistency pass): final turn
+
+*Per CHECKLIST #32 (verbatim "continue" — Chunk B execution); #25 (drift scan honest — confirmed all 3 docs had ZERO drift indicators; PURELY additive registration of Pass 53 work, no fix); #43 (each addendum cross-references canonical TRADING_RULES sections + AUDIT_INDEX DEC bodies + DOCUMENTATION_REGISTER entry); #45 (read each doc tail before editing to find correct insertion point; verified DEC numbers + Sprint placements against AUDIT_INDEX); #51 (Chunk B scope strict — 3 docs only; refused scope-creep into Chunk C); #58 (atomic 4-file commit); #65 (no roster expansions; STRATEGY_REGISTER count unchanged ~117/119; BUG_REGISTER no new bugs); #66 (DEC-491/492/493/494/495/496 referenced per actual AUDIT_INDEX entries; PROPOSED count delta 13→16 verified by counting). Stream 3 sequential execution continues.*

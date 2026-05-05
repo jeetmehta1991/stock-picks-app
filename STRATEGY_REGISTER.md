@@ -224,3 +224,29 @@ These gaps will be closed during sprint planning for Phase 0.D (Sprint 7 in ENGI
 
 **Total Phase 1A active strategy count:** ~117 of ~119 classes fire (2 skipped per DEC-490).
 
+---
+
+## Pass 53 Addendum — Post Sprint-1-Pre-Flight (Stream 3 chunk B)
+
+No new strategies added Pass 53 post-pre-flight. Strategy roster (~119 classes; ~117 active in Phase 1A per DEC-490) is unchanged from the prior Phase 1A Restoration entry above.
+
+**Pass 53 changes that DO affect strategy execution context (but not roster size):**
+
+| Pass 53 change | Effect on strategy execution |
+|---|---|
+| §2A Signal Universe Catalogue (TRADING_RULES NEW) | Canonical reference for ~265-275 signal fields strategies consume. Strategies should reference §2A for available signals rather than scattered code comments. |
+| §10.8 Smart Money Composite (TRADING_RULES NEW) | Composite weights matrix `+4/+2/+1/-3/-1` + composite labels by score now canonical for `smart_money_composite` strategy filter (tier upgrade logic + multi-source confluence strategies). |
+| §13.12 API Endpoint Inventory (TRADING_RULES NEW) | Strategies reading specific endpoints should reference §13.12 for canonical source per signal category. |
+| DEC-494 Tier 2 alignment (refresh_extended_universe.py NDX-non-S&P removal) | DEC-370 Index Rebalance strategies (Layer 3B) reference T1c (`nasdaq_100_membership.csv`) for NDX events, NOT extended_universe.csv. Phase 1C+ scope. |
+| DEC-496 Tier 3 momentum methodology | momentum_watchlist.csv populate uses Jegadeesh-Titman 12-1 (DEC-496). Strategies that fire on Tier 3 names get this universe via universe.py `get_momentum_watchlist()` — schema preserves `added_date`/`removed_date` for PIT correctness. |
+| DEC-491/492/493 PROPOSED Sprint 2 trade-capture fragility | Affects strategy POST-EXECUTION analysis (trade_log Parquet format, signals_at_entry preservation, trade_id schema). No effect on strategy entry/exit logic itself. |
+| Universe folder move (commit `c7f5580f`) | Strategies that programmatically read universe CSVs now use `backtest.data.universe` module loaders via `UNIVERSE_DIR` constant. No code change required for strategies using existing `get_*` functions. |
+
+Phase 1A active count remains ~117 of ~119 (per DEC-490).
+
+**Cross-references:**
+- TRADING_RULES.md §2A canonical signal universe
+- TRADING_RULES.md §10.8/§10.9 smart money composite + adjacent
+- DOCUMENTATION_REGISTER.md Pass 53 post-pre-flight entry
+- AUDIT.md Pass 53 narrative entries
+

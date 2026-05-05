@@ -242,3 +242,24 @@ No new bugs introduced. Existing bug-to-decision mappings remain valid. Phase 1A
 
 **BUG-007 elevated priority Pass 53:** original framing was "Phase 1B run with `--no-agents` flag"; Pass 53 restoration makes Phase 1A v3-style `--no-agents` execution a separate sprint deliverable. BUG-007 must be resolved BEFORE Sprint 6.5 starts or Phase 1A blocked at Day 1.
 
+---
+
+## Pass 53 Addendum — Post Sprint-1-Pre-Flight (Stream 3 chunk B)
+
+No new bugs introduced Pass 53 post-pre-flight. DEC-491/492/493 PROPOSED (Sprint 2 trade-capture fragility) are **improvements/refactors**, not bug fixes — surfacing existing fragility patterns that are working correctly today (CSV serialization works; just brittle for nested dicts). They're properly tracked in ENGINEERING_REGISTER Sprint 2 additions, not BUG_REGISTER.
+
+**Bug-to-decision mappings unchanged Pass 53 post-pre-flight:**
+- BUG-095 (Portfolio class) — Sprint 3 unchanged
+- BUG-111 (break-and-retest primitive) — Sprint 8 unchanged
+- BUG-218 (yfinance .info CURRENT-not-as_of) — Sprint 4 unchanged (DEC-443)
+- BUG-007 (API key guard `--no-agents`) — Sprint 6.5 dependency unchanged
+- BUG-284 (govcontracts) — referenced in DEC-494 body; Sprint 1 alignment with `refresh_extended_universe.py` cleanup
+
+**Pass 53 universe folder move (commit `c7f5580f`) — bug-impact none:**
+Universe CSV reads abstracted through `backtest.data.universe` module functions (`get_sp500_constituents`, `get_etfs_full`, `get_extended_universe`, `get_momentum_watchlist`). Module-level `UNIVERSE_DIR` constant centralizes path. No bug introduced; no bug resolved.
+
+**Cross-references:**
+- ENGINEERING_REGISTER.md Sprint 2 additions block — DEC-491/492/493 PROPOSED entries
+- AUDIT.md Pass 53 narrative entries
+- DOCUMENTATION_REGISTER.md Pass 53 post-pre-flight entry
+
