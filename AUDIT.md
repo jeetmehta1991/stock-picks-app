@@ -29102,3 +29102,72 @@ CHECKLIST #43 (cross-doc consistency) already requires reconciliation across doc
 - CHECKLIST #67/#67.b (per-turn doc sync — applied this turn)
 
 *Per CHECKLIST #1 (owner directive); #43 (cross-doc applied to canonical doc set); #45 (this compliance statement); #67/#67.b (doc sync this turn).*
+
+---
+
+## Pass 53 — Strategy roster Option 2 + owner "Approve all" — 2026-05-06
+
+### Trigger
+
+Owner question Pass 53: *"where is each and every strategy tabulated?"* surfaced that per-strategy enumeration was fragmented across 4+ docs with only Layer 1 fully named (in `screener.py` registry). 4 STRATEGY_REGISTER.md "open enumeration gaps" had been documented but unaddressed since Pass 52: Layer 2A directional split, Layer 2B Earnings Momentum, Layer 2C Calendar, Layer 3B DEC-371 within-category catalog.
+
+### Two-step resolution
+
+**Step 1 — Option 2 (generate consolidated roster + draft missing names):**
+- Created [STRATEGY_ROSTER_FULL.md](STRATEGY_ROSTER_FULL.md) — single per-strategy doc covering all layers
+- Layer 1 (✅ IMPLEMENTED): 72 strategies enumerated 1:1 from `screener.py:812` ALL_STRATEGIES registry
+- Layer 2A (✅ patterns RESOLVED at DEC-259; class split): proposed 12 classes (6 patterns × 2 directional)
+- Layer 2B (⚠ DRAFT-PROPOSED): drafted 4 named strategies — `pre_earnings_iv_crush_front_run`, `guidance_raise_momentum`, `surprise_magnitude_pead`, `earnings_cluster_sector_drift`
+- Layer 2C (⚠ DRAFT-PROPOSED): drafted 5 named strategies — `sell_in_may_short`, `january_effect_smallcap`, `santa_rally_long`, `fomc_drift`, `turn_of_month` (DEC-368 absorbed; no double-count)
+- Layer 2D (⏸ PENDING-FORM): zero Claude drafts per owner directive — owner populates after strategy intake form operational
+- Layer 3A (✅ RESOLVED): 20 classes (10 base × 2 directional) per DEC-355-362 (Pass 52)
+- Layer 3B (⚠ DRAFT-PROPOSED): drafted 21 named strategies — 4 Pairs/Stat Arb (DEC-367), 4 Cross-Asset (DEC-369), 2 Index Rebalance (DEC-370), 11 within-category gaps (DEC-371)
+- Layer 4 (🔴 PENDING-DEC): 4 strategies + 1 multiplier per DEC-141/142/143/145/176
+
+**Step 2 — Owner "Approve all" 2026-05-06:**
+- 42 ⚠ DRAFT-PROPOSED items promoted → ✅ RESOLVED-DECIDED
+- Coverage: Layer 2A directional split (12) + Layer 2B (4) + Layer 2C (5) + Layer 3B (21) = 42 promotions
+- Layer 2D and Layer 4 remain gated per their respective rules (form-driven, per-DEC)
+
+### Aggregate post-approval
+
+- Total RESOLVED-DECIDED + IMPLEMENTED named classes: **134**
+  - Layer 1: 72 (✅ IMPLEMENTED in code)
+  - Layer 2A: 12 (✅ RESOLVED-DECIDED)
+  - Layer 2B: 4 (✅ RESOLVED-DECIDED)
+  - Layer 2C: 5 (✅ RESOLVED-DECIDED)
+  - Layer 3A: 20 (✅ RESOLVED-DECIDED Pass 52)
+  - Layer 3B: 21 (✅ RESOLVED-DECIDED Pass 53)
+- Total when Layer 4 promoted: **138** (+4 strategies; DEC-176 multiplier not counted as class)
+- Total with Layer 2D form-derived estimate (mid: 10): **~148**
+
+### Closure of STRATEGY_REGISTER.md "Open enumeration gaps"
+
+All 4 gaps CLOSED 2026-05-06:
+- Layer 2A directional → 12 classes ✅
+- Layer 2B Earnings Momentum → 4 named ✅
+- Layer 2C Calendar → 5 named ✅
+- Layer 3B DEC-371 within-category → 11 named ✅
+
+### Files modified Pass 53 owner "Approve all"
+
+- `STRATEGY_ROSTER_FULL.md` (new — Pass 53 Option 2; updated to flip 42 markers to RESOLVED-DECIDED)
+- `STRATEGY_REGISTER.md` — open-enumeration-gaps section: OPEN → CLOSED
+- `CANONICAL_FACTS.md` F-002 — layered roster table updated (counts + RESOLVED-DECIDED markers)
+- `AUDIT.md` — this narrative entry
+
+### Implementation sequencing post-approval
+
+1. Sprint 7 (Phase 0.D) — Layer 2A (12) + Layer 2B (4) + Layer 2C (5) = 21 new classes via smartmoneyconcepts library + earnings/calendar custom logic
+2. Sprint 8 (Phase 1C+) — Layer 3A (20) + Layer 3B (21) = 41 new classes (chart patterns + categories)
+3. Per-DEC unblocking — Layer 4 strategies as DEC-141/142/143/145 individually promoted; DEC-176 (boolean combinations) is multiplier overlay
+4. Owner-driven — Layer 2D when strategy intake form operational
+
+### Cross-references
+
+- [STRATEGY_ROSTER_FULL.md](STRATEGY_ROSTER_FULL.md) — canonical per-strategy enumeration
+- [STRATEGY_REGISTER.md](STRATEGY_REGISTER.md) — categorical layered-roster summary (open gaps section now CLOSED)
+- [CANONICAL_FACTS.md F-002](CANONICAL_FACTS.md) — strategy roster fact (count updated)
+- DECs: DEC-045 (fork-first; Layer 2 parent), DEC-259 (ICT/SMC patterns), DEC-355-362 (chart patterns), DEC-367-371 (strategy categories), DEC-141/142/143/145/176 (Layer 4 PENDING)
+
+*Per CHECKLIST #1 (owner "Approve all"); #25 (Layer 2D PENDING-FORM scope honored — no Claude drafts; Layer 4 PENDING-DEC scope honored — separate per-DEC approval); #43 (cross-doc — STRATEGY_ROSTER + REGISTER + CANONICAL_FACTS + this narrative); #45 (this); #58 (atomic codification — 42 promotions in single commit); #67/#67.b (per-turn doc sync).*

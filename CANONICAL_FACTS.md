@@ -82,18 +82,19 @@ Each fact has: **F-NNN identifier** • value (planned) • scope/definition •
 
 ### F-002 — Strategy roster (planned)
 
-**Value (planned):** **~108-118 strategy classes across 4 layers, ~150-200+ long/short variants, ~200-300+ multi-timeframe variants. Total unique testable strategies projected: 100+ (could exceed 200 with full multi-TF expansion).**
+**Value (planned):** **~134 RESOLVED-DECIDED strategy classes across 4 layers post owner "Approve all" 2026-05-06 (was ~108-118 pre-Pass-53-Option-2). Goes to ~138 when Layer 4 PENDING-DEC promoted; ~148 with Layer 2D form-derived ICT estimate. ~200-300+ multi-TF variants projected. Total unique testable strategies projected: 100+ confirmed (could exceed 200 with full multi-TF expansion).**
 
 **Definition:** A "strategy" is a unique combination of {entry signal, entry zone, regime filter, exit method}. Layered roster:
 
 | Layer | Source | Status | Class count | Notes |
 |---|---|---|---|---|
 | **Layer 1 — Baseline** | PROJECT_PLAN section 6 | DOCUMENTED + IMPLEMENTED | **60** | 7 categories: Momentum/Trend (12), Mean Reversion (10), Smart Money (8), Volatility (7), Fundamental (8), Macro/Regime (6), Event-Driven (9) — see `STRATEGY_REGISTER.md` Layer 1 |
-| **Layer 2 — Phase 0.D additions** | DEC-045 / DEC-259 / DEC-261 | DECIDED at category level; class enumeration PENDING | **~13-17** | 2A ICT/SMC (6 patterns × 1-2 variants), 2B Earnings Momentum (3-5), 2C Calendar (4-6) |
-| **Layer 2D — ICT form-derived (NEW Pass 53 owner directive)** | smartmoneyconcepts library + form-derived patterns | PENDING — additional ICT strategies will be derived from a form-driven pattern catalog beyond DEC-259's 6 baseline patterns | **+TBD (likely 5-15)** | Owner Pass 53 Q2 directive: "doesnt yet include additional ICT strategies that will be derived from the form" — requires owner-driven enumeration once form is operational |
-| **Layer 3 — Pass 52 RESOLVED-DECIDED** | DEC-355-362 + DEC-367-371 | RESOLVED-DECIDED | **~30-35** | Layer 3A chart patterns (8 base, 10 if DEC-358 split into 3); Layer 3B strategy categories (Pairs/Calendar/Cross-Asset/Index Rebalance/within-category gaps; ~22-27 minus DEC-368/Layer-2C overlap of ~4-5) |
-| **Layer 4 — PENDING strategy-additive** | DEC-141/142/143/145/176 | PENDING owner approval | **~5-6** | Sector-neutral hedge overlay, market-neutral SPY, IPO/lockup framework, IV pre-earnings, meta-strategies (DEC-176 multiplier not counted) |
-| **Total classes (Layers 1+2+2D+3+4)** | | | **~108-133+** | Owner expects "100+ strategies tested in the end"; upper end depends on form-derived ICT count |
+| **Layer 2 — Phase 0.D additions** | DEC-045 / DEC-259 / DEC-261 + Pass 53 owner "Approve all" 2026-05-06 | RESOLVED-DECIDED post Pass 53 | **21** (12 + 4 + 5) | 2A ICT/SMC (6 patterns × 2 directional = 12 classes), 2B Earnings Momentum (4 named), 2C Calendar (5 named; DEC-368 absorbed). See [STRATEGY_ROSTER_FULL.md](STRATEGY_ROSTER_FULL.md). |
+| **Layer 2D — ICT form-derived (NEW Pass 53 owner directive)** | smartmoneyconcepts library + form-derived patterns | PENDING-FORM — additional ICT strategies derived from owner's form once operational | **+TBD (likely 5-15)** | Owner Pass 53 Q2 directive: "doesnt yet include additional ICT strategies that will be derived from the form" — requires owner-driven enumeration once form is operational |
+| **Layer 3A — Chart patterns** | DEC-355-362 (Pass 52) | RESOLVED-DECIDED | **20** | 10 base classes × 2 directional (with DEC-358 split into Wedge/Triangle/Pennant) per [STRATEGY_ROSTER_FULL.md](STRATEGY_ROSTER_FULL.md) |
+| **Layer 3B — Strategy categories** | DEC-367/369/370/371 + Pass 53 owner "Approve all" 2026-05-06 | RESOLVED-DECIDED post Pass 53 | **21** | 4 Pairs/Stat Arb (DEC-367), 4 Cross-Asset (DEC-369), 2 Index Rebalance (DEC-370), 11 within-category gaps (DEC-371). DEC-368 Calendar absorbed into Layer 2C. |
+| **Layer 4 — PENDING strategy-additive** | DEC-141/142/143/145/176 | 🔴 PENDING-DEC (per-DEC promotion required) | **~5-6** | Sector-neutral hedge overlay, market-neutral SPY, IPO/lockup framework, IV pre-earnings, meta-strategies (DEC-176 multiplier not counted) |
+| **Total RESOLVED-DECIDED + IMPLEMENTED classes** | | | **134** (post Pass 53 "Approve all") | Goes to **138** with Layer 4 promotion; **~148** with Layer 2D form-derived estimate. Owner expects "100+ strategies tested" — confirmed. |
 | **+ long/short variants** | DEC counting convention | | **~150-200+** | Many classes have separate long + short entry logic |
 | **+ multi-TF (DEC-350: daily + weekly)** | DEC-350 | | **~200-300+** | If non-ICT roster doubled with weekly TF |
 

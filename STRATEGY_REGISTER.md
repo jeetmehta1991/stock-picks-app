@@ -147,24 +147,31 @@ Sub-decisions that, on owner approval and engineering implementation, would add 
 
 ---
 
-## Status update (Pass 53 — 2026-05-06)
+## Status update (Pass 53 — 2026-05-06; UPDATED post owner "Approve all")
 
-**Per-strategy enumeration superseded by [STRATEGY_ROSTER_FULL.md](STRATEGY_ROSTER_FULL.md).** Owner directive Option 2 (Pass 53) generated a consolidated per-strategy table for all layers with DRAFT-PROPOSED names for Layer 2B / 2C / 3B (closing the open enumeration gaps below). Layer 2D form-derived ICT remains PENDING-FORM per owner directive.
+**Per-strategy enumeration is now in [STRATEGY_ROSTER_FULL.md](STRATEGY_ROSTER_FULL.md) (Pass 53 Option 2 + owner "Approve all" 2026-05-06).** Owner Pass 53 turn:
+
+1. Option 2 generated a consolidated per-strategy table for all layers with DRAFT-PROPOSED names for Layer 2A directional split (12), Layer 2B (4), Layer 2C (5), Layer 3B (21).
+2. Owner "Approve all" 2026-05-06 promoted all 42 DRAFT-PROPOSED items → ✅ RESOLVED-DECIDED.
+3. Layer 2D form-derived ICT remains ⏸ PENDING-FORM (owner-driven; no Claude drafts per directive).
+4. Layer 4 remains 🔴 PENDING-DEC (per-DEC promotion separate; DEC-141/142/143/145/176).
 
 **This doc (STRATEGY_REGISTER.md) remains canonical for the layered-roster summary** (categorical counts + DEC mapping). For individual strategy names, refer to [STRATEGY_ROSTER_FULL.md](STRATEGY_ROSTER_FULL.md).
 
+**Aggregate post Pass 53 "Approve all":** 134 RESOLVED-DECIDED + IMPLEMENTED named classes; 138 with Layer 4 promotion; ~148 with Layer 2D form-derived estimate.
+
 ---
 
-## Open enumeration gaps
+## Open enumeration gaps — CLOSED Pass 53 owner "Approve all" 2026-05-06
 
-These are not decisions to make today; they're documentation gaps to close before Phase 0.D and Sprint 8 (strategy categories implementation) begins:
+| Gap | Pre-Pass-53 status | Post-Pass-53 status |
+|---|---|---|
+| 1. Layer 2A — ICT/SMC strategy enumeration: confirm 6 patterns × variants = N classes | OPEN | ✅ CLOSED — 12 classes (6 patterns × 2 directional) |
+| 2. Layer 2B — Earnings momentum class enumeration | OPEN | ✅ CLOSED — 4 named strategies in [STRATEGY_ROSTER_FULL.md](STRATEGY_ROSTER_FULL.md) Layer 2B |
+| 3. Layer 2C — Calendar strategy class enumeration | OPEN | ✅ CLOSED — 5 named strategies in [STRATEGY_ROSTER_FULL.md](STRATEGY_ROSTER_FULL.md) Layer 2C; DEC-368 absorbed |
+| 4. Layer 3B — DEC-371 within-category catalog enumeration: ≥10 gaps not itemized | OPEN | ✅ CLOSED — 11 named strategies in [STRATEGY_ROSTER_FULL.md](STRATEGY_ROSTER_FULL.md) Layer 3B (DEC-371 sub-section) |
 
-1. **Layer 2A — ICT/SMC strategy enumeration:** confirm 6 patterns × variants = N classes
-2. **Layer 2B — Earnings momentum class enumeration:** specific classes within "earnings momentum" umbrella
-3. **Layer 2C — Calendar strategy class enumeration:** specific calendar strategies (Sell-in-May, etc.)
-4. **Layer 3B — DEC-371 within-category catalog enumeration:** ≥10 gaps not yet itemized
-
-These gaps will be closed during sprint planning for Phase 0.D (Sprint 7 in ENGINEERING_REGISTER.md) and Sprint 8 (strategy categories).
+All 4 gaps resolved. Implementation tracked per Sprint 7 (Phase 0.D) and Sprint 8 (Phase 1C+) per STRATEGY_ROSTER_FULL.md "Implementation sequencing" section.
 
 ---
 
