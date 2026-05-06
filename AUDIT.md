@@ -29313,3 +29313,84 @@ Both findings documented in test suite as xfail; tests will flip to pass once li
 - L143 (don't rewrite history — these findings are PROSPECTIVE; library will be sandboxed in `vendored/` per Phase A)
 
 *Per CHECKLIST #1 (owner Option A approved); #25 (2 real PIT findings surfaced; not silenced); #43 (cross-doc — AUDIT narrative + test scaffold + DEC-508 risk register); #45 (this); #51 (scope strict — Phase A only; Phase B/C separate); #67/#67.b (per-turn doc sync); #71 (first instantiation discipline — found and documented PIT issues before strategies consume).*
+
+---
+
+## Pass 53 — smartmoneyconcepts Phase A Tier 2 integration tests — 2026-05-06
+
+### Trigger
+
+Owner directive 2026-05-06 "A" — advance Phase A from Tier 1 (correctness on synthetic data) to Tier 2 (integration on real data) per DEC-508 + CHECKLIST #71.
+
+### Result
+
+**Tier 2 test file added:** `backtest/tests/test_smartmoneyconcepts_integration.py` — 21 tests across 4 sub-categories. All 21 passing.
+
+| Sub-category | Tests | Coverage |
+|---|---|---|
+| **Cache pipeline** | 6 | smc reads real `backtest/data/cache/ohlcv/{TICKER}.parquet` for MSFT/TSLA/ABNB/AAPL; signal density sanity (FVG 0.5%-50% range); 5-year window stability |
+| **Composition** | 5 | Column-name no-collision with compute_all_signals 296 fields; index alignment; merged-signal-panel demo (296 + 27 smc columns = 323 features); F-003 universe extension count; PIT preservation across truncation |
+| **Survivorship** | 5 | Short-history (AAPL ~272 bars); recent-IPO discovery (RIVN/CVNA/ABNB/etc.); swing_length > len(df) graceful; split-adjusted price jumps (TSLA); 2022 crisis volatility window |
+| **Performance** | 5 | Per-primitive < 1s budget on 5-year (1316-bar) frame; full pipeline < 3s budget; cross-ticker timing variance < 10×; full-universe sequential extrapolation < 10-hour soft budget |
+
+### Key Tier 2 findings
+
+**Performance — better than expected.** Measured wall-time:
+- Full smc pipeline (7 primitives) on MSFT 1316-bar frame: **345ms**
+- Full-universe sequential extrapolation: **~11 minutes** (1937 tickers × 345ms)
+- Well under 10-hour soft budget; no parallelization required for Phase 1B-α
+- Per-primitive timing variance < 10× across tickers (consistent)
+
+**Composition — clean naming separation confirmed.**
+- smc uses CamelCase column names (`FVG`, `Top`, `Bottom`, `MitigatedIndex`, `HighLow`, `Level`, `BOS`, `CHOCH`, `BrokenIndex`, `OB`, `OBVolume`, `Percentage`, `Liquidity`, `End`, `Swept`, `PreviousHigh`, `PreviousLow`, `BrokenHigh`, `BrokenLow`, `Direction`, `CurrentRetracement%`, `DeepestRetracement%`)
+- compute_all_signals uses snake_case (296 fields)
+- **Zero collisions detected.** Owner-recommended convention: prefix smc outputs with `smc_` or `ict_` in `OurTechnicalToolkit` (DEC-462) for clarity, even though no collision exists.
+- Total merged signal panel: 296 (existing) + 27 (smc) = **323 features** post-Phase-1B wiring
+
+**Survivorship — graceful handling confirmed.**
+- AAPL ~272 cached bars: smc primitives work with reduced swing_length (=20 instead of 50)
+- swing_length > len(df) edge case: library raises explicitly OR returns coherent output (no crash)
+- TSLA split-adjusted prices: pipeline runs cleanly through split-induced price jumps
+- 2022 crisis volatility window: pipeline runs without errors
+
+**Cache pipeline — real data validated:**
+- 6 tests verify smc reads `backtest/data/cache/ohlcv/{TICKER}.parquet` directly without any pre-processing
+- FVG signal density sanity: MSFT 5-year produces FVG density in 0.5%-50% range (expected)
+- TSLA high-vol ticker produces ≥10 swings, ≥5 FVGs over 5-year window
+
+### Phase A Tier 2 status
+
+| Tier 2 sub-category | Status |
+|---|---|
+| Cache pipeline integration | ✅ 6 tests passing |
+| Composition with F-003 signals | ✅ 5 tests passing |
+| Survivorship (short history / IPO / corp actions) | ✅ 5 tests passing |
+| Performance (wall-time budget) | ✅ 5 tests passing |
+
+Tier 2 is **scope-complete**. Tier 3 (statistical sanity / adversarial random-walk / cross-validation / lookahead-detection at scale) and Tier 4 (Dashboard 2 visual + owner spot-check) remain future scope.
+
+### Aggregate Phase A status
+
+| Phase | Status |
+|---|---|
+| Tier 1 unit + PIT regression | ✅ COMPLETE — 78 tests (Pass 53 prior turn) |
+| Tier 2 integration | ✅ COMPLETE — 21 tests (this turn) |
+| Tier 3 empirical | ⏸ Future scope |
+| Tier 4 visual + owner spot-check | ⏸ Owner-driven |
+
+**Total smartmoneyconcepts test coverage: 99 tests** (78 unit/PIT + 21 integration). 96 passing + 1 skipped + 2 xfail (intentional PIT findings). Phase A merge-eligible from a test-pyramid perspective once Tier 3 + Tier 4 added.
+
+### Files modified
+
+- `backtest/tests/test_smartmoneyconcepts_integration.py` (new — 21 tests)
+- `AUDIT.md` (this narrative)
+
+### Cross-references
+
+- DEC-508 Phase A risk register (R-PHA-001/002 from prior turn unchanged)
+- CHECKLIST #71 (fork-integration mandate)
+- DEC-462 (OurTechnicalToolkit Sprint 7 consumer that wires smc → strategies)
+- F-003 (signal universe: 296 existing + 27 smc = 323 post-wiring)
+- F-002 (Layer 2A 12 ICT/SMC strategies that consume these primitives)
+
+*Per CHECKLIST #1 (Option A approved); #25 (performance + composition + survivorship findings reported); #43 (cross-doc); #45 (this); #51 (Tier 2 scope only); #67/#67.b (per-turn doc sync); #71 (Tier 2 of fork-integration mandate complete).*
