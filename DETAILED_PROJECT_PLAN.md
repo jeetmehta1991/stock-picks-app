@@ -1579,16 +1579,20 @@ This section captures the Pass 53 owner-directed scope expansion of Sprint 0A be
 | Reference (corp actions screener) | `backtest/data/cache/polygon/reference/` | 599 | 2 | Sprint 0A | T2 universe SCREENER (DEC-103/380 spinoff/IPO graduation criteria) | (universe build, not signal) | ⚠ PARTIAL — 599 of ~2,000 reference profiles | ✅ wired into T2 SCREENER | Batch 4 |
 | Splits | `backtest/data/cache/polygon/splits/` | 2 | 2-5 | 1A+ | OHLCV adjustment (split-adjusted close) | Cat 1 | ⚠ PARTIAL — 2 stub files (sample only; backfill pending) | ⚠ uses Polygon's pre-adjusted aggs | Batch 4 |
 | Dividends | `backtest/data/cache/polygon/dividends/` | 2 | 2-5 | 1A+ | Total return calc + dividend yield signal | Cat 1+6 | ⚠ PARTIAL — 2 stub files | ⚠ pending | Batch 4 |
-| Options chains/IV/OI | `data_prefetch/polygon/options/` | 0 | 2-3 | 1B+ Batch 12-c | Risk Agent (3 debaters; F-001 nodes 8-10) — IV rank/skew/term-structure/max-pain/dealer gamma | Cat 3 (~5+ planned) | ⏸ DEFERRED — Polygon Options Starter ~$29/mo subscription per DEC-506 (point-of-need) | 🔴 NOT WIRED | Batch 12-c (post-subscription) |
+| Options chains/IV/OI | `data_prefetch/polygon/options/` (folder will be created on subscription) | 0 | 2-3 | 1B+ Batch 12-c | Risk Agent (3 debaters; F-001 nodes 8-10) — IV rank/skew/term-structure/max-pain/dealer gamma | Cat 3 (~5+ planned) | ⏸ DEFERRED — Polygon Options Starter ~$29/mo subscription per DEC-506 (point-of-need) | 🔴 NOT WIRED | Batch 12-c (post-subscription) |
+| NBBO daily-close (bid/ask/spread) | `data_prefetch/polygon/nbbo/` (no folder yet) | 0 | 2-5 | 1A+ | Liquidity proxy (DEC-321/366); Risk Agent (microstructure) | Cat 1 (liquidity/spread) + Cat 4 (microstructure) | 🔴 NOT STARTED — was named in original §3.16.2 plan, never executed; supplementary depth indicator | 🔴 NOT WIRED | Sprint 0A extension OR Sprint 4 |
 
 #### §3.16.2.B — Quiver Trader (Paid; per DEC-450 subscription)
 
-Quiver Trader provides 14+ endpoint groups (DEC-502 owner-approved Pass 53). Bulk endpoints serve a single global parquet aggregating all tickers; per-ticker endpoints serve one parquet per ticker.
+Quiver Trader provides 16 endpoint groups currently prefetched (DEC-502 owner-approved Pass 53). Bulk endpoints serve a single global parquet aggregating all tickers; per-ticker endpoints serve one parquet per ticker.
 
 | Endpoint | Cache path | Files | Type | Stage | Phase | Consumer | Signal cat | Prefetch state | Consumer state | Sprint 0A batch |
 |---|---|---|---|---|---|---|---|---|---|---|
 | live/insiders | `backtest/data/cache/quiver/insiders/` | 1 (1M rows) | bulk | 2-5 | 1A+ | smart_money composite (`insider_signal`) — F-003 Cat 2 | Cat 2 | ✅ DONE | ✅ wired (Pass 53 Batch 13.1) | Batch 9 v2 |
 | live/sec13fchanges | `backtest/data/cache/quiver/sec13fchanges/` | 1 (500k rows) | bulk | 2-5 | 1A+ | smart_money composite (`institutional_signal`); 45-day reporting lag | Cat 2 | ✅ DONE | ✅ wired (Pass 53 Batch 13.1) | Batch 9 v2 |
+| live/sec13f (full holdings) | `backtest/data/cache/quiver/sec13f/` | 1 (bulk) | bulk | 2-5 | 1A+ | smart_money composite (full position snapshots; complement to sec13fchanges deltas) | Cat 2 | ✅ DONE | ⚠ raw cache only; full-holdings consumer pending Sprint 4 | Batch 9 v2 |
+| live/institutional (per-ticker) | `backtest/data/cache/quiver/institutional/` | 509 | per-ticker | 2-5 | 1B+ | Risk Agent (institutional concentration; complement to topshareholders) | Cat 4 | ✅ DONE | 🔴 wiring matrix Row 4 partial | Batch 10 |
+| live/insider (per-ticker; distinct from bulk insiders) | `backtest/data/cache/quiver/insider/` | 509 | per-ticker | 2-5 | 1A+ | smart_money composite (per-ticker insider scoping) | Cat 2 | ✅ DONE | ⚠ optional alternative to bulk insiders feed | Batch 10 |
 | live/quivernews | `backtest/data/cache/quiver/quivernews/` | 1 | bulk | 2-5 | 1B+ | News Analyst (alternative news flow vs Polygon) — DEC-464 | Cat 5 | ✅ DONE | ⚠ optional secondary source (Polygon news primary) | Batch 9 v2 |
 | bulk/corporatedonors | `backtest/data/cache/quiver/corporatedonors/` | 1 | bulk | 2-5 | 1B+ | Fundamentals Analyst (corporate-donor influence proxy) | Cat 6 | ✅ DONE | 🔴 parser PENDING Sprint 4 | Batch 9 v2 |
 | live/patentmomentum | `backtest/data/cache/quiver/patentmomentum/` | 1 | bulk | 3-5 | 1C+ | Fundamentals Analyst (innovation signal) | Cat 6 | ✅ DONE | 🔴 PENDING Phase 1C+ | Batch 9 v2 |
@@ -1606,7 +1610,7 @@ Quiver Trader provides 14+ endpoint groups (DEC-502 owner-approved Pass 53). Bul
 | Endpoint | Cache path | Files | Stage | Phase | Consumer | Signal cat | Prefetch state | Consumer state | Sprint 0A batch |
 |---|---|---|---|---|---|---|---|---|---|
 | FRED 50 macro series | `data_prefetch/fred/observations/` | 50 | 2-5 | 1A+ | Risk Agent (3 debaters); `regime_filter.classify_regime` | Cat 4 (yield curve, VIX, DXY, HY OAS, STLFSI4, RECPROUSM156N, ICSA, WALCL + 42 more) | ✅ DONE | ✅ wired — 12 signals exposed via `macro.macro_snapshot()` Pass 53 Batch 13.3 | Batch 6 |
-| ALFRED vintages (PIT corrections) | `data_prefetch/alfred/` | 0 (folder structure only) | 2-5 | 1A+ | Risk Agent — PIT-correct macro per DEC-301 (revisions instead of first-print) | Cat 4 | 🔴 NOT STARTED — folder placeholder | 🔴 consumer reads first-print FRED only | Batch 6 (extension) |
+| ALFRED vintages (PIT corrections) | `data_prefetch/alfred/` (no folder yet) | 0 | 2-5 | 1A+ | Risk Agent — PIT-correct macro per DEC-301 (revisions instead of first-print) | Cat 4 | 🔴 NOT STARTED — folder will be created when prefetched | 🔴 consumer reads first-print FRED only | Batch 6 (extension) |
 
 #### §3.16.2.D — AAII + CNN F&G + CFTC (Free)
 
@@ -1640,8 +1644,8 @@ Quiver Trader provides 14+ endpoint groups (DEC-502 owner-approved Pass 53). Bul
 
 | Endpoint | Cache path | Files | Stage | Phase | Consumer | Signal cat | Prefetch state | Consumer state | Sprint 0A batch |
 |---|---|---|---|---|---|---|---|---|---|
-| Polygon Options chains/IV/OI/skew | `data_prefetch/polygon/options/` (placeholder) | 0 | 2-3 | 1B+ | Risk Agent (3 debaters) — IV rank/skew/max-pain/dealer gamma | Cat 3 | ⏸ DEFERRED — point-of-need subscription per DEC-506; ~$29/mo separate | 🔴 NOT WIRED | Batch 12-c (post-sub) |
-| Ortex short interest / days-to-cover / utilization | `data_prefetch/ortex/` (placeholder) | 0 | 2-3 | 1B+ | Risk Agent + Fundamentals Analyst — squeeze risk / forced-cover triggers | Cat 3+6 | ⏸ DEFERRED — point-of-need subscription per DEC-506; ~$50-150/mo | 🔴 NOT WIRED | Batch 12-d (post-sub) |
+| Polygon Options chains/IV/OI/skew | `data_prefetch/polygon/options/` (no folder yet — will be created on subscription) | 0 | 2-3 | 1B+ | Risk Agent (3 debaters) — IV rank/skew/max-pain/dealer gamma | Cat 3 | ⏸ DEFERRED — point-of-need subscription per DEC-506; ~$29/mo separate | 🔴 NOT WIRED | Batch 12-c (post-sub) |
+| Ortex short interest / days-to-cover / utilization | `data_prefetch/ortex/` (no folder yet — will be created on subscription) | 0 | 2-3 | 1B+ | Risk Agent + Fundamentals Analyst — squeeze risk / forced-cover triggers | Cat 3+6 | ⏸ DEFERRED — point-of-need subscription per DEC-506; ~$50-150/mo | 🔴 NOT WIRED | Batch 12-d (post-sub) |
 
 #### §3.16.2.H — Aggregate counts (verified 2026-05-06)
 
@@ -1649,8 +1653,10 @@ Quiver Trader provides 14+ endpoint groups (DEC-502 owner-approved Pass 53). Bul
 |---|---|
 | Active prefetched APIs (Stage 2) | 8 (Polygon Stocks Starter + Quiver Trader + FRED + AAII + CNN F&G + CFTC + SEC EDGAR + supplementary sources) |
 | Deferred APIs (Stage 2-3 IN-SCOPE; subscription point-of-need per DEC-506) | 2 (Polygon Options + Ortex) |
-| Total endpoints prefetched | 26 |
-| Total endpoint placeholders awaiting work | 4 (ALFRED vintages; Polygon Options; Ortex; pytrends partial completion) |
+| Total endpoints prefetched | **29** (Polygon: OHLCV + News + Financials + Ticker events + Reference + Splits + Dividends = 7; Quiver: 16 — bulk insiders / sec13fchanges / sec13f / quivernews / corporatedonors / patentmomentum + per-ticker offexchange / topshareholders / etfholdings / institutional / insider / wallstreetbets / wikipedia / lobbying / gov_contracts / congressional; FRED 50-series; AAII; CNN composite + 7 components; CFTC COT; SEC EDGAR Form 4 + 8-K + SC 13D + SC 13G; Apewisdom; Wikipedia; pytrends partial = 7+16+1+1+1+1+1+1+1+1 endpoint groups consolidated to 29 distinct endpoints) |
+| Total endpoints pending prefetch (free; awaiting work) | **3** (ALFRED vintages; Polygon NBBO daily-close; pytrends completion 172/1,937 → full) |
+| Total endpoints pending subscription | **2** (Polygon Options; Ortex per DEC-506) |
+| Total endpoints partial / stub | **3** (Polygon Reference 599/~2,000; Polygon Splits 2 stubs; Polygon Dividends 2 stubs) |
 | Total files cached across all endpoints | ~22,800+ |
 | Total raw data points | ~2M+ (1M Quiver insiders + 500k 13F changes + 1.05M Polygon news articles + 91k Polygon financials filings + 6,056 SEC EDGAR filings + 50 FRED series time-points + ~6,000 AAII/CNN/CFTC/AAII sentiment time-points + per-ticker per-day point-time data) |
 

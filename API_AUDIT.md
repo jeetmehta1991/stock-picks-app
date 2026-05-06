@@ -1845,7 +1845,8 @@ High-value adds: BAMLH0A0HYM2 (HY OAS), STLFSI4 (financial stress), RECPROUSM156
 | Reference (corp actions screener) | `backtest/data/cache/polygon/reference/` | 599 | 2 | Sprint 0A | T2 universe SCREENER (DEC-103/380) | (universe) | ⚠ 599 of ~2k | ✅ wired into T2 SCREENER | Batch 4 |
 | Splits | `backtest/data/cache/polygon/splits/` | 2 | 2-5 | 1A+ | OHLCV adjustment | Cat 1 | ⚠ stub | ⚠ uses pre-adj aggs | Batch 4 |
 | Dividends | `backtest/data/cache/polygon/dividends/` | 2 | 2-5 | 1A+ | Total return + dividend yield | Cat 1+6 | ⚠ stub | ⚠ pending | Batch 4 |
-| Options chains/IV/OI | `data_prefetch/polygon/options/` | 0 | 2-3 | 1B+ | Risk Agent (3 debaters) — IV rank/skew/term-structure/max-pain | Cat 3 | ⏸ DEFERRED per DEC-506 (~$29/mo point-of-need) | 🔴 NOT WIRED | Batch 12-c |
+| Options chains/IV/OI | `data_prefetch/polygon/options/` (no folder yet) | 0 | 2-3 | 1B+ | Risk Agent (3 debaters) — IV rank/skew/term-structure/max-pain | Cat 3 | ⏸ DEFERRED per DEC-506 (~$29/mo point-of-need) | 🔴 NOT WIRED | Batch 12-c |
+| NBBO daily-close (bid/ask/spread) | `data_prefetch/polygon/nbbo/` (no folder yet) | 0 | 2-5 | 1A+ | Liquidity proxy (DEC-321/366); Risk Agent (microstructure) | Cat 1+4 | 🔴 NOT STARTED — was named in original §3.16.2 plan, never executed | 🔴 NOT WIRED | Sprint 0A ext OR Sprint 4 |
 
 ### 22.B — Quiver Trader (Paid; per DEC-450; bulk + per-ticker)
 
@@ -1853,6 +1854,9 @@ High-value adds: BAMLH0A0HYM2 (HY OAS), STLFSI4 (financial stress), RECPROUSM156
 |---|---|---|---|---|---|---|---|---|---|---|
 | live/insiders | `backtest/data/cache/quiver/insiders/` | 1 (1M rows) | bulk | 2-5 | 1A+ | smart_money composite (`insider_signal`) | Cat 2 | ✅ | ✅ wired Batch 13.1 | Batch 9 v2 |
 | live/sec13fchanges | `backtest/data/cache/quiver/sec13fchanges/` | 1 (500k rows) | bulk | 2-5 | 1A+ | smart_money composite (`institutional_signal`); 45-day lag | Cat 2 | ✅ | ✅ wired Batch 13.1 | Batch 9 v2 |
+| live/sec13f (full holdings) | `backtest/data/cache/quiver/sec13f/` | 1 (bulk) | bulk | 2-5 | 1A+ | smart_money composite (full position snapshots; complement to sec13fchanges deltas) | Cat 2 | ✅ | ⚠ raw cache only; full-holdings consumer pending Sprint 4 | Batch 9 v2 |
+| live/institutional (per-ticker) | `backtest/data/cache/quiver/institutional/` | 509 | per-ticker | 2-5 | 1B+ | Risk Agent (institutional concentration; complement to topshareholders) | Cat 4 | ✅ | 🔴 wiring matrix Row 4 partial | Batch 10 |
+| live/insider (per-ticker; distinct from bulk insiders) | `backtest/data/cache/quiver/insider/` | 509 | per-ticker | 2-5 | 1A+ | smart_money composite (per-ticker insider scoping) | Cat 2 | ✅ | ⚠ optional alternative to bulk insiders | Batch 10 |
 | live/quivernews | `backtest/data/cache/quiver/quivernews/` | 1 | bulk | 2-5 | 1B+ | News Analyst (alternative news flow) | Cat 5 | ✅ | ⚠ optional secondary (Polygon news primary) | Batch 9 v2 |
 | bulk/corporatedonors | `backtest/data/cache/quiver/corporatedonors/` | 1 | bulk | 2-5 | 1B+ | Fundamentals Analyst (corporate-donor influence proxy) | Cat 6 | ✅ | 🔴 parser PENDING Sprint 4 | Batch 9 v2 |
 | live/patentmomentum | `backtest/data/cache/quiver/patentmomentum/` | 1 | bulk | 3-5 | 1C+ | Fundamentals Analyst (innovation signal) | Cat 6 | ✅ | 🔴 PENDING Phase 1C+ | Batch 9 v2 |
@@ -1870,7 +1874,7 @@ High-value adds: BAMLH0A0HYM2 (HY OAS), STLFSI4 (financial stress), RECPROUSM156
 | Endpoint | Cache path | Files | Stage | Phase | Consumer | Sig cat | Prefetch | Consumer | Batch |
 |---|---|---|---|---|---|---|---|---|---|
 | FRED 50 macro series | `data_prefetch/fred/observations/` | 50 | 2-5 | 1A+ | Risk Agent (3 debaters); `regime_filter.classify_regime` | Cat 4 | ✅ | ✅ wired — 12 signals via `macro.macro_snapshot()` Batch 13.3 | Batch 6 |
-| ALFRED vintages (PIT corrections) | `data_prefetch/alfred/` | 0 | 2-5 | 1A+ | Risk Agent — PIT-correct macro per DEC-301 (revisions) | Cat 4 | 🔴 NOT STARTED | 🔴 reads first-print only | Batch 6 ext |
+| ALFRED vintages (PIT corrections) | `data_prefetch/alfred/` (no folder yet) | 0 | 2-5 | 1A+ | Risk Agent — PIT-correct macro per DEC-301 (revisions) | Cat 4 | 🔴 NOT STARTED — folder created when prefetched | 🔴 reads first-print only | Batch 6 ext |
 
 ### 22.D — AAII + CNN F&G + CFTC (Free)
 
@@ -1904,8 +1908,8 @@ High-value adds: BAMLH0A0HYM2 (HY OAS), STLFSI4 (financial stress), RECPROUSM156
 
 | Endpoint | Cache path | Files | Stage | Phase | Consumer | Sig cat | Prefetch | Consumer | Batch |
 |---|---|---|---|---|---|---|---|---|---|
-| Polygon Options chains/IV/OI/skew | `data_prefetch/polygon/options/` (placeholder) | 0 | 2-3 | 1B+ | Risk Agent (3 debaters) — IV rank/skew/max-pain/dealer gamma | Cat 3 | ⏸ DEFERRED — point-of-need ~$29/mo per DEC-506 | 🔴 NOT WIRED | Batch 12-c (post-sub) |
-| Ortex short interest / days-to-cover / utilization | `data_prefetch/ortex/` (placeholder) | 0 | 2-3 | 1B+ | Risk Agent + Fundamentals Analyst — squeeze / forced-cover triggers | Cat 3+6 | ⏸ DEFERRED — point-of-need ~$50-150/mo per DEC-506 | 🔴 NOT WIRED | Batch 12-d (post-sub) |
+| Polygon Options chains/IV/OI/skew | `data_prefetch/polygon/options/` (no folder yet — created on subscription) | 0 | 2-3 | 1B+ | Risk Agent (3 debaters) — IV rank/skew/max-pain/dealer gamma | Cat 3 | ⏸ DEFERRED — point-of-need ~$29/mo per DEC-506 | 🔴 NOT WIRED | Batch 12-c (post-sub) |
+| Ortex short interest / days-to-cover / utilization | `data_prefetch/ortex/` (no folder yet — created on subscription) | 0 | 2-3 | 1B+ | Risk Agent + Fundamentals Analyst — squeeze / forced-cover triggers | Cat 3+6 | ⏸ DEFERRED — point-of-need ~$50-150/mo per DEC-506 | 🔴 NOT WIRED | Batch 12-d (post-sub) |
 
 ### 22.H — Aggregate counts (verified 2026-05-06)
 
@@ -1913,8 +1917,10 @@ High-value adds: BAMLH0A0HYM2 (HY OAS), STLFSI4 (financial stress), RECPROUSM156
 |---|---|
 | Active prefetched APIs (Stage 2) | 8 |
 | Deferred APIs (Stage 2-3 IN-SCOPE; subscription point-of-need) | 2 (Polygon Options + Ortex) |
-| Total endpoints prefetched | 26 |
-| Endpoint placeholders awaiting work | 4 (ALFRED vintages; Polygon Options; Ortex; pytrends partial completion) |
+| Total endpoints prefetched | **29** (Polygon 7 + Quiver 16 + FRED + AAII + CNN composite + 7 components consolidated + CFTC + SEC EDGAR 4 forms + Apewisdom + Wikipedia + pytrends partial = 29 distinct endpoint groups) |
+| Endpoints pending prefetch (free; awaiting work) | **3** (ALFRED vintages; Polygon NBBO daily-close; pytrends completion 172/1,937 → full) |
+| Endpoints pending subscription | **2** (Polygon Options; Ortex per DEC-506) |
+| Endpoints partial / stub | **3** (Polygon Reference 599/~2,000; Polygon Splits 2 stubs; Polygon Dividends 2 stubs) |
 | Total files cached | ~22,800+ |
 | Total raw data points | ~2M+ (1M Quiver insiders + 500k 13F changes + 1.05M Polygon news articles + 91k Polygon financials filings + 6,056 SEC EDGAR filings + 50 FRED series time-points + sentiment time-points) |
 
