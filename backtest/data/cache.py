@@ -21,7 +21,10 @@ from pathlib import Path
 from typing import Optional
 
 import pandas as pd
-import yfinance as yf
+# yfinance removed from runtime per DEC-497 D4 (Pass 53 Batch 13 sub-task 6
+# 2026-05-06). All OHLCV reads come from cache/ohlcv/ (Polygon-prefetched).
+# `_fetch_from_yfinance` retained as no-op stub for transition; cache miss
+# returns empty DataFrame.
 
 logger = logging.getLogger(__name__)
 
@@ -85,31 +88,19 @@ def _fetch_from_yfinance(
     end: date,
     delay: float = 0.3,
 ) -> pd.DataFrame:
-    """Fetch OHLCV from yfinance with retry on rate limit."""
-    for attempt in range(3):
-        try:
-            time.sleep(delay * (attempt + 1))
-            obj = yf.Ticker(ticker)
-            df = obj.history(
-                start=start.isoformat(),
-                end=(end + timedelta(days=1)).isoformat(),
-                auto_adjust=True,
-                actions=False,
-            )
-            if df.empty:
-                return pd.DataFrame()
-            df.index = pd.to_datetime(df.index).tz_localize(None)
-            df.columns = [c.lower() for c in df.columns]
-            df = df[["open", "high", "low", "close", "volume"]].copy()
-            df = df[df["volume"] > 0]
-            return df
-        except Exception as exc:
-            if "rate" in str(exc).lower() or "429" in str(exc):
-                wait = 30 * (attempt + 1)
-                logger.warning("Rate limited fetching %s — waiting %ds", ticker, wait)
-                time.sleep(wait)
-            else:
-                logger.error("fetch %s attempt %d: %s", ticker, attempt + 1, exc)
+    """Pass 53 Batch 13 sub-task 6 (DEC-497 + D4 yfinance HARD CUT 2026-05-06):
+    DEPRECATED — yfinance removed from runtime per owner directive. Cache miss
+    returns empty DataFrame; legitimate Stage 2 backtest reads come from
+    cache/ohlcv/ (Polygon-prefetched per Sprint 0A Batch 2 + Batch 9 v2).
+
+    Function preserved as no-op stub to avoid breaking imports during transition.
+    Prior implementation: yf.Ticker.history() with retries.
+    """
+    logger.warning(
+        "_fetch_from_yfinance(%s) called — yfinance HARD CUT per DEC-497 D4. "
+        "Returning empty DataFrame. Cache miss for ticker not in Sprint 0A "
+        "prefetch — investigate.", ticker
+    )
     return pd.DataFrame()
 
 

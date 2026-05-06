@@ -25,7 +25,8 @@ from pathlib import Path
 from typing import Optional
 
 import pandas as pd
-import yfinance as yf
+# yfinance removed from runtime per DEC-497 D4 (Pass 53 Batch 13 sub-task 6
+# 2026-05-06). Sector + info now via canonical CSV (Master Dedup 18-classifier).
 
 from backtest.config import SP50, ETFS, LIQUIDITY
 
@@ -582,26 +583,43 @@ def fetch_info_bulk(
     if to_fetch:
         logger.info("Fetching info for %d new tickers...", len(to_fetch))
 
-    for i, ticker in enumerate(to_fetch):
-        if i > 0 and i % 20 == 0:
-            time.sleep(2)
+    # Pass 53 Batch 13 sub-task 6 (DEC-497 D4 yfinance HARD CUT 2026-05-06):
+    # yfinance.Ticker.info removed from runtime. Sector resolution now via
+    # canonical CSV at "Backtesting universe/Master Universe_Deduplicated_All
+    # Tiers_May 2026.csv" (Pass 53 Master Dedup with 18-classifier sectors per
+    # DEC-499). For tickers not in Master Dedup, default to "Unknown".
+    # FUTURE: data_prefetch/polygon/reference/{TICKER}.parquet for richer info.
+    try:
+        from backtest.data.universe import UNIVERSE_DIR  # type: ignore
+    except ImportError:
+        UNIVERSE_DIR = Path(__file__).parent.parent.parent / "Backtesting universe"
+    master_path = UNIVERSE_DIR / "Master Universe_Deduplicated_All Tiers_May 2026.csv"
+    master_lookup = {}
+    if master_path.exists():
         try:
-            info = yf.Ticker(ticker).info
-            cached[ticker] = {
-                "name":       info.get("longName", ticker),
-                "sector":     info.get("sector", "Unknown"),
-                "industry":   info.get("industry", "Unknown"),
-                "market_cap": info.get("marketCap", 0) or 0,
-                "exchange":   info.get("exchange", ""),
-                "ipo_date":   info.get("firstTradeDateEpochUtc"),
+            text = ''.join(l for l in master_path.read_text(encoding='utf-8').splitlines(keepends=True) if not l.startswith('#'))
+            import io as _io
+            mdf = pd.read_csv(_io.StringIO(text))
+            master_lookup = {
+                str(r["Symbol"]).upper(): {
+                    "name": r.get("Company", "") or "",
+                    "sector": r.get("Sector", "Unknown") or "Unknown",
+                }
+                for _, r in mdf.iterrows()
             }
         except Exception as exc:
-            cached[ticker] = {
-                "name": ticker, "sector": "Unknown",
-                "industry": "Unknown", "market_cap": 0,
-                "exchange": "", "ipo_date": None,
-            }
-            logger.debug("fetch_info(%s): %s", ticker, exc)
+            logger.debug("fetch_info_bulk master lookup failed: %s", exc)
+
+    for i, ticker in enumerate(to_fetch):
+        m = master_lookup.get(ticker.upper(), {})
+        cached[ticker] = {
+            "name":       m.get("name", ticker) or ticker,
+            "sector":     m.get("sector", "Unknown"),
+            "industry":   "Unknown",
+            "market_cap": 0,  # FUTURE: Polygon reference prefetch
+            "exchange":   "",
+            "ipo_date":   None,
+        }
         time.sleep(delay)
 
     # Save updated cache

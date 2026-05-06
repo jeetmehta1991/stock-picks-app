@@ -1,17 +1,21 @@
 """
-data/fetcher.py — OHLCV price data and fundamentals via yfinance.
+data/fetcher.py — OHLCV price data and fundamentals.
+
+Pass 53 Batch 13 sub-task 6 (DEC-497 NO-LIVE-API HARD CUT + D4 yfinance total
+cut owner directive 2026-05-06): yfinance REMOVED from runtime. All data reads
+come from prefetched caches:
+  - OHLCV: cache/ohlcv/{TICKER}.parquet (Sprint 0A Batch 2)
+  - Reference (sector/cap/IPO): data_prefetch/polygon/reference/ (FUTURE)
+  - Earnings dates: derive from data_prefetch/polygon/financials/ (Batch 4)
+  - Dividends: data_prefetch/polygon/dividends/ (FUTURE)
 
 CRITICAL: Every function that retrieves data accepts an `as_of` date parameter.
 Data returned NEVER includes anything after `as_of`. This is the primary defence
 against look-ahead bias in the backtesting engine.
 
-When backtesting date D:
-  - OHLCV: rows with index <= D
-  - Fundamentals: last available filing on or before D
-  - Volume averages: trailing 20 days ending on D
-
-If a function does not have an `as_of` parameter, it is safe to call anytime
-(e.g. fetching the full S&P 500 constituent list for universe construction).
+Pre-prefetch state (FUTURE prefetch pending): functions return empty/stub
+gracefully (per DEC-503 test pyramid acceptance). Cache miss does NOT fall back
+to live API — DEC-497 HARD CUT.
 """
 
 import os
@@ -19,9 +23,10 @@ import time
 import logging
 from datetime import date, datetime, timedelta
 from typing import Optional
+from pathlib import Path
 
 import pandas as pd
-import yfinance as yf
+# yfinance removed from runtime per DEC-497 D4 (Pass 53 Batch 13 sub-task 6 2026-05-06).
 
 from backtest.config import (
     BACKTEST_START, BACKTEST_END, LIQUIDITY,
@@ -117,35 +122,31 @@ def fetch_ohlcv(
     Index: DatetimeIndex (UTC-naive).
     Returns empty DataFrame on failure.
     """
-    # The end ceiling is whichever is earlier: requested end OR as_of
+    # Pass 53 Batch 13 sub-task 6 (DEC-497 D4 yfinance HARD CUT 2026-05-06):
+    # Read from cache/ohlcv/{TICKER}.parquet (Sprint 0A Batch 2 prefetched).
+    # NO live API fallback. Cache miss → empty DataFrame.
     effective_end = min(end, as_of) if as_of else end
-    # Add one day so yfinance includes effective_end
-    fetch_end = effective_end + timedelta(days=1)
-
+    safe_ticker = ticker.replace(".", "-")
+    cache_path = Path(__file__).parent / "cache" / "ohlcv" / f"{safe_ticker}.parquet"
+    if not cache_path.exists():
+        logger.debug("OHLCV cache miss for %s (DEC-497 HARD CUT — no live fallback)", ticker)
+        return pd.DataFrame()
     try:
-        ticker_obj = yf.Ticker(ticker)
-        df = ticker_obj.history(
-            start=start.isoformat(),
-            end=fetch_end.isoformat(),
-            auto_adjust=True,
-            actions=False,
-        )
-        if df.empty:
-            logger.debug("No OHLCV data returned for %s", ticker)
-            return pd.DataFrame()
-
-        # Normalise column names
-        df.index = pd.to_datetime(df.index).tz_localize(None)
-        df.rename(columns={"Open": "open", "High": "high", "Low": "low",
-                            "Close": "close", "Volume": "volume"}, inplace=True)
-        df = df[["open", "high", "low", "close", "volume"]].copy()
-
-        # Enforce date ceiling
+        df = pd.read_parquet(cache_path)
+        # Cache may use either 'date' column or DatetimeIndex
+        if "date" in df.columns:
+            df["date"] = pd.to_datetime(df["date"])
+            df = df.set_index("date")
+        elif not isinstance(df.index, pd.DatetimeIndex):
+            df.index = pd.to_datetime(df.index)
+        df.index = df.index.tz_localize(None) if df.index.tz else df.index
+        # Filter to requested window
+        mask = (df.index.date >= start) & (df.index.date <= effective_end)
+        df = df[mask].copy()
+        # Enforce date ceiling (PIT guard)
         if as_of:
             df = _assert_no_lookahead(df, as_of, f"OHLCV:{ticker}")
-
         return df
-
     except Exception as exc:
         logger.error("fetch_ohlcv(%s): %s", ticker, exc)
         return pd.DataFrame()
@@ -180,25 +181,37 @@ def fetch_ohlcv_bulk(
 def fetch_info(ticker: str, as_of: Optional[date] = None) -> dict:
     """
     Fetch static company info: market cap, sector, industry, listing date.
-    `as_of` is accepted for API consistency but yfinance info is point-in-time
-    approximate for backtesting purposes (survivorship note: we use current
-    constituents which introduces mild survivorship bias — acceptable for Phase 1).
+
+    Pass 53 Batch 13 sub-task 6 (DEC-497 D4 yfinance HARD CUT 2026-05-06):
+    yfinance removed. Reads from data_prefetch/polygon/reference/{TICKER}.parquet
+    (FUTURE prefetch — not yet executed). Pre-prefetch returns sector="Unknown"
+    + market_cap=0 graceful state. Sector mapping for universe loaded via
+    `backtest.data.universe.get_sector_map()` from CSVs (canonical Pass 53).
     """
+    safe_ticker = ticker.replace(".", "-")
+    ref_path = Path(__file__).parent.parent.parent / "data_prefetch" / "polygon" / "reference" / f"{safe_ticker}.parquet"
+    default = {"ticker": ticker, "name": ticker, "sector": "Unknown",
+               "industry": "Unknown", "market_cap": 0, "exchange": "",
+               "ipo_date": None}
+    if not ref_path.exists():
+        return default
     try:
-        info = yf.Ticker(ticker).info
+        df = pd.read_parquet(ref_path)
+        if df.empty:
+            return default
+        row = df.iloc[0]
         return {
             "ticker":       ticker,
-            "name":         info.get("longName", ticker),
-            "sector":       info.get("sector", "Unknown"),
-            "industry":     info.get("industry", "Unknown"),
-            "market_cap":   info.get("marketCap", 0) or 0,
-            "exchange":     info.get("exchange", ""),
-            "ipo_date":     info.get("firstTradeDateEpochUtc"),   # epoch seconds
+            "name":         row.get("name", ticker),
+            "sector":       row.get("sector", "Unknown") or "Unknown",
+            "industry":     row.get("industry", "Unknown") or "Unknown",
+            "market_cap":   row.get("market_cap", 0) or 0,
+            "exchange":     row.get("exchange", ""),
+            "ipo_date":     row.get("list_date"),
         }
     except Exception as exc:
         logger.error("fetch_info(%s): %s", ticker, exc)
-        return {"ticker": ticker, "name": ticker, "sector": "Unknown",
-                "industry": "Unknown", "market_cap": 0, "exchange": ""}
+        return default
 
 
 def fetch_earnings_dates(
@@ -207,28 +220,24 @@ def fetch_earnings_dates(
 ) -> pd.DataFrame:
     """
     Return historical earnings dates for `ticker`, filtered to on/before as_of.
-    Used by agents to check earnings proximity (avoid entering before reports).
 
-    Returns DataFrame with columns: earnings_date, eps_estimate, eps_actual
+    Pass 53 Batch 13 sub-task 6 (DEC-497 D4): yfinance removed. Derives earnings
+    dates from data_prefetch/polygon/financials/{TICKER}.parquet (Sprint 0A Batch 4).
+    Polygon financials filing_date approximates earnings release date.
     """
+    safe_ticker = ticker.replace(".", "-")
+    fin_path = Path(__file__).parent.parent.parent / "data_prefetch" / "polygon" / "financials" / f"{safe_ticker}.parquet"
+    if not fin_path.exists():
+        return pd.DataFrame()
     try:
-        cal = yf.Ticker(ticker).earnings_dates
-        if cal is None or cal.empty:
+        df = pd.read_parquet(fin_path)
+        if df.empty or "filing_date" not in df.columns:
             return pd.DataFrame()
-
-        cal = cal.copy()
-        cal.index = pd.to_datetime(cal.index).tz_localize(None)
-        cal.index.name = "earnings_date"
-        cal = cal.reset_index()
-        cal["earnings_date"] = pd.to_datetime(cal["earnings_date"])
-
+        df["earnings_date"] = pd.to_datetime(df["filing_date"])
+        df = df.dropna(subset=["earnings_date"])
         if as_of:
-            # Only use earnings dates that were known before as_of
-            # (i.e. the announcement had already happened or was scheduled and public)
-            cal = cal[cal["earnings_date"].dt.date <= as_of]
-
-        return cal[["earnings_date"]].drop_duplicates().sort_values("earnings_date")
-
+            df = df[df["earnings_date"].dt.date <= as_of]
+        return df[["earnings_date"]].drop_duplicates().sort_values("earnings_date")
     except Exception as exc:
         logger.debug("fetch_earnings_dates(%s): %s", ticker, exc)
         return pd.DataFrame()
@@ -238,23 +247,16 @@ def days_to_next_earnings(ticker: str, as_of: date) -> Optional[int]:
     """
     Return number of calendar days until next earnings announcement after `as_of`.
     Returns None if no upcoming earnings data available.
-    Used by Risk Agent to flag earnings proximity.
+
+    Pass 53 Batch 13 sub-task 6 (DEC-497 D4): yfinance removed. Polygon
+    financials provides historical filing_date but not FORWARD earnings calendar
+    out of the box; pre-Polygon-events expansion this returns None gracefully.
+    Future enhancement: derive from Polygon ticker events feed (Batch 5).
     """
-    try:
-        cal = yf.Ticker(ticker).earnings_dates
-        if cal is None or cal.empty:
-            return None
-        future = [
-            d.date() if hasattr(d, "date") else _to_date(str(d)[:10])
-            for d in cal.index
-            if (d.date() if hasattr(d, "date") else _to_date(str(d)[:10])) > as_of
-        ]
-        if not future:
-            return None
-        next_date = min(future)
-        return (next_date - as_of).days
-    except Exception:
-        return None
+    # Stage 2 backtest doesn't need forward earnings (uses historical_membership);
+    # Phase 1B Risk Agent needs forward calendar → wire via Polygon /vX/reference
+    # /financials with filing_date.gte=today (Batch 13 future).
+    return None
 
 
 def fetch_dividends(
@@ -264,18 +266,28 @@ def fetch_dividends(
 ) -> pd.DataFrame:
     """
     Return dividend history for `ticker` on or before `as_of`.
-    Used to detect dividend changes (signal in Category 6).
+
+    Pass 53 Batch 13 sub-task 6 (DEC-497 D4): yfinance removed. Reads from
+    data_prefetch/polygon/dividends/{TICKER}.parquet (FUTURE prefetch — Polygon
+    `/v3/reference/dividends` endpoint). Pre-prefetch returns empty DataFrame
+    gracefully.
     """
+    safe_ticker = ticker.replace(".", "-")
+    div_path = Path(__file__).parent.parent.parent / "data_prefetch" / "polygon" / "dividends" / f"{safe_ticker}.parquet"
+    if not div_path.exists():
+        return pd.DataFrame()
     try:
-        end = as_of or BACKTEST_END
-        df = yf.Ticker(ticker).dividends
+        df = pd.read_parquet(div_path)
         if df.empty:
             return pd.DataFrame()
-        df = df.reset_index()
-        df.columns = ["date", "dividend"]
-        df["date"] = pd.to_datetime(df["date"]).dt.tz_localize(None)
-        mask = (df["date"].dt.date >= start) & (df["date"].dt.date <= end)
-        return df[mask].reset_index(drop=True)
+        # Schema TBD post-prefetch; expected: ex_dividend_date, cash_amount, declared_date
+        end = as_of or BACKTEST_END
+        if "ex_dividend_date" in df.columns:
+            df["date"] = pd.to_datetime(df["ex_dividend_date"])
+            df = df.rename(columns={"cash_amount": "dividend"} if "cash_amount" in df.columns else {})
+            mask = (df["date"].dt.date >= start) & (df["date"].dt.date <= end)
+            return df[mask].reset_index(drop=True)
+        return df
     except Exception as exc:
         logger.debug("fetch_dividends(%s): %s", ticker, exc)
         return pd.DataFrame()

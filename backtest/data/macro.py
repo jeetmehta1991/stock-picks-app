@@ -19,7 +19,8 @@ from typing import Optional
 
 import requests
 import pandas as pd
-import yfinance as yf
+# yfinance removed from runtime per DEC-497 D4 (Pass 53 Batch 13 sub-task 6 2026-05-06).
+# VIX + DXY now read exclusively from cache/ohlcv/ (Polygon-prefetched).
 
 logger = logging.getLogger(__name__)
 
@@ -257,21 +258,10 @@ def get_vix(start: date, end: date, as_of: Optional[date] = None) -> pd.DataFram
         mask = (cached.index.date >= start) & (cached.index.date <= effective_end)
         return cached[mask]
 
-    # Fallback to yfinance (live — Stage 3+ only)
-    try:
-        df = yf.download("^VIX", start=start.isoformat(),
-                         end=(effective_end + timedelta(days=1)).isoformat(),
-                         auto_adjust=True, progress=False)
-        if df.empty:
-            return pd.DataFrame()
-        if isinstance(df.columns, pd.MultiIndex):
-            df.columns = df.columns.get_level_values(0)
-        df.index = pd.to_datetime(df.index).tz_localize(None)
-        result = df[["Close"]].rename(columns={"Close": "vix"})
-        return result[result.index.date <= effective_end]
-    except Exception as exc:
-        logger.error("get_vix fallback failed: %s", exc)
-        return pd.DataFrame()
+    # Pass 53 Batch 13 sub-task 6 (DEC-497 D4 yfinance HARD CUT 2026-05-06):
+    # No live API fallback. Cache miss → empty DataFrame.
+    logger.debug("VIX cache miss; DEC-497 HARD CUT — no live yfinance fallback")
+    return pd.DataFrame()
 
 
 def vix_regime(as_of: date, lookback_days: int = 5) -> str:
@@ -295,20 +285,10 @@ def get_dxy(start: date, end: date, as_of: Optional[date] = None) -> pd.DataFram
         mask = (cached.index.date >= start) & (cached.index.date <= effective_end)
         return cached[mask]
 
-    try:
-        df = yf.download("DX-Y.NYB", start=start.isoformat(),
-                         end=(effective_end + timedelta(days=1)).isoformat(),
-                         auto_adjust=True, progress=False)
-        if df.empty:
-            return pd.DataFrame()
-        if isinstance(df.columns, pd.MultiIndex):
-            df.columns = df.columns.get_level_values(0)
-        df.index = pd.to_datetime(df.index).tz_localize(None)
-        result = df[["Close"]].rename(columns={"Close": "dxy"})
-        return result[result.index.date <= effective_end]
-    except Exception as exc:
-        logger.error("get_dxy fallback failed: %s", exc)
-        return pd.DataFrame()
+    # Pass 53 Batch 13 sub-task 6 (DEC-497 D4 yfinance HARD CUT 2026-05-06):
+    # No live API fallback. Cache miss → empty DataFrame.
+    logger.debug("DXY cache miss; DEC-497 HARD CUT — no live yfinance fallback")
+    return pd.DataFrame()
 
 
 def dxy_trend(as_of: date, lookback_days: int = 20) -> str:
