@@ -1695,7 +1695,8 @@ columns: ticker, event_type, event_date, details_json, fetched_at
 
 | Item | Status | Detail |
 |---|---|---|
-| Universe build | ✅ IMPLEMENTED | 614 T1a + 161 T1c + 27 T1 ETFs + 1924 T3 + 347 T2 (297 SCREENER + 50 graduated-name backfill per BUG-274) + Master 1,937 unique tickers |
+| Universe build | ✅ IMPLEMENTED | 614 T1a + 161 T1c + 27 T1 ETFs + 347 T2 (0 blank sectors post BUG-275 fix) + 1923 T3 (post BUG-276 NULL Symbol fix) + Master 1,937 unique tickers w/ resolved_tier per DEC-504 |
+| DEC-504 T3-over-T1 precedence resolver | ✅ RESOLVED-IMPLEMENTED 2026-05-05 | universe.py: _TIER_PRECEDENCE + TIER_PARAMS + resolve_tier_precedence + get_tier_params; 10 new unit tests; full DEC-503 test pyramid (FIRST APPLICATION) — 79/79 regression PASS |
 | Sector normalization 18-classifier | ✅ IMPLEMENTED | DEC-499; T1a 100% / T1c 100% / T2 100% / T3 100% (271 "Unknown") / ETFs 100% |
 | T3 leveraged-ETF blocklist | ✅ FIXED | CS whitelist + 110-entry blocklist; SOXL/AMDL/INTW/TSMX excluded |
 | Polygon Stocks Starter OHLCV | ✅ 1,821 cached | Pre-Pass-53 baseline |

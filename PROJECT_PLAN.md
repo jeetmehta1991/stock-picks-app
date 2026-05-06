@@ -958,6 +958,7 @@ PROJECT_PLAN_ARCHIVE.md contains the pre-April-2026 PROJECT_PLAN reference, usef
 - **DEC-501** — Polygon Options NOT upgraded; deferred Stage 3/Phase 1C
 - **DEC-502** — Quiver Trader-tier 8 endpoint groups + Apewisdom + pytrends supplement
 - **DEC-503** — Comprehensive test pyramid before every code push (HARD RULE; CHECKLIST #69)
+- **DEC-504** — T3-over-T1 multi-tier precedence resolver (RESOLVED-IMPLEMENTED 2026-05-05; FIRST DEC-503 test pyramid application)
 
 ### 31.4 Critical bugs surfaced Pass 53 (BUG-271/272/273)
 
@@ -969,7 +970,10 @@ PROJECT_PLAN_ARCHIVE.md contains the pre-April-2026 PROJECT_PLAN reference, usef
 - T1a S&P 500 historical: 614 rows (Jan 2020 → May 2026)
 - T1c NASDAQ-100: 161 rows (101 active + 60 historical)
 - T1 ETFs: 27 (DEC-118)
-- T2 Spinoffs/IPOs: 347 (297 SCREENER + 50 graduated-name backfill per BUG-274 Option B owner-approved 2026-05-05; earliest list_date 2010-02-10)
+- T2 Spinoffs/IPOs: 347 (297 SCREENER + 50 graduated-name backfill per BUG-274 Option B owner-approved 2026-05-05; 0 blank sectors post BUG-275 fix)
+- T3 Momentum: 1923 period rows (1924 - 1 NULL Symbol post BUG-276 fix); 1220 unique tickers
+- Master Dedup: 1,937 unique tickers with `resolved_tier` column per DEC-504 (T3=993, T1a=501, T2=282, T1c=134, T1ETF=27)
+- DEC-504 T3-over-T1 precedence rule RESOLVED-IMPLEMENTED Pass 53; scope (a)-(e) all approved
 - T3 Momentum Top-100: 1924 rows (after leveraged-ETF blocklist fix)
 - Master Universe Deduplicated: 1,775 unique tickers with full dimensional metadata
 

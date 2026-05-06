@@ -936,6 +936,116 @@ def test_union_universe_includes_etfs():
     print(f"✅ union_universe: {len(union)} tickers w/ETFs, {len(union_no_etf)} w/o")
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# DEC-504 — T3-OVER-T1 PRECEDENCE RESOLVER (Pass 53 owner directive 2026-05-05)
+# ─────────────────────────────────────────────────────────────────────────────
+
+def test_dec504_tier_precedence_order():
+    """Verify _TIER_PRECEDENCE order: T3 > T2 > T1c > T1a > T1ETF."""
+    from backtest.data.universe import _TIER_PRECEDENCE
+    assert _TIER_PRECEDENCE == ["T3", "T2", "T1c", "T1a", "T1ETF"], \
+        "Precedence order must be T3 > T2 > T1c > T1a > T1ETF per DEC-504"
+    print("✅ DEC-504 tier precedence order: T3 > T2 > T1c > T1a > T1ETF")
+
+
+def test_dec504_tier_params_complete():
+    """Each tier has all required parameter keys per DEC-504 scope (a)-(e)."""
+    from backtest.data.universe import TIER_PARAMS, _TIER_PRECEDENCE
+    required_keys = {"min_avg_dollar_volume_usd", "min_history_days",
+                     "min_market_cap_m", "position_size_tier", "refresh_cadence"}
+    for tier in _TIER_PRECEDENCE:
+        assert tier in TIER_PARAMS, f"TIER_PARAMS missing tier {tier}"
+        keys = set(TIER_PARAMS[tier].keys())
+        assert required_keys <= keys, \
+            f"Tier {tier} missing keys: {required_keys - keys}"
+    # T3 more permissive than T1a per owner intent
+    assert TIER_PARAMS["T3"]["min_avg_dollar_volume_usd"] < TIER_PARAMS["T1a"]["min_avg_dollar_volume_usd"], \
+        "T3 ADV floor must be < T1a (T3 is more permissive)"
+    assert TIER_PARAMS["T3"]["min_history_days"] < TIER_PARAMS["T1a"]["min_history_days"], \
+        "T3 history requirement must be < T1a"
+    print("✅ DEC-504 TIER_PARAMS complete + T3 more permissive than T1a")
+
+
+def test_dec504_resolver_t3_over_t1_vst_2024():
+    """VST canonical case: T1a + T3 simultaneous on 2024-06-01 → resolves to T3."""
+    from backtest.data.universe import resolve_tier_precedence
+    # VST joined T1a 2024-05-08 + T3 added 2024-05-01 (removed 2024-06-03)
+    # On 2024-06-01: both active → T3 wins per DEC-504
+    result = resolve_tier_precedence("VST", date(2024, 6, 1))
+    assert result == "T3", f"VST 2024-06-01 should resolve to T3 (DEC-504), got {result}"
+    print(f"✅ DEC-504 VST 2024-06-01 → T3 (T3 wins over T1a)")
+
+
+def test_dec504_resolver_t1a_after_t3_removal():
+    """VST 2024-07-01: T3 removed 2024-06-03; only T1a active → resolves to T1a."""
+    from backtest.data.universe import resolve_tier_precedence
+    result = resolve_tier_precedence("VST", date(2024, 7, 1))
+    assert result == "T1a", f"VST 2024-07-01 should resolve to T1a (T3 removed), got {result}"
+    print(f"✅ DEC-504 VST 2024-07-01 → T1a (T3 removed; T1a is now most-specific)")
+
+
+def test_dec504_resolver_t2_over_t3():
+    """T2+T3 dual-membership case: T2 should NOT win over T3 per precedence order."""
+    from backtest.data.universe import resolve_tier_precedence, get_extended_universe_pit, get_momentum_watchlist_pit
+    # Find a ticker that's in both T2 and T3 active on 2025-08-01
+    t2_active = set(get_extended_universe_pit(date(2025, 8, 1)))
+    t3_active = set(get_momentum_watchlist_pit(date(2025, 8, 1)))
+    overlap = t2_active & t3_active
+    assert len(overlap) > 0, "Test requires ≥1 T2∩T3 active ticker (validator showed 26 on 2025-08-01)"
+    sample = sorted(overlap)[0]
+    result = resolve_tier_precedence(sample, date(2025, 8, 1))
+    assert result == "T3", f"{sample} 2025-08-01 in T2∩T3; should resolve to T3 (DEC-504), got {result}"
+    print(f"✅ DEC-504 {sample} (T2∩T3) → T3")
+
+
+def test_dec504_resolver_t1_only():
+    """Pure T1a-only ticker (e.g., AAPL pre-2025) resolves to T1a."""
+    from backtest.data.universe import resolve_tier_precedence
+    result = resolve_tier_precedence("AAPL", date(2024, 6, 1))
+    # AAPL is T1a-active and T1c-active; T1c wins over T1a per precedence
+    assert result in ("T1a", "T1c"), f"AAPL 2024-06-01 should resolve to T1a or T1c, got {result}"
+    print(f"✅ DEC-504 AAPL 2024-06-01 → {result}")
+
+
+def test_dec504_resolver_etf():
+    """Pure ETF (e.g., SPY) resolves to T1ETF (lowest precedence; nothing else applies)."""
+    from backtest.data.universe import resolve_tier_precedence
+    result = resolve_tier_precedence("SPY", date(2024, 6, 1))
+    assert result == "T1ETF", f"SPY should resolve to T1ETF, got {result}"
+    print(f"✅ DEC-504 SPY → T1ETF")
+
+
+def test_dec504_resolver_unknown_ticker():
+    """Ticker not in any tier returns None."""
+    from backtest.data.universe import resolve_tier_precedence
+    result = resolve_tier_precedence("NOTATICKER", date(2024, 6, 1))
+    assert result is None, f"Unknown ticker should resolve to None, got {result}"
+    print(f"✅ DEC-504 unknown ticker → None")
+
+
+def test_dec504_get_tier_params_t3_returned_for_dual():
+    """get_tier_params returns T3 dict for dual T1+T3 ticker per precedence."""
+    from backtest.data.universe import get_tier_params, TIER_PARAMS
+    params = get_tier_params("VST", date(2024, 6, 1))
+    assert params is not None, "VST 2024-06-01 should return params"
+    assert params == TIER_PARAMS["T3"], "VST dual membership should return T3 params per DEC-504"
+    assert params["min_avg_dollar_volume_usd"] == 5_000_000, "T3 ADV floor"
+    assert params["min_history_days"] == 60, "T3 history floor"
+    print(f"✅ DEC-504 get_tier_params VST → T3 dict (ADV $5M, history 60d)")
+
+
+def test_dec504_get_tier_params_returns_copy():
+    """get_tier_params returns a copy, not the canonical dict (mutation safety)."""
+    from backtest.data.universe import get_tier_params, TIER_PARAMS
+    params = get_tier_params("AAPL", date(2024, 6, 1))
+    if params is not None:
+        original_adv = TIER_PARAMS["T1a"]["min_avg_dollar_volume_usd"]
+        params["min_avg_dollar_volume_usd"] = -1
+        assert TIER_PARAMS["T1a"]["min_avg_dollar_volume_usd"] == original_adv, \
+            "Mutating returned dict must not affect canonical TIER_PARAMS"
+        print("✅ DEC-504 get_tier_params returns copy (mutation-safe)")
+
+
 def test_union_universe_includes_ndx():
     """union_universe contains T1c NDX-non-S&P names like AAPL (also S&P) + e.g., MELI."""
     from backtest.data.universe import union_universe

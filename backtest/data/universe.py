@@ -226,6 +226,126 @@ def union_universe(as_of: date, include_etfs: bool = True) -> list[str]:
     return sorted(members)
 
 
+# =============================================================================
+# DEC-504 Pass 53 owner directive 2026-05-05 — Multi-tier precedence resolver
+# =============================================================================
+# When a ticker is in multiple tiers PIT-active for the same date, T3 wins over
+# T1 per owner directive: "If a ticker is in multiple tiers, rules of T3 should
+# apply over T1." Generalized precedence (most-specific wins):
+#
+#   T3 (momentum) > T2 (spinoff/IPO) > T1c (NDX-non-SP) > T1a (S&P 500) > T1ETF
+#
+# Rationale: T3/T2 capture more-specific signal categories. If a ticker
+# graduates into T1 from T3, the T3 momentum thesis is the more-recent + more-
+# specific signal, so T3 rules apply (more permissive liquidity + history floors,
+# T3 strategy roster, T3 position sizing).
+#
+# Scope of "rules apply" per Pass 53 owner Q1=Approve all:
+#   (a) Liquidity floor — T3=$5M ADV, T2=$5M, T1c=$10M, T1a=$10M, T1ETF=N/A
+#   (b) History minimum — T3=60d, T2=20d (with LIMITED_HISTORY flag), T1c=250d, T1a=250d
+#   (c) Position sizing — tier-specific tier→size map (Master Dedup uses this)
+#   (d) Strategy roster — tier-eligible strategies (e.g., spinoff strategies T2-only,
+#       momentum strategies T3+T1)
+#   (e) Refresh cadence — T3 monthly, T2 monthly, T1 quarterly (ops-level, not runtime)
+
+# Tier precedence order — index 0 = highest precedence
+_TIER_PRECEDENCE = ["T3", "T2", "T1c", "T1a", "T1ETF"]
+
+# Tier-specific parameter dicts (DEC-504 owner-approved scope a-d)
+TIER_PARAMS = {
+    "T3": {
+        "min_avg_dollar_volume_usd": 5_000_000,   # $5M ADV (DEC-321/366)
+        "min_history_days": 60,
+        "min_market_cap_m": 300,                  # $300M
+        "position_size_tier": "T3",
+        "refresh_cadence": "monthly",
+    },
+    "T2": {
+        "min_avg_dollar_volume_usd": 5_000_000,
+        "min_history_days": 20,                   # LIMITED_HISTORY-flagged strategies respect this
+        "min_market_cap_m": 2_000,                # $2B (DEC-103)
+        "position_size_tier": "T2",
+        "refresh_cadence": "monthly",
+    },
+    "T1c": {
+        "min_avg_dollar_volume_usd": 10_000_000,  # $10M ADV
+        "min_history_days": 250,
+        "min_market_cap_m": 100,                  # $100M
+        "position_size_tier": "T1c",
+        "refresh_cadence": "quarterly",
+    },
+    "T1a": {
+        "min_avg_dollar_volume_usd": 10_000_000,
+        "min_history_days": 250,
+        "min_market_cap_m": 100,
+        "position_size_tier": "T1a",
+        "refresh_cadence": "quarterly",
+    },
+    "T1ETF": {
+        "min_avg_dollar_volume_usd": 5_000_000,
+        "min_history_days": 250,
+        "min_market_cap_m": 0,                    # ETFs N/A
+        "position_size_tier": "T1ETF",
+        "refresh_cadence": "static",
+    },
+}
+
+
+def _ticker_in_tier(ticker: str, tier: str, as_of: date) -> bool:
+    """Return True if ticker is PIT-active in the named tier on `as_of`."""
+    t = ticker.upper()
+    if tier == "T3":
+        return t in set(get_momentum_watchlist_pit(as_of))
+    if tier == "T2":
+        return t in set(get_extended_universe_pit(as_of))
+    if tier == "T1c":
+        return t in set(get_ndx_constituents_pit(as_of))
+    if tier == "T1a":
+        return t in set(get_sp500_constituents_pit(as_of))
+    if tier == "T1ETF":
+        return t in set(get_etfs_full())
+    raise ValueError(f"Unknown tier: {tier}")
+
+
+def resolve_tier_precedence(ticker: str, as_of: date) -> Optional[str]:
+    """
+    Return the most-specific PIT-active tier for `ticker` on `as_of`.
+
+    Precedence order (DEC-504 Pass 53): T3 > T2 > T1c > T1a > T1ETF.
+    Returns None if ticker not PIT-active in any tier on the given date.
+
+    Example:
+      VST joined S&P 500 on 2024-05-08 AND was T3 momentum top-100 with
+      added_date=2024-05-01. For as_of=2024-06-01:
+        - T1a-active: True
+        - T3-active: True (removed 2024-06-03)
+        - resolve_tier_precedence('VST', 2024-06-01) → 'T3' (T3 wins)
+
+      For as_of=2024-07-01:
+        - T1a-active: True
+        - T3-active: False (removed 2024-06-03)
+        - resolve_tier_precedence('VST', 2024-07-01) → 'T1a'
+    """
+    for tier in _TIER_PRECEDENCE:
+        if _ticker_in_tier(ticker, tier, as_of):
+            return tier
+    return None
+
+
+def get_tier_params(ticker: str, as_of: date) -> Optional[dict]:
+    """
+    Return the tier-specific parameter dict for `ticker` on `as_of` per DEC-504
+    precedence resolution. Returns None if ticker not PIT-active in any tier.
+
+    Use this in place of hardcoded T1/T2/T3 parameter lookups so multi-tier
+    tickers get T3-over-T1 rules per owner directive.
+    """
+    tier = resolve_tier_precedence(ticker, as_of)
+    if tier is None:
+        return None
+    return TIER_PARAMS[tier].copy()
+
+
 def apply_liquidity_filter(
     tickers: list[str],
     ohlcv_dict: dict[str, pd.DataFrame],

@@ -28511,3 +28511,98 @@ Master Universe Dedup rebuilt: 1,937 unique tickers (unchanged — graduated nam
 - **DEC-103** (T2 thresholds), DEC-494 (T2 SCREENER-FIRST), DEC-499 (sector source priority)
 
 *Per CHECKLIST #1 (owner Q1=B Option B); #13 (CHECKLIST re-read); #25 (BUG-274 honest acknowledgment); #43 (cross-doc); #45 (this statement); #51 (scope strict per Option B); #58 (atomic commit for T2 backfill scope); #66.b (INPUT/OUTPUT/FLOW); #67/#67.b (separate commit, decoupled); #68 (smoke + full ≤30s); #69 partial (data fix not new code).*
+
+---
+
+## Pass 53 — DEC-504 T3-over-T1 precedence rule + comprehensive CSV validation + 3 fixes (2026-05-05)
+
+**Owner directive 2026-05-05:** Edge case "If a ticker is in multiple tiers, rules of T3 should apply over T1." + "Verify All CSV files. Check for correctness, completeness, standardization. Flag if any issues."
+
+### Validation findings
+
+Comprehensive validator (`temp_staging/validate_all_universes.py`) ran across all 6 universe CSVs + Master Dedup. Surfaced 4 issues:
+
+| # | Severity | Issue | Status |
+|---|---|---|---|
+| 1 | 🔴 | T3 has 1 NULL Symbol row (idx 1134, 2025-09-01 to 2025-10-01, single anomalous Polygon return) | FIXED |
+| 2 | 🔴 | T2 has 93 blank Sectors (original SCREENER output where Polygon SIC didn't map; comprehensive backfill needed) | FIXED |
+| 3 | 🟡 | VST T1a∩T3 historical overlap at 2024-06-01 — exactly the edge case for T3-over-T1 precedence | DEC-504 codifies |
+| 4 | 🟢 | T2∩T3 active overlaps (15-26 across history) — recent IPOs showing momentum | Per design intent (DEC-103/104) |
+
+Schema (B++): ALL FILES CONFORM. Date format: 0 bad. PIT inversions: 0. Symbol format: ALL CONFORM.
+
+### Owner approvals
+
+Q1 + Q2 + Q3 = "Approve all":
+- **DEC-504** T3-over-T1 precedence rule, scope (a)-(e) fully approved
+- T2 sector backfill via Polygon SIC + yfinance fallback (Option B-style 1-shot)
+- T3 NULL Symbol row deletion
+
+### DEC-504 implementation (FIRST application of CHECKLIST #69 test pyramid)
+
+**Code:** [backtest/data/universe.py](backtest/data/universe.py) — added `_TIER_PRECEDENCE` constant + `TIER_PARAMS` dict + `resolve_tier_precedence(ticker, as_of)` + `get_tier_params(ticker, as_of)`.
+
+**Precedence order:** T3 > T2 > T1c > T1a > T1ETF (most-specific wins).
+
+**Per-tier parameters (DEC-504 scope a-e):**
+
+| Tier | min_ADV | min_history_days | min_market_cap_m | refresh |
+|---|---|---|---|---|
+| T3 | $5M | 60d | $300M | monthly |
+| T2 | $5M | 20d | $2,000M | monthly |
+| T1c | $10M | 250d | $100M | quarterly |
+| T1a | $10M | 250d | $100M | quarterly |
+| T1ETF | $5M | 250d | n/a | static |
+
+**Canonical example:** VST joined T1a 2024-05-08 + T3 added 2024-05-01 (removed 2024-06-03):
+- as_of=2024-06-01 → both active → resolves to **T3**
+- as_of=2024-07-01 → T3 removed → resolves to **T1a**
+
+**Master Dedup new column:** `resolved_tier` populated per DEC-504 precedence. Distribution: T3=993, T1a=501, T2=282, T1c=134, T1ETF=27 (total 1,937 unique tickers).
+
+### CHECKLIST #69 test pyramid — FIRST APPLICATION (DEC-503 mandate)
+
+| Layer | Status | Evidence |
+|---|---|---|
+| **Unit** | ✅ 10 new tests PASS | `test_dec504_*` in test_unit.py covering tier order, params completeness, T3-over-T1 (VST 2024-06-01), T1a-after-T3-removal (VST 2024-07-01), T2∩T3→T3, T1-only, ETF→T1ETF, unknown ticker→None, mutation-safe copy |
+| **Smoke** | ✅ PASS | resolve_tier_precedence on AAPL/SPY/VST/SNDK with real CSVs |
+| **Integration** | ✅ PASS | universe.py functions + resolver + Master Dedup rebuild chain |
+| **System** | ⚠ N/A | Full backtest is post-Sprint-0A; no end-to-end harness available yet |
+| **Functional** | ✅ PASS | T3-over-T1 precedence applied per spec; VST and T2∩T3 overlap cases verified |
+| **Regression** | ✅ 79/79 | `backtest/tests/test_unit.py` + `test_integration.py`; was 69/69 + 10 new = 79/79 |
+| **Data integrity** | ✅ PASS | Master 0 blank Sectors; T2 0 blank (was 93); T3 0 NULL (was 1); resolved_tier populated for all 1,937 |
+| **Performance** | ⚠ N/A | resolver is O(1) on cached PIT lookups; no perf surface change |
+| **Acceptance** | ✅ PASS | VST 2024-06-01→T3, VST 2024-07-01→T1a, SNDK 2025-08-01→T2, AAPL→T1c, SPY→T1ETF — all match owner intent |
+
+### Q3 fix — T3 NULL Symbol row deleted
+
+`temp_staging/fix_t3_null_symbol.py` — single row dropped (idx 1134, NULL Symbol, Sector=Unknown, period 2025-09-01 to 2025-10-01). T3 rows: 1924 → 1923.
+
+### Q2 fix — T2 sector backfill (93 → 0 blank)
+
+`temp_staging/backfill_t2_sectors.py`:
+- Smoke: AA + ADT probed
+- Full: 93 blank-sector T2 rows queried Polygon `/v3/reference/tickers/{ticker}` for SIC code
+- Comprehensive SIC→GICS map (more granular than original T2 SCREENER, especially 3500-3899 range disambiguating Industrials vs IT vs Health Care)
+- 54 filled via Polygon SIC; 39 filled via yfinance one-time fallback (ADRs/foreign tickers Polygon SIC didn't return); 0 unrecoverable
+- T2 final: 347 rows, 0 blank Sectors, 100% DEC-499 sector coverage achieved
+
+### Pre-flight CHECKLIST applied
+- ✅ #1/#45 — owner directive Q1+Q2+Q3 explicit "Approve all"; this statement
+- ✅ Pre-flight per recommendation — DEC-504 + 3 fixes owner-gated
+- ✅ #66.b — INPUT (validator findings + owner edge-case directive); OUTPUT (DEC-504 code + 3 data fixes + Master rebuild + 10 unit tests + doc sweep); FLOW (validate → diagnose → owner-gate → execute → test pyramid → docs → commit)
+- ✅ #13/#22/#23/#29 — T2 sector backfill 93 Polygon calls + ~39 yfinance fallbacks; well within established pattern
+- ✅ #67/#67.b — doc sweep this turn
+- ✅ #68 — smoke (AA + ADT) + full (93 calls) per established pattern
+- ✅ #69 — **FIRST APPLICATION** of test pyramid HARD RULE per DEC-503; all 9 layers addressed (System + Performance N/A with reason)
+
+### Cross-references
+- **AUDIT_INDEX.md DEC-504** — full body entry
+- **CHECKLIST.md #69** — test pyramid (first application here)
+- **backtest/tests/test_unit.py** — 10 new test_dec504_* tests
+- **backtest/data/universe.py** — _TIER_PRECEDENCE + TIER_PARAMS + resolve_tier_precedence + get_tier_params
+- **temp_staging/validate_all_universes.py** — validator script
+- **temp_staging/fix_t3_null_symbol.py** — Q3 fix
+- **temp_staging/backfill_t2_sectors.py** — Q2 fix
+
+*Per CHECKLIST #1 (owner directive Q1+Q2+Q3 "Approve all"); #13 (re-read); #25 (validator-found issues honest); #43 (cross-doc); #45 (this statement); #51 (scope per owner); #58 (atomic commit); #66.b (INPUT/OUTPUT/FLOW); #67 (doc sync this turn); #68 (smoke + full); **#69 FIRST APPLICATION — comprehensive test pyramid for DEC-504 code, all layers addressed**.*

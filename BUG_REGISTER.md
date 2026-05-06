@@ -391,3 +391,41 @@ Refactor `build_tier2_screener_full.py` to compute PIT add/remove dates per cand
 - DELL: added 2018-12-19, removed 2024-09-23 (graduated_to_T1a_2018), $138B IT
 - COIN: added 2021-04-14, removed 2025-05-19 (graduated_to_T1a_2021), $54B Financials
 
+---
+
+### BUG-275 — T2 SCREENER 93 blank Sectors (resolved Pass 53 owner Q2 approved)
+
+**Severity:** MEDIUM — DEC-499 sector coverage promise breached (T2 had 93 of 347 = 27% blank)
+**Module:** Original `scripts/build_tier2_screener_full.py` SIC→GICS mapping was too coarse
+**Owner-flagged via comprehensive validation (Pass 53 turn 2026-05-05)**
+
+**Description:**
+T2 SCREENER applied limited SIC→GICS mapping during full global pull; 93 of 297 SCREENER-output rows had blank `Sector` column because Polygon SIC code didn't fall into mapped ranges (mostly ADRs/foreign tickers + edge SIC codes outside core 11-class GICS range). DEC-499 promises 100% sector population across all 6 universe files.
+
+**Fix Pass 53 owner Q2 approved 2026-05-05:**
+`temp_staging/backfill_t2_sectors.py`:
+1. Smoke probe: AA + ADT (verify Polygon SIC + comprehensive map work)
+2. Full: 93 blank-sector T2 rows queried Polygon `/v3/reference/tickers/{ticker}` for sic_code
+3. Comprehensive SIC→GICS map (granular ranges 3500-3899 disambiguating Industrials vs IT vs Health Care; +Communication Services for SIC 2700 publishing; +finance subdivisions 6000-6799)
+4. yfinance `.info['sector']` one-time fallback for ADRs/foreign Polygon SIC didn't return
+5. Result: 54 filled via Polygon SIC + 39 filled via yfinance + 0 tagged Unknown = 93/93 fixed
+
+**T2 final state Pass 53 turn 2026-05-05:** 347 rows, 0 blank Sectors, 100% DEC-499 coverage achieved.
+
+**Joint:** DEC-499 (18-classifier sector taxonomy), DEC-103/494 (T2 thresholds + SCREENER architecture), DEC-274 (graduated names backfill — distinct from this).
+
+---
+
+### BUG-276 — T3 NULL Symbol row (resolved Pass 53 owner Q3 approved)
+
+**Severity:** LOW — single anomalous row (1 of 1924); cleanup not impact
+**Module:** Original T3 SCREENER returned NaN Symbol for one monthly snapshot
+
+**Description:**
+T3 row idx 1134 had `Symbol=NaN, Company=NaN, Sector=Unknown, added_date=2025-09-01, removed_date=2025-10-01, MomentumScore=1.323, LastPrice=7.04`. Likely Polygon SIC lookup returned a record with NULL ticker symbol; T3 SCREENER didn't filter this out.
+
+**Fix Pass 53 owner Q3 approved 2026-05-05:**
+`temp_staging/fix_t3_null_symbol.py` — single `dropna(subset=["Symbol"])` operation. T3 rows: 1924 → 1923.
+
+**Joint:** DEC-104/364 (T3 momentum methodology), DEC-496 (T3 SCREENER architecture).
+
