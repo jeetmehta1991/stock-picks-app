@@ -285,3 +285,40 @@ def _format(drifts: list[Drift]) -> str:
 def test_canonical_facts_md_exists():
     """The canonical facts file itself must exist (sanity)."""
     assert (REPO_ROOT / "CANONICAL_FACTS.md").is_file()
+
+
+# ---------------------------------------------------------------------------
+# F-003 / F-012 — Prefetch/Consumer split structure (Option B refactor 2026-05-06)
+# ---------------------------------------------------------------------------
+#
+# F-003 (signal universe) and F-012 (APIs) tables must use the two-column
+# Prefetch state / Consumer state structure. This prevents the SEC-EDGAR-style
+# ambiguity where "⏸ Sprint 4" conflated "files not cached" with "files cached
+# but parsers not built". A bare single-column "Status" header signals the
+# refactor was reverted.
+
+
+def test_f003_f012_use_prefetch_consumer_split():
+    """F-003 + F-012 status tables must split prefetch state from consumer state."""
+    canonical = (REPO_ROOT / "CANONICAL_FACTS.md").read_text(encoding="utf-8")
+
+    # Both facts must contain the two-column header phrase
+    assert "Prefetch state" in canonical, (
+        "F-003 / F-012 must have a 'Prefetch state' column header per Option B refactor "
+        "(owner directive 2026-05-06). The single-column 'Status (Stage 2)' header "
+        "conflates raw-data-cached with consumer-integration-done."
+    )
+    assert "Consumer state" in canonical, (
+        "F-003 / F-012 must have a 'Consumer state' column header per Option B refactor."
+    )
+
+    # Forbidden: bare single-column status headers in F-003/F-012 tables
+    forbidden_headers = [
+        "| Status (Stage 2) |",  # F-003 old format
+        "| Stage 2 status |",  # F-012 old format
+    ]
+    for forbidden in forbidden_headers:
+        assert forbidden not in canonical, (
+            f"CANONICAL_FACTS.md still contains single-column header `{forbidden}` — "
+            f"Option B refactor requires Prefetch state | Consumer state two-column split."
+        )

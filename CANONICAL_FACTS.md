@@ -141,16 +141,23 @@ Each fact has: **F-NNN identifier** • value (planned) • scope/definition •
 
 **The 6 canonical categories:**
 
-| # | Category | Field count | Status (Stage 2) | SSOT code path |
-|---|---|---|---|---|
-| 1 | Technical Indicators (pivots, momentum, trend, vol, volume, candles) | **~220** | ✅ ACTIVE | `backtest/signals/technical.py` (26 functions aggregated by `compute_all_signals()`) |
-| 2 | Smart Money composite + adjacents (congressional, insider, 13F, news, gov contracts, lobbying, analyst) | **~10** composite/raw labels | ✅ ACTIVE | `backtest/data/smart_money.py` |
-| 3 | Options Intelligence (IV rank, IV percentile, term structure, P/C ratio, skew, max-pain, dealer gamma) | **~5+ planned** | ⏸ Stage 3+ scope (gated on Polygon Options + Ortex subscriptions per DEC-506) | TBD post-subscription |
-| 4 | Macro Filters (yield curve, VIX, DXY, FRED 50-series, ALFRED revisions, CFTC COT, event calendar) | **~15** | ✅ ACTIVE | `backtest/data/macro.py` |
-| 5 | Sentiment Signals (AAII, CNN F&G composite + 7 components, Apewisdom, Wikipedia pageviews, pytrends) | **~5** | ✅ ACTIVE | `backtest/data/sentiment.py` |
-| 6 | Company / Fundamental Signals (EPS estimates, margin, FCF, insider ownership, share count delta, analyst rating) | **~15 (full set Sprint 4)** | ⏸ PARTIAL Stage 2 — full Sprint 4 per DEC-484 SEC EDGAR | `backtest/data/smart_money.py:88-253` (analyst); SEC EDGAR Sprint 4 build |
-| **Stage 2 total active** | | **~270** | | |
-| **Stage 3+ planned** | (incl. Category 3 + Category 6 expansion) | **~290+** | | |
+Status is split into **two independent layers** (per owner directive 2026-05-06 — Option B refactor):
+- **Prefetch state** = is the raw data cached in `data_prefetch/<api>/<endpoint>/...`? (or in `backtest/data/cache/` for OHLCV)
+- **Consumer state** = is the cached data parsed + exposed as signals + read by the consuming agent toolkit?
+
+A category can have prefetch ✅ but consumer 🔴 (data sitting on disk, no code reads it for agent input). This is the L146 pattern — the SEC EDGAR case is the canonical example.
+
+| # | Category | Field count | Prefetch state | Consumer state | SSOT code path |
+|---|---|---|---|---|---|
+| 1 | Technical Indicators (pivots, momentum, trend, vol, volume, candles) | **~220** | ✅ ACTIVE — Polygon OHLCV cached for ~1,937 tickers | ✅ ACTIVE — `compute_all_signals()` exposes all ~220 fields; Market Analyst toolkit reads Cat 1 | `backtest/signals/technical.py` (26 functions aggregated by `compute_all_signals()`) |
+| 2 | Smart Money composite + adjacents (congressional, insider, 13F, news, gov contracts, lobbying, analyst) | **~10** composite/raw labels | ✅ ACTIVE — Quiver Trader bulk endpoints cached (insiders 1M rows, 13Fchanges 500k rows, etc.) Pass 53 Batch 9 v2 | ✅ ACTIVE — `smart_money.insider_signal` / `institutional_signal` / composite wired Pass 53 Batch 13 sub-task 1 | `backtest/data/smart_money.py` |
+| 3 | Options Intelligence (IV rank, IV percentile, term structure, P/C ratio, skew, max-pain, dealer gamma) | **~5+ planned** | 🔴 NOT PREFETCHED — Polygon Options + Ortex subscriptions deferred per DEC-506 (point-of-need) | 🔴 NOT WIRED — depends on prefetch | TBD post-subscription |
+| 4 | Macro Filters (yield curve, VIX, DXY, FRED 50-series, ALFRED revisions, CFTC COT, event calendar) | **~15** | ✅ ACTIVE — FRED 50-series + ALFRED + CFTC COT cached Pass 53 Batches 6-8 | ✅ ACTIVE — `macro.macro_snapshot()` exposes 12 FRED-derived signals (yield curve / HY OAS / STLFSI4 / RECPROUSM156N / ICSA / WALCL); CFTC dealer positions Pass 53 Batch 13 sub-task 3+5 | `backtest/data/macro.py` |
+| 5 | Sentiment Signals (AAII, CNN F&G composite + 7 components, Apewisdom, Wikipedia pageviews, pytrends) | **~5** | ✅ ACTIVE — AAII + CNN F&G composite + 7 sub-components + Apewisdom + Wikipedia pageviews cached (pytrends partial — 200/1937 per Batch 12-b rate-limit) | ✅ ACTIVE — `sentiment.sentiment_snapshot()` exposes all sources Pass 53 Batch 13 sub-task 4+5 | `backtest/data/sentiment.py` |
+| 6 | Company / Fundamental Signals (EPS estimates, margin, FCF, insider ownership, share count delta, analyst rating) | **~15 (full set Sprint 4)** | ✅ PARTIAL — Polygon financials cached (1,746 files / 91k filings Batch 4); SEC EDGAR cached (6,056 files Form 4 + 8-K + SC 13D + SC 13G Batch 11 commit `0713f5a0`); Quiver analyst ratings cached | ⏸ PARTIAL — Quiver analyst ratings exposed via `smart_money.get_analyst_data` ✅; Polygon financials parser + SEC EDGAR Form 4/8-K/13D/13G parsers + Fundamentals Analyst toolkit wiring **Sprint 4 PENDING** (gates Layer 1 `buyback_announcements` strategy per DEC-490) | `backtest/data/smart_money.py:88-253` (analyst); SEC EDGAR + Polygon financials Sprint 4 build |
+| **Stage 2 total active (prefetch ✅ AND consumer ✅)** | | **~270** | | | |
+| **Stage 2 cached but not consumed (prefetch ✅, consumer 🔴/⏸)** | | **+~10-15** (SEC EDGAR + Polygon financials parsing pending) | | | |
+| **Stage 3+ planned (prefetch + consumer)** | (incl. Category 3 + Category 6 full set) | **~290+** | | | |
 
 **Disambiguation (per owner Q3 directive):**
 - **"~220 signals"** = Technical category only (Category 1) — used in `EXPLANATION.md` §The signals + `backtest/signals/technical.py` docstring. **Correct in scope.**
@@ -538,16 +545,22 @@ Plus `OurAgentState` schema extension with 7 new fields (DEC-467) and Ortex wiri
 
 **The 8 Stage 2 active APIs:**
 
-| API | Subscription | Stage 2 status | Cache path |
-|---|---|---|---|
-| Polygon Stocks Starter | Paid | ✅ ACTIVE | `data_prefetch/polygon/{aggs,news,financials,events,reference,dividends}/` |
-| Quiver Trader | Paid | ✅ ACTIVE | `data_prefetch/quiver/{insiders,sec13fchanges,quivernews,offexchange,...}/` |
-| FRED | Free | ✅ ACTIVE | `data_prefetch/fred/observations/` (50 series) |
-| ALFRED (revisions) | Free | ✅ ACTIVE | `data_prefetch/alfred/` |
-| AAII | Free | ✅ ACTIVE | `data_prefetch/aaii/` |
-| CNN F&G (composite + 7 components) | Free | ✅ ACTIVE | `data_prefetch/cnn_fg/` |
-| CFTC COT | Free | ✅ ACTIVE | `data_prefetch/cftc/cot_emini_sp500.parquet` |
-| SEC EDGAR | Free | ⏸ Sprint 4 | `data_prefetch/sec_edgar/` (6,056 files) |
+Status is split into **two independent layers** (per owner directive 2026-05-06 — Option B refactor) to disambiguate prefetch readiness from consumer integration:
+- **Prefetch state** = is the raw data cached on disk?
+- **Consumer state** = is the cached data parsed + exposed via the consuming module + read by the toolkit/agent?
+
+A row can have prefetch ✅ but consumer 🔴 (e.g., SEC EDGAR — 6,056 files cached but parsers + Fundamentals Analyst wiring is Sprint 4 work). This is the L146 pattern. The wiring matrix in [TRADINGAGENTS_DATA_AUDIT.md §1071](TRADINGAGENTS_DATA_AUDIT.md) cross-tracks consumer state per agent.
+
+| API | Subscription | Prefetch state | Consumer state | Cache path |
+|---|---|---|---|---|
+| Polygon Stocks Starter | Paid | ✅ ACTIVE — 1,937 tickers OHLCV + 1.05M news articles + 1,746 financials + ticker events + dividends + reference cached Pass 53 Batches 2-5 | ✅ ACTIVE — `fetcher.fetch_ohlcv` + `smart_money.get_news_sentiment` + (financials parser pending Sprint 4) wired Pass 53 Batch 13 sub-tasks 2+6 | `data_prefetch/polygon/{aggs,news,financials,events,reference,dividends}/` |
+| Quiver Trader | Paid | ✅ ACTIVE — 8 endpoint groups cached: insiders 1M rows, sec13fchanges 500k rows, quivernews, offexchange, etc. Pass 53 Batches 9 v2 + 10 | ✅ ACTIVE — `smart_money.insider_signal` / `institutional_signal` / composite reads bulk feeds Pass 53 Batch 13 sub-task 1 | `data_prefetch/quiver/{insiders,sec13fchanges,quivernews,offexchange,...}/` |
+| FRED | Free | ✅ ACTIVE — 50 series cached Pass 53 Batch 6 | ✅ ACTIVE — `macro.macro_snapshot()` exposes 12 FRED-derived signals (yield curve / VIX / DXY / HY OAS / STLFSI4 / RECPROUSM156N / ICSA / WALCL) Pass 53 Batch 13 sub-task 3 | `data_prefetch/fred/observations/` (50 series) |
+| ALFRED (revisions) | Free | ✅ ACTIVE | ⚠ PARTIAL — revision-aware reads not yet wired into macro snapshot; signals use first-print FRED only | `data_prefetch/alfred/` |
+| AAII | Free | ✅ ACTIVE | ✅ ACTIVE — `sentiment.sentiment_snapshot()` exposes AAII bull/bear/neutral | `data_prefetch/aaii/` |
+| CNN F&G (composite + 7 components) | Free | ✅ ACTIVE — composite + 7 sub-components cached Pass 53 Batch 7 | ✅ ACTIVE — `sentiment.get_cnn_components()` exposes all 7 components Pass 53 Batch 13 sub-task 4 | `data_prefetch/cnn_fg/` |
+| CFTC COT | Free | ✅ ACTIVE — 1,293 weekly TFF reports cached Pass 53 Batch 8 | ✅ ACTIVE — `sentiment.get_cot_report()` exposes dealer_positions_long/short Pass 53 Batch 13 sub-task 5 | `data_prefetch/cftc/cot_emini_sp500.parquet` |
+| SEC EDGAR | Free | ✅ ACTIVE — 6,056 files cached Pass 53 Batch 11 (commit `0713f5a0`); Form 4 + 8-K + SC 13D + SC 13G across 4 subfolders | 🔴 NOT WIRED — parsers pending **Sprint 4** (per DEC-484); blocks Layer 1 `buyback_announcements` per DEC-490; no agent currently reads SEC EDGAR cache | `data_prefetch/sec_edgar/{4,8_K,SC_13D,SC_13G}/` (6,056 files) |
 
 **The 2 post-subscription Stage 3+ APIs (per DEC-506 owner directive 2026-05-05):**
 
