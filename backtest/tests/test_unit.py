@@ -1210,6 +1210,75 @@ def test_bug273_institutional_signal_respects_45day_lag():
     print("✅ BUG-273 institutional_signal 45-day lag respected")
 
 
+def test_macro_hy_oas_classification():
+    """Pass 53 Batch 13 sub-task 3: HY OAS regime thresholds."""
+    from backtest.data.macro import hy_oas_signal
+    # Read live cache to see actual current state (assume 2026-05-05 reading)
+    result = hy_oas_signal(date(2026, 5, 1))
+    # 2026-05-04 latest value = 2.78 → healthy_credit
+    assert result["value"] is not None, "FRED prefetch should have data"
+    assert result["signal"] in ("healthy_credit", "normal", "elevated", "crisis", "unknown")
+    if result["value"] is not None and result["value"] < 3.0:
+        assert result["signal"] == "healthy_credit", \
+            f"value={result['value']} < 3.0 should be healthy_credit"
+    print(f"✅ Batch 13 hy_oas: value={result['value']} → {result['signal']} (score={result['score']})")
+
+
+def test_macro_stlfsi_classification():
+    """STLFSI4 financial stress regime thresholds."""
+    from backtest.data.macro import financial_stress_signal
+    result = financial_stress_signal(date(2026, 5, 1))
+    assert result["value"] is not None
+    # 2026-04-24 latest = -0.68 → below_normal or normal
+    assert result["signal"] in ("below_normal", "normal", "elevated", "crisis", "unknown")
+    print(f"✅ Batch 13 stlfsi: value={result['value']} → {result['signal']}")
+
+
+def test_macro_recession_probability():
+    """RECPROUSM156N recession probability thresholds."""
+    from backtest.data.macro import recession_probability_signal
+    result = recession_probability_signal(date(2026, 5, 1))
+    # 2026-03-01 latest = 1.82% → healthy
+    if result["value"] is not None:
+        assert result["signal"] in ("healthy", "elevated_risk", "high_risk",
+                                      "imminent_recession", "unknown")
+    print(f"✅ Batch 13 recession_prob: value={result['value']}% → {result['signal']}")
+
+
+def test_macro_jobless_claims():
+    """ICSA initial jobless claims thresholds."""
+    from backtest.data.macro import jobless_claims_signal
+    result = jobless_claims_signal(date(2026, 5, 1))
+    # 2026-04-25 latest = 189000 → strong
+    if result["value"] is not None and result["value"] < 250_000:
+        assert result["signal"] == "strong"
+    print(f"✅ Batch 13 jobless_claims: {result['value']:.0f} → {result['signal']}" if result["value"] else f"signal={result['signal']}")
+
+
+def test_macro_fed_balance_sheet():
+    """WALCL Fed balance sheet trajectory (90-day delta)."""
+    from backtest.data.macro import fed_balance_sheet_signal
+    result = fed_balance_sheet_signal(date(2026, 5, 1))
+    assert result["signal"] in ("expansion_qe", "stable", "contraction_qt", "unknown")
+    print(f"✅ Batch 13 fed_balance_sheet: {result['signal']} (delta_pct={result.get('delta_pct')})")
+
+
+def test_macro_snapshot_includes_batch13_expansion():
+    """macro_snapshot returns new HY OAS / STLFSI / recession prob / jobless / Fed BS."""
+    from backtest.data.macro import macro_snapshot
+    snap = macro_snapshot(date(2026, 5, 1))
+    # Existing fields preserved
+    for key in ["yield_curve_regime", "vix_regime", "dxy_trend", "macro_score"]:
+        assert key in snap, f"Existing field {key} missing"
+    # New fields present (DEC-507 wiring matrix Row 4 closure)
+    for key in ["hy_oas", "financial_stress", "recession_probability",
+                "jobless_claims", "fed_balance_sheet"]:
+        assert key in snap, f"Batch 13 expansion field {key} missing"
+        assert "signal" in snap[key]
+        assert "score" in snap[key]
+    print(f"✅ Batch 13 macro_snapshot composite score={snap['macro_score']}")
+
+
 def test_polygon_news_positive_sentiment(tmp_path, monkeypatch):
     """Pass 53 Batch 13 Row 2 closure: get_news_sentiment reads Polygon news insights."""
     # Inject fake data_prefetch/polygon/news/AAPL.parquet

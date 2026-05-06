@@ -420,7 +420,141 @@ def is_near_high_impact_event(as_of: date, window_days: int = 2) -> dict:
             "days_away": nearest["days_away"]}
 
 
+# Pass 53 Batch 13 sub-task 3 (Wiring matrix Row 4 closure per DEC-507/L146/CHECKLIST #70):
+# 5 high-priority FRED series wired into macro_snapshot composite per DEC-407+448 expansion.
+# data_prefetch/fred/observations/{series_id}.parquet (Sprint 0A Batch 6 prefetched 50/52 series).
+
+_REPO_ROOT_MACRO = Path(__file__).parent.parent.parent
+PREFETCH_FRED_DIR = _REPO_ROOT_MACRO / "data_prefetch" / "fred" / "observations"
+
+
+def _fred_value_at(series_id: str, as_of: date) -> Optional[float]:
+    """Latest FRED observation value at-or-before `as_of` from prefetch cache.
+
+    Returns None if cache miss or no observations on/before as_of.
+    """
+    path = PREFETCH_FRED_DIR / f"{series_id}.parquet"
+    if not path.exists():
+        return None
+    try:
+        df = pd.read_parquet(path)
+        if df.empty or "date" not in df.columns or "value" not in df.columns:
+            return None
+        df["date"] = pd.to_datetime(df["date"]).dt.date
+        df = df[df["date"] <= as_of]
+        if df.empty:
+            return None
+        return float(df.iloc[-1]["value"])
+    except Exception as exc:
+        logger.debug("_fred_value_at(%s, %s): %s", series_id, as_of, exc)
+        return None
+
+
+def hy_oas_signal(as_of: date) -> dict:
+    """High-yield OAS regime classification (credit cycle leading indicator).
+
+    BAMLH0A0HYM2 = ICE BofA US High Yield Index Option-Adjusted Spread (% over Treasury).
+    Crisis signal when >8.0 (e.g., 2008 = 18%, 2020 COVID = 11%, 2022 = 6%).
+    """
+    val = _fred_value_at("BAMLH0A0HYM2", as_of)
+    if val is None:
+        return {"signal": "unknown", "value": None, "score": 0}
+    if val < 3.0:
+        return {"signal": "healthy_credit", "value": val, "score": 1}
+    elif val < 6.0:
+        return {"signal": "normal", "value": val, "score": 0}
+    elif val < 8.0:
+        return {"signal": "elevated", "value": val, "score": -1}
+    else:
+        return {"signal": "crisis", "value": val, "score": -2}
+
+
+def financial_stress_signal(as_of: date) -> dict:
+    """St Louis Fed financial stress index regime.
+
+    STLFSI4: 0 = average historical stress; >0 = above-normal; <0 = below-normal.
+    Crisis signal when >+3 (e.g., 2008 = 5+, 2020 = 5+).
+    """
+    val = _fred_value_at("STLFSI4", as_of)
+    if val is None:
+        return {"signal": "unknown", "value": None, "score": 0}
+    if val < -1.0:
+        return {"signal": "below_normal", "value": val, "score": 1}
+    elif val < 1.0:
+        return {"signal": "normal", "value": val, "score": 0}
+    elif val < 3.0:
+        return {"signal": "elevated", "value": val, "score": -1}
+    else:
+        return {"signal": "crisis", "value": val, "score": -2}
+
+
+def recession_probability_signal(as_of: date) -> dict:
+    """Smoothed recession probability (RECPROUSM156N).
+
+    Values: 0-100% probability of US recession current month.
+    >50% = high recession risk; >75% = imminent.
+    """
+    val = _fred_value_at("RECPROUSM156N", as_of)
+    if val is None:
+        return {"signal": "unknown", "value": None, "score": 0}
+    if val < 20:
+        return {"signal": "healthy", "value": val, "score": 1}
+    elif val < 40:
+        return {"signal": "elevated_risk", "value": val, "score": 0}
+    elif val < 60:
+        return {"signal": "high_risk", "value": val, "score": -1}
+    else:
+        return {"signal": "imminent_recession", "value": val, "score": -2}
+
+
+def jobless_claims_signal(as_of: date) -> dict:
+    """Initial jobless claims (ICSA) — high-frequency labor leading indicator.
+
+    Weekly published. Recession trigger commonly cited as sustained >300K.
+    """
+    val = _fred_value_at("ICSA", as_of)
+    if val is None:
+        return {"signal": "unknown", "value": None, "score": 0}
+    if val < 250_000:
+        return {"signal": "strong", "value": val, "score": 1}
+    elif val < 350_000:
+        return {"signal": "normal", "value": val, "score": 0}
+    elif val < 450_000:
+        return {"signal": "weakening", "value": val, "score": -1}
+    else:
+        return {"signal": "recession_indicator", "value": val, "score": -2}
+
+
+def fed_balance_sheet_signal(as_of: date, lookback_days: int = 90) -> dict:
+    """Fed balance sheet trajectory (WALCL) — QE vs QT direction.
+
+    Compares current value to ~90 days ago; growing = QE (bullish liquidity);
+    shrinking = QT (bearish liquidity).
+    """
+    val_now = _fred_value_at("WALCL", as_of)
+    val_past = _fred_value_at("WALCL", as_of - timedelta(days=lookback_days))
+    if val_now is None or val_past is None or val_past == 0:
+        return {"signal": "unknown", "value": val_now, "score": 0,
+                "delta_pct": None}
+    delta_pct = (val_now - val_past) / val_past * 100
+    if delta_pct > 1.0:
+        return {"signal": "expansion_qe", "value": val_now, "score": 1,
+                "delta_pct": delta_pct}
+    elif delta_pct < -1.0:
+        return {"signal": "contraction_qt", "value": val_now, "score": -1,
+                "delta_pct": delta_pct}
+    else:
+        return {"signal": "stable", "value": val_now, "score": 0,
+                "delta_pct": delta_pct}
+
+
 def macro_snapshot(as_of: date) -> dict:
+    """Composite macro context snapshot.
+
+    Pass 53 Batch 13 sub-task 3 expansion (DEC-507 wiring matrix Row 4):
+    Adds HY OAS / STLFSI4 / Recession Prob / ICSA / WALCL signals to
+    pre-existing yield curve / VIX / DXY / event-calendar composite.
+    """
     from backtest.config import BACKTEST_START
     yc  = yield_curve_regime(as_of)
     vr  = vix_regime(as_of)
@@ -428,6 +562,7 @@ def macro_snapshot(as_of: date) -> dict:
     ec  = is_near_high_impact_event(as_of)
     vix_df = get_vix(as_of - timedelta(days=5), as_of, as_of=as_of)
     vix_val = float(vix_df["vix"].iloc[-1]) if not vix_df.empty else None
+    # Existing signals (legacy scoring)
     score = 0
     if yc == "normal":    score += 2
     elif yc == "inverted": score -= 2
@@ -438,7 +573,15 @@ def macro_snapshot(as_of: date) -> dict:
     if dxy == "falling":  score += 1
     elif dxy == "rising":  score -= 1
     if ec["blocked"]:     score -= 2
+    # Pass 53 Batch 13 expansion: 5 high-priority FRED signals
+    hy = hy_oas_signal(as_of)
+    fs = financial_stress_signal(as_of)
+    rp = recession_probability_signal(as_of)
+    jc = jobless_claims_signal(as_of)
+    bs = fed_balance_sheet_signal(as_of)
+    score += hy["score"] + fs["score"] + rp["score"] + jc["score"] + bs["score"]
     return {
+        # Existing fields
         "yield_curve_regime":     yc,
         "vix_regime":             vr,
         "vix_value":              vix_val,
@@ -446,5 +589,12 @@ def macro_snapshot(as_of: date) -> dict:
         "near_high_impact_event": ec["blocked"],
         "event_type":             ec.get("nearest_event_type"),
         "event_days_away":        ec.get("days_away"),
+        # NEW Pass 53 Batch 13 expansion
+        "hy_oas":                hy,
+        "financial_stress":      fs,
+        "recession_probability": rp,
+        "jobless_claims":        jc,
+        "fed_balance_sheet":     bs,
+        # Composite
         "macro_score":            score,
     }
