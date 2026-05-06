@@ -29394,3 +29394,76 @@ Tier 2 is **scope-complete**. Tier 3 (statistical sanity / adversarial random-wa
 - F-002 (Layer 2A 12 ICT/SMC strategies that consume these primitives)
 
 *Per CHECKLIST #1 (Option A approved); #25 (performance + composition + survivorship findings reported); #43 (cross-doc); #45 (this); #51 (Tier 2 scope only); #67/#67.b (per-turn doc sync); #71 (Tier 2 of fork-integration mandate complete).*
+
+---
+
+## Pass 53 — smartmoneyconcepts Phase A Tier 3 empirical tests + 3 new PIT findings — 2026-05-06
+
+### Trigger
+
+Owner directive 2026-05-06 "A" — advance Phase A to Tier 3 (statistical sanity / adversarial random-walk / cross-validation / lookahead detection at scale) per DEC-508 + CHECKLIST #71. Tier 3 closes Phase A merge-eligibility for Claude-runnable testing (Tier 4 = Dashboard 2 visual + owner spot-check; owner-driven).
+
+### Result
+
+**Tier 3 test file added:** `backtest/tests/test_smartmoneyconcepts_empirical.py` — 18 tests; 15 passing + 3 expected-fail (real findings).
+
+| Sub-category | Tests | Status |
+|---|---|---|
+| **Statistical sanity** | 4 | ✅ all pass — FVG density distribution across 5 real tickers, swing count scaling with swing_length, length scaling, bull/bear balance |
+| **Adversarial random-walk** | 5 | ✅ all pass — constant data → no signals (3 primitives); pure GBM bounded FVG density (~24%); jumps amplify density |
+| **Cross-validation** | 4 | ✅ all pass — across 5 seeds (CV<0.5); 4-fold walk-forward (DEC-505); window-size stability |
+| **Lookahead detection at scale** | 5 | ⚠ **3 xfail (R-PHA-003/004/005 — see below); 2 pass (swing + FVG safe-window bulk)** |
+
+### 🔴 3 NEW PIT findings surfaced via Tier 3 (added to risk register)
+
+**R-PHA-003 — `smc.bos_choch` safe-window violation on real ABNB.** Tier 1 PIT test on synthetic data passed for BOS/CHOCH. Tier 3 ran the same regression on 3 real tickers (MSFT/TSLA/ABNB). MSFT and TSLA had 0 violations in `cutoff - swing_length` safe window; **ABNB had 1 BOS violation at idx 534 (cutoff=658, swing_length=50, safe_end=608).** Root cause: BOS detection at bar D depends on the swing high/low at bar D' (D' < D), which itself can shift if a slightly-higher tie-break swing exists in future data. Synthetic data didn't trigger this because it lacked tie-break-prone structures. **Consumer mitigation REQUIRED:** use `2*swing_length` safe window OR confirm swings are stable for `swing_length` bars after detection before BOS/CHOCH is consumed by `OurTechnicalToolkit` (DEC-462 Sprint 7).
+
+**R-PHA-004 — `smc.fvg` +1-bar lag is INSUFFICIENT.** Tier 1 finding R-PHA-001 said FVG is "1-bar forward-looking" because mid-bar placement requires bar 3 to confirm the gap. Tier 3 attempted to verify the +1-bar shift mitigation works — and it doesn't. Empirically: FVG signal at bar D can also depend on bars D+2..D+N when MitigatedIndex updates retroactively as price retraces into the gap. **Consumer mitigation REQUIRED:** use a larger lag (≥3 bars) OR ignore MitigatedIndex column entirely and re-derive mitigation from the consumer side (`OurTechnicalToolkit` Sprint 7).
+
+**R-PHA-005 — Aggregate universe-sample PIT regression: 4 violations (Phase A merge gate).** Across MSFT/TSLA/ABNB × 3 primitives × safe windows, total PIT violations = 4 (driven by R-PHA-003 BOS/CHOCH and tied-swing tie-break shifts). **This is the Phase A merge gate.** Phase A is currently scope-complete (Tiers 1-3 written and run), but **Phase A merge is BLOCKED on R-PHA-005 until consumer-side mitigations applied.** The mitigations are:
+- 2*swing_length safe window for BOS/CHOCH (R-PHA-003)
+- ≥3-bar lag for FVG (R-PHA-001 + R-PHA-004)
+- swing_length lag for retracements Direction (R-PHA-002)
+
+Once `OurTechnicalToolkit` (DEC-462 Sprint 7) applies these mitigations at read-time, the xfail tests should flip to pass and Phase A merges.
+
+### Phase A risk register — full status (5 entries)
+
+| ID | Severity | Component | Finding | Mitigation site |
+|---|---|---|---|---|
+| R-PHA-001 | Low-Medium | smc.fvg | mid-bar placement → +1-bar lookahead | `OurTechnicalToolkit` shift +1 |
+| R-PHA-002 | Medium | smc.retracements | Direction established retroactively → swing_length-bar lookahead | `OurTechnicalToolkit` shift +swing_length |
+| R-PHA-003 | Medium | smc.bos_choch | tie-break swing shifts violate `cutoff - swing_length` safe window | `OurTechnicalToolkit` use 2*swing_length safe window |
+| R-PHA-004 | Medium | smc.fvg MitigatedIndex | retroactive mitigation tracking → multi-bar lookahead beyond +1 | `OurTechnicalToolkit` lag ≥3 OR re-derive mitigation |
+| R-PHA-005 | High | aggregate universe-sample | 4 PIT violations gate Phase A merge | composite of R-PHA-001/002/003/004 fixes |
+
+### Aggregate Phase A status — scope complete; merge gated
+
+| Tier | Tests | Status |
+|---|---|---|
+| Tier 1 (unit + PIT regression) | 78 | ✅ COMPLETE |
+| Tier 2 (integration) | 21 | ✅ COMPLETE |
+| Tier 3 (empirical) | 18 | ✅ COMPLETE — 5 R-PHA findings surfaced |
+| Tier 4 (Dashboard 2 visual + owner spot-check) | — | ⏸ Owner-driven |
+| **Total smc coverage** | **117 tests** | 111 pass + 1 skip + 5 xfail (intentional R-PHA findings) |
+
+**Phase A is scope-complete for Tiers 1-3.** Merge to main is gated on:
+1. **Tier 4 owner spot-check** (Dashboard 2 visual review of 20-50 signals — owner-driven workflow not in this turn's scope)
+2. **R-PHA-005 closure** via `OurTechnicalToolkit` consumer-side mitigations in Sprint 7
+
+**Phase B (canary)** can begin when both gates clear: signals computed via `OurTechnicalToolkit` (mitigations applied), strategies disabled, Dashboard 2 validates 20-50 signals + statistical sanity + PIT regression at canary scale.
+
+### Files modified
+
+- `backtest/tests/test_smartmoneyconcepts_empirical.py` (new — 18 tests)
+- `AUDIT.md` (this narrative)
+
+### Cross-references
+
+- DEC-508 Phase A risk register (R-PHA-001 to R-PHA-005)
+- CHECKLIST #71 (fork-integration mandate Tier 3 sub-category)
+- DEC-462 (`OurTechnicalToolkit` — Sprint 7 site for all 4 mitigations)
+- DEC-505 (4-fold walk-forward — empirically tested in cross-validation tests)
+- F-002 (Layer 2A 12 ICT/SMC strategies cannot fire until Phase A merges)
+
+*Per CHECKLIST #1 (Option A approved); #25 (3 NEW R-PHA findings surfaced; not silenced); #43 (cross-doc — 5-finding risk register cross-linked); #45 (this); #51 (Tier 3 scope only); #67/#67.b (per-turn doc sync); #71 (Tier 3 of fork-integration mandate complete; Phase A merge gated on Tier 4 + R-PHA-005 mitigations).*
