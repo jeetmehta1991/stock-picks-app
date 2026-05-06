@@ -1550,18 +1550,144 @@ This section captures the Pass 53 owner-directed scope expansion of Sprint 0A be
 
 **T3 leveraged-ETF blocklist fix (Pass 53 turn 2026-05-05):** Owner-flagged after seeing SOXL/AMDL/INTW/TSMX in currently-active T3 momentum members. 3x-leveraged ETFs distort momentum signal via daily compounding. Fixed by: (a) CS-only whitelist via Polygon `/v3/reference/tickers?type=CS active=true|false` + (b) hardcoded LEVERAGED_ETF_BLOCKLIST (~110 entries) in `scripts/build_tier3_screener.py`. Smoke-tested top-20 cleaned (CELC/RHLD/RAIL/AEYE/NKTR/PL/LBPH/RGTI/ALMS/RCMT — real momentum names).
 
-### §3.16.2 Multi-API prefetch scope (8 APIs, Pass 53 owner-directed)
+<!-- canonical-fact-scope: F-012 prefetch endpoint inventory; cross-referenced in API_AUDIT.md §18 -->
+### §3.16.2 Multi-API prefetch endpoint inventory + consumer mapping (Pass 53 current state 2026-05-06)
 
-| API | Scope | Sub-phase | Status |
-|---|---|---|---|
-| **Polygon Stocks Starter** | OHLCV (DONE 1,821 cached) + EXTENSION (news, financials, events including ticker events DEC-500, NBBO daily-close) | 0A.1, 0A.9 | OHLCV DONE; EXTENSION pending |
-| **FRED + ALFRED** | 52 series → curating to ~15-20 high-signal subset (Pass 53 turn analysis); ALFRED vintage realtime_end PIT correction per DEC-301 | 0A.2 | NOT STARTED |
-| **AAII** | Weekly Bull/Bear/Neutral sentiment readings; 325 readings 2020-2026 | 0A.3 | NOT STARTED |
-| **CNN F&G** | Composite (0-100) + 7 sub-components (junk-bond demand, put/call, market momentum, stock breadth, safe-haven, market vol, stock-price strength) | 0A.3 | NOT STARTED |
-| **CFTC COT** | Weekly commercial vs speculative positioning; CME E-mini S&P 500 | 0A.4 | NOT STARTED — wires existing stub `sentiment.get_cot_report` |
-| **Quiver Trader** | 10 endpoint groups (DEC-502, owner approved Pass 53): congresstrading + housetrading + senatetrading + lobbying + govcontracts + offexchange + topshareholders + etfholdings + sec13f + corporatedonors + execcomp + congresspoliticians + quivernews + patents (excluding App Ratings + Patent Drift per Q1 drop); BULK migration where dashboard provides Bulk variant; per CHECKLIST #68 | 0A.5 | NOT STARTED — silent-gap fix required first |
-| **SEC EDGAR** | Form 4 (insider direct, vs Quiver reformat); 8-K (material events); 10-Q/K (financials); via edgartools library | 0A.6 | NOT STARTED |
-| **Apewisdom + pytrends** | Free supplementary social sentiment — Apewisdom WSB/Reddit ticker mentions (2021-present, daily); pytrends Google Trends search-volume index by ticker (2004-present); Pass 53 Q2 owner-approved 2026-05-05 | 0A.7 | NOT STARTED |
+**Authority:** This section is the canonical prefetch endpoint inventory. [API_AUDIT.md §22](API_AUDIT.md) mirrors this structure. [CANONICAL_FACTS.md F-012](CANONICAL_FACTS.md) summarizes at the API level.
+
+**Scope per owner directive 2026-05-06:** every endpoint currently prefetched, its cache path + verified file count, the Stage(s) and Phase(s) that consume it, the agent / signal category / strategy-set that reads it, and current prefetch state. State is split into **Prefetch state** (raw data cached?) and **Consumer state** (parser + toolkit + agent wired?) per CANONICAL_FACTS.md F-003/F-012 Option B refactor.
+
+**Status legend:**
+- ✅ DONE = prefetch complete + verified file count + consumer wired
+- ✅ PREFETCH = prefetch complete + verified; consumer pending (specified Sprint)
+- ⚠ PARTIAL = some files cached or some consumer paths wired, others pending
+- 🔴 NOT STARTED = no prefetch yet
+- ⏸ DEFERRED = subscription gate (point-of-need per DEC-506)
+
+**Stage/Phase legend:**
+- Stage 2 = Strategy Validation (current); Stage 3 = Paper Trading; Stage 4 = Email-approved live; Stage 5 = Full automation
+- Phase 1A = rules-only baseline; Phase 1A-α/β = cube + production-dry-run; Phase 1B = agent overlay added; Phase 1B-α = combined cube; Phase 1C+ = strategy-categories expansion
+
+#### §3.16.2.A — Polygon Stocks Starter (Paid; ~$30/mo per DEC-441)
+
+| Endpoint | Cache path | Files | Stage | Phase | Consumer | Signal cat | Prefetch state | Consumer state | Sprint 0A batch |
+|---|---|---|---|---|---|---|---|---|---|
+| OHLCV daily (5y rolling per DEC-505) | `backtest/data/cache/ohlcv/` | 1,933 | 2-5 | 1A+ | Market Analyst (F-001); all Layer 1-4 strategies (F-002) | Cat 1 (~220 technical signals) | ✅ DONE | ✅ wired (`fetcher.fetch_ohlcv`) | Batch 2 |
+| News articles (1.05M articles) | `data_prefetch/polygon/news/` | 1,926 | 2-5 | 1B+ | News Analyst (DEC-464 OurNewsToolkit); F-003 Cat 5+6 | Cat 5+6 | ✅ DONE | ✅ wired (`smart_money.get_news_sentiment` Pass 53 Batch 13.2) | Batch 3 |
+| Financials (91k filings) | `data_prefetch/polygon/financials/` | 1,746 | 2-5 | 1B+ Sprint 4 | Fundamentals Analyst (DEC-463 OurFundamentalsToolkit) | Cat 6 (EPS estimates / margin / FCF / share-count delta) | ✅ DONE | 🔴 parser PENDING Sprint 4 (gates Layer 1 `buyback_announcements` per DEC-490) | Batch 4 |
+| Ticker events (DEC-500) | `data_prefetch/polygon/events/` | 1,687 | 2-5 | 1B+ | All 11 active agents (F-001) — corp-action enrichment context | Cat 1+5+6 (split/dividend/ticker_change/M&A/delisting) | ✅ DONE | ⚠ wiring matrix Row 3+ pending toolkit integration | Batch 5 |
+| Reference (corp actions screener) | `backtest/data/cache/polygon/reference/` | 599 | 2 | Sprint 0A | T2 universe SCREENER (DEC-103/380 spinoff/IPO graduation criteria) | (universe build, not signal) | ⚠ PARTIAL — 599 of ~2,000 reference profiles | ✅ wired into T2 SCREENER | Batch 4 |
+| Splits | `backtest/data/cache/polygon/splits/` | 2 | 2-5 | 1A+ | OHLCV adjustment (split-adjusted close) | Cat 1 | ⚠ PARTIAL — 2 stub files (sample only; backfill pending) | ⚠ uses Polygon's pre-adjusted aggs | Batch 4 |
+| Dividends | `backtest/data/cache/polygon/dividends/` | 2 | 2-5 | 1A+ | Total return calc + dividend yield signal | Cat 1+6 | ⚠ PARTIAL — 2 stub files | ⚠ pending | Batch 4 |
+| Options chains/IV/OI | `data_prefetch/polygon/options/` | 0 | 2-3 | 1B+ Batch 12-c | Risk Agent (3 debaters; F-001 nodes 8-10) — IV rank/skew/term-structure/max-pain/dealer gamma | Cat 3 (~5+ planned) | ⏸ DEFERRED — Polygon Options Starter ~$29/mo subscription per DEC-506 (point-of-need) | 🔴 NOT WIRED | Batch 12-c (post-subscription) |
+
+#### §3.16.2.B — Quiver Trader (Paid; per DEC-450 subscription)
+
+Quiver Trader provides 14+ endpoint groups (DEC-502 owner-approved Pass 53). Bulk endpoints serve a single global parquet aggregating all tickers; per-ticker endpoints serve one parquet per ticker.
+
+| Endpoint | Cache path | Files | Type | Stage | Phase | Consumer | Signal cat | Prefetch state | Consumer state | Sprint 0A batch |
+|---|---|---|---|---|---|---|---|---|---|---|
+| live/insiders | `backtest/data/cache/quiver/insiders/` | 1 (1M rows) | bulk | 2-5 | 1A+ | smart_money composite (`insider_signal`) — F-003 Cat 2 | Cat 2 | ✅ DONE | ✅ wired (Pass 53 Batch 13.1) | Batch 9 v2 |
+| live/sec13fchanges | `backtest/data/cache/quiver/sec13fchanges/` | 1 (500k rows) | bulk | 2-5 | 1A+ | smart_money composite (`institutional_signal`); 45-day reporting lag | Cat 2 | ✅ DONE | ✅ wired (Pass 53 Batch 13.1) | Batch 9 v2 |
+| live/quivernews | `backtest/data/cache/quiver/quivernews/` | 1 | bulk | 2-5 | 1B+ | News Analyst (alternative news flow vs Polygon) — DEC-464 | Cat 5 | ✅ DONE | ⚠ optional secondary source (Polygon news primary) | Batch 9 v2 |
+| bulk/corporatedonors | `backtest/data/cache/quiver/corporatedonors/` | 1 | bulk | 2-5 | 1B+ | Fundamentals Analyst (corporate-donor influence proxy) | Cat 6 | ✅ DONE | 🔴 parser PENDING Sprint 4 | Batch 9 v2 |
+| live/patentmomentum | `backtest/data/cache/quiver/patentmomentum/` | 1 | bulk | 3-5 | 1C+ | Fundamentals Analyst (innovation signal) | Cat 6 | ✅ DONE | 🔴 PENDING Phase 1C+ | Batch 9 v2 |
+| live/offexchange (per-ticker) | `backtest/data/cache/quiver/offexchange/` | 1,851 | per-ticker | 2-5 | 1B+ | Risk Agent (dark-pool / off-lit institutional flow) | Cat 4 | ✅ DONE | 🔴 wiring matrix Row 4 partial | Batch 10 |
+| live/topshareholders (per-ticker) | `backtest/data/cache/quiver/topshareholders/` | 1,937 | per-ticker | 2-5 | 1B+ | Risk Agent (concentration / forced-liquidation risk) | Cat 4 | ✅ DONE | 🔴 wiring matrix Row 4 partial | Batch 10 |
+| live/etfholdings (per-ticker) | `backtest/data/cache/quiver/etfholdings/` | 1,563 | per-ticker | 2-5 | 1B+ | Risk Agent (ETF flow exposure) | Cat 4 | ✅ DONE | 🔴 wiring matrix Row 4 partial | Batch 10 |
+| live/wallstreetbets (per-ticker) | `backtest/data/cache/quiver/wallstreetbets/` | 509 | per-ticker | 2-5 | 1B+ | Sentiment Agent (retail-mention signal) | Cat 5 | ✅ DONE | ⚠ supplementary to Apewisdom | Batch 10 |
+| live/wikipedia (per-ticker) | `backtest/data/cache/quiver/wikipedia/` | 509 | per-ticker | 2-5 | 1B+ | Sentiment Agent (attention proxy) | Cat 5 | ✅ DONE | ⚠ supplementary to free Wikipedia pageviews | Batch 10 |
+| live/lobbying (per-ticker) | `backtest/data/cache/quiver/lobbying/` | 509 | per-ticker | 2-5 | 1A+ | smart_money composite | Cat 2 | ✅ DONE | ✅ wired | Batch 10 |
+| live/gov_contracts (per-ticker) | `backtest/data/cache/quiver/gov_contracts/` | 509 | per-ticker | 2-5 | 1A+ | smart_money composite (gov_contracts adjacent) | Cat 2 | ✅ DONE | ✅ wired | Batch 10 |
+| live/congressional (per-ticker) | `backtest/data/cache/quiver/congressional/` | 509 | per-ticker | 2-5 | 1A+ | smart_money composite (`congressional_signal`) | Cat 2 | ✅ DONE | ✅ wired | Batch 10 |
+
+#### §3.16.2.C — FRED + ALFRED (Free; per DEC-301)
+
+| Endpoint | Cache path | Files | Stage | Phase | Consumer | Signal cat | Prefetch state | Consumer state | Sprint 0A batch |
+|---|---|---|---|---|---|---|---|---|---|
+| FRED 50 macro series | `data_prefetch/fred/observations/` | 50 | 2-5 | 1A+ | Risk Agent (3 debaters); `regime_filter.classify_regime` | Cat 4 (yield curve, VIX, DXY, HY OAS, STLFSI4, RECPROUSM156N, ICSA, WALCL + 42 more) | ✅ DONE | ✅ wired — 12 signals exposed via `macro.macro_snapshot()` Pass 53 Batch 13.3 | Batch 6 |
+| ALFRED vintages (PIT corrections) | `data_prefetch/alfred/` | 0 (folder structure only) | 2-5 | 1A+ | Risk Agent — PIT-correct macro per DEC-301 (revisions instead of first-print) | Cat 4 | 🔴 NOT STARTED — folder placeholder | 🔴 consumer reads first-print FRED only | Batch 6 (extension) |
+
+#### §3.16.2.D — AAII + CNN F&G + CFTC (Free)
+
+| Endpoint | Cache path | Files | Stage | Phase | Consumer | Signal cat | Prefetch state | Consumer state | Sprint 0A batch |
+|---|---|---|---|---|---|---|---|---|---|
+| AAII bull/bear/neutral weekly (325 readings) | `data_prefetch/aaii/` | 1 | 2-5 | 1A+ | Sentiment (`sentiment_snapshot`) | Cat 5 | ✅ DONE | ✅ wired | Batch 7 |
+| CNN F&G composite (0-100) | `data_prefetch/cnn_fg/` | 2 | 2-5 | 1A+ | Sentiment | Cat 5 | ✅ DONE | ✅ wired | Batch 7 |
+| CNN F&G 7 sub-components (junk-bond demand / put-call / momentum / breadth / safe-haven / vol / price-strength) | `data_prefetch/cnn_fg/components/` | 7 | 2-5 | 1A+ | Sentiment (`get_cnn_components`) | Cat 5 | ✅ DONE | ✅ wired Pass 53 Batch 13.4 | Batch 7 |
+| CFTC COT E-mini S&P 500 weekly TFF (1,293 reports) | `data_prefetch/cftc/` | 1 | 2-5 | 1A+ | Sentiment (`get_cot_report` — dealer_long/short positions) | Cat 4+5 | ✅ DONE | ✅ wired Pass 53 Batch 13.5 | Batch 8 |
+
+#### §3.16.2.E — SEC EDGAR (Free; per DEC-484; via edgartools library)
+
+| Endpoint | Cache path | Files | Stage | Phase | Consumer | Signal cat | Prefetch state | Consumer state | Sprint 0A batch |
+|---|---|---|---|---|---|---|---|---|---|
+| Form 4 (insider direct transactions) | `data_prefetch/sec_edgar/4/` | 1,600 | 2-5 | 1B+ Sprint 4 | Fundamentals Analyst (insider clusters; alternative to Quiver insiders) | Cat 6 | ✅ DONE Pass 53 Batch 11 | 🔴 parser PENDING Sprint 4 | Batch 11 |
+| 8-K (material events) | `data_prefetch/sec_edgar/8_K/` | 1,543 | 2-5 | 1B+ Sprint 4 | Fundamentals Analyst (material events: M&A / guidance / resignations / restatements) | Cat 6 | ✅ DONE Pass 53 Batch 11 | 🔴 parser PENDING Sprint 4 | Batch 11 |
+| SC 13D (activist accumulation >5%) | `data_prefetch/sec_edgar/SC_13D/` | 1,244 | 2-5 | 1B+ Sprint 4 | Fundamentals Analyst (activist signal) | Cat 6 | ✅ DONE Pass 53 Batch 11 | 🔴 parser PENDING Sprint 4 | Batch 11 |
+| SC 13G (passive accumulation >5%) | `data_prefetch/sec_edgar/SC_13G/` | 1,669 | 2-5 | 1B+ Sprint 4 | Fundamentals Analyst (institutional accumulation) | Cat 6 | ✅ DONE Pass 53 Batch 11 | 🔴 parser PENDING Sprint 4 | Batch 11 |
+
+**SEC EDGAR aggregate:** 6,056 files cached (commit `0713f5a0`). Parsers + Fundamentals Analyst toolkit wiring + signal extraction is Sprint 4 work.
+
+#### §3.16.2.F — Free supplementary sentiment (Pass 53 Q2 owner-approved)
+
+| Endpoint | Cache path | Files | Stage | Phase | Consumer | Signal cat | Prefetch state | Consumer state | Sprint 0A batch |
+|---|---|---|---|---|---|---|---|---|---|
+| Apewisdom WSB/r/stocks daily mentions | `data_prefetch/apewisdom/` | 1 | 2-5 | 1B+ | Sentiment Agent (`get_apewisdom_mentions`); ticker-aware retail signal | Cat 5 | ✅ DONE | ✅ wired Pass 53 Batch 13.5 | Batch 12-a |
+| Wikipedia pageviews (per-ticker) | `data_prefetch/wikipedia/` | 1,414 | 2-5 | 1B+ | Sentiment Agent (`get_wikipedia_pageviews`); attention proxy | Cat 5 | ✅ DONE | ✅ wired Pass 53 Batch 13.5 | Batch 12-a |
+| pytrends Google Trends (per-ticker) | `data_prefetch/pytrends/` | 172 | 2-5 | 1B+ | Sentiment Agent supplementary | Cat 5 | ⚠ PARTIAL (172/1,937 — rate-limit halt) | ⚠ partial | Batch 12-b |
+
+#### §3.16.2.G — Subscription-deferred (DEC-506)
+
+| Endpoint | Cache path | Files | Stage | Phase | Consumer | Signal cat | Prefetch state | Consumer state | Sprint 0A batch |
+|---|---|---|---|---|---|---|---|---|---|
+| Polygon Options chains/IV/OI/skew | `data_prefetch/polygon/options/` (placeholder) | 0 | 2-3 | 1B+ | Risk Agent (3 debaters) — IV rank/skew/max-pain/dealer gamma | Cat 3 | ⏸ DEFERRED — point-of-need subscription per DEC-506; ~$29/mo separate | 🔴 NOT WIRED | Batch 12-c (post-sub) |
+| Ortex short interest / days-to-cover / utilization | `data_prefetch/ortex/` (placeholder) | 0 | 2-3 | 1B+ | Risk Agent + Fundamentals Analyst — squeeze risk / forced-cover triggers | Cat 3+6 | ⏸ DEFERRED — point-of-need subscription per DEC-506; ~$50-150/mo | 🔴 NOT WIRED | Batch 12-d (post-sub) |
+
+#### §3.16.2.H — Aggregate counts (verified 2026-05-06)
+
+| Metric | Count |
+|---|---|
+| Active prefetched APIs (Stage 2) | 8 (Polygon Stocks Starter + Quiver Trader + FRED + AAII + CNN F&G + CFTC + SEC EDGAR + supplementary sources) |
+| Deferred APIs (Stage 2-3 IN-SCOPE; subscription point-of-need per DEC-506) | 2 (Polygon Options + Ortex) |
+| Total endpoints prefetched | 26 |
+| Total endpoint placeholders awaiting work | 4 (ALFRED vintages; Polygon Options; Ortex; pytrends partial completion) |
+| Total files cached across all endpoints | ~22,800+ |
+| Total raw data points | ~2M+ (1M Quiver insiders + 500k 13F changes + 1.05M Polygon news articles + 91k Polygon financials filings + 6,056 SEC EDGAR filings + 50 FRED series time-points + ~6,000 AAII/CNN/CFTC/AAII sentiment time-points + per-ticker per-day point-time data) |
+
+#### §3.16.2.I — Stage/Phase consumption ladder (visual)
+
+```
+Stage 2 (Strategy Validation — current Pass 53)
+├── Phase 0.A (Sprint 0A — current): all prefetch above lands here
+├── Phase 1A (Sprint 6.5 — rules + smart-money baseline, NO agents)
+│   Consumes: OHLCV, FRED 50-series, smart_money composite (Quiver insiders + 13F + congressional + lobbying + gov_contracts),
+│             AAII, CNN F&G composite + 7 components, CFTC COT
+├── Phase 1A-α / 1A-β (Sprint 6.5-7 — rules-only cube + production-scale validation)
+│   Consumes: same as 1A
+├── Phase 1B (Sprint 7 — agent overlay added)
+│   Adds consumption: Polygon news, Polygon ticker events, Quiver quivernews/offexchange/topshareholders/etfholdings/
+│                     wallstreetbets/wikipedia/corporatedonors, Apewisdom, Wikipedia pageviews, pytrends
+│   Sprint 4 unblocks: Polygon financials parser, SEC EDGAR Form 4/8-K/SC 13D/SC 13G parsers
+│   Sprint 4 activates: Layer 1 buyback_announcements strategy (DEC-490 unlock)
+├── Phase 1B-α (Sprint 7-8 — combined cube + dashboards)
+│   Consumes: same as 1B + dashboards (DEC-199/200/201 in Sprint 9)
+└── Phase 1C+ (Sprint 8 — strategy-categories expansion)
+    Adds consumption: Quiver patentmomentum (innovation signal); Polygon Options + Ortex (post-subscription per DEC-506)
+
+Stage 3 (Paper Trading Proof)
+└── Same prefetched data refreshed daily; Polygon Options + Ortex active if subscribed
+
+Stage 4-5 (Email-approved live → Full automation)
+└── Same prefetched data refreshed daily; live trading via IBKR
+```
+
+#### §3.16.2.J — Cross-references
+
+- [CANONICAL_FACTS.md F-012](CANONICAL_FACTS.md) — API-level summary with prefetch/consumer split
+- [CANONICAL_FACTS.md F-003](CANONICAL_FACTS.md) — signal universe per category mapping to prefetch endpoints
+- [TRADINGAGENTS_DATA_AUDIT.md §1071](TRADINGAGENTS_DATA_AUDIT.md) — DEC-507 wiring matrix (Agent × Toolkit × Data path × Verified status)
+- [API_AUDIT.md §18](API_AUDIT.md) — mirrored prefetch inventory + per-API capability detail
+- DECs: DEC-440 (Polygon news replaces AV+Finnhub), DEC-441 (Polygon $30/mo), DEC-450 (Quiver Trader), DEC-484 (SEC EDGAR replaces FMP), DEC-490 (Phase 1A skipped strategies pending fundamentals), DEC-497 (NO-LIVE-API HARD CUT), DEC-499 (18-classifier sector taxonomy), DEC-500 (Polygon ticker events), DEC-502 (Quiver Trader endpoint expansion), DEC-505 (5-year walk-forward window), DEC-506 (Polygon Options + Ortex point-of-need subscription)
 
 ### §3.16.3 NO-LIVE-API HARD CUT refactor (DEC-497 owner directive Q8)
 
