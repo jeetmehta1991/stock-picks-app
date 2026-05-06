@@ -1057,3 +1057,63 @@ Every code push affecting agent inputs must execute full test pyramid: unit + sm
 Trader tier has NO WSB/Twitter/Reddit endpoints (my prior assumption Pass 53 turn 2026-05-05 was wrong). Apewisdom + pytrends fills this gap.
 
 **Cross-references:** AUDIT_INDEX.md DEC-500/501/502/503; AUDIT.md Pass 53 narrative; BUG_REGISTER.md BUG-271/272/273; API_AUDIT.md Pass 53 endpoint inventory; DETAILED_PROJECT_PLAN.md §3.16.
+
+---
+
+## Agent toolkit wiring matrix (DEC-507 + CHECKLIST #70 Pass 53 owner directive 2026-05-05)
+
+**Mandate:** Pre-Phase-1B (or any agent-using phase entry), this matrix must show ✅ for every row. ⚠ or 🔴 rows are gating issues that block phase entry.
+
+**L146 root cause:** Owner question Pass 53 turn 2026-05-05 "Why wasn't Polygon news → Sentiment Agent done earlier or planned?" — surfaced that data DEC (DEC-440) + toolkit DEC (DEC-464) were each approved independently without explicit integration deliverable. 1.05M Polygon news articles sat unused.
+
+### Wiring matrix (Pass 53 baseline state 2026-05-05)
+
+| # | Agent | Toolkit | Data source path | Code path | Status | Pending work |
+|---|---|---|---|---|---|---|
+| 1 | Technical Agent | OurTechnicalToolkit (DEC-462) | `data_prefetch/polygon/aggs/` + `backtest/data/cache/ohlcv/` | `backtest/signals/technical.py` (compute_all_signals) | ✅ WIRED | — |
+| 2 | News Analyst | OurNewsToolkit (DEC-464) | `data_prefetch/polygon/news/{TICKER}.parquet` (Batch 3 done; 1,926 tickers / 1.05M articles) | `smart_money.get_news_sentiment` reads legacy `cache/av_news/` + `cache/finnhub_news/` (NOT data_prefetch/polygon/news/) | 🔴 NOT WIRED | Batch 13: rewrite get_news_sentiment to read data_prefetch/polygon/news/; full DEC-503 test pyramid |
+| 3 | Fundamental Agent | OurFundamentalsToolkit (DEC-463) | `data_prefetch/polygon/financials/{TICKER}.parquet` (Batch 4 in flight) + `data_prefetch/sec_edgar/` (Batch 11 just done) | `smart_money.get_analyst_data` (Batch 1 stub returns "not_available") | 🔴 NOT WIRED | Batch 13: parse Polygon financials format; expose EPS estimates / margin / FCF; SEC EDGAR Form 4 + 8-K + 13D/G integration |
+| 4 | Risk Agent | OurRiskToolkit (DEC-466) | `data_prefetch/fred/observations/` (50 series Batch 6) + `data_prefetch/cftc/` (Batch 8) + `data_prefetch/polygon/options/` (Batch 12-c future) + `data_prefetch/ortex/` (Batch 12-d future) | `backtest/data/macro.py` macro_snapshot (7 of 50 FRED consumed) | ⚠ PARTIAL | Batch 13 high-priority: HY OAS (BAMLH0A0HYM2) + STLFSI4 + RECPROUSM156N + ICSA + WALCL → macro_snapshot. Batch 12-c/12-d post-subscription: Options IV/skew/OI + Ortex short-interest |
+| 5 | Sentiment Agent | (TBD toolkit per DEC-465 spirit) | `data_prefetch/aaii/` + `data_prefetch/cnn_fg/` (composite + 7 components Batch 7) + `data_prefetch/apewisdom/` + `data_prefetch/wikipedia/` (Batch 12-a done) + `data_prefetch/quiver/{quivernews,offexchange}/` (Batch 9 v2 done) + Polygon news (shared with #2) | `backtest/data/sentiment.py` sentiment_snapshot (AAII + CNN F&G composite ✅; CFTC stub returns not_available) | ⚠ PARTIAL | Batch 13: wire CNN F&G 7 sub-components + Apewisdom + Wikipedia pageviews + Quiver dark-pool + CFTC COT → sentiment_snapshot |
+| 6 | Bull Researcher | (consumes other toolkits) | All above | TradingAgents Phase 2 (LangGraph) | 🔴 NOT WIRED | Depends on rows 1-5 being ✅; integration during Sprint 7 (Phase 1B) |
+| 7 | Bear Researcher | (consumes other toolkits) | All above | TradingAgents Phase 2 (LangGraph) | 🔴 NOT WIRED | Depends on rows 1-5 being ✅ |
+| 8 | Research Manager | (synthesis Phase 2) | All above | TradingAgents Phase 2 | 🔴 NOT WIRED | Depends on rows 6-7 being ✅ |
+| 9 | Trader | OurTraderToolkit (DEC-465) | All above | TradingAgents Phase 3 | 🔴 NOT WIRED | Depends on row 8 being ✅ |
+| 10 | Aggressive Risk Debater | OurRiskToolkit (DEC-466) | Same as Risk Agent (row 4) | TradingAgents Phase 4 | 🔴 NOT WIRED | Depends on row 4 being ✅ |
+| 11 | Conservative Risk Debater | OurRiskToolkit (DEC-466) | Same as Risk Agent (row 4) | TradingAgents Phase 4 | 🔴 NOT WIRED | Depends on row 4 being ✅ |
+| 12 | Neutral Risk Debater | OurRiskToolkit (DEC-466) | Same as Risk Agent (row 4) | TradingAgents Phase 4 | 🔴 NOT WIRED | Depends on row 4 being ✅ |
+| 13 | Portfolio Manager | (synthesis all toolkits) | All above | TradingAgents Phase 4 (FINAL DECISION) | 🔴 NOT WIRED | Depends on rows 1-12 being ✅ |
+
+### Status legend
+- ✅ = wired AND tested end-to-end (data path → toolkit fn → agent prompt all working)
+- ⚠ = partial (some data sources connected; others pending)
+- 🔴 = not wired (data may be cached but consumer code doesn't read it OR consumer not built)
+
+### Phase entry gates per #70
+- **Phase 1A entry (Sprint 6.5):** Rows 1-5 should be ⚠ or ✅. Row 1 ✅ required; rows 2-5 can be ⚠ since `--no-agents` flag used. Currently: 1=✅, 2-5=mixed.
+- **Phase 1B entry (Sprint 7):** Rows 1-5 must be ✅ (data tier complete); rows 6-13 can be ⚠ or ✅ (orchestration tier).
+- **Phase 1B-α run (Sprint 9):** ALL ROWS ✅. No ⚠ or 🔴 permitted.
+
+### Pass 53 Batch 13 scope (corrects this matrix to ✅ for rows 2, 3, 4, 5)
+
+Batch 13 NO-LIVE-API refactor MUST close:
+1. Row 2 (News Analyst) — rewrite `get_news_sentiment` to read `data_prefetch/polygon/news/`
+2. Row 3 (Fundamental Agent) — parse Polygon financials + integrate SEC EDGAR
+3. Row 4 (Risk Agent) — wire 5+ high-priority FRED series (HY OAS, STLFSI4, RECPROUSM156N, ICSA, WALCL) + CFTC COT
+4. Row 5 (Sentiment Agent) — wire CNN F&G 7 components + Apewisdom + Wikipedia + Quiver dark-pool
+
+Rows 6-13 (TradingAgents orchestration) addressed Sprint 7 (Phase 1B), gated on rows 1-5 ✅.
+
+### Pass 53 Batch 12-c/12-d (Options + Ortex; post-subscription)
+
+When owner subscribes per DEC-506:
+- Polygon Options Starter → enriches Row 4 (Risk Agent) + Row 5 (Sentiment Agent)
+- Ortex → enriches Row 4 (Risk Agent) + Row 5 (Sentiment Agent)
+- Wiring matrix updated post-Batch-12-c/12-d completion
+
+### Cross-references
+- DEC-507 (this matrix's parent decision)
+- L146 (lesson — data DEC + toolkit DEC ≠ integration)
+- CHECKLIST #70 (mandates this matrix updated pre-phase-entry)
+- DEC-462-466 (custom toolkit DECs that this matrix tracks)
+- DEC-503 (test pyramid; complementary — pyramid validates code, this matrix validates wiring exists)

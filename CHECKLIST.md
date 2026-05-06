@@ -719,3 +719,23 @@ State compliance visibly: "Checklist: ✅ [each item]"
     **First application:** smart_money silent-gap fix (BUG-271/272/273) next turn — full test pyramid required before commit.
 
     **Joint:** DEC-097 (90% test coverage minimum), DEC-098 (hot-path 100% coverage), DEC-503 (this rule's parent decision), L145 (silent-gap lesson).
+
+70. **Agent toolkit wiring matrix HARD RULE (Pass 53 owner directive 2026-05-05; DEC-507; L146).**
+    Pre-Phase-1B (or any agent-using phase entry), maintain explicit `Agent × Data source × Code path × Verified status` matrix in `TRADINGAGENTS_DATA_AUDIT.md`. Each row must be ✅ before phase begins.
+
+    **Trigger:** Pre-entry to any phase that activates new agent capabilities (Phase 1B agents-on, Phase 1C+ expanded agents, Phase 1B-α run kickoff).
+
+    **Required matrix columns:**
+    - Agent name (Technical / News Analyst / Fundamental / Risk / Sentiment / Bull / Bear / Research Manager / Trader / Risk Debaters / Portfolio Manager)
+    - Toolkit (DEC-462-466 + others)
+    - Data source path (e.g. `data_prefetch/polygon/news/<TICKER>.parquet`)
+    - Code path (e.g. `smart_money.get_news_sentiment` or `OurNewsToolkit.fetch`)
+    - Verified status (✅ end-to-end traced + tested / ⚠ partial / 🔴 not wired)
+
+    **Past failure pattern (motivating rule):** Owner Q Pass 53 turn 2026-05-05 surfaced: 1.05M Polygon news articles cached (Batch 3 done) but `smart_money.get_news_sentiment` reads legacy `cache/av_news/` + `cache/finnhub_news/` paths. Data DEC (DEC-440) and toolkit DEC (DEC-464) were each approved independently without an integration deliverable. Result: data sat unused. Same shape as L145 silent-gap but on wiring axis. L146 codifies the lesson; this checklist item is the systematic prevention.
+
+    **Verification format in pre-flight:** before any agent-using-phase entry (or in any pre-flight that touches agent input data), state explicitly: "Wiring matrix: Technical ✅ / News ⚠ (DEC-440 cached, DEC-464 toolkit pending wiring) / Fundamental 🔴 / Risk ⚠ (7/50 FRED wired) / Sentiment ⚠ (AAII/CNN F&G ✅; rest pending) / Bull-Bear 🔴 / Portfolio Manager 🔴." Each row shows actual status; ⚠/🔴 items state remaining work.
+
+    **First application:** Batch 13 NO-LIVE-API refactor — wiring matrix updated to ✅ for all rows before Phase 1B-α run begins.
+
+    **Joint:** DEC-507 (this rule's parent decision), L146 (data-DEC + toolkit-DEC ≠ integration lesson), L145 (silent-gap pattern; complementary), DEC-462-466 (custom toolkit DECs that this matrix tracks), CHECKLIST #69 (test pyramid; complementary — pyramid validates code, this validates wiring exists).

@@ -631,7 +631,7 @@ L99 + DEC-269 require ≥143 independent positions per strategy. With 4 OOS fold
 - DEC-505 (this rule) — supersedes DEC-109 6-fold spec
 - DEC-269 — numeric gates unchanged (Sharpe / DD / win rate are relative to backtest, not absolute time)
 - DEC-478 — Polygon tier (owner declined upgrade)
-- DEC-501 — Polygon Options not upgraded (same owner-cost-control rationale)
+- DEC-501 — superseded Pass 53 by DEC-506 (Polygon Options Stage 2 IN-SCOPE; subscription deferred to point-of-need per owner directive 2026-05-05)
 - L99 — sample-size floor preserved
 
 ---
@@ -1133,7 +1133,9 @@ PROJECT_PLAN_ARCHIVE.md contains the pre-April-2026 PROJECT_PLAN reference, usef
 - **DEC-498** — Per-turn doc sync rule (CHECKLIST #67 + #67.b codified)
 - **DEC-499** — 18-classifier sector taxonomy (GICS-11 + 7 ETF asset classes)
 - **DEC-500** — Polygon ticker events integration as agent context (RESOLVED-DECIDED)
-- **DEC-501** — Polygon Options NOT upgraded; deferred Stage 3/Phase 1C
+- **DEC-501** — superseded by DEC-506 Pass 53 owner correction 2026-05-05 (Polygon Options Stage 2 IN-SCOPE; subscription buy-on-demand at sprint entry)
+- **DEC-506** — Polygon Options + Ortex confirmed Stage 2 in-scope; subscriptions deferred to point-of-need; corrects DEC-501 + DEC-468 timing
+- **DEC-507** — Agent toolkit wiring matrix HARD RULE (CHECKLIST #70 + L146)
 - **DEC-502** — Quiver Trader-tier 8 endpoint groups + Apewisdom + pytrends supplement
 - **DEC-503** — Comprehensive test pyramid before every code push (HARD RULE; CHECKLIST #69)
 - **DEC-504** — T3-over-T1 multi-tier precedence resolver (RESOLVED-IMPLEMENTED 2026-05-05; FIRST DEC-503 test pyramid application)

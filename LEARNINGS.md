@@ -1190,3 +1190,45 @@ The verification is cheap. The cost of skipping it is wasted owner trust and fal
 5. **Test pyramid on integration code** — per CHECKLIST #69, every endpoint integration gets unit + smoke + integration + system test coverage
 
 **Pattern relation:** Sibling to L143 (don't-rewrite-history) and L144 (roster category-boundary) — all three are integrity failures around assumptions about systems that "look fine" but have hidden gaps.
+
+---
+
+## L146 — Data DEC + Toolkit DEC ≠ Integration (Pass 53 2026-05-05)
+
+**Pattern:** Approving a data-prefetch DEC and a consumer/toolkit DEC independently does NOT create end-to-end integration. The wiring step (`data_prefetch/<source>/ → toolkit fn → agent prompt`) is a third deliverable that must be explicit in planning, otherwise data is cached but never consumed.
+
+**Discovery (Pass 53 2026-05-05):** Owner question "Why wasn't Polygon news → Sentiment Agent done earlier or even planned?" surfaced root cause:
+
+| DEC | What it approved | What it didn't approve |
+|---|---|---|
+| DEC-440 | Polygon news replaces Alpha Vantage + Finnhub (DATA prefetch) | The consumer reading from Polygon path |
+| DEC-464 | OurNewsToolkit — News Analyst custom toolkit (CONSUMER side) | The data-source path the toolkit reads |
+
+Result: 1.05M Polygon news articles cached (Pass 53 Batch 3 done) but `smart_money.get_news_sentiment` reads legacy `cache/av_news/` + `cache/finnhub_news/` paths. Articles sit unused. Same architectural pattern as L145 silent-gap (BUG-271/272/273) but on the wiring axis instead of endpoint-availability axis.
+
+**Why it went undetected:**
+1. Each DEC was approved in isolation — owner saw "Polygon news prefetch approved" and "OurNewsToolkit approved" and reasonably assumed they'd connect
+2. No CHECKLIST item required tracing prefetch → toolkit → agent prompt end-to-end at phase entry
+3. `TRADINGAGENTS_DATA_AUDIT.md` enumerated DATA SOURCES but not WIRING STATE per agent
+4. Phase 1A is `--no-agents` rules-only baseline; agents kicked in at Phase 1B; wiring assumed to happen "naturally"
+5. Sprint 0A scope (DEC-497) explicitly enumerated "8 APIs to prefetch" but did NOT explicitly enumerate "every agent toolkit consumes from data_prefetch/" — implicit but not enforced
+
+**Codified:**
+- DEC-507 — Agent toolkit wiring matrix HARD RULE
+- CHECKLIST #70 — Agent toolkit wiring matrix mandate (pre-Phase-1B and any agent-using phase entry)
+- TRADINGAGENTS_DATA_AUDIT.md — gets explicit wiring matrix table
+
+**Apply when:**
+- Approving a data-prefetch DEC where consumer is a different module/agent
+- Approving an agent toolkit DEC where data source is in a different DEC
+- Sprint planning that includes both data layer + agent layer changes
+- Any phase entry that activates new agent capabilities
+
+**Mitigation pattern (going forward):**
+1. **Explicit wiring DEC** when data DEC and consumer DEC are separate
+2. **Wiring matrix maintained pre-phase-entry** per CHECKLIST #70 — `Agent × Data source × Code path × Verified status` ✅/⚠/🔴
+3. **Phase-entry gate** — "all agent toolkit rows ✅ before Phase 1B begins"
+4. **Test pyramid integration tier** (per #69 / DEC-503) — must include `data_prefetch/<source>/ → toolkit fn → agent prompt` traced by tests
+5. **Cross-check at sprint planning** — for each new data DEC, ask "what consumer reads this and is its DEC also approved + wired?"
+
+**Pattern relation:** Sibling to L145 (silent-gap on endpoint availability). L145 = "endpoint exists but returns 404"; L146 = "endpoint works + data cached but consumer code doesn't read it". Both are silent failures invisible without explicit wiring/integration verification.

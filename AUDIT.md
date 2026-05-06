@@ -28876,3 +28876,84 @@ WALK_FORWARD_FOLDS = [
 - **L99** — sample-size floor preserved (~400-800 trades/strategy across 4 folds)
 
 *Per CHECKLIST #1 (owner Q1+Q2+Q3); #13 (re-read); #25 (window correction honest acknowledgment); #43 (cross-doc); #45 (this statement); #51 (scope strict); #58 (atomic commit); #66.b (INPUT/OUTPUT/FLOW); #67/#67.b (doc sync); #68 N/A; **#69 THIRD DEC-503 application — config change with full test pyramid; 88/88 regression PASS**.*
+
+---
+
+## Pass 53 — DEC-506/507 + L146 + CHECKLIST #70: Polygon Options + Ortex Stage-2 scope correction + Agent Toolkit Wiring Matrix HARD RULE (2026-05-05)
+
+**Owner directives Pass 53 turn 2026-05-05:**
+1. "i believe polygon options, ortex are in stage 2 testing" — corrects my prior DEC-501 documentation (Stage 3 deferral) + DEC-468 (Sprint 7 timing tag)
+2. "Why wasn't this done earlier or even planned?" (re: Polygon news → Sentiment Agent wiring) — surfaces planning failure
+3. "i will buy subscriptions at a later date when needed in sprint. but codify all relevant decisions" — subscriptions deferred to point-of-need; architectural scope confirmed NOW
+
+### Two errors I owned + corrected
+
+**Error #1 — DEC-501 documentation wrong:** I documented Polygon Options as DEFERRED to Stage 3 / Phase 1C based on misreading owner's cost-control intent. Owner cost-control was about Polygon Stocks Developer/Advanced upgrade, NOT Polygon Options separate subscription. **Corrected via DEC-506 Pass 53 supersession.**
+
+**Error #2 — Planning failure on agent toolkit wiring:** Owner Q "Why wasn't Polygon news → Sentiment Agent done earlier or even planned?" surfaced root cause: data DEC (DEC-440 Polygon news primary) and consumer DEC (DEC-464 OurNewsToolkit) were each approved INDEPENDENTLY without a third explicit "wiring" deliverable. Result: 1.05M Polygon news articles cached in Batch 3 but `smart_money.get_news_sentiment` reads legacy `cache/av_news/` paths. Same architectural pattern as L145 silent-gap (BUG-271/272/273), but on the wiring axis. **Codified via L146 + CHECKLIST #70 + DEC-507.**
+
+### DEC-506 — Polygon Options + Ortex Stage 2 IN-SCOPE (supersedes DEC-501, corrects DEC-468 timing)
+
+- **Polygon Options Starter** (~$29/mo separate from Stocks Starter): Stage 2 in-scope; subscription deferred to point-of-need
+- **Ortex** (~$50-150/mo tier TBD): Stage 2 in-scope; subscription deferred to point-of-need
+- **Sprint 0A scope expansion:** Batch 12-c (Polygon Options prefetch ~4-6hr) + Batch 12-d (Ortex prefetch ~2-3hr) added — sequence now 16 batches (was 14)
+- Until subscriptions purchased: code + agent toolkits scaffold to read from `data_prefetch/polygon/options/` + `data_prefetch/ortex/`; pre-subscription state returns "not_available" gracefully (Batch 1 BUG-271 stub pattern)
+
+### DEC-507 — Agent toolkit wiring matrix HARD RULE (codifies L146 + CHECKLIST #70)
+
+**Mandate:** Pre-Phase-1B (or any agent-using phase entry), maintain explicit `Agent × Data source × Code path × Verified status` matrix in `TRADINGAGENTS_DATA_AUDIT.md`. Each row must be ✅ before phase begins.
+
+**Initial matrix (Pass 53 baseline) populated in TRADINGAGENTS_DATA_AUDIT.md:**
+- Row 1 (Technical Agent): ✅ WIRED
+- Row 2 (News Analyst): 🔴 NOT WIRED (1.05M articles cached but consumer reads legacy paths) — Batch 13 fix
+- Row 3 (Fundamental Agent): 🔴 NOT WIRED (Batch 1 set stub) — Batch 13 + post-Batch-4 financials
+- Row 4 (Risk Agent): ⚠ PARTIAL (7/50 FRED) — Batch 13 wires HY OAS / STLFSI4 / RECPROUSM156N / ICSA / WALCL
+- Row 5 (Sentiment Agent): ⚠ PARTIAL (AAII + CNN F&G ✅; rest pending) — Batch 13 wires CNN F&G 7 components + Apewisdom + Wikipedia + Quiver social
+- Rows 6-13 (Bull / Bear / Research Manager / Trader / Risk Debaters / Portfolio Manager): 🔴 NOT WIRED — Sprint 7 Phase 1B
+
+**Phase entry gates per CHECKLIST #70:**
+- Phase 1A entry: Row 1 ✅ + rows 2-5 ⚠ acceptable (--no-agents flag)
+- Phase 1B entry: Rows 1-5 ✅ MANDATORY
+- Phase 1B-α run: ALL ROWS ✅ MANDATORY
+
+### L146 codified — data DEC + toolkit DEC ≠ integration
+
+Pattern: approving prefetch DEC + consumer DEC independently does NOT create end-to-end integration. Wiring is a third explicit deliverable. Same shape as L145 silent-gap but on wiring axis.
+
+### Scope updates committed this turn
+
+- `AUDIT_INDEX.md`: DEC-506 + DEC-507 full body entries
+- `LEARNINGS.md`: L146 entry (data-DEC + toolkit-DEC ≠ integration)
+- `CHECKLIST.md`: #70 (agent toolkit wiring matrix; Pre-Phase-1B mandate)
+- `CLAUDE.md`: HARD RULE for #70 wiring matrix
+- `TRADINGAGENTS_DATA_AUDIT.md`: full 13-row wiring matrix table
+- `PROJECT_PLAN.md`: §32 + §31 DECs 506/507 references; DEC-501 marked superseded
+- `DETAILED_PROJECT_PLAN.md`: §3.16 scope updates; Ortex + Polygon Options Stage 2 in-scope; DEC-501 marked superseded; new DEC-506/507 rows in Sprint 0A scope table
+
+### Subscription timing
+
+Owner directive: "i will buy subscriptions at a later date when needed in sprint." Architectural scope confirmed NOW; subscriptions deferred to point-of-need (likely Sprint 0A.5+ when Batch 12-c/12-d ready to run, or Sprint 7 Phase 1B for agent integration).
+
+### Pre-flight CHECKLIST applied
+- ✅ #1/#45 — owner directive explicit; this statement
+- ✅ Pre-flight per recommendation — DEC-506 + DEC-507 + L146 + CHECKLIST #70 codified per owner approval
+- ✅ #13/#22/#23/#29 N/A (doc-only this turn; no API ops)
+- ✅ #25 — honest acknowledgment of 2 documentation errors + planning failure
+- ✅ #66.b — INPUT (owner correction + Q); OUTPUT (DEC-506/507 + L146 + #70 + 7 doc updates); FLOW (acknowledge → codify → owner-gate → commit)
+- ✅ #67/#67.b — doc sweep this turn; decoupled from in-flight Batch 4/5 + completed Batch 11
+- ✅ #68 N/A (no API ops)
+- ✅ #69 N/A (no code push this turn)
+- ✅ #70 (NEW) — wiring matrix instantiated for Pass 53 baseline state in TRADINGAGENTS_DATA_AUDIT.md
+
+### Cross-references
+- **AUDIT_INDEX.md DEC-506 + DEC-507** — full entries
+- **LEARNINGS.md L146** — pattern + mitigation
+- **CHECKLIST.md #70** — wiring matrix HARD RULE
+- **CLAUDE.md HARD RULE** — wiring matrix mandate
+- **TRADINGAGENTS_DATA_AUDIT.md** — 13-row matrix table (Row 1 ✅ / Rows 2-3 🔴 / Rows 4-5 ⚠ / Rows 6-13 🔴)
+- **DEC-440** (Polygon news primary; data DEC) + **DEC-464** (OurNewsToolkit; consumer DEC) — the canonical example of L146 pattern
+- **DEC-501** — SUPERSEDED Pass 53 (was Polygon Options Stage 3 deferral; reversed)
+- **DEC-468** — RESOLVED-CLARIFIED Pass 53 (Ortex Stage 2 IN-SCOPE; was Sprint 7 timing implicit)
+- **L145** (silent-gap pattern; sibling) + **L146** (this lesson)
+
+*Per CHECKLIST #1 (owner directive explicit); #13 (re-read); #25 (2 errors honestly acknowledged); #43 (cross-doc); #45 (this statement); #51 (scope per owner); #58 (atomic codification commit); #66.b (INPUT/OUTPUT/FLOW); #67/#67.b (doc sync this turn); #68/#69 N/A; **#70 NEW — wiring matrix instantiated**.*

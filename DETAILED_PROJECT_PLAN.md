@@ -719,7 +719,8 @@ Stage 2 requires the following data sources. Polygon tier choice (Stocks Starter
 | **FMP (Financial Modeling Prep)** | PIT financials, earnings transcripts, analyst consensus estimates | $14-50/mo | NEW addition pending DEC-461 + DEC-478 |
 | **FRED + ALFRED** | Macro data (rates, jobless, CPI, etc.); ALFRED for vintage PIT | Free | Stage 2 use confirmed |
 | **Quiver Quantitative paid** | Insider trading (Form 4+144), congressional, 13F, analyst rating changes, government contracts | ~$50-100/mo | Confirmed paid (DEC-450) |
-| **Ortex** | Short interest | TBD (in plan; not yet wired) | DEC-468 wires it Sprint 7 |
+| **Ortex** | Short interest + days-to-cover; squeeze risk | TBD subscription tier ($50-150/mo at point-of-need per DEC-506) | DEC-468 + DEC-506 (Pass 53 timing correction): Stage 2 IN-SCOPE; Sprint 0A Batch 12-d post-subscription; agent integration Sprint 7 (Phase 1B) per Wiring Matrix Row 4 |
+| **Polygon Options Starter** | OHLC/OI/IV/chain per-ticker; Risk Agent IV rank/skew/term-structure/max-pain; Sentiment Agent put/call ratios | ~$29/mo separate (point-of-need per DEC-506) | DEC-506 (supersedes DEC-501 Stage 3 deferral): Stage 2 IN-SCOPE; Sprint 0A Batch 12-c post-subscription |
 | **smartmoneyconcepts library** | ICT/SMC primitives (FVG/BOS/CHoCH/OB) | Free (forked per DEC-045) | Phase 0.D |
 | **AAII** | Bull/Bear sentiment | Free (web scrape) | Refresh script DEC-319/390 |
 | **CNN Fear & Greed** | Sentiment index | Free (web scrape) | Refresh script DEC-320/391 |
@@ -948,7 +949,7 @@ Verdict gate  └──────────────▶  Stage 2 → 3 tr
 | **0A.10** | Smoke + demo + full tests per API (16 test files: 8 smoke + 8 demo) per CHECKLIST #68 protocol; full test pyramid per CHECKLIST #69 (DEC-503) | NOT STARTED |
 
 **Sprint 0A scope-out (per Pass 53 owner Q1 directive 2026-05-05):**
-- Polygon Options Starter — DEFERRED to Stage 3 / Phase 1C (DEC-501; owner declined Stocks Starter upgrade)
+- Polygon Options Starter — Pass 53 owner correction 2026-05-05 (DEC-506 supersedes DEC-501): Stage 2 IN-SCOPE; subscription deferred to point-of-need; Batch 12-c added to Sprint 0A pending subscription
 - Polygon SMA/EMA/RSI/MACD indicator endpoints — DROPPED (duplicates local pandas-ta; Risk Agent uses ATR backward-looking until options scope-in)
 - Polygon NBBO intraday quotes / snapshots / market-status / tick trades — DEFERRED to Stage 3+ live trading
 
@@ -1724,7 +1725,9 @@ columns: ticker, event_type, event_date, details_json, fetched_at
 | **498** | Per-turn doc sync rule (CHECKLIST #67 + #67.b) — every turn with meaningful changes ends with doc sweep; decoupled from pending runs | Cross-cutting | RESOLVED-DECIDED Pass 53 |
 | **499** | 18-classifier sector taxonomy (GICS-11 + 7 ETF asset classes) | Universe + Cube | RESOLVED-DECIDED Pass 53 |
 | **500** | Polygon ticker events integration as agent context (price-move trigger) | Sprint 0A.9 | RESOLVED-DECIDED Pass 53 |
-| **501** | Polygon Options NOT upgraded; OHLC/OI/IV/chain deferred Stage 3/Phase 1C | Sprint 0A scope-out | RESOLVED-DECIDED Pass 53 |
+| **501** | (SUPERSEDED Pass 53) Polygon Options Stage 3/Phase 1C deferral — REVERSED by DEC-506 to Stage 2 IN-SCOPE | Sprint 0A scope-in (subscription point-of-need) | SUPERSEDED-BY-DEC-506 Pass 53 |
+| **506** | Polygon Options + Ortex confirmed Stage 2 IN-SCOPE (corrects DEC-501 + DEC-468 timing); subscriptions buy-on-demand at sprint entry | Sprint 0A.5+ Batches 12-c/12-d (Options + Ortex post-subscription) | RESOLVED-DECIDED Pass 53 |
+| **507** | Agent toolkit wiring matrix HARD RULE (CHECKLIST #70 + L146 codification); pre-Phase-1B explicit Agent × Data source × Code path × Verified status table | Cross-cutting / process | RESOLVED-DECIDED Pass 53 |
 | **502** | Quiver Trader-tier agent-input expansion (8 endpoint groups; App Ratings + Patent Drift dropped per Q1; Apewisdom + pytrends added per Q2) | Sprint 0A.5, 0A.7 | RESOLVED-DECIDED Pass 53 |
 | **503** | Comprehensive test pyramid before every code push (CHECKLIST #69; HARD RULE) | Cross-cutting | RESOLVED-DECIDED Pass 53 |
 
