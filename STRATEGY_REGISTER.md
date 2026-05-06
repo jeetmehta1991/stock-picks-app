@@ -147,6 +147,14 @@ Sub-decisions that, on owner approval and engineering implementation, would add 
 
 ---
 
+## Status update (Pass 53 — 2026-05-06)
+
+**Per-strategy enumeration superseded by [STRATEGY_ROSTER_FULL.md](STRATEGY_ROSTER_FULL.md).** Owner directive Option 2 (Pass 53) generated a consolidated per-strategy table for all layers with DRAFT-PROPOSED names for Layer 2B / 2C / 3B (closing the open enumeration gaps below). Layer 2D form-derived ICT remains PENDING-FORM per owner directive.
+
+**This doc (STRATEGY_REGISTER.md) remains canonical for the layered-roster summary** (categorical counts + DEC mapping). For individual strategy names, refer to [STRATEGY_ROSTER_FULL.md](STRATEGY_ROSTER_FULL.md).
+
+---
+
 ## Open enumeration gaps
 
 These are not decisions to make today; they're documentation gaps to close before Phase 0.D and Sprint 8 (strategy categories implementation) begins:

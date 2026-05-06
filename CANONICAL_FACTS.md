@@ -102,8 +102,8 @@ Each fact has: **F-NNN identifier** • value (planned) • scope/definition •
 - **Phase 1B active:** Same roster as 1A (agent overlay added on top; roster does not change)
 - **Phase 1C+:** Layer 2 + Layer 3 strategies operational (Sprint 8 — strategy categories implementation)
 
-**SSOT:** `STRATEGY_REGISTER.md` (canonical layered roster doc)
-**Origin docs:** `PROJECT_PLAN.md` §6 (Layer 1) • `PROJECT_PLAN_ARCHIVE.md` §5/§6 (Layer 1 detailed enumeration) • `AUDIT_INDEX.md` (DECs for Layers 2-4)
+**SSOT:** `STRATEGY_REGISTER.md` (canonical layered roster doc) + **[`STRATEGY_ROSTER_FULL.md`](STRATEGY_ROSTER_FULL.md)** (per-strategy enumeration with every named strategy across all layers, Pass 53 Option 2 owner-directive)
+**Origin docs:** `PROJECT_PLAN.md` §6 (Layer 1) • `PROJECT_PLAN_ARCHIVE.md` §5/§6 (Layer 1 detailed enumeration) • `AUDIT_INDEX.md` (DECs for Layers 2-4) • `backtest/signals/screener.py:812` `ALL_STRATEGIES` registry (Layer 1 code SSOT)
 
 **Dependencies (depends-on):**
 - F-005 universe size (more tickers = more candidate-days = strategies have more opportunities to fire)
