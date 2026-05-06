@@ -28689,3 +28689,90 @@ Validator (Pass 53 Batch 1 prep) confirmed `smart_money_score` composite (DEC-33
 Next: Batch 2 (Polygon OHLCV gap fill — 116 missing tickers from 1,937 universe).
 
 *Per CHECKLIST #1 (owner directive Batch 1 explicit); #13 (re-read); #25 (BUG-271/272/273 silent-gap honest acknowledgment + resolution); #43 (cross-doc); #45 (this statement); #51 (scope per owner); #58 (atomic commit Batch 1); #66.b (INPUT/OUTPUT/FLOW); #67/#67.b (Batch 1 commit + doc sync); #68 N/A (no API ops); **#69 SECOND APPLICATION of test pyramid for smart_money silent-gap fix; all layers PASS or N/A-justified**.*
+
+---
+
+## Pass 53 — Website Architecture Restoration + Q2 inline restore + Q3 DEC promotions (2026-05-05)
+
+**Owner-flagged regression:** "the website creation has been completely removed? Why? That is still a key deliverable in stage 3. Can not be removed!" + "Tell me what has been eliminated in the latest project plan that was a part in the previous 3 versions."
+
+### Investigation
+
+Git archaeology surfaced: **Section 21 "Website Architecture & Phase-Specific Analytics Dashboards"** (~270 lines, 8 sub-sections) was completely eliminated by **Pass 52 turn 128 PROJECT_PLAN REFRESH** (commit `4d514c2a`) which rewrote PROJECT_PLAN.md from 21-section structure to 30-section structure, dropping Section 21 entirely. Content preserved only in PROJECT_PLAN_ARCHIVE.md.
+
+Source: Pass 44 commit `bb6335d6` — "PROJECT_PLAN Section 21: Website Architecture & 6 Phase-Specific Analytics Dashboards (Pass 44)".
+
+### Other eliminations identified (per owner Q2)
+
+| # | Content eliminated | Source | Restored Pass 53? |
+|---|---|---|---|
+| 1 | Section 21 Website Architecture (~270 lines, 8 sub-sections) | bb6335d6 Pass 44 §21 | ✅ YES — restored as §32 |
+| 2 | 60-strategy enumeration inline | bb6335d6 Pass 44 §6 | ✅ YES — restored as §7.4 |
+| 3 | Confidence Tiers + Position Sizing + Tier Adjustment full spec | bb6335d6 Pass 44 §8 | ✅ YES — restored as §11.B |
+| 4 | Stage 2 → Stage 3 Validation Gates detailed table | bb6335d6 Pass 44 §11 | ✅ YES — restored as §11.C |
+| 5 | Key Lessons Driving This Plan inline | bb6335d6 Pass 44 §19 | ✅ YES — restored as §24 (expanded) |
+| 6 | Stage 2 Backtest $300 Two-Stage Plan detailed | bb6335d6 Pass 44 §4 | (kept simplified per Sprint Roadmap Index) |
+
+### Owner approvals (Pass 53 turn 2026-05-05)
+
+- **Q1 Approve** — restore Section 21 Website Architecture as new Section 32 in PROJECT_PLAN.md + DETAILED_PROJECT_PLAN.md Part 14.5 sub-section
+- **Q2 Restore inline** — items 2-5 (60-strategy detail, confidence tiers, validation gates, learnings) restored inline within PROJECT_PLAN.md (not just as pointers)
+- **Q3 Yes** — DEC-202/203/204 promoted from DEFERRED to RESOLVED-DECIDED with full specs (Dashboard 4/5/6 spec'd NOW for Stage 3 entry preparation)
+
+### Restoration executed Pass 53 Batch (this turn, 2026-05-05)
+
+**PROJECT_PLAN.md additions:**
+- **§32 Website Architecture & Phase-Specific Analytics Dashboards** (~280 lines, 9 sub-sections):
+  - §32.1 Two-Property Web Architecture (DEC-187)
+  - §32.2 Trade Flow diagram
+  - §32.3 Public Recommendations Site spec (DEC-187 to 198)
+  - §32.4 Push Notification Layer (DEC-194/195: Telegram + 6 alerts + email twice daily)
+  - §32.5 Phase-Specific Analytics Dashboards (6 dashboards):
+    - Dashboard 1 (DEC-199; existing 5-section spec)
+    - Dashboard 2 (DEC-200; existing 5-section spec)
+    - Dashboard 3 (DEC-201; existing 6-section spec)
+    - **Dashboard 4 (DEC-202 PROMOTED Pass 53; 11-section full spec)**
+    - **Dashboard 5 (DEC-203 PROMOTED Pass 53; D4 + 7 sections full spec)**
+    - **Dashboard 6 (DEC-204 PROMOTED Pass 53; 6-section waterfall full spec)**
+  - §32.6 Tech Stack (Vercel + Streamlit; Local VS Code update Pass 53)
+  - §32.7 Build Sequence aligned to phase milestones
+  - §32.8 DEC-187 to DEC-204 inventory table
+  - §32.9 Cost Summary update (Stage 3+ hosting)
+- **§7.4 Layer 1 60-strategy enumeration** (Q2 restoration)
+- **§11.B Confidence Tiers, Position Sizing, Tier Adjustment** (Q2 restoration)
+- **§11.C Stage 2 → Stage 3 Validation Gates** (Q2 restoration; expanded with Pass 53 gates 9-11)
+- **§24 Learnings expanded inline** (Q2 restoration; key process + architectural + operational learnings)
+
+**AUDIT_INDEX.md DEC promotions:**
+- DEC-202: DEFERRED_TO_STAGE_3 → RESOLVED-DECIDED with 11-section spec
+- DEC-203: DEFERRED_TO_STAGE_4 → RESOLVED-DECIDED with D4 + 7 sections
+- DEC-204: DEFERRED_TO_STAGE_3 → RESOLVED-DECIDED with 6-section waterfall
+
+**DETAILED_PROJECT_PLAN.md Part 14 addition:**
+- §14.5 Stage 3 Website + Dashboard Architecture (cross-references PROJECT_PLAN.md §32)
+- §14.5.1 Stage 3 entry prerequisites (website/dashboard specific)
+- §14.5.2 Build sequence
+- §14.5.3 DEC inventory restored
+- §14.5.4 Cost summary update
+
+### Pre-flight CHECKLIST applied
+- ✅ #1/#45 — owner directive Q1+Q2+Q3 explicit "Approve all"; this statement
+- ✅ Pre-flight per recommendation — all 3 owner-gated; no scope creep
+- ✅ #13/#22/#23/#29 N/A (doc-only restoration; no API calls)
+- ✅ #66.b — INPUT (owner regression flag); OUTPUT (4 doc additions + 3 DEC promotions); FLOW (git archaeology → identify → owner-gate → restore inline → DEC promote → commit)
+- ✅ #67 — restoration commits same turn as identification (per-turn doc sync)
+- ✅ #68/#69 N/A (no API ops; no code push)
+
+### Cross-references
+- **PROJECT_PLAN.md §32** — Website Architecture full restoration
+- **PROJECT_PLAN.md §7.4 / §11.B / §11.C / §24** — Q2 inline restorations
+- **AUDIT_INDEX.md DEC-202/203/204** — Q3 DEC promotions
+- **DETAILED_PROJECT_PLAN.md §14.5** — Stage 3 entry prerequisite cross-reference
+- **PROJECT_PLAN_ARCHIVE.md §21** — preserved historical source
+- Git history: bb6335d6 (Pass 44 source) + 4d514c2a (Pass 52 elimination) + this commit (Pass 53 restoration)
+
+### Pattern surfaced (potential L146 candidate)
+
+Pass 52 turn 128 PROJECT_PLAN REFRESH dropped Section 21 without owner-explicit approval to remove. Documents marked "REFRESH" or "supersedes outdated version" should require owner-explicit elimination list approval before content removal. Going forward, refactors that REMOVE content (not just reorganize) need owner sign-off on the eliminations list.
+
+*Per CHECKLIST #1 (owner Q1+Q2+Q3 "Approve all"); #13 (re-read); #25 (regression honestly identified via git archaeology); #43 (cross-doc); #45 (this statement); #51 (scope strict per owner); #58 (atomic restoration commit); #66.b (INPUT/OUTPUT/FLOW); #67/#67.b (doc sync this turn); #68/#69 N/A (no API/code).*

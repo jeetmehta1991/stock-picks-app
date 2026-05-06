@@ -5621,6 +5621,62 @@ Per DEC-269 + Part 14:
 10. **Disaster recovery plan in place** — DEC-273
 11. **Owner explicit Stage 4 approval** — informed by all above
 
+## §14.5 Stage 3 Website + Dashboard Architecture (RESTORED Pass 53 owner directive 2026-05-05)
+
+**Owner-flagged elimination:** "the website creation has been completely removed? Why? That is still a key deliverable in stage 3. Can not be removed!" — restored Pass 53 turn 2026-05-05.
+
+**Canonical home:** PROJECT_PLAN.md §32 — Website Architecture & Phase-Specific Analytics Dashboards.
+
+This sub-section summarizes Stage 3 entry prerequisites that are website + dashboard related; full spec lives in PROJECT_PLAN.md §32 (restored from Pass 44 commit `bb6335d6`).
+
+### §14.5.1 Stage 3 entry prerequisites (website / dashboard)
+
+Per DEC-187 to DEC-204 (Pass 43-44 + Pass 53 promotions Q3):
+
+1. **Property 1 — Public Recommendations Site** (Next.js + Vercel free tier per DEC-187/190)
+   - Mobile-first card-based layout with 10-point trade rationale per recommendation (DEC-189)
+   - Section A "Today's recs" + Section B "Yesterday's results" with status badges
+   - Track record header (rolling 30/90/all-time win rate, profit factor)
+   - Publish timing per DEC-191 (pre-market 7-8am ET + post-close 4pm ET)
+   - DEC-192: actual paper trades with real slippage shown (not theoretical)
+   - DEC-196: no auth during paper trading
+
+2. **Property 2 — Dashboard 4 (Stage 3 Paper Trading Analytics)** — Streamlit per DEC-048
+   - **PROMOTED Pass 53 from DEFERRED to RESOLVED-DECIDED** per Q3 owner directive
+   - 11-section spec per PROJECT_PLAN.md §32.5 Dashboard 4 (status bar / equity curves / DD chart with breaker overlay / per-strategy P&L attribution / per-regime breakdown / trade journal with 10-point rationale searchable / backtest-vs-paper divergence tracker / KPIs panel / circuit breaker status / system health / push alert log)
+   - Effort: ~5-7d (reuses Dashboard 1 Cube infrastructure)
+
+3. **Telegram bot + 6 alert events** (DEC-194/195)
+   - Stop-out / circuit breaker / position halted / daily P&L breach (-2%/-5%) / divergence threshold / data feed failure
+   - Email summary twice daily (pre-market 7am + post-close 4:30pm)
+
+4. **Tech stack & hosting**
+   - Public site: Vercel free tier (~$0/mo)
+   - Dashboard 4: Streamlit Cloud free tier (~$0/mo)
+   - Backend: Local VS Code (Pass 53; was Codespace) until Stage 4 cloud migration
+   - Database: SQLite trade event store (DEC-267)
+
+### §14.5.2 Build sequence (Pass 53 §32.7)
+
+| Sub-phase | Deliverable |
+|---|---|
+| Sprint 9 (Phase 1B-α run) | Dashboard 1 + 2 + 3 fully operational (already-spec'd; DEC-199/200/201) |
+| **Stage 3 entry preparation** | **Public Site (Property 1) + Dashboard 4 (DEC-202 promoted Pass 53) + Telegram + Email** |
+| Stage 3 ongoing | Daily monitoring via Dashboard 4; weekly performance reviews via QuantStats |
+| Stage 4 entry | + Dashboard 5 (DEC-203 promoted Pass 53) + Dashboard 6 (DEC-204 promoted Pass 53) |
+
+### §14.5.3 DEC inventory restored Pass 53
+
+DEC-187 to DEC-198 RESOLVED-DECIDED Pass 43 (existed in AUDIT_INDEX; restored visibility in PROJECT_PLAN §32).
+DEC-199/200/201 RESOLVED-DECIDED Pass 52 turn 79 (5/5/6-section specs).
+**DEC-202/203/204 PROMOTED Pass 53** from DEFERRED to RESOLVED-DECIDED with full specs (per Q3 owner directive 2026-05-05).
+
+### §14.5.4 Cost summary update (Stage 3+ hosting)
+
+Per PROJECT_PLAN.md §32.9:
+- Stage 3 hosting: ~$0-5/mo (Vercel free + Streamlit Cloud free + Telegram free + email)
+- Stage 4 hosting: ~$55-85/mo (Vercel Pro + Streamlit Cloud Teams + IBKR market data)
+
 ---
 
 # PART 15 — STAGE 4: LIVE TRADING SMALL SCALE (PLANNING LEVEL)

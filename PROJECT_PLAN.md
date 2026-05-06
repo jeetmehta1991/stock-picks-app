@@ -387,6 +387,27 @@ Approximately **~108-118 classes** post-Phase-1C (per BUG-111 resolution Sprint 
 
 STRATEGY_REGISTER.md is canonical.
 
+### 7.4 Layer 1 — 60-strategy enumeration (RESTORED Pass 53 inline per Q2 owner directive)
+
+*(Restored from PROJECT_PLAN_ARCHIVE.md / Pass 44 commit `bb6335d6`. Eliminated by Pass 52 turn 128 REFRESH; owner Q2 Pass 53 2026-05-05: "Restore inline".)*
+
+| Category | Count | Examples |
+|---|---|---|
+| **Momentum / Trend** | 12 | 50/200 SMA cross, breakout from base, sector momentum rotation, MACD bull cross + above 200 EMA + ADX>25, Donchian 20 breakout, MA stack 9/21/50, prior swing-high breakout, Hull MA flip up, Supertrend flip up + price above 200 EMA, ROC + RSI midline, Aroon Up cross, sector RS rotation |
+| **Mean Reversion** | 10 | Oversold bounce, RSI divergence, Bollinger reversion (lower band touch + RSI<30), Keltner channel mid-band test, mean-reversion-after-gap, MFI oversold + price >200 EMA, z-score >2 reversion, gap-fill, Stochastic K cross above 20, support-zone bounce |
+| **Smart Money** | 8 | Congressional cluster buy (DEC-124 confluence), insider CEO+cluster buy, 13F accumulation Q-over-Q, gov contracts + congressional buy, insider buy + low-IV setup, 13F new initiator, congressional pre-earnings, insider Form 4 + analyst upgrade |
+| **Volatility** | 7 | VIX spike fade, IV crush + post-earnings drift, vol contraction breakout, low-vol pullback to MA, BBW expansion + breakout direction, ATR rank low + breakout, vol-targeting overlay |
+| **Fundamental** | 8 | Earnings momentum (post-EPS beat drift), analyst upgrade clusters, buyback announcements, dividend hike, EPS estimate revision up, revenue surprise, margin expansion, capex cut + buyback |
+| **Macro / Regime** | 6 | Yield-curve normalization trades, crisis dip-buying (regime=crisis_CRISIS_FLAG longs at 50% size), sector rotation (defensive→cyclical), USD weakness + commodities, Fed pivot trades, bond-stock correlation breakdown |
+| **Event-Driven** | 9 | Spinoffs (DEC-103 cap >$5B + 90d history), M&A arbitrage, post-IPO drift (>$10B IPO + 90d), earnings PEAD, FDA approval drift, S&P 500 inclusion drift, index-rebalance front-run, dividend ex-date arb, secondary offering drift |
+
+**Strategy attributes (Layer 1):**
+- **`earnings_tolerant`** (DEC-013 REVISED): PEAD and earnings-momentum strategies ignore earnings proximity. Others reduce size 0.75× within 7 days, 0.5× within 3 days
+- **Confidence tier:** 5% / 4% / 3% / 1.5% / 0.75% position size based on signal quality (per DEC-021)
+- **CVD-dependent strategies dropped** per DEC-046 (daily OHLCV cannot produce real Cumulative Volume Delta)
+
+**Layer 2-4 detail:** see STRATEGY_REGISTER.md per-layer enumeration. Layer 2 ICT/SMC strategies use `smartmoneyconcepts` library fork per DEC-045. Layer 3 chart patterns DEC-355-362. Layer 3B categories DEC-367-371. Layer 4 PENDING DEC-141/142/143/145.
+
 ---
 
 ## 8. Signal Universe (~220 fields per instrument per day)
@@ -515,6 +536,77 @@ Detail: API_AUDIT.md per-API specification with use-case mapping.
 ---
 
 # PART D — RULES & THRESHOLDS
+
+## 11.B Confidence Tiers, Position Sizing, Tier Adjustment (RESTORED Pass 53 inline per Q2)
+
+*(Restored from PROJECT_PLAN_ARCHIVE.md / Pass 44 commit `bb6335d6`. Eliminated by Pass 52 turn 128 REFRESH; owner Q2 Pass 53 2026-05-05: "Restore inline".)*
+
+### 11.B.1 Stage 1 (rule-based preliminary tier)
+
+Based on signal counts and smart money:
+
+| Tier | Triggers | Position size |
+|---|---|---|
+| EXCEPTIONAL | 3+ strategies fire AND congressional cluster buy AND insider cluster buy | 5% of capital |
+| VERY HIGH | 2+ strategies fire AND 1+ smart money signal | 4% |
+| HIGH | 2+ strategies fire OR 1 strategy + smart money | 3% |
+| MEDIUM-HIGH | 1 strategy fire + supporting context | 1.5% |
+| MEDIUM | 1 strategy fire alone | 0.75-1% (Stage 3+ only) |
+| LOW / AVOID | Below minimum or contradicted | watch-only |
+
+### 11.B.2 Stage 2 (TradingAgents 5-tier overlay) — DEC-061 Option 1 / DEC-481 Option C2 Hybrid
+
+TradingAgents Portfolio Manager outputs Buy/Overweight/Hold/Underweight/Sell. Maps to tier adjustment:
+- **Buy** → upgrade preliminary tier by 1 level
+- **Overweight** → priority flag within tier (stay in tier, prioritize for execution)
+- **Hold** → no change
+- **Underweight** → downgrade preliminary tier by 1 level
+- **Sell** → downgrade to AVOID (do not trade)
+
+AVOID tier never upgrades regardless of agent rating.
+
+DEC-481 Option C2 Hybrid (PROPOSED Pass 52 turn 133) supersedes DEC-459 Option C — TradingAgents v0.2.4 uses 5-tier rating, not numeric confidence; SignalProcessor reads rating from rendered markdown via deterministic heuristic.
+
+### 11.B.3 Position size multiplier stack
+
+```
+position_size = base × tier_multiplier × earnings_modifier × vol_targeted × drawdown_modifier
+```
+
+- `tier_multiplier`: 5% / 4% / 3% / 1.5% / 0.75% / 0 per table above
+- `earnings_modifier`: 1.0 if earnings_tolerant=True; else 0.75× within 7d / 0.5× within 3d
+- `vol_targeted`: pending DEC-023 (inverse-ATR sizing)
+- `drawdown_modifier`: pending DEC-022 (step function at -5/-10/-15%)
+
+Floor: combined multiplier < 0.10% → skip as `below_minimum_size`.
+
+**Canonical thresholds:** TRADING_RULES_AND_INFORMATION.md (this section is summary; thresholds may be revised there post-backtest per REVISIT_AFTER_BACKTEST tags).
+
+---
+
+## 11.C Stage 2 → Stage 3 Validation Gates (RESTORED Pass 53 inline per Q2)
+
+*(Restored from PROJECT_PLAN_ARCHIVE.md / Pass 44 §11. Eliminated by Pass 52 turn 128 REFRESH; owner Q2 Pass 53 2026-05-05: "Restore inline".)*
+
+Stage 2 must pass these gates before Stage 3 paper trading:
+
+| # | Gate | Threshold | Source |
+|---|---|---|---|
+| 1 | **Edge over baseline** | Stage 2 (full agents) Sharpe ≥ rules-only Sharpe + 0.2 absolute OR 0.15 relative | DEC-131 |
+| 2 | **Per-strategy minimum** | ≥500 trades AND ≥143 independent positions per L99 (3.5× row inflation correction) | L99 |
+| 3 | **Regime breakdown** | Per-regime PASS in ≥1 of 4 regimes (calm/neutral/volatile/crisis per DEC-106); not universal-pass required | DEC-209 |
+| 4 | **Drawdown bounded** | Max drawdown ≤ 25% across full backtest | DEC-269 |
+| 5 | **Walk-forward consistency** | Out-of-sample Sharpe within 0.5 of in-sample | DEC-109 |
+| 6 | **Transaction costs honest** | Costs computed at actual broker spread + slippage per DEC-040 PIT loader | DEC-040, DEC-092/122/280 |
+| 7 | **No look-ahead** | PIT regression tests via freezegun pass; DEC-305 PIT guard RAISE not WARN | DEC-040, DEC-305, DEC-417 |
+| 8 | **Agent score calibration** | Distribution of Portfolio Manager 5-tier output roughly normal (not all Hold, not all extremes) | DEC-481 |
+| 9 | **5-Gate cube validity** | n≥30 + FDR q<0.10 + PSR≥0.95 + t≥3.4 + RR≥2.0 per DEC-426 | DEC-426 + DEC-469/470 |
+| 10 | **A/B Sharpe delta CI** | Block-bootstrap CI on Sharpe delta excludes zero per DEC-472 PROPOSED | DEC-472 |
+| 11 | **Stage 3 dashboard prerequisites (NEW Pass 53 §32)** | Public site live + Dashboard 4 operational + Telegram bot + email alerts active | §32, DEC-187, DEC-202 |
+
+Detailed gate logic in DETAILED_PROJECT_PLAN.md Part 13 §13.1.
+
+---
 
 ## 11. Trading Rules Reference
 
@@ -751,18 +843,52 @@ Detail: CHECKLIST.md.
 
 ---
 
-## 24. Learnings
+## 24. Learnings — Key Lessons Driving This Plan (RESTORED Pass 53 inline per Q2)
 
-**Canonical:** LEARNINGS.md.
+**Canonical:** LEARNINGS.md (1-145 entries).
 
-L1-L137 process learnings documented across project lifecycle. Key Pass 52 learnings:
-- L137 → CHECKLIST #58 (sprint-tracker discipline)
-- L136 → CHECKLIST #57 (use-case mapping)
-- L135 → CHECKLIST #56 (focus-phase scope filter)
-- L134 → CHECKLIST #55 (phase scope check)
-- L133 → CHECKLIST #54 (test-run audit gate)
+*(Q2 owner directive Pass 53 2026-05-05: restore inline. Pass 52 turn 128 REFRESH had compressed this to a pointer.)*
 
-Detail: LEARNINGS.md.
+### 24.1 Process / discipline learnings (CHECKLIST source)
+
+| # | Lesson | Codified in CHECKLIST |
+|---|---|---|
+| L86 | Cost-controlled API runs (small batch → owner approval → scale) | #13/#22/#23/#29 |
+| L88 | Wikipedia is unreliable as a runtime data source — static CSV pattern is correct | Universe management |
+| L89 | New spinoff >$5B → add to T2 immediately, don't wait for S&P 500 inclusion (SNDK 9-month lag) | DEC-103 |
+| L94 | Process discipline standing rule | #30/#31/#32 (Pass 44) |
+| L99 | Row inflation correction 3.5× — per-strategy minimum 143 independent positions | Stage 2 → 3 gate #2 |
+| L103 | Read library source before recommending | Fork-first architecture HARD RULE |
+| L106-L108 | (multiple process learnings) | #30/#31/#32 |
+| L133-L137 | (Pass 52 learnings) | #54-#58 |
+| L143 | Don't-rewrite-history (immutable historical AUDIT.md narratives) | #67 exclusions |
+| L144 | Roster category-boundary integrity | #65 |
+| L145 | Silent-gap pattern (working endpoint validates wrong assumption) | #69 (test pyramid mandate; DEC-503) |
+
+### 24.2 Architectural learnings driving design
+
+- **PIT correctness is non-negotiable** (L143 + DEC-040 + DEC-305) — every fetcher accepts `as_of`, RAISES on look-ahead, freezegun-tested
+- **Survivorship bias prevention** (DEC-303 PIT membership + DEC-477/483/494 B++ schema) — universe loaders filter by `(added_date <= as_of) AND (removed_date IS NULL OR removed_date > as_of)`
+- **NO LIVE API HARD CUT** Stage 2 (DEC-497 + D4 owner directive 2026-05-05) — backtest reads from `data_prefetch/` only; yfinance removed runtime
+- **Smart-money signals are CONTINUOUS, not binary** (BUG-144) — agents consume confidence-weighted scores, not just gates
+- **Agent overlay must DEMONSTRATE edge** (DEC-131 ≥0.2 Sharpe delta) — A/B tested every Phase, retired if degrades
+- **Strategy decay re-validation quarterly** (DEC-214) — strategy passing Stage 2 may fail in live; re-run periodically
+- **Test pyramid before every code push** (DEC-503 Pass 53; CHECKLIST #69) — silent-gap discovery (BUG-271/272/273) showed limited testing missed 3-of-4 endpoint failures
+
+### 24.3 Operational learnings
+
+- **Email > Telegram for trade approvals** (DEC-194 evolved Pass 43) — but Telegram for real-time alerts (free + richer than SMS)
+- **Owner approves all decisions explicitly** (CLAUDE.md HARD RULE) — no autonomous strategy/threshold changes
+- **Cost-controlled API discipline** (CHECKLIST #13/#22/#23/#29) — small test → manual review → owner approval → scale; past mistakes (L86/L95) cost $150
+- **Per-turn doc sync** (CHECKLIST #67/#67.b Pass 53) — every turn with meaningful changes commits docs same turn; decoupled from pending operations
+
+### 24.4 Recent Pass 53 learnings
+
+- **L143 / L144 / L145** codified Pass 53 (silent-gap discovery, roster integrity, test pyramid mandate)
+- **CHECKLIST #67/#68/#69** added Pass 53 (per-turn doc sync, smoke→demo→full protocol, test pyramid before push)
+- **DEC-497 to DEC-504** Pass 53 architectural decisions (Sprint 0A scope, Polygon ticker events, Quiver expansion, test pyramid HARD RULE, T3-over-T1 precedence)
+
+Full detail: LEARNINGS.md L1-L145.
 
 ---
 
@@ -980,3 +1106,247 @@ PROJECT_PLAN_ARCHIVE.md contains the pre-April-2026 PROJECT_PLAN reference, usef
 ### 31.6 Reading guide
 
 Full Sprint 0A detail in **DETAILED_PROJECT_PLAN.md Part 2.6 (Sprint-Sequenced Index) + Part 3 §3.16-§3.17 (expanded scope)**. Cross-document navigation in DETAILED_PROJECT_PLAN.md Part 18.
+
+---
+
+## 32. Website Architecture & Phase-Specific Analytics Dashboards
+
+*(RESTORED Pass 53 owner directive 2026-05-05 — eliminated by Pass 52 turn 128 PROJECT_PLAN REFRESH (commit `4d514c2a`); preserved in PROJECT_PLAN_ARCHIVE.md §21. Owner: "the website creation has been completely removed? Why? That is still a key deliverable in stage 3. Can not be removed!" Restoring Section 21 from Pass 44 (commit `bb6335d6`) with Pass 53 minor updates.)*
+
+### 32.1 Two-Property Web Architecture (per DECISION-187)
+
+The system has two distinct web properties, not one:
+
+**Property 1 — Public Recommendations Site** (mobile-first, no auth, end-of-day refresh)
+- Today's trade recommendations with full 10-point rationale
+- Yesterday's recommendation results (success/failure with mark-to-market on still-open positions)
+- Track record header: rolling 30/90/all-time recommendation win rate, avg gain, avg loss, profit factor
+- URL: TBD public domain
+
+**Property 2 — Private Analytics Dashboards** (multiple dashboards, no auth during paper trading per DEC-196, revisit before live)
+- Phase-specific dashboards (one per phase — see §32.5)
+- All deeply linked, accessed via internal URLs
+- URL: TBD internal subdomain
+
+### 32.2 Trade Flow: Algo → Execution → Notification → Display
+
+```
+[Backtest / Paper / Live Algo Engine]
+              │
+              ▼
+   Generates trade decisions
+              │
+              ▼
+[Autonomous Execution] ←─── (no human approval gate per DEC-033 changed)
+              │
+              ▼
+   Trades placed (paper or live broker via IBKR)
+              │
+              ▼
+   Fills + slippage recorded
+              │
+        ┌─────┴─────┐
+        ▼           ▼
+[Notification    [Database]
+   Layer]            │
+   - Telegram    [Public Site] ← end-of-day refresh
+   - Email       [Private Dashboards] ← real-time/on-demand
+   - Push           │
+        │        Owner monitors via mobile
+   Owner alerts:
+   stops, breakers,
+   halts, P&L breach,
+   divergence, data
+   feed failures
+        │
+   Owner may manually
+   replicate trades in
+   Wealthsimple (out of system)
+```
+
+### 32.3 Public Recommendations Site — Spec (per DEC-187 to 198)
+
+**Layout: Mobile-first card-based, two main sections.**
+
+**Section A — Today's / Tomorrow's Recommendations**
+- Card per recommendation
+- Card collapsed view (default on mobile): ticker, direction, tier, entry, stop, target, hold range, strategy name, top 3 signals
+- Card expanded view (tap to expand): full 10-point rationale per DEC-189
+
+**Section B — Yesterday's Results**
+- Card per recommendation made yesterday
+- Status badges: closed-positive ✅ / closed-negative ❌ / still-open with mark-to-market 🔄
+- Closed cards show: entry, exit, hold days, exit reason, P&L
+- Open cards show: entry, current, unrealized P&L, days held so far
+- Original rationale expandable
+
+**Header — Track Record**
+- Rolling win rate (30d / 90d / all)
+- Avg gain on winners / avg loss on losers
+- Profit factor
+- Total recommendations
+
+**10-Point Trade Rationale (DEC-189) per recommendation:**
+1. **Trigger** — exact signal values (RSI=28, not "oversold")
+2. **Strategy** — name + one-line description
+3. **Setup** — chart pattern / context
+4. **Smart money context** — insider/congressional/13F flags with names
+5. **Macro/regime fit** — why this trade fits current regime
+6. **Agent reasoning** — Bull case, Bear case, who won
+7. **Risk assessment** — gap risk, earnings proximity, sector weakness
+8. **Similar historical trades** — "won 14 of 22 in similar setups"
+9. **Position sizing rationale** — why this tier
+10. **Exit plan** — stop, target, time stop, abort conditions
+
+**Publish timing (DEC-191):**
+- Pre-market 7-8am ET: tomorrow's recommendations published
+- Post-close 4pm ET: today's results updated, status badges set
+
+**DEC-192:** Site shows actual paper trades with real slippage, not theoretical recommendations. Track record reflects what actually happened including fills.
+
+### 32.4 Push Notification Layer (DEC-194, DEC-195)
+
+**Bot:** Telegram (free, richer formatting than SMS, separate from phone SMS).
+
+**6 alert events:**
+1. Stop-out fired on any open position
+2. Circuit breaker triggered (any of 5 levels per CIRCUIT_BREAKERS config)
+3. Position halted intraday
+4. Daily P&L breach (-2% warning, -5% critical)
+5. Backtest-vs-paper divergence > threshold (paper Sharpe drops 0.5 below backtest, per DEC-114)
+6. Data feed failure (any vendor)
+
+**NOT alerting on:** earnings beats/misses (too noisy across many open positions).
+
+**Email summary (twice daily):**
+- Pre-market 7am ET: tomorrow's planned trades + overnight news + regime classification
+- Post-close 4:30pm ET: today's executed trades + day P&L + open positions + tomorrow's preview
+
+### 32.5 Phase-Specific Analytics Dashboards (6 dashboards)
+
+Each phase produces different output shapes and answers different questions. One dashboard each:
+
+**Dashboard 1 — Phase 1B-α Backtest Analysis** (DEC-199; Pass 52 turn 79 RESOLVED-DECIDED with 5-section spec)
+
+Sections: Cube Explorer (2D heatmap / 3D scatter / per-cell drill-down per DEC-430) | Per-strategy verdict cards (PASS/FAIL_RR/FAIL_CONFIDENCE/FAIL_DRAWDOWN/INSUFFICIENT_SAMPLE per DEC-426 + 5-gate validity n>=30/p<0.05/PSR>=0.95/t>=3.4/RR>=2.0) | Regime breakdown (verdict-by-regime per DEC-209) | A/B comparison (rules vs full-agents net Sharpe per DEC-205-216 + DEC-210) | Live decision lookup (state-vector input → recommended strategy/exit/confidence per DEC-429). Filter sliders all dimensions; drill-downs to per-cell trades with DEC-189 10-point rationale.
+
+**Dashboard 2 — Phase 0.D ICT/SMC Signal Audit** (DEC-200; Pass 52 turn 79 RESOLVED-DECIDED with 5-section spec)
+
+Sections: Signal visualization (FVG/BOS/CHoCH/order blocks overlay on candlestick per DEC-259/261 PIT N+1 lag) | Signal frequency stats (per-ticker per-month counts; flag anomalies) | Synthetic test cases (smartmoneyconcepts test suite verification) | PIT validation (confirm N+1 lag rule applied) | Library version manifest (pinned smartmoneyconcepts version + fork commit hash per DEC-045).
+
+**Dashboard 3 — Stage 2 Path B Agent Overlay Analysis** (DEC-201; Pass 52 turn 79 RESOLVED-DECIDED with 6-section spec)
+
+Sections: A/B summary (4-arm net Sharpe table per DEC-205-210) | Agent disagreement events (trades tagged AGENT_DISAGREEMENT_BULL_BEAR per DEC-212 + outcome) | Per-agent ablation (DEC-211 narrow scope — marginal Sharpe per agent on top-20% strategies × 5K sample, post-Phase-1B-α) | Both-rationales comparison (DEC-213 — rules_rationale + agent_rationale side-by-side) | Cost accounting (Net Sharpe = Gross Lift − Annualized Cost per DEC-210; alert if approaching DEC-131 0.2 net threshold) | Quarterly re-validation status (DEC-214; ALERT_AGENT_DECAY).
+
+**Dashboard 4 — Stage 3 Paper Trading Analytics** (DEC-202 PROMOTED FROM DEFERRED Pass 53 owner directive 2026-05-05 — full spec below)
+
+Sections (PROMOTED Pass 53 to ACTIVE; spec drafted now for Stage 3 entry preparation):
+- **§4.1 Status bar** — last update timestamp / paper-account balance / open positions count / today's P&L / today's order count
+- **§4.2 Equity curves** — $5K vs $50K vs SPY (per DEC-029-A/B); zoom 30d/90d/YTD/all
+- **§4.3 Drawdown chart** — peak-to-trough with circuit-breaker overlay (CIRCUIT_BREAKERS L1-L5 markers)
+- **§4.4 Per-strategy P&L attribution** — P&L breakdown across strategies (sortable by net contribution)
+- **§4.5 Per-regime breakdown** — calm/neutral/volatile/crisis per DEC-106 + win rate / Sharpe / count
+- **§4.6 Trade journal** — full trade list with 10-point rationale per DEC-189; searchable + filterable; expandable cards per trade
+- **§4.7 Backtest-vs-paper divergence tracker** — paper Sharpe vs backtest projection; flag when >0.5σ deviation per DEC-114
+- **§4.8 KPIs panel** — Sharpe / win rate / profit factor / max DD / vs-SPY (rolling 30d / 90d / all-time per DEC-155)
+- **§4.9 Circuit breaker status** — current state of L1-L5 breakers + last-fired log
+- **§4.10 System health panel** — data feed freshness (Polygon / Quiver / FRED / etc); broker connection (IBKR paper); kill switch armed/fired
+- **§4.11 Push alert log** — 6 alert events history (stops / breakers / halts / P&L breach / divergence / data feed) with timestamps + ack status
+- Filters: notional ($5K/$50K), date range, strategy, regime, exit method
+- Effort: ~5-7d (Streamlit; reuses Dashboard 1 Cube infrastructure for verdict lookup)
+- Pass 53 RESOLVED-DECIDED (promoted from DEFERRED_TO_STAGE_3); Stage 3 entry prerequisite
+
+**Dashboard 5 — Stage 4 Live Trading Analytics** (DEC-203 PROMOTED FROM DEFERRED Pass 53 owner directive 2026-05-05 — full spec below)
+
+Sections (PROMOTED Pass 53 to ACTIVE; mirrors Dashboard 4 + real-money concerns):
+- **All Dashboard 4 sections** plus:
+- **§5.1 Real cash position + USD/CAD exposure** (DEC-134) — CAD home base; USD position with FX rate; running CAD-equivalent P&L
+- **§5.2 Tax event log** (DEC-035, DEC-270) — realized gains/losses per Canadian CRA classification; T5008 tracking; unrealized year-end estimate
+- **§5.3 Capital protection metrics** — running drawdown vs limits / vol vs target / factor exposure caps / sector concentration
+- **§5.4 Reconciliation status** (DEC-097) — broker statement reconciliation; discrepancy log
+- **§5.5 Order routing performance** — fill quality vs NBBO; slippage actual vs DEC-092/122/280 estimate; venue breakdown
+- **§5.6 Regulatory event flags** (DEC-159) — short-sale rule (Reg SHO); pattern day trader status; circuit breaker triggered events
+- **§5.7 Optional: Wealthsimple replication tracking log** — owner manually replicates in Wealthsimple per personal preference; this dashboard tracks that replication
+- Filters: account ($10K-50K initial / scaled), date range, strategy, regime
+- Effort: ~3-4d incremental over Dashboard 4 (re-uses §4 sections + adds §5.1-§5.7)
+- Pass 53 RESOLVED-DECIDED (promoted from DEFERRED_TO_STAGE_4); Stage 4 entry prerequisite
+
+**Dashboard 6 — Cross-Phase Comparison** (DEC-204 PROMOTED FROM DEFERRED Pass 53 owner directive 2026-05-05 — full spec below)
+
+Sections (PROMOTED Pass 53 to ACTIVE; master "is it working" view):
+- **§6.1 Sharpe waterfall** — Backtest → Stage 2 (1B-α) → Stage 3 (Paper) → Stage 4 (Live) Sharpe per DEC-129; expected vs actual at each phase boundary
+- **§6.2 Win rate degradation waterfall** — backtest → paper → live; expected win-rate decline given DEC-114 threshold
+- **§6.3 Slippage attribution per phase** — modeled vs realized slippage per DEC-092/122/280
+- **§6.4 Strategy mortality** — which strategies passed/failed each phase (PASS at backtest → PASS at paper → PASS at live); strategy retirement log per DEC-249/214/043
+- **§6.5 Cost stack** — commission + slippage + agent fees + infrastructure + data subscription per trade across phases
+- **§6.6 Decision ledger** — when each strategy was promoted/demoted; full audit trail per DEC-249
+- Filters: strategy subset, date range, phase scope
+- Effort: ~3-4d (Streamlit; sources from Dashboard 4 + Dashboard 5 underlying parquet trades)
+- Pass 53 RESOLVED-DECIDED (promoted from DEFERRED_TO_STAGE_3); useful from Stage 3 onwards (need ≥30d paper trading for first meaningful waterfall)
+
+### 32.6 Tech Stack & Hosting (Hybrid per owner approval)
+
+**Public site (Property 1):** Next.js + Vercel
+- Mobile-first, SSR/SSG-optimized
+- Custom domain (TBD)
+- Free tier sufficient for paper trading phase
+- SEO and polish required for public-facing
+
+**Private dashboards (Property 2, all 6):** Streamlit (per DEC-048 approved)
+- Python-native, fast iteration
+- One Streamlit app per dashboard, deep-linked
+- Hosted via Streamlit Cloud free tier or self-hosted alongside backend
+- Single-user friendly; revisit if multi-user need emerges
+
+**Backend / Algo engine:** Local VS Code (Pass 53 update; was Codespace pre-Pass-53) through paper trading per DEC-031, migrate to AWS/GCP/DO before Stage 4 per DEC-093.
+
+**Database:** Existing Parquet cache + new transactional store for trades/results. SQLite during paper (DEC-267); Postgres for live trading.
+
+### 32.7 Build Sequence Aligned to Phase Milestones
+
+Dashboards don't all need to exist on Day 1. Built in lockstep with phase progression:
+
+| Phase | Dashboards Required | Why |
+|---|---|---|
+| **Sprint 6.5 (Phase 1A baseline)** | Phase 1A Trade Summary Dashboard (NEW Pass 53 §2.5.3 — Streamlit port of legacy 9-tab) | Pre-cube analytical layer |
+| **Sprint 7 (Phase 1A-α + 1B + 1B-α)** | Dashboard 1 + Dashboard 2 + Dashboard 3 + Phase 1B Trade Summary Dashboard (NEW) | Cube + ICT/SMC + agent + statistical analysis |
+| **Sprint 9 (1B-α run)** | Dashboard 1 + 2 + 3 fully operational | Required to interpret results and pass/fail strategies + Stage 2 verdict gate |
+| **Stage 3 entry (paper trading)** | **Public Site (Property 1) + Dashboard 4** | CRITICAL — paper trading goes live + owner monitors via mobile + push alerts |
+| **Stage 4 entry (live)** | Public Site live + Dashboard 4 + Dashboard 5 + Dashboard 6 | Real money requires complete monitoring stack |
+| **Stage 5** | All 6 dashboards stable + monitoring automation | Owner shifts to monitor role per Part 16 |
+
+### 32.8 Decisions in scope (DEC-187 to DEC-204; preserved AUDIT_INDEX)
+
+| DEC | Title | Status |
+|---|---|---|
+| 187 | Two-property web architecture | RESOLVED-DECIDED Pass 43 |
+| 188 | Public site card-based layout | RESOLVED-DECIDED Pass 43 |
+| 189 | Trade rationale 10-point depth standard | RESOLVED-DECIDED Pass 43 |
+| 190 | Mobile-first design priority | RESOLVED-DECIDED Pass 43 |
+| 191 | Publish timing (pre-market 7-8am ET / post-close 4pm ET) | RESOLVED-DECIDED Pass 43 |
+| 192 | Site shows actual paper trades with slippage | RESOLVED-DECIDED Pass 43 |
+| 194 | Push alert events (6 events) | RESOLVED-DECIDED Pass 43 |
+| 195 | Telegram bot | RESOLVED-DECIDED Pass 43 |
+| 196 | No auth on paper-trading dashboard; revisit live | RESOLVED-DECIDED Pass 43 |
+| 198 | Paper trading mirrors live algo exactly | RESOLVED-DECIDED Pass 43 |
+| 199 | Dashboard 1 (Phase 1B-α backtest analysis) | RESOLVED-DECIDED Pass 52 turn 79 (5-section spec) |
+| 200 | Dashboard 2 (Phase 0.D ICT/SMC audit) | RESOLVED-DECIDED Pass 52 turn 79 (5-section spec) |
+| 201 | Dashboard 3 (Stage 2 agent analysis) | RESOLVED-DECIDED Pass 52 turn 79 (6-section spec) |
+| **202** | **Dashboard 4 (Stage 3 paper trading)** | **PROMOTED Pass 53 from DEFERRED to RESOLVED-DECIDED** (11-section spec §32.5) |
+| **203** | **Dashboard 5 (Stage 4 live trading)** | **PROMOTED Pass 53 from DEFERRED to RESOLVED-DECIDED** (mirrors §4 + 7 §5 sections) |
+| **204** | **Dashboard 6 (Cross-phase comparison)** | **PROMOTED Pass 53 from DEFERRED to RESOLVED-DECIDED** (6-section waterfall) |
+
+### 32.9 Cost Summary update (Stage 3+ hosting)
+
+**Stage 3 monthly recurring (paper trading, ~3 months):**
+- Vercel free tier (Property 1 public site): $0/mo
+- Streamlit Cloud free tier (Property 2 dashboards 1-4): $0/mo
+- Telegram bot: $0/mo
+- Email infrastructure (transactional, e.g., AWS SES or owner-Gmail): ~$0-5/mo
+- Stage 3 hosting total: ~$0-5/mo
+
+**Stage 4 monthly recurring (live trading + hosting upgrade):**
+- Vercel Pro (custom domain SSL, more bandwidth): ~$20/mo
+- Streamlit Cloud Teams (multi-dashboard concurrent + private auth): ~$25/mo (or self-host on cloud at ~$10-30/mo)
+- IBKR market data subscriptions: ~$10-30/mo per DEC-271
+- Stage 4 hosting + market data: ~$55-85/mo
