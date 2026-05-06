@@ -558,37 +558,119 @@ def smart_money_score(
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# ALPHA VANTAGE / FINNHUB NEWS SENTIMENT
-# Read from pre-fetched cache (scripts/prefetch_alphavantage_news.py +
-# scripts/prefetch_finnhub_news.py). Falls back to neutral if no cache.
+# NEWS SENTIMENT
+# Pass 53 Batch 13 sub-task 2 (DEC-507 + L146 wiring matrix Row 2 closure):
+# PRIMARY source = Polygon news (DEC-440) read from data_prefetch/polygon/news/
+# {TICKER}.parquet (Sprint 0A Batch 3 prefetched 1.05M articles for 1,926
+# tickers). Polygon news includes rich `insights` array with per-ticker
+# `sentiment` ('positive'/'negative'/'neutral') + `sentiment_reasoning` text.
+# LEGACY fallback: Alpha Vantage + Finnhub paths retained for backwards
+# compatibility (BUG-217 Pass 48). Will be removed Sprint 0A.8 NO-LIVE-API
+# refactor + Batch 14 test cleanup.
 # ─────────────────────────────────────────────────────────────────────────────
-#
-# BUG-217 fix (Pass 48): previous implementation looked at `prefetch/news/`
-# with `{ticker}_{year}.parquet` files and a `sentiment_score` column — none
-# of which exist. Actual data is in `cache/av_news/` and `cache/finnhub_news/`
-# as `{ticker}.parquet` with columns `sentiment_mean` / `sentiment_weighted` /
-# `article_count`. This caused get_news_sentiment to return neutral for every
-# ticker for every date, silently dropping the prefetched news data.
 
+# data_prefetch path (Pass 53 Batch 3 + Batch 13 Row 2 closure)
+PREFETCH_POLYGON_NEWS_DIR = _REPO_ROOT / "data_prefetch" / "polygon" / "news"
+
+# Legacy paths (BUG-217 Pass 48; preserved during transition)
 AV_NEWS_DIR = Path(__file__).parent / "cache" / "av_news"
 FH_NEWS_DIR = Path(__file__).parent / "cache" / "finnhub_news"
+
+
+def _polygon_insights_to_score(insights, ticker: str) -> Optional[float]:
+    """Extract per-ticker sentiment from Polygon news insights array.
+
+    Polygon insights schema (per article, when present):
+        [{'ticker': 'AAPL', 'sentiment': 'positive'|'negative'|'neutral',
+          'sentiment_reasoning': '...'}, ...]
+
+    Returns score in [-1, 1] for the matching ticker, or None if absent.
+    Mapping: positive=+1.0, negative=-1.0, neutral=0.0.
+    """
+    if insights is None:
+        return None
+    try:
+        # insights may be list, ndarray, or string-encoded list
+        if isinstance(insights, str):
+            return None  # serialized; skip
+        for entry in insights:
+            if not isinstance(entry, dict):
+                continue
+            if str(entry.get("ticker", "")).upper() == ticker.upper():
+                sent = str(entry.get("sentiment", "")).lower()
+                if sent == "positive":
+                    return 1.0
+                if sent == "negative":
+                    return -1.0
+                if sent == "neutral":
+                    return 0.0
+    except (TypeError, ValueError):
+        pass
+    return None
 
 
 def get_news_sentiment(ticker: str, as_of: date, lookback_days: int = 7) -> dict:
     """
     Return news sentiment for ticker in the lookback window before as_of.
-    Reads from pre-fetched Alpha Vantage cache first, falls back to Finnhub.
+
+    PRIMARY (Pass 53 Batch 13 Row 2 closure): data_prefetch/polygon/news/
+    LEGACY fallback: Alpha Vantage + Finnhub caches.
 
     Returns dict:
         sentiment_score: float (-1 to 1), positive = bullish news
         article_count: int — number of articles in window
         signal: bullish | bearish | neutral
-        source: alphavantage | finnhub | none
+        source: polygon | alphavantage | finnhub | none
     """
     safe_ticker = ticker.replace("-", "_").replace(".", "_")
     result = {"sentiment_score": 0.0, "article_count": 0,
               "signal": "neutral", "source": "none"}
 
+    # === PRIMARY: Polygon news with per-ticker insights ===
+    polygon_path = PREFETCH_POLYGON_NEWS_DIR / f"{safe_ticker}.parquet"
+    if polygon_path.exists():
+        try:
+            df = pd.read_parquet(polygon_path)
+            if not df.empty and "date" in df.columns:
+                df["date"] = pd.to_datetime(df["date"])
+                window_start = pd.Timestamp(as_of - timedelta(days=lookback_days))
+                window_end = pd.Timestamp(as_of)
+                window = df[(df["date"] >= window_start) & (df["date"] <= window_end)]
+                if not window.empty:
+                    # Extract per-ticker sentiment scores from insights
+                    scores = []
+                    for insights_val in window.get("insights", pd.Series()):
+                        s = _polygon_insights_to_score(insights_val, ticker)
+                        if s is not None:
+                            scores.append(s)
+                    article_count = len(window)
+                    if scores:
+                        avg_score = sum(scores) / len(scores)
+                        if avg_score >= 0.15:
+                            signal = "bullish"
+                        elif avg_score <= -0.15:
+                            signal = "bearish"
+                        else:
+                            signal = "neutral"
+                        return {
+                            "sentiment_score": round(avg_score, 3),
+                            "article_count": article_count,
+                            "scored_count": len(scores),  # NEW: # articles with insights
+                            "signal": signal,
+                            "source": "polygon",
+                        }
+                    # Articles in window but none had insights — still better than nothing
+                    return {
+                        "sentiment_score": 0.0,
+                        "article_count": article_count,
+                        "scored_count": 0,
+                        "signal": "neutral",
+                        "source": "polygon_no_insights",
+                    }
+        except Exception as exc:
+            logger.debug("get_news_sentiment polygon path %s: %s", ticker, exc)
+
+    # === LEGACY fallback (Alpha Vantage / Finnhub) ===
     for cache_dir, source in [(AV_NEWS_DIR, "alphavantage"),
                                (FH_NEWS_DIR, "finnhub")]:
         path = cache_dir / f"{safe_ticker}.parquet"
@@ -607,14 +689,11 @@ def get_news_sentiment(ticker: str, as_of: date, lookback_days: int = 7) -> dict
             if window.empty:
                 continue
 
-            # Prefer relevance-weighted sentiment when available (AV);
-            # fall back to mean sentiment otherwise.
             if "sentiment_weighted" in window.columns:
                 avg_score = float(window["sentiment_weighted"].mean())
             elif "sentiment_mean" in window.columns:
                 avg_score = float(window["sentiment_mean"].mean())
             elif "sentiment_score" in window.columns:
-                # legacy schema fallback
                 avg_score = float(window["sentiment_score"].mean())
             else:
                 continue

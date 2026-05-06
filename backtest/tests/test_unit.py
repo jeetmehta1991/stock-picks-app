@@ -1210,6 +1210,93 @@ def test_bug273_institutional_signal_respects_45day_lag():
     print("✅ BUG-273 institutional_signal 45-day lag respected")
 
 
+def test_polygon_news_positive_sentiment(tmp_path, monkeypatch):
+    """Pass 53 Batch 13 Row 2 closure: get_news_sentiment reads Polygon news insights."""
+    # Inject fake data_prefetch/polygon/news/AAPL.parquet
+    polygon_news_dir = tmp_path / "data_prefetch" / "polygon" / "news"
+    polygon_news_dir.mkdir(parents=True)
+    df = pd.DataFrame({
+        "id": ["a", "b", "c"],
+        "date": pd.to_datetime(["2024-05-30", "2024-05-31", "2024-06-01"]),
+        "title": ["good", "great", "ok"],
+        "insights": [
+            [{"ticker": "AAPL", "sentiment": "positive", "sentiment_reasoning": "x"}],
+            [{"ticker": "AAPL", "sentiment": "positive", "sentiment_reasoning": "y"}],
+            [{"ticker": "AAPL", "sentiment": "neutral", "sentiment_reasoning": "z"}],
+        ],
+    })
+    df.to_parquet(polygon_news_dir / "AAPL.parquet")
+    from backtest.data import smart_money
+    monkeypatch.setattr(smart_money, "PREFETCH_POLYGON_NEWS_DIR", polygon_news_dir)
+    result = smart_money.get_news_sentiment("AAPL", date(2024, 6, 1), lookback_days=7)
+    assert result["source"] == "polygon", f"Expected polygon source, got {result['source']!r}"
+    assert result["signal"] == "bullish", f"Expected bullish, got {result['signal']!r}"
+    assert result["scored_count"] == 3
+    print(f"✅ Batch 13 Row 2 polygon news positive → {result['signal']} score={result['sentiment_score']}")
+
+
+def test_polygon_news_negative_sentiment(tmp_path, monkeypatch):
+    """Negative-sentiment articles produce bearish signal."""
+    polygon_news_dir = tmp_path / "data_prefetch" / "polygon" / "news"
+    polygon_news_dir.mkdir(parents=True)
+    df = pd.DataFrame({
+        "id": ["a", "b"],
+        "date": pd.to_datetime(["2024-05-31", "2024-06-01"]),
+        "title": ["bad", "worse"],
+        "insights": [
+            [{"ticker": "TSLA", "sentiment": "negative", "sentiment_reasoning": "x"}],
+            [{"ticker": "TSLA", "sentiment": "negative", "sentiment_reasoning": "y"}],
+        ],
+    })
+    df.to_parquet(polygon_news_dir / "TSLA.parquet")
+    from backtest.data import smart_money
+    monkeypatch.setattr(smart_money, "PREFETCH_POLYGON_NEWS_DIR", polygon_news_dir)
+    result = smart_money.get_news_sentiment("TSLA", date(2024, 6, 1))
+    assert result["signal"] == "bearish", f"Expected bearish, got {result['signal']!r}"
+    print(f"✅ polygon news negative → {result['signal']} score={result['sentiment_score']}")
+
+
+def test_polygon_news_only_other_tickers_in_insights(tmp_path, monkeypatch):
+    """Articles tagged but with insights only for OTHER tickers → neutral with 0 scored."""
+    polygon_news_dir = tmp_path / "data_prefetch" / "polygon" / "news"
+    polygon_news_dir.mkdir(parents=True)
+    # Article mentions GOOGL but insights only for MSFT (cross-ticker article)
+    df = pd.DataFrame({
+        "id": ["a"],
+        "date": pd.to_datetime(["2024-06-01"]),
+        "title": ["msft news mentions googl"],
+        "insights": [
+            [{"ticker": "MSFT", "sentiment": "positive", "sentiment_reasoning": "x"}],
+        ],
+    })
+    df.to_parquet(polygon_news_dir / "GOOGL.parquet")
+    from backtest.data import smart_money
+    monkeypatch.setattr(smart_money, "PREFETCH_POLYGON_NEWS_DIR", polygon_news_dir)
+    result = smart_money.get_news_sentiment("GOOGL", date(2024, 6, 1))
+    # Article exists but no GOOGL-specific insight → neutral, polygon_no_insights source
+    assert result["scored_count"] == 0
+    assert result["signal"] == "neutral"
+    assert result["source"] == "polygon_no_insights"
+    print(f"✅ polygon news ticker filter excludes other-ticker insights")
+
+
+def test_polygon_news_missing_falls_through_to_neutral(tmp_path, monkeypatch):
+    """No polygon cache + no legacy cache → returns default neutral / source=none."""
+    empty_polygon_dir = tmp_path / "data_prefetch" / "polygon" / "news"
+    empty_polygon_dir.mkdir(parents=True)
+    empty_legacy = tmp_path / "empty_legacy"
+    empty_legacy.mkdir()
+    from backtest.data import smart_money
+    monkeypatch.setattr(smart_money, "PREFETCH_POLYGON_NEWS_DIR", empty_polygon_dir)
+    monkeypatch.setattr(smart_money, "AV_NEWS_DIR", empty_legacy)
+    monkeypatch.setattr(smart_money, "FH_NEWS_DIR", empty_legacy)
+    result = smart_money.get_news_sentiment("XYZ", date(2024, 6, 1))
+    assert result["source"] == "none"
+    assert result["signal"] == "neutral"
+    assert result["sentiment_score"] == 0.0
+    print(f"✅ polygon news missing + no legacy → graceful neutral fallback")
+
+
 def test_smart_money_score_uses_three_inputs_post_fix():
     """Composite smart_money_score correctly combines all 3 (now-fixed) inputs."""
     # Inject bulk data for all 3 sources matching actual schemas
