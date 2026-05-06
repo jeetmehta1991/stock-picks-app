@@ -1,15 +1,26 @@
 """
 data/smart_money.py — Smart money + analyst consensus data.
 
-Sources:
-  - Quiver Quantitative free tier: congressional, insider, 13F, analyst revisions
-  - yfinance: analyst consensus, price targets, EPS estimates (no key required)
-  - SEC EDGAR: Form 4, 13D/13G
-  - OpenInsider: insider trades
+Sources (Pass 53 DEC-497 NO-LIVE-API + DEC-503 second test pyramid application
+2026-05-05; D4 owner-approved yfinance total cut runtime):
+  - Quiver Quantitative paid (Trader tier per DEC-450):
+      * congressional — historical/congresstrading/{ticker} (per-ticker, works in tier)
+      * insider — live/insidertrading bulk feed (BUG-272 fix; historical/insidertrading 404s)
+      * 13F — live/sec13f bulk feed (BUG-273 fix; historical/institutionalholdings 404s)
+      * lobbying / govcontracts — per-ticker (works)
+  - Polygon Stocks Starter (DEC-441/444):
+      * EPS estimates / financials -> data_prefetch/polygon/financials/<TICKER>.parquet
+        (Sprint 0A Batch 4 populates; pre-Batch-4 returns "not_available")
+  - SEC EDGAR via edgartools (DEC-456 + R1 owner-approved Pass 53):
+      * Form 4 (insider direct), 8-K (material events), 13D/G (5%+ activists)
+      * Sprint 0A Batch 11 prefetches; reads from data_prefetch/sec_edgar/...
+  - News sentiment: legacy AV+Finnhub paths retained until Batch 13 migration
+    to data_prefetch/polygon/news/.
 
 All functions enforce point-in-time data (as_of parameter).
-QUIVER_API_KEY env var required for Quiver data — gracefully skips if absent.
-yfinance analyst data requires no API key.
+QUIVER_API_KEY env var: live smoke tests only; runtime backtest reads from
+cache/quiver/ + data_prefetch/ exclusively (NO LIVE API — DEC-497 HARD CUT).
+yfinance: REMOVED runtime per DEC-497 + D4 owner-approved 2026-05-05.
 """
 
 import os
@@ -21,7 +32,6 @@ from pathlib import Path
 from typing import Optional
 
 import pandas as pd
-import yfinance as yf
 
 logger = logging.getLogger(__name__)
 
@@ -30,11 +40,23 @@ QUIVER_BASE = "https://api.quiverquant.com/beta"
 _DELAY      = 1.5
 
 # Pre-fetch cache directory — populated by scripts/prefetch_quiver.py
+# Sprint 0A.8 (Batch 13) will migrate to data_prefetch/quiver/. Until then,
+# legacy path retained for backwards compatibility.
 PREFETCH_DIR = Path(__file__).parent / "cache" / "quiver"
+
+# Module-level bulk-feed cache (loaded once per process; thread-safe via GIL)
+# BUG-272/273 Pass 53 fix: Quiver Trader tier exposes Live <dataset> as paginated
+# bulk feeds (no per-ticker endpoint), so cache is single global.parquet per dataset
+# and we filter by Ticker column at read time.
+_BULK_CACHE: dict[str, Optional[pd.DataFrame]] = {}
 
 
 def _load_prefetch(dataset: str, ticker: str) -> Optional[pd.DataFrame]:
-    """Load pre-fetched Quiver data from Parquet cache. Returns None if not cached."""
+    """Load pre-fetched Quiver data from Parquet cache. Returns None if not cached.
+
+    Per-ticker pattern. Used for endpoints with per-ticker variants
+    (congresstrading, lobbying, govcontracts, offexchange, topshareholders, etc.).
+    """
     path = PREFETCH_DIR / dataset / f"{ticker.replace('-','_')}.parquet"
     if not path.exists():
         return None
@@ -44,6 +66,55 @@ def _load_prefetch(dataset: str, ticker: str) -> Optional[pd.DataFrame]:
     except Exception as exc:
         logger.debug("prefetch load %s/%s: %s", dataset, ticker, exc)
         return None
+
+
+def _load_quiver_bulk(dataset: str) -> pd.DataFrame:
+    """Load Quiver bulk-feed parquet from cache/quiver/<dataset>/global.parquet.
+
+    BUG-272/273 Pass 53 (DEC-503 second test pyramid application):
+    Migration from per-ticker live API calls to bulk-feed cache reads.
+
+    Quiver Trader-tier exposes these as paginated bulk feeds without per-ticker
+    endpoints — Sprint 0A.5 prefetch (Batch 10) populates the bulk parquet;
+    runtime reads filter the bulk DataFrame by `Ticker` column.
+
+    Returns empty DataFrame if file missing (graceful degradation pre-prefetch).
+    Cached per-process via _BULK_CACHE module global.
+
+    Used by insider_signal (`live/insidertrading`) + institutional_signal
+    (`live/sec13f`) per BUG-272/BUG-273 silent-gap fix.
+    """
+    if dataset in _BULK_CACHE:
+        cached = _BULK_CACHE[dataset]
+        return cached if cached is not None else pd.DataFrame()
+    path = PREFETCH_DIR / dataset / "global.parquet"
+    if not path.exists():
+        logger.debug(
+            "Quiver bulk feed not yet prefetched (Sprint 0A.5/Batch 10 will populate): %s", path
+        )
+        _BULK_CACHE[dataset] = None
+        return pd.DataFrame()
+    try:
+        df = pd.read_parquet(path)
+        _BULK_CACHE[dataset] = df
+        logger.info("Loaded Quiver bulk feed %s: %d rows", dataset, len(df))
+        return df
+    except Exception as exc:
+        logger.warning("Quiver bulk feed load failed for %s: %s", dataset, exc)
+        _BULK_CACHE[dataset] = None
+        return pd.DataFrame()
+
+
+def _filter_bulk_by_ticker(df: pd.DataFrame, ticker: str) -> pd.DataFrame:
+    """Filter a Quiver bulk DataFrame by Ticker column (case-insensitive)."""
+    if df.empty or "Ticker" not in df.columns:
+        return df
+    return df[df["Ticker"].astype(str).str.upper() == ticker.upper()].copy()
+
+
+def _reset_bulk_cache_for_tests():
+    """Test-only helper: reset module-level bulk cache so tests don't leak state."""
+    _BULK_CACHE.clear()
 
 
 def _quiver_get(endpoint: str) -> Optional[list]:
@@ -82,38 +153,43 @@ def _get_quiver_data(dataset: str, endpoint_path: str, ticker: str) -> Optional[
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# ANALYST CONSENSUS — yfinance primary, no API key required
+# ANALYST CONSENSUS
+# BUG-271 Pass 53 (DEC-503 second test pyramid application):
+#   REMOVED Quiver `historical/analystestimates` branch — endpoint NOT in Trader
+#   tier per Pass 53 dashboard inventory + smoke test 2026-05-05 (404).
+#   REMOVED yfinance branches per DEC-497 NO-LIVE-API HARD CUT (D4 owner approval
+#   2026-05-05).
+#   Function now reads from data_prefetch/polygon/financials/{ticker}.parquet
+#   (populated by Sprint 0A Batch 4). Pre-Batch-4: returns "not_available"
+#   gracefully. Polygon Stocks Starter financials endpoint covers EPS estimates
+#   only — analyst consensus + recommendation count + price target fields will
+#   remain "not_available" until/unless an analyst-consensus subscription is
+#   added in Phase 1B/1C (FMP per DEC-461 candidate).
 # ─────────────────────────────────────────────────────────────────────────────
+
+# data_prefetch root for NO-LIVE-API reads (DEC-497)
+_REPO_ROOT = Path(__file__).parent.parent.parent
+PREFETCH_POLYGON_FINANCIALS_DIR = _REPO_ROOT / "data_prefetch" / "polygon" / "financials"
+
 
 def get_analyst_data(ticker: str, as_of: date) -> dict:
     """
-    Fetch analyst consensus, price targets, EPS estimates, and recent revisions.
+    Fetch analyst consensus, price targets, EPS estimates, and recent revisions
+    from data_prefetch/polygon/financials/ (populated by Sprint 0A Batch 4).
 
-    IMPORTANT — LIVE-ONLY DATA WARNING:
-    Fields from yfinance t.info (recommendationMean, targetMeanPrice, eps estimates)
-    always return CURRENT values, not historical values as-of the backtest date.
-    These fields are used for site card display only — they do NOT affect confidence
-    tier calculations, strategy pass/fail criteria, or backtest metrics.
-    Point-in-time enforcement applies to recommendations history and upgrades/downgrades
-    only (filtered by as_of date below).
+    Returns dict with default `signal="not_available"` if cache miss (graceful
+    pre-prefetch state). When Batch 4 populates cache, EPS estimates fields
+    populated; analyst-consensus fields (buy/hold/sell counts, price targets)
+    remain "not_available" until FMP/equivalent subscribed (DEC-461 candidate).
+
+    BUG-271 + DEC-497 + D4 owner-approved Pass 53: NO yfinance + NO Quiver
+    historical/analystestimates (both removed; endpoint 404 / yfinance-cut).
 
     Returns dict with:
-      consensus          — Strong Buy / Buy / Hold / Sell / Strong Sell
-      buy_count          — number of Buy + Strong Buy ratings
-      hold_count         — number of Hold ratings
-      sell_count         — number of Sell + Strong Sell ratings
-      total_analysts     — total analysts covering
-      buy_pct            — % of analysts with Buy/Strong Buy
-      target_mean        — average price target
-      target_high        — highest price target
-      target_low         — lowest price target
-      target_upside_pct  — % upside from current price to mean target
-      eps_estimate_next_q — EPS consensus estimate next quarter
-      eps_estimate_next_y — EPS consensus estimate next year
-      recent_upgrades    — upgrades in last 30 days (from Quiver if available)
-      recent_downgrades  — downgrades in last 30 days
-      revision_direction — "up" / "down" / "flat"
-      signal             — "strong_buy" / "buy" / "hold" / "sell" / "unknown"
+      consensus, buy_count, hold_count, sell_count, total_analysts, buy_pct,
+      target_mean, target_high, target_low, target_upside_pct,
+      eps_estimate_next_q, eps_estimate_next_y, recent_upgrades,
+      recent_downgrades, revision_direction, signal.
     """
     result = {
         "consensus": "unknown", "buy_count": 0, "hold_count": 0,
@@ -122,135 +198,37 @@ def get_analyst_data(ticker: str, as_of: date) -> dict:
         "target_upside_pct": None, "eps_estimate_next_q": None,
         "eps_estimate_next_y": None, "recent_upgrades": 0,
         "recent_downgrades": 0, "revision_direction": "flat",
-        "signal": "unknown",
+        "signal": "not_available",
     }
+    safe_ticker = ticker.replace("-", "_").replace(".", "_")
+    path = PREFETCH_POLYGON_FINANCIALS_DIR / f"{safe_ticker}.parquet"
+    if not path.exists():
+        # Pre-Batch-4 graceful state — no Polygon financials prefetch yet.
+        # signal="not_available" surfaces as no-input to agents (Fundamental Agent
+        # treats as missing data, doesn't fall back to stale yfinance per DEC-497).
+        return result
+
     try:
-        t    = yf.Ticker(ticker)
-        info = t.info
-
-        # Consensus label
-        rec_mean = info.get("recommendationMean")   # 1=Strong Buy, 5=Strong Sell
-        rec_key  = info.get("recommendationKey", "").lower()
-        result["consensus"] = {
-            "strong_buy": "Strong Buy", "buy": "Buy",
-            "hold": "Hold", "sell": "Sell", "strong_sell": "Strong Sell",
-        }.get(rec_key, rec_key.replace("_"," ").title() if rec_key else "Unknown")
-
-        # Analyst counts
-        n = info.get("numberOfAnalystOpinions", 0) or 0
-        result["total_analysts"] = n
-
-        # Price targets
-        cur  = info.get("currentPrice") or info.get("regularMarketPrice")
-        mean = info.get("targetMeanPrice")
-        high = info.get("targetHighPrice")
-        low  = info.get("targetLowPrice")
-        result["target_mean"] = round(mean, 2) if mean else None
-        result["target_high"] = round(high, 2) if high else None
-        result["target_low"]  = round(low,  2) if low  else None
-        if mean and cur and cur > 0:
-            result["target_upside_pct"] = round((mean - cur) / cur * 100, 2)
-
-        # EPS estimates
-        try:
-            earnings = t.earnings_estimate
-            if earnings is not None and not earnings.empty:
-                if "0q" in earnings.index:
-                    result["eps_estimate_next_q"] = earnings.loc["0q", "Avg"] \
-                        if "Avg" in earnings.columns else None
-                if "0y" in earnings.index:
-                    result["eps_estimate_next_y"] = earnings.loc["0y", "Avg"] \
-                        if "Avg" in earnings.columns else None
-        except Exception:
-            pass
-
-        # Recommendations history — parse buy/hold/sell counts and recent changes
-        try:
-            recs = t.recommendations
-            if recs is not None and not recs.empty:
-                # Point-in-time: only use recommendations on or before as_of
-                recs.index = pd.to_datetime(recs.index).tz_localize(None)
-                recs = recs[recs.index.date <= as_of]
-                if not recs.empty:
-                    # Count latest snapshot
-                    latest = recs.iloc[-1]
-                    sb = int(latest.get("strongBuy", 0) or 0)
-                    b  = int(latest.get("buy",       0) or 0)
-                    h  = int(latest.get("hold",      0) or 0)
-                    s  = int(latest.get("sell",      0) or 0)
-                    ss = int(latest.get("strongSell",0) or 0)
-                    total = sb + b + h + s + ss
-                    result["buy_count"]      = sb + b
-                    result["hold_count"]     = h
-                    result["sell_count"]     = s + ss
-                    result["total_analysts"] = total
-                    result["buy_pct"]        = round((sb+b)/total*100, 1) if total else 0
-        except Exception:
-            pass
-
-        # Recent upgrades/downgrades (last 30 days)
-        try:
-            upgrades = t.upgrades_downgrades
-            if upgrades is not None and not upgrades.empty:
-                upgrades.index = pd.to_datetime(upgrades.index).tz_localize(None)
-                window_start   = pd.Timestamp(as_of - timedelta(days=30))
-                recent = upgrades[
-                    (upgrades.index >= window_start) &
-                    (upgrades.index.date <= as_of)
-                ]
-                if not recent.empty and "Action" in recent.columns:
-                    result["recent_upgrades"]   = int((recent["Action"].str.lower() == "up").sum())
-                    result["recent_downgrades"]  = int((recent["Action"].str.lower() == "down").sum())
-                    ups   = result["recent_upgrades"]
-                    downs = result["recent_downgrades"]
-                    result["revision_direction"] = (
-                        "up"   if ups > downs else
-                        "down" if downs > ups else "flat"
-                    )
-        except Exception:
-            pass
-
-        # Quiver analyst revisions enhancement (if key available)
-        if QUIVER_KEY:
-            quiver_revs = _quiver_get(f"historical/analystestimates/{ticker}")
-            if quiver_revs:
-                time.sleep(_DELAY)
-                df_q = pd.DataFrame(quiver_revs)
-                if not df_q.empty and "Date" in df_q.columns:
-                    df_q["Date"] = pd.to_datetime(df_q["Date"]).dt.date
-                    recent_q = df_q[
-                        (df_q["Date"] >= as_of - timedelta(days=30)) &
-                        (df_q["Date"] <= as_of)
-                    ]
-                    if not recent_q.empty:
-                        # Quiver provides direction field
-                        if "Direction" in recent_q.columns:
-                            ups   = (recent_q["Direction"].str.lower() == "up").sum()
-                            downs = (recent_q["Direction"].str.lower() == "down").sum()
-                            result["recent_upgrades"]   = max(result["recent_upgrades"],   int(ups))
-                            result["recent_downgrades"] = max(result["recent_downgrades"], int(downs))
-                            if ups > downs:
-                                result["revision_direction"] = "up"
-                            elif downs > ups:
-                                result["revision_direction"] = "down"
-
-        # Derive signal
-        buy_pct = result["buy_pct"]
-        rev     = result["revision_direction"]
-        ups_cnt = result["recent_upgrades"]
-        if buy_pct >= 70 and rev == "up" and ups_cnt >= 2:
-            result["signal"] = "strong_buy"
-        elif buy_pct >= 60 and rev in ("up", "flat"):
-            result["signal"] = "buy"
-        elif buy_pct < 40 or rev == "down":
-            result["signal"] = "sell"
-        elif result["total_analysts"] > 0:
-            result["signal"] = "hold"
-
+        df = pd.read_parquet(path)
+        if df.empty:
+            return result
+        # Schema TBD post-Batch-4. Polygon /vX/reference/financials returns
+        # standardized GAAP statements; EPS estimates are NOT included (those
+        # come from analyst consensus providers). Filter PIT by filing_date <= as_of.
+        if "filing_date" in df.columns:
+            df["filing_date"] = pd.to_datetime(df["filing_date"]).dt.date
+            df = df[df["filing_date"] <= as_of]
+        if df.empty:
+            return result
+        # Per-filing fundamentals available — defer field-level extraction to
+        # Batch 13 NO-LIVE-API refactor when full schema is locked. For Batch 1
+        # signal value: presence of any post-PIT row → "available_unparsed",
+        # consumed by Fundamental Agent as raw context (no derived signal).
+        result["signal"] = "available_unparsed"
+        return result
     except Exception as exc:
         logger.debug("get_analyst_data(%s): %s", ticker, exc)
-
-    return result
+        return result
 
 
 def analyst_bullets(analyst: dict, current_price: Optional[float] = None) -> list:
@@ -379,13 +357,19 @@ def congressional_signal(ticker: str, as_of: date, lookback_days: int = 45) -> d
 # ─────────────────────────────────────────────────────────────────────────────
 
 def insider_signal(ticker: str, as_of: date, lookback_days: int = 30) -> dict:
-    data = _get_quiver_data("insider", f"historical/insidertrading/{ticker}", ticker)
-    if not data:
+    """Insider trading signal from Quiver `live/insidertrading` bulk feed.
+
+    BUG-272 Pass 53 fix (DEC-503 second test pyramid application):
+    Migrated from `historical/insidertrading/{ticker}` (404 — NOT IN TRADER TIER)
+    to `live/insidertrading` paginated bulk feed (no per-ticker endpoint exists).
+    Bulk feed cached as cache/quiver/insidertrading/global.parquet; runtime filters
+    by Ticker column. Sprint 0A.5 Batch 10 prefetches the bulk file.
+    """
+    bulk = _load_quiver_bulk("insidertrading")
+    df = _filter_bulk_by_ticker(bulk, ticker)
+    if df.empty:
         return {"signal": "none", "buy_count": 0, "sell_count": 0}
     try:
-        df = pd.DataFrame(data)
-        if df.empty:
-            return {"signal": "none", "buy_count": 0, "sell_count": 0}
         df["filing_date"] = pd.to_datetime(
             df.get("Date", df.get("date", ""))).dt.date
         df = df[df["filing_date"] <= as_of]
@@ -426,13 +410,19 @@ def insider_signal(ticker: str, as_of: date, lookback_days: int = 30) -> dict:
 # ─────────────────────────────────────────────────────────────────────────────
 
 def institutional_signal(ticker: str, as_of: date) -> dict:
-    data = _get_quiver_data("institutional", f"historical/institutionalholdings/{ticker}", ticker)
-    if not data:
+    """13F institutional holdings signal from Quiver `live/sec13f` bulk feed.
+
+    BUG-273 Pass 53 fix (DEC-503 second test pyramid application):
+    Migrated from `historical/institutionalholdings/{ticker}` (404 — NOT IN TRADER
+    TIER) to `live/sec13f` paginated bulk feed (no per-ticker endpoint exists).
+    Bulk feed cached as cache/quiver/sec13f/global.parquet; runtime filters by
+    Ticker column. Sprint 0A.5 Batch 10 prefetches the bulk file.
+    """
+    bulk = _load_quiver_bulk("sec13f")
+    df = _filter_bulk_by_ticker(bulk, ticker)
+    if df.empty:
         return {"signal": "none"}
     try:
-        df = pd.DataFrame(data)
-        if df.empty:
-            return {"signal": "none"}
         df["quarter_end"]    = pd.to_datetime(
             df.get("Date", df.get("date", ""))).dt.date
         df["available_after"] = df["quarter_end"].apply(

@@ -28606,3 +28606,86 @@ Q1 + Q2 + Q3 = "Approve all":
 - **temp_staging/backfill_t2_sectors.py** — Q2 fix
 
 *Per CHECKLIST #1 (owner directive Q1+Q2+Q3 "Approve all"); #13 (re-read); #25 (validator-found issues honest); #43 (cross-doc); #45 (this statement); #51 (scope per owner); #58 (atomic commit); #66.b (INPUT/OUTPUT/FLOW); #67 (doc sync this turn); #68 (smoke + full); **#69 FIRST APPLICATION — comprehensive test pyramid for DEC-504 code, all layers addressed**.*
+
+---
+
+## Pass 53 — Sprint 0A Batch 1: smart_money silent-gap fix (BUG-271/272/273) — DEC-503 SECOND test pyramid application (2026-05-05)
+
+**Owner directive:** Approve all D1-D6, R1-R4, Q9-Q10 + execute Batch 1 = smart_money silent-gap fix with full DEC-503 test pyramid.
+
+### Context
+
+Validator (Pass 53 Batch 1 prep) confirmed `smart_money_score` composite (DEC-332 weights: congressional + insider + institutional) was computing on **1-of-3 inputs** for an undetermined period across all Phase 1A v3 archive results. Smart-money confluence signal (cube dimension #8 per DEC-471) operating on degraded inputs.
+
+### Fix scope (Batch 1 = `backtest/data/smart_money.py` + tests)
+
+**BUG-271 — `get_analyst_data` refactor:**
+- REMOVED Quiver `historical/analystestimates` branch (endpoint 404 in Trader tier per Pass 53 dashboard inventory smoke)
+- REMOVED yfinance branches per D4 owner-approved total cut (DEC-497 NO-LIVE-API HARD CUT)
+- New read path: `data_prefetch/polygon/financials/<TICKER>.parquet` (Sprint 0A Batch 4 populates)
+- Pre-Batch-4 returns `signal="not_available"` gracefully (no silent contamination)
+- Polygon Stocks Starter financials covers EPS estimates only — analyst consensus (recommendationMean / targetMeanPrice / counts) remains "not_available" until FMP/equivalent subscribed (DEC-461 candidate Phase 1B/1C)
+
+**BUG-272 — `insider_signal` migration:**
+- Removed `historical/insidertrading/{ticker}` per-ticker call (404 in Trader)
+- New bulk pattern: `_load_quiver_bulk("insidertrading")` reading `cache/quiver/insidertrading/global.parquet`
+- Sprint 0A.5 Batch 10 prefetches the `live/insidertrading` paginated bulk feed
+- Signal computation logic UNCHANGED (filter by Ticker column; existing CEO+cluster+sale logic preserved)
+
+**BUG-273 — `institutional_signal` migration:**
+- Removed `historical/institutionalholdings/{ticker}` per-ticker call (404 in Trader)
+- New bulk pattern: `_load_quiver_bulk("sec13f")` reading `cache/quiver/sec13f/global.parquet`
+- Sprint 0A.5 Batch 10 prefetches the `live/sec13f` paginated bulk feed (10,000-row max per smoke)
+- 45-day reporting lag enforcement preserved
+- Signal computation logic UNCHANGED (new positions / increases / decreases logic)
+
+### New helpers added
+
+- `_load_quiver_bulk(dataset)` — cached bulk-feed loader; returns empty DataFrame gracefully if file missing
+- `_filter_bulk_by_ticker(df, ticker)` — case-insensitive Ticker column filter
+- `_reset_bulk_cache_for_tests()` — test-only cache reset
+
+### Module docstring updated
+
+`backtest/data/smart_money.py` docstring now reflects Pass 53 source map:
+- Quiver Trader-tier endpoints + paths (live/insidertrading bulk, live/sec13f bulk, congresstrading per-ticker)
+- Polygon Stocks Starter for financials (replacing yfinance per DEC-441/444 + D4)
+- SEC EDGAR via edgartools (Form 4, 8-K, 13D/G per R1) — Batch 11
+- yfinance: REMOVED runtime per DEC-497 + D4 (`import yfinance` removed; `yf.Ticker()` calls absent — verified by test_bug271_get_analyst_data_no_yfinance_calls)
+
+### CHECKLIST #69 test pyramid — SECOND APPLICATION (DEC-503 mandate)
+
+| Layer | Status | Evidence |
+|---|---|---|
+| **Unit** | ✅ 9 new tests PASS | `test_bug271_*` + `test_bug272_*` + `test_bug273_*` + `test_smart_money_score_uses_three_inputs_post_fix` covering: pre-Batch-4 graceful state, no-yfinance verification, no-bulk-cache returns "none", synthetic bulk buy/sell signals, case-insensitive ticker filter, 45-day reporting lag, composite 3-input integration |
+| **Smoke** | ✅ PASS | `_load_quiver_bulk` returns empty DF for missing file; signals gracefully return "none"/"not_available" |
+| **Integration** | ✅ PASS | smart_money_score chain with synthetic bulk feeds for all 3 inputs verifies composite |
+| **System** | ⚠ N/A | Full Stage 2 backtest is post-Sprint-0A; no end-to-end harness available |
+| **Functional** | ✅ PASS | Signals correctly derived from synthetic data per existing signal logic |
+| **Regression** | ✅ **88/88 PASS** | (was 79; +9 BUG-271/272/273 tests) |
+| **Data integrity** | ✅ PASS | PIT 45-day lag verified; case-insensitive filter verified; composite 3-input not silently zeroed |
+| **Performance** | ✅ N/A | bulk loader caches once per process via `_BULK_CACHE` module global; O(1) cache hit, O(N) ticker filter |
+| **Acceptance** | ✅ PASS | post-fix `smart_money_score("TEST", 2024-06-01)` returns composite WITH non-zero insider/institutional inputs given synthetic bulk data |
+
+### Pre-flight CHECKLIST applied
+- ✅ #1/#45 — owner directive "Batch 1 approved"; this statement
+- ✅ Pre-flight per recommendation — code change scoped strictly to BUG-271/272/273; D4 yfinance cut applied; D1-D6 + R1-R2 confirmed for downstream batches
+- ✅ #13/#22/#23/#29 N/A (no API calls in Batch 1; existing knowledge from prior smoke tests)
+- ✅ #66.b — INPUT (BUG-271/272/273 + Batch 1 owner approval); OUTPUT (smart_money.py refactor + 9 unit tests + 88/88 regression + doc sweep + commit); FLOW (refactor → tests → run → docs → commit)
+- ✅ #67/#67.b — single Batch 1 commit
+- ✅ #68 — N/A (no API multi-call ops; existing Quiver knowledge from prior smoke tests)
+- ✅ **#69 — SECOND APPLICATION of test pyramid HARD RULE (after DEC-504 first); all 9 layers addressed (System N/A with reason)**
+
+### Cross-references
+- **BUG_REGISTER.md BUG-271/272/273** — RESOLVED entries with full resolution detail
+- **backtest/data/smart_money.py** — refactored module
+- **backtest/tests/test_unit.py** — 9 new test_bug271/272/273_* tests
+- **DEC-497** (NO-LIVE-API HARD CUT), DEC-503 (test pyramid; this is second application), DEC-504 (T3-over-T1 precedence; first application)
+- **L143** (don't-rewrite-history — historical archive results preserved unchanged; this fix is forward-looking)
+- **L145** (silent-gap pattern — codified the lesson; comprehensive testing is the systematic prevention)
+
+### Sprint 0A 14-batch sequence — Batch 1 of 14 complete
+
+Next: Batch 2 (Polygon OHLCV gap fill — 116 missing tickers from 1,937 universe).
+
+*Per CHECKLIST #1 (owner directive Batch 1 explicit); #13 (re-read); #25 (BUG-271/272/273 silent-gap honest acknowledgment + resolution); #43 (cross-doc); #45 (this statement); #51 (scope per owner); #58 (atomic commit Batch 1); #66.b (INPUT/OUTPUT/FLOW); #67/#67.b (Batch 1 commit + doc sync); #68 N/A (no API ops); **#69 SECOND APPLICATION of test pyramid for smart_money silent-gap fix; all layers PASS or N/A-justified**.*

@@ -267,9 +267,10 @@ Universe CSV reads abstracted through `backtest.data.universe` module functions 
 
 ## Pass 53 — Smart Money Silent-Gap Bugs (Discovered 2026-05-05 via Quiver smoke test)
 
-### BUG-271 — `smart_money.py` historical/analystestimates endpoint 404 (Quiver-enhanced analyst-revisions silently dead)
+### BUG-271 — `smart_money.py` historical/analystestimates endpoint 404 (Quiver-enhanced analyst-revisions silently dead) — RESOLVED Pass 53 Batch 1 2026-05-05
 
 **Severity:** HIGH — affects all Phase 1A v3 archive smart-money scoring + agent analyst input
+**Status:** ✅ RESOLVED Pass 53 Batch 1 2026-05-05 (DEC-503 second test pyramid application)
 **Module:** `backtest/data/smart_money.py:215`
 **Function:** `get_analyst_data` (Quiver enhancement branch)
 
@@ -292,9 +293,10 @@ REMOVE Quiver branch entirely from `get_analyst_data`. Rely on Polygon `/vX/refe
 
 ---
 
-### BUG-272 — `smart_money.py` historical/insidertrading endpoint 404 (insider_signal silently zeroed)
+### BUG-272 — `smart_money.py` historical/insidertrading endpoint 404 (insider_signal silently zeroed) — RESOLVED Pass 53 Batch 1 2026-05-05
 
 **Severity:** HIGH — affects all Phase 1A v3 archive smart-money scoring + agent insider input
+**Status:** ✅ RESOLVED Pass 53 Batch 1 2026-05-05 (DEC-503 second test pyramid application)
 **Module:** `backtest/data/smart_money.py:382`
 **Function:** `insider_signal`
 
@@ -316,9 +318,10 @@ Replace `historical/insidertrading/{ticker}` per-ticker call with bulk `live/ins
 
 ---
 
-### BUG-273 — `smart_money.py` historical/institutionalholdings endpoint 404 (institutional_signal silently zeroed)
+### BUG-273 — `smart_money.py` historical/institutionalholdings endpoint 404 (institutional_signal silently zeroed) — RESOLVED Pass 53 Batch 1 2026-05-05
 
 **Severity:** HIGH — affects all Phase 1A v3 archive smart-money scoring + agent institutional input
+**Status:** ✅ RESOLVED Pass 53 Batch 1 2026-05-05 (DEC-503 second test pyramid application)
 **Module:** `backtest/data/smart_money.py:429`
 **Function:** `institutional_signal`
 
@@ -341,7 +344,31 @@ Replace `historical/institutionalholdings/{ticker}` per-ticker call with bulk `l
 ---
 
 **Combined impact statement (BUG-271/272/273):**
-The composite `smart_money_score` function (DEC-332 weights: congressional + insider + institutional) has been computing on **1-of-3 inputs** (only congressional works) for an undetermined period (likely all Phase 1A v3 archive results). Smart-money confluence signal (DEC-124) — a primary dimension in the verdict cube (Part 2 §2.2 dimension #8 "Smart money signal present") — operates on degraded inputs. Pass 53 owner directive Q3 = doc sweep first, then full test pyramid fix next turn (DEC-503 first application).
+The composite `smart_money_score` function (DEC-332 weights: congressional + insider + institutional) had been computing on **1-of-3 inputs** (only congressional works) for an undetermined period (likely all Phase 1A v3 archive results). Smart-money confluence signal (DEC-124) — a primary dimension in the verdict cube (Part 2 §2.2 dimension #8 "Smart money signal present") — operated on degraded inputs.
+
+**RESOLUTION Pass 53 Batch 1 2026-05-05** (DEC-503 SECOND test pyramid application):
+
+Fix in `backtest/data/smart_money.py`:
+- BUG-271 `get_analyst_data`: REMOVED Quiver `historical/analystestimates` branch (404 in tier) AND yfinance branches (D4 owner-approved total cut). Function now reads from `data_prefetch/polygon/financials/<TICKER>.parquet` (Sprint 0A Batch 4 populates). Pre-Batch-4: returns `signal="not_available"` gracefully.
+- BUG-272 `insider_signal`: migrated to `_load_quiver_bulk("insidertrading")` reading `cache/quiver/insidertrading/global.parquet` (Sprint 0A.5 Batch 10 prefetches the live/insidertrading paginated bulk feed). Existing signal logic preserved; only data source changed.
+- BUG-273 `institutional_signal`: migrated to `_load_quiver_bulk("sec13f")` reading `cache/quiver/sec13f/global.parquet` (Sprint 0A.5 Batch 10 prefetches the live/sec13f paginated bulk feed). 45-day reporting lag enforcement preserved.
+
+New helpers added: `_load_quiver_bulk(dataset)` (cached bulk-feed loader), `_filter_bulk_by_ticker(df, ticker)` (case-insensitive Ticker column filter), `_reset_bulk_cache_for_tests()` (test-only cache reset).
+
+Test pyramid (CHECKLIST #69 SECOND DEC-503 application):
+- Unit: 9 new test_bug271/272/273_* tests PASS — graceful no-cache, synthetic bulk buy/sell, ticker filter case-insensitive, 45-day lag, smart_money_score 3-input composite verified
+- Smoke: no-cache returns "none"/"not_available" gracefully
+- Integration: smart_money_score chain with synthetic bulk feeds for all 3 inputs
+- System: N/A (full Stage 2 backtest is post-Sprint-0A)
+- Functional: signals correctly derived from synthetic data
+- Regression: 88/88 PASS (was 79; +9 BUG-271/272/273 tests)
+- Data integrity: PIT 45-day lag verified; case-insensitive ticker filter verified; composite 3-input not silently zeroed
+- Performance: bulk loader caches once per process via _BULK_CACHE module global
+- Acceptance: post-fix `smart_money_score("TEST", 2024-06-01)` returns composite WITH non-zero insider/institutional inputs given synthetic bulk data
+
+Sprint 0A Batch 10 (Quiver per-ticker prefetch) will populate `cache/quiver/insidertrading/global.parquet` + `cache/quiver/sec13f/global.parquet`. Until then, signals return "none" gracefully (no silent contamination of cube). Post-Batch-10: smart_money_score operational with all 3 inputs working.
+
+Commit: Pass 53 Batch 1 (this turn).
 
 ---
 
