@@ -1,0 +1,305 @@
+# Tier 2 Universe_Spinoffs and Recent IPOs_Feb 2010 to May 2026 - DEC-103/494 Pass 53 FULL SCREENER output
+# Built: 2026-05-05 via Polygon /v3/reference/tickers global pagination + per-ticker detail
+# Approach: full global scan (15401 non-T1 candidates checked); filter by DEC-103 thresholds (cap >=$5B for any recent listing; >=$10B tagged as IPO).
+# T1 (T1a + T1c) excluded.
+# Window: 2010-01-01 -> 2026-05-05
+# SCHEMA: Symbol, Company, Sector (GICS), added_date (Polygon list_date), removed_date (NULL = currently active), MarketCapB, Tier2Reason
+# PIT FILTER: (added_date IS NULL OR added_date <= as_of) AND (removed_date IS NULL OR removed_date > as_of)
+Symbol,Company,Sector,added_date,removed_date,MarketCapB,Tier2Reason
+AA,Alcoa Corporation,,2016-10-18,,16.48,recent_listing_2016
+AAOI,"Applied Optoelectronics, Inc.",Information Technology,2013-09-26,,13.85,recent_listing_2013
+ACA,"Arcosa, Inc. Common Stock",,2018-10-16,,6.05,spinoff_or_ipo_2018
+ACI,"Albertsons Companies, Inc.",Consumer Discretionary,2020-06-26,,8.06,spinoff_or_ipo_2020
+ACT,"Enact Holdings, Inc. Common Stock",Financials,2021-09-16,,5.99,spinoff_or_ipo_2021
+ADT,ADT Inc.,,2018-01-19,,5.58,spinoff_or_ipo_2018
+AFRM,"Affirm Holdings, Inc. Class A Common Stock",,2021-01-13,,22.35,recent_listing_2021
+AHR,"American Healthcare REIT, Inc.",Financials,2024-02-07,,9.62,spinoff_or_ipo_2024
+ALAB,"Astera Labs, Inc. Common Stock",Information Technology,2024-03-20,,34.47,recent_listing_2024
+ALC,Alcon Inc. Ordinary Shares,,2019-04-09,,35.82,recent_listing_2019
+ALGM,"Allegro MicroSystems, Inc. Common Stock",Information Technology,2020-10-29,,9.17,spinoff_or_ipo_2020
+ALH,Alliance Laundry Holdings Inc.,Industrials,2025-10-09,,5.07,spinoff_or_ipo_2025
+ALLY,Ally Financial Inc.,Financials,2013-12-13,,13.23,recent_listing_2013
+ALM,Almonty Industries Inc. Common Shares,,2013-05-16,,5.51,spinoff_or_ipo_2013
+ALSN,"ALLISON TRANSMISSION HOLDINGS, INC.",Consumer Discretionary,2012-03-15,,10.73,recent_listing_2012
+AM,Antero Midstream Corporation Common Stock,Energy,2017-05-04,,10.44,recent_listing_2017
+AMH,AMERICAN HOMES 4 RENT,Financials,2013-08-01,,11.63,recent_listing_2013
+AMRZ,Amrize Ltd,,2025-06-23,,28.18,recent_listing_2025
+APG,APi Group Corporation,,2017-10-05,,19.35,recent_listing_2017
+APGE,"Apogee Therapeutics, Inc. Common Stock",Health Care,2023-07-14,,6.29,spinoff_or_ipo_2023
+APLS,"Apellis Pharmaceuticals, Inc. Common Stock",Health Care,2017-11-09,,5.25,spinoff_or_ipo_2017
+APPF,"AppFolio, Inc. Class A",Information Technology,2015-06-26,,6.14,spinoff_or_ipo_2015
+AR,ANTERO RESOURCES CORPORATION,Energy,2013-10-10,,12.25,recent_listing_2013
+ARMK,ARAMARK,Consumer Discretionary,2013-12-12,,11.77,recent_listing_2013
+AS,"Amer Sports, Inc.",,2024-02-01,,19.74,recent_listing_2024
+ASTS,"AST SpaceMobile, Inc. Class A Common Stock",,2021-04-07,,20.44,recent_listing_2021
+AUR,"Aurora Innovation, Inc. Class A Common Stock",Information Technology,2021-11-04,,12.62,recent_listing_2021
+AVTR,"Avantor, Inc.",Health Care,2019-05-17,,5.46,spinoff_or_ipo_2019
+AXSM,"Axsome Therapeutics, Inc",Health Care,2015-11-19,,11.51,recent_listing_2015
+AXTA,Axalta Coating Systems Ltd.,,2014-11-12,,5.71,spinoff_or_ipo_2014
+BAH,Booz Allen Hamilton Holding Corporation,,2010-11-17,,9.39,spinoff_or_ipo_2010
+BAM,Brookfield Asset Management Ltd.,Financials,2022-12-01,,77.98,recent_listing_2022
+BBIO,"BridgeBio Pharma, Inc. Common Stock",Health Care,2019-06-27,,13.37,recent_listing_2019
+BBUC,Brookfield Business Corporation Class A Subordinate Voting Shares,,2016-05-31,,7.04,spinoff_or_ipo_2016
+BE,Bloom Energy Corporation,Utilities,2018-07-25,,82.1,recent_listing_2018
+BEPC,Brookfield Renewable Corporation Class A Exchangeable Subordinate Voting Shares,,2020-07-24,,6.48,spinoff_or_ipo_2020
+BIRK,Birkenstock Holding plc,,2023-10-11,,6.79,spinoff_or_ipo_2023
+BJ,"BJs Wholesale Club Holdings, Inc. Common Stock",Consumer Discretionary,2018-06-28,,12.27,recent_listing_2018
+BLCO,Bausch + Lomb Corporation,,2022-05-06,,5.81,spinoff_or_ipo_2022
+BLD,TopBuild Corp. Common Stock,Industrials,2015-06-17,,12.07,recent_listing_2015
+BLSH,Bullish,,2025-08-13,,6.12,spinoff_or_ipo_2025
+BNT,Brookfield Wealth Solutions Ltd.,,2021-06-28,,12.27,recent_listing_2021
+BOOT,"Boot Barn Holdings, Inc.",Consumer Discretionary,2014-10-30,,5.1,spinoff_or_ipo_2014
+BROS,Dutch Bros Inc.,Consumer Discretionary,2021-09-15,,7.24,spinoff_or_ipo_2021
+BRX,BRIXMOR PROPERTY GROUP INC.,Financials,2013-10-30,,9.17,spinoff_or_ipo_2013
+BSY,"Bentley Systems, Incorporated Class B Common Stock",Information Technology,2020-09-23,,10.19,recent_listing_2020
+BTSG,"BrightSpring Health Services, Inc. Common Stock",Health Care,2024-01-26,,10.38,recent_listing_2024
+BURL,"BURLINGTON STORES, INC.",Consumer Discretionary,2013-10-02,,19.43,recent_listing_2013
+BWXT,"BWX Technologies, Inc.",,2010-07-12,,19.85,recent_listing_2010
+BXSL,Blackstone Secured Lending Fund,,2021-10-28,,5.74,spinoff_or_ipo_2021
+CAI,"Caris Life Sciences, Inc. Common Stock",Health Care,2025-06-18,,5.28,spinoff_or_ipo_2025
+CART,Maplebear Inc. Common Stock,Industrials,2023-09-19,,10.25,recent_listing_2023
+CAVA,"CAVA Group, Inc.",Consumer Discretionary,2023-06-15,,10.38,recent_listing_2023
+CELC,Celcuity Inc. Common Stock,Health Care,2017-09-20,,7.01,spinoff_or_ipo_2017
+CG,The Carlyle Group Inc. Common Stock,Financials,2012-05-03,,17.98,recent_listing_2012
+CGON,"CG Oncology, Inc. Common stock",Health Care,2024-01-25,,5.96,spinoff_or_ipo_2024
+CHRD,Chord Energy Corporation Common Stock,Energy,2020-11-20,,8.46,spinoff_or_ipo_2020
+CHWY,"Chewy, Inc.",Consumer Discretionary,2019-06-14,,10.23,recent_listing_2019
+CHYM,"Chime Financial, Inc. Class A Common Stock",,2025-06-12,,8.43,spinoff_or_ipo_2025
+CIFR,Cipher Digital Inc. Common Stock,,2021-08-30,,7.26,spinoff_or_ipo_2021
+CNH,CNH INDUSTRIAL N.V.,Industrials,2013-09-30,,12.67,recent_listing_2013
+CNM,"Core & Main, Inc.",,2021-07-23,,9.11,spinoff_or_ipo_2021
+COGT,"Cogent Biosciences, Inc. Common Stock",Health Care,2018-03-29,,6.27,spinoff_or_ipo_2018
+COLB,Columbia Banking Systems Inc,Financials,2023-03-01,,8.42,spinoff_or_ipo_2023
+COMP,"Compass, Inc.",Real Estate,2021-04-01,,5.27,spinoff_or_ipo_2021
+CORZ,"Core Scientific, Inc. Common Stock",,2024-01-24,,6.66,spinoff_or_ipo_2024
+CPNG,"Coupang, Inc.",Consumer Discretionary,2021-03-11,,36.61,recent_listing_2021
+CRBG,"Corebridge Financial, Inc.",Financials,2022-09-15,,12.36,recent_listing_2022
+CRC,California Resources Corporation,Energy,2020-10-28,,6.14,spinoff_or_ipo_2020
+CRCL,"Circle Internet Group, Inc.",,2025-06-05,,29.55,recent_listing_2025
+CRDO,Credo Technology Group Holding Ltd Ordinary Shares,Information Technology,2022-01-27,,33.21,recent_listing_2022
+CRSP,CRISPR Therapeutics AG,Health Care,2016-10-19,,5.17,spinoff_or_ipo_2016
+CRWV,"CoreWeave, Inc. Class A Common Stock",Information Technology,2025-03-28,,66.25,recent_listing_2025
+CTRE,"CareTrust REIT, Inc",Financials,2014-05-29,,8.82,spinoff_or_ipo_2014
+CWAN,"Clearwater Analytics Holdings, Inc.",Information Technology,2021-09-24,,7.17,spinoff_or_ipo_2021
+CWEN,"Clearway Energy, Inc. Class C Common Stock",Utilities,2013-07-16,,6.01,spinoff_or_ipo_2013
+DBX,"Dropbox, Inc. Class A",Information Technology,2018-03-23,,5.99,spinoff_or_ipo_2018
+DKNG,DraftKings Inc. Class A Common Stock,,2020-04-24,,11.68,recent_listing_2020
+DOCN,"DigitalOcean Holdings, Inc.",Information Technology,2021-03-24,,11.35,recent_listing_2021
+DRS,"Leonardo DRS, Inc. Common Stock",,2021-03-24,,10.64,recent_listing_2021
+DT,"Dynatrace, Inc.",Information Technology,2019-08-01,,11.56,recent_listing_2019
+DTM,"DT Midstream, Inc.",Energy,2021-06-18,,14.99,recent_listing_2021
+DUOL,"Duolingo, Inc. Class A Common Stock",Information Technology,2021-07-28,,5.16,spinoff_or_ipo_2021
+ECG,"Everus Construction Group, Inc.",,2024-10-28,,7.7,spinoff_or_ipo_2024
+ELAN,Elanco Animal Health Incorporated Common Stock,Health Care,2018-09-20,,11.24,recent_listing_2018
+EMAT,Evolution Metals & Technologies Corp. Common Stock,Utilities,2026-01-06,,5.68,spinoff_or_ipo_2026
+ENLT,Enlight Renewable Energy Ltd. Ordinary Shares,,2019-08-09,,12.36,recent_listing_2019
+EPRT,"Essential Properties Realty Trust, Inc.",Financials,2018-06-21,,6.71,spinoff_or_ipo_2018
+EQH,"Equitable Holdings, Inc.",Financials,2018-05-10,,11.68,recent_listing_2018
+EQX,Equinox Gold Corp.,,2013-09-19,,10.94,recent_listing_2013
+ESAB,ESAB Corporation,Industrials,2022-03-21,,5.78,spinoff_or_ipo_2022
+ESI,Element Solutions Inc.,Materials,2013-09-27,,10.43,recent_listing_2013
+ESNT,Essent Group LTD,Financials,2013-10-31,,5.65,spinoff_or_ipo_2013
+ESTC,Elastic N.V.,Information Technology,2018-10-05,,5.24,spinoff_or_ipo_2018
+FAF,First American Financial Corporation,Financials,2010-05-24,,6.96,spinoff_or_ipo_2010
+FERG,Ferguson Enterprises Inc.,,2010-12-02,,52.34,recent_listing_2010
+FIG,"Figma, Inc.",Information Technology,2025-07-31,,10.52,recent_listing_2025
+FIGR,"Figure Technology Solutions, Inc. Class A Common Stock",Financials,2025-09-11,,7.95,spinoff_or_ipo_2025
+FIVE,"Five Below, Inc. Common Stock",Consumer Discretionary,2012-07-19,,12.78,recent_listing_2012
+FLUT,Flutter Entertainment plc,Information Technology,2024-01-29,,18.17,recent_listing_2024
+FLY,Firefly Aerospace Inc. Common Stock,,2025-08-07,,5.34,spinoff_or_ipo_2025
+FN,Fabrinet,,2010-06-25,,25.72,recent_listing_2010
+FND,"Floor & Decor Holdings, Inc.",Consumer Discretionary,2017-04-27,,5.21,spinoff_or_ipo_2017
+FROG,JFrog Ltd. Ordinary Shares,Information Technology,2020-09-16,,6.37,spinoff_or_ipo_2020
+FSV,FirstService Corporation Common Shares,,2015-06-02,,5.89,spinoff_or_ipo_2015
+FTAI,FTAI Aviation Ltd. Common Stock,,2015-05-15,,24.62,recent_listing_2015
+FWONA,Liberty Media Corporation Series A Liberty Formula One Common Stock,,2013-01-10,,20.34,recent_listing_2013
+FWONK,Liberty Media Corporation Series C Liberty Formula One Common Stock,Communication Services,2014-07-08,,22.08,recent_listing_2014
+GFL,GFL Environmental Inc. Subordinate Voting Shares,,2020-03-03,,13.61,recent_listing_2020
+GH,"Guardant Health, Inc. Common Stock",Health Care,2018-10-04,,12.09,recent_listing_2018
+GKOS,Glaukos Corporation,Health Care,2015-06-25,,7.98,spinoff_or_ipo_2015
+GLBE,Global-E Online Ltd. Ordinary Shares,,2021-05-12,,5.44,spinoff_or_ipo_2021
+GLPI,"Gaming and Leisure Properties, Inc.",Financials,2013-10-14,,13.4,recent_listing_2013
+GMED,GLOBUS MEDICAL INC,Health Care,2012-08-03,,12.29,recent_listing_2012
+GOLF,Acushnet Holdings Corp.,,2016-10-28,,5.47,spinoff_or_ipo_2016
+GRAB,Grab Holdings Limited Class A Ordinary Shares,,2021-12-02,,14.84,recent_listing_2021
+GTES,Gates Industrial Corporation plc,Industrials,2018-01-25,,6.26,spinoff_or_ipo_2018
+GWRE,"GUIDEWIRE SOFTWARE, INC.",Information Technology,2012-01-25,,12.15,recent_listing_2012
+GXO,"GXO Logistics, Inc.",Industrials,2021-07-22,,5.32,spinoff_or_ipo_2021
+HASI,"HA Sustainable Infrastructure Capital, Inc.",,2013-04-18,,5.4,spinoff_or_ipo_2013
+HESM,Hess Midstream LP Class A Share representing a limited partner Interest,Energy,2017-04-05,,5.11,spinoff_or_ipo_2017
+HIMS,"Hims & Hers Health, Inc.",,2021-01-21,,6.3,spinoff_or_ipo_2021
+HLI,"Houlihan Lokey, Inc.",Financials,2015-08-13,,10.5,recent_listing_2015
+HQY,"HealthEquity, Inc",Industrials,2014-07-31,,6.94,spinoff_or_ipo_2014
+HUBS,"HUBSPOT, INC.",Information Technology,2014-10-09,,12.74,recent_listing_2014
+HUT,Hut 8 Corp. Common Stock,,2023-12-04,,8.79,spinoff_or_ipo_2023
+IBP,"INSTALLED BUILDING PRODUCTS, INC.",,2014-02-13,,7.46,spinoff_or_ipo_2014
+IBRX,"ImmunityBio, Inc. Common Stock",Health Care,2021-03-10,,7.78,spinoff_or_ipo_2021
+IMVT,"Immunovant, Inc. Common Stock",Health Care,2019-06-21,,5.67,spinoff_or_ipo_2019
+INGM,Ingram Micro Holding Corporation,Information Technology,2024-10-24,,6.5,spinoff_or_ipo_2024
+IONQ,"IonQ, Inc.",Information Technology,2021-01-04,,17.07,recent_listing_2021
+IOT,Samsara Inc.,Information Technology,2021-12-15,,17.77,recent_listing_2021
+IREN,IREN Limited Ordinary Shares,,2021-11-17,,16.42,recent_listing_2021
+JHG,Janus Henderson Group plc Ordinary Shares,Financials,2017-05-30,,7.96,spinoff_or_ipo_2017
+JHX,James Hardie Industries plc,,2025-07-01,,11.53,recent_listing_2025
+JOBY,"Joby Aviation, Inc.",,2021-08-11,,8.71,spinoff_or_ipo_2021
+JXN,Jackson Financial Inc.,Financials,2021-09-01,,7.98,spinoff_or_ipo_2021
+KGS,"Kodiak Gas Services, Inc.",Energy,2023-06-29,,6.01,spinoff_or_ipo_2023
+KLAR,Klarna Group plc,,2025-09-10,,5.62,spinoff_or_ipo_2025
+KNF,Knife River Corporation,Energy,2023-05-25,,5.12,spinoff_or_ipo_2023
+KNSL,"Kinsale Capital Group, Inc.",Financials,2016-07-28,,7.01,spinoff_or_ipo_2016
+KRMN,Karman Holdings Inc.,,2025-02-13,,8.66,spinoff_or_ipo_2025
+KRYS,"Krystal Biotech, Inc. Common Stock",Health Care,2017-09-20,,8.46,spinoff_or_ipo_2017
+KVYO,"Klaviyo, Inc.",Information Technology,2023-09-20,,6.77,spinoff_or_ipo_2023
+KYMR,"Kymera Therapeutics, Inc. Common Stock",Health Care,2020-08-21,,6.88,spinoff_or_ipo_2020
+LBRDA,Liberty Broadband Corporation Class A,Communication Services,2014-11-04,,5.53,spinoff_or_ipo_2014
+LBRDK,Liberty Broadband Corporation Class C,Communication Services,2014-11-04,,5.54,spinoff_or_ipo_2014
+LBRT,Liberty Energy Inc.,Energy,2018-01-12,,5.54,spinoff_or_ipo_2018
+LEVI,Levi Strauss & Co. Class A Common Stock,Consumer Discretionary,2019-03-21,,8.5,spinoff_or_ipo_2019
+LGN,Legence Corp. Class A Common stock,Industrials,2025-09-12,,7.03,spinoff_or_ipo_2025
+LINE,"Lineage, Inc. Common Stock",Financials,2024-07-25,,8.02,spinoff_or_ipo_2024
+LLYVA,"Liberty Live Holdings, Inc. Series A Liberty Live Group Common Stock",,2023-08-04,,8.46,spinoff_or_ipo_2023
+LLYVK,"Liberty Live Holdings, Inc. Series C Liberty Live Group Common Stock",,2023-08-04,,8.65,spinoff_or_ipo_2023
+LNTH,"Lantheus Holdings, Inc",,2015-06-25,,5.71,spinoff_or_ipo_2015
+LOAR,Loar Holdings Inc.,,2024-04-25,,5.2,spinoff_or_ipo_2024
+LPLA,LPL Financial Holdings Inc.,Financials,2010-11-18,,25.73,recent_listing_2010
+LTH,"Life Time Group Holdings, Inc.",,2021-10-07,,5.85,spinoff_or_ipo_2021
+LYFT,"Lyft, Inc. Class A Common Stock",Industrials,2019-03-29,,5.37,spinoff_or_ipo_2019
+MBLY,Mobileye Global Inc. Class A Common Stock,Information Technology,2022-10-26,,7.28,spinoff_or_ipo_2022
+MDLN,Medline Inc. Class A common stock,Health Care,2025-12-17,,37.37,recent_listing_2025
+MEDP,"Medpace Holdings, Inc. Common Stock",Health Care,2016-08-11,,11.91,recent_listing_2016
+MGY,Magnolia Oil & Gas Corporation Class A Common Stock,Energy,2017-06-26,,5.78,spinoff_or_ipo_2017
+MICC,The Magnum Ice Cream Company N.V.,,2025-12-08,,9.29,spinoff_or_ipo_2025
+MIRM,"Mirum Pharmaceuticals, Inc. Common Stock",Health Care,2019-07-18,,6.45,spinoff_or_ipo_2019
+MP,MP Materials Corp.,Energy,2020-11-18,,11.76,recent_listing_2020
+MPLX,MPLX LP,Energy,2012-10-26,,58.04,recent_listing_2012
+MSGS,Madison Square Garden Sports Corp.,,2015-09-17,,8.19,spinoff_or_ipo_2015
+MTDR,MATADOR RESOURCES COMPANY,Energy,2012-02-02,,7.93,spinoff_or_ipo_2012
+MTSI,"MACOM Technology Solutions Holdings, Inc",Information Technology,2012-03-15,,21.88,recent_listing_2012
+MUSA,MURPHY USA INC.,Consumer Discretionary,2013-08-19,,10.95,recent_listing_2013
+MXL,"MaxLinear, Inc. Common Stock",Information Technology,2010-03-24,,7.0,spinoff_or_ipo_2010
+NBIS,Nebius Group N.V. Class A Ordinary Shares,,2011-05-24,,44.79,recent_listing_2011
+NE,Noble Corporation plc,Energy,2022-09-30,,8.13,spinoff_or_ipo_2022
+NET,"Cloudflare, Inc. Class A common stock, par value $0.001 per share",Information Technology,2019-09-13,,79.22,recent_listing_2019
+NTNX,"Nutanix, Inc. Class A Common Stock",Information Technology,2016-09-30,,11.6,recent_listing_2016
+NTRA,"Natera, Inc. Common Stock",Health Care,2015-07-02,,30.21,recent_listing_2015
+NU,Nu Holdings Ltd.,,2021-12-09,,68.83,recent_listing_2021
+NUVL,"Nuvalent, Inc. Class A Common Stock",Health Care,2021-07-29,,8.1,spinoff_or_ipo_2021
+NVT,nVent Electric plc Ordinary Shares,Industrials,2018-04-16,,26.31,recent_listing_2018
+NXE,NexGen Energy Ltd.,,2013-07-24,,8.24,spinoff_or_ipo_2013
+NXT,Nextpower Inc. Class A Common Stock,,2023-02-09,,17.36,recent_listing_2023
+OBDC,Blue Owl Capital Corporation,,2019-07-18,,5.86,spinoff_or_ipo_2019
+OGS,"ONE GAS, INC.",Energy,2014-01-16,,5.57,spinoff_or_ipo_2014
+OKLO,Oklo Inc.,Utilities,2024-05-10,,11.93,recent_listing_2024
+OLLI,"Ollie's Bargain Outlet Holdings, Inc. Common Stock",Consumer Discretionary,2015-07-16,,5.0,spinoff_or_ipo_2015
+OMF,"OneMain Holdings, Inc.",,2013-10-16,,6.38,spinoff_or_ipo_2013
+ONON,On Holding AG,,2021-09-15,,11.35,recent_listing_2021
+OR,OR Royalties Inc.,,2014-06-26,,6.76,spinoff_or_ipo_2014
+OSCR,"Oscar Health, Inc.",Health Care,2021-03-03,,5.59,spinoff_or_ipo_2021
+OTF,Blue Owl Technology Finance Corp.,,2025-06-12,,5.29,spinoff_or_ipo_2025
+OUT,OUTFRONT Media Inc.,Financials,2014-03-28,,5.46,spinoff_or_ipo_2014
+OWL,Blue Owl Capital Inc.,Financials,2021-05-20,,6.84,spinoff_or_ipo_2021
+P,"Everpure, Inc.",Information Technology,2015-10-07,,24.16,recent_listing_2015
+PACS,"PACS Group, Inc.",,2024-04-11,,5.11,spinoff_or_ipo_2024
+PATH,"UiPath, Inc.",Information Technology,2021-04-21,,5.67,spinoff_or_ipo_2021
+PBF,PBF ENERGY INC.,Energy,2012-12-13,,5.39,spinoff_or_ipo_2012
+PCOR,"Procore Technologies, Inc.",Information Technology,2021-05-20,,9.37,spinoff_or_ipo_2021
+PCTY,Paylocity Holding Corporation Common Stock,Information Technology,2014-03-19,,5.87,spinoff_or_ipo_2014
+PCVX,"Vaxcyte, Inc. Common Stock",Health Care,2020-06-12,,8.45,spinoff_or_ipo_2020
+PECO,"Phillips Edison & Company, Inc. Common Stock",Financials,2016-01-22,,5.0,spinoff_or_ipo_2016
+PEN,"Penumbra, Inc.",Health Care,2015-09-18,,12.77,recent_listing_2015
+PFGC,Performance Food Group Company,,2015-10-01,,13.66,recent_listing_2015
+PINS,"Pinterest, Inc. Class A Common Stock",Information Technology,2019-04-18,,12.01,recent_listing_2019
+PL,Planet Labs PBC,Communication Services,2021-12-08,,13.34,recent_listing_2021
+PLNT,"Planet Fitness, Inc.",,2015-08-06,,5.03,spinoff_or_ipo_2015
+PR,Permian Resources Corporation,Energy,2016-04-15,,18.97,recent_listing_2016
+PRAX,"Praxis Precision Medicines, Inc. Common Stock",Health Care,2020-10-16,,9.41,spinoff_or_ipo_2020
+PRI,"PRIMERICA, INC.",Financials,2010-04-01,,8.5,spinoff_or_ipo_2010
+PRMB,Primo Brands Corporation,Consumer Staples,2024-11-11,,7.3,spinoff_or_ipo_2024
+PSN,Parsons Corporation,Information Technology,2019-05-08,,5.35,spinoff_or_ipo_2019
+PTCT,"PTC Therapeutics, Inc.",Health Care,2013-06-20,,5.43,spinoff_or_ipo_2013
+PTGX,"Protagonist Therapeutics, Inc",Health Care,2016-08-11,,6.4,spinoff_or_ipo_2016
+QBTS,D-Wave Quantum Inc.,Information Technology,2022-08-08,,7.75,spinoff_or_ipo_2022
+QSR,Restaurant Brands International Inc.,Consumer Discretionary,2014-12-10,,27.8,recent_listing_2014
+RACE,Ferrari N.V.,,2015-10-21,,59.79,recent_listing_2015
+RAL,Ralliant Corporation,Industrials,2025-06-25,,5.1,spinoff_or_ipo_2025
+RBLX,Roblox Corporation,Information Technology,2021-03-10,,34.06,recent_listing_2021
+RBRK,"Rubrik, Inc.",Information Technology,2024-04-25,,11.92,recent_listing_2024
+RDDT,"Reddit, Inc.",Information Technology,2024-03-21,,32.55,recent_listing_2024
+RELY,"Remitly Global, Inc. Common Stock",Industrials,2021-09-23,,5.0,spinoff_or_ipo_2021
+REXR,"REXFORD INDUSTRIAL REALTY, INC.",Financials,2013-07-19,,7.93,spinoff_or_ipo_2013
+REZI,"Resideo Technologies, Inc. Common Stock",,2018-10-15,,5.98,spinoff_or_ipo_2018
+RGC,Regencell Bioscience Holdings Limited Ordinary Shares,,2021-07-16,,13.53,recent_listing_2021
+RGTI,"Rigetti Computing, Inc. Common Stock",Information Technology,2022-03-02,,5.88,spinoff_or_ipo_2022
+RITM,Rithm Capital Corp.,Financials,2013-05-02,,5.38,spinoff_or_ipo_2013
+RKLB,Rocket Lab Corporation Common Stock,,2021-08-25,,46.42,recent_listing_2021
+RKT,"Rocket Companies, Inc.",Financials,2020-08-06,,39.64,recent_listing_2020
+ROAD,"Construction Partners, Inc. Class A Common Stock",Industrials,2018-05-04,,7.08,spinoff_or_ipo_2018
+ROIV,Roivant Sciences Ltd. Common Shares,Health Care,2021-10-01,,20.3,recent_listing_2021
+ROKU,"Roku, Inc. Class A Common Stock",Communication Services,2017-09-28,,18.61,recent_listing_2017
+RPRX,Royalty Pharma plc Class A Ordinary Shares,Health Care,2020-06-16,,22.31,recent_listing_2020
+RVMD,"Revolution Medicines, Inc. Common Stock",Health Care,2020-02-13,,31.44,recent_listing_2020
+RYTM,"Rhythm Pharmaceuticals, Inc. Common Stock",Health Care,2017-10-05,,5.86,spinoff_or_ipo_2017
+S,"SentinelOne, Inc.",Information Technology,2021-06-30,,5.31,spinoff_or_ipo_2021
+SAIL,"SailPoint, Inc. Common Stock",Information Technology,2025-02-13,,6.85,spinoff_or_ipo_2025
+SARO,"StandardAero, Inc.",,2024-10-02,,8.17,spinoff_or_ipo_2024
+SBRA,"Sabra Healthcare REIT, Inc.",Financials,2010-11-08,,5.16,spinoff_or_ipo_2010
+SFD,"Smithfield Foods, Inc. Common Stock",,2025-01-28,,10.47,recent_listing_2025
+SFM,"Sprouts Farmers Market, Inc.",Consumer Discretionary,2013-08-01,,7.59,spinoff_or_ipo_2013
+SGHC,Super Group (SGHC) Limited,,2022-01-28,,6.54,spinoff_or_ipo_2022
+SITE,"SiteOne Landscape Supply, Inc.",,2016-05-12,,5.56,spinoff_or_ipo_2016
+SITM,SiTime Corporation Common Stock,Information Technology,2019-11-21,,14.91,recent_listing_2019
+SMMT,Summit Therapeutics Inc. Common Stock,Health Care,2015-03-05,,13.18,recent_listing_2015
+SN,"SharkNinja, Inc.",Consumer Staples,2023-07-31,,16.25,recent_listing_2023
+SNAP,Snap Inc.,Information Technology,2017-03-02,,10.42,recent_listing_2017
+SNDR,"Schneider National, Inc.",,2017-04-06,,5.25,spinoff_or_ipo_2017
+SNOW,Snowflake Inc.,Information Technology,2020-09-16,,49.85,recent_listing_2020
+SOBO,South Bow Corporation,,2024-10-08,,7.34,spinoff_or_ipo_2024
+SOFI,"SoFi Technologies, Inc. Common Stock",,2021-06-01,,20.78,recent_listing_2021
+SPOT,Spotify Technology S.A.,,2018-04-03,,90.12,recent_listing_2018
+SRRK,Scholar Rock Holding Corporation Common Stock,Health Care,2018-05-24,,5.55,spinoff_or_ipo_2018
+SSNC,SS&C Technologies Inc,Information Technology,2010-03-31,,16.67,recent_listing_2010
+ST,Sensata Technologies Holding plc,Industrials,2010-03-11,,5.98,spinoff_or_ipo_2010
+STAG,"STAG INDUSTRIAL, INC.",Financials,2011-04-15,,7.22,spinoff_or_ipo_2011
+STLA,Stellantis N.V.,,2010-06-09,,20.51,recent_listing_2010
+SUN,SUNOCO L.P.,Energy,2012-09-20,,12.86,recent_listing_2012
+SYM,Symbotic Inc. Class A Common Stock,Industrials,2022-06-08,,7.17,spinoff_or_ipo_2022
+SYRE,"Spyre Therapeutics, Inc. Common Stock",Health Care,2016-04-07,,5.96,spinoff_or_ipo_2016
+TEM,"Tempus AI, Inc. Class A Common Stock",Information Technology,2024-06-14,,10.01,recent_listing_2024
+TERN,"Terns Pharmaceuticals, Inc. Common Stock",Health Care,2021-02-05,,6.12,spinoff_or_ipo_2021
+TFPM,Triple Flag Precious Metals Corp.,,2021-09-23,,6.47,spinoff_or_ipo_2021
+TLN,Talen Energy Corporation Common Stock,Utilities,2023-06-01,,17.46,recent_listing_2023
+TMHC,Taylor Morrison Home Corporation Common Stock,,2013-04-10,,5.47,spinoff_or_ipo_2013
+TOST,"Toast, Inc.",Information Technology,2021-09-22,,17.05,recent_listing_2021
+TPG,TPG Inc. Class A Common Stock,Financials,2022-01-13,,7.23,spinoff_or_ipo_2022
+TRNO,Terreno Realty Corporation,Real Estate,2010-02-10,,6.86,spinoff_or_ipo_2010
+TRU,TransUnion,,2015-06-25,,13.31,recent_listing_2015
+TTAN,"ServiceTitan, Inc. Class A Common Stock",Information Technology,2024-12-12,,6.08,spinoff_or_ipo_2024
+TW,Tradeweb Markets Inc. Class A Common Stock,Financials,2019-04-04,,23.97,recent_listing_2019
+TWLO,Twilio Inc.,Information Technology,2016-06-23,,28.79,recent_listing_2016
+U,Unity Software Inc.,Information Technology,2020-09-18,,12.1,recent_listing_2020
+UHAL.B,U-Haul Holding Company,,2022-11-10,,8.89,spinoff_or_ipo_2022
+UI,Ubiquiti Inc. Common Stock,Communication Services,2011-10-14,,60.77,recent_listing_2011
+ULS,UL Solutions Inc.,,2024-04-12,,18.13,recent_listing_2024
+USAR,"USA Rare Earth, Inc. Class A Common Stock",Energy,2025-03-14,,5.58,spinoff_or_ipo_2025
+USFD,US Foods Holding Corp.,,2016-05-26,,20.06,recent_listing_2016
+VAL,Valaris Limited,Energy,2021-05-03,,7.1,spinoff_or_ipo_2021
+VEEV,Veeva Systems Inc.,Information Technology,2013-10-16,,27.8,recent_listing_2013
+VFS,VinFast Auto Ltd. Ordinary Shares,,2023-08-15,,9.85,spinoff_or_ipo_2023
+VG,"Venture Global, Inc.",Energy,2025-01-24,,34.18,recent_listing_2025
+VIK,Viking Holdings Ltd,,2024-05-01,,35.25,recent_listing_2024
+VNOM,"Viper Energy, Inc. Class A Common Stock",Energy,2014-06-18,,9.9,spinoff_or_ipo_2014
+VOYA,"VOYA FINANCIAL, INC.",Financials,2013-05-02,,7.58,spinoff_or_ipo_2013
+W,Wayfair Inc.,Consumer Discretionary,2014-10-02,,8.56,spinoff_or_ipo_2014
+WES,"Western Midstream Partners, LP",Energy,2012-12-07,,16.76,recent_listing_2012
+WFRD,Weatherford International plc Ordinary Shares,Energy,2021-06-02,,7.85,spinoff_or_ipo_2021
+WH,"Wyndham Hotels & Resorts, Inc. Common Stock",Consumer Discretionary,2018-05-17,,6.01,spinoff_or_ipo_2018
+WMG,Warner Music Group Corp. Class A Common Stock,,2020-06-03,,14.68,recent_listing_2020
+WMS,"ADVANCED DRAINAGE SYSTEMS, INC.",,2014-07-25,,10.96,recent_listing_2014
+WULF,TeraWulf Inc. Common Stock,,2021-12-14,,10.98,recent_listing_2021
+XENE,Xenon Pharmaceuticals Inc,Health Care,2014-11-05,,5.55,spinoff_or_ipo_2014
+XP,XP Inc. Class A Common Stock,,2019-12-11,,9.56,spinoff_or_ipo_2019
+YOU,"Clear Secure, Inc.",Information Technology,2021-06-30,,5.67,spinoff_or_ipo_2021
+YUMC,"Yum China Holdings, Inc. Common Stock",Consumer Discretionary,2016-10-17,,16.79,recent_listing_2016
+Z,"Zillow Group, Inc. Class C Capital Stock",Industrials,2011-07-20,,10.09,recent_listing_2011
+ZG,ZILLOW GROUP INC CLASS A,Industrials,2011-07-20,,10.14,recent_listing_2011
+ZWS,Zurn Elkay Water Solutions Corporation,Industrials,2012-03-29,,8.39,spinoff_or_ipo_2012

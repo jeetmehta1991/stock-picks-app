@@ -1540,7 +1540,7 @@ This section captures the Pass 53 owner-directed scope expansion of Sprint 0A be
 - **T1a S&P 500 historical** — 614 rows (503 active + 111 historical removed-during-window 2020-01-01 → 2026-04-09); CDAY→DAY rename map applied; Wikipedia Table 1 used under L88 one-time exception with 4/4 high-impact spot-check verified vs S&P DJI press releases; canonical PIT file per DEC-477. File: `Backtesting universe/Tier 1A Universe_SP500 Tickers_Jan 2020 to May 2026.csv`
 - **T1c NASDAQ-100** — 161 rows (101 active matching Nasdaq IR official 101 via 3-way Slickcharts+Wiki+Nasdaq cross-check + 60 historical); multi-period rows for re-entry (CSGP/SPLK/TTWO/WDC). File: `Backtesting universe/Tier 1C Universe_NASDAQ-100 Tickers_Jan 2020 to May 2026.csv`
 - **T1 ETFs** — 27 ETFs (DEC-118 selected sector + macro + volatility + broad-market); QQQ "Technology"→"Information Technology" GICS canonical normalization. File: `Backtesting universe/Tier 1 ETFs Universe_Sector and Broad-Market ETFs_May 2026.csv`
-- **T2 Spinoffs/IPOs** — 10 baseline (full SCREENER global pull background-running 2026-05-05; expected 100-200 qualifying tickers). File: `Backtesting universe/Tier 2 Universe_Spinoffs and Recent IPOs_Sep 2014 to May 2026.csv`
+- **T2 Spinoffs/IPOs** — 297 qualifying tickers (full SCREENER complete 2026-05-05; 15,401 Polygon candidates checked; 200.7 min wall time; earliest qualifying listing 2010-02-10; filename auto-extended date range). Top names: SPOT/BE/NET/BAM/NU/CRWV/UI/RACE/MPLX/FERG/SNOW/RKLB/NBIS/RKT/MDLN/CPNG/ALC/VIK/ALAB/VG/RBLX/CRDO/RDDT/RVMD/NTRA. File: `Backtesting universe/Tier 2 Universe_Spinoffs and Recent IPOs_Feb 2010 to May 2026.csv`
 - **T3 Momentum Top-100** — 1924 rows (1999 minus 75 removed via leveraged-ETF blocklist; 271 sector="Unknown" tagging; 100% sector populated post Polygon SIC + yfinance one-time fallback). File: `Backtesting universe/Tier 3 Universe_Momentum Top-100_Jun 2022 to May 2026.csv`
 
 **Master deduplicated list:** `Backtesting universe/Master Universe_Deduplicated_All Tiers_May 2026.csv` — 1,775 unique tickers with full dimensional metadata: Symbol, Company, Sector (18-classifier per DEC-499), Tier_membership, currently_active, T1a/T1c/T1ETF/T2/T3 status + per-tier dates + extension columns. Built Pass 53 owner directive 2026-05-05.
@@ -1695,7 +1695,7 @@ columns: ticker, event_type, event_date, details_json, fetched_at
 
 | Item | Status | Detail |
 |---|---|---|
-| Universe build | ✅ IMPLEMENTED | 614 T1a + 161 T1c + 27 T1 ETFs + 1924 T3 + 10 T2 baseline (full SCREENER pending) + Master 1,775 |
+| Universe build | ✅ IMPLEMENTED | 614 T1a + 161 T1c + 27 T1 ETFs + 1924 T3 + 297 T2 (full SCREENER complete 2026-05-05) + Master to be rebuilt with T2 expansion |
 | Sector normalization 18-classifier | ✅ IMPLEMENTED | DEC-499; T1a 100% / T1c 100% / T2 100% / T3 100% (271 "Unknown") / ETFs 100% |
 | T3 leveraged-ETF blocklist | ✅ FIXED | CS whitelist + 110-entry blocklist; SOXL/AMDL/INTW/TSMX excluded |
 | Polygon Stocks Starter OHLCV | ✅ 1,821 cached | Pre-Pass-53 baseline |

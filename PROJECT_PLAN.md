@@ -969,7 +969,7 @@ PROJECT_PLAN_ARCHIVE.md contains the pre-April-2026 PROJECT_PLAN reference, usef
 - T1a S&P 500 historical: 614 rows (Jan 2020 → May 2026)
 - T1c NASDAQ-100: 161 rows (101 active + 60 historical)
 - T1 ETFs: 27 (DEC-118)
-- T2 Spinoffs/IPOs: 10 baseline (full SCREENER global pull pending)
+- T2 Spinoffs/IPOs: 297 (full SCREENER complete 2026-05-05; 15,401 candidates checked; earliest list_date 2010-02-10)
 - T3 Momentum Top-100: 1924 rows (after leveraged-ETF blocklist fix)
 - Master Universe Deduplicated: 1,775 unique tickers with full dimensional metadata
 

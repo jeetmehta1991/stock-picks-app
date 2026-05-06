@@ -53,7 +53,7 @@ if not POLYGON_KEY:
 
 BASE_URL = "https://api.polygon.io"
 REPO = Path(__file__).resolve().parent.parent
-T2_CSV = REPO / "Backtesting universe" / "Tier 2 Universe_Spinoffs and Recent IPOs_Sep 2014 to May 2026.csv"
+T2_CSV = REPO / "Backtesting universe" / "Tier 2 Universe_Spinoffs and Recent IPOs_Feb 2010 to May 2026.csv"
 T1A_CSV = REPO / "Backtesting universe" / "Tier 1A Universe_SP500 Tickers_Jan 2020 to May 2026.csv"
 T1C_CSV = REPO / "Backtesting universe" / "Tier 1C Universe_NASDAQ-100 Tickers_Jan 2020 to May 2026.csv"
 

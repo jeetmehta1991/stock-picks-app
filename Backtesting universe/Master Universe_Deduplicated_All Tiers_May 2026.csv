@@ -8,9 +8,9 @@
 # T3 dimensions show LATEST period values (MomentumScore/MarketCapB/LastPrice from most recent active or last-removed period); T3_period_count counts active+historical periods
 Symbol,Company,Sector,Tier_membership,currently_active,T1a_status,T1a_added_date,T1a_removed_date,T1c_status,T1c_added_date,T1c_removed_date,T1ETF_status,T1ETF_Category,T2_status,T2_added_date,T2_removed_date,T2_MarketCapB,T2_Reason,T3_status,T3_added_date,T3_removed_date,T3_MomentumScore_latest,T3_MarketCapB_latest,T3_LastPrice_latest,T3_period_count
 A,Agilent Technologies,Health Care,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
-AA,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2022-08-01,0.801676,,64.5,1
+AA,Alcoa Corporation,,"T2-active,T3-historical",True,,,,,,,,,active,2016-10-18,,16.48,recent_listing_2016,historical,2022-06-01,2022-08-01,0.801676,,64.5,1
 AAL,American Airlines,Industrials,"T1a-historical,T1c-historical",False,historical,,2024-09-23,historical,,2020-04-20,,,,,,,,,,,,,,0
-AAOI,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2023-09-01,2026-05-01,2.268841,,58.12,6
+AAOI,"Applied Optoelectronics, Inc.",Information Technology,"T2-active,T3-historical",True,,,,,,,,,active,2013-09-26,,13.85,recent_listing_2013,historical,2023-09-01,2026-05-01,2.268841,,58.12,6
 AAON,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2023-05-01,2023-07-03,0.868197,,66.15,1
 AAP,,Consumer Discretionary,T1a-historical,False,historical,,2023-08-25,,,,,,,,,,,,,,,,,0
 AAPL,Apple Inc.,Information Technology,"T1a-active,T1c-active",True,active,,,active,,,,,,,,,,,,,,,,0
@@ -20,17 +20,19 @@ ABMD,,Health Care,T1a-historical,False,historical,,2022-12-22,,,,,,,,,,,,,,,,,0
 ABNB,Airbnb,Consumer Discretionary,"T1a-active,T1c-active",True,active,2023-09-18,,active,2021-12-20,,,,,,,,,,,,,,,0
 ABSI,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2024-05-01,2024-06-03,3.165414,,5.54,1
 ABT,Abbott Laboratories,Health Care,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
+ACA,"Arcosa, Inc. Common Stock",,T2-active,True,,,,,,,,,active,2018-10-16,,6.05,spinoff_or_ipo_2018,,,,,,,0
 ACCD,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2023-06-01,2023-07-03,1.482226,,16.06,1
 ACET,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2022-08-01,2022-12-01,0.578645,,220.0,2
 ACGL,Arch Capital Group,Financials,T1a-active,True,active,2022-11-01,,,,,,,,,,,,,,,,,,0
 ACHC,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2022-11-01,2022-12-01,0.367071,,76.72,1
 ACHR,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2023-10-02,2025-12-01,1.872024,,9.65,3
-ACI,,Consumer Staples,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2022-07-01,0.652266,,31.36,1
+ACI,"Albertsons Companies, Inc.",Consumer Discretionary,"T2-active,T3-historical",True,,,,,,,,,active,2020-06-26,,8.06,spinoff_or_ipo_2020,historical,2022-06-01,2022-07-01,0.652266,,31.36,1
 ACIW,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2024-10-01,2024-12-02,1.543291,,50.23,1
 ACLS,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2022-07-01,2024-01-01,0.738977,,138.04,2
 ACLX,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2023-03-01,2024-12-02,1.606614,,82.76,5
 ACMR,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2023-11-01,2026-01-01,1.442717,,42.43,3
 ACN,Accenture,Information Technology,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
+ACT,"Enact Holdings, Inc. Common Stock",Financials,T2-active,True,,,,,,,,,active,2021-09-16,,5.99,spinoff_or_ipo_2021,,,,,,,0
 ACVA,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2023-07-03,2024-02-01,0.954008,,14.87,2
 ADBE,Adobe Inc.,Information Technology,"T1a-active,T1c-active",True,active,,,active,,,,,,,,,,,,,,,,0
 ADI,Analog Devices,Information Technology,"T1a-active,T1c-active",True,active,,,active,,,,,,,,,,,,,,,,0
@@ -41,6 +43,7 @@ ADPT,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2025-04-01,2026-02
 ADS,,Financials,T1a-historical,False,historical,,2020-06-22,,,,,,,,,,,,,,,,,0
 ADSE,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2024-03-01,2024-04-01,1.310345,,6.7,1
 ADSK,Autodesk,Information Technology,"T1a-active,T1c-active",True,active,,,active,,,,,,,,,,,,,,,,0
+ADT,ADT Inc.,,T2-active,True,,,,,,,,,active,2018-01-19,,5.58,spinoff_or_ipo_2018,,,,,,,0
 ADTN,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2025-04-01,2025-06-02,1.081264,,9.22,1
 AEE,Ameren,Utilities,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 AEHR,,Industrials,T3-active,True,,,,,,,,,,,,,,active,2022-09-01,2023-12-01,2.712329,,32.52,3
@@ -52,7 +55,7 @@ AES,AES Corporation,Utilities,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 AEVA,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2025-05-01,2026-04-01,2.918033,,14.34,3
 AEYE,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2024-06-03,2024-10-01,4.908096,,27.0,2
 AFL,Aflac,Financials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
-AFRM,"Affirm Holdings, Inc. Class A Common Stock",,"T2-active,T3-historical",True,,,,,,,,,active,2021-01-13,,22.35,tech_listing_2021,historical,2024-01-01,2025-09-01,1.511439,,68.06,2
+AFRM,"Affirm Holdings, Inc. Class A Common Stock",,"T2-active,T3-historical",True,,,,,,,,,active,2021-01-13,,22.35,recent_listing_2021,historical,2024-01-01,2025-09-01,1.511439,,68.06,2
 AG,,Materials,T3-active,True,,,,,,,,,,,,,,active,2026-01-01,,2.340872,,20.68,1
 AGFY,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2025-01-01,2025-02-03,1.755259,,54.55,1
 AGI,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2023-03-01,2023-07-03,0.697889,,12.87,2
@@ -60,7 +63,7 @@ AGIO,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2025-01-01,2025-02
 AGN,,Health Care,T1a-historical,False,historical,,2020-05-12,,,,,,,,,,,,,,,,,0
 AGX,,Consumer Discretionary,T3-active,True,,,,,,,,,,,,,,active,2024-08-01,2026-02-02,2.738585,,566.62,5
 AGYS,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2023-02-01,2023-07-03,0.915769,,78.24,1
-AHR,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2025-03-03,2025-09-01,1.170277,,36.07,1
+AHR,"American Healthcare REIT, Inc.",Financials,"T2-active,T3-historical",True,,,,,,,,,active,2024-02-07,,9.62,spinoff_or_ipo_2024,historical,2025-03-03,2025-09-01,1.170277,,36.07,1
 AI,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2023-08-01,2024-02-01,1.789423,,29.01,1
 AIG,American International Group,Financials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 AIMC,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2023-04-03,2023-05-01,0.521137,,61.53,1
@@ -72,27 +75,33 @@ AJRD,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2023-04-03,2023-05-01,
 AKAM,Akamai Technologies,Information Technology,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 AKRO,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2022-12-01,2025-07-01,1.162564,,42.17,3
 AKUS,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2023-01-02,2023-02-01,0.548235,,13.16,1
-ALAB,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2025-09-01,2025-12-01,1.683948,,198.8,1
+ALAB,"Astera Labs, Inc. Common Stock",Information Technology,"T2-active,T3-historical",True,,,,,,,,,active,2024-03-20,,34.47,recent_listing_2024,historical,2025-09-01,2025-12-01,1.683948,,198.8,1
 ALB,Albemarle Corporation,Materials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
+ALC,Alcon Inc. Ordinary Shares,,T2-active,True,,,,,,,,,active,2019-04-09,,35.82,recent_listing_2019,,,,,,,0
 ALDX,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2023-05-01,2023-08-01,1.348371,,9.37,1
-ALGM,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2023-05-01,2023-10-02,1.082753,,50.84,2
+ALGM,"Allegro MicroSystems, Inc. Common Stock",Information Technology,"T2-active,T3-historical",True,,,,,,,,,active,2020-10-29,,9.17,spinoff_or_ipo_2020,historical,2023-05-01,2023-10-02,1.082753,,50.84,2
 ALGN,Align Technology,Health Care,"T1a-active,T1c-historical",True,active,,,historical,,2023-12-18,,,,,,,,,,,,,,0
 ALGS,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2025-02-03,2025-03-03,1.346087,,40.47,1
+ALH,Alliance Laundry Holdings Inc.,Industrials,T2-active,True,,,,,,,,,active,2025-10-09,,5.07,spinoff_or_ipo_2025,,,,,,,0
 ALHC,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2023-02-01,2025-07-01,1.387314,,17.69,2
 ALK,,Industrials,T1a-historical,False,historical,,2023-12-18,,,,,,,,,,,,,,,,,0
 ALKT,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2023-12-01,2024-10-01,0.892795,,32.84,2
 ALL,Allstate,Financials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 ALLE,Allegion,Industrials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 ALLT,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2025-02-03,2025-09-01,1.577419,,7.99,2
+ALLY,Ally Financial Inc.,Financials,T2-active,True,,,,,,,,,active,2013-12-13,,13.23,recent_listing_2013,,,,,,,0
+ALM,Almonty Industries Inc. Common Shares,,T2-active,True,,,,,,,,,active,2013-05-16,,5.51,spinoff_or_ipo_2013,,,,,,,0
 ALMS,,Health Care,T3-active,True,,,,,,,,,,,,,,active,2026-03-02,2026-04-01,4.794393,,24.8,2
 ALNT,,Industrials,T3-active,True,,,,,,,,,,,,,,active,2025-10-01,2025-11-03,1.88048,,62.42,2
 ALNY,Alnylam Pharmaceuticals,Health Care,"T1c-active,T3-historical",True,,,,active,2025-12-22,,,,,,,,,historical,2023-02-01,2023-03-01,0.821198,,231.62,1
 ALPN,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2024-01-01,2024-06-03,4.338398,,38.65,1
+ALSN,"ALLISON TRANSMISSION HOLDINGS, INC.",Consumer Discretionary,T2-active,True,,,,,,,,,active,2012-03-15,,10.73,recent_listing_2012,,,,,,,0
 ALT,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2023-02-01,2024-12-02,1.800866,,6.47,3
 ALTG,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2023-04-03,2023-05-01,0.500808,,18.58,1
 ALTS,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2025-10-01,2025-11-03,2.848315,,6.85,1
 ALXN,Alexion Pharmaceuticals,Health Care,"T1a-historical,T1c-historical",False,historical,,2021-07-21,historical,,2021-07-21,,,,,,,,,,,,,,0
 ALXO,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-04-01,2024-07-01,1.534431,,16.93,2
+AM,Antero Midstream Corporation Common Stock,Energy,T2-active,True,,,,,,,,,active,2017-05-04,,10.44,recent_listing_2017,,,,,,,0
 AMAL,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2023-01-02,2023-02-01,0.587672,,26.53,1
 AMAM,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2023-07-03,2024-05-01,2.014024,,27.94,3
 AMAT,Applied Materials,Information Technology,"T1a-active,T1c-active",True,active,,,active,,,,,,,,,,,,,,,,0
@@ -100,6 +109,7 @@ AMCR,Amcor,Materials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 AMD,Advanced Micro Devices,Information Technology,"T1a-active,T1c-active",True,active,,,active,,,,,,,,,,,,,,,,0
 AME,Ametek,Industrials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 AMGN,Amgen,Health Care,"T1a-active,T1c-active",True,active,,,active,,,,,,,,,,,,,,,,0
+AMH,AMERICAN HOMES 4 RENT,Financials,T2-active,True,,,,,,,,,active,2013-08-01,,11.63,recent_listing_2013,,,,,,,0
 AMLX,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2023-02-01,2026-05-01,2.713178,,14.37,3
 AMP,Ameriprise Financial,Financials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 AMPG,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2025-02-03,2025-03-03,1.241304,,5.16,1
@@ -108,6 +118,7 @@ AMPX,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2026-01-01,2026-05
 AMPY,,Energy,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2022-10-03,0.765172,,6.69,1
 AMR,,Energy,T3-historical,False,,,,,,,,,,,,,,historical,2022-08-01,2024-07-01,1.497404,,341.47,2
 AMRX,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-02-01,2024-09-02,1.031646,,6.42,2
+AMRZ,Amrize Ltd,,T2-active,True,,,,,,,,,active,2025-06-23,,28.18,recent_listing_2025,,,,,,,0
 AMSC,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2023-10-02,2025-12-01,1.526578,,60.84,4
 AMT,American Tower,Real Estate,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 AMTM,,Industrials,T1a-historical,False,historical,2024-09-30,2024-12-23,,,,,,,,,,,,,,,,,0
@@ -128,20 +139,20 @@ APA,APA Corporation,Energy,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 APD,Air Products,Materials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 APEI,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2024-08-01,2025-12-01,1.60974,,39.12,2
 APEN,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2023-03-01,2023-05-01,0.56378,,9.93,1
-APG,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2023-10-02,2023-11-01,1.040684,,18.39,1
-APGE,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-08-01,2025-01-01,2.179502,,54.91,1
+APG,APi Group Corporation,,"T2-active,T3-historical",True,,,,,,,,,active,2017-10-05,,19.35,recent_listing_2017,historical,2023-10-02,2023-11-01,1.040684,,18.39,1
+APGE,"Apogee Therapeutics, Inc. Common Stock",Health Care,"T2-active,T3-historical",True,,,,,,,,,active,2023-07-14,,6.29,spinoff_or_ipo_2023,historical,2024-08-01,2025-01-01,2.179502,,54.91,1
 APH,Amphenol,Information Technology,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 APLD,,Information Technology,T3-active,True,,,,,,,,,,,,,,active,2023-08-01,2025-10-01,4.055319,,23.76,5
-APLS,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2022-10-03,2023-08-01,0.959667,,86.97,2
+APLS,"Apellis Pharmaceuticals, Inc. Common Stock",Health Care,"T2-active,T3-historical",True,,,,,,,,,active,2017-11-09,,5.25,spinoff_or_ipo_2017,historical,2022-10-03,2023-08-01,0.959667,,86.97,2
 APLT,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2024-11-01,2025-02-03,1.764516,,8.57,1
 APO,Apollo Global Management,Financials,T1a-active,True,active,2024-12-23,,,,,,,,,,,,,,,,,,0
 APP,AppLovin,Information Technology,"T1a-active,T1c-active,T3-historical",True,active,2025-09-22,,active,2024-11-18,,,,,,,,,historical,2023-10-02,2024-12-02,2.527057,,127.75,2
-APPF,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2023-12-01,2024-02-01,0.907364,,194.78,1
+APPF,"AppFolio, Inc. Class A",Information Technology,"T2-active,T3-historical",True,,,,,,,,,active,2015-06-26,,6.14,spinoff_or_ipo_2015,historical,2023-12-01,2024-02-01,0.907364,,194.78,1
 APPS,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2025-08-01,2026-01-01,3.739437,,6.73,2
 APTS,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2022-08-01,1.48654,,24.94,1
 APTV,Aptiv,Consumer Discretionary,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 AQST,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-12-02,2025-02-03,1.58,,5.16,1
-AR,,Energy,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2023-03-01,0.66109,,30.78,1
+AR,ANTERO RESOURCES CORPORATION,Energy,"T2-active,T3-historical",True,,,,,,,,,active,2013-10-10,,12.25,recent_listing_2013,historical,2022-06-01,2023-03-01,0.66109,,30.78,1
 ARCH,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2023-02-01,0.662321,,153.0,2
 ARCT,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2023-09-01,2024-05-01,1.64129,,40.94,2
 ARDX,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-02-01,2024-08-01,1.008929,,6.75,2
@@ -152,6 +163,7 @@ ARIS,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2025-01-01,2025-06-0
 ARLO,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2023-10-02,2024-04-01,1.333333,,8.96,2
 ARLP,,Energy,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2023-01-02,1.308357,,24.03,1
 ARM,Arm Holdings,Information Technology,T1c-active,True,,,,active,2024-06-24,,,,,,,,,,,,,,,0
+ARMK,ARAMARK,Consumer Discretionary,T2-active,True,,,,,,,,,active,2013-12-12,,11.77,recent_listing_2013,,,,,,,0
 ARMN,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2026-01-01,2026-04-01,4.422872,,20.39,1
 ARNC,,Industrials,T1a-historical,False,historical,,2020-04-01,,,,,,,,,,,,,,,,,0
 AROC,,Utilities,T3-historical,False,,,,,,,,,,,,,,historical,2023-10-02,2024-07-01,1.2,,20.13,2
@@ -159,7 +171,7 @@ ARQQ,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2025-02
 ARQT,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-11-01,2025-06-02,0.899646,,16.09,2
 ARRY,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2023-02-01,2023-08-01,0.963342,,23.03,1
 ARWR,,Health Care,T3-active,True,,,,,,,,,,,,,,active,2026-01-01,,3.360755,,57.78,1
-AS,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2025-07-01,2025-11-03,1.585013,,41.05,1
+AS,"Amer Sports, Inc.",,"T2-active,T3-historical",True,,,,,,,,,active,2024-02-01,,19.74,recent_listing_2024,historical,2025-07-01,2025-11-03,1.585013,,41.05,1
 ASC,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2022-07-01,2023-07-03,0.923899,,14.41,1
 ASM,,Materials,T3-active,True,,,,,,,,,,,,,,active,2025-11-03,2026-03-02,1.801887,,5.94,3
 ASML,ASML Holding,Information Technology,T1c-active,True,,,,active,,,,,,,,,,,,,,,,0
@@ -170,7 +182,7 @@ ASPN,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2024-04-01,2024-12
 ASRT,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2023-03-01,2023-10-02,1.151515,,85.2,2
 ASST,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2025-07-01,2026-02-02,1.425934,,22.6,2
 ASTI,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2026-04-01,2026-05-01,2.642458,,6.52,1
-ASTS,,Communication Services,T3-active,True,,,,,,,,,,,,,,active,2024-08-01,2025-09-01,2.311027,,78.67,5
+ASTS,"AST SpaceMobile, Inc. Class A Common Stock",,"T2-active,T3-active",True,,,,,,,,,active,2021-04-07,,20.44,recent_listing_2021,active,2024-08-01,2025-09-01,2.311027,,78.67,5
 ASUR,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2023-05-01,2023-06-01,1.513793,,14.58,1
 ASYS,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2026-03-02,2026-04-01,2.241584,,16.37,1
 ATAI,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2025-11-03,2026-01-01,2.680473,,6.22,1
@@ -186,7 +198,7 @@ ATVI,Activision Blizzard,Communication Services,"T1a-historical,T1c-historical",
 ATYR,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2025-08-01,2025-11-03,1.971264,,5.17,1
 AU,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2025-11-03,2026-05-01,2.441128,,124.5,1
 AUPH,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-01-01,2024-02-01,1.077859,,8.54,1
-AUR,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2024-11-01,2025-08-01,1.329545,,6.15,2
+AUR,"Aurora Innovation, Inc. Class A Common Stock",Information Technology,"T2-active,T3-historical",True,,,,,,,,,active,2021-11-04,,12.62,recent_listing_2021,historical,2024-11-01,2025-08-01,1.329545,,6.15,2
 AURC,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2023-09-01,2023-10-02,3.463019,,44.05,1
 AVAV,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2024-07-01,2024-09-02,0.872146,,177.91,1
 AVB,AvalonBay Communities,Real Estate,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
@@ -195,6 +207,7 @@ AVDL,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2023-07-03,2026-03-02,
 AVEO,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2022-12-01,2023-02-01,1.995968,,14.86,1
 AVGO,Broadcom,Information Technology,"T1a-active,T1c-active",True,active,,,active,,,,,,,,,,,,,,,,0
 AVPT,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2024-01-01,2025-05-01,1.11378,,16.72,2
+AVTR,"Avantor, Inc.",Health Care,T2-active,True,,,,,,,,,active,2019-05-17,,5.46,spinoff_or_ipo_2019,,,,,,,0
 AVTX,,Health Care,T3-active,True,,,,,,,,,,,,,,active,2026-05-01,,1.905858,,13.89,1
 AVXL,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2025-05-01,2025-06-02,1.773256,,9.54,1
 AVY,Avery Dennison,Materials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
@@ -202,7 +215,8 @@ AWK,American Water Works,Utilities,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 AXGN,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2025-04-01,2025-06-02,1.864253,,18.99,1
 AXON,Axon Enterprise,Industrials,"T1a-active,T1c-active,T3-historical",True,active,2023-05-04,,active,2024-12-23,,,,,,,,,historical,2023-05-01,2023-06-01,0.928622,,218.59,1
 AXP,American Express,Financials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
-AXSM,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2022-09-01,2023-12-01,0.722355,,72.27,3
+AXSM,"Axsome Therapeutics, Inc",Health Care,"T2-active,T3-historical",True,,,,,,,,,active,2015-11-19,,11.51,recent_listing_2015,historical,2022-09-01,2023-12-01,0.722355,,72.27,3
+AXTA,Axalta Coating Systems Ltd.,,T2-active,True,,,,,,,,,active,2014-11-12,,5.71,spinoff_or_ipo_2014,,,,,,,0
 AXTI,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2025-12-01,2026-02-02,3.583333,,10.45,1
 AZEK,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2023-10-02,2023-11-01,1.019509,,32.09,1
 AZN,AstraZeneca,Health Care,T1c-historical,False,,,,historical,2022-02-22,2026-01-20,,,,,,,,,,,,,,0
@@ -210,14 +224,16 @@ AZO,AutoZone,Consumer Discretionary,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 AZPN,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2022-10-03,2023-02-01,0.518224,,230.77,1
 AZZ,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2024-06-03,2024-08-01,1.021022,,84.6,1
 BA,Boeing,Industrials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
-BABA,"Alibaba Group Holding Limited American Depositary Shares, each represents eight Ordinary Shares",,T2-active,True,,,,,,,,,active,2014-09-19,,319.72,international_listing_2014,,,,,,,0
 BAC,Bank of America,Financials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
+BAH,Booz Allen Hamilton Holding Corporation,,T2-active,True,,,,,,,,,active,2010-11-17,,9.39,spinoff_or_ipo_2010,,,,,,,0
 BALL,Ball Corporation,Materials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
+BAM,Brookfield Asset Management Ltd.,Financials,T2-active,True,,,,,,,,,active,2022-12-01,,77.98,recent_listing_2022,,,,,,,0
 BANF,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2022-08-01,2022-12-01,0.430781,,90.64,1
 BATL,,Energy,T3-active,True,,,,,,,,,,,,,,active,2026-05-01,,3.679104,,6.27,1
 BAX,Baxter International,Health Care,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 BBAI,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2025-04-01,2026-01-01,2.349057,,7.1,2
-BBIO,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2023-06-01,2026-02-02,1.562344,,71.72,3
+BBIO,"BridgeBio Pharma, Inc. Common Stock",Health Care,"T2-active,T3-historical",True,,,,,,,,,active,2019-06-27,,13.37,recent_listing_2019,historical,2023-06-01,2026-02-02,1.562344,,71.72,3
+BBUC,Brookfield Business Corporation Class A Subordinate Voting Shares,,T2-active,True,,,,,,,,,active,2016-05-31,,7.04,spinoff_or_ipo_2016,,,,,,,0
 BBW,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2023-10-02,2023-12-01,0.700176,,28.92,1
 BBWI,,Consumer Discretionary,T1a-historical,False,historical,,2024-10-01,,,,,,,,,,,,,,,,,0
 BBY,Best Buy,Consumer Discretionary,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
@@ -226,10 +242,11 @@ BCPC,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2022-07-01,2024-07-0
 BDC,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2023-05-01,2023-06-01,0.69373,,84.28,1
 BDTX,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-06-03,2024-07-01,2.153226,,5.87,1
 BDX,Becton Dickinson,Health Care,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
-BE,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2025-03-03,2026-03-02,3.333824,,88.41,3
+BE,Bloom Energy Corporation,Utilities,"T2-active,T3-historical",True,,,,,,,,,active,2018-07-25,,82.1,recent_listing_2018,historical,2025-03-03,2026-03-02,3.333824,,88.41,3
 BELFA,,Information Technology,T3-active,True,,,,,,,,,,,,,,active,2026-05-01,,1.862613,,190.65,1
 BELFB,,Information Technology,T3-active,True,,,,,,,,,,,,,,active,2022-09-01,2024-03-01,1.858166,,203.53,4
 BEN,Franklin Resources,Financials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
+BEPC,Brookfield Renewable Corporation Class A Exchangeable Subordinate Voting Shares,,T2-active,True,,,,,,,,,active,2020-07-24,,6.48,spinoff_or_ipo_2020,,,,,,,0
 BETR,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2025-11-03,2026-03-02,2.436052,,34.12,1
 BF-B,Brown–Forman,Consumer Staples,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 BFRG,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-03-01,2024-04-01,1.17284,,7.04,1
@@ -240,6 +257,8 @@ BIDU,Baidu,Communication Services,T1c-historical,False,,,,historical,,2022-12-19
 BIIB,Biogen,Health Care,"T1a-active,T1c-historical",True,active,,,historical,,2025-12-22,,,,,,,,,,,,,,0
 BIO,,Health Care,T1a-historical,False,historical,2020-06-22,2024-09-23,,,,,,,,,,,,,,,,,0
 BIOA,,Health Care,T3-active,True,,,,,,,,,,,,,,active,2026-03-02,,2.817967,,16.15,1
+BIRK,Birkenstock Holding plc,,T2-active,True,,,,,,,,,active,2023-10-11,,6.79,spinoff_or_ipo_2023,,,,,,,0
+BJ,"BJs Wholesale Club Holdings, Inc. Common Stock",Consumer Discretionary,T2-active,True,,,,,,,,,active,2018-06-28,,12.27,recent_listing_2018,,,,,,,0
 BK,BNY Mellon,Financials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 BKD,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-01-01,2024-09-02,0.896848,,6.62,3
 BKNG,Booking Holdings,Consumer Discretionary,"T1a-active,T1c-active",True,active,,,active,,,,,,,,,,,,,,,,0
@@ -247,17 +266,20 @@ BKR,Baker Hughes,Energy,"T1a-active,T1c-active",True,active,,,active,2022-12-19,
 BKSY,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2025-08-01,2025-12-01,1.796919,,19.97,2
 BKTI,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2025-08-01,2025-12-01,2.085489,,82.29,2
 BLBD,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2023-07-03,2025-01-01,1.362827,,42.46,4
-BLD,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2024-01-01,2024-07-01,1.001934,,414.14,2
+BLCO,Bausch + Lomb Corporation,,T2-active,True,,,,,,,,,active,2022-05-06,,5.81,spinoff_or_ipo_2022,,,,,,,0
+BLD,TopBuild Corp. Common Stock,Industrials,"T2-active,T3-historical",True,,,,,,,,,active,2015-06-17,,12.07,recent_listing_2015,historical,2024-01-01,2024-07-01,1.001934,,414.14,2
 BLDR,Builders FirstSource,Industrials,"T1a-active,T3-historical",True,active,2023-12-18,,,,,,,,,,,,historical,2023-07-03,2024-01-01,0.755783,,106.26,1
 BLFS,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2023-05-01,2023-06-01,0.652767,,21.8,1
 BLK,BlackRock,Financials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
+BLSH,Bullish,,T2-active,True,,,,,,,,,active,2025-08-13,,6.12,spinoff_or_ipo_2025,,,,,,,0
 BLU,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2023-07-03,0.748792,,14.48,2
 BMEA,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2023-05-01,2023-09-01,0.940497,,21.85,1
 BMI,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2023-06-01,2023-07-03,0.676088,,132.83,1
 BMR,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2024-04-01,2025-03-03,2.366279,,5.79,2
 BMRN,BioMarin Pharmaceutical,Health Care,T1c-historical,False,,,,historical,,2020-12-21,,,,,,,,,,,,,,0
 BMY,Bristol Myers Squibb,Health Care,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
-BNTX,BioNTech SE American Depositary Share,,T2-active,True,,,,,,,,,active,2019-10-10,,25.12,biotech_listing_2019,,,,,,,0
+BNT,Brookfield Wealth Solutions Ltd.,,T2-active,True,,,,,,,,,active,2021-06-28,,12.27,recent_listing_2021,,,,,,,0
+BOOT,"Boot Barn Holdings, Inc.",Consumer Discretionary,T2-active,True,,,,,,,,,active,2014-10-30,,5.1,spinoff_or_ipo_2014,,,,,,,0
 BORR,,Energy,T3-active,True,,,,,,,,,,,,,,active,2022-07-01,2023-11-01,2.134715,,6.05,4
 BOWL,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2023-01-02,2023-03-01,0.647727,,13.05,1
 BPMC,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2024-02-01,2024-10-01,1.258751,,110.34,2
@@ -268,28 +290,33 @@ BRBR,,Consumer Staples,T3-historical,False,,,,,,,,,,,,,,historical,2023-12-01,20
 BRG,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2022-08-01,2022-12-01,0.933094,,26.87,1
 BRK-B,Berkshire Hathaway,Financials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 BRO,Brown & Brown,Financials,T1a-active,True,active,2021-09-20,,,,,,,,,,,,,,,,,,0
-BROS,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2025-04-01,2025-06-02,1.273872,,65.01,1
+BROS,Dutch Bros Inc.,Consumer Discretionary,"T2-active,T3-historical",True,,,,,,,,,active,2021-09-15,,7.24,spinoff_or_ipo_2021,historical,2025-04-01,2025-06-02,1.273872,,65.01,1
+BRX,BRIXMOR PROPERTY GROUP INC.,Financials,T2-active,True,,,,,,,,,active,2013-10-30,,9.17,spinoff_or_ipo_2013,,,,,,,0
 BRY,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2022-07-01,2022-08-01,0.664223,,11.35,1
 BRZE,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2023-12-01,2024-02-01,1.135157,,53.08,1
 BSM,,Energy,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2023-02-01,0.715363,,18.2,3
 BSX,Boston Scientific,Health Care,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
+BSY,"Bentley Systems, Incorporated Class B Common Stock",Information Technology,T2-active,True,,,,,,,,,active,2020-09-23,,10.19,recent_listing_2020,,,,,,,0
 BTAI,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2023-03-01,2023-04-03,0.714207,,498.08,1
 BTBT,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2024-02-01,2024-03-01,2.486301,,5.09,1
 BTCT,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2025-01-01,2025-02-03,2.394004,,15.85,1
 BTDR,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2025-02-03,2025-03-03,1.482183,,22.29,1
 BTM,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2025-08-01,2025-09-01,1.913793,,35.49,1
 BTOG,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2024-08-01,2024-09-02,1.844768,,319.2,1
-BTSG,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2025-03-03,2025-08-01,1.166821,,23.38,2
+BTSG,"BrightSpring Health Services, Inc. Common Stock",Health Care,"T2-active,T3-historical",True,,,,,,,,,active,2024-01-26,,10.38,recent_listing_2024,historical,2025-03-03,2025-08-01,1.166821,,23.38,2
 BTU,,Energy,T3-active,True,,,,,,,,,,,,,,active,2022-06-01,2023-04-03,2.139905,,39.5,3
 BUR,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2023-11-01,2024-05-01,1.172702,,15.6,2
+BURL,"BURLINGTON STORES, INC.",Consumer Discretionary,T2-active,True,,,,,,,,,active,2013-10-02,,19.43,recent_listing_2013,,,,,,,0
 BVH,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2024-01-01,2024-03-01,1.4149,,75.2,1
 BVS,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-10-01,2024-12-02,2.537994,,11.64,1
 BW,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2026-01-01,2026-03-02,3.229008,,5.54,1
 BWA,,Consumer Discretionary,T1a-historical,False,historical,,2025-03-24,,,,,,,,,,,,,,,,,0
 BWMX,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2023-10-02,2023-11-01,1.183588,,15.7,1
+BWXT,"BWX Technologies, Inc.",,T2-active,True,,,,,,,,,active,2010-07-12,,19.85,recent_listing_2010,,,,,,,0
 BX,Blackstone Inc.,Financials,T1a-active,True,active,2023-09-18,,,,,,,,,,,,,,,,,,0
 BXC,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2022-07-01,2022-09-01,0.747914,,69.13,1
 BXP,"BXP, Inc.",Real Estate,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
+BXSL,Blackstone Secured Lending Fund,,T2-active,True,,,,,,,,,active,2021-10-28,,5.74,spinoff_or_ipo_2021,,,,,,,0
 BYRN,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2024-11-01,2025-10-01,1.146252,,23.48,3
 BZH,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2023-09-01,2024-04-01,1.174983,,31.82,1
 C,Citigroup,Financials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
@@ -297,6 +324,7 @@ CABA,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2023-03-01,2024-05
 CADL,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-07-01,2025-05-01,4.444805,,8.38,2
 CAG,Conagra Brands,Consumer Staples,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 CAH,Cardinal Health,Health Care,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
+CAI,"Caris Life Sciences, Inc. Common Stock",Health Care,T2-active,True,,,,,,,,,active,2025-06-18,,5.28,spinoff_or_ipo_2025,,,,,,,0
 CAL,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2024-06-03,2024-07-01,1.107263,,37.72,1
 CALM,,Consumer Staples,T3-historical,False,,,,,,,,,,,,,,historical,2022-11-01,2022-12-01,0.674875,,60.53,1
 CALX,,Communication Services,T3-historical,False,,,,,,,,,,,,,,historical,2023-02-01,2023-03-01,0.638119,,66.18,1
@@ -304,10 +332,11 @@ CAMT,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2023-10
 CAPR,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-11-01,2025-09-01,1.551487,,11.15,2
 CAR,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2025-10-01,1.389147,,206.04,2
 CARR,Carrier Global,Industrials,T1a-active,True,active,2020-04-03,,,,,,,,,,,,,,,,,,0
+CART,Maplebear Inc. Common Stock,Industrials,T2-active,True,,,,,,,,,active,2023-09-19,,10.25,recent_listing_2023,,,,,,,0
 CASY,Casey's,Consumer Staples,T1a-active,True,active,2026-04-09,,,,,,,,,,,,,,,,,,0
 CAT,Caterpillar Inc.,Industrials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 CATX,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-06-03,2025-01-01,3.692671,,11.91,2
-CAVA,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2024-10-01,2025-04-01,1.170314,,122.97,1
+CAVA,"CAVA Group, Inc.",Consumer Discretionary,"T2-active,T3-historical",True,,,,,,,,,active,2023-06-15,,10.38,recent_listing_2023,historical,2024-10-01,2025-04-01,1.170314,,122.97,1
 CB,Chubb Limited,Financials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 CBAY,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2023-02-01,2024-05-01,2.659864,,32.28,2
 CBOE,Cboe Global Markets,Financials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
@@ -335,7 +364,7 @@ CE,,Materials,T1a-historical,False,historical,,2025-03-24,,,,,,,,,,,,,,,,,0
 CECO,,Industrials,T3-active,True,,,,,,,,,,,,,,active,2024-06-03,2024-10-01,2.058204,,60.95,2
 CEG,Constellation Energy,Utilities,"T1a-active,T1c-active",True,active,2022-02-02,,active,2022-02-02,,,,,,,,,,,,,,,0
 CEIX,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2023-05-01,0.490361,,54.89,1
-CELC,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-09-02,2026-01-01,4.939464,,77.51,2
+CELC,Celcuity Inc. Common Stock,Health Care,"T2-active,T3-historical",True,,,,,,,,,active,2017-09-20,,7.01,spinoff_or_ipo_2017,historical,2024-09-02,2026-01-01,4.939464,,77.51,2
 CELH,,Consumer Staples,T3-historical,False,,,,,,,,,,,,,,historical,2023-02-01,2024-06-03,1.689841,,83.43,4
 CENX,,Materials,T3-active,True,,,,,,,,,,,,,,active,2024-06-03,2025-01-01,1.957117,,49.65,3
 CEP,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2025-09-01,2025-10-01,1.823177,,28.26,1
@@ -343,19 +372,22 @@ CERE,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2022-08-01,
 CERN,Cerner,Health Care,"T1a-historical,T1c-historical",False,historical,,2022-06-08,historical,,2021-12-20,,,,,,,,,,,,,,0
 CF,CF Industries,Materials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 CFG,Citizens Financial Group,Financials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
+CG,The Carlyle Group Inc. Common Stock,Financials,T2-active,True,,,,,,,,,active,2012-05-03,,17.98,recent_listing_2012,,,,,,,0
 CGAU,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2026-03-02,2026-05-01,1.9922,,19.18,1
 CGEM,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-06-03,2024-08-01,1.111111,,24.13,1
-CGON,,Health Care,T3-active,True,,,,,,,,,,,,,,active,2026-05-01,,1.88869,,64.62,1
+CGON,"CG Oncology, Inc. Common stock",Health Care,"T2-active,T3-active",True,,,,,,,,,active,2024-01-25,,5.96,spinoff_or_ipo_2024,active,2026-05-01,,1.88869,,64.62,1
 CHD,Church & Dwight,Consumer Staples,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 CHK,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2023-02-01,0.489388,,98.24,3
 CHKP,Check Point Software,Information Technology,T1c-historical,False,,,,historical,,2021-12-20,,,,,,,,,,,,,,0
+CHRD,Chord Energy Corporation Common Stock,Energy,T2-active,True,,,,,,,,,active,2020-11-20,,8.46,spinoff_or_ipo_2020,,,,,,,0
 CHRW,C.H. Robinson,Industrials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 CHTR,Charter Communications,Communication Services,"T1a-active,T1c-active",True,active,,,active,,,,,,,,,,,,,,,,0
-CHWY,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2025-03-03,2025-07-01,1.196334,,37.14,1
+CHWY,"Chewy, Inc.",Consumer Discretionary,"T2-active,T3-historical",True,,,,,,,,,active,2019-06-14,,10.23,recent_listing_2019,historical,2025-03-03,2025-07-01,1.196334,,37.14,1
 CHX,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2023-10-02,2023-11-01,0.996676,,36.04,1
+CHYM,"Chime Financial, Inc. Class A Common Stock",,T2-active,True,,,,,,,,,active,2025-06-12,,8.43,spinoff_or_ipo_2025,,,,,,,0
 CI,Cigna,Health Care,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 CIEN,Ciena,Information Technology,"T1a-active,T3-historical",True,active,2026-02-09,,,,,,,,,,,,historical,2025-12-01,2026-03-02,1.985634,,239.0,2
-CIFR,,Financials,T3-active,True,,,,,,,,,,,,,,active,2024-05-01,2026-04-01,3.462662,,13.74,3
+CIFR,Cipher Digital Inc. Common Stock,,"T2-active,T3-active",True,,,,,,,,,active,2021-08-30,,7.26,spinoff_or_ipo_2021,active,2024-05-01,2026-04-01,3.462662,,13.74,3
 CINF,Cincinnati Financial,Financials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 CIR,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2023-08-01,2023-12-01,1.884635,,55.76,1
 CL,Colgate-Palmolive,Consumer Staples,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
@@ -383,40 +415,46 @@ CMPX,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2026-01-01,2026-02
 CMS,CMS Energy,Utilities,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 CNC,Centene Corporation,Health Care,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 CNCE,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2023-03-01,2023-05-01,1.24,,8.4,1
+CNH,CNH INDUSTRIAL N.V.,Industrials,T2-active,True,,,,,,,,,active,2013-09-30,,12.67,recent_listing_2013,,,,,,,0
 CNK,,Communication Services,T3-historical,False,,,,,,,,,,,,,,historical,2023-11-01,2025-03-03,1.223259,,30.97,2
-CNM,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2024-02-01,2024-07-01,1.110294,,57.4,2
+CNM,"Core & Main, Inc.",,"T2-active,T3-historical",True,,,,,,,,,active,2021-07-23,,9.11,spinoff_or_ipo_2021,historical,2024-02-01,2024-07-01,1.110294,,57.4,2
 CNP,CenterPoint Energy,Utilities,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 CNQ,,Energy,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2022-11-01,0.611729,,29.0,1
 CNX,,Energy,T3-historical,False,,,,,,,,,,,,,,historical,2022-09-01,2022-10-03,0.586799,,17.55,1
 COCO,,Consumer Staples,T3-historical,False,,,,,,,,,,,,,,historical,2023-05-01,2024-03-01,0.98526,,25.59,3
 COEP,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2026-01-01,2026-02-02,4.159166,,18.8,1
 COF,Capital One,Financials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
-COGT,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2022-10-03,2026-04-01,4.416309,,37.86,3
+COGT,"Cogent Biosciences, Inc. Common Stock",Health Care,"T2-active,T3-historical",True,,,,,,,,,active,2018-03-29,,6.27,spinoff_or_ipo_2018,historical,2022-10-03,2026-04-01,4.416309,,37.86,3
 COHR,Coherent Corp.,Information Technology,"T1a-active,T3-historical",True,active,2026-03-23,,,,,,,,,,,,historical,2024-10-01,2025-02-03,1.18902,,98.09,1
 COIN,Coinbase,Financials,"T1a-active,T3-historical",True,active,2025-05-19,,,,,,,,,,,,historical,2023-12-01,2024-12-02,1.701752,,191.23,1
 COKE,,Consumer Staples,T3-historical,False,,,,,,,,,,,,,,historical,2024-02-01,2024-03-01,0.875942,,93.3,1
+COLB,Columbia Banking Systems Inc,Financials,T2-active,True,,,,,,,,,active,2023-03-01,,8.42,spinoff_or_ipo_2023,,,,,,,0
 COMM,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2024-11-01,2026-03-02,2.869936,,18.15,6
-COMP,,Real Estate,T3-historical,False,,,,,,,,,,,,,,historical,2024-11-01,2025-07-01,0.854271,,7.38,2
+COMP,"Compass, Inc.",Real Estate,"T2-active,T3-historical",True,,,,,,,,,active,2021-04-01,,5.27,spinoff_or_ipo_2021,historical,2024-11-01,2025-07-01,0.854271,,7.38,2
 COO,Cooper Companies (The),Health Care,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 COP,ConocoPhillips,Energy,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 COR,Cencora,Health Care,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 CORT,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2022-11-01,2025-09-01,1.056742,,73.22,2
-CORZ,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2025-02-03,2025-06-02,1.264368,,7.88,1
+CORZ,"Core Scientific, Inc. Common Stock",,"T2-active,T3-historical",True,,,,,,,,,active,2024-01-24,,6.66,spinoff_or_ipo_2024,historical,2025-02-03,2025-06-02,1.264368,,7.88,1
 COST,Costco,Consumer Staples,"T1a-active,T1c-active",True,active,,,active,,,,,,,,,,,,,,,,0
 COTY,,Consumer Staples,"T1a-historical,T3-historical",False,historical,,2020-09-21,,,,,,,,,,,historical,2023-06-01,2023-07-03,0.658192,,11.74,1
 CPAY,Corpay,Financials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 CPB,Campbell's Company (The),Consumer Staples,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 CPG,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2023-01-02,0.769575,,7.91,2
 CPK,,Utilities,T3-historical,False,,,,,,,,,,,,,,historical,2022-09-01,2024-10-01,3.694976,,117.75,6
+CPNG,"Coupang, Inc.",Consumer Discretionary,T2-active,True,,,,,,,,,active,2021-03-11,,36.61,recent_listing_2021,,,,,,,0
 CPRI,,Consumer Discretionary,T1a-historical,False,historical,,2020-05-12,,,,,,,,,,,,,,,,,0
 CPRT,Copart,Industrials,"T1a-active,T1c-active",True,active,,,active,,,,,,,,,,,,,,,,0
 CPRX,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2022-09-01,2023-07-03,1.150068,,15.76,1
 CPS,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2025-10-01,2026-01-01,1.619247,,37.56,1
 CPT,Camden Property Trust,Real Estate,T1a-active,True,active,2022-04-04,,,,,,,,,,,,,,,,,,0
+CRBG,"Corebridge Financial, Inc.",Financials,T2-active,True,,,,,,,,,active,2022-09-15,,12.36,recent_listing_2022,,,,,,,0
 CRBP,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-04-01,2025-01-01,2.927885,,16.34,3
+CRC,California Resources Corporation,Energy,T2-active,True,,,,,,,,,active,2020-10-28,,6.14,spinoff_or_ipo_2020,,,,,,,0
+CRCL,"Circle Internet Group, Inc.",,T2-active,True,,,,,,,,,active,2025-06-05,,29.55,recent_listing_2025,,,,,,,0
 CRCT,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2023-08-01,2023-09-01,1.078488,,14.3,1
 CRDF,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-05-01,2024-06-03,2.807947,,5.75,1
-CRDO,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2024-03-01,2026-03-02,1.488392,,144.7,5
+CRDO,Credo Technology Group Holding Ltd Ordinary Shares,Information Technology,"T2-active,T3-historical",True,,,,,,,,,active,2022-01-27,,33.21,recent_listing_2022,historical,2024-03-01,2026-03-02,1.488392,,144.7,5
 CRH,CRH plc,Materials,T1a-active,True,active,2025-12-22,,,,,,,,,,,,,,,,,,0
 CRK,,Energy,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2025-09-01,1.765385,,28.76,3
 CRL,Charles River Laboratories,Health Care,T1a-active,True,active,2021-05-14,,,,,,,,,,,,,,,,,,0
@@ -427,9 +465,11 @@ CRNC,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2025-06
 CRNX,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2023-12-01,2024-10-01,2.284504,,54.26,3
 CROX,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2023-04-03,2023-08-01,1.11492,,106.74,1
 CRS,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2023-11-01,2025-08-01,1.246654,,238.37,4
+CRSP,CRISPR Therapeutics AG,Health Care,T2-active,True,,,,,,,,,active,2016-10-19,,5.17,spinoff_or_ipo_2016,,,,,,,0
 CRT,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2022-10-03,2022-11-01,0.645033,,24.84,1
 CRVS,,Health Care,T3-active,True,,,,,,,,,,,,,,active,2024-12-02,2025-01-01,2.859504,,14.01,2
 CRWD,CrowdStrike,Information Technology,"T1a-active,T1c-active",True,active,2024-06-24,,active,2021-08-26,,,,,,,,,,,,,,,0
+CRWV,"CoreWeave, Inc. Class A Common Stock",Information Technology,T2-active,True,,,,,,,,,active,2025-03-28,,66.25,recent_listing_2025,,,,,,,0
 CSCO,Cisco,Information Technology,"T1a-active,T1c-active",True,active,,,active,,,,,,,,,,,,,,,,0
 CSGP,CoStar Group,Real Estate,"T1a-active,T1c-active",True,active,2022-09-19,,active,2022-12-19,2020-07-20,,,,,,,,,,,,,,0
 CSPI,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2024-04-01,2024-05-01,3.112879,,27.14,1
@@ -439,6 +479,7 @@ CTGO,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2026-03-02,2026-04-0
 CTIC,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2023-04-03,1.590517,,6.01,2
 CTLT,,Health Care,T1a-historical,False,historical,2020-09-21,2024-12-23,,,,,,,,,,,,,,,,,0
 CTRA,Coterra,Energy,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
+CTRE,"CareTrust REIT, Inc",Financials,T2-active,True,,,,,,,,,active,2014-05-29,,8.82,spinoff_or_ipo_2014,,,,,,,0
 CTSH,Cognizant,Information Technology,"T1a-active,T1c-active",True,active,,,active,,,,,,,,,,,,,,,,0
 CTVA,Corteva,Materials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 CTXS,Citrix Systems,Information Technology,"T1a-historical,T1c-historical",False,historical,,2022-10-03,historical,,2020-12-21,,,,,,,,,,,,,,0
@@ -453,7 +494,9 @@ CVNA,Carvana,Consumer Discretionary,"T1a-active,T3-historical",True,active,2025-
 CVRX,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-02-01,2024-04-01,1.502757,,27.23,1
 CVS,CVS Health,Health Care,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 CVX,Chevron Corporation,Energy,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
+CWAN,"Clearwater Analytics Holdings, Inc.",Information Technology,T2-active,True,,,,,,,,,active,2021-09-24,,7.17,spinoff_or_ipo_2021,,,,,,,0
 CWCO,,Utilities,T3-historical,False,,,,,,,,,,,,,,historical,2024-01-01,2024-02-01,1.499669,,37.77,1
+CWEN,"Clearway Energy, Inc. Class C Common Stock",Utilities,T2-active,True,,,,,,,,,active,2013-07-16,,6.01,spinoff_or_ipo_2013,,,,,,,0
 CXM,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2023-12-01,2024-02-01,1.039113,,15.64,1
 CXO,,Energy,T1a-historical,False,historical,,2021-01-21,,,,,,,,,,,,,,,,,0
 CXW,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2022-07-01,0.672346,,12.76,1
@@ -470,6 +513,7 @@ DAVE,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2024-08-01,2026-01-
 DAWN,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2023-03-01,2023-07-03,1.115385,,12.1,2
 DAY,,Industrials,T1a-historical,False,historical,2021-09-20,2026-02-09,,,,,,,,,,,,,,,,,0
 DBVT,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2026-02-02,2026-04-01,4.578049,,22.87,1
+DBX,"Dropbox, Inc. Class A",Information Technology,T2-active,True,,,,,,,,,active,2018-03-23,,5.99,spinoff_or_ipo_2018,,,,,,,0
 DC,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2026-02-02,2026-03-02,1.566372,,5.8,1
 DCPH,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2022-12-01,2023-05-01,0.554011,,14.53,1
 DCTH,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-10-01,2025-06-02,1.528302,,13.4,3
@@ -495,7 +539,7 @@ DISCA,,Communication Services,T1a-historical,False,historical,,2022-04-11,,,,,,,
 DISCK,,Communication Services,T1a-historical,False,historical,,2022-04-11,,,,,,,,,,,,,,,,,0
 DISH,,Communication Services,T1a-historical,False,historical,,2023-06-20,,,,,,,,,,,,,,,,,0
 DK,,Energy,T3-active,True,,,,,,,,,,,,,,active,2022-08-01,2023-03-01,2.617849,,47.43,3
-DKNG,,Communication Services,T3-historical,False,,,,,,,,,,,,,,historical,2023-08-01,2024-05-01,1.291312,,40.35,2
+DKNG,DraftKings Inc. Class A Common Stock,,"T2-active,T3-historical",True,,,,,,,,,active,2020-04-24,,11.68,recent_listing_2020,historical,2023-08-01,2024-05-01,1.291312,,40.35,2
 DKS,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2023-06-01,2024-11-01,1.225257,,236.3,2
 DLR,Digital Realty,Real Estate,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 DLTR,Dollar Tree,Consumer Staples,"T1a-active,T1c-historical",True,active,,,historical,,2024-11-18,,,,,,,,,,,,,,0
@@ -505,6 +549,7 @@ DNOW,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2022-10-03,2022-11
 DNTH,,Health Care,T3-active,True,,,,,,,,,,,,,,active,2024-10-01,2024-11-01,2.743886,,81.13,2
 DO,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2023-08-01,2023-11-01,1.227061,,14.32,1
 DOC,Healthpeak Properties,Real Estate,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
+DOCN,"DigitalOcean Holdings, Inc.",Information Technology,T2-active,True,,,,,,,,,active,2021-03-24,,11.35,recent_listing_2021,,,,,,,0
 DOCS,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2025-04-01,2025-09-01,1.169389,,61.09,2
 DOCU,DocuSign,Information Technology,T1c-historical,False,,,,historical,2020-06-22,2022-12-19,,,,,,,,,,,,,,0
 DOGZ,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2025-05-01,4.162651,,25.71,2
@@ -517,11 +562,14 @@ DPZ,Domino's,Consumer Discretionary,T1a-active,True,active,2020-05-12,,,,,,,,,,,
 DRCT,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2024-01-01,2024-06-03,4.531034,,3528.8,2
 DRE,,Real Estate,T1a-historical,False,historical,,2022-10-03,,,,,,,,,,,,,,,,,0
 DRI,Darden Restaurants,Consumer Discretionary,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
+DRS,"Leonardo DRS, Inc. Common Stock",,T2-active,True,,,,,,,,,active,2021-03-24,,10.64,recent_listing_2021,,,,,,,0
 DRTS,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2026-04-01,2026-05-01,2.165414,,8.42,1
 DRUG,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2026-02-02,2026-03-02,1.578218,,78.12,1
+DT,"Dynatrace, Inc.",Information Technology,T2-active,True,,,,,,,,,active,2019-08-01,,11.56,recent_listing_2019,,,,,,,0
 DTE,DTE Energy,Utilities,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
+DTM,"DT Midstream, Inc.",Energy,T2-active,True,,,,,,,,,active,2021-06-18,,14.99,recent_listing_2021,,,,,,,0
 DUK,Duke Energy,Utilities,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
-DUOL,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2023-11-01,2025-09-01,1.373384,,411.26,2
+DUOL,"Duolingo, Inc. Class A Common Stock",Information Technology,"T2-active,T3-historical",True,,,,,,,,,active,2021-07-28,,5.16,spinoff_or_ipo_2021,historical,2023-11-01,2025-09-01,1.373384,,411.26,2
 DVA,DaVita,Health Care,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 DVN,Devon Energy,Energy,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 DWAC,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2024-03-01,2024-05-01,2.54048,,47.23,1
@@ -535,7 +583,7 @@ EA,Electronic Arts,Communication Services,"T1a-active,T1c-active",True,active,,,
 EAT,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2024-08-01,2025-10-01,1.197455,,157.14,2
 EBAY,eBay Inc.,Consumer Discretionary,"T1a-active,T1c-historical",True,active,,,historical,,2023-12-18,,,,,,,,,,,,,,0
 EBS,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-09-02,2025-05-01,1.783784,,7.21,1
-ECG,,Industrials,T3-active,True,,,,,,,,,,,,,,active,2026-04-01,,1.871726,,117.31,1
+ECG,"Everus Construction Group, Inc.",,"T2-active,T3-active",True,,,,,,,,,active,2024-10-28,,7.7,spinoff_or_ipo_2024,active,2026-04-01,,1.871726,,117.31,1
 ECL,Ecolab,Materials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 ECOR,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2025-04-01,2025-05-01,1.642249,,15.51,1
 ED,Consolidated Edison,Utilities,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
@@ -549,34 +597,40 @@ EGO,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2026-03-02,2026-04-01
 EGY,,Energy,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2022-09-01,1.950192,,7.7,1
 EIX,Edison International,Utilities,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 EL,Estée Lauder Companies (The),Consumer Staples,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
+ELAN,Elanco Animal Health Incorporated Common Stock,Health Care,T2-active,True,,,,,,,,,active,2018-09-20,,11.24,recent_listing_2018,,,,,,,0
 ELEV,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2023-07-03,2023-08-01,2.391892,,5.02,1
 ELF,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2023-01-02,2024-09-02,0.880283,,218.0,2
 ELV,Elevance Health,Health Care,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 ELVA,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2026-03-02,2026-04-01,3.376451,,10.37,1
 ELVN,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-12-02,2025-01-01,1.479239,,28.66,1
+EMAT,Evolution Metals & Technologies Corp. Common Stock,Utilities,T2-active,True,,,,,,,,,active,2026-01-06,,5.68,spinoff_or_ipo_2026,,,,,,,0
 EME,Emcor,Industrials,"T1a-active,T3-historical",True,active,2025-09-22,,,,,,,,,,,,historical,2023-10-02,2025-02-03,1.349228,,507.95,3
 EMN,,Materials,T1a-historical,False,historical,,2025-11-04,,,,,,,,,,,,,,,,,0
 EMR,Emerson Electric,Industrials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 EMX,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2025-11-03,2025-12-01,1.680851,,5.04,1
 ENLC,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2023-04-03,0.657107,,13.29,4
-ENLT,,Utilities,T3-active,True,,,,,,,,,,,,,,active,2026-03-02,,3.086068,,65.99,1
+ENLT,Enlight Renewable Energy Ltd. Ordinary Shares,,"T2-active,T3-active",True,,,,,,,,,active,2019-08-09,,12.36,recent_listing_2019,active,2026-03-02,,3.086068,,65.99,1
 ENPH,Enphase Energy,Information Technology,"T1a-historical,T1c-historical",False,historical,2021-01-07,2025-09-22,historical,2022-11-21,2023-12-18,,,,,,,,,,,,,,0
 ENTA,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2026-02-02,2026-03-02,2.208984,,16.43,1
 EOG,EOG Resources,Energy,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 EOSE,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2025-02-03,2026-04-01,2.958435,,16.19,4
 EPAM,EPAM Systems,Information Technology,T1a-active,True,active,2021-12-14,,,,,,,,,,,,,,,,,,0
+EPRT,"Essential Properties Realty Trust, Inc.",Financials,T2-active,True,,,,,,,,,active,2018-06-21,,6.71,spinoff_or_ipo_2018,,,,,,,0
+EQH,"Equitable Holdings, Inc.",Financials,T2-active,True,,,,,,,,,active,2018-05-10,,11.68,recent_listing_2018,,,,,,,0
 EQIX,Equinix,Real Estate,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 EQR,Equity Residential,Real Estate,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 EQT,EQT Corporation,Energy,"T1a-active,T3-historical",True,active,2022-10-03,,,,,,,,,,,,historical,2022-06-01,2022-10-03,1.295918,,42.75,1
-EQX,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2026-01-01,2026-02-02,1.631579,,13.5,1
+EQX,Equinox Gold Corp.,,"T2-active,T3-historical",True,,,,,,,,,active,2013-09-19,,10.94,recent_listing_2013,historical,2026-01-01,2026-02-02,1.631579,,13.5,1
 ERF,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2023-02-01,0.696462,,18.22,1
 ERIE,Erie Indemnity,Financials,T1a-active,True,active,2024-09-23,,,,,,,,,,,,,,,,,,0
 ES,Eversource Energy,Utilities,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
-ESAB,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2023-10-02,2023-12-01,0.899485,,70.11,1
+ESAB,ESAB Corporation,Industrials,"T2-active,T3-historical",True,,,,,,,,,active,2022-03-21,,5.78,spinoff_or_ipo_2022,historical,2023-10-02,2023-12-01,0.899485,,70.11,1
+ESI,Element Solutions Inc.,Materials,T2-active,True,,,,,,,,,active,2013-09-27,,10.43,recent_listing_2013,,,,,,,0
 ESLT,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2025-05-01,2025-11-03,1.487242,,486.43,1
+ESNT,Essent Group LTD,Financials,T2-active,True,,,,,,,,,active,2013-10-31,,5.65,spinoff_or_ipo_2013,,,,,,,0
 ESQ,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2025-06-02,2025-07-01,0.803085,,84.15,1
 ESS,Essex Property Trust,Real Estate,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
-ESTC,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2024-02-01,2024-05-01,1.363899,,130.7,1
+ESTC,Elastic N.V.,Information Technology,"T2-active,T3-historical",True,,,,,,,,,active,2018-10-05,,5.24,spinoff_or_ipo_2018,historical,2024-02-01,2024-05-01,1.363899,,130.7,1
 ESTE,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2022-07-01,2023-01-02,0.606244,,15.95,3
 ETFC,,Financials,T1a-historical,False,historical,,2020-10-07,,,,,,,,,,,,,,,,,0
 ETN,Eaton Corporation,Industrials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
@@ -608,6 +662,7 @@ EYE,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2025-09-01,2026-02-
 EYPT,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-02-01,2026-05-01,2.005076,,17.76,3
 EZGO,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2023-10-02,2023-11-01,3.934783,,2270.0,1
 F,Ford Motor Company,Consumer Discretionary,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
+FAF,First American Financial Corporation,Financials,T2-active,True,,,,,,,,,active,2010-05-24,,6.96,spinoff_or_ipo_2010,,,,,,,0
 FANG,Diamondback Energy,Energy,"T1a-active,T1c-active",True,active,,,active,2022-12-19,,,,,,,,,,,,,,,0
 FARO,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2025-07-01,2025-09-01,1.554588,,43.99,1
 FAST,Fastenal,Industrials,"T1a-active,T1c-active",True,active,,,active,,,,,,,,,,,,,,,,0
@@ -622,6 +677,7 @@ FDX,FedEx,Industrials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 FE,FirstEnergy,Utilities,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 FEIM,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2025-07-01,2026-05-01,2.419048,,53.85,3
 FER,Ferrovial,Industrials,T1c-active,True,,,,active,2025-12-22,,,,,,,,,,,,,,,0
+FERG,Ferguson Enterprises Inc.,,T2-active,True,,,,,,,,,active,2010-12-02,,52.34,recent_listing_2010,,,,,,,0
 FET,,Industrials,T3-active,True,,,,,,,,,,,,,,active,2026-05-01,,3.150134,,61.92,1
 FFIV,"F5, Inc.",Information Technology,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 FG,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2024-03-01,2024-04-01,1.215407,,46.59,1
@@ -629,21 +685,25 @@ FGEN,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2023-04-03,2023-07-03,
 FHN,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2022-11-01,2023-02-01,0.503971,,24.62,2
 FI,Fiserv,Financials,T1c-historical,False,,,,historical,,2023-06-07,,,,,,,,,,,,,,0
 FICO,Fair Isaac,Information Technology,T1a-active,True,active,2023-03-20,,,,,,,,,,,,,,,,,,0
-FIG,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2025-10-01,2026-01-01,1.349186,,53.14,1
+FIG,"Figma, Inc.",Information Technology,"T2-active,T3-historical",True,,,,,,,,,active,2025-07-31,,10.52,recent_listing_2025,historical,2025-10-01,2026-01-01,1.349186,,53.14,1
+FIGR,"Figure Technology Solutions, Inc. Class A Common Stock",Financials,T2-active,True,,,,,,,,,active,2025-09-11,,7.95,spinoff_or_ipo_2025,,,,,,,0
 FIGS,,Consumer Discretionary,T3-active,True,,,,,,,,,,,,,,active,2026-05-01,,2.638614,,14.7,1
 FIP,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2024-06-03,2025-01-01,1.42623,,8.88,1
 FIS,Fidelity National Information Services,Financials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 FISV,Fiserv,Financials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 FITB,Fifth Third Bancorp,Financials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
-FIVE,,Consumer Discretionary,T3-active,True,,,,,,,,,,,,,,active,2026-05-01,,1.940974,,221.72,1
+FIVE,"Five Below, Inc. Common Stock",Consumer Discretionary,"T2-active,T3-active",True,,,,,,,,,active,2012-07-19,,12.78,recent_listing_2012,active,2026-05-01,,1.940974,,221.72,1
 FIX,Comfort Systems USA,Industrials,"T1a-active,T3-historical",True,active,2025-12-22,,,,,,,,,,,,historical,2023-04-03,2025-02-03,1.357115,,486.65,3
 FLIR,,Industrials,T1a-historical,False,historical,,2021-05-14,,,,,,,,,,,,,,,,,0
 FLNC,,Industrials,T3-active,True,,,,,,,,,,,,,,active,2023-03-01,2023-09-01,2.385167,,14.15,3
 FLNG,,Energy,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2023-02-01,0.624662,,36.1,2
 FLR,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2022-09-01,2023-04-03,0.770554,,37.04,2
 FLS,,Industrials,T1a-historical,False,historical,,2021-03-22,,,,,,,,,,,,,,,,,0
+FLUT,Flutter Entertainment plc,Information Technology,T2-active,True,,,,,,,,,active,2024-01-29,,18.17,recent_listing_2024,,,,,,,0
+FLY,Firefly Aerospace Inc. Common Stock,,T2-active,True,,,,,,,,,active,2025-08-07,,5.34,spinoff_or_ipo_2025,,,,,,,0
 FMC,,Materials,T1a-historical,False,historical,,2025-03-24,,,,,,,,,,,,,,,,,0
-FN,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2024-08-01,2026-05-01,1.981559,,615.99,2
+FN,Fabrinet,,"T2-active,T3-historical",True,,,,,,,,,active,2010-06-25,,25.72,recent_listing_2010,historical,2024-08-01,2026-05-01,1.981559,,615.99,2
+FND,"Floor & Decor Holdings, Inc.",Consumer Discretionary,T2-active,True,,,,,,,,,active,2017-04-27,,5.21,spinoff_or_ipo_2017,,,,,,,0
 FNKO,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2025-04-01,2025-05-01,1.052632,,12.87,1
 FOA,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2025-02-03,2025-09-01,1.990933,,23.09,2
 FOR,,Real Estate,T3-historical,False,,,,,,,,,,,,,,historical,2023-09-01,2024-05-01,1.274763,,33.53,2
@@ -658,14 +718,15 @@ FRC,,Financials,T1a-historical,False,historical,,2023-05-04,,,,,,,,,,,,,,,,,0
 FRGE,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2026-01-01,2026-05-01,3.195653,,44.69,1
 FRHC,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2023-06-01,2025-07-01,0.883766,,145.86,2
 FRO,,Energy,T3-historical,False,,,,,,,,,,,,,,historical,2022-12-01,2024-08-01,1.136976,,28.55,4
-FROG,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2024-04-01,2024-06-03,1.294671,,43.92,1
+FROG,JFrog Ltd. Ordinary Shares,Information Technology,"T2-active,T3-historical",True,,,,,,,,,active,2020-09-16,,6.37,spinoff_or_ipo_2020,historical,2024-04-01,2024-06-03,1.294671,,43.92,1
 FRPT,,Consumer Staples,T3-historical,False,,,,,,,,,,,,,,historical,2024-07-01,2024-09-02,0.835677,,129.25,1
 FRT,Federal Realty Investment Trust,Real Estate,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 FSLR,First Solar,Information Technology,T1a-active,True,active,2022-12-19,,,,,,,,,,,,,,,,,,0
 FSLY,,Information Technology,T3-active,True,,,,,,,,,,,,,,active,2023-09-01,2024-02-01,3.672913,,27.43,2
 FSS,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2023-04-03,2023-05-01,0.519137,,52.79,1
 FSTX,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2023-02-01,2023-03-01,1.017647,,6.86,1
-FTAI,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2023-09-01,2025-05-01,0.992656,,132.95,2
+FSV,FirstService Corporation Common Shares,,T2-active,True,,,,,,,,,active,2015-06-02,,5.89,spinoff_or_ipo_2015,,,,,,,0
+FTAI,FTAI Aviation Ltd. Common Stock,,"T2-active,T3-historical",True,,,,,,,,,active,2015-05-15,,24.62,recent_listing_2015,historical,2023-09-01,2025-05-01,0.992656,,132.95,2
 FTI,,Energy,"T1a-historical,T3-historical",False,historical,,2021-02-12,,,,,,,,,,,historical,2022-12-01,2024-01-01,0.785124,,21.6,2
 FTK,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2025-07-01,2025-12-01,1.963039,,14.43,2
 FTNT,Fortinet,Information Technology,"T1a-active,T1c-active",True,active,,,active,2021-12-20,,,,,,,,,,,,,,,0
@@ -673,6 +734,8 @@ FTV,Fortive,Industrials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 FUBO,,Communication Services,T3-historical,False,,,,,,,,,,,,,,historical,2025-04-01,2026-01-01,1.452055,,42.96,2
 FULC,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2026-02-02,2026-04-01,1.948649,,10.91,1
 FUSN,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2024-02-01,2024-08-01,3.90411,,21.48,1
+FWONA,Liberty Media Corporation Series A Liberty Formula One Common Stock,,T2-active,True,,,,,,,,,active,2013-01-10,,20.34,recent_listing_2013,,,,,,,0
+FWONK,Liberty Media Corporation Series C Liberty Formula One Common Stock,Communication Services,T2-active,True,,,,,,,,,active,2014-07-08,,22.08,recent_listing_2014,,,,,,,0
 GATO,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2024-07-01,2025-02-03,1.298063,,15.42,2
 GBT,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2022-10-03,2022-12-01,1.079927,,68.18,1
 GCT,,Consumer Discretionary,T3-active,True,,,,,,,,,,,,,,active,2023-11-01,2025-01-01,2.122372,,41.59,4
@@ -687,28 +750,32 @@ GEO,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2023-03-01,2025-08-
 GEOS,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2025-12-01,2026-01-01,1.482257,,27.28,1
 GEV,GE Vernova,Industrials,T1a-active,True,active,2024-04-02,,,,,,,,,,,,,,,,,,0
 GFF,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2023-03-01,2024-07-01,1.118899,,67.72,2
+GFL,GFL Environmental Inc. Subordinate Voting Shares,,T2-active,True,,,,,,,,,active,2020-03-03,,13.61,recent_listing_2020,,,,,,,0
 GFS,GlobalFoundries,Information Technology,T1c-historical,False,,,,historical,2022-12-19,2025-12-22,,,,,,,,,,,,,,0
-GH,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2025-03-03,2026-02-02,2.541064,,107.79,3
+GH,"Guardant Health, Inc. Common Stock",Health Care,"T2-active,T3-historical",True,,,,,,,,,active,2018-10-04,,12.09,recent_listing_2018,historical,2025-03-03,2026-02-02,2.541064,,107.79,3
 GIII,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2024-01-01,2024-05-01,1.261134,,33.51,1
 GILD,Gilead Sciences,Health Care,"T1a-active,T1c-active",True,active,,,active,,,,,,,,,,,,,,,,0
 GILT,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2025-11-03,2026-01-01,1.677122,,14.51,1
 GIS,General Mills,Consumer Staples,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
-GKOS,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-03-01,2024-04-01,0.943697,,92.52,1
+GKOS,Glaukos Corporation,Health Care,"T2-active,T3-historical",True,,,,,,,,,active,2015-06-25,,7.98,spinoff_or_ipo_2015,historical,2024-03-01,2024-04-01,0.943697,,92.52,1
 GL,Globe Life,Financials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
-GLBE,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2023-12-01,2024-01-01,0.615768,,32.38,1
+GLBE,Global-E Online Ltd. Ordinary Shares,,"T2-active,T3-historical",True,,,,,,,,,active,2021-05-12,,5.44,spinoff_or_ipo_2021,historical,2023-12-01,2024-01-01,0.615768,,32.38,1
 GLD,SPDR Gold Shares,Commodities,T1-ETF,True,,,,,,,active,Commodities,,,,,,,,,,,,0
 GLNG,,Energy,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2023-02-01,0.958904,,24.31,1
 GLOP,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2022-12-01,2023-04-03,1.040816,,8.0,2
+GLPI,"Gaming and Leisure Properties, Inc.",Financials,T2-active,True,,,,,,,,,active,2013-10-14,,13.4,recent_listing_2013,,,,,,,0
 GLUE,,Health Care,T3-active,True,,,,,,,,,,,,,,active,2024-12-02,2025-01-01,2.039526,,15.38,2
 GLW,Corning Inc.,Information Technology,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 GLYC,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2023-02-01,2023-04-03,1.767857,,310.0,1
 GM,General Motors,Consumer Discretionary,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 GME,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2025-02-03,2025-03-03,1.2,,32.01,1
+GMED,GLOBUS MEDICAL INC,Health Care,T2-active,True,,,,,,,,,active,2012-08-03,,12.29,recent_listing_2012,,,,,,,0
 GNE,,Utilities,T3-historical,False,,,,,,,,,,,,,,historical,2024-02-01,2024-03-01,1.767977,,28.87,1
 GNRC,Generac,Industrials,T1a-active,True,active,2021-03-22,,,,,,,,,,,,,,,,,,0
 GNW,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2023-04-03,2023-05-01,0.608247,,6.24,1
 GO,,Consumer Staples,T3-historical,False,,,,,,,,,,,,,,historical,2022-09-01,2022-12-01,0.547774,,33.37,1
 GOGO,,Communication Services,T3-historical,False,,,,,,,,,,,,,,historical,2022-07-01,2022-09-01,0.646712,,16.78,1
+GOLF,Acushnet Holdings Corp.,,T2-active,True,,,,,,,,,active,2016-10-28,,5.47,spinoff_or_ipo_2016,,,,,,,0
 GOOG,Alphabet Inc. (Class C),Communication Services,"T1a-active,T1c-active",True,active,,,active,,,,,,,,,,,,,,,,0
 GOOGL,Alphabet Inc. (Class A),Communication Services,"T1a-active,T1c-active",True,active,,,active,,,,,,,,,,,,,,,,0
 GPC,Genuine Parts Company,Consumer Discretionary,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
@@ -716,6 +783,7 @@ GPN,Global Payments,Financials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 GPOR,,Energy,T3-historical,False,,,,,,,,,,,,,,historical,2024-02-01,2024-04-01,0.922817,,131.04,1
 GPRE,,Materials,T3-active,True,,,,,,,,,,,,,,active,2026-05-01,,3.717877,,16.89,1
 GPS,,Consumer Discretionary,"T1a-historical,T3-historical",False,historical,,2022-02-03,,,,,,,,,,,historical,2024-05-01,2024-10-01,1.003604,,22.24,1
+GRAB,Grab Holdings Limited Class A Ordinary Shares,,T2-active,True,,,,,,,,,active,2021-12-02,,14.84,recent_listing_2021,,,,,,,0
 GRAL,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2025-07-01,2026-03-02,2.25,,87.88,1
 GRBK,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2023-05-01,2024-02-01,0.970918,,47.44,2
 GRMN,Garmin,Consumer Discretionary,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
@@ -727,14 +795,18 @@ GSAT,,Communication Services,T3-active,True,,,,,,,,,,,,,,active,2023-01-02,2026-
 GSHD,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2023-11-01,2025-06-02,1.174414,,120.68,2
 GSIT,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2025-12-01,2026-05-01,2.547945,,7.77,2
 GTE,,Energy,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2023-01-02,0.812396,,13.1,3
+GTES,Gates Industrial Corporation plc,Industrials,T2-active,True,,,,,,,,,active,2018-01-25,,6.26,spinoff_or_ipo_2018,,,,,,,0
 GTHX,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2024-10-01,2024-11-01,4.442748,,7.13,1
+GWRE,"GUIDEWIRE SOFTWARE, INC.",Information Technology,T2-active,True,,,,,,,,,active,2012-01-25,,12.15,recent_listing_2012,,,,,,,0
 GWW,W. W. Grainger,Industrials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
+GXO,"GXO Logistics, Inc.",Industrials,T2-active,True,,,,,,,,,active,2021-07-22,,5.32,spinoff_or_ipo_2021,,,,,,,0
 HA,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2024-10-01,2024-11-01,1.761453,,17.48,1
 HAE,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2022-12-01,2023-03-01,0.76605,,77.3,1
 HAL,Halliburton,Energy,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 HALO,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2023-02-01,2023-03-01,0.774789,,56.74,1
 HARP,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2024-03-01,2024-05-01,2.422388,,22.93,1
 HAS,Hasbro,Consumer Discretionary,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
+HASI,"HA Sustainable Infrastructure Capital, Inc.",,T2-active,True,,,,,,,,,active,2013-04-18,,5.4,spinoff_or_ipo_2013,,,,,,,0
 HBAN,Huntington Bancshares,Financials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 HBI,,Consumer Discretionary,T1a-historical,False,historical,,2021-12-20,,,,,,,,,,,,,,,,,0
 HBM,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2024-06-03,2026-05-01,2.46375,,27.71,2
@@ -746,13 +818,15 @@ HD,Home Depot (The),Consumer Discretionary,T1a-active,True,active,,,,,,,,,,,,,,,
 HDSN,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2022-07-01,2023-02-01,1.479452,,10.86,3
 HEES,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2025-06-02,2025-08-01,1.180697,,95.46,1
 HES,,Energy,T1a-historical,False,historical,,2025-07-23,,,,,,,,,,,,,,,,,0
+HESM,Hess Midstream LP Class A Share representing a limited partner Interest,Energy,T2-active,True,,,,,,,,,active,2017-04-05,,5.11,spinoff_or_ipo_2017,,,,,,,0
 HFC,,Energy,T1a-historical,False,historical,,2021-06-04,,,,,,,,,,,,,,,,,0
 HIBB,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2023-04-03,2024-09-02,0.90623,,87.21,2
 HIG,Hartford (The),Financials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 HII,Huntington Ingalls Industries,Industrials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
-HIMS,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2023-04-03,2025-12-01,1.658273,,59.12,3
+HIMS,"Hims & Hers Health, Inc.",,"T2-active,T3-historical",True,,,,,,,,,active,2021-01-21,,6.3,spinoff_or_ipo_2021,historical,2023-04-03,2025-12-01,1.658273,,59.12,3
 HIPO,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2025-02-03,2025-03-03,1.764092,,26.48,1
 HL,,Materials,T3-active,True,,,,,,,,,,,,,,active,2026-01-01,,2.064957,,17.93,1
+HLI,"Houlihan Lokey, Inc.",Financials,T2-active,True,,,,,,,,,active,2015-08-13,,10.5,recent_listing_2015,,,,,,,0
 HLIT,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2023-05-01,2023-08-01,0.986047,,17.08,2
 HLT,Hilton Worldwide,Consumer Discretionary,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 HLX,,Energy,T3-historical,False,,,,,,,,,,,,,,historical,2022-12-01,2024-01-01,0.576677,,9.87,2
@@ -769,6 +843,7 @@ HP,,Energy,"T1a-historical,T3-historical",False,historical,,2020-05-22,,,,,,,,,,
 HPE,Hewlett Packard Enterprise,Information Technology,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 HPK,,Energy,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2022-11-01,2.186813,,29.0,2
 HPQ,HP Inc.,Information Technology,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
+HQY,"HealthEquity, Inc",Industrials,T2-active,True,,,,,,,,,active,2014-07-31,,6.94,spinoff_or_ipo_2014,,,,,,,0
 HRB,,Consumer Discretionary,"T1a-historical,T3-historical",False,historical,,2020-09-21,,,,,,,,,,,historical,2022-09-01,2023-03-01,0.683341,,36.68,1
 HRL,Hormel Foods,Consumer Staples,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 HRMY,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2022-08-01,2023-03-01,0.630468,,54.05,2
@@ -780,12 +855,12 @@ HST,Host Hotels & Resorts,Real Estate,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 HSY,Hershey Company (The),Consumer Staples,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 HTZ,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2025-06-02,2025-08-01,1.103448,,7.32,1
 HUBB,Hubbell Incorporated,Industrials,T1a-active,True,active,2023-10-18,,,,,,,,,,,,,,,,,,0
-HUBS,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2023-11-01,2023-12-01,0.725459,,483.37,1
+HUBS,"HUBSPOT, INC.",Information Technology,"T2-active,T3-historical",True,,,,,,,,,active,2014-10-09,,12.74,recent_listing_2014,historical,2023-11-01,2023-12-01,0.725459,,483.37,1
 HUM,Humana,Health Care,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 HUMA,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-07-01,2024-12-02,1.776119,,5.58,2
 HURN,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2022-11-01,2023-05-01,0.535137,,70.34,3
 HUSA,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2022-11-01,1.204444,,49.6,2
-HUT,,Financials,T3-active,True,,,,,,,,,,,,,,active,2023-12-01,2025-04-01,2.537687,,47.41,3
+HUT,Hut 8 Corp. Common Stock,,"T2-active,T3-active",True,,,,,,,,,active,2023-12-04,,8.79,spinoff_or_ipo_2023,active,2023-12-01,2025-04-01,2.537687,,47.41,3
 HWKN,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2024-08-01,2024-09-02,0.895391,,88.42,1
 HWM,Howmet Aerospace,Industrials,T1a-active,True,active,2020-04-01,,,,,,,,,,,,,,,,,,0
 HY,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2024-03-01,2024-04-01,1.146985,,68.36,1
@@ -796,8 +871,8 @@ IAG,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2024-10-01,2026-05-01
 IAS,,Communication Services,T3-historical,False,,,,,,,,,,,,,,historical,2023-08-01,2023-10-02,1.427718,,20.32,1
 IBKR,Interactive Brokers,Financials,"T1a-active,T3-historical",True,active,2025-08-28,,,,,,,,,,,,historical,2025-01-01,2025-02-03,1.300782,,47.83,1
 IBM,IBM,Information Technology,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
-IBP,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2024-06-03,2024-07-01,1.278719,,243.39,1
-IBRX,,Health Care,T3-active,True,,,,,,,,,,,,,,active,2024-06-03,2024-10-01,1.827586,,7.38,2
+IBP,"INSTALLED BUILDING PRODUCTS, INC.",,"T2-active,T3-historical",True,,,,,,,,,active,2014-02-13,,7.46,spinoff_or_ipo_2014,historical,2024-06-03,2024-07-01,1.278719,,243.39,1
+IBRX,"ImmunityBio, Inc. Common Stock",Health Care,"T2-active,T3-active",True,,,,,,,,,active,2021-03-10,,7.78,spinoff_or_ipo_2021,active,2024-06-03,2024-10-01,1.827586,,7.38,2
 ICE,Intercontinental Exchange,Financials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 ICL,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2022-07-01,2022-08-01,0.635581,,11.4,1
 IDCC,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2023-10-02,2025-06-02,1.135339,,215.05,3
@@ -819,7 +894,7 @@ IMNM,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-03-01,2026-05
 IMO,,Energy,T3-historical,False,,,,,,,,,,,,,,historical,2022-07-01,2023-02-01,0.582207,,56.2,2
 IMRX,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2025-11-03,2026-04-01,2.163636,,5.22,2
 IMTE,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2022-07-01,2022-08-01,1.008929,,90.0,1
-IMVT,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2023-01-02,2024-05-01,1.46129,,38.15,1
+IMVT,"Immunovant, Inc. Common Stock",Health Care,"T2-active,T3-historical",True,,,,,,,,,active,2019-06-21,,5.67,spinoff_or_ipo_2019,historical,2023-01-02,2024-05-01,1.46129,,38.15,1
 IMXI,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2022-11-01,2023-01-02,0.770764,,26.65,1
 INBX,,Health Care,T3-active,True,,,,,,,,,,,,,,active,2023-07-03,2026-02-02,3.762643,,58.39,3
 INCY,Incyte,Health Care,"T1a-active,T1c-historical",True,active,,,historical,,2021-12-20,,,,,,,,,,,,,,0
@@ -827,6 +902,7 @@ INDO,,Energy,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2022-11-01,0
 INDV,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2025-10-01,2026-05-01,2.431633,,33.63,2
 INFA,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2024-05-01,2024-06-03,1.311849,,35.51,1
 INFO,,Industrials,T1a-historical,False,historical,,2022-03-02,,,,,,,,,,,,,,,,,0
+INGM,Ingram Micro Holding Corporation,Information Technology,T2-active,True,,,,,,,,,active,2024-10-24,,6.5,spinoff_or_ipo_2024,,,,,,,0
 INKT,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2025-09-01,2025-10-01,1.282821,,18.71,1
 INOD,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2023-07-03,2025-12-01,2.502768,,75.94,6
 INSM,Insmed Incorporated,Health Care,"T1c-active,T3-historical",True,,,,active,2025-12-22,,,,,,,,,historical,2024-08-01,2025-06-02,2.132661,,77.69,1
@@ -837,9 +913,9 @@ INTR,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2024-03-01,2024-06-
 INTT,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2023-06-01,2023-09-01,2.380653,,26.91,1
 INTU,Intuit,Information Technology,"T1a-active,T1c-active",True,active,,,active,,,,,,,,,,,,,,,,0
 INVH,Invitation Homes,Real Estate,T1a-active,True,active,2022-09-19,,,,,,,,,,,,,,,,,,0
-IONQ,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2023-07-03,2025-12-01,2.83871,,64.26,3
+IONQ,"IonQ, Inc.",Information Technology,"T2-active,T3-historical",True,,,,,,,,,active,2021-01-04,,17.07,recent_listing_2021,historical,2023-07-03,2025-12-01,2.83871,,64.26,3
 IONS,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2022-11-01,2022-12-01,0.417981,,42.27,1
-IOT,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2023-06-01,2024-04-01,0.923317,,30.85,2
+IOT,Samsara Inc.,Information Technology,"T2-active,T3-historical",True,,,,,,,,,active,2021-12-15,,17.77,recent_listing_2021,historical,2023-06-01,2024-04-01,0.923317,,30.85,2
 IOVA,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-04-01,2024-12-02,1.745714,,9.61,2
 IP,International Paper,Materials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 IPAR,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2023-05-01,2023-10-02,0.845096,,150.32,2
@@ -849,7 +925,7 @@ IPI,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2022-11-01
 IQV,IQVIA,Health Care,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 IR,Ingersoll Rand,Industrials,T1a-active,True,active,2020-03-02,,,,,,,,,,,,,,,,,,0
 IRDM,,Communication Services,T3-historical,False,,,,,,,,,,,,,,historical,2023-05-01,2023-07-03,0.621286,,62.76,1
-IREN,,Financials,T3-active,True,,,,,,,,,,,,,,active,2024-02-01,2026-04-01,4.365443,,35.09,7
+IREN,IREN Limited Ordinary Shares,,"T2-active,T3-active",True,,,,,,,,,active,2021-11-17,,16.42,recent_listing_2021,active,2024-02-01,2026-04-01,4.365443,,35.09,7
 IRM,Iron Mountain,Real Estate,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 IRON,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-02-01,2025-06-02,0.904537,,52.47,2
 IRT,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2022-07-01,0.611209,,27.31,1
@@ -870,14 +946,16 @@ JBHT,J.B. Hunt,Industrials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 JBL,Jabil,Information Technology,"T1a-active,T3-historical",True,active,2023-12-18,,,,,,,,,,,,historical,2023-08-01,2024-01-01,0.735098,,122.55,3
 JCI,Johnson Controls,Industrials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 JD,JD.com,Consumer Discretionary,T1c-historical,False,,,,historical,,2023-12-18,,,,,,,,,,,,,,0
+JHG,Janus Henderson Group plc Ordinary Shares,Financials,T2-active,True,,,,,,,,,active,2017-05-30,,7.96,spinoff_or_ipo_2017,,,,,,,0
+JHX,James Hardie Industries plc,,T2-active,True,,,,,,,,,active,2025-07-01,,11.53,recent_listing_2025,,,,,,,0
 JKHY,Jack Henry & Associates,Financials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 JNJ,Johnson & Johnson,Health Care,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 JNPR,,Information Technology,T1a-historical,False,historical,,2025-07-09,,,,,,,,,,,,,,,,,0
-JOBY,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2025-09-01,2025-12-01,2.193613,,16.0,1
+JOBY,"Joby Aviation, Inc.",,"T2-active,T3-historical",True,,,,,,,,,active,2021-08-11,,8.71,spinoff_or_ipo_2021,historical,2025-09-01,2025-12-01,2.193613,,16.0,1
 JPM,JPMorgan Chase,Financials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 JSPR,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-12-02,2025-01-01,2.388214,,22.02,1
 JWN,,Consumer Discretionary,T1a-historical,False,historical,,2020-06-22,,,,,,,,,,,,,,,,,0
-JXN,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2024-06-03,2024-11-01,1.285525,,86.37,1
+JXN,Jackson Financial Inc.,Financials,"T2-active,T3-historical",True,,,,,,,,,active,2021-09-01,,7.98,spinoff_or_ipo_2021,historical,2024-06-03,2024-11-01,1.285525,,86.37,1
 K,,Consumer Staples,T1a-historical,False,historical,,2025-12-11,,,,,,,,,,,,,,,,,0
 KBH,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2023-09-01,2023-10-02,0.838186,,54.3,1
 KD,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2024-07-01,2024-09-02,0.970499,,26.05,1
@@ -886,32 +964,36 @@ KDP,Keurig Dr Pepper,Consumer Staples,"T1a-active,T1c-active",True,active,2022-0
 KEY,KeyCorp,Financials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 KEYS,Keysight Technologies,Information Technology,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 KGC,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2025-03-03,2026-04-01,2.506481,,37.87,3
+KGS,"Kodiak Gas Services, Inc.",Energy,T2-active,True,,,,,,,,,active,2023-06-29,,6.01,spinoff_or_ipo_2023,,,,,,,0
 KHC,Kraft Heinz,Consumer Staples,"T1a-active,T1c-active",True,active,,,active,,,,,,,,,,,,,,,,0
 KIM,Kimco Realty,Real Estate,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 KINS,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2025-04-01,2025-09-01,1.344564,,15.31,2
 KKR,KKR & Co.,Financials,T1a-active,True,active,2024-06-24,,,,,,,,,,,,,,,,,,0
 KLAC,KLA Corporation,Information Technology,"T1a-active,T1c-active",True,active,,,active,,,,,,,,,,,,,,,,0
+KLAR,Klarna Group plc,,T2-active,True,,,,,,,,,active,2025-09-10,,5.62,spinoff_or_ipo_2025,,,,,,,0
 KLXE,,Energy,T3-historical,False,,,,,,,,,,,,,,historical,2023-01-02,2023-02-01,3.717949,,14.72,1
 KMB,Kimberly-Clark,Consumer Staples,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 KMI,Kinder Morgan,Energy,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 KMX,,Consumer Discretionary,T1a-historical,False,historical,,2025-10-31,,,,,,,,,,,,,,,,,0
-KNSL,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2022-11-01,2022-12-01,0.503001,,245.38,1
+KNF,Knife River Corporation,Energy,T2-active,True,,,,,,,,,active,2023-05-25,,5.12,spinoff_or_ipo_2023,,,,,,,0
+KNSL,"Kinsale Capital Group, Inc.",Financials,"T2-active,T3-historical",True,,,,,,,,,active,2016-07-28,,7.01,spinoff_or_ipo_2016,historical,2022-11-01,2022-12-01,0.503001,,245.38,1
 KO,Coca-Cola Company (The),Consumer Staples,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 KOD,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2025-09-01,2026-03-02,3.103989,,28.81,3
 KOS,,Energy,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2023-04-03,0.707424,,7.82,3
 KR,Kroger,Consumer Staples,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
-KRMN,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2026-03-02,2026-04-01,2.623667,,108.71,1
+KRMN,Karman Holdings Inc.,,"T2-active,T3-historical",True,,,,,,,,,active,2025-02-13,,8.66,spinoff_or_ipo_2025,historical,2026-03-02,2026-04-01,2.623667,,108.71,1
 KROS,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2023-07-03,2023-08-01,0.888206,,49.15,1
 KRTX,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2022-10-03,2023-07-03,0.785508,,191.96,2
 KRUS,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2022-09-01,2023-07-03,0.737078,,65.87,2
-KRYS,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2022-12-01,2023-08-01,0.857826,,120.48,2
+KRYS,"Krystal Biotech, Inc. Common Stock",Health Care,"T2-active,T3-historical",True,,,,,,,,,active,2017-09-20,,8.46,spinoff_or_ipo_2017,historical,2022-12-01,2023-08-01,0.857826,,120.48,2
 KSS,,Consumer Discretionary,T1a-historical,False,historical,,2020-09-21,,,,,,,,,,,,,,,,,0
 KSU,,Industrials,T1a-historical,False,historical,,2021-12-14,,,,,,,,,,,,,,,,,0
 KTOS,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2023-12-01,2026-04-01,3.433294,,111.32,3
 KULR,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2025-01-01,2025-10-01,1.865288,,5.93,2
 KURA,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-05-01,2024-12-02,1.548303,,19.52,3
 KVUE,Kenvue,Consumer Staples,T1a-active,True,active,2023-08-25,,,,,,,,,,,,,,,,,,0
-KYMR,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2023-06-01,2026-05-01,2.002649,,90.68,3
+KVYO,"Klaviyo, Inc.",Information Technology,T2-active,True,,,,,,,,,active,2023-09-20,,6.77,spinoff_or_ipo_2023,,,,,,,0
+KYMR,"Kymera Therapeutics, Inc. Common Stock",Health Care,"T2-active,T3-historical",True,,,,,,,,,active,2020-08-21,,6.88,spinoff_or_ipo_2020,historical,2023-06-01,2026-05-01,2.002649,,90.68,3
 KYTX,,Health Care,T3-active,True,,,,,,,,,,,,,,active,2026-02-02,2026-04-01,2.714286,,7.8,2
 KZR,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2022-07-01,1.105802,,123.4,1
 L,Loews Corporation,Financials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
@@ -923,7 +1005,9 @@ LAR,,Materials,T3-active,True,,,,,,,,,,,,,,active,2026-03-02,,1.948113,,6.25,1
 LASR,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2025-10-01,2026-04-01,3.465164,,43.58,2
 LB,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2025-08-01,2025-09-01,1.242947,,67.58,1
 LBPH,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2024-03-01,2024-12-02,4.882353,,32.0,3
-LBRT,,Energy,T3-historical,False,,,,,,,,,,,,,,historical,2022-12-01,2023-02-01,0.560976,,16.0,1
+LBRDA,Liberty Broadband Corporation Class A,Communication Services,T2-active,True,,,,,,,,,active,2014-11-04,,5.53,spinoff_or_ipo_2014,,,,,,,0
+LBRDK,Liberty Broadband Corporation Class C,Communication Services,T2-active,True,,,,,,,,,active,2014-11-04,,5.54,spinoff_or_ipo_2014,,,,,,,0
+LBRT,Liberty Energy Inc.,Energy,"T2-active,T3-historical",True,,,,,,,,,active,2018-01-12,,5.54,spinoff_or_ipo_2018,historical,2022-12-01,2023-02-01,0.560976,,16.0,1
 LBTYA,Liberty Global Class A,Communication Services,T1c-historical,False,,,,historical,,2020-12-21,,,,,,,,,,,,,,0
 LBTYK,Liberty Global Class C,Communication Services,T1c-historical,False,,,,historical,,2020-12-21,,,,,,,,,,,,,,0
 LC,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2024-12-02,2025-01-01,1.269537,,14.23,1
@@ -932,19 +1016,22 @@ LDOS,Leidos,Industrials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 LEG,,Consumer Staples,T1a-historical,False,historical,,2021-12-20,,,,,,,,,,,,,,,,,0
 LEN,Lennar,Consumer Discretionary,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 LEU,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2025-04-01,2026-05-01,2.048191,,210.63,3
+LEVI,Levi Strauss & Co. Class A Common Stock,Consumer Discretionary,T2-active,True,,,,,,,,,active,2019-03-21,,8.5,spinoff_or_ipo_2019,,,,,,,0
 LFMD,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-02-01,2025-10-01,1.213849,,10.87,3
 LFVN,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2025-03-03,2025-04-01,2.131004,,21.51,1
+LGN,Legence Corp. Class A Common stock,Industrials,T2-active,True,,,,,,,,,active,2025-09-12,,7.03,spinoff_or_ipo_2025,,,,,,,0
 LGVN,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2022-07-01,0.636226,,108.4,1
 LH,Labcorp,Health Care,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 LHX,L3Harris,Industrials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 LIF,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2025-11-03,2025-12-01,1.379163,,105.73,1
 LII,Lennox International,Industrials,T1a-active,True,active,2024-12-23,,,,,,,,,,,,,,,,,,0
 LIN,Linde plc,Materials,"T1a-active,T1c-active",True,active,,,active,2024-03-18,,,,,,,,,,,,,,,0
+LINE,"Lineage, Inc. Common Stock",Financials,T2-active,True,,,,,,,,,active,2024-07-25,,8.02,spinoff_or_ipo_2024,,,,,,,0
 LITE,Lumentum,Information Technology,"T1a-active,T3-historical",True,active,2026-03-23,,,,,,,,,,,,historical,2025-11-03,2026-04-01,3.722972,,332.45,2
 LKQ,,Consumer Discretionary,T1a-historical,False,historical,,2025-12-22,,,,,,,,,,,,,,,,,0
 LLY,Lilly (Eli),Health Care,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
-LLYVA,,Communication Services,T3-historical,False,,,,,,,,,,,,,,historical,2025-06-02,2025-09-01,1.147492,,78.77,1
-LLYVK,,Communication Services,T3-historical,False,,,,,,,,,,,,,,historical,2025-06-02,2025-10-01,1.131874,,85.68,1
+LLYVA,"Liberty Live Holdings, Inc. Series A Liberty Live Group Common Stock",,"T2-active,T3-historical",True,,,,,,,,,active,2023-08-04,,8.46,spinoff_or_ipo_2023,historical,2025-06-02,2025-09-01,1.147492,,78.77,1
+LLYVK,"Liberty Live Holdings, Inc. Series C Liberty Live Group Common Stock",,"T2-active,T3-historical",True,,,,,,,,,active,2023-08-04,,8.65,spinoff_or_ipo_2023,historical,2025-06-02,2025-10-01,1.131874,,85.68,1
 LMB,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2023-08-01,2025-09-01,1.18651,,139.39,6
 LMND,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2025-01-01,2025-12-01,2.008854,,54.37,4
 LMT,Lockheed Martin,Industrials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
@@ -952,11 +1039,11 @@ LNC,,Financials,T1a-historical,False,historical,,2023-09-18,,,,,,,,,,,,,,,,,0
 LNG,,Utilities,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2023-02-01,0.641908,,170.43,2
 LNSR,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2025-08-01,2025-09-01,1.345588,,12.76,1
 LNT,Alliant Energy,Utilities,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
-LNTH,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2023-03-01,1.008237,,48.76,1
-LOAR,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2025-06-02,2025-07-01,0.856311,,95.6,1
+LNTH,"Lantheus Holdings, Inc",,"T2-active,T3-historical",True,,,,,,,,,active,2015-06-25,,5.71,spinoff_or_ipo_2015,historical,2022-06-01,2023-03-01,1.008237,,48.76,1
+LOAR,Loar Holdings Inc.,,"T2-active,T3-historical",True,,,,,,,,,active,2024-04-25,,5.2,spinoff_or_ipo_2024,historical,2025-06-02,2025-07-01,0.856311,,95.6,1
 LOW,Lowe's,Consumer Discretionary,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 LPG,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2023-04-03,2024-03-01,1.376073,,44.29,3
-LPLA,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2022-12-01,2023-01-02,0.579099,,252.34,1
+LPLA,LPL Financial Holdings Inc.,Financials,"T2-active,T3-historical",True,,,,,,,,,active,2010-11-18,,25.73,recent_listing_2010,historical,2022-12-01,2023-01-02,0.579099,,252.34,1
 LPTH,,Information Technology,T3-active,True,,,,,,,,,,,,,,active,2025-11-03,2026-01-01,3.333333,,9.49,2
 LQD,iShares iBoxx Investment Grade Corporate Bond ETF,Fixed Income,T1-ETF,True,,,,,,,active,Bonds,,,,,,,,,,,,0
 LQDA,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2022-10-03,2026-03-02,1.447183,,34.75,5
@@ -964,7 +1051,7 @@ LRCX,Lam Research,Information Technology,"T1a-active,T1c-active",True,active,,,a
 LRN,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2023-12-01,2025-08-01,1.236332,,153.39,2
 LSCC,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2023-05-01,2023-06-01,0.914074,,90.44,1
 LTBR,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2024-12-02,2026-02-02,1.856874,,15.17,3
-LTH,,Communication Services,T3-historical,False,,,,,,,,,,,,,,historical,2025-03-03,2025-07-01,0.996803,,31.23,1
+LTH,"Life Time Group Holdings, Inc.",,"T2-active,T3-historical",True,,,,,,,,,active,2021-10-07,,5.85,spinoff_or_ipo_2021,historical,2025-03-03,2025-07-01,0.996803,,31.23,1
 LTHM,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2022-07-01,2022-08-01,0.915047,,34.49,1
 LULU,Lululemon Athletica,Consumer Discretionary,"T1a-active,T1c-historical",True,active,2023-10-18,,historical,,2025-12-22,,,,,,,,,,,,,,0
 LUMN,,Communication Services,"T1a-historical,T3-historical",False,historical,,2023-03-20,,,,,,,,,,,historical,2024-10-01,2025-03-03,3.153846,,5.4,1
@@ -975,6 +1062,7 @@ LW,,Consumer Staples,T1a-historical,False,historical,,2026-03-23,,,,,,,,,,,,,,,,
 LWAY,,Consumer Staples,T3-historical,False,,,,,,,,,,,,,,historical,2024-06-03,2024-07-01,2.335,,20.01,1
 LXU,,Materials,T3-active,True,,,,,,,,,,,,,,active,2022-06-01,2023-01-02,1.884956,,16.3,2
 LYB,LyondellBasell,Materials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
+LYFT,"Lyft, Inc. Class A Common Stock",Industrials,T2-active,True,,,,,,,,,active,2019-03-29,,5.37,spinoff_or_ipo_2019,,,,,,,0
 LYRA,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-04-01,2024-06-03,1.654472,,326.5,1
 LYTS,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2023-04-03,2023-05-01,1.507365,,15.32,1
 LYV,Live Nation Entertainment,Communication Services,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
@@ -991,6 +1079,7 @@ MAXN,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2023-01
 MAXR,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2023-02-01,2023-07-03,0.717172,,52.7,2
 MAZE,,Health Care,T3-active,True,,,,,,,,,,,,,,active,2026-03-02,,2.700365,,30.38,1
 MBC,,Consumer Staples,"T1a-historical,T3-historical",False,historical,2022-12-15,2022-12-19,,,,,,,,,,,historical,2024-05-01,2024-06-03,1.40613,,18.84,1
+MBLY,Mobileye Global Inc. Class A Common Stock,Information Technology,T2-active,True,,,,,,,,,active,2022-10-26,,7.28,spinoff_or_ipo_2022,,,,,,,0
 MBX,,Health Care,T3-active,True,,,,,,,,,,,,,,active,2026-02-02,,2.107961,,28.5,1
 MCD,McDonald's,Consumer Discretionary,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 MCHP,Microchip Technology,Information Technology,"T1a-active,T1c-active",True,active,,,active,,,,,,,,,,,,,,,,0
@@ -1000,11 +1089,12 @@ MCRB,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2023-06-01,2023-07
 MCY,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2024-09-02,2024-11-01,1.283706,,63.35,1
 MDB,MongoDB,Information Technology,"T1c-historical,T3-historical",False,,,,historical,2023-12-18,2025-05-19,,,,,,,,historical,2023-11-01,2024-01-01,1.269442,,335.31,1
 MDGL,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2023-02-01,2024-01-01,0.793001,,120.4,1
+MDLN,Medline Inc. Class A common stock,Health Care,T2-active,True,,,,,,,,,active,2025-12-17,,37.37,recent_listing_2025,,,,,,,0
 MDLZ,Mondelez International,Consumer Staples,"T1a-active,T1c-active",True,active,,,active,,,,,,,,,,,,,,,,0
 MDT,Medtronic,Health Care,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 MDWD,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-10-01,2024-11-01,1.184783,,20.1,1
 MDXG,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2023-09-01,2024-03-01,1.405405,,8.9,2
-MEDP,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2024-04-01,2024-05-01,1.221573,,403.26,1
+MEDP,"Medpace Holdings, Inc. Common Stock",Health Care,"T2-active,T3-historical",True,,,,,,,,,active,2016-08-11,,11.91,recent_listing_2016,historical,2024-04-01,2024-05-01,1.221573,,403.26,1
 MELI,Mercado Libre,Consumer Discretionary,T1c-active,True,,,,active,,,,,,,,,,,,,,,,0
 MET,MetLife,Financials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 META,Meta Platforms,Communication Services,"T1a-active,T1c-active",True,active,,,active,,,,,,,,,,,,,,,,0
@@ -1014,12 +1104,13 @@ MGM,MGM Resorts,Consumer Discretionary,T1a-active,True,active,,,,,,,,,,,,,,,,,,,
 MGNI,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2023-09-01,2023-10-02,0.893216,,15.07,1
 MGNX,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-03-01,2024-07-01,2.173448,,14.82,2
 MGPI,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2022-08-01,2022-12-01,0.605892,,100.85,1
-MGY,,Energy,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2022-10-03,0.547382,,23.35,1
+MGY,Magnolia Oil & Gas Corporation Class A Common Stock,Energy,"T2-active,T3-historical",True,,,,,,,,,active,2017-06-26,,5.78,spinoff_or_ipo_2017,historical,2022-06-01,2022-10-03,0.547382,,23.35,1
 MHK,,Consumer Discretionary,T1a-historical,False,historical,,2025-12-22,,,,,,,,,,,,,,,,,0
 MHO,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2023-08-01,2024-04-01,1.331674,,131.18,1
+MICC,The Magnum Ice Cream Company N.V.,,T2-active,True,,,,,,,,,active,2025-12-08,,9.29,spinoff_or_ipo_2025,,,,,,,0
 MIME,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2022-07-01,0.577167,,79.71,1
 MIND,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2025-04-01,2026-01-01,1.880519,,11.09,3
-MIRM,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2022-11-01,2025-05-01,0.987659,,49.93,2
+MIRM,"Mirum Pharmaceuticals, Inc. Common Stock",Health Care,"T2-active,T3-historical",True,,,,,,,,,active,2019-07-18,,6.45,spinoff_or_ipo_2019,historical,2022-11-01,2025-05-01,0.987659,,49.93,2
 MKC,McCormick & Company,Consumer Staples,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 MKSI,,Industrials,T3-active,True,,,,,,,,,,,,,,active,2026-04-01,,2.012689,,223.18,1
 MKTX,,Financials,T1a-historical,False,historical,,2025-09-22,,,,,,,,,,,,,,,,,0
@@ -1042,8 +1133,9 @@ MODN,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2023-03-01,2023-04-03,
 MOH,,Health Care,T1a-historical,False,historical,2022-03-02,2026-03-23,,,,,,,,,,,,,,,,,0
 MORF,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2023-06-01,2023-11-01,1.043267,,54.78,1
 MOS,Mosaic Company (The),Materials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
-MP,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2025-08-01,2026-03-02,1.494236,,51.93,1
+MP,MP Materials Corp.,Energy,"T2-active,T3-historical",True,,,,,,,,,active,2020-11-18,,11.76,recent_listing_2020,historical,2025-08-01,2026-03-02,1.494236,,51.93,1
 MPC,Marathon Petroleum,Energy,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
+MPLX,MPLX LP,Energy,T2-active,True,,,,,,,,,active,2012-10-26,,58.04,recent_listing_2012,,,,,,,0
 MPTI,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2025-08-01,2025-09-01,1.44719,,41.59,1
 MPWR,Monolithic Power Systems,Information Technology,"T1a-active,T1c-active",True,active,2021-02-12,,active,2025-12-22,,,,,,,,,,,,,,,0
 MRK,Merck & Co.,Health Care,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
@@ -1057,27 +1149,30 @@ MRX,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2025-06-02,2025-08-0
 MS,Morgan Stanley,Financials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 MSCI,MSCI Inc.,Financials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 MSFT,Microsoft,Information Technology,"T1a-active,T1c-active",True,active,,,active,,,,,,,,,,,,,,,,0
+MSGS,Madison Square Garden Sports Corp.,,T2-active,True,,,,,,,,,active,2015-09-17,,8.19,spinoff_or_ipo_2015,,,,,,,0
 MSI,Motorola Solutions,Information Technology,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 MSTR,MicroStrategy,Information Technology,"T1c-active,T3-historical",True,,,,active,2024-12-23,,,,,,,,,historical,2023-12-01,2025-01-01,4.047542,,255.34,2
 MTA,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2026-02-02,2026-04-01,1.957597,,8.37,1
 MTB,M&T Bank,Financials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 MTCH,Match Group,Information Technology,"T1a-historical,T1c-historical",False,historical,2021-09-20,2026-03-23,historical,2020-12-21,2022-12-19,,,,,,,,,,,,,,0
 MTD,Mettler Toledo,Health Care,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
-MTDR,,Energy,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2023-02-01,0.682672,,64.48,2
+MTDR,MATADOR RESOURCES COMPANY,Energy,"T2-active,T3-historical",True,,,,,,,,,active,2012-02-02,,7.93,spinoff_or_ipo_2012,historical,2022-06-01,2023-02-01,0.682672,,64.48,2
 MTH,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2023-09-01,2023-10-02,0.87037,,75.25,1
 MTOR,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2022-08-01,2022-10-03,0.503508,,36.43,1
+MTSI,"MACOM Technology Solutions Holdings, Inc",Information Technology,T2-active,True,,,,,,,,,active,2012-03-15,,21.88,recent_listing_2012,,,,,,,0
 MTTR,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2025-03-03,2025-05-01,1.769231,,5.4,1
 MTW,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2023-10-02,2023-11-01,0.997494,,15.94,1
 MU,Micron Technology,Information Technology,"T1a-active,T1c-active",True,active,,,active,,,,,,,,,,,,,,,,0
 MUR,,Energy,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2023-02-01,0.709495,,45.37,2
-MUSA,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2023-02-01,0.517386,,297.62,1
+MUSA,MURPHY USA INC.,Consumer Discretionary,"T2-active,T3-historical",True,,,,,,,,,active,2013-08-19,,10.95,recent_listing_2013,historical,2022-06-01,2023-02-01,0.517386,,297.62,1
 MUX,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2026-03-02,2026-05-01,2.365217,,27.09,1
 MXIM,Maxim Integrated Products,Information Technology,"T1a-historical,T1c-historical",False,historical,,2021-08-30,historical,,2021-08-26,,,,,,,,,,,,,,0
+MXL,"MaxLinear, Inc. Common Stock",Information Technology,T2-active,True,,,,,,,,,active,2010-03-24,,7.0,spinoff_or_ipo_2010,,,,,,,0
 MYOV,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2023-01-02,2023-05-01,0.882682,,26.96,1
 MYRG,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2023-11-01,2023-12-01,0.730817,,138.95,1
 NATI,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2023-06-01,2023-07-03,0.660286,,58.11,1
 NB,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2025-11-03,2026-04-01,2.229665,,6.75,1
-NBIS,,Communication Services,T3-active,True,,,,,,,,,,,,,,active,2025-11-03,2026-03-02,3.118464,,100.82,2
+NBIS,Nebius Group N.V. Class A Ordinary Shares,,"T2-active,T3-active",True,,,,,,,,,active,2011-05-24,,44.79,recent_listing_2011,active,2025-11-03,2026-03-02,3.118464,,100.82,2
 NBIX,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2023-02-01,2023-03-01,0.638095,,118.68,1
 NBL,,Energy,T1a-historical,False,historical,,2020-10-12,,,,,,,,,,,,,,,,,0
 NBR,,Energy,T3-active,True,,,,,,,,,,,,,,active,2022-06-01,2023-02-01,2.003688,,89.6,4
@@ -1085,13 +1180,14 @@ NBY,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2026-03-02,2026-04-
 NCLH,Norwegian Cruise Line Holdings,Consumer Discretionary,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 NDAQ,"Nasdaq, Inc.",Financials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 NDSN,Nordson Corporation,Industrials,T1a-active,True,active,2022-02-15,,,,,,,,,,,,,,,,,,0
+NE,Noble Corporation plc,Energy,T2-active,True,,,,,,,,,active,2022-09-30,,8.13,spinoff_or_ipo_2022,,,,,,,0
 NEE,NextEra Energy,Utilities,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 NEGG,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2025-09-01,2026-01-01,4.510967,,66.33,1
 NEM,Newmont,Materials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 NEO,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2023-07-03,2024-02-01,1.093509,,19.03,2
 NEON,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2025-06-02,2025-11-03,1.40829,,23.24,2
 NESR,,Energy,T3-active,True,,,,,,,,,,,,,,active,2026-04-01,,2.360937,,21.51,1
-NET,"Cloudflare, Inc. Class A common stock, par value $0.001 per share",Information Technology,"T2-active,T3-historical",True,,,,,,,,,active,2019-09-13,,79.22,tech_listing_2019,historical,2025-08-01,2025-12-01,1.441689,,218.58,1
+NET,"Cloudflare, Inc. Class A common stock, par value $0.001 per share",Information Technology,"T2-active,T3-historical",True,,,,,,,,,active,2019-09-13,,79.22,recent_listing_2019,historical,2025-08-01,2025-12-01,1.441689,,218.58,1
 NETI,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2023-08-01,2023-09-01,0.79084,,11.73,1
 NEWP,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2026-04-01,2026-05-01,3.293651,,5.41,1
 NEWR,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2023-12-01,2024-01-01,0.647282,,86.68,1
@@ -1131,16 +1227,16 @@ NSC,Norfolk Southern,Industrials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 NSSC,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2023-04-03,2024-10-01,1.224898,,54.51,2
 NTAP,NetApp,Information Technology,"T1a-active,T1c-historical",True,active,,,historical,,2020-08-24,,,,,,,,,,,,,,0
 NTES,NetEase,Communication Services,T1c-historical,False,,,,historical,,2022-12-19,,,,,,,,,,,,,,0
-NTNX,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2023-07-03,2024-09-02,0.896239,,56.47,2
+NTNX,"Nutanix, Inc. Class A Common Stock",Information Technology,"T2-active,T3-historical",True,,,,,,,,,active,2016-09-30,,11.6,recent_listing_2016,historical,2023-07-03,2024-09-02,0.896239,,56.47,2
 NTR,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2022-07-01,0.640805,,101.09,1
-NTRA,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-07-01,2025-04-01,1.169905,,165.26,3
+NTRA,"Natera, Inc. Common Stock",Health Care,"T2-active,T3-historical",True,,,,,,,,,active,2015-07-02,,30.21,recent_listing_2015,historical,2024-07-01,2025-04-01,1.169905,,165.26,3
 NTRS,Northern Trust,Financials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
-NU,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2023-08-01,2024-06-03,1.366337,,11.95,2
+NU,Nu Holdings Ltd.,,"T2-active,T3-historical",True,,,,,,,,,active,2021-12-09,,68.83,recent_listing_2021,historical,2023-08-01,2024-06-03,1.366337,,11.95,2
 NUE,Nucor,Materials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 NUKK,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2025-02-03,2026-01-01,4.0,,8.0,3
 NUTX,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2025-09-01,2026-03-02,3.297266,,183.88,1
 NUVB,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2026-01-01,2026-05-01,1.973262,,5.56,2
-NUVL,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2023-03-01,2024-06-03,1.23115,,76.64,2
+NUVL,"Nuvalent, Inc. Class A Common Stock",Health Care,"T2-active,T3-historical",True,,,,,,,,,active,2021-07-29,,8.1,spinoff_or_ipo_2021,historical,2023-03-01,2024-06-03,1.23115,,76.64,2
 NVAX,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-07-01,2024-10-01,0.978313,,16.42,2
 NVCR,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2025-02-03,2025-03-03,1.145506,,30.08,1
 NVDA,Nvidia,Information Technology,"T1a-active,T1c-active",True,active,,,active,,,,,,,,,,,,,,,,0
@@ -1150,72 +1246,86 @@ NVMI,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2024-08
 NVNI,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2025-03-03,2025-04-01,1.327957,,43.3,1
 NVR,"NVR, Inc.",Consumer Discretionary,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 NVRI,,Industrials,T3-active,True,,,,,,,,,,,,,,active,2026-01-01,2026-02-02,1.806259,,18.83,2
+NVT,nVent Electric plc Ordinary Shares,Industrials,T2-active,True,,,,,,,,,active,2018-04-16,,26.31,recent_listing_2018,,,,,,,0
 NVTS,,Information Technology,T3-active,True,,,,,,,,,,,,,,active,2023-07-03,2026-01-01,3.039024,,8.28,4
 NWL,,Materials,T1a-historical,False,historical,,2023-09-18,,,,,,,,,,,,,,,,,0
 NWLI,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2023-09-01,2023-10-02,1.135752,,419.12,1
 NWS,News Corp (Class B),Communication Services,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 NWSA,News Corp (Class A),Communication Services,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
-NXE,,Energy,T3-historical,False,,,,,,,,,,,,,,historical,2024-06-03,2024-07-01,1.253333,,8.45,1
+NXE,NexGen Energy Ltd.,,"T2-active,T3-historical",True,,,,,,,,,active,2013-07-24,,8.24,spinoff_or_ipo_2013,historical,2024-06-03,2024-07-01,1.253333,,8.45,1
 NXPI,NXP Semiconductors,Information Technology,"T1a-active,T1c-active",True,active,2021-03-22,,active,,,,,,,,,,,,,,,,0
 NXRT,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2022-07-01,0.797831,,92.84,1
-NXT,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2025-12-01,2026-02-02,1.435402,,90.67,1
+NXT,Nextpower Inc. Class A Common Stock,,"T2-active,T3-historical",True,,,,,,,,,active,2023-02-09,,17.36,recent_listing_2023,historical,2025-12-01,2026-02-02,1.435402,,90.67,1
 O,Realty Income,Real Estate,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
+OBDC,Blue Owl Capital Corporation,,T2-active,True,,,,,,,,,active,2019-07-18,,5.86,spinoff_or_ipo_2019,,,,,,,0
 OCUL,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-09-02,2025-02-03,1.225664,,10.06,1
 ODFL,Old Dominion,Industrials,"T1a-active,T1c-active",True,active,,,active,,,,,,,,,,,,,,,,0
 OEC,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2023-04-03,2023-06-01,0.699062,,25.35,1
 OGN,,Health Care,T1a-historical,False,historical,2021-06-03,2023-10-18,,,,,,,,,,,,,,,,,0
+OGS,"ONE GAS, INC.",Energy,T2-active,True,,,,,,,,,active,2014-01-16,,5.57,spinoff_or_ipo_2014,,,,,,,0
 OI,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2023-04-03,2023-06-01,0.716996,,21.72,1
 OII,,Energy,T3-historical,False,,,,,,,,,,,,,,historical,2023-09-01,2024-01-01,0.560269,,23.17,1
 OIS,,Industrials,T3-active,True,,,,,,,,,,,,,,active,2026-05-01,,2.306233,,12.2,1
 OKE,Oneok,Energy,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
-OKLO,,Utilities,T3-historical,False,,,,,,,,,,,,,,historical,2025-06-02,2026-02-02,2.894644,,88.72,3
+OKLO,Oklo Inc.,Utilities,"T2-active,T3-historical",True,,,,,,,,,active,2024-05-10,,11.93,recent_listing_2024,historical,2025-06-02,2026-02-02,2.894644,,88.72,3
 OKTA,Okta,Information Technology,T1c-historical,False,,,,historical,2020-12-21,2022-11-21,,,,,,,,,,,,,,0
+OLLI,"Ollie's Bargain Outlet Holdings, Inc. Common Stock",Consumer Discretionary,T2-active,True,,,,,,,,,active,2015-07-16,,5.0,spinoff_or_ipo_2015,,,,,,,0
 OLMA,,Health Care,T3-active,True,,,,,,,,,,,,,,active,2023-11-01,2024-06-03,1.784114,,13.67,3
 OLO,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2025-07-01,2025-08-01,1.092379,,9.06,1
 OMC,Omnicom Group,Communication Services,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 OMER,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2025-01-01,2025-06-02,1.831746,,8.92,2
+OMF,"OneMain Holdings, Inc.",,T2-active,True,,,,,,,,,active,2013-10-16,,6.38,spinoff_or_ipo_2013,,,,,,,0
 ON,ON Semiconductor,Information Technology,"T1a-active,T1c-historical",True,active,2022-06-21,,historical,2023-06-20,2025-12-22,,,,,,,,,,,,,,0
 ONDS,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2026-01-01,2026-03-02,3.674033,,8.46,1
 ONEM,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2023-02-01,2023-04-03,0.648566,,16.09,1
+ONON,On Holding AG,,T2-active,True,,,,,,,,,active,2021-09-15,,11.35,recent_listing_2021,,,,,,,0
 ONTO,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2023-11-01,2024-08-01,1.067027,,233.14,3
 OPEN,,Real Estate,T3-historical,False,,,,,,,,,,,,,,historical,2025-11-03,2026-04-01,3.071017,,5.87,1
 OPFI,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2025-03-03,2025-10-01,1.358531,,10.92,1
 OPOF,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2025-08-01,2025-09-01,1.214642,,39.93,1
 OPRT,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2025-04-01,2025-09-01,1.285714,,7.36,2
 OPRX,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2025-10-01,2026-01-01,3.184369,,20.88,1
+OR,OR Royalties Inc.,,T2-active,True,,,,,,,,,active,2014-06-26,,6.76,spinoff_or_ipo_2014,,,,,,,0
 ORCL,Oracle Corporation,Information Technology,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 ORIC,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2023-08-01,2024-06-03,1.650591,,13.46,3
 ORKA,,Health Care,T3-active,True,,,,,,,,,,,,,,active,2026-02-02,2026-04-01,3.408325,,44.48,2
 ORLA,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2025-05-01,2026-02-02,1.455373,,13.48,2
 ORLY,O’Reilly Automotive,Consumer Discretionary,"T1a-active,T1c-active",True,active,,,active,,,,,,,,,,,,,,,,0
 ORN,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2024-08-01,2024-09-02,1.557029,,9.64,1
-OSCR,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2024-01-01,2024-12-02,3.327835,,20.99,1
+OSCR,"Oscar Health, Inc.",Health Care,"T2-active,T3-historical",True,,,,,,,,,active,2021-03-03,,5.59,spinoff_or_ipo_2021,historical,2024-01-01,2024-12-02,3.327835,,20.99,1
 OSG,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2024-07-01,2024-09-02,1.091358,,8.47,1
 OSH,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2023-03-01,2023-07-03,1.0,,38.96,2
 OSS,,Industrials,T3-active,True,,,,,,,,,,,,,,active,2025-10-01,2025-11-03,2.234177,,7.67,2
+OTF,Blue Owl Technology Finance Corp.,,T2-active,True,,,,,,,,,active,2025-06-12,,5.29,spinoff_or_ipo_2025,,,,,,,0
 OTIS,Otis Worldwide,Industrials,T1a-active,True,active,2020-04-03,,,,,,,,,,,,,,,,,,0
 OUST,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2024-07-01,2026-04-01,2.006219,,24.17,5
+OUT,OUTFRONT Media Inc.,Financials,T2-active,True,,,,,,,,,active,2014-03-28,,5.46,spinoff_or_ipo_2014,,,,,,,0
 OVV,,Energy,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2023-02-01,0.592724,,53.85,2
+OWL,Blue Owl Capital Inc.,Financials,T2-active,True,,,,,,,,,active,2021-05-20,,6.84,spinoff_or_ipo_2021,,,,,,,0
 OXY,Occidental Petroleum,Energy,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
+P,"Everpure, Inc.",Information Technology,T2-active,True,,,,,,,,,active,2015-10-07,,24.16,recent_listing_2015,,,,,,,0
 PACB,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2023-07-03,2023-10-02,1.261307,,13.5,1
-PACS,,Health Care,T3-active,True,,,,,,,,,,,,,,active,2026-01-01,2026-03-02,2.186458,,30.59,2
+PACS,"PACS Group, Inc.",,"T2-active,T3-active",True,,,,,,,,,active,2024-04-11,,5.11,spinoff_or_ipo_2024,active,2026-01-01,2026-03-02,2.186458,,30.59,2
 PAHC,,Health Care,T3-active,True,,,,,,,,,,,,,,active,2026-05-01,,1.994997,,53.88,1
 PANW,Palo Alto Networks,Information Technology,"T1a-active,T1c-active",True,active,2023-06-20,,active,2021-12-20,,,,,,,,,,,,,,,0
 PARR,,Energy,T3-active,True,,,,,,,,,,,,,,active,2022-12-01,2026-02-02,3.566759,,65.67,4
+PATH,"UiPath, Inc.",Information Technology,T2-active,True,,,,,,,,,active,2021-04-21,,5.67,spinoff_or_ipo_2021,,,,,,,0
 PAY,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2024-05-01,2025-08-01,1.112239,,37.45,2
 PAYC,,Information Technology,T1a-historical,False,historical,2020-01-28,2026-03-23,,,,,,,,,,,,,,,,,0
 PAYO,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2025-04-01,2025-05-01,1.034765,,9.95,1
 PAYX,Paychex,Industrials,"T1a-active,T1c-active",True,active,,,active,,,,,,,,,,,,,,,,0
 PBCT,,Financials,T1a-historical,False,historical,,2022-04-04,,,,,,,,,,,,,,,,,0
-PBF,,Energy,T3-active,True,,,,,,,,,,,,,,active,2022-06-01,2023-05-01,2.142945,,51.23,2
+PBF,PBF ENERGY INC.,Energy,"T2-active,T3-active",True,,,,,,,,,active,2012-12-13,,5.39,spinoff_or_ipo_2012,active,2022-06-01,2023-05-01,2.142945,,51.23,2
 PBFX,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2022-09-01,2023-01-02,0.852041,,21.78,2
 PBI,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2024-09-02,2025-08-01,1.121212,,10.5,3
 PBT,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2022-07-01,2023-03-01,0.857367,,23.7,2
 PBYI,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-04-01,2024-05-01,1.634146,,6.48,1
 PCAR,Paccar,Industrials,"T1a-active,T1c-active",True,active,,,active,,,,,,,,,,,,,,,,0
 PCG,PG&E Corporation,Utilities,T1a-active,True,active,2022-10-03,,,,,,,,,,,,,,,,,,0
+PCOR,"Procore Technologies, Inc.",Information Technology,T2-active,True,,,,,,,,,active,2021-05-20,,9.37,spinoff_or_ipo_2021,,,,,,,0
 PCT,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2024-12-02,2025-10-01,1.493289,,14.86,2
-PCVX,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2022-12-01,2023-11-01,1.102785,,51.35,3
+PCTY,Paylocity Holding Corporation Common Stock,Information Technology,T2-active,True,,,,,,,,,active,2014-03-19,,5.87,spinoff_or_ipo_2014,,,,,,,0
+PCVX,"Vaxcyte, Inc. Common Stock",Health Care,"T2-active,T3-historical",True,,,,,,,,,active,2020-06-12,,8.45,spinoff_or_ipo_2020,historical,2022-12-01,2023-11-01,1.102785,,51.35,3
 PDCE,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2022-10-03,0.527277,,63.55,2
 PDD,PDD Holdings,Consumer Discretionary,T1c-active,True,,,,active,2020-08-24,,,,,,,,,,,,,,,0
 PDEX,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2025-08-01,2025-10-01,1.473417,,53.5,1
@@ -1223,14 +1333,16 @@ PDFS,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2023-05
 PDS,,Energy,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2023-01-02,0.99911,,67.37,3
 PDSB,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2023-02-01,2023-08-01,1.194872,,8.56,2
 PDYN,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2025-05-01,2025-12-01,2.73913,,8.6,1
+PECO,"Phillips Edison & Company, Inc. Common Stock",Financials,T2-active,True,,,,,,,,,active,2016-01-22,,5.0,spinoff_or_ipo_2016,,,,,,,0
 PEG,Public Service Enterprise Group,Utilities,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
-PEN,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2023-06-01,2023-10-02,0.857238,,308.06,1
+PEN,"Penumbra, Inc.",Health Care,"T2-active,T3-historical",True,,,,,,,,,active,2015-09-18,,12.77,recent_listing_2015,historical,2023-06-01,2023-10-02,0.857238,,308.06,1
 PENN,,Consumer Discretionary,T1a-historical,False,historical,2021-03-22,2022-09-19,,,,,,,,,,,,,,,,,0
 PEP,PepsiCo,Consumer Staples,"T1a-active,T1c-active",True,active,,,active,,,,,,,,,,,,,,,,0
 PERI,,Communication Services,T3-historical,False,,,,,,,,,,,,,,historical,2023-05-01,2023-07-03,0.795524,,35.3,1
 PETQ,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2023-12-01,2024-02-01,0.933902,,18.14,1
 PFE,Pfizer,Health Care,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 PFG,Principal Financial Group,Financials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
+PFGC,Performance Food Group Company,,T2-active,True,,,,,,,,,active,2015-10-01,,13.66,recent_listing_2015,,,,,,,0
 PG,Procter & Gamble,Consumer Staples,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 PGR,Progressive Corporation,Financials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 PGTI,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2024-02-01,2024-04-01,1.008755,,41.3,1
@@ -1241,12 +1353,13 @@ PHM,PulteGroup,Consumer Discretionary,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 PHR,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2023-06-01,2023-07-03,0.694459,,31.5,1
 PHUN,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2022-07-01,0.562044,,107.0,1
 PI,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2022-10-03,2025-01-01,1.484654,,205.63,3
-PINS,"Pinterest, Inc. Class A Common Stock",Information Technology,T2-active,True,,,,,,,,,active,2019-04-18,,12.01,tech_listing_2019,,,,,,,0
+PINS,"Pinterest, Inc. Class A Common Stock",Information Technology,T2-active,True,,,,,,,,,active,2019-04-18,,12.01,recent_listing_2019,,,,,,,0
 PKG,Packaging Corporation of America,Materials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
-PL,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2025-03-03,2026-04-01,4.892938,,25.87,2
+PL,Planet Labs PBC,Communication Services,"T2-active,T3-historical",True,,,,,,,,,active,2021-12-08,,13.34,recent_listing_2021,historical,2025-03-03,2026-04-01,4.892938,,25.87,2
 PLAB,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2022-08-01,2022-10-03,0.614424,,23.28,1
 PLD,Prologis,Real Estate,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 PLMR,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2025-06-02,2025-08-01,1.100474,,163.9,1
+PLNT,"Planet Fitness, Inc.",,T2-active,True,,,,,,,,,active,2015-08-06,,5.03,spinoff_or_ipo_2015,,,,,,,0
 PLRX,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2022-12-01,2023-08-01,1.806789,,21.5,2
 PLSE,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-02-01,2024-03-01,2.925234,,12.6,1
 PLTR,Palantir Technologies,Information Technology,"T1a-active,T1c-active,T3-historical",True,active,2024-09-23,,active,2024-12-23,,,,,,,,,historical,2023-09-01,2024-06-03,2.134271,,24.51,2
@@ -1264,15 +1377,17 @@ PPG,PPG Industries,Materials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 PPIH,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2025-10-01,2025-11-03,1.502051,,30.5,1
 PPL,PPL Corporation,Utilities,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 PPTA,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2024-11-01,2026-05-01,1.983755,,33.06,4
-PR,,Energy,T3-historical,False,,,,,,,,,,,,,,historical,2023-10-02,2023-11-01,1.149842,,13.63,1
-PRAX,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-04-01,2026-04-01,3.395874,,294.04,2
+PR,Permian Resources Corporation,Energy,"T2-active,T3-historical",True,,,,,,,,,active,2016-04-15,,18.97,recent_listing_2016,historical,2023-10-02,2023-11-01,1.149842,,13.63,1
+PRAX,"Praxis Precision Medicines, Inc. Common Stock",Health Care,"T2-active,T3-historical",True,,,,,,,,,active,2020-10-16,,9.41,spinoff_or_ipo_2020,historical,2024-04-01,2026-04-01,3.395874,,294.04,2
 PRCH,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2025-02-03,2026-01-01,3.667614,,16.43,4
 PRCT,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2023-01-02,2025-02-03,1.265192,,97.29,4
 PRE,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2025-12-01,2026-01-01,1.906667,,13.08,1
 PRG,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2023-07-03,2023-12-01,0.995592,,31.69,1
 PRGO,,Health Care,T1a-historical,False,historical,,2021-09-20,,,,,,,,,,,,,,,,,0
+PRI,"PRIMERICA, INC.",Financials,T2-active,True,,,,,,,,,active,2010-04-01,,8.5,spinoff_or_ipo_2010,,,,,,,0
 PRIM,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2023-10-02,2025-03-03,1.289035,,76.82,2
 PRM,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2024-11-01,2025-04-01,1.136667,,12.82,1
+PRMB,Primo Brands Corporation,Consumer Staples,T2-active,True,,,,,,,,,active,2024-11-11,,7.3,spinoff_or_ipo_2024,,,,,,,0
 PRPH,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2022-08-01,2022-09-01,0.873016,,129.8,1
 PRTA,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2023-02-01,2023-10-02,1.383846,,66.7,2
 PRTG,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2025-06-02,2025-07-01,0.982695,,10.77,1
@@ -1282,14 +1397,15 @@ PRVB,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2023-01-02,2023-06-01,
 PSA,Public Storage,Real Estate,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 PSIX,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2026-04-01,2026-05-01,2.265299,,95.51,1
 PSKY,Paramount Skydance Corporation,Communication Services,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
+PSN,Parsons Corporation,Information Technology,T2-active,True,,,,,,,,,active,2019-05-08,,5.35,spinoff_or_ipo_2019,,,,,,,0
 PSNL,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2025-03-03,2026-01-01,1.595174,,9.68,2
 PSTG,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2024-06-03,1.303814,,52.55,2
 PSTX,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2025-01-01,2025-03-03,1.881459,,9.48,1
 PSX,Phillips 66,Energy,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 PTC,PTC Inc.,Information Technology,T1a-active,True,active,2021-04-20,,,,,,,,,,,,,,,,,,0
-PTCT,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2022-11-01,2025-06-02,0.924746,,54.99,3
+PTCT,"PTC Therapeutics, Inc.",Health Care,"T2-active,T3-historical",True,,,,,,,,,active,2013-06-20,,5.43,spinoff_or_ipo_2013,historical,2022-11-01,2025-06-02,0.924746,,54.99,3
 PTEN,,Energy,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2023-03-01,0.638384,,16.22,2
-PTGX,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2023-05-01,2025-06-02,0.965805,,49.44,3
+PTGX,"Protagonist Therapeutics, Inc",Health Care,"T2-active,T3-historical",True,,,,,,,,,active,2016-08-11,,6.4,spinoff_or_ipo_2016,historical,2023-05-01,2025-06-02,0.965805,,49.44,3
 PTON,Peloton,Consumer Discretionary,"T1c-historical,T3-historical",False,,,,historical,2020-12-21,2022-01-24,,,,,,,,historical,2025-05-01,2025-08-01,1.187861,,7.57,1
 PVH,,Consumer Discretionary,T1a-historical,False,historical,,2022-09-19,,,,,,,,,,,,,,,,,0
 PVLA,,Health Care,T3-active,True,,,,,,,,,,,,,,active,2026-03-02,,3.425758,,112.37,1
@@ -1297,7 +1413,7 @@ PWR,Quanta Services,Industrials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 PXD,,Energy,T1a-historical,False,historical,,2024-05-08,,,,,,,,,,,,,,,,,0
 PYPL,PayPal,Financials,"T1a-active,T1c-active",True,active,,,active,,,,,,,,,,,,,,,,0
 Q,Qnity Electronics,Information Technology,T1a-active,True,active,2025-11-03,,,,,,,,,,,,,,,,,,0
-QBTS,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2025-03-03,2026-04-01,3.011824,,23.75,2
+QBTS,D-Wave Quantum Inc.,Information Technology,"T2-active,T3-historical",True,,,,,,,,,active,2022-08-08,,7.75,spinoff_or_ipo_2022,historical,2025-03-03,2026-04-01,3.011824,,23.75,2
 QCOM,Qualcomm,Information Technology,"T1a-active,T1c-active",True,active,,,active,,,,,,,,,,,,,,,,0
 QMCO,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2025-01-01,2025-10-01,1.150649,,8.28,3
 QNST,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2023-04-03,2024-11-01,1.229285,,19.64,3
@@ -1305,20 +1421,23 @@ QNTM,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2026-01-01,2026-02
 QQQ,Invesco QQQ Trust,Information Technology,T1-ETF,True,,,,,,,active,Broad Market,,,,,,,,,,,,0
 QRVO,,Information Technology,T1a-historical,False,historical,,2024-12-23,,,,,,,,,,,,,,,,,0
 QS,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2025-12-01,2026-01-01,2.155039,,16.28,1
+QSR,Restaurant Brands International Inc.,Consumer Discretionary,T2-active,True,,,,,,,,,active,2014-12-10,,27.8,recent_listing_2014,,,,,,,0
 QTRX,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2023-10-02,2024-05-01,1.479249,,25.09,3
 QTWO,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2024-07-01,2025-03-03,1.28672,,100.73,2
 QUBT,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2025-12-01,2026-01-01,1.36391,,15.72,1
 QUIK,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2024-03-01,2024-07-01,1.543874,,15.37,2
 QURE,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2025-02-03,2025-11-03,2.165829,,15.75,2
+RACE,Ferrari N.V.,,T2-active,True,,,,,,,,,active,2015-10-21,,59.79,recent_listing_2015,,,,,,,0
 RAIL,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2024-12-02,2025-01-01,4.917355,,14.32,1
+RAL,Ralliant Corporation,Industrials,T2-active,True,,,,,,,,,active,2025-06-25,,5.1,spinoff_or_ipo_2025,,,,,,,0
 RAPP,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2026-04-01,2026-05-01,2.113402,,30.2,1
 RAPT,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2025-12-01,2026-05-01,4.120141,,57.96,2
-RBLX,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2025-06-02,2026-01-01,1.619038,,128.49,1
-RBRK,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2025-06-02,2025-11-03,1.757719,,87.53,1
+RBLX,Roblox Corporation,Information Technology,"T2-active,T3-historical",True,,,,,,,,,active,2021-03-10,,34.06,recent_listing_2021,historical,2025-06-02,2026-01-01,1.619038,,128.49,1
+RBRK,"Rubrik, Inc.",Information Technology,"T2-active,T3-historical",True,,,,,,,,,active,2024-04-25,,11.92,recent_listing_2024,historical,2025-06-02,2025-11-03,1.757719,,87.53,1
 RCAT,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2025-05-01,2025-12-01,2.097561,,10.16,1
 RCL,Royal Caribbean Group,Consumer Discretionary,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 RCMT,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2022-07-01,2022-09-01,4.779412,,23.58,1
-RDDT,"Reddit, Inc.",Information Technology,"T2-active,T3-historical",True,,,,,,,,,active,2024-03-21,,32.55,tech_listing_2024,historical,2025-04-01,2025-12-01,1.960362,,241.98,2
+RDDT,"Reddit, Inc.",Information Technology,"T2-active,T3-historical",True,,,,,,,,,active,2024-03-21,,32.55,recent_listing_2024,historical,2025-04-01,2025-12-01,1.960362,,241.98,2
 RDFN,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2024-11-01,2024-12-02,1.492032,,12.51,1
 RDNT,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-10-01,2025-02-03,1.310644,,82.49,2
 RDW,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2025-01-01,2025-10-01,1.242029,,15.47,2
@@ -1326,41 +1445,47 @@ REAL,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2025-01
 REG,Regency Centers,Real Estate,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 REGN,Regeneron Pharmaceuticals,Health Care,"T1a-active,T1c-active",True,active,,,active,,,,,,,,,,,,,,,,0
 RELL,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2022-09-01,2023-03-01,0.651786,,20.35,2
-RELY,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2023-05-01,2024-02-01,1.276042,,21.85,3
+RELY,"Remitly Global, Inc. Common Stock",Industrials,"T2-active,T3-historical",True,,,,,,,,,active,2021-09-23,,5.0,spinoff_or_ipo_2021,historical,2023-05-01,2024-02-01,1.276042,,21.85,3
 REPL,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2023-03-01,2025-07-01,0.789575,,9.27,2
 RES,,Energy,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2023-02-01,0.885593,,8.9,2
 RETA,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2023-03-01,2023-09-01,2.042147,,92.39,2
 REVG,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2024-06-03,2024-10-01,1.112024,,28.28,1
+REXR,"REXFORD INDUSTRIAL REALTY, INC.",Financials,T2-active,True,,,,,,,,,active,2013-07-19,,7.93,spinoff_or_ipo_2013,,,,,,,0
+REZI,"Resideo Technologies, Inc. Common Stock",,T2-active,True,,,,,,,,,active,2018-10-15,,5.98,spinoff_or_ipo_2018,,,,,,,0
 RF,Regions Financial Corporation,Financials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 RFP,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2022-09-01,2023-05-01,0.587302,,22.0,3
+RGC,Regencell Bioscience Holdings Limited Ordinary Shares,,T2-active,True,,,,,,,,,active,2021-07-16,,13.53,recent_listing_2021,,,,,,,0
 RGLS,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2025-07-01,2025-08-01,2.877451,,7.91,1
-RGTI,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2025-04-01,2025-05-01,4.863636,,9.03,1
+RGTI,"Rigetti Computing, Inc. Common Stock",Information Technology,"T2-active,T3-historical",True,,,,,,,,,active,2022-03-02,,5.88,spinoff_or_ipo_2022,historical,2025-04-01,2025-05-01,4.863636,,9.03,1
 RHI,,Industrials,T1a-historical,False,historical,,2024-06-24,,,,,,,,,,,,,,,,,0
 RHLD,,Financials,T3-active,True,,,,,,,,,,,,,,active,2026-04-01,,4.928934,,151.84,1
 RIG,,Energy,T3-active,True,,,,,,,,,,,,,,active,2023-03-01,2024-01-01,1.974249,,6.93,4
 RIGL,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2025-10-01,2026-02-02,2.088485,,50.96,2
 RIOT,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2023-06-01,2024-04-01,0.93356,,11.35,3
+RITM,Rithm Capital Corp.,Financials,T2-active,True,,,,,,,,,active,2013-05-02,,5.38,spinoff_or_ipo_2013,,,,,,,0
 RIVN,Rivian Automotive,Consumer Discretionary,T1c-historical,False,,,,historical,2022-12-19,2023-06-20,,,,,,,,,,,,,,0
 RJF,Raymond James Financial,Financials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
-RKLB,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2024-12-02,2026-05-01,2.811075,,70.2,4
-RKT,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2024-10-01,2024-12-02,1.593151,,18.93,1
+RKLB,Rocket Lab Corporation Common Stock,,"T2-active,T3-historical",True,,,,,,,,,active,2021-08-25,,46.42,recent_listing_2021,historical,2024-12-02,2026-05-01,2.811075,,70.2,4
+RKT,"Rocket Companies, Inc.",Financials,"T2-active,T3-historical",True,,,,,,,,,active,2020-08-06,,39.64,recent_listing_2020,historical,2024-10-01,2024-12-02,1.593151,,18.93,1
 RL,Ralph Lauren Corporation,Consumer Discretionary,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 RLAY,,Health Care,T3-active,True,,,,,,,,,,,,,,active,2026-04-01,,2.0,,9.6,1
 RLMD,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2022-11-01,2022-12-01,0.444783,,33.23,1
 RMBS,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2023-03-01,2023-12-01,0.847354,,54.46,2
 RMD,ResMed,Health Care,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 RNA,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-06-03,2025-03-03,1.472881,,29.18,2
-ROAD,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2024-05-01,2025-02-03,1.292384,,101.14,3
+ROAD,"Construction Partners, Inc. Class A Common Stock",Industrials,"T2-active,T3-historical",True,,,,,,,,,active,2018-05-04,,7.08,spinoff_or_ipo_2018,historical,2024-05-01,2025-02-03,1.292384,,101.14,3
 ROCC,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2022-09-01,2.67666,,34.34,1
 ROCK,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2023-10-02,2023-11-01,0.955023,,72.59,1
-ROIV,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2023-04-03,2024-01-01,0.624031,,8.38,1
+ROIV,Roivant Sciences Ltd. Common Shares,Health Care,"T2-active,T3-historical",True,,,,,,,,,active,2021-10-01,,20.3,recent_listing_2021,historical,2023-04-03,2024-01-01,0.624031,,8.38,1
 ROK,Rockwell Automation,Industrials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
+ROKU,"Roku, Inc. Class A Common Stock",Communication Services,T2-active,True,,,,,,,,,active,2017-09-28,,18.61,recent_listing_2017,,,,,,,0
 ROL,"Rollins, Inc.",Industrials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 ROOT,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2024-04-01,2025-10-01,1.655188,,118.74,6
 ROP,Roper Technologies,Information Technology,"T1a-active,T1c-active",True,active,,,active,2023-12-18,,,,,,,,,,,,,,,0
 ROST,Ross Stores,Consumer Discretionary,"T1a-active,T1c-active",True,active,,,active,,,,,,,,,,,,,,,,0
 ROVR,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2024-01-01,2024-05-01,1.464126,,10.99,1
 RPD,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2023-12-01,2024-01-01,0.667024,,46.61,1
+RPRX,Royalty Pharma plc Class A Ordinary Shares,Health Care,T2-active,True,,,,,,,,,active,2020-06-16,,22.31,recent_listing_2020,,,,,,,0
 RRC,,Energy,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2022-10-03,1.1321,,32.28,1
 RSG,Republic Services,Industrials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 RSI,,Communication Services,T3-historical,False,,,,,,,,,,,,,,historical,2024-05-01,2025-05-01,0.995356,,12.89,2
@@ -1369,18 +1494,21 @@ RTX,RTX Corporation,Industrials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 RUM,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2025-02-03,2025-03-03,1.272578,,13.84,1
 RUN,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2026-04-01,2026-05-01,2.252912,,19.55,1
 RVLV,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2025-02-03,2025-03-03,1.290885,,34.18,1
+RVMD,"Revolution Medicines, Inc. Common Stock",Health Care,T2-active,True,,,,,,,,,active,2020-02-13,,31.44,recent_listing_2020,,,,,,,0
 RVNC,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2022-11-01,2023-08-01,1.093471,,30.46,2
 RVTY,Revvity,Health Care,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 RXDX,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2022-09-01,2023-06-01,3.267311,,110.31,2
 RXRX,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-04-01,2024-05-01,1.299065,,14.76,1
 RXST,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2023-07-03,2024-08-01,1.415087,,61.15,2
 RYI,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2023-04-03,0.628761,,36.81,2
-RYTM,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2022-10-03,2024-09-02,1.241899,,40.13,3
-S,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2024-02-01,2024-03-01,0.856192,,27.88,1
+RYTM,"Rhythm Pharmaceuticals, Inc. Common Stock",Health Care,"T2-active,T3-historical",True,,,,,,,,,active,2017-10-05,,5.86,spinoff_or_ipo_2017,historical,2022-10-03,2024-09-02,1.241899,,40.13,3
+S,"SentinelOne, Inc.",Information Technology,"T2-active,T3-historical",True,,,,,,,,,active,2021-06-30,,5.31,spinoff_or_ipo_2021,historical,2024-02-01,2024-03-01,0.856192,,27.88,1
 SA,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2026-02-02,2026-05-01,2.07661,,37.75,1
 SAIA,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2023-09-01,2024-06-03,1.233226,,580.46,3
+SAIL,"SailPoint, Inc. Common Stock",Information Technology,T2-active,True,,,,,,,,,active,2025-02-13,,6.85,spinoff_or_ipo_2025,,,,,,,0
 SANA,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-04-01,2024-05-01,1.699681,,8.45,1
 SANM,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2023-01-02,2023-05-01,0.463274,,60.96,2
+SARO,"StandardAero, Inc.",,T2-active,True,,,,,,,,,active,2024-10-02,,8.17,spinoff_or_ipo_2024,,,,,,,0
 SATS,EchoStar,Communication Services,"T1a-active,T3-historical",True,active,2026-03-23,,,,,,,,,,,,historical,2024-12-02,2026-04-01,3.224418,,119.72,3
 SAVA,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-10-01,2024-11-01,1.379595,,28.81,1
 SBAC,SBA Communications,Real Estate,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
@@ -1388,6 +1516,7 @@ SBET,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2025-07-01,2025-10-
 SBNY,,Financials,T1a-historical,False,historical,2021-12-20,2023-03-15,,,,,,,,,,,,,,,,,0
 SBOW,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2022-11-01,0.833333,,44.33,2
 SBR,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2022-07-01,2023-04-03,0.685243,,86.79,4
+SBRA,"Sabra Healthcare REIT, Inc.",Financials,T2-active,True,,,,,,,,,active,2010-11-08,,5.16,spinoff_or_ipo_2010,,,,,,,0
 SBUX,Starbucks,Consumer Discretionary,"T1a-active,T1c-active",True,active,,,active,,,,,,,,,,,,,,,,0
 SCHW,Charles Schwab Corporation,Financials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 SCVL,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2024-09-02,2024-10-01,0.899635,,41.64,1
@@ -1399,12 +1528,13 @@ SEPN,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2026-04-01,2026-05
 SERA,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-03-01,2024-04-01,0.991018,,6.65,1
 SERV,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2025-05-01,2025-07-01,1.553846,,6.64,1
 SEZL,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2025-03-03,2025-11-03,2.146106,,92.7,2
-SFM,,Consumer Staples,T3-historical,False,,,,,,,,,,,,,,historical,2024-07-01,2025-07-01,1.150494,,169.76,1
+SFD,"Smithfield Foods, Inc. Common Stock",,T2-active,True,,,,,,,,,active,2025-01-28,,10.47,recent_listing_2025,,,,,,,0
+SFM,"Sprouts Farmers Market, Inc.",Consumer Discretionary,"T2-active,T3-historical",True,,,,,,,,,active,2013-08-01,,7.59,spinoff_or_ipo_2013,historical,2024-07-01,2025-07-01,1.150494,,169.76,1
 SG,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2024-05-01,2025-04-01,1.506234,,30.15,1
 SGEN,Seagen,Health Care,T1c-historical,False,,,,historical,,2023-12-14,,,,,,,,,,,,,,0
 SGFY,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2022-11-01,2023-06-01,1.054619,,30.47,1
 SGH,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2023-11-01,2023-12-01,0.761481,,23.78,1
-SGHC,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2025-03-03,2025-12-01,2.251196,,13.59,2
+SGHC,Super Group (SGHC) Limited,,"T2-active,T3-historical",True,,,,,,,,,active,2022-01-28,,6.54,spinoff_or_ipo_2022,historical,2025-03-03,2025-12-01,2.251196,,13.59,2
 SGML,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2022-10-03,2023-09-01,1.213415,,36.3,1
 SGMT,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2025-08-01,2025-11-03,1.758865,,7.78,1
 SHC,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2023-11-01,2024-01-01,0.534969,,12.51,1
@@ -1418,7 +1548,8 @@ SII,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2026-03-02,2026-05-0
 SILK,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2023-02-01,2023-04-03,0.694964,,53.51,1
 SION,,Health Care,T3-active,True,,,,,,,,,,,,,,active,2026-04-01,,1.978583,,36.16,1
 SIRI,Sirius XM,Communication Services,T1c-historical,False,,,,historical,,2024-06-24,,,,,,,,,,,,,,0
-SITM,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2022-08-01,0.685842,,211.59,1
+SITE,"SiteOne Landscape Supply, Inc.",,T2-active,True,,,,,,,,,active,2016-05-12,,5.56,spinoff_or_ipo_2016,,,,,,,0
+SITM,SiTime Corporation Common Stock,Information Technology,"T2-active,T3-historical",True,,,,,,,,,active,2019-11-21,,14.91,recent_listing_2019,historical,2022-06-01,2022-08-01,0.685842,,211.59,1
 SIVB,,Financials,T1a-historical,False,historical,,2023-03-15,,,,,,,,,,,,,,,,,0
 SJI,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2022-11-01,2022-12-01,0.475468,,33.08,1
 SJM,J.M. Smucker Company (The),Consumer Staples,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
@@ -1436,22 +1567,25 @@ SLV,iShares Silver Trust,Commodities,T1-ETF,True,,,,,,,active,Commodities,,,,,,,
 SLVM,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2023-01-02,2023-03-01,0.76398,,48.58,1
 SM,,Energy,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2022-11-01,0.809859,,46.26,1
 SMCI,Supermicro,Information Technology,"T1a-active,T1c-historical,T3-historical",True,active,2024-03-18,,historical,2024-07-22,2024-12-23,,,,,,,,historical,2022-10-03,2024-04-01,3.830379,,47.41,1
-SMMT,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-08-01,2025-08-01,2.299871,,25.64,3
+SMMT,Summit Therapeutics Inc. Common Stock,Health Care,"T2-active,T3-historical",True,,,,,,,,,active,2015-03-05,,13.18,recent_listing_2015,historical,2024-08-01,2025-08-01,2.299871,,25.64,3
 SMR,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2024-11-01,2025-11-03,1.957107,,35.16,2
 SMTC,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2024-11-01,2025-04-01,1.817199,,57.33,1
 SMWB,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2025-01-01,2025-03-03,1.235387,,14.15,1
-SN,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2024-09-02,2025-04-01,1.074391,,111.54,3
+SN,"SharkNinja, Inc.",Consumer Staples,"T2-active,T3-historical",True,,,,,,,,,active,2023-07-31,,16.25,recent_listing_2023,historical,2024-09-02,2025-04-01,1.074391,,111.54,3
 SNA,Snap-on,Industrials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
+SNAP,Snap Inc.,Information Technology,T2-active,True,,,,,,,,,active,2017-03-02,,10.42,recent_listing_2017,,,,,,,0
 SNCR,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2024-11-01,2024-12-02,2.842593,,14.11,1
 SNDK,Sandisk,Information Technology,"T1a-active,T1c-active",True,active,2025-11-28,,active,2026-04-20,,,,,,,,,,,,,,,0
+SNDR,"Schneider National, Inc.",,T2-active,True,,,,,,,,,active,2017-04-06,,5.25,spinoff_or_ipo_2017,,,,,,,0
 SNDX,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2023-03-01,2023-04-03,0.733376,,27.37,1
 SNEX,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2023-01-02,2023-02-01,0.576833,,29.07,1
-SNOW,Snowflake Inc.,Information Technology,T2-active,True,,,,,,,,,active,2020-09-16,,49.85,tech_listing_2020,,,,,,,0
+SNOW,Snowflake Inc.,Information Technology,T2-active,True,,,,,,,,,active,2020-09-16,,49.85,recent_listing_2020,,,,,,,0
 SNPS,Synopsys,Information Technology,"T1a-active,T1c-active",True,active,,,active,,,,,,,,,,,,,,,,0
 SNSE,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2026-04-01,2026-05-01,2.972841,,34.23,1
 SO,Southern Company,Utilities,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
+SOBO,South Bow Corporation,,T2-active,True,,,,,,,,,active,2024-10-08,,7.34,spinoff_or_ipo_2024,,,,,,,0
 SOC,,Energy,T3-historical,False,,,,,,,,,,,,,,historical,2025-03-03,2025-08-01,1.278893,,32.93,2
-SOFI,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2025-06-02,2025-12-01,1.631328,,27.55,2
+SOFI,"SoFi Technologies, Inc. Common Stock",,"T2-active,T3-historical",True,,,,,,,,,active,2021-06-01,,20.78,recent_listing_2021,historical,2025-06-02,2025-12-01,1.631328,,27.55,2
 SOLS,Solstice Advanced Materials,Materials,"T1a-historical,T1c-historical",False,historical,2025-10-30,2025-12-22,historical,2025-10-30,2025-11-06,,,,,,,,,,,,,,0
 SOLV,Solventum,Health Care,T1a-active,True,active,2024-04-01,,,,,,,,,,,,,,,,,,0
 SOUN,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2024-04-01,2026-01-01,1.408673,,18.33,4
@@ -1465,7 +1599,7 @@ SPIR,,Communication Services,T3-historical,False,,,,,,,,,,,,,,historical,2024-05
 SPLK,Splunk,Information Technology,"T1c-historical,T3-historical",False,,,,historical,2023-12-18,2024-03-18,,,,,,,,historical,2023-11-01,2024-01-01,0.879423,,147.14,1
 SPNT,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2023-10-02,2023-12-01,0.715008,,10.17,1
 SPOK,,Communication Services,T3-historical,False,,,,,,,,,,,,,,historical,2023-09-01,2024-02-01,1.171117,,17.89,2
-SPOT,,Communication Services,T3-historical,False,,,,,,,,,,,,,,historical,2023-11-01,2025-09-01,1.400273,,772.6,5
+SPOT,Spotify Technology S.A.,,"T2-active,T3-historical",True,,,,,,,,,active,2018-04-03,,90.12,recent_listing_2018,historical,2023-11-01,2025-09-01,1.400273,,772.6,5
 SPR,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2024-10-01,2024-11-01,1.213789,,35.0,1
 SPRB,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2025-12-01,2026-02-02,2.352381,,110.0,1
 SPRY,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-10-01,2025-02-03,1.580817,,14.53,1
@@ -1476,15 +1610,19 @@ SRE,Sempra,Utilities,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 SRFM,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2025-09-01,2025-10-01,2.96124,,5.11,1
 SRPT,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2022-11-01,2023-07-03,0.636035,,122.13,2
 SRRA,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2022-09-01,2.051083,,54.95,1
-SRRK,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-05-01,2025-11-03,2.984971,,34.47,3
+SRRK,Scholar Rock Holding Corporation Common Stock,Health Care,"T2-active,T3-historical",True,,,,,,,,,active,2018-05-24,,5.55,spinoff_or_ipo_2018,historical,2024-05-01,2025-11-03,2.984971,,34.47,3
 SRTS,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2022-10-03,2022-12-01,1.926209,,11.5,1
 SSD,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2023-10-02,2024-03-01,0.946802,,200.91,2
+SSNC,SS&C Technologies Inc,Information Technology,T2-active,True,,,,,,,,,active,2010-03-31,,16.67,recent_listing_2010,,,,,,,0
 SSNT,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2024-02-01,2024-03-01,3.58457,,123.6,1
 SSRM,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2025-04-01,2026-03-02,1.858824,,21.87,1
+ST,Sensata Technologies Holding plc,Industrials,T2-active,True,,,,,,,,,active,2010-03-11,,5.98,spinoff_or_ipo_2010,,,,,,,0
+STAG,"STAG INDUSTRIAL, INC.",Financials,T2-active,True,,,,,,,,,active,2011-04-15,,7.22,spinoff_or_ipo_2011,,,,,,,0
 STE,Steris,Health Care,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 STEM,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2025-12-01,2026-01-01,2.002667,,22.52,1
 STEP,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2024-12-02,2025-01-01,1.447536,,61.58,1
 STKL,,Consumer Staples,T3-historical,False,,,,,,,,,,,,,,historical,2022-12-01,2023-03-01,0.866667,,8.68,2
+STLA,Stellantis N.V.,,T2-active,True,,,,,,,,,active,2010-06-09,,20.51,recent_listing_2010,,,,,,,0
 STLD,Steel Dynamics,Materials,T1a-active,True,active,2022-12-22,,,,,,,,,,,,,,,,,,0
 STNE,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2024-03-01,2024-04-01,1.092486,,18.1,1
 STNG,,Energy,T3-historical,False,,,,,,,,,,,,,,historical,2022-08-01,2024-09-02,0.819033,,83.53,2
@@ -1498,6 +1636,7 @@ STVN,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2023-08-01,2024-01
 STX,Seagate Technology,Information Technology,"T1a-active,T1c-active",True,active,,,active,2025-12-22,,,,,,,,,,,,,,,0
 STZ,Constellation Brands,Consumer Staples,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 SU,,Energy,T3-historical,False,,,,,,,,,,,,,,historical,2022-07-01,2022-11-01,0.666507,,34.83,1
+SUN,SUNOCO L.P.,Energy,T2-active,True,,,,,,,,,active,2012-09-20,,12.86,recent_listing_2012,,,,,,,0
 SUPV,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2024-05-01,2025-08-01,1.256135,,14.71,2
 SVM,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2026-02-02,2026-05-01,2.179177,,13.13,1
 SW,Smurfit Westrock,Materials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
@@ -1510,8 +1649,8 @@ SWKS,Skyworks Solutions,Information Technology,"T1a-active,T1c-historical",True,
 SWN,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2022-07-01,2022-10-03,0.528509,,6.97,2
 SYF,Synchrony Financial,Financials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 SYK,Stryker Corporation,Health Care,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
-SYM,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2023-07-03,2026-02-02,2.625415,,87.3,3
-SYRE,,Health Care,T3-active,True,,,,,,,,,,,,,,active,2024-12-02,2025-01-01,2.348195,,47.31,2
+SYM,Symbotic Inc. Class A Common Stock,Industrials,"T2-active,T3-historical",True,,,,,,,,,active,2022-06-08,,7.17,spinoff_or_ipo_2022,historical,2023-07-03,2026-02-02,2.625415,,87.3,3
+SYRE,"Spyre Therapeutics, Inc. Common Stock",Health Care,"T2-active,T3-active",True,,,,,,,,,active,2016-04-07,,5.96,spinoff_or_ipo_2016,active,2024-12-02,2025-01-01,2.348195,,47.31,2
 SYY,Sysco,Consumer Staples,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 T,AT&T,Communication Services,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 TA,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2023-04-03,2023-07-03,1.264359,,86.34,1
@@ -1535,12 +1674,13 @@ TEAM,Atlassian,Information Technology,T1c-historical,False,,,,historical,2020-12
 TECH,Bio-Techne,Health Care,T1a-active,True,active,2021-08-30,,,,,,,,,,,,,,,,,,0
 TECK,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2022-08-01,0.877879,,43.21,1
 TEL,TE Connectivity,Information Technology,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
-TEM,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2025-07-01,2025-08-01,1.390058,,65.87,1
+TEM,"Tempus AI, Inc. Class A Common Stock",Information Technology,"T2-active,T3-historical",True,,,,,,,,,active,2024-06-14,,10.01,recent_listing_2024,historical,2025-07-01,2025-08-01,1.390058,,65.87,1
 TEN,,Energy,T3-historical,False,,,,,,,,,,,,,,historical,2022-11-01,2023-01-02,0.643411,,19.08,1
 TER,Teradyne,Information Technology,T1a-active,True,active,2020-09-21,,,,,,,,,,,,,,,,,,0
-TERN,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2023-08-01,2026-02-02,3.982669,,28.75,2
+TERN,"Terns Pharmaceuticals, Inc. Common Stock",Health Care,"T2-active,T3-historical",True,,,,,,,,,active,2021-02-05,,6.12,spinoff_or_ipo_2021,historical,2023-08-01,2026-02-02,3.982669,,28.75,2
 TEX,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2023-04-03,2023-11-01,0.966258,,57.69,3
 TFC,Truist Financial,Financials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
+TFPM,Triple Flag Precious Metals Corp.,,T2-active,True,,,,,,,,,active,2021-09-23,,6.47,spinoff_or_ipo_2021,,,,,,,0
 TFX,,Health Care,T1a-historical,False,historical,,2025-03-24,,,,,,,,,,,,,,,,,0
 TGB,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2026-01-01,2026-05-01,2.407407,,8.28,1
 TGH,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2023-12-01,2024-01-01,0.61266,,49.17,1
@@ -1561,11 +1701,11 @@ TJX,TJX Companies,Consumer Discretionary,T1a-active,True,active,,,,,,,,,,,,,,,,,
 TK,,Energy,T3-historical,False,,,,,,,,,,,,,,historical,2023-04-03,2023-07-03,0.627168,,5.63,1
 TKNO,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2025-03-03,2025-04-01,1.923567,,9.18,1
 TKO,TKO Group Holdings,Communication Services,T1a-active,True,active,2025-03-24,,,,,,,,,,,,,,,,,,0
-TLN,,Utilities,T3-historical,False,,,,,,,,,,,,,,historical,2025-08-01,2025-10-01,1.362505,,358.77,1
+TLN,Talen Energy Corporation Common Stock,Utilities,"T2-active,T3-historical",True,,,,,,,,,active,2023-06-01,,17.46,recent_listing_2023,historical,2025-08-01,2025-10-01,1.362505,,358.77,1
 TLT,iShares 20+ Year Treasury Bond ETF,Fixed Income,T1-ETF,True,,,,,,,active,Bonds,,,,,,,,,,,,0
 TMC,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2025-08-01,2026-05-01,2.758824,,6.39,3
 TMDX,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2022-10-03,2024-12-02,3.191204,,159.14,2
-TMHC,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2023-07-03,2023-11-01,0.962544,,45.06,2
+TMHC,Taylor Morrison Home Corporation Common Stock,,"T2-active,T3-historical",True,,,,,,,,,active,2013-04-10,,5.47,spinoff_or_ipo_2013,historical,2023-07-03,2023-11-01,0.962544,,45.06,2
 TMO,Thermo Fisher Scientific,Health Care,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 TMQ,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2026-03-02,2026-04-01,4.015385,,6.52,1
 TMST,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2022-07-01,2022-08-01,0.683162,,24.49,1
@@ -1576,9 +1716,10 @@ TNGX,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-03-01,2026-04
 TNK,,Energy,T3-historical,False,,,,,,,,,,,,,,historical,2022-09-01,2024-08-01,1.041104,,72.5,2
 TNP,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2022-12-01,2023-06-01,0.742547,,19.29,1
 TNXP,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2025-10-01,2025-11-03,1.355783,,32.18,1
-TOST,"Toast, Inc.",Information Technology,"T2-active,T3-historical",True,,,,,,,,,active,2021-09-22,,17.05,tech_listing_2021,historical,2025-01-01,2025-02-03,1.282241,,43.18,1
+TOST,"Toast, Inc.",Information Technology,"T2-active,T3-historical",True,,,,,,,,,active,2021-09-22,,17.05,recent_listing_2021,historical,2025-01-01,2025-02-03,1.282241,,43.18,1
 TPB,,Consumer Staples,T3-historical,False,,,,,,,,,,,,,,historical,2025-01-01,2025-11-03,1.316867,,98.49,3
 TPC,,Industrials,T3-active,True,,,,,,,,,,,,,,active,2023-03-01,2025-12-01,2.999475,,76.15,4
+TPG,TPG Inc. Class A Common Stock,Financials,T2-active,True,,,,,,,,,active,2022-01-13,,7.23,spinoff_or_ipo_2022,,,,,,,0
 TPH,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2023-10-02,2023-11-01,0.964831,,29.61,1
 TPL,Texas Pacific Land Corporation,Energy,"T1a-active,T3-historical",True,active,2024-11-26,,,,,,,,,,,,historical,2022-11-01,2023-04-03,0.897843,,231.6,1
 TPR,"Tapestry, Inc.",Consumer Discretionary,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
@@ -1588,8 +1729,10 @@ TRGP,Targa Resources,Energy,"T1a-active,T3-historical",True,active,2022-10-12,,,
 TRI,Thomson Reuters,Industrials,T1c-active,True,,,,active,2025-07-17,,,,,,,,,,,,,,,0
 TRMB,Trimble Inc.,Information Technology,T1a-active,True,active,2021-01-21,,,,,,,,,,,,,,,,,,0
 TRMD,,Energy,T3-historical,False,,,,,,,,,,,,,,historical,2022-07-01,2023-07-03,1.223397,,31.55,2
+TRNO,Terreno Realty Corporation,Real Estate,T2-active,True,,,,,,,,,active,2010-02-10,,6.86,spinoff_or_ipo_2010,,,,,,,0
 TROW,T. Rowe Price,Financials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 TRQ,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2023-02-01,0.930018,,31.44,1
+TRU,TransUnion,,T2-active,True,,,,,,,,,active,2015-06-25,,13.31,recent_listing_2015,,,,,,,0
 TRV,Travelers Companies (The),Financials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 TRVI,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2025-05-01,2026-03-02,2.24557,,12.82,2
 TSAT,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2023-10-02,2023-11-01,1.344031,,18.26,1
@@ -1599,13 +1742,15 @@ TSHA,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2026-02-02,2026-03
 TSLA,"Tesla, Inc.",Consumer Discretionary,"T1a-active,T1c-active",True,active,2020-12-21,,active,,,,,,,,,,,,,,,,0
 TSN,Tyson Foods,Consumer Staples,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 TT,Trane Technologies,Industrials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
+TTAN,"ServiceTitan, Inc. Class A Common Stock",Information Technology,T2-active,True,,,,,,,,,active,2024-12-12,,6.08,spinoff_or_ipo_2024,,,,,,,0
 TTD,Trade Desk (The),Communication Services,"T1a-active,T1c-historical",True,active,2025-07-18,,historical,2023-07-17,2025-12-22,,,,,,,,,,,,,,0
 TTI,,Energy,T3-active,True,,,,,,,,,,,,,,active,2026-04-01,,2.204461,,8.62,1
 TTMI,,Information Technology,T3-active,True,,,,,,,,,,,,,,active,2025-09-01,,3.675318,,95.47,1
 TTWO,Take-Two Interactive,Communication Services,"T1a-active,T1c-active",True,active,,,active,2023-12-14,2020-12-21,,,,,,,,,,,,,,0
 TVTX,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2025-07-01,1.863905,,19.36,4
+TW,Tradeweb Markets Inc. Class A Common Stock,Financials,T2-active,True,,,,,,,,,active,2019-04-04,,23.97,recent_listing_2019,,,,,,,0
 TWI,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2022-07-01,2022-12-01,0.772861,,12.02,2
-TWLO,Twilio Inc.,Information Technology,"T2-active,T3-historical",True,,,,,,,,,active,2016-06-23,,28.79,tech_listing_2016,historical,2025-03-03,2025-09-01,1.085641,,122.74,2
+TWLO,Twilio Inc.,Information Technology,"T2-active,T3-historical",True,,,,,,,,,active,2016-06-23,,28.79,recent_listing_2016,historical,2025-03-03,2025-09-01,1.085641,,122.74,2
 TWST,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-04-01,2024-12-02,2.070152,,46.39,1
 TWTR,,Communication Services,T1a-historical,False,historical,,2022-11-01,,,,,,,,,,,,,,,,,0
 TXG,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2023-09-01,2023-10-02,0.803095,,62.91,1
@@ -1613,7 +1758,7 @@ TXN,Texas Instruments,Information Technology,"T1a-active,T1c-active",True,active
 TXT,Textron,Industrials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 TYL,Tyler Technologies,Information Technology,T1a-active,True,active,2020-06-22,,,,,,,,,,,,,,,,,,0
 TYRA,,Health Care,T3-active,True,,,,,,,,,,,,,,active,2026-04-01,,2.614542,,36.29,1
-U,Unity Software Inc.,Information Technology,T2-active,True,,,,,,,,,active,2020-09-18,,12.1,tech_listing_2020,,,,,,,0
+U,Unity Software Inc.,Information Technology,T2-active,True,,,,,,,,,active,2020-09-18,,12.1,recent_listing_2020,,,,,,,0
 UA,,Consumer Discretionary,T1a-historical,False,historical,,2022-06-21,,,,,,,,,,,,,,,,,0
 UAA,,Consumer Discretionary,T1a-historical,False,historical,,2022-06-21,,,,,,,,,,,,,,,,,0
 UAL,United Airlines Holdings,Industrials,"T1a-active,T1c-historical",True,active,,,historical,,2020-06-22,,,,,,,,,,,,,,0
@@ -1623,8 +1768,10 @@ UBER,Uber,Industrials,"T1a-active,T3-historical",True,active,2023-12-18,,,,,,,,,
 UDR,"UDR, Inc.",Real Estate,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 UEC,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2024-03-01,2026-05-01,2.058708,,15.63,2
 UFPT,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2023-04-03,2023-12-01,0.718784,,157.75,2
+UHAL.B,U-Haul Holding Company,,T2-active,True,,,,,,,,,active,2022-11-10,,8.89,spinoff_or_ipo_2022,,,,,,,0
 UHS,Universal Health Services,Health Care,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
-UI,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2025-01-01,2025-12-01,1.505348,,658.23,1
+UI,Ubiquiti Inc. Common Stock,Communication Services,"T2-active,T3-historical",True,,,,,,,,,active,2011-10-14,,60.77,recent_listing_2011,historical,2025-01-01,2025-12-01,1.505348,,658.23,1
+ULS,UL Solutions Inc.,,T2-active,True,,,,,,,,,active,2024-04-12,,18.13,recent_listing_2024,,,,,,,0
 ULTA,Ulta Beauty,Consumer Discretionary,"T1a-active,T1c-historical",True,active,,,historical,,2020-12-21,,,,,,,,,,,,,,0
 UMAC,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2025-03-03,2026-01-01,1.822761,,15.13,3
 UNFI,,Consumer Staples,T3-historical,False,,,,,,,,,,,,,,historical,2025-04-01,2025-08-01,1.304085,,30.46,1
@@ -1639,10 +1786,11 @@ URGN,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2023-09-01,2026-02
 URI,United Rentals,Industrials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 USAK,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2022-08-01,2022-09-01,1.171006,,30.85,1
 USAP,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2024-09-02,2025-03-03,1.28765,,43.9,3
-USAR,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2026-04-01,2026-05-01,2.302632,,20.08,1
+USAR,"USA Rare Earth, Inc. Class A Common Stock",Energy,"T2-active,T3-historical",True,,,,,,,,,active,2025-03-14,,5.58,spinoff_or_ipo_2025,historical,2026-04-01,2026-05-01,2.302632,,20.08,1
 USAS,,Materials,T3-active,True,,,,,,,,,,,,,,active,2026-02-02,2026-03-02,2.642384,,5.5,2
 USAU,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2025-08-01,2026-03-02,1.737838,,20.26,3
 USB,U.S. Bancorp,Financials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
+USFD,US Foods Holding Corp.,,T2-active,True,,,,,,,,,active,2016-05-26,,20.06,recent_listing_2016,,,,,,,0
 USLM,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2024-12-02,2025-04-01,1.225861,,113.51,1
 USM,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2023-12-01,2025-06-02,0.901849,,69.95,4
 USO,United States Oil Fund LP,Commodities,T1-ETF,True,,,,,,,active,Commodities,,,,,,,,,,,,0
@@ -1651,21 +1799,25 @@ UTI,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2024-03-
 UUUU,,Materials,T3-active,True,,,,,,,,,,,,,,active,2025-11-03,,2.904656,,17.61,1
 UWMC,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2023-09-01,2023-10-02,0.827778,,6.58,1
 V,Visa Inc.,Financials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
-VAL,,Energy,T3-active,True,,,,,,,,,,,,,,active,2022-06-01,2023-04-03,2.101942,,102.24,4
+VAL,Valaris Limited,Energy,"T2-active,T3-active",True,,,,,,,,,active,2021-05-03,,7.1,spinoff_or_ipo_2021,active,2022-06-01,2023-04-03,2.101942,,102.24,4
 VAR,,Health Care,T1a-historical,False,historical,,2021-04-20,,,,,,,,,,,,,,,,,0
 VC,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2023-05-01,2023-06-01,0.716592,,156.33,1
 VCEL,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2023-12-01,2024-01-01,0.528645,,32.82,1
 VECT,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2023-07-03,2023-09-01,2.030357,,16.97,1
+VEEV,Veeva Systems Inc.,Information Technology,T2-active,True,,,,,,,,,active,2013-10-16,,27.8,recent_listing_2013,,,,,,,0
 VERA,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-03-01,2025-02-03,2.057608,,48.83,2
 VERI,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2025-12-01,2026-01-01,1.673993,,7.3,1
 VERU,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2022-08-01,2023-01-02,0.57529,,122.4,2
 VERX,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2024-01-01,2025-04-01,1.275197,,57.79,2
 VET,,Energy,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2023-01-02,1.497807,,22.78,1
 VFC,,Consumer Discretionary,T1a-historical,False,historical,,2024-04-03,,,,,,,,,,,,,,,,,0
+VFS,VinFast Auto Ltd. Ordinary Shares,,T2-active,True,,,,,,,,,active,2023-08-15,,9.85,spinoff_or_ipo_2023,,,,,,,0
+VG,"Venture Global, Inc.",Energy,T2-active,True,,,,,,,,,active,2025-01-24,,34.18,recent_listing_2025,,,,,,,0
 VIAV,,Information Technology,T3-active,True,,,,,,,,,,,,,,active,2026-05-01,,2.295909,,34.64,1
 VICI,Vici Properties,Real Estate,T1a-active,True,active,2022-06-08,,,,,,,,,,,,,,,,,,0
 VICR,,Information Technology,T3-active,True,,,,,,,,,,,,,,active,2026-04-01,,1.971839,,153.02,1
 VIGL,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2025-07-01,2025-08-01,1.084656,,7.88,1
+VIK,Viking Holdings Ltd,,T2-active,True,,,,,,,,,active,2024-05-01,,35.25,recent_listing_2024,,,,,,,0
 VIRT,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2025-03-03,2025-04-01,1.187893,,38.31,1
 VITL,,Consumer Staples,T3-historical,False,,,,,,,,,,,,,,historical,2024-07-01,2025-04-01,1.369687,,42.37,2
 VIVO,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2022-08-01,2023-02-01,0.580581,,31.58,1
@@ -1674,9 +1826,10 @@ VLO,Valero Energy,Energy,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 VLTO,Veralto,Industrials,T1a-active,True,active,2023-10-02,,,,,,,,,,,,,,,,,,0
 VMC,Vulcan Materials Company,Materials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 VNO,,Financials,T1a-historical,False,historical,,2023-01-05,,,,,,,,,,,,,,,,,0
-VNOM,,Energy,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2022-10-03,0.626645,,29.67,2
+VNOM,"Viper Energy, Inc. Class A Common Stock",Energy,"T2-active,T3-historical",True,,,,,,,,,active,2014-06-18,,9.9,spinoff_or_ipo_2014,historical,2022-06-01,2022-10-03,0.626645,,29.67,2
 VNT,,Industrials,T1a-historical,False,historical,2020-10-09,2021-03-22,,,,,,,,,,,,,,,,,0
 VOR,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2025-09-01,2025-12-01,1.69527,,39.89,1
+VOYA,"VOYA FINANCIAL, INC.",Financials,T2-active,True,,,,,,,,,active,2013-05-02,,7.58,spinoff_or_ipo_2013,,,,,,,0
 VRDN,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2023-02-01,2023-08-01,1.26,,23.73,1
 VRSK,Verisk Analytics,Industrials,"T1a-active,T1c-active",True,active,,,active,,,,,,,,,,,,,,,,0
 VRSN,Verisign,Information Technology,"T1a-active,T1c-historical",True,active,,,historical,,2022-12-19,,,,,,,,,,,,,,0
@@ -1700,7 +1853,7 @@ VYGR,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2023-07-03,2023-08
 VZ,Verizon,Communication Services,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 VZIO,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2024-09-02,2024-10-01,1.003643,,11.0,1
 VZLA,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2026-02-02,2026-04-01,2.404145,,6.57,1
-W,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2026-01-01,2026-02-02,1.572571,,112.55,1
+W,Wayfair Inc.,Consumer Discretionary,"T2-active,T3-historical",True,,,,,,,,,active,2014-10-02,,8.56,spinoff_or_ipo_2014,historical,2026-01-01,2026-02-02,1.572571,,112.55,1
 WAB,Wabtec,Industrials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 WAT,Waters Corporation,Health Care,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 WBA,Walgreens Boots Alliance,Consumer Staples,"T1a-historical,T1c-historical",False,historical,,2025-08-28,historical,,2024-07-22,,,,,,,,,,,,,,0
@@ -1711,9 +1864,11 @@ WDC,Western Digital,Information Technology,"T1a-active,T1c-active",True,active,,
 WEAV,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2023-07-03,2024-05-01,1.676471,,12.74,3
 WEC,WEC Energy Group,Utilities,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 WELL,Welltower,Real Estate,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
+WES,"Western Midstream Partners, LP",Energy,T2-active,True,,,,,,,,,active,2012-12-07,,16.76,recent_listing_2012,,,,,,,0
 WFC,Wells Fargo,Financials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
-WFRD,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2022-07-01,2024-07-01,1.25292,,129.25,3
+WFRD,Weatherford International plc Ordinary Shares,Energy,"T2-active,T3-historical",True,,,,,,,,,active,2021-06-02,,7.85,spinoff_or_ipo_2021,historical,2022-07-01,2024-07-01,1.25292,,129.25,3
 WGS,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-07-01,2025-11-03,2.180453,,129.19,2
+WH,"Wyndham Hotels & Resorts, Inc. Common Stock",Consumer Discretionary,T2-active,True,,,,,,,,,active,2018-05-17,,6.01,spinoff_or_ipo_2018,,,,,,,0
 WHR,,Consumer Staples,T1a-historical,False,historical,,2024-03-18,,,,,,,,,,,,,,,,,0
 WIMI,,Communication Services,T3-historical,False,,,,,,,,,,,,,,historical,2025-02-03,2025-03-03,2.674219,,24.0,1
 WINA,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2023-06-01,2024-01-01,0.675416,,405.3,2
@@ -1725,7 +1880,9 @@ WLFC,,Materials,T3-historical,False,,,,,,,,,,,,,,historical,2024-12-02,2025-06-0
 WLL,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2022-09-01,0.610097,,74.95,1
 WM,Waste Management,Industrials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 WMB,Williams Companies,Energy,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
+WMG,Warner Music Group Corp. Class A Common Stock,,T2-active,True,,,,,,,,,active,2020-06-03,,14.68,recent_listing_2020,,,,,,,0
 WMK,,Consumer Staples,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2022-07-01,0.60791,,80.09,1
+WMS,"ADVANCED DRAINAGE SYSTEMS, INC.",,T2-active,True,,,,,,,,,active,2014-07-25,,10.96,recent_listing_2014,,,,,,,0
 WMT,Walmart,Consumer Staples,"T1a-active,T1c-active",True,active,,,active,2026-01-20,,,,,,,,,,,,,,,0
 WNC,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2023-04-03,2023-07-03,0.689857,,25.99,1
 WOLF,,Information Technology,T3-active,True,,,,,,,,,,,,,,active,2025-12-01,,3.721713,,15.44,1
@@ -1735,7 +1892,7 @@ WST,West Pharmaceutical Services,Health Care,T1a-active,True,active,2020-05-22,,
 WTI,,Energy,T3-historical,False,,,,,,,,,,,,,,historical,2022-10-03,2023-02-01,0.976331,,6.68,2
 WTW,Willis Towers Watson,Financials,"T1a-active,T1c-historical",True,active,,,historical,,2020-04-30,,,,,,,,,,,,,,0
 WU,,Industrials,T1a-historical,False,historical,,2021-12-20,,,,,,,,,,,,,,,,,0
-WULF,,Financials,T3-active,True,,,,,,,,,,,,,,active,2024-12-02,2026-04-01,3.963333,,14.89,3
+WULF,TeraWulf Inc. Common Stock,,"T2-active,T3-active",True,,,,,,,,,active,2021-12-14,,10.98,recent_listing_2021,active,2024-12-02,2026-04-01,3.963333,,14.89,3
 WVE,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2024-12-02,2025-06-02,0.933476,,9.01,2
 WW,,Consumer Discretionary,T3-historical,False,,,,,,,,,,,,,,historical,2023-09-01,2024-01-01,0.921687,,7.97,1
 WWE,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2023-01-02,2023-02-01,0.64999,,80.8,1
@@ -1744,7 +1901,7 @@ WY,Weyerhaeuser,Real Estate,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 WYNN,Wynn Resorts,Consumer Discretionary,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 XEC,,Energy,T1a-historical,False,historical,,2020-03-02,,,,,,,,,,,,,,,,,0
 XEL,Xcel Energy,Utilities,"T1a-active,T1c-active",True,active,,,active,,,,,,,,,,,,,,,,0
-XENE,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2022-11-01,1.491846,,38.2,2
+XENE,Xenon Pharmaceuticals Inc,Health Care,"T2-active,T3-historical",True,,,,,,,,,active,2014-11-05,,5.55,spinoff_or_ipo_2014,historical,2022-06-01,2022-11-01,1.491846,,38.2,2
 XENT,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2022-06-01,2022-07-01,0.549304,,27.81,1
 XERS,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2025-05-01,2026-01-01,1.927673,,9.31,2
 XLB,Materials Select Sector SPDR Fund,Materials,T1-ETF,True,,,,,,,active,Sector,,,,,,,,,,,,0
@@ -1760,7 +1917,7 @@ XLV,Health Care Select Sector SPDR Fund,Health Care,T1-ETF,True,,,,,,,active,Sec
 XLY,Consumer Discretionary Select Sector SPDR Fund,Consumer Discretionary,T1-ETF,True,,,,,,,active,Sector,,,,,,,,,,,,0
 XMTR,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2025-07-01,2025-12-01,1.732649,,55.91,2
 XOM,ExxonMobil,Energy,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
-XP,,Financials,T3-historical,False,,,,,,,,,,,,,,historical,2024-03-01,2024-04-01,0.989961,,25.77,1
+XP,XP Inc. Class A Common Stock,,"T2-active,T3-historical",True,,,,,,,,,active,2019-12-11,,9.56,spinoff_or_ipo_2019,historical,2024-03-01,2024-04-01,0.989961,,25.77,1
 XPO,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2023-09-01,2024-07-01,1.283357,,110.72,1
 XPOF,,Communication Services,T3-historical,False,,,,,,,,,,,,,,historical,2023-06-01,2023-08-01,1.054996,,26.53,1
 XPRO,,Energy,T3-historical,False,,,,,,,,,,,,,,historical,2023-10-02,2023-11-01,0.981497,,23.56,1
@@ -1770,11 +1927,15 @@ XYL,Xylem Inc.,Industrials,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 XYZ,"Block, Inc.",Financials,T1a-active,True,active,2025-07-23,,,,,,,,,,,,,,,,,,0
 YEXT,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2023-06-01,2023-10-02,1.090703,,9.22,2
 YMAB,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2024-03-01,2024-04-01,1.912145,,11.27,1
+YOU,"Clear Secure, Inc.",Information Technology,T2-active,True,,,,,,,,,active,2021-06-30,,5.67,spinoff_or_ipo_2021,,,,,,,0
 YUM,Yum! Brands,Consumer Discretionary,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
+YUMC,"Yum China Holdings, Inc. Common Stock",Consumer Discretionary,T2-active,True,,,,,,,,,active,2016-10-17,,16.79,recent_listing_2016,,,,,,,0
+Z,"Zillow Group, Inc. Class C Capital Stock",Industrials,T2-active,True,,,,,,,,,active,2011-07-20,,10.09,recent_listing_2011,,,,,,,0
 ZBH,Zimmer Biomet,Health Care,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 ZBIO,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2025-12-01,2026-05-01,2.241594,,26.03,2
 ZBRA,Zebra Technologies,Information Technology,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 ZETA,,Information Technology,T3-historical,False,,,,,,,,,,,,,,historical,2023-07-03,2025-02-03,1.27991,,20.2,2
+ZG,ZILLOW GROUP INC CLASS A,Industrials,T2-active,True,,,,,,,,,active,2011-07-20,,10.14,recent_listing_2011,,,,,,,0
 ZIM,,Industrials,T3-historical,False,,,,,,,,,,,,,,historical,2024-11-01,2025-05-01,1.209581,,22.14,2
 ZIMV,,Unknown,T3-historical,False,,,,,,,,,,,,,,historical,2024-04-01,2024-05-01,1.981846,,19.71,1
 ZION,,Financials,T1a-historical,False,historical,,2024-03-18,,,,,,,,,,,,,,,,,0
@@ -1782,3 +1943,4 @@ ZM,Zoom Video Communications,Information Technology,T1c-historical,False,,,,hist
 ZS,Zscaler,Information Technology,T1c-active,True,,,,active,2021-12-20,,,,,,,,,,,,,,,0
 ZTS,Zoetis,Health Care,T1a-active,True,active,,,,,,,,,,,,,,,,,,,0
 ZURA,,Health Care,T3-historical,False,,,,,,,,,,,,,,historical,2026-02-02,2026-05-01,4.166052,,7.0,2
+ZWS,Zurn Elkay Water Solutions Corporation,Industrials,T2-active,True,,,,,,,,,active,2012-03-29,,8.39,spinoff_or_ipo_2012,,,,,,,0

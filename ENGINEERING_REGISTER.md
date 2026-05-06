@@ -43,7 +43,7 @@
 - T1a (Tier 1A Universe_SP500 Tickers_Jan 2020 to May 2026.csv): 614 rows = 503 active + 111 historical removed-during-window. 100% Sector populated (DEC-499 18-classifier set; T1a uses GICS-11 only). 8 unrecoverable tickers retained per Q2=B owner approval (PIT integrity).
 - T1c (Tier 1C Universe_NASDAQ-100 Tickers_Jan 2020 to May 2026.csv): 161 rows = 101 active + 60 historical. 100% GICS Sector.
 - T1 ETFs (Tier 1 ETFs Universe_Sector and Broad-Market ETFs_May 2026.csv): 27 rows. 18-classifier set including 7 ETF asset/style classes.
-- T2 (Tier 2 Universe_Spinoffs and Recent IPOs_Sep 2014 to May 2026.csv): 10 rows baseline (full SCREENER restart in flight; expecting 50-150 final).
+- T2 (Tier 2 Universe_Spinoffs and Recent IPOs_Feb 2010 to May 2026.csv): 297 rows (full SCREENER complete 2026-05-05; 15,401 candidates checked; 200.7 min wall time; earliest qualifying list_date 2010-02-10; B++ schema with MarketCapB + Tier2Reason extension columns).
 - T3 (Tier 3 Universe_Momentum Top-100_Jun 2022 to May 2026.csv): 1999 period rows / 1220 unique tickers across 48 monthly snapshots. Sector partial (Polygon SIC + yfinance one-time fallback per Q1 owner approval 2026-05-05).
 - Cache: 1,821 OHLCV parquets (T1a + T1c + T1 ETFs + T2 + T3); 599 reference; 6,520 splits + 988,496 dividends global; 5 ticker news (full universe expansion pending Sprint 0A.1).
 
@@ -530,7 +530,7 @@ Discovered Pass 53 turn (this) via owner fact-check question on tier classificat
 
 | DEC-N | Description | Test signal | Effort |
 |---|---|---|---|
-| DEC-494 | Tier 2 / refresh_extended_universe.py alignment with DEC-483 — remove NDX-non-S&P from Tier 2 inclusion (now T1c) | refresh_extended_universe.py docstring + logic exclude NDX-non-S&P; Tier 2 Universe_Spinoffs and Recent IPOs_Sep 2014 to May 2026.csv contains only spinoffs + recent IPOs; T1c (Tier 1C Universe_NASDAQ-100 Tickers_Jan 2020 to May 2026.csv) canonical NDX-non-S&P source | ~0.5-1d |
+| DEC-494 | Tier 2 / refresh_extended_universe.py alignment with DEC-483 — remove NDX-non-S&P from Tier 2 inclusion (now T1c) | refresh_extended_universe.py docstring + logic exclude NDX-non-S&P; Tier 2 Universe_Spinoffs and Recent IPOs_Feb 2010 to May 2026.csv contains only spinoffs + recent IPOs; T1c (Tier 1C Universe_NASDAQ-100 Tickers_Jan 2020 to May 2026.csv) canonical NDX-non-S&P source | ~0.5-1d |
 | DEC-495 | Stage 3+ archived watchlist for tickers falling out of all 5 universe buckets (T1a/T1b/T1c/T2/T3); `archived_watchlist.csv` schema + daily reconciliation job + close-out / re-entry tracking | Diff job correctly identifies tickers leaving union(T1)+T2+T3; archived rows auto-created with last_tier + last_active_date + reason; rejoined tickers tracked | ~2-3d Sprint 5 implementation |
 | DEC-496 | Tier 3 momentum methodology — Jegadeesh-Titman 12-1 (252-day lookback, 21-day skip; rank top 100 non-T1 by `(price[D-21]/price[D-252])-1`) | Synthetic returns produce expected ranking; PIT loader returns correct top-100 for any as_of D; monthly refresh handles list churn | ~1d methodology + ~1-2d historical compute (folded into DEC-375/376/377) |
 
@@ -540,7 +540,7 @@ Discovered Pass 53 turn (this) via owner fact-check question on tier classificat
 - DEC-496 RESOLVED-DECIDED Sprint 1 (historical populate) + Sprint 5 (ongoing automation) — classic defaults: 252/21 windows, risk-adjustment OFF, tie-breakers vol-asc→ADV-desc.
 
 **Sprint 1 added scope (Pass 53):**
-- T2 historical populate via Polygon corporate actions DEC-380 (post-prefetch) — produces `Tier 2 Universe_Spinoffs and Recent IPOs_Sep 2014 to May 2026.csv` 2020-2026 spinoffs + IPOs + add/remove dates
+- T2 historical populate via Polygon corporate actions DEC-380 (post-prefetch) — produces `Tier 2 Universe_Spinoffs and Recent IPOs_Feb 2010 to May 2026.csv` 2020-2026 spinoffs + IPOs + add/remove dates
 - T3 historical populate via Jegadeesh-Titman 12-1 from Polygon OHLCV cache (post-prefetch) — produces `Tier 3 Universe_Momentum Top-100_Jun 2022 to May 2026.csv` 2020-2026 monthly snapshots
 - Sprint 1 effort revised: ~25.5-35.5d → ~28-39d (+~2.5-3.5d for T2/T3 historical populate work; folded into existing Sprint 1 budget)
 - Sprint 5 phased automation (DEC-372/373/374 + DEC-375/376/377) UNCHANGED — handles ongoing live monthly refresh post-Sprint-1 historical baseline.

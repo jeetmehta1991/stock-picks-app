@@ -174,7 +174,7 @@ def get_ndx_constituents_pit(as_of: date) -> list[str]:
 
 def get_extended_universe_pit(as_of: date) -> list[str]:
     """PIT-correct Tier 2 (spinoffs + recent IPOs) constituents at `as_of` (DEC-103 / DEC-494)."""
-    csv_path = UNIVERSE_DIR / "Tier 2 Universe_Spinoffs and Recent IPOs_Sep 2014 to May 2026.csv"
+    csv_path = UNIVERSE_DIR / "Tier 2 Universe_Spinoffs and Recent IPOs_Feb 2010 to May 2026.csv"
     if not csv_path.exists():
         return []
     try:
@@ -184,7 +184,7 @@ def get_extended_universe_pit(as_of: date) -> list[str]:
         active = _filter_pit(df, as_of)
         return active["Symbol"].dropna().drop_duplicates().tolist()
     except Exception as exc:
-        logger.error("Could not read Tier 2 Universe_Spinoffs and Recent IPOs_Sep 2014 to May 2026.csv: %s", exc)
+        logger.error("Could not read Tier 2 Universe_Spinoffs and Recent IPOs_Feb 2010 to May 2026.csv: %s", exc)
         return []
 
 
@@ -211,7 +211,7 @@ def union_universe(as_of: date, include_etfs: bool = True) -> list[str]:
     Returns deduplicated ticker list combining:
       T1a (S&P 500 — historical_membership.csv PIT)
       T1c (NASDAQ 100 non-S&P — Tier 1C Universe_NASDAQ-100 Tickers_Jan 2020 to May 2026.csv PIT)
-      T2  (spinoffs + recent IPOs — Tier 2 Universe_Spinoffs and Recent IPOs_Sep 2014 to May 2026.csv PIT)
+      T2  (spinoffs + recent IPOs — Tier 2 Universe_Spinoffs and Recent IPOs_Feb 2010 to May 2026.csv PIT)
       T3  (momentum top 100 non-T1 — Tier 3 Universe_Momentum Top-100_Jun 2022 to May 2026.csv PIT)
       ETFs (Tier 1 ETFs — Tier 1 ETFs Universe_Sector and Broad-Market ETFs_May 2026.csv, always-active)
 
@@ -363,7 +363,7 @@ def get_extended_universe() -> list[str]:
     Refreshed monthly via scripts/refresh_extended_universe.py (Stage 3+ only).
     Empty CSV = Tier 2 not yet populated (Phase 1B/1C/1D use Tier 1 only).
     """
-    csv_path = UNIVERSE_DIR / "Tier 2 Universe_Spinoffs and Recent IPOs_Sep 2014 to May 2026.csv"
+    csv_path = UNIVERSE_DIR / "Tier 2 Universe_Spinoffs and Recent IPOs_Feb 2010 to May 2026.csv"
     try:
         df = pd.read_csv(csv_path, comment='#')
         if df.empty:
@@ -372,7 +372,7 @@ def get_extended_universe() -> list[str]:
         logger.info("Loaded %d Tier 2 extended universe tickers", len(tickers))
         return tickers
     except Exception as exc:
-        logger.debug("Tier 2 Universe_Spinoffs and Recent IPOs_Sep 2014 to May 2026.csv not found or empty: %s", exc)
+        logger.debug("Tier 2 Universe_Spinoffs and Recent IPOs_Feb 2010 to May 2026.csv not found or empty: %s", exc)
         return []
 
 
