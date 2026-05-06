@@ -584,6 +584,58 @@ Floor: combined multiplier < 0.10% → skip as `below_minimum_size`.
 
 ---
 
+## 11.D Backtest window + walk-forward methodology (DEC-505 Pass 53 owner directive 2026-05-05)
+
+**Owner directive:** "Remove backtest windows for these 16 months. Why would it make sense to use these windows for testing if we have no data for these. Develop testing windows within the 5 year data we already have."
+
+### Locked Stage 2 backtest window
+
+| Constant | Value | Purpose |
+|---|---|---|
+| `DATA_LOAD_START` | 2021-05-05 | Warmup window start (Polygon Stocks Starter cache start; 252-day indicator computation begins here) |
+| `BACKTEST_START` | 2022-05-05 | First tradeable date (post 1y warmup; signals fire from this date forward) |
+| `BACKTEST_END` | 2026-05-05 | Polygon cache end (locked) |
+
+**Total window:** 5.0 years (1y warmup + 4y tradeable).
+
+### Walk-forward folds (DEC-505 supersedes DEC-109's 6-fold spec)
+
+| Fold | OOS test window | Rationale |
+|---|---|---|
+| Fold 1 | 2022-05-05 → 2023-05-05 | Post-warmup; first OOS test |
+| Fold 2 | 2023-05-05 → 2024-05-05 | |
+| Fold 3 | 2024-05-05 → 2025-05-05 | |
+| Fold 4 | 2025-05-05 → 2026-05-05 | Most recent year |
+
+DEC-109 (6 folds × 1y) required 6+ years of data; Polygon delivers 5y; owner declined Stocks Developer/Advanced upgrade per DEC-501 spirit ("No upgrade. Lets stick to what we have"). Reduced to 4 folds + 1y warmup = full 5y utilization.
+
+### Sample-size floor preserved (L99)
+
+L99 + DEC-269 require ≥143 independent positions per strategy. With 4 OOS folds × ~100-200 trades/strategy/year ≈ 400-800 per-strategy trades — comfortably above floor.
+
+### Per-fold compute (revised from DEC-109 estimate)
+
+- Per fold: ~509 T1 + variable T2/T3 ≈ 5-8 hr wall time
+- Total Phase 1B-α run: 4 folds × 5-8 hr = **20-32 hr** (was 30-50 hr for 6 folds; ~33% reduction)
+
+### Code references
+
+- `backtest/config.py`:
+  - `BACKTEST_START = date(2022, 5, 5)`
+  - `BACKTEST_END = date(2026, 5, 5)`
+  - `DATA_LOAD_START = date(2021, 5, 5)`
+  - `WALK_FORWARD_FOLDS = [(2022-05-05, 2023-05-05), (2023-05-05, 2024-05-05), (2024-05-05, 2025-05-05), (2025-05-05, 2026-05-05)]`
+
+### Joint decisions
+
+- DEC-505 (this rule) — supersedes DEC-109 6-fold spec
+- DEC-269 — numeric gates unchanged (Sharpe / DD / win rate are relative to backtest, not absolute time)
+- DEC-478 — Polygon tier (owner declined upgrade)
+- DEC-501 — Polygon Options not upgraded (same owner-cost-control rationale)
+- L99 — sample-size floor preserved
+
+---
+
 ## 11.C Stage 2 → Stage 3 Validation Gates (RESTORED Pass 53 inline per Q2)
 
 *(Restored from PROJECT_PLAN_ARCHIVE.md / Pass 44 §11. Eliminated by Pass 52 turn 128 REFRESH; owner Q2 Pass 53 2026-05-05: "Restore inline".)*
@@ -991,7 +1043,7 @@ Option 3 cached `~/.git-credentials` (chmod 600) for git operations from sandbox
 | **OOS** | Out-of-sample — validation data not used in training |
 | **A/B** | Comparative testing of agent overlay variants |
 | **TIER** | Confidence tier (HIGH/MEDIUM/LOW per DEC-021 3-tier) |
-| **Walk-forward** | Rolling train/test methodology per DEC-109 (5yr/1yr) |
+| **Walk-forward** | Rolling train/test methodology per DEC-505 (1y warmup + 4 OOS × 1y; supersedes DEC-109 5y/1y/6-fold) |
 | **Cube** | Phase 1B-α dimensional cube per DEC-422 (17+ dimensions) |
 | **5-gate** | DEC-426 validity filter (n/p/PSR/t/R:R) |
 | **Crisis flag** | Replaces hard regime direction blocks; identifies extreme conditions |

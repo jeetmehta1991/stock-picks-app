@@ -17,12 +17,30 @@ Single source of truth for:
 from datetime import date
 
 # ─────────────────────────────────────────────────────────────────────────────
-# BACKTEST WINDOW
+# BACKTEST WINDOW (Pass 53 owner directive 2026-05-05; DEC-505)
+# Aligned to Polygon Stocks Starter 5y rolling cache (locked 2021-05-05 →
+# 2026-05-05). Owner declined Polygon Developer/Advanced upgrade. Walk-forward
+# scheme: 1y warmup (DATA_LOAD_START → BACKTEST_START) + 4 OOS folds × 1y each.
+# Old window 2020-01-01 → 2026-03-31 had a 16-month gap (2020-01 → 2021-05) with
+# no Polygon data — corrected per owner directive: "Remove backtest windows
+# for these 16 months."
 # ─────────────────────────────────────────────────────────────────────────────
-BACKTEST_START  = date(2022, 1, 1)
-BACKTEST_END    = date(2026, 3, 31)
-PHASE_1D_START  = date(2020, 1, 1)   # extended window — all strategies passing Phase 1C
-DATA_LOAD_START = date(2021, 1, 1)   # extra year loaded for indicator warmup
+BACKTEST_START  = date(2022, 5, 5)   # First tradeable date (post 1y warmup)
+BACKTEST_END    = date(2026, 5, 5)   # Polygon cache end
+DATA_LOAD_START = date(2021, 5, 5)   # 1y warmup window for 252-day indicators
+PHASE_1D_START  = date(2021, 5, 5)   # Pass 53: extended window aligned to cache start (was 2020-01-01)
+
+# Walk-forward folds (DEC-505 supersedes DEC-109):
+#   Fold 1 OOS: 2022-05-05 → 2023-05-05
+#   Fold 2 OOS: 2023-05-05 → 2024-05-05
+#   Fold 3 OOS: 2024-05-05 → 2025-05-05
+#   Fold 4 OOS: 2025-05-05 → 2026-05-05
+WALK_FORWARD_FOLDS = [
+    (date(2022, 5, 5), date(2023, 5, 5)),
+    (date(2023, 5, 5), date(2024, 5, 5)),
+    (date(2024, 5, 5), date(2025, 5, 5)),
+    (date(2025, 5, 5), date(2026, 5, 5)),
+]
 
 # ─────────────────────────────────────────────────────────────────────────────
 # UNIVERSE — Phase 1A (S&P 50 + 17 ETFs = 67 instruments)

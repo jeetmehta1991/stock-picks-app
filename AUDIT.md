@@ -28776,3 +28776,103 @@ Source: Pass 44 commit `bb6335d6` — "PROJECT_PLAN Section 21: Website Architec
 Pass 52 turn 128 PROJECT_PLAN REFRESH dropped Section 21 without owner-explicit approval to remove. Documents marked "REFRESH" or "supersedes outdated version" should require owner-explicit elimination list approval before content removal. Going forward, refactors that REMOVE content (not just reorganize) need owner sign-off on the eliminations list.
 
 *Per CHECKLIST #1 (owner Q1+Q2+Q3 "Approve all"); #13 (re-read); #25 (regression honestly identified via git archaeology); #43 (cross-doc); #45 (this statement); #51 (scope strict per owner); #58 (atomic restoration commit); #66.b (INPUT/OUTPUT/FLOW); #67/#67.b (doc sync this turn); #68/#69 N/A (no API/code).*
+
+---
+
+## Pass 53 — DEC-505 Backtest window alignment to Polygon Stocks Starter 5y cache (2026-05-05)
+
+**Owner directive:** "Stage 2 backtest window per project plan: 2020-01-01 → 2026-05. Polygon Stocks Starter delivers: 2021-05-05 → 2026-05-05 (5y rolling from today). Gap of 16 months (2020-01-01 → 2021-05-05) has NO Polygon data — known limitation. Remove backtest windows for these 16 months. Why would it make sense to use these windows for testing if we have no data for these. Develop testing windows within the 5 year data we already have."
+
+### Approval (Pass 53 Q1+Q2+Q3 approved 2026-05-05)
+
+- **Q1 Approve** — Option A walk-forward recalibration (1y warmup + 4 OOS × 1y)
+- **Q2 Approve** — DEC-505 entry (4-fold walk-forward + 1y warmup; supersedes DEC-109 6-fold spec)
+- **Q3 Confirm** — backtest/config.py BACKTEST_START → 2022-05-05 (post-warmup tradeable; warmup starts 2021-05-05)
+
+### Code changes (`backtest/config.py`)
+
+```python
+# OLD
+BACKTEST_START  = date(2022, 1, 1)
+BACKTEST_END    = date(2026, 3, 31)
+PHASE_1D_START  = date(2020, 1, 1)
+DATA_LOAD_START = date(2021, 1, 1)
+
+# NEW Pass 53 DEC-505
+BACKTEST_START  = date(2022, 5, 5)   # First tradeable date (post 1y warmup)
+BACKTEST_END    = date(2026, 5, 5)   # Polygon cache end
+DATA_LOAD_START = date(2021, 5, 5)   # 1y warmup window
+PHASE_1D_START  = date(2021, 5, 5)   # was 2020-01-01; aligned to cache start
+WALK_FORWARD_FOLDS = [
+    (date(2022, 5, 5), date(2023, 5, 5)),
+    (date(2023, 5, 5), date(2024, 5, 5)),
+    (date(2024, 5, 5), date(2025, 5, 5)),
+    (date(2025, 5, 5), date(2026, 5, 5)),
+]
+```
+
+### Walk-forward methodology (DEC-505 supersedes DEC-109)
+
+| Period | Window | Purpose |
+|---|---|---|
+| Warmup | 2021-05-05 → 2022-05-05 (1y) | 252-day indicator computation; no trading |
+| OOS Fold 1 | 2022-05-05 → 2023-05-05 | First tradeable year |
+| OOS Fold 2 | 2023-05-05 → 2024-05-05 | |
+| OOS Fold 3 | 2024-05-05 → 2025-05-05 | |
+| OOS Fold 4 | 2025-05-05 → 2026-05-05 | Most recent year |
+
+**Total:** 5y window, 4y tradeable. DEC-109 (6 folds × 1y) required 6+ years; Polygon delivers 5y; owner declined upgrade.
+
+### Sample-size verification (L99 + DEC-269)
+
+- L99 floor: ≥143 independent positions per strategy + ≥500 trades total
+- 4 OOS folds × ~100-200 trades/strategy/year ≈ **400-800 per-strategy trades** — comfortably above floor
+- No statistical-validity risk from window reduction
+
+### Compute estimate revised
+
+- Per fold: ~509 T1 + variable T2/T3 ≈ 5-8 hr
+- Total Phase 1B-α run: 4 × 5-8 hr = **20-32 hr** (was 30-50 hr for 6 folds; ~33% reduction)
+
+### CHECKLIST #69 test pyramid (DEC-503 third application)
+
+| Layer | Status |
+|---|---|
+| Unit | ✅ N/A — config constant change, no new functions |
+| Smoke | ✅ PASS — `from backtest.config import BACKTEST_START` returns 2022-05-05 |
+| Integration | ✅ PASS — universe loaders work with new window |
+| System | ⚠ N/A — full backtest is post-Sprint-0A |
+| Functional | ✅ PASS — BACKTEST_START aligns with Polygon entitlement boundary |
+| Regression | ✅ **88/88 PASS** (config change non-breaking) |
+| Data integrity | ✅ PASS — no test depends on 2020 data |
+| Performance | ⚠ N/A — config constants; no perf surface |
+| Acceptance | ✅ PASS — backtest window now matches Polygon-cached data exactly |
+
+### Doc updates this turn
+
+- `backtest/config.py` — BACKTEST_START / END / DATA_LOAD_START / PHASE_1D_START + new `WALK_FORWARD_FOLDS` list
+- `AUDIT_INDEX.md` — DEC-505 full body entry
+- `PROJECT_PLAN.md §11.D` — new section "Backtest window + walk-forward methodology"
+- `PROJECT_PLAN.md §11.C` Validation Gates row 5 — updated DEC reference (DEC-109 → DEC-505)
+- `PROJECT_PLAN.md` Tech Stack — Walk-forward row updated
+- `DETAILED_PROJECT_PLAN.md` — 6 forward-looking references updated (compute estimate / fold count / methodology / file structure)
+- This AUDIT entry
+
+### Pre-flight CHECKLIST applied
+- ✅ #1/#45 — owner Q1+Q2+Q3 explicit; this statement
+- ✅ Pre-flight per recommendation — DEC-505 owner-gated; window correction owner-directed
+- ✅ #13/#22/#23/#29 N/A (config + doc; no API)
+- ✅ #66.b — INPUT (owner directive remove 16-month gap); OUTPUT (config update + DEC-505 + 4-fold walk-forward + doc sweep); FLOW (analyze impact → propose 4 options → owner-gate Option A → execute → tests → docs → commit)
+- ✅ #67/#67.b — doc sync this turn
+- ✅ #68 N/A — no API ops
+- ✅ #69 — third DEC-503 test pyramid application; all applicable layers PASS
+
+### Cross-references
+- **AUDIT_INDEX.md DEC-505** — full body entry
+- **DEC-109 supersession** — 6-fold spec REVISED to 4-fold + warmup
+- **DEC-478** — Polygon tier (owner declined upgrade)
+- **DEC-501** — Polygon Options not upgraded (same owner-cost-control rationale)
+- **DEC-269** — numeric gates UNCHANGED (Sharpe / DD / win rate are relative to backtest)
+- **L99** — sample-size floor preserved (~400-800 trades/strategy across 4 folds)
+
+*Per CHECKLIST #1 (owner Q1+Q2+Q3); #13 (re-read); #25 (window correction honest acknowledgment); #43 (cross-doc); #45 (this statement); #51 (scope strict); #58 (atomic commit); #66.b (INPUT/OUTPUT/FLOW); #67/#67.b (doc sync); #68 N/A; **#69 THIRD DEC-503 application — config change with full test pyramid; 88/88 regression PASS**.*

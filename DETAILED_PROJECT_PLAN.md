@@ -804,7 +804,7 @@ STAGE 2 → STAGE 3 GO/NO-GO (Part 13)
 
 **Key timings:**
 - One walk-forward fold = ~6 OOS years × 250 days/year × ~509 Tier 1 tickers + variable Tier 2/3 = ~5-8 hours wall time per fold (per Sprint 9 compute estimate)
-- 6 OOS folds total (DEC-109): ~30-50 hours wall time
+- 4 OOS folds total (DEC-505 Pass 53 supersedes DEC-109; 1y warmup + 4 OOS × 1y; Polygon Stocks Starter 5y cap): ~20-32 hours wall time
 - Cube + verdict + dashboards: ~15 hours additional
 - Total Phase 1B-α run: ~37-40 hours wall time (per Sprint 9 compute estimate Part 9 §9.7)
 
@@ -1166,7 +1166,7 @@ Sprint 1 is RESOLVED-IMPLEMENTED when ALL of these are demonstrably true:
 
 **Risk R-2: Polygon historical depth shorter than expected**
 - Stocks Starter = 5 years per polygon.io/pricing verification
-- 5 years from May 2026 = May 2021 onwards; insufficient for DEC-109 walk-forward 5-year-train pre-2021 OOS folds
+- 5 years from May 2026 = May 2021 onwards; insufficient for DEC-109 5-year-train; CORRECTED via DEC-505 Pass 53 owner directive 2026-05-05 (1y warmup + 4 OOS × 1y within available 5y window)
 - Mitigation: DEC-478 owner decision to upgrade to Stocks Developer ($79/mo, 10 years) covering 2016-2026 for OOS folds 2021-2026
 - If owner declines upgrade: walk-forward train window must reduce; this is a Sprint 7 architectural change
 
@@ -1949,7 +1949,7 @@ Sprint 3 is RESOLVED-IMPLEMENTED when ALL of these are demonstrably true:
 - Mitigation: trade log includes ALL state-mutating events (trades + dividends + corp actions); `replay_to` strict equivalence test in §4.5
 
 **Risk R-3: Correlation computation slow at scale**
-- 60-day return correlation × N existing positions × M candidate tickers per day → O(N×M) computations per day × 250 days × 6 OOS folds
+- 60-day return correlation × N existing positions × M candidate tickers per day → O(N×M) computations per day × 250 days × 4 OOS folds (DEC-505)
 - Mitigation: cache correlation matrix per `as_of_date`; recompute incrementally only when positions change
 - If still slow: parallel computation across positions using NumPy vectorization
 
@@ -1962,7 +1962,7 @@ Sprint 3 is RESOLVED-IMPLEMENTED when ALL of these are demonstrably true:
 - Mitigation: §4.5 done criteria explicitly tests against QuantStats; if drift, debug to convergence before merge
 
 **Risk R-6: Event log size at scale**
-- 6 OOS folds × thousands of trades per fold = potentially 50K-500K event log entries; in-memory might exceed RAM
+- 4 OOS folds × thousands of trades per fold = potentially 30K-330K event log entries; in-memory bounds (DEC-505)
 - Mitigation: stream to Parquet incrementally if event log > 100K entries; query historical state via PyArrow filter pushdown
 
 **Risk R-7: Sector classification PIT-correctness**
@@ -3687,7 +3687,7 @@ Concrete deliverables grouped:
 **Statistical methodology (~12-15d):**
 1. `backtest/statistics/fdr.py` — Benjamini-Hochberg FDR implementation (q=0.10 default)
 2. `backtest/statistics/hierarchical_fdr.py` — 3-level (per-strategy / per-cell / per-regime) FDR per DEC-470
-3. `backtest/statistics/walk_forward.py` — 5-year train / 1-year OOS / 6 folds per DEC-109
+3. `backtest/statistics/walk_forward.py` — 1y warmup + 1y rolling train / 1y OOS / 4 folds per DEC-505 Pass 53 (supersedes DEC-109 5y/1y/6 folds)
 4. `backtest/statistics/distribution_analysis.py` — skew, kurtosis, tail metrics, PSR, t-stat
 5. `backtest/statistics/stationarity.py` — ADF + Chow + rolling Sharpe stability
 6. `backtest/statistics/bootstrap_ci.py` — block bootstrap CIs (block size = 20 trading days, 1000 iterations)
@@ -3924,7 +3924,7 @@ This is the longest sprint by ~30% over Sprint 6. Resources should be focused; c
 - Mitigation: parser handles 3 known formats (OpenAI / Anthropic / Gemini); defensive fallback; conservative REJECT if parsing fails (per CHECKLIST #51 conservative defaults)
 
 **Risk R-4: Cube populator memory at scale**
-- 254K cells × 17+ metrics × 6 OOS folds → high memory; may exceed Codespace limits
+- 254K cells × 17+ metrics × 4 OOS folds (DEC-505) → high memory; manageable on local laptop
 - Mitigation: streaming aggregation (don't load all trades into memory); incremental cell metric computation
 - If still high: cloud burst for Sprint 9 cube populate (one-time cost)
 
