@@ -459,20 +459,32 @@ def test_etf_slippage_lower_than_stock():
 # COT DATA REMOVED
 # ─────────────────────────────────────────────────────────────────────────────
 
-def test_cot_returns_neutral():
+def test_cot_returns_real_data_post_batch13():
+    """Pass 53 Batch 13 sub-task 5 SUPERSEDED 'COT returns not_available':
+    real CFTC TFF data now wired (Sprint 0A Batch 8 prefetched 1,293 weekly
+    reports). Signal classifies normal/extreme based on 26-week percentile."""
     from backtest.data.sentiment import get_cot_report
     result = get_cot_report(date(2023, 6, 1))
-    assert result["signal"] == "not_available"
-    assert result["commercial_net"] is None
-    print("✅ COT returns not_available (fabricated data removed)")
+    # Real data wired: signal in {normal, extreme_commercial_long_buy, extreme_commercial_short_sell}
+    assert result["signal"] in ("normal", "extreme_commercial_long_buy",
+                                  "extreme_commercial_short_sell"), \
+        f"Got unexpected signal {result['signal']!r}"
+    assert result["commercial_net"] is not None, "commercial_net should be populated post Batch 13"
+    print(f"✅ Pass 53 Batch 13 COT real data: signal={result['signal']} commercial_net={result['commercial_net']:,.0f}")
 
-def test_sentiment_score_excludes_cot():
+
+def test_sentiment_score_includes_cot_post_batch13():
+    """Pass 53 Batch 13 sub-task 5: COT signal contributes to sentiment_score
+    (extreme positioning ±1; normal = 0)."""
     from backtest.data.sentiment import sentiment_snapshot
     snap = sentiment_snapshot(date(2023, 6, 1))
-    # Score should be between -5 and +5 (AAII + F&G only, no COT boost)
+    # Score still bounded -5 to +5 (cap)
     assert -5 <= snap["sentiment_score"] <= 5
-    assert "cot" in snap  # key still present for forward compatibility
-    print("✅ Sentiment score excludes COT contribution")
+    # COT now real data + may contribute ±1 to score
+    assert "cot" in snap
+    assert snap["cot"]["signal"] != "not_available", \
+        "COT signal should be real data post Batch 13"
+    print(f"✅ Pass 53 Batch 13 sentiment_score includes COT contribution")
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1210,6 +1222,52 @@ def test_bug273_institutional_signal_respects_45day_lag():
     print("✅ BUG-273 institutional_signal 45-day lag respected")
 
 
+def test_sentiment_snapshot_includes_batch13_expansion():
+    """Pass 53 Batch 13 sub-tasks 4+5: sentiment_snapshot returns CNN components + COT + ticker-specific signals."""
+    from backtest.data.sentiment import sentiment_snapshot
+    snap = sentiment_snapshot(date(2026, 5, 1))
+    # Existing fields preserved
+    for key in ["aaii", "fear_greed", "cot", "sentiment_score"]:
+        assert key in snap, f"Missing existing field: {key}"
+    # NEW fields (DEC-507 Row 5 closure)
+    assert "fg_components" in snap, "Batch 13 sub-task 4 fg_components missing"
+    components = snap["fg_components"]
+    expected_components = ["junk_bond_demand", "put_call_options",
+                             "market_momentum_sp500", "stock_price_breadth",
+                             "safe_haven_demand", "market_volatility_vix",
+                             "stock_price_strength"]
+    for c in expected_components:
+        assert c in components, f"Missing CNN F&G component: {c}"
+    # Ticker-specific without ticker param → None
+    assert snap.get("apewisdom") is None
+    assert snap.get("wikipedia") is None
+    # With ticker
+    snap_t = sentiment_snapshot(date(2026, 5, 1), ticker="AAPL")
+    assert "apewisdom" in snap_t
+    assert "wikipedia" in snap_t
+    print(f"✅ Batch 13 sub-task 4+5 sentiment_snapshot: {len(snap['fg_components'])} CNN components + COT signal={snap['cot']['signal']}")
+
+
+def test_cot_report_real_data():
+    """Pass 53 Batch 13 sub-task 5: get_cot_report reads real CFTC TFF data."""
+    from backtest.data.sentiment import get_cot_report
+    result = get_cot_report(date(2026, 5, 1))
+    # Should NOT be 'not_available' anymore (Pass 53 Batch 8 prefetched real data)
+    assert result["signal"] != "not_available", \
+        f"Pass 53 should provide real COT data; got {result['signal']!r}"
+    assert result["commercial_net"] is not None, "commercial_net should be populated"
+    print(f"✅ Batch 13 sub-task 5 COT real data: signal={result['signal']} commercial_net={result['commercial_net']:,.0f}")
+
+
+def test_cnn_components_loaded():
+    """Pass 53 Batch 13 sub-task 4: CNN F&G 7 sub-components loadable."""
+    from backtest.data.sentiment import get_cnn_components
+    components = get_cnn_components(date(2026, 5, 1))
+    assert len(components) == 7, f"Expected 7 components, got {len(components)}"
+    populated = sum(1 for c in components.values() if c.get("score") is not None)
+    print(f"✅ Batch 13 sub-task 4 CNN components: {populated}/7 populated")
+
+
 def test_macro_hy_oas_classification():
     """Pass 53 Batch 13 sub-task 3: HY OAS regime thresholds."""
     from backtest.data.macro import hy_oas_signal
@@ -1426,7 +1484,7 @@ if __name__ == "__main__":
         test_smart_money_all_keys_present,
         test_slippage_increases_long_entry, test_slippage_decreases_short_entry,
         test_etf_slippage_lower_than_stock,
-        test_cot_returns_neutral, test_sentiment_score_excludes_cot,
+        test_cot_returns_real_data_post_batch13, test_sentiment_score_includes_cot_post_batch13,
         test_hybrid_long_trail_after_target_hit,
         test_hybrid_short_trail_after_target_hit,
         test_pit_filter_event_driven_changes,

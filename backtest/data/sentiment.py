@@ -168,31 +168,225 @@ def get_fear_and_greed(as_of: date) -> dict:
 # as a proxy for broad market sentiment positioning.
 # ---------------------------------------------------------------------------
 
+# ---------------------------------------------------------------------------
+# Pass 53 Batch 13 sub-tasks 4 + 5 (DEC-507 wiring matrix Row 5 closure)
+# Reads from data_prefetch/ paths (Sprint 0A Batches 7/8/9 v2/12-a prefetched).
+# ---------------------------------------------------------------------------
+
+_REPO_ROOT_SENT = Path(__file__).parent.parent.parent
+PREFETCH_CNN_COMPONENTS_DIR = _REPO_ROOT_SENT / "data_prefetch" / "cnn_fg" / "components"
+PREFETCH_APEWISDOM = _REPO_ROOT_SENT / "data_prefetch" / "apewisdom" / "global.parquet"
+PREFETCH_WIKIPEDIA_DIR = _REPO_ROOT_SENT / "data_prefetch" / "wikipedia"
+PREFETCH_CFTC_COT = _REPO_ROOT_SENT / "data_prefetch" / "cftc" / "cot_emini_sp500.parquet"
+
+CNN_COMPONENT_NAMES = [
+    "junk_bond_demand",
+    "put_call_options",
+    "market_momentum_sp500",
+    "stock_price_breadth",
+    "safe_haven_demand",
+    "market_volatility_vix",
+    "stock_price_strength",
+]
+
+
+def get_cnn_components(as_of: date) -> dict:
+    """Return CNN Fear & Greed 7 sub-components at as_of (Pass 53 Batch 7).
+
+    Returns dict {component_name: {"score": float, "rating": str, "date": ...}}
+    Component score 0-100 (low = fear, high = greed).
+    """
+    out = {}
+    for comp in CNN_COMPONENT_NAMES:
+        path = PREFETCH_CNN_COMPONENTS_DIR / f"{comp}.parquet"
+        if not path.exists():
+            out[comp] = {"score": None, "rating": "unknown"}
+            continue
+        try:
+            df = pd.read_parquet(path)
+            if df.empty or "date" not in df.columns or "score" not in df.columns:
+                out[comp] = {"score": None, "rating": "unknown"}
+                continue
+            df["date"] = pd.to_datetime(df["date"]).dt.date
+            df = df[df["date"] <= as_of]
+            if df.empty:
+                out[comp] = {"score": None, "rating": "unknown"}
+                continue
+            row = df.iloc[-1]
+            out[comp] = {
+                "score": float(row["score"]),
+                "rating": str(row.get("rating", "")),
+                "date": str(row["date"]),
+            }
+        except Exception as exc:
+            logger.debug("get_cnn_components(%s): %s", comp, exc)
+            out[comp] = {"score": None, "rating": "unknown"}
+    return out
+
+
+def get_apewisdom_mentions(ticker: str) -> dict:
+    """Apewisdom WSB+r/stocks ticker mentions (Pass 53 Batch 12-a).
+
+    Returns dict with mentions / mentions_24h / rank / sentiment for ticker;
+    returns {"signal": "no_data"} if not in latest snapshot.
+    """
+    if not PREFETCH_APEWISDOM.exists():
+        return {"signal": "no_data"}
+    try:
+        df = pd.read_parquet(PREFETCH_APEWISDOM)
+        if df.empty or "ticker" not in df.columns:
+            return {"signal": "no_data"}
+        match = df[df["ticker"].astype(str).str.upper() == ticker.upper()]
+        if match.empty:
+            return {"signal": "no_mentions", "mentions": 0}
+        row = match.iloc[0]
+        return {
+            "signal": "tracked",
+            "mentions": int(row.get("mentions", 0) or 0),
+            "mentions_24h": int(row.get("mentions_24h", 0) or 0),
+            "rank": int(row.get("rank", 999) or 999),
+            "sentiment": float(row.get("sentiment", 0) or 0),
+        }
+    except Exception as exc:
+        logger.debug("get_apewisdom_mentions(%s): %s", ticker, exc)
+        return {"signal": "no_data"}
+
+
+def get_wikipedia_pageviews(ticker: str, as_of: date, lookback_days: int = 7) -> dict:
+    """Wikipedia pageviews for ticker over lookback window (Pass 53 Batch 12-a).
+
+    Returns dict with views_total / views_avg / signal (above_avg/normal/below_avg
+    relative to 90-day baseline).
+    """
+    safe_ticker = ticker.replace("-", "_").replace(".", "_")
+    path = PREFETCH_WIKIPEDIA_DIR / f"{safe_ticker}.parquet"
+    if not path.exists():
+        return {"signal": "no_data"}
+    try:
+        df = pd.read_parquet(path)
+        if df.empty or "date" not in df.columns or "views" not in df.columns:
+            return {"signal": "no_data"}
+        df["date"] = pd.to_datetime(df["date"]).dt.date
+        df = df[df["date"] <= as_of]
+        if df.empty:
+            return {"signal": "no_data"}
+        # Recent window
+        window_start = as_of - timedelta(days=lookback_days)
+        recent = df[df["date"] >= window_start]
+        if recent.empty:
+            return {"signal": "no_data"}
+        recent_avg = float(recent["views"].mean())
+        # 90-day baseline (excluding recent window)
+        baseline_start = as_of - timedelta(days=90)
+        baseline = df[(df["date"] >= baseline_start) & (df["date"] < window_start)]
+        baseline_avg = float(baseline["views"].mean()) if not baseline.empty else recent_avg
+        ratio = recent_avg / baseline_avg if baseline_avg > 0 else 1.0
+        # Classification
+        if ratio > 2.0:
+            signal = "spike_high_attention"
+        elif ratio > 1.3:
+            signal = "above_avg"
+        elif ratio < 0.7:
+            signal = "below_avg"
+        else:
+            signal = "normal"
+        return {
+            "signal": signal,
+            "views_recent_avg": recent_avg,
+            "views_baseline_avg": baseline_avg,
+            "ratio": ratio,
+        }
+    except Exception as exc:
+        logger.debug("get_wikipedia_pageviews(%s): %s", ticker, exc)
+        return {"signal": "no_data"}
+
+
 def get_cot_report(as_of: date) -> dict:
     """
     COT (Commitment of Traders) positioning.
-    REMOVED: previous implementation used 9 fabricated hardcoded sample points.
-    Real CFTC COT data: https://www.cftc.gov/MarketReports/CommitmentsofTraders/
-    Phase 1C+: integrate real CFTC COT via their free weekly data files.
-    Returns neutral — does not influence sentiment score.
+    Pass 53 Batch 13 sub-task 5 (RESOLVED-IMPLEMENTED 2026-05-06):
+    Reads CFTC TFF E-mini S&P 500 weekly positioning from
+    data_prefetch/cftc/cot_emini_sp500.parquet (Sprint 0A Batch 8 prefetched
+    1,293 weekly reports 2006-06 to 2026-04).
+
+    Commercial hedgers = smart money; speculators often wrong at extremes.
+    Returns commercial net positioning + signal classification.
     """
-    return {"signal": "not_available", "commercial_net": None}
+    if not PREFETCH_CFTC_COT.exists():
+        return {"signal": "not_available", "commercial_net": None}
+    try:
+        df = pd.read_parquet(PREFETCH_CFTC_COT)
+        if df.empty or "report_date" not in df.columns:
+            return {"signal": "not_available", "commercial_net": None}
+        df["report_date"] = pd.to_datetime(df["report_date"]).dt.date
+        df = df[df["report_date"] <= as_of]
+        if df.empty:
+            return {"signal": "not_available", "commercial_net": None}
+        latest = df.iloc[-1]
+        # CFTC TFF schema:
+        # asset_mgr_positions_long, asset_mgr_positions_short
+        # dealer_positions_long_all, dealer_positions_short_all (commercial)
+        try:
+            dealer_long = float(latest.get("dealer_positions_long_all", 0) or 0)
+            dealer_short = float(latest.get("dealer_positions_short_all", 0) or 0)
+            comm_net = dealer_long - dealer_short
+            asset_mgr_long = float(latest.get("asset_mgr_positions_long", 0) or 0)
+            asset_mgr_short = float(latest.get("asset_mgr_positions_short", 0) or 0)
+            spec_net = asset_mgr_long - asset_mgr_short
+        except Exception:
+            return {"signal": "parse_error", "commercial_net": None}
+        # 26-week (6mo) percentile of comm_net for extreme detection
+        history = df.tail(26)
+        try:
+            comm_history = history.apply(
+                lambda r: float(r.get("dealer_positions_long_all", 0) or 0)
+                          - float(r.get("dealer_positions_short_all", 0) or 0),
+                axis=1)
+            pct = (comm_history < comm_net).sum() / max(len(comm_history), 1)
+        except Exception:
+            pct = 0.5
+        if pct > 0.85:
+            signal = "extreme_commercial_long_buy"  # contrarian buy
+        elif pct < 0.15:
+            signal = "extreme_commercial_short_sell"  # contrarian sell
+        else:
+            signal = "normal"
+        return {
+            "signal": signal,
+            "commercial_net": comm_net,
+            "speculator_net": spec_net,
+            "report_date": str(latest["report_date"]),
+            "history_percentile": pct,
+        }
+    except Exception as exc:
+        logger.debug("get_cot_report(%s): %s", as_of, exc)
+        return {"signal": "not_available", "commercial_net": None}
 
 
 # ---------------------------------------------------------------------------
 # COMBINED SENTIMENT SNAPSHOT
 # ---------------------------------------------------------------------------
 
-def sentiment_snapshot(as_of: date) -> dict:
+def sentiment_snapshot(as_of: date, ticker: Optional[str] = None) -> dict:
     """
     Return combined sentiment context dict for `as_of`.
     Used by the Sentiment Agent as its primary input.
 
-    Returns: aaii, fear_greed, cot, sentiment_score (-5 to +5)
+    Pass 53 Batch 13 sub-tasks 4 + 5 expansion (DEC-507 Row 5 closure):
+    Adds CNN F&G 7 sub-components, CFTC COT (real data), and ticker-specific
+    Apewisdom + Wikipedia signals.
+
+    `ticker` parameter optional — when provided, ticker-specific signals
+    (Apewisdom mentions, Wikipedia pageviews) are included; when None, only
+    market-wide sentiment signals are returned.
+
+    Returns: aaii, fear_greed, fg_components, cot, apewisdom (if ticker),
+    wikipedia (if ticker), sentiment_score (-5 to +5).
     """
-    aaii       = get_aaii_sentiment(as_of)
-    fg         = get_fear_and_greed(as_of)
-    cot        = get_cot_report(as_of)
+    aaii = get_aaii_sentiment(as_of)
+    fg = get_fear_and_greed(as_of)
+    fg_components = get_cnn_components(as_of)
+    cot = get_cot_report(as_of)
 
     score = 0
 
@@ -203,19 +397,40 @@ def sentiment_snapshot(as_of: date) -> dict:
     elif "extreme_greed" in aaii_sig:  score -= 2
     elif "elevated_bullishness" in aaii_sig: score -= 1
 
-    # Fear & Greed scoring (contrarian)
+    # Fear & Greed composite scoring (contrarian)
     fg_sig = fg.get("signal", "neutral")
     if fg_sig == "extreme_fear_buy":     score += 3
     elif fg_sig == "fear_lean_buy":       score += 1
     elif fg_sig == "extreme_greed_sell_warning": score -= 2
     elif fg_sig == "greed_caution":       score -= 1
 
-    # COT — not available (removed fabricated data)
-    # Will be re-enabled in Phase 1C with real CFTC data
+    # CFTC COT scoring (Pass 53 Batch 13 sub-task 5)
+    cot_sig = cot.get("signal", "not_available")
+    if cot_sig == "extreme_commercial_long_buy":  score += 1
+    elif cot_sig == "extreme_commercial_short_sell": score -= 1
+
+    # Ticker-specific signals (when ticker provided)
+    apewisdom = None
+    wikipedia = None
+    if ticker:
+        apewisdom = get_apewisdom_mentions(ticker)
+        wikipedia = get_wikipedia_pageviews(ticker, as_of)
+        # Apewisdom rank (lower = more mentions)
+        ape_sig = apewisdom.get("signal", "no_data")
+        if ape_sig == "tracked" and apewisdom.get("rank", 999) <= 50:
+            # Top-50 meme stock — signal mixed (could be retail buy or pump-and-dump)
+            score += 0  # neutral; presence is information, direction is not
+        # Wikipedia pageviews spike — high attention often precedes movement
+        wiki_sig = wikipedia.get("signal", "no_data")
+        if wiki_sig == "spike_high_attention":
+            score += 0  # neutral; signal value depends on direction context
 
     return {
         "aaii":             aaii,
         "fear_greed":       fg,
+        "fg_components":    fg_components,
         "cot":              cot,
+        "apewisdom":        apewisdom,
+        "wikipedia":        wikipedia,
         "sentiment_score":  max(-5, min(5, score)),
     }
