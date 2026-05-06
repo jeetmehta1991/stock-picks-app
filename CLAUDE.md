@@ -178,7 +178,7 @@ All 9 must pass overall for a strategy to advance. Additionally, each strategy g
 ### Sprint Structure (Pass 53 Sprint 0A active per DEC-497)
 
 **Active Sprint:** Sprint 0A — Full multi-API prefetch + universe build + Stage 2 NO-LIVE-API refactor.
-- Universe build: T1a (614) + T1c (161) + T1 ETFs (27) + T2 (297 — full SCREENER complete 2026-05-05; 15,401 candidates checked; earliest list_date 2010-02-10) + T3 (1999 period rows / 1220 unique) — IMPLEMENTED Pass 53
+- Universe build: T1a (614) + T1c (161) + T1 ETFs (27) + T2 (347 — full SCREENER 297 + PIT graduated-name backfill 50 per BUG-274 Option B owner-approved 2026-05-05) + T3 (1999 period rows / 1220 unique) — IMPLEMENTED Pass 53
 - Sector normalization: 18-classifier set per DEC-499 (GICS-11 + Fixed Income, Commodities, Volatility, Broad Market, International, Emerging Markets, Small Cap)
 - Polygon Stocks Starter prefetch: 1,821 OHLCV cached (extension to news/indicators/financials/events/NBBO pending)
 - API scope (8 APIs): Polygon, Quiver Trader, FRED, ALFRED, AAII, CNN F&G (composite + 7 sub-components), CFTC COT, SEC EDGAR (structured per DEC-456)

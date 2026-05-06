@@ -43,7 +43,7 @@
 - T1a (Tier 1A Universe_SP500 Tickers_Jan 2020 to May 2026.csv): 614 rows = 503 active + 111 historical removed-during-window. 100% Sector populated (DEC-499 18-classifier set; T1a uses GICS-11 only). 8 unrecoverable tickers retained per Q2=B owner approval (PIT integrity).
 - T1c (Tier 1C Universe_NASDAQ-100 Tickers_Jan 2020 to May 2026.csv): 161 rows = 101 active + 60 historical. 100% GICS Sector.
 - T1 ETFs (Tier 1 ETFs Universe_Sector and Broad-Market ETFs_May 2026.csv): 27 rows. 18-classifier set including 7 ETF asset/style classes.
-- T2 (Tier 2 Universe_Spinoffs and Recent IPOs_Feb 2010 to May 2026.csv): 297 rows (full SCREENER complete 2026-05-05; 15,401 candidates checked; 200.7 min wall time; earliest qualifying list_date 2010-02-10; B++ schema with MarketCapB + Tier2Reason extension columns).
+- T2 (Tier 2 Universe_Spinoffs and Recent IPOs_Feb 2010 to May 2026.csv): 347 rows (297 SCREENER + 50 graduated-name backfill per BUG-274 Option B owner-approved 2026-05-05; 15,401 SCREENER candidates checked, 200.7 min wall time; earliest qualifying list_date 2010-02-10; B++ schema with MarketCapB + Tier2Reason extension columns; 50 graduated rows have `removed_date` populated = T1 admission date).
 - T3 (Tier 3 Universe_Momentum Top-100_Jun 2022 to May 2026.csv): 1999 period rows / 1220 unique tickers across 48 monthly snapshots. Sector partial (Polygon SIC + yfinance one-time fallback per Q1 owner approval 2026-05-05).
 - Cache: 1,821 OHLCV parquets (T1a + T1c + T1 ETFs + T2 + T3); 599 reference; 6,520 splits + 988,496 dividends global; 5 ticker news (full universe expansion pending Sprint 0A.1).
 

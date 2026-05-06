@@ -553,7 +553,7 @@ Per CHECKLIST #67 / DEC-498 per-turn doc sync rule: Sprint 0A documentation regi
 - `Backtesting universe/Tier 1A Universe_SP500 Tickers_Jan 2020 to May 2026.csv` (614 rows; DEC-477 RESOLVED-IMPLEMENTED)
 - `Backtesting universe/Tier 1C Universe_NASDAQ-100 Tickers_Jan 2020 to May 2026.csv` (161 rows)
 - `Backtesting universe/Tier 1 ETFs Universe_Sector and Broad-Market ETFs_May 2026.csv` (27 rows)
-- `Backtesting universe/Tier 2 Universe_Spinoffs and Recent IPOs_Feb 2010 to May 2026.csv` (297 rows — full SCREENER complete Pass 53 2026-05-05; 15,401 candidates checked, 297 qualifying; earliest list_date 2010-02-10)
+- `Backtesting universe/Tier 2 Universe_Spinoffs and Recent IPOs_Feb 2010 to May 2026.csv` (347 rows — full SCREENER 297 + 50 graduated-name backfill per BUG-274 Option B Pass 53 2026-05-05; 50 graduated rows have removed_date = T1 admission date; earliest list_date 2010-02-10)
 - `Backtesting universe/Tier 3 Universe_Momentum Top-100_Jun 2022 to May 2026.csv` (1999 period rows / 1220 unique)
 - `Backtesting universe/Current Snapshot_SP500 Tickers_May 2026.csv` (503 rows)
 - `Backtesting universe/Master Universe_Deduplicated_All Tiers_May 2026.csv` (1855 unique tickers, full dimensional metadata) — NEW Pass 53

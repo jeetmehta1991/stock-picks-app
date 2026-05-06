@@ -28440,3 +28440,74 @@ Owner: "In the detailed project plan i need specific sections on each phase and 
 - **temp_staging/smoke_quiver_silent_gap_endpoints.py** + **smoke_quiver_url_discovery.py** — empirical evidence
 
 *Per CHECKLIST #1 (owner directives Q1+Q2+Q3 + Q1=All except App Ratings + Patent Drift, Q2 silent-gap smoke this turn, Q3 bulk migration agreed); #13 (CHECKLIST + CLAUDE re-read); #25 (silent-gap honest acknowledgment); #43 (cross-doc); #45 (this statement); #51 (scope strict per owner directives); #58 (atomic commit); #66.b (INPUT smoke + URL probes; OUTPUT 4 DECs + restructure + bug entries; FLOW analysis → smoke → owner-gate → doc sweep → commit); #67 (rule applies); #67.b (decouple from T2 SCREENER); #68 (smoke + URL discovery only); #69 (next turn first application: smart_money fix). Owner directive Q3 = doc sweep first, then full test pyramid fix next turn.*
+
+---
+
+## Pass 53 — BUG-274 T2 PIT correctness graduated-name backfill (2026-05-05)
+
+**Owner question that triggered finding:** "Is sandisk a part of tier 2 and tier 3?"
+
+Cross-check: SNDK (SanDisk, Western Digital spinoff Feb 2025, joined S&P 500 Nov 2025) was NOT in T2 file, despite L89 documented "SNDK waited 9 months for S&P 500 inclusion" and meeting DEC-103 thresholds (>$5B cap, ≥90d history) during 2025-02 → 2025-11 window.
+
+### Root cause (BUG-274 logged)
+T2 SCREENER (`scripts/build_tier2_screener_full.py`) excluded ALL currently-T1 (T1a-active or T1c-active) tickers from output. Result: snapshot-style "currently non-T1" universe rather than PIT-historical T2. Tickers that listed >=2010-01-01, met DEC-103 thresholds, and later graduated to T1 were entirely absent from T2.
+
+### Scope of gap
+- 92 T1a-active + 22 T1c-only-active candidates with non-null added_date (joined T1 in 2020-2026 window) = 114 candidates
+- Of those: 50 qualified for T2 backfill (list_date >= 2010 + cap >= $5B + list_date < T1_admission)
+- 64 skipped (legacy companies that joined T1 in 2020+ window but listed pre-2010)
+- Notable backfilled names: SNDK, ABNB, APO, APP, ARES, CARR, CEG, COIN, CRWD, CVNA, DASH, DDOG, DELL, EPAM, MRNA, OTIS, PANW, PLTR, SHOP
+
+### Owner directive Pass 53 turn 2026-05-05
+
+3 options surfaced:
+- **A** — PIT-aware SCREENER refactor (correct fix; ~3-5d)
+- **B** — Hybrid backfill of graduated names (~1-2 hr fast fix)
+- **C** — Defer to Sprint 5 ongoing automation (no immediate action)
+
+**Owner approved B.** Immediate hybrid backfill executed; structural Option A refactor logged for Sprint 5.
+
+### Execution
+
+`temp_staging/backfill_t2_graduated.py`:
+1. Loaded 114 candidates (T1a + T1c-only graduates with added_date)
+2. Smoke probe: SNDK + APO confirmed Polygon `/v3/reference/tickers/{ticker}` returns valid `list_date`, `market_cap`, `name`, `sic_code`
+3. Full probe: 114 candidates → 50 qualifying
+4. Appended 50 rows to T2 with `added_date=list_date`, `removed_date=T1_added_date`, `Tier2Reason="graduated_to_T1[ac]_YYYY"`
+
+Sector correction (`temp_staging/fix_t2_graduated_sectors.py`): 31 of 50 graduated rows had wrong sector from initial SIC mapping (e.g., SNDK SIC 3572 mapped to Industrials instead of IT). Fixed via T1a > T1c GICS cross-reference per DEC-499 source priority.
+
+Master Universe Dedup rebuilt: 1,937 unique tickers (unchanged — graduated names already in Master via T1a/T1c; T2 expansion adds tier-membership references not new tickers).
+
+### Acceptance verification (CHECKLIST #69 test pyramid partial — data fix, not code push)
+
+- ✅ Smoke: SNDK in T2 PIT load for as_of=2025-08-01 = True (T2 window); for as_of=2026-01-01 = False (post T1 admission 2025-11-28). T2 PIT counts: 295 (2025-08-01), 298 (2026-01-01).
+- ✅ Integration: universe loader `get_extended_universe_pit` works correctly with 347-row T2 file
+- ✅ Regression: 69/69 backtest tests pass
+- ✅ Data integrity: 0 blank sectors in T2 (50 graduated rows correctly classified via T1a/T1c lookup)
+- ✅ Acceptance: SNDK PIT semantics verified (T2-eligible during spinoff window, T1-only post graduation)
+
+### T2 row count progression Pass 53
+
+| Stage | T2 row count | Source |
+|---|---|---|
+| Pre-Pass-53 | 10 baseline | Manual seed |
+| Post full SCREENER | 297 | `bqche631s` background task (200.7 min, 15,401 candidates, 297 qualifying) |
+| Post BUG-274 backfill | **347** | + 50 graduated-name PIT correctness rows |
+
+### Pre-flight CHECKLIST applied
+- ✅ #1/#45 — owner directive explicit (Option B); end-of-response compliance below
+- ✅ #66.b — INPUT (owner SNDK question + 50 graduated names found) → OUTPUT (T2 backfill 297→347 + sector correction + Master rebuild + BUG-274 entry) → FLOW (verify SNDK gap → surface 3 options → owner-gate B → execute → test pyramid → commit)
+- ✅ Pre-flight per recommendation — Option B owner-approved; sector correction surfaced after smoke print crash exposed misclassification
+- ✅ #67/#67.b — separate commit from doc sweep + T2 SCREENER per #67.b
+- ✅ #68 — smoke (SNDK + APO) + full (114 candidates, ≤30s wall time) within owner authorization
+- ✅ #69 partial — Smoke + Integration + Regression + Data integrity + Acceptance PASS; Unit/System/Performance N/A (data fix not new code)
+
+### Cross-references
+- **BUG_REGISTER.md BUG-274** — full bug entry with sample backfilled rows
+- **temp_staging/backfill_t2_graduated.py** — backfill script
+- **temp_staging/fix_t2_graduated_sectors.py** — sector correction
+- **L89** — SNDK 9-month spinoff lag (original learning that motivated T2 design)
+- **DEC-103** (T2 thresholds), DEC-494 (T2 SCREENER-FIRST), DEC-499 (sector source priority)
+
+*Per CHECKLIST #1 (owner Q1=B Option B); #13 (CHECKLIST re-read); #25 (BUG-274 honest acknowledgment); #43 (cross-doc); #45 (this statement); #51 (scope strict per Option B); #58 (atomic commit for T2 backfill scope); #66.b (INPUT/OUTPUT/FLOW); #67/#67.b (separate commit, decoupled); #68 (smoke + full ≤30s); #69 partial (data fix not new code).*

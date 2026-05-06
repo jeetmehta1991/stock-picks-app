@@ -343,3 +343,51 @@ Replace `historical/institutionalholdings/{ticker}` per-ticker call with bulk `l
 **Combined impact statement (BUG-271/272/273):**
 The composite `smart_money_score` function (DEC-332 weights: congressional + insider + institutional) has been computing on **1-of-3 inputs** (only congressional works) for an undetermined period (likely all Phase 1A v3 archive results). Smart-money confluence signal (DEC-124) — a primary dimension in the verdict cube (Part 2 §2.2 dimension #8 "Smart money signal present") — operates on degraded inputs. Pass 53 owner directive Q3 = doc sweep first, then full test pyramid fix next turn (DEC-503 first application).
 
+---
+
+### BUG-274 — T2 SCREENER excluded currently-T1 tickers without computing PIT add/remove dates (graduated-name PIT gap; Option B fix applied Pass 53 2026-05-05)
+
+**Severity:** MEDIUM — affects T2 universe membership PIT correctness for ~50 graduated names
+**Module:** `scripts/build_tier2_screener_full.py`
+**Owner-flagged via SNDK question:** "Is sandisk a part of tier 2 and tier 3?"
+
+**Description:**
+T2 SCREENER excluded ALL currently-T1 tickers (`Tier 1A Universe_SP500 Tickers_Jan 2020 to May 2026.csv` + `Tier 1C Universe_NASDAQ-100 Tickers_Jan 2020 to May 2026.csv` membership) from output, producing a snapshot-style "currently non-T1 universe" rather than a PIT-historical T2 list. Result: tickers that listed >=2010-01-01 and met DEC-103 thresholds (cap >= $5B + age >= 90d) BETWEEN their list_date and their T1 admission date were entirely absent from T2 universe.
+
+**Impact:**
+- 50 graduated tickers missing from T2 (verified Pass 53 turn 2026-05-05 via cross-check against T1a-active+T1c-active with non-null added_date)
+- Notable missing names: SNDK, ABNB, APO, APP, ARES, CARR, CEG, COIN, CRWD, CVNA, DASH, DDOG, DELL, EPAM, MRNA, OTIS, PANW, PLTR, SHOP, SNOW(Snowflake; was already in T2), VEEV(was already in T2)
+- For backtest dates falling in the [list_date, T1_admission_date] window for these tickers, T2 spinoff/IPO strategies miss eligible candidates → "graduating winners excluded" survivorship-like bias
+- Example: SNDK spun off 2025-02-13 from WDC, joined S&P 500 2025-11-28. During the 9-month window, SNDK was a >$5B non-T1 spinoff = T2-eligible. T2 file omitted SNDK entirely.
+
+**Root cause:**
+T2 SCREENER applied T1-exclusion as a hard filter using current T1 membership (snapshot at SCREENER run time = 2026-05-05). Correct PIT logic: each non-T1 candidate computed against `(list_date, T1_admission_date OR present)` window with `added_date` and `removed_date` populated accordingly.
+
+**Fix Pass 53 owner Option B approved 2026-05-05 (immediate hybrid backfill):**
+1. Identified 114 candidates (92 T1a-active + 22 T1c-only-active with non-null added_date)
+2. Polygon `/v3/reference/tickers/{ticker}` queried for `list_date` + `market_cap` + `name` + `sic_code`
+3. Filtered: list_date >= 2010-01-01 AND market_cap >= $5B AND list_date < T1_added_date
+4. 50 qualified for T2 backfill (64 skipped pre-2010 listings — joined T1 in 2020+ window but listed pre-2010, e.g., legacy companies that re-listed)
+5. Appended to T2 with `added_date=list_date`, `removed_date=T1_added_date`, `Tier2Reason="graduated_to_T1a_YYYY"` or `"graduated_to_T1c_YYYY"`
+6. Sector cross-referenced from T1a > T1c GICS (not SIC-derived; per DEC-499 source priority); 31 of 50 sectors corrected
+
+**T2 row count:** 297 → 347 (50 graduated names added).
+
+**Acceptance verification:**
+- SNDK in T2 PIT load for as_of=2025-08-01: True ✓
+- SNDK NOT in T2 PIT load for as_of=2026-01-01: True ✓ (post T1 admission 2025-11-28)
+- 0 blank sectors in T2 file
+- 69/69 backtest regression tests pass
+
+**Structural fix scheduled Sprint 5 (Option A):**
+Refactor `build_tier2_screener_full.py` to compute PIT add/remove dates per candidate during global SCREENER run, not as snapshot-style exclusion. Owner-deferred per Pass 53 directive ("immediate fix Option B + log structural Option A for Sprint 5").
+
+**Joint:** DEC-103 (T2 thresholds), DEC-494 (T2 SCREENER-FIRST architecture), DEC-499 (sector source priority), DEC-477 (T1a PIT canonical), DEC-483 (T1c sub-tier), L89 (SNDK 9-month spinoff lag — original learning), L143 (don't-rewrite-history — historical T2 SCREENER output preserved; backfill is forward-looking correction).
+
+**Sample of backfilled rows:**
+- SNDK: added 2025-02-13, removed 2025-11-28 (graduated_to_T1a_2025), $186B IT
+- ABNB: added 2020-12-10, removed 2023-09-18 (graduated_to_T1a_2020), $83B Consumer Disc
+- APO: added 2011-03-30, removed 2024-12-23 (graduated_to_T1a_2011), $74B Financials
+- DELL: added 2018-12-19, removed 2024-09-23 (graduated_to_T1a_2018), $138B IT
+- COIN: added 2021-04-14, removed 2025-05-19 (graduated_to_T1a_2021), $54B Financials
+
