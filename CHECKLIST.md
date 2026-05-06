@@ -739,3 +739,65 @@ State compliance visibly: "Checklist: ✅ [each item]"
     **First application:** Batch 13 NO-LIVE-API refactor — wiring matrix updated to ✅ for all rows before Phase 1B-α run begins.
 
     **Joint:** DEC-507 (this rule's parent decision), L146 (data-DEC + toolkit-DEC ≠ integration lesson), L145 (silent-gap pattern; complementary), DEC-462-466 (custom toolkit DECs that this matrix tracks), CHECKLIST #69 (test pyramid; complementary — pyramid validates code, this validates wiring exists).
+
+71. **External library fork integration mandate — 15-category test plan + 3-phase A/B/C gate (Pass 53 owner directive 2026-05-05; DEC-508; L147).**
+    Any external library forked under DEC-045 (or future fork-first decisions) must complete the 15-category test plan + 3-phase A/B/C gate before strategies consume its signals.
+
+    **15-category test plan (4 tiers):**
+
+    **Tier 1 — Correctness (must-pass before merge):**
+    - Unit tests on synthetic OHLCV (~50-100 tests covering each primitive)
+    - Canonical pattern fixtures (textbook bullish/bearish patterns with known signals)
+    - **PIT correctness regression** 🔴 CRITICAL (freezegun: signal at bar D MUST be identical whether computed at as_of=D vs as_of=D+50)
+    - Edge case handling (empty / single bar / all-NaN / weekend / IPO short history)
+    - Library version pin + reproducibility (upstream commit hash + fork commit hash recorded)
+
+    **Tier 2 — Integration (must-pass before strategy enable):**
+    - Cache pipeline integration (OHLCV cache → library → signal output → consumer)
+    - Cross-primitive composition (multiple primitives compose without interference)
+    - Survivorship + corporate actions (delisted tickers; splits/dividends adjust correctly)
+    - Performance / load (per-ticker runtime + memory acceptable for full-universe backtest)
+
+    **Tier 3 — Empirical validation (must-pass before backtest):**
+    - Statistical sanity (signal frequency per ticker per month within reasonable bounds)
+    - Adversarial random-walk test (library on Brownian motion ~ baseline signal rate, not pattern-matching noise)
+    - Cross-validation against known source (TradingView ICT script comparison or equivalent)
+    - Signal lookahead detection (>65% win rate triggers re-validation per DEC-084)
+
+    **Tier 4 — Visual + manual validation:**
+    - Dashboard 2 visual inspector (DEC-200 5-section spec; signals overlaid on candlestick charts)
+    - Owner manual spot-check (~20-30 signals reviewed on real charts)
+
+    **3-Phase A/B/C gate:**
+
+    **Phase A — PRE-MERGE** (library in `vendored/`, NOT in main):
+    - All Tier 1 + Tier 2 + Tier 3 tests pass
+    - ≥90% line coverage on library wrapper code
+    - Library NOT imported outside test files
+    - Owner review + approval → Phase B
+
+    **Phase B — CANARY** (library imported, strategies disabled):
+    - Signals computed for full universe → `data_prefetch/<library>/{ticker}.parquet`
+    - Dashboard 2 launched; owner manually validates 20-50 signals
+    - Statistical sanity report (frequency distribution, signal density per regime)
+    - PIT regression on full universe
+    - Owner review + approval → Phase C
+
+    **Phase C — PRODUCTION** (strategies enabled):
+    - Strategies that consume library signals enabled
+    - Backtest run; A/B vs baseline (without library) comparison
+    - DEC-084 red-flag check (>65% win rate = lookahead suspect)
+    - Walk-forward validation per DEC-505 (4 OOS folds × 1y)
+    - Each phase has explicit owner-approval gate
+
+    **Trigger:** Any new external library fork via DEC-045 (or descendant DECs).
+
+    **Verification format in pre-flight:** state explicitly "Library fork status: Phase A tests X/Y passing / Phase B canary signals validated / Phase C strategies enabled, A/B vs baseline = ..." If skipping any phase, surface why + get owner approval (NO skipping unless explicit override).
+
+    **Past failure pattern (motivating rule):** Pass 53 turn 2026-05-05 owner Q "We need extensive testing of smartmoneyconcepts library fork before we integrate into main. how do we test extensively?" surfaced gap: existing project plan referenced smartmoneyconcepts fork (DEC-045) and Dashboard 2 (DEC-200) but had no codified test protocol or phased gate. ICT/SMC signals are pattern-based with subjective ground truth, lookahead-bias-prone, and noise-pattern-matching-prone — high-risk integration without explicit testing mandate.
+
+    **First application:** smartmoneyconcepts library Phase A testing kicks off Pass 53 (per Q2 owner directive: "start phase A testing now").
+
+    **Pattern reusable:** future external library forks (TradingAgents v0.2.4 if extended, QuantStats if extended, future ICT/options libraries) follow same protocol.
+
+    **Joint:** DEC-508 (this rule's parent decision), DEC-045 (fork-first parent), DEC-200 (Dashboard 2; visual validation in Tier 4), DEC-261 (PIT N+1 lag; tested in Tier 1 PIT regression), DEC-084 (>65% win rate red flag; in Tier 3 + Phase C), DEC-503 (test pyramid; Tier 1-3 USE pyramid layers — complementary), DEC-505 (walk-forward Phase C), DEC-507 (wiring matrix; complementary process control), L147 (external library fork integration risk; this checklist codifies the lesson).

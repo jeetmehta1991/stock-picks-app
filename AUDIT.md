@@ -28957,3 +28957,84 @@ Owner directive: "i will buy subscriptions at a later date when needed in sprint
 - **L145** (silent-gap pattern; sibling) + **L146** (this lesson)
 
 *Per CHECKLIST #1 (owner directive explicit); #13 (re-read); #25 (2 errors honestly acknowledged); #43 (cross-doc); #45 (this statement); #51 (scope per owner); #58 (atomic codification commit); #66.b (INPUT/OUTPUT/FLOW); #67/#67.b (doc sync this turn); #68/#69 N/A; **#70 NEW — wiring matrix instantiated**.*
+
+---
+
+## Pass 53 — DEC-508 + L147 + CHECKLIST #71: External library fork extensive testing protocol (smartmoneyconcepts first application; 2026-05-05)
+
+**Owner directive Pass 53 turn 2026-05-05:**
+- "We need extensive testing of smartmoneyconcepts library fork before we integrate into main. how do we test extensively?"
+- Q1: Approved DEC-508 + CHECKLIST #71 codification
+- Q2: Start Phase A testing NOW (not wait Sprint 8)
+- Q3: Owner does manual Dashboard 2 validation review (no paid reviewer delegation)
+
+### Why this matters
+
+External library forks (per DEC-045 fork-first architecture) introduce 4 distinct risks:
+1. **Lookahead bias** — library may compute "swing high" using future bars; high silent-failure risk for ICT/SMC pattern detection
+2. **Pattern-matching noise** — algorithms find patterns in random data; need to verify signal frequency meaningfully > noise baseline
+3. **Subjective ground truth** — no canonical right answer for FVG detection; need pinned-version reproducibility
+4. **Performance scale** — 1937 tickers × 1000 days × multiple primitives must be feasible
+
+DEC-045 approved "fork-first architecture" + DEC-200 approved Dashboard 2 visual inspector — but neither codified the testing protocol or phased gate. Same architectural shape as L145 silent-gap + L146 wiring — third axis: integration-quality.
+
+### DEC-508 — 15-category test plan + 3-phase A/B/C gate
+
+**15 test categories across 4 tiers:**
+
+Tier 1 (correctness; pre-merge): unit tests on synthetic OHLCV (~50-100 tests), canonical pattern fixtures, PIT correctness regression CRITICAL (freezegun: bar D unchanged when computed at D+50), edge cases, library version pin.
+
+Tier 2 (integration; pre-strategy-enable): cache pipeline integration, cross-primitive composition, survivorship + corp actions, performance/load.
+
+Tier 3 (empirical; pre-backtest): statistical sanity (frequency bounds), adversarial random-walk test, cross-validation against TradingView, signal lookahead detection (DEC-084 >65% win rate flag).
+
+Tier 4 (visual + manual): Dashboard 2 (DEC-200), owner manual spot-check ~20-30 signals.
+
+**3-phase gate:**
+- **Phase A** (PRE-MERGE; library in `vendored/`, not main): Tier 1+2+3 tests pass, ≥90% coverage, library not imported outside test files; owner approval → Phase B
+- **Phase B** (CANARY; library imported, strategies disabled): signals computed → `data_prefetch/<library>/<ticker>.parquet`; Dashboard 2 launched; owner validates 20-50 signals; statistical sanity report; PIT regression on full universe; owner approval → Phase C
+- **Phase C** (PRODUCTION; strategies enabled): A/B vs baseline; DEC-084 lookahead check; walk-forward per DEC-505 4 OOS folds
+
+Each phase has explicit owner-approval gate.
+
+### L147 — External library fork integration risk lesson
+
+Sibling pattern to L145 (silent-gap availability) + L146 (wiring). L147 axis: integration-quality. Same root cause: approving DEC alone (DEC-045 fork + DEC-200 dashboard) without codifying TEST PROTOCOL leaves silent integration risk. Codified mitigations: L145 → CHECKLIST #69 (test pyramid); L146 → CHECKLIST #70 (wiring matrix); L147 → CHECKLIST #71 (fork integration mandate).
+
+### Q2 directive — Phase A starts NOW
+
+Per Q2 owner directive ("start phase A testing now"), Phase A testing of smartmoneyconcepts kicks off Pass 53 Sprint 0A as **Batch 15 (NEW)** — added to the 16-batch sequence.
+
+**Batch 15 scope (Phase A test infrastructure):**
+1. Fork smartmoneyconcepts library (clone + pin upstream commit hash) into `vendored/smartmoneyconcepts/`
+2. Document fork commit hash + upstream version in `vendored/MANIFEST.md`
+3. Write Tier 1 unit tests (~50-100 tests on synthetic OHLCV) → `backtest/tests/test_smartmoneyconcepts_unit.py`
+4. Generate canonical pattern fixtures → `backtest/tests/data/synthetic_*.csv`
+5. Write Tier 1 PIT correctness regression → `test_smartmoneyconcepts_pit.py` (freezegun-based)
+6. Write Tier 2 integration tests → `test_smartmoneyconcepts_integration.py`
+7. Write Tier 2 performance tests → `test_smartmoneyconcepts_performance.py`
+8. Write Tier 3 statistical sanity tests → `test_smartmoneyconcepts_statistical.py`
+9. Write Tier 3 adversarial random-walk test → `test_smartmoneyconcepts_adversarial.py`
+
+**Effort:** ~5-7d engineering. Phase B (Dashboard 2 + canary) follows ~3-4d. Phase C (production integration) ~1-2d. Total ~15-23d.
+
+### Pre-flight CHECKLIST applied
+- ✅ #1/#45 — owner Q1+Q2+Q3 explicit
+- ✅ Pre-flight per recommendation — DEC-508 + L147 + #71 codified per owner approval
+- ✅ #66.b — INPUT (owner Q + 3 approvals); OUTPUT (DEC-508 + L147 + #71 + Batch 15 added); FLOW (analyze risks → 15-category plan → 3-phase gate → owner-approve → codify)
+- ✅ #25 — codification addresses 4-risk surface (lookahead / noise / subjective truth / scale)
+- ✅ #67/#67.b — doc sweep this turn; decoupled from in-flight Batch 10 + 12-b retry
+- ✅ #68 — N/A this turn (no API ops)
+- ✅ #69 — N/A this turn (no code push); Batch 15 will use full pyramid
+- ✅ #70 — N/A this turn (no agent toolkit changes); Batch 13 will use wiring matrix
+- ✅ **#71 NEW — first instantiation: smartmoneyconcepts Phase A starts Sprint 0A as Batch 15**
+
+### Cross-references
+- AUDIT_INDEX.md DEC-508 — full body entry
+- LEARNINGS.md L147 — pattern + mitigation
+- CHECKLIST.md #71 — fork integration mandate
+- CLAUDE.md HARD RULE — codified
+- DEC-045 (fork-first parent), DEC-200 (Dashboard 2; Tier 4), DEC-261 (PIT N+1; tested in Tier 1 PIT regression), DEC-084 (>65% red flag; Tier 3 + Phase C), DEC-503 (test pyramid; Tier 1-3 use), DEC-505 (walk-forward Phase C), DEC-507 (wiring matrix; complementary)
+- L145 (silent-gap availability), L146 (wiring axis), L147 (integration-quality axis) — all 3 sibling lessons codified Pass 53
+
+*Per CHECKLIST #1 (owner Q1+Q2+Q3); #13 (re-read); #25 (4-risk surface addressed); #43 (cross-doc); #45 (this statement); #51 (scope strict); #58 (atomic codification); #66.b (INPUT/OUTPUT/FLOW); #67/#67.b (doc sync); #68/#69/#70 N/A this turn; **#71 NEW — first instantiation Batch 15 smartmoneyconcepts Phase A**.*

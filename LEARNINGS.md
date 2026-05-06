@@ -1232,3 +1232,51 @@ Result: 1.05M Polygon news articles cached (Pass 53 Batch 3 done) but `smart_mon
 5. **Cross-check at sprint planning** — for each new data DEC, ask "what consumer reads this and is its DEC also approved + wired?"
 
 **Pattern relation:** Sibling to L145 (silent-gap on endpoint availability). L145 = "endpoint exists but returns 404"; L146 = "endpoint works + data cached but consumer code doesn't read it". Both are silent failures invisible without explicit wiring/integration verification.
+
+---
+
+## L147 — External library fork integration risk: lookahead bias + pattern-matching noise + subjective ground truth (Pass 53 2026-05-05)
+
+**Pattern:** Forking an external library (per DEC-045 fork-first architecture) introduces 4 distinct risk categories that MUST be tested explicitly before integration. Approving the fork DEC alone is necessary but NOT sufficient — a 3rd deliverable (extensive testing protocol) is required between fork DEC and production integration.
+
+**Discovery (Pass 53 2026-05-05):** Owner Q "We need extensive testing of smartmoneyconcepts library fork before we integrate into main. How do we test extensively?" surfaced gap: existing DEC-045 (fork-first) + DEC-200 (Dashboard 2) referenced smartmoneyconcepts but had NO codified test protocol or phased integration gate. Same architectural shape as L145 (silent-gap) and L146 (wiring) — third axis of "approval doesn't equal verification".
+
+**Four risk categories for external library forks:**
+
+1. **Lookahead bias** — easiest to introduce silently. Library may compute "swing high" using future bars (e.g., needs 5 bars on each side to confirm but emits dated as the original bar). For ICT/SMC: FVG/BOS/CHoCH detection has temporal dependency that's easy to get wrong.
+2. **Pattern-matching noise** — algorithms find patterns in random data. Need to verify our signal frequency is meaningfully different from what random walks produce.
+3. **Subjective ground truth** — no canonical "right answer" for FVG detection. Different implementations disagree. Need pinned-version reproducibility + acceptance of "this implementation's interpretation" as our ground truth.
+4. **Performance scale** — 1937 tickers × ~1000 days × multiple primitives. Library must be fast enough; memory bound.
+
+**Why DEC-045 alone wasn't sufficient:**
+- DEC-045 approved "fork existing strategy across all phases" — a fork-first ARCHITECTURE decision
+- DEC-200 approved Dashboard 2 visual inspector — a CONSUMER UI decision
+- Neither DEC required: 15-category test plan, PIT regression, statistical sanity, A/B comparison, owner manual validation
+- The integration QUALITY was implicitly assumed but not codified
+- Without explicit testing mandate, library could be merged → strategies enabled → Sharpe spike → owner alarmed → root cause = lookahead bias from library
+
+**Codified:**
+- DEC-508 — Smartmoneyconcepts fork extensive testing protocol (15-category + 3-phase A/B/C)
+- CHECKLIST #71 — External library fork integration mandate (HARD RULE)
+- DEC-200 — Dashboard 2 (already specified Pass 52 turn 79; now slot in Tier 4 of testing protocol)
+
+**Apply when:**
+- Forking any external library that produces SIGNALS (not just utilities)
+- Forking a library where ground truth is subjective or pattern-based
+- Forking a library that processes time-series data (lookahead risk)
+- Forking a library at scale (performance + memory must verify)
+
+**Mitigation pattern (going forward):**
+1. Fork library + pin upstream commit hash (per DEC-045)
+2. Write 15-category test plan + 3-phase gate per CHECKLIST #71
+3. Phase A — Tier 1 + 2 + 3 tests pass before merge to main
+4. Phase B — canary signals validated via Dashboard (DEC-200-style)
+5. Phase C — production integration with A/B vs baseline + walk-forward
+6. Each phase explicit owner-approval gate
+
+**Pattern relation:** Sibling to L145 + L146.
+- L145 = "endpoint returns 404" (silent gap on availability axis)
+- L146 = "data cached but consumer doesn't read it" (silent gap on wiring axis)
+- L147 = "library integrated but produces lookahead-biased / noise-pattern-matched signals" (silent gap on integration-quality axis)
+
+All three are integrity failures around assumptions about systems that "look fine" but have hidden gaps. Codified mitigations: L145 → CHECKLIST #69 (test pyramid); L146 → CHECKLIST #70 (wiring matrix); L147 → CHECKLIST #71 (fork integration mandate).
