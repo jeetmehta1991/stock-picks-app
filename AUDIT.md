@@ -29223,3 +29223,93 @@ Owner directive 2026-05-06: *"except polygon paid, execute all pending"*. Filter
 - L88 / L143 (no Wikipedia runtime; ALFRED via official API)
 
 *Per CHECKLIST #1 (owner directive "execute all pending except polygon paid"); #13 (FRED_API_KEY blocker surfaced before guessing); #25 (1000-vintage cap surfaced + chunking patched mid-run); #45 (this); #51 (scope strict — Polygon paid + Ortex excluded as directed); #67/#67.b (per-turn doc sync).*
+
+---
+
+## Pass 53 — smartmoneyconcepts Phase A scaling + 2 PIT findings — 2026-05-06
+
+### Trigger
+
+Owner directive 2026-05-06 "A" — continue smartmoneyconcepts Phase A per DEC-508 + CHECKLIST #71. Scaling Tier 1 unit + PIT regression tests from the 15-test scaffold (Pass 53 prior turn) toward the 50-100 target before Phase B canary work begins.
+
+### Result
+
+**Test suite scaled 15 → 78 tests** across all 8 smc primitives:
+- `fvg`: 12 tests
+- `swing_highs_lows`: 10 tests
+- `bos_choch`: 10 tests
+- `ob`: 10 tests
+- `liquidity`: 7 tests
+- `previous_high_low`: 5 tests
+- `retracements`: 5 tests
+- `sessions`: 4 tests
+- Cross-cutting (version pin, signature stability, determinism, 500-bar realistic smoke): 5 tests
+- PIT regression: 10 tests (3 original + 7 new across remaining primitives)
+
+**Outcome:** 75 passed + 1 skipped (sessions parameter mismatch) + **2 expected-fail (xfail) documenting real PIT findings** — exactly the kind of findings DEC-508 Phase A is designed to surface.
+
+### Finding #1 — `smc.fvg` mid-bar placement creates +1-bar lookahead
+
+**Symptom:** FVG signal at bar D appears only after bar D+1 arrives. Specifically: at as_of=200, no FVG at bar 199; at as_of=201, FVG=-1 at bar 199 (the middle bar of a 3-bar bearish gap).
+
+**Root cause:** library convention places the FVG signal on the MIDDLE bar of the 3-bar pattern. Computationally, the signal cannot be confirmed until bar 3 (D+1) arrives — the middle-bar placement is technically forward-looking by 1 bar.
+
+**Consumer mitigation REQUIRED before Phase 1B uses FVG signals (Sprint 7):**
+- Shift FVG signals by +1 bar before strategies consume them, OR
+- Read FVG at as_of-1 instead of as_of in `OurTechnicalToolkit` (DEC-462)
+
+**Severity:** Low-Medium — 1-bar shift is the smallest possible lookahead; conventional in pattern detection. But MUST be applied; otherwise daily strategies see signals 1 day before they're knowable.
+
+**Tracked in:** `backtest/tests/test_smartmoneyconcepts_pit.py::test_fvg_growing_dataframe_appending_preserves_prior_signals` (xfail with explicit consumer-mitigation note).
+
+### Finding #2 — `smc.retracements` `Direction` has retroactive establishment
+
+**Symptom:** Direction at bar D differs based on whether bars D+1..D+N exist. Specifically: at as_of=cutoff, Direction=0 at bars 261-266 (no direction established); at as_of=full, Direction=1 at the same bars (uptrend retroactively established once the next swing confirmed).
+
+**Root cause:** library establishes "trend direction" only after the next swing pair is confirmed. Until that confirmation, Direction is 0; after, it's filled in retroactively as 1 or -1 from the prior swing onward.
+
+**Consumer mitigation REQUIRED before Phase 1B uses retracement signals (Sprint 7):**
+- Lag Direction signal by ≥1 swing length (typically `swing_length` bars), OR
+- Use Direction only at bars where the *next* swing is already detected (look at swings_post_bar_D ≥ 1 before trusting Direction at bar D)
+
+**Severity:** Medium — direction-dependent strategies (e.g., trend-following overlays on retracement levels) would have lookahead bias if Direction is consumed at as_of without lag.
+
+**Tracked in:** `backtest/tests/test_smartmoneyconcepts_pit.py::test_retracements_pit_correctness` (xfail with explicit consumer-mitigation note).
+
+### Phase A status — Tier 1 sub-categories
+
+| Tier 1 sub-category | Status |
+|---|---|
+| Unit tests (correctness + schema + edge cases) | ✅ 65 tests covering all 8 primitives |
+| Canonical pattern detection (V-shape, N-shape, basic bullish/bearish) | ✅ covered in unit tests |
+| PIT regression | ✅ 10 tests; 2 documented findings + consumer-mitigation specs |
+| Edge cases (empty / single-row / all-NaN / flat data) | ✅ covered |
+| Version pin + signature stability | ✅ pinned to vendored/; signature drift detection active |
+| Determinism (same input → same output) | ✅ added |
+| Realistic 500-bar smoke | ✅ added |
+
+**Phase A is scope-complete pending Tier 2/3/4 future turns.** Tier 2 (integration/composition/cache pipeline/survivorship/performance) and Tier 3 (statistical sanity / adversarial random-walk / cross-validation / lookahead-detection at scale) remain future scope. Tier 4 (Dashboard 2 visual + owner spot-check) is owner-driven.
+
+### Risk register update
+
+DEC-508 Phase A risk register adds 2 entries:
+- **R-PHA-001:** FVG +1-bar lookahead (Low-Medium). Mitigation: consumer shift in `OurTechnicalToolkit`. Sprint 7 implementation.
+- **R-PHA-002:** Retracements Direction retroactive establishment (Medium). Mitigation: lag by swing_length in consumer toolkit. Sprint 7 implementation.
+
+Both findings documented in test suite as xfail; tests will flip to pass once library upgrade fixes them OR the consumer mitigation code applies the lag at read-time (the test would then run on already-lagged data).
+
+### Files modified
+
+- `backtest/tests/test_smartmoneyconcepts_unit.py` — scaled 15 → 65 unit tests
+- `backtest/tests/test_smartmoneyconcepts_pit.py` — scaled 3 → 10 PIT tests + 2 xfail findings
+
+### Cross-references
+
+- DEC-508 (library fork integration mandate; 15-category test plan + 3-phase A/B/C gate)
+- CHECKLIST #71 (fork-integration HARD RULE)
+- DEC-261 (PIT N+1 lag rule — both findings violate this)
+- DEC-462 (`OurTechnicalToolkit` — Sprint 7 consumer that must apply mitigations)
+- L147 (4 risks for external library forks — lookahead, noise, subjective, scale)
+- L143 (don't rewrite history — these findings are PROSPECTIVE; library will be sandboxed in `vendored/` per Phase A)
+
+*Per CHECKLIST #1 (owner Option A approved); #25 (2 real PIT findings surfaced; not silenced); #43 (cross-doc — AUDIT narrative + test scaffold + DEC-508 risk register); #45 (this); #51 (scope strict — Phase A only; Phase B/C separate); #67/#67.b (per-turn doc sync); #71 (first instantiation discipline — found and documented PIT issues before strategies consume).*

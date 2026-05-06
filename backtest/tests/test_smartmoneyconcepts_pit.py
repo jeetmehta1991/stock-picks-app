@@ -167,6 +167,155 @@ def test_pit_test_infrastructure_works():
         "Sanity check: future-leak signal should differ between truncated and full"
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# PIT regression for the remaining 6 primitives
+# Same pattern: compute on truncated vs full-then-sliced; safe window =
+# bars at least swing_length BEFORE cutoff so swings are confirmed.
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+def _pit_compare(col_truncated: pd.Series, col_full_sliced: pd.Series) -> list[tuple]:
+    """Return list of (idx, val_t, val_f) violations between truncated and full-sliced."""
+    violations = []
+    for i in range(len(col_truncated)):
+        v_t = col_truncated.iloc[i]
+        v_f = col_full_sliced.iloc[i]
+        if pd.isna(v_t) and pd.isna(v_f):
+            continue
+        if pd.isna(v_t) != pd.isna(v_f):
+            violations.append((i, v_t, v_f))
+        elif not pd.isna(v_t) and v_t != v_f:
+            violations.append((i, v_t, v_f))
+    return violations
+
+
+def test_bos_choch_pit_correctness():
+    """🔴 BOS/CHOCH at bar D (in safe window) must be identical truncated vs full."""
+    full = synthetic_ohlcv_5y(seed=42)
+    n = len(full)
+    cutoff = n // 2
+    swing_length = 50
+
+    sw_t = smc.swing_highs_lows(full.iloc[: cutoff + 1], swing_length=swing_length)
+    sw_f = smc.swing_highs_lows(full, swing_length=swing_length)
+    bc_t = smc.bos_choch(full.iloc[: cutoff + 1], sw_t)
+    bc_f = smc.bos_choch(full, sw_f).iloc[: cutoff + 1]
+
+    safe_end = cutoff - swing_length
+    if safe_end <= 0:
+        pytest.skip("safe window too small")
+
+    for col in ("BOS", "CHOCH"):
+        viols = _pit_compare(bc_t[col].iloc[:safe_end], bc_f[col].iloc[:safe_end])
+        assert not viols, f"BOS/CHOCH PIT violation in {col}: first 3 = {viols[:3]}"
+
+
+def test_ob_pit_correctness():
+    """🔴 OB signals in safe window must be identical truncated vs full."""
+    full = synthetic_ohlcv_5y(seed=42)
+    cutoff = len(full) // 2
+    swing_length = 50
+    sw_t = smc.swing_highs_lows(full.iloc[: cutoff + 1], swing_length=swing_length)
+    sw_f = smc.swing_highs_lows(full, swing_length=swing_length)
+    ob_t = smc.ob(full.iloc[: cutoff + 1], sw_t)
+    ob_f = smc.ob(full, sw_f).iloc[: cutoff + 1]
+
+    safe_end = cutoff - swing_length
+    if safe_end <= 0:
+        pytest.skip("safe window too small")
+    viols = _pit_compare(ob_t["OB"].iloc[:safe_end], ob_f["OB"].iloc[:safe_end])
+    assert not viols, f"OB PIT violation: first 3 = {viols[:3]}"
+
+
+def test_liquidity_pit_correctness():
+    """🔴 Liquidity signals in safe window must be identical truncated vs full."""
+    full = synthetic_ohlcv_5y(seed=42)
+    cutoff = len(full) // 2
+    swing_length = 50
+    sw_t = smc.swing_highs_lows(full.iloc[: cutoff + 1], swing_length=swing_length)
+    sw_f = smc.swing_highs_lows(full, swing_length=swing_length)
+    liq_t = smc.liquidity(full.iloc[: cutoff + 1], sw_t)
+    liq_f = smc.liquidity(full, sw_f).iloc[: cutoff + 1]
+
+    safe_end = cutoff - swing_length
+    if safe_end <= 0:
+        pytest.skip("safe window too small")
+    viols = _pit_compare(liq_t["Liquidity"].iloc[:safe_end], liq_f["Liquidity"].iloc[:safe_end])
+    assert not viols, f"Liquidity PIT violation: first 3 = {viols[:3]}"
+
+
+@pytest.mark.xfail(
+    reason="🔴 PHASE-A FINDING (DEC-508): smc.retracements has lookahead — "
+    "Direction signal at bar D differs depending on whether bars D+1..D+N exist. "
+    "Library establishes 'direction' retroactively when a new swing confirms. "
+    "CONSUMER MITIGATION REQUIRED before Phase 1B uses this signal: lag by ≥1 swing "
+    "(typically swing_length bars) OR use Direction only at bars where the next swing "
+    "is already detected. Tracked under DEC-508 Phase A risk register.",
+    strict=True,
+)
+def test_retracements_pit_correctness():
+    """🔴 Retracements Direction in safe window — KNOWN to fail (lookahead in library)."""
+    full = synthetic_ohlcv_5y(seed=42)
+    cutoff = len(full) // 2
+    swing_length = 50
+    sw_t = smc.swing_highs_lows(full.iloc[: cutoff + 1], swing_length=swing_length)
+    sw_f = smc.swing_highs_lows(full, swing_length=swing_length)
+    ret_t = smc.retracements(full.iloc[: cutoff + 1], sw_t)
+    ret_f = smc.retracements(full, sw_f).iloc[: cutoff + 1]
+
+    safe_end = cutoff - swing_length
+    if safe_end <= 0:
+        pytest.skip("safe window too small")
+    viols = _pit_compare(ret_t["Direction"].iloc[:safe_end], ret_f["Direction"].iloc[:safe_end])
+    assert not viols, f"Retracements Direction PIT violation: first 3 = {viols[:3]}"
+
+
+def test_previous_high_low_pit_correctness():
+    """🔴 PreviousHigh/Low at bar D must reflect only data ≤ D (no peeking)."""
+    full = synthetic_ohlcv_5y(seed=42)
+    cutoff = len(full) // 2
+    res_t = smc.previous_high_low(full.iloc[: cutoff + 1], "1D")
+    res_f = smc.previous_high_low(full, "1D").iloc[: cutoff + 1]
+
+    for col in ("PreviousHigh", "PreviousLow"):
+        viols = _pit_compare(res_t[col], res_f[col])
+        assert not viols, f"previous_high_low PIT violation in {col}: first 3 = {viols[:3]}"
+
+
+@pytest.mark.xfail(
+    reason="🔴 PHASE-A FINDING (DEC-508): FVG signal is placed on the MIDDLE bar of "
+    "a 3-bar pattern, but it cannot be confirmed until bar 3 arrives. So at as_of=199 "
+    "with 200 bars, the FVG at bar 199 is invisible; at as_of=200 with 201 bars it "
+    "becomes visible. This is a 1-bar lookahead from the consumer perspective. "
+    "CONSUMER MITIGATION REQUIRED: shift FVG signals by +1 bar before strategies "
+    "consume them (or read FVG at as_of-1 instead of as_of). Tracked under DEC-508 "
+    "Phase A + DEC-261 N+1 lag rule.",
+    strict=True,
+)
+def test_fvg_growing_dataframe_appending_preserves_prior_signals():
+    """Append a new bar to a 200-bar DF — KNOWN to fail (FVG mid-bar placement is +1-lookahead)."""
+    full = synthetic_ohlcv_5y(seed=42)
+    base = full.iloc[:200]
+    extended = full.iloc[:201]
+    fvg_base = smc.fvg(base)
+    fvg_ext = smc.fvg(extended).iloc[:200]
+    viols = _pit_compare(fvg_base["FVG"], fvg_ext["FVG"])
+    assert not viols, f"Appending bar changed prior FVG signals: first 3 = {viols[:3]}"
+
+
+def test_swing_growing_dataframe_safe_window_invariant():
+    """Append 100 bars: swing signals far before the boundary must be unchanged."""
+    full = synthetic_ohlcv_5y(seed=42)
+    base = full.iloc[:300]
+    extended = full.iloc[:400]
+    swing_length = 50
+    sw_base = smc.swing_highs_lows(base, swing_length=swing_length)
+    sw_ext = smc.swing_highs_lows(extended, swing_length=swing_length).iloc[:300]
+    safe_end = 300 - swing_length
+    viols = _pit_compare(sw_base["HighLow"].iloc[:safe_end], sw_ext["HighLow"].iloc[:safe_end])
+    assert not viols, f"Extending DF changed prior swing signals: first 3 = {viols[:3]}"
+
+
 if __name__ == "__main__":
     import sys
     sys.exit(pytest.main([__file__, "-v"]))
