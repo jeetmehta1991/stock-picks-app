@@ -214,18 +214,24 @@ Not all signals are equal. A confidence tier is the system's assessment of how s
 
 ## What are agents? (the AI layer)
 
-Six AI agents (Claude Haiku model) analyse each trade candidate before it opens. They adjust the confidence tier up or down based on broader context.
+Eleven active AI agents (Claude Haiku model in Phase 1B; Sonnet in Phase 1C+) analyse each trade candidate before it opens. They adjust the confidence tier up or down based on broader context. Architecture per [DETAILED_PROJECT_PLAN.md §2.6](DETAILED_PROJECT_PLAN.md) (TradingAgents Pattern 2 integration; DEC-057). Plus 1 Reflection node post-decision (12 total LLM nodes per propagate(), per [LEARNINGS.md L94](LEARNINGS.md)).
 
-**The 6 agents:**
+**The 11 active agents:**
 
-| Agent | What it checks |
-|---|---|
-| 1. Technical | Are the technical indicators genuinely strong or a false signal? |
-| 2. Fundamental | Is there insider buying? Congressional trades? Government contracts? |
-| 3. Sentiment | What does Fear/Greed index show? Congressional trading? News? |
-| 4. Risk | How high is VIX? Is there an earnings event in 3 days? |
-| 5. Bull/Bear Debate | Two sides argue the trade — who wins? |
-| 6. Decision | Synthesises all 5 → final score 0-100 → adjusts tier |
+| # | Agent | What it checks |
+|---|---|---|
+| 1 | Market Analyst | Technical indicators, ATR, volume, momentum — false signal or genuine? |
+| 2 | Fundamentals Analyst | Earnings, balance sheet, insider/congressional buying, contracts |
+| 3 | News Analyst | News sentiment, headline-flow, event-driven catalysts |
+| 4 | Bull Researcher | Argues the long side — strongest case for entry |
+| 5 | Bear Researcher | Argues the short / no-trade side — strongest case against |
+| 6 | Research Manager | Adjudicates Bull vs Bear debate → research conclusion |
+| 7 | Trader | Position sizing + entry/exit timing recommendation |
+| 8 | Aggressive Risk Debater | Argues for taking risk — opportunity cost framing |
+| 9 | Conservative Risk Debater | Argues for limiting risk — capital preservation framing |
+| 10 | Neutral Risk Debater | Balanced risk perspective — base-rate framing |
+| 11 | Portfolio Manager | Final synthesis → score 0-100 → adjusts tier |
+| (+1) | Reflection (post-decision) | Stores trade rationale for continuous learning |
 
 **Example — NVDA on Jan 10, 2022:**
 - Preliminary tier: HIGH (3 strategies fired)

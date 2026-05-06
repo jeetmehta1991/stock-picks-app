@@ -1676,7 +1676,7 @@ Per Pass 53 owner directive 2026-05-05: every code push (Sprint 0A and beyond) m
 
 **Event types captured:** ticker_change, ticker_split, name_change, listing_change, exchange_change, delisting, new_listing.
 
-**Agent consumption (all 6 agents):**
+**Agent consumption (all 11 active agents per DEC-057 + project plan §2.6 — 3 analysts + Bull/Bear/RM + Trader + 3 Risk Debaters + Portfolio Manager; +1 Reflection post-decision):**
 - **Risk Agent** — material-event risk gate (analogous to SEC 8-K)
 - **Fundamental Agent** — M&A as fundamental thesis trigger (acquirer/target context)
 - **Sentiment Agent** — event-driven flow surge detection

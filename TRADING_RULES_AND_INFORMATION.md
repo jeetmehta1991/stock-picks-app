@@ -2112,7 +2112,7 @@ Event types: ticker_change, ticker_split, name_change, listing_change, exchange_
 
 Cache: `data_prefetch/polygon/events/{ticker}.parquet`.
 
-Feeds all 6 TradingAgents (Risk, Fundamental, Sentiment, Technical, Bull/Bear Debate, Decision) + T2 SCREENER per DEC-380.
+Feeds all 11 active TradingAgents per DEC-057 + DETAILED_PROJECT_PLAN.md §2.6 (Market / Fundamentals / News Analysts + Bull / Bear Researchers + Research Manager + Trader + Aggressive / Conservative / Neutral Risk Debaters + Portfolio Manager) + T2 SCREENER per DEC-380. Note: prior wording "all 6 TradingAgents" reflected the conceptual-role simplification before TradingAgents Pattern 2 integration; correct enumeration is 11+ active LLM nodes per L94/Pass 26.
 
 ### Polygon Options NOT upgraded (DEC-501 owner directive 2026-05-05)
 

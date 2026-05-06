@@ -14,7 +14,7 @@ A multi-stage swing trading system: rule-based + smart money + multi-agent archi
 - **All universe CSVs in [`Backtesting universe/`](Backtesting%20universe/) folder** with B++ schema (`Symbol, Company, Sector, added_date, removed_date`); PIT loader filters by date with NULL-pre-window handling.
 - **Signal universe (~265-275 fields)** across 6 categories (Technical / Smart Money / Options / Macro / Sentiment / Company) — see [TRADING_RULES_AND_INFORMATION.md §2A](TRADING_RULES_AND_INFORMATION.md).
 - **Smart money composite** with weights matrix + composite labels by score — see [TRADING_RULES_AND_INFORMATION.md §10.8](TRADING_RULES_AND_INFORMATION.md).
-- **6-agent TradingAgents pipeline** (Pattern 2 integration; Phase 1B+) — see [TRADINGAGENTS_DATA_AUDIT.md](TRADINGAGENTS_DATA_AUDIT.md).
+- **11-active-agent TradingAgents pipeline** per DEC-057 + [DETAILED_PROJECT_PLAN.md §2.6](DETAILED_PROJECT_PLAN.md) (3 Analysts: Market / Fundamentals / News + Bull / Bear Researchers + Research Manager + Trader + 3 Risk Debaters: Aggressive / Conservative / Neutral + Portfolio Manager; +1 Reflection node post-decision). Pattern 2 integration; Phase 1B+ — see [TRADINGAGENTS_DATA_AUDIT.md](TRADINGAGENTS_DATA_AUDIT.md).
 
 ## Five-stage roadmap
 

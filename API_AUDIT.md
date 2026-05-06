@@ -1796,7 +1796,7 @@ Owner-shared dashboard screenshots Pass 53 turn 2026-05-05 confirmed:
 
 ### Polygon ticker events (DEC-500)
 
-`https://api.polygon.io/vX/reference/tickers/{ticker}/events` — Reference Data, included in Stocks Starter. Event types: ticker_change, ticker_split, name_change, listing_change, exchange_change, delisting, new_listing. Cache: `data_prefetch/polygon/events/{ticker}.parquet`. Feeds all 6 TradingAgents + T2 SCREENER per DEC-380.
+`https://api.polygon.io/vX/reference/tickers/{ticker}/events` — Reference Data, included in Stocks Starter. Event types: ticker_change, ticker_split, name_change, listing_change, exchange_change, delisting, new_listing. Cache: `data_prefetch/polygon/events/{ticker}.parquet`. Feeds all 11 active TradingAgents per DEC-057 (3 analysts + Bull/Bear/RM + Trader + 3 Risk Debaters + Portfolio Manager) + T2 SCREENER per DEC-380.
 
 ### Polygon Options NOT upgraded (DEC-501)
 

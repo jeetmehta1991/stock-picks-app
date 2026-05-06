@@ -175,11 +175,12 @@ def main():
         if agents:
             days = sum(1 for i in range((end-start).days+1)
                        if (start+__import__('datetime').timedelta(days=i)).weekday()<5)
-            # Cost estimate: days × avg candidates that pass screener × 6 agents × Haiku cost
+            # Cost estimate: days × avg candidates that pass screener × 11 active agents × Haiku cost
+            # 11 agents per DEC-057 + DETAILED_PROJECT_PLAN.md §2.6 (3 analysts + Bull/Bear/RM + Trader + 3 Risk Debaters + Portfolio Manager)
             # ~30% of max_cands pass screener on average
             avg_passing = max(1, args.max_cands * 0.3)
-            est_cost = days * avg_passing * 6 * 0.00035 * 1.35  # USD → CAD approx
-            print(f"  Estimated cost: ~${est_cost:.1f} CAD ({days} days × {avg_passing:.0f} avg candidates × 6 agents × $0.00035)")
+            est_cost = days * avg_passing * 11 * 0.00035 * 1.35  # USD → CAD approx
+            print(f"  Estimated cost: ~${est_cost:.1f} CAD ({days} days × {avg_passing:.0f} avg candidates × 11 agents × $0.00035)")
             print(f"Estimated cost: ~${est_cost:.1f} USD (Haiku) — proceeding automatically")
 
     engine = BacktestEngine(

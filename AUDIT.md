@@ -29038,3 +29038,67 @@ Per Q2 owner directive ("start phase A testing now"), Phase A testing of smartmo
 - L145 (silent-gap availability), L146 (wiring axis), L147 (integration-quality axis) — all 3 sibling lessons codified Pass 53
 
 *Per CHECKLIST #1 (owner Q1+Q2+Q3); #13 (re-read); #25 (4-risk surface addressed); #43 (cross-doc); #45 (this statement); #51 (scope strict); #58 (atomic codification); #66.b (INPUT/OUTPUT/FLOW); #67/#67.b (doc sync); #68/#69/#70 N/A this turn; **#71 NEW — first instantiation Batch 15 smartmoneyconcepts Phase A**.*
+
+---
+
+## Pass 53 — 11-agent reference correction (forward-looking docs only; L143 historical preserved) — 2026-05-05
+
+### Trigger
+Owner statement: **"We use 11 agents not 6."** Five forward-looking documents and one runtime cost estimator carried stale "6 agent" / "6-agent pipeline" / "all 6 TradingAgents" wording inherited from pre-Pattern-2 conceptual-role documentation. Actual architecture per [DETAILED_PROJECT_PLAN.md §2.6](DETAILED_PROJECT_PLAN.md) + DEC-057 + L94 = **11 active LLM nodes per propagate()** + 1 Reflection node post-decision.
+
+### Canonical 11-agent enumeration (per DEC-057 + DETAILED_PROJECT_PLAN §2.6)
+1. **Market Analyst** — technical / OHLCV / volume / momentum
+2. **Fundamentals Analyst** — financials / insider / congressional
+3. **News Analyst** — news flow / event-driven catalysts
+4. **Bull Researcher** — long-side argument
+5. **Bear Researcher** — short / no-trade argument
+6. **Research Manager** — adjudicates Bull vs Bear
+7. **Trader** — position sizing + entry/exit timing
+8. **Aggressive Risk Debater** — opportunity-cost framing
+9. **Conservative Risk Debater** — capital-preservation framing
+10. **Neutral Risk Debater** — base-rate framing
+11. **Portfolio Manager** — final synthesis → score 0-100 → tier adjustment
+12. (+1) **Reflection** — post-decision rationale storage (continuous learning)
+
+### Files corrected (forward-looking — corrected this turn)
+| File | Lines | Change |
+|---|---|---|
+| `backtest/run_phase1a.py` | 178+182 | Cost-estimate multiplier `6 → 11` (~83% increase displayed; reflects always-was-11 reality) |
+| `EXPLANATION.md` | §What are agents (215-228) | Replaced 6-agent table with 11-agent canonical table + Reflection note |
+| `TRADING_RULES_AND_INFORMATION.md` | 2115 | DEC-500 ticker-events feed line: "all 6" → "all 11 active" + DEC-057 cross-ref |
+| `TRADINGAGENTS_DATA_AUDIT.md` | 1007-1013 | DEC-500 entry: 6-agent bullets → 11-agent + Reflection bullets with role mapping |
+| `TRADINGAGENTS_DATA_AUDIT.md` | 1077 (header note) | Added matrix-structure clarification: 13 rows = 5 toolkits + 8 LangGraph nodes; canonical 11 enumerated |
+| `THEME_X53_SEQUENCING.md` | 129 | Sprint 0A.9 entry: "all 6" → "all 11 active" + DEC-057 cross-ref |
+| (Earlier this conversation) `AUDIT_INDEX.md` DEC-500 | — | "all 6" → "all 11 active" |
+| (Earlier) `DETAILED_PROJECT_PLAN.md` §3.16.7 | — | "all 6" → "all 11 active" + Reflection note |
+| (Earlier) `API_AUDIT.md` | 1799 | Ticker events feed line corrected |
+| (Earlier) `CLAUDE.md` | 82, 131 | Repo structure + agent pipeline section corrected |
+| (Earlier) `README.md` | 17 | "6-agent TradingAgents pipeline" → "11-active-agent TradingAgents pipeline" |
+
+### Files NOT edited (historical preservation per L143)
+| File | Why preserved |
+|---|---|
+| `LEARNINGS.md` (L49, L94, lines 366, 396) | Lessons explicitly **document the 6→11 evolution** — rewriting them would erase the very lesson that makes the correction valuable. L143 directly applies. |
+| `AUDIT.md` (~30+ historical hits across Pass 26 / Pass 31 / earlier passes) | Historical narrative entries; per [CLAUDE.md HARD RULE Pass 53 #67.b](CLAUDE.md): *"Excludes: AUDIT.md historical narrative entries (per L143)"*. |
+| `PROJECT_PLAN_ARCHIVE.md` | Archive folder — frozen snapshot of pre-Pass-43 spec; do not rewrite history. |
+| `output_1b_dashboard.html` | Rendered Phase 1B-α run output — historical artifact reflecting what was actually run at the time. |
+| `analysis_dashboard_1b.html` | Rendered analysis dashboard from past run — frozen snapshot. |
+
+### Why this slipped
+1. **Conceptual-role inheritance** — early project plan articulated 6 conceptual roles (Technical / Fundamental / Sentiment / Risk / Bull-Bear / Decision). When TradingAgents Pattern 2 was integrated (Pass 26 / DEC-057), the conceptual roles were preserved in casual wording while the actual node count grew to 11+ via separation of Bull/Bear into discrete nodes, splitting Risk into 3 debaters, and adding Research Manager + Trader + Portfolio Manager + Reflection.
+2. **Cost-estimator drift** — `run_phase1a.py` cost line was written when 6-agent was correct; never updated when architecture grew. Phase 1B-α actual cost was always 11+× the displayed estimate (×$0.00035 Haiku × 1.35 USD→CAD).
+3. **Wiring matrix hybrid structure** — TRADINGAGENTS_DATA_AUDIT.md matrix uses 13 rows that conflate toolkits (5) and LangGraph nodes (8); without the now-added header note, readers couldn't map to the canonical 11.
+
+### Process improvement (no new CHECKLIST item; existing #43 covers)
+CHECKLIST #43 (cross-doc consistency) already requires reconciliation across docs. The 11-agent drift is a **#43 lapse** not a missing rule — the drift accumulated across multiple turns where #43 was not invoked for "agent count" specifically. Going forward, any agent-architecture change requires explicit #43 application across the canonical doc set: CLAUDE.md, README.md, EXPLANATION.md, DETAILED_PROJECT_PLAN.md, AUDIT_INDEX.md, API_AUDIT.md, TRADINGAGENTS_DATA_AUDIT.md, TRADING_RULES_AND_INFORMATION.md, THEME_X*_SEQUENCING.md, run_phase1a.py.
+
+### Cross-references
+- DEC-057 (TradingAgents Pattern 2 — canonical 11-agent decision)
+- L94 (11+ LLM nodes per propagate())
+- L143 (don't rewrite historical narratives)
+- DEC-500 (Polygon ticker events; updated to feed all 11)
+- DEC-507 + CHECKLIST #70 (wiring matrix; structure note added)
+- CHECKLIST #43 (cross-doc consistency — root-cause framework)
+- CHECKLIST #67/#67.b (per-turn doc sync — applied this turn)
+
+*Per CHECKLIST #1 (owner directive); #43 (cross-doc applied to canonical doc set); #45 (this compliance statement); #67/#67.b (doc sync this turn).*

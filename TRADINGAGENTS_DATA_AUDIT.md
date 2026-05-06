@@ -1004,13 +1004,21 @@ Toolkits consuming universe context (DEC-465 OurTraderToolkit `existing position
 
 ### Sprint 0A scope changes affecting agent inputs
 
-**DEC-500 — Polygon ticker events as agent context (NEW; all 6 agents):**
-- **Risk Agent** — material-event risk gating (corp action triggers analogous to SEC 8-K)
-- **Fundamental Agent** — M&A as fundamental thesis trigger (acquirer/target context); split/dividend continuity
-- **Sentiment Agent** — event-driven flow surge detection
-- **Technical Agent** — split/dividend adjustments + ticker_change continuity
-- **Bull/Bear Debate** — debate quality enhanced by event context
-- **Decision Agent** — final synthesis includes event timing
+**DEC-500 — Polygon ticker events as agent context (NEW; all 11 active agents per DEC-057 + DETAILED_PROJECT_PLAN §2.6):**
+- **Market Analyst** — split/dividend adjustments + ticker_change continuity in technical signals
+- **Fundamentals Analyst** — M&A as fundamental thesis trigger (acquirer/target context); split/dividend continuity
+- **News Analyst** — event-driven news / corp-action announcement context
+- **Bull Researcher** — uses event context to strengthen long thesis (e.g., spinoff value-unlock)
+- **Bear Researcher** — uses event context to argue against (e.g., delisting / governance red flags)
+- **Research Manager** — adjudicates Bull/Bear debate using event materiality
+- **Trader** — adjusts entry/exit timing around scheduled corp actions
+- **Aggressive Risk Debater** — frames events as opportunity (catalyst trades)
+- **Conservative Risk Debater** — frames events as risk (uncertainty around corp actions)
+- **Neutral Risk Debater** — base-rate framing of event types' historical impact
+- **Portfolio Manager** — final synthesis includes event timing in score
+- (+1) **Reflection** — post-decision, stores rationale around event-driven trades for continuous learning
+
+Note: prior listing of "6 agents (Risk, Fundamental, Sentiment, Technical, Bull/Bear, Decision)" reflected pre-Pattern-2 conceptual roles; the correct enumeration is 11 active LLM nodes (per L94 / Pass 26) plus Reflection.
 
 **DEC-501 — Polygon Options NOT upgraded; agent inputs that DON'T arrive (deferred Stage 3/Phase 1C):**
 - IV rank / IV percentile (Technical + Risk Agent forward-looking risk)
@@ -1068,7 +1076,9 @@ Trader tier has NO WSB/Twitter/Reddit endpoints (my prior assumption Pass 53 tur
 
 ### Wiring matrix (Pass 53 baseline state 2026-05-05)
 
-| # | Agent | Toolkit | Data source path | Code path | Status | Pending work |
+**Matrix structure note (added 2026-05-05 per 11-agent correction):** This matrix uses a **hybrid of toolkits and agents** for tracking purposes — it is NOT a 1-to-1 enumeration of the canonical 11 active TradingAgents per [DETAILED_PROJECT_PLAN §2.6](DETAILED_PROJECT_PLAN.md). Rows 1-5 group **data + toolkit + pre-Pattern-2 conceptual role** (Technical / News / Fundamental / Risk / Sentiment) — these correspond to the 5 custom toolkits (DEC-462-466) that feed the canonical agents. Rows 6-13 enumerate post-Pattern-2 LangGraph nodes. The canonical 11 agents (per DEC-057) are: 3 Analysts (Market = Row 1, Fundamentals = Row 3, News = Row 2) + Bull / Bear / Research Manager (Rows 6-8) + Trader (Row 9) + 3 Risk Debaters (Rows 10-12) + Portfolio Manager (Row 13). "Risk Agent" (Row 4) and "Sentiment Agent" (Row 5) are toolkit-level rows whose outputs flow into the canonical 11; they are not standalone agents in the LangGraph runtime. +1 Reflection node post-decision (12 total LLM nodes per propagate(), per [LEARNINGS.md L94](LEARNINGS.md)) is not tracked as a wiring row because it consumes the Portfolio Manager output, not a toolkit.
+
+| # | Agent / Toolkit row | Toolkit | Data source path | Code path | Status | Pending work |
 |---|---|---|---|---|---|---|
 | 1 | Technical Agent | OurTechnicalToolkit (DEC-462) | `data_prefetch/polygon/aggs/` + `backtest/data/cache/ohlcv/` (Polygon-prefetched; yfinance HARD CUT per Batch 13 sub-task 6 2026-05-06) | `backtest/signals/technical.py` (compute_all_signals); `fetcher.fetch_ohlcv` reads cache only (no live API fallback) | ✅ WIRED | — |
 | 2 | News Analyst | OurNewsToolkit (DEC-464) | `data_prefetch/polygon/news/{TICKER}.parquet` (Batch 3 done; 1,926 tickers / 1.05M articles) | `smart_money.get_news_sentiment` PRIMARY reads `data_prefetch/polygon/news/` with per-ticker `insights` parsing (positive/negative/neutral); LEGACY fallback to AV + Finnhub for backwards compat (Pass 53 Batch 13 sub-task 2 RESOLVED-IMPLEMENTED 2026-05-06) | ✅ WIRED | — (legacy paths removed in Sprint 0A.8 future cleanup) |

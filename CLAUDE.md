@@ -79,7 +79,7 @@ backtest/
     exit_strategies.py   # 12 exit methods
     regime_filter.py     # classify_regime: bull/neutral/bear/crisis
     improvements.py      # walk-forward, transaction costs, slippage, survivorship
-  agents/pipeline.py     # 6-agent pipeline (Haiku Phase 1B, Sonnet Phase 1C+)
+  agents/pipeline.py     # 11-active-agent pipeline per DEC-057 (3 analysts + Bull/Bear/RM + Trader + 3 Risk Debaters + Portfolio Manager + Reflection post-decision); Haiku Phase 1B (~$116 CAD), Sonnet Phase 1C+. Note: prior CLAUDE.md docstring of "6 agents" was a simplification of the conceptual roles before TradingAgents Pattern 2 integration; actual node count is 11+ per L94/Pass 26 lesson.
   results/
     metrics.py           # 9 passing criteria + per-regime verdict matrix
     writer.py            # trade_log, backtest_results, strategy_regime_matrix.json
@@ -128,7 +128,7 @@ All 9 must pass overall for a strategy to advance. Additionally, each strategy g
 - **Phase 1A restored Pass 53:** rules + smart money baseline (no agents) precedes Phase 1B agent overlay. Phase 1A → 1A-α (rules-only cube) → 1A-β (full-scale dry-run) → 1B (agents added) → 1B-α (combined cube). Owner gate at 1A-α (rules-only Sharpe ≥ 0.7 OOS) before $300 1B-α budget commits. See PROJECT_PLAN §3.6-3.10 + DETAILED_PROJECT_PLAN Parts 7.5/7.6/7.7.
 - **Email** (not Telegram) for all trade approvals in Stage 4
 - **Intraday trading:** completely separate future project — out of scope
-- **Agent pipeline:** 6 agents (Technical, Fundamental, Sentiment, Risk, Bull/Bear Debate, Decision) at temperature=0. Haiku for Phase 1B (~$116 CAD). Sonnet for Phase 1C+.
+- **Agent pipeline:** 11 active agents per DEC-057 + DETAILED_PROJECT_PLAN.md §2.6 (3 analysts: Market / Fundamentals / News; 3 research: Bull / Bear / Research Manager; Trader; 3 Risk Debaters: Aggressive / Conservative / Neutral; Portfolio Manager; +1 Reflection post-decision). Pass 53 correction: prior "6 agents" reference (Technical / Fundamental / Sentiment / Risk / Bull-Bear Debate / Decision) was conceptual simplification — actual count is 11 active LLM nodes per propagate() (L94 / Pass 26 lesson). Temperature=0. Haiku for Phase 1B (~$116 CAD). Sonnet for Phase 1C+.
 - **News sentiment:** not_available at free tier. Proceed Phase 1B without news. Add Unusual Whales in Phase 1C instead.
 
 ---
