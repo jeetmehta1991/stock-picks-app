@@ -1610,7 +1610,7 @@ Quiver Trader provides 16 endpoint groups currently prefetched (DEC-502 owner-ap
 | Endpoint | Cache path | Files | Stage | Phase | Consumer | Signal cat | Prefetch state | Consumer state | Sprint 0A batch |
 |---|---|---|---|---|---|---|---|---|---|
 | FRED 50 macro series | `data_prefetch/fred/observations/` | 50 | 2-5 | 1A+ | Risk Agent (3 debaters); `regime_filter.classify_regime` | Cat 4 (yield curve, VIX, DXY, HY OAS, STLFSI4, RECPROUSM156N, ICSA, WALCL + 42 more) | ✅ DONE | ✅ wired — 12 signals exposed via `macro.macro_snapshot()` Pass 53 Batch 13.3 | Batch 6 |
-| ALFRED vintages (PIT corrections) | `data_prefetch/alfred/` (no folder yet) | 0 | 2-5 | 1A+ | Risk Agent — PIT-correct macro per DEC-301 (revisions instead of first-print) | Cat 4 | 🔴 NOT STARTED — folder will be created when prefetched | 🔴 consumer reads first-print FRED only | Batch 6 (extension) |
+| ALFRED vintages (PIT corrections) | `data_prefetch/alfred/` | 50 | 2-5 | 1A+ | Risk Agent — PIT-correct macro per DEC-301 (revisions instead of first-print) | Cat 4 | ✅ DONE Pass 53 owner "execute all pending" 2026-05-06 — 50/50 series with full vintage history (~15MB; ~750k vintage observations); CPIAUCSL 3,357 vintages, GDP 3,237, PAYEMS 13,673, etc. Annual chunking for daily Treasury yields per FRED 1000-vintage-cap | 🔴 consumer still reads first-print FRED; vintage-aware reader pending Sprint 4 | Batch ALFRED |
 
 #### §3.16.2.D — AAII + CNN F&G + CFTC (Free)
 
@@ -1638,7 +1638,7 @@ Quiver Trader provides 16 endpoint groups currently prefetched (DEC-502 owner-ap
 |---|---|---|---|---|---|---|---|---|---|
 | Apewisdom WSB/r/stocks daily mentions | `data_prefetch/apewisdom/` | 1 | 2-5 | 1B+ | Sentiment Agent (`get_apewisdom_mentions`); ticker-aware retail signal | Cat 5 | ✅ DONE | ✅ wired Pass 53 Batch 13.5 | Batch 12-a |
 | Wikipedia pageviews (per-ticker) | `data_prefetch/wikipedia/` | 1,414 | 2-5 | 1B+ | Sentiment Agent (`get_wikipedia_pageviews`); attention proxy | Cat 5 | ✅ DONE | ✅ wired Pass 53 Batch 13.5 | Batch 12-a |
-| pytrends Google Trends (per-ticker) | `data_prefetch/pytrends/` | 172 | 2-5 | 1B+ | Sentiment Agent supplementary | Cat 5 | ⚠ PARTIAL (172/1,937 — rate-limit halt) | ⚠ partial | Batch 12-b |
+| pytrends Google Trends (per-ticker) | `data_prefetch/pytrends/` | 545 | 2-5 | 1B+ | Sentiment Agent supplementary | Cat 5 | ⚠ PARTIAL (545/1,937 = 28%; halted on consecutive errors per script's 10-error rule; resumable next session) Pass 53 owner "execute all pending" 2026-05-06 advanced from 172 → 545 | ⚠ partial | Batch 12-b resume |
 
 #### §3.16.2.G — Subscription-deferred (DEC-506)
 

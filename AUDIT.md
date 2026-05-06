@@ -29171,3 +29171,55 @@ All 4 gaps CLOSED 2026-05-06:
 - DECs: DEC-045 (fork-first; Layer 2 parent), DEC-259 (ICT/SMC patterns), DEC-355-362 (chart patterns), DEC-367-371 (strategy categories), DEC-141/142/143/145/176 (Layer 4 PENDING)
 
 *Per CHECKLIST #1 (owner "Approve all"); #25 (Layer 2D PENDING-FORM scope honored — no Claude drafts; Layer 4 PENDING-DEC scope honored — separate per-DEC approval); #43 (cross-doc — STRATEGY_ROSTER + REGISTER + CANONICAL_FACTS + this narrative); #45 (this); #58 (atomic codification — 42 promotions in single commit); #67/#67.b (per-turn doc sync).*
+
+---
+
+## Pass 53 — "Execute all pending" prefetch (except polygon paid + Ortex) — 2026-05-06
+
+### Trigger
+
+Owner directive 2026-05-06: *"except polygon paid, execute all pending"*. Filtered 8 pending prefetch items down to 2 executable: ALFRED vintages + pytrends completion. Polygon-paid endpoints (NBBO, Reference completion, Splits, Dividends, Options) and Ortex excluded per scope.
+
+### Results
+
+**ALFRED vintages — ✅ COMPLETE 50/50 (15MB)**
+- All 50 FRED series in `data_prefetch/fred/observations/` now have full ALFRED vintage history in `data_prefetch/alfred/`
+- ~750k vintage observations total across 50 series
+- Highlights: CPIAUCSL 3,357 vintages (1947-2026); GDP 3,237; PAYEMS 13,673; UNRATE 2,193
+- Owner provided FRED_API_KEY for the JSON API (CSV fallback doesn't support vintages)
+- Encountered FRED 1000-vintage-per-request cap on 11 daily Treasury yield series (DGS1MO/3MO/6MO/1/2/5/10/30, DFF, T10Y2Y/3M); resolved by annual chunking fallback in `temp_staging/batch_alfred_vintages.py`
+- Consumer state: 🔴 vintage-aware reader pending Sprint 4 — `macro.macro_snapshot()` still reads first-print FRED only
+
+**Pytrends Google Trends — ⚠ PARTIAL 545/1,937 (28%; advanced from 172)**
+- Resumed `temp_staging/batch12b_pytrends.py` (resumable on cache); processed +373 tickers this session
+- Halted on consecutive errors per script's 10-error halt rule (Google Trends rate-limit)
+- Cache is preserved + resumable; further attempts should use longer base sleep (current 5s+) to avoid rate-limit clusters
+- Pytrends remains supplementary to Apewisdom (DONE) + Wikipedia pageviews (1,414 cached)
+
+### Items NOT executed (per scope)
+
+- 🔵 **Polygon NBBO daily-close** — excluded (Polygon paid endpoint) per owner directive
+- 🔵 **Polygon Reference completion** (599 → ~2,000) — excluded
+- 🔵 **Polygon Splits** (2 stubs) — excluded
+- 🔵 **Polygon Dividends** (2 stubs) — excluded
+- 🔵 **Polygon Options chains** — excluded (subscription-deferred per DEC-506)
+- 🔵 **Ortex short interest** — excluded (subscription-deferred per DEC-506; paid)
+
+### Files updated
+
+- `temp_staging/batch_alfred_vintages.py` (new — ALFRED prefetch script with annual-chunking fallback)
+- `data_prefetch/alfred/` (new — 50 parquet files, ~15MB)
+- `data_prefetch/pytrends/` (incremental — +373 parquet files; 545 total)
+- `DETAILED_PROJECT_PLAN.md` §3.16.2.C ALFRED row + §3.16.2.F pytrends row
+- `API_AUDIT.md` §22.C + §22.F mirrored
+- `CANONICAL_FACTS.md` F-012 ALFRED row updated
+- `.env` (owner added FRED_API_KEY; not committed — per CLAUDE.md secret-handling rule)
+
+### Cross-references
+
+- DEC-301 (ALFRED PIT correction)
+- DEC-497 (NO-LIVE-API HARD CUT — ALFRED prefetch is one-time setup)
+- DEC-506 (point-of-need subscriptions for Polygon Options + Ortex; deferred)
+- L88 / L143 (no Wikipedia runtime; ALFRED via official API)
+
+*Per CHECKLIST #1 (owner directive "execute all pending except polygon paid"); #13 (FRED_API_KEY blocker surfaced before guessing); #25 (1000-vintage cap surfaced + chunking patched mid-run); #45 (this); #51 (scope strict — Polygon paid + Ortex excluded as directed); #67/#67.b (per-turn doc sync).*

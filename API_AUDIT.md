@@ -1874,7 +1874,7 @@ High-value adds: BAMLH0A0HYM2 (HY OAS), STLFSI4 (financial stress), RECPROUSM156
 | Endpoint | Cache path | Files | Stage | Phase | Consumer | Sig cat | Prefetch | Consumer | Batch |
 |---|---|---|---|---|---|---|---|---|---|
 | FRED 50 macro series | `data_prefetch/fred/observations/` | 50 | 2-5 | 1A+ | Risk Agent (3 debaters); `regime_filter.classify_regime` | Cat 4 | ✅ | ✅ wired — 12 signals via `macro.macro_snapshot()` Batch 13.3 | Batch 6 |
-| ALFRED vintages (PIT corrections) | `data_prefetch/alfred/` (no folder yet) | 0 | 2-5 | 1A+ | Risk Agent — PIT-correct macro per DEC-301 (revisions) | Cat 4 | 🔴 NOT STARTED — folder created when prefetched | 🔴 reads first-print only | Batch 6 ext |
+| ALFRED vintages (PIT corrections) | `data_prefetch/alfred/` | 50 | 2-5 | 1A+ | Risk Agent — PIT-correct macro per DEC-301 (revisions) | Cat 4 | ✅ DONE 2026-05-06 — 50/50 series ~15MB ~750k vintage observations; annual chunking for daily Treasury per FRED 1000-vintage-cap | 🔴 consumer still reads first-print; vintage reader Sprint 4 | Batch ALFRED |
 
 ### 22.D — AAII + CNN F&G + CFTC (Free)
 
@@ -1902,7 +1902,7 @@ High-value adds: BAMLH0A0HYM2 (HY OAS), STLFSI4 (financial stress), RECPROUSM156
 |---|---|---|---|---|---|---|---|---|---|
 | Apewisdom WSB/r/stocks daily mentions | `data_prefetch/apewisdom/` | 1 | 2-5 | 1B+ | Sentiment Agent (`get_apewisdom_mentions`); ticker-aware retail signal | Cat 5 | ✅ | ✅ wired Batch 13.5 | Batch 12-a |
 | Wikipedia pageviews (per-ticker) | `data_prefetch/wikipedia/` | 1,414 | 2-5 | 1B+ | Sentiment Agent (`get_wikipedia_pageviews`); attention proxy | Cat 5 | ✅ | ✅ wired Batch 13.5 | Batch 12-a |
-| pytrends Google Trends (per-ticker) | `data_prefetch/pytrends/` | 172 | 2-5 | 1B+ | Sentiment Agent supplementary | Cat 5 | ⚠ 172/1,937 (rate-limit halt) | ⚠ partial | Batch 12-b |
+| pytrends Google Trends (per-ticker) | `data_prefetch/pytrends/` | 545 | 2-5 | 1B+ | Sentiment Agent supplementary | Cat 5 | ⚠ 545/1,937 = 28% (advanced from 172; halts on consecutive errors; resumable) Pass 53 "execute all pending" 2026-05-06 | ⚠ partial | Batch 12-b resume |
 
 ### 22.G — Subscription-deferred (DEC-506)
 
