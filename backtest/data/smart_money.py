@@ -357,49 +357,69 @@ def congressional_signal(ticker: str, as_of: date, lookback_days: int = 45) -> d
 # ─────────────────────────────────────────────────────────────────────────────
 
 def insider_signal(ticker: str, as_of: date, lookback_days: int = 30) -> dict:
-    """Insider trading signal from Quiver `live/insidertrading` bulk feed.
+    """Insider trading signal from Quiver `live/insiders` bulk feed.
 
-    BUG-272 Pass 53 fix (DEC-503 second test pyramid application):
-    Migrated from `historical/insidertrading/{ticker}` (404 — NOT IN TRADER TIER)
-    to `live/insidertrading` paginated bulk feed (no per-ticker endpoint exists).
-    Bulk feed cached as cache/quiver/insidertrading/global.parquet; runtime filters
-    by Ticker column. Sprint 0A.5 Batch 10 prefetches the bulk file.
+    BUG-272 Pass 53 fix RESOLVED-IMPLEMENTED 2026-05-06 (Batch 13 schema alignment):
+    Path: `cache/quiver/insiders/global.parquet` (NOT `insidertrading/` — actual
+    Quiver Trader-tier endpoint is `live/insiders` per Pass 53 v2 smoke probe).
+
+    Schema (per Quiver live/insiders):
+      Ticker / Date / Name / AcquiredDisposedCode ('A' acquired, 'D' disposed)
+      / TransactionCode ('P' open-mkt purchase, 'S' open-mkt sale, 'A' grant,
+        'F' tax withhold, 'M' option exercise, 'J' other, 'G' gift, 'C' conversion,
+        'L' small acquisition exempt) / Shares / PricePerShare / officerTitle /
+      isDirector / isOfficer / isTenPercentOwner
+
+    Signal logic:
+      - Bullish: TransactionCode 'P' (open-market purchase, real money) or 'L'
+        (small acquisition); CEO/officer purchases weighted higher
+      - Bearish: TransactionCode 'S' (open-market sale)
+      - Excluded as noise: 'A' (grant), 'F' (tax), 'M' (option exercise alone),
+        'G' (gift), 'C' (conversion), 'J' (other; varies)
+
+    Returns dict per existing schema for backward compatibility.
     """
-    bulk = _load_quiver_bulk("insidertrading")
+    bulk = _load_quiver_bulk("insiders")
     df = _filter_bulk_by_ticker(bulk, ticker)
     if df.empty:
         return {"signal": "none", "buy_count": 0, "sell_count": 0}
     try:
-        df["filing_date"] = pd.to_datetime(
-            df.get("Date", df.get("date", ""))).dt.date
+        df = df.copy()
+        df["filing_date"] = pd.to_datetime(df["Date"]).dt.date
         df = df[df["filing_date"] <= as_of]
-        # Exclude non-discretionary
-        tx_col = "Transaction" if "Transaction" in df else "transaction"
-        df = df[~df[tx_col].str.contains(
-            "Option|Exercise|10b5-1|Gift|Transfer", case=False, na=False)]
+        # Window
         window_start = as_of - timedelta(days=lookback_days)
-        recent = df[df["filing_date"] >= window_start]
-        buys   = recent[recent[tx_col].str.contains(
-            "Purchase|Buy|Acquisition", case=False, na=False)]
-        sells  = recent[recent[tx_col].str.contains(
-            "Sale|Sell", case=False, na=False)]
-        role_col = "InsiderTitle" if "InsiderTitle" in df else "insiderTitle"
-        ceo_buy  = buys[role_col].str.contains("CEO|Chief Executive", case=False, na=False).any() \
-                   if role_col in buys else False
-        cluster  = buys.get("InsiderName", buys.get("insiderName",
-                   pd.Series())).nunique() >= 3
-        signal   = "none"
-        if sells.get("InsiderName", sells.get("insiderName",
-                     pd.Series())).nunique() >= 3:
+        recent = df[df["filing_date"] >= window_start].copy()
+        # Filter to meaningful transactions:
+        # buys: TransactionCode in ('P', 'L') — open-market purchase (real money)
+        # sells: TransactionCode == 'S' — open-market sale
+        buy_codes = ("P", "L")
+        sell_codes = ("S",)
+        buys = recent[recent["TransactionCode"].isin(buy_codes)]
+        sells = recent[recent["TransactionCode"].isin(sell_codes)]
+        # CEO buy detection: officerTitle contains CEO/Chief Executive AND isOfficer
+        if not buys.empty and "officerTitle" in buys.columns:
+            ceo_titles = buys["officerTitle"].fillna("").astype(str)
+            ceo_buy = bool(ceo_titles.str.contains(
+                "CEO|Chief Executive", case=False, na=False).any())
+        else:
+            ceo_buy = False
+        # Cluster buy: 3+ unique insider names purchasing
+        cluster_buy = buys["Name"].nunique() >= 3 if not buys.empty else False
+        # Cluster sell: 3+ unique insider names selling
+        cluster_sell = sells["Name"].nunique() >= 3 if not sells.empty else False
+        # Composite signal
+        signal = "none"
+        if cluster_sell:
             signal = "cluster_sell"
-        elif ceo_buy and cluster:
+        elif ceo_buy and cluster_buy:
             signal = "strong_buy"
-        elif ceo_buy or cluster:
+        elif ceo_buy or cluster_buy:
             signal = "buy"
         elif len(buys) >= 1:
             signal = "weak_buy"
         return {"signal": signal, "buy_count": len(buys), "sell_count": len(sells),
-                "ceo_buy": ceo_buy, "cluster_buy": cluster}
+                "ceo_buy": ceo_buy, "cluster_buy": cluster_buy}
     except Exception as exc:
         logger.debug("insider_signal(%s): %s", ticker, exc)
         return {"signal": "none", "buy_count": 0, "sell_count": 0}
@@ -410,35 +430,53 @@ def insider_signal(ticker: str, as_of: date, lookback_days: int = 30) -> dict:
 # ─────────────────────────────────────────────────────────────────────────────
 
 def institutional_signal(ticker: str, as_of: date) -> dict:
-    """13F institutional holdings signal from Quiver `live/sec13f` bulk feed.
+    """13F institutional holdings signal from Quiver `live/sec13fchanges` bulk feed.
 
-    BUG-273 Pass 53 fix (DEC-503 second test pyramid application):
-    Migrated from `historical/institutionalholdings/{ticker}` (404 — NOT IN TRADER
-    TIER) to `live/sec13f` paginated bulk feed (no per-ticker endpoint exists).
-    Bulk feed cached as cache/quiver/sec13f/global.parquet; runtime filters by
-    Ticker column. Sprint 0A.5 Batch 10 prefetches the bulk file.
+    BUG-273 Pass 53 fix RESOLVED-IMPLEMENTED 2026-05-06 (Batch 13 schema alignment):
+    Migrated to `live/sec13fchanges` (NOT `sec13f`) — sec13fchanges provides
+    quarterly delta directly (Change_Share, Change_Pct), eliminating need to join
+    consecutive quarters. Path: `cache/quiver/sec13fchanges/global.parquet`.
+
+    Schema (per Quiver live/sec13fchanges):
+      Date / ReportPeriod (quarter end) / Ticker / Fund / Change ($ value change)
+      / Change_Share (share count delta) / Change_Pct (% delta) / Held (current
+      shares) / Held_Normalized / Close
+
+    PIT respect: 45-day reporting lag (per DEC-325). Signal at as_of date D
+    consumes only 13F filings where ReportPeriod + 45 days <= D.
+
+    Signal logic (using Change_Share + Change_Pct):
+      - new_position: Change_Pct == 1.0 (initiated; no prior holding)
+      - increased: Change_Share > 0 AND Change_Pct < 1.0 (added to existing)
+      - decreased: Change_Share < 0 (reduced or closed)
+
+    Returns dict per existing schema for backward compatibility.
     """
-    bulk = _load_quiver_bulk("sec13f")
+    bulk = _load_quiver_bulk("sec13fchanges")
     df = _filter_bulk_by_ticker(bulk, ticker)
     if df.empty:
         return {"signal": "none"}
     try:
-        df["quarter_end"]    = pd.to_datetime(
-            df.get("Date", df.get("date", ""))).dt.date
-        df["available_after"] = df["quarter_end"].apply(
+        df = df.copy()
+        df["report_period"] = pd.to_datetime(df["ReportPeriod"]).dt.date
+        df["available_after"] = df["report_period"].apply(
             lambda d: d + timedelta(days=45) if d else None)
         df = df[df["available_after"] <= as_of]
         if df.empty:
             return {"signal": "none"}
-        latest_q = df["quarter_end"].max()
-        latest   = df[df["quarter_end"] == latest_q]
-        sc = "SharesChange" if "SharesChange" in df else "sharesChange"
-        sh = "Shares" if "Shares" in df else "shares"
-        df[sc] = pd.to_numeric(df.get(sc, 0), errors="coerce").fillna(0)
-        df[sh] = pd.to_numeric(df.get(sh, 0), errors="coerce").fillna(0)
-        new_pos   = (latest[sc] == latest[sh]).sum()
-        increased = (latest[sc] > 0).sum()
-        decreased = (latest[sc] < 0).sum()
+        latest_q = df["report_period"].max()
+        latest = df[df["report_period"] == latest_q].copy()
+        # Coerce numeric (defensive)
+        latest["Change_Share"] = pd.to_numeric(latest.get("Change_Share", 0),
+                                                  errors="coerce").fillna(0)
+        latest["Change_Pct"] = pd.to_numeric(latest.get("Change_Pct", 0),
+                                                errors="coerce").fillna(0)
+        # Tagging
+        new_pos = int((latest["Change_Pct"] == 1.0).sum())
+        increased = int(((latest["Change_Share"] > 0) &
+                          (latest["Change_Pct"] < 1.0)).sum())
+        decreased = int((latest["Change_Share"] < 0).sum())
+        # Signal classification (preserves existing semantics)
         signal = "none"
         if new_pos >= 3 or (new_pos >= 1 and increased >= 2):
             signal = "strong_buy"
@@ -446,8 +484,8 @@ def institutional_signal(ticker: str, as_of: date) -> dict:
             signal = "buy"
         elif decreased > increased:
             signal = "negative"
-        return {"signal": signal, "new_positions": int(new_pos),
-                "increased": int(increased), "decreased": int(decreased)}
+        return {"signal": signal, "new_positions": new_pos,
+                "increased": increased, "decreased": decreased}
     except Exception as exc:
         logger.debug("institutional_signal(%s): %s", ticker, exc)
         return {"signal": "none"}

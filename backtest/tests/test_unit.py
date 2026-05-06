@@ -1093,22 +1093,26 @@ def test_bug272_insider_signal_no_bulk_returns_none():
 
 
 def test_bug272_insider_signal_with_synthetic_bulk_buy():
-    """BUG-272: insider_signal computes buy signal when bulk feed has CEO buys."""
+    """BUG-272: insider_signal computes buy signal with live/insiders schema (TransactionCode 'P')."""
+    # Schema: Ticker / Date / Name / AcquiredDisposedCode / TransactionCode / officerTitle
     bulk = pd.DataFrame({
         "Ticker": ["AAPL", "AAPL", "AAPL", "MSFT"],
         "Date": ["2024-05-15", "2024-05-20", "2024-05-25", "2024-05-15"],
-        "Transaction": ["Purchase", "Purchase", "Purchase", "Sale"],
-        "InsiderName": ["John CEO", "Jane CFO", "Bob CTO", "Other"],
-        "InsiderTitle": ["CEO", "CFO", "CTO", "VP"],
+        "Name": ["John CEO", "Jane CFO", "Bob CTO", "Other"],
+        "AcquiredDisposedCode": ["A", "A", "A", "D"],
+        "TransactionCode": ["P", "P", "P", "S"],  # P = open-market purchase
+        "officerTitle": ["CEO", "CFO", "CTO", "VP"],
+        "isOfficer": [True, True, True, True],
+        "isDirector": [False, False, False, False],
     })
-    _inject_quiver_bulk_for_test("insidertrading", bulk)
+    _inject_quiver_bulk_for_test("insiders", bulk)
     from backtest.data.smart_money import insider_signal
     result = insider_signal("AAPL", date(2024, 6, 1), lookback_days=30)
     assert result["signal"] in ("buy", "weak_buy", "strong_buy"), \
         f"Expected buy variant, got {result['signal']!r}"
     assert result["buy_count"] >= 1, f"Expected buy_count>=1, got {result['buy_count']}"
     assert result["sell_count"] == 0, "AAPL has no sells in synthetic data"
-    print(f"✅ BUG-272 insider_signal AAPL (synthetic bulk) → {result['signal']} ({result['buy_count']} buys)")
+    print(f"✅ BUG-272 insider_signal AAPL (live/insiders schema) → {result['signal']} ({result['buy_count']} buys)")
 
 
 def test_bug272_insider_signal_filters_by_ticker():
@@ -1116,11 +1120,13 @@ def test_bug272_insider_signal_filters_by_ticker():
     bulk = pd.DataFrame({
         "Ticker": ["AAPL", "MSFT", "GOOG"],
         "Date": ["2024-05-15"] * 3,
-        "Transaction": ["Purchase"] * 3,
-        "InsiderName": ["A", "B", "C"],
-        "InsiderTitle": ["CEO"] * 3,
+        "Name": ["A", "B", "C"],
+        "AcquiredDisposedCode": ["A"] * 3,
+        "TransactionCode": ["P"] * 3,
+        "officerTitle": ["CEO"] * 3,
+        "isOfficer": [True] * 3,
     })
-    _inject_quiver_bulk_for_test("insidertrading", bulk)
+    _inject_quiver_bulk_for_test("insiders", bulk)
     from backtest.data.smart_money import insider_signal
     result_aapl = insider_signal("AAPL", date(2024, 6, 1))
     result_msft = insider_signal("MSFT", date(2024, 6, 1))
@@ -1129,6 +1135,25 @@ def test_bug272_insider_signal_filters_by_ticker():
     assert result_msft["buy_count"] == 1, f"MSFT filter: expected 1 buy, got {result_msft['buy_count']}"
     assert result_lower_aapl["buy_count"] == 1, "Case-insensitive ticker filter must work"
     print("✅ BUG-272 insider_signal ticker filter (case-insensitive)")
+
+
+def test_bug272_insider_signal_excludes_non_open_market_codes():
+    """BUG-272: TransactionCode 'A' (grant), 'F' (tax), 'M' (option exercise) excluded from buy signal."""
+    bulk = pd.DataFrame({
+        "Ticker": ["AAPL"] * 4,
+        "Date": ["2024-05-15"] * 4,
+        "Name": ["X", "Y", "Z", "W"],
+        "AcquiredDisposedCode": ["A", "A", "A", "A"],
+        "TransactionCode": ["A", "F", "M", "G"],  # grant, tax, option, gift — all excluded
+        "officerTitle": ["CEO"] * 4,
+        "isOfficer": [True] * 4,
+    })
+    _inject_quiver_bulk_for_test("insiders", bulk)
+    from backtest.data.smart_money import insider_signal
+    result = insider_signal("AAPL", date(2024, 6, 1))
+    assert result["buy_count"] == 0, \
+        f"Non-purchase codes must be excluded; got buy_count={result['buy_count']}"
+    print("✅ BUG-272 insider_signal correctly excludes A/F/M/G transaction codes")
 
 
 def test_bug273_institutional_signal_no_bulk_returns_none():
@@ -1142,24 +1167,26 @@ def test_bug273_institutional_signal_no_bulk_returns_none():
 
 
 def test_bug273_institutional_signal_with_synthetic_bulk():
-    """BUG-273: institutional_signal computes signal when bulk feed has 13F data."""
-    # Synthetic 13F: 3 funds opened new positions in AAPL last quarter
+    """BUG-273: institutional_signal computes signal with live/sec13fchanges schema."""
+    # Schema: Ticker / Date / ReportPeriod / Fund / Change_Share / Change_Pct / Held
     quarter_end = "2024-03-31"
     bulk = pd.DataFrame({
         "Ticker": ["AAPL", "AAPL", "AAPL", "MSFT"],
-        "Date": [quarter_end] * 4,
-        "Name": ["Fund A", "Fund B", "Fund C", "Fund D"],
-        "SharesChange": [1000, 500, 200, 100],
-        "Shares": [1000, 500, 200, 100],  # New positions: SharesChange == Shares
+        "Date": ["2024-05-15"] * 4,
+        "ReportPeriod": [quarter_end] * 4,
+        "Fund": ["Fund A", "Fund B", "Fund C", "Fund D"],
+        "Change_Share": [1000, 500, 200, 100],
+        "Change_Pct": [1.0, 1.0, 1.0, 1.0],  # all = 1.0 means new positions
+        "Held": [1000, 500, 200, 100],
     })
-    _inject_quiver_bulk_for_test("sec13f", bulk)
+    _inject_quiver_bulk_for_test("sec13fchanges", bulk)
     from backtest.data.smart_money import institutional_signal
     # 45-day reporting lag: must query >= quarter_end + 45 days for visibility
     result = institutional_signal("AAPL", date(2024, 6, 1))
     assert result["signal"] in ("buy", "strong_buy"), \
         f"Expected buy variant for 3 new positions, got {result['signal']!r}"
     assert result.get("new_positions", 0) >= 1, "Should detect new positions"
-    print(f"✅ BUG-273 institutional_signal AAPL (synthetic 13F) → {result['signal']}")
+    print(f"✅ BUG-273 institutional_signal AAPL (sec13fchanges schema) → {result['signal']}")
 
 
 def test_bug273_institutional_signal_respects_45day_lag():
@@ -1167,12 +1194,14 @@ def test_bug273_institutional_signal_respects_45day_lag():
     quarter_end = "2024-03-31"
     bulk = pd.DataFrame({
         "Ticker": ["AAPL"],
-        "Date": [quarter_end],
-        "Name": ["Fund A"],
-        "SharesChange": [1000],
-        "Shares": [1000],
+        "Date": ["2024-04-01"],
+        "ReportPeriod": [quarter_end],
+        "Fund": ["Fund A"],
+        "Change_Share": [1000],
+        "Change_Pct": [1.0],
+        "Held": [1000],
     })
-    _inject_quiver_bulk_for_test("sec13f", bulk)
+    _inject_quiver_bulk_for_test("sec13fchanges", bulk)
     from backtest.data.smart_money import institutional_signal
     # 30 days post quarter-end < 45-day lag → not yet available
     result_too_early = institutional_signal("AAPL", date(2024, 4, 30))
@@ -1183,18 +1212,19 @@ def test_bug273_institutional_signal_respects_45day_lag():
 
 def test_smart_money_score_uses_three_inputs_post_fix():
     """Composite smart_money_score correctly combines all 3 (now-fixed) inputs."""
-    # Inject bulk data for all 3 sources
+    # Inject bulk data for all 3 sources matching actual schemas
     insider_bulk = pd.DataFrame({
-        "Ticker": ["TEST"], "Date": ["2024-05-25"],
-        "Transaction": ["Purchase"], "InsiderName": ["CEO X"], "InsiderTitle": ["CEO"],
+        "Ticker": ["TEST"], "Date": ["2024-05-25"], "Name": ["CEO X"],
+        "AcquiredDisposedCode": ["A"], "TransactionCode": ["P"],
+        "officerTitle": ["CEO"], "isOfficer": [True], "isDirector": [False],
     })
-    sec13f_bulk = pd.DataFrame({
-        "Ticker": ["TEST"], "Date": ["2024-03-31"], "Name": ["Fund A"],
-        "SharesChange": [1000], "Shares": [1000],
+    sec13fchanges_bulk = pd.DataFrame({
+        "Ticker": ["TEST"], "Date": ["2024-05-15"], "ReportPeriod": ["2024-03-31"],
+        "Fund": ["Fund A"], "Change_Share": [1000], "Change_Pct": [1.0], "Held": [1000],
     })
-    _inject_quiver_bulk_for_test("insidertrading", insider_bulk)
+    _inject_quiver_bulk_for_test("insiders", insider_bulk)
     from backtest.data import smart_money
-    smart_money._BULK_CACHE["sec13f"] = sec13f_bulk
+    smart_money._BULK_CACHE["sec13fchanges"] = sec13fchanges_bulk
     # Note: congressional uses _load_prefetch (per-ticker), not bulk; skip injection
     from backtest.data.smart_money import smart_money_score
     result = smart_money_score("TEST", date(2024, 6, 1))

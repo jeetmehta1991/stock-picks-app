@@ -293,10 +293,10 @@ REMOVE Quiver branch entirely from `get_analyst_data`. Rely on Polygon `/vX/refe
 
 ---
 
-### BUG-272 — `smart_money.py` historical/insidertrading endpoint 404 (insider_signal silently zeroed) — RESOLVED Pass 53 Batch 1 2026-05-05
+### BUG-272 — `smart_money.py` historical/insidertrading endpoint 404 (insider_signal silently zeroed) — RESOLVED-IMPLEMENTED Pass 53 Batch 13 sub-task 2026-05-06
 
 **Severity:** HIGH — affects all Phase 1A v3 archive smart-money scoring + agent insider input
-**Status:** ✅ RESOLVED Pass 53 Batch 1 2026-05-05 (DEC-503 second test pyramid application)
+**Status:** ✅ RESOLVED-IMPLEMENTED Pass 53 Batch 13 (schema-aligned fix; was stubbed Batch 1 2026-05-05; now reads actual `live/insiders` schema with TransactionCode + AcquiredDisposedCode)
 **Module:** `backtest/data/smart_money.py:382`
 **Function:** `insider_signal`
 
@@ -318,10 +318,10 @@ Replace `historical/insidertrading/{ticker}` per-ticker call with bulk `live/ins
 
 ---
 
-### BUG-273 — `smart_money.py` historical/institutionalholdings endpoint 404 (institutional_signal silently zeroed) — RESOLVED Pass 53 Batch 1 2026-05-05
+### BUG-273 — `smart_money.py` historical/institutionalholdings endpoint 404 (institutional_signal silently zeroed) — RESOLVED-IMPLEMENTED Pass 53 Batch 13 sub-task 2026-05-06
 
 **Severity:** HIGH — affects all Phase 1A v3 archive smart-money scoring + agent institutional input
-**Status:** ✅ RESOLVED Pass 53 Batch 1 2026-05-05 (DEC-503 second test pyramid application)
+**Status:** ✅ RESOLVED-IMPLEMENTED Pass 53 Batch 13 (schema-aligned fix using `live/sec13fchanges` Change_Share + Change_Pct columns directly, eliminating the need to join consecutive quarters; was stubbed Batch 1 2026-05-05)
 **Module:** `backtest/data/smart_money.py:429`
 **Function:** `institutional_signal`
 
