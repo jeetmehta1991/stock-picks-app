@@ -26,6 +26,7 @@ logger = logging.getLogger("phase1a_v2")
 
 from backtest.config import BACKTEST_START, BACKTEST_END, UNIVERSE, PASSING_CRITERIA
 from backtest.engine.backtest import BacktestEngine
+from backtest.signals.screener import ALL_STRATEGIES
 
 
 def validate_env():
@@ -138,7 +139,7 @@ def main():
     print("="*70)
     print(f"STAGE 2 BACKTESTING ENGINE v2 — Phase {args.phase.upper()}")
     print(f"Started: {datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')}")
-    print("60 strategies | Trailing stop exits | Circuit breakers | Long + Short")
+    print(f"{len(ALL_STRATEGIES)} strategy classes (Layer 1 baseline; full layered roster ~108-133 per CANONICAL_FACTS.md F-002) | Trailing stop exits | Circuit breakers | Long + Short")
     print("="*70)
 
     validate_env()

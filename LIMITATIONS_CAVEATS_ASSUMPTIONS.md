@@ -253,7 +253,8 @@
 
 **Source:** Pass 52 strategy-coverage redo per L125/CHECKLIST #46
 **Status:** ACTIVE (informational)
-**Caveat:** PROJECT_PLAN.md specifies 60 strategies in 7 categories (pivot 10, momentum 9, trend 9, mean reversion 11, breakout 6, candle 6, confluence 9). Code has 72 strategies. The delta is 12 short variants added per intra-pass owner approvals. **No PROJECT_PLAN drift gaps exist** — all 60 designed strategies are implemented. The 12 short variants extend scope; they don't drift.
+<!-- canonical-fact-historical: F-002 caveat documenting code-vs-PROJECT_PLAN delta — superseded by CANONICAL_FACTS.md F-002 layered roster -->
+**Caveat:** PROJECT_PLAN.md specifies 60 strategies in 7 categories (pivot 10, momentum 9, trend 9, mean reversion 11, breakout 6, candle 6, confluence 9). Code has 72 strategies. The delta is 12 short variants added per intra-pass owner approvals. **No PROJECT_PLAN drift gaps exist** — all 60 designed strategies are implemented. The 12 short variants extend scope; they don't drift. (Pass 53 update: full layered roster per CANONICAL_FACTS.md F-002 = ~108-133 classes; 100+ unique testable strategies projected.)
 **Operational impact:** Reporting that compares "designed vs implemented" strategy count should distinguish drift (none) from extension (12 short variants).
 **Forward-link:** When DEC-355-362 + DEC-350/351/352/354 + retest variants land, scope expands materially. PROJECT_PLAN should be updated to document the expansion (post-resolution work).
 
@@ -453,7 +454,8 @@ When a caveat is resolved:
 
 **Source:** DEC-081/DEC-402/DEC-403 PENDING (Pass 52)
 **Status:** ACTIVE
-**Caveat:** Sharpe daily and Sortino require per-day OHLC for every open position throughout each holding period. For 5-year backtest with avg 20-day holds and ~1000 trades per strategy, that's ~20,000 daily PnL points to track. Across 60-72 strategies, ~1.2M-1.4M data points. Manageable storage but not free.
+<!-- canonical-fact-scope: F-002 estimate cites code-current 60-72 range, not full layered roster -->
+**Caveat:** Sharpe daily and Sortino require per-day OHLC for every open position throughout each holding period. For 5-year backtest with avg 20-day holds and ~1000 trades per strategy, that's ~20,000 daily PnL points to track. Across the current code (60-72 strategy classes; full layered roster ~108-133 per CANONICAL_FACTS.md F-002 will scale this proportionally), ~1.2M-1.4M data points. Manageable storage but not free.
 **Operational impact:** Increases backtest output disk footprint by ~10-20MB per strategy. Compute cost increases proportionally to mark-to-market frequency. Acceptable tradeoff for industry-standard Sharpe/Sortino comparability.
 **Forward-link:** No resolution path needed — accepted cost of canonical metrics.
 

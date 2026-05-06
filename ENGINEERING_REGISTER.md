@@ -273,9 +273,11 @@ Implementation per Theme X4 Block 3 sequencing in AUDIT_INDEX.md.
 
 **Sub-decisions in scope:** DEC-422 (cube driver), DEC-426 (passing criteria), DEC-486/487/488 PROPOSED (post-Phase-1A gates already passed via Sprint 6.5)
 
-**Output:** Phase 1B-α backtest results across 60 strategies × dimensional cube cells
+<!-- canonical-fact-scope: F-002 Phase 1B-α uses Layer 1 baseline 60 classes; Layer 2/2D/3/4 strategies activate Phase 1C+ per F-002 -->
+**Output:** Phase 1B-α backtest results across 60 Layer 1 baseline strategies × dimensional cube cells (full layered roster ~108-133 classes activates in Phase 1C+ per CANONICAL_FACTS.md F-002)
 
-**Test signals:** Cube row count = expected (60 strategies × dimensional cells); each cell has trade_log + metrics + verdict; A/B differential analysis non-empty for cells with both arms
+<!-- canonical-fact-scope: F-002 Phase 1B-α uses Layer 1 baseline -->
+**Test signals:** Cube row count = expected (60 Layer 1 baseline strategies × dimensional cells); each cell has trade_log + metrics + verdict; A/B differential analysis non-empty for cells with both arms
 
 **Exit criteria:** Cube populated; per-strategy × per-cell verdicts produced; owner gate review completed; status flips to RESOLVED-IMPLEMENTED on owner approval
 

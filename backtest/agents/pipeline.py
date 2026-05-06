@@ -1,13 +1,24 @@
 """
 agents/pipeline.py — TradingAgents multi-agent analysis pipeline.
 
-Six agents analyse each candidate instrument:
-  1. Technical Agent     — confirms all indicator signals at exact historical date
-  2. Fundamental Agent   — earnings risk, buybacks, analyst revisions, insider/13F
-  3. Sentiment Agent     — news, congressional trades, AAII, Fear/Greed, social
-  4. Risk Agent          — yield curve, VIX, DXY, short interest, economic calendar
-  5. Bull/Bear Agents    — debate the full signal set
-  6. Decision Agent      — final combined confidence score
+Eleven active agents analyse each candidate instrument (per DEC-057 + DETAILED_PROJECT_PLAN.md
+section 2.6 + CANONICAL_FACTS.md F-001; +1 Reflection node post-decision = 12 LLM nodes total
+per propagate()):
+  1. Market Analyst              — technical / OHLCV / volume / momentum
+  2. Fundamentals Analyst        — earnings, balance sheet, insider/congressional, 13F
+  3. News Analyst                — news flow / event-driven catalysts
+  4. Bull Researcher             — long-side argument
+  5. Bear Researcher             — short / no-trade argument
+  6. Research Manager            — adjudicates Bull vs Bear debate
+  7. Trader                      — position sizing + entry/exit timing
+  8. Aggressive Risk Debater     — opportunity-cost framing
+  9. Conservative Risk Debater   — capital-preservation framing
+  10. Neutral Risk Debater       — base-rate framing
+  11. Portfolio Manager          — final synthesis (5-tier rating per F-010 → tier modifier)
+ (+1) Reflection                 — post-decision rationale storage (continuous learning)
+
+Note: prior docstring of "Six agents" reflected pre-Pattern-2 conceptual roles (Technical /
+Fundamental / Sentiment / Risk / Bull-Bear / Decision); the actual node count is 11+ per L94.
 
 Model selection per project plan section 4.10:
   Phase 1A/1B: claude-haiku  (~$0.021/analysis)
@@ -633,7 +644,7 @@ def run_full_agent_pipeline(
     portfolio_context: Optional[dict] = None,
     disable_news: bool = False,
 ) -> dict:
-    """Run all six agents for a single candidate instrument.
+    """Run the 11 active agents (per DEC-057 + CANONICAL_FACTS.md F-001) for a single candidate instrument.
     
     portfolio_context: dict with open_positions, sector_concentration,
                        existing_position_in_ticker, portfolio_drawdown_pct.

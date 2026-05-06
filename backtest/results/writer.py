@@ -325,7 +325,7 @@ footer{{text-align:center;margin-top:3rem;font-size:.75rem;color:#484f58;
         padding-top:1rem;border-top:1px solid #21262d}}
 </style></head><body>
 <h1>Backtest Report — Stage 2</h1>
-<p style="color:#8b949e;font-size:.85rem">Generated {ts} &nbsp;|&nbsp; 60 strategies &nbsp;|&nbsp; 12 exit methods &nbsp;|&nbsp; 5 improvements applied</p>
+<p style="color:#8b949e;font-size:.85rem">Generated {ts} &nbsp;|&nbsp; {n_s} strategy classes (Layer 1 baseline; full layered roster per CANONICAL_FACTS.md F-002) &nbsp;|&nbsp; 17 exit methods (per F-004) &nbsp;|&nbsp; 5 improvements applied</p>
 
 <div class="stats">
   <div class="stat"><div class="v">{n:,}</div><div class="l">Trades simulated</div></div>
@@ -357,7 +357,7 @@ footer{{text-align:center;margin-top:3rem;font-size:.75rem;color:#484f58;
     <div class="sub">Spread + gap penalty · 0.03% ETF · 0.08% large-cap · 0.15% high-vol</div></div>
   <div class="imp-card"><div class="title">Bonferroni correction</div>
     <div class="val">{bon.get('min_trades_required',200)}+ trades required</div>
-    <div class="sub">60 strategies tested · adjusted p={bon.get('adjusted_significance',0):.5f}</div></div>
+    <div class="sub">{n_s} strategy classes tested (Layer 1 baseline) · adjusted p={bon.get('adjusted_significance',0):.5f}</div></div>
 </div>
 
 <h2>Strategy performance (net of transaction costs)</h2>
@@ -377,7 +377,7 @@ Win rate degradation &gt;5% is a red flag</div>
 </tbody></table>
 
 <footer><p>Stock Picks &amp; Automated Trading System — Stage 2 &nbsp;·&nbsp; All improvements applied</p>
-<p>Point-in-time data · No look-ahead bias · 60 strategies · 12 exits · 5 regimes · 5 improvements</p></footer>
+<p>Point-in-time data · No look-ahead bias · {n_s} strategy classes (Layer 1 baseline; full roster CANONICAL_FACTS.md F-002) · 17 exits (F-004) · 4 regime types + 7 historical windows (F-006) · 5 improvements</p></footer>
 </body></html>"""
 
     with open(output_dir / "backtest_report.html", "w", encoding="utf-8") as f:

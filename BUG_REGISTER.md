@@ -53,11 +53,14 @@ The following table maps every bug in AUDIT.md to the decision(s) that reference
 | BUG-15 | `max_drawdown` uses `cumsum()` instead of compounded equity curve | DEC-458 | (see linked DEC sprint) |
 | BUG-16 | `PASSING_CRITERIA min_trades = 100` contradicts all documentation | DEC-458 | (see linked DEC sprint) |
 | BUG-17 | `run_commit.sh` full mode hangs on interactive `input()` in merge script | DEC-458 | (see linked DEC sprint) |
+<!-- canonical-fact-historical: F-002 BUG_REGISTER documents bugs that explicitly reference stale strategy-count phrasing -->
 | BUG-18 | Bonferroni correction hardcoded to 60 strategies, should be 72 | DEC-080, DEC-400, DEC-458 | (see linked DEC sprint) |
 | BUG-19 | OHLCV cache incomplete — 402 of 495 tickers only cover to 2024-12-31 | DEC-260, DEC-442, DEC-448, DEC-458 | (see linked DEC sprint) |
 | BUG-20 | Regime thresholds inconsistent between PROJECT_PLAN and config.py | DEC-458 | (see linked DEC sprint) |
 | BUG-21 | `exit_strategies.py` own `_pnl` has no borrow cost — short comparison optimistic | DEC-458 | (see linked DEC sprint) |
+<!-- canonical-fact-historical: F-002 bugs reference stale code strings now corrected via CANONICAL_FACTS.md alignment -->
 | BUG-22 | `run_phase1a.py` header prints "60 strategies" | DEC-458 | (see linked DEC sprint) |
+<!-- canonical-fact-historical: F-002 same as above -->
 | BUG-23 | `screener.py` docstring says "60 strategies across 7 categories" | DEC-458 | (see linked DEC sprint) |
 | BUG-24 | CHECKLIST item 13c says "review ALL agent outputs" — not applicable for no-agent | DEC-458 | (see linked DEC sprint) |
 | BUG-25 | `run_tests.sh` does not pass `--no-agents` flag | DEC-458 | (see linked DEC sprint) |
@@ -101,6 +104,7 @@ The following table maps every bug in AUDIT.md to the decision(s) that reference
 | BUG-63 | MEDIUM — Email approval system has 6 critical design gaps not addressed in PROJE | DEC-458 | (see linked DEC sprint) |
 | BUG-64 | MEDIUM — Phase 1C prerequisites not documented — Unusual Whales and Ortex integr | DEC-458 | (see linked DEC sprint) |
 | BUG-65 | MEDIUM — Strategy retirement rule statistically invalid at realistic live trade  | DEC-458 | (see linked DEC sprint) |
+<!-- canonical-fact-historical: F-002 documents PROJECT_PLAN drift — superseded by CANONICAL_FACTS.md F-002 layered roster -->
 | BUG-66 | MEDIUM — PROJECT_PLAN mentions "60 strategies" 11 times — 9 of 12 new short stra | DEC-458 | (see linked DEC sprint) |
 | BUG-67 | MEDIUM — Alpaca paper trading (Stage 3) does not match IBKR live trading (Stage  | DEC-458 | (see linked DEC sprint) |
 | BUG-68 | MEDIUM — CLAUDE.md missing 5 critical recent decisions | DEC-458 | (see linked DEC sprint) |

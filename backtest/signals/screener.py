@@ -1,7 +1,12 @@
 """
-signals/screener.py — All 60 strategies with entry zone logic and regime filter.
+signals/screener.py — All Layer 1 baseline 60 strategy classes (per CANONICAL_FACTS.md F-002 Layer 1) with entry zone logic and regime filter.
 
-60 strategies across 7 categories:
+Note: This file implements the Layer 1 baseline. Layer 2 (Phase 0.D ICT/Earnings/Calendar),
+Layer 2D (form-derived ICT), Layer 3 (Pass 52 RESOLVED chart-pattern + categories), and
+Layer 4 (PENDING strategy-additive) are scheduled per AUDIT_INDEX DEC-045/259/355-362/367-371.
+Full layered roster: ~108-133 classes per CANONICAL_FACTS.md F-002.
+
+60 baseline classes across 7 categories:
   Pivot-based      (10): S1-S3 bounces, R1-R2 breakouts, CPR bias,
                          Camarilla S3/R3, prev day high/low
   Momentum         ( 9): MACD (2 sets), Hull+RSI, Williams%R, ROC,
@@ -797,7 +802,11 @@ def strat_cpr_narrow_momentum_short(s):
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# STRATEGY REGISTRY — all 72 strategies
+# STRATEGY REGISTRY — Layer 1 baseline 60 + currently-implemented dedicated shorts
+# (full layered roster ~108-133 classes per CANONICAL_FACTS.md F-002; layered
+#  roster: Layer 1 baseline 60 + Layer 2 Phase 0.D ICT/Earnings/Calendar + Layer 2D
+#  form-derived ICT + Layer 3 Pass 52 RESOLVED chart-pattern/categories + Layer 4
+#  PENDING strategy-additive). Run `len(ALL_STRATEGIES)` for current count.
 # ─────────────────────────────────────────────────────────────────────────────
 
 ALL_STRATEGIES = {

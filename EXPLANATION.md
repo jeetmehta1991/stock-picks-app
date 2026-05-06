@@ -313,7 +313,7 @@ ATR = Average True Range = how much the stock normally moves per day. A 1.0× AT
 ## What is the agent pipeline in Phase 1B vs Phase 1C?
 
 **Phase 1B (current — NO agents, $0 cost):**
-- All 72 strategies screen every ticker every day
+- All Layer 1 baseline 60 + Layer 2/2D/3/4 strategies screen every ticker every day (full layered roster ~108-133 classes; 100+ unique testable strategies projected — see [CANONICAL_FACTS.md F-002](CANONICAL_FACTS.md))
 - Three-state evaluation: long / short / avoid
 - Preliminary tier assigned by rule (how many strategies fired)
 - Trade opens at preliminary tier size
@@ -332,7 +332,7 @@ ATR = Average True Range = how much the stock normally moves per day. A 1.0× AT
 
 ## What is Phase 1B trying to prove?
 
-Phase 1B runs all 72 strategies on all 509 tickers from January 2022 to March 2026. The goal is to answer: **"Which strategies have statistically valid edge?"**
+Phase 1B runs the full layered strategy roster (Layer 1 baseline 60 + Layer 2 Phase 0.D ICT/Earnings/Calendar + Layer 2D form-derived ICT + Layer 3 Pass 52 RESOLVED chart-pattern/categories + Layer 4 PENDING ≈ ~108-133 classes; 100+ unique testable strategies projected — see [CANONICAL_FACTS.md F-002](CANONICAL_FACTS.md)) on the full 5-bucket universe (~1,937 unique tickers per [F-005](CANONICAL_FACTS.md)) across the walk-forward window (1y warmup + 4 OOS folds × 1y per [DEC-505](AUDIT_INDEX.md)). The goal is to answer: **"Which strategies have statistically valid edge?"**
 
 A strategy passes Phase 1B if it meets ALL 10 criteria across enough trades:
 1. Win rate ≥ 55% (more than half the trades win)
@@ -358,9 +358,9 @@ A strategy passes Phase 1B if it meets ALL 10 criteria across enough trades:
 ## What does the full run need to look like?
 
 **Phase 1B full run plan:**
-- 72 strategies (long + short + avoid)
-- 509 tickers
-- Jan 2022 – March 2026 (4+ years)
+- Full layered strategy roster (~108-133 classes per [F-002](CANONICAL_FACTS.md); long + short + avoid variants)
+- 5-bucket universe ~1,937 unique tickers per [F-005](CANONICAL_FACTS.md) (T1a/T1c/T1ETF/T2/T3 with DEC-504 multi-tier precedence)
+- Walk-forward window: 1y warmup + 4 OOS folds × 1y per [DEC-505](AUDIT_INDEX.md) (Polygon Stocks Starter 5y rolling cap)
 - NO agents ($0 cost)
 - 5 parallel batches on laptop
 - Estimated time: 15-20 hours

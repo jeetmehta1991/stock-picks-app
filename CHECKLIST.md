@@ -703,7 +703,7 @@ State compliance visibly: "Checklist: ✅ [each item]"
     - **Integration** — module-to-module data flow (e.g., fetcher → cache → signals → screener)
     - **System** — end-to-end workflow (full prefetch → universe load → backtest → report)
     - **Functional** — feature behavior matches spec
-    - **Regression** — full `backtest/tests/test_unit.py` + `backtest/tests/test_integration.py` (36/36 must pass)
+    - **Regression** — full `backtest/tests/test_unit.py` + `backtest/tests/test_integration.py` (all tests must pass; current count ~102 and grows over time — run `pytest -q` to verify; see [CANONICAL_FACTS.md F-007](CANONICAL_FACTS.md))
     - **Data integrity** — schema validation, PIT semantics, completeness gates
     - **Performance / load** — for prefetch + heavy-data code (rate-limit handling, memory bounds, wall-time budgets)
     - **Acceptance** — owner-defined pass criteria for the specific change

@@ -1637,7 +1637,7 @@ Per Pass 53 owner directive 2026-05-05: every code push (Sprint 0A and beyond) m
 - **Integration** — module-to-module data flow (fetcher → cache → signals → screener)
 - **System** — end-to-end (full prefetch → universe load → backtest → report)
 - **Functional** — feature behavior matches spec
-- **Regression** — full `backtest/tests/test_unit.py` + `test_integration.py` (36/36 must pass)
+- **Regression** — full `backtest/tests/test_unit.py` + `test_integration.py` (all tests must pass; current count ~102 and grows over time — run `pytest -q` to verify; see [CANONICAL_FACTS.md F-007](CANONICAL_FACTS.md))
 - **Data integrity** — schema validation, PIT semantics, completeness gates
 - **Performance / load** — for prefetch + heavy-data code (rate limits, memory, wall-time budgets)
 - **Acceptance** — owner-defined pass criteria for the change
