@@ -625,7 +625,12 @@ class BacktestEngine:
         bonferroni = bonferroni_adjusted_threshold(60)
         logger.info("Bonferroni: %s", bonferroni["recommendation"])
 
-        # Exit comparison
+        # Exit comparison (DEC-422 cube + DEC-067 17-method counterfactual)
+        # Pass 53 Day-9-evening 2026-05-07 owner directive: all 4 tiers of
+        # exit-analysis context propagated per DEC-594 same-commit. ~25 columns
+        # added to trade_exit_detail.csv via entry_context dict per trade.
+        from backtest.engine.exit_context import build_entry_context
+
         exit_frames = []
         trade_detail_frames = []
         for strategy in df_trades["strategy"].unique():
@@ -643,14 +648,27 @@ class BacktestEngine:
                 sig = row.get("signals_at_entry", {})
                 atr = (sig.get("atr", row["entry_price"] * 0.02)
                        if isinstance(sig, dict) else row["entry_price"] * 0.02)
+
+                # Build per-trade context dict (Tiers 1-4) for trade_exit_detail
+                entry_context = build_entry_context(
+                    row=row,
+                    ticker=ticker,
+                    entry_date=entry_date,
+                    df_full=df_full,
+                    spy_df=self.spy_df,
+                    signals=sig if isinstance(sig, dict) else {},
+                    atr=atr,
+                )
+
                 trades_data.append({
-                    "ticker":      ticker,
-                    "df":          df_full,
-                    "entry_date":  entry_date,
-                    "entry_price": row["entry_price"],
-                    "direction":   row["direction"],
-                    "atr":         atr,
-                    "signals":     sig if isinstance(sig, dict) else {},
+                    "ticker":         ticker,
+                    "df":             df_full,
+                    "entry_date":     entry_date,
+                    "entry_price":    row["entry_price"],
+                    "direction":      row["direction"],
+                    "atr":            atr,
+                    "signals":        sig if isinstance(sig, dict) else {},
+                    "entry_context":  entry_context,  # dict with Tier 1-4 fields
                 })
             if trades_data:
                 ec, td = run_exit_comparison(strategy, trades_data)

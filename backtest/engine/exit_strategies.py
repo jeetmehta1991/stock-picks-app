@@ -500,8 +500,9 @@ def run_exit_comparison(
                 win_list.append(r["win"])
                 hold_list.append(r["hold_days"])
 
-                # Per-trade detail row
-                trade_detail_rows.append({
+                # Per-trade detail row + Pass 53 Day-9-evening Tier 1-4 context
+                # (DEC-594 same-commit; ~25 columns added per owner directive)
+                row = {
                     "ticker":       t.get("ticker", ""),
                     "strategy":     strategy_name,
                     "entry_date":   str(t["entry_date"]),
@@ -513,7 +514,12 @@ def run_exit_comparison(
                     "hold_days":    r["hold_days"],
                     "exit_price":   round(r.get("exit_price", t["entry_price"]), 4),
                     "exit_date":    str(r.get("exit_date", "")),
-                })
+                }
+                # Propagate entry_context (Tiers 1-4) — see exit_context.py
+                ctx = t.get("entry_context")
+                if isinstance(ctx, dict):
+                    row.update(ctx)
+                trade_detail_rows.append(row)
             except Exception as exc:
                 logger.debug("Exit %s on %s: %s", exit_name, strategy_name, exc)
 

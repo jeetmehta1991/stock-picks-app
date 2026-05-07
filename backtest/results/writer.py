@@ -118,11 +118,37 @@ def write_all_outputs(
 
     if trade_exit_detail is not None and not trade_exit_detail.empty:
         trade_exit_detail.to_csv(output_dir / "trade_exit_detail.csv", index=False)
-        logger.info("Wrote trade_exit_detail.csv — %d rows (%d trades × exits)",
+        logger.info("Wrote trade_exit_detail.csv — %d rows (%d trades × exits; %d cols incl Tier 1-4 context)",
                     len(trade_exit_detail),
-                    trade_exit_detail["ticker"].count() if "ticker" in trade_exit_detail.columns else 0)
+                    trade_exit_detail["ticker"].count() if "ticker" in trade_exit_detail.columns else 0,
+                    len(trade_exit_detail.columns))
         best.to_csv(output_dir / "exit_strategy_best.csv", index=False)
         logger.info("Wrote exit_strategy_comparison.csv + exit_strategy_best.csv")
+
+        # Pass 53 Day-9-evening 2026-05-07 owner directive: emit per-dimension
+        # aggregations of trade_exit_detail for direct exit-method analysis by
+        # strategy × regime × sector × cap × vol × hold-band × universe-tier ×
+        # smart-money × etc. Each aggregate file: groupby (strategy, exit_method, dim)
+        # with n / win_rate / avg_pnl_pct / total_pnl_pct.
+        from backtest.engine.exit_context import CONTEXT_COLUMN_NAMES
+        for dim in CONTEXT_COLUMN_NAMES:
+            if dim not in trade_exit_detail.columns:
+                continue
+            try:
+                agg = (trade_exit_detail.groupby(
+                            ["strategy", "exit_method", dim], dropna=False
+                        ).agg(
+                            n=("pnl_pct", "size"),
+                            win_rate=("win", "mean"),
+                            avg_pnl_pct=("pnl_pct", "mean"),
+                            total_pnl_pct=("pnl_pct", "sum"),
+                        ).reset_index())
+                agg.to_csv(
+                    output_dir / f"exit_by_{dim}.csv", index=False,
+                )
+            except Exception as exc:
+                logger.debug("exit_by_%s aggregate failed: %s", dim, exc)
+        logger.info("Wrote exit_by_<dim>.csv aggregates for %d Tier 1-4 dimensions", len(CONTEXT_COLUMN_NAMES))
 
     # ── Walk-forward validation ──
     # Portfolio-level summary with tier-based position sizing
