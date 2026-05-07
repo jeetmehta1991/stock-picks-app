@@ -609,11 +609,24 @@ PREFETCH_SEC_EDGAR_DIR = _REPO_ROOT / "data_prefetch" / "sec_edgar"
 
 # EDGAR form-type → subdirectory mapping. Form names with spaces become
 # underscored on disk (e.g., "8-K" → "8_K", "SC 13D" → "SC_13D").
+# Pass 53 Day-9 v8h Tier B1-B4 expansion: 10-K, 10-Q, DEF 14A, S-1, S-1/A,
+# SC 13D/A, SC 13G/A added.
 SEC_EDGAR_FORM_DIRS = {
-    "4":     "4",
-    "8-K":   "8_K",
-    "SC 13D": "SC_13D",
-    "SC 13G": "SC_13G",
+    "4":        "4",
+    "8-K":      "8_K",
+    "SC 13D":   "SC_13D",
+    "SC 13G":   "SC_13G",
+    # Tier B1: annual + quarterly reports
+    "10-K":     "10_K",
+    "10-Q":     "10_Q",
+    # Tier B2: proxy statements
+    "DEF 14A":  "DEF_14A",
+    # Tier B3: IPO registration + amendments
+    "S-1":      "S_1",
+    "S-1/A":    "S_1_A",
+    # Tier B4: beneficial-ownership amendments
+    "SC 13D/A": "SC_13D_A",
+    "SC 13G/A": "SC_13G_A",
 }
 
 

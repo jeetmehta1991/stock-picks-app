@@ -29,9 +29,36 @@ def write_all_outputs(
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    # ── Trade log ──
-    df_trades.to_csv(output_dir / "trade_log.csv", index=False)
-    logger.info("Wrote trade_log.csv (%d trades)", len(df_trades))
+    # ── Trade log ── DEC-491 (Pass 53 Sprint 2): hybrid Parquet + CSV.
+    # Parquet is the canonical format (preserves nested dict/list types in
+    # signals_at_entry, agent_reasoning, context_bullets — DEC-492 coupling).
+    # CSV preserved for human inspection / diffing; complex columns get
+    # JSON-stringified, lossy on read but readable for owner inspection.
+    if not df_trades.empty:
+        try:
+            df_trades.to_parquet(output_dir / "trade_log.parquet", index=False)
+            logger.info("Wrote trade_log.parquet (%d trades; nested types preserved)",
+                        len(df_trades))
+        except Exception as exc:
+            # Fall back to CSV-only if Parquet write fails (rare; usually
+            # mixed-type columns)
+            logger.warning("trade_log.parquet write failed (%s); CSV only", exc)
+        # CSV (legacy / human-readable). Stringify complex columns first.
+        df_csv = df_trades.copy()
+        for col in df_csv.columns:
+            if df_csv[col].dtype == "object":
+                # Check if any non-null cell is dict/list — stringify only those columns
+                sample = df_csv[col].dropna().head(5)
+                if any(isinstance(v, (dict, list)) for v in sample):
+                    import json
+                    df_csv[col] = df_csv[col].apply(
+                        lambda v: json.dumps(v, default=str) if isinstance(v, (dict, list)) else v
+                    )
+        df_csv.to_csv(output_dir / "trade_log.csv", index=False)
+        logger.info("Wrote trade_log.csv (%d trades)", len(df_trades))
+    else:
+        df_trades.to_csv(output_dir / "trade_log.csv", index=False)
+        logger.info("Wrote trade_log.csv (0 trades)")
 
     # ── Backtest results ──
     if not metrics.empty:

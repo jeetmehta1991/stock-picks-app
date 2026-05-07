@@ -424,3 +424,81 @@ def get_ticker_change_history(ticker: str) -> list[dict]:
     except Exception as exc:
         logger.debug("get_ticker_change_history(%s): %s", ticker, exc)
         return []
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Pass 53 Day-9 v8h Tier D — Polygon static / snapshot / reference_meta
+# ─────────────────────────────────────────────────────────────────────────────
+
+def get_polygon_snapshot(direction: str = "gainers") -> pd.DataFrame:
+    """Tier D1 — current-day snapshot of universe-wide gainers/losers.
+
+    Source: data_prefetch/polygon/snapshot/{direction}.parquet
+    direction: 'gainers' or 'losers'.
+
+    .. WARNING:: NO PIT DIMENSION
+       Snapshot is current-state only; not historical. Use only for live/
+       paper-trading triage, never for backtest decisions.
+    """
+    path = Path(__file__).parent.parent.parent / "data_prefetch" / "polygon" / "snapshot" / f"{direction}.parquet"
+    if not path.exists():
+        return pd.DataFrame()
+    try:
+        return pd.read_parquet(path)
+    except Exception as exc:
+        logger.debug("get_polygon_snapshot(%s): %s", direction, exc)
+        return pd.DataFrame()
+
+
+def get_market_status() -> dict:
+    """Tier D2 — current Polygon market status (open/closed/extended-hours).
+
+    Source: data_prefetch/polygon/market_status/now.parquet
+    Single-row snapshot. Use to gate live-trading decisions; ignored in backtest.
+    """
+    path = Path(__file__).parent.parent.parent / "data_prefetch" / "polygon" / "market_status" / "now.parquet"
+    if not path.exists():
+        return {}
+    try:
+        df = pd.read_parquet(path)
+        if df.empty:
+            return {}
+        return df.iloc[0].to_dict()
+    except Exception as exc:
+        logger.debug("get_market_status: %s", exc)
+        return {}
+
+
+def get_upcoming_holidays() -> pd.DataFrame:
+    """Tier D2 — upcoming market-holiday calendar.
+
+    Source: data_prefetch/polygon/market_status/upcoming_holidays.parquet
+    Useful for gating earnings-blackout (DEC-518) edge cases on holiday-shifted
+    calendars. Schema: date / exchange / status / open / close.
+    """
+    path = Path(__file__).parent.parent.parent / "data_prefetch" / "polygon" / "market_status" / "upcoming_holidays.parquet"
+    if not path.exists():
+        return pd.DataFrame()
+    try:
+        return pd.read_parquet(path)
+    except Exception as exc:
+        logger.debug("get_upcoming_holidays: %s", exc)
+        return pd.DataFrame()
+
+
+def get_polygon_reference_meta(kind: str = "exchanges") -> pd.DataFrame:
+    """Tier D3 — Polygon static reference data.
+
+    Source: data_prefetch/polygon/reference_meta/{kind}.parquet
+    kind: 'exchanges' (52 rows), 'conditions' (130 rows), 'ticker_types' (25 rows).
+
+    Used for cross-reference / validation; not signal-generating.
+    """
+    path = Path(__file__).parent.parent.parent / "data_prefetch" / "polygon" / "reference_meta" / f"{kind}.parquet"
+    if not path.exists():
+        return pd.DataFrame()
+    try:
+        return pd.read_parquet(path)
+    except Exception as exc:
+        logger.debug("get_polygon_reference_meta(%s): %s", kind, exc)
+        return pd.DataFrame()

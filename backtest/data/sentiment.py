@@ -551,3 +551,57 @@ def get_search_attention(ticker: str, as_of: date,
     except Exception as exc:
         logger.debug("get_search_attention(%s): %s", ticker, exc)
         return default
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Pass 53 Day-9 v8h Tier C3 — CFTC additional contracts
+# ─────────────────────────────────────────────────────────────────────────────
+# Existing single-contract `get_cot_emini_sp500()` extended with generic
+# loader covering 19 contracts (TFF + DCOT). Filenames follow
+# data_prefetch/cftc/cot_<slug>.parquet pattern.
+
+CFTC_CONTRACT_SLUGS = frozenset({
+    # Equity indices
+    "emini_sp500", "emini_nasdaq100", "emini_russell2k", "emini_dow",
+    "vix_futures",
+    # Rates (INV-011 fix: real names UST 10Y NOTE etc.)
+    "treasury_10y", "treasury_5y", "treasury_2y", "ust_bond",
+    "ultra_treasury", "fed_funds_30d",
+    # Currencies
+    "dxy_dollar_idx", "eur_usd", "jpy_usd",
+    # Commodities
+    "wti_crude", "gold", "silver", "natural_gas", "copper",
+})
+
+
+def get_cftc_cot(contract_slug: str, as_of: Optional[date] = None) -> pd.DataFrame:
+    """Load CFTC Commitments-of-Traders data for a contract slug (PIT-aware).
+
+    Source: ``data_prefetch/cftc/cot_<contract_slug>.parquet``
+
+    Args:
+        contract_slug: one of CFTC_CONTRACT_SLUGS (e.g. 'vix_futures',
+            'treasury_10y', 'gold').
+        as_of: if provided, returns rows with report_date <= as_of (PIT cutoff).
+            CFTC reports are released weekly with a 3-day lag from Tuesday
+            close; for strict PIT correctness consumer should subtract 3 days
+            from as_of when filtering.
+
+    Returns DataFrame or empty if contract not found.
+    """
+    if contract_slug not in CFTC_CONTRACT_SLUGS:
+        logger.debug("get_cftc_cot: unknown contract slug '%s'", contract_slug)
+        return pd.DataFrame()
+    path = _REPO_ROOT_SENT / "data_prefetch" / "cftc" / f"cot_{contract_slug}.parquet"
+    if not path.exists():
+        return pd.DataFrame()
+    try:
+        df = pd.read_parquet(path)
+        if as_of is not None and "report_date" in df.columns:
+            df = df.copy()
+            df["report_date"] = pd.to_datetime(df["report_date"], errors="coerce")
+            df = df[df["report_date"] <= pd.Timestamp(as_of)]
+        return df
+    except Exception as exc:
+        logger.debug("get_cftc_cot(%s): %s", contract_slug, exc)
+        return pd.DataFrame()

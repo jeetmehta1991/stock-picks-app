@@ -461,6 +461,10 @@ class BacktestEngine:
                             (float(etf_today["close"].iloc[-1]) /
                              float(etf_prev["close"].iloc[-1]) - 1) * 100, 3)
 
+                # DEC-493 (Pass 53 Sprint 2): assign unique trade_id at entry.
+                from backtest.engine.exit_manager import make_trade_id
+                _tid = make_trade_id(ticker, as_of, strat_entry["strategy"],
+                                     direction=direction)
                 trade = OpenTrade(
                     ticker=ticker,
                     entry_date=as_of,
@@ -468,14 +472,19 @@ class BacktestEngine:
                     direction=direction,
                     strategy=strat_entry["strategy"],
                     category=category,
+                    trade_id=_tid,
                     sector=sector,
                     initial_stop=round(init_stop, 4),
                     trailing_stop=round(init_stop, 4),
                     highest_close=entry_price,
                     regime_at_entry=f"{regime}{'_CRISIS_FLAG' if crisis_flag else ''}",
+                    # DEC-492 (Pass 53 Sprint 2): filter REMOVED. Pre-fix kept
+                    # only (bool, int, float) types, dropping all string/list
+                    # signals (e.g. categorical regime tags, signal-list
+                    # arrays). Now preserves all signal types — Parquet
+                    # serialization (DEC-491) handles nested dicts/lists.
                     signals_at_entry={
-                        **{k: v for k, v in cand["signals"].items()
-                           if isinstance(v, (bool, int, float))},
+                        **cand["signals"],
                         "sector_etf": sector_etf,
                         "sector_etf_return_pct": sector_etf_return,
                         "sector": sector,

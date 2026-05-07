@@ -115,7 +115,28 @@ Format per entry:
 
 ---
 
+## INV-012 — Most Tier B5-B10 Quiver endpoints don't exist in public API
+
+- **Discovered:** 2026-05-07 (Pass 53 Day-9 v8h endpoint discovery)
+- **Observation:** Direct API probing of Quiver Trader endpoints I had assumed existed:
+  - 404: `historical/iposcalendar`, `historical/spacs`, `historical/optionsflow/{ticker}`, `historical/earningsbeats/{ticker}`, `historical/dividends/{ticker}`, `historical/splits/{ticker}`
+  - 200 but 0 records: `historical/twitter/AAPL`
+  - 200 with sparse current data: `live/spacs` (2 records), `live/twitter` (1 record)
+- **Why not blocking:** These were aspirational endpoints from PREFETCH_COVERAGE_AUDIT.md Tier B5-B10. Their absence means we proceed with current Quiver coverage (16 datasets prefetched). Equivalent signals available from other sources:
+  - Dividends/splits: Polygon (already prefetched)
+  - Twitter sentiment: skip (Quiver feed empty); could build via X API direct in Phase 1B+ if needed
+  - Options flow: would require Polygon Options subscription (Stocks Starter doesn't include)
+  - IPO calendar: Polygon `/v3/reference/tickers` filtered by list_date in last 90d (derivable from existing ref prefetch)
+- **Status:** resolved — endpoints unavailable; PREFETCH_COVERAGE_AUDIT.md Tier B5-B10 marked as "not available" rather than queued
+- **Next action:** update PREFETCH_COVERAGE_AUDIT.md with this discovery + remove Tier B5-B10 from active queue
+
+---
+
 ## INV-011 — CFTC Treasury contract names different in TFF dataset
+
+**Status update 2026-05-07 evening:** RESOLVED via commit `c236105c`. Real
+contract names: `UST 10Y NOTE` / `UST 5Y NOTE` / `UST 2Y NOTE` / `UST BOND`
+/ `ULTRA UST BOND` / `DJIA x $5`. CFTC coverage now 19/20.
 
 - **Discovered:** 2026-05-07 (Pass 53 Day-9 v8h Tier C3 CFTC prefetch)
 - **Observation:** Tried to fetch CFTC TFF positioning for "10-YEAR U.S. TREASURY NOTES" / "5-YEAR" / "2-YEAR" / "ULTRA U.S. TREASURY BONDS" / "E-MINI DJIA (X $5)" — all returned 0 rows. Other contracts (e-mini SP500, NDX, RUT, VIX, fed funds, currencies, commodities) all worked fine.

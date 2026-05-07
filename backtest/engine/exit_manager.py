@@ -29,6 +29,25 @@ from backtest.config import CIRCUIT_BREAKERS, TRAILING_STOP
 logger = logging.getLogger(__name__)
 
 
+def make_trade_id(ticker: str, entry_date: date, strategy: str,
+                    direction: str = "long", seq: int = 0) -> str:
+    """DEC-493 — generate a time-ordered, human-readable trade_id.
+
+    Format: ``T-{TICKER}-{YYYY-MM-DD}-{STRATEGY}-{DIR}-{SEQ}``
+
+    Sortable lexicographically. Collision-free for unique
+    (ticker, entry_date, strategy, direction) within a single backtest. The
+    optional ``seq`` field disambiguates the rare case of multiple identical
+    entries on the same bar (e.g. signal re-fires). Phase 1B+ may add a
+    secondary uuid4 field for cross-table joins; Phase 1A baseline uses this
+    composite.
+    """
+    safe_ticker = str(ticker).replace(".", "_")
+    safe_strategy = str(strategy).replace(" ", "_").replace("/", "_")[:32]
+    safe_dir = "L" if direction == "long" else "S"
+    return f"T-{safe_ticker}-{entry_date}-{safe_strategy}-{safe_dir}-{seq}"
+
+
 @dataclass
 class OpenTrade:
     """Represents a live open trade being managed by the exit manager."""
@@ -44,6 +63,8 @@ class OpenTrade:
     highest_close:      float         # highest close seen (long) / lowest (short)
     regime_at_entry:    str
     conversion_pair_id: Optional[str] = None
+    # DEC-493 (Pass 53 Sprint 2): unique trade_id field
+    trade_id:           Optional[str] = None
     circuit_breaker_triggered: Optional[int] = None
     signals_at_entry:   dict = field(default_factory=dict)
     context_bullets:    list = field(default_factory=list)
@@ -133,6 +154,8 @@ class ClosedTrade:
     aaii_signal:          str = "neutral"
     cnn_fg_score:         float = 50.0
     cnn_fg_label:         str = "Neutral"
+    # DEC-493 (Pass 53 Sprint 2): unique trade_id propagated from OpenTrade
+    trade_id:             Optional[str] = None
 
 
 def _pnl(entry, exit_p, direction, hold_days=0):
@@ -402,6 +425,8 @@ def close_trade(
         aaii_signal=trade.aaii_signal,
         cnn_fg_score=trade.cnn_fg_score,
         cnn_fg_label=trade.cnn_fg_label,
+        # DEC-493 (Pass 53 Sprint 2): propagate trade_id from OpenTrade
+        trade_id=trade.trade_id,
     )
 
 
