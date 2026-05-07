@@ -84,6 +84,45 @@ def _fred_series(series_id: str, start: date, end: date,
             s.name = series_id
             return s
 
+    # Pass 53 Day-9 v8c G9 fix (L146): if vintage requested via as_of, prefer
+    # the prefetched ALFRED parquet at data_prefetch/alfred/{series_id}.parquet
+    # over a live API call. This honors DEC-497 NO-LIVE-API HARD CUT for Stage 2
+    # backtest while still providing PIT-correct vintage data per DEC-301.
+    if as_of is not None:
+        from pathlib import Path as _Path
+        _alfred_root = _Path(__file__).parent.parent.parent / "data_prefetch" / "alfred"
+        alfred_path = _alfred_root / f"{series_id}.parquet"
+        if alfred_path.exists():
+            try:
+                df = pd.read_parquet(alfred_path)
+                # ALFRED schema: series_id / date / realtime_start / realtime_end / value
+                if {"date", "realtime_start", "realtime_end", "value"}.issubset(df.columns):
+                    df["date"] = pd.to_datetime(df["date"])
+                    df["realtime_start"] = pd.to_datetime(df["realtime_start"])
+                    df["realtime_end"] = pd.to_datetime(df["realtime_end"])
+                    # Vintage filter: pick observations whose realtime_start ≤ as_of ≤ realtime_end
+                    as_of_ts = pd.Timestamp(as_of)
+                    vint = df[(df["realtime_start"] <= as_of_ts)
+                               & (df["realtime_end"] >= as_of_ts)]
+                    # Keep most-recent vintage per date if multiple
+                    vint = (vint.sort_values("realtime_start")
+                                 .drop_duplicates(subset=["date"], keep="last"))
+                    mask = (vint["date"] >= pd.Timestamp(start)) & \
+                           (vint["date"] <= pd.Timestamp(end))
+                    sliced = vint[mask]
+                    if not sliced.empty:
+                        s = pd.Series(
+                            sliced["value"].values,
+                            index=pd.DatetimeIndex(sliced["date"]),
+                            name=series_id,
+                        )
+                        logger.debug("ALFRED cache hit: %s vintage as_of %s "
+                                     "(%d obs)", series_id, as_of, len(s))
+                        return s
+            except Exception as exc:
+                logger.debug("ALFRED parquet read failed for %s: %s — "
+                             "falling through to live API", series_id, exc)
+
     if FRED_KEY:
         try:
             params = {

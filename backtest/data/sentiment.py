@@ -42,19 +42,41 @@ _AAII_DF: Optional[pd.DataFrame] = None
 
 
 def _load_aaii() -> pd.DataFrame:
+    """Load AAII weekly sentiment.
+
+    Pass 53 Day-9 v8c G2 fix (L146 wiring): Sprint 0A canonical path
+    ``data_prefetch/aaii/weekly_sentiment.parquet`` is preferred (auto-refreshed
+    via GH Actions); legacy CSV ``backtest/data/aaii_sentiment.csv`` is fallback
+    for backwards-compat. Schemas match exactly: date / bullish / neutral /
+    bearish / bull_bear_spread.
+    """
     global _AAII_DF
     if _AAII_DF is not None:
         return _AAII_DF
+    repo_root = Path(__file__).parent.parent.parent
+    parquet_path = repo_root / "data_prefetch" / "aaii" / "weekly_sentiment.parquet"
     csv_path = DATA_DIR / "aaii_sentiment.csv"
-    if csv_path.exists():
+    df = None
+    if parquet_path.exists():
+        try:
+            df = pd.read_parquet(parquet_path)
+            df["date"] = pd.to_datetime(df["date"])
+            logger.info("AAII: loaded %d weekly readings from Sprint 0A parquet",
+                        len(df))
+        except Exception as exc:
+            logger.warning("AAII parquet read failed (%s); falling back to CSV", exc)
+            df = None
+    if df is None and csv_path.exists():
         df = pd.read_csv(csv_path, parse_dates=["date"])
-        df = df.rename(columns={"date": "survey_date", "bullish": "bullish_pct",
-                                 "bearish": "bearish_pct", "neutral": "neutral_pct"})
-        _AAII_DF = df.sort_values("survey_date").reset_index(drop=True)
-        logger.info("AAII: loaded %d weekly readings from CSV", len(_AAII_DF))
-    else:
-        logger.warning("AAII CSV not found — using empty dataset")
-        _AAII_DF = pd.DataFrame(columns=["survey_date","bullish_pct","bearish_pct","neutral_pct"])
+        logger.info("AAII: loaded %d weekly readings from legacy CSV", len(df))
+    if df is None:
+        logger.warning("AAII not found at parquet OR CSV — using empty dataset")
+        _AAII_DF = pd.DataFrame(columns=["survey_date","bullish_pct",
+                                          "bearish_pct","neutral_pct"])
+        return _AAII_DF
+    df = df.rename(columns={"date": "survey_date", "bullish": "bullish_pct",
+                             "bearish": "bearish_pct", "neutral": "neutral_pct"})
+    _AAII_DF = df.sort_values("survey_date").reset_index(drop=True)
     return _AAII_DF
 
 
@@ -111,17 +133,55 @@ _CNN_DF: Optional[pd.DataFrame] = None
 
 
 def _load_cnn() -> pd.DataFrame:
+    """Load CNN Fear & Greed daily readings.
+
+    Pass 53 Day-9 v8c G3 review (L146): Sprint 0A canonical path
+    ``data_prefetch/cnn_fg/daily.parquet`` only has ~253 rows (~1 year, 2025-05+)
+    because CNN's API has limited history. Legacy CSV
+    ``backtest/data/cnn_fear_greed.csv`` has 1630 daily readings (2020-2026)
+    built from CNN archives + interpolation, providing complete backtest history.
+    Reads CSV (canonical for backtest), then merges any newer parquet rows.
+    """
     global _CNN_DF
     if _CNN_DF is not None:
         return _CNN_DF
+    repo_root = Path(__file__).parent.parent.parent
+    parquet_path = repo_root / "data_prefetch" / "cnn_fg" / "daily.parquet"
     csv_path = DATA_DIR / "cnn_fear_greed.csv"
+
+    df_csv = None
     if csv_path.exists():
-        df = pd.read_csv(csv_path, parse_dates=["date"])
-        df = df.rename(columns={"date": "reading_date"})
-        _CNN_DF = df.sort_values("reading_date").reset_index(drop=True)
-        logger.info("CNN F&G: loaded %d daily readings from CSV", len(_CNN_DF))
+        df_csv = pd.read_csv(csv_path, parse_dates=["date"])
+        df_csv = df_csv.rename(columns={"date": "reading_date"})
+
+    df_parquet = None
+    if parquet_path.exists():
+        try:
+            tmp = pd.read_parquet(parquet_path)
+            if "date" in tmp.columns:
+                tmp["reading_date"] = pd.to_datetime(tmp["date"])
+            tmp = tmp.rename(columns={"rating": "label"})
+            df_parquet = tmp[["reading_date", "score", "label"]].copy()
+        except Exception as exc:
+            logger.debug("CNN parquet read skipped (%s); using CSV only", exc)
+
+    if df_csv is not None and df_parquet is not None:
+        # CSV has full history; parquet has any newer rows
+        max_csv = df_csv["reading_date"].max()
+        newer = df_parquet[df_parquet["reading_date"] > max_csv]
+        merged = pd.concat([df_csv, newer], ignore_index=True)
+        _CNN_DF = merged.sort_values("reading_date").reset_index(drop=True)
+        logger.info("CNN F&G: %d CSV + %d newer parquet rows = %d total",
+                    len(df_csv), len(newer), len(_CNN_DF))
+    elif df_csv is not None:
+        _CNN_DF = df_csv.sort_values("reading_date").reset_index(drop=True)
+        logger.info("CNN F&G: loaded %d daily readings from legacy CSV", len(_CNN_DF))
+    elif df_parquet is not None:
+        _CNN_DF = df_parquet.sort_values("reading_date").reset_index(drop=True)
+        logger.info("CNN F&G: loaded %d daily readings from Sprint 0A parquet "
+                    "(legacy CSV missing — limited history)", len(_CNN_DF))
     else:
-        logger.warning("CNN F&G CSV not found — using empty dataset")
+        logger.warning("CNN F&G not found at parquet OR CSV — using empty dataset")
         _CNN_DF = pd.DataFrame(columns=["reading_date","score","label"])
     return _CNN_DF
 
