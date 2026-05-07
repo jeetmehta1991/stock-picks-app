@@ -452,7 +452,8 @@ Buy / Overweight / Hold / Underweight / Sell → maps to position_size_modifier 
 | 3. PSR (Probabilistic Sharpe Ratio) | ≥ 0.95 | TRADING_RULES §3.3 |
 | 4. t-statistic | ≥ 3.4 | TRADING_RULES §3.4 |
 | 5. R:R ratio | ≥ 2.0 (HARD REJECT below) | DEC-353 / TRADING_RULES §3.5 |
-| 6. Deflated Sharpe Ratio (NEW Pass 53 Q3) | ≥ 0.95 confidence | DEC-510 (Bailey-Lopez de Prado 2014) — accounts for skew/kurtosis + multiple-testing trial count |
+| 6. Deflated Sharpe Ratio (Pass 53 Q3) | ≥ 0.95 confidence | DEC-510 (Bailey-Lopez de Prado 2014) — accounts for skew/kurtosis + multiple-testing trial count |
+| 7. Absolute mean-return-per-trade-net-of-cost (NEW Pass 53 adversarial Q2) | ≥ 5 bps per trade after DEC-095 slippage + DEC-573 spread + DEC-574 borrow | DEC-578 — closes "5R:R 12% win-rate gameable" loophole; pairs R:R ratio with absolute effect-size floor |
 
 **SSOT:** `CLAUDE.md` §Passing Criteria + `TRADING_RULES_AND_INFORMATION.md` §3 Strategy Validity Gates + DEC-269 + DEC-426
 

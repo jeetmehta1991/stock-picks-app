@@ -30009,3 +30009,104 @@ F-006 in CANONICAL_FACTS.md updated with:
 - L94 / L143 (preserved historical narratives)
 
 *Per CHECKLIST #1 (Q1+Q2+Q3 A approved; "approve all" → "approve A" interpreted as same intent); #25 (10 P0+P1 + 17 backlog DECs codified covering 22 genuinely-new findings + 5 transparent external-AI misreads); #43 (cross-doc — TRADING_RULES §10 + F-006 + this narrative); #45 (this); #51 (scope strict — DEC drafting + spec only; implementation Sprint pre-Phase-1A); #58 (27 DECs atomically codified in single commit); #67/#67.b (per-turn doc sync).*
+
+---
+
+## Pass 53 — Adversarial review Q1+Q2+Q3 atomic — DEC-559 promoted + DEC-566-588 — 2026-05-06
+
+### Trigger
+
+Owner directive 2026-05-06 ("Q1 Q2 Q3 A" — 6th external-AI review take; deepest forensic pass through TRADING_RULES_AND_INFORMATION.md). Approved 23 DECs covering 12 real bugs + 25 critical gaps. **Q4 (DEC-581 endogeneity-loop protection) NOT in this approval — re-offered for next turn.**
+
+### Q1 P0 — Pre-Phase-1A blockers (10 DECs; 5 inline bug fixes + 5 new specs)
+
+**Real bugs fixed inline in TRADING_RULES_AND_INFORMATION.md:**
+
+1. **§3.2 Bonferroni × t-stat double-counting (DEC-582)** — Resolution: Gate 2 (Bonferroni) corrects for cross-strategy multi-testing (199 strategies); Gate 4 (t-stat ≥ 3.4) corrects for cross-cell-within-strategy multi-testing (~17 cube dims). Each gate addresses a different correction layer; both required. Cube-cell-level uses FDR per DEC-470 PROPOSED hierarchical correction (NOT 199 × 17 cells naive Bonferroni → would require t-stat ~7).
+
+2. **§6.2 max-loss cap math (DEC-584)** — Real bug. Original spec: `if ticker_30d_pnl <= -0.10 × initial_portfolio:` made trigger near-impossible (5% position would need to lose 200% of itself). Fixed: `× ticker_capital_allocated`.
+
+3. **§16.2 walk-forward 2018-2021 OHLCV source (DEC-583)** — Polygon Stocks Starter starts ~May 2021; yfinance deprecated per DEC-497; pre-2021 OHLCV source was undocumented. Fix: truncate train to 2021-05+ (4y train acceptable).
+
+4. **Strategy count 119 → 199 + exit count 17 → 20 doc reconciliation (DEC-585)** — Global replace across §2.6, §2.10, §21.1 (strategy count) and §21.2 (exit count). Pass 53 doc-drift consequence of Layer 1.I + Layer 6 expansions.
+
+5. **§9.6 vs §9.2 circuit breaker priority (DEC-586)** — Resolution: Levels 1-2 + Level 6 most-restrictive-wins; Levels 3-5 absolute precedence. Level 6c HARD STOP vs Level 5 → whichever fires first; live simultaneous → Level 6c (flat-all wins over temporary halt). Recovery hysteresis loosened from -5% to -10% (per adversarial review — -5% trapped portfolio for years at -25% DD).
+
+6. **§11.1 vs Layer 5 regime-block reconciliation (DEC-587)** — Resolution: direction is unconstrained (long+short philosophy preserved); strategy CHOICE is constrained by regime (RSI-oversold gated on `[neutral]` because mean-reversion logic doesn't have edge in Bear regimes; not because long is blocked). No contradiction with §11.1 once distinction is made.
+
+7. **§2A.4 vs §10.7 VIX hysteresis (DEC-559 promoted from P3 to P0)** — Standardize on 5-day SMA ≥40 enter / <35 exit (matches §2A.4); §10.7 21-day reference deprecated.
+
+**New specs:**
+
+8. **DEC-566 — "What happens on failure" branches** — Every gate (§1, §2, §7) gets explicit failure action: (a) abandon → RETIRED status; (b) retry → RETRY_ONCE; (c) fallback → default rule-only; (d) owner-review → manual intervention. Per-gate table to be drafted in §1+§2 next pass.
+
+9. **DEC-569 — Cube primary vs drilldown dimensions** — Primary (cell verdict applies): Strategy / Regime / Sector / Direction / Exit method = 5 dims. Drilldown (post-hoc only; no verdict): remaining 12 dims. Resolves §21 vs §3.1 sample-size inconsistency (10¹⁴ cells unrunnable).
+
+10. **DEC-588 — TRADING_RULES doc-reconciliation pass** — Propagates DEC-509 through DEC-565 into §1, §2, §3, §5, §7, §8, §9, §10, §11, §12, §13, §14, §16, §17, §18, §21, §22. Scope: ~3-5 days targeted edits. **DEC-588 declares INTENT this turn**; full propagation in subsequent commit(s).
+
+### Q2 P1 — High-leverage adds (13 DECs)
+
+| DEC | Title | Effort |
+|---|---|---|
+| DEC-567 | PM confidence calibration check (Brier-score + reliability diagram) | ~1d |
+| DEC-568 | Walk-forward fold aggregation methodology (pooled-trade Sharpe + bootstrap CI) | ~1d |
+| DEC-570 | Event calendar extension (NFP, PPI, ISM, Treasury auctions, ECB/BoJ/PBoC) | ~0.5d |
+| DEC-571 | Corporate-action exit handling (M&A bid period, bankruptcy, reverse splits, going-private) | ~1d |
+| DEC-572 | Universal cache freshness-policy table | ~0.5d |
+| DEC-573 | Slippage floor + half-spread modeling (correct §14.2 size_factor=0 baseline) | ~1d |
+| DEC-574 | Borrow rate model (Ortex post-subscription; conservative 30bps easy / 5% hard default) | ~0.5d |
+| DEC-575 | Performance metrics correctness (rf_daily DTB3; Sortino MAR; L-moments skew/kurtosis) | ~1-2d |
+| DEC-576 | Promote DEC-512 PIT audit close to hard checklist gate in §2.6 | ~0.25d |
+| DEC-577 | Unify `gate_score` vs `PM confidence` terminology | ~0.25d |
+| **DEC-578** | **F-009 7th gate — absolute mean-return-per-trade-net-of-cost ≥ 5bps** (closes "5R:R 12% win-rate gameable" loophole) | ~0.5d |
+| DEC-579 | MAE/MFE cross-validated percentiles (75th not 90th to leave OOS noise headroom) | ~0.5d |
+| DEC-580 | Vol-targeting vs tier-sizing precedence (tier sets MAX; vol scales DOWN) | ~0.25d |
+
+### F-009 EXTENDED to 7-gate (DEC-578)
+
+Phase 1B-α verdict gate now includes:
+1. Sample size n ≥ 30
+2. Bonferroni p < 0.05 (per DEC-582 — strategy-level only; cube-cells via FDR)
+3. PSR ≥ 0.95
+4. t-stat ≥ 3.4 (per DEC-582 — cross-cell-within-strategy correction)
+5. R:R ≥ 2.0 (HARD REJECT)
+6. Deflated Sharpe Ratio ≥ 0.95 (DEC-510 prior turn)
+7. **NEW: Absolute mean-return-per-trade-net-of-cost ≥ 5bps** (DEC-578 — closes ratio-gaming loophole)
+
+### Q4 NOT APPROVED (DEC-581 endogeneity-loop protection)
+
+Owner did not include Q4 in "Q1 Q2 Q3 A". DEC-581 remains PROPOSED — deepest critique (28 REVISIT_AFTER_BACKTEST items create endogeneity loop where post-backtest decisions are conditioned on backtest results). Re-offered for next turn.
+
+### Acknowledged transparency
+
+External AI's 8 "already-addressed" items have DECs (DEC-541/540/546/545/543/548/547/527) but TRADING_RULES doc not yet reconciled — that's DEC-588's scope. ~6 of 8 doc-drift instances confirmed; reconciliation pending.
+
+### Cumulative Sprint pre-Phase-1A scope (across 6 review-take turns)
+
+| Source | Effort |
+|---|---|
+| DEC-511/512/513 (signal universe) | ~20-28d |
+| DEC-514-521 (exit/risk/fill) | ~6-8d |
+| DEC-539-543 (regime P0) | ~5-7d |
+| DEC-544-548 (regime P1) | ~3-4d |
+| DEC-559/566/569/582-588 (adversarial P0) | ~5-7d |
+| DEC-567-580 (adversarial P1) | ~5-8d |
+| DEC-588 doc-reconciliation pass | ~3-5d |
+| **TOTAL** | **~47-67 days before Phase 1A backtest can run cleanly** |
+
+### Files modified
+
+- `TRADING_RULES_AND_INFORMATION.md` — §3.2 (DEC-582 Bonferroni), §6.2 (DEC-584 max-loss math), §9.6 (DEC-586 priority), §11.1 (DEC-587 regime reconciliation), §16.2 (DEC-583 walk-forward), §10.21 NEW (DEC-559+566-588 codified backlog + Q4 callout); global ~109-119 → 199 strategy count; 17 → 20 exit count
+- `CANONICAL_FACTS.md` F-009 — 6-gate → 7-gate (DEC-578 effect-size floor)
+- `AUDIT.md` — this narrative
+
+### Cross-references
+
+- DEC-559 (promoted P3→P0) + DEC-566-588 (this turn)
+- F-009 7-gate (extended from 6-gate; DEC-510 + DEC-578 both gates)
+- F-002 199 strategies; F-004 20 exit methods (Pass 53 doc-drift fixed)
+- DEC-470 PROPOSED (hierarchical FDR for cube-cell multi-testing)
+- DEC-509-565 (Pass 53 prior-review DECs; DEC-588 reconciliation pass propagates these into TRADING_RULES)
+- L143 (historical narrative preservation; this narrative records corrections forward-only)
+
+*Per CHECKLIST #1 (Q1+Q2+Q3 A approved; Q4 explicitly excluded); #25 (12 real bugs + 25 critical gaps codified; 5 inline TRADING_RULES fixes + 23 DECs; 8 prior-review doc-drift instances surfaced for DEC-588 reconciliation); #43 (cross-doc — TRADING_RULES + F-009 + this narrative); #45 (this); #51 (scope strict — Q1+Q2+Q3 only; Q4 deferred); #58 (23 DECs + 5 inline bug fixes in single commit); #67/#67.b (per-turn doc sync).*

@@ -241,7 +241,7 @@
 **Effort target:** ~6-8 engineering days
 
 **Acceptance criteria:**
-- [ ] Rules-based screener executes full ~109-119 strategy roster on full universe (per DEC-477 Tier 1A Universe_SP500 Tickers_Jan 2020 to May 2026.csv + DEC-483 R1000 + NDX expansion)
+- [ ] Rules-based screener executes full 199 strategy classes (per F-002 post Pass 53 expansion: Layer 1 110 + Layer 2A 12 + 2B 4 + 2C 5 + Layer 3A 20 + 3B 21 + Layer 6 27) roster on full universe (per DEC-477 Tier 1A Universe_SP500 Tickers_Jan 2020 to May 2026.csv + DEC-483 R1000 + NDX expansion)
 - [ ] Smart money signals operational (DEC-124 confluence + DEC-332 weights + DEC-450 Quiver paid endpoints)
 - [ ] `--no-agents` flag preserved from Phase 1A v3 archive — no TradingAgents.propagate calls
 - [ ] Trade outcome log produced for full universe per DEC-189 schema; baseline trades tagged `arm=A_rules_only`
@@ -650,15 +650,19 @@ A strategy is **VALID** if and only if it passes ALL 5 gates per dimensional cub
 
 **Source:** DEC-426
 
-### 3.2 Gate 2: Statistical Significance (p < 0.05 Bonferroni-corrected)
+### 3.2 Gate 2: Statistical Significance (p < 0.05 Bonferroni-corrected) — REVISED per DEC-582 Pass 53 owner-approved 2026-05-06
 
 **Rule:** Strategy returns must be statistically significant at p < 0.05 **after Bonferroni correction** for multiple testing.
 
-**Bonferroni correction factor:** Number of strategies × number of cells tested. Per DEC-080+400, correction is applied within cube methodology.
+**Bonferroni correction factor (DEC-582 RESOLUTION):** Number of strategies tested **only** (per F-002 = 199 RESOLVED-DECIDED + IMPLEMENTED). **NOT strategies × cube cells.** Cube-cell-level multi-testing handled separately via FDR (Benjamini-Hochberg) at the per-strategy level — see DEC-470 PROPOSED for hierarchical correction.
 
-**Per DEC-018:** Bonferroni correction factor was hardcoded to 60 in original code (BUG-18) — must be 72 (or current strategy count); fixed via DEC-400.
+**Resolution of double-counting concern (Pass 53 adversarial review):** Gate 4 (t-stat ≥ 3.4) and Gate 2 (Bonferroni p < 0.05) appeared to double-count multi-testing correction. They do NOT — Gate 2 corrects for cross-strategy multi-testing (199 strategies); Gate 4 corrects for cross-cell-within-strategy multi-testing (~17 cube dims). Each gate addresses a different correction layer; both required for valid inference.
 
-**Source:** DEC-080, DEC-400, DEC-426
+**Why not 199 × cube_cells:** With ~10¹⁴ cells per §21, naive Bonferroni → α/10¹⁴ → t-stat ~7 → no real strategy passes. Hierarchical correction (DEC-470) controls family-wise error within strategy, then Bonferroni across strategies — statistically defensible AND tractable.
+
+**Per DEC-018 (historical):** Original code hardcoded Bonferroni factor to 60 (BUG-18); now must equal `len(ALL_STRATEGIES)` = 199.
+
+**Source:** DEC-080 + DEC-400 + DEC-426 + DEC-582 (Pass 53 BUG fix) + DEC-470 PROPOSED (hierarchical FDR for cube-cells)
 
 ### 3.3 Gate 3: Probabilistic Sharpe Ratio (PSR ≥ 0.95)
 
@@ -845,16 +849,19 @@ if last_trade_was_stop_out(ticker, lookback=5d):
 
 **Source:** DEC-018
 
-### 6.2 Per-Ticker Cumulative Max-Loss Cap (per DEC-135)
+### 6.2 Per-Ticker Cumulative Max-Loss Cap (per DEC-135 + DEC-584 BUG FIX 2026-05-06)
 
 **Rule:** **Default cap: -10% rolling 30-day per ticker.** If breached, halt that ticker for 30-day cooldown.
 
-**Implementation:**
+**Implementation (CORRECTED per DEC-584 — Pass 53 adversarial review found math bug):**
 ```
 ticker_30d_pnl = cumulative_pnl(ticker, lookback=30d)
-if ticker_30d_pnl <= -0.10 × initial_portfolio:
+ticker_capital_allocated = sum_of_position_sizes_for_ticker_in_30d
+if ticker_30d_pnl <= -0.10 × ticker_capital_allocated:
     halt_ticker(ticker, cooldown=30d)
 ```
+
+**Prior (incorrect) version compared `ticker_30d_pnl` to `-0.10 × initial_portfolio`** — for a 5% position to lose 10% of portfolio meant losing 200% of itself, mathematically impossible. Corrected to compare against ticker-level capital allocated.
 
 **REVISIT_AFTER_BACKTEST:** -10% threshold tunable empirically.
 
@@ -1407,7 +1414,12 @@ All DEC-528-538 are RESOLVED-DECIDED at backlog level (Pass 53 owner-approved 20
 
 **Implementation:** ~0.5 day in `backtest/engine/circuit_breakers.py`. Computes rolling 252-day max equity; checks DD% on each trading day's close.
 
-**Interaction with Levels 1-5:** Level 6 evaluated AFTER Levels 1-5 (sequential per DEC-315). Most restrictive action wins.
+**Interaction with Levels 1-5 (CORRECTED per DEC-586 Pass 53 owner-approved 2026-05-06):** Sequential evaluation per DEC-315. **Priority resolution:**
+- Levels 1-2 (intraday-from-open soft pause) and Level 6 (DD-from-peak) are NOT mutually exclusive — both can fire same day; **most restrictive action wins** (between them)
+- Levels 3-5 (intraday hard halt per NYSE Rule 80B) take **absolute precedence** over Levels 1-2 and Level 6 sub-levels 6a/6b — market is halted; nothing else matters
+- Level 6c HARD STOP and Levels 3-5 conflict resolution: **whichever fires first** (Level 5 typically same-bar; Level 6c needs end-of-day evaluation in Stage 2 per DEC-126); in live Stage 4+, simultaneous → most restrictive (Level 6c flat-all wins, since Levels 3-5 only halt trading temporarily)
+
+**Schmitt-trigger gap:** Level 6 recovery hysteresis loosened from "-5% from peak" to **"-10% from peak"** to avoid trapping portfolio at -25% DD for years (per adversarial review). Recovery: equity must rise from current to within -10% of running 252-day peak.
 
 **Source:** DEC-515
 
@@ -1826,13 +1838,58 @@ This integrates both mechanisms: EMA captures input-driven regime probability; t
 
 All DEC-549-565 are RESOLVED-DECIDED at backlog level (Pass 53 owner-approved 2026-05-06 Q3); implementation post-Phase-1B-α or as Sprint priorities allow.
 
+### 10.21 Adversarial-review DECs — DEC-559 promoted + DEC-566-588 (Pass 53 Q1+Q2+Q3 owner-approved 2026-05-06)
+
+**Trigger:** External-AI adversarial review of TRADING_RULES_AND_INFORMATION.md identified ~12 real bugs + ~25 critical gaps. Owner approved P0+P1+DEC-588 batch (Q4 DEC-581 endogeneity protection NOT in this approval).
+
+#### Q1 P0 — Pre-Phase-1A blockers (10 DECs; 9 inline-fixed above; DEC-588 spec below)
+
+| DEC | Resolution location |
+|---|---|
+| **DEC-559** | VIX hysteresis 5d vs 21d reconciliation — **standardize on 5-day SMA ≥40 enter / <35 exit** (matches §2A.4); §10.7 21-day reference deprecated. Inline edit pending §10.7. |
+| **DEC-566** | "What happens on failure" branches — every gate gets explicit failure action: (a) abandon (strategy promoted to RETIRED status); (b) retry with different parameters (Phase 1A-α RETRY_ONCE); (c) fallback (default rule-only); (d) owner-review (manual intervention required). Per-gate table TBD; DEC-566 spec to be drafted in §1+§2 next pass. |
+| **DEC-569** | Cube primary vs drilldown dimensions — **Primary (cell verdict applies):** (1) Strategy, (2) Regime, (3) Sector, (4) Direction, (5) Exit method = 5 dims. **Drilldown (post-hoc analysis only; no verdict):** remaining 12 dims. Resolves §21 vs §3.1 sample-size inconsistency. |
+| **DEC-582** | Bonferroni × t-stat double-counting fix → §3.2 inline-edited above (correction at strategy level only; cube-cells via FDR per DEC-470 PROPOSED) |
+| **DEC-583** | Walk-forward 2018-2021 OHLCV source → §16.2 inline-edited above (truncate to 2021-05+; 4y train acceptable) |
+| **DEC-584** | §6.2 max-loss cap math fix → §6.2 inline-edited above (`× ticker_capital_allocated` not `× initial_portfolio`) |
+| **DEC-585** | Strategy count 119 → 199 + exit count 17 → 20 doc reconciliation → multiple §s inline-edited via global replace |
+| **DEC-586** | §9.6 vs §9.2 circuit breaker priority resolution → §9.6 inline-edited above; recovery hysteresis loosened to -10% |
+| **DEC-587** | §11.1 vs Layer 5 regime-block reconciliation → §11.1 inline-edited above (direction is unconstrained; strategy CHOICE is constrained) |
+| **DEC-588** | TRADING_RULES doc-reconciliation pass propagating DEC-509 through DEC-565 into all affected §s. Scope: ~3-5 days targeted edits across §1, §2, §3, §5, §7, §8, §9, §10, §11, §12, §13, §14, §16, §17, §18, §21, §22. Track via separate sprint task; DEC-588 declares INTENT this turn; full propagation done in subsequent commit(s). |
+
+#### Q2 P1 — High-leverage adds (13 DECs)
+
+| DEC | Title | Effort |
+|---|---|---|
+| DEC-567 | PM confidence calibration check (Brier-score + reliability diagram pre-Phase-1B production gate) | ~1d |
+| DEC-568 | Walk-forward fold aggregation methodology (pooled-trade Sharpe + bootstrap CI per fold; NOT mean-of-fold-Sharpes) | ~1d |
+| DEC-570 | Event-suppression calendar extension (NFP, PPI, ISM, Treasury auctions, ECB/BoJ/PBoC) | ~0.5d |
+| DEC-571 | Corporate-action exit handling extension (M&A bid period; bankruptcy/Ch11; reverse splits; going-private) | ~1d |
+| DEC-572 | Universal cache freshness-policy table (Polygon news intraday; Quiver insiders 4-day filing window; AAII Thursdays; CNN F&G daily) | ~0.5d |
+| DEC-573 | Slippage floor + half-spread modeling (correct §14.2 size_factor=0 baseline gap; add explicit spread cost) | ~1d |
+| DEC-574 | Borrow rate model (Ortex when subscribed per DEC-506; conservative default 30bps easy / 5% hard until subscribed) | ~0.5d |
+| DEC-575 | Performance-metrics correctness pass (rf_daily DTB3 not FEDFUNDS; Sortino MAR-anchored not zero; L-moments skew/kurtosis estimators) | ~1-2d |
+| DEC-576 | Promote DEC-512 PIT-fundamentals audit close to hard checklist gate in §2.6 Phase 1A acceptance | ~0.25d |
+| DEC-577 | Unify `gate_score` vs `PM confidence` terminology (deprecate `gate_score` post-DEC-459) | ~0.25d |
+| DEC-578 | F-009 7th gate — absolute mean-return-per-trade-net-of-cost floor (extends DEC-510 6-gate; pairs with R:R 2.0 floor; closes "5R:R 12% win-rate gameable" loophole) | ~0.5d |
+| DEC-579 | MAE/MFE cross-validated percentiles (step-down from 90th to 75th to leave OOS noise headroom; protects against in-sample overfit) | ~0.5d |
+| DEC-580 | Vol-targeting vs tier-sizing precedence rule (tier-size sets MAX; vol-target scales DOWN if vol > target) | ~0.25d |
+
+All Q2 P1 DECs RESOLVED-DECIDED at spec level Pass 53; implementation Sprint pre-Phase-1A.
+
+#### Q4 NOT IN THIS APPROVAL (DEC-581 — tuning methodology + endogeneity-loop protection)
+
+Owner did not include Q4 in "Q1 Q2 Q3 A" approval. **DEC-581 remains PROPOSED** awaiting separate owner approval — the deepest critique from the adversarial review (28 REVISIT_AFTER_BACKTEST items create endogeneity loop where post-backtest decisions are conditioned on backtest results which were conditioned on different decisions). Re-offered at end of next response.
+
 ---
 
 ## 11. Regime-Conditional Strategy Behavior
 
 ### 11.1 Crisis-Flag Handling (replaces hard regime direction blocks)
 
-**Per project memory:** Original system had hard regime direction blocks (e.g., long-only blocked in Bear regime). **REMOVED.**
+**Per project memory:** Original system had hard regime direction blocks (e.g., long-only blocked in Bear regime). **REMOVED for direction (long+short philosophy per Pass 53 owner directive "buy the dip and sell the rip" — no direction-based regime block).**
+
+**RECONCILIATION with Layer 5 per DEC-587 Pass 53 owner-approved 2026-05-06 (adversarial review fix):** Layer 5 regime-eligibility flags (DEC-516/540) are NOT direction blocks — they are STRATEGY-eligibility gates per category. RSI-oversold-long is gated on `[neutral]` regime not because long is blocked in Bear, but because RSI-oversold mean-reversion logic doesn't have edge in Bear regimes. **Direction is unconstrained by regime; strategy CHOICE is constrained by regime.** No contradiction with §11.1 once distinction is made. Crisis-override (longs at 50% size) preserves direction freedom across all regimes.
 
 **Replacement:** Crisis flagging — strategies respect `crisis_flag` (computed from regime probability per DEC-107) but no hard blocks.
 
@@ -2247,7 +2304,20 @@ fx_exposure_pct = portfolio_usd_value_cad / total_portfolio_value_cad
 | 2020-01-01 to 2024-12-31 | 2025-01-01 to 2025-12-31 |
 | ... | ... |
 
-### 16.2 Cache Extends to 2018-01-01 (per DEC-109 Option B)
+### 16.2 Cache Extends to 2018-01-01 (per DEC-109 Option B) — REVISED per DEC-583 Pass 53 owner-approved 2026-05-06
+
+**Pass 53 BUG FIX:** Polygon Stocks Starter prefetch starts ~May 2021 (5y rolling cap per DEC-505). yfinance deprecated per DEC-497 NO-LIVE-API HARD CUT. Prior spec said "Cache extends to 2018-01-01 (DEC-109 Option B)" but **2018-2021 OHLCV source was undocumented**. Walk-forward as previously specified is impossible.
+
+**DEC-583 RESOLUTION (Option A — RECOMMENDED + DEFAULT):** Truncate walk-forward train window to **Polygon-prefetched data only (2021-05 → 2026-05).** Walk-forward schedule revised:
+- Train: 2021-05 → 2025-04 (~4y)
+- OOS Test: 2025-05 → 2026-05 (1y; current rolling)
+- Hold-out: 2026-06+ (forward, never-tuned)
+
+**Trade-off accepted:** Less train data than original 5-year baseline (4y vs 5y). Mitigation: DEC-505 4-fold walk-forward gives multiple test estimates.
+
+**Alternative considered (Option B, REJECTED):** One-time Polygon paid backfill to 2018 (~$200-500 estimated; still requires Polygon API). Rejected — 4y vs 5y train is acceptable; no need for paid backfill.
+
+**Affected:** §16.1 schedule + DEC-505 4-fold walk-forward + all Phase 1A acceptance gates referencing pre-2021 OHLCV.
 
 **Rule:** Cache start date 2018-01-01 (not 2020-01-01 default).
 
@@ -2532,7 +2602,7 @@ See §17.8 above.
 
 ### 21.1 Core Dimensions
 
-1. **Strategy** (~109-119 strategy classes)
+1. **Strategy** (199 strategy classes (per F-002 post Pass 53 expansion: Layer 1 110 + Layer 2A 12 + 2B 4 + 2C 5 + Layer 3A 20 + 3B 21 + Layer 6 27) classes)
 2. **Regime** (Bull/Bull-Pause/Neutral/Bear-Pause/Bear/Crisis — 6 levels)
 3. **Sector** (11 GICS sectors)
 4. **Market cap band** (mega/large/mid/small)
@@ -2544,7 +2614,7 @@ See §17.8 above.
 ### 21.2 Additional Dimensions
 
 9. **Trigger type** (catalyst/technical/stat-arb per DEC-174)
-10. **Exit method** (17 exit methods per §8)
+10. **Exit method** (20 exit methods per §8 post-DEC-517 R-multiple additions; was 17 pre-Pass-53)
 11. **Position size tier** (HIGH/MED/LOW)
 12. **Day of week** (Mon/Tue/Wed/Thu/Fri)
 13. **Time of day** (open/mid/close)
