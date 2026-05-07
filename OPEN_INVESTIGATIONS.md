@@ -327,4 +327,152 @@ contract names: `UST 10Y NOTE` / `UST 5Y NOTE` / `UST 2Y NOTE` / `UST BOND`
 
 ---
 
+## INV-024 — Quiver gov_contracts severe field-level loss (no Date / no AwardingAgency / Amount as STRING) (Pass 53 Day-9 v8h evening)
+
+- **Discovered:** 2026-05-07 evening; field-level deep-dive schema probe
+- **Observation:** `data_prefetch/quiver/gov_contracts/AAPL.parquet` contains only 4 columns: `Ticker, Amount (STRING), Qtr (int), Year (int)`. Quiver `/historical/govcontracts/{ticker}` API actually returns: `Date, AwardingAgency, DepartmentDescription, ContractDescription, Amount (numeric), ResearchTopic, ParentAwardId`. The save logic in `prefetch_quiver.py` is filtering down to 4 fields, losing the time dimension at daily granularity + agency identity + contract subject. **This is the EXACT pattern owner cited as the canonical "high-coverage-but-erroneous" failure mode.**
+- **Why blocking:** Quarterly aggregates (`Qtr+Year`) cannot do PIT cutoff at daily resolution — strategies like "buy on gov-contract win within last 5 days" cannot be implemented. Lost AwardingAgency means "DOD-contract premium" strategies impossible. Lost Amount-as-numeric means aggregation requires runtime str→numeric coercion.
+- **Severity:** CRITICAL for any strategy using gov_contracts as a signal. Phase 1A baseline doesn't directly use, but smart_money composite (Phase 1A baseline) calls `get_gov_contracts_signal()` which returns a signal derived from this data.
+- **Status:** open
+- **Next action:**
+  - Read Quiver API response schema for `/historical/govcontracts/{ticker}` (probe one ticker, compare to docs)
+  - Edit `prefetch_quiver.py` `save_ticker_data()` and the gov_contracts-specific path to preserve all returned fields
+  - Fix Amount type to numeric
+  - Re-prefetch all 1937 (~1-2h)
+  - This is in addition to current BG `b3xny7m35` which is finishing the OLD 4-field schema — owner approval needed before second BG
+- **Joint:** owner directive 2026-05-07 evening (the "time column missing" example); CHECKLIST #76 column-(b) probe surfaced this; INV-014 (DEC-491 sister field-loss pattern); BG `b3xny7m35` (currently re-prefetching with INSUFFICIENT field set — will need re-do).
+
+---
+
+## INV-025 — SEC EDGAR all 11 forms cached as filing-metadata-only (primary_doc not parsed; lost transaction-level fields) (Pass 53 Day-9 v8h evening)
+
+- **Discovered:** 2026-05-07 evening; field-level deep-dive
+- **Observation:** All 11 SEC EDGAR per-form parquets have schema `[ticker, cik, form, filing_date, accession_number, primary_doc]` — only filing metadata. The `primary_doc` is a URL to the actual filing XML/HTML. Without parsing that doc, we have no Form 4 transaction details (shares/price/officer/director-flag), no 8-K item numbers (1.01 acquisition / 2.02 results / 5.02 officer change / 8.01 other), no SC 13D holder positions, no 10-K/Q line items.
+- **Why blocking:** "Filing-event-happened" signals work (e.g. 8-K within last 5 days = catalyst), but actionable signals like "insider bought >$1M of stock" or "13D activist with 10%+ stake" require the structured content. Phase 1B-π (insider/activist overlays) blocked.
+- **Severity:** HIGH for Phase 1B; informational for Phase 1A (baseline doesn't parse 8-K item details).
+- **Status:** open
+- **Next action:**
+  - Two paths:
+    1. Parse `primary_doc` XML/HTML for each filing (~1700 tickers × 11 forms × N filings) — expensive
+    2. Use SEC EDGAR full-text-search + structured XBRL feeds — faster
+  - Recommended path 2; estimate 20-30h infrastructure build + initial fetch
+- **Joint:** PREFETCH_COVERAGE_AUDIT field-level matrix; CHECKLIST #76; INV-014/INV-024 (sister field-loss pattern).
+
+---
+
+## INV-026 — Polygon financials cached as JSON-string (line items not extracted) (Pass 53 Day-9 v8h evening)
+
+- **Discovered:** 2026-05-07 evening; field-level deep-dive
+- **Observation:** `data_prefetch/polygon/financials/AAPL.parquet` schema has `financials_json` column as a STRING. The Polygon `/vX/reference/financials` API returns income statement / balance sheet / cash flow as nested structured data. We're storing the JSON dump as a string — must `json.loads()` at read time AND walk the nested schema to extract revenue/EPS/FCF/etc.
+- **Why blocking:** Cannot do `df.query("revenue > 1e10")`-style filtering. Every consumer must json-parse + nested-key-extract. Significant runtime cost + brittle.
+- **Severity:** MEDIUM (data IS there, just inefficient access).
+- **Status:** open
+- **Next action:**
+  - Local processing — no new API calls. Walk all 1746 financials parquets, json-parse, extract key line items into separate columns (revenue, gross_profit, operating_income, net_income, eps_basic, eps_diluted, total_assets, total_liabilities, stockholders_equity, cash_from_operations, capex, free_cash_flow), preserve the raw JSON for audit
+  - ~30 min processing + write back
+- **Joint:** PREFETCH_COVERAGE_AUDIT field-level matrix; sister to INV-025 for SEC EDGAR.
+
+---
+
+## INV-027 — Polygon news lost per-ticker `insights` array (article-level only) (Pass 53 Day-9 v8h evening)
+
+- **Discovered:** 2026-05-07 evening; field-level deep-dive
+- **Observation:** Polygon `/v2/reference/news` returns each article with an `insights` array containing per-ticker {ticker, sentiment, sentiment_reasoning} entries. For multi-ticker articles (e.g. "AAPL beats but MSFT disappoints"), the per-ticker sentiments differ. Our cached schema has only article-level `sentiment` + `sentiment_reasoning` — for multi-ticker articles, we lose the per-ticker breakdown.
+- **Why blocking:** Reduces signal precision for sentiment overlays. Multi-ticker articles common (sector pieces, earnings season, M&A coverage).
+- **Severity:** HIGH for sentiment-overlay strategies; informational for Phase 1A.
+- **Status:** open
+- **Next action:**
+  - Edit `prefetch_polygon_news.py` to preserve `insights` field (likely as JSON-encoded column or normalized rows)
+  - Re-prefetch news cache (~4-6h)
+- **Joint:** PREFETCH_COVERAGE_AUDIT field-level matrix; sister to INV-024 (Quiver gov_contracts field loss).
+
+---
+
+## INV-028 — OHLCV cache missing `vwap` + `transactions` count from Polygon aggregates (Pass 53 Day-9 v8h evening)
+
+- **Discovered:** 2026-05-07 evening; field-level deep-dive
+- **Observation:** `backtest/data/cache/ohlcv/AAPL.parquet` has 6 columns: date, open, high, low, close, volume. Polygon `/v2/aggs/ticker/{t}/range/1/day/{from}/{to}` response returns: `t, o, h, l, c, v, vw (vwap), n (transactions count)`. We're losing 2 fields per bar.
+- **Why blocking:** VWAP useful for execution-cost modeling (slippage benchmark). Transactions count proxies liquidity — useful for ranking liquidity-adjusted strategies (DEC-321 tier 3 liquidity floor uses ADV but transactions/day is more granular).
+- **Severity:** MEDIUM (data not lost; just need to re-prefetch with new fields).
+- **Status:** open
+- **Next action:**
+  - Edit `prefetch_polygon_ohlcv_daily.py` to capture `vw` + `n` fields
+  - Re-prefetch (1937 × 6 years = ~6-8h)
+- **Joint:** field-level matrix; CHECKLIST #76 column-(b) probe surfaced this.
+
+---
+
+## INV-029 — Polygon events captures only ticker_change (lost splits/dividends/delisting/merger event types) (Pass 53 Day-9 v8h evening)
+
+- **Discovered:** 2026-05-07 evening; field-level deep-dive
+- **Observation:** `data_prefetch/polygon/events/AAPL.parquet` contains 1 row with `event_type=ticker_change`. Polygon `/v3/reference/tickers/{t}/events` accepts `?types=` query parameter and returns event types: `ticker_change, splits, dividends, delisting, name_change, merger`. Current prefetch is filtering to ticker_change only.
+- **Why blocking:** Event-driven signals (post-split price-action, dividend-ex-day strategies, M&A arbitrage) blocked.
+- **Severity:** MEDIUM for Phase 1B+; non-blocking for Phase 1A.
+- **Status:** open
+- **Next action:**
+  - Verify Polygon API param syntax (probe 1 ticker w/ `?types=ticker_change,splits,dividends,delisting,name_change,merger`)
+  - Edit `prefetch_polygon_corp_actions.py` or `events` script to fetch all types
+  - Re-prefetch (~1h, fast endpoint)
+- **Joint:** field-level matrix.
+
+---
+
+## INV-030 — Polygon reference missing address/branding/employees/FIGI/description (Pass 53 Day-9 v8h evening)
+
+- **Discovered:** 2026-05-07 evening; field-level deep-dive
+- **Observation:** `data_prefetch/polygon/reference/AAPL.parquet` has 16 fields. Polygon `/v3/reference/tickers/{t}` actually returns: `address (street/city/state/zip), branding (logo_url, icon_url), total_employees, phone_number, description, composite_figi, share_class_figi, round_lot, market_cap` (have), `share_class_shares_outstanding` (have), `weighted_shares_outstanding` (have).
+- **Why blocking:** FIGI useful for cross-source matching (Polygon/SEC/Bloomberg). Total_employees + description useful for LLM-agent prompts. Address useful for geographic/local-economy strategies. Branding (logo_url) useful for dashboard.
+- **Severity:** LOW-MEDIUM (Phase 1B+ enrichment).
+- **Status:** open
+- **Next action:**
+  - Add missing fields to `prefetch_polygon_reference.py` `fetch_ticker_reference()`
+  - Re-prefetch (~1h, fast endpoint, data already at 1686/1937 = 87%)
+- **Joint:** field-level matrix.
+
+---
+
+## INV-031 — Quiver congressional missing District/State/Industry/Sector/Filing fields (Pass 53 Day-9 v8h evening)
+
+- **Discovered:** 2026-05-07 evening; field-level deep-dive
+- **Observation:** Quiver `/historical/congresstrading/{ticker}` returns 16+ fields per Quiver docs. Our cached schema has 16 cols but missing: `District` (congressional district number), `State` (state abbreviation), `Industry` (industry classification), `Sector` (sector classification), `Filing` (URL to filing).
+- **Why blocking:** Senator-vs-rep sub-signals, regional concentration signals, industry-affiliated trades — all need the missing dimensions.
+- **Severity:** MEDIUM (Phase 1B refinement); non-blocking for Phase 1A baseline composite.
+- **Status:** open
+- **Next action:**
+  - Probe one congressional API call to verify which fields the API returns
+  - Edit `prefetch_quiver.py` save logic for congressional endpoint
+  - Re-prefetch (currently mid-flight in BG `b3xny7m35` — won't be in this run)
+- **Joint:** INV-024 (sister Quiver field loss); BG `b3xny7m35` state.
+
+---
+
+## INV-032 — Alpha Vantage news cache aggregated daily — lost per-article detail (Pass 53 Day-9 v8h evening)
+
+- **Discovered:** 2026-05-07 evening; field-level deep-dive
+- **Observation:** `backtest/data/cache/av_news/CCI.parquet` schema: `date, sentiment_mean, sentiment_weighted, article_count, bullish_count, bearish_count, max_relevance, sentiment_direction`. AV `NEWS_SENTIMENT` API returns per-article: title, url, time_published, authors, summary, banner_image, source, category_within_source, source_domain, topics, overall_sentiment_score, overall_sentiment_label, ticker_sentiment[]. We're aggregating to daily — lost ALL per-article info.
+- **Why blocking:** Cannot reconstruct which articles, who wrote them, what they said. LLM-agent context can't read the actual text. Can't do per-article sentiment analysis with our own NLP.
+- **Severity:** MEDIUM-HIGH (Phase 1B+ news strategies blocked at the article level).
+- **Status:** open
+- **Next action:**
+  - Edit `prefetch_alphavantage_news.py` to preserve raw articles (with one daily-rollup as derived view, not as primary cache)
+  - Re-prefetch full (~10-15h, AV free 25/min limits)
+- **Joint:** INV-015 (AV news under-coverage at 25 files — same prefetch needs full rebuild anyway); INV-027 (Polygon news sister field loss).
+
+---
+
+## INV-033 — STRING date columns across 8+ caches (typing gap, not data gap) (Pass 53 Day-9 v8h evening)
+
+- **Discovered:** 2026-05-07 evening; field-level deep-dive
+- **Observation:** Multiple cached parquets have `date` / `Date` / `time` / `TransactionDate` / `snapshot_date` / `report_date` columns stored as STRING (object) instead of pandas datetime64. Affected: Wikipedia per-ticker, pytrends per-ticker, Quiver sec13fchanges, Quiver offexchange, Quiver corporatedonors, Quiver patentmomentum, Quiver gov_contracts (lacks Date entirely — INV-024), CNN F&G `date` field, Apewisdom `snapshot_date`, CFTC `report_date`.
+- **Why blocking:** Functional — engine can `pd.to_datetime` at read time — but represents prefetch type-info loss during write. Also: PIT cutoff queries (`df[df.date <= as_of]`) work correctly only if string format is ISO-8601 lexically-sortable.
+- **Severity:** LOW (typing — engineering hygiene; current consumers all coerce at read time).
+- **Status:** open
+- **Next action:**
+  - Write a one-time migration script that walks each affected cache + coerces date columns to datetime64
+  - Or: edit each prefetcher to write datetime64 directly going forward (preferred — fix root cause)
+  - ~1h
+- **Joint:** field-level matrix; sister to INV-020 (canonical-source rule violation pattern).
+
+---
+
 *Last updated: 2026-05-07 evening (Pass 53 Day-9 v8h ongoing)*

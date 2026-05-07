@@ -11,6 +11,336 @@ Last full inventory: 2026-05-07 evening. Master Universe = 1937 unique tickers.
 
 ---
 
+## Pass 53 Day-9 v8h evening FIELD-LEVEL DEEP DIVE per owner directive 2026-05-07 (round 2)
+
+**Owner correction 2026-05-07 evening:** *"What i mean by dimensions in an API endpoint is that we earlier had downloaded an API but didnt prefetch time column. So the coverage for that API endpoint was high, but essentially erroneous because the time dimension wasnt prefetched. So thats the gap we also need to analyze for all API endpoints and within each API endpoint are all dimensions being prefetched?"*
+
+**Acknowledged framing miss:** the prior deep-dive (round 1) audited ENDPOINT + UNIVERSE coverage but NOT FIELD-LEVEL completeness within each endpoint. This round corrects that. Method: read parquet schema of one cached file per endpoint + compare to API spec.
+
+### Owner-confirmed scope this turn:
+- **Polygon Stocks Starter** (paid — current)
+- **Polygon Indices Basic** (FREE — owner can add at no cost) — **opportunity**
+- **Polygon Options Basic** (FREE) — **opportunity**
+- **Polygon Futures Basic** (FREE) — **opportunity**
+- **Polygon Currencies Basic** (FREE) — **opportunity**
+- **Quiver Trader plan** (current) — confirmed
+- No new paid subscriptions
+
+### Field-level audit headline findings (sorted by severity)
+
+| # | Source | Issue | Severity | INV |
+|---|---|---|---|---|
+| 1 | Quiver `gov_contracts` | NO date column — only `Qtr+Year`. Lost DateSigned/AwardingAgency/DepartmentDescription/ContractDescription per Quiver API. Amount stored as STRING. **EXACT pattern owner cited.** | CRITICAL | INV-024 |
+| 2 | Quiver `topshareholders` + `etfholdings` | NO date column — current snapshot only (INV-008 already logged) | HIGH | INV-008 (existing) |
+| 3 | SEC EDGAR all 11 forms | Filing metadata only (`primary_doc` URL not parsed). Lost Form 4 transaction details (shares/price/officer/director-flag), 8-K material event types, 13D/G holder positions, 10-K/10-Q line items. Without parsing: just "X ticker filed Form Y on Z date" — non-actionable for signals. | CRITICAL | INV-025 |
+| 4 | Polygon financials | `financials_json` stored as STRING — income statement / balance sheet / cash flow line items not extracted. Can't query revenue / EPS / FCF directly. | HIGH | INV-026 |
+| 5 | Polygon news | **No per-ticker `insights` array** captured. We have article-level `sentiment` + `sentiment_reasoning` but Polygon API returns INSIGHTS = list of {ticker, sentiment, sentiment_reasoning} per article. For multi-ticker articles, we lose ticker-specific sentiment. | HIGH | INV-027 |
+| 6 | OHLCV cache | Missing `vwap` + `transactions` count from Polygon `/v2/aggs/.../day` response. VWAP useful for execution-cost modeling; transactions count for liquidity scoring. | MEDIUM | INV-028 |
+| 7 | Polygon events | Only `ticker_change` events captured. Polygon spec lists `splits`, `dividends`, `delisting`, `name_change`, `merger` as event types. Many events lost. | MEDIUM | INV-029 |
+| 8 | Polygon reference | Missing: address, branding (logo/icon URLs), total_employees, FIGI codes (composite_figi/share_class_figi useful for cross-source matching), description. | LOW-MEDIUM | INV-030 |
+| 9 | Quiver `congressional` | Missing: District, State, Industry, Sector, Filing URL per Quiver API spec. | MEDIUM | INV-031 |
+| 10 | AV news cache | Aggregated DAILY only — lost per-article (title, summary, source, URL, ticker_sentiment). Cannot reconstruct article-level info. | MEDIUM | INV-032 |
+| 11 | Finnhub news AAPL | 0 rows in cached parquet — data integrity gap. INV-016 escalates from "S&P-only-stale" to "actively-empty-for-some-tickers". | HIGH | INV-016 (existing) |
+| 12 | Quiver `institutional` AAPL | 0 rows in cached parquet — INV-007 still active. Per-ticker fetch broken; bulk works. | HIGH | INV-007 (existing) |
+| 13 | Wikipedia, pytrends, Quiver sec13fchanges, Quiver offexchange, Quiver corporatedonors, Quiver patentmomentum, CNN F&G `date` field, Apewisdom `snapshot_date` | `date` columns stored as STRING (not pandas datetime64). Functional — engine can `pd.to_datetime` at read time — but indicates the prefetch lost type info during write. PIT cutoff queries become string-comparison-correct only with ISO-8601 format. | LOW (typing) | INV-033 |
+
+### Per-source field-level matrix
+
+#### Polygon news (`data_prefetch/polygon/news/AAPL.parquet`, 21621 rows, 12 cols)
+- HAVE: ticker, id, published_utc, title, description, article_url, amp_url, publisher_name, publisher_homepage_url, sentiment (article-level), sentiment_reasoning (article-level), all_tickers
+- MISSING per Polygon `/v2/reference/news` spec:
+  - **`insights`** (list of per-ticker {ticker, sentiment, sentiment_reasoning}) — CRITICAL miss; for multi-ticker articles we lose ticker-specific sentiment
+  - `keywords` (article keywords/tags)
+  - `image_url`
+  - `author`
+- **Action:** re-prefetch news with full schema. ~4-6h at full universe.
+
+#### Polygon financials (AAPL.parquet, 86 rows, 11 cols)
+- HAVE: ticker, filing_date, period_of_report_date, fiscal_period, fiscal_year, start_date, end_date, cik, company_name, source_filing_url, **financials_json (STRING — unparsed)**
+- MISSING per Polygon `/vX/reference/financials` spec (within `financials_json`):
+  - Income statement: revenue, cost_of_revenue, gross_profit, operating_expenses, operating_income, net_income, eps_basic, eps_diluted, weighted_average_shares
+  - Balance sheet: total_assets, total_liabilities, stockholders_equity, current_assets, current_liabilities, long_term_debt
+  - Cash flow: cash_from_operations, cash_from_investing, cash_from_financing, capex, free_cash_flow
+  - `tickers` array (multi-ticker filings — some financials cover multiple share classes)
+  - `acceptance_datetime_utc` (more granular than filing_date)
+- **Action:** parse financials_json into structured columns + reread cache. ~30 min processing on existing cache (no new API calls).
+
+#### Polygon events (AAPL.parquet, 1 row, 4 cols)
+- HAVE: ticker, event_type, event_date, **details_json (STRING — unparsed)**
+- MISSING: only ticker_change events present; spec lists splits, dividends, delisting, name_change, merger
+- **Action:** re-prefetch with `?types=ticker_change,splits,dividends,delisting,name_change` query. ~1h.
+
+#### Polygon reference (AAPL.parquet, 1 row, 16 cols)
+- HAVE: ticker, name, market_cap, share_class_shares_outstanding, weighted_shares_outstanding, sic_code, sic_description, primary_exchange, type, active, currency_name, cik, list_date, delisted_utc, homepage_url, fetched_at
+- MISSING per spec:
+  - `address` (street/city/state/zip — useful for geographic strategies)
+  - `branding` (logo_url, icon_url)
+  - `total_employees`
+  - `phone_number`
+  - `description` (company description text)
+  - `composite_figi`, `share_class_figi` (FIGI identifiers)
+  - `round_lot`
+- **Action:** add fields to `prefetch_polygon_reference.py` + re-prefetch. ~1h.
+
+#### Quiver congressional (AAPL.parquet, 1087 rows, 16 cols)
+- HAVE: Representative, BioGuideID, ReportDate, TransactionDate, Ticker, Transaction, Range, House, Amount, Party, last_modified, TickerType, Description, ExcessReturn, PriceChange, SPYChange
+- MISSING per Quiver API spec:
+  - `District` (congressional district)
+  - `State`
+  - `Industry`, `Sector`
+  - `Filing` (URL to filing)
+- **Action:** when re-prefetching, extend to capture these fields. (Currently in flight as `b3xny7m35` BG — won't be in this run; future run.)
+
+#### Quiver gov_contracts (AAPL.parquet, 66 rows, 4 cols) — **CRITICAL FIELD GAP**
+- HAVE: Ticker, Amount (STRING type), Qtr (int), Year (int)
+- MISSING per Quiver `/historical/govcontracts/{ticker}` API spec — this is the EXACT pattern owner cited:
+  - **`Date`** (when contract was awarded — DAILY granularity, not quarterly aggregate)
+  - **`AwardingAgency`** (who awarded — DOD, NASA, GSA, etc.)
+  - **`DepartmentDescription`**
+  - **`ContractDescription`** (contract subject text)
+  - **`Amount` should be numeric** (currently STRING)
+- **Severity:** CRITICAL — the data we have is severely impoverished. Qtr+Year aggregate cannot do PIT cutoff at daily level. Strategy "buy on gov contract win" cannot be implemented at all without DateSigned. Currently mid-flight in BG `b3xny7m35` re-prefetch — will need a SECOND re-prefetch with extended field set after this audit.
+- **Action:** edit `prefetch_quiver.py` save logic to capture all returned fields (currently must be filtering); re-launch.
+
+#### Quiver insider (AAPL.parquet, 249 rows, 16 cols)
+- HAVE: Ticker, Date, Name, AcquiredDisposedCode, TransactionCode, Shares, PricePerShare, SharesOwnedFollowing, fileDate, officerTitle, isDirector, isOfficer, isTenPercentOwner, isOther, directOrIndirectOwnership, uploaded
+- COMPLETE — both Date (transaction) and fileDate (when filed) present. DEC-512 BUG-INSIDER-PIT correctly uses fileDate. **Resolved.**
+
+#### Quiver institutional (AAPL.parquet) — INV-007 STILL ACTIVE
+- 0 rows. Per-ticker fetch broken. Bulk endpoint `quiver/sec13fchanges/global.parquet` (500K rows) works. **Action:** wire engine consumers to use bulk parquet, deprecate per-ticker.
+
+#### Quiver topshareholders (AAPL.parquet, 1 row, 2 cols) — INV-008
+- ownership / ownership_options as JSON-string objects. NO date. NO structured top-N rows.
+- **Action:** parse JSON into structured rows + add `as_of_date` column. Schedule periodic snapshot capture for PIT history (Stage 3+).
+
+#### Quiver etfholdings (AAPL.parquet, 703 rows, 5 cols) — INV-008
+- ETF Symbol, Holding Name, Holding Symbol, % of ETF, Value ($). **NO date** — current snapshot only.
+- **Action:** add daily snapshot capture going forward (cron) for ETF flow signals.
+
+#### SEC EDGAR all 11 forms (AAPL Form 4: 586 rows, 6 cols) — **CRITICAL FIELD GAP**
+- HAVE: ticker, cik, form, filing_date, accession_number, primary_doc
+- MISSING — all of the structured filing CONTENT:
+  - Form 4: TransactionDate, ReportingOwner.Name, OfficerTitle, IsDirector, IsOfficer, IsTenPercentOwner, Transaction.SecurityType, Transaction.Shares, Transaction.PricePerShare, Transaction.AcquiredDisposed
+  - 8-K: ItemNumber (1.01 acquisition / 2.02 results / 5.02 officer change / 8.01 other), CompanyText, Items array
+  - SC 13D: ReportingOwner, PercentOfClass, Shares, AcquisitionDate, PurposeOfTransaction
+  - 10-K/10-Q: link to financial-tag (XBRL) data
+  - DEF 14A: ProxyType, ItemDetails
+- **Severity:** CRITICAL. We have "filed-on-date" only — useful for "filing event happened" signals (e.g., 8-K within last 5 days = catalyst), but nothing about WHAT was filed.
+- **Action:** Two paths:
+  1. Parse `primary_doc` XML/HTML for each filing → very expensive (~1700 tickers × 11 forms × N filings each)
+  2. Use SEC EDGAR full-text-search + structured-data XBRL feeds → faster, smaller scope. **Recommended.**
+- **Effort:** ~20-30h to add structured content fetch.
+
+#### CNN F&G daily (253 rows, 4 cols)
+- HAVE: timestamp (int64 epoch), score, rating, date (string)
+- COMPLETE for the composite endpoint. 7 sub-components in separate parquets per DEC-498. Confirmed.
+- Note: `timestamp` and `date` redundant; `rating` is regime label ("Greed"/"Extreme Greed"). Schema is fine.
+
+#### AAII (325 rows, 5 cols)
+- HAVE: date, bullish, neutral, bearish, bull_bear_spread
+- MISSING per AAII publication:
+  - `8_week_avg` (8-week MA of bull-bear spread — published WITH the survey)
+  - `historical_avg` (long-term avg)
+  - `s&p_500_close` (S&P close on survey date — for context)
+- AAII also publishes (separate endpoints, not yet cached):
+  - **Asset Allocation Survey** (monthly: stocks/bonds/cash %)
+  - **Investor Confidence Index** (quarterly)
+- **Action:** add 3 missing fields to weekly + add 2 separate endpoints. ~1h.
+
+#### CFTC COT (e-mini SP500: 1293 rows, 87 cols)
+- 87 columns — comprehensive financial-disagg breakdown. **No fields missing.**
+- Note: `report_date` is `object` (string) — should be datetime. INV-033 typing.
+
+#### FRED VIXCLS (1623 rows, 2 cols: date, value)
+- COMPLETE — but limited to 2020-01-01 onward per `prefetch_macro.py` `DATE_START`. VIXCLS goes back to 1990. **Action:** consider extending DATE_START for backtesting beyond 2020.
+
+#### ALFRED — same series schema, with realtime_start/realtime_end vintage params
+- **PROBE NEEDED:** does our ALFRED cache include realtime_start + realtime_end columns? If not, the vintage data is the SAME as FRED current (no PIT-revision benefit). **This is the test the audit hasn't yet run.**
+
+#### Wikipedia (AAPL.parquet, 1855 rows, 3 cols)
+- HAVE: date (STRING), views, article
+- COMPLETE — but date is string. INV-033.
+
+#### pytrends (AAPL.parquet, 262 rows, 4 cols)
+- HAVE: ticker, date (STRING), search_volume_index, query_label
+- MISSING dimensions:
+  - `interest_by_region` (state-level geographic dimension)
+  - `related_queries` (co-search analysis)
+  - `related_topics`
+- **Action:** add 3 dimensional endpoints. ~3-4h rate-limited.
+
+#### Quiver offexchange (AAPL.parquet, 3937 rows, 5 cols)
+- HAVE: Ticker, Date (STRING), OTC_Short, OTC_Total, DPI
+- COMPLETE for FINRA off-exchange. INV-033 typing.
+
+#### Apewisdom (global.parquet, 2310 rows, 8 cols)
+- HAVE: rank, ticker, name, mentions, upvotes, rank_24h_ago, mentions_24h_ago, snapshot_date (STRING)
+- MISSING per Apewisdom API:
+  - `subreddits` (which subreddits — currently the global feed only)
+  - `sentiment` (positive/negative count)
+- **Action:** add 4 subreddit-specific endpoints + sentiment dimension.
+
+#### Quiver news bulk (1500 rows, 6 cols)
+- HAVE: url, time, headline, category, summary, image
+- **NO ticker column** — articles categorized by category only. Cannot do per-ticker news lookup from this endpoint.
+- **Action:** verify this is the only Quiver news endpoint; if per-ticker exists, prefetch that.
+
+#### Quiver sec13fchanges (500K rows, 10 cols)
+- HAVE: Date (STRING), ReportPeriod, Ticker, Fund, Change, Change_Share, Change_Pct, Held, Held_Normalized, Close
+- COMPLETE bulk. INV-033 typing.
+
+#### Quiver corporatedonors (25K rows, 11 cols)
+- HAVE: BioGuideID, CandidateName, CompanyCMTENM, TransactionDate (STRING), TransactionAmount, Ticker, CommitteeName, Cycle, TransactionType, CompanyCMTEID, Uploaded
+- COMPLETE. INV-033 typing.
+
+#### Quiver patentmomentum (5.83M rows, 3 cols)
+- HAVE: ticker, date (STRING), momentum
+- **MINIMAL fields** — Quiver Patents API likely has more (granted_patents, pending_patents, citations, R&D_spend per Quiver docs).
+- **Action:** verify Quiver Patents endpoint full field set + extend.
+
+#### Finnhub news (AAPL.parquet) — INV-016 ESCALATES
+- 0 rows for AAPL specifically. Other tickers may also be empty. Universe coverage 509 files but content per file unknown.
+- **Action:** spot-check 5-10 other tickers for empty parquets; re-prefetch any that are 0-row.
+
+#### AV news (CCI.parquet, 303 rows, 8 cols)
+- HAVE: date, sentiment_mean, sentiment_weighted, article_count, bullish_count, bearish_count, max_relevance, sentiment_direction
+- **AGGREGATED DAILY** — per-article info lost. AV `NEWS_SENTIMENT` API returns: title, url, time_published, authors, summary, banner_image, source, category_within_source, source_domain, topics, overall_sentiment_score, overall_sentiment_label, ticker_sentiment[].
+- **Action:** re-prefetch with raw-article schema preserved + roll up to daily as derived view, not as primary cache.
+
+#### OHLCV cache (AAPL.parquet, 1255 rows, 6 cols) — **MISSING KEY FIELDS**
+- HAVE: date, open, high, low, close, volume
+- MISSING from Polygon `/v2/aggs/.../day` response:
+  - **`vwap`** (volume-weighted average price — execution-cost benchmark)
+  - **`transactions`** (number of trades per bar — liquidity scoring)
+- **Action:** edit `prefetch_polygon_ohlcv_daily.py` to capture these + re-prefetch. ~6-8h. INV-028.
+
+### Polygon FREE plan inventory (Indices / Options / Futures / Currencies Basic)
+
+Owner confirmed: can add 4 free Polygon plans alongside paid Stocks Starter. Inventory:
+
+#### **Polygon Indices Basic (FREE)**
+
+Direct index aggregates (no ETF proxy needed):
+
+| Endpoint | Description | Phase 1A use |
+|---|---|---|
+| `/v2/aggs/ticker/I:SPX/range/.../day` | S&P 500 INDEX (vs SPY ETF) | Cleaner regime classifier |
+| `/v2/aggs/ticker/I:NDX/range/.../day` | Nasdaq-100 INDEX (vs QQQ) | Same |
+| `/v2/aggs/ticker/I:DJI/range/.../day` | Dow Jones INDEX (vs DIA) | Same |
+| `/v2/aggs/ticker/I:RUT/range/.../day` | Russell 2000 INDEX (vs IWM) | Cleaner small-cap regime |
+| `/v2/aggs/ticker/I:VIX/range/.../day` | VIX INDEX direct | **RESOLVES BUG-VIX-PROXY permanently** |
+| `/v2/aggs/ticker/I:VIX9D/range/.../day` | 9-day VIX | Term-structure short end |
+| `/v2/aggs/ticker/I:VIX3M/range/.../day` | 3-month VIX | DEC-513 #7 native (vs FRED VXVCLS) |
+| `/v2/aggs/ticker/I:VIX6M/range/.../day` | 6-month VIX | Extended term-structure |
+| `/v2/aggs/ticker/I:VVIX/range/.../day` | VVIX (vol of VIX) | **RESOLVES INV-010 (VVIXCLS 400 from FRED)** |
+| `/v2/aggs/ticker/I:OEX/range/.../day` | S&P 100 | Mega-cap regime |
+| `/v2/aggs/ticker/I:MID/range/.../day` | S&P 400 mid-cap | Mid-cap regime |
+| `/v2/aggs/ticker/I:SML/range/.../day` | S&P 600 small-cap | Small-cap regime |
+| `/v2/aggs/ticker/I:NYA/range/.../day` | NYSE Composite | Broad-market regime |
+| `/v2/aggs/ticker/I:COMP/range/.../day` | Nasdaq Composite | Broad-tech regime |
+| `/v3/reference/tickers?market=indices` | Indices universe list | Reference |
+| `/v3/snapshot/indices` | Current snapshot | Real-time (Stage 3+) |
+
+**Use cases:** native VIX (resolves BUG-VIX-PROXY structurally), VIX term-structure direct (resolves INV-010 VVIX gap from FRED), regime classifier on direct indices vs ETF proxies (no tracking error).
+
+**Estimated prefetch:** ~14 series × 6 years × 1 daily fetch = trivial (~10 min wall clock). **HIGH VALUE per dollar (zero $ added).**
+
+#### **Polygon Options Basic (FREE)**
+
+| Endpoint | Description | Use case |
+|---|---|---|
+| `/v3/reference/options/contracts?underlying_ticker={t}` | Option chain universe per ticker | Per-ticker chain fetch |
+| `/v3/reference/options/contracts/{contract}` | Per-contract metadata (strike, expiry, type) | Reference |
+| `/v2/aggs/ticker/O:AAPL250117C00200000/range/.../day` | OHLCV per option contract | Vol surface, OI history |
+| `/v3/snapshot/options/{ticker}` | Current chain snapshot per ticker | Stage 3+ |
+| `/v3/snapshot/options/{ticker}/{contract}` | Per-contract snapshot | Stage 3+ |
+
+**Derived signals possible:**
+- **Put/call ratio per ticker** (volume + OI) — bullish/bearish positioning
+- **Implied vol surface** — forward-looking vol expectations
+- **IV rank/percentile** — how expensive options are vs history
+- **Skew** (OTM put IV vs OTM call IV) — tail-risk pricing
+- **Term structure** of IV — short vs long-dated vol
+- **Unusual options activity** (volume vs OI vs avg) — institutional flow
+- **Gamma exposure (GEX)** approximation — dealer-positioning signal
+
+**Caveat:** Options chains explode in size. AAPL has ~500-1000 contracts at any time × 6 years history = potentially 10-50 GB. Need careful prefetch strategy: just OI+IV+volume daily aggregates per contract, NOT every tick.
+
+**Estimated:** ~10-30h initial prefetch + ongoing daily updates. **HIGH VALUE for Phase 1B+ (options-flow strategies).**
+
+#### **Polygon Futures Basic (FREE)**
+
+| Symbol | Description | Use case |
+|---|---|---|
+| ES (e-mini SP500) | S&P 500 futures | Term structure vs SPX index |
+| NQ (e-mini Nasdaq) | NDX futures | Same |
+| RTY (e-mini Russell) | RUT futures | Same |
+| YM (e-mini Dow) | DJI futures | Same |
+| VX (VIX futures) | VIX futures | **VIX futures curve — major contango/backwardation signal**; cross-validates CFTC COT |
+| CL (WTI crude) | Oil futures | Term structure vs USO ETF; macro signal |
+| GC (gold) | Gold futures | Term structure vs GLD ETF |
+| SI (silver) | Silver futures | Same vs SLV |
+| HG (copper) | Copper futures | Industrial-cycle signal |
+| ZB / ZN / ZF / ZT (treasuries) | Treasury futures | Yield-curve positioning vs FRED DGS |
+| 6E / 6J / 6B / 6A / 6C / 6S | Currency futures (EUR/JPY/GBP/AUD/CAD/CHF) | Cross-validate Polygon Currencies |
+| ZC / ZS / ZW (corn/soy/wheat) | Agriculturals | Inflation signal |
+
+**Estimated:** ~25 contracts × 6 years × daily = ~5 min × 25 = ~2h wall clock. **MEDIUM-HIGH VALUE** (term structure signals not currently captured).
+
+#### **Polygon Currencies Basic (FREE)**
+
+| Pair | Use case |
+|---|---|
+| C:EURUSD | DXY major component (57.6% weight) |
+| C:USDJPY | DXY (13.6%); risk-off proxy |
+| C:GBPUSD | DXY (11.9%) |
+| C:USDCAD | DXY (9.1%); commodity-currency cross |
+| C:USDCHF | DXY (3.6%); risk-off proxy |
+| C:USDAUD | Risk-on currency cross |
+| C:USDNZD | Same |
+| C:USDCNY | Asia-EM proxy |
+| C:USDMXN | LATAM proxy |
+| C:USDINR | Asia-EM proxy |
+
+**Estimated:** ~10 pairs × 6 years × daily = trivial (~30 min). **MEDIUM VALUE** — gives us native DXY computation (vs FRED DTWEXBGS aggregate or UUP ETF proxy) + cross-currency risk-on/off signals.
+
+### Recommended action plan (per #76 column-c)
+
+#### Tier F — FIELD-LEVEL re-prefetches (existing endpoints, schema-fix)
+
+| # | Action | Est. effort | Priority |
+|---|---|---|---|
+| F1 | Quiver gov_contracts: re-fetch with full field set (Date, AwardingAgency, etc.) | 1-2h | **P0** (CRITICAL gap) |
+| F2 | Polygon news: re-prefetch with `insights` array | 4-6h | P1 |
+| F3 | Polygon financials: parse financials_json into structured columns (no API calls — local processing) | 30 min | P1 |
+| F4 | Polygon events: re-prefetch with `?types=ticker_change,splits,dividends,delisting` | 1h | P2 |
+| F5 | Polygon reference: extend to capture address/branding/employees/FIGI/description + re-prefetch | 1h | P2 |
+| F6 | OHLCV: extend prefetch_polygon_ohlcv_daily.py to capture `vwap` + `transactions` + re-prefetch | 6-8h | P1 |
+| F7 | SEC EDGAR: parse primary_doc structured data (XBRL for 10-K/Q; XML for Form 4 etc.) | 20-30h | P1 |
+| F8 | Quiver congressional: re-fetch with District/State/Industry/Sector | (next BG) | P2 |
+| F9 | AV news: re-fetch raw articles (not aggregated) | 10-15h | P1 |
+| F10 | Finnhub news: spot-check 5-10 tickers for empty parquets; re-fetch any 0-row | 1-2h + re-prefetch | P1 |
+| F11 | All STRING-date columns → datetime: write migration script | 1h | P2 (cosmetic) |
+
+#### Tier G — NEW Polygon FREE plan prefetches
+
+| # | Plan | Est. effort | Priority |
+|---|---|---|---|
+| G1 | Indices Basic: 14 series × 6 years (SPX/NDX/DJI/RUT/VIX/VIX9D/VIX3M/VIX6M/VVIX/OEX/MID/SML/NYA/COMP) | ~10 min | **P0** (resolves BUG-VIX-PROXY + INV-010) |
+| G2 | Futures Basic: ~25 contracts (ES/NQ/RTY/VX/CL/GC/SI/HG/ZB-N-F-T/6E-J-B-A-C-S/ZC-S-W) | ~2h | P1 |
+| G3 | Currencies Basic: ~10 pairs (EURUSD/USDJPY/GBPUSD/etc.) | ~30 min | P1 |
+| G4 | Options Basic: chains + IV + OI for top 100 most-liquid tickers as starter (full universe later) | ~10-30h | P1-P2 |
+
+**Combined estimated wall time: ~80-100h additional fetch (parallelizable, mostly unattended).**
+
+### Subscription confirmations resolved
+- ✓ Polygon Stocks Starter (paid, current)
+- ✓ Polygon Indices/Options/Futures/Currencies Basic (FREE — owner confirmed adding)
+- ✓ Quiver Trader plan (current)
+- ✗ NO new paid subscriptions (per owner directive)
+
+---
+
 ## Pass 53 Day-9 v8h evening DEEP DIVE per owner directive 2026-05-07
 
 **Owner directive:** *"I want all data downloaded from API endpoints with all dimensions pre-fetched. No exceptions. Even if its relevant later on beyond phase 1A, i need to download it now. I am going to pause API subscriptions so i need it all downloaded even if we do not have plan to use it. Download broad everything and use as needed is the goal."*
