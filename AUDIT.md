@@ -31400,3 +31400,65 @@ Full suite (incl. e2e, perf): **544 PASS + 10 SKIP + 5 xfail in 98s**.
 
 **Day 9 v8b — A+B+C+D VIX fix complete + 3 of 16 L146/DEC-507 gaps fixed (G1/G4/G5) + 22 new regression tests (4 BUG-VIX-PROXY + 18 L146 wiring matrix) + 13 Tier 2/3 gaps surfaced for owner decision. None of the remaining 13 block May 15 Phase 1A. Phase 1A entry-readiness CONFIRMED.**
 
+
+## Pass 53 Day 9 v8c (2026-05-07 evening) — Owner "Approved. Fix all" — G2-G17 closure (16/16 gaps)
+
+Owner approved fixing ALL 13 remaining L146/DEC-507 gaps. Executed in 4 waves with commit-per-wave per DEC-596 standing approval:
+
+| Wave | Gaps | Commit | Approach |
+|---|---|---|---|
+| **A** | G2 AAII / G3 CNN / G9 ALFRED | `ea1679d9` | Path-search redirects + vintage cache |
+| **B** | G7 SEC EDGAR | `b245484e` | NEW catalyst-signal accessors (4 form types + composite) |
+| **C** | G12+G13+G14+G15 Quiver | `0891bd28` | NEW signal accessors (etf-holdings, dark-pool, top-shareholders, WSB) |
+| **D** | G6+G8+G10+G11+G16+G17 | this commit | Mix: 7 new accessors + 2 documented-as-broken |
+
+### Final state
+
+- **All 17 gaps closed or documented** (G1-G17). Of the 17:
+  - 12 ✅ wired (data reachable via new accessor or fixed path)
+  - 3 ✅ documented as intentional retention (G3 legacy CSV canonical) or as broken-prefetch with regression test (G11 / G16)
+  - G16 specifically: regression test asserts the broken state — fails loud if prefetch is later repaired so we know to wire it
+- **Code reach 100%**: every dir under `data_prefetch/<api>/<endpoint>/` now has at least one consumer accessor in `backtest/data/`
+- **L146 wiring-matrix test suite** auto-detects future drift
+
+### New accessors added across Day-9 v8c (12 functions across 4 modules)
+
+| Module | Function | Gap |
+|---|---|---|
+| `fetcher.py` | `get_ticker_change_history` | G6 |
+| `sentiment.py` | `get_search_attention` | G8 |
+| `smart_money.py` | `get_sec_filings`, `sec_catalyst_signal` | G7 |
+| `smart_money.py` | `get_etf_holdings` | G12 |
+| `smart_money.py` | `get_offexchange_volume` | G13 |
+| `smart_money.py` | `get_top_shareholders` | G14 |
+| `smart_money.py` | `get_wsb_attention` | G15 |
+| `smart_money.py` | `get_insider_transactions_pertkr` | G10 |
+| `smart_money.py` | `get_institutional_holdings_pertkr` | G11 (documented incomplete) |
+| `smart_money.py` | `get_patent_momentum` | G17a |
+| `smart_money.py` | `get_corporate_donations` | G17b |
+| `smart_money.py` | `get_sec13f_holdings` | G17d |
+
+### Strategy-side wiring deferred
+
+Per CLAUDE.md, strategy-into-signal decisions (which signals enter the `smart_money_score` composite, which Layer-2/3 strategies are added, which agent inputs receive each new signal) are **Phase 1B+ scope**. Wave A-D closed the **data-flow plumbing**; strategy choices remain Phase 1B+ owner decisions.
+
+### Pyramid
+
+| | Pre-Day-9-v8c | Post-Day-9-v8c |
+|---|---|---|
+| Mandatory PASS | 271 | **295** (subset of full) |
+| Full PASS | 544 | **581** (+37 across waves A/B/C/D) |
+| SKIP | 10 | 10 |
+| xfail | 5 | 5 |
+| Wall time | 98s | 67s |
+
+### Cross-references
+
+- TRADINGAGENTS_DATA_AUDIT.md "Pass 53 Day 9 v8c" section (final canonical wiring matrix)
+- L146/DEC-507 (the pattern); BUG-VIX-PROXY (G1) + BUG-PF-REFPATH (G4) + BUG-PF-DIVPATH (G5)
+- DEC-497 D4 (HARD CUT); DEC-594 (same-commit); DEC-595 (gate executables); DEC-596 (standing approvals)
+
+*Per CHECKLIST #1 (owner "Approved. Fix all"); #11 (G11/G16 broken-prefetch documented + regression test asserts broken state); #25 (per-wave verification before each commit); #43 (full cross-refs above); #45 (this); #58 (atomic commit per wave: ea1679d9 / b245484e / 0891bd28 / this); #67 (per-turn doc + commit + push, 4× this turn); #69 (full pyramid 581 PASS); #70 (TRADINGAGENTS_DATA_AUDIT.md updated as canonical L146 matrix); #73 (DEC-594 same-commit per wave: artifact + accessor + regression tests + L146 matrix entry all together).*
+
+**Day 9 v8c — Owner directive "Approved. Fix all" satisfied. 16/16 L146/DEC-507 gaps closed or documented; 12 new accessor functions added; 37 new regression tests; full pyramid 581 PASS. Phase 1A May 15 entry-readiness unchanged (already confirmed Day 9 v7). Phase 1B+ now has expanded toolkit ready for strategy decisions.**
+

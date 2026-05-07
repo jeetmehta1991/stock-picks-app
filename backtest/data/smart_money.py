@@ -1165,3 +1165,205 @@ def get_wsb_attention(ticker: str, as_of: date,
     except Exception as exc:
         logger.debug("get_wsb_attention(%s): %s", ticker, exc)
         return default
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Pass 53 Day-9 v8c Wave D — L146 G10/G11/G16/G17 closures
+# ─────────────────────────────────────────────────────────────────────────────
+# G10: insider per-ticker fast-path accessor (bulk remains canonical)
+# G11: institutional per-ticker prefetch is INCOMPLETE (AAPL empty, ~18% empty);
+#      bulk sec13fchanges is canonical. Document; do not delete data.
+# G16: Quiver wikipedia mirror is empty (separate data_prefetch/wikipedia/ used).
+#      Document; do not delete.
+# G17: 4 micro-datasets — wire 3 with real data (patentmomentum / corporatedonors /
+#      sec13f); skip quivernews (general headlines, not per-ticker; Polygon news
+#      is the canonical news source already wired).
+
+
+def get_insider_transactions_pertkr(ticker: str, as_of: date,
+                                     lookback_days: int = 90) -> dict:
+    """G10 — Insider transactions for `ticker` from per-ticker prefetch (PIT).
+
+    Source: data_prefetch/quiver/insider/<TICKER>.parquet (per-ticker fast path)
+    Falls back to bulk insiders/global.parquet via _load_quiver_bulk if per-tkr
+    file is missing. Bulk is canonical for completeness.
+
+    Schema: Ticker / Date / Name / AcquiredDisposedCode (A=acquired/D=disposed) /
+            TransactionCode / Shares / PricePerShare / SharesOwnedFollowing /
+            officerTitle / isDirector / isOfficer / isTenPercentOwner
+
+    Returns dict with buy/sell counts + cluster flag.
+    """
+    df = _load_prefetch("insider", ticker)
+    if df is None or df.empty:
+        # Fall back to bulk
+        bulk = _load_quiver_bulk("insiders")
+        if bulk.empty or "Ticker" not in bulk.columns:
+            return {"buy_count": 0, "sell_count": 0, "cluster": False,
+                    "rows_in_window": 0, "source": "none"}
+        df = bulk[bulk["Ticker"] == ticker]
+        source = "bulk"
+    else:
+        source = "per_ticker"
+    if df.empty:
+        return {"buy_count": 0, "sell_count": 0, "cluster": False,
+                "rows_in_window": 0, "source": source}
+    try:
+        df = df.copy()
+        df["Date"] = pd.to_datetime(df["Date"])
+        cutoff = pd.Timestamp(as_of)
+        window_start = cutoff - pd.Timedelta(days=lookback_days)
+        win = df[(df["Date"] >= window_start) & (df["Date"] <= cutoff)]
+        if win.empty:
+            return {"buy_count": 0, "sell_count": 0, "cluster": False,
+                    "rows_in_window": 0, "source": source}
+        buys  = int((win["AcquiredDisposedCode"] == "A").sum())
+        sells = int((win["AcquiredDisposedCode"] == "D").sum())
+        return {
+            "buy_count":      buys,
+            "sell_count":     sells,
+            "cluster":        buys >= 3 or sells >= 3,
+            "rows_in_window": int(len(win)),
+            "source":         source,
+        }
+    except Exception as exc:
+        logger.debug("get_insider_transactions_pertkr(%s): %s", ticker, exc)
+        return {"buy_count": 0, "sell_count": 0, "cluster": False,
+                "rows_in_window": 0, "source": source}
+
+
+def get_institutional_holdings_pertkr(ticker: str) -> dict:
+    """G11 — Institutional per-ticker prefetch (DOCUMENTED AS INCOMPLETE).
+
+    Source: data_prefetch/quiver/institutional/<TICKER>.parquet
+    Status: ~18% of per-ticker files empty (incl. AAPL). Bulk path
+    `data_prefetch/quiver/sec13fchanges/global.parquet` (used by
+    institutional_signal()) is the canonical source. This accessor exists
+    so the per-ticker prefetch is reachable from code (closes L146 wiring
+    gap) but is documented as fallback-only.
+
+    Returns dict with row count + warning flag.
+    """
+    df = _load_prefetch("institutional", ticker)
+    if df is None or df.empty:
+        return {
+            "row_count": 0,
+            "is_complete": False,
+            "warning": "Per-ticker institutional prefetch is empty for "
+                       f"{ticker}; use institutional_signal() (bulk path) "
+                       "or get_top_shareholders() instead.",
+        }
+    return {
+        "row_count":   int(len(df)),
+        "is_complete": True,
+        "warning":     None,
+    }
+
+
+# G16: data_prefetch/quiver/wikipedia/ is empty for all 100 sampled tickers.
+# The separate `data_prefetch/wikipedia/` (already consumed by sentiment.py
+# via get_wikipedia_pageviews) is canonical. No accessor added — the empty
+# Quiver mirror should be re-prefetched or removed (owner decision; data
+# preservation rule keeps it for now).
+
+
+def get_patent_momentum(ticker: str, as_of: date,
+                        lookback_days: int = 90) -> dict:
+    """G17a — Quiver patent-momentum signal (PIT).
+
+    Source: data_prefetch/quiver/patentmomentum/global.parquet
+    Schema: ticker / date / momentum (numeric)
+
+    Returns latest patent-momentum value within lookback window.
+    """
+    bulk = _load_quiver_bulk("patentmomentum")
+    if bulk.empty or "ticker" not in bulk.columns:
+        return {"latest_momentum": None, "as_of": str(as_of), "found": False}
+    try:
+        df = bulk[bulk["ticker"] == ticker].copy()
+        if df.empty:
+            return {"latest_momentum": None, "as_of": str(as_of), "found": False}
+        df["date"] = pd.to_datetime(df["date"])
+        cutoff = pd.Timestamp(as_of)
+        window_start = cutoff - pd.Timedelta(days=lookback_days)
+        win = df[(df["date"] >= window_start) & (df["date"] <= cutoff)]
+        if win.empty:
+            return {"latest_momentum": None, "as_of": str(as_of), "found": False}
+        latest = win.sort_values("date").iloc[-1]
+        return {
+            "latest_momentum": float(latest["momentum"]),
+            "as_of":           str(as_of),
+            "found":           True,
+        }
+    except Exception as exc:
+        logger.debug("get_patent_momentum(%s): %s", ticker, exc)
+        return {"latest_momentum": None, "as_of": str(as_of), "found": False}
+
+
+def get_corporate_donations(ticker: str) -> dict:
+    """G17b — Corporate PAC political donations summary (`Ticker` column).
+
+    Source: data_prefetch/quiver/corporatedonors/global.parquet
+    Schema: BioGuideID / CandidateName / CompanyCMTENM / TransactionDate /
+            TransactionAmount / Ticker / ...
+
+    Returns total donation $ + recipient count for the company's PAC.
+    """
+    bulk = _load_quiver_bulk("corporatedonors")
+    if bulk.empty or "Ticker" not in bulk.columns:
+        return {"total_donations_usd": 0.0, "recipient_count": 0,
+                "found": False}
+    try:
+        df = bulk[bulk["Ticker"] == ticker]
+        if df.empty:
+            return {"total_donations_usd": 0.0, "recipient_count": 0,
+                    "found": False}
+        total = float(df["TransactionAmount"].sum())
+        n = int(df["BioGuideID"].nunique())
+        return {
+            "total_donations_usd": total,
+            "recipient_count":     n,
+            "found":               True,
+        }
+    except Exception as exc:
+        logger.debug("get_corporate_donations(%s): %s", ticker, exc)
+        return {"total_donations_usd": 0.0, "recipient_count": 0,
+                "found": False}
+
+
+def get_sec13f_holdings(ticker: str, as_of: date) -> dict:
+    """G17d — Full SEC 13F institutional holdings for `ticker` (PIT).
+
+    Source: data_prefetch/quiver/sec13f/global.parquet (500K rows bulk).
+    Schema: Date / ReportPeriod / Name / Ticker / Fund / Class / ...
+
+    Complement to existing institutional_signal() which uses sec13fchanges
+    (changes-only). This returns the most-recent absolute-holdings snapshot
+    on or before as_of (filed within ~45 days of ReportPeriod).
+
+    Returns dict with fund_count + total_value_held (when value column present).
+    """
+    bulk = _load_quiver_bulk("sec13f")
+    if bulk.empty or "Ticker" not in bulk.columns:
+        return {"fund_count": 0, "report_period": None, "found": False}
+    try:
+        df = bulk[bulk["Ticker"] == ticker].copy()
+        if df.empty:
+            return {"fund_count": 0, "report_period": None, "found": False}
+        # Filter PIT: 13F filings appear ~45 days after ReportPeriod end
+        df["Date"] = pd.to_datetime(df["Date"])
+        cutoff = pd.Timestamp(as_of)
+        df = df[df["Date"] <= cutoff]
+        if df.empty:
+            return {"fund_count": 0, "report_period": None, "found": False}
+        df["ReportPeriod"] = pd.to_datetime(df["ReportPeriod"], errors="coerce")
+        latest_rp = df["ReportPeriod"].max()
+        latest_snap = df[df["ReportPeriod"] == latest_rp]
+        return {
+            "fund_count":    int(latest_snap["Fund"].nunique()),
+            "report_period": str(latest_rp.date()) if pd.notna(latest_rp) else None,
+            "found":         True,
+        }
+    except Exception as exc:
+        logger.debug("get_sec13f_holdings(%s): %s", ticker, exc)
+        return {"fund_count": 0, "report_period": None, "found": False}

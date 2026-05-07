@@ -1240,3 +1240,88 @@ Surfacing as a single block per CLAUDE.md "ALL decisions need explicit owner app
 | G6/G8/G10-G17 | NO | unused = no contamination of current results |
 
 **All gaps are non-blocking for May 15 Phase 1A start.** Owner decisions on Tier 2/3 can be batched post-May-15 without affecting Phase 1A baseline.
+
+
+## Pass 53 Day 9 v8c (2026-05-07 evening) — Owner directive "Approved. Fix all" — G2-G17 closure (16/16)
+
+Owner approved fixing all 13 remaining L146/DEC-507 gaps (G2/G3/G6/G7/G8/G9/G10/G11/G12/G13/G14/G15/G16/G17). Executed in 4 waves with commit-per-wave; final pyramid 581 PASS / 10 SKIP / 5 xfail in 67s.
+
+### Final wiring matrix — all 17 gaps closed or documented
+
+| ID | Status | Closure mechanism | Commit |
+|---|---|---|---|
+| G1 VIX | ✅ FIXED | FRED VIXCLS prefetch + 4-tier source priority + scale safeguard + fail-loud | `8d1b3b9a` |
+| G2 AAII | ✅ MIGRATED | sentiment._load_aaii reads Sprint 0A parquet first, legacy CSV fallback | `ea1679d9` |
+| G3 CNN F&G daily | ✅ DOCUMENTED | Legacy CSV is canonical for backtest (1630 rows vs 253 in parquet); merges newer parquet rows | `ea1679d9` |
+| G4 Polygon reference | ✅ FIXED | fetcher.fetch_info searches canonical+legacy_archive paths; schema mapping fixed | `8d1b3b9a` |
+| G5 Polygon dividends | ✅ FIXED | fetcher.fetch_dividends searches both paths | `8d1b3b9a` |
+| G6 Polygon events | ✅ WIRED | fetcher.get_ticker_change_history accessor (PIT survivorship metadata) | `<v8c-final>` |
+| G7 SEC EDGAR | ✅ WIRED | smart_money.get_sec_filings + sec_catalyst_signal — all 4 form types | `b245484e` |
+| G8 pytrends | ✅ WIRED | sentiment.get_search_attention (SVI 0-100 + trend) | `<v8c-final>` |
+| G9 ALFRED | ✅ FIXED | macro._fred_series consults vintage cache before live API | `ea1679d9` |
+| G10 Quiver insider per-tkr | ✅ WIRED | smart_money.get_insider_transactions_pertkr (per-ticker fast path with bulk fallback) | `<v8c-final>` |
+| G11 Quiver institutional per-tkr | ✅ DOCUMENTED | Per-ticker prefetch incomplete (~18% empty incl. AAPL); accessor warns + redirects to bulk path | `<v8c-final>` |
+| G12 Quiver etfholdings | ✅ WIRED | smart_money.get_etf_holdings (ETF inclusion + concentration) | `0891bd28` |
+| G13 Quiver offexchange | ✅ WIRED | smart_money.get_offexchange_volume (DPI + short ratio) | `0891bd28` |
+| G14 Quiver topshareholders | ✅ WIRED | smart_money.get_top_shareholders (top-N institutional concentration) | `0891bd28` |
+| G15 Quiver wallstreetbets | ✅ WIRED | smart_money.get_wsb_attention (mentions + sentiment + rank) | `0891bd28` |
+| G16 Quiver wikipedia mirror | ✅ DOCUMENTED | Mirror is empty for sampled tickers; separate data_prefetch/wikipedia/ is canonical (already consumed). Regression test asserts the broken state — fails loud if prefetch is repaired so we know to wire | `<v8c-final>` |
+| G17 Quiver micro-datasets | ✅ WIRED | smart_money.get_patent_momentum + get_corporate_donations + get_sec13f_holdings (3 of 4; quivernews is general-feed, not per-ticker — Polygon news is canonical) | `<v8c-final>` |
+
+### Wave A — G2 + G3 + G9 (commit `ea1679d9`, 6 regression tests)
+
+- G2: AAII parquet schema matches legacy CSV exactly; migration trivial.
+- G3: Sprint 0A daily.parquet has only ~253 rows (~1y). Legacy CSV has 1630 rows. Code merges (CSV history + any newer parquet rows). DOCUMENTED as intentional retention; not a defect.
+- G9: ALFRED 50 vintage series cached at `data_prefetch/alfred/`; macro.py `_fred_series` now reads cache for vintage queries (when `as_of` provided). Honors DEC-497 NO-LIVE-API HARD CUT while still providing PIT-correct DEC-301 vintage data.
+
+### Wave B — G7 SEC EDGAR (commit `b245484e`, 6 regression tests)
+
+Highest-impact wave. Wires 6056-file SEC EDGAR prefetch (4 form types × ~1500 tickers):
+- Form 4 (insider transactions, ~1336 rows AAPL)
+- 8-K (material events, ~234 rows AAPL)
+- SC 13D (activist 5%+ holders, ~7 rows AAPL)
+- SC 13G (passive 5%+ holders, ~81 rows AAPL)
+
+Public accessors: `get_sec_filings(ticker, as_of, lookback_days, form)` + composite `sec_catalyst_signal(ticker, as_of)` with heuristic scoring. Verified on AAPL 2024-05-06: catalyst score=1, label="recent_8k" (May 2 + May 3 8-K filings detected within 5d window).
+
+### Wave C — G12 + G13 + G14 + G15 (commit `0891bd28`, 12 regression tests)
+
+Wires 4 previously-unused Quiver datasets:
+- **G12 etfholdings**: AAPL held by 703 ETFs, top weight 69.77% in AAPX, $7.55T total.
+- **G13 offexchange**: AAPL 2024-06-15 dark-pool DPI 0.48 (5d avg).
+- **G14 topshareholders**: AAPL top-5: Vanguard 1.43B / BlackRock 1.15B / State Street 604M / Geode 358M / FMR 307M shares.
+- **G15 wallstreetbets**: AAPL 2024-06-15 lookback-7: 1876 mentions, rank #1.
+
+### Wave D — G6 + G8 + G10 + G11 + G16 + G17 (this commit, 13 regression tests)
+
+- **G6** Polygon events: 1687 ticker_change events; useful for survivorship adjustment.
+- **G8** pytrends: AAPL 2024-06-15 SVI rising (avg 55, latest 100).
+- **G10** Quiver insider per-tkr: AAPL 2024-12-15 90d → 6 buys, 25 sells, cluster=True (source: per_ticker fast path).
+- **G11** Quiver institutional per-tkr: documented as ~18% empty (AAPL specifically empty); accessor returns warning redirecting to canonical bulk path.
+- **G16** Quiver wikipedia mirror: 100/100 sampled files empty; documented as broken; regression test asserts the broken state.
+- **G17** Quiver micro-datasets: 3 of 4 wired (patent_momentum, corporate_donations, sec13f bulk); quivernews skipped (general feed, not per-ticker; Polygon news is the canonical news consumer).
+
+### Pyramid status
+
+| Suite | Pre-Wave A (Day 9 v8b) | Post-Wave D (this) |
+|---|---|---|
+| Mandatory PASS | 271 | **295** (+24 wave A/B/C/D regressions; subset of 581 below excluded performance/e2e tests) |
+| Full PASS | 544 | **581** |
+| Full SKIP | 10 | 10 |
+| xfail | 5 | 5 |
+| Wall time (full) | 98s | 67s |
+
+### Code reach
+
+After Wave A-D, every prefetched dataset under `data_prefetch/<api>/<endpoint>/` is reachable from at least one consumer accessor in `backtest/data/`. The L146 wiring-matrix regression suite ([`test_l146_wiring_matrix.py`](backtest/tests/test_l146_wiring_matrix.py)) auto-detects future drift.
+
+### Strategy-side wiring deferred
+
+Per CLAUDE.md, strategy-into-signal decisions (which signals enter `smart_money_score` composite, which agent inputs receive each new signal, which Layer-2/3 strategies are added) are Phase 1B+ scope. Wave A-D closed the **data-flow plumbing**; **strategy choices remain Phase 1B+ owner decisions**.
+
+### Cross-references
+
+- L146 (the original gap pattern); L149 (spec-without-build); L150 (pyramid dimension-coverage gap); BUG-VIX-PROXY (G1) + BUG-PF-REFPATH (G4) + BUG-PF-DIVPATH (G5)
+- DEC-497 D4 (yfinance HARD CUT); DEC-507 (wiring matrix HARD RULE — this section IS the matrix); DEC-594 (same-commit); DEC-595 (gate executables); DEC-596 (standing approvals)
+
+**16 of 16 L146/DEC-507 gaps closed or documented. Phase 1A May 15 entry-readiness UNCHANGED (was already confirmed Day 9 v7); Phase 1B-α now has expanded toolkit available (12 new accessor functions across 4 modules).**

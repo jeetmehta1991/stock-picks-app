@@ -295,10 +295,10 @@ def fetch_dividends(
     returns empty DataFrame gracefully.
     """
     safe_ticker = ticker.replace(".", "-")
-    repo_root = Path(__file__).parent.parent.parent
+    repo_root_div = Path(__file__).parent.parent.parent
     candidate_paths = [
-        repo_root / "data_prefetch" / "polygon" / "dividends" / f"{safe_ticker}.parquet",
-        repo_root / "data_prefetch" / "polygon" / "legacy_archive_pass53" / "dividends" / f"{safe_ticker}.parquet",
+        repo_root_div / "data_prefetch" / "polygon" / "dividends" / f"{safe_ticker}.parquet",
+        repo_root_div / "data_prefetch" / "polygon" / "legacy_archive_pass53" / "dividends" / f"{safe_ticker}.parquet",
     ]
     div_path = next((p for p in candidate_paths if p.exists()), None)
     if div_path is None:
@@ -386,3 +386,41 @@ def volume_spike_factor(df_ohlcv: pd.DataFrame, window: int = 20) -> float:
     if avg_vol == 0:
         return 1.0
     return today_vol / avg_vol
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Pass 53 Day-9 v8c Wave D — L146 G6 Polygon events accessor
+# ─────────────────────────────────────────────────────────────────────────────
+def get_ticker_change_history(ticker: str) -> list[dict]:
+    """Return historical ticker_change events from Polygon events prefetch.
+
+    Source: data_prefetch/polygon/events/<TICKER>.parquet
+    Schema: ticker / event_type / event_date / details_json
+
+    Useful for survivorship adjustment (mapping current ticker to historical
+    tickers it was previously known by). Currently only `ticker_change`
+    events are populated; other event types may appear in future prefetches.
+
+    Returns list of dicts with keys: event_type, event_date, details_json.
+    Empty list if no prefetch found.
+    """
+    safe = ticker.replace(".", "-")
+    path = (Path(__file__).parent.parent.parent / "data_prefetch"
+            / "polygon" / "events" / f"{safe}.parquet")
+    if not path.exists():
+        return []
+    try:
+        df = pd.read_parquet(path)
+        if df.empty:
+            return []
+        return [
+            {
+                "event_type":  row.get("event_type", ""),
+                "event_date":  row.get("event_date"),
+                "details_json": row.get("details_json", ""),
+            }
+            for _, row in df.iterrows()
+        ]
+    except Exception as exc:
+        logger.debug("get_ticker_change_history(%s): %s", ticker, exc)
+        return []

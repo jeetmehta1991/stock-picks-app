@@ -494,3 +494,60 @@ def sentiment_snapshot(as_of: date, ticker: Optional[str] = None) -> dict:
         "wikipedia":        wikipedia,
         "sentiment_score":  max(-5, min(5, score)),
     }
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Pass 53 Day-9 v8c Wave D — L146 G8 pytrends search-attention accessor
+# ─────────────────────────────────────────────────────────────────────────────
+PREFETCH_PYTRENDS_DIR = _REPO_ROOT_SENT / "data_prefetch" / "pytrends"
+
+
+def get_search_attention(ticker: str, as_of: date,
+                          lookback_days: int = 30) -> dict:
+    """Return Google Trends search-volume signal for `ticker` (PIT).
+
+    Source: data_prefetch/pytrends/<TICKER>.parquet
+    Schema: ticker / date / search_volume_index (0-100) / query_label
+
+    Search Volume Index (SVI) is normalized 0-100 by Google Trends; spike
+    in SVI is a retail-attention proxy (which can foreshadow vol/momentum
+    in single-name names but is noisy).
+
+    Returns dict with avg SVI in window + latest SVI + trend direction.
+    """
+    safe = ticker.replace(".", "-")
+    path = PREFETCH_PYTRENDS_DIR / f"{safe}.parquet"
+    default = {"avg_svi": None, "latest_svi": None,
+               "trend": "unknown", "rows_in_window": 0,
+               "as_of": str(as_of)}
+    if not path.exists():
+        return default
+    try:
+        df = pd.read_parquet(path)
+        if df.empty or "date" not in df.columns:
+            return default
+        df["date"] = pd.to_datetime(df["date"])
+        cutoff = pd.Timestamp(as_of)
+        window_start = cutoff - pd.Timedelta(days=lookback_days)
+        window = df[(df["date"] >= window_start) & (df["date"] <= cutoff)]
+        if window.empty:
+            return default
+        avg_svi = float(window["search_volume_index"].mean())
+        latest_svi = float(window["search_volume_index"].iloc[-1])
+        # Crude trend: latest vs window avg
+        if latest_svi > avg_svi * 1.2:
+            trend = "rising"
+        elif latest_svi < avg_svi * 0.8:
+            trend = "falling"
+        else:
+            trend = "flat"
+        return {
+            "avg_svi":         avg_svi,
+            "latest_svi":      latest_svi,
+            "trend":           trend,
+            "rows_in_window":  int(len(window)),
+            "as_of":           str(as_of),
+        }
+    except Exception as exc:
+        logger.debug("get_search_attention(%s): %s", ticker, exc)
+        return default
