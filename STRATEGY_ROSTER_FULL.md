@@ -181,74 +181,74 @@ Per owner directive 2026-05-06 *"Long bias is not logical. The philosophy is buy
 
 | # | Strategy ID | Direction | Logic summary | Long-pair |
 |---|---|---|---|---|
-| 73 | `pivot_r1_fade_short` | short | Pivot R1 resistance fade short | mirrors `pivot_s1_bounce` |
-| 74 | `pivot_r2_fade_short` | short | Pivot R2 deeper-resistance fade short | mirrors `pivot_s2_bounce` |
-| 75 | `pivot_r3_blowoff_short` | short | Pivot R3 blow-off-top reversal short | mirrors `pivot_s3_capitulation` |
-| 76 | `pivot_s1_breakdown_short` | short | Pivot S1 breakdown continuation short | mirrors `pivot_r1_breakout` |
-| 77 | `pivot_s2_breakdown_short` | short | Pivot S2 continuation breakdown short | mirrors `pivot_r2_continuation` |
-| 78 | `camarilla_r3_fade_short` | short | Camarilla R3 reversal fade short | mirrors `camarilla_s3_bounce` |
-| 79 | `camarilla_s3_breakdown_short` | short | Camarilla S3 breakdown short | mirrors `camarilla_r3_breakout` |
-| 80 | `prev_day_high_fade_short` | short | Previous day high fade short | mirrors `prev_day_low_bounce` |
+| 134 | `pivot_r1_fade_short` | short | Pivot R1 resistance fade short | mirrors `pivot_s1_bounce` |
+| 135 | `pivot_r2_fade_short` | short | Pivot R2 deeper-resistance fade short | mirrors `pivot_s2_bounce` |
+| 136 | `pivot_r3_blowoff_short` | short | Pivot R3 blow-off-top reversal short | mirrors `pivot_s3_capitulation` |
+| 137 | `pivot_s1_breakdown_short` | short | Pivot S1 breakdown continuation short | mirrors `pivot_r1_breakout` |
+| 138 | `pivot_s2_breakdown_short` | short | Pivot S2 continuation breakdown short | mirrors `pivot_r2_continuation` |
+| 139 | `camarilla_r3_fade_short` | short | Camarilla R3 reversal fade short | mirrors `camarilla_s3_bounce` |
+| 140 | `camarilla_s3_breakdown_short` | short | Camarilla S3 breakdown short | mirrors `camarilla_r3_breakout` |
+| 141 | `prev_day_high_fade_short` | short | Previous day high fade short | mirrors `prev_day_low_bounce` |
 
 #### Momentum shorts (6 new)
 
 | # | Strategy ID | Direction | Logic summary | Long-pair |
 |---|---|---|---|---|
-| 81 | `macd_fast_crossover_short` | short | MACD fast (5/10/9) bearish crossover | mirrors `macd_fast_crossover` |
-| 82 | `williams_r_overbought_short` | short | Williams %R overbought reversal short | mirrors `williams_r_oversold` |
-| 83 | `roc_collapse_short` | short | Rate-of-change collapse (negative momentum burst) short | mirrors `roc_burst` |
-| 84 | `awesome_oscillator_bearish_short` | short | Awesome Oscillator bearish saucer/twin-peaks short | mirrors `awesome_oscillator` |
-| 85 | `ppo_crossover_short` | short | PPO bearish signal crossover | mirrors `ppo_crossover` |
-| 86 | `ultimate_oscillator_bearish_short` | short | Ultimate Oscillator bearish-divergence reversal | mirrors `ultimate_oscillator` |
+| 142 | `macd_fast_crossover_short` | short | MACD fast (5/10/9) bearish crossover | mirrors `macd_fast_crossover` |
+| 143 | `williams_r_overbought_short` | short | Williams %R overbought reversal short | mirrors `williams_r_oversold` |
+| 144 | `roc_collapse_short` | short | Rate-of-change collapse (negative momentum burst) short | mirrors `roc_burst` |
+| 145 | `awesome_oscillator_bearish_short` | short | Awesome Oscillator bearish saucer/twin-peaks short | mirrors `awesome_oscillator` |
+| 146 | `ppo_crossover_short` | short | PPO bearish signal crossover | mirrors `ppo_crossover` |
+| 147 | `ultimate_oscillator_bearish_short` | short | Ultimate Oscillator bearish-divergence reversal | mirrors `ultimate_oscillator` |
 
 #### Trend shorts (5 new)
 
 | # | Strategy ID | Direction | Logic summary | Long-pair |
 |---|---|---|---|---|
-| 87 | `death_cross_9_21_short` | short | Faster 9/21 EMA bearish cross short | mirrors `golden_cross_9_21` |
-| 88 | `death_cross_20_50_short` | short | 20/50 SMA bearish cross short | mirrors `golden_cross_20_50` |
-| 89 | `tema_dema_bearish_short` | short | TEMA crosses below DEMA short | mirrors `tema_dema` |
-| 90 | `ichimoku_tk_cross_bearish_short` | short | Ichimoku Tenkan-Kijun bearish cross short | mirrors `ichimoku_tk_cross` |
-| 91 | `adx_initiation_bearish_short` | short | ADX > 25 with -DI dominant short | mirrors `adx_initiation` |
+| 148 | `death_cross_9_21_short` | short | Faster 9/21 EMA bearish cross short | mirrors `golden_cross_9_21` |
+| 149 | `death_cross_20_50_short` | short | 20/50 SMA bearish cross short | mirrors `golden_cross_20_50` |
+| 150 | `tema_dema_bearish_short` | short | TEMA crosses below DEMA short | mirrors `tema_dema` |
+| 151 | `ichimoku_tk_cross_bearish_short` | short | Ichimoku Tenkan-Kijun bearish cross short | mirrors `ichimoku_tk_cross` |
+| 152 | `adx_initiation_bearish_short` | short | ADX > 25 with -DI dominant short | mirrors `adx_initiation` |
 
 #### Mean-reversion shorts (7 new) — sell the rip when overbought
 
 | # | Strategy ID | Direction | Logic summary | Long-pair |
 |---|---|---|---|---|
-| 92 | `rsi9_overbought_short` | short | RSI(9) extreme overbought (>80) short | mirrors `rsi9_extreme` |
-| 93 | `rsi21_overbought_short` | short | RSI(21) slow overbought reversal short | mirrors `rsi21_slow` |
-| 94 | `mfi_overbought_short` | short | MFI > 80 + pivot resistance + OBV falling short | mirrors `mfi_oversold` |
-| 95 | `cmf_flip_bearish_short` | short | Chaikin Money Flow bearish flip short | mirrors `cmf_flip` |
-| 96 | `bollinger_tight_breakdown_short` | short | Bollinger band tightness pre-breakdown short (squeeze breaks down) | mirrors `bollinger_tight` (bias-inverted) |
-| 97 | `keltner_upper_short` | short | Keltner channel upper-band fade short | mirrors `keltner_lower` |
-| 98 | `stoch_overbought_short` | short | Stochastic overbought cross below 80 short | mirrors `stoch_oversold` |
+| 153 | `rsi9_overbought_short` | short | RSI(9) extreme overbought (>80) short | mirrors `rsi9_extreme` |
+| 154 | `rsi21_overbought_short` | short | RSI(21) slow overbought reversal short | mirrors `rsi21_slow` |
+| 155 | `mfi_overbought_short` | short | MFI > 80 + pivot resistance + OBV falling short | mirrors `mfi_oversold` |
+| 156 | `cmf_flip_bearish_short` | short | Chaikin Money Flow bearish flip short | mirrors `cmf_flip` |
+| 157 | `bollinger_tight_breakdown_short` | short | Bollinger band tightness pre-breakdown short (squeeze breaks down) | mirrors `bollinger_tight` (bias-inverted) |
+| 158 | `keltner_upper_short` | short | Keltner channel upper-band fade short | mirrors `keltner_lower` |
+| 159 | `stoch_overbought_short` | short | Stochastic overbought cross below 80 short | mirrors `stoch_oversold` |
 
 #### Breakout shorts (3 new)
 
 | # | Strategy ID | Direction | Logic summary | Long-pair |
 |---|---|---|---|---|
-| 99 | `squeeze_breakdown_short` | short | TTM Squeeze fire-down break short | mirrors `squeeze_breakout` |
-| 100 | `inside_bar_breakdown_short` | short | Inside bar break + ADX trending + below VWAP short | mirrors `inside_bar_breakout` |
-| 101 | `force_index_breakdown_short` | short | Elder Force Index breakdown short | mirrors `force_index_breakout` |
+| 160 | `squeeze_breakdown_short` | short | TTM Squeeze fire-down break short | mirrors `squeeze_breakout` |
+| 161 | `inside_bar_breakdown_short` | short | Inside bar break + ADX trending + below VWAP short | mirrors `inside_bar_breakout` |
+| 162 | `force_index_breakdown_short` | short | Elder Force Index breakdown short | mirrors `force_index_breakout` |
 
 #### Candle shorts (3 new) — bearish reversals to complete pattern symmetry
 
 | # | Strategy ID | Direction | Logic summary | Long-pair |
 |---|---|---|---|---|
-| 102 | `bearish_engulfing_resistance_short` | short | Bearish engulfing at resistance short | mirrors `bullish_engulfing_support` |
-| 103 | `doji_at_resistance_short` | short | Doji indecision at resistance short | mirrors `doji_at_support` |
-| 104 | `three_black_crows_short` | short | Three Black Crows continuation short | mirrors `three_white_soldiers` |
+| 163 | `bearish_engulfing_resistance_short` | short | Bearish engulfing at resistance short | mirrors `bullish_engulfing_support` |
+| 164 | `doji_at_resistance_short` | short | Doji indecision at resistance short | mirrors `doji_at_support` |
+| 165 | `three_black_crows_short` | short | Three Black Crows continuation short | mirrors `three_white_soldiers` |
 
 #### Confluence shorts (6 new)
 
 | # | Strategy ID | Direction | Logic summary | Long-pair |
 |---|---|---|---|---|
-| 105 | `rsi_volume_200ema_short` | short | RSI overbought + volume + below 200 EMA short | mirrors `rsi_volume_200ema` |
-| 106 | `macd_ichimoku_short` | short | MACD bearish + Ichimoku cloud breakdown short | mirrors `macd_ichimoku` |
-| 107 | `pivot_fib_confluence_short` | short | Pivot resistance + Fibonacci confluence short | mirrors `pivot_fib_confluence` |
-| 108 | `death_cross_volume_short` | short | Death cross + volume confirmation short | mirrors `golden_cross_volume` |
-| 109 | `supertrend_ichimoku_adx_short` | short | SuperTrend + Ichimoku + ADX triple bearish confluence | mirrors `supertrend_ichimoku_adx` |
-| 110 | `williams_stoch_dual_short` | short | Williams %R + Stochastic dual overbought short | mirrors `williams_stoch_dual` |
+| 166 | `rsi_volume_200ema_short` | short | RSI overbought + volume + below 200 EMA short | mirrors `rsi_volume_200ema` |
+| 167 | `macd_ichimoku_short` | short | MACD bearish + Ichimoku cloud breakdown short | mirrors `macd_ichimoku` |
+| 168 | `pivot_fib_confluence_short` | short | Pivot resistance + Fibonacci confluence short | mirrors `pivot_fib_confluence` |
+| 169 | `death_cross_volume_short` | short | Death cross + volume confirmation short | mirrors `golden_cross_volume` |
+| 170 | `supertrend_ichimoku_adx_short` | short | SuperTrend + Ichimoku + ADX triple bearish confluence | mirrors `supertrend_ichimoku_adx` |
+| 171 | `williams_stoch_dual_short` | short | Williams %R + Stochastic dual overbought short | mirrors `williams_stoch_dual` |
 
 **Layer 1 totals post-symmetry expansion: 110 strategies — 60 long-baseline + 50 shorts (12 from 1.H + 38 from 1.I) = ratio 1.2:1 (near-balanced).**
 
@@ -420,7 +420,171 @@ Per STRATEGY_REGISTER.md Layer 4. DECs are logged but not yet RESOLVED-DECIDED f
 
 ---
 
-## Aggregate counts (post owner "Approve all" + symmetry expansion 2026-05-06)
+## Layer 5 — Regime-conditioning eligibility flag schema (✅ RESOLVED-DECIDED owner-approved 2026-05-06; Q1 part 1)
+
+Per owner Q1 directive 2026-05-06 (after external-AI strategy review): every Layer 1-4 strategy carries a `regime_eligible: list[regime_id]` field that gates whether the strategy can fire in a given market regime. **This is an OVERLAY, not new strategies.** Reuses F-006 4-regime classifier (bull / neutral / bear / crisis); does NOT introduce new regime detectors (the external AI's proposed Layer 5A 6 detectors were rejected as overfit risk).
+
+### Regime enum
+
+Per F-006: `{bull, neutral, bear, crisis}`. Strategies fire ONLY when current regime ∈ `regime_eligible`. Defaults below; per-strategy overrides allowed via DEC.
+
+### Default eligibility flags by Layer 1 category
+
+| Category | Strategies | Default `regime_eligible` | Rationale |
+|---|---|---|---|
+| **1.A Pivot** (10L + 8 new S = 18) | `pivot_*` | `[bull, neutral, bear, crisis]` (all) | Intraday-anchored support/resistance; less regime-dependent |
+| **1.B Momentum** (9L + 3+6 S = 18) | `macd_*`, `hull_*`, `roc_*`, `awesome_*`, `stochrsi_*`, `ppo_*`, `ultimate_*`, `williams_r_*` | `[bull, bear]` (trending only; suppress in neutral) | Momentum needs directional move; chop kills |
+| **1.C Trend** (9L + 4+5 S = 18) | `golden_cross_*`, `death_cross_*`, `parabolic_sar_*`, `tema_dema*`, `ichimoku_*`, `adx_initiation*`, `supertrend_macd*` | `[bull, bear]` (trending) | Trend strategies need a trend |
+| **1.D Mean Reversion** (11L + 2+7 S = 20) | `rsi_*`, `mfi_*`, `cmf_flip*`, `bollinger_*`, `keltner_*`, `stoch_*` | `[neutral]` only | RSI-style reversion works in quiet ranging markets; gets crushed in trending or crisis |
+| **1.E Breakout** (6L + 3+3 S + 1 dual = 13) | `squeeze_*`, `volume_spike_*`, `52w_*`, `inside_bar_*`, `force_index_*`, `donchian_*` | `[bull, bear]` | Breakouts fail in chop |
+| **1.F Candle** (4L + 2+3 S = 9) | `morning_star`, `evening_star_*`, `bullish_engulfing_*`, `bearish_engulfing_*`, `doji_*`, `shooting_star_*`, `three_white_*`, `three_black_*` | `[bull, neutral, bear, crisis]` (all) | Discretionary patterns can fire in any regime; let strategy harness join with S/R context |
+| **1.G Confluence** (9L + 2+6 S + 1 dual = 18) | `rsi_volume_200ema*`, `macd_ichimoku*`, `bb_squeeze_volume`, `pivot_fib_*`, `golden/death_cross_volume*`, `cpr_narrow_momentum*`, `camarilla_rsi_obv*`, `supertrend_ichimoku_adx*`, `williams_stoch_dual*` | inherits strictest of constituent flags | If trend+momentum confluence: `[bull, bear]`; if mean-rev confluence: `[neutral]` |
+| **1.H Dedicated shorts** (12) | shorts of trend/momentum/breakout/confluence | inherits from long-pair | Same flag as the long counterpart |
+| **1.I Symmetry shorts** (38) | mirrors of 1.A-G longs | inherits from long-pair (mirrored direction) | Same logic; sell-the-rip in same regimes long fires in |
+
+### Default eligibility flags by Layer 2-4 category
+
+| Category | Strategies | Default `regime_eligible` |
+|---|---|---|
+| **2A ICT/SMC** (12) | FVG/BOS/CHoCH/Order Block/Liquidity Grab/Premium-Discount × 2 directional | `[bull, bear]` (continuation patterns) |
+| **2B Earnings Momentum** (4) | `pre_earnings_*`, `guidance_raise_*`, `surprise_magnitude_pead`, `earnings_cluster_*` | `[bull, neutral, bear, crisis]` (event-driven; regime-agnostic) |
+| **2C Calendar** (5) | `sell_in_may_short`, `january_effect_smallcap`, `santa_rally_long`, `fomc_drift`, `turn_of_month` | `[bull, neutral, bear, crisis]` (calendar; regime-agnostic) |
+| **2D Form-derived ICT** (PENDING) | TBD | Default `[bull, bear]` per Layer 2A precedent; owner can override per-strategy |
+| **3A Chart patterns** (20) | trendline / channel / range / wedge / triangle / pennant / H&S / double-top / cup-handle / flag × 2 directional | `[bull, bear]` (continuation patterns) |
+| **3B Pairs/Stat Arb** (4) | `pair_trade_*`, `cointegrated_basket*`, `sector_pair_momentum`, `etf_basket_arb` | `[neutral]` (pair convergence works in quiet) |
+| **3B Cross-Asset** (4) | `dollar_weakness_*`, `bond_yield_spike_*`, `gold_silver_ratio_*`, `tlt_spy_*` | `[bull, bear]` (cross-asset trends) |
+| **3B Index Rebalance** (2) | `sp500_inclusion_*`, `nasdaq100_rebalance_*` | `[bull, neutral, bear, crisis]` (event-driven) |
+| **3B DEC-371 within-cat** (11) | inherit from Layer 1 parent category | various |
+| **4 PENDING-DEC** (4 + 1 multiplier) | per individual DEC | TBD when promoted |
+
+### Per-strategy overrides
+
+The `regime_eligible` field is **per-strategy mutable** via DEC. Initial defaults above are based on academic literature; empirical results may suggest narrower or broader flags for specific strategies. Override DECs follow the standard DEC numbering scheme (e.g., DEC-510 "narrow `rsi_oversold` to `[neutral]` only — empirical: bull-regime fires lose 60% of time").
+
+### Crisis regime — owner override
+
+Per CLAUDE.md Approved Rules: "crisis regime longs ALLOWED at 50% size — flagged `regime=crisis_CRISIS_FLAG`." This trumps any `regime_eligible` exclusion: if a long strategy has `[bull]` only, it can still fire in crisis but at 50% size. Implementation: position-sizing layer applies the crisis-regime scaler AFTER eligibility gate. (External AI's recommendation to harden eligibility was rejected because owner buy-the-dip philosophy explicitly allows crisis longs at reduced size.)
+
+### Implementation note
+
+Layer 5 is a SCHEMA + DEFAULT TABLE; no per-strategy IDs. The flag values populate as a column on each strategy spec when implemented in code. Sprint 7+ work in `OurTechnicalToolkit` (DEC-462) reads the `regime_eligible` flag at strategy-firing time; if `current_regime ∉ regime_eligible`, the strategy is skipped (or fires at reduced size in crisis-override case).
+
+**Total strategies tagged: 172** (110 Layer 1 + 12 Layer 2A + 4 Layer 2B + 5 Layer 2C + 20 Layer 3A + 21 Layer 3B); Layer 2D + Layer 4 tagged when promoted.
+
+---
+
+## Layer 6 — External-AI-review additions (✅ RESOLVED-DECIDED owner-approved 2026-05-06; Q1 part 2)
+
+Per owner Q1 directive 2026-05-06 (Pass 53 external-AI strategy review approval): 27 new strategy classes across 7 sub-categories (cross-sectional / volatility regime / overnight-gap / insider-institutional / breadth / post-event drift / microstructure). External AI proposed 44; 17 rejected (11 duplicates of existing Layer 1 + 1 out-of-scope intraday + 2 subscription-deferred + 2 data-deferred + 1 detector-overfit-rejection consolidation).
+
+### Layer 6A — Cross-sectional ranking (8 new strategies; 172-179)
+
+These need a different harness from time-series strategies — rank universe daily, long top decile, short bottom decile, rebalance weekly or monthly. **Architectural prerequisite: cross-sectional ranking module** (per signal-universe review — needs Category 7 universe-level signals; tracked separately).
+
+| # | Strategy ID | Direction | Logic summary | Inputs | Regime |
+|---|---|---|---|---|---|
+| 172 | `xs_momentum_12_1` | long+short | Jegadeesh-Titman: rank by 12-month return skipping last month; long top decile, short bottom | universe price history | `[bull, bear]` |
+| 173 | `xs_short_term_reversal` | long+short | Rank by 1-week or 1-month return; long bottom decile, short top (opposite to momentum) | universe price history | `[neutral]` |
+| 174 | `xs_residual_momentum` | long+short | Momentum on factor-residualized returns (after FF3 or sector beta); less crash-prone than raw | returns + factor exposures | `[bull, bear]` |
+| 175 | `xs_idiosyncratic_vol` | long+short | Ang-Hodrick-Xing-Zhang: rank by 30-day idiosyncratic vol; long low-IV, short high-IV | returns + market beta | `[neutral]` |
+| 176 | `xs_quality_minus_junk` | long+short | AQR QMJ: composite of profitability/growth/safety/payout; long top quintile, short bottom | fundamentals (Polygon financials Sprint 4) | `[bull, neutral, bear, crisis]` |
+| 177 | `xs_betting_against_beta` | long+short | Frazzini-Pedersen BAB: leverage-adjusted long low-beta, short high-beta | rolling betas | `[bull, neutral, bear, crisis]` |
+| 178 | `xs_dual_momentum_absolute_gate` | long+cash | Antonacci absolute gate: positive trailing-12-month return required for any long position; combines with relative momentum from 3B `sector_pair_momentum` | returns + risk-free rate | `[bull, bear]` |
+| 179 | `xs_stock_vs_sector_rs` | long+short | Within each sector, long top-quintile stocks by 3-month RS vs sector ETF; short bottom | stock + sector ETF prices | `[bull, bear]` |
+
+### Layer 6B — Volatility regime (3 new strategies; 180-182)
+
+| # | Strategy ID | Direction | Logic summary | Inputs | Regime |
+|---|---|---|---|---|---|
+| 180 | `vix_term_contango_long` | long | VIX < VIX3M (contango) → risk-on equity long bias | VIX, VIX3M | `[bull, neutral, bear, crisis]` (own signal) |
+| 181 | `vix_backwardation_short` | short | VIX > VIX3M sustained ≥3 days → risk-off equity short | VIX, VIX3M | `[bull, neutral, bear, crisis]` |
+| 182 | `realized_vol_regime_short` | short | 20-day realized vol crosses above 25% → short equity until cross-back | returns | `[bear, crisis]` |
+
+### Layer 6C — Overnight / gap (5 new strategies; 183-187)
+
+External AI's 6.20 ORB (opening-range breakout) **REJECTED** — requires intraday minute-bar data which is out-of-scope per CLAUDE.md.
+
+| # | Strategy ID | Direction | Logic summary | Inputs | Regime |
+|---|---|---|---|---|---|
+| 183 | `overnight_only_long` | long | Buy at close, sell at open next day; systematic close-to-open capture (Lou-Polk-Skouras) | OHLCV | `[bull, neutral, bear, crisis]` |
+| 184 | `gap_fade_small` | long+short | Gap < 1% at open → fade direction (small gaps mean-revert) | OHLCV | `[neutral]` |
+| 185 | `gap_and_go_large` | long+short | Gap > 2-3% at open + first-15-min volume confirm → continuation | OHLCV + volume | `[bull, bear]` |
+| 186 | `overnight_drift_after_strong_close` | long | Close in top 10% of day's range → overnight long bias | OHLCV | `[bull, bear]` |
+| 187 | `gap_fill_reversal` | long+short | Unfilled gap > 3 days → continuation; partially-filled gap → fade in fill direction | OHLCV history | `[bull, neutral, bear, crisis]` |
+
+### Layer 6D — Insider/institutional (1 new strategy; 188)
+
+External AI proposed 6; 5 rejected. `insider_cluster_buy` and `insider_ceo_cfo_buy` and `thirteenf_whale_follow` are duplicates of Layer 1 Smart Money. Short-interest strategies deferred per DEC-506 (Ortex subscription).
+
+| # | Strategy ID | Direction | Logic summary | Inputs | Regime |
+|---|---|---|---|---|---|
+| 188 | `insider_cluster_sell_short` | short | ≥3 insiders sell within 10 days excluding 10b5-1 plans; less reliable than buys but tradeable in size | SEC Form 4 (Sprint 4 parser) | `[bear, neutral, crisis]` |
+
+### Layer 6E — Breadth / market-internals overlays (4 new strategies; 189-192)
+
+Universe-level signals; need Category 7 architecture (per signal-universe review).
+
+| # | Strategy ID | Direction | Logic summary | Inputs | Regime |
+|---|---|---|---|---|---|
+| 189 | `breadth_thrust_zweig` | long | Zweig: 10-day A/D ratio crosses 0.40 → 0.615 within 10 days → strong long | A/D data | `[neutral, bull]` (transition → trending) |
+| 190 | `new_highs_lows_divergence` | long+short | New 52w highs falling while index rises → distribution short; opposite at bottoms | highs/lows count | `[bull, bear]` |
+| 191 | `mcclellan_extreme` | long+short | McClellan Oscillator < -100 → oversold long; > +100 → overbought short | A/D-derived | `[neutral]` |
+| 192 | `percent_above_50sma_extreme` | long | % S&P stocks above 50-SMA < 20% → washout long entry | universe screen | `[neutral, bear]` (transition) |
+
+### Layer 6F — Post-event drift (2 new strategies; 193-194)
+
+External AI proposed 7; 5 rejected as duplicates of Layer 1 Event-Driven (M&A arbitrage, spinoffs, secondary-offering, post-IPO, buyback).
+
+| # | Strategy ID | Direction | Logic summary | Inputs | Regime |
+|---|---|---|---|---|---|
+| 193 | `analyst_downgrade_drift_short` | short | Sell-side rating downgrade or price-target cut → drift T+1 to T+30 short | Polygon news/consensus | `[bull, neutral, bear, crisis]` |
+| 194 | `dividend_initiation_drift` | long | First-time dividend announcement → drift 60-90 days (signaling effect; distinct from Layer 1 dividend hike continuation) | corp actions | `[bull, neutral, bear, crisis]` |
+
+### Layer 6G — Microstructure (4 new strategies; 195-198)
+
+External AI's 6.41 volume-profile-POC bounce **DEFERRED** — requires intraday volume profile (daily approximation is too weak per signal-universe review).
+
+| # | Strategy ID | Direction | Logic summary | Inputs | Regime |
+|---|---|---|---|---|---|
+| 195 | `vwap_reclaim` | long | Price loses VWAP intraday, reclaims it before close + closes above → swing long T+1 (distinct from Layer 1 VWAP filter usage) | OHLCV (daily VWAP approx) | `[bull, neutral]` |
+| 196 | `failed_breakdown_reversal` | long | False break below support, reclaims within 1-2 days with volume → strong long | OHLC + S/R | `[neutral, bull]` (transition) |
+| 197 | `failed_breakout_short` | short | False break above resistance, fails back below within 1-2 days → short | OHLC + S/R | `[neutral]` |
+| 198 | `first_red_day_after_run` | short | Stock up ≥5 days consecutively, first red day with volume → short T+1 (extension exhaustion) | OHLCV | `[bull, neutral]` (trending → transition) |
+
+### Layer 6 totals
+
+**27 new strategy classes** (172-198):
+- 6A Cross-sectional: 8
+- 6B Vol regime: 3
+- 6C Overnight/gap: 5
+- 6D Insider: 1
+- 6E Breadth: 4
+- 6F Drift: 2
+- 6G Microstructure: 4
+
+### External AI proposals NOT added (transparency)
+
+| Proposal | Reason rejected |
+|---|---|
+| Layer 5A 6 regime detectors | Overfit risk; F-006 4-regime classifier sufficient; flag schema is the actual gap |
+| 6.7 xs_low_volatility | Overlaps 6.4 (xs_idiosyncratic_vol; better-documented variant) |
+| 6.9 xs_sector_rs_rotation | Layer 3B `sector_pair_momentum` (DEC-367) covers |
+| 6.13 vix_spike_fade | Layer 1 `volatility_breakout` + crisis-regime buy-the-dip cover |
+| 6.15 vvix_extreme_revert | Needs VVIX feed not in current FRED 50-series; deferred |
+| 6.16 low_vol_breakout_setup | Layer 1 `bollinger_tight` + `squeeze_breakout` cover |
+| 6.20 opening_range_breakout | Intraday out-of-scope per CLAUDE.md |
+| 6.23-6.26 (4× insider/13F duplicates) | Layer 1 Smart Money already covers |
+| 6.27 short_interest_squeeze | Ortex subscription-deferred per DEC-506 |
+| 6.28 high_si_breakdown_short | Same Ortex gate |
+| 6.36 buyback_announcement_drift | Layer 1 `buyback_announcements` (gated on Sprint 4 SEC EDGAR per DEC-490) |
+| 6.37 ma_target_spread | Layer 1 `M&A arbitrage` |
+| 6.38 spinoff_drift | Layer 1 `Spinoffs (DEC-103)` |
+| 6.39 secondary_offering_post_drop | Layer 1 `secondary offering drift` |
+| 6.41 volume_profile_poc_bounce | Requires intraday volume profile; daily approximation too weak |
+
+---
+
+## Aggregate counts (post owner "Approve all" + symmetry expansion + Q1+Q2+Q3 2026-05-06)
 
 | Layer | Status | Count |
 |---|---|---|
@@ -434,10 +598,11 @@ Per STRATEGY_REGISTER.md Layer 4. DECs are logged but not yet RESOLVED-DECIDED f
 | Layer 3A (✅ RESOLVED-DECIDED) | DEC-355-362 (Pass 52) | **20** (10 base × 2 directional; with DEC-358 split into 3) |
 | Layer 3B (✅ RESOLVED-DECIDED, owner-approved 2026-05-06) | DEC-367/369/370/371 | **21** (4+4+2+11; DEC-368 absorbed into Layer 2C) |
 | Layer 4 (🔴 PENDING-DEC) | DEC-141/142/143/145/176 | **4 strategies + 1 multiplier** (per-DEC promotion required) |
-| **Sub-total of RESOLVED-DECIDED + IMPLEMENTED (NAMED) post Layer 1.I symmetry** | | **172 strategy classes** |
-| With Layer 4 PENDING (when promoted) | | **176 strategy classes** |
-| With Layer 2D estimate (5-15 mid: 10) | | **~186 strategy classes** |
-| With pending Layer 5 flag schema + Layer 6 28-30 new (next turn) | | **~214-216 strategy classes** |
+| Layer 5 (✅ RESOLVED-DECIDED, owner-approved 2026-05-06) | regime-eligibility flag schema (overlay; no new strategies) | **+0 strategies; 172 tagged** |
+| Layer 6 (✅ RESOLVED-DECIDED, owner-approved 2026-05-06) | 7 sub-categories from external-AI strategy review | **+27** (172-198) |
+| **Sub-total of RESOLVED-DECIDED + IMPLEMENTED (NAMED) post Q1** | | **199 strategy classes** |
+| With Layer 4 PENDING (when promoted) | | **203 strategy classes** |
+| With Layer 2D estimate (5-15 mid: 10) | | **~213 strategy classes** |
 
 **Closure of STRATEGY_REGISTER.md "Open enumeration gaps" (per Pass 53 Option 2):**
 
@@ -447,6 +612,57 @@ Per STRATEGY_REGISTER.md Layer 4. DECs are logged but not yet RESOLVED-DECIDED f
 | 2. Layer 2B — Earnings momentum class enumeration | ✅ CLOSED — 4 named classes owner-approved 2026-05-06 |
 | 3. Layer 2C — Calendar strategy class enumeration | ✅ CLOSED — 5 named classes owner-approved 2026-05-06 |
 | 4. Layer 3B — DEC-371 within-category catalog (≥10 itemized) | ✅ CLOSED — 11 named classes owner-approved 2026-05-06 |
+
+---
+
+## Methodology decisions (Q2 + Q3 owner-approved 2026-05-06)
+
+These are PROCESS decisions that gate strategies from Phase 1A-α → Phase 1B-α and Phase 1B-α → Phase 2 (paper trading). Not new strategies — methodological filters that prevent backtest p-hacking and inflated apparent diversity.
+
+### DEC-509 — Strategy correlation cluster (Q2; methodology gate before Phase 1B-α)
+
+**Trigger:** External AI 2026-05-06 review identified that ~40-60 of our ~199 strategies are highly correlated (3 RSI variants, 3 golden-cross variants, 3 Bollinger variants, etc.). Effective independent bets are ~15-20 wearing different costumes. Owner approved Q2 2026-05-06.
+
+**Rule:** Pre-Phase-1B-α gate — run pairwise return correlation on a 1-year in-sample period; cluster at ρ > 0.7; if cluster has >3 members, retain the highest-Sharpe representative + flag the rest as "redundant variants" with `correlation_cluster_id` field. Redundant variants run in backtest for completeness but are excluded from final selection (Phase 1B-α verdict).
+
+**Output artifacts:**
+- `correlation_matrix_<as_of>.parquet` — pairwise return correlations across all 199 strategies on 1y in-sample
+- `correlation_clusters_<as_of>.json` — cluster IDs + member lists + Sharpe rankings
+- `strategy_correlation_dashboard.html` — visual cluster map for owner review
+
+**Implementation:** ~1-2 days work in `backtest/engine/improvements.py`. Phase 1A-α exit criterion: correlation cluster analysis complete + owner-reviewed cluster map.
+
+**Status:** ✅ RESOLVED-DECIDED 2026-05-06 (Q2 approval).
+
+### DEC-510 — Deflated Sharpe Ratio as F-009 6th gate (Q3; methodology extension to DEC-426)
+
+**Trigger:** External AI 2026-05-06 review identified that with ~199 strategies × parameter variants × 4 OOS folds (DEC-505), Bonferroni correction (DEC-080) under-corrects for the multiple-testing problem because it doesn't account for skew/kurtosis of return distributions. Owner approved Q3 2026-05-06.
+
+**Rule:** Add Deflated Sharpe Ratio (DSR; Bailey-Lopez de Prado 2014) as 6th gate in Phase 1B-α 5-gate verdict (DEC-426). Gate threshold: **DSR ≥ 0.95 confidence** that observed Sharpe is statistically distinguishable from zero, given the number of trials, skew, and kurtosis.
+
+**Formula reference:** DSR = Φ((SR - SR_0) × √((n-1) / (1 - γ_3·SR + (γ_4-1)/4·SR²)))
+- SR = observed Sharpe; SR_0 = expected max Sharpe under null (0); γ_3 = return skew; γ_4 = return kurtosis; n = number of trades; Φ = std normal CDF
+
+**Phase 1B-α 6-gate verdict (extension to DEC-426):**
+
+| Gate | Threshold |
+|---|---|
+| 1. Sample size | n ≥ 30 trades per cell |
+| 2. Bonferroni-corrected p-value | p < 0.05 / N_strategies (DEC-080) |
+| 3. PSR (Probabilistic Sharpe Ratio) | ≥ 0.95 |
+| 4. t-statistic | ≥ 3.4 |
+| 5. R:R ratio | ≥ 2.0 (HARD REJECT below per DEC-353) |
+| **6. Deflated Sharpe Ratio (NEW)** | **≥ 0.95 confidence** |
+
+**Implementation:** ~1 day in `backtest/results/metrics.py`. Phase 1B-α verdict criterion (DEC-269) extended to require all 6 gates pass.
+
+**Status:** ✅ RESOLVED-DECIDED 2026-05-06 (Q3 approval).
+
+### Cross-references
+
+- Q2 + Q3 approved 2026-05-06 turn (Pass 53 owner directive after external-AI strategy review)
+- Cross-doc: F-009 passing criteria (CANONICAL_FACTS.md) extended; DEC-269 Phase 1B-α verdict gate; DEC-080 Bonferroni; DEC-353 R:R hard reject
+- Implementation in `backtest/engine/improvements.py` (DEC-509 cluster) + `backtest/results/metrics.py` (DEC-510 DSR)
 
 ---
 

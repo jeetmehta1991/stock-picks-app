@@ -82,7 +82,7 @@ Each fact has: **F-NNN identifier** • value (planned) • scope/definition •
 
 ### F-002 — Strategy roster (planned)
 
-**Value (planned):** **~172 RESOLVED-DECIDED strategy classes across 4 layers post owner "Approve all" + Layer 1.I symmetry expansion 2026-05-06 (was 134 pre-symmetry; 108-118 pre-Pass-53-Option-2). Goes to ~176 when Layer 4 PENDING-DEC promoted; ~186 with Layer 2D form-derived ICT estimate; ~214-216 with Layer 5 flag schema + Layer 6 expansion (next-turn work). ~200-400+ multi-TF variants projected. Total unique testable strategies projected: 200+ confirmed (could exceed 400 with full multi-TF expansion).**
+**Value (planned):** **199 RESOLVED-DECIDED strategy classes across 6 layers post owner "Approve all" + Layer 1.I symmetry + Q1+Q2+Q3 (Layer 5 flag schema + Layer 6 27 new) 2026-05-06 (was 134 pre-symmetry; 108-118 pre-Pass-53-Option-2). Goes to 203 when Layer 4 PENDING-DEC promoted; ~213 with Layer 2D form-derived ICT estimate. ~200-400+ multi-TF variants projected. Total unique testable strategies projected: 200+ confirmed (could exceed 400 with full multi-TF expansion).**
 
 **Project philosophy (owner directive 2026-05-06):** *"Buy the dip and sell the rip."* The roster evaluates long AND short strategies wherever the entry logic is logically symmetric. Direction asymmetry in Layer 1.A-H was a documentation artifact (PROJECT_PLAN section 6 baseline was long-biased; Layer 1.H added 12 shorts incrementally without coherent symmetry). Layer 1.I (38 new shorts approved 2026-05-06) closes the symmetry gap, bringing Layer 1 long/short ratio to ~1.2:1. Empirical results from Phase 1A-α / Phase 1B-α validation determine which strategies have edge in which direction; the roster's job is to make BOTH directions evaluable. Strategies that are NOT logically symmetric (breadth-thrust, dividend-initiation drift, defensive-tilt overlays) remain single-direction by design.
 
@@ -96,7 +96,9 @@ Each fact has: **F-NNN identifier** • value (planned) • scope/definition •
 | **Layer 3A — Chart patterns** | DEC-355-362 (Pass 52) | RESOLVED-DECIDED | **20** | 10 base classes × 2 directional (with DEC-358 split into Wedge/Triangle/Pennant) per [STRATEGY_ROSTER_FULL.md](STRATEGY_ROSTER_FULL.md) |
 | **Layer 3B — Strategy categories** | DEC-367/369/370/371 + Pass 53 owner "Approve all" 2026-05-06 | RESOLVED-DECIDED post Pass 53 | **21** | 4 Pairs/Stat Arb (DEC-367), 4 Cross-Asset (DEC-369), 2 Index Rebalance (DEC-370), 11 within-category gaps (DEC-371). DEC-368 Calendar absorbed into Layer 2C. |
 | **Layer 4 — PENDING strategy-additive** | DEC-141/142/143/145/176 | 🔴 PENDING-DEC (per-DEC promotion required) | **~5-6** | Sector-neutral hedge overlay, market-neutral SPY, IPO/lockup framework, IV pre-earnings, meta-strategies (DEC-176 multiplier not counted) |
-| **Total RESOLVED-DECIDED + IMPLEMENTED classes** | | | **172** (post Pass 53 "Approve all" + Layer 1.I symmetry 2026-05-06) | Was 134 pre-symmetry. Goes to **176** with Layer 4 promotion; **~186** with Layer 2D form-derived estimate; **~214-216** with Layer 5 flag schema + Layer 6 expansion (Pass 53 next-turn work). Owner expects "100+ strategies tested" — confirmed (200+ projected). |
+| **Layer 5 — Regime-eligibility flag schema** (✅ RESOLVED-DECIDED, owner-approved 2026-05-06 Q1) | overlay (no new strategies) | RESOLVED-DECIDED | **0 strategies; 172 tagged** | F-006 4-regime classifier reuse + per-strategy `regime_eligible` flag. Default flags by category (Pivot all, Momentum trending, Trend trending, Mean Rev neutral, Breakout trending, Candle all, Confluence inherit). See [STRATEGY_ROSTER_FULL.md Layer 5](STRATEGY_ROSTER_FULL.md). |
+| **Layer 6 — External-AI-review additions** (✅ RESOLVED-DECIDED, owner-approved 2026-05-06 Q1) | external AI strategy review filtered + dedup | RESOLVED-DECIDED post Pass 53 | **27 (172-198)** | 6A Cross-sectional (8) + 6B Vol regime (3) + 6C Overnight/gap (5) + 6D Insider (1) + 6E Breadth (4) + 6F Drift (2) + 6G Microstructure (4). 17 external proposals rejected (11 dups + ORB out-of-scope + subscription/data-deferred). |
+| **Total RESOLVED-DECIDED + IMPLEMENTED classes** | | | **199** (post Pass 53 "Approve all" + Layer 1.I symmetry + Q1+Q2+Q3 2026-05-06) | Was 134 pre-symmetry. Goes to **203** with Layer 4 promotion; **~213** with Layer 2D form-derived estimate. Owner expects "100+ strategies tested" — confirmed (200+ projected). |
 | **+ long/short variants** | DEC counting convention | | **~150-200+** | Many classes have separate long + short entry logic |
 | **+ multi-TF (DEC-350: daily + weekly)** | DEC-350 | | **~200-300+** | If non-ICT roster doubled with weekly TF |
 
@@ -421,7 +423,7 @@ Buy / Overweight / Hold / Underweight / Sell → maps to position_size_modifier 
 
 ### F-009 — Passing criteria
 
-**Value (planned):** **9 overall criteria + per-regime verdict (criterion 10) = 10-row gate. Phase 1B-α verdict gate uses 5 strategy validity gates per DEC-426.**
+**Value (planned):** **9 overall criteria + per-regime verdict (criterion 10) = 10-row gate. Phase 1B-α verdict gate uses 6 strategy validity gates per DEC-426 + DEC-510 (Pass 53 owner Q3 2026-05-06: Deflated Sharpe added as 6th gate).**
 
 **The 9 overall criteria (per CLAUDE.md):**
 
@@ -438,15 +440,16 @@ Buy / Overweight / Hold / Underweight / Sell → maps to position_size_modifier 
 | 9 | Min trades | ≥100 overall, ≥30 per regime |
 | 10 | Per-regime verdict | PASS in ≥1 regime (not universal pass required) |
 
-**The 5 strategy validity gates (Phase 1B-α verdict per DEC-426):**
+**The 6 strategy validity gates (Phase 1B-α verdict per DEC-426 + DEC-510):**
 
 | Gate | Threshold | Source |
 |---|---|---|
-| Sample size | n ≥ 30 trades per cell | TRADING_RULES §3.1 |
-| Statistical significance | p < 0.05 Bonferroni-corrected | TRADING_RULES §3.2 / DEC-269 |
-| PSR (Probabilistic Sharpe Ratio) | ≥ 0.95 | TRADING_RULES §3.3 |
-| t-statistic | ≥ 3.4 | TRADING_RULES §3.4 |
-| R:R ratio | ≥ 2.0 (HARD REJECT below) | DEC-353 / TRADING_RULES §3.5 |
+| 1. Sample size | n ≥ 30 trades per cell | TRADING_RULES §3.1 |
+| 2. Statistical significance | p < 0.05 Bonferroni-corrected | TRADING_RULES §3.2 / DEC-269 / DEC-080 |
+| 3. PSR (Probabilistic Sharpe Ratio) | ≥ 0.95 | TRADING_RULES §3.3 |
+| 4. t-statistic | ≥ 3.4 | TRADING_RULES §3.4 |
+| 5. R:R ratio | ≥ 2.0 (HARD REJECT below) | DEC-353 / TRADING_RULES §3.5 |
+| 6. Deflated Sharpe Ratio (NEW Pass 53 Q3) | ≥ 0.95 confidence | DEC-510 (Bailey-Lopez de Prado 2014) — accounts for skew/kurtosis + multiple-testing trial count |
 
 **SSOT:** `CLAUDE.md` §Passing Criteria + `TRADING_RULES_AND_INFORMATION.md` §3 Strategy Validity Gates + DEC-269 + DEC-426
 

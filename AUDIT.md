@@ -29547,3 +29547,105 @@ Pre-correction: 60 long-baseline + 12 dedicated shorts (Layer 1.H) = 72; long/sh
 - L143 — historical narratives preserved (prior "long-biased" framing not retroactively rewritten)
 
 *Per CHECKLIST #1 (owner directive); #25 (audit revealed 7-of-7 categories had asymmetry; not assumed); #43 (cross-doc — F-002 + ROSTER + this narrative); #45 (this); #51 (Layer 1 symmetry only this turn; Layer 5/6/methodology DECs next turns); #58 (38 strategies in single commit); #67/#67.b (per-turn doc sync).*
+
+---
+
+## Pass 53 — Q1+Q2+Q3 atomic execution (Layer 5 + Layer 6 + 2 methodology DECs) — 2026-05-06
+
+### Trigger
+
+Owner directive 2026-05-06 "Q1 Q2 Q3 approve. Execute all in this turn itself." Also: numbering collision between Layer 1.I (73-110) and Layer 2A-4 (73-133) needed fix per "leave 1-133 untouched" prior directive.
+
+### Renumber fix
+
+Layer 1.I (38 new shorts from prior turn) renumbered from 73-110 → **134-171** to avoid collision with existing Layer 2A-4 IDs. Owner's "leave 1-133 untouched" directive interpreted as preserving existing strategy IDs (Layer 2-4 stays at 73-133).
+
+### Q1 Part 1 — Layer 5 regime-eligibility flag schema (RESOLVED-DECIDED)
+
+External AI proposed 6 new regime detector classes (Layer 5A); **rejected** as overfit risk. F-006's existing 4-regime classifier (bull / neutral / bear / crisis) is sufficient. The actual gap is **per-strategy eligibility flags** — strategies don't currently know which regimes they're allowed to fire in.
+
+**Schema:** Each strategy gets `regime_eligible: list[regime_id]` field. Defaults by category:
+- Pivot: all 4 regimes (intraday-anchored)
+- Momentum: `[bull, bear]` (trending)
+- Trend: `[bull, bear]`
+- Mean Reversion: `[neutral]`
+- Breakout: `[bull, bear]`
+- Candle: all 4 regimes (discretionary)
+- Confluence: inherits strictest of constituents
+- Layer 2A: `[bull, bear]`
+- Layer 2B/2C: all 4 (event-driven)
+- Layer 3A: `[bull, bear]` (continuation)
+- Layer 3B Pairs: `[neutral]`; Cross-Asset: `[bull, bear]`; Index Rebalance: all 4
+
+**Implementation:** Sprint 7+ in `OurTechnicalToolkit` (DEC-462). Crisis-regime override: longs allowed at 50% size per CLAUDE.md (trumps eligibility exclusion).
+
+**Total tagged: 172 strategies** (110 Layer 1 + 12 Layer 2A + 4 Layer 2B + 5 Layer 2C + 20 Layer 3A + 21 Layer 3B). Layer 2D + Layer 4 tagged when promoted.
+
+### Q1 Part 2 — Layer 6 27 new strategies (RESOLVED-DECIDED; numbered 172-198)
+
+External AI proposed 44; 17 rejected (transparent in STRATEGY_ROSTER_FULL.md Layer 6 §"External AI proposals NOT added"). 27 net-new added across 7 sub-categories:
+
+| Sub | Count | IDs | Strategies |
+|---|---|---|---|
+| 6A Cross-sectional | 8 | 172-179 | xs_momentum_12_1, xs_short_term_reversal, xs_residual_momentum, xs_idiosyncratic_vol, xs_quality_minus_junk, xs_betting_against_beta, xs_dual_momentum_absolute_gate, xs_stock_vs_sector_rs |
+| 6B Vol regime | 3 | 180-182 | vix_term_contango_long, vix_backwardation_short, realized_vol_regime_short |
+| 6C Overnight/gap | 5 | 183-187 | overnight_only_long, gap_fade_small, gap_and_go_large, overnight_drift_after_strong_close, gap_fill_reversal |
+| 6D Insider | 1 | 188 | insider_cluster_sell_short |
+| 6E Breadth | 4 | 189-192 | breadth_thrust_zweig, new_highs_lows_divergence, mcclellan_extreme, percent_above_50sma_extreme |
+| 6F Drift | 2 | 193-194 | analyst_downgrade_drift_short, dividend_initiation_drift |
+| 6G Microstructure | 4 | 195-198 | vwap_reclaim, failed_breakdown_reversal, failed_breakout_short, first_red_day_after_run |
+
+### Q2 — DEC-509: Strategy correlation cluster (methodology gate)
+
+**Pre-Phase-1B-α gate:** pairwise return correlation on 1y in-sample; cluster at ρ > 0.7; clusters with >3 members retain highest-Sharpe representative + flag rest as "redundant variants" with `correlation_cluster_id` field. Redundant variants run in backtest but excluded from Phase 1B-α verdict.
+
+**Implementation:** ~1-2 days in `backtest/engine/improvements.py`. Exit criterion: cluster map + owner review.
+
+### Q3 — DEC-510: Deflated Sharpe Ratio as F-009 6th gate (extension to DEC-426)
+
+**6-gate Phase 1B-α verdict:** existing 5 (sample size + Bonferroni p-value + PSR + t-stat + R:R) + **DSR ≥ 0.95 confidence** (Bailey-Lopez de Prado 2014). DSR accounts for return skew/kurtosis + multiple-testing trial count, which Bonferroni alone misses.
+
+**Implementation:** ~1 day in `backtest/results/metrics.py`. Phase 1B-α verdict criterion (DEC-269) extended to require all 6 gates.
+
+### Aggregate roster post-Q1+Q2+Q3
+
+| Layer | Status | Count |
+|---|---|---|
+| Layer 1 (with 1.I symmetry, renumbered 134-171) | mixed implemented + spec | 110 |
+| Layer 2A | RESOLVED-DECIDED | 12 |
+| Layer 2B | RESOLVED-DECIDED | 4 |
+| Layer 2C | RESOLVED-DECIDED | 5 |
+| Layer 2D | PENDING-FORM | TBD (5-15) |
+| Layer 3A | RESOLVED-DECIDED | 20 |
+| Layer 3B | RESOLVED-DECIDED | 21 |
+| Layer 4 | PENDING-DEC | 4 + 1 multiplier |
+| **Layer 5** | RESOLVED-DECIDED (overlay flag schema) | **0 strategies; 172 tagged** |
+| **Layer 6** | RESOLVED-DECIDED (27 new) | **27 (172-198)** |
+| **Total RESOLVED-DECIDED + IMPLEMENTED** | | **199** (was 172 pre-Q1+Q2+Q3) |
+| With Layer 4 promotion | | 203 |
+| With Layer 2D mid (10) | | ~213 |
+
+### Methodology DEC count
+
+- DEC-509 (correlation cluster) + DEC-510 (Deflated Sharpe) = 2 new methodology DECs
+- Cross-linked from F-009 + DEC-426 (extended) + DEC-269 (Phase 1B-α verdict criterion)
+
+### Files modified
+
+- `STRATEGY_ROSTER_FULL.md` — Layer 1.I renumbered 134-171; Layer 5 flag schema section; Layer 6 27 strategies; Methodology DEC section (DEC-509 + DEC-510); aggregate counts updated 172 → 199
+- `CANONICAL_FACTS.md` — F-002 layered roster table extended with Layer 5/6 rows; F-009 5-gate → 6-gate (Deflated Sharpe added)
+- `AUDIT.md` — this narrative
+
+### What's NEXT
+
+Owner asked for signal-universe review take after this commit. Per separate directive — analysis only, no implementation, await further approval before drafting Category 7 universe-level signals + missing signal additions.
+
+### Cross-references
+
+- F-002 (layered roster); F-006 (regime classifier reused for Layer 5); F-009 (passing criteria 5→6 gates); F-005 (universe size for cross-sectional decile sorts)
+- DEC-462 (`OurTechnicalToolkit` Sprint 7+ implementation site for Layer 5 flag-gating + Layer 6 27 strategies)
+- DEC-080 (Bonferroni); DEC-269 (Phase 1B-α verdict); DEC-353 (R:R hard reject); DEC-426 (5-gate; now 6-gate); DEC-505 (4-fold walk-forward — interacts with DSR multiple-testing)
+- R-PHA-001/002/003/004/005 (Phase A risk register — Layer 6 cross-sectional + Layer 1.I shorts both depend on `OurTechnicalToolkit` mitigations clearing R-PHA-005)
+- L94 / L143 (philosophy framing preserved in earlier AUDIT entries; corrected forward-only)
+
+*Per CHECKLIST #1 (Q1+Q2+Q3 owner-approved); #25 (numbering collision surfaced + fixed; 17 external proposals rejected with transparency); #43 (cross-doc atomically — F-002 + F-009 + ROSTER + AUDIT); #45 (this); #51 (scope strict — Q1+Q2+Q3 only this commit; signal review take next); #58 (atomic codification — Layer 5 + Layer 6 + 2 DECs in single commit); #67/#67.b (per-turn doc sync).*
