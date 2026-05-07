@@ -29467,3 +29467,83 @@ Once `OurTechnicalToolkit` (DEC-462 Sprint 7) applies these mitigations at read-
 - F-002 (Layer 2A 12 ICT/SMC strategies cannot fire until Phase A merges)
 
 *Per CHECKLIST #1 (Option A approved); #25 (3 NEW R-PHA findings surfaced; not silenced); #43 (cross-doc — 5-finding risk register cross-linked); #45 (this); #51 (Tier 3 scope only); #67/#67.b (per-turn doc sync); #71 (Tier 3 of fork-integration mandate complete; Phase A merge gated on Tier 4 + R-PHA-005 mitigations).*
+
+---
+
+## Pass 53 — Project philosophy correction + Layer 1 long/short symmetry expansion — 2026-05-06
+
+### Trigger
+
+Owner directive 2026-05-06 (after external-AI strategy review and approval of Q1+Q2+Q3) — *"Long bias is not logical. The philosophy is buy the dip and sell the rip."* Owner explicitly rejected Claude's prior framing that the system is "structurally long-biased because S&P 500 has positive equity premium" (preserved per L143 in earlier AUDIT narrative). Project philosophy is symmetric long+short evaluation wherever entry logic is logically symmetric.
+
+### Layer 1 symmetry audit findings
+
+Pre-correction: 60 long-baseline + 12 dedicated shorts (Layer 1.H) = 72; long/short ratio 5:1. 7 of 7 Layer 1 categories had asymmetric coverage:
+- Pivot: 10L + 0S (worst)
+- Momentum: 9L + 3S (1.H)
+- Trend: 9L + 4S (1.H)
+- Mean Reversion: 11L + 2S
+- Breakout: 6L + 3S (1.H) + 1 dual-direction
+- Candle: 4L + 2S
+- Confluence: 9L + 2S (1.H) + 1 dual-direction
+
+### Resolution — Layer 1.I added (38 new shorts; RESOLVED-DECIDED)
+
+| Category | New shorts | Examples |
+|---|---|---|
+| Pivot | 8 | `pivot_r1_fade_short` (mirrors `pivot_s1_bounce`) — sell-the-rip at R1 resistance |
+| Momentum | 6 | `williams_r_overbought_short`, `roc_collapse_short`, etc. |
+| Trend | 5 | `death_cross_9_21_short`, `tema_dema_bearish_short`, etc. |
+| Mean Reversion | 7 | `rsi9_overbought_short`, `mfi_overbought_short`, `keltner_upper_short`, etc. |
+| Breakout | 3 | `squeeze_breakdown_short`, `inside_bar_breakdown_short`, etc. |
+| Candle | 3 | `bearish_engulfing_resistance_short`, `three_black_crows_short`, etc. |
+| Confluence | 6 | `rsi_volume_200ema_short`, `death_cross_volume_short`, etc. |
+| **TOTAL** | **38 new shorts** | All RESOLVED-DECIDED 2026-05-06 |
+
+### Post-symmetry Layer 1 state
+
+**110 strategies (60L + 50S; ratio ~1.2:1)** — near-balanced.
+- 72 ✅ IMPLEMENTED in code (existing `screener.py` registry)
+- 38 ✅ RESOLVED-DECIDED — Sprint 7+ implementation gated on R-PHA-001/002/003/004/005 mitigations from `OurTechnicalToolkit` (DEC-462)
+
+### Implementation considerations for Sprint 7+
+
+- **PIT mitigations** — same R-PHA fixes as longs (FVG +3-bar lag, swing_length lag for retracements, 2*swing_length safe window for BOS/CHOCH)
+- **Borrow cost** — DEC-399 short-specific borrow cost must be applied on top of DEC-095 slippage; verify DEC-399 status before short strategies advance
+- **Regime eligibility** — Layer 5 flag schema (next turn): mean-reversion shorts default `[neutral, quiet]`; trend shorts `[bear-vol, transition]`; pivot shorts inherit from long counterparts
+- **Code reuse** — parameterize entry_zone_validator with `is_short: bool` flag where possible
+- **Phase 1A activation** — same as longs, subject to DEC-490 fundamentals-pending exclusions
+
+### Aggregate roster post-symmetry
+
+| Layer | Status | Count |
+|---|---|---|
+| Layer 1 (with 1.I symmetry) | mixed implemented + spec | **110** |
+| Layer 2A | RESOLVED-DECIDED | 12 |
+| Layer 2B | RESOLVED-DECIDED | 4 |
+| Layer 2C | RESOLVED-DECIDED | 5 |
+| Layer 2D | PENDING-FORM | TBD (5-15) |
+| Layer 3A | RESOLVED-DECIDED | 20 |
+| Layer 3B | RESOLVED-DECIDED | 21 |
+| Layer 4 | PENDING-DEC | 4 + 1 multiplier |
+| **Total RESOLVED-DECIDED + IMPLEMENTED** | | **172** (was 134 pre-symmetry) |
+| With Layer 4 promotion | | 176 |
+| With Layer 2D mid (10) | | ~186 |
+| Pending next-turn (Layer 5 flag schema + Layer 6 ~28-30 new) | | ~214-216 final |
+
+### Updated framing in canonical docs
+
+- `CANONICAL_FACTS.md` F-002 — added "Project philosophy (owner directive 2026-05-06)" paragraph; replaced "long-biased" framing with buy-the-dip-sell-the-rip; layered roster table updated
+- `STRATEGY_ROSTER_FULL.md` — added "Project philosophy" section in header; Layer 1.I full enumeration (38 strategies); aggregate counts updated
+- `AUDIT.md` — this narrative entry (prior "long-biased" framing in earlier Tier 3 narrative preserved per L143)
+
+### Cross-references
+
+- F-002 — count + philosophy updated
+- STRATEGY_ROSTER_FULL.md Layer 1.I — 38 spec entries
+- DEC-095 (slippage); DEC-399 (borrow cost — verify status)
+- DEC-462 (`OurTechnicalToolkit` — Sprint 7+ implementation site)
+- R-PHA-001/002/003/004/005 — same mitigations apply to shorts
+- L143 — historical narratives preserved (prior "long-biased" framing not retroactively rewritten)
+
+*Per CHECKLIST #1 (owner directive); #25 (audit revealed 7-of-7 categories had asymmetry; not assumed); #43 (cross-doc — F-002 + ROSTER + this narrative); #45 (this); #51 (Layer 1 symmetry only this turn; Layer 5/6/methodology DECs next turns); #58 (38 strategies in single commit); #67/#67.b (per-turn doc sync).*

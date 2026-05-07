@@ -2,8 +2,26 @@
 
 **Created:** Pass 53 — 2026-05-06 (owner directive Option 2: consolidate every named strategy + close 4 open enumeration gaps)
 **Bulk-approved:** Pass 53 — 2026-05-06 owner "Approve all" — Layer 2A directional split (12), Layer 2B (4), Layer 2C (5), Layer 3B (21) all promoted ✅ RESOLVED-PROPOSED → ✅ RESOLVED-DECIDED.
+**Symmetry expansion approved:** Pass 53 — 2026-05-06 owner directive *"Long bias is not logical. The philosophy is buy the dip and sell the rip."* Added 38 long+short symmetric counterparts across Pivot / Momentum / Trend / Mean Reversion / Breakout / Candle / Confluence categories. **Layer 1 grows 72 → 110 (60L + 50S; ratio ~1.2:1, near-balanced).**
 **Purpose:** Single canonical view of every individually-named strategy class across Layer 1 (implemented) and Layer 2-4 (planned/proposed). Sub-doc to [CANONICAL_FACTS.md F-002](CANONICAL_FACTS.md).
-**Authority:** Layer 1 names are SSOT-anchored to [`backtest/signals/screener.py:812`](backtest/signals/screener.py#L812) `ALL_STRATEGIES` registry. Layer 2-4 names are sourced from [STRATEGY_REGISTER.md](STRATEGY_REGISTER.md) + the listed DECs. Layer 2D form-derived ICT remains ⏸ PENDING-FORM (owner-driven). Layer 4 strategies remain 🔴 PENDING-DEC (per-DEC approvals separate).
+**Authority:** Layer 1 baseline names are SSOT-anchored to [`backtest/signals/screener.py:812`](backtest/signals/screener.py#L812) `ALL_STRATEGIES` registry; the 38 new shorts in Layer 1.I are RESOLVED-DECIDED specs for Sprint 7+ implementation. Layer 2-4 names are sourced from [STRATEGY_REGISTER.md](STRATEGY_REGISTER.md) + the listed DECs. Layer 2D form-derived ICT remains ⏸ PENDING-FORM (owner-driven). Layer 4 strategies remain 🔴 PENDING-DEC (per-DEC approvals separate).
+
+---
+
+## Project philosophy (owner directive 2026-05-06)
+
+**"Buy the dip and sell the rip."** The system evaluates long AND short strategies wherever the entry logic is symmetric. Direction asymmetry in Layer 1 was a documentation artifact (PROJECT_PLAN section 6 baseline was long-biased; Layer 1.H added 12 shorts incrementally without a coherent symmetry plan), not a deliberate design decision. Empirical results from Phase 1A-α / Phase 1B-α validation will determine which strategies have edge in which direction; the roster's job is to make BOTH directions evaluable for any logically-symmetric setup.
+
+Concretely:
+- **Mean-reversion:** oversold-bounce LONG ↔ overbought-fade SHORT (sell the rip when RSI/MFI/Stoch overbought)
+- **Pivot:** support-bounce LONG ↔ resistance-fade SHORT (sell the rip at R1/R2/R3)
+- **Trend:** golden-cross LONG ↔ death-cross SHORT (both continuation directions)
+- **Breakout:** resistance-break LONG ↔ support-breakdown SHORT
+- **Candle:** bullish-reversal LONG ↔ bearish-reversal SHORT
+- **Confluence:** any multi-signal long ↔ same-signals-inverted short
+- **Cross-sectional (Layer 6A):** long top decile ↔ short bottom decile by definition
+
+Strategies that are NOT logically symmetric remain single-direction by design — examples: breadth-thrust (Zweig is a long-only signal by structure), dividend-initiation drift (signaling event is asymmetric), pure-long defensive overlays (e.g., low-volatility tilt). These exceptions are flagged in their respective layers.
 
 ---
 
@@ -155,7 +173,90 @@
 | 71 | `camarilla_rsi_obv_short` | short | Camarilla resistance + RSI + OBV short |
 | 72 | `cpr_narrow_momentum_short` | short | Narrow CPR + bearish momentum confluence |
 
-**Layer 1 total: 72 strategy classes (60 long-baseline + 12 shorts).**
+### Layer 1.I — Long+short symmetry expansion (✅ RESOLVED-DECIDED owner-approved 2026-05-06; 38 new shorts)
+
+Per owner directive 2026-05-06 *"Long bias is not logical. The philosophy is buy the dip and sell the rip."* These 38 strategy classes are the symmetric short counterparts to existing Layer 1 longs that previously had no logical-pair short. Implementation: Sprint 7+ (after `OurTechnicalToolkit` mitigations close R-PHA-005). Each is a direct mirror of a long strategy with inverted entry zone (R-side instead of S-side, overbought instead of oversold, breakdown instead of breakout, bearish-reversal instead of bullish-reversal).
+
+#### Pivot shorts (8 new) — sell the rip at R1/R2/R3
+
+| # | Strategy ID | Direction | Logic summary | Long-pair |
+|---|---|---|---|---|
+| 73 | `pivot_r1_fade_short` | short | Pivot R1 resistance fade short | mirrors `pivot_s1_bounce` |
+| 74 | `pivot_r2_fade_short` | short | Pivot R2 deeper-resistance fade short | mirrors `pivot_s2_bounce` |
+| 75 | `pivot_r3_blowoff_short` | short | Pivot R3 blow-off-top reversal short | mirrors `pivot_s3_capitulation` |
+| 76 | `pivot_s1_breakdown_short` | short | Pivot S1 breakdown continuation short | mirrors `pivot_r1_breakout` |
+| 77 | `pivot_s2_breakdown_short` | short | Pivot S2 continuation breakdown short | mirrors `pivot_r2_continuation` |
+| 78 | `camarilla_r3_fade_short` | short | Camarilla R3 reversal fade short | mirrors `camarilla_s3_bounce` |
+| 79 | `camarilla_s3_breakdown_short` | short | Camarilla S3 breakdown short | mirrors `camarilla_r3_breakout` |
+| 80 | `prev_day_high_fade_short` | short | Previous day high fade short | mirrors `prev_day_low_bounce` |
+
+#### Momentum shorts (6 new)
+
+| # | Strategy ID | Direction | Logic summary | Long-pair |
+|---|---|---|---|---|
+| 81 | `macd_fast_crossover_short` | short | MACD fast (5/10/9) bearish crossover | mirrors `macd_fast_crossover` |
+| 82 | `williams_r_overbought_short` | short | Williams %R overbought reversal short | mirrors `williams_r_oversold` |
+| 83 | `roc_collapse_short` | short | Rate-of-change collapse (negative momentum burst) short | mirrors `roc_burst` |
+| 84 | `awesome_oscillator_bearish_short` | short | Awesome Oscillator bearish saucer/twin-peaks short | mirrors `awesome_oscillator` |
+| 85 | `ppo_crossover_short` | short | PPO bearish signal crossover | mirrors `ppo_crossover` |
+| 86 | `ultimate_oscillator_bearish_short` | short | Ultimate Oscillator bearish-divergence reversal | mirrors `ultimate_oscillator` |
+
+#### Trend shorts (5 new)
+
+| # | Strategy ID | Direction | Logic summary | Long-pair |
+|---|---|---|---|---|
+| 87 | `death_cross_9_21_short` | short | Faster 9/21 EMA bearish cross short | mirrors `golden_cross_9_21` |
+| 88 | `death_cross_20_50_short` | short | 20/50 SMA bearish cross short | mirrors `golden_cross_20_50` |
+| 89 | `tema_dema_bearish_short` | short | TEMA crosses below DEMA short | mirrors `tema_dema` |
+| 90 | `ichimoku_tk_cross_bearish_short` | short | Ichimoku Tenkan-Kijun bearish cross short | mirrors `ichimoku_tk_cross` |
+| 91 | `adx_initiation_bearish_short` | short | ADX > 25 with -DI dominant short | mirrors `adx_initiation` |
+
+#### Mean-reversion shorts (7 new) — sell the rip when overbought
+
+| # | Strategy ID | Direction | Logic summary | Long-pair |
+|---|---|---|---|---|
+| 92 | `rsi9_overbought_short` | short | RSI(9) extreme overbought (>80) short | mirrors `rsi9_extreme` |
+| 93 | `rsi21_overbought_short` | short | RSI(21) slow overbought reversal short | mirrors `rsi21_slow` |
+| 94 | `mfi_overbought_short` | short | MFI > 80 + pivot resistance + OBV falling short | mirrors `mfi_oversold` |
+| 95 | `cmf_flip_bearish_short` | short | Chaikin Money Flow bearish flip short | mirrors `cmf_flip` |
+| 96 | `bollinger_tight_breakdown_short` | short | Bollinger band tightness pre-breakdown short (squeeze breaks down) | mirrors `bollinger_tight` (bias-inverted) |
+| 97 | `keltner_upper_short` | short | Keltner channel upper-band fade short | mirrors `keltner_lower` |
+| 98 | `stoch_overbought_short` | short | Stochastic overbought cross below 80 short | mirrors `stoch_oversold` |
+
+#### Breakout shorts (3 new)
+
+| # | Strategy ID | Direction | Logic summary | Long-pair |
+|---|---|---|---|---|
+| 99 | `squeeze_breakdown_short` | short | TTM Squeeze fire-down break short | mirrors `squeeze_breakout` |
+| 100 | `inside_bar_breakdown_short` | short | Inside bar break + ADX trending + below VWAP short | mirrors `inside_bar_breakout` |
+| 101 | `force_index_breakdown_short` | short | Elder Force Index breakdown short | mirrors `force_index_breakout` |
+
+#### Candle shorts (3 new) — bearish reversals to complete pattern symmetry
+
+| # | Strategy ID | Direction | Logic summary | Long-pair |
+|---|---|---|---|---|
+| 102 | `bearish_engulfing_resistance_short` | short | Bearish engulfing at resistance short | mirrors `bullish_engulfing_support` |
+| 103 | `doji_at_resistance_short` | short | Doji indecision at resistance short | mirrors `doji_at_support` |
+| 104 | `three_black_crows_short` | short | Three Black Crows continuation short | mirrors `three_white_soldiers` |
+
+#### Confluence shorts (6 new)
+
+| # | Strategy ID | Direction | Logic summary | Long-pair |
+|---|---|---|---|---|
+| 105 | `rsi_volume_200ema_short` | short | RSI overbought + volume + below 200 EMA short | mirrors `rsi_volume_200ema` |
+| 106 | `macd_ichimoku_short` | short | MACD bearish + Ichimoku cloud breakdown short | mirrors `macd_ichimoku` |
+| 107 | `pivot_fib_confluence_short` | short | Pivot resistance + Fibonacci confluence short | mirrors `pivot_fib_confluence` |
+| 108 | `death_cross_volume_short` | short | Death cross + volume confirmation short | mirrors `golden_cross_volume` |
+| 109 | `supertrend_ichimoku_adx_short` | short | SuperTrend + Ichimoku + ADX triple bearish confluence | mirrors `supertrend_ichimoku_adx` |
+| 110 | `williams_stoch_dual_short` | short | Williams %R + Stochastic dual overbought short | mirrors `williams_stoch_dual` |
+
+**Layer 1 totals post-symmetry expansion: 110 strategies — 60 long-baseline + 50 shorts (12 from 1.H + 38 from 1.I) = ratio 1.2:1 (near-balanced).**
+
+**Implementation note:** the 38 new shorts are RESOLVED-DECIDED at the spec level. Code implementation is Sprint 7+ work and must:
+- Apply R-PHA-001/002/003/004/005 PIT mitigations from `OurTechnicalToolkit` (DEC-462) — same mitigations as longs
+- Use parameterized `is_short: bool` flag in entry_zone_validator (where possible) to avoid duplicating logic
+- Apply DEC-095 slippage cost (currently 0.03/0.08/0.15% per liquidity tier — short-specific borrow cost per DEC-399 must be added on top)
+- Honor regime-eligibility flags (Layer 5 — next turn) — most shorts get bear-vol/transition regime preference; mean-reversion shorts get quiet-regime preference (mirror of mean-reversion long defaults)
 
 ---
 
@@ -319,11 +420,13 @@ Per STRATEGY_REGISTER.md Layer 4. DECs are logged but not yet RESOLVED-DECIDED f
 
 ---
 
-## Aggregate counts (post owner "Approve all" 2026-05-06)
+## Aggregate counts (post owner "Approve all" + symmetry expansion 2026-05-06)
 
 | Layer | Status | Count |
 |---|---|---|
-| Layer 1 (✅ IMPLEMENTED) | Code SSOT | **72** (60 baseline + 12 shorts) |
+| Layer 1.A-H (✅ IMPLEMENTED in code) | screener.py SSOT | **72** (60 baseline + 12 dedicated 1.H shorts) |
+| Layer 1.I (✅ RESOLVED-DECIDED, owner-approved 2026-05-06) | symmetry expansion spec | **+38** new shorts (Sprint 7+ implementation) |
+| **Layer 1 total** | mixed implemented + spec | **110** (60L + 50S; ratio ~1.2:1) |
 | Layer 2A (✅ RESOLVED-DECIDED, owner-approved 2026-05-06) | DEC-259 + Pass 53 directional split | **12** (6 patterns × 2 directional variants) |
 | Layer 2B (✅ RESOLVED-DECIDED, owner-approved 2026-05-06) | DEC-045 | **4** (named strategies) |
 | Layer 2C (✅ RESOLVED-DECIDED, owner-approved 2026-05-06) | DEC-045 (DEC-368 absorbed) | **5** (named strategies) |
@@ -331,9 +434,10 @@ Per STRATEGY_REGISTER.md Layer 4. DECs are logged but not yet RESOLVED-DECIDED f
 | Layer 3A (✅ RESOLVED-DECIDED) | DEC-355-362 (Pass 52) | **20** (10 base × 2 directional; with DEC-358 split into 3) |
 | Layer 3B (✅ RESOLVED-DECIDED, owner-approved 2026-05-06) | DEC-367/369/370/371 | **21** (4+4+2+11; DEC-368 absorbed into Layer 2C) |
 | Layer 4 (🔴 PENDING-DEC) | DEC-141/142/143/145/176 | **4 strategies + 1 multiplier** (per-DEC promotion required) |
-| **Sub-total of RESOLVED-DECIDED + IMPLEMENTED (NAMED)** | | **134 strategy classes** |
-| With Layer 4 PENDING (when promoted) | | **138 strategy classes** |
-| With Layer 2D estimate (5-15 mid: 10) | | **~148 strategy classes** |
+| **Sub-total of RESOLVED-DECIDED + IMPLEMENTED (NAMED) post Layer 1.I symmetry** | | **172 strategy classes** |
+| With Layer 4 PENDING (when promoted) | | **176 strategy classes** |
+| With Layer 2D estimate (5-15 mid: 10) | | **~186 strategy classes** |
+| With pending Layer 5 flag schema + Layer 6 28-30 new (next turn) | | **~214-216 strategy classes** |
 
 **Closure of STRATEGY_REGISTER.md "Open enumeration gaps" (per Pass 53 Option 2):**
 
