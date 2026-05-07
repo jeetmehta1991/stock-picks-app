@@ -57,6 +57,20 @@ SERIES = {
     "treasury_10y":   "DGS10",     # 10-year treasury yield
     "corp_spread":    "BAA10Y",    # Corporate bond spread
     "vix":            "VIXCLS",    # VIX volatility index (BUG-VIX-PROXY fix Pass 53 Day-9 v8)
+    # Pass 53 Day-9 v8h Tier C additions (DEC-513 #7 + macro signals)
+    "vix_3m":         "VXVCLS",    # 3-month VIX (term-structure ratio with VIX)
+    "vvix":           "VVIXCLS",   # Vol of VIX (regime-shift indicator)
+    "dxy":            "DTWEXBGS",  # Trade-weighted broad dollar index
+    "ted_3m":         "TB3SMFFM",  # 3-month T-bill - fed funds (TED-style spread)
+    "wti":            "DCOILWTICO",# WTI crude oil price
+    "housing_starts": "HOUST",     # Housing starts
+    "permits":        "PERMIT",    # Building permits
+    "retail_sales":   "RSAFS",     # Retail sales
+    "industrial_prod":"INDPRO",    # Industrial production index
+    "consumer_sent":  "UMCSENT",   # U-Mich consumer sentiment
+    "money_supply_m2":"M2SL",      # M2 money stock
+    "pce_inflation":  "PCEPI",     # PCE price index (Fed's preferred inflation gauge)
+    "gold_price":     "GOLDAMGBD228NLBM",  # London gold AM fix
 }
 
 
@@ -116,7 +130,7 @@ def main():
     combined.index.name = "date"
     combined = combined.reset_index()
     combined.to_parquet(CACHE_DIR / "macro_combined.parquet", index=False)
-    print(f"\n  ✓ Combined macro snapshot: {len(combined)} daily rows")
+    print(f"\n  [OK] Combined macro snapshot: {len(combined)} daily rows")
 
     print("\nMacro pre-fetch complete. Caller is responsible for git commit.")
 

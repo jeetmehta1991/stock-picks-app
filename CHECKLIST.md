@@ -874,3 +874,26 @@ State compliance visibly: "Checklist: ✅ [each item]"
     **First application:** Pass 53 late evening 2026-05-06 — DEC-594/595 commit lands with `backtest/tests/test_gates.py` (6 gates) + `scripts/audit_decs_for_artifacts.py` (retroactive audit) in same commit.
 
     **Joint:** DEC-594 + DEC-595 (this rule's parent decisions), DEC-503 (test pyramid; this rule enforces artifact layer), DEC-591 + CHECKLIST #72 (data-integrity test; first compliant DEC under #594), DEC-507/508 (asserted in gates #3/#4), DEC-590 (Phase 1A entry uses gate #1), L148 (test pyramid layered failure mode) + L149 (this turn — spec-without-build codification), L86 + L95 ($150 + $300 prior losses from same pattern).
+
+74. **HARD RULE — Every flag/observation MUST be logged to [OPEN_INVESTIGATIONS.md](OPEN_INVESTIGATIONS.md) in the same commit it is surfaced** (Pass 53 Day-9 v8h owner directive 2026-05-07).
+
+    **The pattern this rule fixes:**
+
+    Owner 2026-05-07: *"Q1 rec should have been flagged and recommended by you. Thats literally your job. This is exactly what has gone wrong and i needed to do so many audit passes. We keep finding issues but we cant resolve if we cant even track them. Heavily increases iterations."*
+
+    Throughout Pass 53, observations like "trade-level regime=100% neutral", "ETF holdings has no PIT dimension", "Quiver wikipedia mirror is empty" were buried in AUDIT.md narratives or commit messages — easy to miss, impossible to enumerate. The result: same issues re-discovered by repeated audit cycles. Owner had to ask "where can i check the list of such flags" and the honest answer was "nowhere canonical."
+
+    **The rule:**
+
+    - When an observation surfaces during work that is NOT a bug (→ `BUG_REGISTER.md`) and NOT a deferred spec (→ `AUDIT_BACKLOG.md`), it MUST be logged to `OPEN_INVESTIGATIONS.md` as `INV-NNN` in the **same commit** as the work that surfaced it.
+    - Format: `INV-NNN — short title` + Discovered (date+commit+how-caught) + Observation + Why-not-blocking + Status (open/in-progress/resolved/wontfix) + Next-action.
+    - Pre-flight verification: when surfacing a flag in any response, state explicitly "logging as INV-NNN in same commit" or explain why it falls under BUG/BACKLOG instead.
+    - End-of-response check: if any flag was raised in the turn but not committed, the response is non-compliant.
+
+    **Why this is structural, not just discipline:**
+
+    Same logic as DEC-594/L149 spec-without-build — discipline alone failed. The mechanism (single canonical doc + same-commit rule + pre-flight verification) makes the failure mode impossible to silently repeat. INV-NNN entries are auditable; "vibes-based flagging" in narratives is not.
+
+    **First application:** Pass 53 Day-9 v8h commit `c0a3a568` — created `OPEN_INVESTIGATIONS.md` with 8 INV entries retroactively documenting flags raised across this session.
+
+    **Joint:** DEC-594/595 (same-commit pattern); CHECKLIST #11 (proactive flagging is the trigger; #74 is the persistence layer); L149 (sister rule for spec-without-build); L150 (sister rule for pyramid dimension-coverage gap); INV-001..INV-008 (initial entries).
