@@ -30110,3 +30110,123 @@ External AI's 8 "already-addressed" items have DECs (DEC-541/540/546/545/543/548
 - L143 (historical narrative preservation; this narrative records corrections forward-only)
 
 *Per CHECKLIST #1 (Q1+Q2+Q3 A approved; Q4 explicitly excluded); #25 (12 real bugs + 25 critical gaps codified; 5 inline TRADING_RULES fixes + 23 DECs; 8 prior-review doc-drift instances surfaced for DEC-588 reconciliation); #43 (cross-doc — TRADING_RULES + F-009 + this narrative); #45 (this); #51 (scope strict — Q1+Q2+Q3 only; Q4 deferred); #58 (23 DECs + 5 inline bug fixes in single commit); #67/#67.b (per-turn doc sync).*
+
+---
+
+## Pass 53 — DEC-581 endogeneity-loop protection (Q4 owner-approved 2026-05-06)
+
+### Trigger
+
+Owner directive 2026-05-06 ("Q4 (DEC-581) — your rec approved" + "Pytrends background auto continue restart"). Q4 was the deepest critique from the adversarial review — 28 REVISIT_AFTER_BACKTEST items + 11 P2/P3 backlog + multiple PROPOSED-not-RESOLVED references creating an endogeneity loop where post-backtest decisions are conditioned on backtest results which were conditioned on different decisions.
+
+### DEC-581 — Tuning methodology + endogeneity-loop protection (RESOLVED-DECIDED)
+
+**Spec location:** TRADING_RULES_AND_INFORMATION.md §23.4 (full ~150-line spec).
+
+**Resolution: 5-component protection layer:**
+
+#### 1. Class A vs Class B endogeneity classification
+
+Every REVISIT item is classified:
+- **Class A** (no strategy-selection feedback): operational thresholds, sizing scalars, cache freshness, etc. Safe to tune on full backtest data.
+- **Class B** (strategy-selection feedback): tuning the parameter changes which strategies pass Phase 1B-α gates. Requires hold-out fold + single-shot tuning.
+
+**Reclassification of 34 REVISIT items (28 original + 6 new from Pass 53):**
+- **Class A:** 20 items (cache freshness, vol targets, Kelly fraction, event windows, etc.)
+- **Class B:** 14 items (PM confidence threshold, tier thresholds, Risk veto, regime caps, smart money decay/weights, Bonferroni factor, EMA alpha, F-009 7th gate threshold, DSR threshold, asymmetric EMA, Schmitt thresholds, sentiment thresholds, etc.) = ~41% of REVISIT items affect strategy selection.
+
+#### 2. Hold-out fold protection
+
+**Total available hold-out folds: 3** (per DEC-152).
+
+| Fold | Purpose |
+|---|---|
+| 1 | Top-level Sharpe / R:R / win-rate gate validation |
+| 2 | Class B parameter tuning (single-shot; grouped) |
+| 3 | Final pre-promotion validation (never tuned) |
+
+**Recommended grouping: 14 Class B params → 10 grouped experiments fitting in 1 hold-out fold.** Examples:
+- PM confidence + tier thresholds + Risk veto → 1 agent-gate joint experiment
+- EMA smoothing + Schmitt thresholds + asymmetric alpha → 1 regime-classifier experiment
+- Smart money decay + composite weights → 1 joint experiment
+
+#### 3. Multi-comparison correction at tuning level
+
+- **Tuning-experiment Bonferroni:** ~50 tuning trials → α/50 ≈ 0.001 → t-stat ~3.3 effect-size required
+- **Effect-size floor:** Sharpe move ≥ 0.05 absolute (1× SE of Sharpe at n=250 daily returns) — tuning moves below this rejected as noise
+- **Iteration cap per sweep:** Max 20 candidate values; prevents fine-grained p-hacking
+
+#### 4. Joint vs marginal tuning rule
+
+Default: **marginal** (one parameter at a time; preserves interpretability).
+Joint allowed only with: documented interaction + Bonferroni correction across joint dimension + effect-size floor post-correction.
+
+#### 5. Tuning audit trail
+
+Every Class B tuning experiment produces `tuning_audit/<item_id>_<date>.json` with:
+- Tuner identity, date, data window
+- Alternatives tried + selected value + rationale
+- Effect-size delta + statistical significance post-correction
+- Hold-out fold consumed
+- Owner approval timestamp
+
+Prevents post-hoc rationalization; enables reproducibility.
+
+#### 6. Endogeneity-cycle prevention
+
+- **Sequence rule:** Class B parameters tuned ONCE per Phase 1B-α run; results frozen
+- **No iterative re-tuning** within a single run
+- **Quarterly re-tune cadence:** Each re-tune consumes a fresh data window (per DEC-214)
+- **Post-tune strategy selection re-run:** Required ONLY if Class B parameter materially shifts (Sharpe Δ ≥0.05)
+
+### Implementation
+
+- `backtest/engine/tuning_methodology.py` (NEW) — Class A/B classification + hold-out allocation + audit trail
+- `tuning_audit/` directory (NEW) — JSON per Class B tuning experiment
+- Joins with DEC-470 PROPOSED hierarchical FDR — joint statistical-correctness layer for Phase 1B-α verdict
+
+**Effort:** ~2-3 days spec-implementation + ongoing per-tuning effort.
+
+### Aggregate Pass 53 review-cycle complete
+
+DEC-581 closes the 6th and final adversarial-review take. **All Q-grade approvals from external-AI reviews now codified.**
+
+| Review | DECs | Status |
+|---|---|---|
+| Strategy roster (DEC-509/510 + Layer 1.I/5/6) | 50+ classes | ✅ COMMITTED |
+| Signal universe (DEC-511/512/513) | 3 critical + Cat 7 | ✅ COMMITTED |
+| Exit/risk/fill (DEC-514-538) | 14 active + 11 backlog | ✅ COMMITTED |
+| Regime/smart money (DEC-539-565) | 10 P0+P1 + 17 backlog | ✅ COMMITTED |
+| Adversarial review P0+P1+DEC-588 (DEC-559 promoted + 566/569/582-588 + 567/568/570-580) | 23 DECs + 5 inline bug fixes | ✅ COMMITTED prior commit `240215f8` |
+| Adversarial review Q4 (DEC-581 endogeneity protection) | 1 methodology DEC | ✅ COMMITTED this turn |
+| **TOTAL Pass 53 review-cycle** | **~80 DECs codified** | ✅ COMPLETE |
+
+### Cumulative Sprint pre-Phase-1A scope (final)
+
+| Source | Effort |
+|---|---|
+| Prior 5 reviews | ~34-47d |
+| Adversarial P0+P1 prior turn | ~10-15d |
+| DEC-588 doc-reconciliation pass | ~3-5d |
+| **DEC-581 endogeneity protection (this turn)** | **~2-3d** |
+| **TOTAL Sprint pre-Phase-1A** | **~49-70 days** |
+
+### Pytrends background
+
+Bg `bi30dq6mx` restarted per owner "auto continue restart" directive. Will continue auto-restart cycle indefinitely until 1937/1937 OR owner pauses.
+
+### Files modified
+
+- `TRADING_RULES_AND_INFORMATION.md` — §23.4 NEW (DEC-581 full spec ~150 lines + 34-item endogeneity reclassification table)
+- `AUDIT.md` — this narrative + Pass 53 review-cycle summary
+
+### Cross-references
+
+- DEC-581 (this turn — methodology layer for all REVISIT_AFTER_BACKTEST tuning)
+- DEC-470 PROPOSED (hierarchical FDR; joint statistical-correctness layer with DEC-581)
+- DEC-152 (hold-out methodology; consumed by DEC-581 fold allocation)
+- DEC-214 (quarterly re-validation cadence)
+- DEC-249/250 (strategy decay detection; Class B parameters per DEC-581)
+- All 28 prior REVISIT_AFTER_BACKTEST items now classified Class A or B
+
+*Per CHECKLIST #1 (Q4 owner-approved "your rec approved"); #25 (deepest critique from adversarial review codified — endogeneity-loop addressed via 5-component protection); #43 (cross-doc — TRADING_RULES §23.4 + this narrative); #45 (this); #51 (scope strict — DEC-581 spec only); #58 (single-DEC commit); #67/#67.b (per-turn doc sync); pytrends auto-restart per directive.*

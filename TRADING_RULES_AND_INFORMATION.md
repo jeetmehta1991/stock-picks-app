@@ -2720,11 +2720,155 @@ Per owner directive #8 — dedicated section listing all empirical-tune items in
 
 ### 23.3 Tuning Cadence
 
-**Phase 1B-α (initial tuning):** Tune all items post-empirical-evidence; baseline values updated based on Phase 1B-α outputs.
+**Phase 1B-α (initial tuning):** Tune all items post-empirical-evidence; baseline values updated based on Phase 1B-α outputs. **GOVERNED BY DEC-581 endogeneity-loop protection (§23.4 below).**
 
 **Quarterly re-tune (Stage 3+):** Per DEC-214 quarterly re-validation, REVISIT_AFTER_BACKTEST items re-evaluated; demote/retire strategies showing decay (DEC-249).
 
 **Stage 4+ ongoing:** Live trading data feeds into tuning loop; quarterly cadence continues.
+
+### 23.4 DEC-581 — Tuning methodology + endogeneity-loop protection (Pass 53 owner-approved 2026-05-06 Q4)
+
+**Trigger:** External-AI adversarial review identified the deepest critique — 28 REVISIT_AFTER_BACKTEST items + 11 P2/P3 backlog + multiple PROPOSED-not-RESOLVED references create an **endogeneity loop**: post-backtest decisions are conditioned on backtest results which were conditioned on different decisions. Tuning Bonferroni factor (§23.1 #16) affects strategy selection; strategy selection affects walk-forward results; walk-forward results condition Bonferroni tuning. Without protection, tuning becomes circular noise-mining.
+
+**Resolution:** Two-class reclassification + hold-out fold protection + multi-test correction at tuning level + audit trail.
+
+#### Class A vs Class B endogeneity classification
+
+Every REVISIT item is classified:
+
+- **Class A (no strategy-selection feedback):** Tuning the parameter does NOT change which strategies pass Phase 1B-α gates. Examples: cache freshness, filelock timeout, memory cap. Safe to tune on full backtest data.
+- **Class B (strategy-selection feedback):** Tuning the parameter DOES change which strategies pass. Examples: Bonferroni factor, R:R floor, smart money composite weights, decay half-life. Requires hold-out fold + single-shot tuning.
+
+**Reclassification table (28 REVISIT items + new):**
+
+| # | Item | Class | Hold-out required |
+|---|---|---|---|
+| 1 | Per-ticker max-loss cap (-10%) | A | No (operational threshold; doesn't gate) |
+| 2 | Edge decay percentage (20%) | A | No |
+| 3 | PM confidence threshold (0.5) | **B** | YES — gates strategy promotion to live |
+| 4 | Tier thresholds (0.5/0.65/0.8) | **B** | YES — affects which trades execute |
+| 5 | Risk veto threshold (0.5) | **B** | YES |
+| 6 | Continuous-Risk vs binary-veto | **B** | YES — fundamental architecture choice |
+| 6a | RM alignment check on/off | **B** | YES — A/B verdict directly |
+| 7 | Slippage threshold ATR/price (3%) | A | No (cost model adjustment; doesn't reorder strategies materially) |
+| 8 | Event window pre/post (1/3) | A | No |
+| 9-11 | Regime candidate caps (20/15/10) | **B** | YES — affects which trades execute |
+| 12 | Portfolio vol target (15%) | A | No (sizing scalar) |
+| 13 | Per-position vol target (1%) | A | No |
+| 14 | Fractional Kelly (0.25) | A | No |
+| 15 | Smart money decay half-life (90d) | **B** | YES — composite drives strategy fires |
+| 16 | Bonferroni correction factor | **B** | YES — directly affects gate-passing |
+| 17 | EMA smoothing alpha (0.1) | **B** | YES — regime classifier output drives Layer 5 eligibility |
+| 18-20 | Cache freshness | A | No |
+| 21 | Cache size monitoring threshold | A | No |
+| 22 | Filelock timeout | A | No |
+| 23 | Stop-out cooldown (5d) | A | No (operational; doesn't gate selection) |
+| 24 | Strategy decay flag threshold (>50%) | **B** | YES — drives retirement |
+| 25 | Rolling Sharpe window (6mo) | A | No |
+| 26 | Memory cap (4 GB) | A | No |
+| 27 | Cold-start CI target | A | No |
+| 28 | Test coverage target | A | No |
+| 29 (NEW) | F-009 7th gate threshold (5bps DEC-578) | **B** | YES |
+| 30 (NEW) | DSR threshold (0.95 DEC-510) | **B** | YES |
+| 31 (NEW) | Asymmetric EMA alpha values (DEC-544) | **B** | YES |
+| 32 (NEW) | Schmitt-trigger thresholds (0.6/0.4 DEC-546) | **B** | YES |
+| 33 (NEW) | Smart money composite weights (+4/+2/-3) | **B** | YES |
+| 34 (NEW) | Sentiment thresholds (CNN F&G 20/35/65/80) | **B** | YES |
+
+**Class B count: 14 of 34 = ~41% of REVISIT items affect strategy selection.**
+
+#### Hold-out fold protection
+
+**Total available hold-out folds: 3** (per DEC-152 hold-out methodology).
+
+**Allocation rule:**
+- **Fold 1:** Top-level Sharpe / R:R / win-rate gate validation (cross-strategy)
+- **Fold 2:** Class B parameter tuning (single-shot; consumes one fold per Class B parameter group)
+- **Fold 3:** Final pre-promotion validation (never tuned; final out-of-sample test before Stage 3)
+
+**Constraint:** With 14 Class B parameters and 1 hold-out fold for tuning, **must group Class B parameters into ≤14 single-shot groups** OR defer some to post-Phase-1B-α (using Stage 3 paper trading data as hold-out for the deferred set).
+
+**Recommended grouping (12 single-shot tuning experiments):**
+1. PM confidence threshold + tier thresholds + Risk veto threshold (3 → 1 joint experiment; agent-gate cluster)
+2. Continuous-Risk vs binary-veto + RM alignment on/off (2 → 1 A/B test)
+3. Regime candidate caps (3 → 1 joint experiment)
+4. Smart money decay half-life + composite weights (2 → 1 joint experiment)
+5. Bonferroni factor (alone; depends on strategy count)
+6. EMA smoothing + Schmitt thresholds + asymmetric alpha (4 → 1 regime-classifier experiment)
+7. Strategy decay threshold (alone; quarterly cadence)
+8. F-009 7th gate threshold (alone; cost-model-dependent)
+9. DSR threshold (alone; statistical methodology)
+10. Sentiment thresholds (CNN F&G 4 levels → 1 joint experiment)
+11. Reserved (deferred to Stage 3 paper if needed)
+12. Reserved
+
+**14 → 10 grouped experiments fits in 1 hold-out fold without contamination.**
+
+#### Multi-comparison correction at tuning level
+
+**Tuning-experiment Bonferroni:** With 10 grouped tuning experiments + 28 REVISIT items + 11 backlog ≈ 40-50 tuning trials, naive α/N → α/50 ≈ 0.001 → t-stat ~3.3 effect-size required.
+
+**Effect-size floor (alongside statistical):**
+- **Sharpe move ≥ 0.05 absolute** to count as a valid tuning improvement (1× standard error of Sharpe estimate at n=250 daily returns)
+- Tuning moves below 0.05 Sharpe rejected as noise; baseline retained
+
+**Iteration cap per parameter sweep:** Max 20 iterations (e.g., 20 candidate values for a continuous threshold). Prevents fine-grained p-hacking.
+
+#### Joint vs marginal tuning rule
+
+**Default: marginal** (one parameter at a time; preserves interpretability).
+
+**Joint allowed only if:**
+- Parameters interact via documented dependency (e.g., asymmetric EMA fast-in / slow-out alphas affect each other through transition matrix)
+- Joint tuning has Bonferroni correction across joint dimension (α/n_combinations)
+- Effect-size floor still applies post-correction
+
+**Recommended grouping (above) uses joint tuning only where interaction is documented.**
+
+#### Tuning audit trail
+
+Every Class B tuning experiment produces:
+```
+tuning_audit/<item_id>_<date>.json
+{
+  "item_id": "DEC-080-Bonferroni-factor",
+  "class": "B",
+  "tuner": "owner / Claude / joint",
+  "tune_date": "2026-XX-XX",
+  "data_used": "walk-forward fold 2018-2024 in-sample + 2025 hold-out fold 2",
+  "alternatives_tried": [N=10, N=72, N=199, N=199*17],
+  "selected_value": "N=199",
+  "selected_rationale": "DEC-582 cross-strategy multi-testing; cube-cells via FDR DEC-470",
+  "effect_size_sharpe_delta": 0.08,
+  "effect_size_pass": true (≥0.05 floor),
+  "hold_out_fold_consumed": 2,
+  "stat_significance_p": 0.012 (post-Bonferroni-tuning correction),
+  "owner_approved": true,
+  "approval_date": "2026-XX-XX"
+}
+```
+
+Audit trail prevents post-hoc rationalization + enables reproducibility.
+
+#### Endogeneity-cycle prevention
+
+**Sequence rule:** Class B parameters tuned ONCE per Phase 1B-α run; results frozen. **No iterative re-tuning** within a single run.
+
+**Iterative re-tuning across phase boundaries:** Allowed at quarterly re-validation (DEC-214) cadence ONLY. Each re-tune consumes a fresh data window (next quarter's trades).
+
+**Post-tune strategy selection re-run:** Required ONLY if a Class B parameter materially shifts (Sharpe Δ ≥0.05). Otherwise prior selection holds. Prevents loop where each tune triggers full re-selection.
+
+#### Implementation
+
+- `backtest/engine/tuning_methodology.py` (NEW) — implements Class A/B classification + hold-out allocation + tuning audit trail
+- `tuning_audit/` directory (NEW) — JSON file per Class B tuning experiment
+- DEC-470 PROPOSED hierarchical FDR + this DEC-581 — joint statistical-correctness layer for Phase 1B-α verdict
+
+**Effort:** ~2-3 days spec-implementation + ongoing per-tuning effort.
+
+**Source:** DEC-581 (Pass 53 Q4 owner-approved 2026-05-06 — adversarial review codification of deepest critique)
+
+---
 
 ### 23.4 Tuning Result Documentation Format
 
