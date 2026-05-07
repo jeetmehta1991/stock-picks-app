@@ -41,12 +41,14 @@ CONTRACTS = [
     ("emini_russell2k", DATASET_TFF, "E-MINI RUSSELL 2000"),
     ("emini_dow",       DATASET_TFF, "E-MINI DJIA (X $5)"),
     ("vix_futures",     DATASET_TFF, "VIX FUTURES"),
-    # ── Rates (TFF) ──
-    ("treasury_10y",    DATASET_TFF, "10-YEAR U.S. TREASURY NOTES"),
-    ("treasury_5y",     DATASET_TFF, "5-YEAR U.S. TREASURY NOTES"),
-    ("treasury_2y",     DATASET_TFF, "2-YEAR U.S. TREASURY NOTES"),
-    ("ultra_treasury",  DATASET_TFF, "ULTRA U.S. TREASURY BONDS"),
+    # ── Rates (TFF) ── INV-011 fix 2026-05-07: actual CFTC contract names
+    ("treasury_10y",    DATASET_TFF, "UST 10Y NOTE"),
+    ("treasury_5y",     DATASET_TFF, "UST 5Y NOTE"),
+    ("treasury_2y",     DATASET_TFF, "UST 2Y NOTE"),
+    ("ust_bond",        DATASET_TFF, "UST BOND"),
+    ("ultra_treasury",  DATASET_TFF, "ULTRA UST BOND"),
     ("fed_funds_30d",   DATASET_TFF, "FED FUNDS"),
+    ("emini_dow",       DATASET_TFF, "DJIA x $5"),
     # ── Currencies (TFF) ──
     ("dxy_dollar_idx",  DATASET_TFF, "USD INDEX"),
     ("eur_usd",         DATASET_TFF, "EURO FX"),
