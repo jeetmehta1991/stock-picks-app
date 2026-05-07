@@ -194,7 +194,7 @@ def main():
                 total_done += 1
 
                 n = len(records) if isinstance(records, list) else 0
-                print(f"  [{i+1}/{len(remaining)}] {ticker}: ✓ {n} records")
+                print(f"  [{i+1}/{len(remaining)}] {ticker}: OK {n} records")
 
                 # Commit every COMMIT_EVERY tickers
                 if batch_count % COMMIT_EVERY == 0:

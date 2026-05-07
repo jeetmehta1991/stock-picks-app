@@ -140,6 +140,25 @@ Format per entry:
 contract names: `UST 10Y NOTE` / `UST 5Y NOTE` / `UST 2Y NOTE` / `UST BOND`
 / `ULTRA UST BOND` / `DJIA x $5`. CFTC coverage now 19/20.
 
+---
+
+## INV-013 — Quiver wikipedia checkpoint/data mismatch (Pass 53 Day-9 v8h)
+
+- **Discovered:** 2026-05-07 evening; Quiver BG status check
+- **Observation:**
+  - Earlier this session (Tier E1, commit `8f45fe33`): I DELETED `data_prefetch/quiver/wikipedia/` because all 509 files were empty (resolving INV-006).
+  - The Quiver checkpoint at `data_prefetch/quiver/_checkpoint.json` still lists 509 tickers as "done" for wikipedia endpoint.
+  - The currently-running BG `bsu432hbt` will hit the wikipedia endpoint last (sequential by endpoint) and will **skip these 509 tickers** thinking they're complete — but no data files exist on disk.
+  - Result: wikipedia endpoint coverage = 0 files / 1937 target unless intervened.
+- **Why not blocking:** Phase 1A baseline doesn't depend on Quiver wikipedia (separate `data_prefetch/wikipedia/` is the canonical source, populated 1414 files via different prefetch). Quiver wikipedia mirror was redundant before being empty.
+- **Status:** open
+- **Next action:**
+  - Wait for current BG (`bsu432hbt`) to complete (~4 hours)
+  - After completion: edit checkpoint to remove all wikipedia entries
+  - Re-run Quiver script with checkpoint cleared for wikipedia → fetch all 1937
+  - OR: leave as-is permanently (separate data_prefetch/wikipedia/ is the canonical source for engine consumers via `sentiment.get_wikipedia_pageviews`)
+  - **Recommendation: leave as-is.** No engine consumer reads from `data_prefetch/quiver/wikipedia/` (verified L146 audit Day-9 v8b INV-006); the canonical source is `data_prefetch/wikipedia/` (1414 files, populated). Re-fetching the redundant Quiver mirror has no value.
+
 - **Discovered:** 2026-05-07 (Pass 53 Day-9 v8h Tier C3 CFTC prefetch)
 - **Observation:** Tried to fetch CFTC TFF positioning for "10-YEAR U.S. TREASURY NOTES" / "5-YEAR" / "2-YEAR" / "ULTRA U.S. TREASURY BONDS" / "E-MINI DJIA (X $5)" — all returned 0 rows. Other contracts (e-mini SP500, NDX, RUT, VIX, fed funds, currencies, commodities) all worked fine.
 - **Why not blocking:** 13/18 contracts fetched successfully. Treasury futures positioning is nice-to-have for rate-driven strategies; we have rate level/spread data from FRED (DGS10/DGS5/DGS2/T10Y2Y).
