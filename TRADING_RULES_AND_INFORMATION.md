@@ -3219,11 +3219,14 @@ Scan all 351 existing DECs in [AUDIT_INDEX.md](AUDIT_INDEX.md) for spec-without-
 
 ### 23.13 Standing Approvals + Per-Turn Push (DEC-596 — Pass 53 owner directive 2026-05-06 late evening)
 
-**Decision:** Owner grants blanket standing approval for routine bash execution and mandates per-turn git push to `main`, contingent on Claude maintaining careful + thorough verification discipline (test pyramid, pre-flight CHECKLIST, data-integrity scan, gate tests).
+**Decision:** Owner grants blanket standing approval for routine bash execution and mandates per-turn git push to `main`, contingent on Claude maintaining careful + thorough verification discipline (test pyramid, pre-flight CHECKLIST, data-integrity scan, gate tests). **Pre-approval scope is bash + push ONLY — ALL decisions still require explicit owner approval per CLAUDE.md.**
 
-**Owner directive (verbatim):** *"i approve all bash runs. Dont ask me over and over again in the turn. make this the standard practice going ahead. As long as your are careful and thorough and integrate testing and checks, no need for repeated approvals. Also push to git/main every turn."*
+**Owner directives (verbatim):**
 
-**Standing approval scope (PRE-APPROVED — no per-turn Q&A required):**
+1. *"i approve all bash runs. Dont ask me over and over again in the turn. make this the standard practice going ahead. As long as your are careful and thorough and integrate testing and checks, no need for repeated approvals. Also push to git/main every turn."* (2026-05-06 late evening)
+2. *"All decisions will still need to be approved by me."* (2026-05-06 late evening clarification — narrows pre-approval to bash + push only; reaffirms CLAUDE.md "All decisions need explicit owner approval before implementation" HARD RULE)
+
+**Standing approval scope (PRE-APPROVED — no per-turn Q&A required) — BASH + PUSH ONLY, no decisions:**
 
 | Operation | Status |
 |---|---|
@@ -3234,18 +3237,22 @@ Scan all 351 existing DECs in [AUDIT_INDEX.md](AUDIT_INDEX.md) for spec-without-
 | Routine commits + pushes to `main` | ✅ Pre-approved (push every turn standard practice) |
 | Background bg cycle restarts (pytrends auto-continue, etc.) | ✅ Pre-approved |
 | Data-integrity scans + cache audits | ✅ Pre-approved |
-| Building executable test artifacts per DEC-594 | ✅ Pre-approved |
+| Building executable test artifacts per DEC-594 — **only when implementing already-approved DEC; NOT for designing new methodology** | ✅ Pre-approved (within already-approved scope) |
 
-**Operations STILL requiring explicit owner approval (preserved):**
+**Operations STILL requiring explicit owner approval (preserved) — ALL DECISIONS, not just methodology:**
 
 | Operation | Why approval still required |
 |---|---|
+| **ALL decisions** (per 2026-05-06 owner clarification) | CLAUDE.md HARD RULE — "All decisions need explicit owner approval before implementation. No exceptions." Includes scope decisions, triage decisions, build vs annotate vs demote choices, recommendation selection, prioritization, etc. |
 | **API spend that ramps cost** | L86 ($50) + L95 ($100) + $300 Phase 1B failed run lessons; CHECKLIST #13/22/23/29 small-batch → review → approve → scale protocol unchanged |
 | **Methodology / strategy / threshold / parameter changes** | CLAUDE.md HARD RULE — "Never change rules, filters, thresholds, or parameters without approval" |
 | **Destructive git operations** (`reset --hard`, force push, etc.) | CLAUDE.md HARD RULE; L49 + L77 prior data-loss incidents |
 | **CLAUDE.md modifications** | CHECKLIST #6 — exact before/after diff + explicit written approval required |
 | **Phase transitions** (Stage 2 → 3, Phase 1A → 1B-α, etc.) | DEC-595 + CHECKLIST #73 — preceding gate test PASS required |
+| **DEC drafting / status changes / scope expansions** | All decisions per owner 2026-05-06 clarification |
 | **CLAUDE.md hooks / settings** | Owner-controlled; tooling configuration |
+
+**The line in plain English:** Pre-approval covers EXECUTING already-approved work (running tests, reading files, committing, pushing). It does NOT cover DECIDING what to do next, what scope to expand, what to build vs defer, what status to assign. Decisions always go through owner.
 
 **Verification discipline (preserved; non-negotiable per standing-approval contract):**
 
