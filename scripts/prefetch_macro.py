@@ -24,14 +24,29 @@ from datetime import date
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
+# Load .env so FRED_API_KEY does not need manual export (Pass 53 Day-9 v8 BUG-VIX-PROXY fix)
+def _load_env_file(path: Path = Path(".env")) -> None:
+    if not path.exists():
+        return
+    for line in path.read_text(errors="ignore").splitlines():
+        s = line.strip()
+        if not s or s.startswith("#") or "=" not in s:
+            continue
+        k, v = s.split("=", 1)
+        os.environ.setdefault(k.strip(), v.strip().strip('"').strip("'"))
+
+
+_load_env_file()
+
 FRED_KEY = os.environ.get("FRED_API_KEY", "")
 if not FRED_KEY:
-    print("ERROR: FRED_API_KEY not set")
+    print("ERROR: FRED_API_KEY not set (looked in env + .env)")
     sys.exit(1)
 
 CACHE_DIR = Path("backtest/data/cache/macro")
+SPRINT_0A_DIR = Path("data_prefetch/fred/observations")  # canonical L146 wiring path
 DATE_START = "2020-01-01"
-DATE_END = "2026-03-31"
+DATE_END = "2026-12-31"
 
 SERIES = {
     "yield_curve":    "T10Y2Y",    # 10Y-2Y spread — inversion = recession risk
@@ -41,6 +56,7 @@ SERIES = {
     "inflation_exp":  "T10YIE",    # 10-year breakeven inflation
     "treasury_10y":   "DGS10",     # 10-year treasury yield
     "corp_spread":    "BAA10Y",    # Corporate bond spread
+    "vix":            "VIXCLS",    # VIX volatility index (BUG-VIX-PROXY fix Pass 53 Day-9 v8)
 }
 
 
@@ -68,6 +84,7 @@ def fetch_fred(series_id: str) -> pd.DataFrame:
 
 def main():
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    SPRINT_0A_DIR.mkdir(parents=True, exist_ok=True)
     print(f"Fetching {len(SERIES)} FRED macro series: {DATE_START} to {DATE_END}")
     print()
 
@@ -75,12 +92,17 @@ def main():
     for name, series_id in SERIES.items():
         try:
             df = fetch_fred(series_id)
+            # Legacy path
             out_file = CACHE_DIR / f"{name}.parquet"
             df.to_parquet(out_file, index=False)
+            # Sprint 0A canonical path (DEC-440 / L146 wiring matrix)
+            sprint_file = SPRINT_0A_DIR / f"{series_id}.parquet"
+            df.to_parquet(sprint_file, index=False)
             all_series[name] = df
-            print(f"  ✓ {name} ({series_id}): {len(df)} observations")
+            print(f"  [OK] {name} ({series_id}): {len(df)} observations -> "
+                  f"{out_file.name} + {sprint_file.name}")
         except Exception as e:
-            print(f"  ✗ {name} ({series_id}): {e}")
+            print(f"  [FAIL] {name} ({series_id}): {e}")
 
     # Also save combined macro snapshot for fast lookup
     # Forward-fill to daily frequency
@@ -96,16 +118,7 @@ def main():
     combined.to_parquet(CACHE_DIR / "macro_combined.parquet", index=False)
     print(f"\n  ✓ Combined macro snapshot: {len(combined)} daily rows")
 
-    import subprocess
-    subprocess.run(["git", "add", "backtest/data/cache/macro/"], capture_output=True)
-    subprocess.run(["git", "commit", "-m", "FRED macro pre-fetch: all series 2020-2024"], capture_output=True)
-    result = subprocess.run(["git", "push", "origin", "main"], capture_output=True, text=True)
-    if result.returncode == 0:
-        print("\nCommitted and pushed to main.")
-    else:
-        print(f"\nPush warning: {result.stderr[:100]}")
-
-    print("\nMacro pre-fetch complete.")
+    print("\nMacro pre-fetch complete. Caller is responsible for git commit.")
 
 
 if __name__ == "__main__":

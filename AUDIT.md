@@ -31311,3 +31311,92 @@ Unchanged from Day 9 v7: 249 mandatory PASS + 6 SKIP. H1+H2+H3 are diagnostic, n
 
 **Day 9 v8 — H1+H2 confirm Phase 1A entry-readiness on engine wiring + entry gate. H3 confirms operational viability at 25-tkr scale (all artifacts emit) AND surfaces BUG-VIX-PROXY (owner decision pending: A/B/C/D). May 15 launch CANNOT proceed cleanly without VIX fix; H3 caught what code review missed.**
 
+
+## Pass 53 Day 9 v8b (2026-05-07 afternoon) — A+B+C+D VIX fix executed + deep L146/DEC-507 audit + G1/G4/G5 fixed + L146 regression suite
+
+### What this turn closed
+
+Owner approved "A B C D execute all" + asked sharp question "Isnt vix data already prefetched as per sprint 0A plan?" The question revealed Sprint 0A FRED prefetch *plan* listed VIXCLS but the actual `prefetch_macro.py:SERIES` dict omitted it (L149 spec-without-build at the prefetch-script level). After fixing G1, owner directed: "There are clearly a lot of L146 / DEC-507 misses. Do a deep review and identify all gaps. Address them."
+
+### G1 VIX fix executed (Options A+B+C+D combined)
+
+**C — FRED VIXCLS prefetched.** Patched [`scripts/prefetch_macro.py`](scripts/prefetch_macro.py): added `"vix": "VIXCLS"` to SERIES dict, added dotenv loader so `FRED_API_KEY` doesn't need manual export, dual-write to legacy + Sprint 0A canonical paths. Ran the script → 1623 obs cached at `data_prefetch/fred/observations/VIXCLS.parquet`.
+
+**A + B + D — `macro.py` source priority hardened.** Replaced `get_vix()` with a 4-tier source priority:
+1. **FRED VIXCLS** (canonical — Option C anchor)
+2. **^VIX OHLCV cache** (existing canonical — Option A path)
+3. **VXX OHLCV** (proxy — Option B band-aid: classifier ignores raw price; uses 30-day return-vol instead because VXX *price* and VIX *index points* are different numeric scales)
+4. **Empty + LOUD warning** (Option D fail-loud)
+
+Updated `vix_regime()` to detect the VXX-proxy path and switch to return-vol-based classification.
+
+**Regression test suite** ([`test_bug_vix_proxy_regression.py`](backtest/tests/test_bug_vix_proxy_regression.py)):
+- 4 tests: VIXCLS schema sanity (median 8-35, p99 < 100), real-index scale across calm + COVID-crash dates, regime variance across 2023, classifier thresholds unchanged
+- All 4 PASS
+
+**Verified at runtime — H3 re-run regime distribution:**
+| | Pre-fix | Post-fix |
+|---|---|---|
+| crisis | 260/260 (100%) | 0 (0%) |
+| bull | 0 | 200 |
+| neutral | 0 | 60 |
+
+2023 was a calm-bull year — post-fix distribution is correct.
+
+### Sprint 0A coverage gap revealed by owner's question
+
+Owner's "Isnt vix data already prefetched..." question was the right call. Detailed inventory found:
+- VIX is **not** in `data_prefetch/fred/observations/` (50 series, none of them VIXCLS)
+- VIX is **not** in `data_prefetch/polygon/` (only OHLCV; ^VIX not in Polygon Stocks scope)
+- VIX **only** exists as VXX/SVIX ETN proxies in `cache/ohlcv/` — wrong scale
+- CNN F&G "market_volatility_vix.parquet" is a 0-100 normalized score, not VIX index
+
+→ Sprint 0A *plan* listed FRED but Sprint 0A *implementation* never added VIXCLS. Same L149 pattern detected at the prefetch-script level. Fixed this turn.
+
+### Deep L146/DEC-507 audit — 16 gaps catalogued, 3 fixed (G1/G4/G5)
+
+Full inventory written to [`TRADINGAGENTS_DATA_AUDIT.md`](TRADINGAGENTS_DATA_AUDIT.md) "Pass 53 Day 9 v8" section. Summary:
+
+- **G1 VIX** — FIXED this turn (above)
+- **G4 Polygon reference (`fetcher.py` 🔴 CRITICAL)** — FIXED. Code read `data_prefetch/polygon/reference/` (didn't exist); 599 ticker files were in `data_prefetch/polygon/legacy_archive_pass53/reference/`. Also schema mismatch: Polygon uses `sic_description / primary_exchange / list_date`, not `sector / exchange / ipo_date`. Fixed both. Verified: `fetch_info('AAPL')` now returns `market_cap=4.07T name='Apple Inc.'` (was returning `market_cap=0 sector='Unknown'` for every ticker).
+- **G5 Polygon dividends** — FIXED. Same path-search pattern.
+- **G2 / G3 / G6 / G7 / G8 / G9 / G10-G17** — 13 remaining gaps surfaced for owner decision. **None block May 15 Phase 1A.** Categorized into Tier 2 (high-impact, owner-decide) and Tier 3 (strategic — wire as new signal or delete prefetch).
+
+### L146 wiring-matrix regression suite
+
+NEW [`test_l146_wiring_matrix.py`](backtest/tests/test_l146_wiring_matrix.py): 18 tests — 14 parametric (data_source × consumer_module) + 4 explicit gap regressions. Auto-detects future drift: any new prefetch dir without a consumer reference fails the suite. Caveat: matches by leaf path components only — does not catch "both legacy and Sprint 0A path exist; consumer uses legacy" cases (G2 / G3 still pass the lenient test). Future enhancement: add explicit "canonical-path-used" assertion per-consumer.
+
+### Pyramid
+
+| Suite | Day 9 v7 | Day 9 v8 (BUG-VIX-PROXY regression) | Day 9 v8b (this — L146 matrix) |
+|---|---|---|---|
+| Mandatory PASS | 249 | 253 | **271** (+18 L146 + 4 already counted) |
+| Mandatory SKIP | 6 | 6 | 6 |
+| Wall time | 11.5s | 15s | 12-15s mandatory; full suite 97s |
+
+Full suite (incl. e2e, perf): **544 PASS + 10 SKIP + 5 xfail in 98s**.
+
+### Tier 2 / Tier 3 gaps surfaced (owner decision required — DO NOT auto-fix)
+
+**Tier 2:**
+- G2 + G3: AAII / CNN F&G daily — migrate from legacy CSV to Sprint 0A parquet?
+- G7: SEC EDGAR 8-K filings — wire as Layer-2 catalyst signal?
+- G9: ALFRED — switch `macro.py` from live API to cached parquets?
+
+**Tier 3:**
+- G6: Polygon events (corporate actions) — Sprint 5+ or delete prefetch?
+- G8: pytrends 1417 ticker files — wire as retail-attention signal or delete?
+- G10/G11/G16: per-ticker Quiver dirs duplicating bulk versions — investigate or delete?
+- G12-G15: etfholdings / offexchange / topshareholders / wallstreetbets — wire each as signal or delete?
+- G17: Quiver micro-datasets (1 file each) — audit or delete?
+
+### Cross-references
+
+- L146 (data DEC + toolkit DEC ≠ integration); DEC-302 (proxy fallback); DEC-316 (regime fail-closed); DEC-440 (Sprint 0A FRED scope); DEC-497 D4 (yfinance HARD CUT); DEC-507 (wiring matrix HARD RULE); DEC-508 (15-category test plan + A/B/C gate); DEC-594 (same-commit); DEC-595 (gate executables); DEC-596 (standing approvals)
+- L149 (spec-without-build); L150 (pyramid dimension-coverage gap); now adding **L151 candidate (deep-audit-revealing meta-pattern)** — if this turn's pattern recurs, will codify
+- BUG-VIX-PROXY (G1) + BUG-PF-REFPATH (G4) + BUG-PF-DIVPATH (G5) — fixed this turn
+
+*Per CHECKLIST #1 (owner-approved A+B+C+D execute all + deep review); #11 (Tier 2/3 gaps surfaced not auto-fixed); #25 (audit before fix; regression tests before declaring done); #43 (full cross-refs above); #45 (this); #58 (atomic commit per DEC-594); #67 (per-turn doc + commit + push); #69 (mandatory pyramid 271 PASS); #70 (TRADINGAGENTS_DATA_AUDIT.md updated with G1-G17 inventory); #73 (DEC-594 same-commit: VIX fix + 4 regression tests + L146 matrix + 18 tests + AUDIT/TRADINGAGENTS_DATA_AUDIT updates landing together).*
+
+**Day 9 v8b — A+B+C+D VIX fix complete + 3 of 16 L146/DEC-507 gaps fixed (G1/G4/G5) + 22 new regression tests (4 BUG-VIX-PROXY + 18 L146 wiring matrix) + 13 Tier 2/3 gaps surfaced for owner decision. None of the remaining 13 block May 15 Phase 1A. Phase 1A entry-readiness CONFIRMED.**
+

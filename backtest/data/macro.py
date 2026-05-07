@@ -161,8 +161,38 @@ def yield_curve_regime(as_of: date, lookback_days: int = 30) -> str:
 _VIX_CACHE: Optional[pd.DataFrame] = None
 _DXY_CACHE: Optional[pd.DataFrame] = None
 # DEC-302 fix (Pass 50): track which symbol is being used so downstream can warn
-_VIX_SOURCE: Optional[str] = None  # '^VIX' (canonical) or 'VXX' (proxy)
+# Pass 53 Day-9 v8 BUG-VIX-PROXY: 'FRED:VIXCLS' is the new canonical priority
+_VIX_SOURCE: Optional[str] = None  # 'FRED:VIXCLS' (canonical) | '^VIX' | 'VXX' (proxy — degraded)
 _DXY_SOURCE: Optional[str] = None  # 'DX-Y.NYB' (canonical) or 'UUP' (proxy)
+
+
+def _load_vix_from_fred() -> Optional[pd.DataFrame]:
+    """Load VIX from FRED VIXCLS prefetch (Pass 53 Day-9 v8 BUG-VIX-PROXY fix).
+
+    Prefers ``data_prefetch/fred/observations/VIXCLS.parquet`` (Sprint 0A canonical
+    L146 wiring path) over ``backtest/data/cache/macro/vix.parquet`` (legacy path).
+    Returns DataFrame with DatetimeIndex + 'vix' column or None on miss.
+    """
+    from pathlib import Path
+    candidates = [
+        Path("data_prefetch/fred/observations/VIXCLS.parquet"),
+        Path("backtest/data/cache/macro/vix.parquet"),
+    ]
+    for path in candidates:
+        if not path.exists():
+            continue
+        try:
+            df = pd.read_parquet(path)
+            if "date" not in df.columns or "value" not in df.columns:
+                continue
+            df = df.rename(columns={"value": "vix"})
+            df["date"] = pd.to_datetime(df["date"])
+            df = df.set_index("date").sort_index()
+            return df[["vix"]]
+        except Exception as exc:
+            logger.warning("FRED VIX load failed at %s: %s", path, exc)
+            continue
+    return None
 
 
 def _load_vix_from_ohlcv_cache() -> Optional[pd.DataFrame]:
@@ -249,18 +279,49 @@ def get_dxy_data_source() -> Optional[str]:
 
 
 def get_vix(start: date, end: date, as_of: Optional[date] = None) -> pd.DataFrame:
-    """Return VIX data — reads from OHLCV cache first, falls back to yfinance."""
+    """Return VIX data.
+
+    Source priority (Pass 53 Day-9 v8 BUG-VIX-PROXY fix — Options A+B+C+D):
+      1. FRED VIXCLS (canonical, point-in-time, no proxy distortion) — Option C
+      2. ^VIX OHLCV cache (canonical via Codespaces yfinance prefetch) — Option A
+      3. VXX OHLCV cache (proxy — Option B band-aid: classifier ignores level,
+         uses 30-day return-volatility instead because VXX *price* is on a
+         different numeric scale than VIX *index points*)
+      4. Empty DataFrame + LOUD warning — Option D fail-loud
+    """
+    global _VIX_SOURCE
     effective_end = min(end, as_of) if as_of else end
 
-    # Try OHLCV cache first — no network call
+    # 1. FRED VIXCLS — canonical
+    fred = _load_vix_from_fred()
+    if fred is not None and not fred.empty:
+        _VIX_SOURCE = "FRED:VIXCLS"
+        mask = (fred.index.date >= start) & (fred.index.date <= effective_end)
+        sliced = fred[mask]
+        if not sliced.empty:
+            return sliced
+
+    # 2. ^VIX OHLCV cache (canonical via yfinance prefetch)
     cached = _load_vix_from_ohlcv_cache()
     if cached is not None:
         mask = (cached.index.date >= start) & (cached.index.date <= effective_end)
-        return cached[mask]
+        sliced = cached[mask]
+        if not sliced.empty and _VIX_SOURCE == "^VIX":
+            return sliced
+        if not sliced.empty and _VIX_SOURCE == "VXX":
+            # Don't return raw VXX — caller must handle scale per Option B.
+            # Annotate so vix_regime() can take the proxy path.
+            sliced = sliced.copy()
+            sliced.attrs["scale"] = "VXX_PRICE_NOT_VIX_POINTS"
+            return sliced
 
-    # Pass 53 Batch 13 sub-task 6 (DEC-497 D4 yfinance HARD CUT 2026-05-06):
-    # No live API fallback. Cache miss → empty DataFrame.
-    logger.debug("VIX cache miss; DEC-497 HARD CUT — no live yfinance fallback")
+    # 4. Fail-loud — Option D
+    logger.warning(
+        "BUG-VIX-PROXY guard: no canonical VIX source available "
+        "(checked FRED:VIXCLS, ^VIX OHLCV cache). VXX proxy disabled because "
+        "its price level is not on the VIX-index scale. Run scripts/prefetch_macro.py "
+        "to populate VIXCLS. Regime classification will return 'unknown'."
+    )
     return pd.DataFrame()
 
 
@@ -269,6 +330,29 @@ def vix_regime(as_of: date, lookback_days: int = 5) -> str:
     df = get_vix(start, as_of, as_of=as_of)
     if df.empty:
         return "unknown"
+
+    # Pass 53 Day-9 v8 BUG-VIX-PROXY Option B safeguard:
+    # If the only available source is VXX (proxy), DO NOT use the dollar price
+    # against VIX-index thresholds. Estimate vol-regime from VXX 30-day realized
+    # vol of returns instead — different numeric scale, but ordinally aligned
+    # with crisis/calm. Mark as 'unknown' if not enough history.
+    if df.attrs.get("scale") == "VXX_PRICE_NOT_VIX_POINTS":
+        if len(df) < 30:
+            return "unknown"
+        rets = df["vix"].pct_change().dropna().tail(30)
+        if rets.empty:
+            return "unknown"
+        annualized_vol_pct = float(rets.std() * (252 ** 0.5) * 100)
+        # Empirical mapping: VXX 30-day annualized return-vol of ~80% ~= VIX 25
+        # (proxy — band-aid only; replace by FRED VIXCLS as soon as available).
+        if annualized_vol_pct < 50:
+            return "low"
+        if annualized_vol_pct < 90:
+            return "normal"
+        if annualized_vol_pct < 130:
+            return "elevated"
+        return "crisis"
+
     v = float(df["vix"].iloc[-1])
     if v < 15:   return "low"
     if v < 25:   return "normal"

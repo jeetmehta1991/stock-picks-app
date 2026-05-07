@@ -183,31 +183,50 @@ def fetch_info(ticker: str, as_of: Optional[date] = None) -> dict:
     Fetch static company info: market cap, sector, industry, listing date.
 
     Pass 53 Batch 13 sub-task 6 (DEC-497 D4 yfinance HARD CUT 2026-05-06):
-    yfinance removed. Reads from data_prefetch/polygon/reference/{TICKER}.parquet
-    (FUTURE prefetch — not yet executed). Pre-prefetch returns sector="Unknown"
-    + market_cap=0 graceful state. Sector mapping for universe loaded via
-    `backtest.data.universe.get_sector_map()` from CSVs (canonical Pass 53).
+    yfinance removed. Reads from Polygon reference data.
+
+    Pass 53 Day-9 v8 G4 fix (BUG-PF-REFPATH): path was
+    ``data_prefetch/polygon/reference/`` (never existed); actual data is in
+    ``data_prefetch/polygon/legacy_archive_pass53/reference/`` (599 tickers).
+    Schema columns are ``sic_code/sic_description/primary_exchange/list_date``
+    — NOT ``sector/industry/exchange/ipo_date`` — so we map them. Sector
+    canonical source remains universe CSVs (B++ schema) per L146 separation;
+    Polygon reference only fills market_cap / industry-via-SIC / exchange /
+    list_date.
     """
     safe_ticker = ticker.replace(".", "-")
-    ref_path = Path(__file__).parent.parent.parent / "data_prefetch" / "polygon" / "reference" / f"{safe_ticker}.parquet"
+    repo_root = Path(__file__).parent.parent.parent
+    # Day-9 v8 G4 fix: search canonical path first, then legacy archive
+    candidate_paths = [
+        repo_root / "data_prefetch" / "polygon" / "reference" / f"{safe_ticker}.parquet",
+        repo_root / "data_prefetch" / "polygon" / "legacy_archive_pass53" / "reference" / f"{safe_ticker}.parquet",
+    ]
+    ref_path = next((p for p in candidate_paths if p.exists()), None)
     default = {"ticker": ticker, "name": ticker, "sector": "Unknown",
                "industry": "Unknown", "market_cap": 0, "exchange": "",
                "ipo_date": None}
-    if not ref_path.exists():
+    if ref_path is None:
         return default
     try:
         df = pd.read_parquet(ref_path)
         if df.empty:
             return default
         row = df.iloc[0]
+        # Schema mapping (Polygon reference → canonical info dict):
+        #   name            -> name
+        #   market_cap      -> market_cap
+        #   sic_description -> industry (Polygon uses SIC, not GICS)
+        #   primary_exchange-> exchange (XNAS / XNYS / etc.)
+        #   list_date       -> ipo_date
+        # sector remains "Unknown" — universe CSVs are the canonical sector source.
         return {
             "ticker":       ticker,
-            "name":         row.get("name", ticker),
+            "name":         row.get("name", ticker) or ticker,
             "sector":       row.get("sector", "Unknown") or "Unknown",
-            "industry":     row.get("industry", "Unknown") or "Unknown",
+            "industry":     row.get("industry") or row.get("sic_description") or "Unknown",
             "market_cap":   row.get("market_cap", 0) or 0,
-            "exchange":     row.get("exchange", ""),
-            "ipo_date":     row.get("list_date"),
+            "exchange":     row.get("exchange") or row.get("primary_exchange") or "",
+            "ipo_date":     row.get("ipo_date") or row.get("list_date"),
         }
     except Exception as exc:
         logger.error("fetch_info(%s): %s", ticker, exc)
@@ -268,13 +287,21 @@ def fetch_dividends(
     Return dividend history for `ticker` on or before `as_of`.
 
     Pass 53 Batch 13 sub-task 6 (DEC-497 D4): yfinance removed. Reads from
-    data_prefetch/polygon/dividends/{TICKER}.parquet (FUTURE prefetch — Polygon
-    `/v3/reference/dividends` endpoint). Pre-prefetch returns empty DataFrame
-    gracefully.
+    data_prefetch/polygon/dividends/{TICKER}.parquet.
+
+    Pass 53 Day-9 v8 G5 fix (BUG-PF-DIVPATH): path was
+    ``data_prefetch/polygon/dividends/`` (never existed); only 2 files actually
+    in ``data_prefetch/polygon/legacy_archive_pass53/dividends/``. Pre-coverage
+    returns empty DataFrame gracefully.
     """
     safe_ticker = ticker.replace(".", "-")
-    div_path = Path(__file__).parent.parent.parent / "data_prefetch" / "polygon" / "dividends" / f"{safe_ticker}.parquet"
-    if not div_path.exists():
+    repo_root = Path(__file__).parent.parent.parent
+    candidate_paths = [
+        repo_root / "data_prefetch" / "polygon" / "dividends" / f"{safe_ticker}.parquet",
+        repo_root / "data_prefetch" / "polygon" / "legacy_archive_pass53" / "dividends" / f"{safe_ticker}.parquet",
+    ]
+    div_path = next((p for p in candidate_paths if p.exists()), None)
+    if div_path is None:
         return pd.DataFrame()
     try:
         df = pd.read_parquet(div_path)

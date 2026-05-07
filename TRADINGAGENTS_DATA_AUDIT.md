@@ -1145,3 +1145,98 @@ When owner subscribes per DEC-506:
 **Phase 1A entry gate state:** Row 1 ✅ + rows 2-5 mixed-but-acceptable per #70 1A-entry rule (rows 2-5 can be ⚠ when `--no-agents` flag used). Phase 1A May 15 start UNBLOCKED.
 
 **Phase 1B-α gate state (Sprint 9):** Rows 6-13 still 🔴; gate 3 `test_gate_pre_phase_1b_alpha_run` SKIP today — will require all rows ✅ before run.
+
+
+## Pass 53 Day 9 v8 (2026-05-07 noon) — Deep L146/DEC-507 wiring audit + G1-G17 inventory
+
+After BUG-VIX-PROXY (G1) was caught by H3 dress rehearsal, owner directed: "There are clearly a lot of L146 / DEC-507 misses. Do a deep review and identify all gaps. Address them." This section is the canonical wiring matrix for the deep audit.
+
+### Methodology
+1. Inventoried every directory under `data_prefetch/<api>/<endpoint>/` (10 APIs, ~26K files, ~1.3 GB)
+2. Grepped consumer code (`backtest/data/{cache,fetcher,macro,sentiment,smart_money,universe}.py`) for path references
+3. Cross-checked each (prefetched dataset → consumer call site) pair
+4. Classified each gap by severity + fix complexity
+
+### Findings — 16 wiring gaps confirmed
+
+| # | Source | Prefetch state | Consumer status | Gap class | Fix tier |
+|---|---|---|---|---|---|
+| **G1** ✅ FIXED | FRED VIXCLS | 1623 obs (prefetched this turn) | `macro.py` source priority FRED→^VIX→VXX-scale-safeguard→fail-loud | **CRITICAL — was fully broken** | Tier 1 — DONE |
+| **G2** | AAII weekly | `data_prefetch/aaii/weekly_sentiment.parquet` | `sentiment.py:48` reads legacy `backtest/data/aaii_sentiment.csv` | Silent legacy-vs-Sprint-0A duplication | Tier 2 — owner decision |
+| **G3** | CNN F&G daily | `data_prefetch/cnn_fg/daily.parquet` | `sentiment.py:117` reads legacy `backtest/data/cnn_fear_greed.csv` | Silent legacy-vs-Sprint-0A duplication | Tier 2 — owner decision |
+| **G4** ✅ FIXED | Polygon reference (599 tickers) | Files in `legacy_archive_pass53/reference/` | `fetcher.py:192` was reading `data_prefetch/polygon/reference/` (didn't exist) | **CRITICAL path bug** | Tier 1 — DONE this turn |
+| **G5** ✅ FIXED | Polygon dividends (2 tickers — sparse) | Files in `legacy_archive_pass53/dividends/` | `fetcher.py:276` was reading `data_prefetch/polygon/dividends/` (didn't exist) | Path bug + sparse coverage | Tier 1 — DONE this turn |
+| **G6** | Polygon events (1687 tickers) | `data_prefetch/polygon/events/` populated; schema = `event_type/event_date/details_json`; **AAPL row contains ticker_change** | NO CONSUMER | Schema is corporate-actions (ticker_change/listing/delisting); not earnings calendar | Tier 3 — defer (low Phase-1A value) |
+| **G7** 🔴 | SEC EDGAR (6056 files) | `data_prefetch/sec_edgar/{4, 8_K, SC_13D, SC_13G}/` | `smart_money.py:16` docstring says "reads from data_prefetch/sec_edgar/" but **NO CODE DOES** | 70MB regulatory filings entirely unused | Tier 2 — high impact (8-K = catalyst) |
+| **G8** | pytrends (1417 ticker files, 12MB) | `data_prefetch/pytrends/<TICKER>.parquet` | NO CONSUMER | Entirely unused | Tier 3 — owner decision |
+| **G9** | ALFRED (50 vintage series, 15MB) | `data_prefetch/alfred/<SERIES>.parquet` | `macro.py:102` calls live ALFRED API | Live API instead of cache reads | Tier 2 — owner decision |
+| **G10** | Quiver insider per-ticker (509 files) | `data_prefetch/quiver/insider/<TICKER>.parquet` | Code uses bulk `_load_quiver_bulk("insiders")` only | Per-ticker dir unused; bulk version may be incomplete | Tier 3 — investigate completeness |
+| **G11** | Quiver institutional per-ticker (509 files) | `data_prefetch/quiver/institutional/<TICKER>.parquet` | Code uses bulk `sec13fchanges` only | Per-ticker dir unused | Tier 3 — investigate |
+| **G12** | Quiver etfholdings (1563 files) | `data_prefetch/quiver/etfholdings/<TICKER>.parquet` | NO CONSUMER | Unused | Tier 3 — owner decision |
+| **G13** | Quiver offexchange (1851 files — largest) | `data_prefetch/quiver/offexchange/<TICKER>.parquet` | NO CONSUMER | Dark-pool data unused | Tier 3 — owner decision |
+| **G14** | Quiver topshareholders (1937 files) | `data_prefetch/quiver/topshareholders/<TICKER>.parquet` | NO CONSUMER | Unused | Tier 3 — owner decision |
+| **G15** | Quiver wallstreetbets (509 files) | `data_prefetch/quiver/wallstreetbets/<TICKER>.parquet` | NO CONSUMER | Reddit sentiment unused | Tier 3 — owner decision |
+| **G16** | Quiver wikipedia mirror (509 files) | `data_prefetch/quiver/wikipedia/` (vs separate `data_prefetch/wikipedia/`) | Separate `data_prefetch/wikipedia/` (1414 files) IS consumed; quiver mirror redundant | Redundant prefetch | Tier 3 — defer / cleanup |
+| **G17** | Quiver patentmomentum / corporatedonors / quivernews / sec13f | 1 file each | NO CONSUMER | All unused | Tier 3 — owner decision |
+
+### Tier 1 (fixed this turn — broken paths, no decisions needed)
+
+- **G1 BUG-VIX-PROXY** (committed `42a338da` predecessor + this turn's macro.py edits)
+  - `data_prefetch/fred/observations/VIXCLS.parquet` prefetched (1623 obs)
+  - `macro.py` source priority: FRED → ^VIX OHLCV → VXX-scale-safeguard → fail-loud
+  - 4 regression tests in `test_bug_vix_proxy_regression.py` (all PASS)
+  - **Verified at runtime:** H3 dress rehearsal regime distribution went 100% crisis → bull=200/neutral=60/crisis=0 (correct for 2023)
+- **G4 BUG-PF-REFPATH** (this turn)
+  - `fetcher.py:fetch_info` searches both canonical + legacy_archive_pass53 paths
+  - Schema mapping fixed: `sic_description → industry`, `primary_exchange → exchange`, `list_date → ipo_date`
+  - **Verified:** `fetch_info('AAPL')` now returns `market_cap=4.07T, name='Apple Inc.'`
+- **G5 BUG-PF-DIVPATH** (this turn)
+  - `fetcher.py:fetch_dividends` searches both paths
+- **L146 wiring-matrix regression suite** ([`test_l146_wiring_matrix.py`](backtest/tests/test_l146_wiring_matrix.py))
+  - 18 tests: 14 (data-source × consumer-module) parametric + 4 explicit gap-fix regression tests
+  - Auto-detects future drift: any new prefetch dir without a consumer reference fails the suite
+  - All 18 PASS
+
+### Tier 2 / Tier 3 — owner decisions required (NOT fixed this turn)
+
+Surfacing as a single block per CLAUDE.md "ALL decisions need explicit owner approval":
+
+**Tier 2 (high-impact; ~1-2 hours each):**
+- **G2 + G3** — should AAII / CNN F&G daily switch from legacy CSVs to Sprint 0A parquet? Both work; legacy CSV is hand-maintained (last refresh date drifts), Sprint 0A parquet has automated refresh via GH Actions. Recommend **migrate** with a 1-week soak period of dual reads + comparison test before deletion.
+- **G7 SEC EDGAR** — 6056 filings (4/8_K/SC_13D/SC_13G) prefetched. 8-K filings are material-event disclosures (M&A, executive changes, restatements) — directly relevant to catalyst-based strategies (DEC-???). Should we wire as a Layer-2 catalyst signal (binary: "8-K filed in past 5 days")? Recommend **YES**.
+- **G9 ALFRED** — `macro.py` calls live ALFRED API for vintage data per DEC-301; data is also prefetched at `data_prefetch/alfred/`. Recommend **switch to cache** (loses ad-hoc vintage queries but ensures DEC-497 NO-LIVE-API hard cut compliance).
+
+**Tier 3 (strategic — wire as new signals or delete prefetch):**
+- **G6 Polygon events** — corporate actions (ticker changes / listing / delisting). Useful for survivorship adjustment but no immediate trade signal. Recommend **defer to Sprint 5+**.
+- **G8 pytrends** — Google Trends search-volume index per ticker. Could be a Layer-2 retail-attention signal. Recommend **owner decide: wire as signal or delete prefetch**.
+- **G10 / G11 / G16** — per-ticker Quiver dirs are duplicated by bulk versions or other prefetched paths. Recommend **delete redundant prefetches** to save space.
+- **G12-G15 Quiver datasets** — etfholdings (1563), offexchange (1851), topshareholders (1937), wallstreetbets (509). Each represents a potential signal not currently used. Recommend **owner decide per dataset** — wire each into smart_money composite or delete.
+- **G17 Quiver micro-datasets** (patentmomentum, corporatedonors, quivernews, sec13f) — 1 file each, unclear if real or stub. Recommend **owner audit + decide**.
+
+### Sister findings — process gaps (not data path gaps)
+
+**`scripts/prefetch_macro.py:10` docstring listed VIXCLS as included; the actual `SERIES` dict omitted it.** Same L149 spec-without-build pattern at the prefetch-script level. Fix this turn: added VIXCLS to SERIES + added dotenv loader so `FRED_API_KEY` doesn't need manual export.
+
+### Cross-references
+
+- L146 (data DEC + toolkit DEC ≠ integration; wiring is third deliverable)
+- DEC-507 (Agent × Data source × Code path × Verified status matrix HARD RULE)
+- DEC-508 (15-category test plan + 3-phase A/B/C gate for forks)
+- DEC-302 (VXX/UUP proxy fallback — original spec; hardened this turn with Option B scale safeguard)
+- DEC-440 (Polygon news prefetch — original L146 instance) + DEC-464 (smart_money toolkit) + DEC-497 D4 (yfinance HARD CUT — triggered the VIX gap)
+- L149 (spec-without-build) + L150 (pyramid dimension-coverage gap) — sister meta-patterns
+- BUG-VIX-PROXY (G1) + BUG-PF-REFPATH (G4) + BUG-PF-DIVPATH (G5) — concrete instances
+
+### Phase 1A May 15 entry-gate impact
+
+| Gap | Blocks May 15? | Reason |
+|---|---|---|
+| G1 VIX | NO (fixed) | regime classifier now correct |
+| G4 reference | NO (fixed) | fetch_info now returns real data |
+| G5 dividends | NO (fixed) | path fixed; 2 ticker coverage is all that exists |
+| G2 + G3 (AAII / CNN) | NO | legacy CSVs work; migration is non-blocking |
+| G7 SEC EDGAR | NO | not used by any current strategy; impact is "missed signal" not "broken signal" |
+| G9 ALFRED | NO | live API works; vintage queries non-blocking for Phase 1A baseline |
+| G6/G8/G10-G17 | NO | unused = no contamination of current results |
+
+**All gaps are non-blocking for May 15 Phase 1A start.** Owner decisions on Tier 2/3 can be batched post-May-15 without affecting Phase 1A baseline.
