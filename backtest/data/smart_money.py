@@ -1022,6 +1022,14 @@ def get_etf_holdings(ticker: str) -> dict:
       top_etf_weight   — max % of any single ETF
       total_etf_value  — sum of $ value across all ETF holdings
       top10            — list of {etf_symbol, weight_pct, value_usd} top 10
+
+    .. WARNING:: NO PIT DIMENSION
+       Source data has no date column — this is a CURRENT snapshot of ETF
+       inclusions, not a historical record. Using this in a backtest at
+       as_of=2020 silently leaks future ETF inclusion changes. Phase 1A
+       must NOT use this accessor for time-bounded decisions until source
+       prefetch is extended with date dimension. Documented per Pass 53
+       Day-9 v8g PIT audit (Batch 7).
     """
     df = _load_prefetch("etfholdings", ticker)
     default = {"etf_count": 0, "top_etf_weight": 0.0,
@@ -1101,6 +1109,14 @@ def get_top_shareholders(ticker: str, top_n: int = 10) -> dict:
     Each dict: owner_name / owner_title / shares (or underlying_shares for options).
 
     Returns top-N institutional holders + total share count + concentration.
+
+    .. WARNING:: NO PIT DIMENSION
+       Source is a CURRENT shareholder snapshot, not historical. Using this
+       in a backtest at past as_of silently leaks current ownership info.
+       Phase 1A must NOT use this for time-bounded decisions until source
+       is extended. Documented per Pass 53 Day-9 v8g PIT audit (Batch 7).
+       Use ``institutional_signal()`` (sec13fchanges bulk; PIT-correct) for
+       backtest-time concentration signals.
     """
     df = _load_prefetch("topshareholders", ticker)
     default = {"top_n_count": 0, "top_n_total_shares": 0,
@@ -1319,12 +1335,17 @@ def get_patent_momentum(ticker: str, as_of: date,
         return {"latest_momentum": None, "as_of": str(as_of), "found": False}
 
 
-def get_corporate_donations(ticker: str) -> dict:
-    """G17b — Corporate PAC political donations summary (`Ticker` column).
+def get_corporate_donations(ticker: str,
+                              as_of: Optional[date] = None) -> dict:
+    """G17b — Corporate PAC political donations summary (PIT, optional cutoff).
 
     Source: data_prefetch/quiver/corporatedonors/global.parquet
     Schema: BioGuideID / CandidateName / CompanyCMTENM / TransactionDate /
             TransactionAmount / Ticker / ...
+
+    Pass 53 Day-9 v8g PIT-fix: now accepts optional ``as_of`` parameter.
+    When provided, donations with TransactionDate > as_of are excluded
+    (closes silent lookahead — donations made AFTER as_of weren't public yet).
 
     Returns total donation $ + recipient count for the company's PAC.
     """
@@ -1337,6 +1358,15 @@ def get_corporate_donations(ticker: str) -> dict:
         if df.empty:
             return {"total_donations_usd": 0.0, "recipient_count": 0,
                     "found": False}
+        # PIT cutoff per as_of
+        if as_of is not None and "TransactionDate" in df.columns:
+            df = df.copy()
+            df["_td"] = pd.to_datetime(df["TransactionDate"], errors="coerce")
+            cutoff = pd.Timestamp(as_of)
+            df = df[df["_td"].notna() & (df["_td"] <= cutoff)]
+            if df.empty:
+                return {"total_donations_usd": 0.0, "recipient_count": 0,
+                        "found": False}
         total = float(df["TransactionAmount"].sum())
         n = int(df["BioGuideID"].nunique())
         return {

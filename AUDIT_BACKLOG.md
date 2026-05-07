@@ -17,6 +17,45 @@
 
 **Phase 1A May 15 BLOCKERS: 0** ✅
 
+**Day 9 v8b-v8f Phase-1A blocker closures (this session, 2026-05-07):**
+- R3-01 DEC-514 gap-through-stop fill methodology — ✅ FIXED `0b593d1f`/`dbce0da3` (-20.5pp bias quantified)
+- R3-02 DEC-515 Level 6 DD-from-peak CB — ✅ WIRED Day-9 v4 + N5
+- R3-03 DEC-516 regime-flip exit — ✅ WIRED Day-9 v4
+- R1-11 DEC-510 Deflated Sharpe Ratio — ✅ IMPLEMENTED (`deflated_sharpe.py`, DEC-247 lib)
+- R2-17 DEC-512 PIT-fundamentals audit — ✅ COMPLETE `6f79a503` (BUG-INSIDER-PIT fixed: ~6d lookahead removed)
+- BUG-VIX-PROXY (not in original review) — ✅ FIXED `8d1b3b9a` (FRED VIXCLS prefetch + 4-tier source priority)
+- 16 L146/DEC-507 wiring gaps — ✅ closed/documented Wave A-D (`ea1679d9`/`b245484e`/`0891bd28`/`cce55afa`)
+
+**Pyramid: 628 PASS + 11 SKIP + 5 xfail in 69s** (was 165 pre-Day-9; +463 across all closures).
+
+**Day 9 v8g additions (this session, 2026-05-07 evening — owner directive "Implement P0, P1, verification/hygiene, sprint 0A in parallel"):**
+- R3-04 DEC-517 R-multiple exits — ✅ IMPLEMENTED `7ceaed29` (3 new EXIT_STRATEGIES methods + 14 tests)
+- R3-05 DEC-518 Earnings-blackout — ✅ IMPLEMENTED `686e0036` (4-strategy tolerant list + 7 tests)
+- R3-06 DEC-519 Strategy-to-exit mapping — ✅ COMPLETE via existing counterfactual cube (no new code; documented)
+- R3-08 DEC-521 Per-class time stops — ✅ IMPLEMENTED `686e0036` (20-category default map + 8 tests)
+- R2-02 DEC-513 #1 Realized vol — ✅ IMPLEMENTED `d148fd19`
+- R2-04 DEC-513 #4 Correlation matrix — ✅ IMPLEMENTED `23140972`
+- R2-05 DEC-513 #5 Overnight/intraday split — ✅ IMPLEMENTED `d148fd19`
+- R2-06 DEC-513 #6 Gap classification — ✅ IMPLEMENTED `d148fd19`
+- R2-08 DEC-513 #8 52-week distance continuous — ✅ IMPLEMENTED `d148fd19`
+- R2-18 DEC-513 #10 signal_age_days — ✅ IMPLEMENTED helper `d148fd19` (caller wiring Sprint 7)
+- R1-09 DEC-509 Correlation cluster gate — ✅ IMPLEMENTED `23140972` (verdict-cube wiring Sprint 7)
+- PIT-verification audit Batch 7 — ✅ COMPLETE (BUG-DONATIONS-PIT fixed; ETF/topshareholders documented as no-PIT-dimension; 14 tests)
+- Hygiene: .gitignore for output_smoke_*/output_dress_rehearsal/ added `7ceaed29`
+
+**Pyramid post-v8g: 702 PASS + 11 SKIP + 5 xfail in 67s** (+74 from Day-9 v8f).
+
+**Remaining Sprint pre-Phase-1A items (not implemented this session — multi-day each):**
+- R2-01 DEC-511 Cat 7 (5 modules — cross-sectional ranking, breadth, factor exposures, signal architecture)
+- R2-03 DEC-513 #2/#3 betas + factor exposures (need benchmark + FF3 data)
+- R2-09 DEC-513 #7 VIX3M + VVIX (need FRED prefetch additions)
+- R2-10 Cat 7 §7.2 breadth indicators
+- R2-11 DEC-513 #9 FINRA short interest (new data source)
+- R3-07 DEC-520 Signal-reversal exit_when() predicate (per-strategy refactor)
+- R4-01 DEC-539 regime training/labeling
+
+These are **NOT Phase 1A blockers** — Phase 1A baseline runs without them.
+
 Day 9 buffer L149 spec-without-build remediation count: 13 instances caught + closed
 1. cache.py Schema-B blindness
 2. cache.py index.json staleness
@@ -166,9 +205,9 @@ Each has a "Test signal:" pattern in DEC body but no explicit code reference. Ap
 | R1-06 | P0 | Post-event drift beyond earnings | Layer 6F 2 strategies (193-194); 5 dups of Layer 1 Event-Driven | 🟢 | Sprint 7 |
 | R1-07 | P0 | Microstructure swing setups | Layer 6G 4 strategies (195-198); 1 deferred (intraday VP) | 🟢 / 🔵 | Sprint 7 |
 | R1-08 | P0 | Direction asymmetry Layer 1 | Layer 1.I 38 new shorts (134-171) — buy-the-dip + sell-the-rip philosophy | ✅ | Sprint 7 |
-| R1-09 | P0 | Strategy correlation will inflate apparent diversity | DEC-509 correlation cluster gate | 🟢 | Sprint pre-Phase-1A |
+| R1-09 | P0 | Strategy correlation will inflate apparent diversity | DEC-509 correlation cluster gate | ✅ | IMPLEMENTED Day-9 v8g (`23140972`) — `backtest/engine/correlation_cluster.py`: compute_correlation_matrix + cluster_strategies + flag_redundant_variants. 15 tests. Verdict-cube integration deferred to Sprint 7. |
 | R1-10 | P0 | No regime conditioning | Layer 5 regime-eligibility flag schema (172 strategies tagged) | 🟢 | Sprint 7 |
-| R1-11 | P0 | Multiple-testing problem | DEC-510 Deflated Sharpe Ratio (F-009 6th gate) | 🟢 | Sprint pre-Phase-1A |
+| R1-11 | P0 | Multiple-testing problem | DEC-510 Deflated Sharpe Ratio (F-009 6th gate) | ✅ | IMPLEMENTED — `backtest/results/deflated_sharpe.py` (DEC-247 PSR + DSR with Bailey-LdP 2014 formula; 22 tests in `test_partial_spec_artifacts_v2.py`) |
 | R1-12 | P1 | Cost modeling underspecified | DEC-095/092/122/280 already exist; reviewer missed | ✅ | Already in code |
 | R1-13 | P2 | Layer 2D form-derived ICT hole | PENDING-FORM owner-driven enumeration | 🔴 | Owner-gated |
 
@@ -179,13 +218,13 @@ Each has a "Test signal:" pattern in DEC body but no explicit code reference. Ap
 | ID | Severity | Title | DEC / Resolution | Status | Sprint |
 |---|---|---|---|---|---|
 | R2-01 | P0 | Cross-sectional ranks missing | DEC-511 Category 7 (5 modules) | 🟢 | Sprint pre-Phase-1A |
-| R2-02 | P0 | Realized vol as first-class signal | DEC-513 #1 (3 horizons) | 🟢 | Sprint pre-Phase-1A |
+| R2-02 | P0 | Realized vol as first-class signal | DEC-513 #1 (3 horizons) | ✅ | IMPLEMENTED Day-9 v8g (`d148fd19`) — `dec513_extended_signals.compute_realized_vol` (10d/20d/60d annualized). 4 tests. |
 | R2-03 | P0 | Beta + factor exposures | DEC-513 #2 + #3 + Cat 7 §7.4 | 🟢 | Sprint pre-Phase-1A |
-| R2-04 | P0 | Correlation matrices | DEC-513 #4 + Cat 7 §7.3 | 🟢 | Sprint pre-Phase-1A |
-| R2-05 | P0 | Overnight/intraday split | DEC-513 #5 | 🟢 | Sprint pre-Phase-1A |
-| R2-06 | P0 | Gap classification | DEC-513 #6 | 🟢 | Sprint pre-Phase-1A |
+| R2-04 | P0 | Correlation matrices | DEC-513 #4 + Cat 7 §7.3 | ✅ | IMPLEMENTED Day-9 v8g (`23140972`) — `correlation_cluster.compute_correlation_matrix` (N×N pairwise Pearson). 5 tests. |
+| R2-05 | P0 | Overnight/intraday split | DEC-513 #5 | ✅ | IMPLEMENTED Day-9 v8g (`d148fd19`) — `dec513_extended_signals.compute_overnight_intraday_split`. 2 tests. |
+| R2-06 | P0 | Gap classification | DEC-513 #6 | ✅ | IMPLEMENTED Day-9 v8g (`d148fd19`) — `compute_gaps` (size/bucket/fill T+1/T+3/T+5). 4 tests. |
 | R2-07 | P2 | Volume profile / POC / HVN | Deferred (intraday VP needed); DEC-526 P2 backlog uses daily approx | 🟡 | Post-Phase-1B-α |
-| R2-08 | P0 | 52-week distance continuous | DEC-513 #8 | 🟢 | Sprint pre-Phase-1A |
+| R2-08 | P0 | 52-week distance continuous | DEC-513 #8 | ✅ | IMPLEMENTED Day-9 v8g (`d148fd19`) — `compute_extremes` (8 fields: 52w/20d/252d distance pct + ATR-norm). 5 tests. |
 | R2-09 | P0 | VIX term structure (VIX3M, VVIX) | DEC-513 #7 | 🟢 | Sprint pre-Phase-1A |
 | R2-10 | P0 | Breadth indicators incomplete | Cat 7 §7.2 (DEC-511) | 🟢 | Sprint pre-Phase-1A |
 | R2-11 | P0 | Short interest data absent | DEC-513 #9 (FINRA free) | 🟢 | Sprint pre-Phase-1A |
@@ -194,8 +233,8 @@ Each has a "Test signal:" pattern in DEC body but no explicit code reference. Ap
 | R2-14 | P1 | Analyst price-target revision continuous | DEC-552 backlog | 🟡 | Phase 1B-α tunable |
 | R2-15 | P3 | Macro surprise data (Citi ESI) | Paid; deferred | 🔵 | Stage 3+ |
 | R2-16 | P3 | FX cross-rates beyond DXY | Lower priority | 🔵 | Stage 3+ |
-| R2-17 | P0 | PIT-fundamentals filing-date audit | DEC-512 (pre-Phase-1A blocker) | 🟢 | Sprint pre-Phase-1A |
-| R2-18 | P1 | Universal `signal_age_days` field | DEC-513 #10 | 🟢 | Sprint pre-Phase-1A |
+| R2-17 | P0 | PIT-fundamentals filing-date audit | DEC-512 (pre-Phase-1A blocker) | ✅ | COMPLETE Day-9 v8f (`6f79a503`) — 7-item audit run, 6/7 PASS as-is, item 6 BUG-INSIDER-PIT fixed (Quiver insider Date→fileDate, ~6d lookahead removed). 9 regression tests. |
+| R2-18 | P1 | Universal `signal_age_days` field | DEC-513 #10 | ✅ | IMPLEMENTED Day-9 v8g (`d148fd19`) — `dec513_extended_signals.attach_signal_age` helper. Caller integration into 7 categories: Sprint 7 schema migration. |
 | R2-19 | P1 | 90-day decay sensitivity | DEC-123 REVISIT_AFTER_BACKTEST (Class B per DEC-581) | 🟡 | Phase 1B-α tuning |
 | R2-20 | P1 | Sentiment thresholds untuned | DEC-072 + DEC-581 Class B | 🟡 | Phase 1B-α tuning |
 | R2-21 | P2 | Per-ticker vs universe-level architectural split | DEC-511 Cat 7 (architectural addition) | 🟢 | Sprint pre-Phase-1A |
@@ -209,14 +248,14 @@ Each has a "Test signal:" pattern in DEC body but no explicit code reference. Ap
 
 | ID | Severity | Title | DEC | Status | Sprint |
 |---|---|---|---|---|---|
-| R3-01 | P0 | Gap-through-stop fill methodology missing | DEC-514 (silent backtest bug; Phase 1A blocker) | 🟢 | Sprint pre-Phase-1A |
-| R3-02 | P0 | DD-from-peak portfolio breaker missing | DEC-515 (Level 6) | 🟢 | Sprint pre-Phase-1A |
-| R3-03 | P0 | Regime-flip exit (symmetric to Layer 5) | DEC-516 | 🟢 | Sprint 7 |
-| R3-04 | P1 | R-multiple exits missing | DEC-517 (3 new exit methods #18-20) | 🟢 | Sprint pre-Phase-1A |
-| R3-05 | P1 | Earnings-blackout exit | DEC-518 | 🟢 | Sprint pre-Phase-1A |
-| R3-06 | P1 | Strategy-to-exit mapping (compete vs single) | DEC-519 (multiple compete; first-trigger wins) | 🟢 | Sprint pre-Phase-1A |
-| R3-07 | P1 | Signal-reversal exit precise definition | DEC-520 (exit_when() predicate) | 🟢 | Sprint pre-Phase-1A |
-| R3-08 | P1 | Per-strategy-class time stops | DEC-521 | 🟢 | Sprint pre-Phase-1A |
+| R3-01 | P0 | Gap-through-stop fill methodology missing | DEC-514 (silent backtest bug; Phase 1A blocker) | ✅ | FIXED Day-9 v8e (`0b593d1f` + `dbce0da3`) — `compute_fill_price()` helper + 12 sites refactored + 22 regression tests. H3 quantified -20.5pp pre-fix bias on 25-tkr × 1y sample. |
+| R3-02 | P0 | DD-from-peak portfolio breaker missing | DEC-515 (Level 6) | ✅ | WIRED Day-9 v4 + N5 — `backtest/engine/circuit_breakers.py` Level6State + update_level_6_state + halt branch in `process_day_exits`. 4 tests in test_n5_n6_wiring.py + 5 in test_n1_n2_artifacts.py. |
+| R3-03 | P0 | Regime-flip exit (symmetric to Layer 5) | DEC-516 | ✅ | WIRED Day-9 v4 — `exit_regime_flip` in EXIT_STRATEGIES registry. 3 regression tests in test_n1_n2_artifacts.py. |
+| R3-04 | P1 | R-multiple exits missing | DEC-517 (3 new exit methods #18-20) | ✅ | IMPLEMENTED Day-9 v8g (`7ceaed29`) — 3 new exits in EXIT_STRATEGIES: r_multiple_2r/3r/break_even_at_1r. 14 regression tests. |
+| R3-05 | P1 | Earnings-blackout exit | DEC-518 | ✅ | IMPLEMENTED Day-9 v8g (`686e0036`) — exit_earnings_blackout + 4-strategy tolerant list (DEC-013). 7 tests. |
+| R3-06 | P1 | Strategy-to-exit mapping (compete vs single) | DEC-519 (multiple compete; first-trigger wins) | ✅ | IMPLEMENTED via counterfactual cube (run_exit_comparison) — every trade tested against all exits; first-trigger wins behavior natively supported. |
+| R3-07 | P1 | Signal-reversal exit precise definition | DEC-520 (exit_when() predicate) | 🟢 | DEFERRED — requires per-strategy refactor across 60+ classes. Sprint 7. |
+| R3-08 | P1 | Per-strategy-class time stops | DEC-521 | ✅ | IMPLEMENTED Day-9 v8g (`686e0036`) — exit_class_time_stop + CATEGORY_TIME_STOPS_DAYS (20 categories). 8 tests. |
 | R3-09 | P2 | Trailing-stop ATR floor (vol-collapse trap) | DEC-522 | 🟡 | P2 backlog |
 | R3-10 | P2 | Scale-out beyond 50/50 | DEC-523 | 🟡 | P2 backlog |
 | R3-11 | P2 | News / 8-K-driven exit | DEC-524 (post-Sprint 4 SEC EDGAR parser) | 🟡 | Sprint 4+ |

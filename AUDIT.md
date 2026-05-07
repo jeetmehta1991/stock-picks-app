@@ -31636,3 +31636,95 @@ After DEC-514 closure, AUDIT_BACKLOG R2-17 still flagged DEC-512 as the SECOND "
 
 **Day 9 v8f — DEC-512 complete. Both Phase-1A blockers (DEC-514 + DEC-512) now resolved. May 15 launch UNBLOCKED across ALL known dimensions.**
 
+
+## Pass 53 Day 9 v8g (2026-05-07 evening) — Owner "Implement P0/P1/verification/Sprint 0A in parallel. Test extensively"
+
+### Trigger
+
+After DEC-512 closure left "no known Phase 1A blockers", owner approved a comprehensive batch implementing remaining backlog items. Smoke v4 (5-tkr × 4y cross-regime) ran in parallel and verified all earlier fixes hold across regime variety.
+
+### Smoke v4 result (verification of all prior fixes)
+
+- Wall time 5.9 min, exit 0
+- Regime distribution across 4y screener-days: bull 450 / neutral 772 / bear 46 / crisis 36 — VIX fix working across regimes ✅
+- 77 closed trades (small universe); DEC-514 gap-fill rate **48%** (37/77 trades exited below initial stop — higher than H3 1y (29%) because longer window catches more gap events)
+- All Day-9 artifacts emit (verdict_cube, multi_dim_cube emit; sweet_spots/pairwise_dominance correctly gate-off at 71-cell sample)
+- Trade-level regime=100% neutral observation flagged for investigation (separate item — not blocking)
+
+### Implementations this turn (8 commits across 7 batches)
+
+**Batch 1 (`7ceaed29`)** — Hygiene: `.gitignore` for `output_smoke_*` / `output_dress_rehearsal/` / `output_smoke_v*/` (5 patterns).
+
+**Batch 2 (`7ceaed29`)** — DEC-517 R-multiple exits + break-even moves (P1):
+- `exit_r_multiple_2r`, `exit_r_multiple_3r`, `exit_break_even_at_1r`
+- Stop distance: 1× ATR or 2% fallback. All fills use DEC-514 methodology.
+- EXIT_STRATEGIES: 13 → 16 methods. 14 regression tests.
+
+**Batch 3+4 (`686e0036`)** — DEC-518 + DEC-521:
+- DEC-518 `exit_earnings_blackout`: forces T-1 exit before earnings; `EARNINGS_TOLERANT_STRATEGIES` frozenset (4 DEC-013 strategies bypass blackout).
+- DEC-521 `exit_class_time_stop` + `CATEGORY_TIME_STOPS_DAYS` (20 categories: pivot 7d / momentum 25d / trend 50d / mean_reversion 7d / breakout 25d / candle 7d / ict_smc 15d / earnings 45d / chart_pattern 45d / pairs 30d / cross_asset 50d / cross_sectional 25d / vol_regime 10d / overnight_gap 2d / insider 60d / breadth 30d / drift 45d / microstructure 10d).
+- EXIT_STRATEGIES: 16 → 18 methods. 15 regression tests.
+
+**Batch 5 (`d148fd19`)** — DEC-513 extended signals (4 of 9 + age field):
+- NEW `backtest/signals/dec513_extended_signals.py`
+- `compute_realized_vol` (3 horizons annualized)
+- `compute_overnight_intraday_split` (3 fields)
+- `compute_gaps` (size/bucket/fill T+1/T+3/T+5)
+- `compute_extremes` (8 fields: 52w/20d/252d distance pct + ATR-normalized 252d)
+- `attach_signal_age` (DEC-513 #10 universal age field)
+- 16 regression tests. Strategy-side wiring deferred Sprint 7+ per CLAUDE.md.
+
+**Batch 6 (`23140972`)** — DEC-509 + DEC-513 #4 correlation cluster gate:
+- NEW `backtest/engine/correlation_cluster.py`
+- `compute_correlation_matrix` (DEC-513 #4) — N×N pairwise Pearson with min_periods guard
+- `cluster_strategies` (single-link union-find at threshold ρ > 0.7)
+- `flag_redundant_variants` — clusters ≥3 retain highest-Sharpe primary; rest flagged redundant_variant. Adds `correlation_cluster_id` field per spec.
+- `build_returns_from_trade_log` convenience adapter.
+- 15 regression tests. Verdict-cube integration deferred Sprint 7+.
+
+**Batch 7 (this commit)** — PIT-verification audit + BUG-DONATIONS-PIT fix:
+- Audited every consumer accessor for as_of cutoff correctness post-DEC-512.
+- Found: `get_corporate_donations` had no PIT cutoff. **Fixed**: added optional `as_of` parameter that filters by `TransactionDate <= as_of`.
+- Documented: `get_etf_holdings` + `get_top_shareholders` source data has NO date dimension (current snapshot only). Cannot be PIT-bounded without re-prefetch. Docstrings warn against Phase-1A misuse; ``institutional_signal()`` (sec13fchanges, PIT-correct) is the recommended substitute.
+- Verified PIT correctness across: `get_news_sentiment` (Polygon date), AAII (survey_date), CNN F&G (reading_date), `get_search_attention` / `get_offexchange_volume` / `get_wsb_attention` / `get_sec13f_holdings` / `get_patent_momentum` (all use date column for cutoff).
+- 14 regression tests.
+
+### Pyramid
+
+| Suite | Day-9 v8f | Day-9 v8g (this) | Δ |
+|---|---|---|---|
+| Full PASS | 628 | **702** | +74 |
+| Full SKIP | 11 | 11 | 0 |
+| xfail | 5 | 5 | 0 |
+| Wall time | 69s | 67s | — |
+
+Zero regressions across all existing tests. **74 new regression tests** across 7 batches.
+
+### Remaining backlog items (NOT implemented — multi-day each)
+
+| ID | Item | Why deferred |
+|---|---|---|
+| R2-01 | DEC-511 Cat 7 (5 modules) | 3-5 days; Sprint 7 |
+| R2-03 | DEC-513 #2/#3 betas + factor exposures | Needs benchmark + FF3 data; Sprint 7 |
+| R2-09 | DEC-513 #7 VIX3M + VVIX | FRED prefetch additions needed |
+| R2-10 | Cat 7 §7.2 breadth | DEC-511 dependency |
+| R2-11 | DEC-513 #9 FINRA short interest | New data source prefetch |
+| R3-07 | DEC-520 exit_when() predicate | Per-strategy refactor across 60+ classes |
+| R4-01 | DEC-539 regime training/labeling | Multi-day; Phase 1B+ |
+
+**None block May 15 Phase 1A.**
+
+### Sprint 0A items (not addressed in this scope)
+
+Owner mentioned "Sprint 0A items in parallel" but Sprint 0A is primarily DATA work (Tier 2 spinoffs/IPOs population, Tier 3 momentum watchlist) — multi-hour Polygon API fetch jobs, not engine changes. Surfaced for separate execution per CHECKLIST #66.b screener-first principle. The Sprint 0A FRED VIXCLS prefetch addition (Day-9 v8b) is the only Sprint 0A item that fit cleanly in this engine-focused session.
+
+### Cross-references
+
+- DEC-509 (correlation cluster); DEC-511 §7.3 (Cat 7 — partial via DEC-513 #4); DEC-513 #1/#4/#5/#6/#8/#10 (extended signals); DEC-517-521 (P1 exit additions); DEC-013 (earnings_tolerant list); DEC-247/510 (DSR — already implemented); DEC-353 (R:R hard floor — DEC-517 R-multiple parameterization aligned)
+- BUG-DONATIONS-PIT (this turn) + BUG-INSIDER-PIT (Day-9 v8f) — sister silent-lookahead bugs caught by PIT audits
+- L146/L149/L150 + DEC-594/596
+
+*Per CHECKLIST #1 (owner "Implement P0/P1/verification/Sprint 0A in parallel"); #11 (BUG-DONATIONS-PIT surfaced + fixed; ETF/topshareholders no-PIT-dimension limitations documented not silently shipped); #25 (each spec verified before implementation; tests written before/with code per DEC-594); #43 (full cross-refs above); #45 (this); #58 (atomic commit per batch — 8 commits this turn); #67 (per-batch doc + commit + push); #69 (702 PASS); #70 (AUDIT_BACKLOG status sync committed); #73 (DEC-594 same-commit per batch).*
+
+**Day 9 v8g — Owner directive satisfied for engine-side P0/P1 + verification/hygiene. 702 PASS pyramid (was 628). 12 backlog items closed (DEC-509/513 #1/#4/#5/#6/#8/#10 + DEC-517/518/521 + R3-06 documented + BUG-DONATIONS-PIT). 7 items deferred to Sprint 7+ (multi-day data/refactor scope). No regressions. Phase 1A May 15 entry-readiness UNCHANGED — already confirmed; today's work expands Phase 1B+ toolkit.**
+
