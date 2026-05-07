@@ -985,3 +985,183 @@ def get_congressional_detail(ticker: str, as_of: date, top_n: int = 3) -> list:
     except Exception as exc:
         logger.debug("get_congressional_detail(%s): %s", ticker, exc)
         return []
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Pass 53 Day-9 v8c Wave C — L146 G12+G13+G14+G15 Quiver new-signal accessors
+# ─────────────────────────────────────────────────────────────────────────────
+# Wires 4 previously-unconsumed Quiver datasets into thin accessor functions.
+# Strategy-side wiring (smart_money composite, agent inputs) deferred to
+# Phase 1B+ per CLAUDE.md (Layer-2 candidate signals).
+#
+# Each accessor reads from data_prefetch/quiver/<dataset>/<TICKER>.parquet
+# (PIT-safe per Sprint 0A.8 NO-LIVE-API HARD CUT).
+
+
+def get_etf_holdings(ticker: str) -> dict:
+    """G12 — Which ETFs hold this ticker, and at what weight?
+
+    Source: data_prefetch/quiver/etfholdings/<TICKER>.parquet
+    Schema: 'ETF Symbol' / 'Holding Name' / 'Holding Symbol' / '% of ETF' /
+            'Value ($)'
+
+    Returns dict with:
+      etf_count        — number of ETFs holding this ticker
+      top_etf_weight   — max % of any single ETF
+      total_etf_value  — sum of $ value across all ETF holdings
+      top10            — list of {etf_symbol, weight_pct, value_usd} top 10
+    """
+    df = _load_prefetch("etfholdings", ticker)
+    default = {"etf_count": 0, "top_etf_weight": 0.0,
+               "total_etf_value": 0.0, "top10": []}
+    if df is None or df.empty:
+        return default
+    try:
+        df_sorted = df.sort_values("% of ETF", ascending=False)
+        top10 = [
+            {
+                "etf_symbol":  row["ETF Symbol"],
+                "weight_pct":  float(row["% of ETF"]),
+                "value_usd":   float(row["Value ($)"]),
+            }
+            for _, row in df_sorted.head(10).iterrows()
+        ]
+        return {
+            "etf_count":       int(len(df)),
+            "top_etf_weight":  float(df["% of ETF"].max()),
+            "total_etf_value": float(df["Value ($)"].sum()),
+            "top10":           top10,
+        }
+    except Exception as exc:
+        logger.debug("get_etf_holdings(%s): %s", ticker, exc)
+        return default
+
+
+def get_offexchange_volume(ticker: str, as_of: date,
+                            lookback_days: int = 5) -> dict:
+    """G13 — Dark-pool / off-exchange volume signal (PIT).
+
+    Source: data_prefetch/quiver/offexchange/<TICKER>.parquet
+    Schema: Ticker / Date / OTC_Short / OTC_Total / DPI
+
+    DPI = Dark-Pool Index (off-exchange volume / total volume). Rising DPI
+    can indicate institutional accumulation (or distribution) in dark venues.
+
+    Returns dict with avg DPI in window, latest DPI, and short-vol ratio.
+    """
+    df = _load_prefetch("offexchange", ticker)
+    default = {"avg_dpi": None, "latest_dpi": None, "short_ratio": None,
+               "rows_in_window": 0, "as_of": str(as_of)}
+    if df is None or df.empty or "Date" not in df.columns:
+        return default
+    try:
+        df["Date"] = pd.to_datetime(df["Date"])
+        cutoff = pd.Timestamp(as_of)
+        window_start = cutoff - pd.Timedelta(days=lookback_days)
+        window = df[(df["Date"] >= window_start) & (df["Date"] <= cutoff)]
+        if window.empty:
+            return default
+        avg_dpi = float(window["DPI"].mean()) if "DPI" in window.columns else None
+        latest_row = window.iloc[-1]
+        latest_dpi = float(latest_row.get("DPI", 0)) if "DPI" in window.columns else None
+        short_ratio = None
+        if "OTC_Short" in window.columns and "OTC_Total" in window.columns:
+            tot = float(latest_row.get("OTC_Total", 0))
+            if tot > 0:
+                short_ratio = float(latest_row.get("OTC_Short", 0)) / tot
+        return {
+            "avg_dpi":         avg_dpi,
+            "latest_dpi":      latest_dpi,
+            "short_ratio":     short_ratio,
+            "rows_in_window":  int(len(window)),
+            "as_of":           str(as_of),
+        }
+    except Exception as exc:
+        logger.debug("get_offexchange_volume(%s): %s", ticker, exc)
+        return default
+
+
+def get_top_shareholders(ticker: str, top_n: int = 10) -> dict:
+    """G14 — Institutional ownership concentration signal.
+
+    Source: data_prefetch/quiver/topshareholders/<TICKER>.parquet
+    Schema: 1 row with 'ownership' (array of dicts) + 'ownership_options' arrays.
+    Each dict: owner_name / owner_title / shares (or underlying_shares for options).
+
+    Returns top-N institutional holders + total share count + concentration.
+    """
+    df = _load_prefetch("topshareholders", ticker)
+    default = {"top_n_count": 0, "top_n_total_shares": 0,
+               "top_holder_shares": 0, "top_holders": []}
+    if df is None or df.empty or "ownership" not in df.columns:
+        return default
+    try:
+        ownership_arr = df["ownership"].iloc[0]
+        # ownership is a numpy array of dicts; cast to list of dicts
+        if hasattr(ownership_arr, "tolist"):
+            owners = list(ownership_arr.tolist())
+        else:
+            owners = list(ownership_arr) if ownership_arr is not None else []
+        if not owners:
+            return default
+        # Sort by shares desc, take top_n
+        owners_sorted = sorted(
+            (o for o in owners if isinstance(o, dict)),
+            key=lambda o: o.get("shares", 0) or 0, reverse=True
+        )[:top_n]
+        top_total = sum(o.get("shares", 0) or 0 for o in owners_sorted)
+        top_holder_shares = owners_sorted[0].get("shares", 0) if owners_sorted else 0
+        return {
+            "top_n_count":         int(len(owners_sorted)),
+            "top_n_total_shares":  int(top_total),
+            "top_holder_shares":   int(top_holder_shares),
+            "top_holders":         [
+                {"name": o.get("owner_name", ""),
+                 "title": o.get("owner_title", ""),
+                 "shares": int(o.get("shares", 0) or 0)}
+                for o in owners_sorted
+            ],
+        }
+    except Exception as exc:
+        logger.debug("get_top_shareholders(%s): %s", ticker, exc)
+        return default
+
+
+def get_wsb_attention(ticker: str, as_of: date,
+                       lookback_days: int = 7) -> dict:
+    """G15 — Reddit r/wallstreetbets mention/sentiment signal (PIT).
+
+    Source: data_prefetch/quiver/wallstreetbets/<TICKER>.parquet
+    Schema: Date / Ticker / Mentions / Rank / Sentiment
+
+    Returns aggregate mentions + avg sentiment + max rank in window.
+    Caveat: WSB sentiment is noisy; useful as retail-attention proxy.
+    """
+    df = _load_prefetch("wallstreetbets", ticker)
+    default = {"total_mentions": 0, "avg_sentiment": None,
+               "best_rank": None, "rows_in_window": 0, "as_of": str(as_of)}
+    if df is None or df.empty or "Date" not in df.columns:
+        return default
+    try:
+        df["Date"] = pd.to_datetime(df["Date"])
+        cutoff = pd.Timestamp(as_of)
+        window_start = cutoff - pd.Timedelta(days=lookback_days)
+        window = df[(df["Date"] >= window_start) & (df["Date"] <= cutoff)]
+        if window.empty:
+            return default
+        total_mentions = int(window.get("Mentions", pd.Series([0])).sum())
+        avg_sentiment = (float(window["Sentiment"].mean())
+                          if "Sentiment" in window.columns else None)
+        best_rank = (int(window["Rank"].min())
+                      if "Rank" in window.columns and not window["Rank"].isna().all()
+                      else None)
+        return {
+            "total_mentions":   total_mentions,
+            "avg_sentiment":    avg_sentiment,
+            "best_rank":        best_rank,
+            "rows_in_window":   int(len(window)),
+            "as_of":            str(as_of),
+        }
+    except Exception as exc:
+        logger.debug("get_wsb_attention(%s): %s", ticker, exc)
+        return default
