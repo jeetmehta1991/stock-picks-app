@@ -31230,3 +31230,84 @@ All 9 DEC-503 types are now instantiated in the pytest suite. The "comprehensive
 
 **Day 9 v7 — pyramid now G1-G5 complete: 9 DEC-503 types instantiated in pytest, 11 mandatory CI tiers, 260 PASS local. No further pyramid gaps known. Per owner directive "we have stopped further audit runs but progress can happen if we get the desired results without errors" — this turn satisfies that condition (G1-G5 all green, no errors, full pyramid 11.5s wall time).**
 
+
+## Pass 53 Day 9 v8 (2026-05-07 noon) — H1+H2+H3 Phase 1A entry-readiness pre-flight; H3 caught BUG-VIX-PROXY (CRITICAL — owner decision required)
+
+### Steps run
+
+| Step | Action | Result |
+|---|---|---|
+| **H1** | `pytest test_gates.py::test_gate_pre_phase_1a_entry -v` | ✅ PASS in 0.5s — data-integrity suite present, Master Dedup CSV present, 5 sample tickers' parquets present, DEC-505 4-fold WF referenced in config.py |
+| **H2** | Static trace of Day-9 wiring across engine.py / writer.py / exit_strategies.py / improvements.py / exit_context.py | ✅ 11/11 PASS — Level 6 CB import + state init + halt branch; DEC-516 regime_flip in EXIT_STRATEGIES; DEC-505 4-fold WF; DEC-578 verdict_cube emission; DEC-067 trailing_stop; Tier 1-4 25-col context |
+| **H3** | 25-tkr × 1y dress rehearsal via [`run_dress_rehearsal.py`](run_dress_rehearsal.py) | ✅ Exit 0 in 9.3 min, 449 closed trades, **all 4 Day-9 artifacts emitted** (verdict_cube 166 cells / multi_dim_cube 338 cells × 5 dims / sweet_spots 17 rows / pairwise_dominance 1170 rows). Sweet_spots + pairwise_dominance — both **missing in 5-tkr smoke v3** — emit cleanly at 25-tkr scale, confirming emission gates fire correctly with adequate sample size. |
+
+### H3 confirmed working at 25-tkr scale
+
+- 26 mandatory + Day-9 artifacts written
+- `trade_exit_detail.csv` 5,395 rows × 36 cols (counterfactual: 449 trades × 12 exits + Tier 1-4 context)
+- `verdict_cube.csv` 166 cells, all `INSUFFICIENT_SAMPLE` — **expected** at this scale (DEC-578 Gate 1 needs n≥30 per cell; 449 trades / 166 cells ≈ 2.7 trades/cell). At production scale (1937-tkr × 4y) the cells will populate.
+- Wall time scales linearly: smoke v3 5-tkr × 4y ≈ 8 min; H3 25-tkr × 1y ≈ 9.3 min — extrapolated production 1937-tkr × 4y ≈ 8-12 hours, in line with prior Phase 1A budgets.
+
+### CRITICAL FINDING — BUG-VIX-PROXY: regime classification corrupted by VXX-price-as-VIX-points fallback
+
+**What H3 caught.** Every trading day of 2023 in H3 logs shows `regime=crisis`. Actual market 2023: VIX 12-22, SPY +24%, decisively bull-to-neutral. Smoke v3 (Day 9 v2) showed the same pathology, but I treated "regime=crisis active" as a positive (testing the crisis path) — H3's full-year continuous crisis exposed it as anomaly.
+
+**Root cause traced** ([`backtest/data/macro.py:185-202`](backtest/data/macro.py#L185-L202)):
+1. `^VIX` data **not in OHLCV cache** (DEC-497 D4 HARD CUT 2026-05-06 blocks live yfinance + Sprint 0A prefetch did not include `^VIX`)
+2. `_load_vix_from_ohlcv_cache()` falls back to **VXX ETF** as proxy per DEC-302
+3. VXX is an ETN whose **dollar price** ($113 in mid-2023) is fed into `vix_regime()` as if it were VIX-index points
+4. Classifier thresholds `<15 / <25 / <35 / >=35` are calibrated for VIX *index* (typically 10-50). Applied to VXX *price* (typically $20-$130), 100% of dates classify as crisis.
+5. The `logger.warning("VIX loader using PROXY VXX — material tracking error...")` correctly fires but understates: it is not "tracking error" — VXX **price levels are not on the same scale as VIX**, so the regime function returns nonsense.
+
+**Confirmation diagnostic:**
+```
+macro_snapshot(2023-06-15)
+  vix_value = 113.20  ← VXX close price, NOT VIX
+  vix_regime = crisis
+```
+
+**Impact.**
+- Every backtest run since the HARD CUT 2026-05-06 has had **all-crisis regime** for any date the cache lacks ^VIX
+- Affects smoke v2/v3, H3 dress rehearsal, **and would affect Phase 1A on May 15** unless fixed
+- Strategies that pass in crisis-only get false validation; strategies that pass in bull-only never get tested
+- Per-regime cube (DEC-578 verdict_cube) cells are 100% crisis-bucketed → no per-regime statistical power
+
+### Fix options (DECISION REQUIRED — not auto-fixed)
+
+Surfacing for owner approval per CLAUDE.md "ALL decisions need explicit owner approval":
+
+| Option | Effort | Pro | Con |
+|---|---|---|---|
+| **A. Prefetch ^VIX into cache** (run Codespaces fetch script + commit ^VIX.parquet) | 30 min | Authoritative source; no code change; matches existing data-arch | Requires re-running fetch; ^VIX.parquet must be checked into cache (or fetched via Polygon/FRED) |
+| **B. Add VXX→VIX scale conversion** in `_load_vix_from_ohlcv_cache()` | 1 hour | Works with existing cache | Conversion is non-trivial (VXX has roll cost + contango drift); tracking error still material; band-aid |
+| **C. Source VIX from FRED** (`VIXCLS` series, free, daily, point-in-time-clean) | 1 hour | Free + reliable + already part of Sprint 0A FRED prefetch scope | New code path; but aligns with "no live API" hard cut for Stage 2 |
+| **D. Make classifier fail-loud on missing data** (raise instead of fallback) | 10 min | Forces fix-before-run | Doesn't unblock May 15; surfaces same gap differently |
+
+**Claude's recommendation:** **Option C (FRED VIXCLS)** — already part of DEC-440 Sprint 0A FRED scope, point-in-time clean, no proxy distortion, no live API at backtest time. A+B are temporary fixes; D blocks May 15 without fixing.
+
+### Tracker entry — BUG-VIX-PROXY
+
+```
+ID:        BUG-VIX-PROXY (Pass 53 Day 9 v8 H3-discovered 2026-05-07)
+Severity:  CRITICAL — corrupts regime classification → corrupts every per-regime metric
+Triggered: DEC-497 D4 yfinance HARD CUT (2026-05-06) + Sprint 0A prefetch did not include ^VIX
+Affected:  Every backtest since 2026-05-06; smoke v2 / v3 / H3 dress rehearsal; would affect Phase 1A May 15
+Root file: backtest/data/macro.py:185-202 (VXX proxy fallback)
+Status:    SURFACED — owner-approval pending on Options A/B/C/D
+Owner:     <pending>
+```
+
+### Pyramid
+
+Unchanged from Day 9 v7: 249 mandatory PASS + 6 SKIP. H1+H2+H3 are diagnostic, not new tests. (G5 already covered the regime classifier output values; what G5 did NOT test was the VXX → vix_value scale mapping in macro.py — a coverage gap to close once Option A/B/C lands.)
+
+### Cross-references
+
+- DEC-302 (VXX/UUP proxy fallback — original spec); DEC-316 (regime fail-closed); DEC-497 D4 (yfinance HARD CUT — triggered the gap); DEC-440 (Sprint 0A FRED scope — Option C anchor)
+- L150 (pyramid dimension-coverage gap — analogous: spec-without-build at the VIX-data-input dimension)
+- BUG-VIX-PROXY (this turn)
+
+*Per CHECKLIST #1 (owner-approved H1+H2+H3); #11 (flag failure modes proactively — BUG-VIX-PROXY surfaced not auto-fixed); #25 (verification before recommendation: H1 PASS / H2 PASS / H3 PASS-but-finding); #43 (DEC-302/316/440/497 + L150 + BUG-VIX-PROXY); #45 (this); #58 (atomic commit per DEC-594); #67 (per-turn doc + commit + push); #68 (smoke→demo→full: H3 = demo level); #69 (pyramid PASS unchanged); #72 (data-integrity 7/7 unchanged); #73 (DEC-594 same-commit: run_dress_rehearsal.py + AUDIT narrative + finding doc landing together).*
+
+**Day 9 v8 — H1+H2 confirm Phase 1A entry-readiness on engine wiring + entry gate. H3 confirms operational viability at 25-tkr scale (all artifacts emit) AND surfaces BUG-VIX-PROXY (owner decision pending: A/B/C/D). May 15 launch CANNOT proceed cleanly without VIX fix; H3 caught what code review missed.**
+
