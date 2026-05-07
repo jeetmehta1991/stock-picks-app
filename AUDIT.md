@@ -31023,3 +31023,93 @@ DEC-505 spec'd Pass 53 turn 2026-05-05 → engine wasn't updated for 6 weeks (sp
 
 **Day 9 v2 CLOSED. Phase 1A May 15 entry: regime classifier validated; walk-forward 4-fold operational; pipeline produces realistic 4,349-trade output. Owner-decision sequence (D1+D2+D3+D4 + Path B build + WF-1) executed end-to-end.**
 
+---
+
+## Pass 53 Day 9 v3 / v4 (2026-05-07 evening) — exit-context Tier 1-4 + per-exit conditional analysis + N1 (DEC-516/515 engine) + N2 (DEC-578 7-gate)
+
+### Owner directives sequence
+
+1. "How can we analyze which exits work best by strategy by regime or other variables..." — methodology question
+2. "In addition to approach 2, what are other variables..." — taxonomy expansion
+3. "All tiers need to be tested in phase 1A itself" — owner reframe + push-back on tiered MVP
+4. "We are not analyzing universal exit strategies. We are looking for best exit strategies that work optimally under different set of variables" — owner reframe to per-exit conditional
+5. "Continue with next" → "Approve all" (D1+D2+D3+D4) — N1 + N2 + AUDIT update + N3 deferred
+
+### v3 — Trade exit context Tier 1-4 (commit `7e6dc1c8`)
+
+NEW [`backtest/engine/exit_context.py`](backtest/engine/exit_context.py) — per-trade context builder spanning 25 dimensions across 4 tiers:
+- Tier 1 (10): regime / sector / cap_band / vol_band / hold_band / win_loss / universe_tier (DEC-504) / smart_money_present (DEC-124) / confidence_tier / direction
+- Tier 2 (5): vix_at_entry / entry_atr_ratio / mae_bucket / mfe_bucket / regime_changed_during_hold / earnings_during_hold (Polygon financials)
+- Tier 3 (5): circuit_breaker_active_during_hold / news_sentiment_shift / 8K_filed / day_of_week / days_from_quarter_end
+- Tier 4 (5): vix_term_structure / hy_oas_band / adv_bucket / volume_rank_within_sector / sector_momentum_vs_spy
+
+Wired into [`backtest.py:_run`](backtest/engine/backtest.py:618) → [`run_exit_comparison`](backtest/engine/exit_strategies.py:475) so trade_exit_detail.csv emits all 25 columns.
+[`writer.py`](backtest/results/writer.py) emits 25 per-dim 1D marginal `exit_by_<dim>.csv` aggregates.
+
+18 unit tests in [`test_exit_context.py`](backtest/tests/test_exit_context.py).
+
+### v3-corrected — Per-exit conditional analyzer (commit `36d68e75`)
+
+**Owner reframe:** prior turn's `exit_by_<dim>.csv` was "universal best per dim" framing. Owner clarified: "best exit strategies that work optimally under different set of variables" = per-EXIT conditional sweet-spot analysis.
+
+NEW [`backtest/results/exit_conditional_analyzer.py`](backtest/results/exit_conditional_analyzer.py):
+- `compute_multi_dim_cube()` — long-form (exit_method × regime × sector × cap × vol × hold-band) cells with metrics
+- `find_sweet_spots()` — per-exit top-K conditions where exit ranks #1 (with edge-over-runner-up)
+- `compute_pairwise_dominance()` — for each (exit_A, exit_B, condition), does A beat B?
+
+writer.py emits 3 conditional-analysis CSVs (cube + sweet-spots + pairwise) PLUS the 25 per-dim 1D marginals.
+
+9 unit tests in [`test_exit_conditional_analyzer.py`](backtest/tests/test_exit_conditional_analyzer.py); synthetic test validates "trailing_atr wins in volatile" + "fixed_3r wins in calm" pattern surfaces correctly.
+
+### v4 — N1 + N2 (this commit)
+
+**N1: DEC-516 regime-flip exit + DEC-515 Level 6 portfolio DD-from-peak circuit breaker**
+
+DEC-516 (regime-flip exit symmetric to Layer 5 entry gating): added `regime_flip` to EXIT_STRATEGIES registry. Falls back to time_stop_max_days when no regime data; detects flips via optional regime_series parameter.
+
+DEC-515 (Level 6 portfolio DD-from-peak circuit breaker): NEW [`backtest/engine/circuit_breakers.py`](backtest/engine/circuit_breakers.py) with:
+- `Level6State` dataclass (rolling_peak_equity / halt_triggered / target_resume_equity / halt_log)
+- `update_level_6_state()` — peak tracking + DD-from-peak halt logic + recovery threshold
+- `evaluate_circuit_breakers_priority()` — sequential check Level 6 → 5 → 4 → 3 → 2 → 1 per DEC-586 priority fix
+- Default thresholds: 15% DD halt (REVISIT_AFTER_BACKTEST per DEC-581 Class B); 5% recovery; 30-day min history before activation
+
+Both close L149 spec-without-build patterns: DEC-515/516 spec'd Pass 53 turn 2026-05-06 (~2 days ago) but engine had no Level 6 / regime_flip code. Same pattern as walk-forward 2-window (already remediated WF-1).
+
+**N2: DEC-578 7-gate Phase 1B-α verdict composer**
+
+NEW [`backtest/results/seven_gate_verdict.py`](backtest/results/seven_gate_verdict.py) composes existing Day 9 primitives:
+- Gate 1: sample size n ≥ 30 (DEC-422)
+- Gate 2: Bonferroni p ≤ α/N=199 strategies (DEC-401 + DEC-582)
+- Gate 3: DSR ≥ 0.95 (DEC-247 deflated_sharpe)
+- Gate 4: t-stat ≥ 3.4 cross-cell-within-strategy (DEC-582 inner Bonferroni)
+- Gate 5: R:R ≥ 2.0 (DEC-353 hard reject)
+- Gate 6: profit factor ≥ 1.3 (sector-adjusted)
+- Gate 7: effect-size floor ≥ 5bps absolute mean return (DEC-578 NEW 7th gate)
+
+`evaluate_cell()` returns GateResult with verdict (PASS / FAIL_<gate_N> / INSUFFICIENT_SAMPLE) + gates_passed count + per-gate detail.
+`compute_verdict_cube()` applies 7-gate to every (strategy × regime × sector × cap × vol) cell.
+
+16 unit tests in [`test_n1_n2_artifacts.py`](backtest/tests/test_n1_n2_artifacts.py): regime-flip exit (3) + Level 6 circuit breaker (5) + 7-gate verdict (8).
+
+### Pyramid
+
+| Suite | Day 9 v2 close | Day 9 v3 | Day 9 v3-corrected | Day 9 v4 (this) |
+|---|---|---|---|---|
+| Total | 165 PASS + 5 SKIP | 183 (+18 exit_context) | 192 (+9 conditional) | **208 (+16 N1+N2)** |
+
+### N3 deferred
+
+Owner D4: defer 5 next-priority PARTIAL-SPEC-ONLY artifacts (DEC-269 Stage 4 gates / DEC-487 Phase 1A-α restoration / DEC-490 skipped strategies / DEC-144 stock-vs-sector momentum / DEC-138 cold-start CI) to Sprint 7+. No code change this turn.
+
+### Cross-references
+
+- DEC-067 (exit methods); DEC-422 (cube); DEC-578 (7-gate); DEC-353 (R:R + PF); DEC-582 (Bonferroni Gate 2 vs Gate 4); DEC-353 (hard reject)
+- DEC-515 (circuit breakers; Level 6 NEW); DEC-516 (regime-flip exit); DEC-586 (priority fix)
+- DEC-247 (DSR); DEC-401 (Holm-Bonferroni); DEC-423 (bootstrap CI); DEC-250 (edge decay); DEC-415 (rolling Sharpe); DEC-405 (stress tests); DEC-246 (quant audit)
+- DEC-594 (same-commit) + DEC-595 (gate executable tests) + DEC-596 (standing approval)
+- L149 (spec-without-build meta-pattern; DEC-515/516 are 2 more remediated instances)
+
+*Per CHECKLIST #1 (owner-approved D1+D2+D3+D4); #25 (N1 engine fix + N2 verdict composer + AUDIT update); #43 (DEC-067/247/353/401/405/415/422/423/515/516/578/582/586/594/595/596 + L149); #45 (this); #58 (atomic commit per DEC-594); #67 (per-turn push); #69 (208 PASS + 5 explicit-SKIP); #72 (data-integrity 7/7); #73 (DEC-594 same-commit applied to all artifacts).*
+
+**Day 9 v2/v3/v4 — exit-method analysis fully self-contained for May 15 Phase 1A: trade_exit_detail (counterfactual ~25 cols) + exit_method_multi_dim_cube + exit_sweet_spots + exit_pairwise_dominance + exit_by_<dim> × 25 + DEC-516 regime-flip in EXIT_STRATEGIES + DEC-515 Level 6 portfolio circuit breaker + DEC-578 7-gate verdict composer. All 11 spec-without-build patterns (Day 9 v1 cache + crisis_flag + WF-1 + Day 9 v4 DEC-515 + DEC-516) remediated within Day 9 buffer.**
+

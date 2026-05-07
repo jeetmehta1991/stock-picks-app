@@ -438,6 +438,70 @@ def exit_hybrid_50pct(df_full, entry_date, entry_price, direction, atr,
 # EXIT STRATEGY REGISTRY
 # ─────────────────────────────────────────────────────────────────────────────
 
+def exit_regime_flip(df_full, entry_date, entry_price, direction, atr, signals=None,
+                     regime_series=None, max_days=20):
+    """DEC-516 regime-flip exit (Pass 53 owner-approved 2026-05-06).
+
+    Symmetric to Layer 5 entry gating: when the regime classification flips
+    from the entry-day regime during the hold period, exit immediately at
+    next bar's close. Falls back to time_stop_max_days if regime data
+    unavailable or regime never flips within window.
+
+    Args:
+        df_full: full OHLCV DataFrame for the ticker.
+        entry_date: trade entry date.
+        entry_price: trade entry price.
+        direction: 'long' or 'short'.
+        atr: ATR at entry.
+        signals: signals dict at entry (used to extract entry-regime if available).
+        regime_series: optional pandas Series of regime per date (key = date).
+            If not provided, falls back to signals.get('regime_at_entry') and
+            re-uses it (no flip detection possible).
+        max_days: maximum hold without flip → defaults to time stop at this many days.
+
+    Returns:
+        Same _base_result dict as other exit functions.
+    """
+    future = df_full[df_full.index.date > entry_date] if hasattr(df_full.index, 'date') \
+             else df_full[pd.to_datetime(df_full["date"]).dt.date > entry_date]
+    if future.empty:
+        return _base_result(entry_price, entry_price, entry_date,
+                            entry_date, "no_data", direction)
+
+    # Determine entry-day regime from signals (best-effort)
+    entry_regime = None
+    if isinstance(signals, dict):
+        entry_regime = signals.get("regime_at_entry") or signals.get("regime")
+
+    # If we have a regime_series, scan for the flip
+    if regime_series is not None and entry_regime:
+        # Future bars within max_days window
+        for i, ts in enumerate(future.index[:max_days]):
+            try:
+                bar_date = ts.date() if hasattr(ts, 'date') else ts
+                cur_regime = regime_series.get(bar_date)
+                if cur_regime and cur_regime != entry_regime and cur_regime != "unknown":
+                    # Flip detected — exit at this bar's close
+                    return _base_result(
+                        entry_price, float(future.iloc[i]["close"]),
+                        entry_date, bar_date,
+                        f"regime_flip_{entry_regime}_to_{cur_regime}", direction,
+                    )
+            except Exception:
+                continue
+
+    # No flip detected (or no regime data) → fall back to time_stop at max_days
+    target_idx = min(max_days - 1, len(future) - 1)
+    target_row = future.iloc[target_idx]
+    target_ts = future.index[target_idx]
+    return _base_result(
+        entry_price, float(target_row["close"]),
+        entry_date,
+        target_ts.date() if hasattr(target_ts, 'date') else target_ts,
+        f"regime_flip_max_days_{max_days}", direction,
+    )
+
+
 EXIT_STRATEGIES = {
     "trailing_10pct":       lambda df, ed, ep, d, a, s: exit_trailing_pct(df, ed, ep, d, a, 0.10),
     "trailing_5pct":        lambda df, ed, ep, d, a, s: exit_trailing_pct(df, ed, ep, d, a, 0.05),
@@ -451,6 +515,8 @@ EXIT_STRATEGIES = {
     "time_stop_20d":        lambda df, ed, ep, d, a, s: exit_time_stop(df, ed, ep, d, a, 20),
     "breakeven_plus_trail": lambda df, ed, ep, d, a, s: exit_breakeven_trail(df, ed, ep, d, a),
     "hybrid_50pct_target":  lambda df, ed, ep, d, a, s: exit_hybrid_50pct(df, ed, ep, d, a),
+    # DEC-516 (Pass 53 owner-approved 2026-05-06; engine compliance Pass 53 Day-9-evening)
+    "regime_flip":          lambda df, ed, ep, d, a, s: exit_regime_flip(df, ed, ep, d, a, s),
 }
 
 
