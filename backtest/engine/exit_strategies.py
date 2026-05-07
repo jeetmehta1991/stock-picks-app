@@ -509,6 +509,136 @@ def exit_regime_flip(df_full, entry_date, entry_price, direction, atr, signals=N
     )
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# Pass 53 Day-9 v8g — DEC-517 R-multiple exits + break-even moves
+# ─────────────────────────────────────────────────────────────────────────────
+# Per spec TRADING_RULES_AND_INFORMATION.md §8.7:
+#   18 exit_r_multiple_2r:    target = entry ± 2 × stop_distance (initial-risk-parameterized)
+#   19 exit_r_multiple_3r:    target = entry ± 3 × stop_distance
+#   20 exit_break_even_at_1r: move stop to entry once price reaches +1R; trail thereafter
+#
+# Stop distance defaults: ATR-based (1× ATR) when atr provided, else 2% of entry.
+# Combined behaviors (BE+0.5R cushion, BE+1R cushion) are stretch — left for
+# future as exit composition variants per DEC-523.
+
+
+def _stop_distance(entry_price: float, atr: float, direction: str) -> float:
+    """Compute initial stop distance per DEC-517 conventions."""
+    if atr and atr > 0:
+        return float(atr)
+    return entry_price * 0.02  # 2% fallback
+
+
+def exit_r_multiple_2r(df_full, entry_date, entry_price, direction, atr,
+                        signals=None):
+    """DEC-517 #18: Take profit at 2× initial risk."""
+    return _exit_r_multiple_impl(df_full, entry_date, entry_price, direction,
+                                  atr, r_multiple=2.0)
+
+
+def exit_r_multiple_3r(df_full, entry_date, entry_price, direction, atr,
+                        signals=None):
+    """DEC-517 #19: Take profit at 3× initial risk."""
+    return _exit_r_multiple_impl(df_full, entry_date, entry_price, direction,
+                                  atr, r_multiple=3.0)
+
+
+def _exit_r_multiple_impl(df_full, entry_date, entry_price, direction, atr,
+                            r_multiple: float):
+    """Shared R-multiple-target implementation. Stop = -1R; target = +NR.
+
+    Uses DEC-514 fill methodology for both stop and target fills.
+    """
+    sd = _stop_distance(entry_price, atr, direction)
+    if direction == "long":
+        stop = entry_price - sd
+        target = entry_price + r_multiple * sd
+    else:
+        stop = entry_price + sd
+        target = entry_price - r_multiple * sd
+
+    future = df_full[df_full.index.date > entry_date]
+    if future.empty:
+        return _base_result(entry_price, entry_price, entry_date,
+                            entry_date, "no_data", direction)
+
+    for idx, row in future.iterrows():
+        bar_open = float(row.get("open", float(row["close"])))
+        h = float(row["high"])
+        l = float(row["low"])
+        # Stop checked first (DEC-514 §11.4 conservative bias)
+        stop_fill = compute_fill_price(direction, "stop", stop, bar_open, h, l)
+        if stop_fill is not None:
+            return _base_result(entry_price, stop_fill, entry_date,
+                                idx.date(), "r_multiple_stop", direction)
+        target_fill = compute_fill_price(direction, "target", target, bar_open, h, l)
+        if target_fill is not None:
+            return _base_result(entry_price, target_fill, entry_date,
+                                idx.date(),
+                                f"r_multiple_{r_multiple:.0f}r_target", direction)
+
+    last = future.iloc[-1]
+    return _base_result(entry_price, float(last["close"]), entry_date,
+                        future.index[-1].date(), "max_days", direction)
+
+
+def exit_break_even_at_1r(df_full, entry_date, entry_price, direction, atr,
+                            signals=None, trail_pct: float = 0.10):
+    """DEC-517 #20: Move stop to break-even at +1R, then trail at trail_pct.
+
+    Phase 1 (entry → +1R): stop fixed at -1R from entry.
+    Phase 2 (after +1R hit): stop moves to entry (break-even); trails by trail_pct
+    on subsequent highs (longs) / lows (shorts).
+    """
+    sd = _stop_distance(entry_price, atr, direction)
+    one_r = entry_price + sd if direction == "long" else entry_price - sd
+    stop = entry_price - sd if direction == "long" else entry_price + sd
+    be_hit = False
+    best = entry_price
+
+    future = df_full[df_full.index.date > entry_date]
+    if future.empty:
+        return _base_result(entry_price, entry_price, entry_date,
+                            entry_date, "no_data", direction)
+
+    for idx, row in future.iterrows():
+        bar_open = float(row.get("open", float(row["close"])))
+        h = float(row["high"])
+        l = float(row["low"])
+        close = float(row["close"])
+
+        # Trigger break-even when +1R reached intraday
+        if not be_hit:
+            if direction == "long" and h >= one_r:
+                stop = entry_price  # BE
+                be_hit = True
+            elif direction == "short" and l <= one_r:
+                stop = entry_price
+                be_hit = True
+
+        # Trail after BE hit
+        if be_hit:
+            if direction == "long":
+                if close > best:
+                    best = close
+                    stop = max(stop, best * (1 - trail_pct))
+            else:
+                if close < best:
+                    best = close
+                    stop = min(stop, best * (1 + trail_pct))
+
+        # Stop fill (DEC-514)
+        stop_fill = compute_fill_price(direction, "stop", stop, bar_open, h, l)
+        if stop_fill is not None:
+            reason = "be_trail_stop" if be_hit else "initial_1r_stop"
+            return _base_result(entry_price, stop_fill, entry_date,
+                                idx.date(), reason, direction)
+
+    last = future.iloc[-1]
+    return _base_result(entry_price, float(last["close"]), entry_date,
+                        future.index[-1].date(), "max_days", direction)
+
+
 EXIT_STRATEGIES = {
     "trailing_10pct":       lambda df, ed, ep, d, a, s: exit_trailing_pct(df, ed, ep, d, a, 0.10),
     "trailing_5pct":        lambda df, ed, ep, d, a, s: exit_trailing_pct(df, ed, ep, d, a, 0.05),
@@ -524,6 +654,10 @@ EXIT_STRATEGIES = {
     "hybrid_50pct_target":  lambda df, ed, ep, d, a, s: exit_hybrid_50pct(df, ed, ep, d, a),
     # DEC-516 (Pass 53 owner-approved 2026-05-06; engine compliance Pass 53 Day-9-evening)
     "regime_flip":          lambda df, ed, ep, d, a, s: exit_regime_flip(df, ed, ep, d, a, s),
+    # DEC-517 (Pass 53 owner-approved 2026-05-06 Q2 P1; engine compliance Day-9 v8g 2026-05-07)
+    "r_multiple_2r":        lambda df, ed, ep, d, a, s: exit_r_multiple_2r(df, ed, ep, d, a, s),
+    "r_multiple_3r":        lambda df, ed, ep, d, a, s: exit_r_multiple_3r(df, ed, ep, d, a, s),
+    "break_even_at_1r":     lambda df, ed, ep, d, a, s: exit_break_even_at_1r(df, ed, ep, d, a, s),
 }
 
 

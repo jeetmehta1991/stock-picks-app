@@ -37,3 +37,10 @@ output_1b_batch*_test/trade_log_checkpoint.csv
 
 # Pass 53 universe-build intermediate artifacts (kept local for audit trail; canonical output is in Backtesting universe/)
 temp_staging/
+
+# Pass 53 Day-9 v8g — local smoke / dress-rehearsal output dirs (regenerated per run)
+output_smoke_test/
+output_smoke_day9_v3/
+output_dress_rehearsal/
+output_smoke_v4_cross_regime/
+output_smoke_v*/
