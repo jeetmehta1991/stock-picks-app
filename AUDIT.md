@@ -31576,3 +31576,63 @@ H3 re-run after DEC-514 implementation (commit `0b593d1f`):
 
 This finding validates the DEC-514 audit: the bug was real, material, and affected every backtest result since project start. Same pattern as BUG-VIX-PROXY (silent biases that pyramid-style verification finally caught).
 
+
+## Pass 53 Day 9 v8f (2026-05-07 evening) — DEC-512 PIT-fundamentals audit + BUG-INSIDER-PIT fix
+
+### Trigger
+
+After DEC-514 closure, AUDIT_BACKLOG R2-17 still flagged DEC-512 as the SECOND "pre-Phase-1A blocker" with 7 audit items pending. Spec called it "#1 source of fundamentals lookahead bias."
+
+### Audit results (7 items)
+
+| # | Item | Result |
+|---|---|---|
+| 1 | Polygon financials uses filing_date | PASS — `fetcher.py` already correct |
+| 2 | SEC EDGAR Form 4 filing_date populated | PASS — 100% AAPL |
+| 3 | SEC EDGAR 8-K filing_date | PASS |
+| 4 | SEC EDGAR SC 13D/G filing_date | PASS |
+| 5 | Forward earnings calendar PIT | FEATURE-GAP not bug (Polygon Stocks Starter limitation) |
+| 6 | Quiver insiders Date vs fileDate | **BUG FOUND — fixed this turn** |
+| 7 | Universal signal_age_days field | DEC-513 #10 enhancement, separate item |
+
+### BUG-INSIDER-PIT (Item 6)
+
+`smart_money.py:388` and Wave-D accessor `get_insider_transactions_pertkr` both used Quiver `Date` (transaction date) for PIT cutoff instead of `fileDate` (SEC filing date). The Quiver schema has both columns; only fileDate reflects when the public knew about the transaction.
+
+**Magnitude (AAPL 249 transactions):**
+- Mean filing lag: 6.0 days
+- Median: 2.0 days
+- Max: **116 days** (Katherine Adams 2021-05-14, filed 2021-08-04)
+- 43% of transactions had >2-day lag
+
+**Pre-fix lookahead:** `as_of=2021-05-16` would include the Adams transaction as a known signal even though SEC didn't publish it until 2021-08-04 (82 days later). At a 6-day mean lag, every insider signal was systematically too early by ~6 days.
+
+**Fix:** Both call sites now use `fileDate` for PIT cutoff. Defensive fallback to `Date` if `fileDate` absent.
+
+### Pyramid
+
+628 PASS + 11 SKIP + 5 xfail in 69s (was 619; +9 DEC-512 audit tests).
+
+### Phase 1A May 15 status — UNBLOCKED across all dimensions
+
+- DEC-514 fill methodology: ✅ FIXED
+- DEC-512 PIT audit: ✅ COMPLETE (1 bug found, 1 bug fixed)
+- BUG-VIX-PROXY: ✅ FIXED
+- All 17 L146/DEC-507 wiring gaps: ✅ closed or documented
+- Phase 1A entry gate: ✅ PASS
+- 9-type DEC-503 pyramid: ✅ instantiated
+- H3 dress rehearsal: ✅ 25-tkr × 1y PASS
+
+**AUDIT_BACKLOG.md R2-17 + R3-01 — both "pre-Phase-1A blockers" — now closeable.**
+
+### Cross-references
+
+- DEC-512 (this audit); DEC-318 (N+1 lag); DEC-261 (PIT rule); DEC-305 (RAISE not WARNING); DEC-514 (Day 9 v8e); DEC-594/596
+- BUG-VIX-PROXY (v8); BUG-PF-REFPATH/DIVPATH (v8b); BUG-INSIDER-PIT (this turn)
+- AUDIT_BACKLOG R2-17 (closeable); R3-01 (already closed v8e)
+- TRADING_RULES_AND_INFORMATION.md §2A.9
+
+*Per CHECKLIST #1 (owner "Continue with next" → I picked DEC-512 as the sole remaining backlog blocker); #11 (BUG-INSIDER-PIT surfaced + fixed same turn — fix is mechanical, no source decision needed unlike VIX A/B/C/D); #25 (7-item audit run before fix; only item 6 needed code change); #43 (cross-refs above); #45 (this); #58 atomic commit; #67 doc + push; #69 628 PASS; #73 same-commit.*
+
+**Day 9 v8f — DEC-512 complete. Both Phase-1A blockers (DEC-514 + DEC-512) now resolved. May 15 launch UNBLOCKED across ALL known dimensions.**
+

@@ -385,7 +385,19 @@ def insider_signal(ticker: str, as_of: date, lookback_days: int = 30) -> dict:
         return {"signal": "none", "buy_count": 0, "sell_count": 0}
     try:
         df = df.copy()
-        df["filing_date"] = pd.to_datetime(df["Date"]).dt.date
+        # Pass 53 Day-9 v8f DEC-512 fix (BUG-INSIDER-PIT): use fileDate (SEC
+        # filing date) for PIT cutoff, NOT Date (transaction date). Pre-fix
+        # used Date which gave ~6-day lookahead — public didn't know about
+        # the transaction until the SEC Form 4 was filed. Fall back to Date
+        # only when fileDate is absent (defensive; should not happen with
+        # current Quiver schema).
+        if "fileDate" in df.columns:
+            df["filing_date"] = pd.to_datetime(df["fileDate"], errors="coerce").dt.date
+            # Drop rows where fileDate is unparseable rather than silently
+            # falling back to Date (which would re-introduce the lookahead)
+            df = df[df["filing_date"].notna()]
+        else:
+            df["filing_date"] = pd.to_datetime(df["Date"]).dt.date
         df = df[df["filing_date"] <= as_of]
         # Window
         window_start = as_of - timedelta(days=lookback_days)
@@ -1210,10 +1222,17 @@ def get_insider_transactions_pertkr(ticker: str, as_of: date,
                 "rows_in_window": 0, "source": source}
     try:
         df = df.copy()
-        df["Date"] = pd.to_datetime(df["Date"])
+        # Pass 53 Day-9 v8f DEC-512 fix (BUG-INSIDER-PIT): PIT cutoff must use
+        # fileDate (SEC filing) not Date (transaction). Public didn't know
+        # about the transaction until the Form 4 was filed (~6 days lag).
+        if "fileDate" in df.columns:
+            df["pit_date"] = pd.to_datetime(df["fileDate"], errors="coerce")
+            df = df[df["pit_date"].notna()]
+        else:
+            df["pit_date"] = pd.to_datetime(df["Date"], errors="coerce")
         cutoff = pd.Timestamp(as_of)
         window_start = cutoff - pd.Timedelta(days=lookback_days)
-        win = df[(df["Date"] >= window_start) & (df["Date"] <= cutoff)]
+        win = df[(df["pit_date"] >= window_start) & (df["pit_date"] <= cutoff)]
         if win.empty:
             return {"buy_count": 0, "sell_count": 0, "cluster": False,
                     "rows_in_window": 0, "source": source}
