@@ -442,6 +442,165 @@ def exit_hybrid_50pct(df_full, entry_date, entry_price, direction, atr,
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# Pass 53 Day-9 v8g — DEC-518 Earnings-blackout exit
+# Per spec TRADING_RULES_AND_INFORMATION.md §8.8.
+# ─────────────────────────────────────────────────────────────────────────────
+
+EARNINGS_TOLERANT_STRATEGIES = frozenset({
+    "pre_earnings_iv_crush_front_run",
+    "guidance_raise_momentum",
+    "surprise_magnitude_pead",
+    "earnings_cluster_sector_drift",
+})
+
+
+def is_earnings_tolerant(strategy_name: str) -> bool:
+    return strategy_name in EARNINGS_TOLERANT_STRATEGIES
+
+
+def exit_earnings_blackout(df_full, entry_date, entry_price, direction, atr,
+                             signals=None, ticker: str = "",
+                             strategy_name: str = "",
+                             earnings_dates=None):
+    """DEC-518: Force exit at close of T-1 before scheduled earnings.
+
+    Skips blackout for strategies on the DEC-013 earnings_tolerant list. If no
+    earnings calendar available, returns no_earnings_known (no forced exit).
+    """
+    if is_earnings_tolerant(strategy_name):
+        if len(df_full) == 0:
+            return _base_result(entry_price, entry_price, entry_date,
+                                entry_date, "earnings_tolerant_skip", direction)
+        last = df_full.iloc[-1]
+        last_date = (df_full.index[-1].date()
+                     if hasattr(df_full.index[-1], "date") else entry_date)
+        return _base_result(entry_price, float(last["close"]), entry_date,
+                            last_date, "earnings_tolerant_skip", direction)
+
+    future = df_full[df_full.index.date > entry_date]
+    if future.empty:
+        return _base_result(entry_price, entry_price, entry_date,
+                            entry_date, "no_data", direction)
+
+    if earnings_dates is None and ticker:
+        try:
+            from backtest.data.fetcher import fetch_earnings_dates
+            df_e = fetch_earnings_dates(ticker)
+            if df_e is not None and not df_e.empty:
+                earnings_dates = pd.to_datetime(
+                    df_e["earnings_date"]
+                ).dt.date.tolist()
+        except Exception as exc:
+            logger.debug("exit_earnings_blackout: earnings fetch failed (%s): %s",
+                          ticker, exc)
+            earnings_dates = []
+
+    if not earnings_dates:
+        last = future.iloc[-1]
+        return _base_result(entry_price, float(last["close"]), entry_date,
+                            future.index[-1].date(), "no_earnings_known",
+                            direction)
+
+    upcoming = sorted(d for d in earnings_dates if d > entry_date)
+    if not upcoming:
+        last = future.iloc[-1]
+        return _base_result(entry_price, float(last["close"]), entry_date,
+                            future.index[-1].date(), "no_upcoming_earnings",
+                            direction)
+
+    next_earn = upcoming[0]
+    bars_before = future[future.index.date < next_earn]
+    if bars_before.empty:
+        target_idx = 0
+    else:
+        target_idx = len(bars_before) - 1
+
+    target_row = future.iloc[target_idx]
+    target_ts = future.index[target_idx]
+    return _base_result(
+        entry_price, float(target_row["close"]),
+        entry_date,
+        target_ts.date() if hasattr(target_ts, "date") else target_ts,
+        "earnings_blackout_T_minus_1", direction,
+    )
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Pass 53 Day-9 v8g — DEC-521 Per-strategy-class time stops
+# Per spec TRADING_RULES_AND_INFORMATION.md §8.11.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Default time stops per strategy class (configurable per-strategy override).
+# Categories follow STRATEGY_ROSTER_FULL.md Layer 1 letter taxonomy.
+CATEGORY_TIME_STOPS_DAYS = {
+    # Layer 1
+    "pivot":           7,    # 1.A range 5-10
+    "momentum":        25,   # 1.B range 20-30
+    "trend":           50,   # 1.C range 40-60
+    "mean_reversion":  7,    # 1.D range 5-10
+    "breakout":        25,   # 1.E range 20-30
+    "candle":          7,    # 1.F range 5-10
+    "confluence":      None, # 1.G inherited from constituents (handled by caller)
+    # Layer 2
+    "ict_smc":         15,   # 2A range 10-20
+    "earnings":        45,   # 2B range 30-60 (PEAD)
+    "calendar":        None, # 2C per-strategy (e.g. Sell-in-May 6 months)
+    # Layer 3
+    "chart_pattern":   45,   # 3A range 30-60
+    "pairs":           30,   # 3B range 20-40
+    "cross_asset":     50,   # 3B range 40-60
+    # Layer 6
+    "cross_sectional": 25,   # 6A range 21-30
+    "vol_regime":      10,   # 6B range 5-15
+    "overnight_gap":   2,    # 6C range 1-3
+    "insider":         60,   # 6D range 30-90
+    "breadth":         30,   # 6E range 20-40
+    "drift":           45,   # 6F range 30-60
+    "microstructure":  10,   # 6G range 5-15
+}
+
+
+def get_max_days_for_category(category: str, default: int = 30) -> int:
+    """Return DEC-521 default max_days for a strategy category.
+
+    Returns ``default`` if category is unknown OR ``None`` (e.g. confluence,
+    calendar) — caller should compute strictest constituent for confluence
+    or per-strategy override for calendar.
+    """
+    val = CATEGORY_TIME_STOPS_DAYS.get(category, default)
+    return val if val is not None else default
+
+
+def exit_class_time_stop(df_full, entry_date, entry_price, direction, atr,
+                          signals=None, category: str = "momentum",
+                          override_days=None):
+    """DEC-521: Time stop at close of bar `max_days` per strategy category.
+
+    Args:
+        category: Layer 1 category (e.g. 'momentum', 'mean_reversion').
+        override_days: optional per-strategy override; takes precedence over
+                       category default.
+    """
+    days = override_days if override_days is not None \
+           else get_max_days_for_category(category)
+
+    future = df_full[df_full.index.date > entry_date]
+    if future.empty:
+        return _base_result(entry_price, entry_price, entry_date,
+                            entry_date, "no_data", direction)
+
+    target_idx = min(days - 1, len(future) - 1)
+    target_row = future.iloc[target_idx]
+    target_ts = future.index[target_idx]
+    return _base_result(
+        entry_price, float(target_row["close"]),
+        entry_date,
+        target_ts.date() if hasattr(target_ts, "date") else target_ts,
+        f"class_time_stop_{category}_{days}d", direction,
+    )
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # EXIT STRATEGY REGISTRY
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -658,6 +817,19 @@ EXIT_STRATEGIES = {
     "r_multiple_2r":        lambda df, ed, ep, d, a, s: exit_r_multiple_2r(df, ed, ep, d, a, s),
     "r_multiple_3r":        lambda df, ed, ep, d, a, s: exit_r_multiple_3r(df, ed, ep, d, a, s),
     "break_even_at_1r":     lambda df, ed, ep, d, a, s: exit_break_even_at_1r(df, ed, ep, d, a, s),
+    # DEC-518 (Pass 53 owner-approved 2026-05-06 Q2 P1; engine compliance Day-9 v8g 2026-05-07)
+    # Note: requires ticker + strategy_name; signals dict expected to carry them
+    "earnings_blackout":    lambda df, ed, ep, d, a, s: exit_earnings_blackout(
+        df, ed, ep, d, a, s,
+        ticker=(s or {}).get("ticker", ""),
+        strategy_name=(s or {}).get("strategy_name", ""),
+    ),
+    # DEC-521 (Pass 53 owner-approved 2026-05-06 Q2 P1; engine compliance Day-9 v8g 2026-05-07)
+    # Note: category provided via signals dict; default 'momentum' (25d)
+    "class_time_stop":      lambda df, ed, ep, d, a, s: exit_class_time_stop(
+        df, ed, ep, d, a, s,
+        category=(s or {}).get("category", "momentum"),
+    ),
 }
 
 
