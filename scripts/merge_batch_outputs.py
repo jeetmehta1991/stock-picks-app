@@ -31,7 +31,7 @@ def merge_csv(dirs: list, filename: str) -> pd.DataFrame:
                 df["_batch_source"] = d
                 dfs.append(df)
             except Exception as e:
-                print(f"  ⚠️  Could not read {f}: {e}")
+                print(f"  [WARN]  Could not read {f}: {e}")
     if not dfs:
         return pd.DataFrame()
     return pd.concat(dfs, ignore_index=True)
@@ -44,13 +44,13 @@ def validate_merge(trade_log: pd.DataFrame, input_dirs: list) -> list[str]:
     # Check total trade count
     expected_min = len(input_dirs) * 1   # at least 1 trade per batch (test runs may have few)
     if len(trade_log) < expected_min:
-        issues.append(f"Low trade count: {len(trade_log)} (expected ≥ {expected_min})")
+        issues.append(f"Low trade count: {len(trade_log)} (expected >= {expected_min})")
 
     # Check no duplicate trades (same ticker + entry_date + strategy)
     if len(trade_log) > 0 and all(c in trade_log.columns for c in ["ticker","entry_date","strategy"]):
         dupes = trade_log.duplicated(subset=["ticker","entry_date","strategy"]).sum()
         if dupes > 0:
-            issues.append(f"Duplicate trades: {dupes} — ticker+date+strategy not unique")
+            issues.append(f"Duplicate trades: {dupes} - ticker+date+strategy not unique")
 
     # Check all batches contributed
     if "_batch_source" in trade_log.columns:
@@ -84,10 +84,10 @@ def main():
     output_dir.mkdir(parents=True, exist_ok=True)
 
     print(f"\n{'='*60}")
-    print(f"MERGING {len(input_dirs)} BATCH OUTPUTS → {output_dir}")
+    print(f"MERGING {len(input_dirs)} BATCH OUTPUTS -> {output_dir}")
     print(f"{'='*60}\n")
 
-    # ── 0. Verify all batches completed ──
+    # -- 0. Verify all batches completed --
     print("Verifying all batch directories exist and have trade logs...")
     missing_dirs = []
     empty_dirs   = []
@@ -99,38 +99,38 @@ def main():
             # Check for checkpoint as fallback
             checkpoint = Path(d) / "trade_log_checkpoint.csv"
             if checkpoint.exists():
-                print(f"  ⚠️  {d}: no trade_log.csv but checkpoint exists — batch may have crashed")
+                print(f"  [WARN]  {d}: no trade_log.csv but checkpoint exists - batch may have crashed")
                 empty_dirs.append(d)
             else:
                 empty_dirs.append(d)
         else:
             import pandas as _pd2
             df_check = _pd2.read_csv(trade_log_path)
-            print(f"  ✅ {d}: {len(df_check)} trades")
+            print(f"  [OK] {d}: {len(df_check)} trades")
 
     if missing_dirs:
-        print(f"❌ ABORT: {len(missing_dirs)} batch directories not found: {missing_dirs}")
+        print(f"[FAIL] ABORT: {len(missing_dirs)} batch directories not found: {missing_dirs}")
         print("   Ensure all batches completed before merging.")
         sys.exit(1)
     if empty_dirs:
-        print(f"⚠️  WARNING: {len(empty_dirs)} batches have no trade_log.csv: {empty_dirs}")
+        print(f"[WARN]  WARNING: {len(empty_dirs)} batches have no trade_log.csv: {empty_dirs}")
         response = input("Continue merge with partial batches? (yes/no): ").strip().lower()
         if response != "yes":
             print("Merge aborted.")
             sys.exit(1)
 
-    # ── 1. Merge trade log ──
+    # -- 1. Merge trade log --
     print("Merging trade_log.csv...")
     trade_log = merge_csv(input_dirs, "trade_log.csv")
     if trade_log.empty:
-        print("❌ No trade logs found — check input directories")
+        print("[FAIL] No trade logs found - check input directories")
         sys.exit(1)
     # Remove batch source column before saving
     trade_log_clean = trade_log.drop(columns=["_batch_source"], errors="ignore")
     trade_log_clean.to_csv(output_dir / "trade_log.csv", index=False)
-    print(f"  ✅ {len(trade_log_clean)} total trades from {len(input_dirs)} batches")
+    print(f"  [OK] {len(trade_log_clean)} total trades from {len(input_dirs)} batches")
 
-    # ── 2. Re-compute strategy metrics on combined trade log ──
+    # -- 2. Re-compute strategy metrics on combined trade log --
     print("\nRe-computing strategy metrics on combined trade log...")
     try:
         from backtest.results.metrics import (compute_all_metrics,
@@ -139,7 +139,7 @@ def main():
         # compute_all_metrics returns a single DataFrame
         metrics_df = compute_all_metrics(trade_log_clean)
         metrics_df.to_csv(output_dir / "backtest_results.csv", index=False)
-        print(f"  ✅ {len(metrics_df)} strategies evaluated")
+        print(f"  [OK] {len(metrics_df)} strategies evaluated")
 
         # Walk-forward on combined log (needs full universe to reach 100+ IS trades)
         try:
@@ -148,19 +148,19 @@ def main():
             wf_df = walk_forward_to_df(wf)
             wf_df.to_csv(output_dir / "walk_forward_validation.csv", index=False)
             summary = wf.get("summary", {})
-            print(f"  ✅ Walk-forward: {summary.get('robust',0)} ROBUST / "
+            print(f"  [OK] Walk-forward: {summary.get('robust',0)} ROBUST / "
                   f"{summary.get('total',0)} strategies")
         except Exception as wf_e:
-            print(f"  ⚠️  Walk-forward failed: {wf_e}")
+            print(f"  [WARN]  Walk-forward failed: {wf_e}")
 
     except Exception as e:
-        print(f"  ⚠️  Metrics re-computation failed: {e}")
+        print(f"  [WARN]  Metrics re-computation failed: {e}")
         print("  Falling back to concat of batch results...")
         raw_metrics = merge_csv(input_dirs, "backtest_results.csv")
         raw_metrics.drop(columns=["_batch_source"], errors="ignore").to_csv(
             output_dir / "backtest_results.csv", index=False)
 
-    # ── 3. Merge other output files (concat only) ──
+    # -- 3. Merge other output files (concat only) --
     for filename in ["skipped_trades.csv", "sector_concentration.csv",
                      "agent_performance.csv", "tier_adjustment_analysis.csv",
                      "circuit_breaker_log.csv"]:
@@ -168,31 +168,31 @@ def main():
         if not df.empty:
             df.drop(columns=["_batch_source"], errors="ignore").to_csv(
                 output_dir / filename, index=False)
-            print(f"  ✅ {filename}: {len(df)} rows")
+            print(f"  [OK] {filename}: {len(df)} rows")
 
-    # ── 4. Re-compute portfolio summary ──
+    # -- 4. Re-compute portfolio summary --
     try:
         from backtest.results.metrics import compute_portfolio_summary
         port = compute_portfolio_summary(trade_log_clean)
         (output_dir / "portfolio_summary.json").write_text(json.dumps(port, indent=2))
-        print(f"\n  ✅ Portfolio return: {port.get('portfolio_return_pct',0):.1f}%")
-        print(f"  ✅ Max portfolio heat: {port.get('max_portfolio_heat_pct',0):.1f}%")
+        print(f"\n  [OK] Portfolio return: {port.get('portfolio_return_pct',0):.1f}%")
+        print(f"  [OK] Max portfolio heat: {port.get('max_portfolio_heat_pct',0):.1f}%")
     except Exception as e:
-        print(f"  ⚠️  Portfolio summary failed: {e}")
+        print(f"  [WARN]  Portfolio summary failed: {e}")
 
-    # ── 5. Validation ──
+    # -- 5. Validation --
     print(f"\n{'='*60}")
     print("VALIDATION")
     print(f"{'='*60}")
     issues = validate_merge(trade_log, input_dirs)
     if issues:
-        print(f"❌ {len(issues)} issues found:")
+        print(f"[FAIL] {len(issues)} issues found:")
         for issue in issues:
             print(f"  - {issue}")
     else:
-        print("✅ All validation checks passed")
+        print("[OK] All validation checks passed")
 
-    # ── 6. Summary ──
+    # -- 6. Summary --
     print(f"\n{'='*60}")
     print("MERGE SUMMARY")
     print(f"{'='*60}")
@@ -205,7 +205,7 @@ def main():
         wr = trade_log_clean["win"].mean()
         print(f"Overall win rate:  {wr:.1%}")
     print(f"\nOutput: {output_dir}/")
-    print("\n⚠️  NEXT STEP: git add + commit all batch outputs and merged result")
+    print("\n[WARN]  NEXT STEP: git add + commit all batch outputs and merged result")
     print("   NEVER run git reset --hard without checking git status first")
 
 

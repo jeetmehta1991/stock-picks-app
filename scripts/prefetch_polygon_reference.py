@@ -109,7 +109,7 @@ def main():
     if args.tickers:
         print(f"Mode:     EXPLICIT TICKERS ({len(args.tickers)})")
     elif args.limit_tickers:
-        print(f"Mode:     LIMITED ({args.limit_tickers} tickers — TEST RUN)")
+        print(f"Mode:     LIMITED ({args.limit_tickers} tickers - TEST RUN)")
     else:
         print(f"Mode:     FULL UNIVERSE")
     print()

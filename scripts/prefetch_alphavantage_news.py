@@ -37,8 +37,8 @@ if not AV_KEY:
 
 CACHE_DIR    = Path("backtest/data/cache/av_news")
 CHECKPOINT_F = Path("backtest/data/cache/av_news_checkpoint.json")
-COMMIT_EVERY = 25       # commit every 25 tickers — smaller batches for reliability
-RATE_SLEEP   = 3.0      # 25 calls/min = 1 per 2.4s — use 3s (20/min, safe buffer)
+COMMIT_EVERY = 25       # commit every 25 tickers - smaller batches for reliability
+RATE_SLEEP   = 3.0      # 25 calls/min = 1 per 2.4s - use 3s (20/min, safe buffer)
 
 # Annual date ranges to fetch
 ANNUAL_BATCHES = [
@@ -76,12 +76,12 @@ def fetch_news(ticker: str, time_from: str, time_to: str) -> list:
                 data = r.json()
                 if "Information" in data:
                     # Rate limit hit
-                    print(f"  Rate limit — waiting 60s")
+                    print(f"  Rate limit - waiting 60s")
                     time.sleep(60)
                     continue
                 return data.get("feed", [])
             else:
-                print(f"  HTTP {r.status_code} — retrying")
+                print(f"  HTTP {r.status_code} - retrying")
                 time.sleep(15)
         except Exception as e:
             print(f"  Error (attempt {attempt+1}): {e}")
@@ -136,7 +136,7 @@ def process_ticker(ticker: str) -> pd.DataFrame:
     df = pd.DataFrame(all_rows)
     df["date"] = pd.to_datetime(df["date"])
 
-    # Weight by relevance score — more relevant articles count more
+    # Weight by relevance score - more relevant articles count more
     df["weighted_score"] = df["ticker_score"] * df["relevance_score"].clip(0, 1)
 
     # Aggregate to daily
@@ -240,7 +240,7 @@ def main():
         batch_count += 1
 
         n = len(df) if not df.empty else 0
-        print(f"  → {n} daily rows saved")
+        print(f"  -> {n} daily rows saved")
 
         if batch_count % COMMIT_EVERY == 0:
             print(f"\n  Committing batch of {COMMIT_EVERY}...")

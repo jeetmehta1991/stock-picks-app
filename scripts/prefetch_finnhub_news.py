@@ -33,9 +33,9 @@ CHECKPOINT_FILE = Path("backtest/data/cache/finnhub_news_checkpoint.json")
 RATE_LIMIT_SLEEP = 1.1   # 60 calls/min = 1 per second, use 1.1 for safety
 COMMIT_EVERY = 50
 
-# Annual batches — free tier handles ~1 year per call
+# Annual batches - free tier handles ~1 year per call
 # Finnhub free tier: ~1 year lookback from today (April 2026)
-# 2022-2024 returns empty results on free tier — only fetch recent data
+# 2022-2024 returns empty results on free tier - only fetch recent data
 # This covers our OOS period (2025-Mar 2026) which is most critical
 BATCHES = [
     ("2025-01-01", "2025-12-31"),
@@ -55,7 +55,7 @@ def fetch_news(ticker: str, from_date: str, to_date: str) -> list:
             if r.status_code == 200:
                 return r.json() if r.text.strip() else []
             elif r.status_code == 429:
-                print(f"  Rate limited — waiting 60s")
+                print(f"  Rate limited - waiting 60s")
                 time.sleep(60)
             else:
                 return []

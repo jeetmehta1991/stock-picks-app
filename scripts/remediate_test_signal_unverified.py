@@ -56,11 +56,11 @@ def extract_keywords(test_signal: str) -> list:
     """
     if not test_signal:
         return []
-    # Function-like or snake_case identifiers (≥4 chars)
+    # Function-like or snake_case identifiers (>=4 chars)
     kws = re.findall(r"\b([a-z_]{4,}_[a-z_]+)\b", test_signal)
-    # Acronyms / Symbol-like (≥2 caps)
+    # Acronyms / Symbol-like (>=2 caps)
     caps = re.findall(r"\b([A-Z]{2,}[A-Z0-9_]*)\b", test_signal)
-    # Threshold-like ≥4 digit
+    # Threshold-like >=4 digit
     nums = re.findall(r"\b(\d{2,3}(?:\.\d+)?(?:bps|%)?)\b", test_signal)
     return list({*kws, *caps, *nums})[:8]
 
@@ -82,10 +82,10 @@ def remediate_dec(audit_text: str, dec_id: str, body: str, status: str) -> tuple
         )
         return audit_text.replace(body, new_body, 1), "ANNOTATED"
 
-    # No keyword match — demote
+    # No keyword match - demote
     new_body = body + (
         f" **{ANNOTATION_MARKER}: PARTIAL-SPEC-ONLY (was RESOLVED-DECIDED; demoted via DEC-594 "
-        f"retroactive audit Day 4-5 — code-grep on test_signal keywords found no match in "
+        f"retroactive audit Day 4-5 - code-grep on test_signal keywords found no match in "
         f"`backtest/tests/`; cannot advance to RESOLVED-DECIDED until executable artifact lands per DEC-594).**"
     )
     new_text = audit_text.replace(body, new_body, 1)

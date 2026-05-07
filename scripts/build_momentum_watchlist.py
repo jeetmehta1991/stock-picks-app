@@ -33,7 +33,7 @@ from pathlib import Path
 import pandas as pd
 import yfinance as yf
 
-# ── Config ──────────────────────────────────────────────────────────────────
+# -- Config ------------------------------------------------------------------
 CSV_PATH   = Path(__file__).parent.parent / "Backtesting universe" / "Tier 3 Universe_Momentum Top-100_Jun 2022 to May 2026.csv"
 SP500_CSV  = Path(__file__).parent.parent / "Backtesting universe" / "Current Snapshot_SP500 Tickers_May 2026.csv"
 MAX_TICKERS = 50          # top N by momentum
@@ -42,16 +42,16 @@ MIN_AVG_VOL = 500_000     # shares/day
 MIN_MKTCAP_B = 2.0        # USD billions
 MOMENTUM_DAYS = 63        # ~3 months of trading days
 LOOKBACK_DAYS = 95        # calendar days to fetch (includes weekends)
-BIG_MOVE_THRESHOLD = 0.50 # 50% — triggers out-of-cycle addition
+BIG_MOVE_THRESHOLD = 0.50 # 50% - triggers out-of-cycle addition
 
-# Nasdaq 100 non-S&P tickers (approximate — update semi-annually)
+# Nasdaq 100 non-S&P tickers (approximate - update semi-annually)
 # These are Nasdaq 100 members that are NOT in the S&P 500
 NASDAQ100_NON_SP500 = [
     "MELI", "ASML", "TEAM", "WDAY", "DDOG", "SGEN", "CPNG", "RIVN", "LCID",
     "GRAB", "ZS", "CRWD", "NET", "SNOW", "PLTR", "ABNB", "DASH", "COIN",
 ]
 
-# Russell 1000 non-S&P high-profile names (seed list — not exhaustive)
+# Russell 1000 non-S&P high-profile names (seed list - not exhaustive)
 # Focus on large-cap spinoffs, recent IPOs, high-momentum names
 RUSSELL1000_SEEDS = [
     "SNDK", "GEV", "VST", "SMCI", "GDDY", "ERIE",  # known S&P additions we're missing
@@ -82,7 +82,7 @@ def compute_momentum(tickers: list, sp500: set) -> pd.DataFrame:
         return pd.DataFrame()
 
     # Bulk download
-    print(f"Downloading {len(candidates)} tickers ({start} → {end})...")
+    print(f"Downloading {len(candidates)} tickers ({start} -> {end})...")
     try:
         raw = yf.download(
             candidates, start=start.isoformat(), end=end.isoformat(),
@@ -168,7 +168,7 @@ def main():
     p.add_argument("--top", type=int, default=MAX_TICKERS, help=f"Top N tickers (default {MAX_TICKERS})")
     p.add_argument("--add", nargs="+", metavar="TICKER", help="Force-add tickers regardless of momentum")
     p.add_argument("--out-of-cycle", action="store_true",
-                   help="Flag: out-of-cycle update (big movers) — adds to existing list")
+                   help="Flag: out-of-cycle update (big movers) - adds to existing list")
     args = p.parse_args()
 
     sp500 = get_sp500_tickers()
@@ -183,7 +183,7 @@ def main():
     # Compute momentum
     momentum_df = compute_momentum(all_candidates, sp500)
     if momentum_df.empty:
-        print("No valid momentum data — check network and try again")
+        print("No valid momentum data - check network and try again")
         sys.exit(1)
 
     # Select top N
@@ -193,7 +193,7 @@ def main():
     if args.out_of_cycle:
         big_movers = momentum_df[momentum_df["MomentumPct"] >= BIG_MOVE_THRESHOLD * 100]
         if not big_movers.empty:
-            print(f"\n⚡ OUT-OF-CYCLE BIG MOVERS (>{BIG_MOVE_THRESHOLD*100:.0f}% in {MOMENTUM_DAYS}d):")
+            print(f"\n* OUT-OF-CYCLE BIG MOVERS (>{BIG_MOVE_THRESHOLD*100:.0f}% in {MOMENTUM_DAYS}d):")
             print(big_movers[["Symbol","MomentumPct","LastPrice"]].to_string(index=False))
 
     print(f"\n{'='*60}")
@@ -202,7 +202,7 @@ def main():
     print(selected[["Symbol","MomentumPct","LastPrice","AvgVol20d"]].to_string(index=False))
 
     if not args.write:
-        print(f"\nDry run — use --write to save to {CSV_PATH}")
+        print(f"\nDry run - use --write to save to {CSV_PATH}")
         return
 
     # Fetch market cap + sector for selected tickers
@@ -231,7 +231,7 @@ def main():
         final_df = combined.drop_duplicates(subset=["Symbol"], keep="last")
 
     final_df.to_csv(CSV_PATH, index=False)
-    print(f"\n✅ Written: {CSV_PATH}")
+    print(f"\n[OK] Written: {CSV_PATH}")
     print(f"   {len(final_df)} tickers in Tier 3 momentum watchlist")
     print(f"\nNext steps:")
     print(f"  git add backtest/data/Tier 3 Universe_Momentum Top-100_Jun 2022 to May 2026.csv")

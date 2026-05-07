@@ -40,7 +40,7 @@ from pathlib import Path
 import pandas as pd
 import yfinance as yf
 
-# ── Config ──────────────────────────────────────────────────────────────────
+# -- Config ------------------------------------------------------------------
 # Pass 53 folder move: universe CSVs live in top-level "Backtesting universe/"
 CSV_PATH   = Path(__file__).parent.parent / "Backtesting universe" / "Tier 2 Universe_Spinoffs and Recent IPOs_Feb 2010 to May 2026.csv"
 SP500_CSV  = Path(__file__).parent.parent / "Backtesting universe" / "Current Snapshot_SP500 Tickers_May 2026.csv"
@@ -49,10 +49,10 @@ MIN_MKTCAP_IPO_B     = 10.0  # recent IPOs above $10B (DEC-103)
 MIN_PRICE   = 5.0
 MIN_AVG_VOL = 200_000
 
-# Seed list — Tier 2 candidates: SPINOFFS + RECENT IPOs only (DEC-494 Pass 53 — NDX-non-S&P removed; now T1c per DEC-483).
+# Seed list - Tier 2 candidates: SPINOFFS + RECENT IPOs only (DEC-494 Pass 53 - NDX-non-S&P removed; now T1c per DEC-483).
 # Curated by monthly review until Sprint 1 SCREENER-FIRST refactor (Polygon corp-actions feed) lands.
 TIER2_SEEDS = {
-    # Recent spinoffs (2023-2026) — should be in Tier 2 immediately
+    # Recent spinoffs (2023-2026) - should be in Tier 2 immediately
     "SNDK":  "spinoff_from_WDC_2025",
     "GEV":   "spinoff_from_GE_2024",
     "SOLV":  "spinoff_from_Honeywell_2024",
@@ -102,7 +102,7 @@ def validate_ticker(ticker: str, sp500: set) -> dict | None:
             "AvgVol":     int(avg_vol),
         }
     except Exception as e:
-        print(f"  {ticker}: validation error — {e}")
+        print(f"  {ticker}: validation error - {e}")
         return None
 
 
@@ -116,7 +116,7 @@ def main():
     args = p.parse_args()
 
     sp500 = get_sp500_tickers()
-    print(f"S&P 500 universe: {len(sp500)} tickers (Tier 1 — excluded from Tier 2)")
+    print(f"S&P 500 universe: {len(sp500)} tickers (Tier 1 - excluded from Tier 2)")
 
     # Build candidate list from seeds + any force-adds
     candidates = dict(TIER2_SEEDS)
@@ -145,7 +145,7 @@ def main():
         time.sleep(0.3)
         if ticker in sp500:
             promoted_to_tier1.append(ticker)
-            print(f"  {ticker}: promoted to S&P 500 (Tier 1) — removing from Tier 2")
+            print(f"  {ticker}: promoted to S&P 500 (Tier 1) - removing from Tier 2")
             continue
 
         result = validate_ticker(ticker, sp500)
@@ -160,12 +160,12 @@ def main():
             result["removed_date"] = ""  # NULL = currently active in Tier 2
             valid_rows.append(result)
             status = "existing" if ticker in existing_tickers else "NEW"
-            print(f"  {ticker}: ✅ ${result['MarketCapB']:.1f}B  [{result['Sector']}]  ({status})")
+            print(f"  {ticker}: [OK] ${result['MarketCapB']:.1f}B  [{result['Sector']}]  ({status})")
         else:
             if ticker in existing_tickers:
-                print(f"  {ticker}: ⚠️  failed validation — removing from Tier 2")
+                print(f"  {ticker}: [WARN]  failed validation - removing from Tier 2")
             else:
-                print(f"  {ticker}: ❌ failed validation — not added")
+                print(f"  {ticker}: [FAIL] failed validation - not added")
 
     # Build result DataFrame
     result_df = pd.DataFrame(valid_rows) if valid_rows else pd.DataFrame()
@@ -176,19 +176,19 @@ def main():
     print(f"Valid tickers:         {len(valid_rows)}")
     print(f"Promoted to S&P 500:   {len(promoted_to_tier1)} {promoted_to_tier1}")
     if not result_df.empty:
-        print(f"Market cap range:      ${result_df['MarketCapB'].min():.1f}B — ${result_df['MarketCapB'].max():.1f}B")
+        print(f"Market cap range:      ${result_df['MarketCapB'].min():.1f}B - ${result_df['MarketCapB'].max():.1f}B")
         print(f"\nFinal list:")
         print(result_df[["Symbol","Company","Sector","MarketCapB","Tier2Reason"]].to_string(index=False))
 
     if not args.write:
-        print(f"\nDry run — use --write to save to {CSV_PATH}")
+        print(f"\nDry run - use --write to save to {CSV_PATH}")
         return
 
     # Pass 53 B++ canonical column order: Symbol,Company,Sector,added_date,removed_date,<extension cols>
     cols = ["Symbol","Company","Sector","added_date","removed_date","MarketCapB","Tier2Reason"]
     result_df = result_df[[c for c in cols if c in result_df.columns]]
     result_df.to_csv(CSV_PATH, index=False)
-    print(f"\n✅ Written: {CSV_PATH} ({len(result_df)} tickers)")
+    print(f"\n[OK] Written: {CSV_PATH} ({len(result_df)} tickers)")
     print(f"\nNext steps:")
     print(f"  git add backtest/data/Tier 2 Universe_Spinoffs and Recent IPOs_Feb 2010 to May 2026.csv")
     print(f"  git commit -m 'Tier 2 extended universe: monthly refresh {date.today()}'")

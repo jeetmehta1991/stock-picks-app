@@ -40,9 +40,10 @@ if not POLYGON_KEY:
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 BASE_URL = "https://api.polygon.io"
-CACHE_DIR = Path("backtest/data/cache/polygon/news")
-CHECKPOINT_FILE = Path("backtest/data/cache/polygon/_checkpoint_news.json")
-UNIVERSE_CSV = Path("Backtesting universe/Current Snapshot_SP500 Tickers_May 2026.csv")
+# Pass 53 Day-9 v8h: canonical Sprint 0A path + Master Universe scope
+CACHE_DIR = Path("data_prefetch/polygon/news")
+CHECKPOINT_FILE = Path("data_prefetch/polygon/_checkpoint_news.json")
+UNIVERSE_CSV = Path("Backtesting universe/Master Universe_Deduplicated_All Tiers_May 2026.csv")
 
 # 5y window per DEC-482
 END_DATE = date.today()
@@ -51,11 +52,11 @@ START_DATE = END_DATE - timedelta(days=5 * 365 + 30)
 RATE_LIMIT_SLEEP = 0.05
 TIMEOUT = 60
 COMMIT_EVERY = 25
-MAX_PAGES_PER_TICKER = 50  # safety cap; 50 × 1000 = 50k articles per ticker max
+MAX_PAGES_PER_TICKER = 50  # safety cap; 50 x 1000 = 50k articles per ticker max
 
 
 def load_universe() -> list[str]:
-    df = pd.read_csv(UNIVERSE_CSV)
+    df = pd.read_csv(UNIVERSE_CSV, comment="#")
     return sorted(df["Symbol"].dropna().str.strip().str.upper().unique().tolist())
 
 
@@ -153,7 +154,7 @@ def main():
     if args.tickers:
         print(f"Mode:   EXPLICIT TICKERS ({len(args.tickers)})")
     elif args.limit_tickers:
-        print(f"Mode:   LIMITED ({args.limit_tickers} tickers — TEST RUN)")
+        print(f"Mode:   LIMITED ({args.limit_tickers} tickers - TEST RUN)")
     else:
         print(f"Mode:   FULL UNIVERSE")
     print()
@@ -173,7 +174,7 @@ def main():
     print()
 
     if not todo:
-        print("✅ All news already cached.")
+        print("[OK] All news already cached.")
         return 0
 
     failures = []
@@ -185,7 +186,7 @@ def main():
         df = fetch_news_for_ticker(ticker)
         if df.empty:
             print("(0 articles)")
-            # Even 0 articles is a success — just no news for this ticker
+            # Even 0 articles is a success - just no news for this ticker
             completed.add(ticker)
             continue
         out_path = CACHE_DIR / f"{ticker}.parquet"

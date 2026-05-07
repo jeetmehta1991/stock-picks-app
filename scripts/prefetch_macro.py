@@ -49,7 +49,7 @@ DATE_START = "2020-01-01"
 DATE_END = "2026-12-31"
 
 SERIES = {
-    "yield_curve":    "T10Y2Y",    # 10Y-2Y spread — inversion = recession risk
+    "yield_curve":    "T10Y2Y",    # 10Y-2Y spread - inversion = recession risk
     "fed_funds":      "FEDFUNDS",  # Fed funds rate
     "unemployment":   "UNRATE",    # Unemployment rate
     "cpi":            "CPIAUCSL",  # CPI inflation

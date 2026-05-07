@@ -76,7 +76,7 @@ def fetch_with_retry(url: str, max_retries: int = 3) -> list:
                 return r.json() if r.text.strip() else []
             elif r.status_code == 429:
                 wait = 60 * (attempt + 1)
-                print(f"  Rate limited — waiting {wait}s")
+                print(f"  Rate limited - waiting {wait}s")
                 time.sleep(wait)
             elif r.status_code == 404:
                 return []  # ticker not covered
@@ -173,13 +173,13 @@ def main():
     for data_type, url_template in ENDPOINTS.items():
         done_tickers = set(checkpoint.get(data_type, []))
         if len(done_tickers) >= target_count:
-            print(f"Skipping {data_type} — already complete ({len(done_tickers)} tickers)")
+            print(f"Skipping {data_type} - already complete ({len(done_tickers)} tickers)")
             continue
 
         remaining = [t for t in universe if t not in done_tickers]
 
         print(f"\n{'='*60}")
-        print(f"Fetching: {data_type} — {len(remaining)} remaining / {len(universe)} total")
+        print(f"Fetching: {data_type} - {len(remaining)} remaining / {len(universe)} total")
         print(f"{'='*60}")
 
         batch_count = 0
@@ -205,16 +205,16 @@ def main():
                 time.sleep(RATE_LIMIT_SLEEP)
 
             except KeyboardInterrupt:
-                print(f"\nInterrupted at {ticker} — saving checkpoint and committing...")
+                print(f"\nInterrupted at {ticker} - saving checkpoint and committing...")
                 git_commit(f"Quiver pre-fetch: {data_type} interrupted at {ticker}")
                 raise
             except Exception as e:
-                print(f"  ERROR on {ticker}: {e} — skipping and continuing")
+                print(f"  ERROR on {ticker}: {e} - skipping and continuing")
                 time.sleep(5)
                 continue
 
-        # Final commit for this data type — retry push up to 3 times
-        print(f"\nCompleted {data_type} — committing...")
+        # Final commit for this data type - retry push up to 3 times
+        print(f"\nCompleted {data_type} - committing...")
         for attempt in range(3):
             git_commit(f"Quiver pre-fetch: {data_type} complete ({len(universe)} tickers)")
             # Verify push succeeded
@@ -228,19 +228,19 @@ def main():
                 capture_output=True, text=True
             )
             if check.stdout.strip() == local.stdout.strip():
-                print(f"  ✅ Push confirmed on origin/main")
+                print(f"  [OK] Push confirmed on origin/main")
                 break
             else:
-                print(f"  ⚠️  Push may have failed (attempt {attempt+1}/3) — retrying...")
+                print(f"  [WARN] Push may have failed (attempt {attempt+1}/3) - retrying...")
                 import time as _t; _t.sleep(5)
         else:
-            print(f"\n  ❌ PUSH FAILED after 3 attempts for {data_type}")
+            print(f"\n  [FAIL] PUSH FAILED after 3 attempts for {data_type}")
             print(f"  DO NOT RUN git reset --hard")
             print(f"  Run manually: git add backtest/data/cache/quiver/ && git commit -m 'manual push' && git pull --rebase origin main && git push origin main")
 
     print(f"\nAll Quiver data pre-fetched and committed.")
     print(f"Cache location: {CACHE_DIR}/")
-    print(f"\n⚠️  IMPORTANT: Run 'git status' before any git reset --hard")
+    print(f"\n[WARN] IMPORTANT: Run 'git status' before any git reset --hard")
     print(f"   If files show as modified/untracked, commit them first!")
 
 

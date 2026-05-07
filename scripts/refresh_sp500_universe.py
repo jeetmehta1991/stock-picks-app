@@ -27,7 +27,7 @@ from pathlib import Path
 
 import pandas as pd
 
-# ── Config ─────────────────────────────────────────────────────────────────
+# -- Config -----------------------------------------------------------------
 CSV_PATH  = Path(__file__).parent.parent / "Backtesting universe" / "Current Snapshot_SP500 Tickers_May 2026.csv"
 SLICK_URL = "https://www.slickcharts.com/sp500"
 
@@ -59,7 +59,7 @@ def fetch_from_slickcharts() -> pd.DataFrame:
     df = tables[0]
     print(f"  Raw table: {len(df)} rows, columns: {df.columns.tolist()}")
 
-    # Normalise column names — slickcharts uses '#', 'Company', 'Symbol', 'Weight'
+    # Normalise column names - slickcharts uses '#', 'Company', 'Symbol', 'Weight'
     df.columns = [c.strip() for c in df.columns]
     if "Symbol" not in df.columns:
         # Try alternate column names
@@ -71,7 +71,7 @@ def fetch_from_slickcharts() -> pd.DataFrame:
                 rename_map[col] = "Company"
         df = df.rename(columns=rename_map)
 
-    # Clean tickers — replace '.' with '-' (BRK.B → BRK-B)
+    # Clean tickers - replace '.' with '-' (BRK.B -> BRK-B)
     df["Symbol"] = df["Symbol"].str.strip().str.replace(".", "-", regex=False)
     df = df[df["Symbol"].str.match(r"^[A-Z\-]{1,6}$", na=False)]  # valid ticker chars only
     return df[["Symbol", "Company"]].drop_duplicates(subset=["Symbol"])
@@ -99,12 +99,12 @@ def main():
                    help="Force-remove tickers (confirmed removals)")
     args = p.parse_args()
 
-    # ── 1. Load current CSV ───────────────────────────────────────────────
+    # -- 1. Load current CSV -----------------------------------------------
     if not CSV_PATH.exists():
         print(f"ERROR: {CSV_PATH} not found")
         sys.exit(1)
     current_df = pd.read_csv(CSV_PATH, comment='#')
-    # Pass 53 schema standardization — ensure B++ columns present (added_date/removed_date)
+    # Pass 53 schema standardization - ensure B++ columns present (added_date/removed_date)
     if "added_date" not in current_df.columns:
         current_df["added_date"] = ""
     if "removed_date" not in current_df.columns:
@@ -112,7 +112,7 @@ def main():
     current_tickers = set(current_df["Symbol"].tolist())
     print(f"\nCurrent CSV: {len(current_tickers)} tickers (last updated: check git log)")
 
-    # ── 2. Fetch new list ─────────────────────────────────────────────────
+    # -- 2. Fetch new list -------------------------------------------------
     try:
         new_df = fetch_from_slickcharts()
     except Exception as e:
@@ -125,7 +125,7 @@ def main():
 
     new_tickers = set(new_df["Symbol"].tolist())
 
-    # ── 3. Compute diff ───────────────────────────────────────────────────
+    # -- 3. Compute diff ---------------------------------------------------
     additions = new_tickers - current_tickers
     removals  = current_tickers - new_tickers
 
@@ -143,7 +143,7 @@ def main():
     print(f"DIFF vs current CSV")
     print(f"{'='*60}")
     if additions:
-        print(f"\n✅ ADDITIONS ({len(additions)}):")
+        print(f"\n[OK] ADDITIONS ({len(additions)}):")
         for t in sorted(additions):
             company = new_df[new_df["Symbol"] == t]["Company"].values
             name = company[0] if len(company) > 0 else "(manual add)"
@@ -152,7 +152,7 @@ def main():
         print("\n  No additions detected")
 
     if removals:
-        print(f"\n❌ REMOVALS ({len(removals)}):")
+        print(f"\n[FAIL] REMOVALS ({len(removals)}):")
         for t in sorted(removals):
             row = current_df[current_df["Symbol"] == t]
             name = row["Company"].values[0] if len(row) > 0 else "?"
@@ -162,10 +162,10 @@ def main():
         print("\n  No removals detected")
 
     if not additions and not removals:
-        print("\n✅ Universe is current — no changes needed")
+        print("\n[OK] Universe is current - no changes needed")
         return
 
-    # ── 4. Build updated DataFrame ────────────────────────────────────────
+    # -- 4. Build updated DataFrame ----------------------------------------
     # Start from current, apply removals
     updated_df = current_df[~current_df["Symbol"].isin(removals)].copy()
 
@@ -191,19 +191,19 @@ def main():
                 time.sleep(0.5)
         updated_df = pd.concat([updated_df, pd.DataFrame(new_rows)], ignore_index=True)
     elif additions:
-        # Dry run — show what would be added
-        print(f"\n  (dry run — sectors not fetched; use --write to fetch and apply)")
+        # Dry run - show what would be added
+        print(f"\n  (dry run - sectors not fetched; use --write to fetch and apply)")
 
-    # ── 5. Write or report ────────────────────────────────────────────────
+    # -- 5. Write or report ------------------------------------------------
     if args.write:
         updated_df = updated_df.sort_values("Symbol").reset_index(drop=True)
-        # Pass 53 B++ schema — enforce canonical column order on output
+        # Pass 53 B++ schema - enforce canonical column order on output
         b_plus_plus_cols = ["Symbol", "Company", "Sector", "added_date", "removed_date"]
         extra_cols = [c for c in updated_df.columns if c not in b_plus_plus_cols]
         updated_df = updated_df[b_plus_plus_cols + extra_cols]
         updated_df.to_csv(CSV_PATH, index=False)
-        print(f"\n✅ Written: {CSV_PATH}")
-        print(f"   {len(current_tickers)} → {len(updated_df)} tickers")
+        print(f"\n[OK] Written: {CSV_PATH}")
+        print(f"   {len(current_tickers)} -> {len(updated_df)} tickers")
         print(f"\nNext steps:")
         print(f"  git diff backtest/data/Current Snapshot_SP500 Tickers_May 2026.csv   # review")
         print(f"  git add backtest/data/Current Snapshot_SP500 Tickers_May 2026.csv")

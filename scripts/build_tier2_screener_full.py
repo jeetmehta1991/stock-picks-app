@@ -169,10 +169,10 @@ def main():
     args = ap.parse_args()
 
     print("=" * 70)
-    print("Tier 2 FULL Global SCREENER — DEC-103/494 Pass 53")
+    print("Tier 2 FULL Global SCREENER - DEC-103/494 Pass 53")
     print("=" * 70)
-    print(f"Window: {WINDOW_START} → {WINDOW_END}")
-    print(f"Filters: spinoff cap >${MIN_SPINOFF_CAP_B}B / IPO cap >${MIN_IPO_CAP_B}B + ≥{MIN_DAYS}d history")
+    print(f"Window: {WINDOW_START} -> {WINDOW_END}")
+    print(f"Filters: spinoff cap >${MIN_SPINOFF_CAP_B}B / IPO cap >${MIN_IPO_CAP_B}B + >={MIN_DAYS}d history")
 
     t1_set = load_t1_tickers()
     print(f"T1 (T1a + T1c) ticker set: {len(t1_set)} (excluded from T2)")
@@ -307,7 +307,7 @@ def main():
         ]
         # If filename changed, write to new and remove old
         if new_filename != T2_CSV.name:
-            print(f"\n[FILENAME CHANGE] earliest list_date {earliest_list_date} → renaming to: {new_filename}")
+            print(f"\n[FILENAME CHANGE] earliest list_date {earliest_list_date} -> renaming to: {new_filename}")
             with open(new_path, "w", encoding="utf-8", newline="") as f:
                 for line in header_lines:
                     f.write(line + "\n")
@@ -321,7 +321,7 @@ def main():
                 df.to_csv(f, index=False)
             print(f"\nWrote {len(df)} rows to {T2_CSV}")
     else:
-        print(f"\nDry run — pass --write to save to {T2_CSV}")
+        print(f"\nDry run - pass --write to save to {T2_CSV}")
 
     return 0
 

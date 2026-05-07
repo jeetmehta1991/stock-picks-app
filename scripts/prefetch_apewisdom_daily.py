@@ -52,7 +52,7 @@ def fetch_apewisdom_snapshot() -> pd.DataFrame:
         if not page_results:
             break
         rows.extend(page_results)
-        # Apewisdom paginates ~50/page; stop when we have ≥ MAX_RANK
+        # Apewisdom paginates ~50/page; stop when we have >= MAX_RANK
         if len(rows) >= MAX_RANK or len(page_results) < 50:
             break
         page += 1

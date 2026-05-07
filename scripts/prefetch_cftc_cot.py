@@ -35,13 +35,13 @@ OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 # Map of (label -> {dataset, contract_market_name_filter, slug_for_filename})
 CONTRACTS = [
-    # ── Equity indices (TFF) ──
+    # -- Equity indices (TFF) --
     ("emini_sp500",     DATASET_TFF, "E-MINI S&P 500"),
     ("emini_nasdaq100", DATASET_TFF, "E-MINI NASDAQ-100"),
     ("emini_russell2k", DATASET_TFF, "E-MINI RUSSELL 2000"),
     ("emini_dow",       DATASET_TFF, "E-MINI DJIA (X $5)"),
     ("vix_futures",     DATASET_TFF, "VIX FUTURES"),
-    # ── Rates (TFF) ── INV-011 fix 2026-05-07: actual CFTC contract names
+    # -- Rates (TFF) -- INV-011 fix 2026-05-07: actual CFTC contract names
     ("treasury_10y",    DATASET_TFF, "UST 10Y NOTE"),
     ("treasury_5y",     DATASET_TFF, "UST 5Y NOTE"),
     ("treasury_2y",     DATASET_TFF, "UST 2Y NOTE"),
@@ -49,11 +49,11 @@ CONTRACTS = [
     ("ultra_treasury",  DATASET_TFF, "ULTRA UST BOND"),
     ("fed_funds_30d",   DATASET_TFF, "FED FUNDS"),
     ("emini_dow",       DATASET_TFF, "DJIA x $5"),
-    # ── Currencies (TFF) ──
+    # -- Currencies (TFF) --
     ("dxy_dollar_idx",  DATASET_TFF, "USD INDEX"),
     ("eur_usd",         DATASET_TFF, "EURO FX"),
     ("jpy_usd",         DATASET_TFF, "JAPANESE YEN"),
-    # ── Commodities (DCOT) ──
+    # -- Commodities (DCOT) --
     ("wti_crude",       DATASET_DCOT, "CRUDE OIL, LIGHT SWEET-WTI"),
     ("gold",            DATASET_DCOT, "GOLD"),
     ("silver",          DATASET_DCOT, "SILVER"),
@@ -123,7 +123,7 @@ def main():
             df = fetch_contract(dataset, contract_filter)
             if df.empty:
                 print(f"  [SKIP] {slug} ({contract_filter}): no rows returned "
-                      f"— check filter")
+                      f"- check filter")
                 fail_count += 1
                 continue
             df.to_parquet(out_path, index=False)

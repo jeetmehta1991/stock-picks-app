@@ -35,21 +35,21 @@ passed  = []
 
 def check(label, condition, message, warn=False):
     if condition:
-        passed.append(f"✅ {label}")
-        print(f"  ✅ {label}")
+        passed.append(f"[OK] {label}")
+        print(f"  [OK] {label}")
     elif warn:
-        warnings.append(f"⚠️  {label}: {message}")
-        print(f"  ⚠️  {label}: {message}")
+        warnings.append(f"[WARN]  {label}: {message}")
+        print(f"  [WARN]  {label}: {message}")
     else:
-        issues.append(f"❌ {label}: {message}")
-        print(f"  ❌ {label}: {message}")
+        issues.append(f"[FAIL] {label}: {message}")
+        print(f"  [FAIL] {label}: {message}")
 
 
 print("=" * 60)
 print("PHASE 1B PRE-RUN DATA VALIDATION")
 print("=" * 60)
 
-# ── Quiver cache ──
+# -- Quiver cache --
 print("\n--- Quiver Cache ---")
 quiver_types = ["congressional","insider","institutional",
                 "gov_contracts","lobbying","wikipedia","wallstreetbets"]
@@ -66,17 +66,17 @@ for dt in quiver_types:
         check(f"Quiver {dt}: {count} files ({non_empty} non-empty)",
               ok, f"only {count} files or too few non-empty", warn=False)
     elif dt == "wikipedia":
-        # Wikipedia may legitimately return empty for all — mark as warning not blocker
+        # Wikipedia may legitimately return empty for all - mark as warning not blocker
         check(f"Quiver {dt}: {count} files ({non_empty} non-empty)",
               count >= REQUIRED_TICKERS,
               f"only {count}/{REQUIRED_TICKERS} files downloaded", warn=True)
     else:
-        # gov_contracts, lobbying, wsb, institutional — sparse data is expected
+        # gov_contracts, lobbying, wsb, institutional - sparse data is expected
         check(f"Quiver {dt}: {count} files ({non_empty} non-empty)",
               count >= REQUIRED_TICKERS,
               f"only {count}/{REQUIRED_TICKERS} files downloaded", warn=True)
 
-# ── Alpha Vantage news ──
+# -- Alpha Vantage news --
 print("\n--- Alpha Vantage News ---")
 av_count = len(list(AV_DIR.glob("*.parquet"))) if AV_DIR.exists() else 0
 av_nonempty = sum(1 for f in AV_DIR.glob("*.parquet") if f.stat().st_size > 1100) if AV_DIR.exists() else 0
@@ -87,17 +87,17 @@ check(
     warn=True,
 )
 
-# ── OHLCV cache ──
+# -- OHLCV cache --
 print("\n--- OHLCV Cache ---")
 ohlcv_count = len(list(OHLCV_DIR.glob("*.parquet"))) if OHLCV_DIR.exists() else 0
 # OHLCV: allow up to 20 missing (some ETFs/tickers may not be on yfinance)
 check(
     f"OHLCV: {ohlcv_count} tickers",
     ohlcv_count >= REQUIRED_TICKERS - 20,
-    f"only {ohlcv_count}/{REQUIRED_TICKERS} — more than 20 missing",
+    f"only {ohlcv_count}/{REQUIRED_TICKERS} - more than 20 missing",
 )
 
-# ── FRED macro ──
+# -- FRED macro --
 print("\n--- FRED Macro ---")
 try:
     import pandas as pd
@@ -112,13 +112,13 @@ try:
             f"only extends to {last_date}, need {MIN_MACRO_DATE}",
         )
     else:
-        issues.append("❌ FRED macro: macro_combined.parquet not found")
-        print("  ❌ FRED macro: not found")
+        issues.append("[FAIL] FRED macro: macro_combined.parquet not found")
+        print("  [FAIL] FRED macro: not found")
 except Exception as e:
-    issues.append(f"❌ FRED macro: {e}")
-    print(f"  ❌ FRED macro: {e}")
+    issues.append(f"[FAIL] FRED macro: {e}")
+    print(f"  [FAIL] FRED macro: {e}")
 
-# ── AAII sentiment ──
+# -- AAII sentiment --
 print("\n--- Sentiment CSVs ---")
 aaii_file = Path("backtest/data/aaii_sentiment.csv")
 cnn_file  = Path("backtest/data/cnn_fear_greed.csv")
@@ -127,17 +127,17 @@ if aaii_file.exists():
     aaii_df = pd.read_csv(aaii_file)
     check(f"AAII sentiment: {len(aaii_df)} rows", len(aaii_df) >= 300, f"only {len(aaii_df)} rows")
 else:
-    issues.append("❌ AAII CSV not found")
-    print("  ❌ AAII CSV not found")
+    issues.append("[FAIL] AAII CSV not found")
+    print("  [FAIL] AAII CSV not found")
 
 if cnn_file.exists():
     cnn_df = pd.read_csv(cnn_file)
     check(f"CNN Fear & Greed: {len(cnn_df)} rows", len(cnn_df) >= 1500, f"only {len(cnn_df)} rows")
 else:
-    issues.append("❌ CNN F&G CSV not found")
-    print("  ❌ CNN F&G CSV not found")
+    issues.append("[FAIL] CNN F&G CSV not found")
+    print("  [FAIL] CNN F&G CSV not found")
 
-# ── Integration tests ──
+# -- Integration tests --
 print("\n--- Integration Tests ---")
 import subprocess, sys as _sys
 result = subprocess.run(
@@ -150,11 +150,11 @@ if not tests_passed:
 check(
     "Integration tests",
     tests_passed,
-    "some tests failed — run: python backtest/tests/run_all_tests.py",
-    warn=True,  # warn not blocker — tests may fail on laptop due to missing cache
+    "some tests failed - run: python backtest/tests/run_all_tests.py",
+    warn=True,  # warn not blocker - tests may fail on laptop due to missing cache
 )
 
-# ── PROMPT_VERSION check ──
+# -- PROMPT_VERSION check --
 print("\n--- Agent Cache ---")
 try:
     from backtest.agents.pipeline import PROMPT_VERSION
@@ -165,11 +165,11 @@ try:
         True, "", warn=False
     )
     if old_caches:
-        print(f"  ℹ️  {len(old_caches)} cached agent analyses (will be auto-skipped if stale)")
+        print(f"  [INFO]  {len(old_caches)} cached agent analyses (will be auto-skipped if stale)")
 except Exception as e:
-    warnings.append(f"⚠️  Could not check agent cache: {e}")
+    warnings.append(f"[WARN]  Could not check agent cache: {e}")
 
-# ── Summary ──
+# -- Summary --
 print("\n" + "=" * 60)
 print(f"PASSED: {len(passed)}")
 print(f"WARNINGS: {len(warnings)}")
@@ -184,10 +184,10 @@ if issues:
     print("\nBLOCKERS (must fix before Phase 1B):")
     for i in issues:
         print(f"  {i}")
-    print("\n❌ NOT READY FOR PHASE 1B")
+    print("\n[FAIL] NOT READY FOR PHASE 1B")
     sys.exit(1)
 else:
-    print("\n✅ ALL CHECKS PASSED — ready for Phase 1B")
+    print("\n[OK] ALL CHECKS PASSED - ready for Phase 1B")
     print("\nPhase 1B run command:")
     print("  nohup python backtest/run_phase1a.py --phase 1b --output-dir output_1b > phase1b.log 2>&1 &")
     print("  tail -f phase1b.log")

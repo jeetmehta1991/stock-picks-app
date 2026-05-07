@@ -66,13 +66,13 @@ MIN_SPINOFF_CAP_B = 5.0
 MIN_IPO_CAP_B = 10.0
 MIN_IPO_DAYS = 90
 
-# Polygon Stocks Starter cache window cutoff — first bar in OHLCV cache should
+# Polygon Stocks Starter cache window cutoff - first bar in OHLCV cache should
 # be near this date for a ticker that existed throughout the 5y window.
 # Tickers with first_bar_date significantly LATER than this are recent listings.
 POLYGON_WINDOW_START = date(2021, 5, 15)  # 2021-05-06 was actual; +9 buffer
 RECENT_LISTING_THRESHOLD = date(2021, 6, 1)  # de facto IPO/spinoff if first bar after this
 
-# Curated seeds from refresh_extended_universe.py — known spinoffs + IPOs
+# Curated seeds from refresh_extended_universe.py - known spinoffs + IPOs
 TIER2_SEEDS = {
     "SNDK": "spinoff_from_WDC_2025",
     "GEV":  "spinoff_from_GE_2024",
@@ -219,13 +219,13 @@ def validate_candidate(ticker: str, reason_hint: str = "", t1_set: set | None = 
     except Exception:
         list_d = None
 
-    # Apply DEC-103 thresholds — spinoff >$5B / IPO >$10B; for unclassified, use $5B floor
+    # Apply DEC-103 thresholds - spinoff >$5B / IPO >$10B; for unclassified, use $5B floor
     is_spinoff = "spinoff" in reason_hint.lower()
     threshold = MIN_SPINOFF_CAP_B if is_spinoff else MIN_IPO_CAP_B
     if cap_b < threshold:
         return None
 
-    # ≥90 days history check via list_date
+    # >=90 days history check via list_date
     if list_d:
         days_since = (WINDOW_END - list_d).days
         if days_since < MIN_IPO_DAYS:
@@ -248,10 +248,10 @@ def main():
     args = ap.parse_args()
 
     print("=" * 60)
-    print("Tier 2 SCREENER — DEC-103/494 Pass 53 (curated + cache-discovery hybrid)")
+    print("Tier 2 SCREENER - DEC-103/494 Pass 53 (curated + cache-discovery hybrid)")
     print("=" * 60)
-    print(f"Window: {WINDOW_START} → {WINDOW_END}")
-    print(f"Filters: spinoff cap >${MIN_SPINOFF_CAP_B}B / IPO cap >${MIN_IPO_CAP_B}B + ≥{MIN_IPO_DAYS}d history")
+    print(f"Window: {WINDOW_START} -> {WINDOW_END}")
+    print(f"Filters: spinoff cap >${MIN_SPINOFF_CAP_B}B / IPO cap >${MIN_IPO_CAP_B}B + >={MIN_IPO_DAYS}d history")
 
     t1_set = load_t1_tickers()
     print(f"\nT1 (T1a + T1c) ticker set: {len(t1_set)} (excluded from T2)")
@@ -263,9 +263,9 @@ def main():
         row = validate_candidate(ticker, reason, t1_set)
         if row:
             seed_rows.append(row)
-            print(f"  [{i}/{len(TIER2_SEEDS)}] {ticker} ✓ ${row['MarketCapB']:.1f}B  {row['Sector']}  ({reason})")
+            print(f"  [{i}/{len(TIER2_SEEDS)}] {ticker} OK ${row['MarketCapB']:.1f}B  {row['Sector']}  ({reason})")
         else:
-            print(f"  [{i}/{len(TIER2_SEEDS)}] {ticker} ✗ (excluded — T1, fails cap, or no metadata)")
+            print(f"  [{i}/{len(TIER2_SEEDS)}] {ticker} [FAIL] (excluded - T1, fails cap, or no metadata)")
         time.sleep(0.05)
 
     # Step 2: discover recent listings from OHLCV cache
@@ -281,7 +281,7 @@ def main():
         row = validate_candidate(ticker, f"cache_discovery_{first_d.year}", t1_set)
         if row:
             discovery_rows.append(row)
-            print(f"  ✓ {ticker} first_bar={first_d}  ${row['MarketCapB']:.1f}B  {row['Sector']}  ({row['Tier2Reason']})")
+            print(f"  OK {ticker} first_bar={first_d}  ${row['MarketCapB']:.1f}B  {row['Sector']}  ({row['Tier2Reason']})")
         time.sleep(0.05)
 
     all_rows = seed_rows + discovery_rows
@@ -301,10 +301,10 @@ def main():
         cols = ["Symbol", "Company", "Sector", "added_date", "removed_date", "MarketCapB", "Tier2Reason"]
         df = df[[c for c in cols if c in df.columns]]
         header_lines = [
-            "# T2 Tier 2 Universe_Spinoffs and Recent IPOs_Feb 2010 to May 2026.csv — DEC-103/494 Pass 53 SCREENER-FIRST output",
+            "# T2 Tier 2 Universe_Spinoffs and Recent IPOs_Feb 2010 to May 2026.csv - DEC-103/494 Pass 53 SCREENER-FIRST output",
             f"# Built: {date.today().isoformat()} via Polygon /v3/reference/tickers/{{ticker}} per-ticker detail + OHLCV cache discovery",
             "# Approach: curated TIER2_SEEDS validated against Polygon detail endpoint + cache-discovery (tickers whose first OHLCV bar >= 2021-06-01 are de facto recent listings within Polygon Stocks Starter 5y window).",
-            f"# DEC-103 thresholds: spinoff cap >${MIN_SPINOFF_CAP_B}B / IPO cap >${MIN_IPO_CAP_B}B + ≥{MIN_IPO_DAYS}d history",
+            f"# DEC-103 thresholds: spinoff cap >${MIN_SPINOFF_CAP_B}B / IPO cap >${MIN_IPO_CAP_B}B + >={MIN_IPO_DAYS}d history",
             "# T1 (T1a + T1c) excluded.",
             "# SCHEMA: Symbol, Company, Sector (GICS), added_date (Polygon list_date), removed_date (NULL = currently active), MarketCapB, Tier2Reason",
             "# PIT FILTER: (added_date IS NULL OR added_date <= as_of) AND (removed_date IS NULL OR removed_date > as_of)",
@@ -316,7 +316,7 @@ def main():
             df.to_csv(f, index=False)
         print(f"\nWrote {len(df)} rows to {T2_CSV}")
     else:
-        print(f"\nDry run — pass --write to save to {T2_CSV}")
+        print(f"\nDry run - pass --write to save to {T2_CSV}")
 
     return 0
 

@@ -77,7 +77,7 @@ def fetch_paginated(endpoint: str, params: dict, max_pages: int = 1000) -> list:
         url = next_url
         params = {"apiKey": POLYGON_KEY}
         if page >= max_pages:
-            print(f"    WARNING: hit max_pages={max_pages} at {len(all_results)} records — increase --max-pages if more data expected")
+            print(f"    WARNING: hit max_pages={max_pages} at {len(all_results)} records - increase --max-pages if more data expected")
             break
         if page % 50 == 0:
             print(f"    Page {page}: cumulative {len(all_results)} records")
@@ -115,7 +115,7 @@ def main():
     print(f"=== Polygon Corporate Actions Prefetch ===")
     print(f"Window: {START_DATE} to {END_DATE} (~5 years)")
     if args.tickers:
-        print(f"Filter: {args.tickers} (per-ticker loop — Polygon ticker.in= broken for these endpoints, Pass 53 verified)")
+        print(f"Filter: {args.tickers} (per-ticker loop - Polygon ticker.in= broken for these endpoints, Pass 53 verified)")
     print()
 
     splits_params = {

@@ -92,7 +92,7 @@ def _polygon_ticker(ticker: str) -> str:
     used by Polygon API (BRK.B). Pass 53 fix — verified 2026-05-05 that Polygon
     returns 0 results for dash form but full data for dot form on BRK-B / BF-B."""
     if "-" in ticker:
-        # Common dual-class: ABC-A / ABC-B → ABC.A / ABC.B (last segment after dash)
+        # Common dual-class: ABC-A / ABC-B -> ABC.A / ABC.B (last segment after dash)
         prefix, _, suffix = ticker.rpartition("-")
         if len(suffix) == 1 and suffix.isalpha():
             return f"{prefix}.{suffix}"
@@ -166,7 +166,7 @@ def main():
     if args.tickers:
         print(f"Mode:     EXPLICIT TICKERS ({len(args.tickers)}: {args.tickers})")
     elif args.limit_tickers:
-        print(f"Mode:     LIMITED ({args.limit_tickers} tickers — TEST RUN)")
+        print(f"Mode:     LIMITED ({args.limit_tickers} tickers - TEST RUN)")
     else:
         print(f"Mode:     FULL UNIVERSE")
     print()
@@ -189,7 +189,7 @@ def main():
     print()
 
     if not todo:
-        print("✅ All tickers already cached.")
+        print("[OK] All tickers already cached.")
         return 0
 
     failures = []

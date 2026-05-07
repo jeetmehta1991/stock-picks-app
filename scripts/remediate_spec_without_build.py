@@ -65,7 +65,7 @@ def remediate_dec(audit_text: str, dec_id: str, body: str, status: str,
         # + append note to body
         new_body = body + (
             f" **{annotation_marker}: PARTIAL-SPEC-ONLY (was RESOLVED-DECIDED; "
-            f"demoted via DEC-594 retroactive audit — code-grep found no test "
+            f"demoted via DEC-594 retroactive audit - code-grep found no test "
             f"reference in `backtest/tests/`; cannot advance to RESOLVED-DECIDED "
             f"until executable artifact lands per DEC-594 same-commit rule).**"
         )
@@ -106,7 +106,7 @@ def main():
 
     for dec in targets:
         dec_id = dec["id"]
-        # Find body in audit text — match the row with this DEC ID
+        # Find body in audit text - match the row with this DEC ID
         row_re = re.compile(
             rf"\|\s*\*\*{re.escape(dec_id)}\*\*\s*\|\s*(.+?)\s*\|\s*([\w-]+)\s*\|",
             re.DOTALL,

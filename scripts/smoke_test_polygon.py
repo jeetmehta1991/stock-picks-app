@@ -88,7 +88,7 @@ def run_smoke_test():
         passed, msg = test_endpoint(f"aggs:{ticker}", url, expected_keys=["status", "results"])
         # Stocks Starter is 15-min delayed but historical aggs should always work
         results.append((f"aggs/{ticker}", passed, msg))
-        print(f"  {ticker}: {'✓' if passed else '✗'} {msg}")
+        print(f"  {ticker}: {'OK' if passed else '[FAIL]'} {msg}")
         time.sleep(0.1)
 
     # Test 2: Ticker reference details
@@ -97,7 +97,7 @@ def run_smoke_test():
         url = f"{BASE_URL}/v3/reference/tickers/{ticker}"
         passed, msg = test_endpoint(f"ref:{ticker}", url, expected_keys=["status", "results"])
         results.append((f"reference/{ticker}", passed, msg))
-        print(f"  {ticker}: {'✓' if passed else '✗'} {msg}")
+        print(f"  {ticker}: {'OK' if passed else '[FAIL]'} {msg}")
         time.sleep(0.1)
 
     # Test 3: Splits
@@ -105,7 +105,7 @@ def run_smoke_test():
     url = f"{BASE_URL}/v3/reference/splits?ticker=AAPL&limit=10"
     passed, msg = test_endpoint("splits", url, expected_keys=["status", "results"])
     results.append(("splits", passed, msg))
-    print(f"  splits: {'✓' if passed else '✗'} {msg}")
+    print(f"  splits: {'OK' if passed else '[FAIL]'} {msg}")
     time.sleep(0.1)
 
     # Test 4: Dividends
@@ -113,7 +113,7 @@ def run_smoke_test():
     url = f"{BASE_URL}/v3/reference/dividends?ticker=AAPL&limit=10"
     passed, msg = test_endpoint("dividends", url, expected_keys=["status", "results"])
     results.append(("dividends", passed, msg))
-    print(f"  dividends: {'✓' if passed else '✗'} {msg}")
+    print(f"  dividends: {'OK' if passed else '[FAIL]'} {msg}")
     time.sleep(0.1)
 
     # Test 5: News
@@ -122,7 +122,7 @@ def run_smoke_test():
         url = f"{BASE_URL}/v2/reference/news?ticker={ticker}&limit=10"
         passed, msg = test_endpoint(f"news:{ticker}", url, expected_keys=["status", "results"])
         results.append((f"news/{ticker}", passed, msg))
-        print(f"  {ticker}: {'✓' if passed else '✗'} {msg}")
+        print(f"  {ticker}: {'OK' if passed else '[FAIL]'} {msg}")
         time.sleep(0.1)
 
     # Summary
@@ -141,7 +141,7 @@ def run_smoke_test():
         print("Do NOT proceed with prefetch until failures resolved.")
         sys.exit(1)
 
-    print("\n✅ ALL ENDPOINTS WORKING")
+    print("\n[OK] ALL ENDPOINTS WORKING")
     print("Polygon Stocks Starter subscription verified for Sprint 1 prefetch scope.")
     print("\nNext steps:")
     print("  1. Run: python scripts/prefetch_polygon_ohlcv_daily.py")

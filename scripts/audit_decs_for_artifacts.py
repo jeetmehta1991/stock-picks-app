@@ -48,12 +48,12 @@ ARTIFACT_PATTERN = re.compile(
 DEC_ROW_RE = re.compile(r"\|\s*\*\*(DECISION-\d+(?:-\w+)?)\*\*\s*\|\s*(.+?)\s*\|\s*([\w-]+)\s*\|")
 
 # DECs that touch test/gate/validation but are KNOWN to have artifacts; allowlist
-# (or DECs where the test/gate is INPUT not OUTPUT — i.e., the DEC consumes
+# (or DECs where the test/gate is INPUT not OUTPUT - i.e., the DEC consumes
 # existing test infra rather than creating new test infra)
 KNOWN_COMPLIANT = {
     "DECISION-097",   # 90% test coverage minimum (consumes coverage infra)
     "DECISION-098",   # hot-path 100% coverage (consumes coverage infra)
-    "DECISION-503",   # test pyramid HARD RULE — was the FIRST L149 victim; layer 7 unbuilt; remediated by DEC-591 + L148
+    "DECISION-503",   # test pyramid HARD RULE - was the FIRST L149 victim; layer 7 unbuilt; remediated by DEC-591 + L148
     "DECISION-504",   # T3-over-T1 precedence (10 unit tests in test_unit.py)
     "DECISION-507",   # wiring matrix (TRADINGAGENTS_DATA_AUDIT.md tracks status)
     "DECISION-508",   # smartmoneyconcepts 4-tier testing (test_smartmoneyconcepts_*.py exists)
@@ -111,7 +111,7 @@ def classify_dec(dec):
         return "KNOWN_COMPLIANT", [], [], []
 
     status = (dec.get("status") or "").upper()
-    # Non-active statuses — no standalone artifact required
+    # Non-active statuses - no standalone artifact required
     if "SUPERSEDED" in status:
         return "SUPERSEDED", [], [], []
     if "DEFERRED" in status:
@@ -139,7 +139,7 @@ def classify_dec(dec):
     body = dec["body"]
     annotation_marker = "Pass 53 evening 2026-05-06 DEC-594 audit"
     if annotation_marker in body:
-        # Body annotated — extract test path references (handle both / and \ separators)
+        # Body annotated - extract test path references (handle both / and \ separators)
         annotated_paths_raw = re.findall(
             r"`(backtest[/\\]tests[/\\][^`\s]+\.py)`", body
         )
@@ -147,11 +147,11 @@ def classify_dec(dec):
         existing_annotated = [a for a in annotated_paths if artifact_exists(a)]
         if existing_annotated:
             return "ANNOTATED_COMPLIANT", triggers, existing_annotated, []
-        # Annotation says "PARTIAL-SPEC-ONLY" — that's the demote case
+        # Annotation says "PARTIAL-SPEC-ONLY" - that's the demote case
         if "PARTIAL-SPEC-ONLY" in body:
             return "PARTIAL_SPEC_ONLY", triggers, [], []
         # Annotation present but no path matched (e.g., "covered by test_data_integrity
-        # + test_unit indirectly") — annotation explicitly justifies no direct path;
+        # + test_unit indirectly") - annotation explicitly justifies no direct path;
         # treat as audit-trail-compliant
         return "ANNOTATED_NO_DIRECT_TEST", triggers, [], []
 
@@ -171,7 +171,7 @@ def classify_dec(dec):
                         return "TEST_SIGNAL_REFERENCED_IN_CODE", triggers, [str(test_file.relative_to(REPO_ROOT))], []
                 except Exception:
                     pass
-        # Test signal pattern but no code reference — needs verification
+        # Test signal pattern but no code reference - needs verification
         return "TEST_SIGNAL_UNVERIFIED", triggers, [], missing
 
     return "SPEC_WITHOUT_BUILD", triggers, existing, missing

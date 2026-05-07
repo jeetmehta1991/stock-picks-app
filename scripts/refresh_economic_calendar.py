@@ -71,7 +71,7 @@ def fetch_fomc_dates() -> list[str]:
                 continue
         return sorted(set(dates))
     except Exception as exc:
-        logger.warning("FOMC fetch failed: %s — preserving existing dates", exc)
+        logger.warning("FOMC fetch failed: %s - preserving existing dates", exc)
         return []
 
 
@@ -89,7 +89,7 @@ def fetch_bls_dates(release_url: str) -> list[str]:
         matches = re.findall(r"(20\d{2}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\d|3[01]))", r.text)
         return sorted(set(matches))
     except Exception as exc:
-        logger.warning("BLS fetch %s failed: %s — preserving existing dates", release_url, exc)
+        logger.warning("BLS fetch %s failed: %s - preserving existing dates", release_url, exc)
         return []
 
 
@@ -118,7 +118,7 @@ def main():
     new_nfp = fetch_bls_dates("https://www.bls.gov/schedule/news_release/empsit.htm")
     logger.info("Fetched NFP: %d dates from bls.gov", len(new_nfp))
 
-    # Merge (additive — never remove existing dates)
+    # Merge (additive - never remove existing dates)
     raw["CPI_DATES"]  = merge_dates(raw.get("CPI_DATES", []),  new_cpi)
     raw["NFP_DATES"]  = merge_dates(raw.get("NFP_DATES", []),  new_nfp)
     raw["FOMC_DATES"] = merge_dates(raw.get("FOMC_DATES", []), new_fomc)
@@ -137,7 +137,7 @@ def main():
                 len(raw["NFP_DATES"]),
                 len(raw["FOMC_DATES"]),
                 raw["_metadata"].get("coverage_through", "unknown"))
-    logger.info("Wrote %s — commit this file to extend coverage in production.", CALENDAR_PATH)
+    logger.info("Wrote %s - commit this file to extend coverage in production.", CALENDAR_PATH)
 
 
 if __name__ == "__main__":

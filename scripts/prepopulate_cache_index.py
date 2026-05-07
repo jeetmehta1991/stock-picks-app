@@ -15,7 +15,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from backtest.data.universe import get_sp500_constituents, ETFS_FULL
 from backtest.data.cache import CACHE_DIR, INDEX_FILE, _cache_path
 
-# ── 1. Pre-populate index.json ──
+# -- 1. Pre-populate index.json --
 print("Pre-populating index.json...")
 universe = list(dict.fromkeys(get_sp500_constituents(500) + ETFS_FULL))
 
@@ -34,9 +34,9 @@ for ticker in universe:
 
 INDEX_FILE.parent.mkdir(parents=True, exist_ok=True)
 INDEX_FILE.write_text(json.dumps(existing_index, default=str, indent=2))
-print(f"  ✅ index.json: {len(existing_index)} entries ({added} added)")
+print(f"  [OK] index.json: {len(existing_index)} entries ({added} added)")
 
-# ── 2. Pre-populate info_cache.json ──
+# -- 2. Pre-populate info_cache.json --
 print("Pre-populating info_cache.json...")
 info_cache_path = Path("data/cache/info_cache.json")
 try:
@@ -44,12 +44,12 @@ try:
 except Exception:
     existing_info = {}
 
-print(f"  ✅ info_cache.json: {len(existing_info)} tickers already cached")
+print(f"  [OK] info_cache.json: {len(existing_info)} tickers already cached")
 missing_info = [t for t in universe if t not in existing_info]
 if missing_info:
-    print(f"  ⚠️  {len(missing_info)} tickers missing from info_cache — will be fetched during run")
+    print(f"  [WARN]  {len(missing_info)} tickers missing from info_cache - will be fetched during run")
     print(f"     First few missing: {missing_info[:5]}")
 else:
-    print(f"  ✅ All {len(universe)} tickers in info_cache — no race condition risk")
+    print(f"  [OK] All {len(universe)} tickers in info_cache - no race condition risk")
 
-print("\n✅ Pre-population complete — safe to start parallel batches")
+print("\n[OK] Pre-population complete - safe to start parallel batches")

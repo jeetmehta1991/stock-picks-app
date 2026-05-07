@@ -72,7 +72,7 @@ TIMEOUT = 60
 GROUPED_CACHE: dict[str, dict] = {}  # date_iso -> {ticker: {close, volume, dollar_vol}}
 CS_WHITELIST: set[str] = set()  # populated at startup from /v3/reference/tickers?type=CS
 
-# Pass 53 owner-flagged 2026-05-05 — explicit leveraged ETF blocklist (belt-and-suspenders alongside CS whitelist).
+# Pass 53 owner-flagged 2026-05-05 - explicit leveraged ETF blocklist (belt-and-suspenders alongside CS whitelist).
 # These are 2x/3x leveraged ETFs that should NEVER appear in T3 momentum (volatility decay
 # distorts momentum signal; CLAUDE.md tier1_etfs.csv explicitly excludes leveraged ETFs).
 LEVERAGED_ETF_BLOCKLIST = {
@@ -99,7 +99,7 @@ LEVERAGED_ETF_BLOCKLIST = {
     "BTCL", "BTCS", "BITX", "BITU", "BITI", "ETHU", "ETHD", "BFOR",
     # 1.5x and other leverage
     "QQQU", "SPYL",
-    # Short ETFs (inverse 1x — also distort momentum)
+    # Short ETFs (inverse 1x - also distort momentum)
     "SH", "PSQ", "DOG", "RWM", "EFZ", "EUM", "MZZ", "MYY",
 }
 
@@ -312,7 +312,7 @@ def main():
     args = ap.parse_args()
 
     print("=" * 60)
-    print("Tier 3 SCREENER — DEC-496 Pass 53 SCREENER-FIRST architecture")
+    print("Tier 3 SCREENER - DEC-496 Pass 53 SCREENER-FIRST architecture")
     print("=" * 60)
     if args.quick:
         start = date(2025, 1, 1)
@@ -336,7 +336,7 @@ def main():
     t1_df = load_t1_pit()
     print(f"T1 PIT membership: {len(t1_df)} rows (T1a + T1c)")
 
-    # Pass 53 owner-flagged 2026-05-05 — fetch CS-only whitelist for T3 candidate filter
+    # Pass 53 owner-flagged 2026-05-05 - fetch CS-only whitelist for T3 candidate filter
     global CS_WHITELIST
     CS_WHITELIST = fetch_cs_whitelist()
     print(f"Leveraged ETF blocklist: {len(LEVERAGED_ETF_BLOCKLIST)} entries (belt-and-suspenders)")
@@ -408,13 +408,13 @@ def main():
         df = df[[c for c in cols if c in df.columns]]
         # Header comments
         header_lines = [
-            "# T3 Tier 3 Universe_Momentum Top-100_Jun 2022 to May 2026.csv — DEC-496 Pass 53 SCREENER-FIRST output",
+            "# T3 Tier 3 Universe_Momentum Top-100_Jun 2022 to May 2026.csv - DEC-496 Pass 53 SCREENER-FIRST output",
             f"# Built: {date.today().isoformat()} via Polygon /v2/aggs/grouped/locale/us/market/stocks/{{date}}",
-            f"# Methodology: J-T 12-1 (lookback {LOOKBACK_DAYS}d, skip {SKIP_DAYS}d, risk-adj OFF, tie-breakers vol-asc → ADV-desc)",
+            f"# Methodology: J-T 12-1 (lookback {LOOKBACK_DAYS}d, skip {SKIP_DAYS}d, risk-adj OFF, tie-breakers vol-asc -> ADV-desc)",
             f"# Window: {start} to {end} ({len(snapshots)} monthly snapshots)",
             f"# Liquidity floor: ${MIN_DOLLAR_VOLUME/1e6:.0f}M min daily dollar volume on D-{SKIP_DAYS}",
             f"# T1 exclusion: T1a + T1c PIT membership at each snapshot",
-            "# SCHEMA: Symbol, Company, Sector, added_date (first month rank ≤100), removed_date (first month rank >100), MomentumScore, MarketCapB (blank — not from grouped endpoint), LastPrice",
+            "# SCHEMA: Symbol, Company, Sector, added_date (first month rank <=100), removed_date (first month rank >100), MomentumScore, MarketCapB (blank - not from grouped endpoint), LastPrice",
             "# PIT FILTER: (added_date IS NULL OR added_date <= as_of) AND (removed_date IS NULL OR removed_date > as_of)",
         ]
         with open(T3_CSV, "w", encoding="utf-8", newline="") as f:
@@ -423,7 +423,7 @@ def main():
             df.to_csv(f, index=False)
         print(f"\nWrote {len(df)} rows to {T3_CSV}")
     else:
-        print(f"\nDry run — pass --write to save to {T3_CSV}")
+        print(f"\nDry run - pass --write to save to {T3_CSV}")
 
     return 0
 

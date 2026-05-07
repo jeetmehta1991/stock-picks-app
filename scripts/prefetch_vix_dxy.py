@@ -44,7 +44,7 @@ def main():
     ]
 
     for ticker, description in targets:
-        logger.info("Fetching %s — %s", ticker, description)
+        logger.info("Fetching %s - %s", ticker, description)
         df = get_ohlcv(ticker, start=start, end=end, force_refresh=False)
         if df.empty:
             logger.error(
@@ -53,7 +53,7 @@ def main():
             )
         else:
             logger.info(
-                "  OK: %s cached, %d rows, %s → %s",
+                "  OK: %s cached, %d rows, %s -> %s",
                 ticker, len(df), df.index[0].date(), df.index[-1].date(),
             )
 

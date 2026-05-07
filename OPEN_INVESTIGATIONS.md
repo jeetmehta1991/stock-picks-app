@@ -311,4 +311,20 @@ contract names: `UST 10Y NOTE` / `UST 5Y NOTE` / `UST 2Y NOTE` / `UST BOND`
 
 ---
 
+## INV-023 — Quiver BG `bsu432hbt` died from second Unicode emoji bug at line 231 — completed congressional only (1/7 endpoints) (Pass 53 Day-9 v8h evening)
+
+- **Discovered:** 2026-05-07 evening; Quiver BG failed with exit code 1 at end of congressional fetch
+- **Observation:** `scripts/prefetch_quiver.py` had MULTIPLE Unicode chars in print statements: `✓` (✓ at line 197 — fixed earlier in `33b93fec`), `✅` (✅ line 231), `⚠` (⚠ lines 234, 243), `❌` (❌ line 237), `—` em-dash (lines 182, 208, 209, 212, 217). Earlier fix at line 197 was incomplete — line 231 ✅ crash was the FATAL exit. The em-dash and other emoji fired as `UnicodeEncodeError` in Windows cp1252 console; the inner-loop em-dash crashes were caught by the outer `except Exception` and logged as "ERROR on TICKER" (misleading — the data was actually saved before the print crash).
+- **Why not blocking long-term:** Data integrity intact. `save_ticker_data()` runs BEFORE the failing print, so data files were saved + checkpoints updated for every ticker. Verification: 1941 congressional parquet files vs 1921 checkpoint entries — files >= checkpoint, all good. The "ERROR on TICKER" log lines were save-then-print-crash events; data WAS persisted.
+- **Severity:** HIGH at the moment — Phase 1A blockers re-emerged. After the BG died, only 1 of 7 endpoints actually progressed (congressional 1921/1937). The 6 remaining (insider/institutional/gov_contracts/lobbying/wallstreetbets/wikipedia) are STILL at 509 baseline. INV-003 (Quiver re-prefetch) re-opens.
+- **Status:** RESOLVING THIS COMMIT
+- **Next action:**
+  - Bulk-replace ALL Unicode chars in print statements with ASCII labels (DONE this commit)
+  - Generalize regression test from runner-only (`test_phase1a_runner_no_unicode.py`) to all prefetch/refresh/build/smoke scripts (`test_prefetch_scripts_no_unicode.py` — DONE this commit)
+  - Re-launch BG to resume from checkpoint state (congressional ~done; will progress to insider/institutional/gov_contracts/lobbying/wallstreetbets; wikipedia ghost will skip per INV-013)
+  - Estimated remaining wall time: ~6 endpoints × 1428 tickers × 1.2s = ~2.9 hours
+- **Joint:** P1.runner regression (commit `8d2641edf`) — same bug class but narrower scope (didn't cover prefetch scripts); L150 (pyramid dimension-coverage gap meta-pattern: when one script has a regression test, sibling scripts in same role need the same coverage); CHECKLIST #75 strict pyramid (this fix MUST run pyramid before push); CHECKLIST #74 (this INV entry in same commit as the fix); INV-013 (wikipedia ghost — same BG); INV-003 (Quiver re-prefetch — re-opens).
+
+---
+
 *Last updated: 2026-05-07 evening (Pass 53 Day-9 v8h ongoing)*

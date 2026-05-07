@@ -46,7 +46,7 @@ results = []  # list of (check_name, pass_bool, message)
 def check(name: str, condition: bool, msg: str):
     """Record a check result."""
     results.append((name, condition, msg))
-    icon = "✓" if condition else "✗"
+    icon = "OK" if condition else "[FAIL]"
     print(f"  {icon} {name}: {msg}")
 
 
@@ -91,7 +91,7 @@ def verify_ohlcv():
         check(f"ohlcv_{ticker}_schema", not missing,
               f"{len(cols)} columns; missing: {missing if missing else 'none'}")
 
-        # Row count: 5y × ~252 trading days ≈ 1260 rows
+        # Row count: 5y x ~252 trading days ~= 1260 rows
         check(f"ohlcv_{ticker}_rows", 1100 < len(df) < 1400,
               f"{len(df)} rows (expected ~1260 for 5y daily)")
 
@@ -171,7 +171,7 @@ def verify_corp_actions():
     splits_file = CACHE_DIR / "splits" / "all_splits_test.parquet"
     divs_file = CACHE_DIR / "dividends" / "all_dividends_test.parquet"
 
-    # Splits — for our 5 tickers in 5y window, expect 0-2 splits (e.g., GOOGL did 20-for-1 in 2022)
+    # Splits - for our 5 tickers in 5y window, expect 0-2 splits (e.g., GOOGL did 20-for-1 in 2022)
     if splits_file.exists():
         try:
             df = pd.read_parquet(splits_file)
@@ -180,22 +180,22 @@ def verify_corp_actions():
                 expected_cols = {"ticker", "execution_date", "split_from", "split_to"}
                 check("splits_schema", expected_cols.issubset(set(df.columns)),
                       f"columns: {list(df.columns)}")
-                # GOOGL had a 20-for-1 split on 2022-07-15 — verify if in test window
+                # GOOGL had a 20-for-1 split on 2022-07-15 - verify if in test window
                 googl_splits = df[df["ticker"] == "GOOGL"] if "ticker" in df.columns else pd.DataFrame()
                 check("splits_googl_2022",
                       len(googl_splits) >= 1,
-                      f"GOOGL splits in window: {len(googl_splits)} (expected ≥1: the 2022 20-for-1)")
+                      f"GOOGL splits in window: {len(googl_splits)} (expected >=1: the 2022 20-for-1)")
         except Exception as e:
             check("splits_readable", False, f"Read failed: {e}")
     else:
         check("splits_file_exists", False,
-              f"WARNING: {splits_file} not found — script may have written without _test suffix")
+              f"WARNING: {splits_file} not found - script may have written without _test suffix")
         # Fallback: try without suffix
         alt = CACHE_DIR / "splits" / "all_splits.parquet"
         if alt.exists():
             check("splits_file_alt", True, f"Found at {alt} (no suffix)")
 
-    # Dividends — for our 5 tickers (4 dividend payers, GOOGL only started 2024) over 5y
+    # Dividends - for our 5 tickers (4 dividend payers, GOOGL only started 2024) over 5y
     # AAPL pays quarterly = ~20; MSFT quarterly = ~20; JPM quarterly = ~20; XOM quarterly = ~20; GOOGL = ~6
     # Total expected: ~70-100 records
     if divs_file.exists():
@@ -203,7 +203,7 @@ def verify_corp_actions():
             df = pd.read_parquet(divs_file)
             check("divs_readable", True, f"{len(df)} dividend records")
             check("divs_count_sane", 50 <= len(df) <= 200,
-                  f"{len(df)} records (expected 50-200 for 4-5 quarterly payers × 5y)")
+                  f"{len(df)} records (expected 50-200 for 4-5 quarterly payers x 5y)")
             if len(df) > 0 and "ticker" in df.columns:
                 per_ticker = df["ticker"].value_counts().to_dict()
                 check("divs_per_ticker", True, f"per-ticker: {per_ticker}")
@@ -230,7 +230,7 @@ def verify_news():
     for ticker in TEST_TICKERS:
         f = news_dir / f"{ticker}.parquet"
         if not f.exists():
-            print(f"  ⚠ news_{ticker}: no file (0 articles in 5y window — possible but unusual for this ticker)")
+            print(f"  [WARN] news_{ticker}: no file (0 articles in 5y window - possible but unusual for this ticker)")
             continue
 
         try:
@@ -247,7 +247,7 @@ def verify_news():
         if ticker == "AAPL" and len(df) > 1000:
             pagination_evidence = True
 
-        # Sentiment populated. Pass 53 verified: Polygon news sentiment is sparse —
+        # Sentiment populated. Pass 53 verified: Polygon news sentiment is sparse -
         # 12-27% coverage observed across AAPL/MSFT/GOOGL/JPM/XOM. Sentiment is computed
         # only for some articles, not all. Threshold lowered from 30% to 10% to reflect
         # this data-quality reality. Consumers (DEC-440) must handle missing sentiment
@@ -260,9 +260,9 @@ def verify_news():
                   f"{non_null_sent}/{len(df)} ({sent_ratio:.0%}) have sentiment field populated (Pass 53: Polygon sentiment is sparse; threshold >10%)")
 
     check("news_pagination_evidence", pagination_evidence,
-          "AAPL >1000 articles → multi-page pagination handled correctly"
+          "AAPL >1000 articles -> multi-page pagination handled correctly"
           if pagination_evidence else
-          "AAPL <1000 articles — pagination not exercised; full universe tickers may also paginate but unverified")
+          "AAPL <1000 articles - pagination not exercised; full universe tickers may also paginate but unverified")
 
 
 def verify_checkpoints():
@@ -314,11 +314,11 @@ def main():
     if failed:
         print(f"\n*** {len(failed)} CHECKS FAILED ***")
         for name, msg in failed:
-            print(f"  ✗ {name}: {msg}")
+            print(f"  [FAIL] {name}: {msg}")
         print("\nDo NOT proceed to full prefetch until failures resolved.")
         return 1
 
-    print("\n✅ ALL CHECKS PASSED")
+    print("\n[OK] ALL CHECKS PASSED")
     print("Pipeline validated end-to-end on 5 tickers.")
     print("Safe to scale to full 484-ticker prefetch (with owner approval).")
     return 0
