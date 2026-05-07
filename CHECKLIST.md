@@ -801,3 +801,32 @@ State compliance visibly: "Checklist: ✅ [each item]"
     **Pattern reusable:** future external library forks (TradingAgents v0.2.4 if extended, QuantStats if extended, future ICT/options libraries) follow same protocol.
 
     **Joint:** DEC-508 (this rule's parent decision), DEC-045 (fork-first parent), DEC-200 (Dashboard 2; visual validation in Tier 4), DEC-261 (PIT N+1 lag; tested in Tier 1 PIT regression), DEC-084 (>65% win rate red flag; in Tier 3 + Phase C), DEC-503 (test pyramid; Tier 1-3 USE pyramid layers — complementary), DEC-505 (walk-forward Phase C), DEC-507 (wiring matrix; complementary process control), L147 (external library fork integration risk; this checklist codifies the lesson).
+
+72. **Data-integrity test scan of cache MUST run + pass before any DEC marks RESOLVED-IMPLEMENTED OR before any phase entry (Pass 53 owner directive 2026-05-06 evening; DEC-591; L148; HARD RULE).**
+
+    **Rule:** A 7-test minimum data-integrity scan of the live cache (not mocked fixtures) is mandatory before any DEC marks RESOLVED-IMPLEMENTED OR before any phase entry. The suite extends as new data sources are added. No code push that touches prefetched data is compliant without running this suite.
+
+    **The 7 minimum tests (`backtest/tests/test_data_integrity.py`):**
+
+    | # | Test | Asserts | Catches |
+    |---|---|---|---|
+    | 1 | OHLCV schema consistency | All OHLCV files share single schema | Schema split (Pass 53 C1) |
+    | 2 | OHLCV freshness | All OHLCV last_bar ≥ as_of − 7 days OR ticker-delisted-tagged | Stale files (Pass 53 C2) |
+    | 3 | Required tickers present | VIX/VIXCLS, SPY, sector ETFs (XLB-XLY+XLC) | Missing canonical tickers (Pass 53 C3+M6) |
+    | 4 | Numeric dtype | CFTC, FRED, financials numeric cols are float64 | String-dtype bugs (Pass 53 C4) |
+    | 5 | Tier params populated | TIER_PARAMS dict has all 5 keys per tier (T1a/T1c/T1ETF/T2/T3) | Empty params (Pass 53 C5) |
+    | 6 | Cross-source ticker coverage | Each source ≥75% of universe (or explicit "delisted" tagged) | Quiver legacy paths (Pass 53 H5) |
+    | 7 | Cumulative-snapshot history | Apewisdom/AAII/CNN F&G have multi-day history (≥30d minimum) | Single-day caches (Pass 53 H3) |
+
+    **Gate behavior:**
+
+    - Test suite runs as part of `pytest backtest/tests/` standard regression
+    - Failed test BLOCKS phase entry, BLOCKS DEC RESOLVED-IMPLEMENTED marking, BLOCKS commit-with-skip-tests
+    - Suite extends as new data sources added (one new test per source per gap pattern)
+    - HARD RULE: no skipping; no `pytest.skip` annotations; no "we'll fix it later"
+
+    **Past failure pattern (motivating rule):** Pass 53 prefetch audit 2026-05-06 surfaced 5 of 5 CRITICAL findings + 7 HIGH findings, all of which existed in cache for weeks/months without detection. Existing 102-test unit + integration suite passed 100%. DEC-503 specified 9 test types but only code-test layers (1-6) were implemented; data-integrity layer (7) was specified-but-not-built. Same silent-gap pattern as L145/L146/L147 but on the VERIFICATION axis.
+
+    **First application:** Pass 53 evening 2026-05-06 — data-integrity test suite implementation as remediation of audit findings; PASS-gate for DEC-590 May 15 Phase 1A start.
+
+    **Joint:** DEC-591 (this rule's parent decision), DEC-503 (test pyramid; this DEC implements specified-but-unimplemented type #7 — complementary), DEC-507 (wiring matrix; complementary process control), DEC-590 (9-day window provides time pre-Phase-1A), CHECKLIST #69 (test pyramid before every code push) + this #72, L148 (test pyramid layered failure mode; this checklist codifies the lesson).

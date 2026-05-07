@@ -2987,6 +2987,142 @@ Per CANONICAL_FACTS F-001 + DETAILED_PROJECT_PLAN.md §3.6-3.10 + DEC-505 4-fold
 
 ---
 
+### 23.8 Data-Integrity Test Layer Mandatory (DEC-591 — Pass 53 owner-approved 2026-05-06 evening)
+
+**Decision:** Data-integrity test layer (DEC-503 test type #7 — "schema validation, PIT semantics, completeness gates") is mandatory before Phase 1A start. PASS-gate codified as CHECKLIST #72 (HARD RULE).
+
+**Rationale (per L148):** Pass 53 prefetch audit 2026-05-06 surfaced 5 of 5 CRITICAL findings + 7 HIGH findings, all of which existed in cache for weeks/months without detection. DEC-503 specified 9 test types but only code-test layers (1-6) were implemented; data-integrity layer (7) was specified-but-not-built. Same silent-gap pattern as L145/L146/L147 but on the VERIFICATION axis (test layer specified but never built).
+
+**Test suite scope (`backtest/tests/test_data_integrity.py`):**
+
+7 tests scanning the live cache (not mocked fixtures), each mapping to a pyramid-gap pattern:
+
+| Test | Asserts | Catches |
+|---|---|---|
+| 1 | All OHLCV files share single schema | C1 schema split |
+| 2 | All OHLCV last_bar ≥ as_of − 7 days OR ticker-delisted | C2 stale files |
+| 3 | Required tickers present (VIX/VIXCLS, SPY, sector ETFs XLB-XLY+XLC) | C3 + M6 |
+| 4 | Numeric columns have numeric dtype (CFTC, FRED, financials) | C4 |
+| 5 | TIER_PARAMS dict populated for T1a/T1c/T1ETF/T2/T3 with all 5 keys | C5 |
+| 6 | Cross-source ticker coverage ≥75% of universe (per source) | H5 Quiver legacy |
+| 7 | Cumulative-snapshot sources have multi-day history (Apewisdom, AAII, CNN F&G, etc.) | H3 Apewisdom |
+
+**Gate behavior:**
+
+- Test suite runs as part of `pytest backtest/tests/` standard regression
+- Failed test BLOCKS phase entry, BLOCKS DEC RESOLVED-IMPLEMENTED marking, BLOCKS commit-with-skip-tests
+- Suite extends as new data sources added (one new test per source per gap pattern)
+
+**CHECKLIST #72 (NEW HARD RULE Pass 53 2026-05-06 evening):**
+
+> Data-integrity test scan of cache MUST run + pass before any DEC marks RESOLVED-IMPLEMENTED OR before any phase entry. The 7-test minimum scan is mandatory; new data sources extend the suite. No code push that touches prefetched data is compliant without running this suite.
+
+**Implementation:** ~1d engineering within Day 1-2 of DEC-590 9-day window.
+
+**Cross-references:**
+- L148 (parent lesson — test pyramid layered failure mode)
+- DEC-503 (test pyramid HARD RULE; data-integrity layer was specified there but unimplemented)
+- DEC-590 (9-day window provides time for implementation pre-Phase-1A)
+- CHECKLIST #69 (test pyramid before every code push) + #72 (this DEC)
+- Pass 53 prefetch audit 2026-05-06 (5 CRITICAL + 7 HIGH findings)
+
+**Status:** RESOLVED-DECIDED Pass 53 owner approval 2026-05-06 ("Approve ALL your recs on the rest").
+
+---
+
+### 23.9 Apewisdom Cumulative Daily Prefetcher (DEC-592 — Pass 53 owner-approved 2026-05-06 evening Q-followup b)
+
+**Decision:** Apewisdom (free WSB/r/stocks ticker-mention sentiment) prefetched via cumulative daily-snapshot architecture, not point-in-time queries. Owner directive 2026-05-06 (Q-followup b = "umulative daily prefetcher") supersedes prior scope-out alternative.
+
+**Problem:** Apewisdom API returns top trending tickers for the CURRENT day only — no historical query. Pass 53 prior prefetch only persisted 1 day (2026-05-05; 1110 rows in `data_prefetch/apewisdom/global.parquet`). Per DEC-502, history needs 2021-present coverage. Single-day cache provides zero historical signal.
+
+**Solution architecture:**
+
+1. **Daily prefetcher** (`scripts/prefetch_apewisdom_daily.py`) runs once per day (GitHub Actions cron `0 9 * * *` UTC; matches AAII Thursday refresh pattern)
+2. **Append-only schema:** new daily snapshot APPENDED to `data_prefetch/apewisdom/global.parquet`; never overwrites
+3. **Schema:** `[rank, ticker, name, mentions, upvotes, rank_24h_ago, mentions_24h_ago, snapshot_date]` — `snapshot_date` is the partition key
+4. **Forward-only history:** 2026-05-05 (current snapshot) onward; no Stage-2 retroactive backfill (Apewisdom doesn't expose historical API)
+5. **Stage-2 implication:** Apewisdom signal becomes available DURING Phase 1A run (accumulates daily); not retrospective for 2022-05 → 2026-05 backtest window
+6. **Use within Phase 1A:** Out-of-cache forward-only signal — strategies that depend on Apewisdom only fire from 2026-05-05 onward; PIT loader returns "not_available" for any as_of < 2026-05-05
+7. **Use post-Phase-1A:** Stage 3 papertrading + Stage 4 live use Apewisdom as accumulating signal; relevance grows over time
+
+**Why cumulative-daily not scope-out:**
+
+- Owner explicit choice b = cumulative daily prefetcher
+- Apewisdom is free; ongoing cost = $0
+- Even forward-only signal has Stage 3+ value
+- Pattern reuse: same architecture works for any "current snapshot" API (e.g., CNN F&G already uses similar daily-cumulative pattern)
+
+**Implementation:**
+
+- Day 3-5 of DEC-590 9-day window (May 8-10)
+- New script: `scripts/prefetch_apewisdom_daily.py` (~30 lines)
+- New GitHub Actions workflow: `.github/workflows/refresh_apewisdom.yml` (cron daily)
+- Loader update in `backtest/data/sentiment.py` to filter cumulative parquet by `snapshot_date <= as_of`
+- Data-integrity test #7 covers this (cumulative snapshot multi-day history assertion)
+
+**Cross-references:**
+- DEC-502 (Quiver + Apewisdom + pytrends supplement parent)
+- DEC-591 (data-integrity test #7 catches single-day failure)
+- L148 (test pyramid gap; this DEC's #7 implementation closes the gap)
+- AAII / CNN F&G similar daily-accumulate pattern (precedent)
+
+**Status:** RESOLVED-DECIDED Pass 53 owner approval 2026-05-06 evening.
+
+---
+
+### 23.10 Wikipedia Pageviews Authorized as Alt-Data Signal (DEC-593 — Pass 53 owner-approved 2026-05-06 evening Q-followup c)
+
+**Decision:** Wikipedia pageviews via Wikimedia REST API (https://wikimedia.org/api/rest_v1/metrics/pageviews/) authorized as alternative-data signal for the Stage 2 backtest universe. Owner directive 2026-05-06 (Q-followup c = "authorize new") supersedes prior unauthorized accumulation.
+
+**Scope clarification (HARD-RULE distinction):**
+
+CLAUDE.md HARD RULE "NEVER use Wikipedia" applies to:
+- ❌ `pd.read_html('https://en.wikipedia.org/wiki/...')` for S&P 500 / NDX constituent membership scraping (L88)
+- ❌ Wikipedia tables as ground-truth source for universe construction (use S&P DJI press releases / FTSE Russell / Nasdaq IR instead)
+
+This DEC authorizes:
+- ✅ Wikipedia PAGEVIEWS via Wikimedia REST API as ATTENTION-PROXY alt-data signal (used by quant funds for retail attention)
+- ✅ Per-ticker daily pageview count for the company's primary Wikipedia article
+- ✅ Cached at `data_prefetch/wikipedia/{TICKER}.parquet` with schema `[date, views, article]`
+
+**Distinction:** "Wikipedia pageviews" (this DEC; alt-data signal) is fundamentally different from "Wikipedia table scraping" (HARD RULE-banned; structured-data scraping). Pageviews are timeseries observations from a STABLE REST API; tables are HTML scraping subject to formatting drift.
+
+**Current cache state (audited 2026-05-06):**
+
+- 1,414 / 1,937 tickers cached (73% coverage)
+- Date range: 2021-04-06 → 2026-05-04 (5+ years; matches DEC-505 backtest window)
+- Schema: `[date, views, article]` (article = canonical Wikipedia article title; usually company name)
+
+**Use within strategies:**
+
+- Layer 6 universe-level signals (Pass 53 STRATEGY_ROSTER_FULL Layer 6) include attention-proxy signals
+- DEC-511 / DEC-513 sentiment universe extensions can consume pageviews
+- Sentiment Agent toolkit (DEC-466 OurSentimentToolkit) may consume pageviews as confirmation signal alongside Apewisdom + pytrends
+
+**Coverage extension (Day 3-5):**
+
+- Re-prefetch the 523 missing tickers (likely T2/T3 newer listings) to bring coverage to 100%
+- Verify schema consistency via DEC-591 test suite
+- Add data-integrity test for cumulative pageview history (≥30d minimum per ticker)
+
+**Why not Apewisdom-only:**
+
+- Wikipedia pageviews exist 2008-present (deep historical); Apewisdom only 2026-05-05 onward forward
+- For Stage 2 backtest 2022-05 → 2026-05, Wikipedia pageviews provide RETROSPECTIVE attention signal that Apewisdom cannot
+- Complementary: Wikipedia = sustained-attention proxy (encyclopedia); Apewisdom = burst-attention proxy (forum mentions); pytrends = search-attention proxy (Google)
+
+**Cross-references:**
+- DEC-502 (alt-data sentiment supplement parent)
+- DEC-505 (5y backtest window; Wikipedia coverage matches)
+- DEC-591 (data-integrity test #7 covers cumulative history assertion)
+- L88 (no Wikipedia HARD RULE — preserved for table-scraping; pageviews carve-out)
+- Pass 53 prefetch audit H4 (this DEC closes the unauthorized-accumulation flag)
+
+**Status:** RESOLVED-DECIDED Pass 53 owner approval 2026-05-06 evening.
+
+---
+
 # DOCUMENT METADATA
 
 **Created:** Pass 52 turn 128 (post-Pass-52 closure, pre-Sprint-1 setup phase)

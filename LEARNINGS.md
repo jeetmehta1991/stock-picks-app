@@ -1280,3 +1280,53 @@ Result: 1.05M Polygon news articles cached (Pass 53 Batch 3 done) but `smart_mon
 - L147 = "library integrated but produces lookahead-biased / noise-pattern-matched signals" (silent gap on integration-quality axis)
 
 All three are integrity failures around assumptions about systems that "look fine" but have hidden gaps. Codified mitigations: L145 → CHECKLIST #69 (test pyramid); L146 → CHECKLIST #70 (wiring matrix); L147 → CHECKLIST #71 (fork integration mandate).
+
+---
+
+## L148 — Test pyramid layered failure mode: code-tests pass while data-tests are missing (Pass 53 2026-05-06)
+
+**Symptom:** Pass 53 prefetch audit (2026-05-06) surfaced 5 of 5 CRITICAL data-quality findings (C1 OHLCV schema split, C2 5 stale OHLCV files, C3 VIX entirely missing, C4 CFTC string dtype, C5 TIER_PARAMS dict empty) + 7 HIGH findings — all of which existed in cache for weeks/months without detection. Existing 102-test unit + integration suite passes 100%. Pyramid SHOULD have caught these per DEC-503 + CHECKLIST #69.
+
+**Root cause:** The 9-type test pyramid specified in DEC-503 lists "(7) Data integrity — schema validation, PIT semantics, completeness gates" as a required layer, but only the CODE-test layers (1 unit, 2 smoke, 3 integration, 4 system, 5 functional, 6 regression) are implemented. The data-integrity layer was specified-but-not-built. Existing tests use mocked fixtures or 1-ticker happy-path probes; they do not scan the full cache.
+
+**Concretely, no test asserts:**
+- All OHLCV files share single schema (would catch C1)
+- All OHLCV files have last_bar ≥ as_of − 7 days (would catch C2)
+- Required tickers present: VIX, SPY, sector ETFs (would catch C3 + M6 missing XLC)
+- Numeric columns have numeric dtype after prefetch (would catch C4)
+- TIER_PARAMS dict has all 5 keys per tier (would catch C5)
+- Cross-source ticker intersection ≥ X% of universe (would catch H5 Quiver legacy)
+- Cumulative-snapshot sources have multi-day history (would catch H3 Apewisdom)
+- SEC EDGAR caches sorted ascending (would catch H7)
+
+**Mechanism (how the gap forms):**
+1. DEC specifies 9 test types
+2. Implementation focuses on code-test layers (1-6) because they're easier and catch most BUGS
+3. Data-integrity layer (7) requires scanning cache + ground-truth assertions about real data — slower, more brittle
+4. Code tests pass → DEC marked RESOLVED-IMPLEMENTED → no one re-checks data layer
+5. Real-world data drift accumulates silently (re-prefetch produces different schema; some files freeze when API errors; numeric cols cast wrong)
+6. Bug surfaces only when downstream consumer fails (or audit notices)
+
+**Pattern relation:**
+- L145 = silent gap on AVAILABILITY axis (endpoint 404)
+- L146 = silent gap on WIRING axis (data cached but consumer doesn't read it)
+- L147 = silent gap on QUALITY axis (library integrated but signal lookahead-biased)
+- L148 = silent gap on **VERIFICATION axis** (test layer specified but never built)
+
+All four require explicit-mandatory-codification of the gap's mitigation (CHECKLIST item, HARD RULE), not just "we should test this."
+
+**Codified:**
+- DEC-591 — Data-integrity test layer mandatory before Phase 1A. Implements DEC-503 test type #7 which was specified but never built. PASS-gate before Phase 1A May 15 start.
+- CHECKLIST #72 — Data-integrity test scan of cache MUST run + pass before any DEC marks RESOLVED-IMPLEMENTED OR before any phase entry. (HARD RULE.)
+
+**Apply when:**
+- Codifying any DEC that touches prefetched data
+- Reviewing a DEC marked RESOLVED-IMPLEMENTED — verify data-integrity layer was actually run, not just code-test layers
+- Pre-phase-entry gates (Phase 1A, 1B-α, 1C+, etc.)
+
+**Mitigation pattern (going forward):**
+1. Every prefetch DEC requires accompanying data-integrity test (added to suite)
+2. Test scans the full cache (not fixtures), asserts schema + freshness + completeness
+3. Test runs as part of CI + as pre-phase gate
+4. DEC cannot mark RESOLVED-IMPLEMENTED until data-integrity test passes
+5. Audit-style cache scans (like Pass 53 2026-05-06) become AUTOMATED rather than manual

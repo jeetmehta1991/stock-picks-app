@@ -1,0 +1,40 @@
+name: Refresh Apewisdom (cumulative daily)
+
+# Per DEC-592 Pass 53 (2026-05-06): Apewisdom is forward-only accumulator;
+# this workflow appends today's snapshot to data_prefetch/apewisdom/global.parquet
+# every day at 09:00 UTC.
+
+on:
+  schedule:
+    - cron: '0 9 * * *'  # daily 09:00 UTC
+  workflow_dispatch:
+
+jobs:
+  prefetch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install deps
+        run: |
+          pip install --upgrade pip
+          pip install pandas requests pyarrow
+
+      - name: Run Apewisdom daily prefetch
+        run: python scripts/prefetch_apewisdom_daily.py
+
+      - name: Commit + push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data_prefetch/apewisdom/global.parquet
+          if ! git diff --staged --quiet; then
+            git commit -m "chore: Apewisdom cumulative snapshot $(date +%F) (DEC-592)"
+            git push
+          fi

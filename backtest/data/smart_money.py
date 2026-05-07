@@ -40,9 +40,9 @@ QUIVER_BASE = "https://api.quiverquant.com/beta"
 _DELAY      = 1.5
 
 # Pre-fetch cache directory — populated by scripts/prefetch_quiver.py
-# Sprint 0A.8 (Batch 13) will migrate to data_prefetch/quiver/. Until then,
-# legacy path retained for backwards compatibility.
-PREFETCH_DIR = Path(__file__).parent / "cache" / "quiver"
+# Pass 53 H5 fix 2026-05-06: migrated from backtest/data/cache/quiver/ to
+# data_prefetch/quiver/ per Sprint 0A.8 + DEC-497 NO-LIVE-API HARD CUT.
+PREFETCH_DIR = Path(__file__).parent.parent.parent / "data_prefetch" / "quiver"
 
 # Module-level bulk-feed cache (loaded once per process; thread-safe via GIL)
 # BUG-272/273 Pass 53 fix: Quiver Trader tier exposes Live <dataset> as paginated

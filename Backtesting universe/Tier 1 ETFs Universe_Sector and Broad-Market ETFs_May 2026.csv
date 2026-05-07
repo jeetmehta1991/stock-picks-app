@@ -3,6 +3,7 @@
 # PIT FILTER: (added_date IS NULL OR added_date <= as_of) AND (removed_date IS NULL OR removed_date > as_of). For ETFs all dates NULL = always available.
 # NOTE: ETFs are reference instruments (not membership-driven like S&P 500). Schema columns added for cross-tier consistency per Pass 53 owner directive.
 Symbol,Company,Sector,added_date,removed_date,Category
+XLC,SPDR Communication Services Select Sector ETF,Communication Services,2018-09-21,,Sector
 SPY,SPDR S&P 500 ETF Trust,Broad Market,,,Broad Market
 QQQ,Invesco QQQ Trust,Information Technology,,,Broad Market
 IWM,iShares Russell 2000 ETF,Small Cap,,,Broad Market
