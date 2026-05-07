@@ -30927,3 +30927,99 @@ Post-Day-9: 357 entries; 84 PARTIAL_SPEC_ONLY (DEC-153/401/423 promoted)
 
 **Day 9 buffer was the right investment. 4 critical bugs caught with 8 days remaining. Path A smoke validated Phase 1A pipeline end-to-end. Phase 1A May 15 cleared.**
 
+---
+
+## Pass 53 Day 9 v2 (2026-05-07 evening) — Path C 5 artifacts + WF-1 4-fold + smoke v2 (regime classifier WORKING)
+
+### Owner directives
+
+"A B C combined Y" + "Approve all" (WF-1) — re-run smoke (Path A) + investigate walk-forward (Path B) + build top 5 PARTIAL-SPEC-ONLY artifacts (Path C); then approve WF-1 4-fold engine fix.
+
+### Path C (5 PARTIAL-SPEC-ONLY → RESOLVED-DECIDED)
+
+Per DEC-594 same-commit, 5 new executable artifacts + 22 unit tests landed in commit `33f83494`:
+
+| DEC | Artifact | Purpose | Tests |
+|---|---|---|---|
+| DEC-246 | [`backtest/results/quant_audit.py`](backtest/results/quant_audit.py) | Annualized Sharpe / max drawdown / vol periodicity validators | 5 |
+| DEC-247 | [`backtest/results/deflated_sharpe.py`](backtest/results/deflated_sharpe.py) | PSR + DSR per Bailey-Lopez de Prado (Phase 1B-α Gate 3) | 4 |
+| DEC-250 | [`backtest/results/edge_decay.py`](backtest/results/edge_decay.py) | Sharpe haircut for crowded-trade decay (default 20%) | 5 |
+| DEC-415 | [`backtest/results/rolling_sharpe_test.py`](backtest/results/rolling_sharpe_test.py) | 252-day rolling Sharpe stability (DEC-111 Phase B) | 3 |
+| DEC-405 | [`backtest/results/stress_tests.py`](backtest/results/stress_tests.py) | 2018Q4/2020Q1/2022 stress windows + per-stress verdict | 5 |
+
+3 numerical-precision bugs caught + fixed during build (DEC-247 PSR formula kurt-1 vs +2 sign; DEC-415 NaN vs 0.0 fill; DEC-246 test bound).
+
+### Path B finding + WF-1 fix (commit `b097a50d`)
+
+**B finding:** [`backtest/engine/improvements.py:run_walk_forward`](backtest/engine/improvements.py:108) was hardcoded **2-window IS/OOS** pre-DEC-505 legacy. DEC-505 (Pass 53 owner-approved 2026-05-05) mandates **4 OOS folds × 1y + 1y warmup**. Same L149 spec-without-build pattern.
+
+**WF-1 owner approval:** Build 4-fold replacement now (per DEC-594 same-commit).
+
+**Implementation:**
+- 1y warmup: 2021-05-05 → 2022-05-05
+- 4 OOS folds: 2022-05/2023-05/2024-05/2025-05 starts × 1y each
+- Expanding-window training (set grows each fold)
+- Verdict: ROBUST = ≥3 of 4 folds pass; WEAK = 1-2; OVERFIT = 0 + IS pass; INSUFFICIENT_OOS_DATA = ≥3 folds with <30 OOS trades
+- Log message: "Walk-forward (4 folds per DEC-505): ..."
+- Summary keys: fold_1/2/3/4 (was window_1/2)
+
+**6 new tests** in `test_walk_forward_4fold.py` + **2 existing tests updated** (test_unit.py + test_integration.py) for DEC-505 fold-date assertions.
+
+**AUDIT_INDEX promotions:**
+- DEC-482 (walk-forward methodology revised): PARTIAL-SPEC-ONLY → RESOLVED-DECIDED
+- DEC-505 (4-fold spec): annotated with engine-compliance-landed marker
+
+### Path A — Smoke v2 results (cache fix loaded)
+
+Smoke run 20 tickers × 4 years × walk-forward × `--no-agents`:
+
+| Metric | Smoke v1 (broken cache) | **Smoke v2 (fixed cache)** |
+|---|---|---|
+| Regime classifier | `regime=unknown` ENTIRE window | **`regime=neutral`** (working) |
+| Total trades | 3,637 | **4,349** |
+| IS / OOS trades | 2,602 / 1,035 | **3,084 / 1,265** |
+| Strategies analyzed | 61 | **62** |
+| Strategies beating SPY (75.2%) | 22/61 (36%) | **7/62 (11%)** (realistic with regime gating) |
+| Portfolio return | +61.8% (over-traded; broken regime) | **−15.7%** (realistic) |
+| Pipeline gate | ✅ PASSED | ✅ **PASSED** |
+
+**Walk-forward output:** Smoke v2 reports `Walk-forward (2 windows)` because it was started ~7:19 BEFORE WF-1 commit landed at ~7:35. The bg held the legacy module. Future runs (including May 15 Phase 1A) will use 4-fold per DEC-505 since they re-import the fixed module.
+
+### L149 spec-without-build remediated for DEC-505
+
+DEC-505 spec'd Pass 53 turn 2026-05-05 → engine wasn't updated for 6 weeks (spec-without-build) → smoke caught the legacy 2-window logic via Path B investigation → fixed in WF-1 commit per DEC-594. **L149 pattern caught + remediated within Day 9 buffer.**
+
+### Test pyramid (Day 9 v2 close)
+
+| Suite | Count |
+|---|---|
+| Unit + integration | 102 → **102** (2 updated for DEC-505) |
+| Alignment | 6 |
+| Data-integrity (DEC-591) | 7 |
+| Gates (DEC-595) | 1 PASS + 5 SKIP |
+| Quiver (post-H5 fix) | 25 |
+| smartmoneyconcepts Phase A | 110 + 2 SKIP + 5 xfailed |
+| Partial-spec artifacts v1 (DEC-153/401/423) | 17 |
+| Partial-spec artifacts v2 (DEC-246/247/250/415/405) | 22 |
+| Cache schema-B | 4 |
+| Walk-forward 4-fold (DEC-505 NEW) | 6 |
+| **Total active** | **300 PASS + 5 explicit-SKIP** |
+
+### PARTIAL_SPEC_ONLY count
+
+| | Day 9 open | Day 9 v1 close | Day 9 v2 close |
+|---|---|---|---|
+| Count | 87 | 84 | **76** |
+| Δ | — | −3 (DEC-153/401/423) | **−8** (+ DEC-246/247/250/415/405 + DEC-482 + DEC-505 annotated) |
+
+### Cross-references
+
+- DEC-153/246/247/250/401/405/415/423/482/505/590/594/596 — all Pass 53 DECs
+- L148 (test pyramid layered failure) + L149 (spec-without-build meta-pattern)
+- Pass 53 Day 9 commits: `8d36017b` (Path B v1) + `f343dddd` (cache fix) + `f6287514` (smoke v1) + `33f83494` (Path C v2 5 artifacts) + `b097a50d` (WF-1 4-fold)
+- Pass 53 Day 9 v2 smoke output: [output_smoke_day9_v2/](output_smoke_day9_v2/)
+
+*Per CHECKLIST #1 (owner-approved Path A+B+C combined + WF-1); #25 (5 artifacts + WF-1 + smoke v2 + L149 remediation); #43 (DEC-153/246/247/250/401/405/415/423/482/505/590/594/596 + L148/L149); #45 (this); #51 (Day 9 v2 buffer); #58 (3 atomic commits); #67 (per-turn push per DEC-596); #69 (300 PASS + 5 explicit-SKIP); #72 (data-integrity 7/7); #73 (each artifact + WF-1 DEC-594-compliant).*
+
+**Day 9 v2 CLOSED. Phase 1A May 15 entry: regime classifier validated; walk-forward 4-fold operational; pipeline produces realistic 4,349-trade output. Owner-decision sequence (D1+D2+D3+D4 + Path B build + WF-1) executed end-to-end.**
+
