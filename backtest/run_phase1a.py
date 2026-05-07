@@ -1,5 +1,5 @@
 """
-run_phase1a.py — Phase 1A entry point for backtesting engine v2.
+run_phase1a.py - Phase 1A entry point for backtesting engine v2.
 
 Usage:
   python run_phase1a.py --dry-run          # 2-month pipeline validation, no agents
@@ -30,15 +30,20 @@ from backtest.signals.screener import ALL_STRATEGIES
 
 
 def validate_env():
+    """Pass 53 Day-9 v8h fix: replaced Unicode emoji icons ([OK] / [WARN] /
+    [FAIL]) with ASCII labels - Windows cp1252 console encoding crashed on
+    these characters, blocking the production runner. Caught by P1.runner
+    integration test 2026-05-07 (would have blocked Phase 1A May 15).
+    """
     import os
     print("\n=== Environment Check ===")
     for var, label in [
         ("ANTHROPIC_API_KEY", "required for agents"),
-        ("QUIVER_API_KEY",    "optional — smart money signals"),
-        ("FRED_API_KEY",      "optional — yield curve data"),
+        ("QUIVER_API_KEY",    "optional - smart money signals"),
+        ("FRED_API_KEY",      "optional - yield curve data"),
     ]:
         val = os.environ.get(var,"")
-        icon = "✅" if val else ("⚠️ " if "optional" in label else "❌")
+        icon = "[OK]" if val else ("[WARN]" if "optional" in label else "[FAIL]")
         print(f"  {icon} {var}: {'set' if val else 'NOT SET'} ({label})")
     print()
 
@@ -49,13 +54,13 @@ def validate_lookahead():
     test_date = date(2023, 6, 15)
     df = fetch_ohlcv("AAPL", start=date(2023,1,1), end=date(2023,12,31), as_of=test_date)
     if df.empty:
-        print("  ⚠️  Could not fetch test data — network issue")
+        print("  [WARN] Could not fetch test data - network issue")
         return True
     last = df.index[-1].date()
     if last > test_date:
-        print(f"  ❌ LOOK-AHEAD BIAS: data has row {last} after as_of={test_date}")
+        print(f"  [FAIL] LOOK-AHEAD BIAS: data has row {last} after as_of={test_date}")
         return False
-    print(f"  ✅ Date ceiling works: last row = {last} (as_of = {test_date})")
+    print(f"  [OK] Date ceiling works: last row = {last} (as_of = {test_date})")
     return True
 
 
@@ -67,7 +72,7 @@ def print_results(engine: BacktestEngine):
         return
     metrics = compute_all_metrics(df)
     print("\n" + "="*75)
-    print("PHASE 1A RESULTS — v2")
+    print("PHASE 1A RESULTS - v2")
     print("="*75)
     print(f"Total trades:     {len(df):,}")
     print(f"Long trades:      {(df['direction']=='long').sum():,}")
@@ -79,8 +84,8 @@ def print_results(engine: BacktestEngine):
         print(f"\n{'Strategy':<35} {'Cat':<12} {'L/S':<8} {'Trades':>7} {'WinRate':>8} {'PF':>6} {'ROI':>8} {'Pass':>5}")
         print("-"*90)
         for _, r in metrics.head(20).iterrows():
-            p = "✅" if r["passes_all"] else ""
-            a = "⚠️" if r.get("audit_flags") else ""
+            p = "[OK]" if r["passes_all"] else ""
+            a = "[WARN]" if r.get("audit_flags") else ""
             print(f"{r['strategy']:<35} {r.get('category',''):<12} {r['direction_mix']:<8} "
                   f"{int(r['total_trades']):>7,} {r['win_rate']*100:>7.1f}% "
                   f"{r['profit_factor']:>6.2f} {r['total_roi_pct']:>7.1f}% {p}{a:>4}")
@@ -91,7 +96,7 @@ def phase1a_quality_gate(engine: BacktestEngine) -> bool:
     from backtest.results.metrics import compute_all_metrics
     df = engine.get_trade_log()
     if df.empty:
-        print("❌ No trades — pipeline issue")
+        print("[FAIL] No trades - pipeline issue")
         return False
     metrics = compute_all_metrics(df)
     low_trades = metrics[metrics["total_trades"] < PASSING_CRITERIA["min_trades"]]
@@ -99,24 +104,24 @@ def phase1a_quality_gate(engine: BacktestEngine) -> bool:
 
     print("\n=== Phase 1A Quality Gate ===")
     if low_trades.empty:
-        print(f"  ✅ All strategies have {PASSING_CRITERIA['min_trades']}+ trades")
+        print(f"  [OK] All strategies have {PASSING_CRITERIA['min_trades']}+ trades")
     else:
-        print(f"  ⚠️  {len(low_trades)} strategies below {PASSING_CRITERIA['min_trades']} trades — need more data")
+        print(f"  [WARN]  {len(low_trades)} strategies below {PASSING_CRITERIA['min_trades']} trades - need more data")
 
     if passing.empty:
-        print("  ℹ️  No strategies pass all criteria yet — normal for Phase 1A dry run")
+        print("  [INFO] No strategies pass all criteria yet - normal for Phase 1A dry run")
     else:
-        print(f"  ✅ {len(passing)} strategies pass all criteria → ready for Phase 1B")
+        print(f"  [OK] {len(passing)} strategies pass all criteria -> ready for Phase 1B")
 
     audit = metrics[metrics["audit_flags"].apply(lambda x: len(x)>0 if isinstance(x,list) else False)]
     if not audit.empty:
-        print(f"  ⚠️  {len(audit)} strategies flagged for look-ahead bias audit (win rate >75% or PF >1.5)")
+        print(f"  [WARN]  {len(audit)} strategies flagged for look-ahead bias audit (win rate >75% or PF >1.5)")
 
     passed = len(engine.closed_trades) > 0
     if passed:
-        print("\n✅ Phase 1A PASSED — pipeline clean, ready for full run or Phase 1B")
+        print("\n[OK] Phase 1A PASSED - pipeline clean, ready for full run or Phase 1B")
     else:
-        print("\n❌ Phase 1A FAILED — no trades produced")
+        print("\n[FAIL] Phase 1A FAILED - no trades produced")
     return passed
 
 
@@ -124,7 +129,7 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument("--dry-run",    action="store_true")
     p.add_argument("--no-agents",  action="store_true")
-    p.add_argument("--no-git",     action="store_true",  help="Suppress git commits during run (for parallel batches — commit manually at end)")
+    p.add_argument("--no-git",     action="store_true",  help="Suppress git commits during run (for parallel batches - commit manually at end)")
     p.add_argument("--no-news",    action="store_true",  help="Disable news sentiment (for A/B comparison)")
     p.add_argument("--tickers",    type=str, default=None, help="Comma-separated list of tickers for batch test")
     p.add_argument("--phase",      type=str, default="1a", choices=["1a","1b","1c","1d"])
@@ -137,7 +142,7 @@ def main():
     phase_key = f"phase_{args.phase}"
 
     print("="*70)
-    print(f"STAGE 2 BACKTESTING ENGINE v2 — Phase {args.phase.upper()}")
+    print(f"STAGE 2 BACKTESTING ENGINE v2 - Phase {args.phase.upper()}")
     print(f"Started: {datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')}")
     print(f"{len(ALL_STRATEGIES)} strategy classes (Layer 1 baseline; full layered roster ~108-133 per CANONICAL_FACTS.md F-002) | Trailing stop exits | Circuit breakers | Long + Short")
     print("="*70)
@@ -152,7 +157,7 @@ def main():
         end      = date(2023, 2, 28)
         universe = ["AAPL","MSFT","NVDA","AMZN","GOOGL","SPY","QQQ","XLK","GLD","TLT"]
         agents   = False
-        print(f"\nDRY RUN: {start} → {end} | {len(universe)} instruments | no agents\n")
+        print(f"\nDRY RUN: {start} -> {end} | {len(universe)} instruments | no agents\n")
     else:
         start  = date.fromisoformat(args.start) if args.start else BACKTEST_START
         end    = date.fromisoformat(args.end)   if args.end   else BACKTEST_END
@@ -161,46 +166,46 @@ def main():
         # --tickers flag: override universe with specific tickers (for batch tests)
         if args.tickers:
             universe = [t.strip() for t in args.tickers.split(",")]
-            print(f"\nBATCH TEST MODE: {start} → {end} | {len(universe)} tickers: {universe}")
+            print(f"\nBATCH TEST MODE: {start} -> {end} | {len(universe)} tickers: {universe}")
         # Phase 1B+ uses full S&P 500 + ETFs universe
         elif args.phase in ("1b", "1c", "1d"):
             from backtest.data.universe import get_sp500_constituents, ETFS_FULL
             sp500    = get_sp500_constituents(500)
             universe = list(dict.fromkeys(sp500 + ETFS_FULL))
-            print(f"\nPhase {args.phase.upper()}: {start} → {end} | {len(universe)} instruments (full S&P 500 + ETFs)")
+            print(f"\nPhase {args.phase.upper()}: {start} -> {end} | {len(universe)} instruments (full S&P 500 + ETFs)")
         else:
             universe = UNIVERSE
-            print(f"\nPhase 1A: {start} → {end} | {len(universe)} instruments")
+            print(f"\nPhase 1A: {start} -> {end} | {len(universe)} instruments")
 
         print(f"Agents: {'Haiku' if agents else 'DISABLED'} | Max cands/day: {args.max_cands}\n")
         if agents:
             days = sum(1 for i in range((end-start).days+1)
                        if (start+__import__('datetime').timedelta(days=i)).weekday()<5)
-            # Cost estimate: days × avg candidates that pass screener × 11 active agents × Haiku cost
-            # 11 agents per DEC-057 + DETAILED_PROJECT_PLAN.md §2.6 (3 analysts + Bull/Bear/RM + Trader + 3 Risk Debaters + Portfolio Manager)
+            # Cost estimate: days x avg candidates that pass screener x 11 active agents x Haiku cost
+            # 11 agents per DEC-057 + DETAILED_PROJECT_PLAN.md sec 2.6 (3 analysts + Bull/Bear/RM + Trader + 3 Risk Debaters + Portfolio Manager)
             # ~30% of max_cands pass screener on average
             avg_passing = max(1, args.max_cands * 0.3)
-            est_cost = days * avg_passing * 11 * 0.00035 * 1.35  # USD → CAD approx
-            print(f"  Estimated cost: ~${est_cost:.1f} CAD ({days} days × {avg_passing:.0f} avg candidates × 11 agents × $0.00035)")
-            print(f"Estimated cost: ~${est_cost:.1f} USD (Haiku) — proceeding automatically")
+            est_cost = days * avg_passing * 11 * 0.00035 * 1.35  # USD -> CAD approx
+            print(f"  Estimated cost: ~${est_cost:.1f} CAD ({days} days x {avg_passing:.0f} avg candidates x 11 agents x $0.00035)")
+            print(f"Estimated cost: ~${est_cost:.1f} USD (Haiku) - proceeding automatically")
 
     engine = BacktestEngine(
         universe=universe, start=start, end=end,
         phase=phase_key, max_candidates_per_day=args.max_cands,
         run_agents=agents, output_dir=args.output_dir,
         disable_news=args.no_news,
-        walk_forward=not args.no_git,  # suppress per-batch WF — run on merged result only
+        walk_forward=not args.no_git,  # suppress per-batch WF - run on merged result only
     )
     if args.no_git:
         import os
         os.environ["BACKTEST_NO_GIT"] = "1"
-        print("⚠️  --no-git: parallel batch mode")
-        print("   - Git operations suppressed — commit manually when all batches complete")
-        print("   - Per-batch walk-forward suppressed — run on merged result only")
-        print("   Command: git status → git add [dirs] → git commit → git pull --rebase → git push")
+        print("[WARN]  --no-git: parallel batch mode")
+        print("   - Git operations suppressed - commit manually when all batches complete")
+        print("   - Per-batch walk-forward suppressed - run on merged result only")
+        print("   Command: git status -> git add [dirs] -> git commit -> git pull --rebase -> git push")
 
     if args.no_news:
-        print("⚠️  News sentiment DISABLED — A/B comparison mode")
+        print("[WARN]  News sentiment DISABLED - A/B comparison mode")
     engine.load_data()
     engine.run()
     print_results(engine)

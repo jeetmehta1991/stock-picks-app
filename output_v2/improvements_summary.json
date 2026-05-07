@@ -1,16 +1,16 @@
 {
-  "generated_at": "2026-05-07T05:10:34.606524",
+  "generated_at": "2026-05-07T21:28:41.141413",
   "transaction_costs": {
     "applied": true,
-    "gross_total_roi": 107.973,
-    "net_total_roi": 77.838,
-    "total_cost": 16.189
+    "gross_total_roi": -48.992,
+    "net_total_roi": -50.515,
+    "total_cost": 1.125
   },
   "survivorship_bias": {
-    "gross_roi": 91.784,
-    "adjusted_roi": 77.838,
-    "haircut_pct": 13.946,
-    "years": 0.16
+    "gross_roi": -50.116,
+    "adjusted_roi": -50.515,
+    "haircut_pct": 0.399,
+    "years": 0.08
   },
   "bonferroni": {
     "n_strategies": 60,
