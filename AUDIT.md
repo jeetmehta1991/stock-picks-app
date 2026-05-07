@@ -29753,3 +29753,147 @@ Owner directive 2026-05-06 (after signal-universe review take, owner answered "Q
 - DEC-305 RAISE-not-WARNING on lookahead (DEC-512 makes this enforceable for fundamentals)
 
 *Per CHECKLIST #1 (Q1+Q2+Q3 A approved this turn); #25 (3 architectural DECs codified from prior signal-review take); #43 (cross-doc atomically — TRADING_RULES §2A + CANONICAL_FACTS F-003 + this narrative); #45 (this); #51 (scope strict — DEC drafting + spec only; implementation Sprint pre-Phase-1A); #58 (3 DECs + Category 7 spec in single commit); #67/#67.b (per-turn doc sync).*
+
+---
+
+## Pass 53 — Exit / circuit-breaker / fill-methodology review Q1+Q2+Q3 atomic — DEC-514 through DEC-538 — 2026-05-06
+
+### Trigger
+
+Owner directive 2026-05-06 (interpreted "Q1 Q2 Q1 A" as typo for "Q1 Q2 Q3 A" — pattern matches prior turns; owner can interrupt if wrong). Approved all three batches from exit/risk/slippage external-AI review take.
+
+### Q1 (P0) — Pre-Phase-1A blockers (3 CRITICAL)
+
+**DEC-514 — Backtest fill methodology (gap-through-stop + intraday fill on EOD bars):**
+- 6 fill rules covering all bar patterns (low > stop / low ≤ stop ≤ open / open < stop / etc.)
+- Long stop-loss fill rules + symmetric short rules
+- Stop-fires-first conservative bias when stop AND target both within bar range
+- Phase 1A cannot run cleanly until DEC-514 implemented — without it, every overnight gap-down position's downside is silently understated
+- **#1 silent backtest bug pre-Phase-1A**
+- Spec in TRADING_RULES_AND_INFORMATION.md §11
+- Effort: ~0.5-1 day in `backtest/engine/exit_manager.py`
+
+**DEC-515 — Level 6 DD-from-peak portfolio circuit breaker:**
+- Levels 1-5 (DEC-314/315) all fire on single-day or intraday-from-open
+- **None fire on cumulative drawdown from equity peak** — biggest risk-management gap
+- Slow grind-down drawdowns kill portfolios more often than single-day shocks
+- New Level 6: 6a (-10% from 252-day peak → halve sizes 5d), 6b (-20% → flat over 5d), 6c (-30% → HARD STOP + alert)
+- Recovery hysteresis: -5% from peak (matches DEC-127 pattern)
+- Spec in TRADING_RULES_AND_INFORMATION.md §9.6
+- Effort: ~0.5 day in `backtest/engine/circuit_breakers.py`
+
+**DEC-516 — Regime-flip exit (symmetric counterpart to Layer 5 entry gating):**
+- Layer 5 (Q1 prior turn) gates which regimes a strategy can OPEN positions in
+- Asymmetric and probably wrong: had entry gating but no exit gating
+- New exit method `regime_flip_exit` participates in DEC-519 competing exit stack
+- Crisis-regime override preserved: longs in crisis at 50% size still allowed
+- Spec in STRATEGY_ROSTER_FULL.md Layer 5 EXIT-side counterpart section
+- Effort: Sprint 7 in `OurTechnicalToolkit` (DEC-462); ~0.5 day
+
+### Q2 (P1) — High-leverage adds (5)
+
+**DEC-517 — R-multiple exits + break-even moves at +1R:**
+- Adds 3 new exit methods (#18-20): `exit_r_multiple_2r`, `exit_r_multiple_3r`, `exit_break_even_at_1r`
+- Plus combined behaviors: BE+0.5R cushion at +2R, BE+1R cushion at +3R
+- Aligns with DEC-353 R:R ≥ 2.0 hard floor (parameterized in R, not %)
+- Spec in TRADING_RULES_AND_INFORMATION.md §8.7
+
+**DEC-518 — Earnings-blackout exit for non-earnings strategies:**
+- Force exit at close of T-1 (1 trading day before earnings)
+- Affects ~190 of 199 strategies; Layer 2B Earnings Momentum 4 classes overrides (earnings-native)
+- Spec in TRADING_RULES_AND_INFORMATION.md §8.8
+
+**DEC-519 — Strategy-to-exit mapping (compete vs single):**
+- Decision: **multiple exits compete; first-to-trigger wins** (NOT one exit per strategy)
+- Default exit stack per position: stop + target + time-stop + signal-reversal + earnings-blackout + regime-flip + sector-overlay
+- DEC-422 cube records which exit fired per (strategy × exit_method) cell
+- Spec in TRADING_RULES_AND_INFORMATION.md §8.9
+
+**DEC-520 — Signal-reversal exit precise definition:**
+- Exit when entry-condition logic is no longer true (NOT when opposite-direction signal fires)
+- Each strategy registers `exit_when()` predicate symmetric to `entry_when()`
+- Examples: `rsi_oversold` exits when RSI > 50 (not RSI > 70); `golden_cross_50_200` exits on death cross
+- Spec in TRADING_RULES_AND_INFORMATION.md §8.10
+
+**DEC-521 — Per-strategy-class time stops:**
+- Replaces single global `max_days` with per-Layer-1-category defaults
+- Pivot/Mean-Rev/Candle: 5-10 days; Momentum/Breakout/2A: 20-30; Trend/3A: 40-60; 2B PEAD: 30-60; 6A monthly: 21-30
+- Configurable per-strategy override via DEC
+- Spec in TRADING_RULES_AND_INFORMATION.md §8.11
+
+### Q3 (P2 backlog) — Documented future work (6)
+
+| DEC | Title | Effort |
+|---|---|---|
+| DEC-522 | Trailing-stop ATR floor (vol-collapse trap fix; `max(current_atr, 0.7×entry_atr)`) | ~0.25d |
+| DEC-523 | Scale-out curves beyond 50/50 (1/3 at 1R + 1/3 at 2R + 1/3 trail) | ~1d |
+| DEC-524 | News / SEC EDGAR 8-K-driven exit (post-Sprint 4 parser) | ~1-2d |
+| DEC-525 | Sector/market exit overlay (SPY < 50-SMA kill switch) | ~0.5d |
+| DEC-526 | Pattern-target exit for Layer 3A (measured-move + Fib 1.272/1.618) | ~1d |
+| DEC-527 | MAE/MFE empirical exit calibration (Phase 1B-α work) | ~2-3d |
+
+### Q3 (P3-P4 backlog) — DEC-528 through DEC-538
+
+| DEC | Title |
+|---|---|
+| DEC-528 | Volatility-target position exit (vol_realized > 1.5× vol_entry) |
+| DEC-529 | Correlation-spike portfolio breaker Level 8 (depends on DEC-511 §7.3) |
+| DEC-530 | Profit-protect ratchet stops (step-function vs continuous trail) |
+| DEC-531 | DD-from-peak per-trade exit (give back ≤30% of unrealized profit) |
+| DEC-532 | Time-stop + profit conditional (extend time stop if in profit) |
+| DEC-533 | Adverse-selection slippage on stops (vol-conditional fast-move multiplier) |
+| DEC-534 | Long/short asymmetry: borrow recall + dividend liability + forced-buy-in |
+| DEC-535 | Exit-as-function-of-signal-quality (high-confluence → wider stops + longer horizons) |
+| DEC-536 | Underspecification fixes single-doc cleanup (vol-breakout dir / volume-spike dir / multi-TF / time-decay / chandelier 22d / SuperTrend dual-use) |
+| DEC-537 | Hybrid 50% scale-out fraction Phase 1B-α tunable |
+| DEC-538 | Liquidity-conditional slippage refinement (per-name ADV) |
+
+All DEC-528-538 are RESOLVED-DECIDED at backlog level; implementation post-Phase-1B-α or as Sprint priorities allow.
+
+### Aggregate exit/risk-management state post Q1+Q2+Q3
+
+| Component | Pre-Pass-53 | Post Q1+Q2+Q3 |
+|---|---|---|
+| Exit methods | 17 (DEC-067) | **20 named methods** (+3 from DEC-517) + 8 cross-cutting decisions |
+| Circuit-breaker levels | 5 (DEC-314/315) + dispersion (DEC-128) + AEP (DEC-435) | **6 levels** (+Level 6 DD-from-peak DEC-515) + dispersion + AEP |
+| Backtest fill methodology | UNDOCUMENTED (silent bug) | **EXPLICIT (DEC-514)** — 6 fill rules + stop/target priority |
+| Regime exit gating | None (Layer 5 entry-only) | **Symmetric (DEC-516)** — exit when regime flips out of `regime_eligible` |
+| R:R 2:1 floor | DEC-353 + DEC-426 5-gate | DEC-353 + DEC-426/510 6-gate (DSR added Q3 prior turn) — already paired with win rate ≥55% + expectancy >0 |
+| Slippage model | DEC-092 base + DEC-122 per-method + DEC-280 time-of-day (3-layer) | unchanged this turn (no DEC drafted; DEC-446 calibration still pending; DEC-538 future refinement) |
+
+### Sprint pre-Phase-1A scope expansion (cumulative across 3 review-take turns)
+
+| Source | Effort |
+|---|---|
+| DEC-511 Category 7 universe-level signals (prior turn) | ~5-7 days |
+| DEC-512 PIT-fundamentals filing-date audit (prior turn) | ~2-3 days |
+| DEC-513 P1 signal additions (prior turn) | ~12-18 days |
+| DEC-514 Backtest fill methodology (this turn P0) | ~0.5-1 day |
+| DEC-515 Level 6 DD-from-peak breaker (this turn P0) | ~0.5 day |
+| DEC-516 Regime-flip exit (this turn P0; Sprint 7) | ~0.5 day |
+| DEC-517 R-multiple exits + BE moves (this turn P1) | ~1-2 days |
+| DEC-518 Earnings-blackout exit (this turn P1) | ~0.5 day |
+| DEC-519 Strategy-to-exit mapping (this turn P1) | ~0.5 day spec only |
+| DEC-520 Signal-reversal precise definition (this turn P1) | ~0.5 day spec |
+| DEC-521 Per-class time stops (this turn P1) | ~0.5 day |
+| **TOTAL Sprint pre-Phase-1A** | **~24-34 days** before Phase 1A backtest can run cleanly |
+
+### Files modified
+
+- `TRADING_RULES_AND_INFORMATION.md` — §8.7-8.18 (DEC-517-538 exit methods + backlog), §9.6-9.7 (DEC-515 Level 6 + DEC-127 clarification), §11 NEW (DEC-514 fill methodology)
+- `STRATEGY_ROSTER_FULL.md` — Layer 5 EXIT-side counterpart section (DEC-516 regime-flip exit)
+- `CANONICAL_FACTS.md` F-004 — exit method count 17 → 20 + 8 cross-cutting decisions
+- `AUDIT.md` — this narrative
+
+### Cross-references
+
+- DEC-514 / 515 / 516 (P0 pre-Phase-1A blockers)
+- DEC-517-521 (P1 high-leverage adds)
+- DEC-522-527 (P2 backlog)
+- DEC-528-538 (P3-P4 backlog)
+- F-004 (exit methods) + F-009 (passing criteria 6-gate) + F-005 (universe; DD-from-peak depends on equity-curve-from-portfolio per DEC-095/Sprint 3)
+- DEC-353 R:R hard floor + DEC-426 6-gate + DEC-510 Deflated Sharpe — R:R parameterization aligned with R-multiple exits (DEC-517)
+- DEC-422 dimensional cube extended to record `exit_method_fired` per cell — supports DEC-519 first-to-trigger reporting
+- L94 / L143 (philosophy framing preserved in earlier AUDIT entries)
+
+*Per CHECKLIST #1 (Q1+Q2+Q3 A approved); #25 (5 external-AI partial misreads in earlier take + 14 DECs codified this turn covering 25 genuinely-new findings); #43 (cross-doc atomically — TRADING_RULES §8/§9/§11 + STRATEGY_ROSTER + F-004 + this narrative); #45 (this); #51 (scope strict — DEC drafting + spec only; implementation Sprint pre-Phase-1A + Sprint 7); #58 (14 DECs in single commit — P0+P1+P2 backlog atomically codified); #67/#67.b (per-turn doc sync).*

@@ -209,7 +209,7 @@ A category can have prefetch ✅ but consumer 🔴 (data sitting on disk, no cod
 
 ### F-004 — Exit methods
 
-**Value (planned):** **17 exit methods total = 9 baseline (pre-Pass-52) + 8 new (DEC-067 phases A+B = DEC-432/433).**
+**Value (planned):** **20 exit methods + 8 cross-cutting exit DECs (Pass 53 owner-approved 2026-05-06)** = 9 baseline (pre-Pass-52) + 8 new (DEC-067 phases A+B = DEC-432/433) + 3 R-multiple/break-even (DEC-517) = 20 method classes; PLUS 8 cross-cutting decisions (DEC-516 regime-flip exit + DEC-518 earnings-blackout + DEC-519 strategy-to-exit-mapping + DEC-520 signal-reversal precise definition + DEC-521 per-class time stops + DEC-514 backtest fill methodology + DEC-515 Level-6 DD-from-peak breaker + DEC-522-527 P2 backlog).
 
 **Definition:** An "exit method" is a deterministic rule for closing a trade. Strategies are tested against multiple exit methods to find the optimal pairing.
 

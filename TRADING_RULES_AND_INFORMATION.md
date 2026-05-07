@@ -1163,6 +1163,180 @@ Phase B (DEC-433) — 6 new exit methods (1 dropped from initial 9):
 
 **Source:** DEC-338
 
+### 8.7 R-Multiple Exits + Break-Even Moves (DEC-517 — Pass 53 owner-approved 2026-05-06 Q2 P1)
+
+**Trigger:** External AI 2026-05-06 review — DEC-067 has %-based and ATR-based exits but no R-multiple. With R:R ≥ 2.0 hard floor (DEC-353), exits SHOULD be parameterized in R (multiples of initial risk). A 5% target on a 1% stop = 5R; a 5% target on a 4% stop = 1.25R — same %, completely different trades.
+
+**New exit methods (added to DEC-067 17 → 19 + scale-out variants per DEC-523):**
+
+| # | Method | Logic |
+|---|---|---|
+| 18 | `exit_r_multiple_2r` | Take profit at 2× initial risk (entry_price ± 2 × stop_distance) |
+| 19 | `exit_r_multiple_3r` | Take profit at 3× initial risk |
+| 20 | `exit_break_even_at_1r` | Move stop to entry (break-even) at +1R unrealized; continue trail per primary exit |
+
+**Combined behaviors:**
+- BE+0.5R cushion: at +2R, move stop to +0.5R (locks 0.5R minimum gain)
+- BE+1R cushion: at +3R, move stop to +1R (locks 1R minimum gain)
+
+**Source:** DEC-517
+
+### 8.8 Earnings-Blackout Exit (DEC-518 — Pass 53 owner-approved 2026-05-06 Q2 P1)
+
+**Trigger:** DEC-013 (earnings_tolerant) sizes positions around earnings but doesn't hard-exit non-earnings strategies. Almost all systematic swing systems have "flat by T-1 before earnings" rule.
+
+**Rule:** For strategies NOT tagged `earnings_tolerant: True` (DEC-013 list — PEAD, earnings-momentum), force exit at close of T-1 (1 trading day before scheduled earnings) regardless of P&L.
+
+**Earnings calendar source:** Polygon Stocks Starter earnings dates (per DEC-256; subject to DEC-512 PIT-fundamentals filing-date audit).
+
+**Affected strategies:** All Layer 1-6 strategies EXCEPT explicitly earnings-tolerant: ~190 of 199 strategy classes affected.
+
+**Override:** Layer 2B Earnings Momentum strategies (4 classes — `pre_earnings_iv_crush_front_run`, `guidance_raise_momentum`, `surprise_magnitude_pead`, `earnings_cluster_sector_drift`) are EARNINGS-NATIVE; blackout does not apply.
+
+**Source:** DEC-518
+
+### 8.9 Strategy-to-Exit Mapping (DEC-519 — Pass 53 owner-approved 2026-05-06 Q2 P1)
+
+**Decision:** Every position has **multiple exits competing** (first-to-trigger wins), NOT one exit per strategy.
+
+**Default exit stack per position:**
+1. **Stop** (one of: `atr_trail_1x` per CLAUDE.md primary, `fixed_pct`, `chandelier`, etc. — strategy-specific)
+2. **Profit target** (one of: `exit_r_multiple_2r` default, or strategy-specific %)
+3. **Time stop** (per-strategy-class default per DEC-521)
+4. **Signal-reversal** (per DEC-520 precise definition)
+5. **Earnings-blackout** (per DEC-518) for non-earnings-tolerant strategies
+6. **Regime-flip** (per DEC-516) when regime exits the strategy's `regime_eligible` set
+7. **Sector/market overlay** (per DEC-525, P2 backlog)
+
+**First-to-trigger wins:** the position closes at the first exit's fill price; subsequent triggers ignored.
+
+**Reporting:** Per-(strategy × exit_method) cell in DEC-422 dimensional cube records which exit method fired for each trade.
+
+**Source:** DEC-519
+
+### 8.10 Signal-Reversal Exit Precise Definition (DEC-520 — Pass 53 owner-approved 2026-05-06 Q2 P1)
+
+**Trigger:** DEC-067 method 9 lists "Signal-reversal exit" but doesn't define which signal reverses. With 199 strategies, this needs precise per-strategy meaning.
+
+**Rule:** Exit when the entry-condition logic is no longer true (NOT when an opposite-direction signal fires).
+
+**Examples:**
+- `rsi_oversold` (entry: RSI(14) < 30 long): exit when RSI(14) > 50 (re-cross neutral midline; NOT when RSI > 70)
+- `macd_crossover` (entry: MACD bullish cross): exit when MACD bearish cross (entry-condition inverted)
+- `golden_cross_50_200` (entry: 50 SMA crosses above 200 SMA): exit when 50 SMA crosses below 200 SMA
+- `pivot_s1_bounce` (entry: bounce at S1 support): exit when price closes below S1 (support broken)
+
+**Implementation:** each strategy class registers an `exit_when()` predicate alongside its `entry_when()` predicate. Symmetric pair.
+
+**Source:** DEC-520
+
+### 8.11 Per-Strategy-Class Time Stops (DEC-521 — Pass 53 owner-approved 2026-05-06 Q2 P1)
+
+**Trigger:** External AI flagged that one global `max_days` parameter is wrong for a multi-strategy system.
+
+**Rule:** Default time stops per Layer 1 category (configurable per-strategy override):
+
+| Strategy class | Default `max_days` | Rationale |
+|---|---|---|
+| Pivot (1.A) | 5-10 days | Intraday-anchored; mean-reverts within days |
+| Momentum (1.B) | 20-30 days | Trending continuation horizon |
+| Trend (1.C) | 40-60 days | Major trend continuation |
+| Mean Reversion (1.D) | 5-10 days | Quick reversion expected; chop kills |
+| Breakout (1.E) | 20-30 days | Breakout follow-through |
+| Candle (1.F) | 5-10 days | Reversal patterns play out quickly |
+| Confluence (1.G) | strictest of constituents | inherited |
+| Layer 2A ICT/SMC | 10-20 days | Pattern-driven horizon |
+| Layer 2B Earnings | 30-60 days | PEAD horizon |
+| Layer 2C Calendar | per-strategy (Sell-in-May 6 months; Santa rally 1 week; etc.) | calendar-specific |
+| Layer 3A Chart patterns | 30-60 days | Pattern measured-move horizon |
+| Layer 3B Pairs | 20-40 days | Convergence horizon |
+| Layer 3B Cross-Asset | 40-60 days | Cross-asset trend horizon |
+| Layer 6A Cross-sectional | 21-30 days (rebalance cadence) | Monthly rebalance default |
+| Layer 6B Vol regime | 5-15 days | Vol regimes shift quickly |
+| Layer 6C Overnight/gap | 1-3 days | T+1 close-to-open or gap-fill window |
+| Layer 6D Insider | 30-90 days | Insider signal persistence |
+| Layer 6E Breadth | 20-40 days | Breadth thrust → bull-leg horizon |
+| Layer 6F Drift | 30-60 days | Post-event drift window |
+| Layer 6G Microstructure | 5-15 days | Setup-driven short horizon |
+
+**Source:** DEC-521
+
+### 8.12 Trailing-Stop ATR Floor (DEC-522 — Pass 53 owner-approved 2026-05-06 Q3 P2 backlog)
+
+**Trigger:** External AI flagged "ATR collapse trap" — when realized vol crashes mid-trade, daily-refreshed ATR shrinks, trailing stop tightens aggressively, position stops out at noise.
+
+**Rule:** Daily ATR refresh (per DEC-311) uses `max(current_atr, 0.7 × entry_day_atr)` — floor prevents trail-tightening on vol collapse.
+
+**Source:** DEC-522 — P2 backlog spec; implementation in `backtest/engine/exit_strategies.py` ~0.25 day.
+
+### 8.13 Scale-Out Curves Beyond 50/50 (DEC-523 — Pass 53 owner-approved 2026-05-06 Q3 P2 backlog)
+
+**Trigger:** DEC-067 hybrid is single 50/50 split. Real scale-out is a curve.
+
+**Rule (proposed, P2 backlog):** Add general scale-out framework. Default profile: 1/3 at 1R + 1/3 at 2R + 1/3 trail (chandelier/ATR).
+
+**Source:** DEC-523 — P2 backlog; ~1 day implementation.
+
+### 8.14 News / 8-K-Driven Exit (DEC-524 — Pass 53 owner-approved 2026-05-06 Q3 P2 backlog)
+
+**Trigger:** Polygon news + SEC EDGAR 8-K already cached (Pass 53 Batch 3 + Batch 11). Exit on adverse idiosyncratic news (downgrade, guidance cut, SEC filing concern).
+
+**Rule (proposed, P2 backlog):** Exit position on:
+- Polygon news article tagged negative-sentiment (per `insights` field) within 1 trading day
+- SEC EDGAR 8-K filed with material event (Item 2.02, 4.01, 4.02, etc.) within 1 trading day
+
+**Source:** DEC-524 — P2 backlog; ~1-2 days post-Sprint 4 SEC EDGAR parser.
+
+### 8.15 Sector/Market Exit Overlay (DEC-525 — Pass 53 owner-approved 2026-05-06 Q3 P2 backlog)
+
+**Trigger:** Top-down kill switch separate from 5-level circuit breakers (which are P&L-triggered, not market-state-triggered).
+
+**Rule (proposed, P2 backlog):** Exit longs if SPY breaks 50-SMA on closing basis; exit shorts if SPY breaks above 50-SMA. Sector ETF analog: exit sector positions if sector ETF (XLF/XLK/etc.) breaks 50-SMA against position direction.
+
+**Source:** DEC-525 — P2 backlog; ~0.5 day.
+
+### 8.16 Pattern-Target Exit for Layer 3A (DEC-526 — Pass 53 owner-approved 2026-05-06 Q3 P2 backlog)
+
+**Trigger:** Layer 3A chart-pattern strategies (20 classes — DEC-355-362) lack textbook measured-move targets.
+
+**Rule (proposed, P2 backlog):**
+- **Measured-move target:** height of pattern projected from breakout point (e.g., for double-top, the depth of the trough below the second peak; for cup & handle, the cup depth)
+- **Fibonacci extensions:** 1.272 / 1.618 / 2.618 of the swing as alternate target levels
+
+**Per-pattern target table:** to be specified during DEC-526 implementation.
+
+**Source:** DEC-526 — P2 backlog; ~1 day.
+
+### 8.17 MAE/MFE Empirical Exit Calibration (DEC-527 — Pass 53 owner-approved 2026-05-06 Q3 P2 backlog)
+
+**Trigger:** DEC-422 cube already captures MAE (Maximum Adverse Excursion) + MFE (Maximum Favorable Excursion) per cell. Best-practice: train exits on the in-sample MAE/MFE distributions per strategy.
+
+**Rule (proposed, P2 backlog; Phase 1B-α work):** For each strategy class, after Phase 1A-α in-sample run:
+- Compute MFE distribution; set TP at the 90th-percentile MFE achieved by winners
+- Compute MAE distribution; set stop at the 5th-percentile MAE that didn't recover to a profit
+
+**Source:** DEC-527 — P2 backlog; Phase 1B-α work ~2-3 days.
+
+---
+
+### 8.18 Backlog (P3-P4) — DEC-528 through DEC-538
+
+| DEC | Topic | Effort |
+|---|---|---|
+| DEC-528 | Volatility-target position exit (vol_realized > 1.5× vol_entry over 5 bars) | ~0.5d |
+| DEC-529 | Correlation-spike portfolio breaker (Level 8; depends on DEC-511 §7.3 correlation matrix) | ~1d |
+| DEC-530 | Profit-protect ratchet stops (step-function: BE at 1R / lock 1R at 2R / lock 2R at 3R) | ~0.5d |
+| DEC-531 | DD-from-peak per-trade exit (give back ≤30% of unrealized profit) | ~0.5d |
+| DEC-532 | Time-stop + profit conditional (T+10 if not in profit; T+20 if in profit) | ~0.5d |
+| DEC-533 | Adverse-selection slippage on stops (vol-conditional multiplier on stop-market fills in fast moves) | ~0.5d |
+| DEC-534 | Long/short asymmetry: borrow recall exit + dividend liability + forced-buy-in modeling | ~1d |
+| DEC-535 | Exit-as-function-of-signal-quality (high-confluence fires get wider stops + longer time horizons) | ~1d |
+| DEC-536 | Underspecification fixes (vol-breakout direction / volume-spike direction filter / multi-TF / time-decay / chandelier 22d / SuperTrend dual-use) — single doc cleanup | ~0.5d |
+| DEC-537 | Hybrid 50% scale-out fraction tunable in Phase 1B-α (calibration via DEC-072 sweep methodology) | post-Phase-1B-α |
+| DEC-538 | Liquidity-conditional slippage refinement (per-name ADV vs tier-based DEC-095) | post-Phase-1B-α |
+
+All DEC-528-538 are RESOLVED-DECIDED at backlog level (Pass 53 owner-approved 2026-05-06 Q3); implementation deferred to post-Phase-1B-α or as Sprint priorities allow.
+
 ---
 
 ## 9. Circuit Breakers
@@ -1216,6 +1390,91 @@ Phase B (DEC-433) — 6 new exit methods (1 dropped from initial 9):
 **Documentation note:** Circuit breakers operate at **end-of-day resolution** in Stage 2 backtest (no intraday data); Stage 3+ paper trading enables intraday circuit breakers.
 
 **Source:** DEC-126 (documents limitation)
+
+### 9.6 Level 6 — Drawdown-from-Peak Portfolio Breaker (DEC-515 — Pass 53 owner-approved 2026-05-06 Q1 P0; CRITICAL gap)
+
+**Trigger:** External AI 2026-05-06 review identified that Levels 1-5 (DEC-314/315) all fire on single-day or intraday-from-open. None fire on cumulative drawdown from equity peak. **Slow grind-down drawdowns kill portfolios more often than single-day shocks** — biggest risk-management gap.
+
+**Rule (Level 6 — NEW):**
+
+| Sub-level | Trigger (DD from peak) | Action |
+|---|---|---|
+| **6a** | -10% from running 252-day equity peak | Halve position sizes for 5 trading days; new entries skipped |
+| **6b** | -20% from running 252-day equity peak | Flat all positions over next 5 trading days; new entries blocked |
+| **6c** | -30% from running 252-day equity peak | HARD STOP — flat all positions immediately; backtest run flagged for owner review (production-mode equivalent: alert + manual unlock) |
+
+**Recovery:** Position-sizing returns to normal once equity recovers to within -5% of prior peak (hysteresis gap matching DEC-127 pattern).
+
+**Implementation:** ~0.5 day in `backtest/engine/circuit_breakers.py`. Computes rolling 252-day max equity; checks DD% on each trading day's close.
+
+**Interaction with Levels 1-5:** Level 6 evaluated AFTER Levels 1-5 (sequential per DEC-315). Most restrictive action wins.
+
+**Source:** DEC-515
+
+### 9.7 Recovery vs New Entries (DEC-127 clarification per Pass 53 owner-approved 2026-05-06 Q1 P0)
+
+**Trigger:** External AI flagged DEC-127 cooldown rules don't specify whether new entries are taken at half-size or skipped during cooldown.
+
+**Rule (clarification):** During cooldown periods (Levels 1-2 + 6a):
+- **New entries SKIPPED** (cleaner cooldown semantics; matches most prop systems)
+- Existing positions managed normally (stops + targets active)
+- Existing positions sized at the half-size scaler from Level fire
+
+During hard halts (Levels 3-5 + 6b/6c):
+- **New entries BLOCKED**
+- Existing positions either halted (intraday Levels 3-5) or unwound (Level 6b/6c)
+
+**Source:** DEC-127 clarification — same DEC, additive specification.
+
+---
+
+## 11. Backtest Fill Methodology (DEC-514 — Pass 53 owner-approved 2026-05-06 Q1 P0; CRITICAL pre-Phase-1A bug fix)
+
+**Trigger:** External AI 2026-05-06 review identified that EOD-bar backtests have a **silent bug** when overnight gaps blow past stop levels. Without explicit fill methodology, backtests assume stop-price fill in all cases — understates downside in earnings-gap scenarios. **#1 silent backtest bug pre-Phase-1A.**
+
+### 11.1 Long-position stop-loss fill rules
+
+**Setup:** Long position at entry_price; stop_price below; bar OHLC = (open, high, low, close).
+
+| Bar pattern | Fill rule |
+|---|---|
+| `low > stop_price` | NO FILL — stop not triggered this bar |
+| `low ≤ stop_price ≤ open` | Fill at `stop_price` (intraday triggered; assume no slippage past stop in normal moves) |
+| `open < stop_price` (gap-down through stop) | **Fill at `open`** (gap-through-stop case; you cannot fill at the stop you set above the open) |
+| `low ≤ stop_price` AND vol-of-day > 1.5× ATR | Fill at `stop_price - slippage_bps × adverse_selection_multiplier` (per DEC-533 P3 backlog, future) |
+
+### 11.2 Long-position take-profit fill rules
+
+| Bar pattern | Fill rule |
+|---|---|
+| `high < target_price` | NO FILL |
+| `high ≥ target_price ≥ open` | Fill at `target_price` |
+| `open > target_price` (gap-up through target) | Fill at `open` (favorable gap; received better than target) |
+
+### 11.3 Short-position symmetric rules
+
+Short stop = stop above entry; short target = target below entry. Mirror the above rules.
+
+### 11.4 Fill priority within bar
+
+When multiple exits could trigger same bar (stop AND target both within range), assume **stop fires first** (conservative; understates winners). Implementation choice for this asymmetry:
+- Stage 2 backtest: stop-first (conservative)
+- Stage 3 paper: actual order routing decides
+- Document the asymmetry; revisit if Stage-2-vs-Stage-3 verdicts diverge materially
+
+### 11.5 Partial-fill modeling
+
+**Stage 2:** Full fill at trigger price assumed. For S&P 500 + ETFs at typical position sizes (5%/4%/3% portfolio), this is ~accurate.
+
+**Stage 3+:** Partial-fill modeling becomes relevant for larger universes / smaller-cap names. Documented as future scope.
+
+### 11.6 Implementation site
+
+`backtest/engine/exit_manager.py` — fill methodology applied at each bar's close-of-day evaluation. ~0.5-1 day implementation.
+
+**Phase 1A cannot run cleanly until DEC-514 implemented** — without it, every overnight gap-down position's downside is silently understated.
+
+**Source:** DEC-514
 
 ---
 

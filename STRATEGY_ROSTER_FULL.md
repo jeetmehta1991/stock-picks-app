@@ -471,6 +471,20 @@ Layer 5 is a SCHEMA + DEFAULT TABLE; no per-strategy IDs. The flag values popula
 
 **Total strategies tagged: 172** (110 Layer 1 + 12 Layer 2A + 4 Layer 2B + 5 Layer 2C + 20 Layer 3A + 21 Layer 3B); Layer 2D + Layer 4 tagged when promoted.
 
+### Layer 5 EXIT-side counterpart — Regime-flip exit (DEC-516 — Pass 53 owner-approved 2026-05-06 Q1 P0)
+
+**Trigger:** Layer 5 entry-eligibility schema gates which regimes a strategy can OPEN positions in. The symmetric counterpart was missing: when regime flips OUT of a strategy's `regime_eligible` set, existing positions should also CLOSE.
+
+**Rule:** Force exit via DEC-519 competing-stack when `current_regime ∉ strategy.regime_eligible`. New exit method `regime_flip_exit` participates in the position's exit stack alongside stop / target / time-stop / signal-reversal / earnings-blackout / sector-overlay.
+
+**Example:** `rsi_oversold` opens long with `regime_eligible: [neutral]`. Held while regime stays neutral. Regime flips to bear-vol → `regime_flip_exit` triggers → position closes.
+
+**Crisis-regime override:** Per CLAUDE.md, longs allowed in crisis at 50% size. Crisis-override KEEPS position open at half-size when regime flips to crisis (regime_flip_exit checks crisis-override flag before firing).
+
+**Implementation:** Sprint 7 in `OurTechnicalToolkit` (DEC-462) regime-aware exit gating; ~0.5 day.
+
+**Source:** DEC-516
+
 ---
 
 ## Layer 6 — External-AI-review additions (✅ RESOLVED-DECIDED owner-approved 2026-05-06; Q1 part 2)
