@@ -43,9 +43,11 @@ if not POLYGON_KEY:
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 BASE_URL = "https://api.polygon.io"
-CACHE_DIR = Path("backtest/data/cache/polygon/reference")
-INDEX_FILE = Path("backtest/data/cache/polygon/reference_index.parquet")
-UNIVERSE_CSV = Path("Backtesting universe/Current Snapshot_SP500 Tickers_May 2026.csv")
+# Pass 53 Day-9 v8h: write to canonical Sprint 0A path + read full Master Universe
+# (1937 tickers across T1a/T1c/ETFs/T2/T3) instead of S&P 500 snapshot only.
+CACHE_DIR = Path("data_prefetch/polygon/reference")
+INDEX_FILE = Path("data_prefetch/polygon/reference_index.parquet")
+UNIVERSE_CSV = Path("Backtesting universe/Master Universe_Deduplicated_All Tiers_May 2026.csv")
 
 RATE_LIMIT_SLEEP = 0.05
 TIMEOUT = 30
@@ -117,7 +119,7 @@ def main():
     if args.tickers:
         tickers = sorted(t.upper() for t in args.tickers)
     else:
-        df_uni = pd.read_csv(UNIVERSE_CSV)
+        df_uni = pd.read_csv(UNIVERSE_CSV, comment="#")
         tickers = sorted(df_uni["Symbol"].dropna().str.strip().str.upper().unique())
         if args.limit_tickers:
             tickers = tickers[:args.limit_tickers]

@@ -37,8 +37,9 @@ if not POLYGON_KEY:
     sys.exit(1)
 
 BASE_URL = "https://api.polygon.io"
-SPLITS_DIR = Path("backtest/data/cache/polygon/splits")
-DIVIDENDS_DIR = Path("backtest/data/cache/polygon/dividends")
+# Pass 53 Day-9 v8h: canonical Sprint 0A path per L146 wiring matrix.
+SPLITS_DIR = Path("data_prefetch/polygon/splits")
+DIVIDENDS_DIR = Path("data_prefetch/polygon/dividends")
 
 # 5y window per DEC-482
 END_DATE = date.today()

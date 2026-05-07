@@ -38,8 +38,9 @@ if not QUIVER_TOKEN:
 
 BASE_URL = "https://api.quiverquant.com/beta"
 HEADERS = {"Authorization": f"Token {QUIVER_TOKEN}"}
-CACHE_DIR = Path("backtest/data/cache/quiver")
-CHECKPOINT_FILE = Path("backtest/data/cache/quiver_checkpoint.json")
+# Pass 53 Day-9 v8h: canonical Sprint 0A path per L146 (was backtest/data/cache/quiver)
+CACHE_DIR = Path("data_prefetch/quiver")
+CHECKPOINT_FILE = Path("data_prefetch/quiver/_checkpoint.json")
 DATE_START = date(2020, 1, 1)
 DATE_END = date(2026, 3, 31)
 RATE_LIMIT_SLEEP = 1.2  # seconds between calls
@@ -148,10 +149,18 @@ def git_commit(message: str):
 
 
 def main():
-    # Build universe
-    sp500 = get_sp500_constituents(500)
-    universe = list(dict.fromkeys(sp500 + ETFS_FULL))
-    print(f"Universe: {len(universe)} instruments")
+    # Pass 53 Day-9 v8h: read FULL Master Universe (1937 unique tickers)
+    # instead of just S&P 500 + ETFs (was 509 effective coverage).
+    master_csv = Path("Backtesting universe/Master Universe_Deduplicated_All Tiers_May 2026.csv")
+    if master_csv.exists():
+        df_uni = pd.read_csv(master_csv, comment="#")
+        universe = sorted(df_uni["Symbol"].dropna().str.strip().str.upper().unique())
+        print(f"Universe: {len(universe)} instruments (Master Dedup)")
+    else:
+        # Legacy fallback
+        sp500 = get_sp500_constituents(500)
+        universe = list(dict.fromkeys(sp500 + ETFS_FULL))
+        print(f"Universe: {len(universe)} instruments (legacy fallback)")
     print(f"Data types: {list(ENDPOINTS.keys())}")
     print(f"Date range: {DATE_START} to {DATE_END}")
     print(f"Cache dir: {CACHE_DIR}")
@@ -159,14 +168,11 @@ def main():
 
     checkpoint = load_checkpoint()
     total_done = 0
-
-    # Congressional already complete — skip if all 509 done
-    if len(checkpoint.get("congressional", [])) >= 509:
-        print("Congressional: already complete — skipping")
+    target_count = len(universe)
 
     for data_type, url_template in ENDPOINTS.items():
         done_tickers = set(checkpoint.get(data_type, []))
-        if len(done_tickers) >= 509:
+        if len(done_tickers) >= target_count:
             print(f"Skipping {data_type} — already complete ({len(done_tickers)} tickers)")
             continue
 
