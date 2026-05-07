@@ -36,9 +36,16 @@ def _read_or_skip(d: Path, ticker: str) -> pd.DataFrame:
 @pytest.mark.parametrize("form_label,form_dir", list(FORM_DIRS.items()))
 @pytest.mark.parametrize("ticker", DEMO_TICKERS)
 def test_sec_edgar_demo_ticker_x_form(form_label: str, form_dir: Path, ticker: str):
+    # Pass 53 Day-9 v8h: empty parquets are now legitimate (script writes
+    # empty file when ticker has no filings of given form type, so coverage
+    # check sees the path). Schema check still required; empty df is OK
+    # since not every ticker has filings of every form type.
     df = _read_or_skip(form_dir, ticker)
     assert {"ticker", "filing_date"} <= set(df.columns), f"{form_label} {ticker} missing required cols"
-    # Filing dates should be parseable
+    if df.empty:
+        pytest.skip(f"{form_label} {ticker} has no filings (legitimate for "
+                    f"{ticker} on {form_label}; empty placeholder per Tier B prefetch)")
+    # Filing dates should be parseable when df non-empty
     dates = pd.to_datetime(df["filing_date"], errors="coerce").dropna()
     assert len(dates) > 0, f"{form_label} {ticker} no parseable filing dates"
 

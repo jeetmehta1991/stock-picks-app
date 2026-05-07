@@ -61,9 +61,19 @@ def test_g7_sec_catalyst_signal_composite():
 
 
 def test_g7_sec_filing_form_types_complete():
-    """All 4 form types reachable via SEC_EDGAR_FORM_DIRS map."""
+    """SEC_EDGAR_FORM_DIRS must include the 4 G7-baseline forms.
+
+    Pass 53 Day-9 v8h (Tier B1-B4): expanded from 4 → 11 forms (added 10-K /
+    10-Q / DEF 14A / S-1 / S-1/A / SC 13D/A / SC 13G/A). Test now asserts
+    SUPERSET (G7 baseline still present) rather than EQUAL to allow
+    additive expansion.
+    """
     from backtest.data.smart_money import SEC_EDGAR_FORM_DIRS
-    assert set(SEC_EDGAR_FORM_DIRS.keys()) == {"4", "8-K", "SC 13D", "SC 13G"}
+    g7_baseline = {"4", "8-K", "SC 13D", "SC 13G"}
+    assert g7_baseline.issubset(set(SEC_EDGAR_FORM_DIRS.keys())), (
+        f"G7 baseline forms missing from SEC_EDGAR_FORM_DIRS: "
+        f"{g7_baseline - set(SEC_EDGAR_FORM_DIRS.keys())}"
+    )
 
 
 def test_g7_filings_pit_correctness():

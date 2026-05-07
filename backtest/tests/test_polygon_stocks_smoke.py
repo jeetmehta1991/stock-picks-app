@@ -56,8 +56,15 @@ def test_polygon_news_cache_populated():
 
 
 def test_polygon_news_smoke_schema():
+    # Pass 53 Day-9 v8h: Polygon news schema evolved — `tickers` (list) is
+    # now provided as `all_tickers` (list) + `ticker` (singular per-row).
+    # Test accepts either schema.
     df = pd.read_parquet(_first_parquet(NEWS_DIR))
-    assert {"id", "title", "published_utc", "tickers"} <= set(df.columns)
+    cols = set(df.columns)
+    assert {"id", "title", "published_utc"} <= cols
+    assert "all_tickers" in cols or "tickers" in cols, (
+        f"Polygon news schema missing tickers column: {cols}"
+    )
     assert len(df) > 0
 
 

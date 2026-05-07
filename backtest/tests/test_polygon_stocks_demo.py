@@ -49,8 +49,13 @@ def test_polygon_ohlcv_demo(ticker: str):
 
 @pytest.mark.parametrize("ticker", DEMO_TICKERS)
 def test_polygon_news_demo(ticker: str):
+    # Pass 53 Day-9 v8h: schema evolved (tickers → all_tickers + ticker).
     df = _read_or_skip(NEWS_DIR, ticker)
-    assert {"id", "title", "published_utc", "tickers"} <= set(df.columns)
+    cols = set(df.columns)
+    assert {"id", "title", "published_utc"} <= cols
+    assert "all_tickers" in cols or "tickers" in cols, (
+        f"Polygon news {ticker} schema missing tickers col: {cols}"
+    )
     assert len(df) >= 5, f"{ticker} has only {len(df)} news articles"
     # Sanity: published_utc is datetime-parseable
     pd.to_datetime(df["published_utc"]).head(5)

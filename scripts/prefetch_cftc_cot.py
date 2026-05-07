@@ -99,6 +99,16 @@ def fetch_contract(dataset: str, contract_filter: str,
         df["report_date"] = pd.to_datetime(
             df["report_date_as_yyyy_mm_dd"], errors="coerce"
         ).dt.date
+    # Pass 53 Day-9 v8h fix (caught by test_data_integrity_4_numeric_dtype_cftc_fred):
+    # CFTC Socrata API returns numeric columns as JSON strings. Coerce to numeric
+    # so downstream arithmetic (rolling means, position changes, etc.) works.
+    numeric_keywords = (
+        "positions", "open_interest", "traders", "pct_of", "conc_",
+        "change_in", "spread",
+    )
+    for col in df.columns:
+        if any(kw in col.lower() for kw in numeric_keywords):
+            df[col] = pd.to_numeric(df[col], errors="coerce")
     return df
 
 
