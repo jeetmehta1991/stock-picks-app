@@ -566,5 +566,21 @@
     "market_cap": 0,
     "exchange": "",
     "ipo_date": null
+  },
+  "BA": {
+    "name": "Boeing",
+    "sector": "Industrials",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
+  },
+  "SO": {
+    "name": "Southern Company",
+    "sector": "Utilities",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
   }
 }
