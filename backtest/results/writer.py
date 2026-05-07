@@ -125,12 +125,23 @@ def write_all_outputs(
         best.to_csv(output_dir / "exit_strategy_best.csv", index=False)
         logger.info("Wrote exit_strategy_comparison.csv + exit_strategy_best.csv")
 
-        # Pass 53 Day-9-evening 2026-05-07 owner directive: emit per-dimension
-        # aggregations of trade_exit_detail for direct exit-method analysis by
-        # strategy × regime × sector × cap × vol × hold-band × universe-tier ×
-        # smart-money × etc. Each aggregate file: groupby (strategy, exit_method, dim)
-        # with n / win_rate / avg_pnl_pct / total_pnl_pct.
+        # Pass 53 Day-9-evening v2 owner reframe: per-EXIT conditional analysis
+        # (not per-dim universal best). Output 3 deliverables:
+        #   1. exit_method_multi_dim_cube.csv — long-form cube of exit_method ×
+        #      (regime × sector × cap × vol × hold-band) with metrics per cell.
+        #   2. exit_sweet_spots.csv — per-exit top-20 conditions where IT dominates.
+        #   3. exit_pairwise_dominance.csv — for each (exit_A, exit_B, condition),
+        #      does A beat B?
+        # Plus per-dim marginal aggregates (kept; useful as 1D slice view).
         from backtest.engine.exit_context import CONTEXT_COLUMN_NAMES
+        from backtest.results.exit_conditional_analyzer import (
+            compute_multi_dim_cube,
+            find_sweet_spots,
+            compute_pairwise_dominance,
+            DEFAULT_CONDITION_DIMS,
+        )
+
+        # 1D marginal aggregates (per-dim slice; also kept from prior commit)
         for dim in CONTEXT_COLUMN_NAMES:
             if dim not in trade_exit_detail.columns:
                 continue
@@ -143,12 +154,39 @@ def write_all_outputs(
                             avg_pnl_pct=("pnl_pct", "mean"),
                             total_pnl_pct=("pnl_pct", "sum"),
                         ).reset_index())
-                agg.to_csv(
-                    output_dir / f"exit_by_{dim}.csv", index=False,
-                )
+                agg.to_csv(output_dir / f"exit_by_{dim}.csv", index=False)
             except Exception as exc:
                 logger.debug("exit_by_%s aggregate failed: %s", dim, exc)
-        logger.info("Wrote exit_by_<dim>.csv aggregates for %d Tier 1-4 dimensions", len(CONTEXT_COLUMN_NAMES))
+
+        # Multi-dim conditional cube (exit_method × condition-combo)
+        try:
+            available_dims = [d for d in DEFAULT_CONDITION_DIMS
+                              if d in trade_exit_detail.columns]
+            cube = compute_multi_dim_cube(trade_exit_detail, dims=available_dims)
+            if not cube.empty:
+                cube.to_csv(output_dir / "exit_method_multi_dim_cube.csv", index=False)
+                logger.info("Wrote exit_method_multi_dim_cube.csv — %d cells × %d dims",
+                            len(cube), len(available_dims))
+
+                # Per-exit sweet spots (top-20 per exit by edge over runner-up)
+                spots = find_sweet_spots(cube, dims=available_dims)
+                if not spots.empty:
+                    spots.to_csv(output_dir / "exit_sweet_spots.csv", index=False)
+                    logger.info("Wrote exit_sweet_spots.csv — %d rows (top-20 per exit_method)",
+                                len(spots))
+
+                # Pairwise dominance (exit_A beats exit_B?)
+                dom = compute_pairwise_dominance(cube, dims=available_dims)
+                if not dom.empty:
+                    dom.to_csv(output_dir / "exit_pairwise_dominance.csv", index=False)
+                    logger.info("Wrote exit_pairwise_dominance.csv — %d (exit_A, exit_B, condition) rows",
+                                len(dom))
+        except Exception as exc:
+            logger.warning("Multi-dim conditional analysis failed: %s", exc)
+
+        logger.info("Wrote exit_by_<dim>.csv (1D marginals) for %d dims + "
+                    "multi-dim cube + sweet-spots + pairwise dominance",
+                    len(CONTEXT_COLUMN_NAMES))
 
     # ── Walk-forward validation ──
     # Portfolio-level summary with tier-based position sizing
