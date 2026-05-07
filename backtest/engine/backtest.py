@@ -95,6 +95,11 @@ class BacktestEngine:
         self.closed_trades:       list[ClosedTrade] = []
         self.skipped_trades:      list[dict]        = []
         self.circuit_breaker_log: list[dict]        = []
+        # DEC-515 Level 6 CB state — Pass 53 Day-9-evening v5 engine wiring
+        # per DEC-594 same-commit. Persistent state across days within a run.
+        from backtest.engine.circuit_breakers import Level6State
+        self.level_6_state = Level6State()
+        self._backtest_start_date: Optional[date] = None  # set at run() start
 
     # ──────────────────────────────────────────────────────────────────────
     # DATA LOADING
@@ -192,6 +197,9 @@ class BacktestEngine:
             self.load_data()
 
         trading_days = self._trading_days()
+        # DEC-515 Level 6 CB: record backtest start date for min_history check
+        if trading_days:
+            self._backtest_start_date = trading_days[0]
         logger.info(
             "Starting backtest: %d days | phase=%s | agents=%s | "
             "costs=%s | slippage=%s | instruments=%d",
@@ -272,6 +280,41 @@ class BacktestEngine:
         candidates     = screen_universe(ohlcv_pit, self.info_dict, as_of, regime)
         active_signals = {c["ticker"]: c for c in candidates}
         sent           = sentiment_snapshot(as_of)
+
+        # ── 5.5 DEC-515 Level 6 portfolio DD-from-peak circuit breaker ──
+        # (Pass 53 Day-9-evening v5 engine wiring per DEC-594)
+        # Compute today's portfolio equity from closed trades; update Level 6 state;
+        # if halt_active, block all new entries this day.
+        from backtest.engine.circuit_breakers import update_level_6_state
+        days_since_start = (as_of - self._backtest_start_date).days if self._backtest_start_date else 0
+        # Equity proxy: cumulative pnl_dollar of closed trades
+        try:
+            closed_pnl_total = sum(float(t.pnl_dollar) for t in self.closed_trades
+                                    if hasattr(t, "pnl_dollar") and t.pnl_dollar is not None)
+            current_equity = 100000.0 + closed_pnl_total  # initial $100k baseline
+        except Exception:
+            current_equity = 100000.0
+        l6_result = update_level_6_state(
+            self.level_6_state, current_equity=current_equity, as_of=as_of,
+            days_since_start=days_since_start,
+        )
+        if l6_result.get("event") in ("halt_triggered", "halt_resumed"):
+            self.circuit_breaker_log.append({
+                "date": as_of, "level": 6,
+                "event": l6_result["event"],
+                "dd_from_peak": l6_result["dd_from_peak"],
+                "rolling_peak_equity": l6_result["rolling_peak_equity"],
+                "current_equity": current_equity,
+            })
+        if self.level_6_state.halt_triggered:
+            # Halt = no new entries this day; existing trades continue under exit logic
+            for cand in candidates[:self.max_cands]:
+                self.skipped_trades.append({
+                    "ticker": cand["ticker"], "date": as_of,
+                    "strategy": cand.get("strategies", [{}])[0].get("strategy", "unknown"),
+                    "reason": f"level_6_halt_dd_{l6_result['dd_from_peak']:.3f}",
+                })
+            return  # skip entry loop entirely
 
         # ── 6. Open new trades — no position cap, no correlation filter,
         #         no per-ticker limit, no direction hard block ──

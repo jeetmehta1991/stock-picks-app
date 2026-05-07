@@ -184,6 +184,32 @@ def write_all_outputs(
         except Exception as exc:
             logger.warning("Multi-dim conditional analysis failed: %s", exc)
 
+        # DEC-578 7-gate Phase 1B-α verdict cube (Pass 53 Day-9-evening v5
+        # engine wiring per DEC-594). Apply per-cell 7-gate to actual trade
+        # log (not counterfactual) — produces verdict_cube.csv mapping
+        # (strategy × regime × sector × cap × vol) → PASS / FAIL_<gate> /
+        # INSUFFICIENT_SAMPLE.
+        try:
+            from backtest.results.seven_gate_verdict import compute_verdict_cube
+            if df_trades is not None and not df_trades.empty:
+                verdict_dims = [d for d in (
+                    "strategy", "regime", "sector",
+                ) if d in df_trades.columns]
+                if verdict_dims:
+                    verdict_cube_df = compute_verdict_cube(
+                        df_trades, pnl_col="pnl_pct",
+                        cell_id_cols=verdict_dims,
+                    )
+                    if not verdict_cube_df.empty:
+                        verdict_cube_df.to_csv(output_dir / "verdict_cube.csv", index=False)
+                        n_pass = (verdict_cube_df["verdict"] == "PASS").sum()
+                        logger.info(
+                            "Wrote verdict_cube.csv — %d cells | PASS=%d (DEC-578 7-gate)",
+                            len(verdict_cube_df), n_pass,
+                        )
+        except Exception as exc:
+            logger.warning("DEC-578 verdict_cube.csv emission failed: %s", exc)
+
         logger.info("Wrote exit_by_<dim>.csv (1D marginals) for %d dims + "
                     "multi-dim cube + sweet-spots + pairwise dominance",
                     len(CONTEXT_COLUMN_NAMES))
