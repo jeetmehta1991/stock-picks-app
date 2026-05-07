@@ -182,4 +182,133 @@ contract names: `UST 10Y NOTE` / `UST 5Y NOTE` / `UST 2Y NOTE` / `UST BOND`
 
 ---
 
+## INV-015 — Alpha Vantage news cached only 25 files (alphabetical mid-letter range) (Pass 53 Day-9 v8h evening)
+
+- **Discovered:** 2026-05-07 evening; comprehensive prefetch deep-dive audit per owner directive
+- **Observation:** `backtest/data/cache/av_news/` has only 25 files spanning alphabetical range C..D + X (CCI, CMI, COST, CRWD, CSGP, CSX, CTRA, CVS, D, DAL, DAY, DE, DFS, DG, DHI, DHR, DLR, DLTR, DPZ, DRI, DVA, DVN, DXCM, FANG, XRAY). Looks like a partial-batch run that died after the C..D letter range, with one orphan X (FANG/XRAY may have been from a different batch). The script `scripts/prefetch_alphavantage_news.py` is configured for 4 batches × 127 tickers each = 508 total but only 25 landed.
+- **Why not blocking:** Phase 1A baseline doesn't depend on AV news (sentiment overlay is Phase 1B+). Currently active news source for any consumer: Polygon news (1926/1937, 99.4%).
+- **Severity:** HIGH for owner's "broad everything" directive — major under-coverage of an API we have a key for.
+- **Status:** open
+- **Next action:**
+  - Verify AlphaVantage API key still works (smoke fetch one ticker)
+  - Check checkpoint file for last-completed ticker
+  - Re-launch prefetch for full 1937 Master Universe (~10-15h on free tier 25 calls/min, 500/day = need premium tier OR multi-day run)
+  - Confirm subscription tier with owner before launching (free tier = 500 calls/day caps full universe at ~4 days; premium tier removes this)
+- **Joint:** owner directive 2026-05-07 ("download broad everything"); INV-016 (Finnhub same pattern); CHECKLIST #76 (column-(b) verification surfaced this — paper-only audit would have just reported "AV news cached" without count check).
+
+---
+
+## INV-016 — Finnhub news 509 files = S&P-500-only (NOT expanded to Master Universe) (Pass 53 Day-9 v8h evening)
+
+- **Discovered:** 2026-05-07 evening; comprehensive prefetch deep-dive audit
+- **Observation:** `backtest/data/cache/finnhub_news/` has exactly 509 files. The script `scripts/prefetch_finnhub_news.py` line ~31 reads `from backtest.data.universe import get_sp500_constituents, ETFS_FULL` and uses S&P 500 + ETFs only. Same pattern as old Quiver per-ticker (which is now being fixed by `bsu432hbt` BG). Needs the same Master-Universe-expansion treatment.
+- **Why not blocking:** Free-tier Finnhub returns near-empty for older dates; current cache is ~2025-Mar 2026 only. Phase 1A baseline doesn't depend on Finnhub news (Polygon news is primary). Phase 1B+ news-sentiment strategies could benefit from cross-source.
+- **Severity:** HIGH for owner's "broad everything" — known stale prefetch script + stale universe scope.
+- **Status:** open
+- **Next action:**
+  - Update `scripts/prefetch_finnhub_news.py` to read Master Universe CSV (1937) instead of S&P 500
+  - Switch to `data_prefetch/finnhub/` canonical Sprint 0A path
+  - Re-prefetch (~6-8h on free tier 60/min)
+  - Confirm Finnhub subscription tier — free returns minimal historical; basic paid tier needed for >1y lookback
+- **Joint:** INV-015 (Alpha Vantage same pattern); CHECKLIST #76 (column-(b) verification — paper audit would have reported coverage % vs S&P only, not flagged the universe-mismatch as separate concern).
+
+---
+
+## INV-017 — Polygon dividends/splits canonical paths each have 1 file (vs 1500+ tickers actually pay/split) (Pass 53 Day-9 v8h evening)
+
+- **Discovered:** 2026-05-07 evening; comprehensive prefetch deep-dive audit
+- **Observation:** `data_prefetch/polygon/dividends/` = 1 file. `data_prefetch/polygon/splits/` = 1 file. `legacy_archive_pass53/dividends/` = 2 files, `legacy_archive_pass53/splits/` = 2 files. Master Universe = 1937 tickers; estimate 1500+ pay dividends and 50-100+ split per year. The `scripts/prefetch_polygon_corp_actions.py` exists but apparently never completed at universe scope.
+- **Why not blocking:** Phase 1A doesn't trade dividend strategies (60-strategy baseline is technical-only). Phase 1B+ dividend-yield strategies blocked.
+- **Severity:** HIGH for Phase 1B; informational for Phase 1A.
+- **Status:** open
+- **Next action:**
+  - Re-launch `scripts/prefetch_polygon_corp_actions.py` at full Master Universe scope
+  - Verify it writes to canonical `data_prefetch/polygon/dividends/` + `data_prefetch/polygon/splits/`
+  - ~2-3h wall clock per the audit estimate
+- **Joint:** PREFETCH_COVERAGE_AUDIT.md row "Polygon dividends/splits"; CHECKLIST #76 (column-b verification confirmed at-most-1-file per dir).
+
+---
+
+## INV-018 — Polygon snapshot/market_status/reference_meta stub dirs (2-3 files each — likely smoke-test artifacts) (Pass 53 Day-9 v8h evening)
+
+- **Discovered:** 2026-05-07 evening; comprehensive prefetch deep-dive audit
+- **Observation:** `data_prefetch/polygon/snapshot/` = 2 files. `data_prefetch/polygon/market_status/` = 2 files. `data_prefetch/polygon/reference_meta/` = 3 files. These dirs exist (created by some test scaffold or G6/G16 wiring) but are not actually populated as part of any canonical prefetch flow. Either: (a) leftover from smoke-test runs, or (b) failed-launch attempts of new prefetch scripts.
+- **Why not blocking:** Real-time-only endpoints (snapshot, market status) cannot be prefetched historically. Reference_meta is a low-priority static dataset.
+- **Severity:** LOW (housekeeping).
+- **Status:** open
+- **Next action:**
+  - Inspect file contents to determine origin
+  - If smoke-test artifacts: delete dirs OR document as "test-output-staging" in canonical doc
+  - If real data: identify the populating mechanism + add to canonical script set
+  - Decide on going-forward strategy: daily-snapshot capture going forward (cron job) OR explicit decision-not-to-cache
+- **Joint:** CHECKLIST #76 column-(b) — paper audit would have reported "snapshot dir exists" without verifying file count; running ls revealed the stub state.
+
+---
+
+## INV-019 — ALFRED 7-series gap behind FRED (recent Tier C additions did not propagate to vintage cache) (Pass 53 Day-9 v8h evening)
+
+- **Discovered:** 2026-05-07 evening; FRED↔ALFRED filesystem diff
+- **Observation:** Diff shows ALFRED missing 7 series that FRED has: DCOILWTICO, DTWEXBGS, INDPRO, RSAFS, TB3SMFFM, VIXCLS, VXVCLS. These are exactly the Tier C additions made in this Pass 53 session via `prefetch_macro.py` extension — they were added to FRED prefetch but the equivalent ALFRED prefetch script (which mirrors FRED with vintage realtime_start parameter) was not updated.
+- **Why not blocking:** ALFRED vintages are needed only for revision-aware strategies (Phase 1C+). Phase 1A baseline reads FRED current series.
+- **Severity:** MEDIUM (Phase 1C blocker; non-blocking for Phase 1A/1B).
+- **Status:** open
+- **Next action:**
+  - Locate canonical ALFRED prefetch script (NOT in `scripts/` per current inventory — orphan-script issue per INV-021)
+  - Mirror the 7 new FRED series into ALFRED with `realtime_start` + `realtime_end` parameters
+  - ~5 min wall clock
+- **Joint:** INV-021 (orphan prefetch scripts); INV-020 (canonical-source rule violated for FRED prefetch script).
+
+---
+
+## INV-020 — `prefetch_macro.py` SERIES dict (21 entries) ≠ actual cache (57 series) — script doc out-of-sync with state (Pass 53 Day-9 v8h evening)
+
+- **Discovered:** 2026-05-07 evening; read of `scripts/prefetch_macro.py` + filesystem walk
+- **Observation:** `scripts/prefetch_macro.py` SERIES dict has 21 entries (yield_curve, fed_funds, unemployment, cpi, ..., gold_price). Actual `data_prefetch/fred/observations/` has 57 parquet files. The 36-series gap (e.g. AAA, BAMLC0A0CM, DGS1, GDP, PAYEMS, MORTGAGE30US, NFCI, STLFSI4, etc.) was populated by **some other mechanism not visible in the canonical prefetch script** — could be older script versions deleted from `scripts/`, an inline GH Actions workflow doing extra fetches, manual one-off runs, or notebook-driven prefetch.
+- **Why not blocking:** Series ARE cached and consumable. The issue is **canonical-source-of-truth violation** (CHECKLIST #76 / DEC-456-style integrity rule): the prefetch script is supposed to be the documented source of what's prefetched. When the script disagrees with the cache, refresh / re-prefetch / debugging cycles will follow the wrong canonical source.
+- **Severity:** MEDIUM (process / operational risk).
+- **Status:** open
+- **Next action:**
+  - Update `scripts/prefetch_macro.py` SERIES dict to enumerate ALL 57 cached series + the additional 25-30 recommended in the deep-dive audit
+  - Add a self-check in `main()`: after fetching, scan `data_prefetch/fred/observations/` for series NOT in SERIES dict and warn (catches manual additions going forward)
+  - Add a regression test: `test_prefetch_macro_series_dict_matches_cache` — verifies SERIES.values() superset of cached parquet stems
+- **Joint:** INV-021 (orphan scripts — same root); CHECKLIST #76 (canonical-source verification was the column-(b) probe that surfaced this); DEC-456 (data integrity rule).
+
+---
+
+## INV-021 — Orphan cache directories without canonical prefetch scripts (AAII / CNN F&G / FRED-extras / ALFRED / pytrends / Wikipedia) (Pass 53 Day-9 v8h evening)
+
+- **Discovered:** 2026-05-07 evening; `scripts/prefetch_*.py` ↔ `data_prefetch/*/` cross-inventory
+- **Observation:** Multiple cache directories in `data_prefetch/` are populated but have NO matching prefetch script in `scripts/` AND NO matching workflow in `.github/workflows/`:
+  - `data_prefetch/aaii/weekly_sentiment.parquet` — no `prefetch_aaii.py`
+  - `data_prefetch/cnn_fg/daily.parquet` + 7 components — no `prefetch_cnn_fg.py`
+  - `data_prefetch/alfred/` 50 series — no `prefetch_alfred.py`
+  - `data_prefetch/pytrends/` 1417 files — no `prefetch_pytrends.py`
+  - `data_prefetch/wikipedia/` 1414 files — no `prefetch_wikipedia.py`
+  - `data_prefetch/cftc/` 19 contracts — has script `prefetch_cftc_cot.py` (resolved this case)
+  - 36 of 57 FRED series — `prefetch_macro.py` only enumerates 21 (INV-020)
+- **Why not blocking:** Caches are populated and consumable. The data is there.
+- **Severity:** MEDIUM (operational debt — when refresh is needed, no canonical entry-point exists; team-knowledge dependency).
+- **Status:** open
+- **Next action:**
+  - Author canonical prefetch scripts for each orphan source (5 scripts: aaii, cnn_fg, alfred, pytrends, wikipedia)
+  - Each script reads existing cache → extracts series/ticker list → re-fetches at canonical schema → writes canonical path
+  - Add to `.github/workflows/` for periodic refresh
+  - Pyramid + smoke per CHECKLIST #75 strict
+  - Estimated ~6-8h aggregate
+- **Joint:** INV-020 (FRED variant); INV-019 (ALFRED variant — extension of this); CHECKLIST #44 (data-consumption audit must include runtime probe — same root pattern).
+
+---
+
+## INV-022 — Legacy `backtest/data/cache/quiver/` directory empty but not deleted (Pass 53 Day-9 v8h evening)
+
+- **Discovered:** 2026-05-07 evening; legacy cache walk
+- **Observation:** `backtest/data/cache/quiver/` = 0 files. The Quiver migration to `data_prefetch/quiver/` (Sprint 0A canonical path per L146) deleted contents but left the parent directory. Empty dir is harmless but signals incomplete migration cleanup.
+- **Why not blocking:** Trivial.
+- **Severity:** LOW (housekeeping).
+- **Status:** open
+- **Next action:** delete the empty directory + add `.gitignore` entry to ensure it doesn't reappear; OR document explicitly in canonical doc that it's a deprecated path.
+- **Joint:** L146 wiring matrix (Quiver migration); INV-020/021 (canonical-source-of-truth pattern).
+
+---
+
 *Last updated: 2026-05-07 evening (Pass 53 Day-9 v8h ongoing)*

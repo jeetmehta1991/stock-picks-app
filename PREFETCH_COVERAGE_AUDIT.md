@@ -11,6 +11,315 @@ Last full inventory: 2026-05-07 evening. Master Universe = 1937 unique tickers.
 
 ---
 
+## Pass 53 Day-9 v8h evening DEEP DIVE per owner directive 2026-05-07
+
+**Owner directive:** *"I want all data downloaded from API endpoints with all dimensions pre-fetched. No exceptions. Even if its relevant later on beyond phase 1A, i need to download it now. I am going to pause API subscriptions so i need it all downloaded even if we do not have plan to use it. Download broad everything and use as needed is the goal."*
+
+**Goal:** comprehensive audit beyond surface-level — every API, every endpoint we have access to (paid or free), every dimension. Surface every gap, abnormality, and "doesn't look normal" issue.
+
+**Method per #76:** column (a) observation = filesystem inventory + script read + checkpoint cross-check; column (b) verification at audit time = (1) `ls data_prefetch/**` filesystem walk, (2) `ls backtest/data/cache/**` legacy walk, (3) `ls scripts/prefetch_*.py` + `ls .github/workflows/prefetch_*.yml` script inventory, (4) `grep os.environ.get .._API_KEY` keyholder probe, (5) FRED↔ALFRED diff, (6) `_checkpoint.json` ↔ filesystem diff, (7) read of `prefetch_macro.py` + `prefetch_polygon_reference.py` + `prefetch_apewisdom_daily.py` for canonical-source verification; column (c) recommendation = bottom of section.
+
+### Deep-dive headline findings (sorted by severity)
+
+| # | Finding | Severity | Action |
+|---|---|---|---|
+| 1 | **8 NEW INV flags** logged this audit (INV-015..INV-022) — silent gaps + drift | varies | per-INV |
+| 2 | **Alpha Vantage news cached only 25 files** (letter range C..X partial) — prefetch died mid-run | HIGH | INV-015 |
+| 3 | **Finnhub news 509 files = S&P-only** (NOT expanded to 1937 Master Universe) | HIGH | INV-016 |
+| 4 | **Polygon dividends/splits canonical paths = 1 file each** — corp_actions prefetch never completed at universe scope | HIGH (P0/Phase 1B) | INV-017 |
+| 5 | **prefetch_macro.py SERIES dict (21) ≠ cache state (57)** — script doc out-of-sync with actual cache; canonical-source rule violated | MEDIUM (process) | INV-020 |
+| 6 | **NO prefetch scripts exist for AAII / CNN F&G / FRED-extras / ALFRED / pytrends / Wikipedia / CFTC** — orphan cache dirs without canonical refresh path | MEDIUM (operational debt) | INV-021 |
+| 7 | **ALFRED 7-series gap behind FRED** (recent Tier C additions didn't propagate to vintage cache) | MEDIUM | INV-019 |
+| 8 | **Polygon snapshot / market_status / reference_meta stub dirs (2-3 files each)** — looks like smoke-test artifacts, not real prefetch | LOW (low-priority endpoints) | INV-018 |
+| 9 | **Legacy `backtest/data/cache/quiver/` directory empty** but not deleted | LOW (housekeeping) | INV-022 |
+| 10 | DEC-491 trade_log.parquet silent degrade (caught earlier this session) | MEDIUM | INV-014 (already logged) |
+
+### Per-API endpoint inventory + gap matrix
+
+(format = column-(a) observation / column-(b) verification step / column-(c) recommendation)
+
+#### **A. Polygon Stocks Starter ($29/mo)** — verified via API_AUDIT.md §2
+
+| Endpoint | Cached? | Coverage | Verified | Recommendation | Priority | Blocker |
+|---|---|---|---|---|---|---|
+| `/v2/aggs/ticker/{t}/range/.../day` (OHLCV) | YES | 2123 (109%) | filesystem + smoke earlier | Already complete. | — | resolved |
+| `/v2/reference/news` | YES | 1926 (99.4%) | filesystem | Top-up missing 11 tickers (~5 min) | P2 | non-blocking |
+| `/vX/reference/financials` | YES | 1746 (90.1%) | filesystem | Top-up missing 191 (~30 min) | P1 | Phase 1B |
+| `/v3/reference/tickers/{t}` | IN FLIGHT | BG `b9xczleu2` ~1133/1937 | live BG read | Wait for BG to complete (~30 min more); confirms 100% | P0 | **Phase 1A** |
+| `/v3/reference/tickers/{t}/events` | YES | 1687 (87.1%) | filesystem | Top-up missing 250 (~30 min). Spec says other event types (delisting, IPO, etc.) possible — only ticker_change observed; probe other types. | P1 + new probe | Phase 1B |
+| `/v3/reference/dividends` | **PARTIAL** | 1 file canonical / 2 legacy | filesystem + INV-017 | NEW PREFETCH at 1937 universe scope. Estimated 2-3h. | P1 | Phase 1B |
+| `/v3/reference/splits` | **PARTIAL** | 1 file canonical / 2 legacy | filesystem + INV-017 | NEW PREFETCH at 1937 universe. Estimated 2-3h. | P1 | Phase 1B |
+| `/v1/indicators/sma` `/ema` `/rsi` `/macd` | NO | 0 | not-cached + API_AUDIT.md confirms NO | Polygon-precomputed indicators — we compute locally, but **owner directive says download anyway**. Estimated 4 endpoints × 1937 = 7748 fetches. ~3-5h. | P2 (per owner directive) | non-blocking |
+| `/v3/quotes/{t}` (NBBO historical) | NO | 0 | API_AUDIT.md NO | Useful for slippage calibration. Stocks Starter includes 5+ years intraday. Storage cost ~5-50 GB depending on resolution. **Per owner directive: download.** Probe for tier limits first. | P2 | non-blocking — new infrastructure |
+| `/v3/trades/{t}` (tick) | NO | 0 | API_AUDIT.md OUT OF SCOPE | Tick data — high storage. **Per owner: download.** Probe storage feasibility first. | P3 | informational |
+| `/v3/snapshot/locale/us/markets/stocks/tickers` | STUB | 2 files | filesystem | Real-time only — not prefetchable at historical cadence. Daily-snapshot capture possible going forward. **Per owner: set up daily capture.** | P2 | Stage 3+ |
+| `/v1/marketstatus/now` | STUB | 2 files | filesystem | Real-time only. Daily capture going forward. | P3 | informational |
+| `/v1/marketstatus/upcoming` (holidays) | STUB | files unclear | filesystem | Static reference — small. **Cache once.** ~5 min. | P2 | non-blocking |
+| `/v3/reference/conditions` | NO | 0 | API_AUDIT.md NO | Trade/quote condition codes — small static reference. ~5 min. | P3 | informational |
+| `/v3/reference/exchanges` | NO | 0 | not-cached | Exchange list — small static. ~2 min. | P3 | informational |
+| `/v2/snapshot/locale/us/markets/stocks/gainers` | NO | 0 | not-cached | Real-time gainers — daily snapshot going forward. | P3 | Stage 3+ |
+| `/v2/snapshot/locale/us/markets/stocks/losers` | NO | 0 | not-cached | Same. | P3 | Stage 3+ |
+| `/v1/open-close/{t}/{date}` | NO | 0 | not-cached | Per-ticker daily summary. Overlap with `/v2/aggs/.../day` — redundant. | P3 | skip |
+| `/v2/last/trade/{t}` | NO | 0 | API_AUDIT.md OUT OF SCOPE | Real-time only. | — | skip |
+| Treasury yields endpoint | NO | 0 | FRED authoritative | Skip — FRED has more series + ALFRED vintage. | — | skip |
+| Options endpoints | NO | 0 | NOT in Stocks Starter tier | **Verify subscription tier** — Options Starter is separate ($79/mo). If we DON'T have it, can't download. **OWNER QUESTION: do we have Options Starter access?** | TBD | confirm tier first |
+
+#### **B. Quiver Trader (~$150/yr)** — verified by current BG `bsu432hbt` + API_AUDIT.md
+
+| Endpoint | Cached? | Coverage | Verified | Recommendation | Priority | Blocker |
+|---|---|---|---|---|---|---|
+| `historical/congresstrading/{t}` | IN FLIGHT | 1864/1937 (96%) | live BG | wait + commit on completion | P0 | **Phase 1A** |
+| `live/insiders?ticker={t}` | IN FLIGHT | 509 baseline | BG queued | wait | P0 | **Phase 1A** |
+| `live/sec13f?ticker={t}` | IN FLIGHT | 509 baseline | BG queued | wait | P0 | **Phase 1A** |
+| `historical/govcontracts/{t}` | IN FLIGHT | 509 baseline | BG queued | wait | P0 | **Phase 1A** |
+| `historical/lobbying/{t}` | IN FLIGHT | 509 baseline | BG queued | wait | P1 | Phase 1B |
+| `historical/wikipedia/{t}` (Quiver mirror) | DELETED (INV-006/013) | 0 effective | filesystem | leave as-is — canonical at `data_prefetch/wikipedia/` | — | resolved |
+| `historical/wallstreetbets/{t}` | IN FLIGHT | 509 baseline | BG queued | wait | P1 | Phase 1B |
+| `live/offexchange?ticker={t}` (dark pool) | YES | 1851 (95.6%) | filesystem | Top-up missing 86 | P2 | non-blocking |
+| `live/sec13fchanges?ticker={t}` | bulk | 1 global parquet | filesystem | Already canonical bulk | — | resolved |
+| `live/topshareholders?ticker={t}` | YES | 1937 (100%) | filesystem | INV-008 — no PIT dim. Schedule 1×/quarter snapshot capture. | P3 | Stage 3+ |
+| `live/etfholdings?ticker={t}` | YES | 1563 (80.7%) | filesystem | Top-up missing 374 | P2 | non-blocking |
+| `live/corporatedonors?ticker={t}` | bulk | 1 global parquet | filesystem | Already canonical bulk | — | resolved |
+| `live/patentmomentum?ticker={t}` | bulk | 1 global parquet | filesystem | INV-N — patent momentum bulk only goes to 2022; **probe Quiver for 2024-2026 extension** | P2 | new probe |
+| `live/quivernews?ticker={t}` | bulk | 1 global parquet | filesystem | Bulk only; OK | — | resolved |
+| **MISSING per Quiver docs** | | | | | | |
+| `live/twitter?ticker={t}` | NO | 0 | INV-012 verified 0 records for AAPL | Probe 5 different tickers — if any data, prefetch all 1937. | P2 (per owner) | new probe |
+| `live/iposcalendar` | NO | 0 | INV-012 verified 404 | Probe again with correct path; if 404, defer | P3 | confirm |
+| `live/spacs` | NO | 0 | INV-012 404 | Same | P3 | confirm |
+| `live/optionsflow?ticker={t}` | NO | 0 | INV-012 404 | Confirm not in Trader plan | P3 | confirm |
+| `live/earningsbeats?ticker={t}` | NO | 0 | INV-012 404 | Confirm not in Trader plan | P3 | confirm |
+| `live/dividends?ticker={t}` | NO | 0 | not-probed | Probe — if exists, use over Polygon (Quiver has 0% gap) | P2 | new probe |
+| `live/splits?ticker={t}` | NO | 0 | not-probed | Same | P2 | new probe |
+| `live/senateindustry?ticker={t}` | NO | 0 | not-probed | Senate-only sub-feed — probe | P2 | new probe |
+| `live/housemtg?ticker={t}` | NO | 0 | not-probed | House Member Trades sub-feed — probe | P2 | new probe |
+| `live/snptrend` | NO | 0 | not-probed | S&P 500 sentiment trend — probe | P2 | new probe |
+| `live/redditpoliticians` | NO | 0 | not-probed | Reddit politicians — probe | P3 | new probe |
+| `live/swaps` | NO | 0 | not-probed | Swaps reporting — probe | P3 | new probe |
+
+#### **C. SEC EDGAR (free)** — 11 forms cached
+
+| Form Type | Cached? | Coverage | Recommendation | Priority |
+|---|---|---|---|---|
+| 4 (insider) | YES | 1717/1937 (88.6%) | Top-up missing 220 (~1h) | P1 |
+| 8-K | YES | 1715/1937 (88.5%) | Top-up missing 222 (~1h) | P1 |
+| SC 13D | YES | 1715/1937 (88.5%) | Top-up missing 222 (~2h) | P1 |
+| SC 13G | YES | 1722/1937 (88.9%) | Top-up missing 215 (~1h) | P2 |
+| 10-K | YES | 1683/1937 (86.9%) | Top-up missing 254 (~2h) | P1 |
+| 10-Q | YES | 1683/1937 (86.9%) | Same | P1 |
+| DEF 14A (proxy) | YES | 1683/1937 (86.9%) | Top-up missing 254 (~1h) | P2 |
+| S-1 | YES | 1683/1937 (86.9%) | Same | P2 |
+| S-1/A | YES | 1683/1937 (86.9%) | Same | P2 |
+| SC 13D/A | YES | 1683/1937 (86.9%) | Same | P2 |
+| SC 13G/A | YES | 1683/1937 (86.9%) | Same | P2 |
+| **MISSING forms** | | | | |
+| Form 3 (initial insider stmt) | NO | 0 | NEW prefetch | P2 |
+| Form 5 (annual insider stmt) | NO | 0 | NEW prefetch | P3 |
+| 11-K (employee benefits) | NO | 0 | NEW prefetch | P3 |
+| 6-K (foreign filer) | NO | 0 | NEW prefetch — covers ADRs / cross-listed | P2 |
+| 20-F (foreign annual) | NO | 0 | NEW prefetch | P2 |
+| 40-F (Canadian annual) | NO | 0 | NEW prefetch | P3 |
+| 425 (M&A solicitation) | NO | 0 | NEW prefetch — useful for M&A strategy signals | P2 |
+| 13F-HR (institutional bulk) | NO | 0 | Skip — Quiver `sec13fchanges` redundant | — |
+| S-3 (shelf registration) | NO | 0 | NEW prefetch — pre-issuance signal | P3 |
+| F-1 (foreign IPO) | NO | 0 | NEW prefetch — T2 enrichment | P3 |
+| SD (specialized disclosures) | NO | 0 | NEW prefetch | P3 |
+| 144 (Rule 144 insider) | NO | 0 | NEW prefetch — insider sale notice | P2 |
+| POS AM (post-effective amend) | NO | 0 | NEW prefetch | P3 |
+| 8-A12B / 8-A12G (registration) | NO | 0 | NEW prefetch | P3 |
+
+#### **D. FRED (free)** — 57 series cached
+
+INV-020 surfaced: `prefetch_macro.py` SERIES dict has 21 entries; cache has 57. The 36-series gap was populated by some other mechanism (not in `scripts/`, not in `.github/workflows/`). **Canonical source rule violated** — the prefetcher script is no longer the source of truth for what's actually fetched.
+
+Cached series (alphabetical): A191RL1Q225SBEA, AAA, AAA10Y, AHETPI, BAA, BAA10Y, BAMLC0A0CM, BAMLC0A4CBBB, BAMLH0A0HYM2, CCSA, CIVPART, CPIAUCSL, CPILFESL, DCOILWTICO, DFEDTARU, DFF, DGS1, DGS10, DGS1MO, DGS2, DGS30, DGS3MO, DGS5, DGS6MO, DTWEXBGS, FEDFUNDS, FYFSGDA188S, GDP, GDPC1, HOUST, ICSA, INDPRO, M2SL, MORTGAGE30US, NFCI, PAYEMS, PCEPI, PCEPILFE, PERMIT, PPIACO, PPIFIS, RECPROUSM156N, RSAFS, STLFSI4, T10Y2Y, T10Y3M, T10YIE, T5YIE, TB3SMFFM, U6RATE, UMCSENT, UNRATE, USPRIV, USREC, VIXCLS, VXVCLS, WALCL.
+
+**Recommended additions (per owner directive — broad-everything):**
+- TIPS yields: DFII5, DFII10, DFII30 (real yields)
+- Forward inflation: T5YIFR (5y5y forward breakeven)
+- Productivity: OPHNFB, ULCNFB
+- Labor sub-aggregates: USCONS, USTRADE, USMINE, USINFO, USFIRE, USEHS, USLAH, USSERV, USGOVT
+- Regional Fed indices: KCFSI, NYFRBLAUP
+- Money supply: M1SL, BOGMBASE
+- Consumer credit: TOTALSL
+- Housing: CSUSHPINSA, MSPUS
+- Manufacturing: AMTMNO (new orders), AMTMTI (inventories)
+- Yield curves (additional points): DGS20, DGS3
+- Fed balance sheet detail: WALCL (have), TREAST, WGS10YR
+- Foreign curves (sample): IRLTLT01DEM156N (Germany 10y), IRLTLT01GBM156N (UK), IRLTLT01JPM156N (Japan)
+- Commodities prices: PCOPP (copper), PWHEAMTUSDM (wheat)
+- Volatility: VXOCLS (old VIX), VXNCLS (NDX)
+- Currencies: DEXUSEU, DEXJPUS, DEXUSUK, DEXCHUS
+
+**Estimated:** 25-30 new series × 1 fetch each = ~3-5 min wall clock. Trivial.
+
+#### **E. ALFRED (free)** — 50 series, 7 behind FRED
+
+Missing series (per FRED↔ALFRED diff): DCOILWTICO, DTWEXBGS, INDPRO, RSAFS, TB3SMFFM, VIXCLS, VXVCLS — these are the Tier C additions made this session that didn't propagate to ALFRED prefetch. INV-019.
+
+**Action:** mirror new FRED additions to ALFRED. Same prefetch logic, different endpoint (`/series/observations` → `/series/observations` w/ `realtime_start` param). ~5 min.
+
+#### **F. AAII Sentiment (free, manual)** — 1 file (weekly)
+
+Only endpoint AAII publishes is the weekly survey (Bullish/Neutral/Bearish %). No other data feeds. Cache is current. **No gaps. Done.**
+
+INV-021 flag: no canonical prefetch script in `scripts/` for AAII — sentiment.py reads parquet but parquet was populated by some external means.
+
+#### **G. CNN Fear & Greed (free, scrape)** — composite + 7 components
+
+DEC-498 confirmed the 7 sub-components (junk_bond_demand, market_momentum_sp500, market_volatility_vix, put_call_options, safe_haven_demand, stock_price_breadth, stock_price_strength). All 7 cached. **Done.**
+
+INV-021 flag: no canonical prefetch script in `scripts/` for CNN F&G.
+
+#### **H. CFTC COT (free, Socrata)** — 19 contracts
+
+Comprehensive financial coverage (e-mini SP500/NDX/RUT/Dow/VIX/treasury 2y/5y/10y/ultra/bond, fed funds, copper, gold, silver, dxy, eur/usd, jpy/usd, natural gas, wti). **Recommended additions (per owner — broad everything):**
+- Agricultural: corn, wheat, soybeans, cattle, lean hogs, sugar, cotton, cocoa, coffee, OJ — ~10 contracts
+- Other financials: 2-year+ Eurodollar, SOFR, GBP/USD, AUD/USD, CHF/USD, CAD/USD, NZD/USD — ~7 contracts
+- Energy: Brent crude, heating oil, gasoline, propane — ~4 contracts
+- Metals: platinum, palladium, lead, zinc, tin, aluminum — ~6 contracts
+
+**Estimated:** ~27 new contracts × 1 endpoint = ~5 min. Trivial.
+
+#### **I. Apewisdom (free, public)** — 1 file (global daily)
+
+Cached endpoint: `/api/v1.0/filter/all-stocks` (top-trending across all subreddits). Other Apewisdom endpoints:
+- `/api/v1.0/filter/wallstreetbets` — WSB-only timeline
+- `/api/v1.0/filter/stocks` — r/stocks subreddit-only
+- `/api/v1.0/filter/stockmarket` — r/stockmarket
+- `/api/v1.0/filter/options` — r/options
+- `/api/v1.0/filter/CryptoCurrency` — out of scope
+- Per-ticker historical (if API supports — needs probe)
+
+**Recommended:** add 4 subreddit-specific endpoints; probe per-ticker history. ~30 min.
+
+#### **J. pytrends (Google Trends free)** — 1417/1937 (73.2%)
+
+Only per-ticker SVI cached. Other dimensions:
+- `interest_by_region(ticker)` — geographic (state-level)
+- `related_queries(ticker)` — co-search analysis
+- `related_topics(ticker)`
+- `trending_searches(country='united_states')` — daily trending
+- `realtime_trending_searches(country='united_states')`
+- `top_charts(year, geo)` — top searches per year
+
+**Recommended:**
+- Top-up missing 520 ticker SVI (~3-4h, rate-limited)
+- Add `interest_by_region` per ticker (1937 × 1 call)
+- Add `related_queries` per ticker (1937 × 1 call)
+- Add daily `trending_searches` going forward (cron)
+
+**Estimated:** ~8-12h total, rate-limited. P2 priority.
+
+#### **K. Wikipedia Pageviews (free)** — 1414/1937 (73.0%)
+
+Cached: per-ticker daily pageviews. Other dimensions:
+- Article revision history (volume of edits per day)
+- Backlinks count
+- Article categories
+- Bytes-changed (proxy for content volatility)
+
+**Recommended:**
+- Top-up missing 523 tickers (~2h)
+- Add daily revision counts per ticker (~2h)
+
+#### **L. Alpha Vantage (free + premium tier?)** — 25 files news ONLY
+
+INV-015 surfaced: AV news cached only 25 files (alphabetical range C..D, X — partial). Looks like prefetch died mid-alphabet. **Major under-coverage.**
+
+**Other AV endpoints we don't use:**
+- `TOP_GAINERS_LOSERS` — daily
+- `LISTING_STATUS` — current + delisted tickers
+- `EARNINGS_CALENDAR` — full historical earnings calendar
+- `IPO_CALENDAR` — upcoming IPOs
+- `INCOME_STATEMENT` / `BALANCE_SHEET` / `CASH_FLOW` — overlap with Polygon financials, but AV has older history
+- `EARNINGS` (historical EPS surprises) — useful for PEAD strategies
+- `OVERVIEW` (company overview)
+- `EARNINGS_CALL_TRANSCRIPTS` (premium)
+- `TIME_SERIES_INTRADAY_EXTENDED` — historical intraday
+- `TECHNICAL_INDICATORS` — 60+ indicators (overlap; we compute)
+- `COMMODITIES` — WTI / Brent / NG / Copper / Aluminum / Wheat / Corn / Sugar / Coffee / etc.
+- `ECONOMIC_INDICATORS` — overlap with FRED
+- `NEWS_SENTIMENT` (cached partial)
+
+**Recommended:**
+- Resolve INV-015: re-prefetch news at full 1937 universe
+- New: TOP_GAINERS_LOSERS daily snapshot
+- New: EARNINGS_CALENDAR (full historical + upcoming)
+- New: EARNINGS (per-ticker EPS surprises)
+- New: COMMODITIES (10+ contracts)
+
+**Estimated:** ~10-15h for full re-prefetch + 4 new endpoints. P1 (news P0 if Phase 1B uses sentiment).
+
+#### **M. Finnhub (free tier)** — 509 files news ONLY (S&P-only)
+
+INV-016 surfaced: Finnhub cache locked at S&P 500 universe — never expanded to 1937.
+
+**Other Finnhub endpoints we don't use:**
+- `/stock/profile2` — company profile (sector, industry, IPO date, market cap)
+- `/stock/insider-transactions` — overlap with Quiver/SEC; potential cross-validation
+- `/stock/insider-sentiment` — Finnhub-derived
+- `/calendar/earnings` — earnings calendar
+- `/calendar/ipo` — IPO calendar
+- `/stock/split` — splits
+- `/stock/dividend` — dividends
+- `/stock/peers` — peer companies (useful for sector-relative strategies)
+- `/stock/recommendation` — analyst recommendation trends
+- `/stock/price-target` — analyst price targets
+- `/stock/eps-surprise` — EPS surprises
+- `/stock/revenue-estimate` — revenue estimates
+- `/stock/eps-estimate` — EPS estimates
+- `/stock/upgrade-downgrade` — rating changes
+- `/stock/social-sentiment` — Reddit/Twitter sentiment
+- `/news` — general market news
+- `/economic/calendar` — economic events calendar
+- `/scan/pattern` — pattern recognition
+- `/scan/support-resistance` — automated S/R
+- `/calendar/economic`
+- `/news-sentiment`
+
+**Recommended:**
+- Resolve INV-016: re-prefetch news at full 1937
+- New: profile2 (sector cross-check vs Polygon)
+- New: insider-sentiment + recommendation + price-target + eps-surprise + upgrade-downgrade — analyst layer for Phase 1B+
+- New: social-sentiment + scan endpoints — pattern/sentiment overlay
+
+**Estimated:** ~8-12h. P1.
+
+### Cross-cutting summary
+
+**Total newly-identified gaps to close (per owner "broad everything"):**
+- Polygon: 7+ endpoints (indicators, quotes, holidays, conditions, exchanges, snapshot daily-capture)
+- Quiver: 8+ endpoints to probe + 4-5 confirmed missing
+- SEC EDGAR: 13 missing form types
+- FRED: 25-30 additional series
+- ALFRED: 7 series gap
+- CFTC: 27 additional contracts
+- Apewisdom: 4 subreddit endpoints + per-ticker history probe
+- pytrends: top-up 520 + 3 dimensional adds
+- Wikipedia: top-up 523 + revision counts
+- Alpha Vantage: 5+ endpoints + news re-prefetch
+- Finnhub: 15+ endpoints + news re-prefetch
+
+**Estimated total wall time** (mostly unattended, rate-limited):
+- P0 (Phase 1A blockers actively in flight): Quiver BG ~6h + Polygon reference BG ~1h
+- P1 (Phase 1B blockers): ~30-40h aggregate
+- P2 (broader / informational per owner directive): ~50-80h aggregate
+- P3 (very informational): ~10-20h aggregate
+
+**Total: ~90-150 hours of API fetch wall time** (most parallelizable; truly elapsed ~24-48h with concurrent jobs).
+
+### Subscription confirmation needed (owner action)
+
+Before scheduling P2/P3 prefetches, confirm:
+1. **Polygon Options Starter** subscription? (separate from Stocks Starter $29/mo)
+2. **Polygon Indices Starter** subscription? (for SPX/NDX/VIX direct vs ETF proxy)
+3. **Quiver Trader plan tier** — does it include twitter/optionsflow/earningsbeats? (INV-012 saw 404 but verification was 1-ticker)
+4. **AlphaVantage premium tier?** (free is rate-limited; premium has higher cap + earnings transcripts)
+5. **Finnhub paid tier?** (free has 60/min; basic paid is much more)
+6. **Any other paid APIs** I haven't enumerated? (Tradier, IEX Cloud, IBKR data feed, OpenBB Pro, Refinitiv?)
+
+---
+
 ## Retrospective enrichment per CHECKLIST #76 (added 2026-05-07 evening)
 
 **Disclosure:** the original audit (commit `c0a3a568`) was a **paper audit only** — file counts, dimension lists, and status fields. It did NOT exercise functional-verification (no smoke runs of prefetch scripts during audit, no pyramid scan over consumer paths, no filesystem↔checkpoint diff, no endpoint discovery probe). Per CHECKLIST #76, this is non-compliant for phase-gating use without retrofit.
