@@ -31550,3 +31550,29 @@ Zero regressions across existing 581 tests post-DEC-514 changes.
 
 **Day 9 v8e — DEC-514 implementation complete. Final Phase 1A blocker resolved. 22 new tests; full pyramid 619 PASS. May 15 Phase 1A start UNBLOCKED across all known dimensions.**
 
+
+### H3 dress rehearsal post-DEC-514 — material bias quantified
+
+H3 re-run after DEC-514 implementation (commit `0b593d1f`):
+- Wall time: 7.6 min, exit code 0
+- Closed trades: **518** (vs 449 pre-DEC-514 on identical universe + window)
+- All 4 Day-9 artifacts emit cleanly (verdict_cube 311 cells, multi_dim_cube 364, sweet_spots 18, pairwise_dominance 1326)
+- Regime distribution unchanged (bull=200 / neutral=60 / crisis=0) — VIX fix preserved
+
+**Critical bias quantification (validates DEC-514 was a real bug, not theoretical):**
+
+| Metric | Pre-DEC-514 (silent bug) | Post-DEC-514 (correct) | Delta |
+|---|---|---|---|
+| Closed trades | 449 | 518 | +69 (15% more — gap-through stops trigger more exits) |
+| Portfolio return (1y / 25-tkr) | -11.7% | **-32.2%** | **-20.5pp** revealed |
+| Stop-fills below stop level | n/a (impossible pre-fix) | **151 of 518 (29.2%)** | — |
+| Avg shortfall vs stop on gap-throughs | n/a | **-9.32%** | — |
+
+**Interpretation:** ~29% of stop/trail exits were gap-through events; on average, the bar opened 9.3% below the stop. Pre-DEC-514 silently filled at the stop, hiding ~9% of loss per gap event. Cumulatively over 1 year × 25 tickers, this hidden bias was -20pp on portfolio return.
+
+**Implication for prior backtest results:** every result computed before this commit (`0b593d1f`) carries the same bias direction. Magnitude varies with regime volatility — calmer periods have fewer gap-throughs; volatile/crisis periods have more. The 2023 dress rehearsal sample spans calm-bull regime, so -20pp is likely a **lower-bound** on the bias scale; volatile/crisis samples will see larger corrections.
+
+**Phase 1A May 15 implication:** previously-passing strategies may now fail the 9 passing criteria once realistic gap-fill losses are counted. This is the right outcome — Phase 1A measures real strategies, not optimistic ones.
+
+This finding validates the DEC-514 audit: the bug was real, material, and affected every backtest result since project start. Same pattern as BUG-VIX-PROXY (silent biases that pyramid-style verification finally caught).
+
