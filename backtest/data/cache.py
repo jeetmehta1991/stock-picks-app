@@ -123,16 +123,56 @@ def get_ohlcv(
     cached_end_str = index.get(ticker, {}).get("end")
     cached_start_str = index.get(ticker, {}).get("start")
 
+    # Pass 53 H6 fix 2026-05-07: cache now uses Schema-B (RangeIndex + date col)
+    # post Polygon migration. Auto-detect index.json staleness by checking actual
+    # file if cache_file exists but index entry missing OR appears stale.
+    if not force_refresh and cache_file.exists() and (not cached_start_str or not cached_end_str):
+        # Index missing — derive from file
+        try:
+            df_check = pd.read_parquet(cache_file)
+            if "date" in df_check.columns:
+                dates_series = pd.to_datetime(df_check["date"])
+                cached_start_str = str(dates_series.min().date())
+                cached_end_str = str(dates_series.max().date())
+            elif isinstance(df_check.index, pd.DatetimeIndex):
+                cached_start_str = str(df_check.index.min().date())
+                cached_end_str = str(df_check.index.max().date())
+            # Update index.json for future calls
+            index[ticker] = {
+                "start": cached_start_str,
+                "end": cached_end_str,
+                "rows": len(df_check),
+            }
+            _save_index(index)
+        except Exception as exc:
+            logger.debug("Cache index recovery failed for %s: %s", ticker, exc)
+
     # Load from cache if available and covers the range
     if (not force_refresh and cache_file.exists() and cached_end_str and cached_start_str):
         cached_start = date.fromisoformat(cached_start_str)
         cached_end   = date.fromisoformat(cached_end_str)
 
-        if cached_start <= start and cached_end >= end:
+        # Pass 53 H6 fix 2026-05-07: relax strict-coverage check to ±7 day buffer
+        # to handle weekend/holiday boundary cases (e.g., request start 2020-01-01
+        # vs cache start 2020-01-02 = first trading day after New Year). Mask
+        # filter at end already constrains to actual request range.
+        from datetime import timedelta as _td
+        if cached_start <= start + _td(days=7) and cached_end >= end - _td(days=7):
             # Full cache hit
             try:
                 df = pd.read_parquet(cache_file)
-                df.index = pd.to_datetime(df.index).tz_localize(None)
+                # Pass 53 H6 fix: detect Schema-B (date col + RangeIndex) vs
+                # legacy Schema-A (DatetimeIndex). Normalize to DatetimeIndex.
+                if "date" in df.columns:
+                    dt = pd.to_datetime(df["date"])
+                    if isinstance(dt.dtype, pd.DatetimeTZDtype):
+                        dt = dt.dt.tz_localize(None)
+                    df["date"] = dt
+                    df = df.set_index("date").sort_index()
+                else:
+                    df.index = pd.to_datetime(df.index)
+                    if df.index.tz is not None:
+                        df.index = df.index.tz_localize(None)
                 mask = (df.index.date >= start) & (df.index.date <= end)
                 logger.debug("Cache hit: %s (%d rows)", ticker, mask.sum())
                 return df[mask]

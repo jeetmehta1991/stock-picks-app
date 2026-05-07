@@ -251,6 +251,10 @@ class BacktestEngine:
         spy_ema   = get_spy_ema200(self.spy_df, as_of) if self.spy_df is not None else None
         regime_ctx = get_regime_context(vix, spy_close, spy_ema)
         regime     = regime_ctx["regime"]
+        # Pass 53 fix 2026-05-07: hoist crisis_flag to function scope so it's
+        # defined before line 299 (was UnboundLocalError when regime != crisis
+        # and inner-loop set never executed). Per DEC-316 unknown regime exists.
+        crisis_flag = regime == "crisis"
         # Note: regime_ctx used for direction gating only — no position sizing in backtest
 
         # ── 3. Build today's bars for exit manager ──
