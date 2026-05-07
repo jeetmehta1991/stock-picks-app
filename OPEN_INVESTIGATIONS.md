@@ -16,9 +16,11 @@ Format per entry:
 
 - **Discovered:** 2026-05-07; smoke v4 cross-regime run (bg `b3giyk7i1`, commit `df3762fd`)
 - **Observation:** 5-tkr × 4y (2020-2024) smoke produced 77 closed trades, **all with `regime_at_entry = "neutral"`**. Yet screener-day classification across the same window correctly showed all 4 regimes: bull 450 / neutral 772 / bear 46 / crisis 36 days.
-- **Why not blocking:** Small 5-ticker test with 77 trades. At Phase 1A scale (1937 tickers, expected 50-200K trades) the pattern most likely won't replicate. May simply be that these 5 tickers (AAPL/JPM/XOM/TSLA/SPY) only had screen-passing setups during neutral periods.
-- **Status:** open
-- **Next action:** if Phase 1A baseline run also shows trades-only-in-neutral, this is a real bug — investigate engine code path that records `regime_at_entry` on OpenTrade vs ClosedTrade.
+- **Status:** ✅ **RESOLVED 2026-05-07 (Pass 53 Day-9 v8h P1.C5 investigation)**
+- **Root cause:** Inspection of `output_smoke_v4_cross_regime/skipped_trades.csv` showed **3503 of 3921 skips with reason `level_6_halt_dd_-0.173` to `-0.243`** — the DEC-515 Level 6 portfolio drawdown circuit breaker firing. All 77 trades opened in **January 2022 only** (entry_date 2022-01-03 to 2022-01-31). Jan 2022 VIX was 17-28 / SPY mixed → neutral regime classification (correct per DEC-316 classifier rules: crisis ≥40, bear ≥30 + SPY-down, bull <20 + SPY-up, else neutral). After Jan 2022 the small 5-ticker portfolio drew down >15% (Level 6 trigger threshold), the halt activated, and the small portfolio could not recover above the 5% recovery threshold for the rest of the 4-year window.
+- **NOT A BUG:** This is DEC-515 working correctly at tiny universe scale + a real early-2022 bear-market drawdown. The trade-level regime=100% neutral is a correct artifact of all-entries-in-Jan-2022 + Jan-2022-was-neutral.
+- **Phase 1A implication:** At full 1937-tkr scale, portfolio drawdown calculation aggregates across orders of magnitude more positions; Level 6 trigger far less likely to fire from concentrated early-2022 losses; recovery far more likely. Pattern will not replicate.
+- **Verification path:** When Phase 1A baseline runs at full scale, trade-level regime distribution should span all 4 regimes (bull/neutral/bear/crisis) in proportion to entry-day market state. If Phase 1A still shows 100% neutral, re-investigate.
 
 ---
 
