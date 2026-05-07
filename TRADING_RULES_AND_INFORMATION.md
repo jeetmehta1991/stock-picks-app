@@ -554,10 +554,20 @@ This contract is recommended for Categories 1-6 too (per signal-universe review 
 - **Smart money adjacent signals (canonical):** §10.9
 - **API endpoint inventory per source:** §13.12
 - **Regime classification using macro signals:** §10
-- **Strategy roster consumption of signals:** STRATEGY_REGISTER.md
-- **Cube dimensions consuming signals as filters:** §21
+- **Strategy roster consumption of signals:** STRATEGY_REGISTER.md + STRATEGY_ROSTER_FULL.md (Pass 53 expansion to 199 strategies per DEC-509/510)
+- **Cube dimensions consuming signals as filters:** §21 (revised per DEC-569 5 primary + 12 drilldown post Pass 53 R7-09)
 - **PIT enforcement for all signals:** §12 (DEC-305 RAISE not WARNING)
 - **Signal-cleanup decisions:** DEC-453 (OpenBB), DEC-454 (Alpha Vantage), DEC-455 (Finnhub) — Sprint 4 deprecation cleanup; DEC-440 (Polygon news replaces AV+Finnhub); DEC-484 (SEC EDGAR replaces FMP for fundamentals)
+
+### 2A.9 Pass 53 Doc-Reconciliation Cross-Refs (DEC-588 — NEW Day-6 propagation)
+
+Per DEC-588 doc-reconciliation pass (Pass 53 Day 6-7 of 9-day window) executed 2026-05-07: signal-universe-related Pass 53 DECs are codified canonically at §23.x and cross-referenced into this section for top-to-bottom readability.
+
+- **DEC-509 — Layer 1.I 38 short-side strategies for buy-the-dip-sell-the-rip symmetry:** strategy roster expanded to 199 classes (was 134); short-side strategies consume same Category 1 technical signals as long-side counterparts (mirror logic). See STRATEGY_ROSTER_FULL.md Layer 1.I 134-171.
+- **DEC-510 — Layer 5 regime-eligibility flag schema overlay:** strategies tag which regime(s) they're eligible to fire in (calm/neutral/volatile/crisis); flag consumes regime classification from §10. See STRATEGY_ROSTER_FULL.md Layer 5.
+- **DEC-511 — Category 7 universe-level signals (NEW):** ~25-30 fields across 5 modules (cross_sectional_ranks / breadth_indicators / correlation_matrix / factor_exposures / sector_rs). Sprint pre-Phase-1A blocker. See §2A.7 above for full inventory.
+- **DEC-512 — Sentiment-extension fields (DEC-511 sub-decision):** AAII bullish_minus_bearish_30d_zscore + cnn_fg_score + cnn_fg_components + Apewisdom mention deltas + pytrends search-volume zscore. Stage-2 forward-only Apewisdom per DEC-592.
+- **DEC-513 — Macro-extension fields (P1):** realized_vol (3 horizons: 5d/21d/63d), beta (3 windows: 60d/120d/250d), overnight/intraday return split (2 fields), gap classification (5 levels: -3σ/-2σ/-1σ/+1σ/+2σ/+3σ). Adds 10 fields to Category 4. See §2A.4.
 
 **Source code paths (engineering verification):**
 - Category 1: `backtest/signals/technical.py` (26 fns aggregated by `compute_all_signals()`)
