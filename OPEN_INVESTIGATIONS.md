@@ -92,4 +92,37 @@ Format per entry:
 
 ---
 
-*Last updated: 2026-05-07 (Pass 53 Day-9 v8h)*
+## INV-009 — Sync small-test of paginated-global scripts can overwrite background-job output
+
+- **Discovered:** 2026-05-07 (Pass 53 Day-9 v8h prefetch session)
+- **Observation:** I ran `python scripts/prefetch_polygon_corp_actions.py --tickers AAPL` to smoke-test the script while it was already running in the background as job `bswwwh1w5` (no --tickers, doing global pagination). The script writes to a SINGLE shared file `data_prefetch/polygon/dividends/all_dividends.parquet` rather than appending. The single-AAPL test (20 rows) overwrote the global pull's output. Re-launched as `b4jd6ij18` to recover.
+- **Why not blocking:** Splits file (`all_splits.parquet`) was unaffected (smoke test was dividends-only); re-run recovered the dividend data.
+- **Status:** open — process / habit fix
+- **Next action:**
+  - When verifying a script, prefer scripts that write per-ticker (so parallel writes don't conflict) OR run smoke test on a non-conflicting output dir
+  - Add a flag to scripts that write singletons (e.g. `--out-suffix _smoketest`) to redirect output during testing
+  - Update CHECKLIST.md #13/#22 to explicitly call out shared-file scripts as a parallelism trap
+
+---
+
+## INV-010 — VVIX not on FRED (CBOE-only series)
+
+- **Discovered:** 2026-05-07 (Pass 53 Day-9 v8h Tier C2 FRED prefetch)
+- **Observation:** Tried to fetch VVIX (vol of VIX) from FRED — series ID `VVIXCLS` returns 400 Bad Request. CBOE provides VVIX directly but doesn't release it to FRED.
+- **Why not blocking:** DEC-513 #7 spec calls for VIX3M + VVIX, but VIX3M (VXVCLS) was successfully fetched. VVIX is one signal of many.
+- **Status:** open — defer
+- **Next action:** if VVIX needed, fetch from CBOE direct (https://www.cboe.com/us/options/market_statistics/historical_data/) or via Polygon if they expose ^VVIX as a ticker. Add to data_prefetch/cboe/ if needed.
+
+---
+
+## INV-011 — CFTC Treasury contract names different in TFF dataset
+
+- **Discovered:** 2026-05-07 (Pass 53 Day-9 v8h Tier C3 CFTC prefetch)
+- **Observation:** Tried to fetch CFTC TFF positioning for "10-YEAR U.S. TREASURY NOTES" / "5-YEAR" / "2-YEAR" / "ULTRA U.S. TREASURY BONDS" / "E-MINI DJIA (X $5)" — all returned 0 rows. Other contracts (e-mini SP500, NDX, RUT, VIX, fed funds, currencies, commodities) all worked fine.
+- **Why not blocking:** 13/18 contracts fetched successfully. Treasury futures positioning is nice-to-have for rate-driven strategies; we have rate level/spread data from FRED (DGS10/DGS5/DGS2/T10Y2Y).
+- **Status:** open — investigate
+- **Next action:** query CFTC Socrata API without contract filter for one date to see how Treasury contracts are actually named in the dataset; update `prefetch_cftc_cot.py` CONTRACTS list with correct names; re-run.
+
+---
+
+*Last updated: 2026-05-07 evening (Pass 53 Day-9 v8h ongoing)*
