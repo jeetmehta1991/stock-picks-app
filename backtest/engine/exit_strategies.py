@@ -24,6 +24,13 @@ import numpy as np
 import pandas as pd
 from typing import Optional
 
+# Pass 53 Day-9 v8e DEC-514 — Backtest fill methodology.
+# Use compute_fill_price() at every intraday-stop / target trigger so gap-through
+# events fill at bar_open (realistic broker behavior) instead of silently
+# filling at the stop/target level (which would understate downside on
+# overnight gap-downs and overstate winners on gap-ups). Spec: TRADING_RULES_AND_INFORMATION.md §11.
+from backtest.engine.exit_manager import compute_fill_price
+
 logger = logging.getLogger(__name__)
 
 
@@ -75,20 +82,23 @@ def exit_trailing_pct(df_full, entry_date, entry_price, direction, atr,
         close = float(row["close"])
         low   = float(row.get("low",  close))
         high  = float(row.get("high", close))
+        bar_open = float(row.get("open", close))  # DEC-514
         # Update trailing stop
         if direction == "long":
             if close > best:
                 best = close
                 stop = max(stop, best * (1 - trail_pct))
-            if low <= stop:
-                return _base_result(entry_price, stop, entry_date,
+            fill = compute_fill_price(direction, "stop", stop, bar_open, high, low)
+            if fill is not None:
+                return _base_result(entry_price, fill, entry_date,
                                     idx.date(), "trailing_stop", direction)
         else:
             if close < best:
                 best = close
                 stop = min(stop, best * (1 + trail_pct))
-            if high >= stop:
-                return _base_result(entry_price, stop, entry_date,
+            fill = compute_fill_price(direction, "stop", stop, bar_open, high, low)
+            if fill is not None:
+                return _base_result(entry_price, fill, entry_date,
                                     idx.date(), "trailing_stop", direction)
 
     last = future.iloc[-1]
@@ -131,6 +141,7 @@ def exit_atr_trail(df_full, entry_date, entry_price, direction, atr,
         close = float(row["close"])
         low   = float(row.get("low",  close))
         high  = float(row.get("high", close))
+        bar_open = float(row.get("open", close))  # DEC-514
         # DEC-311: use TODAY's ATR for stop-distance (refreshed daily)
         try:
             current_atr = float(atr_series.loc[idx])
@@ -143,15 +154,17 @@ def exit_atr_trail(df_full, entry_date, entry_price, direction, atr,
                 best = close
                 # Stop ratchets up only — uses current ATR for distance
                 stop = max(stop, best - atr_mult * current_atr)
-            if low <= stop:
-                return _base_result(entry_price, stop, entry_date,
+            fill = compute_fill_price(direction, "stop", stop, bar_open, high, low)
+            if fill is not None:
+                return _base_result(entry_price, fill, entry_date,
                                     idx.date(), "atr_trailing_stop", direction)
         else:
             if close < best:
                 best = close
                 stop = min(stop, best + atr_mult * current_atr)
-            if high >= stop:
-                return _base_result(entry_price, stop, entry_date,
+            fill = compute_fill_price(direction, "stop", stop, bar_open, high, low)
+            if fill is not None:
+                return _base_result(entry_price, fill, entry_date,
                                     idx.date(), "atr_trailing_stop", direction)
 
     last = future.iloc[-1]
@@ -176,21 +189,17 @@ def exit_fixed_target(df_full, entry_date, entry_price, direction, atr,
     for i, (idx, row) in enumerate(future.iterrows()):
         # No max_days force exit — only trailing stop and circuit breakers exit trades
         h, l = float(row["high"]), float(row["low"])
-        # Stop checked first (conservative)
-        if direction == "long":
-            if l <= stop:
-                return _base_result(entry_price, stop, entry_date,
-                                    idx.date(), "stop_loss", direction)
-            if h >= target:
-                return _base_result(entry_price, target, entry_date,
-                                    idx.date(), "take_profit", direction)
-        else:
-            if h >= stop:
-                return _base_result(entry_price, stop, entry_date,
-                                    idx.date(), "stop_loss", direction)
-            if l <= target:
-                return _base_result(entry_price, target, entry_date,
-                                    idx.date(), "take_profit", direction)
+        bar_open = float(row.get("open", float(row["close"])))  # DEC-514
+        # DEC-514 §11.4: stop checked first (conservative — when both stop and
+        # target trigger same bar, stop fires first; understates winners).
+        stop_fill = compute_fill_price(direction, "stop", stop, bar_open, h, l)
+        if stop_fill is not None:
+            return _base_result(entry_price, stop_fill, entry_date,
+                                idx.date(), "stop_loss", direction)
+        target_fill = compute_fill_price(direction, "target", target, bar_open, h, l)
+        if target_fill is not None:
+            return _base_result(entry_price, target_fill, entry_date,
+                                idx.date(), "take_profit", direction)
 
     last = future.iloc[-1]
     return _base_result(entry_price, float(last["close"]), entry_date,
@@ -231,20 +240,15 @@ def exit_next_pivot(df_full, entry_date, entry_price, direction, atr,
     for i, (idx, row) in enumerate(future.iterrows()):
         # No max_days force exit — only trailing stop and circuit breakers exit trades
         h, l = float(row["high"]), float(row["low"])
-        if direction == "long":
-            if l <= stop:
-                return _base_result(entry_price, stop, entry_date,
-                                    idx.date(), "pivot_stop", direction)
-            if h >= target:
-                return _base_result(entry_price, target, entry_date,
-                                    idx.date(), "pivot_target", direction)
-        else:
-            if h >= stop:
-                return _base_result(entry_price, stop, entry_date,
-                                    idx.date(), "pivot_stop", direction)
-            if l <= target:
-                return _base_result(entry_price, target, entry_date,
-                                    idx.date(), "pivot_target", direction)
+        bar_open = float(row.get("open", float(row["close"])))  # DEC-514
+        stop_fill = compute_fill_price(direction, "stop", stop, bar_open, h, l)
+        if stop_fill is not None:
+            return _base_result(entry_price, stop_fill, entry_date,
+                                idx.date(), "pivot_stop", direction)
+        target_fill = compute_fill_price(direction, "target", target, bar_open, h, l)
+        if target_fill is not None:
+            return _base_result(entry_price, target_fill, entry_date,
+                                idx.date(), "pivot_target", direction)
 
     last = future.iloc[-1]
     return _base_result(entry_price, float(last["close"]), entry_date,
@@ -265,24 +269,24 @@ def exit_ma_cross(df_full, entry_date, entry_price, direction, atr,
         close = float(row["close"])
         low   = float(row.get("low",  close))
         high  = float(row.get("high", close))
+        bar_open = float(row.get("open", close))  # DEC-514
         # Compute EMA on data up to this point
         hist = df_full[df_full.index <= idx]["close"]
         if len(hist) >= ma_period:
             ema = float(hist.ewm(span=ma_period, adjust=False).mean().iloc[-1])
         else:
             ema = close
-        # Hard stop
+        # Hard stop (intraday L/H — DEC-514 fill methodology)
+        stop_fill = compute_fill_price(direction, "stop", stop, bar_open, high, low)
+        if stop_fill is not None:
+            return _base_result(entry_price, stop_fill, entry_date,
+                                idx.date(), "hard_stop", direction)
+        # MA-cross (close-based by design — separate from DEC-514 stop fills)
         if direction == "long":
-            if low <= stop:
-                return _base_result(entry_price, stop, entry_date,
-                                    idx.date(), "hard_stop", direction)
             if close < ema:
                 return _base_result(entry_price, close, entry_date,
                                     idx.date(), "ma_cross", direction)
         else:
-            if high >= stop:
-                return _base_result(entry_price, stop, entry_date,
-                                    idx.date(), "hard_stop", direction)
             if close > ema:
                 return _base_result(entry_price, close, entry_date,
                                     idx.date(), "ma_cross", direction)
@@ -399,16 +403,18 @@ def exit_hybrid_50pct(df_full, entry_date, entry_price, direction, atr,
                 half_taken  = True
                 stop        = entry_price   # move stop to breakeven on remainder
 
-        # Trail remainder
+        # Trail remainder (DEC-514 intraday L/H fills with gap-through rule)
         if half_taken:
+            bar_open = float(row.get("open", close))
             if direction == "long":
                 if close > best:
                     best = close
                     stop = max(stop, best * (1 - trail_pct))
-                if l <= stop:
-                    full_pnl = _pnl(entry_price, stop, direction)
+                fill = compute_fill_price(direction, "stop", stop, bar_open, h, l)
+                if fill is not None:
+                    full_pnl = _pnl(entry_price, fill, direction)
                     pnl = blended_pnl * 0.5 + full_pnl * 0.5
-                    return {"exit_price": round(stop, 4), "exit_date": idx.date(),
+                    return {"exit_price": round(fill, 4), "exit_date": idx.date(),
                             "exit_reason": "hybrid_trail", "pnl_pct": round(pnl, 4),
                             "win": pnl > 0,
                             "hold_days": (idx.date() - entry_date).days}
@@ -416,10 +422,11 @@ def exit_hybrid_50pct(df_full, entry_date, entry_price, direction, atr,
                 if close < best:
                     best = close
                     stop = min(stop, best * (1 + trail_pct))
-                if h >= stop:
-                    full_pnl = _pnl(entry_price, stop, direction)
+                fill = compute_fill_price(direction, "stop", stop, bar_open, h, l)
+                if fill is not None:
+                    full_pnl = _pnl(entry_price, fill, direction)
                     pnl = blended_pnl * 0.5 + full_pnl * 0.5
-                    return {"exit_price": round(stop, 4), "exit_date": idx.date(),
+                    return {"exit_price": round(fill, 4), "exit_date": idx.date(),
                             "exit_reason": "hybrid_trail", "pnl_pct": round(pnl, 4),
                             "win": pnl > 0,
                             "hold_days": (idx.date() - entry_date).days}

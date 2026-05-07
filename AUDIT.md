@@ -31462,3 +31462,91 @@ Per CLAUDE.md, strategy-into-signal decisions (which signals enter the `smart_mo
 
 **Day 9 v8c — Owner directive "Approved. Fix all" satisfied. 16/16 L146/DEC-507 gaps closed or documented; 12 new accessor functions added; 37 new regression tests; full pyramid 581 PASS. Phase 1A May 15 entry-readiness unchanged (already confirmed Day 9 v7). Phase 1B+ now has expanded toolkit ready for strategy decisions.**
 
+
+## Pass 53 Day 9 v8e (2026-05-07 evening) — DEC-514 Phase 1A blocker fixed
+
+### Trigger
+
+After Wave A-D L146 closure (`cce55afa`), continued audit revealed AUDIT_BACKLOG line 18 says "Phase 1A May 15 BLOCKERS: 0 ✅" but line 212 (R3-01) flags **DEC-514 gap-through-stop fill methodology** as "silent backtest bug; Phase 1A blocker" with status 🟢 (decided but unimplemented). Spec was approved 2026-05-06 in TRADING_RULES_AND_INFORMATION.md §11; **zero implementation existed in code**. Owner approved implementation this turn.
+
+### What was broken pre-DEC-514
+
+Every backtest stop-fill site silently returned `level` (stop or target price) when the bar's intraday extreme touched the level — even if the bar OPENED past the level via overnight gap. Real-world fills on gap-through events happen at `bar_open` (worse for stops, better for targets). Pre-DEC-514 behavior:
+
+| Scenario | Pre-DEC-514 (silent bug) | Post-DEC-514 (correct) |
+|---|---|---|
+| Long stop @ 95, bar opens @ 88 | exit_price = 95 | exit_price = 88 (gap-through) |
+| Long target @ 105, bar opens @ 110 | exit_price = 105 | exit_price = 110 (favourable gap) |
+| Short stop @ 105, bar opens @ 110 | exit_price = 105 | exit_price = 110 (gap-through) |
+
+Result: every overnight gap-down past stop **silently understated downside**; every gap-up past target **silently understated upside**. Net bias depended on regime; in volatile periods the bug compounded materially.
+
+### Implementation
+
+**Helper** ([`backtest/engine/exit_manager.py`](backtest/engine/exit_manager.py)):
+```python
+def compute_fill_price(direction, level_type, level, bar_open, bar_high, bar_low) -> Optional[float]:
+    """6-rule fill methodology per DEC-514 §11.1-11.4."""
+```
+
+Six rules — symmetric across long/short × stop/target. Returns `None` if level not crossed; `bar_open` if bar gapped through; `level` for intraday triggers.
+
+**Refactored sites (12 across exit_strategies.py + exit_manager.py):**
+1. `check_trailing_stop_hit` (used by `process_day_exits` portfolio loop)
+2. `exit_trailing_pct` (long + short trail)
+3. `exit_atr_trail` (long + short trail)
+4. `exit_fixed_target` (long+short × stop+target = 4 sites consolidated to 2 calls)
+5. `exit_next_pivot` (same — 2 calls)
+6. `exit_ma_cross` (hard stop only; MA-cross signal stays close-based by design)
+7. `exit_hybrid_50pct` (trail-remainder long + short)
+
+**Backwards-compat:** `check_trailing_stop_hit` accepts optional `today_open=None` — legacy callers preserve pre-DEC-514 fill-at-stop behavior. Engine main loop (`process_day_exits`) updated to pass `today_open` so production path uses the helper.
+
+**Out of DEC-514 scope (close-based fills retained):**
+- `exit_breakeven_trail`: uses `close ≤ stop` triggers (close-based by design)
+- `exit_hybrid_50pct` hard stop: `close ≤ stop` (close-based by design)
+- `exit_ma_cross` MA-cross signal (`close < ema`): orthogonal to DEC-514
+
+These can be re-evaluated separately if owner wants; not part of this fix.
+
+### Regression tests
+
+NEW [`test_dec514_fill_methodology.py`](backtest/tests/test_dec514_fill_methodology.py): 22 tests (all PASS):
+- 12 parametric tests for the canonical helper (3 cases × 4 direction × level_type combos)
+- 2 boundary tests (stop = open, target = open)
+- 2 bad-input guards (raise on invalid direction / level_type)
+- 4 end-to-end tests (atr_trail + trailing_pct + check_trailing_stop_hit gap-through + intraday)
+- 1 backwards-compat test (legacy callers without today_open)
+- 1 sanity test (exit_strategies.py imports the helper)
+
+### Pyramid
+
+| Suite | Day 9 v8d (matrix ext) | Day 9 v8e (DEC-514) |
+|---|---|---|
+| Full PASS | 581 | **619** (+22 DEC-514 + +16 matrix already counted) |
+| Full SKIP | 10 | 10 |
+| xfail | 5 | 5 |
+| Wall time | 67s | 68s |
+
+Zero regressions across existing 581 tests post-DEC-514 changes.
+
+### Phase 1A May 15 status
+
+- DEC-514 ✅ FIXED (was the only remaining "silent backtest bug; Phase 1A blocker" per AUDIT_BACKLOG R3-01)
+- All 17 L146/DEC-507 gaps closed or documented (Day 9 v8b/c)
+- Phase 1A entry gate (test_gate_pre_phase_1a_entry) PASS
+- H3 dress rehearsal at 25-tkr scale PASS (regime distribution correct post-VIX-fix)
+- 619 mandatory tests PASS
+
+**No known Phase 1A blockers remain.**
+
+### Cross-references
+
+- DEC-514 (this fix); DEC-127 (entry-time stop logic); DEC-353 (R:R ≥ 2.0 — DEC-514 makes R-multiples accurate); DEC-515 (Level 6 CB — separately wired Day 9 v4); DEC-594 (same-commit); DEC-596 (standing approvals)
+- AUDIT.md "Pass 53 Q1 P0" section (DEC-514 spec approval narrative); AUDIT_BACKLOG.md R3-01 (the flagged blocker)
+- TRADING_RULES_AND_INFORMATION.md §11 (canonical spec source)
+
+*Per CHECKLIST #1 (owner "Approved" for DEC-514 implementation); #11 (close-based sites flagged as out-of-scope rather than silently changed); #25 (helper verified with 12-rule test before refactoring sites); #43 (full cross-refs above); #45 (this); #58 (single atomic commit: helper + 12 site refactors + 22 regression tests + AUDIT narrative); #67 (per-turn doc + push); #69 (619 PASS); #73 (DEC-594 same-commit per spec).*
+
+**Day 9 v8e — DEC-514 implementation complete. Final Phase 1A blocker resolved. 22 new tests; full pyramid 619 PASS. May 15 Phase 1A start UNBLOCKED across all known dimensions.**
+

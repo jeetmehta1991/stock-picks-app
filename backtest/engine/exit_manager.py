@@ -237,27 +237,110 @@ def update_trailing_stop(trade: OpenTrade, today_close: float, vix_value: Option
     return trade
 
 
+def compute_fill_price(
+    direction: str,
+    level_type: str,
+    level: float,
+    bar_open: float,
+    bar_high: float,
+    bar_low: float,
+) -> Optional[float]:
+    """DEC-514 — Backtest fill methodology (Pass 53 owner-approved 2026-05-06 Q1 P0).
+
+    Compute the realistic fill price when a stop or target is hit on an EOD bar.
+    Without this helper, code that returns ``level`` directly silently
+    understates downside on overnight gap-downs (every gap-through-stop fills
+    at stop, but a real broker fills at open — the gap-loss is real).
+
+    Spec source: TRADING_RULES_AND_INFORMATION.md §11.
+
+    Args:
+        direction:  ``'long'`` or ``'short'``
+        level_type: ``'stop'`` (loss-side) or ``'target'`` (profit-side)
+        level:      stop or target price
+        bar_open / bar_high / bar_low: today's OHLC
+            (close is not needed for fill calculation; intraday triggers happen
+             before close).
+
+    Returns:
+        Fill price, or ``None`` if the level was not crossed this bar.
+
+    Six rules — symmetric across long/short:
+      Long stop:    low > stop                → None
+                    low ≤ stop ≤ open         → fill at stop
+                    open < stop (gap-through) → fill at open
+      Long target:  high < target             → None
+                    high ≥ target ≥ open      → fill at target
+                    open > target (gap-up)    → fill at open  (favourable)
+      Short stop:   high < stop               → None
+                    high ≥ stop ≥ open        → fill at stop
+                    open > stop (gap-up)      → fill at open  (adverse)
+      Short target: low > target              → None
+                    low ≤ target ≤ open       → fill at target
+                    open < target (gap-down)  → fill at open  (favourable)
+    """
+    if direction == "long":
+        if level_type == "stop":
+            # Stop is BELOW entry. Hit if intraday low touches it.
+            if bar_low > level:
+                return None
+            if bar_open < level:
+                return bar_open  # Gap-down through stop — fill at open
+            return level
+        elif level_type == "target":
+            # Target is ABOVE entry. Hit if intraday high touches it.
+            if bar_high < level:
+                return None
+            if bar_open > level:
+                return bar_open  # Gap-up through target — favourable fill at open
+            return level
+    elif direction == "short":
+        if level_type == "stop":
+            # Stop is ABOVE entry. Hit if intraday high touches it.
+            if bar_high < level:
+                return None
+            if bar_open > level:
+                return bar_open  # Gap-up through stop — adverse fill at open
+            return level
+        elif level_type == "target":
+            # Target is BELOW entry. Hit if intraday low touches it.
+            if bar_low > level:
+                return None
+            if bar_open < level:
+                return bar_open  # Gap-down through target — favourable fill at open
+            return level
+    raise ValueError(f"Invalid direction='{direction}' or level_type='{level_type}'")
+
+
 def check_trailing_stop_hit(trade: OpenTrade, today_low: float, today_high: float,
-                              today_close: float) -> Optional[float]:
+                              today_close: float, today_open: Optional[float] = None
+                              ) -> Optional[float]:
     """
     Check if trailing stop was breached during the day.
-    Uses daily Low (long) or daily High (short) — the intraday extreme.
-    This correctly reflects that a real stop order triggers if price TRADES through
-    the stop at any point during the day, not just at close.
 
-    Exit price = trailing stop level (not the low/high — stop is a limit price).
-    If stock gaps through stop entirely (low < stop by large margin), the
-    gap-down circuit breaker handles the extreme case separately.
-
-    More conservative than close-based: ~2-4pp lower win rate expected but realistic.
+    Pass 53 Day-9 v8e DEC-514 fix: now uses ``compute_fill_price()`` to apply
+    the gap-through-stop rule (fill at open instead of stop when bar opened
+    past the stop level). Falls back to legacy "fill at stop" if today_open
+    not provided (backwards-compat).
     """
-    if trade.direction == "long":
-        if today_low <= trade.trailing_stop:
-            return trade.trailing_stop  # exit at stop price, not at low
-    else:
-        if today_high >= trade.trailing_stop:
-            return trade.trailing_stop  # exit at stop price, not at high
-    return None
+    if today_open is None:
+        # Backwards-compat path (legacy callers without bar_open)
+        if trade.direction == "long":
+            if today_low <= trade.trailing_stop:
+                return trade.trailing_stop
+        else:
+            if today_high >= trade.trailing_stop:
+                return trade.trailing_stop
+        return None
+
+    return compute_fill_price(
+        direction=trade.direction,
+        level_type="stop",
+        level=trade.trailing_stop,
+        bar_open=today_open,
+        bar_high=today_high,
+        bar_low=today_low,
+    )
 
 
 def close_trade(
@@ -416,7 +499,8 @@ def process_day_exits(
         trade = update_trailing_stop(trade, today_close, vix_value)
 
         # ── Step 3: Check if trailing stop was hit (uses intraday low/high) ──
-        exit_price = check_trailing_stop_hit(trade, today_low, today_high, today_close)
+        exit_price = check_trailing_stop_hit(trade, today_low, today_high, today_close,
+                                              today_open=today_open)  # DEC-514
 
         if exit_price is not None:
             closed.append(close_trade(
