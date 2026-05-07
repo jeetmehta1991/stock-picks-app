@@ -152,12 +152,16 @@ def get_ohlcv(
         cached_start = date.fromisoformat(cached_start_str)
         cached_end   = date.fromisoformat(cached_end_str)
 
-        # Pass 53 H6 fix 2026-05-07: relax strict-coverage check to ±7 day buffer
-        # to handle weekend/holiday boundary cases (e.g., request start 2020-01-01
-        # vs cache start 2020-01-02 = first trading day after New Year). Mask
-        # filter at end already constrains to actual request range.
+        # Pass 53 H6 fix 2026-05-07 (revised): use cache for ANY overlap with
+        # request range. Mask filter at end trims to actual request data.
+        # Strict full-coverage check was wrong because (a) DEC-497 yfinance HARD
+        # CUT means we can't fetch missing tail anyway; (b) request ends often
+        # overshoot cache_end (e.g., macro_snapshot requests end=2026-12-31 but
+        # cache has 2026-05-05 — that's fine, just use what we have).
+        # Original strict check + my ±7-day buffer both failed for this case.
         from datetime import timedelta as _td
-        if cached_start <= start + _td(days=7) and cached_end >= end - _td(days=7):
+        has_overlap = cached_start <= end + _td(days=7) and cached_end >= start - _td(days=7)
+        if has_overlap:
             # Full cache hit
             try:
                 df = pd.read_parquet(cache_file)

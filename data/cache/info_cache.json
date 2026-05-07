@@ -558,5 +558,13 @@
     "market_cap": 109769015296,
     "exchange": "NYQ",
     "ipo_date": null
+  },
+  "UUP": {
+    "name": "UUP",
+    "sector": "Unknown",
+    "industry": "Unknown",
+    "market_cap": 0,
+    "exchange": "",
+    "ipo_date": null
   }
 }

@@ -1,0 +1,6 @@
+strategy,exit_method,trades,win_rate,profit_factor,avg_pnl_pct,total_roi_pct,max_drawdown_pct,avg_hold_days,composite_score,recommended
+cpr_narrow_bullish,ma_exit_ema9,7,0.4286,3.6081,3.832,26.8238,-6.4446,12.4,67.48,True
+stochrsi_oversold,hybrid_50pct_target,7,0.5714,2.1741,2.7611,19.3279,-13.3232,41.4,62.87,True
+bollinger_tight,ma_exit_ema9,8,0.375,0.2617,-1.2986,-10.3889,-8.8788,1.5,31.68,True
+hull_rsi,trailing_10pct,5,0.8,5.295,8.59,42.9501,0.0,25.8,92.0,True
+morning_star,ma_exit_ema9,5,0.2,0.464,-0.8338,-4.1689,-5.3471,1.6,29.98,True
