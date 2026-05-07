@@ -1583,13 +1583,32 @@ regime_prob_smoothed[t] = α × regime_prob_raw[t] + (1-α) × regime_prob_smoot
 
 **Source:** DEC-151
 
-### 10.7 Regime Hysteresis VIX SMA (per DEC-317)
+### 10.7 Regime Hysteresis VIX SMA (per DEC-317 + DEC-559 Pass 53 P0 standardization)
 
-**Rule:** Regime transitions require VIX to cross threshold AND stay there for SMA window (e.g., VIX 21-day SMA, not single-day spike).
+**Rule:** Regime transitions require VIX to cross threshold AND stay there for SMA window. **Standardized to 5-day SMA per DEC-559 Pass 53 P0 (was inconsistent: §2A.4 said 5d / prior §10.7 said 21d — DEC-559 promoted P3→P0 to resolve contradiction).**
 
-**Methodology:** Prevents single-day VIX spike from triggering regime change.
+**Methodology:** Prevents single-day VIX spike from triggering regime change. 5-day SMA chosen for responsiveness to fast regime shifts (2020-03 COVID, 2022 inflation) while still filtering noise.
 
-**Source:** DEC-317
+**Source:** DEC-317 (parent), DEC-559 (Pass 53 standardization to 5d).
+
+### 10.7.A Pass 53 DEC-588 doc-reconciliation cross-refs (regime methodology)
+
+Pass 53 review-cycle adds substantial regime methodology codified at §10.10-10.21. For top-to-bottom readability:
+
+- **DEC-539** (§10.10) — Regime training/labeling mechanism (CRITICAL P0)
+- **DEC-540** (§10.11) — Regime probability consumption pattern (CRITICAL P0)
+- **DEC-541** (§10.12) — Regime classifier validation methodology (P0)
+- **DEC-542** (§10.13) — Collapse 6 → 4 regime classes (P0)
+- **DEC-543** (§10.14) — Stage 2 vs Stage 3+ regime-input parity (P0)
+- **DEC-544** (§10.15) — Asymmetric EMA smoothing (P1)
+- **DEC-545** (§10.16) — EMA + transition-matrix integration (P1)
+- **DEC-546** (§10.17) — Schmitt-trigger on regime binarization + min-duration (P1)
+- **DEC-547+** (§10.18-10.21) — additional regime methodology DECs
+- **DEC-583** (§16.2 walk-forward 2018-2021 truncation fix) — walk-forward train window truncated to 2021-05+ since Polygon Stocks Starter cache starts 2021-05 per DEC-505
+- **DEC-587** (§11.1 regime-block reconciliation) — circuit breaker + regime-eligibility coordination
+- **DEC-559** (this section) — VIX hysteresis 5d standardization
+
+All DECs RESOLVED-DECIDED at Pass 53 owner approval 2026-05-06; codified inline below.
 
 ### 10.8 Smart Money Composite Score (per DEC-124 + DEC-332 + DEC-450)
 
