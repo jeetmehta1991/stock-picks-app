@@ -1,16 +1,16 @@
 {
-  "scanned_count": 517,
+  "scanned_count": 518,
   "counts": {
-    "COMPLIANT": 19,
-    "SPEC_WITHOUT_BUILD": 43,
+    "COMPLIANT": 22,
+    "SPEC_WITHOUT_BUILD": 0,
     "NO_TRIGGER": 202,
     "KNOWN_COMPLIANT": 13,
-    "SUPERSEDED": 29,
+    "SUPERSEDED": 30,
     "DEFERRED": 49,
-    "PARTIAL_SPEC_ONLY": 0,
+    "PARTIAL_SPEC_ONLY": 87,
     "PROPOSED_OR_PENDING": 13,
     "TEST_SIGNAL_REFERENCED_IN_CODE": 4,
-    "TEST_SIGNAL_UNVERIFIED": 132,
+    "TEST_SIGNAL_UNVERIFIED": 85,
     "INACTIVE_STATUS": 13
   },
   "findings": {
@@ -20,11 +20,11 @@
         "status": "RESOLVED-DECIDED",
         "classification": "COMPLIANT",
         "triggers": [
-          "test",
           "gate",
-          "validation",
+          "test",
+          "before phase",
           "validate",
-          "before phase"
+          "validation"
         ],
         "artifacts_existing": [
           "API_AUDIT.md"
@@ -50,8 +50,8 @@
         "status": "RESOLVED-DECIDED",
         "classification": "COMPLIANT",
         "triggers": [
-          "verified",
-          "test"
+          "test",
+          "verified"
         ],
         "artifacts_existing": [
           "PROJECT_PLAN.md"
@@ -80,8 +80,8 @@
           "test"
         ],
         "artifacts_existing": [
-          "README.md",
           "PROJECT_PLAN.md",
+          "README.md",
           "CLAUDE.md"
         ],
         "artifacts_missing": [],
@@ -120,8 +120,8 @@
         "classification": "COMPLIANT",
         "triggers": [
           "gate",
-          "before next",
-          "test"
+          "test",
+          "before next"
         ],
         "artifacts_existing": [
           "API_AUDIT.md",
@@ -136,8 +136,8 @@
         "classification": "COMPLIANT",
         "triggers": [
           "gate",
-          "verified",
           "test",
+          "verified",
           "validation"
         ],
         "artifacts_existing": [
@@ -153,8 +153,8 @@
         "status": "RESOLVED-DECIDED",
         "classification": "COMPLIANT",
         "triggers": [
-          "tests",
-          "validate"
+          "validate",
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/signals/technical.py"
@@ -196,9 +196,9 @@
           "test"
         ],
         "artifacts_existing": [
-          "scripts/prefetch_finnhub_news.py",
+          "backtest/agents/pipeline.py",
           "backtest/data/smart_money.py",
-          "backtest/agents/pipeline.py"
+          "scripts/prefetch_finnhub_news.py"
         ],
         "artifacts_missing": [],
         "body_excerpt": "Deprecate Finnhub from project entirely \u2014 Pass 52 owner-approved (DEC-410 Batch 2, Hypothesis H-finnhub-1). Remove `scripts/prefetch_finnhub_news.py` (broken per BUG-053/181); remove `FINNHUB_API_KEY`..."
@@ -212,8 +212,8 @@
           "validation"
         ],
         "artifacts_existing": [
-          "backtest/data/smart_money.py",
-          "backtest/agents/pipeline.py"
+          "backtest/agents/pipeline.py",
+          "backtest/data/smart_money.py"
         ],
         "artifacts_missing": [],
         "body_excerpt": "Alpha Vantage deprecation timeline \u2014 Pass 52 owner-approved (DEC-410 Batch 3, Hypothesis H-av-1). Sequence: (a) preserve existing AV cache parquet artifacts for transition period; (b) remove AV from a..."
@@ -236,11 +236,11 @@
         "status": "RESOLVED-DECIDED",
         "classification": "COMPLIANT",
         "triggers": [
+          "verification",
+          "verify",
           "test",
           "verified",
-          "verification",
-          "validation",
-          "verify"
+          "validation"
         ],
         "artifacts_existing": [
           "TRADINGAGENTS_DATA_AUDIT.md"
@@ -249,24 +249,58 @@
         "body_excerpt": "Verify Polygon Stocks Starter PIT fundamentals coverage Pass 52 turn 130 owner-approved RESOLVED-DECIDED. Pre-Sprint-1 verification: confirm whether Polygon Stocks Starter $30/mo (DEC-441) includes in..."
       },
       {
+        "id": "DECISION-477",
+        "status": "RESOLVED-IMPLEMENTED",
+        "classification": "COMPLIANT",
+        "triggers": [
+          "verification",
+          "tests",
+          "test",
+          "verified"
+        ],
+        "artifacts_existing": [
+          "backtest/tests/test_unit.py",
+          "backtest/tests/test_data_integrity.py"
+        ],
+        "artifacts_missing": [],
+        "body_excerpt": "historical_membership.csv (DEC-303) canonical universe; deprecate 482-ticker static CSV. **Pass 53 RESOLVED-IMPLEMENTED (this turn \u2014 614-row B++ scrape complete via Wikipedia L88 fallback exception, o..."
+      },
+      {
         "id": "DECISION-494",
         "status": "splits",
         "classification": "COMPLIANT",
         "triggers": [
-          "tests",
+          "test",
           "verification",
           "verify",
-          "test"
+          "tests"
         ],
         "artifacts_existing": [
-          "scripts/refresh_extended_universe.py",
-          "CLAUDE.md"
+          "CLAUDE.md",
+          "scripts/refresh_extended_universe.py"
         ],
         "artifacts_missing": [
           "refresh_extended_universe.py",
           "universe.py"
         ],
         "body_excerpt": "Tier 2 / refresh_extended_universe.py implementation alignment with DEC-483 \u2014 remove NDX-non-S&P from Tier 2 inclusion (now T1c). Pass 53 owner-approved PROPOSED via owner question catch (\"Isnt tier 2..."
+      },
+      {
+        "id": "DECISION-497",
+        "status": "RESOLVED-DECIDED",
+        "classification": "COMPLIANT",
+        "triggers": [
+          "verified",
+          "test",
+          "tests"
+        ],
+        "artifacts_existing": [
+          "backtest/tests/test_data_integrity.py"
+        ],
+        "artifacts_missing": [
+          "smart_money.py"
+        ],
+        "body_excerpt": "**Sprint 0A definition \u2014 full multi-API prefetch + universe build absorbed + Stage 2 NO-LIVE-API refactor.** Pass 53 owner-approved RESOLVED-DECIDED 2026-05-05 (this turn). RENAMES Sprint 1 \u2192 Sprint 0..."
       },
       {
         "id": "DECISION-498",
@@ -277,9 +311,9 @@
           "verify"
         ],
         "artifacts_existing": [
-          "CLAUDE.md",
+          "CHECKLIST.md",
           "AUDIT.md",
-          "CHECKLIST.md"
+          "CLAUDE.md"
         ],
         "artifacts_missing": [
           "scripts/*.md"
@@ -292,514 +326,36 @@
         "classification": "COMPLIANT",
         "triggers": [
           "gates",
-          "tests",
-          "test"
+          "test",
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/config.py"
         ],
         "artifacts_missing": [],
         "body_excerpt": "**Backtest window alignment to Polygon Stocks Starter 5y cache (supersedes DEC-109 6-fold walk-forward).** Pass 53 owner-approved Q1+Q2+Q3 2026-05-05 RESOLVED-DECIDED. RATIONALE: project plan document..."
-      }
-    ],
-    "SPEC_WITHOUT_BUILD": [
-      {
-        "id": "DECISION-014",
-        "status": "RESOLVED-DECIDED",
-        "classification": "SPEC_WITHOUT_BUILD",
-        "triggers": [
-          "gate"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Phase 1B passing criteria adjustments **Pass 52 turn 119 RESOLVED-DECIDED Final: Phase 1B passing criteria \u2014 superseded by DEC-422 dimensional cube + DEC-426 5-gate validity (n\u226530, p<0.05, PSR\u22650.95, t..."
       },
       {
-        "id": "DECISION-031",
+        "id": "DECISION-596",
         "status": "RESOLVED-DECIDED",
-        "classification": "SPEC_WITHOUT_BUILD",
+        "classification": "COMPLIANT",
         "triggers": [
-          "before sta"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Codespace/Cloud workflow vs local \u2014 Codespace through Phase 0, migrate to cloud before Sta"
-      },
-      {
-        "id": "DECISION-037",
-        "status": "RESOLVED-DECIDED",
-        "classification": "SPEC_WITHOUT_BUILD",
-        "triggers": [
-          "tests",
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Characterization-test-first approach (Phase A) **Pass 52 turn 119 RESOLVED-DECIDED Final: Characterization-test-first approach Phase A \u2014 joint DEC-438 golden master tests RESOLVED Sprint 6. Methodolog..."
-      },
-      {
-        "id": "DECISION-043",
-        "status": "RESOLVED-DECIDED",
-        "classification": "SPEC_WITHOUT_BUILD",
-        "triggers": [
-          "validation"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Retune framework **Pass 52 turn 119 RESOLVED-DECIDED Final: Retune framework \u2014 strategy parameter retune triggered by DEC-249 strategy decay flag + DEC-214 quarterly re-validation. Sprint 9 ~1d (joint..."
-      },
-      {
-        "id": "DECISION-050",
-        "status": "RESOLVED-DECIDED",
-        "classification": "SPEC_WITHOUT_BUILD",
-        "triggers": [
-          "tests"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "freezegun for PIT regression tests"
-      },
-      {
-        "id": "DECISION-060",
-        "status": "RESOLVED-DECIDED",
-        "classification": "SPEC_WITHOUT_BUILD",
-        "triggers": [
-          "smoke test",
-          "before stage"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Smoke test gating before Stage 2 scale"
-      },
-      {
-        "id": "DECISION-082",
-        "status": "RESOLVED-DECIDED",
-        "classification": "SPEC_WITHOUT_BUILD",
-        "triggers": [
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Stress-test pass requirements \u2014 Pass 52 owner-approved Option A (revised from prior 2008/2020/2022 scope after owner caught error: backtest covers 2021-2024 only, NOT 2008 or 2020). Test only periods ..."
-      },
-      {
-        "id": "DECISION-103",
-        "status": "RESOLVED-DECIDED",
-        "classification": "SPEC_WITHOUT_BUILD",
-        "triggers": [
-          "validate"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Auto-populate Tier 2 universe (spinoffs, IPOs, $5B+) \u2014 Pass 52 turn 33 RESOLVED via supersession. Pass 52 phased implementation: DEC-372 (Phase A \u2014 GH Actions monthly automation), DEC-373 (Phase B \u2014 -..."
-      },
-      {
-        "id": "DECISION-111",
-        "status": "RESOLVED-DECIDED",
-        "classification": "SPEC_WITHOUT_BUILD",
-        "triggers": [
-          "tests",
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Stationarity / structural break tests \u2014 Pass 52 owner-approved scoped to feasibility. 3 test types: (1) ADF on equity curve (~1000 daily obs, sufficient power); (2) Rolling 1-year Sharpe deviation (>2..."
-      },
-      {
-        "id": "DECISION-117",
-        "status": "RESOLVED-DECIDED",
-        "classification": "SPEC_WITHOUT_BUILD",
-        "triggers": [
-          "validated"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Add file-level checksum + last-validated timestamp to cache **Pass 52 turn 119 RESOLVED-DECIDED Final: File-level checksum + last-validated timestamp to cache. Joint DEC-260 cache freshness + DEC-330 ..."
-      },
-      {
-        "id": "DECISION-152",
-        "status": "RESOLVED-DECIDED",
-        "classification": "SPEC_WITHOUT_BUILD",
-        "triggers": [
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Hold-out final test period (never touched during audits)"
-      },
-      {
-        "id": "DECISION-153",
-        "status": "RESOLVED-DECIDED",
-        "classification": "SPEC_WITHOUT_BUILD",
-        "triggers": [
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Regime-stratified train/test splits **Pass 52 turn 119 RESOLVED-DECIDED Final: Regime-stratified train/test splits. Joint DEC-109 walk-forward + DEC-422 cube per-regime verdicts. Sprint 7 ~1d.**"
-      },
-      {
-        "id": "DECISION-177",
-        "status": "RESOLVED-DECIDED",
-        "classification": "SPEC_WITHOUT_BUILD",
-        "triggers": [
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Explicit random seed in every backtest run output (reproducibility test) **Pass 52 turn 119 RESOLVED-DECIDED Batch F: Random seed in backtest output. Joint DEC-096 reproducibility manifest + DEC-232 d..."
-      },
-      {
-        "id": "DECISION-196",
-        "status": "RESOLVED-DECIDED",
-        "classification": "SPEC_WITHOUT_BUILD",
-        "triggers": [
-          "before live"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "No authentication on paper-trading analytics dashboard; revisit before live trading"
-      },
-      {
-        "id": "DECISION-205",
-        "status": "RESOLVED-DECIDED",
-        "classification": "SPEC_WITHOUT_BUILD",
-        "triggers": [
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "A/B test arm design \u2014 minimum 4 arms (rules, full-agents, no-Risk, no-Bull-Bear)"
-      },
-      {
-        "id": "DECISION-207",
-        "status": "RESOLVED-DECIDED",
-        "classification": "SPEC_WITHOUT_BUILD",
-        "triggers": [
-          "before declaring"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Pre-commit minimum sample size per arm (300 paired trades) before declaring winner"
-      },
-      {
-        "id": "DECISION-246",
-        "status": "RESOLVED-DECIDED",
-        "classification": "SPEC_WITHOUT_BUILD",
-        "triggers": [
-          "gate"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Quant finance correctness audit (Sharpe annualization, DD computation, vol periodicity) **Pass 52 turn 119 RESOLVED-DECIDED Final: Quant finance correctness audit (Sharpe annualization, DD computation..."
-      },
-      {
-        "id": "DECISION-247",
-        "status": "RESOLVED-DECIDED",
-        "classification": "SPEC_WITHOUT_BUILD",
-        "triggers": [
-          "validate"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Stats/ML implementation review (HMM, deflated Sharpe, Kelly \u2014 validate against known resul **Pass 52 turn 119 RESOLVED-DECIDED Final: Stats/ML implementation review (HMM, Deflated Sharpe, Kelly \u2014 vali..."
-      },
-      {
-        "id": "DECISION-248",
-        "status": "RESOLVED-DECIDED",
-        "classification": "SPEC_WITHOUT_BUILD",
-        "triggers": [
-          "before losses"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Owner pre-commitment doc (rules owner commits to before losses)"
-      },
-      {
-        "id": "DECISION-269",
-        "status": "RESOLVED-DECIDED",
-        "classification": "SPEC_WITHOUT_BUILD",
-        "triggers": [
-          "gates"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Stage 4 entry criteria \u2014 explicit numeric gates (Sharpe/DD/win-rate/A-B-clear/divergence) **Pass 52 turn 119 RESOLVED-DECIDED Batch G: Stage 4 entry criteria explicit numeric gates. Document gates now..."
-      },
-      {
-        "id": "DECISION-296",
-        "status": "RESOLVED-DECIDED",
-        "classification": "SPEC_WITHOUT_BUILD",
-        "triggers": [
-          "tests"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Fix test_e2e fixture \u2014 engine fixture undefined, 7 of 8 e2e tests ERROR at setup"
-      },
-      {
-        "id": "DECISION-297",
-        "status": "RESOLVED-DECIDED",
-        "classification": "SPEC_WITHOUT_BUILD",
-        "triggers": [
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Add unit test for close_trade \u2014 would have caught the days bug; same for any function in c"
-      },
-      {
-        "id": "DECISION-299",
-        "status": "RESOLVED-DECIDED",
-        "classification": "SPEC_WITHOUT_BUILD",
-        "triggers": [
-          "gate",
-          "validation"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "yfinance fetch_info CURRENT sector \u2014 RESOLVED Pass 52 owner approve all: snapshot current results to dated CSV (Step 1, immediate), defer Polygon Reference subscription until BUG-191 validation gate b..."
-      },
-      {
-        "id": "DECISION-327",
-        "status": "RESOLVED-DECIDED",
-        "classification": "SPEC_WITHOUT_BUILD",
-        "triggers": [
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [
-          "improvements.py",
-          "exit_manager.py"
-        ],
-        "body_excerpt": "Short-borrow cost duplicated across improvements.py + exit_manager.py with different units \u2014 pick single source. Pass 52 owner-approved. Investigate live backtest path first (`improvements.py:80-84` c..."
-      },
-      {
-        "id": "DECISION-336",
-        "status": "RESOLVED-DECIDED",
-        "classification": "SPEC_WITHOUT_BUILD",
-        "triggers": [
-          "verify"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [
-          "info_cache.json"
-        ],
-        "body_excerpt": "info_cache.json never refreshed \u2014 stale market caps persist project-lifetime **Pass 52 turn 49: Likely SUPERSEDED_BY_DEC-443 (Polygon reference data covers sector + market_cap PIT, replacing yfinance ..."
-      },
-      {
-        "id": "DECISION-343",
-        "status": "RESOLVED-DECIDED",
-        "classification": "SPEC_WITHOUT_BUILD",
-        "triggers": [
-          "before committing"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Pandas-ta deprecation warning on pandas 4.0 \u2014 plan replacement (TA-Lib alternative) **Pass 52 turn 51 owner-approved joint-with-DEC-445 framing: wait until DEC-445 implementation reveals whether Polyg..."
-      },
-      {
-        "id": "DECISION-353",
-        "status": "RESOLVED-DECIDED",
-        "classification": "SPEC_WITHOUT_BUILD",
-        "triggers": [
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Risk-reward ratio sweep \u2014 owner resolution Pass 52: 2R reward:risk MINIMUM. Current default `exit_fixed_target(target_mult=3.0, stop_mult=2.0)` = 3R/2R = 1.5:1 R/R, which is BELOW the new 2:1 minimum ..."
-      },
-      {
-        "id": "DECISION-373",
-        "status": "RESOLVED-DECIDED",
-        "classification": "SPEC_WITHOUT_BUILD",
-        "triggers": [
-          "validate"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "DEC-103 Phase B \u2014 Update script with `--validate` mode that flags missing-data tickers (yfinance returning empty info) for manual review rather than silent drop. Catches SNDK-style edge cases where yf..."
-      },
-      {
-        "id": "DECISION-378",
-        "status": "RESOLVED-DECIDED",
-        "classification": "SPEC_WITHOUT_BUILD",
-        "triggers": [
-          "validate"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "DEC-105 Phase 1 \u2014 NASDAQ symbol-directory weekly diff for spinoff/IPO detection. Source: `ftp.nasdaqtrader.com/SymbolDirectory/nasdaqtraded.txt`. Diff against last week's list, flag new tickers, valid..."
-      },
-      {
-        "id": "DECISION-381",
-        "status": "RESOLVED-DECIDED",
-        "classification": "SPEC_WITHOUT_BUILD",
-        "triggers": [
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "DEC-307 implementation \u2014 `get_ohlcv` symmetric front-extension. After existing tail-extension check, add: if cached_start > requested_start, fetch [requested_start, cached_start - 1day], prepend, save..."
-      },
-      {
-        "id": "DECISION-382",
-        "status": "RESOLVED-DECIDED",
-        "classification": "SPEC_WITHOUT_BUILD",
-        "triggers": [
-          "verify"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [
-          "cache.py"
-        ],
-        "body_excerpt": "DEC-308 implementation \u2014 Verify exact 20-day threshold location in cache.py + replace hard floor with `min(20, available_days)` + add `LIMITED_HISTORY` flag in result schema. Strategy level (not cache..."
-      },
-      {
-        "id": "DECISION-389",
-        "status": "RESOLVED-DECIDED",
-        "classification": "SPEC_WITHOUT_BUILD",
-        "triggers": [
-          "validate"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [
-          "sentiment.py"
-        ],
-        "body_excerpt": "DEC-318 implementation \u2014 AAII pub-lag fix. In `sentiment.py` AAII consumption: when reading for `as_of=D`, look up survey from prior week ending Friday before D-2. Update CSV schema with `pub_date` co..."
-      },
-      {
-        "id": "DECISION-390",
-        "status": "RESOLVED-DECIDED",
-        "classification": "SPEC_WITHOUT_BUILD",
-        "triggers": [
-          "gate",
-          "validation"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [
-          ".github/workflows/refresh_aaii.yml",
-          "scripts/refresh_aaii_sentiment.py"
-        ],
-        "body_excerpt": "DEC-319 implementation \u2014 `scripts/refresh_aaii_sentiment.py` (HTML scrape aaii.com/sentimentsurvey/sent_results) + `.github/workflows/refresh_aaii.yml` schedule Friday 14:00 UTC. Auto-PR weekly delta...."
-      },
-      {
-        "id": "DECISION-399",
-        "status": "RESOLVED-DECIDED",
-        "classification": "SPEC_WITHOUT_BUILD",
-        "triggers": [
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "DEC-327 Phase B \u2014 Consolidate to shared `backtest.engine.costs.calculate_borrow_cost(trade, hold_days)` consumed by both paths. Remove duplication. Unit test: borrow cost charged exactly once per shor..."
-      },
-      {
-        "id": "DECISION-401",
-        "status": "RESOLVED-DECIDED",
-        "classification": "SPEC_WITHOUT_BUILD",
-        "triggers": [
-          "gate"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "DEC-080 Phase B \u2014 Add Holm-Bonferroni step-down option (less conservative than Bonferroni for correlated strategies). Add min-Sharpe filter (Sharpe \u2265 0.5) joint with BUG-038. Owner approval gate: Bonf..."
-      },
-      {
-        "id": "DECISION-405",
-        "status": "RESOLVED-DECIDED",
-        "classification": "SPEC_WITHOUT_BUILD",
-        "triggers": [
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [
-          "backtest/results/stress_tests.py"
-        ],
-        "body_excerpt": "DEC-082 implementation (Option A scope) \u2014 New `backtest/results/stress_tests.py`. Test 2022 full year (Sharpe \u2265 0, DD \u2264 20%, Win Rate \u2265 40%) + crisis sub-periods VIX > 30 sustained within 2021-2024 (Q..."
-      },
-      {
-        "id": "DECISION-414",
-        "status": "RESOLVED-DECIDED",
-        "classification": "SPEC_WITHOUT_BUILD",
-        "triggers": [
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "DEC-111 Phase A \u2014 Add `statsmodels>=0.14.0` to requirements.txt. Implement ADF test on strategy equity curve (~1000 daily PnL observations). Output per strategy: `is_stationary` bool (ADF p < 0.05). ~..."
-      },
-      {
-        "id": "DECISION-415",
-        "status": "RESOLVED-DECIDED",
-        "classification": "SPEC_WITHOUT_BUILD",
-        "triggers": [
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "DEC-111 Phase B \u2014 Rolling 1-year Sharpe deviation test. Compute Sharpe over 252-day rolling windows; flag strategies where any window deviates >2\u03c3 from full-period Sharpe. Output per strategy: `rollin..."
-      },
-      {
-        "id": "DECISION-416",
-        "status": "RESOLVED-DECIDED",
-        "classification": "SPEC_WITHOUT_BUILD",
-        "triggers": [
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "DEC-111 Phase C \u2014 Chow split-sample structural break test. Only computed when n_trades \u2265 600 (300 per half). Split at midpoint; test if mean returns differ significantly. Output per strategy: `chow_br..."
-      },
-      {
-        "id": "DECISION-423",
-        "status": "RESOLVED-DECIDED",
-        "classification": "SPEC_WITHOUT_BUILD",
-        "triggers": [
-          "gates"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "DEC-068 expansion (per Pass 52 DEC-422) \u2014 Bootstrap CI + pairwise significance now operates at PER-CELL level (not per-strategy). For each cell in dimensional cube: 1000 resample bootstrap on cell tra..."
-      },
-      {
-        "id": "DECISION-477",
-        "status": "RESOLVED-IMPLEMENTED",
-        "classification": "SPEC_WITHOUT_BUILD",
-        "triggers": [
-          "verified",
           "verification",
-          "tests",
-          "test"
+          "gate",
+          "test",
+          "tests"
         ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "historical_membership.csv (DEC-303) canonical universe; deprecate 482-ticker static CSV. **Pass 53 RESOLVED-IMPLEMENTED (this turn \u2014 614-row B++ scrape complete via Wikipedia L88 fallback exception, o..."
-      },
-      {
-        "id": "DECISION-478",
-        "status": "RESOLVED-DECIDED",
-        "classification": "SPEC_WITHOUT_BUILD",
-        "triggers": [
-          "verification"
+        "artifacts_existing": [
+          "AUDIT.md",
+          "CLAUDE.md"
         ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Polygon tier \u2014 Stocks Starter $29/mo selected. Pass 53 turn (this) owner-approved RESOLVED-DECIDED (\"I will take the starter pack only\"). Implications: (a) 5-year history total (May 2021 \u2192 May 2026); ..."
-      },
-      {
-        "id": "DECISION-497",
-        "status": "RESOLVED-DECIDED",
-        "classification": "SPEC_WITHOUT_BUILD",
-        "triggers": [
-          "tests",
-          "test"
+        "artifacts_missing": [
+          "feedback_standing_approvals.md"
         ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "**Sprint 0A definition \u2014 full multi-API prefetch + universe build absorbed + Stage 2 NO-LIVE-API refactor.** Pass 53 owner-approved RESOLVED-DECIDED 2026-05-05 (this turn). RENAMES Sprint 1 \u2192 Sprint 0..."
+        "body_excerpt": "**Standing Approvals for routine bash + Per-Turn Push.** Pass 53 owner directive 2026-05-06 late evening RESOLVED-DECIDED. Owner verbatim: \"i approve all bash runs. Dont ask me over and over again in ..."
       }
     ],
+    "SPEC_WITHOUT_BUILD": [],
     "NO_TRIGGER": [
       {
         "id": "DECISION-001",
@@ -2741,6 +2297,15 @@
     ],
     "SUPERSEDED": [
       {
+        "id": "DECISION-014",
+        "status": "SUPERSEDED_BY_DEC-422",
+        "classification": "SUPERSEDED",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Phase 1B passing criteria adjustments **Pass 52 turn 119 SUPERSEDED_BY_DEC-422 Final: Phase 1B passing criteria \u2014 superseded by DEC-422 dimensional cube + DEC-426 5-gate validity (n\u226530, p<0.05, PSR\u22650...."
+      },
+      {
         "id": "DECISION-016",
         "status": "SUPERSEDED_BY_DEC-422",
         "classification": "SUPERSEDED",
@@ -3445,7 +3010,791 @@
         "body_excerpt": "DEC-132 implementation \u2014 Calendar-year Sharpe variance computation. DEFERRED_TO_STAGE_3 per owner Pass 52 scope filter. Original scope preserved. ~1 day post-DEC-081 + post-Stage 3 prep."
       }
     ],
-    "PARTIAL_SPEC_ONLY": [],
+    "PARTIAL_SPEC_ONLY": [
+      {
+        "id": "DECISION-018",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Cooldown after stop-out (BUG-133) **Pass 52 turn 115 owner-approved RESOLVED-DECIDED Batch B Risk Mgmt: Cooldown after stop-out (BUG-133). Per-ticker cooldown 5 trading days post-stop prevents whipsaw..."
+      },
+      {
+        "id": "DECISION-031",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Codespace/Cloud workflow vs local \u2014 Codespace through Phase 0, migrate to cloud before Sta **Pass 53 evening 2026-05-06 DEC-594 audit: PARTIAL-SPEC-ONLY (was RESOLVED-DECIDED; demoted via DEC-594 retr..."
+      },
+      {
+        "id": "DECISION-037",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Characterization-test-first approach (Phase A) **Pass 52 turn 119 RESOLVED-DECIDED Final: Characterization-test-first approach Phase A \u2014 joint DEC-438 golden master tests RESOLVED Sprint 6. Methodolog..."
+      },
+      {
+        "id": "DECISION-043",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Retune framework **Pass 52 turn 119 RESOLVED-DECIDED Final: Retune framework \u2014 strategy parameter retune triggered by DEC-249 strategy decay flag + DEC-214 quarterly re-validation. Sprint 9 ~1d (joint..."
+      },
+      {
+        "id": "DECISION-050",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "freezegun for PIT regression tests **Pass 53 evening 2026-05-06 DEC-594 audit: PARTIAL-SPEC-ONLY (was RESOLVED-DECIDED; demoted via DEC-594 retroactive audit \u2014 code-grep found no test reference in `ba..."
+      },
+      {
+        "id": "DECISION-060",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Smoke test gating before Stage 2 scale **Pass 53 evening 2026-05-06 DEC-594 audit: PARTIAL-SPEC-ONLY (was RESOLVED-DECIDED; demoted via DEC-594 retroactive audit \u2014 code-grep found no test reference in..."
+      },
+      {
+        "id": "DECISION-082",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Stress-test pass requirements \u2014 Pass 52 owner-approved Option A (revised from prior 2008/2020/2022 scope after owner caught error: backtest covers 2021-2024 only, NOT 2008 or 2020). Test only periods ..."
+      },
+      {
+        "id": "DECISION-096",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Backtest reproducibility (code + data + config hash) **Pass 52 turn 58 owner-approved RESOLVED-DECIDED: backtest reproducibility manifest (code SHA + data version + config hash). Joint with DEC-283 (o..."
+      },
+      {
+        "id": "DECISION-103",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Auto-populate Tier 2 universe (spinoffs, IPOs, $5B+) \u2014 Pass 52 turn 33 RESOLVED via supersession. Pass 52 phased implementation: DEC-372 (Phase A \u2014 GH Actions monthly automation), DEC-373 (Phase B \u2014 -..."
+      },
+      {
+        "id": "DECISION-107",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Regime probability (not hard label) **Pass 52 turn 61 owner-approved RESOLVED-DECIDED with PHASED ROLLOUT: Regime probability instead of hard label. Phase A \u2014 emit probability alongside label (backwar..."
+      },
+      {
+        "id": "DECISION-111",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Stationarity / structural break tests \u2014 Pass 52 owner-approved scoped to feasibility. 3 test types: (1) ADF on equity curve (~1000 daily obs, sufficient power); (2) Rolling 1-year Sharpe deviation (>2..."
+      },
+      {
+        "id": "DECISION-117",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Add file-level checksum + last-validated timestamp to cache **Pass 52 turn 119 RESOLVED-DECIDED Final: File-level checksum + last-validated timestamp to cache. Joint DEC-260 cache freshness + DEC-330 ..."
+      },
+      {
+        "id": "DECISION-136",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Portfolio rebalancing frequency policy **Pass 52 turn 115 owner-approved RESOLVED-DECIDED Batch B Risk Mgmt: Portfolio rebalancing frequency policy. Threshold-based rebalance: trigger if any position ..."
+      },
+      {
+        "id": "DECISION-138",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Cold-start CI test (fresh container in <30 min) **Pass 52 turn 113 owner-approved RESOLVED-DECIDED with Sprint 6 placement: Cold-start CI test (fresh container in <30 min). New `.github/workflows/cold..."
+      },
+      {
+        "id": "DECISION-144",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Stock-vs-sector momentum delta as breakdown variable **Pass 52 turn 85 owner-approved RESOLVED-DECIDED: Stock-vs-sector momentum delta as breakdown variable. New cube dimension: momentum_delta_band = ..."
+      },
+      {
+        "id": "DECISION-147",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Delisting registry + survivorship bias correction **Pass 52 turn 119 RESOLVED-DECIDED Batch D: Delisting registry + survivorship bias correction. Track delisted tickers explicitly so backtest universe..."
+      },
+      {
+        "id": "DECISION-152",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Hold-out final test period (never touched during audits) **Pass 53 evening 2026-05-06 DEC-594 audit: PARTIAL-SPEC-ONLY (was RESOLVED-DECIDED; demoted via DEC-594 retroactive audit \u2014 code-grep found no..."
+      },
+      {
+        "id": "DECISION-153",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Regime-stratified train/test splits **Pass 52 turn 119 PARTIAL-SPEC-ONLY (was RESOLVED-DECIDED; Pass 53 evening 2026-05-06 demoted via DEC-594 retroactive audit \u2014 methodology spec final but Sprint 7 s..."
+      },
+      {
+        "id": "DECISION-175",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Signal persistence weighting (consecutive-day signals) **Pass 52 turn 119 RESOLVED-DECIDED Batch E: Signal persistence weighting \u2014 consecutive-day signals weighted higher (3-day breakout > 1-day break..."
+      },
+      {
+        "id": "DECISION-177",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Explicit random seed in every backtest run output (reproducibility test) **Pass 52 turn 119 RESOLVED-DECIDED Batch F: Random seed in backtest output. Joint DEC-096 reproducibility manifest + DEC-232 d..."
+      },
+      {
+        "id": "DECISION-196",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "No authentication on paper-trading analytics dashboard; revisit before live trading **Pass 53 evening 2026-05-06 DEC-594 audit: PARTIAL-SPEC-ONLY (was RESOLVED-DECIDED; demoted via DEC-594 retroactive..."
+      },
+      {
+        "id": "DECISION-199",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Dashboard 1 detailed spec (Phase 1B-\u03b1 backtest analysis) **Pass 52 turn 79 owner-approved RESOLVED-DECIDED with 5-section spec: Dashboard 1 (Phase 1B-\u03b1 backtest analysis). Section 1 \u2014 Cube Explorer (2..."
+      },
+      {
+        "id": "DECISION-205",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "A/B test arm design \u2014 minimum 4 arms (rules, full-agents, no-Risk, no-Bull-Bear) **Pass 53 evening 2026-05-06 DEC-594 audit: PARTIAL-SPEC-ONLY (was RESOLVED-DECIDED; demoted via DEC-594 retroactive au..."
+      },
+      {
+        "id": "DECISION-207",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Pre-commit minimum sample size per arm (300 paired trades) before declaring winner **Pass 53 evening 2026-05-06 DEC-594 audit: PARTIAL-SPEC-ONLY (was RESOLVED-DECIDED; demoted via DEC-594 retroactive ..."
+      },
+      {
+        "id": "DECISION-216",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "A/B test orchestrator code module (parallel arms with deterministic seeds) **Pass 52 turn 72 owner-approved RESOLVED-DECIDED with HARD-REVERSIBILITY sandbox-prototype acknowledgment: A/B test orchestr..."
+      },
+      {
+        "id": "DECISION-219",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "GitHub Actions audit \u2014 security, schedule, failure alerting, idempotency **Pass 52 turn 95 owner-approved RESOLVED-DECIDED: GitHub Actions audit. Inventory of 6 workflows confirmed during DEC-220 insp..."
+      },
+      {
+        "id": "DECISION-220",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Audit sync_from_claude.yml \u2014 disable if it bypasses owner approval **Pass 52 turn 95 owner-approved RESOLVED-DECIDED with INSPECTION COMPLETE turn 95: sync_from_claude.yml audit. **INSPECTION FINDING:..."
+      },
+      {
+        "id": "DECISION-229",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Config management upgrade (pydantic + env overrides + change log) **Pass 52 turn 85 owner-approved RESOLVED-DECIDED with HARD-REVERSIBILITY sandbox-prototype: Config management upgrade. Replace ad-hoc..."
+      },
+      {
+        "id": "DECISION-231",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Audit all except Exception patterns; ensure WARNING+ logging with context **Pass 52 turn 85 owner-approved RESOLVED-DECIDED: Audit all bare except Exception patterns. Find every bare except in codebas..."
+      },
+      {
+        "id": "DECISION-246",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Quant finance correctness audit (Sharpe annualization, DD computation, vol periodicity) **Pass 52 turn 119 RESOLVED-DECIDED Final: Quant finance correctness audit (Sharpe annualization, DD computation..."
+      },
+      {
+        "id": "DECISION-247",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Stats/ML implementation review (HMM, deflated Sharpe, Kelly \u2014 validate against known resul **Pass 52 turn 119 RESOLVED-DECIDED Final: Stats/ML implementation review (HMM, Deflated Sharpe, Kelly \u2014 vali..."
+      },
+      {
+        "id": "DECISION-248",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Owner pre-commitment doc (rules owner commits to before losses) **Pass 53 evening 2026-05-06 DEC-594 audit: PARTIAL-SPEC-ONLY (was RESOLVED-DECIDED; demoted via DEC-594 retroactive audit \u2014 code-grep f..."
+      },
+      {
+        "id": "DECISION-250",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Edge decay assumption (discount backtest Sharpe by expected crowding %) **Pass 52 turn 117 owner-approved RESOLVED-DECIDED Batch C with REVISIT_AFTER_BACKTEST: Edge decay assumption. Default 20% disco..."
+      },
+      {
+        "id": "DECISION-251",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Dependency injection audit (refactor for testability with mocks) **Pass 52 turn 119 owner-approved RESOLVED-DECIDED with HARD-REVERSIBILITY sandbox-prototype: Dependency injection audit \u2014 refactor for..."
+      },
+      {
+        "id": "DECISION-258",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Options chain snapshot cache (OI + IV + put-call ratio) per ticker per day \u2014 Pass 52 turn 32 SCOPE CORRECTION per owner directive (\"Phase 1C is a sub-phase of Stage 2; in current focus\"). Originally D..."
+      },
+      {
+        "id": "DECISION-260",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Cache freshness assertion \u2014 Pass 52 owner-approved as patch-level uniform mechanism. Per cache file (parquet), check `max(date)` against backtest target date; if target > max \u2192 raise `CacheStaleError(..."
+      },
+      {
+        "id": "DECISION-269",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Stage 4 entry criteria \u2014 explicit numeric gates (Sharpe/DD/win-rate/A-B-clear/divergence) **Pass 52 turn 119 RESOLVED-DECIDED Batch G: Stage 4 entry criteria explicit numeric gates. Document gates now..."
+      },
+      {
+        "id": "DECISION-277",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Per-strategy promotion workflow \u2014 each of 72 strategies has independent stage **Pass 52 turn 81 owner-approved RESOLVED-DECIDED with HARD-REVERSIBILITY sandbox-prototype: Per-strategy promotion workfl..."
+      },
+      {
+        "id": "DECISION-278",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Internal trade journal schema \u2014 chart snapshot, agent transcripts, signal raw values, regi **Pass 52 turn 81 owner-approved RESOLVED-DECIDED with 3-LAYER TRADE JOURNAL: Internal trade journal schema. ..."
+      },
+      {
+        "id": "DECISION-283",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Backtest output schema \u2014 explicit columns/types/nullability/post-conditions, versioned **Pass 52 turn 56 owner-approved RESOLVED-DECIDED: Backtest output schema versioning. Joint with DEC-330 (cache s..."
+      },
+      {
+        "id": "DECISION-296",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Fix test_e2e fixture \u2014 engine fixture undefined, 7 of 8 e2e tests ERROR at setup **Pass 53 evening 2026-05-06 DEC-594 audit: PARTIAL-SPEC-ONLY (was RESOLVED-DECIDED; demoted via DEC-594 retroactive au..."
+      },
+      {
+        "id": "DECISION-297",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Add unit test for close_trade \u2014 would have caught the days bug; same for any function in c **Pass 53 evening 2026-05-06 DEC-594 audit: PARTIAL-SPEC-ONLY (was RESOLVED-DECIDED; demoted via DEC-594 retr..."
+      },
+      {
+        "id": "DECISION-299",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "yfinance fetch_info CURRENT sector \u2014 RESOLVED Pass 52 owner approve all: snapshot current results to dated CSV (Step 1, immediate), defer Polygon Reference subscription until BUG-191 validation gate b..."
+      },
+      {
+        "id": "DECISION-327",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Short-borrow cost duplicated across improvements.py + exit_manager.py with different units \u2014 pick single source. Pass 52 owner-approved. Investigate live backtest path first (`improvements.py:80-84` c..."
+      },
+      {
+        "id": "DECISION-336",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "info_cache.json never refreshed \u2014 stale market caps persist project-lifetime **Pass 52 turn 49: Likely SUPERSEDED_BY_DEC-443 (Polygon reference data covers sector + market_cap PIT, replacing yfinance ..."
+      },
+      {
+        "id": "DECISION-338",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Conversion logic (short\u2192long in bull regime) creates label only; no actual long opened \u2014 d **Pass 52 turn 50 owner sub-choice: (A) Implement actual position open in opposite direction.** Conversion lo..."
+      },
+      {
+        "id": "DECISION-343",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Pandas-ta deprecation warning on pandas 4.0 \u2014 plan replacement (TA-Lib alternative) **Pass 52 turn 51 owner-approved joint-with-DEC-445 framing: wait until DEC-445 implementation reveals whether Polyg..."
+      },
+      {
+        "id": "DECISION-353",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Risk-reward ratio sweep \u2014 owner resolution Pass 52: 2R reward:risk MINIMUM. Current default `exit_fixed_target(target_mult=3.0, stop_mult=2.0)` = 3R/2R = 1.5:1 R/R, which is BELOW the new 2:1 minimum ..."
+      },
+      {
+        "id": "DECISION-368",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "DEC-099-B \u2014 Calendar / Seasonal strategies \u2014 Pass 52 turn 33 owner-approved PENDING. Cheap to implement (date-based filters); event calendar exists. Examples: Sell-in-May, January effect, Santa rally,..."
+      },
+      {
+        "id": "DECISION-369",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "DEC-099-C \u2014 Cross-Asset strategies \u2014 Pass 52 turn 33 owner-approved PENDING (Phase 1D is Stage 2 sub-phase per turn 32 correction; not deferred). Needs intermarket data feeds (bonds, oil, dollar). **U..."
+      },
+      {
+        "id": "DECISION-370",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "DEC-099-D \u2014 Index Rebalance strategies \u2014 Pass 52 turn 33 owner-approved PENDING (Phase 1C is Stage 2 sub-phase per turn 32 correction; not deferred). Needs S&P/Russell adds-drops calendar; joint with ..."
+      },
+      {
+        "id": "DECISION-373",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "DEC-103 Phase B \u2014 Update script with `--validate` mode that flags missing-data tickers (yfinance returning empty info) for manual review rather than silent drop. Catches SNDK-style edge cases where yf..."
+      },
+      {
+        "id": "DECISION-378",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "DEC-105 Phase 1 \u2014 NASDAQ symbol-directory weekly diff for spinoff/IPO detection. Source: `ftp.nasdaqtrader.com/SymbolDirectory/nasdaqtraded.txt`. Diff against last week's list, flag new tickers, valid..."
+      },
+      {
+        "id": "DECISION-381",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "DEC-307 implementation \u2014 `get_ohlcv` symmetric front-extension. After existing tail-extension check, add: if cached_start > requested_start, fetch [requested_start, cached_start - 1day], prepend, save..."
+      },
+      {
+        "id": "DECISION-382",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "DEC-308 implementation \u2014 Verify exact 20-day threshold location in cache.py + replace hard floor with `min(20, available_days)` + add `LIMITED_HISTORY` flag in result schema. Strategy level (not cache..."
+      },
+      {
+        "id": "DECISION-389",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "DEC-318 implementation \u2014 AAII pub-lag fix. In `sentiment.py` AAII consumption: when reading for `as_of=D`, look up survey from prior week ending Friday before D-2. Update CSV schema with `pub_date` co..."
+      },
+      {
+        "id": "DECISION-390",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "DEC-319 implementation \u2014 `scripts/refresh_aaii_sentiment.py` (HTML scrape aaii.com/sentimentsurvey/sent_results) + `.github/workflows/refresh_aaii.yml` schedule Friday 14:00 UTC. Auto-PR weekly delta...."
+      },
+      {
+        "id": "DECISION-399",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "DEC-327 Phase B \u2014 Consolidate to shared `backtest.engine.costs.calculate_borrow_cost(trade, hold_days)` consumed by both paths. Remove duplication. Unit test: borrow cost charged exactly once per shor..."
+      },
+      {
+        "id": "DECISION-401",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "DEC-080 Phase B \u2014 Add Holm-Bonferroni step-down option (less conservative than Bonferroni for correlated strategies). Add min-Sharpe filter (Sharpe \u2265 0.5) joint with BUG-038. Owner approval gate: Bonf..."
+      },
+      {
+        "id": "DECISION-405",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "DEC-082 implementation (Option A scope) \u2014 New `backtest/results/stress_tests.py`. Test 2022 full year (Sharpe \u2265 0, DD \u2264 20%, Win Rate \u2265 40%) + crisis sub-periods VIX > 30 sustained within 2021-2024 (Q..."
+      },
+      {
+        "id": "DECISION-414",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "DEC-111 Phase A \u2014 Add `statsmodels>=0.14.0` to requirements.txt. Implement ADF test on strategy equity curve (~1000 daily PnL observations). Output per strategy: `is_stationary` bool (ADF p < 0.05). ~..."
+      },
+      {
+        "id": "DECISION-415",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "DEC-111 Phase B \u2014 Rolling 1-year Sharpe deviation test. Compute Sharpe over 252-day rolling windows; flag strategies where any window deviates >2\u03c3 from full-period Sharpe. Output per strategy: `rollin..."
+      },
+      {
+        "id": "DECISION-416",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "DEC-111 Phase C \u2014 Chow split-sample structural break test. Only computed when n_trades \u2265 600 (300 per half). Split at midpoint; test if mean returns differ significantly. Output per strategy: `chow_br..."
+      },
+      {
+        "id": "DECISION-420",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "DEC-131 implementation \u2014 Agent value-add A/B framework with three-case pairing (Pass 52 turn 13 owner-approved). Run Stage 2 candidates twice: rules-only path + agent-overlay path. Per (ticker, date, ..."
+      },
+      {
+        "id": "DECISION-423",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "DEC-068 expansion (per Pass 52 DEC-422) \u2014 Bootstrap CI + pairwise significance now operates at PER-CELL level (not per-strategy). For each cell in dimensional cube: 1000 resample bootstrap on cell tra..."
+      },
+      {
+        "id": "DECISION-427",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "DEC-422 Phase 3: Marginal heatmap analysis (Approach A). For each pair (strategy_i, exit_j), compute per-dimension marginal heatmap. Statistically valid for 2D slicing. Output: marginal-best exit per ..."
+      },
+      {
+        "id": "DECISION-430",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "DEC-422 Phase 6: Dashboard 1 visualization for multi-dim cube. Streamlit interactive: pick 2 dimensions \u2192 display Sharpe heatmap; pick 3 dimensions \u2192 display 3D scatter; per-cell drill-down to underly..."
+      },
+      {
+        "id": "DECISION-437",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Property-based testing via `hypothesis` library (Phase 0.E formalization) \u2014 Pass 52 owner-approved as Layer 3 of multi-layer defense. `hypothesis` generates random inputs across input space; verifies ..."
+      },
+      {
+        "id": "DECISION-438",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Characterization / golden-master tests (Phase 0.E formalization) \u2014 Pass 52 owner-approved as Layer 4 of multi-layer defense. Capture full output of known-good backtest run as golden master; future run..."
+      },
+      {
+        "id": "DECISION-439",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Differential testing (Phase 0.E formalization) \u2014 Pass 52 owner-approved as Layer 5 of multi-layer defense. Run same logic through two independent implementations; flag any divergence. Target highest-s..."
+      },
+      {
+        "id": "DECISION-442",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Demote yfinance to fallback OHLCV after Polygon prefetch validation \u2014 Pass 52 owner-approved (DEC-410 Batch 1, Hypothesis H-yfinance-1). Sequence: (a) implement Polygon `/v2/aggs/...` prefetch per DEC..."
+      },
+      {
+        "id": "DECISION-444",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Deprecate `days_to_next_earnings()` via yfinance live calls \u2014 Pass 52 owner-approved (DEC-410 Batch 1, Hypothesis H-yfinance-3). Route all `days_to_next_earnings()` lookups through DEC-256 Polygon ear..."
+      },
+      {
+        "id": "DECISION-446",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Polygon intraday quotes selective fetch for slippage calibration \u2014 Pass 52 owner-approved (DEC-410 Batch 1, Hypothesis H-polygon-4). Fetch Polygon `/v3/quotes/{ticker}` NBBO bid-ask for 20-ticker \u00d7 30..."
+      },
+      {
+        "id": "DECISION-451",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Fix BUG-284 gov_contracts date filter \u2014 Pass 52 owner-approved (DEC-410 Batch 2). Quiver `/historical/govcontracts/` returns Date field but cache schema saves only Qtr+Year, breaking date-based querie..."
+      },
+      {
+        "id": "DECISION-459",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "AgentGateConfig spec \u2014 Option C Hybrid Architecture **Pass 52 turn 129 owner-approved RESOLVED-DECIDED (SUPERSEDES DEC-042):** OPTION C HYBRID ARCHITECTURE \u2014 TradingAgents Portfolio Manager native out..."
+      },
+      {
+        "id": "DECISION-467",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "OurAgentState schema extension + LangGraph state injection points Pass 52 turn 130 owner-approved RESOLVED-DECIDED. Implement OurAgentState (extends TradingAgentsState) per TRADINGAGENTS_DATA_AUDIT Pa..."
+      },
+      {
+        "id": "DECISION-486",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Phase 1A restoration as distinct sub-phase Pass 53 owner-approved RESOLVED-DECIDED. Restore Phase 1A (rules-based + smart money baseline; NO agent overlay) as distinct Sprint 6.5 deliverable preceding..."
+      },
+      {
+        "id": "DECISION-487",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Phase 1A-\u03b1 restoration as distinct sub-phase Pass 53 owner-approved RESOLVED-DECIDED. Phase 1A-\u03b1 \u2014 rules-only dimensional cube + dashboards + verdict; cube methodology built once and reused by Phase 1..."
+      },
+      {
+        "id": "DECISION-488",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Phase 1A-\u03b2 restoration as distinct sub-phase Pass 53 owner-approved RESOLVED-DECIDED. Phase 1A-\u03b2 \u2014 production-scale validation run on full universe (~1015 tickers per DEC-483) WITHOUT agents. DELIVERA..."
+      },
+      {
+        "id": "DECISION-478",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Polygon tier \u2014 Stocks Starter $29/mo selected. Pass 53 turn (this) owner-approved RESOLVED-DECIDED (\"I will take the starter pack only\"). Implications: (a) 5-year history total (May 2021 \u2192 May 2026); ..."
+      },
+      {
+        "id": "DECISION-482",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Walk-forward methodology revised: expanding window 2y+/6mo OOS \u00d7 4-5 folds within 5y Polygon Stocks Starter window. Pass 53 turn (this) owner-approved RESOLVED-DECIDED (Q1 = (c) expanding window). SUP..."
+      },
+      {
+        "id": "DECISION-485",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Earnings transcripts dropped from Stage 2 scope. Pass 53 turn (this) owner-approved RESOLVED-DECIDED (per Q5 \"Skip 2 strategies\"). Earnings call transcripts not available free at scale (FMP free tier ..."
+      },
+      {
+        "id": "DECISION-490",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Phase 1A skipped strategies enumerated. Pass 53 turn (this) RESOLVED-DECIDED. Per DEC-484 (financials deferred to Sprint 4 SEC EDGAR) + DEC-485 (transcripts dropped), 2 Layer 1 Fundamental strategies ..."
+      },
+      {
+        "id": "DECISION-496",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "Tier 3 momentum watchlist methodology \u2014 Jegadeesh-Titman 12-1 month price momentum (academic standard) computed via SCREENER-FIRST two-step flow against the broad US equities market. **Pass 53 owner-a..."
+      },
+      {
+        "id": "DECISION-501",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "**Polygon Options NOT upgraded; OHLC/OI/IV/chain data deferred to Stage 3 / Phase 1C.** Pass 53 owner directive 2026-05-05 (Q1=C: defer options entirely) RESOLVED-DECIDED. RATIONALE: Polygon Stocks St..."
+      },
+      {
+        "id": "DECISION-502",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "**Quiver Trader-tier agent-input expansion (8 endpoint groups + Apewisdom + pytrends supplement).** Pass 53 owner-approved Q1+Q2+Q3 2026-05-05 RESOLVED-DECIDED. ARTIFACT: Sprint 0A.5 + 0A.7 prefetch s..."
+      },
+      {
+        "id": "DECISION-506",
+        "status": "PARTIAL-SPEC-ONLY",
+        "classification": "PARTIAL_SPEC_ONLY",
+        "triggers": [],
+        "artifacts_existing": [],
+        "artifacts_missing": [],
+        "body_excerpt": "**Polygon Options + Ortex confirmed Stage 2 in-scope (corrects DEC-501 deferral + DEC-468 Sprint-7 timing).** Pass 53 owner-approved 2026-05-05 RESOLVED-DECIDED. Owner directive: \"polygon options, ort..."
+      }
+    ],
     "PROPOSED_OR_PENDING": [
       {
         "id": "DECISION-469",
@@ -3626,35 +3975,33 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "test"
+          "verification",
+          "test",
+          "tests"
         ],
         "artifacts_existing": [],
         "artifacts_missing": [
-          "metrics.py"
+          "metrics.py",
+          "test_integration.py",
+          "test_gates.py"
         ],
         "body_excerpt": "Strategy correlation analysis methodology **Pass 52 turn 67 owner-approved RESOLVED-DECIDED standalone: Strategy correlation analysis methodology \u2014 90-day rolling Pearson correlation on daily returns...."
-      },
-      {
-        "id": "DECISION-018",
-        "status": "RESOLVED-DECIDED",
-        "classification": "TEST_SIGNAL_UNVERIFIED",
-        "triggers": [
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Cooldown after stop-out (BUG-133) **Pass 52 turn 115 owner-approved RESOLVED-DECIDED Batch B Risk Mgmt: Cooldown after stop-out (BUG-133). Per-ticker cooldown 5 trading days post-stop prevents whipsaw..."
       },
       {
         "id": "DECISION-019",
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
+          "verification",
+          "validate",
           "test",
-          "validate"
+          "tests"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "run_all_tests.py",
+          "test_canonical_facts_alignment.py"
+        ],
         "body_excerpt": "Liquidity filter timing (BUG-135) **Pass 52 turn 115 owner-approved RESOLVED-DECIDED Batch B Risk Mgmt: Liquidity filter timing (BUG-135). Apply liquidity filter at entry; re-validate at exit only if ..."
       },
       {
@@ -3662,10 +4009,15 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "test"
+          "verification",
+          "test",
+          "tests"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_cftc_cot_demo.py",
+          "test_canonical_facts_alignment.py"
+        ],
         "body_excerpt": "Tier system simplification **Pass 52 turn 95 owner-approved RESOLVED-DECIDED: Tier system simplification \u2014 reduce from 4 categories (5/4/3/1.5%) to 3 (HIGH/MEDIUM/LOW = 5%/3%/1.5%) for clarity. 4-tier..."
       },
       {
@@ -3674,10 +4026,14 @@
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
           "test",
-          "verify"
+          "verify",
+          "tests",
+          "verification"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_unit.py"
+        ],
         "body_excerpt": "Smart money refinement (officer roles, 10b5-1 filter, etc.) **Pass 52 turn 61 owner-approved RESOLVED-DECIDED: Smart money refinement \u2014 filter insider buys by officer role (CFO/CEO/Director vs minor o..."
       },
       {
@@ -3685,10 +4041,15 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "test"
+          "verification",
+          "test",
+          "tests"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_integration.py",
+          "test_e2e.py"
+        ],
         "body_excerpt": "Separate WSB from smart money **Pass 52 turn 61 owner-approved RESOLVED-DECIDED: Separate WSB from smart money \u2014 refactor signal taxonomy. Smart Money composite = congressional + insider + 13F (per DE..."
       },
       {
@@ -3696,10 +4057,15 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "test"
+          "verification",
+          "test",
+          "tests"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_aaii_smoke.py",
+          "test_aaii_demo.py"
+        ],
         "body_excerpt": "Adopt Quiver pre-built composites **Pass 52 turn 61 owner-approved RESOLVED-DECIDED \u2014 DO NOT adopt Quiver pre-built composites. Hand-roll composites for: (1) DEC-332/335 tunable weights (impossible wi..."
       },
       {
@@ -3707,12 +4073,17 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
+          "verification",
           "before empirical",
+          "tests",
           "test",
           "validation"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_aaii_smoke.py",
+          "test_aaii_demo.py"
+        ],
         "body_excerpt": "Fractional Kelly position sizing **Pass 52 turn 67 owner-approved RESOLVED-DECIDED with PHASED ROLLOUT: Fractional Kelly position sizing (0.25-0.50 of full Kelly). Phase A \u2014 compute Kelly size alongsi..."
       },
       {
@@ -3720,10 +4091,15 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "test"
+          "verification",
+          "test",
+          "tests"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_integration.py",
+          "test_smartmoneyconcepts_unit.py"
+        ],
         "body_excerpt": "Vol-targeted sizing per-position (closes 023) **Pass 52 turn 67 owner-approved RESOLVED-DECIDED: Vol-targeted sizing per-position. `size = target_vol / position_vol`. Higher-vol positions get smaller ..."
       },
       {
@@ -3731,10 +4107,15 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "test"
+          "verification",
+          "test",
+          "tests"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_fred_alfred_demo.py",
+          "test_e2e.py"
+        ],
         "body_excerpt": "Portfolio vol target 15% **Pass 52 turn 67 owner-approved RESOLVED-DECIDED with REVISIT_AFTER_BACKTEST tag: Portfolio vol target 15% annualized. Gross sizing scaled to maintain target across all posit..."
       },
       {
@@ -3742,10 +4123,15 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "test"
+          "verification",
+          "test",
+          "tests"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_polygon_stocks_demo.py",
+          "test_quiver_trader_demo.py"
+        ],
         "body_excerpt": "Max correlation cap between positions **Pass 52 turn 67 owner-approved RESOLVED-DECIDED with JOINT RESOLUTION: Max correlation cap 0.7 between simultaneous holdings (sector ETFs allowed exception). Jo..."
       },
       {
@@ -3753,32 +4139,31 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "test"
+          "verification",
+          "test",
+          "tests"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_aaii_smoke.py",
+          "test_aaii_demo.py"
+        ],
         "body_excerpt": "Slippage model = f(size%ADV, vol) **Pass 52 turn 67 owner-approved RESOLVED-DECIDED as parent of DEC-122/DEC-280: Slippage model = f(size%ADV, vol). Base model: `slippage_bps = \u03b1 + \u03b2\u00d7(size_pct_ADV) + ..."
-      },
-      {
-        "id": "DECISION-096",
-        "status": "RESOLVED-DECIDED",
-        "classification": "TEST_SIGNAL_UNVERIFIED",
-        "triggers": [
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Backtest reproducibility (code + data + config hash) **Pass 52 turn 58 owner-approved RESOLVED-DECIDED: backtest reproducibility manifest (code SHA + data version + config hash). Joint with DEC-283 (o..."
       },
       {
         "id": "DECISION-102",
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "test"
+          "verification",
+          "test",
+          "tests"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_aaii_smoke.py",
+          "test_aaii_demo.py"
+        ],
         "body_excerpt": "Market-Level / Correlation-Factor strategies **Pass 52 turn 61 owner-approved RESOLVED-DECIDED \u2014 absorbed by DEC-369. DEC-369 (3-5 cross-asset strategies via TLT/GLD/UUP/USO intermarket, RESOLVED-DECI..."
       },
       {
@@ -3786,32 +4171,31 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "test"
+          "verification",
+          "test",
+          "tests"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_data_integrity.py",
+          "test_fred_alfred_demo.py"
+        ],
         "body_excerpt": "Regime inputs 2 \u2192 8+ **Pass 52 turn 61 owner-approved RESOLVED-DECIDED: Expand regime classifier from 2 inputs (VIX, DXY) to 8+ inputs. New inputs: yield curve (DGS2-DGS10), HY spread, ICSA jobless cl..."
-      },
-      {
-        "id": "DECISION-107",
-        "status": "RESOLVED-DECIDED",
-        "classification": "TEST_SIGNAL_UNVERIFIED",
-        "triggers": [
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Regime probability (not hard label) **Pass 52 turn 61 owner-approved RESOLVED-DECIDED with PHASED ROLLOUT: Regime probability instead of hard label. Phase A \u2014 emit probability alongside label (backwar..."
       },
       {
         "id": "DECISION-108",
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "test"
+          "verification",
+          "test",
+          "tests"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_data_integrity.py",
+          "test_fred_alfred_demo.py"
+        ],
         "body_excerpt": "Regime persistence model (HMM or smoothing) **Pass 52 turn 61 owner-approved RESOLVED-DECIDED with EXPONENTIAL SMOOTHING (not HMM): Regime persistence model. Exponential smoothing simpler \u2014 `EMA_regim..."
       },
       {
@@ -3819,12 +4203,17 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
+          "verification",
+          "tests",
           "gate",
-          "test",
-          "gates"
+          "gates",
+          "test"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "run_all_tests.py",
+          "test_canonical_facts_alignment.py"
+        ],
         "body_excerpt": "Agent value-add minimum (Sharpe improvement \u22650.2 over rules-only) \u2014 Pass 52 owner-approved with two-gate refinement (Pass 52 turn 13). **Two-gate logic:** primary gate `agent_sharpe - rules_sharpe \u2265 0..."
       },
       {
@@ -3832,10 +4221,15 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "test"
+          "verification",
+          "test",
+          "tests"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_data_integrity.py",
+          "test_cftc_cot_demo.py"
+        ],
         "body_excerpt": "USD/CAD currency exposure tracking + optional FX hedge **Pass 52 turn 115 owner-approved RESOLVED-DECIDED Batch B Risk Mgmt with SPLIT SCOPE: USD/CAD currency exposure tracking (Stage 2 ~1d Sprint 6) ..."
       },
       {
@@ -3843,80 +4237,47 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Per-ticker cumulative max-loss cap (rolling 30-day) **Pass 52 turn 115 owner-approved RESOLVED-DECIDED Batch B Risk Mgmt: Per-ticker cumulative max-loss cap (rolling 30-day). Default cap -10% rolling ..."
-      },
-      {
-        "id": "DECISION-136",
-        "status": "RESOLVED-DECIDED",
-        "classification": "TEST_SIGNAL_UNVERIFIED",
-        "triggers": [
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Portfolio rebalancing frequency policy **Pass 52 turn 115 owner-approved RESOLVED-DECIDED Batch B Risk Mgmt: Portfolio rebalancing frequency policy. Threshold-based rebalance: trigger if any position ..."
-      },
-      {
-        "id": "DECISION-138",
-        "status": "RESOLVED-DECIDED",
-        "classification": "TEST_SIGNAL_UNVERIFIED",
-        "triggers": [
-          "smoke test",
-          "tests",
-          "test"
+          "verification",
+          "test",
+          "tests"
         ],
         "artifacts_existing": [],
         "artifacts_missing": [
-          ".github/workflows/cold_start.yml"
+          "test_canonical_facts_alignment.py",
+          "test_aaii_demo.py"
         ],
-        "body_excerpt": "Cold-start CI test (fresh container in <30 min) **Pass 52 turn 113 owner-approved RESOLVED-DECIDED with Sprint 6 placement: Cold-start CI test (fresh container in <30 min). New `.github/workflows/cold..."
-      },
-      {
-        "id": "DECISION-144",
-        "status": "RESOLVED-DECIDED",
-        "classification": "TEST_SIGNAL_UNVERIFIED",
-        "triggers": [
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Stock-vs-sector momentum delta as breakdown variable **Pass 52 turn 85 owner-approved RESOLVED-DECIDED: Stock-vs-sector momentum delta as breakdown variable. New cube dimension: momentum_delta_band = ..."
+        "body_excerpt": "Per-ticker cumulative max-loss cap (rolling 30-day) **Pass 52 turn 115 owner-approved RESOLVED-DECIDED Batch B Risk Mgmt: Per-ticker cumulative max-loss cap (rolling 30-day). Default cap -10% rolling ..."
       },
       {
         "id": "DECISION-145",
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "test"
+          "verification",
+          "test",
+          "tests"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_aaii_smoke.py",
+          "test_aaii_demo.py"
+        ],
         "body_excerpt": "IV delta vs historical pre-earnings pattern as signal **Pass 52 turn 85 owner-approved RESOLVED-DECIDED with IMPLEMENTATION-DEFERRED: IV delta vs historical pre-earnings pattern as signal. Compare cur..."
-      },
-      {
-        "id": "DECISION-147",
-        "status": "RESOLVED-DECIDED",
-        "classification": "TEST_SIGNAL_UNVERIFIED",
-        "triggers": [
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Delisting registry + survivorship bias correction **Pass 52 turn 119 RESOLVED-DECIDED Batch D: Delisting registry + survivorship bias correction. Track delisted tickers explicitly so backtest universe..."
       },
       {
         "id": "DECISION-151",
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "test"
+          "verification",
+          "test",
+          "tests"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_data_integrity.py",
+          "test_e2e.py"
+        ],
         "body_excerpt": "Sector-level regime classification **Pass 52 turn 119 RESOLVED-DECIDED Batch D: Sector-level regime classification \u2014 per-sector regime independent of market-level. E.g., Tech sector bear during 2022 w..."
       },
       {
@@ -3924,10 +4285,15 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "test"
+          "verification",
+          "test",
+          "tests"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_aaii_smoke.py",
+          "test_aaii_demo.py"
+        ],
         "body_excerpt": "Regulatory event handler (SEC/DOJ investigations, sanctions) **Pass 52 turn 119 RESOLVED-DECIDED Batch E: Regulatory event handler (SEC/DOJ investigations, sanctions). Joint DEC-256 (event calendar) +..."
       },
       {
@@ -3935,12 +4301,17 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
+          "verification",
+          "tests",
           "gate",
-          "test",
-          "gates"
+          "gates",
+          "test"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_aaii_smoke.py",
+          "test_aaii_demo.py"
+        ],
         "body_excerpt": "Type hints + mypy in CI **Pass 52 turn 117 owner-approved RESOLVED-DECIDED Batch C: Type hints + mypy in CI. Mypy strict mode in CI gate; gradual rollout with `--strict` per-module via `[mypy-module.*..."
       },
       {
@@ -3948,11 +4319,16 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
+          "verification",
           "gate",
-          "test"
+          "test",
+          "tests"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_cftc_cot_smoke.py",
+          "test_canonical_facts_alignment.py"
+        ],
         "body_excerpt": "Docstring standard + sphinx documentation **Pass 52 turn 117 owner-approved RESOLVED-DECIDED Batch C: Docstring standard + sphinx documentation. Google-style docstrings (more readable than NumPy/RST) ..."
       },
       {
@@ -3960,10 +4336,15 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "test"
+          "verification",
+          "test",
+          "tests"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_aaii_smoke.py",
+          "test_aaii_demo.py"
+        ],
         "body_excerpt": "All numerical constants extracted to config **Pass 52 turn 117 owner-approved RESOLVED-DECIDED Batch C: All numerical constants extracted to config. Magic numbers (thresholds, multipliers, lookback wi..."
       },
       {
@@ -3971,50 +4352,36 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
+          "verification",
+          "tests",
+          "gate",
           "gates",
-          "gate",
           "test"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "run_all_tests.py",
+          "test_aaii_demo.py"
+        ],
         "body_excerpt": "Adopt ruff + black + isort + mypy as CI gates **Pass 52 turn 117 owner-approved RESOLVED-DECIDED Batch C: Adopt ruff + black + isort + mypy as CI gates. Pre-commit hook (developer-side) + CI gate (PR-..."
-      },
-      {
-        "id": "DECISION-175",
-        "status": "RESOLVED-DECIDED",
-        "classification": "TEST_SIGNAL_UNVERIFIED",
-        "triggers": [
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Signal persistence weighting (consecutive-day signals) **Pass 52 turn 119 RESOLVED-DECIDED Batch E: Signal persistence weighting \u2014 consecutive-day signals weighted higher (3-day breakout > 1-day break..."
-      },
-      {
-        "id": "DECISION-199",
-        "status": "RESOLVED-DECIDED",
-        "classification": "TEST_SIGNAL_UNVERIFIED",
-        "triggers": [
-          "gate",
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Dashboard 1 detailed spec (Phase 1B-\u03b1 backtest analysis) **Pass 52 turn 79 owner-approved RESOLVED-DECIDED with 5-section spec: Dashboard 1 (Phase 1B-\u03b1 backtest analysis). Section 1 \u2014 Cube Explorer (2..."
       },
       {
         "id": "DECISION-200",
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "test",
-          "gate",
           "verification",
-          "validation",
-          "verify"
+          "verify",
+          "tests",
+          "gate",
+          "test",
+          "validation"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_smartmoneyconcepts_empirical.py",
+          "test_smartmoneyconcepts_integration.py"
+        ],
         "body_excerpt": "Dashboard 2 detailed spec (Phase 0.D ICT/SMC signal audit) **Pass 52 turn 79 owner-approved RESOLVED-DECIDED with 5-section spec: Dashboard 2 (Phase 0.D ICT/SMC signal audit). Pre-Phase-1B-\u03b1 gate to v..."
       },
       {
@@ -4022,11 +4389,16 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
+          "verification",
           "test",
+          "tests",
           "validation"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_aaii_smoke.py",
+          "test_aaii_demo.py"
+        ],
         "body_excerpt": "Dashboard 3 detailed spec (Stage 2 agent overlay analysis) **Pass 52 turn 79 owner-approved RESOLVED-DECIDED with 6-section spec: Dashboard 3 (Stage 2 agent overlay analysis). Section 1 \u2014 A/B summary ..."
       },
       {
@@ -4034,10 +4406,15 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "test"
+          "verification",
+          "test",
+          "tests"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_aaii_smoke.py",
+          "test_aaii_demo.py"
+        ],
         "body_excerpt": "Net Sharpe contribution accounting (gross lift minus annualized agent cost) **Pass 52 turn 72 owner-approved RESOLVED-DECIDED: Net Sharpe contribution accounting (gross lift minus annualized agent cos..."
       },
       {
@@ -4045,11 +4422,16 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
+          "verification",
           "test",
+          "tests",
           "validation"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_canonical_facts_alignment.py",
+          "test_aaii_demo.py"
+        ],
         "body_excerpt": "Per-agent ablation studies (drop each agent one at a time) **Pass 52 turn 72 owner-approved RESOLVED-DECIDED with Option A NARROW SCOPE + cost mitigations: Per-agent ablation studies (drop each agent ..."
       },
       {
@@ -4057,10 +4439,15 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "test"
+          "verification",
+          "test",
+          "tests"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_quiver_trader_smoke.py",
+          "test_e2e.py"
+        ],
         "body_excerpt": "Agent-disagreement decomposition (Bull vs Bear, Risk override) \u2014 testable hypotheses **Pass 52 turn 72 owner-approved RESOLVED-DECIDED: Agent-disagreement decomposition (Bull vs Bear, Risk override). ..."
       },
       {
@@ -4068,10 +4455,15 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "test"
+          "verification",
+          "test",
+          "tests"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_aaii_smoke.py",
+          "test_aaii_demo.py"
+        ],
         "body_excerpt": "Both-rationales storage (rules-only AND agent rationale stored every trade) **Pass 52 turn 72 owner-approved RESOLVED-DECIDED: Both-rationales storage (rules-only AND agent rationale stored every trad..."
       },
       {
@@ -4079,11 +4471,16 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
+          "verification",
           "test",
+          "tests",
           "validation"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_integration.py",
+          "test_gates.py"
+        ],
         "body_excerpt": "Quarterly re-validation of agent A/B test (model drift / cost drift) **Pass 52 turn 72 owner-approved RESOLVED-DECIDED: Quarterly re-validation of agent A/B test (model drift / cost drift). Re-run las..."
       },
       {
@@ -4091,26 +4488,17 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "test"
+          "verification",
+          "test",
+          "tests"
         ],
         "artifacts_existing": [],
         "artifacts_missing": [
-          "ab_results/YYYY-MM-DD_HHMM_runhash.json"
+          "run_all_tests.py",
+          "ab_results/YYYY-MM-DD_HHMM_runhash.json",
+          "test_canonical_facts_alignment.py"
         ],
         "body_excerpt": "A/B test result registry (structured artifacts versioned in repo) **Pass 52 turn 72 owner-approved RESOLVED-DECIDED: A/B test result registry (structured artifacts versioned in repo). Each A/B test ru..."
-      },
-      {
-        "id": "DECISION-216",
-        "status": "RESOLVED-DECIDED",
-        "classification": "TEST_SIGNAL_UNVERIFIED",
-        "triggers": [
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [
-          "backtest/ab_orchestrator.py"
-        ],
-        "body_excerpt": "A/B test orchestrator code module (parallel arms with deterministic seeds) **Pass 52 turn 72 owner-approved RESOLVED-DECIDED with HARD-REVERSIBILITY sandbox-prototype acknowledgment: A/B test orchestr..."
       },
       {
         "id": "DECISION-217",
@@ -4118,59 +4506,33 @@
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
           "verification",
-          "tests",
-          "test"
+          "test",
+          "tests"
         ],
         "artifacts_existing": [],
         "artifacts_missing": [
-          "engine.py",
-          "engine/backtest.py"
+          "test_aaii_demo.py",
+          "engine/backtest.py",
+          "test_aaii_smoke.py",
+          "engine.py"
         ],
         "body_excerpt": "Audit and remove dead code (engine.py vs engine/backtest.py duplication etc.) **Pass 52 turn 95 owner-approved RESOLVED-DECIDED: Audit and remove dead code. Joint with DEC-098 (90% test coverage RESOL..."
-      },
-      {
-        "id": "DECISION-219",
-        "status": "RESOLVED-DECIDED",
-        "classification": "TEST_SIGNAL_UNVERIFIED",
-        "triggers": [
-          "test",
-          "verify"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [
-          "prefetch_quiver.yml",
-          "prefetch_av_news.yml",
-          "validate_backtest.yml",
-          "update_stocks.yml",
-          "prefetch_finnhub.yml",
-          "sync_from_claude.yml"
-        ],
-        "body_excerpt": "GitHub Actions audit \u2014 security, schedule, failure alerting, idempotency **Pass 52 turn 95 owner-approved RESOLVED-DECIDED: GitHub Actions audit. Inventory of 6 workflows confirmed during DEC-220 insp..."
-      },
-      {
-        "id": "DECISION-220",
-        "status": "RESOLVED-DECIDED",
-        "classification": "TEST_SIGNAL_UNVERIFIED",
-        "triggers": [
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [
-          "sync_from_claude.yml"
-        ],
-        "body_excerpt": "Audit sync_from_claude.yml \u2014 disable if it bypasses owner approval **Pass 52 turn 95 owner-approved RESOLVED-DECIDED with INSPECTION COMPLETE turn 95: sync_from_claude.yml audit. **INSPECTION FINDING:..."
       },
       {
         "id": "DECISION-222",
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "tests",
+          "verification",
           "test",
+          "tests",
           "regression test"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_canonical_facts_alignment.py",
+          "test_aaii_demo.py"
+        ],
         "body_excerpt": "Test naming and structure audit; regression tests for top-20 critical bugs **Pass 52 turn 65 owner-approved RESOLVED-DECIDED: Test naming and structure audit + regression tests for top-20 CRITICAL bug..."
       },
       {
@@ -4178,10 +4540,15 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "test"
+          "verification",
+          "test",
+          "tests"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_aaii_smoke.py",
+          "test_aaii_demo.py"
+        ],
         "body_excerpt": "Cache size monitoring + alerting (cache_size_gb metric, 80% disk alert) **Pass 52 turn 65 owner-approved RESOLVED-DECIDED: Cache size monitoring. `cache_size_gb` metric via `du -sh backtest/data/cache..."
       },
       {
@@ -4189,58 +4556,49 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Fetcher reliability audit (retry/rate-limit/idempotency per API) **Pass 52 turn 85 owner-approved RESOLVED-DECIDED: Fetcher reliability audit (retry/rate-limit/idempotency per API). Standardize 17 API..."
-      },
-      {
-        "id": "DECISION-229",
-        "status": "RESOLVED-DECIDED",
-        "classification": "TEST_SIGNAL_UNVERIFIED",
-        "triggers": [
+          "verification",
           "test",
-          "before full",
-          "validation"
+          "tests"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Config management upgrade (pydantic + env overrides + change log) **Pass 52 turn 85 owner-approved RESOLVED-DECIDED with HARD-REVERSIBILITY sandbox-prototype: Config management upgrade. Replace ad-hoc..."
+        "artifacts_missing": [
+          "test_aaii_smoke.py",
+          "test_aaii_demo.py"
+        ],
+        "body_excerpt": "Fetcher reliability audit (retry/rate-limit/idempotency per API) **Pass 52 turn 85 owner-approved RESOLVED-DECIDED: Fetcher reliability audit (retry/rate-limit/idempotency per API). Standardize 17 API..."
       },
       {
         "id": "DECISION-230",
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "test"
+          "verification",
+          "test",
+          "tests"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_polygon_stocks_demo.py",
+          "test_gates.py"
+        ],
         "body_excerpt": "Logging audit + standard (structured JSON, rotation, level standardization) **Pass 52 turn 85 owner-approved RESOLVED-DECIDED with python-json-logger library: Logging audit + standard. Structured JSON..."
-      },
-      {
-        "id": "DECISION-231",
-        "status": "RESOLVED-DECIDED",
-        "classification": "TEST_SIGNAL_UNVERIFIED",
-        "triggers": [
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Audit all except Exception patterns; ensure WARNING+ logging with context **Pass 52 turn 85 owner-approved RESOLVED-DECIDED: Audit all bare except Exception patterns. Find every bare except in codebas..."
       },
       {
         "id": "DECISION-232",
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
+          "verification",
+          "regression test",
+          "tests",
           "gate",
-          "test",
-          "regression test"
+          "test"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_cftc_cot_smoke.py",
+          "test_canonical_facts_alignment.py"
+        ],
         "body_excerpt": "Determinism test (run identical backtest twice, diff outputs) **Pass 52 turn 85 owner-approved RESOLVED-DECIDED: Determinism test (run identical backtest twice, diff outputs). Regression test running ..."
       },
       {
@@ -4248,11 +4606,16 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
+          "verification",
           "test",
+          "tests",
           "validation"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_aaii_smoke.py",
+          "test_aaii_demo.py"
+        ],
         "body_excerpt": "Daily data quality monitoring (per-ticker NaN/missing/anomaly detection) **Pass 52 turn 58 owner-approved RESOLVED-DECIDED with REVISIT_AFTER_BACKTEST tag: Daily data quality monitoring per-ticker NaN..."
       },
       {
@@ -4260,10 +4623,15 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "test"
+          "verification",
+          "test",
+          "tests"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_polygon_stocks_demo.py",
+          "test_quiver_trader_demo.py"
+        ],
         "body_excerpt": "Ticker lifecycle event handler (CUSIP/ISIN tracking across renames/mergers) **Pass 52 turn 58 owner-approved RESOLVED-DECIDED: Ticker lifecycle event handler (CUSIP/ISIN tracking across renames/merger..."
       },
       {
@@ -4271,10 +4639,15 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "test"
+          "verification",
+          "test",
+          "tests"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_data_integrity.py",
+          "test_canonical_facts_alignment.py"
+        ],
         "body_excerpt": "Time/calendar handling spec (NYSE calendar, holidays, DST, half-days) **Pass 52 turn 58 owner-approved RESOLVED-DECIDED with `pandas_market_calendars` library: NYSE/NASDAQ calendar handling (holidays,..."
       },
       {
@@ -4282,10 +4655,15 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "test"
+          "verification",
+          "test",
+          "tests"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_aaii_smoke.py",
+          "test_aaii_demo.py"
+        ],
         "body_excerpt": "Time-in-market metric (% in any position, % long, % short, % cash) **Pass 52 turn 58 owner-approved RESOLVED-DECIDED: Time-in-market metric (% in any position, % long, % short, % cash). Pure additive ..."
       },
       {
@@ -4304,49 +4682,33 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
+          "verification",
           "test",
+          "tests",
           "validation"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Strategy decay metric (rolling 6mo Sharpe per strategy; flag >50% drop) **Pass 52 turn 117 owner-approved RESOLVED-DECIDED Batch C: Strategy decay metric. Rolling 6mo Sharpe per strategy; flag >50% dr..."
-      },
-      {
-        "id": "DECISION-250",
-        "status": "RESOLVED-DECIDED",
-        "classification": "TEST_SIGNAL_UNVERIFIED",
-        "triggers": [
-          "test"
-        ],
-        "artifacts_existing": [],
         "artifacts_missing": [
-          "metrics.py"
+          "test_aaii_smoke.py",
+          "test_aaii_demo.py"
         ],
-        "body_excerpt": "Edge decay assumption (discount backtest Sharpe by expected crowding %) **Pass 52 turn 117 owner-approved RESOLVED-DECIDED Batch C with REVISIT_AFTER_BACKTEST: Edge decay assumption. Default 20% disco..."
-      },
-      {
-        "id": "DECISION-251",
-        "status": "RESOLVED-DECIDED",
-        "classification": "TEST_SIGNAL_UNVERIFIED",
-        "triggers": [
-          "tests",
-          "test",
-          "before full"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Dependency injection audit (refactor for testability with mocks) **Pass 52 turn 119 owner-approved RESOLVED-DECIDED with HARD-REVERSIBILITY sandbox-prototype: Dependency injection audit \u2014 refactor for..."
+        "body_excerpt": "Strategy decay metric (rolling 6mo Sharpe per strategy; flag >50% drop) **Pass 52 turn 117 owner-approved RESOLVED-DECIDED Batch C: Strategy decay metric. Rolling 6mo Sharpe per strategy; flag >50% dr..."
       },
       {
         "id": "DECISION-252",
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "before locking",
-          "test"
+          "verification",
+          "test",
+          "tests",
+          "before locking"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_aaii_smoke.py",
+          "test_aaii_demo.py"
+        ],
         "body_excerpt": "Explicit commission model in backtest using real IBKR pricing tables (Tiered + Fixed, with **Pass 52 turn 91 owner-approved RESOLVED-DECIDED with HARD-REVERSIBILITY sandbox-prototype + IBKR TIERED DEF..."
       },
       {
@@ -4354,10 +4716,15 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "test"
+          "verification",
+          "test",
+          "tests"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "run_all_tests.py",
+          "test_canonical_facts_alignment.py"
+        ],
         "body_excerpt": "Routing decision for interlisted securities: evaluate TSX-CAD vs US-NYSE per trade based o **Pass 52 turn 91 owner-approved RESOLVED-DECIDED with rule-based routing: Routing decision for interlisted s..."
       },
       {
@@ -4365,10 +4732,15 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "test"
+          "verification",
+          "test",
+          "tests"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_data_integrity.py",
+          "test_cftc_cot_demo.py"
+        ],
         "body_excerpt": "ETF substitution for index strategies: SPY/QQQ/IWM trades evaluate TSX-CAD equivalents (XS **Pass 52 turn 91 owner-approved RESOLVED-DECIDED with UNHEDGED DEFAULT (XUU/XQQ/XSU/VUN substitution table):..."
       },
       {
@@ -4376,10 +4748,15 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "test"
+          "verification",
+          "test",
+          "tests"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_data_integrity.py",
+          "test_cftc_cot_demo.py"
+        ],
         "body_excerpt": "Norbert's Gambit at funding: use DLR.TO/DLR.U.TO for CAD->USD conversion when capital move **Pass 52 turn 91 owner-approved RESOLVED-DECIDED with STAGE 4+ OPERATIONAL SCOPE: Norbert's Gambit at fundin..."
       },
       {
@@ -4387,10 +4764,15 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "test"
+          "verification",
+          "test",
+          "tests"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_cftc_cot_smoke.py",
+          "test_cftc_cot_demo.py"
+        ],
         "body_excerpt": "Earnings calendar prefetch \u2014 Pass 52 owner-approved with Polygon source. Source: Polygon `/vX/reference/tickers/{ticker}/events` + `/v3/reference/financials` (post-DEC-441 subscription). Storage: `bac..."
       },
       {
@@ -4399,59 +4781,49 @@
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
           "verification",
-          "validation",
-          "test"
+          "test",
+          "tests",
+          "validation"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_canonical_facts_alignment.py",
+          "test_aaii_demo.py"
+        ],
         "body_excerpt": "Quarterly fundamentals prefetch \u2014 Pass 52 owner-approved with Polygon\u2192yfinance fallback (OpenBB dropped from source priority per Polygon coverage). Source priority: Polygon `/v3/reference/financials` ..."
-      },
-      {
-        "id": "DECISION-258",
-        "status": "RESOLVED-DECIDED",
-        "classification": "TEST_SIGNAL_UNVERIFIED",
-        "triggers": [
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Options chain snapshot cache (OI + IV + put-call ratio) per ticker per day \u2014 Pass 52 turn 32 SCOPE CORRECTION per owner directive (\"Phase 1C is a sub-phase of Stage 2; in current focus\"). Originally D..."
       },
       {
         "id": "DECISION-259",
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "before implementation",
-          "verified",
           "verification",
-          "test"
+          "tests",
+          "test",
+          "verified",
+          "before implementation"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_cftc_cot_demo.py",
+          "test_canonical_facts_alignment.py"
+        ],
         "body_excerpt": "ICT/SMC signal pre-computation cache (FVG/BOS/CHoCH/order blocks) \u2014 Pass 52 owner-approved with Phase 0.D smartmoneyconcepts dependency. Source: smartmoneyconcepts library (per DEC-045 RESOLVED \u2014 Phas..."
-      },
-      {
-        "id": "DECISION-260",
-        "status": "RESOLVED-DECIDED",
-        "classification": "TEST_SIGNAL_UNVERIFIED",
-        "triggers": [
-          "validator",
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Cache freshness assertion \u2014 Pass 52 owner-approved as patch-level uniform mechanism. Per cache file (parquet), check `max(date)` against backtest target date; if target > max \u2192 raise `CacheStaleError(..."
       },
       {
         "id": "DECISION-262",
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "test"
+          "verification",
+          "test",
+          "tests"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_aaii_smoke.py",
+          "test_aaii_demo.py"
+        ],
         "body_excerpt": "10-candidate-cap rationale \u2014 keep, raise, or make conditional **Pass 52 turn 91 owner-approved RESOLVED-DECIDED with conditional cap 10/15/20: Daily candidate cap. Normal regime: 10 candidates; high-v..."
       },
       {
@@ -4459,11 +4831,16 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
+          "verification",
+          "verify",
           "test",
-          "verify"
+          "tests"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_canonical_facts_alignment.py",
+          "test_aaii_demo.py"
+        ],
         "body_excerpt": "Burst-day stress test \u2014 re-run high-volatility days, verify no silent drops **Pass 52 turn 91 owner-approved RESOLVED-DECIDED: Burst-day stress test. Re-run top-20 high-volatility days from 2018-prese..."
       },
       {
@@ -4471,13 +4848,18 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "gate",
+          "verification",
           "smoke test",
-          "test",
-          "gates"
+          "tests",
+          "gate",
+          "gates",
+          "test"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_cftc_cot_smoke.py",
+          "test_aaii_demo.py"
+        ],
         "body_excerpt": "Smoke test power analysis \u2014 minimum candidates for ENTER/SKIP statistical distinguishabili **Pass 52 turn 91 owner-approved RESOLVED-DECIDED (absorbed by upstream RESOLVED decisions): Smoke test power..."
       },
       {
@@ -4485,47 +4867,32 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "test"
+          "verification",
+          "test",
+          "tests"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_aaii_smoke.py",
+          "test_aaii_demo.py"
+        ],
         "body_excerpt": "requirements.txt audit + completeness (openai/tradingagents/fredapi missing) **Pass 52 turn 117 owner-approved RESOLVED-DECIDED Batch C: requirements.txt audit + completeness. Add missing dependencies..."
-      },
-      {
-        "id": "DECISION-277",
-        "status": "RESOLVED-DECIDED",
-        "classification": "TEST_SIGNAL_UNVERIFIED",
-        "triggers": [
-          "gate",
-          "before locking",
-          "gates",
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Per-strategy promotion workflow \u2014 each of 72 strategies has independent stage **Pass 52 turn 81 owner-approved RESOLVED-DECIDED with HARD-REVERSIBILITY sandbox-prototype: Per-strategy promotion workfl..."
-      },
-      {
-        "id": "DECISION-278",
-        "status": "RESOLVED-DECIDED",
-        "classification": "TEST_SIGNAL_UNVERIFIED",
-        "triggers": [
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Internal trade journal schema \u2014 chart snapshot, agent transcripts, signal raw values, regi **Pass 52 turn 81 owner-approved RESOLVED-DECIDED with 3-LAYER TRADE JOURNAL: Internal trade journal schema. ..."
       },
       {
         "id": "DECISION-279",
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "before locking",
-          "test"
+          "verification",
+          "test",
+          "tests",
+          "before locking"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_aaii_smoke.py",
+          "test_aaii_demo.py"
+        ],
         "body_excerpt": "P&L decomposition \u2014 separate (signal/timing/exit/sizing/agent) contributions **Pass 52 turn 81 owner-approved RESOLVED-DECIDED with HARD-REVERSIBILITY sandbox-prototype + 5-COMPONENT ATTRIBUTION: P&L ..."
       },
       {
@@ -4533,54 +4900,47 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "test"
+          "verification",
+          "test",
+          "tests"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_data_integrity.py",
+          "test_canonical_facts_alignment.py"
+        ],
         "body_excerpt": "Time-of-day slippage adjustment \u2014 first/last 30 min higher slippage **Pass 52 turn 81 owner-approved RESOLVED-DECIDED (bookkeeping flip per status drift; parent ref DEC-092): Time-of-day slippage adju..."
-      },
-      {
-        "id": "DECISION-283",
-        "status": "RESOLVED-DECIDED",
-        "classification": "TEST_SIGNAL_UNVERIFIED",
-        "triggers": [
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Backtest output schema \u2014 explicit columns/types/nullability/post-conditions, versioned **Pass 52 turn 56 owner-approved RESOLVED-DECIDED: Backtest output schema versioning. Joint with DEC-330 (cache s..."
       },
       {
         "id": "DECISION-287",
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "test"
+          "verification",
+          "test",
+          "tests"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "run_all_tests.py",
+          "test_aaii_demo.py"
+        ],
         "body_excerpt": "Public site failure handling + freshness signal (last-updated timestamp prominent) **Pass 52 turn 56 owner-approved RESOLVED-DECIDED: Stage 1 public site reliability. Add prominent last-updated timest..."
-      },
-      {
-        "id": "DECISION-338",
-        "status": "RESOLVED-DECIDED",
-        "classification": "TEST_SIGNAL_UNVERIFIED",
-        "triggers": [
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Conversion logic (short\u2192long in bull regime) creates label only; no actual long opened \u2014 d **Pass 52 turn 50 owner sub-choice: (A) Implement actual position open in opposite direction.** Conversion lo..."
       },
       {
         "id": "DECISION-347",
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "test"
+          "verification",
+          "test",
+          "tests"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "run_all_tests.py",
+          "test_aaii_demo.py"
+        ],
         "body_excerpt": "Lagging-indicator dominance \u2014 add leading-style signals + regime-condition the lagging ones (1+3 combination) **Pass 52 turn 89 owner-approved RESOLVED-DECIDED (absorbed by upstream RESOLVED decisions..."
       },
       {
@@ -4588,11 +4948,15 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "before entry",
-          "test"
+          "verification",
+          "test",
+          "tests",
+          "before entry"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_unit.py"
+        ],
         "body_excerpt": "Event-calendar suppression \u2014 FOMC / earnings / CPI date-aware signal gating **Pass 52 turn 89 owner-approved RESOLVED-DECIDED: Event-calendar suppression \u2014 FOMC / earnings / CPI date-aware signal gati..."
       },
       {
@@ -4600,12 +4964,16 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "before allowed",
           "before fomc",
+          "verification",
+          "tests",
+          "before allowed",
           "test"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_unit.py"
+        ],
         "body_excerpt": "Asymmetric event window \u2014 `is_near_high_impact_event` should use pre_days=1, post_days=2-3 instead of symmetric window_days=2 (per microstructure event-volatility research) **Pass 52 turn 89 owner-app..."
       },
       {
@@ -4613,81 +4981,48 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "tests",
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "DEC-099-A \u2014 Pairs / Stat Arb category \u2014 Pass 52 turn 33 owner-approved as PENDING in scope (Phase 1C is Stage 2 sub-phase per turn 32 correction; not deferred). Cointegration tests (Engle-Granger, Joh..."
-      },
-      {
-        "id": "DECISION-368",
-        "status": "RESOLVED-DECIDED",
-        "classification": "TEST_SIGNAL_UNVERIFIED",
-        "triggers": [
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "DEC-099-B \u2014 Calendar / Seasonal strategies \u2014 Pass 52 turn 33 owner-approved PENDING. Cheap to implement (date-based filters); event calendar exists. Examples: Sell-in-May, January effect, Santa rally,..."
-      },
-      {
-        "id": "DECISION-369",
-        "status": "RESOLVED-DECIDED",
-        "classification": "TEST_SIGNAL_UNVERIFIED",
-        "triggers": [
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "DEC-099-C \u2014 Cross-Asset strategies \u2014 Pass 52 turn 33 owner-approved PENDING (Phase 1D is Stage 2 sub-phase per turn 32 correction; not deferred). Needs intermarket data feeds (bonds, oil, dollar). **U..."
-      },
-      {
-        "id": "DECISION-370",
-        "status": "RESOLVED-DECIDED",
-        "classification": "TEST_SIGNAL_UNVERIFIED",
-        "triggers": [
           "verification",
-          "test"
+          "test",
+          "tests"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "DEC-099-D \u2014 Index Rebalance strategies \u2014 Pass 52 turn 33 owner-approved PENDING (Phase 1C is Stage 2 sub-phase per turn 32 correction; not deferred). Needs S&P/Russell adds-drops calendar; joint with ..."
+        "artifacts_missing": [
+          "test_integration.py",
+          "test_smartmoneyconcepts_unit.py"
+        ],
+        "body_excerpt": "DEC-099-A \u2014 Pairs / Stat Arb category \u2014 Pass 52 turn 33 owner-approved as PENDING in scope (Phase 1C is Stage 2 sub-phase per turn 32 correction; not deferred). Cointegration tests (Engle-Granger, Joh..."
       },
       {
         "id": "DECISION-371",
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "test"
+          "verification",
+          "test",
+          "tests"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_aaii_smoke.py",
+          "test_aaii_demo.py"
+        ],
         "body_excerpt": "DEC-099-E \u2014 Within-category gaps catalog \u2014 Pass 52 turn 33 owner-approved PENDING. Catalog of gaps within existing strategy categories already in roster: Russell rebalance for momentum category, pairs..."
-      },
-      {
-        "id": "DECISION-420",
-        "status": "RESOLVED-DECIDED",
-        "classification": "TEST_SIGNAL_UNVERIFIED",
-        "triggers": [
-          "gate",
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "DEC-131 implementation \u2014 Agent value-add A/B framework with three-case pairing (Pass 52 turn 13 owner-approved). Run Stage 2 candidates twice: rules-only path + agent-overlay path. Per (ticker, date, ..."
       },
       {
         "id": "DECISION-425",
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "before locking",
-          "test"
+          "verification",
+          "test",
+          "tests",
+          "before locking"
         ],
         "artifacts_existing": [],
         "artifacts_missing": [
-          "backtest/results/dim_cube.py"
+          "backtest/results/dim_cube.py",
+          "test_aaii_smoke.py",
+          "test_aaii_demo.py"
         ],
         "body_excerpt": "DEC-422 Phase 1: Dimensional slicing infrastructure. Build per-cell aggregation engine in `backtest/results/dim_cube.py`. Inputs: ClosedTrade rows + dimension-extraction functions per slicing var. Out..."
       },
@@ -4696,33 +5031,32 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
+          "verification",
           "gate",
-          "test"
+          "test",
+          "tests"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_canonical_facts_alignment.py",
+          "test_aaii_demo.py"
+        ],
         "body_excerpt": "DEC-422 Phase 2: Per-cell statistical engine. For each populated cell: compute full metrics suite per DEC-422 schema (`roi_pct`, `sharpe`, `sortino`, `reward_risk_ratio`, `profit_factor`, `expectancy`..."
-      },
-      {
-        "id": "DECISION-427",
-        "status": "RESOLVED-DECIDED",
-        "classification": "TEST_SIGNAL_UNVERIFIED",
-        "triggers": [
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "DEC-422 Phase 3: Marginal heatmap analysis (Approach A). For each pair (strategy_i, exit_j), compute per-dimension marginal heatmap. Statistically valid for 2D slicing. Output: marginal-best exit per ..."
       },
       {
         "id": "DECISION-428",
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "test"
+          "verification",
+          "test",
+          "tests"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_canonical_facts_alignment.py",
+          "test_aaii_demo.py"
+        ],
         "body_excerpt": "DEC-422 Phase 4: Combined 3D analysis (Approach B). For top-20% strategies from Phase 3, run 3D combined cells (strategy \u00d7 regime \u00d7 second-dim). Cells with n<30 fall back to marginal best. ~3-4 days. ..."
       },
       {
@@ -4730,39 +5064,36 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "test"
+          "verification",
+          "test",
+          "tests"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_unit.py",
+          "test_gates.py"
+        ],
         "body_excerpt": "DEC-422 Phase 5: Live decision lookup table builder. Produce queryable lookup: given current state vector \u2192 return (strategy, exit_method, confidence) tuple. Cells with INSUFFICIENT_CONFIDENCE return ..."
-      },
-      {
-        "id": "DECISION-430",
-        "status": "RESOLVED-DECIDED",
-        "classification": "TEST_SIGNAL_UNVERIFIED",
-        "triggers": [
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "DEC-422 Phase 6: Dashboard 1 visualization for multi-dim cube. Streamlit interactive: pick 2 dimensions \u2192 display Sharpe heatmap; pick 3 dimensions \u2192 display 3D scatter; per-cell drill-down to underly..."
       },
       {
         "id": "DECISION-431",
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
+          "verification",
+          "verify",
+          "regression test",
+          "tests",
+          "gate",
           "gates",
           "test",
-          "gate",
-          "tests",
-          "validation",
-          "regression test",
-          "verify"
+          "validation"
         ],
         "artifacts_existing": [],
         "artifacts_missing": [
-          "dim_cube.py"
+          "test_cftc_cot_smoke.py",
+          "dim_cube.py",
+          "test_canonical_facts_alignment.py"
         ],
         "body_excerpt": "DEC-422 Phase 7: Validation/regression test suite. Synthetic test cases: (1) cell with known statistical properties \u2192 verify gates fire correctly; (2) sparse cell \u2192 verify INSUFFICIENT_SAMPLE flag; (3..."
       },
@@ -4771,51 +5102,17 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "tests",
-          "test"
+          "verification",
+          "test",
+          "tests"
         ],
         "artifacts_existing": [],
         "artifacts_missing": [
-          ".github/workflows/regression.yml"
+          "run_all_tests.py",
+          ".github/workflows/regression.yml",
+          "test_aaii_demo.py"
         ],
         "body_excerpt": "CI/CD regression pipeline (Phase 0.E formalization) \u2014 Pass 52 owner-approved as Layer 2 of multi-layer catch-mechanism defense (Layer 1 = pre-flight checklist; Layer 3 = property-based tests DEC-437; ..."
-      },
-      {
-        "id": "DECISION-437",
-        "status": "RESOLVED-DECIDED",
-        "classification": "TEST_SIGNAL_UNVERIFIED",
-        "triggers": [
-          "test",
-          "verifies"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Property-based testing via `hypothesis` library (Phase 0.E formalization) \u2014 Pass 52 owner-approved as Layer 3 of multi-layer defense. `hypothesis` generates random inputs across input space; verifies ..."
-      },
-      {
-        "id": "DECISION-438",
-        "status": "RESOLVED-DECIDED",
-        "classification": "TEST_SIGNAL_UNVERIFIED",
-        "triggers": [
-          "tests",
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [
-          "backtest/tests/golden/"
-        ],
-        "body_excerpt": "Characterization / golden-master tests (Phase 0.E formalization) \u2014 Pass 52 owner-approved as Layer 4 of multi-layer defense. Capture full output of known-good backtest run as golden master; future run..."
-      },
-      {
-        "id": "DECISION-439",
-        "status": "RESOLVED-DECIDED",
-        "classification": "TEST_SIGNAL_UNVERIFIED",
-        "triggers": [
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Differential testing (Phase 0.E formalization) \u2014 Pass 52 owner-approved as Layer 5 of multi-layer defense. Run same logic through two independent implementations; flag any divergence. Target highest-s..."
       },
       {
         "id": "DECISION-441",
@@ -4823,68 +5120,47 @@
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
           "verification",
-          "test"
+          "test",
+          "tests"
         ],
         "artifacts_existing": [],
         "artifacts_missing": [
+          "test_aaii_demo.py",
+          "test_aaii_smoke.py",
           "smart_money.py"
         ],
         "body_excerpt": "Polygon Stocks Starter $30/month subscription \u2014 Pass 52 owner-approved purchase NOW (Phase 0 prep). Replaces 4 jobs in our system: (1) earnings calendar via DEC-256; (2) news sentiment via DEC-440 (re..."
-      },
-      {
-        "id": "DECISION-442",
-        "status": "RESOLVED-DECIDED",
-        "classification": "TEST_SIGNAL_UNVERIFIED",
-        "triggers": [
-          "test",
-          "validation"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Demote yfinance to fallback OHLCV after Polygon prefetch validation \u2014 Pass 52 owner-approved (DEC-410 Batch 1, Hypothesis H-yfinance-1). Sequence: (a) implement Polygon `/v2/aggs/...` prefetch per DEC..."
-      },
-      {
-        "id": "DECISION-444",
-        "status": "RESOLVED-DECIDED",
-        "classification": "TEST_SIGNAL_UNVERIFIED",
-        "triggers": [
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Deprecate `days_to_next_earnings()` via yfinance live calls \u2014 Pass 52 owner-approved (DEC-410 Batch 1, Hypothesis H-yfinance-3). Route all `days_to_next_earnings()` lookups through DEC-256 Polygon ear..."
       },
       {
         "id": "DECISION-445",
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "test"
+          "verification",
+          "test",
+          "tests"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_aaii_smoke.py",
+          "test_aaii_demo.py"
+        ],
         "body_excerpt": "Polygon precomputed indicators integration as DEC-439 layer 5 differential reference \u2014 Pass 52 owner-approved (DEC-410 Batch 1, Hypothesis H-polygon-3). Use Polygon `/v1/indicators/{sma,ema,rsi,macd}/..."
-      },
-      {
-        "id": "DECISION-446",
-        "status": "RESOLVED-DECIDED",
-        "classification": "TEST_SIGNAL_UNVERIFIED",
-        "triggers": [
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Polygon intraday quotes selective fetch for slippage calibration \u2014 Pass 52 owner-approved (DEC-410 Batch 1, Hypothesis H-polygon-4). Fetch Polygon `/v3/quotes/{ticker}` NBBO bid-ask for 20-ticker \u00d7 30..."
       },
       {
         "id": "DECISION-447",
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "test"
+          "verification",
+          "test",
+          "tests"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_data_integrity.py",
+          "test_fred_alfred_demo.py"
+        ],
         "body_excerpt": "Polygon reference tickers PIT consumption pattern \u2014 Pass 52 owner-approved (DEC-410 Batch 1). Implement query pattern for Polygon `/v3/reference/tickers/{ticker}` with as-of-date semantics for sector ..."
       },
       {
@@ -4892,13 +5168,18 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
+          "verification",
           "validates",
+          "tests",
           "test",
-          "validation",
-          "validate"
+          "validate",
+          "validation"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "run_all_tests.py",
+          "test_aaii_demo.py"
+        ],
         "body_excerpt": "Validate DEC-301 ALFRED PIT mitigation produces materially different values \u2014 Pass 52 owner-approved (DEC-410 Batch 1, Hypothesis H-fred-3). Test on sample: query FRED non-vintage vs ALFRED vintage fo..."
       },
       {
@@ -4906,35 +5187,33 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
+          "verification",
+          "tests",
           "test",
           "verifies"
         ],
         "artifacts_existing": [],
         "artifacts_missing": [
+          "test_canonical_facts_alignment.py",
+          "test_cftc_cot_demo.py",
           "prefetch_quiver.py"
         ],
         "body_excerpt": "Extend `prefetch_quiver.py` to ALL paid-tier endpoints \u2014 Pass 52 owner-approved with EXPANDED SCOPE per Pass 52 turn 28 owner correction: \"Quiver paid tier already active; all endpoints integrated in ..."
-      },
-      {
-        "id": "DECISION-451",
-        "status": "RESOLVED-DECIDED",
-        "classification": "TEST_SIGNAL_UNVERIFIED",
-        "triggers": [
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Fix BUG-284 gov_contracts date filter \u2014 Pass 52 owner-approved (DEC-410 Batch 2). Quiver `/historical/govcontracts/` returns Date field but cache schema saves only Qtr+Year, breaking date-based querie..."
       },
       {
         "id": "DECISION-454",
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "test"
+          "verification",
+          "test",
+          "tests"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_aaii_smoke.py",
+          "test_aaii_demo.py"
+        ],
         "body_excerpt": "Remove OpenBB from project scope \u2014 Pass 52 owner-approved (DEC-410 Batch 3, Hypothesis H-openbb-1). Update PROJECT_PLAN section 10 to remove OpenBB row. Resolves DEC-410 OpenBB consumption gap dual tr..."
       },
       {
@@ -4942,12 +5221,17 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "validates",
+          "verification",
+          "tests",
           "test",
+          "validates",
           "validation"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_data_integrity.py",
+          "test_canonical_facts_alignment.py"
+        ],
         "body_excerpt": "SEC EDGAR as DEC-439 differential testing reference for fundamentals PIT \u2014 Pass 52 owner-approved (DEC-410 Batch 4). Use SEC EDGAR (free, authoritative regulatory source with native filing_date) as in..."
       },
       {
@@ -4955,25 +5239,16 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Lead-lag intra-sector momentum strategy \u2014 Pass 52 turn 69 owner-approved RESOLVED-DECIDED. NEW strategy class added per owner Pass 52 directive: capture cluster-effect when sector leader (e.g., INTC f..."
-      },
-      {
-        "id": "DECISION-459",
-        "status": "RESOLVED-DECIDED",
-        "classification": "TEST_SIGNAL_UNVERIFIED",
-        "triggers": [
-          "gate",
-          "tests",
+          "verification",
           "test",
-          "verify"
+          "tests"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "AgentGateConfig spec \u2014 Option C Hybrid Architecture **Pass 52 turn 129 owner-approved RESOLVED-DECIDED (SUPERSEDES DEC-042):** OPTION C HYBRID ARCHITECTURE \u2014 TradingAgents Portfolio Manager native out..."
+        "artifacts_missing": [
+          "test_gates.py",
+          "test_e2e.py"
+        ],
+        "body_excerpt": "Lead-lag intra-sector momentum strategy \u2014 Pass 52 turn 69 owner-approved RESOLVED-DECIDED. NEW strategy class added per owner Pass 52 directive: capture cluster-effect when sector leader (e.g., INTC f..."
       },
       {
         "id": "DECISION-461",
@@ -4981,12 +5256,16 @@
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
           "verification",
-          "test",
+          "tests",
           "validated",
-          "gate"
+          "gate",
+          "test"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_data_integrity.py",
+          "test_canonical_facts_alignment.py"
+        ],
         "body_excerpt": "Subscribe to FMP if Polygon insufficient for PIT fundamentals Pass 52 turn 130 owner-approved RESOLVED-DECIDED conditional on DEC-460 outcome. If Polygon Stocks Starter does not cover PIT income/balan..."
       },
       {
@@ -4994,11 +5273,15 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "test"
+          "verification",
+          "test",
+          "tests"
         ],
         "artifacts_existing": [],
         "artifacts_missing": [
-          "backtest/agents/toolkits/our_fundamentals_toolkit.py"
+          "backtest/agents/toolkits/our_fundamentals_toolkit.py",
+          "test_aaii_smoke.py",
+          "test_aaii_demo.py"
         ],
         "body_excerpt": "OurFundamentalsToolkit specification (extends FundamentalsToolkit) Pass 52 turn 130 owner-approved RESOLVED-DECIDED. Implement custom toolkit per TRADINGAGENTS_DATA_AUDIT \u00a721: inject PIT fundamentals ..."
       },
@@ -5007,10 +5290,14 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "test"
+          "verification",
+          "test",
+          "tests"
         ],
         "artifacts_existing": [],
         "artifacts_missing": [
+          "test_aaii_demo.py",
+          "test_aaii_smoke.py",
           "backtest/agents/toolkits/our_news_toolkit.py"
         ],
         "body_excerpt": "OurNewsToolkit specification (extends NewsToolkit) Pass 52 turn 130 owner-approved RESOLVED-DECIDED. Implement custom toolkit per TRADINGAGENTS_DATA_AUDIT \u00a722: inject Polygon news (per-ticker + macro ..."
@@ -5020,11 +5307,15 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "test"
+          "verification",
+          "test",
+          "tests"
         ],
         "artifacts_existing": [],
         "artifacts_missing": [
-          "backtest/agents/toolkits/our_trader_toolkit.py"
+          "backtest/agents/toolkits/our_trader_toolkit.py",
+          "test_aaii_smoke.py",
+          "test_aaii_demo.py"
         ],
         "body_excerpt": "OurTraderToolkit specification (NEW class) Pass 52 turn 130 owner-approved RESOLVED-DECIDED. Implement NEW custom toolkit per TRADINGAGENTS_DATA_AUDIT \u00a723 (no TradingAgents default): inject current pr..."
       },
@@ -5033,92 +5324,34 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
-          "test"
+          "verification",
+          "test",
+          "tests"
         ],
         "artifacts_existing": [],
         "artifacts_missing": [
-          "backtest/agents/toolkits/our_risk_toolkit.py"
+          "backtest/agents/toolkits/our_risk_toolkit.py",
+          "test_aaii_smoke.py",
+          "test_aaii_demo.py"
         ],
         "body_excerpt": "OurRiskToolkit specification (NEW class) Pass 52 turn 130 owner-approved RESOLVED-DECIDED. Implement NEW custom toolkit per TRADINGAGENTS_DATA_AUDIT \u00a724 (no TradingAgents default): inject volatility r..."
-      },
-      {
-        "id": "DECISION-467",
-        "status": "RESOLVED-DECIDED",
-        "classification": "TEST_SIGNAL_UNVERIFIED",
-        "triggers": [
-          "tests",
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "OurAgentState schema extension + LangGraph state injection points Pass 52 turn 130 owner-approved RESOLVED-DECIDED. Implement OurAgentState (extends TradingAgentsState) per TRADINGAGENTS_DATA_AUDIT Pa..."
       },
       {
         "id": "DECISION-468",
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
         "triggers": [
+          "verification",
+          "tests",
           "test",
           "validated"
         ],
         "artifacts_existing": [],
-        "artifacts_missing": [],
+        "artifacts_missing": [
+          "test_data_integrity.py",
+          "test_canonical_facts_alignment.py"
+        ],
         "body_excerpt": "Wire Ortex short interest into stack Pass 52 turn 130 owner-approved RESOLVED-DECIDED. Confirm Ortex subscription scope (currently in $263 CAD/mo full-stack plan but not yet wired); wire Ortex endpoin..."
-      },
-      {
-        "id": "DECISION-486",
-        "status": "RESOLVED-DECIDED",
-        "classification": "TEST_SIGNAL_UNVERIFIED",
-        "triggers": [
-          "gates",
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Phase 1A restoration as distinct sub-phase Pass 53 owner-approved RESOLVED-DECIDED. Restore Phase 1A (rules-based + smart money baseline; NO agent overlay) as distinct Sprint 6.5 deliverable preceding..."
-      },
-      {
-        "id": "DECISION-487",
-        "status": "RESOLVED-DECIDED",
-        "classification": "TEST_SIGNAL_UNVERIFIED",
-        "triggers": [
-          "gate",
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [
-          "backtest/cube/populator.py",
-          "backtest/cube/verdict.py"
-        ],
-        "body_excerpt": "Phase 1A-\u03b1 restoration as distinct sub-phase Pass 53 owner-approved RESOLVED-DECIDED. Phase 1A-\u03b1 \u2014 rules-only dimensional cube + dashboards + verdict; cube methodology built once and reused by Phase 1..."
-      },
-      {
-        "id": "DECISION-488",
-        "status": "RESOLVED-DECIDED",
-        "classification": "TEST_SIGNAL_UNVERIFIED",
-        "triggers": [
-          "verified",
-          "test",
-          "validation"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [
-          "backtest/phase_1a_beta/orchestrator.py"
-        ],
-        "body_excerpt": "Phase 1A-\u03b2 restoration as distinct sub-phase Pass 53 owner-approved RESOLVED-DECIDED. Phase 1A-\u03b2 \u2014 production-scale validation run on full universe (~1015 tickers per DEC-483) WITHOUT agents. DELIVERA..."
-      },
-      {
-        "id": "DECISION-482",
-        "status": "RESOLVED-DECIDED",
-        "classification": "TEST_SIGNAL_UNVERIFIED",
-        "triggers": [
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [
-          "walk_forward.py"
-        ],
-        "body_excerpt": "Walk-forward methodology revised: expanding window 2y+/6mo OOS \u00d7 4-5 folds within 5y Polygon Stocks Starter window. Pass 53 turn (this) owner-approved RESOLVED-DECIDED (Q1 = (c) expanding window). SUP..."
       },
       {
         "id": "DECISION-483",
@@ -5135,39 +5368,6 @@
         "body_excerpt": "Universe expansion: Russell 1000 + NASDAQ 100 added to Sprint 1 Tier 1 with sub-tier tracking. Pass 53 turn (this) owner-approved RESOLVED-DECIDED (Q2 = sub-tiers). Tier 1 sub-tiers: T1a = S&P 500 (50..."
       },
       {
-        "id": "DECISION-485",
-        "status": "RESOLVED-DECIDED",
-        "classification": "TEST_SIGNAL_UNVERIFIED",
-        "triggers": [
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Earnings transcripts dropped from Stage 2 scope. Pass 53 turn (this) owner-approved RESOLVED-DECIDED (per Q5 \"Skip 2 strategies\"). Earnings call transcripts not available free at scale (FMP free tier ..."
-      },
-      {
-        "id": "DECISION-490",
-        "status": "RESOLVED-DECIDED",
-        "classification": "TEST_SIGNAL_UNVERIFIED",
-        "triggers": [
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Phase 1A skipped strategies enumerated. Pass 53 turn (this) RESOLVED-DECIDED. Per DEC-484 (financials deferred to Sprint 4 SEC EDGAR) + DEC-485 (transcripts dropped), 2 Layer 1 Fundamental strategies ..."
-      },
-      {
-        "id": "DECISION-496",
-        "status": "RESOLVED-DECIDED",
-        "classification": "TEST_SIGNAL_UNVERIFIED",
-        "triggers": [
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Tier 3 momentum watchlist methodology \u2014 Jegadeesh-Titman 12-1 month price momentum (academic standard) computed via SCREENER-FIRST two-step flow against the broad US equities market. **Pass 53 owner-a..."
-      },
-      {
         "id": "DECISION-499",
         "status": "RESOLVED-IMPLEMENTED",
         "classification": "TEST_SIGNAL_UNVERIFIED",
@@ -5177,41 +5377,6 @@
         "artifacts_existing": [],
         "artifacts_missing": [],
         "body_excerpt": "**18-classifier sector normalization (GICS-11 + 7 ETF asset/style classes).** Pass 53 owner-approved Q1=B 2026-05-05. ARTIFACT: all universe CSV `Sector` column standardized to one of 18 valid values:..."
-      },
-      {
-        "id": "DECISION-501",
-        "status": "RESOLVED-DECIDED",
-        "classification": "TEST_SIGNAL_UNVERIFIED",
-        "triggers": [
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "**Polygon Options NOT upgraded; OHLC/OI/IV/chain data deferred to Stage 3 / Phase 1C.** Pass 53 owner directive 2026-05-05 (Q1=C: defer options entirely) RESOLVED-DECIDED. RATIONALE: Polygon Stocks St..."
-      },
-      {
-        "id": "DECISION-502",
-        "status": "RESOLVED-DECIDED",
-        "classification": "TEST_SIGNAL_UNVERIFIED",
-        "triggers": [
-          "smoke test",
-          "verified",
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "**Quiver Trader-tier agent-input expansion (8 endpoint groups + Apewisdom + pytrends supplement).** Pass 53 owner-approved Q1+Q2+Q3 2026-05-05 RESOLVED-DECIDED. ARTIFACT: Sprint 0A.5 + 0A.7 prefetch s..."
-      },
-      {
-        "id": "DECISION-506",
-        "status": "RESOLVED-DECIDED",
-        "classification": "TEST_SIGNAL_UNVERIFIED",
-        "triggers": [
-          "test"
-        ],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "**Polygon Options + Ortex confirmed Stage 2 in-scope (corrects DEC-501 deferral + DEC-468 Sprint-7 timing).** Pass 53 owner-approved 2026-05-05 RESOLVED-DECIDED. Owner directive: \"polygon options, ort..."
       }
     ],
     "INACTIVE_STATUS": [
