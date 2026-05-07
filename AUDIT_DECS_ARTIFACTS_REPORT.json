@@ -1,7 +1,7 @@
 {
   "scanned_count": 518,
   "counts": {
-    "COMPLIANT": 22,
+    "COMPLIANT": 30,
     "ANNOTATED_COMPLIANT": 82,
     "ANNOTATED_NO_DIRECT_TEST": 3,
     "SPEC_WITHOUT_BUILD": 0,
@@ -9,7 +9,7 @@
     "KNOWN_COMPLIANT": 13,
     "SUPERSEDED": 30,
     "DEFERRED": 49,
-    "PARTIAL_SPEC_ONLY": 87,
+    "PARTIAL_SPEC_ONLY": 79,
     "PROPOSED_OR_PENDING": 13,
     "TEST_SIGNAL_REFERENCED_IN_CODE": 4,
     "TEST_SIGNAL_UNVERIFIED": 0,
@@ -23,16 +23,31 @@
         "classification": "COMPLIANT",
         "triggers": [
           "before phase",
-          "validate",
-          "gate",
           "test",
-          "validation"
+          "validate",
+          "validation",
+          "gate"
         ],
         "artifacts_existing": [
           "API_AUDIT.md"
         ],
         "artifacts_missing": [],
         "body_excerpt": "Validate stored data quality before Phase 1B-\u03b1 \u2014 Pass 52 turn 33 RESOLVED via supersession. Original stub-only Pass 39 entry; substantive scope migrated to DEC-410 audit deliverable (API_AUDIT.md comm..."
+      },
+      {
+        "id": "DECISION-153",
+        "status": "RESOLVED-DECIDED",
+        "classification": "COMPLIANT",
+        "triggers": [
+          "test",
+          "tests"
+        ],
+        "artifacts_existing": [
+          "backtest/tests/test_partial_spec_artifacts.py",
+          "backtest/engine/regime_stratified_split.py"
+        ],
+        "artifacts_missing": [],
+        "body_excerpt": "Regime-stratified train/test splits **Pass 52 turn 119 PARTIAL-SPEC-ONLY (was RESOLVED-DECIDED; Pass 53 evening 2026-05-06 demoted via DEC-594 retroactive audit \u2014 methodology spec final but Sprint 7 s..."
       },
       {
         "id": "DECISION-202",
@@ -52,8 +67,8 @@
         "status": "RESOLVED-DECIDED",
         "classification": "COMPLIANT",
         "triggers": [
-          "test",
-          "verified"
+          "verified",
+          "test"
         ],
         "artifacts_existing": [
           "PROJECT_PLAN.md"
@@ -90,6 +105,55 @@
         "body_excerpt": "Documentation audit \u2014 role of EXPLANATION/PROGRESS/UNIVERSAL_LEARNINGS, README content **Pass 52 turn 95 owner-approved RESOLVED-DECIDED: Documentation audit framework. For each .md file: (1) primary ..."
       },
       {
+        "id": "DECISION-246",
+        "status": "RESOLVED-DECIDED",
+        "classification": "COMPLIANT",
+        "triggers": [
+          "gate",
+          "test",
+          "tests"
+        ],
+        "artifacts_existing": [
+          "backtest/tests/test_partial_spec_artifacts_v2.py",
+          "backtest/results/quant_audit.py"
+        ],
+        "artifacts_missing": [],
+        "body_excerpt": "Quant finance correctness audit (Sharpe annualization, DD computation, vol periodicity) **Pass 52 turn 119 RESOLVED-DECIDED Final: Quant finance correctness audit (Sharpe annualization, DD computation..."
+      },
+      {
+        "id": "DECISION-247",
+        "status": "RESOLVED-DECIDED",
+        "classification": "COMPLIANT",
+        "triggers": [
+          "validate",
+          "test",
+          "tests"
+        ],
+        "artifacts_existing": [
+          "backtest/results/deflated_sharpe.py",
+          "backtest/tests/test_partial_spec_artifacts_v2.py"
+        ],
+        "artifacts_missing": [],
+        "body_excerpt": "Stats/ML implementation review (HMM, deflated Sharpe, Kelly \u2014 validate against known resul **Pass 52 turn 119 RESOLVED-DECIDED Final: Stats/ML implementation review (HMM, Deflated Sharpe, Kelly \u2014 vali..."
+      },
+      {
+        "id": "DECISION-250",
+        "status": "RESOLVED-DECIDED",
+        "classification": "COMPLIANT",
+        "triggers": [
+          "test",
+          "tests"
+        ],
+        "artifacts_existing": [
+          "backtest/results/edge_decay.py",
+          "backtest/tests/test_partial_spec_artifacts_v2.py"
+        ],
+        "artifacts_missing": [
+          "metrics.py"
+        ],
+        "body_excerpt": "Edge decay assumption (discount backtest Sharpe by expected crowding %) **Pass 52 turn 117 owner-approved RESOLVED-DECIDED Batch C with REVISIT_AFTER_BACKTEST: Edge decay assumption. Default 20% disco..."
+      },
+      {
         "id": "DECISION-290",
         "status": "RESOLVED-DECIDED",
         "classification": "COMPLIANT",
@@ -117,13 +181,44 @@
         "body_excerpt": "S&P 500 historical membership \u2014 RESOLVED Pass 52 owner approve all: build historical_membership.csv per DEC-477 B++ format (single static CSV with `Symbol, Company, Sector, added_date, removed_date` c..."
       },
       {
-        "id": "DECISION-410",
+        "id": "DECISION-401",
+        "status": "RESOLVED-DECIDED",
+        "classification": "COMPLIANT",
+        "triggers": [
+          "gate",
+          "test",
+          "tests"
+        ],
+        "artifacts_existing": [
+          "backtest/tests/test_partial_spec_artifacts.py",
+          "backtest/results/multi_test.py"
+        ],
+        "artifacts_missing": [],
+        "body_excerpt": "DEC-080 Phase B \u2014 Add Holm-Bonferroni step-down option (less conservative than Bonferroni for correlated strategies). Add min-Sharpe filter (Sharpe \u2265 0.5) joint with BUG-038. Owner approval gate: Bonf..."
+      },
+      {
+        "id": "DECISION-405",
         "status": "RESOLVED-DECIDED",
         "classification": "COMPLIANT",
         "triggers": [
           "test",
+          "tests"
+        ],
+        "artifacts_existing": [
+          "backtest/results/stress_tests.py",
+          "backtest/tests/test_partial_spec_artifacts_v2.py"
+        ],
+        "artifacts_missing": [],
+        "body_excerpt": "DEC-082 implementation (Option A scope) \u2014 New `backtest/results/stress_tests.py`. Test 2022 full year (Sharpe \u2265 0, DD \u2264 20%, Win Rate \u2265 40%) + crisis sub-periods VIX > 30 sustained within 2021-2024 (Q..."
+      },
+      {
+        "id": "DECISION-410",
+        "status": "RESOLVED-DECIDED",
+        "classification": "COMPLIANT",
+        "triggers": [
+          "gate",
           "before next",
-          "gate"
+          "test"
         ],
         "artifacts_existing": [
           "AUDIT.md",
@@ -133,14 +228,29 @@
         "body_excerpt": "API endpoint utilization audit \u2014 Pass 52 owner-approved CRITICAL TODO with **comprehensive 6-dimension use-case mapping schema** (Pass 52 turn 16 expanded per L136/CHECKLIST #57) **+ EXTENDED SCOPE pe..."
       },
       {
+        "id": "DECISION-415",
+        "status": "RESOLVED-DECIDED",
+        "classification": "COMPLIANT",
+        "triggers": [
+          "test",
+          "tests"
+        ],
+        "artifacts_existing": [
+          "backtest/results/rolling_sharpe_test.py",
+          "backtest/tests/test_partial_spec_artifacts_v2.py"
+        ],
+        "artifacts_missing": [],
+        "body_excerpt": "DEC-111 Phase B \u2014 Rolling 1-year Sharpe deviation test. Compute Sharpe over 252-day rolling windows; flag strategies where any window deviates >2\u03c3 from full-period Sharpe. Output per strategy: `rollin..."
+      },
+      {
         "id": "DECISION-417",
         "status": "RESOLVED-DECIDED",
         "classification": "COMPLIANT",
         "triggers": [
+          "gate",
           "validation",
-          "test",
           "verified",
-          "gate"
+          "test"
         ],
         "artifacts_existing": [
           "AUDIT_INDEX.md"
@@ -151,12 +261,27 @@
         "body_excerpt": "Test-run audit gate \u2014 Pass 52 owner-approved CRITICAL process gate. **Reframed Pass 52 turn 8 (per owner challenge): DEC-417 is ONE LAYER in multi-layer defense, NOT THE catch mechanism.** Catches app..."
       },
       {
+        "id": "DECISION-423",
+        "status": "RESOLVED-DECIDED",
+        "classification": "COMPLIANT",
+        "triggers": [
+          "gates",
+          "tests"
+        ],
+        "artifacts_existing": [
+          "backtest/tests/test_partial_spec_artifacts.py",
+          "backtest/results/bootstrap_ci.py"
+        ],
+        "artifacts_missing": [],
+        "body_excerpt": "DEC-068 expansion (per Pass 52 DEC-422) \u2014 Bootstrap CI + pairwise significance now operates at PER-CELL level (not per-strategy). For each cell in dimensional cube: 1000 resample bootstrap on cell tra..."
+      },
+      {
         "id": "DECISION-432",
         "status": "RESOLVED-DECIDED",
         "classification": "COMPLIANT",
         "triggers": [
-          "tests",
-          "validate"
+          "validate",
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/signals/technical.py"
@@ -199,8 +324,8 @@
         ],
         "artifacts_existing": [
           "backtest/data/smart_money.py",
-          "backtest/agents/pipeline.py",
-          "scripts/prefetch_finnhub_news.py"
+          "scripts/prefetch_finnhub_news.py",
+          "backtest/agents/pipeline.py"
         ],
         "artifacts_missing": [],
         "body_excerpt": "Deprecate Finnhub from project entirely \u2014 Pass 52 owner-approved (DEC-410 Batch 2, Hypothesis H-finnhub-1). Remove `scripts/prefetch_finnhub_news.py` (broken per BUG-053/181); remove `FINNHUB_API_KEY`..."
@@ -210,8 +335,8 @@
         "status": "RESOLVED-DECIDED",
         "classification": "COMPLIANT",
         "triggers": [
-          "test",
-          "validation"
+          "validation",
+          "test"
         ],
         "artifacts_existing": [
           "backtest/data/smart_money.py",
@@ -241,8 +366,8 @@
           "verify",
           "test",
           "verification",
-          "validation",
-          "verified"
+          "verified",
+          "validation"
         ],
         "artifacts_existing": [
           "TRADINGAGENTS_DATA_AUDIT.md"
@@ -255,14 +380,14 @@
         "status": "RESOLVED-IMPLEMENTED",
         "classification": "COMPLIANT",
         "triggers": [
-          "tests",
-          "test",
+          "verification",
           "verified",
-          "verification"
+          "test",
+          "tests"
         ],
         "artifacts_existing": [
-          "backtest/tests/test_unit.py",
-          "backtest/tests/test_data_integrity.py"
+          "backtest/tests/test_data_integrity.py",
+          "backtest/tests/test_unit.py"
         ],
         "artifacts_missing": [],
         "body_excerpt": "historical_membership.csv (DEC-303) canonical universe; deprecate 482-ticker static CSV. **Pass 53 RESOLVED-IMPLEMENTED (this turn \u2014 614-row B++ scrape complete via Wikipedia L88 fallback exception, o..."
@@ -272,18 +397,18 @@
         "status": "splits",
         "classification": "COMPLIANT",
         "triggers": [
-          "tests",
-          "test",
+          "verification",
           "verify",
-          "verification"
+          "tests",
+          "test"
         ],
         "artifacts_existing": [
-          "scripts/refresh_extended_universe.py",
-          "CLAUDE.md"
+          "CLAUDE.md",
+          "scripts/refresh_extended_universe.py"
         ],
         "artifacts_missing": [
-          "universe.py",
-          "refresh_extended_universe.py"
+          "refresh_extended_universe.py",
+          "universe.py"
         ],
         "body_excerpt": "Tier 2 / refresh_extended_universe.py implementation alignment with DEC-483 \u2014 remove NDX-non-S&P from Tier 2 inclusion (now T1c). Pass 53 owner-approved PROPOSED via owner question catch (\"Isnt tier 2..."
       },
@@ -292,9 +417,9 @@
         "status": "RESOLVED-DECIDED",
         "classification": "COMPLIANT",
         "triggers": [
-          "tests",
+          "verified",
           "test",
-          "verified"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_data_integrity.py"
@@ -327,12 +452,14 @@
         "status": "RESOLVED-DECIDED",
         "classification": "COMPLIANT",
         "triggers": [
-          "tests",
+          "gates",
           "test",
-          "gates"
+          "tests"
         ],
         "artifacts_existing": [
-          "backtest/config.py"
+          "backtest/config.py",
+          "backtest/tests/test_walk_forward_4fold.py",
+          "backtest/engine/improvements.py"
         ],
         "artifacts_missing": [],
         "body_excerpt": "**Backtest window alignment to Polygon Stocks Starter 5y cache (supersedes DEC-109 6-fold walk-forward).** Pass 53 owner-approved Q1+Q2+Q3 2026-05-05 RESOLVED-DECIDED. RATIONALE: project plan document..."
@@ -342,10 +469,10 @@
         "status": "RESOLVED-DECIDED",
         "classification": "COMPLIANT",
         "triggers": [
-          "tests",
-          "test",
+          "gate",
           "verification",
-          "gate"
+          "test",
+          "tests"
         ],
         "artifacts_existing": [
           "AUDIT.md",
@@ -363,9 +490,9 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
+          "verification",
           "test",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_gates.py",
@@ -379,10 +506,10 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
+          "verification",
           "validate",
           "test",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/run_all_tests.py",
@@ -396,9 +523,9 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
+          "verification",
           "test",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_canonical_facts_alignment.py",
@@ -412,10 +539,10 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
           "test",
+          "verification",
           "verify",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_unit.py"
@@ -428,9 +555,9 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
+          "verification",
           "test",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_e2e.py",
@@ -444,9 +571,9 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
+          "verification",
           "test",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_aaii_demo.py",
@@ -460,10 +587,10 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "before empirical",
           "test",
           "verification",
           "validation",
+          "before empirical",
           "tests"
         ],
         "artifacts_existing": [
@@ -478,9 +605,9 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
+          "verification",
           "test",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_integration.py",
@@ -494,9 +621,9 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
+          "verification",
           "test",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_e2e.py",
@@ -510,9 +637,9 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
+          "verification",
           "test",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_polygon_stocks_demo.py",
@@ -526,9 +653,9 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
+          "verification",
           "test",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_aaii_demo.py",
@@ -542,9 +669,9 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
+          "verification",
           "test",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_aaii_demo.py",
@@ -558,9 +685,9 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
+          "verification",
           "test",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_data_integrity.py",
@@ -574,9 +701,9 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
+          "verification",
           "test",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_data_integrity.py",
@@ -590,10 +717,10 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "gate",
           "test",
-          "gates",
           "verification",
+          "gates",
+          "gate",
           "tests"
         ],
         "artifacts_existing": [
@@ -608,9 +735,9 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
+          "verification",
           "test",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_cftc_cot_demo.py",
@@ -624,9 +751,9 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
+          "verification",
           "test",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_aaii_demo.py",
@@ -640,9 +767,9 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
+          "verification",
           "test",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_aaii_demo.py",
@@ -656,9 +783,9 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
+          "verification",
           "test",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_data_integrity.py",
@@ -672,9 +799,9 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
+          "verification",
           "test",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_aaii_demo.py",
@@ -688,10 +815,10 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "gate",
           "test",
-          "gates",
           "verification",
+          "gates",
+          "gate",
           "tests"
         ],
         "artifacts_existing": [
@@ -706,10 +833,10 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
-          "test",
+          "gate",
           "verification",
-          "gate"
+          "test",
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_canonical_facts_alignment.py",
@@ -723,9 +850,9 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
+          "verification",
           "test",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_aaii_demo.py",
@@ -739,10 +866,10 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "gate",
           "test",
-          "gates",
           "verification",
+          "gates",
+          "gate",
           "tests"
         ],
         "artifacts_existing": [
@@ -757,11 +884,11 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "verify",
-          "gate",
           "test",
+          "verify",
           "verification",
           "validation",
+          "gate",
           "tests"
         ],
         "artifacts_existing": [
@@ -776,10 +903,10 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
-          "test",
+          "validation",
           "verification",
-          "validation"
+          "test",
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_aaii_demo.py",
@@ -793,9 +920,9 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
+          "verification",
           "test",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_aaii_demo.py",
@@ -809,10 +936,10 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
-          "test",
+          "validation",
           "verification",
-          "validation"
+          "test",
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_aaii_demo.py",
@@ -826,9 +953,9 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
+          "verification",
           "test",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_e2e.py",
@@ -842,9 +969,9 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
+          "verification",
           "test",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_aaii_demo.py",
@@ -858,10 +985,10 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
-          "test",
+          "validation",
           "verification",
-          "validation"
+          "test",
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_gates.py",
@@ -875,9 +1002,9 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
+          "verification",
           "test",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/run_all_tests.py",
@@ -891,9 +1018,9 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
+          "verification",
           "test",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_aaii_demo.py",
@@ -907,10 +1034,10 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
-          "test",
+          "regression test",
           "verification",
-          "regression test"
+          "test",
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_aaii_demo.py",
@@ -924,9 +1051,9 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
+          "verification",
           "test",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_aaii_demo.py",
@@ -940,9 +1067,9 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
+          "verification",
           "test",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_aaii_demo.py",
@@ -956,9 +1083,9 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
+          "verification",
           "test",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_gates.py",
@@ -972,10 +1099,10 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "gate",
-          "regression test",
           "test",
           "verification",
+          "gate",
+          "regression test",
           "tests"
         ],
         "artifacts_existing": [
@@ -990,10 +1117,10 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
-          "test",
+          "validation",
           "verification",
-          "validation"
+          "test",
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_aaii_demo.py",
@@ -1007,9 +1134,9 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
+          "verification",
           "test",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_polygon_stocks_demo.py",
@@ -1023,9 +1150,9 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
+          "verification",
           "test",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_canonical_facts_alignment.py",
@@ -1039,9 +1166,9 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
+          "verification",
           "test",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_aaii_demo.py",
@@ -1055,10 +1182,10 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
-          "test",
+          "validation",
           "verification",
-          "validation"
+          "test",
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_aaii_demo.py",
@@ -1072,10 +1199,10 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
-          "test",
+          "verification",
           "before locking",
-          "verification"
+          "test",
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_aaii_demo.py",
@@ -1089,9 +1216,9 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
+          "verification",
           "test",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/run_all_tests.py",
@@ -1105,9 +1232,9 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
+          "verification",
           "test",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_cftc_cot_demo.py",
@@ -1121,9 +1248,9 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
+          "verification",
           "test",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_cftc_cot_demo.py",
@@ -1137,9 +1264,9 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
+          "verification",
           "test",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_cftc_cot_demo.py",
@@ -1153,10 +1280,10 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
-          "test",
           "verification",
-          "validation"
+          "validation",
+          "test",
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_aaii_demo.py",
@@ -1170,11 +1297,11 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "before implementation",
           "test",
           "verification",
-          "tests",
-          "verified"
+          "verified",
+          "before implementation",
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_canonical_facts_alignment.py",
@@ -1188,9 +1315,9 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
+          "verification",
           "test",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_aaii_demo.py",
@@ -1204,10 +1331,10 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
-          "test",
           "verify",
-          "verification"
+          "verification",
+          "test",
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_aaii_demo.py",
@@ -1221,11 +1348,11 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "gate",
           "test",
-          "gates",
           "verification",
           "smoke test",
+          "gates",
+          "gate",
           "tests"
         ],
         "artifacts_existing": [
@@ -1240,9 +1367,9 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
+          "verification",
           "test",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_aaii_demo.py",
@@ -1256,10 +1383,10 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
-          "test",
+          "verification",
           "before locking",
-          "verification"
+          "test",
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_aaii_demo.py",
@@ -1273,9 +1400,9 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
+          "verification",
           "test",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_canonical_facts_alignment.py",
@@ -1289,9 +1416,9 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
+          "verification",
           "test",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/run_all_tests.py",
@@ -1305,9 +1432,9 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
+          "verification",
           "test",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/run_all_tests.py",
@@ -1321,10 +1448,10 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
-          "test",
           "verification",
-          "before entry"
+          "before entry",
+          "test",
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_unit.py"
@@ -1339,8 +1466,8 @@
         "triggers": [
           "before allowed",
           "test",
-          "before fomc",
           "verification",
+          "before fomc",
           "tests"
         ],
         "artifacts_existing": [
@@ -1354,9 +1481,9 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
+          "verification",
           "test",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_integration.py",
@@ -1370,9 +1497,9 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
+          "verification",
           "test",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_aaii_demo.py",
@@ -1386,10 +1513,10 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
-          "test",
+          "verification",
           "before locking",
-          "verification"
+          "test",
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_aaii_demo.py",
@@ -1403,10 +1530,10 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
-          "test",
+          "gate",
           "verification",
-          "gate"
+          "test",
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_aaii_demo.py",
@@ -1420,9 +1547,9 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
+          "verification",
           "test",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_aaii_demo.py",
@@ -1436,9 +1563,9 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
+          "verification",
           "test",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_gates.py",
@@ -1453,12 +1580,12 @@
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
           "verify",
-          "gate",
-          "regression test",
-          "gates",
           "test",
           "verification",
+          "gates",
           "validation",
+          "gate",
+          "regression test",
           "tests"
         ],
         "artifacts_existing": [
@@ -1473,9 +1600,9 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
+          "verification",
           "test",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/run_all_tests.py",
@@ -1489,9 +1616,9 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
+          "verification",
           "test",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_aaii_demo.py",
@@ -1505,9 +1632,9 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
+          "verification",
           "test",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_aaii_demo.py",
@@ -1521,9 +1648,9 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
+          "verification",
           "test",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_data_integrity.py",
@@ -1537,12 +1664,12 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "validate",
           "test",
           "verification",
+          "validate",
           "validation",
-          "tests",
-          "validates"
+          "validates",
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/run_all_tests.py",
@@ -1556,10 +1683,10 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
           "verifies",
+          "verification",
           "test",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_canonical_facts_alignment.py",
@@ -1573,9 +1700,9 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
+          "verification",
           "test",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_aaii_demo.py",
@@ -1592,8 +1719,8 @@
           "test",
           "verification",
           "validation",
-          "tests",
-          "validates"
+          "validates",
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_canonical_facts_alignment.py",
@@ -1607,9 +1734,9 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
+          "verification",
           "test",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_e2e.py",
@@ -1623,10 +1750,10 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "gate",
           "test",
           "verification",
           "validated",
+          "gate",
           "tests"
         ],
         "artifacts_existing": [
@@ -1641,9 +1768,9 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
+          "verification",
           "test",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_aaii_demo.py",
@@ -1657,9 +1784,9 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
+          "verification",
           "test",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_aaii_demo.py",
@@ -1673,9 +1800,9 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
+          "verification",
           "test",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_aaii_demo.py",
@@ -1689,9 +1816,9 @@
         "status": "RESOLVED-DECIDED",
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
-          "tests",
+          "verification",
           "test",
-          "verification"
+          "tests"
         ],
         "artifacts_existing": [
           "backtest/tests/test_aaii_demo.py",
@@ -1706,9 +1833,9 @@
         "classification": "ANNOTATED_COMPLIANT",
         "triggers": [
           "tests",
+          "verification",
           "test",
-          "validated",
-          "verification"
+          "validated"
         ],
         "artifacts_existing": [
           "backtest/tests/test_canonical_facts_alignment.py",
@@ -1735,8 +1862,8 @@
         "status": "RESOLVED-IMPLEMENTED-T1a-T1c",
         "classification": "ANNOTATED_NO_DIRECT_TEST",
         "triggers": [
-          "test",
-          "verification"
+          "verification",
+          "test"
         ],
         "artifacts_existing": [],
         "artifacts_missing": [],
@@ -4564,15 +4691,6 @@
         "body_excerpt": "Hold-out final test period (never touched during audits) **Pass 53 evening 2026-05-06 DEC-594 audit: PARTIAL-SPEC-ONLY (was RESOLVED-DECIDED; demoted via DEC-594 retroactive audit \u2014 code-grep found no..."
       },
       {
-        "id": "DECISION-153",
-        "status": "PARTIAL-SPEC-ONLY",
-        "classification": "PARTIAL_SPEC_ONLY",
-        "triggers": [],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Regime-stratified train/test splits **Pass 52 turn 119 PARTIAL-SPEC-ONLY (was RESOLVED-DECIDED; Pass 53 evening 2026-05-06 demoted via DEC-594 retroactive audit \u2014 methodology spec final but Sprint 7 s..."
-      },
-      {
         "id": "DECISION-175",
         "status": "PARTIAL-SPEC-ONLY",
         "classification": "PARTIAL_SPEC_ONLY",
@@ -4672,24 +4790,6 @@
         "body_excerpt": "Audit all except Exception patterns; ensure WARNING+ logging with context **Pass 52 turn 85 owner-approved RESOLVED-DECIDED: Audit all bare except Exception patterns. Find every bare except in codebas..."
       },
       {
-        "id": "DECISION-246",
-        "status": "PARTIAL-SPEC-ONLY",
-        "classification": "PARTIAL_SPEC_ONLY",
-        "triggers": [],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Quant finance correctness audit (Sharpe annualization, DD computation, vol periodicity) **Pass 52 turn 119 RESOLVED-DECIDED Final: Quant finance correctness audit (Sharpe annualization, DD computation..."
-      },
-      {
-        "id": "DECISION-247",
-        "status": "PARTIAL-SPEC-ONLY",
-        "classification": "PARTIAL_SPEC_ONLY",
-        "triggers": [],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Stats/ML implementation review (HMM, deflated Sharpe, Kelly \u2014 validate against known resul **Pass 52 turn 119 RESOLVED-DECIDED Final: Stats/ML implementation review (HMM, Deflated Sharpe, Kelly \u2014 vali..."
-      },
-      {
         "id": "DECISION-248",
         "status": "PARTIAL-SPEC-ONLY",
         "classification": "PARTIAL_SPEC_ONLY",
@@ -4697,15 +4797,6 @@
         "artifacts_existing": [],
         "artifacts_missing": [],
         "body_excerpt": "Owner pre-commitment doc (rules owner commits to before losses) **Pass 53 evening 2026-05-06 DEC-594 audit: PARTIAL-SPEC-ONLY (was RESOLVED-DECIDED; demoted via DEC-594 retroactive audit \u2014 code-grep f..."
-      },
-      {
-        "id": "DECISION-250",
-        "status": "PARTIAL-SPEC-ONLY",
-        "classification": "PARTIAL_SPEC_ONLY",
-        "triggers": [],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "Edge decay assumption (discount backtest Sharpe by expected crowding %) **Pass 52 turn 117 owner-approved RESOLVED-DECIDED Batch C with REVISIT_AFTER_BACKTEST: Edge decay assumption. Default 20% disco..."
       },
       {
         "id": "DECISION-251",
@@ -4933,24 +5024,6 @@
         "body_excerpt": "DEC-327 Phase B \u2014 Consolidate to shared `backtest.engine.costs.calculate_borrow_cost(trade, hold_days)` consumed by both paths. Remove duplication. Unit test: borrow cost charged exactly once per shor..."
       },
       {
-        "id": "DECISION-401",
-        "status": "PARTIAL-SPEC-ONLY",
-        "classification": "PARTIAL_SPEC_ONLY",
-        "triggers": [],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "DEC-080 Phase B \u2014 Add Holm-Bonferroni step-down option (less conservative than Bonferroni for correlated strategies). Add min-Sharpe filter (Sharpe \u2265 0.5) joint with BUG-038. Owner approval gate: Bonf..."
-      },
-      {
-        "id": "DECISION-405",
-        "status": "PARTIAL-SPEC-ONLY",
-        "classification": "PARTIAL_SPEC_ONLY",
-        "triggers": [],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "DEC-082 implementation (Option A scope) \u2014 New `backtest/results/stress_tests.py`. Test 2022 full year (Sharpe \u2265 0, DD \u2264 20%, Win Rate \u2265 40%) + crisis sub-periods VIX > 30 sustained within 2021-2024 (Q..."
-      },
-      {
         "id": "DECISION-414",
         "status": "PARTIAL-SPEC-ONLY",
         "classification": "PARTIAL_SPEC_ONLY",
@@ -4958,15 +5031,6 @@
         "artifacts_existing": [],
         "artifacts_missing": [],
         "body_excerpt": "DEC-111 Phase A \u2014 Add `statsmodels>=0.14.0` to requirements.txt. Implement ADF test on strategy equity curve (~1000 daily PnL observations). Output per strategy: `is_stationary` bool (ADF p < 0.05). ~..."
-      },
-      {
-        "id": "DECISION-415",
-        "status": "PARTIAL-SPEC-ONLY",
-        "classification": "PARTIAL_SPEC_ONLY",
-        "triggers": [],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "DEC-111 Phase B \u2014 Rolling 1-year Sharpe deviation test. Compute Sharpe over 252-day rolling windows; flag strategies where any window deviates >2\u03c3 from full-period Sharpe. Output per strategy: `rollin..."
       },
       {
         "id": "DECISION-416",
@@ -4985,15 +5049,6 @@
         "artifacts_existing": [],
         "artifacts_missing": [],
         "body_excerpt": "DEC-131 implementation \u2014 Agent value-add A/B framework with three-case pairing (Pass 52 turn 13 owner-approved). Run Stage 2 candidates twice: rules-only path + agent-overlay path. Per (ticker, date, ..."
-      },
-      {
-        "id": "DECISION-423",
-        "status": "PARTIAL-SPEC-ONLY",
-        "classification": "PARTIAL_SPEC_ONLY",
-        "triggers": [],
-        "artifacts_existing": [],
-        "artifacts_missing": [],
-        "body_excerpt": "DEC-068 expansion (per Pass 52 DEC-422) \u2014 Bootstrap CI + pairwise significance now operates at PER-CELL level (not per-strategy). For each cell in dimensional cube: 1000 resample bootstrap on cell tra..."
       },
       {
         "id": "DECISION-427",
@@ -5132,9 +5187,12 @@
       },
       {
         "id": "DECISION-482",
-        "status": "PARTIAL-SPEC-ONLY",
+        "status": "RESOLVED-DECIDED",
         "classification": "PARTIAL_SPEC_ONLY",
-        "triggers": [],
+        "triggers": [
+          "test",
+          "tests"
+        ],
         "artifacts_existing": [],
         "artifacts_missing": [],
         "body_excerpt": "Walk-forward methodology revised: expanding window 2y+/6mo OOS \u00d7 4-5 folds within 5y Polygon Stocks Starter window. Pass 53 turn (this) owner-approved RESOLVED-DECIDED (Q1 = (c) expanding window). SUP..."
@@ -5345,8 +5403,8 @@
         "status": "RESOLVED-DECIDED",
         "classification": "TEST_SIGNAL_REFERENCED_IN_CODE",
         "triggers": [
-          "test",
-          "validator"
+          "validator",
+          "test"
         ],
         "artifacts_existing": [
           "backtest\\tests\\test_sec_edgar_smoke.py"

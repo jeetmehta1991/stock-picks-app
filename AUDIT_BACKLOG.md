@@ -1,5 +1,41 @@
 # AUDIT_BACKLOG.md — Master Implementation Backlog (Pass 53 Review-Cycle)
 
+## Pass 53 Day-9-evening v5 close (2026-05-07 evening) — final NIL-gap state pre-Phase-1A
+
+| Bucket | Count | Action |
+|---|---|---|
+| COMPLIANT (artifact path in body + exists) | 30 | None |
+| ANNOTATED_COMPLIANT (annotated path + exists) | 82 | None |
+| ANNOTATED_NO_DIRECT_TEST (audit-trail justified) | 3 | None |
+| KNOWN_COMPLIANT (allowlist) | 13 | None |
+| TEST_SIGNAL_REFERENCED_IN_CODE | 4 | None |
+| PARTIAL_SPEC_ONLY (proper status; awaiting build) | 79 | Sprint 7+ build queue |
+| SUPERSEDED + DEFERRED + INACTIVE + PROPOSED + NO_TRIGGER | 307 | None |
+| **🔴 SPEC_WITHOUT_BUILD** | **0** | ✅ |
+| **🔴 TEST_SIGNAL_UNVERIFIED** | **0** | ✅ |
+| **TOTAL** | **518** | |
+
+**Phase 1A May 15 BLOCKERS: 0** ✅
+
+Day 9 buffer L149 spec-without-build remediation count: 13 instances caught + closed
+1. cache.py Schema-B blindness
+2. cache.py index.json staleness
+3. cache.py weekend boundary strict-check
+4. engine.py crisis_flag UnboundLocalError
+5. WF-1 walk-forward 2-window → 4-fold (DEC-505)
+6. DEC-153 regime-stratified split (lib build)
+7. DEC-401 Holm-Bonferroni (lib build)
+8. DEC-423 bootstrap CI (lib build)
+9. DEC-515 Level 6 CB (lib build)
+10. DEC-516 regime-flip exit (lib build)
+11. DEC-578 7-gate verdict composer (lib build)
+12. DEC-515 Level 6 CB engine wiring (N5)
+13. DEC-578 verdict cube writer wiring (N6)
+
+All in same-commit per DEC-594. Remediation pattern: lib build + engine wiring + tests + AUDIT_INDEX annotation all atomic.
+
+---
+
 ## Pass 53 late-evening 2026-05-06 — DEC-594/595 retroactive audit findings (Day 2-3 remediation)
 
 **Owner directive (verbatim):** *"This is the biggest mistake. I was forced to do multiple runs of audit cycles because of all issues till date. I have already lost 300$ on a failed phase 1B run. WE cant make more mistakes! Test at every stage and be comprehensive in testing"*
