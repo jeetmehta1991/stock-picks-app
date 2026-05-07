@@ -928,9 +928,8 @@ State compliance visibly: "Checklist: ✅ [each item]"
 
     **Caveats / exclusions (HARD-LIMITED):**
 
-    - **Pure-doc commits** (changes only to `*.md` files; no `.py` / `.yaml` / `.json` changes) — pyramid is OPTIONAL; rationale: doc rot doesn't break tests.
-    - **Pure-data commits** (only `data_prefetch/**/*.parquet` or `backtest/data/cache/**`) — pyramid OPTIONAL; data-integrity tests cover this case explicitly (CHECKLIST #72).
-    - **Long-running additions** (e.g. `test_e2e_phase1a_smoke.py` 7-min run) — invoked separately on CI per `.github/workflows/test-pyramid.yml`; NOT skippable from full pyramid mandate but allowed to run in CI rather than locally.
+    - **NO doc-commit carve-out, NO data-commit carve-out** (Pass 53 Day-9 v8h owner correction 2026-05-07 evening: *"Test pyramid is not optional FYI"*). Prior wording softened the original directive's "NO EXCEPTIONS, NO SKIP UNDER ANY SITUATION" into per-category opt-outs — that softening IS the failure mode the rule exists to prevent. Every commit (code, doc, data, mixed) runs the mandatory pyramid before push.
+    - **Long-running additions** (e.g. `test_e2e_phase1a_smoke.py` 7-min run) — invoked on CI per `.github/workflows/test-pyramid.yml`; NOT skippable from full pyramid mandate but allowed to run in CI rather than locally. CI gating is about WHERE the test runs, not WHETHER.
 
     **Past failure pattern motivating this rule:**
 
