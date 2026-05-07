@@ -3217,6 +3217,79 @@ Scan all 351 existing DECs in [AUDIT_INDEX.md](AUDIT_INDEX.md) for spec-without-
 
 ---
 
+### 23.13 Standing Approvals + Per-Turn Push (DEC-596 — Pass 53 owner directive 2026-05-06 late evening)
+
+**Decision:** Owner grants blanket standing approval for routine bash execution and mandates per-turn git push to `main`, contingent on Claude maintaining careful + thorough verification discipline (test pyramid, pre-flight CHECKLIST, data-integrity scan, gate tests).
+
+**Owner directive (verbatim):** *"i approve all bash runs. Dont ask me over and over again in the turn. make this the standard practice going ahead. As long as your are careful and thorough and integrate testing and checks, no need for repeated approvals. Also push to git/main every turn."*
+
+**Standing approval scope (PRE-APPROVED — no per-turn Q&A required):**
+
+| Operation | Status |
+|---|---|
+| File reads (Read, Grep, Glob) | ✅ Pre-approved |
+| pytest execution | ✅ Pre-approved |
+| Script execution (Python data-inspection / cache scans / prefetch utilities) | ✅ Pre-approved |
+| Git status / log / diff / show | ✅ Pre-approved |
+| Routine commits + pushes to `main` | ✅ Pre-approved (push every turn standard practice) |
+| Background bg cycle restarts (pytrends auto-continue, etc.) | ✅ Pre-approved |
+| Data-integrity scans + cache audits | ✅ Pre-approved |
+| Building executable test artifacts per DEC-594 | ✅ Pre-approved |
+
+**Operations STILL requiring explicit owner approval (preserved):**
+
+| Operation | Why approval still required |
+|---|---|
+| **API spend that ramps cost** | L86 ($50) + L95 ($100) + $300 Phase 1B failed run lessons; CHECKLIST #13/22/23/29 small-batch → review → approve → scale protocol unchanged |
+| **Methodology / strategy / threshold / parameter changes** | CLAUDE.md HARD RULE — "Never change rules, filters, thresholds, or parameters without approval" |
+| **Destructive git operations** (`reset --hard`, force push, etc.) | CLAUDE.md HARD RULE; L49 + L77 prior data-loss incidents |
+| **CLAUDE.md modifications** | CHECKLIST #6 — exact before/after diff + explicit written approval required |
+| **Phase transitions** (Stage 2 → 3, Phase 1A → 1B-α, etc.) | DEC-595 + CHECKLIST #73 — preceding gate test PASS required |
+| **CLAUDE.md hooks / settings** | Owner-controlled; tooling configuration |
+
+**Verification discipline (preserved; non-negotiable per standing-approval contract):**
+
+- Pre-flight CHECKLIST runs before every recommendation per Pass 52 mandate
+- Test pyramid runs before every code push per DEC-503 + CHECKLIST #69
+- Data-integrity 7/7 PASS per DEC-591 + CHECKLIST #72
+- Gate tests PASS before phase transitions per DEC-595 + CHECKLIST #73
+- DEC-594 same-commit artifact rule — no DEC marks RESOLVED-DECIDED without artifact in same commit
+
+**Per-turn push protocol:**
+
+- Every turn that produces meaningful changes ends with `git commit + git push origin main`
+- Commit message follows existing convention (subject + body + Co-Authored-By: Claude line)
+- Multiple logical changes in one turn → one commit (atomic per turn) OR multiple commits if logically separable; both acceptable
+- Push cadence supersedes prior CLAUDE.md "meaningful checkpoints only" guidance
+- If a turn produces NO meaningful changes (e.g., status check / question answered), no commit needed
+- PAT lifecycle (CLAUDE.md Push & PAT Pattern) preserved — owner re-pastes PAT per session
+
+**Implicit conditions (revocation triggers):**
+
+- If Claude is careless (e.g., destructive op without check, methodology change without approval, $-cost ramp without batch-review), standing approval is revocable
+- The standing approval is a TRUST contract; verification discipline is the consideration
+
+**Codification:**
+
+- This DEC (TRADING_RULES §23.13)
+- AUDIT_INDEX entry DEC-596
+- Auto-memory `feedback_standing_approvals.md` (persistent across conversations)
+- AUDIT.md narrative entry 2026-05-06 evening
+
+**Cross-references:**
+
+- CLAUDE.md "All API runs costing money" rule (preserved; still applies for COSTLY API ramps)
+- CLAUDE.md "All decisions need explicit owner approval before implementation" (preserved for METHODOLOGY/strategy/threshold)
+- CHECKLIST #1 (owner approval for new recommendations — still required pre-flight)
+- CHECKLIST #6 (CLAUDE.md modifications — still require diff approval)
+- CHECKLIST #13/22/23/29 (small-batch → review → approve → scale for API ramps)
+- DEC-594/595 + CHECKLIST #73 (verification discipline; consideration in TRUST contract)
+- L86 + L95 ($150 prior losses; reasons for preserving API approval rule)
+
+**Status:** RESOLVED-DECIDED Pass 53 owner approval 2026-05-06 late evening.
+
+---
+
 # DOCUMENT METADATA
 
 **Created:** Pass 52 turn 128 (post-Pass-52 closure, pre-Sprint-1 setup phase)

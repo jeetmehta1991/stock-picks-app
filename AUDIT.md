@@ -30644,3 +30644,62 @@ The hard mental shift: "spec done" ≠ "DEC done." DEC is done when artifact run
 
 **Spec-without-build pattern structurally addressed. 43 + 132 = 175 retroactive findings queued for Day 2-3 + Day 4-5 remediation. Phase 1A May 15 schedule holds with ±2 business day slippage tolerance per DEC-590.**
 
+---
+
+## Pass 53 late-evening 2026-05-06 — DEC-596 standing approvals + per-turn push
+
+### Owner directive (verbatim)
+
+*"i approve all bash runs. Dont ask me over and over again in the turn. make this the standard practice going ahead. As long as your are careful and thorough and integrate testing and checks, no need for repeated approvals. Also push to git/main every turn."*
+
+### What changed
+
+Owner shifts collaboration mode: blanket standing approval for routine bash + per-turn push to main, contingent on Claude maintaining verification discipline (test pyramid + data-integrity + gate tests + pre-flight CHECKLIST + DEC-594 same-commit rule).
+
+**Standing approval scope (PRE-APPROVED — no per-turn Q&A):**
+
+- File reads / Grep / Glob / Read
+- pytest execution
+- Script execution (data inspection, cache scans, prefetch utilities)
+- Git status / log / diff / show
+- Routine commits + pushes to main
+- Bg cycle restarts (pytrends auto-continue, etc.)
+- Data-integrity scans
+- Executable artifact builds per DEC-594
+
+**Operations STILL requiring approval (preserved):**
+
+- API spend that ramps cost (L86 + L95 + $300 Phase 1B lessons; CHECKLIST #13/22/23/29 batch → review → approve → scale unchanged)
+- Methodology / strategy / threshold / parameter changes (CLAUDE.md HARD RULE)
+- Destructive git ops (reset --hard, force push, etc.)
+- CLAUDE.md modifications (CHECKLIST #6 — diff + approval required)
+- Phase transitions (DEC-595 gate PASS required)
+
+### Per-turn push protocol
+
+Every turn that produces meaningful changes ends with commit + push to `origin/main`. Supersedes prior CLAUDE.md "meaningful checkpoints only" cadence. Standing-approval contract: verification discipline is the consideration; carelessness revokes the approval.
+
+### Codification
+
+- DEC-596 in TRADING_RULES §23.13 + AUDIT_INDEX entry
+- Auto-memory `feedback_standing_approvals.md` (persistent across conversations) + MEMORY.md index updated
+- This narrative entry
+
+### Files modified this turn
+
+- `TRADING_RULES_AND_INFORMATION.md` (+§23.13 DEC-596)
+- `AUDIT_INDEX.md` (+DEC-596 entry; total 353 → 354)
+- `~/.claude/projects/.../memory/feedback_standing_approvals.md` (NEW; persistent collaboration directive)
+- `~/.claude/projects/.../memory/MEMORY.md` (index updated)
+- `AUDIT.md` (this narrative)
+
+### Cross-references
+
+- CLAUDE.md (preserved — API approval rule, decision approval rule, HARD RULES preserved)
+- CHECKLIST #1/6/13/22/23/29 (preserved)
+- DEC-594/595 + CHECKLIST #73 (verification discipline = consideration in TRUST contract)
+- L86 + L95 ($150 prior losses; rationale for preserving API approval rule)
+- Pass 53 prior turn DEC-594 (Test-Artifact Same-Commit) + DEC-595 (Gate Executable Tests)
+
+*Per CHECKLIST #1 (owner-directed standing approval); #25 (DEC-596 + memory + AUDIT narrative + AUDIT_INDEX entry all atomic); #43 (TRADING_RULES §23.13 + AUDIT_INDEX DEC-596 + memory + AUDIT.md narrative); #45 (this); #51 (scope strict — process directive only); #58 (atomic commit per DEC-596 itself); #67 (per-turn doc sync per DEC-596 itself); #69 (test pyramid runs before push).*
+
