@@ -1377,3 +1377,20 @@ L149 is the META-pattern: it's the mechanism by which L145/L146/L147/L148 each g
 5. Phase transitions blocked until corresponding gate test PASS
 
 **The hard mental shift:** "spec done" is NOT "DEC done." The DEC isn't done until the artifact runs green. This applies to lessons too — L148 wasn't really learned until DEC-591 + CHECKLIST #72 + executable test suite landed in same commit. L149 wasn't really learned until this commit lands with DEC-594/595 + CHECKLIST #73 + `test_gates.py` together.
+
+
+## L150 — Test-pyramid dimension-coverage gap: 9 types declared in spec, 6 instantiated in code (Pass 53 Day 9 2026-05-07 night)
+
+**Pattern.** DEC-503 specified a 9-type test pyramid (Unit / Smoke / Integration / System / Functional / Regression / Data-Integrity / Performance / Acceptance). When asked "is our pyramid comprehensive?" on Day 9, self-assessment found 4 weak dimensions:
+- **System-as-pytest** — smokes existed but as ad-hoc scripts (`run_smoke_*`), not in `pytest backtest/tests/` so end-to-end pipeline breakage didn't fail the test suite
+- **Performance / load** — no automated tests for cache load throughput, peak memory, or filelock concurrency despite 1937-ticker target universe
+- **Acceptance** — phase-gate tests existed but most were placeholders (DEC-595 instantiated but gate logic stubs)
+- **Bad-data stress** — engine never tested with NaN OHLCV / missing columns / corrupted parquet / inverted date range
+
+**Closure.** Day 9 v6 G1-G4 builds — `test_e2e_phase1a_smoke.py` (G1 system-as-pytest, 7 tests), `test_engine_bad_data_stress.py` (G2 bad-data, 10 tests), `test_performance_load.py` (G3 perf, 4 tests), `.github/workflows/test-pyramid.yml` (G4 CI hookup). Total: 21 new tests + CI workflow.
+
+**Causation.** The spec called for 9 types; the build instantiated 6. Same L149 spec-without-build pattern but at the meta level — the *test pyramid spec itself* had a spec-without-build deficit. Detected only when explicitly self-assessed against the spec: "is our pyramid comprehensive?" — pattern-match would have answered yes (we have lots of tests); cross-reference against the DEC-503 9-type list answered no.
+
+**Rule.** When a DEC enumerates N artifact types (N test types, N data sources, N exit methods), pre-flight CHECKLIST must verify count(implemented) == N before claiming the DEC is RESOLVED. A DEC declaring "9 test types" is RESOLVED only when 9 test types have at least one passing test file, not when "lots of tests pass."
+
+**Cross-references.** DEC-503 (9-type pyramid spec); DEC-595 (gate executables); G1-G4 (Day 9 v6 closure builds); L148 (test pyramid layered failure — sister lesson at the data dimension); L149 (spec-without-build at the artifact level — sister lesson at the build dimension).

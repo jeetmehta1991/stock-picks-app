@@ -1,0 +1,106 @@
+name: Test Pyramid
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'backtest/**'
+      - 'scripts/**'
+      - 'pytest.ini'
+      - '.github/workflows/test-pyramid.yml'
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  pyramid:
+    name: Run Pass 53 test pyramid (DEC-503)
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pandas numpy filelock pyarrow psutil python-dateutil pytz
+          pip install yfinance requests --quiet
+          pip install pandas-ta --quiet || pip install ta --quiet || true
+          # Optional libs that some tests skip on if missing
+          pip install freezegun --quiet || true
+
+      - name: Tier 1 — Unit tests
+        run: |
+          python -m pytest backtest/tests/test_unit.py -q --tb=short
+        continue-on-error: false
+
+      - name: Tier 2 — Integration tests
+        run: |
+          python -m pytest backtest/tests/test_integration.py -q --tb=short
+        continue-on-error: false
+
+      - name: Tier 3 — Data integrity tests (DEC-591)
+        run: |
+          python -m pytest backtest/tests/test_data_integrity.py -q --tb=short
+        continue-on-error: false
+
+      - name: Tier 4 — Bad-data stress (G2 / DEC-503)
+        run: |
+          python -m pytest backtest/tests/test_engine_bad_data_stress.py -q --tb=short
+        continue-on-error: false
+
+      - name: Tier 5 — Phase gates (DEC-595)
+        run: |
+          python -m pytest backtest/tests/test_gates.py -q --tb=short
+        continue-on-error: false
+
+      - name: Tier 6 — Day-9 partial-spec artifacts
+        run: |
+          python -m pytest backtest/tests/test_partial_spec_artifacts.py backtest/tests/test_partial_spec_artifacts_v2.py -q --tb=short
+        continue-on-error: false
+
+      - name: Tier 7 — N1/N2/N5/N6 wiring
+        run: |
+          python -m pytest backtest/tests/test_n1_n2_artifacts.py backtest/tests/test_n5_n6_wiring.py -q --tb=short
+        continue-on-error: false
+
+      - name: Tier 8 — Walk-forward 4-fold (DEC-505)
+        run: |
+          python -m pytest backtest/tests/test_walk_forward_4fold.py -q --tb=short
+        continue-on-error: false
+
+      - name: Tier 9 — Exit context + conditional analyzer
+        run: |
+          python -m pytest backtest/tests/test_exit_context.py backtest/tests/test_exit_conditional_analyzer.py -q --tb=short
+        continue-on-error: false
+
+      - name: Tier 10 — Cache schema regression (Pass 53 H6)
+        run: |
+          python -m pytest backtest/tests/test_cache_schema_b.py -q --tb=short
+        continue-on-error: false
+
+      - name: Performance / load (G3) — informational; cache may be empty in CI
+        run: |
+          python -m pytest backtest/tests/test_performance_load.py -q --tb=short || echo "skipped (likely no cache in CI)"
+        continue-on-error: true
+
+      - name: E2E smoke (G1) — informational; cache may be empty in CI
+        run: |
+          python -m pytest backtest/tests/test_e2e_phase1a_smoke.py -q --tb=short || echo "skipped (likely no cache in CI)"
+        continue-on-error: true
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "### Test Pyramid Result" >> $GITHUB_STEP_SUMMARY
+          echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Time:** $(date +%Y-%m-%d' '%H:%M' UTC')" >> $GITHUB_STEP_SUMMARY
+          echo "**Tiers:** Unit + Integration + Data integrity + Bad-data + Gates + Partial-spec + Wiring + Walk-forward + Exit context + Cache schema (10 mandatory) + Performance + E2E (2 informational)" >> $GITHUB_STEP_SUMMARY
