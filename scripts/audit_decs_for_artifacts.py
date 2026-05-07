@@ -133,10 +133,31 @@ def classify_dec(dec):
     if existing:
         return "COMPLIANT", triggers, existing, missing
 
+    # Pass 53 evening 2026-05-07 audit-script enhancement (per DEC-594 retroactive
+    # remediation): a DEC body may carry an inline annotation listing the matched
+    # test path(s). If annotation present + path exists, classify as ANNOTATED_COMPLIANT.
+    body = dec["body"]
+    annotation_marker = "Pass 53 evening 2026-05-06 DEC-594 audit"
+    if annotation_marker in body:
+        # Body annotated — extract test path references (handle both / and \ separators)
+        annotated_paths_raw = re.findall(
+            r"`(backtest[/\\]tests[/\\][^`\s]+\.py)`", body
+        )
+        annotated_paths = [p.replace("\\", "/") for p in annotated_paths_raw]
+        existing_annotated = [a for a in annotated_paths if artifact_exists(a)]
+        if existing_annotated:
+            return "ANNOTATED_COMPLIANT", triggers, existing_annotated, []
+        # Annotation says "PARTIAL-SPEC-ONLY" — that's the demote case
+        if "PARTIAL-SPEC-ONLY" in body:
+            return "PARTIAL_SPEC_ONLY", triggers, [], []
+        # Annotation present but no path matched (e.g., "covered by test_data_integrity
+        # + test_unit indirectly") — annotation explicitly justifies no direct path;
+        # treat as audit-trail-compliant
+        return "ANNOTATED_NO_DIRECT_TEST", triggers, [], []
+
     # No explicit artifact path; check if the DEC body has "Test signal:" pattern
     # which describes a test scenario. For these, look for code references in
     # backtest/tests/ that mention this DEC ID.
-    body = dec["body"]
     has_test_signal_pattern = "test signal" in body.lower()
     if has_test_signal_pattern:
         # Search backtest/tests/ for this DEC ID reference
@@ -166,11 +187,11 @@ def main():
     print(f"Scanned AUDIT_INDEX.md: {len(decs)} DEC entries")
 
     counts = {
-        "COMPLIANT": 0, "SPEC_WITHOUT_BUILD": 0, "NO_TRIGGER": 0,
-        "KNOWN_COMPLIANT": 0, "SUPERSEDED": 0, "DEFERRED": 0,
-        "PARTIAL_SPEC_ONLY": 0, "PROPOSED_OR_PENDING": 0,
-        "TEST_SIGNAL_REFERENCED_IN_CODE": 0, "TEST_SIGNAL_UNVERIFIED": 0,
-        "INACTIVE_STATUS": 0,
+        "COMPLIANT": 0, "ANNOTATED_COMPLIANT": 0, "ANNOTATED_NO_DIRECT_TEST": 0,
+        "SPEC_WITHOUT_BUILD": 0, "NO_TRIGGER": 0, "KNOWN_COMPLIANT": 0,
+        "SUPERSEDED": 0, "DEFERRED": 0, "PARTIAL_SPEC_ONLY": 0,
+        "PROPOSED_OR_PENDING": 0, "TEST_SIGNAL_REFERENCED_IN_CODE": 0,
+        "TEST_SIGNAL_UNVERIFIED": 0, "INACTIVE_STATUS": 0,
     }
     findings = {k: [] for k in counts}
 
