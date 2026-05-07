@@ -11,6 +11,67 @@ Last full inventory: 2026-05-07 evening. Master Universe = 1937 unique tickers.
 
 ---
 
+## Retrospective enrichment per CHECKLIST #76 (added 2026-05-07 evening)
+
+**Disclosure:** the original audit (commit `c0a3a568`) was a **paper audit only** — file counts, dimension lists, and status fields. It did NOT exercise functional-verification (no smoke runs of prefetch scripts during audit, no pyramid scan over consumer paths, no filesystem↔checkpoint diff, no endpoint discovery probe). Per CHECKLIST #76, this is non-compliant for phase-gating use without retrofit.
+
+This section retrofits the missing column-(b) functional-verification + column-(c) recommendation/blocker-status that #76 now mandates.
+
+### Column (b) — functional-verification gaps surfaced AFTER the original audit
+
+| Bug surfaced AFTER `c0a3a568` | Verification step that would have caught it AT AUDIT TIME | Severity if undetected |
+|---|---|---|
+| Quiver Unicode print crash (`✓` causing 897 errors) | `python scripts/prefetch_quiver.py --tickers AAPL` smoke + tail output | Cosmetic only; data integrity intact |
+| Polygon news schema drift (`tickers` → `all_tickers`) | `pytest backtest/tests/test_polygon_news_smoke.py -q` | Consumer crash on first news read |
+| CFTC numeric-as-string dtype | `pytest backtest/tests/test_data_integrity_4_numeric_dtype_cftc_fred -q` | Silent rolling-mean failures downstream |
+| CFTC Treasury contract-name typos (INV-011) | Smoke fetch of one Treasury contract slug + assertion | Empty parquets for 5 contracts |
+| FRED VVIX 400 (INV-010) | Smoke fetch one series at a time + check 200 response | Silent zero-data series |
+| Quiver B5-B10 endpoints 404 (INV-012) | GET each endpoint with one ticker before adding to recommendation list | Wasted Tier-B recommendations |
+| Wikipedia checkpoint ghost (INV-013) | `diff <(jq keys _checkpoint.json) <(ls -1 dir/)` for every prefetch | Re-prefetch silently skips deleted dirs |
+| Production runner Unicode bug (Phase 1A blocker) | Out of audit scope, but P1.runner integration test added retroactively | Phase 1A May 15 launch blocker |
+
+**Lesson:** every comprehensive audit row must run AT LEAST one of {smoke, pyramid scan, filesystem↔checkpoint diff, API endpoint probe} before the audit is considered complete. See CHECKLIST #76.
+
+### Column (c) — recommendations + priority + blocker-status (retrofit for every red/yellow row)
+
+| Source / endpoint | Coverage | Recommendation | Priority | Blocker for |
+|---|---|---|---|---|
+| Polygon reference (sector/cap/IPO) | 30.9% 🔴 | Re-prefetch at full 1937 universe (~1-2h) | P0 | **Phase 1A** — `fetch_info()` returns sector=Unknown for 70% of universe; breaks sector-classification + position-sizing |
+| Polygon dividends | 0.1% 🔴 | Full historical re-prefetch (~2-3h) | P1 | Phase 1B (no dividend strategies in baseline 60); informational for Phase 1A |
+| Polygon splits | 0.1% 🔴 | Full historical re-prefetch (~2-3h) | P1 | Phase 1B; informational for Phase 1A (yfinance OHLCV is split-adjusted) |
+| Polygon financials | 90.1% 🟡 | Top-up the missing 191 tickers (~30 min) | P2 | non-blocking — fundamental strategies opt-in; missing tkrs likely de-listed |
+| Polygon events (ticker_change) | 87.1% 🟡 | Top-up the missing 250 tickers (~30 min) | P2 | non-blocking — used only for ticker-rename resolution (DEC-500) |
+| Quiver congressional | 26.3% 🔴 → ~82% (BG running) | **In progress** — Quiver BG `bsu432hbt`; commit on completion | P0 | **Phase 1A** — smart-money composite signal degenerate at 26.3% |
+| Quiver gov_contracts | 26.3% 🔴 | Re-prefetch at 1937 (queued in BG `bsu432hbt`) | P0 | Phase 1A (same composite) |
+| Quiver insider per-ticker | 26.3% 🔴 | Re-prefetch at 1937 (queued in BG) | P0 | Phase 1A (same composite); also fixes BUG-INSIDER-PIT |
+| Quiver institutional per-ticker | 26.3% + ~18% empty 🔴 | Re-prefetch at 1937 (queued in BG) | P0 | Phase 1A (same composite) |
+| Quiver lobbying | 26.3% 🔴 | Re-prefetch at 1937 (queued in BG) | P1 | Phase 1B (lobbying_signal not in Phase 1A baseline) |
+| Quiver wallstreetbets | 26.3% 🔴 | Re-prefetch at 1937 (queued in BG) | P1 | Phase 1B (retail-attention not in Phase 1A baseline) |
+| Quiver wikipedia mirror | 0% effective 🔴 | **DELETE** — canonical lives at `data_prefetch/wikipedia/` (1414 files) — INV-013 documented; NOT re-prefetching | n/a | resolved (INV-013) |
+| Quiver etfholdings | 80.7% 🟡 | Top-up missing 374 ETFs OR accept (no PIT dim — INV-008) | P2 | non-blocking — informational for ETF-flow strategies (Phase 1B+) |
+| SEC EDGAR Form 4 | 82.6% 🟡 | Top-up the missing 337 tickers (~1h) | P1 | Phase 1B insider-overlay strategies; not in Phase 1A baseline |
+| SEC EDGAR 8-K | 79.7% 🟡 | Top-up the missing 394 tickers (~1h) | P1 | Phase 1B catalyst-event signals |
+| SEC EDGAR SC 13D | 64.2% 🔴 | Top-up the missing 693 tickers (~2h) | P1 | Phase 1B activist-overlay |
+| SEC EDGAR SC 13G | 86.2% 🟡 | Top-up the missing 268 tickers (~1h) | P2 | non-blocking |
+| SEC EDGAR 10-K / 10-Q | 0% 🔴 | NEW prefetch (~4-6h × 2 forms) | P1 | Phase 1B — fundamentals filing-date timing; partially served by Polygon financials for Phase 1A |
+| SEC EDGAR DEF 14A | 0% 🟡 | NEW prefetch (~2-3h) | P2 | non-blocking |
+| SEC EDGAR S-1/S-1A | 0% 🟡 | NEW prefetch (~1-2h) | P2 | Sprint 5 (T2 IPO enrichment) |
+| SEC EDGAR 13D/A + 13G/A amendments | 0% 🟡 | NEW prefetch (~2h) | P2 | Phase 1B+ activist updates |
+| FRED missing series (VIX3M / DTWEXBGS / DCOILWTICO / HOUST / PERMIT / RSAFS / IPB50001N) | 0% 🔴 | **DONE** P1 batch — added 19/21 (VVIX + gold deferred per INV-010) | n/a | resolved this session |
+| ALFRED vintage gaps | matches FRED | Mirror FRED additions (~30 min) | P2 | non-blocking — vintage primarily for revision-aware strategies (Phase 1C+) |
+| CFTC COT (only e-mini SP500) | 1 contract 🔴 | **DONE** P1 batch — extended to 19 contracts | n/a | resolved this session |
+| Apewisdom global | 1 file | Per-ticker mention timeline if API supports | P2 | Sprint 5 — retail-attention extension |
+| pytrends | 73.2% 🟡 | Top-up missing 520 tickers (~3-4h, rate-limited) | P2 | Phase 1B+ search-attention signal |
+| Wikipedia pageviews | 73.0% 🟡 | Top-up missing 523 tickers (~2h) | P2 | non-blocking |
+
+**P0 summary (Phase 1A blockers):** Polygon reference (A1) + 4 Quiver per-ticker endpoints (congressional/gov_contracts/insider/institutional). **All 5 are actively being addressed** — Polygon reference top-up is queued; Quiver BG `bsu432hbt` is in flight (~7h remaining at last check). Once both complete, **0 P0 blockers remain for Phase 1A May 15.**
+
+**P1 summary:** Phase 1B+ work (dividends/splits, lobbying, WSB, SEC EDGAR top-ups + 10-K/10-Q). Not blocking Phase 1A.
+
+**P2 summary:** Sprint 5 / informational. Not blocking any near-term phase.
+
+---
+
 ## Summary — Coverage matrix
 
 ### Polygon Stocks Starter

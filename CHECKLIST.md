@@ -939,3 +939,58 @@ State compliance visibly: "Checklist: ✅ [each item]"
     **First application:** Pass 53 Day-9 v8h P1 batch onwards.
 
     **Joint:** DEC-503 (9-type pyramid); DEC-594/595 (same-commit); CHECKLIST #69 (pre-push pyramid; #75 is the strict-enforcement upgrade); CHECKLIST #72 (data-integrity); CHECKLIST #74 (flag tracker — sister persistence rule). L86 + L95 + $300 Phase 1B prior-loss pattern (same root cause: partial verification ships bugs).
+
+76. **HARD RULE — Comprehensive audits MUST include functional verification + recommended-action escalation, not just inventory** (Pass 53 Day-9 v8h owner directive 2026-05-07 evening).
+
+    **Owner trigger:** *"When i earlier asked you to do a comprehensive check on pre-fetch data, why werrent these issues caught?"* — pointing out that PREFETCH_COVERAGE_AUDIT.md (commit `c0a3a568`) was a paper audit (file counts, dimension lists, status fields) that missed run-time bugs (Quiver Unicode print crash, Polygon news schema drift, CFTC numeric-as-string, CFTC Treasury contract-name typos, VVIX missing on FRED, Quiver B5-B10 endpoints 404, Wikipedia checkpoint ghost) AND failed to escalate the 26.3% Quiver per-ticker red flag from "informational categorization" to "Phase 1A blocker — re-prefetch required."
+
+    **The rule — every comprehensive audit has THREE mandatory columns per row:**
+
+    | Column | Required content |
+    |---|---|
+    | **(a) Observation** | The static fact (file count / coverage % / endpoint presence / schema field) — what existing audits already captured |
+    | **(b) Functional-verification step run** | Concrete command executed AT AUDIT TIME (e.g. `python scripts/prefetch_X.py --tickers AAPL` smoke; `pytest backtest/tests/test_data_integrity_*` for the audited cache; `head data_prefetch/X/*.parquet` schema check; `diff <(jq keys _checkpoint.json) <(ls dir/)` for checkpoint↔fs cross-check). If NOT run, must be explicitly stated as "NOT RUN — paper audit only" — silent omission is non-compliant. |
+    | **(c) Recommended action + priority + blocker-status** | Specific next-step proposal: action verb + scope + estimated effort + priority (P0/P1/P2) + explicit phase-blocker classification ("BLOCKER for Phase 1A" / "BLOCKER for Phase 1B-α" / "non-blocking — Sprint 5 work" / "informational"). Surfacing a red flag in the matrix without a column-(c) recommendation is non-compliant. |
+
+    **Mandatory cross-checks for every prefetch / cache audit:**
+
+    1. **Filesystem ↔ checkpoint diff** — for any prefetch with a checkpoint JSON, compare keys against actual `ls dir/` to surface ghost entries (caught INV-013 retroactively; should have been caught at audit time).
+    2. **Smoke run of every audited script** — at least one ticker / endpoint per script. Catches Unicode bugs, encoding issues, API auth changes, schema drift, dtype bugs.
+    3. **Pyramid scan over consumer code paths** — `pytest -q` filtered to tests touching the audited data source. Catches schema-evolution bugs (Polygon `tickers`→`all_tickers`).
+    4. **API endpoint discovery probe** — for "MISSING endpoints" rows (e.g. Quiver B5-B10), GET each endpoint with one ticker to validate it exists at the current API plan tier BEFORE adding it to the recommendation list. Avoids INV-012-class wasted recommendations.
+
+    **Pre-flight verification format for every row in a comprehensive audit:**
+
+    ```
+    Row: <data source> / <endpoint> / <coverage>
+    (a) Observation: <static fact>
+    (b) Functional-verification: <command run + result OR "NOT RUN — reason">
+    (c) Recommendation: <action> | priority: P{0|1|2} | blocker-status: {Phase 1A | Phase 1B | Sprint 5 | informational}
+    ```
+
+    **Why this is structural, not just discipline:**
+
+    L146/DEC-507 codified the lesson that "data DEC + toolkit DEC ≠ integration; wiring is a third explicit deliverable." #76 is the audit-side counterpart: "inventory + dimension list ≠ remediation plan; functional-verification + escalation are two more explicit deliverables." Same root pattern: I treated "list everything I see" as the deliverable when the actual deliverable is "list everything that blocks the next gate AND propose how to close each." Categorization-only audits ship the appearance of completeness without the substance — owner has to do the second-level translation work that the audit should have done.
+
+    **Past failure pattern motivating this rule:**
+
+    Pass 53 Day-9 v8h `c0a3a568` PREFETCH_COVERAGE_AUDIT.md missed:
+    - Quiver Unicode print crash (run-time only — would have surfaced if smoke step was run, column-(b) gap)
+    - Polygon news schema drift `tickers`→`all_tickers` (consumer-test only — column-(b) gap)
+    - CFTC numeric-as-string + CFTC Treasury contract names + VVIX missing + Quiver B5-B10 404 (all run-time only — column-(b) gap)
+    - Wikipedia checkpoint ghost (filesystem↔checkpoint diff missing — column-(b) gap)
+    - Quiver per-ticker 26.3% — flagged in matrix but NOT escalated as blocker; owner had to escalate it (column-(c) gap, owner pushback: *"Q1 rec should have been flagged and recommended by you. Thats literally your job."*)
+    - Production runner Unicode bug — out of audit scope, but extends pattern: any audit narrowly scoped to "prefetch" misses adjacent code that consumes the prefetch.
+
+    **Pre-flight verification:** when authoring or extending an audit doc, state explicitly: "Audit functional-verification: smoke + pyramid + checkpoint diff + endpoint probe — RUN AT AUDIT TIME" (or "audit is paper-only — column-(b) marked NOT RUN throughout, NOT phase-gate suitable").
+
+    **End-of-turn check:** if a comprehensive audit was authored or updated and (a)/(b)/(c) coverage is incomplete in any row, the response is non-compliant.
+
+    **Caveats / exclusions:**
+
+    - **Quick spot-check audits** (single ticker / single endpoint diagnostic) — not subject to #76. Comprehensive = audits across multiple data sources / endpoints / forms intended to inform Phase / Sprint gating decisions.
+    - **Audits authored before 2026-05-07** — not retroactively non-compliant, but if relied upon for current decisions, must be retrofitted with column (b) and (c) before phase-gating use.
+
+    **First application:** Pass 53 Day-9 v8h evening — retrofit of PREFETCH_COVERAGE_AUDIT.md with columns (b) and (c) per this rule (this commit).
+
+    **Joint:** L146/DEC-507 (data + toolkit + wiring three deliverables — #76 is the audit-side counterpart); CHECKLIST #44 (data-consumption audit must include runtime probe — #76 generalizes this to ALL audits, not just data-consumption); CHECKLIST #74 (flag tracker — column (c) recommendations that don't make it into the same commit must spawn an INV-NNN entry); CHECKLIST #75 (pyramid testing — #76 mandates the pyramid scan column-(b) for any audit touching cache); INV-001..INV-013 (the gaps that would have been surfaced earlier had #76 been in force).
