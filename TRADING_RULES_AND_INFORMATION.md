@@ -1625,6 +1625,209 @@ These signals are computed alongside the smart money composite but are NOT inclu
 
 ---
 
+### 10.10 Regime training/labeling mechanism (DEC-539 — Pass 53 owner-approved 2026-05-06 Q1 P0; CRITICAL)
+
+**Trigger:** External AI 2026-05-06 review identified that DEC-107 spec doesn't define how the 6 regime classes (now 4 per DEC-542) are operationally labeled. The classifier's quality depends entirely on this.
+
+**Resolution:** Hand-labeled historical periods + threshold-rule cross-validation.
+
+**Labeling protocol:**
+1. **Reviewer:** owner + Claude jointly review SPY price action + VIX + macro context per quarter for 2010-2026 (~16 years × 4 quarters = 64 labeling sessions; ~5-10 min each)
+2. **Per-day labels:** each trading day gets one of 4 regime labels (Bull / Neutral / Bear / Crisis) based on:
+   - SPY return regime (trailing 60-day return + slope of 200-SMA)
+   - VIX regime (level + 20-day SMA + percentile in trailing 252-day distribution)
+   - Macro context (recession flag from FRED RECPROUSM156N, financial-stress STLFSI4)
+   - Crisis: VIX > 40 sustained ≥3 days OR -10% drawdown in 5 trading days OR explicit market-stress event (Mar 2020, Aug 2024 yen unwind)
+3. **Stable label periods:** ≥ 5 trading days minimum (matches DEC-546 min-duration constraint)
+4. **Cross-validation:** 70% in-sample / 30% out-of-sample split chronologically (no leakage); regime classifier trained on in-sample, tested on out-of-sample
+5. **Versioning:** labels stored as `data_prefetch/regime_labels/labels_v1.parquet` with reviewer + timestamp + criteria hash
+
+**Effort:** ~2-3 days labeling + ~1 day cross-validation infrastructure. Pre-Phase-1A.
+
+**Source:** DEC-539
+
+### 10.11 Regime probability consumption pattern (DEC-540 — Pass 53 owner-approved 2026-05-06 Q1 P0; CRITICAL)
+
+**Trigger:** External AI identified inconsistency — DEC-107 says strategies consume probability vector; Layer 5 (this Pass Q1) uses hard regime tags. **Reconcile.**
+
+**Resolution:** Two-stage consumption:
+1. Classifier (DEC-107) outputs probability vector `{P(Bull), P(Neutral), P(Bear), P(Crisis)}` summing to 1
+2. **Binarization layer (DEC-546 Schmitt-trigger)** converts vector to hard regime tag
+3. Layer 5 strategies consume the **binarized hard tag** (not the raw probability vector)
+
+**Per-strategy consumption rule:**
+```
+strategy fires only if:
+  current_binarized_regime ∈ strategy.regime_eligible
+  AND P(current_binarized_regime) > 0.5  (confidence floor)
+```
+
+**Crisis-override** per CLAUDE.md preserved: longs allowed at 50% size when binarized_regime=crisis, regardless of strategy's `regime_eligible` set.
+
+**Source:** DEC-540
+
+### 10.12 Regime classifier validation methodology (DEC-541 — Pass 53 owner-approved 2026-05-06 Q1 P0)
+
+**Trigger:** External AI identified that we don't know if the 8-input EMA-smoothed classifier beats a simple SPY-200SMA-sign baseline. Common failure mode: sophisticated classifier that's actually just a slow SPY indicator.
+
+**Validation protocol (pre-Phase-1A):**
+
+1. **Baseline classifier:** SPY-200SMA-sign (3-class: long-trend = SPY > 200 SMA + slope up; neutral = SPY ≈ 200 SMA OR slope flat; short-trend = SPY < 200 SMA + slope down)
+2. **Test classifier:** 8-input EMA-smoothed (DEC-106/107/108) post DEC-542 4-class collapse
+3. **Test metrics on out-of-sample 30% of DEC-539 labels:**
+   - **Regime-conditional Sharpe:** forward 20-day SPY return given regime label; should differ across regimes (Bull > Neutral > Bear)
+   - **Regime persistence:** % of days in same regime as prior day (target: >85% — too low = thrashing; too high = stale)
+   - **Regime accuracy:** classifier label vs hand-labeled ground truth (target: >75% on 4-class problem)
+4. **Decision criterion:** 8-input must beat baseline on **at least 2 of 3 metrics with p < 0.05** (paired permutation test)
+5. **If 8-input fails:** simplify to 4-input or 3-input subset; retest
+
+**Effort:** ~1-2 days validation infrastructure + cross-validation runs. Pre-Phase-1A.
+
+**Source:** DEC-541
+
+### 10.13 Collapse 6 → 4 regime classes (DEC-542 — Pass 53 owner-approved 2026-05-06 Q1 P0)
+
+**Trigger:** External AI identified that 6 classes (Bull / Bull-Pause / Neutral / Bear-Pause / Bear / Crisis) is statistically over-specified for ~6,300 trading days of data. Crisis is overwhelmingly rare (~100-200 days total in 25 years); statistical estimation of Crisis transitions is nearly impossible.
+
+**Resolution:** Collapse to **4 regimes matching F-006 classifier**: `{Bull, Neutral, Bear, Crisis}`.
+
+**Mapping from 6 → 4:**
+- Bull-Pause → Neutral (trend losing momentum is statistically indistinguishable from neutral with our data)
+- Bear-Pause → Neutral (mirror)
+
+**Rationale:**
+- 6,300 days / 4 classes = 1,575/class average (vs 1,050 for 6-class)
+- Crisis stays at ~100-200 days (rare; expected)
+- Bull / Neutral / Bear bear class boundaries are now wider — easier to fit reliable transitions
+
+**Source:** DEC-542
+
+### 10.14 Stage 2 vs Stage 3+ regime-input parity (DEC-543 — Pass 53 owner-approved 2026-05-06 Q1 P0)
+
+**Trigger:** Per DEC-447, Stage 3+ adds richer breadth inputs (PCT_ABOVE_50/200EMA, new high/low ratio). External AI identified that backtest-calibrated strategy parameters wouldn't transfer to live if the regime classifier itself differs across stages.
+
+**Resolution:** **Option A — Freeze inputs at Stage 2 set** (8 inputs per DEC-106; 12+ per DEC-150 multi-asset).
+
+- Stage 3+ live richer breadth (DEC-447) used for **monitoring only**, NOT regime calibration
+- Strategy parameters calibrated on Stage 2 regime classifier remain valid in Stage 3+
+- Trade-off: Stage 3+ doesn't get to use the better breadth signals in regime classification — accepted to preserve calibration validity
+
+**Alternative considered (rejected):** Option B re-validate all backtest-derived strategy parameters when Stage 3+ richer breadth comes online — too expensive; high risk of validity loss
+
+**Source:** DEC-543
+
+### 10.15 Asymmetric EMA smoothing (DEC-544 — Pass 53 owner-approved 2026-05-06 Q2 P1)
+
+**Trigger:** External AI identified that single α=0.1 EMA (10-day half-life) is suboptimal for risk management — fast regime changes (Mar 2020, Aug 2024 yen unwind) detect Bear/Crisis well after losses.
+
+**Resolution:** Per-direction α with fast-in / slow-out asymmetry:
+
+| Transition | α | Half-life | Rationale |
+|---|---|---|---|
+| → Bear or Crisis | **0.20** | 5 days | Catch downside fast — risk management priority |
+| → Recovery (Bear → Neutral or Neutral → Bull) | **0.05** | 20 days | Confirm recovery before re-risking |
+| → Neutral or → Bull (non-recovery) | 0.10 | 10 days | Default symmetric smoothing |
+
+**Implementation:** EMA function checks current vs prior regime; selects α from per-transition table. ~0.5 day in `backtest/engine/regime_filter.py`.
+
+**Source:** DEC-544
+
+### 10.16 EMA + transition-matrix integration (DEC-545 — Pass 53 owner-approved 2026-05-06 Q2 P1)
+
+**Trigger:** External AI identified that DEC-108 EMA and DEC-149 transition matrix are decoupled — two unrelated mechanisms doing related work.
+
+**Resolution:** Transition matrix posterior-updates EMA output via Bayesian update.
+
+**Formula:**
+```
+P_EMA(regime) = EMA-smoothed regime probability (DEC-108 + DEC-544 asymmetric)
+P_transition(regime | prior_regime) = DEC-149 transition matrix
+P_final(regime) = P_EMA(regime) × P_transition(regime | prior_regime)
+P_final normalized to sum to 1 across regimes
+```
+
+This integrates both mechanisms: EMA captures input-driven regime probability; transition matrix encodes regime persistence (regimes don't randomly flip; prior-regime conditional matters).
+
+**Source:** DEC-545
+
+### 10.17 Schmitt-trigger on regime binarization + min-duration (DEC-546 — Pass 53 owner-approved 2026-05-06 Q2 P1)
+
+**Trigger:** External AI identified that no Schmitt threshold exists on regime probability binarization; regime probability hovering at 0.5 will flap. Min-duration constraint also missing.
+
+**Resolution:**
+
+| Rule | Threshold |
+|---|---|
+| **Enter regime X** | P(X) > 0.6 |
+| **Stay in regime X** | P(X) > 0.4 (Schmitt gap; prevents flapping at 0.5) |
+| **Exit regime X** | P(X) < 0.4 |
+| **Min-duration in regime** | ≥ 5 trading days (regardless of probability — prevents thrashing on noise) |
+| **Crisis-override** | Crisis can flip ON within 1 day if VIX > 50 (catastrophic event) — bypasses min-duration |
+
+**Source:** DEC-546
+
+### 10.18 Smart money veto symmetry (DEC-547 — Pass 53 owner-approved 2026-05-06 Q2 P1)
+
+**Trigger:** External AI identified that current veto is asymmetric (cluster_sell vetoes to -5; no equivalent buy boost).
+
+**Resolution:** Symmetric veto.
+
+| Combined source signal | Score |
+|---|---|
+| cong=strong_buy AND ins=strong_buy AND inst=accumulate | **+5 (NEW symmetric to -5)** |
+| cong=sell AND ins=cluster_sell | -5 (existing) |
+
+**Note:** External AI suggested "sells more informative than buys" rationale (Lakonishok-Lee 2001) as alternative — owner-rejected; symmetry chosen for cleanliness. If empirical results in Phase 1B-α suggest sell-asymmetry has edge, revisit via DEC.
+
+**Source:** DEC-547
+
+### 10.19 Sector regime distinct from market regime (DEC-548 — Pass 53 owner-approved 2026-05-06 Q2 P1)
+
+**Trigger:** External AI identified that DEC-151 sector-level regime claims independence from market-level but doesn't specify what inputs the sector regime uses. If same macro inputs as market regime, every sector has identical regime — defeats the purpose.
+
+**Resolution:** Two-level hierarchy.
+
+**Level 1 — Market regime** (existing): 8-input macro classifier per DEC-106/107/108/542
+- Outputs: `{Bull, Neutral, Bear, Crisis}` (4-class)
+
+**Level 2 — Sector regime** (NEW per DEC-548): per-sector deviation from market
+- Inputs (sector-specific):
+  - Sector ETF 60-day return (vs SPY)
+  - Sector ETF 20-day realized vol (per DEC-513 #1)
+  - Sector breadth (% stocks in sector above 50-SMA)
+  - Sector dispersion (intra-sector return std-dev with direction per DEC-554)
+  - Sector beta to SPY (252-day rolling per DEC-513 #2)
+- Outputs: `{Bull, Neutral, Bear}` (3-class — Crisis is market-wide only)
+- Cross-sectional consistency: sector regime is a **deviation from market regime**, not an independent classifier — XLK can't be in Bull when SPY is in Crisis
+
+**Source:** DEC-548
+
+### 10.20 Smart money composite + adjacent — additional DECs (P2-P4 backlog)
+
+| DEC | Title | Effort |
+|---|---|---|
+| DEC-549 | Cluster_buy/cluster_sell threshold symmetry — tighten cluster_sell to require officer-level seller (mirrors cluster_buy CEO requirement) | ~0.5d |
+| DEC-550 | Smart money signal normalization — gov contracts → % of revenue; lobbying → YoY change vs baseline; news sentiment → per-ticker rolling z-score | ~1d |
+| DEC-551 | Regime × smart money interaction — explicit composition rule (independent inputs to position sizing; NOT veto) | ~0.5d |
+| DEC-552 | Regime-conditional smart money weighting — Phase 1B-α tunable: insider buying in bear regime weighted higher than bull regime (private-info-offsets-bearishness rationale) | ~1-2d Phase 1B-α |
+| DEC-553 | Equity-bond correlation as regime input (rolling 60-day SPY-TLT correlation) | ~0.5d |
+| DEC-554 | Sector dispersion direction (pair std-dev with median sector return sign or skew) — disambiguates rotation-bull vs breakdown-bear | ~0.5d |
+| DEC-555 | CFTC COT promotion to regime input (currently sentiment-only; should also be regime input given dealer positioning is regime-relevant) | ~0.5d |
+| DEC-556 | Smart money tunability extension to structure (additive vs multiplicative vs Bayesian vs ML-ensemble) — Layer-1 architectural decision separate from weights | post-Phase-1B-α |
+| DEC-557 | "Decreased > increased" stability fix — minimum count threshold (decreased ≥ 3, decreased > increased + N) | ~0.25d |
+| DEC-558 | "new_pos ≥ 3" universe-normalization — % of trackable institutions opening new positions, OR new positions vs trailing average for that ticker | ~0.5d |
+| DEC-559 | VIX SMA threshold reconciliation — 5-day vs 21-day SMA across docs; standardize | ~0.25d |
+| DEC-560 | Score tier boundaries documented in source-mix terms (≥6 = strong_buy + 1 buy across sources; ≥4 = single strong_buy or two buys) | ~0.25d |
+| DEC-561 | ICE BofA HY OAS (BAMLH0A0HYM2) preferred over BAA10Y for crisis sensitivity (we have both in FRED 50-series; use BAMLH0A0HYM2 as primary) | ~0.25d |
+| DEC-562 | TED/SOFR-OIS / repo / dollar-funding stress as crisis-tail signals (free via NY Fed) | ~1d |
+| DEC-563 | Senate-vs-House priority documentation + citation (Pelosi-style trades, committee access — defensible heuristic) | ~0.25d |
+| DEC-564 | NAAIM exposure index as positioning input (weekly, free) | ~0.5d |
+| DEC-565 | Commodity term structure (oil contango/backwardation, gold/silver ratio) | ~0.5d |
+
+All DEC-549-565 are RESOLVED-DECIDED at backlog level (Pass 53 owner-approved 2026-05-06 Q3); implementation post-Phase-1B-α or as Sprint priorities allow.
+
+---
+
 ## 11. Regime-Conditional Strategy Behavior
 
 ### 11.1 Crisis-Flag Handling (replaces hard regime direction blocks)

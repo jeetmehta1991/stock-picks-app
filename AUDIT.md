@@ -29897,3 +29897,115 @@ All DEC-528-538 are RESOLVED-DECIDED at backlog level; implementation post-Phase
 - L94 / L143 (philosophy framing preserved in earlier AUDIT entries)
 
 *Per CHECKLIST #1 (Q1+Q2+Q3 A approved); #25 (5 external-AI partial misreads in earlier take + 14 DECs codified this turn covering 25 genuinely-new findings); #43 (cross-doc atomically — TRADING_RULES §8/§9/§11 + STRATEGY_ROSTER + F-004 + this narrative); #45 (this); #51 (scope strict — DEC drafting + spec only; implementation Sprint pre-Phase-1A + Sprint 7); #58 (14 DECs in single commit — P0+P1+P2 backlog atomically codified); #67/#67.b (per-turn doc sync).*
+
+---
+
+## Pass 53 — Regime classification + smart money review Q1+Q2+Q3 atomic — DEC-539 through DEC-565 — 2026-05-06
+
+### Trigger
+
+Owner directive 2026-05-06 ("Q1 Q2 Q3 approve all" → corrected to "Q1 Q2 Q3 approve A" — same intent; 5th external-AI review take). Approved 27 DECs covering regime methodology + smart money composite + adjacent + framework limitations.
+
+### Q1 P0 — Pre-Phase-1A blockers (5 CRITICAL)
+
+**DEC-539 — Regime training/labeling mechanism:** Hand-labeled historical periods (2010-2026 quarterly review by owner + Claude) + threshold-rule cross-validation. 70/30 chronological split. Stable label periods ≥ 5 trading days. Versioned in `data_prefetch/regime_labels/labels_v1.parquet`. Pre-Phase-1A blocker; ~2-3 days labeling + ~1 day infrastructure.
+
+**DEC-540 — Regime probability consumption pattern:** Reconciles DEC-107 probability vector with Layer 5 hard tags. Two-stage: classifier outputs vector → DEC-546 Schmitt-trigger binarizes → Layer 5 consumes hard tag. Per-strategy rule: fire only if `current_regime ∈ regime_eligible AND P(current_regime) > 0.5`. Crisis-override per CLAUDE.md preserved.
+
+**DEC-541 — Regime classifier validation methodology:** Baseline = SPY-200SMA-sign 3-class. Test classifier (8-input EMA-smoothed) must beat baseline on ≥ 2 of 3 metrics (regime-conditional Sharpe, regime persistence > 85%, regime accuracy > 75%) with p < 0.05 paired permutation test. If fails, simplify to 4-input or 3-input subset. Pre-Phase-1A.
+
+**DEC-542 — Collapse 6 → 4 regime classes:** Drop Bull-Pause / Bear-Pause sub-classes (statistically indistinguishable with ~6,300 trading days). 4 regimes match F-006: Bull / Neutral / Bear / Crisis. Bull-Pause → Neutral; Bear-Pause → Neutral.
+
+**DEC-543 — Stage 2 vs Stage 3+ regime-input parity:** Option A — freeze inputs at Stage 2 set (8 macro inputs per DEC-106; 12+ per DEC-150 multi-asset). Stage 3+ live richer breadth (DEC-447) used for monitoring only, NOT regime calibration. Preserves backtest-calibrated parameter validity in live.
+
+### Q2 P1 — High-leverage adds (5)
+
+**DEC-544 — Asymmetric EMA smoothing:** Fast-in (α=0.20, 5d half-life) for Bear/Crisis; slow-out (α=0.05, 20d half-life) for recovery; default α=0.10 (10d) for Bull/Neutral transitions. Risk-management priority.
+
+**DEC-545 — EMA + transition-matrix integration:** Bayesian posterior update: `P_final(regime) = P_EMA(regime) × P_transition(regime | prior_regime)` normalized. Integrates DEC-108 EMA + DEC-149 transition matrix (previously decoupled).
+
+**DEC-546 — Schmitt-trigger on regime binarization + min-duration:** Enter at P(X) > 0.6; exit at P(X) < 0.4; min-duration ≥ 5 trading days; crisis-override on VIX > 50 bypasses min-duration.
+
+**DEC-547 — Smart money veto symmetry:** Symmetric +5/-5 veto. cong=strong_buy AND ins=strong_buy AND inst=accumulate → +5 (NEW mirror of -5). Owner chose symmetry over Lakonishok-Lee 2001 sell-asymmetry; revisit if Phase 1B-α empirically supports asymmetry.
+
+**DEC-548 — Sector regime distinct from market regime:** Two-level hierarchy. Market regime = 8-input macro classifier (4 classes). Sector regime = sector-specific deviation (sector ETF return + vol + breadth + dispersion + beta; 3 classes — Crisis is market-wide only). Sector regime gates per-sector strategies.
+
+### Q3 P2-P4 backlog (17 DECs)
+
+| DEC | Title |
+|---|---|
+| DEC-549 | Cluster_buy/cluster_sell threshold symmetry (officer-level seller mirror) |
+| DEC-550 | Smart money signal normalization (gov contracts → % revenue; lobbying → YoY change; news → per-ticker rolling z-score) |
+| DEC-551 | Regime × smart money interaction (independent inputs to position sizing; NOT veto) |
+| DEC-552 | Regime-conditional smart money weighting (Phase 1B-α tunable) |
+| DEC-553 | Equity-bond correlation as regime input (rolling 60-day SPY-TLT) |
+| DEC-554 | Sector dispersion direction (median sign or skew) |
+| DEC-555 | CFTC COT promotion to regime input (currently sentiment-only) |
+| DEC-556 | Smart money tunability extension to structure (Layer-1 architectural) |
+| DEC-557 | "Decreased > increased" stability fix (min count threshold) |
+| DEC-558 | "new_pos ≥ 3" universe-normalization |
+| DEC-559 | VIX SMA threshold reconciliation (5-day vs 21-day) |
+| DEC-560 | Score tier boundaries documented in source-mix terms |
+| DEC-561 | ICE BofA HY OAS (BAMLH0A0HYM2) preferred over BAA10Y |
+| DEC-562 | TED/SOFR-OIS / repo / dollar-funding stress (NY Fed) |
+| DEC-563 | Senate-vs-House priority documentation + citation |
+| DEC-564 | NAAIM exposure index (weekly free) |
+| DEC-565 | Commodity term structure (oil contango/backwardation, gold/silver ratio) |
+
+### What external AI got RIGHT (acknowledged)
+
+- Regime training/labeling missing (DEC-539): TRUE; biggest gap
+- Probability consumption pattern undefined (DEC-540): TRUE; reconciled with Layer 5
+- Validation methodology missing (DEC-541): TRUE
+- 6 classes too many (DEC-542): TRUE; collapsed to 4
+- Stage 2/3 input asymmetry (DEC-543): TRUE; significant calibration risk
+- Asymmetric EMA needed (DEC-544): TRUE; standard risk practice
+- EMA + transition matrix decoupled (DEC-545): TRUE; integrated via Bayesian
+- Schmitt-trigger missing (DEC-546): TRUE
+- Veto asymmetric (DEC-547): TRUE; symmetrized
+- Sector regime inputs unspecified (DEC-548): TRUE; two-level hierarchy
+
+### What external AI got WRONG/PARTIAL (transparent)
+
+- "No funding/credit-stress beyond HY spread": PARTIAL — STLFSI4 in our FRED 50-series; missed
+- "CFTC isn't a regime input": TRUE finding (DEC-555 backlog adds it)
+- "Polygon news migration code path lags spec": WRONG — Pass 53 Batch 13.2 already migrated
+- "VIX term structure missing": PARTIAL — DEC-513 P1 #7 adds VIX3M+VVIX (this Pass)
+- "Realized vol missing": PARTIAL — DEC-513 P1 #1 adds it (this Pass)
+
+### Aggregate Sprint pre-Phase-1A scope (cumulative 5 review-take turns)
+
+| Source | Effort |
+|---|---|
+| DEC-511/512/513 (signal universe) | ~20-28 days |
+| DEC-514/515/516/517-521 (exit/risk/fill) | ~6-8 days |
+| DEC-539/540/541/542/543 (regime P0) | ~5-7 days |
+| DEC-544/545/546/547/548 (regime P1) | ~3-4 days |
+| **TOTAL** | **~34-47 days before Phase 1A backtest can run cleanly** |
+
+### F-006 updates
+
+F-006 in CANONICAL_FACTS.md updated with:
+- 6→4 class collapse (DEC-542) confirmed
+- Training/labeling protocol citation (DEC-539)
+- Validation methodology citation (DEC-541)
+- Probability consumption + Schmitt binarization (DEC-540 + DEC-546)
+- Asymmetric EMA + Bayesian integration (DEC-544 + DEC-545)
+- Stage 2/3 input parity lock (DEC-543)
+
+### Files modified
+
+- `TRADING_RULES_AND_INFORMATION.md` — §10.10-10.20 NEW (DEC-539-548 full specs + DEC-549-565 backlog table)
+- `CANONICAL_FACTS.md` F-006 — extended with 4-class collapse + training/validation/binarization protocol
+- `AUDIT.md` — this narrative
+
+### Cross-references
+
+- DEC-539-548 (P0+P1 regime methodology); DEC-549-565 (P2-P4 backlog)
+- F-006 (regime classifier; updated this turn); F-003 (signal universe — DEC-553/555/561 etc. extend Cat 4 macro)
+- Layer 5 (entry-eligibility flags; consumes DEC-540 binarized regime)
+- DEC-516 (regime-flip exit; consumes same binarized regime for symmetric exit gating)
+- F-002 (199 strategies — all Layer 1-6 strategies' `regime_eligible` flags depend on DEC-540 consumption pattern)
+- L94 / L143 (preserved historical narratives)
+
+*Per CHECKLIST #1 (Q1+Q2+Q3 A approved; "approve all" → "approve A" interpreted as same intent); #25 (10 P0+P1 + 17 backlog DECs codified covering 22 genuinely-new findings + 5 transparent external-AI misreads); #43 (cross-doc — TRADING_RULES §10 + F-006 + this narrative); #45 (this); #51 (scope strict — DEC drafting + spec only; implementation Sprint pre-Phase-1A); #58 (27 DECs atomically codified in single commit); #67/#67.b (per-turn doc sync).*

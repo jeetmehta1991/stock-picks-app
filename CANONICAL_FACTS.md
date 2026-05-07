@@ -307,9 +307,9 @@ When a ticker is PIT-active in multiple tiers, **T3 > T2 > T1c > T1a > T1ETF** �
 
 ### F-006 — Regimes
 
-**Value (planned):** **4 regime types (bull / neutral / bear / crisis) classified per-day. 7 historical regime windows for per-regime verdict in Phase 1B-α.**
+**Value (planned):** **4 regime types (bull / neutral / bear / crisis) classified per-day. 7 historical regime windows for per-regime verdict in Phase 1B-α. POST Pass 53 owner-approved 2026-05-06 Q1: 6→4 class collapse confirmed (DEC-542 — Bull-Pause/Bear-Pause sub-classes dropped; statistically indistinguishable with our data); training/labeling protocol defined (DEC-539 hand-labeled + cross-validation); validation methodology defined (DEC-541 baseline = SPY-200SMA-sign; 8-input must beat on ≥2 of 3 metrics with p<0.05); probability-vector consumption pattern reconciled with Layer 5 hard tags via Schmitt-trigger binarization (DEC-540 + DEC-546); Stage 2 vs Stage 3+ input parity locked (DEC-543 — freeze inputs at Stage 2 set).**
 
-**Definition:** A "regime" is a market state classification computed from VIX + SPY-vs-200EMA + 20-day realized volatility. Regimes are computed real-time at each as-of date.
+**Definition:** A "regime" is a market state classification computed from 8-input macro classifier (VIX + SPY-vs-200EMA + 20-day realized vol + yield curve + breadth + HY spread + ICSA + sector dispersion per DEC-106) → EMA-smoothed (DEC-108 + DEC-544 asymmetric: fast-in 5d half-life for Bear/Crisis, slow-out 20d for recovery, 10d default) → posterior-updated by transition matrix (DEC-545 Bayesian integration) → binarized via Schmitt threshold (DEC-546: enter > 0.6, exit < 0.4, min-duration ≥ 5 trading days, crisis-override on VIX > 50). Regimes are computed real-time at each as-of date.
 
 **The 4 regime types:**
 
