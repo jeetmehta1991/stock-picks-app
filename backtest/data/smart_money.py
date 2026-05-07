@@ -577,6 +577,141 @@ AV_NEWS_DIR = Path(__file__).parent / "cache" / "av_news"
 FH_NEWS_DIR = Path(__file__).parent / "cache" / "finnhub_news"
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# SEC EDGAR FILINGS — Pass 53 Day-9 v8c G7 closure (L146 wiring)
+#
+# Sprint 0A Batch 11 prefetched 6056 filings across 4 form types:
+#   - Form 4    : insider transactions (per-ticker, ~1336 rows AAPL)
+#   - 8-K       : material event disclosures (per-ticker, ~234 rows AAPL)
+#   - SC 13D    : activist 5%+ holder filings (per-ticker, ~7 rows AAPL)
+#   - SC 13G    : passive 5%+ holder filings (per-ticker, ~81 rows AAPL)
+#
+# Schema (uniform across form types):
+#   ticker, cik, form, filing_date, accession_number, primary_doc
+#
+# Public accessors below; strategy-side wiring deferred to Phase 1B+ per
+# CLAUDE.md (Layer-2 catalyst signal candidate).
+# ─────────────────────────────────────────────────────────────────────────────
+
+PREFETCH_SEC_EDGAR_DIR = _REPO_ROOT / "data_prefetch" / "sec_edgar"
+
+# EDGAR form-type → subdirectory mapping. Form names with spaces become
+# underscored on disk (e.g., "8-K" → "8_K", "SC 13D" → "SC_13D").
+SEC_EDGAR_FORM_DIRS = {
+    "4":     "4",
+    "8-K":   "8_K",
+    "SC 13D": "SC_13D",
+    "SC 13G": "SC_13G",
+}
+
+
+def _load_sec_filings(ticker: str, form: str) -> Optional[pd.DataFrame]:
+    """Read prefetched SEC EDGAR filings parquet for one form type."""
+    subdir = SEC_EDGAR_FORM_DIRS.get(form)
+    if subdir is None:
+        return None
+    safe = ticker.replace(".", "-")
+    path = PREFETCH_SEC_EDGAR_DIR / subdir / f"{safe}.parquet"
+    if not path.exists():
+        return None
+    try:
+        df = pd.read_parquet(path)
+        if df.empty:
+            return None
+        df["filing_date"] = pd.to_datetime(df["filing_date"])
+        return df
+    except Exception as exc:
+        logger.debug("SEC EDGAR %s/%s read failed: %s", subdir, ticker, exc)
+        return None
+
+
+def get_sec_filings(
+    ticker: str,
+    as_of: date,
+    lookback_days: int = 30,
+    form: str = "8-K",
+) -> dict:
+    """Return SEC filings of one form type for `ticker` filed within the
+    `lookback_days` window ending at `as_of` (point-in-time).
+
+    Args:
+      ticker: stock ticker.
+      as_of: cutoff date (PIT). Filings filed > as_of are excluded.
+      lookback_days: window length (default 30 days).
+      form: one of '4' / '8-K' / 'SC 13D' / 'SC 13G'.
+
+    Returns:
+      dict with keys:
+        'count'       — number of filings in window
+        'most_recent' — datetime of most recent filing in window (or None)
+        'days_since'  — days since most recent filing (or None)
+        'filings'     — list of {filing_date, accession_number} dicts (≤25)
+    """
+    df = _load_sec_filings(ticker, form)
+    if df is None or df.empty:
+        return {"count": 0, "most_recent": None, "days_since": None,
+                "filings": []}
+
+    cutoff = pd.Timestamp(as_of)
+    window_start = cutoff - pd.Timedelta(days=lookback_days)
+    in_window = df[(df["filing_date"] <= cutoff) &
+                   (df["filing_date"] >= window_start)]
+    in_window = in_window.sort_values("filing_date", ascending=False)
+
+    if in_window.empty:
+        return {"count": 0, "most_recent": None, "days_since": None,
+                "filings": []}
+
+    most_recent = in_window["filing_date"].iloc[0]
+    days_since = (cutoff - most_recent).days
+    return {
+        "count":       int(len(in_window)),
+        "most_recent": most_recent,
+        "days_since":  int(days_since),
+        "filings":     in_window[["filing_date", "accession_number"]]
+                          .head(25)
+                          .to_dict(orient="records"),
+    }
+
+
+def sec_catalyst_signal(ticker: str, as_of: date) -> dict:
+    """Composite catalyst-event signal from SEC EDGAR filings (PIT).
+
+    Combines 4 form types into a single dict suitable for strategy/agent input.
+    Heuristic scoring (Phase 1A baseline; weights revisitable Phase 1B):
+
+      - 8-K filed ≤ 5 trading days       → +1 score (recent material event)
+      - SC 13D filed ≤ 30 days           → +2 score (activist accumulation)
+      - SC 13G filed ≤ 30 days           → +1 score (passive accumulation)
+      - Form 4 cluster ≥ 3 in 30 days    → +/- depending on transaction code
+
+    Returns dict with per-form `count` + `days_since` + composite `score`.
+    """
+    eight_k    = get_sec_filings(ticker, as_of, lookback_days=10, form="8-K")
+    sc_13d     = get_sec_filings(ticker, as_of, lookback_days=30, form="SC 13D")
+    sc_13g     = get_sec_filings(ticker, as_of, lookback_days=30, form="SC 13G")
+    form_4     = get_sec_filings(ticker, as_of, lookback_days=30, form="4")
+
+    score = 0
+    if eight_k["count"] > 0 and (eight_k["days_since"] or 99) <= 5:
+        score += 1
+    if sc_13d["count"] > 0:
+        score += 2
+    if sc_13g["count"] > 0:
+        score += 1
+
+    return {
+        "8k":         eight_k,
+        "sc_13d":     sc_13d,
+        "sc_13g":     sc_13g,
+        "form_4":     form_4,
+        "score":      score,
+        "label":      ("activist_accumulation" if sc_13d["count"] > 0
+                        else "recent_8k"        if score >= 1
+                        else "no_recent_filings"),
+    }
+
+
 def _polygon_insights_to_score(insights, ticker: str) -> Optional[float]:
     """Extract per-ticker sentiment from Polygon news insights array.
 
