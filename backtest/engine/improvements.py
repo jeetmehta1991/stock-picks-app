@@ -107,37 +107,54 @@ def apply_transaction_costs(
 
 def run_walk_forward(df_trades: pd.DataFrame) -> dict:
     """
-    Two-window walk-forward validation (both required for ROBUST verdict).
+    4-fold walk-forward validation per DEC-505 (Pass 53 owner-approved 2026-05-05).
 
-    Window 1: IS=2022-2023, OOS=2024
-    Window 2: IS=2022-2024, OOS=2025-Mar2026
+    Per DEC-505 + DEC-590 + L149 (spec-without-build correction):
+      - 1y warmup: 2021-05-05 → 2022-05-05 (training data accumulation only; not OOS-tested)
+      - Fold 1: train 2021-05-05 → 2022-05-05; OOS 2022-05-05 → 2023-05-05
+      - Fold 2: train 2021-05-05 → 2023-05-05; OOS 2023-05-05 → 2024-05-05
+      - Fold 3: train 2021-05-05 → 2024-05-05; OOS 2024-05-05 → 2025-05-05
+      - Fold 4: train 2021-05-05 → 2025-05-05; OOS 2025-05-05 → 2026-05-05
 
-    ROBUST     = passes BOTH OOS windows
-    WEAK       = passes one OOS window only
-    OVERFIT    = passes IS but neither OOS
-    FAILS_BOTH = fails IS and OOS
-    INSUFFICIENT_OOS_DATA = < 30 OOS trades (not a failure, just insufficient)
+    Expanding-window (training set grows each fold). Disjoint 1y OOS periods.
+
+    Verdict mapping (4-fold):
+      ROBUST                = passes ≥3 of 4 OOS folds
+      WEAK                  = passes 1-2 of 4 OOS folds
+      OVERFIT               = passes IS but 0 OOS folds
+      FAILS_BOTH            = fails IS and OOS
+      INSUFFICIENT_OOS_DATA = ≥3 folds with <30 OOS trades
+
+    History: legacy 2-window IS/OOS pre-DEC-505 replaced Pass 53 Day 9 evening
+    2026-05-07 per WF-1 owner directive ("Approve all"; same-commit per DEC-594).
     """
     from backtest.config import get_sector_criteria
 
     df_trades = df_trades.copy()
     df_trades["entry_date"] = pd.to_datetime(df_trades["entry_date"]).dt.date
 
-    # Two walk-forward windows
-    windows = [
-        {
-            "name":     "window_1",
-            "is_end":   date(2023, 12, 31),
-            "oos_start": date(2024, 1, 1),
-            "oos_end":   date(2024, 12, 31),
-        },
-        {
-            "name":     "window_2",
-            "is_end":   date(2024, 12, 31),
-            "oos_start": date(2025, 1, 1),
-            "oos_end":   date(2026, 3, 31),
-        },
+    # 4-fold walk-forward per DEC-505 (1y warmup + 4 OOS folds × 1y each)
+    fold_starts = [
+        date(2022, 5, 5),
+        date(2023, 5, 5),
+        date(2024, 5, 5),
+        date(2025, 5, 5),
     ]
+    train_start = date(2021, 5, 5)
+    windows = []
+    for i, fold_start in enumerate(fold_starts, start=1):
+        # OOS = 1 year from fold_start (or backtest-end if fold_start + 1y exceeds)
+        oos_end = date(fold_start.year + 1, fold_start.month, min(fold_start.day, 28))
+        # Cap last fold at 2026-05-05 (DEC-505 backtest end)
+        if oos_end > date(2026, 5, 5):
+            oos_end = date(2026, 5, 5)
+        windows.append({
+            "name":      f"fold_{i}",
+            "train_start": train_start,
+            "is_end":    date(fold_start.year, fold_start.month, fold_start.day - 1) if fold_start.day > 1 else date(fold_start.year, fold_start.month - 1, 28),
+            "oos_start": fold_start,
+            "oos_end":   oos_end,
+        })
 
     MIN_OOS_TRADES = 30
 
@@ -206,17 +223,16 @@ def run_walk_forward(df_trades: pd.DataFrame) -> dict:
                 "wr_degradation":  wr_deg,
             }
 
-        # Overall verdict
-        if insufficient_count == 2:
+        # Overall verdict (4-fold per DEC-505)
+        n_folds = len(windows)
+        if insufficient_count >= n_folds - 1:  # 3+ folds insufficient out of 4
             verdict = "INSUFFICIENT_OOS_DATA"
-        elif passes_count == 2:
+        elif passes_count >= 3:  # ≥3 of 4 folds pass = ROBUST
             verdict = "ROBUST"
-        elif passes_count == 1:
-            verdict = "WEAK"
-        elif insufficient_count == 1 and passes_count == 1:
+        elif passes_count >= 1:  # 1-2 folds pass = WEAK
             verdict = "WEAK"
         else:
-            # Check if IS passes at all
+            # 0 OOS folds passed; check if any IS passes
             is_any_pass = any(w["is_pass"] for w in window_results.values())
             verdict = "OVERFIT" if is_any_pass else "FAILS_BOTH"
 
@@ -233,7 +249,7 @@ def run_walk_forward(df_trades: pd.DataFrame) -> dict:
     insuff   = sum(1 for r in results.values() if r["verdict"] == "INSUFFICIENT_OOS_DATA")
 
     logger.info(
-        "Walk-forward (2 windows): %d strategies | ROBUST=%d | OVERFIT=%d | WEAK=%d | INSUFF=%d",
+        "Walk-forward (4 folds per DEC-505): %d strategies | ROBUST=%d | OVERFIT=%d | WEAK=%d | INSUFF=%d",
         total, robust, overfit, weak, insuff,
     )
     return {
@@ -241,9 +257,12 @@ def run_walk_forward(df_trades: pd.DataFrame) -> dict:
         "summary": {
             "total": total, "robust": robust, "overfit": overfit,
             "weak": weak, "insufficient_oos_data": insuff,
-            "window_1": "IS=2022-2023, OOS=2024",
-            "window_2": "IS=2022-2024, OOS=2025-Mar2026",
+            "fold_1": "train=2021-05 → 2022-05; OOS=2022-05 → 2023-05",
+            "fold_2": "train=2021-05 → 2023-05; OOS=2023-05 → 2024-05",
+            "fold_3": "train=2021-05 → 2024-05; OOS=2024-05 → 2025-05",
+            "fold_4": "train=2021-05 → 2025-05; OOS=2025-05 → 2026-05",
             "min_oos_trades": MIN_OOS_TRADES,
+            "spec": "DEC-505 4-fold expanding window (1y warmup + 4×1y OOS)",
         },
     }
 

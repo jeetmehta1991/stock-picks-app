@@ -91,14 +91,19 @@ def test_sector_map_loads_from_csv():
 
 
 def test_walk_forward_two_windows():
-    """B1 regression: walk-forward must compute two windows."""
+    """B1 regression: walk-forward must compute 4 folds per DEC-505.
+
+    Pass 53 Day-9 v2 update (2026-05-07): replaced legacy 2-window expectation
+    with DEC-505 4-fold expanding-window per WF-1 owner-approved migration.
+    Test name retained for git-blame stability; assertions updated.
+    """
     import pandas as pd
     import numpy as np
     from backtest.engine.improvements import run_walk_forward
 
-    # Create synthetic trade log spanning 2022-2026
+    # Create synthetic trade log spanning 2021-05 → 2026-05 per DEC-505 window
     n = 500
-    dates = pd.date_range("2022-01-01", periods=n, freq="5B")
+    dates = pd.date_range("2021-05-05", periods=n, freq="5B")
     df = pd.DataFrame({
         "strategy":   ["test_strat"] * n,
         "entry_date": [d.date() for d in dates],
@@ -112,12 +117,14 @@ def test_walk_forward_two_windows():
     assert "strategy_results" in result
     strat = result["strategy_results"].get("test_strat", {})
     assert "windows" in strat, "windows key missing"
-    assert "window_1" in strat["windows"], "window_1 missing"
-    assert "window_2" in strat["windows"], "window_2 missing"
+    # DEC-505 4-fold: assert all 4 fold names present
+    assert "fold_1" in strat["windows"], "fold_1 missing (DEC-505 4-fold)"
+    assert "fold_4" in strat["windows"], "fold_4 missing (DEC-505 4-fold)"
+    assert len(strat["windows"]) == 4, f"expected 4 folds, got {len(strat['windows'])}"
     assert "verdict" in strat
     assert strat["verdict"] in ["ROBUST", "WEAK", "OVERFIT",
                                  "FAILS_BOTH", "INSUFFICIENT_OOS_DATA"]
-    print("✅ Walk-forward computes two windows")
+    print("✅ Walk-forward computes 4 folds per DEC-505")
 
 
 def test_confidence_intervals():
