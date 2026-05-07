@@ -13,7 +13,8 @@ import pandas as pd
 import pytest
 
 REPO = Path(__file__).resolve().parents[2]
-QUIVER_DIR = REPO / "backtest" / "data" / "cache" / "quiver"
+# Pass 53 H5 fix 2026-05-06: migrated from backtest/data/cache/quiver/ to data_prefetch/quiver/
+QUIVER_DIR = REPO / "data_prefetch" / "quiver"
 
 
 def _first_parquet(d: Path) -> Path:

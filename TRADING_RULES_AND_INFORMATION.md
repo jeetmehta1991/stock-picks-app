@@ -1358,7 +1358,7 @@ All DEC-528-538 are RESOLVED-DECIDED at backlog level (Pass 53 owner-approved 20
 
 ## 9. Circuit Breakers
 
-### 9.1 Levels 1-5 (per DEC-314 + DEC-315)
+### 9.1 Levels 1-6 (per DEC-314 + DEC-315 + DEC-515 Pass 53 + DEC-586 priority fix)
 
 | Level | Trigger | Action |
 |---|---|---|
@@ -1367,10 +1367,13 @@ All DEC-528-538 are RESOLVED-DECIDED at backlog level (Pass 53 owner-approved 20
 | **Level 3** | Intraday -7% from open | Intraday halt (NYSE Rule 80B trigger 1) |
 | **Level 4** | Intraday -13% from open | Extended halt (NYSE Rule 80B trigger 2) |
 | **Level 5** | Intraday -20% from open | Market halt (NYSE Rule 80B trigger 3) |
+| **Level 6** (DEC-515 Pass 53 NEW) | Portfolio DD-from-rolling-peak ≥X% | Halt all new entries until peak recovers Y%; symmetric to Layer 5 entry gating + DEC-516 regime-flip exit |
 
-**Documentation note (per DEC-126 + DEC-314):** Levels 3-4 were documented but NOT implemented in original code; implementation Sprint 2 per DEC-314.
+**Priority order (DEC-586 Pass 53 fix; sequential check per DEC-315):** Level 6 → Level 5 → Level 4 → Level 3 → Level 2 → Level 1 (most-severe first; supersession).
 
-**Source:** DEC-314, DEC-315
+**Documentation note (per DEC-126 + DEC-314 + DEC-515 Pass 53):** Levels 3-4 + Level 6 were documented but NOT implemented in original code; implementation Sprint 2 (Phase 0.C) per DEC-314 + Pass 53 R7-10 §5.1 16-bug list.
+
+**Source:** DEC-314, DEC-315, DEC-515 (Pass 53 Level 6 add), DEC-586 (Pass 53 priority fix), DEC-587 (regime-block reconciliation §11.1)
 
 ### 9.2 Sequential Check (per DEC-315)
 
