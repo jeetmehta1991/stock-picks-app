@@ -455,18 +455,98 @@ This section catalogues ALL signals consumed by strategies, agents, and the scre
 - **Dividend changes** — Polygon `/v3/reference/dividends` — yield, growth rate, special dividends
 - **Fundamentals (Phase 1B)** — income / balance sheet / cashflow per DEC-484 (SEC EDGAR direct parsing); operating margin, debt/equity, FCF, ROIC, EBITDA margin, etc. Full set TBD per Sprint 4 SEC EDGAR delivery.
 
-### 2A.7 Signal Universe Totals
+### 2A.7 Category 7 — Universe-level signals (NEW Pass 53 owner-approved 2026-05-06; DEC-511)
+
+**Architectural distinction:** Categories 1-6 above are **per-ticker** signals (compute on a single ticker's df, return per-ticker values). Category 7 is **universe-level** signals (compute across the entire universe at a given as-of date, return per-(ticker, date) ranks/scores OR universe-wide aggregates). Different harness, different cache key, different PIT discipline.
+
+**Why a new category:** Layer 6A cross-sectional strategies (8 classes; IDs 172-179 per [STRATEGY_ROSTER_FULL.md](STRATEGY_ROSTER_FULL.md) Layer 6A) + Layer 6E breadth strategies (4 classes; IDs 189-192) are **structurally unimplementable** without a separate harness. Per-ticker `compute_all_signals(df)` cannot answer "where does AAPL rank in the universe today?" — that requires reading the entire universe at as-of T.
+
+#### Category 7 modules
+
+| # | Module | Function signature | Output shape | Cache key | Update cadence |
+|---|---|---|---|---|---|
+| 7.1 | **Cross-sectional rank** | `compute_cross_sectional_ranks(universe, as_of) → pd.DataFrame` | rows = tickers in PIT-active universe at as_of; cols = `mom_12_1_pct, ret_1m_pct, idio_vol_30d_pct, realized_vol_60d_pct, beta_252d_pct, dollar_volume_20d_pct, quality_composite_pct, factor_score_pct` (all 0-100 percentile ranks within universe) | (as_of_date) | Daily — recomputed at end-of-day for next-day strategies |
+| 7.2 | **Breadth indicators** | `compute_breadth_indicators(universe, as_of) → dict` | `{percent_above_50sma, percent_above_200sma, advance_decline_line, ad_ratio_10d, mcclellan_oscillator, mcclellan_summation, zweig_thrust_active, percent_at_20d_highs, percent_at_20d_lows, new_52w_highs_count, new_52w_lows_count}` | (as_of_date) | Daily |
+| 7.3 | **Correlation matrix** | `compute_correlation_matrix(universe, lookback=60, as_of) → pd.DataFrame` | N×N pairwise return correlations (lookback-day window ending at as_of); used by DEC-509 strategy correlation cluster + Layer 3B Pairs/Stat Arb (DEC-367) + portfolio-level position-correlation gates | (as_of_date, lookback) | Weekly recompute (correlations are slow-moving) |
+| 7.4 | **Factor exposures** | `compute_factor_exposures(universe, as_of, factors=[market, size, value, quality, momentum]) → pd.DataFrame` | rows = tickers; cols = factor loadings via rolling regression on factor returns (FF3 + momentum + quality proxies) | (as_of_date) | Weekly — factor loadings drift slowly |
+| 7.5 | **Sector relative strength** | `compute_sector_rs(universe, as_of, lookback=63) → pd.DataFrame` | rows = sectors (per F-005 18-classifier sector taxonomy DEC-499); cols = 1m/3m/6m/12m return vs SPY; ranks across sectors | (as_of_date, lookback) | Daily |
+
+#### PIT discipline (universe-level)
+
+**Universe-as-of-date semantics:** All Category 7 functions read the **as-of-date PIT-active universe** (per F-005 5-bucket DEC-477/483/494/495/103/104 + DEC-504 multi-tier precedence), NOT today's universe. A ticker that was in T1a on 2023-06-30 but delisted by 2026-05-06 must appear in 2023-06-30 cross-sectional ranks; today's universe is irrelevant.
+
+**Lookahead trap (CRITICAL):** Cross-sectional momentum/vol/beta computations need the ticker's price history **up to as_of**, not full history. Implementation must filter ticker price series to `df[df.index <= as_of]` before any rank computation. Otherwise you leak future returns into the rank calculation.
+
+**Cache invalidation:** Universe-level signal cache keys are `(as_of_date, signal_module, [optional lookback])`. Recompute when:
+- Underlying ticker prices revise (rare; Polygon-revision audit pending DEC-512)
+- Universe membership changes (T1a/T1c monthly refresh per DEC-374)
+- Module logic changes (versioned via hash)
+
+#### Output schema standardization
+
+Category 7 outputs use a strict signal contract:
+```
+{
+  "value": float,         # raw value (e.g. -0.05 for -5% momentum)
+  "normalized_score": float,  # 0-100 percentile rank within universe
+  "regime_tag": str,      # current F-006 regime
+  "as_of": date,          # PIT date
+  "age_days": int,        # 0 for daily-recomputed
+  "source": str,          # module name
+  "pit_safe": bool,       # always True for Category 7
+}
+```
+
+This contract is recommended for Categories 1-6 too (per signal-universe review architectural callout); rolling adoption.
+
+#### Source code paths (Sprint pre-Phase-1A implementation)
+
+- 7.1: `backtest/signals/universe_ranks.py` (NEW)
+- 7.2: `backtest/signals/breadth.py` (NEW)
+- 7.3: `backtest/engine/correlation_matrix.py` (NEW; consumed by DEC-509 cluster + portfolio gate)
+- 7.4: `backtest/signals/factor_exposures.py` (NEW)
+- 7.5: `backtest/signals/sector_rs.py` (NEW)
+
+**All NEW for Sprint pre-Phase-1A.** Aggregator: `compute_universe_signals(universe, as_of)` returns merged dict of all 5 modules.
+
+#### Strategies blocked on Category 7
+
+| Strategy | Blocked-by | Layer |
+|---|---|---|
+| `xs_momentum_12_1` (172) | 7.1 | 6A |
+| `xs_short_term_reversal` (173) | 7.1 | 6A |
+| `xs_residual_momentum` (174) | 7.1 + 7.4 | 6A |
+| `xs_idiosyncratic_vol` (175) | 7.1 + 7.4 | 6A |
+| `xs_quality_minus_junk` (176) | 7.1 + 7.4 (+ Sprint 4 fundamentals) | 6A |
+| `xs_betting_against_beta` (177) | 7.1 + 7.4 | 6A |
+| `xs_dual_momentum_absolute_gate` (178) | 7.1 + 7.5 | 6A |
+| `xs_stock_vs_sector_rs` (179) | 7.5 | 6A |
+| `breadth_thrust_zweig` (189) | 7.2 | 6E |
+| `new_highs_lows_divergence` (190) | 7.2 | 6E |
+| `mcclellan_extreme` (191) | 7.2 | 6E |
+| `percent_above_50sma_extreme` (192) | 7.2 | 6E |
+| `pair_trade_z_score` (108) | 7.3 | 3B |
+| `cointegrated_basket_revert` (109) | 7.3 | 3B |
+| `sector_pair_momentum` (110) | 7.5 | 3B |
+| `etf_basket_arb` (111) | 7.3 | 3B |
+| All DEC-509 cluster analysis | 7.3 | methodology gate |
+
+**16 strategies + 1 methodology gate** are gated on Category 7. **Sprint pre-Phase-1A blocker.**
+
+### 2A.8 Signal Universe Totals (post Pass 53 Q1+Q2+Q3)
 
 | Category | Count | Status |
 |---|---|---|
 | 1. Technical Indicators | ~220 | ✅ ACTIVE Stage 2 (DEC-298 raw OHLCV cache) |
 | 2. Smart Money composite + adjacents | ~10 composite/raw labels | ✅ ACTIVE Stage 2 (DEC-450 Quiver paid) |
-| 3. Options Intelligence | ~5 planned | ⏸ Stage 3+ scope |
-| 4. Macro Filters | ~15 | ✅ ACTIVE Stage 2 (DEC-301/407+448 FRED+ALFRED) |
+| 3. Options Intelligence | ~5 planned | ⏸ Stage 3+ scope (DEC-506 deferred subscription) |
+| 4. Macro Filters | ~17 (15 + VIX3M + VVIX per DEC-513) | ✅ ACTIVE Stage 2 (DEC-301/407+448); +2 PENDING DEC-513 |
 | 5. Sentiment Signals | ~5 | ✅ ACTIVE Stage 2 (DEC-389/390/391/333/407+448) |
 | 6. Company / Fundamental Signals | ~15 (full set Sprint 4) | ⏸ PARTIAL Stage 2 — full Sprint 4 DEC-484 |
+| **7. Universe-level signals (NEW DEC-511)** | **~25-30 fields across 5 modules** | 🔴 NOT STARTED — Sprint pre-Phase-1A blocker per DEC-511 |
+| **+ DEC-513 P1 signal additions** | **+10 fields** (realized vol 3 horizons; beta 3 windows; overnight/intraday split 2; gap classification 5) | 🔴 NOT STARTED — Sprint pre-Phase-1A per DEC-513 |
 
-**Total active in Stage 2 backtest:** ~265-275 signal fields (matches CLAUDE.md "274 signal fields" reference). Stage 3+ adds Category 3 options + completes Category 6 fundamentals.
+**Total active in Stage 2 backtest (current state):** ~270-280 signal fields. **Total post Sprint pre-Phase-1A (Category 7 + DEC-513 additions):** ~315-325 signal fields. Stage 3+ adds Category 3 options + completes Category 6 fundamentals → ~340+.
 
 ### 2A.8 Cross-References
 
@@ -485,6 +565,74 @@ This section catalogues ALL signals consumed by strategies, agents, and the scre
 - Category 4: `backtest/data/macro.py`
 - Category 5: `backtest/data/sentiment.py`
 - Category 6: distributed across `smart_money.py:88-253` (analyst) + `fetcher.py` (yfinance fundamentals — DEPRECATED per DEC-443) + Sprint 4 SEC EDGAR build
+- Category 7 (NEW DEC-511): `backtest/signals/universe_ranks.py` + `breadth.py` + `factor_exposures.py` + `sector_rs.py` + `backtest/engine/correlation_matrix.py` (all NEW Sprint pre-Phase-1A)
+
+### 2A.9 DEC-512 — PIT-fundamentals filing-date audit (Pre-Phase-1A blocker; Pass 53 Q2 owner-approved 2026-05-06)
+
+**Trigger:** External AI 2026-05-06 review identified that fundamentals data has a TWO-DATE pattern: `filing_date` (when SEC publicly knew the data) vs `period_of_report_date` (the period the data describes). Backtests that join fundamentals on `period_of_report_date` leak future information — at as_of=2024-03-31, you can't use Q1-2024 numbers that will only be filed on 2024-05-15.
+
+**This is the #1 source of fundamentals lookahead bias** in real-world backtests.
+
+#### Audit checklist (pre-Phase-1A blocker)
+
+| # | Audit item | Verification method | Status |
+|---|---|---|---|
+| 1 | Polygon financials cache uses `filing_date` (not `period_of_report_date`) for backtest as-of cutoff | Inspect `data_prefetch/polygon/financials/{TICKER}.parquet` schema; verify `filing_date` column populated; verify consumer code (Sprint 4 parser) joins on `filing_date <= as_of` | 🔴 PENDING |
+| 2 | SEC EDGAR Form 4 cache (Sprint 4 parser) preserves both `transactionDate` AND `filing_date` (4-day SEC window) | Inspect `data_prefetch/sec_edgar/4/{TICKER}.parquet`; consumer joins on `filing_date <= as_of` for material-event-driven strategies; `transactionDate <= as_of` for insider-action-driven strategies | 🔴 PENDING |
+| 3 | SEC EDGAR 8-K cache uses `filing_date` for material-event timing | Same pattern | 🔴 PENDING |
+| 4 | SEC EDGAR SC 13D/G uses `filing_date` (not the holding date in the form) | Same pattern | 🔴 PENDING |
+| 5 | Polygon earnings dates: announced-future earnings dates available historically as-of-prior-date | Test: `query_earnings_dates(ticker='AAPL', as_of='2023-09-15')` returns the 2023-Q4 earnings date IF announced before 2023-09-15. Currently UNKNOWN behavior. | 🔴 PENDING — critical for any pre-earnings strategy |
+| 6 | Quiver insiders cache `Date` (transaction) vs Form 4 `filing_date`: confirm Quiver returns transaction dates and consumer adds 1-4 day lag for filing window per DEC-318 N+1 | Inspect Quiver insiders global.parquet; compare to SEC EDGAR Form 4 for same insider/ticker/date | 🔴 PENDING |
+| 7 | Universal `signal_age_days` field populated per category | Schema audit; rollout per DEC-513 | 🔴 PENDING |
+
+#### Targeted fix scope (post-audit)
+
+If audit reveals lookahead bias:
+- **Code fix in consumer modules** (`smart_money.py`, `macro.py`, `sentiment.py`, `fetcher.py`) — change join keys from `period_of_report_date` to `filing_date`
+- **Add `signal_age_days` field universally** — every signal output includes it
+- **Add `pit_safe: bool` flag** — strategies can require `pit_safe=True` to gate
+
+**Effort:** ~1 day audit (item 1-7 verification) + ~1-2 days targeted code fixes (depends on findings).
+
+**Phase 1A cannot run** until audit complete + bugs fixed. Per DEC-512.
+
+### 2A.10 DEC-513 — P1 signal universe additions (Pre-Phase-1A; Pass 53 Q3 owner-approved 2026-05-06)
+
+**Trigger:** External AI 2026-05-06 review identified 7 P1 (high-priority) signal additions that unblock Layer 6 strategies. Owner-approved.
+
+#### Additions
+
+| # | Signal | Category | Function | Output | Strategies unblocked |
+|---|---|---|---|---|---|
+| 1 | **Realized vol** (3 horizons) | §2A.1.4 ext. | `compute_realized_vol(df) → {realized_vol_10d, realized_vol_20d, realized_vol_60d}` (annualized stddev of daily returns) | 3 fields per ticker | 6B realized_vol_regime_short (182); BAB 6.6; idio-vol 6.4; vol-targeting position sizing |
+| 2 | **Rolling beta** (3 windows) | §2A.1.4 ext. | `compute_betas(df, benchmarks=[SPY, sector_ETF]) → {beta_60d, beta_120d, beta_252d, sector_beta_60d, sector_beta_120d, sector_beta_252d}` | 6 fields per ticker | 6A.3 residual momentum; 6A.6 BAB; market-neutral DEC-141/142 |
+| 3 | **Factor exposures** (FF3 + momentum + quality proxies) | §2A.7.4 (Cat 7) | `compute_factor_exposures(universe, as_of)` — rolling regression on factor returns | 5 fields per (ticker, as_of) | 6A.3 residual momentum; 6A.5 quality-minus-junk; 6A.6 BAB |
+| 4 | **Correlation matrix module** | §2A.7.3 (Cat 7) | `compute_correlation_matrix(universe, lookback=60, as_of)` — pairwise return correlations | N×N matrix | DEC-509 cluster analysis; 3B Pairs/Stat Arb (4 strategies); portfolio-level position-correlation gates |
+| 5 | **Overnight / intraday split** | §2A.1.7 NEW | `compute_overnight_intraday_split(df) → {overnight_return, intraday_return, overnight_intraday_ratio_20d}` | 3 fields per ticker | 6C overnight_only_long (183); overnight_drift_after_strong_close (186) |
+| 6 | **Gap classification** | §2A.1.8 NEW | `compute_gaps(df) → {gap_size_pct, gap_size_bucket [small/medium/large], gap_filled_T1, gap_filled_T3, gap_filled_T5}` | 5 fields per ticker | 6C gap_fade_small (184); gap_and_go_large (185); gap_fill_reversal (187) |
+| 7 | **VIX3M + VVIX** in macro feed | §2A.4 ext. | Add VIX3M (3-month VIX) + VVIX (vol of VIX) series to FRED 50 prefetch (or CBOE direct if FRED unavailable); add `vix_term_structure_ratio = VIX/VIX3M` derived signal | 3 fields universe-wide | 6B vix_term_contango_long (180); vix_backwardation_short (181) |
+| 8 | **52-week distance continuous** | §2A.1.1 ext. | `compute_extremes(df) → {dist_from_52w_high_pct, dist_from_52w_low_pct, dist_from_20d_high_pct, dist_from_20d_low_pct, dist_from_252d_high_atr, ...}` | ~8 fields per ticker | Multiple Layer 1+6 strategies use 52w-distance implicitly today |
+| 9 | **FINRA short interest %** | §2A.6 ext. (free FINRA bi-monthly) | New `data_prefetch/finra/short_interest/` cache + `compute_short_interest(ticker)` | `{short_interest_pct, days_to_cover, si_change_30d}` | 6D `insider_cluster_sell_short` (188); future Ortex squeeze prep |
+| 10 | **Universal `signal_age_days` field** | All 7 categories | Schema additive; every signal output gets `age_days: int` populated | 0 new fields; metadata field on existing | Strategy harness can age-weight or reject stale data uniformly |
+
+#### Implementation effort
+
+- Signals 1-2 + 5-6 + 8: **~1-2 days each in `technical.py`** (mechanical compute additions)
+- Signals 3-4: **~3-5 days** (depends on Category 7 architecture per DEC-511)
+- Signal 7: **~1 day** (CBOE feed extension to macro.py FRED 50-series)
+- Signal 9: **~2 days** (FINRA prefetch + parser)
+- Signal 10: **~1-2 days** (schema additive across all signal modules)
+
+**Total: ~12-18 days engineering work.** Sprint pre-Phase-1A. Blocks Phase 1A run.
+
+#### Cross-references
+
+- DEC-511 (Category 7 architectural prerequisite for items 3-4)
+- DEC-512 (PIT-fundamentals audit — affects signal contract item 10)
+- DEC-509 (correlation cluster — depends on item 4)
+- DEC-505 (4-fold walk-forward — interacts with all per-ticker signals)
+- F-003 + F-009 (signal universe + passing criteria affected)
+- Layer 6A (8 strategies) + 6B (3) + 6C (5) + 6D (1) + 6E (4) + 3B Pairs (4) + DEC-509 — all gated on DEC-513 implementation
 
 ---
 

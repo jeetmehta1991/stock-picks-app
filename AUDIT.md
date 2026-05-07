@@ -29649,3 +29649,107 @@ Owner asked for signal-universe review take after this commit. Per separate dire
 - L94 / L143 (philosophy framing preserved in earlier AUDIT entries; corrected forward-only)
 
 *Per CHECKLIST #1 (Q1+Q2+Q3 owner-approved); #25 (numbering collision surfaced + fixed; 17 external proposals rejected with transparency); #43 (cross-doc atomically — F-002 + F-009 + ROSTER + AUDIT); #45 (this); #51 (scope strict — Q1+Q2+Q3 only this commit; signal review take next); #58 (atomic codification — Layer 5 + Layer 6 + 2 DECs in single commit); #67/#67.b (per-turn doc sync).*
+
+---
+
+## Pass 53 — Signal-universe review Q1+Q2+Q3 atomic — DEC-511/512/513 — 2026-05-06
+
+### Trigger
+
+Owner directive 2026-05-06 (after signal-universe review take, owner answered "Q1 Q2 Q3 A"):
+- Q1 → DEC-511: Category 7 architectural split (universe-level signals)
+- Q2 → DEC-512: PIT-fundamentals filing-date audit (pre-Phase-1A blocker)
+- Q3 → DEC-513: P1 signal additions (realized vol + beta + factor exposures + correlation module + overnight/gap split + VIX3M/VVIX + FINRA SI + 52w-distance + universal `signal_age_days`)
+
+### DEC-511 — Category 7 universe-level signals (architectural split; RESOLVED-DECIDED)
+
+**Problem:** F-003 §2A had 6 per-ticker categories. Layer 6A cross-sectional (8 strategies; IDs 172-179) + Layer 6E breadth (4 strategies; IDs 189-192) + Layer 3B Pairs/Stat Arb (4 strategies; IDs 108-111) are **structurally unimplementable** without a separate harness. Per-ticker `compute_all_signals(df)` cannot answer "where does AAPL rank in the universe today?" — that requires reading the entire universe at as-of T.
+
+**Resolution:** Promote universe-level signals to **Category 7** with own harness/cache/PIT discipline. Spec in `TRADING_RULES_AND_INFORMATION.md` §2A.7.
+
+**5 Category 7 modules:**
+1. `compute_cross_sectional_ranks(universe, as_of)` — daily percentile ranks (mom_12_1, ret_1m, idio_vol_30d, realized_vol_60d, beta_252d, dollar_volume_20d, quality_composite, factor_score)
+2. `compute_breadth_indicators(universe, as_of)` — McClellan Osc/Sum, Zweig thrust, % above 50/200 SMA, A/D line, new-highs/lows
+3. `compute_correlation_matrix(universe, lookback=60, as_of)` — N×N pairwise return correlations
+4. `compute_factor_exposures(universe, as_of)` — FF3 + momentum + quality factor loadings
+5. `compute_sector_rs(universe, as_of, lookback=63)` — sector relative strength vs SPY
+
+**PIT discipline:** Universe-as-of-date semantics — read PIT-active universe at as_of (per F-005 5-bucket DEC-477/483/494/495/103/104 + DEC-504 multi-tier precedence), NOT today's universe.
+
+**21 strategies + DEC-509 cluster gated on DEC-511 implementation.**
+
+**Effort:** 5 NEW source files (`signals/{universe_ranks,breadth,factor_exposures,sector_rs}.py` + `engine/correlation_matrix.py`); ~5-7 days Sprint pre-Phase-1A.
+
+### DEC-512 — PIT-fundamentals filing-date audit (pre-Phase-1A blocker; RESOLVED-DECIDED)
+
+**Problem:** Fundamentals data has TWO-DATE pattern: `filing_date` (when SEC publicly knew) vs `period_of_report_date` (period described). Joining on `period_of_report_date` leaks future information. **#1 source of fundamentals lookahead bias** in real-world backtests.
+
+**7-item audit checklist** (in `TRADING_RULES_AND_INFORMATION.md` §2A.9):
+1. Polygon financials use `filing_date` not `period_of_report_date` for as-of cutoff
+2. SEC EDGAR Form 4 preserves both `transactionDate` + `filing_date` (4-day SEC window)
+3. SEC EDGAR 8-K uses `filing_date` for material-event timing
+4. SEC EDGAR SC 13D/G uses `filing_date` not holding date
+5. Polygon earnings dates: announced-future earnings available historically as-of-prior-date (CRITICAL for any pre-earnings strategy)
+6. Quiver insiders transaction-date-vs-filing-date semantics
+7. Universal `signal_age_days` field populated per category
+
+**Effort:** ~1 day audit + ~1-2 days targeted code fixes (depends on findings). Phase 1A cannot run until audit complete + bugs fixed.
+
+### DEC-513 — P1 signal universe additions (pre-Phase-1A; RESOLVED-DECIDED)
+
+**Trigger:** External AI 2026-05-06 review identified 7 high-priority P1 signal additions that unblock Layer 6 strategies + DEC-509 + market-neutral DEC-141/142.
+
+**10 additions** (spec in `TRADING_RULES_AND_INFORMATION.md` §2A.10):
+1. **Realized vol** (3 horizons: 10/20/60-day) — `compute_realized_vol(df)` in `technical.py` ext.
+2. **Rolling beta** (3 windows: 60/120/252-day) vs SPY + sector ETFs — `compute_betas(df)` ext.
+3. **Factor exposures** (FF3 + momentum + quality) — Category 7 §7.4
+4. **Correlation matrix** (N×N) — Category 7 §7.3 (used by DEC-509 cluster + Pairs/Stat Arb)
+5. **Overnight / intraday split** (C[t-1]→O[t] gap, O[t]→C[t] intraday) — `compute_overnight_intraday_split(df)` NEW §2A.1.7
+6. **Gap classification** (size buckets + fill status T+1/T+3/T+5) — `compute_gaps(df)` NEW §2A.1.8
+7. **VIX3M + VVIX** in macro feed — `macro.py` ext.
+8. **52-week distance continuous** (`dist_from_52w_high_pct`, etc.) — §2A.1.1 ext.
+9. **FINRA short interest %** (free bi-monthly) — new `data_prefetch/finra/short_interest/`
+10. **Universal `signal_age_days` field** — schema additive across all 7 categories
+
+**Effort:** ~12-18 days engineering total. Sprint pre-Phase-1A.
+
+**Strategies unblocked by DEC-513:** Layer 6A (8) + 6B (3) + 6C (5) + 6D (1) + 6E (4) + 3B Pairs (4) + DEC-509 = **25 strategies + 1 methodology gate**.
+
+### F-003 signal universe expansion summary
+
+| Stage | Field count |
+|---|---|
+| Pre-Pass-53 (current state) | ~270-280 |
+| Post DEC-511 + DEC-513 (Sprint pre-Phase-1A) | ~315-325 (+45-55) |
+| Post Stage 3+ (Cat 3 options + Cat 6 fundamentals full) | ~340+ |
+
+### Aggregate Sprint pre-Phase-1A scope expansion
+
+**Sprint pre-Phase-1A now expanded:**
+- DEC-511 Category 7 implementation (~5-7 days)
+- DEC-512 PIT-fundamentals audit + targeted fixes (~2-3 days)
+- DEC-513 P1 signal additions (~12-18 days)
+- = **~20-28 days of pre-Phase-1A work** before Phase 1A backtest can run cleanly
+
+**Strategies / methodology gates blocked:**
+- 21 strategies + 1 cluster gate (DEC-509) gated on DEC-511 (overlap with DEC-513)
+- All fundamentals strategies (Layer 1 buyback_announcements, Layer 2B earnings, Layer 6A xs_quality_minus_junk) gated on DEC-512 audit
+
+### Files modified
+
+- `TRADING_RULES_AND_INFORMATION.md` — §2A.7 Category 7 (full spec); §2A.8 totals updated; §2A.9 DEC-512 audit checklist; §2A.10 DEC-513 P1 additions
+- `CANONICAL_FACTS.md` F-003 — extended with Category 7 + DEC-513 rows; field count 270-280 → 315-325 post-implementation
+- `AUDIT.md` — this narrative
+
+### Cross-references
+
+- DEC-511 / DEC-512 / DEC-513 (this turn — pre-Phase-1A blockers)
+- DEC-509 (Q2 prior turn correlation cluster) + DEC-510 (Q3 Deflated Sharpe) — both depend on DEC-511 §7.3
+- F-002 strategy roster (21 strategies blocked on DEC-511; 25 on DEC-513)
+- F-005 universe (universe-as-of-date PIT semantics for Category 7)
+- F-006 regime classifier (orthogonal to Category 7)
+- F-009 passing criteria (DEC-510 6th gate; DEC-512 fundamentals correctness)
+- DEC-261 PIT N+1 lag rule (DEC-512 extends to fundamentals)
+- DEC-305 RAISE-not-WARNING on lookahead (DEC-512 makes this enforceable for fundamentals)
+
+*Per CHECKLIST #1 (Q1+Q2+Q3 A approved this turn); #25 (3 architectural DECs codified from prior signal-review take); #43 (cross-doc atomically — TRADING_RULES §2A + CANONICAL_FACTS F-003 + this narrative); #45 (this); #51 (scope strict — DEC drafting + spec only; implementation Sprint pre-Phase-1A); #58 (3 DECs + Category 7 spec in single commit); #67/#67.b (per-turn doc sync).*
