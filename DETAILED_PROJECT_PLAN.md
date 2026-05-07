@@ -42,7 +42,7 @@
 - §2.1 What Stage 2 is trying to achieve
 - §2.2 The dimensional verdict cube (the central artifact)
 - §2.3 Universe architecture (3 tiers)
-- §2.4 Strategy roster (4 layers, ~108-118 strategies)
+- §2.4 Strategy roster (4 layers, ~199 strategies (per CANONICAL_FACTS F-002 Pass 53 + STRATEGY_ROSTER_FULL.md))
 - §2.4.5 Exit method roster (DEC-067 canonical, 17 methods)
 - §2.4.6 Pre-trade filters
 - §2.5 Signal universe (~220 fields per ticker per day)
@@ -277,7 +277,9 @@ Phasing: Sprint 0A.0-0A.10 (see ENGINEERING_REGISTER for sub-phase detail). Effo
 
 **Goal:** Empirically validate the strategy roster across a dimensional verdict cube using walk-forward validation + A/B testing of agent overlay vs rules-only. Produce per-cell verdicts (PASS/FAIL/INSUFFICIENT_SAMPLE) that feed a live decision lookup table for Stage 3.
 
-**Effort:** ~310-385 engineering days realistic; ~125-160 days minimum critical path.
+**Effort:** ~319-400 engineering days realistic (Pass 53 R7-05 fix recompute from sub-phase table: 20.5+8+25.5+62.25+96+28+37+41.75 = 319 low; 26.5+11+30.5+76.75+108.5+38+55+54.25 = 400.5 high; was "310-385"); ~125-160 days minimum critical path. Pre-Pass-53 figure preserved as historical note per L143.
+
+**Budget reconciliation (Pass 53 R7-04 fix):** $75-225 (DEC-472/473 expected spend for 300 candidates × $0.25/propagate) and $300 (DEC-059 hard cap) are NOT contradictory: $75-225 = expected actual A/B propagate spend; $300 = budget HARD CAP that triggers `budget_tracker.py` halt. Headroom of $75-225 within $300 covers cost overruns from prompt-cache misses + retry storms + Sonnet upgrade contingency. Owner-funded budget envelope = $300; expected drawdown = $75-225.
 
 **Sub-phases (covered in Parts 3-12):**
 
@@ -293,7 +295,7 @@ Phasing: Sprint 0A.0-0A.10 (see ENGINEERING_REGISTER for sub-phase detail). Effo
 | 1C+ — Strategy Categories | Part 10 | Sprint 8 | ~37-55d |
 | (Sprint 4 — DEC-410 audit) | Part 11 | Sprint 4 | ~41.75-54.25d |
 | (Sprint 5 — Universe Mgmt) | Part 12 | Sprint 5 | ~13.5-15.5d |
-| 1B-α run + ongoing | end of Part 9 | Sprint 9 | ~6d (orchestration; compute ~37-40h wall) |
+| 1B-α run + ongoing | end of Part 9 | Sprint 9 | ~6d (orchestration; compute ~20-32h per DEC-505 4-fold (Pass 53 R7-06 fix; was 37-40h pre-DEC-505 6-fold) wall) |
 
 **Stage 2 verdict criteria** (Part 13 covers in detail):
 - Sharpe ≥ 1.0 OOS (DEC-269)
@@ -422,33 +424,43 @@ If any of these three produce empty results (no PASS cells, no Sharpe edge, A/B 
 
 The cube is the heart of Stage 2. Every other phase serves the cube either by feeding it data, populating it, applying methodology to it, or visualizing it.
 
-**Cube definition (revised per DEC-471 PROPOSED — reduced from 17+ dims to 8 core dims):**
+**Cube definition (Pass 53 R7-01 + R7-02 + R7-09 P0 fix — 5 primary cube dims + 12 drilldown facets per DEC-569; strategy axis updated to 199 per Pass 53 STRATEGY_ROSTER_FULL roster expansion to Layer 1.I shorts + Layer 6):**
+
+**Primary cube (5 dims, faceted in dashboard view):**
 
 | # | Dimension | Levels | Why it matters |
 |---|---|---|---|
-| 1 | Strategy | 119 (Layer 1+2+3+4 from STRATEGY_REGISTER) | The thing being tested |
+| 1 | Strategy | 199 (Layer 1 110 + Layer 1.I 38 shorts + Layer 2A 12 + 2B 4 + 2C 5 + 3A 20 + 3B 21 + Layer 6 27 — see CANONICAL_FACTS F-002 + STRATEGY_ROSTER_FULL.md) | The thing being tested |
 | 2 | Market regime | 4 (calm/neutral/volatile/crisis per DEC-106) | Strategies that work calm may fail volatile |
 | 3 | Sector | 11 GICS | Tech vs Energy vs Financials may have different signal-to-noise |
-| 4 | Market cap band | 3 (mega/large/mid) | Mid-caps less efficient; large more efficient |
-| 5 | Vol band | 3 (low/medium/high VIX) | Vol regime affects mean-reversion vs trend |
-| 6 | Hold period band | 3 (short ≤3d / medium 4-10d / long ≥11d) | Different exit dynamics |
-| 7 | Universe tier | 3 (Tier 1 S&P 500 / Tier 2 spinoffs/IPOs / Tier 3 momentum) | Liquidity and efficiency differ |
-| 8 | Smart money signal present | 2 (yes/no per DEC-124 confluence) | Smart money should add edge |
+| 4 | Universe tier | 5 (T1a S&P 500 / T1c NDX / T1 ETFs / T2 spinoffs/IPOs / T3 momentum per DEC-504) | Liquidity and efficiency differ; T3-over-T1 precedence per DEC-504 |
+| 5 | Smart money signal present | 2 (yes/no per DEC-124 confluence) | Smart money should add edge |
 
-**Cell count:** 119 × 4 × 11 × 3 × 3 × 3 × 3 × 2 = 254,016 maximum cells.
+**Drilldown facets (12 dims, queryable but NOT faceted in cube primary view — recorded as TRADE-LEVEL METADATA per DEC-189 trade outcome log):**
 
-**Expected populated cells:** ~20-30% (50K-75K) — many cells will be empty because trades simply don't occur in some combinations (e.g., a mid-cap technology calm-regime short-hold smart-money-no scenario may never trigger any of 119 strategies).
+Market cap band, vol band, hold period band, momentum band, liquidity band, entry trigger type, exit method (17 per DEC-067/517-538), news event present, earnings proximity, ICT/SMC signal type, Layer 5 regime-eligibility flag, Layer 6 sub-category.
 
-**Why we reduced from 17+ to 8:** Original cube design (TRADING_RULES §21.1) had 17+ dimensions. Adversarial Pass 4 (GAP 130) showed: 119 strategies × 65K cells × 30 trades min × 6 OOS folds = 1.4 BILLION trades required. Universe provides 720K ticker-days. Math impossible. Reduction to 8 core dims with eliminated dimensions becoming TRADE-LEVEL METADATA (recorded in DEC-189 trade outcome log) brings the math back to feasibility.
+**Cell count (primary cube only):** 199 × 4 × 11 × 5 × 2 = 87,560 maximum cells (5-dim primary cube replacing prior 8-dim 254K design per DEC-569).
 
-**Eliminated dimensions (now trade metadata, not faceted):**
+**Expected populated cells:** ~25-35% (~22K-30K populated) — Layer 1.I short-side strategies + Layer 6 universe-level signals expand expected populated coverage relative to long-only baseline; many cells still empty because trades don't occur in all combinations (e.g., crisis-regime + low-vol-band drilldown is structurally rare).
+
+**Why 5 primary + 12 drilldown:** Original cube design (TRADING_RULES §21.1) had 17+ dimensions. Adversarial Pass 4 (GAP 130) and Pass 53 R7-01 audit showed: with 199 strategies × 8 dims × 30 trades min × 4 OOS folds (DEC-505), faceted-cube math exceeds universe ticker-days. DEC-569 reduction to 5 primary cube dims (with 12 dims demoted to drilldown trade-level metadata) brings cube populating math back to feasibility while preserving dimensional analysis via drilldown query.
+
+**Sample-size requirement reconciliation:** 87,560 cells × 30 trades minimum × 4 OOS folds = ~10.5M trades. Universe provides ~700K ticker-days × 5y Polygon Stocks Starter window per DEC-505 = ~3.5M ticker-days. Cube populating ratio ≈ 33%; ~22K-30K populated cells is feasible. Cells failing 30-trade minimum mark INSUFFICIENT_SAMPLE per F-009 Gate 1.
+
+**Drilldown dimensions (recorded per trade, queryable but not faceted in primary cube — per DEC-569 5+12 reconciliation):**
 - Momentum band — recorded per trade, queryable but not a cube axis
-- Liquidity band — used as pre-trade filter (DEC-321/366), not faceted
+- Liquidity band — used as pre-trade filter (DEC-321/366), drilldown only
 - Entry trigger type — recorded
-- Exit method — recorded (17 methods per DEC-067)
+- Exit method — recorded (17 methods per DEC-067/517-538)
 - News event present — recorded
 - Earnings proximity — already a filter via DEC-348 event suppression
 - ICT/SMC signal type — per-strategy attribute
+- Market cap band — drilldown (was prior cube axis pre-DEC-569)
+- Vol band — drilldown (was prior cube axis pre-DEC-569)
+- Hold period band — drilldown (was prior cube axis pre-DEC-569)
+- Layer 5 regime-eligibility flag — drilldown (Pass 53 schema overlay per STRATEGY_ROSTER_FULL Layer 5)
+- Layer 6 sub-category — drilldown for Layer 6 universe-level signals (Pass 53 addition)
 
 **Per-cell metrics (TRADING_RULES §22.4):** roi_pct, sharpe, sortino, reward_risk_ratio, profit_factor, expectancy, win_rate, n_trades, avg_win, avg_loss, avg_hold_days, max_drawdown, calmar, max_adverse_excursion_avg, max_favourable_excursion_avg, roi_after_costs, sharpe_at_5bps/10bps/20bps, bonferroni_p (replaced by FDR q), psr, t_stat, ci_95.
 
@@ -468,34 +480,47 @@ The cube is the heart of Stage 2. Every other phase serves the cube either by fe
 - **INSUFFICIENT_SAMPLE** — Gate 1 fails; cell suspended pending more trades (re-evaluated post-Phase-1B-α)
 - **FAIL_STAT** — Gates 2/3/4 fail; cell rejected for statistical reasons
 
-## §2.3 Universe architecture (3 tiers)
+## §2.3 Universe architecture (5 tiers — Pass 53 R7-07 fix; was 3 tiers)
 
-The universe defines the trading population — which tickers are even eligible to be traded. 3 tiers exist because liquidity, history, and efficiency differ enough to warrant different rules.
+The universe defines the trading population — which tickers are even eligible to be traded. 5 tiers exist (Pass 53 expansion per DEC-365 + DEC-483 + DEC-118 + DEC-103 + DEC-104) because liquidity, history, and efficiency differ enough to warrant different rules. T1b R1000-non-S&P deferred to Stage 3 per DEC-365.
 
-**Tier 1 — S&P 500 + Selected ETFs (~509 tickers):**
-- Composition: S&P 500 constituents per `Tier 1A Universe_SP500 Tickers_Jan 2020 to May 2026.csv` (DEC-303 — PIT-correct historical membership; supersedes static 482-ticker CSV per DEC-477) + selected sector/macro ETFs (per DEC-118: VIX, DXY, GLD, oil, sector ETFs, TLT, HYG, SHY)
+**Universe-count reconciliation (Pass 53 R7-07 fix vs §7.5.1):** Stage 2 active universe = T1a 503 + T1c 134 + T1ETF 27 + T2 ~282 + T3 ~993 ≈ 1,937 unique resolved tickers per Master Dedup CSV with `resolved_tier` column (DEC-504). Prior "1015 tickers" reflected pre-DEC-504 union of T1a + T1c + ETFs; "509 tickers" reflected T1a-only. Both are subsets — actual Stage 2 universe is 1,937 unique.
+
+**Tier 1A — S&P 500 + Selected ETFs (614 historical / 503 active + 27 ETFs):**
+- Composition: S&P 500 constituents per `Tier 1A Universe_SP500 Tickers_Jan 2020 to May 2026.csv` (DEC-303 — PIT-correct historical membership 614 rows: 503 active + 111 historical removed-during-window; DEC-477 — supersedes static 482-ticker CSV) + selected sector/macro ETFs per `Tier 1 ETFs Universe_Sector and Broad-Market ETFs_May 2026.csv` (DEC-118 + DEC-494 — 27 ETFs: VIX, DXY, GLD, oil, sector ETFs, TLT, HYG, SHY, etc.)
 - Liquidity floor: $10M ADV (per DEC-366)
 - History requirement: 250 trading days
 - Why this tier: most-liquid US equities; highest signal-to-noise for technical strategies
 
-**Tier 2 — Spinoffs / IPOs (variable, ~10-30 tickers active):**
-- Composition: recent spinoffs (per DEC-378/379/380 — SEC EDGAR Form 10-12B scrape) + recent IPOs (per DEC-103/373/374)
+**Tier 1C — NASDAQ-100 non-S&P (134 active + 27 historical = 161 total per DEC-303 / Pass 53 sync):**
+- Composition: NDX-non-S&P-overlap constituents per `Tier 1C Universe_NASDAQ-100 Tickers_Jan 2020 to May 2026.csv` (DEC-483 — Pass 53 RESOLVED 161 rows: 101 currently active = Nasdaq official 101 verified via 3-way Slickcharts/Wikipedia/Nasdaq IR cross-check; 60 historical removed-during-window; multi-period rows for CSGP/TTWO/WDC/SPLK)
+- Liquidity floor: $10M ADV
+- History requirement: 250 trading days
+- Why this tier: tech-heavy benchmark; complements T1a sector coverage
+
+**Tier 1B — Russell 1000 non-S&P (deferred to Stage 3 per DEC-365):**
+- Composition: R1000 constituents excluding S&P 500 + NDX-non-S&P overlap
+- Status: DEFERRED to Stage 3 papertrading per DEC-365 (LSEG free tier inadequate; T1a 503 + T1c 101 + ETFs 27 = ~632 instruments already 9× Phase 1A v3 archive baseline; T1b expansion premature for Stage 2 backtest validity)
+
+**Tier 2 — Spinoffs / IPOs (~282 unique resolved tickers, variable per as_of):**
+- Composition: recent spinoffs (per DEC-378/379/380 — Polygon corp-actions screener + SEC EDGAR Form 10-12B scrape) + recent IPOs (per DEC-103/373/374) — file `Tier 2 Universe_Spinoffs and Recent IPOs_Feb 2010 to May 2026.csv`
 - Liquidity floor: $5M ADV
 - Market cap minimum: $2B
 - History requirement: 20 days minimum (with `LIMITED_HISTORY` flag respected by strategies that need longer history)
 - Why this tier: spinoffs and IPOs often have inefficient pricing; specific strategies target this
 
-**Tier 3 — Momentum Top-100 Watchlist:**
-- Composition: top 100 momentum-screen tickers refreshed monthly (per DEC-104/375/376/377)
+**Tier 3 — Momentum Top-100 Watchlist (~993 unique resolved tickers across 72 monthly snapshots):**
+- Composition: top 100 momentum-screen tickers refreshed monthly via DEC-496 J-T 12-1 broad-market screener (per DEC-104/364/375/376/377) — file `Tier 3 Universe_Momentum Top-100_Jun 2022 to May 2026.csv` (1923 period rows / 1220 unique)
 - Liquidity floor: $5M ADV
 - Market cap minimum: $300M
 - History requirement: 60 days
 - Refresh: monthly via `.github/workflows/refresh_momentum_watchlist.yml`
 - Why this tier: momentum strategies need a candidate pool that updates with regime; static lists go stale
+- T3-over-T1 precedence per DEC-504: when ticker is PIT-active in multiple tiers, T3 > T2 > T1c > T1a > T1ETF for runtime rules
 
 **Universe build pipeline (Sprint 5, Part 12):** Each tier has a build function that runs at backtest start (or daily in live) producing a list of tickers eligible for that tier on that as_of date. PIT-correctness applies — at as_of=2020-06-15, Tier 1 should reflect S&P 500 membership AS OF that date, not current.
 
-## §2.4 Strategy roster (4 layers, ~108-118 strategies)
+## §2.4 Strategy roster (4 layers, ~199 strategies (per CANONICAL_FACTS F-002 Pass 53 + STRATEGY_ROSTER_FULL.md))
 
 The strategy roster is the COMPLETE LIST of distinct strategies that fire on the universe. Each strategy is a self-contained signal generator with entry/exit/sizing rules.
 
@@ -745,7 +770,7 @@ End-to-end flow during Phase 1B-α run (Sprint 9):
 DAILY SCAN (one trading day at a time, walk-forward across OOS folds)
                     │
                     ▼
-RULES-BASED SCREEN — fires 109-119 strategies on Tier 1/2/3 universe
+RULES-BASED SCREEN — fires 199 strategies (per CANONICAL_FACTS F-002 Pass 53 + STRATEGY_ROSTER_FULL.md) on Tier 1/2/3 universe
                     │
                     ▼
 SCREEN OUTPUT — ranked candidate list (ticker, strategy, preliminary tier,
@@ -995,7 +1020,7 @@ Sprint 9 verdict ──► Stage 2 → 3 transition (Part 13)
 - **TRADINGAGENTS_DATA_AUDIT.md** — agent data dependency mapping (revised Pass 53 for new endpoint scope)
 - **API_AUDIT.md** — per-API endpoint inventory (Polygon, Quiver Trader, FRED/ALFRED, AAII, CNN F&G, CFTC COT, SEC EDGAR, Apewisdom, pytrends)
 - **THEME_X53_SEQUENCING.md** — Pass 53 sequencing detail (Sprint 0A.0-0A.10)
-- **STRATEGY_REGISTER.md** — strategy roster (Layer 1+2+3+4, ~108-118 strategies)
+- **STRATEGY_REGISTER.md** — strategy roster (Layer 1+2+3+4, ~199 strategies (per CANONICAL_FACTS F-002 Pass 53 + STRATEGY_ROSTER_FULL.md))
 - **ENGINEERING_REGISTER.md** — sprint planning, effort estimates, pyramid coverage
 - **BUG_REGISTER.md** — bug log including BUG-271/272/273 (smart_money silent gaps Pass 53)
 
@@ -1292,10 +1317,10 @@ Sprint 1 is RESOLVED-IMPLEMENTED when ALL of these are demonstrably true:
 | Polygon API key | Owner subscription | Required Day 1 |
 | FRED API key | Free signup | Required Day 8 |
 | `Tier 1A Universe_SP500 Tickers_Jan 2020 to May 2026.csv` | DEC-303 SEC filings + Wayback Machine archive | Pre-existing; verify in Sprint 0 |
-| AAII URL accessible | https://www.aaii.com/sentimentsurvey | Sprint 0 verify in Codespace allowlist |
+| AAII URL accessible | https://www.aaii.com/sentimentsurvey | Sprint 0 verify on local VS Code (Pass 53 R7-03 fix; was Codespace allowlist) |
 | CNN F&G URL accessible | https://production.dataviz.cnn.io/index/fearandgreed/graphdata | Sprint 0 verify |
 | Owner-confirmed cache directory path | `/workspaces/stock-picks-app/data/cache/` | None |
-| Codespace disk available | ≥ 32GB free | Sprint 0 verify (Stocks Starter 5-year cache ≈ 8-12GB) |
+| Local VS Code disk available (Pass 53 R7-03 fix; was Codespace disk) | ≥ 32GB free | Sprint 0 verify (Stocks Starter 5-year cache ≈ 8-12GB) |
 
 **Outputs (consumed by downstream sprints):**
 
@@ -1332,7 +1357,7 @@ Sprint 1 is RESOLVED-IMPLEMENTED when ALL of these are demonstrably true:
 - [ ] Day 6: S&P 500 bulk prefetch (background; 8-12GB)
 - [ ] Day 7: prefetch verification (no missing tickers)
 - [ ] Day 8: FRED 9-series cache + ALFRED PIT
-- [ ] Day 9: AAII + CNN F&G refresh scripts; verify Codespace allowlist
+- [ ] Day 9: AAII + CNN F&G refresh scripts; verify domains accessible on local VS Code (Pass 53 R7-03 fix; was Codespace allowlist)
 - [ ] Day 9: GitHub Actions workflow for refreshes
 - [ ] Day 10: Polygon earnings cache + Polygon reference replacing yfinance.info
 
@@ -2384,9 +2409,9 @@ closed = portfolio.close_position('AMD', exit_price=Decimal('110.00'),
 
 ## §5.1 What — concrete deliverable in plain English
 
-Phase 0.C produces **a stable backtest engine** by fixing 14 critical engine bugs that have accumulated through pre-Pass-52 development. These bugs cause anything from incorrect P&L on closed trades (missing exit method implementations) to silent test failures (NameError in close_trade) to circuit breakers that don't fire correctly. Without Sprint 2, the engine is unreliable; cube populated by an unreliable engine produces invalid verdict.
+Phase 0.C produces **a stable backtest engine** by fixing 16 critical engine bugs (Pass 53 R7-10 fix; was 14 — added Bug 15 Circuit Breaker Level 5 single-name DD per DEC-515 part 1; Bug 16 Circuit Breaker Level 6 portfolio DD-from-peak per DEC-515 part 2) that have accumulated through pre-Pass-52 development. These bugs cause anything from incorrect P&L on closed trades (missing exit method implementations) to silent test failures (NameError in close_trade) to circuit breakers that don't fire correctly. Without Sprint 2, the engine is unreliable; cube populated by an unreliable engine produces invalid verdict.
 
-Concrete deliverables — the 14 critical engine bugs (per ADVERSARIAL_AUDIT GAP 26 enumeration):
+Concrete deliverables — the 16 critical engine bugs (per ADVERSARIAL_AUDIT GAP 26 enumeration + Pass 53 R7-10 + DEC-515 additions):
 
 1. **`close_trade` NameError fix (DEC-293)** — close_trade function had reference to undefined variable; fixes silent test failure.
 
@@ -2416,7 +2441,13 @@ Concrete deliverables — the 14 critical engine bugs (per ADVERSARIAL_AUDIT GAP
 
 14. **`rsi_extreme` exit method missing (DEC-340)** — DEC-067 lists 17 exit methods; rsi_extreme variant had no implementation.
 
+15. **Circuit Breaker Level 5 single-name DD missing (DEC-515 part 1; Pass 53 R7-10 fix — was missing from prior §5.1 14-bug list)** — TRADING_RULES §9 specifies 6-level breakers post Pass 53 (was 4). Level 5 = single-name DD halt: positions with ≥X% intraday/multi-day DD trigger automatic close at next bar regardless of strategy exit logic. Implementation: `backtest/engine/circuit_breakers/level_5.py` + orchestrator priority update.
+
+16. **Circuit Breaker Level 6 portfolio DD-from-peak missing (DEC-515 part 2; Pass 53 R7-10 fix — was missing from prior §5.1 14-bug list)** — Level 6 = portfolio-wide DD-from-peak halt: when portfolio cumulative DD ≥X% from rolling peak, halt all new entries until peak recovers Y%. Symmetric to Layer 5 entry gating + DEC-516 regime-flip exit. Implementation: `backtest/engine/circuit_breakers/level_6.py` + portfolio-state-tracker integration with Sprint 3 Portfolio class.
+
 Plus minor adjustments and dependency cleanups bundled with these fixes per BUG_REGISTER tier-A bugs.
+
+**Circuit breaker priority (Pass 53 DEC-586 fix):** Level 6 → Level 5 → Level 4 → Level 3 → Level 2 → Level 1 (most-severe first per DEC-315 sequencing rule, extended to 6 levels).
 
 ## §5.2 Why — how this advances Stage 2 toward verdict
 
@@ -2426,7 +2457,7 @@ Specifically:
 
 - **Bug 1-3 (close_trade / ClosedTrade / exit_hybrid_50pct):** Closed trade records had inconsistent fields → cube cell population wrong → metrics wrong.
 - **Bug 4 (trailing stop ATR refresh):** Trailing stops too tight or too loose → exit prices systematically biased → returns biased.
-- **Bug 5-7 (circuit breakers Level 3/4/sequence):** During market stress periods (a meaningful fraction of OOS folds), backtest doesn't apply correct halt behavior → over-trading during 2008/2020/2022 stress → returns biased.
+- **Bug 5-7 + Bug 15-16 (circuit breakers Level 3/4/sequence + Level 5 single-name DD + Level 6 portfolio DD-from-peak per Pass 53 R7-10 + DEC-515):** During market stress periods (a meaningful fraction of OOS folds), backtest doesn't apply correct halt behavior → over-trading during 2008/2020/2022 stress → returns biased. Without Level 5, single-name catastrophic DD (e.g., -80% gap) doesn't auto-close → unbounded loss; without Level 6, portfolio compounding DD beyond owner-tolerance not halted.
 - **Bug 8 (fractional Kelly):** A/B framework can't test fractional Kelly arm.
 - **Bug 9 (slippage TOD):** Slippage too low or too high vs reality → returns biased.
 - **Bug 10 (borrow cost double-app):** Short trades over-cost → short strategies systematically penalized.
@@ -2502,10 +2533,12 @@ For each bug, fix is local to the relevant module. Test for the fix verifies beh
 | 11 | Bug 12: volume_climax exit method |
 | 12 | Bug 13: fixed_3r_2r → fixed_target rename |
 | 13 | Bug 14: rsi_extreme exit method |
-| 14-18 | Integration tests + acceptance reproduction |
-| 19-20 | PR review + merge |
+| 14 | Bug 15: Circuit Breaker Level 5 single-name DD (DEC-515 part 1; Pass 53 R7-10 add) |
+| 15 | Bug 16: Circuit Breaker Level 6 portfolio DD-from-peak (DEC-515 part 2; Pass 53 R7-10 add) |
+| 16-20 | Integration tests + acceptance reproduction (Pass 53 DEC-586 6-level priority test) |
+| 21-22 | PR review + merge |
 
-**Total: ~25.5-30.5d realistic** (some bugs more involved than 1d; e.g., circuit breaker Level 3/4 may take 2-3d each given 4-level orchestration logic).
+**Total: ~27.5-32.5d realistic (Pass 53 R7-10 fix; was 25.5-30.5d pre-Bug-15/16; +2d for Level 5/6 implementation + priority orchestrator update per DEC-586).** Circuit breakers Level 3/4/5/6 may each take 2-3d given 6-level orchestration logic.
 
 **Parallel-ability:**
 - Sprint 2 ↔ Sprint 1: **parallel** — Sprint 2 doesn't touch Sprint 1's data layer; Sprint 1 doesn't touch Sprint 2's engine code
@@ -2578,6 +2611,7 @@ Sprint 2 is RESOLVED-IMPLEMENTED when ALL of these are demonstrably true:
 - Bug 3 (exit_hybrid_50pct): 0.5d
 - Bug 4 (trailing stop ATR refresh): 1d
 - Bugs 5+6+7 (circuit breakers Level 3/4 + sequence): 3-4d
+- Bugs 15+16 (circuit breakers Level 5 single-name DD + Level 6 portfolio DD-from-peak per Pass 53 R7-10 + DEC-515): 2-3d
 - Bug 8 (fractional Kelly): 1.5d
 - Bug 9 (slippage TOD): 1.5d
 - Bug 10 (borrow cost): 1d
@@ -2656,7 +2690,8 @@ For each of 14 bugs, dedicated test file:
 - [ ] Day 1: Bug 1 + 2
 - [ ] Day 2: Bug 3
 - [ ] Day 3: Bug 4
-- [ ] Day 4-6: Bugs 5/6/7 (circuit breakers)
+- [ ] Day 4-6: Bugs 5/6/7 (circuit breakers Level 3/4/sequence)
+- [ ] Day 14-15: Bugs 15/16 (circuit breakers Level 5 single-name DD + Level 6 portfolio DD-from-peak per Pass 53 R7-10 + DEC-515)
 - [ ] Day 7: Bug 8
 
 **Week 2 (Days 8-14):**
@@ -3221,7 +3256,7 @@ Phase 1A is the **rules-only execution layer** running the full strategy roster 
 
 Concrete deliverables:
 
-1. **Rules-based screener executes on full universe** — all ~109-119 strategies fire on the universe defined by `Tier 1A Universe_SP500 Tickers_Jan 2020 to May 2026.csv` (DEC-477) + Russell 1000 + NASDAQ 100 (DEC-483) + ETFs (DEC-118), totaling ~1015 tickers
+1. **Rules-based screener executes on full universe** — all ~199 strategies (per CANONICAL_FACTS F-002 Pass 53 + STRATEGY_ROSTER_FULL.md) fire on the universe defined by `Tier 1A Universe_SP500 Tickers_Jan 2020 to May 2026.csv` (DEC-477) + Russell 1000 + NASDAQ 100 (DEC-483) + ETFs (DEC-118), totaling ~1015 tickers
 2. **Smart money signals integrated** — DEC-124 cross-source confluence + DEC-332 weights + DEC-450 Quiver paid (insider/congressional/13F/analyst-changes/gov-contracts) feed into screener; smart money is a SIGNAL not an agent
 3. **Liquidity floor applied** — DEC-366 ADV thresholds; tier-specific ($10M Tier 1 / $5M Tier 2 / $5M Tier 3)
 4. **Per-ticker risk gates enforced** — DEC-018 5-day cooldown + DEC-135 -10% rolling 30d max-loss cap
@@ -3310,7 +3345,7 @@ End of all folds: Phase 1A trade_log.parquet ready for Phase 1A-α cube populato
 
 ## §7.5.5 Done criteria
 
-- [ ] All ~109-119 strategies fire correctly across walk-forward folds with --no-agents flag
+- [ ] All ~199 strategies (per CANONICAL_FACTS F-002 Pass 53 + STRATEGY_ROSTER_FULL.md) fire correctly across walk-forward folds with --no-agents flag
 - [ ] Smart money confluence operational (DEC-124 + DEC-332 + DEC-450)
 - [ ] Liquidity floor + event suppression + per-ticker risk gates enforced
 - [ ] Trade outcome log produced with `arm=A_rules_only` tag; Parquet ready for Phase 1A-α
@@ -3334,8 +3369,8 @@ End of all folds: Phase 1A trade_log.parquet ready for Phase 1A-α cube populato
 - Mitigation: explicit fold boundary tests in Phase 0.E catch-mechanism (Sprint 6); PIT regression suite
 
 **Risk R-4: Phase 1A run wall time exceeds estimate**
-- 4 folds × 1015 tickers × 119 strategies = potentially 30-40h wall time, not 20-25h
-- Mitigation: parallel folds (Codespace 8-core); progress monitor with ETA
+- 4 folds × 1015 tickers × 199 strategies = 24-32h wall time per DEC-505 4-fold (Pass 53 R7-02 + R7-06 fix; was 30-40h pre-DEC-505 6-fold × 119 strategies)
+- Mitigation: parallel folds (local VS Code 8+ core laptop per Pass 53 R7-03 fix; was Codespace 8-core); progress monitor with ETA
 
 ## §7.5.7 Cost
 
@@ -3582,7 +3617,7 @@ Owner reviews; rules-only Sharpe ≥ 0.7 OOS gate decision → proceed to Phase 
 - Mitigation: this is a legitimate empirical outcome; owner gate decision protects $300 budget
 
 **Risk R-3: Cube populator memory at full universe scale**
-- 1015 tickers × 119 strategies × ~100 trades each = potential memory pressure
+- 1015 tickers × 199 strategies (Pass 53 R7-02 fix) × ~100 trades each = potential memory pressure (recompute Sprint 9 dry-run capacity test)
 - Mitigation: streaming aggregation; incremental writes
 
 ## §7.6.7 Cost
@@ -3695,11 +3730,11 @@ Concrete deliverables:
 ## §7.7.2 Why — how this advances Stage 2 toward verdict
 
 Phase 1A-β catches infrastructure failures at zero API cost. Without it:
-- Cache bug discovered mid-1B-α run = $300 + 37-40h re-run after fix
+- Cache bug discovered mid-1B-α run = $300 + 20-32h per DEC-505 4-fold (Pass 53 R7-06 fix; was 37-40h pre-DEC-505 6-fold) re-run after fix
 - PIT regression discovered mid-1B-α = same
 - Memory ceiling crash mid-1B-α = same
 
-1A-β cost: ~6-8h wall + 0 API spend. Insurance value: $300 + 37-40h potential re-run cost. **ROI overwhelming.**
+1A-β cost: ~6-8h wall + 0 API spend. Insurance value: $300 + 20-32h per DEC-505 4-fold (Pass 53 R7-06 fix; was 37-40h pre-DEC-505 6-fold) potential re-run cost. **ROI overwhelming.**
 
 ## §7.7.3 How
 
@@ -3741,7 +3776,7 @@ backtest/phase_1a_beta/
 - This IS the purpose of 1A-β; failure here = success of 1A-β catching it
 
 **Risk R-2: Wall time exceeds 6-8h estimate**
-- Mitigation: progress monitor with ETA; parallel folds across Codespace cores
+- Mitigation: progress monitor with ETA; parallel folds across local VS Code laptop cores (Pass 53 R7-03 fix; was Codespace cores)
 
 ## §7.7.7 Cost
 
@@ -3799,7 +3834,7 @@ Phase 1A-β IS the integration test for the Phase 1B-α infrastructure.
 
 **Step 6:** Owner reviews 1A-β report; authorizes Phase 1B-α $300 budget commitment.
 
-**Without Phase 1A-β:** JBLU cache corruption discovered mid-1B-α with $147 spent + 23h wall time invested. Re-run cost ~$300 + 37-40h.
+**Without Phase 1A-β:** JBLU cache corruption discovered mid-1B-α with $147 spent + 23h wall time invested. Re-run cost ~$300 + 20-32h per DEC-505 4-fold (Pass 53 R7-06 fix; was 37-40h pre-DEC-505 6-fold).
 
 ---
 
@@ -4256,10 +4291,10 @@ Concrete deliverables:
 2. **ICT/SMC Audit dashboard (DEC-200)** — focused view on Phase 0.D primitives: FVG detection accuracy, BOS/CHoCH validity, OB zone-bounce hit rates per ticker per timeframe; lets owner verify SMC strategies are firing correctly
 3. **Agent Overlay Analysis dashboard (DEC-201)** — A/B framework comparison view: per-arm Sharpe / DD / win rate / trade count; per-regime verdict (full-agent value-add vs rules-only); block-bootstrap CI overlap visualization; cost spent vs $300 budget
 
-**Sprint 9 run (~6d orchestration; ~37-40h wall compute):**
-4. **Phase 1B-α orchestrator** — `backtest/phase_1b_alpha/run.py` master script that executes the full walk-forward across all 6 OOS folds, all 119 strategies, all 3 A/B arms
+**Sprint 9 run (~6d orchestration; ~20-32h per DEC-505 4-fold (Pass 53 R7-06 fix; was 37-40h pre-DEC-505 6-fold) wall compute):**
+4. **Phase 1B-α orchestrator** — `backtest/phase_1b_alpha/run.py` master script that executes the full walk-forward across all 4 OOS folds (per DEC-505 4-fold; Pass 53 R7-06 fix; was 6 folds pre-DEC-505), all 199 strategies (Pass 53 R7-02 fix), all 3 A/B arms
 5. **Walk-forward fold execution** — DEC-109 spec: 5y train + 1y OOS × 6 folds. Train period populates strategy parameters; OOS period generates trades for cube
-6. **Parallel fold execution** — folds run in parallel processes (Codespace 8-core; up to 8 concurrent folds with file-locked cache)
+6. **Parallel fold execution** — folds run in parallel processes (local VS Code 8+ core laptop per Pass 53 R7-03 fix; was Codespace 8-core; up to 4 concurrent folds per DEC-505 with file-locked cache)
 7. **Trade outcome log** — per DEC-189 Pydantic schema; written to Parquet incrementally (avoid in-memory bloat per Sprint 7 R-4)
 8. **Cube populator end-of-run** — group trades by 8-dim cell coordinates; compute per-cell metrics suite (DEC-422)
 9. **5-Gate verdict assignment** — DEC-426 (Gate 1 n≥30, Gate 2 FDR q<0.10 hierarchical per DEC-470 PROPOSED, Gate 3 PSR≥0.95, Gate 4 t-stat≥3.4, Gate 5 R:R≥2.0)
@@ -4411,11 +4446,11 @@ Stage 2 → Stage 3 GO/NO-GO decision (Part 13)
 | Dashboards build | Sprint 7-8 | DEC-200 ICT/SMC Audit | 3d |
 | Dashboards build | Sprint 7-8 | DEC-201 Agent Overlay Analysis | 3-4d |
 | **Run pre-flight** | **Sprint 9 Day 1** | Verify all prior sprints RESOLVED-IMPLEMENTED; smoke test 1 fold 10 candidates | 1d |
-| **Run** | **Sprint 9 Days 2-5** | Parallel 6-fold execution wall-time ~37-40h | 4d wall (orchestration; mostly compute time) |
+| **Run** | **Sprint 9 Days 2-5** | Parallel 6-fold execution wall-time ~20-32h per DEC-505 4-fold (Pass 53 R7-06 fix; was 37-40h pre-DEC-505 6-fold) | 4d wall (orchestration; mostly compute time) |
 | Cube populate | Sprint 9 Day 5 | populator.py + verdict.py + ab/comparison.py + lookup | 1d |
 | Owner review | Sprint 9 Day 6 | Owner reviews dashboards; decision Stage 2 → 3 | — |
 
-**Total Phase 1B-α: ~28-38d engineering effort across Sprints 7-8-9; Sprint 9 dedicated run is ~6d engineering + ~37-40h compute time.**
+**Total Phase 1B-α: ~28-38d engineering effort across Sprints 7-8-9; Sprint 9 dedicated run is ~6d engineering + ~20-32h per DEC-505 4-fold (Pass 53 R7-06 fix; was 37-40h pre-DEC-505 6-fold) compute time.**
 
 **Blockers:**
 - **All Sprints 1-8 RESOLVED-IMPLEMENTED.** Phase 1B-α is the integration/run; if any prior sprint has open issues, run produces invalid results.
@@ -4427,7 +4462,7 @@ Stage 2 → Stage 3 GO/NO-GO decision (Part 13)
 **Parallel-ability:**
 - Dashboards build ↔ Sprint 7 toolkit work: **parallel** (different teams or interleaved by single solo dev; dashboards don't block toolkit)
 - Sprint 9 run is **inherently sequential** — must wait for all prior sprints
-- Within Sprint 9 run, folds parallelize across processes (8-core Codespace = up to 8 folds simultaneously, but only 6 folds total per DEC-109)
+- Within Sprint 9 run, folds parallelize across processes (8+ core local VS Code laptop per Pass 53 R7-03 fix; was 8-core Codespace; up to 4 folds simultaneously per DEC-505 4-fold; Pass 53 R7-06 fix supersedes prior DEC-109 6-fold)
 
 ## §9.5 Done criteria — verifiable acceptance
 
@@ -4436,7 +4471,7 @@ Phase 1B-α complete when ALL of these are demonstrably true:
 - [ ] Cube Explorer dashboard (DEC-199) loads cube.parquet; slices on all 8 dimensions; cell detail shows constituent trades; PASS/FAIL color coding correct
 - [ ] ICT/SMC Audit dashboard (DEC-200) shows FVG/BOS/CHoCH/OB primitives per ticker; manual spot-check on 5 known examples matches owner intuition
 - [ ] Agent Overlay Analysis dashboard (DEC-201) shows 3-arm comparison; CI overlap visualization; budget spend
-- [ ] Phase 1B-α orchestrator runs 6 folds × 119 strategies × 3 arms successfully end-to-end
+- [ ] Phase 1B-α orchestrator runs 4 folds × 199 strategies × 3 arms successfully end-to-end (Pass 53 R7-02 + R7-06 fix; was 6 folds × 119 strategies pre-DEC-505)
 - [ ] Trade outcome log Parquet produced for each fold; total trades > 1000 (sanity check that strategies fired)
 - [ ] cube.parquet populated; populated cell count between 20K-75K (expected range per §2.2)
 - [ ] verdict.parquet has each populated cell labeled PASS / FAIL_RR / INSUFFICIENT_SAMPLE / FAIL_STAT
@@ -4505,7 +4540,7 @@ Phase 1B-α complete when ALL of these are demonstrably true:
 - 6 folds × ~6-7 hours per fold (sequential) = 36-42h
 - With 6-process parallelization: ~6-8h wall time
 - Plus cube populate + verdict + dashboards: ~15h
-- **Total wall time: ~37-40h** (DEC-059 estimate)
+- **Total wall time: ~20-32h per DEC-505 4-fold (Pass 53 R7-06 fix; was 37-40h pre-DEC-505 6-fold)** (DEC-059 estimate)
 
 **Dollar cost:**
 - Anthropic API (TradingAgents propagate): up to $300 per DEC-059 budget
@@ -4577,7 +4612,7 @@ Phase 1B-α complete when ALL of these are demonstrably true:
 **Sprint 9 run:**
 - [ ] Day 1: pre-flight (all prior sprints RESOLVED-IMPLEMENTED; smoke test 1 fold)
 - [ ] Day 1: pre-fund $300 API budget; verify Anthropic API rate headroom
-- [ ] Day 2-5: parallel 6-fold execution; ~37-40h wall time
+- [ ] Day 2-5: parallel 6-fold execution; ~20-32h per DEC-505 4-fold (Pass 53 R7-06 fix; was 37-40h pre-DEC-505 6-fold) wall time
 - [ ] Day 5: cube populate + verdict + AB comparison + lookup export
 - [ ] Day 6: summary generation + owner dashboard review + Stage 2 → 3 decision
 
@@ -4697,7 +4732,7 @@ Total API cost: $284 / $300 budget — under cap ✓
 
 ## §10.1 What — concrete deliverable in plain English
 
-Phase 1C+ expands the strategy roster from the Phase 0 baseline (Layer 1 ~60 strategies) to the full Layer 1+2+3+4 roster (~109-119 strategies) by building strategy categories that didn't exist or were stubs in earlier sprints. This includes 8 chart pattern strategies, 5 strategy categories (calendar / index-rebalance / within-category extensions), 9 exit method variants, and the AEP breaker strategy. Plus the architectural decision on BUG-111 (break-and-retest variants for existing 25 breakout strategies).
+Phase 1C+ expands the strategy roster from the Phase 0 baseline (Layer 1 ~60 strategies) to the full Layer 1+2+3+4 roster (~199 strategies (per CANONICAL_FACTS F-002 Pass 53 + STRATEGY_ROSTER_FULL.md)) by building strategy categories that didn't exist or were stubs in earlier sprints. This includes 8 chart pattern strategies, 5 strategy categories (calendar / index-rebalance / within-category extensions), 9 exit method variants, and the AEP breaker strategy. Plus the architectural decision on BUG-111 (break-and-retest variants for existing 25 breakout strategies).
 
 Concrete deliverables:
 
@@ -5388,7 +5423,7 @@ Engine iterates eligible tickers; runs strategies
 **Dependencies:**
 - Sprint 1 OHLCV (for ADV computation)
 - Sprint 1 reference data (for cap + sector classification)
-- SEC EDGAR access (Codespace allowlist verified)
+- SEC EDGAR access (local VS Code — no allowlist needed per Pass 53 R7-03 fix; was Codespace allowlist verified)
 - Wayback Machine access (for Tier 1A Universe_SP500 Tickers_Jan 2020 to May 2026.csv backfill if needed)
 
 **Library dependencies:**
@@ -5425,7 +5460,7 @@ Engine iterates eligible tickers; runs strategies
 **Blockers:**
 - Sprint 1 OHLCV cache available (for ADV computation)
 - DEC-477 owner approval
-- SEC EDGAR allowlist verified in Codespace network settings
+- SEC EDGAR access verified on local VS Code (Pass 53 R7-03 fix; was Codespace network allowlist; no allowlist required for local VS Code)
 
 ## §12.5 Done criteria
 
@@ -5447,7 +5482,7 @@ Engine iterates eligible tickers; runs strategies
 ## §12.6 Risks
 
 **Risk R-1: SEC EDGAR allowlist or rate limiting**
-- SEC EDGAR has rate limits + may be in Codespace allowlist constraints
+- SEC EDGAR has rate limits (local VS Code per Pass 53 R7-03 fix; prior Codespace allowlist constraints moot)
 - Mitigation: Day 5 verify allowlist; if blocked, scrape locally on Windows + commit Parquet (manual refresh fallback)
 
 **Risk R-2: Tier 1A Universe_SP500 Tickers_Jan 2020 to May 2026.csv backfill incomplete**
@@ -6003,7 +6038,7 @@ Point-in-time correctness is non-negotiable. Every backtest data fetch must resp
 
 **Test discipline (Pass 53 DEC-503 + CHECKLIST #69):**
 - Unit + smoke + integration + system + functional + regression + data integrity + performance + acceptance per push
-- 36/36 existing tests must pass (`backtest/tests/test_unit.py` + `backtest/tests/test_integration.py`)
+- All tests pass per CANONICAL_FACTS F-007 (Pass 53 R7-08 fix; was hardcoded "36/36"; current count drifts as new test files added — `backtest/tests/test_unit.py` + `backtest/tests/test_integration.py` + Pass 53 additions: `test_smartmoneyconcepts_*` + `test_canonical_facts_alignment.py` + 16 BATCH 14 smoke/demo files)
 - Partial coverage non-compliant
 
 ## §17.5 Open architectural decisions

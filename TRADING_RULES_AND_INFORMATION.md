@@ -2893,6 +2893,100 @@ When tuned, ENGINEERING_REGISTER and AUDIT.md narrative entries cross-reference 
 
 ---
 
+### 23.6 Audit-Iteration Ceiling (DEC-589 — Pass 53 owner-approved 2026-05-06)
+
+**Decision:** Pass 53 review-cycle CLOSED after 7 external-AI adversarial reviews + ~155 findings + ~80 DECs codified. No additional audit cycles permitted before Phase 1A implementation begins.
+
+**Rationale (per Pass 53 owner Q2 = A approval):**
+
+7 review-takes have been completed across Pass 53:
+1. Strategy roster (Layer 1.I + Layer 6 expansion to 199 strategies)
+2. Signal universe (Category 7 universe-level signals; ~270-280 → ~315-325 fields)
+3. Exit-risk methodology (DEC-517-538 + 17 exit methods)
+4. Regime methodology (DEC-539-565 4-regime collapse + training/labeling protocol)
+5. Adversarial TRADING_RULES (DEC-566-580 cross-section + 7-gate Phase 1B-α verdict promotion)
+6. Adversarial Q4 endogeneity (DEC-581 5-component endogeneity-loop protection)
+7. Adversarial DETAILED_PROJECT_PLAN (CC-1 through CC-7 strategic risks; 10 P0 doc-drift bugs)
+
+Marginal utility of additional review cycles approached zero. Adversarial reviews 5-7 began surfacing audit-process risks (CC-2 audit-cycle non-convergence; CC-3 decision-to-code ratio of ∞:0). Continued auditing without implementation creates structural risk per CC-4 planning-paralysis pattern.
+
+**Boundary conditions (when ceiling can be relaxed):**
+
+The audit-iteration ceiling is suspended ONLY when one of these triggers fires:
+1. **Phase 1A empirical findings invalidate codified DEC** — if running code produces results that contradict a codified DEC's claimed effect, that specific DEC re-opens for revision (not the broader audit cycle).
+2. **Phase 1B-α 7-gate Phase 1B-α verdict produces zero PASS cells** — Stage 2 has failed and the entire methodology stack re-opens per Part 13.3.
+3. **Live data source breaks** — if a Sprint 0A prefetched data source (Polygon/Quiver/FRED/AAII/CNN F&G/CFTC/SEC EDGAR/Apewisdom/pytrends) becomes unavailable or schema changes, that specific data DEC re-opens.
+4. **Owner explicit directive** — owner can re-open audit at any time. The ceiling is operational discipline, not a contract.
+
+**What this rule blocks:**
+
+- ❌ "8th external-AI review of [doc X]" — explicitly disallowed before Phase 1A implementation begins.
+- ❌ "Re-audit [DEC-N] for completeness" — disallowed unless DEC actually fails empirical test.
+- ❌ "Pass 54 audit-only sprint" — disallowed; Pass 54 must contain code execution.
+- ❌ "Revisit [methodology Y] one more time" — disallowed unless boundary-condition trigger fires.
+
+**What this rule does NOT block:**
+
+- ✅ Inline P0 doc-drift fixes during implementation (e.g., R7-01 through R7-10 applied 2026-05-06)
+- ✅ DEC drafting that arises from running-code findings
+- ✅ Owner-directed scope expansions
+- ✅ Pre-flight CHECKLIST verification before each recommendation (CHECKLIST #45 + Pass 52 mandate)
+
+**Cross-references:**
+- AUDIT.md Pass 53 review-cycle FINAL narrative (closure entry)
+- AUDIT_BACKLOG.md (master registry of ~155 findings + ~80 DECs)
+- AUDIT_INDEX.md DEC-589 entry
+- DEC-590 (§23.7 below — Phase 1A implementation begin date 2026-05-15)
+
+**Status:** RESOLVED-DECIDED Pass 53 owner Q2 approval 2026-05-06.
+
+---
+
+### 23.7 Implementation Begin Date (DEC-590 — Pass 53 owner-approved 2026-05-06)
+
+**Decision:** Phase 1A implementation begins **2026-05-15** (9 days from Pass 53 review-cycle closure 2026-05-06). No further auditing permitted in the 9-day pre-implementation window EXCEPT inline P0 doc-drift fixes that arise from current-pass cleanup.
+
+**Rationale (per Pass 53 owner Q3 = A approval):**
+
+Owner-approved date provides:
+- 9 days for codebase setup, alignment-test convergence, and `data_prefetch/` cache validation
+- Time-box on document reconciliation (DEC-588 propagates Pass 53 decisions across TRADING_RULES sections)
+- Hard deadline preventing audit-iteration drift (CC-2 risk mitigation)
+- Owner calendar alignment (start of work week post-2026-05-15)
+
+**Pre-implementation 9-day window allowed work (2026-05-06 to 2026-05-14):**
+
+| Day | Allowed work | Disallowed work |
+|---|---|---|
+| 1-2 (May 6-7) | P0 doc-drift fixes (R7-01 through R7-10) + DEC-589/DEC-590 codification + AUDIT.md narrative + AUDIT_INDEX.md updates + alignment tests | New external-AI reviews; new audit cycles |
+| 3-5 (May 8-10) | Sprint 0A pytrends bg restart cycles + Polygon news/indicators/financials/events/NBBO prefetch extension + 16 BATCH 14 smoke/demo test convergence | New methodology debates |
+| 6-7 (May 11-12) | DEC-588 doc-reconciliation pass (~3-5 days propagating DEC-509-565 across TRADING_RULES sections) + universe-build validation (614+161+27+347+1923 = 2872 rows / 1937 unique) | Strategy roster expansion (locked at 199 per F-002) |
+| 8-9 (May 13-14) | Phase 1A v3 archive 67-instrument-equivalent subset re-run prep + DEC-507 wiring matrix verification (5 toolkits × N agents × M data sources × verified status) + DEC-508 Tier 1-4 testing matrix prep | Last-minute scope additions |
+| 10 (May 15) | **Phase 1A implementation BEGINS** — owner-gated start | — |
+
+**Phase 1A scope at start (May 15):**
+
+Per CANONICAL_FACTS F-001 + DETAILED_PROJECT_PLAN.md §3.6-3.10 + DEC-505 4-fold walk-forward:
+
+1. Sprint 1A-α — Rules-only baseline cube (no agents) — `--no-agents` flag, 4 OOS folds, full universe, all 199 strategies
+2. Owner gate at 1A-α — rules-only Sharpe ≥ 0.7 OOS before $300 1B-α budget commits
+3. Sprint 1A-β — Full-scale dry-run on 1937-unique-ticker universe with `--no-agents --dry-run`
+4. Owner gate at 1A-β — pipeline integrity verified before Phase 1B-α agent overlay
+
+**Slippage tolerance:** ±2 business days only. If implementation cannot start by 2026-05-19, owner reviews root cause + reapproves new date.
+
+**Cross-references:**
+- DEC-589 (§23.6 above — audit-iteration ceiling)
+- AUDIT_BACKLOG.md implementation roadmap Week 1-5+
+- DETAILED_PROJECT_PLAN.md §3.6-3.10 (Phase 1A sub-phase definitions)
+- DEC-505 (4-fold walk-forward replacing 6-fold per Pass 53 R7-06)
+- DEC-507 (Agent toolkit wiring matrix HARD RULE)
+- DEC-508 + CHECKLIST #71 (4-tier external library fork integration mandate)
+
+**Status:** RESOLVED-DECIDED Pass 53 owner Q3 approval 2026-05-06.
+
+---
+
 # DOCUMENT METADATA
 
 **Created:** Pass 52 turn 128 (post-Pass-52 closure, pre-Sprint-1 setup phase)
@@ -2900,7 +2994,7 @@ When tuned, ENGINEERING_REGISTER and AUDIT.md narrative entries cross-reference 
 **Refresh trigger:** Any threshold change requires Owner approval per CHECKLIST #51 + atomic update to this document per CHECKLIST #58
 **Companion:** PROJECT_PLAN.md (project entry point); ENGINEERING_REGISTER.md (sprint roadmap); AUDIT.md (decision detail); BUG_REGISTER.md (bug-decision cross-reference)
 
-**Total threshold items documented:** 28 REVISIT_AFTER_BACKTEST tags + ~50 fixed thresholds across 23 sections.
+**Total threshold items documented:** 28 REVISIT_AFTER_BACKTEST tags + ~50 fixed thresholds across 23 sections (+ §23.6 DEC-589 audit-iteration ceiling + §23.7 DEC-590 Phase 1A implementation begin date 2026-05-15 per Pass 53 review-cycle closure).
 
 ---
 

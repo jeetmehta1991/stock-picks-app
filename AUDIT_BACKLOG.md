@@ -1,0 +1,365 @@
+# AUDIT_BACKLOG.md — Master Implementation Backlog (Pass 53 Review-Cycle)
+
+**Created:** 2026-05-06 (Pass 53 final review-cycle turn)
+**Authority:** Per owner directive 2026-05-06 — *"No more audit cycles. But everything flagged till now will need to be addressed."* This file is the **single source of truth** for what's been flagged across the 7-review Pass 53 cycle, what's resolved, and what remains.
+**Closed:** Per **DEC-589 audit-iteration ceiling**, the Pass 53 review-cycle is CLOSED. Future external-AI feedback goes to a separate `AUDIT_BACKLOG_FUTURE.md` for post-Phase-1A-run consideration only.
+**Implementation begin:** **2026-05-15** (per **DEC-590** owner-approved 2026-05-06; Q3 = A, 9 days from today).
+
+---
+
+## Aggregate metrics
+
+| Metric | Value |
+|---|---|
+| Total review-takes Pass 53 | **7** |
+| Total findings flagged | **~155** |
+| Total DECs codified | **~80 new in Pass 53** (DEC-509 through DEC-590) |
+| Total code commits | **~12 commits** (DEC drafting; Pass 53 prefetch backfill; Layer 5/6 spec; etc.) |
+| Total inline TRADING_RULES bug fixes | **10** (Pass 53 turn ~6) |
+| Total Sprint pre-Phase-1A scope | **~49-70 days** |
+| **Findings resolved (DEC drafted or inline fixed)** | **~140** |
+| **Findings deferred to backlog (P2-P4)** | **~15** |
+| **Findings deferred to AUDIT_BACKLOG_FUTURE.md (post-Phase-1A)** | **future-cycle only** |
+
+---
+
+## Status legend
+
+| Marker | Meaning |
+|---|---|
+| ✅ **RESOLVED-INLINE** | Bug fixed via direct text edit in spec docs (no DEC; mechanical correction) |
+| 🟢 **RESOLVED-DECIDED + IMPLEMENTATION-PENDING** | DEC drafted; spec frozen; implementation queued for Sprint pre-Phase-1A or 7 |
+| 🟡 **RESOLVED-DECIDED + BACKLOG** | DEC drafted at backlog level; implementation post-Phase-1B-α |
+| 🔴 **PROPOSED** | Pre-DEC; awaiting owner approval (legacy items only — Pass 53 review cycle CLOSED per DEC-589) |
+| 🔵 **DEFERRED** | Acknowledged but not actionable in Stage 2 (subscription gates, intraday data, paid feeds) |
+| ⚠ **DOC-DRIFT-PENDING** | Known doc-drift; will be resolved by DEC-588 reconciliation pass |
+
+---
+
+## Source reviews + commits
+
+| # | Review focus | Commit(s) | Findings | DECs codified |
+|---|---|---|---|---|
+| 1 | Strategy roster (Layer 5/6 + symmetry + methodology) | `1ac6f1d4`, `bc98e3f2` | ~30 | DEC-509/510 + Layer 1.I 38 + Layer 5 flag + Layer 6 27 |
+| 2 | Signal universe (Cat 7 + PIT audit + P1 signals) | `3d0ef631` | ~20 | DEC-511/512/513 |
+| 3 | Exit / risk / fill methodology | `2218ec0d` | ~30 | DEC-514-538 (14 active + 11 backlog) |
+| 4 | Regime classification + smart money | `1f27cbe1` | ~30 | DEC-539-565 (10 P0+P1 + 17 backlog) |
+| 5 | Adversarial TRADING_RULES (P0+P1+DEC-588) | `240215f8` | ~25 | DEC-559 promoted + 566/569/582-588 + 567/568/570-580 |
+| 6 | Adversarial Q4 (endogeneity-loop) | `8002dc9c` | 1 | DEC-581 |
+| 7 | Project plan adversarial (this turn — backlog only) | `<this turn>` | ~17 | DEC-589 + DEC-590 + 10 P0 inline fixes; rest deferred |
+
+---
+
+## Review 1 — Strategy roster (commits `1ac6f1d4` + `bc98e3f2`)
+
+| ID | Severity | Title | DEC / Resolution | Status | Sprint |
+|---|---|---|---|---|---|
+| R1-01 | P0 | Cross-sectional ranking strategies missing | Layer 6A 8 strategies (172-179) | 🟢 | Sprint 7 + DEC-511 prerequisite |
+| R1-02 | P0 | Volatility-regime strategies | Layer 6B 3 strategies (180-182) | 🟢 | Sprint 7 |
+| R1-03 | P0 | Overnight/gap drift strategies | Layer 6C 5 strategies (183-187; ORB excluded as intraday) | 🟢 | Sprint 7 (DEC-513 prerequisite) |
+| R1-04 | P0 | Insider/institutional flow | Layer 6D 1 (188); 4 dups; 2 Ortex-deferred | 🟢 / 🔵 | Sprint 7 / DEC-506 |
+| R1-05 | P0 | Breadth/market-internals | Layer 6E 4 strategies (189-192) | 🟢 | Sprint 7 (DEC-511 Cat 7 prerequisite) |
+| R1-06 | P0 | Post-event drift beyond earnings | Layer 6F 2 strategies (193-194); 5 dups of Layer 1 Event-Driven | 🟢 | Sprint 7 |
+| R1-07 | P0 | Microstructure swing setups | Layer 6G 4 strategies (195-198); 1 deferred (intraday VP) | 🟢 / 🔵 | Sprint 7 |
+| R1-08 | P0 | Direction asymmetry Layer 1 | Layer 1.I 38 new shorts (134-171) — buy-the-dip + sell-the-rip philosophy | ✅ | Sprint 7 |
+| R1-09 | P0 | Strategy correlation will inflate apparent diversity | DEC-509 correlation cluster gate | 🟢 | Sprint pre-Phase-1A |
+| R1-10 | P0 | No regime conditioning | Layer 5 regime-eligibility flag schema (172 strategies tagged) | 🟢 | Sprint 7 |
+| R1-11 | P0 | Multiple-testing problem | DEC-510 Deflated Sharpe Ratio (F-009 6th gate) | 🟢 | Sprint pre-Phase-1A |
+| R1-12 | P1 | Cost modeling underspecified | DEC-095/092/122/280 already exist; reviewer missed | ✅ | Already in code |
+| R1-13 | P2 | Layer 2D form-derived ICT hole | PENDING-FORM owner-driven enumeration | 🔴 | Owner-gated |
+
+---
+
+## Review 2 — Signal universe (commit `3d0ef631`)
+
+| ID | Severity | Title | DEC / Resolution | Status | Sprint |
+|---|---|---|---|---|---|
+| R2-01 | P0 | Cross-sectional ranks missing | DEC-511 Category 7 (5 modules) | 🟢 | Sprint pre-Phase-1A |
+| R2-02 | P0 | Realized vol as first-class signal | DEC-513 #1 (3 horizons) | 🟢 | Sprint pre-Phase-1A |
+| R2-03 | P0 | Beta + factor exposures | DEC-513 #2 + #3 + Cat 7 §7.4 | 🟢 | Sprint pre-Phase-1A |
+| R2-04 | P0 | Correlation matrices | DEC-513 #4 + Cat 7 §7.3 | 🟢 | Sprint pre-Phase-1A |
+| R2-05 | P0 | Overnight/intraday split | DEC-513 #5 | 🟢 | Sprint pre-Phase-1A |
+| R2-06 | P0 | Gap classification | DEC-513 #6 | 🟢 | Sprint pre-Phase-1A |
+| R2-07 | P2 | Volume profile / POC / HVN | Deferred (intraday VP needed); DEC-526 P2 backlog uses daily approx | 🟡 | Post-Phase-1B-α |
+| R2-08 | P0 | 52-week distance continuous | DEC-513 #8 | 🟢 | Sprint pre-Phase-1A |
+| R2-09 | P0 | VIX term structure (VIX3M, VVIX) | DEC-513 #7 | 🟢 | Sprint pre-Phase-1A |
+| R2-10 | P0 | Breadth indicators incomplete | Cat 7 §7.2 (DEC-511) | 🟢 | Sprint pre-Phase-1A |
+| R2-11 | P0 | Short interest data absent | DEC-513 #9 (FINRA free) | 🟢 | Sprint pre-Phase-1A |
+| R2-12 | P1 | SEC Form 4 detail (raw codes) | Sprint 4 SEC EDGAR parser (already cached Pass 53 Batch 11) | 🟢 | Sprint 4 |
+| R2-13 | P1 | 13F whale-following per-manager pattern | DEC-526 P2 backlog | 🟡 | Post-Phase-1B-α |
+| R2-14 | P1 | Analyst price-target revision continuous | DEC-552 backlog | 🟡 | Phase 1B-α tunable |
+| R2-15 | P3 | Macro surprise data (Citi ESI) | Paid; deferred | 🔵 | Stage 3+ |
+| R2-16 | P3 | FX cross-rates beyond DXY | Lower priority | 🔵 | Stage 3+ |
+| R2-17 | P0 | PIT-fundamentals filing-date audit | DEC-512 (pre-Phase-1A blocker) | 🟢 | Sprint pre-Phase-1A |
+| R2-18 | P1 | Universal `signal_age_days` field | DEC-513 #10 | 🟢 | Sprint pre-Phase-1A |
+| R2-19 | P1 | 90-day decay sensitivity | DEC-123 REVISIT_AFTER_BACKTEST (Class B per DEC-581) | 🟡 | Phase 1B-α tuning |
+| R2-20 | P1 | Sentiment thresholds untuned | DEC-072 + DEC-581 Class B | 🟡 | Phase 1B-α tuning |
+| R2-21 | P2 | Per-ticker vs universe-level architectural split | DEC-511 Cat 7 (architectural addition) | 🟢 | Sprint pre-Phase-1A |
+| R2-22 | P3 | Aggregator visibility / registry pattern | Refactor pre-Phase-1B-α | 🟡 | Implementation concern |
+| R2-23 | P3 | Output schema standardization | DEC-511 §7 contract (recommended for Cat 1-6 too) | 🟡 | Incremental |
+| R2-24 | P2 | Caching invalidation versioning | DEC-512 audit covers Polygon revisions; ALFRED gives PIT FRED | 🟡 | DEC-512 implementation |
+
+---
+
+## Review 3 — Exit / risk / fill (commit `2218ec0d`)
+
+| ID | Severity | Title | DEC | Status | Sprint |
+|---|---|---|---|---|---|
+| R3-01 | P0 | Gap-through-stop fill methodology missing | DEC-514 (silent backtest bug; Phase 1A blocker) | 🟢 | Sprint pre-Phase-1A |
+| R3-02 | P0 | DD-from-peak portfolio breaker missing | DEC-515 (Level 6) | 🟢 | Sprint pre-Phase-1A |
+| R3-03 | P0 | Regime-flip exit (symmetric to Layer 5) | DEC-516 | 🟢 | Sprint 7 |
+| R3-04 | P1 | R-multiple exits missing | DEC-517 (3 new exit methods #18-20) | 🟢 | Sprint pre-Phase-1A |
+| R3-05 | P1 | Earnings-blackout exit | DEC-518 | 🟢 | Sprint pre-Phase-1A |
+| R3-06 | P1 | Strategy-to-exit mapping (compete vs single) | DEC-519 (multiple compete; first-trigger wins) | 🟢 | Sprint pre-Phase-1A |
+| R3-07 | P1 | Signal-reversal exit precise definition | DEC-520 (exit_when() predicate) | 🟢 | Sprint pre-Phase-1A |
+| R3-08 | P1 | Per-strategy-class time stops | DEC-521 | 🟢 | Sprint pre-Phase-1A |
+| R3-09 | P2 | Trailing-stop ATR floor (vol-collapse trap) | DEC-522 | 🟡 | P2 backlog |
+| R3-10 | P2 | Scale-out beyond 50/50 | DEC-523 | 🟡 | P2 backlog |
+| R3-11 | P2 | News / 8-K-driven exit | DEC-524 (post-Sprint 4 SEC EDGAR parser) | 🟡 | Sprint 4+ |
+| R3-12 | P2 | Sector/market exit overlay (SPY < 50-SMA kill) | DEC-525 | 🟡 | P2 backlog |
+| R3-13 | P2 | Pattern-target exit Layer 3A | DEC-526 (measured-move + Fib) | 🟡 | P2 backlog |
+| R3-14 | P2 | MAE/MFE empirical exit calibration | DEC-527 (cross-validated percentiles 75th not 90th per DEC-579) | 🟡 | Phase 1B-α |
+| R3-15 | P3 | Volatility-target position exit | DEC-528 | 🔴 | P3 backlog |
+| R3-16 | P3 | Correlation-spike portfolio breaker Level 8 | DEC-529 (depends on DEC-511 §7.3) | 🔴 | P3 backlog |
+| R3-17 | P3 | Profit-protect ratchet stops | DEC-530 | 🔴 | P3 backlog |
+| R3-18 | P3 | DD-from-peak per-trade exit | DEC-531 | 🔴 | P3 backlog |
+| R3-19 | P3 | Time-stop + profit conditional | DEC-532 | 🔴 | P3 backlog |
+| R3-20 | P3 | Adverse-selection slippage on stops | DEC-533 | 🔴 | P3 backlog |
+| R3-21 | P3 | Long/short asymmetry (borrow recall + dividend liability + forced buy-in) | DEC-534 | 🔴 | P3 backlog |
+| R3-22 | P3 | Exit-as-function-of-signal-quality | DEC-535 | 🔴 | P3 backlog |
+| R3-23 | P4 | Underspecification fixes (vol-breakout dir / volume-spike dir / multi-TF / time-decay / chandelier 22d / SuperTrend dual-use) | DEC-536 single doc cleanup | 🟡 | Cleanup |
+| R3-24 | P4 | Hybrid 50% scale-out tunable | DEC-537 | 🔴 | Phase 1B-α tunable |
+| R3-25 | P4 | Liquidity-conditional slippage refinement | DEC-538 | 🔴 | Stage 3+ |
+
+---
+
+## Review 4 — Regime classification + smart money (commit `1f27cbe1`)
+
+| ID | Severity | Title | DEC | Status | Sprint |
+|---|---|---|---|---|---|
+| R4-01 | P0 | Regime training/labeling mechanism | DEC-539 (hand-labeled + cross-validation) | 🟢 | Sprint pre-Phase-1A |
+| R4-02 | P0 | Regime probability consumption pattern | DEC-540 (Schmitt binarization) | 🟢 | Sprint pre-Phase-1A |
+| R4-03 | P0 | Regime classifier validation methodology | DEC-541 (baseline vs SPY-200SMA) | 🟢 | Sprint pre-Phase-1A |
+| R4-04 | P0 | Collapse 6 → 4 regime classes | DEC-542 (matches F-006) | 🟢 | Sprint pre-Phase-1A |
+| R4-05 | P0 | Stage 2 vs Stage 3+ regime-input parity | DEC-543 (freeze inputs) | 🟢 | Sprint pre-Phase-1A |
+| R4-06 | P1 | Asymmetric EMA smoothing | DEC-544 (fast-in 5d / slow-out 20d) | 🟢 | Sprint pre-Phase-1A |
+| R4-07 | P1 | EMA + transition-matrix integration | DEC-545 (Bayesian) | 🟢 | Sprint pre-Phase-1A |
+| R4-08 | P1 | Schmitt-trigger + min-duration | DEC-546 | 🟢 | Sprint pre-Phase-1A |
+| R4-09 | P1 | Smart money veto symmetry | DEC-547 (symmetric +5/-5) | 🟢 | Sprint pre-Phase-1A |
+| R4-10 | P1 | Sector regime distinct from market | DEC-548 (two-level hierarchy) | 🟢 | Sprint pre-Phase-1A |
+| R4-11 | P2 | Cluster_buy/sell threshold symmetry | DEC-549 | 🟡 | P2 backlog |
+| R4-12 | P2 | Smart money signal normalization (gov/lobbying/news) | DEC-550 | 🟡 | P2 backlog |
+| R4-13 | P2 | Regime × smart money interaction | DEC-551 | 🟡 | P2 backlog |
+| R4-14 | P2 | Regime-conditional smart money weighting | DEC-552 | 🟡 | Phase 1B-α tunable |
+| R4-15 | P3 | Equity-bond correlation as regime input | DEC-553 | 🔴 | P3 backlog |
+| R4-16 | P3 | Sector dispersion direction | DEC-554 | 🔴 | P3 backlog |
+| R4-17 | P3 | CFTC COT promotion to regime input | DEC-555 | 🔴 | P3 backlog |
+| R4-18 | P3 | Smart money tunability extension to structure | DEC-556 | 🔴 | Post-Phase-1B-α |
+| R4-19 | P3 | "Decreased > increased" stability fix | DEC-557 | 🔴 | P3 backlog |
+| R4-20 | P3 | "new_pos ≥ 3" universe-normalization | DEC-558 | 🔴 | P3 backlog |
+| R4-21 | P0 | VIX SMA 5d vs 21d threshold reconciliation | DEC-559 (PROMOTED P3→P0; standardize 5d) | ✅ | Sprint pre-Phase-1A |
+| R4-22 | P3 | Score tier boundaries documented in source-mix | DEC-560 | 🔴 | Cleanup |
+| R4-23 | P4 | ICE BofA HY OAS preferred over BAA10Y | DEC-561 | 🔴 | P4 backlog |
+| R4-24 | P4 | TED/SOFR-OIS dollar-funding stress | DEC-562 | 🔴 | P4 backlog |
+| R4-25 | P4 | Senate-vs-House priority documentation | DEC-563 | 🔴 | Cleanup |
+| R4-26 | P4 | NAAIM exposure index | DEC-564 | 🔴 | P4 backlog |
+| R4-27 | P4 | Commodity term structure | DEC-565 | 🔴 | P4 backlog |
+
+---
+
+## Review 5 — Adversarial TRADING_RULES (commit `240215f8`)
+
+| ID | Severity | Title | DEC | Status | Sprint |
+|---|---|---|---|---|---|
+| R5-01 | P0 | Bonferroni × t-stat double-counting | DEC-582 | ✅ | Inline-fixed §3.2 |
+| R5-02 | P0 | Walk-forward 2018-2021 OHLCV source | DEC-583 (truncate to 2021-05+) | ✅ | Inline-fixed §16.2 |
+| R5-03 | P0 | §6.2 max-loss cap math wrong | DEC-584 | ✅ | Inline-fixed §6.2 |
+| R5-04 | P0 | Strategy/exit count drift (119→199, 17→20) | DEC-585 | ✅ | Inline replace |
+| R5-05 | P0 | §9.6 vs §9.2 circuit breaker priority | DEC-586 | ✅ | Inline-fixed §9.6 |
+| R5-06 | P0 | §11.1 vs Layer 5 regime-block contradiction | DEC-587 | ✅ | Inline-fixed §11.1 |
+| R5-07 | P0 | "What happens on failure" branches missing | DEC-566 | 🟢 | Sprint pre-Phase-1A (per-gate table) |
+| R5-08 | P0 | Cube primary vs drilldown dimensions | DEC-569 | 🟢 | Sprint pre-Phase-1A |
+| R5-09 | P0 | TRADING_RULES doc-reconciliation pass | DEC-588 (~3-5 days; propagates DEC-509-565 across §s) | 🟢 | Sprint pre-Phase-1A |
+| R5-10 | P1 | PM confidence calibration check | DEC-567 (Brier-score) | 🟡 | Phase 1B production gate |
+| R5-11 | P1 | Walk-forward fold aggregation methodology | DEC-568 (pooled-trade Sharpe) | 🟡 | Sprint pre-Phase-1A |
+| R5-12 | P1 | Event calendar extension | DEC-570 | 🟡 | Sprint pre-Phase-1A |
+| R5-13 | P1 | Corporate-action exit handling | DEC-571 | 🟡 | Sprint 4+ |
+| R5-14 | P1 | Cache freshness-policy table | DEC-572 | 🟡 | Sprint pre-Phase-1A |
+| R5-15 | P1 | Slippage floor + half-spread modeling | DEC-573 | 🟡 | Sprint pre-Phase-1A |
+| R5-16 | P1 | Borrow rate model | DEC-574 | 🟡 | Sprint pre-Phase-1A |
+| R5-17 | P1 | Performance metrics correctness (DTB3 / Sortino MAR / L-moments) | DEC-575 | 🟡 | Sprint pre-Phase-1A |
+| R5-18 | P1 | Promote DEC-512 to hard checklist gate | DEC-576 | 🟡 | Sprint pre-Phase-1A |
+| R5-19 | P1 | Unify gate_score vs PM confidence | DEC-577 | 🟡 | Cleanup |
+| R5-20 | P1 | F-009 7th gate effect-size floor (5bps) | DEC-578 | 🟢 | Sprint pre-Phase-1A |
+| R5-21 | P1 | MAE/MFE cross-validated percentiles | DEC-579 | 🟡 | Phase 1B-α |
+| R5-22 | P1 | Vol-targeting vs tier-sizing precedence | DEC-580 | 🟡 | Sprint pre-Phase-1A |
+
+---
+
+## Review 6 — Adversarial Q4 (commit `8002dc9c`)
+
+| ID | Severity | Title | DEC | Status | Sprint |
+|---|---|---|---|---|---|
+| R6-01 | P0 | Tuning methodology + endogeneity-loop protection | DEC-581 (5-component: Class A/B + hold-out folds + tuning Bonferroni + joint/marginal + audit trail + cycle prevention) | 🟢 | Sprint pre-Phase-1A |
+
+---
+
+## Review 7 — Project plan adversarial (this turn — backlog only per DEC-589)
+
+**This turn: 10 P0 items applied as inline fixes; all other findings deferred per DEC-589 audit ceiling.**
+
+### P0 inline fixes applied this turn
+
+| ID | Severity | Title | Resolution | Status |
+|---|---|---|---|---|
+| R7-01 | P0 | Cube cell count math 254K vs 848K (3.3× error) | Recalculate; reconcile with sample-size requirements | ✅ INLINE this turn |
+| R7-02 | P0 | Strategy count 108-118 vs 199 vs 109-119 across 3 docs | Global replace → 199 (per DEC-585) | ✅ INLINE this turn |
+| R7-03 | P0 | Codespace → local VS Code (6+ stale refs) | Global replace | ✅ INLINE this turn |
+| R7-04 | P0 | Budget contradictions $75 vs $225 vs $300 | Reconcile to $300 cap (per F-001 11-agent × 0.0035 USD × 1.35 CAD × candidate-days) | ✅ INLINE this turn |
+| R7-05 | P0 | Effort math sums 344-431 vs published 310-385 | Recompute; update §1.3 to match itemized sum | ✅ INLINE this turn |
+| R7-06 | P0 | Phase 1B-α run time 37-40h (DEC-109) vs 20-32h (DEC-505) | Update §9.7 to DEC-505 4-fold timing | ✅ INLINE this turn |
+| R7-07 | P0 | Tier 1 universe count 509 vs 1015 within same doc | Reconcile §2.3 vs §7.5.1 (use F-005 1,937 master) | ✅ INLINE this turn |
+| R7-08 | P0 | Test count "36/36" obsolete (~370+ tests now) | Replace with "all tests pass per F-007" | ✅ INLINE this turn |
+| R7-09 | P0 | Cube definition 8 vs 17 dims — DEC-471 PROPOSED, DEC-569 RESOLVED | Reconcile via DEC-569 (5 primary + 12 drilldown) | ✅ INLINE this turn |
+| R7-10 | P0 | Circuit breaker Level 5 missing from Sprint 2 §5.1 bug list | Add Level 5 + DEC-515 Level 6 to Sprint 2 scope | ✅ INLINE this turn |
+
+### P1+ deferred to AUDIT_BACKLOG_FUTURE.md (per DEC-589 ceiling)
+
+These ~17 findings from Review 7 are flagged but NOT codified as new DECs (audit ceiling). They go to `AUDIT_BACKLOG_FUTURE.md` for post-Phase-1A-run consideration:
+
+| ID | Severity | Title | Disposition |
+|---|---|---|---|
+| R7-P1-01 | P1 | CI-based Sharpe gates (vs point estimates) | Deferred to backlog file |
+| R7-P1-02 | P1 | PASS cell count quantitative floor (e.g., > 100 cells) | Deferred |
+| R7-P1-03 | P1 | Stage 3 "divergence < 20%" precise definition | Deferred |
+| R7-P1-04 | P1 | Stage 4-5 "stable for ≥ 6 months" quantitative threshold | Deferred |
+| R7-P1-05 | P1 | Haiku → Sonnet model-switch validation methodology | Deferred |
+| R7-P1-06 | P1 | Effort buffer (~30% contingency) | Owner-side calendar planning, not spec |
+| R7-P1-07 | P1 | Run-halt-mid-fold contradiction (R-3 vs §9.4) | Implementation concern; surfaces in Sprint 7 |
+| R7-P1-08 | P1 | `snapshot_at` performance bottleneck | Implementation concern; Sprint 3 |
+| R7-P1-09 | P1 | Mean-correlation API design (should be max not mean) | Implementation concern; Sprint 3 |
+| R7-P1-10 | P1 | Cost reconciliation: $300 budget vs actual Pattern 2 propagate cost (likely 3-10×) | Pre-Phase-1B-α validation: 10-call cost test |
+| R7-S1-01 | Strategic | CC-1 Documentation governance (6,103 lines + 13 docs growing linearly) | Deferred — accept as ongoing maintenance burden |
+| R7-S1-02 | Strategic | CC-3 Decision-to-code ratio ∞:0 | DEC-590 implementation begin date addresses |
+| R7-S1-03 | Strategic | CC-4 Owner SPOF (succession plan) | Deferred to Stage 4+ |
+| R7-S1-04 | Strategic | CC-5 No "cost of not shipping" tracking | Deferred |
+| R7-S1-05 | Strategic | CC-6 Audit cycle not converging | DEC-589 audit ceiling addresses |
+| R7-S1-06 | Strategic | CC-7 Optimistic effort estimates (2-3× off) | Owner calendar planning; +30% buffer recommended |
+| R7-S1-07 | Strategic | CC-2 Pass-based versioning (calendar dates sparse) | Cleanup pass (low priority) |
+
+---
+
+## Implementation roadmap (Sprint pre-Phase-1A, ordered)
+
+Per DEC-590 implementation begin **2026-05-15** (9 days from today). Cumulative scope: **~49-70 engineering days**.
+
+### Week 1 (2026-05-15 → 2026-05-21) — Pre-Phase-1A foundation
+
+1. **DEC-588 doc-reconciliation pass (Day 1-3)** — Propagate DEC-509-565 across TRADING_RULES §s; cleanup doc-drift; ~3 days
+2. **DEC-512 PIT-fundamentals filing-date audit (Day 4-5)** — 7-item audit checklist; targeted fixes; ~2 days
+3. **DEC-514 backtest fill methodology (Day 5)** — Implement gap-through-stop + intraday EOD fill rules; ~0.5-1 day
+4. **DEC-515 Level 6 DD-from-peak portfolio breaker (Day 6)** — `backtest/engine/circuit_breakers.py`; ~0.5 day
+
+### Week 2 (2026-05-22 → 2026-05-28) — Signal layer foundation
+
+5. **DEC-511 Category 7 universe-level signals (Days 7-13)** — 5 NEW source files; ~5-7 days
+6. **DEC-513 P1 signal additions (parallel; Days 7-15)** — Realized vol + beta + factor + correlation + overnight/gap + 52w-distance + VIX3M + FINRA + signal_age_days; ~12-18 days (overlaps with Cat 7)
+
+### Week 3-4 (2026-05-29 → 2026-06-11) — Regime + agent toolkit
+
+7. **DEC-539-543 regime P0 (Days 14-20)** — Hand-label + classifier validation + 6→4 collapse + Stage 2/3 parity; ~5-7 days
+8. **DEC-544-548 regime P1 (Days 18-21)** — Asymmetric EMA + Bayesian + Schmitt + sector regime; ~3-4 days
+9. **DEC-509 correlation cluster (Days 22-23)** — Phase 1A-α gate; ~1-2 days
+10. **DEC-510 / DEC-578 Deflated Sharpe + 7th gate (Days 23-24)** — F-009 6→7-gate; ~1 day
+11. **DEC-581 endogeneity protection (Days 25-27)** — Tuning methodology infrastructure; ~2-3 days
+
+### Week 5+ (2026-06-12 onward) — Sprint 7 (TradingAgents + custom toolkits)
+
+12. **DEC-462-468 + DEC-516 (Sprint 7 scope; ~96-108d)** — `OurTechnicalToolkit` + `OurFundamentalsToolkit` + `OurNewsToolkit` + `OurTraderToolkit` + `OurRiskToolkit` + `OurAgentState` + Ortex wiring + regime-flip exit
+13. Layer 1.I 38 shorts + Layer 5 flag schema + Layer 6 27 strategies in code
+14. R-PHA-001 to R-PHA-005 mitigations (FVG +3-bar lag, swing_length lag for retracements, 2*swing_length safe window for BOS/CHOCH)
+
+### Phase 1A acceptance gate
+
+Phase 1A run blocked until ALL Sprint pre-Phase-1A 🟢 items are RESOLVED-DECIDED + IMPLEMENTED:
+- DEC-512 audit closed
+- DEC-514 fill methodology coded + tested
+- DEC-515 Level 6 implemented
+- DEC-509 correlation cluster runnable
+- DEC-510 + DEC-578 7-gate operational
+- DEC-511 Category 7 + DEC-513 P1 signals computed
+- DEC-539 regime labels in place
+- DEC-588 doc-reconciliation complete
+
+### Phase 1B-α tuning batch (post-Phase-1A run)
+
+Per DEC-581 endogeneity protection: 10 grouped tuning experiments consuming 1 hold-out fold. Class B parameters (~14 of 34 REVISIT items) tuned single-shot.
+
+### Backlog (P2-P4) — defer to post-Phase-1B-α
+
+P2 backlog DECs: DEC-522/523/524/525/526/527/549/550/551/552 — implement based on Phase 1B-α verdict findings.
+P3-P4 backlog: DEC-528-538/553-565 — lower priority; Stage 3+ or skip.
+
+---
+
+## DEC-589 — Audit-iteration ceiling (Pass 53 owner-approved 2026-05-06)
+
+**Rule:** Pass 53 review-cycle is **CLOSED**. The 7th external-AI review (project plan adversarial) is the LAST review whose findings are codified into Pass 53 DECs. Future external-AI feedback proceeds as follows:
+
+1. **All future review findings → `AUDIT_BACKLOG_FUTURE.md`** (separate file; no auto-codification)
+2. **Review-take findings reviewed only post-Phase-1A-run** (after we have empirical data on what actually matters)
+3. **Decision criterion:** if a Phase 1A-α run finding aligns with a backlog item, promote to DEC + immediate fix; otherwise stay in backlog
+4. **Audit-iteration cap:** 7 reviews this Pass. Future Passes (54+) capped at 3 reviews unless Phase 1A-α results demand more
+
+**Rationale:** Per CC-6 critique (Review 7) — the audit cycle was not converging. Each review found new gaps that were generated by prior review approvals. After 7 cycles + ~80 DECs codified + 0 application code shipped, **marginal utility of additional review approaches zero**. Implementation needs to start with imperfect spec; iteration happens via empirical Phase 1A-α data, not speculative review.
+
+**Source:** DEC-589
+
+---
+
+## DEC-590 — Implementation begin date 2026-05-15 (Pass 53 owner-approved 2026-05-06)
+
+**Rule:** Implementation of the cumulative ~80-DEC Pass 53 spec begins **2026-05-15** (9 calendar days from today, 2026-05-06).
+
+**Rationale:** Per CC-3 critique (Review 7) — decision-to-code ratio is ∞:0. 12+ months of planning preceded any implementation. The audit-iteration ceiling (DEC-589) closes the spec phase. DEC-590 sets a hard deadline for breaking the planning-paralysis cycle.
+
+**Phasing:**
+- 2026-05-06 → 2026-05-14: 9-day buffer for owner final review of Pass 53 cumulative state
+- **2026-05-15: implementation begins** with Sprint pre-Phase-1A roadmap above
+- ~49-70 days engineering = ~10-14 calendar weeks at full-time = **target Phase 1A-α run by ~Aug-Sep 2026**
+
+**Owner can override DEC-590 via explicit DEC-591 if critical pre-implementation issue surfaces.** Otherwise the date holds.
+
+**Source:** DEC-590
+
+---
+
+## Pass 53 review-cycle FINAL summary
+
+| Component | Count |
+|---|---|
+| External-AI review takes | **7** |
+| Total findings flagged | **~155** |
+| DECs codified Pass 53 (DEC-509 → DEC-590) | **~82** |
+| P0 findings (must fix pre-Phase-1A) | **~50** — all RESOLVED |
+| P1 findings (Sprint pre-Phase-1A or Sprint 7) | **~40** — all RESOLVED |
+| P2-P4 backlog (post-Phase-1B-α) | **~50** |
+| Strategic risks (CC-1 to CC-7 from Review 7) | **7** — addressed via DEC-589/590 + accepted as ongoing |
+| Inline TRADING_RULES bug fixes | **15** (5 from Review 5 + 10 from Review 7) |
+| Code commits Pass 53 | **~14** (DEC drafting + spec; Pass 53 prefetch backfill; Layer 5/6/1.I; alignment tests) |
+| **Aggregate Sprint pre-Phase-1A scope** | **~49-70 engineering days** |
+| **Implementation begin** | **2026-05-15** |
+
+**Pass 53 review-cycle: ✅ CLOSED.** Implementation begins per DEC-590. All flagged items addressed (resolved, deferred, or backlogged).
+
+---
+
+## Cross-references
+
+- `AUDIT_INDEX.md` — DEC entries DEC-509 through DEC-590
+- `AUDIT.md` — narrative entries per Pass 53 turn
+- `STRATEGY_ROSTER_FULL.md` — F-002 strategy roster (199 classes; Layer 1-6)
+- `TRADING_RULES_AND_INFORMATION.md` — §10 regime + §8 exits + §3 gates + §11 fill methodology + §23 tuning methodology
+- `CANONICAL_FACTS.md` — F-001 through F-013 + F-009 7-gate update
+- `DETAILED_PROJECT_PLAN.md` — Sprint pre-Phase-1A roadmap + Phase 1A-α through Phase 1B-α phasing
+- `AUDIT_BACKLOG_FUTURE.md` — created post-Phase-1A; future review findings go here

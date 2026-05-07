@@ -30230,3 +30230,156 @@ Bg `bi30dq6mx` restarted per owner "auto continue restart" directive. Will conti
 - All 28 prior REVISIT_AFTER_BACKTEST items now classified Class A or B
 
 *Per CHECKLIST #1 (Q4 owner-approved "your rec approved"); #25 (deepest critique from adversarial review codified — endogeneity-loop addressed via 5-component protection); #43 (cross-doc — TRADING_RULES §23.4 + this narrative); #45 (this); #51 (scope strict — DEC-581 spec only); #58 (single-DEC commit); #67/#67.b (per-turn doc sync); pytrends auto-restart per directive.*
+
+---
+
+## Pass 53 review-cycle FINAL closure (2026-05-06) — DEC-589 + DEC-590 + AUDIT_BACKLOG.md + 10 P0 doc-drift inline fixes
+
+### Owner directive (verbatim)
+
+*"Approve all but combine P0 items from all previous decisions. Map ALL identified issues, gaps, decisions and bugs. from your analysis. No more audit cycles. but everything flagged till now will need to be addressed"*
+
+Q1 = approve P0 fix-only path (10 acute doc-drift bugs as inline edits, no new DECs); Q2 = approve DEC-589 audit-iteration ceiling (Pass 53 review-cycle CLOSED); Q3 = approve DEC-590 implementation begin date 2026-05-15 (9 days from 2026-05-06).
+
+### What this turn closed
+
+**Pass 53 review-cycle was a 7-take adversarial-AI gauntlet** spanning ~6 weeks of effort:
+
+| Take | Theme | DECs | Closure commit |
+|---|---|---|---|
+| 1 | Strategy roster expansion (Layer 1.I 38 shorts + Layer 6 27 universe-level) | DEC-509/510 + 50+ classes | prior commit |
+| 2 | Signal universe (Category 7 universe-level signals; ~270-280 → ~315-325 fields) | DEC-511/512/513 | prior commit |
+| 3 | Exit/risk methodology + DEC-514 backtest fill methodology (gap-through-stop) | DEC-514-538 (14 active + 11 backlog) | prior commit |
+| 4 | Regime/smart money (4-regime collapse + training/labeling protocol) | DEC-539-565 (10 P0/P1 + 17 backlog) | prior commit |
+| 5 | Adversarial TRADING_RULES (cross-section + 7-gate Phase 1B-α verdict promotion + DEC-588 doc-reconciliation) | DEC-559 promoted + DEC-566-588 (23 DECs + 5 inline bug fixes) | `240215f8` |
+| 6 | Adversarial Q4 endogeneity-loop protection | DEC-581 (5-component protection: Class A/B classification + hold-out fold protection + tuning Bonferroni + audit trail + cycle prevention) | prior commit |
+| 7 | Adversarial DETAILED_PROJECT_PLAN.md (CC-1 through CC-7 strategic risks + 10 P0 doc-drift bugs) | 10 inline P0 fixes (R7-01 through R7-10) + DEC-589 audit-iteration ceiling + DEC-590 implementation begin date | this commit |
+
+**Aggregate metrics:**
+- Reviews completed: 7
+- Findings surfaced: ~155 (P0/P1/P2/backlog)
+- DECs codified: ~80 (DEC-509 through DEC-590)
+- Inline bug fixes: 15 (5 from review 5 + 10 from review 7)
+- Items deferred to backlog: ~15 (Stage 3+ scope)
+
+### DEC-589 — Audit-iteration ceiling (Pass 53 review-cycle CLOSED)
+
+**Decision** (per Q2 = A): Pass 53 review-cycle CLOSED. No additional audit cycles permitted before Phase 1A implementation begins (DEC-590 = 2026-05-15).
+
+**Rationale:** Marginal utility of additional review cycles approached zero. Reviews 5-7 began surfacing audit-process risks per CC-2 (audit-cycle non-convergence) + CC-3 (decision-to-code ratio of ∞:0) + CC-4 (planning-paralysis pattern). Continued auditing without implementation creates structural risk.
+
+**Boundary conditions for ceiling suspension:**
+1. Phase 1A empirical findings invalidate codified DEC
+2. Phase 1B-α 7-gate verdict produces zero PASS cells (Stage 2 has failed; Part 13.3 re-opens)
+3. Live data source breaks (Polygon/Quiver/FRED/AAII/CNN F&G/CFTC/SEC EDGAR/Apewisdom/pytrends)
+4. Owner explicit directive
+
+**What this rule blocks:** 8th external-AI review of any doc; "Pass 54 audit-only sprint"; methodology revisits without empirical trigger.
+
+**What this rule does NOT block:** inline P0 doc-drift fixes (already done this turn — R7-01 through R7-10); DEC drafting from running-code findings; pre-flight CHECKLIST verification before each recommendation.
+
+**Spec location:** TRADING_RULES_AND_INFORMATION.md §23.6 (full ~70-line spec).
+
+### DEC-590 — Phase 1A implementation begin date 2026-05-15
+
+**Decision** (per Q3 = A): Phase 1A implementation begins 2026-05-15 (9 days from Pass 53 review-cycle closure 2026-05-06).
+
+**9-day pre-implementation window allowed work (May 6-14):**
+
+| Day | Allowed work |
+|---|---|
+| 1-2 (May 6-7) | P0 doc-drift fixes (R7-01 through R7-10) + DEC-589/590 codification + AUDIT.md narrative + AUDIT_INDEX.md updates + alignment tests |
+| 3-5 (May 8-10) | Sprint 0A pytrends bg restart cycles + Polygon news/indicators/financials/events/NBBO prefetch extension + 16 BATCH 14 smoke/demo test convergence |
+| 6-7 (May 11-12) | DEC-588 doc-reconciliation pass (~3-5 days propagating DEC-509-565 across TRADING_RULES sections) + universe-build validation |
+| 8-9 (May 13-14) | Phase 1A v3 archive 67-instrument-equivalent subset re-run prep + DEC-507 wiring matrix verification + DEC-508 Tier 1-4 testing matrix prep |
+| 10 (May 15) | **Phase 1A implementation BEGINS** — owner-gated start |
+
+**Phase 1A scope at start (May 15):** Sprint 1A-α rules-only baseline cube (no agents, --no-agents flag, 4 OOS folds per DEC-505, full universe, 199 strategies); owner gate at 1A-α (rules-only Sharpe ≥ 0.7 OOS) before $300 1B-α budget commits; Sprint 1A-β full-scale dry-run on 1937-unique-ticker universe with --no-agents --dry-run; owner gate at 1A-β (pipeline integrity) before Phase 1B-α agent overlay.
+
+**Slippage tolerance:** ±2 business days only. If implementation cannot start by 2026-05-19, owner reviews root cause + reapproves new date.
+
+**Spec location:** TRADING_RULES_AND_INFORMATION.md §23.7 (full ~50-line spec).
+
+### AUDIT_BACKLOG.md — Master findings registry
+
+Created comprehensive `AUDIT_BACKLOG.md` (26KB / ~365 lines) mapping ALL ~155 findings across 7 reviews:
+
+- Aggregate metrics (7 reviews, ~155 findings, ~80 DECs codified, ~140 resolved, ~15 deferred)
+- Status legend (✅ RESOLVED-INLINE / 🟢 P0-COMMITTED / 🟡 P1-COMMITTED-BACKLOG / 🔴 PROPOSED / 🔵 DEFERRED / ⚠ DOC-DRIFT-PENDING)
+- Source reviews + commits cross-reference table
+- Master findings registry organized by Review 1-7
+- Implementation roadmap with weekly breakdown for Sprint pre-Phase-1A (~49-70 engineering days)
+- DEC-589 audit-iteration ceiling spec
+- DEC-590 implementation begin date 2026-05-15 spec
+- Pass 53 review-cycle FINAL summary table
+- Cross-references section
+
+This file becomes the master tracking document for the next 9 days through Phase 1A.
+
+### Inline P0 doc-drift fixes applied to DETAILED_PROJECT_PLAN.md
+
+Per Q1 = approve P0 fix-only path, 10 inline edits applied (no new DECs):
+
+| ID | Fix | Sections |
+|---|---|---|
+| R7-01 | Cube cell count math 254K → 87,560 (recomputed: 199×4×11×5×2 with 5 primary + 12 drilldown per DEC-569) | §2.2 |
+| R7-02 | Strategy count 108-118 / 109-119 → 199 (per CANONICAL_FACTS F-002 + STRATEGY_ROSTER_FULL.md) | global |
+| R7-03 | Codespace → local VS Code (10 stale references updated) | global |
+| R7-04 | Budget contradictions $75/$225/$300 reconciled ($75-225 = expected; $300 = hard cap) | §2 prefix |
+| R7-05 | Effort math sums recomputed (319-400 days realistic; was 310-385) | §2 prefix |
+| R7-06 | Phase 1B-α run time 37-40h → 20-32h per DEC-505 4-fold (was 6-fold) | global |
+| R7-07 | Tier 1 universe 509 vs 1015 reconciled (Master Dedup 1,937 unique resolved tickers per DEC-504) | §2.3 |
+| R7-08 | Test count "36/36" → "all tests pass per F-007" (drift-tolerant) | global |
+| R7-09 | Cube definition 8 vs 17 dims reconciled per DEC-569 (5 primary + 12 drilldown) | §2.2 |
+| R7-10 | Circuit breaker Level 5 + DEC-515 Level 6 added to §5.1 bug list (was 14 bugs; now 16) | §5.1 |
+
+### TRADING_RULES additions
+
+- §23.6 NEW — DEC-589 audit-iteration ceiling spec (~70 lines)
+- §23.7 NEW — DEC-590 implementation begin date 2026-05-15 spec (~50 lines)
+
+### AUDIT_INDEX.md additions
+
+- DEC-589 entry (audit-iteration ceiling)
+- DEC-590 entry (implementation begin date)
+- Total decision entries: 346 → 348 (Pass 53 review-cycle DECs DEC-509-588 propagation pending DEC-588 doc-reconciliation pass per 9-day window day 6-7)
+
+### Pytrends background
+
+Bg `b6lq78el9` restarted per owner "auto continue restart" directive. Last cycle ended at 1088/1937 cached (56.2%). Will continue auto-restart cycle indefinitely until 1937/1937 OR owner pauses. Each cycle adds +5-10 cached tickers before Google session-blocks; resumable on restart.
+
+### Files modified this turn
+
+- `AUDIT_BACKLOG.md` (NEW; 26KB / ~365 lines) — master findings registry
+- `DETAILED_PROJECT_PLAN.md` — 10 P0 inline fixes (R7-01 through R7-10)
+- `TRADING_RULES_AND_INFORMATION.md` — §23.6 (DEC-589) + §23.7 (DEC-590) + metadata footer update
+- `AUDIT_INDEX.md` — DEC-589 + DEC-590 entries + decision count update
+- `AUDIT.md` — this Pass 53 review-cycle FINAL narrative
+
+### What happens next
+
+**Day 1 (today, 2026-05-06):** This commit closes Pass 53 review-cycle. Pytrends bg cycle continues. No more audit work; only execution.
+
+**Day 2-5 (May 7-10):** Sprint 0A continues — Polygon news/indicators/financials/events/NBBO prefetch extension; BATCH 14 smoke/demo test convergence; pytrends auto-restart cycles.
+
+**Day 6-7 (May 11-12):** DEC-588 doc-reconciliation pass — propagate DEC-509-565 across TRADING_RULES sections; universe-build re-validation.
+
+**Day 8-9 (May 13-14):** Phase 1A v3 archive subset re-run prep; DEC-507 wiring matrix verification; DEC-508 Tier 1-4 testing matrix prep.
+
+**Day 10 (May 15):** **Phase 1A implementation BEGINS** — Sprint 1A-α rules-only baseline cube (--no-agents flag, 4 OOS folds, full universe, 199 strategies). Owner-gated start.
+
+### Cross-references
+
+- DEC-589 (audit-iteration ceiling — TRADING_RULES §23.6)
+- DEC-590 (Phase 1A implementation begin date — TRADING_RULES §23.7)
+- AUDIT_BACKLOG.md (master findings registry of ~155 items + ~80 DECs)
+- DETAILED_PROJECT_PLAN.md (10 P0 fixes applied; Phase 1A sub-phase definitions §3.6-3.10)
+- DEC-505 (4-fold walk-forward replacing 6-fold per Pass 53 R7-06)
+- DEC-507 (Agent toolkit wiring matrix HARD RULE)
+- DEC-508 + CHECKLIST #71 (4-tier external library fork integration mandate)
+- DEC-588 (doc-reconciliation pass — Day 6-7 of 9-day window)
+- DEC-569 (cube reconciliation: 5 primary + 12 drilldown per Pass 53 R7-01/R7-09)
+- DEC-515 (Circuit Breaker Level 5 + Level 6 — Pass 53 R7-10 add to §5.1)
+
+*Per CHECKLIST #1 (owner-approved Q1+Q2+Q3 = approve all); #25 (10 P0 inline fixes + 2 closure DECs = comprehensive scope); #43 (cross-doc — TRADING_RULES + DETAILED_PROJECT_PLAN + AUDIT_INDEX + AUDIT_BACKLOG); #45 (this); #51 (scope strict — Pass 53 review-cycle closure only; no new methodology); #58 (single atomic commit closing Pass 53); #67/#67.b (per-turn doc sync — all forward-looking docs synced this turn); #69 (test pyramid — alignment + unit + integration tests run pre-commit per next step). Pass 53 review-cycle CLOSED. Phase 1A implementation BEGINS 2026-05-15.*
+
