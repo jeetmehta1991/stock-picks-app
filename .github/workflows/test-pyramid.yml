@@ -57,7 +57,12 @@ jobs:
           python -m pytest backtest/tests/test_engine_bad_data_stress.py -q --tb=short
         continue-on-error: false
 
-      - name: Tier 5 — Phase gates (DEC-595)
+      - name: Tier 5 — Acceptance / functional (G5 / DEC-503)
+        run: |
+          python -m pytest backtest/tests/test_acceptance_functional.py -q --tb=short
+        continue-on-error: false
+
+      - name: Tier 5b — Phase gates (DEC-595)
         run: |
           python -m pytest backtest/tests/test_gates.py -q --tb=short
         continue-on-error: false
@@ -103,4 +108,6 @@ jobs:
           echo "### Test Pyramid Result" >> $GITHUB_STEP_SUMMARY
           echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
           echo "**Time:** $(date +%Y-%m-%d' '%H:%M' UTC')" >> $GITHUB_STEP_SUMMARY
-          echo "**Tiers:** Unit + Integration + Data integrity + Bad-data + Gates + Partial-spec + Wiring + Walk-forward + Exit context + Cache schema (10 mandatory) + Performance + E2E (2 informational)" >> $GITHUB_STEP_SUMMARY
+          echo "**Mandatory tiers (11):** Unit + Integration + Data integrity + Bad-data (G2) + Acceptance (G5) + Phase Gates + Partial-spec + Wiring + Walk-forward + Exit context + Cache schema" >> $GITHUB_STEP_SUMMARY
+          echo "**Informational tiers (2):** Performance/load (G3) + E2E smoke (G1) — skip on cache-empty CI" >> $GITHUB_STEP_SUMMARY
+          echo "**G4:** This workflow itself — automated pyramid execution on every push to main" >> $GITHUB_STEP_SUMMARY
