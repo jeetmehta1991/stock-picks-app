@@ -135,18 +135,24 @@ def test_avoid_tier_not_in_long_trades(engine):
     print("✅ No AVOID-tier long trades")
 
 
-def test_outputs_written(engine):
-    """Verify output files are written after save_all_outputs."""
-    import tempfile, os
-    with tempfile.TemporaryDirectory() as tmpdir:
-        engine.output_dir = Path(tmpdir)
-        engine.save_all_outputs()
-        written = list(Path(tmpdir).glob("*.csv")) + list(Path(tmpdir).glob("*.html"))
-        assert len(written) >= 3, f"Only {len(written)} output files written"
-        filenames = [f.name for f in written]
-        assert any("trade_log" in f for f in filenames), "trade_log.csv not written"
-        assert any("backtest_results" in f for f in filenames), "backtest_results.csv not written"
-    print(f"✅ Output files written: {len(written)} files including trade_log and backtest_results")
+def test_outputs_written(engine, tmp_path):
+    """Verify output files are written after save_all_outputs.
+
+    Pass 53 Day-9 v8h: switched from tempfile.TemporaryDirectory() to pytest
+    tmp_path fixture. Windows cleanup of TemporaryDirectory was racing
+    concurrent test FS activity (e.g. parquet writes during Quiver BG
+    re-prefetch), producing PermissionError on close. tmp_path delegates
+    cleanup to pytest which handles concurrent access gracefully.
+    """
+    engine.output_dir = tmp_path
+    engine.save_all_outputs()
+    written = list(tmp_path.glob("*.csv")) + list(tmp_path.glob("*.html"))
+    assert len(written) >= 3, f"Only {len(written)} output files written"
+    filenames = [f.name for f in written]
+    assert any("trade_log" in f for f in filenames), "trade_log.csv not written"
+    assert any("backtest_results" in f for f in filenames), "backtest_results.csv not written"
+    print(f"[OK] Output files written: {len(written)} files including "
+          f"trade_log and backtest_results")
 
 
 def test_point_in_time_ohlcv():

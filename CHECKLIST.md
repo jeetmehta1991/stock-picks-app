@@ -897,3 +897,45 @@ State compliance visibly: "Checklist: ✅ [each item]"
     **First application:** Pass 53 Day-9 v8h commit `c0a3a568` — created `OPEN_INVESTIGATIONS.md` with 8 INV entries retroactively documenting flags raised across this session.
 
     **Joint:** DEC-594/595 (same-commit pattern); CHECKLIST #11 (proactive flagging is the trigger; #74 is the persistence layer); L149 (sister rule for spec-without-build); L150 (sister rule for pyramid dimension-coverage gap); INV-001..INV-008 (initial entries).
+
+75. **HARD RULE — FULL PYRAMID TESTING FOR EVERY DECISION IMPLEMENTATION, BUG RESOLUTION, AND ACTION** (Pass 53 Day-9 v8h owner directive 2026-05-07).
+
+    **Owner directive verbatim:**
+
+    *"MANDATORY REQUIREMENT: FULL PYRAMID TESTING FOR EVERY DECISION IMPLEMENTATION, BUG RESOLUTION, EVERY ACTION! THIS IS NON NEGOTIABLE AND MUST BE DONE! NO EXCEPTIONS, NO SKIP UNDER ANY SITUATION."*
+
+    **The rule:**
+
+    Every commit that contains code changes (not pure-doc / pure-data commits) MUST run the **full mandatory pyramid** before push. The "mandatory pyramid" is the test suite excluding only the slow-tier `test_e2e_phase1a_smoke.py` + `test_performance_load.py` (which require cache + are gated to CI). All other tests run.
+
+    Standard invocation:
+
+    ```bash
+    python -m pytest backtest/tests/ -q --tb=line \
+      --ignore=backtest/tests/test_e2e_phase1a_smoke.py \
+      --ignore=backtest/tests/test_performance_load.py
+    ```
+
+    Pre-push gate: zero failures (xfail + skip permitted with documented reasons; failures HALT push).
+
+    **Why this is structural, not just discipline:**
+
+    Owner ($300 Phase 1B failed run + 7 audit cycles + repeated downstream-bug pattern) has paid the cost when partial testing missed regressions. Same logic as DEC-594/L149 spec-without-build — discipline alone failed. The mechanism (fail-loud, run-or-block) makes the failure mode impossible to silently skip.
+
+    **Pre-flight verification:** when proposing or executing a code change, state explicitly: "Mandatory pyramid: X PASS / 0 FAIL post-change" (or "pre-change baseline + post-change: same Δ").
+
+    **End-of-turn check:** if any commit contained code changes and the pyramid was NOT run + reported, the response is non-compliant.
+
+    **Caveats / exclusions (HARD-LIMITED):**
+
+    - **Pure-doc commits** (changes only to `*.md` files; no `.py` / `.yaml` / `.json` changes) — pyramid is OPTIONAL; rationale: doc rot doesn't break tests.
+    - **Pure-data commits** (only `data_prefetch/**/*.parquet` or `backtest/data/cache/**`) — pyramid OPTIONAL; data-integrity tests cover this case explicitly (CHECKLIST #72).
+    - **Long-running additions** (e.g. `test_e2e_phase1a_smoke.py` 7-min run) — invoked separately on CI per `.github/workflows/test-pyramid.yml`; NOT skippable from full pyramid mandate but allowed to run in CI rather than locally.
+
+    **Past failure pattern motivating this rule:**
+
+    Pass 53 Day-9 v8h, my CFTC re-prefetch saved numeric columns as strings — caught by `test_data_integrity_4_numeric_dtype_cftc_fred` only because the existing pyramid was run. Without #75 enforcement, I might have shipped the data fix without running tests; the bug would have propagated to Phase 1A consumers (rolling-mean / sum-aggregation operations would silently fail). The fix landed in same commit BECAUSE the pyramid ran.
+
+    **First application:** Pass 53 Day-9 v8h P1 batch onwards.
+
+    **Joint:** DEC-503 (9-type pyramid); DEC-594/595 (same-commit); CHECKLIST #69 (pre-push pyramid; #75 is the strict-enforcement upgrade); CHECKLIST #72 (data-integrity); CHECKLIST #74 (flag tracker — sister persistence rule). L86 + L95 + $300 Phase 1B prior-loss pattern (same root cause: partial verification ships bugs).
