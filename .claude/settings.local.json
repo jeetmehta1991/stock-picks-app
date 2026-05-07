@@ -3,7 +3,27 @@
     "allow": [
       "Bash(git add *)",
       "Bash(git commit *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(python -m pytest backtest/tests/test_unit.py backtest/tests/test_integration.py -v)",
+      "Bash(git pull *)",
+      "Bash(git stash *)",
+      "Bash(git restore *)",
+      "Bash(python -m pytest backtest/tests/test_unit.py backtest/tests/test_integration.py)",
+      "Skill(schedule)",
+      "Bash(grep -v '\\\\.parquet$')",
+      "Bash(grep -v '\\\\.pyc$')",
+      "Bash(grep -v '\\\\.zip$')",
+      "Bash(git fetch *)",
+      "Bash(git rev-list *)",
+      "Bash(grep -v 'parquet$')",
+      "Bash(awk '{print $2}')",
+      "Bash(awk -F/ '{print $1}')",
+      "Bash(xargs -0 git checkout HEAD --)",
+      "Bash(awk 'NR==356' /c/Users/jeetm/Github/stock-picks-app/AUDIT_INDEX.md)",
+      "Bash(awk 'NR==454 || NR==483' /c/Users/jeetm/Github/stock-picks-app/AUDIT_INDEX.md)",
+      "Bash(xxd)",
+      "WebFetch(domain:massive.com)",
+      "Bash(python -m pytest backtest/tests/test_data_integrity.py -v)"
     ]
   }
 }
