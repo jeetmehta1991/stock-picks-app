@@ -162,8 +162,23 @@ contract names: `UST 10Y NOTE` / `UST 5Y NOTE` / `UST 2Y NOTE` / `UST BOND`
 - **Discovered:** 2026-05-07 (Pass 53 Day-9 v8h Tier C3 CFTC prefetch)
 - **Observation:** Tried to fetch CFTC TFF positioning for "10-YEAR U.S. TREASURY NOTES" / "5-YEAR" / "2-YEAR" / "ULTRA U.S. TREASURY BONDS" / "E-MINI DJIA (X $5)" — all returned 0 rows. Other contracts (e-mini SP500, NDX, RUT, VIX, fed funds, currencies, commodities) all worked fine.
 - **Why not blocking:** 13/18 contracts fetched successfully. Treasury futures positioning is nice-to-have for rate-driven strategies; we have rate level/spread data from FRED (DGS10/DGS5/DGS2/T10Y2Y).
-- **Status:** open — investigate
-- **Next action:** query CFTC Socrata API without contract filter for one date to see how Treasury contracts are actually named in the dataset; update `prefetch_cftc_cot.py` CONTRACTS list with correct names; re-run.
+- **Status:** RESOLVED — INV-011 fix landed in `18e93c00` with corrected names.
+- **Next action:** none — superseded by INV-011 resolution.
+
+---
+
+## INV-014 — DEC-491 trade_log.parquet write silently degrades to CSV-only (Pass 53 Day-9 v8h)
+
+- **Discovered:** 2026-05-07 evening; Phase 1A dry-run output (BG `bo1zvd4xk`)
+- **Observation:** Engine logs `WARNING: trade_log.parquet write failed (Cannot write struct type 'agent_reasoning' with no child field to Parquet. Consider adding a dummy child field.); CSV only`. The `agent_reasoning` column is an empty struct (no child fields) when `run_agents=False`, which pyarrow rejects. DEC-491 architecture intent is Parquet PRIMARY + CSV serialized; runtime is silently degrading to CSV-only.
+- **Why not blocking:** CSV fallback works; engine continues; trade-log content is preserved. DEC-491 was about resilience — the fallback IS the resilience working. But the architectural goal of Parquet-as-primary is degraded for any agents-disabled run (which is Phase 1A baseline, dry-run, and the Phase 1A no-agents path per `--no-agents` flag).
+- **Severity:** medium. Phase 1A `--no-agents` runs (the most common pre-Phase-1B configuration) will skip the Parquet write every time. Downstream Parquet consumers (anyone reading `trade_log.parquet` directly per DEC-491) will silently miss data.
+- **Status:** open
+- **Next action:**
+  - Fix in `backtest/results/writer.py` DEC-491 block: when serializing object columns with empty dicts/lists, replace `{}` with `None` (or `{"_": None}` if pyarrow needs a child) before to_parquet
+  - Add data-integrity test asserting `trade_log.parquet` is written (not just `trade_log.csv`) for `--no-agents` runs
+  - Or simpler: drop the `agent_reasoning` column entirely from the Parquet write when it's a uniform-empty-struct (preserve in CSV)
+- **Joint:** DEC-491 (the rule that motivated parquet-primary); CHECKLIST #74 (this INV entry honoring same-commit flag rule); the dry-run was the (b) functional-verification step that caught this — example of CHECKLIST #76's column-(b) catching a bug an inventory-only audit would miss.
 
 ---
 

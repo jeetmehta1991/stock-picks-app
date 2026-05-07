@@ -71,6 +71,95 @@ def test_dec513_realized_vol_insufficient_history():
 
 
 # ---------------------------------------------------------------------------
+# #2 Betas (Pass 53 Day-9 v8h evening — DEC-513 #2)
+# ---------------------------------------------------------------------------
+def _build_synth_pair(beta: float, n: int = 280, vol: float = 0.01,
+                       seed: int = 42, drift: float = 0.0):
+    """Build market and stock OHLCV where stock_ret = beta * market_ret + tiny noise.
+
+    Returns (stock_df, market_df). Useful for verifying that compute_betas
+    recovers the synthetic beta to within tolerance.
+    """
+    rng = np.random.default_rng(seed)
+    idx = pd.date_range("2022-01-03", periods=n, freq="B")
+    market_rets = rng.normal(drift, vol, n)
+    noise = rng.normal(0, vol * 0.05, n)  # 5% noise relative to market vol
+    stock_rets = beta * market_rets + noise
+    market_close = 100.0 * np.cumprod(1 + market_rets)
+    stock_close = 100.0 * np.cumprod(1 + stock_rets)
+    market_df = pd.DataFrame({"open": market_close, "high": market_close * 1.005,
+                              "low": market_close * 0.995, "close": market_close,
+                              "volume": [1_000_000] * n}, index=idx)
+    stock_df = pd.DataFrame({"open": stock_close, "high": stock_close * 1.005,
+                             "low": stock_close * 0.995, "close": stock_close,
+                             "volume": [1_000_000] * n}, index=idx)
+    return stock_df, market_df
+
+
+def test_dec513_betas_returns_8_fields():
+    from backtest.signals.dec513_extended_signals import compute_betas
+    s, m = _build_synth_pair(beta=1.0, n=280)
+    out = compute_betas(s, m)
+    expected = {
+        "beta_market_60d", "beta_market_252d",
+        "r2_market_60d", "r2_market_252d",
+        "beta_sector_60d", "beta_sector_252d",
+        "r2_sector_60d", "r2_sector_252d",
+    }
+    assert set(out.keys()) == expected
+
+
+def test_dec513_betas_recover_beta_one():
+    """Synthetic stock_ret = 1.0 * market_ret → beta_market should be ~1.0."""
+    from backtest.signals.dec513_extended_signals import compute_betas
+    s, m = _build_synth_pair(beta=1.0, n=280)
+    out = compute_betas(s, m)
+    assert abs(out["beta_market_252d"] - 1.0) < 0.05
+    assert out["r2_market_252d"] > 0.95  # near-perfect linear relationship
+
+
+def test_dec513_betas_recover_beta_one_point_five():
+    """Synthetic stock_ret = 1.5 * market_ret → beta_market ~1.5."""
+    from backtest.signals.dec513_extended_signals import compute_betas
+    s, m = _build_synth_pair(beta=1.5, n=280)
+    out = compute_betas(s, m)
+    assert abs(out["beta_market_252d"] - 1.5) < 0.10
+
+
+def test_dec513_betas_recover_beta_half():
+    """Synthetic stock_ret = 0.5 * market_ret → beta_market ~0.5."""
+    from backtest.signals.dec513_extended_signals import compute_betas
+    s, m = _build_synth_pair(beta=0.5, n=280)
+    out = compute_betas(s, m)
+    assert abs(out["beta_market_252d"] - 0.5) < 0.05
+
+
+def test_dec513_betas_sector_nan_when_omitted():
+    """No sector_df → sector_* fields are all NaN."""
+    from backtest.signals.dec513_extended_signals import compute_betas
+    s, m = _build_synth_pair(beta=1.0, n=280)
+    out = compute_betas(s, m, sector_df=None)
+    assert np.isnan(out["beta_sector_60d"])
+    assert np.isnan(out["beta_sector_252d"])
+
+
+def test_dec513_betas_sector_recovers_when_supplied():
+    """When sector ETF is the same as market, sector beta ≈ market beta."""
+    from backtest.signals.dec513_extended_signals import compute_betas
+    s, m = _build_synth_pair(beta=1.2, n=280)
+    out = compute_betas(s, m, sector_df=m)  # use market as sector for test
+    assert abs(out["beta_sector_252d"] - 1.2) < 0.10
+
+
+def test_dec513_betas_insufficient_history_returns_nan():
+    from backtest.signals.dec513_extended_signals import compute_betas
+    s, m = _build_synth_pair(beta=1.0, n=5)
+    out = compute_betas(s, m)
+    assert np.isnan(out["beta_market_60d"])
+    assert np.isnan(out["beta_market_252d"])
+
+
+# ---------------------------------------------------------------------------
 # #5 Overnight / intraday split
 # ---------------------------------------------------------------------------
 def test_dec513_overnight_intraday_returns_three_fields():
@@ -174,6 +263,87 @@ def test_dec513_gap_fill_true_when_intraday_returns():
     out = compute_gaps(df2)
     # Without future bars in df2, fill flags must be False
     assert out["gap_filled_T1"] is False
+
+
+# ---------------------------------------------------------------------------
+# #7 VIX term structure (Pass 53 Day-9 v8h evening — DEC-513 #7)
+# ---------------------------------------------------------------------------
+def _build_fred_series(values: list, label: str = "value") -> pd.DataFrame:
+    """Build a FRED-style observations DataFrame (DatetimeIndex + value col)."""
+    idx = pd.date_range("2024-01-02", periods=len(values), freq="B")
+    return pd.DataFrame({label: values}, index=idx)
+
+
+def test_dec513_vix_term_structure_returns_5_fields():
+    from backtest.signals.dec513_extended_signals import compute_vix_term_structure
+    vix = _build_fred_series([15.0, 16.0, 18.0])
+    vix3m = _build_fred_series([18.0, 19.0, 20.0])
+    out = compute_vix_term_structure(vix, vix3m)
+    assert set(out.keys()) == {"vix_spot", "vix_3m", "vix_term_premium",
+                                "vix_term_ratio", "vix_term_regime"}
+
+
+def test_dec513_vix_term_contango_normal():
+    """VIX=15, VIX3M=18 → premium=+3, ratio=1.2, regime=contango."""
+    from backtest.signals.dec513_extended_signals import compute_vix_term_structure
+    vix = _build_fred_series([15.0])
+    vix3m = _build_fred_series([18.0])
+    out = compute_vix_term_structure(vix, vix3m)
+    assert out["vix_spot"] == 15.0
+    assert out["vix_3m"] == 18.0
+    assert out["vix_term_premium"] == pytest.approx(3.0)
+    assert out["vix_term_ratio"] == pytest.approx(1.2)
+    assert out["vix_term_regime"] == "contango"
+
+
+def test_dec513_vix_term_backwardation_stress():
+    """VIX=40, VIX3M=30 → premium=-10, ratio=0.75, regime=backwardation."""
+    from backtest.signals.dec513_extended_signals import compute_vix_term_structure
+    vix = _build_fred_series([40.0])
+    vix3m = _build_fred_series([30.0])
+    out = compute_vix_term_structure(vix, vix3m)
+    assert out["vix_term_premium"] == pytest.approx(-10.0)
+    assert out["vix_term_ratio"] == pytest.approx(0.75)
+    assert out["vix_term_regime"] == "backwardation"
+
+
+def test_dec513_vix_term_flat_regime():
+    """VIX=20, VIX3M=20.5 → ratio=1.025, regime=flat."""
+    from backtest.signals.dec513_extended_signals import compute_vix_term_structure
+    vix = _build_fred_series([20.0])
+    vix3m = _build_fred_series([20.5])
+    out = compute_vix_term_structure(vix, vix3m)
+    assert out["vix_term_regime"] == "flat"
+
+
+def test_dec513_vix_term_handles_empty_input():
+    from backtest.signals.dec513_extended_signals import compute_vix_term_structure
+    empty = pd.DataFrame({"value": []})
+    vix3m = _build_fred_series([20.0])
+    out = compute_vix_term_structure(empty, vix3m)
+    assert np.isnan(out["vix_spot"])
+    assert out["vix_term_regime"] == "unknown"
+
+
+def test_dec513_vix_term_handles_zero_vix():
+    """vix_spot=0 → division-safe; returns NaN regime=unknown."""
+    from backtest.signals.dec513_extended_signals import compute_vix_term_structure
+    vix = _build_fred_series([0.0])
+    vix3m = _build_fred_series([20.0])
+    out = compute_vix_term_structure(vix, vix3m)
+    assert np.isnan(out["vix_spot"]) or out["vix_spot"] == 0.0
+    assert out["vix_term_regime"] == "unknown"
+
+
+def test_dec513_vix_term_uses_last_row():
+    """compute_vix_term_structure should use the LAST row (most-recent), not first."""
+    from backtest.signals.dec513_extended_signals import compute_vix_term_structure
+    vix = _build_fred_series([10.0, 20.0, 30.0])
+    vix3m = _build_fred_series([15.0, 25.0, 33.0])
+    out = compute_vix_term_structure(vix, vix3m)
+    # Should pick last row (vix=30, vix3m=33)
+    assert out["vix_spot"] == 30.0
+    assert out["vix_3m"] == 33.0
 
 
 # ---------------------------------------------------------------------------

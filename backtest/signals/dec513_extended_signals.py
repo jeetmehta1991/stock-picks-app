@@ -7,19 +7,19 @@ Additive signal-computing helpers. Each function takes an OHLCV DataFrame
 signals as_of the LAST bar in the DataFrame. Callers slice df to as_of for
 PIT correctness.
 
-Implemented this turn (4 of 9):
+Implemented (7 of 10 — Pass 53 Day-9 v8h evening adds #2 + #7):
   #1 compute_realized_vol           — 3 horizons (10d/20d/60d annualized)
+  #2 compute_betas                  — rolling beta + R² vs market (60d/252d) + sector ETF
   #5 compute_overnight_intraday_split — overnight vs intraday return decomposition
   #6 compute_gaps                    — gap size, bucket, fill outcomes T+1/T+3/T+5
+  #7 compute_vix_term_structure     — VIX1M vs VIX3M (premium + ratio + regime)
   #8 compute_extremes                — 52w/20d/252d high/low distance
+  #10 attach_signal_age              — universal age field
 
-Deferred (require additional infra):
-  #2 compute_betas         — needs benchmark series (SPY + sector ETF)
-  #3 compute_factor_exposures — needs FF3 factor returns
-  #4 compute_correlation_matrix — Sprint 7 / DEC-511 §7.3
-  #7 VIX3M + VVIX          — needs FRED prefetch additions
-  #9 FINRA short interest  — new data source
-  #10 signal_age_days      — schema-additive across all 7 categories
+Deferred (still require new prefetched data not yet available):
+  #3 compute_factor_exposures — needs FF3 factor returns prefetch
+  #4 compute_correlation_matrix — DONE elsewhere (correlation_cluster.py per DEC-509)
+  #9 FINRA short interest    — new data source not in prefetch
 """
 
 from __future__ import annotations
@@ -55,6 +55,75 @@ def compute_realized_vol(df: pd.DataFrame) -> Dict[str, float]:
             out[f"realized_vol_{w}d"] = float("nan")
             continue
         out[f"realized_vol_{w}d"] = float(sliced.std() * np.sqrt(_TRADING_DAYS_YEAR))
+    return out
+
+
+# ---------------------------------------------------------------------------
+# DEC-513 #2 — Rolling betas vs market + sector ETF
+# ---------------------------------------------------------------------------
+def compute_betas(df: pd.DataFrame,
+                  market_df: pd.DataFrame,
+                  sector_df: pd.DataFrame | None = None) -> Dict[str, float]:
+    """Rolling beta + R² of stock vs market and optional sector ETF.
+
+    beta = cov(stock_rets, bench_rets) / var(bench_rets)
+    R²   = corr(stock_rets, bench_rets) ** 2
+
+    Computed over 60d and 252d windows on simple daily returns. All series
+    are aligned on common dates before fitting; if alignment yields fewer
+    than the window size, that horizon returns NaN.
+
+    Args:
+        df: stock OHLCV with close column (DatetimeIndex).
+        market_df: market benchmark OHLCV with close column (e.g. SPY).
+        sector_df: optional sector ETF OHLCV with close column.
+
+    Returns dict:
+        beta_market_60d, beta_market_252d, r2_market_60d, r2_market_252d,
+        beta_sector_60d, beta_sector_252d, r2_sector_60d, r2_sector_252d
+        (sector_* are NaN when sector_df is None).
+    """
+    nan_keys = {
+        "beta_market_60d": float("nan"), "beta_market_252d": float("nan"),
+        "r2_market_60d":  float("nan"), "r2_market_252d":  float("nan"),
+        "beta_sector_60d": float("nan"), "beta_sector_252d": float("nan"),
+        "r2_sector_60d":  float("nan"), "r2_sector_252d":  float("nan"),
+    }
+    if df is None or "close" not in df.columns or len(df) < 11:
+        return nan_keys
+    if market_df is None or "close" not in market_df.columns or len(market_df) < 11:
+        return nan_keys
+
+    stock_rets = df["close"].pct_change()
+    market_rets = market_df["close"].pct_change()
+    aligned = pd.concat([stock_rets, market_rets], axis=1, keys=["s", "m"]).dropna()
+
+    out = dict(nan_keys)
+    for w in (60, 252):
+        if len(aligned) < w:
+            continue
+        sliced = aligned.tail(w)
+        var_m = sliced["m"].var()
+        if var_m and var_m > 1e-12:
+            cov_sm = sliced["s"].cov(sliced["m"])
+            corr_sm = sliced["s"].corr(sliced["m"])
+            out[f"beta_market_{w}d"] = float(cov_sm / var_m)
+            out[f"r2_market_{w}d"] = float(corr_sm * corr_sm) if pd.notna(corr_sm) else float("nan")
+
+    if sector_df is not None and "close" in sector_df.columns and len(sector_df) >= 11:
+        sector_rets = sector_df["close"].pct_change()
+        aligned_sec = pd.concat([stock_rets, sector_rets], axis=1, keys=["s", "x"]).dropna()
+        for w in (60, 252):
+            if len(aligned_sec) < w:
+                continue
+            sliced = aligned_sec.tail(w)
+            var_x = sliced["x"].var()
+            if var_x and var_x > 1e-12:
+                cov_sx = sliced["s"].cov(sliced["x"])
+                corr_sx = sliced["s"].corr(sliced["x"])
+                out[f"beta_sector_{w}d"] = float(cov_sx / var_x)
+                out[f"r2_sector_{w}d"] = float(corr_sx * corr_sx) if pd.notna(corr_sx) else float("nan")
+
     return out
 
 
@@ -159,6 +228,71 @@ def compute_gaps(df: pd.DataFrame) -> Dict[str, float]:
             filled = True  # zero gap auto-"filled"
         out[key] = bool(filled)
     return out
+
+
+# ---------------------------------------------------------------------------
+# DEC-513 #7 — VIX term structure (1M vs 3M)
+# ---------------------------------------------------------------------------
+def compute_vix_term_structure(vix_df: pd.DataFrame,
+                                vix3m_df: pd.DataFrame) -> Dict[str, float]:
+    """VIX term-structure regime signal (1M vs 3M).
+
+    Source: FRED VIXCLS (1M) and VXVCLS (3M) — both prefetched to
+    ``data_prefetch/fred/observations/``. Caller passes per-series DataFrames
+    sliced to the as_of date (PIT enforcement is the caller's responsibility).
+
+    Returns most-recent observation:
+        vix_spot              — VIX1M close (annualized %)
+        vix_3m                — VIX3M close (annualized %)
+        vix_term_premium      — vix_3m - vix_spot (positive = contango/normal,
+                                 negative = backwardation/stress)
+        vix_term_ratio        — vix_3m / vix_spot
+        vix_term_regime       — 'contango' (ratio > 1.05),
+                                 'flat' (0.95 ≤ ratio ≤ 1.05),
+                                 'backwardation' (ratio < 0.95)
+
+    Schema is FRED-agnostic — accepts any DataFrame with a 'value' column or
+    a single non-index column, as long as last row is the most-recent obs.
+    """
+    nan_out = {
+        "vix_spot": float("nan"), "vix_3m": float("nan"),
+        "vix_term_premium": float("nan"), "vix_term_ratio": float("nan"),
+        "vix_term_regime": "unknown",
+    }
+    if vix_df is None or vix3m_df is None or len(vix_df) == 0 or len(vix3m_df) == 0:
+        return nan_out
+
+    def _last_value(s_df):
+        if "value" in s_df.columns:
+            v = s_df["value"].dropna()
+        else:
+            # FRED-style observation parquets sometimes have just one numeric col
+            num_cols = [c for c in s_df.columns if pd.api.types.is_numeric_dtype(s_df[c])]
+            if not num_cols:
+                return float("nan")
+            v = s_df[num_cols[0]].dropna()
+        return float(v.iloc[-1]) if len(v) else float("nan")
+
+    vix_spot = _last_value(vix_df)
+    vix_3m = _last_value(vix3m_df)
+    if not (pd.notna(vix_spot) and pd.notna(vix_3m) and vix_spot > 0):
+        return nan_out
+
+    premium = vix_3m - vix_spot
+    ratio = vix_3m / vix_spot
+    if ratio > 1.05:
+        regime = "contango"
+    elif ratio < 0.95:
+        regime = "backwardation"
+    else:
+        regime = "flat"
+    return {
+        "vix_spot": vix_spot,
+        "vix_3m": vix_3m,
+        "vix_term_premium": float(premium),
+        "vix_term_ratio": float(ratio),
+        "vix_term_regime": regime,
+    }
 
 
 # ---------------------------------------------------------------------------
