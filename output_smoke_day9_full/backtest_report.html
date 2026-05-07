@@ -1,0 +1,802 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Backtest Report — 2026-05-07 06:44 UTC</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d9;padding:2rem 1rem}
+h1{font-size:1.7rem;color:#f0f6fc;margin-bottom:.4rem}
+h2{font-size:1rem;color:#58a6ff;margin:2.5rem 0 .75rem;border-bottom:1px solid #21262d;padding-bottom:.4rem}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:1.5rem 0}
+.stat{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:1rem 1.2rem}
+.stat .v{font-size:2rem;font-weight:700;color:#f0f6fc} .stat .l{font-size:.75rem;color:#8b949e;margin-top:3px}
+.note{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:.9rem 1.2rem;
+       font-size:.82rem;color:#8b949e;margin-bottom:1.5rem}
+.note strong{color:#c9d1d9}
+.improvements{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.75rem;margin-bottom:1.5rem}
+.imp-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:.9rem 1.1rem}
+.imp-card .title{font-size:.7rem;color:#8b949e;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.4rem}
+.imp-card .val{font-size:1.1rem;font-weight:600;color:#f0f6fc}
+.imp-card .sub{font-size:.72rem;color:#8b949e;margin-top:.2rem}
+table{width:100%;border-collapse:collapse;font-size:.8rem;margin-bottom:1rem}
+th{background:#161b22;color:#8b949e;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;
+    padding:.55rem .8rem;text-align:left;border-bottom:1px solid #21262d}
+td{padding:.55rem .8rem;border-bottom:1px solid #21262d}
+tr:hover td{background:#1c2128}
+footer{text-align:center;margin-top:3rem;font-size:.75rem;color:#484f58;
+        padding-top:1rem;border-top:1px solid #21262d}
+</style></head><body>
+<h1>Backtest Report — Stage 2</h1>
+<p style="color:#8b949e;font-size:.85rem">Generated 2026-05-07 06:44 UTC &nbsp;|&nbsp; 61 strategy classes (Layer 1 baseline; full layered roster per CANONICAL_FACTS.md F-002) &nbsp;|&nbsp; 17 exit methods (per F-004) &nbsp;|&nbsp; 5 improvements applied</p>
+
+<div class="stats">
+  <div class="stat"><div class="v">3,637</div><div class="l">Trades simulated</div></div>
+  <div class="stat"><div class="v">61</div><div class="l">Strategies tested</div></div>
+  <div class="stat"><div class="v" style="color:#3fb950">0</div><div class="l">Passing all criteria</div></div>
+  <div class="stat"><div class="v">2,377</div><div class="l">Long trades</div></div>
+  <div class="stat"><div class="v">1,260</div><div class="l">Short trades</div></div>
+  <div class="stat"><div class="v" style="color:#3fb950">7368.8%</div><div class="l">Gross ROI</div></div>
+  <div class="stat"><div class="v" style="color:#3fb950">1774.5%</div><div class="l">Net ROI (after costs)</div></div>
+  <div class="stat"><div class="v" style="color:#f85149">-838.2%</div><div class="l">Transaction costs</div></div>
+</div>
+
+<h2>Improvements applied</h2>
+<div class="improvements">
+  <div class="imp-card"><div class="title">Transaction costs</div>
+    <div class="val">-838.18% total</div>
+    <div class="sub">0.08% ETF · 0.10% large-cap · 0.15% mid-cap round-trip</div></div>
+  <div class="imp-card"><div class="title">Survivorship bias haircut</div>
+    <div class="val">-4756.1% applied</div>
+    <div class="sub">2% annual over 4.0 years — gross 6530.7% → adjusted 1774.5%</div></div>
+  <div class="imp-card"><div class="title">Walk-forward validation</div>
+    <div class="val">In-sample 2022-23 · OOS 2024</div>
+    <div class="sub">ROBUST = passes both · OVERFIT = fails out-of-sample</div></div>
+  <div class="imp-card"><div class="title">Correlation filter</div>
+    <div class="val">Max 0.70 correlation</div>
+    <div class="sub">Max 3 positions per sector · prevents concentrated drawdowns</div></div>
+  <div class="imp-card"><div class="title">Slippage model</div>
+    <div class="val">Applied at entry</div>
+    <div class="sub">Spread + gap penalty · 0.03% ETF · 0.08% large-cap · 0.15% high-vol</div></div>
+  <div class="imp-card"><div class="title">Bonferroni correction</div>
+    <div class="val">500+ trades required</div>
+    <div class="sub">61 strategy classes tested (Layer 1 baseline) · adjusted p=0.00083</div></div>
+</div>
+
+<h2>Strategy performance (net of transaction costs)</h2>
+<div class="note"><strong>Pass criteria:</strong> 55%+ win rate · profit factor &gt;1.2 · 500+ trades · 2+ regimes · positive net ROI · max drawdown &lt;20%
+&nbsp;·&nbsp; ⚠️ = flagged for look-ahead bias audit</div>
+<table><thead><tr><th>Strategy</th><th>Category</th><th>L/S</th><th>Trades</th>
+<th>Win rate</th><th>Profit factor</th><th>Net ROI</th><th>Max DD</th><th>Regimes</th><th>Walk-forward</th><th>Pass</th>
+</tr></thead><tbody><tr>
+              <td style="color:#58a6ff;font-weight:600">golden_cross_50_200</td>
+              <td style="color:#8b949e">trend</td>
+              <td>15L/3S</td>
+              <td>18</td>
+              <td style="color:#3fb950;font-weight:500">66.7%  ✓</td>
+              <td>5.65</td>
+              <td style="color:#3fb950">155.5%</td>
+              <td style="color:#e3b341">-9.1%</td>
+              <td style="font-size:11px">—</td>
+              <td style="color:#e3b341;font-weight:500">INSUFFICIENT_OOS_DATA</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">pivot_fib_confluence</td>
+              <td style="color:#8b949e">confluence</td>
+              <td>6L/0S</td>
+              <td>6</td>
+              <td style="color:#3fb950;font-weight:500">66.7%  ✓</td>
+              <td>4.48</td>
+              <td style="color:#3fb950">48.4%</td>
+              <td style="color:#e3b341">-4.2%</td>
+              <td style="font-size:11px">—</td>
+              <td style="color:#e3b341;font-weight:500">INSUFFICIENT_OOS_DATA</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">prev_day_low_bounce</td>
+              <td style="color:#8b949e">pivot</td>
+              <td>11L/7S</td>
+              <td>18</td>
+              <td style="color:#3fb950;font-weight:500">55.6%  ✓</td>
+              <td>1.93</td>
+              <td style="color:#3fb950">37.1%</td>
+              <td style="color:#f85149">-17.0%</td>
+              <td style="font-size:11px">—</td>
+              <td style="color:#e3b341;font-weight:500">INSUFFICIENT_OOS_DATA</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">supertrend_ichimoku_adx</td>
+              <td style="color:#8b949e">confluence</td>
+              <td>37L/0S</td>
+              <td>37</td>
+              <td style="color:#e3b341;font-weight:500">54.0%</td>
+              <td>2.32</td>
+              <td style="color:#3fb950">160.2%</td>
+              <td style="color:#f85149">-41.4%</td>
+              <td style="font-size:11px">—</td>
+              <td style="color:#e3b341;font-weight:500">INSUFFICIENT_OOS_DATA</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">inside_bar_breakout</td>
+              <td style="color:#8b949e">breakout</td>
+              <td>49L/0S</td>
+              <td>49</td>
+              <td style="color:#e3b341;font-weight:500">53.1%</td>
+              <td>3.69</td>
+              <td style="color:#3fb950">362.3%</td>
+              <td style="color:#f85149">-35.2%</td>
+              <td style="font-size:11px">—</td>
+              <td style="color:#e3b341;font-weight:500">INSUFFICIENT_OOS_DATA</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">three_white_soldiers</td>
+              <td style="color:#8b949e">candle</td>
+              <td>33L/0S</td>
+              <td>33</td>
+              <td style="color:#e3b341;font-weight:500">51.5%</td>
+              <td>1.71</td>
+              <td style="color:#3fb950">81.0%</td>
+              <td style="color:#f85149">-21.4%</td>
+              <td style="font-size:11px">—</td>
+              <td style="color:#e3b341;font-weight:500">INSUFFICIENT_OOS_DATA</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">rsi21_slow</td>
+              <td style="color:#8b949e">mean_reversion</td>
+              <td>1L/3S</td>
+              <td>4</td>
+              <td style="color:#e3b341;font-weight:500">50.0%</td>
+              <td>4.00</td>
+              <td style="color:#3fb950">19.8%</td>
+              <td style="color:#e3b341">-1.9%</td>
+              <td style="font-size:11px">—</td>
+              <td style="color:#e3b341;font-weight:500">INSUFFICIENT_OOS_DATA</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">pivot_s3_capitulation</td>
+              <td style="color:#8b949e">pivot</td>
+              <td>4L/0S</td>
+              <td>4</td>
+              <td style="color:#e3b341;font-weight:500">50.0%</td>
+              <td>0.65</td>
+              <td style="color:#f85149">-2.5%</td>
+              <td style="color:#e3b341">-4.5%</td>
+              <td style="font-size:11px">—</td>
+              <td style="color:#e3b341;font-weight:500">INSUFFICIENT_OOS_DATA</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">golden_cross_20_50</td>
+              <td style="color:#8b949e">trend</td>
+              <td>17L/8S</td>
+              <td>25</td>
+              <td style="color:#e3b341;font-weight:500">48.0%</td>
+              <td>2.57</td>
+              <td style="color:#3fb950">127.0%</td>
+              <td style="color:#f85149">-42.0%</td>
+              <td style="font-size:11px">—</td>
+              <td style="color:#e3b341;font-weight:500">INSUFFICIENT_OOS_DATA</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">ultimate_oscillator</td>
+              <td style="color:#8b949e">momentum</td>
+              <td>22L/3S</td>
+              <td>25</td>
+              <td style="color:#f85149;font-weight:500">44.0%</td>
+              <td>2.26</td>
+              <td style="color:#3fb950">93.1%</td>
+              <td style="color:#f85149">-19.4%</td>
+              <td style="font-size:11px">—</td>
+              <td style="color:#e3b341;font-weight:500">INSUFFICIENT_OOS_DATA</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">supertrend_macd</td>
+              <td style="color:#8b949e">trend</td>
+              <td>130L/0S</td>
+              <td>130</td>
+              <td style="color:#f85149;font-weight:500">43.1%</td>
+              <td>2.00</td>
+              <td style="color:#3fb950">488.8%</td>
+              <td style="color:#f85149">-156.6%</td>
+              <td style="font-size:11px">—</td>
+              <td style="color:#e3b341;font-weight:500">WEAK</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">morning_star</td>
+              <td style="color:#8b949e">candle</td>
+              <td>60L/15S</td>
+              <td>75</td>
+              <td style="color:#f85149;font-weight:500">42.7%</td>
+              <td>2.06</td>
+              <td style="color:#3fb950">278.0%</td>
+              <td style="color:#f85149">-48.1%</td>
+              <td style="font-size:11px">—</td>
+              <td style="color:#e3b341;font-weight:500">INSUFFICIENT_OOS_DATA</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">cpr_narrow_momentum</td>
+              <td style="color:#8b949e">confluence</td>
+              <td>100L/27S</td>
+              <td>127</td>
+              <td style="color:#f85149;font-weight:500">41.7%</td>
+              <td>1.85</td>
+              <td style="color:#3fb950">390.4%</td>
+              <td style="color:#f85149">-167.7%</td>
+              <td style="font-size:11px">—</td>
+              <td style="color:#e3b341;font-weight:500">INSUFFICIENT_OOS_DATA</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">macd_crossover</td>
+              <td style="color:#8b949e">momentum</td>
+              <td>84L/48S</td>
+              <td>132</td>
+              <td style="color:#f85149;font-weight:500">41.7%</td>
+              <td>1.35</td>
+              <td style="color:#3fb950">185.2%</td>
+              <td style="color:#f85149">-105.1%</td>
+              <td style="font-size:11px">—</td>
+              <td style="color:#e3b341;font-weight:500">FAILS_BOTH</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">camarilla_r3_breakout</td>
+              <td style="color:#8b949e">pivot</td>
+              <td>41L/0S</td>
+              <td>41</td>
+              <td style="color:#f85149;font-weight:500">41.5%</td>
+              <td>2.15</td>
+              <td style="color:#3fb950">169.4%</td>
+              <td style="color:#f85149">-49.4%</td>
+              <td style="font-size:11px">—</td>
+              <td style="color:#e3b341;font-weight:500">INSUFFICIENT_OOS_DATA</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">williams_r_oversold</td>
+              <td style="color:#8b949e">momentum</td>
+              <td>78L/6S</td>
+              <td>84</td>
+              <td style="color:#f85149;font-weight:500">40.5%</td>
+              <td>1.80</td>
+              <td style="color:#3fb950">264.0%</td>
+              <td style="color:#f85149">-76.5%</td>
+              <td style="font-size:11px">—</td>
+              <td style="color:#e3b341;font-weight:500">INSUFFICIENT_OOS_DATA</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">prev_day_high_break</td>
+              <td style="color:#8b949e">pivot</td>
+              <td>35L/20S</td>
+              <td>55</td>
+              <td style="color:#f85149;font-weight:500">40.0%</td>
+              <td>1.74</td>
+              <td style="color:#3fb950">136.3%</td>
+              <td style="color:#f85149">-98.4%</td>
+              <td style="font-size:11px">—</td>
+              <td style="color:#e3b341;font-weight:500">INSUFFICIENT_OOS_DATA</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">pivot_s1_bounce</td>
+              <td style="color:#8b949e">pivot</td>
+              <td>27L/3S</td>
+              <td>30</td>
+              <td style="color:#f85149;font-weight:500">40.0%</td>
+              <td>1.58</td>
+              <td style="color:#3fb950">81.1%</td>
+              <td style="color:#f85149">-49.8%</td>
+              <td style="font-size:11px">—</td>
+              <td style="color:#e3b341;font-weight:500">INSUFFICIENT_OOS_DATA</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">macd_ichimoku</td>
+              <td style="color:#8b949e">confluence</td>
+              <td>42L/6S</td>
+              <td>48</td>
+              <td style="color:#f85149;font-weight:500">37.5%</td>
+              <td>1.86</td>
+              <td style="color:#3fb950">147.3%</td>
+              <td style="color:#f85149">-46.3%</td>
+              <td style="font-size:11px">—</td>
+              <td style="color:#e3b341;font-weight:500">INSUFFICIENT_OOS_DATA</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">bollinger_lower</td>
+              <td style="color:#8b949e">mean_reversion</td>
+              <td>134L/36S</td>
+              <td>170</td>
+              <td style="color:#f85149;font-weight:500">37.1%</td>
+              <td>1.42</td>
+              <td style="color:#3fb950">319.4%</td>
+              <td style="color:#f85149">-253.4%</td>
+              <td style="font-size:11px">—</td>
+              <td style="color:#e3b341;font-weight:500">WEAK</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">roc_burst</td>
+              <td style="color:#8b949e">momentum</td>
+              <td>11L/19S</td>
+              <td>30</td>
+              <td style="color:#f85149;font-weight:500">36.7%</td>
+              <td>1.53</td>
+              <td style="color:#3fb950">77.7%</td>
+              <td style="color:#f85149">-55.8%</td>
+              <td style="font-size:11px">—</td>
+              <td style="color:#e3b341;font-weight:500">INSUFFICIENT_OOS_DATA</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">tema_dema</td>
+              <td style="color:#8b949e">trend</td>
+              <td>55L/27S</td>
+              <td>82</td>
+              <td style="color:#f85149;font-weight:500">36.6%</td>
+              <td>0.83</td>
+              <td style="color:#f85149">-66.6%</td>
+              <td style="color:#f85149">-113.5%</td>
+              <td style="font-size:11px">—</td>
+              <td style="color:#e3b341;font-weight:500">INSUFFICIENT_OOS_DATA</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">ichimoku_tk_cross</td>
+              <td style="color:#8b949e">trend</td>
+              <td>42L/5S</td>
+              <td>47</td>
+              <td style="color:#f85149;font-weight:500">36.2%</td>
+              <td>1.25</td>
+              <td style="color:#3fb950">50.5%</td>
+              <td style="color:#f85149">-101.8%</td>
+              <td style="font-size:11px">—</td>
+              <td style="color:#e3b341;font-weight:500">INSUFFICIENT_OOS_DATA</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">macd_fast_crossover</td>
+              <td style="color:#8b949e">momentum</td>
+              <td>72L/34S</td>
+              <td>106</td>
+              <td style="color:#f85149;font-weight:500">35.9%</td>
+              <td>1.35</td>
+              <td style="color:#3fb950">150.9%</td>
+              <td style="color:#f85149">-141.2%</td>
+              <td style="font-size:11px">—</td>
+              <td style="color:#e3b341;font-weight:500">INSUFFICIENT_OOS_DATA</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">ichimoku_cloud_breakout</td>
+              <td style="color:#8b949e">trend</td>
+              <td>94L/18S</td>
+              <td>112</td>
+              <td style="color:#f85149;font-weight:500">35.7%</td>
+              <td>1.37</td>
+              <td style="color:#3fb950">177.2%</td>
+              <td style="color:#f85149">-136.4%</td>
+              <td style="font-size:11px">—</td>
+              <td style="color:#e3b341;font-weight:500">INSUFFICIENT_OOS_DATA</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">pivot_r2_continuation</td>
+              <td style="color:#8b949e">pivot</td>
+              <td>81L/28S</td>
+              <td>109</td>
+              <td style="color:#f85149;font-weight:500">34.9%</td>
+              <td>1.13</td>
+              <td style="color:#3fb950">63.3%</td>
+              <td style="color:#f85149">-123.9%</td>
+              <td style="font-size:11px">—</td>
+              <td style="color:#e3b341;font-weight:500">FAILS_BOTH</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">hull_rsi</td>
+              <td style="color:#8b949e">momentum</td>
+              <td>163L/56S</td>
+              <td>219</td>
+              <td style="color:#f85149;font-weight:500">34.2%</td>
+              <td>1.32</td>
+              <td style="color:#3fb950">325.2%</td>
+              <td style="color:#f85149">-242.6%</td>
+              <td style="font-size:11px">—</td>
+              <td style="color:#e3b341;font-weight:500">FAILS_BOTH</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">pivot_r1_breakout</td>
+              <td style="color:#8b949e">pivot</td>
+              <td>92L/51S</td>
+              <td>143</td>
+              <td style="color:#f85149;font-weight:500">33.6%</td>
+              <td>1.09</td>
+              <td style="color:#3fb950">57.2%</td>
+              <td style="color:#f85149">-234.1%</td>
+              <td style="font-size:11px">—</td>
+              <td style="color:#e3b341;font-weight:500">FAILS_BOTH</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">doji_at_support</td>
+              <td style="color:#8b949e">candle</td>
+              <td>3L/0S</td>
+              <td>3</td>
+              <td style="color:#f85149;font-weight:500">33.3%</td>
+              <td>8.87</td>
+              <td style="color:#3fb950">93.3%</td>
+              <td style="color:#e3b341">-8.1%</td>
+              <td style="font-size:11px">—</td>
+              <td style="color:#e3b341;font-weight:500">INSUFFICIENT_OOS_DATA</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">bullish_engulfing_support</td>
+              <td style="color:#8b949e">candle</td>
+              <td>5L/16S</td>
+              <td>21</td>
+              <td style="color:#f85149;font-weight:500">33.3%</td>
+              <td>1.06</td>
+              <td style="color:#3fb950">4.5%</td>
+              <td style="color:#f85149">-39.7%</td>
+              <td style="font-size:11px">—</td>
+              <td style="color:#e3b341;font-weight:500">INSUFFICIENT_OOS_DATA</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">golden_cross_9_21</td>
+              <td style="color:#8b949e">trend</td>
+              <td>28L/23S</td>
+              <td>51</td>
+              <td style="color:#f85149;font-weight:500">33.3%</td>
+              <td>1.01</td>
+              <td style="color:#3fb950">1.8%</td>
+              <td style="color:#f85149">-85.2%</td>
+              <td style="font-size:11px">—</td>
+              <td style="color:#e3b341;font-weight:500">INSUFFICIENT_OOS_DATA</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">pivot_s2_bounce</td>
+              <td style="color:#8b949e">pivot</td>
+              <td>9L/0S</td>
+              <td>9</td>
+              <td style="color:#f85149;font-weight:500">33.3%</td>
+              <td>0.35</td>
+              <td style="color:#f85149">-31.4%</td>
+              <td style="color:#f85149">-29.3%</td>
+              <td style="font-size:11px">—</td>
+              <td style="color:#e3b341;font-weight:500">INSUFFICIENT_OOS_DATA</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">supertrend_macd_short</td>
+              <td style="color:#8b949e">trend</td>
+              <td>0L/6S</td>
+              <td>6</td>
+              <td style="color:#f85149;font-weight:500">33.3%</td>
+              <td>0.16</td>
+              <td style="color:#f85149">-35.6%</td>
+              <td style="color:#f85149">-27.4%</td>
+              <td style="font-size:11px">—</td>
+              <td style="color:#e3b341;font-weight:500">INSUFFICIENT_OOS_DATA</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">bollinger_tight</td>
+              <td style="color:#8b949e">mean_reversion</td>
+              <td>165L/79S</td>
+              <td>244</td>
+              <td style="color:#f85149;font-weight:500">32.8%</td>
+              <td>1.04</td>
+              <td style="color:#3fb950">42.5%</td>
+              <td style="color:#f85149">-243.3%</td>
+              <td style="font-size:11px">—</td>
+              <td style="color:#e3b341;font-weight:500">FAILS_BOTH</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">cmf_flip</td>
+              <td style="color:#8b949e">mean_reversion</td>
+              <td>40L/21S</td>
+              <td>61</td>
+              <td style="color:#f85149;font-weight:500">32.8%</td>
+              <td>0.60</td>
+              <td style="color:#f85149">-115.8%</td>
+              <td style="color:#f85149">-136.2%</td>
+              <td style="font-size:11px">—</td>
+              <td style="color:#e3b341;font-weight:500">INSUFFICIENT_OOS_DATA</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">cpr_narrow_bullish</td>
+              <td style="color:#8b949e">pivot</td>
+              <td>181L/90S</td>
+              <td>271</td>
+              <td style="color:#f85149;font-weight:500">31.7%</td>
+              <td>1.11</td>
+              <td style="color:#3fb950">143.2%</td>
+              <td style="color:#f85149">-365.7%</td>
+              <td style="font-size:11px">—</td>
+              <td style="color:#e3b341;font-weight:500">FAILS_BOTH</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">awesome_oscillator</td>
+              <td style="color:#8b949e">momentum</td>
+              <td>51L/24S</td>
+              <td>75</td>
+              <td style="color:#f85149;font-weight:500">30.7%</td>
+              <td>0.96</td>
+              <td style="color:#f85149">-16.9%</td>
+              <td style="color:#f85149">-146.4%</td>
+              <td style="font-size:11px">—</td>
+              <td style="color:#e3b341;font-weight:500">INSUFFICIENT_OOS_DATA</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">rsi_oversold</td>
+              <td style="color:#8b949e">mean_reversion</td>
+              <td>42L/8S</td>
+              <td>50</td>
+              <td style="color:#f85149;font-weight:500">30.0%</td>
+              <td>1.02</td>
+              <td style="color:#3fb950">4.5%</td>
+              <td style="color:#f85149">-84.3%</td>
+              <td style="font-size:11px">—</td>
+              <td style="color:#e3b341;font-weight:500">INSUFFICIENT_OOS_DATA</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">stochrsi_oversold</td>
+              <td style="color:#8b949e">momentum</td>
+              <td>106L/61S</td>
+              <td>167</td>
+              <td style="color:#f85149;font-weight:500">29.9%</td>
+              <td>0.91</td>
+              <td style="color:#f85149">-76.0%</td>
+              <td style="color:#f85149">-198.3%</td>
+              <td style="font-size:11px">—</td>
+              <td style="color:#e3b341;font-weight:500">FAILS_BOTH</td>
+              <td>⚠️</td>
+            </tr><tr>
+              <td style="color:#58a6ff;font-weight:600">ppo_crossover</td>
+              <td style="color:#8b949e">momentum</td>
+              <td>35L/20S</td>
+              <td>55</td>
+              <td style="color:#f85149;font-weight:500">27.3%</td>
+              <td>0.92</td>
+              <td style="color:#f85149">-24.6%</td>
+              <td style="color:#f85149">-83.7%</td>
+              <td style="font-size:11px">—</td>
+              <td style="color:#e3b341;font-weight:500">INSUFFICIENT_OOS_DATA</td>
+              <td>⚠️</td>
+            </tr></tbody></table>
+
+<h2>Walk-forward validation — in-sample (2022-23) vs out-of-sample (2024)</h2>
+<div class="note"><strong>ROBUST</strong> = strategy passes both periods — real edge &nbsp;·&nbsp;
+<strong>OVERFIT</strong> = passes in-sample, fails 2024 — curve-fitted to training data, do not trade &nbsp;·&nbsp;
+Win rate degradation &gt;5% is a red flag</div>
+<table><thead><tr><th>Strategy</th><th>Verdict</th><th>IS trades</th><th>IS win rate</th>
+<th>OOS trades</th><th>OOS win rate</th><th>WR degradation</th></tr></thead><tbody>
+<tr>
+              <td style="color:#58a6ff">bollinger_tight</td>
+              <td style="color:#e3b341;font-weight:600">FAILS_BOTH</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td style="color:#8b949e">0%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">hull_rsi</td>
+              <td style="color:#e3b341;font-weight:600">FAILS_BOTH</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td style="color:#8b949e">0%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">stochrsi_oversold</td>
+              <td style="color:#e3b341;font-weight:600">FAILS_BOTH</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td style="color:#8b949e">0%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">pivot_r2_continuation</td>
+              <td style="color:#e3b341;font-weight:600">FAILS_BOTH</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td style="color:#8b949e">0%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">cpr_narrow_bullish</td>
+              <td style="color:#e3b341;font-weight:600">FAILS_BOTH</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td style="color:#8b949e">0%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">macd_crossover</td>
+              <td style="color:#e3b341;font-weight:600">FAILS_BOTH</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td style="color:#8b949e">0%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">williams_stoch_dual</td>
+              <td style="color:#e3b341;font-weight:600">FAILS_BOTH</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td style="color:#8b949e">0%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">pivot_r1_breakout</td>
+              <td style="color:#e3b341;font-weight:600">FAILS_BOTH</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td style="color:#8b949e">0%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">hull_rsi_short</td>
+              <td style="color:#e3b341;font-weight:600">FAILS_BOTH</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td style="color:#8b949e">0%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">awesome_oscillator</td>
+              <td style="color:#e3b341;font-weight:600">INSUFFICIENT_OOS_DATA</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td style="color:#8b949e">0%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">ppo_crossover</td>
+              <td style="color:#e3b341;font-weight:600">INSUFFICIENT_OOS_DATA</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td style="color:#8b949e">0%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">cpr_narrow_momentum</td>
+              <td style="color:#e3b341;font-weight:600">INSUFFICIENT_OOS_DATA</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td style="color:#8b949e">0%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">golden_cross_9_21</td>
+              <td style="color:#e3b341;font-weight:600">INSUFFICIENT_OOS_DATA</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td style="color:#8b949e">0%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">three_white_soldiers</td>
+              <td style="color:#e3b341;font-weight:600">INSUFFICIENT_OOS_DATA</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td style="color:#8b949e">0%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">tema_dema</td>
+              <td style="color:#e3b341;font-weight:600">INSUFFICIENT_OOS_DATA</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td style="color:#8b949e">0%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">cmf_flip</td>
+              <td style="color:#e3b341;font-weight:600">INSUFFICIENT_OOS_DATA</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td style="color:#8b949e">0%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">ichimoku_cloud_breakout</td>
+              <td style="color:#e3b341;font-weight:600">INSUFFICIENT_OOS_DATA</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td style="color:#8b949e">0%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">williams_r_oversold</td>
+              <td style="color:#e3b341;font-weight:600">INSUFFICIENT_OOS_DATA</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td style="color:#8b949e">0%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">macd_fast_crossover</td>
+              <td style="color:#e3b341;font-weight:600">INSUFFICIENT_OOS_DATA</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td style="color:#8b949e">0%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">ultimate_oscillator</td>
+              <td style="color:#e3b341;font-weight:600">INSUFFICIENT_OOS_DATA</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td style="color:#8b949e">0%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">rsi9_extreme</td>
+              <td style="color:#e3b341;font-weight:600">INSUFFICIENT_OOS_DATA</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td style="color:#8b949e">0%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">inside_bar_breakout</td>
+              <td style="color:#e3b341;font-weight:600">INSUFFICIENT_OOS_DATA</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td style="color:#8b949e">0%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">morning_star</td>
+              <td style="color:#e3b341;font-weight:600">INSUFFICIENT_OOS_DATA</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td style="color:#8b949e">0%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">ichimoku_tk_cross</td>
+              <td style="color:#e3b341;font-weight:600">INSUFFICIENT_OOS_DATA</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td style="color:#8b949e">0%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">rsi_oversold</td>
+              <td style="color:#e3b341;font-weight:600">INSUFFICIENT_OOS_DATA</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td style="color:#8b949e">0%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">evening_star_short</td>
+              <td style="color:#e3b341;font-weight:600">INSUFFICIENT_OOS_DATA</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td style="color:#8b949e">0%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">rsi21_slow</td>
+              <td style="color:#e3b341;font-weight:600">INSUFFICIENT_OOS_DATA</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td style="color:#8b949e">0%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">stochrsi_overbought_short</td>
+              <td style="color:#e3b341;font-weight:600">INSUFFICIENT_OOS_DATA</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td style="color:#8b949e">0%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">stoch_oversold</td>
+              <td style="color:#e3b341;font-weight:600">INSUFFICIENT_OOS_DATA</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td style="color:#8b949e">0%</td>
+            </tr><tr>
+              <td style="color:#58a6ff">force_index_breakout</td>
+              <td style="color:#e3b341;font-weight:600">INSUFFICIENT_OOS_DATA</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td>0</td>
+              <td style="color:#f85149">0%</td>
+              <td style="color:#8b949e">0%</td>
+            </tr>
+</tbody></table>
+
+<footer><p>Stock Picks &amp; Automated Trading System — Stage 2 &nbsp;·&nbsp; All improvements applied</p>
+<p>Point-in-time data · No look-ahead bias · 61 strategy classes (Layer 1 baseline; full roster CANONICAL_FACTS.md F-002) · 17 exits (F-004) · 4 regime types + 7 historical windows (F-006) · 5 improvements</p></footer>
+</body></html>

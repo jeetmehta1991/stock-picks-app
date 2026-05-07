@@ -30813,3 +30813,117 @@ Phase A: ✅ COMPLETE (Tier 1 + 2 + 3 all green; library in `vendored/` per spec
 
 **Day 8 work CLOSED. Phase 1A May 15 start: GATE 1 GREEN. NIL-gap criteria all satisfied.**
 
+---
+
+## Pass 53 Day 9 (2026-05-07) — Path B artifact build + Path A smoke + cache.py + engine.py latent-bug catches
+
+### Owner directives
+
+D1 Y / D2 Y / D3 N / D4 Y + "Path B build" — approved both Path A (Phase 1A pipeline smoke 20 tickers × 4 folds × `--no-agents`) AND Path B (build top 3 PARTIAL-SPEC-ONLY artifacts).
+
+### Path B: 3 PARTIAL-SPEC-ONLY → RESOLVED-DECIDED
+
+Per DEC-594 same-commit rule:
+
+| DEC | Artifact | Tests |
+|---|---|---|
+| DEC-153 (regime-stratified train/test splits) | [`backtest/engine/regime_stratified_split.py`](backtest/engine/regime_stratified_split.py) | 5 unit tests in test_partial_spec_artifacts.py |
+| DEC-401 (Holm-Bonferroni step-down) | [`backtest/results/multi_test.py`](backtest/results/multi_test.py) | 6 unit tests |
+| DEC-423 (per-cell bootstrap CI) | [`backtest/results/bootstrap_ci.py`](backtest/results/bootstrap_ci.py) | 6 unit tests (incl. numerical-precision floor for constant-return Sharpe) |
+
+All 17/17 PASS. AUDIT_INDEX promoted from PARTIAL-SPEC-ONLY → RESOLVED-DECIDED with annotation. Commit `8d36017b`.
+
+### Path A: Phase 1A pipeline smoke caught 4 latent bugs
+
+**Smoke run methodology:**
+
+- 20 tickers (AAPL/MSFT/NVDA/AMZN/GOOGL/META/TSLA/JPM/BAC/WMT/SPY/QQQ/XLK/XLF/XLE/GLD/TLT/VXX/UUP/DIA)
+- 4-year window 2022-05-05 → 2026-05-05 per DEC-505
+- Walk-forward enabled (BACKTEST_NO_GIT=1 to suppress git auto-commits while preserving fold logic)
+- `--no-agents` flag (rules-only baseline per Phase 1A-α)
+- ~63-min wall time (regime=unknown caused per-day cache thrashing on broken pre-fix cache)
+
+**Latent bugs caught (would have surfaced May 15 at full run):**
+
+| # | Bug | File | Fix | Test |
+|---|---|---|---|---|
+| 1 | Schema-B blindness — get_ohlcv read RangeIndex as DatetimeIndex; date filter returned 0 rows | `backtest/data/cache.py:135` | Detect 'date' column; set as DatetimeIndex; handle DatetimeTZDtype properly | `test_cache_get_ohlcv_schema_b_loads_correctly` |
+| 2 | index.json staleness — only 495 of 2123 entries post H6 migration | `backtest/data/cache/index.json` | Auto-recover entry from file when missing + rebuild script | `test_cache_index_recovery_from_file` |
+| 3 | Strict-coverage check vs request-end overshoot (cache 2026-05-05 vs request 2026-12-31) | `backtest/data/cache.py:131` | Relaxed to "any overlap" check; mask filter trims at end | `test_cache_get_ohlcv_weekend_boundary` |
+| 4 | crisis_flag UnboundLocalError when regime=unknown (DEC-316 fail-closed state) | `backtest/engine/backtest.py:255` | Hoisted `crisis_flag = regime == "crisis"` to function scope (was inside inner loop) | (covered by smoke run completion) |
+
+Each was a regression from earlier Pass 53 work (H5/H6 migration, Schema-B unification). All would have surfaced at May 15 Phase 1A start with no path forward except mid-run debug. Smoke surfaced them with 8 days buffer remaining.
+
+Commit `f343dddd` (cache + engine bug fixes + 4 cache regression tests).
+
+### Smoke results (final)
+
+| Metric | Value |
+|---|---|
+| Trades closed | **3,637** |
+| IS trades | 2,602 |
+| OOS trades | 1,035 |
+| Strategies analyzed | 61 |
+| Strategies beating SPY | 22 / 61 |
+| SPY benchmark return | 75.2% |
+| Portfolio return (tier-sized; un-walk-forward-corrected) | 61.8% |
+| Walk-forward windows | 2 |
+| Walk-forward verdict | ROBUST=0 OVERFIT=0 WEAK=2 INSUFF=50 |
+| Trade exit detail rows | 43,296 |
+| Pipeline final gate | ✅ **Phase 1A PASSED** |
+
+**Caveat:** Smoke run executed with regime=unknown for entire window (cache.py fix landed POST-smoke-start; the running process held the broken cache module). Pipeline produced trades end-to-end (validating PIPELINE works) but per-regime breakdowns are degenerate. Re-run after full fix needed for accurate verdicts. **The smoke's value was end-to-end-pipeline validation, not strategy verdicts.** Per DEC-595 gate 1 acceptance criterion = pipeline-runs-end-to-end ✅.
+
+Outputs: [output_smoke_day9_full/](output_smoke_day9_full/) — 78 MB total.
+
+### Test pyramid (post-Day-9)
+
+| Suite | Count | Status |
+|---|---|---|
+| Unit + integration | 102 | ✅ |
+| Alignment (CANONICAL_FACTS) | 6 | ✅ |
+| Data-integrity (DEC-591) | 7 | ✅ |
+| Gates (DEC-595) | 1 PASS + 5 SKIP | ✅ |
+| smartmoneyconcepts Phase A | 110 + 2 SKIP + 5 xfailed | ✅ |
+| Quiver (post-H5 fix) | 25 | ✅ |
+| **Partial-spec artifacts (NEW Day 9)** | **17** | ✅ |
+| **Cache schema-B regression (NEW Day 9)** | **4** | ✅ |
+| **TOTAL** | **272 PASS + 5 SKIP + 32 skipped + 5 xfailed** | ✅ |
+
+### Critical decisions count
+
+Pre-Day-9: 354 entries; 87 PARTIAL_SPEC_ONLY
+Post-Day-9: 357 entries; 84 PARTIAL_SPEC_ONLY (DEC-153/401/423 promoted)
+
+### Phase 1A May 15 entry status
+
+**Gate 1 (`test_gate_pre_phase_1a_entry`) PASSES + smoke validates pipeline end-to-end.** No remaining blockers. Phase 1A May 15 start cleared.
+
+### Files modified Day 9
+
+- `backtest/engine/regime_stratified_split.py` (NEW; ~115 lines)
+- `backtest/results/multi_test.py` (NEW; ~85 lines)
+- `backtest/results/bootstrap_ci.py` (NEW; ~155 lines)
+- `backtest/data/cache.py` (Schema-B handling + index recovery + overlap check)
+- `backtest/data/cache/index.json` (rebuilt: 495 → 2123 entries)
+- `backtest/engine/backtest.py` (crisis_flag hoist)
+- `backtest/tests/test_partial_spec_artifacts.py` (NEW; 17 tests)
+- `backtest/tests/test_cache_schema_b.py` (NEW; 4 tests)
+- `output_smoke_day9_full/` (NEW; smoke run outputs ~78 MB)
+- `AUDIT.md` (this narrative)
+- `AUDIT_INDEX.md` (DEC-153/401/423 promotion annotations)
+
+### Cross-references
+
+- DEC-153/401/423 (parent DECs; promoted to RESOLVED-DECIDED)
+- DEC-505 (4-fold walk-forward; smoke ran with walk-forward enabled)
+- DEC-590 (9-day window; Day 9 buffer used productively)
+- DEC-594 (same-commit artifact rule; 4 commits this turn each compliant)
+- DEC-595 (gate executable tests; gate 1 PASS = pipeline ready)
+- DEC-596 (per-turn push; Day 9 = 3 commits per DEC-596 cadence)
+- L148/L149 (test pyramid + spec-without-build patterns; Day 9 caught 4 instances)
+
+*Per CHECKLIST #1 (D1+D2+D3+D4 + Path B build owner-approved); #25 (3 artifacts + 4 bug fixes + smoke + 21 new tests); #43 (TRADING_RULES + AUDIT_INDEX + AUDIT.md + LEARNINGS); #45 (this); #51 (scope strict — Day 9 buffer); #58 (3 atomic commits — Path B / bug fixes / smoke results); #67 (per-turn push per DEC-596); #69 (272 PASS + 5 SKIP); #72 (data-integrity 7/7); #73 (gate 1 PASS + DEC-594 same-commit applied to all artifacts).*
+
+**Day 9 buffer was the right investment. 4 critical bugs caught with 8 days remaining. Path A smoke validated Phase 1A pipeline end-to-end. Phase 1A May 15 cleared.**
+

@@ -1,0 +1,14 @@
+date,ticker,level,reason,exit_price
+2023-02-23,NVDA,1,overnight_gap_up_12.9pct,23.44
+2023-05-25,NVDA,1,overnight_gap_up_26.1pct,38.523
+2023-05-25,NVDA,1,overnight_gap_up_26.1pct,38.523
+2024-04-24,TSLA,1,overnight_gap_up_12.6pct,162.84
+2024-08-07,VXX,1,overnight_gap_down_12.8pct,61.43000030517578
+2025-01-27,NVDA,1,overnight_gap_down_12.5pct,124.8
+2025-10-31,AMZN,1,overnight_gap_up_12.2pct,250.1
+2025-10-31,AMZN,1,overnight_gap_up_12.2pct,250.1
+2025-10-31,AMZN,1,overnight_gap_up_12.2pct,250.1
+2025-10-31,AMZN,1,overnight_gap_up_12.2pct,250.1
+2025-10-31,AMZN,1,overnight_gap_up_12.2pct,250.1
+2025-10-31,AMZN,1,overnight_gap_up_12.2pct,250.1
+2025-10-31,AMZN,1,overnight_gap_up_12.2pct,250.1
