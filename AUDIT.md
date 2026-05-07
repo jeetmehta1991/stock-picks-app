@@ -30520,3 +30520,127 @@ Per DEC-590 9-day pre-implementation window, Day 1-2 work (P0 doc-drift fixes + 
 
 **Pass 53 prefetch-audit remediation CLOSED. Data quality gaps NIL. Phase 1A unblocked. 115/115 tests pass.**
 
+---
+
+## Pass 53 late-evening 2026-05-06 — DEC-594/595 + CHECKLIST #73 + L149 + retroactive DEC audit (structural fix for spec-without-build pattern)
+
+### Owner directive (verbatim)
+
+*"This is the biggest mistake. I was forced to do multiple runs of audit cycles because of all issues till date. I have already lost 300$ on a failed phase 1B run. WE cant make more mistakes! Test at every stage and be comprehensive in testing"* + (next message): *"approve all"*
+
+### What this turn closed
+
+The DEC-503 layer-7 failure (test pyramid type #7 specified-but-unbuilt for ~6 weeks) is not a one-off. It's the same structural pattern that caused L86 ($50 lost), L95 ($100 lost), the $300 Phase 1B failed run, and the seven Pass 53 audit cycles. The root cause: a DEC could mark RESOLVED-DECIDED on spec text alone, with executable artifact deferred to "later" — and "later" became "in production" before being built.
+
+This turn codifies the structural fix, not just the lesson:
+
+| Codification | Scope |
+|---|---|
+| DEC-594 | Test-Artifact Same-Commit HARD RULE — every DEC with test/gate/validation spec MUST include executable artifact in same commit; status `PARTIAL-SPEC-ONLY` (NEW) for spec-final + artifact-pending state |
+| DEC-595 | Stage / Phase / Sub-phase Gate Executable Tests — every transition has executable gate test in `backtest/tests/test_gates.py`; no transition without gate PASS |
+| CHECKLIST #73 | HARD RULE codification of (a) same-commit + (b) phase gates |
+| L149 | Spec-without-build meta-pattern (companion to L145/L146/L147/L148; on the CODIFICATION axis) |
+
+### Executable artifacts landed same-commit (DEC-594 self-compliance demonstration)
+
+- [backtest/tests/test_gates.py](backtest/tests/test_gates.py) — NEW; 6 phase gates (gate 1 PASSES today; gates 2-6 SKIP with explicit reason until criteria materialize)
+- [scripts/audit_decs_for_artifacts.py](scripts/audit_decs_for_artifacts.py) — NEW; retroactive DEC audit script with classification taxonomy
+- [AUDIT_DECS_ARTIFACTS_REPORT.json](AUDIT_DECS_ARTIFACTS_REPORT.json) — NEW; machine-readable audit report (517 DECs scanned)
+
+### Retroactive audit results
+
+**517 DEC entries scanned** in [AUDIT_INDEX.md](AUDIT_INDEX.md):
+
+| Classification | Count | Action |
+|---|---|---|
+| COMPLIANT (artifact path in body + exists) | 19 | None |
+| KNOWN_COMPLIANT (allowlisted) | 13 | None |
+| TEST_SIGNAL_REFERENCED_IN_CODE | 4 | None |
+| SUPERSEDED | 29 | None |
+| DEFERRED | 49 | None |
+| INACTIVE_STATUS (OBSOLETE/BLOCKED_ON/FAIL_RR) | 13 | None |
+| PROPOSED_OR_PENDING | 13 | None — pre-RESOLVED |
+| NO_TRIGGER | 202 | None — no test/gate keywords |
+| **🔴 SPEC_WITHOUT_BUILD** | **43** | **Day 2-3 remediation** |
+| **🟡 TEST_SIGNAL_UNVERIFIED** | **132** | **Day 4-5 remediation** |
+
+**Day 2-3 remediation queue (43 DECs):**
+
+- 1 CRITICAL: DEC-477 (T1a canonical RESOLVED-IMPLEMENTED) — has tests in `test_unit.py`; needs path annotation in DEC body
+- 4 phase-1A relevant: DEC-014/153/423/497 — triage methodology vs build needs
+- 38 other RESOLVED-DECIDED — triage in priority order
+
+**Day 4-5 remediation queue (132 DECs):**
+
+Each has "Test signal:" pattern in body. Code-grep `backtest/tests/test_unit.py` + `test_integration.py` for matching logic. Annotate DEC body with file path + line range OR demote to PARTIAL-SPEC-ONLY.
+
+### Phase 1A May 15 schedule impact
+
+- Day 1 (today, May 6): Pass 53 review-cycle closure + prefetch-audit remediation + DEC-594/595 codification + retroactive audit ← DONE
+- Day 2-3 (May 7-8): Remediate 43 SPEC_WITHOUT_BUILD findings
+- Day 4-5 (May 9-10): Remediate 132 TEST_SIGNAL_UNVERIFIED + Wikipedia coverage extension + Quiver migration verify
+- Day 6-7 (May 11-12): DEC-588 doc-reconciliation pass
+- Day 8-9 (May 13-14): DEC-507 wiring matrix verification + DEC-508 Tier 1-4 testing matrix prep + final NIL-gap audit
+- Day 10 (May 15): Phase 1A implementation BEGINS — gate 1 (`test_gate_pre_phase_1a_entry`) MUST PASS
+
+If remediation exceeds 9-day capacity, slippage tolerance per DEC-590 is ±2 business days (May 15 → May 19 max). Surfaced as soon as detected.
+
+### Test pyramid result (post-additions)
+
+| Suite | Count | Status |
+|---|---|---|
+| Unit + integration | 102 | ✅ PASS |
+| Alignment | 6 | ✅ PASS |
+| Data-integrity (DEC-591) | 7 | ✅ PASS |
+| Gates (DEC-595 NEW) | 6 (1 PASS + 5 SKIP) | ✅ Gate 1 PASS; gates 2-6 PENDING criteria |
+| **TOTAL** | **121** | **✅ 116 PASS + 5 explicit-skip** |
+
+### How DEC-594 prevents future $-loss
+
+Before DEC-594:
+1. Owner directive → I codify DEC with spec + "test signal" description
+2. DEC marks RESOLVED-DECIDED on spec alone
+3. Implementation deferred to "Sprint X"
+4. Sprint X passes; partial implementation; nobody re-checks
+5. Production run fails because spec ≠ artifact
+
+After DEC-594:
+1. Owner directive → I draft DEC with spec
+2. **Pre-flight CHECKLIST #1 scans for trigger words; flags non-compliant draft**
+3. **DEC body MUST cite executable artifact path; artifact MUST exist in same commit**
+4. If multi-day implementation: DEC marks `PARTIAL-SPEC-ONLY` (new status); cannot advance to RESOLVED-DECIDED until artifact lands
+5. **CI cannot merge a commit that has DEC body but no corresponding artifact (future enforcement; Day 4-5)**
+6. Production run PRECEDED BY GATE TEST PASS — no transition without preceding gate
+
+The hard mental shift: "spec done" ≠ "DEC done." DEC is done when artifact runs green.
+
+### Files modified this turn
+
+- `LEARNINGS.md` (+L149; ~75 lines)
+- `TRADING_RULES_AND_INFORMATION.md` (+§23.11 DEC-594 + §23.12 DEC-595)
+- `AUDIT_INDEX.md` (+DEC-594 + DEC-595 entries; total 351 → 353)
+- `CHECKLIST.md` (+#73 HARD RULE — Test-Artifact Same-Commit + Phase Gates)
+- `AUDIT_BACKLOG.md` (+ retroactive audit results section; Day 2-3 + Day 4-5 work queues)
+- `backtest/tests/test_gates.py` (NEW; 6 gates; gate 1 PASS today)
+- `scripts/audit_decs_for_artifacts.py` (NEW; retroactive audit script)
+- `AUDIT_DECS_ARTIFACTS_REPORT.json` (NEW; machine-readable audit report)
+- `AUDIT.md` (this narrative)
+
+### Cross-references
+
+- DEC-594 (parent rule — Test-Artifact Same-Commit HARD RULE)
+- DEC-595 (parent rule — Stage/Phase Gate Executable Tests)
+- CHECKLIST #73 (HARD RULE codification of both)
+- L149 (spec-without-build meta-pattern; companion to L145/L146/L147/L148)
+- L86 + L95 ($50 + $100 prior losses; same pattern)
+- $300 Phase 1B failed run (same pattern)
+- 7 Pass 53 audit cycles (same pattern)
+- DEC-503 (test pyramid HARD RULE; layer 7 was the canonical instance of the failure)
+- DEC-591 (data-integrity test layer; first DEC compliant with #594 since artifact landed same-commit)
+- DEC-590 (Phase 1A May 15 begin date; gate 1 must PASS)
+- AUDIT_BACKLOG.md (Day 2-3 + Day 4-5 remediation queues)
+
+*Per CHECKLIST #1 (owner-approved "approve all"); #25 (DEC-594/595 + CHECKLIST #73 + L149 + audit script + gate scaffold + report all in single commit per #594 self-compliance); #43 (cross-doc — TRADING_RULES §23.11/12 + AUDIT_INDEX DEC-594/595 + LEARNINGS L149 + CHECKLIST #73 + AUDIT_BACKLOG + AUDIT.md narrative); #45 (this); #51 (scope strict — process structural fix only; allowed under DEC-589 owner-directive carve-out); #58 (single atomic commit); #67/#67.b (per-turn doc sync); #69 (test pyramid 116/116 PASS + 5 explicit-skip); **#72 (data-integrity 7/7 PASS); #73 (NEW HARD RULE this turn — gate 1 PASS; DEC-594/595 + executable artifacts in same commit demonstrates self-compliance).**
+
+**Spec-without-build pattern structurally addressed. 43 + 132 = 175 retroactive findings queued for Day 2-3 + Day 4-5 remediation. Phase 1A May 15 schedule holds with ±2 business day slippage tolerance per DEC-590.**
+

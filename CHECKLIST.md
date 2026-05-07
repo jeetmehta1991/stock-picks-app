@@ -830,3 +830,47 @@ State compliance visibly: "Checklist: ✅ [each item]"
     **First application:** Pass 53 evening 2026-05-06 — data-integrity test suite implementation as remediation of audit findings; PASS-gate for DEC-590 May 15 Phase 1A start.
 
     **Joint:** DEC-591 (this rule's parent decision), DEC-503 (test pyramid; this DEC implements specified-but-unimplemented type #7 — complementary), DEC-507 (wiring matrix; complementary process control), DEC-590 (9-day window provides time pre-Phase-1A), CHECKLIST #69 (test pyramid before every code push) + this #72, L148 (test pyramid layered failure mode; this checklist codifies the lesson).
+
+73. **Test-Artifact Same-Commit + Stage/Phase Gate Executable Tests (Pass 53 owner-approved 2026-05-06 late evening; DEC-594 + DEC-595; L148 + L149; HARD RULE).**
+
+    **Rule (a) — Test-Artifact Same-Commit (DEC-594):** Every DEC that specifies a test layer / validation gate / acceptance criterion / pass criterion MUST include the executable test code (Python, pytest, CI workflow, gate script) in the SAME commit as the DEC text. A DEC cannot mark RESOLVED-DECIDED if any specified test/gate is "to be implemented later." Status taxonomy adds `PARTIAL-SPEC-ONLY` (NEW) for spec-final + artifact-pending state.
+
+    **Rule (b) — Stage/Phase Gate Executable Tests (DEC-595):** Every transition between stages, phases, sprints, or sub-phases MUST have an executable gate test in `backtest/tests/test_gates.py` asserting entry/exit criteria. No transition without preceding gate test PASS.
+
+    **Trigger words for DEC-594 enforcement (pre-flight CHECKLIST #1 scan):**
+
+    `test`, `validate`, `verify`, `verified`, `gate`, `acceptance criterion`, `pass criterion`, `must pass`, `before X`, `before phase entry`, `before commit`, `before run`, `before merge`, `before scale`. If ANY appear in a DEC body, the DEC MUST reference the corresponding executable artifact (file path) and that artifact MUST exist in the same commit.
+
+    **Initial gates (extends as new transitions defined; per DEC-595):**
+
+    | # | Gate | Asserts | Trigger |
+    |---|---|---|---|
+    | 1 | `test_gate_pre_phase_1a_entry` | data-integrity 7/7 + universe build verified + smoke run on 5 tickers + DEC-505 4-fold config valid | Before May 15 Phase 1A start (DEC-590) |
+    | 2 | `test_gate_post_phase_1a_alpha` | rules-only Sharpe ≥ 0.7 OOS | Before $300 1B-α budget commit |
+    | 3 | `test_gate_pre_phase_1b_alpha_run` | DEC-507 wiring matrix all ✅ + DEC-508 Tier 1-3 fork tests pass + budget tracker armed + Anthropic API headroom | Before Phase 1B-α run (Sprint 9) |
+    | 4 | `test_gate_post_phase_1b_alpha_verdict` | DEC-578 7-gate ≥1 PASS cell + DSR + walk-forward 4 OOS folds (DEC-505) | Before Stage 3 entry |
+    | 5 | `test_gate_pre_stage_3_entry` | Phase 1B-α verdict produced + paper-trading infra ready + 3-month plan (DEC-028) | Before Stage 2 → 3 |
+    | 6 | `test_gate_pre_stage_4_entry` | 3-month paper-trading audit pass + email approval pipeline + capital pre-funded | Before Stage 3 → 4 |
+
+    **Retroactive audit obligation:**
+
+    All 353 existing DECs in [AUDIT_INDEX.md](AUDIT_INDEX.md) MUST be scanned for spec-without-build patterns within Day 2-3 of DEC-590 9-day window. Findings logged to [AUDIT_BACKLOG.md](AUDIT_BACKLOG.md). Each remediated by either: (a) building executable artifact in same commit; OR (b) demoting to `PARTIAL-SPEC-ONLY` status with explicit dependency-on-artifact note.
+
+    **Gate behavior:**
+
+    - Each gate is a `pytest` function asserting executable conditions (boolean checks on cache state, file existence, metric thresholds)
+    - Failed gate BLOCKS transition; surfaces actionable error message
+    - Gate test file is part of standard `pytest backtest/tests/` regression
+    - New transitions defined → new gate added in same commit (per #73a)
+
+    **Verification format in pre-flight:**
+
+    State explicitly: "DEC-594 compliance: [DEC body has X trigger words; artifact at <path>; same-commit verified ✅]" OR "[no trigger words; #594 N/A]". For phase-transition recommendations: "Gate `test_gate_<name>` PASS verified (or SKIPPED with reason: ...)".
+
+    **Past failure pattern (motivating rule):**
+
+    DEC-503 (Pass 52 turn 132): codified 9-type test pyramid; layer 7 (data integrity) specified but unbuilt for ~6 weeks; Pass 53 audit 2026-05-06 surfaced 5 CRITICAL findings layer 7 would have caught at codification time. Same pattern caused L86 ($50 lost), L95 ($100 lost), $300 Phase 1B failed run, 7 Pass 53 audit cycles. Discipline alone insufficient; structural mechanism required.
+
+    **First application:** Pass 53 late evening 2026-05-06 — DEC-594/595 commit lands with `backtest/tests/test_gates.py` (6 gates) + `scripts/audit_decs_for_artifacts.py` (retroactive audit) in same commit.
+
+    **Joint:** DEC-594 + DEC-595 (this rule's parent decisions), DEC-503 (test pyramid; this rule enforces artifact layer), DEC-591 + CHECKLIST #72 (data-integrity test; first compliant DEC under #594), DEC-507/508 (asserted in gates #3/#4), DEC-590 (Phase 1A entry uses gate #1), L148 (test pyramid layered failure mode) + L149 (this turn — spec-without-build codification), L86 + L95 ($150 + $300 prior losses from same pattern).

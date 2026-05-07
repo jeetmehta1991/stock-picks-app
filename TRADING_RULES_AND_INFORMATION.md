@@ -3123,6 +3123,100 @@ This DEC authorizes:
 
 ---
 
+### 23.11 Test-Artifact Same-Commit HARD RULE (DEC-594 — Pass 53 owner-approved 2026-05-06 late evening)
+
+**Decision:** Every DEC that specifies a test layer / validation gate / acceptance criterion / pass criterion MUST include the executable test code (Python, pytest, CI workflow, gate script) in the SAME commit as the DEC text. A DEC cannot mark RESOLVED-DECIDED if any specified test/gate is "to be implemented later." If implementation requires multi-day work, the DEC marks PARTIAL-SPEC-ONLY until the executable artifact lands; only then does it advance to RESOLVED-DECIDED.
+
+**Codified as CHECKLIST #73 + this DEC.**
+
+**Rationale (per L148 + L149 NEW):**
+
+The DEC-503 layer-7 failure is structural, not procedural. DEC-503 marked RESOLVED-DECIDED Pass 52 turn 132 with "Data integrity — schema validation, PIT semantics, completeness gates" in spec. The executable test was never written in that commit. Six weeks of prefetch work shipped under the framing of "comprehensive test pyramid" while layer 7 didn't exist. Pass 53 prefetch audit 2026-05-06 surfaced 5 CRITICAL + 7 HIGH findings that layer 7 would have caught at codification time.
+
+Same pattern caused:
+- L86 Pass 26: $50 lost on 6-agent design when actual was 11-agent (no agent-count test before run)
+- L95: $100 lost on bug discovered mid-run (no end-to-end smoke before scaled run)
+- $300 Phase 1B failed run: insufficient pre-flight validation
+- 7 Pass 53 audit cycles: each cycle found gaps that an executable test would have caught
+
+**Trigger words for DEC-594 enforcement:**
+
+DEC pre-flight CHECKLIST #1 review must scan DEC body for: `test`, `validate`, `verify`, `verified`, `gate`, `acceptance criterion`, `pass criterion`, `must pass`, `before X`, `before phase entry`, `before commit`, `before run`. If any present, the DEC body must reference the corresponding executable artifact (file path) and the artifact must exist in the same commit.
+
+**Status taxonomy (extended):**
+
+- `RESOLVED-DECIDED` — spec final, executable artifact present
+- `RESOLVED-IMPLEMENTED` — spec + artifact + integration tests + production usage demonstrated
+- `PARTIAL-SPEC-ONLY` (NEW) — spec final, executable artifact PENDING; DEC blocked from advancing to RESOLVED-DECIDED until artifact lands
+- `PROPOSED` — spec draft awaiting owner approval
+- `DEFERRED` — out-of-scope for current stage; revisit at named gate
+
+**Retroactive audit (Day 2-3 of DEC-590 9-day window):**
+
+Scan all 351 existing DECs in [AUDIT_INDEX.md](AUDIT_INDEX.md) for spec-without-build patterns. Each finding gets demoted to PARTIAL-SPEC-ONLY status (or remediated by building the executable artifact in same commit).
+
+**Implementation:**
+
+- New CHECKLIST item #73 (gate executable tests) — codified same commit as this DEC
+- New gate test file [backtest/tests/test_gates.py](backtest/tests/test_gates.py) — phase entry/exit gates as pytest functions
+- Retroactive audit script [scripts/audit_decs_for_artifacts.py](scripts/audit_decs_for_artifacts.py) — automated scan
+- Reviewer (Claude in pre-flight CHECKLIST #1) MUST flag non-compliant DEC drafts BEFORE codification
+
+**Cross-references:**
+
+- L148 (test pyramid layered failure mode — parent lesson for spec-without-build pattern)
+- L149 NEW (this turn — codification of "every DEC with test/gate spec must include executable artifact in same commit")
+- L86 ($50 lost; same pattern on agent count axis)
+- L95 ($100 lost; same pattern on end-to-end smoke axis)
+- DEC-503 (test pyramid HARD RULE; this DEC enforces the artifact-not-just-spec layer)
+- DEC-591 (data-integrity test layer — first DEC compliant with #594 since artifact landed same-commit)
+- CHECKLIST #72 (data-integrity HARD RULE) + #73 (gate executable HARD RULE)
+
+**Status:** RESOLVED-DECIDED Pass 53 owner approval 2026-05-06 late evening ("approve all").
+
+---
+
+### 23.12 Stage / Phase / Sub-phase Gate Executable Tests (DEC-595 — Pass 53 owner-approved 2026-05-06 late evening)
+
+**Decision:** Every transition between stages, phases, sprints, or sub-phases MUST have an executable gate test in [backtest/tests/test_gates.py](backtest/tests/test_gates.py) that asserts the entry/exit criteria. No transition without preceding gate test PASS.
+
+**Gates required (initial set; extends as new transitions defined):**
+
+| # | Gate | Asserts | Triggers |
+|---|---|---|---|
+| 1 | `test_gate_pre_phase_1a_entry` | 7-test data-integrity (DEC-591) + universe build verified + smoke run on 5 tickers + DEC-505 4-fold config valid | Before May 15 Phase 1A start (DEC-590) |
+| 2 | `test_gate_post_phase_1a_alpha` | rules-only Sharpe ≥ 0.7 OOS verified per [PROJECT_PLAN](PROJECT_PLAN.md) §3.6-3.10 | Before $300 1B-α budget commit |
+| 3 | `test_gate_pre_phase_1b_alpha_run` | DEC-507 wiring matrix all ✅ + DEC-508 Tier 1-3 fork tests pass + budget tracker armed + Anthropic API rate headroom verified | Before Phase 1B-α run (Sprint 9) |
+| 4 | `test_gate_post_phase_1b_alpha_verdict` | DEC-578 7-gate Phase 1B-α verdict has ≥1 PASS cell + DSR validated + walk-forward 4 OOS folds complete (DEC-505) | Before Stage 3 entry |
+| 5 | `test_gate_pre_stage_3_entry` | Phase 1B-α verdict produced + paper-trading infrastructure ready + 3-month duration plan (DEC-028) | Before Stage 2 → 3 transition |
+| 6 | `test_gate_pre_stage_4_entry` | 3-month paper-trading audit pass + email approval pipeline operational + capital pre-funded | Before Stage 3 → 4 transition |
+
+**Gate behavior:**
+
+- Each gate is a `pytest` function asserting executable conditions (boolean checks on cache state, file existence, metric thresholds)
+- Failed gate BLOCKS transition; surfaces actionable error message
+- Gate test file is part of standard pytest regression
+- New transitions defined → new gate added in same commit (per DEC-594)
+
+**Implementation:**
+
+`backtest/tests/test_gates.py` initial scaffold lands same-commit as this DEC (per DEC-594 enforcement). Gates 1-6 created with current asserts; #1 PASSES today (data-integrity 7/7); #2-#6 are PENDING until corresponding work completes (will assert SkipException with reason until criteria available).
+
+**Cross-references:**
+
+- DEC-594 (parent rule mandating same-commit artifact)
+- CHECKLIST #73 (this DEC's HARD RULE codification)
+- DEC-590 (Phase 1A May 15 begin date; gate #1 must PASS first)
+- DEC-505 (4-fold walk-forward; assertions in gate #2/#4)
+- DEC-507/508 (wiring matrix + fork integration; gate #3)
+- DEC-578 (7-gate Phase 1B-α verdict; gate #4)
+- DEC-028 (Stage 3 paper duration; gate #5)
+- L148/L149 (lessons motivating the rule)
+
+**Status:** RESOLVED-DECIDED Pass 53 owner approval 2026-05-06 late evening.
+
+---
+
 # DOCUMENT METADATA
 
 **Created:** Pass 52 turn 128 (post-Pass-52 closure, pre-Sprint-1 setup phase)

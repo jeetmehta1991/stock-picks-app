@@ -1,5 +1,73 @@
 # AUDIT_BACKLOG.md — Master Implementation Backlog (Pass 53 Review-Cycle)
 
+## Pass 53 late-evening 2026-05-06 — DEC-594/595 retroactive audit findings (Day 2-3 remediation)
+
+**Owner directive (verbatim):** *"This is the biggest mistake. I was forced to do multiple runs of audit cycles because of all issues till date. I have already lost 300$ on a failed phase 1B run. WE cant make more mistakes! Test at every stage and be comprehensive in testing"*
+
+**Structural fix codified this turn:** DEC-594 (Test-Artifact Same-Commit HARD RULE) + DEC-595 (Stage/Phase Gate Executable Tests) + CHECKLIST #73 + L149 (spec-without-build meta-pattern).
+
+**Retroactive DEC audit results** (`scripts/audit_decs_for_artifacts.py` ran 2026-05-06; full report `AUDIT_DECS_ARTIFACTS_REPORT.json`):
+
+| Classification | Count | Action required |
+|---|---|---|
+| COMPLIANT | 19 | None — artifact path in DEC body + exists |
+| KNOWN_COMPLIANT | 13 | None — pre-allowlisted |
+| TEST_SIGNAL_REFERENCED_IN_CODE | 4 | None — test code references DEC ID |
+| SUPERSEDED | 29 | None — absorbed by another DEC |
+| DEFERRED | 49 | None — out of stage scope |
+| INACTIVE_STATUS (OBSOLETE/BLOCKED_ON/FAIL_RR) | 13 | None — non-active |
+| PROPOSED_OR_PENDING | 13 | None — not yet RESOLVED-DECIDED |
+| NO_TRIGGER | 202 | None — no test/gate keywords |
+| **🔴 SPEC_WITHOUT_BUILD** | **43** | **Day 2-3 remediation: build artifact OR demote to PARTIAL-SPEC-ONLY** |
+| **🟡 TEST_SIGNAL_UNVERIFIED** | **132** | **Day 4-5 remediation: code-grep for matching tests; annotate DEC body with path or demote** |
+| TOTAL | 517 | — |
+
+**Breakdown of 43 SPEC_WITHOUT_BUILD by criticality:**
+
+- **1 CRITICAL** (RESOLVED-IMPLEMENTED): DEC-477 (T1a canonical) — has tests in `test_unit.py` but DEC body lacks path annotation. Day 2 fix: annotate.
+- **4 PHASE-1A relevant**: DEC-014 (Phase 1B passing criteria — superseded by 422+426), DEC-153 (regime-stratified splits — methodology DEC), DEC-423 (bootstrap CI per-cell), DEC-497 (Sprint 0A — has data-integrity test via DEC-591). Day 2-3 triage.
+- **38 OTHER RESOLVED-DECIDED**: methodology DECs spanning various scopes. Day 3 triage.
+
+**Day 2-3 remediation protocol** (Day 2 = May 7; Day 3 = May 8):
+
+For each of 43 SPEC_WITHOUT_BUILD findings:
+
+1. Re-read DEC body in detail
+2. Search code (`backtest/tests/`, `scripts/`, `backtest/`) for related logic
+3. Decision tree:
+   - (a) Test EXISTS → annotate DEC body with path; mark COMPLIANT in next audit run
+   - (b) Test PARTIALLY exists → build remaining; same-commit per DEC-594
+   - (c) Test does NOT exist + DEC mandates one → build; same-commit
+   - (d) Test does NOT exist + DEC is process/data-only → no artifact required (but DEC body should explicitly say so)
+4. Update DEC status if needed (RESOLVED-DECIDED → PARTIAL-SPEC-ONLY → RESOLVED-DECIDED again post-build)
+
+**Day 4-5 remediation protocol** (132 TEST_SIGNAL_UNVERIFIED):
+
+Each has a "Test signal:" pattern in DEC body but no explicit code reference. Approach:
+
+1. Extract test_signal description from DEC body (regex `Test signal[s]?:\s*(.+?)(?:\.|;|$)`)
+2. Code-grep `backtest/tests/test_unit.py` + `test_integration.py` for matching pattern
+3. If found: annotate DEC body with file path + line range
+4. If not found: demote to PARTIAL-SPEC-ONLY; queue test build
+
+**Audit script + report committed same-commit as DEC-594/595** (DEC-594 self-compliance demonstration).
+
+**Cross-references:**
+- DEC-594 (parent rule — Test-Artifact Same-Commit HARD RULE)
+- DEC-595 (parent rule — Stage/Phase Gate Executable Tests)
+- CHECKLIST #73 (HARD RULE codification)
+- L148 (test pyramid layered failure mode)
+- L149 (spec-without-build meta-pattern)
+- `scripts/audit_decs_for_artifacts.py` (this audit script)
+- `AUDIT_DECS_ARTIFACTS_REPORT.json` (full machine-readable report)
+- `backtest/tests/test_gates.py` (6 phase gates, gate 1 PASS today)
+
+**Status:** 175 DECs queued for Day 2-3 (43 SPEC_WITHOUT_BUILD) + Day 4-5 (132 TEST_SIGNAL_UNVERIFIED) remediation. Tracking continues until 100% before May 15 Phase 1A start. If remediation count exceeds 9-day window capacity, owner reviews + reapproves Phase 1A start date per DEC-590 ±2-business-day slippage tolerance.
+
+---
+
+
+
 **Created:** 2026-05-06 (Pass 53 final review-cycle turn)
 **Authority:** Per owner directive 2026-05-06 — *"No more audit cycles. But everything flagged till now will need to be addressed."* This file is the **single source of truth** for what's been flagged across the 7-review Pass 53 cycle, what's resolved, and what remains.
 **Closed:** Per **DEC-589 audit-iteration ceiling**, the Pass 53 review-cycle is CLOSED. Future external-AI feedback goes to a separate `AUDIT_BACKLOG_FUTURE.md` for post-Phase-1A-run consideration only.

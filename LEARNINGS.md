@@ -1330,3 +1330,50 @@ All four require explicit-mandatory-codification of the gap's mitigation (CHECKL
 3. Test runs as part of CI + as pre-phase gate
 4. DEC cannot mark RESOLVED-IMPLEMENTED until data-integrity test passes
 5. Audit-style cache scans (like Pass 53 2026-05-06) become AUTOMATED rather than manual
+
+---
+
+## L149 — Spec-without-build is the structural cause of every prior $-loss + audit cycle (Pass 53 2026-05-06 late evening)
+
+**Symptom:** Owner directive 2026-05-06 late evening: "We can't make more mistakes! Test at every stage and be comprehensive in testing." Lost $300 on a failed Phase 1B run; forced through 7 Pass 53 audit cycles; lost $50 on L86 6-vs-11 agent design; lost $100 on L95 mid-run bug discovery. Pattern across all four: a DEC was codified with spec text, marked RESOLVED-DECIDED, then the executable artifact was deferred to "later" — and "later" became "in production" before being built.
+
+**Root cause:** DEC codification process did NOT require executable artifact in same commit. Spec was treated as sufficient for RESOLVED-DECIDED status. Implementation could lag by weeks or months without surfacing.
+
+**Concrete instances of the pattern:**
+
+| Loss | DEC/Item | Spec date | Artifact built date | Cost |
+|---|---|---|---|---|
+| L86 | 6-agent → 11-agent design correction | Pass 26 spec | Pass 26 mid-run | $50 |
+| L95 | end-to-end smoke test | various | discovered mid-run | $100 |
+| Phase 1B failed run | various agent-pipeline gates | pre-Pass-52 | run-time | $300 |
+| Pass 53 audit cycle ×7 | DEC-503 layer 7 | Pass 52 turn 132 | Pass 53 evening 2026-05-06 | 7 cycles + 5 CRITICAL findings + 7 HIGH findings |
+
+**Pattern relation:**
+- L145 = silent gap on AVAILABILITY (endpoint 404)
+- L146 = silent gap on WIRING (data cached but consumer doesn't read)
+- L147 = silent gap on QUALITY (library lookahead-biased)
+- L148 = silent gap on VERIFICATION (test layer specified but unbuilt)
+- **L149 = silent gap on CODIFICATION (DEC marks RESOLVED-DECIDED with artifact deferred to "later")**
+
+L149 is the META-pattern: it's the mechanism by which L145/L146/L147/L148 each get instantiated. Without same-commit artifact requirement, any spec — including the lessons themselves — can become spec-without-build.
+
+**Codified:**
+- DEC-594 — Test-Artifact Same-Commit HARD RULE. Every DEC with test/gate/validation spec MUST include executable artifact in same commit. New status `PARTIAL-SPEC-ONLY` for spec-final + artifact-pending state.
+- DEC-595 — Stage/Phase/Sub-phase Gate Executable Tests. Every transition has executable gate test in `backtest/tests/test_gates.py`.
+- CHECKLIST #73 — joint codification (HARD RULE).
+- Retroactive audit (Day 2-3 of DEC-590 9-day window): scan all 353 DECs for spec-without-build; demote or remediate.
+
+**Apply when:**
+- Drafting any new DEC (pre-flight CHECKLIST #1 scans for trigger words)
+- Reviewing existing DECs (retroactive audit)
+- Phase transitions (gate test PASS required)
+- Reviewing why a $-loss or audit cycle happened (likely L149 instance)
+
+**Mitigation pattern (going forward):**
+1. Pre-flight scans DEC body for trigger words (`test`, `validate`, `gate`, `must pass`, `before X`, etc.)
+2. If trigger word present → DEC MUST cite executable artifact path
+3. Artifact MUST exist in same commit as DEC text (verified via `git show <commit> --stat`)
+4. If multi-day implementation: mark `PARTIAL-SPEC-ONLY`, build artifact in subsequent commit, then advance to `RESOLVED-DECIDED`
+5. Phase transitions blocked until corresponding gate test PASS
+
+**The hard mental shift:** "spec done" is NOT "DEC done." The DEC isn't done until the artifact runs green. This applies to lessons too — L148 wasn't really learned until DEC-591 + CHECKLIST #72 + executable test suite landed in same commit. L149 wasn't really learned until this commit lands with DEC-594/595 + CHECKLIST #73 + `test_gates.py` together.
