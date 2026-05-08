@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-08T16:49:32.176086+00:00",
+  "generated_at": "2026-05-08T17:01:00.724202+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -15,7 +15,9 @@
         "pushed": false,
         "n_doc_refs": 0
       },
-      "short_id": "DEC-001"
+      "short_id": "DEC-001",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-002",
@@ -31,7 +33,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-002"
+      "short_id": "DEC-002",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-003",
@@ -47,7 +51,9 @@
         "pushed": false,
         "n_doc_refs": 0
       },
-      "short_id": "DEC-003"
+      "short_id": "DEC-003",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-004",
@@ -63,7 +69,9 @@
         "pushed": false,
         "n_doc_refs": 0
       },
-      "short_id": "DEC-004"
+      "short_id": "DEC-004",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-005",
@@ -79,7 +87,9 @@
         "pushed": false,
         "n_doc_refs": 0
       },
-      "short_id": "DEC-005"
+      "short_id": "DEC-005",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-006",
@@ -95,7 +105,9 @@
         "pushed": false,
         "n_doc_refs": 0
       },
-      "short_id": "DEC-006"
+      "short_id": "DEC-006",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-007",
@@ -111,7 +123,9 @@
         "pushed": false,
         "n_doc_refs": 0
       },
-      "short_id": "DEC-007"
+      "short_id": "DEC-007",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-008",
@@ -127,7 +141,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-008"
+      "short_id": "DEC-008",
+      "sprint": "-",
+      "dependencies": "BUG-113"
     },
     {
       "id": "DECISION-009",
@@ -143,7 +159,9 @@
         "pushed": false,
         "n_doc_refs": 0
       },
-      "short_id": "DEC-009"
+      "short_id": "DEC-009",
+      "sprint": "-",
+      "dependencies": "BUG-118"
     },
     {
       "id": "DECISION-010",
@@ -159,7 +177,9 @@
         "pushed": false,
         "n_doc_refs": 0
       },
-      "short_id": "DEC-010"
+      "short_id": "DEC-010",
+      "sprint": "-",
+      "dependencies": "BUG-116"
     },
     {
       "id": "DECISION-011",
@@ -175,7 +195,9 @@
         "pushed": false,
         "n_doc_refs": 0
       },
-      "short_id": "DEC-011"
+      "short_id": "DEC-011",
+      "sprint": "-",
+      "dependencies": "BUG-119"
     },
     {
       "id": "DECISION-012",
@@ -191,7 +213,9 @@
         "pushed": false,
         "n_doc_refs": 0
       },
-      "short_id": "DEC-012"
+      "short_id": "DEC-012",
+      "sprint": "-",
+      "dependencies": "BUG-117"
     },
     {
       "id": "DECISION-013",
@@ -207,7 +231,9 @@
         "pushed": false,
         "n_doc_refs": 6
       },
-      "short_id": "DEC-013"
+      "short_id": "DEC-013",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-014",
@@ -223,7 +249,9 @@
         "pushed": false,
         "n_doc_refs": 7
       },
-      "short_id": "DEC-014"
+      "short_id": "DEC-014",
+      "sprint": "Sprint 6.5 \u2014 Phase 1A Rules-On",
+      "dependencies": "DEC-422; DEC-426"
     },
     {
       "id": "DECISION-015",
@@ -239,7 +267,9 @@
         "pushed": false,
         "n_doc_refs": 8
       },
-      "short_id": "DEC-015"
+      "short_id": "DEC-015",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-016",
@@ -255,7 +285,9 @@
         "pushed": false,
         "n_doc_refs": 5
       },
-      "short_id": "DEC-016"
+      "short_id": "DEC-016",
+      "sprint": "-",
+      "dependencies": "BUG-130; DEC-422; DEC-426"
     },
     {
       "id": "DECISION-017",
@@ -271,7 +303,9 @@
         "pushed": false,
         "n_doc_refs": 0
       },
-      "short_id": "DEC-017"
+      "short_id": "DEC-017",
+      "sprint": "-",
+      "dependencies": "BUG-131"
     },
     {
       "id": "DECISION-018",
@@ -287,7 +321,9 @@
         "pushed": false,
         "n_doc_refs": 9
       },
-      "short_id": "DEC-018"
+      "short_id": "DEC-018",
+      "sprint": "Sprint 6 (+4); Sprint 6.5 \u2014 Phase 1A Rules-On; Sprint 7 Pattern 2 toolkit add",
+      "dependencies": "BUG-133"
     },
     {
       "id": "DECISION-019",
@@ -303,7 +339,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-019"
+      "short_id": "DEC-019",
+      "sprint": "Sprint 4 (+1)",
+      "dependencies": "BUG-135"
     },
     {
       "id": "DECISION-020",
@@ -319,7 +357,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-020"
+      "short_id": "DEC-020",
+      "sprint": "-",
+      "dependencies": "DEC-441"
     },
     {
       "id": "DECISION-021",
@@ -335,7 +375,9 @@
         "pushed": false,
         "n_doc_refs": 19
       },
-      "short_id": "DEC-021"
+      "short_id": "DEC-021",
+      "sprint": "Sprint 7 (+1 \u2014 final ENG addit; Sprint 7 (REVISED \u2014 DEC-042 re; Sprint 7 Pattern 2 toolkit add",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-022",
@@ -351,7 +393,9 @@
         "pushed": false,
         "n_doc_refs": 6
       },
-      "short_id": "DEC-022"
+      "short_id": "DEC-022",
+      "sprint": "-",
+      "dependencies": "BUG-170; DEC-091"
     },
     {
       "id": "DECISION-023",
@@ -367,7 +411,9 @@
         "pushed": false,
         "n_doc_refs": 6
       },
-      "short_id": "DEC-023"
+      "short_id": "DEC-023",
+      "sprint": "Sprint 5 additions (Position S",
+      "dependencies": "BUG-168; DEC-087"
     },
     {
       "id": "DECISION-024",
@@ -383,7 +429,9 @@
         "pushed": false,
         "n_doc_refs": 10
       },
-      "short_id": "DEC-024"
+      "short_id": "DEC-024",
+      "sprint": "-",
+      "dependencies": "BUG-169; DEC-089"
     },
     {
       "id": "DECISION-025",
@@ -399,7 +447,9 @@
         "pushed": false,
         "n_doc_refs": 5
       },
-      "short_id": "DEC-025"
+      "short_id": "DEC-025",
+      "sprint": "-",
+      "dependencies": "BUG-175; DEC-422"
     },
     {
       "id": "DECISION-026",
@@ -415,7 +465,9 @@
         "pushed": false,
         "n_doc_refs": 3
       },
-      "short_id": "DEC-026"
+      "short_id": "DEC-026",
+      "sprint": "Sprint 7 additions",
+      "dependencies": "BUG-172; DEC-109"
     },
     {
       "id": "DECISION-027",
@@ -431,7 +483,9 @@
         "pushed": false,
         "n_doc_refs": 1
       },
-      "short_id": "DEC-027"
+      "short_id": "DEC-027",
+      "sprint": "-",
+      "dependencies": "BUG-173"
     },
     {
       "id": "DECISION-028",
@@ -447,7 +501,9 @@
         "pushed": false,
         "n_doc_refs": 1
       },
-      "short_id": "DEC-028"
+      "short_id": "DEC-028",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-029",
@@ -463,7 +519,9 @@
         "pushed": false,
         "n_doc_refs": 22
       },
-      "short_id": "DEC-029"
+      "short_id": "DEC-029",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-029-A",
@@ -479,7 +537,9 @@
         "pushed": false,
         "n_doc_refs": 4
       },
-      "short_id": "DEC-029-A"
+      "short_id": "DEC-029-A",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-029-B",
@@ -495,7 +555,9 @@
         "pushed": false,
         "n_doc_refs": 0
       },
-      "short_id": "DEC-029-B"
+      "short_id": "DEC-029-B",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-029-C",
@@ -511,7 +573,9 @@
         "pushed": false,
         "n_doc_refs": 15
       },
-      "short_id": "DEC-029-C"
+      "short_id": "DEC-029-C",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-030",
@@ -527,7 +591,9 @@
         "pushed": false,
         "n_doc_refs": 1
       },
-      "short_id": "DEC-030"
+      "short_id": "DEC-030",
+      "sprint": "-",
+      "dependencies": "BUG-185"
     },
     {
       "id": "DECISION-031",
@@ -543,7 +609,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-031"
+      "short_id": "DEC-031",
+      "sprint": "-",
+      "dependencies": "DEC-594"
     },
     {
       "id": "DECISION-032",
@@ -559,7 +627,9 @@
         "pushed": false,
         "n_doc_refs": 0
       },
-      "short_id": "DEC-032"
+      "short_id": "DEC-032",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-033",
@@ -575,7 +645,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-033"
+      "short_id": "DEC-033",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-034",
@@ -591,7 +663,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-034"
+      "short_id": "DEC-034",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-035",
@@ -607,7 +681,9 @@
         "pushed": false,
         "n_doc_refs": 10
       },
-      "short_id": "DEC-035"
+      "short_id": "DEC-035",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-036",
@@ -623,7 +699,9 @@
         "pushed": false,
         "n_doc_refs": 1
       },
-      "short_id": "DEC-036"
+      "short_id": "DEC-036",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-037",
@@ -639,7 +717,9 @@
         "pushed": false,
         "n_doc_refs": 1
       },
-      "short_id": "DEC-037"
+      "short_id": "DEC-037",
+      "sprint": "-",
+      "dependencies": "DEC-438"
     },
     {
       "id": "DECISION-038",
@@ -655,7 +735,9 @@
         "pushed": false,
         "n_doc_refs": 0
       },
-      "short_id": "DEC-038"
+      "short_id": "DEC-038",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-039",
@@ -671,7 +753,9 @@
         "pushed": false,
         "n_doc_refs": 1
       },
-      "short_id": "DEC-039"
+      "short_id": "DEC-039",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-040",
@@ -687,7 +771,9 @@
         "pushed": false,
         "n_doc_refs": 11
       },
-      "short_id": "DEC-040"
+      "short_id": "DEC-040",
+      "sprint": "Sprint 1 / Sprint 2 additions ; Sprint 7 additions (Statistica",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-041",
@@ -703,7 +789,9 @@
         "pushed": false,
         "n_doc_refs": 0
       },
-      "short_id": "DEC-041"
+      "short_id": "DEC-041",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-042",
@@ -719,7 +807,9 @@
         "pushed": true,
         "n_doc_refs": 48
       },
-      "short_id": "DEC-042"
+      "short_id": "DEC-042",
+      "sprint": "Sprint 7 (+1 \u2014 final ENG addit; Sprint 7 (REVISED \u2014 DEC-042 re; Sprint 7 effort revised; Sprint effort revisions",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-043",
@@ -735,7 +825,9 @@
         "pushed": false,
         "n_doc_refs": 0
       },
-      "short_id": "DEC-043"
+      "short_id": "DEC-043",
+      "sprint": "Sprint 9 (+4)",
+      "dependencies": "DEC-214; DEC-249"
     },
     {
       "id": "DECISION-044",
@@ -751,7 +843,9 @@
         "pushed": false,
         "n_doc_refs": 0
       },
-      "short_id": "DEC-044"
+      "short_id": "DEC-044",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-045",
@@ -767,7 +861,9 @@
         "pushed": false,
         "n_doc_refs": 30
       },
-      "short_id": "DEC-045"
+      "short_id": "DEC-045",
+      "sprint": "Sprint 1 additions (Phase 0.A ; Sprint 7 Pattern 2 toolkit add",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-046",
@@ -783,7 +879,9 @@
         "pushed": false,
         "n_doc_refs": 0
       },
-      "short_id": "DEC-046"
+      "short_id": "DEC-046",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-047",
@@ -799,7 +897,9 @@
         "pushed": false,
         "n_doc_refs": 0
       },
-      "short_id": "DEC-047"
+      "short_id": "DEC-047",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-048",
@@ -815,7 +915,9 @@
         "pushed": false,
         "n_doc_refs": 1
       },
-      "short_id": "DEC-048"
+      "short_id": "DEC-048",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-049",
@@ -831,7 +933,9 @@
         "pushed": false,
         "n_doc_refs": 1
       },
-      "short_id": "DEC-049"
+      "short_id": "DEC-049",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-050",
@@ -847,7 +951,9 @@
         "pushed": false,
         "n_doc_refs": 5
       },
-      "short_id": "DEC-050"
+      "short_id": "DEC-050",
+      "sprint": "-",
+      "dependencies": "DEC-594"
     },
     {
       "id": "DECISION-051",
@@ -863,7 +969,9 @@
         "pushed": false,
         "n_doc_refs": 13
       },
-      "short_id": "DEC-051"
+      "short_id": "DEC-051",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-052",
@@ -879,7 +987,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-052"
+      "short_id": "DEC-052",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-053",
@@ -895,7 +1005,9 @@
         "pushed": false,
         "n_doc_refs": 0
       },
-      "short_id": "DEC-053"
+      "short_id": "DEC-053",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-054",
@@ -911,7 +1023,9 @@
         "pushed": false,
         "n_doc_refs": 5
       },
-      "short_id": "DEC-054"
+      "short_id": "DEC-054",
+      "sprint": "Sprint 4 additions (DEC-410 Au",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-055",
@@ -927,7 +1041,9 @@
         "pushed": false,
         "n_doc_refs": 1
       },
-      "short_id": "DEC-055"
+      "short_id": "DEC-055",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-056",
@@ -943,7 +1059,9 @@
         "pushed": false,
         "n_doc_refs": 0
       },
-      "short_id": "DEC-056"
+      "short_id": "DEC-056",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-057",
@@ -959,7 +1077,9 @@
         "pushed": false,
         "n_doc_refs": 11
       },
-      "short_id": "DEC-057"
+      "short_id": "DEC-057",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-058",
@@ -975,7 +1095,9 @@
         "pushed": false,
         "n_doc_refs": 6
       },
-      "short_id": "DEC-058"
+      "short_id": "DEC-058",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-059",
@@ -991,7 +1113,9 @@
         "pushed": false,
         "n_doc_refs": 1
       },
-      "short_id": "DEC-059"
+      "short_id": "DEC-059",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-060",
@@ -1007,7 +1131,9 @@
         "pushed": false,
         "n_doc_refs": 1
       },
-      "short_id": "DEC-060"
+      "short_id": "DEC-060",
+      "sprint": "-",
+      "dependencies": "DEC-594"
     },
     {
       "id": "DECISION-061",
@@ -1023,7 +1149,9 @@
         "pushed": false,
         "n_doc_refs": 0
       },
-      "short_id": "DEC-061"
+      "short_id": "DEC-061",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-062",
@@ -1039,7 +1167,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-062"
+      "short_id": "DEC-062",
+      "sprint": "Sprint 7-8 (+3)",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-063",
@@ -1055,7 +1185,9 @@
         "pushed": false,
         "n_doc_refs": 5
       },
-      "short_id": "DEC-063"
+      "short_id": "DEC-063",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-064",
@@ -1071,7 +1203,9 @@
         "pushed": true,
         "n_doc_refs": 6
       },
-      "short_id": "DEC-064"
+      "short_id": "DEC-064",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-065",
@@ -1087,7 +1221,9 @@
         "pushed": false,
         "n_doc_refs": 9
       },
-      "short_id": "DEC-065"
+      "short_id": "DEC-065",
+      "sprint": "Sprint 1 additions (Phase 0.A ",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-066",
@@ -1103,7 +1239,9 @@
         "pushed": false,
         "n_doc_refs": 8
       },
-      "short_id": "DEC-066"
+      "short_id": "DEC-066",
+      "sprint": "-",
+      "dependencies": "DEC-422"
     },
     {
       "id": "DECISION-067",
@@ -1119,7 +1257,9 @@
         "pushed": true,
         "n_doc_refs": 41
       },
-      "short_id": "DEC-067"
+      "short_id": "DEC-067",
+      "sprint": "Sprint 6 additions (Phase 0.E ; Sprint 7 additions (Statistica; Sprint 8 additions (Strategy C",
+      "dependencies": "DEC-353"
     },
     {
       "id": "DECISION-068",
@@ -1135,7 +1275,9 @@
         "pushed": true,
         "n_doc_refs": 17
       },
-      "short_id": "DEC-068"
+      "short_id": "DEC-068",
+      "sprint": "-",
+      "dependencies": "DEC-423"
     },
     {
       "id": "DECISION-069",
@@ -1151,7 +1293,9 @@
         "pushed": true,
         "n_doc_refs": 15
       },
-      "short_id": "DEC-069"
+      "short_id": "DEC-069",
+      "sprint": "-",
+      "dependencies": "DEC-422"
     },
     {
       "id": "DECISION-070",
@@ -1167,7 +1311,9 @@
         "pushed": true,
         "n_doc_refs": 34
       },
-      "short_id": "DEC-070"
+      "short_id": "DEC-070",
+      "sprint": "Sprint 3 \u2014 Phase 0.B Portfolio",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-071",
@@ -1183,7 +1329,9 @@
         "pushed": false,
         "n_doc_refs": 4
       },
-      "short_id": "DEC-071"
+      "short_id": "DEC-071",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-072",
@@ -1199,7 +1347,9 @@
         "pushed": false,
         "n_doc_refs": 11
       },
-      "short_id": "DEC-072"
+      "short_id": "DEC-072",
+      "sprint": "Sprint 4 additions (DEC-410 Au; Sprint 7 additions (Statistica",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-073",
@@ -1215,7 +1365,9 @@
         "pushed": false,
         "n_doc_refs": 4
       },
-      "short_id": "DEC-073"
+      "short_id": "DEC-073",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-074",
@@ -1231,7 +1383,9 @@
         "pushed": false,
         "n_doc_refs": 8
       },
-      "short_id": "DEC-074"
+      "short_id": "DEC-074",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-075",
@@ -1247,7 +1401,9 @@
         "pushed": true,
         "n_doc_refs": 8
       },
-      "short_id": "DEC-075"
+      "short_id": "DEC-075",
+      "sprint": "Sprint 6 additions (Phase 0.E ; Sprint 7 additions (Statistica; Sprint 8 additions (Strategy C",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-076",
@@ -1263,7 +1419,9 @@
         "pushed": true,
         "n_doc_refs": 8
       },
-      "short_id": "DEC-076"
+      "short_id": "DEC-076",
+      "sprint": "Sprint 3 \u2014 Phase 0.B Portfolio",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-077",
@@ -1279,7 +1437,9 @@
         "pushed": true,
         "n_doc_refs": 4
       },
-      "short_id": "DEC-077"
+      "short_id": "DEC-077",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-078",
@@ -1295,7 +1455,9 @@
         "pushed": true,
         "n_doc_refs": 20
       },
-      "short_id": "DEC-078"
+      "short_id": "DEC-078",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-078A",
@@ -1311,7 +1473,9 @@
         "pushed": false,
         "n_doc_refs": 8
       },
-      "short_id": "DEC-078A"
+      "short_id": "DEC-078A",
+      "sprint": "-",
+      "dependencies": "DEC-078"
     },
     {
       "id": "DECISION-078B",
@@ -1327,7 +1491,9 @@
         "pushed": false,
         "n_doc_refs": 8
       },
-      "short_id": "DEC-078B"
+      "short_id": "DEC-078B",
+      "sprint": "-",
+      "dependencies": "DEC-078"
     },
     {
       "id": "DECISION-079",
@@ -1343,7 +1509,9 @@
         "pushed": true,
         "n_doc_refs": 5
       },
-      "short_id": "DEC-079"
+      "short_id": "DEC-079",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-080",
@@ -1359,7 +1527,9 @@
         "pushed": false,
         "n_doc_refs": 46
       },
-      "short_id": "DEC-080"
+      "short_id": "DEC-080",
+      "sprint": "Sprint 7 additions; Sprint 7 additions (Statistica",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-081",
@@ -1375,7 +1545,9 @@
         "pushed": false,
         "n_doc_refs": 20
       },
-      "short_id": "DEC-081"
+      "short_id": "DEC-081",
+      "sprint": "Sprint 7 additions (Statistica",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-082",
@@ -1391,7 +1563,9 @@
         "pushed": false,
         "n_doc_refs": 9
       },
-      "short_id": "DEC-082"
+      "short_id": "DEC-082",
+      "sprint": "Sprint 7 additions (Statistica",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-083",
@@ -1407,7 +1581,9 @@
         "pushed": false,
         "n_doc_refs": 7
       },
-      "short_id": "DEC-083"
+      "short_id": "DEC-083",
+      "sprint": "Sprint 7 additions (Statistica",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-084",
@@ -1423,7 +1599,9 @@
         "pushed": false,
         "n_doc_refs": 8
       },
-      "short_id": "DEC-084"
+      "short_id": "DEC-084",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-085",
@@ -1439,7 +1617,9 @@
         "pushed": false,
         "n_doc_refs": 8
       },
-      "short_id": "DEC-085"
+      "short_id": "DEC-085",
+      "sprint": "Sprint 7 additions (Statistica",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-086",
@@ -1455,7 +1635,9 @@
         "pushed": false,
         "n_doc_refs": 10
       },
-      "short_id": "DEC-086"
+      "short_id": "DEC-086",
+      "sprint": "Sprint 5 additions (Position S; Sprint 7 additions (Statistica",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-087",
@@ -1471,7 +1653,9 @@
         "pushed": false,
         "n_doc_refs": 11
       },
-      "short_id": "DEC-087"
+      "short_id": "DEC-087",
+      "sprint": "Sprint 5 additions (Position S; Sprint 7 additions (Statistica",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-088",
@@ -1487,7 +1671,9 @@
         "pushed": false,
         "n_doc_refs": 6
       },
-      "short_id": "DEC-088"
+      "short_id": "DEC-088",
+      "sprint": "Sprint 5 additions (Position S; Sprint 7 additions (Statistica",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-089",
@@ -1503,7 +1689,9 @@
         "pushed": false,
         "n_doc_refs": 10
       },
-      "short_id": "DEC-089"
+      "short_id": "DEC-089",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-090",
@@ -1519,7 +1707,9 @@
         "pushed": false,
         "n_doc_refs": 11
       },
-      "short_id": "DEC-090"
+      "short_id": "DEC-090",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-091",
@@ -1535,7 +1725,9 @@
         "pushed": false,
         "n_doc_refs": 9
       },
-      "short_id": "DEC-091"
+      "short_id": "DEC-091",
+      "sprint": "Sprint 5 additions (Position S",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-092",
@@ -1551,7 +1743,9 @@
         "pushed": false,
         "n_doc_refs": 27
       },
-      "short_id": "DEC-092"
+      "short_id": "DEC-092",
+      "sprint": "Sprint 4 additions (DEC-410 Au; Sprint 7 Pattern 2 toolkit add; Sprint 7 additions (Statistica",
+      "dependencies": "DEC-122; DEC-280"
     },
     {
       "id": "DECISION-093",
@@ -1567,7 +1761,9 @@
         "pushed": false,
         "n_doc_refs": 3
       },
-      "short_id": "DEC-093"
+      "short_id": "DEC-093",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-094",
@@ -1583,7 +1779,9 @@
         "pushed": false,
         "n_doc_refs": 8
       },
-      "short_id": "DEC-094"
+      "short_id": "DEC-094",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-095",
@@ -1599,7 +1797,9 @@
         "pushed": false,
         "n_doc_refs": 10
       },
-      "short_id": "DEC-095"
+      "short_id": "DEC-095",
+      "sprint": "Sprint 1 additions (Phase 0.A ",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-096",
@@ -1615,7 +1815,9 @@
         "pushed": false,
         "n_doc_refs": 18
       },
-      "short_id": "DEC-096"
+      "short_id": "DEC-096",
+      "sprint": "Sprint 6 additions (Phase 0.E ; Sprint 7 additions (Statistica",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-097",
@@ -1631,7 +1833,9 @@
         "pushed": false,
         "n_doc_refs": 5
       },
-      "short_id": "DEC-097"
+      "short_id": "DEC-097",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-098",
@@ -1647,7 +1851,9 @@
         "pushed": true,
         "n_doc_refs": 22
       },
-      "short_id": "DEC-098"
+      "short_id": "DEC-098",
+      "sprint": "Sprint 6 \u2014 Phase 0.E Catch-Mec",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-099",
@@ -1663,7 +1869,9 @@
         "pushed": true,
         "n_doc_refs": 28
       },
-      "short_id": "DEC-099"
+      "short_id": "DEC-099",
+      "sprint": "Sprint 8 additions (Strategy C",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-100",
@@ -1679,7 +1887,9 @@
         "pushed": false,
         "n_doc_refs": 11
       },
-      "short_id": "DEC-100"
+      "short_id": "DEC-100",
+      "sprint": "Sprint 7 additions; Sprint 7-8 (+3)",
+      "dependencies": "DEC-100; DEC-422"
     },
     {
       "id": "DECISION-101",
@@ -1695,7 +1905,9 @@
         "pushed": false,
         "n_doc_refs": 11
       },
-      "short_id": "DEC-101"
+      "short_id": "DEC-101",
+      "sprint": "-",
+      "dependencies": "DEC-256"
     },
     {
       "id": "DECISION-102",
@@ -1711,7 +1923,9 @@
         "pushed": false,
         "n_doc_refs": 7
       },
-      "short_id": "DEC-102"
+      "short_id": "DEC-102",
+      "sprint": "-",
+      "dependencies": "DEC-369"
     },
     {
       "id": "DECISION-103",
@@ -1727,7 +1941,9 @@
         "pushed": true,
         "n_doc_refs": 55
       },
-      "short_id": "DEC-103"
+      "short_id": "DEC-103",
+      "sprint": "Sprint 0A \u2014 Phase 0.A Multi-AP; Sprint 5 additions (Universe M",
+      "dependencies": "DEC-372"
     },
     {
       "id": "DECISION-104",
@@ -1743,7 +1959,9 @@
         "pushed": false,
         "n_doc_refs": 19
       },
-      "short_id": "DEC-104"
+      "short_id": "DEC-104",
+      "sprint": "Sprint 5 additions (Universe M",
+      "dependencies": "DEC-364; DEC-375"
     },
     {
       "id": "DECISION-105",
@@ -1759,7 +1977,9 @@
         "pushed": false,
         "n_doc_refs": 9
       },
-      "short_id": "DEC-105"
+      "short_id": "DEC-105",
+      "sprint": "Sprint 5 additions (Universe M",
+      "dependencies": "DEC-378"
     },
     {
       "id": "DECISION-106",
@@ -1775,7 +1995,9 @@
         "pushed": false,
         "n_doc_refs": 18
       },
-      "short_id": "DEC-106"
+      "short_id": "DEC-106",
+      "sprint": "Sprint 7 Pattern 2 toolkit add; Sprint 7 additions (Statistica",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-107",
@@ -1791,7 +2013,9 @@
         "pushed": false,
         "n_doc_refs": 8
       },
-      "short_id": "DEC-107"
+      "short_id": "DEC-107",
+      "sprint": "Sprint 7 additions; Sprint 7-8 additions (Phase 1B",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-108",
@@ -1807,7 +2031,9 @@
         "pushed": false,
         "n_doc_refs": 9
       },
-      "short_id": "DEC-108"
+      "short_id": "DEC-108",
+      "sprint": "Sprint 7 additions; Sprint 7-8 additions (Phase 1B",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-109",
@@ -1823,7 +2049,9 @@
         "pushed": true,
         "n_doc_refs": 60
       },
-      "short_id": "DEC-109"
+      "short_id": "DEC-109",
+      "sprint": "Sprint 1 \u2014 RETIRED Pass 53 (re; Sprint 7 additions; Sprint 7 additions (Statistica; Sprint 7-8 additions (Phase 1B",
+      "dependencies": "DEC-298"
     },
     {
       "id": "DECISION-110",
@@ -1839,7 +2067,9 @@
         "pushed": false,
         "n_doc_refs": 39
       },
-      "short_id": "DEC-110"
+      "short_id": "DEC-110",
+      "sprint": "Sprint 7 additions; Sprint 7-8 additions (Phase 1B",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-111",
@@ -1855,7 +2085,9 @@
         "pushed": false,
         "n_doc_refs": 8
       },
-      "short_id": "DEC-111"
+      "short_id": "DEC-111",
+      "sprint": "Sprint 7 additions; Sprint 7 additions (Statistica; Sprint 7-8 additions (Phase 1B",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-112",
@@ -1871,7 +2103,9 @@
         "pushed": false,
         "n_doc_refs": 1
       },
-      "short_id": "DEC-112"
+      "short_id": "DEC-112",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-113",
@@ -1887,7 +2121,9 @@
         "pushed": false,
         "n_doc_refs": 6
       },
-      "short_id": "DEC-113"
+      "short_id": "DEC-113",
+      "sprint": "Sprint 6 additions; Sprint 7-8 additions (Phase 1B",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-114",
@@ -1903,7 +2139,9 @@
         "pushed": false,
         "n_doc_refs": 7
       },
-      "short_id": "DEC-114"
+      "short_id": "DEC-114",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-115",
@@ -1919,7 +2157,9 @@
         "pushed": false,
         "n_doc_refs": 1
       },
-      "short_id": "DEC-115"
+      "short_id": "DEC-115",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-116",
@@ -1935,7 +2175,9 @@
         "pushed": false,
         "n_doc_refs": 1
       },
-      "short_id": "DEC-116"
+      "short_id": "DEC-116",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-117",
@@ -1951,7 +2193,9 @@
         "pushed": false,
         "n_doc_refs": 1
       },
-      "short_id": "DEC-117"
+      "short_id": "DEC-117",
+      "sprint": "Sprint 1 (+2)",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-118",
@@ -1967,7 +2211,9 @@
         "pushed": false,
         "n_doc_refs": 16
       },
-      "short_id": "DEC-118"
+      "short_id": "DEC-118",
+      "sprint": "Sprint 0A \u2014 Phase 0.A Multi-AP; Sprint 1 (+2)",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-119",
@@ -1983,7 +2229,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-119"
+      "short_id": "DEC-119",
+      "sprint": "Sprint 6 (+10)",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-120",
@@ -1999,7 +2247,9 @@
         "pushed": false,
         "n_doc_refs": 0
       },
-      "short_id": "DEC-120"
+      "short_id": "DEC-120",
+      "sprint": "Sprint 7-8 (+3)",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-121",
@@ -2015,7 +2265,9 @@
         "pushed": false,
         "n_doc_refs": 0
       },
-      "short_id": "DEC-121"
+      "short_id": "DEC-121",
+      "sprint": "Sprint 7 (+8)",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-122",
@@ -2031,7 +2283,9 @@
         "pushed": false,
         "n_doc_refs": 9
       },
-      "short_id": "DEC-122"
+      "short_id": "DEC-122",
+      "sprint": "Sprint 4 (+5); Sprint 4 additions (DEC-410 Au",
+      "dependencies": "DEC-092; DEC-280"
     },
     {
       "id": "DECISION-123",
@@ -2047,7 +2301,9 @@
         "pushed": false,
         "n_doc_refs": 3
       },
-      "short_id": "DEC-123"
+      "short_id": "DEC-123",
+      "sprint": "Sprint 4 (+5)",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-124",
@@ -2063,7 +2319,9 @@
         "pushed": false,
         "n_doc_refs": 11
       },
-      "short_id": "DEC-124"
+      "short_id": "DEC-124",
+      "sprint": "Sprint 4 (+5); Sprint 7 Pattern 2 toolkit add",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-125",
@@ -2079,7 +2337,9 @@
         "pushed": false,
         "n_doc_refs": 1
       },
-      "short_id": "DEC-125"
+      "short_id": "DEC-125",
+      "sprint": "Sprint 4 (+5)",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-126",
@@ -2095,7 +2355,9 @@
         "pushed": false,
         "n_doc_refs": 1
       },
-      "short_id": "DEC-126"
+      "short_id": "DEC-126",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-127",
@@ -2111,7 +2373,9 @@
         "pushed": false,
         "n_doc_refs": 4
       },
-      "short_id": "DEC-127"
+      "short_id": "DEC-127",
+      "sprint": "Sprint 6 (+10)",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-128",
@@ -2127,7 +2391,9 @@
         "pushed": false,
         "n_doc_refs": 1
       },
-      "short_id": "DEC-128"
+      "short_id": "DEC-128",
+      "sprint": "Sprint 6 (+10)",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-129",
@@ -2143,7 +2409,9 @@
         "pushed": true,
         "n_doc_refs": 16
       },
-      "short_id": "DEC-129"
+      "short_id": "DEC-129",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-130",
@@ -2159,7 +2427,9 @@
         "pushed": false,
         "n_doc_refs": 11
       },
-      "short_id": "DEC-130"
+      "short_id": "DEC-130",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-131",
@@ -2175,7 +2445,9 @@
         "pushed": true,
         "n_doc_refs": 29
       },
-      "short_id": "DEC-131"
+      "short_id": "DEC-131",
+      "sprint": "Sprint 7 (+8); Sprint 7 additions (Statistica",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-132",
@@ -2191,7 +2463,9 @@
         "pushed": false,
         "n_doc_refs": 6
       },
-      "short_id": "DEC-132"
+      "short_id": "DEC-132",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-133",
@@ -2207,7 +2481,9 @@
         "pushed": false,
         "n_doc_refs": 3
       },
-      "short_id": "DEC-133"
+      "short_id": "DEC-133",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-134",
@@ -2223,7 +2499,9 @@
         "pushed": false,
         "n_doc_refs": 6
       },
-      "short_id": "DEC-134"
+      "short_id": "DEC-134",
+      "sprint": "Sprint 6 (+4)",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-135",
@@ -2239,7 +2517,9 @@
         "pushed": false,
         "n_doc_refs": 8
       },
-      "short_id": "DEC-135"
+      "short_id": "DEC-135",
+      "sprint": "Sprint 6 (+4); Sprint 7 Pattern 2 toolkit add",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-136",
@@ -2255,7 +2535,9 @@
         "pushed": false,
         "n_doc_refs": 1
       },
-      "short_id": "DEC-136"
+      "short_id": "DEC-136",
+      "sprint": "Sprint 6 (+4)",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-137",
@@ -2271,7 +2553,9 @@
         "pushed": false,
         "n_doc_refs": 3
       },
-      "short_id": "DEC-137"
+      "short_id": "DEC-137",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-138",
@@ -2287,7 +2571,9 @@
         "pushed": false,
         "n_doc_refs": 8
       },
-      "short_id": "DEC-138"
+      "short_id": "DEC-138",
+      "sprint": "Sprint 6 additions (Phase 0.E ",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-139",
@@ -2303,7 +2589,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-139"
+      "short_id": "DEC-139",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-140",
@@ -2319,7 +2607,9 @@
         "pushed": false,
         "n_doc_refs": 4
       },
-      "short_id": "DEC-140"
+      "short_id": "DEC-140",
+      "sprint": "-",
+      "dependencies": "DEC-230"
     },
     {
       "id": "DECISION-141",
@@ -2335,7 +2625,9 @@
         "pushed": false,
         "n_doc_refs": 16
       },
-      "short_id": "DEC-141"
+      "short_id": "DEC-141",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-142",
@@ -2351,7 +2643,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-142"
+      "short_id": "DEC-142",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-143",
@@ -2367,7 +2661,9 @@
         "pushed": false,
         "n_doc_refs": 3
       },
-      "short_id": "DEC-143"
+      "short_id": "DEC-143",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-144",
@@ -2383,7 +2679,9 @@
         "pushed": false,
         "n_doc_refs": 9
       },
-      "short_id": "DEC-144"
+      "short_id": "DEC-144",
+      "sprint": "Sprint 7 additions; Sprint 7-8 additions (Phase 1B",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-145",
@@ -2399,7 +2697,9 @@
         "pushed": false,
         "n_doc_refs": 4
       },
-      "short_id": "DEC-145"
+      "short_id": "DEC-145",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-146",
@@ -2415,7 +2715,9 @@
         "pushed": false,
         "n_doc_refs": 0
       },
-      "short_id": "DEC-146"
+      "short_id": "DEC-146",
+      "sprint": "Sprint 4 (+5)",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-147",
@@ -2431,7 +2733,9 @@
         "pushed": false,
         "n_doc_refs": 4
       },
-      "short_id": "DEC-147"
+      "short_id": "DEC-147",
+      "sprint": "Sprint 5 (+1)",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-148",
@@ -2447,7 +2751,9 @@
         "pushed": false,
         "n_doc_refs": 1
       },
-      "short_id": "DEC-148"
+      "short_id": "DEC-148",
+      "sprint": "Sprint 7 (+8)",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-149",
@@ -2463,7 +2769,9 @@
         "pushed": false,
         "n_doc_refs": 1
       },
-      "short_id": "DEC-149"
+      "short_id": "DEC-149",
+      "sprint": "Sprint 7 (+8)",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-150",
@@ -2479,7 +2787,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-150"
+      "short_id": "DEC-150",
+      "sprint": "Sprint 7 (+8)",
+      "dependencies": "DEC-106"
     },
     {
       "id": "DECISION-151",
@@ -2495,7 +2805,9 @@
         "pushed": false,
         "n_doc_refs": 1
       },
-      "short_id": "DEC-151"
+      "short_id": "DEC-151",
+      "sprint": "Sprint 7 (+8)",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-152",
@@ -2511,7 +2823,9 @@
         "pushed": false,
         "n_doc_refs": 12
       },
-      "short_id": "DEC-152"
+      "short_id": "DEC-152",
+      "sprint": "Sprint 7 additions; Sprint 7-8 additions (Phase 1B",
+      "dependencies": "DEC-594"
     },
     {
       "id": "DECISION-153",
@@ -2527,7 +2841,9 @@
         "pushed": true,
         "n_doc_refs": 10
       },
-      "short_id": "DEC-153"
+      "short_id": "DEC-153",
+      "sprint": "Sprint 7 (+8)",
+      "dependencies": "DEC-594"
     },
     {
       "id": "DECISION-154",
@@ -2543,7 +2859,9 @@
         "pushed": false,
         "n_doc_refs": 0
       },
-      "short_id": "DEC-154"
+      "short_id": "DEC-154",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-155",
@@ -2559,7 +2877,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-155"
+      "short_id": "DEC-155",
+      "sprint": "Sprint 7 (+8)",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-156",
@@ -2575,7 +2895,9 @@
         "pushed": false,
         "n_doc_refs": 1
       },
-      "short_id": "DEC-156"
+      "short_id": "DEC-156",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-157",
@@ -2591,7 +2913,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-157"
+      "short_id": "DEC-157",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-158",
@@ -2607,7 +2931,9 @@
         "pushed": true,
         "n_doc_refs": 11
       },
-      "short_id": "DEC-158"
+      "short_id": "DEC-158",
+      "sprint": "-",
+      "dependencies": "DEC-266"
     },
     {
       "id": "DECISION-159",
@@ -2623,7 +2949,9 @@
         "pushed": false,
         "n_doc_refs": 3
       },
-      "short_id": "DEC-159"
+      "short_id": "DEC-159",
+      "sprint": "Sprint 4 (+5)",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-160",
@@ -2639,7 +2967,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-160"
+      "short_id": "DEC-160",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-161",
@@ -2655,7 +2985,9 @@
         "pushed": false,
         "n_doc_refs": 14
       },
-      "short_id": "DEC-161"
+      "short_id": "DEC-161",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-162",
@@ -2671,7 +3003,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-162"
+      "short_id": "DEC-162",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-163",
@@ -2687,7 +3021,9 @@
         "pushed": false,
         "n_doc_refs": 0
       },
-      "short_id": "DEC-163"
+      "short_id": "DEC-163",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-164",
@@ -2703,7 +3039,9 @@
         "pushed": false,
         "n_doc_refs": 1
       },
-      "short_id": "DEC-164"
+      "short_id": "DEC-164",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-165",
@@ -2719,7 +3057,9 @@
         "pushed": false,
         "n_doc_refs": 0
       },
-      "short_id": "DEC-165"
+      "short_id": "DEC-165",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-166",
@@ -2735,7 +3075,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-166"
+      "short_id": "DEC-166",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-167",
@@ -2751,7 +3093,9 @@
         "pushed": false,
         "n_doc_refs": 1
       },
-      "short_id": "DEC-167"
+      "short_id": "DEC-167",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-168",
@@ -2767,7 +3111,9 @@
         "pushed": false,
         "n_doc_refs": 1
       },
-      "short_id": "DEC-168"
+      "short_id": "DEC-168",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-169",
@@ -2783,7 +3129,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-169"
+      "short_id": "DEC-169",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-170",
@@ -2799,7 +3147,9 @@
         "pushed": false,
         "n_doc_refs": 4
       },
-      "short_id": "DEC-170"
+      "short_id": "DEC-170",
+      "sprint": "Sprint 6 (+5)",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-171",
@@ -2815,7 +3165,9 @@
         "pushed": false,
         "n_doc_refs": 1
       },
-      "short_id": "DEC-171"
+      "short_id": "DEC-171",
+      "sprint": "Sprint 6 (+5)",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-172",
@@ -2831,7 +3183,9 @@
         "pushed": false,
         "n_doc_refs": 1
       },
-      "short_id": "DEC-172"
+      "short_id": "DEC-172",
+      "sprint": "Sprint 6 (+5)",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-173",
@@ -2847,7 +3201,9 @@
         "pushed": false,
         "n_doc_refs": 5
       },
-      "short_id": "DEC-173"
+      "short_id": "DEC-173",
+      "sprint": "Sprint 6 (+5)",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-174",
@@ -2863,7 +3219,9 @@
         "pushed": false,
         "n_doc_refs": 1
       },
-      "short_id": "DEC-174"
+      "short_id": "DEC-174",
+      "sprint": "Sprint 8 (+1)",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-175",
@@ -2879,7 +3237,9 @@
         "pushed": false,
         "n_doc_refs": 1
       },
-      "short_id": "DEC-175"
+      "short_id": "DEC-175",
+      "sprint": "Sprint 7 (+8)",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-176",
@@ -2895,7 +3255,9 @@
         "pushed": false,
         "n_doc_refs": 3
       },
-      "short_id": "DEC-176"
+      "short_id": "DEC-176",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-177",
@@ -2911,7 +3273,9 @@
         "pushed": false,
         "n_doc_refs": 5
       },
-      "short_id": "DEC-177"
+      "short_id": "DEC-177",
+      "sprint": "Sprint 6 (+10)",
+      "dependencies": "DEC-09"
     },
     {
       "id": "DECISION-178",
@@ -2927,7 +3291,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-178"
+      "short_id": "DEC-178",
+      "sprint": "Sprint 6 (+10)",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-179",
@@ -2943,7 +3309,9 @@
         "pushed": false,
         "n_doc_refs": 0
       },
-      "short_id": "DEC-179"
+      "short_id": "DEC-179",
+      "sprint": "Sprint 6 (+10)",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-180",
@@ -2959,7 +3327,9 @@
         "pushed": false,
         "n_doc_refs": 0
       },
-      "short_id": "DEC-180"
+      "short_id": "DEC-180",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-181",
@@ -2975,7 +3345,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-181"
+      "short_id": "DEC-181",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-182",
@@ -2991,7 +3363,9 @@
         "pushed": false,
         "n_doc_refs": 0
       },
-      "short_id": "DEC-182"
+      "short_id": "DEC-182",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-183",
@@ -3007,7 +3381,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-183"
+      "short_id": "DEC-183",
+      "sprint": "Sprint 6 (+10)",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-184",
@@ -3023,7 +3399,9 @@
         "pushed": false,
         "n_doc_refs": 1
       },
-      "short_id": "DEC-184"
+      "short_id": "DEC-184",
+      "sprint": "Sprint 7-8 (+3)",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-185",
@@ -3039,7 +3417,9 @@
         "pushed": false,
         "n_doc_refs": 1
       },
-      "short_id": "DEC-185"
+      "short_id": "DEC-185",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-187",
@@ -3055,7 +3435,9 @@
         "pushed": false,
         "n_doc_refs": 9
       },
-      "short_id": "DEC-187"
+      "short_id": "DEC-187",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-188",
@@ -3071,7 +3453,9 @@
         "pushed": false,
         "n_doc_refs": 3
       },
-      "short_id": "DEC-188"
+      "short_id": "DEC-188",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-189",
@@ -3087,7 +3471,9 @@
         "pushed": false,
         "n_doc_refs": 28
       },
-      "short_id": "DEC-189"
+      "short_id": "DEC-189",
+      "sprint": "Sprint 6 additions; Sprint 7 Pattern 2 toolkit add; Sprint 7 effort revised; Sprint 7 \u2014 Statistical Methodo; Sprint 7-8 additions (Phase 1B",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-190",
@@ -3103,7 +3489,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-190"
+      "short_id": "DEC-190",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-191",
@@ -3119,7 +3507,9 @@
         "pushed": false,
         "n_doc_refs": 4
       },
-      "short_id": "DEC-191"
+      "short_id": "DEC-191",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-192",
@@ -3135,7 +3525,9 @@
         "pushed": false,
         "n_doc_refs": 4
       },
-      "short_id": "DEC-192"
+      "short_id": "DEC-192",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-193",
@@ -3151,7 +3543,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-193"
+      "short_id": "DEC-193",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-194",
@@ -3167,7 +3561,9 @@
         "pushed": false,
         "n_doc_refs": 10
       },
-      "short_id": "DEC-194"
+      "short_id": "DEC-194",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-195",
@@ -3183,7 +3579,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-195"
+      "short_id": "DEC-195",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-196",
@@ -3199,7 +3597,9 @@
         "pushed": false,
         "n_doc_refs": 3
       },
-      "short_id": "DEC-196"
+      "short_id": "DEC-196",
+      "sprint": "-",
+      "dependencies": "DEC-594"
     },
     {
       "id": "DECISION-197",
@@ -3215,7 +3615,9 @@
         "pushed": false,
         "n_doc_refs": 4
       },
-      "short_id": "DEC-197"
+      "short_id": "DEC-197",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-198",
@@ -3231,7 +3633,9 @@
         "pushed": false,
         "n_doc_refs": 5
       },
-      "short_id": "DEC-198"
+      "short_id": "DEC-198",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-199",
@@ -3247,7 +3651,9 @@
         "pushed": false,
         "n_doc_refs": 39
       },
-      "short_id": "DEC-199"
+      "short_id": "DEC-199",
+      "sprint": "Sprint 6.5 \u2014 Phase 1A Rules-On; Sprint 7 \u2014 Statistical Methodo; Sprint 7-8 additions (Phase 1B; Sprint 9 additions (Phase 1B-\u03b1",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-200",
@@ -3263,7 +3669,9 @@
         "pushed": false,
         "n_doc_refs": 25
       },
-      "short_id": "DEC-200"
+      "short_id": "DEC-200",
+      "sprint": "Sprint 6.5 \u2014 Phase 1A Rules-On; Sprint 7 effort revised; Sprint 7-8 additions (Phase 1B; Sprint 9 additions (Phase 1B-\u03b1",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-201",
@@ -3279,7 +3687,9 @@
         "pushed": false,
         "n_doc_refs": 11
       },
-      "short_id": "DEC-201"
+      "short_id": "DEC-201",
+      "sprint": "Sprint 7 \u2014 Statistical Methodo; Sprint 7-8 additions (Phase 1B",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-202",
@@ -3295,7 +3705,9 @@
         "pushed": true,
         "n_doc_refs": 7
       },
-      "short_id": "DEC-202"
+      "short_id": "DEC-202",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-203",
@@ -3311,7 +3723,9 @@
         "pushed": false,
         "n_doc_refs": 5
       },
-      "short_id": "DEC-203"
+      "short_id": "DEC-203",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-204",
@@ -3327,7 +3741,9 @@
         "pushed": false,
         "n_doc_refs": 5
       },
-      "short_id": "DEC-204"
+      "short_id": "DEC-204",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-205",
@@ -3343,7 +3759,9 @@
         "pushed": true,
         "n_doc_refs": 52
       },
-      "short_id": "DEC-205"
+      "short_id": "DEC-205",
+      "sprint": "Sprint 6 additions (Phase 0.E ; Sprint 9 additions (Phase 1B-\u03b1",
+      "dependencies": "DEC-594"
     },
     {
       "id": "DECISION-206",
@@ -3359,7 +3777,9 @@
         "pushed": false,
         "n_doc_refs": 3
       },
-      "short_id": "DEC-206"
+      "short_id": "DEC-206",
+      "sprint": "Sprint 6 additions (Phase 0.E ",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-207",
@@ -3375,7 +3795,9 @@
         "pushed": false,
         "n_doc_refs": 9
       },
-      "short_id": "DEC-207"
+      "short_id": "DEC-207",
+      "sprint": "Sprint 7 additions (Statistica; Sprint 9 additions (Phase 1B-\u03b1",
+      "dependencies": "DEC-594"
     },
     {
       "id": "DECISION-208",
@@ -3391,7 +3813,9 @@
         "pushed": false,
         "n_doc_refs": 5
       },
-      "short_id": "DEC-208"
+      "short_id": "DEC-208",
+      "sprint": "Sprint 7 additions (Statistica",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-209",
@@ -3407,7 +3831,9 @@
         "pushed": false,
         "n_doc_refs": 9
       },
-      "short_id": "DEC-209"
+      "short_id": "DEC-209",
+      "sprint": "Sprint 7 additions (Statistica",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-210",
@@ -3423,7 +3849,9 @@
         "pushed": false,
         "n_doc_refs": 13
       },
-      "short_id": "DEC-210"
+      "short_id": "DEC-210",
+      "sprint": "Sprint 7 additions (Statistica; Sprint 7-8 additions (Phase 1B",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-211",
@@ -3439,7 +3867,9 @@
         "pushed": false,
         "n_doc_refs": 22
       },
-      "short_id": "DEC-211"
+      "short_id": "DEC-211",
+      "sprint": "Sprint 7 additions (Statistica; Sprint 7-8 additions (Phase 1B; Sprint 9 additions (Phase 1B-\u03b1",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-212",
@@ -3455,7 +3885,9 @@
         "pushed": false,
         "n_doc_refs": 5
       },
-      "short_id": "DEC-212"
+      "short_id": "DEC-212",
+      "sprint": "Sprint 7 additions (Statistica",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-213",
@@ -3471,7 +3903,9 @@
         "pushed": false,
         "n_doc_refs": 8
       },
-      "short_id": "DEC-213"
+      "short_id": "DEC-213",
+      "sprint": "Sprint 6 additions",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-214",
@@ -3487,7 +3921,9 @@
         "pushed": false,
         "n_doc_refs": 10
       },
-      "short_id": "DEC-214"
+      "short_id": "DEC-214",
+      "sprint": "Sprint 9 additions (Phase 1B-\u03b1",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-215",
@@ -3503,7 +3939,9 @@
         "pushed": false,
         "n_doc_refs": 5
       },
-      "short_id": "DEC-215"
+      "short_id": "DEC-215",
+      "sprint": "Sprint 7 additions (Statistica; Sprint 7-8 additions (Phase 1B",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-216",
@@ -3519,7 +3957,9 @@
         "pushed": false,
         "n_doc_refs": 10
       },
-      "short_id": "DEC-216"
+      "short_id": "DEC-216",
+      "sprint": "Sprint 6 additions (Phase 0.E ; Sprint 7 (+1 \u2014 final ENG addit; Sprint 7 (REVISED \u2014 DEC-042 re; Sprint 7 additions (Statistica",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-217",
@@ -3535,7 +3975,9 @@
         "pushed": true,
         "n_doc_refs": 11
       },
-      "short_id": "DEC-217"
+      "short_id": "DEC-217",
+      "sprint": "Sprint 6 \u2014 Phase 0.E Catch-Mec",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-218",
@@ -3551,7 +3993,9 @@
         "pushed": false,
         "n_doc_refs": 3
       },
-      "short_id": "DEC-218"
+      "short_id": "DEC-218",
+      "sprint": "Sprint 6 \u2014 Phase 0.E Catch-Mec",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-219",
@@ -3567,7 +4011,9 @@
         "pushed": false,
         "n_doc_refs": 5
       },
-      "short_id": "DEC-219"
+      "short_id": "DEC-219",
+      "sprint": "Sprint 6 additions (Phase 0.E ; Sprint 6 \u2014 Phase 0.E Catch-Mec",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-220",
@@ -3583,7 +4029,9 @@
         "pushed": true,
         "n_doc_refs": 18
       },
-      "short_id": "DEC-220"
+      "short_id": "DEC-220",
+      "sprint": "Sprint 6 (+5); Sprint 6 \u2014 Phase 0.E Catch-Mec",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-221",
@@ -3599,7 +4047,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-221"
+      "short_id": "DEC-221",
+      "sprint": "-",
+      "dependencies": "DEC-098"
     },
     {
       "id": "DECISION-222",
@@ -3615,7 +4065,9 @@
         "pushed": false,
         "n_doc_refs": 16
       },
-      "short_id": "DEC-222"
+      "short_id": "DEC-222",
+      "sprint": "Sprint 6 additions (Phase 0.E ",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-223",
@@ -3631,7 +4083,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-223"
+      "short_id": "DEC-223",
+      "sprint": "-",
+      "dependencies": "DEC-436"
     },
     {
       "id": "DECISION-224",
@@ -3647,7 +4101,9 @@
         "pushed": false,
         "n_doc_refs": 3
       },
-      "short_id": "DEC-224"
+      "short_id": "DEC-224",
+      "sprint": "-",
+      "dependencies": "DEC-328"
     },
     {
       "id": "DECISION-225",
@@ -3663,7 +4119,9 @@
         "pushed": false,
         "n_doc_refs": 9
       },
-      "short_id": "DEC-225"
+      "short_id": "DEC-225",
+      "sprint": "Sprint 1 additions (Phase 0.A ; Sprint 9 additions (Phase 1B-\u03b1",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-226",
@@ -3679,7 +4137,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-226"
+      "short_id": "DEC-226",
+      "sprint": "-",
+      "dependencies": "DEC-330"
     },
     {
       "id": "DECISION-227",
@@ -3695,7 +4155,9 @@
         "pushed": false,
         "n_doc_refs": 7
       },
-      "short_id": "DEC-227"
+      "short_id": "DEC-227",
+      "sprint": "Sprint 1 additions (Phase 0.A ",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-228",
@@ -3711,7 +4173,9 @@
         "pushed": false,
         "n_doc_refs": 6
       },
-      "short_id": "DEC-228"
+      "short_id": "DEC-228",
+      "sprint": "Sprint 4 additions (DEC-410 Au; Sprint 9 additions (Phase 1B-\u03b1",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-229",
@@ -3727,7 +4191,9 @@
         "pushed": false,
         "n_doc_refs": 4
       },
-      "short_id": "DEC-229"
+      "short_id": "DEC-229",
+      "sprint": "Sprint 6 (+5); Sprint 6 additions (Phase 0.E ",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-230",
@@ -3743,7 +4209,9 @@
         "pushed": false,
         "n_doc_refs": 11
       },
-      "short_id": "DEC-230"
+      "short_id": "DEC-230",
+      "sprint": "Sprint 6 additions (Phase 0.E ",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-231",
@@ -3759,7 +4227,9 @@
         "pushed": false,
         "n_doc_refs": 6
       },
-      "short_id": "DEC-231"
+      "short_id": "DEC-231",
+      "sprint": "Sprint 6 additions (Phase 0.E ",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-232",
@@ -3775,7 +4245,9 @@
         "pushed": false,
         "n_doc_refs": 6
       },
-      "short_id": "DEC-232"
+      "short_id": "DEC-232",
+      "sprint": "Sprint 6 additions (Phase 0.E ",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-233",
@@ -3791,7 +4263,9 @@
         "pushed": false,
         "n_doc_refs": 6
       },
-      "short_id": "DEC-233"
+      "short_id": "DEC-233",
+      "sprint": "Sprint 6 additions (Phase 0.E ",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-234",
@@ -3807,7 +4281,9 @@
         "pushed": false,
         "n_doc_refs": 4
       },
-      "short_id": "DEC-234"
+      "short_id": "DEC-234",
+      "sprint": "Sprint 4 additions (DEC-410 Au",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-235",
@@ -3823,7 +4299,9 @@
         "pushed": false,
         "n_doc_refs": 3
       },
-      "short_id": "DEC-235"
+      "short_id": "DEC-235",
+      "sprint": "Sprint 1 additions (Phase 0.A ",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-236",
@@ -3839,7 +4317,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-236"
+      "short_id": "DEC-236",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-237",
@@ -3855,7 +4335,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-237"
+      "short_id": "DEC-237",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-238",
@@ -3871,7 +4353,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-238"
+      "short_id": "DEC-238",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-239",
@@ -3887,7 +4371,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-239"
+      "short_id": "DEC-239",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-240",
@@ -3903,7 +4389,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-240"
+      "short_id": "DEC-240",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-241",
@@ -3919,7 +4407,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-241"
+      "short_id": "DEC-241",
+      "sprint": "Sprint 6 additions (Phase 0.E ",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-242",
@@ -3935,7 +4425,9 @@
         "pushed": false,
         "n_doc_refs": 7
       },
-      "short_id": "DEC-242"
+      "short_id": "DEC-242",
+      "sprint": "Sprint 7 additions (Statistica",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-243",
@@ -3951,7 +4443,9 @@
         "pushed": false,
         "n_doc_refs": 0
       },
-      "short_id": "DEC-243"
+      "short_id": "DEC-243",
+      "sprint": "Sprint 9 (+4)",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-244",
@@ -3967,7 +4461,9 @@
         "pushed": false,
         "n_doc_refs": 0
       },
-      "short_id": "DEC-244"
+      "short_id": "DEC-244",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-245",
@@ -3983,7 +4479,9 @@
         "pushed": false,
         "n_doc_refs": 3
       },
-      "short_id": "DEC-245"
+      "short_id": "DEC-245",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-246",
@@ -3999,7 +4497,9 @@
         "pushed": false,
         "n_doc_refs": 11
       },
-      "short_id": "DEC-246"
+      "short_id": "DEC-246",
+      "sprint": "Sprint 7 (+8)",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-247",
@@ -4015,7 +4515,9 @@
         "pushed": false,
         "n_doc_refs": 8
       },
-      "short_id": "DEC-247"
+      "short_id": "DEC-247",
+      "sprint": "Sprint 7 (+8)",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-248",
@@ -4031,7 +4533,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-248"
+      "short_id": "DEC-248",
+      "sprint": "-",
+      "dependencies": "DEC-594"
     },
     {
       "id": "DECISION-249",
@@ -4047,7 +4551,9 @@
         "pushed": false,
         "n_doc_refs": 11
       },
-      "short_id": "DEC-249"
+      "short_id": "DEC-249",
+      "sprint": "Sprint 9 (+1)",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-250",
@@ -4063,7 +4569,9 @@
         "pushed": false,
         "n_doc_refs": 3
       },
-      "short_id": "DEC-250"
+      "short_id": "DEC-250",
+      "sprint": "Sprint 7 (+1)",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-251",
@@ -4079,7 +4587,9 @@
         "pushed": true,
         "n_doc_refs": 14
       },
-      "short_id": "DEC-251"
+      "short_id": "DEC-251",
+      "sprint": "Sprint 6 (+10); Sprint 9 (+1); Sprint effort revisions",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-252",
@@ -4095,7 +4605,9 @@
         "pushed": false,
         "n_doc_refs": 13
       },
-      "short_id": "DEC-252"
+      "short_id": "DEC-252",
+      "sprint": "Sprint 4 additions (DEC-410 Au",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-253",
@@ -4111,7 +4623,9 @@
         "pushed": false,
         "n_doc_refs": 5
       },
-      "short_id": "DEC-253"
+      "short_id": "DEC-253",
+      "sprint": "Sprint 4 additions (DEC-410 Au",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-254",
@@ -4127,7 +4641,9 @@
         "pushed": false,
         "n_doc_refs": 9
       },
-      "short_id": "DEC-254"
+      "short_id": "DEC-254",
+      "sprint": "Sprint 4 additions (DEC-410 Au",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-255",
@@ -4143,7 +4659,9 @@
         "pushed": false,
         "n_doc_refs": 5
       },
-      "short_id": "DEC-255"
+      "short_id": "DEC-255",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-256",
@@ -4159,7 +4677,9 @@
         "pushed": true,
         "n_doc_refs": 42
       },
-      "short_id": "DEC-256"
+      "short_id": "DEC-256",
+      "sprint": "Sprint 1 \u2014 RETIRED Pass 53 (re; Sprint 4 additions (DEC-410 Au; Sprint 7 additions (Statistica",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-257",
@@ -4175,7 +4695,9 @@
         "pushed": false,
         "n_doc_refs": 24
       },
-      "short_id": "DEC-257"
+      "short_id": "DEC-257",
+      "sprint": "Sprint 0A \u2014 Phase 0.A Multi-AP; Sprint 1 \u2014 RETIRED Pass 53 (re",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-258",
@@ -4191,7 +4713,9 @@
         "pushed": true,
         "n_doc_refs": 20
       },
-      "short_id": "DEC-258"
+      "short_id": "DEC-258",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-259",
@@ -4207,7 +4731,9 @@
         "pushed": false,
         "n_doc_refs": 17
       },
-      "short_id": "DEC-259"
+      "short_id": "DEC-259",
+      "sprint": "Sprint 1 additions (Phase 0.A ",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-260",
@@ -4223,7 +4749,9 @@
         "pushed": false,
         "n_doc_refs": 17
       },
-      "short_id": "DEC-260"
+      "short_id": "DEC-260",
+      "sprint": "Sprint 1 \u2014 RETIRED Pass 53 (re; Sprint 6 additions (Phase 0.E ",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-261",
@@ -4239,7 +4767,9 @@
         "pushed": false,
         "n_doc_refs": 19
       },
-      "short_id": "DEC-261"
+      "short_id": "DEC-261",
+      "sprint": "Sprint 1 additions (Phase 0.A ; Sprint 1 \u2014 RETIRED Pass 53 (re",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-262",
@@ -4255,7 +4785,9 @@
         "pushed": false,
         "n_doc_refs": 6
       },
-      "short_id": "DEC-262"
+      "short_id": "DEC-262",
+      "sprint": "Sprint 7 Pattern 2 toolkit add; Sprint 7 additions (Statistica",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-263",
@@ -4271,7 +4803,9 @@
         "pushed": false,
         "n_doc_refs": 4
       },
-      "short_id": "DEC-263"
+      "short_id": "DEC-263",
+      "sprint": "Sprint 7 additions (Statistica",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-264",
@@ -4287,7 +4821,9 @@
         "pushed": false,
         "n_doc_refs": 5
       },
-      "short_id": "DEC-264"
+      "short_id": "DEC-264",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-265",
@@ -4303,7 +4839,9 @@
         "pushed": false,
         "n_doc_refs": 7
       },
-      "short_id": "DEC-265"
+      "short_id": "DEC-265",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-266",
@@ -4319,7 +4857,9 @@
         "pushed": false,
         "n_doc_refs": 12
       },
-      "short_id": "DEC-266"
+      "short_id": "DEC-266",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-267",
@@ -4335,7 +4875,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-267"
+      "short_id": "DEC-267",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-268",
@@ -4351,7 +4893,9 @@
         "pushed": false,
         "n_doc_refs": 0
       },
-      "short_id": "DEC-268"
+      "short_id": "DEC-268",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-269",
@@ -4367,7 +4911,9 @@
         "pushed": false,
         "n_doc_refs": 30
       },
-      "short_id": "DEC-269"
+      "short_id": "DEC-269",
+      "sprint": "Sprint 9 (+4)",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-270",
@@ -4383,7 +4929,9 @@
         "pushed": false,
         "n_doc_refs": 4
       },
-      "short_id": "DEC-270"
+      "short_id": "DEC-270",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-271",
@@ -4399,7 +4947,9 @@
         "pushed": false,
         "n_doc_refs": 1
       },
-      "short_id": "DEC-271"
+      "short_id": "DEC-271",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-272",
@@ -4415,7 +4965,9 @@
         "pushed": false,
         "n_doc_refs": 1
       },
-      "short_id": "DEC-272"
+      "short_id": "DEC-272",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-273",
@@ -4431,7 +4983,9 @@
         "pushed": false,
         "n_doc_refs": 1
       },
-      "short_id": "DEC-273"
+      "short_id": "DEC-273",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-274",
@@ -4447,7 +5001,9 @@
         "pushed": false,
         "n_doc_refs": 4
       },
-      "short_id": "DEC-274"
+      "short_id": "DEC-274",
+      "sprint": "Sprint 6 (+5)",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-275",
@@ -4463,7 +5019,9 @@
         "pushed": false,
         "n_doc_refs": 1
       },
-      "short_id": "DEC-275"
+      "short_id": "DEC-275",
+      "sprint": "Sprint 1 (+1)",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-276",
@@ -4479,7 +5037,9 @@
         "pushed": false,
         "n_doc_refs": 1
       },
-      "short_id": "DEC-276"
+      "short_id": "DEC-276",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-277",
@@ -4495,7 +5055,9 @@
         "pushed": false,
         "n_doc_refs": 3
       },
-      "short_id": "DEC-277"
+      "short_id": "DEC-277",
+      "sprint": "Sprint 3 additions (Phase 0.B ",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-278",
@@ -4511,7 +5073,9 @@
         "pushed": false,
         "n_doc_refs": 7
       },
-      "short_id": "DEC-278"
+      "short_id": "DEC-278",
+      "sprint": "Sprint 6 additions",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-279",
@@ -4527,7 +5091,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-279"
+      "short_id": "DEC-279",
+      "sprint": "Sprint 7 additions (Statistica",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-280",
@@ -4543,7 +5109,9 @@
         "pushed": false,
         "n_doc_refs": 13
       },
-      "short_id": "DEC-280"
+      "short_id": "DEC-280",
+      "sprint": "Sprint 4 additions (DEC-410 Au",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-281",
@@ -4559,7 +5127,9 @@
         "pushed": false,
         "n_doc_refs": 4
       },
-      "short_id": "DEC-281"
+      "short_id": "DEC-281",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-282",
@@ -4575,7 +5145,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-282"
+      "short_id": "DEC-282",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-283",
@@ -4591,7 +5163,9 @@
         "pushed": false,
         "n_doc_refs": 10
       },
-      "short_id": "DEC-283"
+      "short_id": "DEC-283",
+      "sprint": "Sprint 6 additions (Phase 0.E ",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-284",
@@ -4607,7 +5181,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-284"
+      "short_id": "DEC-284",
+      "sprint": "Sprint 7 additions (Statistica",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-285",
@@ -4623,7 +5199,9 @@
         "pushed": false,
         "n_doc_refs": 1
       },
-      "short_id": "DEC-285"
+      "short_id": "DEC-285",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-286",
@@ -4639,7 +5217,9 @@
         "pushed": false,
         "n_doc_refs": 1
       },
-      "short_id": "DEC-286"
+      "short_id": "DEC-286",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-287",
@@ -4655,7 +5235,9 @@
         "pushed": false,
         "n_doc_refs": 3
       },
-      "short_id": "DEC-287"
+      "short_id": "DEC-287",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-288",
@@ -4671,7 +5253,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-288"
+      "short_id": "DEC-288",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-289",
@@ -4687,7 +5271,9 @@
         "pushed": false,
         "n_doc_refs": 1
       },
-      "short_id": "DEC-289"
+      "short_id": "DEC-289",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-290",
@@ -4703,7 +5289,9 @@
         "pushed": false,
         "n_doc_refs": 7
       },
-      "short_id": "DEC-290"
+      "short_id": "DEC-290",
+      "sprint": "Sprint 9 additions (Phase 1B-\u03b1",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-291",
@@ -4719,7 +5307,9 @@
         "pushed": false,
         "n_doc_refs": 16
       },
-      "short_id": "DEC-291"
+      "short_id": "DEC-291",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-292",
@@ -4735,7 +5325,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-292"
+      "short_id": "DEC-292",
+      "sprint": "Sprint 9 (+4)",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-293",
@@ -4751,7 +5343,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-293"
+      "short_id": "DEC-293",
+      "sprint": "Sprint 2 additions (Engine Bug",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-294",
@@ -4767,7 +5361,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-294"
+      "short_id": "DEC-294",
+      "sprint": "Sprint 2 additions (Engine Bug",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-295",
@@ -4783,7 +5379,9 @@
         "pushed": true,
         "n_doc_refs": 5
       },
-      "short_id": "DEC-295"
+      "short_id": "DEC-295",
+      "sprint": "Sprint 2 additions (Engine Bug",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-296",
@@ -4799,7 +5397,9 @@
         "pushed": false,
         "n_doc_refs": 0
       },
-      "short_id": "DEC-296"
+      "short_id": "DEC-296",
+      "sprint": "Sprint 2 additions (Engine Bug",
+      "dependencies": "DEC-594"
     },
     {
       "id": "DECISION-297",
@@ -4815,7 +5415,9 @@
         "pushed": false,
         "n_doc_refs": 1
       },
-      "short_id": "DEC-297"
+      "short_id": "DEC-297",
+      "sprint": "Sprint 2 additions (Engine Bug",
+      "dependencies": "DEC-594"
     },
     {
       "id": "DECISION-298",
@@ -4825,13 +5427,15 @@
       "pass_intro": "Pass 48",
       "pass_resolved": "52",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
         "tested": false,
         "pushed": true,
         "n_doc_refs": 42
       },
-      "short_id": "DEC-298"
+      "short_id": "DEC-298",
+      "sprint": "Sprint 7 (+1 \u2014 final ENG addit; Sprint 7 additions; Sprint 7 \u2014 Statistical Methodo",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-299",
@@ -4847,7 +5451,9 @@
         "pushed": false,
         "n_doc_refs": 8
       },
-      "short_id": "DEC-299"
+      "short_id": "DEC-299",
+      "sprint": "Sprint 4 additions (DEC-410 Au",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-300",
@@ -4863,7 +5469,9 @@
         "pushed": false,
         "n_doc_refs": 7
       },
-      "short_id": "DEC-300"
+      "short_id": "DEC-300",
+      "sprint": "Sprint 1 additions (Phase 0.A ",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-301",
@@ -4879,7 +5487,9 @@
         "pushed": false,
         "n_doc_refs": 10
       },
-      "short_id": "DEC-301"
+      "short_id": "DEC-301",
+      "sprint": "Sprint 4 additions (DEC-410 Au",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-302",
@@ -4895,7 +5505,9 @@
         "pushed": false,
         "n_doc_refs": 8
       },
-      "short_id": "DEC-302"
+      "short_id": "DEC-302",
+      "sprint": "Sprint 4 additions (DEC-410 Au",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-303",
@@ -4911,7 +5523,9 @@
         "pushed": false,
         "n_doc_refs": 49
       },
-      "short_id": "DEC-303"
+      "short_id": "DEC-303",
+      "sprint": "Sprint 0A \u2014 Phase 0.A Multi-AP; Sprint 1 \u2014 RETIRED Pass 53 (re; Sprint 5 additions (Universe M; Sprint 8 additions (Strategy C",
+      "dependencies": "DEC-477"
     },
     {
       "id": "DECISION-304",
@@ -4927,7 +5541,9 @@
         "pushed": false,
         "n_doc_refs": 9
       },
-      "short_id": "DEC-304"
+      "short_id": "DEC-304",
+      "sprint": "Sprint 1 additions (Phase 0.A ",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-305",
@@ -4943,7 +5559,9 @@
         "pushed": false,
         "n_doc_refs": 7
       },
-      "short_id": "DEC-305"
+      "short_id": "DEC-305",
+      "sprint": "Sprint 2 additions (Engine Bug",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-306",
@@ -4959,7 +5577,9 @@
         "pushed": false,
         "n_doc_refs": 0
       },
-      "short_id": "DEC-306"
+      "short_id": "DEC-306",
+      "sprint": "Sprint 2 additions (Engine Bug",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-307",
@@ -4975,7 +5595,9 @@
         "pushed": true,
         "n_doc_refs": 9
       },
-      "short_id": "DEC-307"
+      "short_id": "DEC-307",
+      "sprint": "Sprint 1 additions (Phase 0.A ",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-308",
@@ -4991,7 +5613,9 @@
         "pushed": false,
         "n_doc_refs": 15
       },
-      "short_id": "DEC-308"
+      "short_id": "DEC-308",
+      "sprint": "Sprint 1 additions (Phase 0.A ",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-309",
@@ -5007,7 +5631,9 @@
         "pushed": true,
         "n_doc_refs": 4
       },
-      "short_id": "DEC-309"
+      "short_id": "DEC-309",
+      "sprint": "Sprint 1 additions (Phase 0.A ",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-310",
@@ -5023,7 +5649,9 @@
         "pushed": false,
         "n_doc_refs": 4
       },
-      "short_id": "DEC-310"
+      "short_id": "DEC-310",
+      "sprint": "Sprint 1 additions (Phase 0.A ",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-311",
@@ -5039,7 +5667,9 @@
         "pushed": false,
         "n_doc_refs": 3
       },
-      "short_id": "DEC-311"
+      "short_id": "DEC-311",
+      "sprint": "Sprint 2 additions (Engine Bug",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-312",
@@ -5055,7 +5685,9 @@
         "pushed": false,
         "n_doc_refs": 3
       },
-      "short_id": "DEC-312"
+      "short_id": "DEC-312",
+      "sprint": "Sprint 2 additions (Engine Bug",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-313",
@@ -5071,7 +5703,9 @@
         "pushed": false,
         "n_doc_refs": 8
       },
-      "short_id": "DEC-313"
+      "short_id": "DEC-313",
+      "sprint": "Sprint 2 additions (Engine Bug",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-314",
@@ -5087,7 +5721,9 @@
         "pushed": false,
         "n_doc_refs": 12
       },
-      "short_id": "DEC-314"
+      "short_id": "DEC-314",
+      "sprint": "Sprint 2 additions (Engine Bug",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-315",
@@ -5103,7 +5739,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-315"
+      "short_id": "DEC-315",
+      "sprint": "Sprint 2 additions (Engine Bug",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-316",
@@ -5119,7 +5757,9 @@
         "pushed": false,
         "n_doc_refs": 10
       },
-      "short_id": "DEC-316"
+      "short_id": "DEC-316",
+      "sprint": "Sprint 4 additions (DEC-410 Au",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-317",
@@ -5135,7 +5775,9 @@
         "pushed": true,
         "n_doc_refs": 10
       },
-      "short_id": "DEC-317"
+      "short_id": "DEC-317",
+      "sprint": "Sprint 4 additions (DEC-410 Au",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-318",
@@ -5151,7 +5793,9 @@
         "pushed": false,
         "n_doc_refs": 9
       },
-      "short_id": "DEC-318"
+      "short_id": "DEC-318",
+      "sprint": "Sprint 1 additions (Phase 0.A ",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-319",
@@ -5167,7 +5811,9 @@
         "pushed": false,
         "n_doc_refs": 5
       },
-      "short_id": "DEC-319"
+      "short_id": "DEC-319",
+      "sprint": "Sprint 1 additions (Phase 0.A ",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-320",
@@ -5183,7 +5829,9 @@
         "pushed": false,
         "n_doc_refs": 5
       },
-      "short_id": "DEC-320"
+      "short_id": "DEC-320",
+      "sprint": "Sprint 1 additions (Phase 0.A ",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-321",
@@ -5199,7 +5847,9 @@
         "pushed": false,
         "n_doc_refs": 20
       },
-      "short_id": "DEC-321"
+      "short_id": "DEC-321",
+      "sprint": "Sprint 2 additions (Engine Bug; Sprint 4 (+1); Sprint 5 additions (Universe M",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-322",
@@ -5215,7 +5865,9 @@
         "pushed": true,
         "n_doc_refs": 8
       },
-      "short_id": "DEC-322"
+      "short_id": "DEC-322",
+      "sprint": "Sprint 4 additions (DEC-410 Au",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-323",
@@ -5231,7 +5883,9 @@
         "pushed": false,
         "n_doc_refs": 7
       },
-      "short_id": "DEC-323"
+      "short_id": "DEC-323",
+      "sprint": "Sprint 4 additions (DEC-410 Au",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-324",
@@ -5247,7 +5901,9 @@
         "pushed": false,
         "n_doc_refs": 4
       },
-      "short_id": "DEC-324"
+      "short_id": "DEC-324",
+      "sprint": "Sprint 4 additions (DEC-410 Au",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-325",
@@ -5263,7 +5919,9 @@
         "pushed": false,
         "n_doc_refs": 6
       },
-      "short_id": "DEC-325"
+      "short_id": "DEC-325",
+      "sprint": "Sprint 4 additions (DEC-410 Au",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-326",
@@ -5279,7 +5937,9 @@
         "pushed": false,
         "n_doc_refs": 7
       },
-      "short_id": "DEC-326"
+      "short_id": "DEC-326",
+      "sprint": "Sprint 7 additions",
+      "dependencies": "DEC-109"
     },
     {
       "id": "DECISION-327",
@@ -5295,7 +5955,9 @@
         "pushed": false,
         "n_doc_refs": 6
       },
-      "short_id": "DEC-327"
+      "short_id": "DEC-327",
+      "sprint": "Sprint 2 additions (Engine Bug",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-328",
@@ -5311,7 +5973,9 @@
         "pushed": false,
         "n_doc_refs": 7
       },
-      "short_id": "DEC-328"
+      "short_id": "DEC-328",
+      "sprint": "Sprint 1 additions (Phase 0.A ",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-329",
@@ -5327,7 +5991,9 @@
         "pushed": true,
         "n_doc_refs": 4
       },
-      "short_id": "DEC-329"
+      "short_id": "DEC-329",
+      "sprint": "Sprint 1 additions (Phase 0.A ",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-330",
@@ -5343,7 +6009,9 @@
         "pushed": false,
         "n_doc_refs": 15
       },
-      "short_id": "DEC-330"
+      "short_id": "DEC-330",
+      "sprint": "Sprint 6 additions (Phase 0.E ",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-331",
@@ -5359,7 +6027,9 @@
         "pushed": false,
         "n_doc_refs": 0
       },
-      "short_id": "DEC-331"
+      "short_id": "DEC-331",
+      "sprint": "Sprint 5 additions (Universe M",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-332",
@@ -5375,7 +6045,9 @@
         "pushed": true,
         "n_doc_refs": 26
       },
-      "short_id": "DEC-332"
+      "short_id": "DEC-332",
+      "sprint": "Sprint 4 additions (DEC-410 Au",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-333",
@@ -5391,7 +6063,9 @@
         "pushed": false,
         "n_doc_refs": 1
       },
-      "short_id": "DEC-333"
+      "short_id": "DEC-333",
+      "sprint": "Sprint 4 additions (DEC-410 Au",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-334",
@@ -5407,7 +6081,9 @@
         "pushed": false,
         "n_doc_refs": 0
       },
-      "short_id": "DEC-334"
+      "short_id": "DEC-334",
+      "sprint": "Sprint 7 additions (Statistica",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-335",
@@ -5423,7 +6099,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-335"
+      "short_id": "DEC-335",
+      "sprint": "Sprint 7 additions (Statistica",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-336",
@@ -5439,7 +6117,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-336"
+      "short_id": "DEC-336",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-337",
@@ -5455,7 +6135,9 @@
         "pushed": false,
         "n_doc_refs": 6
       },
-      "short_id": "DEC-337"
+      "short_id": "DEC-337",
+      "sprint": "Sprint 2 additions (Engine Bug",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-338",
@@ -5471,7 +6153,9 @@
         "pushed": true,
         "n_doc_refs": 6
       },
-      "short_id": "DEC-338"
+      "short_id": "DEC-338",
+      "sprint": "Sprint 2 additions (Engine Bug",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-339",
@@ -5487,7 +6171,9 @@
         "pushed": false,
         "n_doc_refs": 0
       },
-      "short_id": "DEC-339"
+      "short_id": "DEC-339",
+      "sprint": "Sprint 3 additions (Phase 0.B ",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-340",
@@ -5503,7 +6189,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-340"
+      "short_id": "DEC-340",
+      "sprint": "Sprint 2 additions (Engine Bug",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-341",
@@ -5519,7 +6207,9 @@
         "pushed": false,
         "n_doc_refs": 3
       },
-      "short_id": "DEC-341"
+      "short_id": "DEC-341",
+      "sprint": "Sprint 6 additions (Phase 0.E ",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-342",
@@ -5535,7 +6225,9 @@
         "pushed": false,
         "n_doc_refs": 1
       },
-      "short_id": "DEC-342"
+      "short_id": "DEC-342",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-343",
@@ -5551,7 +6243,9 @@
         "pushed": false,
         "n_doc_refs": 6
       },
-      "short_id": "DEC-343"
+      "short_id": "DEC-343",
+      "sprint": "-",
+      "dependencies": "DEC-44; DEC-445"
     },
     {
       "id": "DECISION-344",
@@ -5567,7 +6261,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-344"
+      "short_id": "DEC-344",
+      "sprint": "Sprint 4 additions (DEC-410 Au",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-345",
@@ -5583,7 +6279,9 @@
         "pushed": true,
         "n_doc_refs": 45
       },
-      "short_id": "DEC-345"
+      "short_id": "DEC-345",
+      "sprint": "Sprint 8 additions (Strategy C",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-346",
@@ -5599,7 +6297,9 @@
         "pushed": true,
         "n_doc_refs": 23
       },
-      "short_id": "DEC-346"
+      "short_id": "DEC-346",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-347",
@@ -5615,7 +6315,9 @@
         "pushed": true,
         "n_doc_refs": 13
       },
-      "short_id": "DEC-347"
+      "short_id": "DEC-347",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-348",
@@ -5631,7 +6333,9 @@
         "pushed": true,
         "n_doc_refs": 33
       },
-      "short_id": "DEC-348"
+      "short_id": "DEC-348",
+      "sprint": "Sprint 7 additions (Statistica",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-349",
@@ -5647,7 +6351,9 @@
         "pushed": true,
         "n_doc_refs": 11
       },
-      "short_id": "DEC-349"
+      "short_id": "DEC-349",
+      "sprint": "Sprint 7 Pattern 2 toolkit add; Sprint 7 additions (Statistica",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-350",
@@ -5663,7 +6369,9 @@
         "pushed": false,
         "n_doc_refs": 19
       },
-      "short_id": "DEC-350"
+      "short_id": "DEC-350",
+      "sprint": "Sprint 8 additions (Strategy C",
+      "dependencies": "DEC-345"
     },
     {
       "id": "DECISION-351",
@@ -5679,7 +6387,9 @@
         "pushed": true,
         "n_doc_refs": 8
       },
-      "short_id": "DEC-351"
+      "short_id": "DEC-351",
+      "sprint": "-",
+      "dependencies": "BUG-147; BUG-151"
     },
     {
       "id": "DECISION-352",
@@ -5695,7 +6405,9 @@
         "pushed": false,
         "n_doc_refs": 9
       },
-      "short_id": "DEC-352"
+      "short_id": "DEC-352",
+      "sprint": "Sprint 8 additions (Strategy C",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-353",
@@ -5711,7 +6423,9 @@
         "pushed": true,
         "n_doc_refs": 55
       },
-      "short_id": "DEC-353"
+      "short_id": "DEC-353",
+      "sprint": "Sprint 6 additions (Phase 0.E ",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-354",
@@ -5727,7 +6441,9 @@
         "pushed": true,
         "n_doc_refs": 17
       },
-      "short_id": "DEC-354"
+      "short_id": "DEC-354",
+      "sprint": "Sprint 8 additions (Strategy C",
+      "dependencies": "DEC-099"
     },
     {
       "id": "DECISION-355",
@@ -5743,7 +6459,9 @@
         "pushed": true,
         "n_doc_refs": 46
       },
-      "short_id": "DEC-355"
+      "short_id": "DEC-355",
+      "sprint": "Sprint 7 (+1 \u2014 final ENG addit; Sprint 8 additions (Strategy C",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-356",
@@ -5759,7 +6477,9 @@
         "pushed": false,
         "n_doc_refs": 6
       },
-      "short_id": "DEC-356"
+      "short_id": "DEC-356",
+      "sprint": "Sprint 8 additions (Strategy C",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-357",
@@ -5775,7 +6495,9 @@
         "pushed": false,
         "n_doc_refs": 5
       },
-      "short_id": "DEC-357"
+      "short_id": "DEC-357",
+      "sprint": "Sprint 8 additions (Strategy C",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-358",
@@ -5791,7 +6513,9 @@
         "pushed": false,
         "n_doc_refs": 18
       },
-      "short_id": "DEC-358"
+      "short_id": "DEC-358",
+      "sprint": "Sprint 7 (+1 \u2014 final ENG addit; Sprint 8 additions (Strategy C",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-359",
@@ -5807,7 +6531,9 @@
         "pushed": false,
         "n_doc_refs": 6
       },
-      "short_id": "DEC-359"
+      "short_id": "DEC-359",
+      "sprint": "Sprint 8 additions (Strategy C",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-360",
@@ -5823,7 +6549,9 @@
         "pushed": false,
         "n_doc_refs": 5
       },
-      "short_id": "DEC-360"
+      "short_id": "DEC-360",
+      "sprint": "Sprint 8 additions (Strategy C",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-361",
@@ -5839,7 +6567,9 @@
         "pushed": false,
         "n_doc_refs": 5
       },
-      "short_id": "DEC-361"
+      "short_id": "DEC-361",
+      "sprint": "Sprint 8 additions (Strategy C",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-362",
@@ -5855,7 +6585,9 @@
         "pushed": false,
         "n_doc_refs": 10
       },
-      "short_id": "DEC-362"
+      "short_id": "DEC-362",
+      "sprint": "Sprint 8 additions (Strategy C",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-363",
@@ -5871,7 +6603,9 @@
         "pushed": true,
         "n_doc_refs": 5
       },
-      "short_id": "DEC-363"
+      "short_id": "DEC-363",
+      "sprint": "Sprint 5 \u2014 Universe Management",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-364",
@@ -5887,7 +6621,9 @@
         "pushed": false,
         "n_doc_refs": 13
       },
-      "short_id": "DEC-364"
+      "short_id": "DEC-364",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-365",
@@ -5903,7 +6639,9 @@
         "pushed": true,
         "n_doc_refs": 27
       },
-      "short_id": "DEC-365"
+      "short_id": "DEC-365",
+      "sprint": "Sprint 0A \u2014 Phase 0.A Multi-AP; Sprint 5 \u2014 Universe Management",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-366",
@@ -5919,7 +6657,9 @@
         "pushed": true,
         "n_doc_refs": 24
       },
-      "short_id": "DEC-366"
+      "short_id": "DEC-366",
+      "sprint": "Sprint 2 additions (Engine Bug; Sprint 5 additions (Universe M",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-367",
@@ -5935,7 +6675,9 @@
         "pushed": false,
         "n_doc_refs": 18
       },
-      "short_id": "DEC-367"
+      "short_id": "DEC-367",
+      "sprint": "Sprint 8 \u2014 Strategy Categories",
+      "dependencies": "DEC-099"
     },
     {
       "id": "DECISION-368",
@@ -5951,7 +6693,9 @@
         "pushed": true,
         "n_doc_refs": 32
       },
-      "short_id": "DEC-368"
+      "short_id": "DEC-368",
+      "sprint": "Sprint 8 additions (Strategy C",
+      "dependencies": "DEC-099"
     },
     {
       "id": "DECISION-369",
@@ -5967,7 +6711,9 @@
         "pushed": false,
         "n_doc_refs": 17
       },
-      "short_id": "DEC-369"
+      "short_id": "DEC-369",
+      "sprint": "-",
+      "dependencies": "DEC-099"
     },
     {
       "id": "DECISION-370",
@@ -5983,7 +6729,9 @@
         "pushed": true,
         "n_doc_refs": 34
       },
-      "short_id": "DEC-370"
+      "short_id": "DEC-370",
+      "sprint": "Sprint 8 additions (Strategy C",
+      "dependencies": "DEC-099"
     },
     {
       "id": "DECISION-371",
@@ -5999,7 +6747,9 @@
         "pushed": false,
         "n_doc_refs": 11
       },
-      "short_id": "DEC-371"
+      "short_id": "DEC-371",
+      "sprint": "Sprint 8 additions (Strategy C",
+      "dependencies": "DEC-099"
     },
     {
       "id": "DECISION-372",
@@ -6015,7 +6765,9 @@
         "pushed": true,
         "n_doc_refs": 22
       },
-      "short_id": "DEC-372"
+      "short_id": "DEC-372",
+      "sprint": "Sprint 1 / Sprint 5 additions ; Sprint 5 \u2014 Universe Management",
+      "dependencies": "DEC-103"
     },
     {
       "id": "DECISION-373",
@@ -6031,7 +6783,9 @@
         "pushed": false,
         "n_doc_refs": 6
       },
-      "short_id": "DEC-373"
+      "short_id": "DEC-373",
+      "sprint": "Sprint 5 additions (Universe M",
+      "dependencies": "DEC-103"
     },
     {
       "id": "DECISION-374",
@@ -6047,7 +6801,9 @@
         "pushed": false,
         "n_doc_refs": 5
       },
-      "short_id": "DEC-374"
+      "short_id": "DEC-374",
+      "sprint": "Sprint 5 \u2014 Universe Management",
+      "dependencies": "DEC-103"
     },
     {
       "id": "DECISION-375",
@@ -6063,7 +6819,9 @@
         "pushed": false,
         "n_doc_refs": 12
       },
-      "short_id": "DEC-375"
+      "short_id": "DEC-375",
+      "sprint": "Sprint 1 / Sprint 5 additions ; Sprint 5 \u2014 Universe Management",
+      "dependencies": "DEC-104; DEC-364"
     },
     {
       "id": "DECISION-376",
@@ -6079,7 +6837,9 @@
         "pushed": false,
         "n_doc_refs": 6
       },
-      "short_id": "DEC-376"
+      "short_id": "DEC-376",
+      "sprint": "Sprint 5 additions (Universe M",
+      "dependencies": "DEC-104"
     },
     {
       "id": "DECISION-377",
@@ -6095,7 +6855,9 @@
         "pushed": false,
         "n_doc_refs": 8
       },
-      "short_id": "DEC-377"
+      "short_id": "DEC-377",
+      "sprint": "Sprint 7 (+1 \u2014 final ENG addit",
+      "dependencies": "DEC-104"
     },
     {
       "id": "DECISION-378",
@@ -6111,7 +6873,9 @@
         "pushed": false,
         "n_doc_refs": 19
       },
-      "short_id": "DEC-378"
+      "short_id": "DEC-378",
+      "sprint": "Sprint 5 \u2014 Universe Management; Sprint 8 additions (Strategy C",
+      "dependencies": "DEC-105"
     },
     {
       "id": "DECISION-379",
@@ -6127,7 +6891,9 @@
         "pushed": false,
         "n_doc_refs": 6
       },
-      "short_id": "DEC-379"
+      "short_id": "DEC-379",
+      "sprint": "Sprint 5 additions (Universe M",
+      "dependencies": "DEC-105"
     },
     {
       "id": "DECISION-380",
@@ -6143,7 +6909,9 @@
         "pushed": true,
         "n_doc_refs": 20
       },
-      "short_id": "DEC-380"
+      "short_id": "DEC-380",
+      "sprint": "Sprint 0A \u2014 Phase 0.A Multi-AP; Sprint 1 / Sprint 5 additions ; Sprint 4 additions (DEC-410 Au",
+      "dependencies": "DEC-105"
     },
     {
       "id": "DECISION-381",
@@ -6159,7 +6927,9 @@
         "pushed": true,
         "n_doc_refs": 17
       },
-      "short_id": "DEC-381"
+      "short_id": "DEC-381",
+      "sprint": "Sprint 2 \u2014 Engine Bug Fixes Ti; Sprint 3 \u2014 Phase 0.B Portfolio",
+      "dependencies": "DEC-307"
     },
     {
       "id": "DECISION-382",
@@ -6175,7 +6945,9 @@
         "pushed": false,
         "n_doc_refs": 4
       },
-      "short_id": "DEC-382"
+      "short_id": "DEC-382",
+      "sprint": "Sprint 1 additions (Phase 0.A ",
+      "dependencies": "DEC-308"
     },
     {
       "id": "DECISION-383",
@@ -6191,7 +6963,9 @@
         "pushed": false,
         "n_doc_refs": 8
       },
-      "short_id": "DEC-383"
+      "short_id": "DEC-383",
+      "sprint": "Sprint 1 additions (Phase 0.A ",
+      "dependencies": "DEC-310"
     },
     {
       "id": "DECISION-384",
@@ -6207,7 +6981,9 @@
         "pushed": false,
         "n_doc_refs": 4
       },
-      "short_id": "DEC-384"
+      "short_id": "DEC-384",
+      "sprint": "Sprint 2 \u2014 Engine Bug Fixes Ti",
+      "dependencies": "DEC-313; DEC-337"
     },
     {
       "id": "DECISION-385",
@@ -6223,7 +6999,9 @@
         "pushed": true,
         "n_doc_refs": 7
       },
-      "short_id": "DEC-385"
+      "short_id": "DEC-385",
+      "sprint": "-",
+      "dependencies": "DEC-314"
     },
     {
       "id": "DECISION-386",
@@ -6239,7 +7017,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-386"
+      "short_id": "DEC-386",
+      "sprint": "-",
+      "dependencies": "DEC-314"
     },
     {
       "id": "DECISION-387",
@@ -6255,7 +7035,9 @@
         "pushed": true,
         "n_doc_refs": 4
       },
-      "short_id": "DEC-387"
+      "short_id": "DEC-387",
+      "sprint": "-",
+      "dependencies": "DEC-314"
     },
     {
       "id": "DECISION-388",
@@ -6271,7 +7053,9 @@
         "pushed": true,
         "n_doc_refs": 17
       },
-      "short_id": "DEC-388"
+      "short_id": "DEC-388",
+      "sprint": "Sprint 2 \u2014 Engine Bug Fixes Ti; Sprint 4 additions (DEC-410 Au",
+      "dependencies": "DEC-317"
     },
     {
       "id": "DECISION-389",
@@ -6287,7 +7071,9 @@
         "pushed": false,
         "n_doc_refs": 8
       },
-      "short_id": "DEC-389"
+      "short_id": "DEC-389",
+      "sprint": "Sprint 2 \u2014 Engine Bug Fixes Ti",
+      "dependencies": "DEC-318"
     },
     {
       "id": "DECISION-390",
@@ -6303,7 +7089,9 @@
         "pushed": false,
         "n_doc_refs": 5
       },
-      "short_id": "DEC-390"
+      "short_id": "DEC-390",
+      "sprint": "Sprint 1 additions (Phase 0.A ",
+      "dependencies": "DEC-319"
     },
     {
       "id": "DECISION-391",
@@ -6319,7 +7107,9 @@
         "pushed": false,
         "n_doc_refs": 5
       },
-      "short_id": "DEC-391"
+      "short_id": "DEC-391",
+      "sprint": "Sprint 1 additions (Phase 0.A ",
+      "dependencies": "DEC-320"
     },
     {
       "id": "DECISION-392",
@@ -6335,7 +7125,9 @@
         "pushed": true,
         "n_doc_refs": 11
       },
-      "short_id": "DEC-392"
+      "short_id": "DEC-392",
+      "sprint": "Sprint 2 \u2014 Engine Bug Fixes Ti",
+      "dependencies": "DEC-321"
     },
     {
       "id": "DECISION-393",
@@ -6351,7 +7143,9 @@
         "pushed": true,
         "n_doc_refs": 9
       },
-      "short_id": "DEC-393"
+      "short_id": "DEC-393",
+      "sprint": "Sprint 4 additions (DEC-410 Au",
+      "dependencies": "DEC-322"
     },
     {
       "id": "DECISION-394",
@@ -6367,7 +7161,9 @@
         "pushed": false,
         "n_doc_refs": 5
       },
-      "short_id": "DEC-394"
+      "short_id": "DEC-394",
+      "sprint": "Sprint 4 additions (DEC-410 Au; Sprint 8 additions (Strategy C",
+      "dependencies": "DEC-323"
     },
     {
       "id": "DECISION-395",
@@ -6383,7 +7179,9 @@
         "pushed": false,
         "n_doc_refs": 7
       },
-      "short_id": "DEC-395"
+      "short_id": "DEC-395",
+      "sprint": "-",
+      "dependencies": "DEC-323"
     },
     {
       "id": "DECISION-396",
@@ -6399,7 +7197,9 @@
         "pushed": false,
         "n_doc_refs": 9
       },
-      "short_id": "DEC-396"
+      "short_id": "DEC-396",
+      "sprint": "-",
+      "dependencies": "DEC-325"
     },
     {
       "id": "DECISION-397",
@@ -6415,7 +7215,9 @@
         "pushed": false,
         "n_doc_refs": 3
       },
-      "short_id": "DEC-397"
+      "short_id": "DEC-397",
+      "sprint": "Sprint 2 \u2014 Engine Bug Fixes Ti",
+      "dependencies": "DEC-326"
     },
     {
       "id": "DECISION-398",
@@ -6431,7 +7233,9 @@
         "pushed": false,
         "n_doc_refs": 4
       },
-      "short_id": "DEC-398"
+      "short_id": "DEC-398",
+      "sprint": "Sprint 2 \u2014 Engine Bug Fixes Ti",
+      "dependencies": "DEC-327"
     },
     {
       "id": "DECISION-399",
@@ -6447,7 +7251,9 @@
         "pushed": true,
         "n_doc_refs": 21
       },
-      "short_id": "DEC-399"
+      "short_id": "DEC-399",
+      "sprint": "Sprint 2 additions (Engine Bug; Sprint 7 Pattern 2 toolkit add",
+      "dependencies": "DEC-327"
     },
     {
       "id": "DECISION-400",
@@ -6463,7 +7269,9 @@
         "pushed": false,
         "n_doc_refs": 10
       },
-      "short_id": "DEC-400"
+      "short_id": "DEC-400",
+      "sprint": "Sprint 7 \u2014 Statistical Methodo",
+      "dependencies": "DEC-080"
     },
     {
       "id": "DECISION-401",
@@ -6479,7 +7287,9 @@
         "pushed": true,
         "n_doc_refs": 6
       },
-      "short_id": "DEC-401"
+      "short_id": "DEC-401",
+      "sprint": "Sprint 7 additions (Statistica",
+      "dependencies": "DEC-080"
     },
     {
       "id": "DECISION-402",
@@ -6495,7 +7305,9 @@
         "pushed": false,
         "n_doc_refs": 5
       },
-      "short_id": "DEC-402"
+      "short_id": "DEC-402",
+      "sprint": "Sprint 7 additions (Statistica",
+      "dependencies": "DEC-081"
     },
     {
       "id": "DECISION-403",
@@ -6511,7 +7323,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-403"
+      "short_id": "DEC-403",
+      "sprint": "Sprint 7 additions (Statistica",
+      "dependencies": "DEC-081"
     },
     {
       "id": "DECISION-404",
@@ -6527,7 +7341,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-404"
+      "short_id": "DEC-404",
+      "sprint": "Sprint 7 additions (Statistica",
+      "dependencies": "DEC-081"
     },
     {
       "id": "DECISION-405",
@@ -6543,7 +7359,9 @@
         "pushed": false,
         "n_doc_refs": 14
       },
-      "short_id": "DEC-405"
+      "short_id": "DEC-405",
+      "sprint": "Sprint 7 additions (Statistica",
+      "dependencies": "DEC-082"
     },
     {
       "id": "DECISION-406",
@@ -6559,7 +7377,9 @@
         "pushed": false,
         "n_doc_refs": 6
       },
-      "short_id": "DEC-406"
+      "short_id": "DEC-406",
+      "sprint": "Sprint 7 additions (Statistica",
+      "dependencies": "DEC-083"
     },
     {
       "id": "DECISION-407",
@@ -6575,7 +7395,9 @@
         "pushed": false,
         "n_doc_refs": 17
       },
-      "short_id": "DEC-407"
+      "short_id": "DEC-407",
+      "sprint": "Sprint 4 \u2014 DEC-410 Audit Findi",
+      "dependencies": "DEC-085"
     },
     {
       "id": "DECISION-408",
@@ -6591,7 +7413,9 @@
         "pushed": false,
         "n_doc_refs": 3
       },
-      "short_id": "DEC-408"
+      "short_id": "DEC-408",
+      "sprint": "Sprint 7 additions (Statistica",
+      "dependencies": "DEC-085"
     },
     {
       "id": "DECISION-409",
@@ -6607,7 +7431,9 @@
         "pushed": false,
         "n_doc_refs": 9
       },
-      "short_id": "DEC-409"
+      "short_id": "DEC-409",
+      "sprint": "Sprint 7 additions (Statistica",
+      "dependencies": "DEC-085"
     },
     {
       "id": "DECISION-410",
@@ -6623,7 +7449,9 @@
         "pushed": true,
         "n_doc_refs": 84
       },
-      "short_id": "DEC-410"
+      "short_id": "DEC-410",
+      "sprint": "Sprint 7 additions (Statistica; Sprint 8 additions (Strategy C",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-411",
@@ -6639,7 +7467,9 @@
         "pushed": false,
         "n_doc_refs": 21
       },
-      "short_id": "DEC-411"
+      "short_id": "DEC-411",
+      "sprint": "Sprint 7 (+1 \u2014 final ENG addit; Sprint 7 \u2014 Statistical Methodo",
+      "dependencies": "DEC-109; DEC-298"
     },
     {
       "id": "DECISION-412",
@@ -6655,7 +7485,9 @@
         "pushed": false,
         "n_doc_refs": 5
       },
-      "short_id": "DEC-412"
+      "short_id": "DEC-412",
+      "sprint": "Sprint 7 additions (Statistica",
+      "dependencies": "DEC-109"
     },
     {
       "id": "DECISION-413",
@@ -6671,7 +7503,9 @@
         "pushed": false,
         "n_doc_refs": 10
       },
-      "short_id": "DEC-413"
+      "short_id": "DEC-413",
+      "sprint": "Sprint 7 additions; Sprint 7 additions (Statistica",
+      "dependencies": "DEC-110"
     },
     {
       "id": "DECISION-414",
@@ -6687,7 +7521,9 @@
         "pushed": false,
         "n_doc_refs": 6
       },
-      "short_id": "DEC-414"
+      "short_id": "DEC-414",
+      "sprint": "Sprint 7 additions (Statistica",
+      "dependencies": "DEC-111"
     },
     {
       "id": "DECISION-415",
@@ -6703,7 +7539,9 @@
         "pushed": false,
         "n_doc_refs": 7
       },
-      "short_id": "DEC-415"
+      "short_id": "DEC-415",
+      "sprint": "Sprint 7 additions (Statistica",
+      "dependencies": "DEC-111"
     },
     {
       "id": "DECISION-416",
@@ -6719,7 +7557,9 @@
         "pushed": false,
         "n_doc_refs": 3
       },
-      "short_id": "DEC-416"
+      "short_id": "DEC-416",
+      "sprint": "Sprint 7 additions (Statistica",
+      "dependencies": "DEC-111"
     },
     {
       "id": "DECISION-417",
@@ -6735,7 +7575,9 @@
         "pushed": true,
         "n_doc_refs": 42
       },
-      "short_id": "DEC-417"
+      "short_id": "DEC-417",
+      "sprint": "Sprint 6 \u2014 Phase 0.E Catch-Mec; Sprint 7-8 additions (Phase 1B",
+      "dependencies": "DEC-417"
     },
     {
       "id": "DECISION-418",
@@ -6751,7 +7593,9 @@
         "pushed": false,
         "n_doc_refs": 8
       },
-      "short_id": "DEC-418"
+      "short_id": "DEC-418",
+      "sprint": "-",
+      "dependencies": "DEC-129"
     },
     {
       "id": "DECISION-419",
@@ -6767,7 +7611,9 @@
         "pushed": false,
         "n_doc_refs": 4
       },
-      "short_id": "DEC-419"
+      "short_id": "DEC-419",
+      "sprint": "-",
+      "dependencies": "DEC-130"
     },
     {
       "id": "DECISION-420",
@@ -6783,7 +7629,9 @@
         "pushed": true,
         "n_doc_refs": 7
       },
-      "short_id": "DEC-420"
+      "short_id": "DEC-420",
+      "sprint": "-",
+      "dependencies": "DEC-131"
     },
     {
       "id": "DECISION-421",
@@ -6799,7 +7647,9 @@
         "pushed": false,
         "n_doc_refs": 5
       },
-      "short_id": "DEC-421"
+      "short_id": "DEC-421",
+      "sprint": "-",
+      "dependencies": "DEC-132"
     },
     {
       "id": "DECISION-422",
@@ -6815,7 +7665,9 @@
         "pushed": true,
         "n_doc_refs": 141
       },
-      "short_id": "DEC-422"
+      "short_id": "DEC-422",
+      "sprint": "Sprint 6.5 \u2014 Phase 1A Rules-On; Sprint 7 additions (Statistica; Sprint 7-8 (+3); Sprint 8 additions (Strategy C; Sprint 9 \u2014 Phase 1B-\u03b1 Run (Wee",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-423",
@@ -6831,7 +7683,9 @@
         "pushed": true,
         "n_doc_refs": 14
       },
-      "short_id": "DEC-423"
+      "short_id": "DEC-423",
+      "sprint": "-",
+      "dependencies": "DEC-068; DEC-422"
     },
     {
       "id": "DECISION-424",
@@ -6847,7 +7701,9 @@
         "pushed": false,
         "n_doc_refs": 4
       },
-      "short_id": "DEC-424"
+      "short_id": "DEC-424",
+      "sprint": "-",
+      "dependencies": "DEC-069; DEC-422"
     },
     {
       "id": "DECISION-425",
@@ -6863,7 +7719,9 @@
         "pushed": false,
         "n_doc_refs": 5
       },
-      "short_id": "DEC-425"
+      "short_id": "DEC-425",
+      "sprint": "Sprint 7-8 additions (Phase 1B",
+      "dependencies": "DEC-422"
     },
     {
       "id": "DECISION-426",
@@ -6879,7 +7737,9 @@
         "pushed": false,
         "n_doc_refs": 30
       },
-      "short_id": "DEC-426"
+      "short_id": "DEC-426",
+      "sprint": "Sprint 6.5 \u2014 Phase 1A Rules-On; Sprint 7 additions; Sprint 7 additions (Statistica; Sprint 9 \u2014 Phase 1B-\u03b1 Run (Wee",
+      "dependencies": "DEC-422"
     },
     {
       "id": "DECISION-427",
@@ -6895,7 +7755,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-427"
+      "short_id": "DEC-427",
+      "sprint": "Sprint 7-8 additions (Phase 1B",
+      "dependencies": "DEC-422"
     },
     {
       "id": "DECISION-428",
@@ -6911,7 +7773,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-428"
+      "short_id": "DEC-428",
+      "sprint": "Sprint 7-8 additions (Phase 1B",
+      "dependencies": "DEC-422"
     },
     {
       "id": "DECISION-429",
@@ -6927,7 +7791,9 @@
         "pushed": false,
         "n_doc_refs": 8
       },
-      "short_id": "DEC-429"
+      "short_id": "DEC-429",
+      "sprint": "Sprint 7-8 additions (Phase 1B",
+      "dependencies": "DEC-422"
     },
     {
       "id": "DECISION-430",
@@ -6943,7 +7809,9 @@
         "pushed": false,
         "n_doc_refs": 17
       },
-      "short_id": "DEC-430"
+      "short_id": "DEC-430",
+      "sprint": "Sprint 7-8 additions (Phase 1B; Sprint 9 additions (Phase 1B-\u03b1",
+      "dependencies": "DEC-422"
     },
     {
       "id": "DECISION-431",
@@ -6959,7 +7827,9 @@
         "pushed": false,
         "n_doc_refs": 4
       },
-      "short_id": "DEC-431"
+      "short_id": "DEC-431",
+      "sprint": "Sprint 7-8 additions (Phase 1B",
+      "dependencies": "DEC-422"
     },
     {
       "id": "DECISION-432",
@@ -6975,7 +7845,9 @@
         "pushed": false,
         "n_doc_refs": 9
       },
-      "short_id": "DEC-432"
+      "short_id": "DEC-432",
+      "sprint": "Sprint 8 additions (Strategy C",
+      "dependencies": "DEC-067"
     },
     {
       "id": "DECISION-433",
@@ -6991,7 +7863,9 @@
         "pushed": false,
         "n_doc_refs": 3
       },
-      "short_id": "DEC-433"
+      "short_id": "DEC-433",
+      "sprint": "Sprint 8 additions (Strategy C",
+      "dependencies": "DEC-067; DEC-353"
     },
     {
       "id": "DECISION-434",
@@ -7007,7 +7881,9 @@
         "pushed": false,
         "n_doc_refs": 4
       },
-      "short_id": "DEC-434"
+      "short_id": "DEC-434",
+      "sprint": "-",
+      "dependencies": "DEC-067; DEC-388; DEC-409"
     },
     {
       "id": "DECISION-435",
@@ -7023,7 +7899,9 @@
         "pushed": false,
         "n_doc_refs": 7
       },
-      "short_id": "DEC-435"
+      "short_id": "DEC-435",
+      "sprint": "Sprint 8 additions (Strategy C",
+      "dependencies": "DEC-075"
     },
     {
       "id": "DECISION-436",
@@ -7039,7 +7917,9 @@
         "pushed": true,
         "n_doc_refs": 23
       },
-      "short_id": "DEC-436"
+      "short_id": "DEC-436",
+      "sprint": "Sprint 6 additions (Phase 0.E ; Sprint 6 \u2014 Phase 0.E Catch-Mec",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-437",
@@ -7055,7 +7935,9 @@
         "pushed": false,
         "n_doc_refs": 14
       },
-      "short_id": "DEC-437"
+      "short_id": "DEC-437",
+      "sprint": "Sprint 1 \u2014 RETIRED Pass 53 (re; Sprint 2 \u2014 Engine Bug Fixes Ti; Sprint 3 \u2014 Phase 0.B Portfolio; Sprint 4 \u2014 DEC-410 Audit Findi; Sprint 5 \u2014 Universe Management; Sprint 6 \u2014 Phase 0.E Catch-Mec",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-438",
@@ -7071,7 +7953,9 @@
         "pushed": false,
         "n_doc_refs": 15
       },
-      "short_id": "DEC-438"
+      "short_id": "DEC-438",
+      "sprint": "Sprint 6 additions (Phase 0.E ; Sprint 6 \u2014 Phase 0.E Catch-Mec",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-439",
@@ -7087,7 +7971,9 @@
         "pushed": false,
         "n_doc_refs": 23
       },
-      "short_id": "DEC-439"
+      "short_id": "DEC-439",
+      "sprint": "Sprint 6 \u2014 Phase 0.E Catch-Mec",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-440",
@@ -7103,7 +7989,9 @@
         "pushed": true,
         "n_doc_refs": 41
       },
-      "short_id": "DEC-440"
+      "short_id": "DEC-440",
+      "sprint": "Sprint 1 \u2014 RETIRED Pass 53 (re; Sprint 4 additions (DEC-410 Au",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-441",
@@ -7119,7 +8007,9 @@
         "pushed": true,
         "n_doc_refs": 65
       },
-      "short_id": "DEC-441"
+      "short_id": "DEC-441",
+      "sprint": "Sprint 1 \u2014 RETIRED Pass 53 (re; Sprint 4 additions (DEC-410 Au; Sprint 4 \u2014 DEC-410 Audit Findi",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-442",
@@ -7135,7 +8025,9 @@
         "pushed": true,
         "n_doc_refs": 18
       },
-      "short_id": "DEC-442"
+      "short_id": "DEC-442",
+      "sprint": "Sprint 4 \u2014 DEC-410 Audit Findi",
+      "dependencies": "DEC-410"
     },
     {
       "id": "DECISION-443",
@@ -7151,7 +8043,9 @@
         "pushed": false,
         "n_doc_refs": 19
       },
-      "short_id": "DEC-443"
+      "short_id": "DEC-443",
+      "sprint": "Sprint 4 additions (DEC-410 Au; Sprint 4 \u2014 DEC-410 Audit Findi; Sprint 9 \u2014 Phase 1B-\u03b1 Run (Wee",
+      "dependencies": "DEC-410"
     },
     {
       "id": "DECISION-444",
@@ -7167,7 +8061,9 @@
         "pushed": false,
         "n_doc_refs": 5
       },
-      "short_id": "DEC-444"
+      "short_id": "DEC-444",
+      "sprint": "Sprint 4 additions (DEC-410 Au",
+      "dependencies": "DEC-410"
     },
     {
       "id": "DECISION-445",
@@ -7183,7 +8079,9 @@
         "pushed": false,
         "n_doc_refs": 12
       },
-      "short_id": "DEC-445"
+      "short_id": "DEC-445",
+      "sprint": "Sprint 0A \u2014 Phase 0.A Multi-AP; Sprint 4 \u2014 DEC-410 Audit Findi",
+      "dependencies": "DEC-410; DEC-439"
     },
     {
       "id": "DECISION-446",
@@ -7199,7 +8097,9 @@
         "pushed": false,
         "n_doc_refs": 9
       },
-      "short_id": "DEC-446"
+      "short_id": "DEC-446",
+      "sprint": "Sprint 0A \u2014 Phase 0.A Multi-AP; Sprint 4 additions (DEC-410 Au",
+      "dependencies": "DEC-410"
     },
     {
       "id": "DECISION-447",
@@ -7215,7 +8115,9 @@
         "pushed": false,
         "n_doc_refs": 13
       },
-      "short_id": "DEC-447"
+      "short_id": "DEC-447",
+      "sprint": "Sprint 4 additions (DEC-410 Au",
+      "dependencies": "DEC-410"
     },
     {
       "id": "DECISION-448",
@@ -7231,7 +8133,9 @@
         "pushed": false,
         "n_doc_refs": 10
       },
-      "short_id": "DEC-448"
+      "short_id": "DEC-448",
+      "sprint": "Sprint 4 \u2014 DEC-410 Audit Findi",
+      "dependencies": "DEC-410"
     },
     {
       "id": "DECISION-449",
@@ -7247,7 +8151,9 @@
         "pushed": false,
         "n_doc_refs": 4
       },
-      "short_id": "DEC-449"
+      "short_id": "DEC-449",
+      "sprint": "Sprint 4 additions (DEC-410 Au",
+      "dependencies": "DEC-301; DEC-410"
     },
     {
       "id": "DECISION-450",
@@ -7263,7 +8169,9 @@
         "pushed": true,
         "n_doc_refs": 34
       },
-      "short_id": "DEC-450"
+      "short_id": "DEC-450",
+      "sprint": "Sprint 4 \u2014 DEC-410 Audit Findi; Sprint 8 additions (Strategy C",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-451",
@@ -7279,7 +8187,9 @@
         "pushed": false,
         "n_doc_refs": 5
       },
-      "short_id": "DEC-451"
+      "short_id": "DEC-451",
+      "sprint": "Sprint 4 additions (DEC-410 Au",
+      "dependencies": "BUG-284; DEC-410"
     },
     {
       "id": "DECISION-452",
@@ -7295,7 +8205,9 @@
         "pushed": true,
         "n_doc_refs": 4
       },
-      "short_id": "DEC-452"
+      "short_id": "DEC-452",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-453",
@@ -7311,7 +8223,9 @@
         "pushed": false,
         "n_doc_refs": 13
       },
-      "short_id": "DEC-453"
+      "short_id": "DEC-453",
+      "sprint": "Sprint 4 \u2014 DEC-410 Audit Findi",
+      "dependencies": "DEC-410"
     },
     {
       "id": "DECISION-454",
@@ -7327,7 +8241,9 @@
         "pushed": false,
         "n_doc_refs": 8
       },
-      "short_id": "DEC-454"
+      "short_id": "DEC-454",
+      "sprint": "Sprint 4 additions (DEC-410 Au",
+      "dependencies": "DEC-410"
     },
     {
       "id": "DECISION-455",
@@ -7343,7 +8259,9 @@
         "pushed": false,
         "n_doc_refs": 8
       },
-      "short_id": "DEC-455"
+      "short_id": "DEC-455",
+      "sprint": "Sprint 4 additions (DEC-410 Au",
+      "dependencies": "DEC-410"
     },
     {
       "id": "DECISION-456",
@@ -7359,7 +8277,9 @@
         "pushed": true,
         "n_doc_refs": 15
       },
-      "short_id": "DEC-456"
+      "short_id": "DEC-456",
+      "sprint": "Sprint 0A \u2014 Phase 0.A Multi-AP; Sprint 4 \u2014 DEC-410 Audit Findi",
+      "dependencies": "DEC-410; DEC-439"
     },
     {
       "id": "DECISION-457",
@@ -7375,7 +8295,9 @@
         "pushed": true,
         "n_doc_refs": 9
       },
-      "short_id": "DEC-457"
+      "short_id": "DEC-457",
+      "sprint": "Sprint 5 \u2014 Universe Management",
+      "dependencies": "DEC-366"
     },
     {
       "id": "DECISION-458",
@@ -7391,7 +8313,9 @@
         "pushed": true,
         "n_doc_refs": 159
       },
-      "short_id": "DEC-458"
+      "short_id": "DEC-458",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-459",
@@ -7407,7 +8331,9 @@
         "pushed": true,
         "n_doc_refs": 42
       },
-      "short_id": "DEC-459"
+      "short_id": "DEC-459",
+      "sprint": "Sprint 7 (+1 \u2014 final ENG addit; Sprint 7 (REVISED \u2014 DEC-042 re; Sprint 7 effort revised",
+      "dependencies": "DEC-042"
     },
     {
       "id": "DECISION-460",
@@ -7423,7 +8349,9 @@
         "pushed": false,
         "n_doc_refs": 13
       },
-      "short_id": "DEC-460"
+      "short_id": "DEC-460",
+      "sprint": "Sprint 7 Pattern 2 toolkit add; Sprint 7 effort revised",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-461",
@@ -7439,7 +8367,9 @@
         "pushed": false,
         "n_doc_refs": 12
       },
-      "short_id": "DEC-461"
+      "short_id": "DEC-461",
+      "sprint": "Sprint 7 Pattern 2 toolkit add; Sprint 7 effort revised",
+      "dependencies": "DEC-460"
     },
     {
       "id": "DECISION-462",
@@ -7455,7 +8385,9 @@
         "pushed": false,
         "n_doc_refs": 49
       },
-      "short_id": "DEC-462"
+      "short_id": "DEC-462",
+      "sprint": "Sprint 7 Pattern 2 toolkit add; Sprint 7 effort revised",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-463",
@@ -7471,7 +8403,9 @@
         "pushed": false,
         "n_doc_refs": 6
       },
-      "short_id": "DEC-463"
+      "short_id": "DEC-463",
+      "sprint": "Sprint 7 Pattern 2 toolkit add; Sprint 7 effort revised",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-464",
@@ -7487,7 +8421,9 @@
         "pushed": false,
         "n_doc_refs": 6
       },
-      "short_id": "DEC-464"
+      "short_id": "DEC-464",
+      "sprint": "Sprint 7 Pattern 2 toolkit add; Sprint 7 effort revised",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-465",
@@ -7503,7 +8439,9 @@
         "pushed": false,
         "n_doc_refs": 5
       },
-      "short_id": "DEC-465"
+      "short_id": "DEC-465",
+      "sprint": "Sprint 7 Pattern 2 toolkit add; Sprint 7 effort revised",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-466",
@@ -7519,7 +8457,9 @@
         "pushed": false,
         "n_doc_refs": 7
       },
-      "short_id": "DEC-466"
+      "short_id": "DEC-466",
+      "sprint": "Sprint 7 Pattern 2 toolkit add; Sprint 7 effort revised",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-467",
@@ -7535,7 +8475,9 @@
         "pushed": false,
         "n_doc_refs": 9
       },
-      "short_id": "DEC-467"
+      "short_id": "DEC-467",
+      "sprint": "Sprint 7 Pattern 2 toolkit add; Sprint 7 effort revised",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-468",
@@ -7551,7 +8493,9 @@
         "pushed": false,
         "n_doc_refs": 11
       },
-      "short_id": "DEC-468"
+      "short_id": "DEC-468",
+      "sprint": "Sprint 7 Pattern 2 toolkit add; Sprint 7 effort revised",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-486",
@@ -7567,7 +8511,9 @@
         "pushed": false,
         "n_doc_refs": 26
       },
-      "short_id": "DEC-486"
+      "short_id": "DEC-486",
+      "sprint": "Sprint 6.5 \u2014 Phase 1A Rules-On; Sprint 9 \u2014 Phase 1B-\u03b1 Run (Wee",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-487",
@@ -7583,7 +8529,9 @@
         "pushed": false,
         "n_doc_refs": 11
       },
-      "short_id": "DEC-487"
+      "short_id": "DEC-487",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-488",
@@ -7599,7 +8547,9 @@
         "pushed": false,
         "n_doc_refs": 4
       },
-      "short_id": "DEC-488"
+      "short_id": "DEC-488",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-477",
@@ -7615,7 +8565,9 @@
         "pushed": true,
         "n_doc_refs": 56
       },
-      "short_id": "DEC-477"
+      "short_id": "DEC-477",
+      "sprint": "Sprint 0A \u2014 Phase 0.A Multi-AP; Sprint 1 \u2014 RETIRED Pass 53 (re",
+      "dependencies": "DEC-303"
     },
     {
       "id": "DECISION-478",
@@ -7631,7 +8583,9 @@
         "pushed": false,
         "n_doc_refs": 13
       },
-      "short_id": "DEC-478"
+      "short_id": "DEC-478",
+      "sprint": "Sprint 1 \u2014 RETIRED Pass 53 (re",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-479",
@@ -7647,7 +8601,9 @@
         "pushed": false,
         "n_doc_refs": 6
       },
-      "short_id": "DEC-479"
+      "short_id": "DEC-479",
+      "sprint": "Sprint 1 \u2014 RETIRED Pass 53 (re",
+      "dependencies": "DEC-441"
     },
     {
       "id": "DECISION-482",
@@ -7663,7 +8619,9 @@
         "pushed": false,
         "n_doc_refs": 17
       },
-      "short_id": "DEC-482"
+      "short_id": "DEC-482",
+      "sprint": "Sprint 1 \u2014 RETIRED Pass 53 (re",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-483",
@@ -7679,7 +8637,9 @@
         "pushed": false,
         "n_doc_refs": 60
       },
-      "short_id": "DEC-483"
+      "short_id": "DEC-483",
+      "sprint": "Sprint 0A \u2014 Phase 0.A Multi-AP; Sprint 1 / Sprint 5 additions ; Sprint 1 \u2014 RETIRED Pass 53 (re",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-484",
@@ -7695,7 +8655,9 @@
         "pushed": false,
         "n_doc_refs": 15
       },
-      "short_id": "DEC-484"
+      "short_id": "DEC-484",
+      "sprint": "Sprint 1 \u2014 RETIRED Pass 53 (re",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-485",
@@ -7711,7 +8673,9 @@
         "pushed": false,
         "n_doc_refs": 11
       },
-      "short_id": "DEC-485"
+      "short_id": "DEC-485",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-490",
@@ -7727,7 +8691,9 @@
         "pushed": false,
         "n_doc_refs": 13
       },
-      "short_id": "DEC-490"
+      "short_id": "DEC-490",
+      "sprint": "-",
+      "dependencies": "DEC-484; DEC-485"
     },
     {
       "id": "DECISION-489",
@@ -7743,7 +8709,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "DEC-489"
+      "short_id": "DEC-489",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-469",
@@ -7759,7 +8727,9 @@
         "pushed": false,
         "n_doc_refs": 29
       },
-      "short_id": "DEC-469"
+      "short_id": "DEC-469",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-470",
@@ -7775,7 +8745,9 @@
         "pushed": false,
         "n_doc_refs": 10
       },
-      "short_id": "DEC-470"
+      "short_id": "DEC-470",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-471",
@@ -7791,7 +8763,9 @@
         "pushed": false,
         "n_doc_refs": 10
       },
-      "short_id": "DEC-471"
+      "short_id": "DEC-471",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-472",
@@ -7807,7 +8781,9 @@
         "pushed": false,
         "n_doc_refs": 4
       },
-      "short_id": "DEC-472"
+      "short_id": "DEC-472",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-473",
@@ -7823,7 +8799,9 @@
         "pushed": false,
         "n_doc_refs": 3
       },
-      "short_id": "DEC-473"
+      "short_id": "DEC-473",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-474",
@@ -7839,7 +8817,9 @@
         "pushed": false,
         "n_doc_refs": 6
       },
-      "short_id": "DEC-474"
+      "short_id": "DEC-474",
+      "sprint": "-",
+      "dependencies": "DEC-459; DEC-481"
     },
     {
       "id": "DECISION-475",
@@ -7855,7 +8835,9 @@
         "pushed": false,
         "n_doc_refs": 8
       },
-      "short_id": "DEC-475"
+      "short_id": "DEC-475",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-476",
@@ -7871,7 +8853,9 @@
         "pushed": false,
         "n_doc_refs": 18
       },
-      "short_id": "DEC-476"
+      "short_id": "DEC-476",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-480",
@@ -7887,7 +8871,9 @@
         "pushed": false,
         "n_doc_refs": 3
       },
-      "short_id": "DEC-480"
+      "short_id": "DEC-480",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-481",
@@ -7903,7 +8889,9 @@
         "pushed": false,
         "n_doc_refs": 34
       },
-      "short_id": "DEC-481"
+      "short_id": "DEC-481",
+      "sprint": "-",
+      "dependencies": "DEC-459"
     },
     {
       "id": "DECISION-491",
@@ -7919,7 +8907,9 @@
         "pushed": true,
         "n_doc_refs": 38
       },
-      "short_id": "DEC-491"
+      "short_id": "DEC-491",
+      "sprint": "Sprint 2 additions (Pass 53 \u2014 ",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-492",
@@ -7935,7 +8925,9 @@
         "pushed": false,
         "n_doc_refs": 4
       },
-      "short_id": "DEC-492"
+      "short_id": "DEC-492",
+      "sprint": "Sprint 2 additions (Pass 53 \u2014 ",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-493",
@@ -7951,7 +8943,9 @@
         "pushed": false,
         "n_doc_refs": 5
       },
-      "short_id": "DEC-493"
+      "short_id": "DEC-493",
+      "sprint": "Sprint 2 additions (Pass 53 \u2014 ",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-496",
@@ -7967,7 +8961,9 @@
         "pushed": true,
         "n_doc_refs": 42
       },
-      "short_id": "DEC-496"
+      "short_id": "DEC-496",
+      "sprint": "Sprint 0A \u2014 Phase 0.A Multi-AP; Sprint 1 / Sprint 5 additions ",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-495",
@@ -7983,7 +8979,9 @@
         "pushed": true,
         "n_doc_refs": 24
       },
-      "short_id": "DEC-495"
+      "short_id": "DEC-495",
+      "sprint": "Sprint 1 / Sprint 5 additions ",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-494",
@@ -7999,7 +8997,9 @@
         "pushed": true,
         "n_doc_refs": 43
       },
-      "short_id": "DEC-494"
+      "short_id": "DEC-494",
+      "sprint": "Sprint 1 / Sprint 5 additions ",
+      "dependencies": "DEC-483"
     },
     {
       "id": "DECISION-497",
@@ -8015,7 +9015,9 @@
         "pushed": true,
         "n_doc_refs": 30
       },
-      "short_id": "DEC-497"
+      "short_id": "DEC-497",
+      "sprint": "Sprint 0A \u2014 Phase 0.A Multi-AP",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-498",
@@ -8031,7 +9033,9 @@
         "pushed": false,
         "n_doc_refs": 4
       },
-      "short_id": "DEC-498"
+      "short_id": "DEC-498",
+      "sprint": "Sprint 0A \u2014 Phase 0.A Multi-AP",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-499",
@@ -8047,7 +9051,9 @@
         "pushed": false,
         "n_doc_refs": 11
       },
-      "short_id": "DEC-499"
+      "short_id": "DEC-499",
+      "sprint": "Sprint 0A \u2014 Phase 0.A Multi-AP",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-500",
@@ -8063,7 +9069,9 @@
         "pushed": true,
         "n_doc_refs": 7
       },
-      "short_id": "DEC-500"
+      "short_id": "DEC-500",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-501",
@@ -8079,7 +9087,9 @@
         "pushed": false,
         "n_doc_refs": 14
       },
-      "short_id": "DEC-501"
+      "short_id": "DEC-501",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-502",
@@ -8095,7 +9105,9 @@
         "pushed": false,
         "n_doc_refs": 12
       },
-      "short_id": "DEC-502"
+      "short_id": "DEC-502",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-503",
@@ -8111,7 +9123,9 @@
         "pushed": true,
         "n_doc_refs": 47
       },
-      "short_id": "DEC-503"
+      "short_id": "DEC-503",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-508",
@@ -8127,7 +9141,9 @@
         "pushed": true,
         "n_doc_refs": 27
       },
-      "short_id": "DEC-508"
+      "short_id": "DEC-508",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-507",
@@ -8143,7 +9159,9 @@
         "pushed": true,
         "n_doc_refs": 33
       },
-      "short_id": "DEC-507"
+      "short_id": "DEC-507",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-506",
@@ -8159,7 +9177,9 @@
         "pushed": true,
         "n_doc_refs": 11
       },
-      "short_id": "DEC-506"
+      "short_id": "DEC-506",
+      "sprint": "-",
+      "dependencies": "DEC-468; DEC-501"
     },
     {
       "id": "DECISION-505",
@@ -8175,7 +9195,9 @@
         "pushed": true,
         "n_doc_refs": 43
       },
-      "short_id": "DEC-505"
+      "short_id": "DEC-505",
+      "sprint": "-",
+      "dependencies": "DEC-109"
     },
     {
       "id": "DECISION-596",
@@ -8191,7 +9213,9 @@
         "pushed": true,
         "n_doc_refs": 21
       },
-      "short_id": "DEC-596"
+      "short_id": "DEC-596",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-594",
@@ -8207,7 +9231,9 @@
         "pushed": true,
         "n_doc_refs": 422
       },
-      "short_id": "DEC-594"
+      "short_id": "DEC-594",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-595",
@@ -8223,7 +9249,9 @@
         "pushed": false,
         "n_doc_refs": 23
       },
-      "short_id": "DEC-595"
+      "short_id": "DEC-595",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-591",
@@ -8239,7 +9267,9 @@
         "pushed": true,
         "n_doc_refs": 24
       },
-      "short_id": "DEC-591"
+      "short_id": "DEC-591",
+      "sprint": "-",
+      "dependencies": "DEC-503"
     },
     {
       "id": "DECISION-592",
@@ -8255,7 +9285,9 @@
         "pushed": false,
         "n_doc_refs": 7
       },
-      "short_id": "DEC-592"
+      "short_id": "DEC-592",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-593",
@@ -8271,7 +9303,9 @@
         "pushed": false,
         "n_doc_refs": 4
       },
-      "short_id": "DEC-593"
+      "short_id": "DEC-593",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-589",
@@ -8287,7 +9321,9 @@
         "pushed": true,
         "n_doc_refs": 16
       },
-      "short_id": "DEC-589"
+      "short_id": "DEC-589",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-590",
@@ -8303,7 +9339,9 @@
         "pushed": true,
         "n_doc_refs": 31
       },
-      "short_id": "DEC-590"
+      "short_id": "DEC-590",
+      "sprint": "-",
+      "dependencies": "-"
     },
     {
       "id": "DECISION-504",
@@ -8319,7 +9357,9 @@
         "pushed": true,
         "n_doc_refs": 18
       },
-      "short_id": "DEC-504"
+      "short_id": "DEC-504",
+      "sprint": "-",
+      "dependencies": "-"
     }
   ],
   "bugs": [
@@ -8335,7 +9375,9 @@
         "pushed": false,
         "n_doc_refs": 3
       },
-      "short_id": "BUG-001"
+      "short_id": "BUG-001",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
     },
     {
       "id": "BUG-02",
@@ -8349,7 +9391,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "BUG-002"
+      "short_id": "BUG-002",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
     },
     {
       "id": "BUG-03",
@@ -8363,7 +9407,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "BUG-003"
+      "short_id": "BUG-003",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
     },
     {
       "id": "BUG-04",
@@ -8377,7 +9423,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "BUG-004"
+      "short_id": "BUG-004",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
     },
     {
       "id": "BUG-05",
@@ -8391,7 +9439,9 @@
         "pushed": true,
         "n_doc_refs": 15
       },
-      "short_id": "BUG-005"
+      "short_id": "BUG-005",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
     },
     {
       "id": "BUG-06",
@@ -8405,7 +9455,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "BUG-006"
+      "short_id": "BUG-006",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
     },
     {
       "id": "BUG-07",
@@ -8419,7 +9471,9 @@
         "pushed": false,
         "n_doc_refs": 8
       },
-      "short_id": "BUG-007"
+      "short_id": "BUG-007",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
     },
     {
       "id": "BUG-08",
@@ -8433,7 +9487,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "BUG-008"
+      "short_id": "BUG-008",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
     },
     {
       "id": "BUG-09",
@@ -8447,7 +9503,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "BUG-009"
+      "short_id": "BUG-009",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
     },
     {
       "id": "BUG-10",
@@ -8461,7 +9519,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "BUG-010"
+      "short_id": "BUG-010",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
     },
     {
       "id": "BUG-11",
@@ -8475,7 +9535,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "BUG-011"
+      "short_id": "BUG-011",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
     },
     {
       "id": "BUG-12",
@@ -8489,7 +9551,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "BUG-012"
+      "short_id": "BUG-012",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
     },
     {
       "id": "BUG-13",
@@ -8503,7 +9567,9 @@
         "pushed": false,
         "n_doc_refs": 3
       },
-      "short_id": "BUG-013"
+      "short_id": "BUG-013",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-256; DEC-444; DEC-458"
     },
     {
       "id": "BUG-14",
@@ -8517,7 +9583,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "BUG-014"
+      "short_id": "BUG-014",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
     },
     {
       "id": "BUG-15",
@@ -8531,7 +9599,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "BUG-015"
+      "short_id": "BUG-015",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
     },
     {
       "id": "BUG-16",
@@ -8545,7 +9615,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "BUG-016"
+      "short_id": "BUG-016",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
     },
     {
       "id": "BUG-17",
@@ -8559,7 +9631,9 @@
         "pushed": false,
         "n_doc_refs": 2
       },
-      "short_id": "BUG-017"
+      "short_id": "BUG-017",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
     }
   ],
   "investigations": [
@@ -8575,7 +9649,8 @@
         "tested": false,
         "pushed": true,
         "n_doc_refs": 7
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "INV-002",
@@ -8589,7 +9664,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 1
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "INV-003",
@@ -8603,7 +9679,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 1
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "INV-004",
@@ -8617,7 +9694,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 1
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "INV-005",
@@ -8631,7 +9709,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 4
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "INV-006",
@@ -8645,7 +9724,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 1
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "INV-007",
@@ -8659,7 +9739,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 3
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "INV-008",
@@ -8673,7 +9754,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 1
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "INV-009",
@@ -8687,7 +9769,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 1
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "INV-010",
@@ -8701,7 +9784,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 5
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "INV-012",
@@ -8715,7 +9799,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 3
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "INV-011",
@@ -8729,7 +9814,8 @@
         "tested": true,
         "pushed": true,
         "n_doc_refs": 1
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "INV-013",
@@ -8743,7 +9829,8 @@
         "tested": false,
         "pushed": true,
         "n_doc_refs": 0
-      }
+      },
+      "dependencies": "INV-006"
     },
     {
       "id": "INV-014",
@@ -8757,7 +9844,8 @@
         "tested": false,
         "pushed": true,
         "n_doc_refs": 0
-      }
+      },
+      "dependencies": "DEC-491"
     },
     {
       "id": "INV-015",
@@ -8771,7 +9859,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 0
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "INV-016",
@@ -8785,7 +9874,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 0
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "INV-017",
@@ -8799,7 +9889,8 @@
         "tested": false,
         "pushed": true,
         "n_doc_refs": 0
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "INV-018",
@@ -8813,7 +9904,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 0
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "INV-019",
@@ -8827,7 +9919,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 0
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "INV-020",
@@ -8841,7 +9934,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 0
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "INV-021",
@@ -8855,7 +9949,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 0
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "INV-022",
@@ -8869,7 +9964,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 0
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "INV-023",
@@ -8883,7 +9979,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 0
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "INV-024",
@@ -8897,7 +9994,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 0
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "INV-025",
@@ -8911,7 +10009,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 0
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "INV-026",
@@ -8925,7 +10024,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 0
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "INV-027",
@@ -8939,7 +10039,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 0
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "INV-028",
@@ -8953,7 +10054,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 0
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "INV-029",
@@ -8967,7 +10069,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 0
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "INV-030",
@@ -8981,7 +10084,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 0
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "INV-031",
@@ -8995,7 +10099,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 0
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "INV-032",
@@ -9009,7 +10114,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 0
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "INV-033",
@@ -9023,7 +10129,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 0
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "INV-034",
@@ -9037,7 +10144,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 1
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "INV-038",
@@ -9051,7 +10159,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 1
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "INV-035",
@@ -9065,7 +10174,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 1
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "INV-036",
@@ -9079,7 +10189,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 0
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "INV-037",
@@ -9093,7 +10204,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 0
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "INV-039",
@@ -9107,7 +10219,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 0
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "INV-040",
@@ -9121,7 +10234,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 0
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "INV-041",
@@ -9135,7 +10249,8 @@
         "tested": false,
         "pushed": true,
         "n_doc_refs": 1
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "INV-042",
@@ -9149,7 +10264,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 2
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "INV-043",
@@ -9163,7 +10279,8 @@
         "tested": false,
         "pushed": true,
         "n_doc_refs": 1
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "INV-044",
@@ -9177,7 +10294,8 @@
         "tested": false,
         "pushed": true,
         "n_doc_refs": 0
-      }
+      },
+      "dependencies": "-"
     }
   ],
   "caveats": [
@@ -9192,7 +10310,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 2
-      }
+      },
+      "dependencies": "DEC-298"
     },
     {
       "id": "CAV-002",
@@ -9205,7 +10324,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 1
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "CAV-003",
@@ -9218,7 +10338,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 1
-      }
+      },
+      "dependencies": "DEC-300"
     },
     {
       "id": "CAV-004",
@@ -9231,7 +10352,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 2
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "CAV-005",
@@ -9244,7 +10366,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 1
-      }
+      },
+      "dependencies": "DEC-345"
     },
     {
       "id": "CAV-006",
@@ -9257,7 +10380,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 0
-      }
+      },
+      "dependencies": "DEC-345"
     },
     {
       "id": "CAV-007",
@@ -9270,7 +10394,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 0
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "CAV-008",
@@ -9283,7 +10408,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 1
-      }
+      },
+      "dependencies": "DEC-353"
     },
     {
       "id": "CAV-009",
@@ -9296,7 +10422,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 1
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "CAV-010",
@@ -9309,7 +10436,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 0
-      }
+      },
+      "dependencies": "DEC-222"
     },
     {
       "id": "CAV-011",
@@ -9322,7 +10450,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 1
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "CAV-012",
@@ -9335,7 +10464,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 1
-      }
+      },
+      "dependencies": "BUG-185"
     },
     {
       "id": "CAV-013",
@@ -9348,7 +10478,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 0
-      }
+      },
+      "dependencies": "BUG-053; BUG-181"
     },
     {
       "id": "CAV-014",
@@ -9361,7 +10492,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 0
-      }
+      },
+      "dependencies": "BUG-186; DEC-158; DEC-352"
     },
     {
       "id": "CAV-015",
@@ -9374,7 +10506,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 1
-      }
+      },
+      "dependencies": "DEC-308"
     },
     {
       "id": "CAV-016",
@@ -9387,7 +10520,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 1
-      }
+      },
+      "dependencies": "BUG-204; DEC-217"
     },
     {
       "id": "CAV-017",
@@ -9400,7 +10534,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 0
-      }
+      },
+      "dependencies": "BUG-281"
     },
     {
       "id": "CAV-018",
@@ -9413,7 +10548,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 0
-      }
+      },
+      "dependencies": "BUG-207"
     },
     {
       "id": "CAV-019",
@@ -9426,7 +10562,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 1
-      }
+      },
+      "dependencies": "BUG-209"
     },
     {
       "id": "CAV-020",
@@ -9439,7 +10576,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 1
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "CAV-021",
@@ -9452,7 +10590,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 0
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "CAV-022",
@@ -9465,7 +10604,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 1
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "CAV-023",
@@ -9478,7 +10618,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 1
-      }
+      },
+      "dependencies": "DEC-355; DEC-362"
     },
     {
       "id": "CAV-024",
@@ -9491,7 +10632,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 1
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "CAV-025",
@@ -9504,7 +10646,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 2
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "CAV-026",
@@ -9517,7 +10660,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 1
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "CAV-027",
@@ -9530,7 +10674,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 4
-      }
+      },
+      "dependencies": "DEC-364"
     },
     {
       "id": "CAV-028",
@@ -9543,7 +10688,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 3
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "CAV-029",
@@ -9556,7 +10702,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 1
-      }
+      },
+      "dependencies": "DEC-365"
     },
     {
       "id": "CAV-030",
@@ -9569,7 +10716,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 2
-      }
+      },
+      "dependencies": "DEC-365"
     },
     {
       "id": "CAV-031",
@@ -9582,7 +10730,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 2
-      }
+      },
+      "dependencies": "DEC-366"
     },
     {
       "id": "CAV-037",
@@ -9595,7 +10744,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 4
-      }
+      },
+      "dependencies": "DEC-310"
     },
     {
       "id": "CAV-038",
@@ -9608,7 +10758,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 2
-      }
+      },
+      "dependencies": "DEC-313; DEC-384"
     },
     {
       "id": "CAV-039",
@@ -9621,7 +10772,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 3
-      }
+      },
+      "dependencies": "DEC-314; DEC-386"
     },
     {
       "id": "CAV-040",
@@ -9634,7 +10786,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 5
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "CAV-041",
@@ -9647,7 +10800,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 3
-      }
+      },
+      "dependencies": "DEC-065"
     },
     {
       "id": "CAV-042",
@@ -9660,7 +10814,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 3
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "CAV-043",
@@ -9673,7 +10828,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 4
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "CAV-044",
@@ -9686,7 +10842,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 5
-      }
+      },
+      "dependencies": "DEC-366"
     },
     {
       "id": "CAV-045",
@@ -9699,7 +10856,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 3
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "CAV-046",
@@ -9712,7 +10870,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 3
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "CAV-047",
@@ -9725,7 +10884,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 3
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "CAV-048",
@@ -9738,7 +10898,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 4
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "CAV-049",
@@ -9751,7 +10912,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 4
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "CAV-050",
@@ -9764,7 +10926,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 2
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "CAV-051",
@@ -9777,7 +10940,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 2
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "CAV-052",
@@ -9790,7 +10954,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 2
-      }
+      },
+      "dependencies": "DEC-406"
     },
     {
       "id": "CAV-053",
@@ -9803,7 +10968,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 4
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "CAV-054",
@@ -9816,7 +10982,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 4
-      }
+      },
+      "dependencies": "DEC-298; DEC-411; DEC-412"
     },
     {
       "id": "CAV-055",
@@ -9829,7 +10996,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 2
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "CAV-056",
@@ -9842,7 +11010,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 3
-      }
+      },
+      "dependencies": "DEC-414"
     },
     {
       "id": "CAV-057",
@@ -9855,7 +11024,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 4
-      }
+      },
+      "dependencies": "DEC-303"
     },
     {
       "id": "CAV-058",
@@ -9868,7 +11038,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 2
-      }
+      },
+      "dependencies": "DEC-129"
     },
     {
       "id": "CAV-059",
@@ -9881,7 +11052,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 2
-      }
+      },
+      "dependencies": "DEC-130"
     },
     {
       "id": "CAV-060",
@@ -9894,7 +11066,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 3
-      }
+      },
+      "dependencies": "DEC-131"
     },
     {
       "id": "CAV-061",
@@ -9907,7 +11080,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 4
-      }
+      },
+      "dependencies": "DEC-132; DEC-415"
     },
     {
       "id": "CAV-062",
@@ -9920,7 +11094,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 4
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "CAV-063",
@@ -9933,7 +11108,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 4
-      }
+      },
+      "dependencies": "DEC-067; DEC-388; DEC-409; DEC-422"
     },
     {
       "id": "CAV-064",
@@ -9946,7 +11122,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 4
-      }
+      },
+      "dependencies": "DEC-070"
     },
     {
       "id": "CAV-065",
@@ -9959,7 +11136,8 @@
         "tested": false,
         "pushed": true,
         "n_doc_refs": 6
-      }
+      },
+      "dependencies": "DEC-436; DEC-437"
     },
     {
       "id": "CAV-066",
@@ -9972,7 +11150,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 4
-      }
+      },
+      "dependencies": "DEC-422; DEC-437"
     },
     {
       "id": "CAV-067",
@@ -9985,7 +11164,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 4
-      }
+      },
+      "dependencies": "DEC-438"
     },
     {
       "id": "CAV-068",
@@ -9998,7 +11178,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 6
-      }
+      },
+      "dependencies": "DEC-439"
     },
     {
       "id": "CAV-069",
@@ -10011,7 +11192,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 2
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "CAV-070",
@@ -10024,7 +11206,8 @@
         "tested": false,
         "pushed": true,
         "n_doc_refs": 4
-      }
+      },
+      "dependencies": "-"
     },
     {
       "id": "CAV-071",
@@ -10037,7 +11220,8 @@
         "tested": false,
         "pushed": true,
         "n_doc_refs": 2
-      }
+      },
+      "dependencies": "DEC-410; DEC-441"
     },
     {
       "id": "CAV-072",
@@ -10050,7 +11234,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 0
-      }
+      },
+      "dependencies": "DEC-014"
     },
     {
       "id": "CAV-073",
@@ -10063,7 +11248,8 @@
         "tested": false,
         "pushed": false,
         "n_doc_refs": 0
-      }
+      },
+      "dependencies": "-"
     }
   ],
   "learnings": [
@@ -10718,191 +11904,191 @@
   ],
   "recent_commits": [
     {
+      "sha": "db53740d",
+      "subject": "Finnhub: company_news batch 17",
+      "author": "jeetmehta1991",
+      "rel_time": "3 minutes ago"
+    },
+    {
+      "sha": "7f880480",
+      "subject": "Finnhub: company_news batch 16",
+      "author": "jeetmehta1991",
+      "rel_time": "6 minutes ago"
+    },
+    {
+      "sha": "a8c6c1e7",
+      "subject": "Finnhub: company_news batch 15",
+      "author": "jeetmehta1991",
+      "rel_time": "9 minutes ago"
+    },
+    {
+      "sha": "e2eb6444",
+      "subject": "Stage 2 dashboard: 4-status (coded/wired/tested/pushed) per ID + Caveats + Learnings tabs",
+      "author": "jeetmehta1991",
+      "rel_time": "11 minutes ago"
+    },
+    {
       "sha": "dbd71cc6",
       "subject": "Finnhub: company_news batch 14",
       "author": "jeetmehta1991",
-      "rel_time": "23 seconds ago"
+      "rel_time": "12 minutes ago"
     },
     {
       "sha": "27cf71f5",
       "subject": "Finnhub: company_news batch 13",
       "author": "jeetmehta1991",
-      "rel_time": "3 minutes ago"
+      "rel_time": "15 minutes ago"
     },
     {
       "sha": "1d029ebf",
       "subject": "Finnhub: company_news batch 12",
       "author": "jeetmehta1991",
-      "rel_time": "6 minutes ago"
+      "rel_time": "18 minutes ago"
     },
     {
       "sha": "1108a963",
       "subject": "Stage 2 dashboard: NEW Pipeline tab (active BGs + queue + timeline)",
       "author": "jeetmehta1991",
-      "rel_time": "9 minutes ago"
+      "rel_time": "20 minutes ago"
     },
     {
       "sha": "95d650ac",
       "subject": "Finnhub: company_news batch 11",
       "author": "jeetmehta1991",
-      "rel_time": "9 minutes ago"
+      "rel_time": "21 minutes ago"
     },
     {
       "sha": "3ee5e22e",
       "subject": "Finnhub: company_news batch 10",
       "author": "jeetmehta1991",
-      "rel_time": "12 minutes ago"
+      "rel_time": "24 minutes ago"
     },
     {
       "sha": "d0f24185",
       "subject": "Finnhub: company_news batch 9",
       "author": "jeetmehta1991",
-      "rel_time": "15 minutes ago"
+      "rel_time": "27 minutes ago"
     },
     {
       "sha": "6517e0d7",
       "subject": "Pages workflow: deploy both dashboards + landing page",
       "author": "jeetmehta1991",
-      "rel_time": "15 minutes ago"
+      "rel_time": "27 minutes ago"
     },
     {
       "sha": "4598383b",
       "subject": "Finnhub: company_news batch 8",
       "author": "jeetmehta1991",
-      "rel_time": "18 minutes ago"
+      "rel_time": "29 minutes ago"
     },
     {
       "sha": "a82a3425",
       "subject": "Stage 2 project tracker dashboard (NEW)",
       "author": "jeetmehta1991",
-      "rel_time": "20 minutes ago"
+      "rel_time": "31 minutes ago"
     },
     {
       "sha": "5ac743cb",
       "subject": "Finnhub: company_news batch 7",
       "author": "jeetmehta1991",
-      "rel_time": "21 minutes ago"
+      "rel_time": "33 minutes ago"
     },
     {
       "sha": "fb9be6fb",
       "subject": "Quiver new-endpoints: spacs final (8 fetched)",
       "author": "jeetmehta1991",
-      "rel_time": "22 minutes ago"
+      "rel_time": "34 minutes ago"
     },
     {
       "sha": "07b6c3eb",
       "subject": "Quiver new-endpoints: housetrading final (7 fetched)",
       "author": "jeetmehta1991",
-      "rel_time": "23 minutes ago"
+      "rel_time": "34 minutes ago"
     },
     {
       "sha": "22e7f1dd",
       "subject": "Finnhub: company_news batch 6",
       "author": "jeetmehta1991",
-      "rel_time": "25 minutes ago"
+      "rel_time": "36 minutes ago"
     },
     {
       "sha": "72e8ac34",
       "subject": "Finnhub: company_news batch 5",
       "author": "jeetmehta1991",
-      "rel_time": "27 minutes ago"
+      "rel_time": "39 minutes ago"
     },
     {
       "sha": "2b2163f7",
       "subject": "Finnhub: company_news batch 4",
       "author": "jeetmehta1991",
-      "rel_time": "30 minutes ago"
+      "rel_time": "41 minutes ago"
     },
     {
       "sha": "979b7040",
       "subject": "Finnhub: company_news batch 3",
       "author": "jeetmehta1991",
-      "rel_time": "33 minutes ago"
+      "rel_time": "44 minutes ago"
     },
     {
       "sha": "f003bb0b",
       "subject": "Finnhub: company_news batch 2",
       "author": "jeetmehta1991",
-      "rel_time": "36 minutes ago"
+      "rel_time": "48 minutes ago"
     },
     {
       "sha": "fdb3f48d",
       "subject": "Finnhub: company_news batch 1",
       "author": "jeetmehta1991",
-      "rel_time": "39 minutes ago"
+      "rel_time": "51 minutes ago"
     },
     {
       "sha": "e31af775",
       "subject": "Dashboard API Usage tab: per-FIELD rows + Coding/Wiring status",
       "author": "jeetmehta1991",
-      "rel_time": "41 minutes ago"
+      "rel_time": "52 minutes ago"
     },
     {
       "sha": "05d25bd9",
       "subject": "Finnhub: earnings final (1936 fetched)",
       "author": "jeetmehta1991",
-      "rel_time": "42 minutes ago"
+      "rel_time": "54 minutes ago"
     },
     {
       "sha": "3575968d",
       "subject": "Finnhub: earnings batch 19",
       "author": "jeetmehta1991",
-      "rel_time": "43 minutes ago"
+      "rel_time": "55 minutes ago"
     },
     {
       "sha": "1bcfd6c6",
       "subject": "Finnhub: earnings batch 18",
       "author": "jeetmehta1991",
-      "rel_time": "46 minutes ago"
+      "rel_time": "58 minutes ago"
     },
     {
       "sha": "c4c4260f",
       "subject": "Finnhub: earnings batch 17",
       "author": "jeetmehta1991",
-      "rel_time": "49 minutes ago"
+      "rel_time": "61 minutes ago"
     },
     {
       "sha": "559efead",
       "subject": "Finnhub: earnings batch 16",
       "author": "jeetmehta1991",
-      "rel_time": "52 minutes ago"
+      "rel_time": "63 minutes ago"
     },
     {
       "sha": "8c464068",
       "subject": "Finnhub earnings batches: pre-pause state committed",
       "author": "jeetmehta1991",
-      "rel_time": "52 minutes ago"
-    },
-    {
-      "sha": "ed86bc4e",
-      "subject": "Finnhub: earnings batch 15",
-      "author": "jeetmehta1991",
-      "rel_time": "54 minutes ago"
-    },
-    {
-      "sha": "b8a7c2ef",
-      "subject": "Finnhub: earnings batch 14",
-      "author": "jeetmehta1991",
-      "rel_time": "57 minutes ago"
-    },
-    {
-      "sha": "9aeb9fc0",
-      "subject": "Finnhub: earnings batch 13",
-      "author": "jeetmehta1991",
-      "rel_time": "60 minutes ago"
-    },
-    {
-      "sha": "210dbc33",
-      "subject": "Finnhub: earnings batch 12",
-      "author": "jeetmehta1991",
-      "rel_time": "62 minutes ago"
+      "rel_time": "63 minutes ago"
     }
   ],
   "uncommitted": {
-    "count": 16,
+    "count": 90,
     "modified": 4,
     "added": 0,
-    "untracked": 12,
+    "untracked": 86,
     "deleted": 0,
     "files": [
       {
@@ -10923,47 +12109,343 @@
       },
       {
         "status": "??",
-        "path": "data_prefetch/finnhub/company_news/PVLA.parquet"
+        "path": "data_prefetch/finnhub/company_news/TMST.parquet"
       },
       {
         "status": "??",
-        "path": "data_prefetch/finnhub/company_news/PWR.parquet"
+        "path": "data_prefetch/finnhub/company_news/TMUS.parquet"
       },
       {
         "status": "??",
-        "path": "data_prefetch/finnhub/company_news/PXD.parquet"
+        "path": "data_prefetch/finnhub/company_news/TNDM.parquet"
       },
       {
         "status": "??",
-        "path": "data_prefetch/finnhub/company_news/PYPL.parquet"
+        "path": "data_prefetch/finnhub/company_news/TNET.parquet"
       },
       {
         "status": "??",
-        "path": "data_prefetch/finnhub/company_news/Q.parquet"
+        "path": "data_prefetch/finnhub/company_news/TNGX.parquet"
       },
       {
         "status": "??",
-        "path": "data_prefetch/finnhub/company_news/QBTS.parquet"
+        "path": "data_prefetch/finnhub/company_news/TNK.parquet"
       },
       {
         "status": "??",
-        "path": "data_prefetch/finnhub/company_news/QCOM.parquet"
+        "path": "data_prefetch/finnhub/company_news/TNP.parquet"
       },
       {
         "status": "??",
-        "path": "data_prefetch/finnhub/company_news/QMCO.parquet"
+        "path": "data_prefetch/finnhub/company_news/TNXP.parquet"
       },
       {
         "status": "??",
-        "path": "data_prefetch/finnhub/company_news/QNST.parquet"
+        "path": "data_prefetch/finnhub/company_news/TOST.parquet"
       },
       {
         "status": "??",
-        "path": "data_prefetch/finnhub/company_news/QNTM.parquet"
+        "path": "data_prefetch/finnhub/company_news/TPB.parquet"
       },
       {
         "status": "??",
-        "path": "data_prefetch/finnhub/company_news/QQQ.parquet"
+        "path": "data_prefetch/finnhub/company_news/TPC.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/TPG.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/TPH.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/TPL.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/TPR.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/TPST.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/TREE.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/TRGP.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/TRI.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/TRMB.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/TRMD.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/TRNO.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/TROW.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/TRQ.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/TRU.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/TRV.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/TRVI.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/TSAT.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/TSCO.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/TSEM.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/TSHA.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/TSLA.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/TSN.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/TT.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/TTAN.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/TTD.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/TTI.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/TTMI.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/TTWO.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/TVTX.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/TW.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/TWI.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/TWLO.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/TWST.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/TWTR.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/TXG.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/TXN.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/TXT.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/TYL.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/TYRA.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/U.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/UA.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/UAA.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/UAL.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/UAMY.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/UAN.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/UBER.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/UDR.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/UEC.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/UFPT.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/UHAL.B.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/UHS.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/UI.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/ULS.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/ULTA.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/UMAC.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/UNFI.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/UNH.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/UNM.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/UNP.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/UPB.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/UPC.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/UPS.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/UPST.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/URGN.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/URI.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/USAK.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/USAP.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/USAR.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/USAS.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/USAU.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/USB.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/USFD.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/USLM.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/finnhub/company_news/USM.parquet"
       },
       {
         "status": "??",

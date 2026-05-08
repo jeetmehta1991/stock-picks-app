@@ -324,6 +324,41 @@ def id_status(id_str: str, corpora: dict) -> dict:
     }
 
 
+def extract_dependencies(text: str) -> list[str]:
+    """Extract DEC/BUG/INV/CAV/F references from a string.
+
+    Patterns recognized: 'SUPERSEDED_BY DEC-422', 'BLOCKED_ON DEC-298',
+    'Joint DEC-491', 'BUG-095', and any plain ID mention.
+    """
+    if not text:
+        return []
+    pattern = re.compile(r"\b(DEC-\d+|BUG-\d+|INV-\d+|CAV-\d+|L-\d+|F-\d+)\b")
+    return sorted(set(pattern.findall(text)))
+
+
+def parse_sprint_dec_map(eng_register_path: Path) -> dict[str, list[str]]:
+    """Walk ENGINEERING_REGISTER.md Sprint sections, return
+    {DEC-NNN: [sprint_short_names]}.
+
+    Sprint header pattern: '### Sprint X - Title'.
+    """
+    if not eng_register_path.exists():
+        return {}
+    text = eng_register_path.read_text(encoding="utf-8", errors="ignore")
+    parts = re.split(r"^### (Sprint [^\n]+)$", text, flags=re.MULTILINE)
+    # parts[0] = preamble, then alternating (title, body)
+    out: dict[str, set] = {}
+    for i in range(1, len(parts), 2):
+        title = parts[i].strip()
+        body = parts[i + 1] if i + 1 < len(parts) else ""
+        # Short name: first 30 chars of title
+        short = title[:30]
+        for m in re.finditer(r"DEC-(\d+)", body):
+            dec_id = f"DEC-{m.group(1)}"
+            out.setdefault(dec_id, set()).add(short)
+    return {k: sorted(v) for k, v in out.items()}
+
+
 def parse_caveats(path: Path) -> list[dict]:
     """Parse LIMITATIONS_CAVEATS_ASSUMPTIONS.md ### CAV-NNN sections."""
     if not path.exists():
@@ -485,6 +520,11 @@ def main() -> int:
     cavs = parse_caveats(REPO_ROOT / "LIMITATIONS_CAVEATS_ASSUMPTIONS.md")
     lessons = parse_learnings(REPO_ROOT / "LEARNINGS.md")
 
+    # Sprint mapping (DEC-NNN -> [sprint names]) from ENGINEERING_REGISTER.md
+    print("Parsing sprint x decision map ...")
+    sprint_map = parse_sprint_dec_map(REPO_ROOT / "ENGINEERING_REGISTER.md")
+    print(f"  decisions with sprint assignment: {len(sprint_map)}")
+
     # Attach 4-status (coded / wired / tested / pushed) to each
     print("Computing per-ID status (coded/wired/tested/pushed)...")
     for d in decisions:
@@ -493,9 +533,10 @@ def main() -> int:
         short_id = full_id.replace("DECISION-", "DEC-")
         d["status_grep"] = id_status(short_id, corpora)
         d["short_id"] = short_id
+        d["sprint"] = "; ".join(sprint_map.get(short_id, [])) or "-"
+        d["dependencies"] = "; ".join(extract_dependencies(d["title"] + " " + d["status"])) or "-"
     for b in bugs:
         full_id = b["id"]
-        # Normalize BUG-1 -> BUG-001
         m = re.match(r"BUG-(\d+)$", full_id)
         if m:
             short = f"BUG-{int(m.group(1)):03d}"
@@ -503,10 +544,15 @@ def main() -> int:
             short = full_id
         b["status_grep"] = id_status(short, corpora)
         b["short_id"] = short
+        # BUG already has sprint_context column from BUG_REGISTER
+        b["sprint"] = b.get("sprint_context", "-") or "-"
+        b["dependencies"] = "; ".join(extract_dependencies(b.get("linked_decisions", "") + " " + b.get("title", ""))) or "-"
     for i in invs:
         i["status_grep"] = id_status(i["id"], corpora)
+        i["dependencies"] = "; ".join(extract_dependencies(i.get("title", "") + " " + i.get("summary", ""))) or "-"
     for c in cavs:
         c["status_grep"] = id_status(c["id"], corpora)
+        c["dependencies"] = "; ".join(extract_dependencies(c.get("title", "") + " " + c.get("impact", ""))) or "-"
     # L-NNN don't need status grep (they're principles, not code)
 
     snapshot = {

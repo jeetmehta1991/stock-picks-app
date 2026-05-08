@@ -101,7 +101,7 @@ per CHECKLIST #77 - never reads from memory.
       Pushed = referenced in any git commit subject (=&gt; merged).
     </p>
     <table id="tbl-decisions" class="display compact" style="width:100%">
-      <thead><tr><th>ID</th><th>Title</th><th>Doc Status</th><th>Coded</th><th>Wired</th><th>Tested</th><th>Pushed</th><th>Theme</th></tr></thead>
+      <thead><tr><th>ID</th><th>Title</th><th>Doc Status</th><th>Coded</th><th>Wired</th><th>Tested</th><th>Pushed</th><th>Sprint</th><th>Dependencies</th><th>Theme</th></tr></thead>
     </table>
   </section>
 
@@ -112,7 +112,7 @@ per CHECKLIST #77 - never reads from memory.
       <input id="bug-filter" placeholder="Filter ID / title / linked decisions..." size="50">
     </div>
     <table id="tbl-bugs" class="display compact" style="width:100%">
-      <thead><tr><th>Bug ID</th><th>Title</th><th>Coded</th><th>Wired</th><th>Tested</th><th>Pushed</th><th>Linked Decisions</th></tr></thead>
+      <thead><tr><th>Bug ID</th><th>Title</th><th>Coded</th><th>Wired</th><th>Tested</th><th>Pushed</th><th>Sprint</th><th>Dependencies</th></tr></thead>
     </table>
   </section>
 
@@ -129,7 +129,7 @@ per CHECKLIST #77 - never reads from memory.
       </select>
     </div>
     <table id="tbl-invs" class="display compact" style="width:100%">
-      <thead><tr><th>INV ID</th><th>Title</th><th>Doc Status</th><th>Coded</th><th>Wired</th><th>Tested</th><th>Pushed</th></tr></thead>
+      <thead><tr><th>INV ID</th><th>Title</th><th>Doc Status</th><th>Coded</th><th>Wired</th><th>Tested</th><th>Pushed</th><th>Dependencies</th></tr></thead>
     </table>
   </section>
 
@@ -146,7 +146,7 @@ per CHECKLIST #77 - never reads from memory.
       </select>
     </div>
     <table id="tbl-caveats" class="display compact" style="width:100%">
-      <thead><tr><th>CAV ID</th><th>Title</th><th>Status</th><th>Coded</th><th>Wired</th><th>Tested</th><th>Pushed</th><th>Impact</th></tr></thead>
+      <thead><tr><th>CAV ID</th><th>Title</th><th>Status</th><th>Coded</th><th>Wired</th><th>Tested</th><th>Pushed</th><th>Dependencies</th><th>Impact</th></tr></thead>
     </table>
   </section>
 
@@ -301,12 +301,14 @@ const decRows = D.decisions.map(d => {
     statusCheck(sg.wired),
     statusCheck(sg.tested),
     statusCheck(sg.pushed),
+    d.sprint || '-',
+    `<span style="font-size:11px">${d.dependencies || '-'}</span>`,
     d.theme,
   ];
 });
 const decTable = $('#tbl-decisions').DataTable({
   data: decRows, pageLength: 50, order: [[0, 'asc']],
-  columns: [{type:'html'}, {}, {type: 'html'}, {type:'html'}, {type:'html'}, {type:'html'}, {type:'html'}, {}],
+  columns: [{type:'html'}, {}, {type: 'html'}, {type:'html'}, {type:'html'}, {type:'html'}, {type:'html'}, {}, {type:'html'}, {}],
 });
 $('#dec-filter').on('keyup', function () { decTable.search(this.value).draw(); });
 $('#dec-status-filter').on('change', function () { decTable.column(2).search(this.value).draw(); });
@@ -322,12 +324,13 @@ const bugRows = D.bugs.map(b => {
     statusCheck(sg.wired),
     statusCheck(sg.tested),
     statusCheck(sg.pushed),
-    b.linked_decisions,
+    b.sprint || b.sprint_context || '-',
+    `<span style="font-size:11px">${b.dependencies || b.linked_decisions || '-'}</span>`,
   ];
 });
 const bugTable = $('#tbl-bugs').DataTable({
   data: bugRows, pageLength: 50, order: [[0, 'asc']],
-  columns: [{type:'html'}, {}, {type:'html'}, {type:'html'}, {type:'html'}, {type:'html'}, {}],
+  columns: [{type:'html'}, {}, {type:'html'}, {type:'html'}, {type:'html'}, {type:'html'}, {}, {type:'html'}],
 });
 $('#bug-filter').on('keyup', function () { bugTable.search(this.value).draw(); });
 
@@ -337,11 +340,12 @@ const invRows = D.investigations.map(i => {
   return [
     `<code>${i.id}</code>`, i.title, badge(i.status),
     statusCheck(sg.coded), statusCheck(sg.wired), statusCheck(sg.tested), statusCheck(sg.pushed),
+    `<span style="font-size:11px">${i.dependencies || '-'}</span>`,
   ];
 });
 const invTable = $('#tbl-invs').DataTable({
   data: invRows, pageLength: 50, order: [[0, 'asc']],
-  columns: [{type:'html'}, {}, {type: 'html'}, {type:'html'}, {type:'html'}, {type:'html'}, {type:'html'}],
+  columns: [{type:'html'}, {}, {type: 'html'}, {type:'html'}, {type:'html'}, {type:'html'}, {type:'html'}, {type:'html'}],
 });
 $('#inv-filter').on('keyup', function () { invTable.search(this.value).draw(); });
 $('#inv-status-filter').on('change', function () { invTable.column(2).search(this.value).draw(); });
@@ -353,12 +357,13 @@ const cavRows = caveats.map(c => {
   return [
     `<code>${c.id}</code>`, c.title, badge(c.status),
     statusCheck(sg.coded), statusCheck(sg.wired), statusCheck(sg.tested), statusCheck(sg.pushed),
+    `<span style="font-size:11px">${c.dependencies || '-'}</span>`,
     c.impact,
   ];
 });
 const cavTable = $('#tbl-caveats').DataTable({
   data: cavRows, pageLength: 50, order: [[0, 'asc']],
-  columns: [{type:'html'}, {}, {type:'html'}, {type:'html'}, {type:'html'}, {type:'html'}, {type:'html'}, {}],
+  columns: [{type:'html'}, {}, {type:'html'}, {type:'html'}, {type:'html'}, {type:'html'}, {type:'html'}, {type:'html'}, {}],
 });
 $('#cav-filter').on('keyup', function () { cavTable.search(this.value).draw(); });
 $('#cav-status-filter').on('change', function () { cavTable.column(2).search(this.value).draw(); });
