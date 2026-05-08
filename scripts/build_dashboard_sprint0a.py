@@ -562,11 +562,70 @@ ENDPOINTS = [
 ]
 
 
+def load_codebase_text() -> tuple[str, str]:
+    """Return (production_text, total_text) for field-wiring grep.
+
+    production_text: backtest/data + engine + signals + results (active code path)
+    total_text: all of backtest/ + scripts/ (anywhere coded)
+    """
+    prod_parts = []
+    total_parts = []
+    for sub in ("backtest/data", "backtest/engine", "backtest/signals", "backtest/results"):
+        p = Path(sub)
+        if not p.exists():
+            continue
+        for f in p.rglob("*.py"):
+            try:
+                prod_parts.append(f.read_text(encoding="utf-8", errors="ignore"))
+            except Exception:
+                continue
+    backtest_root = Path("backtest")
+    if backtest_root.exists():
+        for f in backtest_root.rglob("*.py"):
+            try:
+                total_parts.append(f.read_text(encoding="utf-8", errors="ignore"))
+            except Exception:
+                continue
+    scripts_root = Path("scripts")
+    if scripts_root.exists():
+        for f in scripts_root.rglob("*.py"):
+            try:
+                total_parts.append(f.read_text(encoding="utf-8", errors="ignore"))
+            except Exception:
+                continue
+    return "\n".join(prod_parts), "\n".join(total_parts)
+
+
+def field_wiring_status(field: str, prod: str, total: str) -> dict:
+    """Return {coded, wired, n_refs} for a field name.
+
+    coded  = referenced anywhere (backtest/ + scripts/)
+    wired  = referenced in backtest/{data,engine,signals,results}/ (active path)
+    n_refs = approximate reference count (in quoted-string form)
+    """
+    if not field or len(field) < 2:
+        return {"coded": False, "wired": False, "n_refs": 0}
+    # Match common quotation patterns to avoid false positives on substrings
+    patterns = [f'"{field}"', f"'{field}'", f'["{field}"]', f"['{field}']"]
+    prod_count = sum(prod.count(p) for p in patterns)
+    total_count = sum(total.count(p) for p in patterns)
+    return {
+        "coded": total_count > 0,
+        "wired": prod_count > 0,
+        "n_refs": total_count,
+    }
+
+
 def main() -> int:
     print(f"=== Building Sprint 0A dashboard data ===")
     universe = load_universe()
     universe_size = len(universe)
     print(f"Master Universe: {universe_size} tickers")
+
+    print("Loading codebase text for field-wiring grep ...")
+    prod_text, total_text = load_codebase_text()
+    print(f"  production code: {len(prod_text)} chars")
+    print(f"  total code: {len(total_text)} chars")
 
     # PRIMARY catalog source: API_ENDPOINT_INVENTORY.md (per CHECKLIST #77)
     # Filesystem walk is SUPPLEMENTARY - provides files/rows/schema for
@@ -670,6 +729,15 @@ def main() -> int:
         ep_data["use_case"] = ep_meta.get("use_case", "-")
         ep_data["stage_phase"] = ep_meta.get("stage", "-")
         ep_data["criticality"] = ep_meta.get("criticality", "-")
+
+        # Per-field coding/wiring status (for API Usage / Stage tab field-level rows)
+        fields_for_audit = ep_data.get("unique_columns") or ep_data.get("columns") or []
+        field_statuses = []
+        for f in fields_for_audit:
+            status = field_wiring_status(f, prod_text, total_text)
+            field_statuses.append({"field": f, **status})
+        ep_data["field_statuses"] = field_statuses
+
         snapshot["endpoints"].append(ep_data)
         print(f"  {api}.{endpoint}: {ep_data.get('coverage_pct', '-')}% ({ep_data.get('files_count', '-')} files, status={ep_data['status']})")
 
