@@ -157,11 +157,21 @@
   </section>
 
   <section id="api-usage" class="panel">
-    <h2>API Usage / Stage Mapping</h2>
-    <p>Each API's role in the system: what signals it provides, which Phase/Stage it powers, criticality.</p>
+    <h2>API / Endpoint Usage / Stage Mapping</h2>
+    <p>Per-endpoint role: signals provided, Phase/Stage powered, criticality. Sortable + searchable.</p>
+    <div class="filter-bar">
+      <input id="usage-filter" placeholder="Filter by API, endpoint, stage, or use-case..." size="50">
+      <select id="usage-criticality-filter">
+        <option value="">All criticalities</option>
+        <option value="P0">P0 (critical)</option>
+        <option value="P1">P1 (high)</option>
+        <option value="P2">P2 (medium)</option>
+        <option value="P3">P3 (low)</option>
+      </select>
+    </div>
     <table id="tbl-usage" class="display compact" style="width:100%">
       <thead><tr>
-        <th>API</th><th>Use case</th><th>Stage</th><th>Criticality</th><th>Endpoints OK</th><th>Total files</th>
+        <th>API</th><th>Endpoint</th><th>Use case</th><th>Stage</th><th>Criticality</th><th>Coverage %</th><th>Files</th>
       </tr></thead>
     </table>
   </section>
@@ -296,23 +306,28 @@ D.endpoints.forEach(ep => {statusCounts[ep.status || 'EMPTY']++;});
   if (el) el.textContent = statusCounts[s.toUpperCase()];
 });
 
-// API Usage / Stage mapping table
-const useCases = D.api_use_cases || {};
-const usageRows = Object.entries(useCases).map(([api, info]) => {
-  const apiSummary = (D.api_summary || {})[api] || {endpoints: 0, ok_endpoints: 0, total_files: 0};
+// API / Endpoint Usage / Stage mapping table — endpoint-level
+function critBadge(c) {
+  return `<span class="badge ${c === 'P0' ? 'badge-low' : c === 'P1' ? 'badge-partial' : c === 'P2' ? 'badge-empty' : 'badge-empty'}">${c || '-'}</span>`;
+}
+const usageRows = D.endpoints.map(ep => {
+  const cov = ep.available_coverage_pct !== undefined ? ep.available_coverage_pct : (ep.coverage_pct !== undefined ? ep.coverage_pct : '-');
   return [
-    api,
-    info.use_case || '-',
-    info.stage || '-',
-    `<span class="badge ${info.criticality === 'P0' ? 'badge-low' : info.criticality === 'P1' ? 'badge-partial' : 'badge-empty'}">${info.criticality || '-'}</span>`,
-    `${apiSummary.ok_endpoints} / ${apiSummary.endpoints}`,
-    apiSummary.total_files.toLocaleString(),
+    ep.api,
+    ep.endpoint,
+    ep.use_case || '-',
+    ep.stage_phase || '-',
+    critBadge(ep.criticality),
+    cov === '-' ? '-' : `<span class="pct-cell ${pctClass(ep.status)}">${cov}%</span>`,
+    ep.files_count !== undefined ? ep.files_count : (ep.row_count !== undefined ? `${ep.row_count} rows` : '-'),
   ];
 });
-$('#tbl-usage').DataTable({
-  data: usageRows, pageLength: 30, order: [[3,'asc']],
-  columns: [{},{},{},{type:'html'},{},{}],
+const usageTable = $('#tbl-usage').DataTable({
+  data: usageRows, pageLength: 30, order: [[4,'asc']],
+  columns: [{},{},{},{},{type:'html'},{type:'html'},{}],
 });
+$('#usage-filter').on('keyup', function () { usageTable.search(this.value).draw(); });
+$('#usage-criticality-filter').on('change', function () { usageTable.column(4).search(this.value).draw(); });
 
 // Attention table - endpoints with available coverage < 80%
 const attentionRows = D.endpoints

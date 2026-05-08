@@ -110,8 +110,106 @@ def scan_global_file(path: Path) -> dict:
 # tickers Polygon recognizes; Wikipedia = tickers with Wikipedia page)
 # show as 100% when fully fetched against their realistic ceiling.
 # None means "use raw 1937 universe" (default).
-# API use-case + stage mapping (per owner directive 2026-05-08:
-# "add in dashboard how each api will be used and in what stage")
+# Endpoint-level use-case + stage mapping (per owner directive 2026-05-08
+# afternoon: "API usage and stage mapping, I need for each endpoint")
+# Format: "{api}.{endpoint}" -> {use_case, stage, criticality}
+ENDPOINT_USE_CASES = {
+    # Polygon Stocks Starter
+    "polygon.ohlcv": {"use_case": "Core daily OHLCV foundation for ALL strategies (Layer 1 baseline + layered roster ~108-133 classes per F-002)", "stage": "Phase 1A baseline", "criticality": "P0"},
+    "polygon.news": {"use_case": "Per-ticker article-level news + per-ticker insights sentiment overlay (multi-ticker articles split correctly)", "stage": "Phase 1B sentiment overlay", "criticality": "P1"},
+    "polygon.financials": {"use_case": "Quarterly financials (filing_date + period_of_report_date) for fundamentals strategies + value-tilt screening", "stage": "Phase 1B fundamental overlay", "criticality": "P1"},
+    "polygon.events": {"use_case": "Ticker-change events for survivorship + symbology resolution", "stage": "Phase 1A backtest data integrity", "criticality": "P1"},
+    "polygon.reference": {"use_case": "Sector / market_cap / SIC / IPO date reference (PIT for confidence_tier sizing + sector classification)", "stage": "Phase 1A baseline", "criticality": "P0"},
+    "polygon.reference_extended": {"use_case": "Extended reference (FIGI cross-source ID, total_employees, description for LLM agents, address, branding)", "stage": "Phase 1B agent context", "criticality": "P2"},
+    "polygon.dividends_full": {"use_case": "Full historical dividend events for dividend-yield strategies + ex-div date proximity signal", "stage": "Phase 1B+ overlay", "criticality": "P2"},
+    "polygon.splits_full": {"use_case": "Full split history for OHLCV split-adjustment validation + post-split anomaly strategies", "stage": "Phase 1A data integrity", "criticality": "P1"},
+    "polygon.ipos_full": {"use_case": "IPO calendar for T2 universe construction + post-IPO anomaly strategies", "stage": "Phase 1A T2 universe + Phase 1B overlay", "criticality": "P1"},
+    # Polygon Indices Basic
+    "polygon_indices.aggs": {"use_case": "Direct broad-market regime classification (NDX, COMP working; VIX/SPX/DJI/RUT license-gated)", "stage": "Phase 1A regime classifier (alt source)", "criticality": "P2"},
+    # Polygon Forex Basic
+    "polygon_forex.aggs": {"use_case": "Native FX pairs for DXY computation + risk-on/off via JPY/CHF/EM crosses", "stage": "Phase 1A regime + Phase 1B FX overlay", "criticality": "P1"},
+    # Polygon Futures Basic
+    "polygon_futures.aggs": {"use_case": "Term-structure signals (VX curve, treasury curve, contango/backwardation) - deferred per-contract dated logic", "stage": "Phase 1C+", "criticality": "P2"},
+    # Polygon Economy
+    "polygon_economy.inflation": {"use_case": "CPI alternative source (cross-check FRED CPIAUCSL)", "stage": "Phase 1A regime", "criticality": "P2"},
+    "polygon_economy.inflation_expectations": {"use_case": "Forward inflation expectations (1y/5y/10y/30y models)", "stage": "Phase 1A regime", "criticality": "P1"},
+    "polygon_economy.treasury_yields": {"use_case": "Treasury yields with daily granularity (alternative to FRED)", "stage": "Phase 1A regime", "criticality": "P1"},
+    # Polygon Benzinga
+    "polygon_benzinga.analyst_insights": {"use_case": "Per-analyst rating actions + price targets + insight reasoning", "stage": "Phase 1B agent overlay", "criticality": "P1"},
+    "polygon_benzinga.ratings": {"use_case": "Analyst rating history (recommendation drift over time)", "stage": "Phase 1B agent overlay", "criticality": "P1"},
+    "polygon_benzinga.earnings": {"use_case": "Earnings calendar + actual-vs-estimate surprise", "stage": "Phase 1B PEAD strategies", "criticality": "P1"},
+    "polygon_benzinga.guidance": {"use_case": "Company forward guidance (raised/lowered/affirmed)", "stage": "Phase 1B post-guidance reaction", "criticality": "P1"},
+    "polygon_benzinga.firm_details": {"use_case": "Analyst firm metadata (rank, accuracy track record)", "stage": "Phase 1B analyst-quality weighting", "criticality": "P2"},
+    # Polygon Indicators
+    "polygon_indicators.sma_50": {"use_case": "Cross-validation of locally-computed SMA50 vs Polygon precomputed", "stage": "Phase 1A signal validation", "criticality": "P2"},
+    "polygon_indicators.sma_200": {"use_case": "Cross-validation of SMA200 + golden/death cross signals", "stage": "Phase 1A signal validation", "criticality": "P2"},
+    "polygon_indicators.ema_20": {"use_case": "Cross-validation of EMA20 (short-term trend)", "stage": "Phase 1A signal validation", "criticality": "P2"},
+    "polygon_indicators.ema_50": {"use_case": "Cross-validation of EMA50 (medium-term trend)", "stage": "Phase 1A signal validation", "criticality": "P2"},
+    "polygon_indicators.rsi_14": {"use_case": "Cross-validation of RSI(14) momentum oscillator", "stage": "Phase 1A signal validation", "criticality": "P2"},
+    "polygon_indicators.macd": {"use_case": "Cross-validation of MACD(12/26/9) trend-momentum", "stage": "Phase 1A signal validation", "criticality": "P2"},
+    # Quiver Trader
+    "quiver.congressional": {"use_case": "Congressional trade signals (smart_money composite); House+Senate aggregate", "stage": "Phase 1A baseline (smart_money)", "criticality": "P0"},
+    "quiver.senatetrading": {"use_case": "Senate-only filing-trade signal (chamber-specific weighting)", "stage": "Phase 1B refined smart-money", "criticality": "P1"},
+    "quiver.housetrading": {"use_case": "House-only filing-trade signal (chamber-specific weighting)", "stage": "Phase 1B refined smart-money", "criticality": "P1"},
+    "quiver.spacs": {"use_case": "SPAC mention timeline (SPAC-specific universe + sentiment)", "stage": "Phase 1B SPAC overlay", "criticality": "P2"},
+    "quiver.insider": {"use_case": "Per-ticker SEC Form 4 insider transactions (smart_money insider component)", "stage": "Phase 1A baseline", "criticality": "P0"},
+    "quiver.institutional": {"use_case": "Per-ticker SEC 13F snapshots (smart_money institutional component)", "stage": "Phase 1A baseline", "criticality": "P0"},
+    "quiver.gov_contracts": {"use_case": "Quarterly federal contract awards (Qtr+Year aggregate; daily-grain via USAspending pending)", "stage": "Phase 1A baseline", "criticality": "P1"},
+    "quiver.lobbying": {"use_case": "Lobbying activity (issue-specific dollar amounts)", "stage": "Phase 1B lobbying overlay", "criticality": "P2"},
+    "quiver.wallstreetbets": {"use_case": "WSB mention/sentiment time series (retail attention)", "stage": "Phase 1B retail overlay", "criticality": "P2"},
+    "quiver.wikipedia_mirror": {"use_case": "DEPRECATED - use canonical wikipedia.pageviews instead", "stage": "DEPRECATED", "criticality": "skip"},
+    "quiver.offexchange": {"use_case": "FINRA dark-pool short volume + dark-pool index (DPI) per ticker", "stage": "Phase 1B dark-pool overlay", "criticality": "P1"},
+    "quiver.topshareholders": {"use_case": "Top 10 institutional shareholders snapshot (no PIT history)", "stage": "Phase 1B+ context (current snapshot)", "criticality": "P3"},
+    "quiver.etfholdings": {"use_case": "Per-ticker ETF inclusion list + % weight (no PIT)", "stage": "Phase 1B ETF flow proxy", "criticality": "P2"},
+    "quiver.patentmomentum_bulk": {"use_case": "Patent grant momentum (bulk; through 2022)", "stage": "Phase 1B+ innovation signal", "criticality": "P2"},
+    "quiver.corporatedonors_bulk": {"use_case": "Corporate political donations (PIT cutoff via TransactionDate)", "stage": "Phase 1B+ political-bias overlay", "criticality": "P3"},
+    "quiver.quivernews_bulk": {"use_case": "Quiver headline feed (general market news; not per-ticker)", "stage": "Phase 1B agent context", "criticality": "P3"},
+    "quiver.sec13fchanges_bulk": {"use_case": "Quarterly 13F position changes (delta over time per fund x ticker)", "stage": "Phase 1A baseline (smart_money)", "criticality": "P0"},
+    # SEC EDGAR
+    "sec_edgar.10_K": {"use_case": "Annual report filing-event metadata (date + accession; line items via xbrl_companyfacts)", "stage": "Phase 1B fundamentals + filing-event overlay", "criticality": "P1"},
+    "sec_edgar.10_Q": {"use_case": "Quarterly report filing-event metadata", "stage": "Phase 1B fundamentals + filing-event overlay", "criticality": "P1"},
+    "sec_edgar.8_K": {"use_case": "Material event filings (acquisitions, results, officer changes) - catalyst signal", "stage": "Phase 1B catalyst-event overlay", "criticality": "P1"},
+    "sec_edgar.form_4": {"use_case": "Insider transaction filings (SEC official; cross-validate Quiver insider)", "stage": "Phase 1B insider overlay", "criticality": "P1"},
+    "sec_edgar.DEF_14A": {"use_case": "Proxy statement filings (governance + compensation context)", "stage": "Phase 1B+ governance overlay", "criticality": "P3"},
+    "sec_edgar.S_1": {"use_case": "IPO registration filings (T2 universe pre-listing)", "stage": "Phase 1B+ IPO overlay", "criticality": "P3"},
+    "sec_edgar.S_1_A": {"use_case": "IPO amendments", "stage": "Phase 1B+ IPO overlay", "criticality": "P3"},
+    "sec_edgar.SC_13D": {"use_case": "Activist 5%+ holder filings (catalyst signal)", "stage": "Phase 1B+ activist overlay", "criticality": "P2"},
+    "sec_edgar.SC_13D_A": {"use_case": "Activist holder amendments", "stage": "Phase 1B+ activist overlay", "criticality": "P2"},
+    "sec_edgar.SC_13G": {"use_case": "Passive 5%+ holder filings", "stage": "Phase 1B+ ownership overlay", "criticality": "P2"},
+    "sec_edgar.SC_13G_A": {"use_case": "Passive holder amendments", "stage": "Phase 1B+ ownership overlay", "criticality": "P2"},
+    "sec_edgar.xbrl_companyfacts": {"use_case": "STRUCTURED financial line items (revenue/EPS/cash flow as time series; replaces Polygon Stocks Plus Filings + Fundamentals)", "stage": "Phase 1B fundamentals overlay", "criticality": "P0"},
+    # FRED / ALFRED
+    "fred.observations": {"use_case": "90+ macro series (yield curve / inflation / employment / sector employment / FX rates) for regime classification", "stage": "Phase 1A regime classifier", "criticality": "P0"},
+    "alfred.vintage_observations": {"use_case": "Revision-aware FRED data (PIT-correct macro replay)", "stage": "Phase 1C+ revision-aware backtest", "criticality": "P3"},
+    # AAII / CNN F&G
+    "aaii.weekly_sentiment": {"use_case": "AAII weekly bullish/bearish % (contrarian signal at extremes)", "stage": "Phase 1A regime classifier", "criticality": "P1"},
+    "cnn_fg.daily": {"use_case": "CNN F&G composite + 7 sub-components (VIX/breadth/momentum/etc.)", "stage": "Phase 1A regime classifier", "criticality": "P1"},
+    # CFTC
+    "cftc.tff_disagg_combined": {"use_case": "Trader-in-Financial-Futures + Disaggregated commodity positioning (latest combined)", "stage": "Phase 1A regime + Phase 1B positioning overlay", "criticality": "P1"},
+    "cftc.extended": {"use_case": "Legacy + supplemental CFTC datasets (futures-only, supplemental CIT)", "stage": "Phase 1B positioning overlay", "criticality": "P2"},
+    # Apewisdom / Wikipedia / pytrends
+    "apewisdom.global": {"use_case": "Top-trending stocks across all subreddits (snapshot, forward-only)", "stage": "Phase 1B retail overlay", "criticality": "P2"},
+    "apewisdom.subreddits": {"use_case": "Subreddit-specific timelines (WSB / stocks / investing / options / etc.)", "stage": "Phase 1B retail overlay", "criticality": "P2"},
+    "wikipedia.pageviews": {"use_case": "Per-ticker Wikipedia daily pageviews (attention spike signal)", "stage": "Phase 1B+ attention overlay", "criticality": "P2"},
+    "pytrends.interest_over_time": {"use_case": "Per-ticker Google Trends search-volume index (search-attention signal)", "stage": "Phase 1B+ attention overlay", "criticality": "P2"},
+    # Finnhub
+    "finnhub.quote": {"use_case": "Real-time delayed quote (current price snapshot)", "stage": "Phase 1B context (delayed)", "criticality": "P3"},
+    "finnhub.profile2": {"use_case": "Company profile (industry classification cross-source vs Polygon)", "stage": "Phase 1A reference cross-check", "criticality": "P3"},
+    "finnhub.peers": {"use_case": "Per-ticker peer companies (sector-relative strategies)", "stage": "Phase 1B sector-relative overlay", "criticality": "P2"},
+    "finnhub.insider_transactions": {"use_case": "Insider transactions (cross-source vs Quiver insider + SEC Form 4)", "stage": "Phase 1B insider overlay", "criticality": "P1"},
+    "finnhub.insider_sentiment": {"use_case": "Finnhub-derived insider sentiment composite (mspr score)", "stage": "Phase 1B insider sentiment overlay", "criticality": "P1"},
+    "finnhub.recommendation": {"use_case": "Analyst recommendation distribution (buy/hold/sell counts over time)", "stage": "Phase 1B agent overlay", "criticality": "P1"},
+    "finnhub.earnings": {"use_case": "EPS surprise time series (PEAD signal)", "stage": "Phase 1B PEAD strategies", "criticality": "P1"},
+    "finnhub.company_news": {"use_case": "Per-ticker company news (cross-source confirm vs Polygon news)", "stage": "Phase 1B sentiment overlay", "criticality": "P2"},
+    "finnhub.financials_reported": {"use_case": "Reported financial statements (cross-source vs SEC XBRL)", "stage": "Phase 1B fundamentals overlay", "criticality": "P2"},
+    "finnhub.metric": {"use_case": "Per-ticker financial ratios (PE/PB/ROE/etc.)", "stage": "Phase 1B fundamental ratios", "criticality": "P1"},
+    "finnhub.calendar_earnings": {"use_case": "Forward earnings calendar (days_to_earnings cube dim)", "stage": "Phase 1A days-to-earnings", "criticality": "P0"},
+    "finnhub.calendar_ipo": {"use_case": "Forward IPO calendar (T2 universe maintenance)", "stage": "Phase 1A T2 universe", "criticality": "P1"},
+    "finnhub.calendar_economic": {"use_case": "Economic event calendar (FOMC/CPI/NFP scheduling)", "stage": "Phase 1A days-to-event signal", "criticality": "P1"},
+}
+
+
+# API-level use-case + stage mapping (legacy; kept for backwards-compat)
 API_USE_CASES = {
     "polygon": {
         "use_case": "Core OHLCV for all Layer 1 baseline + layered roster (~108-133 classes per F-002); news sentiment overlay; fundamentals; corporate actions; reference/sector/market_cap PIT",
@@ -465,6 +563,12 @@ def main() -> int:
             ep_data.update(info)
             ep_data["status"] = "OK" if info.get("present") else "EMPTY"
 
+        # Attach endpoint-level use-case / stage / criticality
+        ep_key = f"{api}.{endpoint}"
+        ep_meta = ENDPOINT_USE_CASES.get(ep_key, {})
+        ep_data["use_case"] = ep_meta.get("use_case", "-")
+        ep_data["stage_phase"] = ep_meta.get("stage", "-")
+        ep_data["criticality"] = ep_meta.get("criticality", "-")
         snapshot["endpoints"].append(ep_data)
         print(f"  {api}.{endpoint}: {ep_data.get('coverage_pct', '-')}% ({ep_data.get('files_count', '-')} files, status={ep_data['status']})")
 
