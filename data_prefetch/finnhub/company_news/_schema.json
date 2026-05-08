@@ -1,0 +1,16 @@
+{
+  "cache_dir": "data_prefetch/finnhub/company_news",
+  "canonical_columns": [
+    "category",
+    "datetime",
+    "headline",
+    "id",
+    "image",
+    "related",
+    "source",
+    "summary",
+    "url"
+  ],
+  "source": "backtest/tests/test_schema_canonical.py CANONICAL_SCHEMAS",
+  "owner_directive": "Pass 53 J8 2026-05-08"
+}

@@ -1,0 +1,18 @@
+{
+  "cache_dir": "data_prefetch/polygon/financials",
+  "canonical_columns": [
+    "cik",
+    "company_name",
+    "end_date",
+    "filing_date",
+    "financials_json",
+    "fiscal_period",
+    "fiscal_year",
+    "period_of_report_date",
+    "source_filing_url",
+    "start_date",
+    "ticker"
+  ],
+  "source": "backtest/tests/test_schema_canonical.py CANONICAL_SCHEMAS",
+  "owner_directive": "Pass 53 J8 2026-05-08"
+}

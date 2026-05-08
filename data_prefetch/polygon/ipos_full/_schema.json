@@ -1,0 +1,27 @@
+{
+  "cache_dir": "data_prefetch/polygon/ipos_full",
+  "canonical_columns": [
+    "announced_date",
+    "currency_code",
+    "final_issue_price",
+    "highest_offer_price",
+    "ipo_status",
+    "isin",
+    "issuer_name",
+    "last_updated",
+    "listing_date",
+    "lot_size",
+    "lowest_offer_price",
+    "max_shares_offered",
+    "min_shares_offered",
+    "primary_exchange",
+    "security_description",
+    "security_type",
+    "shares_outstanding",
+    "ticker",
+    "total_offer_size",
+    "us_code"
+  ],
+  "source": "backtest/tests/test_schema_canonical.py CANONICAL_SCHEMAS",
+  "owner_directive": "Pass 53 J8 2026-05-08"
+}

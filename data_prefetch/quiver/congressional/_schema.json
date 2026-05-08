@@ -1,0 +1,23 @@
+{
+  "cache_dir": "data_prefetch/quiver/congressional",
+  "canonical_columns": [
+    "Amount",
+    "BioGuideID",
+    "Description",
+    "ExcessReturn",
+    "House",
+    "Party",
+    "PriceChange",
+    "Range",
+    "ReportDate",
+    "Representative",
+    "SPYChange",
+    "Ticker",
+    "TickerType",
+    "Transaction",
+    "TransactionDate",
+    "last_modified"
+  ],
+  "source": "backtest/tests/test_schema_canonical.py CANONICAL_SCHEMAS",
+  "owner_directive": "Pass 53 J8 2026-05-08"
+}

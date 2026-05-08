@@ -1,0 +1,19 @@
+{
+  "cache_dir": "data_prefetch/polygon/benzinga/analyst_insights",
+  "canonical_columns": [
+    "benzinga_firm_id",
+    "benzinga_id",
+    "benzinga_rating_id",
+    "company_name",
+    "date",
+    "firm",
+    "insight",
+    "last_updated",
+    "price_target",
+    "rating",
+    "rating_action",
+    "ticker"
+  ],
+  "source": "backtest/tests/test_schema_canonical.py CANONICAL_SCHEMAS",
+  "owner_directive": "Pass 53 J8 2026-05-08"
+}

@@ -1,0 +1,23 @@
+{
+  "cache_dir": "data_prefetch/quiver/insider",
+  "canonical_columns": [
+    "AcquiredDisposedCode",
+    "Date",
+    "Name",
+    "PricePerShare",
+    "Shares",
+    "SharesOwnedFollowing",
+    "Ticker",
+    "TransactionCode",
+    "directOrIndirectOwnership",
+    "fileDate",
+    "isDirector",
+    "isOfficer",
+    "isOther",
+    "isTenPercentOwner",
+    "officerTitle",
+    "uploaded"
+  ],
+  "source": "backtest/tests/test_schema_canonical.py CANONICAL_SCHEMAS",
+  "owner_directive": "Pass 53 J8 2026-05-08"
+}

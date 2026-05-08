@@ -1,0 +1,15 @@
+{
+  "cache_dir": "data_prefetch/finnhub/earnings",
+  "canonical_columns": [
+    "actual",
+    "estimate",
+    "period",
+    "quarter",
+    "surprise",
+    "surprisePercent",
+    "symbol",
+    "year"
+  ],
+  "source": "backtest/tests/test_schema_canonical.py CANONICAL_SCHEMAS",
+  "owner_directive": "Pass 53 J8 2026-05-08"
+}

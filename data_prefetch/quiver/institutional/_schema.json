@@ -1,0 +1,18 @@
+{
+  "cache_dir": "data_prefetch/quiver/institutional",
+  "canonical_columns": [
+    "Class",
+    "Date",
+    "Direction",
+    "Fund",
+    "Name",
+    "Put/Call",
+    "ReportPeriod",
+    "SH/PRN",
+    "Shares",
+    "Ticker",
+    "Value"
+  ],
+  "source": "backtest/tests/test_schema_canonical.py CANONICAL_SCHEMAS",
+  "owner_directive": "Pass 53 J8 2026-05-08"
+}

@@ -1,0 +1,11 @@
+{
+  "cache_dir": "data_prefetch/quiver/gov_contracts",
+  "canonical_columns": [
+    "Amount",
+    "Qtr",
+    "Ticker",
+    "Year"
+  ],
+  "source": "backtest/tests/test_schema_canonical.py CANONICAL_SCHEMAS",
+  "owner_directive": "Pass 53 J8 2026-05-08"
+}

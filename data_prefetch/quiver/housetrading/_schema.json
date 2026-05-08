@@ -1,0 +1,15 @@
+{
+  "cache_dir": "data_prefetch/quiver/housetrading",
+  "canonical_columns": [
+    "Amount",
+    "BioGuideID",
+    "Date",
+    "Range",
+    "Representative",
+    "Ticker",
+    "Transaction",
+    "last_modified"
+  ],
+  "source": "backtest/tests/test_schema_canonical.py CANONICAL_SCHEMAS",
+  "owner_directive": "Pass 53 J8 2026-05-08"
+}

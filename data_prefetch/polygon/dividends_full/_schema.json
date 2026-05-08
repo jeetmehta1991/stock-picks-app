@@ -1,0 +1,17 @@
+{
+  "cache_dir": "data_prefetch/polygon/dividends_full",
+  "canonical_columns": [
+    "cash_amount",
+    "currency",
+    "declaration_date",
+    "dividend_type",
+    "ex_dividend_date",
+    "frequency",
+    "id",
+    "pay_date",
+    "record_date",
+    "ticker"
+  ],
+  "source": "backtest/tests/test_schema_canonical.py CANONICAL_SCHEMAS",
+  "owner_directive": "Pass 53 J8 2026-05-08"
+}
