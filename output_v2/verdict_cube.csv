@@ -1,0 +1,59 @@
+strategy,regime,sector,verdict,gates_passed,n_trades,gate_1_sample_size_value,gate_1_sample_size_passed
+adx_initiation,bull,Information Technology,INSUFFICIENT_SAMPLE,0,1,1,False
+awesome_oscillator,neutral,Consumer Discretionary,INSUFFICIENT_SAMPLE,0,1,1,False
+awesome_oscillator,neutral,Information Technology,INSUFFICIENT_SAMPLE,0,1,1,False
+bollinger_lower,bull,Information Technology,INSUFFICIENT_SAMPLE,0,1,1,False
+bollinger_lower,neutral,Communication Services,INSUFFICIENT_SAMPLE,0,1,1,False
+bollinger_lower,neutral,Consumer Discretionary,INSUFFICIENT_SAMPLE,0,1,1,False
+bollinger_tight,bull,Communication Services,INSUFFICIENT_SAMPLE,0,1,1,False
+bollinger_tight,bull,Consumer Discretionary,INSUFFICIENT_SAMPLE,0,1,1,False
+bollinger_tight,bull,Information Technology,INSUFFICIENT_SAMPLE,0,1,1,False
+bollinger_tight,neutral,Communication Services,INSUFFICIENT_SAMPLE,0,1,1,False
+bollinger_tight,neutral,Consumer Discretionary,INSUFFICIENT_SAMPLE,0,1,1,False
+bollinger_tight,neutral,Information Technology,INSUFFICIENT_SAMPLE,0,1,1,False
+bollinger_tight,neutral,Technology,INSUFFICIENT_SAMPLE,0,1,1,False
+cmf_flip,neutral,Information Technology,INSUFFICIENT_SAMPLE,0,1,1,False
+cpr_narrow_bullish,bull,Communication Services,INSUFFICIENT_SAMPLE,0,1,1,False
+cpr_narrow_bullish,neutral,Communication Services,INSUFFICIENT_SAMPLE,0,1,1,False
+cpr_narrow_bullish,neutral,Consumer Discretionary,INSUFFICIENT_SAMPLE,0,2,2,False
+cpr_narrow_bullish,neutral,Information Technology,INSUFFICIENT_SAMPLE,0,2,2,False
+cpr_narrow_bullish,neutral,Technology,INSUFFICIENT_SAMPLE,0,1,1,False
+cpr_narrow_momentum,neutral,Communication Services,INSUFFICIENT_SAMPLE,0,1,1,False
+cpr_narrow_momentum,neutral,Consumer Discretionary,INSUFFICIENT_SAMPLE,0,1,1,False
+cpr_narrow_momentum,neutral,Information Technology,INSUFFICIENT_SAMPLE,0,1,1,False
+force_index_breakout,neutral,Information Technology,INSUFFICIENT_SAMPLE,0,1,1,False
+golden_cross_9_21,neutral,Communication Services,INSUFFICIENT_SAMPLE,0,1,1,False
+hull_rsi,neutral,Communication Services,INSUFFICIENT_SAMPLE,0,1,1,False
+hull_rsi,neutral,Consumer Discretionary,INSUFFICIENT_SAMPLE,0,1,1,False
+hull_rsi,neutral,Information Technology,INSUFFICIENT_SAMPLE,0,3,3,False
+ichimoku_cloud_breakout,bull,Information Technology,INSUFFICIENT_SAMPLE,0,1,1,False
+ichimoku_tk_cross,neutral,Consumer Discretionary,INSUFFICIENT_SAMPLE,0,1,1,False
+ichimoku_tk_cross,neutral,Information Technology,INSUFFICIENT_SAMPLE,0,1,1,False
+macd_crossover,neutral,Communication Services,INSUFFICIENT_SAMPLE,0,1,1,False
+macd_crossover,neutral,Consumer Discretionary,INSUFFICIENT_SAMPLE,0,1,1,False
+macd_crossover,neutral,Information Technology,INSUFFICIENT_SAMPLE,0,1,1,False
+macd_fast_crossover,neutral,Communication Services,INSUFFICIENT_SAMPLE,0,1,1,False
+macd_fast_crossover,neutral,Consumer Discretionary,INSUFFICIENT_SAMPLE,0,1,1,False
+macd_fast_crossover,neutral,Information Technology,INSUFFICIENT_SAMPLE,0,1,1,False
+morning_star,bull,Communication Services,INSUFFICIENT_SAMPLE,0,1,1,False
+morning_star,bull,Information Technology,INSUFFICIENT_SAMPLE,0,3,3,False
+morning_star,neutral,Technology,INSUFFICIENT_SAMPLE,0,1,1,False
+pivot_r1_breakout,neutral,Communication Services,INSUFFICIENT_SAMPLE,0,1,1,False
+pivot_s1_bounce,neutral,Information Technology,INSUFFICIENT_SAMPLE,0,1,1,False
+rsi_oversold,neutral,Information Technology,INSUFFICIENT_SAMPLE,0,2,2,False
+rsi_oversold,neutral,Technology,INSUFFICIENT_SAMPLE,0,1,1,False
+stochrsi_overbought_short,bull,Consumer Discretionary,INSUFFICIENT_SAMPLE,0,1,1,False
+stochrsi_overbought_short,neutral,Information Technology,INSUFFICIENT_SAMPLE,0,2,2,False
+stochrsi_oversold,bull,Communication Services,INSUFFICIENT_SAMPLE,0,1,1,False
+stochrsi_oversold,bull,Information Technology,INSUFFICIENT_SAMPLE,0,1,1,False
+stochrsi_oversold,neutral,Communication Services,INSUFFICIENT_SAMPLE,0,1,1,False
+stochrsi_oversold,neutral,Consumer Discretionary,INSUFFICIENT_SAMPLE,0,1,1,False
+stochrsi_oversold,neutral,Information Technology,INSUFFICIENT_SAMPLE,0,3,3,False
+supertrend_macd,neutral,Consumer Discretionary,INSUFFICIENT_SAMPLE,0,1,1,False
+supertrend_macd,neutral,Information Technology,INSUFFICIENT_SAMPLE,0,1,1,False
+tema_dema,neutral,Communication Services,INSUFFICIENT_SAMPLE,0,1,1,False
+ultimate_oscillator,bull,Consumer Discretionary,INSUFFICIENT_SAMPLE,0,1,1,False
+williams_r_oversold,neutral,Technology,INSUFFICIENT_SAMPLE,0,1,1,False
+williams_stoch_dual,bull,Consumer Discretionary,INSUFFICIENT_SAMPLE,0,1,1,False
+williams_stoch_dual,neutral,Communication Services,INSUFFICIENT_SAMPLE,0,1,1,False
+williams_stoch_dual,neutral,Information Technology,INSUFFICIENT_SAMPLE,0,1,1,False

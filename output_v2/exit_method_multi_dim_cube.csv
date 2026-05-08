@@ -1,0 +1,19 @@
+exit_method,regime_at_entry,sector,cap_band,vol_band,hold_duration_band,n,win_rate,avg_pnl_pct,total_pnl_pct,sharpe_proxy
+atr_trail_1x,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,6,0.16666666666666666,-1.8179999999999998,-10.908,-1.5759700364094236
+atr_trail_2x,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,6,0.5,13.530366666666666,81.1822,1.5549234057895898
+break_even_at_1r,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,6,0.3333333333333333,6.756,40.536,1.0340413914876856
+breakeven_plus_trail,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,6,0.5,12.472366666666666,74.8342,1.4600694505588316
+class_time_stop,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,6,0.5,11.342999999999998,68.05799999999999,0.9021468452727109
+earnings_blackout,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,6,0.5,18.082083333333333,108.4925,1.3627591041620701
+fixed_3r_2r,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,6,0.5,3.9182,23.5092,0.8615546420578644
+hybrid_50pct_target,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,6,0.5,5.739733333333334,34.4384,0.7449368244513292
+ma_exit_ema9,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,6,0.3333333333333333,8.370416666666666,50.2225,1.128970944891404
+next_pivot_target,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,6,0.5,-4.0721,-24.4326,-1.9131329804240147
+r_multiple_2r,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,6,0.3333333333333333,0.6916500000000001,4.149900000000001,0.25571093672577244
+r_multiple_3r,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,6,0.3333333333333333,2.224,13.344000000000001,0.6060126922916577
+regime_flip,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,6,0.5,8.65515,51.9309,0.7800256960439671
+time_stop_10d,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,6,0.5,7.337583333333332,44.025499999999994,1.1031237006399266
+time_stop_20d,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,6,0.5,8.65515,51.9309,0.7800256960439671
+trailing_10pct,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,6,0.5,10.940333333333333,65.642,1.1871527605344032
+trailing_15pct,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,6,0.5,16.55515,99.3309,1.1918321730047121
+trailing_5pct,neutral,Information Technology,unknown,high_atr_2.5_5pct,long_ge_11d,6,0.16666666666666666,-2.931366666666667,-17.5882,-2.3627934822574193

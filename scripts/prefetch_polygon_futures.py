@@ -67,12 +67,20 @@ FUTURES_CONTRACTS = [
 ]
 
 
-def fetch_paginated(url: str, params: dict | None = None) -> list[dict]:
+def fetch_paginated(url: str, params: dict | None = None,
+                     max_pages: int = 1, page_sleep: float = 13.0) -> list[dict]:
+    """Pagination with explicit max + rate-limit-aware sleep.
+
+    Free-tier Futures Basic = 5 calls/min = 13s safe sleep. Reference
+    endpoints (products/contracts/schedules) get max_pages=1 by default
+    since the first page (limit=1000) covers all common contracts.
+    """
     h = {"Authorization": f"Bearer {POLYGON_KEY}"}
     out: list[dict] = []
     next_url = url
     p = dict(params or {})
-    while next_url:
+    pages = 0
+    while next_url and pages < max_pages:
         r = requests.get(next_url, headers=h, params=p, timeout=TIMEOUT)
         if r.status_code != 200:
             print(f"    HTTP {r.status_code}: {r.text[:120]}")
@@ -81,8 +89,10 @@ def fetch_paginated(url: str, params: dict | None = None) -> list[dict]:
         results = data.get("results", []) or []
         out.extend(results)
         next_url = data.get("next_url")
-        p = {}  # next_url has params baked in
-        time.sleep(0.1)
+        pages += 1
+        p = {}
+        if next_url and pages < max_pages:
+            time.sleep(page_sleep)
     return out
 
 
@@ -113,28 +123,32 @@ def main() -> int:
     aggs_dir.mkdir(parents=True, exist_ok=True)
     print(f"=== Polygon Futures prefetch ===")
 
-    # 1. Products
+    # 1. Products (single page, limit=1000)
     print("  Products ... ", end="", flush=True)
-    products = fetch_paginated("https://api.polygon.io/futures/v1/products")
+    products = fetch_paginated("https://api.polygon.io/futures/v1/products",
+                                params={"limit": 1000}, max_pages=1)
     if products:
         pd.DataFrame(products).to_parquet(CACHE_DIR / "products.parquet", index=False)
     print(f"{len(products)} products")
+    time.sleep(13)
 
-    # 2. Contracts
+    # 2. Contracts (single page, limit=1000)
     print("  Contracts ... ", end="", flush=True)
     contracts = fetch_paginated("https://api.polygon.io/futures/v1/contracts",
-                                  params={"limit": 1000})
+                                  params={"limit": 1000}, max_pages=1)
     if contracts:
         pd.DataFrame(contracts).to_parquet(CACHE_DIR / "contracts.parquet", index=False)
     print(f"{len(contracts)} contracts")
+    time.sleep(13)
 
-    # 3. Schedules
+    # 3. Schedules (single page, limit=1000)
     print("  Schedules ... ", end="", flush=True)
     schedules = fetch_paginated("https://api.polygon.io/futures/v1/schedules",
-                                  params={"limit": 1000})
+                                  params={"limit": 1000}, max_pages=1)
     if schedules:
         pd.DataFrame(schedules).to_parquet(CACHE_DIR / "schedules.parquet", index=False)
     print(f"{len(schedules)} schedule entries")
+    time.sleep(13)
 
     # 4. OHLCV per contract symbol
     print(f"  Aggs for {len(FUTURES_CONTRACTS)} contracts (~13s sleep / call for free tier rate limit):")
