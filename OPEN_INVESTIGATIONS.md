@@ -615,4 +615,30 @@ contract names: `UST 10Y NOTE` / `UST 5Y NOTE` / `UST 2Y NOTE` / `UST BOND`
 
 ---
 
-*Last updated: 2026-05-08 afternoon (Pass 53 Day-9 v8h+1 — Tier H execution in flight)*
+## INV-041 — SEC XBRL prefetch script `git_commit()` captures all staged files, not just cache dir (Pass 53 Day-9 v8h+1 2026-05-08)
+
+- **Discovered:** 2026-05-08 morning; my Tier-1 batch commit was rejected/lost; investigation showed staged files were captured by `prefetch_sec_xbrl.py`'s background `git_commit()` calls under "SEC XBRL prefetch: batch N" messages
+- **Observation:** `scripts/prefetch_sec_xbrl.py` `git_commit()` runs `git add data_prefetch/sec_xbrl/` then `git commit -m "..."` — but `git commit` without `-- <paths>` commits ALL staged files in the index. So if I had OTHER files staged (e.g. new prefetch scripts, data caches), the BG's commit captured them under the misleading "SEC XBRL: batch 5" message.
+- **Why not blocking:** Data is preserved on origin/main. Just confusing commit narrative.
+- **Severity:** LOW (process / housekeeping).
+- **Status:** open
+- **Next action:**
+  - Edit `prefetch_sec_xbrl.py` `git_commit()` to use `git commit -- data_prefetch/sec_xbrl/` (path-restricted commit). Same fix needed in `prefetch_quiver_new_endpoints.py` and `prefetch_polygon_benzinga.py`.
+  - Or: change to `git stash`-bracketed pattern that protects unrelated staged files.
+- **Joint:** PREFETCH_COVERAGE_AUDIT.md Tier H execution; sister to git-flow hygiene rules.
+
+---
+
+## INV-042 — FRED series DEXJPUS returns 500 — likely deprecated (Pass 53 Day-9 v8h+1 2026-05-08)
+
+- **Discovered:** 2026-05-08; FRED API retry confirmed persistent 500 for series_id `DEXJPUS` while DEXUSUK / DEXCAUS / DEXSZUS / DEXUSEU all returned 200 with 1583 obs each.
+- **Observation:** DEXJPUS was the JPY/USD exchange rate. May have been renamed or deprecated. FRED doc page would clarify.
+- **Why not blocking:** USDJPY is fetched from Polygon Forex Basic (12/12 OK). FRED currency cross alternatives (DEXSZUS = CHF, DEXUSEU = EUR, DEXCAUS = CAD, DEXUSUK = GBP) all work.
+- **Severity:** LOW (alternative source available).
+- **Status:** open — research correct series ID.
+- **Next action:** check FRED series search for "JPY US" / "Japanese yen" — likely renamed to DEXUSJP or similar. Update `prefetch_macro.py` SERIES dict.
+- **Joint:** Tier H15 execution; FRED retry 4/5 succeeded (DEXJPUS only failure).
+
+---
+
+*Last updated: 2026-05-08 afternoon (Pass 53 Day-9 v8h+1 — Tier H/I execution + B1 in flight)*

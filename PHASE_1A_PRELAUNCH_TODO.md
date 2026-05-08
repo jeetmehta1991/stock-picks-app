@@ -1,5 +1,73 @@
 # PHASE_1A_PRELAUNCH_TODO.md — Comprehensive pre-Phase-1A pending items
 
+## 2026-05-08 (Day-9 v8h+1) — Tier H/I execution status
+
+**Phase 1A start:** 2026-05-15 (DEC-590; **7 calendar days remaining**)
+**Updated by:** Day-9 v8h+1 morning Tier H execution per owner directive 2026-05-07 evening + 2026-05-08 morning ("100% coverage with no missing dimensions/fields after the pre-fetch").
+
+### Current background jobs (active 2026-05-08 morning)
+
+| BG ID | Job | Progress | Auto-commit |
+|---|---|---|---|
+| `bxb15vnoj` | SEC EDGAR XBRL companyfacts (Tier H17 P0) | 1181/1937 (61%) | every 100 (commits ~aaa141866 onwards) |
+| `bv4jolhrf` | Quiver senate/house/spacs (Tier H12 P1) | senatetrading 273/1937; house+spacs just started | every 100 |
+| `b51k78mfv` | Polygon Benzinga 5 endpoints (Tier H11 P1) | analyst_insights 472/1937; 4 others 1/1937 | every 100 |
+| `bo17n7lan` | Polygon Futures (Tier H8 P1) — RELAUNCHED unbuffered + paginated-fix | starting after fix | manual commit on completion |
+| `b8hr00kzq` | SEC EDGAR per-form top-up (Tier B1) — 10-K/10-Q/8-K/13D/13G/etc. | starting | per-form via `prefetch_sec_edgar.py` |
+
+### Owner-action gates resolved 2026-05-08
+
+| Gate | Status | Effect |
+|---|---|---|
+| Polygon Indices Basic activation | ✅ ACTIVATED — partial 2/13 | I:NDX, I:COMP work. CBOE/S&P licensed indices (VIX/SPX/DJI/RUT) still 403 (license gate beyond Basic). FRED VIXCLS remains primary. INV-034 RESOLVED-PARTIAL; INV-038 logged. |
+| Finnhub API key in `.env` | ✅ DONE | 13/20 endpoints free-tier accessible. INV-035 RESOLVED. |
+| AlphaVantage tier confirm | ✅ FREE | Premium endpoints (NEWS_SENTIMENT, INSIDER_TRANSACTIONS, INSTITUTIONAL_HOLDINGS, INCOME/BALANCE/CASH_FLOW, EARNINGS_*, IPO_CALENDAR, FX_*, CRYPTO_*, COMMODITIES_*, ECONOMIC_INDICATORS) inaccessible. |
+
+### Tier H execution progress (per CHECKLIST #76 column-c)
+
+**Endpoint × Field × Universe coverage matrix** (column added per owner directive 2026-05-08 "add fields/dimensions as well"):
+
+| # | Action | Endpoints | Fields/dimensions captured | Universe | Status |
+|---|---|---|---|---|---|
+| H1 | OHLCV re-fetch with vw + n | `/v2/aggs/ticker/{t}/range/1/day/...` | date, open, high, low, close, volume, **vwap**, **transactions** | 1937 tickers × 6yr | 🟡 PENDING (P1; existing OHLCV needs re-fetch) |
+| H2 | Polygon news with insights | `/v2/reference/news` | id, publisher, title, description, article_url, amp_url, publisher_name, publisher_homepage_url, **insights[]** (per-ticker), **author**, **image_url**, **keywords**, sentiment, sentiment_reasoning, all_tickers, published_utc | 1937 × full hist | 🟡 PENDING (P1) |
+| H3 | Polygon dividends + splits full | `/v3/reference/dividends`, `/v3/reference/splits` | div: cash_amount, currency, declaration_date, dividend_type, ex_dividend_date, frequency, id, pay_date, record_date, ticker; splits: execution_date, id, split_from, split_to, ticker | 1937 (~1500 actually pay) | 🟡 PENDING (P1) |
+| H4 | Polygon reference extended fields | `/v3/reference/tickers/{t}` | + address, branding (logo_url, icon_url), total_employees, phone_number, description, composite_figi, share_class_figi, round_lot | 1937 | 🟡 PENDING (P2) |
+| H5 | Polygon Economy series | `/fed/v1/inflation`, `/fed/v1/inflation-expectations`, `/fed/v1/treasury-yields` | inflation: date, cpi; inflation_exp: date, model_1y/5y/10y/30y; treasury_yields: date, yield_1y/5y/10y | global | ✅ DONE (commit batch-5) |
+| H6 | Polygon precomputed indicators | `/v1/indicators/{sma\|ema\|rsi\|macd}/{t}` | timestamp, value | 1937 × 4 indicators × multiple windows | 🟡 PENDING (P2) |
+| H8 | Polygon Futures Basic | products, contracts, schedules, `/v2/aggs/ticker/{ES\|NQ\|...}/range/...` | OHLCV + vwap + transactions per contract | 35 contracts × 6yr | 🔄 IN-PROGRESS-BG `bo17n7lan` |
+| H9 | Polygon Forex Basic | `/v2/aggs/ticker/C:{PAIR}/range/...` | OHLCV + vwap + transactions | 12 pairs × 6yr | ✅ DONE (12/12) |
+| H10 | Polygon Options Basic | `/v3/reference/options/contracts`, `/v2/aggs/ticker/O:{contract}/range/...` | chain reference + per-contract OHLCV (snapshots/trades/quotes 403 — Stocks Plus tier) | 1937 underlying × N contracts each | 🟡 PENDING (P1; long-running ~10-30h) |
+| H11 | Polygon Benzinga | analyst_insights, ratings, earnings, guidance, firm_details (5/7 accessible) | rating_action, insight, date, firm, price_target, rating, last_updated, company_name + endpoint-specific fields | 1937 | 🔄 IN-PROGRESS-BG `b51k78mfv` |
+| H12 | Quiver senate/house/spacs | `/historical/senatetrading/{t}`, `/historical/housetrading/{t}`, `/historical/spacs/{t}` | senate: Senator, BioGuideID, Date, Ticker, Transaction, Range, Amount, last_modified; house: Representative, BioGuideID, Date, ...; spacs: Date, Ticker, Mentions, Rank, Sentiment | 1937 × 3 endpoints | 🔄 IN-PROGRESS-BG `bv4jolhrf` |
+| H15 | FRED 30+ new series | `/fred/series/observations` for: TIPS (DFII5/10/30), forward inflation T5YIFR, productivity OPHNFB/ULCNFB, additional yield-curve points DGS3/DGS20, fed balance TREAST, M1/monetary base, sector employment 9 categories, Case-Shiller, MSPUS, AMTMNO, consumer credit TOTALSL, FX (DEXUSEU/UK/CA/CH), Brent, gas, foreign 10y (Germany/UK/Japan) | date, value (one row per observation) | 1 series each | ✅ MOSTLY DONE (4/5 retried 2026-05-08 — DEXJPUS deprecated, INV-042) |
+| H16 | ALFRED vintage mirror | `/fred/series/observations` w/ realtime_start + realtime_end | + realtime_start, realtime_end | 50→57 series | 🟡 PENDING (P2) |
+| H17 | SEC EDGAR XBRL companyfacts | `data.sec.gov/api/xbrl/companyfacts/CIK{cik}.json` | tag, taxonomy, unit, value, filing_date, period_start, period_end, fiscal_year, fiscal_period, form, accession, frame | 1937 tickers | 🔄 IN-PROGRESS-BG `bxb15vnoj` 1181/1937 (61%) |
+| H18 | CFTC 5 missing datasets | Legacy futures-only (6dca-aqww), Legacy combined (jun7-fc8e), Disagg futures-only (72hh-3qpy), TFF combined (yw9f-hn96), Supp CIT (4zgm-a668) | (varies per dataset; ~50-87 columns each) | 19 contracts × 5 datasets | 🟡 PENDING (P2) |
+| H19 | Apewisdom 4 subreddit feeds | `/api/v1.0/filter/{wallstreetbets\|stocks\|investing\|options}` | rank, ticker, name, mentions, upvotes, rank_24h_ago, mentions_24h_ago, snapshot_date | global × 4 feeds | 🟡 PENDING (P2) |
+| H20 | pytrends 4 dimensions | interest_by_region, related_queries, related_topics, get_historical_interest | varies per method | 1937 tickers × 4 methods | 🟡 PENDING (P2; rate-limited 8-12h) |
+| H21 | AAII extra fields | weekly_sentiment.parquet | + 8_week_avg, historical_avg, S&P_500_close (currently missing per probe) | global | 🟡 PENDING (P3) |
+| H22 | Date-typing migration | walk all caches | coerce date strings → datetime64 | 8+ caches | 🟡 PENDING (P3) |
+| **B1** | **SEC EDGAR per-form top-up** | All 11 forms (10-K/10-Q/8-K/13D/13G/Form 4/DEF 14A/S-1/etc.) | ticker, cik, form, filing_date, accession_number, primary_doc | 1683→1937 | 🔄 IN-PROGRESS-BG `b8hr00kzq` (per owner directive "Tier B1 + H17 do both") |
+
+### NEW INV entries 2026-05-08 morning
+
+| INV | Title | Status |
+|---|---|---|
+| INV-041 | SEC XBRL `git_commit()` captures all staged files (process bug) | logged this turn |
+| INV-042 | FRED DEXJPUS 500-error (likely deprecated series) | logged this turn |
+
+### Owner-action items pending (none currently blocking)
+
+- [ ] confirm whether 11 blocked Polygon Indices (VIX/SPX/DJI/RUT/etc.) require additional licensing fees beyond Basic plan
+- [ ] confirm AlphaVantage continues at free tier (premium endpoints inaccessible)
+
+### Phase 1A May 15 strict blockers status: **0 OPEN** (launch UNBLOCKED)
+
+---
+
+
+
 **Created:** 2026-05-07 (Pass 53 Day-9 v8h) per owner directive: *"Create a detailed to do list for all items yet to be executed before phase 1A. This includes all items already in sprint plan as well as all other pending items in the earlier audit of resolved-specs defined but not built yet as well as any other items still pending from this entire conversation."*
 
 **Phase 1A start:** 2026-05-15 (DEC-590; 8 calendar days from creation date)
