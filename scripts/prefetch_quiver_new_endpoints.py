@@ -62,6 +62,7 @@ ENDPOINTS = {
     "senatetrading": "historical/senatetrading",
     "housetrading":  "historical/housetrading",
     "spacs":         "historical/spacs",
+    "twitter":       "historical/twitter",
 }
 
 
@@ -107,10 +108,16 @@ def save_checkpoint(cp: dict) -> None:
 
 
 def git_commit(message: str) -> None:
+    """Path-restricted commit per INV-041 fix - only stages CACHE_ROOT
+    + checkpoint, prevents capturing unrelated staged files."""
     import subprocess
-    subprocess.run(["git", "add", str(CACHE_ROOT)], capture_output=True)
-    result = subprocess.run(["git", "commit", "-m", message],
-                            capture_output=True, text=True)
+    cache_path = str(CACHE_ROOT)
+    cp_path = str(CHECKPOINT_FILE)
+    subprocess.run(["git", "add", "--", cache_path, cp_path], capture_output=True)
+    result = subprocess.run(
+        ["git", "commit", "-m", message, "--", cache_path, cp_path],
+        capture_output=True, text=True,
+    )
     if "nothing to commit" in result.stdout:
         return
     subprocess.run(["git", "pull", "--rebase", "origin", "main"], capture_output=True, text=True)
@@ -134,6 +141,11 @@ def main() -> int:
 
     print(f"=== Quiver new-endpoints prefetch ({len(ENDPOINTS)} endpoints x {len(tickers)} tickers) ===")
     cp = load_checkpoint()
+    # Ensure every ENDPOINT key exists in checkpoint dict (defensive - fixes
+    # KeyError when a NEW endpoint is added to ENDPOINTS dict but old checkpoint
+    # was loaded without that key, e.g. twitter added 2026-05-08).
+    for k in ENDPOINTS:
+        cp.setdefault(k, [])
 
     for key, path in ENDPOINTS.items():
         done = set(cp.get(key, []))

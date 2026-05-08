@@ -156,18 +156,27 @@ def parse_decisions(audit_index: Path) -> list[dict]:
 
 
 def parse_bug_register(path: Path) -> list[dict]:
-    """Parse BUG_REGISTER.md bug → decision cross-reference table."""
+    """Parse BUG_REGISTER.md bug -> decision cross-reference table.
+
+    Defensive: skips HTML comments + blank lines mid-table without
+    resetting in_table flag (BUG_REGISTER has <!-- canonical-fact ... -->
+    annotations between rows that earlier broke the parser to 17 of 152).
+    """
     if not path.exists():
         return []
     text = path.read_text(encoding="utf-8", errors="ignore")
-    # Header: | Bug ID | Title (truncated) | Linked decisions | Sprint context |
     rows: list[dict] = []
     in_table = False
     for line in text.split("\n"):
-        if not line.strip().startswith("|"):
+        stripped = line.strip()
+        if not stripped:
+            continue  # blank lines ignored, don't reset in_table
+        if stripped.startswith("<!--") or stripped.endswith("-->"):
+            continue  # HTML comments ignored
+        if not stripped.startswith("|"):
             in_table = False
             continue
-        cols = [c.strip() for c in line.strip().strip("|").split("|")]
+        cols = [c.strip() for c in stripped.strip("|").split("|")]
         if "Bug ID" in cols[0]:
             in_table = True
             continue

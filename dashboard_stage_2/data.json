@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-08T17:01:00.724202+00:00",
+  "generated_at": "2026-05-08T17:43:36.175721+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -9634,6 +9634,2102 @@
       "short_id": "BUG-017",
       "sprint": "(see linked DEC sprint)",
       "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-18",
+      "title": "Bonferroni correction hardcoded to 60 strategies, should be 72",
+      "linked_decisions": "DEC-080, DEC-400, DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 6
+      },
+      "short_id": "BUG-018",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-080; DEC-400; DEC-458"
+    },
+    {
+      "id": "BUG-19",
+      "title": "OHLCV cache incomplete \u2014 402 of 495 tickers only cover to 2024-12-31",
+      "linked_decisions": "DEC-260, DEC-442, DEC-448, DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-019",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-260; DEC-442; DEC-448; DEC-458"
+    },
+    {
+      "id": "BUG-20",
+      "title": "Regime thresholds inconsistent between PROJECT_PLAN and config.py",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-020",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-21",
+      "title": "`exit_strategies.py` own `_pnl` has no borrow cost \u2014 short comparison optimistic",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-021",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-22",
+      "title": "`run_phase1a.py` header prints \"60 strategies\"",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-022",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-23",
+      "title": "`screener.py` docstring says \"60 strategies across 7 categories\"",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-023",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-24",
+      "title": "CHECKLIST item 13c says \"review ALL agent outputs\" \u2014 not applicable for no-agent",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-024",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-25",
+      "title": "`run_tests.sh` does not pass `--no-agents` flag",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-025",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-26",
+      "title": "CRITICAL \u2014 VIX proxy is VXX price (223\u2013461), not actual VIX (18\u201336) \u2014 all regime",
+      "linked_decisions": "DEC-317, DEC-388, DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 10
+      },
+      "short_id": "BUG-026",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-317; DEC-388; DEC-458"
+    },
+    {
+      "id": "BUG-27",
+      "title": "CRITICAL \u2014 `regime_confidence()` function built but never called \u2014 dead code",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 5
+      },
+      "short_id": "BUG-027",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-28",
+      "title": "HIGH \u2014 RSI computation uses simple rolling mean instead of Wilder exponential sm",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-028",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-29",
+      "title": "HIGH \u2014 Open trades at backtest end silently discarded \u2014 upward bias in all metri",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-029",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-30",
+      "title": "HIGH \u2014 VIX tightening in crisis contradicts own documentation",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-030",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-31",
+      "title": "HIGH \u2014 Walk-forward OOS minimum of 30 trades is statistically insufficient",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-031",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-32",
+      "title": "HIGH \u2014 Profit factor minimum 1.2 too low; literature requires 1.5 minimum",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-032",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-33",
+      "title": "HIGH \u2014 Sharpe ratio not required as passing criterion; computed but ignored",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-033",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-34",
+      "title": "HIGH \u2014 Mean reversion strategies run in all regimes \u2014 literature shows they fail",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-034",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-35",
+      "title": "MEDIUM \u2014 Decision Agent default fallback has invalid `action` value",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-035",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-36",
+      "title": "MEDIUM \u2014 Regime-aware strategy weighting not implemented",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-036",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-37",
+      "title": "MEDIUM \u2014 Survivorship bias haircut methodology is arbitrary",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-037",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-38",
+      "title": "MEDIUM \u2014 No minimum Sharpe in Bonferroni correction",
+      "linked_decisions": "DEC-080, DEC-401, DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 5
+      },
+      "short_id": "BUG-038",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-080; DEC-401; DEC-458"
+    },
+    {
+      "id": "BUG-39",
+      "title": "MEDIUM \u2014 `regime_confidence()` compares VIX-based regime with SPY-trend regime i",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-039",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-40",
+      "title": "MEDIUM \u2014 Short stop distance same as long (10%) \u2014 asymmetric risk not accounted",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-040",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-41",
+      "title": "MEDIUM \u2014 `min_market_cap_m = 100` too low; admits stocks with poor institutional",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 4
+      },
+      "short_id": "BUG-041",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-42",
+      "title": "LOW \u2014 `LILLY` appears as ticker in `run_full.sh` but should be `LLY`",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-042",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-43",
+      "title": "LOW \u2014 Missing Calmar ratio minimum in passing criteria",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-043",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-44",
+      "title": "LOW \u2014 Test suite has no test for `close_trade()` or `_process_day()`",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-044",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-45",
+      "title": "MEDIUM \u2014 FX currency risk not modelled",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-045",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-46",
+      "title": "MEDIUM \u2014 `fetch_info_bulk` info cache uses current market_cap, not historical",
+      "linked_decisions": "DEC-260, DEC-442, DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-046",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-260; DEC-442; DEC-458"
+    },
+    {
+      "id": "BUG-47",
+      "title": "MEDIUM \u2014 VXX in universe creates self-referencing regime paradox",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-047",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-48",
+      "title": "MEDIUM \u2014 Sector `Volatility` and `Emerging Markets` not in sector criteria profi",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-048",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-49",
+      "title": "LOW \u2014 FX risk not mentioned in EXPLANATION.md or PROJECT_PLAN.md",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-049",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-50",
+      "title": "LOW \u2014 `position_staleness_pct=1%` in live rules has no backtest equivalent",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-050",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-51",
+      "title": "HIGH \u2014 All 5 agents receive wrong or zero price context due to BUG-10 compoundin",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-051",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "BUG-10; DEC-458"
+    },
+    {
+      "id": "BUG-52",
+      "title": "HIGH \u2014 Risk Agent's VIX floor behavior now fully explained by BUG-26",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-052",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "BUG-26; DEC-458"
+    },
+    {
+      "id": "BUG-53",
+      "title": "HIGH \u2014 Finnhub news cache: all 509 files are empty \u2014 Sentiment Agent has no news",
+      "linked_decisions": "DEC-256, DEC-441, DEC-453, DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": true,
+        "n_doc_refs": 19
+      },
+      "short_id": "BUG-053",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-256; DEC-441; DEC-453; DEC-458"
+    },
+    {
+      "id": "BUG-54",
+      "title": "MEDIUM \u2014 Hull Moving Average uses simple rolling mean instead of WMA \u2014 signal ti",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-054",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-55",
+      "title": "MEDIUM \u2014 PSAR flip detection uses approximation that may fire on wrong day",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-055",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-56",
+      "title": "MEDIUM \u2014 Phase 1C base score can exceed [0, 100] \u2014 Decision Agent adjustment not",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-056",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-57",
+      "title": "MEDIUM \u2014 Integration tests missing 15 critical scenarios \u2014 5 bugs would have bee",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-057",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-58",
+      "title": "LOW \u2014 StochRSI cross-up fires in mid-range, not just oversold zone",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-058",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-59",
+      "title": "LOW \u2014 CPR top/bottom labels are reversed vs industry convention",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-059",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-60",
+      "title": "HIGH \u2014 Short entry zone validation rejects favourable gap-down \u2014 understates sho",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-060",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-61",
+      "title": "HIGH \u2014 Backtest allows multiple concurrent positions in same ticker across conse",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-061",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-62",
+      "title": "HIGH \u2014 Phase 1D cannot run \u2014 2020 OHLCV data not cached, DATA_LOAD_START=2021",
+      "linked_decisions": "DEC-442, DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-062",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-442; DEC-458"
+    },
+    {
+      "id": "BUG-63",
+      "title": "MEDIUM \u2014 Email approval system has 6 critical design gaps not addressed in PROJE",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-063",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-64",
+      "title": "MEDIUM \u2014 Phase 1C prerequisites not documented \u2014 Unusual Whales and Ortex integr",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-064",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-65",
+      "title": "MEDIUM \u2014 Strategy retirement rule statistically invalid at realistic live trade",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-065",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-66",
+      "title": "MEDIUM \u2014 PROJECT_PLAN mentions \"60 strategies\" 11 times \u2014 9 of 12 new short stra",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-066",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-67",
+      "title": "MEDIUM \u2014 Alpaca paper trading (Stage 3) does not match IBKR live trading (Stage",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-067",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-68",
+      "title": "MEDIUM \u2014 CLAUDE.md missing 5 critical recent decisions",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-068",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-69",
+      "title": "LOW \u2014 Infrastructure design: GitHub Actions vs VPS ambiguity",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-069",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-70",
+      "title": "LOW \u2014 No database schema designed for Stage 3 PostgreSQL",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 3
+      },
+      "short_id": "BUG-070",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-71",
+      "title": "LOW \u2014 IBKR API session management not designed",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-071",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-72",
+      "title": "HIGH \u2014 `validate_phase1b_data.py` passes all checks but misses 6 blockers \u2014 fals",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": true,
+        "n_doc_refs": 12
+      },
+      "short_id": "BUG-072",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-73",
+      "title": "HIGH \u2014 `prepopulate_cache_index.py` writes incompatible format \u2014 causes cache mi",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 3
+      },
+      "short_id": "BUG-073",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-74",
+      "title": "HIGH \u2014 BUG-14 worse than documented: XLE also missing from `run_full.sh` \u2014 5 tic",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-074",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "BUG-14; DEC-458"
+    },
+    {
+      "id": "BUG-75",
+      "title": "MEDIUM \u2014 `max_drawdown` computed on unsorted PnL series \u2014 results depend on exit",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-075",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-76",
+      "title": "MEDIUM \u2014 Agent cache fully contaminated: all runs for same ticker+date+phase sha",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-076",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-77",
+      "title": "MEDIUM \u2014 Candidate ranking by `strategy_count` inflated by `avoid` entries \u2014 top",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-077",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-78",
+      "title": "CRITICAL \u2014 Trailing stop lookahead bias: stop updated using today's close BEFORE",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-078",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-79",
+      "title": "HIGH \u2014 Stop fills assumed at the stop price; gap-through is not modelled (slippa",
+      "linked_decisions": "DEC-081, DEC-130, DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 12
+      },
+      "short_id": "BUG-079",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-081; DEC-130; DEC-458"
+    },
+    {
+      "id": "BUG-80",
+      "title": "HIGH \u2014 Exit slippage never applied; only entry slippage charged. Round-trip slip",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-080",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-81",
+      "title": "HIGH \u2014 `SHORT_BORROW_COST_PER_DAY = 0.005` is 2.5\u00d7 the documented intent",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-081",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-82",
+      "title": "HIGH \u2014 Slippage and transaction-cost double-charging \u2014 total cost 2\u00d7 literature",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-082",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-83",
+      "title": "HIGH \u2014 `get_congressional_detail()` filters with INVERTED point-in-time logic",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 4
+      },
+      "short_id": "BUG-083",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-84",
+      "title": "MEDIUM \u2014 IS/OOS walk-forward boundary leakage on multi-day swing trades",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-084",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-85",
+      "title": "MEDIUM \u2014 `regime_at_entry` includes the regime label but no transition tracking",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-085",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-86",
+      "title": "MEDIUM \u2014 FRED CPI lookahead bias of ~10 days",
+      "linked_decisions": "DEC-449, DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-086",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-449; DEC-458"
+    },
+    {
+      "id": "BUG-87",
+      "title": "MEDIUM \u2014 No data quality validation on ingestion",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-087",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-88",
+      "title": "MEDIUM \u2014 No signal versioning; cache invalidation incomplete",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-088",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-89",
+      "title": "MEDIUM \u2014 Flat signal dict (220 fields) lacks type safety",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-089",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-90",
+      "title": "MEDIUM \u2014 No state checkpointing for crashes/restarts",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-090",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-91",
+      "title": "MEDIUM \u2014 No determinism control",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-091",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-92",
+      "title": "LOW \u2014 No streaming progress / metrics during run",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-092",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-93",
+      "title": "CRITICAL \u2014 No execution layer exists; PROJECT_PLAN describes it conceptually onl",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-093",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-94",
+      "title": "CRITICAL \u2014 Stage 3 paper trading cannot actually run as designed",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-094",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-95",
+      "title": "CRITICAL \u2014 No portfolio-level state; every trade evaluated independently",
+      "linked_decisions": "DEC-070, DEC-076, DEC-091, DEC-222, DEC-231, DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": true,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 51
+      },
+      "short_id": "BUG-095",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-070; DEC-076; DEC-091; DEC-222; DEC-231; DEC-458"
+    },
+    {
+      "id": "BUG-96",
+      "title": "HIGH \u2014 No benchmark comparison (SPY buy-and-hold)",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-096",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-97",
+      "title": "HIGH \u2014 No infrastructure-as-code; manual VPS setup",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-097",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-98",
+      "title": "HIGH \u2014 No monitoring or alerting",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-098",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-99",
+      "title": "MEDIUM \u2014 No secret management; API keys in environment variables",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2
+      },
+      "short_id": "BUG-099",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-100",
+      "title": "MEDIUM \u2014 No kill switch; manual intervention required to stop trading",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 4
+      },
+      "short_id": "BUG-100",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-101",
+      "title": "CRITICAL \u2014 88.1% of trades are overlapping re-entries on the same ticker \u2014 backt",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 28
+      },
+      "short_id": "BUG-101",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-102",
+      "title": "CRITICAL \u2014 3.5\u00d7 same-day duplicate inflation: 9,921 unique decisions logged as 3",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 9
+      },
+      "short_id": "BUG-102",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-103",
+      "title": "CRITICAL \u2014 Smart money data prefetched for 7 categories \u00d7 509 tickers but never",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 24
+      },
+      "short_id": "BUG-103",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-104",
+      "title": "HIGH \u2014 Position sizing rules from config never applied to PnL \u2014 backtest assumes",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 34
+      },
+      "short_id": "BUG-104",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-105",
+      "title": "HIGH \u2014 Agent downgrade cascade: 99.9% of trades downgraded by exactly 1 tier \u2014 a",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 8
+      },
+      "short_id": "BUG-105",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-106",
+      "title": "HIGH \u2014 Perfect stop fills in trade log: every trailing-stop exit fills at exactl",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 4
+      },
+      "short_id": "BUG-106",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-107",
+      "title": "MEDIUM \u2014 Silent exception swallowing: `except Exception: pass` masks checkpoint",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 4
+      },
+      "short_id": "BUG-107",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-108",
+      "title": "MEDIUM \u2014 Agent context built with `.get(key, default)` masks missing data; agent",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 6
+      },
+      "short_id": "BUG-108",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-109",
+      "title": "HIGH \u2014 yfinance auto_adjust causes data drift; backtest results not reproducible",
+      "linked_decisions": "DEC-442, DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": true,
+        "n_doc_refs": 24
+      },
+      "short_id": "BUG-109",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-442; DEC-458"
+    },
+    {
+      "id": "BUG-110",
+      "title": "HIGH \u2014 Entry gap filter not enforced; trades opened despite exceeding ATR limit",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": true,
+        "n_doc_refs": 15
+      },
+      "short_id": "BUG-110",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-111",
+      "title": "**CRITICAL** \u2014 No break-and-retest variants of breakout strategies (severity: MEDIUM\u2192HIGH\u2192CRITICAL across Pass 52)",
+      "linked_decisions": "DEC-354 (parent umbrella reopened) + DEC-355/356/357 (3 retest-variant strategies) + DEC-358/359/360/361/362 (5 chart pattern strategies; retest-cross-cutting)",
+      "sprint_context": "Sprint 8 (DEC-355-362) + open scope: 25 existing breakout strategies in screener.py potentially need retest variants \u2014 verification needed",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": true,
+        "n_doc_refs": 52
+      },
+      "short_id": "BUG-111",
+      "sprint": "Sprint 8 (DEC-355-362) + open scope: 25 existing breakout strategies in screener.py potentially need retest variants \u2014 verification needed",
+      "dependencies": "DEC-354; DEC-355; DEC-358"
+    },
+    {
+      "id": "BUG-112",
+      "title": "LOW \u2014 No ICT/SMC concepts implemented",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": true,
+        "n_doc_refs": 4
+      },
+      "short_id": "BUG-112",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-113",
+      "title": "HIGH \u2014 Agent action/sizing/exit recommendations ignored by engine",
+      "linked_decisions": "DEC-008, DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": true,
+        "n_doc_refs": 25
+      },
+      "short_id": "BUG-113",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-008; DEC-458"
+    },
+    {
+      "id": "BUG-113",
+      "title": "HIGH \u2014 Agent action/sizing/exit recommendations ignored by engine",
+      "linked_decisions": "DEC-008, DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": true,
+        "n_doc_refs": 25
+      },
+      "short_id": "BUG-113",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-008; DEC-458"
+    },
+    {
+      "id": "BUG-178",
+      "title": "HIGH \u2014 Earnings dates fetched live during backtest, no prefetch path",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 12
+      },
+      "short_id": "BUG-178",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-179",
+      "title": "HIGH \u2014 yfinance .info fetched live during backtest universe load",
+      "linked_decisions": "DEC-443, DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 15
+      },
+      "short_id": "BUG-179",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-443; DEC-458"
+    },
+    {
+      "id": "BUG-180",
+      "title": "HIGH \u2014 VIX not explicitly prefetched; VXX used as proxy is cause of BUG-26",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 6
+      },
+      "short_id": "BUG-180",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "BUG-26; DEC-458"
+    },
+    {
+      "id": "BUG-181",
+      "title": "MEDIUM \u2014 Finnhub news prefetch silently produces empty files",
+      "linked_decisions": "DEC-453, DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 15
+      },
+      "short_id": "BUG-181",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-453; DEC-458"
+    },
+    {
+      "id": "BUG-182",
+      "title": "MEDIUM \u2014 Agent cache invalidated by every code change with no versioning gate",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 6
+      },
+      "short_id": "BUG-182",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-183",
+      "title": "LOW \u2014 No prefetch validation step",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 7
+      },
+      "short_id": "BUG-183",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-184",
+      "title": "CRITICAL \u2014 Insider data prefetch stops 2024-12-31; 13-month gap before backtest",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": true,
+        "n_doc_refs": 7
+      },
+      "short_id": "BUG-184",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-185",
+      "title": "CRITICAL \u2014 Wikipedia views prefetch failed entirely; all 509 files empty",
+      "linked_decisions": "DEC-030, DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": true,
+        "n_doc_refs": 17
+      },
+      "short_id": "BUG-185",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-030; DEC-458"
+    },
+    {
+      "id": "BUG-186",
+      "title": "HIGH \u2014 29 institutional 13F files empty including major tickers (AAPL, ABBV, AMZ",
+      "linked_decisions": "DEC-325, DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 19
+      },
+      "short_id": "BUG-186",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-325; DEC-458"
+    },
+    {
+      "id": "BUG-187",
+      "title": "HIGH \u2014 WSB mentions prefetch stops 2025-02-21; 14-month gap",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 3
+      },
+      "short_id": "BUG-187",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-188",
+      "title": "MEDIUM \u2014 Defense tickers (NOC, TXT) have empty gov_contracts data",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 3
+      },
+      "short_id": "BUG-188",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-189",
+      "title": "MEDIUM \u2014 Ticker symbol mapping issue: BF-B, BRK-B variants empty",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 3
+      },
+      "short_id": "BUG-189",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-190",
+      "title": "MEDIUM \u2014 Quiver endpoints not in prefetch (Senate, Twitter, Off-Exchange, App Do",
+      "linked_decisions": "DEC-450, DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 8
+      },
+      "short_id": "BUG-190",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-450; DEC-458"
+    },
+    {
+      "id": "BUG-191",
+      "title": "CRITICAL \u2014 No prefetch validation gate before cache-dependent code runs",
+      "linked_decisions": "DEC-299, DEC-322, DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": true,
+        "n_doc_refs": 24
+      },
+      "short_id": "BUG-191",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-299; DEC-322; DEC-458"
+    },
+    {
+      "id": "BUG-199",
+      "title": "MEDIUM \u2014 No gate firing rate observability",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": true,
+        "n_doc_refs": 8
+      },
+      "short_id": "BUG-199",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-200",
+      "title": "CRITICAL \u2014 Risk Agent context expansion required (Section B)",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": true,
+        "n_doc_refs": 9
+      },
+      "short_id": "BUG-200",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-201",
+      "title": "MEDIUM \u2014 Strategy `earnings_tolerant` attribute missing",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": true,
+        "n_doc_refs": 4
+      },
+      "short_id": "BUG-201",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-202",
+      "title": "MEDIUM \u2014 No earnings-momentum strategies implemented",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": true,
+        "n_doc_refs": 3
+      },
+      "short_id": "BUG-202",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-203",
+      "title": "MEDIUM \u2014 No A/B testing infrastructure for agent gates",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": true,
+        "n_doc_refs": 3
+      },
+      "short_id": "BUG-203",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-270",
+      "title": "HIGH \u2014 `insider_signal()` column-name mismatch (100% silent failure)",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": true,
+        "wired": false,
+        "tested": true,
+        "pushed": true,
+        "n_doc_refs": 21
+      },
+      "short_id": "BUG-270",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-271",
+      "title": "HIGH \u2014 `get_gov_contracts()` no Date column lookup (99.4% silent failure)",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": true,
+        "wired": true,
+        "tested": true,
+        "pushed": true,
+        "n_doc_refs": 32
+      },
+      "short_id": "BUG-271",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-272",
+      "title": "HIGH \u2014 `get_lobbying()` Amount string concat (98.8% silent failure)",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": true,
+        "wired": true,
+        "tested": true,
+        "pushed": true,
+        "n_doc_refs": 9
+      },
+      "short_id": "BUG-272",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-273",
+      "title": "HIGH \u2014 `congressional_signal()` Chamber/House column mismatch",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": true,
+        "wired": true,
+        "tested": true,
+        "pushed": true,
+        "n_doc_refs": 14
+      },
+      "short_id": "BUG-273",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-274",
+      "title": "HIGH \u2014 `institutional_signal()` SharesChange column missing",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": true,
+        "n_doc_refs": 19
+      },
+      "short_id": "BUG-274",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-275",
+      "title": "LOW \u2014 `bonferroni_adjusted_threshold(n_strategies=0)` TypeError on complex round",
+      "linked_decisions": "DEC-080, DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": true,
+        "n_doc_refs": 10
+      },
+      "short_id": "BUG-275",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-080; DEC-458"
+    },
+    {
+      "id": "BUG-276",
+      "title": "HIGH \u2014 `_agent_cache_key` calls `sorted()` on list of dicts \u2192 crashes when strat",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 7
+      },
+      "short_id": "BUG-276",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-277",
+      "title": "HIGH \u2014 `classify_regime()` truth-value-of-DataFrame error \u2014 100% failure",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 7
+      },
+      "short_id": "BUG-277",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-278",
+      "title": "MEDIUM \u2014 `yield_curve_regime()` doesn't use macro_combined.parquet cache",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 3
+      },
+      "short_id": "BUG-278",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-279",
+      "title": "MEDIUM \u2014 `get_ohlcv()` with reversed date order silently returns 0 rows",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 5
+      },
+      "short_id": "BUG-279",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-280",
+      "title": "LOW \u2014 `days_to_next_earnings()` returns None on yfinance failure",
+      "linked_decisions": "DEC-444, DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": true,
+        "n_doc_refs": 7
+      },
+      "short_id": "BUG-280",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-444; DEC-458"
+    },
+    {
+      "id": "BUG-281",
+      "title": "MEDIUM \u2014 `site_generator._assign_tier` duplicates `engine._assign_confidence_tie",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": true,
+        "n_doc_refs": 4
+      },
+      "short_id": "BUG-281",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-282",
+      "title": "LOW \u2014 `site_generator.build_entry_zone` ignores `category` parameter",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 3
+      },
+      "short_id": "BUG-282",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-283",
+      "title": "LOW \u2014 `build_position_sizing` returns 0% silently for unknown tier",
+      "linked_decisions": "DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 3
+      },
+      "short_id": "BUG-283",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-458"
+    },
+    {
+      "id": "BUG-284",
+      "title": "MEDIUM \u2014 `prefetch_quiver` DATE_FIELDS[\"gov_contracts\"]=\"Date\" but cache schema",
+      "linked_decisions": "DEC-451, DEC-458",
+      "sprint_context": "(see linked DEC sprint)",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 12
+      },
+      "short_id": "BUG-284",
+      "sprint": "(see linked DEC sprint)",
+      "dependencies": "DEC-451; DEC-458"
     }
   ],
   "investigations": [
@@ -11904,559 +14000,999 @@
   ],
   "recent_commits": [
     {
+      "sha": "a811f8ad",
+      "subject": "Finnhub: financials_reported batch 6",
+      "author": "jeetmehta1991",
+      "rel_time": "3 minutes ago"
+    },
+    {
+      "sha": "9c5fb7b3",
+      "subject": "Finnhub: financials_reported batch 5",
+      "author": "jeetmehta1991",
+      "rel_time": "9 minutes ago"
+    },
+    {
+      "sha": "2caa80a8",
+      "subject": "Finnhub: financials_reported batch 4",
+      "author": "jeetmehta1991",
+      "rel_time": "14 minutes ago"
+    },
+    {
+      "sha": "c0bd4e72",
+      "subject": "Finnhub: financials_reported batch 3",
+      "author": "jeetmehta1991",
+      "rel_time": "20 minutes ago"
+    },
+    {
+      "sha": "235c2736",
+      "subject": "Stage 2 dashboard: fix duplicate 'caveats' identifier (SyntaxError that broke render)",
+      "author": "jeetmehta1991",
+      "rel_time": "22 minutes ago"
+    },
+    {
+      "sha": "24755458",
+      "subject": "Force Pages rebuild (ensure data.js in artifact)",
+      "author": "jeetmehta1991",
+      "rel_time": "24 minutes ago"
+    },
+    {
+      "sha": "7c6fd53f",
+      "subject": "Finnhub: financials_reported batch 2",
+      "author": "jeetmehta1991",
+      "rel_time": "26 minutes ago"
+    },
+    {
+      "sha": "e54c13b9",
+      "subject": "Finnhub: financials_reported batch 1",
+      "author": "jeetmehta1991",
+      "rel_time": "32 minutes ago"
+    },
+    {
+      "sha": "f6e5a777",
+      "subject": "Finnhub: company_news final (1936 fetched)",
+      "author": "jeetmehta1991",
+      "rel_time": "38 minutes ago"
+    },
+    {
+      "sha": "bb0b37b1",
+      "subject": "Finnhub: company_news batch 19",
+      "author": "jeetmehta1991",
+      "rel_time": "39 minutes ago"
+    },
+    {
+      "sha": "1d47f4cc",
+      "subject": "Finnhub: company_news batch 18",
+      "author": "jeetmehta1991",
+      "rel_time": "42 minutes ago"
+    },
+    {
+      "sha": "e2804a4f",
+      "subject": "Stage 2 dashboard: Sprint + Dependencies columns",
+      "author": "jeetmehta1991",
+      "rel_time": "43 minutes ago"
+    },
+    {
       "sha": "db53740d",
       "subject": "Finnhub: company_news batch 17",
       "author": "jeetmehta1991",
-      "rel_time": "3 minutes ago"
+      "rel_time": "46 minutes ago"
     },
     {
       "sha": "7f880480",
       "subject": "Finnhub: company_news batch 16",
       "author": "jeetmehta1991",
-      "rel_time": "6 minutes ago"
+      "rel_time": "49 minutes ago"
     },
     {
       "sha": "a8c6c1e7",
       "subject": "Finnhub: company_news batch 15",
       "author": "jeetmehta1991",
-      "rel_time": "9 minutes ago"
+      "rel_time": "52 minutes ago"
     },
     {
       "sha": "e2eb6444",
       "subject": "Stage 2 dashboard: 4-status (coded/wired/tested/pushed) per ID + Caveats + Learnings tabs",
       "author": "jeetmehta1991",
-      "rel_time": "11 minutes ago"
+      "rel_time": "54 minutes ago"
     },
     {
       "sha": "dbd71cc6",
       "subject": "Finnhub: company_news batch 14",
       "author": "jeetmehta1991",
-      "rel_time": "12 minutes ago"
+      "rel_time": "54 minutes ago"
     },
     {
       "sha": "27cf71f5",
       "subject": "Finnhub: company_news batch 13",
       "author": "jeetmehta1991",
-      "rel_time": "15 minutes ago"
+      "rel_time": "57 minutes ago"
     },
     {
       "sha": "1d029ebf",
       "subject": "Finnhub: company_news batch 12",
       "author": "jeetmehta1991",
-      "rel_time": "18 minutes ago"
+      "rel_time": "61 minutes ago"
     },
     {
       "sha": "1108a963",
       "subject": "Stage 2 dashboard: NEW Pipeline tab (active BGs + queue + timeline)",
       "author": "jeetmehta1991",
-      "rel_time": "20 minutes ago"
+      "rel_time": "63 minutes ago"
     },
     {
       "sha": "95d650ac",
       "subject": "Finnhub: company_news batch 11",
       "author": "jeetmehta1991",
-      "rel_time": "21 minutes ago"
+      "rel_time": "63 minutes ago"
     },
     {
       "sha": "3ee5e22e",
       "subject": "Finnhub: company_news batch 10",
       "author": "jeetmehta1991",
-      "rel_time": "24 minutes ago"
+      "rel_time": "66 minutes ago"
     },
     {
       "sha": "d0f24185",
       "subject": "Finnhub: company_news batch 9",
       "author": "jeetmehta1991",
-      "rel_time": "27 minutes ago"
+      "rel_time": "69 minutes ago"
     },
     {
       "sha": "6517e0d7",
       "subject": "Pages workflow: deploy both dashboards + landing page",
       "author": "jeetmehta1991",
-      "rel_time": "27 minutes ago"
+      "rel_time": "69 minutes ago"
     },
     {
       "sha": "4598383b",
       "subject": "Finnhub: company_news batch 8",
       "author": "jeetmehta1991",
-      "rel_time": "29 minutes ago"
+      "rel_time": "72 minutes ago"
     },
     {
       "sha": "a82a3425",
       "subject": "Stage 2 project tracker dashboard (NEW)",
       "author": "jeetmehta1991",
-      "rel_time": "31 minutes ago"
+      "rel_time": "74 minutes ago"
     },
     {
       "sha": "5ac743cb",
       "subject": "Finnhub: company_news batch 7",
       "author": "jeetmehta1991",
-      "rel_time": "33 minutes ago"
+      "rel_time": "76 minutes ago"
     },
     {
       "sha": "fb9be6fb",
       "subject": "Quiver new-endpoints: spacs final (8 fetched)",
       "author": "jeetmehta1991",
-      "rel_time": "34 minutes ago"
+      "rel_time": "76 minutes ago"
     },
     {
       "sha": "07b6c3eb",
       "subject": "Quiver new-endpoints: housetrading final (7 fetched)",
       "author": "jeetmehta1991",
-      "rel_time": "34 minutes ago"
+      "rel_time": "77 minutes ago"
     },
     {
       "sha": "22e7f1dd",
       "subject": "Finnhub: company_news batch 6",
       "author": "jeetmehta1991",
-      "rel_time": "36 minutes ago"
-    },
-    {
-      "sha": "72e8ac34",
-      "subject": "Finnhub: company_news batch 5",
-      "author": "jeetmehta1991",
-      "rel_time": "39 minutes ago"
-    },
-    {
-      "sha": "2b2163f7",
-      "subject": "Finnhub: company_news batch 4",
-      "author": "jeetmehta1991",
-      "rel_time": "41 minutes ago"
-    },
-    {
-      "sha": "979b7040",
-      "subject": "Finnhub: company_news batch 3",
-      "author": "jeetmehta1991",
-      "rel_time": "44 minutes ago"
-    },
-    {
-      "sha": "f003bb0b",
-      "subject": "Finnhub: company_news batch 2",
-      "author": "jeetmehta1991",
-      "rel_time": "48 minutes ago"
-    },
-    {
-      "sha": "fdb3f48d",
-      "subject": "Finnhub: company_news batch 1",
-      "author": "jeetmehta1991",
-      "rel_time": "51 minutes ago"
-    },
-    {
-      "sha": "e31af775",
-      "subject": "Dashboard API Usage tab: per-FIELD rows + Coding/Wiring status",
-      "author": "jeetmehta1991",
-      "rel_time": "52 minutes ago"
-    },
-    {
-      "sha": "05d25bd9",
-      "subject": "Finnhub: earnings final (1936 fetched)",
-      "author": "jeetmehta1991",
-      "rel_time": "54 minutes ago"
-    },
-    {
-      "sha": "3575968d",
-      "subject": "Finnhub: earnings batch 19",
-      "author": "jeetmehta1991",
-      "rel_time": "55 minutes ago"
-    },
-    {
-      "sha": "1bcfd6c6",
-      "subject": "Finnhub: earnings batch 18",
-      "author": "jeetmehta1991",
-      "rel_time": "58 minutes ago"
-    },
-    {
-      "sha": "c4c4260f",
-      "subject": "Finnhub: earnings batch 17",
-      "author": "jeetmehta1991",
-      "rel_time": "61 minutes ago"
-    },
-    {
-      "sha": "559efead",
-      "subject": "Finnhub: earnings batch 16",
-      "author": "jeetmehta1991",
-      "rel_time": "63 minutes ago"
-    },
-    {
-      "sha": "8c464068",
-      "subject": "Finnhub earnings batches: pre-pause state committed",
-      "author": "jeetmehta1991",
-      "rel_time": "63 minutes ago"
+      "rel_time": "79 minutes ago"
     }
   ],
   "uncommitted": {
-    "count": 90,
+    "count": 1992,
     "modified": 4,
-    "added": 0,
-    "untracked": 86,
+    "added": 1929,
+    "untracked": 59,
     "deleted": 0,
     "files": [
-      {
-        "status": "M",
-        "path": "dashboard_stage_2/index.html"
-      },
       {
         "status": "M",
         "path": "data_prefetch/finnhub/_checkpoint.json"
       },
       {
-        "status": "M",
-        "path": "scripts/build_dashboard_stage_2.py"
+        "status": "MM",
+        "path": "data_prefetch/quiver/_new_endpoints_checkpoint.json"
       },
       {
-        "status": "M",
-        "path": "scripts/prefetch_quiver_new_endpoints.py"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/A.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/TMST.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AA.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/TMUS.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AAL.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/TNDM.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AAOI.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/TNET.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AAON.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/TNGX.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AAP.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/TNK.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AAPL.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/TNP.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ABAT.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/TNXP.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ABBV.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/TOST.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ABMD.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/TPB.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ABNB.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/TPC.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ABSI.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/TPG.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ABT.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/TPH.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ACA.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/TPL.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ACCD.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/TPR.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ACET.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/TPST.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ACGL.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/TREE.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ACHC.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/TRGP.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ACHR.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/TRI.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ACI.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/TRMB.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ACIW.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/TRMD.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ACLS.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/TRNO.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ACLX.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/TROW.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ACMR.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/TRQ.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ACN.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/TRU.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ACT.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/TRV.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ACVA.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/TRVI.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ADBE.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/TSAT.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ADI.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/TSCO.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ADM.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/TSEM.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ADMA.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/TSHA.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ADP.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/TSLA.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ADPT.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/TSN.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ADS.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/TT.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ADSE.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/TTAN.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ADSK.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/TTD.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ADT.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/TTI.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ADTN.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/TTMI.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AEE.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/TTWO.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AEHR.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/TVTX.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AEIS.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/TW.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AEO.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/TWI.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AEP.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/TWLO.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AERI.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/TWST.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AES.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/TWTR.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AEVA.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/TXG.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AEYE.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/TXN.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AFL.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/TXT.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AFRM.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/TYL.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AG.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/TYRA.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AGFY.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/U.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AGI.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/UA.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AGIO.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/UAA.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AGN.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/UAL.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AGX.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/UAMY.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AGYS.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/UAN.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AHR.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/UBER.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AI.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/UDR.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AIG.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/UEC.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AIMC.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/UFPT.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AISP.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/UHAL.B.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AIV.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/UHS.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AIZ.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/UI.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AJG.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/ULS.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AJRD.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/ULTA.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AKAM.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/UMAC.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AKRO.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/UNFI.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AKUS.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/UNH.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ALAB.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/UNM.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ALB.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/UNP.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ALC.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/UPB.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ALDX.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/UPC.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ALGM.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/UPS.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ALGN.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/UPST.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ALGS.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/URGN.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ALH.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/URI.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ALHC.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/USAK.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ALK.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/USAP.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ALKT.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/USAR.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ALL.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/USAS.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ALLE.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/USAU.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ALLT.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/USB.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ALLY.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/USFD.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ALM.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/USLM.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ALMS.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/USM.parquet"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ALNT.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/quiver/twitter/"
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ALNY.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ALPN.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ALSN.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ALT.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ALTG.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ALTS.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ALXN.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ALXO.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AM.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AMAL.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AMAM.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AMAT.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AMCR.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AMD.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AME.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AMGN.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AMH.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AMLX.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AMP.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AMPG.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AMPH.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AMPX.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AMPY.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AMR.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AMRX.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AMRZ.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AMSC.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AMT.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AMTM.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AMTX.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AMZN.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ANAB.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ANDE.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ANET.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ANF.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ANIP.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ANNX.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ANRO.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ANSS.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AON.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AOS.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AOSL.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/APA.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/APD.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/APEI.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/APEN.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/APG.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/APGE.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/APH.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/APLD.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/APLS.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/APLT.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/APO.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/APP.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/APPF.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/APPS.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/APTS.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/APTV.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AQST.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AR.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ARCH.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ARCT.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ARDX.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ARE.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ARES.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ARHS.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ARIS.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ARLO.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ARLP.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ARM.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ARMK.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ARMN.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ARNC.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AROC.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ARQQ.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ARQT.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ARRY.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ARWR.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AS.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ASC.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ASM.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ASML.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ASO.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ASPC.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ASPI.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ASPN.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ASRT.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ASST.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ASTI.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ASTS.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ASUR.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ASYS.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ATAI.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ATEC.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ATGE.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ATI.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ATKR.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ATLX.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ATNM.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ATO.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ATRO.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ATVI.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/ATYR.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AU.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AUPH.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AUR.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AURC.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AVAV.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AVB.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AVD.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AVDL.parquet"
+      },
+      {
+        "status": "A",
+        "path": "data_prefetch/quiver/twitter/AVEO.parquet"
       }
     ]
   },
   "unpushed_commits": [],
   "active_bgs": [
     {
-      "pid": "48140",
+      "pid": "48744",
       "elapsed": "C:\\Users\\jeetm\\Github\\stock-picks-app\\.venv\\Scripts\\python.exe",
       "script": "prefetch_quiver_new_endpoints",
       "description": "Quiver senate/house/spacs/twitter"
@@ -12474,8 +15010,14 @@
       "description": "Finnhub free-tier (10 endpoints x 1937 tickers)"
     },
     {
-      "pid": "48120",
+      "pid": "48712",
       "elapsed": "/usr/bin/bash",
+      "script": "prefetch_quiver_new_endpoints",
+      "description": "Quiver senate/house/spacs/twitter"
+    },
+    {
+      "pid": "against",
+      "elapsed": "endpoint",
       "script": "prefetch_quiver_new_endpoints",
       "description": "Quiver senate/house/spacs/twitter"
     }
