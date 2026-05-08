@@ -993,3 +993,53 @@ State compliance visibly: "Checklist: ✅ [each item]"
     **First application:** Pass 53 Day-9 v8h evening — retrofit of PREFETCH_COVERAGE_AUDIT.md with columns (b) and (c) per this rule (this commit).
 
     **Joint:** L146/DEC-507 (data + toolkit + wiring three deliverables — #76 is the audit-side counterpart); CHECKLIST #44 (data-consumption audit must include runtime probe — #76 generalizes this to ALL audits, not just data-consumption); CHECKLIST #74 (flag tracker — column (c) recommendations that don't make it into the same commit must spawn an INV-NNN entry); CHECKLIST #75 (pyramid testing — #76 mandates the pyramid scan column-(b) for any audit touching cache); INV-001..INV-013 (the gaps that would have been surfaced earlier had #76 been in force).
+
+77. **HARD RULE — API endpoint catalogs MUST be sourced from canonical API documentation (or live API probe), never from training-data memory** (Pass 53 Day-9 v8h+1 owner directive 2026-05-07 evening; codified after 3 prefetch-coverage audit passes that all worked from memory and missed the same gaps).
+
+    **Owner trigger:** *"This is horrible performance. I specifically said I want ALL available data downloaded. You have done 3 passes on this already and yet this was still missed... Despite multiple L146-style silent gap analysis passes, its still incomplete and these things are not even being flagged."* + (next turn): *"Do not work from memory but rather documentation."*
+
+    **The rule:**
+
+    Every API audit (endpoint listing, gap analysis, coverage matrix, field-level audit) MUST source its endpoint catalog from one of:
+
+    1. **Canonical API documentation page** fetched at audit time (WebFetch a stable URL — `polygon.io/docs/...`, `api.stlouisfed.org/docs/api/`, official `llms.txt` files where available)
+    2. **Live API probe** with our actual API key (`probe_api_catalog.py` pattern — hit each endpoint with one test call, capture HTTP status + sample response schema)
+    3. **Both**, where docs are blocked (403/404) or ambiguous about plan tier — probe is the more authoritative path because it directly verifies tier access
+
+    Training-data memory is NOT acceptable as the catalog source. If memory is the only available source, the audit must explicitly disclose: *"Catalog sourced from training data — NOT phase-gate-suitable. Re-probe required before phase entry."* Silent reliance on memory is non-compliant.
+
+    **Pre-flight verification format for every API audit:**
+
+    ```
+    Source for endpoint catalog: <docs URL fetched at HH:MM> + <probe script run at HH:MM>
+    Probe report: <path/to/PROBE_REPORT.json>
+    Endpoints in catalog: N (M ✅ probe-confirmed, K 🔴, L ❓ deferred)
+    ```
+
+    **Why this is structural, not just discipline:**
+
+    Three consecutive audits in Pass 53 Day-9 v8h:
+    - Pass 1 (commit `c0a3a568`): paper audit — endpoint list from training data
+    - Pass 2 (commit `2fb228ed5`): retrospective enrichment per #76 — applied to existing rows but didn't expand catalog
+    - Pass 3 (commit `212018194`): field-level deep-dive — schema-probed parquets but didn't enumerate API catalog from canonical source
+
+    Each pass found NEW gaps not surfaced by prior passes — the catalog kept growing because each pass was a different lens on the same memory-based starting set. The 4th pass (Pass 53 Day-9 v8h+1, this commit) is the first to ground every endpoint claim in either canonical docs or live probe; surfaced 30+ new findings (Polygon Indices Basic NOT activated, Finnhub key missing, 13 Quiver endpoints don't exist at our tier, SEC EDGAR XBRL solves INV-025/026 partially, Polygon Benzinga is in our tier).
+
+    Owner has paid in 4 audit cycles for the lack of this rule. Memory-based catalogs are the failure mode — make it impossible to silently rely on memory.
+
+    **Past failure pattern motivating this rule:**
+
+    L131 honest-knowledge-limit disclaimer was already in `API_AUDIT.md` Tier 1 framework, BUT was not enforced — I authored 3 passes of audits that ignored that disclaimer. #77 is the enforceable upgrade: every audit's pre-flight must specify the canonical source URL or probe script reference; without it, the audit is non-compliant.
+
+    **Pre-flight verification:** when authoring or extending an API audit, state explicitly: *"Catalog source: <URL fetched HH:MM> + <probe.py run HH:MM>"* (or *"NOT-VERIFIED — paper audit from memory; not phase-gate-suitable"*).
+
+    **End-of-turn check:** if an API audit doc was authored or modified and the source attribution is missing, the response is non-compliant.
+
+    **Caveats / exclusions:**
+
+    - **Quick spot-check (single endpoint, single ticker)** — not subject to #77.
+    - **Audits authored before 2026-05-07** — flagged as memory-based; require re-probe before phase-gating use.
+
+    **First application:** Pass 53 Day-9 v8h+1 commit (this one) — `API_ENDPOINT_INVENTORY.md` sourced from `massive.com/docs/llms.txt` + `alphavantage.co/documentation/` + `publicreporting.cftc.gov/` + `apewisdom.io/api/` + `pytrends` GitHub README + `scripts/probe_api_catalog.py` live probe @ 2026-05-08. Probe report: `API_ENDPOINT_PROBE_REPORT.json`.
+
+    **Joint:** CHECKLIST #76 (column-b runtime probe — #77 is the tighter "where does the catalog come from" rule); CHECKLIST #51 (honest knowledge limit disclaimer); L146/DEC-507 (data + toolkit + wiring); INV-024 reframing (Quiver govcontracts gap turned out to be at API level, not prefetch — a memory-based audit got the assumption wrong); INV-035..INV-037 (this commit's new INV flags: Indices Basic not activated, Finnhub key missing, 13 Quiver paths 404).

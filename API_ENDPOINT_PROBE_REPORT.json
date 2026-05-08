@@ -1,0 +1,1991 @@
+{
+  "polygon": [
+    {
+      "label": "polygon.stocks_aggs_daily",
+      "url": "https://api.polygon.io/v2/aggs/ticker/AAPL/range/1/day/2025-01-01/2025-01-15",
+      "status": 200,
+      "top_keys": [
+        "ticker",
+        "queryCount",
+        "resultsCount",
+        "adjusted",
+        "results",
+        "status",
+        "request_id",
+        "count"
+      ],
+      "sample_record_keys": [
+        "v",
+        "vw",
+        "o",
+        "c",
+        "h",
+        "l",
+        "t",
+        "n"
+      ]
+    },
+    {
+      "label": "polygon.stocks_aggs_minute",
+      "url": "https://api.polygon.io/v2/aggs/ticker/AAPL/range/1/minute/2025-01-15/2025-01-15",
+      "status": 200,
+      "top_keys": [
+        "ticker",
+        "queryCount",
+        "resultsCount",
+        "adjusted",
+        "results",
+        "status",
+        "request_id",
+        "count"
+      ],
+      "sample_record_keys": [
+        "v",
+        "vw",
+        "o",
+        "c",
+        "h",
+        "l",
+        "t",
+        "n"
+      ]
+    },
+    {
+      "label": "polygon.stocks_open_close",
+      "url": "https://api.polygon.io/v1/open-close/AAPL/2025-01-15",
+      "status": 200,
+      "top_keys": [
+        "status",
+        "from",
+        "symbol",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "afterHours",
+        "preMarket"
+      ]
+    },
+    {
+      "label": "polygon.stocks_grouped_daily",
+      "url": "https://api.polygon.io/v2/aggs/grouped/locale/us/market/stocks/2025-01-15",
+      "status": 200,
+      "top_keys": [
+        "queryCount",
+        "resultsCount",
+        "adjusted",
+        "results",
+        "status",
+        "request_id",
+        "count"
+      ],
+      "sample_record_keys": [
+        "T",
+        "v",
+        "vw",
+        "o",
+        "c",
+        "h",
+        "l",
+        "t",
+        "n"
+      ]
+    },
+    {
+      "label": "polygon.stocks_previous_close",
+      "url": "https://api.polygon.io/v2/aggs/ticker/AAPL/prev",
+      "status": 200,
+      "top_keys": [
+        "ticker",
+        "queryCount",
+        "resultsCount",
+        "adjusted",
+        "results",
+        "status",
+        "request_id",
+        "count"
+      ],
+      "sample_record_keys": [
+        "T",
+        "v",
+        "vw",
+        "o",
+        "c",
+        "h",
+        "l",
+        "t",
+        "n"
+      ]
+    },
+    {
+      "label": "polygon.ref_tickers",
+      "url": "https://api.polygon.io/v3/reference/tickers",
+      "status": 200,
+      "top_keys": [
+        "results",
+        "status",
+        "request_id",
+        "count",
+        "next_url"
+      ],
+      "sample_record_keys": [
+        "ticker",
+        "name",
+        "market",
+        "locale",
+        "primary_exchange",
+        "type",
+        "active",
+        "currency_name",
+        "cik",
+        "composite_figi",
+        "share_class_figi",
+        "last_updated_utc"
+      ]
+    },
+    {
+      "label": "polygon.ref_ticker_detail",
+      "url": "https://api.polygon.io/v3/reference/tickers/AAPL",
+      "status": 200,
+      "top_keys": [
+        "request_id",
+        "results",
+        "status"
+      ]
+    },
+    {
+      "label": "polygon.ref_ticker_types",
+      "url": "https://api.polygon.io/v3/reference/tickers/types",
+      "status": 200,
+      "top_keys": [
+        "results",
+        "count",
+        "status",
+        "request_id"
+      ],
+      "sample_record_keys": [
+        "code",
+        "description",
+        "asset_class",
+        "locale"
+      ]
+    },
+    {
+      "label": "polygon.ref_related",
+      "url": "https://api.polygon.io/v1/related-companies/AAPL",
+      "status": 200,
+      "top_keys": [
+        "request_id",
+        "results",
+        "status",
+        "ticker"
+      ],
+      "sample_record_keys": [
+        "ticker"
+      ]
+    },
+    {
+      "label": "polygon.ref_news",
+      "url": "https://api.polygon.io/v2/reference/news",
+      "status": 200,
+      "top_keys": [
+        "results",
+        "status",
+        "request_id",
+        "count",
+        "next_url"
+      ],
+      "sample_record_keys": [
+        "id",
+        "publisher",
+        "title",
+        "author",
+        "published_utc",
+        "article_url",
+        "tickers",
+        "image_url",
+        "description",
+        "keywords",
+        "insights"
+      ]
+    },
+    {
+      "label": "polygon.ref_dividends",
+      "url": "https://api.polygon.io/v3/reference/dividends",
+      "status": 200,
+      "top_keys": [
+        "results",
+        "status",
+        "request_id",
+        "next_url"
+      ],
+      "sample_record_keys": [
+        "cash_amount",
+        "currency",
+        "declaration_date",
+        "dividend_type",
+        "ex_dividend_date",
+        "frequency",
+        "id",
+        "pay_date",
+        "record_date",
+        "ticker"
+      ]
+    },
+    {
+      "label": "polygon.ref_splits",
+      "url": "https://api.polygon.io/v3/reference/splits",
+      "status": 200,
+      "top_keys": [
+        "results",
+        "status",
+        "request_id",
+        "next_url"
+      ],
+      "sample_record_keys": [
+        "execution_date",
+        "id",
+        "split_from",
+        "split_to",
+        "ticker"
+      ]
+    },
+    {
+      "label": "polygon.ref_ipos",
+      "url": "https://api.polygon.io/vX/reference/ipos",
+      "status": 200,
+      "top_keys": [
+        "results",
+        "status",
+        "request_id",
+        "next_url"
+      ],
+      "sample_record_keys": [
+        "ticker",
+        "last_updated",
+        "announced_date",
+        "issuer_name",
+        "currency_code",
+        "max_shares_offered",
+        "primary_exchange",
+        "security_type",
+        "lot_size",
+        "security_description",
+        "ipo_status"
+      ]
+    },
+    {
+      "label": "polygon.ref_events",
+      "url": "https://api.polygon.io/v3/reference/tickers/AAPL/events",
+      "status": 404,
+      "preview": "404 page not found"
+    },
+    {
+      "label": "polygon.ref_financials",
+      "url": "https://api.polygon.io/vX/reference/financials",
+      "status": 200,
+      "top_keys": [
+        "results",
+        "status",
+        "request_id",
+        "next_url"
+      ],
+      "sample_record_keys": [
+        "start_date",
+        "end_date",
+        "timeframe",
+        "fiscal_period",
+        "fiscal_year",
+        "cik",
+        "sic",
+        "tickers",
+        "company_name",
+        "financials"
+      ]
+    },
+    {
+      "label": "polygon.ref_short_interest",
+      "url": "https://api.polygon.io/stocks/v1/short-interest/AAPL",
+      "status": 404,
+      "preview": ""
+    },
+    {
+      "label": "polygon.ref_short_volume",
+      "url": "https://api.polygon.io/stocks/v1/short-volume/AAPL",
+      "status": 404,
+      "preview": ""
+    },
+    {
+      "label": "polygon.ref_conditions",
+      "url": "https://api.polygon.io/v3/reference/conditions",
+      "status": 200,
+      "top_keys": [
+        "results",
+        "status",
+        "request_id",
+        "count",
+        "next_url"
+      ],
+      "sample_record_keys": [
+        "id",
+        "type",
+        "name",
+        "asset_class",
+        "data_types"
+      ]
+    },
+    {
+      "label": "polygon.ref_exchanges",
+      "url": "https://api.polygon.io/v3/reference/exchanges",
+      "status": 200,
+      "top_keys": [
+        "results",
+        "status",
+        "request_id",
+        "count"
+      ],
+      "sample_record_keys": [
+        "id",
+        "type",
+        "asset_class",
+        "locale",
+        "name",
+        "acronym",
+        "mic",
+        "operating_mic",
+        "participant_id",
+        "url"
+      ]
+    },
+    {
+      "label": "polygon.ref_market_holidays",
+      "url": "https://api.polygon.io/v1/marketstatus/upcoming",
+      "status": 200,
+      "sample_record_keys": [
+        "date",
+        "exchange",
+        "name",
+        "status"
+      ],
+      "count": 24
+    },
+    {
+      "label": "polygon.ref_market_status",
+      "url": "https://api.polygon.io/v1/marketstatus/now",
+      "status": 200,
+      "top_keys": [
+        "afterHours",
+        "currencies",
+        "earlyHours",
+        "exchanges",
+        "indicesGroups",
+        "market",
+        "serverTime"
+      ]
+    },
+    {
+      "label": "polygon.filings_10k_sections",
+      "url": "https://api.polygon.io/stocks/v1/filings/10-k",
+      "status": 404,
+      "preview": "404 page not found"
+    },
+    {
+      "label": "polygon.filings_13f",
+      "url": "https://api.polygon.io/stocks/v1/filings/13-f",
+      "status": 404,
+      "preview": "404 page not found"
+    },
+    {
+      "label": "polygon.filings_8k_text",
+      "url": "https://api.polygon.io/stocks/v1/filings/8-k",
+      "status": 404,
+      "preview": "404 page not found"
+    },
+    {
+      "label": "polygon.filings_form3",
+      "url": "https://api.polygon.io/stocks/v1/filings/form-3",
+      "status": 404,
+      "preview": "404 page not found"
+    },
+    {
+      "label": "polygon.filings_form4",
+      "url": "https://api.polygon.io/stocks/v1/filings/form-4",
+      "status": 404,
+      "preview": "404 page not found"
+    },
+    {
+      "label": "polygon.filings_edgar_idx",
+      "url": "https://api.polygon.io/stocks/v1/filings/edgar-index",
+      "status": 404,
+      "preview": "404 page not found"
+    },
+    {
+      "label": "polygon.filings_risk_categories",
+      "url": "https://api.polygon.io/stocks/v1/filings/risk-categories",
+      "status": 404,
+      "preview": "404 page not found"
+    },
+    {
+      "label": "polygon.filings_risk_factors",
+      "url": "https://api.polygon.io/stocks/v1/filings/risk-factors",
+      "status": 404,
+      "preview": "404 page not found"
+    },
+    {
+      "label": "polygon.fund_balance_sheets",
+      "url": "https://api.polygon.io/stocks/v1/fundamentals/balance-sheets",
+      "status": 404,
+      "preview": "404 page not found"
+    },
+    {
+      "label": "polygon.fund_cash_flow",
+      "url": "https://api.polygon.io/stocks/v1/fundamentals/cash-flow",
+      "status": 404,
+      "preview": "404 page not found"
+    },
+    {
+      "label": "polygon.fund_income_statements",
+      "url": "https://api.polygon.io/stocks/v1/fundamentals/income-statements",
+      "status": 404,
+      "preview": "404 page not found"
+    },
+    {
+      "label": "polygon.fund_ratios",
+      "url": "https://api.polygon.io/stocks/v1/fundamentals/ratios",
+      "status": 404,
+      "preview": "404 page not found"
+    },
+    {
+      "label": "polygon.fund_float",
+      "url": "https://api.polygon.io/stocks/v1/fundamentals/float",
+      "status": 404,
+      "preview": "404 page not found"
+    },
+    {
+      "label": "polygon.snap_full_market",
+      "url": "https://api.polygon.io/v2/snapshot/locale/us/markets/stocks/tickers",
+      "status": 200,
+      "top_keys": [
+        "tickers",
+        "status",
+        "request_id",
+        "count"
+      ],
+      "sample_record_keys": [
+        "ticker",
+        "todaysChangePerc",
+        "todaysChange",
+        "updated",
+        "day",
+        "min",
+        "prevDay"
+      ]
+    },
+    {
+      "label": "polygon.snap_single_ticker",
+      "url": "https://api.polygon.io/v2/snapshot/locale/us/markets/stocks/tickers/AAPL",
+      "status": 200,
+      "top_keys": [
+        "ticker",
+        "status",
+        "request_id"
+      ]
+    },
+    {
+      "label": "polygon.snap_top_movers",
+      "url": "https://api.polygon.io/v2/snapshot/locale/us/markets/stocks/gainers",
+      "status": 200,
+      "top_keys": [
+        "tickers",
+        "status",
+        "request_id"
+      ],
+      "sample_record_keys": [
+        "ticker",
+        "todaysChangePerc",
+        "todaysChange",
+        "updated",
+        "day",
+        "min",
+        "prevDay"
+      ]
+    },
+    {
+      "label": "polygon.snap_unified",
+      "url": "https://api.polygon.io/v3/snapshot",
+      "status": 200,
+      "top_keys": [
+        "results",
+        "status",
+        "request_id"
+      ],
+      "sample_record_keys": [
+        "market_status",
+        "name",
+        "ticker",
+        "type",
+        "session",
+        "last_minute"
+      ]
+    },
+    {
+      "label": "polygon.ind_sma",
+      "url": "https://api.polygon.io/v1/indicators/sma/AAPL",
+      "status": 200,
+      "top_keys": [
+        "results",
+        "status",
+        "request_id"
+      ]
+    },
+    {
+      "label": "polygon.ind_ema",
+      "url": "https://api.polygon.io/v1/indicators/ema/AAPL",
+      "status": 200,
+      "top_keys": [
+        "results",
+        "status",
+        "request_id"
+      ]
+    },
+    {
+      "label": "polygon.ind_rsi",
+      "url": "https://api.polygon.io/v1/indicators/rsi/AAPL",
+      "status": 200,
+      "top_keys": [
+        "results",
+        "status",
+        "request_id"
+      ]
+    },
+    {
+      "label": "polygon.ind_macd",
+      "url": "https://api.polygon.io/v1/indicators/macd/AAPL",
+      "status": 200,
+      "top_keys": [
+        "results",
+        "status",
+        "request_id"
+      ]
+    },
+    {
+      "label": "polygon.last_trade",
+      "url": "https://api.polygon.io/v2/last/trade/AAPL",
+      "status": 403,
+      "preview": "{\"status\":\"NOT_AUTHORIZED\",\"request_id\":\"4d55237884f51e4b44af54de3b9b799a\",\"message\":\"You are not entitled to this data. Please upgrade your plan at https://massive.com/pricing\"}"
+    },
+    {
+      "label": "polygon.last_quote",
+      "url": "https://api.polygon.io/v2/last/nbbo/AAPL",
+      "status": 403,
+      "preview": "{\"status\":\"NOT_AUTHORIZED\",\"request_id\":\"84d6f9c40fae9611e39237abca05e381\",\"message\":\"You are not entitled to this data. Please upgrade your plan at https://massive.com/pricing\"}"
+    },
+    {
+      "label": "polygon.trades",
+      "url": "https://api.polygon.io/v3/trades/AAPL",
+      "status": 403,
+      "preview": "{\"status\":\"NOT_AUTHORIZED\",\"request_id\":\"f3fad2bc5ddf4ba9957455a97d99af92\",\"message\":\"You are not entitled to this data. Please upgrade your plan at https://massive.com/pricing\"}"
+    },
+    {
+      "label": "polygon.quotes",
+      "url": "https://api.polygon.io/v3/quotes/AAPL",
+      "status": 403,
+      "preview": "{\"status\":\"NOT_AUTHORIZED\",\"request_id\":\"befafad99b60cd2be7b06a97d9c5ccf6\",\"message\":\"You are not entitled to this data. Please upgrade your plan at https://massive.com/pricing\"}"
+    },
+    {
+      "label": "polygon.econ_inflation",
+      "url": "https://api.polygon.io/fed/v1/inflation",
+      "status": 200,
+      "top_keys": [
+        "status",
+        "request_id",
+        "results",
+        "next_url"
+      ],
+      "sample_record_keys": [
+        "date",
+        "cpi"
+      ]
+    },
+    {
+      "label": "polygon.econ_inflation_exp",
+      "url": "https://api.polygon.io/fed/v1/inflation-expectations",
+      "status": 200,
+      "top_keys": [
+        "status",
+        "request_id",
+        "results",
+        "next_url"
+      ],
+      "sample_record_keys": [
+        "date",
+        "model_1_year",
+        "model_5_year",
+        "model_10_year",
+        "model_30_year"
+      ]
+    },
+    {
+      "label": "polygon.econ_labor",
+      "url": "https://api.polygon.io/fed/v1/labor",
+      "status": 404,
+      "preview": "404 page not found"
+    },
+    {
+      "label": "polygon.econ_treasury_yields",
+      "url": "https://api.polygon.io/fed/v1/treasury-yields",
+      "status": 200,
+      "top_keys": [
+        "status",
+        "request_id",
+        "results",
+        "next_url"
+      ],
+      "sample_record_keys": [
+        "date",
+        "yield_1_year",
+        "yield_5_year",
+        "yield_10_year"
+      ]
+    },
+    {
+      "label": "polygon.idx_aggs_spx",
+      "url": "https://api.polygon.io/v2/aggs/ticker/I:SPX/range/1/day/2025-01-01/2025-01-15",
+      "status": 403,
+      "preview": "{\"status\":\"NOT_AUTHORIZED\",\"request_id\":\"25754ccef2296742d577437fbcb8d7b6\",\"message\":\"You are not entitled to this data. Please upgrade your plan at https://massive.com/pricing\"}"
+    },
+    {
+      "label": "polygon.idx_aggs_ndx",
+      "url": "https://api.polygon.io/v2/aggs/ticker/I:NDX/range/1/day/2025-01-01/2025-01-15",
+      "status": 200,
+      "top_keys": [
+        "ticker",
+        "queryCount",
+        "results",
+        "status",
+        "request_id",
+        "count"
+      ],
+      "sample_record_keys": [
+        "o",
+        "c",
+        "h",
+        "l",
+        "t"
+      ]
+    },
+    {
+      "label": "polygon.idx_aggs_dji",
+      "url": "https://api.polygon.io/v2/aggs/ticker/I:DJI/range/1/day/2025-01-01/2025-01-15",
+      "status": 403,
+      "preview": "{\"status\":\"NOT_AUTHORIZED\",\"request_id\":\"3a4bb8a9877a4ac1a292963e702dd6f7\",\"message\":\"You are not entitled to this data. Please upgrade your plan at https://massive.com/pricing\"}"
+    },
+    {
+      "label": "polygon.idx_aggs_rut",
+      "url": "https://api.polygon.io/v2/aggs/ticker/I:RUT/range/1/day/2025-01-01/2025-01-15",
+      "status": 403,
+      "preview": "{\"status\":\"NOT_AUTHORIZED\",\"request_id\":\"347e92920df0fbb800f93fe31870019a\",\"message\":\"You are not entitled to this data. Please upgrade your plan at https://massive.com/pricing\"}"
+    },
+    {
+      "label": "polygon.idx_aggs_vix",
+      "url": "https://api.polygon.io/v2/aggs/ticker/I:VIX/range/1/day/2025-01-01/2025-01-15",
+      "status": 403,
+      "preview": "{\"status\":\"NOT_AUTHORIZED\",\"request_id\":\"056933f9c39283847cae73178dd91fb2\",\"message\":\"You are not entitled to this data. Please upgrade your plan at https://massive.com/pricing\"}"
+    },
+    {
+      "label": "polygon.idx_aggs_vix9d",
+      "url": "https://api.polygon.io/v2/aggs/ticker/I:VIX9D/range/1/day/2025-01-01/2025-01-15",
+      "status": 403,
+      "preview": "{\"status\":\"NOT_AUTHORIZED\",\"request_id\":\"b38e9336c8fa0cee2c786ecbaded0973\",\"message\":\"You are not entitled to this data. Please upgrade your plan at https://massive.com/pricing\"}"
+    },
+    {
+      "label": "polygon.idx_aggs_vix3m",
+      "url": "https://api.polygon.io/v2/aggs/ticker/I:VIX3M/range/1/day/2025-01-01/2025-01-15",
+      "status": 403,
+      "preview": "{\"status\":\"NOT_AUTHORIZED\",\"request_id\":\"00655cabe0cbb8827bb4382481fe24b1\",\"message\":\"You are not entitled to this data. Please upgrade your plan at https://massive.com/pricing\"}"
+    },
+    {
+      "label": "polygon.idx_aggs_vvix",
+      "url": "https://api.polygon.io/v2/aggs/ticker/I:VVIX/range/1/day/2025-01-01/2025-01-15",
+      "status": 403,
+      "preview": "{\"status\":\"NOT_AUTHORIZED\",\"request_id\":\"3a4fcbe9aa4f7aa457f456b62baa8899\",\"message\":\"You are not entitled to this data. Please upgrade your plan at https://massive.com/pricing\"}"
+    },
+    {
+      "label": "polygon.idx_aggs_oex",
+      "url": "https://api.polygon.io/v2/aggs/ticker/I:OEX/range/1/day/2025-01-01/2025-01-15",
+      "status": 403,
+      "preview": "{\"status\":\"NOT_AUTHORIZED\",\"request_id\":\"5e239c48c14d029787f0a6dfbffa4d7a\",\"message\":\"You are not entitled to this data. Please upgrade your plan at https://massive.com/pricing\"}"
+    },
+    {
+      "label": "polygon.idx_tickers_all",
+      "url": "https://api.polygon.io/v3/reference/tickers",
+      "status": 200,
+      "top_keys": [
+        "results",
+        "status",
+        "request_id",
+        "count",
+        "next_url"
+      ],
+      "sample_record_keys": [
+        "ticker",
+        "name",
+        "market",
+        "locale",
+        "active",
+        "source_feed"
+      ]
+    },
+    {
+      "label": "polygon.idx_snapshot",
+      "url": "https://api.polygon.io/v3/snapshot/indices",
+      "status": 403,
+      "preview": "{\"status\":\"NOT_AUTHORIZED\",\"request_id\":\"392d604ccba1d6e5cc626a138263dae1\",\"message\":\"You are not entitled to this data. Please upgrade your plan at https://massive.com/pricing\"}"
+    },
+    {
+      "label": "polygon.opt_contracts",
+      "url": "https://api.polygon.io/v3/reference/options/contracts",
+      "status": 200,
+      "top_keys": [
+        "results",
+        "status",
+        "request_id",
+        "next_url"
+      ],
+      "sample_record_keys": [
+        "cfi",
+        "contract_type",
+        "exercise_style",
+        "expiration_date",
+        "primary_exchange",
+        "shares_per_contract",
+        "strike_price",
+        "ticker",
+        "underlying_ticker"
+      ]
+    },
+    {
+      "label": "polygon.opt_aggs",
+      "url": "https://api.polygon.io/v2/aggs/ticker/O:AAPL250117C00200000/range/1/day/2024-01-01/2025-01-15",
+      "status": 200,
+      "top_keys": [
+        "ticker",
+        "queryCount",
+        "resultsCount",
+        "adjusted",
+        "results",
+        "status",
+        "request_id",
+        "count"
+      ],
+      "sample_record_keys": [
+        "v",
+        "vw",
+        "o",
+        "c",
+        "h",
+        "l",
+        "t",
+        "n"
+      ]
+    },
+    {
+      "label": "polygon.opt_snapshot_chain",
+      "url": "https://api.polygon.io/v3/snapshot/options/AAPL",
+      "status": 403,
+      "preview": "{\"status\":\"NOT_AUTHORIZED\",\"request_id\":\"a70ffc99c7224dd23e26adca64e4c1b9\",\"message\":\"You are not entitled to this data. Please upgrade your plan at https://massive.com/pricing\"}"
+    },
+    {
+      "label": "polygon.opt_trades",
+      "url": "https://api.polygon.io/v3/trades/O:AAPL250117C00200000",
+      "status": 403,
+      "preview": "{\"status\":\"NOT_AUTHORIZED\",\"request_id\":\"80acb7f5e1fd75a69869a4fa6cd4c596\",\"message\":\"You are not entitled to this data. Please upgrade your plan at https://massive.com/pricing\"}"
+    },
+    {
+      "label": "polygon.opt_quotes",
+      "url": "https://api.polygon.io/v3/quotes/O:AAPL250117C00200000",
+      "status": 403,
+      "preview": "{\"status\":\"NOT_AUTHORIZED\",\"request_id\":\"a9ed87e4ca709582a530a2648a498550\",\"message\":\"You are not entitled to this data. Please upgrade your plan at https://massive.com/pricing\"}"
+    },
+    {
+      "label": "polygon.fut_contracts",
+      "url": "https://api.polygon.io/futures/v1/contracts",
+      "status": 200,
+      "top_keys": [
+        "status",
+        "request_id",
+        "results",
+        "next_url"
+      ],
+      "sample_record_keys": [
+        "active",
+        "date",
+        "first_trade_date",
+        "last_trade_date",
+        "name",
+        "product_code",
+        "ticker",
+        "trading_venue",
+        "group_code"
+      ]
+    },
+    {
+      "label": "polygon.fut_products",
+      "url": "https://api.polygon.io/futures/v1/products",
+      "status": 200,
+      "top_keys": [
+        "status",
+        "request_id",
+        "results",
+        "next_url"
+      ],
+      "sample_record_keys": [
+        "asset_sub_class",
+        "date",
+        "last_updated",
+        "product_code",
+        "trade_currency_code",
+        "trading_venue",
+        "type",
+        "unit_of_measure",
+        "unit_of_measure_qty"
+      ]
+    },
+    {
+      "label": "polygon.fut_aggs_es",
+      "url": "https://api.polygon.io/v2/aggs/ticker/ES/range/1/day/2025-01-01/2025-01-15",
+      "status": 200,
+      "top_keys": [
+        "ticker",
+        "queryCount",
+        "resultsCount",
+        "adjusted",
+        "results",
+        "status",
+        "request_id",
+        "count"
+      ],
+      "sample_record_keys": [
+        "v",
+        "vw",
+        "o",
+        "c",
+        "h",
+        "l",
+        "t",
+        "n"
+      ]
+    },
+    {
+      "label": "polygon.fut_aggs_vx",
+      "url": "https://api.polygon.io/v2/aggs/ticker/VX/range/1/day/2025-01-01/2025-01-15",
+      "status": 200,
+      "top_keys": [
+        "ticker",
+        "queryCount",
+        "resultsCount",
+        "adjusted",
+        "status",
+        "request_id"
+      ]
+    },
+    {
+      "label": "polygon.fut_schedules",
+      "url": "https://api.polygon.io/futures/v1/schedules",
+      "status": 200,
+      "top_keys": [
+        "status",
+        "request_id",
+        "results",
+        "next_url"
+      ],
+      "sample_record_keys": [
+        "product_code",
+        "product_name",
+        "session_end_date",
+        "trading_venue",
+        "event",
+        "timestamp"
+      ]
+    },
+    {
+      "label": "polygon.fx_aggs_eurusd",
+      "url": "https://api.polygon.io/v2/aggs/ticker/C:EURUSD/range/1/day/2025-01-01/2025-01-15",
+      "status": 200,
+      "top_keys": [
+        "ticker",
+        "queryCount",
+        "resultsCount",
+        "adjusted",
+        "results",
+        "status",
+        "request_id",
+        "count"
+      ],
+      "sample_record_keys": [
+        "v",
+        "vw",
+        "o",
+        "c",
+        "h",
+        "l",
+        "t",
+        "n"
+      ]
+    },
+    {
+      "label": "polygon.fx_aggs_usdjpy",
+      "url": "https://api.polygon.io/v2/aggs/ticker/C:USDJPY/range/1/day/2025-01-01/2025-01-15",
+      "status": 200,
+      "top_keys": [
+        "ticker",
+        "queryCount",
+        "resultsCount",
+        "adjusted",
+        "results",
+        "status",
+        "request_id",
+        "count"
+      ],
+      "sample_record_keys": [
+        "v",
+        "vw",
+        "o",
+        "c",
+        "h",
+        "l",
+        "t",
+        "n"
+      ]
+    },
+    {
+      "label": "polygon.fx_conversion",
+      "url": "https://api.polygon.io/v1/conversion/USD/EUR",
+      "status": 403,
+      "preview": "{\"status\":\"NOT_AUTHORIZED\",\"request_id\":\"98c6bc499c5d651472f9b8a1d9fde7d9\",\"message\":\"You are not entitled to this data. Please upgrade your plan at https://massive.com/pricing\"}"
+    },
+    {
+      "label": "polygon.fx_tickers_all",
+      "url": "https://api.polygon.io/v3/reference/tickers",
+      "status": 200,
+      "top_keys": [
+        "results",
+        "status",
+        "request_id",
+        "count",
+        "next_url"
+      ],
+      "sample_record_keys": [
+        "ticker",
+        "name",
+        "market",
+        "locale",
+        "active",
+        "currency_symbol",
+        "currency_name",
+        "base_currency_symbol",
+        "base_currency_name",
+        "last_updated_utc"
+      ]
+    },
+    {
+      "label": "polygon.benzinga_analyst",
+      "url": "https://api.polygon.io/benzinga/v1/analyst-insights",
+      "status": 200,
+      "top_keys": [
+        "status",
+        "request_id",
+        "results",
+        "next_url"
+      ],
+      "sample_record_keys": [
+        "rating_action",
+        "insight",
+        "date",
+        "firm",
+        "price_target",
+        "rating",
+        "last_updated",
+        "company_name",
+        "ticker",
+        "benzinga_firm_id",
+        "benzinga_rating_id",
+        "benzinga_id"
+      ]
+    },
+    {
+      "label": "polygon.etfglobal_constituents",
+      "url": "https://api.polygon.io/etfg/v1/constituents",
+      "status": 404,
+      "preview": "404 page not found"
+    },
+    {
+      "label": "polygon.tmx_corporate_events",
+      "url": "https://api.polygon.io/tmx/v1/corporate-events",
+      "status": 403,
+      "preview": "{\"status\":\"NOT_AUTHORIZED\",\"request_id\":\"1bc209d5c8053b9c71223fca2821724b\",\"message\":\"You are not entitled to this data. Please upgrade your plan at https://massive.com/pricing\"}"
+    }
+  ],
+  "quiver": [
+    {
+      "label": "quiver.historical.congresstrading",
+      "url": "https://api.quiverquant.com/beta/historical/congresstrading/AAPL",
+      "status": 200,
+      "sample_record_keys": [
+        "Representative",
+        "BioGuideID",
+        "ReportDate",
+        "TransactionDate",
+        "Ticker",
+        "Transaction",
+        "Range",
+        "House",
+        "Amount",
+        "Party",
+        "last_modified",
+        "TickerType",
+        "Description",
+        "ExcessReturn",
+        "PriceChange",
+        "SPYChange"
+      ],
+      "count": 1089
+    },
+    {
+      "label": "quiver.historical.senatetrading",
+      "url": "https://api.quiverquant.com/beta/historical/senatetrading/AAPL",
+      "status": 200,
+      "sample_record_keys": [
+        "Senator",
+        "BioGuideID",
+        "Date",
+        "Ticker",
+        "Transaction",
+        "Range",
+        "Amount",
+        "last_modified"
+      ],
+      "count": 212
+    },
+    {
+      "label": "quiver.historical.housetrading",
+      "url": "https://api.quiverquant.com/beta/historical/housetrading/AAPL",
+      "status": 200,
+      "sample_record_keys": [
+        "Representative",
+        "BioGuideID",
+        "Date",
+        "Ticker",
+        "Transaction",
+        "Range",
+        "Amount",
+        "last_modified"
+      ],
+      "count": 479
+    },
+    {
+      "label": "quiver.historical.govcontracts",
+      "url": "https://api.quiverquant.com/beta/historical/govcontracts/AAPL",
+      "status": 200,
+      "sample_record_keys": [
+        "Ticker",
+        "Amount",
+        "Qtr",
+        "Year"
+      ],
+      "count": 66
+    },
+    {
+      "label": "quiver.historical.lobbying",
+      "url": "https://api.quiverquant.com/beta/historical/lobbying/AAPL",
+      "status": 200,
+      "sample_record_keys": [
+        "Date",
+        "Amount",
+        "Client",
+        "Issue",
+        "Specific_Issue",
+        "Registrant",
+        "Ticker"
+      ],
+      "count": 388
+    },
+    {
+      "label": "quiver.historical.wikipedia",
+      "url": "https://api.quiverquant.com/beta/historical/wikipedia/AAPL",
+      "status": 404,
+      "preview": "\n<!doctype html>\n<html lang=\"en\">\n<head>\n  <title>Not Found</title>\n</head>\n<body>\n  <h1>Not Found</h1><p>The requested resource was not found on this server.</p>\n<script>(function(){function c(){var "
+    },
+    {
+      "label": "quiver.historical.wallstreetbets",
+      "url": "https://api.quiverquant.com/beta/historical/wallstreetbets/AAPL",
+      "status": 200,
+      "sample_record_keys": [
+        "Date",
+        "Ticker",
+        "Mentions",
+        "Rank",
+        "Sentiment"
+      ],
+      "count": 2343
+    },
+    {
+      "label": "quiver.historical.twitter",
+      "url": "https://api.quiverquant.com/beta/historical/twitter/AAPL",
+      "status": 200
+    },
+    {
+      "label": "quiver.historical.patentmomentum",
+      "url": "https://api.quiverquant.com/beta/historical/patentmomentum/AAPL",
+      "status": 404,
+      "preview": "\n<!doctype html>\n<html lang=\"en\">\n<head>\n  <title>Not Found</title>\n</head>\n<body>\n  <h1>Not Found</h1><p>The requested resource was not found on this server.</p>\n<script>(function(){function c(){var "
+    },
+    {
+      "label": "quiver.historical.appratings",
+      "url": "https://api.quiverquant.com/beta/historical/appratings/AAPL",
+      "status": 404,
+      "preview": "\n<!doctype html>\n<html lang=\"en\">\n<head>\n  <title>Not Found</title>\n</head>\n<body>\n  <h1>Not Found</h1><p>The requested resource was not found on this server.</p>\n<script>(function(){function c(){var "
+    },
+    {
+      "label": "quiver.historical.sec13fchanges",
+      "url": "https://api.quiverquant.com/beta/historical/sec13fchanges/AAPL",
+      "status": 404,
+      "preview": "\n<!doctype html>\n<html lang=\"en\">\n<head>\n  <title>Not Found</title>\n</head>\n<body>\n  <h1>Not Found</h1><p>The requested resource was not found on this server.</p>\n<script>(function(){function c(){var "
+    },
+    {
+      "label": "quiver.historical.insidertrading",
+      "url": "https://api.quiverquant.com/beta/historical/insidertrading/AAPL",
+      "status": 404,
+      "preview": "\n<!doctype html>\n<html lang=\"en\">\n<head>\n  <title>Not Found</title>\n</head>\n<body>\n  <h1>Not Found</h1><p>The requested resource was not found on this server.</p>\n<script>(function(){function c(){var "
+    },
+    {
+      "label": "quiver.historical.earningsbeats",
+      "url": "https://api.quiverquant.com/beta/historical/earningsbeats/AAPL",
+      "status": 404,
+      "preview": "\n<!doctype html>\n<html lang=\"en\">\n<head>\n  <title>Not Found</title>\n</head>\n<body>\n  <h1>Not Found</h1><p>The requested resource was not found on this server.</p>\n<script>(function(){function c(){var "
+    },
+    {
+      "label": "quiver.historical.redditpoliticians",
+      "url": "https://api.quiverquant.com/beta/historical/redditpoliticians/AAPL",
+      "status": 404,
+      "preview": "\n<!doctype html>\n<html lang=\"en\">\n<head>\n  <title>Not Found</title>\n</head>\n<body>\n  <h1>Not Found</h1><p>The requested resource was not found on this server.</p>\n<script>(function(){function c(){var "
+    },
+    {
+      "label": "quiver.historical.reddittendies",
+      "url": "https://api.quiverquant.com/beta/historical/reddittendies/AAPL",
+      "status": 404,
+      "preview": "\n<!doctype html>\n<html lang=\"en\">\n<head>\n  <title>Not Found</title>\n</head>\n<body>\n  <h1>Not Found</h1><p>The requested resource was not found on this server.</p>\n<script>(function(){function c(){var "
+    },
+    {
+      "label": "quiver.historical.snptrend",
+      "url": "https://api.quiverquant.com/beta/historical/snptrend/AAPL",
+      "status": 404,
+      "preview": "\n<!doctype html>\n<html lang=\"en\">\n<head>\n  <title>Not Found</title>\n</head>\n<body>\n  <h1>Not Found</h1><p>The requested resource was not found on this server.</p>\n<script>(function(){function c(){var "
+    },
+    {
+      "label": "quiver.historical.swaps",
+      "url": "https://api.quiverquant.com/beta/historical/swaps/AAPL",
+      "status": 404,
+      "preview": "\n<!doctype html>\n<html lang=\"en\">\n<head>\n  <title>Not Found</title>\n</head>\n<body>\n  <h1>Not Found</h1><p>The requested resource was not found on this server.</p>\n<script>(function(){function c(){var "
+    },
+    {
+      "label": "quiver.historical.googletrends",
+      "url": "https://api.quiverquant.com/beta/historical/googletrends/AAPL",
+      "status": 404,
+      "preview": "\n<!doctype html>\n<html lang=\"en\">\n<head>\n  <title>Not Found</title>\n</head>\n<body>\n  <h1>Not Found</h1><p>The requested resource was not found on this server.</p>\n<script>(function(){function c(){var "
+    },
+    {
+      "label": "quiver.historical.linkedindata",
+      "url": "https://api.quiverquant.com/beta/historical/linkedindata/AAPL",
+      "status": 404,
+      "preview": "\n<!doctype html>\n<html lang=\"en\">\n<head>\n  <title>Not Found</title>\n</head>\n<body>\n  <h1>Not Found</h1><p>The requested resource was not found on this server.</p>\n<script>(function(){function c(){var "
+    },
+    {
+      "label": "quiver.historical.iposcalendar",
+      "url": "https://api.quiverquant.com/beta/historical/iposcalendar/AAPL",
+      "status": 404,
+      "preview": "\n<!doctype html>\n<html lang=\"en\">\n<head>\n  <title>Not Found</title>\n</head>\n<body>\n  <h1>Not Found</h1><p>The requested resource was not found on this server.</p>\n<script>(function(){function c(){var "
+    },
+    {
+      "label": "quiver.historical.spacs",
+      "url": "https://api.quiverquant.com/beta/historical/spacs/AAPL",
+      "status": 200,
+      "sample_record_keys": [
+        "Date",
+        "Ticker",
+        "Mentions",
+        "Rank",
+        "Sentiment"
+      ],
+      "count": 108
+    },
+    {
+      "label": "quiver.historical.optionsflow",
+      "url": "https://api.quiverquant.com/beta/historical/optionsflow/AAPL",
+      "status": 404,
+      "preview": "\n<!doctype html>\n<html lang=\"en\">\n<head>\n  <title>Not Found</title>\n</head>\n<body>\n  <h1>Not Found</h1><p>The requested resource was not found on this server.</p>\n<script>(function(){function c(){var "
+    },
+    {
+      "label": "quiver.historical.estimates",
+      "url": "https://api.quiverquant.com/beta/historical/estimates/AAPL",
+      "status": 404,
+      "preview": "\n<!doctype html>\n<html lang=\"en\">\n<head>\n  <title>Not Found</title>\n</head>\n<body>\n  <h1>Not Found</h1><p>The requested resource was not found on this server.</p>\n<script>(function(){function c(){var "
+    },
+    {
+      "label": "quiver.live.insiders",
+      "url": "https://api.quiverquant.com/beta/live/insiders",
+      "status": 200,
+      "sample_record_keys": [
+        "Ticker",
+        "Date",
+        "Name",
+        "AcquiredDisposedCode",
+        "TransactionCode",
+        "Shares",
+        "PricePerShare",
+        "SharesOwnedFollowing",
+        "fileDate",
+        "officerTitle",
+        "isDirector",
+        "isOfficer",
+        "isTenPercentOwner",
+        "isOther",
+        "directOrIndirectOwnership",
+        "uploaded"
+      ],
+      "count": 349
+    },
+    {
+      "label": "quiver.live.sec13f",
+      "url": "https://api.quiverquant.com/beta/live/sec13f",
+      "status": 200,
+      "sample_record_keys": [
+        "Date",
+        "ReportPeriod",
+        "Name",
+        "Ticker",
+        "Fund",
+        "Class",
+        "Value",
+        "Shares",
+        "SH/PRN",
+        "Put/Call",
+        "Direction"
+      ],
+      "count": 10000
+    },
+    {
+      "label": "quiver.live.sec13fchanges",
+      "url": "https://api.quiverquant.com/beta/live/sec13fchanges",
+      "status": 200,
+      "sample_record_keys": [
+        "Date",
+        "ReportPeriod",
+        "Ticker",
+        "Fund",
+        "Change",
+        "Change_Share",
+        "Change_Pct",
+        "Held",
+        "Held_Normalized",
+        "Close"
+      ],
+      "count": 10000
+    },
+    {
+      "label": "quiver.live.offexchange",
+      "url": "https://api.quiverquant.com/beta/live/offexchange",
+      "status": 200,
+      "sample_record_keys": [
+        "Ticker",
+        "Date",
+        "OTC_Short",
+        "OTC_Total",
+        "DPI"
+      ],
+      "count": 5416
+    },
+    {
+      "label": "quiver.live.topshareholders",
+      "url": "https://api.quiverquant.com/beta/live/topshareholders",
+      "status": 404,
+      "preview": "\n<!doctype html>\n<html lang=\"en\">\n<head>\n  <title>Not Found</title>\n</head>\n<body>\n  <h1>Not Found</h1><p>The requested resource was not found on this server.</p>\n<script>(function(){function c(){var "
+    },
+    {
+      "label": "quiver.live.etfholdings",
+      "url": "https://api.quiverquant.com/beta/live/etfholdings",
+      "status": 200,
+      "sample_record_keys": [
+        "ETF Symbol",
+        "Holding Name",
+        "Holding Symbol",
+        "% of ETF",
+        "Value ($)"
+      ],
+      "count": 706
+    },
+    {
+      "label": "quiver.live.corporatedonors",
+      "url": "https://api.quiverquant.com/beta/live/corporatedonors",
+      "status": 404,
+      "preview": "\n<!doctype html>\n<html lang=\"en\">\n<head>\n  <title>Not Found</title>\n</head>\n<body>\n  <h1>Not Found</h1><p>The requested resource was not found on this server.</p>\n<script>(function(){function c(){var "
+    },
+    {
+      "label": "quiver.live.patentmomentum",
+      "url": "https://api.quiverquant.com/beta/live/patentmomentum",
+      "status": 200,
+      "sample_record_keys": [
+        "ticker",
+        "date",
+        "momentum"
+      ],
+      "count": 108
+    },
+    {
+      "label": "quiver.live.quivernews",
+      "url": "https://api.quiverquant.com/beta/live/quivernews",
+      "status": 200,
+      "top_keys": [
+        "data"
+      ],
+      "sample_record_keys": [
+        "url",
+        "time",
+        "headline",
+        "category",
+        "summary",
+        "image"
+      ]
+    },
+    {
+      "label": "quiver.live.wikipedia",
+      "url": "https://api.quiverquant.com/beta/live/wikipedia",
+      "status": 404,
+      "preview": "\n<!doctype html>\n<html lang=\"en\">\n<head>\n  <title>Not Found</title>\n</head>\n<body>\n  <h1>Not Found</h1><p>The requested resource was not found on this server.</p>\n<script>(function(){function c(){var "
+    },
+    {
+      "label": "quiver.live.wallstreetbets",
+      "url": "https://api.quiverquant.com/beta/live/wallstreetbets",
+      "status": 200,
+      "sample_record_keys": [
+        "Ticker",
+        "Count",
+        "Sentiment"
+      ],
+      "count": 307
+    },
+    {
+      "label": "quiver.live.twitter",
+      "url": "https://api.quiverquant.com/beta/live/twitter",
+      "status": 200,
+      "sample_record_keys": [
+        "Ticker",
+        "Date",
+        "Followers",
+        "pct_change",
+        "pct_change_week",
+        "pct_change_daily"
+      ],
+      "count": 1
+    },
+    {
+      "label": "quiver.live.iposcalendar",
+      "url": "https://api.quiverquant.com/beta/live/iposcalendar",
+      "status": 404,
+      "preview": "\n<!doctype html>\n<html lang=\"en\">\n<head>\n  <title>Not Found</title>\n</head>\n<body>\n  <h1>Not Found</h1><p>The requested resource was not found on this server.</p>\n<script>(function(){function c(){var "
+    },
+    {
+      "label": "quiver.live.spacs",
+      "url": "https://api.quiverquant.com/beta/live/spacs",
+      "status": 200,
+      "sample_record_keys": [
+        "Time",
+        "Ticker",
+        "Count",
+        "Sentiment"
+      ],
+      "count": 2
+    },
+    {
+      "label": "quiver.bulk.congresstrading",
+      "url": "https://api.quiverquant.com/beta/bulk/congresstrading",
+      "error": "HTTPSConnectionPool(host='api.quiverquant.com', port=443): Read timed out. (read timeout=15)"
+    },
+    {
+      "label": "quiver.bulk.senatetrading",
+      "url": "https://api.quiverquant.com/beta/bulk/senatetrading",
+      "status": 404,
+      "preview": "\n<!doctype html>\n<html lang=\"en\">\n<head>\n  <title>Not Found</title>\n</head>\n<body>\n  <h1>Not Found</h1><p>The requested resource was not found on this server.</p>\n<script>(function(){function c(){var "
+    },
+    {
+      "label": "quiver.bulk.housetrading",
+      "url": "https://api.quiverquant.com/beta/bulk/housetrading",
+      "status": 404,
+      "preview": "\n<!doctype html>\n<html lang=\"en\">\n<head>\n  <title>Not Found</title>\n</head>\n<body>\n  <h1>Not Found</h1><p>The requested resource was not found on this server.</p>\n<script>(function(){function c(){var "
+    },
+    {
+      "label": "quiver.bulk.insiders",
+      "url": "https://api.quiverquant.com/beta/bulk/insiders",
+      "status": 404,
+      "preview": "\n<!doctype html>\n<html lang=\"en\">\n<head>\n  <title>Not Found</title>\n</head>\n<body>\n  <h1>Not Found</h1><p>The requested resource was not found on this server.</p>\n<script>(function(){function c(){var "
+    },
+    {
+      "label": "quiver.bulk.sec13f",
+      "url": "https://api.quiverquant.com/beta/bulk/sec13f",
+      "status": 404,
+      "preview": "\n<!doctype html>\n<html lang=\"en\">\n<head>\n  <title>Not Found</title>\n</head>\n<body>\n  <h1>Not Found</h1><p>The requested resource was not found on this server.</p>\n<script>(function(){function c(){var "
+    },
+    {
+      "label": "quiver.bulk.govcontracts",
+      "url": "https://api.quiverquant.com/beta/bulk/govcontracts",
+      "status": 404,
+      "preview": "\n<!doctype html>\n<html lang=\"en\">\n<head>\n  <title>Not Found</title>\n</head>\n<body>\n  <h1>Not Found</h1><p>The requested resource was not found on this server.</p>\n<script>(function(){function c(){var "
+    },
+    {
+      "label": "quiver.bulk.lobbying",
+      "url": "https://api.quiverquant.com/beta/bulk/lobbying",
+      "status": 404,
+      "preview": "\n<!doctype html>\n<html lang=\"en\">\n<head>\n  <title>Not Found</title>\n</head>\n<body>\n  <h1>Not Found</h1><p>The requested resource was not found on this server.</p>\n<script>(function(){function c(){var "
+    },
+    {
+      "label": "quiver.bulk.wikipedia",
+      "url": "https://api.quiverquant.com/beta/bulk/wikipedia",
+      "status": 404,
+      "preview": "\n<!doctype html>\n<html lang=\"en\">\n<head>\n  <title>Not Found</title>\n</head>\n<body>\n  <h1>Not Found</h1><p>The requested resource was not found on this server.</p>\n<script>(function(){function c(){var "
+    },
+    {
+      "label": "quiver.bulk.wallstreetbets",
+      "url": "https://api.quiverquant.com/beta/bulk/wallstreetbets",
+      "status": 404,
+      "preview": "\n<!doctype html>\n<html lang=\"en\">\n<head>\n  <title>Not Found</title>\n</head>\n<body>\n  <h1>Not Found</h1><p>The requested resource was not found on this server.</p>\n<script>(function(){function c(){var "
+    },
+    {
+      "label": "quiver.bulk.twitter",
+      "url": "https://api.quiverquant.com/beta/bulk/twitter",
+      "status": 404,
+      "preview": "\n<!doctype html>\n<html lang=\"en\">\n<head>\n  <title>Not Found</title>\n</head>\n<body>\n  <h1>Not Found</h1><p>The requested resource was not found on this server.</p>\n<script>(function(){function c(){var "
+    },
+    {
+      "label": "quiver.bulk.patentmomentum",
+      "url": "https://api.quiverquant.com/beta/bulk/patentmomentum",
+      "status": 404,
+      "preview": "\n<!doctype html>\n<html lang=\"en\">\n<head>\n  <title>Not Found</title>\n</head>\n<body>\n  <h1>Not Found</h1><p>The requested resource was not found on this server.</p>\n<script>(function(){function c(){var "
+    },
+    {
+      "label": "quiver.bulk.corporatedonors",
+      "url": "https://api.quiverquant.com/beta/bulk/corporatedonors",
+      "status": 200,
+      "top_keys": [
+        "data",
+        "pagination"
+      ],
+      "sample_record_keys": [
+        "BioGuideID",
+        "CandidateName",
+        "CompanyCMTENM",
+        "TransactionDate",
+        "TransactionAmount",
+        "Ticker",
+        "CommitteeName",
+        "Cycle",
+        "TransactionType",
+        "CompanyCMTEID",
+        "Uploaded"
+      ]
+    },
+    {
+      "label": "quiver.bulk.appratings",
+      "url": "https://api.quiverquant.com/beta/bulk/appratings",
+      "status": 404,
+      "preview": "\n<!doctype html>\n<html lang=\"en\">\n<head>\n  <title>Not Found</title>\n</head>\n<body>\n  <h1>Not Found</h1><p>The requested resource was not found on this server.</p>\n<script>(function(){function c(){var "
+    }
+  ],
+  "fred": [
+    {
+      "label": "fred.series",
+      "url": "https://api.stlouisfed.org/fred/series",
+      "status": 200,
+      "top_keys": [
+        "realtime_start",
+        "realtime_end",
+        "seriess"
+      ]
+    },
+    {
+      "label": "fred.series_observations",
+      "url": "https://api.stlouisfed.org/fred/series/observations",
+      "status": 200,
+      "top_keys": [
+        "realtime_start",
+        "realtime_end",
+        "observation_start",
+        "observation_end",
+        "units",
+        "output_type",
+        "file_type",
+        "order_by",
+        "sort_order",
+        "count",
+        "offset",
+        "limit",
+        "observations"
+      ],
+      "sample_record_keys": [
+        "realtime_start",
+        "realtime_end",
+        "date",
+        "value"
+      ]
+    },
+    {
+      "label": "fred.series_categories",
+      "url": "https://api.stlouisfed.org/fred/series/categories",
+      "status": 200,
+      "top_keys": [
+        "categories"
+      ]
+    },
+    {
+      "label": "fred.series_release",
+      "url": "https://api.stlouisfed.org/fred/series/release",
+      "status": 200,
+      "top_keys": [
+        "realtime_start",
+        "realtime_end",
+        "releases"
+      ]
+    },
+    {
+      "label": "fred.series_search",
+      "url": "https://api.stlouisfed.org/fred/series/search",
+      "status": 200,
+      "top_keys": [
+        "realtime_start",
+        "realtime_end",
+        "order_by",
+        "sort_order",
+        "count",
+        "offset",
+        "limit",
+        "seriess"
+      ]
+    },
+    {
+      "label": "fred.series_tags",
+      "url": "https://api.stlouisfed.org/fred/series/tags",
+      "status": 200,
+      "top_keys": [
+        "realtime_start",
+        "realtime_end",
+        "order_by",
+        "sort_order",
+        "count",
+        "offset",
+        "limit",
+        "tags"
+      ]
+    },
+    {
+      "label": "fred.series_updates",
+      "url": "https://api.stlouisfed.org/fred/series/updates",
+      "status": 200,
+      "top_keys": [
+        "realtime_start",
+        "realtime_end",
+        "filter_variable",
+        "filter_value",
+        "order_by",
+        "sort_order",
+        "count",
+        "offset",
+        "limit",
+        "seriess"
+      ]
+    },
+    {
+      "label": "fred.series_vintagedates",
+      "url": "https://api.stlouisfed.org/fred/series/vintagedates",
+      "status": 200,
+      "top_keys": [
+        "realtime_start",
+        "realtime_end",
+        "order_by",
+        "sort_order",
+        "count",
+        "offset",
+        "limit",
+        "vintage_dates"
+      ]
+    },
+    {
+      "label": "fred.category",
+      "url": "https://api.stlouisfed.org/fred/category",
+      "status": 200,
+      "top_keys": [
+        "categories"
+      ]
+    },
+    {
+      "label": "fred.category_children",
+      "url": "https://api.stlouisfed.org/fred/category/children",
+      "status": 200,
+      "top_keys": [
+        "categories"
+      ]
+    },
+    {
+      "label": "fred.category_related",
+      "url": "https://api.stlouisfed.org/fred/category/related",
+      "status": 200,
+      "top_keys": [
+        "categories"
+      ]
+    },
+    {
+      "label": "fred.category_series",
+      "url": "https://api.stlouisfed.org/fred/category/series",
+      "status": 200,
+      "top_keys": [
+        "realtime_start",
+        "realtime_end",
+        "order_by",
+        "sort_order",
+        "count",
+        "offset",
+        "limit",
+        "seriess"
+      ]
+    },
+    {
+      "label": "fred.category_tags",
+      "url": "https://api.stlouisfed.org/fred/category/tags",
+      "status": 200,
+      "top_keys": [
+        "realtime_start",
+        "realtime_end",
+        "order_by",
+        "sort_order",
+        "count",
+        "offset",
+        "limit",
+        "tags"
+      ]
+    },
+    {
+      "label": "fred.category_related_tags",
+      "url": "https://api.stlouisfed.org/fred/category/related_tags",
+      "status": 200,
+      "top_keys": [
+        "realtime_start",
+        "realtime_end",
+        "order_by",
+        "sort_order",
+        "count",
+        "offset",
+        "limit",
+        "tags"
+      ]
+    },
+    {
+      "label": "fred.release",
+      "url": "https://api.stlouisfed.org/fred/release",
+      "status": 200,
+      "top_keys": [
+        "realtime_start",
+        "realtime_end",
+        "releases"
+      ]
+    },
+    {
+      "label": "fred.releases",
+      "url": "https://api.stlouisfed.org/fred/releases",
+      "status": 200,
+      "top_keys": [
+        "realtime_start",
+        "realtime_end",
+        "order_by",
+        "sort_order",
+        "count",
+        "offset",
+        "limit",
+        "releases"
+      ]
+    },
+    {
+      "label": "fred.releases_dates",
+      "url": "https://api.stlouisfed.org/fred/releases/dates",
+      "status": 200,
+      "top_keys": [
+        "realtime_start",
+        "realtime_end",
+        "order_by",
+        "sort_order",
+        "count",
+        "offset",
+        "limit",
+        "release_dates"
+      ]
+    },
+    {
+      "label": "fred.release_dates",
+      "url": "https://api.stlouisfed.org/fred/release/dates",
+      "status": 200,
+      "top_keys": [
+        "realtime_start",
+        "realtime_end",
+        "order_by",
+        "sort_order",
+        "count",
+        "offset",
+        "limit",
+        "release_dates"
+      ]
+    },
+    {
+      "label": "fred.release_series",
+      "url": "https://api.stlouisfed.org/fred/release/series",
+      "status": 200,
+      "top_keys": [
+        "realtime_start",
+        "realtime_end",
+        "order_by",
+        "sort_order",
+        "count",
+        "offset",
+        "limit",
+        "seriess"
+      ]
+    },
+    {
+      "label": "fred.release_sources",
+      "url": "https://api.stlouisfed.org/fred/release/sources",
+      "status": 200,
+      "top_keys": [
+        "realtime_start",
+        "realtime_end",
+        "sources"
+      ]
+    },
+    {
+      "label": "fred.release_tags",
+      "url": "https://api.stlouisfed.org/fred/release/tags",
+      "status": 200,
+      "top_keys": [
+        "realtime_start",
+        "realtime_end",
+        "order_by",
+        "sort_order",
+        "count",
+        "offset",
+        "limit",
+        "tags"
+      ]
+    },
+    {
+      "label": "fred.source",
+      "url": "https://api.stlouisfed.org/fred/source",
+      "status": 200,
+      "top_keys": [
+        "realtime_start",
+        "realtime_end",
+        "sources"
+      ]
+    },
+    {
+      "label": "fred.sources",
+      "url": "https://api.stlouisfed.org/fred/sources",
+      "status": 200,
+      "top_keys": [
+        "realtime_start",
+        "realtime_end",
+        "order_by",
+        "sort_order",
+        "count",
+        "offset",
+        "limit",
+        "sources"
+      ]
+    },
+    {
+      "label": "fred.source_releases",
+      "url": "https://api.stlouisfed.org/fred/source/releases",
+      "status": 200,
+      "top_keys": [
+        "realtime_start",
+        "realtime_end",
+        "order_by",
+        "sort_order",
+        "count",
+        "offset",
+        "limit",
+        "releases"
+      ]
+    },
+    {
+      "label": "fred.tags",
+      "url": "https://api.stlouisfed.org/fred/tags",
+      "status": 200,
+      "top_keys": [
+        "realtime_start",
+        "realtime_end",
+        "order_by",
+        "sort_order",
+        "count",
+        "offset",
+        "limit",
+        "tags"
+      ]
+    },
+    {
+      "label": "fred.related_tags",
+      "url": "https://api.stlouisfed.org/fred/related_tags",
+      "status": 200,
+      "top_keys": [
+        "realtime_start",
+        "realtime_end",
+        "order_by",
+        "sort_order",
+        "count",
+        "offset",
+        "limit",
+        "tags"
+      ]
+    },
+    {
+      "label": "fred.tags_series",
+      "url": "https://api.stlouisfed.org/fred/tags/series",
+      "status": 200,
+      "top_keys": [
+        "realtime_start",
+        "realtime_end",
+        "order_by",
+        "sort_order",
+        "count",
+        "offset",
+        "limit",
+        "seriess"
+      ]
+    },
+    {
+      "label": "fred.alfred_observations_vintage",
+      "url": "https://api.stlouisfed.org/fred/series/observations",
+      "status": 200,
+      "top_keys": [
+        "realtime_start",
+        "realtime_end",
+        "observation_start",
+        "observation_end",
+        "units",
+        "output_type",
+        "file_type",
+        "order_by",
+        "sort_order",
+        "count",
+        "offset",
+        "limit",
+        "observations"
+      ],
+      "sample_record_keys": [
+        "realtime_start",
+        "realtime_end",
+        "date",
+        "value"
+      ]
+    }
+  ],
+  "sec_edgar": [
+    {
+      "label": "sec.submissions",
+      "url": "https://data.sec.gov/submissions/CIK0000320193.json",
+      "status": 200,
+      "top_keys": [
+        "cik",
+        "entityType",
+        "sic",
+        "sicDescription",
+        "ownerOrg",
+        "insiderTransactionForOwnerExists",
+        "insiderTransactionForIssuerExists",
+        "name",
+        "tickers",
+        "exchanges",
+        "ein",
+        "lei",
+        "description",
+        "website",
+        "investorWebsite",
+        "category",
+        "fiscalYearEnd",
+        "stateOfIncorporation",
+        "stateOfIncorporationDescription",
+        "addresses",
+        "phone",
+        "flags",
+        "formerNames",
+        "filings"
+      ]
+    },
+    {
+      "label": "sec.companyconcept_us_gaap_revenue",
+      "url": "https://data.sec.gov/api/xbrl/companyconcept/CIK0000320193/us-gaap/Revenues.json",
+      "status": 200,
+      "top_keys": [
+        "cik",
+        "taxonomy",
+        "tag",
+        "label",
+        "description",
+        "entityName",
+        "units"
+      ]
+    },
+    {
+      "label": "sec.companyfacts",
+      "url": "https://data.sec.gov/api/xbrl/companyfacts/CIK0000320193.json",
+      "status": 200,
+      "top_keys": [
+        "cik",
+        "entityName",
+        "facts"
+      ]
+    },
+    {
+      "label": "sec.frames_revenues",
+      "url": "https://data.sec.gov/api/xbrl/frames/us-gaap/Revenues/USD/CY2023Q4I.json",
+      "status": 200,
+      "top_keys": [
+        "taxonomy",
+        "tag",
+        "ccp",
+        "uom",
+        "label",
+        "description",
+        "pts",
+        "data"
+      ],
+      "sample_record_keys": [
+        "accn",
+        "cik",
+        "entityName",
+        "loc",
+        "start",
+        "end",
+        "val"
+      ]
+    },
+    {
+      "label": "sec.efts_search",
+      "url": "https://efts.sec.gov/LATEST/search-index?q=%22Apple%22&dateRange=custom&startdt=2024-01-01&enddt=2024-01-31",
+      "status": 200,
+      "top_keys": [
+        "took",
+        "timed_out",
+        "_shards",
+        "hits",
+        "aggregations",
+        "query"
+      ]
+    }
+  ]
+}

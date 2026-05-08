@@ -327,10 +327,19 @@ contract names: `UST 10Y NOTE` / `UST 5Y NOTE` / `UST 2Y NOTE` / `UST BOND`
 
 ---
 
-## INV-024 — Quiver gov_contracts severe field-level loss (no Date / no AwardingAgency / Amount as STRING) (Pass 53 Day-9 v8h evening)
+## INV-024 — Quiver gov_contracts field set REFRAMED — gap at API level not our prefetch (Pass 53 Day-9 v8h+1 2026-05-08)
 
-- **Discovered:** 2026-05-07 evening; field-level deep-dive schema probe
-- **Observation:** `data_prefetch/quiver/gov_contracts/AAPL.parquet` contains only 4 columns: `Ticker, Amount (STRING), Qtr (int), Year (int)`. Quiver `/historical/govcontracts/{ticker}` API actually returns: `Date, AwardingAgency, DepartmentDescription, ContractDescription, Amount (numeric), ResearchTopic, ParentAwardId`. The save logic in `prefetch_quiver.py` is filtering down to 4 fields, losing the time dimension at daily granularity + agency identity + contract subject. **This is the EXACT pattern owner cited as the canonical "high-coverage-but-erroneous" failure mode.**
+- **Discovered:** 2026-05-07 evening (initial); REFRAMED 2026-05-08 morning after probe via `probe_api_catalog.py`
+- **Observation (REVISED):** `data_prefetch/quiver/gov_contracts/AAPL.parquet` contains 4 columns: `Ticker, Amount (STRING), Qtr (int), Year (int)`. **The Quiver `/historical/govcontracts/{ticker}` API itself returns ONLY these 4 fields** (probe-confirmed 2026-05-08). My initial INV-024 hypothesis (that the API returns DateSigned / AwardingAgency / DepartmentDescription / ContractDescription and our prefetch was filtering them out) was WRONG — that hypothesis came from training-data memory, not API docs.
+- **Status:** REFRAMED.
+- **Why:** Daily-granularity government contracts + agency + description requires a different source. Options:
+  1. **USAspending.gov direct** (free, public) — `api.usaspending.gov/api/v2/award/...` provides daily contract-level data with full fields
+  2. **SEC EDGAR 8-K material events** — companies disclose major contract wins; structured via XBRL when material
+  3. **Polygon Benzinga news** — analyst-quality contract-win coverage
+- **Action:**
+  - Add USAspending.gov to API inventory + probe its endpoints
+  - This is no longer a prefetch fix; it's a NEW source addition
+- **Joint:** **CHECKLIST #77** (this is the canonical example of memory-based catalog hypothesis being wrong); INV-035 (sister: many Quiver endpoints I assumed exist actually don't at our tier).
 - **Why blocking:** Quarterly aggregates (`Qtr+Year`) cannot do PIT cutoff at daily resolution — strategies like "buy on gov-contract win within last 5 days" cannot be implemented. Lost AwardingAgency means "DOD-contract premium" strategies impossible. Lost Amount-as-numeric means aggregation requires runtime str→numeric coercion.
 - **Severity:** CRITICAL for any strategy using gov_contracts as a signal. Phase 1A baseline doesn't directly use, but smart_money composite (Phase 1A baseline) calls `get_gov_contracts_signal()` which returns a signal derived from this data.
 - **Status:** open
@@ -475,4 +484,76 @@ contract names: `UST 10Y NOTE` / `UST 5Y NOTE` / `UST 2Y NOTE` / `UST BOND`
 
 ---
 
-*Last updated: 2026-05-07 evening (Pass 53 Day-9 v8h ongoing)*
+## INV-034 — Polygon Indices Basic plan NOT YET ACTIVATED on account (Pass 53 Day-9 v8h+1 2026-05-08)
+
+- **Discovered:** 2026-05-08 morning; `probe_api_catalog.py` returned 403 NOT_AUTHORIZED for I:SPX, I:DJI, I:RUT, I:VIX, I:VIX9D, I:VIX3M, I:VVIX, I:OEX (all major indices). Only I:NDX returned 200 (anomaly).
+- **Observation:** Owner stated 2026-05-07 they could add Indices Basic (plus Options/Futures/Currencies Basic) for free. Probe confirms Indices Basic is **NOT yet activated**. Futures Basic + Currencies Basic + Options Basic (partial) ARE active and working.
+- **Why blocking for Phase 1A:** ✅ **YES** — would resolve BUG-VIX-PROXY structurally (native VIX vs VXX proxy) and INV-010 (VVIX missing from FRED). Currently Phase 1A regime classifier uses VXX-as-VIX proxy with workaround.
+- **Severity:** HIGH — owner-action gate.
+- **Status:** open — owner action pending.
+- **Next action:** owner activates Polygon Indices Basic on `polygon.io/dashboard` (free upgrade); re-run `probe_api_catalog.py` to confirm; then prefetch I:VIX, I:VIX9D, I:VIX3M, I:VVIX, I:SPX, I:NDX, I:DJI, I:RUT, I:OEX, I:MID, I:SML, I:NYA, I:COMP at full historical depth.
+- **Joint:** BUG-VIX-PROXY (replaced by direct VIX); INV-010 (VVIX gap); CHECKLIST #77 (probe-grounded — caught the not-activated state).
+
+---
+
+## INV-035 — Finnhub `FINNHUB_API_KEY` missing from `.env` (Pass 53 Day-9 v8h+1 2026-05-08)
+
+- **Discovered:** 2026-05-08 morning; `probe_api_catalog.py` skipped Finnhub block because `os.environ.get("FINNHUB_API_KEY")` returned empty string.
+- **Observation:** Owner stated 2026-05-07 they have a Finnhub key. The key is not in `.env` accessible to scripts. Either: (a) key was set in a different env file, (b) key was at one point but removed, (c) key needs to be added.
+- **Why blocking:** Finnhub is a multi-source API for analyst recommendations / price targets / EPS surprises / insider sentiment / social sentiment / pattern scans / IPO calendar / economic calendar — Phase 1B+ overlay-strategy enabler. Without key, no probe possible, no prefetch.
+- **Severity:** MEDIUM (Phase 1B overlay; non-blocking for Phase 1A).
+- **Status:** open — owner action pending.
+- **Next action:** owner adds `FINNHUB_API_KEY=<value>` to `.env`. Re-run probe; if 200, update API_ENDPOINT_INVENTORY.md with Finnhub catalog + plan an extend prefetch.
+- **Joint:** INV-016 (Finnhub news prefetch S&P-only — sister); CHECKLIST #77.
+
+---
+
+## INV-036 — 13 Quiver endpoints in `API_AUDIT.md` don't exist at our Trader tier (Pass 53 Day-9 v8h+1 2026-05-08)
+
+- **Discovered:** 2026-05-08 morning; `probe_api_catalog.py` returned 404 for the following endpoints I had assumed exist (per API_AUDIT.md training-data memory):
+  - `/historical/wikipedia/{t}` 404
+  - `/historical/patentmomentum/{t}` 404 (only bulk works)
+  - `/historical/appratings/{t}` 404
+  - `/historical/sec13fchanges/{t}` 404 (only `/live/sec13fchanges` works)
+  - `/historical/insidertrading/{t}` 404 (correct name is `/live/insiders`)
+  - `/historical/earningsbeats/{t}` 404
+  - `/historical/redditpoliticians/{t}` 404
+  - `/historical/reddittendies/{t}` 404
+  - `/historical/snptrend/{t}` 404
+  - `/historical/swaps/{t}` 404
+  - `/historical/googletrends/{t}` 404
+  - `/historical/linkedindata/{t}` 404
+  - `/historical/iposcalendar/{t}` 404
+  - `/historical/optionsflow/{t}` 404
+  - `/historical/estimates/{t}` 404
+- **Observation:** API_AUDIT.md Tier 1 framework had a `L131` "Honest knowledge limit" disclaimer — but the disclaimer was not enforced. Multiple audits inherited this assumed-endpoint list and propagated it through 3 passes without verification.
+- **Why not blocking:** None of these endpoints were ever consumed by our engine — they were aspirational additions in audit docs. No real consumer crashes. But they polluted gap-analysis and recommendation lists.
+- **Severity:** LOW (informational + canonical-doc cleanup).
+- **Status:** open
+- **Next action:**
+  - Update `API_AUDIT.md` Quiver section to reflect probe-confirmed endpoint set (only working: congresstrading, senatetrading, housetrading, govcontracts, lobbying, wallstreetbets, twitter, spacs, plus live insiders/sec13f/sec13fchanges/offexchange/topshareholders-bulk-only/etfholdings/corporatedonors/quivernews/patentmomentum-bulk).
+  - Confirm ENDPOINTS NEW that DO work and we don't currently fetch:
+    - **`/historical/senatetrading/{t}`** — separate from congress; senate-only with `Senator` field — NEW
+    - **`/historical/housetrading/{t}`** — house-only — NEW
+    - **`/historical/spacs/{t}`** — SPAC mention timeline — NEW
+- **Joint:** CHECKLIST #77 (this is the canonical case for the new rule); CHECKLIST #51 (honest knowledge limit); INV-024 (reframing — same root pattern).
+
+---
+
+## INV-037 — Polygon Filings + Fundamentals endpoints (10-K Sections / 13-F / 8-K Text / Form 3/4 / Income Stmt / Balance Sheet / Cash Flow / Ratios / Float / Short Interest / Short Volume) require Stocks Plus tier — NOT our Stocks Starter (Pass 53 Day-9 v8h+1 2026-05-08)
+
+- **Discovered:** 2026-05-08 morning; `probe_api_catalog.py` returned 404 for all `/stocks/v1/filings/...` and `/stocks/v1/fundamentals/...` endpoints despite being listed in `massive.com/docs/llms.txt` Stocks section.
+- **Observation:** Massive's llms.txt catalogs the FULL Stocks feature set including Filings (10-K Sections, 13-F, 8-K Text, Form 3/4, SEC EDGAR Index, Risk Categories, Risk Factors) + Fundamentals (Balance Sheets, Cash Flow, Float, Income Statements, Ratios, Short Interest, Short Volume). However probe shows all paths I guessed return 404 — these features require Stocks **Plus** or higher tier, NOT Stocks Starter.
+- **Why blocking:** my prior INV-025 (SEC EDGAR filing-metadata-only) and INV-026 (Polygon financials JSON unparsed) recommendations assumed Polygon could be the structured-fundamentals provider. That assumption is wrong at our tier.
+- **Mitigation discovered same probe:** SEC EDGAR XBRL `companyfacts` + `frames` endpoints (FREE, public) provide the same structured fundamentals + filing data we need. INV-025/026 fix path is **SEC XBRL direct, not Polygon Filings**.
+- **Severity:** MEDIUM (was P1 blocker for INV-025/026; now mitigated via SEC XBRL).
+- **Status:** open — pivot recommendation to SEC XBRL.
+- **Next action:**
+  - Author `scripts/prefetch_sec_xbrl.py`: per-ticker `companyfacts` (`data.sec.gov/api/xbrl/companyfacts/CIK{cik}.json`) + selected `frames` (`data.sec.gov/api/xbrl/frames/{taxonomy}/{tag}/{unit}/CY{year}Q{quarter}.json`).
+  - For each ticker: 1 companyfacts call → structured time-series of every XBRL line item.
+  - ~1937 tickers × 1 call each + ~50-100 frames calls = manageable.
+- **Joint:** INV-025 (SEC EDGAR filing-metadata-only — XBRL solves part of this); INV-026 (financials_json — XBRL provides structured); CHECKLIST #77.
+
+---
+
+*Last updated: 2026-05-08 morning (Pass 53 Day-9 v8h+1 — probe-grounded inventory)*
