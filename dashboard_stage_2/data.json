@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-08T19:56:00.940570+00:00",
+  "generated_at": "2026-05-08T20:43:23.865547+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -14015,325 +14015,193 @@
   ],
   "recent_commits": [
     {
+      "sha": "398a5994",
+      "subject": "Polygon Options chain ref: final (1932 tickers fetched)",
+      "author": "jeetmehta1991",
+      "rel_time": "25 minutes ago"
+    },
+    {
+      "sha": "0b4f9389",
+      "subject": "Polygon Options chain ref: batch 19 (1900 tickers)",
+      "author": "jeetmehta1991",
+      "rel_time": "25 minutes ago"
+    },
+    {
+      "sha": "87d88628",
+      "subject": "Polygon Options chain ref: batch 18 (1800 tickers)",
+      "author": "jeetmehta1991",
+      "rel_time": "28 minutes ago"
+    },
+    {
+      "sha": "f56fe3f1",
+      "subject": "Polygon Options chain ref: batch 17 (1700 tickers)",
+      "author": "jeetmehta1991",
+      "rel_time": "30 minutes ago"
+    },
+    {
+      "sha": "cf1a0541",
+      "subject": "Polygon Options chain ref: batch 16 (1600 tickers)",
+      "author": "jeetmehta1991",
+      "rel_time": "33 minutes ago"
+    },
+    {
+      "sha": "3133dc07",
+      "subject": "Polygon Options chain ref: batch 15 (1500 tickers)",
+      "author": "jeetmehta1991",
+      "rel_time": "35 minutes ago"
+    },
+    {
+      "sha": "e926b105",
+      "subject": "Polygon Options chain ref: batch 14 (1400 tickers)",
+      "author": "jeetmehta1991",
+      "rel_time": "38 minutes ago"
+    },
+    {
+      "sha": "74c4820f",
+      "subject": "Pass 53 v8h+1: comprehensive dashboard review - parser canon + automation panel + H10/H20/H21 stages",
+      "author": "jeetmehta1991",
+      "rel_time": "39 minutes ago"
+    },
+    {
+      "sha": "77a937f6",
+      "subject": "Polygon Options chain ref: batch 13 (1300 tickers)",
+      "author": "jeetmehta1991",
+      "rel_time": "40 minutes ago"
+    },
+    {
+      "sha": "5b2a55ca",
+      "subject": "Polygon Options chain ref: batch 12 (1200 tickers)",
+      "author": "jeetmehta1991",
+      "rel_time": "42 minutes ago"
+    },
+    {
+      "sha": "060c6515",
+      "subject": "Polygon Options chain ref: batch 11 (1100 tickers)",
+      "author": "jeetmehta1991",
+      "rel_time": "45 minutes ago"
+    },
+    {
       "sha": "284ea3e5",
       "subject": "Polygon Options chain ref: batch 10 (1000 tickers)",
       "author": "jeetmehta1991",
-      "rel_time": "51 seconds ago"
+      "rel_time": "48 minutes ago"
     },
     {
       "sha": "3fc49ce4",
       "subject": "Polygon Options chain ref: batch 7 (700 tickers)",
       "author": "jeetmehta1991",
-      "rel_time": "8 minutes ago"
+      "rel_time": "56 minutes ago"
     },
     {
       "sha": "d4c0cb4f",
       "subject": "Pass 53 Day-9 v8h+1: dashboards regenerated post polygon_options scan fix",
       "author": "jeetmehta1991",
-      "rel_time": "10 minutes ago"
+      "rel_time": "57 minutes ago"
     },
     {
       "sha": "fe487230",
       "subject": "Polygon Options chain ref: batch 6 (600 tickers)",
       "author": "jeetmehta1991",
-      "rel_time": "11 minutes ago"
+      "rel_time": "58 minutes ago"
     },
     {
       "sha": "c8db7542",
       "subject": "Polygon Options chain ref: batch 5 (500 tickers)",
       "author": "jeetmehta1991",
-      "rel_time": "13 minutes ago"
+      "rel_time": "61 minutes ago"
     },
     {
       "sha": "977383fd",
       "subject": "Polygon Options chain ref: batch 4 (400 tickers)",
       "author": "jeetmehta1991",
-      "rel_time": "16 minutes ago"
+      "rel_time": "63 minutes ago"
     },
     {
       "sha": "763e9036",
       "subject": "Polygon Options chain ref: batch 3 (300 tickers)",
       "author": "jeetmehta1991",
-      "rel_time": "19 minutes ago"
+      "rel_time": "66 minutes ago"
     },
     {
       "sha": "b1a8ae1e",
       "subject": "Polygon Options chain ref: batch 2 (200 tickers)",
       "author": "jeetmehta1991",
-      "rel_time": "21 minutes ago"
+      "rel_time": "69 minutes ago"
     },
     {
       "sha": "b9509a97",
       "subject": "Pass 53 Day-9 v8h+1: dashboard fix - register polygon_options cache scan",
       "author": "jeetmehta1991",
-      "rel_time": "22 minutes ago"
+      "rel_time": "70 minutes ago"
     },
     {
       "sha": "3bbd3dbb",
       "subject": "Polygon Options chain ref: batch 1 (100 tickers)",
       "author": "jeetmehta1991",
-      "rel_time": "24 minutes ago"
+      "rel_time": "71 minutes ago"
     },
     {
       "sha": "0f077b97",
       "subject": "Pass 53 Day-9 v8h+1: Tier J6 - shared safe_filename_stem helper + 7 unit tests",
       "author": "jeetmehta1991",
-      "rel_time": "33 minutes ago"
+      "rel_time": "80 minutes ago"
     },
     {
       "sha": "aa4d2a27",
       "subject": "Pass 53 Day-9 v8h+1: Tier H10 Polygon Options chain-ref smoke (5 tickers)",
       "author": "jeetmehta1991",
-      "rel_time": "34 minutes ago"
+      "rel_time": "82 minutes ago"
     },
     {
       "sha": "bbd23631",
       "subject": "Pass 53 Day-9 v8h+1: Tier J4/J7/J8 - schema regression + sidecar lock",
       "author": "jeetmehta1991",
-      "rel_time": "37 minutes ago"
+      "rel_time": "84 minutes ago"
     },
     {
       "sha": "de3dc1a9",
       "subject": "Pass 53 Day-9 v8h+1: Tier J empirical audit \u00e2\u20ac\u201d J1/J5/J6 closed, J3 needs scope",
       "author": "jeetmehta1991",
-      "rel_time": "57 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "8150352b",
       "subject": "Pass 53 Day-9 v8h+1: wire sync_doc_counts.py --check into pre-commit hook",
       "author": "jeetmehta1991",
-      "rel_time": "63 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "4039b7e7",
       "subject": "Finnhub: metric final (1879 fetched)",
       "author": "jeetmehta1991",
-      "rel_time": "67 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "e9282fce",
       "subject": "Finnhub: metric batch 18",
       "author": "jeetmehta1991",
-      "rel_time": "70 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "2a242b24",
       "subject": "Finnhub: metric batch 17",
       "author": "jeetmehta1991",
-      "rel_time": "72 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "8944b3fd",
       "subject": "Finnhub: metric batch 16",
       "author": "jeetmehta1991",
-      "rel_time": "75 minutes ago"
-    },
-    {
-      "sha": "e99d4ded",
-      "subject": "Finnhub: metric batch 15",
-      "author": "jeetmehta1991",
-      "rel_time": "78 minutes ago"
-    },
-    {
-      "sha": "afa7c38d",
-      "subject": "Finnhub: metric batch 14",
-      "author": "jeetmehta1991",
-      "rel_time": "81 minutes ago"
-    },
-    {
-      "sha": "348cce1a",
-      "subject": "Finnhub: metric batch 13",
-      "author": "jeetmehta1991",
-      "rel_time": "83 minutes ago"
-    },
-    {
-      "sha": "21d9420d",
-      "subject": "Finnhub: metric batch 12",
-      "author": "jeetmehta1991",
-      "rel_time": "86 minutes ago"
-    },
-    {
-      "sha": "f1d7bce1",
-      "subject": "Pass 53 Day-9 v8h+1: doc count drift detector + INV-045 (cross-doc consistency)",
-      "author": "jeetmehta1991",
-      "rel_time": "89 minutes ago"
-    },
-    {
-      "sha": "001cb98b",
-      "subject": "Finnhub: metric batch 11",
-      "author": "jeetmehta1991",
-      "rel_time": "89 minutes ago"
-    },
-    {
-      "sha": "e1417742",
-      "subject": "Finnhub: metric batch 10",
-      "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
-    },
-    {
-      "sha": "a78879c2",
-      "subject": "Finnhub: metric batch 9",
-      "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
-    },
-    {
-      "sha": "2ed82017",
-      "subject": "Quiver new-endpoints: twitter final (1930 fetched)",
-      "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
-    },
-    {
-      "sha": "c278808e",
-      "subject": "Quiver new-endpoints: twitter batch 19",
-      "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
-    },
-    {
-      "sha": "b79e35b0",
-      "subject": "Finnhub: metric batch 8",
-      "author": "jeetmehta1991",
       "rel_time": "2 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 34,
-    "modified": 6,
+    "count": 1,
+    "modified": 0,
     "added": 0,
-    "untracked": 28,
+    "untracked": 1,
     "deleted": 0,
     "files": [
-      {
-        "status": "M",
-        "path": "BUG_REGISTER.md"
-      },
-      {
-        "status": "M",
-        "path": "dashboard_stage_2/index.html"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/options_chains/_checkpoint.json"
-      },
-      {
-        "status": "M",
-        "path": "scripts/build_dashboard_sprint0a.py"
-      },
-      {
-        "status": "M",
-        "path": "scripts/build_dashboard_stage_2.py"
-      },
-      {
-        "status": "M",
-        "path": "scripts/sync_doc_counts.py"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/polygon/options_chains/LBTYA.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/polygon/options_chains/LBTYK.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/polygon/options_chains/LC.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/polygon/options_chains/LCID.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/polygon/options_chains/LDOS.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/polygon/options_chains/LEG.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/polygon/options_chains/LEN.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/polygon/options_chains/LEU.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/polygon/options_chains/LEVI.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/polygon/options_chains/LFMD.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/polygon/options_chains/LFVN.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/polygon/options_chains/LGN.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/polygon/options_chains/LGVN.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/polygon/options_chains/LH.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/polygon/options_chains/LHX.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/polygon/options_chains/LIF.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/polygon/options_chains/LII.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/polygon/options_chains/LIN.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/polygon/options_chains/LINE.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/polygon/options_chains/LITE.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/polygon/options_chains/LKQ.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/polygon/options_chains/LLY.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/polygon/options_chains/LLYVA.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/polygon/options_chains/LLYVK.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/polygon/options_chains/LMB.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/polygon/options_chains/LMND.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/polygon/options_chains/LMT.parquet"
-      },
       {
         "status": "??",
         "path": "scripts/prefetch_polygon_options_full.py"
@@ -14341,20 +14209,7 @@
     ]
   },
   "unpushed_commits": [],
-  "active_bgs": [
-    {
-      "pid": "50630",
-      "elapsed": "/usr/bin/bash",
-      "script": "prefetch_polygon_options",
-      "description": "Polygon Options Basic (chain ref)"
-    },
-    {
-      "pid": "50650",
-      "elapsed": "C:\\Users\\jeetm\\Github\\stock-picks-app\\.venv\\Scripts\\python.exe",
-      "script": "prefetch_polygon_options",
-      "description": "Polygon Options Basic (chain ref)"
-    }
-  ],
+  "active_bgs": [],
   "pending_pipeline": [
     {
       "item": "H10 Polygon Options chains (1937 underlyings)",
