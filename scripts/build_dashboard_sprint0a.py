@@ -479,10 +479,11 @@ ENDPOINTS = [
     ("polygon", "dividends_full", "data_prefetch/polygon/dividends_full", "per_ticker"),
     ("polygon", "splits_full", "data_prefetch/polygon/splits_full", "per_ticker"),
     ("polygon", "ipos_full", "data_prefetch/polygon/ipos_full", "per_ticker"),
-    # Polygon Indices/Forex/Futures Basic
+    # Polygon Indices/Forex/Futures/Options Basic
     ("polygon_indices", "aggs", "data_prefetch/polygon/indices", "global"),
     ("polygon_forex", "aggs", "data_prefetch/polygon/forex", "global"),
     ("polygon_futures", "aggs", "data_prefetch/polygon/futures/aggs", "global"),
+    ("polygon_options", "options_chains", "data_prefetch/polygon/options_chains", "per_ticker"),
     # Polygon Economy
     ("polygon_economy", "inflation", "data_prefetch/polygon/economy/inflation.parquet", "single"),
     ("polygon_economy", "inflation_expectations", "data_prefetch/polygon/economy/inflation_expectations.parquet", "single"),

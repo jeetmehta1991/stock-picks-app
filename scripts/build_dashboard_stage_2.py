@@ -441,6 +441,7 @@ def get_active_bgs() -> list[dict]:
         "prefetch_polygon_indices": "Polygon Indices Basic",
         "prefetch_polygon_forex": "Polygon Forex Basic",
         "prefetch_polygon_futures": "Polygon Futures Basic",
+        "prefetch_polygon_options": "Polygon Options Basic (chain ref)",
         "prefetch_polygon_economy": "Polygon Economy",
         "prefetch_alfred_mirror": "ALFRED vintage mirror",
         "prefetch_cftc_extended": "CFTC 5 missing datasets",
