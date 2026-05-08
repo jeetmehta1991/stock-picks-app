@@ -21,7 +21,7 @@
 
 | Metric | Count |
 |---|---|
-| Total canonical bugs in AUDIT.md (### BUG-NN sections) | 152 |
+| Total canonical bugs in AUDIT.md (### BUG-NN sections) | 148 |
 | Bugs linked to decisions (AUDIT_INDEX.md cross-reference) | 148 (100%) |
 | Bugs unlinked needing separate ENG entry | 0 |
 | Bugs explicitly tagged CRITICAL OPEN in registers | 2 (BUG-095, BUG-111) |

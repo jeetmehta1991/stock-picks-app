@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-08T19:45:50.070187+00:00",
+  "generated_at": "2026-05-08T19:56:00.940570+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -11980,7 +11980,7 @@
       "severity": "HIGH",
       "summary": "`data_prefetch/polygon/dividends/` = 1 file. `data_prefetch/polygon/splits/` = 1 file. `legacy_archive_pass53/dividends/` = 2 files, `legacy_archive_pass53/splits/` = 2 files. Master Universe = 1937 t",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
         "tested": false,
         "pushed": true,
@@ -12265,7 +12265,7 @@
       "severity": "MEDIUM",
       "summary": "Owner stated 2026-05-07 they have a Finnhub key. The key is not in `.env` accessible to scripts. Either: (a) key was set in a different env file, (b) key was at one point but removed, (c) key needs to",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
         "tested": false,
         "pushed": false,
@@ -14015,264 +14015,324 @@
   ],
   "recent_commits": [
     {
+      "sha": "284ea3e5",
+      "subject": "Polygon Options chain ref: batch 10 (1000 tickers)",
+      "author": "jeetmehta1991",
+      "rel_time": "51 seconds ago"
+    },
+    {
+      "sha": "3fc49ce4",
+      "subject": "Polygon Options chain ref: batch 7 (700 tickers)",
+      "author": "jeetmehta1991",
+      "rel_time": "8 minutes ago"
+    },
+    {
+      "sha": "d4c0cb4f",
+      "subject": "Pass 53 Day-9 v8h+1: dashboards regenerated post polygon_options scan fix",
+      "author": "jeetmehta1991",
+      "rel_time": "10 minutes ago"
+    },
+    {
       "sha": "fe487230",
       "subject": "Polygon Options chain ref: batch 6 (600 tickers)",
       "author": "jeetmehta1991",
-      "rel_time": "22 seconds ago"
+      "rel_time": "11 minutes ago"
     },
     {
       "sha": "c8db7542",
       "subject": "Polygon Options chain ref: batch 5 (500 tickers)",
       "author": "jeetmehta1991",
-      "rel_time": "3 minutes ago"
+      "rel_time": "13 minutes ago"
     },
     {
       "sha": "977383fd",
       "subject": "Polygon Options chain ref: batch 4 (400 tickers)",
       "author": "jeetmehta1991",
-      "rel_time": "6 minutes ago"
+      "rel_time": "16 minutes ago"
     },
     {
       "sha": "763e9036",
       "subject": "Polygon Options chain ref: batch 3 (300 tickers)",
       "author": "jeetmehta1991",
-      "rel_time": "9 minutes ago"
+      "rel_time": "19 minutes ago"
     },
     {
       "sha": "b1a8ae1e",
       "subject": "Polygon Options chain ref: batch 2 (200 tickers)",
       "author": "jeetmehta1991",
-      "rel_time": "11 minutes ago"
+      "rel_time": "21 minutes ago"
     },
     {
       "sha": "b9509a97",
       "subject": "Pass 53 Day-9 v8h+1: dashboard fix - register polygon_options cache scan",
       "author": "jeetmehta1991",
-      "rel_time": "12 minutes ago"
+      "rel_time": "22 minutes ago"
     },
     {
       "sha": "3bbd3dbb",
       "subject": "Polygon Options chain ref: batch 1 (100 tickers)",
       "author": "jeetmehta1991",
-      "rel_time": "14 minutes ago"
+      "rel_time": "24 minutes ago"
     },
     {
       "sha": "0f077b97",
       "subject": "Pass 53 Day-9 v8h+1: Tier J6 - shared safe_filename_stem helper + 7 unit tests",
       "author": "jeetmehta1991",
-      "rel_time": "23 minutes ago"
+      "rel_time": "33 minutes ago"
     },
     {
       "sha": "aa4d2a27",
       "subject": "Pass 53 Day-9 v8h+1: Tier H10 Polygon Options chain-ref smoke (5 tickers)",
       "author": "jeetmehta1991",
-      "rel_time": "24 minutes ago"
+      "rel_time": "34 minutes ago"
     },
     {
       "sha": "bbd23631",
       "subject": "Pass 53 Day-9 v8h+1: Tier J4/J7/J8 - schema regression + sidecar lock",
       "author": "jeetmehta1991",
-      "rel_time": "27 minutes ago"
+      "rel_time": "37 minutes ago"
     },
     {
       "sha": "de3dc1a9",
       "subject": "Pass 53 Day-9 v8h+1: Tier J empirical audit \u00e2\u20ac\u201d J1/J5/J6 closed, J3 needs scope",
       "author": "jeetmehta1991",
-      "rel_time": "47 minutes ago"
+      "rel_time": "57 minutes ago"
     },
     {
       "sha": "8150352b",
       "subject": "Pass 53 Day-9 v8h+1: wire sync_doc_counts.py --check into pre-commit hook",
       "author": "jeetmehta1991",
-      "rel_time": "53 minutes ago"
+      "rel_time": "63 minutes ago"
     },
     {
       "sha": "4039b7e7",
       "subject": "Finnhub: metric final (1879 fetched)",
       "author": "jeetmehta1991",
-      "rel_time": "57 minutes ago"
+      "rel_time": "67 minutes ago"
     },
     {
       "sha": "e9282fce",
       "subject": "Finnhub: metric batch 18",
       "author": "jeetmehta1991",
-      "rel_time": "59 minutes ago"
+      "rel_time": "70 minutes ago"
     },
     {
       "sha": "2a242b24",
       "subject": "Finnhub: metric batch 17",
       "author": "jeetmehta1991",
-      "rel_time": "62 minutes ago"
+      "rel_time": "72 minutes ago"
     },
     {
       "sha": "8944b3fd",
       "subject": "Finnhub: metric batch 16",
       "author": "jeetmehta1991",
-      "rel_time": "65 minutes ago"
+      "rel_time": "75 minutes ago"
     },
     {
       "sha": "e99d4ded",
       "subject": "Finnhub: metric batch 15",
       "author": "jeetmehta1991",
-      "rel_time": "68 minutes ago"
+      "rel_time": "78 minutes ago"
     },
     {
       "sha": "afa7c38d",
       "subject": "Finnhub: metric batch 14",
       "author": "jeetmehta1991",
-      "rel_time": "70 minutes ago"
+      "rel_time": "81 minutes ago"
     },
     {
       "sha": "348cce1a",
       "subject": "Finnhub: metric batch 13",
       "author": "jeetmehta1991",
-      "rel_time": "73 minutes ago"
+      "rel_time": "83 minutes ago"
     },
     {
       "sha": "21d9420d",
       "subject": "Finnhub: metric batch 12",
       "author": "jeetmehta1991",
-      "rel_time": "76 minutes ago"
+      "rel_time": "86 minutes ago"
     },
     {
       "sha": "f1d7bce1",
       "subject": "Pass 53 Day-9 v8h+1: doc count drift detector + INV-045 (cross-doc consistency)",
       "author": "jeetmehta1991",
-      "rel_time": "78 minutes ago"
+      "rel_time": "89 minutes ago"
     },
     {
       "sha": "001cb98b",
       "subject": "Finnhub: metric batch 11",
       "author": "jeetmehta1991",
-      "rel_time": "79 minutes ago"
+      "rel_time": "89 minutes ago"
     },
     {
       "sha": "e1417742",
       "subject": "Finnhub: metric batch 10",
       "author": "jeetmehta1991",
-      "rel_time": "81 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "a78879c2",
       "subject": "Finnhub: metric batch 9",
       "author": "jeetmehta1991",
-      "rel_time": "84 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "2ed82017",
       "subject": "Quiver new-endpoints: twitter final (1930 fetched)",
       "author": "jeetmehta1991",
-      "rel_time": "85 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "c278808e",
       "subject": "Quiver new-endpoints: twitter batch 19",
       "author": "jeetmehta1991",
-      "rel_time": "86 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "b79e35b0",
       "subject": "Finnhub: metric batch 8",
       "author": "jeetmehta1991",
-      "rel_time": "87 minutes ago"
-    },
-    {
-      "sha": "29b956cd",
-      "subject": "Quiver new-endpoints: twitter batch 18",
-      "author": "jeetmehta1991",
-      "rel_time": "89 minutes ago"
-    },
-    {
-      "sha": "cc6465ff",
-      "subject": "Finnhub: metric batch 7",
-      "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
-    },
-    {
-      "sha": "c3fdcbf3",
-      "subject": "Quiver new-endpoints: twitter batch 17",
-      "author": "jeetmehta1991",
       "rel_time": "2 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 19,
-    "modified": 4,
+    "count": 34,
+    "modified": 6,
     "added": 0,
-    "untracked": 15,
+    "untracked": 28,
     "deleted": 0,
     "files": [
       {
         "status": "M",
-        "path": "dashboard_sprint0a/data.js"
+        "path": "BUG_REGISTER.md"
       },
       {
         "status": "M",
-        "path": "dashboard_sprint0a/data.json"
-      },
-      {
-        "status": "M",
-        "path": "dashboard_sprint0a/last_run.txt"
+        "path": "dashboard_stage_2/index.html"
       },
       {
         "status": "M",
         "path": "data_prefetch/polygon/options_chains/_checkpoint.json"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/polygon/options_chains/ENLC.parquet"
+        "status": "M",
+        "path": "scripts/build_dashboard_sprint0a.py"
+      },
+      {
+        "status": "M",
+        "path": "scripts/build_dashboard_stage_2.py"
+      },
+      {
+        "status": "M",
+        "path": "scripts/sync_doc_counts.py"
       },
       {
         "status": "??",
-        "path": "data_prefetch/polygon/options_chains/ENLT.parquet"
+        "path": "data_prefetch/polygon/options_chains/LBTYA.parquet"
       },
       {
         "status": "??",
-        "path": "data_prefetch/polygon/options_chains/ENPH.parquet"
+        "path": "data_prefetch/polygon/options_chains/LBTYK.parquet"
       },
       {
         "status": "??",
-        "path": "data_prefetch/polygon/options_chains/ENTA.parquet"
+        "path": "data_prefetch/polygon/options_chains/LC.parquet"
       },
       {
         "status": "??",
-        "path": "data_prefetch/polygon/options_chains/EOG.parquet"
+        "path": "data_prefetch/polygon/options_chains/LCID.parquet"
       },
       {
         "status": "??",
-        "path": "data_prefetch/polygon/options_chains/EOSE.parquet"
+        "path": "data_prefetch/polygon/options_chains/LDOS.parquet"
       },
       {
         "status": "??",
-        "path": "data_prefetch/polygon/options_chains/EPAM.parquet"
+        "path": "data_prefetch/polygon/options_chains/LEG.parquet"
       },
       {
         "status": "??",
-        "path": "data_prefetch/polygon/options_chains/EPRT.parquet"
+        "path": "data_prefetch/polygon/options_chains/LEN.parquet"
       },
       {
         "status": "??",
-        "path": "data_prefetch/polygon/options_chains/EQH.parquet"
+        "path": "data_prefetch/polygon/options_chains/LEU.parquet"
       },
       {
         "status": "??",
-        "path": "data_prefetch/polygon/options_chains/EQIX.parquet"
+        "path": "data_prefetch/polygon/options_chains/LEVI.parquet"
       },
       {
         "status": "??",
-        "path": "data_prefetch/polygon/options_chains/EQR.parquet"
+        "path": "data_prefetch/polygon/options_chains/LFMD.parquet"
       },
       {
         "status": "??",
-        "path": "data_prefetch/polygon/options_chains/EQT.parquet"
+        "path": "data_prefetch/polygon/options_chains/LFVN.parquet"
       },
       {
         "status": "??",
-        "path": "data_prefetch/polygon/options_chains/EQX.parquet"
+        "path": "data_prefetch/polygon/options_chains/LGN.parquet"
       },
       {
         "status": "??",
-        "path": "data_prefetch/polygon/options_chains/ERF.parquet"
+        "path": "data_prefetch/polygon/options_chains/LGVN.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/polygon/options_chains/LH.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/polygon/options_chains/LHX.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/polygon/options_chains/LIF.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/polygon/options_chains/LII.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/polygon/options_chains/LIN.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/polygon/options_chains/LINE.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/polygon/options_chains/LITE.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/polygon/options_chains/LKQ.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/polygon/options_chains/LLY.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/polygon/options_chains/LLYVA.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/polygon/options_chains/LLYVK.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/polygon/options_chains/LMB.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/polygon/options_chains/LMND.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/polygon/options_chains/LMT.parquet"
       },
       {
         "status": "??",
@@ -14422,6 +14482,119 @@
       "H10 Options storage could blow up (100s of GB beyond top-100 underlyings)"
     ]
   },
+  "automation_status": [
+    {
+      "name": "Pre-commit hook chain",
+      "description": "preflight.py (unicode/em-dash/canonical-source/git-commit-capture) + sync_doc_counts.py --check (cross-doc count drift)",
+      "installed": true,
+      "gates": [
+        "preflight",
+        "sync_doc_counts"
+      ],
+      "source": "scripts/git_hooks/pre-commit (canonical) + .git/hooks/pre-commit (installed)"
+    },
+    {
+      "name": "2-hour drift-alignment cron",
+      "description": "Owner-mandated 2026-05-08: every 2h auto-runs sync_doc_counts.py --update + dashboard rebuilds + status updates. Content changes need explicit owner approval.",
+      "installed": "session-only",
+      "schedule": "minute :13 every 2h local",
+      "scope_limits": "drift alignment + status updates ONLY; no content/rule/threshold changes",
+      "source": "CronCreate runtime (resets at session end; not persisted to disk despite durable=true flag)."
+    },
+    {
+      "name": "Doc count drift detector (sync_doc_counts.py)",
+      "description": "Asserts header numerical claims match source-of-truth tables. Uses canonical parsers (parse_decisions/parse_bug_register/parse_inv_entries) for BUG/INV/DEC; regex for CHECKLIST/CAV.",
+      "installed": true,
+      "modes": [
+        "--check (CI gate)",
+        "--update (manual sync)"
+      ],
+      "source": "scripts/sync_doc_counts.py"
+    },
+    {
+      "name": "Schema canonical regression (J4)",
+      "description": "23 cache-dir column sets locked by parametrized pytest. Catches prefetch scripts writing extra/missing columns.",
+      "installed": true,
+      "source": "backtest/tests/test_schema_canonical.py + scripts/write_cache_schemas.py + 23 _schema.json sidecars"
+    },
+    {
+      "name": "Cross-doc count consistency tests",
+      "description": "11 tests: AUDIT_INDEX/BUG_REGISTER/CHECKLIST/INV/CAV claim-vs-table cross-checks + dashboard parser correctness gates + duplicate-const JS gate.",
+      "installed": true,
+      "source": "backtest/tests/test_doc_count_consistency.py"
+    },
+    {
+      "name": "Shared safe_filename_stem helper (J6)",
+      "description": "Canonical helper for new prefetch scripts. Avoids Windows reserved names (CON/PRN/AUX/NUL/COM*/LPT*).",
+      "installed": true,
+      "source": "scripts/_prefetch_utils.py + 7 unit tests in test_prefetch_utils.py"
+    }
+  ],
+  "test_inventory": {
+    "total": 658,
+    "by_module": {
+      "test_aaii_demo": 3,
+      "test_aaii_smoke": 3,
+      "test_acceptance_functional": 12,
+      "test_bug_vix_proxy_regression": 4,
+      "test_cache_schema_b": 4,
+      "test_canonical_facts_alignment": 6,
+      "test_cftc_cot_demo": 3,
+      "test_cftc_cot_smoke": 3,
+      "test_cnn_fg_demo": 3,
+      "test_cnn_fg_smoke": 5,
+      "test_data_integrity": 7,
+      "test_data_integrity_v8h_additions": 9,
+      "test_dec491_492_493_sprint2": 12,
+      "test_dec509_correlation_cluster": 15,
+      "test_dec512_pit_audit": 7,
+      "test_dec513_extended_signals": 30,
+      "test_dec514_fill_methodology": 11,
+      "test_dec517_r_multiple_exits": 12,
+      "test_dec518_dec521_exits": 15,
+      "test_doc_count_consistency": 11,
+      "test_e2e": 10,
+      "test_e2e_phase1a_smoke": 7,
+      "test_engine_bad_data_stress": 10,
+      "test_exit_conditional_analyzer": 9,
+      "test_exit_context": 18,
+      "test_fred_alfred_demo": 4,
+      "test_fred_alfred_smoke": 5,
+      "test_gates": 6,
+      "test_integration": 7,
+      "test_l146_wave_a_g2_g3_g9": 6,
+      "test_l146_wave_b_g7_sec_edgar": 6,
+      "test_l146_wave_c_g12_g15": 9,
+      "test_l146_wave_d_g6_g8_g10_g11_g16_g17": 13,
+      "test_l146_wiring_matrix": 5,
+      "test_n1_n2_artifacts": 16,
+      "test_n5_n6_wiring": 5,
+      "test_partial_spec_artifacts": 17,
+      "test_partial_spec_artifacts_v2": 22,
+      "test_performance_load": 4,
+      "test_phase1a_runner_no_unicode": 2,
+      "test_pit_audit_v8g": 14,
+      "test_polygon_stocks_demo": 4,
+      "test_polygon_stocks_smoke": 8,
+      "test_prefetch_scripts_no_unicode": 2,
+      "test_prefetch_utils": 7,
+      "test_preflight": 7,
+      "test_quiver_trader_demo": 5,
+      "test_quiver_trader_smoke": 12,
+      "test_schema_canonical": 1,
+      "test_sec_edgar_demo": 3,
+      "test_sec_edgar_smoke": 7,
+      "test_smartmoneyconcepts_empirical": 18,
+      "test_smartmoneyconcepts_integration": 21,
+      "test_smartmoneyconcepts_pit": 10,
+      "test_smartmoneyconcepts_unit": 68,
+      "test_sprint2_acceptance": 4,
+      "test_supplementary_demo": 4,
+      "test_supplementary_smoke": 6,
+      "test_unit": 95,
+      "test_walk_forward_4fold": 6
+    }
+  },
   "decision_status_counts": {
     "RESOLVED-DECIDED": 318,
     "PARTIAL": 5,
@@ -14470,30 +14643,8 @@
     "RESOLVED": 4
   },
   "tier_status_counts": {
-    "TICKERSYR": 1,
-    "FULLHIST": 1,
-    "ACTUALLYPAY": 1,
-    "UNKNOWN": 3,
-    "GLOBAL": 2,
-    "RSI": 1,
-    "RANGE": 1,
-    "PAIRSYR": 1,
-    "UNDERLYINGNCONTRACTSEACH": 1,
-    "ENDPOINTS": 1,
-    "SERIESEACH": 1,
-    "SERIES": 1,
-    "TICKERS": 1,
-    "CONTRACTSDATASETS": 1,
-    "INVESTING": 1,
-    "TICKERSMETHODS": 1,
-    "CACHES": 1,
-    "DONEVERIFIED--VHSAMPLENRANDOMP": 1,
-    "MOSTLYDONEHCOVEREDMOSTCASES": 1,
-    "NEEDS-OWNER-SCOPEVERIFIED--VHS": 1,
-    "DONE--VHBACKTESTTESTSTESTSCHEM": 1,
-    "DONEVERIFIED--VHSTRATIFIEDSAMP": 1,
-    "DONE--VHVIASHAREDSCRIPTSPREFET": 1,
-    "DONE--VHEMPIRICALSCANOFCANONIC": 1,
-    "DONE--VHSCRIPTSWRITECACHESCHEM": 1
+    "UNKNOWN": 20,
+    "DONE": 7,
+    "NEEDS-OWNER-SCOPE": 1
   }
 }

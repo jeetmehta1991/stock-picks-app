@@ -480,6 +480,95 @@ def get_pending_pipeline() -> list[dict]:
     ]
 
 
+def get_automation_status() -> list[dict]:
+    """Surface the automation infrastructure that other parts of the dashboard
+    don't represent. Each entry: name + what it does + how to verify.
+    """
+    items = []
+
+    # 1. Pre-commit hook chain
+    hook_path = REPO_ROOT / ".git" / "hooks" / "pre-commit"
+    hook_installed = hook_path.exists()
+    hook_text = hook_path.read_text(errors="ignore") if hook_installed else ""
+    items.append({
+        "name": "Pre-commit hook chain",
+        "description": "preflight.py (unicode/em-dash/canonical-source/git-commit-capture) + sync_doc_counts.py --check (cross-doc count drift)",
+        "installed": hook_installed,
+        "gates": [
+            "preflight" if "preflight.py" in hook_text else "MISSING preflight",
+            "sync_doc_counts" if "sync_doc_counts.py" in hook_text else "MISSING sync_doc_counts",
+        ],
+        "source": "scripts/git_hooks/pre-commit (canonical) + .git/hooks/pre-commit (installed)",
+    })
+
+    # 2. 2-hour drift cron (session-scoped)
+    items.append({
+        "name": "2-hour drift-alignment cron",
+        "description": "Owner-mandated 2026-05-08: every 2h auto-runs sync_doc_counts.py --update + dashboard rebuilds + status updates. Content changes need explicit owner approval.",
+        "installed": "session-only",
+        "schedule": "minute :13 every 2h local",
+        "scope_limits": "drift alignment + status updates ONLY; no content/rule/threshold changes",
+        "source": "CronCreate runtime (resets at session end; not persisted to disk despite durable=true flag).",
+    })
+
+    # 3. Doc count drift detector
+    items.append({
+        "name": "Doc count drift detector (sync_doc_counts.py)",
+        "description": "Asserts header numerical claims match source-of-truth tables. Uses canonical parsers (parse_decisions/parse_bug_register/parse_inv_entries) for BUG/INV/DEC; regex for CHECKLIST/CAV.",
+        "installed": (REPO_ROOT / "scripts" / "sync_doc_counts.py").exists(),
+        "modes": ["--check (CI gate)", "--update (manual sync)"],
+        "source": "scripts/sync_doc_counts.py",
+    })
+
+    # 4. Schema canonical regression test (J4)
+    schema_test = REPO_ROOT / "backtest" / "tests" / "test_schema_canonical.py"
+    items.append({
+        "name": "Schema canonical regression (J4)",
+        "description": "23 cache-dir column sets locked by parametrized pytest. Catches prefetch scripts writing extra/missing columns.",
+        "installed": schema_test.exists(),
+        "source": "backtest/tests/test_schema_canonical.py + scripts/write_cache_schemas.py + 23 _schema.json sidecars",
+    })
+
+    # 5. Cross-doc count consistency tests
+    cross_test = REPO_ROOT / "backtest" / "tests" / "test_doc_count_consistency.py"
+    items.append({
+        "name": "Cross-doc count consistency tests",
+        "description": "11 tests: AUDIT_INDEX/BUG_REGISTER/CHECKLIST/INV/CAV claim-vs-table cross-checks + dashboard parser correctness gates + duplicate-const JS gate.",
+        "installed": cross_test.exists(),
+        "source": "backtest/tests/test_doc_count_consistency.py",
+    })
+
+    # 6. Shared prefetch helper (J6)
+    helper = REPO_ROOT / "scripts" / "_prefetch_utils.py"
+    items.append({
+        "name": "Shared safe_filename_stem helper (J6)",
+        "description": "Canonical helper for new prefetch scripts. Avoids Windows reserved names (CON/PRN/AUX/NUL/COM*/LPT*).",
+        "installed": helper.exists(),
+        "source": "scripts/_prefetch_utils.py + 7 unit tests in test_prefetch_utils.py",
+    })
+
+    return items
+
+
+def get_test_inventory() -> dict:
+    """Count tests in the repo by module, for the dashboard's pyramid panel."""
+    test_dir = REPO_ROOT / "backtest" / "tests"
+    if not test_dir.is_dir():
+        return {"total": 0, "by_module": {}}
+    by_module: dict = {}
+    total = 0
+    for f in sorted(test_dir.glob("test_*.py")):
+        try:
+            text = f.read_text(encoding="utf-8", errors="ignore")
+        except Exception:
+            continue
+        n = len(re.findall(r"^def test_\w+", text, re.MULTILINE))
+        if n:
+            by_module[f.stem] = n
+            total += n
+    return {"total": total, "by_module": by_module}
+
+
 def get_timeline_summary() -> dict:
     """Realistic parallelized end-to-end timeline (per owner Q 2026-05-08)."""
     return {
@@ -579,6 +668,8 @@ def main() -> int:
         "active_bgs": get_active_bgs(),
         "pending_pipeline": get_pending_pipeline(),
         "timeline_summary": get_timeline_summary(),
+        "automation_status": get_automation_status(),
+        "test_inventory": get_test_inventory(),
     }
 
     # Aggregations
@@ -594,10 +685,22 @@ def main() -> int:
     snapshot["inv_status_counts"] = inv_by_status
 
     tier_by_status: dict = {}
+    # Canonical status keywords (in priority order - first match wins).
+    STATUS_KEYWORDS = [
+        "DONE", "RESOLVED", "DEFERRED", "BLOCKED", "PARTIAL",
+        "IN-PROGRESS", "IN PROGRESS", "PENDING",
+        "NEEDS-OWNER-SCOPE", "NEEDS OWNER",
+        "EMPIRICALLY-CLEAN", "EMPIRICALLY CLEAN",
+        "OPEN", "MOSTLY DONE",
+    ]
     for t in snapshot["tier_items"]:
-        # Status field is markdown like "DONE" or "PENDING"
-        s = re.sub(r"[^A-Z\-]", "", t["status"].upper())[:30] or "UNKNOWN"
-        tier_by_status[s] = tier_by_status.get(s, 0) + 1
+        raw = (t.get("status") or "").upper()
+        normalized = "UNKNOWN"
+        for kw in STATUS_KEYWORDS:
+            if kw in raw:
+                normalized = kw.replace(" ", "-")
+                break
+        tier_by_status[normalized] = tier_by_status.get(normalized, 0) + 1
     snapshot["tier_status_counts"] = tier_by_status
 
     out_json = OUT_DIR / "data.json"

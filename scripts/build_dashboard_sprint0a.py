@@ -314,7 +314,7 @@ API_USE_CASES = {
     },
     "polygon_options": {
         "use_case": "Put/call ratio, IV surface, options chain, unusual activity signals",
-        "stage": "Phase 1B+ overlay",
+        "stage": "Phase 1A: chain-reference cache (H10 ep1 IN PROGRESS owner-approved 2026-05-08). Phase 1B+ overlay: per-contract OHLCV (ep2) DEFERRED to on-demand fetch per owner 2026-05-08 to avoid 100GB+ precompute.",
         "criticality": "P1",
     },
     "polygon_futures": {
@@ -384,12 +384,12 @@ API_USE_CASES = {
     },
     "pytrends": {
         "use_case": "Search-attention signal (per-ticker SVI; geographic dimension; related queries)",
-        "stage": "Phase 1B+ overlay",
-        "criticality": "P2",
+        "stage": "DEFERRED to Phase 1C per owner 2026-05-08. Apewisdom (already cached, 8 subreddits) covers ~90% of retail-attention signal at zero incremental cost. Pytrends needs paid proxy/SerpAPI to bypass Google 429.",
+        "criticality": "P3 (deferred)",
     },
     "aaii": {
         "use_case": "Weekly investor sentiment survey (bullish/bearish %; contrarian signal)",
-        "stage": "Phase 1A regime classifier",
+        "stage": "Phase 1A regime classifier - STATUS QUO confirmed owner 2026-05-08 (5-col weekly file sufficient; 8-week MA + long-term comparison computable locally; AAII Asset Allocation Survey optional ~30 min add).",
         "criticality": "P1",
     },
     "cnn_fg": {

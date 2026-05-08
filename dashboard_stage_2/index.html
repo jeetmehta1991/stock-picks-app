@@ -64,6 +64,7 @@ per CHECKLIST #77 - never reads from memory.
   <button class="tab-btn" data-panel="tier">Tier H/I/J Execution</button>
   <button class="tab-btn" data-panel="code">Code State (git)</button>
   <button class="tab-btn" data-panel="pipeline">Pipeline (BGs + Queue)</button>
+  <button class="tab-btn" data-panel="automation">Automation + Tests</button>
 </nav>
 
 <main>
@@ -219,6 +220,20 @@ per CHECKLIST #77 - never reads from memory.
     <p>Showing first 200; total dirty: <span id="dirty-total">--</span></p>
     <table id="tbl-dirty" class="display compact" style="width:100%">
       <thead><tr><th>Status</th><th>Path</th></tr></thead>
+    </table>
+  </section>
+
+  <section id="automation" class="panel">
+    <h2>Automation + Test Pyramid</h2>
+    <p style="color:#6b7588;font-size:13px">Infrastructure that enforces correctness across commits + sessions. Each row shows what it does, whether it's installed/active, and where to find the source.</p>
+    <table id="tbl-automation" class="display compact" style="width:100%">
+      <thead><tr><th>Component</th><th>Description</th><th>Status</th><th>Detail</th><th>Source</th></tr></thead>
+    </table>
+
+    <h3 style="margin-top:24px">Test Inventory</h3>
+    <p>Total tests: <span id="test-total">--</span></p>
+    <table id="tbl-tests" class="display compact" style="width:100%">
+      <thead><tr><th>Module</th><th>Test count</th></tr></thead>
     </table>
   </section>
 
@@ -441,6 +456,31 @@ $('#tbl-unpushed').DataTable({
 document.getElementById('dirty-total').textContent = D.uncommitted.count;
 $('#tbl-dirty').DataTable({
   data: (D.uncommitted.files || []).map(f => [f.status, f.path]),
+  pageLength: 50,
+});
+
+// Automation panel
+const automation = D.automation_status || [];
+$('#tbl-automation').DataTable({
+  data: automation.map(a => {
+    const status = a.installed === true ? '<span class="badge badge-resolved">INSTALLED</span>'
+      : a.installed === false ? '<span class="badge badge-open">MISSING</span>'
+      : `<span class="badge badge-partial">${a.installed}</span>`;
+    const detail = [];
+    if (a.gates) detail.push(`gates: ${a.gates.join(', ')}`);
+    if (a.modes) detail.push(`modes: ${a.modes.join(', ')}`);
+    if (a.schedule) detail.push(`schedule: ${a.schedule}`);
+    if (a.scope_limits) detail.push(`scope: ${a.scope_limits}`);
+    return [a.name, a.description, status, detail.join('<br>') || '-', a.source || '-'];
+  }),
+  pageLength: 25,
+  ordering: false,
+});
+
+const tests = D.test_inventory || {total: 0, by_module: {}};
+document.getElementById('test-total').textContent = tests.total;
+$('#tbl-tests').DataTable({
+  data: Object.entries(tests.by_module).sort((a,b) => b[1] - a[1]),
   pageLength: 50,
 });
 </script>
