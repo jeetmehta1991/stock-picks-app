@@ -134,6 +134,36 @@ CHECKS = [
 ]
 
 
+def check_structural_drift() -> tuple[list[str], int, int]:
+    """Owner-mandated 2026-05-08 (after polygon_options gap was missed by the
+    2-hour cron because the cron only checked numerical drift): walk
+    data_prefetch/ for any subdir with >=1 parquet and cross-check against
+    the union of CACHE_PATHS scanned by build_dashboard_sprint0a.
+
+    Returns (uncovered_dirs, total_cached, total_scanned).
+    """
+    cached: set[str] = set()
+    pf = REPO_ROOT / "data_prefetch"
+    if pf.is_dir():
+        for p in pf.rglob("*.parquet"):
+            rel = str(p.parent.relative_to(REPO_ROOT)).replace("\\", "/")
+            # Skip intentionally-archived legacy paths
+            if "legacy_archive" in rel:
+                continue
+            cached.add(rel)
+    sprint0a_path = REPO_ROOT / "scripts" / "build_dashboard_sprint0a.py"
+    scanned: set[str] = set()
+    if sprint0a_path.exists():
+        text = sprint0a_path.read_text(encoding="utf-8", errors="ignore")
+        for m in re.finditer(r'"(data_prefetch/[^"]+)"', text):
+            scanned.add(m.group(1).replace("\\", "/").rstrip("/"))
+    uncovered = sorted(
+        c for c in cached
+        if c not in scanned and not any(c.startswith(s + "/") for s in scanned)
+    )
+    return uncovered, len(cached), len(scanned)
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--check", action="store_true", help="non-zero exit on drift")
@@ -176,6 +206,19 @@ def main() -> int:
             else:
                 line += " (no claim found in doc)"
         print(line)
+
+    # Structural drift check (advisory - does NOT exit non-zero, since adding
+    # a missing entry to CACHE_PATHS is a content change requiring approval).
+    uncovered, total_cached, total_scanned = check_structural_drift()
+    print()
+    print("=== Structural drift (cache dirs not in dashboard scan) ===")
+    print(f"  cached_dirs={total_cached} scanned_dirs={total_scanned} uncovered={len(uncovered)}")
+    if uncovered:
+        print("  ADVISORY (not blocking - adding to scan list is content change):")
+        for u in uncovered[:20]:
+            print(f"    - {u}")
+        if len(uncovered) > 20:
+            print(f"    ... +{len(uncovered) - 20} more")
 
     if args.check and drift_found:
         print("\nDrift detected. Run 'python scripts/sync_doc_counts.py --update' to fix.")

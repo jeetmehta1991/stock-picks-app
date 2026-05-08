@@ -65,6 +65,7 @@ per CHECKLIST #77 - never reads from memory.
   <button class="tab-btn" data-panel="code">Code State (git)</button>
   <button class="tab-btn" data-panel="pipeline">Pipeline (BGs + Queue)</button>
   <button class="tab-btn" data-panel="automation">Automation + Tests</button>
+  <button class="tab-btn" data-panel="reference">Reference</button>
 </nav>
 
 <main>
@@ -101,8 +102,23 @@ per CHECKLIST #77 - never reads from memory.
       Tested = referenced in <code>backtest/tests/</code>.
       Pushed = referenced in any git commit subject (=&gt; merged).
     </p>
+    <p style="font-size:12px;color:#6b7588;margin-top:4px">
+      Pyramid columns (DEC-503): <strong title="Unit">U</strong> /
+      <strong title="Smoke">Sm</strong> /
+      <strong title="Integration">I</strong> /
+      <strong title="System">Sy</strong> /
+      <strong title="Functional">F</strong> /
+      <strong title="Regression">R</strong> /
+      <strong title="Data integrity">D</strong> /
+      <strong title="Performance">P</strong> /
+      <strong title="Acceptance">A</strong>. Green=test layer covers ID; gray=no coverage in that layer.
+    </p>
     <table id="tbl-decisions" class="display compact" style="width:100%">
-      <thead><tr><th>ID</th><th>Title</th><th>Doc Status</th><th>Coded</th><th>Wired</th><th>Tested</th><th>Pushed</th><th>Sprint</th><th>Dependencies</th><th>Theme</th></tr></thead>
+      <thead><tr><th>ID</th><th>Title</th><th>Doc Status</th><th>Coded</th><th>Wired</th><th>Tested</th><th>Pushed</th>
+        <th title="Unit">U</th><th title="Smoke">Sm</th><th title="Integration">I</th><th title="System">Sy</th>
+        <th title="Functional">F</th><th title="Regression">R</th><th title="Data integrity">D</th>
+        <th title="Performance">P</th><th title="Acceptance">A</th>
+        <th>Sprint</th><th>Dependencies</th><th>Theme</th></tr></thead>
     </table>
   </section>
 
@@ -113,7 +129,11 @@ per CHECKLIST #77 - never reads from memory.
       <input id="bug-filter" placeholder="Filter ID / title / linked decisions..." size="50">
     </div>
     <table id="tbl-bugs" class="display compact" style="width:100%">
-      <thead><tr><th>Bug ID</th><th>Title</th><th>Coded</th><th>Wired</th><th>Tested</th><th>Pushed</th><th>Sprint</th><th>Dependencies</th></tr></thead>
+      <thead><tr><th>Bug ID</th><th>Title</th><th>Coded</th><th>Wired</th><th>Tested</th><th>Pushed</th>
+        <th title="Unit">U</th><th title="Smoke">Sm</th><th title="Integration">I</th><th title="System">Sy</th>
+        <th title="Functional">F</th><th title="Regression">R</th><th title="Data integrity">D</th>
+        <th title="Performance">P</th><th title="Acceptance">A</th>
+        <th>Sprint</th><th>Dependencies</th></tr></thead>
     </table>
   </section>
 
@@ -130,7 +150,11 @@ per CHECKLIST #77 - never reads from memory.
       </select>
     </div>
     <table id="tbl-invs" class="display compact" style="width:100%">
-      <thead><tr><th>INV ID</th><th>Title</th><th>Doc Status</th><th>Coded</th><th>Wired</th><th>Tested</th><th>Pushed</th><th>Dependencies</th></tr></thead>
+      <thead><tr><th>INV ID</th><th>Title</th><th>Doc Status</th><th>Coded</th><th>Wired</th><th>Tested</th><th>Pushed</th>
+        <th title="Unit">U</th><th title="Smoke">Sm</th><th title="Integration">I</th><th title="System">Sy</th>
+        <th title="Functional">F</th><th title="Regression">R</th><th title="Data integrity">D</th>
+        <th title="Performance">P</th><th title="Acceptance">A</th>
+        <th>Dependencies</th></tr></thead>
     </table>
   </section>
 
@@ -147,7 +171,11 @@ per CHECKLIST #77 - never reads from memory.
       </select>
     </div>
     <table id="tbl-caveats" class="display compact" style="width:100%">
-      <thead><tr><th>CAV ID</th><th>Title</th><th>Status</th><th>Coded</th><th>Wired</th><th>Tested</th><th>Pushed</th><th>Dependencies</th><th>Impact</th></tr></thead>
+      <thead><tr><th>CAV ID</th><th>Title</th><th>Status</th><th>Coded</th><th>Wired</th><th>Tested</th><th>Pushed</th>
+        <th title="Unit">U</th><th title="Smoke">Sm</th><th title="Integration">I</th><th title="System">Sy</th>
+        <th title="Functional">F</th><th title="Regression">R</th><th title="Data integrity">D</th>
+        <th title="Performance">P</th><th title="Acceptance">A</th>
+        <th>Dependencies</th><th>Impact</th></tr></thead>
     </table>
   </section>
 
@@ -235,6 +263,47 @@ per CHECKLIST #77 - never reads from memory.
     <table id="tbl-tests" class="display compact" style="width:100%">
       <thead><tr><th>Module</th><th>Test count</th></tr></thead>
     </table>
+
+    <h3 style="margin-top:24px">Test Pyramid (DEC-503 / CHECKLIST #69)</h3>
+    <p style="font-size:13px;color:#6b7588">9-layer model. Each layer maps to specific test files. Empty layers (no test files mapped yet) surface coverage gaps rather than pretend coverage exists.</p>
+    <table id="tbl-pyramid-layers" class="display compact" style="width:100%">
+      <thead><tr><th>Layer</th><th>Mapped test files</th><th>Status</th></tr></thead>
+    </table>
+
+    <h3 style="margin-top:24px">Structural Drift (cache dirs not in dashboard scan)</h3>
+    <p style="font-size:13px;color:#6b7588">Detects populated cache directories not registered in build_dashboard_sprint0a's CACHE_PATHS list. The polygon_options gap was this kind of drift - cron's numerical-drift check missed it. Added 2026-05-08 per owner directive.</p>
+    <p>Cached dirs: <span id="drift-cached">--</span>  |  Scanned dirs: <span id="drift-scanned">--</span>  |  Uncovered: <strong id="drift-uncovered-count" style="color:#c00">--</strong></p>
+    <table id="tbl-drift" class="display compact" style="width:100%">
+      <thead><tr><th>Uncovered cache directory</th></tr></thead>
+    </table>
+  </section>
+
+  <section id="reference" class="panel">
+    <h2>Reference: Lifecycle Stages</h2>
+    <p style="color:#6b7588;font-size:13px">The 4 dashboard badges (coded/wired/tested/pushed) cover only the in-repo lifecycle. Below: full project-wide stages, Stage 2 sub-phases, and what each badge means in detail.</p>
+
+    <h3 style="margin-top:16px">1. Repo lifecycle (the 4 dashboard badges)</h3>
+    <table id="tbl-ref-badges" class="display compact" style="width:100%">
+      <thead><tr><th>Stage</th><th>Definition</th><th>How detected</th><th>Failure mode</th></tr></thead>
+    </table>
+
+    <h3 style="margin-top:24px">2. Project-wide stages (per CLAUDE.md)</h3>
+    <table id="tbl-ref-stages" class="display compact" style="width:100%">
+      <thead><tr><th>Stage</th><th>Status</th><th>What happens</th></tr></thead>
+    </table>
+
+    <h3 style="margin-top:24px">3. Stage 2 sub-phases</h3>
+    <table id="tbl-ref-phases" class="display compact" style="width:100%">
+      <thead><tr><th>Phase</th><th>Status</th><th>Purpose</th></tr></thead>
+    </table>
+
+    <h3 style="margin-top:24px">Full feature path</h3>
+    <p style="font-size:14px;line-height:1.8">
+      AUDIT.md spec &rarr; <strong>coded</strong> &rarr; <strong>wired</strong> &rarr;
+      <strong>tested</strong> (across all 9 pyramid layers) &rarr; <strong>pushed</strong> &rarr;
+      Phase 1A run &rarr; empirical pass/fail per-regime &rarr; Phase 1B agent integration &rarr;
+      Phase 1C overlay layer &rarr; Stage 3 papertrade &rarr; Stage 4 live trading.
+    </p>
   </section>
 
 </main>
@@ -303,6 +372,21 @@ function statusCheck(b) {
     ? '<span class="badge badge-resolved">YES</span>'
     : '<span class="badge badge-superseded">no</span>';
 }
+// Compact dot for the 9 pyramid layer columns (greener=covered)
+function pyramidDot(b) {
+  return b
+    ? '<span title="covered" style="color:#16a34a;font-weight:bold;font-size:14px">&#10003;</span>'
+    : '<span title="no coverage" style="color:#cbd5e1;font-size:14px">&middot;</span>';
+}
+// Render the 9 pyramid layer cells in canonical order matching the table headers
+function pyramidCells(sg) {
+  const p = (sg && sg.pyramid) || {};
+  return [
+    pyramidDot(p.unit), pyramidDot(p.smoke), pyramidDot(p.integration),
+    pyramidDot(p.system), pyramidDot(p.functional), pyramidDot(p.regression),
+    pyramidDot(p.data_integrity), pyramidDot(p.performance), pyramidDot(p.acceptance),
+  ];
+}
 
 // Decisions table
 document.getElementById('dec-total').textContent = D.decisions.length;
@@ -316,6 +400,7 @@ const decRows = D.decisions.map(d => {
     statusCheck(sg.wired),
     statusCheck(sg.tested),
     statusCheck(sg.pushed),
+    ...pyramidCells(sg),
     d.sprint || '-',
     `<span style="font-size:11px">${d.dependencies || '-'}</span>`,
     d.theme,
@@ -323,7 +408,6 @@ const decRows = D.decisions.map(d => {
 });
 const decTable = $('#tbl-decisions').DataTable({
   data: decRows, pageLength: 50, order: [[0, 'asc']],
-  columns: [{type:'html'}, {}, {type: 'html'}, {type:'html'}, {type:'html'}, {type:'html'}, {type:'html'}, {}, {type:'html'}, {}],
 });
 $('#dec-filter').on('keyup', function () { decTable.search(this.value).draw(); });
 $('#dec-status-filter').on('change', function () { decTable.column(2).search(this.value).draw(); });
@@ -339,13 +423,13 @@ const bugRows = D.bugs.map(b => {
     statusCheck(sg.wired),
     statusCheck(sg.tested),
     statusCheck(sg.pushed),
+    ...pyramidCells(sg),
     b.sprint || b.sprint_context || '-',
     `<span style="font-size:11px">${b.dependencies || b.linked_decisions || '-'}</span>`,
   ];
 });
 const bugTable = $('#tbl-bugs').DataTable({
   data: bugRows, pageLength: 50, order: [[0, 'asc']],
-  columns: [{type:'html'}, {}, {type:'html'}, {type:'html'}, {type:'html'}, {type:'html'}, {}, {type:'html'}],
 });
 $('#bug-filter').on('keyup', function () { bugTable.search(this.value).draw(); });
 
@@ -355,12 +439,12 @@ const invRows = D.investigations.map(i => {
   return [
     `<code>${i.id}</code>`, i.title, badge(i.status),
     statusCheck(sg.coded), statusCheck(sg.wired), statusCheck(sg.tested), statusCheck(sg.pushed),
+    ...pyramidCells(sg),
     `<span style="font-size:11px">${i.dependencies || '-'}</span>`,
   ];
 });
 const invTable = $('#tbl-invs').DataTable({
   data: invRows, pageLength: 50, order: [[0, 'asc']],
-  columns: [{type:'html'}, {}, {type: 'html'}, {type:'html'}, {type:'html'}, {type:'html'}, {type:'html'}, {type:'html'}],
 });
 $('#inv-filter').on('keyup', function () { invTable.search(this.value).draw(); });
 $('#inv-status-filter').on('change', function () { invTable.column(2).search(this.value).draw(); });
@@ -372,13 +456,13 @@ const cavRows = caveats.map(c => {
   return [
     `<code>${c.id}</code>`, c.title, badge(c.status),
     statusCheck(sg.coded), statusCheck(sg.wired), statusCheck(sg.tested), statusCheck(sg.pushed),
+    ...pyramidCells(sg),
     `<span style="font-size:11px">${c.dependencies || '-'}</span>`,
     c.impact,
   ];
 });
 const cavTable = $('#tbl-caveats').DataTable({
   data: cavRows, pageLength: 50, order: [[0, 'asc']],
-  columns: [{type:'html'}, {}, {type:'html'}, {type:'html'}, {type:'html'}, {type:'html'}, {type:'html'}, {type:'html'}, {}],
 });
 $('#cav-filter').on('keyup', function () { cavTable.search(this.value).draw(); });
 $('#cav-status-filter').on('change', function () { cavTable.column(2).search(this.value).draw(); });
@@ -482,6 +566,45 @@ document.getElementById('test-total').textContent = tests.total;
 $('#tbl-tests').DataTable({
   data: Object.entries(tests.by_module).sort((a,b) => b[1] - a[1]),
   pageLength: 50,
+});
+
+// Pyramid layers panel
+const pyramidLayerFiles = D.pyramid_layer_files || {};
+$('#tbl-pyramid-layers').DataTable({
+  data: Object.entries(pyramidLayerFiles).map(([layer, files]) => {
+    const populated = files && files.length > 0;
+    const status = populated
+      ? `<span class="badge badge-resolved">${files.length} file(s)</span>`
+      : `<span class="badge badge-open">EMPTY - coverage gap</span>`;
+    return [layer, files.join(', ') || '<em>(none mapped)</em>', status];
+  }),
+  pageLength: 15,
+  ordering: false,
+});
+
+// Structural drift panel
+const drift = D.structural_drift || {cached_dir_count:0, scanned_dir_count:0, uncovered:[], uncovered_count:0};
+document.getElementById('drift-cached').textContent = drift.cached_dir_count;
+document.getElementById('drift-scanned').textContent = drift.scanned_dir_count;
+document.getElementById('drift-uncovered-count').textContent = drift.uncovered_count;
+$('#tbl-drift').DataTable({
+  data: drift.uncovered.map(d => [d]),
+  pageLength: 25,
+});
+
+// Reference panel
+const ref = D.reference_tables || {badges:[], stages:[], phases:[]};
+$('#tbl-ref-badges').DataTable({
+  data: ref.badges.map(b => [b.stage, b.definition, b.detection, b.failure_mode]),
+  pageLength: 10, ordering: false, paging: false, searching: false, info: false,
+});
+$('#tbl-ref-stages').DataTable({
+  data: ref.stages.map(s => [s.stage, s.status, s.description]),
+  pageLength: 10, ordering: false, paging: false, searching: false, info: false,
+});
+$('#tbl-ref-phases').DataTable({
+  data: ref.phases.map(p => [p.phase, p.status, p.purpose]),
+  pageLength: 10, ordering: false, paging: false, searching: false, info: false,
 });
 </script>
 

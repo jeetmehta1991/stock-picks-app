@@ -273,8 +273,25 @@ def get_uncommitted_files() -> dict:
         return {"count": 0, "files": []}
 
 
+# DEC-503 / CHECKLIST 69: 9-layer test pyramid. Each layer maps to specific
+# test files. A layer with no mapped file means we have NO tests in that
+# layer yet (which is informative - exposes coverage gaps).
+TEST_PYRAMID_LAYERS = {
+    "unit": ["test_unit.py", "test_prefetch_utils.py"],
+    "smoke": [],  # Smoke is run by manual prefetch scripts; no dedicated test files
+    "integration": ["test_integration.py"],
+    "system": ["test_gate_pre_phase_1a_entry.py"],  # if it exists
+    "functional": ["test_doc_count_consistency.py"],
+    "regression": [],  # Regression tests live inline in test_unit/integration
+    "data_integrity": ["test_schema_canonical.py"],
+    "performance": [],  # No perf gate yet
+    "acceptance": [],   # Phase-1A 9-criteria matrix in metrics.py is the gate; not a pytest file
+}
+
+
 def load_status_corpora() -> dict:
-    """Pre-load text corpora for ID-status grep (coded/wired/pushed/tested)."""
+    """Pre-load text corpora for ID-status grep (coded/wired/pushed/tested).
+    Tests corpus is also broken out per pyramid layer (DEC-503)."""
     def cat(paths):
         out = []
         for p in paths:
@@ -286,10 +303,24 @@ def load_status_corpora() -> dict:
                     except Exception:
                         continue
         return "\n".join(out)
+    def cat_files(filenames):
+        out = []
+        tests_dir = REPO_ROOT / "backtest" / "tests"
+        for fn in filenames:
+            p = tests_dir / fn
+            if p.exists():
+                try:
+                    out.append(p.read_text(encoding="utf-8", errors="ignore"))
+                except Exception:
+                    pass
+        return "\n".join(out)
+
     prod = cat(["backtest/data", "backtest/engine", "backtest/signals", "backtest/results"])
     tests = cat(["backtest/tests"])
     backtest_all = cat(["backtest"])
     scripts = cat(["scripts"])
+    # Per-pyramid-layer corpora
+    layers = {layer: cat_files(files) for layer, files in TEST_PYRAMID_LAYERS.items()}
     docs_text = ""
     for d in ("AUDIT.md", "AUDIT_INDEX.md", "BUG_REGISTER.md", "PHASE_1A_PRELAUNCH_TODO.md"):
         p = REPO_ROOT / d
@@ -311,6 +342,7 @@ def load_status_corpora() -> dict:
         "scripts": scripts,
         "docs": docs_text,
         "git_log": git_log_subjects,
+        "pyramid_layers": layers,
     }
 
 
@@ -318,18 +350,31 @@ def id_status(id_str: str, corpora: dict) -> dict:
     """For a given ID (e.g. DEC-422 / BUG-001 / INV-024 / CAV-070), return:
       coded:  referenced in backtest/ or scripts/ Python
       wired:  referenced in active path (data/engine/signals/results)
-      tested: referenced in backtest/tests/
+      tested: referenced in backtest/tests/ (rolls up across pyramid)
       pushed: referenced in any git commit subject (=> code change merged)
       n_doc_refs: doc-only references (AUDIT.md / etc.) for context
+      pyramid: per-layer test coverage (DEC-503 9-layer model). Empty layers
+               (no test files mapped yet) always evaluate False to surface
+               the coverage gap rather than pretend coverage exists.
     """
     if not id_str or len(id_str) < 4:
-        return {"coded": False, "wired": False, "tested": False, "pushed": False, "n_doc_refs": 0}
+        return {
+            "coded": False, "wired": False, "tested": False, "pushed": False,
+            "n_doc_refs": 0,
+            "pyramid": {layer: False for layer in TEST_PYRAMID_LAYERS},
+        }
+    pyramid_layers = corpora.get("pyramid_layers", {})
+    pyramid = {
+        layer: id_str in pyramid_layers.get(layer, "")
+        for layer in TEST_PYRAMID_LAYERS
+    }
     return {
         "coded": (id_str in corpora["backtest_all"]) or (id_str in corpora["scripts"]),
         "wired": id_str in corpora["prod"],
         "tested": id_str in corpora["tests"],
         "pushed": id_str in corpora["git_log"],
         "n_doc_refs": corpora["docs"].count(id_str),
+        "pyramid": pyramid,
     }
 
 
@@ -478,6 +523,98 @@ def get_pending_pipeline() -> list[dict]:
         {"item": "Tier J7 null/missing normalization", "api": "local", "wallclock": "2h", "rate_limit": "n/a", "blocker": False, "priority": "P3"},
         {"item": "Tier J8 _schema.json per cache directory", "api": "local", "wallclock": "2h", "rate_limit": "n/a", "blocker": False, "priority": "P3"},
     ]
+
+
+def get_structural_drift() -> dict:
+    """Walk data_prefetch/ for any subdir containing >=1 parquet; cross-check
+    against the union of CACHE_PATHS scanned by build_dashboard_sprint0a.
+
+    Per owner directive 2026-05-08 (after polygon_options gap was missed by
+    the 2-hour drift cron because cron only checks numerical drift): this
+    function surfaces STRUCTURAL drift - cached subdirs not represented in
+    the dashboard scan list.
+    """
+    # Cached subdirs (have >=1 parquet)
+    cached: set[str] = set()
+    pf = REPO_ROOT / "data_prefetch"
+    if pf.is_dir():
+        for p in pf.rglob("*.parquet"):
+            rel = str(p.parent.relative_to(REPO_ROOT)).replace("\\", "/")
+            if "legacy_archive" in rel:
+                continue
+            cached.add(rel)
+
+    # Scanned by sprint0a dashboard - parse CACHE_PATHS list from source
+    sprint0a_path = REPO_ROOT / "scripts" / "build_dashboard_sprint0a.py"
+    scanned: set[str] = set()
+    if sprint0a_path.exists():
+        text = sprint0a_path.read_text(encoding="utf-8", errors="ignore")
+        # Match tuples like ("polygon", "news", "data_prefetch/polygon/news", "per_ticker")
+        for m in re.finditer(r'"(data_prefetch/[^"]+)"', text):
+            scanned.add(m.group(1).replace("\\", "/").rstrip("/"))
+
+    # Filter cached: drop trivial top-level placeholders (like data_prefetch
+    # itself) and dirs that are clearly transient (_checkpoint files only).
+    uncovered = sorted(
+        c for c in cached
+        if c not in scanned
+        and not any(c.startswith(s + "/") for s in scanned)  # parent already scanned
+    )
+    return {
+        "cached_dir_count": len(cached),
+        "scanned_dir_count": len(scanned),
+        "uncovered": uncovered,
+        "uncovered_count": len(uncovered),
+    }
+
+
+def get_reference_tables() -> dict:
+    """Owner-requested reference page: 4-badge meanings, full-system stages
+    1-4, and Stage 2 sub-phases. Static content - update when the project
+    structure changes."""
+    return {
+        "badges": [
+            {
+                "stage": "Coded",
+                "definition": "The function/class/signal exists physically in a file.",
+                "detection": "grep finds it in backtest/, scripts/, or agents/.",
+                "failure_mode": "Spec written in AUDIT.md but never implemented; coded=NO.",
+            },
+            {
+                "stage": "Wired",
+                "definition": "Code is reachable from a runtime entry point (run_phase1a, prefetch script, agent pipeline). Actually CALLED.",
+                "detection": "Grep finds it imported + called from a hot-path module (backtest/data, engine, signals, results); not orphan code.",
+                "failure_mode": "L146 / DEC-507: Polygon news cached + smart_money.get_news_sentiment coded, but the function read legacy cache/av_news/ paths -> coded=YES, wired=NO.",
+            },
+            {
+                "stage": "Tested",
+                "definition": "A test exercises the code path. ROLLS UP across the 9-layer DEC-503 pyramid.",
+                "detection": "Per-layer corpus grep using TEST_PYRAMID_LAYERS map. A YES rollup hides per-layer gaps; see pyramid columns for layer breakdown.",
+                "failure_mode": "Function works, but no test exercises it; if it breaks no test fails -> silent regression.",
+            },
+            {
+                "stage": "Pushed",
+                "definition": "Change is on origin/main.",
+                "detection": "git log --all subject lines reference the ID.",
+                "failure_mode": "Local-only fix lost in a session reset.",
+            },
+        ],
+        "stages": [
+            {"stage": "Stage 1: Foundation", "status": "DONE (pre-Pass 53)", "description": "Codebase scaffolded; tooling chosen; CI / hooks / tests / git layout."},
+            {"stage": "Stage 2: Strategy validation", "status": "CURRENT", "description": "Validate strategies via backtest before any real money. Subdivided into Phase 0A/1A/1B/1C+ below."},
+            {"stage": "Stage 3: Papertrading", "status": "Future", "description": "Run live with simulated capital; verify the engine works end-to-end against real-time data."},
+            {"stage": "Stage 4: Live trading", "status": "Future", "description": "Real money. Email-based per-trade approvals (per DEC, not Telegram)."},
+        ],
+        "phases": [
+            {"phase": "Phase 0A", "status": "CURRENT (Sprint 0A - Pass 53)", "purpose": "Cache all Stage-2 inputs locally so backtests have NO live API calls. Universe T1a/T1b/T1c/T2/T3 + ETFs. Sprint 0A dashboard tracks this."},
+            {"phase": "Phase 1A", "status": "Launch May 15 (DEC-590)", "purpose": "Run all 60 baseline strategies x 7 regimes against cached data. Owner gate at 1A-alpha (rules-only Sharpe >= 0.7 OOS)."},
+            {"phase": "Phase 1A-alpha", "status": "Sub-phase", "purpose": "Strategy x regime x parameter cube; rules only."},
+            {"phase": "Phase 1A-beta", "status": "Sub-phase", "purpose": "Same scope, full universe, end-to-end dry-run."},
+            {"phase": "Phase 1B", "status": "After 1A passes", "purpose": "11-agent TradingAgents pipeline scores Phase 1A's candidates and overlays a tier adjustment (>=75 upgrade, <=40 downgrade). Haiku model (~$116 CAD)."},
+            {"phase": "Phase 1B-alpha", "status": "Sub-phase", "purpose": "Rules + agents combined cube; A/B vs 1A baseline."},
+            {"phase": "Phase 1C+", "status": "After 1B passes", "purpose": "Overlays: news (Unusual Whales), options (H10 ep2), pytrends. Sonnet model."},
+        ],
+    }
 
 
 def get_automation_status() -> list[dict]:
@@ -670,6 +807,10 @@ def main() -> int:
         "timeline_summary": get_timeline_summary(),
         "automation_status": get_automation_status(),
         "test_inventory": get_test_inventory(),
+        "pyramid_layers": list(TEST_PYRAMID_LAYERS.keys()),
+        "pyramid_layer_files": TEST_PYRAMID_LAYERS,
+        "structural_drift": get_structural_drift(),
+        "reference_tables": get_reference_tables(),
     }
 
     # Aggregations
