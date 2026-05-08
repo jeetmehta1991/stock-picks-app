@@ -1,5 +1,75 @@
 # API Endpoint Utilization Audit (DEC-410)
 
+## 2026-05-08 (Pass 53 Day-9 v8h+1) — PROBE-GROUNDED AMENDMENT (CHECKLIST #77)
+
+**Critical disclosure per CHECKLIST #77 (codified 2026-05-07 evening):** sections below this amendment were authored from training-data memory + audit cross-references. The L131 "honest knowledge limit" disclaimer was present but NOT enforced — multiple downstream audits inherited the unverified endpoint set, leading to 4 audit cycles before owner pushback ("This is horrible performance... 3 passes... still incomplete and these things are not even being flagged").
+
+**Probe-grounded canonical:** `API_ENDPOINT_INVENTORY.md` (created 2026-05-08 morning; sourced from `massive.com/docs/llms.txt` + `alphavantage.co/documentation/` + `publicreporting.cftc.gov/` + `apewisdom.io/api/` + `pytrends` GitHub README + `scripts/probe_api_catalog.py` live probe @ 2026-05-08). Probe report: `API_ENDPOINT_PROBE_REPORT.json` (~150 endpoint hits with our keys at our actual tier).
+
+**Use API_ENDPOINT_INVENTORY.md (and PHASE_1A_PRELAUNCH_TODO.md fields/dimensions matrix) for AUTHORITATIVE current state.** Use sections below this amendment for historical decision context only.
+
+### Probe-confirmed corrections to sections below
+
+| API | Section below claims | Probe-confirmed reality (2026-05-08) | Source |
+|---|---|---|---|
+| Polygon Stocks Starter | "/v3/reference/tickers/{t}/events" available | 🔴 404 — wrong URL guess; existing 1687-file cache came from different prefetch path; needs investigation | probe |
+| Polygon Stocks Starter | "/v1/indicators/sma/ema/rsi/macd" listed as "Stage 1-2 use? NO" | ✅ probe-confirmed accessible at our tier | probe |
+| Polygon Stocks Starter | NBBO Quotes / Trades intraday "Stage 1-2 use? NO" | 🔴 403 — actually NOT in our Stocks Starter; requires Stocks Advanced | probe |
+| Polygon Stocks Plus | section claims "Filings + Fundamentals available at Starter" | 🔴 404 — Filings (10-K Sections / 13-F / 8-K Text / Form 3-4 / Risk) and Fundamentals (Income Stmt / Balance Sheet / Cash Flow / Ratios / Float / Short Interest / Short Volume) require Stocks PLUS tier | probe + Massive llms.txt |
+| Polygon Indices Basic (added 2026-05-08) | not yet documented | ⚠ PARTIAL — 2/13 wanted accessible (I:NDX, I:COMP). VIX/SPX/DJI/RUT/VIX9D/VIX3M/VVIX/OEX 403 (CBOE/S&P licensing gate beyond Basic) | probe |
+| Polygon Options Basic (added 2026-05-08) | not yet documented | ⚠ PARTIAL — chains + per-contract aggs OK; snapshots/trades/quotes 403 | probe |
+| Polygon Futures Basic (added 2026-05-08) | not yet documented | ✅ products + contracts + schedules + per-contract aggs (rate-limited 5/min) | probe |
+| Polygon Forex Basic (added 2026-05-08) | not yet documented | ✅ aggs + reference (12 pairs cached: EURUSD, USDJPY, GBPUSD, USDCAD, USDCHF, AUDUSD, NZDUSD, USDCNY, USDMXN, USDINR, USDKRW, USDBRL) | probe |
+| Polygon Benzinga partner | not documented | ✅ 5/7 endpoints (analyst_insights, ratings, earnings, guidance, firm_details). consensus 404, news 403 | probe |
+| Polygon Economy | not documented | ✅ 3/4 endpoints (inflation, inflation_expectations, treasury_yields). labor 404 | probe |
+| Quiver Trader | claims 14+ historical endpoints | 🔴 13 of those 404 at our tier. Working: congresstrading, **senatetrading**, **housetrading**, govcontracts, lobbying, wallstreetbets, twitter, **spacs**. NOT working at Trader: wikipedia, patentmomentum (per-ticker), appratings, sec13fchanges (per-ticker), insidertrading (per-ticker), earningsbeats, redditpoliticians, reddittendies, snptrend, swaps, googletrends, linkedindata, iposcalendar, optionsflow, estimates | probe |
+| Quiver govcontracts | INV-024 originally claimed prefetch was filtering to 4 fields (Ticker/Amount/Qtr/Year) and missing Date/AwardingAgency/etc. | **WRONG — REFRAMED.** API itself returns ONLY 4 fields. Our prefetch is faithful. Daily-grained gov contracts requires alternate source (USAspending.gov / SEC 8-K). | probe + Quiver API direct response |
+| FRED | listed series subset | ✅ ALL 28 enumerated endpoints work + ALFRED vintage. 57 cached series (was 21 in prefetch_macro.py SERIES dict; gap was inline external-script work). 30+ new series added 2026-05-08 (TIPS, productivity, sector employment 9 categories, Case-Shiller, foreign 10y yields, FX rates). DEXJPUS persistent 500 (INV-042 — likely deprecated). | probe |
+| AlphaVantage | listed as "free + premium-tier; have key" | 🔴 OWNER-CONFIRMED FREE TIER ONLY. Premium endpoints (NEWS_SENTIMENT, INSIDER_TRANSACTIONS, INSTITUTIONAL_HOLDINGS, INCOME/BALANCE/CASH_FLOW, EARNINGS_*, IPO_CALENDAR, FX_*, CRYPTO_*, COMMODITIES_*, ECONOMIC_INDICATORS, REALTIME_OPTIONS, EARNINGS_CALL_TRANSCRIPT, all intraday) inaccessible. Free tier limited to: TIME_SERIES_DAILY/WEEKLY/MONTHLY (NOT _ADJUSTED), GLOBAL_QUOTE (delayed), SYMBOL_SEARCH, MARKET_STATUS, LISTING_STATUS, INDEX_CATALOG, ~50 technical indicators (SMA/EMA/RSI/MACD/BBANDS/ATR/etc.) | owner-confirmed 2026-05-08 |
+| Finnhub | "no key" | ✅ KEY ADDED 2026-05-08. 13/20 endpoints free-tier accessible: quote, profile2, peers, insider-transactions, insider-sentiment, recommendation, eps_surprise, calendar/{earnings,ipo,economic}, company-news, financials-reported, metric. 7 premium-locked: price-target, social-sentiment, upgrade-downgrade, eps-estimate, revenue-estimate, dividend, split. | probe |
+| SEC EDGAR | listed as "filings index only" | ✅ XBRL companyfacts + frames endpoints confirmed AT OUR TIER (free public). Provides STRUCTURED financial line items per company (revenue/EPS/cash flow/etc.) — solves INV-025 + INV-026 + INV-037. Implemented as `prefetch_sec_xbrl.py`; 1937/1937 done in checkpoint 2026-05-08. | probe |
+| CFTC | listed Disagg + TFF | 7 datasets confirmed available: Legacy futures-only (6dca-aqww), Legacy combined (jun7-fc8e), Disagg futures-only (72hh-3qpy), Disagg combined (kh3c-gbw2 — have), TFF futures-only (gpe5-46if — have), TFF combined (yw9f-hn96), Supp CIT (4zgm-a668). We have 2/7. | docs |
+| Apewisdom | listed `all-stocks` only | 2 endpoints (filter + paginated) × multiple subreddit filters: all, all-stocks, all-crypto, wallstreetbets, stocks, investing, options, CryptoCurrency, Bitcoin, SatoshiStreetBets, +7 others. Currently fetching `all-stocks` only. | docs |
+| pytrends | listed `interest_over_time` only | 12 methods total; we use 1/12. Missing: interest_by_region, related_queries, related_topics, trending_searches, realtime_trending_searches, top_charts, suggestions, categories, multirange_interest_over_time, get_historical_interest, build_payload | docs |
+
+### What changed in the underlying APIs since this audit was first written
+
+- **Polygon was acquired/rebranded as Massive** (massive.com). All `polygon.io` doc URLs 301-redirect to `massive.com/docs/...`. API endpoints unchanged.
+- **Owner activated Indices/Options/Futures/Currencies Basic free plans** 2026-05-08 — the new tiers landed during execution. Indices Basic gives us only Massive's own indices (NDX, COMP, MID, SML, NYA) — CBOE/S&P licensed indices (VIX, SPX, DJI, RUT) still gated.
+- **Finnhub key added to .env** 2026-05-08.
+
+### NEW INV entries surfaced by probe (2026-05-08 morning)
+
+| INV | Title | Resolution path |
+|---|---|---|
+| INV-034 | Polygon Indices Basic ACTIVATED but partial 2/13 | RESOLVED-PARTIAL — owner clarification on remaining 11 indices' license fees |
+| INV-035 | Finnhub key was missing from .env | RESOLVED 2026-05-08 |
+| INV-036 | 13 Quiver endpoints in API_AUDIT.md don't exist at Trader tier | open — API_AUDIT update (this commit) |
+| INV-037 | Polygon Filings/Fundamentals require Stocks Plus (NOT our Starter) | mitigation via SEC EDGAR XBRL (working) |
+| INV-038 | Polygon Indices CBOE/S&P license gates | open — owner action |
+| INV-039 | Polygon Benzinga 5/7 accessible | RESOLVING — full prefetch in flight |
+| INV-040 | Quiver senate/house/spacs work but never fetched | RESOLVING — full prefetch in flight |
+| INV-041 | SEC XBRL git_commit captures all staged files | open — script fix in `prefetch_finnhub_full.py` `git_commit_paths()` (uses `--`) |
+| INV-042 | FRED DEXJPUS 500 — likely deprecated | open — research correct series ID |
+
+### Updated Q1-Q4 strategic answers (post-probe)
+
+**Q1 — Can this API be used in a better way?** Polygon Stocks Starter is now well-utilized but DOES NOT include Filings or Fundamentals (those need Plus tier). SEC EDGAR XBRL is the equivalent free path and is implemented.
+
+**Q2 — Are we using everything offered?** Finnhub jump from 0/20 → in-flight prefetch of 13/20 free endpoints. Polygon Benzinga 5/7 ramping up. Polygon Indices Basic / Options Basic / Futures Basic / Forex Basic now active.
+
+**Q3 — Is the cost worth it?** Owner directive 2026-05-08: NO new paid subscriptions. AlphaVantage free tier confirmed. Owner is going to PAUSE subscriptions after prefetch completes — cost question moot for current execution; future cost question deferred.
+
+**Q4 — Can one replace others?** SEC EDGAR XBRL replaces Polygon Plus Filings + Fundamentals at $0 cost. FRED replaces most of AlphaVantage's economic-indicator paid endpoints. Polygon news (paid) replaces AlphaVantage news (premium-locked) and Finnhub news (free but 1937-incomplete). No further consolidation needed.
+
+---
+
+## Pre-2026-05-08 (memory-based) audit content below
+
+The sections below were written from training-data memory and inherited assumptions. Treat as historical decision context, NOT canonical inventory.
+
+---
+
 **Status:** IN PROGRESS — Pass 52 walkthrough cadence
 **Scope:** ALL APIs across all phases (Pass 52 turn 19 owner-approved one-time CHECKLIST #56 override)
 **Deliverable:** sub-decisions DEC-442+ logged based on findings; OpenBB consumption gap resolution; consolidation/deprecation recommendations
