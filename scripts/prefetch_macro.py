@@ -71,6 +71,53 @@ SERIES = {
     "money_supply_m2":"M2SL",      # M2 money stock
     "pce_inflation":  "PCEPI",     # PCE price index (Fed's preferred inflation gauge)
     "gold_price":     "GOLDAMGBD228NLBM",  # London gold AM fix
+    # Pass 53 Day-9 v8h+1 additions (broad-everything per owner directive 2026-05-08)
+    # TIPS yields (real)
+    "tips_5y":        "DFII5",
+    "tips_10y":       "DFII10",
+    "tips_30y":       "DFII30",
+    "forward_inflation_5y5y": "T5YIFR",
+    # Productivity
+    "productivity":   "OPHNFB",
+    "unit_labor_cost":"ULCNFB",
+    # Yield curve points
+    "treasury_3y":    "DGS3",
+    "treasury_20y":   "DGS20",
+    # Fed balance sheet detail
+    "treasury_held":  "TREAST",
+    # M1 money supply + monetary base
+    "money_supply_m1":"M1SL",
+    "monetary_base":  "BOGMBASE",
+    # Sector employment
+    "employ_construction": "USCONS",
+    "employ_trade":   "USTRADE",
+    "employ_mining":  "USMINE",
+    "employ_info":    "USINFO",
+    "employ_finance": "USFIRE",
+    "employ_education":"USEHS",
+    "employ_leisure": "USLAH",
+    "employ_services":"USSERV",
+    "employ_government":"USGOVT",
+    # Housing additions
+    "case_shiller":   "CSUSHPINSA",
+    "median_sale_price":"MSPUS",
+    # Manufacturing
+    "new_orders_durable":"AMTMNO",
+    # Consumer credit
+    "consumer_credit":"TOTALSL",
+    # FX exchange rates (FRED-tracked)
+    "dex_us_eu":      "DEXUSEU",
+    "dex_us_uk":      "DEXUSUK",
+    "dex_jp_us":      "DEXJPUS",
+    "dex_us_ca":      "DEXCAUS",
+    "dex_us_ch":      "DEXSZUS",
+    # Commodities
+    "brent":          "DCOILBRENTEU",
+    "gas_reg":        "GASREGW",
+    # Foreign yields
+    "germany_10y":    "IRLTLT01DEM156N",
+    "uk_10y":         "IRLTLT01GBM156N",
+    "japan_10y":      "IRLTLT01JPM156N",
 }
 
 

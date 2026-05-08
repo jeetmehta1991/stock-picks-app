@@ -484,7 +484,23 @@ contract names: `UST 10Y NOTE` / `UST 5Y NOTE` / `UST 2Y NOTE` / `UST BOND`
 
 ---
 
-## INV-034 — Polygon Indices Basic plan NOT YET ACTIVATED on account (Pass 53 Day-9 v8h+1 2026-05-08)
+## INV-034 — Polygon Indices Basic ACTIVATED but tier gives only 2 of 13 wanted indices (Pass 53 Day-9 v8h+1 2026-05-08 — REFRAMED)
+
+- **Discovered:** 2026-05-08 morning (initial); REFRAMED 2026-05-08 afternoon after owner activated Indices Basic and re-probe
+- **Observation (REVISED):** Owner activated Indices Basic. Re-probe finds 2 indices accessible at our tier:
+  - ✅ I:NDX, I:COMP (Massive's own indices — work)
+  - 🔴 I:VIX, I:SPX, I:DJI, I:RUT, I:VIX9D, I:VIX3M, I:VVIX, I:OEX (still 403 — likely CBOE/S&P licensing gate beyond Indices Basic)
+  - ⚠ I:MID, I:SML, I:NYA (probe returned 200 single-day but EMPTY for full date range — odd, may need different request format)
+- **Why:** Indices Basic appears to give Massive's own indices but NOT CBOE-licensed (VIX family) or S&P-licensed (SPX/DJI/RUT). FRED VIXCLS / VXVCLS remain primary VIX source.
+- **Severity:** REDUCED. NDX + COMP are useful adds; VIX comes from FRED.
+- **Status:** RESOLVED-PARTIAL — Indices Basic active, partial coverage; high-value indices still gated.
+- **Next action:** verify with owner whether the 11 blocked indices require additional licensing fees beyond Basic plan.
+- **Joint:** **INV-038** (companion finding); BUG-VIX-PROXY (FRED is workaround); INV-010 (VVIX deferred).
+
+---
+
+## INV-038 — Polygon Indices Basic license tier discovery (Pass 53 Day-9 v8h+1 2026-05-08)
+(see INV-034 reframing above)
 
 - **Discovered:** 2026-05-08 morning; `probe_api_catalog.py` returned 403 NOT_AUTHORIZED for I:SPX, I:DJI, I:RUT, I:VIX, I:VIX9D, I:VIX3M, I:VVIX, I:OEX (all major indices). Only I:NDX returned 200 (anomaly).
 - **Observation:** Owner stated 2026-05-07 they could add Indices Basic (plus Options/Futures/Currencies Basic) for free. Probe confirms Indices Basic is **NOT yet activated**. Futures Basic + Currencies Basic + Options Basic (partial) ARE active and working.
@@ -496,7 +512,18 @@ contract names: `UST 10Y NOTE` / `UST 5Y NOTE` / `UST 2Y NOTE` / `UST BOND`
 
 ---
 
-## INV-035 — Finnhub `FINNHUB_API_KEY` missing from `.env` (Pass 53 Day-9 v8h+1 2026-05-08)
+## INV-035 — RESOLVED — Finnhub key added 2026-05-08; 13/20 endpoints accessible at free tier (Pass 53 Day-9 v8h+1 2026-05-08)
+
+- **Status:** RESOLVED — owner added FINNHUB_API_KEY to .env 2026-05-08 afternoon.
+- **Re-probe results (free tier):**
+  - ✅ Free + working: quote, profile2, peers, insider-transactions, insider-sentiment, recommendation, eps_surprise, calendar/earnings, calendar/ipo, calendar/economic, company-news, financials-reported, metric (13)
+  - 🔴 Premium-only: price-target, social-sentiment, upgrade-downgrade, eps-estimate, revenue-estimate, dividend, split (7)
+- **Action:** new prefetch script `scripts/prefetch_finnhub_full.py` to author for the 13 free endpoints across full universe. ~6-10h fetch wall (free tier 60/min × 13 endpoints × 1937 tickers).
+- **Joint:** INV-016 (Finnhub news S&P-only stale — to re-do as part of full Finnhub prefetch).
+
+---
+
+## INV-035-old — replaced by RESOLVED entry above (Pass 53 Day-9 v8h+1 2026-05-08)
 
 - **Discovered:** 2026-05-08 morning; `probe_api_catalog.py` skipped Finnhub block because `os.environ.get("FINNHUB_API_KEY")` returned empty string.
 - **Observation:** Owner stated 2026-05-07 they have a Finnhub key. The key is not in `.env` accessible to scripts. Either: (a) key was set in a different env file, (b) key was at one point but removed, (c) key needs to be added.
@@ -556,4 +583,36 @@ contract names: `UST 10Y NOTE` / `UST 5Y NOTE` / `UST 2Y NOTE` / `UST BOND`
 
 ---
 
-*Last updated: 2026-05-08 morning (Pass 53 Day-9 v8h+1 — probe-grounded inventory)*
+## INV-039 — Polygon Benzinga partner data 5/7 endpoints accessible at our tier (rich data) (Pass 53 Day-9 v8h+1 2026-05-08)
+
+- **Discovered:** 2026-05-08 afternoon; smoke-test of `prefetch_polygon_benzinga.py` with auto-probe.
+- **Observation:** Benzinga is a paid Polygon partner add-on. Probe with AAPL (single ticker) finds:
+  - ✅ analyst_insights: 132 records
+  - ✅ ratings: 1508 records
+  - ✅ earnings: 62 records
+  - ✅ guidance: 31 records
+  - ✅ firm_details: 658 records
+  - 🔴 consensus: 404 (URL guess wrong; need to find correct path)
+  - 🔴 news: 403 (premium add-on beyond our tier)
+- **Significance:** **MAJOR Phase 1B+ signal opportunity**. Analyst recommendations + ratings + price targets + guidance are high-value for momentum + reversal + earnings strategies. Combined with eps_surprise (already in cache from Quiver insider): comprehensive earnings-event signal.
+- **Status:** open; full prefetch P1.
+- **Next action:** full universe prefetch of 5 working endpoints. Estimated 5 endpoints × 1937 tickers × 0.2s sleep = ~30 min wall clock per endpoint, ~2.5h aggregate. Probe `consensus` URL alternatives.
+- **Joint:** PREFETCH_COVERAGE_AUDIT.md Tier H11.
+
+---
+
+## INV-040 — Quiver senate/house/spacs endpoints WORK at our tier — major data we never fetched (Pass 53 Day-9 v8h+1 2026-05-08)
+
+- **Discovered:** 2026-05-08 afternoon; smoke of `prefetch_quiver_new_endpoints.py`.
+- **Observation:** Smoke with AAPL/MSFT/GOOGL/NVDA/SPY yields rich data:
+  - senatetrading: AAPL 212 / MSFT 136 / GOOGL 27 / NVDA 87 / SPY 27 records — separate from congresstrading
+  - housetrading: AAPL 479 / MSFT 457 / GOOGL 166 / NVDA 335 / SPY 33 records — biggest dataset
+  - spacs: AAPL 108 / MSFT 100 / GOOGL 0 / NVDA 32 / SPY 303 records — SPAC mention timeline
+- **Significance:** Senate-only / House-only sub-feeds enable chamber-specific signals. SPAC feed enables SPAC-related strategies for T2 (recent IPOs / spinoffs). Quiver Trader plan included these all along — never fetched until now.
+- **Status:** open; full prefetch P1.
+- **Next action:** full universe prefetch (~40 min × 3 endpoints = ~2h aggregate at 1.2s sleep). Quiver rate-limit safe.
+- **Joint:** API_AUDIT.md Quiver section needs update to reflect probe-confirmed endpoint set; sister to INV-036.
+
+---
+
+*Last updated: 2026-05-08 afternoon (Pass 53 Day-9 v8h+1 — Tier H execution in flight)*
