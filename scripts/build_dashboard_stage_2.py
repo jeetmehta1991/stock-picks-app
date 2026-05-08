@@ -264,6 +264,117 @@ def get_uncommitted_files() -> dict:
         return {"count": 0, "files": []}
 
 
+def load_status_corpora() -> dict:
+    """Pre-load text corpora for ID-status grep (coded/wired/pushed/tested)."""
+    def cat(paths):
+        out = []
+        for p in paths:
+            pp = REPO_ROOT / p
+            if pp.exists():
+                for f in pp.rglob("*.py"):
+                    try:
+                        out.append(f.read_text(encoding="utf-8", errors="ignore"))
+                    except Exception:
+                        continue
+        return "\n".join(out)
+    prod = cat(["backtest/data", "backtest/engine", "backtest/signals", "backtest/results"])
+    tests = cat(["backtest/tests"])
+    backtest_all = cat(["backtest"])
+    scripts = cat(["scripts"])
+    docs_text = ""
+    for d in ("AUDIT.md", "AUDIT_INDEX.md", "BUG_REGISTER.md", "PHASE_1A_PRELAUNCH_TODO.md"):
+        p = REPO_ROOT / d
+        if p.exists():
+            docs_text += "\n" + p.read_text(encoding="utf-8", errors="ignore")
+    # git log subjects (across all branches, all history)
+    try:
+        r = subprocess.run(
+            ["git", "log", "--all", "--pretty=format:%s"],
+            cwd=REPO_ROOT, capture_output=True, text=True, check=False,
+        )
+        git_log_subjects = r.stdout
+    except Exception:
+        git_log_subjects = ""
+    return {
+        "prod": prod,
+        "tests": tests,
+        "backtest_all": backtest_all,
+        "scripts": scripts,
+        "docs": docs_text,
+        "git_log": git_log_subjects,
+    }
+
+
+def id_status(id_str: str, corpora: dict) -> dict:
+    """For a given ID (e.g. DEC-422 / BUG-001 / INV-024 / CAV-070), return:
+      coded:  referenced in backtest/ or scripts/ Python
+      wired:  referenced in active path (data/engine/signals/results)
+      tested: referenced in backtest/tests/
+      pushed: referenced in any git commit subject (=> code change merged)
+      n_doc_refs: doc-only references (AUDIT.md / etc.) for context
+    """
+    if not id_str or len(id_str) < 4:
+        return {"coded": False, "wired": False, "tested": False, "pushed": False, "n_doc_refs": 0}
+    return {
+        "coded": (id_str in corpora["backtest_all"]) or (id_str in corpora["scripts"]),
+        "wired": id_str in corpora["prod"],
+        "tested": id_str in corpora["tests"],
+        "pushed": id_str in corpora["git_log"],
+        "n_doc_refs": corpora["docs"].count(id_str),
+    }
+
+
+def parse_caveats(path: Path) -> list[dict]:
+    """Parse LIMITATIONS_CAVEATS_ASSUMPTIONS.md ### CAV-NNN sections."""
+    if not path.exists():
+        return []
+    text = path.read_text(encoding="utf-8", errors="ignore")
+    cav_re = re.compile(r"^### (CAV-\d+(?:\w*)?)\s+(.+?)(?:\n|$)", re.MULTILINE)
+    entries: list[dict] = []
+    for m in cav_re.finditer(text):
+        cav_id = m.group(1)
+        title_line = m.group(2).strip()
+        start = m.end()
+        next_match = cav_re.search(text, start)
+        end = next_match.start() if next_match else min(start + 2000, len(text))
+        body = text[start:end]
+        status = "ACTIVE"
+        if "RESOLVED" in body[:300].upper() or "RESOLVED" in title_line.upper():
+            status = "RESOLVED"
+        elif "MITIGATED" in body[:300].upper():
+            status = "MITIGATED"
+        impact_match = re.search(r"\*\*Operational impact:\*\*\s*(.+?)(?=\*\*|\n\n)", body, re.DOTALL)
+        impact = (impact_match.group(1).strip()[:200] if impact_match else "")
+        entries.append({
+            "id": cav_id,
+            "title": title_line[:160],
+            "status": status,
+            "impact": impact,
+        })
+    return entries
+
+
+def parse_learnings(path: Path) -> list[dict]:
+    """Parse LEARNINGS.md ### Title lines as L-NNN entries (sequential numbering)."""
+    if not path.exists():
+        return []
+    text = path.read_text(encoding="utf-8", errors="ignore")
+    # Each lesson is an `### Title` under `## N. SECTION`
+    lesson_re = re.compile(r"^### ([^\n]+)\n([^\n].*?)(?=\n###|\n##|\Z)", re.DOTALL | re.MULTILINE)
+    entries: list[dict] = []
+    counter = 0
+    for m in lesson_re.finditer(text):
+        title = m.group(1).strip()
+        body = m.group(2).strip()[:400]
+        counter += 1
+        entries.append({
+            "id": f"L-{counter:03d}",
+            "title": title[:200],
+            "body": body[:400],
+        })
+    return entries
+
+
 def get_active_bgs() -> list[dict]:
     """Detect active prefetch background processes via `ps`."""
     try:
@@ -364,11 +475,47 @@ def get_unpushed_commits() -> list[dict]:
 
 
 def main() -> int:
+    print("Loading corpora for ID-status grep ...")
+    corpora = load_status_corpora()
+    print(f"  prod={len(corpora['prod'])} tests={len(corpora['tests'])} backtest_all={len(corpora['backtest_all'])} scripts={len(corpora['scripts'])} git_log={len(corpora['git_log'])}")
+
+    decisions = parse_decisions(REPO_ROOT / "AUDIT_INDEX.md")
+    bugs = parse_bug_register(REPO_ROOT / "BUG_REGISTER.md")
+    invs = parse_inv_entries(REPO_ROOT / "OPEN_INVESTIGATIONS.md")
+    cavs = parse_caveats(REPO_ROOT / "LIMITATIONS_CAVEATS_ASSUMPTIONS.md")
+    lessons = parse_learnings(REPO_ROOT / "LEARNINGS.md")
+
+    # Attach 4-status (coded / wired / tested / pushed) to each
+    print("Computing per-ID status (coded/wired/tested/pushed)...")
+    for d in decisions:
+        # Normalize ID for grep: AUDIT_INDEX uses "DECISION-001" but actual code/commits use "DEC-001"
+        full_id = d["id"]
+        short_id = full_id.replace("DECISION-", "DEC-")
+        d["status_grep"] = id_status(short_id, corpora)
+        d["short_id"] = short_id
+    for b in bugs:
+        full_id = b["id"]
+        # Normalize BUG-1 -> BUG-001
+        m = re.match(r"BUG-(\d+)$", full_id)
+        if m:
+            short = f"BUG-{int(m.group(1)):03d}"
+        else:
+            short = full_id
+        b["status_grep"] = id_status(short, corpora)
+        b["short_id"] = short
+    for i in invs:
+        i["status_grep"] = id_status(i["id"], corpora)
+    for c in cavs:
+        c["status_grep"] = id_status(c["id"], corpora)
+    # L-NNN don't need status grep (they're principles, not code)
+
     snapshot = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
-        "decisions": parse_decisions(REPO_ROOT / "AUDIT_INDEX.md"),
-        "bugs": parse_bug_register(REPO_ROOT / "BUG_REGISTER.md"),
-        "investigations": parse_inv_entries(REPO_ROOT / "OPEN_INVESTIGATIONS.md"),
+        "decisions": decisions,
+        "bugs": bugs,
+        "investigations": invs,
+        "caveats": cavs,
+        "learnings": lessons,
         "tier_items": parse_tier_table(REPO_ROOT / "PHASE_1A_PRELAUNCH_TODO.md"),
         "recent_commits": get_recent_commits(30),
         "uncommitted": get_uncommitted_files(),

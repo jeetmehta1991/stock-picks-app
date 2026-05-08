@@ -59,6 +59,8 @@ per CHECKLIST #77 - never reads from memory.
   <button class="tab-btn" data-panel="decisions">Decisions (DEC)</button>
   <button class="tab-btn" data-panel="bugs">Bugs (BUG)</button>
   <button class="tab-btn" data-panel="invs">Investigations (INV)</button>
+  <button class="tab-btn" data-panel="caveats">Caveats (CAV)</button>
+  <button class="tab-btn" data-panel="learnings">Learnings (L)</button>
   <button class="tab-btn" data-panel="tier">Tier H/I/J Execution</button>
   <button class="tab-btn" data-panel="code">Code State (git)</button>
   <button class="tab-btn" data-panel="pipeline">Pipeline (BGs + Queue)</button>
@@ -91,8 +93,15 @@ per CHECKLIST #77 - never reads from memory.
         <option value="DEFERRED">DEFERRED</option>
       </select>
     </div>
+    <p style="font-size:12px;color:#6b7588">
+      <strong>4-status detection per CHECKLIST #74/L146:</strong>
+      Coded = referenced in any code under <code>backtest/</code> or <code>scripts/</code>.
+      Wired = referenced in active path <code>backtest/{data,engine,signals,results}/</code>.
+      Tested = referenced in <code>backtest/tests/</code>.
+      Pushed = referenced in any git commit subject (=&gt; merged).
+    </p>
     <table id="tbl-decisions" class="display compact" style="width:100%">
-      <thead><tr><th>ID</th><th>Title</th><th>Status</th><th>Theme</th><th>Pass Intro</th><th>Pass Resolved</th></tr></thead>
+      <thead><tr><th>ID</th><th>Title</th><th>Doc Status</th><th>Coded</th><th>Wired</th><th>Tested</th><th>Pushed</th><th>Theme</th></tr></thead>
     </table>
   </section>
 
@@ -103,7 +112,7 @@ per CHECKLIST #77 - never reads from memory.
       <input id="bug-filter" placeholder="Filter ID / title / linked decisions..." size="50">
     </div>
     <table id="tbl-bugs" class="display compact" style="width:100%">
-      <thead><tr><th>Bug ID</th><th>Title</th><th>Linked Decisions</th><th>Sprint Context</th></tr></thead>
+      <thead><tr><th>Bug ID</th><th>Title</th><th>Coded</th><th>Wired</th><th>Tested</th><th>Pushed</th><th>Linked Decisions</th></tr></thead>
     </table>
   </section>
 
@@ -120,7 +129,35 @@ per CHECKLIST #77 - never reads from memory.
       </select>
     </div>
     <table id="tbl-invs" class="display compact" style="width:100%">
-      <thead><tr><th>INV ID</th><th>Title</th><th>Status</th><th>Severity</th><th>Summary</th></tr></thead>
+      <thead><tr><th>INV ID</th><th>Title</th><th>Doc Status</th><th>Coded</th><th>Wired</th><th>Tested</th><th>Pushed</th></tr></thead>
+    </table>
+  </section>
+
+  <section id="caveats" class="panel">
+    <h2>Caveats / Limitations / Assumptions (CAV)</h2>
+    <p>From <code>LIMITATIONS_CAVEATS_ASSUMPTIONS.md</code>. Persistent record of known limitations.</p>
+    <div class="filter-bar">
+      <input id="cav-filter" placeholder="Filter ID / title / impact..." size="50">
+      <select id="cav-status-filter">
+        <option value="">All statuses</option>
+        <option value="ACTIVE">ACTIVE</option>
+        <option value="MITIGATED">MITIGATED</option>
+        <option value="RESOLVED">RESOLVED</option>
+      </select>
+    </div>
+    <table id="tbl-caveats" class="display compact" style="width:100%">
+      <thead><tr><th>CAV ID</th><th>Title</th><th>Status</th><th>Coded</th><th>Wired</th><th>Tested</th><th>Pushed</th><th>Impact</th></tr></thead>
+    </table>
+  </section>
+
+  <section id="learnings" class="panel">
+    <h2>Engineering Learnings (L)</h2>
+    <p>From <code>LEARNINGS.md</code>. Universal principles from real mistakes.</p>
+    <div class="filter-bar">
+      <input id="lesson-filter" placeholder="Filter title / body..." size="50">
+    </div>
+    <table id="tbl-lessons" class="display compact" style="width:100%">
+      <thead><tr><th>L #</th><th>Title</th><th>Body (excerpt)</th></tr></thead>
     </table>
   </section>
 
@@ -246,36 +283,95 @@ const invDist = D.inv_status_counts || {};
 document.getElementById('inv-distribution').innerHTML =
   Object.entries(invDist).map(([s, c]) => `${badge(s)} <strong>${c}</strong>`).join(' &nbsp; ');
 
+function statusCheck(b) {
+  return b
+    ? '<span class="badge badge-resolved">YES</span>'
+    : '<span class="badge badge-superseded">no</span>';
+}
+
 // Decisions table
 document.getElementById('dec-total').textContent = D.decisions.length;
-const decRows = D.decisions.map(d => [
-  d.id, d.title, badge(d.status), d.theme, d.pass_intro, d.pass_resolved,
-]);
+const decRows = D.decisions.map(d => {
+  const sg = d.status_grep || {};
+  return [
+    `<code>${d.short_id || d.id}</code>`,
+    d.title,
+    badge(d.status),
+    statusCheck(sg.coded),
+    statusCheck(sg.wired),
+    statusCheck(sg.tested),
+    statusCheck(sg.pushed),
+    d.theme,
+  ];
+});
 const decTable = $('#tbl-decisions').DataTable({
   data: decRows, pageLength: 50, order: [[0, 'asc']],
-  columns: [{}, {}, {type: 'html'}, {}, {}, {}],
+  columns: [{type:'html'}, {}, {type: 'html'}, {type:'html'}, {type:'html'}, {type:'html'}, {type:'html'}, {}],
 });
 $('#dec-filter').on('keyup', function () { decTable.search(this.value).draw(); });
 $('#dec-status-filter').on('change', function () { decTable.column(2).search(this.value).draw(); });
 
 // Bugs table
 document.getElementById('bug-total').textContent = D.bugs.length;
-const bugRows = D.bugs.map(b => [b.id, b.title, b.linked_decisions, b.sprint_context]);
+const bugRows = D.bugs.map(b => {
+  const sg = b.status_grep || {};
+  return [
+    `<code>${b.short_id || b.id}</code>`,
+    b.title,
+    statusCheck(sg.coded),
+    statusCheck(sg.wired),
+    statusCheck(sg.tested),
+    statusCheck(sg.pushed),
+    b.linked_decisions,
+  ];
+});
 const bugTable = $('#tbl-bugs').DataTable({
   data: bugRows, pageLength: 50, order: [[0, 'asc']],
+  columns: [{type:'html'}, {}, {type:'html'}, {type:'html'}, {type:'html'}, {type:'html'}, {}],
 });
 $('#bug-filter').on('keyup', function () { bugTable.search(this.value).draw(); });
 
 // INVs table
-const invRows = D.investigations.map(i => [
-  i.id, i.title, badge(i.status), i.severity, i.summary,
-]);
+const invRows = D.investigations.map(i => {
+  const sg = i.status_grep || {};
+  return [
+    `<code>${i.id}</code>`, i.title, badge(i.status),
+    statusCheck(sg.coded), statusCheck(sg.wired), statusCheck(sg.tested), statusCheck(sg.pushed),
+  ];
+});
 const invTable = $('#tbl-invs').DataTable({
   data: invRows, pageLength: 50, order: [[0, 'asc']],
-  columns: [{}, {}, {type: 'html'}, {}, {}],
+  columns: [{type:'html'}, {}, {type: 'html'}, {type:'html'}, {type:'html'}, {type:'html'}, {type:'html'}],
 });
 $('#inv-filter').on('keyup', function () { invTable.search(this.value).draw(); });
 $('#inv-status-filter').on('change', function () { invTable.column(2).search(this.value).draw(); });
+
+// Caveats table
+const caveats = D.caveats || [];
+const cavRows = caveats.map(c => {
+  const sg = c.status_grep || {};
+  return [
+    `<code>${c.id}</code>`, c.title, badge(c.status),
+    statusCheck(sg.coded), statusCheck(sg.wired), statusCheck(sg.tested), statusCheck(sg.pushed),
+    c.impact,
+  ];
+});
+const cavTable = $('#tbl-caveats').DataTable({
+  data: cavRows, pageLength: 50, order: [[0, 'asc']],
+  columns: [{type:'html'}, {}, {type:'html'}, {type:'html'}, {type:'html'}, {type:'html'}, {type:'html'}, {}],
+});
+$('#cav-filter').on('keyup', function () { cavTable.search(this.value).draw(); });
+$('#cav-status-filter').on('change', function () { cavTable.column(2).search(this.value).draw(); });
+
+// Learnings table
+const lessons = D.learnings || [];
+$('#tbl-lessons').DataTable({
+  data: lessons.map(l => [l.id, l.title, l.body]),
+  pageLength: 50, order: [[0, 'asc']],
+});
+$('#lesson-filter').on('keyup', function () {
+  $('#tbl-lessons').DataTable().search(this.value).draw();
+});
 
 // Tier table
 const tierRows = D.tier_items.map(t => [t.id, t.action, t.source, t.effort, badge(t.status)]);
