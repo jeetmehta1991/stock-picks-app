@@ -52,6 +52,17 @@ TIMEOUT = 30
 RATE_LIMIT_SLEEP = 0.2  # Stocks Starter is unlimited; gentle
 
 
+RESERVED_WIN = {"CON", "PRN", "AUX", "NUL"} | {f"COM{i}" for i in range(1, 10)} | {f"LPT{i}" for i in range(1, 10)}
+
+
+def safe_filename_stem(ticker: str) -> str:
+    """Avoid Windows-reserved filenames (CON/PRN/AUX/NUL/COM1-9/LPT1-9)."""
+    safe = str(ticker).replace("-", "_")
+    if safe.upper() in RESERVED_WIN:
+        safe = safe + "_"
+    return safe
+
+
 def fetch_paginated(url: str, params: dict | None = None,
                      max_pages: int = 100) -> list[dict]:
     h = {"Authorization": f"Bearer {POLYGON_KEY}"}
@@ -95,7 +106,7 @@ def main() -> int:
         df.to_parquet(out_dir / "all.parquet", index=False)
         # Per-ticker shards
         for t, g in df.groupby("ticker"):
-            g.to_parquet(out_dir / f"{str(t).replace('-', '_')}.parquet", index=False)
+            g.to_parquet(out_dir / f"{safe_filename_stem(t)}.parquet", index=False)
         print(f"OK {len(df)} dividends across {df['ticker'].nunique()} tickers")
     else:
         print("EMPTY")
@@ -113,7 +124,7 @@ def main() -> int:
         out_dir.mkdir(parents=True, exist_ok=True)
         df.to_parquet(out_dir / "all.parquet", index=False)
         for t, g in df.groupby("ticker"):
-            g.to_parquet(out_dir / f"{str(t).replace('-', '_')}.parquet", index=False)
+            g.to_parquet(out_dir / f"{safe_filename_stem(t)}.parquet", index=False)
         print(f"OK {len(df)} splits across {df['ticker'].nunique()} tickers")
     else:
         print("EMPTY")
@@ -132,7 +143,7 @@ def main() -> int:
         df.to_parquet(out_dir / "all.parquet", index=False)
         if "ticker" in df.columns:
             for t, g in df[df["ticker"].notna()].groupby("ticker"):
-                g.to_parquet(out_dir / f"{str(t).replace('-', '_')}.parquet", index=False)
+                g.to_parquet(out_dir / f"{safe_filename_stem(t)}.parquet", index=False)
         print(f"OK {len(df)} IPOs")
     else:
         print("EMPTY")

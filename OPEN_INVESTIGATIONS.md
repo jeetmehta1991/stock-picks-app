@@ -214,7 +214,19 @@ contract names: `UST 10Y NOTE` / `UST 5Y NOTE` / `UST 2Y NOTE` / `UST BOND`
 
 ---
 
-## INV-017 — Polygon dividends/splits canonical paths each have 1 file (vs 1500+ tickers actually pay/split) (Pass 53 Day-9 v8h evening)
+## INV-017 — RESOLVED 2026-05-08 — Polygon dividends/splits/IPOs prefetched at full historical universe (Pass 53 Day-9 v8h+1)
+
+- **Status:** RESOLVED 2026-05-08; `scripts/prefetch_polygon_corp_actions_full.py` paginated all available history.
+- **Result:**
+  - Dividends: 100,000 records across 10,984 tickers (paginated; may have hit max_pages=100 cap; data covers our 1937 universe + much more)
+  - Splits: 27,590 records across 18,909 tickers
+  - IPOs: 6,264 records
+- **Output:** `data_prefetch/polygon/{dividends_full,splits_full,ipos_full}/` with per-ticker shards + global `all.parquet`
+- **Joint:** Tier H3 (P1) — DONE; original INV below preserved as historical reference.
+
+---
+
+## INV-017-original — Polygon dividends/splits canonical paths each have 1 file (vs 1500+ tickers actually pay/split) (Pass 53 Day-9 v8h evening)
 
 - **Discovered:** 2026-05-07 evening; comprehensive prefetch deep-dive audit
 - **Observation:** `data_prefetch/polygon/dividends/` = 1 file. `data_prefetch/polygon/splits/` = 1 file. `legacy_archive_pass53/dividends/` = 2 files, `legacy_archive_pass53/splits/` = 2 files. Master Universe = 1937 tickers; estimate 1500+ pay dividends and 50-100+ split per year. The `scripts/prefetch_polygon_corp_actions.py` exists but apparently never completed at universe scope.
@@ -638,6 +650,20 @@ contract names: `UST 10Y NOTE` / `UST 5Y NOTE` / `UST 2Y NOTE` / `UST BOND`
 - **Status:** open — research correct series ID.
 - **Next action:** check FRED series search for "JPY US" / "Japanese yen" — likely renamed to DEXUSJP or similar. Update `prefetch_macro.py` SERIES dict.
 - **Joint:** Tier H15 execution; FRED retry 4/5 succeeded (DEXJPUS only failure).
+
+---
+
+## INV-043 — Windows-reserved filenames break corp_actions per-ticker save (Pass 53 Day-9 v8h+1 2026-05-08)
+
+- **Discovered:** 2026-05-08; corp_actions BG `b07b0rg5j` wrote `dividends_full/PRN.parquet` and `ipos_full/CON.parquet` — Windows reserves PRN (parallel port) and CON (console) as device names; git couldn't open them on push.
+- **Observation:** Reserved Windows device names cannot be filenames: `CON, PRN, AUX, NUL, COM1-COM9, LPT1-LPT9`. Polygon tickers `PRN` and `CON` (real public companies) hit this.
+- **Severity:** MEDIUM — blocks any per-ticker save on Windows for tickers matching these names.
+- **Status:** RESOLVING THIS COMMIT
+- **Fix landed this commit:**
+  - Renamed `PRN.parquet` -> `PRN_.parquet` and `CON.parquet` -> `CON_.parquet`
+  - Added `safe_filename_stem()` helper to `scripts/prefetch_polygon_corp_actions_full.py` that appends `_` for any ticker matching reserved Windows names
+- **Action propagation needed:** apply same `safe_filename_stem()` pattern to other prefetch scripts that save per-ticker parquets (Quiver, SEC EDGAR, Finnhub) — only triggers if those datasets contain `PRN/CON/AUX/NUL/COM*/LPT*` tickers, which is rare but possible
+- **Joint:** sister to INV-041 (script process bugs); CHECKLIST #5 (proactive flagging — caught at push time, not write time).
 
 ---
 
