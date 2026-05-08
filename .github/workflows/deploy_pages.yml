@@ -1,5 +1,6 @@
 name: Deploy Dashboards to GitHub Pages
 # Updated 2026-05-08: now includes dashboard_stage_2 alongside dashboard_sprint0a
+# Force rebuild 2026-05-08 evening (ensure data.js included in deploy artifact)
 
 # Pass 53 Day-9 v8h+1 owner-mandated 2026-05-08:
 # Custom Pages workflow that uploads ONLY the dashboards, not the
