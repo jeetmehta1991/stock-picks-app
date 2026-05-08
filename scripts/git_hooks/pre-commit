@@ -21,4 +21,21 @@ if [ $EXIT -ne 0 ]; then
     exit 1
 fi
 
+# INV-045 propagation Pass 53 Day-9 v8h+1 2026-05-08:
+# Block commits when reference-doc numerical claims drift from source-of-truth
+# tables. Run sync_doc_counts.py --check; if drift detected, exit non-zero with
+# remediation hint.
+python scripts/sync_doc_counts.py --check
+SYNC_EXIT=$?
+
+if [ $SYNC_EXIT -ne 0 ]; then
+    echo ""
+    echo "==================================================================="
+    echo "COMMIT BLOCKED by doc count drift detector."
+    echo "Fix: python scripts/sync_doc_counts.py --update"
+    echo "Then stage the updated docs and re-commit."
+    echo "==================================================================="
+    exit 1
+fi
+
 exit 0
