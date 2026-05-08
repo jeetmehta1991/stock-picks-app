@@ -278,14 +278,14 @@ def get_uncommitted_files() -> dict:
 # layer yet (which is informative - exposes coverage gaps).
 TEST_PYRAMID_LAYERS = {
     "unit": ["test_unit.py", "test_prefetch_utils.py"],
-    "smoke": [],  # Smoke is run by manual prefetch scripts; no dedicated test files
+    "smoke": ["test_smoke.py"],
     "integration": ["test_integration.py"],
-    "system": ["test_gate_pre_phase_1a_entry.py"],  # if it exists
+    "system": ["test_gate_pre_phase_1a_entry.py"],
     "functional": ["test_doc_count_consistency.py"],
-    "regression": [],  # Regression tests live inline in test_unit/integration
+    "regression": ["test_regression.py"],
     "data_integrity": ["test_schema_canonical.py"],
-    "performance": [],  # No perf gate yet
-    "acceptance": [],   # Phase-1A 9-criteria matrix in metrics.py is the gate; not a pytest file
+    "performance": ["test_performance.py"],
+    "acceptance": ["test_acceptance.py"],
 }
 
 

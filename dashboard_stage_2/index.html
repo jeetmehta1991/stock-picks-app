@@ -372,19 +372,15 @@ function statusCheck(b) {
     ? '<span class="badge badge-resolved">YES</span>'
     : '<span class="badge badge-superseded">no</span>';
 }
-// Compact dot for the 9 pyramid layer columns (greener=covered)
-function pyramidDot(b) {
-  return b
-    ? '<span title="covered" style="color:#16a34a;font-weight:bold;font-size:14px">&#10003;</span>'
-    : '<span title="no coverage" style="color:#cbd5e1;font-size:14px">&middot;</span>';
-}
-// Render the 9 pyramid layer cells in canonical order matching the table headers
+// 9-pyramid layer columns: explicit YES / no badges (no dot logic per owner
+// directive 2026-05-08). Reuses the same statusCheck() badge style as the
+// rolled-up Coded/Wired/Tested/Pushed columns for visual consistency.
 function pyramidCells(sg) {
   const p = (sg && sg.pyramid) || {};
   return [
-    pyramidDot(p.unit), pyramidDot(p.smoke), pyramidDot(p.integration),
-    pyramidDot(p.system), pyramidDot(p.functional), pyramidDot(p.regression),
-    pyramidDot(p.data_integrity), pyramidDot(p.performance), pyramidDot(p.acceptance),
+    statusCheck(p.unit), statusCheck(p.smoke), statusCheck(p.integration),
+    statusCheck(p.system), statusCheck(p.functional), statusCheck(p.regression),
+    statusCheck(p.data_integrity), statusCheck(p.performance), statusCheck(p.acceptance),
   ];
 }
 

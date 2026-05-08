@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-08T21:46:04.143336+00:00",
+  "generated_at": "2026-05-08T22:15:01.704892+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -14690,14 +14690,14 @@
         "n_doc_refs": 47,
         "pyramid": {
           "unit": true,
-          "smoke": false,
+          "smoke": true,
           "integration": false,
           "system": false,
           "functional": false,
-          "regression": false,
+          "regression": true,
           "data_integrity": false,
-          "performance": false,
-          "acceptance": false
+          "performance": true,
+          "acceptance": true
         }
       },
       "short_id": "DEC-503",
@@ -14752,7 +14752,7 @@
           "integration": false,
           "system": false,
           "functional": false,
-          "regression": false,
+          "regression": true,
           "data_integrity": false,
           "performance": false,
           "acceptance": false
@@ -15074,7 +15074,7 @@
           "regression": false,
           "data_integrity": false,
           "performance": false,
-          "acceptance": false
+          "acceptance": true
         }
       },
       "short_id": "DEC-504",
@@ -20130,7 +20130,7 @@
       "status_grep": {
         "coded": true,
         "wired": false,
-        "tested": false,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 1,
         "pyramid": {
@@ -20139,7 +20139,7 @@
           "integration": false,
           "system": false,
           "functional": false,
-          "regression": false,
+          "regression": true,
           "data_integrity": false,
           "performance": false,
           "acceptance": false
@@ -20232,9 +20232,9 @@
       "severity": "MEDIUM",
       "summary": "Multiple reference docs carry numerical claims in prose (e.g. `Total: N decision entries`, `N canonical bugs`) that drift from the structured-data reality below them. Detected at audit:\n  - AUDIT_INDE",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
-        "tested": false,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 0,
         "pyramid": {
@@ -20243,7 +20243,7 @@
           "integration": false,
           "system": false,
           "functional": false,
-          "regression": false,
+          "regression": true,
           "data_integrity": false,
           "performance": false,
           "acceptance": false
@@ -22606,34 +22606,40 @@
   ],
   "recent_commits": [
     {
+      "sha": "e67659dd",
+      "subject": "Pass 53 v8h+1: structural drift detector + 9-layer test pyramid columns + Reference tab",
+      "author": "jeetmehta1991",
+      "rel_time": "28 minutes ago"
+    },
+    {
       "sha": "e66cee33",
       "subject": "Pass 53 v8h+1: SEC EDGAR CIK fallback + B1 top-up (+8 tickers)",
       "author": "jeetmehta1991",
-      "rel_time": "12 minutes ago"
+      "rel_time": "41 minutes ago"
     },
     {
       "sha": "65f23d6c",
       "subject": "Pass 53 v8h+1: H10 ep1 prefetch script (drove 1937/1937 to 100%)",
       "author": "jeetmehta1991",
-      "rel_time": "21 minutes ago"
+      "rel_time": "50 minutes ago"
     },
     {
       "sha": "a74b5368",
       "subject": "Pass 53 auto-drift-sweep 2026-05-08 16:50: dashboards refreshed",
       "author": "jeetmehta1991",
-      "rel_time": "55 minutes ago"
+      "rel_time": "84 minutes ago"
     },
     {
       "sha": "398a5994",
       "subject": "Polygon Options chain ref: final (1932 tickers fetched)",
       "author": "jeetmehta1991",
-      "rel_time": "87 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "0b4f9389",
       "subject": "Polygon Options chain ref: batch 19 (1900 tickers)",
       "author": "jeetmehta1991",
-      "rel_time": "88 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "87d88628",
@@ -22711,61 +22717,61 @@
       "sha": "fe487230",
       "subject": "Polygon Options chain ref: batch 6 (600 tickers)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "c8db7542",
       "subject": "Polygon Options chain ref: batch 5 (500 tickers)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "977383fd",
       "subject": "Polygon Options chain ref: batch 4 (400 tickers)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "763e9036",
       "subject": "Polygon Options chain ref: batch 3 (300 tickers)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "b1a8ae1e",
       "subject": "Polygon Options chain ref: batch 2 (200 tickers)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "b9509a97",
       "subject": "Pass 53 Day-9 v8h+1: dashboard fix - register polygon_options cache scan",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "3bbd3dbb",
       "subject": "Polygon Options chain ref: batch 1 (100 tickers)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "0f077b97",
       "subject": "Pass 53 Day-9 v8h+1: Tier J6 - shared safe_filename_stem helper + 7 unit tests",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "aa4d2a27",
       "subject": "Pass 53 Day-9 v8h+1: Tier H10 Polygon Options chain-ref smoke (5 tickers)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "bbd23631",
       "subject": "Pass 53 Day-9 v8h+1: Tier J4/J7/J8 - schema regression + sidecar lock",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "de3dc1a9",
@@ -22778,32 +22784,70 @@
       "subject": "Pass 53 Day-9 v8h+1: wire sync_doc_counts.py --check into pre-commit hook",
       "author": "jeetmehta1991",
       "rel_time": "3 hours ago"
-    },
-    {
-      "sha": "4039b7e7",
-      "subject": "Finnhub: metric final (1879 fetched)",
-      "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 3,
-    "modified": 3,
+    "count": 14,
+    "modified": 7,
     "added": 0,
-    "untracked": 0,
+    "untracked": 7,
     "deleted": 0,
     "files": [
+      {
+        "status": "M",
+        "path": "dashboard_stage_2/data.js"
+      },
+      {
+        "status": "M",
+        "path": "dashboard_stage_2/data.json"
+      },
       {
         "status": "M",
         "path": "dashboard_stage_2/index.html"
       },
       {
         "status": "M",
-        "path": "scripts/build_dashboard_stage_2.py"
+        "path": "dashboard_stage_2/last_run.txt"
       },
       {
         "status": "M",
-        "path": "scripts/sync_doc_counts.py"
+        "path": "data_prefetch/aaii/weekly_sentiment.parquet"
+      },
+      {
+        "status": "M",
+        "path": "pytest.ini"
+      },
+      {
+        "status": "M",
+        "path": "scripts/build_dashboard_stage_2.py"
+      },
+      {
+        "status": "??",
+        "path": "backtest/tests/test_acceptance.py"
+      },
+      {
+        "status": "??",
+        "path": "backtest/tests/test_performance.py"
+      },
+      {
+        "status": "??",
+        "path": "backtest/tests/test_regression.py"
+      },
+      {
+        "status": "??",
+        "path": "backtest/tests/test_smoke.py"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/aaii/asset.xls"
+      },
+      {
+        "status": "??",
+        "path": "\"data_prefetch/aaii/sentiment (2).xls\""
+      },
+      {
+        "status": "??",
+        "path": "scripts/parse_aaii_sentiment.py"
       }
     ]
   },
@@ -22985,10 +23029,11 @@
     }
   ],
   "test_inventory": {
-    "total": 658,
+    "total": 679,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
+      "test_acceptance": 5,
       "test_acceptance_functional": 12,
       "test_bug_vix_proxy_regression": 4,
       "test_cache_schema_b": 4,
@@ -23025,6 +23070,7 @@
       "test_n5_n6_wiring": 5,
       "test_partial_spec_artifacts": 17,
       "test_partial_spec_artifacts_v2": 22,
+      "test_performance": 4,
       "test_performance_load": 4,
       "test_phase1a_runner_no_unicode": 2,
       "test_pit_audit_v8g": 14,
@@ -23035,6 +23081,7 @@
       "test_preflight": 7,
       "test_quiver_trader_demo": 5,
       "test_quiver_trader_smoke": 12,
+      "test_regression": 7,
       "test_schema_canonical": 1,
       "test_sec_edgar_demo": 3,
       "test_sec_edgar_smoke": 7,
@@ -23042,6 +23089,7 @@
       "test_smartmoneyconcepts_integration": 21,
       "test_smartmoneyconcepts_pit": 10,
       "test_smartmoneyconcepts_unit": 68,
+      "test_smoke": 5,
       "test_sprint2_acceptance": 4,
       "test_supplementary_demo": 4,
       "test_supplementary_smoke": 6,
@@ -23065,7 +23113,9 @@
       "test_unit.py",
       "test_prefetch_utils.py"
     ],
-    "smoke": [],
+    "smoke": [
+      "test_smoke.py"
+    ],
     "integration": [
       "test_integration.py"
     ],
@@ -23075,12 +23125,18 @@
     "functional": [
       "test_doc_count_consistency.py"
     ],
-    "regression": [],
+    "regression": [
+      "test_regression.py"
+    ],
     "data_integrity": [
       "test_schema_canonical.py"
     ],
-    "performance": [],
-    "acceptance": []
+    "performance": [
+      "test_performance.py"
+    ],
+    "acceptance": [
+      "test_acceptance.py"
+    ]
   },
   "structural_drift": {
     "cached_dir_count": 88,
