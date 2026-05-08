@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stage 2 Project Tracker</title>
+<!--
+Source: build_dashboard_stage_2.py reads canonical docs:
+  AUDIT_INDEX.md / BUG_REGISTER.md / OPEN_INVESTIGATIONS.md /
+  PHASE_1A_PRELAUNCH_TODO.md + git log/status
+per CHECKLIST #77 - never reads from memory.
+-->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; background: #f5f7fa; color: #222; }
+  header { background: #2d1f5c; color: white; padding: 16px 24px; }
+  header h1 { margin: 0; font-size: 22px; }
+  header .meta { font-size: 12px; color: #aab; margin-top: 4px; }
+  nav { background: white; border-bottom: 1px solid #e0e3e8; padding: 0 24px; }
+  nav button { background: none; border: none; padding: 14px 20px; cursor: pointer; font-size: 14px; font-weight: 500; color: #4a5468; border-bottom: 3px solid transparent; }
+  nav button.active { color: #6b3aff; border-bottom-color: #6b3aff; }
+  nav button:hover { background: #f0f3f7; }
+  main { padding: 20px 24px; }
+  .panel { display: none; background: white; border-radius: 8px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 20px; }
+  .panel.active { display: block; }
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 16px; }
+  .stat { background: #f8fafc; border: 1px solid #e0e3e8; border-radius: 6px; padding: 14px; }
+  .stat .label { font-size: 11px; color: #6b7588; text-transform: uppercase; letter-spacing: 0.5px; }
+  .stat .value { font-size: 24px; font-weight: 600; color: #2d1f5c; margin-top: 4px; }
+  table.dataTable thead th { background: #fafbfc; font-weight: 600; }
+  .filter-bar { margin-bottom: 12px; }
+  .filter-bar input, .filter-bar select { padding: 8px 12px; border: 1px solid #d0d4dc; border-radius: 4px; margin-right: 8px; font-size: 13px; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 500; }
+  .badge-resolved { background: #d4f4dd; color: #0e6d3a; }
+  .badge-pending { background: #fff5d6; color: #855300; }
+  .badge-superseded { background: #ececf1; color: #555; }
+  .badge-deferred { background: #d8e4f5; color: #2052a8; }
+  .badge-partial { background: #fde6c8; color: #7a4500; }
+  .badge-open { background: #ffeae5; color: #8a1a0e; }
+  .badge-critical { background: #ff5b41; color: white; }
+  code { font-size: 11px; background: #f0f3f7; padding: 1px 4px; border-radius: 3px; }
+  details { margin-top: 8px; }
+  .footer { padding: 16px 24px; color: #8895a8; font-size: 12px; text-align: center; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Stage 2 Project Tracker</h1>
+  <div class="meta">
+    Generated: <span id="generated-at">--</span> &nbsp;|&nbsp;
+    Sources: AUDIT_INDEX.md / BUG_REGISTER.md / OPEN_INVESTIGATIONS.md / PHASE_1A_PRELAUNCH_TODO.md / git
+  </div>
+</header>
+
+<nav>
+  <button class="tab-btn active" data-panel="overview">Overview</button>
+  <button class="tab-btn" data-panel="decisions">Decisions (DEC)</button>
+  <button class="tab-btn" data-panel="bugs">Bugs (BUG)</button>
+  <button class="tab-btn" data-panel="invs">Investigations (INV)</button>
+  <button class="tab-btn" data-panel="tier">Tier H/I/J Execution</button>
+  <button class="tab-btn" data-panel="code">Code State (git)</button>
+</nav>
+
+<main>
+
+  <section id="overview" class="panel active">
+    <h2>Overview</h2>
+    <div class="stats-grid" id="overview-stats"></div>
+    <h3>Decision status distribution</h3>
+    <div id="dec-distribution"></div>
+    <h3>Tier execution status</h3>
+    <div id="tier-distribution"></div>
+    <h3>Investigation status</h3>
+    <div id="inv-distribution"></div>
+  </section>
+
+  <section id="decisions" class="panel">
+    <h2>Decisions (DEC)</h2>
+    <p>From <code>AUDIT_INDEX.md</code>. Total: <span id="dec-total">--</span>.</p>
+    <div class="filter-bar">
+      <input id="dec-filter" placeholder="Filter ID / title / theme..." size="40">
+      <select id="dec-status-filter">
+        <option value="">All statuses</option>
+        <option value="RESOLVED-DECIDED">RESOLVED-DECIDED</option>
+        <option value="PENDING">PENDING</option>
+        <option value="PARTIAL">PARTIAL</option>
+        <option value="SUPERSEDED">SUPERSEDED</option>
+        <option value="DEFERRED">DEFERRED</option>
+      </select>
+    </div>
+    <table id="tbl-decisions" class="display compact" style="width:100%">
+      <thead><tr><th>ID</th><th>Title</th><th>Status</th><th>Theme</th><th>Pass Intro</th><th>Pass Resolved</th></tr></thead>
+    </table>
+  </section>
+
+  <section id="bugs" class="panel">
+    <h2>Bugs (BUG)</h2>
+    <p>From <code>BUG_REGISTER.md</code>. Total: <span id="bug-total">--</span>. Each bug links to one+ resolving decisions.</p>
+    <div class="filter-bar">
+      <input id="bug-filter" placeholder="Filter ID / title / linked decisions..." size="50">
+    </div>
+    <table id="tbl-bugs" class="display compact" style="width:100%">
+      <thead><tr><th>Bug ID</th><th>Title</th><th>Linked Decisions</th><th>Sprint Context</th></tr></thead>
+    </table>
+  </section>
+
+  <section id="invs" class="panel">
+    <h2>Open Investigations (INV)</h2>
+    <p>From <code>OPEN_INVESTIGATIONS.md</code>. Each INV is a flag/observation requiring follow-up.</p>
+    <div class="filter-bar">
+      <input id="inv-filter" placeholder="Filter ID / title..." size="40">
+      <select id="inv-status-filter">
+        <option value="">All statuses</option>
+        <option value="OPEN">OPEN</option>
+        <option value="RESOLVED">RESOLVED</option>
+        <option value="DEFERRED">DEFERRED</option>
+      </select>
+    </div>
+    <table id="tbl-invs" class="display compact" style="width:100%">
+      <thead><tr><th>INV ID</th><th>Title</th><th>Status</th><th>Severity</th><th>Summary</th></tr></thead>
+    </table>
+  </section>
+
+  <section id="tier" class="panel">
+    <h2>Tier H / I / J Execution</h2>
+    <p>From <code>PHASE_1A_PRELAUNCH_TODO.md</code>. Tier H = prefetch additions; I = owner-action gates; J = data normalization.</p>
+    <div class="filter-bar">
+      <input id="tier-filter" placeholder="Filter ID / action / source..." size="50">
+    </div>
+    <table id="tbl-tier" class="display compact" style="width:100%">
+      <thead><tr><th>#</th><th>Action</th><th>Source</th><th>Effort</th><th>Status</th></tr></thead>
+    </table>
+  </section>
+
+  <section id="code" class="panel">
+    <h2>Code State (git)</h2>
+    <div class="stats-grid" id="code-stats"></div>
+    <h3>Recent commits (last 30)</h3>
+    <table id="tbl-commits" class="display compact" style="width:100%">
+      <thead><tr><th>SHA</th><th>Subject</th><th>Author</th><th>When</th></tr></thead>
+    </table>
+    <h3>Unpushed commits (local ahead of origin/main)</h3>
+    <table id="tbl-unpushed" class="display compact" style="width:100%">
+      <thead><tr><th>SHA</th><th>Subject</th><th>When</th></tr></thead>
+    </table>
+    <h3>Uncommitted files (working tree)</h3>
+    <p>Showing first 200; total dirty: <span id="dirty-total">--</span></p>
+    <table id="tbl-dirty" class="display compact" style="width:100%">
+      <thead><tr><th>Status</th><th>Path</th></tr></thead>
+    </table>
+  </section>
+
+</main>
+
+<div class="footer">Stage 2 Tracker | refresh: <code>python scripts/build_dashboard_stage_2.py</code></div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script src="data.js"></script>
+<script>
+function badgeForStatus(s) {
+  if (!s) return 'badge-pending';
+  const u = s.toUpperCase();
+  if (u.includes('RESOLVED')) return 'badge-resolved';
+  if (u.includes('SUPERSEDED')) return 'badge-superseded';
+  if (u.includes('DEFERRED')) return 'badge-deferred';
+  if (u.includes('PARTIAL')) return 'badge-partial';
+  if (u.includes('OPEN')) return 'badge-open';
+  return 'badge-pending';
+}
+function badge(s) { return `<span class="badge ${badgeForStatus(s)}">${s || '-'}</span>`; }
+
+const D = STAGE2_DATA;
+document.getElementById('generated-at').textContent = D.generated_at || '-';
+
+// Tab switching
+document.querySelectorAll('.tab-btn').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    document.getElementById(b.dataset.panel).classList.add('active');
+  });
+});
+
+// Overview stats
+const overviewStats = [
+  ['Decisions', D.decisions.length],
+  ['Bugs', D.bugs.length],
+  ['Investigations', D.investigations.length],
+  ['Tier items', D.tier_items.length],
+  ['Recent commits', D.recent_commits.length],
+  ['Unpushed', D.unpushed_commits.length],
+  ['Uncommitted files', D.uncommitted.count],
+];
+document.getElementById('overview-stats').innerHTML = overviewStats.map(([l, v]) =>
+  `<div class="stat"><div class="label">${l}</div><div class="value">${v}</div></div>`).join('');
+
+// Decision distribution
+const decDist = D.decision_status_counts || {};
+document.getElementById('dec-distribution').innerHTML =
+  Object.entries(decDist).map(([s, c]) => `${badge(s)} <strong>${c}</strong>`).join(' &nbsp; ');
+
+// Tier distribution
+const tierDist = D.tier_status_counts || {};
+document.getElementById('tier-distribution').innerHTML =
+  Object.entries(tierDist).map(([s, c]) => `${badge(s)} <strong>${c}</strong>`).join(' &nbsp; ');
+
+// Investigation distribution
+const invDist = D.inv_status_counts || {};
+document.getElementById('inv-distribution').innerHTML =
+  Object.entries(invDist).map(([s, c]) => `${badge(s)} <strong>${c}</strong>`).join(' &nbsp; ');
+
+// Decisions table
+document.getElementById('dec-total').textContent = D.decisions.length;
+const decRows = D.decisions.map(d => [
+  d.id, d.title, badge(d.status), d.theme, d.pass_intro, d.pass_resolved,
+]);
+const decTable = $('#tbl-decisions').DataTable({
+  data: decRows, pageLength: 50, order: [[0, 'asc']],
+  columns: [{}, {}, {type: 'html'}, {}, {}, {}],
+});
+$('#dec-filter').on('keyup', function () { decTable.search(this.value).draw(); });
+$('#dec-status-filter').on('change', function () { decTable.column(2).search(this.value).draw(); });
+
+// Bugs table
+document.getElementById('bug-total').textContent = D.bugs.length;
+const bugRows = D.bugs.map(b => [b.id, b.title, b.linked_decisions, b.sprint_context]);
+const bugTable = $('#tbl-bugs').DataTable({
+  data: bugRows, pageLength: 50, order: [[0, 'asc']],
+});
+$('#bug-filter').on('keyup', function () { bugTable.search(this.value).draw(); });
+
+// INVs table
+const invRows = D.investigations.map(i => [
+  i.id, i.title, badge(i.status), i.severity, i.summary,
+]);
+const invTable = $('#tbl-invs').DataTable({
+  data: invRows, pageLength: 50, order: [[0, 'asc']],
+  columns: [{}, {}, {type: 'html'}, {}, {}],
+});
+$('#inv-filter').on('keyup', function () { invTable.search(this.value).draw(); });
+$('#inv-status-filter').on('change', function () { invTable.column(2).search(this.value).draw(); });
+
+// Tier table
+const tierRows = D.tier_items.map(t => [t.id, t.action, t.source, t.effort, badge(t.status)]);
+const tierTable = $('#tbl-tier').DataTable({
+  data: tierRows, pageLength: 50, order: [[0, 'asc']],
+  columns: [{}, {}, {}, {}, {type: 'html'}],
+});
+$('#tier-filter').on('keyup', function () { tierTable.search(this.value).draw(); });
+
+// Code state
+const codeStats = [
+  ['Recent commits (30)', D.recent_commits.length],
+  ['Unpushed commits', D.unpushed_commits.length],
+  ['Uncommitted files', D.uncommitted.count],
+  ['Modified', D.uncommitted.modified || 0],
+  ['Untracked', D.uncommitted.untracked || 0],
+  ['Deleted', D.uncommitted.deleted || 0],
+];
+document.getElementById('code-stats').innerHTML = codeStats.map(([l, v]) =>
+  `<div class="stat"><div class="label">${l}</div><div class="value">${v}</div></div>`).join('');
+$('#tbl-commits').DataTable({
+  data: D.recent_commits.map(c => [c.sha, c.subject, c.author, c.rel_time]),
+  pageLength: 30,
+});
+$('#tbl-unpushed').DataTable({
+  data: D.unpushed_commits.map(c => [c.sha, c.subject, c.rel_time]),
+  pageLength: 30,
+});
+document.getElementById('dirty-total').textContent = D.uncommitted.count;
+$('#tbl-dirty').DataTable({
+  data: (D.uncommitted.files || []).map(f => [f.status, f.path]),
+  pageLength: 50,
+});
+</script>
+
+</body>
+</html>
