@@ -411,9 +411,11 @@ def main() -> int:
             key = f"{api}.{endpoint}"
             expected_max = EXPECTED_MAX.get(key, universe_size)
             ep_data["expected_max_universe"] = expected_max
-            ep_data["available_coverage_pct"] = round(
-                100.0 * len(files) / max(expected_max, 1), 2
-            )
+            raw_avail = 100.0 * len(files) / max(expected_max, 1)
+            ep_data["available_coverage_pct"] = round(min(100.0, raw_avail), 2)
+            # Flag when actual exceeds expected (broader-than-universe coverage)
+            if raw_avail > 100.0:
+                ep_data["coverage_note"] = f"broader-than-universe: {len(files)} files vs {expected_max} expected ({raw_avail:.0f}%)"
             # Field/dimension audit
             all_columns: set = set()
             row_counts = []
