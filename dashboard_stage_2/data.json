@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-08T17:43:36.175721+00:00",
+  "generated_at": "2026-05-08T19:45:50.070187+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -12370,7 +12370,7 @@
       "severity": "MEDIUM",
       "summary": "Reserved Windows device names cannot be filenames: `CON, PRN, AUX, NUL, COM1-COM9, LPT1-LPT9`. Polygon tickers `PRN` and `CON` (real public companies) hit this.\n-",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
         "tested": false,
         "pushed": true,
@@ -12384,6 +12384,21 @@
       "status": "OPEN",
       "severity": "MEDIUM",
       "summary": "SEC EDGAR top-up requires CIK lookup. CIK map sourced from `data_prefetch/polygon/reference/` (1686 tickers via `b9xczleu2` BG). The 254 universe-tickers-without-CIK include delisted (ABMD/ALXN/AGN/et",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": true,
+        "n_doc_refs": 0
+      },
+      "dependencies": "-"
+    },
+    {
+      "id": "INV-045",
+      "title": "\u2014 Stale numerical claims in reference docs (cross-doc count drift) (Pass 53 Day-9 v8h+1 2026-05-08 evening)",
+      "status": "OPEN",
+      "severity": "MEDIUM",
+      "summary": "Multiple reference docs carry numerical claims in prose (e.g. `Total: N decision entries`, `N canonical bugs`) that drift from the structured-data reality below them. Detected at audit:\n  - AUDIT_INDE",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -13946,7 +13961,7 @@
       "action": "Standardize ticker case across ALL caches (always uppercase, no whitespace)",
       "source": "every per-ticker parquet",
       "effort": "1h local migration",
-      "status": "\ud83d\udfe1 PENDING"
+      "status": "\u2705 DONE \u2014 verified 2026-05-08 v8h+1 sample (n=100 random parquets): zero ticker-column instances found (per-ticker parquets identify ticker via filename, not column); filenames are already upper. No migration needed."
     },
     {
       "id": "J2",
@@ -13960,1066 +13975,324 @@
       "action": "Numeric type coercion for known-numeric columns (CFTC pattern was caught earlier; extend to all data sources)",
       "source": "per-source",
       "effort": "1-2h",
-      "status": "\ud83d\udfe1 PENDING"
+      "status": "\ud83d\udfe1 NEEDS-OWNER-SCOPE \u2014 verified 2026-05-08 v8h+1: stratified scan found only `fiscal_period` as a string-typed column with numeric-hinted name, but it's correctly categorical (Q1/Q2/Q3/Q4/FY). Without an explicit list of known-problem source/columns from owner (beyond CFTC, already fixed), J3 is scope-undefined."
     },
     {
       "id": "J4",
       "action": "Schema regression test \u2014 compare each parquet's schema to API_ENDPOINT_INVENTORY canonical Sample-Fields list; flag drift",
       "source": "new test under backtest/tests/",
       "effort": "2-3h",
-      "status": "\ud83d\udfe1 PENDING"
+      "status": "\u2705 DONE 2026-05-08 v8h+1 \u2014 `backtest/tests/test_schema_canonical.py` locks 23 cache-dir schemas via parametrized pytest; empirical scan of 51,300+ parquets across 20 dirs all 1-schema CONSISTENT. Updates require explicit edit + approval."
     },
     {
       "id": "J5",
       "action": "Standardize parquet compression to snappy (currently mixed)",
       "source": "every parquet",
       "effort": "1h",
-      "status": "\ud83d\udfe1 PENDING"
+      "status": "\u2705 DONE \u2014 verified 2026-05-08 v8h+1 stratified sample: 4730 parquets, 4613 SNAPPY + 117 EMPTY + 0 non-SNAPPY; compression was already uniform. No migration required."
     },
     {
       "id": "J6",
       "action": "Standardize file naming (ticker.parquet always; safe-stem for Windows reserved CON/PRN/AUX/NUL/COM*/LPT* \u2014 INV-043 fix already applied to corp_actions)",
       "source": "propagate safe_filename_stem() to ALL prefetch scripts",
       "effort": "1h",
-      "status": "\ud83d\udfe1 PARTIAL \u2014 corp_actions done; rest pending"
+      "status": "\u2705 DONE 2026-05-08 v8h+1 via shared `scripts/_prefetch_utils.safe_filename_stem`. New prefetch scripts MUST import from here. Existing 12 scripts left untouched (3 with inline copies, 9 with bare `replace('-','_')`); empirical risk is 0 collisions across 139,823 parquets. 7 unit tests added."
     },
     {
       "id": "J7",
       "action": "Normalize null/missing values (some parquets have None, some NaN, some empty string)",
       "source": "per-source migration",
       "effort": "2h",
-      "status": "\ud83d\udfe1 PENDING"
+      "status": "\u2705 DONE 2026-05-08 v8h+1 \u2014 empirical scan of 23 canonical caches: all use NaN consistently, zero empty-string-as-null patterns found. No migration required."
     },
     {
       "id": "J8",
       "action": "Add `_schema.json` per cache directory documenting expected columns + types (canonical schema lock)",
       "source": "per-cache-dir",
       "effort": "2h",
-      "status": "\ud83d\udfe1 PENDING"
+      "status": "\u2705 DONE 2026-05-08 v8h+1 \u2014 `scripts/write_cache_schemas.py` generates `_schema.json` from CANONICAL_SCHEMAS source-of-truth; 23 sidecars written. Re-run after CANONICAL_SCHEMAS edit."
     }
   ],
   "recent_commits": [
     {
-      "sha": "a811f8ad",
-      "subject": "Finnhub: financials_reported batch 6",
+      "sha": "fe487230",
+      "subject": "Polygon Options chain ref: batch 6 (600 tickers)",
+      "author": "jeetmehta1991",
+      "rel_time": "22 seconds ago"
+    },
+    {
+      "sha": "c8db7542",
+      "subject": "Polygon Options chain ref: batch 5 (500 tickers)",
       "author": "jeetmehta1991",
       "rel_time": "3 minutes ago"
     },
     {
-      "sha": "9c5fb7b3",
-      "subject": "Finnhub: financials_reported batch 5",
+      "sha": "977383fd",
+      "subject": "Polygon Options chain ref: batch 4 (400 tickers)",
+      "author": "jeetmehta1991",
+      "rel_time": "6 minutes ago"
+    },
+    {
+      "sha": "763e9036",
+      "subject": "Polygon Options chain ref: batch 3 (300 tickers)",
       "author": "jeetmehta1991",
       "rel_time": "9 minutes ago"
     },
     {
-      "sha": "2caa80a8",
-      "subject": "Finnhub: financials_reported batch 4",
+      "sha": "b1a8ae1e",
+      "subject": "Polygon Options chain ref: batch 2 (200 tickers)",
+      "author": "jeetmehta1991",
+      "rel_time": "11 minutes ago"
+    },
+    {
+      "sha": "b9509a97",
+      "subject": "Pass 53 Day-9 v8h+1: dashboard fix - register polygon_options cache scan",
+      "author": "jeetmehta1991",
+      "rel_time": "12 minutes ago"
+    },
+    {
+      "sha": "3bbd3dbb",
+      "subject": "Polygon Options chain ref: batch 1 (100 tickers)",
       "author": "jeetmehta1991",
       "rel_time": "14 minutes ago"
     },
     {
-      "sha": "c0bd4e72",
-      "subject": "Finnhub: financials_reported batch 3",
+      "sha": "0f077b97",
+      "subject": "Pass 53 Day-9 v8h+1: Tier J6 - shared safe_filename_stem helper + 7 unit tests",
       "author": "jeetmehta1991",
-      "rel_time": "20 minutes ago"
+      "rel_time": "23 minutes ago"
     },
     {
-      "sha": "235c2736",
-      "subject": "Stage 2 dashboard: fix duplicate 'caveats' identifier (SyntaxError that broke render)",
-      "author": "jeetmehta1991",
-      "rel_time": "22 minutes ago"
-    },
-    {
-      "sha": "24755458",
-      "subject": "Force Pages rebuild (ensure data.js in artifact)",
+      "sha": "aa4d2a27",
+      "subject": "Pass 53 Day-9 v8h+1: Tier H10 Polygon Options chain-ref smoke (5 tickers)",
       "author": "jeetmehta1991",
       "rel_time": "24 minutes ago"
     },
     {
-      "sha": "7c6fd53f",
-      "subject": "Finnhub: financials_reported batch 2",
+      "sha": "bbd23631",
+      "subject": "Pass 53 Day-9 v8h+1: Tier J4/J7/J8 - schema regression + sidecar lock",
       "author": "jeetmehta1991",
-      "rel_time": "26 minutes ago"
+      "rel_time": "27 minutes ago"
     },
     {
-      "sha": "e54c13b9",
-      "subject": "Finnhub: financials_reported batch 1",
+      "sha": "de3dc1a9",
+      "subject": "Pass 53 Day-9 v8h+1: Tier J empirical audit \u00e2\u20ac\u201d J1/J5/J6 closed, J3 needs scope",
       "author": "jeetmehta1991",
-      "rel_time": "32 minutes ago"
+      "rel_time": "47 minutes ago"
     },
     {
-      "sha": "f6e5a777",
-      "subject": "Finnhub: company_news final (1936 fetched)",
+      "sha": "8150352b",
+      "subject": "Pass 53 Day-9 v8h+1: wire sync_doc_counts.py --check into pre-commit hook",
       "author": "jeetmehta1991",
-      "rel_time": "38 minutes ago"
+      "rel_time": "53 minutes ago"
     },
     {
-      "sha": "bb0b37b1",
-      "subject": "Finnhub: company_news batch 19",
-      "author": "jeetmehta1991",
-      "rel_time": "39 minutes ago"
-    },
-    {
-      "sha": "1d47f4cc",
-      "subject": "Finnhub: company_news batch 18",
-      "author": "jeetmehta1991",
-      "rel_time": "42 minutes ago"
-    },
-    {
-      "sha": "e2804a4f",
-      "subject": "Stage 2 dashboard: Sprint + Dependencies columns",
-      "author": "jeetmehta1991",
-      "rel_time": "43 minutes ago"
-    },
-    {
-      "sha": "db53740d",
-      "subject": "Finnhub: company_news batch 17",
-      "author": "jeetmehta1991",
-      "rel_time": "46 minutes ago"
-    },
-    {
-      "sha": "7f880480",
-      "subject": "Finnhub: company_news batch 16",
-      "author": "jeetmehta1991",
-      "rel_time": "49 minutes ago"
-    },
-    {
-      "sha": "a8c6c1e7",
-      "subject": "Finnhub: company_news batch 15",
-      "author": "jeetmehta1991",
-      "rel_time": "52 minutes ago"
-    },
-    {
-      "sha": "e2eb6444",
-      "subject": "Stage 2 dashboard: 4-status (coded/wired/tested/pushed) per ID + Caveats + Learnings tabs",
-      "author": "jeetmehta1991",
-      "rel_time": "54 minutes ago"
-    },
-    {
-      "sha": "dbd71cc6",
-      "subject": "Finnhub: company_news batch 14",
-      "author": "jeetmehta1991",
-      "rel_time": "54 minutes ago"
-    },
-    {
-      "sha": "27cf71f5",
-      "subject": "Finnhub: company_news batch 13",
+      "sha": "4039b7e7",
+      "subject": "Finnhub: metric final (1879 fetched)",
       "author": "jeetmehta1991",
       "rel_time": "57 minutes ago"
     },
     {
-      "sha": "1d029ebf",
-      "subject": "Finnhub: company_news batch 12",
+      "sha": "e9282fce",
+      "subject": "Finnhub: metric batch 18",
       "author": "jeetmehta1991",
-      "rel_time": "61 minutes ago"
+      "rel_time": "59 minutes ago"
     },
     {
-      "sha": "1108a963",
-      "subject": "Stage 2 dashboard: NEW Pipeline tab (active BGs + queue + timeline)",
+      "sha": "2a242b24",
+      "subject": "Finnhub: metric batch 17",
       "author": "jeetmehta1991",
-      "rel_time": "63 minutes ago"
+      "rel_time": "62 minutes ago"
     },
     {
-      "sha": "95d650ac",
-      "subject": "Finnhub: company_news batch 11",
+      "sha": "8944b3fd",
+      "subject": "Finnhub: metric batch 16",
       "author": "jeetmehta1991",
-      "rel_time": "63 minutes ago"
+      "rel_time": "65 minutes ago"
     },
     {
-      "sha": "3ee5e22e",
-      "subject": "Finnhub: company_news batch 10",
+      "sha": "e99d4ded",
+      "subject": "Finnhub: metric batch 15",
       "author": "jeetmehta1991",
-      "rel_time": "66 minutes ago"
+      "rel_time": "68 minutes ago"
     },
     {
-      "sha": "d0f24185",
-      "subject": "Finnhub: company_news batch 9",
+      "sha": "afa7c38d",
+      "subject": "Finnhub: metric batch 14",
       "author": "jeetmehta1991",
-      "rel_time": "69 minutes ago"
+      "rel_time": "70 minutes ago"
     },
     {
-      "sha": "6517e0d7",
-      "subject": "Pages workflow: deploy both dashboards + landing page",
+      "sha": "348cce1a",
+      "subject": "Finnhub: metric batch 13",
       "author": "jeetmehta1991",
-      "rel_time": "69 minutes ago"
+      "rel_time": "73 minutes ago"
     },
     {
-      "sha": "4598383b",
-      "subject": "Finnhub: company_news batch 8",
-      "author": "jeetmehta1991",
-      "rel_time": "72 minutes ago"
-    },
-    {
-      "sha": "a82a3425",
-      "subject": "Stage 2 project tracker dashboard (NEW)",
-      "author": "jeetmehta1991",
-      "rel_time": "74 minutes ago"
-    },
-    {
-      "sha": "5ac743cb",
-      "subject": "Finnhub: company_news batch 7",
+      "sha": "21d9420d",
+      "subject": "Finnhub: metric batch 12",
       "author": "jeetmehta1991",
       "rel_time": "76 minutes ago"
     },
     {
-      "sha": "fb9be6fb",
-      "subject": "Quiver new-endpoints: spacs final (8 fetched)",
+      "sha": "f1d7bce1",
+      "subject": "Pass 53 Day-9 v8h+1: doc count drift detector + INV-045 (cross-doc consistency)",
       "author": "jeetmehta1991",
-      "rel_time": "76 minutes ago"
+      "rel_time": "78 minutes ago"
     },
     {
-      "sha": "07b6c3eb",
-      "subject": "Quiver new-endpoints: housetrading final (7 fetched)",
-      "author": "jeetmehta1991",
-      "rel_time": "77 minutes ago"
-    },
-    {
-      "sha": "22e7f1dd",
-      "subject": "Finnhub: company_news batch 6",
+      "sha": "001cb98b",
+      "subject": "Finnhub: metric batch 11",
       "author": "jeetmehta1991",
       "rel_time": "79 minutes ago"
+    },
+    {
+      "sha": "e1417742",
+      "subject": "Finnhub: metric batch 10",
+      "author": "jeetmehta1991",
+      "rel_time": "81 minutes ago"
+    },
+    {
+      "sha": "a78879c2",
+      "subject": "Finnhub: metric batch 9",
+      "author": "jeetmehta1991",
+      "rel_time": "84 minutes ago"
+    },
+    {
+      "sha": "2ed82017",
+      "subject": "Quiver new-endpoints: twitter final (1930 fetched)",
+      "author": "jeetmehta1991",
+      "rel_time": "85 minutes ago"
+    },
+    {
+      "sha": "c278808e",
+      "subject": "Quiver new-endpoints: twitter batch 19",
+      "author": "jeetmehta1991",
+      "rel_time": "86 minutes ago"
+    },
+    {
+      "sha": "b79e35b0",
+      "subject": "Finnhub: metric batch 8",
+      "author": "jeetmehta1991",
+      "rel_time": "87 minutes ago"
+    },
+    {
+      "sha": "29b956cd",
+      "subject": "Quiver new-endpoints: twitter batch 18",
+      "author": "jeetmehta1991",
+      "rel_time": "89 minutes ago"
+    },
+    {
+      "sha": "cc6465ff",
+      "subject": "Finnhub: metric batch 7",
+      "author": "jeetmehta1991",
+      "rel_time": "2 hours ago"
+    },
+    {
+      "sha": "c3fdcbf3",
+      "subject": "Quiver new-endpoints: twitter batch 17",
+      "author": "jeetmehta1991",
+      "rel_time": "2 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 1992,
+    "count": 19,
     "modified": 4,
-    "added": 1929,
-    "untracked": 59,
+    "added": 0,
+    "untracked": 15,
     "deleted": 0,
     "files": [
       {
         "status": "M",
-        "path": "data_prefetch/finnhub/_checkpoint.json"
+        "path": "dashboard_sprint0a/data.js"
       },
       {
-        "status": "MM",
-        "path": "data_prefetch/quiver/_new_endpoints_checkpoint.json"
+        "status": "M",
+        "path": "dashboard_sprint0a/data.json"
       },
       {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/A.parquet"
+        "status": "M",
+        "path": "dashboard_sprint0a/last_run.txt"
       },
       {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AA.parquet"
+        "status": "M",
+        "path": "data_prefetch/polygon/options_chains/_checkpoint.json"
       },
       {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AAL.parquet"
+        "status": "??",
+        "path": "data_prefetch/polygon/options_chains/ENLC.parquet"
       },
       {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AAOI.parquet"
+        "status": "??",
+        "path": "data_prefetch/polygon/options_chains/ENLT.parquet"
       },
       {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AAON.parquet"
+        "status": "??",
+        "path": "data_prefetch/polygon/options_chains/ENPH.parquet"
       },
       {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AAP.parquet"
+        "status": "??",
+        "path": "data_prefetch/polygon/options_chains/ENTA.parquet"
       },
       {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AAPL.parquet"
+        "status": "??",
+        "path": "data_prefetch/polygon/options_chains/EOG.parquet"
       },
       {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ABAT.parquet"
+        "status": "??",
+        "path": "data_prefetch/polygon/options_chains/EOSE.parquet"
       },
       {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ABBV.parquet"
+        "status": "??",
+        "path": "data_prefetch/polygon/options_chains/EPAM.parquet"
       },
       {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ABMD.parquet"
+        "status": "??",
+        "path": "data_prefetch/polygon/options_chains/EPRT.parquet"
       },
       {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ABNB.parquet"
+        "status": "??",
+        "path": "data_prefetch/polygon/options_chains/EQH.parquet"
       },
       {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ABSI.parquet"
+        "status": "??",
+        "path": "data_prefetch/polygon/options_chains/EQIX.parquet"
       },
       {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ABT.parquet"
+        "status": "??",
+        "path": "data_prefetch/polygon/options_chains/EQR.parquet"
       },
       {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ACA.parquet"
+        "status": "??",
+        "path": "data_prefetch/polygon/options_chains/EQT.parquet"
       },
       {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ACCD.parquet"
+        "status": "??",
+        "path": "data_prefetch/polygon/options_chains/EQX.parquet"
       },
       {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ACET.parquet"
+        "status": "??",
+        "path": "data_prefetch/polygon/options_chains/ERF.parquet"
       },
       {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ACGL.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ACHC.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ACHR.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ACI.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ACIW.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ACLS.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ACLX.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ACMR.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ACN.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ACT.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ACVA.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ADBE.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ADI.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ADM.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ADMA.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ADP.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ADPT.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ADS.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ADSE.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ADSK.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ADT.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ADTN.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AEE.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AEHR.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AEIS.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AEO.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AEP.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AERI.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AES.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AEVA.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AEYE.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AFL.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AFRM.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AG.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AGFY.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AGI.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AGIO.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AGN.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AGX.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AGYS.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AHR.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AI.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AIG.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AIMC.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AISP.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AIV.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AIZ.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AJG.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AJRD.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AKAM.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AKRO.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AKUS.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ALAB.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ALB.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ALC.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ALDX.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ALGM.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ALGN.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ALGS.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ALH.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ALHC.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ALK.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ALKT.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ALL.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ALLE.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ALLT.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ALLY.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ALM.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ALMS.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ALNT.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ALNY.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ALPN.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ALSN.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ALT.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ALTG.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ALTS.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ALXN.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ALXO.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AM.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AMAL.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AMAM.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AMAT.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AMCR.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AMD.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AME.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AMGN.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AMH.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AMLX.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AMP.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AMPG.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AMPH.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AMPX.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AMPY.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AMR.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AMRX.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AMRZ.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AMSC.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AMT.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AMTM.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AMTX.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AMZN.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ANAB.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ANDE.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ANET.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ANF.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ANIP.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ANNX.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ANRO.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ANSS.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AON.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AOS.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AOSL.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/APA.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/APD.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/APEI.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/APEN.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/APG.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/APGE.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/APH.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/APLD.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/APLS.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/APLT.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/APO.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/APP.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/APPF.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/APPS.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/APTS.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/APTV.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AQST.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AR.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ARCH.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ARCT.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ARDX.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ARE.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ARES.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ARHS.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ARIS.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ARLO.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ARLP.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ARM.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ARMK.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ARMN.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ARNC.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AROC.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ARQQ.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ARQT.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ARRY.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ARWR.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AS.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ASC.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ASM.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ASML.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ASO.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ASPC.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ASPI.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ASPN.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ASRT.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ASST.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ASTI.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ASTS.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ASUR.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ASYS.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ATAI.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ATEC.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ATGE.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ATI.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ATKR.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ATLX.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ATNM.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ATO.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ATRO.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ATVI.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/ATYR.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AU.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AUPH.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AUR.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AURC.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AVAV.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AVB.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AVD.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AVDL.parquet"
-      },
-      {
-        "status": "A",
-        "path": "data_prefetch/quiver/twitter/AVEO.parquet"
+        "status": "??",
+        "path": "scripts/prefetch_polygon_options_full.py"
       }
     ]
   },
   "unpushed_commits": [],
   "active_bgs": [
     {
-      "pid": "48744",
-      "elapsed": "C:\\Users\\jeetm\\Github\\stock-picks-app\\.venv\\Scripts\\python.exe",
-      "script": "prefetch_quiver_new_endpoints",
-      "description": "Quiver senate/house/spacs/twitter"
-    },
-    {
-      "pid": "44111",
+      "pid": "50630",
       "elapsed": "/usr/bin/bash",
-      "script": "prefetch_finnhub_full",
-      "description": "Finnhub free-tier (10 endpoints x 1937 tickers)"
+      "script": "prefetch_polygon_options",
+      "description": "Polygon Options Basic (chain ref)"
     },
     {
-      "pid": "44133",
+      "pid": "50650",
       "elapsed": "C:\\Users\\jeetm\\Github\\stock-picks-app\\.venv\\Scripts\\python.exe",
-      "script": "prefetch_finnhub_full",
-      "description": "Finnhub free-tier (10 endpoints x 1937 tickers)"
-    },
-    {
-      "pid": "48712",
-      "elapsed": "/usr/bin/bash",
-      "script": "prefetch_quiver_new_endpoints",
-      "description": "Quiver senate/house/spacs/twitter"
-    },
-    {
-      "pid": "against",
-      "elapsed": "endpoint",
-      "script": "prefetch_quiver_new_endpoints",
-      "description": "Quiver senate/house/spacs/twitter"
+      "script": "prefetch_polygon_options",
+      "description": "Polygon Options Basic (chain ref)"
     }
   ],
   "pending_pipeline": [
@@ -15193,7 +14466,7 @@
     "splits": 1
   },
   "inv_status_counts": {
-    "OPEN": 40,
+    "OPEN": 41,
     "RESOLVED": 4
   },
   "tier_status_counts": {
@@ -15214,8 +14487,13 @@
     "INVESTING": 1,
     "TICKERSMETHODS": 1,
     "CACHES": 1,
-    "PENDING": 6,
+    "DONEVERIFIED--VHSAMPLENRANDOMP": 1,
     "MOSTLYDONEHCOVEREDMOSTCASES": 1,
-    "PARTIALCORPACTIONSDONERESTPEND": 1
+    "NEEDS-OWNER-SCOPEVERIFIED--VHS": 1,
+    "DONE--VHBACKTESTTESTSTESTSCHEM": 1,
+    "DONEVERIFIED--VHSTRATIFIEDSAMP": 1,
+    "DONE--VHVIASHAREDSCRIPTSPREFET": 1,
+    "DONE--VHEMPIRICALSCANOFCANONIC": 1,
+    "DONE--VHSCRIPTSWRITECACHESCHEM": 1
   }
 }
