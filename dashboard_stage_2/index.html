@@ -416,8 +416,8 @@ document.getElementById('timeline-windows').innerHTML = windows.map(([w, what]) 
   `<div><strong>${w}:</strong> ${what || '-'}</div>`).join('') +
   `<div style="margin-top:12px"><strong>Net estimate:</strong> ${tl.net_estimate || '-'}</div>` +
   `<div><strong>Phase 1A runway:</strong> ${tl.phase_1a_runway || '-'}</div>`;
-const caveats = tl.caveats || [];
-document.getElementById('timeline-caveats').innerHTML = caveats.map(c => `<li>${c}</li>`).join('');
+const timelineCaveats = tl.caveats || [];
+document.getElementById('timeline-caveats').innerHTML = timelineCaveats.map(c => `<li>${c}</li>`).join('');
 
 // Code state
 const codeStats = [
