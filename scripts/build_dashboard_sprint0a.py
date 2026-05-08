@@ -30,6 +30,97 @@ OUT_DIR.mkdir(parents=True, exist_ok=True)
 DATA_PREFETCH = Path("data_prefetch")
 LEGACY_CACHE = Path("backtest/data/cache")
 MASTER_UNIVERSE = Path("Backtesting universe/Master Universe_Deduplicated_All Tiers_May 2026.csv")
+INVENTORY_MD = Path("API_ENDPOINT_INVENTORY.md")
+
+
+def parse_inventory_md(path: Path) -> list[dict]:
+    """Parse API_ENDPOINT_INVENTORY.md tables into endpoint records.
+
+    Per owner directive 2026-05-08: dashboard catalog source must be the
+    inventory doc (canonical) NOT filesystem walks (memory). Each per-API
+    section uses the standardized 5-column table:
+        | Endpoint | Status | Sample fields | Currently cached? | Action |
+    """
+    import re
+    text = path.read_text(encoding="utf-8")
+    rows = []
+    current_api = None
+    in_table = False
+    seen_header = False
+    api_section_re = re.compile(r"^##\s+\d+\.\s+(.+?)(?:\s+\(.*)?$")
+    for line in text.split("\n"):
+        m = api_section_re.match(line)
+        if m:
+            api_label = m.group(1).strip()
+            current_api = api_label
+            in_table = False
+            seen_header = False
+            continue
+        if not current_api:
+            continue
+        if line.startswith("|"):
+            if "---" in line and "|---" in line.replace(" ", ""):
+                in_table = True
+                continue
+            cols = [c.strip() for c in line.strip().strip("|").split("|")]
+            if not seen_header and cols and cols[0].lower() in ("endpoint", "endpoint path"):
+                seen_header = True
+                continue
+            if in_table and len(cols) >= 5 and cols[0]:
+                rows.append({
+                    "api_label": current_api,
+                    "endpoint_path": cols[0],
+                    "status_raw": cols[1],
+                    "sample_fields": cols[2],
+                    "currently_cached": cols[3],
+                    "action": cols[4],
+                })
+        else:
+            if in_table and line.strip() == "":
+                in_table = False
+                seen_header = False
+    return rows
+
+
+# Inventory status emoji codepoints (chr() form - keeps file ASCII-pure
+# per CHECKLIST #75 unicode-test).
+_OK_MARK = chr(0x2705)         # check_mark
+_RED_CIRCLE = chr(0x1F534)     # red_circle
+_WARN_SIGN = chr(0x26A0)       # warning_sign
+_QUESTION_MARK = chr(0x2753)   # question_mark
+_EM_DASH = chr(0x2014)         # em-dash
+
+
+def normalize_status(raw: str) -> str:
+    """Map inventory status emoji/text to standard buckets."""
+    if not raw:
+        return "UNKNOWN"
+    if _OK_MARK in raw:
+        return "ACCESSIBLE"
+    if _RED_CIRCLE in raw:
+        if "404" in raw:
+            return "DOES_NOT_EXIST"
+        return "TIER_BLOCKED"
+    if _WARN_SIGN in raw:
+        return "PARTIAL"
+    if _QUESTION_MARK in raw:
+        return "UNPROBED"
+    return "UNKNOWN"
+
+
+def normalize_cached(raw: str):
+    """Map 'Currently cached?' column to bucket + extract files count if present."""
+    import re
+    if not raw or raw.strip() in ("-", _EM_DASH):
+        return ("NOT_CACHED", None)
+    raw_l = raw.lower()
+    if raw_l.startswith("no") and not raw_l.startswith("note"):
+        return ("NOT_CACHED", None)
+    m = re.search(r"(\d{1,7})\s*/", raw) or re.search(r"\((\d{1,7})", raw) or re.search(r"(\d{2,7})", raw)
+    if "yes" in raw_l or _OK_MARK in raw or "in flight" in raw_l or "done" in raw_l:
+        n = int(m.group(1)) if m else None
+        return ("CACHED", n)
+    return ("UNKNOWN", None)
 
 
 def load_universe() -> pd.DataFrame:
@@ -477,6 +568,16 @@ def main() -> int:
     universe_size = len(universe)
     print(f"Master Universe: {universe_size} tickers")
 
+    # PRIMARY catalog source: API_ENDPOINT_INVENTORY.md (per CHECKLIST #77)
+    # Filesystem walk is SUPPLEMENTARY - provides files/rows/schema for
+    # endpoints we have cached. The catalog itself comes from the inventory.
+    inventory_rows = []
+    if INVENTORY_MD.exists():
+        inventory_rows = parse_inventory_md(INVENTORY_MD)
+        print(f"Parsed {len(inventory_rows)} endpoint rows from {INVENTORY_MD}")
+    else:
+        print(f"WARNING: {INVENTORY_MD} not found - falling back to ENDPOINTS list only")
+
     tier_counts = universe.groupby("resolved_tier", dropna=False).size().to_dict() if "resolved_tier" in universe.columns else {}
 
     snapshot = {
@@ -597,6 +698,44 @@ def main() -> int:
         apis[api]["total_files"] += ep.get("files_count", 0)
     snapshot["api_summary"] = apis
     snapshot["api_use_cases"] = API_USE_CASES
+
+    # CANONICAL catalog from inventory MD (per CHECKLIST #77)
+    catalog = []
+    for r in inventory_rows:
+        status = normalize_status(r["status_raw"])
+        cached_bucket, cached_count = normalize_cached(r["currently_cached"])
+        # Combine status + cached -> final bucket
+        if status == "TIER_BLOCKED":
+            final = "TIER_BLOCKED"
+        elif status == "DOES_NOT_EXIST":
+            final = "DOES_NOT_EXIST"
+        elif status == "ACCESSIBLE" and cached_bucket == "CACHED":
+            final = "CACHED"
+        elif status == "ACCESSIBLE" and cached_bucket == "NOT_CACHED":
+            final = "ACCESSIBLE_NOT_CACHED"
+        elif status == "PARTIAL":
+            final = "PARTIAL"
+        elif status == "UNPROBED":
+            final = "UNPROBED"
+        else:
+            final = "UNKNOWN"
+        catalog.append({
+            "api_label": r["api_label"],
+            "endpoint_path": r["endpoint_path"],
+            "tier_status": status,
+            "cached_status": cached_bucket,
+            "cached_count": cached_count,
+            "final_bucket": final,
+            "sample_fields": r["sample_fields"],
+            "action": r["action"],
+        })
+    snapshot["catalog"] = catalog
+    # Catalog status counts
+    bucket_counts: dict[str, int] = {}
+    for c in catalog:
+        bucket_counts[c["final_bucket"]] = bucket_counts.get(c["final_bucket"], 0) + 1
+    snapshot["catalog_bucket_counts"] = bucket_counts
+    print(f"Catalog summary: {len(catalog)} endpoints | buckets: {bucket_counts}")
 
     # Output JSON
     out_json = OUT_DIR / "data.json"

@@ -63,6 +63,7 @@
   <button class="tab-btn" data-panel="field-audit">Field/Dimension Audit</button>
   <button class="tab-btn" data-panel="status-overview">Status Overview</button>
   <button class="tab-btn" data-panel="api-usage">API Usage / Stage</button>
+  <button class="tab-btn" data-panel="catalog">Full Catalog (Inventory)</button>
 </nav>
 
 <main>
@@ -153,6 +154,30 @@
     <h3>Endpoints below 80% Available Coverage (need attention)</h3>
     <table id="tbl-attention" class="display compact" style="width:100%">
       <thead><tr><th>API</th><th>Endpoint</th><th>Universe %</th><th>Available %</th><th>Files</th><th>Status</th></tr></thead>
+    </table>
+  </section>
+
+  <section id="catalog" class="panel">
+    <h2>Full Catalog (canonical from API_ENDPOINT_INVENTORY.md)</h2>
+    <p>EVERY endpoint we know about across all APIs — accessible+cached, accessible-not-yet-cached, tier-blocked (403), does-not-exist (404). Source per CHECKLIST #77: the inventory doc is the canonical catalog; filesystem walk is supplementary.</p>
+    <div class="stats-grid" id="catalog-stats"></div>
+    <div class="filter-bar">
+      <input id="catalog-filter" placeholder="Filter API, endpoint, status..." size="50">
+      <select id="catalog-bucket-filter">
+        <option value="">All buckets</option>
+        <option value="CACHED">CACHED (we have files)</option>
+        <option value="ACCESSIBLE_NOT_CACHED">ACCESSIBLE_NOT_CACHED (queue)</option>
+        <option value="PARTIAL">PARTIAL</option>
+        <option value="TIER_BLOCKED">TIER_BLOCKED (403)</option>
+        <option value="DOES_NOT_EXIST">DOES_NOT_EXIST (404)</option>
+        <option value="UNPROBED">UNPROBED</option>
+      </select>
+    </div>
+    <table id="tbl-catalog" class="display compact" style="width:100%">
+      <thead><tr>
+        <th>API</th><th>Endpoint</th><th>Tier Status</th><th>Cached?</th><th>Bucket</th>
+        <th>Sample Fields</th><th>Action</th>
+      </tr></thead>
     </table>
   </section>
 
@@ -306,7 +331,35 @@ D.endpoints.forEach(ep => {statusCounts[ep.status || 'EMPTY']++;});
   if (el) el.textContent = statusCounts[s.toUpperCase()];
 });
 
-// API / Endpoint Usage / Stage mapping table — endpoint-level
+// Full Catalog table (parsed from API_ENDPOINT_INVENTORY.md)
+const catalog = D.catalog || [];
+const catalogStats = D.catalog_bucket_counts || {};
+const catalogStatsHtml = Object.entries(catalogStats).map(([bucket, count]) => {
+  const cls = bucket === 'CACHED' ? 'pct-ok' : bucket === 'ACCESSIBLE_NOT_CACHED' ? 'pct-partial' : bucket === 'TIER_BLOCKED' ? 'pct-low' : 'pct-empty';
+  return `<div class="stat"><div class="label">${bucket}</div><div class="value pct-cell ${cls}">${count}</div></div>`;
+}).join('');
+document.getElementById('catalog-stats').innerHTML = catalogStatsHtml;
+
+const catalogRows = catalog.map(c => {
+  const bucketCls = c.final_bucket === 'CACHED' ? 'badge-ok' : c.final_bucket === 'ACCESSIBLE_NOT_CACHED' ? 'badge-partial' : c.final_bucket === 'TIER_BLOCKED' ? 'badge-low' : 'badge-empty';
+  return [
+    c.api_label,
+    `<code style="font-size:11px">${c.endpoint_path}</code>`,
+    c.tier_status,
+    c.cached_status + (c.cached_count !== null ? ` (${c.cached_count})` : ''),
+    `<span class="badge ${bucketCls}">${c.final_bucket}</span>`,
+    `<span class="columns-list">${(c.sample_fields || '').slice(0, 100)}${(c.sample_fields || '').length > 100 ? '...' : ''}</span>`,
+    `<span class="columns-list">${(c.action || '').slice(0, 80)}${(c.action || '').length > 80 ? '...' : ''}</span>`,
+  ];
+});
+const catalogTable = $('#tbl-catalog').DataTable({
+  data: catalogRows, pageLength: 50, order: [[4, 'asc']],
+  columns: [{}, {type:'html'}, {}, {}, {type:'html'}, {type:'html'}, {type:'html'}],
+});
+$('#catalog-filter').on('keyup', function () { catalogTable.search(this.value).draw(); });
+$('#catalog-bucket-filter').on('change', function () { catalogTable.column(4).search(this.value).draw(); });
+
+// API / Endpoint Usage / Stage mapping table - endpoint-level
 function critBadge(c) {
   return `<span class="badge ${c === 'P0' ? 'badge-low' : c === 'P1' ? 'badge-partial' : c === 'P2' ? 'badge-empty' : 'badge-empty'}">${c || '-'}</span>`;
 }
