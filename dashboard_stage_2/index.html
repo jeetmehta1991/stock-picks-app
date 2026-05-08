@@ -103,7 +103,7 @@ per CHECKLIST #77 - never reads from memory.
       Pushed = referenced in any git commit subject (=&gt; merged).
     </p>
     <p style="font-size:12px;color:#6b7588;margin-top:4px">
-      Pyramid columns (DEC-503): <strong title="Unit">U</strong> /
+      Pyramid columns (DEC-503 13-layer): <strong title="Unit">U</strong> /
       <strong title="Smoke">Sm</strong> /
       <strong title="Integration">I</strong> /
       <strong title="System">Sy</strong> /
@@ -111,13 +111,19 @@ per CHECKLIST #77 - never reads from memory.
       <strong title="Regression">R</strong> /
       <strong title="Data integrity">D</strong> /
       <strong title="Performance">P</strong> /
-      <strong title="Acceptance">A</strong>. Green=test layer covers ID; gray=no coverage in that layer.
+      <strong title="Acceptance">A</strong> /
+      <strong title="Property-based">Pr</strong> /
+      <strong title="Snapshot">Sn</strong> /
+      <strong title="Contract">C</strong> /
+      <strong title="Compatibility matrix">Cm</strong>. YES=test layer covers ID; no=no coverage in that layer.
     </p>
     <table id="tbl-decisions" class="display compact" style="width:100%">
       <thead><tr><th>ID</th><th>Title</th><th>Doc Status</th><th>Coded</th><th>Wired</th><th>Tested</th><th>Pushed</th>
         <th title="Unit">U</th><th title="Smoke">Sm</th><th title="Integration">I</th><th title="System">Sy</th>
         <th title="Functional">F</th><th title="Regression">R</th><th title="Data integrity">D</th>
         <th title="Performance">P</th><th title="Acceptance">A</th>
+        <th title="Property-based (Hypothesis)">Pr</th><th title="Snapshot / golden-data">Sn</th>
+        <th title="Contract (API shape)">C</th><th title="Compatibility matrix">Cm</th>
         <th>Sprint</th><th>Dependencies</th><th>Theme</th></tr></thead>
     </table>
   </section>
@@ -133,6 +139,8 @@ per CHECKLIST #77 - never reads from memory.
         <th title="Unit">U</th><th title="Smoke">Sm</th><th title="Integration">I</th><th title="System">Sy</th>
         <th title="Functional">F</th><th title="Regression">R</th><th title="Data integrity">D</th>
         <th title="Performance">P</th><th title="Acceptance">A</th>
+        <th title="Property-based (Hypothesis)">Pr</th><th title="Snapshot / golden-data">Sn</th>
+        <th title="Contract (API shape)">C</th><th title="Compatibility matrix">Cm</th>
         <th>Sprint</th><th>Dependencies</th></tr></thead>
     </table>
   </section>
@@ -154,6 +162,8 @@ per CHECKLIST #77 - never reads from memory.
         <th title="Unit">U</th><th title="Smoke">Sm</th><th title="Integration">I</th><th title="System">Sy</th>
         <th title="Functional">F</th><th title="Regression">R</th><th title="Data integrity">D</th>
         <th title="Performance">P</th><th title="Acceptance">A</th>
+        <th title="Property-based (Hypothesis)">Pr</th><th title="Snapshot / golden-data">Sn</th>
+        <th title="Contract (API shape)">C</th><th title="Compatibility matrix">Cm</th>
         <th>Dependencies</th></tr></thead>
     </table>
   </section>
@@ -175,6 +185,8 @@ per CHECKLIST #77 - never reads from memory.
         <th title="Unit">U</th><th title="Smoke">Sm</th><th title="Integration">I</th><th title="System">Sy</th>
         <th title="Functional">F</th><th title="Regression">R</th><th title="Data integrity">D</th>
         <th title="Performance">P</th><th title="Acceptance">A</th>
+        <th title="Property-based (Hypothesis)">Pr</th><th title="Snapshot / golden-data">Sn</th>
+        <th title="Contract (API shape)">C</th><th title="Compatibility matrix">Cm</th>
         <th>Dependencies</th><th>Impact</th></tr></thead>
     </table>
   </section>
@@ -372,15 +384,19 @@ function statusCheck(b) {
     ? '<span class="badge badge-resolved">YES</span>'
     : '<span class="badge badge-superseded">no</span>';
 }
-// 9-pyramid layer columns: explicit YES / no badges (no dot logic per owner
+// 13-pyramid layer columns: explicit YES / no badges (no dot logic per owner
 // directive 2026-05-08). Reuses the same statusCheck() badge style as the
 // rolled-up Coded/Wired/Tested/Pushed columns for visual consistency.
+// 4 additional layers added 2026-05-08: property-based (Hypothesis),
+// snapshot (golden-data), contract (API shape), compatibility (matrix).
 function pyramidCells(sg) {
   const p = (sg && sg.pyramid) || {};
   return [
     statusCheck(p.unit), statusCheck(p.smoke), statusCheck(p.integration),
     statusCheck(p.system), statusCheck(p.functional), statusCheck(p.regression),
     statusCheck(p.data_integrity), statusCheck(p.performance), statusCheck(p.acceptance),
+    statusCheck(p.property), statusCheck(p.snapshot),
+    statusCheck(p.contract), statusCheck(p.compatibility),
   ];
 }
 

@@ -286,6 +286,10 @@ TEST_PYRAMID_LAYERS = {
     "data_integrity": ["test_schema_canonical.py"],
     "performance": ["test_performance.py"],
     "acceptance": ["test_acceptance.py"],
+    "property": ["test_property.py"],
+    "snapshot": ["test_snapshot.py"],
+    "contract": ["test_contract.py"],
+    "compatibility": ["test_compatibility.py"],
 }
 
 

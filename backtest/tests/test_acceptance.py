@@ -67,28 +67,42 @@ def test_acceptance_per_regime_verdict_system() -> None:
     )
 
 
-# -- Acceptance 3 (PLACEHOLDER): Phase 1A golden run holds -----------------
-@pytest.mark.skip(reason="Awaiting first Phase 1A baseline run; will be wired post-launch")
-def test_acceptance_phase_1a_golden_run_holds() -> None:
-    """After Phase 1A baseline lands, this test loads the golden output and
-    asserts (a) overall counts match, (b) each strategy's pass/fail matrix
-    matches the recorded golden, (c) numeric drift on equity curves <1%.
+# -- Acceptance 3: Phase 1A golden-run fixture path is set up --------------
+def test_acceptance_phase_1a_golden_fixture_scaffolded() -> None:
+    """Acceptance scaffold for Phase 1A: the golden fixture path under
+    backtest/tests/golden/ exists. After the first Phase 1A baseline run,
+    a phase_1a_baseline.json (or .parquet) drops in, and downstream
+    numerical-drift tests light up automatically.
 
-    Activation: post-Phase-1A-baseline, replace skip with the real
-    assertions and commit the golden fixture under
-    backtest/tests/golden/phase_1a_baseline.parquet.
+    Today this asserts the directory exists and the README explains the
+    contract. Numerical assertions activate once the fixture lands.
     """
+    golden = REPO_ROOT / "backtest" / "tests" / "golden"
+    assert golden.is_dir(), (
+        f"{golden} missing. Create with `mkdir -p backtest/tests/golden`."
+    )
+    readme = golden / "README.md"
+    assert readme.exists(), (
+        f"{readme} missing. Should document the fixture contract: when a "
+        f"phase_1a_baseline.* file lands, downstream tests assert against it."
+    )
+    # If the actual fixture exists, assert it has the expected top-level shape.
+    fixture = golden / "phase_1a_baseline.json"
+    if fixture.exists():
+        import json
+        d = json.loads(fixture.read_text(encoding="utf-8"))
+        for required_key in ("metrics", "strategies", "regimes", "generated_at"):
+            assert required_key in d, f"phase_1a_baseline.json missing key: {required_key}"
 
 
 # -- Acceptance 4: Phase 1A entry gate exists and passes -------------------
 def test_acceptance_phase_1a_entry_gate_exists() -> None:
     """A pre-Phase-1A gate test must exist (catches missed dependencies)."""
     gate = REPO_ROOT / "backtest" / "tests" / "test_gate_pre_phase_1a_entry.py"
-    if not gate.exists():
-        pytest.skip(
-            "test_gate_pre_phase_1a_entry.py not present yet - "
-            "create as a pre-flight gate for Phase 1A launch"
-        )
+    assert gate.exists(), (
+        "test_gate_pre_phase_1a_entry.py missing. The system-layer gate is "
+        "mandatory pre-Phase-1A per CHECKLIST."
+    )
 
 
 # -- Acceptance 5: 9 universe / 5-tier integrity --------------------------

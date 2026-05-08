@@ -55,6 +55,12 @@ def main() -> int:
     for col in header_cols[1:]:
         df[col] = pd.to_numeric(df[col], errors="coerce")
 
+    # Drop rows where all 3 sentiment values are missing (AAII skipped a week
+    # or pre-survey-start dates). Keeps the loader contract that bullish_pct
+    # is always in [0, 1] for every row.
+    df = df.dropna(subset=["bullish", "neutral", "bearish"], how="all").reset_index(drop=True)
+    df = df.dropna(subset=["bullish"]).reset_index(drop=True)
+
     df.to_parquet(OUT, index=False)
     print(f"Wrote {OUT.relative_to(REPO_ROOT)}")
     print(f"  rows: {len(df)}")
