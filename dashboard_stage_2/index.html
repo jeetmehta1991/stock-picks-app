@@ -61,6 +61,7 @@ per CHECKLIST #77 - never reads from memory.
   <button class="tab-btn" data-panel="invs">Investigations (INV)</button>
   <button class="tab-btn" data-panel="tier">Tier H/I/J Execution</button>
   <button class="tab-btn" data-panel="code">Code State (git)</button>
+  <button class="tab-btn" data-panel="pipeline">Pipeline (BGs + Queue)</button>
 </nav>
 
 <main>
@@ -132,6 +133,38 @@ per CHECKLIST #77 - never reads from memory.
     <table id="tbl-tier" class="display compact" style="width:100%">
       <thead><tr><th>#</th><th>Action</th><th>Source</th><th>Effort</th><th>Status</th></tr></thead>
     </table>
+  </section>
+
+  <section id="pipeline" class="panel">
+    <h2>Pipeline: Currently Downloading + What's Next</h2>
+    <p>Live snapshot of active background prefetch processes plus the queued Tier H/J pipeline.</p>
+
+    <h3>Currently Downloading (active BGs)</h3>
+    <p style="font-size:13px;color:#6b7588">Detected from <code>ps -ef</code> at build time. Refresh dashboard data via <code>python scripts/build_dashboard_stage_2.py</code> to update.</p>
+    <table id="tbl-active-bgs" class="display compact" style="width:100%">
+      <thead><tr><th>PID</th><th>Elapsed</th><th>Script</th><th>Description</th></tr></thead>
+    </table>
+
+    <h3 style="margin-top:24px">Pending pipeline (queued items + ETAs)</h3>
+    <div class="filter-bar">
+      <input id="pipeline-filter" placeholder="Filter API / item / priority..." size="50">
+      <select id="pipeline-priority-filter">
+        <option value="">All priorities</option>
+        <option value="P0">P0 (critical)</option>
+        <option value="P1">P1 (high)</option>
+        <option value="P2">P2 (medium)</option>
+        <option value="P3">P3 (low)</option>
+      </select>
+    </div>
+    <table id="tbl-pipeline" class="display compact" style="width:100%">
+      <thead><tr><th>Item</th><th>API / Source</th><th>Wall-clock ETA</th><th>Rate-limit notes</th><th>Priority</th></tr></thead>
+    </table>
+
+    <h3 style="margin-top:24px">Realistic parallelized timeline</h3>
+    <div id="timeline-windows" style="font-size:14px;line-height:1.8"></div>
+
+    <h3 style="margin-top:16px">Caveats</h3>
+    <ul id="timeline-caveats" style="font-size:13px;color:#6b7588"></ul>
   </section>
 
   <section id="code" class="panel">
@@ -251,6 +284,39 @@ const tierTable = $('#tbl-tier').DataTable({
   columns: [{}, {}, {}, {}, {type: 'html'}],
 });
 $('#tier-filter').on('keyup', function () { tierTable.search(this.value).draw(); });
+
+// Pipeline tab
+const activeBGs = D.active_bgs || [];
+$('#tbl-active-bgs').DataTable({
+  data: activeBGs.map(b => [b.pid, b.elapsed, `<code>${b.script}</code>`, b.description]),
+  pageLength: 20, order: [],
+  columns: [{}, {}, {type: 'html'}, {}],
+});
+const pipeline = D.pending_pipeline || [];
+const pipelineRows = pipeline.map(p => [
+  p.item, p.api, p.wallclock, p.rate_limit,
+  `<span class="badge ${p.priority === 'P0' ? 'badge-critical' : p.priority === 'P1' ? 'badge-pending' : p.priority === 'P2' ? 'badge-deferred' : 'badge-superseded'}">${p.priority}</span>`,
+]);
+const pipelineTable = $('#tbl-pipeline').DataTable({
+  data: pipelineRows, pageLength: 30, order: [[4, 'asc']],
+  columns: [{}, {}, {}, {}, {type: 'html'}],
+});
+$('#pipeline-filter').on('keyup', function () { pipelineTable.search(this.value).draw(); });
+$('#pipeline-priority-filter').on('change', function () { pipelineTable.column(4).search(this.value).draw(); });
+
+const tl = D.timeline_summary || {};
+const windows = [
+  ['Next ~5 hours', tl.next_5h],
+  ['Next ~12-15 hours', tl.next_12_15h],
+  ['Next ~24-30 hours', tl.next_24_30h],
+  ['Next ~36-48 hours', tl.next_36_48h],
+];
+document.getElementById('timeline-windows').innerHTML = windows.map(([w, what]) =>
+  `<div><strong>${w}:</strong> ${what || '-'}</div>`).join('') +
+  `<div style="margin-top:12px"><strong>Net estimate:</strong> ${tl.net_estimate || '-'}</div>` +
+  `<div><strong>Phase 1A runway:</strong> ${tl.phase_1a_runway || '-'}</div>`;
+const caveats = tl.caveats || [];
+document.getElementById('timeline-caveats').innerHTML = caveats.map(c => `<li>${c}</li>`).join('');
 
 // Code state
 const codeStats = [

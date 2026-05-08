@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-08T16:29:08.646988+00:00",
+  "generated_at": "2026-05-08T16:40:32.267179+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -4776,196 +4776,204 @@
   ],
   "recent_commits": [
     {
+      "sha": "95d650ac",
+      "subject": "Finnhub: company_news batch 11",
+      "author": "jeetmehta1991",
+      "rel_time": "25 seconds ago"
+    },
+    {
+      "sha": "3ee5e22e",
+      "subject": "Finnhub: company_news batch 10",
+      "author": "jeetmehta1991",
+      "rel_time": "3 minutes ago"
+    },
+    {
+      "sha": "d0f24185",
+      "subject": "Finnhub: company_news batch 9",
+      "author": "jeetmehta1991",
+      "rel_time": "6 minutes ago"
+    },
+    {
+      "sha": "6517e0d7",
+      "subject": "Pages workflow: deploy both dashboards + landing page",
+      "author": "jeetmehta1991",
+      "rel_time": "6 minutes ago"
+    },
+    {
+      "sha": "4598383b",
+      "subject": "Finnhub: company_news batch 8",
+      "author": "jeetmehta1991",
+      "rel_time": "9 minutes ago"
+    },
+    {
+      "sha": "a82a3425",
+      "subject": "Stage 2 project tracker dashboard (NEW)",
+      "author": "jeetmehta1991",
+      "rel_time": "11 minutes ago"
+    },
+    {
       "sha": "5ac743cb",
       "subject": "Finnhub: company_news batch 7",
       "author": "jeetmehta1991",
-      "rel_time": "64 seconds ago"
+      "rel_time": "12 minutes ago"
     },
     {
       "sha": "fb9be6fb",
       "subject": "Quiver new-endpoints: spacs final (8 fetched)",
       "author": "jeetmehta1991",
-      "rel_time": "2 minutes ago"
+      "rel_time": "13 minutes ago"
     },
     {
       "sha": "07b6c3eb",
       "subject": "Quiver new-endpoints: housetrading final (7 fetched)",
       "author": "jeetmehta1991",
-      "rel_time": "2 minutes ago"
+      "rel_time": "14 minutes ago"
     },
     {
       "sha": "22e7f1dd",
       "subject": "Finnhub: company_news batch 6",
       "author": "jeetmehta1991",
-      "rel_time": "4 minutes ago"
+      "rel_time": "16 minutes ago"
     },
     {
       "sha": "72e8ac34",
       "subject": "Finnhub: company_news batch 5",
       "author": "jeetmehta1991",
-      "rel_time": "7 minutes ago"
+      "rel_time": "18 minutes ago"
     },
     {
       "sha": "2b2163f7",
       "subject": "Finnhub: company_news batch 4",
       "author": "jeetmehta1991",
-      "rel_time": "10 minutes ago"
+      "rel_time": "21 minutes ago"
     },
     {
       "sha": "979b7040",
       "subject": "Finnhub: company_news batch 3",
       "author": "jeetmehta1991",
-      "rel_time": "12 minutes ago"
+      "rel_time": "24 minutes ago"
     },
     {
       "sha": "f003bb0b",
       "subject": "Finnhub: company_news batch 2",
       "author": "jeetmehta1991",
-      "rel_time": "16 minutes ago"
+      "rel_time": "27 minutes ago"
     },
     {
       "sha": "fdb3f48d",
       "subject": "Finnhub: company_news batch 1",
       "author": "jeetmehta1991",
-      "rel_time": "19 minutes ago"
+      "rel_time": "30 minutes ago"
     },
     {
       "sha": "e31af775",
       "subject": "Dashboard API Usage tab: per-FIELD rows + Coding/Wiring status",
       "author": "jeetmehta1991",
-      "rel_time": "20 minutes ago"
+      "rel_time": "32 minutes ago"
     },
     {
       "sha": "05d25bd9",
       "subject": "Finnhub: earnings final (1936 fetched)",
       "author": "jeetmehta1991",
-      "rel_time": "22 minutes ago"
+      "rel_time": "33 minutes ago"
     },
     {
       "sha": "3575968d",
       "subject": "Finnhub: earnings batch 19",
       "author": "jeetmehta1991",
-      "rel_time": "23 minutes ago"
+      "rel_time": "34 minutes ago"
     },
     {
       "sha": "1bcfd6c6",
       "subject": "Finnhub: earnings batch 18",
       "author": "jeetmehta1991",
-      "rel_time": "26 minutes ago"
+      "rel_time": "37 minutes ago"
     },
     {
       "sha": "c4c4260f",
       "subject": "Finnhub: earnings batch 17",
       "author": "jeetmehta1991",
-      "rel_time": "29 minutes ago"
+      "rel_time": "40 minutes ago"
     },
     {
       "sha": "559efead",
       "subject": "Finnhub: earnings batch 16",
       "author": "jeetmehta1991",
-      "rel_time": "31 minutes ago"
+      "rel_time": "43 minutes ago"
     },
     {
       "sha": "8c464068",
       "subject": "Finnhub earnings batches: pre-pause state committed",
       "author": "jeetmehta1991",
-      "rel_time": "31 minutes ago"
+      "rel_time": "43 minutes ago"
     },
     {
       "sha": "ed86bc4e",
       "subject": "Finnhub: earnings batch 15",
       "author": "jeetmehta1991",
-      "rel_time": "34 minutes ago"
+      "rel_time": "45 minutes ago"
     },
     {
       "sha": "b8a7c2ef",
       "subject": "Finnhub: earnings batch 14",
       "author": "jeetmehta1991",
-      "rel_time": "37 minutes ago"
+      "rel_time": "48 minutes ago"
     },
     {
       "sha": "9aeb9fc0",
       "subject": "Finnhub: earnings batch 13",
       "author": "jeetmehta1991",
-      "rel_time": "39 minutes ago"
+      "rel_time": "51 minutes ago"
     },
     {
       "sha": "210dbc33",
       "subject": "Finnhub: earnings batch 12",
       "author": "jeetmehta1991",
-      "rel_time": "42 minutes ago"
+      "rel_time": "53 minutes ago"
     },
     {
       "sha": "c8c3da2a",
       "subject": "Finnhub: earnings batch 11",
       "author": "jeetmehta1991",
-      "rel_time": "45 minutes ago"
+      "rel_time": "56 minutes ago"
     },
     {
       "sha": "a31b2bed",
       "subject": "Pages workflow: add diagnostic logging",
       "author": "jeetmehta1991",
-      "rel_time": "47 minutes ago"
+      "rel_time": "58 minutes ago"
     },
     {
       "sha": "266598fa",
       "subject": "Finnhub: earnings batch 10",
       "author": "jeetmehta1991",
-      "rel_time": "47 minutes ago"
+      "rel_time": "59 minutes ago"
     },
     {
       "sha": "0ee514d7",
       "subject": "Finnhub: earnings batch 9",
       "author": "jeetmehta1991",
-      "rel_time": "50 minutes ago"
-    },
-    {
-      "sha": "383fc312",
-      "subject": "Re-trigger Pages workflow (owner asked rerun)",
-      "author": "jeetmehta1991",
-      "rel_time": "50 minutes ago"
-    },
-    {
-      "sha": "77107abf",
-      "subject": "Finnhub: earnings batch 8",
-      "author": "jeetmehta1991",
-      "rel_time": "52 minutes ago"
-    },
-    {
-      "sha": "b01bda90",
-      "subject": "GitHub Pages workflow: dashboard-only artifact (excludes 2.6GB data_prefetch)",
-      "author": "jeetmehta1991",
-      "rel_time": "53 minutes ago"
-    },
-    {
-      "sha": "dbee4274",
-      "subject": "Finnhub: earnings batch 7",
-      "author": "jeetmehta1991",
-      "rel_time": "55 minutes ago"
-    },
-    {
-      "sha": "8e687457",
-      "subject": "Finnhub: earnings batch 6",
-      "author": "jeetmehta1991",
-      "rel_time": "58 minutes ago"
-    },
-    {
-      "sha": "2b4baa07",
-      "subject": "Finnhub: earnings batch 5",
-      "author": "jeetmehta1991",
-      "rel_time": "60 minutes ago"
+      "rel_time": "61 minutes ago"
     }
   ],
   "uncommitted": {
-    "count": 41,
-    "modified": 2,
+    "count": 17,
+    "modified": 4,
     "added": 0,
-    "untracked": 39,
+    "untracked": 13,
     "deleted": 0,
     "files": [
       {
         "status": "M",
+        "path": "dashboard_stage_2/index.html"
+      },
+      {
+        "status": "M",
         "path": "data_prefetch/finnhub/_checkpoint.json"
+      },
+      {
+        "status": "M",
+        "path": "scripts/build_dashboard_stage_2.py"
       },
       {
         "status": "M",
@@ -4973,163 +4981,212 @@
       },
       {
         "status": "??",
-        "path": "dashboard_stage_2/"
+        "path": "data_prefetch/finnhub/company_news/MIME.parquet"
       },
       {
         "status": "??",
-        "path": "data_prefetch/finnhub/company_news/FORG.parquet"
+        "path": "data_prefetch/finnhub/company_news/MIND.parquet"
       },
       {
         "status": "??",
-        "path": "data_prefetch/finnhub/company_news/FORM.parquet"
+        "path": "data_prefetch/finnhub/company_news/MIRM.parquet"
       },
       {
         "status": "??",
-        "path": "data_prefetch/finnhub/company_news/FOUR.parquet"
+        "path": "data_prefetch/finnhub/company_news/MKC.parquet"
       },
       {
         "status": "??",
-        "path": "data_prefetch/finnhub/company_news/FOX.parquet"
+        "path": "data_prefetch/finnhub/company_news/MKSI.parquet"
       },
       {
         "status": "??",
-        "path": "data_prefetch/finnhub/company_news/FOXA.parquet"
+        "path": "data_prefetch/finnhub/company_news/MKTX.parquet"
       },
       {
         "status": "??",
-        "path": "data_prefetch/finnhub/company_news/FRBN.parquet"
+        "path": "data_prefetch/finnhub/company_news/ML.parquet"
       },
       {
         "status": "??",
-        "path": "data_prefetch/finnhub/company_news/FRC.parquet"
+        "path": "data_prefetch/finnhub/company_news/MLM.parquet"
       },
       {
         "status": "??",
-        "path": "data_prefetch/finnhub/company_news/FRGE.parquet"
+        "path": "data_prefetch/finnhub/company_news/MLTX.parquet"
       },
       {
         "status": "??",
-        "path": "data_prefetch/finnhub/company_news/FRHC.parquet"
+        "path": "data_prefetch/finnhub/company_news/MLYS.parquet"
       },
       {
         "status": "??",
-        "path": "data_prefetch/finnhub/company_news/FRO.parquet"
+        "path": "data_prefetch/finnhub/company_news/MMM.parquet"
       },
       {
         "status": "??",
-        "path": "data_prefetch/finnhub/company_news/FROG.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/FRPT.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/FRT.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/FSLR.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/FSLY.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/FSS.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/FSTX.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/FSV.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/FTAI.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/FTI.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/FTK.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/FTNT.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/FTV.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/FUBO.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/FULC.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/FUSN.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/FWONA.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/FWONK.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/GATO.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/GBT.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/GCT.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/GD.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/GDDY.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/GDX.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/GE.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/finnhub/company_news/GEHC.parquet"
+        "path": "data_prefetch/finnhub/company_news/MMYT.parquet"
       },
       {
         "status": "??",
         "path": "data_prefetch/quiver/twitter/"
-      },
-      {
-        "status": "??",
-        "path": "scripts/build_dashboard_stage_2.py"
       }
     ]
   },
   "unpushed_commits": [],
+  "active_bgs": [
+    {
+      "pid": "48140",
+      "elapsed": "C:\\Users\\jeetm\\Github\\stock-picks-app\\.venv\\Scripts\\python.exe",
+      "script": "prefetch_quiver_new_endpoints",
+      "description": "Quiver senate/house/spacs/twitter"
+    },
+    {
+      "pid": "44111",
+      "elapsed": "/usr/bin/bash",
+      "script": "prefetch_finnhub_full",
+      "description": "Finnhub free-tier (10 endpoints x 1937 tickers)"
+    },
+    {
+      "pid": "44133",
+      "elapsed": "C:\\Users\\jeetm\\Github\\stock-picks-app\\.venv\\Scripts\\python.exe",
+      "script": "prefetch_finnhub_full",
+      "description": "Finnhub free-tier (10 endpoints x 1937 tickers)"
+    },
+    {
+      "pid": "48120",
+      "elapsed": "/usr/bin/bash",
+      "script": "prefetch_quiver_new_endpoints",
+      "description": "Quiver senate/house/spacs/twitter"
+    }
+  ],
+  "pending_pipeline": [
+    {
+      "item": "H10 Polygon Options chains (1937 underlyings)",
+      "api": "Polygon",
+      "wallclock": "10-30h",
+      "rate_limit": "Stocks Starter unlimited; storage caveat",
+      "blocker": false,
+      "priority": "P1"
+    },
+    {
+      "item": "H20 pytrends 4 dimensions (interest_by_region/related_queries/related_topics/get_historical_interest)",
+      "api": "Google Trends",
+      "wallclock": "8-12h",
+      "rate_limit": "rate-limited single-thread",
+      "blocker": false,
+      "priority": "P2"
+    },
+    {
+      "item": "H21 AAII extended fields (8wk avg / historical avg / S&P close)",
+      "api": "AAII",
+      "wallclock": "~1h",
+      "rate_limit": "manual download",
+      "blocker": false,
+      "priority": "P3"
+    },
+    {
+      "item": "H8 Polygon Futures redesign (per-contract dated symbol logic)",
+      "api": "Polygon Futures Basic",
+      "wallclock": "2-4h code + 2h fetch",
+      "rate_limit": "free 5/min",
+      "blocker": false,
+      "priority": "P2"
+    },
+    {
+      "item": "AlphaVantage news re-fetch (INV-015)",
+      "api": "AlphaVantage",
+      "wallclock": "10-15h or 4 days",
+      "rate_limit": "free 500/day",
+      "blocker": false,
+      "priority": "P1"
+    },
+    {
+      "item": "USAspending.gov daily-grain gov contracts (INV-024 alternate)",
+      "api": "USAspending",
+      "wallclock": "2-3h",
+      "rate_limit": "free, no auth",
+      "blocker": false,
+      "priority": "P2"
+    },
+    {
+      "item": "H14 Quiver Twitter full-universe (currently in flight)",
+      "api": "Quiver",
+      "wallclock": "~45-60min remaining",
+      "rate_limit": "1.2s per call",
+      "blocker": false,
+      "priority": "P2"
+    },
+    {
+      "item": "Tier J1 ticker case standardization",
+      "api": "local",
+      "wallclock": "1h script + run",
+      "rate_limit": "n/a",
+      "blocker": false,
+      "priority": "P3"
+    },
+    {
+      "item": "Tier J3 numeric type coercion across all sources",
+      "api": "local",
+      "wallclock": "1-2h",
+      "rate_limit": "n/a",
+      "blocker": false,
+      "priority": "P3"
+    },
+    {
+      "item": "Tier J4 schema regression test",
+      "api": "local",
+      "wallclock": "2-3h",
+      "rate_limit": "n/a",
+      "blocker": false,
+      "priority": "P3"
+    },
+    {
+      "item": "Tier J5 parquet compression (snappy)",
+      "api": "local",
+      "wallclock": "1h",
+      "rate_limit": "n/a",
+      "blocker": false,
+      "priority": "P3"
+    },
+    {
+      "item": "Tier J6 safe_filename_stem() propagation to all prefetch scripts",
+      "api": "local",
+      "wallclock": "1h",
+      "rate_limit": "n/a",
+      "blocker": false,
+      "priority": "P3"
+    },
+    {
+      "item": "Tier J7 null/missing normalization",
+      "api": "local",
+      "wallclock": "2h",
+      "rate_limit": "n/a",
+      "blocker": false,
+      "priority": "P3"
+    },
+    {
+      "item": "Tier J8 _schema.json per cache directory",
+      "api": "local",
+      "wallclock": "2h",
+      "rate_limit": "n/a",
+      "blocker": false,
+      "priority": "P3"
+    }
+  ],
+  "timeline_summary": {
+    "next_5h": "Finnhub + Quiver Twitter active BGs done",
+    "next_12_15h": "H10 Options chain reference + H20 pytrends + H21 AAII + H8 Futures + USAspending parallel BGs done",
+    "next_24_30h": "H10 Options per-contract aggs (top-100 underlyings) + AV news multi-day if strict free-tier",
+    "next_36_48h": "Tier J normalization scripts authored + run",
+    "phase_1a_runway": "May 15 (7 days)",
+    "net_estimate": "~24-48h wall-clock to reach 100% coverage of accessible endpoints + all dimensions stored + normalized",
+    "caveats": [
+      "AlphaVantage strict 500/day cap could turn 10-15h into 4 days",
+      "pytrends throttles for hours when Google detects bot pattern; could double estimate",
+      "H10 Options storage could blow up (100s of GB beyond top-100 underlyings)"
+    ]
+  },
   "decision_status_counts": {
     "RESOLVED-DECIDED": 318,
     "PARTIAL": 5,

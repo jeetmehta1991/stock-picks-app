@@ -264,6 +264,83 @@ def get_uncommitted_files() -> dict:
         return {"count": 0, "files": []}
 
 
+def get_active_bgs() -> list[dict]:
+    """Detect active prefetch background processes via `ps`."""
+    try:
+        r = subprocess.run(["ps", "-ef"], capture_output=True, text=True, check=False)
+    except Exception:
+        return []
+    bgs: list[dict] = []
+    SCRIPT_PATTERNS = {
+        "prefetch_finnhub_full": "Finnhub free-tier (10 endpoints x 1937 tickers)",
+        "prefetch_quiver_new_endpoints": "Quiver senate/house/spacs/twitter",
+        "prefetch_quiver.py": "Quiver 7 endpoints",
+        "prefetch_polygon_indicators": "Polygon SMA/EMA/RSI/MACD",
+        "prefetch_polygon_benzinga": "Polygon Benzinga 5 endpoints",
+        "prefetch_polygon_corp_actions_full": "Polygon dividends/splits/IPOs",
+        "prefetch_polygon_reference_extended": "Polygon reference extended fields",
+        "prefetch_polygon_news": "Polygon news re-fetch",
+        "prefetch_polygon_ohlcv_daily": "Polygon OHLCV daily",
+        "prefetch_sec_xbrl": "SEC EDGAR XBRL companyfacts",
+        "prefetch_sec_edgar": "SEC EDGAR per-form",
+        "prefetch_polygon_indices": "Polygon Indices Basic",
+        "prefetch_polygon_forex": "Polygon Forex Basic",
+        "prefetch_polygon_futures": "Polygon Futures Basic",
+        "prefetch_polygon_economy": "Polygon Economy",
+        "prefetch_alfred_mirror": "ALFRED vintage mirror",
+        "prefetch_cftc_extended": "CFTC 5 missing datasets",
+        "prefetch_apewisdom_subreddits": "Apewisdom 8 subreddit feeds",
+        "prefetch_alphavantage_news": "Alpha Vantage news",
+    }
+    for line in r.stdout.split("\n"):
+        for pat, desc in SCRIPT_PATTERNS.items():
+            if pat in line and "grep" not in line:
+                cols = line.split()
+                pid = cols[1] if len(cols) > 1 else "?"
+                etime = cols[5] if len(cols) > 5 else "?"
+                bgs.append({"pid": pid, "elapsed": etime, "script": pat, "description": desc})
+                break
+    return bgs
+
+
+def get_pending_pipeline() -> list[dict]:
+    """Hard-coded pipeline of queued Tier H items + ETAs (per Pass 53
+    Day-9 v8h+1 owner-asked timeline 2026-05-08)."""
+    return [
+        {"item": "H10 Polygon Options chains (1937 underlyings)", "api": "Polygon", "wallclock": "10-30h", "rate_limit": "Stocks Starter unlimited; storage caveat", "blocker": False, "priority": "P1"},
+        {"item": "H20 pytrends 4 dimensions (interest_by_region/related_queries/related_topics/get_historical_interest)", "api": "Google Trends", "wallclock": "8-12h", "rate_limit": "rate-limited single-thread", "blocker": False, "priority": "P2"},
+        {"item": "H21 AAII extended fields (8wk avg / historical avg / S&P close)", "api": "AAII", "wallclock": "~1h", "rate_limit": "manual download", "blocker": False, "priority": "P3"},
+        {"item": "H8 Polygon Futures redesign (per-contract dated symbol logic)", "api": "Polygon Futures Basic", "wallclock": "2-4h code + 2h fetch", "rate_limit": "free 5/min", "blocker": False, "priority": "P2"},
+        {"item": "AlphaVantage news re-fetch (INV-015)", "api": "AlphaVantage", "wallclock": "10-15h or 4 days", "rate_limit": "free 500/day", "blocker": False, "priority": "P1"},
+        {"item": "USAspending.gov daily-grain gov contracts (INV-024 alternate)", "api": "USAspending", "wallclock": "2-3h", "rate_limit": "free, no auth", "blocker": False, "priority": "P2"},
+        {"item": "H14 Quiver Twitter full-universe (currently in flight)", "api": "Quiver", "wallclock": "~45-60min remaining", "rate_limit": "1.2s per call", "blocker": False, "priority": "P2"},
+        {"item": "Tier J1 ticker case standardization", "api": "local", "wallclock": "1h script + run", "rate_limit": "n/a", "blocker": False, "priority": "P3"},
+        {"item": "Tier J3 numeric type coercion across all sources", "api": "local", "wallclock": "1-2h", "rate_limit": "n/a", "blocker": False, "priority": "P3"},
+        {"item": "Tier J4 schema regression test", "api": "local", "wallclock": "2-3h", "rate_limit": "n/a", "blocker": False, "priority": "P3"},
+        {"item": "Tier J5 parquet compression (snappy)", "api": "local", "wallclock": "1h", "rate_limit": "n/a", "blocker": False, "priority": "P3"},
+        {"item": "Tier J6 safe_filename_stem() propagation to all prefetch scripts", "api": "local", "wallclock": "1h", "rate_limit": "n/a", "blocker": False, "priority": "P3"},
+        {"item": "Tier J7 null/missing normalization", "api": "local", "wallclock": "2h", "rate_limit": "n/a", "blocker": False, "priority": "P3"},
+        {"item": "Tier J8 _schema.json per cache directory", "api": "local", "wallclock": "2h", "rate_limit": "n/a", "blocker": False, "priority": "P3"},
+    ]
+
+
+def get_timeline_summary() -> dict:
+    """Realistic parallelized end-to-end timeline (per owner Q 2026-05-08)."""
+    return {
+        "next_5h": "Finnhub + Quiver Twitter active BGs done",
+        "next_12_15h": "H10 Options chain reference + H20 pytrends + H21 AAII + H8 Futures + USAspending parallel BGs done",
+        "next_24_30h": "H10 Options per-contract aggs (top-100 underlyings) + AV news multi-day if strict free-tier",
+        "next_36_48h": "Tier J normalization scripts authored + run",
+        "phase_1a_runway": "May 15 (7 days)",
+        "net_estimate": "~24-48h wall-clock to reach 100% coverage of accessible endpoints + all dimensions stored + normalized",
+        "caveats": [
+            "AlphaVantage strict 500/day cap could turn 10-15h into 4 days",
+            "pytrends throttles for hours when Google detects bot pattern; could double estimate",
+            "H10 Options storage could blow up (100s of GB beyond top-100 underlyings)",
+        ],
+    }
+
+
 def get_unpushed_commits() -> list[dict]:
     try:
         r = subprocess.run(
@@ -296,6 +373,9 @@ def main() -> int:
         "recent_commits": get_recent_commits(30),
         "uncommitted": get_uncommitted_files(),
         "unpushed_commits": get_unpushed_commits(),
+        "active_bgs": get_active_bgs(),
+        "pending_pipeline": get_pending_pipeline(),
+        "timeline_summary": get_timeline_summary(),
     }
 
     # Aggregations
