@@ -438,7 +438,21 @@ contract names: `UST 10Y NOTE` / `UST 5Y NOTE` / `UST 2Y NOTE` / `UST BOND`
 
 ---
 
-## INV-030 — Polygon reference missing address/branding/employees/FIGI/description (Pass 53 Day-9 v8h evening)
+## INV-030 — RESOLVED 2026-05-08 — Polygon reference extended fields prefetched (Pass 53 Day-9 v8h+1)
+
+- **Status:** RESOLVED 2026-05-08; `scripts/prefetch_polygon_reference_extended.py` re-fetched 1937 tickers with all extended fields.
+- **Result:** 1686/1937 OK (251 failed = delisted, expected). Field population:
+  - total_employees: 1641 (97.3%)
+  - composite_figi: 1515 (89.9%)
+  - description: 1658 (98.4%)
+  - branding_json (logo + icon URLs): 1561 (92.6%)
+  - address_json, phone_number, share_class_figi, round_lot also captured
+- **Output:** `data_prefetch/polygon/reference_extended/{ticker}.parquet` + `_index.parquet`
+- **Joint:** Tier H4 P2 — DONE.
+
+---
+
+## INV-030-original — Polygon reference missing address/branding/employees/FIGI/description (Pass 53 Day-9 v8h evening)
 
 - **Discovered:** 2026-05-07 evening; field-level deep-dive
 - **Observation:** `data_prefetch/polygon/reference/AAPL.parquet` has 16 fields. Polygon `/v3/reference/tickers/{t}` actually returns: `address (street/city/state/zip), branding (logo_url, icon_url), total_employees, phone_number, description, composite_figi, share_class_figi, round_lot, market_cap` (have), `share_class_shares_outstanding` (have), `weighted_shares_outstanding` (have).
