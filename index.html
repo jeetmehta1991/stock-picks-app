@@ -2,10 +2,38 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="refresh" content="0; url=./dashboard_sprint0a/index.html">
-<title>Stock Picks App - Sprint 0A Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stock Picks App - Dashboards</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 40px 24px; background: #f5f7fa; color: #222; max-width: 900px; margin-left: auto; margin-right: auto; }
+  h1 { font-size: 28px; margin: 0 0 8px 0; color: #1a1f36; }
+  .sub { color: #6b7588; font-size: 14px; margin-bottom: 32px; }
+  .card { background: white; border-radius: 8px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 16px; border-left: 4px solid #6b3aff; }
+  .card h2 { margin: 0 0 8px 0; font-size: 18px; }
+  .card p { color: #4a5468; font-size: 14px; margin: 0 0 12px 0; }
+  .card a { display: inline-block; padding: 10px 18px; background: #6b3aff; color: white; text-decoration: none; border-radius: 4px; font-weight: 500; font-size: 14px; }
+  .card a:hover { background: #5a2ed8; }
+  .meta { font-size: 12px; color: #8895a8; margin-top: 8px; }
+</style>
 </head>
 <body>
-<p>Redirecting to <a href="./dashboard_sprint0a/index.html">Sprint 0A Coverage Dashboard</a>...</p>
+
+<h1>Stock Picks App</h1>
+<div class="sub">Stage 2 dashboards (auto-refreshed via GitHub Actions on every push to main)</div>
+
+<div class="card">
+  <h2>Sprint 0A Coverage Dashboard</h2>
+  <p>Per-API / per-endpoint / per-field prefetch coverage. 237 endpoints across 20 APIs. Field-level coding + wiring status. Drill-down per ticker.</p>
+  <a href="./dashboard_sprint0a/index.html">Open Sprint 0A dashboard &rarr;</a>
+  <div class="meta">Source: API_ENDPOINT_INVENTORY.md (canonical) + filesystem walk + grep against backtest/ for wiring</div>
+</div>
+
+<div class="card">
+  <h2>Stage 2 Project Tracker</h2>
+  <p>Project execution status: 520 decisions, bugs, investigations, Tier H/I/J execution, code state (commits / uncommitted / unpushed). Single comprehensive view across AUDIT_INDEX.md / BUG_REGISTER.md / OPEN_INVESTIGATIONS.md / PHASE_1A_PRELAUNCH_TODO.md / git.</p>
+  <a href="./dashboard_stage_2/index.html">Open Stage 2 tracker &rarr;</a>
+  <div class="meta">Source: parses canonical project docs + git log/status</div>
+</div>
+
 </body>
 </html>

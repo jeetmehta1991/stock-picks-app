@@ -1,8 +1,8 @@
-name: Deploy Sprint 0A Dashboard to GitHub Pages
-# Re-trigger: 2026-05-08 (owner asked rerun)
+name: Deploy Dashboards to GitHub Pages
+# Updated 2026-05-08: now includes dashboard_stage_2 alongside dashboard_sprint0a
 
 # Pass 53 Day-9 v8h+1 owner-mandated 2026-05-08:
-# Custom Pages workflow that uploads ONLY the dashboard, not the
+# Custom Pages workflow that uploads ONLY the dashboards, not the
 # 2.6 GB data_prefetch/ tree which would exceed Pages artifact limits.
 
 on:
@@ -10,6 +10,7 @@ on:
     branches: [main]
     paths:
       - 'dashboard_sprint0a/**'
+      - 'dashboard_stage_2/**'
       - 'index.html'
       - '.nojekyll'
       - '.github/workflows/deploy_pages.yml'
@@ -36,21 +37,22 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Prepare dashboard-only site (excludes data_prefetch/, backtest/, etc.)
+      - name: Prepare dashboards-only site (excludes data_prefetch/, backtest/, etc.)
         run: |
           set -e
-          mkdir -p _site/dashboard_sprint0a
+          mkdir -p _site/dashboard_sprint0a _site/dashboard_stage_2
           cp -r dashboard_sprint0a/* _site/dashboard_sprint0a/
+          cp -r dashboard_stage_2/* _site/dashboard_stage_2/
           cp index.html _site/index.html
           touch _site/.nojekyll
           echo "=== Site root contents ==="
           ls -la _site
-          echo "=== Dashboard contents ==="
+          echo "=== dashboard_sprint0a contents ==="
           ls -la _site/dashboard_sprint0a
+          echo "=== dashboard_stage_2 contents ==="
+          ls -la _site/dashboard_stage_2
           echo "=== Site size ==="
           du -sh _site
-          echo "=== File sizes ==="
-          du -ah _site | sort -h | tail -20
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
