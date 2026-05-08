@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sprint 0A Coverage Dashboard</title>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; background: #f5f7fa; color: #222; }
+  header { background: #1a1f36; color: white; padding: 16px 24px; }
+  header h1 { margin: 0; font-size: 22px; }
+  header .meta { font-size: 12px; color: #aab; margin-top: 4px; }
+  nav { background: white; border-bottom: 1px solid #e0e3e8; padding: 0 24px; }
+  nav button { background: none; border: none; padding: 14px 20px; cursor: pointer; font-size: 14px; font-weight: 500; color: #4a5468; border-bottom: 3px solid transparent; }
+  nav button.active { color: #1a73e8; border-bottom-color: #1a73e8; }
+  nav button:hover { background: #f0f3f7; }
+  main { padding: 20px 24px; }
+  .panel { display: none; background: white; border-radius: 8px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 20px; }
+  .panel.active { display: block; }
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 16px; }
+  .stat { background: #f8fafc; border: 1px solid #e0e3e8; border-radius: 6px; padding: 14px; }
+  .stat .label { font-size: 11px; color: #6b7588; text-transform: uppercase; letter-spacing: 0.5px; }
+  .stat .value { font-size: 24px; font-weight: 600; color: #1a1f36; margin-top: 4px; }
+  .stat .sub { font-size: 11px; color: #8895a8; margin-top: 4px; }
+  table.dataTable thead th { background: #fafbfc; font-weight: 600; }
+  .pct-cell { font-weight: 600; padding: 4px 8px; border-radius: 4px; display: inline-block; min-width: 50px; text-align: right; }
+  .pct-ok { background: #e3fcef; color: #0e6d3a; }
+  .pct-partial { background: #fff5d6; color: #855300; }
+  .pct-low { background: #ffeae5; color: #8a1a0e; }
+  .pct-empty { background: #ececf1; color: #555; }
+  .filter-bar { margin-bottom: 12px; }
+  .filter-bar input, .filter-bar select { padding: 8px 12px; border: 1px solid #d0d4dc; border-radius: 4px; margin-right: 8px; font-size: 13px; }
+  .columns-list { font-family: ui-monospace, monospace; font-size: 11px; color: #555; max-width: 400px; word-break: break-word; }
+  .drill-link { color: #1a73e8; cursor: pointer; text-decoration: none; }
+  .drill-link:hover { text-decoration: underline; }
+  details { margin-top: 8px; }
+  details summary { cursor: pointer; font-size: 13px; color: #4a5468; }
+  details ul { font-size: 12px; padding-left: 20px; max-height: 200px; overflow-y: auto; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 500; }
+  .badge-ok { background: #d4f4dd; color: #0e6d3a; }
+  .badge-partial { background: #fff5d6; color: #855300; }
+  .badge-low { background: #ffeae5; color: #8a1a0e; }
+  .badge-empty { background: #ececf1; color: #555; }
+  .footer { padding: 16px 24px; color: #8895a8; font-size: 12px; text-align: center; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Sprint 0A Coverage Dashboard</h1>
+  <div class="meta">
+    Generated: <span id="generated-at">--</span> &nbsp;|&nbsp;
+    Universe: <span id="universe-size">--</span> tickers &nbsp;|&nbsp;
+    Endpoints tracked: <span id="endpoint-count">--</span>
+  </div>
+</header>
+
+<nav>
+  <button class="tab-btn active" data-panel="api-matrix">API Matrix</button>
+  <button class="tab-btn" data-panel="endpoint-detail">Endpoint Detail</button>
+  <button class="tab-btn" data-panel="ticker-drilldown">Ticker Drill-down</button>
+  <button class="tab-btn" data-panel="field-audit">Field/Dimension Audit</button>
+  <button class="tab-btn" data-panel="status-overview">Status Overview</button>
+</nav>
+
+<main>
+
+  <section id="api-matrix" class="panel active">
+    <h2>API Matrix</h2>
+    <p>Per-API summary: endpoints accessible, OK count, total files cached. Click an API row to drill into its endpoints.</p>
+    <div class="stats-grid" id="api-summary-stats"></div>
+    <table id="tbl-api" class="display compact" style="width:100%">
+      <thead><tr>
+        <th>API</th><th>Endpoints</th><th>OK Endpoints</th><th>OK %</th><th>Total Files</th>
+      </tr></thead>
+    </table>
+  </section>
+
+  <section id="endpoint-detail" class="panel">
+    <h2>Endpoint Detail</h2>
+    <p>Every endpoint × universe coverage % × field count × status. Click "Show fields" to see all captured columns/dimensions.</p>
+    <div class="filter-bar">
+      <input id="ep-filter" placeholder="Filter by API or endpoint..." size="40">
+      <select id="ep-status-filter">
+        <option value="">All statuses</option>
+        <option value="OK">OK</option>
+        <option value="PARTIAL">PARTIAL</option>
+        <option value="LOW">LOW</option>
+        <option value="EMPTY">EMPTY</option>
+      </select>
+    </div>
+    <table id="tbl-endpoints" class="display compact" style="width:100%">
+      <thead><tr>
+        <th>API</th><th>Endpoint</th><th>Kind</th><th>Files</th><th>Coverage %</th>
+        <th>Fields</th><th>Status</th><th>Sample Fields</th>
+      </tr></thead>
+    </table>
+  </section>
+
+  <section id="ticker-drilldown" class="panel">
+    <h2>Ticker Drill-down</h2>
+    <p>Pick a ticker to see its coverage across every API + endpoint + field count.</p>
+    <div class="filter-bar">
+      <input id="ticker-search" placeholder="Search tickers (e.g. AAPL)" list="ticker-list">
+      <datalist id="ticker-list"></datalist>
+      <select id="tier-filter">
+        <option value="">All tiers</option>
+        <option value="T1a">T1a</option>
+        <option value="T1c">T1c</option>
+        <option value="T1ETF">T1ETF</option>
+        <option value="T2">T2</option>
+        <option value="T3">T3</option>
+      </select>
+    </div>
+    <div id="ticker-summary" style="margin-bottom:12px"></div>
+    <table id="tbl-tickers" class="display compact" style="width:100%">
+      <thead><tr>
+        <th>Ticker</th><th>Tier</th><th>Sector</th>
+        <th>Endpoints With Data</th><th>Total Per-Ticker Endpoints</th><th>Coverage %</th><th>Drill</th>
+      </tr></thead>
+    </table>
+    <div id="ticker-drill" style="margin-top:20px"></div>
+  </section>
+
+  <section id="field-audit" class="panel">
+    <h2>Field / Dimension Audit</h2>
+    <p>Per-endpoint inventory of captured fields/columns. Identify lost dimensions (e.g. missing time column, missing sentiment, etc.).</p>
+    <table id="tbl-fields" class="display compact" style="width:100%">
+      <thead><tr>
+        <th>API</th><th>Endpoint</th><th>Total Fields</th><th>Avg Fields/File</th>
+        <th>Min</th><th>Max</th><th>All Captured Fields</th>
+      </tr></thead>
+    </table>
+  </section>
+
+  <section id="status-overview" class="panel">
+    <h2>Status Overview</h2>
+    <div class="stats-grid">
+      <div class="stat"><div class="label">Endpoints OK</div><div class="value" id="status-ok">--</div></div>
+      <div class="stat"><div class="label">Endpoints PARTIAL</div><div class="value" id="status-partial">--</div></div>
+      <div class="stat"><div class="label">Endpoints LOW</div><div class="value" id="status-low">--</div></div>
+      <div class="stat"><div class="label">Endpoints EMPTY</div><div class="value" id="status-empty">--</div></div>
+    </div>
+    <h3>Endpoints below 50% coverage (need attention)</h3>
+    <table id="tbl-attention" class="display compact" style="width:100%">
+      <thead><tr><th>API</th><th>Endpoint</th><th>Coverage %</th><th>Files</th><th>Status</th></tr></thead>
+    </table>
+  </section>
+
+</main>
+
+<div class="footer">Sprint 0A Coverage Dashboard | refresh: <code>python scripts/build_dashboard_sprint0a.py</code> | hourly via Task Scheduler</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script src="data.js"></script>
+<script>
+function pctClass(s) {
+  return {OK:'pct-ok', PARTIAL:'pct-partial', LOW:'pct-low', EMPTY:'pct-empty'}[s] || 'pct-empty';
+}
+function badgeClass(s) {
+  return 'badge ' + ({OK:'badge-ok', PARTIAL:'badge-partial', LOW:'badge-low', EMPTY:'badge-empty'}[s] || 'badge-empty');
+}
+
+const D = DASHBOARD_DATA;
+
+// Header
+document.getElementById('generated-at').textContent = D.generated_at || '-';
+document.getElementById('universe-size').textContent = D.universe_size || 0;
+document.getElementById('endpoint-count').textContent = D.endpoints.length;
+
+// Tab switching
+document.querySelectorAll('.tab-btn').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    document.getElementById(b.dataset.panel).classList.add('active');
+  });
+});
+
+// API summary stats
+const apis = D.api_summary || {};
+const apiStatsHtml = Object.entries(apis).map(([api, s]) =>
+  `<div class="stat"><div class="label">${api}</div><div class="value">${s.ok_endpoints}/${s.endpoints}</div><div class="sub">${s.total_files.toLocaleString()} files</div></div>`
+).join('');
+document.getElementById('api-summary-stats').innerHTML = apiStatsHtml;
+
+// API matrix table
+const apiRows = Object.entries(apis).map(([api, s]) => [
+  api, s.endpoints, s.ok_endpoints,
+  `<span class="pct-cell pct-${s.ok_endpoints === s.endpoints ? 'ok' : (s.ok_endpoints > 0 ? 'partial' : 'low')}">${(100*s.ok_endpoints/s.endpoints).toFixed(0)}%</span>`,
+  s.total_files.toLocaleString()
+]);
+$('#tbl-api').DataTable({
+  data: apiRows, pageLength: 25, order: [[1,'desc']],
+  columns: [{},{},{},{type:'html'},{}]
+});
+
+// Endpoint detail table
+const epRows = D.endpoints.map(ep => {
+  const cov = ep.coverage_pct !== undefined ? ep.coverage_pct : '-';
+  const status = ep.status || 'EMPTY';
+  const fields = ep.unique_columns || ep.columns || [];
+  const sampleFields = fields.slice(0, 8).join(', ') + (fields.length > 8 ? `... (+${fields.length - 8})` : '');
+  return [
+    ep.api, ep.endpoint, ep.kind,
+    ep.files_count !== undefined ? ep.files_count : (ep.row_count !== undefined ? `${ep.row_count} rows` : '-'),
+    cov === '-' ? '-' : `<span class="pct-cell ${pctClass(status)}">${cov}%</span>`,
+    fields.length || '-',
+    `<span class="${badgeClass(status)}">${status}</span>`,
+    `<span class="columns-list" title="${fields.join(', ')}">${sampleFields}</span>`,
+  ];
+});
+const epTable = $('#tbl-endpoints').DataTable({
+  data: epRows, pageLength: 25, order: [[4,'desc']],
+  columns: [{},{},{},{},{type:'html'},{},{type:'html'},{type:'html'}],
+});
+$('#ep-filter').on('keyup', function () { epTable.search(this.value).draw(); });
+$('#ep-status-filter').on('change', function () { epTable.column(6).search(this.value).draw(); });
+
+// Ticker drilldown
+const tickers = D.per_ticker_coverage || {};
+const tickerRows = Object.entries(tickers).map(([t, info]) => {
+  const cov = info.endpoints_total > 0 ? (100 * info.endpoints_with_data / info.endpoints_total) : 0;
+  return [
+    t, info.tier, info.sector,
+    info.endpoints_with_data, info.endpoints_total,
+    `<span class="pct-cell ${pctClass(cov >= 80 ? 'OK' : cov >= 30 ? 'PARTIAL' : 'LOW')}">${cov.toFixed(0)}%</span>`,
+    `<a class="drill-link" data-ticker="${t}">drill</a>`
+  ];
+});
+const tList = document.getElementById('ticker-list');
+tList.innerHTML = Object.keys(tickers).slice(0, 2000).map(t => `<option value="${t}">`).join('');
+const tickerTable = $('#tbl-tickers').DataTable({
+  data: tickerRows, pageLength: 25, order: [[5,'desc']],
+  columns: [{},{},{},{},{},{type:'html'},{type:'html'}],
+});
+$('#ticker-search').on('keyup', function () { tickerTable.search(this.value).draw(); });
+$('#tier-filter').on('change', function () { tickerTable.column(1).search(this.value).draw(); });
+
+// Drill-down
+$('#tbl-tickers').on('click', '.drill-link', function () {
+  const t = $(this).data('ticker');
+  const info = tickers[t];
+  const rows = Object.entries(info.endpoint_row_counts || {}).map(([ep, n]) =>
+    `<tr><td>${ep}</td><td>${n.toLocaleString()}</td></tr>`).join('');
+  document.getElementById('ticker-drill').innerHTML = `
+    <h3>${t} (Tier: ${info.tier}, Sector: ${info.sector})</h3>
+    <p>Endpoints with data: ${info.endpoints_with_data} / ${info.endpoints_total}</p>
+    <table class="display compact" style="width:auto"><thead><tr><th>Endpoint</th><th>Row Count</th></tr></thead><tbody>${rows}</tbody></table>`;
+});
+
+// Field audit
+const fieldRows = D.endpoints.filter(ep => ep.unique_columns).map(ep => {
+  const cols = ep.unique_columns || [];
+  return [
+    ep.api, ep.endpoint, ep.n_unique_columns || cols.length,
+    ep.avg_field_count || '-', ep.min_field_count || '-', ep.max_field_count || '-',
+    `<details><summary>${cols.length} fields</summary><ul>${cols.map(c => `<li>${c}</li>`).join('')}</ul></details>`,
+  ];
+});
+$('#tbl-fields').DataTable({
+  data: fieldRows, pageLength: 25, order: [[2,'desc']],
+  columns: [{},{},{},{},{},{},{type:'html'}],
+});
+
+// Status overview
+const statusCounts = {OK:0, PARTIAL:0, LOW:0, EMPTY:0};
+D.endpoints.forEach(ep => {statusCounts[ep.status || 'EMPTY']++;});
+['ok','partial','low','empty'].forEach(s => {
+  const el = document.getElementById('status-' + s);
+  if (el) el.textContent = statusCounts[s.toUpperCase()];
+});
+
+// Attention table
+const attentionRows = D.endpoints
+  .filter(ep => ep.coverage_pct !== undefined && ep.coverage_pct < 50)
+  .map(ep => [
+    ep.api, ep.endpoint,
+    `<span class="pct-cell ${pctClass(ep.status)}">${ep.coverage_pct}%</span>`,
+    ep.files_count || 0,
+    `<span class="${badgeClass(ep.status)}">${ep.status}</span>`,
+  ]);
+$('#tbl-attention').DataTable({
+  data: attentionRows, pageLength: 25, order: [[2,'asc']],
+  columns: [{},{},{type:'html'},{},{type:'html'}],
+});
+</script>
+
+</body>
+</html>

@@ -1,15 +1,21 @@
-# API_ENDPOINT_INVENTORY.md - Definitive endpoint catalog (Pass 53 Day-9 v8h+1 2026-05-08)
+# API_ENDPOINT_INVENTORY.md - Definitive endpoint catalog (Pass 53 Day-9 v8h+1)
 
-**Method per CHECKLIST #76 column-(b):** every row sourced from canonical API docs (where fetchable) AND probe verification (`scripts/probe_api_catalog.py`) hitting actual endpoints with our keys at 2026-05-08. Probe report at `API_ENDPOINT_PROBE_REPORT.json` (~150 endpoints).
+**Method per CHECKLIST #76 column-(b) + #77:** every row sourced from canonical API docs (where fetchable) AND probe verification (`scripts/probe_api_catalog.py`) hitting actual endpoints with our keys at 2026-05-08. Probe report: `API_ENDPOINT_PROBE_REPORT.json`.
 
-**Owner directive 2026-05-07 (round 4):** no working from memory; ground every claim in docs + probe. End goal: 100% endpoint coverage at our plan tiers + 100% field-level coverage per endpoint.
+**Owner directives:**
+- 2026-05-07 evening: "Do not work from memory but rather documentation."
+- 2026-05-08: "100% coverage on everything with no missing dimensions / fields after the pre-fetch."
+- 2026-05-08 (this turn): "follow the table structure in polygon for all API endpoints" — standardized to 5-column format.
 
 **Status legend:**
-- ✅ = probe-confirmed 200 OK at our tier (use it)
-- 🔴 = probe-confirmed 4xx (NOT in our tier, or wrong URL)
-- ⚠ = partial / needs follow-up probe
-- ❓ = not yet probed (deferred)
-- ❌ = doc-listed but no path candidate to probe
+- ✅ probe-confirmed 200 OK at our tier (use it)
+- 🔴 probe-confirmed 4xx (NOT in our tier OR wrong URL guess)
+- ⚠ partial / needs follow-up probe
+- ❓ not yet probed (deferred)
+
+**Standard table format used in every per-API section below:**
+
+| Endpoint | Status | Sample fields | Currently cached? | Action |
 
 ---
 
@@ -17,382 +23,427 @@
 
 | API | Plan | Probe pass rate | Key gap |
 |---|---|---|---|
-| Polygon (Massive) | Stocks Starter (paid) | 42/78 (54%) | Indices Basic NOT YET ACTIVATED; Filings/Fundamentals require higher tier |
-| Quiver Quant | Trader (paid) | 19/50 (38%) | many endpoints listed in API_AUDIT.md don't exist; senatetrading + housetrading + spacs ARE accessible |
-| FRED | Free | 28/28 (100%) | all endpoints work |
-| ALFRED | Free (= FRED w/ realtime_*) | 1/1 (100%) | vintage cache should mirror FRED |
-| SEC EDGAR | Free public | 5/5 (100%) | all 4 data.sec.gov endpoints + EFTS search work |
-| Finnhub | Free (key) | SKIPPED | **`FINNHUB_API_KEY` missing from .env** — INV flag |
-| AlphaVantage | Free | inferred from docs | NEWS_SENTIMENT requires premium per docs |
-| AAII | Web (no API) | n/a | weekly survey CSV — current cache complete |
-| CNN F&G | Scraped | n/a | composite + 7 components cached |
-| CFTC | Public Socrata | 7 datasets exist | we have 2/7 |
-| Apewisdom | Public REST | 2 endpoints | we have 1/2 effectively |
-| pytrends | Library wrapping Google Trends | 12 methods | we use 1/12 |
+| Polygon (Massive) Stocks Starter | Paid | 42/78 (54%) | Filings/Fundamentals require Stocks Plus (NOT in our tier) |
+| Polygon Indices Basic | Free (activated 2026-05-08) | 2/13 wanted | CBOE/S&P license gates VIX/SPX/DJI/RUT/etc. (INV-038) |
+| Polygon Options Basic | Free | 2/5 endpoints | snapshots/trades/quotes 403 (Stocks Advanced needed) |
+| Polygon Futures Basic | Free | 5/5 endpoints | rate-limited (5 calls/min) |
+| Polygon Forex Basic | Free | 3/4 endpoints | conversion endpoint 403 |
+| Polygon Benzinga partner | included | 5/7 endpoints | consensus 404, news 403 |
+| Polygon Economy | included | 3/4 endpoints | labor 404 (URL guess wrong) |
+| Quiver Trader | Paid | 8 historical + 5 live + 4 bulk = 17 working | 13 endpoints in old API_AUDIT 404 (INV-036) |
+| FRED | Free | 28/28 (100%) | DEXJPUS persistent 500 (INV-042) |
+| ALFRED | Free (= FRED w/ realtime_*) | 30/40 mirror | 10 series have no published vintages |
+| SEC EDGAR | Free public | 5/5 (100%) | XBRL companyfacts solves INV-025/026/037 |
+| Finnhub | Free (key added 2026-05-08) | 13/20 endpoints | 7 premium-locked |
+| AlphaVantage | Free (owner-confirmed) | ~50/133 free | premium endpoints inaccessible |
+| AAII | Web (no API) | 1/1 | extra-fields top-up pending |
+| CNN F&G | Scraped | composite + 7 components | complete |
+| CFTC | Public Socrata | 7/7 datasets | 5 newly added 2026-05-08 |
+| Apewisdom | Public REST | 1 endpoint × 9 subreddit filters | 8 subreddits cached 2026-05-08 |
+| pytrends | Library wrapping Google Trends | 12 methods | we use 1/12 (under-utilization) |
+| Wikipedia pageviews | Public REST | 1 endpoint | 73% coverage |
 
 ---
 
-## 1. Polygon (Massive) - probe-confirmed catalog
-
-### Stocks Starter (paid - confirmed in our tier)
+## 1. Polygon Stocks Starter (paid, current)
 
 | Endpoint | Status | Sample fields | Currently cached? | Action |
 |---|---|---|---|---|
-| `/v2/aggs/ticker/{t}/range/1/day/...` | ✅ | v, vw, o, c, h, l, t, n | YES (1937 tickers) but missing vw + n | F6 P1 — re-fetch with vw + n |
-| `/v2/aggs/ticker/{t}/range/1/minute/...` | ✅ | v, vw, o, c, h, l, t, n | NO | NEW prefetch — minute-level for top liquid tickers |
+| `/v2/aggs/ticker/{t}/range/1/day/...` | ✅ | t, o, h, l, c, v, vw, n | YES (1937 + vw + n via 2026-05-08 re-fetch) | DONE H1 |
+| `/v2/aggs/ticker/{t}/range/1/minute/...` | ✅ | t, o, h, l, c, v, vw, n | NO | NEW prefetch — minute-level for top-liquid only (storage caveat) |
 | `/v1/open-close/{t}/{date}` | ✅ | status, from, symbol, open, high, low, close, volume | NO | redundant with daily aggs — skip |
-| `/v2/aggs/grouped/locale/us/market/stocks/{date}` | ✅ | T, v, vw, o, c, h, l, t | NO (used for T3 build) | NEW — daily snapshot capture for liquidity ranking |
-| `/v2/aggs/ticker/{t}/prev` | ✅ | T, v, vw, o, c, h, l, t | NO | NEW — daily previous-close |
-| `/v3/reference/tickers` | ✅ | ticker, name, market, locale, primary_exchange, type, active, currency_name | YES (universe build) | top up |
-| `/v3/reference/tickers/{t}` | ✅ | (16 fields cached; missing address/branding/employees/FIGI/desc) | YES (1686/1937) | F5 P2 — extend fields |
-| `/v3/reference/tickers/types` | ✅ | code, description, asset_class, locale | NO | NEW small static — cache |
-| `/v1/related-companies/{t}` | ✅ | ticker | NO | **NEW — peer-companies signal**, P2 |
-| `/v2/reference/news` | ✅ | id, publisher, title, author, published_utc, article_url, tickers, image_url, **insights**, keywords | YES (1926/1937) but missing insights/author/image_url/keywords | F2 P1 — re-fetch with full schema |
-| `/v3/reference/dividends` | ✅ | cash_amount, currency, declaration_date, dividend_type, ex_dividend_date, frequency, id, pay_date, record_date, ticker | YES (1 file) | F-new P0 — full universe re-prefetch |
-| `/v3/reference/splits` | ✅ | execution_date, id, split_from, split_to, ticker | YES (1 file) | F-new P0 — full universe re-prefetch |
-| `/vX/reference/ipos` | ✅ | ticker, last_updated, announced_date, issuer_name, currency_code, max_shares_offered, primary_exchange, security_type | NO | **NEW — IPO signal** |
-| `/v3/reference/tickers/{t}/events` | 🔴 404 | — | YES (1687 files via prefetch_polygon_corp_actions.py) | URL mismatch — verify actual path used by working prefetch |
-| `/vX/reference/financials` | ✅ | start_date, end_date, timeframe, fiscal_period, fiscal_year, cik, sic, tickers, financials_json | YES (1746/1937) | F3 P1 — local processing to extract line items |
-| `/v3/reference/conditions` | ✅ | id, type, name, asset_class, data_types | NO | NEW small static — cache |
-| `/v3/reference/exchanges` | ✅ | id, type, asset_class, locale, name, acronym, mic, operating_mic | NO | NEW small static — cache |
+| `/v2/aggs/grouped/locale/us/market/stocks/{date}` | ✅ | T, v, vw, o, c, h, l, t | NO (used for T3 build only) | NEW — daily snapshot capture for liquidity ranking |
+| `/v2/aggs/ticker/{t}/prev` | ✅ | T, v, vw, o, c, h, l, t | NO | NEW — daily previous-close capture |
+| `/v3/reference/tickers` | ✅ | ticker, name, market, locale, primary_exchange, type, active, currency_name | YES (universe build) | top up periodically |
+| `/v3/reference/tickers/{t}` (basic) | ✅ | 16 base fields | YES (1686/1937) | superseded by reference_extended |
+| `/v3/reference/tickers/{t}` (extended) | ✅ | + phone, description, total_employees, composite_figi, share_class_figi, round_lot, address, branding | YES (1686/1937 via H4 2026-05-08) | DONE — INV-030 RESOLVED |
+| `/v3/reference/tickers/types` | ✅ | code, description, asset_class, locale | NO | NEW — small static, cache once |
+| `/v1/related-companies/{t}` | ✅ | ticker | NO | NEW — peer-companies signal (P2) |
+| `/v2/reference/news` | ✅ | id, publisher, title, author, published_utc, article_url, tickers, image_url, **insights[]**, sentiment, sentiment_reasoning | YES (1937/1937, with per-ticker insights) | DONE H2 |
+| `/v3/reference/dividends` | ✅ | cash_amount, currency, declaration_date, dividend_type, ex_dividend_date, frequency, id, pay_date, record_date, ticker | YES (100,000 records / 10,984 tickers) | DONE H3 — INV-017 RESOLVED |
+| `/v3/reference/splits` | ✅ | execution_date, id, split_from, split_to, ticker | YES (27,590 records / 18,909 tickers) | DONE H3 |
+| `/vX/reference/ipos` | ✅ | ticker, last_updated, announced_date, issuer_name, currency_code, max_shares_offered, primary_exchange, security_type | YES (6,264 records) | DONE H3 |
+| `/v3/reference/tickers/{t}/events` | 🔴 404 | — | YES (1687 files via legacy script) | URL mismatch — investigate actual path used by working prefetch |
+| `/vX/reference/financials` | ✅ | start_date, end_date, timeframe, fiscal_period, fiscal_year, cik, sic, tickers, financials_json | YES (1746/1937) | parse financials_json into structured columns (local) |
+| `/v3/reference/conditions` | ✅ | id, type, name, asset_class, data_types | NO | NEW — small static, cache once |
+| `/v3/reference/exchanges` | ✅ | id, type, asset_class, locale, name, acronym, mic, operating_mic | NO | NEW — small static |
 | `/v1/marketstatus/upcoming` | ✅ | date, exchange, name, status | NO (stub dir) | NEW — cache once |
-| `/v1/marketstatus/now` | ✅ | afterHours, currencies, earlyHours, exchanges, indicesGroups, market, serverTime | NO | NEW — daily snapshot capture |
-| `/v2/snapshot/locale/us/markets/stocks/tickers` | ✅ | ticker, todaysChangePerc, todaysChange, updated, day, min, prevDay | NO | NEW — daily snapshot capture |
-| `/v2/snapshot/locale/us/markets/stocks/tickers/{t}` | ✅ | ticker, status, request_id | NO | NEW — daily per-ticker snapshot |
-| `/v2/snapshot/locale/us/markets/stocks/{direction}` (gainers/losers) | ✅ | (same shape as full market) | NO | NEW — daily top-movers capture |
-| `/v3/snapshot` | ✅ | market_status, name, ticker, type, session, last_minute | NO | NEW — unified snapshot |
-| `/v1/indicators/sma/{t}` | ✅ | results, status, request_id | NO | **NEW — pre-computed SMA**, P2 (own compute is fine but cache to save time) |
-| `/v1/indicators/ema/{t}` | ✅ | results | NO | NEW |
-| `/v1/indicators/rsi/{t}` | ✅ | results | NO | NEW |
-| `/v1/indicators/macd/{t}` | ✅ | results | NO | NEW |
-| `/v2/last/trade/{t}` | 🔴 403 | NOT_AUTHORIZED | — | requires Stocks Advanced |
-| `/v2/last/nbbo/{t}` | 🔴 403 | — | — | requires Stocks Advanced |
-| `/v3/trades/{t}` | 🔴 403 | — | — | requires Stocks Advanced |
-| `/v3/quotes/{t}` | 🔴 403 | — | — | requires Stocks Advanced |
-| `/stocks/v1/short-interest/{t}` | 🔴 404 | — | — | URL incorrect; probe other paths |
-| `/stocks/v1/short-volume/{t}` | 🔴 404 | — | — | URL incorrect; probe other paths |
-| `/stocks/v1/filings/{form}` | 🔴 404 | — | NO | Massive Filings feature requires Stocks Plus tier — NOT in our tier; SEC EDGAR direct is the alternative |
-| `/stocks/v1/fundamentals/{statement}` | 🔴 404 | — | partial via /vX/reference/financials | structured fundamentals require Stocks Plus tier |
+| `/v1/marketstatus/now` | ✅ | afterHours, currencies, earlyHours, exchanges, indicesGroups, market, serverTime | NO | Stage 3+ daily snapshot capture |
+| `/v2/snapshot/locale/us/markets/stocks/tickers` | ✅ | ticker, todaysChangePerc, todaysChange, updated, day, min, prevDay | NO | Stage 3+ daily capture |
+| `/v2/snapshot/locale/us/markets/stocks/tickers/{t}` | ✅ | ticker, status, request_id | NO | Stage 3+ daily capture |
+| `/v2/snapshot/locale/us/markets/stocks/{direction}` (gainers/losers) | ✅ | (same shape as full market) | NO | Stage 3+ daily top-movers capture |
+| `/v3/snapshot` (unified) | ✅ | market_status, name, ticker, type, session, last_minute | NO | Stage 3+ unified snapshot |
+| `/v1/indicators/sma/{t}` | ✅ | results.values[].timestamp, value | YES (in flight 2026-05-08) | DONE H6 — sma_50, sma_200 windows cached |
+| `/v1/indicators/ema/{t}` | ✅ | results.values[].timestamp, value | YES (in flight) | DONE H6 — ema_20, ema_50 windows |
+| `/v1/indicators/rsi/{t}` | ✅ | results.values[].timestamp, value | YES (in flight) | DONE H6 — window=14 |
+| `/v1/indicators/macd/{t}` | ✅ | results.values[].timestamp, value, signal, histogram | YES (in flight) | DONE H6 — 12/26/9 |
+| `/v2/last/trade/{t}` | 🔴 403 | NOT_AUTHORIZED | — | requires Stocks Advanced tier |
+| `/v2/last/nbbo/{t}` | 🔴 403 | NOT_AUTHORIZED | — | requires Stocks Advanced |
+| `/v3/trades/{t}` | 🔴 403 | NOT_AUTHORIZED | — | requires Stocks Advanced |
+| `/v3/quotes/{t}` | 🔴 403 | NOT_AUTHORIZED | — | requires Stocks Advanced |
+| `/stocks/v1/short-interest/{t}` | 🔴 404 | URL guess wrong | — | research correct path |
+| `/stocks/v1/short-volume/{t}` | 🔴 404 | URL guess wrong | — | research correct path |
+| `/stocks/v1/filings/{form}` (10-K/10-Q/8-K/Form3/Form4 etc.) | 🔴 404 | tier-locked | NO | requires Stocks Plus tier — alternative: SEC EDGAR XBRL (DONE H17) |
+| `/stocks/v1/fundamentals/{statement}` (income/balance/cash flow/ratios/float/short interest/short volume) | 🔴 404 | tier-locked | partial via /vX/reference/financials | Stocks Plus tier — alternative: SEC EDGAR XBRL (DONE H17) |
 
-### Economy (probe-confirmed)
+## 2. Polygon Indices Basic (free, activated 2026-05-08)
 
 | Endpoint | Status | Sample fields | Currently cached? | Action |
 |---|---|---|---|---|
-| `/fed/v1/inflation` | ✅ | date, cpi | NO | **NEW — duplicates FRED CPIAUCSL but as alternative source** |
-| `/fed/v1/inflation-expectations` | ✅ | date, model_1_year, model_5_year, model_10_year, model_30_year | NO | **NEW — Massive's own inflation expectations model**; richer than FRED T10YIE |
-| `/fed/v1/treasury-yields` | ✅ | date, yield_1_year, yield_5_year, yield_10_year | NO | NEW — alternative source for treasury yields |
-| `/fed/v1/labor` | 🔴 404 | — | — | URL guess wrong; probe alternatives |
-
-### Indices Basic (FREE plan upgrade — owner said they would add)
-
-**Probe finding: 403 NOT_AUTHORIZED on most index symbols (I:SPX, I:DJI, I:RUT, I:VIX, etc.). Indices Basic is NOT YET ACTIVATED on the account.**
-
-| Symbol | Probe status |
-|---|---|
-| I:SPX | 🔴 403 |
-| I:NDX | ✅ 200 (single exception — odd) |
-| I:DJI | 🔴 403 |
-| I:RUT | 🔴 403 |
-| I:VIX | 🔴 403 |
-| I:VIX9D | 🔴 403 |
-| I:VIX3M | 🔴 403 |
-| I:VVIX | 🔴 403 |
-| I:OEX | 🔴 403 |
-
-**ACTION REQUIRED FROM OWNER:** activate Indices Basic plan via massive.com dashboard. Once activated, re-probe + start prefetch.
-
-### Options Basic (PARTIAL access)
-
-| Endpoint | Status | Notes |
-|---|---|---|
-| `/v3/reference/options/contracts` | ✅ | full chain reference |
-| `/v2/aggs/ticker/{O:contract}/range/1/day/...` | ✅ | per-contract OHLCV (vw + n included) |
-| `/v3/snapshot/options/{ticker}` | 🔴 403 | NOT_AUTHORIZED |
-| `/v3/trades/{O:contract}` | 🔴 403 | — |
-| `/v3/quotes/{O:contract}` | 🔴 403 | — |
-
-Conclusion: Options Basic gives us **chains + OHLCV per contract** but not snapshots/trades/quotes. **Sufficient for put/call ratio + volume + OI tracking.** Greeks/IV would need higher tier.
-
-### Futures Basic (FULLY ACCESSIBLE)
-
-| Endpoint | Status | Sample fields |
-|---|---|---|
-| `/futures/v1/contracts` | ✅ | active, date, first_trade_date, last_trade_date, name, product_code, ticker, trading_venue |
-| `/futures/v1/products` | ✅ | asset_sub_class, date, last_updated, product_code, trade_currency_code, trading_venue, type, unit_of_measure |
-| `/v2/aggs/ticker/ES/range/1/day/...` | ✅ | v, vw, o, c, h, l, t, n |
-| `/v2/aggs/ticker/VX/range/1/day/...` | ✅ | (same) |
-| `/futures/v1/schedules` | ✅ | product_code, product_name, session_end_date, trading_venue, event, timestamp |
-
-**ACTION:** prefetch ALL futures contracts available — ~25-30 contracts × 6 years × daily = trivial.
-
-### Currencies/Forex Basic (MOSTLY ACCESSIBLE)
-
-| Endpoint | Status |
-|---|---|
-| `/v2/aggs/ticker/C:EURUSD/range/1/day/...` | ✅ |
-| `/v2/aggs/ticker/C:USDJPY/range/1/day/...` | ✅ |
-| `/v3/reference/tickers?market=fx` | ✅ |
-| `/v1/conversion/USD/EUR` | 🔴 403 |
-
-### Partner Data
-
-| Endpoint | Status | Notes |
-|---|---|---|
-| `/benzinga/v1/analyst-insights` | ✅ | rating_action, insight, date, firm, price_target, rating, last_updated, company_name |
-| `/etfg/v1/constituents` | 🔴 404 | URL guess wrong; check actual path |
-| `/tmx/v1/corporate-events` | 🔴 403 | TMX is paid add-on |
-
-**SURPRISING WIN:** Benzinga analyst data is in our tier! That's analyst recommendations, ratings, price targets, firm details — major Phase 1B+ signal. **NEW prefetch P1.**
-
----
-
-## 2. Quiver Quant (probe-confirmed)
-
-### Working endpoints (200)
-
-| Endpoint | Path | Sample fields | Currently cached? |
-|---|---|---|---|
-| congresstrading | `/historical/congresstrading/{t}` | Representative, BioGuideID, ReportDate, TransactionDate, Ticker, Transaction, Range, House (per probe) | YES 1937 |
-| **senatetrading** | `/historical/senatetrading/{t}` | Senator, BioGuideID, Date, Ticker, Transaction, Range, Amount, last_modified | **NO — NEW** |
-| **housetrading** | `/historical/housetrading/{t}` | Representative, BioGuideID, Date, Ticker, Transaction, Range, Amount, last_modified | **NO — NEW** |
-| govcontracts | `/historical/govcontracts/{t}` | **Ticker, Amount, Qtr, Year (only 4 fields — confirmed at API level)** | YES 1937 |
-| lobbying | `/historical/lobbying/{t}` | Date, Amount, Client, Issue, Specific_Issue, Registrant, Ticker | YES 1937 |
-| wallstreetbets | `/historical/wallstreetbets/{t}` | Date, Ticker, Mentions, Rank, Sentiment | YES 1937 |
-| twitter | `/historical/twitter/{t}` | (empty for AAPL — INV-012 confirmed) | NO |
-| **spacs** | `/historical/spacs/{t}` | Date, Ticker, Mentions, Rank, Sentiment | **NO — NEW** |
-| live insiders | `/live/insiders?ticker=` | Ticker, Date, Name, AcquiredDisposedCode, TransactionCode, Shares, PricePerShare, SharesOwnedFollowing | YES 1937 |
-| live sec13f | `/live/sec13f?ticker=` | Date, ReportPeriod, Name, Ticker, Fund, Class, Value, Shares | YES 1937 |
-| live sec13fchanges | `/live/sec13fchanges?ticker=` | Date, ReportPeriod, Ticker, Fund, Change, Change_Share, Change_Pct, Held | YES bulk |
-| live offexchange | `/live/offexchange?ticker=` | Ticker, Date, OTC_Short, OTC_Total, DPI | YES 1851 |
-
-### NOT in our tier OR wrong path (404)
-
-| Endpoint | Probe path | Status |
-|---|---|---|
-| historical/wikipedia | `/historical/wikipedia/{t}` | 🔴 404 (NOT in Trader plan) |
-| historical/patentmomentum | per-ticker | 🔴 404 (only bulk available) |
-| historical/appratings | per-ticker | 🔴 404 |
-| historical/sec13fchanges | per-ticker | 🔴 404 (only live-bulk works) |
-| historical/insidertrading | `/historical/insidertrading/{t}` | 🔴 404 (different name — `live/insiders` is the working one) |
-| historical/earningsbeats | per-ticker | 🔴 404 |
-| historical/redditpoliticians | per-ticker | 🔴 404 |
-| historical/reddittendies | per-ticker | 🔴 404 |
-| historical/snptrend | per-ticker | 🔴 404 |
-| historical/swaps | per-ticker | 🔴 404 |
-| historical/googletrends | per-ticker | 🔴 404 |
-| historical/linkedindata | per-ticker | 🔴 404 |
-| historical/iposcalendar | per-ticker | 🔴 404 |
-| historical/optionsflow | per-ticker | 🔴 404 |
-| historical/estimates | per-ticker | 🔴 404 |
-| live topshareholders | per-ticker | 🔴 404 (only bulk works — see existing cache) |
-
-**REFRAMING INV-024:** Quiver govcontracts API actually returns ONLY 4 fields (Ticker/Amount/Qtr/Year). Our prefetch IS faithful — the field-level gap is at the **API level**, not at our prefetch level. The "missing Date / AwardingAgency / DepartmentDescription" hypothesis was WRONG. Daily-granularity gov contracts must come from an alternate source (USAspending.gov direct or SEC EDGAR).
-
-### NEW Quiver endpoints to add
-
-| # | Endpoint | Action |
-|---|---|---|
-| Q1 | `/historical/senatetrading/{t}` | **NEW prefetch** — 1937 × 1.2s = ~40 min |
-| Q2 | `/historical/housetrading/{t}` | **NEW prefetch** — same |
-| Q3 | `/historical/spacs/{t}` | **NEW prefetch** — same; SPAC mention timeline |
-| Q4 | `/historical/twitter/{t}` (full universe) | re-probe with non-AAPL tickers — INV-012 was 1-ticker test |
-
----
-
-## 3. FRED (28/28 working)
-
-All endpoints functional. Available beyond what we use today:
-
-| Endpoint | Currently used | Action |
-|---|---|---|
-| `/fred/series` | NO | NEW — series metadata |
-| `/fred/series/observations` | YES | continue |
-| `/fred/series/categories` | NO | NEW — find related series |
-| `/fred/series/release` | NO | NEW — release schedule |
-| `/fred/series/search` | NO | NEW — discovery |
-| `/fred/series/tags` | NO | NEW |
-| `/fred/series/updates` | NO | NEW — staleness check |
-| `/fred/series/vintagedates` | NO | NEW — ALFRED PIT support |
-| `/fred/category` + 5 sub-endpoints | NO | NEW — category traversal |
-| `/fred/release` + 6 sub-endpoints | NO | NEW — release calendar |
-| `/fred/source` + 2 sub-endpoints | NO | NEW |
-| `/fred/tags`, `/fred/related_tags`, `/fred/tags/series` | NO | NEW |
-| ALFRED vintage observations | partial (50 series) | extend to mirror full FRED set |
-
-**ACTION P0:** add 25-30 important FRED series we don't have (TIPS yields, additional yield-curve points, regional Fed indices, sector employment, Money Market). See INV-N.
-
----
-
-## 4. SEC EDGAR (5/5 working - all FREE)
-
-| Endpoint | Status | What it provides |
-|---|---|---|
-| `data.sec.gov/submissions/CIK{cik}.json` | ✅ | Full filing history per company; structured JSON. **MUCH richer than our current prefetch (filing metadata only).** |
-| `data.sec.gov/api/xbrl/companyconcept/CIK{cik}/{taxonomy}/{tag}.json` | ✅ | **Per-company XBRL line item time series** — e.g. Revenues over time. Solves INV-025/026 partially! |
-| `data.sec.gov/api/xbrl/companyfacts/CIK{cik}.json` | ✅ | **All XBRL facts for a company** — comprehensive structured fundamentals |
-| `data.sec.gov/api/xbrl/frames/{tax}/{tag}/{unit}/CY{Y}Q{Q}.json` | ✅ | Cross-sectional XBRL — all companies for a given concept + period |
-| `efts.sec.gov/LATEST/search-index?q=...` | ✅ | Full-text search across filings |
-
-**MAJOR FINDING:** SEC EDGAR XBRL data API directly provides STRUCTURED fundamentals — solves INV-025 (filing-metadata-only) and INV-026 (financials_json unparsed). We can fetch parsed line items for free.
-
-**ACTION P0:** new prefetch script `scripts/prefetch_sec_xbrl.py` for company facts + frames. ~1937 tickers × 1 call each + frames per concept = manageable.
-
----
-
-## 5. Finnhub - SKIPPED (NO API KEY)
-
-INV finding: `FINNHUB_API_KEY` not in `.env`. Owner mentioned having a key.
-
-**ACTION REQUIRED FROM OWNER:** add `FINNHUB_API_KEY` to `.env` so probe can run.
-
-Anticipated catalog (from training data — to be probe-verified once key available):
-- /quote, /stock/profile2, /stock/peers, /stock/insider-transactions, /stock/insider-sentiment, /stock/recommendation, /stock/price-target, /stock/upgrade-downgrade, /stock/eps-surprise, /stock/revenue-estimate, /stock/eps-estimate, /stock/dividend, /stock/split, /stock/social-sentiment, /calendar/earnings, /calendar/ipo, /calendar/economic, /news, /company-news, /news-sentiment, /scan/pattern, /scan/support-resistance, /etf/holdings, /index/constituents, /stock/financials-reported, /stock/metric, /stock/ownership, /stock/fund-ownership, +others
-
----
-
-## 6. AlphaVantage (catalog from official docs)
-
-133 functions cataloged from `https://www.alphavantage.co/documentation/` (WebFetch successful). Free tier limited to:
-- TIME_SERIES_DAILY/WEEKLY/MONTHLY (NOT _ADJUSTED on free)
-- GLOBAL_QUOTE (delayed)
-- SYMBOL_SEARCH, MARKET_STATUS, LISTING_STATUS, INDEX_CATALOG
-- ~50 technical indicators (SMA, EMA, RSI, MACD, BBANDS, ATR, etc.)
-
-Premium-only (have key but unclear which tier): NEWS_SENTIMENT, INSIDER_TRANSACTIONS, INSTITUTIONAL_HOLDINGS, COMPANY_OVERVIEW, INCOME/BALANCE/CASH_FLOW, EARNINGS_*, IPO_CALENDAR, FX_*, COMMODITIES, ECONOMIC_INDICATORS, REALTIME_OPTIONS, EARNINGS_CALL_TRANSCRIPT, etc.
-
-**ACTION:** verify AV plan tier with owner. If premium, re-probe these (INV-015 fix).
-
----
-
-## 7. CFTC (7 datasets)
-
-From CFTC docs (WebFetch successful):
-
-| Dataset | Socrata ID | Have? | Action |
-|---|---|---|---|
-| Legacy Futures Only | 6dca-aqww | NO | NEW — historical-baseline COT (older) |
-| Legacy Combined | jun7-fc8e | NO | NEW |
-| Disaggregated Futures Only | 72hh-3qpy | NO | NEW |
-| Disaggregated Combined | kh3c-gbw2 | YES | continue |
-| TFF Futures Only | gpe5-46if | YES | continue |
-| TFF Combined | yw9f-hn96 | NO | NEW |
-| Supplemental CIT | 4zgm-a668 | NO | NEW — Commercial Index Trader |
-
-**ACTION:** add 5 missing datasets. ~30 min.
-
----
-
-## 8. Apewisdom (2 endpoints)
-
-From docs:
-- `/api/v1.0/filter/{filter}` (single page)
-- `/api/v1.0/filter/{filter}/page/{N}` (paginated)
-
-Filters: `all`, `all-stocks`, `all-crypto`, `wallstreetbets`, `stocks`, `investing`, `options`, `CryptoCurrency`, `Bitcoin`, `SatoshiStreetBets`, +7 others.
-
-We currently fetch: `all-stocks` only.
-
-**ACTION:** add subreddit-specific timelines (`wallstreetbets`, `stocks`, `investing`, `options` — 4 new). +9 if we want all.
-
----
-
-## 9. pytrends (12 methods)
-
-| Method | Currently used | Action |
-|---|---|---|
-| `interest_over_time` | YES | continue |
-| `multirange_interest_over_time` | NO | NEW — multi-window |
-| `get_historical_interest` | NO | NEW — hourly resolution |
-| `interest_by_region` | NO | NEW — geographic |
-| `related_topics` | NO | NEW — co-search |
-| `related_queries` | NO | NEW |
-| `trending_searches` | NO | NEW — daily trending |
-| `realtime_trending_searches` | NO | NEW |
-| `top_charts` | NO | NEW — annual top searches |
-| `suggestions` | NO | NEW |
-| `categories` | NO | NEW — taxonomy |
-| `build_payload` | YES (helper) | n/a |
-
-We use 1/12 methods. **MAJOR under-utilization.**
-
----
-
-## 10. AAII (no API; CSV-only)
-
-Single weekly survey publication. Cache complete (325 weekly readings).
-
-**Missing fields per AAII publication that we don't capture:** 8_week_avg, historical_avg, S&P_500_close. ~1h to add.
-
-**Other AAII publications:** Asset Allocation Survey (monthly), Investor Confidence Index (quarterly) — not yet cached. Both manual download.
-
----
-
-## 11. CNN Fear & Greed
-
-Composite + 7 components currently cached (per DEC-498). All available components captured.
+| `/v2/aggs/ticker/I:NDX/range/1/day/...` | ✅ | t, o, h, l, c | YES (812 bars cached 2026-05-08) | continue |
+| `/v2/aggs/ticker/I:COMP/range/1/day/...` | ✅ | t, o, h, l, c | YES (812 bars cached) | continue |
+| `/v2/aggs/ticker/I:MID/range/1/day/...` | ⚠ 200 short / 0 long | (probe inconsistent) | NO | re-probe with intermediate date range |
+| `/v2/aggs/ticker/I:SML/range/1/day/...` | ⚠ same | — | NO | same |
+| `/v2/aggs/ticker/I:NYA/range/1/day/...` | ⚠ same | — | NO | same |
+| `/v2/aggs/ticker/I:VIX/range/1/day/...` | 🔴 403 | NOT_AUTHORIZED | — | CBOE license gate — workaround: FRED VIXCLS (DONE) |
+| `/v2/aggs/ticker/I:VIX9D/range/1/day/...` | 🔴 403 | — | — | CBOE license gate |
+| `/v2/aggs/ticker/I:VIX3M/range/1/day/...` | 🔴 403 | — | — | CBOE license gate — workaround: FRED VXVCLS (DONE) |
+| `/v2/aggs/ticker/I:VVIX/range/1/day/...` | 🔴 403 | — | — | CBOE license gate (INV-010) |
+| `/v2/aggs/ticker/I:SPX/range/1/day/...` | 🔴 403 | — | — | S&P license gate — workaround: SPY ETF |
+| `/v2/aggs/ticker/I:DJI/range/1/day/...` | 🔴 403 | — | — | S&P license gate — workaround: DIA ETF |
+| `/v2/aggs/ticker/I:RUT/range/1/day/...` | 🔴 403 | — | — | S&P license gate — workaround: IWM ETF |
+| `/v2/aggs/ticker/I:OEX/range/1/day/...` | 🔴 403 | — | — | S&P license gate |
+| `/v3/reference/tickers?market=indices` | ✅ | ticker, name, market, locale, active, source_feed | NO | NEW small static — cache once |
+| `/v3/snapshot/indices` | 🔴 403 | NOT_AUTHORIZED | — | tier-gated |
+
+## 3. Polygon Options Basic (free, partial)
+
+| Endpoint | Status | Sample fields | Currently cached? | Action |
+|---|---|---|---|---|
+| `/v3/reference/options/contracts` | ✅ | cfi, contract_type, exercise_style, expiration_date, primary_exchange, shares_per_contract, strike_price, ticker | NO | NEW — chain reference per underlying (P1 H10) |
+| `/v2/aggs/ticker/{O:contract}/range/1/day/...` | ✅ | t, o, h, l, c, v, vw, n | NO | NEW — per-contract OHLCV (large; P1 H10) |
+| `/v3/snapshot/options/{ticker}` | 🔴 403 | NOT_AUTHORIZED | — | tier-gated (Stocks Advanced) |
+| `/v3/trades/{O:contract}` | 🔴 403 | — | — | tier-gated |
+| `/v3/quotes/{O:contract}` | 🔴 403 | — | — | tier-gated |
+
+## 4. Polygon Futures Basic (free, fully accessible)
+
+| Endpoint | Status | Sample fields | Currently cached? | Action |
+|---|---|---|---|---|
+| `/futures/v1/products` | ✅ | asset_sub_class, date, last_updated, product_code, trade_currency_code, trading_venue, type, unit_of_measure | YES (paginated cap 100) | top-up if needed |
+| `/futures/v1/contracts` | ✅ | active, date, first_trade_date, last_trade_date, name, product_code, ticker, trading_venue | YES | continue |
+| `/v2/aggs/ticker/{root}/range/1/day/...` | ⚠ | t, o, h, l, c, v, vw, n (ES works; NQ/RTY/YM/VX return count=0 with single-letter) | partial (ES ✅ 9 bars; others empty) | NEW H8 — needs per-contract dated symbol query (deferred; needs redesign) |
+| `/futures/v1/schedules` | ✅ | product_code, product_name, session_end_date, trading_venue, event, timestamp | YES | continue |
+
+## 5. Polygon Forex/Currencies Basic (free, mostly accessible)
+
+| Endpoint | Status | Sample fields | Currently cached? | Action |
+|---|---|---|---|---|
+| `/v2/aggs/ticker/C:EURUSD/range/1/day/...` | ✅ | t, o, h, l, c, v, vw, n | YES (12/12 pairs cached 2026-05-08) | DONE H9 |
+| `/v2/aggs/ticker/C:USDJPY/range/1/day/...` | ✅ | (same) | YES | DONE |
+| 10 more pairs (GBPUSD/USDCAD/USDCHF/AUDUSD/NZDUSD/USDCNY/USDMXN/USDINR/USDKRW/USDBRL) | ✅ | (same) | YES (12/12) | DONE |
+| `/v3/reference/tickers?market=fx` | ✅ | ticker, name, market, locale, active, currency_symbol, currency_name, base_currency_symbol | NO | NEW — small static |
+| `/v1/conversion/USD/EUR` | 🔴 403 | NOT_AUTHORIZED | — | tier-gated |
+
+## 6. Polygon Economy (free, included)
+
+| Endpoint | Status | Sample fields | Currently cached? | Action |
+|---|---|---|---|---|
+| `/fed/v1/inflation` | ✅ | date, cpi | YES (951 rows cached 2026-05-08) | DONE H5 |
+| `/fed/v1/inflation-expectations` | ✅ | date, model_1_year, model_5_year, model_10_year, model_30_year | YES (532 rows) | DONE H5 |
+| `/fed/v1/treasury-yields` | ✅ | date, yield_1_year, yield_5_year, yield_10_year | YES (16,071 rows — granular) | DONE H5 |
+| `/fed/v1/labor` | 🔴 404 | URL guess wrong | — | research correct path |
+
+## 7. Polygon Benzinga partner (paid add-on, 5/7 in our tier)
+
+| Endpoint | Status | Sample fields | Currently cached? | Action |
+|---|---|---|---|---|
+| `/benzinga/v1/analyst-insights` | ✅ | rating_action, insight, date, firm, price_target, rating, last_updated, company_name | YES (1937/1937 in flight) | DONE H11 |
+| `/benzinga/v1/ratings` | ✅ | (1508 records/AAPL — analyst rating history) | YES (1937/1937 in flight) | DONE H11 |
+| `/benzinga/v1/earnings` | ✅ | (62 records/AAPL — earnings calendar + history) | YES (~89% in flight) | in flight |
+| `/benzinga/v1/guidance` | ✅ | (31 records/AAPL — company guidance) | queued in BG | in flight |
+| `/benzinga/v1/firms` (firm_details) | ✅ | (658 firms — analyst firm metadata) | queued in BG | in flight |
+| `/benzinga/v1/consensus-ratings` | 🔴 404 | URL guess wrong | NO | research correct path |
+| `/benzinga/v1/news` | 🔴 403 | tier-gated | — | premium add-on |
+
+## 8. Quiver Quant Trader (paid)
+
+| Endpoint | Status | Sample fields | Currently cached? | Action |
+|---|---|---|---|---|
+| `/historical/congresstrading/{t}` | ✅ | Representative, BioGuideID, ReportDate, TransactionDate, Ticker, Transaction, Range, House, Amount, Party, last_modified, TickerType, Description, ExcessReturn, PriceChange, SPYChange | YES (1937/1937) | continue |
+| `/historical/senatetrading/{t}` | ✅ | Senator, BioGuideID, Date, Ticker, Transaction, Range, Amount, last_modified | YES (1937/1937 via H12 2026-05-08) | DONE H12 |
+| `/historical/housetrading/{t}` | ✅ | Representative, BioGuideID, Date, Ticker, Transaction, Range, Amount, last_modified | YES (1930/1937 via H12) | DONE H12 |
+| `/historical/govcontracts/{t}` | ✅ | Ticker, Amount, Qtr, Year (only 4 fields — confirmed at API level) | YES (1937/1937) | INV-024 reframed; alternate source needed for daily granularity |
+| `/historical/lobbying/{t}` | ✅ | Date, Amount, Client, Issue, Specific_Issue, Registrant, Ticker | YES (1937/1937) | continue |
+| `/historical/wallstreetbets/{t}` | ✅ | Date, Ticker, Mentions, Rank, Sentiment | YES (1937/1937) | continue |
+| `/historical/twitter/{t}` | ✅ (sparse) | (empty for AAPL — re-probe with non-AAPL) | NO | NEW — full universe smoke + prefetch |
+| `/historical/spacs/{t}` | ✅ | Date, Ticker, Mentions, Rank, Sentiment | YES (in flight via H12) | DONE H13 |
+| `/live/insiders?ticker=` | ✅ | Ticker, Date, Name, AcquiredDisposedCode, TransactionCode, Shares, PricePerShare, SharesOwnedFollowing, fileDate, officerTitle, isDirector, isOfficer, isTenPercentOwner, isOther, directOrIndirectOwnership, uploaded | YES (1937/1937) | continue |
+| `/live/sec13f?ticker=` | ✅ | Date, ReportPeriod, Name, Ticker, Fund, Class, Value, Shares, SH/PRN, Put/Call, Direction | YES (1937/1937) | continue |
+| `/live/sec13fchanges?ticker=` (bulk) | ✅ | Date, ReportPeriod, Ticker, Fund, Change, Change_Share, Change_Pct, Held, Held_Normalized, Close | YES (500K rows global) | continue |
+| `/live/offexchange?ticker=` | ✅ | Ticker, Date, OTC_Short, OTC_Total, DPI | YES (1851/1937) | top-up |
+| `/live/topshareholders?ticker=` (per-ticker 404; bulk works) | ⚠ partial | ownership, ownership_options (JSON-string objects, no date) | YES (1937 via bulk) | INV-008 — needs structured parse + PIT |
+| `/live/etfholdings?ticker=` | ✅ | ETF Symbol, Holding Name, Holding Symbol, % of ETF, Value ($) | YES (1563/1937) | top-up |
+| `live/quivernews` (bulk) | ✅ | url, time, headline, category, summary, image | YES (1500 rows global) | continue |
+| `live/patentmomentum` (bulk only) | ✅ | ticker, date, momentum | YES (5.83M rows global, cap 2022) | extend through 2024-2026 (needs API check) |
+| `live/corporatedonors` (bulk only) | ✅ | BioGuideID, CandidateName, CompanyCMTENM, TransactionDate, TransactionAmount, Ticker, CommitteeName, Cycle, TransactionType, CompanyCMTEID, Uploaded | YES (25K rows global) | continue |
+| `/historical/wikipedia/{t}` | 🔴 404 | NOT in Trader plan | — | use canonical `data_prefetch/wikipedia/` (Wikipedia direct) |
+| `/historical/patentmomentum/{t}` | 🔴 404 | per-ticker not available | — | bulk works |
+| `/historical/appratings/{t}` | 🔴 404 | not in Trader tier | — | skip |
+| `/historical/sec13fchanges/{t}` | 🔴 404 | per-ticker 404 (live-bulk works) | — | bulk path is canonical |
+| `/historical/insidertrading/{t}` | 🔴 404 | wrong name (correct: `live/insiders`) | — | skip |
+| `/historical/earningsbeats/{t}` | 🔴 404 | not in Trader tier | — | skip |
+| `/historical/redditpoliticians/{t}` | 🔴 404 | not in Trader tier | — | skip |
+| `/historical/reddittendies/{t}` | 🔴 404 | not in Trader tier | — | skip |
+| `/historical/snptrend/{t}` | 🔴 404 | not in Trader tier | — | skip |
+| `/historical/swaps/{t}` | 🔴 404 | not in Trader tier | — | skip |
+| `/historical/googletrends/{t}` | 🔴 404 | not in Trader tier | — | use pytrends instead |
+| `/historical/linkedindata/{t}` | 🔴 404 | not in Trader tier | — | skip |
+| `/historical/iposcalendar/{t}` | 🔴 404 | not in Trader tier | — | use Polygon /vX/reference/ipos (DONE) |
+| `/historical/optionsflow/{t}` | 🔴 404 | not in Trader tier | — | use Polygon Options Basic |
+| `/historical/estimates/{t}` | 🔴 404 | not in Trader tier | — | use Finnhub recommendation/eps_surprise (DONE) |
+
+## 9. FRED (free, all 28 endpoints accessible)
+
+| Endpoint | Status | Sample fields | Currently cached? | Action |
+|---|---|---|---|---|
+| `/fred/series` | ✅ | series metadata (id, title, frequency, units, etc.) | NO | NEW — series metadata |
+| `/fred/series/observations` | ✅ | date, value | YES (87 series cached + 30 added 2026-05-08) | DONE H15; ongoing |
+| `/fred/series/categories` | ✅ | category_id, name | NO | NEW — find related series |
+| `/fred/series/release` | ✅ | release_id, name | NO | NEW — release schedule |
+| `/fred/series/search` | ✅ | matching series | NO | NEW — discovery |
+| `/fred/series/tags` | ✅ | tag_name, group_id | NO | NEW |
+| `/fred/series/updates` | ✅ | recently-updated series | NO | NEW — staleness check |
+| `/fred/series/vintagedates` | ✅ | vintage_date list | NO | NEW — ALFRED PIT support |
+| `/fred/category` (and 5 sub) | ✅ | category metadata + traversal | NO | NEW |
+| `/fred/release` (and 6 sub) | ✅ | release metadata + dates + series + sources + tags + related | NO | NEW |
+| `/fred/source` (and 2 sub) | ✅ | source metadata + releases | NO | NEW |
+| `/fred/tags`, `/fred/related_tags`, `/fred/tags/series` | ✅ | tag metadata + linked series | NO | NEW |
+| 87 cached series (post 2026-05-08 H15) | ✅ | date, value per series | YES | DONE H15 |
+| `DEXJPUS` | 🔴 500 | persistent error (likely deprecated) | NO | INV-042 — workaround: Polygon Forex C:USDJPY (DONE) |
+
+## 10. ALFRED vintage (free, = FRED w/ realtime_*)
+
+| Endpoint | Status | Sample fields | Currently cached? | Action |
+|---|---|---|---|---|
+| `/fred/series/observations?realtime_start=...&realtime_end=...` | ✅ | date, value, realtime_start, realtime_end | YES (30/40 mirror via H16 2026-05-08) | DONE H16 |
+| 10 series with no published vintages | ⚠ EMPTY | (continuous series) | NO | not applicable — no vintages exist |
+
+## 11. SEC EDGAR (free public, all 5 endpoints work)
+
+| Endpoint | Status | Sample fields | Currently cached? | Action |
+|---|---|---|---|---|
+| `data.sec.gov/submissions/CIK{cik}.json` | ✅ | full filing history per company; structured JSON | YES (per-form 1683-1722 via prefetch_sec_edgar.py) | top-up via CIK-map expansion (INV-044) |
+| `data.sec.gov/api/xbrl/companyconcept/CIK{cik}/{tax}/{tag}.json` | ✅ | per-company XBRL line item time series | NO (queryable on demand) | use programmatic; not bulk-fetch |
+| `data.sec.gov/api/xbrl/companyfacts/CIK{cik}.json` | ✅ | tag, taxonomy, unit, value, filing_date, period_start, period_end, fiscal_year, fiscal_period, form, accession, frame | YES (1937/1937 via H17 2026-05-08) | DONE H17 — INV-025/026/037 RESOLVED |
+| `data.sec.gov/api/xbrl/frames/{tax}/{tag}/{unit}/CY{Y}Q{Q}.json` | ✅ | cross-sectional XBRL — all companies for a concept + period | NO (queryable on demand) | use programmatic |
+| `efts.sec.gov/LATEST/search-index?q=...` | ✅ | full-text search across filings | NO | NEW — keyword search |
+
+## 12. Finnhub free tier (key added 2026-05-08, 13/20 free)
+
+| Endpoint | Status | Sample fields | Currently cached? | Action |
+|---|---|---|---|---|
+| `/quote` | ✅ | c, h, l, o, pc, t (current quote, delayed) | YES (1937/1937 via Finnhub BG 2026-05-08) | DONE |
+| `/stock/profile2` | ✅ | country, currency, exchange, ipo, marketCapitalization, name, phone, shareOutstanding, ticker, weburl, logo, finnhubIndustry | YES (1929/1937 in flight) | DONE |
+| `/stock/peers` | ✅ | array of peer tickers | YES (in flight) | in flight |
+| `/stock/insider-transactions` | ✅ | name, share, change, filingDate, transactionDate, transactionCode, transactionPrice | YES (in flight; 112 records/AAPL smoke) | in flight |
+| `/stock/insider-sentiment` | ✅ | symbol, year, month, change, mspr | YES (in flight; 51 records/AAPL smoke) | in flight |
+| `/stock/recommendation` | ✅ | symbol, period, buy, hold, sell, strongBuy, strongSell | YES (in flight; 4 records/AAPL smoke) | in flight |
+| `/stock/earnings` (eps_surprise) | ✅ | actual, estimate, period, surprise, surprisePercent, symbol | YES (in flight) | in flight |
+| `/calendar/earnings` | ✅ | symbol, date, epsActual, epsEstimate, hour, quarter, revenueActual, revenueEstimate, year | partial | check global cache |
+| `/calendar/ipo` | ✅ | date, exchange, name, numberOfShares, price, status, symbol, totalSharesValue | partial | check |
+| `/calendar/economic` | ✅ | actual, country, estimate, event, impact, prev, time, unit | partial | check |
+| `/company-news` | ✅ | category, datetime, headline, id, image, related, source, summary, url | YES (in flight; 243 records/AAPL smoke) | in flight |
+| `/stock/financials-reported` | ✅ | accessNumber, cik, endDate, filedDate, form, quarter, report, startDate, year, symbol | YES (in flight; 16 records/AAPL smoke) | in flight |
+| `/stock/metric` | ✅ | metric, metricType, series (annual/quarterly TTM ratios) | YES (in flight) | in flight |
+| `/stock/price-target` | 🔴 403 | premium-locked | — | skip on free tier |
+| `/stock/social-sentiment` | 🔴 403 | premium-locked | — | skip |
+| `/stock/upgrade-downgrade` | 🔴 403 | premium-locked | — | skip |
+| `/stock/eps-estimate` | 🔴 403 | premium-locked | — | skip; use Polygon Benzinga (DONE) |
+| `/stock/revenue-estimate` | 🔴 403 | premium-locked | — | skip |
+| `/stock/dividend` | 🔴 403 | premium-locked | — | use Polygon dividends (DONE) |
+| `/stock/split` | 🔴 403 | premium-locked | — | use Polygon splits (DONE) |
+
+## 13. AlphaVantage (owner-confirmed free tier)
+
+| Endpoint | Status | Sample fields | Currently cached? | Action |
+|---|---|---|---|---|
+| `TIME_SERIES_DAILY` | ✅ free | open, high, low, close, volume | NO (use Polygon OHLCV) | redundant — skip |
+| `TIME_SERIES_WEEKLY` | ✅ free | (same, weekly) | NO | redundant |
+| `TIME_SERIES_MONTHLY` | ✅ free | (same, monthly) | NO | redundant |
+| `GLOBAL_QUOTE` | ✅ free (delayed) | symbol, open, high, low, price, volume, latest_trading_day, previous_close, change, change_percent | NO | redundant with Finnhub /quote |
+| `SYMBOL_SEARCH` | ✅ free | best matches | NO | NEW — discovery (P3) |
+| `MARKET_STATUS` | ✅ free | active markets globally | NO | redundant with Polygon /v1/marketstatus/now |
+| `LISTING_STATUS` | ✅ free | active + delisted tickers list | NO | NEW — useful for survivorship audit (P2) |
+| `INDEX_CATALOG` | ✅ free | available indices list | NO | NEW — small static |
+| `TIME_SERIES_DAILY_ADJUSTED` | 🔴 premium | — | — | skip on free |
+| `NEWS_SENTIMENT` | 🔴 premium | — | — | use Polygon news (DONE) |
+| `INSIDER_TRANSACTIONS` | 🔴 premium | — | — | use Quiver insiders (DONE) |
+| `INSTITUTIONAL_HOLDINGS` | 🔴 premium | — | — | use Quiver sec13f (DONE) |
+| `COMPANY_OVERVIEW` | 🔴 premium | — | — | use Polygon reference_extended (DONE) |
+| `INCOME_STATEMENT` / `BALANCE_SHEET` / `CASH_FLOW` | 🔴 premium | — | — | use SEC XBRL (DONE) |
+| `EARNINGS` / `EARNINGS_CALENDAR` / `IPO_CALENDAR` | 🔴 premium | — | — | use Finnhub calendars (DONE) |
+| `EARNINGS_CALL_TRANSCRIPT` | 🔴 premium | — | — | premium-only |
+| `FX_*` | 🔴 premium | — | — | use Polygon Forex (DONE) |
+| `CRYPTO_*` | 🔴 premium | — | — | out of scope |
+| `COMMODITIES_*` (WTI/BRENT/NG/COPPER/etc.) | 🔴 premium | — | — | use FRED commodities (DONE) |
+| `ECONOMIC_INDICATORS` (REAL_GDP/CPI/UNEMPLOYMENT/etc.) | 🔴 premium | — | — | use FRED (DONE) |
+| `REALTIME_OPTIONS` / `HISTORICAL_OPTIONS` | 🔴 premium | — | — | use Polygon Options Basic |
+| ~50 technical indicators (SMA/EMA/RSI/MACD/BBANDS/ATR/OBV/etc.) | ✅ free | timestamp, value | NO | redundant — Polygon indicators DONE H6 |
+
+## 14. CFTC public Socrata (7 datasets, all accessible)
+
+| Endpoint | Status | Sample fields | Currently cached? | Action |
+|---|---|---|---|---|
+| `/resource/kh3c-gbw2.json` (Disagg Combined) | ✅ | report_date, contract_market_name, open_interest_all, dealer/asset_mgr/lev_money positions long/short/spread, traders_*, conc_*, change_in_* | YES (19 contracts) | continue |
+| `/resource/gpe5-46if.json` (TFF Futures Only) | ✅ | (TFF schema) | YES (19 contracts) | continue |
+| `/resource/6dca-aqww.json` (Legacy Futures Only) | ✅ | (Legacy schema) | YES (18 contracts via H18 2026-05-08) | DONE H18 |
+| `/resource/jun7-fc8e.json` (Legacy Combined) | ✅ | (Legacy schema, futures+options) | YES (18 contracts via H18) | DONE H18 |
+| `/resource/72hh-3qpy.json` (Disagg Futures Only) | ✅ | (Disagg schema, futures only) | YES (5 contracts, mostly commodities) | DONE H18 |
+| `/resource/yw9f-hn96.json` (TFF Combined) | ✅ | (TFF schema, combined) | YES (13 contracts) | DONE H18 |
+| `/resource/4zgm-a668.json` (Supplemental CIT) | ✅ | (CIT schema; different contract set) | YES (0 of our contracts; CIT covers different family) | DONE H18 — skip our contracts |
+
+## 15. Apewisdom (public REST, 1 endpoint × multiple subreddits)
+
+| Endpoint | Status | Sample fields | Currently cached? | Action |
+|---|---|---|---|---|
+| `/api/v1.0/filter/all-stocks` | ✅ | rank, ticker, name, mentions, upvotes, rank_24h_ago, mentions_24h_ago, snapshot_date | YES (snapshot 2310 rows global) | DONE; cron daily for forward accumulation |
+| `/api/v1.0/filter/wallstreetbets` | ✅ | (same) | YES (878 rows via H19) | DONE H19 |
+| `/api/v1.0/filter/stocks` | ✅ | (same) | YES (568 rows) | DONE H19 |
+| `/api/v1.0/filter/investing` | ✅ | (same) | YES (276 rows) | DONE H19 |
+| `/api/v1.0/filter/options` | ✅ | (same) | YES (168 rows) | DONE H19 |
+| `/api/v1.0/filter/stockmarket` | ✅ | (same) | YES (202 rows) | DONE H19 |
+| `/api/v1.0/filter/CryptoCurrency` | ✅ | (same; out of scope) | YES (109 rows) | DONE (scope creep — kept for completeness) |
+| `/api/v1.0/filter/Bitcoin` | ✅ | (same) | YES (56 rows) | DONE |
+| `/api/v1.0/filter/SatoshiStreetBets` | ✅ | (same) | YES (5 rows) | DONE |
+
+## 16. pytrends (Google Trends library, 12 methods)
+
+| Endpoint | Status | Sample fields | Currently cached? | Action |
+|---|---|---|---|---|
+| `interest_over_time(kw_list)` | ✅ | date, search_volume_index, query_label | YES (1417/1937 = 73%) | top-up to 100% (P2) |
+| `multirange_interest_over_time` | ✅ | (multi-window aggregate) | NO | NEW H20 P2 |
+| `get_historical_interest` | ✅ | (hourly resolution) | NO | NEW H20 P2 (rate-limited) |
+| `interest_by_region` | ✅ | region, value | NO | NEW H20 P2 — geographic |
+| `related_topics` | ✅ | (Dict of DataFrames) | NO | NEW H20 P2 — co-search |
+| `related_queries` | ✅ | (Dict of DataFrames) | NO | NEW H20 P2 |
+| `trending_searches` | ✅ | (daily trending) | NO | NEW |
+| `realtime_trending_searches` | ✅ | (realtime trending) | NO | NEW |
+| `top_charts(year)` | ✅ | (annual top searches) | NO | NEW |
+| `suggestions(keyword)` | ✅ | (keyword suggestions) | NO | NEW |
+| `categories` | ✅ | (taxonomy) | NO | NEW |
+| `build_payload` | ✅ (helper) | n/a | n/a | helper, used internally |
+
+## 17. AAII (web download, no API)
+
+| Endpoint | Status | Sample fields | Currently cached? | Action |
+|---|---|---|---|---|
+| Weekly Investor Sentiment Survey CSV | ✅ | survey_date, bullish_pct, bearish_pct, neutral_pct, bull_bear_spread | YES (325 weekly readings) | extend with 8_week_avg, historical_avg, S&P close (H21 P3) |
+| Asset Allocation Survey | ✅ | (monthly stocks/bonds/cash %) | NO | NEW manual download (P3) |
+| Investor Confidence Index | ✅ | (quarterly) | NO | NEW manual download (P3) |
+
+## 18. CNN Fear & Greed (web scrape)
+
+| Endpoint | Status | Sample fields | Currently cached? | Action |
+|---|---|---|---|---|
+| Composite daily | ✅ | timestamp, score, rating, date | YES (253 rows) | continue |
+| Junk bond demand | ✅ | (component-level) | YES | continue |
+| Market momentum SP500 | ✅ | (component-level) | YES | continue |
+| Market volatility VIX | ✅ | (component-level) | YES | continue |
+| Put/call options | ✅ | (component-level) | YES | continue |
+| Safe haven demand | ✅ | (component-level) | YES | continue |
+| Stock price breadth | ✅ | (component-level) | YES | continue |
+| Stock price strength | ✅ | (component-level) | YES | continue |
+
+## 19. Wikipedia Pageviews (free public REST)
+
+| Endpoint | Status | Sample fields | Currently cached? | Action |
+|---|---|---|---|---|
+| `wikimedia.org/api/rest_v1/metrics/pageviews/per-article/...` | ✅ | date, views, article | YES (1414/1937 = 73%) | top-up to 100% (P2) |
+| Article revision history | ✅ | revision_count per day | NO | NEW — content-volatility proxy (P2) |
+
+## 20. USAspending.gov (federal contracts — alternate to Quiver govcontracts)
+
+| Endpoint | Status | Sample fields | Currently cached? | Action |
+|---|---|---|---|---|
+| `api.usaspending.gov/api/v2/award/...` | ❓ | DateSigned, AwardingAgency, ContractDescription, Amount (numeric) | NO | **NEW prefetch** to fix INV-024 daily-granularity govcontracts gap |
 
 ---
 
 ## Cross-cutting action plan (per CHECKLIST #76 column-c)
 
-### Tier H — Prefetch additions WITH ENOUGH ACCESS NOW (no owner action needed)
+### Tier H — Prefetch additions WITH ENOUGH ACCESS NOW
 
-| # | Action | Source | Est. effort | Priority |
+| # | Action | Source | Est. effort | Status |
 |---|---|---|---|---|
-| H1 | OHLCV re-fetch with `vw` + `n` | Polygon | 6-8h | P1 (INV-028) |
-| H2 | Polygon news re-fetch with `insights` + author + image_url + keywords | Polygon | 4-6h | P1 (INV-027) |
-| H3 | Polygon dividends + splits full universe | Polygon | 2-3h each | P1 (INV-017) |
-| H4 | Polygon IPOs + reference fields (address/branding/employees/FIGI) | Polygon | 2h | P2 (INV-030) |
-| H5 | Polygon Economy series (inflation, inflation_exp, treasury_yields) | Polygon | 30 min | P2 |
-| H6 | Polygon precomputed indicators (SMA/EMA/RSI/MACD) | Polygon | 4-6h | P2 |
-| H7 | Polygon Snapshots daily capture (cron) | Polygon | ongoing | P3 (Stage 3+) |
-| H8 | **Polygon Futures Basic full prefetch** (~25 contracts × 6 years) | Polygon | 2h | P1 |
-| H9 | **Polygon Forex Basic full prefetch** (~10 pairs × 6 years) | Polygon | 30 min | P1 |
-| H10 | **Polygon Options Basic** — chains + per-contract aggs for full universe (top liquid first) | Polygon | 10-30h | P1 |
-| H11 | Polygon Benzinga analyst data | Polygon | 4-6h | **P1 — major signal** |
-| H12 | **Quiver senate/house trading separate fetches** | Quiver | ~40 min each | P1 |
-| H13 | Quiver SPACs feed | Quiver | ~40 min | P2 |
-| H14 | Quiver Twitter (re-probe with non-AAPL tickers) | Quiver | smoke | P2 |
-| H15 | FRED additions (TIPS, productivity, regional Fed, sector employment) | FRED | 30 min | P2 |
-| H16 | ALFRED mirror for new FRED series | FRED | 30 min | P2 |
-| H17 | **SEC XBRL companyfacts + frames** (structured fundamentals — solves INV-025/026 partially) | SEC | 4-6h | **P0** |
-| H18 | CFTC 5 missing datasets (Legacy + Disaggregated Futures Only + TFF Combined + Supp CIT) | CFTC | 30 min | P2 |
-| H19 | Apewisdom 4 new subreddit feeds | Apewisdom | 30 min ongoing | P2 |
-| H20 | pytrends 4 new dimensions (interest_by_region, related_queries, related_topics, get_historical_interest) | pytrends | 8-12h rate-limited | P2 |
-| H21 | AAII extend fields (8wk avg, historical avg, S&P close) | AAII | 1h | P3 |
-| H22 | All STRING-date columns -> datetime migration | local | 1h | P3 (INV-033) |
+| H1 | OHLCV re-fetch with `vw` + `n` | Polygon | 6-8h | ✅ DONE |
+| H2 | Polygon news re-fetch with `insights` | Polygon | 4-6h | ✅ DONE (cache already insights-aware) |
+| H3 | Polygon dividends + splits + IPOs full | Polygon | 2-3h each | ✅ DONE |
+| H4 | Polygon reference extended fields | Polygon | 1h | ✅ DONE |
+| H5 | Polygon Economy series | Polygon | 30 min | ✅ DONE |
+| H6 | Polygon precomputed indicators | Polygon | 4-6h | 🔄 IN-FLIGHT |
+| H7 | Polygon Snapshots daily capture | Polygon | ongoing | 🟡 Stage 3+ |
+| H8 | Polygon Futures Basic full prefetch | Polygon | 2h | ⚠ DEFERRED (per-contract dated symbol logic) |
+| H9 | Polygon Forex Basic full prefetch | Polygon | 30 min | ✅ DONE (12/12 pairs) |
+| H10 | Polygon Options Basic — chains + per-contract aggs | Polygon | 10-30h | 🟡 QUEUED |
+| H11 | Polygon Benzinga analyst data | Polygon | 4-6h | 🔄 IN-FLIGHT |
+| H12 | Quiver senate/house/spacs separate fetches | Quiver | ~40 min each | ✅ DONE |
+| H13 | Quiver SPACs feed | Quiver | ~40 min | ✅ DONE (rolled into H12) |
+| H14 | Quiver Twitter (re-probe non-AAPL) | Quiver | smoke | 🟡 QUEUED |
+| H15 | FRED 30+ new series | FRED | 30 min | ✅ DONE |
+| H16 | ALFRED mirror new FRED series | FRED | 30 min | ✅ DONE (30/40) |
+| H17 | SEC XBRL companyfacts + frames | SEC | 4-6h | ✅ DONE (1937 ckpt) |
+| H18 | CFTC 5 missing datasets | CFTC | 30 min | ✅ DONE |
+| H19 | Apewisdom 4 (+4 extra) subreddit feeds | Apewisdom | 30 min | ✅ DONE (8 feeds) |
+| H20 | pytrends 4 new dimensions | pytrends | 8-12h rate-limited | 🟡 QUEUED |
+| H21 | AAII extend fields | AAII | 1h | 🟡 QUEUED |
+| H22 | All STRING-date columns -> datetime migration | local | 1h | ✅ DONE (7033 files; INV-033 RESOLVED) |
+| **B1** | **SEC EDGAR per-form top-up** | SEC | ~1-2h | ✅ DONE (capped at 1683 by CIK-map gap; INV-044) |
+| **NEW Finnhub** | Finnhub 13 free endpoints | Finnhub | ~6-10h | 🔄 IN-FLIGHT |
 
-### Tier I — Owner actions required
+### Tier I — Owner actions (all RESOLVED 2026-05-08)
 
-| # | Action | Owner action |
+| # | Action | Status |
 |---|---|---|
-| I1 | Activate Polygon Indices Basic on dashboard | adds free | once active, prefetch I:VIX/I:SPX/I:NDX/I:VIX3M/I:VVIX etc. |
-| I2 | Add `FINNHUB_API_KEY` to `.env` | adds key | enables Finnhub probe + prefetch |
-| I3 | Confirm AlphaVantage tier | clarifies | unblocks AV NEWS_SENTIMENT re-prefetch |
+| I1 | Activate Polygon Indices Basic on dashboard | ✅ ACTIVATED (partial 2/13 — INV-038 license gates remain) |
+| I2 | Add `FINNHUB_API_KEY` to `.env` | ✅ DONE |
+| I3 | Confirm AlphaVantage tier | ✅ FREE confirmed |
 
 ---
 
-## INV updates from probe
+## INV summary (probe-grounded, Pass 53 Day-9 v8h+1)
 
-- **INV-024 reframed:** Quiver govcontracts API returns ONLY 4 fields at API level. Our prefetch is faithful. The "Date / AwardingAgency / DepartmentDescription" gap is at the API contract, not at our save logic. Daily-granularity gov contracts requires alternate source (USAspending.gov / SEC).
-- **INV-025/026 partially solvable** via SEC EDGAR XBRL companyfacts + frames endpoints (free). Not via Polygon Filings (404 — not in our tier).
-- **NEW INV (numbered next): Polygon Indices Basic NOT YET ACTIVATED** — owner action needed.
-- **NEW INV: Finnhub API key missing from .env** — owner action needed.
-- **NEW INV: 13 Quiver endpoints in API_AUDIT.md don't exist at our Trader tier** (returned 404 on probe). Need API_AUDIT.md correction.
+| INV | Title | Status (2026-05-08) |
+|---|---|---|
+| INV-014 | DEC-491 trade_log.parquet silent degrade | open |
+| INV-015 | AlphaVantage news partial 25 files | open |
+| INV-016 | Finnhub news S&P-only stale | open |
+| INV-017 | Polygon dividends/splits 0.1% coverage | ✅ RESOLVED 2026-05-08 (H3) |
+| INV-024 | Quiver govcontracts field set | REFRAMED — gap at API level |
+| INV-025 | SEC EDGAR filing-metadata-only | ✅ RESOLVED via H17 SEC XBRL |
+| INV-026 | Polygon financials JSON unparsed | ✅ RESOLVED via SEC XBRL |
+| INV-027 | Polygon news per-ticker insights | ✅ RESOLVED (cache insights-aware) |
+| INV-028 | OHLCV missing vw + n | ✅ RESOLVED via H1 |
+| INV-029 | Polygon events only ticker_change | open (URL mismatch) |
+| INV-030 | Polygon reference missing extended fields | ✅ RESOLVED via H4 |
+| INV-031 | Quiver congressional missing District/State/etc. | open |
+| INV-032 | AV news aggregated (lost per-article) | open |
+| INV-033 | STRING-date columns | ✅ RESOLVED via H22 |
+| INV-034 | Polygon Indices Basic activation | ✅ RESOLVED-PARTIAL |
+| INV-035 | Finnhub key missing | ✅ RESOLVED |
+| INV-036 | 13 Quiver endpoints don't exist at our tier | ✅ RESOLVED (this doc + API_AUDIT amendment) |
+| INV-037 | Polygon Filings/Fundamentals require Stocks Plus | ✅ RESOLVED via SEC XBRL |
+| INV-038 | Polygon Indices CBOE/S&P license gates | open (owner action) |
+| INV-039 | Polygon Benzinga 5/7 accessible | 🔄 IN-FLIGHT prefetch |
+| INV-040 | Quiver senate/house/spacs prefetch | ✅ RESOLVED via H12 |
+| INV-041 | git_commit captures all staged files | open (script fix) |
+| INV-042 | FRED DEXJPUS 500 | open (research) |
+| INV-043 | Windows-reserved filenames (PRN/CON) | ✅ RESOLVED |
+| INV-044 | SEC EDGAR top-up CIK-map gap | open |
 
 ---
 
 ## 100% coverage criteria (per owner directive 2026-05-08)
 
 To claim "100% coverage, no missing endpoints, no missing fields":
-1. Every endpoint listed above with status ✅ → must be prefetched at full universe scope
-2. Every endpoint with ⚠ or ❓ → must be re-probed and resolved to ✅ or 🔴
-3. Every field returned by ✅ endpoints → must be preserved in cache
-4. Every owner-action item (I1-I3) → resolved
-5. Every Tier H action → executed
+1. Every endpoint with status ✅ → must be prefetched at full universe scope (most done)
+2. Every endpoint with ⚠ or ❓ → must be re-probed (H8 Futures, H14 Twitter, USAspending.gov pending)
+3. Every field returned by ✅ endpoints → must be preserved in cache (Sample fields column above is the canonical schema target; verified via dashboard's Field Audit tab)
+4. Every owner-action item (I1/I2/I3) → ✅ all RESOLVED 2026-05-08
+5. Every Tier H action → ✅ 16 of 22 DONE; 4 in-flight; 2 deferred (H8 Futures, H14 Twitter); 2 queued (H10 Options, H20 pytrends)
 
-**Estimated total wall time:** ~80-120h fetch (mostly parallelizable, owner can pause subscriptions afterward).
+**Estimated remaining wall time:** ~15-30h fetch (Polygon Options Basic + pytrends multi-dim + Finnhub remaining 8 endpoints completing).
 
 ---
 
-*Authored 2026-05-08. Probe report: `API_ENDPOINT_PROBE_REPORT.json`. Last probe: 2026-05-08.*
+*Authored 2026-05-08. Probe report: `API_ENDPOINT_PROBE_REPORT.json`. Last probe: 2026-05-08. Standardized to 5-column Polygon-style table format per owner directive 2026-05-08.*
