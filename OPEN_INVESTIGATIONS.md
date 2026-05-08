@@ -681,4 +681,18 @@ contract names: `UST 10Y NOTE` / `UST 5Y NOTE` / `UST 2Y NOTE` / `UST BOND`
 
 ---
 
-*Last updated: 2026-05-08 afternoon (Pass 53 Day-9 v8h+1 — Tier H/I execution + B1 in flight)*
+## INV-044 — SEC EDGAR per-form coverage capped at 1683 by CIK-map gap (254 tickers no CIK) (Pass 53 Day-9 v8h+1 2026-05-08)
+
+- **Discovered:** 2026-05-08; B1-redo BG `b2an5z5lx` summary: 1670 SUCCESS / 13 no-data / **254 no CIK in map** / 0 errors. Per-form counts unchanged (10_K: 1683, 10_Q: 1683, 8_K: 1715, etc.) because the 254 missing tickers don't have CIK in our reference cache.
+- **Observation:** SEC EDGAR top-up requires CIK lookup. CIK map sourced from `data_prefetch/polygon/reference/` (1686 tickers via `b9xczleu2` BG). The 254 universe-tickers-without-CIK include delisted (ABMD/ALXN/AGN/etc.) and possibly newer T2/T3 names where Polygon reference doesn't carry the CIK.
+- **Severity:** MEDIUM (Phase 1B+ filing-overlay coverage capped at ~87%; Phase 1A baseline doesn't depend on SEC EDGAR per-form metadata directly).
+- **Status:** open
+- **Next action:**
+  - Probe SEC EDGAR submissions endpoint with ticker (instead of CIK lookup) to find CIK for missing 254 — `data.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK={t}` returns CIK from ticker
+  - Or: use SEC EDGAR's `company_tickers.json` master list (one-fetch, has all tickers + CIKs)
+  - After CIK map expanded, re-run `prefetch_sec_edgar.py` to capture missing 254
+- **Joint:** INV-030 (Polygon reference 251 delisted = same root); SEC XBRL `prefetch_sec_xbrl.py` had similar 251 no-CIK skips.
+
+---
+
+*Last updated: 2026-05-08 afternoon (Pass 53 Day-9 v8h+1 — Tier H/I execution + B1 done)*
