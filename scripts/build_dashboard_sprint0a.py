@@ -43,7 +43,7 @@ def load_universe() -> pd.DataFrame:
 
 def scan_dir_files(dir_path: Path) -> dict[str, dict]:
     """Return {ticker: {file_size, row_count, columns, has_date_col, last_date}}
-    for each .parquet in dir_path. Per-ticker shards only — skip _index/_checkpoint
+    for each .parquet in dir_path. Per-ticker shards only - skip _index/_checkpoint
     and global all.parquet."""
     out: dict[str, dict] = {}
     if not dir_path.exists():
@@ -102,6 +102,179 @@ def scan_global_file(path: Path) -> dict:
         }
     except Exception:
         return {"present": False, "error": "read failed"}
+
+
+# Realistic-max universe per endpoint family - used to compute
+# "available coverage %" so endpoints capped by data-availability
+# (e.g. SEC EDGAR ceiling = tickers with CIK; Polygon reference =
+# tickers Polygon recognizes; Wikipedia = tickers with Wikipedia page)
+# show as 100% when fully fetched against their realistic ceiling.
+# None means "use raw 1937 universe" (default).
+# API use-case + stage mapping (per owner directive 2026-05-08:
+# "add in dashboard how each api will be used and in what stage")
+API_USE_CASES = {
+    "polygon": {
+        "use_case": "Core OHLCV for all Layer 1 baseline + layered roster (~108-133 classes per F-002); news sentiment overlay; fundamentals; corporate actions; reference/sector/market_cap PIT",
+        "stage": "Phase 1A baseline",
+        "criticality": "P0",
+    },
+    "polygon_indices": {
+        "use_case": "Cross-validation of broad-market regime vs ETF proxies (NDX, COMP working; VIX/SPX gated by license)",
+        "stage": "Phase 1A regime classifier (alt source)",
+        "criticality": "P2",
+    },
+    "polygon_options": {
+        "use_case": "Put/call ratio, IV surface, options chain, unusual activity signals",
+        "stage": "Phase 1B+ overlay",
+        "criticality": "P1",
+    },
+    "polygon_futures": {
+        "use_case": "Term-structure signals (VX curve, treasury curve, commodity contango/backwardation)",
+        "stage": "Phase 1C+",
+        "criticality": "P2",
+    },
+    "polygon_forex": {
+        "use_case": "Native DXY computation; risk-on/off proxies via JPY/CHF; EM currency stress",
+        "stage": "Phase 1A regime + Phase 1B FX overlay",
+        "criticality": "P1",
+    },
+    "polygon_economy": {
+        "use_case": "Macro regime classification (CPI/treasury yields/inflation expectations)",
+        "stage": "Phase 1A regime classifier",
+        "criticality": "P1",
+    },
+    "polygon_benzinga": {
+        "use_case": "Analyst momentum (ratings + price targets); earnings guidance reaction; consensus drift",
+        "stage": "Phase 1B agent overlay",
+        "criticality": "P1",
+    },
+    "polygon_indicators": {
+        "use_case": "Cross-validation of locally-computed technicals (SMA/EMA/RSI/MACD)",
+        "stage": "Phase 1A signal validation",
+        "criticality": "P2",
+    },
+    "quiver": {
+        "use_case": "Smart-money composite signal (congress/senate/house/insider/sec13f); retail attention (WSB/SPACs); off-exchange dark-pool flow; ETF flows",
+        "stage": "Phase 1A baseline (smart_money composite) + Phase 1B+ overlays",
+        "criticality": "P0",
+    },
+    "fred": {
+        "use_case": "90+ macro series for regime classifier; yield curve; inflation; employment; sector employment; FX rates",
+        "stage": "Phase 1A regime classifier",
+        "criticality": "P0",
+    },
+    "alfred": {
+        "use_case": "Vintage data for revision-aware backtesting (PIT-correct macro replay)",
+        "stage": "Phase 1C+ revision-aware",
+        "criticality": "P3",
+    },
+    "sec_edgar": {
+        "use_case": "Structured fundamentals (XBRL companyfacts); filing-event signals (8-K material events; insider Form 4); 13D/G activist holdings",
+        "stage": "Phase 1B fundamental overlay + Phase 1B+ filing-event overlay",
+        "criticality": "P1",
+    },
+    "finnhub": {
+        "use_case": "Cross-source confirm; analyst recommendations; insider sentiment; earnings/IPO/economic calendars; company news",
+        "stage": "Phase 1B overlay",
+        "criticality": "P1",
+    },
+    "alphavantage": {
+        "use_case": "Cross-source confirm of free-tier technical indicators + listing status (premium endpoints inaccessible)",
+        "stage": "Phase 1A signal validation (limited)",
+        "criticality": "P3",
+    },
+    "cftc": {
+        "use_case": "Speculator vs commercial positioning across financial + commodity futures",
+        "stage": "Phase 1A regime + Phase 1B positioning overlay",
+        "criticality": "P1",
+    },
+    "apewisdom": {
+        "use_case": "Retail attention signal across 8 subreddits (WSB, options, investing, etc.)",
+        "stage": "Phase 1B retail-overlay",
+        "criticality": "P2",
+    },
+    "pytrends": {
+        "use_case": "Search-attention signal (per-ticker SVI; geographic dimension; related queries)",
+        "stage": "Phase 1B+ overlay",
+        "criticality": "P2",
+    },
+    "aaii": {
+        "use_case": "Weekly investor sentiment survey (bullish/bearish %; contrarian signal)",
+        "stage": "Phase 1A regime classifier",
+        "criticality": "P1",
+    },
+    "cnn_fg": {
+        "use_case": "Composite sentiment + 7 sub-components (VIX/breadth/momentum/etc.)",
+        "stage": "Phase 1A regime classifier",
+        "criticality": "P1",
+    },
+    "wikipedia": {
+        "use_case": "Page-view attention proxy (spike-detection signal)",
+        "stage": "Phase 1B+ overlay",
+        "criticality": "P3",
+    },
+    "usaspending": {
+        "use_case": "Daily-grain federal contract awards (alternate to Quiver govcontracts quarterly aggregate; INV-024 fix)",
+        "stage": "Phase 1B+ smart-money overlay",
+        "criticality": "P2",
+    },
+}
+
+
+EXPECTED_MAX = {
+    # SEC EDGAR / XBRL - capped by CIK-map availability
+    "sec_edgar.10_K": 1686,
+    "sec_edgar.10_Q": 1686,
+    "sec_edgar.8_K": 1686,
+    "sec_edgar.form_4": 1686,
+    "sec_edgar.DEF_14A": 1686,
+    "sec_edgar.S_1": 1686,
+    "sec_edgar.S_1_A": 1686,
+    "sec_edgar.SC_13D": 1686,
+    "sec_edgar.SC_13D_A": 1686,
+    "sec_edgar.SC_13G": 1686,
+    "sec_edgar.SC_13G_A": 1686,
+    "sec_edgar.xbrl_companyfacts": 1686,
+    # Polygon reference - capped by delisted tickers (251 not in Polygon)
+    "polygon.reference": 1686,
+    "polygon.reference_extended": 1686,
+    "polygon.financials": 1686,
+    "polygon.events": 1686,
+    "polygon.dividends_full": 1686,
+    "polygon.splits_full": 1686,
+    "polygon.ipos_full": 1686,
+    # Polygon news - same delisted ceiling
+    "polygon.news": 1686,
+    # Polygon indicators - Polygon-recognized only
+    "polygon_indicators.sma_50": 1686,
+    "polygon_indicators.sma_200": 1686,
+    "polygon_indicators.ema_20": 1686,
+    "polygon_indicators.ema_50": 1686,
+    "polygon_indicators.rsi_14": 1686,
+    "polygon_indicators.macd": 1686,
+    # Polygon Benzinga - paid partner data, US listings only
+    "polygon_benzinga.analyst_insights": 1686,
+    "polygon_benzinga.ratings": 1686,
+    "polygon_benzinga.earnings": 1686,
+    "polygon_benzinga.guidance": 1686,
+    "polygon_benzinga.firm_details": 1686,
+    # Wikipedia - only tickers with a public Wikipedia page (~1414 max observed)
+    "wikipedia.pageviews": 1414,
+    # pytrends - Google Trends has-data ceiling (~1417 observed)
+    "pytrends.interest_over_time": 1417,
+    # Finnhub - same delisted ceiling
+    "finnhub.quote": 1686,
+    "finnhub.profile2": 1686,
+    "finnhub.peers": 1686,
+    "finnhub.insider_transactions": 1686,
+    "finnhub.insider_sentiment": 1686,
+    "finnhub.recommendation": 1686,
+    "finnhub.earnings": 1686,
+    "finnhub.company_news": 1686,
+    "finnhub.financials_reported": 1686,
+    "finnhub.metric": 1686,
+    # Quiver - covers full Master Universe; default 1937
+}
 
 
 # Per-ticker endpoint definitions
@@ -234,6 +407,13 @@ def main() -> int:
             files = scan_dir_files(path)
             ep_data["files_count"] = len(files)
             ep_data["coverage_pct"] = round(100.0 * len(files) / max(universe_size, 1), 2)
+            # Available coverage: files / expected_max (realistic ceiling)
+            key = f"{api}.{endpoint}"
+            expected_max = EXPECTED_MAX.get(key, universe_size)
+            ep_data["expected_max_universe"] = expected_max
+            ep_data["available_coverage_pct"] = round(
+                100.0 * len(files) / max(expected_max, 1), 2
+            )
             # Field/dimension audit
             all_columns: set = set()
             row_counts = []
@@ -253,7 +433,9 @@ def main() -> int:
             ep_data["max_field_count"] = max(field_counts) if field_counts else 0
             ep_data["non_empty_files"] = len(row_counts)
             ep_data["sample_row_counts"] = sorted(row_counts)[:5] + ["..."] + sorted(row_counts)[-5:] if len(row_counts) > 10 else sorted(row_counts)
-            ep_data["status"] = "OK" if ep_data["coverage_pct"] >= 80 else "PARTIAL" if ep_data["coverage_pct"] >= 30 else "LOW"
+            # Status keyed off AVAILABLE coverage (more meaningful than universe-wide)
+            avail = ep_data["available_coverage_pct"]
+            ep_data["status"] = "OK" if avail >= 80 else "PARTIAL" if avail >= 30 else "LOW"
         elif kind == "global":
             # Directory of global files (each one is its own dataset, not per-ticker)
             files_count = 0
@@ -308,6 +490,7 @@ def main() -> int:
             apis[api]["ok_endpoints"] += 1
         apis[api]["total_files"] += ep.get("files_count", 0)
     snapshot["api_summary"] = apis
+    snapshot["api_use_cases"] = API_USE_CASES
 
     # Output JSON
     out_json = OUT_DIR / "data.json"

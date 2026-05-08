@@ -62,6 +62,7 @@
   <button class="tab-btn" data-panel="ticker-drilldown">Ticker Drill-down</button>
   <button class="tab-btn" data-panel="field-audit">Field/Dimension Audit</button>
   <button class="tab-btn" data-panel="status-overview">Status Overview</button>
+  <button class="tab-btn" data-panel="api-usage">API Usage / Stage</button>
 </nav>
 
 <main>
@@ -90,9 +91,16 @@
         <option value="EMPTY">EMPTY</option>
       </select>
     </div>
+    <p style="font-size:12px; color:#6b7588; margin:0 0 8px 0">
+      <strong>Universe Coverage %</strong> = files / 1937 (raw Master Universe).
+      <strong>Available Coverage %</strong> = files / realistic-max for that endpoint
+      (e.g. SEC EDGAR ceiling = 1686 tickers with CIK; Wikipedia = 1414 tickers with public page).
+      <strong>Status</strong> uses Available Coverage % for fairer assessment.
+    </p>
     <table id="tbl-endpoints" class="display compact" style="width:100%">
       <thead><tr>
-        <th>API</th><th>Endpoint</th><th>Kind</th><th>Files</th><th>Coverage %</th>
+        <th>API</th><th>Endpoint</th><th>Kind</th><th>Files</th>
+        <th>Universe %</th><th>Max Possible</th><th>Available %</th>
         <th>Fields</th><th>Status</th><th>Sample Fields</th>
       </tr></thead>
     </table>
@@ -142,9 +150,19 @@
       <div class="stat"><div class="label">Endpoints LOW</div><div class="value" id="status-low">--</div></div>
       <div class="stat"><div class="label">Endpoints EMPTY</div><div class="value" id="status-empty">--</div></div>
     </div>
-    <h3>Endpoints below 50% coverage (need attention)</h3>
+    <h3>Endpoints below 80% Available Coverage (need attention)</h3>
     <table id="tbl-attention" class="display compact" style="width:100%">
-      <thead><tr><th>API</th><th>Endpoint</th><th>Coverage %</th><th>Files</th><th>Status</th></tr></thead>
+      <thead><tr><th>API</th><th>Endpoint</th><th>Universe %</th><th>Available %</th><th>Files</th><th>Status</th></tr></thead>
+    </table>
+  </section>
+
+  <section id="api-usage" class="panel">
+    <h2>API Usage / Stage Mapping</h2>
+    <p>Each API's role in the system: what signals it provides, which Phase/Stage it powers, criticality.</p>
+    <table id="tbl-usage" class="display compact" style="width:100%">
+      <thead><tr>
+        <th>API</th><th>Use case</th><th>Stage</th><th>Criticality</th><th>Endpoints OK</th><th>Total files</th>
+      </tr></thead>
     </table>
   </section>
 
@@ -201,24 +219,28 @@ $('#tbl-api').DataTable({
 // Endpoint detail table
 const epRows = D.endpoints.map(ep => {
   const cov = ep.coverage_pct !== undefined ? ep.coverage_pct : '-';
+  const avail = ep.available_coverage_pct !== undefined ? ep.available_coverage_pct : '-';
+  const expectedMax = ep.expected_max_universe !== undefined ? ep.expected_max_universe : '-';
   const status = ep.status || 'EMPTY';
   const fields = ep.unique_columns || ep.columns || [];
   const sampleFields = fields.slice(0, 8).join(', ') + (fields.length > 8 ? `... (+${fields.length - 8})` : '');
   return [
     ep.api, ep.endpoint, ep.kind,
     ep.files_count !== undefined ? ep.files_count : (ep.row_count !== undefined ? `${ep.row_count} rows` : '-'),
-    cov === '-' ? '-' : `<span class="pct-cell ${pctClass(status)}">${cov}%</span>`,
+    cov === '-' ? '-' : `<span class="pct-cell pct-empty">${cov}%</span>`,
+    expectedMax === '-' ? '-' : expectedMax,
+    avail === '-' ? '-' : `<span class="pct-cell ${pctClass(status)}">${avail}%</span>`,
     fields.length || '-',
     `<span class="${badgeClass(status)}">${status}</span>`,
     `<span class="columns-list" title="${fields.join(', ')}">${sampleFields}</span>`,
   ];
 });
 const epTable = $('#tbl-endpoints').DataTable({
-  data: epRows, pageLength: 25, order: [[4,'desc']],
-  columns: [{},{},{},{},{type:'html'},{},{type:'html'},{type:'html'}],
+  data: epRows, pageLength: 25, order: [[6,'desc']],
+  columns: [{},{},{},{},{type:'html'},{},{type:'html'},{},{type:'html'},{type:'html'}],
 });
 $('#ep-filter').on('keyup', function () { epTable.search(this.value).draw(); });
-$('#ep-status-filter').on('change', function () { epTable.column(6).search(this.value).draw(); });
+$('#ep-status-filter').on('change', function () { epTable.column(8).search(this.value).draw(); });
 
 // Ticker drilldown
 const tickers = D.per_ticker_coverage || {};
@@ -274,18 +296,37 @@ D.endpoints.forEach(ep => {statusCounts[ep.status || 'EMPTY']++;});
   if (el) el.textContent = statusCounts[s.toUpperCase()];
 });
 
-// Attention table
+// API Usage / Stage mapping table
+const useCases = D.api_use_cases || {};
+const usageRows = Object.entries(useCases).map(([api, info]) => {
+  const apiSummary = (D.api_summary || {})[api] || {endpoints: 0, ok_endpoints: 0, total_files: 0};
+  return [
+    api,
+    info.use_case || '-',
+    info.stage || '-',
+    `<span class="badge ${info.criticality === 'P0' ? 'badge-low' : info.criticality === 'P1' ? 'badge-partial' : 'badge-empty'}">${info.criticality || '-'}</span>`,
+    `${apiSummary.ok_endpoints} / ${apiSummary.endpoints}`,
+    apiSummary.total_files.toLocaleString(),
+  ];
+});
+$('#tbl-usage').DataTable({
+  data: usageRows, pageLength: 30, order: [[3,'asc']],
+  columns: [{},{},{},{type:'html'},{},{}],
+});
+
+// Attention table - endpoints with available coverage < 80%
 const attentionRows = D.endpoints
-  .filter(ep => ep.coverage_pct !== undefined && ep.coverage_pct < 50)
+  .filter(ep => ep.available_coverage_pct !== undefined && ep.available_coverage_pct < 80)
   .map(ep => [
     ep.api, ep.endpoint,
-    `<span class="pct-cell ${pctClass(ep.status)}">${ep.coverage_pct}%</span>`,
+    `<span class="pct-cell pct-empty">${ep.coverage_pct}%</span>`,
+    `<span class="pct-cell ${pctClass(ep.status)}">${ep.available_coverage_pct}%</span>`,
     ep.files_count || 0,
     `<span class="${badgeClass(ep.status)}">${ep.status}</span>`,
   ]);
 $('#tbl-attention').DataTable({
-  data: attentionRows, pageLength: 25, order: [[2,'asc']],
-  columns: [{},{},{type:'html'},{},{type:'html'}],
+  data: attentionRows, pageLength: 25, order: [[3,'asc']],
+  columns: [{},{},{type:'html'},{type:'html'},{},{type:'html'}],
 });
 </script>
 

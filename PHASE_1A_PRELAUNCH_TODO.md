@@ -50,6 +50,21 @@
 | H22 | Date-typing migration | walk all caches | coerce date strings → datetime64 | 8+ caches | 🟡 PENDING (P3) |
 | **B1** | **SEC EDGAR per-form top-up** | All 11 forms (10-K/10-Q/8-K/13D/13G/Form 4/DEF 14A/S-1/etc.) | ticker, cik, form, filing_date, accession_number, primary_doc | 1683→1937 | 🔄 IN-PROGRESS-BG `b8hr00kzq` (per owner directive "Tier B1 + H17 do both") |
 
+### NEW Tier J — Data standardization + normalization (owner directive 2026-05-08 afternoon)
+
+Owner: *"all data in prefetch needs to be standardized and normalized."*
+
+| # | Action | Scope | Effort | Status |
+|---|---|---|---|---|
+| J1 | Standardize ticker case across ALL caches (always uppercase, no whitespace) | every per-ticker parquet | 1h local migration | 🟡 PENDING |
+| J2 | Normalize date columns to datetime64[ns] (already 7033 done via H22) | every parquet w/ date col | (extension of H22) | ✅ MOSTLY DONE — H22 covered most cases |
+| J3 | Numeric type coercion for known-numeric columns (CFTC pattern was caught earlier; extend to all data sources) | per-source | 1-2h | 🟡 PENDING |
+| J4 | Schema regression test — compare each parquet's schema to API_ENDPOINT_INVENTORY canonical Sample-Fields list; flag drift | new test under backtest/tests/ | 2-3h | 🟡 PENDING |
+| J5 | Standardize parquet compression to snappy (currently mixed) | every parquet | 1h | 🟡 PENDING |
+| J6 | Standardize file naming (ticker.parquet always; safe-stem for Windows reserved CON/PRN/AUX/NUL/COM*/LPT* — INV-043 fix already applied to corp_actions) | propagate safe_filename_stem() to ALL prefetch scripts | 1h | 🟡 PARTIAL — corp_actions done; rest pending |
+| J7 | Normalize null/missing values (some parquets have None, some NaN, some empty string) | per-source migration | 2h | 🟡 PENDING |
+| J8 | Add `_schema.json` per cache directory documenting expected columns + types (canonical schema lock) | per-cache-dir | 2h | 🟡 PENDING |
+
 ### NEW INV entries 2026-05-08 morning
 
 | INV | Title | Status |
