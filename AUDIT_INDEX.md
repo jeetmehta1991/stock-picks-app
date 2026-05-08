@@ -5,7 +5,7 @@
 
 ## Decision Registry
 
-**Total: 354 decision entries (Pass 53 close: +DEC-589 + DEC-590 + DEC-591/592/593 prefetch-audit remediation + DEC-594/595 spec-without-build structural fix + DEC-596 standing approvals + per-turn push; Pass 53 review-cycle DECs DEC-509-588 propagation pending DEC-588 doc-reconciliation pass; PARTIAL-SPEC-ONLY status counts pending retroactive audit per DEC-594)**
+**Total: 520 decision entries (Pass 53 close: +DEC-589 + DEC-590 + DEC-591/592/593 prefetch-audit remediation + DEC-594/595 spec-without-build structural fix + DEC-596 standing approvals + per-turn push; Pass 53 review-cycle DECs DEC-509-588 propagation pending DEC-588 doc-reconciliation pass; PARTIAL-SPEC-ONLY status counts pending retroactive audit per DEC-594)**
 
 | Status | Count |
 |---|---|

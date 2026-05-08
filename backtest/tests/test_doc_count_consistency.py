@@ -37,22 +37,25 @@ def read_doc(name: str) -> str:
 # AUDIT_INDEX.md - decisions
 # ---------------------------------------------------------------------------
 def test_audit_index_decision_count_matches_table():
-    """Header claims 'Total: N decision entries'; structured table should
-    have at least that many DECISION-NNN rows.
+    """Header claims 'Total: N decision entries'; structured table count
+    must be within +/- 5% of claim. Catches BOTH directions of drift:
+      - downward (parser dropping rows) — original concern
+      - upward (claim stale; new DECs added without header refresh) —
+        added 2026-05-08 after dashboard 520 vs header 354 finding.
+    Use 'python scripts/sync_doc_counts.py --update' to refresh the
+    header claim from the table count.
     """
     text = read_doc("AUDIT_INDEX.md")
-    # Extract claim (allow varying formats)
     m = re.search(r"Total:\s*(\d+)\s*decision entries", text)
     if not m:
         pytest.skip("AUDIT_INDEX.md has no 'Total: N decision entries' claim")
     claimed = int(m.group(1))
-    # Count actual table rows (DECISION-NNN appearing in table)
-    actual = len(re.findall(r"\*\*DECISION-\d+", text))
-    # Allow up to 50% upward drift (table can grow without header re-numbering)
-    # but downward drift is always wrong
-    assert actual >= int(claimed * 0.95), (
-        f"AUDIT_INDEX claims {claimed} decisions; table has only {actual} "
-        f"(more than 5% short - claim out of date OR rows lost)"
+    actual = len(re.findall(r"^\| \*\*DECISION-\d+", text, re.MULTILINE))
+    drift_pct = abs(actual - claimed) / max(claimed, 1)
+    assert drift_pct < 0.05, (
+        f"AUDIT_INDEX claims {claimed} decisions; table has {actual} "
+        f"({drift_pct:.1%} drift, threshold 5%). "
+        f"Run: python scripts/sync_doc_counts.py --update"
     )
 
 

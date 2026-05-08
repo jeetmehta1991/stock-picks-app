@@ -695,4 +695,23 @@ contract names: `UST 10Y NOTE` / `UST 5Y NOTE` / `UST 2Y NOTE` / `UST BOND`
 
 ---
 
-*Last updated: 2026-05-08 afternoon (Pass 53 Day-9 v8h+1 — Tier H/I execution + B1 done)*
+## INV-045 — Stale numerical claims in reference docs (cross-doc count drift) (Pass 53 Day-9 v8h+1 2026-05-08 evening)
+
+- **Discovered:** 2026-05-08 evening; owner asked dashboard decision-count check → analysis showed AUDIT_INDEX header claimed 354 decisions but table actually had 520 (+166 drift).
+- **Observation:** Multiple reference docs carry numerical claims in prose (e.g. `Total: N decision entries`, `N canonical bugs`) that drift from the structured-data reality below them. Detected at audit:
+  - AUDIT_INDEX.md: 354 claimed, 520 actual (+166 drift)
+  - BUG_REGISTER.md: 148 claimed, 152 actual (+4 drift)
+- **Severity:** MEDIUM (any consumer reading the header gets wrong counts; test_doc_count_consistency was tolerating upward drift).
+- **Status:** RESOLVING THIS COMMIT
+- **Fix landed:**
+  - `scripts/sync_doc_counts.py` (NEW) - reads source-of-truth tables, regenerates header claims; supports `--check` (CI gate) and `--update` (fix mode)
+  - `test_audit_index_decision_count_matches_table` tightened to fail on drift in BOTH directions (was downward-only); threshold 5%
+  - One-shot `--update` ran 2026-05-08 evening: AUDIT_INDEX 354 -> 520; BUG_REGISTER 148 -> 152
+- **Action propagation needed:**
+  - Add `python scripts/sync_doc_counts.py --check` to pre-commit hook (analogous to `preflight.py`) so future drift is caught at commit-time
+  - Or: make sync_doc_counts.py auto-run + commit before tests on every push
+- **Joint:** CHECKLIST #34 (count-derived fields regenerate from source); CHECKLIST #36 (numerical claims regenerated at write time); CHECKLIST #74 (this INV in same commit as fix); test_doc_count_consistency.py (catches future drift).
+
+---
+
+*Last updated: 2026-05-08 evening (Pass 53 Day-9 v8h+1 — Tier H/I execution + B1 done + INV-045 sync)*
