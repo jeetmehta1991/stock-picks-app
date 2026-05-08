@@ -85,20 +85,40 @@ LEGACY_REFERENCE_INDEX = Path(
 
 
 def load_cik_map() -> dict[str, str]:
-    """Build ticker → CIK lookup from Polygon reference cache."""
+    """Build ticker -> CIK lookup. Primary: Polygon reference cache.
+    Fallback: SEC's authoritative company_tickers.json (covers ~8 tickers
+    Polygon reference is missing, e.g. recently-IPO'd or smaller filers)."""
+    cik_map: dict[str, str] = {}
+
+    # Primary: Polygon reference cache
     for p in [REFERENCE_INDEX, LEGACY_REFERENCE_INDEX]:
         if p.exists():
             df = pd.read_parquet(p)
             if "ticker" in df.columns and "cik" in df.columns:
-                # Normalize CIK to 10-digit zero-padded
-                cik_map = {}
                 for _, row in df.iterrows():
                     cik_raw = str(row["cik"]).strip() if pd.notna(row.get("cik")) else ""
                     if cik_raw and cik_raw.lower() not in ("nan", "none", ""):
                         cik_map[str(row["ticker"]).upper()] = cik_raw.zfill(10)
-                if cik_map:
-                    return cik_map
-    return {}
+            if cik_map:
+                break
+
+    # Fallback: SEC authoritative map (only fills gaps; does not overwrite)
+    try:
+        import requests
+        r = requests.get(
+            "https://www.sec.gov/files/company_tickers.json",
+            headers={"User-Agent": "stock-picks-app jeet@example.com"},
+            timeout=30,
+        )
+        if r.status_code == 200:
+            for v in r.json().values():
+                t = str(v.get("ticker", "")).upper()
+                if t and t not in cik_map:
+                    cik_map[t] = str(v.get("cik_str", "")).zfill(10)
+    except Exception:
+        pass
+
+    return cik_map
 
 
 def fetch_submissions(cik: str, retries: int = 3) -> Optional[dict]:
