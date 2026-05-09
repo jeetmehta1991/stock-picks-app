@@ -21,6 +21,22 @@ from pathlib import Path
 from datetime import date, timedelta
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
+
+
+def _load_env(path: Path = Path(".env")) -> None:
+    """Load .env file into os.environ if present (idempotent)."""
+    if not path.exists():
+        return
+    for line in path.read_text(errors="ignore").splitlines():
+        s = line.strip()
+        if not s or s.startswith("#") or "=" not in s:
+            continue
+        k, v = s.split("=", 1)
+        os.environ.setdefault(k.strip(), v.strip().strip('"').strip("'"))
+
+
+_load_env()
+
 # INV-016 fix Pass 53 v8h+1 owner-approved 2026-05-08: read Master Universe
 # (1937) instead of S&P 500 + ETFs only (~509). Falls back to legacy scope
 # if Master Universe CSV not present.
