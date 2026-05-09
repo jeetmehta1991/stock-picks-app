@@ -64,6 +64,7 @@
   <button class="tab-btn" data-panel="status-overview">Status Overview</button>
   <button class="tab-btn" data-panel="api-usage">API Usage / Stage</button>
   <button class="tab-btn" data-panel="catalog">Full Catalog (Inventory)</button>
+  <button class="tab-btn" data-panel="coverage-matrix">Coverage Matrix</button>
 </nav>
 
 <main>
@@ -204,6 +205,24 @@
       <thead><tr>
         <th>API</th><th>Endpoint</th><th>Field</th><th>Use case</th><th>Stage</th>
         <th>Criticality</th><th>Coding</th><th>Wiring</th><th>Refs</th>
+      </tr></thead>
+    </table>
+  </section>
+
+  <section id="coverage-matrix" class="panel">
+    <h2>Coverage Matrix - per-(API, endpoint, field)</h2>
+    <p style="color:#6b7588;font-size:13px">
+      Owner directive 2026-05-09: per-field coverage with commentary on every &lt;100% row, plus pyramid status badges (cached / coded / wired / tested) per endpoint. Endpoint-summary rows shown in <strong>bold</strong>.
+    </p>
+    <div class="filter-bar">
+      <input id="cov-filter" placeholder="Filter API / endpoint / field / commentary..." size="50">
+    </div>
+    <table id="tbl-coverage-matrix" class="display compact" style="width:100%">
+      <thead><tr>
+        <th>API</th><th>Endpoint</th><th>Field</th><th>Kind</th>
+        <th>Coverage %</th><th>Commentary</th>
+        <th>Cached</th><th>Coded</th><th>Wired</th><th>Tested</th>
+        <th>Files</th>
       </tr></thead>
     </table>
   </section>
@@ -437,6 +456,40 @@ $('#tbl-attention').DataTable({
   data: attentionRows, pageLength: 25, order: [[3,'asc']],
   columns: [{},{},{type:'html'},{type:'html'},{},{type:'html'}],
 });
+
+// Coverage Matrix tab (owner directive 2026-05-09)
+function covPctClass(pct) {
+  if (pct === null || pct === undefined) return 'pct-empty';
+  if (pct >= 95) return 'pct-full';
+  if (pct >= 50) return 'pct-partial';
+  if (pct > 0)   return 'pct-partial';
+  return 'pct-empty';
+}
+function boolBadge(b) {
+  return b
+    ? '<span class="badge badge-resolved">YES</span>'
+    : '<span class="badge badge-superseded">no</span>';
+}
+const cov = D.coverage_matrix || [];
+const covRows = cov.map(r => [
+  r.api,
+  r.endpoint,
+  r.is_summary ? `<strong>${r.field}</strong>` : `<code style="font-size:11px">${r.field}</code>`,
+  r.kind,
+  `<span class="pct-cell ${covPctClass(r.coverage_pct)}">${r.coverage_pct}%</span>`,
+  `<span style="font-size:12px;color:#475569">${r.commentary || '-'}</span>`,
+  boolBadge(r.cached),
+  boolBadge(r.coded),
+  boolBadge(r.wired),
+  boolBadge(r.tested),
+  r.files_count || r.n_observed || '-',
+]);
+const covTable = $('#tbl-coverage-matrix').DataTable({
+  data: covRows, pageLength: 100, order: [[0,'asc'],[1,'asc'],[2,'asc']],
+  columns: [{},{},{type:'html'},{},{type:'html'},{type:'html'},
+            {type:'html'},{type:'html'},{type:'html'},{type:'html'},{}],
+});
+$('#cov-filter').on('keyup', function () { covTable.search(this.value).draw(); });
 </script>
 
 </body>

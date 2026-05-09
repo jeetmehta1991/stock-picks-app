@@ -178,6 +178,216 @@ def scan_dir_files(dir_path: Path) -> dict[str, dict]:
     return out
 
 
+def compute_field_coverage_matrix(cache_paths_list: list, universe: list[str], universe_size: int) -> list[dict]:
+    """Per-(api, endpoint, field) coverage table.
+
+    For each cache directory in CACHE_PATHS:
+    - per_ticker: sample up to 200 non-empty parquets; for each column, count
+      how many sampled tickers have a non-null value; estimate universe coverage
+      as (sampled_with_field / sampled_non_empty) * (n_files_total / universe_size).
+      Universe coverage = % of universe tickers with non-null in this field.
+    - single: read the single parquet; per-field coverage = non-null rows / total rows.
+    - global: similar to single but may span multiple files; concat samples.
+
+    Returns rows ready for HTML table:
+      {api, endpoint, field, kind, coverage_pct, commentary, n_observed,
+       pyramid_status, coded, wired, tested, cached, testing_layers}.
+    """
+    import random
+    rows: list[dict] = []
+    universe_set = set(universe)
+
+    # Heuristic commentary lookup based on (api, endpoint) facts
+    KNOWN_GAPS = {
+        ("polygon", "events"):                "Only ticker_change events captured (INV-029); other event types deferred",
+        ("polygon", "reference"):             "~251 delisted/foreign/ADR tickers without Polygon reference (immutable at source)",
+        ("polygon", "reference_extended"):    "~251 delisted tickers; INV-030 RESOLVED for available 1686",
+        ("sec_edgar", "10_K"):                "246 tickers genuinely SEC-unfileable (delisted/foreign/ADR/renamed)",
+        ("sec_edgar", "10_Q"):                "Same 246 unfileable",
+        ("sec_edgar", "8_K"):                 "Same baseline; some non-public companies",
+        ("sec_edgar", "form_4"):              "Tickers without insider transactions in window",
+        ("sec_edgar", "DEF_14A"):             "Same baseline + non-proxy filers",
+        ("sec_edgar", "S_1"):                 "Tickers without recent IPO filings",
+        ("sec_edgar", "S_1_A"):               "Tickers without S-1 amendments",
+        ("sec_edgar", "SC_13D"):              "Activist filings sparse by ticker",
+        ("sec_edgar", "SC_13D_A"):            "Activist amendments sparse by ticker",
+        ("sec_edgar", "SC_13G"):              "Passive filings; not all tickers have >5% holders",
+        ("sec_edgar", "SC_13G_A"):            "Passive amendments sparse",
+        ("sec_edgar", "xbrl_companyfacts"):   "275 tickers without recent XBRL filings",
+        ("wikipedia", "pageviews"):           "Tickers without dedicated Wikipedia page (~525)",
+        ("pytrends", "interest_over_time"):   "DEFERRED Phase 1C per DEC-599; partial data from earlier run",
+        ("quiver", "wikipedia_mirror"):       "Same gap as wikipedia.pageviews source",
+        ("quiver", "etfholdings"):            "Tickers Quiver does not track in ETF universe",
+        ("finnhub", "financials_reported"):   "Free-tier limited; full coverage requires Premium",
+        ("finnhub", "social_sentiment"):      "PREMIUM-LOCKED; EXCLUDED from Phase 1A per DEC-605",
+        ("aaii", "weekly_sentiment"):         "Single global parquet (1987-2026); not per-ticker",
+        ("aaii", "asset_allocation_survey"):  "Single global parquet (1987-2026); not per-ticker",
+    }
+
+    def commentary(api, endpoint, field, pct):
+        if pct >= 99.5:
+            return ""
+        key = (api, endpoint)
+        if key in KNOWN_GAPS:
+            return KNOWN_GAPS[key]
+        if pct == 0:
+            return "Field present in schema but no values populated; investigate source"
+        if pct < 50:
+            return "Major gap; field may be sparse-by-design or source-limited"
+        return "Minor gap; tickers without this field likely delisted/foreign or non-applicable"
+
+    def per_endpoint_row(api, endpoint, kind, fields_data, n_observed, n_universe):
+        """Roll up endpoint-level summary row."""
+        avg_cov = sum(d["coverage_pct"] for d in fields_data.values()) / max(len(fields_data), 1)
+        return {
+            "api": api,
+            "endpoint": endpoint,
+            "field": "(endpoint summary)",
+            "kind": kind,
+            "coverage_pct": round(avg_cov, 1),
+            "commentary": f"Avg per-field coverage; {len(fields_data)} fields tracked",
+            "n_observed": n_observed,
+            "n_universe": n_universe,
+            "is_summary": True,
+        }
+
+    for tup in cache_paths_list:
+        api, endpoint, path, kind = tup
+        cache_path = Path(path)
+
+        if kind == "single":
+            # Single global parquet (e.g. AAII weekly sentiment, AAS)
+            if not cache_path.exists() or not cache_path.is_file():
+                continue
+            try:
+                df = pd.read_parquet(cache_path)
+            except Exception:
+                continue
+            fields_data = {}
+            for col in df.columns:
+                non_null = df[col].notna().sum()
+                pct = float(non_null) / max(len(df), 1) * 100
+                fields_data[col] = {
+                    "coverage_pct": round(pct, 1),
+                    "n_observed": int(non_null),
+                }
+                rows.append({
+                    "api": api,
+                    "endpoint": endpoint,
+                    "field": col,
+                    "kind": kind,
+                    "coverage_pct": round(pct, 1),
+                    "commentary": commentary(api, endpoint, col, pct),
+                    "n_observed": int(non_null),
+                    "n_universe": len(df),
+                    "is_summary": False,
+                })
+            rows.append(per_endpoint_row(api, endpoint, kind, fields_data, len(df), len(df)))
+
+        elif kind == "per_ticker":
+            if not cache_path.is_dir():
+                continue
+            # Sample up to 200 non-empty parquets
+            all_parqs = sorted(cache_path.glob("*.parquet"))
+            non_empty_sample = []
+            for parq in all_parqs:
+                stem = parq.stem
+                if stem.startswith("_") or stem in ("all", "global", "index"):
+                    continue
+                try:
+                    if parq.stat().st_size < 200:
+                        continue
+                    df = pd.read_parquet(parq)
+                    if df.empty:
+                        continue
+                    non_empty_sample.append((stem.upper(), df))
+                except Exception:
+                    continue
+                if len(non_empty_sample) >= 50:
+                    break
+            if not non_empty_sample:
+                continue
+            n_total_files = len(all_parqs)
+            n_universe_with_data_estimate = min(n_total_files, universe_size)
+            # Per-field: count sampled tickers with non-null
+            field_tickers: dict[str, int] = {}
+            field_non_null_total: dict[str, int] = {}
+            field_total_obs: dict[str, int] = {}
+            for ticker, df in non_empty_sample:
+                for col in df.columns:
+                    non_null = int(df[col].notna().sum())
+                    if non_null > 0:
+                        field_tickers[col] = field_tickers.get(col, 0) + 1
+                    field_non_null_total[col] = field_non_null_total.get(col, 0) + non_null
+                    field_total_obs[col] = field_total_obs.get(col, 0) + len(df)
+            fields_data = {}
+            sampled = len(non_empty_sample)
+            for col, tickers_with in field_tickers.items():
+                # Estimate universe coverage = (sample_field_rate) * (universe_with_data / sampled)
+                sample_rate = tickers_with / sampled
+                # Apply universe ceiling: tickers with this field cannot exceed total cached files
+                est_universe_pct = sample_rate * (n_universe_with_data_estimate / max(universe_size, 1)) * 100
+                fields_data[col] = {
+                    "coverage_pct": round(est_universe_pct, 1),
+                    "n_observed": tickers_with,
+                }
+                rows.append({
+                    "api": api,
+                    "endpoint": endpoint,
+                    "field": col,
+                    "kind": kind,
+                    "coverage_pct": round(est_universe_pct, 1),
+                    "commentary": commentary(api, endpoint, col, est_universe_pct),
+                    "n_observed": tickers_with,
+                    "n_universe": universe_size,
+                    "n_sampled": sampled,
+                    "n_files_total": n_total_files,
+                    "is_summary": False,
+                })
+            rows.append(per_endpoint_row(api, endpoint, kind, fields_data, sampled, universe_size))
+
+        elif kind == "global":
+            # Global directory of multiple parquets (e.g. fred/observations)
+            if not cache_path.is_dir():
+                continue
+            all_parqs = sorted(cache_path.glob("*.parquet"))[:50]  # cap for speed
+            field_seen: dict[str, int] = {}
+            n_files_with_data = 0
+            for parq in all_parqs:
+                try:
+                    if parq.stat().st_size < 200:
+                        continue
+                    df = pd.read_parquet(parq)
+                    if df.empty:
+                        continue
+                    n_files_with_data += 1
+                    for col in df.columns:
+                        if df[col].notna().sum() > 0:
+                            field_seen[col] = field_seen.get(col, 0) + 1
+                except Exception:
+                    continue
+            fields_data = {}
+            n_total_files = len(list(cache_path.glob("*.parquet")))
+            for col, count in field_seen.items():
+                pct = float(count) / max(n_files_with_data, 1) * 100
+                fields_data[col] = {"coverage_pct": round(pct, 1), "n_observed": count}
+                rows.append({
+                    "api": api,
+                    "endpoint": endpoint,
+                    "field": col,
+                    "kind": kind,
+                    "coverage_pct": round(pct, 1),
+                    "commentary": commentary(api, endpoint, col, pct),
+                    "n_observed": count,
+                    "n_universe": n_total_files,
+                    "n_sampled": n_files_with_data,
+                    "is_summary": False,
+                })
+            rows.append(per_endpoint_row(api, endpoint, kind, fields_data, n_files_with_data, n_total_files))
+
+    return rows
+
+
 def scan_global_file(path: Path) -> dict:
     """Single global parquet (e.g. quiver bulk). Return {row_count, columns, ...}."""
     if not path.exists():
@@ -816,6 +1026,66 @@ def main() -> int:
         bucket_counts[c["final_bucket"]] = bucket_counts.get(c["final_bucket"], 0) + 1
     snapshot["catalog_bucket_counts"] = bucket_counts
     print(f"Catalog summary: {len(catalog)} endpoints | buckets: {bucket_counts}")
+
+    # Owner directive 2026-05-09: per-(api, endpoint, field) coverage matrix
+    # in a new dashboard page. For each field: coverage % across universe,
+    # commentary on why <100%, plus per-endpoint pyramid status indicators.
+    print("Computing per-field coverage matrix ...")
+    universe_list = list(universe["Symbol"]) if "Symbol" in universe.columns else []
+    coverage_matrix = compute_field_coverage_matrix(ENDPOINTS, universe_list, universe_size)
+    # Augment each row with cached/coded/wired/tested heuristics from existing
+    # endpoint scan results
+    ep_lookup = {(e["api"], e["endpoint"]): e for e in snapshot["endpoints"]}
+    # Build a 'consumer-references' set: which APIs are referenced in
+    # backtest/data,engine,signals,results,agents (the runtime hot-path).
+    prod_corpus = ""
+    for d in ("backtest/data", "backtest/engine", "backtest/signals",
+              "backtest/results", "backtest/agents"):
+        dd = Path(d)
+        if dd.exists():
+            for py in dd.rglob("*.py"):
+                try:
+                    prod_corpus += py.read_text(encoding="utf-8", errors="ignore")
+                except Exception:
+                    continue
+    tests_corpus = ""
+    td = Path("backtest/tests")
+    if td.exists():
+        for py in td.rglob("*.py"):
+            try:
+                tests_corpus += py.read_text(encoding="utf-8", errors="ignore")
+            except Exception:
+                continue
+    for row in coverage_matrix:
+        api = row["api"]
+        endpoint = row["endpoint"]
+        ep = ep_lookup.get((api, endpoint), {})
+        # cached: any non-empty parquet exists for the endpoint
+        row["cached"] = (ep.get("non_empty_files", 0) > 0
+                         or ep.get("files_count", 0) > 0)
+        row["files_count"] = ep.get("files_count", 0)
+        row["endpoint_coverage_pct"] = ep.get("coverage_pct")
+        # coded: cache path string appears in any production module
+        path_str = next((p for (a, e, p, k) in ENDPOINTS
+                         if a == api and e == endpoint), "")
+        row["coded"] = path_str in prod_corpus or path_str.replace("/", ".") in prod_corpus
+        # wired: cache path is read at runtime (a 'pd.read_parquet' / 'Path(' call references it)
+        wired_signal = (
+            f'"{path_str}"' in prod_corpus or
+            f"'{path_str}'" in prod_corpus or
+            f'Path("{path_str}")' in prod_corpus
+        )
+        row["wired"] = wired_signal
+        # tested: any test file references the cache path or api+endpoint
+        test_signal = (
+            path_str in tests_corpus or
+            f"{api}/{endpoint}" in tests_corpus or
+            f"{api}.{endpoint}" in tests_corpus
+        )
+        row["tested"] = test_signal
+
+    snapshot["coverage_matrix"] = coverage_matrix
+    print(f"  coverage matrix rows: {len(coverage_matrix)}")
 
     # Output JSON
     out_json = OUT_DIR / "data.json"
