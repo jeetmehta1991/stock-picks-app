@@ -113,10 +113,13 @@ def fetch_news_for_ticker(ticker: str) -> pd.DataFrame:
     if not all_articles:
         return pd.DataFrame()
 
-    # Flatten to columns we care about
+    # Flatten to columns we care about. INV-027 fix Pass 53 v8h+1 2026-05-08:
+    # preserve full insights array (per-ticker sentiment for multi-ticker
+    # articles) so downstream sentiment-overlay strategies can reconstruct
+    # per-ticker breakdown for sector / earnings-season pieces.
+    import json as _json
     rows = []
     for a in all_articles:
-        # Extract this ticker's per-ticker insight if present
         insights = a.get("insights", []) or []
         ticker_insight = next((i for i in insights if i.get("ticker") == ticker), {})
         rows.append({
@@ -129,9 +132,10 @@ def fetch_news_for_ticker(ticker: str) -> pd.DataFrame:
             "amp_url": a.get("amp_url"),
             "publisher_name": (a.get("publisher") or {}).get("name"),
             "publisher_homepage_url": (a.get("publisher") or {}).get("homepage_url"),
-            "sentiment": ticker_insight.get("sentiment"),  # positive / negative / neutral
+            "sentiment": ticker_insight.get("sentiment"),  # this-ticker sentiment
             "sentiment_reasoning": ticker_insight.get("sentiment_reasoning"),
             "all_tickers": ",".join(a.get("tickers", []) or []),
+            "insights_json": _json.dumps(insights) if insights else None,  # INV-027
         })
 
     df = pd.DataFrame(rows)

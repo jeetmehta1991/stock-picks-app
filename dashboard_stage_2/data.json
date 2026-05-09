@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-09T01:31:05.585658+00:00",
+  "generated_at": "2026-05-09T02:49:55.062518+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -17357,7 +17357,7 @@
       "status_grep": {
         "coded": true,
         "wired": false,
-        "tested": false,
+        "tested": true,
         "pushed": false,
         "n_doc_refs": 8,
         "pyramid": {
@@ -17366,7 +17366,7 @@
           "integration": false,
           "system": false,
           "functional": false,
-          "regression": false,
+          "regression": true,
           "data_integrity": false,
           "performance": false,
           "acceptance": false,
@@ -22210,7 +22210,7 @@
       "severity": "HIGH",
       "summary": "`backtest/data/cache/finnhub_news/` has exactly 509 files. The script `scripts/prefetch_finnhub_news.py` line ~31 reads `from backtest.data.universe import get_sp500_constituents, ETFS_FULL` and uses ",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
         "tested": false,
         "pushed": false,
@@ -22415,8 +22415,8 @@
     },
     {
       "id": "INV-023",
-      "title": "\u2014 Quiver BG `bsu432hbt` died from second Unicode emoji bug at line 231 \u2014 completed congressional only (1/7 endpoints) (Pass 53 Day-9 v8h evening)",
-      "status": "OPEN",
+      "title": "\u2014 RESOLVED 2026-05-08 v8h+1 \u2014 Quiver BG Unicode emoji bug fixed; all 7 endpoints completed (Pass 53)",
+      "status": "RESOLVED",
       "severity": "HIGH",
       "summary": "`scripts/prefetch_quiver.py` had MULTIPLE Unicode chars in print statements: `\u2713` (\u2713 at line 197 \u2014 fixed earlier in `33b93fec`), `\u2705` (\u2705 line 231), `\u26a0` (\u26a0 lines 234, 243), `\u274c` (\u274c line 237), `\u2014` em-dash ",
       "status_grep": {
@@ -22540,7 +22540,7 @@
       "severity": "HIGH",
       "summary": "Polygon `/v2/reference/news` returns each article with an `insights` array containing per-ticker {ticker, sentiment, sentiment_reasoning} entries. For multi-ticker articles (e.g. \"AAPL beats but MSFT ",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
         "tested": false,
         "pushed": false,
@@ -22775,10 +22775,10 @@
     },
     {
       "id": "INV-038",
-      "title": "\u2014 Polygon Indices Basic license tier discovery (Pass 53 Day-9 v8h+1 2026-05-08)",
-      "status": "OPEN",
-      "severity": "HIGH",
-      "summary": "Owner stated 2026-05-07 they could add Indices Basic (plus Options/Futures/Currencies Basic) for free. Probe confirms Indices Basic is",
+      "title": "\u2014 RESOLVED 2026-05-08 v8h+1 \u2014 Polygon Indices Basic license tier discovered + activated; 2/13 covered (Pass 53)",
+      "status": "RESOLVED",
+      "severity": "UNKNOWN",
+      "summary": "Owner activated Polygon Indices Basic 2026-05-08. Re-probe finds 2 of 13 wanted indices accessible at our tier (I:NDX, I:COMP). The 11 others (VIX/SPX/DJI/RUT family) require additional CBOE/S&P licen",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -23092,6 +23092,36 @@
           "system": false,
           "functional": false,
           "regression": true,
+          "data_integrity": false,
+          "performance": false,
+          "acceptance": false,
+          "property": false,
+          "snapshot": false,
+          "contract": false,
+          "compatibility": false
+        }
+      },
+      "dependencies": "-"
+    },
+    {
+      "id": "INV-046",
+      "title": "\u2014 Phase 1A smoke surfaces single-trade PnL > 100% (engine bug candidate) (Pass 53 Day-9 v8h+1 2026-05-08)",
+      "status": "OPEN",
+      "severity": "HIGH",
+      "summary": "`test_e2e_phase1a_smoke.py::test_g1_pnl_realistic` asserts `df['pnl_pct'].abs().max() < 100`. In the smoke fixture's 397-trade run, max PnL hit",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 0,
+        "pyramid": {
+          "unit": false,
+          "smoke": false,
+          "integration": false,
+          "system": false,
+          "functional": false,
+          "regression": false,
           "data_integrity": false,
           "performance": false,
           "acceptance": false,
@@ -25730,196 +25760,200 @@
   ],
   "recent_commits": [
     {
+      "sha": "9093d20f",
+      "subject": "StockTwits batch 14",
+      "author": "jeetmehta1991",
+      "rel_time": "2 minutes ago"
+    },
+    {
+      "sha": "8281e07d",
+      "subject": "StockTwits batch 13",
+      "author": "jeetmehta1991",
+      "rel_time": "18 minutes ago"
+    },
+    {
+      "sha": "fb7cc135",
+      "subject": "StockTwits batch 12",
+      "author": "jeetmehta1991",
+      "rel_time": "34 minutes ago"
+    },
+    {
+      "sha": "4421b801",
+      "subject": "StockTwits batch 11",
+      "author": "jeetmehta1991",
+      "rel_time": "51 minutes ago"
+    },
+    {
+      "sha": "da8873a8",
+      "subject": "StockTwits batch 10",
+      "author": "jeetmehta1991",
+      "rel_time": "67 minutes ago"
+    },
+    {
+      "sha": "95f23368",
+      "subject": "Pass 53 v8h+1: Next Up auto-ranked panel (Tier 0-7 prioritization)",
+      "author": "jeetmehta1991",
+      "rel_time": "78 minutes ago"
+    },
+    {
       "sha": "9d1d6b3c",
       "subject": "StockTwits batch 9",
       "author": "jeetmehta1991",
-      "rel_time": "4 minutes ago"
+      "rel_time": "83 minutes ago"
     },
     {
       "sha": "80df9b2f",
       "subject": "StockTwits batch 8",
       "author": "jeetmehta1991",
-      "rel_time": "21 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "77187649",
       "subject": "StockTwits batch 7",
       "author": "jeetmehta1991",
-      "rel_time": "37 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "6f2e664f",
       "subject": "StockTwits batch 6",
       "author": "jeetmehta1991",
-      "rel_time": "53 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "7bdd83fb",
       "subject": "StockTwits batch 5",
       "author": "jeetmehta1991",
-      "rel_time": "69 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "9fd0a256",
       "subject": "StockTwits batch 4",
       "author": "jeetmehta1991",
-      "rel_time": "86 minutes ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "482b42cf",
       "subject": "StockTwits batch 3",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "1da0d4bc",
       "subject": "StockTwits batch 2",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "8179b83b",
       "subject": "StockTwits batch 1",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "c97d31c5",
       "subject": "Pass 53 v8h+1: 13-layer pyramid (4 NEW) + StockTwits + Finnhub social_sentiment + AAII NaN-fix",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "74226e11",
       "subject": "Pass 53 v8h+1: full test pyramid (4 new layers) + AAII extended parse + YES/no badges",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "e67659dd",
       "subject": "Pass 53 v8h+1: structural drift detector + 9-layer test pyramid columns + Reference tab",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "e66cee33",
       "subject": "Pass 53 v8h+1: SEC EDGAR CIK fallback + B1 top-up (+8 tickers)",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "65f23d6c",
       "subject": "Pass 53 v8h+1: H10 ep1 prefetch script (drove 1937/1937 to 100%)",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "a74b5368",
       "subject": "Pass 53 auto-drift-sweep 2026-05-08 16:50: dashboards refreshed",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "398a5994",
       "subject": "Polygon Options chain ref: final (1932 tickers fetched)",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "7 hours ago"
     },
     {
       "sha": "0b4f9389",
       "subject": "Polygon Options chain ref: batch 19 (1900 tickers)",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "7 hours ago"
     },
     {
       "sha": "87d88628",
       "subject": "Polygon Options chain ref: batch 18 (1800 tickers)",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "7 hours ago"
     },
     {
       "sha": "f56fe3f1",
       "subject": "Polygon Options chain ref: batch 17 (1700 tickers)",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "7 hours ago"
     },
     {
       "sha": "cf1a0541",
       "subject": "Polygon Options chain ref: batch 16 (1600 tickers)",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "7 hours ago"
     },
     {
       "sha": "3133dc07",
       "subject": "Polygon Options chain ref: batch 15 (1500 tickers)",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "7 hours ago"
     },
     {
       "sha": "e926b105",
       "subject": "Polygon Options chain ref: batch 14 (1400 tickers)",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "7 hours ago"
     },
     {
       "sha": "74c4820f",
       "subject": "Pass 53 v8h+1: comprehensive dashboard review - parser canon + automation panel + H10/H20/H21 stages",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "7 hours ago"
     },
     {
       "sha": "77a937f6",
       "subject": "Polygon Options chain ref: batch 13 (1300 tickers)",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
-    },
-    {
-      "sha": "5b2a55ca",
-      "subject": "Polygon Options chain ref: batch 12 (1200 tickers)",
-      "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
-    },
-    {
-      "sha": "060c6515",
-      "subject": "Polygon Options chain ref: batch 11 (1100 tickers)",
-      "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
-    },
-    {
-      "sha": "284ea3e5",
-      "subject": "Polygon Options chain ref: batch 10 (1000 tickers)",
-      "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
-    },
-    {
-      "sha": "3fc49ce4",
-      "subject": "Polygon Options chain ref: batch 7 (700 tickers)",
-      "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
-    },
-    {
-      "sha": "d4c0cb4f",
-      "subject": "Pass 53 Day-9 v8h+1: dashboards regenerated post polygon_options scan fix",
-      "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
-    },
-    {
-      "sha": "fe487230",
-      "subject": "Polygon Options chain ref: batch 6 (600 tickers)",
-      "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
+      "rel_time": "7 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 18,
-    "modified": 3,
+    "count": 12,
+    "modified": 5,
     "added": 0,
-    "untracked": 15,
+    "untracked": 7,
     "deleted": 0,
     "files": [
       {
         "status": "M",
-        "path": "dashboard_stage_2/index.html"
+        "path": "OPEN_INVESTIGATIONS.md"
+      },
+      {
+        "status": "M",
+        "path": "backtest/tests/test_regression.py"
       },
       {
         "status": "M",
@@ -25927,7 +25961,11 @@
       },
       {
         "status": "M",
-        "path": "scripts/build_dashboard_stage_2.py"
+        "path": "scripts/prefetch_finnhub_news.py"
+      },
+      {
+        "status": "M",
+        "path": "scripts/prefetch_polygon_news.py"
       },
       {
         "status": "??",
@@ -25939,55 +25977,23 @@
       },
       {
         "status": "??",
-        "path": "data_prefetch/stocktwits/CSGP.parquet"
+        "path": "data_prefetch/stocktwits/FSLR.parquet"
       },
       {
         "status": "??",
-        "path": "data_prefetch/stocktwits/CSPI.parquet"
+        "path": "data_prefetch/stocktwits/FSLY.parquet"
       },
       {
         "status": "??",
-        "path": "data_prefetch/stocktwits/CSX.parquet"
+        "path": "data_prefetch/stocktwits/FSS.parquet"
       },
       {
         "status": "??",
-        "path": "data_prefetch/stocktwits/CTAS.parquet"
+        "path": "data_prefetch/stocktwits/FSTX.parquet"
       },
       {
         "status": "??",
-        "path": "data_prefetch/stocktwits/CTGO.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/stocktwits/CTIC.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/stocktwits/CTLT.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/stocktwits/CTRA.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/stocktwits/CTRE.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/stocktwits/CTSH.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/stocktwits/CTVA.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/stocktwits/CTXS.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/stocktwits/CUBI.parquet"
+        "path": "data_prefetch/stocktwits/FSV.parquet"
       }
     ]
   },
@@ -26169,7 +26175,7 @@
     }
   ],
   "test_inventory": {
-    "total": 714,
+    "total": 715,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -26225,7 +26231,7 @@
       "test_property": 6,
       "test_quiver_trader_demo": 5,
       "test_quiver_trader_smoke": 12,
-      "test_regression": 7,
+      "test_regression": 8,
       "test_schema_canonical": 1,
       "test_sec_edgar_demo": 3,
       "test_sec_edgar_smoke": 7,
@@ -26416,16 +26422,6 @@
   },
   "next_up": [
     {
-      "kind": "BUG",
-      "id": "BUG-007",
-      "title": "API key guard blocks no-agent Phase 1B run",
-      "status": "OPEN",
-      "tier": 0,
-      "reason": "BUG-007 API key guard blocks --no-agents (explicit Phase 1A dep)",
-      "back_refs": 0,
-      "sprint": "(see linked DEC sprint)"
-    },
-    {
       "kind": "INV",
       "id": "INV-015",
       "title": "\u2014 Alpha Vantage news cached only 25 files (alphabetical mid-letter range) (Pass 53 Day-9 v8h evening)",
@@ -26439,16 +26435,6 @@
       "kind": "INV",
       "id": "INV-016",
       "title": "\u2014 Finnhub news 509 files = S&P-500-only (NOT expanded to Master Universe) (Pass 53 Day-9 v8h evening)",
-      "status": "OPEN",
-      "tier": 0,
-      "reason": "INV OPEN with HIGH/CRITICAL severity",
-      "back_refs": 0,
-      "sprint": "-"
-    },
-    {
-      "kind": "INV",
-      "id": "INV-023",
-      "title": "\u2014 Quiver BG `bsu432hbt` died from second Unicode emoji bug at line 231 \u2014 completed congressional only (1/7 endpoints) (Pass 53 Day-9 v8h eve",
       "status": "OPEN",
       "tier": 0,
       "reason": "INV OPEN with HIGH/CRITICAL severity",
@@ -26487,8 +26473,8 @@
     },
     {
       "kind": "INV",
-      "id": "INV-038",
-      "title": "\u2014 Polygon Indices Basic license tier discovery (Pass 53 Day-9 v8h+1 2026-05-08)",
+      "id": "INV-046",
+      "title": "\u2014 Phase 1A smoke surfaces single-trade PnL > 100% (engine bug candidate) (Pass 53 Day-9 v8h+1 2026-05-08)",
       "status": "OPEN",
       "tier": 0,
       "reason": "INV OPEN with HIGH/CRITICAL severity",
@@ -26664,6 +26650,26 @@
       "reason": "Dependency root (3 downstream items reference)",
       "back_refs": 3,
       "sprint": "Sprint 7 additions (Statistica"
+    },
+    {
+      "kind": "DEC",
+      "id": "DEC-091",
+      "title": "Drawdown re-sizing Pass 52 turn 67 owner-approved BLOCKED_ON_BUG-095 (post-Portfolio class via Phase 0.B): Drawdown re-sizing methodology \u2014 ",
+      "status": "BLOCKED_ON_BUG-095",
+      "tier": 1,
+      "reason": "Dependency root (3 downstream items reference)",
+      "back_refs": 3,
+      "sprint": "Sprint 5 additions (Position S"
+    },
+    {
+      "kind": "DEC",
+      "id": "DEC-103",
+      "title": "Auto-populate Tier 2 universe (spinoffs, IPOs, $5B+) \u2014 Pass 52 turn 33 RESOLVED via supersession. Pass 52 phased implementation: DEC-372 (Ph",
+      "status": "PARTIAL-SPEC-ONLY",
+      "tier": 1,
+      "reason": "Dependency root (3 downstream items reference)",
+      "back_refs": 3,
+      "sprint": "Sprint 0A \u2014 Phase 0.A Multi-AP; Sprint 5 additions (Universe M"
     }
   ],
   "decision_status_counts": {
@@ -26710,8 +26716,8 @@
     "splits": 1
   },
   "inv_status_counts": {
-    "OPEN": 41,
-    "RESOLVED": 4
+    "OPEN": 40,
+    "RESOLVED": 6
   },
   "tier_status_counts": {
     "UNKNOWN": 20,

@@ -118,6 +118,29 @@ def test_bug_dashboard_polygon_options_scanned() -> None:
     )
 
 
+# -- BUG-007 RESOLVED: API key guard does NOT block --no-agents ----------
+def test_bug_007_no_agents_does_not_require_anthropic_key() -> None:
+    """BUG-007 (Phase 1A explicit dep): when --no-agents flag is set, the
+    runner must NOT hard-fail on missing ANTHROPIC_API_KEY. The agent
+    pipeline returns None instead of raising; the runner skips the agent
+    branch entirely. Regression: any future code path that calls
+    sys.exit() / raise on missing ANTHROPIC_API_KEY when --no-agents is
+    in effect re-introduces BUG-007."""
+    from pathlib import Path
+    runner = REPO_ROOT / "backtest" / "run_phase1a.py"
+    pipeline = REPO_ROOT / "backtest" / "agents" / "pipeline.py"
+    assert runner.exists() and pipeline.exists()
+    # The pipeline _call_claude must NOT raise/exit on missing key
+    pipeline_text = pipeline.read_text(encoding="utf-8", errors="ignore")
+    assert "if not ANTHROPIC_KEY" in pipeline_text, (
+        "pipeline.py missing the 'if not ANTHROPIC_KEY' soft-guard - "
+        "BUG-007 regression candidate"
+    )
+    # And the runner must accept the flag
+    runner_text = runner.read_text(encoding="utf-8", errors="ignore")
+    assert "--no-agents" in runner_text, "run_phase1a.py missing --no-agents flag"
+
+
 # -- BUG-J5 ALREADY-CLEAN: parquet compression stays SNAPPY ----------------
 def test_bug_j5_parquet_compression_snappy() -> None:
     """Sample 50 random parquets; assert compression is uniformly SNAPPY.

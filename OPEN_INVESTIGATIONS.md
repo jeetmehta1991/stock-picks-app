@@ -323,19 +323,18 @@ contract names: `UST 10Y NOTE` / `UST 5Y NOTE` / `UST 2Y NOTE` / `UST BOND`
 
 ---
 
-## INV-023 — Quiver BG `bsu432hbt` died from second Unicode emoji bug at line 231 — completed congressional only (1/7 endpoints) (Pass 53 Day-9 v8h evening)
+## INV-023 — RESOLVED 2026-05-08 v8h+1 — Quiver BG Unicode emoji bug fixed; all 7 endpoints completed (Pass 53)
 
 - **Discovered:** 2026-05-07 evening; Quiver BG failed with exit code 1 at end of congressional fetch
 - **Observation:** `scripts/prefetch_quiver.py` had MULTIPLE Unicode chars in print statements: `✓` (✓ at line 197 — fixed earlier in `33b93fec`), `✅` (✅ line 231), `⚠` (⚠ lines 234, 243), `❌` (❌ line 237), `—` em-dash (lines 182, 208, 209, 212, 217). Earlier fix at line 197 was incomplete — line 231 ✅ crash was the FATAL exit. The em-dash and other emoji fired as `UnicodeEncodeError` in Windows cp1252 console; the inner-loop em-dash crashes were caught by the outer `except Exception` and logged as "ERROR on TICKER" (misleading — the data was actually saved before the print crash).
 - **Why not blocking long-term:** Data integrity intact. `save_ticker_data()` runs BEFORE the failing print, so data files were saved + checkpoints updated for every ticker. Verification: 1941 congressional parquet files vs 1921 checkpoint entries — files >= checkpoint, all good. The "ERROR on TICKER" log lines were save-then-print-crash events; data WAS persisted.
 - **Severity:** HIGH at the moment — Phase 1A blockers re-emerged. After the BG died, only 1 of 7 endpoints actually progressed (congressional 1921/1937). The 6 remaining (insider/institutional/gov_contracts/lobbying/wallstreetbets/wikipedia) are STILL at 509 baseline. INV-003 (Quiver re-prefetch) re-opens.
-- **Status:** RESOLVING THIS COMMIT
-- **Next action:**
-  - Bulk-replace ALL Unicode chars in print statements with ASCII labels (DONE this commit)
-  - Generalize regression test from runner-only (`test_phase1a_runner_no_unicode.py`) to all prefetch/refresh/build/smoke scripts (`test_prefetch_scripts_no_unicode.py` — DONE this commit)
-  - Re-launch BG to resume from checkpoint state (congressional ~done; will progress to insider/institutional/gov_contracts/lobbying/wallstreetbets; wikipedia ghost will skip per INV-013)
-  - Estimated remaining wall time: ~6 endpoints × 1428 tickers × 1.2s = ~2.9 hours
-- **Joint:** P1.runner regression (commit `8d2641edf`) — same bug class but narrower scope (didn't cover prefetch scripts); L150 (pyramid dimension-coverage gap meta-pattern: when one script has a regression test, sibling scripts in same role need the same coverage); CHECKLIST #75 strict pyramid (this fix MUST run pyramid before push); CHECKLIST #74 (this INV entry in same commit as the fix); INV-013 (wikipedia ghost — same BG); INV-003 (Quiver re-prefetch — re-opens).
+- **Status:** RESOLVED 2026-05-08 v8h+1.
+- **Resolution evidence:**
+  - All 7 Quiver endpoints fully cached: congressional 1941, gov_contracts 1941, insider 1941, institutional 1941, lobbying 1941, wallstreetbets 1941, plus housetrading/senatetrading/spacs/topshareholders/twitter all at 1937.
+  - `test_prefetch_scripts_no_unicode.py` now enforces ASCII-only runtime strings across all prefetch scripts (T0 regression gate).
+  - StockTwits prefetch (added Pass 53 v8h+1) caught at hook layer because it had a `≈` Unicode char; fixed before commit.
+- **Joint:** P1.runner regression (commit `8d2641edf`); L150 (pyramid dimension-coverage gap); CHECKLIST #74/#75; INV-013 (wikipedia ghost — same BG); INV-003 (Quiver re-prefetch closed).
 
 ---
 
@@ -525,16 +524,13 @@ contract names: `UST 10Y NOTE` / `UST 5Y NOTE` / `UST 2Y NOTE` / `UST BOND`
 
 ---
 
-## INV-038 — Polygon Indices Basic license tier discovery (Pass 53 Day-9 v8h+1 2026-05-08)
-(see INV-034 reframing above)
+## INV-038 — RESOLVED 2026-05-08 v8h+1 — Polygon Indices Basic license tier discovered + activated; 2/13 covered (Pass 53)
 
 - **Discovered:** 2026-05-08 morning; `probe_api_catalog.py` returned 403 NOT_AUTHORIZED for I:SPX, I:DJI, I:RUT, I:VIX, I:VIX9D, I:VIX3M, I:VVIX, I:OEX (all major indices). Only I:NDX returned 200 (anomaly).
-- **Observation:** Owner stated 2026-05-07 they could add Indices Basic (plus Options/Futures/Currencies Basic) for free. Probe confirms Indices Basic is **NOT yet activated**. Futures Basic + Currencies Basic + Options Basic (partial) ARE active and working.
-- **Why blocking for Phase 1A:** ✅ **YES** — would resolve BUG-VIX-PROXY structurally (native VIX vs VXX proxy) and INV-010 (VVIX missing from FRED). Currently Phase 1A regime classifier uses VXX-as-VIX proxy with workaround.
-- **Severity:** HIGH — owner-action gate.
-- **Status:** open — owner action pending.
-- **Next action:** owner activates Polygon Indices Basic on `polygon.io/dashboard` (free upgrade); re-run `probe_api_catalog.py` to confirm; then prefetch I:VIX, I:VIX9D, I:VIX3M, I:VVIX, I:SPX, I:NDX, I:DJI, I:RUT, I:OEX, I:MID, I:SML, I:NYA, I:COMP at full historical depth.
-- **Joint:** BUG-VIX-PROXY (replaced by direct VIX); INV-010 (VVIX gap); CHECKLIST #77 (probe-grounded — caught the not-activated state).
+- **Observation:** Owner activated Polygon Indices Basic 2026-05-08. Re-probe finds 2 of 13 wanted indices accessible at our tier (I:NDX, I:COMP). The 11 others (VIX/SPX/DJI/RUT family) require additional CBOE/S&P licensing fees beyond Basic.
+- **Resolution:** RESOLVED-PARTIAL per INV-034 reframing. The activation step is complete; the licensing-gate constraint is empirical and structural. FRED VIXCLS / VXVCLS remain primary VIX source; BUG-VIX-PROXY documented as data-source choice not bug.
+- **Status:** RESOLVED 2026-05-08 v8h+1.
+- **Joint:** **INV-034** (companion finding, RESOLVED-PARTIAL); BUG-VIX-PROXY (FRED workaround documented); INV-010 (VVIX gap accepted as deferred).
 
 ---
 
@@ -714,4 +710,20 @@ contract names: `UST 10Y NOTE` / `UST 5Y NOTE` / `UST 2Y NOTE` / `UST BOND`
 
 ---
 
-*Last updated: 2026-05-08 evening (Pass 53 Day-9 v8h+1 — Tier H/I execution + B1 done + INV-045 sync)*
+## INV-046 — Phase 1A smoke surfaces single-trade PnL > 100% (engine bug candidate) (Pass 53 Day-9 v8h+1 2026-05-08)
+
+- **Discovered:** 2026-05-08 evening, full pyramid run after 13-layer expansion.
+- **Observation:** `test_e2e_phase1a_smoke.py::test_g1_pnl_realistic` asserts `df['pnl_pct'].abs().max() < 100`. In the smoke fixture's 397-trade run, max PnL hit **106.06%** (single trade exceeds 100% absolute). Most trades are normal 1-10%, but at least one trade has a runaway return.
+- **Why blocking for Phase 1A:** A trade returning >100% PnL means either (a) survivorship leak (closing on a multi-bagger split-adjusted price), (b) position-sizing extreme letting >1x leverage through, (c) fill bug (entry vs exit price computed against different splits/dividends), or (d) the realism floor itself is wrong (e.g., genuinely 0DTE options-like instruments could exceed 100%, but Phase 1A is equity-only so they shouldn't).
+- **Severity:** HIGH — Phase 1A May 15 launch should not run on an engine that produces unrealistic single-trade returns. Either fix the engine OR document the finding + raise the realism floor with rationale.
+- **Status:** open
+- **Next action:**
+  - Identify the offending trade (which ticker, which date range, which strategy)
+  - Trace through engine: entry price, exit price, position size, split/dividend adjustments
+  - If real bug: fix
+  - If acceptable artifact (e.g. extremely cheap stock + circuit-breaker-day move): document + raise the realism floor to a defensible value with explicit AUDIT.md decision
+- **Joint:** test_e2e_phase1a_smoke.py G1 gate; Phase 1A May 15 launch dependency.
+
+---
+
+*Last updated: 2026-05-08 v8h+1 — INV-023 + INV-038 RESOLVED + INV-046 logged + T0 patches deployed*

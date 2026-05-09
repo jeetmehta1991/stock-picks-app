@@ -21,7 +21,19 @@ from pathlib import Path
 from datetime import date, timedelta
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
+# INV-016 fix Pass 53 v8h+1 owner-approved 2026-05-08: read Master Universe
+# (1937) instead of S&P 500 + ETFs only (~509). Falls back to legacy scope
+# if Master Universe CSV not present.
 from backtest.data.universe import get_sp500_constituents, ETFS_FULL
+
+
+def _load_master_universe() -> list[str] | None:
+    """Master Universe Deduplicated CSV; returns None if not found."""
+    csv = Path("Backtesting universe/Master Universe_Deduplicated_All Tiers_May 2026.csv")
+    if not csv.exists():
+        return None
+    df = pd.read_csv(csv, comment="#")
+    return sorted(df["Symbol"].dropna().str.strip().str.upper().unique())
 
 FINNHUB_KEY = os.environ.get("FINNHUB_API_KEY", "")
 if not FINNHUB_KEY:
@@ -160,11 +172,14 @@ def save_checkpoint(done: list, batch: int = 0):
 
 
 def git_commit(message: str):
+    """Path-restricted commit per INV-041 - only stages the finnhub_news
+    cache + checkpoint, prevents capturing unrelated staged files."""
     import subprocess
-    subprocess.run(["git", "add", "backtest/data/cache/finnhub_news/",
-                    "backtest/data/cache/finnhub_news_checkpoint.json"],
-                   capture_output=True)
-    subprocess.run(["git", "commit", "-m", message], capture_output=True)
+    cache_path = "backtest/data/cache/finnhub_news/"
+    cp_path = "backtest/data/cache/finnhub_news_checkpoint.json"
+    subprocess.run(["git", "add", "--", cache_path, cp_path], capture_output=True)
+    subprocess.run(["git", "commit", "-m", message, "--", cache_path, cp_path],
+                    capture_output=True)
     subprocess.run(["git", "pull", "--rebase", "origin", "main"], capture_output=True)
     subprocess.run(["git", "push", "origin", "main"], capture_output=True)
 
@@ -176,8 +191,14 @@ def main():
         help='Batch 1-5 for GitHub Actions (0=all, default)')
     args = parser.parse_args()
 
-    sp500 = get_sp500_constituents(500)
-    universe = list(dict.fromkeys(sp500 + ETFS_FULL))
+    master = _load_master_universe()
+    if master:
+        universe = master
+        print(f"INV-016 fix: loaded {len(universe)} tickers from Master Universe Deduplicated CSV")
+    else:
+        sp500 = get_sp500_constituents(500)
+        universe = list(dict.fromkeys(sp500 + ETFS_FULL))
+        print(f"Master Universe CSV not found; falling back to S&P 500 + ETFs ({len(universe)})")
 
     # Split into 5 batches for GitHub Actions 6-hour limit
     if args.batch > 0:
