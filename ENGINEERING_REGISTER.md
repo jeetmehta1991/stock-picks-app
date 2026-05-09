@@ -1030,3 +1030,37 @@ Sprint 7 after Portfolio class lands (Sprint 3 completion):
 
 Sprint 7 cannot fully complete until Sprint 3 Portfolio class (BUG-095) resolves. Same critical path dependency as before but now explicit: agent toolkit work has 3 distinct phases (parallel-able / Portfolio-blocked / DEC-189-blocked).
 
+---
+
+## Pass 53 v8h+1 closure additions (2026-05-08 / 2026-05-09)
+
+Sprint scope additions arising from T0 blocker triage + 13-layer pyramid expansion. All are RESOLVED-DECIDED in same window; net delta tracked here for sprint-level visibility.
+
+**Sprint 0A.7 (smoke + demo tests) — extended:**
+- Test pyramid amended 9 -> 13 layers per DEC-597. New test files: `test_property.py` (Hypothesis), `test_snapshot.py` (golden-data), `test_contract.py` (API shape), `test_compatibility.py` (cross-version).
+- Per-addressal pyramid mandate per DEC-602 (CHECKLIST #78); doc-sweep all 16 forward-looking docs per DEC-603 (CHECKLIST #79).
+- Pyramid cells 4-state YES/no/N/A/LATER per DEC-598; `PYRAMID_OVERRIDES` mechanism for ID-specific applicability.
+
+**Sprint 0A.5 (Quiver) + Sprint 0A.1 (Polygon news + indicators) — closure:**
+- INV-016 Finnhub news Master Universe expansion (BG `blk7obzpy` complete; 1941 files).
+- INV-027 Polygon news insights_json backfill (BG `bwgxwcrwq` complete; 1924/1937, 449 MB).
+- INV-023 Quiver Unicode bug RESOLVED; all 7 endpoints fully cached.
+
+**NEW Sprint addition — Phase 1B+ retail-attention layer (DEC-599):**
+- StockTwits prefetch script + cache (1937 underlyings; ~22 MB; 8-col schema locked).
+- Apewisdom + StockTwits + Finnhub social_sentiment (premium-locked; built-not-active) form the cross-platform retail-attention triple.
+- pytrends DEFERRED to Phase 1C (Google 429 anti-bot blocks free tier).
+
+**NEW Sprint addition — Phase 1A options chain reference (DEC-600):**
+- Polygon Options ep1 (`/v3/reference/options/contracts`) cached for full universe; ep2 (per-contract OHLCV) deferred to on-demand fetch in Phase 1B+.
+
+**Sprint 6.5 (Phase 1A Rules-Only Baseline) — pre-flight finding:**
+- INV-046 (engine pnl > 100% surfacing in `test_g1_pnl_realistic`): root-cause investigation pending. HIGH severity Phase 1A May 15 launch dependency.
+
+**Dashboard infra (cross-cutting):**
+- Stage 2 dashboard: 11 tabs (Overview / Next Up / Decisions / Bugs / INVs / Caveats / Learnings / Tier / Code / Pipeline / Automation / Reference). Auto-drift-sweep cron `f6f27d5d` runs every 2h per DEC-604.
+- Reference tab now has 5 sections (badges / stages / phases / 13-layer pyramid / dashboard column meanings).
+- Description column added to Decisions / Bugs / INVs / Caveats tables (extracted from AUDIT.md ### sections).
+
+**Critical path impact: Phase 1A May 15 launch UNCHANGED — INV-046 is the only remaining blocker to investigate.**
+

@@ -1,5 +1,50 @@
 # AUDIT_BACKLOG.md — Master Implementation Backlog (Pass 53 Review-Cycle)
 
+## Pass 53 Day-9 v8h+1 close (2026-05-08/09) — T0 triage + 13-layer pyramid + 8 new DECs logged
+
+**8 new DECs logged 2026-05-09 (DEC-597 → DEC-604) - retroactive batch closing the
+decision-register gap from prior turns where decisions were implemented but not
+formally logged in AUDIT_INDEX.md:**
+
+| DEC | Title | Status | First commit |
+|---|---|---|---|
+| DEC-597 | Test pyramid 9 -> 13 layer amendment | RESOLVED-DECIDED | `c97d31c5b` |
+| DEC-598 | Pyramid 4-state cells + per-ID override | RESOLVED-DECIDED | `bc0373e7e` |
+| DEC-599 | StockTwits adoption / pytrends DEFERRED | RESOLVED-DECIDED | `74226e118` / `9673eccca` |
+| DEC-600 | Polygon Options ep1 active / ep2 on-demand | RESOLVED-DECIDED | `aa4d2a279` |
+| DEC-601 | AAII extended sentiment 13-col integration | RESOLVED-DECIDED | `74226e118` |
+| DEC-602 | Per-addressal pyramid mandate (CHECKLIST #78) | RESOLVED-DECIDED | `a32060e74` |
+| DEC-603 | All-docs sweep mandate (CHECKLIST #79) | RESOLVED-DECIDED | `a32060e74` |
+| DEC-604 | 2-hour drift cron + structural detector | RESOLVED-DECIDED | `f1d7bce1e` / `e67659ddf` |
+
+**T0 blocker triage (Pass 53 v8h+1) outcome:**
+
+| Item | Status | Resolution |
+|---|---|---|
+| BUG-007 | RESOLVED | regression test in `test_regression.py` (`7a175f7c2`) |
+| INV-023 | RESOLVED | Quiver Unicode bug fixed; ASCII regression gate active |
+| INV-038 | RESOLVED-PARTIAL | Polygon Indices Basic activated 2/13 (CBOE/S&P license-gated remainder) |
+| INV-016 | RESOLVED | Finnhub news Master Universe expansion 1941 ticker files |
+| INV-027 | RESOLVED | Polygon news insights_json backfilled 1924 tickers / 449 MB |
+| INV-046 | OPEN HIGH | engine pnl > 100% (test_g1 single-trade 106.06%) — root cause investigation pending |
+| INV-015 / INV-032 | SURFACED | AlphaVantage news premium tier needed (~$50/mo) |
+| INV-025 | SURFACED | SEC EDGAR XBRL parser 20-30h infra build |
+
+**5 of 8 T0 RESOLVED, 1 OPEN (INV-046), 2 SURFACED for owner.**
+
+**Net delta vs v5 close:**
+- DEC-503 amended (9 -> 13 layers); 4 new test files (`test_property/snapshot/contract/compatibility.py`).
+- 2 new prefetch sources committed (StockTwits + Finnhub social_sentiment script-only).
+- Polygon Options chain reference cached for full universe.
+- AAII sentiment cache schema expanded 5-col -> 13-col.
+- Dashboard expanded: Reference tab (5 sections), Automation tab, Next Up auto-ranker, structural drift detector.
+- 2 new CHECKLIST HARD RULES (#78 per-addressal pyramid, #79 all-docs sweep).
+- 2-hour auto-drift-sweep cron live.
+
+**Phase 1A May 15 launch readiness: 1 OPEN blocker (INV-046).** Pyramid 982 pass / 1 fail (the INV-046 finding itself) / 14 skipped / 5 xfailed.
+
+---
+
 ## Pass 53 Day-9-evening v5 close (2026-05-07 evening) — final NIL-gap state pre-Phase-1A
 
 | Bucket | Count | Action |

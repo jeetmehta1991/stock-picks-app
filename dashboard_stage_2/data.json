@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-09T16:43:37.855165+00:00",
+  "generated_at": "2026-05-09T17:17:03.211741+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -17183,7 +17183,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 12,
+        "n_doc_refs": 13,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -17217,7 +17217,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 48,
+        "n_doc_refs": 52,
         "pyramid": {
           "unit": true,
           "smoke": true,
@@ -17373,6 +17373,278 @@
       "short_id": "DEC-505",
       "sprint": "-",
       "dependencies": "DEC-109",
+      "description": ""
+    },
+    {
+      "id": "DECISION-597",
+      "title": "Test pyramid amended from 9 layers (DEC-503) to 13 layers. Pass 53 v8h+1 owner-approved 2026-05-08 RESOLVED-DECIDED. AMENDMENT: DEC-503 specified 9 layers (unit",
+      "status": "RESOLVED-DECIDED",
+      "theme": "Cross-cutting / process / Pass 53 v8h+1",
+      "pass_intro": "Pass 53",
+      "pass_resolved": "53",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2,
+        "pyramid": {
+          "unit": false,
+          "smoke": false,
+          "integration": false,
+          "system": false,
+          "functional": false,
+          "regression": false,
+          "data_integrity": false,
+          "performance": false,
+          "acceptance": false,
+          "property": false,
+          "snapshot": false,
+          "contract": false,
+          "compatibility": false
+        }
+      },
+      "short_id": "DEC-597",
+      "sprint": "Sprint 7 effort revised",
+      "dependencies": "DEC-503",
+      "description": ""
+    },
+    {
+      "id": "DECISION-598",
+      "title": "Pyramid cell 4-state semantics + per-ID override mechanism. Pass 53 v8h+1 owner-approved 2026-05-09 RESOLVED-DECIDED. CHANGE: pyramid cells extended from boolea",
+      "status": "RESOLVED-DECIDED",
+      "theme": "Cross-cutting / process / Pass 53 v8h+1",
+      "pass_intro": "Pass 53",
+      "pass_resolved": "53",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 0,
+        "pyramid": {
+          "unit": false,
+          "smoke": false,
+          "integration": false,
+          "system": false,
+          "functional": false,
+          "regression": false,
+          "data_integrity": false,
+          "performance": false,
+          "acceptance": false,
+          "property": false,
+          "snapshot": false,
+          "contract": false,
+          "compatibility": false
+        }
+      },
+      "short_id": "DEC-598",
+      "sprint": "Sprint 7 effort revised",
+      "dependencies": "-",
+      "description": ""
+    },
+    {
+      "id": "DECISION-599",
+      "title": "StockTwits adoption as Phase 1B+ retail-attention source; replaces pytrends. Pass 53 v8h+1 owner-approved 2026-05-08 RESOLVED-DECIDED. DECISION: pytrends DEFERR",
+      "status": "RESOLVED-DECIDED",
+      "theme": "Phase 1B / signal / Pass 53 v8h+1",
+      "pass_intro": "Pass 53",
+      "pass_resolved": "53",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 0,
+        "pyramid": {
+          "unit": false,
+          "smoke": false,
+          "integration": false,
+          "system": false,
+          "functional": false,
+          "regression": false,
+          "data_integrity": false,
+          "performance": false,
+          "acceptance": false,
+          "property": false,
+          "snapshot": false,
+          "contract": false,
+          "compatibility": false
+        }
+      },
+      "short_id": "DEC-599",
+      "sprint": "Sprint 7 effort revised",
+      "dependencies": "-",
+      "description": ""
+    },
+    {
+      "id": "DECISION-600",
+      "title": "Polygon Options ep1 (chain reference) active in Phase 1A; ep2 (per-contract OHLCV) deferred to Phase 1B+ on-demand fetch. Pass 53 v8h+1 owner-approved 2026-05-0",
+      "status": "RESOLVED-DECIDED",
+      "theme": "Phase 1A / data architecture / Pass 53 v8h+1",
+      "pass_intro": "Pass 53",
+      "pass_resolved": "53",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 0,
+        "pyramid": {
+          "unit": false,
+          "smoke": false,
+          "integration": false,
+          "system": false,
+          "functional": false,
+          "regression": false,
+          "data_integrity": false,
+          "performance": false,
+          "acceptance": false,
+          "property": false,
+          "snapshot": false,
+          "contract": false,
+          "compatibility": false
+        }
+      },
+      "short_id": "DEC-600",
+      "sprint": "Sprint 7 effort revised",
+      "dependencies": "-",
+      "description": ""
+    },
+    {
+      "id": "DECISION-601",
+      "title": "AAII extended sentiment 13-col schema replaces 5-col cache for Phase 1A regime input. Pass 53 v8h+1 owner-supplied xls 2026-05-08 RESOLVED-DECIDED. SCHEMA EXPAN",
+      "status": "RESOLVED-DECIDED",
+      "theme": "Phase 1A / signal / Pass 53 v8h+1",
+      "pass_intro": "Pass 53",
+      "pass_resolved": "53",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 0,
+        "pyramid": {
+          "unit": false,
+          "smoke": false,
+          "integration": false,
+          "system": false,
+          "functional": false,
+          "regression": false,
+          "data_integrity": false,
+          "performance": false,
+          "acceptance": false,
+          "property": false,
+          "snapshot": false,
+          "contract": false,
+          "compatibility": false
+        }
+      },
+      "short_id": "DEC-601",
+      "sprint": "-",
+      "dependencies": "-",
+      "description": ""
+    },
+    {
+      "id": "DECISION-602",
+      "title": "Per-addressal pyramid mandate (CHECKLIST #78 codification). Pass 53 v8h+1 owner directive 2026-05-08 RESOLVED-DECIDED. RULE: testing pyramid runs PER ADDRESSAL ",
+      "status": "RESOLVED-DECIDED",
+      "theme": "Cross-cutting / process / Pass 53 v8h+1",
+      "pass_intro": "Pass 53",
+      "pass_resolved": "53",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2,
+        "pyramid": {
+          "unit": false,
+          "smoke": false,
+          "integration": false,
+          "system": false,
+          "functional": false,
+          "regression": false,
+          "data_integrity": false,
+          "performance": false,
+          "acceptance": false,
+          "property": false,
+          "snapshot": false,
+          "contract": false,
+          "compatibility": false
+        }
+      },
+      "short_id": "DEC-602",
+      "sprint": "Sprint 7 effort revised",
+      "dependencies": "-",
+      "description": ""
+    },
+    {
+      "id": "DECISION-603",
+      "title": "End-of-turn doc sweep covers all forward-looking docs (CHECKLIST #79 codification). Pass 53 v8h+1 owner directive 2026-05-08 RESOLVED-DECIDED. RULE: enumerated ",
+      "status": "RESOLVED-DECIDED",
+      "theme": "Cross-cutting / process / Pass 53 v8h+1",
+      "pass_intro": "Pass 53",
+      "pass_resolved": "53",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 0,
+        "pyramid": {
+          "unit": false,
+          "smoke": false,
+          "integration": false,
+          "system": false,
+          "functional": false,
+          "regression": false,
+          "data_integrity": false,
+          "performance": false,
+          "acceptance": false,
+          "property": false,
+          "snapshot": false,
+          "contract": false,
+          "compatibility": false
+        }
+      },
+      "short_id": "DEC-603",
+      "sprint": "Sprint 7 effort revised",
+      "dependencies": "-",
+      "description": ""
+    },
+    {
+      "id": "DECISION-604",
+      "title": "2-hour drift-alignment cron + structural drift detector. Pass 53 v8h+1 owner directive 2026-05-08 RESOLVED-DECIDED. CRON: every 2h (minute :13) auto-runs `sync_",
+      "status": "RESOLVED-DECIDED",
+      "theme": "Cross-cutting / process / Pass 53 v8h+1",
+      "pass_intro": "Pass 53",
+      "pass_resolved": "53",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 0,
+        "pyramid": {
+          "unit": false,
+          "smoke": false,
+          "integration": false,
+          "system": false,
+          "functional": false,
+          "regression": false,
+          "data_integrity": false,
+          "performance": false,
+          "acceptance": false,
+          "property": false,
+          "snapshot": false,
+          "contract": false,
+          "compatibility": false
+        }
+      },
+      "short_id": "DEC-604",
+      "sprint": "Sprint 7 effort revised",
+      "dependencies": "-",
       "description": ""
     },
     {
@@ -17885,7 +18157,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 12,
+        "n_doc_refs": 15,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -22866,7 +23138,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 3,
+        "n_doc_refs": 4,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -23238,7 +23510,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 3,
+        "n_doc_refs": 4,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -26542,6 +26814,12 @@
   ],
   "recent_commits": [
     {
+      "sha": "76436fa7",
+      "subject": "Pass 53 auto-drift-sweep 2026-05-09 07:53: dashboards refreshed (no numerical drift)",
+      "author": "jeetmehta1991",
+      "rel_time": "26 minutes ago"
+    },
+    {
       "sha": "5814a4cc",
       "subject": "Pass 53 auto-drift-sweep 2026-05-09 05:53: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
@@ -26557,13 +26835,13 @@
       "sha": "ad5f0f78",
       "subject": "StockTwits final (1923 fetched)",
       "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
+      "rel_time": "8 hours ago"
     },
     {
       "sha": "658f40ad",
       "subject": "StockTwits batch 38",
       "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
+      "rel_time": "8 hours ago"
     },
     {
       "sha": "dcc49c62",
@@ -26575,13 +26853,13 @@
       "sha": "1a594038",
       "subject": "StockTwits batch 36",
       "author": "jeetmehta1991",
-      "rel_time": "8 hours ago"
+      "rel_time": "9 hours ago"
     },
     {
       "sha": "65a03894",
       "subject": "StockTwits batch 35",
       "author": "jeetmehta1991",
-      "rel_time": "8 hours ago"
+      "rel_time": "9 hours ago"
     },
     {
       "sha": "fd5a7cd9",
@@ -26599,13 +26877,13 @@
       "sha": "ca936547",
       "subject": "StockTwits batch 32",
       "author": "jeetmehta1991",
-      "rel_time": "9 hours ago"
+      "rel_time": "10 hours ago"
     },
     {
       "sha": "da89952c",
       "subject": "StockTwits batch 31",
       "author": "jeetmehta1991",
-      "rel_time": "9 hours ago"
+      "rel_time": "10 hours ago"
     },
     {
       "sha": "f8bdd491",
@@ -26623,25 +26901,25 @@
       "sha": "bc0373e7",
       "subject": "Pass 53 v8h+1: pyramid 4-state cells (YES/no/N/A/LATER) + git body grep + BUG-007 annotation",
       "author": "jeetmehta1991",
-      "rel_time": "10 hours ago"
+      "rel_time": "11 hours ago"
     },
     {
       "sha": "ccd6dbbf",
       "subject": "StockTwits batch 28",
       "author": "jeetmehta1991",
-      "rel_time": "10 hours ago"
+      "rel_time": "11 hours ago"
     },
     {
       "sha": "220c21e3",
       "subject": "StockTwits batch 27",
       "author": "jeetmehta1991",
-      "rel_time": "10 hours ago"
+      "rel_time": "11 hours ago"
     },
     {
       "sha": "5d86e1c0",
       "subject": "Pass 53 v8h+1: Description column added to Decisions / Bugs / INVs / Caveats tables",
       "author": "jeetmehta1991",
-      "rel_time": "10 hours ago"
+      "rel_time": "11 hours ago"
     },
     {
       "sha": "b66c12b6",
@@ -26659,19 +26937,19 @@
       "sha": "586d7e0e",
       "subject": "StockTwits batch 25",
       "author": "jeetmehta1991",
-      "rel_time": "11 hours ago"
+      "rel_time": "12 hours ago"
     },
     {
       "sha": "b51b14b0",
       "subject": "StockTwits batch 24",
       "author": "jeetmehta1991",
-      "rel_time": "11 hours ago"
+      "rel_time": "12 hours ago"
     },
     {
       "sha": "7ecf6254",
       "subject": "StockTwits batch 23",
       "author": "jeetmehta1991",
-      "rel_time": "11 hours ago"
+      "rel_time": "12 hours ago"
     },
     {
       "sha": "6332c06b",
@@ -26714,21 +26992,27 @@
       "subject": "Finnhub news pre-fetch: batch 33",
       "author": "jeetmehta1991",
       "rel_time": "12 hours ago"
-    },
-    {
-      "sha": "c7b92068",
-      "subject": "Finnhub news pre-fetch: batch 32",
-      "author": "jeetmehta1991",
-      "rel_time": "12 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 1928,
-    "modified": 1925,
+    "count": 1931,
+    "modified": 1928,
     "added": 0,
     "untracked": 3,
     "deleted": 0,
     "files": [
+      {
+        "status": "M",
+        "path": "AUDIT_BACKLOG.md"
+      },
+      {
+        "status": "M",
+        "path": "AUDIT_INDEX.md"
+      },
+      {
+        "status": "M",
+        "path": "ENGINEERING_REGISTER.md"
+      },
       {
         "status": "M",
         "path": "data_prefetch/polygon/_checkpoint_news.json"
@@ -27516,18 +27800,6 @@
       {
         "status": "M",
         "path": "data_prefetch/polygon/news/AVDL.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AVEO.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AVGO.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AVPT.parquet"
       }
     ]
   },
@@ -28321,7 +28593,7 @@
     }
   ],
   "decision_status_counts": {
-    "RESOLVED-DECIDED": 318,
+    "RESOLVED-DECIDED": 326,
     "PARTIAL": 5,
     "SUPERSEDED_BY_DEC-422": 6,
     "SUPERSEDED": 10,
