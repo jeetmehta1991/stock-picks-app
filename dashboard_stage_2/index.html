@@ -133,7 +133,7 @@ per CHECKLIST #77 - never reads from memory.
       <strong title="Property-based">Pr</strong> /
       <strong title="Snapshot">Sn</strong> /
       <strong title="Contract">C</strong> /
-      <strong title="Compatibility matrix">Cm</strong>. YES=test layer covers ID; no=no coverage in that layer.
+      <strong title="Compatibility matrix">Cm</strong>. <strong>YES</strong>=test layer covers ID; <strong>no</strong>=layer applies but no coverage (gap); <strong>N/A</strong>=layer doesn't apply to this ID type; <strong>LATER</strong>=applicable but deferred (hover for reason).
     </p>
     <table id="tbl-decisions" class="display compact" style="width:100%">
       <thead><tr><th>ID</th><th>Title</th><th>Description</th><th>Doc Status</th><th>Coded</th><th>Wired</th><th>Tested</th><th>Pushed</th>
@@ -418,19 +418,29 @@ function statusCheck(b) {
     ? '<span class="badge badge-resolved">YES</span>'
     : '<span class="badge badge-superseded">no</span>';
 }
-// 13-pyramid layer columns: explicit YES / no badges (no dot logic per owner
-// directive 2026-05-08). Reuses the same statusCheck() badge style as the
-// rolled-up Coded/Wired/Tested/Pushed columns for visual consistency.
-// 4 additional layers added 2026-05-08: property-based (Hypothesis),
-// snapshot (golden-data), contract (API shape), compatibility (matrix).
+// 4-state pyramid cell: YES / no / N/A / LATER:<reason>. Owner directive
+// 2026-05-09: distinguish 'no coverage' (real gap) from 'not applicable'
+// (layer doesn't apply to this ID type) from 'deferred to later phase'.
+function pyramidStatusCell(v) {
+  if (v === true)  return '<span class="badge badge-resolved">YES</span>';
+  if (v === false) return '<span class="badge badge-superseded">no</span>';
+  if (typeof v !== 'string') return '<span class="badge badge-superseded">no</span>';
+  if (v === 'N/A') return '<span class="badge badge-deferred" title="not applicable to this ID type">N/A</span>';
+  if (v.startsWith('LATER')) {
+    const reason = v.slice(6) || 'deferred to later phase';
+    const safe = reason.replace(/"/g, '&quot;');
+    return `<span class="badge badge-pending" title="${safe}">LATER</span>`;
+  }
+  return '<span class="badge badge-superseded">no</span>';
+}
 function pyramidCells(sg) {
   const p = (sg && sg.pyramid) || {};
   return [
-    statusCheck(p.unit), statusCheck(p.smoke), statusCheck(p.integration),
-    statusCheck(p.system), statusCheck(p.functional), statusCheck(p.regression),
-    statusCheck(p.data_integrity), statusCheck(p.performance), statusCheck(p.acceptance),
-    statusCheck(p.property), statusCheck(p.snapshot),
-    statusCheck(p.contract), statusCheck(p.compatibility),
+    pyramidStatusCell(p.unit), pyramidStatusCell(p.smoke), pyramidStatusCell(p.integration),
+    pyramidStatusCell(p.system), pyramidStatusCell(p.functional), pyramidStatusCell(p.regression),
+    pyramidStatusCell(p.data_integrity), pyramidStatusCell(p.performance), pyramidStatusCell(p.acceptance),
+    pyramidStatusCell(p.property), pyramidStatusCell(p.snapshot),
+    pyramidStatusCell(p.contract), pyramidStatusCell(p.compatibility),
   ];
 }
 

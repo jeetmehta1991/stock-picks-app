@@ -293,6 +293,34 @@ TEST_PYRAMID_LAYERS = {
 }
 
 
+# Per-ID per-layer applicability overrides (Pass 53 v8h+1 owner directive
+# 2026-05-09: a bool boolean for every layer is misleading - some IDs have
+# layers that simply don't apply. Annotate "N/A" or "LATER" here so the
+# dashboard distinguishes 'no coverage' (gap) from 'not applicable' (correct).
+#
+# Format: { id_short: { layer: "N/A" | "LATER:reason" } }
+# Layers not listed default to the bool grep result (YES / no).
+PYRAMID_OVERRIDES: dict[str, dict[str, str]] = {
+    # BUG-007 is an environmental guard fix (run_phase1a accepts --no-agents
+    # without ANTHROPIC_API_KEY). Only regression layer is meaningful;
+    # other layers don't apply to this kind of bug.
+    "BUG-007": {
+        "unit": "N/A",
+        "smoke": "N/A",
+        "integration": "N/A",
+        "system": "N/A",
+        "functional": "N/A",
+        "data_integrity": "N/A",
+        "performance": "N/A",
+        "acceptance": "N/A",
+        "property": "N/A",
+        "snapshot": "N/A",
+        "contract": "N/A",
+        "compatibility": "N/A",
+    },
+}
+
+
 def load_status_corpora() -> dict:
     """Pre-load text corpora for ID-status grep (coded/wired/pushed/tested).
     Tests corpus is also broken out per pyramid layer (DEC-503)."""
@@ -330,13 +358,18 @@ def load_status_corpora() -> dict:
         p = REPO_ROOT / d
         if p.exists():
             docs_text += "\n" + p.read_text(encoding="utf-8", errors="ignore")
-    # git log subjects (across all branches, all history)
+    # git log: full message (subject + body) - 2026-05-09 fix per owner
+    # finding that BUG-007 mentions in commit body weren't being detected
+    # (was using %s subject-only). %B is the full raw body. Force utf-8
+    # decode + errors=replace because some commit messages contain non-cp1252
+    # characters (em-dashes from older commits) that crashed default decode.
     try:
         r = subprocess.run(
-            ["git", "log", "--all", "--pretty=format:%s"],
+            ["git", "log", "--all", "--pretty=format:%B%n----COMMIT----"],
             cwd=REPO_ROOT, capture_output=True, text=True, check=False,
+            encoding="utf-8", errors="replace",
         )
-        git_log_subjects = r.stdout
+        git_log_subjects = r.stdout or ""
     except Exception:
         git_log_subjects = ""
     return {
@@ -368,10 +401,20 @@ def id_status(id_str: str, corpora: dict) -> dict:
             "pyramid": {layer: False for layer in TEST_PYRAMID_LAYERS},
         }
     pyramid_layers = corpora.get("pyramid_layers", {})
-    pyramid = {
-        layer: id_str in pyramid_layers.get(layer, "")
-        for layer in TEST_PYRAMID_LAYERS
-    }
+    overrides = PYRAMID_OVERRIDES.get(id_str, {})
+    pyramid: dict = {}
+    for layer in TEST_PYRAMID_LAYERS:
+        # Detected coverage from grep
+        detected = id_str in pyramid_layers.get(layer, "")
+        if detected:
+            # Coverage exists - YES wins regardless of override
+            pyramid[layer] = True
+        elif layer in overrides:
+            # Apply manual override (N/A or LATER:reason)
+            pyramid[layer] = overrides[layer]
+        else:
+            # Default: no coverage (treated as gap)
+            pyramid[layer] = False
     return {
         "coded": (id_str in corpora["backtest_all"]) or (id_str in corpora["scripts"]),
         "wired": id_str in corpora["prod"],
@@ -809,7 +852,7 @@ def get_reference_tables() -> dict:
             {"col": "Wired",  "meaning": "Code is reachable from a runtime entry point - actually CALLED from backtest/data, engine, signals, results (the active path), not orphan code."},
             {"col": "Tested", "meaning": "Rolled-up: ANY of the 13 pyramid layers reference the ID. The 13 layer columns to the right show per-layer breakdown."},
             {"col": "Pushed", "meaning": "Change is on origin/main per git log --all subject lines."},
-            {"col": "U / Sm / I / Sy / F / R / D / P / A / Pr / Sn / C / Cm", "meaning": "13 pyramid layer columns: per-layer test coverage. YES = a test file in that layer references the ID; no = no coverage in that layer. See Pyramid table above for what each layer asserts."},
+            {"col": "U / Sm / I / Sy / F / R / D / P / A / Pr / Sn / C / Cm", "meaning": "13 pyramid layer columns: per-layer test coverage. 4-state cell (Pass 53 v8h+1 owner directive 2026-05-09): YES = a test in this layer references the ID; no = layer applies but no coverage (real gap); N/A = layer doesn't apply to this ID type (e.g. property-based test for an env-guard fix); LATER = applicable but deferred to a later phase (hover for reason). See PYRAMID_OVERRIDES dict in build_dashboard_stage_2.py for the per-ID annotations."},
         ],
     }
 
