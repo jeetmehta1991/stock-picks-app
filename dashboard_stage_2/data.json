@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-09T22:27:30.537522+00:00",
+  "generated_at": "2026-05-09T22:59:02.823178+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -17386,7 +17386,7 @@
         "coded": true,
         "wired": false,
         "tested": false,
-        "pushed": false,
+        "pushed": true,
         "n_doc_refs": 3,
         "pyramid": {
           "unit": false,
@@ -17485,7 +17485,7 @@
       "pass_intro": "Pass 53",
       "pass_resolved": "53",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
         "tested": false,
         "pushed": true,
@@ -23602,7 +23602,7 @@
       "severity": "MEDIUM",
       "summary": "`data_prefetch/polygon/events/AAPL.parquet` contains 1 row with `event_type=ticker_change`. Polygon `/v3/reference/tickers/{t}/events` accepts `?types=` query parameter and returns event types: `ticke",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
         "tested": false,
         "pushed": true,
@@ -26204,7 +26204,7 @@
         "coded": true,
         "wired": false,
         "tested": false,
-        "pushed": false,
+        "pushed": true,
         "n_doc_refs": 5,
         "pyramid": {
           "unit": false,
@@ -26878,10 +26878,22 @@
   ],
   "recent_commits": [
     {
+      "sha": "8d4fa5d3",
+      "subject": "Pass 53 v8h+1: Sprint 0A Coverage Matrix tab - per-(api, endpoint, field) coverage + commentary + status badges",
+      "author": "jeetmehta1991",
+      "rel_time": "47 seconds ago"
+    },
+    {
+      "sha": "826d5454",
+      "subject": "Pass 53 v8h+1: DEC-605 - Finnhub social_sentiment EXCLUDED from Phase 1A baseline",
+      "author": "jeetmehta1991",
+      "rel_time": "28 minutes ago"
+    },
+    {
       "sha": "5bb5b70f",
       "subject": "Pass 53 v8h+1: AAII Asset Allocation Survey + Finnhub social_sentiment use case in dashboard",
       "author": "jeetmehta1991",
-      "rel_time": "87 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "06d85a9a",
@@ -26899,7 +26911,7 @@
       "sha": "387fac95",
       "subject": "Pass 53 v8h+1: 8 new DECs (597-604) + register sweeps + per-turn discipline fix",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "76436fa7",
@@ -26911,7 +26923,7 @@
       "sha": "5814a4cc",
       "subject": "Pass 53 auto-drift-sweep 2026-05-09 05:53: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
+      "rel_time": "8 hours ago"
     },
     {
       "sha": "9673eccc",
@@ -26923,19 +26935,19 @@
       "sha": "ad5f0f78",
       "subject": "StockTwits final (1923 fetched)",
       "author": "jeetmehta1991",
-      "rel_time": "13 hours ago"
+      "rel_time": "14 hours ago"
     },
     {
       "sha": "658f40ad",
       "subject": "StockTwits batch 38",
       "author": "jeetmehta1991",
-      "rel_time": "13 hours ago"
+      "rel_time": "14 hours ago"
     },
     {
       "sha": "dcc49c62",
       "subject": "StockTwits batch 37",
       "author": "jeetmehta1991",
-      "rel_time": "13 hours ago"
+      "rel_time": "14 hours ago"
     },
     {
       "sha": "1a594038",
@@ -26947,13 +26959,13 @@
       "sha": "65a03894",
       "subject": "StockTwits batch 35",
       "author": "jeetmehta1991",
-      "rel_time": "14 hours ago"
+      "rel_time": "15 hours ago"
     },
     {
       "sha": "fd5a7cd9",
       "subject": "StockTwits batch 34",
       "author": "jeetmehta1991",
-      "rel_time": "14 hours ago"
+      "rel_time": "15 hours ago"
     },
     {
       "sha": "a5bf31b2",
@@ -26971,13 +26983,13 @@
       "sha": "da89952c",
       "subject": "StockTwits batch 31",
       "author": "jeetmehta1991",
-      "rel_time": "15 hours ago"
+      "rel_time": "16 hours ago"
     },
     {
       "sha": "f8bdd491",
       "subject": "StockTwits batch 30",
       "author": "jeetmehta1991",
-      "rel_time": "15 hours ago"
+      "rel_time": "16 hours ago"
     },
     {
       "sha": "1311d82a",
@@ -27001,19 +27013,19 @@
       "sha": "220c21e3",
       "subject": "StockTwits batch 27",
       "author": "jeetmehta1991",
-      "rel_time": "16 hours ago"
+      "rel_time": "17 hours ago"
     },
     {
       "sha": "5d86e1c0",
       "subject": "Pass 53 v8h+1: Description column added to Decisions / Bugs / INVs / Caveats tables",
       "author": "jeetmehta1991",
-      "rel_time": "16 hours ago"
+      "rel_time": "17 hours ago"
     },
     {
       "sha": "b66c12b6",
       "subject": "StockTwits batch 26",
       "author": "jeetmehta1991",
-      "rel_time": "16 hours ago"
+      "rel_time": "17 hours ago"
     },
     {
       "sha": "01752658",
@@ -27037,70 +27049,22 @@
       "sha": "7ecf6254",
       "subject": "StockTwits batch 23",
       "author": "jeetmehta1991",
-      "rel_time": "17 hours ago"
+      "rel_time": "18 hours ago"
     },
     {
       "sha": "6332c06b",
       "subject": "Pass 53 v8h+1: INV-016 RESOLVED - Finnhub news Master Universe expansion complete",
       "author": "jeetmehta1991",
-      "rel_time": "17 hours ago"
-    },
-    {
-      "sha": "9b8071dd",
-      "subject": "Finnhub news batch 0: complete (1937 tickers)",
-      "author": "jeetmehta1991",
-      "rel_time": "17 hours ago"
-    },
-    {
-      "sha": "8fce7bf8",
-      "subject": "Finnhub news pre-fetch: batch 36",
-      "author": "jeetmehta1991",
-      "rel_time": "17 hours ago"
+      "rel_time": "18 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 11,
-    "modified": 9,
+    "count": 2,
+    "modified": 0,
     "added": 0,
     "untracked": 2,
     "deleted": 0,
     "files": [
-      {
-        "status": "M",
-        "path": "API_ENDPOINT_INVENTORY.md"
-      },
-      {
-        "status": "M",
-        "path": "AUDIT.md"
-      },
-      {
-        "status": "M",
-        "path": "AUDIT_BACKLOG.md"
-      },
-      {
-        "status": "M",
-        "path": "AUDIT_INDEX.md"
-      },
-      {
-        "status": "M",
-        "path": "ENGINEERING_REGISTER.md"
-      },
-      {
-        "status": "M",
-        "path": "LIMITATIONS_CAVEATS_ASSUMPTIONS.md"
-      },
-      {
-        "status": "M",
-        "path": "PHASE_1A_PRELAUNCH_TODO.md"
-      },
-      {
-        "status": "M",
-        "path": "PREFETCH_COVERAGE_AUDIT.md"
-      },
-      {
-        "status": "M",
-        "path": "scripts/build_dashboard_sprint0a.py"
-      },
       {
         "status": "??",
         "path": "data_prefetch/finnhub/social_sentiment/"
