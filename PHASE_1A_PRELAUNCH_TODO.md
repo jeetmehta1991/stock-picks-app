@@ -92,6 +92,14 @@ Owner: *"all data in prefetch needs to be standardized and normalized."*
 
 **Strict blocker count: 1 OPEN (INV-046).** All other T0 items either resolved or surfaced for owner.
 
+### StockTwits BG complete 2026-05-09
+
+- `b27jw7urk` finished: **1937/1937 underlyings cached**, ~30 messages/ticker.
+- Cache: `data_prefetch/stocktwits/{ticker}.parquet` with 8-col schema (id, body, created_at, sentiment, user_id, user_username, likes_total, conversation_count).
+- AAPL spot check: 30 msgs latest stream window, 16 Bullish-tagged + 14 untagged.
+- Replaces pytrends as the retail-attention signal source per owner directive 2026-05-08.
+- Schema canonical lock + contract test + dashboard registration all in place.
+
 ---
 
 

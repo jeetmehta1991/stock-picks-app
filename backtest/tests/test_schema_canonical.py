@@ -121,6 +121,12 @@ CANONICAL_SCHEMAS: dict[str, frozenset[str]] = {
         "actual", "estimate", "period", "quarter",
         "surprise", "surprisePercent", "symbol", "year",
     }),
+
+    # StockTwits (Pass 53 v8h+1; replaces pytrends per owner directive 2026-05-08)
+    "data_prefetch/stocktwits": frozenset({
+        "id", "body", "created_at", "sentiment",
+        "user_id", "user_username", "likes_total", "conversation_count",
+    }),
 }
 
 

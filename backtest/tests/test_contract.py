@@ -154,7 +154,26 @@ def test_contract_polygon_news_insights_json_preserved() -> None:
     )
 
 
-# -- Contract 8: AUDIT_INDEX table row shape ----------------------------
+# -- Contract 8: StockTwits stream shape (replaces pytrends) ------------
+def test_contract_stocktwits_stream_shape() -> None:
+    """StockTwits public streams API: 8 fixed fields per cached message.
+    Replaces pytrends as the retail-attention signal source per owner
+    directive 2026-05-08."""
+    sample_dir = REPO_ROOT / "data_prefetch" / "stocktwits"
+    if not sample_dir.is_dir():
+        pytest.skip("stocktwits cache not present")
+    sample = next((p for p in sample_dir.glob("*.parquet") if p.stat().st_size > 1000), None)
+    if sample is None:
+        pytest.skip("no non-empty stocktwits sample")
+    df = pd.read_parquet(sample)
+    expected = {"id", "body", "created_at", "sentiment",
+                "user_id", "user_username", "likes_total", "conversation_count"}
+    assert set(df.columns) == expected, (
+        f"StockTwits contract drift; got {set(df.columns)}"
+    )
+
+
+# -- Contract 9: AUDIT_INDEX table row shape ----------------------------
 def test_contract_audit_index_row_shape() -> None:
     """Each | **DECISION-NNN** row in AUDIT_INDEX must have at least the
     minimum column set parse_decisions expects."""

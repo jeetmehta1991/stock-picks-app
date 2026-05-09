@@ -1,0 +1,15 @@
+{
+  "cache_dir": "data_prefetch/stocktwits",
+  "canonical_columns": [
+    "body",
+    "conversation_count",
+    "created_at",
+    "id",
+    "likes_total",
+    "sentiment",
+    "user_id",
+    "user_username"
+  ],
+  "source": "backtest/tests/test_schema_canonical.py CANONICAL_SCHEMAS",
+  "owner_directive": "Pass 53 J8 2026-05-08"
+}
