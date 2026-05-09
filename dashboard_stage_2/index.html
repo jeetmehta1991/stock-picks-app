@@ -327,6 +327,22 @@ per CHECKLIST #77 - never reads from memory.
       <thead><tr><th>Phase</th><th>Status</th><th>Purpose</th></tr></thead>
     </table>
 
+    <h3 style="margin-top:24px">4. Test pyramid (13 layers, DEC-503 amended Pass 53 v8h+1)</h3>
+    <p style="font-size:13px;color:#6b7588">
+      Per CHECKLIST #78, the pyramid runs <strong>per addressal</strong> (not bundled). Each row shows the dashboard column abbreviation, what the layer asserts, when to run it, and the test files mapped to that layer. Empty layers (no test files) surface coverage gaps honestly rather than passing silently.
+    </p>
+    <table id="tbl-ref-pyramid" class="display compact" style="width:100%">
+      <thead><tr><th>Col</th><th>Layer</th><th>Asserts</th><th>When to run</th><th>Test files</th></tr></thead>
+    </table>
+
+    <h3 style="margin-top:24px">5. Dashboard testing column meanings</h3>
+    <p style="font-size:13px;color:#6b7588">
+      The 4 rolled-up status badges (Coded / Wired / Tested / Pushed) plus the 13 per-layer pyramid columns appear on every Decisions / Bugs / INVs / Caveats table. Here's what each header means.
+    </p>
+    <table id="tbl-ref-badge-meaning" class="display compact" style="width:100%">
+      <thead><tr><th>Column</th><th>Meaning</th></tr></thead>
+    </table>
+
     <h3 style="margin-top:24px">Full feature path</h3>
     <p style="font-size:14px;line-height:1.8">
       AUDIT.md spec &rarr; <strong>coded</strong> &rarr; <strong>wired</strong> &rarr;
@@ -663,6 +679,21 @@ $('#tbl-ref-stages').DataTable({
 $('#tbl-ref-phases').DataTable({
   data: ref.phases.map(p => [p.phase, p.status, p.purpose]),
   pageLength: 10, ordering: false, paging: false, searching: false, info: false,
+});
+$('#tbl-ref-pyramid').DataTable({
+  data: (ref.pyramid || []).map(p => [
+    `<code><strong>${p.col}</strong></code>`,
+    `<strong>${p.layer}</strong>`,
+    p.asserts, p.when_to_run,
+    `<code style="font-size:11px">${p.files}</code>`
+  ]),
+  pageLength: 20, ordering: false, paging: false, searching: false, info: false,
+  columns: [{type:'html'}, {type:'html'}, {}, {}, {type:'html'}],
+});
+$('#tbl-ref-badge-meaning').DataTable({
+  data: (ref.badge_meaning || []).map(b => [`<strong>${b.col}</strong>`, b.meaning]),
+  pageLength: 10, ordering: false, paging: false, searching: false, info: false,
+  columns: [{type:'html'}, {}],
 });
 </script>
 

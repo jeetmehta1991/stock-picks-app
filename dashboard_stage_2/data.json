@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-09T03:28:46.850598+00:00",
+  "generated_at": "2026-05-09T05:54:43.474083+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -22205,8 +22205,8 @@
     },
     {
       "id": "INV-016",
-      "title": "\u2014 Finnhub news Master Universe expansion - PATCHED 2026-05-08 v8h+1; BG running (Pass 53)",
-      "status": "OPEN",
+      "title": "\u2014 RESOLVED 2026-05-09 v8h+1 \u2014 Finnhub news Master Universe expansion complete (Pass 53)",
+      "status": "RESOLVED",
       "severity": "HIGH",
       "summary": "`backtest/data/cache/finnhub_news/` has exactly 509 files. The script `scripts/prefetch_finnhub_news.py` line ~31 reads `from backtest.data.universe import get_sp500_constituents, ETFS_FULL` and uses ",
       "status_grep": {
@@ -22535,14 +22535,14 @@
     },
     {
       "id": "INV-027",
-      "title": "\u2014 Polygon news per-ticker `insights` array - PATCHED 2026-05-08 v8h+1; backfill BG running (Pass 53)",
-      "status": "OPEN",
+      "title": "\u2014 RESOLVED 2026-05-08 v8h+1 \u2014 Polygon news per-ticker `insights` array preserved (Pass 53)",
+      "status": "RESOLVED",
       "severity": "HIGH",
       "summary": "Polygon `/v2/reference/news` returns each article with an `insights` array containing per-ticker {ticker, sentiment, sentiment_reasoning} entries. For multi-ticker articles (e.g. \"AAPL beats but MSFT ",
       "status_grep": {
         "coded": true,
         "wired": false,
-        "tested": false,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 3,
         "pyramid": {
@@ -22557,7 +22557,7 @@
           "acceptance": false,
           "property": false,
           "snapshot": false,
-          "contract": false,
+          "contract": true,
           "compatibility": false
         }
       },
@@ -25760,260 +25760,196 @@
   ],
   "recent_commits": [
     {
-      "sha": "752dad48",
-      "subject": "Finnhub news pre-fetch: batch 8",
-      "author": "jeetmehta1991",
-      "rel_time": "2 minutes ago"
-    },
-    {
-      "sha": "fe340f9c",
-      "subject": "Finnhub news pre-fetch: batch 7",
-      "author": "jeetmehta1991",
-      "rel_time": "6 minutes ago"
-    },
-    {
-      "sha": "97d61b1d",
-      "subject": "StockTwits batch 16",
+      "sha": "586d7e0e",
+      "subject": "StockTwits batch 25",
       "author": "jeetmehta1991",
       "rel_time": "8 minutes ago"
     },
     {
-      "sha": "62fddae2",
-      "subject": "Finnhub news pre-fetch: batch 6",
+      "sha": "b51b14b0",
+      "subject": "StockTwits batch 24",
       "author": "jeetmehta1991",
-      "rel_time": "10 minutes ago"
+      "rel_time": "24 minutes ago"
     },
     {
-      "sha": "d2260565",
-      "subject": "Finnhub news pre-fetch: batch 5",
+      "sha": "7ecf6254",
+      "subject": "StockTwits batch 23",
       "author": "jeetmehta1991",
-      "rel_time": "14 minutes ago"
+      "rel_time": "40 minutes ago"
     },
     {
-      "sha": "39fef19d",
-      "subject": "Finnhub news pre-fetch: batch 4",
+      "sha": "6332c06b",
+      "subject": "Pass 53 v8h+1: INV-016 RESOLVED - Finnhub news Master Universe expansion complete",
       "author": "jeetmehta1991",
-      "rel_time": "18 minutes ago"
+      "rel_time": "49 minutes ago"
     },
     {
-      "sha": "2c2333e9",
-      "subject": "Finnhub news pre-fetch: batch 3",
+      "sha": "9b8071dd",
+      "subject": "Finnhub news batch 0: complete (1937 tickers)",
       "author": "jeetmehta1991",
-      "rel_time": "23 minutes ago"
+      "rel_time": "51 minutes ago"
     },
     {
-      "sha": "90bd9cd6",
-      "subject": "StockTwits batch 15",
+      "sha": "8fce7bf8",
+      "subject": "Finnhub news pre-fetch: batch 36",
       "author": "jeetmehta1991",
-      "rel_time": "25 minutes ago"
+      "rel_time": "53 minutes ago"
     },
     {
-      "sha": "1f77b94e",
-      "subject": "Finnhub news pre-fetch: batch 2",
+      "sha": "f25d3dd2",
+      "subject": "Finnhub news pre-fetch: batch 35",
       "author": "jeetmehta1991",
-      "rel_time": "27 minutes ago"
+      "rel_time": "56 minutes ago"
     },
     {
-      "sha": "89e39150",
-      "subject": "Finnhub news pre-fetch: batch 1",
-      "author": "jeetmehta1991",
-      "rel_time": "32 minutes ago"
-    },
-    {
-      "sha": "302779f4",
-      "subject": "Pass 53 v8h+1: prefetch_finnhub_news.py - add _load_env helper",
-      "author": "jeetmehta1991",
-      "rel_time": "35 minutes ago"
-    },
-    {
-      "sha": "7a175f7c",
-      "subject": "Pass 53 v8h+1: T0 blocker triage - INV-023/INV-038 RESOLVED + INV-046 logged + INV-016/INV-027 patched",
-      "author": "jeetmehta1991",
-      "rel_time": "37 minutes ago"
-    },
-    {
-      "sha": "9093d20f",
-      "subject": "StockTwits batch 14",
-      "author": "jeetmehta1991",
-      "rel_time": "41 minutes ago"
-    },
-    {
-      "sha": "8281e07d",
-      "subject": "StockTwits batch 13",
+      "sha": "42072ec6",
+      "subject": "StockTwits batch 22",
       "author": "jeetmehta1991",
       "rel_time": "57 minutes ago"
     },
     {
-      "sha": "fb7cc135",
-      "subject": "StockTwits batch 12",
+      "sha": "2eafae51",
+      "subject": "Finnhub news pre-fetch: batch 34",
+      "author": "jeetmehta1991",
+      "rel_time": "60 minutes ago"
+    },
+    {
+      "sha": "e6dbb0ce",
+      "subject": "Finnhub news pre-fetch: batch 33",
+      "author": "jeetmehta1991",
+      "rel_time": "63 minutes ago"
+    },
+    {
+      "sha": "c7b92068",
+      "subject": "Finnhub news pre-fetch: batch 32",
+      "author": "jeetmehta1991",
+      "rel_time": "66 minutes ago"
+    },
+    {
+      "sha": "9fe62422",
+      "subject": "Finnhub news pre-fetch: batch 31",
+      "author": "jeetmehta1991",
+      "rel_time": "69 minutes ago"
+    },
+    {
+      "sha": "6a2d483d",
+      "subject": "Finnhub news pre-fetch: batch 30",
+      "author": "jeetmehta1991",
+      "rel_time": "72 minutes ago"
+    },
+    {
+      "sha": "0443ab4f",
+      "subject": "StockTwits batch 21",
       "author": "jeetmehta1991",
       "rel_time": "73 minutes ago"
     },
     {
-      "sha": "4421b801",
-      "subject": "StockTwits batch 11",
+      "sha": "8a7bf5d1",
+      "subject": "Finnhub news pre-fetch: batch 29",
+      "author": "jeetmehta1991",
+      "rel_time": "76 minutes ago"
+    },
+    {
+      "sha": "6fb48b62",
+      "subject": "Finnhub news pre-fetch: batch 28",
+      "author": "jeetmehta1991",
+      "rel_time": "79 minutes ago"
+    },
+    {
+      "sha": "cc098374",
+      "subject": "Finnhub news pre-fetch: batch 27",
+      "author": "jeetmehta1991",
+      "rel_time": "82 minutes ago"
+    },
+    {
+      "sha": "f1260e0d",
+      "subject": "Finnhub news pre-fetch: batch 26",
+      "author": "jeetmehta1991",
+      "rel_time": "85 minutes ago"
+    },
+    {
+      "sha": "282ee922",
+      "subject": "Finnhub news pre-fetch: batch 25",
+      "author": "jeetmehta1991",
+      "rel_time": "88 minutes ago"
+    },
+    {
+      "sha": "39a88056",
+      "subject": "StockTwits batch 20",
+      "author": "jeetmehta1991",
+      "rel_time": "89 minutes ago"
+    },
+    {
+      "sha": "159fc4b7",
+      "subject": "Finnhub news pre-fetch: batch 24",
       "author": "jeetmehta1991",
       "rel_time": "2 hours ago"
     },
     {
-      "sha": "da8873a8",
-      "subject": "StockTwits batch 10",
+      "sha": "ccbcc853",
+      "subject": "Finnhub news pre-fetch: batch 23",
       "author": "jeetmehta1991",
       "rel_time": "2 hours ago"
     },
     {
-      "sha": "95f23368",
-      "subject": "Pass 53 v8h+1: Next Up auto-ranked panel (Tier 0-7 prioritization)",
+      "sha": "7086dcf8",
+      "subject": "Finnhub news pre-fetch: batch 22",
       "author": "jeetmehta1991",
       "rel_time": "2 hours ago"
     },
     {
-      "sha": "9d1d6b3c",
-      "subject": "StockTwits batch 9",
+      "sha": "db019853",
+      "subject": "Finnhub news pre-fetch: batch 21",
       "author": "jeetmehta1991",
       "rel_time": "2 hours ago"
     },
     {
-      "sha": "80df9b2f",
-      "subject": "StockTwits batch 8",
+      "sha": "f2e05fc9",
+      "subject": "Finnhub news pre-fetch: batch 20",
       "author": "jeetmehta1991",
       "rel_time": "2 hours ago"
     },
     {
-      "sha": "77187649",
-      "subject": "StockTwits batch 7",
+      "sha": "dc09e56e",
+      "subject": "StockTwits batch 19",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "2 hours ago"
     },
     {
-      "sha": "6f2e664f",
-      "subject": "StockTwits batch 6",
+      "sha": "8afa2fb9",
+      "subject": "Finnhub news pre-fetch: batch 19",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "2 hours ago"
     },
     {
-      "sha": "7bdd83fb",
-      "subject": "StockTwits batch 5",
+      "sha": "d53bb2a8",
+      "subject": "Finnhub news pre-fetch: batch 18",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "2 hours ago"
     },
     {
-      "sha": "9fd0a256",
-      "subject": "StockTwits batch 4",
+      "sha": "02685bb1",
+      "subject": "Finnhub news pre-fetch: batch 17",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "2 hours ago"
     },
     {
-      "sha": "482b42cf",
-      "subject": "StockTwits batch 3",
+      "sha": "6a88099a",
+      "subject": "Finnhub news pre-fetch: batch 16",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
-    },
-    {
-      "sha": "1da0d4bc",
-      "subject": "StockTwits batch 2",
-      "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
-    },
-    {
-      "sha": "8179b83b",
-      "subject": "StockTwits batch 1",
-      "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
-    },
-    {
-      "sha": "c97d31c5",
-      "subject": "Pass 53 v8h+1: 13-layer pyramid (4 NEW) + StockTwits + Finnhub social_sentiment + AAII NaN-fix",
-      "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
-    },
-    {
-      "sha": "74226e11",
-      "subject": "Pass 53 v8h+1: full test pyramid (4 new layers) + AAII extended parse + YES/no badges",
-      "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
-    },
-    {
-      "sha": "e67659dd",
-      "subject": "Pass 53 v8h+1: structural drift detector + 9-layer test pyramid columns + Reference tab",
-      "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
+      "rel_time": "2 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 1512,
-    "modified": 1468,
+    "count": 1954,
+    "modified": 1928,
     "added": 0,
-    "untracked": 44,
+    "untracked": 26,
     "deleted": 0,
     "files": [
       {
         "status": "M",
-        "path": "AUDIT.md"
-      },
-      {
-        "status": "M",
-        "path": "BUG_REGISTER.md"
-      },
-      {
-        "status": "M",
-        "path": "CHECKLIST.md"
-      },
-      {
-        "status": "M",
-        "path": "OPEN_INVESTIGATIONS.md"
-      },
-      {
-        "status": "M",
-        "path": "PHASE_1A_PRELAUNCH_TODO.md"
-      },
-      {
-        "status": "M",
-        "path": "backtest/data/cache/finnhub_news/D.parquet"
-      },
-      {
-        "status": "M",
-        "path": "backtest/data/cache/finnhub_news/DAL.parquet"
-      },
-      {
-        "status": "M",
-        "path": "backtest/data/cache/finnhub_news/DAY.parquet"
-      },
-      {
-        "status": "M",
-        "path": "backtest/data/cache/finnhub_news/DD.parquet"
-      },
-      {
-        "status": "M",
-        "path": "backtest/data/cache/finnhub_news_checkpoint.json"
-      },
-      {
-        "status": "M",
-        "path": "backtest/tests/test_gate_pre_phase_1a_entry.py"
-      },
-      {
-        "status": "M",
-        "path": "dashboard_sprint0a/data.js"
-      },
-      {
-        "status": "M",
-        "path": "dashboard_sprint0a/data.json"
-      },
-      {
-        "status": "M",
-        "path": "dashboard_sprint0a/last_run.txt"
-      },
-      {
-        "status": "M",
-        "path": "dashboard_stage_2/data.js"
-      },
-      {
-        "status": "M",
-        "path": "dashboard_stage_2/data.json"
-      },
-      {
-        "status": "M",
-        "path": "dashboard_stage_2/last_run.txt"
+        "path": "dashboard_stage_2/index.html"
       },
       {
         "status": "M",
@@ -26746,24 +26682,75 @@
       {
         "status": "M",
         "path": "data_prefetch/polygon/news/ATKR.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ATLX.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ATNM.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ATO.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ATRO.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ATVI.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ATYR.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AU.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AUPH.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AUR.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AURC.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AVAV.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AVB.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AVD.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AVDL.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AVEO.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AVGO.parquet"
       }
     ]
   },
   "unpushed_commits": [],
-  "active_bgs": [
-    {
-      "pid": "56732",
-      "elapsed": "C:\\Users\\jeetm\\Github\\stock-picks-app\\.venv\\Scripts\\python.exe",
-      "script": "prefetch_polygon_news",
-      "description": "Polygon news re-fetch"
-    },
-    {
-      "pid": "56712",
-      "elapsed": "/usr/bin/bash",
-      "script": "prefetch_polygon_news",
-      "description": "Polygon news re-fetch"
-    }
-  ],
+  "active_bgs": [],
   "pending_pipeline": [
     {
       "item": "H10 Polygon Options chains (1937 underlyings)",
@@ -26940,7 +26927,7 @@
     }
   ],
   "test_inventory": {
-    "total": 715,
+    "total": 716,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -26954,7 +26941,7 @@
       "test_cnn_fg_demo": 3,
       "test_cnn_fg_smoke": 5,
       "test_compatibility": 8,
-      "test_contract": 7,
+      "test_contract": 8,
       "test_data_integrity": 7,
       "test_data_integrity_v8h_additions": 9,
       "test_dec491_492_493_sprint2": 12,
@@ -27182,6 +27169,121 @@
         "status": "After 1B passes",
         "purpose": "Overlays: news (Unusual Whales), options (H10 ep2), pytrends. Sonnet model."
       }
+    ],
+    "pyramid": [
+      {
+        "col": "U",
+        "layer": "Unit",
+        "asserts": "One function/class behaves correctly in isolation.",
+        "when_to_run": "Run unless the addressal is doc-only (no code touched).",
+        "files": "test_unit.py, test_prefetch_utils.py"
+      },
+      {
+        "col": "Sm",
+        "layer": "Smoke",
+        "asserts": "The minimum end-to-end path runs without crashing (script imports, dashboard builds, etc.).",
+        "when_to_run": "Run if any prefetch / dashboard / runner script touched.",
+        "files": "test_smoke.py"
+      },
+      {
+        "col": "I",
+        "layer": "Integration",
+        "asserts": "Multiple components collaborate correctly across module boundaries.",
+        "when_to_run": "Run if any cross-module call path touched.",
+        "files": "test_integration.py"
+      },
+      {
+        "col": "Sy",
+        "layer": "System",
+        "asserts": "Full pipeline / Phase 1A entry path produces the expected output.",
+        "when_to_run": "Run if Phase 1A entry path touched.",
+        "files": "test_gate_pre_phase_1a_entry.py"
+      },
+      {
+        "col": "F",
+        "layer": "Functional",
+        "asserts": "Parser / schema / cross-doc correctness; user-visible behavior matches spec.",
+        "when_to_run": "Run if doc / parser / dashboard touched.",
+        "files": "test_doc_count_consistency.py"
+      },
+      {
+        "col": "R",
+        "layer": "Regression",
+        "asserts": "A previously-fixed bug stays fixed (one test per resolved BUG-NN).",
+        "when_to_run": "ALWAYS run if a BUG is being claimed RESOLVED (the BUG-NN test must exist).",
+        "files": "test_regression.py"
+      },
+      {
+        "col": "D",
+        "layer": "Data integrity",
+        "asserts": "Cache shape and schema invariants (every cached parquet matches its locked column set).",
+        "when_to_run": "Run if any cache schema touched.",
+        "files": "test_schema_canonical.py"
+      },
+      {
+        "col": "P",
+        "layer": "Performance",
+        "asserts": "Runtime / memory stays within bounds (no O(n^2) sneaks; cache loads under budget).",
+        "when_to_run": "Run if hot-path code touched.",
+        "files": "test_performance.py"
+      },
+      {
+        "col": "A",
+        "layer": "Acceptance",
+        "asserts": "Owner-defined pass criteria met (9-criteria PASSING_CRITERIA + per-regime verdict).",
+        "when_to_run": "Run if PASSING_CRITERIA / 9-criteria touched.",
+        "files": "test_acceptance.py + golden/"
+      },
+      {
+        "col": "Pr",
+        "layer": "Property-based",
+        "asserts": "Invariants hold for ALL valid inputs (Hypothesis-generated counterexamples).",
+        "when_to_run": "Run if invariant-bearing code touched (regime classifier, profit_factor, etc.).",
+        "files": "test_property.py"
+      },
+      {
+        "col": "Sn",
+        "layer": "Snapshot",
+        "asserts": "Output shape and key counts match a frozen golden baseline.",
+        "when_to_run": "Run if dashboard data shape OR a golden fixture touched.",
+        "files": "test_snapshot.py"
+      },
+      {
+        "col": "C",
+        "layer": "Contract",
+        "asserts": "Our parser handles the actual API response shape (frozen mock fixtures per source).",
+        "when_to_run": "Run if API parser touched.",
+        "files": "test_contract.py"
+      },
+      {
+        "col": "Cm",
+        "layer": "Compatibility",
+        "asserts": "Code works across the supported Python / pandas / pyarrow matrix.",
+        "when_to_run": "Run if pandas / numpy / pyarrow API surface touched.",
+        "files": "test_compatibility.py"
+      }
+    ],
+    "badge_meaning": [
+      {
+        "col": "Coded",
+        "meaning": "Code with this ID/name reference exists in backtest/ or scripts/ (any Python file). Detected by grep across prod + tests + scripts corpora."
+      },
+      {
+        "col": "Wired",
+        "meaning": "Code is reachable from a runtime entry point - actually CALLED from backtest/data, engine, signals, results (the active path), not orphan code."
+      },
+      {
+        "col": "Tested",
+        "meaning": "Rolled-up: ANY of the 13 pyramid layers reference the ID. The 13 layer columns to the right show per-layer breakdown."
+      },
+      {
+        "col": "Pushed",
+        "meaning": "Change is on origin/main per git log --all subject lines."
+      },
+      {
+        "col": "U / Sm / I / Sy / F / R / D / P / A / Pr / Sn / C / Cm",
+        "meaning": "13 pyramid layer columns: per-layer test coverage. YES = a test file in that layer references the ID; no = no coverage in that layer. See Pyramid table above for what each layer asserts."
+      }
     ]
   },
   "next_up": [
@@ -27197,28 +27299,8 @@
     },
     {
       "kind": "INV",
-      "id": "INV-016",
-      "title": "\u2014 Finnhub news Master Universe expansion - PATCHED 2026-05-08 v8h+1; BG running (Pass 53)",
-      "status": "OPEN",
-      "tier": 0,
-      "reason": "INV OPEN with HIGH/CRITICAL severity",
-      "back_refs": 0,
-      "sprint": "-"
-    },
-    {
-      "kind": "INV",
       "id": "INV-025",
       "title": "\u2014 SEC EDGAR all 11 forms cached as filing-metadata-only (primary_doc not parsed; lost transaction-level fields) (Pass 53 Day-9 v8h evening)",
-      "status": "OPEN",
-      "tier": 0,
-      "reason": "INV OPEN with HIGH/CRITICAL severity",
-      "back_refs": 0,
-      "sprint": "-"
-    },
-    {
-      "kind": "INV",
-      "id": "INV-027",
-      "title": "\u2014 Polygon news per-ticker `insights` array - PATCHED 2026-05-08 v8h+1; backfill BG running (Pass 53)",
       "status": "OPEN",
       "tier": 0,
       "reason": "INV OPEN with HIGH/CRITICAL severity",
@@ -27434,6 +27516,26 @@
       "reason": "Dependency root (3 downstream items reference)",
       "back_refs": 3,
       "sprint": "Sprint 0A \u2014 Phase 0.A Multi-AP; Sprint 5 additions (Universe M"
+    },
+    {
+      "kind": "DEC",
+      "id": "DEC-104",
+      "title": "Auto-populate Tier 3 momentum watchlist \u2014 Pass 52 turn 33 RESOLVED via supersession. Pass 52 phased implementation: DEC-364 (Tier 3 size 50\u2192",
+      "status": "RESOLVED-DECIDED",
+      "tier": 1,
+      "reason": "Dependency root (3 downstream items reference)",
+      "back_refs": 3,
+      "sprint": "Sprint 5 additions (Universe M"
+    },
+    {
+      "kind": "DEC",
+      "id": "DEC-105",
+      "title": "Spinoff detector \u2014 Pass 52 turn 33 RESOLVED via supersession. Pass 52 phased implementation: DEC-378 (Phase 1 \u2014 NASDAQ symbol-directory week",
+      "status": "RESOLVED-DECIDED",
+      "tier": 1,
+      "reason": "Dependency root (3 downstream items reference)",
+      "back_refs": 3,
+      "sprint": "Sprint 5 additions (Universe M"
     }
   ],
   "decision_status_counts": {
@@ -27480,8 +27582,8 @@
     "splits": 1
   },
   "inv_status_counts": {
-    "OPEN": 40,
-    "RESOLVED": 6
+    "OPEN": 38,
+    "RESOLVED": 8
   },
   "tier_status_counts": {
     "UNKNOWN": 20,

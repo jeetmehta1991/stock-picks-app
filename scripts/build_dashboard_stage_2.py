@@ -740,6 +740,28 @@ def get_reference_tables() -> dict:
             {"phase": "Phase 1B-alpha", "status": "Sub-phase", "purpose": "Rules + agents combined cube; A/B vs 1A baseline."},
             {"phase": "Phase 1C+", "status": "After 1B passes", "purpose": "Overlays: news (Unusual Whales), options (H10 ep2), pytrends. Sonnet model."},
         ],
+        "pyramid": [
+            {"col": "U",  "layer": "Unit",          "asserts": "One function/class behaves correctly in isolation.",                                          "when_to_run": "Run unless the addressal is doc-only (no code touched).",                              "files": "test_unit.py, test_prefetch_utils.py"},
+            {"col": "Sm", "layer": "Smoke",          "asserts": "The minimum end-to-end path runs without crashing (script imports, dashboard builds, etc.).", "when_to_run": "Run if any prefetch / dashboard / runner script touched.",                            "files": "test_smoke.py"},
+            {"col": "I",  "layer": "Integration",   "asserts": "Multiple components collaborate correctly across module boundaries.",                          "when_to_run": "Run if any cross-module call path touched.",                                          "files": "test_integration.py"},
+            {"col": "Sy", "layer": "System",         "asserts": "Full pipeline / Phase 1A entry path produces the expected output.",                            "when_to_run": "Run if Phase 1A entry path touched.",                                                 "files": "test_gate_pre_phase_1a_entry.py"},
+            {"col": "F",  "layer": "Functional",    "asserts": "Parser / schema / cross-doc correctness; user-visible behavior matches spec.",                  "when_to_run": "Run if doc / parser / dashboard touched.",                                            "files": "test_doc_count_consistency.py"},
+            {"col": "R",  "layer": "Regression",    "asserts": "A previously-fixed bug stays fixed (one test per resolved BUG-NN).",                            "when_to_run": "ALWAYS run if a BUG is being claimed RESOLVED (the BUG-NN test must exist).",         "files": "test_regression.py"},
+            {"col": "D",  "layer": "Data integrity", "asserts": "Cache shape and schema invariants (every cached parquet matches its locked column set).",      "when_to_run": "Run if any cache schema touched.",                                                    "files": "test_schema_canonical.py"},
+            {"col": "P",  "layer": "Performance",   "asserts": "Runtime / memory stays within bounds (no O(n^2) sneaks; cache loads under budget).",            "when_to_run": "Run if hot-path code touched.",                                                       "files": "test_performance.py"},
+            {"col": "A",  "layer": "Acceptance",    "asserts": "Owner-defined pass criteria met (9-criteria PASSING_CRITERIA + per-regime verdict).",            "when_to_run": "Run if PASSING_CRITERIA / 9-criteria touched.",                                       "files": "test_acceptance.py + golden/"},
+            {"col": "Pr", "layer": "Property-based", "asserts": "Invariants hold for ALL valid inputs (Hypothesis-generated counterexamples).",                  "when_to_run": "Run if invariant-bearing code touched (regime classifier, profit_factor, etc.).",     "files": "test_property.py"},
+            {"col": "Sn", "layer": "Snapshot",       "asserts": "Output shape and key counts match a frozen golden baseline.",                                  "when_to_run": "Run if dashboard data shape OR a golden fixture touched.",                            "files": "test_snapshot.py"},
+            {"col": "C",  "layer": "Contract",       "asserts": "Our parser handles the actual API response shape (frozen mock fixtures per source).",          "when_to_run": "Run if API parser touched.",                                                          "files": "test_contract.py"},
+            {"col": "Cm", "layer": "Compatibility",  "asserts": "Code works across the supported Python / pandas / pyarrow matrix.",                            "when_to_run": "Run if pandas / numpy / pyarrow API surface touched.",                                "files": "test_compatibility.py"},
+        ],
+        "badge_meaning": [
+            {"col": "Coded",  "meaning": "Code with this ID/name reference exists in backtest/ or scripts/ (any Python file). Detected by grep across prod + tests + scripts corpora."},
+            {"col": "Wired",  "meaning": "Code is reachable from a runtime entry point - actually CALLED from backtest/data, engine, signals, results (the active path), not orphan code."},
+            {"col": "Tested", "meaning": "Rolled-up: ANY of the 13 pyramid layers reference the ID. The 13 layer columns to the right show per-layer breakdown."},
+            {"col": "Pushed", "meaning": "Change is on origin/main per git log --all subject lines."},
+            {"col": "U / Sm / I / Sy / F / R / D / P / A / Pr / Sn / C / Cm", "meaning": "13 pyramid layer columns: per-layer test coverage. YES = a test file in that layer references the ID; no = no coverage in that layer. See Pyramid table above for what each layer asserts."},
+        ],
     }
 
 
