@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-09T18:43:46.114737+00:00",
+  "generated_at": "2026-05-09T20:53:17.785349+00:00",
   "universe_size": 1937,
   "tier_counts": {
     "T1ETF": 27,
@@ -60,7 +60,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 336
+          "n_refs": 352
         },
         {
           "field": "high",
@@ -171,7 +171,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 336
+          "n_refs": 352
         },
         {
           "field": "description",
@@ -1183,7 +1183,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 336
+          "n_refs": 352
         },
         {
           "field": "high",
@@ -1239,7 +1239,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 336
+          "n_refs": 352
         },
         {
           "field": "high",
@@ -1313,7 +1313,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 336
+          "n_refs": 352
         },
         {
           "field": "high",
@@ -1493,7 +1493,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 336
+          "n_refs": 352
         },
         {
           "field": "cpi",
@@ -1561,7 +1561,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 336
+          "n_refs": 352
         },
         {
           "field": "model_1_year",
@@ -1635,7 +1635,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 336
+          "n_refs": 352
         },
         {
           "field": "yield_1_year",
@@ -1756,7 +1756,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 336
+          "n_refs": 352
         },
         {
           "field": "firm",
@@ -1919,7 +1919,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 336
+          "n_refs": 352
         },
         {
           "field": "firm",
@@ -2100,7 +2100,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 336
+          "n_refs": 352
         },
         {
           "field": "date_status",
@@ -2294,7 +2294,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 336
+          "n_refs": 352
         },
         {
           "field": "eps_method",
@@ -2530,7 +2530,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 336
+          "n_refs": 352
         },
         {
           "field": "value",
@@ -2581,7 +2581,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 336
+          "n_refs": 352
         },
         {
           "field": "value",
@@ -2632,7 +2632,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 336
+          "n_refs": 352
         },
         {
           "field": "value",
@@ -2683,7 +2683,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 336
+          "n_refs": 352
         },
         {
           "field": "value",
@@ -2734,7 +2734,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 336
+          "n_refs": 352
         },
         {
           "field": "value",
@@ -2787,7 +2787,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 336
+          "n_refs": 352
         },
         {
           "field": "histogram",
@@ -3942,7 +3942,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 336
+          "n_refs": 352
         },
         {
           "field": "momentum",
@@ -5320,7 +5320,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 336
+          "n_refs": 352
         },
         {
           "field": "value",
@@ -5355,7 +5355,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 336
+          "n_refs": 352
         },
         {
           "field": "realtime_end",
@@ -5408,7 +5408,7 @@
       ],
       "n_columns": 13,
       "status": "OK",
-      "use_case": "AAII weekly bullish/bearish % (contrarian signal at extremes)",
+      "use_case": "AAII weekly bullish/bearish % (contrarian signal at extremes); 13-col extended schema with 8wk MA + long-term avg \u00b11\u03c3 bands + S&P weekly OHLC reference",
       "stage_phase": "Phase 1A regime classifier",
       "criticality": "P1",
       "field_statuses": [
@@ -5416,7 +5416,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 336
+          "n_refs": 352
         },
         {
           "field": "bullish",
@@ -5440,7 +5440,7 @@
           "field": "total",
           "coded": true,
           "wired": true,
-          "n_refs": 14
+          "n_refs": 16
         },
         {
           "field": "bullish_8wk_ma",
@@ -5493,6 +5493,101 @@
       ]
     },
     {
+      "api": "aaii",
+      "endpoint": "asset_allocation_survey",
+      "path": "data_prefetch/aaii/asset_allocation_survey.parquet",
+      "kind": "single",
+      "present": true,
+      "file_size": 30647,
+      "row_count": 445,
+      "columns": [
+        "date",
+        "stock_funds_pct",
+        "stocks_pct",
+        "bond_funds_pct",
+        "bonds_pct",
+        "cash_pct",
+        "total",
+        "stocks_combined_pct",
+        "bonds_combined_pct",
+        "cash_combined_pct",
+        "response_rate"
+      ],
+      "n_columns": 11,
+      "status": "OK",
+      "use_case": "AAII monthly stocks/bonds/cash % allocation (retail contrarian indicator; long-term avg ~62% stocks; >75% = euphoria warning, <50% = capitulation buy signal)",
+      "stage_phase": "Phase 1A regime overlay (long-term cycle), Phase 1B+ contrarian timing",
+      "criticality": "P2",
+      "field_statuses": [
+        {
+          "field": "date",
+          "coded": true,
+          "wired": true,
+          "n_refs": 352
+        },
+        {
+          "field": "stock_funds_pct",
+          "coded": true,
+          "wired": false,
+          "n_refs": 2
+        },
+        {
+          "field": "stocks_pct",
+          "coded": true,
+          "wired": false,
+          "n_refs": 2
+        },
+        {
+          "field": "bond_funds_pct",
+          "coded": true,
+          "wired": false,
+          "n_refs": 2
+        },
+        {
+          "field": "bonds_pct",
+          "coded": true,
+          "wired": false,
+          "n_refs": 2
+        },
+        {
+          "field": "cash_pct",
+          "coded": true,
+          "wired": false,
+          "n_refs": 2
+        },
+        {
+          "field": "total",
+          "coded": true,
+          "wired": true,
+          "n_refs": 16
+        },
+        {
+          "field": "stocks_combined_pct",
+          "coded": true,
+          "wired": false,
+          "n_refs": 5
+        },
+        {
+          "field": "bonds_combined_pct",
+          "coded": true,
+          "wired": false,
+          "n_refs": 5
+        },
+        {
+          "field": "cash_combined_pct",
+          "coded": true,
+          "wired": false,
+          "n_refs": 5
+        },
+        {
+          "field": "response_rate",
+          "coded": true,
+          "wired": false,
+          "n_refs": 2
+        }
+      ]
+    },
+    {
       "api": "cnn_fg",
       "endpoint": "daily",
       "path": "data_prefetch/cnn_fg/daily.parquet",
@@ -5534,7 +5629,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 336
+          "n_refs": 352
         }
       ]
     },
@@ -8324,7 +8419,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 336
+          "n_refs": 352
         },
         {
           "field": "views",
@@ -8376,7 +8471,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 336
+          "n_refs": 352
         },
         {
           "field": "query_label",
@@ -9342,7 +9437,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 336
+          "n_refs": 352
         },
         {
           "field": "epsActual",
@@ -9422,7 +9517,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 336
+          "n_refs": 352
         },
         {
           "field": "exchange",
@@ -128569,8 +128664,8 @@
       "total_files": 80
     },
     "aaii": {
-      "endpoints": 1,
-      "ok_endpoints": 1,
+      "endpoints": 2,
+      "ok_endpoints": 2,
       "total_files": 0
     },
     "cnn_fg": {
@@ -128664,6 +128759,11 @@
       "use_case": "Cross-source confirm; analyst recommendations; insider sentiment; earnings/IPO/economic calendars; company news",
       "stage": "Phase 1B overlay",
       "criticality": "P1"
+    },
+    "finnhub.social_sentiment": {
+      "use_case": "Per-ticker daily Reddit + Twitter mention counts + bullish/bearish weighted score. Cross-platform retail-attention signal (complements Apewisdom Reddit-only + StockTwits Twitter-of-finance). Use cases: (1) Phase 1B News Analyst gets cross-platform mention z-score per candidate; (2) Risk Debaters get high-mention-spike anomaly flag; (3) Trader gets sentiment trend reversal signal; (4) Phase 1C contrarian strategies fade retail euphoria when score AND mentions both extreme.",
+      "stage": "Phase 1B+ overlay - PREMIUM-LOCKED at free tier 2026-05-08. Script BUILT (`prefetch_finnhub_social_sentiment.py`) ready to activate when Finnhub Premium added (~$10/mo).",
+      "criticality": "P2 (premium-gated; Apewisdom + StockTwits + Polygon news cover retail layer at free tier)"
     },
     "alphavantage": {
       "use_case": "Cross-source confirm of free-tier technical indicators + listing status (premium endpoints inaccessible)",

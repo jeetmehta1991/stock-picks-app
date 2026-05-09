@@ -127,6 +127,10 @@ CANONICAL_SCHEMAS: dict[str, frozenset[str]] = {
         "id", "body", "created_at", "sentiment",
         "user_id", "user_username", "likes_total", "conversation_count",
     }),
+
+    # AAII Asset Allocation Survey (Pass 53 v8h+1 owner-supplied 2026-05-09;
+    # monthly stocks/bonds/cash %; contrarian retail-allocation indicator).
+    # Single global parquet (not per-ticker); see test_contract for shape lock.
 }
 
 

@@ -273,7 +273,8 @@ ENDPOINT_USE_CASES = {
     "fred.observations": {"use_case": "90+ macro series (yield curve / inflation / employment / sector employment / FX rates) for regime classification", "stage": "Phase 1A regime classifier", "criticality": "P0"},
     "alfred.vintage_observations": {"use_case": "Revision-aware FRED data (PIT-correct macro replay)", "stage": "Phase 1C+ revision-aware backtest", "criticality": "P3"},
     # AAII / CNN F&G
-    "aaii.weekly_sentiment": {"use_case": "AAII weekly bullish/bearish % (contrarian signal at extremes)", "stage": "Phase 1A regime classifier", "criticality": "P1"},
+    "aaii.weekly_sentiment": {"use_case": "AAII weekly bullish/bearish % (contrarian signal at extremes); 13-col extended schema with 8wk MA + long-term avg +/- 1stdev bands + S&P weekly OHLC reference", "stage": "Phase 1A regime classifier", "criticality": "P1"},
+    "aaii.asset_allocation_survey": {"use_case": "AAII monthly stocks/bonds/cash % allocation (retail contrarian indicator; long-term avg ~62% stocks; >75% = euphoria warning, <50% = capitulation buy signal)", "stage": "Phase 1A regime overlay (long-term cycle), Phase 1B+ contrarian timing", "criticality": "P2"},
     "cnn_fg.daily": {"use_case": "CNN F&G composite + 7 sub-components (VIX/breadth/momentum/etc.)", "stage": "Phase 1A regime classifier", "criticality": "P1"},
     # CFTC
     "cftc.tff_disagg_combined": {"use_case": "Trader-in-Financial-Futures + Disaggregated commodity positioning (latest combined)", "stage": "Phase 1A regime + Phase 1B positioning overlay", "criticality": "P1"},
@@ -366,6 +367,11 @@ API_USE_CASES = {
         "use_case": "Cross-source confirm; analyst recommendations; insider sentiment; earnings/IPO/economic calendars; company news",
         "stage": "Phase 1B overlay",
         "criticality": "P1",
+    },
+    "finnhub.social_sentiment": {
+        "use_case": "Per-ticker daily Reddit + Twitter mention counts + bullish/bearish weighted score. Cross-platform retail-attention signal (complements Apewisdom Reddit-only + StockTwits Twitter-of-finance). Use cases: (1) Phase 1B News Analyst gets cross-platform mention z-score per candidate; (2) Risk Debaters get high-mention-spike anomaly flag; (3) Trader gets sentiment trend reversal signal; (4) Phase 1C contrarian strategies fade retail euphoria when score AND mentions both extreme.",
+        "stage": "Phase 1B+ overlay - PREMIUM-LOCKED at free tier 2026-05-08. Script BUILT (`prefetch_finnhub_social_sentiment.py`) ready to activate when Finnhub Premium added (~$10/mo).",
+        "criticality": "P2 (premium-gated; Apewisdom + StockTwits + Polygon news cover retail layer at free tier)",
     },
     "alphavantage": {
         "use_case": "Cross-source confirm of free-tier technical indicators + listing status (premium endpoints inaccessible)",
@@ -541,6 +547,7 @@ ENDPOINTS = [
     ("alfred", "vintage_observations", "data_prefetch/alfred", "global"),
     # AAII / CNN F&G
     ("aaii", "weekly_sentiment", "data_prefetch/aaii/weekly_sentiment.parquet", "single"),
+    ("aaii", "asset_allocation_survey", "data_prefetch/aaii/asset_allocation_survey.parquet", "single"),
     ("cnn_fg", "daily", "data_prefetch/cnn_fg/daily.parquet", "single"),
     # CFTC
     ("cftc", "tff_disagg_combined", "data_prefetch/cftc", "global"),

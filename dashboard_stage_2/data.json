@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-09T18:43:44.080322+00:00",
+  "generated_at": "2026-05-09T20:53:14.609230+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -17145,7 +17145,7 @@
       "pass_intro": "Pass 53",
       "pass_resolved": "53",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
         "tested": false,
         "pushed": true,
@@ -17366,7 +17366,7 @@
           "acceptance": false,
           "property": false,
           "snapshot": false,
-          "contract": false,
+          "contract": true,
           "compatibility": false
         }
       },
@@ -26814,992 +26814,248 @@
   ],
   "recent_commits": [
     {
+      "sha": "06d85a9a",
+      "subject": "Pass 53 v8h+1: INV-027 backfill data sweep - 1924 polygon news files with insights_json",
+      "author": "jeetmehta1991",
+      "rel_time": "5 minutes ago"
+    },
+    {
+      "sha": "324362ec",
+      "subject": "Pass 53 auto-drift-sweep 2026-05-09 09:53: dashboards refreshed (no numerical drift)",
+      "author": "jeetmehta1991",
+      "rel_time": "2 hours ago"
+    },
+    {
       "sha": "387fac95",
       "subject": "Pass 53 v8h+1: 8 new DECs (597-604) + register sweeps + per-turn discipline fix",
       "author": "jeetmehta1991",
-      "rel_time": "86 minutes ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "76436fa7",
       "subject": "Pass 53 auto-drift-sweep 2026-05-09 07:53: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "5814a4cc",
       "subject": "Pass 53 auto-drift-sweep 2026-05-09 05:53: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "9673eccc",
       "subject": "Pass 53 v8h+1: StockTwits BG complete - 1937 underlyings cached + canonical lock + contract test",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "ad5f0f78",
       "subject": "StockTwits final (1923 fetched)",
       "author": "jeetmehta1991",
-      "rel_time": "9 hours ago"
+      "rel_time": "11 hours ago"
     },
     {
       "sha": "658f40ad",
       "subject": "StockTwits batch 38",
       "author": "jeetmehta1991",
-      "rel_time": "9 hours ago"
+      "rel_time": "12 hours ago"
     },
     {
       "sha": "dcc49c62",
       "subject": "StockTwits batch 37",
       "author": "jeetmehta1991",
-      "rel_time": "10 hours ago"
+      "rel_time": "12 hours ago"
     },
     {
       "sha": "1a594038",
       "subject": "StockTwits batch 36",
       "author": "jeetmehta1991",
-      "rel_time": "10 hours ago"
+      "rel_time": "12 hours ago"
     },
     {
       "sha": "65a03894",
       "subject": "StockTwits batch 35",
       "author": "jeetmehta1991",
-      "rel_time": "10 hours ago"
+      "rel_time": "12 hours ago"
     },
     {
       "sha": "fd5a7cd9",
       "subject": "StockTwits batch 34",
       "author": "jeetmehta1991",
-      "rel_time": "11 hours ago"
+      "rel_time": "13 hours ago"
     },
     {
       "sha": "a5bf31b2",
       "subject": "StockTwits batch 33",
       "author": "jeetmehta1991",
-      "rel_time": "11 hours ago"
+      "rel_time": "13 hours ago"
     },
     {
       "sha": "ca936547",
       "subject": "StockTwits batch 32",
       "author": "jeetmehta1991",
-      "rel_time": "11 hours ago"
+      "rel_time": "13 hours ago"
     },
     {
       "sha": "da89952c",
       "subject": "StockTwits batch 31",
       "author": "jeetmehta1991",
-      "rel_time": "11 hours ago"
+      "rel_time": "13 hours ago"
     },
     {
       "sha": "f8bdd491",
       "subject": "StockTwits batch 30",
       "author": "jeetmehta1991",
-      "rel_time": "12 hours ago"
+      "rel_time": "14 hours ago"
     },
     {
       "sha": "1311d82a",
       "subject": "StockTwits batch 29",
       "author": "jeetmehta1991",
-      "rel_time": "12 hours ago"
+      "rel_time": "14 hours ago"
     },
     {
       "sha": "bc0373e7",
       "subject": "Pass 53 v8h+1: pyramid 4-state cells (YES/no/N/A/LATER) + git body grep + BUG-007 annotation",
       "author": "jeetmehta1991",
-      "rel_time": "12 hours ago"
+      "rel_time": "14 hours ago"
     },
     {
       "sha": "ccd6dbbf",
       "subject": "StockTwits batch 28",
       "author": "jeetmehta1991",
-      "rel_time": "12 hours ago"
+      "rel_time": "14 hours ago"
     },
     {
       "sha": "220c21e3",
       "subject": "StockTwits batch 27",
       "author": "jeetmehta1991",
-      "rel_time": "12 hours ago"
+      "rel_time": "15 hours ago"
     },
     {
       "sha": "5d86e1c0",
       "subject": "Pass 53 v8h+1: Description column added to Decisions / Bugs / INVs / Caveats tables",
       "author": "jeetmehta1991",
-      "rel_time": "12 hours ago"
+      "rel_time": "15 hours ago"
     },
     {
       "sha": "b66c12b6",
       "subject": "StockTwits batch 26",
       "author": "jeetmehta1991",
-      "rel_time": "13 hours ago"
+      "rel_time": "15 hours ago"
     },
     {
       "sha": "01752658",
       "subject": "Pass 53 v8h+1: Reference page - add 13-layer test pyramid + dashboard column meanings",
       "author": "jeetmehta1991",
-      "rel_time": "13 hours ago"
+      "rel_time": "15 hours ago"
     },
     {
       "sha": "586d7e0e",
       "subject": "StockTwits batch 25",
       "author": "jeetmehta1991",
-      "rel_time": "13 hours ago"
+      "rel_time": "15 hours ago"
     },
     {
       "sha": "b51b14b0",
       "subject": "StockTwits batch 24",
       "author": "jeetmehta1991",
-      "rel_time": "13 hours ago"
+      "rel_time": "15 hours ago"
     },
     {
       "sha": "7ecf6254",
       "subject": "StockTwits batch 23",
       "author": "jeetmehta1991",
-      "rel_time": "13 hours ago"
+      "rel_time": "16 hours ago"
     },
     {
       "sha": "6332c06b",
       "subject": "Pass 53 v8h+1: INV-016 RESOLVED - Finnhub news Master Universe expansion complete",
       "author": "jeetmehta1991",
-      "rel_time": "14 hours ago"
+      "rel_time": "16 hours ago"
     },
     {
       "sha": "9b8071dd",
       "subject": "Finnhub news batch 0: complete (1937 tickers)",
       "author": "jeetmehta1991",
-      "rel_time": "14 hours ago"
+      "rel_time": "16 hours ago"
     },
     {
       "sha": "8fce7bf8",
       "subject": "Finnhub news pre-fetch: batch 36",
       "author": "jeetmehta1991",
-      "rel_time": "14 hours ago"
+      "rel_time": "16 hours ago"
     },
     {
       "sha": "f25d3dd2",
       "subject": "Finnhub news pre-fetch: batch 35",
       "author": "jeetmehta1991",
-      "rel_time": "14 hours ago"
-    },
-    {
-      "sha": "42072ec6",
-      "subject": "StockTwits batch 22",
-      "author": "jeetmehta1991",
-      "rel_time": "14 hours ago"
-    },
-    {
-      "sha": "2eafae51",
-      "subject": "Finnhub news pre-fetch: batch 34",
-      "author": "jeetmehta1991",
-      "rel_time": "14 hours ago"
+      "rel_time": "16 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 1928,
-    "modified": 1925,
+    "count": 14,
+    "modified": 9,
     "added": 0,
-    "untracked": 3,
+    "untracked": 5,
     "deleted": 0,
     "files": [
       {
         "status": "M",
-        "path": "data_prefetch/polygon/_checkpoint_news.json"
+        "path": "backtest/tests/test_contract.py"
       },
       {
         "status": "M",
-        "path": "data_prefetch/polygon/news/A.parquet"
+        "path": "backtest/tests/test_schema_canonical.py"
       },
       {
         "status": "M",
-        "path": "data_prefetch/polygon/news/AA.parquet"
+        "path": "dashboard_sprint0a/data.js"
       },
       {
         "status": "M",
-        "path": "data_prefetch/polygon/news/AAL.parquet"
+        "path": "dashboard_sprint0a/data.json"
       },
       {
         "status": "M",
-        "path": "data_prefetch/polygon/news/AAOI.parquet"
+        "path": "dashboard_sprint0a/last_run.txt"
       },
       {
         "status": "M",
-        "path": "data_prefetch/polygon/news/AAON.parquet"
+        "path": "dashboard_stage_2/data.js"
       },
       {
         "status": "M",
-        "path": "data_prefetch/polygon/news/AAP.parquet"
+        "path": "dashboard_stage_2/data.json"
       },
       {
         "status": "M",
-        "path": "data_prefetch/polygon/news/AAPL.parquet"
+        "path": "dashboard_stage_2/last_run.txt"
       },
       {
         "status": "M",
-        "path": "data_prefetch/polygon/news/ABAT.parquet"
+        "path": "scripts/build_dashboard_sprint0a.py"
       },
       {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ABBV.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ABMD.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ABNB.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ABSI.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ABT.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ACA.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ACCD.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ACET.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ACGL.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ACHC.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ACHR.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ACI.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ACIW.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ACLS.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ACLX.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ACMR.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ACN.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ACT.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ACVA.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ADBE.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ADI.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ADM.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ADMA.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ADP.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ADPT.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ADS.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ADSE.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ADSK.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ADT.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ADTN.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AEE.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AEHR.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AEIS.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AEO.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AEP.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AERI.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AES.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AEVA.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AEYE.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AFL.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AFRM.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AG.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AGFY.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AGI.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AGIO.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AGX.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AGYS.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AHR.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AI.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AIG.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AIMC.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AISP.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AIV.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AIZ.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AJG.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AJRD.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AKAM.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AKRO.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AKUS.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ALAB.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ALB.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ALC.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ALDX.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ALGM.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ALGN.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ALGS.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ALH.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ALHC.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ALK.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ALKT.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ALL.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ALLE.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ALLT.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ALLY.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ALM.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ALMS.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ALNT.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ALNY.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ALPN.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ALSN.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ALT.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ALTG.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ALTS.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ALXN.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ALXO.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AM.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AMAL.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AMAM.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AMAT.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AMCR.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AMD.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AME.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AMGN.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AMH.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AMLX.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AMP.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AMPG.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AMPH.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AMPX.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AMPY.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AMR.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AMRX.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AMRZ.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AMSC.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AMT.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AMTM.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AMTX.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AMZN.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ANAB.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ANDE.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ANET.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ANF.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ANIP.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ANNX.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ANRO.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ANSS.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AON.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AOS.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AOSL.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/APA.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/APD.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/APEI.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/APEN.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/APG.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/APGE.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/APH.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/APLD.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/APLS.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/APLT.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/APO.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/APP.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/APPF.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/APPS.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/APTS.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/APTV.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AQST.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AR.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ARCH.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ARCT.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ARDX.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ARE.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ARES.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ARHS.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ARIS.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ARLO.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ARLP.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ARM.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ARMK.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ARMN.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ARNC.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AROC.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ARQQ.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ARQT.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ARRY.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ARWR.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AS.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ASC.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ASM.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ASML.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ASO.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ASPC.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ASPI.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ASPN.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ASRT.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ASST.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ASTI.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ASTS.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ASUR.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ASYS.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ATAI.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ATEC.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ATGE.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ATI.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ATKR.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ATLX.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ATNM.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ATO.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ATRO.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ATVI.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/ATYR.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AU.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AUPH.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AUR.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AURC.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AVAV.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AVB.parquet"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AVD.parquet"
+        "status": "??",
+        "path": "data_prefetch/aaii/asset.xls"
       },
       {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AVDL.parquet"
+        "status": "??",
+        "path": "data_prefetch/aaii/asset_allocation_survey.parquet"
       },
       {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AVEO.parquet"
+        "status": "??",
+        "path": "data_prefetch/finnhub/social_sentiment/"
       },
       {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AVGO.parquet"
+        "status": "??",
+        "path": "data_prefetch/polygon/_checkpoint_news_pre_inv027_backup.json"
       },
       {
-        "status": "M",
-        "path": "data_prefetch/polygon/news/AVPT.parquet"
+        "status": "??",
+        "path": "scripts/parse_aaii_asset_allocation.py"
       }
     ]
   },
@@ -27981,7 +27237,7 @@
     }
   ],
   "test_inventory": {
-    "total": 717,
+    "total": 718,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -27995,7 +27251,7 @@
       "test_cnn_fg_demo": 3,
       "test_cnn_fg_smoke": 5,
       "test_compatibility": 8,
-      "test_contract": 9,
+      "test_contract": 10,
       "test_data_integrity": 7,
       "test_data_integrity_v8h_additions": 9,
       "test_dec491_492_493_sprint2": 12,
@@ -28113,7 +27369,7 @@
   },
   "structural_drift": {
     "cached_dir_count": 89,
-    "scanned_dir_count": 80,
+    "scanned_dir_count": 81,
     "uncovered": [
       "data_prefetch/aaii",
       "data_prefetch/apewisdom",

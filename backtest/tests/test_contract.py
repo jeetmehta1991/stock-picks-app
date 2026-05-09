@@ -173,7 +173,25 @@ def test_contract_stocktwits_stream_shape() -> None:
     )
 
 
-# -- Contract 9: AUDIT_INDEX table row shape ----------------------------
+# -- Contract 9: AAII Asset Allocation Survey shape ---------------------
+def test_contract_aaii_asset_allocation_shape() -> None:
+    """AAII Asset Allocation Survey 11-col schema (Pass 53 v8h+1 owner-supplied
+    2026-05-09). Single global parquet (not per-ticker). DEC-505 contrarian
+    retail-allocation indicator."""
+    p = REPO_ROOT / "data_prefetch" / "aaii" / "asset_allocation_survey.parquet"
+    if not p.exists():
+        pytest.skip("AAS parquet not present")
+    df = pd.read_parquet(p)
+    expected = {"date", "stock_funds_pct", "stocks_pct", "bond_funds_pct",
+                "bonds_pct", "cash_pct", "total", "stocks_combined_pct",
+                "bonds_combined_pct", "cash_combined_pct", "response_rate"}
+    assert set(df.columns) == expected, (
+        f"AAS contract drift; got {set(df.columns)}"
+    )
+    assert len(df) > 400, f"AAS rows {len(df)} below floor 400 (1987-2026 monthly)"
+
+
+# -- Contract 10: AUDIT_INDEX table row shape ----------------------------
 def test_contract_audit_index_row_shape() -> None:
     """Each | **DECISION-NNN** row in AUDIT_INDEX must have at least the
     minimum column set parse_decisions expects."""
