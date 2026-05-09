@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-08T23:00:15.435818+00:00",
+  "generated_at": "2026-05-09T01:31:05.585658+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -17355,7 +17355,7 @@
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
         "tested": false,
         "pushed": false,
@@ -25730,260 +25730,204 @@
   ],
   "recent_commits": [
     {
+      "sha": "9d1d6b3c",
+      "subject": "StockTwits batch 9",
+      "author": "jeetmehta1991",
+      "rel_time": "4 minutes ago"
+    },
+    {
+      "sha": "80df9b2f",
+      "subject": "StockTwits batch 8",
+      "author": "jeetmehta1991",
+      "rel_time": "21 minutes ago"
+    },
+    {
+      "sha": "77187649",
+      "subject": "StockTwits batch 7",
+      "author": "jeetmehta1991",
+      "rel_time": "37 minutes ago"
+    },
+    {
+      "sha": "6f2e664f",
+      "subject": "StockTwits batch 6",
+      "author": "jeetmehta1991",
+      "rel_time": "53 minutes ago"
+    },
+    {
+      "sha": "7bdd83fb",
+      "subject": "StockTwits batch 5",
+      "author": "jeetmehta1991",
+      "rel_time": "69 minutes ago"
+    },
+    {
+      "sha": "9fd0a256",
+      "subject": "StockTwits batch 4",
+      "author": "jeetmehta1991",
+      "rel_time": "86 minutes ago"
+    },
+    {
+      "sha": "482b42cf",
+      "subject": "StockTwits batch 3",
+      "author": "jeetmehta1991",
+      "rel_time": "2 hours ago"
+    },
+    {
+      "sha": "1da0d4bc",
+      "subject": "StockTwits batch 2",
+      "author": "jeetmehta1991",
+      "rel_time": "2 hours ago"
+    },
+    {
+      "sha": "8179b83b",
+      "subject": "StockTwits batch 1",
+      "author": "jeetmehta1991",
+      "rel_time": "2 hours ago"
+    },
+    {
+      "sha": "c97d31c5",
+      "subject": "Pass 53 v8h+1: 13-layer pyramid (4 NEW) + StockTwits + Finnhub social_sentiment + AAII NaN-fix",
+      "author": "jeetmehta1991",
+      "rel_time": "3 hours ago"
+    },
+    {
       "sha": "74226e11",
       "subject": "Pass 53 v8h+1: full test pyramid (4 new layers) + AAII extended parse + YES/no badges",
       "author": "jeetmehta1991",
-      "rel_time": "44 minutes ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "e67659dd",
       "subject": "Pass 53 v8h+1: structural drift detector + 9-layer test pyramid columns + Reference tab",
       "author": "jeetmehta1991",
-      "rel_time": "73 minutes ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "e66cee33",
       "subject": "Pass 53 v8h+1: SEC EDGAR CIK fallback + B1 top-up (+8 tickers)",
       "author": "jeetmehta1991",
-      "rel_time": "86 minutes ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "65f23d6c",
       "subject": "Pass 53 v8h+1: H10 ep1 prefetch script (drove 1937/1937 to 100%)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "a74b5368",
       "subject": "Pass 53 auto-drift-sweep 2026-05-08 16:50: dashboards refreshed",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "398a5994",
       "subject": "Polygon Options chain ref: final (1932 tickers fetched)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "0b4f9389",
       "subject": "Polygon Options chain ref: batch 19 (1900 tickers)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "87d88628",
       "subject": "Polygon Options chain ref: batch 18 (1800 tickers)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "f56fe3f1",
       "subject": "Polygon Options chain ref: batch 17 (1700 tickers)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "cf1a0541",
       "subject": "Polygon Options chain ref: batch 16 (1600 tickers)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "3133dc07",
       "subject": "Polygon Options chain ref: batch 15 (1500 tickers)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "e926b105",
       "subject": "Polygon Options chain ref: batch 14 (1400 tickers)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "74c4820f",
       "subject": "Pass 53 v8h+1: comprehensive dashboard review - parser canon + automation panel + H10/H20/H21 stages",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "77a937f6",
       "subject": "Polygon Options chain ref: batch 13 (1300 tickers)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "5b2a55ca",
       "subject": "Polygon Options chain ref: batch 12 (1200 tickers)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "060c6515",
       "subject": "Polygon Options chain ref: batch 11 (1100 tickers)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "284ea3e5",
       "subject": "Polygon Options chain ref: batch 10 (1000 tickers)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "3fc49ce4",
       "subject": "Polygon Options chain ref: batch 7 (700 tickers)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "d4c0cb4f",
       "subject": "Pass 53 Day-9 v8h+1: dashboards regenerated post polygon_options scan fix",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "fe487230",
       "subject": "Polygon Options chain ref: batch 6 (600 tickers)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
-    },
-    {
-      "sha": "c8db7542",
-      "subject": "Polygon Options chain ref: batch 5 (500 tickers)",
-      "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
-    },
-    {
-      "sha": "977383fd",
-      "subject": "Polygon Options chain ref: batch 4 (400 tickers)",
-      "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
-    },
-    {
-      "sha": "763e9036",
-      "subject": "Polygon Options chain ref: batch 3 (300 tickers)",
-      "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
-    },
-    {
-      "sha": "b1a8ae1e",
-      "subject": "Polygon Options chain ref: batch 2 (200 tickers)",
-      "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
-    },
-    {
-      "sha": "b9509a97",
-      "subject": "Pass 53 Day-9 v8h+1: dashboard fix - register polygon_options cache scan",
-      "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
-    },
-    {
-      "sha": "3bbd3dbb",
-      "subject": "Polygon Options chain ref: batch 1 (100 tickers)",
-      "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
-    },
-    {
-      "sha": "0f077b97",
-      "subject": "Pass 53 Day-9 v8h+1: Tier J6 - shared safe_filename_stem helper + 7 unit tests",
-      "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
-    },
-    {
-      "sha": "aa4d2a27",
-      "subject": "Pass 53 Day-9 v8h+1: Tier H10 Polygon Options chain-ref smoke (5 tickers)",
-      "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
-    },
-    {
-      "sha": "bbd23631",
-      "subject": "Pass 53 Day-9 v8h+1: Tier J4/J7/J8 - schema regression + sidecar lock",
-      "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
-    },
-    {
-      "sha": "de3dc1a9",
-      "subject": "Pass 53 Day-9 v8h+1: Tier J empirical audit \u00e2\u20ac\u201d J1/J5/J6 closed, J3 needs scope",
-      "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "6 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 20,
-    "modified": 9,
-    "added": 8,
-    "untracked": 3,
+    "count": 18,
+    "modified": 3,
+    "added": 0,
+    "untracked": 15,
     "deleted": 0,
     "files": [
-      {
-        "status": "A",
-        "path": "backtest/tests/golden/README.md"
-      },
-      {
-        "status": "M",
-        "path": "backtest/tests/test_acceptance.py"
-      },
-      {
-        "status": "A",
-        "path": "backtest/tests/test_compatibility.py"
-      },
-      {
-        "status": "A",
-        "path": "backtest/tests/test_contract.py"
-      },
-      {
-        "status": "A",
-        "path": "backtest/tests/test_gate_pre_phase_1a_entry.py"
-      },
-      {
-        "status": "A",
-        "path": "backtest/tests/test_property.py"
-      },
-      {
-        "status": "A",
-        "path": "backtest/tests/test_snapshot.py"
-      },
-      {
-        "status": "M",
-        "path": "dashboard_stage_2/data.js"
-      },
-      {
-        "status": "M",
-        "path": "dashboard_stage_2/data.json"
-      },
       {
         "status": "M",
         "path": "dashboard_stage_2/index.html"
       },
       {
         "status": "M",
-        "path": "dashboard_stage_2/last_run.txt"
-      },
-      {
-        "status": "M",
-        "path": "data_prefetch/aaii/weekly_sentiment.parquet"
-      },
-      {
-        "status": "M",
-        "path": "pytest.ini"
+        "path": "data_prefetch/stocktwits/_checkpoint.json"
       },
       {
         "status": "M",
         "path": "scripts/build_dashboard_stage_2.py"
-      },
-      {
-        "status": "M",
-        "path": "scripts/parse_aaii_sentiment.py"
-      },
-      {
-        "status": "A",
-        "path": "scripts/prefetch_finnhub_social_sentiment.py"
-      },
-      {
-        "status": "A",
-        "path": "scripts/prefetch_stocktwits.py"
       },
       {
         "status": "??",
@@ -25995,7 +25939,55 @@
       },
       {
         "status": "??",
-        "path": "data_prefetch/stocktwits/"
+        "path": "data_prefetch/stocktwits/CSGP.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/stocktwits/CSPI.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/stocktwits/CSX.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/stocktwits/CTAS.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/stocktwits/CTGO.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/stocktwits/CTIC.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/stocktwits/CTLT.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/stocktwits/CTRA.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/stocktwits/CTRE.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/stocktwits/CTSH.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/stocktwits/CTVA.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/stocktwits/CTXS.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/stocktwits/CUBI.parquet"
       }
     ]
   },
@@ -26422,6 +26414,258 @@
       }
     ]
   },
+  "next_up": [
+    {
+      "kind": "BUG",
+      "id": "BUG-007",
+      "title": "API key guard blocks no-agent Phase 1B run",
+      "status": "OPEN",
+      "tier": 0,
+      "reason": "BUG-007 API key guard blocks --no-agents (explicit Phase 1A dep)",
+      "back_refs": 0,
+      "sprint": "(see linked DEC sprint)"
+    },
+    {
+      "kind": "INV",
+      "id": "INV-015",
+      "title": "\u2014 Alpha Vantage news cached only 25 files (alphabetical mid-letter range) (Pass 53 Day-9 v8h evening)",
+      "status": "OPEN",
+      "tier": 0,
+      "reason": "INV OPEN with HIGH/CRITICAL severity",
+      "back_refs": 0,
+      "sprint": "-"
+    },
+    {
+      "kind": "INV",
+      "id": "INV-016",
+      "title": "\u2014 Finnhub news 509 files = S&P-500-only (NOT expanded to Master Universe) (Pass 53 Day-9 v8h evening)",
+      "status": "OPEN",
+      "tier": 0,
+      "reason": "INV OPEN with HIGH/CRITICAL severity",
+      "back_refs": 0,
+      "sprint": "-"
+    },
+    {
+      "kind": "INV",
+      "id": "INV-023",
+      "title": "\u2014 Quiver BG `bsu432hbt` died from second Unicode emoji bug at line 231 \u2014 completed congressional only (1/7 endpoints) (Pass 53 Day-9 v8h eve",
+      "status": "OPEN",
+      "tier": 0,
+      "reason": "INV OPEN with HIGH/CRITICAL severity",
+      "back_refs": 0,
+      "sprint": "-"
+    },
+    {
+      "kind": "INV",
+      "id": "INV-025",
+      "title": "\u2014 SEC EDGAR all 11 forms cached as filing-metadata-only (primary_doc not parsed; lost transaction-level fields) (Pass 53 Day-9 v8h evening)",
+      "status": "OPEN",
+      "tier": 0,
+      "reason": "INV OPEN with HIGH/CRITICAL severity",
+      "back_refs": 0,
+      "sprint": "-"
+    },
+    {
+      "kind": "INV",
+      "id": "INV-027",
+      "title": "\u2014 Polygon news lost per-ticker `insights` array (article-level only) (Pass 53 Day-9 v8h evening)",
+      "status": "OPEN",
+      "tier": 0,
+      "reason": "INV OPEN with HIGH/CRITICAL severity",
+      "back_refs": 0,
+      "sprint": "-"
+    },
+    {
+      "kind": "INV",
+      "id": "INV-032",
+      "title": "\u2014 Alpha Vantage news cache aggregated daily \u2014 lost per-article detail (Pass 53 Day-9 v8h evening)",
+      "status": "OPEN",
+      "tier": 0,
+      "reason": "INV OPEN with HIGH/CRITICAL severity",
+      "back_refs": 0,
+      "sprint": "-"
+    },
+    {
+      "kind": "INV",
+      "id": "INV-038",
+      "title": "\u2014 Polygon Indices Basic license tier discovery (Pass 53 Day-9 v8h+1 2026-05-08)",
+      "status": "OPEN",
+      "tier": 0,
+      "reason": "INV OPEN with HIGH/CRITICAL severity",
+      "back_refs": 0,
+      "sprint": "-"
+    },
+    {
+      "kind": "DEC",
+      "id": "DEC-458",
+      "title": "Lead-lag intra-sector momentum strategy \u2014 Pass 52 turn 69 owner-approved RESOLVED-DECIDED. NEW strategy class added per owner Pass 52 direct",
+      "status": "RESOLVED-DECIDED",
+      "tier": 1,
+      "reason": "Dependency root (294 downstream items reference)",
+      "back_refs": 294,
+      "sprint": "-"
+    },
+    {
+      "kind": "DEC",
+      "id": "DEC-422",
+      "title": "Phase 1B-\u03b1 dimensional space optimization framework \u2014 Pass 52 owner-approved CRITICAL meta-decision. Phase 1B-\u03b1 purpose redefined: NOT a ser",
+      "status": "FAIL_RR",
+      "tier": 1,
+      "reason": "Dependency root (15 downstream items reference)",
+      "back_refs": 15,
+      "sprint": "Sprint 6.5 \u2014 Phase 1A Rules-On; Sprint 7 additions (Statistica; Sprint 7-8 (+3); Sprint 8 additions (Strategy C; Sprint 9 \u2014 Phase 1B-\u03b1 Run (Wee"
+    },
+    {
+      "kind": "DEC",
+      "id": "DEC-410",
+      "title": "API endpoint utilization audit \u2014 Pass 52 owner-approved CRITICAL TODO with comprehensive 6-dimension use-case mapping schema (Pass 52 turn 1",
+      "status": "RESOLVED-DECIDED",
+      "tier": 1,
+      "reason": "Dependency root (13 downstream items reference)",
+      "back_refs": 13,
+      "sprint": "Sprint 7 additions (Statistica; Sprint 8 additions (Strategy C"
+    },
+    {
+      "kind": "DEC",
+      "id": "DEC-594",
+      "title": "Test-Artifact Same-Commit HARD RULE. Pass 53 owner-approved 2026-05-06 late evening RESOLVED-DECIDED. RULE: Every DEC that specifies a test ",
+      "status": "RESOLVED-DECIDED",
+      "tier": 1,
+      "reason": "Dependency root (11 downstream items reference)",
+      "back_refs": 11,
+      "sprint": "-"
+    },
+    {
+      "kind": "DEC",
+      "id": "DEC-080",
+      "title": "t-stat + Bonferroni \u2014 Pass 52 owner-approved. Replace hardcoded `bonferroni_adjusted_threshold(60)` with `len(STRATEGIES_TESTED)` dynamic co",
+      "status": "RESOLVED-DECIDED",
+      "tier": 1,
+      "reason": "Dependency root (8 downstream items reference)",
+      "back_refs": 8,
+      "sprint": "Sprint 7 additions; Sprint 7 additions (Statistica"
+    },
+    {
+      "kind": "DEC",
+      "id": "DEC-442",
+      "title": "Demote yfinance to fallback OHLCV after Polygon prefetch validation \u2014 Pass 52 owner-approved (DEC-410 Batch 1, Hypothesis H-yfinance-1). Seq",
+      "status": "PARTIAL-SPEC-ONLY",
+      "tier": 1,
+      "reason": "Dependency root (8 downstream items reference)",
+      "back_refs": 8,
+      "sprint": "Sprint 4 \u2014 DEC-410 Audit Findi"
+    },
+    {
+      "kind": "DEC",
+      "id": "DEC-099",
+      "title": "11 missing strategy categories (Pairs, Calendar, Cross-Asset, Index Rebalance, etc.) \u2014 Pass 52 turn 33 RESOLVED via supersession. Pass 52 sp",
+      "status": "RESOLVED-DECIDED",
+      "tier": 1,
+      "reason": "Dependency root (6 downstream items reference)",
+      "back_refs": 6,
+      "sprint": "Sprint 8 additions (Strategy C"
+    },
+    {
+      "kind": "DEC",
+      "id": "DEC-081",
+      "title": "Sharpe + Sortino + transaction cost sensitivity \u2014 Pass 52 owner-approved. Compute both `sharpe_per_trade` (current) AND `sharpe_daily = sqrt",
+      "status": "RESOLVED-DECIDED",
+      "tier": 1,
+      "reason": "Dependency root (5 downstream items reference)",
+      "back_refs": 5,
+      "sprint": "Sprint 7 additions (Statistica"
+    },
+    {
+      "kind": "DEC",
+      "id": "DEC-109",
+      "title": "Rolling 5yr/1yr walk-forward \u2014 Pass 52 owner-approved Option B (extend data load to 2018-01-01 enabling canonical 5yr/1yr; joint with DEC-29",
+      "status": "RESOLVED-DECIDED",
+      "tier": 1,
+      "reason": "Dependency root (5 downstream items reference)",
+      "back_refs": 5,
+      "sprint": "Sprint 1 \u2014 RETIRED Pass 53 (re; Sprint 7 additions; Sprint 7 additions (Statistica; Sprint 7-8 additions (Phase 1B"
+    },
+    {
+      "kind": "DEC",
+      "id": "DEC-256",
+      "title": "Earnings calendar prefetch \u2014 Pass 52 owner-approved with Polygon source. Source: Polygon `/vX/reference/tickers/{ticker}/events` + `/v3/refe",
+      "status": "RESOLVED-DECIDED",
+      "tier": 1,
+      "reason": "Dependency root (5 downstream items reference)",
+      "back_refs": 5,
+      "sprint": "Sprint 1 \u2014 RETIRED Pass 53 (re; Sprint 4 additions (DEC-410 Au; Sprint 7 additions (Statistica"
+    },
+    {
+      "kind": "DEC",
+      "id": "DEC-008",
+      "title": "Decision Agent action field integration (BUG-113)",
+      "status": "PARTIAL",
+      "tier": 1,
+      "reason": "Dependency root (4 downstream items reference)",
+      "back_refs": 4,
+      "sprint": "-"
+    },
+    {
+      "kind": "DEC",
+      "id": "DEC-260",
+      "title": "Cache freshness assertion \u2014 Pass 52 owner-approved as patch-level uniform mechanism. Per cache file (parquet), check `max(date)` against bac",
+      "status": "PARTIAL-SPEC-ONLY",
+      "tier": 1,
+      "reason": "Dependency root (4 downstream items reference)",
+      "back_refs": 4,
+      "sprint": "Sprint 1 \u2014 RETIRED Pass 53 (re; Sprint 6 additions (Phase 0.E "
+    },
+    {
+      "kind": "DEC",
+      "id": "DEC-441",
+      "title": "Polygon Stocks Starter $30/month subscription \u2014 Pass 52 owner-approved purchase NOW (Phase 0 prep). Replaces 4 jobs in our system: (1) earni",
+      "status": "RESOLVED-DECIDED",
+      "tier": 1,
+      "reason": "Dependency root (4 downstream items reference)",
+      "back_refs": 4,
+      "sprint": "Sprint 1 \u2014 RETIRED Pass 53 (re; Sprint 4 additions (DEC-410 Au; Sprint 4 \u2014 DEC-410 Audit Findi"
+    },
+    {
+      "kind": "DEC",
+      "id": "DEC-444",
+      "title": "Deprecate `days_to_next_earnings()` via yfinance live calls \u2014 Pass 52 owner-approved (DEC-410 Batch 1, Hypothesis H-yfinance-3). Route all `",
+      "status": "PARTIAL-SPEC-ONLY",
+      "tier": 1,
+      "reason": "Dependency root (4 downstream items reference)",
+      "back_refs": 4,
+      "sprint": "Sprint 4 additions (DEC-410 Au"
+    },
+    {
+      "kind": "DEC",
+      "id": "DEC-453",
+      "title": "Deprecate Finnhub from project entirely \u2014 Pass 52 owner-approved (DEC-410 Batch 2, Hypothesis H-finnhub-1). Remove `scripts/prefetch_finnhub",
+      "status": "RESOLVED-DECIDED",
+      "tier": 1,
+      "reason": "Dependency root (4 downstream items reference)",
+      "back_refs": 4,
+      "sprint": "Sprint 4 \u2014 DEC-410 Audit Findi"
+    },
+    {
+      "kind": "DEC",
+      "id": "DEC-067",
+      "title": "Add 9 missing exit methods \u2014 Pass 52 owner-approved revised scope. 9 new methods: chandelier (DEC-353 compliant ATR mult \u2265 2.5), psar, super",
+      "status": "RESOLVED-DECIDED",
+      "tier": 1,
+      "reason": "Dependency root (3 downstream items reference)",
+      "back_refs": 3,
+      "sprint": "Sprint 6 additions (Phase 0.E ; Sprint 7 additions (Statistica; Sprint 8 additions (Strategy C"
+    },
+    {
+      "kind": "DEC",
+      "id": "DEC-085",
+      "title": "Define macro correlation precisely \u2014 Pass 52 owner-approved REVISED COMPREHENSIVE (revised from prior 5-indicator list after owner caught it",
+      "status": "RESOLVED-DECIDED",
+      "tier": 1,
+      "reason": "Dependency root (3 downstream items reference)",
+      "back_refs": 3,
+      "sprint": "Sprint 7 additions (Statistica"
+    }
+  ],
   "decision_status_counts": {
     "RESOLVED-DECIDED": 318,
     "PARTIAL": 5,

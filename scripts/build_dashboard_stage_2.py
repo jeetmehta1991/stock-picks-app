@@ -529,6 +529,128 @@ def get_pending_pipeline() -> list[dict]:
     ]
 
 
+def _classify_priority_tier(item: dict, kind: str, back_refs: dict) -> tuple[int | None, str]:
+    """Classify an item into priority Tier 0-7. Returns (tier, reason) or
+    (None, '') if not actionable (RESOLVED-DECIDED with no pyramid gap).
+    See AUDIT.md / Pass 53 v8h+1 owner-approved 2026-05-08 framework."""
+    title = (item.get("title") or "").upper()
+    status = (item.get("status") or "").upper()
+    sg = item.get("status_grep") or {}
+    item_id = item.get("short_id") or item.get("id") or ""
+
+    # Tier 0: Phase 1A May 15 blockers (explicit)
+    if "BUG-007" in item_id and not sg.get("tested"):
+        return 0, "BUG-007 API key guard blocks --no-agents (explicit Phase 1A dep)"
+    if "PHASE 1A" in title and ("BLOCK" in title or "DEPENDENCY" in title):
+        return 0, "Phase 1A blocker per title"
+    if kind == "inv" and "OPEN" in status and ("CRITICAL" in title or "HIGH" in (item.get("severity", "") or "").upper()):
+        return 0, "INV OPEN with HIGH/CRITICAL severity"
+
+    # Tier 1: Dependency root - many downstream items reference this
+    n_back = back_refs.get(item_id, 0)
+    if n_back >= 3:
+        return 1, f"Dependency root ({n_back} downstream items reference)"
+
+    # Tier 2: CRITICAL OPEN
+    if "CRITICAL" in title:
+        if status in ("", "OPEN") or "OPEN" in status:
+            return 2, "CRITICAL OPEN"
+
+    # Tier 3: coded but NOT wired (silent gap pattern - L146 / DEC-507)
+    if sg.get("coded") and not sg.get("wired") and sg.get("pushed"):
+        return 3, "coded + pushed but not wired (silent gap candidate)"
+
+    # Tier 4: PARTIAL-SPEC-ONLY
+    if "PARTIAL-SPEC-ONLY" in status or "PARTIAL-SPEC" in status:
+        return 4, "PARTIAL-SPEC-ONLY: needs implementation OR explicit defer"
+
+    # Tier 5: Wired + tested rollup but pyramid coverage thin
+    pyramid = sg.get("pyramid") or {}
+    if sg.get("wired") and sg.get("tested"):
+        covered = sum(1 for v in pyramid.values() if v)
+        if covered < 5:
+            return 5, f"Pyramid gap: {covered}/13 layers covered"
+
+    # Tier 6: SUPERSEDED / OBSOLETE cleanup
+    if "SUPERSEDED" in status or "OBSOLETE" in status:
+        return 6, "Cleanup: confirm no live deps, delete refs"
+
+    # Tier 7: Deferred - quarterly verification
+    if "DEFERRED" in status:
+        return 7, "Verify deferral rationale still holds"
+
+    # PROPOSED / NEEDS_CLARIFICATION
+    if "PROPOSED" in status or "NEEDS_CLARIFICATION" in status:
+        return 4, f"Status={status}: owner decision needed"
+
+    return None, ""
+
+
+def compute_next_up(decisions: list, bugs: list, invs: list, max_items: int = 20) -> list[dict]:
+    """Rank actionable items into priority tiers and return the top N.
+    Owner directive 2026-05-08."""
+    # Pass 1: build back-reference counts (which IDs do other items depend on)
+    back_refs: dict = {}
+    for d in decisions:
+        for dep in (d.get("dependencies") or "").split(";"):
+            dep = dep.strip()
+            if dep and dep != "-":
+                back_refs[dep] = back_refs.get(dep, 0) + 1
+    for b in bugs:
+        deps_str = (b.get("dependencies") or "") + " " + (b.get("linked_decisions") or "")
+        for dep in re.findall(r"DEC-\d+|BUG-\d+|INV-\d+", deps_str):
+            back_refs[dep] = back_refs.get(dep, 0) + 1
+
+    # Pass 2: classify each item
+    ranked: list[dict] = []
+    for d in decisions:
+        tier, reason = _classify_priority_tier(d, "decision", back_refs)
+        if tier is None:
+            continue
+        ranked.append({
+            "kind": "DEC",
+            "id": d.get("short_id") or d.get("id"),
+            "title": (d.get("title") or "")[:140],
+            "status": d.get("status", "-"),
+            "tier": tier,
+            "reason": reason,
+            "back_refs": back_refs.get(d.get("short_id") or d.get("id"), 0),
+            "sprint": d.get("sprint", "-"),
+        })
+    for b in bugs:
+        tier, reason = _classify_priority_tier(b, "bug", back_refs)
+        if tier is None:
+            continue
+        ranked.append({
+            "kind": "BUG",
+            "id": b.get("short_id") or b.get("id"),
+            "title": (b.get("title") or "")[:140],
+            "status": "OPEN",  # BUG_REGISTER doesn't track status per row
+            "tier": tier,
+            "reason": reason,
+            "back_refs": back_refs.get(b.get("short_id") or b.get("id"), 0),
+            "sprint": b.get("sprint", "-") or b.get("sprint_context", "-"),
+        })
+    for inv in invs:
+        tier, reason = _classify_priority_tier(inv, "inv", back_refs)
+        if tier is None:
+            continue
+        ranked.append({
+            "kind": "INV",
+            "id": inv.get("id"),
+            "title": (inv.get("title") or "")[:140],
+            "status": inv.get("status", "-"),
+            "tier": tier,
+            "reason": reason,
+            "back_refs": back_refs.get(inv.get("id"), 0),
+            "sprint": "-",
+        })
+
+    # Sort by (tier asc, back_refs desc, id asc) then take top N
+    ranked.sort(key=lambda x: (x["tier"], -x["back_refs"], x["id"]))
+    return ranked[:max_items]
+
+
 def get_structural_drift() -> dict:
     """Walk data_prefetch/ for any subdir containing >=1 parquet; cross-check
     against the union of CACHE_PATHS scanned by build_dashboard_sprint0a.
@@ -815,6 +937,7 @@ def main() -> int:
         "pyramid_layer_files": TEST_PYRAMID_LAYERS,
         "structural_drift": get_structural_drift(),
         "reference_tables": get_reference_tables(),
+        "next_up": compute_next_up(decisions, bugs, invs, max_items=25),
     }
 
     # Aggregations

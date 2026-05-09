@@ -56,6 +56,7 @@ per CHECKLIST #77 - never reads from memory.
 
 <nav>
   <button class="tab-btn active" data-panel="overview">Overview</button>
+  <button class="tab-btn" data-panel="next-up">Next Up</button>
   <button class="tab-btn" data-panel="decisions">Decisions (DEC)</button>
   <button class="tab-btn" data-panel="bugs">Bugs (BUG)</button>
   <button class="tab-btn" data-panel="invs">Investigations (INV)</button>
@@ -79,6 +80,23 @@ per CHECKLIST #77 - never reads from memory.
     <div id="tier-distribution"></div>
     <h3>Investigation status</h3>
     <div id="inv-distribution"></div>
+  </section>
+
+  <section id="next-up" class="panel">
+    <h2>Next Up - auto-ranked actionable items</h2>
+    <p style="color:#6b7588;font-size:13px">
+      Top 25 items ranked by priority tier (Pass 53 v8h+1 owner-mandated 2026-05-08).
+      Tier 0 = May 15 launch blockers; Tier 1 = dependency roots; Tier 2 = CRITICAL OPEN;
+      Tier 3 = coded-but-not-wired silent gaps; Tier 4 = PARTIAL-SPEC-ONLY needs decision;
+      Tier 5 = pyramid coverage gap; Tier 6 = SUPERSEDED/OBSOLETE cleanup;
+      Tier 7 = DEFERRED verification.
+    </p>
+    <table id="tbl-next-up" class="display compact" style="width:100%">
+      <thead><tr>
+        <th>Tier</th><th>Kind</th><th>ID</th><th>Title</th><th>Reason</th>
+        <th>Doc Status</th><th>Back-refs</th><th>Sprint</th>
+      </tr></thead>
+    </table>
   </section>
 
   <section id="decisions" class="panel">
@@ -578,6 +596,34 @@ document.getElementById('test-total').textContent = tests.total;
 $('#tbl-tests').DataTable({
   data: Object.entries(tests.by_module).sort((a,b) => b[1] - a[1]),
   pageLength: 50,
+});
+
+// Next Up auto-ranked panel
+const nextUp = D.next_up || [];
+function tierBadge(t) {
+  const colors = {
+    0: ['#dc2626', 'BLOCKER'], 1: ['#ea580c', 'DEP-ROOT'],
+    2: ['#d97706', 'CRITICAL'], 3: ['#ca8a04', 'SILENT-GAP'],
+    4: ['#0891b2', 'PARTIAL'], 5: ['#0d9488', 'COVERAGE'],
+    6: ['#64748b', 'CLEANUP'], 7: ['#94a3b8', 'DEFER-VFY'],
+  };
+  const [c, label] = colors[t] || ['#94a3b8', 'T?'];
+  return `<span class="badge" style="background:${c};color:#fff">T${t} ${label}</span>`;
+}
+$('#tbl-next-up').DataTable({
+  data: nextUp.map(n => [
+    tierBadge(n.tier),
+    `<code>${n.kind}</code>`,
+    `<code>${n.id}</code>`,
+    n.title,
+    `<span style="font-size:12px">${n.reason}</span>`,
+    n.status || '-',
+    n.back_refs > 0 ? `<strong>${n.back_refs}</strong>` : '0',
+    n.sprint || '-',
+  ]),
+  pageLength: 25,
+  ordering: false,
+  searching: true,
 });
 
 // Pyramid layers panel
