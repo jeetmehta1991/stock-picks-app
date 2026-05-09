@@ -1043,3 +1043,86 @@ State compliance visibly: "Checklist: ✅ [each item]"
     **First application:** Pass 53 Day-9 v8h+1 commit (this one) — `API_ENDPOINT_INVENTORY.md` sourced from `massive.com/docs/llms.txt` + `alphavantage.co/documentation/` + `publicreporting.cftc.gov/` + `apewisdom.io/api/` + `pytrends` GitHub README + `scripts/probe_api_catalog.py` live probe @ 2026-05-08. Probe report: `API_ENDPOINT_PROBE_REPORT.json`.
 
     **Joint:** CHECKLIST #76 (column-b runtime probe — #77 is the tighter "where does the catalog come from" rule); CHECKLIST #51 (honest knowledge limit disclaimer); L146/DEC-507 (data + toolkit + wiring); INV-024 reframing (Quiver govcontracts gap turned out to be at API level, not prefetch — a memory-based audit got the assumption wrong); INV-035..INV-037 (this commit's new INV flags: Indices Basic not activated, Finnhub key missing, 13 Quiver paths 404).
+
+78. **HARD RULE — Test pyramid runs PER ADDRESSAL, not bundled** (Pass 53 Day-9 v8h+1 owner directive 2026-05-08).
+
+    **Owner trigger:** *"Testing pyramid is for each addressal but not the bundle! If not applicable, then skip. But needs to go through the pyramid."*
+
+    **The rule:**
+
+    For every individual addressal (one INV resolution, one BUG fix, one DEC implementation, one code patch, one prefetch script change), the applicable pyramid layers MUST be run for THAT addressal in isolation BEFORE moving to the next addressal. Bundling N addressals and running pyramid once at the end is non-compliant.
+
+    **For each addressal, declare per-layer status explicitly:**
+
+    | Layer | Decision rule |
+    |---|---|
+    | unit | Run unless addressal is doc-only (no code touched) |
+    | smoke | Run if any prefetch / dashboard / runner script touched |
+    | integration | Run if any cross-module call path touched |
+    | system | Run if Phase 1A entry path touched |
+    | functional | Run if doc/parser/dashboard touched |
+    | regression | ALWAYS run if a BUG was claimed RESOLVED (the BUG-NN test must exist) |
+    | data_integrity | Run if any cache schema touched |
+    | performance | Run if hot-path code touched |
+    | acceptance | Run if PASSING_CRITERIA / 9-criteria touched |
+    | property | Run if invariant-bearing code touched (regime classifier, profit_factor, etc.) |
+    | snapshot | Run if dashboard data shape OR golden fixture touched |
+    | contract | Run if API parser touched |
+    | compatibility | Run if pandas/numpy/pyarrow API surface touched |
+
+    **N/A is acceptable but must be DECLARED.** A doc-only INV resolution with zero code change can declare "pyramid: skip — doc-only change, no test layer applicable" and move on. Silently skipping without the declaration is non-compliant.
+
+    **Why per-addressal:** bundling masks which addressal broke what. If 6 addressals share a pyramid run and one regression fires, attribution requires manual bisection. Per-addressal isolation makes the cause visible at the addressal level.
+
+    **Doc-sweep can still bundle.** End-of-turn doc-sweep (CHECKLIST #67) is correctly batched. The PYRAMID is the per-addressal step; the DOC SWEEP is the end-of-turn step. Different cadences.
+
+    **Pre-flight verification format (per addressal):**
+
+    ```
+    Addressal: <ID> (e.g. BUG-007 / INV-016 / DEC-422)
+    Files touched: <list>
+    Pyramid layers run:
+      unit: <PASS N/M | SKIP reason>
+      smoke: ...
+      [...all 13 layers]
+    ```
+
+    **End-of-turn check:** if N addressals are claimed in one turn and the pyramid was run only once, the response is non-compliant.
+
+    **First application:** retroactive — Pass 53 v8h+1 T0 triage (commit `7a175f7c2` bundled 6 addressals; this rule codifies per-addressal going forward).
+
+    **Joint:** CHECKLIST #75 (pyramid mandatory for every commit — #78 tightens to per-addressal granularity); CHECKLIST #67 (doc-sweep at end-of-turn — different cadence from pyramid).
+
+79. **HARD RULE — End-of-turn doc sweep covers ALL forward-looking documents (cross-references can come from any of them)** (Pass 53 Day-9 v8h+1 owner directive 2026-05-08).
+
+    **Owner trigger:** *"All documents need to be addressed. There are dependencies and references in all documents for all addressal types. In your list you will definitely miss cross addressals."*
+
+    **The rule:**
+
+    Don't try to enumerate "for a BUG fix update X, Y, Z; for an INV update A, B, C." Cross-addressals always span types — an INV that exposed a BUG that resolved a DEC that needs a CAV that updates a CHECKLIST rule. **Just sweep ALL forward-looking documents at end-of-turn and update wherever the change is referenced.**
+
+    **The complete sweep set (all checked on every meaningful turn):**
+
+    AUDIT.md, AUDIT_INDEX.md, BUG_REGISTER.md, OPEN_INVESTIGATIONS.md,
+    LIMITATIONS_CAVEATS_ASSUMPTIONS.md, CHECKLIST.md, LEARNINGS.md,
+    PHASE_1A_PRELAUNCH_TODO.md, ENGINEERING_REGISTER.md, AUDIT_BACKLOG.md,
+    CANONICAL_FACTS.md, README.md, DETAILED_PROJECT_PLAN.md,
+    API_ENDPOINT_INVENTORY.md, PREFETCH_COVERAGE_AUDIT.md, MEMORY.md.
+    Plus dashboards: `dashboard_stage_2/` (auto-updates all tabs) and
+    `dashboard_sprint0a/` (API endpoint coverage).
+
+    **Caveats / exclusions:**
+
+    - `archive/**` is excluded (per L143).
+    - Pass-specific snapshot docs are not part of the sweep set.
+    - "Be careful — don't create downstream code/project issues while
+      doc-sweeping." A doc update that requires a new code file or
+      data migration is itself a separate addressal subject to #78.
+
+    **End-of-turn check:** if any change with cross-doc impact is made and
+    one of the sweep-set docs is stale relative to that change, the
+    response is non-compliant.
+
+    **First application:** Pass 53 v8h+1 retroactive doc sweep (this commit).
+
+    **Joint:** CHECKLIST #67 (per-turn doc sync sweep — #79 enumerates the complete set explicitly); CHECKLIST #78 (per-addressal pyramid — #79 is the doc-side counterpart, can bundle at end-of-turn).

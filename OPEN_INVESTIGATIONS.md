@@ -198,7 +198,7 @@ contract names: `UST 10Y NOTE` / `UST 5Y NOTE` / `UST 2Y NOTE` / `UST BOND`
 
 ---
 
-## INV-016 — Finnhub news 509 files = S&P-500-only (NOT expanded to Master Universe) (Pass 53 Day-9 v8h evening)
+## INV-016 — Finnhub news Master Universe expansion - PATCHED 2026-05-08 v8h+1; BG running (Pass 53)
 
 - **Discovered:** 2026-05-07 evening; comprehensive prefetch deep-dive audit
 - **Observation:** `backtest/data/cache/finnhub_news/` has exactly 509 files. The script `scripts/prefetch_finnhub_news.py` line ~31 reads `from backtest.data.universe import get_sp500_constituents, ETFS_FULL` and uses S&P 500 + ETFs only. Same pattern as old Quiver per-ticker (which is now being fixed by `bsu432hbt` BG). Needs the same Master-Universe-expansion treatment.
@@ -394,7 +394,7 @@ contract names: `UST 10Y NOTE` / `UST 5Y NOTE` / `UST 2Y NOTE` / `UST BOND`
 
 ---
 
-## INV-027 — Polygon news lost per-ticker `insights` array (article-level only) (Pass 53 Day-9 v8h evening)
+## INV-027 — Polygon news per-ticker `insights` array - PATCHED 2026-05-08 v8h+1; backfill BG running (Pass 53)
 
 - **Discovered:** 2026-05-07 evening; field-level deep-dive
 - **Observation:** Polygon `/v2/reference/news` returns each article with an `insights` array containing per-ticker {ticker, sentiment, sentiment_reasoning} entries. For multi-ticker articles (e.g. "AAPL beats but MSFT disappoints"), the per-ticker sentiments differ. Our cached schema has only article-level `sentiment` + `sentiment_reasoning` — for multi-ticker articles, we lose the per-ticker breakdown.

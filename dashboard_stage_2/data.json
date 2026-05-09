@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-09T02:49:55.062518+00:00",
+  "generated_at": "2026-05-09T03:28:46.850598+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -14038,7 +14038,7 @@
         "wired": true,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 141,
+        "n_doc_refs": 142,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -16711,7 +16711,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 47,
+        "n_doc_refs": 48,
         "pyramid": {
           "unit": true,
           "smoke": true,
@@ -16777,7 +16777,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 33,
+        "n_doc_refs": 34,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -17353,13 +17353,13 @@
       "id": "BUG-07",
       "title": "API key guard blocks no-agent Phase 1B run",
       "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
+      "sprint_context": "RESOLVED 2026-05-08 v8h+1 - test_bug_007 in test_regression.py confirms _call_claude returns None on missing key (soft guard); --no-agents bypasses agent branch.",
       "status_grep": {
         "coded": true,
         "wired": false,
         "tested": true,
         "pushed": false,
-        "n_doc_refs": 8,
+        "n_doc_refs": 12,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -17377,7 +17377,7 @@
         }
       },
       "short_id": "BUG-007",
-      "sprint": "(see linked DEC sprint)",
+      "sprint": "RESOLVED 2026-05-08 v8h+1 - test_bug_007 in test_regression.py confirms _call_claude returns None on missing key (soft guard); --no-agents bypasses agent branch.",
       "dependencies": "DEC-458"
     },
     {
@@ -20087,7 +20087,7 @@
         "wired": false,
         "tested": false,
         "pushed": false,
-        "n_doc_refs": 51,
+        "n_doc_refs": 52,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -20583,7 +20583,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 52,
+        "n_doc_refs": 53,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -22184,7 +22184,7 @@
         "wired": false,
         "tested": false,
         "pushed": false,
-        "n_doc_refs": 0,
+        "n_doc_refs": 3,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -22205,7 +22205,7 @@
     },
     {
       "id": "INV-016",
-      "title": "\u2014 Finnhub news 509 files = S&P-500-only (NOT expanded to Master Universe) (Pass 53 Day-9 v8h evening)",
+      "title": "\u2014 Finnhub news Master Universe expansion - PATCHED 2026-05-08 v8h+1; BG running (Pass 53)",
       "status": "OPEN",
       "severity": "HIGH",
       "summary": "`backtest/data/cache/finnhub_news/` has exactly 509 files. The script `scripts/prefetch_finnhub_news.py` line ~31 reads `from backtest.data.universe import get_sp500_constituents, ETFS_FULL` and uses ",
@@ -22213,8 +22213,8 @@
         "coded": true,
         "wired": false,
         "tested": false,
-        "pushed": false,
-        "n_doc_refs": 0,
+        "pushed": true,
+        "n_doc_refs": 3,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -22423,8 +22423,8 @@
         "coded": false,
         "wired": false,
         "tested": false,
-        "pushed": false,
-        "n_doc_refs": 0,
+        "pushed": true,
+        "n_doc_refs": 2,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -22484,7 +22484,7 @@
         "wired": false,
         "tested": false,
         "pushed": false,
-        "n_doc_refs": 0,
+        "n_doc_refs": 2,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -22535,7 +22535,7 @@
     },
     {
       "id": "INV-027",
-      "title": "\u2014 Polygon news lost per-ticker `insights` array (article-level only) (Pass 53 Day-9 v8h evening)",
+      "title": "\u2014 Polygon news per-ticker `insights` array - PATCHED 2026-05-08 v8h+1; backfill BG running (Pass 53)",
       "status": "OPEN",
       "severity": "HIGH",
       "summary": "Polygon `/v2/reference/news` returns each article with an `insights` array containing per-ticker {ticker, sentiment, sentiment_reasoning} entries. For multi-ticker articles (e.g. \"AAPL beats but MSFT ",
@@ -22543,8 +22543,8 @@
         "coded": true,
         "wired": false,
         "tested": false,
-        "pushed": false,
-        "n_doc_refs": 0,
+        "pushed": true,
+        "n_doc_refs": 3,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -22694,7 +22694,7 @@
         "wired": false,
         "tested": false,
         "pushed": false,
-        "n_doc_refs": 0,
+        "n_doc_refs": 2,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -22783,8 +22783,8 @@
         "coded": false,
         "wired": false,
         "tested": false,
-        "pushed": false,
-        "n_doc_refs": 1,
+        "pushed": true,
+        "n_doc_refs": 3,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -22964,7 +22964,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 1,
+        "n_doc_refs": 2,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -23110,16 +23110,16 @@
       "severity": "HIGH",
       "summary": "`test_e2e_phase1a_smoke.py::test_g1_pnl_realistic` asserts `df['pnl_pct'].abs().max() < 100`. In the smoke fixture's 397-trade run, max PnL hit",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
-        "tested": false,
-        "pushed": false,
-        "n_doc_refs": 0,
+        "tested": true,
+        "pushed": true,
+        "n_doc_refs": 5,
         "pyramid": {
           "unit": false,
           "smoke": false,
           "integration": false,
-          "system": false,
+          "system": true,
           "functional": false,
           "regression": false,
           "data_integrity": false,
@@ -25760,46 +25760,118 @@
   ],
   "recent_commits": [
     {
+      "sha": "752dad48",
+      "subject": "Finnhub news pre-fetch: batch 8",
+      "author": "jeetmehta1991",
+      "rel_time": "2 minutes ago"
+    },
+    {
+      "sha": "fe340f9c",
+      "subject": "Finnhub news pre-fetch: batch 7",
+      "author": "jeetmehta1991",
+      "rel_time": "6 minutes ago"
+    },
+    {
+      "sha": "97d61b1d",
+      "subject": "StockTwits batch 16",
+      "author": "jeetmehta1991",
+      "rel_time": "8 minutes ago"
+    },
+    {
+      "sha": "62fddae2",
+      "subject": "Finnhub news pre-fetch: batch 6",
+      "author": "jeetmehta1991",
+      "rel_time": "10 minutes ago"
+    },
+    {
+      "sha": "d2260565",
+      "subject": "Finnhub news pre-fetch: batch 5",
+      "author": "jeetmehta1991",
+      "rel_time": "14 minutes ago"
+    },
+    {
+      "sha": "39fef19d",
+      "subject": "Finnhub news pre-fetch: batch 4",
+      "author": "jeetmehta1991",
+      "rel_time": "18 minutes ago"
+    },
+    {
+      "sha": "2c2333e9",
+      "subject": "Finnhub news pre-fetch: batch 3",
+      "author": "jeetmehta1991",
+      "rel_time": "23 minutes ago"
+    },
+    {
+      "sha": "90bd9cd6",
+      "subject": "StockTwits batch 15",
+      "author": "jeetmehta1991",
+      "rel_time": "25 minutes ago"
+    },
+    {
+      "sha": "1f77b94e",
+      "subject": "Finnhub news pre-fetch: batch 2",
+      "author": "jeetmehta1991",
+      "rel_time": "27 minutes ago"
+    },
+    {
+      "sha": "89e39150",
+      "subject": "Finnhub news pre-fetch: batch 1",
+      "author": "jeetmehta1991",
+      "rel_time": "32 minutes ago"
+    },
+    {
+      "sha": "302779f4",
+      "subject": "Pass 53 v8h+1: prefetch_finnhub_news.py - add _load_env helper",
+      "author": "jeetmehta1991",
+      "rel_time": "35 minutes ago"
+    },
+    {
+      "sha": "7a175f7c",
+      "subject": "Pass 53 v8h+1: T0 blocker triage - INV-023/INV-038 RESOLVED + INV-046 logged + INV-016/INV-027 patched",
+      "author": "jeetmehta1991",
+      "rel_time": "37 minutes ago"
+    },
+    {
       "sha": "9093d20f",
       "subject": "StockTwits batch 14",
       "author": "jeetmehta1991",
-      "rel_time": "2 minutes ago"
+      "rel_time": "41 minutes ago"
     },
     {
       "sha": "8281e07d",
       "subject": "StockTwits batch 13",
       "author": "jeetmehta1991",
-      "rel_time": "18 minutes ago"
+      "rel_time": "57 minutes ago"
     },
     {
       "sha": "fb7cc135",
       "subject": "StockTwits batch 12",
       "author": "jeetmehta1991",
-      "rel_time": "34 minutes ago"
+      "rel_time": "73 minutes ago"
     },
     {
       "sha": "4421b801",
       "subject": "StockTwits batch 11",
       "author": "jeetmehta1991",
-      "rel_time": "51 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "da8873a8",
       "subject": "StockTwits batch 10",
       "author": "jeetmehta1991",
-      "rel_time": "67 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "95f23368",
       "subject": "Pass 53 v8h+1: Next Up auto-ranked panel (Tier 0-7 prioritization)",
       "author": "jeetmehta1991",
-      "rel_time": "78 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "9d1d6b3c",
       "subject": "StockTwits batch 9",
       "author": "jeetmehta1991",
-      "rel_time": "83 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "80df9b2f",
@@ -25811,19 +25883,19 @@
       "sha": "77187649",
       "subject": "StockTwits batch 7",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "6f2e664f",
       "subject": "StockTwits batch 6",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "7bdd83fb",
       "subject": "StockTwits batch 5",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "9fd0a256",
@@ -25835,13 +25907,13 @@
       "sha": "482b42cf",
       "subject": "StockTwits batch 3",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "1da0d4bc",
       "subject": "StockTwits batch 2",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "8179b83b",
@@ -25865,140 +25937,833 @@
       "sha": "e67659dd",
       "subject": "Pass 53 v8h+1: structural drift detector + 9-layer test pyramid columns + Reference tab",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
-    },
-    {
-      "sha": "e66cee33",
-      "subject": "Pass 53 v8h+1: SEC EDGAR CIK fallback + B1 top-up (+8 tickers)",
-      "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
-    },
-    {
-      "sha": "65f23d6c",
-      "subject": "Pass 53 v8h+1: H10 ep1 prefetch script (drove 1937/1937 to 100%)",
-      "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
-    },
-    {
-      "sha": "a74b5368",
-      "subject": "Pass 53 auto-drift-sweep 2026-05-08 16:50: dashboards refreshed",
-      "author": "jeetmehta1991",
       "rel_time": "6 hours ago"
-    },
-    {
-      "sha": "398a5994",
-      "subject": "Polygon Options chain ref: final (1932 tickers fetched)",
-      "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
-    },
-    {
-      "sha": "0b4f9389",
-      "subject": "Polygon Options chain ref: batch 19 (1900 tickers)",
-      "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
-    },
-    {
-      "sha": "87d88628",
-      "subject": "Polygon Options chain ref: batch 18 (1800 tickers)",
-      "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
-    },
-    {
-      "sha": "f56fe3f1",
-      "subject": "Polygon Options chain ref: batch 17 (1700 tickers)",
-      "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
-    },
-    {
-      "sha": "cf1a0541",
-      "subject": "Polygon Options chain ref: batch 16 (1600 tickers)",
-      "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
-    },
-    {
-      "sha": "3133dc07",
-      "subject": "Polygon Options chain ref: batch 15 (1500 tickers)",
-      "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
-    },
-    {
-      "sha": "e926b105",
-      "subject": "Polygon Options chain ref: batch 14 (1400 tickers)",
-      "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
-    },
-    {
-      "sha": "74c4820f",
-      "subject": "Pass 53 v8h+1: comprehensive dashboard review - parser canon + automation panel + H10/H20/H21 stages",
-      "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
-    },
-    {
-      "sha": "77a937f6",
-      "subject": "Polygon Options chain ref: batch 13 (1300 tickers)",
-      "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 12,
-    "modified": 5,
+    "count": 1512,
+    "modified": 1468,
     "added": 0,
-    "untracked": 7,
+    "untracked": 44,
     "deleted": 0,
     "files": [
+      {
+        "status": "M",
+        "path": "AUDIT.md"
+      },
+      {
+        "status": "M",
+        "path": "BUG_REGISTER.md"
+      },
+      {
+        "status": "M",
+        "path": "CHECKLIST.md"
+      },
       {
         "status": "M",
         "path": "OPEN_INVESTIGATIONS.md"
       },
       {
         "status": "M",
-        "path": "backtest/tests/test_regression.py"
+        "path": "PHASE_1A_PRELAUNCH_TODO.md"
       },
       {
         "status": "M",
-        "path": "data_prefetch/stocktwits/_checkpoint.json"
+        "path": "backtest/data/cache/finnhub_news/D.parquet"
       },
       {
         "status": "M",
-        "path": "scripts/prefetch_finnhub_news.py"
+        "path": "backtest/data/cache/finnhub_news/DAL.parquet"
       },
       {
         "status": "M",
-        "path": "scripts/prefetch_polygon_news.py"
+        "path": "backtest/data/cache/finnhub_news/DAY.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/aaii/asset.xls"
+        "status": "M",
+        "path": "backtest/data/cache/finnhub_news/DD.parquet"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/finnhub/social_sentiment/"
+        "status": "M",
+        "path": "backtest/data/cache/finnhub_news_checkpoint.json"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/stocktwits/FSLR.parquet"
+        "status": "M",
+        "path": "backtest/tests/test_gate_pre_phase_1a_entry.py"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/stocktwits/FSLY.parquet"
+        "status": "M",
+        "path": "dashboard_sprint0a/data.js"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/stocktwits/FSS.parquet"
+        "status": "M",
+        "path": "dashboard_sprint0a/data.json"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/stocktwits/FSTX.parquet"
+        "status": "M",
+        "path": "dashboard_sprint0a/last_run.txt"
       },
       {
-        "status": "??",
-        "path": "data_prefetch/stocktwits/FSV.parquet"
+        "status": "M",
+        "path": "dashboard_stage_2/data.js"
+      },
+      {
+        "status": "M",
+        "path": "dashboard_stage_2/data.json"
+      },
+      {
+        "status": "M",
+        "path": "dashboard_stage_2/last_run.txt"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/_checkpoint_news.json"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/A.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AA.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AAL.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AAOI.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AAON.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AAP.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AAPL.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ABAT.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ABBV.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ABMD.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ABNB.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ABSI.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ABT.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ACA.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ACCD.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ACET.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ACGL.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ACHC.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ACHR.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ACI.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ACIW.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ACLS.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ACLX.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ACMR.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ACN.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ACT.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ACVA.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ADBE.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ADI.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ADM.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ADMA.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ADP.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ADPT.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ADS.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ADSE.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ADSK.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ADT.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ADTN.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AEE.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AEHR.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AEIS.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AEO.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AEP.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AERI.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AES.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AEVA.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AEYE.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AFL.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AFRM.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AG.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AGFY.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AGI.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AGIO.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AGX.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AGYS.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AHR.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AI.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AIG.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AIMC.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AISP.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AIV.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AIZ.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AJG.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AJRD.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AKAM.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AKRO.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AKUS.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ALAB.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ALB.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ALC.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ALDX.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ALGM.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ALGN.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ALGS.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ALH.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ALHC.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ALK.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ALKT.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ALL.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ALLE.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ALLT.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ALLY.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ALM.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ALMS.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ALNT.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ALNY.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ALPN.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ALSN.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ALT.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ALTG.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ALTS.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ALXN.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ALXO.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AM.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AMAL.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AMAM.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AMAT.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AMCR.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AMD.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AME.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AMGN.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AMH.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AMLX.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AMP.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AMPG.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AMPH.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AMPX.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AMPY.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AMR.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AMRX.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AMRZ.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AMSC.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AMT.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AMTM.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AMTX.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AMZN.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ANAB.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ANDE.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ANET.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ANF.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ANIP.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ANNX.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ANRO.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ANSS.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AON.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AOS.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AOSL.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/APA.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/APD.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/APEI.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/APEN.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/APG.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/APGE.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/APH.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/APLD.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/APLS.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/APLT.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/APO.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/APP.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/APPF.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/APPS.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/APTS.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/APTV.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AQST.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AR.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ARCH.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ARCT.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ARDX.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ARE.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ARES.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ARHS.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ARIS.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ARLO.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ARLP.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ARM.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ARMK.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ARMN.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ARNC.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AROC.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ARQQ.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ARQT.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ARRY.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ARWR.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AS.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ASC.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ASM.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ASML.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ASO.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ASPC.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ASPI.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ASPN.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ASRT.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ASST.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ASTI.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ASTS.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ASUR.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ASYS.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ATAI.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ATEC.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ATGE.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ATI.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/ATKR.parquet"
       }
     ]
   },
   "unpushed_commits": [],
-  "active_bgs": [],
+  "active_bgs": [
+    {
+      "pid": "56732",
+      "elapsed": "C:\\Users\\jeetm\\Github\\stock-picks-app\\.venv\\Scripts\\python.exe",
+      "script": "prefetch_polygon_news",
+      "description": "Polygon news re-fetch"
+    },
+    {
+      "pid": "56712",
+      "elapsed": "/usr/bin/bash",
+      "script": "prefetch_polygon_news",
+      "description": "Polygon news re-fetch"
+    }
+  ],
   "pending_pipeline": [
     {
       "item": "H10 Polygon Options chains (1937 underlyings)",
@@ -26307,7 +27072,7 @@
   },
   "structural_drift": {
     "cached_dir_count": 89,
-    "scanned_dir_count": 78,
+    "scanned_dir_count": 80,
     "uncovered": [
       "data_prefetch/aaii",
       "data_prefetch/apewisdom",
@@ -26328,10 +27093,9 @@
       "data_prefetch/quiver/quivernews",
       "data_prefetch/quiver/sec13f",
       "data_prefetch/quiver/sec13fchanges",
-      "data_prefetch/quiver/twitter",
-      "data_prefetch/stocktwits"
+      "data_prefetch/quiver/twitter"
     ],
-    "uncovered_count": 21
+    "uncovered_count": 20
   },
   "reference_tables": {
     "badges": [
@@ -26434,7 +27198,7 @@
     {
       "kind": "INV",
       "id": "INV-016",
-      "title": "\u2014 Finnhub news 509 files = S&P-500-only (NOT expanded to Master Universe) (Pass 53 Day-9 v8h evening)",
+      "title": "\u2014 Finnhub news Master Universe expansion - PATCHED 2026-05-08 v8h+1; BG running (Pass 53)",
       "status": "OPEN",
       "tier": 0,
       "reason": "INV OPEN with HIGH/CRITICAL severity",
@@ -26454,7 +27218,7 @@
     {
       "kind": "INV",
       "id": "INV-027",
-      "title": "\u2014 Polygon news lost per-ticker `insights` array (article-level only) (Pass 53 Day-9 v8h evening)",
+      "title": "\u2014 Polygon news per-ticker `insights` array - PATCHED 2026-05-08 v8h+1; backfill BG running (Pass 53)",
       "status": "OPEN",
       "tier": 0,
       "reason": "INV OPEN with HIGH/CRITICAL severity",

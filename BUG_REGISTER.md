@@ -42,7 +42,7 @@ The following table maps every bug in AUDIT.md to the decision(s) that reference
 | BUG-04 | `avoid` direction falls into `triggered_short` bucket — inflates confidence tier | DEC-458 | (see linked DEC sprint) |
 | BUG-05 | `strategies_triggered` key mismatch — agent cache is always wrong | DEC-458 | (see linked DEC sprint) |
 | BUG-06 | Double borrow cost on short trades | DEC-458 | (see linked DEC sprint) |
-| BUG-07 | API key guard blocks no-agent Phase 1B run | DEC-458 | (see linked DEC sprint) |
+| BUG-07 | API key guard blocks no-agent Phase 1B run | DEC-458 | RESOLVED 2026-05-08 v8h+1 - test_bug_007 in test_regression.py confirms _call_claude returns None on missing key (soft guard); --no-agents bypasses agent branch. |
 | BUG-08 | `ema_50_200_bullish` signal key does not exist | DEC-458 | (see linked DEC sprint) |
 | BUG-09 | `below_cam_s3` signal key does not exist | DEC-458 | (see linked DEC sprint) |
 | BUG-10 | Agent signal keys wrong — agents always see `False` for key price context | DEC-458 | (see linked DEC sprint) |

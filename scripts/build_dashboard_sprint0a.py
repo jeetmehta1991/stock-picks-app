@@ -519,6 +519,10 @@ ENDPOINTS = [
     ("quiver", "corporatedonors_bulk", "data_prefetch/quiver/corporatedonors/global.parquet", "single"),
     ("quiver", "quivernews_bulk", "data_prefetch/quiver/quivernews/global.parquet", "single"),
     ("quiver", "sec13fchanges_bulk", "data_prefetch/quiver/sec13fchanges/global.parquet", "single"),
+    # StockTwits (Pass 53 v8h+1 owner-approved 2026-05-08, retail attention layer)
+    ("stocktwits", "streams", "data_prefetch/stocktwits", "per_ticker"),
+    # Finnhub social_sentiment (Pass 53 v8h+1; PREMIUM-LOCKED at free tier - kept for future)
+    ("finnhub", "social_sentiment", "data_prefetch/finnhub/social_sentiment", "per_ticker"),
     # SEC EDGAR per-form
     ("sec_edgar", "10_K", "data_prefetch/sec_edgar/10_K", "per_ticker"),
     ("sec_edgar", "10_Q", "data_prefetch/sec_edgar/10_Q", "per_ticker"),

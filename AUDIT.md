@@ -31728,3 +31728,74 @@ Owner mentioned "Sprint 0A items in parallel" but Sprint 0A is primarily DATA wo
 
 **Day 9 v8g — Owner directive satisfied for engine-side P0/P1 + verification/hygiene. 702 PASS pyramid (was 628). 12 backlog items closed (DEC-509/513 #1/#4/#5/#6/#8/#10 + DEC-517/518/521 + R3-06 documented + BUG-DONATIONS-PIT). 7 items deferred to Sprint 7+ (multi-day data/refactor scope). No regressions. Phase 1A May 15 entry-readiness UNCHANGED — already confirmed; today's work expands Phase 1B+ toolkit.**
 
+---
+
+## Pass 53 Day 9 v8h+1 (2026-05-08 evening) — T0 blocker triage + 13-layer pyramid + Next Up dashboard
+
+### Trigger
+
+Owner directive 2026-05-08: "Start addressing T0 blockers" (auto-ranked Tier 0 items in new Stage 2 dashboard "Next Up" panel — 8 items: BUG-007 + INV-015/016/023/025/027/032/038).
+
+### Outcomes
+
+**RESOLVED (3 items, structurally already fixed; retroactively recorded):**
+- INV-023 Quiver Unicode emoji bug. All 7 endpoints cached 1937-1941. Regression gate `test_prefetch_scripts_no_unicode.py` enforces ASCII-only runtime strings; caught the StockTwits character on its way in.
+- INV-038 Polygon Indices Basic license. Owner activated 2026-05-08; 2/13 indices accessible (NDX/COMP); 11 gated by CBOE/S&P licensing fees.
+- BUG-007 API key guard / no-agents flag. Verified non-blocking via new regression test in `test_regression.py`; pipeline `_call_claude` returns None on missing key (soft guard).
+
+**PATCHED (2 items, BGs running):**
+- INV-016 Finnhub news Master Universe expansion. Switched from S&P 500 + ETFs (~509) to 1937. BG `blk7obzpy`.
+- INV-027 Polygon news per-ticker insights array. Added `insights_json` JSON-encoded column. Checkpoint reset; BG `bwgxwcrwq` re-prefetching all 1937.
+
+**SURFACED (2 items, owner decision needed):**
+- INV-015 / INV-032 AlphaVantage news. Free tier 25 calls/day = 77 days for full universe; needs premium ~$50/mo.
+- INV-025 SEC EDGAR primary_doc parsing. 20-30h infra build for XBRL parser; Phase 1B not Phase 1A.
+
+**LOGGED (1 new item):**
+- INV-046 Phase 1A engine pnl > 100% finding. `test_e2e_phase1a_smoke G1` 106.06% on single trade in 397-trade smoke. HIGH severity Phase 1A blocker candidate; root-cause investigation pending.
+
+### Pyramid expansion to 13 layers
+
+Owner directive: build full pyramid now, no "build later" outlook.
+
+| Layer | New file | Tests |
+|---|---|---|
+| Property-based | `test_property.py` | 6 |
+| Snapshot | `test_snapshot.py` | 6 |
+| Contract | `test_contract.py` | 7 |
+| Compatibility | `test_compatibility.py` | 8 |
+| System (lit up placeholder) | `test_gate_pre_phase_1a_entry.py` | 8 |
+| Acceptance fixture scaffold | `test_acceptance.py` + `golden/README.md` | 1 |
+
+Plus `test_smoke.py` (40), `test_regression.py` (8), `test_performance.py` (4) added in same v8h+1 series.
+
+**Full pyramid: 983 passed, 1 failed (INV-046), 14 skipped, 5 xfailed.**
+
+### Dashboard expansion
+
+- 13-pyramid columns added to Decisions / Bugs / INVs / Caveats tabs (Y/n badges, no dot logic per owner directive).
+- Reference tab: 4-badge meanings, project Stage 1-4 lifecycle, Stage 2 sub-phases.
+- Automation + Tests tab: hooks, drift cron, schema regression, prefetch helper.
+- Structural drift panel: 21 cache subdirs not in dashboard scan list (post StockTwits + Finnhub social_sentiment registration).
+- Next Up panel: 25 items auto-ranked Tier 0-7.
+
+### Retail-attention sources (replacing pytrends)
+
+- StockTwits public API (`prefetch_stocktwits.py`). BG running, ~10h ETA.
+- Finnhub social_sentiment (`prefetch_finnhub_social_sentiment.py`). BUILT but PREMIUM-LOCKED at free tier; ready when premium added.
+
+### AAII extended sentiment
+
+Owner supplied extended xls 2026-05-08. Parser writes 13-col parquet (date / bullish / neutral / bearish / total / 8wk MA / bull-bear spread / long-term avg ±1σ / S&P 500 weekly OHLC). 2,022 weekly rows 1987-2026.
+
+### CHECKLIST additions
+
+- #78 — pyramid runs PER ADDRESSAL not bundled. Per-addressal isolation makes attribution visible.
+- #79 — end-of-turn doc sweep covers ALL forward-looking docs (16 enumerated). Cross-references span addressal types.
+
+### Cross-references
+
+DEC-503 (test pyramid 9 → 13 amended this commit), CHECKLIST #67/#69/#74/#75/#78/#79, L146/DEC-507 (silent-gap pattern surfacing INV-016 / INV-027), INV-041 (path-restricted git_commit pattern), BUG-007 / BUG-095 / BUG-111 (T0 dependency-root analysis), DEC-422 (15 downstream refs current).
+
+**Day 9 v8h+1 — 5 of 8 T0 blockers RESOLVED or PATCHED. INV-046 the only remaining Phase 1A May 15 launch dependency at HIGH severity. AAII richer parquet integrated. 13-layer pyramid live. Stage 2 + Sprint 0A dashboards rebuilt. CHECKLIST #78 (per-addressal pyramid) + #79 (all-docs sweep) codified.**
+
