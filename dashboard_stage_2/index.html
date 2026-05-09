@@ -136,7 +136,7 @@ per CHECKLIST #77 - never reads from memory.
       <strong title="Compatibility matrix">Cm</strong>. YES=test layer covers ID; no=no coverage in that layer.
     </p>
     <table id="tbl-decisions" class="display compact" style="width:100%">
-      <thead><tr><th>ID</th><th>Title</th><th>Doc Status</th><th>Coded</th><th>Wired</th><th>Tested</th><th>Pushed</th>
+      <thead><tr><th>ID</th><th>Title</th><th>Description</th><th>Doc Status</th><th>Coded</th><th>Wired</th><th>Tested</th><th>Pushed</th>
         <th title="Unit">U</th><th title="Smoke">Sm</th><th title="Integration">I</th><th title="System">Sy</th>
         <th title="Functional">F</th><th title="Regression">R</th><th title="Data integrity">D</th>
         <th title="Performance">P</th><th title="Acceptance">A</th>
@@ -153,7 +153,7 @@ per CHECKLIST #77 - never reads from memory.
       <input id="bug-filter" placeholder="Filter ID / title / linked decisions..." size="50">
     </div>
     <table id="tbl-bugs" class="display compact" style="width:100%">
-      <thead><tr><th>Bug ID</th><th>Title</th><th>Coded</th><th>Wired</th><th>Tested</th><th>Pushed</th>
+      <thead><tr><th>Bug ID</th><th>Title</th><th>Description</th><th>Coded</th><th>Wired</th><th>Tested</th><th>Pushed</th>
         <th title="Unit">U</th><th title="Smoke">Sm</th><th title="Integration">I</th><th title="System">Sy</th>
         <th title="Functional">F</th><th title="Regression">R</th><th title="Data integrity">D</th>
         <th title="Performance">P</th><th title="Acceptance">A</th>
@@ -176,7 +176,7 @@ per CHECKLIST #77 - never reads from memory.
       </select>
     </div>
     <table id="tbl-invs" class="display compact" style="width:100%">
-      <thead><tr><th>INV ID</th><th>Title</th><th>Doc Status</th><th>Coded</th><th>Wired</th><th>Tested</th><th>Pushed</th>
+      <thead><tr><th>INV ID</th><th>Title</th><th>Description</th><th>Doc Status</th><th>Coded</th><th>Wired</th><th>Tested</th><th>Pushed</th>
         <th title="Unit">U</th><th title="Smoke">Sm</th><th title="Integration">I</th><th title="System">Sy</th>
         <th title="Functional">F</th><th title="Regression">R</th><th title="Data integrity">D</th>
         <th title="Performance">P</th><th title="Acceptance">A</th>
@@ -199,7 +199,7 @@ per CHECKLIST #77 - never reads from memory.
       </select>
     </div>
     <table id="tbl-caveats" class="display compact" style="width:100%">
-      <thead><tr><th>CAV ID</th><th>Title</th><th>Status</th><th>Coded</th><th>Wired</th><th>Tested</th><th>Pushed</th>
+      <thead><tr><th>CAV ID</th><th>Title</th><th>Description</th><th>Status</th><th>Coded</th><th>Wired</th><th>Tested</th><th>Pushed</th>
         <th title="Unit">U</th><th title="Smoke">Sm</th><th title="Integration">I</th><th title="System">Sy</th>
         <th title="Functional">F</th><th title="Regression">R</th><th title="Data integrity">D</th>
         <th title="Performance">P</th><th title="Acceptance">A</th>
@@ -436,11 +436,21 @@ function pyramidCells(sg) {
 
 // Decisions table
 document.getElementById('dec-total').textContent = D.decisions.length;
+function descCell(s) {
+  if (!s) return '<span style="color:#cbd5e1">&mdash;</span>';
+  const t = String(s);
+  const short = t.length > 180 ? t.slice(0, 180) + '...' : t;
+  const safe = short.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const fullSafe = t.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  return `<span title="${fullSafe}" style="font-size:12px;color:#475569">${safe}</span>`;
+}
+
 const decRows = D.decisions.map(d => {
   const sg = d.status_grep || {};
   return [
     `<code>${d.short_id || d.id}</code>`,
     d.title,
+    descCell(d.description),
     badge(d.status),
     statusCheck(sg.coded),
     statusCheck(sg.wired),
@@ -465,6 +475,7 @@ const bugRows = D.bugs.map(b => {
   return [
     `<code>${b.short_id || b.id}</code>`,
     b.title,
+    descCell(b.description),
     statusCheck(sg.coded),
     statusCheck(sg.wired),
     statusCheck(sg.tested),
@@ -483,7 +494,7 @@ $('#bug-filter').on('keyup', function () { bugTable.search(this.value).draw(); }
 const invRows = D.investigations.map(i => {
   const sg = i.status_grep || {};
   return [
-    `<code>${i.id}</code>`, i.title, badge(i.status),
+    `<code>${i.id}</code>`, i.title, descCell(i.description), badge(i.status),
     statusCheck(sg.coded), statusCheck(sg.wired), statusCheck(sg.tested), statusCheck(sg.pushed),
     ...pyramidCells(sg),
     `<span style="font-size:11px">${i.dependencies || '-'}</span>`,
@@ -500,7 +511,7 @@ const caveats = D.caveats || [];
 const cavRows = caveats.map(c => {
   const sg = c.status_grep || {};
   return [
-    `<code>${c.id}</code>`, c.title, badge(c.status),
+    `<code>${c.id}</code>`, c.title, descCell(c.description), badge(c.status),
     statusCheck(sg.coded), statusCheck(sg.wired), statusCheck(sg.tested), statusCheck(sg.pushed),
     ...pyramidCells(sg),
     `<span style="font-size:11px">${c.dependencies || '-'}</span>`,

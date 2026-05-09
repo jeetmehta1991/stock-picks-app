@@ -529,6 +529,55 @@ def get_pending_pipeline() -> list[dict]:
     ]
 
 
+def parse_audit_descriptions() -> dict[str, str]:
+    """Parse AUDIT.md for ### BUG-NN / ### DEC-NN sections and index by ID.
+    Returns the first 1-3 lines of body content as a short description.
+    Owner directive 2026-05-09: dashboards must surface descriptions, not
+    just titles, so the user can decode each entry without leaving the page."""
+    audit = REPO_ROOT / "AUDIT.md"
+    if not audit.exists():
+        return {}
+    text = audit.read_text(encoding="utf-8", errors="ignore")
+    out: dict[str, str] = {}
+    # Pattern: heading line + body until next heading or 4 blank-line gap
+    heading_re = re.compile(
+        r"^### (BUG-\d+(?:[-_]\w+)?|DEC-\d+(?:[-_]\w+)?|DECISION-\d+(?:[-_]\w+)?)"
+        r"(?:\s*[" + chr(0xb7) + r":.\-]\s*|\s+)(.+?)$",
+        re.MULTILINE,
+    )
+    matches = list(heading_re.finditer(text))
+    for i, m in enumerate(matches):
+        raw_id = m.group(1)
+        # Normalize: BUG-01 -> BUG-001 to match dashboard's short_id convention
+        num_match = re.match(r"(BUG|DEC|DECISION)-(\d+)(.*)$", raw_id)
+        if num_match:
+            kind = "BUG" if num_match.group(1) == "BUG" else "DEC"
+            num = int(num_match.group(2))
+            suffix = num_match.group(3)
+            norm_id = f"{kind}-{num:03d}{suffix}"
+        else:
+            norm_id = raw_id
+        body_start = m.end()
+        body_end = matches[i + 1].start() if i + 1 < len(matches) else min(body_start + 1500, len(text))
+        body = text[body_start:body_end].strip()
+        # Pull first 200 chars of substantive content (skip blank lines)
+        first_lines = []
+        for line in body.split("\n"):
+            stripped = line.strip()
+            if not stripped:
+                if first_lines:
+                    break  # First blank after content = end of intro
+                continue
+            first_lines.append(stripped)
+            if sum(len(s) for s in first_lines) > 240:
+                break
+        desc = " ".join(first_lines)[:280]
+        # Don't overwrite if a more detailed entry exists already
+        if norm_id not in out or len(desc) > len(out[norm_id]):
+            out[norm_id] = desc
+    return out
+
+
 def _classify_priority_tier(item: dict, kind: str, back_refs: dict) -> tuple[int | None, str]:
     """Classify an item into priority Tier 0-7. Returns (tier, reason) or
     (None, '') if not actionable (RESOLVED-DECIDED with no pyramid gap).
@@ -911,6 +960,8 @@ def main() -> int:
 
     # Attach 4-status (coded / wired / tested / pushed) to each
     print("Computing per-ID status (coded/wired/tested/pushed)...")
+    audit_descs = parse_audit_descriptions()  # owner directive 2026-05-09
+    print(f"  AUDIT.md descriptions indexed: {len(audit_descs)}")
     for d in decisions:
         # Normalize ID for grep: AUDIT_INDEX uses "DECISION-001" but actual code/commits use "DEC-001"
         full_id = d["id"]
@@ -919,6 +970,7 @@ def main() -> int:
         d["short_id"] = short_id
         d["sprint"] = "; ".join(sprint_map.get(short_id, [])) or "-"
         d["dependencies"] = "; ".join(extract_dependencies(d["title"] + " " + d["status"])) or "-"
+        d["description"] = audit_descs.get(short_id, "") or audit_descs.get(full_id, "") or ""
     for b in bugs:
         full_id = b["id"]
         m = re.match(r"BUG-(\d+)$", full_id)
@@ -931,12 +983,18 @@ def main() -> int:
         # BUG already has sprint_context column from BUG_REGISTER
         b["sprint"] = b.get("sprint_context", "-") or "-"
         b["dependencies"] = "; ".join(extract_dependencies(b.get("linked_decisions", "") + " " + b.get("title", ""))) or "-"
+        b["description"] = audit_descs.get(short, "") or ""
     for i in invs:
         i["status_grep"] = id_status(i["id"], corpora)
         i["dependencies"] = "; ".join(extract_dependencies(i.get("title", "") + " " + i.get("summary", ""))) or "-"
+        # INVs already carry a 'summary' field extracted from **Observation:**.
+        # Promote it to a description alias for HTML rendering consistency.
+        i["description"] = i.get("summary", "") or ""
     for c in cavs:
         c["status_grep"] = id_status(c["id"], corpora)
         c["dependencies"] = "; ".join(extract_dependencies(c.get("title", "") + " " + c.get("impact", ""))) or "-"
+        # Caveats already carry an 'impact' field; promote to description.
+        c["description"] = c.get("impact", "") or ""
     # L-NNN don't need status grep (they're principles, not code)
 
     snapshot = {
