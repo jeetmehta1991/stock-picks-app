@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-09T09:27:31.768183+00:00",
+  "generated_at": "2026-05-09T15:03:08.925410+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -26542,201 +26542,193 @@
   ],
   "recent_commits": [
     {
+      "sha": "9673eccc",
+      "subject": "Pass 53 v8h+1: StockTwits BG complete - 1937 underlyings cached + canonical lock + contract test",
+      "author": "jeetmehta1991",
+      "rel_time": "15 minutes ago"
+    },
+    {
       "sha": "ad5f0f78",
       "subject": "StockTwits final (1923 fetched)",
       "author": "jeetmehta1991",
-      "rel_time": "2 minutes ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "658f40ad",
       "subject": "StockTwits batch 38",
       "author": "jeetmehta1991",
-      "rel_time": "9 minutes ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "dcc49c62",
       "subject": "StockTwits batch 37",
       "author": "jeetmehta1991",
-      "rel_time": "26 minutes ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "1a594038",
       "subject": "StockTwits batch 36",
       "author": "jeetmehta1991",
-      "rel_time": "42 minutes ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "65a03894",
       "subject": "StockTwits batch 35",
       "author": "jeetmehta1991",
-      "rel_time": "58 minutes ago"
+      "rel_time": "7 hours ago"
     },
     {
       "sha": "fd5a7cd9",
       "subject": "StockTwits batch 34",
       "author": "jeetmehta1991",
-      "rel_time": "74 minutes ago"
+      "rel_time": "7 hours ago"
     },
     {
       "sha": "a5bf31b2",
       "subject": "StockTwits batch 33",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "7 hours ago"
     },
     {
       "sha": "ca936547",
       "subject": "StockTwits batch 32",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "7 hours ago"
     },
     {
       "sha": "da89952c",
       "subject": "StockTwits batch 31",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "8 hours ago"
     },
     {
       "sha": "f8bdd491",
       "subject": "StockTwits batch 30",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "8 hours ago"
     },
     {
       "sha": "1311d82a",
       "subject": "StockTwits batch 29",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "8 hours ago"
     },
     {
       "sha": "bc0373e7",
       "subject": "Pass 53 v8h+1: pyramid 4-state cells (YES/no/N/A/LATER) + git body grep + BUG-007 annotation",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "8 hours ago"
     },
     {
       "sha": "ccd6dbbf",
       "subject": "StockTwits batch 28",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "8 hours ago"
     },
     {
       "sha": "220c21e3",
       "subject": "StockTwits batch 27",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "9 hours ago"
     },
     {
       "sha": "5d86e1c0",
       "subject": "Pass 53 v8h+1: Description column added to Decisions / Bugs / INVs / Caveats tables",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "9 hours ago"
     },
     {
       "sha": "b66c12b6",
       "subject": "StockTwits batch 26",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "9 hours ago"
     },
     {
       "sha": "01752658",
       "subject": "Pass 53 v8h+1: Reference page - add 13-layer test pyramid + dashboard column meanings",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "9 hours ago"
     },
     {
       "sha": "586d7e0e",
       "subject": "StockTwits batch 25",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "9 hours ago"
     },
     {
       "sha": "b51b14b0",
       "subject": "StockTwits batch 24",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "10 hours ago"
     },
     {
       "sha": "7ecf6254",
       "subject": "StockTwits batch 23",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "10 hours ago"
     },
     {
       "sha": "6332c06b",
       "subject": "Pass 53 v8h+1: INV-016 RESOLVED - Finnhub news Master Universe expansion complete",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "10 hours ago"
     },
     {
       "sha": "9b8071dd",
       "subject": "Finnhub news batch 0: complete (1937 tickers)",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "10 hours ago"
     },
     {
       "sha": "8fce7bf8",
       "subject": "Finnhub news pre-fetch: batch 36",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "10 hours ago"
     },
     {
       "sha": "f25d3dd2",
       "subject": "Finnhub news pre-fetch: batch 35",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "10 hours ago"
     },
     {
       "sha": "42072ec6",
       "subject": "StockTwits batch 22",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "10 hours ago"
     },
     {
       "sha": "2eafae51",
       "subject": "Finnhub news pre-fetch: batch 34",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "10 hours ago"
     },
     {
       "sha": "e6dbb0ce",
       "subject": "Finnhub news pre-fetch: batch 33",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "10 hours ago"
     },
     {
       "sha": "c7b92068",
       "subject": "Finnhub news pre-fetch: batch 32",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "10 hours ago"
     },
     {
       "sha": "9fe62422",
       "subject": "Finnhub news pre-fetch: batch 31",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
-    },
-    {
-      "sha": "6a2d483d",
-      "subject": "Finnhub news pre-fetch: batch 30",
-      "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "10 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 1931,
-    "modified": 1927,
+    "count": 1928,
+    "modified": 1925,
     "added": 0,
-    "untracked": 4,
+    "untracked": 3,
     "deleted": 0,
     "files": [
-      {
-        "status": "M",
-        "path": "backtest/tests/test_contract.py"
-      },
-      {
-        "status": "M",
-        "path": "backtest/tests/test_schema_canonical.py"
-      },
       {
         "status": "M",
         "path": "data_prefetch/polygon/_checkpoint_news.json"
@@ -27528,6 +27520,14 @@
       {
         "status": "M",
         "path": "data_prefetch/polygon/news/AVEO.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AVGO.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/news/AVPT.parquet"
       }
     ]
   },
