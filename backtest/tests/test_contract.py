@@ -132,7 +132,29 @@ def test_contract_aaii_extended_sentiment_shape() -> None:
     assert not missing, f"AAII sentiment contract drift; missing {missing}"
 
 
-# -- Contract 7: AUDIT_INDEX table row shape ----------------------------
+# -- Contract 7: Polygon news insights_json preserved (INV-027) ---------
+def test_contract_polygon_news_insights_json_preserved() -> None:
+    """INV-027 RESOLVED 2026-05-08 v8h+1: Polygon news cache must preserve
+    the per-ticker insights array as JSON-encoded `insights_json` column.
+    Regression: any future re-prefetch that drops this field re-introduces
+    the per-ticker-sentiment-loss bug."""
+    sample_dir = REPO_ROOT / "data_prefetch" / "polygon" / "news"
+    if not sample_dir.is_dir():
+        pytest.skip("polygon/news cache not present")
+    sample = sample_dir / "AAPL.parquet"
+    if not sample.exists():
+        sample = next((p for p in sample_dir.glob("*.parquet") if p.stat().st_size > 1000), None)
+    if sample is None:
+        pytest.skip("no non-empty Polygon news sample")
+    df = pd.read_parquet(sample)
+    assert "insights_json" in df.columns, (
+        f"polygon news {sample.name} missing 'insights_json' column "
+        f"- INV-027 regression. Re-prefetch needed with current "
+        f"scripts/prefetch_polygon_news.py."
+    )
+
+
+# -- Contract 8: AUDIT_INDEX table row shape ----------------------------
 def test_contract_audit_index_row_shape() -> None:
     """Each | **DECISION-NNN** row in AUDIT_INDEX must have at least the
     minimum column set parse_decisions expects."""

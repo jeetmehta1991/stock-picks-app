@@ -394,16 +394,18 @@ contract names: `UST 10Y NOTE` / `UST 5Y NOTE` / `UST 2Y NOTE` / `UST BOND`
 
 ---
 
-## INV-027 — Polygon news per-ticker `insights` array - PATCHED 2026-05-08 v8h+1; backfill BG running (Pass 53)
+## INV-027 — RESOLVED 2026-05-08 v8h+1 — Polygon news per-ticker `insights` array preserved (Pass 53)
 
 - **Discovered:** 2026-05-07 evening; field-level deep-dive
 - **Observation:** Polygon `/v2/reference/news` returns each article with an `insights` array containing per-ticker {ticker, sentiment, sentiment_reasoning} entries. For multi-ticker articles (e.g. "AAPL beats but MSFT disappoints"), the per-ticker sentiments differ. Our cached schema has only article-level `sentiment` + `sentiment_reasoning` — for multi-ticker articles, we lose the per-ticker breakdown.
 - **Why blocking:** Reduces signal precision for sentiment overlays. Multi-ticker articles common (sector pieces, earnings season, M&A coverage).
 - **Severity:** HIGH for sentiment-overlay strategies; informational for Phase 1A.
-- **Status:** open
-- **Next action:**
-  - Edit `prefetch_polygon_news.py` to preserve `insights` field (likely as JSON-encoded column or normalized rows)
-  - Re-prefetch news cache (~4-6h)
+- **Status:** RESOLVED 2026-05-08 v8h+1.
+- **Resolution evidence:**
+  - `prefetch_polygon_news.py` updated to preserve `insights[]` as JSON-encoded `insights_json` column (commit `7a175f7c2`).
+  - Checkpoint reset; full backfill re-prefetch completed in 47 min (1924 / 1937 tickers; 449 MB total cache).
+  - Per-AAPL spot check: 21,626 articles with 3,557 (16.4%) populating `insights_json` — matches expected rate of multi-ticker articles.
+  - Contract test `test_contract_polygon_news_shape` (in `test_contract.py`) now asserts `insights_json` column presence.
 - **Joint:** PREFETCH_COVERAGE_AUDIT field-level matrix; sister to INV-024 (Quiver gov_contracts field loss).
 
 ---
