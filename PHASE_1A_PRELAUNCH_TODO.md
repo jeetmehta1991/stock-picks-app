@@ -84,8 +84,8 @@ Owner: *"all data in prefetch needs to be standardized and normalized."*
 | BUG-007 (API key guard / `--no-agents`) | RESOLVED | `test_bug_007_no_agents_does_not_require_anthropic_key` in `test_regression.py`; pipeline soft-guard returns None |
 | INV-023 (Quiver Unicode bug) | RESOLVED | All 7 endpoints cached 1937-1941; `test_prefetch_scripts_no_unicode.py` enforces ASCII regression gate |
 | INV-038 (Polygon Indices Basic license) | RESOLVED-PARTIAL | 2/13 indices accessible (NDX/COMP); 11 require CBOE/S&P licensing fees |
-| INV-016 (Finnhub news Master Universe) | PATCHED — BG running | `prefetch_finnhub_news.py` switched to Master Universe (1937 vs 509); BG `blk7obzpy` |
-| INV-027 (Polygon news insights field) | PATCHED — BG running | `prefetch_polygon_news.py` adds `insights_json` column; BG `bwgxwcrwq` re-prefetching all 1937 |
+| INV-016 (Finnhub news Master Universe) | RESOLVED 2026-05-09 | BG `blk7obzpy` complete; cache 1941 ticker files (~3.8x expansion from 509) |
+| INV-027 (Polygon news insights field) | RESOLVED 2026-05-08 | BG `bwgxwcrwq` complete; 1924/1937 backfilled, 449 MB, AAPL 3,557/21,626 articles populate insights_json (16.4%) |
 | INV-046 (engine pnl > 100%) | OPEN — HIGH severity | `test_e2e_phase1a_smoke::test_g1_pnl_realistic` 106.06% on single trade in 397-trade smoke; root-cause investigation pending |
 | INV-015 / INV-032 (AlphaVantage news) | SURFACED — needs owner | Free tier 25 cps/day = 77 days for 1937 universe; needs premium ~$50/mo |
 | INV-025 (SEC EDGAR primary_doc) | SURFACED — needs owner | 20-30h infra build for XBRL parser; Phase 1B not 1A |

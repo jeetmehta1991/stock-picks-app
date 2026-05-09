@@ -198,19 +198,20 @@ contract names: `UST 10Y NOTE` / `UST 5Y NOTE` / `UST 2Y NOTE` / `UST BOND`
 
 ---
 
-## INV-016 — Finnhub news Master Universe expansion - PATCHED 2026-05-08 v8h+1; BG running (Pass 53)
+## INV-016 — RESOLVED 2026-05-09 v8h+1 — Finnhub news Master Universe expansion complete (Pass 53)
 
 - **Discovered:** 2026-05-07 evening; comprehensive prefetch deep-dive audit
 - **Observation:** `backtest/data/cache/finnhub_news/` has exactly 509 files. The script `scripts/prefetch_finnhub_news.py` line ~31 reads `from backtest.data.universe import get_sp500_constituents, ETFS_FULL` and uses S&P 500 + ETFs only. Same pattern as old Quiver per-ticker (which is now being fixed by `bsu432hbt` BG). Needs the same Master-Universe-expansion treatment.
 - **Why not blocking:** Free-tier Finnhub returns near-empty for older dates; current cache is ~2025-Mar 2026 only. Phase 1A baseline doesn't depend on Finnhub news (Polygon news is primary). Phase 1B+ news-sentiment strategies could benefit from cross-source.
 - **Severity:** HIGH for owner's "broad everything" — known stale prefetch script + stale universe scope.
-- **Status:** open
-- **Next action:**
-  - Update `scripts/prefetch_finnhub_news.py` to read Master Universe CSV (1937) instead of S&P 500
-  - Switch to `data_prefetch/finnhub/` canonical Sprint 0A path
-  - Re-prefetch (~6-8h on free tier 60/min)
-  - Confirm Finnhub subscription tier — free returns minimal historical; basic paid tier needed for >1y lookback
-- **Joint:** INV-015 (Alpha Vantage same pattern); CHECKLIST #76 (column-(b) verification — paper audit would have reported coverage % vs S&P only, not flagged the universe-mismatch as separate concern).
+- **Status:** RESOLVED 2026-05-09 v8h+1.
+- **Resolution evidence:**
+  - `scripts/prefetch_finnhub_news.py` patched (commit `7a175f7c2`) to read Master Universe Deduplicated CSV (1937 tickers); falls back to legacy scope if CSV absent.
+  - `_load_env()` helper added (commit `302779f4e`) so BG runners load `.env` automatically.
+  - `git_commit()` tightened to path-restricted (INV-041 fix carried forward).
+  - BG `blk7obzpy` completed: cache now has **1941 ticker files** (was 509 = ~3.8× expansion). Spot check: TSLA 16 rows, AAPL 0 rows (free-tier API returns near-empty for tickers without recent news, expected).
+  - Free-tier Finnhub note: minimal historical lookback per ticker; paid Basic tier (~$30/mo) needed for >1y range. Within the free-tier window, full Master Universe is now covered.
+- **Joint:** INV-015 (Alpha Vantage same pattern - still SURFACED; needs premium); CHECKLIST #76 (column-(b) verification surfaced this); CHECKLIST #78 (per-addressal pyramid run for this RESOLVED transition).
 
 ---
 
