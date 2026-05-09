@@ -92,6 +92,14 @@ Owner: *"all data in prefetch needs to be standardized and normalized."*
 
 **Strict blocker count: 1 OPEN (INV-046).** All other T0 items either resolved or surfaced for owner.
 
+### Finnhub social_sentiment EXCLUDED from Phase 1A (DEC-605, owner-approved 2026-05-09)
+
+- Source PREMIUM-LOCKED at current Finnhub free tier; subscription cost-benefit analysis says skip.
+- Phase 1A signal universe explicitly excludes Finnhub social_sentiment data.
+- Apewisdom (Reddit 8 subs) + StockTwits (Twitter-of-finance, 1937 cached) + Polygon news insights_json (per-ticker sentiment, 1937 cached) cover ~90% of the same retail-attention signal at zero incremental cost.
+- Script `prefetch_finnhub_social_sentiment.py` is BUILT but NOT invoked. Activates instantly the day Finnhub Premium is subscribed (Phase 1B+ scope).
+- See CAV-074 for full caveat record.
+
 ### StockTwits BG complete 2026-05-09
 
 - `b27jw7urk` finished: **1937/1937 underlyings cached**, ~30 messages/ticker.

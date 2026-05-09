@@ -43,6 +43,8 @@ formally logged in AUDIT_INDEX.md:**
 
 **Phase 1A May 15 launch readiness: 1 OPEN blocker (INV-046).** Pyramid 982 pass / 1 fail (the INV-046 finding itself) / 14 skipped / 5 xfailed.
 
+**Phase 1A scope clarification 2026-05-09:** DEC-605 EXCLUDES Finnhub social_sentiment data from Phase 1A baseline (premium-locked; budget reserved). CAV-074 logged. Apewisdom + StockTwits + Polygon news insights_json cover the retail-attention signal at free tier.
+
 ---
 
 ## Pass 53 Day-9-evening v5 close (2026-05-07 evening) — final NIL-gap state pre-Phase-1A

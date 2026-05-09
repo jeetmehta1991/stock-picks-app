@@ -1,5 +1,7 @@
 # PREFETCH_COVERAGE_AUDIT.md — Pass 53 Day-9 v8h comprehensive prefetch audit
 
+# Source: live filesystem scan + scripts/probe_api_catalog.py + per CHECKLIST #77 (canonical-source rule)
+
 Owner directive 2026-05-07: *"This is exactly what i mean that we should pre fetch ALL available endpoints and corresponding dimensions. We can choose to not use it but if we have it all prefetched we can be flexible and quick in addressing.... Data quality and comprehensiveness is the foundation."*
 
 This doc audits every prefetched data source against:
@@ -599,7 +601,7 @@ INV-016 surfaced: Finnhub cache locked at S&P 500 universe — never expanded to
 - `/stock/revenue-estimate` — revenue estimates
 - `/stock/eps-estimate` — EPS estimates
 - `/stock/upgrade-downgrade` — rating changes
-- `/stock/social-sentiment` — Reddit/Twitter sentiment
+- `/stock/social-sentiment` — Reddit/Twitter sentiment **[EXCLUDED from Phase 1A per DEC-605 / CAV-074, owner 2026-05-09; premium-locked at our free tier; Phase 1B+ eligible if Premium subscribed; covered at free tier by Apewisdom + StockTwits + Polygon news insights_json]**
 - `/news` — general market news
 - `/economic/calendar` — economic events calendar
 - `/scan/pattern` — pattern recognition
@@ -611,7 +613,7 @@ INV-016 surfaced: Finnhub cache locked at S&P 500 universe — never expanded to
 - Resolve INV-016: re-prefetch news at full 1937
 - New: profile2 (sector cross-check vs Polygon)
 - New: insider-sentiment + recommendation + price-target + eps-surprise + upgrade-downgrade — analyst layer for Phase 1B+
-- New: social-sentiment + scan endpoints — pattern/sentiment overlay
+- ~~New: social-sentiment + scan endpoints — pattern/sentiment overlay~~ (social_sentiment EXCLUDED from Phase 1A per DEC-605; scan endpoints not yet evaluated)
 
 **Estimated:** ~8-12h. P1.
 

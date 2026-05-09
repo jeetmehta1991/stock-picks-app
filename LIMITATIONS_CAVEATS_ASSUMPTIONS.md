@@ -665,3 +665,13 @@ Cells with n<30 trades fall back to marginal-best (next-broader cell). Live deci
 **Operational impact:** Any phase, sub-phase, or DEC archived during a methodology refactor becomes invisible to within-current-doc audit. Absorbed content lives only in `*_ARCHIVE.md` files; current docs may reference DEC-X as "absorbed by DEC-Y" without flagging which content was absorbed (e.g., empirical results, decision history, methodology notes).
 **Resolution:** CHECKLIST #63 (Pass 53) requires archive comparison as standard step in audit methodology. L142 codifies the learning. Future refactors that absorb prior phases must explicitly enumerate what content from absorbed phase is preserved vs dropped.
 **Forward-link:** Pattern to watch: any commit message containing "absorbed" + phase reference. Apply CHECKLIST #63 archive comparison before merging.
+
+### CAV-074 — Phase 1A excludes Finnhub social_sentiment (premium-locked; deferred to Phase 1B+)
+
+**Source:** Pass 53 v8h+1 owner-approved 2026-05-09 (DEC-605)
+**Status:** ACTIVE — Phase 1A scope caveat
+**Caveat:** Phase 1A baseline (rules + smart-money, no agents) does NOT consume Finnhub `/stock/social-sentiment` data even if a Finnhub Premium subscription is added during the Phase 1A run window. Source first becomes eligible at Phase 1B+ News Analyst overlay. Reason: PREMIUM-LOCKED at our current Finnhub free tier (probed 5 high-liquidity tickers 2026-05-08, all 403); ~90% of cross-platform retail-attention signal is already covered by Apewisdom + StockTwits + Polygon news insights_json at zero incremental cost.
+**Operational impact:** Phase 1A signal universe excludes one cross-platform retail-attention channel. Marginal — the three free-tier sources (Apewisdom Reddit, StockTwits Twitter-of-finance, Polygon news per-ticker sentiment) cover the same population the Finnhub aggregator would have queried.
+**Runtime guard:** zero engine/agent/signal code references `finnhub.social_sentiment` (verified 2026-05-09); script `prefetch_finnhub_social_sentiment.py` is BUILT but is NOT invoked by Phase 1A pipeline. Cache directory `data_prefetch/finnhub/social_sentiment/` is empty.
+**Reconsider triggers:** (a) post-Phase-1A Sharpe < 0.7 OOS gate AND post-mortem identifies cross-platform retail sentiment as the gap; (b) Phase 1B News Analyst starves for retail features specifically; (c) Finnhub adds compelling new endpoints at the same tier.
+**Forward-link:** DEC-605 (this exclusion); DEC-599 (StockTwits + Apewisdom + Polygon news cover retail layer); CHECKLIST #13/#22/#23/#29 (paid API approval gate). The script flips ON instantly the day Finnhub Premium is added.

@@ -370,8 +370,8 @@ API_USE_CASES = {
     },
     "finnhub.social_sentiment": {
         "use_case": "Per-ticker daily Reddit + Twitter mention counts + bullish/bearish weighted score. Cross-platform retail-attention signal (complements Apewisdom Reddit-only + StockTwits Twitter-of-finance). Use cases: (1) Phase 1B News Analyst gets cross-platform mention z-score per candidate; (2) Risk Debaters get high-mention-spike anomaly flag; (3) Trader gets sentiment trend reversal signal; (4) Phase 1C contrarian strategies fade retail euphoria when score AND mentions both extreme.",
-        "stage": "Phase 1B+ overlay - PREMIUM-LOCKED at free tier 2026-05-08. Script BUILT (`prefetch_finnhub_social_sentiment.py`) ready to activate when Finnhub Premium added (~$10/mo).",
-        "criticality": "P2 (premium-gated; Apewisdom + StockTwits + Polygon news cover retail layer at free tier)",
+        "stage": "EXCLUDED from Phase 1A per DEC-605 (owner 2026-05-09). PREMIUM-LOCKED at our Finnhub free tier; cost-benefit analysis says skip ($360/yr marginal vs Apewisdom+StockTwits+Polygon news coverage at free tier). Phase 1B+ eligible IF Finnhub Premium subscribed. Script BUILT (prefetch_finnhub_social_sentiment.py); zero runtime references in Phase 1A pipeline (verified 2026-05-09 grep). See CAV-074.",
+        "criticality": "P3 (Phase 1A EXCLUDED; Phase 1B+ deferred-pending-tier)",
     },
     "alphavantage": {
         "use_case": "Cross-source confirm of free-tier technical indicators + listing status (premium endpoints inaccessible)",

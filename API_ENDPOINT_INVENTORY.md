@@ -247,7 +247,7 @@
 | `/stock/financials-reported` | ✅ | accessNumber, cik, endDate, filedDate, form, quarter, report, startDate, year, symbol | YES (in flight; 16 records/AAPL smoke) | in flight |
 | `/stock/metric` | ✅ | metric, metricType, series (annual/quarterly TTM ratios) | YES (in flight) | in flight |
 | `/stock/price-target` | 🔴 403 | premium-locked | — | skip on free tier |
-| `/stock/social-sentiment` | 🔴 403 | premium-locked | — | skip |
+| `/stock/social-sentiment` | 🔴 403 | premium-locked; **EXCLUDED from Phase 1A per DEC-605 (2026-05-09)**; Phase 1B+ eligible if Premium subscribed; CAV-074 logged | — | EXCLUDED Phase 1A; deferred Phase 1B+ |
 | `/stock/upgrade-downgrade` | 🔴 403 | premium-locked | — | skip |
 | `/stock/eps-estimate` | 🔴 403 | premium-locked | — | skip; use Polygon Benzinga (DONE) |
 | `/stock/revenue-estimate` | 🔴 403 | premium-locked | — | skip |

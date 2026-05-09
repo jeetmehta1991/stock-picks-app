@@ -31799,3 +31799,13 @@ DEC-503 (test pyramid 9 → 13 amended this commit), CHECKLIST #67/#69/#74/#75/#
 
 **Day 9 v8h+1 — 5 of 8 T0 blockers RESOLVED or PATCHED. INV-046 the only remaining Phase 1A May 15 launch dependency at HIGH severity. AAII richer parquet integrated. 13-layer pyramid live. Stage 2 + Sprint 0A dashboards rebuilt. CHECKLIST #78 (per-addressal pyramid) + #79 (all-docs sweep) codified.**
 
+### v8h+1 follow-on 2026-05-09: Phase 1A scope clarification - Finnhub social_sentiment EXCLUDED
+
+Owner directive 2026-05-09: "Exclude finnhub social sentiment data from phase 1A run. Note in all documents."
+
+DEC-605 RESOLVED-DECIDED. CAV-074 logged. Phase 1A baseline does NOT consume Finnhub social_sentiment data. Source is PREMIUM-LOCKED at free tier; cost-benefit analysis (this turn, owner-confirmed) recommends NOT subscribing because ~90% of the cross-platform retail-attention signal is already covered free by Apewisdom (Reddit 8 subs) + StockTwits (Twitter-of-finance, 1937 cached) + Polygon news insights_json (per-ticker sentiment, 1937 cached, deep history). $360/yr Premium budget better allocated to Phase 1B Haiku run.
+
+Runtime guard verified: zero engine/agent/signal code references `finnhub.social_sentiment`. Script `prefetch_finnhub_social_sentiment.py` is BUILT but NOT invoked by Phase 1A pipeline. Activates instantly the day Premium is subscribed (Phase 1B+ scope).
+
+Documents updated: AUDIT_INDEX (DEC-605), LIMITATIONS_CAVEATS_ASSUMPTIONS (CAV-074), PHASE_1A_PRELAUNCH_TODO, ENGINEERING_REGISTER, AUDIT_BACKLOG, API_ENDPOINT_INVENTORY, PREFETCH_COVERAGE_AUDIT, AUDIT.md (this entry), Sprint 0A dashboard metadata.
+

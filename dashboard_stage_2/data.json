@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-09T20:53:14.609230+00:00",
+  "generated_at": "2026-05-09T22:27:30.537522+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -17376,6 +17376,40 @@
       "description": ""
     },
     {
+      "id": "DECISION-605",
+      "title": "Finnhub social_sentiment EXCLUDED from Phase 1A baseline; deferred to Phase 1B+ pending tier upgrade. Pass 53 v8h+1 owner-approved 2026-05-09 RESOLVED-DECIDED. ",
+      "status": "RESOLVED-DECIDED",
+      "theme": "Phase 1A / data scope / Pass 53 v8h+1",
+      "pass_intro": "Pass 53",
+      "pass_resolved": "53",
+      "status_grep": {
+        "coded": true,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 3,
+        "pyramid": {
+          "unit": false,
+          "smoke": false,
+          "integration": false,
+          "system": false,
+          "functional": false,
+          "regression": false,
+          "data_integrity": false,
+          "performance": false,
+          "acceptance": false,
+          "property": false,
+          "snapshot": false,
+          "contract": false,
+          "compatibility": false
+        }
+      },
+      "short_id": "DEC-605",
+      "sprint": "Sprint 7 effort revised",
+      "dependencies": "-",
+      "description": ""
+    },
+    {
       "id": "DECISION-597",
       "title": "Test pyramid amended from 9 layers (DEC-503) to 13 layers. Pass 53 v8h+1 owner-approved 2026-05-08 RESOLVED-DECIDED. AMENDMENT: DEC-503 specified 9 layers (unit",
       "status": "RESOLVED-DECIDED",
@@ -17455,7 +17489,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 0,
+        "n_doc_refs": 1,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -26160,6 +26194,36 @@
       },
       "dependencies": "-",
       "description": "Any phase, sub-phase, or DEC archived during a methodology refactor becomes invisible to within-current-doc audit. Absorbed content lives only in `*_ARCHIVE.md` files; current docs may reference DEC-X"
+    },
+    {
+      "id": "CAV-074",
+      "title": "\u2014 Phase 1A excludes Finnhub social_sentiment (premium-locked; deferred to Phase 1B+)",
+      "status": "ACTIVE",
+      "impact": "Phase 1A signal universe excludes one cross-platform retail-attention channel. Marginal \u2014 the three free-tier sources (Apewisdom Reddit, StockTwits Twitter-of-finance, Polygon news per-ticker sentimen",
+      "status_grep": {
+        "coded": true,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 5,
+        "pyramid": {
+          "unit": false,
+          "smoke": false,
+          "integration": false,
+          "system": false,
+          "functional": false,
+          "regression": false,
+          "data_integrity": false,
+          "performance": false,
+          "acceptance": false,
+          "property": false,
+          "snapshot": false,
+          "contract": false,
+          "compatibility": false
+        }
+      },
+      "dependencies": "-",
+      "description": "Phase 1A signal universe excludes one cross-platform retail-attention channel. Marginal \u2014 the three free-tier sources (Apewisdom Reddit, StockTwits Twitter-of-finance, Polygon news per-ticker sentimen"
     }
   ],
   "learnings": [
@@ -26814,236 +26878,228 @@
   ],
   "recent_commits": [
     {
+      "sha": "5bb5b70f",
+      "subject": "Pass 53 v8h+1: AAII Asset Allocation Survey + Finnhub social_sentiment use case in dashboard",
+      "author": "jeetmehta1991",
+      "rel_time": "87 minutes ago"
+    },
+    {
       "sha": "06d85a9a",
       "subject": "Pass 53 v8h+1: INV-027 backfill data sweep - 1924 polygon news files with insights_json",
       "author": "jeetmehta1991",
-      "rel_time": "5 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "324362ec",
       "subject": "Pass 53 auto-drift-sweep 2026-05-09 09:53: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "387fac95",
       "subject": "Pass 53 v8h+1: 8 new DECs (597-604) + register sweeps + per-turn discipline fix",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "76436fa7",
       "subject": "Pass 53 auto-drift-sweep 2026-05-09 07:53: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "5814a4cc",
       "subject": "Pass 53 auto-drift-sweep 2026-05-09 05:53: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
+      "rel_time": "7 hours ago"
     },
     {
       "sha": "9673eccc",
       "subject": "Pass 53 v8h+1: StockTwits BG complete - 1937 underlyings cached + canonical lock + contract test",
       "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
+      "rel_time": "8 hours ago"
     },
     {
       "sha": "ad5f0f78",
       "subject": "StockTwits final (1923 fetched)",
       "author": "jeetmehta1991",
-      "rel_time": "11 hours ago"
+      "rel_time": "13 hours ago"
     },
     {
       "sha": "658f40ad",
       "subject": "StockTwits batch 38",
       "author": "jeetmehta1991",
-      "rel_time": "12 hours ago"
+      "rel_time": "13 hours ago"
     },
     {
       "sha": "dcc49c62",
       "subject": "StockTwits batch 37",
       "author": "jeetmehta1991",
-      "rel_time": "12 hours ago"
+      "rel_time": "13 hours ago"
     },
     {
       "sha": "1a594038",
       "subject": "StockTwits batch 36",
       "author": "jeetmehta1991",
-      "rel_time": "12 hours ago"
+      "rel_time": "14 hours ago"
     },
     {
       "sha": "65a03894",
       "subject": "StockTwits batch 35",
       "author": "jeetmehta1991",
-      "rel_time": "12 hours ago"
+      "rel_time": "14 hours ago"
     },
     {
       "sha": "fd5a7cd9",
       "subject": "StockTwits batch 34",
       "author": "jeetmehta1991",
-      "rel_time": "13 hours ago"
+      "rel_time": "14 hours ago"
     },
     {
       "sha": "a5bf31b2",
       "subject": "StockTwits batch 33",
       "author": "jeetmehta1991",
-      "rel_time": "13 hours ago"
+      "rel_time": "15 hours ago"
     },
     {
       "sha": "ca936547",
       "subject": "StockTwits batch 32",
       "author": "jeetmehta1991",
-      "rel_time": "13 hours ago"
+      "rel_time": "15 hours ago"
     },
     {
       "sha": "da89952c",
       "subject": "StockTwits batch 31",
       "author": "jeetmehta1991",
-      "rel_time": "13 hours ago"
+      "rel_time": "15 hours ago"
     },
     {
       "sha": "f8bdd491",
       "subject": "StockTwits batch 30",
       "author": "jeetmehta1991",
-      "rel_time": "14 hours ago"
+      "rel_time": "15 hours ago"
     },
     {
       "sha": "1311d82a",
       "subject": "StockTwits batch 29",
       "author": "jeetmehta1991",
-      "rel_time": "14 hours ago"
+      "rel_time": "16 hours ago"
     },
     {
       "sha": "bc0373e7",
       "subject": "Pass 53 v8h+1: pyramid 4-state cells (YES/no/N/A/LATER) + git body grep + BUG-007 annotation",
       "author": "jeetmehta1991",
-      "rel_time": "14 hours ago"
+      "rel_time": "16 hours ago"
     },
     {
       "sha": "ccd6dbbf",
       "subject": "StockTwits batch 28",
       "author": "jeetmehta1991",
-      "rel_time": "14 hours ago"
+      "rel_time": "16 hours ago"
     },
     {
       "sha": "220c21e3",
       "subject": "StockTwits batch 27",
       "author": "jeetmehta1991",
-      "rel_time": "15 hours ago"
+      "rel_time": "16 hours ago"
     },
     {
       "sha": "5d86e1c0",
       "subject": "Pass 53 v8h+1: Description column added to Decisions / Bugs / INVs / Caveats tables",
       "author": "jeetmehta1991",
-      "rel_time": "15 hours ago"
+      "rel_time": "16 hours ago"
     },
     {
       "sha": "b66c12b6",
       "subject": "StockTwits batch 26",
       "author": "jeetmehta1991",
-      "rel_time": "15 hours ago"
+      "rel_time": "16 hours ago"
     },
     {
       "sha": "01752658",
       "subject": "Pass 53 v8h+1: Reference page - add 13-layer test pyramid + dashboard column meanings",
       "author": "jeetmehta1991",
-      "rel_time": "15 hours ago"
+      "rel_time": "17 hours ago"
     },
     {
       "sha": "586d7e0e",
       "subject": "StockTwits batch 25",
       "author": "jeetmehta1991",
-      "rel_time": "15 hours ago"
+      "rel_time": "17 hours ago"
     },
     {
       "sha": "b51b14b0",
       "subject": "StockTwits batch 24",
       "author": "jeetmehta1991",
-      "rel_time": "15 hours ago"
+      "rel_time": "17 hours ago"
     },
     {
       "sha": "7ecf6254",
       "subject": "StockTwits batch 23",
       "author": "jeetmehta1991",
-      "rel_time": "16 hours ago"
+      "rel_time": "17 hours ago"
     },
     {
       "sha": "6332c06b",
       "subject": "Pass 53 v8h+1: INV-016 RESOLVED - Finnhub news Master Universe expansion complete",
       "author": "jeetmehta1991",
-      "rel_time": "16 hours ago"
+      "rel_time": "17 hours ago"
     },
     {
       "sha": "9b8071dd",
       "subject": "Finnhub news batch 0: complete (1937 tickers)",
       "author": "jeetmehta1991",
-      "rel_time": "16 hours ago"
+      "rel_time": "17 hours ago"
     },
     {
       "sha": "8fce7bf8",
       "subject": "Finnhub news pre-fetch: batch 36",
       "author": "jeetmehta1991",
-      "rel_time": "16 hours ago"
-    },
-    {
-      "sha": "f25d3dd2",
-      "subject": "Finnhub news pre-fetch: batch 35",
-      "author": "jeetmehta1991",
-      "rel_time": "16 hours ago"
+      "rel_time": "17 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 14,
+    "count": 11,
     "modified": 9,
     "added": 0,
-    "untracked": 5,
+    "untracked": 2,
     "deleted": 0,
     "files": [
       {
         "status": "M",
-        "path": "backtest/tests/test_contract.py"
+        "path": "API_ENDPOINT_INVENTORY.md"
       },
       {
         "status": "M",
-        "path": "backtest/tests/test_schema_canonical.py"
+        "path": "AUDIT.md"
       },
       {
         "status": "M",
-        "path": "dashboard_sprint0a/data.js"
+        "path": "AUDIT_BACKLOG.md"
       },
       {
         "status": "M",
-        "path": "dashboard_sprint0a/data.json"
+        "path": "AUDIT_INDEX.md"
       },
       {
         "status": "M",
-        "path": "dashboard_sprint0a/last_run.txt"
+        "path": "ENGINEERING_REGISTER.md"
       },
       {
         "status": "M",
-        "path": "dashboard_stage_2/data.js"
+        "path": "LIMITATIONS_CAVEATS_ASSUMPTIONS.md"
       },
       {
         "status": "M",
-        "path": "dashboard_stage_2/data.json"
+        "path": "PHASE_1A_PRELAUNCH_TODO.md"
       },
       {
         "status": "M",
-        "path": "dashboard_stage_2/last_run.txt"
+        "path": "PREFETCH_COVERAGE_AUDIT.md"
       },
       {
         "status": "M",
         "path": "scripts/build_dashboard_sprint0a.py"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/aaii/asset.xls"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/aaii/asset_allocation_survey.parquet"
       },
       {
         "status": "??",
@@ -27052,10 +27108,6 @@
       {
         "status": "??",
         "path": "data_prefetch/polygon/_checkpoint_news_pre_inv027_backup.json"
-      },
-      {
-        "status": "??",
-        "path": "scripts/parse_aaii_asset_allocation.py"
       }
     ]
   },
@@ -27849,7 +27901,7 @@
     }
   ],
   "decision_status_counts": {
-    "RESOLVED-DECIDED": 326,
+    "RESOLVED-DECIDED": 327,
     "PARTIAL": 5,
     "SUPERSEDED_BY_DEC-422": 6,
     "SUPERSEDED": 10,
