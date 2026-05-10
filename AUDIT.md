@@ -32012,6 +32012,29 @@ Documents updated this sub-turn:
   - AUDIT.md (this sub-entry)
   - Both dashboards rebuilt
 
+---
+
+## Pass 53 Day 9 v8h+1 follow-on 2026-05-10 (cont): H4 Polygon reference extended (DONE-WITH-DELISTING-CAP)
+
+H4 prefetch BG re-attempted 2026-05-10: existing cache had 1687/1937; ran skip-existing top-up against the 251 missing tickers. **Result: 0/251 succeeded, 251/251 returned Polygon 404.**
+
+Empirical probe verified: ANSS (Synopsys merger Mar 2025) -> 404 NOT_FOUND. ABMD (Abiomed -> JNJ 2022) -> 404 NOT_FOUND. AGN (Allergan -> AbbVie 2020) -> 404 NOT_FOUND. The 251-ticker gap is the SAME structural delisting cap as CAV-075 documents for SEC EDGAR (246 tickers). All 251 are delisted/acquired/M&A casualties whose Polygon entries have been removed.
+
+**No code action possible.** This is data-source-availability ceiling, not fetch-side bug. CAV-075 already documents this pattern at the project level; no need for a separate CAV. Any reference data needed for these 251 tickers must come from successor symbols where applicable (e.g. ANSS -> SNPS, AGN -> ABBV) which ARE cached successfully.
+
+**H4 status: PENDING -> DONE-WITH-DELISTING-CAP** (1687/1937 = 87.1% coverage; remaining 251 immutable at source).
+
+**Per-addressal pyramid (CHECKLIST #78):** pure-doc verification, all layers N/A. The 0-success retry attempt itself was the empirical verification.
+
+**Same-commit (DEC-594):** PHASE_1A_PRELAUNCH_TODO H4 status flip + AUDIT.md narrative + dashboards rebuilt.
+
+Sprint 0A H-tier remaining real-TODO: **H18 (CFTC 5 missing datasets) only.** Plus 0A.7 per-API smoke/demo split.
+
+Documents updated this sub-turn:
+  - PHASE_1A_PRELAUNCH_TODO.md (H4 status flip)
+  - AUDIT.md (this sub-entry)
+  - Both dashboards rebuilt
+
 **Same-commit (DEC-594):** script + DEC-609 + AUDIT.md narrative + contract test + dashboards rebuilt - all in this sub-turn commit.
 
 Documents updated this sub-turn:

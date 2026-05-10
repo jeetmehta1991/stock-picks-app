@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-10T17:52:43.732720+00:00",
+  "generated_at": "2026-05-10T18:04:45.975920+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -21013,7 +21013,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 430,
+        "n_doc_refs": 431,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -28698,7 +28698,7 @@
         "coded": false,
         "wired": false,
         "tested": false,
-        "pushed": false,
+        "pushed": true,
         "n_doc_refs": 5,
         "pyramid": {
           "unit": false,
@@ -30807,7 +30807,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 4,
+        "n_doc_refs": 7,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -31600,40 +31600,46 @@
   ],
   "recent_commits": [
     {
+      "sha": "fc5c43f4",
+      "subject": "Pass 53 v8h+1: H16 + H22 verify (DONE / PARTIAL-DONE-WITH-FINDING + INV-048)",
+      "author": "jeetmehta1991",
+      "rel_time": "5 minutes ago"
+    },
+    {
       "sha": "fe623f3e",
       "subject": "Pass 53 v8h+1: H6 indicator completeness verify + macd top-up (1911 -> 1937)",
       "author": "jeetmehta1991",
-      "rel_time": "3 minutes ago"
+      "rel_time": "15 minutes ago"
     },
     {
       "sha": "b76fc3d1",
       "subject": "Pass 53 v8h+1: H1.b OHLCV Master Dedup data commit (1924 parquets, 105.6 MB) + CAV-079",
       "author": "jeetmehta1991",
-      "rel_time": "14 minutes ago"
+      "rel_time": "26 minutes ago"
     },
     {
       "sha": "1e020b2a",
       "subject": "Pass 53 v8h+1: promotion-path column wired into Stage 2 dashboard (CHECKLIST #81/#82)",
       "author": "jeetmehta1991",
-      "rel_time": "23 minutes ago"
+      "rel_time": "35 minutes ago"
     },
     {
       "sha": "f7b3e987",
       "subject": "Pass 53 v8h+1: untracked artifacts cleanup (gitignore + INV-027 backup archived)",
       "author": "jeetmehta1991",
-      "rel_time": "39 minutes ago"
+      "rel_time": "51 minutes ago"
     },
     {
       "sha": "4bf07436",
       "subject": "Pass 53 v8h+1: H1.a OHLCV Master Dedup prefetch script + DEC-609 (Option B)",
       "author": "jeetmehta1991",
-      "rel_time": "40 minutes ago"
+      "rel_time": "52 minutes ago"
     },
     {
       "sha": "aee93c01",
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 16:43: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "62 minutes ago"
+      "rel_time": "74 minutes ago"
     },
     {
       "sha": "d57a07ee",
@@ -31651,7 +31657,7 @@
       "sha": "f0d03fcd",
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 15:26: dashboard_sprint0a rebuild artifacts (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "041229b1",
@@ -31735,7 +31741,7 @@
       "sha": "826d5454",
       "subject": "Pass 53 v8h+1: DEC-605 - Finnhub social_sentiment EXCLUDED from Phase 1A baseline",
       "author": "jeetmehta1991",
-      "rel_time": "19 hours ago"
+      "rel_time": "20 hours ago"
     },
     {
       "sha": "5bb5b70f",
@@ -31772,17 +31778,11 @@
       "subject": "Pass 53 auto-drift-sweep 2026-05-09 05:53: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
       "rel_time": "27 hours ago"
-    },
-    {
-      "sha": "9673eccc",
-      "subject": "Pass 53 v8h+1: StockTwits BG complete - 1937 underlyings cached + canonical lock + contract test",
-      "author": "jeetmehta1991",
-      "rel_time": "27 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 3,
-    "modified": 3,
+    "count": 2,
+    "modified": 2,
     "added": 0,
     "untracked": 0,
     "deleted": 0,
@@ -31790,10 +31790,6 @@
       {
         "status": "M",
         "path": "AUDIT.md"
-      },
-      {
-        "status": "M",
-        "path": "OPEN_INVESTIGATIONS.md"
       },
       {
         "status": "M",
