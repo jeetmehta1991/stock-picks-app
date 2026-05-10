@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-10T23:13:41.805310+00:00",
+  "generated_at": "2026-05-10T23:21:37.643778+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -2453,7 +2453,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 585,
+        "n_doc_refs": 586,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -21053,7 +21053,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 449,
+        "n_doc_refs": 450,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -21753,7 +21753,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 151,
+        "n_doc_refs": 152,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -22361,7 +22361,7 @@
         "wired": false,
         "tested": false,
         "pushed": false,
-        "n_doc_refs": 6,
+        "n_doc_refs": 7,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -22665,7 +22665,7 @@
         "wired": false,
         "tested": false,
         "pushed": false,
-        "n_doc_refs": 5,
+        "n_doc_refs": 6,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -22702,8 +22702,8 @@
         "coded": true,
         "wired": true,
         "tested": true,
-        "pushed": false,
-        "n_doc_refs": 28,
+        "pushed": true,
+        "n_doc_refs": 34,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -22735,15 +22735,15 @@
       "id": "BUG-80",
       "title": "HIGH  -  Exit slippage never applied; only entry slippage charged. Round-trip slip",
       "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
+      "sprint_context": "RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 15 2026-05-10 (apply_exit_slippage helper added to improvements.py:391+; wired into process_day_exits at CB exit_at_open and trailing_stop exit sites; longs fill below trigger / shorts buy-back above trigger; round-trip slippage now symmetric with entry; 2 new tests + e2e smoke 128/128 PASS)",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
         "pushed": false,
-        "n_doc_refs": 10,
+        "n_doc_refs": 11,
         "pyramid": {
-          "unit": false,
+          "unit": true,
           "smoke": false,
           "integration": false,
           "system": false,
@@ -22759,14 +22759,14 @@
         }
       },
       "short_id": "BUG-080",
-      "sprint": "(see linked DEC sprint)",
+      "sprint": "RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 15 2026-05-10 (apply_exit_slippage helper added to improvements.py:391+; wired into process_day_exits at CB exit_at_open and trailing_stop exit sites; longs fill below trigger / shorts buy-back above trigger; round-trip slippage now symmetric with entry; 2 new tests + e2e smoke 128/128 PASS)",
       "dependencies": "DEC-458",
       "description": "**Files:** `backtest/engine/backtest.py` line 352 (only entry call) and `backtest/engine/exit_manager.py` (no slippage in close_trade)",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Resolved with code + regression test"
       }
     },
     {
@@ -22779,7 +22779,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 12,
+        "n_doc_refs": 13,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -23083,7 +23083,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 66,
+        "n_doc_refs": 67,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -23349,7 +23349,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 16,
+        "n_doc_refs": 17,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -28716,94 +28716,100 @@
   ],
   "recent_commits": [
     {
+      "sha": "b852347d",
+      "subject": "Pass 53 v8h+1: BUG-78 CRITICAL trailing stop lookahead bias FIXED",
+      "author": "jeetmehta1991",
+      "rel_time": "7 minutes ago"
+    },
+    {
       "sha": "5b710e0b",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 13 - 39 BUG mega-sweep (pre-Pass-53 audit findings); OPEN: 46 -> 7",
       "author": "jeetmehta1991",
-      "rel_time": "14 minutes ago"
+      "rel_time": "22 minutes ago"
     },
     {
       "sha": "9e52a585",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 12 - 21 BUGs DEFERRED/SUPERSEDED (Stage 3/Phase 1B sweep)",
       "author": "jeetmehta1991",
-      "rel_time": "18 minutes ago"
+      "rel_time": "26 minutes ago"
     },
     {
       "sha": "d2c22ebf",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 11 - 12 BUGs (62/66/67/69/70/71/74/75/79/81/86/87) SUPERSEDED/DEFERRED",
       "author": "jeetmehta1991",
-      "rel_time": "20 minutes ago"
+      "rel_time": "28 minutes ago"
     },
     {
       "sha": "3f4b7b2e",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 10 - 6 BUGs (51/54/55/56/57/60) SUPERSEDED/DEFERRED",
       "author": "jeetmehta1991",
-      "rel_time": "22 minutes ago"
+      "rel_time": "30 minutes ago"
     },
     {
       "sha": "a1ba19bb",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 9 - 6 SUPERSEDED (BUG-35/36/38/39/41/53)",
       "author": "jeetmehta1991",
-      "rel_time": "24 minutes ago"
+      "rel_time": "32 minutes ago"
     },
     {
       "sha": "fd86b03f",
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 22:45: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "27 minutes ago"
+      "rel_time": "35 minutes ago"
     },
     {
       "sha": "08117f87",
       "subject": "Pass 53 v8h+1: BUG-29 RESOLVED-IMPLEMENTED - end-of-backtest open-trade finalization",
       "author": "jeetmehta1991",
-      "rel_time": "29 minutes ago"
+      "rel_time": "37 minutes ago"
     },
     {
       "sha": "0daa206c",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 7 - 6 BUGs (43/44/45/48/58/59) SUPERSEDED/DEFERRED/OBSOLETE",
       "author": "jeetmehta1991",
-      "rel_time": "54 minutes ago"
+      "rel_time": "61 minutes ago"
     },
     {
       "sha": "2de4536b",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 6 - 5 BUGs (42/47/49/50/52) SUPERSEDED/DEFERRED cross-references",
       "author": "jeetmehta1991",
-      "rel_time": "55 minutes ago"
+      "rel_time": "63 minutes ago"
     },
     {
       "sha": "f16ef86d",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 5 - BUG-37 IMPLEMENTED (haircut doc) + BUG-34/40 SUPERSEDED-BY-design",
       "author": "jeetmehta1991",
-      "rel_time": "57 minutes ago"
+      "rel_time": "65 minutes ago"
     },
     {
       "sha": "a4258bc1",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 4 - BUG-21 IMPLEMENTED + BUG-24/31/32/33 SUPERSEDED-BY-policy-decisions",
       "author": "jeetmehta1991",
-      "rel_time": "59 minutes ago"
+      "rel_time": "67 minutes ago"
     },
     {
       "sha": "1f87aa53",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 3 - BUG-17/25 OBSOLETE + BUG-18/28/30 IMPLEMENTED (Wilder RSI fix)",
       "author": "jeetmehta1991",
-      "rel_time": "63 minutes ago"
+      "rel_time": "71 minutes ago"
     },
     {
       "sha": "694a11fa",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 2 - BUG-01/06/10/12 IMPLEMENTED + BUG-14 OBSOLETE",
       "author": "jeetmehta1991",
-      "rel_time": "66 minutes ago"
+      "rel_time": "74 minutes ago"
     },
     {
       "sha": "3bb2f559",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 1 - BUG-08/09/15/27 RESOLVED-IMPLEMENTED with real fixes",
       "author": "jeetmehta1991",
-      "rel_time": "73 minutes ago"
+      "rel_time": "80 minutes ago"
     },
     {
       "sha": "fc9390b7",
       "subject": "Pass 53 v8h+1: Phase 2 BUG cross-references + id-form normalization (6 BUGs READY -> IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "80 minutes ago"
+      "rel_time": "88 minutes ago"
     },
     {
       "sha": "97c69b3d",
@@ -28839,19 +28845,19 @@
       "sha": "10fa8617",
       "subject": "Pass 53 v8h+1: INV-041 RESOLVED - path-restricted commits in 4 prefetch scripts + 5-test regression gate",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "bcb6ea3f",
       "subject": "Pass 53 v8h+1: parse_inv_entries parser fix - recognize all RESOLVED-* / DEFERRED-* status variants",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "26340a6b",
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 20:43: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "bffd8658",
@@ -28888,17 +28894,11 @@
       "subject": "Pass 53 v8h+1: Tier B engine-correctness promotion sweep #1 (6 DECs RESOLVED-DECIDED -> RESOLVED-IMPLEMENTED)",
       "author": "jeetmehta1991",
       "rel_time": "4 hours ago"
-    },
-    {
-      "sha": "77f57b21",
-      "subject": "Pass 53 auto-drift-sweep 2026-05-10 18:43: dashboards refreshed (no numerical drift)",
-      "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 6,
-    "modified": 6,
+    "count": 7,
+    "modified": 7,
     "added": 0,
     "untracked": 0,
     "deleted": 0,
@@ -28910,6 +28910,10 @@
       {
         "status": "M",
         "path": "backtest/engine/exit_manager.py"
+      },
+      {
+        "status": "M",
+        "path": "backtest/engine/improvements.py"
       },
       {
         "status": "M",
@@ -29107,7 +29111,7 @@
     }
   ],
   "test_inventory": {
-    "total": 768,
+    "total": 770,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -29183,7 +29187,7 @@
       "test_stocktwits_smoke": 4,
       "test_supplementary_demo": 4,
       "test_supplementary_smoke": 6,
-      "test_unit": 112,
+      "test_unit": 114,
       "test_walk_forward_4fold": 6
     }
   },

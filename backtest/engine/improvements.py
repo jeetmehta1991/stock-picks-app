@@ -386,6 +386,45 @@ def apply_slippage(
     return round(adjusted, 4), round(total_slippage * 100, 4)
 
 
+def apply_exit_slippage(
+    exit_price: float,
+    direction: str,
+    ticker: str,
+) -> tuple[float, float]:
+    """Apply realistic slippage to exit price (mirror of apply_slippage at entry).
+
+    BUG-80 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 15 2026-05-10:
+    Previously only entry slippage was charged - exit price used raw stop/target
+    trigger level. Real-world exits incur slippage in the OPPOSITE direction
+    from entry (long sell hits below trigger; short buy-back fills above trigger).
+    Round-trip slippage was understated; this helper adds the missing exit piece.
+
+    Direction conventions:
+      - long EXIT  = sell side -> fill BELOW the trigger -> exit_price * (1 - slippage)
+      - short EXIT = buy-back  -> fill ABOVE the trigger -> exit_price * (1 + slippage)
+
+    Spread classification uses ticker only (no ATR available at exit time without
+    storing it on OpenTrade). For ETFs use tight spread; everything else gets the
+    large-cap default 0.08%. High-volatility +ATR penalty path is approximated by
+    the entry-time slippage already taken; exit-time charges the base spread only.
+
+    Returns (adjusted_exit_price, slippage_pct).
+    """
+    if ticker in ETF_TICKERS:
+        spread_pct = 0.0003
+    else:
+        spread_pct = 0.0008
+
+    if direction == "long":
+        # Sell side - we receive a worse price than the trigger
+        adjusted = exit_price * (1 - spread_pct)
+    else:
+        # Short buy-back - we pay a worse price than the trigger
+        adjusted = exit_price * (1 + spread_pct)
+
+    return round(adjusted, 4), round(spread_pct * 100, 4)
+
+
 # -----------------------------------------------------------------------------
 # 5. REGIME CONFIDENCE SCORE
 # -----------------------------------------------------------------------------

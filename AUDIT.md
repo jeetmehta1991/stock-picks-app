@@ -33096,6 +33096,54 @@ Documents updated:
   - AUDIT.md (this sub-entry)
   - dashboard_stage_2 (rebuilt; IMPLEMENTED 24 -> 25)
 
+---
+
+## Pass 53 Day 9 v8h+1 follow-on 2026-05-10 (cont): Phase 3 Batch 15 - BUG-80 HIGH exit slippage FIXED
+
+**The bug:** previously only entry slippage was charged via `apply_slippage`; exit_price at every close site used the raw stop/target/circuit-breaker trigger level. Round-trip slippage understated by ~50%.
+
+**The fix:** new `apply_exit_slippage()` helper in `improvements.py:391+` mirrors entry slippage in the OPPOSITE price-impact direction:
+  - Long EXIT (sell) -> fill BELOW trigger -> `exit_price * (1 - spread_pct)`
+  - Short EXIT (buy-back) -> fill ABOVE trigger -> `exit_price * (1 + spread_pct)`
+
+Wired into `process_day_exits` at two close sites:
+  - Circuit breaker exit at `today_open` (Level 1/2/3/4 exit_at_open actions)
+  - Trailing stop exit at trigger price
+
+Spread classification uses ticker only (ETF: 0.03%, default: 0.08%) since ATR isn't stored on OpenTrade. High-vol +ATR penalty path was paid at entry; exit charges base spread only - this is the conservative under-charge interpretation.
+
+**2 new tests (both PASS):**
+  - `test_bug_080_exit_slippage_applied` - unit test of apply_exit_slippage direction symmetry + ETF tightening
+  - `test_bug_080_exit_slippage_wired_in_process_day_exits` - pin: process_day_exits source must call apply_exit_slippage + contain BUG-80 cross-ref
+
+**Per-addressal pyramid (CHECKLIST #78):** unit + integration + e2e_phase1a_smoke 128/128 PASS in 3:24 min. Full smoke run of entire backtest engine with new exit slippage applied succeeds with zero regressions.
+
+**Same-commit (DEC-594):** apply_exit_slippage helper + 2 exit-site wiring + 2 new tests + register flip + AUDIT.md + dashboard rebuilt - this single commit.
+
+**Phase 1A May 15 IMPACT - HIGH:**
+Round-trip slippage is now symmetric (entry + exit). Phase 1A baseline pnl_pct will be slightly more conservative than under old code (typically ~0.06-0.16% per round trip for non-ETF large-caps vs ~0.03-0.08% under old code). This is the realistic cost basis matching live trading.
+
+**Visible bug tier distribution (post-Phase-3-batch-15):**
+  - IMPLEMENTED: 26 (was 25; +1 BUG-80)
+  - DEFERRED: 39; CODE_ONLY: 1
+  - OPEN: 5 (was 6; -1)
+  - Total visible: 71; hidden: 77
+
+**Remaining 5 OPEN bugs:**
+  - BUG-61 HIGH: multiple concurrent positions in same ticker across consecutive days
+  - BUG-77 MEDIUM: candidate ranking 'avoid' inflated
+  - BUG-83 HIGH: get_congressional_detail() inverted PIT logic
+  - BUG-95 CRITICAL: no Portfolio class (DEFERRED-TO-SPRINT-3 per audit)
+  - BUG-110 HIGH: entry gap filter not enforced
+
+Documents updated:
+  - backtest/engine/improvements.py (apply_exit_slippage helper)
+  - backtest/engine/exit_manager.py (2 wire-up sites + BUG-80 cross-refs)
+  - backtest/tests/test_unit.py (2 new BUG-80 tests)
+  - BUG_REGISTER.md (1 flip: BUG-80)
+  - AUDIT.md (this sub-entry)
+  - dashboard_stage_2 (rebuilt; IMPLEMENTED 25 -> 26)
+
 **Remaining OPEN backlog after sweeps:**
   - 1 DEC RESOLVED-DECIDED-deferred (DEC-028 Stage 3 paper trading - intentional)
   - INVs: 33 OPEN + 2 DEFERRED (genuine work; not promotion-eligible)

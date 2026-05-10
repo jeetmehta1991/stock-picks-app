@@ -485,8 +485,13 @@ def process_day_exits(
 
         if exit_cb:
             trade.circuit_breaker_triggered = exit_cb["level"]
+            # BUG-80 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 15 2026-05-10:
+            # apply exit slippage symmetrically to entry slippage; longs receive
+            # below-trigger fill, shorts pay above-trigger.
+            from backtest.engine.improvements import apply_exit_slippage
+            cb_exit_price, _ = apply_exit_slippage(today_open, trade.direction, trade.ticker)
             closed.append(close_trade(
-                trade, today_open, today_date,
+                trade, cb_exit_price, today_date,
                 f"circuit_breaker_{exit_cb['level']}",
                 0.0, 0.0,  # MAE/MFE now on trade object
                 fail_reason=exit_cb["reason"],
@@ -541,8 +546,12 @@ def process_day_exits(
                                               today_open=today_open)  # DEC-514
 
         if exit_price is not None:
+            # BUG-80 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 15 2026-05-10:
+            # apply exit slippage to trailing-stop trigger price too (sister of CB exit above).
+            from backtest.engine.improvements import apply_exit_slippage
+            ts_exit_price, _ = apply_exit_slippage(exit_price, trade.direction, trade.ticker)
             closed.append(close_trade(
-                trade, exit_price, today_date, "trailing_stop",
+                trade, ts_exit_price, today_date, "trailing_stop",
                 0.0, 0.0,  # MAE/MFE now on trade object
             ))
 

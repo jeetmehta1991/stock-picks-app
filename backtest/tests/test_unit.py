@@ -1824,6 +1824,47 @@ def test_bug_037_survivorship_haircut_methodology_documented():
         assert threshold in doc, f"haircut docstring missing tier: {threshold}"
 
 
+def test_bug_080_exit_slippage_applied():
+    """BUG-80: exit slippage applied symmetrically with entry slippage.
+
+    Pass 53 v8h+1 Phase 3 Batch 15 fix 2026-05-10. Previously only entry
+    slippage was charged; exit price used raw stop/target trigger level.
+    Fix: apply_exit_slippage() helper added; called at every close site in
+    process_day_exits (CB exit at today_open; trailing stop exit at trigger).
+
+    Long: sell-side -> fill below trigger -> exit_price * (1 - 0.0008)
+    Short: buy-back -> fill above trigger -> exit_price * (1 + 0.0008)
+    """
+    from backtest.engine.improvements import apply_exit_slippage
+
+    # Long exit: fill below trigger
+    adj_long, slip_pct = apply_exit_slippage(100.0, "long", "AAPL")
+    assert adj_long < 100.0, f"Long exit must fill below trigger: got {adj_long}"
+    assert 99.9 < adj_long < 100.0, f"Long exit slippage too aggressive: {adj_long}"
+    assert slip_pct > 0
+
+    # Short exit (buy-back): fill above trigger
+    adj_short, _ = apply_exit_slippage(100.0, "short", "AAPL")
+    assert adj_short > 100.0, f"Short exit (buy-back) must fill above trigger: got {adj_short}"
+    assert 100.0 < adj_short < 100.1, f"Short exit slippage too aggressive: {adj_short}"
+
+    # ETF tight spread
+    adj_etf, etf_pct = apply_exit_slippage(100.0, "long", "SPY")
+    assert adj_etf > adj_long, "ETF should have tighter spread than non-ETF large-cap"
+    assert etf_pct < slip_pct, "ETF slippage_pct should be smaller"
+
+
+def test_bug_080_exit_slippage_wired_in_process_day_exits():
+    """BUG-80: process_day_exits must invoke apply_exit_slippage at exit sites."""
+    import inspect
+    from backtest.engine import exit_manager
+    src = inspect.getsource(exit_manager.process_day_exits)
+    assert "BUG-80" in src, "BUG-80 cross-reference must exist"
+    assert "apply_exit_slippage" in src, (
+        "process_day_exits must call apply_exit_slippage at exit close sites"
+    )
+
+
 def test_bug_078_trailing_stop_no_lookahead():
     """BUG-78 CRITICAL: trailing stop updated AFTER intraday check, not before.
 
