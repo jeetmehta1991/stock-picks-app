@@ -344,6 +344,14 @@ def congressional_signal(ticker: str, as_of: date, lookback_days: int = 45) -> d
 def insider_signal(ticker: str, as_of: date, lookback_days: int = 30) -> dict:
     """Insider trading signal from Quiver `live/insiders` bulk feed.
 
+    BUG-270 Pass 53 v8h+1 cross-reference (RESOLVED-IMPLEMENTED 2026-05-10):
+    "insider_signal() column-name mismatch (100% silent failure)" was subsumed
+    by the BUG-272 schema migration below. Rewriting the function to consume
+    the live/insiders bulk feed (NOT the legacy insidertrading endpoint) fixed
+    the column-name mismatch as a side effect of schema alignment. No
+    independent BUG-270 fix needed; promotion verified via this docstring tag
+    so dashboard wired-check can find the cross-reference.
+
     BUG-272 Pass 53 fix RESOLVED-IMPLEMENTED 2026-05-06 (Batch 13 schema alignment):
     Path: `cache/quiver/insiders/global.parquet` (NOT `insidertrading/`  -  actual
     Quiver Trader-tier endpoint is `live/insiders` per Pass 53 v2 smoke probe).

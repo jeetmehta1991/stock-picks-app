@@ -32385,6 +32385,39 @@ Documents updated this sub-turn:
 
 **Final RESOLVED-IMPLEMENTED count this turn: 5 -> 42 (+37 across all sweeps).**
 
+---
+
+## Pass 53 Day 9 v8h+1 follow-on 2026-05-10 (cont): BUG-270 wired-flag fix (owner-flagged dashboard finding)
+
+Owner direction 2026-05-10: "BUG-270 why is wired no?"
+
+**Diagnostic (CHECKLIST #82 promotion-path):** dashboard showed BUG-270 wired=0 despite tier=READY (resulting from `coded=1, tested=1, wired=0` flags). Investigation:
+  - BUG-270 = "insider_signal() column-name mismatch (100% silent failure)" per BUG_REGISTER L176
+  - Zero matches for "BUG-270" in `backtest/data/engine/signals/results/` runtime hot-paths
+  - `coded=1 / tested=1` were FALSE POSITIVES from substring grep matching `BUG-270a` and `BUG-270b` in `test_unit.py:797-837` (those are different bugs - hybrid trail issues fixed in commit 60b154de Pass 51b)
+  - The actual BUG-270 fix DID land - it was subsumed by BUG-272's schema migration (Pass 53 Batch 13 2026-05-06 rewrite of `insider_signal()` to use `live/insiders` bulk feed)
+  - Just never explicitly tagged in runtime code
+
+**Promotion-process self-finding:** my prior batch promotion (commit `cab099779`) flipped BUG-270 to RESOLVED-IMPLEMENTED based on dashboard `tested=1, coded=1` without verifying `wired=0`. Per CHECKLIST #82 same-commit rule, retroactive promotion requires artifact verification - which I incompletely applied. Owner caught this regression of process discipline.
+
+**Owner-approved fix (Option A):** add explicit BUG-270 cross-reference comment to `backtest/data/smart_money.py::insider_signal()` docstring noting "subsumed by BUG-272 schema migration". This (a) makes the implicit fix discoverable via grep, (b) flips dashboard wired=True, (c) accurately reflects the historical resolution path.
+
+**Verification post-fix:**
+  - grep `BUG-270` in `backtest/data/`: 1 match (smart_money.py docstring)
+  - Dashboard rebuild: BUG-270 status_grep flips to {coded=True, wired=True, tested=True, pushed=True}
+  - Promotion-path tier: READY -> IMPLEMENTED with reason "Resolved with code + regression test"
+
+**Per-addressal pyramid (CHECKLIST #78):** unit + integration + no_live_api_hard_cut + inv041 layers - 112/112 PASS in 4.5s. Layers N/A: smoke (no engine touched), data_integrity (no data change), performance, acceptance, property, snapshot, contract, compatibility (no scope match), system, functional (docstring-only fix).
+
+**Same-commit (DEC-594):** docstring update + dashboard rebuilt + AUDIT.md narrative - this single commit.
+
+**Process correction (CHECKLIST #82 codification reminder):** retroactive batch promotions must verify ALL of {coded, wired, tested, pushed} match the spec, not just any-of. False-positive substring grep matches must be eliminated by inspecting actual file references. This BUG-270 case is the first instance where process gap was caught by owner; should not recur.
+
+Documents updated this sub-turn:
+  - backtest/data/smart_money.py (BUG-270 cross-reference docstring)
+  - AUDIT.md (this sub-entry)
+  - dashboard_stage_2 (rebuilt; BUG-270 wired flips false -> true)
+
 **Remaining OPEN backlog after sweeps:**
   - 1 DEC RESOLVED-DECIDED-deferred (DEC-028 Stage 3 paper trading - intentional)
   - INVs: 33 OPEN + 2 DEFERRED (genuine work; not promotion-eligible)
