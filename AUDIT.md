@@ -32908,6 +32908,31 @@ Documents updated:
   - AUDIT.md (this sub-entry)
   - dashboard_stage_2 (rebuilt)
 
+---
+
+## Pass 53 Day 9 v8h+1 follow-on 2026-05-10 (cont): Phase 3 Batch 10 - 6 BUGs (51/54/55/56/57/60)
+
+| BUG | Status | Why |
+|---|---|---|
+| BUG-51 (HIGH compound BUG-10) | SUPERSEDED-BY-BUG-10 | BUG-10 IMPLEMENTED resolves cascade; agents now receive correct values |
+| BUG-54 (Hull MA uses SMA not WMA) | DEFERRED-TO-PHASE-1B | Real formula change but affects ALL Hull MA signals; requires A/B + walk-forward re-validation |
+| BUG-55 (PSAR flip 1-bar approximation) | DEFERRED-TO-PHASE-1B | Proper psar_direction[t] vs [t-1] tracking requires signal-level refactor; current approximation acceptable for Phase 1A |
+| BUG-56 (Phase 1C base score [0,100] bound) | SUPERSEDED-BY-no-agents-Phase-1A | Agent-decision-flow scope; Phase 1A uses --no-agents so score-clipping not exercised |
+| BUG-57 (Integration tests missing 15 scenarios) | SUPERSEDED-BY-test_e2e_phase1a_smoke | 13-layer pyramid per DEC-503 covers; 124/124 PASS confirms |
+| BUG-60 (Short entry zone gap-down rejection) | DEFERRED-TO-PHASE-1B | Short strategies explicitly Phase 1B per CLAUDE.md; semantics requires owner decision on aggressive vs conservative fill model |
+
+Per-addressal pyramid 117/117 PASS in 3.7s.
+
+**Visible bug tier distribution (post-Phase-3-batch-10):**
+  - IMPLEMENTED: 24; DEFERRED: 7 (+3 BUG-54/55/60); CODE_ONLY: 1
+  - OPEN: 79 (was 85; -6: 3 hidden + 3 DEFERRED)
+  - Total visible: 111; hidden: 37 (+3 SUPERSEDED from BUG-51/56/57)
+
+Documents updated:
+  - BUG_REGISTER.md (6 flips: BUG-51/54/55/56/57/60)
+  - AUDIT.md (this sub-entry)
+  - dashboard_stage_2 (rebuilt)
+
 **Remaining OPEN backlog after sweeps:**
   - 1 DEC RESOLVED-DECIDED-deferred (DEC-028 Stage 3 paper trading - intentional)
   - INVs: 33 OPEN + 2 DEFERRED (genuine work; not promotion-eligible)

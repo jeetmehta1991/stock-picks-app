@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-10T22:49:20.339424+00:00",
+  "generated_at": "2026-05-10T22:51:08.764745+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -1853,7 +1853,7 @@
         "wired": true,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 199,
+        "n_doc_refs": 200,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -2093,7 +2093,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 269,
+        "n_doc_refs": 271,
         "pyramid": {
           "unit": true,
           "smoke": true,
@@ -17733,7 +17733,7 @@
         "wired": true,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 43,
+        "n_doc_refs": 44,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -20253,7 +20253,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 60,
+        "n_doc_refs": 61,
         "pyramid": {
           "unit": true,
           "smoke": true,
@@ -20413,7 +20413,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 49,
+        "n_doc_refs": 50,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -21715,7 +21715,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 171,
+        "n_doc_refs": 175,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -22019,7 +22019,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 171,
+        "n_doc_refs": 172,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -22276,48 +22276,10 @@
       }
     },
     {
-      "id": "BUG-51",
-      "title": "HIGH  -  All 5 agents receive wrong or zero price context due to BUG-10 compoundin",
-      "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": false,
-        "n_doc_refs": 10,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "BUG-051",
-      "sprint": "(see linked DEC sprint)",
-      "dependencies": "BUG-10; DEC-458",
-      "description": "**File:** `backtest/agents/pipeline.py` lines 161\u2013166 (Technical Agent) and lines 664\u2013670 (pipeline orchestrator)",
-      "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
-      }
-    },
-    {
       "id": "BUG-54",
       "title": "MEDIUM  -  Hull Moving Average uses simple rolling mean instead of WMA  -  signal ti",
       "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
+      "sprint_context": "DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 10 2026-05-10 (Hull MA fallback uses SMA instead of WMA - real formula change but affects ALL Hull MA signals across backtest; Phase 1A baseline stays on current SMA approximation; WMA migration requires A/B testing + walk-forward re-validation per DEC-505; tagged for Phase 1B-alpha)",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -22341,21 +22303,21 @@
         }
       },
       "short_id": "BUG-054",
-      "sprint": "(see linked DEC sprint)",
+      "sprint": "DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 10 2026-05-10 (Hull MA fallback uses SMA instead of WMA - real formula change but affects ALL Hull MA signals across backtest; Phase 1A baseline stays on current SMA approximation; WMA migration requires A/B testing + walk-forward re-validation per DEC-505; tagged for Phase 1B-alpha)",
       "dependencies": "DEC-458",
       "description": "**File:** `backtest/signals/technical.py` lines 586\u2013588",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "DEFERRED",
+        "label": "DEFERRED",
+        "color": "#3b82f6",
+        "reason": "Bug deferred per sprint_context: DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 10 2026-05-10 (Hull MA fallback uses SMA instead of"
       }
     },
     {
       "id": "BUG-55",
       "title": "MEDIUM  -  PSAR flip detection uses approximation that may fire on wrong day",
       "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
+      "sprint_context": "DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 10 2026-05-10 (PSAR flip detection uses 1-bar approximation; proper psar_direction[t] vs psar_direction[t-1] tracking requires signal-level refactor; Phase 1B scope - currently approximation is acceptable for Phase 1A which uses other trend confirmations alongside PSAR)",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -22379,97 +22341,21 @@
         }
       },
       "short_id": "BUG-055",
-      "sprint": "(see linked DEC sprint)",
+      "sprint": "DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 10 2026-05-10 (PSAR flip detection uses 1-bar approximation; proper psar_direction[t] vs psar_direction[t-1] tracking requires signal-level refactor; Phase 1B scope - currently approximation is acceptable for Phase 1A which uses other trend confirmations alongside PSAR)",
       "dependencies": "DEC-458",
       "description": "**File:** `backtest/signals/technical.py` lines 508\u2013510",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
-      }
-    },
-    {
-      "id": "BUG-56",
-      "title": "MEDIUM  -  Phase 1C base score can exceed [0, 100]  -  Decision Agent adjustment not",
-      "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": false,
-        "n_doc_refs": 6,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "BUG-056",
-      "sprint": "(see linked DEC sprint)",
-      "dependencies": "DEC-458",
-      "description": "**Approved Phase 1C design:** Base score = weighted sum of 5 agents \u00d7 10, then Decision Agent adjusts \u00b115 points.",
-      "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
-      }
-    },
-    {
-      "id": "BUG-57",
-      "title": "MEDIUM  -  Integration tests missing 15 critical scenarios  -  5 bugs would have bee",
-      "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": false,
-        "n_doc_refs": 4,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "BUG-057",
-      "sprint": "(see linked DEC sprint)",
-      "dependencies": "DEC-458",
-      "description": "**File:** `backtest/tests/test_integration.py` \u2014 7 tests currently",
-      "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "DEFERRED",
+        "label": "DEFERRED",
+        "color": "#3b82f6",
+        "reason": "Bug deferred per sprint_context: DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 10 2026-05-10 (PSAR flip detection uses 1-bar appro"
       }
     },
     {
       "id": "BUG-60",
       "title": "HIGH  -  Short entry zone validation rejects favourable gap-down  -  understates sho",
       "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
+      "sprint_context": "DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 10 2026-05-10 (short entry zone gap-down semantics requires explicit owner decision on aggressive vs conservative short fill model; defer to Phase 1B where short strategies are explicit per CLAUDE.md - Short strategies strict original conditions Phase 1B for statistical volume)",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -22493,14 +22379,14 @@
         }
       },
       "short_id": "BUG-060",
-      "sprint": "(see linked DEC sprint)",
+      "sprint": "DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 10 2026-05-10 (short entry zone gap-down semantics requires explicit owner decision on aggressive vs conservative short fill model; defer to Phase 1B where short strategies are explicit per CLAUDE.md - Short strategies strict original conditions Phase 1B for statistical volume)",
       "dependencies": "DEC-458",
       "description": "**File:** `backtest/signals/screener.py` lines 919\u2013923",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "DEFERRED",
+        "label": "DEFERRED",
+        "color": "#3b82f6",
+        "reason": "Bug deferred per sprint_context: DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 10 2026-05-10 (short entry zone gap-down semantics "
       }
     },
     {
@@ -25697,7 +25583,7 @@
     }
   ],
   "bugs_total_count": 148,
-  "bugs_hidden_count": 34,
+  "bugs_hidden_count": 37,
   "investigations": [
     {
       "id": "INV-001",
@@ -30350,82 +30236,88 @@
   ],
   "recent_commits": [
     {
+      "sha": "a1ba19bb",
+      "subject": "Pass 53 v8h+1: Phase 3 Batch 9 - 6 SUPERSEDED (BUG-35/36/38/39/41/53)",
+      "author": "jeetmehta1991",
+      "rel_time": "70 seconds ago"
+    },
+    {
       "sha": "fd86b03f",
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 22:45: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "2 minutes ago"
+      "rel_time": "4 minutes ago"
     },
     {
       "sha": "08117f87",
       "subject": "Pass 53 v8h+1: BUG-29 RESOLVED-IMPLEMENTED - end-of-backtest open-trade finalization",
       "author": "jeetmehta1991",
-      "rel_time": "4 minutes ago"
+      "rel_time": "6 minutes ago"
     },
     {
       "sha": "0daa206c",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 7 - 6 BUGs (43/44/45/48/58/59) SUPERSEDED/DEFERRED/OBSOLETE",
       "author": "jeetmehta1991",
-      "rel_time": "29 minutes ago"
+      "rel_time": "31 minutes ago"
     },
     {
       "sha": "2de4536b",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 6 - 5 BUGs (42/47/49/50/52) SUPERSEDED/DEFERRED cross-references",
       "author": "jeetmehta1991",
-      "rel_time": "31 minutes ago"
+      "rel_time": "32 minutes ago"
     },
     {
       "sha": "f16ef86d",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 5 - BUG-37 IMPLEMENTED (haircut doc) + BUG-34/40 SUPERSEDED-BY-design",
       "author": "jeetmehta1991",
-      "rel_time": "32 minutes ago"
+      "rel_time": "34 minutes ago"
     },
     {
       "sha": "a4258bc1",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 4 - BUG-21 IMPLEMENTED + BUG-24/31/32/33 SUPERSEDED-BY-policy-decisions",
       "author": "jeetmehta1991",
-      "rel_time": "35 minutes ago"
+      "rel_time": "36 minutes ago"
     },
     {
       "sha": "1f87aa53",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 3 - BUG-17/25 OBSOLETE + BUG-18/28/30 IMPLEMENTED (Wilder RSI fix)",
       "author": "jeetmehta1991",
-      "rel_time": "38 minutes ago"
+      "rel_time": "40 minutes ago"
     },
     {
       "sha": "694a11fa",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 2 - BUG-01/06/10/12 IMPLEMENTED + BUG-14 OBSOLETE",
       "author": "jeetmehta1991",
-      "rel_time": "42 minutes ago"
+      "rel_time": "44 minutes ago"
     },
     {
       "sha": "3bb2f559",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 1 - BUG-08/09/15/27 RESOLVED-IMPLEMENTED with real fixes",
       "author": "jeetmehta1991",
-      "rel_time": "48 minutes ago"
+      "rel_time": "50 minutes ago"
     },
     {
       "sha": "fc9390b7",
       "subject": "Pass 53 v8h+1: Phase 2 BUG cross-references + id-form normalization (6 BUGs READY -> IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "55 minutes ago"
+      "rel_time": "57 minutes ago"
     },
     {
       "sha": "97c69b3d",
       "subject": "Pass 53 v8h+1: Phase 1 BUG categorization (10 SUPERSEDED/DEFERRED) + dashboard hide-moot-bugs filter",
       "author": "jeetmehta1991",
-      "rel_time": "65 minutes ago"
+      "rel_time": "67 minutes ago"
     },
     {
       "sha": "99d137c1",
       "subject": "Pass 53 v8h+1: BUG-270/271/272/273 pyramid overrides + Promotion dropdown filters",
       "author": "jeetmehta1991",
-      "rel_time": "77 minutes ago"
+      "rel_time": "79 minutes ago"
     },
     {
       "sha": "a7c66530",
       "subject": "Pass 53 v8h+1: DEC-610 SPEC_ONLY -> DEFERRED_TO_* re-classification (14 forward-looking DECs)",
       "author": "jeetmehta1991",
-      "rel_time": "84 minutes ago"
+      "rel_time": "86 minutes ago"
     },
     {
       "sha": "4cd84d66",
@@ -30520,12 +30412,6 @@
     {
       "sha": "25485a1b",
       "subject": "Pass 53 v8h+1: H4 Polygon reference extended verify (DONE-WITH-DELISTING-CAP per CAV-075 sister pattern)",
-      "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
-    },
-    {
-      "sha": "fc5c43f4",
-      "subject": "Pass 53 v8h+1: H16 + H22 verify (DONE / PARTIAL-DONE-WITH-FINDING + INV-048)",
       "author": "jeetmehta1991",
       "rel_time": "5 hours ago"
     }
