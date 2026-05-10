@@ -33043,6 +33043,59 @@ Documents updated:
   - AUDIT.md (this sub-entry)
   - dashboard_stage_2 (rebuilt)
 
+---
+
+## Pass 53 Day 9 v8h+1 follow-on 2026-05-10 (cont): Phase 3 Batch 14 - BUG-78 CRITICAL trailing stop lookahead bias FIXED
+
+Owner directive 2026-05-10: "proceed with bug 78"
+
+**The bug:** in `BacktestEngine.process_day_exits` at `exit_manager.py:530+`, the trailing stop was updated using today's close BEFORE checking against today's intraday low/high. This is a lookahead bias - real-time trading cannot know today's close at the moment today's intraday low was made.
+
+**Worked example of the bias:** Long trade with `highest_close=$100`, `trailing_stop=$90`. Today's bar: low=$95, close=$110 (new high), high=$112.
+  - OLD (buggy): `update_trailing_stop` ratchets stop to `110 * 0.9 = $99`. Then `check_trailing_stop_hit` sees `low=$95 < $99` and falsely exits at $99 (a stop that wasn't even set when $95 happened).
+  - NEW (fixed): `check_trailing_stop_hit` runs first with existing stop=$90; today's low of $95 doesn't breach $90, position survives. THEN `update_trailing_stop` ratchets to $99 for tomorrow.
+
+**The fix:** swapped Steps 2 and 3 in `process_day_exits`:
+  - Step 2 (NEW): `check_trailing_stop_hit` using YESTERDAY's stop (set at end of prior day)
+  - Step 3 (NEW): `update_trailing_stop` from today's close (applies to tomorrow's check)
+
+Explicit BUG-78 cross-reference comments at both sites for grep-discoverability.
+
+**2 new tests (both PASS):**
+  - `test_bug_078_trailing_stop_no_lookahead`: pins ordering invariant via source inspection (`check_trailing_stop_hit` must appear BEFORE `update_trailing_stop(trade, today_close...)` in the function body)
+  - `test_bug_078_no_lookahead_synthetic_scenario`: end-to-end synthetic trade through `process_day_exits`; verifies the $95-low / $110-close / $112-high scenario does NOT exit (under old code it would have exited at $99); post-check `trailing_stop` correctly updated to $99 for tomorrow
+
+**Per-addressal pyramid (CHECKLIST #78):** unit + integration + e2e_phase1a_smoke 126/126 PASS in 3:14 min. **Full smoke run of the entire backtest engine with the new ordering succeeds with ZERO regressions** - schema preserved, all 7 gates pass. Layers N/A: data_integrity (no data change), performance (O(1) per trade swap), acceptance, property, snapshot, contract, compatibility, system, functional.
+
+**Same-commit (DEC-594):** code reorder + 2 new tests + register flip + AUDIT.md narrative + dashboard rebuilt - this single commit.
+
+**Phase 1A May 15 IMPACT - CRITICAL:**
+This was the most material remaining engineering bug. Phase 1A baseline metrics computed under the old code path had a systematic upward bias: every trade that exited "trailing_stop" might have done so at a fresh-today stop level that should not have existed yet. The fix eliminates this bias. Baseline numbers post-fix will be more conservative + realistic, matching what live trading would have produced.
+
+**Trade-level bias direction:** the old code path more often triggered exits (because stops were always set against today's close which is closer than yesterday's). Removing the lookahead means fewer trailing-stop exits triggered, so trades hold longer on average. This may improve or worsen final pnl_pct depending on whether the trades that survive longer recover or continue down.
+
+**Visible bug tier distribution (post-Phase-3-batch-14):**
+  - IMPLEMENTED: 25 (was 24)
+  - DEFERRED: 39
+  - CODE_ONLY: 1
+  - OPEN: 6 (was 7; -1 from BUG-78)
+  - Total visible: 71; hidden: 77
+
+**Remaining 6 OPEN bugs:**
+  - BUG-61 (multiple concurrent positions per ticker) — HIGH
+  - BUG-77 (candidate ranking 'avoid' inflated) — MEDIUM
+  - BUG-80 (exit slippage never applied) — HIGH
+  - BUG-83 (congressional_signal inverted PIT) — HIGH
+  - BUG-95 (no Portfolio class) — CRITICAL but DEFERRED-TO-SPRINT-3 per audit
+  - BUG-110 (entry gap filter not enforced) — HIGH
+
+Documents updated:
+  - backtest/engine/exit_manager.py (process_day_exits Step 2/3 reorder + BUG-78 cross-refs)
+  - backtest/tests/test_unit.py (2 new BUG-78 unit tests)
+  - BUG_REGISTER.md (1 flip: BUG-78)
+  - AUDIT.md (this sub-entry)
+  - dashboard_stage_2 (rebuilt; IMPLEMENTED 24 -> 25)
+
 **Remaining OPEN backlog after sweeps:**
   - 1 DEC RESOLVED-DECIDED-deferred (DEC-028 Stage 3 paper trading - intentional)
   - INVs: 33 OPEN + 2 DEFERRED (genuine work; not promotion-eligible)

@@ -526,10 +526,17 @@ def process_day_exits(
                 "action": "tighten_stop", "new_stop": trade.trailing_stop,
             })
 
-        # -- Step 2: Update trailing stop from today's close --
-        trade = update_trailing_stop(trade, today_close, vix_value)
-
-        # -- Step 3: Check if trailing stop was hit (uses intraday low/high) --
+        # -- Step 2: Check if trailing stop was hit using YESTERDAY's stop --
+        # BUG-78 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 14 2026-05-10:
+        # Previously updated trailing_stop FROM today's close BEFORE checking against
+        # today's intraday low/high - a classic lookahead bias. Real-time trading
+        # can't know today's close at the time today's intraday low was made.
+        # Correct order:
+        #   1. Check today's intraday low/high against the EXISTING stop (set yesterday)
+        #   2. AFTER the check, update highest_close + trailing_stop from today's close
+        #      (for use on tomorrow's intraday check)
+        # This eliminates the lookahead - the stop level used today is what was set
+        # at end-of-day yesterday, never includes today's information.
         exit_price = check_trailing_stop_hit(trade, today_low, today_high, today_close,
                                               today_open=today_open)  # DEC-514
 
@@ -545,6 +552,11 @@ def process_day_exits(
                 if long_signal and long_signal.get("long_count", 0) > 0:
                     closed[-1].conversion_pair_id = f"convert_{trade.ticker}_{today_date}"
             continue
+
+        # -- Step 3: Update trailing stop from today's close (post-check, no lookahead) --
+        # BUG-78 fix: this update runs AFTER the intraday check, so the new stop only
+        # applies to tomorrow's intraday check, not today's.
+        trade = update_trailing_stop(trade, today_close, vix_value)
 
         still_open.append(trade)
 

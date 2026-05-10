@@ -1824,6 +1824,77 @@ def test_bug_037_survivorship_haircut_methodology_documented():
         assert threshold in doc, f"haircut docstring missing tier: {threshold}"
 
 
+def test_bug_078_trailing_stop_no_lookahead():
+    """BUG-78 CRITICAL: trailing stop updated AFTER intraday check, not before.
+
+    Pass 53 v8h+1 Phase 3 Batch 14 fix 2026-05-10. Previously process_day_exits
+    updated trailing_stop from today's close BEFORE checking against today's
+    intraday low/high - lookahead bias because today's close is unknown at the
+    time today's low was made. Fix: check stop hit FIRST using yesterday's stop,
+    THEN update from today's close for tomorrow.
+
+    Lookahead scenario verified eliminated: trade with highest_close=100, stop=90.
+    Today: close=110 (new high), low=95, high=112. Old buggy behavior would
+    bump stop to 110*0.9=99, then see low=95 <= 99, falsely exit at 99. Correct
+    behavior: check existing stop (90) against today's low (95) - 95 > 90, no
+    exit; then update stop to 99 for tomorrow.
+    """
+    import inspect
+    from backtest.engine import exit_manager
+    src = inspect.getsource(exit_manager.process_day_exits)
+    # Must contain BUG-78 marker
+    assert "BUG-78" in src, "BUG-78 cross-reference must exist"
+    # Check the ordering: check_trailing_stop_hit must appear BEFORE update_trailing_stop
+    check_pos = src.find("check_trailing_stop_hit")
+    update_pos = src.find("update_trailing_stop(trade, today_close")
+    assert check_pos > 0 and update_pos > 0, "Both functions must be invoked"
+    assert check_pos < update_pos, (
+        f"BUG-78: check_trailing_stop_hit must run BEFORE update_trailing_stop "
+        f"(check at {check_pos}, update at {update_pos})"
+    )
+
+
+def test_bug_078_no_lookahead_synthetic_scenario():
+    """BUG-78 functional test: synthetic trade that would lookahead-exit under
+    old code does NOT exit under new code.
+
+    Long trade entered at $100, trailing stop at $90 (set via prior day's
+    highest_close). Today: low=$95, close=$110, high=$112. Yesterday's stop
+    is $90. Under old code, stop bumps to $110*0.9=$99 then sees low=$95 <= $99,
+    incorrectly exits at $99. Under fixed code, the check uses $90 stop which
+    today's low of $95 doesn't breach - position survives.
+    """
+    from datetime import date
+    from backtest.engine.exit_manager import process_day_exits, OpenTrade
+
+    trade = OpenTrade(
+        ticker="TEST", entry_date=date(2024, 1, 1), entry_price=100.0,
+        direction="long", strategy="dummy", category="momentum",
+        sector="Industrials", initial_stop=90.0, trailing_stop=90.0,
+        highest_close=100.0, regime_at_entry="bull",
+    )
+    ticker_bars = {"TEST": {"open": 105.0, "high": 112.0, "low": 95.0, "close": 110.0, "prev_close": 100.0}}
+    closed, still_open = process_day_exits(
+        [trade], ticker_bars, date(2024, 1, 2),
+        vix_value=15.0, regime="bull", active_signals={},
+        circuit_breaker_log=[],
+    )
+    # Old buggy behavior would have closed the trade (low=95 < new_stop=99)
+    # Fixed: no exit (low=95 > yesterday's stop=90)
+    assert len(closed) == 0, (
+        f"BUG-78 fix failure: trade should NOT exit (low=95 > yesterday's stop=90); "
+        f"got {len(closed)} closed trades"
+    )
+    assert len(still_open) == 1, "Trade must remain open"
+    # AFTER check, trailing_stop should have been updated from today's close
+    # (highest_close 100 -> 110, stop 90 -> max(90, 110*0.9)=99)
+    updated_trade = still_open[0]
+    assert updated_trade.highest_close == 110.0, "highest_close must update post-check"
+    assert updated_trade.trailing_stop == 99.0, (
+        f"trailing_stop must update to 99.0 after check (got {updated_trade.trailing_stop})"
+    )
+
+
 def test_bug_021_exit_strategies_pnl_gross_by_design():
     """BUG-21: exit_strategies._pnl is gross-only by design (DEC-295).
 
