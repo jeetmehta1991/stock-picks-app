@@ -197,39 +197,74 @@ def compute_field_coverage_matrix(cache_paths_list: list, universe: list[str], u
     rows: list[dict] = []
     universe_set = set(universe)
 
-    # Heuristic commentary lookup based on (api, endpoint) facts
+    # Heuristic commentary lookup based on (api, endpoint) facts. Updated
+    # 2026-05-10 v8h+1 with findings from CAV-075 (delisting empirically
+    # confirmed 0/246 in SEC active map), DEC-605/CAV-074 (Finnhub
+    # social_sentiment EXCLUDED Phase 1A), DEC-606/CAV-076 (Finnhub
+    # financials_reported EXCLUDED ALL phases), INV-047/CAV-077 (Quiver
+    # etfholdings refresh dead-end), global-feed completeness audit
+    # (CFTC/Polygon-economy/FRED/ALFRED all empirically COMPLETE).
     KNOWN_GAPS = {
-        ("polygon", "events"):                "Only ticker_change events captured (INV-029); other event types deferred",
-        ("polygon", "reference"):             "~251 delisted/foreign/ADR tickers without Polygon reference (immutable at source)",
-        ("polygon", "reference_extended"):    "~251 delisted tickers; INV-030 RESOLVED for available 1686",
-        ("sec_edgar", "10_K"):                "246 tickers genuinely SEC-unfileable (delisted/foreign/ADR/renamed)",
-        ("sec_edgar", "10_Q"):                "Same 246 unfileable",
-        ("sec_edgar", "8_K"):                 "Same baseline; some non-public companies",
-        ("sec_edgar", "form_4"):              "Tickers without insider transactions in window",
-        ("sec_edgar", "DEF_14A"):             "Same baseline + non-proxy filers",
-        ("sec_edgar", "S_1"):                 "Tickers without recent IPO filings",
-        ("sec_edgar", "S_1_A"):               "Tickers without S-1 amendments",
-        ("sec_edgar", "SC_13D"):              "Activist filings sparse by ticker",
-        ("sec_edgar", "SC_13D_A"):            "Activist amendments sparse by ticker",
-        ("sec_edgar", "SC_13G"):              "Passive filings; not all tickers have >5% holders",
-        ("sec_edgar", "SC_13G_A"):            "Passive amendments sparse",
-        ("sec_edgar", "xbrl_companyfacts"):   "275 tickers without recent XBRL filings",
-        ("wikipedia", "pageviews"):           "Tickers without dedicated Wikipedia page (~525)",
-        ("pytrends", "interest_over_time"):   "DEFERRED Phase 1C per DEC-599; partial data from earlier run",
-        ("quiver", "wikipedia_mirror"):       "Same gap as wikipedia.pageviews source",
-        ("quiver", "etfholdings"):            "Tickers Quiver does not track in ETF universe",
-        ("finnhub", "financials_reported"):   "Free-tier limited; full coverage requires Premium",
-        ("finnhub", "social_sentiment"):      "PREMIUM-LOCKED; EXCLUDED from Phase 1A per DEC-605",
-        ("aaii", "weekly_sentiment"):         "Single global parquet (1987-2026); not per-ticker",
-        ("aaii", "asset_allocation_survey"):  "Single global parquet (1987-2026); not per-ticker",
+        # SEC EDGAR per-form: empirically confirmed delisting (CAV-075)
+        ("sec_edgar", "10_K"):                "CAV-075: 246 missing tickers EMPIRICALLY confirmed delisted/acquired/renamed/foreign (0/246 in SEC active CIK map). Examples: ABMD->JNJ, ANSS->Synopsys, ADS->BFH, ALXN->AstraZeneca, AGN->AbbVie. Immutable at source.",
+        ("sec_edgar", "10_Q"):                "CAV-075: same 246 SEC-unfileable as 10-K (delisting/acquisition; immutable)",
+        ("sec_edgar", "8_K"):                 "CAV-075: same delisting baseline; some non-public companies",
+        ("sec_edgar", "form_4"):              "CAV-075: same delisting baseline; tickers without insider transactions in window",
+        ("sec_edgar", "DEF_14A"):             "CAV-075: same baseline + non-proxy filers",
+        ("sec_edgar", "S_1"):                 "CAV-075: same baseline; tickers without recent IPO filings",
+        ("sec_edgar", "S_1_A"):               "CAV-075: same baseline; tickers without S-1 amendments",
+        ("sec_edgar", "SC_13D"):              "CAV-075: same baseline; activist filings sparse by ticker",
+        ("sec_edgar", "SC_13D_A"):            "CAV-075: same baseline; activist amendments sparse",
+        ("sec_edgar", "SC_13G"):              "CAV-075: same baseline; not all tickers have >5% holders",
+        ("sec_edgar", "SC_13G_A"):            "CAV-075: same baseline; passive amendments sparse",
+        ("sec_edgar", "xbrl_companyfacts"):   "CAV-075: 275 tickers without recent XBRL filings (delisted/foreign overlap)",
+        # Polygon reference: same delisting confirmation (CAV-075)
+        ("polygon", "events"):                "INV-029: only ticker_change events captured; other event types deferred (P2 Phase 1B+)",
+        ("polygon", "reference"):             "CAV-075: ~251 delisted tickers (overlap with SEC unfileable); immutable at source",
+        ("polygon", "reference_extended"):    "CAV-075: ~251 delisted; INV-030 RESOLVED for available 1686 (extended fields populated)",
+        # Wikipedia: source-availability ceiling
+        ("wikipedia", "pageviews"):           "523 tickers without dedicated Wikipedia page (small-cap / recent IPO; e.g. AAOI, ABSI, AEYE, AFRM). Source-availability ceiling, not delisting.",
+        ("quiver", "wikipedia_mirror"):       "Same WP page-availability ceiling as wikipedia.pageviews",
+        # Quiver etfholdings: refresh dead-end (INV-047/CAV-077)
+        ("quiver", "etfholdings"):            "INV-047/CAV-077: STATIC SNAPSHOT only - all Quiver+Polygon refresh endpoints return 404; existing 1563 files from deprecated source. Owner-pending decision: accept static (default), paid 3rd-party (~$30-50/mo), or scraping infra.",
+        # Pytrends: deferred per DEC-599
+        ("pytrends", "interest_over_time"):   "DEC-599: DEFERRED Phase 1C (Google 429 anti-bot blocks free pytrends); StockTwits + Apewisdom + Polygon news cover retail-attention layer at free tier",
+        # Finnhub financials_reported: EXCLUDED ALL phases (DEC-606/CAV-076)
+        ("finnhub", "financials_reported"):   "DEC-606/CAV-076: EXCLUDED COMPLETELY from all phases (1A+1B+1C+Stage3+Stage4). Superseded by SEC EDGAR XBRL companyfacts (1662, free) + Polygon /vX/reference/financials (1937, already paid). Premium not worth subscribing.",
+        # Finnhub social_sentiment: EXCLUDED Phase 1A (DEC-605/CAV-074)
+        ("finnhub", "social_sentiment"):      "DEC-605/CAV-074: PREMIUM-LOCKED; EXCLUDED from Phase 1A. Apewisdom + StockTwits + Polygon news insights_json cover ~90% of retail-attention signal at free tier. Phase 1B+ eligible if Premium added.",
+        # Single-file global feeds: empirically COMPLETE (CFTC / Polygon economy / FRED / ALFRED)
+        ("aaii", "weekly_sentiment"):         "Single global parquet (13-col extended; 2,022 rows 1987-2026 fresh through 2026-05-07). Not per-ticker. COMPLETE per DEC-601.",
+        ("aaii", "asset_allocation_survey"):  "Single global parquet (11-col; 445 monthly rows 1987-2026 fresh through 2026-04). Not per-ticker. COMPLETE per DEC-601 sister entry (owner-supplied 2026-05-09).",
+        # CFTC: 19 contracts complete (audit 2026-05-10)
+        ("cftc", "tff_disagg_combined"):      "Audit 2026-05-10: 19 contract series ALL non-empty (commodities + currencies + e-mini equity + treasuries + VIX); most span 2006-06-13 to 2026-04-28 (current week). COMPLETE per Sprint 0A.4.",
+        ("cftc", "extended"):                 "Audit 2026-05-10: 19-contract universe; same fetch as tff_disagg_combined. COMPLETE.",
+        # Polygon economy: 3 series complete
+        ("polygon_economy", "inflation"):              "Audit 2026-05-10: 951 monthly rows 1947-01 to 2026-03 (CPI+PCE core/total). COMPLETE.",
+        ("polygon_economy", "inflation_expectations"): "Audit 2026-05-10: 532 monthly rows 1982-01 to 2026-04 (Fed model + market 1Y/5Y/10Y/30Y). COMPLETE.",
+        ("polygon_economy", "treasury_yields"):        "Audit 2026-05-10: 16,071 daily rows 1962-01-02 to 2026-05-06 (1M/3M/1Y/2Y/5Y/10Y/30Y curve). COMPLETE.",
+        # FRED: 90 series complete (over-delivered vs Sprint 0A.2 spec ~50)
+        ("fred", "observations"):             "Audit 2026-05-10: 90 series ALL non-empty (vs Sprint 0A.2 spec ~50; over-delivered). Date coverage varies by frequency (quarterly series ~33 rows; daily series 2,000+ rows). All current through 2026-04 to 2026-05.",
+        # ALFRED: 80 series with vintage history
+        ("alfred", "vintage_observations"):   "Audit 2026-05-10: 80 series ALL non-empty with vintage observations (e.g. AAA10Y has 41,058 rows = full vintage history). Sprint 0A.2 spec satisfied at higher count.",
     }
 
-    def commentary(api, endpoint, field, pct):
-        if pct >= 99.5:
-            return ""
+    def commentary(api, endpoint, field, pct, kind=None):
+        # KNOWN_GAPS lookup wins for endpoint-level explanations regardless of pct
         key = (api, endpoint)
         if key in KNOWN_GAPS:
             return KNOWN_GAPS[key]
+        if pct >= 99.5:
+            return ""
+        # Kind-aware default text per CHECKLIST methodology rule (Pass 53 v8h+1):
+        # global feeds (single/global) use different completeness semantics.
+        if kind in ("single", "global"):
+            if pct == 0:
+                return "Global feed: field present in schema but unpopulated; investigate source"
+            if pct < 50:
+                return "Global feed: data-quality gap; field sparse across observations"
+            return "Global feed: minor data-quality gap; some observations lack this field"
+        # per_ticker default
         if pct == 0:
             return "Field present in schema but no values populated; investigate source"
         if pct < 50:
@@ -256,13 +291,27 @@ def compute_field_coverage_matrix(cache_paths_list: list, universe: list[str], u
         cache_path = Path(path)
 
         if kind == "single":
-            # Single global parquet (e.g. AAII weekly sentiment, AAS)
+            # Single global parquet (e.g. AAII weekly sentiment, AAS).
+            # Completeness metric: row_count + latest_obs_date freshness.
             if not cache_path.exists() or not cache_path.is_file():
                 continue
             try:
                 df = pd.read_parquet(cache_path)
             except Exception:
                 continue
+            # Find latest observation date (first date-like column)
+            latest_obs = None
+            date_col = next((c for c in df.columns if c.lower() in
+                              {"date", "time", "timestamp", "filing_date", "report_date",
+                               "execution_date", "ex_dividend_date", "snapshot_date",
+                               "transactiondate", "attime"}), None)
+            if date_col:
+                try:
+                    d = pd.to_datetime(df[date_col], errors="coerce").dropna()
+                    if len(d):
+                        latest_obs = str(d.max().date())
+                except Exception:
+                    pass
             fields_data = {}
             for col in df.columns:
                 non_null = df[col].notna().sum()
@@ -277,9 +326,11 @@ def compute_field_coverage_matrix(cache_paths_list: list, universe: list[str], u
                     "field": col,
                     "kind": kind,
                     "coverage_pct": round(pct, 1),
-                    "commentary": commentary(api, endpoint, col, pct),
+                    "commentary": commentary(api, endpoint, col, pct, kind),
                     "n_observed": int(non_null),
                     "n_universe": len(df),
+                    "row_count": len(df),
+                    "latest_obs_date": latest_obs,
                     "is_summary": False,
                 })
             rows.append(per_endpoint_row(api, endpoint, kind, fields_data, len(df), len(df)))
@@ -337,7 +388,7 @@ def compute_field_coverage_matrix(cache_paths_list: list, universe: list[str], u
                     "field": col,
                     "kind": kind,
                     "coverage_pct": round(est_universe_pct, 1),
-                    "commentary": commentary(api, endpoint, col, est_universe_pct),
+                    "commentary": commentary(api, endpoint, col, est_universe_pct, kind),
                     "n_observed": tickers_with,
                     "n_universe": universe_size,
                     "n_sampled": sampled,
@@ -347,12 +398,16 @@ def compute_field_coverage_matrix(cache_paths_list: list, universe: list[str], u
             rows.append(per_endpoint_row(api, endpoint, kind, fields_data, sampled, universe_size))
 
         elif kind == "global":
-            # Global directory of multiple parquets (e.g. fred/observations)
+            # Global directory of multiple parquets (e.g. fred/observations).
+            # Completeness metrics: series_count + non_empty_pct + latest_obs_date.
             if not cache_path.is_dir():
                 continue
-            all_parqs = sorted(cache_path.glob("*.parquet"))[:50]  # cap for speed
+            all_parqs_list = sorted(cache_path.glob("*.parquet"))
+            n_total_files = len(all_parqs_list)
+            all_parqs = all_parqs_list[:50]  # cap for speed
             field_seen: dict[str, int] = {}
             n_files_with_data = 0
+            latest_obs_global = None
             for parq in all_parqs:
                 try:
                     if parq.stat().st_size < 200:
@@ -364,10 +419,21 @@ def compute_field_coverage_matrix(cache_paths_list: list, universe: list[str], u
                     for col in df.columns:
                         if df[col].notna().sum() > 0:
                             field_seen[col] = field_seen.get(col, 0) + 1
+                    # Track latest obs across sampled files
+                    date_col = next((c for c in df.columns if c.lower() in
+                                      {"date", "time", "timestamp", "report_date"}), None)
+                    if date_col:
+                        try:
+                            d = pd.to_datetime(df[date_col], errors="coerce").dropna()
+                            if len(d):
+                                m = str(d.max().date())
+                                if not latest_obs_global or m > latest_obs_global:
+                                    latest_obs_global = m
+                        except Exception:
+                            pass
                 except Exception:
                     continue
             fields_data = {}
-            n_total_files = len(list(cache_path.glob("*.parquet")))
             for col, count in field_seen.items():
                 pct = float(count) / max(n_files_with_data, 1) * 100
                 fields_data[col] = {"coverage_pct": round(pct, 1), "n_observed": count}
@@ -377,10 +443,13 @@ def compute_field_coverage_matrix(cache_paths_list: list, universe: list[str], u
                     "field": col,
                     "kind": kind,
                     "coverage_pct": round(pct, 1),
-                    "commentary": commentary(api, endpoint, col, pct),
+                    "commentary": commentary(api, endpoint, col, pct, kind),
                     "n_observed": count,
                     "n_universe": n_total_files,
                     "n_sampled": n_files_with_data,
+                    "series_count": n_total_files,
+                    "non_empty_pct": round(100.0 * n_files_with_data / max(len(all_parqs), 1), 1),
+                    "latest_obs_date": latest_obs_global,
                     "is_summary": False,
                 })
             rows.append(per_endpoint_row(api, endpoint, kind, fields_data, n_files_with_data, n_total_files))

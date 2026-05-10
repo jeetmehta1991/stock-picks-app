@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-10T13:39:38.618083+00:00",
+  "generated_at": "2026-05-10T14:04:23.214361+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -17587,7 +17587,7 @@
       "pass_intro": "Pass 53",
       "pass_resolved": "53",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
         "tested": false,
         "pushed": true,
@@ -24197,7 +24197,7 @@
         "coded": true,
         "wired": false,
         "tested": false,
-        "pushed": false,
+        "pushed": true,
         "n_doc_refs": 2,
         "pyramid": {
           "unit": false,
@@ -26296,7 +26296,7 @@
       "status": "ACTIVE",
       "impact": "None to address. Phase 1A backtest correctly skips these tickers \u2014 they were never tradable in Phase 1A's window OR they were tradable but their data is in our universe under their renamed/successor s",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
         "tested": false,
         "pushed": true,
@@ -26359,7 +26359,7 @@
         "coded": true,
         "wired": false,
         "tested": false,
-        "pushed": false,
+        "pushed": true,
         "n_doc_refs": 2,
         "pyramid": {
           "unit": false,
@@ -27033,10 +27033,16 @@
   ],
   "recent_commits": [
     {
+      "sha": "ecc846c2",
+      "subject": "Pass 53 v8h+1: INV-047 + CAV-077 - Quiver etfholdings refresh DEAD-END (static snapshot only)",
+      "author": "jeetmehta1991",
+      "rel_time": "24 minutes ago"
+    },
+    {
       "sha": "2244b1e5",
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 10:13: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "45 minutes ago"
+      "rel_time": "69 minutes ago"
     },
     {
       "sha": "27944fa2",
@@ -27096,7 +27102,7 @@
       "sha": "826d5454",
       "subject": "Pass 53 v8h+1: DEC-605 - Finnhub social_sentiment EXCLUDED from Phase 1A baseline",
       "author": "jeetmehta1991",
-      "rel_time": "15 hours ago"
+      "rel_time": "16 hours ago"
     },
     {
       "sha": "5bb5b70f",
@@ -27120,7 +27126,7 @@
       "sha": "387fac95",
       "subject": "Pass 53 v8h+1: 8 new DECs (597-604) + register sweeps + per-turn discipline fix",
       "author": "jeetmehta1991",
-      "rel_time": "20 hours ago"
+      "rel_time": "21 hours ago"
     },
     {
       "sha": "76436fa7",
@@ -27132,7 +27138,7 @@
       "sha": "5814a4cc",
       "subject": "Pass 53 auto-drift-sweep 2026-05-09 05:53: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "22 hours ago"
+      "rel_time": "23 hours ago"
     },
     {
       "sha": "9673eccc",
@@ -27144,13 +27150,13 @@
       "sha": "ad5f0f78",
       "subject": "StockTwits final (1923 fetched)",
       "author": "jeetmehta1991",
-      "rel_time": "28 hours ago"
+      "rel_time": "29 hours ago"
     },
     {
       "sha": "658f40ad",
       "subject": "StockTwits batch 38",
       "author": "jeetmehta1991",
-      "rel_time": "28 hours ago"
+      "rel_time": "29 hours ago"
     },
     {
       "sha": "dcc49c62",
@@ -27168,13 +27174,13 @@
       "sha": "65a03894",
       "subject": "StockTwits batch 35",
       "author": "jeetmehta1991",
-      "rel_time": "29 hours ago"
+      "rel_time": "30 hours ago"
     },
     {
       "sha": "fd5a7cd9",
       "subject": "StockTwits batch 34",
       "author": "jeetmehta1991",
-      "rel_time": "29 hours ago"
+      "rel_time": "30 hours ago"
     },
     {
       "sha": "a5bf31b2",
@@ -27192,7 +27198,7 @@
       "sha": "da89952c",
       "subject": "StockTwits batch 31",
       "author": "jeetmehta1991",
-      "rel_time": "30 hours ago"
+      "rel_time": "31 hours ago"
     },
     {
       "sha": "f8bdd491",
@@ -27205,32 +27211,34 @@
       "subject": "StockTwits batch 29",
       "author": "jeetmehta1991",
       "rel_time": "31 hours ago"
-    },
-    {
-      "sha": "bc0373e7",
-      "subject": "Pass 53 v8h+1: pyramid 4-state cells (YES/no/N/A/LATER) + git body grep + BUG-007 annotation",
-      "author": "jeetmehta1991",
-      "rel_time": "31 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 6,
-    "modified": 4,
+    "count": 8,
+    "modified": 6,
     "added": 0,
     "untracked": 2,
     "deleted": 0,
     "files": [
       {
         "status": "M",
-        "path": "LIMITATIONS_CAVEATS_ASSUMPTIONS.md"
+        "path": "CHECKLIST.md"
       },
       {
         "status": "M",
-        "path": "OPEN_INVESTIGATIONS.md"
+        "path": "dashboard_sprint0a/data.js"
       },
       {
         "status": "M",
-        "path": "PHASE_1A_PRELAUNCH_TODO.md"
+        "path": "dashboard_sprint0a/data.json"
+      },
+      {
+        "status": "M",
+        "path": "dashboard_sprint0a/index.html"
+      },
+      {
+        "status": "M",
+        "path": "dashboard_sprint0a/last_run.txt"
       },
       {
         "status": "M",

@@ -1126,3 +1126,34 @@ State compliance visibly: "Checklist: ✅ [each item]"
     **First application:** Pass 53 v8h+1 retroactive doc sweep (this commit).
 
     **Joint:** CHECKLIST #67 (per-turn doc sync sweep — #79 enumerates the complete set explicitly); CHECKLIST #78 (per-addressal pyramid — #79 is the doc-side counterpart, can bundle at end-of-turn).
+
+80. **HARD RULE — Coverage analyses MUST use cache-kind-appropriate metrics; one-size-fits-all is non-compliant** (Pass 53 v8h+1 owner directive 2026-05-10).
+
+    **Owner trigger:** *"What about cftc endpoints coverage, polygon economy, alfred, etc. Why where these missed in the prev turn?"*
+
+    **The rule:**
+
+    Coverage / completeness analyses must apply different metrics per cache `kind`:
+
+    | Cache kind | Coverage metric | Completeness signal |
+    |---|---|---|
+    | `per_ticker` | `% universe tickers with non-empty cache file` | `n_files_total / universe_size`; sampled non-empty count |
+    | `single` | `% rows with non-null in column` (data-quality) | `row_count` + `latest_obs_date` |
+    | `global` | `% series files with non-null in column` | `series_count` + `% non-empty` + `latest_obs_date` |
+
+    **Why:** the per-ticker `coverage_pct` formula returns `None` for global feeds (CFTC, Polygon economy, FRED, ALFRED) because they have no per-ticker dimension. Rolling those into "N/A" without a kind-appropriate audit creates silent gaps — exactly the failure mode that surfaced when the owner asked "what about cftc endpoints coverage, polygon economy, alfred, etc." 2026-05-10. Empirical audit showed all four are COMPLETE per their respective Sprint 0A specs; the issue was audit methodology, not data.
+
+    **Pre-flight verification when authoring a coverage analysis:**
+
+    ```
+    For each cache kind in {per_ticker, single, global}:
+      report the kind-specific coverage metric AND completeness signal
+    Endpoints reported as 'N/A' in coverage_pct must include an
+      explicit kind-appropriate signal in the same row.
+    ```
+
+    **End-of-turn check:** if any coverage analysis is authored and any cache dir is reported with only `coverage_pct=None` / "N/A" without a kind-appropriate replacement metric, the response is non-compliant.
+
+    **First application:** Sprint 0A dashboard Coverage Matrix tab adds `Completeness` column showing kind-appropriate signals (row-count + latest-obs-date for single feeds; series-count + non-empty% + latest-obs-date for global feeds). Per-row completeness fields land in `data.json` for all 1076 coverage-matrix rows.
+
+    **Joint:** CHECKLIST #76 (audits must include functional verification not just inventory — #80 is the kind-aware specialization), CHECKLIST #77 (canonical-source rule — both flag silent gaps that look like "no data" but are methodology bugs); INV-047 sister pattern (Quiver etfholdings refresh dead-end was the LAST gap a single-metric audit could surface — kind-aware audit is what catches the next one).

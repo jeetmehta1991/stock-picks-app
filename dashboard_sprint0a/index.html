@@ -217,10 +217,17 @@
     <div class="filter-bar">
       <input id="cov-filter" placeholder="Filter API / endpoint / field / commentary..." size="50">
     </div>
+    <p style="font-size:12px;color:#475569;margin-top:4px">
+      <strong>Coverage % semantics by Kind</strong> (per CHECKLIST methodology rule v8h+1 2026-05-10):
+      <em>per_ticker</em> = % universe tickers with non-null;
+      <em>single</em> = % rows with non-null in this column (data-quality);
+      <em>global</em> = % series files with non-null observation in this column.
+      The <strong>Completeness</strong> column shows the kind-appropriate freshness signal: row-count + latest-obs-date for single feeds; series-count + non-empty% + latest-obs-date for global feeds.
+    </p>
     <table id="tbl-coverage-matrix" class="display compact" style="width:100%">
       <thead><tr>
         <th>API</th><th>Endpoint</th><th>Field</th><th>Kind</th>
-        <th>Coverage %</th><th>Commentary</th>
+        <th>Coverage %</th><th>Completeness</th><th>Commentary</th>
         <th>Cached</th><th>Coded</th><th>Wired</th><th>Tested</th>
         <th>Files</th>
       </tr></thead>
@@ -471,12 +478,29 @@ function boolBadge(b) {
     : '<span class="badge badge-superseded">no</span>';
 }
 const cov = D.coverage_matrix || [];
+function completenessCell(r) {
+  // Kind-aware completeness signal (Pass 53 v8h+1 owner-mandated 2026-05-10).
+  const parts = [];
+  if (r.kind === 'single' || r.kind === 'global') {
+    if (r.row_count !== undefined) parts.push(`${r.row_count.toLocaleString()} rows`);
+    if (r.series_count !== undefined) parts.push(`${r.series_count} series`);
+    if (r.non_empty_pct !== undefined) parts.push(`${r.non_empty_pct}% non-empty`);
+    if (r.latest_obs_date) parts.push(`latest ${r.latest_obs_date}`);
+  } else if (r.kind === 'per_ticker') {
+    if (r.n_files_total !== undefined) parts.push(`${r.n_files_total} files`);
+    if (r.n_sampled !== undefined) parts.push(`${r.n_sampled} sampled`);
+  }
+  return parts.length
+    ? `<span style="font-size:11px;color:#475569">${parts.join(' &middot; ')}</span>`
+    : '<span style="color:#cbd5e1">-</span>';
+}
 const covRows = cov.map(r => [
   r.api,
   r.endpoint,
   r.is_summary ? `<strong>${r.field}</strong>` : `<code style="font-size:11px">${r.field}</code>`,
   r.kind,
   `<span class="pct-cell ${covPctClass(r.coverage_pct)}">${r.coverage_pct}%</span>`,
+  completenessCell(r),
   `<span style="font-size:12px;color:#475569">${r.commentary || '-'}</span>`,
   boolBadge(r.cached),
   boolBadge(r.coded),
@@ -486,7 +510,7 @@ const covRows = cov.map(r => [
 ]);
 const covTable = $('#tbl-coverage-matrix').DataTable({
   data: covRows, pageLength: 100, order: [[0,'asc'],[1,'asc'],[2,'asc']],
-  columns: [{},{},{type:'html'},{},{type:'html'},{type:'html'},
+  columns: [{},{},{type:'html'},{},{type:'html'},{type:'html'},{type:'html'},
             {type:'html'},{type:'html'},{type:'html'},{type:'html'},{}],
 });
 $('#cov-filter').on('keyup', function () { covTable.search(this.value).draw(); });
