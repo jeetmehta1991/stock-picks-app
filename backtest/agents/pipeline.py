@@ -148,6 +148,11 @@ def run_technical_agent(
     # Each strategy lists its signals_used - pull those values from the full signal dict
     # BUG-05 RESOLVED-IMPLEMENTED Pass 53 v8h+1 cross-reference 2026-05-10:
     # strategies_triggered key consistently used here + caller signature; no key mismatch.
+    # BUG-10 RESOLVED-IMPLEMENTED Pass 53 v8h+1 cross-reference 2026-05-10:
+    # Signal merge below combines (a) strategy-specific signals_used + (b) predefined
+    # context signals + (c) all bool signals - agents see actual TRUE/FALSE values, not
+    # stale False. Original bug "agents always see False for key price context" fixed by
+    # the multi-step merge below.
     strategy_signals = {}
     for strat in strategies_triggered:
         if isinstance(strat, dict):

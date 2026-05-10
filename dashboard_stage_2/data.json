@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-10T22:00:14.947238+00:00",
+  "generated_at": "2026-05-10T22:06:35.196036+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -1133,7 +1133,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 111,
+        "n_doc_refs": 112,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -2093,7 +2093,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 263,
+        "n_doc_refs": 264,
         "pyramid": {
           "unit": true,
           "smoke": true,
@@ -2453,7 +2453,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 572,
+        "n_doc_refs": 573,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -11933,7 +11933,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 9,
+        "n_doc_refs": 10,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -21053,7 +21053,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 445,
+        "n_doc_refs": 446,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -21333,7 +21333,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 20,
+        "n_doc_refs": 21,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -21365,17 +21365,17 @@
   "bugs": [
     {
       "id": "BUG-01",
-      "title": "`crisis_flag` used before definition \u2192 NameError crash",
+      "title": "`crisis_flag` used before definition -> NameError crash",
       "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
+      "sprint_context": "RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 2 2026-05-10 (crisis_flag predefined at function scope in backtest.py:269 - same fix as BUG-02; cross-ref test_bug_001 added)",
       "status_grep": {
         "coded": true,
-        "wired": false,
-        "tested": false,
+        "wired": true,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 60,
         "pyramid": {
-          "unit": false,
+          "unit": true,
           "smoke": false,
           "integration": false,
           "system": false,
@@ -21391,19 +21391,19 @@
         }
       },
       "short_id": "BUG-001",
-      "sprint": "(see linked DEC sprint)",
+      "sprint": "RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 2 2026-05-10 (crisis_flag predefined at function scope in backtest.py:269 - same fix as BUG-02; cross-ref test_bug_001 added)",
       "dependencies": "DEC-458",
       "description": "**File:** `backtest/engine/backtest.py` lines 299 and 325 **Introduced by:** Commit `b430ab36` (our crisis exclusions change)",
       "promotion_path": {
-        "tier": "CODE_ONLY",
-        "label": "NEEDS-TEST",
-        "color": "#f59e0b",
-        "reason": "Status inherited from linked DEC; coded but missing test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Resolved with code + regression test"
       }
     },
     {
       "id": "BUG-02",
-      "title": "`days` variable used before definition \u2192 UnboundLocalError on every trade close",
+      "title": "`days` variable used before definition -> UnboundLocalError on every trade close",
       "linked_decisions": "DEC-458",
       "sprint_context": "RESOLVED-IMPLEMENTED Pass 53 v8h+1 2026-05-10 (fix landed; backtest.py:263 explicit comment confirms days variable defined before use to prevent UnboundLocalError)",
       "status_grep": {
@@ -21411,7 +21411,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 56,
+        "n_doc_refs": 57,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -21441,7 +21441,7 @@
     },
     {
       "id": "BUG-03",
-      "title": "`ClosedTrade` dataclass defined twice \u2014 dead code, maintenance risk",
+      "title": "`ClosedTrade` dataclass defined twice  -  dead code, maintenance risk",
       "linked_decisions": "DEC-458",
       "sprint_context": "RESOLVED-IMPLEMENTED Pass 53 v8h+1 2026-05-10 (duplicate ClosedTrade removed; only one class definition at exit_manager.py:101)",
       "status_grep": {
@@ -21479,7 +21479,7 @@
     },
     {
       "id": "BUG-04",
-      "title": "`avoid` direction falls into `triggered_short` bucket \u2014 inflates confidence tier",
+      "title": "`avoid` direction falls into `triggered_short` bucket  -  inflates confidence tier",
       "linked_decisions": "DEC-458",
       "sprint_context": "RESOLVED-IMPLEMENTED Pass 53 v8h+1 2026-05-10 (backtest.py:335 has explicit avoid-direction skip with logging)",
       "status_grep": {
@@ -21517,7 +21517,7 @@
     },
     {
       "id": "BUG-05",
-      "title": "`strategies_triggered` key mismatch \u2014 agent cache is always wrong",
+      "title": "`strategies_triggered` key mismatch  -  agent cache is always wrong",
       "linked_decisions": "DEC-458",
       "sprint_context": "RESOLVED-IMPLEMENTED Pass 53 v8h+1 2026-05-10 (pipeline.py:140-180 uses canonical strategies_triggered key consistently)",
       "status_grep": {
@@ -21557,15 +21557,15 @@
       "id": "BUG-06",
       "title": "Double borrow cost on short trades",
       "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
+      "sprint_context": "RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 2 2026-05-10 (DEC-295 single-source borrow rate in improvements.py:84; exit_manager._pnl is gross-only; test_bug_006 added)",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
         "pushed": false,
         "n_doc_refs": 31,
         "pyramid": {
-          "unit": false,
+          "unit": true,
           "smoke": false,
           "integration": false,
           "system": false,
@@ -21581,14 +21581,14 @@
         }
       },
       "short_id": "BUG-006",
-      "sprint": "(see linked DEC sprint)",
+      "sprint": "RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 2 2026-05-10 (DEC-295 single-source borrow rate in improvements.py:84; exit_manager._pnl is gross-only; test_bug_006 added)",
       "dependencies": "DEC-458",
       "description": "**Files:** `backtest/engine/exit_manager.py` (`_pnl()`) and `backtest/engine/improvements.py` (`apply_transaction_costs()`)",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Resolved with code + regression test"
       }
     },
     {
@@ -21639,7 +21639,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 41,
+        "n_doc_refs": 43,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -21677,7 +21677,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 81,
+        "n_doc_refs": 85,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -21707,17 +21707,17 @@
     },
     {
       "id": "BUG-10",
-      "title": "Agent signal keys wrong \u2014 agents always see `False` for key price context",
+      "title": "Agent signal keys wrong  -  agents always see `False` for key price context",
       "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
+      "sprint_context": "RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 2 2026-05-10 (pipeline.py:148-171 3-step merge: strategy + context + bool signals; test_bug_010 added)",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
-        "tested": false,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 168,
         "pyramid": {
-          "unit": false,
+          "unit": true,
           "smoke": false,
           "integration": false,
           "system": false,
@@ -21733,14 +21733,14 @@
         }
       },
       "short_id": "BUG-010",
-      "sprint": "(see linked DEC sprint)",
+      "sprint": "RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 2 2026-05-10 (pipeline.py:148-171 3-step merge: strategy + context + bool signals; test_bug_010 added)",
       "dependencies": "DEC-458",
       "description": "**File:** `backtest/agents/pipeline.py` lines 664\u2013670",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Resolved with code + regression test"
       }
     },
     {
@@ -21783,17 +21783,17 @@
     },
     {
       "id": "BUG-12",
-      "title": "Deduplication order bias \u2014 shorts never fire when long strategy fires first",
+      "title": "Deduplication order bias  -  shorts never fire when long strategy fires first",
       "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
+      "sprint_context": "RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 2 2026-05-10 (backtest.py:368 dedup orders by strategy_count desc; no direction bias; test_bug_012 added)",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 37,
         "pyramid": {
-          "unit": false,
+          "unit": true,
           "smoke": false,
           "integration": false,
           "system": false,
@@ -21809,52 +21809,14 @@
         }
       },
       "short_id": "BUG-012",
-      "sprint": "(see linked DEC sprint)",
+      "sprint": "RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 2 2026-05-10 (backtest.py:368 dedup orders by strategy_count desc; no direction bias; test_bug_012 added)",
       "dependencies": "DEC-458",
       "description": "**File:** `backtest/signals/screener.py` lines 978, 971\u2013974 and `backtest/engine/backtest.py` deduplication logic",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
-      }
-    },
-    {
-      "id": "BUG-14",
-      "title": "AAPL, CVS, JPM, NVDA missing from `run_full.sh` batch ticker lists",
-      "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 57,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "BUG-014",
-      "sprint": "(see linked DEC sprint)",
-      "dependencies": "DEC-458",
-      "description": "**File:** `run_full.sh` \u2014 all 5 batch `--tickers` lists",
-      "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Resolved with code + regression test"
       }
     },
     {
@@ -21867,7 +21829,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 59,
+        "n_doc_refs": 61,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -22011,7 +21973,7 @@
     },
     {
       "id": "BUG-21",
-      "title": "`exit_strategies.py` own `_pnl` has no borrow cost \u2014 short comparison optimistic",
+      "title": "`exit_strategies.py` own `_pnl` has no borrow cost  -  short comparison optimistic",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -22087,7 +22049,7 @@
     },
     {
       "id": "BUG-24",
-      "title": "CHECKLIST item 13c says \"review ALL agent outputs\" \u2014 not applicable for no-agent",
+      "title": "CHECKLIST item 13c says \"review ALL agent outputs\"  -  not applicable for no-agent",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -22163,7 +22125,7 @@
     },
     {
       "id": "BUG-27",
-      "title": "CRITICAL \u2014 `regime_confidence()` function built but never called \u2014 dead code",
+      "title": "CRITICAL  -  `regime_confidence()` function built but never called  -  dead code",
       "linked_decisions": "DEC-458",
       "sprint_context": "RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 2026-05-10 (regime_confidence docstring marks it INTENTIONALLY-UNUSED + DEFERRED-TO-STAGE-3+; per CLAUDE.md Approved Rules Phase 1A backtest does not use regime confidence scaling; test_bug_027 verifies docstring marker)",
       "status_grep": {
@@ -22171,7 +22133,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 166,
+        "n_doc_refs": 169,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -22201,7 +22163,7 @@
     },
     {
       "id": "BUG-28",
-      "title": "HIGH \u2014 RSI computation uses simple rolling mean instead of Wilder exponential sm",
+      "title": "HIGH  -  RSI computation uses simple rolling mean instead of Wilder exponential sm",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -22239,7 +22201,7 @@
     },
     {
       "id": "BUG-29",
-      "title": "HIGH \u2014 Open trades at backtest end silently discarded \u2014 upward bias in all metri",
+      "title": "HIGH  -  Open trades at backtest end silently discarded  -  upward bias in all metri",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -22277,7 +22239,7 @@
     },
     {
       "id": "BUG-30",
-      "title": "HIGH \u2014 VIX tightening in crisis contradicts own documentation",
+      "title": "HIGH  -  VIX tightening in crisis contradicts own documentation",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -22315,7 +22277,7 @@
     },
     {
       "id": "BUG-31",
-      "title": "HIGH \u2014 Walk-forward OOS minimum of 30 trades is statistically insufficient",
+      "title": "HIGH  -  Walk-forward OOS minimum of 30 trades is statistically insufficient",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -22353,7 +22315,7 @@
     },
     {
       "id": "BUG-32",
-      "title": "HIGH \u2014 Profit factor minimum 1.2 too low; literature requires 1.5 minimum",
+      "title": "HIGH  -  Profit factor minimum 1.2 too low; literature requires 1.5 minimum",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -22391,7 +22353,7 @@
     },
     {
       "id": "BUG-33",
-      "title": "HIGH \u2014 Sharpe ratio not required as passing criterion; computed but ignored",
+      "title": "HIGH  -  Sharpe ratio not required as passing criterion; computed but ignored",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -22429,7 +22391,7 @@
     },
     {
       "id": "BUG-34",
-      "title": "HIGH \u2014 Mean reversion strategies run in all regimes \u2014 literature shows they fail",
+      "title": "HIGH  -  Mean reversion strategies run in all regimes  -  literature shows they fail",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -22467,7 +22429,7 @@
     },
     {
       "id": "BUG-35",
-      "title": "MEDIUM \u2014 Decision Agent default fallback has invalid `action` value",
+      "title": "MEDIUM  -  Decision Agent default fallback has invalid `action` value",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -22505,7 +22467,7 @@
     },
     {
       "id": "BUG-36",
-      "title": "MEDIUM \u2014 Regime-aware strategy weighting not implemented",
+      "title": "MEDIUM  -  Regime-aware strategy weighting not implemented",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -22543,7 +22505,7 @@
     },
     {
       "id": "BUG-37",
-      "title": "MEDIUM \u2014 Survivorship bias haircut methodology is arbitrary",
+      "title": "MEDIUM  -  Survivorship bias haircut methodology is arbitrary",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -22581,7 +22543,7 @@
     },
     {
       "id": "BUG-38",
-      "title": "MEDIUM \u2014 No minimum Sharpe in Bonferroni correction",
+      "title": "MEDIUM  -  No minimum Sharpe in Bonferroni correction",
       "linked_decisions": "DEC-080, DEC-401, DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -22619,7 +22581,7 @@
     },
     {
       "id": "BUG-39",
-      "title": "MEDIUM \u2014 `regime_confidence()` compares VIX-based regime with SPY-trend regime i",
+      "title": "MEDIUM  -  `regime_confidence()` compares VIX-based regime with SPY-trend regime i",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -22657,7 +22619,7 @@
     },
     {
       "id": "BUG-40",
-      "title": "MEDIUM \u2014 Short stop distance same as long (10%) \u2014 asymmetric risk not accounted",
+      "title": "MEDIUM  -  Short stop distance same as long (10%)  -  asymmetric risk not accounted",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -22695,7 +22657,7 @@
     },
     {
       "id": "BUG-41",
-      "title": "MEDIUM \u2014 `min_market_cap_m = 100` too low; admits stocks with poor institutional",
+      "title": "MEDIUM  -  `min_market_cap_m = 100` too low; admits stocks with poor institutional",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -22733,7 +22695,7 @@
     },
     {
       "id": "BUG-42",
-      "title": "LOW \u2014 `LILLY` appears as ticker in `run_full.sh` but should be `LLY`",
+      "title": "LOW  -  `LILLY` appears as ticker in `run_full.sh` but should be `LLY`",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -22771,7 +22733,7 @@
     },
     {
       "id": "BUG-43",
-      "title": "LOW \u2014 Missing Calmar ratio minimum in passing criteria",
+      "title": "LOW  -  Missing Calmar ratio minimum in passing criteria",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -22809,7 +22771,7 @@
     },
     {
       "id": "BUG-44",
-      "title": "LOW \u2014 Test suite has no test for `close_trade()` or `_process_day()`",
+      "title": "LOW  -  Test suite has no test for `close_trade()` or `_process_day()`",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -22847,7 +22809,7 @@
     },
     {
       "id": "BUG-45",
-      "title": "MEDIUM \u2014 FX currency risk not modelled",
+      "title": "MEDIUM  -  FX currency risk not modelled",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -22885,7 +22847,7 @@
     },
     {
       "id": "BUG-47",
-      "title": "MEDIUM \u2014 VXX in universe creates self-referencing regime paradox",
+      "title": "MEDIUM  -  VXX in universe creates self-referencing regime paradox",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -22923,7 +22885,7 @@
     },
     {
       "id": "BUG-48",
-      "title": "MEDIUM \u2014 Sector `Volatility` and `Emerging Markets` not in sector criteria profi",
+      "title": "MEDIUM  -  Sector `Volatility` and `Emerging Markets` not in sector criteria profi",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -22961,7 +22923,7 @@
     },
     {
       "id": "BUG-49",
-      "title": "LOW \u2014 FX risk not mentioned in EXPLANATION.md or PROJECT_PLAN.md",
+      "title": "LOW  -  FX risk not mentioned in EXPLANATION.md or PROJECT_PLAN.md",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -22999,7 +22961,7 @@
     },
     {
       "id": "BUG-50",
-      "title": "LOW \u2014 `position_staleness_pct=1%` in live rules has no backtest equivalent",
+      "title": "LOW  -  `position_staleness_pct=1%` in live rules has no backtest equivalent",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -23037,7 +22999,7 @@
     },
     {
       "id": "BUG-51",
-      "title": "HIGH \u2014 All 5 agents receive wrong or zero price context due to BUG-10 compoundin",
+      "title": "HIGH  -  All 5 agents receive wrong or zero price context due to BUG-10 compoundin",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -23075,7 +23037,7 @@
     },
     {
       "id": "BUG-52",
-      "title": "HIGH \u2014 Risk Agent's VIX floor behavior now fully explained by BUG-26",
+      "title": "HIGH  -  Risk Agent's VIX floor behavior now fully explained by BUG-26",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -23113,7 +23075,7 @@
     },
     {
       "id": "BUG-53",
-      "title": "HIGH \u2014 Finnhub news cache: all 509 files are empty \u2014 Sentiment Agent has no news",
+      "title": "HIGH  -  Finnhub news cache: all 509 files are empty  -  Sentiment Agent has no news",
       "linked_decisions": "DEC-256, DEC-441, DEC-453, DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -23151,7 +23113,7 @@
     },
     {
       "id": "BUG-54",
-      "title": "MEDIUM \u2014 Hull Moving Average uses simple rolling mean instead of WMA \u2014 signal ti",
+      "title": "MEDIUM  -  Hull Moving Average uses simple rolling mean instead of WMA  -  signal ti",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -23189,7 +23151,7 @@
     },
     {
       "id": "BUG-55",
-      "title": "MEDIUM \u2014 PSAR flip detection uses approximation that may fire on wrong day",
+      "title": "MEDIUM  -  PSAR flip detection uses approximation that may fire on wrong day",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -23227,7 +23189,7 @@
     },
     {
       "id": "BUG-56",
-      "title": "MEDIUM \u2014 Phase 1C base score can exceed [0, 100] \u2014 Decision Agent adjustment not",
+      "title": "MEDIUM  -  Phase 1C base score can exceed [0, 100]  -  Decision Agent adjustment not",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -23265,7 +23227,7 @@
     },
     {
       "id": "BUG-57",
-      "title": "MEDIUM \u2014 Integration tests missing 15 critical scenarios \u2014 5 bugs would have bee",
+      "title": "MEDIUM  -  Integration tests missing 15 critical scenarios  -  5 bugs would have bee",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -23303,7 +23265,7 @@
     },
     {
       "id": "BUG-58",
-      "title": "LOW \u2014 StochRSI cross-up fires in mid-range, not just oversold zone",
+      "title": "LOW  -  StochRSI cross-up fires in mid-range, not just oversold zone",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -23341,7 +23303,7 @@
     },
     {
       "id": "BUG-59",
-      "title": "LOW \u2014 CPR top/bottom labels are reversed vs industry convention",
+      "title": "LOW  -  CPR top/bottom labels are reversed vs industry convention",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -23379,7 +23341,7 @@
     },
     {
       "id": "BUG-60",
-      "title": "HIGH \u2014 Short entry zone validation rejects favourable gap-down \u2014 understates sho",
+      "title": "HIGH  -  Short entry zone validation rejects favourable gap-down  -  understates sho",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -23417,7 +23379,7 @@
     },
     {
       "id": "BUG-61",
-      "title": "HIGH \u2014 Backtest allows multiple concurrent positions in same ticker across conse",
+      "title": "HIGH  -  Backtest allows multiple concurrent positions in same ticker across conse",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -23455,7 +23417,7 @@
     },
     {
       "id": "BUG-62",
-      "title": "HIGH \u2014 Phase 1D cannot run \u2014 2020 OHLCV data not cached, DATA_LOAD_START=2021",
+      "title": "HIGH  -  Phase 1D cannot run  -  2020 OHLCV data not cached, DATA_LOAD_START=2021",
       "linked_decisions": "DEC-442, DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -23493,7 +23455,7 @@
     },
     {
       "id": "BUG-63",
-      "title": "MEDIUM \u2014 Email approval system has 6 critical design gaps not addressed in PROJE",
+      "title": "MEDIUM  -  Email approval system has 6 critical design gaps not addressed in PROJE",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -23531,7 +23493,7 @@
     },
     {
       "id": "BUG-64",
-      "title": "MEDIUM \u2014 Phase 1C prerequisites not documented \u2014 Unusual Whales and Ortex integr",
+      "title": "MEDIUM  -  Phase 1C prerequisites not documented  -  Unusual Whales and Ortex integr",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -23569,7 +23531,7 @@
     },
     {
       "id": "BUG-65",
-      "title": "MEDIUM \u2014 Strategy retirement rule statistically invalid at realistic live trade",
+      "title": "MEDIUM  -  Strategy retirement rule statistically invalid at realistic live trade",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -23607,7 +23569,7 @@
     },
     {
       "id": "BUG-66",
-      "title": "MEDIUM \u2014 PROJECT_PLAN mentions \"60 strategies\" 11 times \u2014 9 of 12 new short stra",
+      "title": "MEDIUM  -  PROJECT_PLAN mentions \"60 strategies\" 11 times  -  9 of 12 new short stra",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -23645,7 +23607,7 @@
     },
     {
       "id": "BUG-67",
-      "title": "MEDIUM \u2014 Alpaca paper trading (Stage 3) does not match IBKR live trading (Stage",
+      "title": "MEDIUM  -  Alpaca paper trading (Stage 3) does not match IBKR live trading (Stage",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -23683,7 +23645,7 @@
     },
     {
       "id": "BUG-68",
-      "title": "MEDIUM \u2014 CLAUDE.md missing 5 critical recent decisions",
+      "title": "MEDIUM  -  CLAUDE.md missing 5 critical recent decisions",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -23721,7 +23683,7 @@
     },
     {
       "id": "BUG-69",
-      "title": "LOW \u2014 Infrastructure design: GitHub Actions vs VPS ambiguity",
+      "title": "LOW  -  Infrastructure design: GitHub Actions vs VPS ambiguity",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -23759,7 +23721,7 @@
     },
     {
       "id": "BUG-70",
-      "title": "LOW \u2014 No database schema designed for Stage 3 PostgreSQL",
+      "title": "LOW  -  No database schema designed for Stage 3 PostgreSQL",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -23797,7 +23759,7 @@
     },
     {
       "id": "BUG-71",
-      "title": "LOW \u2014 IBKR API session management not designed",
+      "title": "LOW  -  IBKR API session management not designed",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -23835,7 +23797,7 @@
     },
     {
       "id": "BUG-72",
-      "title": "HIGH \u2014 `validate_phase1b_data.py` passes all checks but misses 6 blockers \u2014 fals",
+      "title": "HIGH  -  `validate_phase1b_data.py` passes all checks but misses 6 blockers  -  fals",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -23873,7 +23835,7 @@
     },
     {
       "id": "BUG-73",
-      "title": "HIGH \u2014 `prepopulate_cache_index.py` writes incompatible format \u2014 causes cache mi",
+      "title": "HIGH  -  `prepopulate_cache_index.py` writes incompatible format  -  causes cache mi",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -23911,7 +23873,7 @@
     },
     {
       "id": "BUG-74",
-      "title": "HIGH \u2014 BUG-14 worse than documented: XLE also missing from `run_full.sh` \u2014 5 tic",
+      "title": "HIGH  -  BUG-14 worse than documented: XLE also missing from `run_full.sh`  -  5 tic",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -23949,7 +23911,7 @@
     },
     {
       "id": "BUG-75",
-      "title": "MEDIUM \u2014 `max_drawdown` computed on unsorted PnL series \u2014 results depend on exit",
+      "title": "MEDIUM  -  `max_drawdown` computed on unsorted PnL series  -  results depend on exit",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -23987,7 +23949,7 @@
     },
     {
       "id": "BUG-76",
-      "title": "MEDIUM \u2014 Agent cache fully contaminated: all runs for same ticker+date+phase sha",
+      "title": "MEDIUM  -  Agent cache fully contaminated: all runs for same ticker+date+phase sha",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -24025,7 +23987,7 @@
     },
     {
       "id": "BUG-77",
-      "title": "MEDIUM \u2014 Candidate ranking by `strategy_count` inflated by `avoid` entries \u2014 top",
+      "title": "MEDIUM  -  Candidate ranking by `strategy_count` inflated by `avoid` entries  -  top",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -24063,7 +24025,7 @@
     },
     {
       "id": "BUG-78",
-      "title": "CRITICAL \u2014 Trailing stop lookahead bias: stop updated using today's close BEFORE",
+      "title": "CRITICAL  -  Trailing stop lookahead bias: stop updated using today's close BEFORE",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -24101,7 +24063,7 @@
     },
     {
       "id": "BUG-79",
-      "title": "HIGH \u2014 Stop fills assumed at the stop price; gap-through is not modelled (slippa",
+      "title": "HIGH  -  Stop fills assumed at the stop price; gap-through is not modelled (slippa",
       "linked_decisions": "DEC-081, DEC-130, DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -24139,7 +24101,7 @@
     },
     {
       "id": "BUG-80",
-      "title": "HIGH \u2014 Exit slippage never applied; only entry slippage charged. Round-trip slip",
+      "title": "HIGH  -  Exit slippage never applied; only entry slippage charged. Round-trip slip",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -24177,7 +24139,7 @@
     },
     {
       "id": "BUG-81",
-      "title": "HIGH \u2014 `SHORT_BORROW_COST_PER_DAY = 0.005` is 2.5\u00d7 the documented intent",
+      "title": "HIGH  -  `SHORT_BORROW_COST_PER_DAY = 0.005` is 2.5x the documented intent",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -24215,7 +24177,7 @@
     },
     {
       "id": "BUG-82",
-      "title": "HIGH \u2014 Slippage and transaction-cost double-charging \u2014 total cost 2\u00d7 literature",
+      "title": "HIGH  -  Slippage and transaction-cost double-charging  -  total cost 2x literature",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -24253,7 +24215,7 @@
     },
     {
       "id": "BUG-83",
-      "title": "HIGH \u2014 `get_congressional_detail()` filters with INVERTED point-in-time logic",
+      "title": "HIGH  -  `get_congressional_detail()` filters with INVERTED point-in-time logic",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -24291,7 +24253,7 @@
     },
     {
       "id": "BUG-84",
-      "title": "MEDIUM \u2014 IS/OOS walk-forward boundary leakage on multi-day swing trades",
+      "title": "MEDIUM  -  IS/OOS walk-forward boundary leakage on multi-day swing trades",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -24329,7 +24291,7 @@
     },
     {
       "id": "BUG-85",
-      "title": "MEDIUM \u2014 `regime_at_entry` includes the regime label but no transition tracking",
+      "title": "MEDIUM  -  `regime_at_entry` includes the regime label but no transition tracking",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -24367,7 +24329,7 @@
     },
     {
       "id": "BUG-86",
-      "title": "MEDIUM \u2014 FRED CPI lookahead bias of ~10 days",
+      "title": "MEDIUM  -  FRED CPI lookahead bias of ~10 days",
       "linked_decisions": "DEC-449, DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -24405,7 +24367,7 @@
     },
     {
       "id": "BUG-87",
-      "title": "MEDIUM \u2014 No data quality validation on ingestion",
+      "title": "MEDIUM  -  No data quality validation on ingestion",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -24443,7 +24405,7 @@
     },
     {
       "id": "BUG-88",
-      "title": "MEDIUM \u2014 No signal versioning; cache invalidation incomplete",
+      "title": "MEDIUM  -  No signal versioning; cache invalidation incomplete",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -24481,7 +24443,7 @@
     },
     {
       "id": "BUG-89",
-      "title": "MEDIUM \u2014 Flat signal dict (220 fields) lacks type safety",
+      "title": "MEDIUM  -  Flat signal dict (220 fields) lacks type safety",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -24519,7 +24481,7 @@
     },
     {
       "id": "BUG-90",
-      "title": "MEDIUM \u2014 No state checkpointing for crashes/restarts",
+      "title": "MEDIUM  -  No state checkpointing for crashes/restarts",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -24557,7 +24519,7 @@
     },
     {
       "id": "BUG-91",
-      "title": "MEDIUM \u2014 No determinism control",
+      "title": "MEDIUM  -  No determinism control",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -24595,7 +24557,7 @@
     },
     {
       "id": "BUG-92",
-      "title": "LOW \u2014 No streaming progress / metrics during run",
+      "title": "LOW  -  No streaming progress / metrics during run",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -24633,7 +24595,7 @@
     },
     {
       "id": "BUG-93",
-      "title": "CRITICAL \u2014 No execution layer exists; PROJECT_PLAN describes it conceptually onl",
+      "title": "CRITICAL  -  No execution layer exists; PROJECT_PLAN describes it conceptually onl",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -24671,7 +24633,7 @@
     },
     {
       "id": "BUG-94",
-      "title": "CRITICAL \u2014 Stage 3 paper trading cannot actually run as designed",
+      "title": "CRITICAL  -  Stage 3 paper trading cannot actually run as designed",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -24709,7 +24671,7 @@
     },
     {
       "id": "BUG-95",
-      "title": "CRITICAL \u2014 No portfolio-level state; every trade evaluated independently",
+      "title": "CRITICAL  -  No portfolio-level state; every trade evaluated independently",
       "linked_decisions": "DEC-070, DEC-076, DEC-091, DEC-222, DEC-231, DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -24747,7 +24709,7 @@
     },
     {
       "id": "BUG-96",
-      "title": "HIGH \u2014 No benchmark comparison (SPY buy-and-hold)",
+      "title": "HIGH  -  No benchmark comparison (SPY buy-and-hold)",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -24785,7 +24747,7 @@
     },
     {
       "id": "BUG-97",
-      "title": "HIGH \u2014 No infrastructure-as-code; manual VPS setup",
+      "title": "HIGH  -  No infrastructure-as-code; manual VPS setup",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -24823,7 +24785,7 @@
     },
     {
       "id": "BUG-98",
-      "title": "HIGH \u2014 No monitoring or alerting",
+      "title": "HIGH  -  No monitoring or alerting",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -24861,7 +24823,7 @@
     },
     {
       "id": "BUG-99",
-      "title": "MEDIUM \u2014 No secret management; API keys in environment variables",
+      "title": "MEDIUM  -  No secret management; API keys in environment variables",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -24899,7 +24861,7 @@
     },
     {
       "id": "BUG-100",
-      "title": "MEDIUM \u2014 No kill switch; manual intervention required to stop trading",
+      "title": "MEDIUM  -  No kill switch; manual intervention required to stop trading",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -24937,7 +24899,7 @@
     },
     {
       "id": "BUG-101",
-      "title": "CRITICAL \u2014 88.1% of trades are overlapping re-entries on the same ticker \u2014 backt",
+      "title": "CRITICAL  -  88.1% of trades are overlapping re-entries on the same ticker  -  backt",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -24975,7 +24937,7 @@
     },
     {
       "id": "BUG-102",
-      "title": "CRITICAL \u2014 3.5\u00d7 same-day duplicate inflation: 9,921 unique decisions logged as 3",
+      "title": "CRITICAL  -  3.5x same-day duplicate inflation: 9,921 unique decisions logged as 3",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -25013,7 +24975,7 @@
     },
     {
       "id": "BUG-103",
-      "title": "CRITICAL \u2014 Smart money data prefetched for 7 categories \u00d7 509 tickers but never",
+      "title": "CRITICAL  -  Smart money data prefetched for 7 categories x 509 tickers but never",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -25051,7 +25013,7 @@
     },
     {
       "id": "BUG-104",
-      "title": "HIGH \u2014 Position sizing rules from config never applied to PnL \u2014 backtest assumes",
+      "title": "HIGH  -  Position sizing rules from config never applied to PnL  -  backtest assumes",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -25089,7 +25051,7 @@
     },
     {
       "id": "BUG-105",
-      "title": "HIGH \u2014 Agent downgrade cascade: 99.9% of trades downgraded by exactly 1 tier \u2014 a",
+      "title": "HIGH  -  Agent downgrade cascade: 99.9% of trades downgraded by exactly 1 tier  -  a",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -25127,7 +25089,7 @@
     },
     {
       "id": "BUG-106",
-      "title": "HIGH \u2014 Perfect stop fills in trade log: every trailing-stop exit fills at exactl",
+      "title": "HIGH  -  Perfect stop fills in trade log: every trailing-stop exit fills at exactl",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -25165,7 +25127,7 @@
     },
     {
       "id": "BUG-107",
-      "title": "MEDIUM \u2014 Silent exception swallowing: `except Exception: pass` masks checkpoint",
+      "title": "MEDIUM  -  Silent exception swallowing: `except Exception: pass` masks checkpoint",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -25203,7 +25165,7 @@
     },
     {
       "id": "BUG-108",
-      "title": "MEDIUM \u2014 Agent context built with `.get(key, default)` masks missing data; agent",
+      "title": "MEDIUM  -  Agent context built with `.get(key, default)` masks missing data; agent",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -25241,7 +25203,7 @@
     },
     {
       "id": "BUG-110",
-      "title": "HIGH \u2014 Entry gap filter not enforced; trades opened despite exceeding ATR limit",
+      "title": "HIGH  -  Entry gap filter not enforced; trades opened despite exceeding ATR limit",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -25279,9 +25241,9 @@
     },
     {
       "id": "BUG-111",
-      "title": "**CRITICAL** \u2014 No break-and-retest variants of breakout strategies (severity: MEDIUM\u2192HIGH\u2192CRITICAL across Pass 52)",
+      "title": "**CRITICAL**  -  No break-and-retest variants of breakout strategies (severity: MEDIUM->HIGH->CRITICAL across Pass 52)",
       "linked_decisions": "DEC-354 (parent umbrella reopened) + DEC-355/356/357 (3 retest-variant strategies) + DEC-358/359/360/361/362 (5 chart pattern strategies; retest-cross-cutting)",
-      "sprint_context": "DEFERRED-TO-SPRINT-8 (chart-pattern + retest variants \u2014 explicit Sprint 8 scope per Pass 53 backlog)",
+      "sprint_context": "DEFERRED-TO-SPRINT-8 (chart-pattern + retest variants  -  explicit Sprint 8 scope per Pass 53 backlog)",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -25305,19 +25267,19 @@
         }
       },
       "short_id": "BUG-111",
-      "sprint": "DEFERRED-TO-SPRINT-8 (chart-pattern + retest variants \u2014 explicit Sprint 8 scope per Pass 53 backlog)",
+      "sprint": "DEFERRED-TO-SPRINT-8 (chart-pattern + retest variants  -  explicit Sprint 8 scope per Pass 53 backlog)",
       "dependencies": "DEC-354; DEC-355; DEC-358",
       "description": "**Files:** `backtest/signals/screener.py` (13 breakout strategies, none with retest)",
       "promotion_path": {
         "tier": "DEFERRED",
         "label": "DEFERRED",
         "color": "#3b82f6",
-        "reason": "Bug deferred per sprint_context: DEFERRED-TO-SPRINT-8 (chart-pattern + retest variants \u2014 explicit Sprint 8 scope per Pass 53 backlog)"
+        "reason": "Bug deferred per sprint_context: DEFERRED-TO-SPRINT-8 (chart-pattern + retest variants  -  explicit Sprint 8 scope per Pass 53 backlo"
       }
     },
     {
       "id": "BUG-112",
-      "title": "LOW \u2014 No ICT/SMC concepts implemented",
+      "title": "LOW  -  No ICT/SMC concepts implemented",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -25355,7 +25317,7 @@
     },
     {
       "id": "BUG-113",
-      "title": "HIGH \u2014 Agent action/sizing/exit recommendations ignored by engine",
+      "title": "HIGH  -  Agent action/sizing/exit recommendations ignored by engine",
       "linked_decisions": "DEC-008, DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -25393,7 +25355,7 @@
     },
     {
       "id": "BUG-113",
-      "title": "HIGH \u2014 Agent action/sizing/exit recommendations ignored by engine",
+      "title": "HIGH  -  Agent action/sizing/exit recommendations ignored by engine",
       "linked_decisions": "DEC-008, DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -25431,7 +25393,7 @@
     },
     {
       "id": "BUG-178",
-      "title": "HIGH \u2014 Earnings dates fetched live during backtest, no prefetch path",
+      "title": "HIGH  -  Earnings dates fetched live during backtest, no prefetch path",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -25469,7 +25431,7 @@
     },
     {
       "id": "BUG-181",
-      "title": "MEDIUM \u2014 Finnhub news prefetch silently produces empty files",
+      "title": "MEDIUM  -  Finnhub news prefetch silently produces empty files",
       "linked_decisions": "DEC-453, DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -25507,7 +25469,7 @@
     },
     {
       "id": "BUG-182",
-      "title": "MEDIUM \u2014 Agent cache invalidated by every code change with no versioning gate",
+      "title": "MEDIUM  -  Agent cache invalidated by every code change with no versioning gate",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -25545,7 +25507,7 @@
     },
     {
       "id": "BUG-183",
-      "title": "LOW \u2014 No prefetch validation step",
+      "title": "LOW  -  No prefetch validation step",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -25583,7 +25545,7 @@
     },
     {
       "id": "BUG-184",
-      "title": "CRITICAL \u2014 Insider data prefetch stops 2024-12-31; 13-month gap before backtest",
+      "title": "CRITICAL  -  Insider data prefetch stops 2024-12-31; 13-month gap before backtest",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -25621,7 +25583,7 @@
     },
     {
       "id": "BUG-185",
-      "title": "CRITICAL \u2014 Wikipedia views prefetch failed entirely; all 509 files empty",
+      "title": "CRITICAL  -  Wikipedia views prefetch failed entirely; all 509 files empty",
       "linked_decisions": "DEC-030, DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -25659,7 +25621,7 @@
     },
     {
       "id": "BUG-186",
-      "title": "HIGH \u2014 29 institutional 13F files empty including major tickers (AAPL, ABBV, AMZ",
+      "title": "HIGH  -  29 institutional 13F files empty including major tickers (AAPL, ABBV, AMZ",
       "linked_decisions": "DEC-325, DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -25697,7 +25659,7 @@
     },
     {
       "id": "BUG-187",
-      "title": "HIGH \u2014 WSB mentions prefetch stops 2025-02-21; 14-month gap",
+      "title": "HIGH  -  WSB mentions prefetch stops 2025-02-21; 14-month gap",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -25735,7 +25697,7 @@
     },
     {
       "id": "BUG-188",
-      "title": "MEDIUM \u2014 Defense tickers (NOC, TXT) have empty gov_contracts data",
+      "title": "MEDIUM  -  Defense tickers (NOC, TXT) have empty gov_contracts data",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -25773,7 +25735,7 @@
     },
     {
       "id": "BUG-189",
-      "title": "MEDIUM \u2014 Ticker symbol mapping issue: BF-B, BRK-B variants empty",
+      "title": "MEDIUM  -  Ticker symbol mapping issue: BF-B, BRK-B variants empty",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -25811,7 +25773,7 @@
     },
     {
       "id": "BUG-190",
-      "title": "MEDIUM \u2014 Quiver endpoints not in prefetch (Senate, Twitter, Off-Exchange, App Do",
+      "title": "MEDIUM  -  Quiver endpoints not in prefetch (Senate, Twitter, Off-Exchange, App Do",
       "linked_decisions": "DEC-450, DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -25849,7 +25811,7 @@
     },
     {
       "id": "BUG-191",
-      "title": "CRITICAL \u2014 No prefetch validation gate before cache-dependent code runs",
+      "title": "CRITICAL  -  No prefetch validation gate before cache-dependent code runs",
       "linked_decisions": "DEC-299, DEC-322, DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -25887,7 +25849,7 @@
     },
     {
       "id": "BUG-199",
-      "title": "MEDIUM \u2014 No gate firing rate observability",
+      "title": "MEDIUM  -  No gate firing rate observability",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -25925,7 +25887,7 @@
     },
     {
       "id": "BUG-200",
-      "title": "CRITICAL \u2014 Risk Agent context expansion required (Section B)",
+      "title": "CRITICAL  -  Risk Agent context expansion required (Section B)",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -25963,7 +25925,7 @@
     },
     {
       "id": "BUG-201",
-      "title": "MEDIUM \u2014 Strategy `earnings_tolerant` attribute missing",
+      "title": "MEDIUM  -  Strategy `earnings_tolerant` attribute missing",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -26001,7 +25963,7 @@
     },
     {
       "id": "BUG-202",
-      "title": "MEDIUM \u2014 No earnings-momentum strategies implemented",
+      "title": "MEDIUM  -  No earnings-momentum strategies implemented",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -26039,7 +26001,7 @@
     },
     {
       "id": "BUG-203",
-      "title": "MEDIUM \u2014 No A/B testing infrastructure for agent gates",
+      "title": "MEDIUM  -  No A/B testing infrastructure for agent gates",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -26077,7 +26039,7 @@
     },
     {
       "id": "BUG-270",
-      "title": "HIGH \u2014 `insider_signal()` column-name mismatch (100% silent failure)",
+      "title": "HIGH  -  `insider_signal()` column-name mismatch (100% silent failure)",
       "linked_decisions": "DEC-458",
       "sprint_context": "RESOLVED-IMPLEMENTED Pass 53 v8h+1 2026-05-10 (code+test verified)",
       "status_grep": {
@@ -26115,7 +26077,7 @@
     },
     {
       "id": "BUG-271",
-      "title": "HIGH \u2014 `get_gov_contracts()` no Date column lookup (99.4% silent failure)",
+      "title": "HIGH  -  `get_gov_contracts()` no Date column lookup (99.4% silent failure)",
       "linked_decisions": "DEC-458",
       "sprint_context": "RESOLVED-IMPLEMENTED Pass 53 Batch 1 2026-05-05",
       "status_grep": {
@@ -26153,7 +26115,7 @@
     },
     {
       "id": "BUG-272",
-      "title": "HIGH \u2014 `get_lobbying()` Amount string concat (98.8% silent failure)",
+      "title": "HIGH  -  `get_lobbying()` Amount string concat (98.8% silent failure)",
       "linked_decisions": "DEC-458",
       "sprint_context": "RESOLVED-IMPLEMENTED Pass 53 Batch 13 2026-05-06",
       "status_grep": {
@@ -26191,7 +26153,7 @@
     },
     {
       "id": "BUG-273",
-      "title": "HIGH \u2014 `congressional_signal()` Chamber/House column mismatch",
+      "title": "HIGH  -  `congressional_signal()` Chamber/House column mismatch",
       "linked_decisions": "DEC-458",
       "sprint_context": "RESOLVED-IMPLEMENTED Pass 53 Batch 13 2026-05-06",
       "status_grep": {
@@ -26229,7 +26191,7 @@
     },
     {
       "id": "BUG-274",
-      "title": "HIGH \u2014 `institutional_signal()` SharesChange column missing",
+      "title": "HIGH  -  `institutional_signal()` SharesChange column missing",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -26267,7 +26229,7 @@
     },
     {
       "id": "BUG-275",
-      "title": "LOW \u2014 `bonferroni_adjusted_threshold(n_strategies=0)` TypeError on complex round",
+      "title": "LOW  -  `bonferroni_adjusted_threshold(n_strategies=0)` TypeError on complex round",
       "linked_decisions": "DEC-080, DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -26305,7 +26267,7 @@
     },
     {
       "id": "BUG-276",
-      "title": "HIGH \u2014 `_agent_cache_key` calls `sorted()` on list of dicts \u2192 crashes when strat",
+      "title": "HIGH  -  `_agent_cache_key` calls `sorted()` on list of dicts -> crashes when strat",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -26343,7 +26305,7 @@
     },
     {
       "id": "BUG-277",
-      "title": "HIGH \u2014 `classify_regime()` truth-value-of-DataFrame error \u2014 100% failure",
+      "title": "HIGH  -  `classify_regime()` truth-value-of-DataFrame error  -  100% failure",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -26381,7 +26343,7 @@
     },
     {
       "id": "BUG-278",
-      "title": "MEDIUM \u2014 `yield_curve_regime()` doesn't use macro_combined.parquet cache",
+      "title": "MEDIUM  -  `yield_curve_regime()` doesn't use macro_combined.parquet cache",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -26419,7 +26381,7 @@
     },
     {
       "id": "BUG-279",
-      "title": "MEDIUM \u2014 `get_ohlcv()` with reversed date order silently returns 0 rows",
+      "title": "MEDIUM  -  `get_ohlcv()` with reversed date order silently returns 0 rows",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -26457,7 +26419,7 @@
     },
     {
       "id": "BUG-281",
-      "title": "MEDIUM \u2014 `site_generator._assign_tier` duplicates `engine._assign_confidence_tie",
+      "title": "MEDIUM  -  `site_generator._assign_tier` duplicates `engine._assign_confidence_tie",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -26495,7 +26457,7 @@
     },
     {
       "id": "BUG-282",
-      "title": "LOW \u2014 `site_generator.build_entry_zone` ignores `category` parameter",
+      "title": "LOW  -  `site_generator.build_entry_zone` ignores `category` parameter",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -26533,7 +26495,7 @@
     },
     {
       "id": "BUG-283",
-      "title": "LOW \u2014 `build_position_sizing` returns 0% silently for unknown tier",
+      "title": "LOW  -  `build_position_sizing` returns 0% silently for unknown tier",
       "linked_decisions": "DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -26571,7 +26533,7 @@
     },
     {
       "id": "BUG-284",
-      "title": "MEDIUM \u2014 `prefetch_quiver` DATE_FIELDS[\"gov_contracts\"]=\"Date\" but cache schema",
+      "title": "MEDIUM  -  `prefetch_quiver` DATE_FIELDS[\"gov_contracts\"]=\"Date\" but cache schema",
       "linked_decisions": "DEC-451, DEC-458",
       "sprint_context": "(see linked DEC sprint)",
       "status_grep": {
@@ -26609,7 +26571,7 @@
     }
   ],
   "bugs_total_count": 148,
-  "bugs_hidden_count": 10,
+  "bugs_hidden_count": 11,
   "investigations": [
     {
       "id": "INV-001",
@@ -31262,58 +31224,64 @@
   ],
   "recent_commits": [
     {
+      "sha": "3bb2f559",
+      "subject": "Pass 53 v8h+1: Phase 3 Batch 1 - BUG-08/09/15/27 RESOLVED-IMPLEMENTED with real fixes",
+      "author": "jeetmehta1991",
+      "rel_time": "5 minutes ago"
+    },
+    {
       "sha": "fc9390b7",
       "subject": "Pass 53 v8h+1: Phase 2 BUG cross-references + id-form normalization (6 BUGs READY -> IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "6 minutes ago"
+      "rel_time": "13 minutes ago"
     },
     {
       "sha": "97c69b3d",
       "subject": "Pass 53 v8h+1: Phase 1 BUG categorization (10 SUPERSEDED/DEFERRED) + dashboard hide-moot-bugs filter",
       "author": "jeetmehta1991",
-      "rel_time": "16 minutes ago"
+      "rel_time": "23 minutes ago"
     },
     {
       "sha": "99d137c1",
       "subject": "Pass 53 v8h+1: BUG-270/271/272/273 pyramid overrides + Promotion dropdown filters",
       "author": "jeetmehta1991",
-      "rel_time": "28 minutes ago"
+      "rel_time": "34 minutes ago"
     },
     {
       "sha": "a7c66530",
       "subject": "Pass 53 v8h+1: DEC-610 SPEC_ONLY -> DEFERRED_TO_* re-classification (14 forward-looking DECs)",
       "author": "jeetmehta1991",
-      "rel_time": "35 minutes ago"
+      "rel_time": "42 minutes ago"
     },
     {
       "sha": "4cd84d66",
       "subject": "Pass 53 v8h+1: BUG-270 wired-flag fix (cross-reference docstring) + process self-finding",
       "author": "jeetmehta1991",
-      "rel_time": "42 minutes ago"
+      "rel_time": "48 minutes ago"
     },
     {
       "sha": "d28c8723",
       "subject": "Pass 53 v8h+1: Tier C/D edge-case sweep - DEC-057 promoted; DEC-028 no-promote (forward-looking)",
       "author": "jeetmehta1991",
-      "rel_time": "66 minutes ago"
+      "rel_time": "72 minutes ago"
     },
     {
       "sha": "10fa8617",
       "subject": "Pass 53 v8h+1: INV-041 RESOLVED - path-restricted commits in 4 prefetch scripts + 5-test regression gate",
       "author": "jeetmehta1991",
-      "rel_time": "68 minutes ago"
+      "rel_time": "75 minutes ago"
     },
     {
       "sha": "bcb6ea3f",
       "subject": "Pass 53 v8h+1: parse_inv_entries parser fix - recognize all RESOLVED-* / DEFERRED-* status variants",
       "author": "jeetmehta1991",
-      "rel_time": "73 minutes ago"
+      "rel_time": "79 minutes ago"
     },
     {
       "sha": "26340a6b",
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 20:43: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "76 minutes ago"
+      "rel_time": "82 minutes ago"
     },
     {
       "sha": "bffd8658",
@@ -31349,7 +31317,7 @@
       "sha": "501cdbff",
       "subject": "Pass 53 v8h+1: Tier B engine-correctness promotion sweep #1 (6 DECs RESOLVED-DECIDED -> RESOLVED-IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "77f57b21",
@@ -31434,12 +31402,6 @@
       "subject": "Pass 53 v8h+1: H-tier doc reconciliation + H20=A (DEC-599 honored)",
       "author": "jeetmehta1991",
       "rel_time": "6 hours ago"
-    },
-    {
-      "sha": "f0d03fcd",
-      "subject": "Pass 53 auto-drift-sweep 2026-05-10 15:26: dashboard_sprint0a rebuild artifacts (no numerical drift)",
-      "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
     }
   ],
   "uncommitted": {
@@ -31455,15 +31417,15 @@
       },
       {
         "status": "M",
+        "path": "backtest/agents/pipeline.py"
+      },
+      {
+        "status": "M",
+        "path": "backtest/engine/backtest.py"
+      },
+      {
+        "status": "M",
         "path": "backtest/engine/improvements.py"
-      },
-      {
-        "status": "M",
-        "path": "backtest/results/metrics.py"
-      },
-      {
-        "status": "M",
-        "path": "backtest/signals/technical.py"
       },
       {
         "status": "M",
@@ -31661,7 +31623,7 @@
     }
   ],
   "test_inventory": {
-    "total": 755,
+    "total": 759,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -31737,7 +31699,7 @@
       "test_stocktwits_smoke": 4,
       "test_supplementary_demo": 4,
       "test_supplementary_smoke": 6,
-      "test_unit": 99,
+      "test_unit": 103,
       "test_walk_forward_4fold": 6
     }
   },

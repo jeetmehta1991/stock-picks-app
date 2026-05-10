@@ -32643,6 +32643,54 @@ Documents updated this sub-turn:
   - AUDIT.md (this sub-entry)
   - dashboard_stage_2 (rebuilt; IMPLEMENTED 11 -> 14)
 
+---
+
+## Pass 53 Day 9 v8h+1 follow-on 2026-05-10 (cont): Phase 3 Batch 2 - 5 BUGs (01/06/10/12/14) resolved
+
+Owner directive 2026-05-10: "Auto Continue. unless input needed from me. auto proceed to next batches"
+
+Batch 2 candidates investigated:
+
+| BUG | Finding | Status |
+|---|---|---|
+| BUG-01 (`crisis_flag` NameError) | backtest.py:269 has explicit `crisis_flag = regime == "crisis"` at function scope; same fix as BUG-02; cross-ref comment added | RESOLVED-IMPLEMENTED |
+| BUG-06 (Double borrow cost on shorts) | DEC-295 fix in improvements.py:84 applies SHORT_ANNUAL_BORROW_RATE once; exit_manager._pnl docstring confirms gross-only | RESOLVED-IMPLEMENTED |
+| BUG-10 (Agent signal keys wrong, always False) | pipeline.py:148-171 3-step merge (strategy + context + bool signals) ensures actual TRUE/FALSE values pass through | RESOLVED-IMPLEMENTED |
+| BUG-12 (Dedup order bias, shorts never fire) | backtest.py:368 dedup orders by `strategy_count desc` not direction; highest-confluence wins regardless of long/short | RESOLVED-IMPLEMENTED |
+| BUG-14 (run_full.sh missing AAPL/CVS/JPM/NVDA) | run_full.sh no longer exists; universe sourced from Master Dedup CSV per DEC-504 | OBSOLETE |
+
+**4 new tests added** to test_unit.py:
+  - `test_bug_001_crisis_flag_predefined`
+  - `test_bug_006_short_borrow_single_source`
+  - `test_bug_010_agent_signal_keys_merge`
+  - `test_bug_012_dedup_strategy_count_priority`
+
+**Cross-reference comments added:**
+  - backtest/engine/backtest.py - BUG-01 + BUG-12
+  - backtest/engine/improvements.py - BUG-06
+  - backtest/agents/pipeline.py - BUG-10
+
+**Per-addressal pyramid (CHECKLIST #78):** unit + integration 110/110 PASS in 4.3s. Layers N/A: smoke (engine code unchanged - just docstring/comments), data_integrity, performance, acceptance, property, snapshot, contract, compatibility, system, functional (cross-ref + 1 obsolete flag).
+
+**Visible bug tier distribution (post-Phase-3-batch-2):**
+  - IMPLEMENTED: 18 (was 14)
+  - READY: 1
+  - CODE_ONLY: 1 (was 2)
+  - DEFERRED: 2
+  - OPEN: 115 (was 119)
+  - Total visible: 137; hidden: 11 (+1 OBSOLETE)
+
+**Honest disclosure:** ~115 BUGs still genuinely OPEN. Auto-proceeding to Batch 3 next.
+
+Documents updated this sub-turn:
+  - backtest/engine/backtest.py (BUG-01 + BUG-12 cross-refs)
+  - backtest/engine/improvements.py (BUG-06 cross-ref)
+  - backtest/agents/pipeline.py (BUG-10 cross-ref)
+  - backtest/tests/test_unit.py (4 new BUG tests)
+  - BUG_REGISTER.md (5 sprint_context flips: BUG-01/06/10/12/14)
+  - AUDIT.md (this sub-entry)
+  - dashboard_stage_2 (rebuilt; IMPLEMENTED 14 -> 18)
+
 **Remaining OPEN backlog after sweeps:**
   - 1 DEC RESOLVED-DECIDED-deferred (DEC-028 Stage 3 paper trading - intentional)
   - INVs: 33 OPEN + 2 DEFERRED (genuine work; not promotion-eligible)

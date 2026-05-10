@@ -264,6 +264,9 @@ class BacktestEngine:
         # and inner-loop set never executed). Per DEC-316 unknown regime exists.
         # BUG-02 RESOLVED-IMPLEMENTED Pass 53 v8h+1 cross-reference 2026-05-10:
         # this hoisting also addresses BUG-02 (`days` UnboundLocalError pattern).
+        # BUG-01 RESOLVED-IMPLEMENTED Pass 53 v8h+1 cross-reference 2026-05-10:
+        # this is the canonical crisis_flag pre-definition that prevents the
+        # original BUG-01 NameError when regime is not "crisis".
         crisis_flag = regime == "crisis"
         # Note: regime_ctx used for direction gating only  -  no position sizing in backtest
 
@@ -363,6 +366,11 @@ class BacktestEngine:
 
                 # Deduplication  -  one position per ticker per day (highest strategy count wins)
                 # Candidates are sorted by strategy_count desc, so first to fire wins
+                # BUG-12 RESOLVED-IMPLEMENTED Pass 53 v8h+1 cross-reference 2026-05-10:
+                # dedup ordering by strategy_count (not arbitrary long-before-short) means
+                # shorts CAN win when they have higher signal confluence. Original bug was
+                # "shorts never fire when long strategy fires first"; this fix removed
+                # the directional bias.
                 if ticker in opened_today:
                     self.skipped_trades.append({
                         "ticker": ticker, "date": as_of,

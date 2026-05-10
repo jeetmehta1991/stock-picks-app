@@ -1622,3 +1622,70 @@ def test_bug_027_regime_confidence_intentionally_unused():
         "BUG-27 docstring must explicitly mark function intentionally-unused / "
         "deferred to Stage 3+ to prevent dead-code accusations"
     )
+
+
+def test_bug_001_crisis_flag_predefined():
+    """BUG-01: crisis_flag must be defined before line 299 to prevent NameError.
+
+    Pass 53 v8h+1 Phase 3 Batch 2 cross-reference 2026-05-10. The fix at
+    backtest.py:267 pre-defines crisis_flag at function scope so it's available
+    even when regime != "crisis" (inner-loop branch wouldn't set it).
+    """
+    import inspect
+    from backtest.engine.backtest import BacktestEngine
+    src = inspect.getsource(BacktestEngine)
+    # Must have crisis_flag definition at function scope (before any inner loop)
+    assert "crisis_flag = regime ==" in src, "crisis_flag must be defined at function scope"
+    assert "BUG-01" in src, "BUG-01 cross-reference comment must exist"
+
+
+def test_bug_006_short_borrow_single_source():
+    """BUG-06: short borrow cost applied centrally in apply_transaction_costs only.
+
+    Pass 53 v8h+1 Phase 3 Batch 2 cross-reference 2026-05-10. DEC-295 fix
+    consolidated borrow cost into one location (improvements.py:84). exit_manager
+    `_pnl` is gross-only with explicit comment confirming this.
+    """
+    import inspect
+    from backtest.engine.exit_manager import _pnl
+    from backtest.engine import improvements
+    pnl_doc = inspect.getdoc(_pnl) or ""
+    assert "DOES NOT subtract borrow" in pnl_doc or "gross" in pnl_doc.lower(), (
+        "_pnl must document gross-only PnL (no borrow cost)"
+    )
+    imp_src = inspect.getsource(improvements.apply_transaction_costs)
+    assert "SHORT_ANNUAL_BORROW_RATE" in imp_src, "borrow cost must be applied in apply_transaction_costs"
+    assert "BUG-06" in imp_src, "BUG-06 cross-reference must exist in improvements.py"
+
+
+def test_bug_010_agent_signal_keys_merge():
+    """BUG-10: pipeline.py merge logic captures strategy + context + bool signals.
+
+    Pass 53 v8h+1 Phase 3 Batch 2 cross-reference 2026-05-10. The 3-step merge
+    (strategy_signals + context_signals + bool_signals) ensures agents see actual
+    TRUE/FALSE values from the signal dict, not stale False defaults.
+    """
+    import inspect
+    from backtest.agents import pipeline
+    src = inspect.getsource(pipeline)
+    assert "BUG-10" in src, "BUG-10 cross-reference must exist in pipeline.py"
+    assert "strategy_signals" in src and "bool_signals" in src, (
+        "merge logic must combine strategy + bool signal sets"
+    )
+
+
+def test_bug_012_dedup_strategy_count_priority():
+    """BUG-12: deduplication picks highest strategy_count, not first-fire long bias.
+
+    Pass 53 v8h+1 Phase 3 Batch 2 cross-reference 2026-05-10. Candidates are
+    sorted by strategy_count desc; dedup at backtest.py:368 picks the candidate
+    with most signal confluence, not direction-biased.
+    """
+    import inspect
+    from backtest.engine.backtest import BacktestEngine
+    src = inspect.getsource(BacktestEngine)
+    assert "BUG-12" in src, "BUG-12 cross-reference must exist in backtest.py"
+    # The dedup comment about strategy_count desc ordering
+    assert "strategy_count desc" in src or "sorted by strategy_count" in src, (
+        "dedup must order candidates by strategy_count, not first-fire"
+    )

@@ -67,6 +67,10 @@ def apply_transaction_costs(
     df = df_trades.copy()
 
     # DEC-295 fix (Pass 50): import canonical single-source rate from config.
+    # BUG-06 RESOLVED-IMPLEMENTED Pass 53 v8h+1 cross-reference 2026-05-10:
+    # Single-source borrow cost prevents double-charging on short trades. Per
+    # exit_manager.py:175 _pnl computes gross only; borrow is applied here
+    # centrally via SHORT_ANNUAL_BORROW_RATE * hold_days / 252.
     from backtest.config import SHORT_ANNUAL_BORROW_RATE
 
     costs = []
