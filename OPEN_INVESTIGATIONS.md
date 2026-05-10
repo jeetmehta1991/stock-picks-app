@@ -755,4 +755,23 @@ contract names: `UST 10Y NOTE` / `UST 5Y NOTE` / `UST 2Y NOTE` / `UST BOND`
 
 ---
 
-*Last updated: 2026-05-10 v8h+1 — INV-047 logged (etfholdings dead-end); CAV-077 added*
+*Last updated: 2026-05-10 v8h+1 — INV-046 RESOLVED-DOCUMENTED (DEC-607); INV-047 logged (etfholdings dead-end); CAV-077 added; INV-048 logged (H22 date-typing residual gap)*
+
+---
+
+## INV-048 — H22 date-typing residual gap: polygon ohlcv_daily / indicators / ALFRED realtime_* still object dtype (Pass 53 Day-9 v8h+1 2026-05-10)
+
+- **Discovered:** 2026-05-10 H22 verify pass; empirical scan of newly-added caches post-J2 broad sweep.
+- **Observation:** 3 caches have date-related columns stored as `object` dtype rather than `datetime64`:
+  - `data_prefetch/polygon/ohlcv_daily/<TICKER>.parquet` — `date` column = Python `date` objects (object dtype). Source: prefetch script writes `df["date"] = pd.to_datetime(...).dt.date` which produces date objects, not Timestamp.
+  - `data_prefetch/polygon/indicators/{ema_*,sma_*,macd,rsi_14}/<TICKER>.parquet` — `date` column = `object`. Same pattern.
+  - `data_prefetch/alfred/<SERIES>.parquet` — `date` IS datetime64 ✅ but `realtime_start` + `realtime_end` are `object`.
+- **Functional impact:** minor; pd Timestamp comparisons against date objects work transparently; engine PIT loader uses `pd.to_datetime` defensively. Sortability and groupby work. The strict per-J2 spec calls for `datetime64` consistency, which is not met for these 3 caches.
+- **Why deferred from H22 to follow-up:** migration touches ~13K parquet files (1937 OHLCV + 11622 indicators + 80 ALFRED) - high blast radius. Per CHECKLIST #78 per-addressal pyramid mandate, separate addressal with isolated pyramid is cleaner than bundling into H22 verify.
+- **Severity:** LOW (functionally transparent at engine level; spec-consistency only).
+- **Status:** OPEN — deferred to migration addressal post-Phase-1A (or before, if owner-prioritized).
+- **Recommended action:**
+  - (A) Defer past Phase 1A May 15 launch; engine works on object-dtype dates today (default).
+  - (B) Run a one-shot migration script reading + coercing + rewriting all ~13K parquets (~5-10 min wallclock; compression-preserving).
+  - (C) Update prefetch scripts to write datetime64 going forward + run migration on existing.
+- **Joint:** J2 H22 broad sweep (7033 prior cases done; this is residual); CHECKLIST #78 per-addressal pyramid (the reason this is its own INV instead of bundled into H22 verify).

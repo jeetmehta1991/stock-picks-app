@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-10T17:42:22.849139+00:00",
+  "generated_at": "2026-05-10T17:52:43.732720+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -12173,7 +12173,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 12,
+        "n_doc_refs": 14,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -21013,7 +21013,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 429,
+        "n_doc_refs": 430,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -28687,6 +28687,43 @@
         "color": "#f59e0b",
         "reason": "Code touches; needs test"
       }
+    },
+    {
+      "id": "INV-048",
+      "title": "\u2014 H22 date-typing residual gap: polygon ohlcv_daily / indicators / ALFRED realtime_* still object dtype (Pass 53 Day-9 v8h+1 2026-05-10)",
+      "status": "OPEN",
+      "severity": "LOW",
+      "summary": "3 caches have date-related columns stored as `object` dtype rather than `datetime64`:\n  - `data_prefetch/polygon/ohlcv_daily/<TICKER>.parquet` \u2014 `date` column = Python `date` objects (object dtype). S",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 5,
+        "pyramid": {
+          "unit": false,
+          "smoke": false,
+          "integration": false,
+          "system": false,
+          "functional": false,
+          "regression": false,
+          "data_integrity": false,
+          "performance": false,
+          "acceptance": false,
+          "property": false,
+          "snapshot": false,
+          "contract": false,
+          "compatibility": false
+        }
+      },
+      "dependencies": "-",
+      "description": "3 caches have date-related columns stored as `object` dtype rather than `datetime64`:\n  - `data_prefetch/polygon/ohlcv_daily/<TICKER>.parquet` \u2014 `date` column = Python `date` objects (object dtype). S",
+      "promotion_path": {
+        "tier": "OPEN",
+        "label": "OPEN",
+        "color": "#ef4444",
+        "reason": "Investigation open; needs diagnosis + fix"
+      }
     }
   ],
   "caveats": [
@@ -31563,34 +31600,40 @@
   ],
   "recent_commits": [
     {
+      "sha": "fe623f3e",
+      "subject": "Pass 53 v8h+1: H6 indicator completeness verify + macd top-up (1911 -> 1937)",
+      "author": "jeetmehta1991",
+      "rel_time": "3 minutes ago"
+    },
+    {
       "sha": "b76fc3d1",
       "subject": "Pass 53 v8h+1: H1.b OHLCV Master Dedup data commit (1924 parquets, 105.6 MB) + CAV-079",
       "author": "jeetmehta1991",
-      "rel_time": "3 minutes ago"
+      "rel_time": "14 minutes ago"
     },
     {
       "sha": "1e020b2a",
       "subject": "Pass 53 v8h+1: promotion-path column wired into Stage 2 dashboard (CHECKLIST #81/#82)",
       "author": "jeetmehta1991",
-      "rel_time": "13 minutes ago"
+      "rel_time": "23 minutes ago"
     },
     {
       "sha": "f7b3e987",
       "subject": "Pass 53 v8h+1: untracked artifacts cleanup (gitignore + INV-027 backup archived)",
       "author": "jeetmehta1991",
-      "rel_time": "28 minutes ago"
+      "rel_time": "39 minutes ago"
     },
     {
       "sha": "4bf07436",
       "subject": "Pass 53 v8h+1: H1.a OHLCV Master Dedup prefetch script + DEC-609 (Option B)",
       "author": "jeetmehta1991",
-      "rel_time": "30 minutes ago"
+      "rel_time": "40 minutes ago"
     },
     {
       "sha": "aee93c01",
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 16:43: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "52 minutes ago"
+      "rel_time": "62 minutes ago"
     },
     {
       "sha": "d57a07ee",
@@ -31614,7 +31657,7 @@
       "sha": "041229b1",
       "subject": "Pass 53 v8h+1: INV-046 RESOLVED-DOCUMENTED + DEC-607 realism floor 100% -> 300% + rapidity gate",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "d6e6296d",
@@ -31716,7 +31759,7 @@
       "sha": "387fac95",
       "subject": "Pass 53 v8h+1: 8 new DECs (597-604) + register sweeps + per-turn discipline fix",
       "author": "jeetmehta1991",
-      "rel_time": "24 hours ago"
+      "rel_time": "25 hours ago"
     },
     {
       "sha": "76436fa7",
@@ -31735,19 +31778,13 @@
       "subject": "Pass 53 v8h+1: StockTwits BG complete - 1937 underlyings cached + canonical lock + contract test",
       "author": "jeetmehta1991",
       "rel_time": "27 hours ago"
-    },
-    {
-      "sha": "ad5f0f78",
-      "subject": "StockTwits final (1923 fetched)",
-      "author": "jeetmehta1991",
-      "rel_time": "32 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 29,
+    "count": 3,
     "modified": 3,
     "added": 0,
-    "untracked": 26,
+    "untracked": 0,
     "deleted": 0,
     "files": [
       {
@@ -31756,115 +31793,11 @@
       },
       {
         "status": "M",
-        "path": "PHASE_1A_PRELAUNCH_TODO.md"
+        "path": "OPEN_INVESTIGATIONS.md"
       },
       {
         "status": "M",
-        "path": "data_prefetch/polygon/indicators/_checkpoint.json"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/polygon/indicators/macd/CPS.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/polygon/indicators/macd/CRML.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/polygon/indicators/macd/CVX.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/polygon/indicators/macd/DASH.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/polygon/indicators/macd/ELEV.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/polygon/indicators/macd/EVRG.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/polygon/indicators/macd/FBRX.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/polygon/indicators/macd/GPC.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/polygon/indicators/macd/GSIT.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/polygon/indicators/macd/MAZE.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/polygon/indicators/macd/MRSH.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/polygon/indicators/macd/PDFS.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/polygon/indicators/macd/PTEN.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/polygon/indicators/macd/RUM.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/polygon/indicators/macd/SFM.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/polygon/indicators/macd/SMWB.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/polygon/indicators/macd/SOFI.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/polygon/indicators/macd/SPGI.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/polygon/indicators/macd/STRL.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/polygon/indicators/macd/STRT.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/polygon/indicators/macd/TDY.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/polygon/indicators/macd/TGLS.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/polygon/indicators/macd/TLN.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/polygon/indicators/macd/UHS.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/polygon/indicators/macd/VAR.parquet"
-      },
-      {
-        "status": "??",
-        "path": "data_prefetch/polygon/indicators/macd/VERA.parquet"
+        "path": "PHASE_1A_PRELAUNCH_TODO.md"
       }
     ]
   },
@@ -32704,7 +32637,7 @@
     "splits": 1
   },
   "inv_status_counts": {
-    "OPEN": 39,
+    "OPEN": 40,
     "RESOLVED": 8
   },
   "tier_status_counts": {

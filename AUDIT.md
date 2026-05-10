@@ -31986,6 +31986,32 @@ Documents updated this sub-turn:
   - AUDIT.md (this sub-entry)
   - Both dashboards rebuilt
 
+---
+
+## Pass 53 Day 9 v8h+1 follow-on 2026-05-10 (cont): H16 + H22 verify (separate sub-turns batched)
+
+Two completeness verifications committed together (separate addressals per CHECKLIST #78 noted; pure-doc pyramid layers all N/A):
+
+**H16 ALFRED vintage scope verify:** empirical 2026-05-10 - `data_prefetch/alfred/` has 80 parquet files (target was 50-57, **over-delivered by 23+ series**). Schema verified incl `realtime_start` + `realtime_end` vintage cols. CPIAUCSL 3357 rows confirms multi-vintage history retained per DEC-301 ALFRED PIT methodology. **H16 status: PARTIAL-DONE -> DONE.**
+
+**H22 date-typing residual sweep verify:** empirical 2026-05-10 stratified scan finds:
+  - DONE-datetime64: AAII weekly, AAII asset_allocation, StockTwits created_at, ALFRED date col
+  - GAP-still-object: polygon ohlcv_daily date, polygon indicators date, ALFRED realtime_start + realtime_end
+
+3 caches have object/date-objects rather than datetime64. **Functional impact is minor** - pd comparison works transparently with date objects, sortability + groupby OK. Engine PIT loader uses `pd.to_datetime` defensively. The strict per-J2 spec calls for datetime64 consistency.
+
+**INV-048 logged** for the residual gap. Migration is high blast radius (~13K parquet files: 1937 OHLCV + 11622 indicators + 80 ALFRED) so deferred to a separate addressal per CHECKLIST #78 - bundling into H22 verify would conflate two scopes (verify vs migrate). Three resolution paths surfaced: (A) defer past Phase 1A; (B) one-shot migration script; (C) update prefetch scripts + run migration.
+
+**H22 status: PARTIAL-DONE -> PARTIAL-DONE-WITH-FINDING.** Sprint 0A H-tier remaining real-TODO: H4, H18 (no H22 migration in scope unless owner upgrades INV-048 priority).
+
+**Same-commit (DEC-594):** PHASE_1A_PRELAUNCH_TODO H16+H22 status flips + INV-048 + AUDIT.md narrative + dashboards rebuilt.
+
+Documents updated this sub-turn:
+  - PHASE_1A_PRELAUNCH_TODO.md (H16 PARTIAL-DONE -> DONE; H22 PARTIAL-DONE -> PARTIAL-DONE-WITH-FINDING)
+  - OPEN_INVESTIGATIONS.md (INV-048 added; total 47 -> 48)
+  - AUDIT.md (this sub-entry)
+  - Both dashboards rebuilt
+
 **Same-commit (DEC-594):** script + DEC-609 + AUDIT.md narrative + contract test + dashboards rebuilt - all in this sub-turn commit.
 
 Documents updated this sub-turn:
