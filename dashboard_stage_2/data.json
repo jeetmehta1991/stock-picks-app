@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-10T21:17:01.544297+00:00",
+  "generated_at": "2026-05-10T21:24:03.069094+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -1124,7 +1124,7 @@
     {
       "id": "DECISION-029",
       "title": "Stage 4 starting capital \u2014 SPLIT into 029-A/B/C",
-      "status": "RESOLVED-DECIDED",
+      "status": "DEFERRED_TO_STAGE_4",
       "theme": "Live Trading Operational (Group E)",
       "pass_intro": "Pass 19",
       "pass_resolved": "43",
@@ -1155,16 +1155,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "DEFERRED",
+        "label": "DEFERRED",
+        "color": "#3b82f6",
+        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
       }
     },
     {
       "id": "DECISION-029-A",
       "title": "Paper trading notional 1: $5K CAD (small-account drag realism)",
-      "status": "RESOLVED-DECIDED",
+      "status": "DEFERRED_TO_STAGE_3",
       "theme": "Paper Trading Setup",
       "pass_intro": "Pass 43",
       "pass_resolved": "43",
@@ -1195,16 +1195,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "DEFERRED",
+        "label": "DEFERRED",
+        "color": "#3b82f6",
+        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
       }
     },
     {
       "id": "DECISION-029-B",
       "title": "Paper trading notional 2: $50K CAD (target AUM scale)",
-      "status": "RESOLVED-DECIDED",
+      "status": "DEFERRED_TO_STAGE_3",
       "theme": "Paper Trading Setup",
       "pass_intro": "Pass 43",
       "pass_resolved": "43",
@@ -1235,10 +1235,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "DEFERRED",
+        "label": "DEFERRED",
+        "color": "#3b82f6",
+        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
       }
     },
     {
@@ -2004,7 +2004,7 @@
     {
       "id": "DECISION-048",
       "title": "Streamlit for Stage 3+ dashboard",
-      "status": "RESOLVED-DECIDED",
+      "status": "DEFERRED_TO_STAGE_3",
       "theme": "Phase 0 / Architecture",
       "pass_intro": "Pass 28",
       "pass_resolved": "33",
@@ -2035,10 +2035,10 @@
       "dependencies": "-",
       "description": "**Status:** Approved by user (verifying free) **Cost confirmed:** $0 library, $0-15/month hosting **Cheaper alternative:** **QuantStats HTML reports committed to existing GitHub Pages site = $0 total**. Use Streamlit only if interactivity needed beyond static reports.",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "DEFERRED",
+        "label": "DEFERRED",
+        "color": "#3b82f6",
+        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
       }
     },
     {
@@ -2693,7 +2693,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 9,
+        "n_doc_refs": 10,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -4093,7 +4093,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 22,
+        "n_doc_refs": 23,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -4693,7 +4693,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 6,
+        "n_doc_refs": 7,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -6693,7 +6693,7 @@
         "wired": false,
         "tested": false,
         "pushed": false,
-        "n_doc_refs": 0,
+        "n_doc_refs": 1,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -7804,7 +7804,7 @@
     {
       "id": "DECISION-192",
       "title": "Site shows actual paper trades with slippage, not theoretical recommendations",
-      "status": "RESOLVED-DECIDED",
+      "status": "DEFERRED_TO_STAGE_3",
       "theme": "Website Architecture",
       "pass_intro": "Pass 43",
       "pass_resolved": "43",
@@ -7835,10 +7835,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "DEFERRED",
+        "label": "DEFERRED",
+        "color": "#3b82f6",
+        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
       }
     },
     {
@@ -8044,7 +8044,7 @@
     {
       "id": "DECISION-198",
       "title": "Paper trading mirrors live algo exactly \u2014 same logic, sizing, risk rules, exits, breakers",
-      "status": "RESOLVED-DECIDED",
+      "status": "DEFERRED_TO_STAGE_3",
       "theme": "Project Axioms",
       "pass_intro": "Pass 43",
       "pass_resolved": "43",
@@ -8075,10 +8075,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "DEFERRED",
+        "label": "DEFERRED",
+        "color": "#3b82f6",
+        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
       }
     },
     {
@@ -8204,7 +8204,7 @@
     {
       "id": "DECISION-202",
       "title": "Dashboard 4 detailed spec (Stage 3 paper trading analytics). Pass 53 owner-approved Q3 RESOLVED-DECIDED 2026-05-05 (PROMOTED FROM DEFERRED_TO_STAGE_3 per owner ",
-      "status": "RESOLVED-DECIDED",
+      "status": "DEFERRED_TO_STAGE_3",
       "theme": "Dashboard Specifications",
       "pass_intro": "Pass 53 (PROMOTED FROM DEFERRED_TO_STAGE_3 Pass 44)",
       "pass_resolved": "-",
@@ -8235,16 +8235,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "DEFERRED",
+        "label": "DEFERRED",
+        "color": "#3b82f6",
+        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
       }
     },
     {
       "id": "DECISION-203",
       "title": "Dashboard 5 detailed spec (Stage 4 live trading analytics). Pass 53 owner-approved Q3 RESOLVED-DECIDED 2026-05-05 (PROMOTED FROM DEFERRED_TO_STAGE_4 per owner d",
-      "status": "RESOLVED-DECIDED",
+      "status": "DEFERRED_TO_STAGE_4",
       "theme": "Dashboard Specifications",
       "pass_intro": "Pass 53 (PROMOTED FROM DEFERRED_TO_STAGE_4 Pass 44)",
       "pass_resolved": "-",
@@ -8275,10 +8275,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "DEFERRED",
+        "label": "DEFERRED",
+        "color": "#3b82f6",
+        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
       }
     },
     {
@@ -10324,7 +10324,7 @@
     {
       "id": "DECISION-255",
       "title": "Norbert's Gambit at funding: use DLR.TO/DLR.U.TO for CAD->USD conversion when capital move Pass 52 turn 91 owner-approved RESOLVED-DECIDED with STAGE 4+ OPERATI",
-      "status": "RESOLVED-DECIDED",
+      "status": "DEFERRED_TO_STAGE_4",
       "theme": "Batch X40 \u2014 Cost Modeling Accuracy",
       "pass_intro": "Pass 46",
       "pass_resolved": "-",
@@ -10355,10 +10355,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "DEFERRED",
+        "label": "DEFERRED",
+        "color": "#3b82f6",
+        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
       }
     },
     {
@@ -14364,7 +14364,7 @@
     {
       "id": "DECISION-356",
       "title": "Channel breakout + retest strategy \u2014 owner directive Pass 52 CRITICAL. Parallel-channel detection (ascending, descending, horizontal), entry on break + retest o",
-      "status": "RESOLVED-DECIDED",
+      "status": "DEFERRED_TO_SPRINT_8",
       "theme": "Batch X55 \u2014 Strategy Coverage Gaps (Pass 52)",
       "pass_intro": "Pass 52",
       "pass_resolved": "-",
@@ -14395,16 +14395,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "DEFERRED",
+        "label": "DEFERRED",
+        "color": "#3b82f6",
+        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
       }
     },
     {
       "id": "DECISION-357",
       "title": "Range breakout + retest strategy \u2014 owner directive Pass 52 CRITICAL. Horizontal range/consolidation detection (N-day range tightness threshold), entry on breako",
-      "status": "RESOLVED-DECIDED",
+      "status": "DEFERRED_TO_SPRINT_8",
       "theme": "Batch X55 \u2014 Strategy Coverage Gaps (Pass 52)",
       "pass_intro": "Pass 52",
       "pass_resolved": "-",
@@ -14435,10 +14435,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "DEFERRED",
+        "label": "DEFERRED",
+        "color": "#3b82f6",
+        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
       }
     },
     {
@@ -14804,7 +14804,7 @@
     {
       "id": "DECISION-367",
       "title": "DEC-099-A \u2014 Pairs / Stat Arb category \u2014 Pass 52 turn 33 owner-approved as PENDING in scope (Phase 1C is Stage 2 sub-phase per turn 32 correction; not deferred).",
-      "status": "RESOLVED-DECIDED",
+      "status": "DEFERRED_TO_PHASE_1C",
       "theme": "Batch X1 \u2014 Data + Universe",
       "pass_intro": "Pass 52",
       "pass_resolved": "-",
@@ -14835,10 +14835,10 @@
       "dependencies": "DEC-099",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "DEFERRED",
+        "label": "DEFERRED",
+        "color": "#3b82f6",
+        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
       }
     },
     {
@@ -15284,7 +15284,7 @@
     {
       "id": "DECISION-379",
       "title": "DEC-105 Phase 2 \u2014 SEC EDGAR Form 10-12B feed scraping for 30-90 day spinoff lead time. RSS at `sec.gov/cgi-bin/browse-edgar`. HTML/PDF text extraction non-trivi",
-      "status": "RESOLVED-DECIDED",
+      "status": "DEFERRED_TO_PHASE_2",
       "theme": "Batch X1 \u2014 Data + Universe",
       "pass_intro": "Pass 52",
       "pass_resolved": "-",
@@ -15315,10 +15315,10 @@
       "dependencies": "DEC-105",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "DEFERRED",
+        "label": "DEFERRED",
+        "color": "#3b82f6",
+        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
       }
     },
     {
@@ -17013,7 +17013,7 @@
         "wired": true,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 142,
+        "n_doc_refs": 143,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -17173,7 +17173,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 30,
+        "n_doc_refs": 31,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -19924,7 +19924,7 @@
     {
       "id": "DECISION-495",
       "title": "Stage 3+ archived watchlist for tickers that fall out of all five universe buckets (T1a/T1b/T1c/T2/T3). Pass 53 owner-approved RESOLVED-DECIDED \u2014 spec approved ",
-      "status": "RESOLVED-DECIDED",
+      "status": "DEFERRED_TO_STAGE_3",
       "theme": "Stage 3+ / Sprint 5 (papertrading scope; implementation when Stage 3 starts)",
       "pass_intro": "Pass 53",
       "pass_resolved": "53",
@@ -19955,10 +19955,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "DEFERRED",
+        "label": "DEFERRED",
+        "color": "#3b82f6",
+        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
       }
     },
     {
@@ -20253,7 +20253,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 55,
+        "n_doc_refs": 56,
         "pyramid": {
           "unit": true,
           "smoke": true,
@@ -20433,6 +20433,46 @@
       "short_id": "DEC-505",
       "sprint": "-",
       "dependencies": "DEC-109",
+      "description": "",
+      "promotion_path": {
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
+      }
+    },
+    {
+      "id": "DECISION-610",
+      "title": "Forward-looking SPEC_ONLY -> DEFERRED_TO_* re-classification methodology (CHECKLIST #82 dashboard signal restoration). Pass 53 v8h+1 owner-approved 2026-05-10 R",
+      "status": "RESOLVED-IMPLEMENTED",
+      "theme": "Cross-cutting / process / Pass 53 v8h+1",
+      "pass_intro": "Pass 53",
+      "pass_resolved": "53",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 1,
+        "pyramid": {
+          "unit": false,
+          "smoke": false,
+          "integration": false,
+          "system": false,
+          "functional": false,
+          "regression": false,
+          "data_integrity": false,
+          "performance": false,
+          "acceptance": false,
+          "property": false,
+          "snapshot": false,
+          "contract": false,
+          "compatibility": false
+        }
+      },
+      "short_id": "DEC-610",
+      "sprint": "-",
+      "dependencies": "-",
       "description": "",
       "promotion_path": {
         "tier": "IMPLEMENTED",
@@ -20764,7 +20804,7 @@
     {
       "id": "DECISION-600",
       "title": "Polygon Options ep1 (chain reference) active in Phase 1A; ep2 (per-contract OHLCV) deferred to Phase 1B+ on-demand fetch. Pass 53 v8h+1 owner-approved 2026-05-0",
-      "status": "RESOLVED-DECIDED",
+      "status": "DEFERRED_TO_PHASE_1B",
       "theme": "Phase 1A / data architecture / Pass 53 v8h+1",
       "pass_intro": "Pass 53",
       "pass_resolved": "53",
@@ -20795,10 +20835,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "DEFERRED",
+        "label": "DEFERRED",
+        "color": "#3b82f6",
+        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
       }
     },
     {
@@ -21013,7 +21053,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 437,
+        "n_doc_refs": 439,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -26387,7 +26427,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 24,
+        "n_doc_refs": 39,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -26463,7 +26503,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 10,
+        "n_doc_refs": 12,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -31600,52 +31640,58 @@
   ],
   "recent_commits": [
     {
+      "sha": "4cd84d66",
+      "subject": "Pass 53 v8h+1: BUG-270 wired-flag fix (cross-reference docstring) + process self-finding",
+      "author": "jeetmehta1991",
+      "rel_time": "6 minutes ago"
+    },
+    {
       "sha": "d28c8723",
       "subject": "Pass 53 v8h+1: Tier C/D edge-case sweep - DEC-057 promoted; DEC-028 no-promote (forward-looking)",
       "author": "jeetmehta1991",
-      "rel_time": "23 minutes ago"
+      "rel_time": "30 minutes ago"
     },
     {
       "sha": "10fa8617",
       "subject": "Pass 53 v8h+1: INV-041 RESOLVED - path-restricted commits in 4 prefetch scripts + 5-test regression gate",
       "author": "jeetmehta1991",
-      "rel_time": "25 minutes ago"
+      "rel_time": "32 minutes ago"
     },
     {
       "sha": "bcb6ea3f",
       "subject": "Pass 53 v8h+1: parse_inv_entries parser fix - recognize all RESOLVED-* / DEFERRED-* status variants",
       "author": "jeetmehta1991",
-      "rel_time": "30 minutes ago"
+      "rel_time": "37 minutes ago"
     },
     {
       "sha": "26340a6b",
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 20:43: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "32 minutes ago"
+      "rel_time": "39 minutes ago"
     },
     {
       "sha": "bffd8658",
       "subject": "Pass 53 v8h+1: INV promotion sweep - INV-045 RESOLVED + 4 NOOPs (CHECKLIST #81)",
       "author": "jeetmehta1991",
-      "rel_time": "58 minutes ago"
+      "rel_time": "65 minutes ago"
     },
     {
       "sha": "cab09977",
       "subject": "Pass 53 v8h+1: BUG promotion sweep (CHECKLIST #81 first application; 4 HIGH-severity smart_money bugs)",
       "author": "jeetmehta1991",
-      "rel_time": "59 minutes ago"
+      "rel_time": "67 minutes ago"
     },
     {
       "sha": "4addd669",
       "subject": "Pass 53 v8h+1: Tier B promotion sweep #3+#4 combined (17 DECs RESOLVED-DECIDED -> RESOLVED-IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "62 minutes ago"
+      "rel_time": "69 minutes ago"
     },
     {
       "sha": "f798881b",
       "subject": "Pass 53 v8h+1: Tier A promotion sweep (8 Phase 1A meta DECs - DEC-497/503/505/507/590/591/594/595)",
       "author": "jeetmehta1991",
-      "rel_time": "71 minutes ago"
+      "rel_time": "78 minutes ago"
     },
     {
       "sha": "936a0c0e",
@@ -31699,7 +31745,7 @@
       "sha": "fe623f3e",
       "subject": "Pass 53 v8h+1: H6 indicator completeness verify + macd top-up (1911 -> 1937)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "b76fc3d1",
@@ -31729,7 +31775,7 @@
       "sha": "aee93c01",
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 16:43: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "d57a07ee",
@@ -31772,12 +31818,6 @@
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 10:13: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
       "rel_time": "8 hours ago"
-    },
-    {
-      "sha": "27944fa2",
-      "subject": "Pass 53 v8h+1: DEC-606 Finnhub financials_reported EXCLUDED COMPLETELY + CAV-075 (delisting confirmed) + CAV-076",
-      "author": "jeetmehta1991",
-      "rel_time": "9 hours ago"
     }
   ],
   "uncommitted": {
@@ -31789,7 +31829,7 @@
     "files": [
       {
         "status": "M",
-        "path": "backtest/data/smart_money.py"
+        "path": "AUDIT_INDEX.md"
       },
       {
         "status": "M",
@@ -32603,7 +32643,7 @@
     }
   ],
   "decision_status_counts": {
-    "RESOLVED-DECIDED": 291,
+    "RESOLVED-DECIDED": 276,
     "PARTIAL": 5,
     "SUPERSEDED_BY_DEC-422": 6,
     "SUPERSEDED": 10,
@@ -32613,10 +32653,10 @@
     "SUPERSEDED_BY_DEC-087": 1,
     "SUPERSEDED_BY_DEC-089": 1,
     "SUPERSEDED_BY_DEC-109": 2,
-    "DEFERRED_TO_STAGE_3": 29,
+    "DEFERRED_TO_STAGE_3": 36,
+    "DEFERRED_TO_STAGE_4": 21,
     "DEFERRED": 2,
-    "DEFERRED_TO_STAGE_4": 18,
-    "RESOLVED-IMPLEMENTED": 43,
+    "RESOLVED-IMPLEMENTED": 44,
     "SUPERSEDED_BY_DEC-459": 1,
     "BLOCKED_ON_BUG-095": 3,
     "correlation": 1,
@@ -32634,8 +32674,11 @@
     "trade_pnl": 1,
     "OBSOLETE": 3,
     "SUPERSEDED_BY_DEC-313": 1,
+    "DEFERRED_TO_SPRINT_8": 2,
     "RESOLVED-DECIDED-DEFERRED": 1,
+    "DEFERRED_TO_PHASE_1C": 1,
     "BLOCKED_ON_DEC-298": 2,
+    "DEFERRED_TO_PHASE_2": 1,
     "BLOCKED_ON_DEC-257": 1,
     "BLOCKED_ON_DEC-447": 1,
     "BLOCKED_ON_DEC-450": 1,
@@ -32643,7 +32686,8 @@
     "BLOCKED_ON_DEC-388_AND_DEC-409": 1,
     "RESOLVED-IMPLEMENTED-T1a-T1c": 1,
     "PROPOSED": 13,
-    "splits": 1
+    "splits": 1,
+    "DEFERRED_TO_PHASE_1B": 1
   },
   "inv_status_counts": {
     "RESOLVED": 14,

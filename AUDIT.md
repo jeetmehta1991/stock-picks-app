@@ -32418,6 +32418,45 @@ Documents updated this sub-turn:
   - AUDIT.md (this sub-entry)
   - dashboard_stage_2 (rebuilt; BUG-270 wired flips false -> true)
 
+---
+
+## Pass 53 Day 9 v8h+1 follow-on 2026-05-10 (cont): SPEC_ONLY -> DEFERRED_TO_* re-classification (DEC-610)
+
+Owner direction 2026-05-10: "Why are so many decisions SPEC_ONLY?" -> diagnostic showed 340 SPEC_ONLY out of 533 DECs (262 RESOLVED-DECIDED-no-artifact + 78 PARTIAL-SPEC-ONLY). Owner approved Option A: "re-classify the ~80 forward-looking decisions out of SPEC_ONLY into a clearer 'deferred but no action expected until phase X' bucket. Restores signal from the noise."
+
+**Methodology (DEC-610):** title-keyword scan with phase-target patterns + false-positive exclusion filter. Patterns: `\bstage 3\b` / `\bstage 4\b` / `\bphase 1b\b` / `\bphase 1c\b` / `\bphase 2\b` / `\bsprint 7\b` / `\bsprint 8\b`. Exclusions: `already.*resolved`, `RESOLVED Pass 5[0-3]`, `before phase` gate-style ("before X" = obligation NOW not deferral).
+
+**14 unique DECs flipped this batch (15 status edits with sub-IDs):**
+
+| Status target | Count | DECs |
+|---|---|---|
+| DEFERRED_TO_STAGE_3 | 7 | 029-A, 029-B, 048, 192, 198, 202, 495 |
+| DEFERRED_TO_STAGE_4 | 3 | 029, 203, 255 |
+| DEFERRED_TO_PHASE_1B | 1 | 600 (Polygon Options ep2) |
+| DEFERRED_TO_PHASE_1C | 1 | 367 (Pairs/Stat Arb) |
+| DEFERRED_TO_PHASE_2 | 1 | 379 (SEC EDGAR Form 10-12B) |
+| DEFERRED_TO_SPRINT_8 | 2 | 356, 357 (chart-pattern + retest strategies) |
+
+Excluded as false-positive (kept SPEC_ONLY):
+  - DEC-098 "Test coverage 70% before Stage 3" - gate obligation NOW
+  - DEC-065 "Validate stored data quality before Phase 1B-α" - gate NOW
+  - DEC-113 trade journal - applies to all phases
+  - DEC-163 implementation cost methodology - broad
+  - DEC-426 "DEC-422 Phase 2: Per-cell statistical engine" - DEC-422 internal phase, not project Phase 2
+
+**Result:** SPEC_ONLY count 340 -> 325 (-15); DEFERRED count 49 -> 64 (+15). Dashboard signal restored: SPEC_ONLY now better reflects genuine implementation backlog vs deferred-by-design.
+
+**Per-addressal pyramid (CHECKLIST #78):** unit + integration + doc_count_consistency 113/113 PASS in 4s. Layers N/A: smoke (no engine code), data_integrity, performance, acceptance, property, snapshot, contract, compatibility, system, functional (status-flip-only re-classification).
+
+**Same-commit (DEC-594):** 14 status flips + DEC-610 register entry + AUDIT.md narrative + dashboard rebuilt - this single commit.
+
+**Future scope:** extend methodology to remaining ~216 unmatched SPEC_ONLY DECs as separate audit pass (manual title review needed; keyword scan exhausted on this batch).
+
+Documents updated this sub-turn:
+  - AUDIT_INDEX.md (15 status flips + DEC-610 entry; total 533 -> 534)
+  - AUDIT.md (this sub-entry)
+  - dashboard_stage_2 (rebuilt; SPEC_ONLY 340 -> 325, DEFERRED 49 -> 64)
+
 **Remaining OPEN backlog after sweeps:**
   - 1 DEC RESOLVED-DECIDED-deferred (DEC-028 Stage 3 paper trading - intentional)
   - INVs: 33 OPEN + 2 DEFERRED (genuine work; not promotion-eligible)
