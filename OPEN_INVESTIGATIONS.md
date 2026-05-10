@@ -701,7 +701,7 @@ contract names: `UST 10Y NOTE` / `UST 5Y NOTE` / `UST 2Y NOTE` / `UST BOND`
   - AUDIT_INDEX.md: 354 claimed, 520 actual (+166 drift)
   - BUG_REGISTER.md: 148 claimed, 152 actual (+4 drift)
 - **Severity:** MEDIUM (any consumer reading the header gets wrong counts; test_doc_count_consistency was tolerating upward drift).
-- **Status:** RESOLVING THIS COMMIT
+- **Status:** RESOLVED 2026-05-10 v8h+1 (sync_doc_counts.py + tightened consistency test landed; auto-cron 2-hour drift sweep operational since 2026-05-08; per-turn doc sync per CHECKLIST #67/#79 keeps registers aligned).
 - **Fix landed:**
   - `scripts/sync_doc_counts.py` (NEW) - reads source-of-truth tables, regenerates header claims; supports `--check` (CI gate) and `--update` (fix mode)
   - `test_audit_index_decision_count_matches_table` tightened to fail on drift in BOTH directions (was downward-only); threshold 5%

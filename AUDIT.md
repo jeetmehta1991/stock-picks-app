@@ -32277,6 +32277,31 @@ Documents updated this sub-turn:
   - AUDIT.md (this sub-entry)
   - Dashboard refresh next cron sweep
 
+---
+
+## Pass 53 Day 9 v8h+1 follow-on 2026-05-10 (cont): INV promotion sweep (CHECKLIST #81 application; INV-045 RESOLVED)
+
+**Scope:** READY-tier INVs flagged by promotion-path column. 5 candidates surveyed:
+
+| INV | Status finding | Action |
+|---|---|---|
+| INV-023 | Already RESOLVED 2026-05-08 (Quiver Unicode bug); body says RESOLVED but parser flags READY due to `RESOLVED` token format. No action needed (already correct). | NOOP |
+| INV-038 | Already RESOLVED-PARTIAL 2026-05-08 (Polygon Indices Basic license); same parser-format issue. | NOOP |
+| INV-041 | OPEN; fix specified ("path-restricted commit") but **NOT YET IMPLEMENTED** in `prefetch_sec_xbrl.py::git_commit()`. Code grep confirmed: still uses `git commit -m message` (not `git commit -- <path>`). Should remain OPEN until fix lands. | NO-PROMOTE; remains OPEN |
+| INV-045 | "RESOLVING THIS COMMIT" status from 2026-05-08 evening; sync_doc_counts.py + tightened test landed; 2-hour cron drift sweep operational since. | **PROMOTE: RESOLVING -> RESOLVED 2026-05-10** |
+| INV-046 | Already RESOLVED-DOCUMENTED via DEC-607 (this turn commit `041229b12`); same parser-format issue surfacing as READY. No action needed. | NOOP |
+
+**INV-045 status flip:** "RESOLVING THIS COMMIT" -> "RESOLVED 2026-05-10 v8h+1 (sync_doc_counts.py + tightened consistency test landed; auto-cron 2-hour drift sweep operational; per-turn doc sync per CHECKLIST #67/#79)".
+
+**Per-addressal pyramid (CHECKLIST #78):** test_doc_count_consistency 11/11 PASS confirms INV-045 fix is operational; unit + integration 102/102 unchanged.
+
+CHECKLIST #82 finding: dashboard READY classification has false positives for INVs whose body status uses non-standard format ("RESOLVED 2026-05-08", "RESOLVED-DOCUMENTED", "RESOLVED-PARTIAL", "RESOLVING THIS COMMIT") - parser strict-matches "RESOLVED" only. Future improvement: tighten `parse_inv_entries` to recognize all RESOLVED* variants. Not blocking; surfaced for next dashboard build improvement.
+
+Documents updated this sub-turn:
+  - OPEN_INVESTIGATIONS.md (INV-045 status flip RESOLVING -> RESOLVED)
+  - AUDIT.md (this sub-entry)
+  - Dashboard refresh next cron sweep
+
 **Same-commit (DEC-594):** script + DEC-609 + AUDIT.md narrative + contract test + dashboards rebuilt - all in this sub-turn commit.
 
 Documents updated this sub-turn:

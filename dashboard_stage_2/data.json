@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-10T20:17:11.950336+00:00",
+  "generated_at": "2026-05-10T20:19:13.928157+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -20533,7 +20533,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 9,
+        "n_doc_refs": 10,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -27774,7 +27774,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 2,
+        "n_doc_refs": 3,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -28218,7 +28218,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 3,
+        "n_doc_refs": 4,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -28440,7 +28440,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 2,
+        "n_doc_refs": 3,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -28588,7 +28588,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 0,
+        "n_doc_refs": 5,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -28625,7 +28625,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 16,
+        "n_doc_refs": 17,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -31600,34 +31600,40 @@
   ],
   "recent_commits": [
     {
+      "sha": "cab09977",
+      "subject": "Pass 53 v8h+1: BUG promotion sweep (CHECKLIST #81 first application; 4 HIGH-severity smart_money bugs)",
+      "author": "jeetmehta1991",
+      "rel_time": "2 minutes ago"
+    },
+    {
       "sha": "4addd669",
       "subject": "Pass 53 v8h+1: Tier B promotion sweep #3+#4 combined (17 DECs RESOLVED-DECIDED -> RESOLVED-IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "2 minutes ago"
+      "rel_time": "4 minutes ago"
     },
     {
       "sha": "f798881b",
       "subject": "Pass 53 v8h+1: Tier A promotion sweep (8 Phase 1A meta DECs - DEC-497/503/505/507/590/591/594/595)",
       "author": "jeetmehta1991",
-      "rel_time": "12 minutes ago"
+      "rel_time": "14 minutes ago"
     },
     {
       "sha": "936a0c0e",
       "subject": "Pass 53 v8h+1: Tier B promotion sweep #2 (5 PIT-correctness DECs - DEC-295/301/302/304/305)",
       "author": "jeetmehta1991",
-      "rel_time": "34 minutes ago"
+      "rel_time": "36 minutes ago"
     },
     {
       "sha": "501cdbff",
       "subject": "Pass 53 v8h+1: Tier B engine-correctness promotion sweep #1 (6 DECs RESOLVED-DECIDED -> RESOLVED-IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "46 minutes ago"
+      "rel_time": "48 minutes ago"
     },
     {
       "sha": "77f57b21",
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 18:43: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "61 minutes ago"
+      "rel_time": "63 minutes ago"
     },
     {
       "sha": "4f9e558c",
@@ -31772,12 +31778,6 @@
       "subject": "Pass 53 auto-drift-sweep 2026-05-09 15:53: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
       "rel_time": "17 hours ago"
-    },
-    {
-      "sha": "0ce9ec2b",
-      "subject": "Pass 53 auto-drift-sweep 2026-05-09 13:53: dashboards refreshed (no numerical drift)",
-      "author": "jeetmehta1991",
-      "rel_time": "19 hours ago"
     }
   ],
   "uncommitted": {
@@ -31793,7 +31793,7 @@
       },
       {
         "status": "M",
-        "path": "BUG_REGISTER.md"
+        "path": "OPEN_INVESTIGATIONS.md"
       }
     ]
   },
