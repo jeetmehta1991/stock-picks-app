@@ -84,11 +84,25 @@ def parse_inv_entries(path: Path) -> list[dict]:
         next_match = inv_re.search(text, start)
         end = next_match.start() if next_match else len(text)
         body = text[start:end]
-        # Status detection
+        # Status detection - target the **Status:** field specifically (not body[:200]
+        # window which may not reach the Status line in long INV bodies). Recognize
+        # all RESOLVED-* variants (RESOLVED-DOCUMENTED, RESOLVED-PARTIAL,
+        # RESOLVED-IMPLEMENTED, RESOLVING, etc.) and DEFERRED-* variants.
         status = "OPEN"
-        if "RESOLVED" in body[:200].upper() or "RESOLVED" in title_line.upper():
+        status_match = re.search(r"\*\*Status:\*\*\s*([^\n]+)", body)
+        if status_match:
+            status_text = status_match.group(1).upper()
+            if "RESOLVED" in status_text or "RESOLVING" in status_text:
+                status = "RESOLVED"
+            elif "DEFERRED" in status_text or "WONTFIX" in status_text:
+                status = "DEFERRED"
+            elif "OPEN" in status_text or "IN-PROGRESS" in status_text:
+                status = "OPEN"
+        # Fallback: if no **Status:** field found, fall back to title-line scan
+        # (some older entries put RESOLVED in title only).
+        elif "RESOLVED" in title_line.upper():
             status = "RESOLVED"
-        if "DEFERRED" in body[:200].upper():
+        elif "DEFERRED" in title_line.upper():
             status = "DEFERRED"
         # Severity detection
         severity = "UNKNOWN"

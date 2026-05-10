@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-10T20:43:27.456652+00:00",
+  "generated_at": "2026-05-10T20:46:27.270939+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -26952,7 +26952,7 @@
     {
       "id": "INV-001",
       "title": "\u2014 Trade-level regime=100% neutral in smoke v4 (Pass 53 Day-9 v8g)",
-      "status": "OPEN",
+      "status": "RESOLVED",
       "severity": "UNKNOWN",
       "summary": "5-tkr \u00d7 4y (2020-2024) smoke produced 77 closed trades,",
       "status_grep": {
@@ -26980,10 +26980,10 @@
       "dependencies": "-",
       "description": "5-tkr \u00d7 4y (2020-2024) smoke produced 77 closed trades,",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Investigation open; needs diagnosis + fix"
+        "tier": "READY",
+        "label": "RESOLVED-DOCUMENTED",
+        "color": "#10b981",
+        "reason": "Resolved as documented (no code change required)"
       }
     },
     {
@@ -27322,7 +27322,7 @@
     {
       "id": "INV-012",
       "title": "\u2014 Most Tier B5-B10 Quiver endpoints don't exist in public API",
-      "status": "OPEN",
+      "status": "RESOLVED",
       "severity": "UNKNOWN",
       "summary": "Direct API probing of Quiver Trader endpoints I had assumed existed:\n  - 404: `historical/iposcalendar`, `historical/spacs`, `historical/optionsflow/{ticker}`, `historical/earningsbeats/{ticker}`, `hi",
       "status_grep": {
@@ -27350,16 +27350,16 @@
       "dependencies": "-",
       "description": "Direct API probing of Quiver Trader endpoints I had assumed existed:\n  - 404: `historical/iposcalendar`, `historical/spacs`, `historical/optionsflow/{ticker}`, `historical/earningsbeats/{ticker}`, `hi",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Investigation open; needs diagnosis + fix"
+        "tier": "READY",
+        "label": "RESOLVED-DOCUMENTED",
+        "color": "#10b981",
+        "reason": "Resolved as documented (no code change required)"
       }
     },
     {
       "id": "INV-011",
       "title": "\u2014 CFTC Treasury contract names different in TFF dataset",
-      "status": "RESOLVED",
+      "status": "OPEN",
       "severity": "UNKNOWN",
       "summary": "\u2014 CFTC Treasury contract names different in TFF dataset",
       "status_grep": {
@@ -27387,10 +27387,10 @@
       "dependencies": "-",
       "description": "\u2014 CFTC Treasury contract names different in TFF dataset",
       "promotion_path": {
-        "tier": "IMPLEMENTED",
-        "label": "IMPLEMENTED",
+        "tier": "READY",
+        "label": "READY-TO-CLOSE",
         "color": "#10b981",
-        "reason": "Resolved with code/test artifact"
+        "reason": "Has code+test; eligible for RESOLVED"
       }
     },
     {
@@ -28173,7 +28173,7 @@
     {
       "id": "INV-034",
       "title": "\u2014 Polygon Indices Basic ACTIVATED but tier gives only 2 of 13 wanted indices (Pass 53 Day-9 v8h+1 2026-05-08 \u2014 REFRAMED)",
-      "status": "OPEN",
+      "status": "RESOLVED",
       "severity": "REDUCED",
       "summary": "\u2014 Polygon Indices Basic ACTIVATED but tier gives only 2 of 13 wanted indices (Pass 53 Day-9 v8h+1 2026-05-08 \u2014 REFRAMED)",
       "status_grep": {
@@ -28201,10 +28201,10 @@
       "dependencies": "-",
       "description": "\u2014 Polygon Indices Basic ACTIVATED but tier gives only 2 of 13 wanted indices (Pass 53 Day-9 v8h+1 2026-05-08 \u2014 REFRAMED)",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Investigation open; needs diagnosis + fix"
+        "tier": "READY",
+        "label": "RESOLVED-DOCUMENTED",
+        "color": "#10b981",
+        "reason": "Resolved as documented (no code change required)"
       }
     },
     {
@@ -28506,7 +28506,7 @@
     {
       "id": "INV-043",
       "title": "\u2014 Windows-reserved filenames break corp_actions per-ticker save (Pass 53 Day-9 v8h+1 2026-05-08)",
-      "status": "OPEN",
+      "status": "RESOLVED",
       "severity": "MEDIUM",
       "summary": "Reserved Windows device names cannot be filenames: `CON, PRN, AUX, NUL, COM1-COM9, LPT1-LPT9`. Polygon tickers `PRN` and `CON` (real public companies) hit this.\n-",
       "status_grep": {
@@ -28534,10 +28534,10 @@
       "dependencies": "-",
       "description": "Reserved Windows device names cannot be filenames: `CON, PRN, AUX, NUL, COM1-COM9, LPT1-LPT9`. Polygon tickers `PRN` and `CON` (real public companies) hit this.\n-",
       "promotion_path": {
-        "tier": "CODE_ONLY",
-        "label": "NEEDS-TEST",
-        "color": "#f59e0b",
-        "reason": "Code touches; needs test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Resolved with code/test artifact"
       }
     },
     {
@@ -28580,7 +28580,7 @@
     {
       "id": "INV-045",
       "title": "\u2014 Stale numerical claims in reference docs (cross-doc count drift) (Pass 53 Day-9 v8h+1 2026-05-08 evening)",
-      "status": "OPEN",
+      "status": "RESOLVED",
       "severity": "MEDIUM",
       "summary": "Multiple reference docs carry numerical claims in prose (e.g. `Total: N decision entries`, `N canonical bugs`) that drift from the structured-data reality below them. Detected at audit:\n  - AUDIT_INDE",
       "status_grep": {
@@ -28608,16 +28608,16 @@
       "dependencies": "-",
       "description": "Multiple reference docs carry numerical claims in prose (e.g. `Total: N decision entries`, `N canonical bugs`) that drift from the structured-data reality below them. Detected at audit:\n  - AUDIT_INDE",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Has code+test; eligible for RESOLVED"
+        "reason": "Resolved with code/test artifact"
       }
     },
     {
       "id": "INV-046",
       "title": "\u2014 Phase 1A smoke surfaces single-trade PnL > 100% (engine bug candidate) (Pass 53 Day-9 v8h+1 2026-05-08)",
-      "status": "OPEN",
+      "status": "RESOLVED",
       "severity": "HIGH",
       "summary": "`test_e2e_phase1a_smoke.py::test_g1_pnl_realistic` asserts `df['pnl_pct'].abs().max() < 100`. In the smoke fixture's 397-trade run, max PnL hit",
       "status_grep": {
@@ -28645,16 +28645,16 @@
       "dependencies": "-",
       "description": "`test_e2e_phase1a_smoke.py::test_g1_pnl_realistic` asserts `df['pnl_pct'].abs().max() < 100`. In the smoke fixture's 397-trade run, max PnL hit",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Has code+test; eligible for RESOLVED"
+        "reason": "Resolved with code/test artifact"
       }
     },
     {
       "id": "INV-047",
       "title": "\u2014 Quiver `etfholdings` refresh dead-end; existing 1563 files are static snapshot (Pass 53 Day-9 v8h+1 2026-05-10)",
-      "status": "OPEN",
+      "status": "DEFERRED",
       "severity": "LOW",
       "summary": "All Quiver Trader plan candidate paths return 404:\n  - `/historical/etfholdings/{ticker}` -> 404\n  - `/live/etfholdings/{ticker}` -> 404\n  - `/historical/etfHoldings/{ticker}` (camelCase) -> 404\n  - `",
       "status_grep": {
@@ -28682,16 +28682,16 @@
       "dependencies": "-",
       "description": "All Quiver Trader plan candidate paths return 404:\n  - `/historical/etfholdings/{ticker}` -> 404\n  - `/live/etfholdings/{ticker}` -> 404\n  - `/historical/etfHoldings/{ticker}` (camelCase) -> 404\n  - `",
       "promotion_path": {
-        "tier": "CODE_ONLY",
-        "label": "NEEDS-TEST",
-        "color": "#f59e0b",
-        "reason": "Code touches; needs test"
+        "tier": "DEFERRED",
+        "label": "DEFERRED",
+        "color": "#3b82f6",
+        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
       }
     },
     {
       "id": "INV-048",
       "title": "\u2014 H22 date-typing residual gap: polygon ohlcv_daily / indicators / ALFRED realtime_* still object dtype (Pass 53 Day-9 v8h+1 2026-05-10)",
-      "status": "OPEN",
+      "status": "DEFERRED",
       "severity": "LOW",
       "summary": "3 caches have date-related columns stored as `object` dtype rather than `datetime64`:\n  - `data_prefetch/polygon/ohlcv_daily/<TICKER>.parquet` \u2014 `date` column = Python `date` objects (object dtype). S",
       "status_grep": {
@@ -28719,10 +28719,10 @@
       "dependencies": "-",
       "description": "3 caches have date-related columns stored as `object` dtype rather than `datetime64`:\n  - `data_prefetch/polygon/ohlcv_daily/<TICKER>.parquet` \u2014 `date` column = Python `date` objects (object dtype). S",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Investigation open; needs diagnosis + fix"
+        "tier": "DEFERRED",
+        "label": "DEFERRED",
+        "color": "#3b82f6",
+        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
       }
     }
   ],
@@ -31600,46 +31600,52 @@
   ],
   "recent_commits": [
     {
+      "sha": "26340a6b",
+      "subject": "Pass 53 auto-drift-sweep 2026-05-10 20:43: dashboards refreshed (no numerical drift)",
+      "author": "jeetmehta1991",
+      "rel_time": "2 minutes ago"
+    },
+    {
       "sha": "bffd8658",
       "subject": "Pass 53 v8h+1: INV promotion sweep - INV-045 RESOLVED + 4 NOOPs (CHECKLIST #81)",
       "author": "jeetmehta1991",
-      "rel_time": "24 minutes ago"
+      "rel_time": "27 minutes ago"
     },
     {
       "sha": "cab09977",
       "subject": "Pass 53 v8h+1: BUG promotion sweep (CHECKLIST #81 first application; 4 HIGH-severity smart_money bugs)",
       "author": "jeetmehta1991",
-      "rel_time": "26 minutes ago"
+      "rel_time": "29 minutes ago"
     },
     {
       "sha": "4addd669",
       "subject": "Pass 53 v8h+1: Tier B promotion sweep #3+#4 combined (17 DECs RESOLVED-DECIDED -> RESOLVED-IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "28 minutes ago"
+      "rel_time": "31 minutes ago"
     },
     {
       "sha": "f798881b",
       "subject": "Pass 53 v8h+1: Tier A promotion sweep (8 Phase 1A meta DECs - DEC-497/503/505/507/590/591/594/595)",
       "author": "jeetmehta1991",
-      "rel_time": "38 minutes ago"
+      "rel_time": "41 minutes ago"
     },
     {
       "sha": "936a0c0e",
       "subject": "Pass 53 v8h+1: Tier B promotion sweep #2 (5 PIT-correctness DECs - DEC-295/301/302/304/305)",
       "author": "jeetmehta1991",
-      "rel_time": "61 minutes ago"
+      "rel_time": "64 minutes ago"
     },
     {
       "sha": "501cdbff",
       "subject": "Pass 53 v8h+1: Tier B engine-correctness promotion sweep #1 (6 DECs RESOLVED-DECIDED -> RESOLVED-IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "73 minutes ago"
+      "rel_time": "76 minutes ago"
     },
     {
       "sha": "77f57b21",
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 18:43: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "88 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "4f9e558c",
@@ -31693,7 +31699,7 @@
       "sha": "f7b3e987",
       "subject": "Pass 53 v8h+1: untracked artifacts cleanup (gitignore + INV-027 backup archived)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "4bf07436",
@@ -31772,32 +31778,18 @@
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 04:13: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
       "rel_time": "14 hours ago"
-    },
-    {
-      "sha": "ae51b3bd",
-      "subject": "Pass 53 auto-drift-sweep 2026-05-10 02:13: dashboards refreshed (no numerical drift)",
-      "author": "jeetmehta1991",
-      "rel_time": "16 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 3,
-    "modified": 3,
+    "count": 1,
+    "modified": 1,
     "added": 0,
     "untracked": 0,
     "deleted": 0,
     "files": [
       {
         "status": "M",
-        "path": "dashboard_sprint0a/data.js"
-      },
-      {
-        "status": "M",
-        "path": "dashboard_sprint0a/data.json"
-      },
-      {
-        "status": "M",
-        "path": "dashboard_sprint0a/last_run.txt"
+        "path": "scripts/build_dashboard_stage_2.py"
       }
     ]
   },
@@ -32348,16 +32340,6 @@
   "next_up": [
     {
       "kind": "INV",
-      "id": "INV-046",
-      "title": "\u2014 Phase 1A smoke surfaces single-trade PnL > 100% (engine bug candidate) (Pass 53 Day-9 v8h+1 2026-05-08)",
-      "status": "OPEN",
-      "tier": 0,
-      "reason": "INV OPEN with HIGH/CRITICAL severity",
-      "back_refs": 1,
-      "sprint": "-"
-    },
-    {
-      "kind": "INV",
       "id": "INV-015",
       "title": "\u2014 Alpha Vantage news cached only 25 files (alphabetical mid-letter range) (Pass 53 Day-9 v8h evening)",
       "status": "OPEN",
@@ -32595,6 +32577,16 @@
       "reason": "Dependency root (3 downstream items reference)",
       "back_refs": 3,
       "sprint": "Sprint 5 additions (Universe M"
+    },
+    {
+      "kind": "DEC",
+      "id": "DEC-111",
+      "title": "Stationarity / structural break tests \u2014 Pass 52 owner-approved scoped to feasibility. 3 test types: (1) ADF on equity curve (~1000 daily obs",
+      "status": "PARTIAL-SPEC-ONLY",
+      "tier": 1,
+      "reason": "Dependency root (3 downstream items reference)",
+      "back_refs": 3,
+      "sprint": "Sprint 7 additions; Sprint 7 additions (Statistica; Sprint 7-8 additions (Phase 1B"
     }
   ],
   "decision_status_counts": {
@@ -32641,8 +32633,9 @@
     "splits": 1
   },
   "inv_status_counts": {
-    "OPEN": 40,
-    "RESOLVED": 8
+    "RESOLVED": 13,
+    "OPEN": 33,
+    "DEFERRED": 2
   },
   "tier_status_counts": {
     "UNKNOWN": 20,
