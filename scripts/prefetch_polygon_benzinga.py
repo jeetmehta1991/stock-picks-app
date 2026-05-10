@@ -111,10 +111,15 @@ def save_checkpoint(cp: dict) -> None:
 
 
 def git_commit(message: str) -> None:
+    """INV-041 fix Pass 53 v8h+1 2026-05-10: path-restricted commit so
+    unrelated staged files don't get captured under this script's message.
+    """
     import subprocess
     subprocess.run(["git", "add", str(CACHE_ROOT)], capture_output=True)
-    result = subprocess.run(["git", "commit", "-m", message],
-                            capture_output=True, text=True)
+    result = subprocess.run(
+        ["git", "commit", "-m", message, "--", str(CACHE_ROOT)],
+        capture_output=True, text=True,
+    )
     if "nothing to commit" in result.stdout:
         return
     subprocess.run(["git", "pull", "--rebase", "origin", "main"], capture_output=True, text=True)

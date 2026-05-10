@@ -7,7 +7,7 @@ unparsed), and INV-037 (Polygon Filings/Fundamentals require Stocks Plus
 which we don't have).
 
 Endpoint: https://data.sec.gov/api/xbrl/companyfacts/CIK{cik:010d}.json
-Returns ALL XBRL facts for a company as nested JSON — every line item
+Returns ALL XBRL facts for a company as nested JSON  -  every line item
 ever reported across all filings, with filing dates + period end dates +
 fiscal periods. Structured fundamentals data direct from SEC.
 
@@ -22,7 +22,7 @@ Run: python scripts/prefetch_sec_xbrl.py
      python scripts/prefetch_sec_xbrl.py --tickers AAPL MSFT (smoke)
      python scripts/prefetch_sec_xbrl.py --batch-size 100 --commit-every 100
 
-Rate limit: SEC EDGAR is 10 calls/sec — fast.
+Rate limit: SEC EDGAR is 10 calls/sec  -  fast.
 """
 
 from __future__ import annotations
@@ -157,12 +157,19 @@ def save_checkpoint(done: set) -> None:
 
 
 def git_commit(message: str) -> None:
-    """Commit and push current cache state. Skips on hook failure."""
+    """Commit and push current cache state. Skips on hook failure.
+
+    INV-041 fix Pass 53 v8h+1 2026-05-10: path-restricted commit via
+    `git commit -- <cache_path>` so unrelated staged files in the index
+    are NOT captured under this script's commit message.
+    """
     import subprocess
     subprocess.run(["git", "add", str(CACHE_DIR)],
                    capture_output=True)
-    result = subprocess.run(["git", "commit", "-m", message],
-                            capture_output=True, text=True)
+    result = subprocess.run(
+        ["git", "commit", "-m", message, "--", str(CACHE_DIR)],
+        capture_output=True, text=True,
+    )
     if "nothing to commit" in result.stdout:
         return
     # Pull-rebase before push

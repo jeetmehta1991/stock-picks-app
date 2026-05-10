@@ -646,11 +646,16 @@ contract names: `UST 10Y NOTE` / `UST 5Y NOTE` / `UST 2Y NOTE` / `UST BOND`
 - **Observation:** `scripts/prefetch_sec_xbrl.py` `git_commit()` runs `git add data_prefetch/sec_xbrl/` then `git commit -m "..."` — but `git commit` without `-- <paths>` commits ALL staged files in the index. So if I had OTHER files staged (e.g. new prefetch scripts, data caches), the BG's commit captured them under the misleading "SEC XBRL: batch 5" message.
 - **Why not blocking:** Data is preserved on origin/main. Just confusing commit narrative.
 - **Severity:** LOW (process / housekeeping).
-- **Status:** open
-- **Next action:**
-  - Edit `prefetch_sec_xbrl.py` `git_commit()` to use `git commit -- data_prefetch/sec_xbrl/` (path-restricted commit). Same fix needed in `prefetch_quiver_new_endpoints.py` and `prefetch_polygon_benzinga.py`.
-  - Or: change to `git stash`-bracketed pattern that protects unrelated staged files.
-- **Joint:** PREFETCH_COVERAGE_AUDIT.md Tier H execution; sister to git-flow hygiene rules.
+- **Status:** RESOLVED 2026-05-10 v8h+1 (path-restricted commit pattern landed in 4 scripts; regression test pins the pattern).
+- **Resolution:** Updated `git_commit()` in 4 scripts to use `git commit -m message -- <cache_path>` form which restricts the commit to the named paths only (preventing capture of unrelated staged files):
+  - `prefetch_sec_xbrl.py` - now `git commit -m message -- str(CACHE_DIR)`
+  - `prefetch_polygon_benzinga.py` - now `git commit -m message -- str(CACHE_ROOT)`
+  - `prefetch_alphavantage_news.py` - now `git commit -m message -- backtest/data/cache/av_news/ av_news_checkpoint.json`
+  - `prefetch_quiver.py` - now `git commit -m message -- backtest/data/cache/quiver/ quiver_checkpoint.json`
+  - 7 sister scripts already had the pattern (prefetch_quiver_new_endpoints, prefetch_polygon_options_full, prefetch_polygon_indicators, prefetch_finnhub_*, prefetch_stocktwits) - left untouched.
+- **Regression test:** `backtest/tests/test_inv041_path_restricted_commits.py` (5 tests) pins the pattern via regex scan of all 11 in-scope scripts. New scripts must follow the same pattern; the test will catch regressions.
+- **Verification:** 5/5 tests PASS post-fix.
+- **Joint:** PREFETCH_COVERAGE_AUDIT.md Tier H execution; sister to git-flow hygiene rules; CHECKLIST #74 (every observation logged); CHECKLIST #78 (per-addressal pyramid - new test file lands same-commit per DEC-594).
 
 ---
 

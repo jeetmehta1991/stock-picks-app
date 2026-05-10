@@ -1,5 +1,5 @@
 """
-scripts/prefetch_quiver.py — Pre-fetch all Quiver data for Phase 1B backtest.
+scripts/prefetch_quiver.py  -  Pre-fetch all Quiver data for Phase 1B backtest.
 
 Downloads and caches to Parquet:
   - Congressional trades (2020-2024)
@@ -13,7 +13,7 @@ Downloads and caches to Parquet:
 Run from laptop (Codespaces blocks api.quiverquant.com):
   python scripts/prefetch_quiver.py
 
-Progress is saved every 50 tickers — safe to interrupt and resume.
+Progress is saved every 50 tickers  -  safe to interrupt and resume.
 """
 
 import os
@@ -126,15 +126,22 @@ def save_checkpoint(checkpoint: dict):
 
 
 def git_commit(message: str):
-    """Commit and push current cache state with rebase to prevent rejections."""
+    """Commit and push current cache state with rebase to prevent rejections.
+
+    INV-041 fix Pass 53 v8h+1 2026-05-10: path-restricted commit so
+    unrelated staged files don't get captured under this script's message.
+    """
     import subprocess
-    # Add and commit
-    subprocess.run(["git", "add",
-                    "backtest/data/cache/quiver/",
-                    "backtest/data/cache/quiver_checkpoint.json"],
-                   capture_output=True)
-    result = subprocess.run(["git", "commit", "-m", message],
-                            capture_output=True, text=True)
+    paths = [
+        "backtest/data/cache/quiver/",
+        "backtest/data/cache/quiver_checkpoint.json",
+    ]
+    # Add and commit (path-restricted)
+    subprocess.run(["git", "add"] + paths, capture_output=True)
+    result = subprocess.run(
+        ["git", "commit", "-m", message, "--"] + paths,
+        capture_output=True, text=True,
+    )
     if "nothing to commit" in result.stdout:
         return
     # Rebase before push to avoid rejection from parallel runs

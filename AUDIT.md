@@ -32302,6 +32302,61 @@ Documents updated this sub-turn:
   - AUDIT.md (this sub-entry)
   - Dashboard refresh next cron sweep
 
+---
+
+## Pass 53 Day 9 v8h+1 follow-on 2026-05-10 (cont): INV-041 RESOLVED + parse_inv_entries parser fix
+
+Owner directive 2026-05-10: "proceed with remaining queue."
+
+Two related addressals committed together (related but separate; pyramid runs noted per addressal):
+
+**(A) parse_inv_entries parser fix (CHECKLIST #82 followup):**
+Parser previously scanned `body[:200]` for RESOLVED keyword. Issue: long INV bodies put **Status:** field past the 200-char window (e.g. INV-046 has Status at line 722, ~500 chars into body), so RESOLVED-DOCUMENTED status was missed -> falsely classified as OPEN. Fix: target the **Status:** field directly via regex; recognize all RESOLVED-* / DEFERRED-* / OPEN variants. Fallback: title-line scan if no **Status:** field present.
+
+Verified post-fix:
+  INV-046: status OPEN -> RESOLVED, tier READY -> IMPLEMENTED
+  INV-045: status RESOLVING -> RESOLVED, tier READY -> IMPLEMENTED  
+  INV-048: status OPEN -> DEFERRED (body says "deferred to migration")
+
+INV status distribution: 8 RESOLVED -> 13 RESOLVED (+5 properly classified). Dashboard READY false-positives reduced.
+
+Per-addressal pyramid (CHECKLIST #78): unit + integration + doc_consistency 113/113 PASS in 3.4s. Layers N/A: smoke (no engine code), data_integrity, performance, acceptance, property, snapshot, contract, compatibility, system, functional (parser-only refactor).
+
+**(B) INV-041 path-restricted commit fix:**
+INV-041 was OPEN with a "next action" specifying path-restricted commits in 3 prefetch scripts. Code grep this turn revealed 4 scripts still using `git commit -m message` without `-- <path>` form (which captures ALL staged files, not just the cache path):
+  - `prefetch_sec_xbrl.py` (the original INV-041 example)
+  - `prefetch_polygon_benzinga.py`
+  - `prefetch_alphavantage_news.py`
+  - `prefetch_quiver.py`
+
+7 sister scripts already had path-restricted form (prefetch_quiver_new_endpoints, prefetch_polygon_options_full, prefetch_polygon_indicators, prefetch_finnhub_*, prefetch_stocktwits) - left untouched.
+
+All 4 patched: now use `git commit -m message -- <cache_path1> [<path2>...]` form. INV-041 first-application complete.
+
+NEW REGRESSION TEST `backtest/tests/test_inv041_path_restricted_commits.py` (5 tests) pins the pattern via regex scan of all 11 in-scope scripts:
+  - test_inv041_no_unrestricted_commit_in_scope_scripts (walks all 11)
+  - 4 module-specific pins for the just-fixed scripts
+  - Comment-stripped to avoid false positives
+
+INV-041 status: OPEN -> RESOLVED 2026-05-10 v8h+1.
+
+Per-addressal pyramid (CHECKLIST #78): regression + unit + integration + no_live_api_hard_cut layers - 112/112 PASS in 3.7s. Layers N/A: smoke (no engine touched), data_integrity, performance, acceptance, property, snapshot, contract, compatibility (no scope match), system (script-internal change), functional (process fix).
+
+**Same-commit (DEC-594):** parser fix + 4 prefetch script fixes + INV-041 register update + new regression test + AUDIT.md narrative + dashboards rebuilt - all in this single commit.
+
+**INV-041 first application of CHECKLIST #74 + #78 + #81:** owner-flagged finding -> investigation -> fix -> regression test -> register status flip + doc sweep, all in same commit.
+
+Documents updated this sub-turn:
+  - scripts/build_dashboard_stage_2.py (parse_inv_entries status detection refactor)
+  - scripts/prefetch_sec_xbrl.py (path-restricted commit)
+  - scripts/prefetch_polygon_benzinga.py (path-restricted commit)
+  - scripts/prefetch_alphavantage_news.py (path-restricted commit)
+  - scripts/prefetch_quiver.py (path-restricted commit)
+  - backtest/tests/test_inv041_path_restricted_commits.py (NEW; 5-test regression gate)
+  - OPEN_INVESTIGATIONS.md (INV-041 OPEN -> RESOLVED with full resolution narrative)
+  - AUDIT.md (this sub-entry)
+  - Both dashboards rebuilt
+
 **Same-commit (DEC-594):** script + DEC-609 + AUDIT.md narrative + contract test + dashboards rebuilt - all in this sub-turn commit.
 
 Documents updated this sub-turn:

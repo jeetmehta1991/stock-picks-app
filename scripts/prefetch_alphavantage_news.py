@@ -1,12 +1,12 @@
 """
-scripts/prefetch_alphavantage_news.py — Pre-fetch Alpha Vantage News & Sentiment.
+scripts/prefetch_alphavantage_news.py  -  Pre-fetch Alpha Vantage News & Sentiment.
 
 Replaces Finnhub news pre-fetch. Alpha Vantage provides:
 - Full historical news back to 2022 (confirmed)
 - AI-powered sentiment scores per article (not keyword-based)
 - Per-ticker filtering with date ranges
 - Free tier: 25 calls/minute, 500/day
-- Already used in Stage 1 — no new account needed
+- Already used in Stage 1  -  no new account needed
 
 Download structure: per ticker, annual batches (2022, 2023, 2024, 2025, 2026)
 Output: Parquet per ticker with daily aggregated sentiment
@@ -186,12 +186,19 @@ def save_checkpoint(done: list, batch: int = 0):
 
 
 def git_commit(message: str):
+    """INV-041 fix Pass 53 v8h+1 2026-05-10: path-restricted commit so
+    unrelated staged files don't get captured under this script's message.
+    """
     import subprocess
-    subprocess.run(["git", "add",
-                    "backtest/data/cache/av_news/",
-                    "backtest/data/cache/av_news_checkpoint.json"],
-                   capture_output=True)
-    result = subprocess.run(["git", "commit", "-m", message], capture_output=True, text=True)
+    paths = [
+        "backtest/data/cache/av_news/",
+        "backtest/data/cache/av_news_checkpoint.json",
+    ]
+    subprocess.run(["git", "add"] + paths, capture_output=True)
+    result = subprocess.run(
+        ["git", "commit", "-m", message, "--"] + paths,
+        capture_output=True, text=True,
+    )
     if "nothing to commit" in result.stdout:
         return
     subprocess.run(["git", "pull", "--rebase", "origin", "main"], capture_output=True)
