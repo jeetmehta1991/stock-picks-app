@@ -31866,3 +31866,33 @@ Documents updated this turn:
   - AUDIT.md (this entry)
   - Both dashboards rebuilt
 
+---
+
+## Pass 53 Day 9 v8h+1 follow-on 2026-05-10 (cont): H-tier doc reconciliation + H20=A owner direction
+
+Owner directives 2026-05-10:
+- "H20 - A approved" (option A: honor DEC-599; pytrends DEFERRED-Phase-1C; no pytrends prefetch this sprint; StockTwits remains adopted retail-attention replacement)
+- "approve your recs on turn sequencing" (this turn = H-tier doc sweep; next turn = 0A.8 NO-LIVE-API refactor + H1 OHLCV BG)
+
+H-tier reconciliation finding: PHASE_1A_PRELAUNCH_TODO.md was stale (last content update 2026-05-08 with several items already superseded or completed via independent DEC actions). Empirical verification 2026-05-10 + DEC cross-reference produced the following status flips (DOC SWEEP ONLY — no code change, no pyramid required per CHECKLIST #78 N/A rule for pure-doc):
+
+| H-item | Prior status | Verified state | Source |
+|---|---|---|---|
+| H10 | PENDING (P1, ~10-30h) | DONE | DEC-600 RESOLVED-DECIDED — ep1 chain ref complete BG `b0lj8cqjx` 1937/1937; ep2 deferred Phase 1B+ on-demand |
+| H19 | PENDING (P2) | DONE | empirical: `data_prefetch/apewisdom/subreddits/` has 8 parquets (wsb/stocks/investing/options/bitcoin/crypto/satoshistreetbets/stockmarket) — exceeds 4-feed spec |
+| H20 | PENDING (P2, 8-12h) | DEFERRED-Phase-1C | DEC-599 RESOLVED-DECIDED + owner H20=A 2026-05-10 — pytrends superseded by StockTwits; reconsider Phase 1C if SerpAPI ~$50/mo approved |
+| H21 | PENDING (P3) | DONE | DEC-601 RESOLVED-DECIDED + empirical: 13-col schema applied; 2022 weekly rows 1987->2026; cols include bullish_8wk_ma, bullish_long_term_avg, +/-1stdev, spy_weekly OHLC |
+| H6 | PENDING (P2) | PARTIAL-DONE | empirical: `data_prefetch/polygon/indicators/` has 6 dirs (ema_20/50, macd, rsi_14, sma_50/200); per-ticker completeness vs 1937 universe still pending verify |
+| H16 | PENDING (P2) | PARTIAL-DONE | empirical: `data_prefetch/alfred/` populated; vintage realtime_start/end coverage scope vs 50-57 series target pending verify |
+| H22 | PENDING (P3) | PARTIAL-DONE | per J2 broad sweep already done 7033 cases; residual sweep on caches added since J2 pending |
+
+**Real-TODO remaining (Sprint 0A pre-Phase-1A):** H1 (OHLCV vwap+transactions re-fetch), H4 (Polygon reference extended fields — address/branding/employees/phone/description/figi/round_lot), H18 (CFTC 5 missing datasets). Plus completeness verifies for H6/H16/H22.
+
+**Sprint 0A genuine blocker remaining:** 0A.8 NO-LIVE-API refactor of `backtest/data/macro.py` + `backtest/data/smart_money.py` (owner-approved 2026-05-05; ~1-2 days; sequenced for next turn). Plus 0A.7 per-API smoke/demo split (~4h).
+
+**Phase 1A May 15 strict blocker count: 0 OPEN.** Launch UNBLOCKED.
+
+Documents updated this sub-turn:
+  - PHASE_1A_PRELAUNCH_TODO.md (H6/H10/H16/H19/H20/H21/H22 status flips with DEC cross-references; header reconciliation note)
+  - AUDIT.md (this sub-entry)
+
