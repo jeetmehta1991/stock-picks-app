@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-10T19:19:14.177527+00:00",
+  "generated_at": "2026-05-10T19:31:55.904449+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -2773,7 +2773,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 42,
+        "n_doc_refs": 43,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -9973,7 +9973,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 11,
+        "n_doc_refs": 12,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -10573,7 +10573,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 19,
+        "n_doc_refs": 20,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -11924,7 +11924,7 @@
     {
       "id": "DECISION-295",
       "title": "Reconcile SHORT_BORROW_COST_PER_DAY units \u2014 0.005 ambiguous (per-day decimal vs per-day pe",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X51 \u2014 CRITICAL Runtime Bugs",
       "pass_intro": "Pass 48",
       "pass_resolved": "50",
@@ -11933,7 +11933,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 6,
+        "n_doc_refs": 9,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -11955,10 +11955,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-PROMOTE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Wired in active path + tested; eligible for RESOLVED-IMPLEMENTED"
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -12164,7 +12164,7 @@
     {
       "id": "DECISION-301",
       "title": "FRED data revisions completely unhandled \u2014 switch to ALFRED (archival FRED) for vintage da",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X52 \u2014 CRITICAL PIT Correctness",
       "pass_intro": "Pass 48",
       "pass_resolved": "50",
@@ -12173,7 +12173,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 15,
+        "n_doc_refs": 16,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -12195,16 +12195,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-PROMOTE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Wired in active path + tested; eligible for RESOLVED-IMPLEMENTED"
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-302",
       "title": "VXX used as VIX proxy + UUP used as DXY proxy \u2014 quantify tracking error or replace with ac",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X52 \u2014 CRITICAL PIT Correctness",
       "pass_intro": "Pass 48",
       "pass_resolved": "50",
@@ -12213,7 +12213,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 10,
+        "n_doc_refs": 11,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -12235,10 +12235,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-PROMOTE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Wired in active path + tested; eligible for RESOLVED-IMPLEMENTED"
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -12284,7 +12284,7 @@
     {
       "id": "DECISION-304",
       "title": "CPI/NFP/FOMC dates hardcoded through March 2026 only \u2014 auto-extend from FRED FOMC + BLS sc",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X52 \u2014 CRITICAL PIT Correctness",
       "pass_intro": "Pass 48",
       "pass_resolved": "50",
@@ -12293,7 +12293,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 9,
+        "n_doc_refs": 10,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -12315,16 +12315,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-PROMOTE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Wired in active path + tested; eligible for RESOLVED-IMPLEMENTED"
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-305",
       "title": "PIT guard `_assert_no_lookahead` logs WARNING but doesn't RAISE \u2014 switch to RAISE in backt",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X52 \u2014 CRITICAL PIT Correctness",
       "pass_intro": "Pass 48",
       "pass_resolved": "50",
@@ -12333,7 +12333,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 7,
+        "n_doc_refs": 8,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -12355,10 +12355,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-PROMOTE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Wired in active path + tested; eligible for RESOLVED-IMPLEMENTED"
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -16173,7 +16173,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 6,
+        "n_doc_refs": 7,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -31600,46 +31600,52 @@
   ],
   "recent_commits": [
     {
+      "sha": "501cdbff",
+      "subject": "Pass 53 v8h+1: Tier B engine-correctness promotion sweep #1 (6 DECs RESOLVED-DECIDED -> RESOLVED-IMPLEMENTED)",
+      "author": "jeetmehta1991",
+      "rel_time": "70 seconds ago"
+    },
+    {
       "sha": "77f57b21",
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 18:43: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "3 minutes ago"
+      "rel_time": "16 minutes ago"
     },
     {
       "sha": "4f9e558c",
       "subject": "Pass 53 v8h+1: 0A.7 per-API smoke/demo split - StockTwits + Apewisdom additions (Sprint 0A COMPLETE)",
       "author": "jeetmehta1991",
-      "rel_time": "42 minutes ago"
+      "rel_time": "54 minutes ago"
     },
     {
       "sha": "07c15d16",
       "subject": "Pass 53 v8h+1: H18 data refresh - 54 CFTC parquets updated (legacy/disagg/tff datasets)",
       "author": "jeetmehta1991",
-      "rel_time": "56 minutes ago"
+      "rel_time": "68 minutes ago"
     },
     {
       "sha": "1af57700",
       "subject": "Pass 53 v8h+1: H18 CFTC 5 missing datasets verify (DONE-WITH-DATASET-SCOPE-CAP) - Sprint 0A H-tier complete",
       "author": "jeetmehta1991",
-      "rel_time": "56 minutes ago"
+      "rel_time": "69 minutes ago"
     },
     {
       "sha": "25485a1b",
       "subject": "Pass 53 v8h+1: H4 Polygon reference extended verify (DONE-WITH-DELISTING-CAP per CAV-075 sister pattern)",
       "author": "jeetmehta1991",
-      "rel_time": "68 minutes ago"
+      "rel_time": "80 minutes ago"
     },
     {
       "sha": "fc5c43f4",
       "subject": "Pass 53 v8h+1: H16 + H22 verify (DONE / PARTIAL-DONE-WITH-FINDING + INV-048)",
       "author": "jeetmehta1991",
-      "rel_time": "79 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "fe623f3e",
       "subject": "Pass 53 v8h+1: H6 indicator completeness verify + macd top-up (1911 -> 1937)",
       "author": "jeetmehta1991",
-      "rel_time": "89 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "b76fc3d1",
@@ -31669,13 +31675,13 @@
       "sha": "aee93c01",
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 16:43: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "d57a07ee",
       "subject": "Pass 53 v8h+1: Sprint 0A.8 NO-LIVE-API HARD CUT implementation (DEC-608)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "bdba8f67",
@@ -31711,49 +31717,49 @@
       "sha": "2244b1e5",
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 10:13: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
+      "rel_time": "7 hours ago"
     },
     {
       "sha": "27944fa2",
       "subject": "Pass 53 v8h+1: DEC-606 Finnhub financials_reported EXCLUDED COMPLETELY + CAV-075 (delisting confirmed) + CAV-076",
       "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
+      "rel_time": "8 hours ago"
     },
     {
       "sha": "c3322875",
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 08:13: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "8 hours ago"
+      "rel_time": "9 hours ago"
     },
     {
       "sha": "ef42fd1b",
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 06:13: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "10 hours ago"
+      "rel_time": "11 hours ago"
     },
     {
       "sha": "06c4c1d4",
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 04:13: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "12 hours ago"
+      "rel_time": "13 hours ago"
     },
     {
       "sha": "ae51b3bd",
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 02:13: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "14 hours ago"
+      "rel_time": "15 hours ago"
     },
     {
       "sha": "6d41cc66",
       "subject": "Pass 53 auto-drift-sweep 2026-05-09 15:53: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "16 hours ago"
+      "rel_time": "17 hours ago"
     },
     {
       "sha": "0ce9ec2b",
       "subject": "Pass 53 auto-drift-sweep 2026-05-09 13:53: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "18 hours ago"
+      "rel_time": "19 hours ago"
     },
     {
       "sha": "1cc943ac",
@@ -31765,24 +31771,18 @@
       "sha": "8d4fa5d3",
       "subject": "Pass 53 v8h+1: Sprint 0A Coverage Matrix tab - per-(api, endpoint, field) coverage + commentary + status badges",
       "author": "jeetmehta1991",
-      "rel_time": "20 hours ago"
+      "rel_time": "21 hours ago"
     },
     {
       "sha": "826d5454",
       "subject": "Pass 53 v8h+1: DEC-605 - Finnhub social_sentiment EXCLUDED from Phase 1A baseline",
       "author": "jeetmehta1991",
       "rel_time": "21 hours ago"
-    },
-    {
-      "sha": "5bb5b70f",
-      "subject": "Pass 53 v8h+1: AAII Asset Allocation Survey + Finnhub social_sentiment use case in dashboard",
-      "author": "jeetmehta1991",
-      "rel_time": "22 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 5,
-    "modified": 5,
+    "count": 2,
+    "modified": 2,
     "added": 0,
     "untracked": 0,
     "deleted": 0,
@@ -31794,18 +31794,6 @@
       {
         "status": "M",
         "path": "AUDIT_INDEX.md"
-      },
-      {
-        "status": "M",
-        "path": "dashboard_sprint0a/data.js"
-      },
-      {
-        "status": "M",
-        "path": "dashboard_sprint0a/data.json"
-      },
-      {
-        "status": "M",
-        "path": "dashboard_sprint0a/last_run.txt"
       }
     ]
   },
@@ -32606,7 +32594,7 @@
     }
   ],
   "decision_status_counts": {
-    "RESOLVED-DECIDED": 322,
+    "RESOLVED-DECIDED": 317,
     "PARTIAL": 5,
     "SUPERSEDED_BY_DEC-422": 6,
     "SUPERSEDED": 10,
@@ -32635,7 +32623,7 @@
     "SUPERSEDED_BY_DEC-330": 1,
     "trade_pnl": 1,
     "OBSOLETE": 3,
-    "RESOLVED-IMPLEMENTED": 12,
+    "RESOLVED-IMPLEMENTED": 17,
     "SUPERSEDED_BY_DEC-313": 1,
     "RESOLVED-DECIDED-DEFERRED": 1,
     "BLOCKED_ON_DEC-298": 2,

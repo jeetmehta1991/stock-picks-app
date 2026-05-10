@@ -32148,6 +32148,33 @@ Documents updated this sub-turn:
   - AUDIT.md (this sub-entry)
   - Both dashboards rebuilt
 
+---
+
+## Pass 53 Day 9 v8h+1 follow-on 2026-05-10 (cont): Tier B promotion sweep #2 (PIT-correctness DECs)
+
+**Scope:** PIT-correctness DECs spanning Pass 50 + Pass 53 (DEC-295/301/302/304/305) - artifacts already landed; status flip.
+
+**Verification per DEC:**
+
+| DEC | Title | test_refs | code_refs | landing commit | Status flip |
+|---|---|---|---|---|---|
+| DEC-295 | SHORT_BORROW_COST_PER_DAY units (0.005 ambiguous) | 2 | 3 | a5db4e7d7 | RESOLVED-DECIDED -> RESOLVED-IMPLEMENTED |
+| DEC-301 | FRED data revisions -> ALFRED vintage queries | 6 | 2 | fc5c43f40 | RESOLVED-DECIDED -> RESOLVED-IMPLEMENTED |
+| DEC-302 | VXX/UUP proxy fallback when canonical missing | 2 | 2 | d57a07ee6 | RESOLVED-DECIDED -> RESOLVED-IMPLEMENTED |
+| DEC-304 | CPI/NFP/FOMC dates auto-extend | 2 | 3 | 19d9954fe | RESOLVED-DECIDED -> RESOLVED-IMPLEMENTED |
+| DEC-305 | PIT lookahead guard RAISES instead of WARN | 2 | 2 | 2e072dd33 | RESOLVED-DECIDED -> RESOLVED-IMPLEMENTED |
+
+**Per-addressal pyramid (CHECKLIST #78):** unit + integration + L146-wave-a + DEC-512-PIT-audit layers - 117 PASS, 1 skip in 4.6s.
+
+**RESOLVED-IMPLEMENTED count: 11 -> 16.**
+
+**Tier B remaining READY:** ~26 across other lineages (DEC-067 9 exit methods, DEC-261 ICT/SMC PIT, DEC-246/247/250 quant audits, DEC-401/405/415/423 statistical methodology, etc.).
+
+Documents updated this sub-turn:
+  - AUDIT_INDEX.md (5 status flips: DEC-295/301/302/304/305)
+  - AUDIT.md (this sub-entry)
+  - Both dashboards rebuilt
+
 **Same-commit (DEC-594):** script + DEC-609 + AUDIT.md narrative + contract test + dashboards rebuilt - all in this sub-turn commit.
 
 Documents updated this sub-turn:
