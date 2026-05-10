@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-10T18:27:08.274437+00:00",
+  "generated_at": "2026-05-10T18:43:30.556595+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -31600,58 +31600,64 @@
   ],
   "recent_commits": [
     {
+      "sha": "4f9e558c",
+      "subject": "Pass 53 v8h+1: 0A.7 per-API smoke/demo split - StockTwits + Apewisdom additions (Sprint 0A COMPLETE)",
+      "author": "jeetmehta1991",
+      "rel_time": "6 minutes ago"
+    },
+    {
       "sha": "07c15d16",
       "subject": "Pass 53 v8h+1: H18 data refresh - 54 CFTC parquets updated (legacy/disagg/tff datasets)",
       "author": "jeetmehta1991",
-      "rel_time": "4 minutes ago"
+      "rel_time": "20 minutes ago"
     },
     {
       "sha": "1af57700",
       "subject": "Pass 53 v8h+1: H18 CFTC 5 missing datasets verify (DONE-WITH-DATASET-SCOPE-CAP) - Sprint 0A H-tier complete",
       "author": "jeetmehta1991",
-      "rel_time": "4 minutes ago"
+      "rel_time": "20 minutes ago"
     },
     {
       "sha": "25485a1b",
       "subject": "Pass 53 v8h+1: H4 Polygon reference extended verify (DONE-WITH-DELISTING-CAP per CAV-075 sister pattern)",
       "author": "jeetmehta1991",
-      "rel_time": "15 minutes ago"
+      "rel_time": "32 minutes ago"
     },
     {
       "sha": "fc5c43f4",
       "subject": "Pass 53 v8h+1: H16 + H22 verify (DONE / PARTIAL-DONE-WITH-FINDING + INV-048)",
       "author": "jeetmehta1991",
-      "rel_time": "27 minutes ago"
+      "rel_time": "44 minutes ago"
     },
     {
       "sha": "fe623f3e",
       "subject": "Pass 53 v8h+1: H6 indicator completeness verify + macd top-up (1911 -> 1937)",
       "author": "jeetmehta1991",
-      "rel_time": "37 minutes ago"
+      "rel_time": "53 minutes ago"
     },
     {
       "sha": "b76fc3d1",
       "subject": "Pass 53 v8h+1: H1.b OHLCV Master Dedup data commit (1924 parquets, 105.6 MB) + CAV-079",
       "author": "jeetmehta1991",
-      "rel_time": "48 minutes ago"
+      "rel_time": "64 minutes ago"
     },
     {
       "sha": "1e020b2a",
       "subject": "Pass 53 v8h+1: promotion-path column wired into Stage 2 dashboard (CHECKLIST #81/#82)",
       "author": "jeetmehta1991",
-      "rel_time": "57 minutes ago"
+      "rel_time": "74 minutes ago"
     },
     {
       "sha": "f7b3e987",
       "subject": "Pass 53 v8h+1: untracked artifacts cleanup (gitignore + INV-027 backup archived)",
       "author": "jeetmehta1991",
-      "rel_time": "73 minutes ago"
+      "rel_time": "89 minutes ago"
     },
     {
       "sha": "4bf07436",
       "subject": "Pass 53 v8h+1: H1.a OHLCV Master Dedup prefetch script + DEC-609 (Option B)",
       "author": "jeetmehta1991",
-      "rel_time": "75 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "aee93c01",
@@ -31663,7 +31669,7 @@
       "sha": "d57a07ee",
       "subject": "Pass 53 v8h+1: Sprint 0A.8 NO-LIVE-API HARD CUT implementation (DEC-608)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "bdba8f67",
@@ -31687,7 +31693,7 @@
       "sha": "d6e6296d",
       "subject": "Pass 53 v8h+1: Coverage Matrix kind-aware metrics + commentary updated + CHECKLIST #80",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "ecc846c2",
@@ -31705,7 +31711,7 @@
       "sha": "27944fa2",
       "subject": "Pass 53 v8h+1: DEC-606 Finnhub financials_reported EXCLUDED COMPLETELY + CAV-075 (delisting confirmed) + CAV-076",
       "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
+      "rel_time": "7 hours ago"
     },
     {
       "sha": "c3322875",
@@ -31747,13 +31753,13 @@
       "sha": "1cc943ac",
       "subject": "Pass 53 auto-drift-sweep 2026-05-09 11:53: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "19 hours ago"
+      "rel_time": "20 hours ago"
     },
     {
       "sha": "8d4fa5d3",
       "subject": "Pass 53 v8h+1: Sprint 0A Coverage Matrix tab - per-(api, endpoint, field) coverage + commentary + status badges",
       "author": "jeetmehta1991",
-      "rel_time": "19 hours ago"
+      "rel_time": "20 hours ago"
     },
     {
       "sha": "826d5454",
@@ -31765,49 +31771,22 @@
       "sha": "5bb5b70f",
       "subject": "Pass 53 v8h+1: AAII Asset Allocation Survey + Finnhub social_sentiment use case in dashboard",
       "author": "jeetmehta1991",
-      "rel_time": "21 hours ago"
+      "rel_time": "22 hours ago"
     },
     {
       "sha": "06d85a9a",
       "subject": "Pass 53 v8h+1: INV-027 backfill data sweep - 1924 polygon news files with insights_json",
       "author": "jeetmehta1991",
       "rel_time": "22 hours ago"
-    },
-    {
-      "sha": "324362ec",
-      "subject": "Pass 53 auto-drift-sweep 2026-05-09 09:53: dashboards refreshed (no numerical drift)",
-      "author": "jeetmehta1991",
-      "rel_time": "24 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 5,
-    "modified": 1,
+    "count": 0,
+    "modified": 0,
     "added": 0,
-    "untracked": 4,
+    "untracked": 0,
     "deleted": 0,
-    "files": [
-      {
-        "status": "M",
-        "path": "AUDIT.md"
-      },
-      {
-        "status": "??",
-        "path": "backtest/tests/test_apewisdom_demo.py"
-      },
-      {
-        "status": "??",
-        "path": "backtest/tests/test_apewisdom_smoke.py"
-      },
-      {
-        "status": "??",
-        "path": "backtest/tests/test_stocktwits_demo.py"
-      },
-      {
-        "status": "??",
-        "path": "backtest/tests/test_stocktwits_smoke.py"
-      }
-    ]
+    "files": []
   },
   "unpushed_commits": [],
   "active_bgs": [],
