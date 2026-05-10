@@ -92,6 +92,15 @@ Owner: *"all data in prefetch needs to be standardized and normalized."*
 
 **Strict blocker count: 1 OPEN (INV-046).** All other T0 items either resolved or surfaced for owner.
 
+### Quiver etfholdings refresh DEAD-END (INV-047 + CAV-077, owner-approved 2026-05-10)
+
+- All Quiver Trader paths (`/historical/etfholdings/{t}`, `/live/etfholdings/{t}`, camelCase variants, no-version-prefix) return 404.
+- All Polygon Stocks Starter ETF-holdings paths return 404.
+- Existing 1563 cached files came from unknown / deprecated source that no longer responds.
+- DECISION: accept static snapshot as-is. Not Phase 1A blocker (P2 Phase 1B+ ETF flow proxy).
+- Resolution paths surfaced for owner: (a) accept static [DEFAULT], (b) paid 3rd-party FMP/EOD/etfdb ~$30-50/mo, (c) scraping infra (fragile), (d) Quiver support query.
+- See INV-047 + CAV-077 for full record.
+
 ### Finnhub financials_reported EXCLUDED COMPLETELY (DEC-606, owner-approved 2026-05-10)
 
 - Total exclusion: not Phase 1A only. Excluded from Phase 1A + Phase 1B+ + Phase 1C+ + Stage 3 + Stage 4.

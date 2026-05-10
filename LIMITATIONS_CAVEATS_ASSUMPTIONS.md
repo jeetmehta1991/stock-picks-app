@@ -694,3 +694,12 @@ Cells with n<30 trades fall back to marginal-best (next-broader cell). Live deci
 **Runtime guard:** zero engine/agent/signal code references `finnhub.financials_reported` (verified 2026-05-10); script `prefetch_finnhub_full.py` is BUILT but is NOT invoked by Phase 1A pipeline.
 **Reconsider triggers:** none; this is permanent. SEC XBRL + Polygon financials are structurally superior data sources.
 **Forward-link:** DEC-606 (this exclusion); CAV-075 (delisting confirms 246-ticker SEC-unfileable ceiling); test_contract_finnhub_earnings_shape (Finnhub `earnings` endpoint, NOT `financials_reported`, remains valid).
+
+### CAV-077 — Quiver `etfholdings` cache is a static snapshot from unknown date; no working refresh endpoint at our paid tiers
+
+**Source:** Pass 53 v8h+1 owner-approved 2026-05-10 (INV-047)
+**Status:** ACTIVE — data-source-deadend caveat (Phase 1B+ research only)
+**Caveat:** The existing 1563 files at `data_prefetch/quiver/etfholdings/` (5-col schema: ETF Symbol / Holding Name / Holding Symbol / % of ETF / Value $) came from an unknown / deprecated Quiver endpoint that no longer responds. Probed all candidate Quiver Trader paths (historical/live + camelCase variants + no-version-prefix) — all 404. Probed Polygon Stocks Starter ETF holdings paths — all 404. Cannot refresh from any tier we currently subscribe to.
+**Operational impact:** etfholdings data is **a static snapshot**, not a live feed. Phase 1A backtest doesn't consume etfholdings (P2 Phase 1B+ ETF flow proxy). Phase 1B+ research using etfholdings must treat it as a single-point-in-time reference, not a time-series. PIT loader returning "not_available" for as_of < snapshot_date is the correct semantic.
+**Resolution paths (owner-pending):** (a) accept static snapshot as-is; (b) paid 3rd-party (FMP / EOD / etfdb ~$30-50/mo); (c) scraping infra (fragile, creates maintenance burden); (d) Quiver support query for correct endpoint (zero cost, unbounded latency). Default = (a) until Phase 1B+ research demonstrates etfholdings provides material lift over zero-cost alternatives.
+**Forward-link:** INV-047 (this dead-end record); CHECKLIST #77 (canonical-source rule caught the 404 honestly); DEC-606 sister pattern (Finnhub financials_reported permanently excluded; etfholdings is structurally similar P2-criticality decision but with no superior zero-cost alternative).

@@ -729,4 +729,28 @@ contract names: `UST 10Y NOTE` / `UST 5Y NOTE` / `UST 2Y NOTE` / `UST BOND`
 
 ---
 
-*Last updated: 2026-05-08 v8h+1 — INV-023 + INV-038 RESOLVED + INV-046 logged + T0 patches deployed*
+## INV-047 — Quiver `etfholdings` refresh dead-end; existing 1563 files are static snapshot (Pass 53 Day-9 v8h+1 2026-05-10)
+
+- **Discovered:** 2026-05-10 owner-approved option-1 etfholdings refresh; probe phase per CHECKLIST #77.
+- **Observation:** All Quiver Trader plan candidate paths return 404:
+  - `/historical/etfholdings/{ticker}` -> 404
+  - `/live/etfholdings/{ticker}` -> 404
+  - `/historical/etfHoldings/{ticker}` (camelCase) -> 404
+  - `/etfholdings/{ticker}` (no version prefix) -> 404
+  - Polygon `/v3/reference/tickers/{etf}/etfs` -> 404
+  - Polygon `/v3/reference/etfs/{ticker}` -> 404
+  - Polygon `/v3/reference/etfs/{ticker}/holdings` -> 404
+- **Why we have data anyway:** existing 1563 cached files at `data_prefetch/quiver/etfholdings/` came from an unknown / deprecated endpoint that no longer responds. Schema (5 cols: ETF Symbol, Holding Name, Holding Symbol, % of ETF, Value $) suggests an "ETFs that hold this ticker" reverse-lookup, possibly from a deprecated Quiver path or an ad-hoc prior fetch.
+- **Why not blocking:** etfholdings is P2 criticality (Phase 1B+ ETF flow proxy). Phase 1A baseline doesn't consume etfholdings data. Static snapshot is acceptable for Phase 1B+ research while data-source decision is pending.
+- **Severity:** LOW for Phase 1A; MEDIUM for Phase 1B+ (signal staleness over time).
+- **Status:** OPEN — deferred to Phase 1B+ pending owner decision on data source.
+- **Resolution paths (owner choice):**
+  - **(a) Accept static snapshot** as-is (zero cost; data freshness limited to last unknown fetch date) — current default per CAV-077.
+  - **(b) Subscribe to paid 3rd-party** — FMP (~$30/mo), EOD Historical Data (~$30/mo), or etfdb.com data API (~$50/mo). Best-quality option but $360-600/yr for a P2 signal.
+  - **(c) Build scraping infra** against etf.com / etfdb.com public pages — cheap but fragile; would create downstream maintenance burden contra owner's "no downstream issues" rule.
+  - **(d) Owner-side query** to Quiver support requesting the correct endpoint for our Trader plan — zero cost but unbounded latency; Quiver may not have the endpoint at all.
+- **Joint:** CHECKLIST #77 (canonical-source rule — caught the 404 honestly instead of fabricating an endpoint); CAV-077 (this static-snapshot caveat); DEC-606 sister exclusion pattern (Finnhub financials_reported permanently excluded due to superior alternative; etfholdings has no equivalent superior alternative at zero cost).
+
+---
+
+*Last updated: 2026-05-10 v8h+1 — INV-047 logged (etfholdings dead-end); CAV-077 added*

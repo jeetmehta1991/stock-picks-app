@@ -461,7 +461,7 @@ ENDPOINT_USE_CASES = {
     "quiver.wikipedia_mirror": {"use_case": "DEPRECATED - use canonical wikipedia.pageviews instead", "stage": "DEPRECATED", "criticality": "skip"},
     "quiver.offexchange": {"use_case": "FINRA dark-pool short volume + dark-pool index (DPI) per ticker", "stage": "Phase 1B dark-pool overlay", "criticality": "P1"},
     "quiver.topshareholders": {"use_case": "Top 10 institutional shareholders snapshot (no PIT history)", "stage": "Phase 1B+ context (current snapshot)", "criticality": "P3"},
-    "quiver.etfholdings": {"use_case": "Per-ticker ETF inclusion list + % weight (no PIT)", "stage": "Phase 1B ETF flow proxy", "criticality": "P2"},
+    "quiver.etfholdings": {"use_case": "Per-ticker ETF inclusion list + % weight (no PIT)", "stage": "Phase 1B ETF flow proxy. STATIC SNAPSHOT only (INV-047 / CAV-077 2026-05-10): all Quiver and Polygon refresh endpoints return 404; existing 1563 files came from deprecated source that no longer responds. Phase 1A baseline does not consume; Phase 1B+ must treat as single-point-in-time reference.", "criticality": "P2 (static snapshot; refresh dead-end pending owner data-source decision)"},
     "quiver.patentmomentum_bulk": {"use_case": "Patent grant momentum (bulk; through 2022)", "stage": "Phase 1B+ innovation signal", "criticality": "P2"},
     "quiver.corporatedonors_bulk": {"use_case": "Corporate political donations (PIT cutoff via TransactionDate)", "stage": "Phase 1B+ political-bias overlay", "criticality": "P3"},
     "quiver.quivernews_bulk": {"use_case": "Quiver headline feed (general market news; not per-ticker)", "stage": "Phase 1B agent context", "criticality": "P3"},
