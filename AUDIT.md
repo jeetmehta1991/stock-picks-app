@@ -31953,7 +31953,7 @@ H1 scope finding (verified 2026-05-10 empirical): the existing legacy `backtest/
 
 **Per-addressal pyramid (CHECKLIST #78):** 191/191 PASS in 8s across contract + regression + unit + integration + smoke + schema-canonical layers. Layers N/A: data_integrity (re-runs on H1.b post-BG), performance, acceptance, property, snapshot, compatibility.
 
-**H1.b (deferred):** full BG kicked off 2026-05-10 17:01 UTC (PID 69842, ETA ~16-17 min at observed 1.9 t/s rate). Per-ticker .parquet files (1937 - 5 smoke = 1932 to fetch) commit as separate H1.b addressal when BG completes; data_integrity pyramid layer runs then. Per CHECKLIST #67.b doc-commits-decoupled-from-pending-BG rule.
+**H1.b (BG completed 2026-05-10 17:20 UTC, separate sub-addressal commit):** 1924/1932 successful, 8 failures (AGN/CXO/ETFC/NBL/RTN/TIF/VAR/WCG - all M&A casualties pre-Polygon-5y-window). Wall time 19 min. Cache size 105.6 MB (1929 total files including 5 smoke). Random 10-file sample data integrity check 2026-05-10: all 10 sampled files pass schema (9 cols, vwap complete, transactions complete, row counts 624-1255 reflecting listing-date variance). CAV-079 logged for the 8 delisted-ticker failures (M&A successor symbols already cached under new symbols - no signal lost; PIT loader correctly returns empty for delisted dates).
 
 **Same-commit (DEC-594):** script + DEC-609 + AUDIT.md narrative + contract test + dashboards rebuilt - all in this sub-turn commit.
 

@@ -695,6 +695,17 @@ Cells with n<30 trades fall back to marginal-best (next-broader cell). Live deci
 **Reconsider triggers:** none; this is permanent. SEC XBRL + Polygon financials are structurally superior data sources.
 **Forward-link:** DEC-606 (this exclusion); CAV-075 (delisting confirms 246-ticker SEC-unfileable ceiling); test_contract_finnhub_earnings_shape (Finnhub `earnings` endpoint, NOT `financials_reported`, remains valid).
 
+### CAV-079 — H1 OHLCV Master Dedup prefetch: 8 historically-delisted tickers fail to fetch (DEC-609 H1.b)
+
+**Source:** Pass 53 v8h+1 owner-approved 2026-05-10 (DEC-609 H1.b BG completion).
+**Status:** ACTIVE - data-source-availability caveat (not a defect).
+**Caveat:** The H1 polygon ohlcv_daily Master Dedup prefetch returned 1924/1932 successful (8 failures): AGN, CXO, ETFC, NBL, RTN, TIF, VAR, WCG. All 8 are M&A casualties / historically delisted equities (Allergan/AGN -> AbbVie 2020; Concho/CXO -> ConocoPhillips 2021; E*TRADE/ETFC -> Morgan Stanley 2020; Noble Energy/NBL -> Chevron 2020; Raytheon/RTN -> RTX 2020; Tiffany/TIF -> LVMH 2021; Varian/VAR -> Siemens 2021; WellCare/WCG -> Centene 2020). Polygon's 5-year rolling window now starts post-delisting for several; surviving tickers are at successor symbols (ABBV, COP, MS, CVX, RTX, etc.) which DO fetch successfully under their new symbols.
+**Operational impact:** Master Dedup CSV includes both historical AND active tickers (1937 unique). The 8 missing equities are absent from `data_prefetch/polygon/ohlcv_daily/` but no signal is lost - they appear under successor tickers in the same cache. Phase 1A backtest consumers must be aware that PIT loader will return empty for the 8 delisted symbols on dates after their delisting; that's correct PIT behavior. No code action required.
+**Reconsider triggers:** (a) if Phase 1A backtest needs PRE-delisting OHLCV for these 8 names (Polygon 5y rolling cap doesn't reach far enough back for some); fix would be either (i) extending Polygon subscription to a longer window or (ii) populating from a vendor that retains delisted history. Defer until Phase 1B/Stage 3 if backtest demonstrably starves for these 8 tickers' history. (b) Ortex / Bloomberg per-ticker history lookup if needed.
+**Forward-link:** DEC-609 (H1 prefetch parent), CAV-075 (sister pattern - SEC EDGAR 246-ticker delisting cap), DEC-504 (Master Dedup with resolved_tier - Master Dedup explicitly includes historical tickers).
+
+---
+
 ### CAV-078 — Phase 1A smoke realism floor raised from 100% to 300% absolute (INV-046 RESOLVED-DOCUMENTED)
 
 **Source:** Pass 53 v8h+1 owner-approved 2026-05-10 (DEC-607)
