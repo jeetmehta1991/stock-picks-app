@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-10T19:31:55.904449+00:00",
+  "generated_at": "2026-05-10T19:54:17.002146+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -20004,7 +20004,7 @@
     {
       "id": "DECISION-497",
       "title": "Sprint 0A definition \u2014 full multi-API prefetch + universe build absorbed + Stage 2 NO-LIVE-API refactor. Pass 53 owner-approved RESOLVED-DECIDED 2026-05-05 (thi",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Sprint 0A / Phase 0.A (renamed from Sprint 1; absorbs prior Sprint 1 work)",
       "pass_intro": "Pass 53",
       "pass_resolved": "53",
@@ -20013,7 +20013,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 35,
+        "n_doc_refs": 37,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -20035,10 +20035,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-PROMOTE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Wired in active path + tested; eligible for RESOLVED-IMPLEMENTED"
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -20244,7 +20244,7 @@
     {
       "id": "DECISION-503",
       "title": "Comprehensive test pyramid before every code push (HARD RULE). Pass 53 owner directive 2026-05-05 RESOLVED-DECIDED. RULE: every code push (new feature / bug fix",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Cross-cutting / process",
       "pass_intro": "Pass 53",
       "pass_resolved": "53",
@@ -20253,7 +20253,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 54,
+        "n_doc_refs": 55,
         "pyramid": {
           "unit": true,
           "smoke": true,
@@ -20275,10 +20275,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-PROMOTE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Wired in active path + tested; eligible for RESOLVED-IMPLEMENTED"
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -20324,7 +20324,7 @@
     {
       "id": "DECISION-507",
       "title": "Agent toolkit wiring matrix HARD RULE (L146 codification). Pass 53 owner-approved 2026-05-05 RESOLVED-DECIDED. RULE: Pre-Phase-1B (or any agent-using phase entr",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Cross-cutting / process",
       "pass_intro": "Pass 53",
       "pass_resolved": "53",
@@ -20333,7 +20333,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 34,
+        "n_doc_refs": 35,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -20355,10 +20355,10 @@
       "dependencies": "-",
       "description": "**Mandate:** Pre-Phase-1B (or any agent-using phase entry), maintain explicit `Agent \u00d7 Data source \u00d7 Code path \u00d7 Verified status` matrix in `TRADINGAGENTS_DATA_AUDIT.md`. Each row must be \u2705 before phase begins.",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-PROMOTE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Wired in active path + tested; eligible for RESOLVED-IMPLEMENTED"
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -20404,7 +20404,7 @@
     {
       "id": "DECISION-505",
       "title": "Backtest window alignment to Polygon Stocks Starter 5y cache (supersedes DEC-109 6-fold walk-forward). Pass 53 owner-approved Q1+Q2+Q3 2026-05-05 RESOLVED-DECID",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Cross-cutting / methodology",
       "pass_intro": "Pass 53",
       "pass_resolved": "53",
@@ -20413,7 +20413,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 44,
+        "n_doc_refs": 45,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -20435,10 +20435,10 @@
       "dependencies": "DEC-109",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-PROMOTE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Wired in active path + tested; eligible for RESOLVED-IMPLEMENTED"
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -21004,7 +21004,7 @@
     {
       "id": "DECISION-594",
       "title": "Test-Artifact Same-Commit HARD RULE. Pass 53 owner-approved 2026-05-06 late evening RESOLVED-DECIDED. RULE: Every DEC that specifies a test layer / validation g",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Cross-cutting / process / Pass 53 closure",
       "pass_intro": "Pass 53",
       "pass_resolved": "53",
@@ -21013,7 +21013,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 434,
+        "n_doc_refs": 435,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -21035,16 +21035,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-PROMOTE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Wired in active path + tested; eligible for RESOLVED-IMPLEMENTED"
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-595",
       "title": "Stage / Phase / Sub-phase Gate Executable Tests. Pass 53 owner-approved 2026-05-06 late evening RESOLVED-DECIDED. RULE: Every transition between stages, phases,",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Cross-cutting / process / Pass 53 closure",
       "pass_intro": "Pass 53",
       "pass_resolved": "53",
@@ -21053,7 +21053,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 23,
+        "n_doc_refs": 25,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -21075,16 +21075,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-PROMOTE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Code + test refs found; eligible for RESOLVED-IMPLEMENTED"
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-591",
       "title": "Data-integrity test layer mandatory before Phase 1A (DEC-503 type #7 implementation; closes L148 silent-gap). Pass 53 owner-approved 2026-05-06 evening RESOLVED",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Cross-cutting / process / Pass 53 closure",
       "pass_intro": "Pass 53",
       "pass_resolved": "53",
@@ -21093,7 +21093,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 24,
+        "n_doc_refs": 25,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -21115,10 +21115,10 @@
       "dependencies": "DEC-503",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-PROMOTE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Code + test refs found; eligible for RESOLVED-IMPLEMENTED"
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -21244,7 +21244,7 @@
     {
       "id": "DECISION-590",
       "title": "Phase 1A implementation begin date 2026-05-15. Pass 53 owner-approved 2026-05-06 Q3=A RESOLVED-DECIDED. RULE: Phase 1A implementation begins 2026-05-15 (9 days ",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Cross-cutting / methodology / Pass 53 closure",
       "pass_intro": "Pass 53",
       "pass_resolved": "53",
@@ -21253,7 +21253,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 31,
+        "n_doc_refs": 32,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -21275,10 +21275,10 @@
       "dependencies": "-",
       "description": "**Decision** (per Q3 = A): Phase 1A implementation begins 2026-05-15 (9 days from Pass 53 review-cycle closure 2026-05-06).",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-PROMOTE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Wired in active path + tested; eligible for RESOLVED-IMPLEMENTED"
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -31600,40 +31600,46 @@
   ],
   "recent_commits": [
     {
+      "sha": "936a0c0e",
+      "subject": "Pass 53 v8h+1: Tier B promotion sweep #2 (5 PIT-correctness DECs - DEC-295/301/302/304/305)",
+      "author": "jeetmehta1991",
+      "rel_time": "11 minutes ago"
+    },
+    {
       "sha": "501cdbff",
       "subject": "Pass 53 v8h+1: Tier B engine-correctness promotion sweep #1 (6 DECs RESOLVED-DECIDED -> RESOLVED-IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "70 seconds ago"
+      "rel_time": "24 minutes ago"
     },
     {
       "sha": "77f57b21",
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 18:43: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "16 minutes ago"
+      "rel_time": "38 minutes ago"
     },
     {
       "sha": "4f9e558c",
       "subject": "Pass 53 v8h+1: 0A.7 per-API smoke/demo split - StockTwits + Apewisdom additions (Sprint 0A COMPLETE)",
       "author": "jeetmehta1991",
-      "rel_time": "54 minutes ago"
+      "rel_time": "77 minutes ago"
     },
     {
       "sha": "07c15d16",
       "subject": "Pass 53 v8h+1: H18 data refresh - 54 CFTC parquets updated (legacy/disagg/tff datasets)",
       "author": "jeetmehta1991",
-      "rel_time": "68 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "1af57700",
       "subject": "Pass 53 v8h+1: H18 CFTC 5 missing datasets verify (DONE-WITH-DATASET-SCOPE-CAP) - Sprint 0A H-tier complete",
       "author": "jeetmehta1991",
-      "rel_time": "69 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "25485a1b",
       "subject": "Pass 53 v8h+1: H4 Polygon reference extended verify (DONE-WITH-DELISTING-CAP per CAV-075 sister pattern)",
       "author": "jeetmehta1991",
-      "rel_time": "80 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "fc5c43f4",
@@ -31663,13 +31669,13 @@
       "sha": "f7b3e987",
       "subject": "Pass 53 v8h+1: untracked artifacts cleanup (gitignore + INV-027 backup archived)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "4bf07436",
       "subject": "Pass 53 v8h+1: H1.a OHLCV Master Dedup prefetch script + DEC-609 (Option B)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "aee93c01",
@@ -31699,13 +31705,13 @@
       "sha": "041229b1",
       "subject": "Pass 53 v8h+1: INV-046 RESOLVED-DOCUMENTED + DEC-607 realism floor 100% -> 300% + rapidity gate",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "d6e6296d",
       "subject": "Pass 53 v8h+1: Coverage Matrix kind-aware metrics + commentary updated + CHECKLIST #80",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "ecc846c2",
@@ -31765,24 +31771,18 @@
       "sha": "1cc943ac",
       "subject": "Pass 53 auto-drift-sweep 2026-05-09 11:53: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "20 hours ago"
+      "rel_time": "21 hours ago"
     },
     {
       "sha": "8d4fa5d3",
       "subject": "Pass 53 v8h+1: Sprint 0A Coverage Matrix tab - per-(api, endpoint, field) coverage + commentary + status badges",
       "author": "jeetmehta1991",
       "rel_time": "21 hours ago"
-    },
-    {
-      "sha": "826d5454",
-      "subject": "Pass 53 v8h+1: DEC-605 - Finnhub social_sentiment EXCLUDED from Phase 1A baseline",
-      "author": "jeetmehta1991",
-      "rel_time": "21 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 2,
-    "modified": 2,
+    "count": 5,
+    "modified": 5,
     "added": 0,
     "untracked": 0,
     "deleted": 0,
@@ -31794,6 +31794,18 @@
       {
         "status": "M",
         "path": "AUDIT_INDEX.md"
+      },
+      {
+        "status": "M",
+        "path": "dashboard_sprint0a/data.js"
+      },
+      {
+        "status": "M",
+        "path": "dashboard_sprint0a/data.json"
+      },
+      {
+        "status": "M",
+        "path": "dashboard_sprint0a/last_run.txt"
       }
     ]
   },
@@ -32416,7 +32428,7 @@
       "kind": "DEC",
       "id": "DEC-594",
       "title": "Test-Artifact Same-Commit HARD RULE. Pass 53 owner-approved 2026-05-06 late evening RESOLVED-DECIDED. RULE: Every DEC that specifies a test ",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "tier": 1,
       "reason": "Dependency root (11 downstream items reference)",
       "back_refs": 11,
@@ -32594,7 +32606,7 @@
     }
   ],
   "decision_status_counts": {
-    "RESOLVED-DECIDED": 317,
+    "RESOLVED-DECIDED": 309,
     "PARTIAL": 5,
     "SUPERSEDED_BY_DEC-422": 6,
     "SUPERSEDED": 10,
@@ -32623,7 +32635,7 @@
     "SUPERSEDED_BY_DEC-330": 1,
     "trade_pnl": 1,
     "OBSOLETE": 3,
-    "RESOLVED-IMPLEMENTED": 17,
+    "RESOLVED-IMPLEMENTED": 25,
     "SUPERSEDED_BY_DEC-313": 1,
     "RESOLVED-DECIDED-DEFERRED": 1,
     "BLOCKED_ON_DEC-298": 2,

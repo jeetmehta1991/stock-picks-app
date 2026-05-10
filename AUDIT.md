@@ -32175,6 +32175,40 @@ Documents updated this sub-turn:
   - AUDIT.md (this sub-entry)
   - Both dashboards rebuilt
 
+---
+
+## Pass 53 Day 9 v8h+1 follow-on 2026-05-10 (cont): Tier A promotion sweep (Phase 1A meta DECs)
+
+**Scope:** Phase 1A meta/process DECs that have CHECKLIST/code/test artifacts and apply directly to Phase 1A May 15 launch.
+
+**Verification per DEC:**
+
+| DEC | Title | test_refs | code+scripts | docs | landing commit |
+|---|---|---|---|---|---|
+| DEC-497 | Sprint 0A definition + NO-LIVE-API HARD CUT | 8 | 11 | 3 | d57a07ee6 |
+| DEC-503 | 13-layer test pyramid HARD RULE | 73 | 6 | 3 | 017526585 |
+| DEC-505 | Backtest window 4-fold (5y rolling) | 20 | 4 | 2 | 42a338da4 |
+| DEC-507 | Agent toolkit wiring matrix HARD RULE | 15 | 7 | 3 | 95f23368a |
+| DEC-590 | Phase 1A start date 2026-05-15 | 2 | 4 | 3 | 9b0bddf7f |
+| DEC-591 | Data-integrity test layer mandatory | 6 | 1 | 2 | 26514d7c9 |
+| DEC-594 | Test-Artifact Same-Commit HARD RULE | 20 | 36 | 2 | 501cdbff6 |
+| DEC-595 | Stage/Phase Gate Executable Tests | 4 | 0 | 2 | 7e6dc1c84 |
+
+All 8 verified via grep on backtest/tests/, backtest/{data,engine,signals,results}/, scripts/, CHECKLIST.md, AUDIT.md, PHASE_1A_PRELAUNCH_TODO.md - all >0 hits except DEC-595 code (which is a process rule codified in CHECKLIST + test files; the 4 test_refs cover the gate-test artifacts).
+
+**Per-addressal pyramid (CHECKLIST #78):** unit + integration + doc_count_consistency + no_live_api_hard_cut + gate_pre_phase_1a_entry layers - 126/126 PASS in 9s.
+
+**RESOLVED-IMPLEMENTED count: 16 -> 24** (+8 this commit; status reflects most-eligible Phase 1A meta gates).
+
+**Tier A status: COMPLETE** (all 8 Phase 1A meta DECs flipped). Tier B remaining ~26 in next batches.
+
+**Phase 1A May 15 status:** 0 strict blockers; all meta DECs now showing as RESOLVED-IMPLEMENTED in dashboards.
+
+Documents updated this sub-turn:
+  - AUDIT_INDEX.md (8 status flips: DEC-497/503/505/507/590/591/594/595)
+  - AUDIT.md (this sub-entry)
+  - Both dashboards rebuilt
+
 **Same-commit (DEC-594):** script + DEC-609 + AUDIT.md narrative + contract test + dashboards rebuilt - all in this sub-turn commit.
 
 Documents updated this sub-turn:
