@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-10T14:04:23.214361+00:00",
+  "generated_at": "2026-05-10T14:57:43.531666+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -17217,7 +17217,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 52,
+        "n_doc_refs": 53,
         "pyramid": {
           "unit": true,
           "smoke": true,
@@ -17376,6 +17376,40 @@
       "description": ""
     },
     {
+      "id": "DECISION-607",
+      "title": "Phase 1A smoke realism floor raised from 100% to 300% absolute + rapidity gate (INV-046 RESOLVED-DOCUMENTED). Pass 53 v8h+1 owner-approved 2026-05-10 RESOLVED-I",
+      "status": "RESOLVED-IMPLEMENTED",
+      "theme": "Phase 1A / test infrastructure / Pass 53 v8h+1",
+      "pass_intro": "Pass 53",
+      "pass_resolved": "53",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 8,
+        "pyramid": {
+          "unit": false,
+          "smoke": false,
+          "integration": false,
+          "system": false,
+          "functional": false,
+          "regression": false,
+          "data_integrity": false,
+          "performance": false,
+          "acceptance": false,
+          "property": false,
+          "snapshot": false,
+          "contract": false,
+          "compatibility": false
+        }
+      },
+      "short_id": "DEC-607",
+      "sprint": "-",
+      "dependencies": "INV-046",
+      "description": ""
+    },
+    {
       "id": "DECISION-606",
       "title": "Finnhub financials_reported EXCLUDED COMPLETELY from all downstream phases; superseded by SEC EDGAR XBRL + Polygon financials. Pass 53 v8h+1 owner-approved 2026",
       "status": "RESOLVED-DECIDED",
@@ -17455,7 +17489,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 2,
+        "n_doc_refs": 3,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -17761,7 +17795,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 422,
+        "n_doc_refs": 424,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -24167,7 +24201,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 5,
+        "n_doc_refs": 15,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -26351,6 +26385,36 @@
       "description": "Phase 1A pipeline does NOT call any Finnhub-financials reader (verified 2026-05-10 grep \u2014 zero engine/agent/signal references). Cache directory `data_prefetch/finnhub/financials_reported/` exists with"
     },
     {
+      "id": "CAV-078",
+      "title": "\u2014 Phase 1A smoke realism floor raised from 100% to 300% absolute (INV-046 RESOLVED-DOCUMENTED)",
+      "status": "RESOLVED",
+      "impact": "Downstream analytics or dashboards that read raw smoke `trade_log.csv` should NOT assume a 100% upper bound on `pnl_pct`. Any consumer that hard-coded 100% as a \"sanity check\" must also raise to 300% ",
+      "status_grep": {
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 7,
+        "pyramid": {
+          "unit": false,
+          "smoke": false,
+          "integration": false,
+          "system": false,
+          "functional": false,
+          "regression": false,
+          "data_integrity": false,
+          "performance": false,
+          "acceptance": false,
+          "property": false,
+          "snapshot": false,
+          "contract": false,
+          "compatibility": false
+        }
+      },
+      "dependencies": "INV-046",
+      "description": "Downstream analytics or dashboards that read raw smoke `trade_log.csv` should NOT assume a 100% upper bound on `pnl_pct`. Any consumer that hard-coded 100% as a \"sanity check\" must also raise to 300% "
+    },
+    {
       "id": "CAV-077",
       "title": "\u2014 Quiver `etfholdings` cache is a static snapshot from unknown date; no working refresh endpoint at our paid tiers",
       "status": "ACTIVE",
@@ -27033,70 +27097,76 @@
   ],
   "recent_commits": [
     {
+      "sha": "d6e6296d",
+      "subject": "Pass 53 v8h+1: Coverage Matrix kind-aware metrics + commentary updated + CHECKLIST #80",
+      "author": "jeetmehta1991",
+      "rel_time": "53 minutes ago"
+    },
+    {
       "sha": "ecc846c2",
       "subject": "Pass 53 v8h+1: INV-047 + CAV-077 - Quiver etfholdings refresh DEAD-END (static snapshot only)",
       "author": "jeetmehta1991",
-      "rel_time": "24 minutes ago"
+      "rel_time": "78 minutes ago"
     },
     {
       "sha": "2244b1e5",
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 10:13: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "69 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "27944fa2",
       "subject": "Pass 53 v8h+1: DEC-606 Finnhub financials_reported EXCLUDED COMPLETELY + CAV-075 (delisting confirmed) + CAV-076",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "c3322875",
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 08:13: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "ef42fd1b",
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 06:13: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "06c4c1d4",
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 04:13: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
+      "rel_time": "8 hours ago"
     },
     {
       "sha": "ae51b3bd",
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 02:13: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "9 hours ago"
+      "rel_time": "10 hours ago"
     },
     {
       "sha": "6d41cc66",
       "subject": "Pass 53 auto-drift-sweep 2026-05-09 15:53: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "11 hours ago"
+      "rel_time": "12 hours ago"
     },
     {
       "sha": "0ce9ec2b",
       "subject": "Pass 53 auto-drift-sweep 2026-05-09 13:53: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "13 hours ago"
+      "rel_time": "14 hours ago"
     },
     {
       "sha": "1cc943ac",
       "subject": "Pass 53 auto-drift-sweep 2026-05-09 11:53: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "15 hours ago"
+      "rel_time": "16 hours ago"
     },
     {
       "sha": "8d4fa5d3",
       "subject": "Pass 53 v8h+1: Sprint 0A Coverage Matrix tab - per-(api, endpoint, field) coverage + commentary + status badges",
       "author": "jeetmehta1991",
-      "rel_time": "15 hours ago"
+      "rel_time": "16 hours ago"
     },
     {
       "sha": "826d5454",
@@ -27108,67 +27178,67 @@
       "sha": "5bb5b70f",
       "subject": "Pass 53 v8h+1: AAII Asset Allocation Survey + Finnhub social_sentiment use case in dashboard",
       "author": "jeetmehta1991",
-      "rel_time": "17 hours ago"
+      "rel_time": "18 hours ago"
     },
     {
       "sha": "06d85a9a",
       "subject": "Pass 53 v8h+1: INV-027 backfill data sweep - 1924 polygon news files with insights_json",
       "author": "jeetmehta1991",
-      "rel_time": "17 hours ago"
+      "rel_time": "18 hours ago"
     },
     {
       "sha": "324362ec",
       "subject": "Pass 53 auto-drift-sweep 2026-05-09 09:53: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "19 hours ago"
+      "rel_time": "20 hours ago"
     },
     {
       "sha": "387fac95",
       "subject": "Pass 53 v8h+1: 8 new DECs (597-604) + register sweeps + per-turn discipline fix",
       "author": "jeetmehta1991",
-      "rel_time": "21 hours ago"
+      "rel_time": "22 hours ago"
     },
     {
       "sha": "76436fa7",
       "subject": "Pass 53 auto-drift-sweep 2026-05-09 07:53: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "21 hours ago"
+      "rel_time": "22 hours ago"
     },
     {
       "sha": "5814a4cc",
       "subject": "Pass 53 auto-drift-sweep 2026-05-09 05:53: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "23 hours ago"
+      "rel_time": "24 hours ago"
     },
     {
       "sha": "9673eccc",
       "subject": "Pass 53 v8h+1: StockTwits BG complete - 1937 underlyings cached + canonical lock + contract test",
       "author": "jeetmehta1991",
-      "rel_time": "23 hours ago"
+      "rel_time": "24 hours ago"
     },
     {
       "sha": "ad5f0f78",
       "subject": "StockTwits final (1923 fetched)",
       "author": "jeetmehta1991",
-      "rel_time": "29 hours ago"
+      "rel_time": "30 hours ago"
     },
     {
       "sha": "658f40ad",
       "subject": "StockTwits batch 38",
       "author": "jeetmehta1991",
-      "rel_time": "29 hours ago"
+      "rel_time": "30 hours ago"
     },
     {
       "sha": "dcc49c62",
       "subject": "StockTwits batch 37",
       "author": "jeetmehta1991",
-      "rel_time": "29 hours ago"
+      "rel_time": "30 hours ago"
     },
     {
       "sha": "1a594038",
       "subject": "StockTwits batch 36",
       "author": "jeetmehta1991",
-      "rel_time": "29 hours ago"
+      "rel_time": "30 hours ago"
     },
     {
       "sha": "65a03894",
@@ -27180,37 +27250,31 @@
       "sha": "fd5a7cd9",
       "subject": "StockTwits batch 34",
       "author": "jeetmehta1991",
-      "rel_time": "30 hours ago"
+      "rel_time": "31 hours ago"
     },
     {
       "sha": "a5bf31b2",
       "subject": "StockTwits batch 33",
       "author": "jeetmehta1991",
-      "rel_time": "30 hours ago"
+      "rel_time": "31 hours ago"
     },
     {
       "sha": "ca936547",
       "subject": "StockTwits batch 32",
       "author": "jeetmehta1991",
-      "rel_time": "30 hours ago"
+      "rel_time": "31 hours ago"
     },
     {
       "sha": "da89952c",
       "subject": "StockTwits batch 31",
       "author": "jeetmehta1991",
-      "rel_time": "31 hours ago"
+      "rel_time": "32 hours ago"
     },
     {
       "sha": "f8bdd491",
       "subject": "StockTwits batch 30",
       "author": "jeetmehta1991",
-      "rel_time": "31 hours ago"
-    },
-    {
-      "sha": "1311d82a",
-      "subject": "StockTwits batch 29",
-      "author": "jeetmehta1991",
-      "rel_time": "31 hours ago"
+      "rel_time": "32 hours ago"
     }
   ],
   "uncommitted": {
@@ -27222,27 +27286,27 @@
     "files": [
       {
         "status": "M",
-        "path": "CHECKLIST.md"
+        "path": "AUDIT.md"
       },
       {
         "status": "M",
-        "path": "dashboard_sprint0a/data.js"
+        "path": "AUDIT_INDEX.md"
       },
       {
         "status": "M",
-        "path": "dashboard_sprint0a/data.json"
+        "path": "LIMITATIONS_CAVEATS_ASSUMPTIONS.md"
       },
       {
         "status": "M",
-        "path": "dashboard_sprint0a/index.html"
+        "path": "OPEN_INVESTIGATIONS.md"
       },
       {
         "status": "M",
-        "path": "dashboard_sprint0a/last_run.txt"
+        "path": "PHASE_1A_PRELAUNCH_TODO.md"
       },
       {
         "status": "M",
-        "path": "scripts/build_dashboard_sprint0a.py"
+        "path": "backtest/tests/test_e2e_phase1a_smoke.py"
       },
       {
         "status": "??",
@@ -27794,6 +27858,16 @@
   "next_up": [
     {
       "kind": "INV",
+      "id": "INV-046",
+      "title": "\u2014 Phase 1A smoke surfaces single-trade PnL > 100% (engine bug candidate) (Pass 53 Day-9 v8h+1 2026-05-08)",
+      "status": "OPEN",
+      "tier": 0,
+      "reason": "INV OPEN with HIGH/CRITICAL severity",
+      "back_refs": 1,
+      "sprint": "-"
+    },
+    {
+      "kind": "INV",
       "id": "INV-015",
       "title": "\u2014 Alpha Vantage news cached only 25 files (alphabetical mid-letter range) (Pass 53 Day-9 v8h evening)",
       "status": "OPEN",
@@ -27816,16 +27890,6 @@
       "kind": "INV",
       "id": "INV-032",
       "title": "\u2014 Alpha Vantage news cache aggregated daily \u2014 lost per-article detail (Pass 53 Day-9 v8h evening)",
-      "status": "OPEN",
-      "tier": 0,
-      "reason": "INV OPEN with HIGH/CRITICAL severity",
-      "back_refs": 0,
-      "sprint": "-"
-    },
-    {
-      "kind": "INV",
-      "id": "INV-046",
-      "title": "\u2014 Phase 1A smoke surfaces single-trade PnL > 100% (engine bug candidate) (Pass 53 Day-9 v8h+1 2026-05-08)",
       "status": "OPEN",
       "tier": 0,
       "reason": "INV OPEN with HIGH/CRITICAL severity",
@@ -28081,7 +28145,7 @@
     "BLOCKED_ON_DEC-450": 1,
     "FAIL_RR": 1,
     "BLOCKED_ON_DEC-388_AND_DEC-409": 1,
-    "RESOLVED-IMPLEMENTED": 3,
+    "RESOLVED-IMPLEMENTED": 4,
     "RESOLVED-IMPLEMENTED-T1a-T1c": 1,
     "PROPOSED": 13,
     "splits": 1

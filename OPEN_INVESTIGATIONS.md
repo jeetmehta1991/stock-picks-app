@@ -719,13 +719,15 @@ contract names: `UST 10Y NOTE` / `UST 5Y NOTE` / `UST 2Y NOTE` / `UST BOND`
 - **Observation:** `test_e2e_phase1a_smoke.py::test_g1_pnl_realistic` asserts `df['pnl_pct'].abs().max() < 100`. In the smoke fixture's 397-trade run, max PnL hit **106.06%** (single trade exceeds 100% absolute). Most trades are normal 1-10%, but at least one trade has a runaway return.
 - **Why blocking for Phase 1A:** A trade returning >100% PnL means either (a) survivorship leak (closing on a multi-bagger split-adjusted price), (b) position-sizing extreme letting >1x leverage through, (c) fill bug (entry vs exit price computed against different splits/dividends), or (d) the realism floor itself is wrong (e.g., genuinely 0DTE options-like instruments could exceed 100%, but Phase 1A is equity-only so they shouldn't).
 - **Severity:** HIGH — Phase 1A May 15 launch should not run on an engine that produces unrealistic single-trade returns. Either fix the engine OR document the finding + raise the realism floor with rationale.
-- **Status:** open
-- **Next action:**
-  - Identify the offending trade (which ticker, which date range, which strategy)
-  - Trace through engine: entry price, exit price, position size, split/dividend adjustments
-  - If real bug: fix
-  - If acceptable artifact (e.g. extremely cheap stock + circuit-breaker-day move): document + raise the realism floor to a defensible value with explicit AUDIT.md decision
-- **Joint:** test_e2e_phase1a_smoke.py G1 gate; Phase 1A May 15 launch dependency.
+- **Status:** RESOLVED-DOCUMENTED 2026-05-10 (Pass 53 v8h+1)
+- **Resolution:** Diagnostic confirmed NOT a bug. Offending trade: NVDA `ichimoku_cloud_breakout` 2023-02-21 -> 2023-08-09, entry $20.74 / exit $42.74 / +106% / 169-day hold / trailing_stop exit. Cache verification: NVDA close 2023-02-21 raw $20.655 -> 2023-08-09 raw $42.554 = +106.02% (matches engine within slippage). This is the 2023 NVDA AI rally captured correctly by a momentum strategy with trailing-stop exit. Realism floor of 100% was set before NVDA/SMCI 2023 became observable in the smoke fixture window.
+- **Action taken:**
+  - Raised abs cap from 100% to 300% (catches genuine engine bugs like decimal/split errors at 10x+ but allows real momentum runs)
+  - Added rapidity gate: PnL > 100% with hold_days < 30 = "real bug" pattern (split-adjust, fill-side, decimal mistakes); legitimate momentum trades that big take time to develop
+  - Test hardened: `test_g1_pnl_realistic` now asserts both the absolute cap and the rapidity gate
+  - DEC-607 logged for traceability of the threshold change
+- **Verification:** per-addressal pyramid 159/159 PASS (unit+integration+smoke+regression+system layers); same-commit rule per DEC-594 satisfied (test change + INV update + DEC log + AUDIT narrative + CAV-078 in same commit).
+- **Joint:** test_e2e_phase1a_smoke.py G1 gate; Phase 1A May 15 launch dependency CLEARED.
 
 ---
 

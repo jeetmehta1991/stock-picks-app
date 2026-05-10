@@ -86,11 +86,11 @@ Owner: *"all data in prefetch needs to be standardized and normalized."*
 | INV-038 (Polygon Indices Basic license) | RESOLVED-PARTIAL | 2/13 indices accessible (NDX/COMP); 11 require CBOE/S&P licensing fees |
 | INV-016 (Finnhub news Master Universe) | RESOLVED 2026-05-09 | BG `blk7obzpy` complete; cache 1941 ticker files (~3.8x expansion from 509) |
 | INV-027 (Polygon news insights field) | RESOLVED 2026-05-08 | BG `bwgxwcrwq` complete; 1924/1937 backfilled, 449 MB, AAPL 3,557/21,626 articles populate insights_json (16.4%) |
-| INV-046 (engine pnl > 100%) | OPEN — HIGH severity | `test_e2e_phase1a_smoke::test_g1_pnl_realistic` 106.06% on single trade in 397-trade smoke; root-cause investigation pending |
+| INV-046 (engine pnl > 100%) | RESOLVED-DOCUMENTED 2026-05-10 | NOT a bug. NVDA `ichimoku_cloud_breakout` 2023-02-21 -> 2023-08-09 +106.06% / 169-day trailing-stop = genuine 2023 AI rally. DEC-607 raised threshold 100% -> 300% + added rapidity gate (`pnl>100% AND hold_days<30`); 159/159 pyramid PASS; CAV-078 logged. |
 | INV-015 / INV-032 (AlphaVantage news) | SURFACED — needs owner | Free tier 25 cps/day = 77 days for 1937 universe; needs premium ~$50/mo |
 | INV-025 (SEC EDGAR primary_doc) | SURFACED — needs owner | 20-30h infra build for XBRL parser; Phase 1B not 1A |
 
-**Strict blocker count: 1 OPEN (INV-046).** All other T0 items either resolved or surfaced for owner.
+**Strict blocker count: 0 OPEN (Pass 53 v8h+1 2026-05-10).** INV-046 RESOLVED-DOCUMENTED via DEC-607 (realism floor raised; not an engine bug). Phase 1A May 15 launch UNBLOCKED.
 
 ### Quiver etfholdings refresh DEAD-END (INV-047 + CAV-077, owner-approved 2026-05-10)
 

@@ -31828,3 +31828,41 @@ Runtime guard verified: zero engine/agent/signal code references `finnhub.social
 
 Documents updated: AUDIT_INDEX (DEC-605), LIMITATIONS_CAVEATS_ASSUMPTIONS (CAV-074), PHASE_1A_PRELAUNCH_TODO, ENGINEERING_REGISTER, AUDIT_BACKLOG, API_ENDPOINT_INVENTORY, PREFETCH_COVERAGE_AUDIT, AUDIT.md (this entry), Sprint 0A dashboard metadata.
 
+---
+
+## Pass 53 Day 9 v8h+1 follow-on 2026-05-10: INV-046 RESOLVED-DOCUMENTED + DEC-607 realism-floor raise + CAV-078
+
+Owner directive 2026-05-10: "INV 046 - Address and resolve."
+
+**INV-046 root-cause diagnostic — NOT an engine bug.**
+
+Reproduced the failing fixture (`test_e2e_phase1a_smoke.py::test_g1_pnl_realistic`) and identified the offending trade: NVDA `ichimoku_cloud_breakout` 2023-02-21 -> 2023-08-09, entry $20.74 / exit $42.74 / +106.06% / 169-day hold / `trailing_stop` exit. Cache verification against `backtest/data/cache/ohlcv/NVDA.parquet`: NVDA close raw 2023-02-21 = $20.655, raw 2023-08-09 = $42.554, return = +106.02% — matches engine output within slippage. This is the genuine 2023 NVDA AI rally captured correctly by a momentum strategy with trailing-stop exit. No survivorship leak, no split-adjustment bug, no fill-side bug, no >1x leverage. The realism floor (100% absolute) was set before NVDA/SMCI 2023 became observable in the smoke fixture window.
+
+**DEC-607 RESOLVED-DECIDED — realism floor raised 100% -> 300% absolute + rapidity gate added.**
+
+Threshold change rationale (empirical):
+- NVDA 2023: +200% in 4 months
+- SMCI 2023: +500% in 6 months
+- These names are legitimate Phase 1A holdings (Tier 1a S&P 500); 100% cap rejected real trend-trade outcomes
+- 300% absolute still catches genuine engine bugs (10x+ PnL, decimal errors, split-adjustment errors)
+- Rapidity gate: PnL > 100% with `hold_days < 30` is the "real bug" pattern (split/dividend/fill mistake); legitimate momentum trades that big take time to develop
+
+Test hardened: `test_g1_pnl_realistic` now asserts both the absolute cap (`abs_max < 300`) and the rapidity gate (`empty(pnl > 100% & hold_days < 30)`). The original 100% threshold flagged a real trade as suspicious; the new dual-gate flags only patterns consistent with engine bugs.
+
+CAV-078 logged: realism floor raised; analytics consumers reading raw smoke trade_log should not assume 100% upper bound.
+
+**Per-addressal pyramid (CHECKLIST #78):** unit + integration + smoke + regression + system layers — 159/159 PASS in 249s. Layers N/A: data_integrity (no data added), performance (no perf concern), acceptance (no new criterion), property (no property test added), snapshot (no golden output), contract (no API contract change), compatibility (no version concern).
+
+**Same-commit rule (DEC-594):** test code change + DEC-607 register entry + INV-046 resolution + CAV-078 + AUDIT.md narrative + PHASE_1A_PRELAUNCH_TODO blocker flip + dashboard rebuilds — all in single commit.
+
+**Phase 1A May 15 blocker count: 0 OPEN (was 1 OPEN before this turn). Launch UNBLOCKED.**
+
+Documents updated this turn:
+  - OPEN_INVESTIGATIONS.md (INV-046 RESOLVED-DOCUMENTED)
+  - AUDIT_INDEX.md (DEC-607 RESOLVED-DECIDED)
+  - LIMITATIONS_CAVEATS_ASSUMPTIONS.md (CAV-078)
+  - PHASE_1A_PRELAUNCH_TODO.md (INV-046 status flip; blocker count 1->0)
+  - backtest/tests/test_e2e_phase1a_smoke.py (threshold + rapidity gate + docstring rationale)
+  - AUDIT.md (this entry)
+  - Both dashboards rebuilt
+

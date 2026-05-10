@@ -695,6 +695,17 @@ Cells with n<30 trades fall back to marginal-best (next-broader cell). Live deci
 **Reconsider triggers:** none; this is permanent. SEC XBRL + Polygon financials are structurally superior data sources.
 **Forward-link:** DEC-606 (this exclusion); CAV-075 (delisting confirms 246-ticker SEC-unfileable ceiling); test_contract_finnhub_earnings_shape (Finnhub `earnings` endpoint, NOT `financials_reported`, remains valid).
 
+### CAV-078 — Phase 1A smoke realism floor raised from 100% to 300% absolute (INV-046 RESOLVED-DOCUMENTED)
+
+**Source:** Pass 53 v8h+1 owner-approved 2026-05-10 (DEC-607)
+**Status:** ACTIVE — analytics consumer-facing caveat (forever-active until next re-tune)
+**Caveat:** The `test_g1_pnl_realistic` smoke gate previously enforced `abs(pnl_pct) < 100%`. Raised to `< 300%` after empirical evidence that legitimate momentum strategies on hot Tier 1a names (NVDA 2023 +200%/4mo, SMCI 2023 +500%/6mo) can produce >100% single-trade returns when held through a multi-month trend. Rapidity gate added (`pnl > 100% AND hold_days < 30`) catches the residual "real bug" pattern (split-adjust, fill-side, decimal mistakes).
+**Operational impact:** Downstream analytics or dashboards that read raw smoke `trade_log.csv` should NOT assume a 100% upper bound on `pnl_pct`. Any consumer that hard-coded 100% as a "sanity check" must also raise to 300% (or use the rapidity-gate pattern). Aggregate metrics (Sharpe, Sortino, max drawdown) are not affected because they already accommodate full distribution.
+**Reconsider triggers:** (a) Stage 4 live trading shows max single-trade return materially below 100% across a calendar quarter (then floor can be lowered back); (b) new hot-stock pattern emerges with >300% single-trade returns where the trade is verified real (raise floor again); (c) engine refactor that adds genuine leverage / options / 0DTE — full re-derivation required.
+**Forward-link:** DEC-607 (this raise), INV-046 (parent diagnostic), `backtest/tests/test_e2e_phase1a_smoke.py::test_g1_pnl_realistic` (the gate).
+
+---
+
 ### CAV-077 — Quiver `etfholdings` cache is a static snapshot from unknown date; no working refresh endpoint at our paid tiers
 
 **Source:** Pass 53 v8h+1 owner-approved 2026-05-10 (INV-047)

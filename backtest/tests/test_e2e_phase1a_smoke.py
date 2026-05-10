@@ -1,10 +1,10 @@
-"""End-to-end Phase 1A smoke pytest — Pass 53 Day-9 wiring closure.
+"""End-to-end Phase 1A smoke pytest  -  Pass 53 Day-9 wiring closure.
 
 G1 of the test-pyramid gap closure (DEC-503 + DEC-595).
 
 Distinct from `test_e2e.py`:
-- test_e2e.py: 5 tickers × 3 months — minimal pipeline smoke
-- this file:   10 tickers × 1 year — exercises full Day-9 wiring
+- test_e2e.py: 5 tickers x 3 months  -  minimal pipeline smoke
+- this file:   10 tickers x 1 year  -  exercises full Day-9 wiring
                 (DEC-505 4-fold WF, DEC-515 Level 6 CB, DEC-516 regime_flip,
                  DEC-578 verdict_cube, Tier 1-4 25-col exit context,
                  per-exit conditional analyzer)
@@ -50,12 +50,12 @@ def smoke_engine(tmp_path_factory):
     eng.load_data()
 
     if len(getattr(eng, "ohlcv_dict", {}) or {}) == 0:
-        pytest.skip("OHLCV cache not populated — skip e2e smoke")
+        pytest.skip("OHLCV cache not populated  -  skip e2e smoke")
 
     eng.run()
 
     if not getattr(eng, "closed_trades", None):
-        pytest.skip("Smoke produced no trades — likely empty cache window")
+        pytest.skip("Smoke produced no trades  -  likely empty cache window")
 
     eng.save_all_outputs()
     logging.disable(logging.NOTSET)
@@ -81,7 +81,7 @@ def test_g1_trade_log_has_exit_context_columns(smoke_engine):
     df = eng.get_trade_log()
     from backtest.engine.exit_context import CONTEXT_COLUMN_NAMES
     present = [c for c in CONTEXT_COLUMN_NAMES if c in df.columns]
-    # Trade log itself may not include all 25 — they propagate via trade_exit_detail
+    # Trade log itself may not include all 25  -  they propagate via trade_exit_detail
     # At minimum, regime_at_entry / cap_band / vol_band should be present somewhere
     detail = getattr(eng, "trade_exit_detail_rows", None)
     if detail is not None and len(detail) > 0:
@@ -127,6 +127,23 @@ def test_g1_no_lookahead(smoke_engine):
 
 
 def test_g1_pnl_realistic(smoke_engine):
+    """Realism floor: PnL is bounded AND short-hold trades cannot post extreme returns.
+
+    Threshold rationale (INV-046 RESOLVED-DOCUMENTED 2026-05-10):
+    - Absolute cap 300%: NVDA 2023 (+200% / 4mo), SMCI 2023 (+500% / 6mo) and similar
+      momentum names are legitimate Phase 1A holdings; the original 100% cap rejected
+      real trend-trade outcomes (smoke fixture flagged NVDA Feb-Aug 2023 +106%).
+    - Rapidity gate: PnL > 100% with hold_days < 30 is the "real bug" pattern
+      (split-adjust, decimal, or fill-side mistakes); legitimate momentum trades
+      that big take time to develop.
+    """
     eng, _ = smoke_engine
     df = eng.get_trade_log()
-    assert df["pnl_pct"].abs().max() < 100, "single-trade PnL > 100%"
+    abs_max = df["pnl_pct"].abs().max()
+    assert abs_max < 300, f"single-trade PnL > 300% (got {abs_max:.2f}%)  -  engine bug suspected"
+
+    rapid = df[(df["pnl_pct"].abs() > 100) & (df["hold_days"] < 30)]
+    assert rapid.empty, (
+        f"{len(rapid)} short-hold trades posted >100% PnL in <30 days  -  "
+        f"likely split/dividend/fill bug"
+    )
