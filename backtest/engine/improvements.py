@@ -1,11 +1,11 @@
 """
-engine/improvements.py — Five critical improvements to backtest realism.
+engine/improvements.py  -  Five critical improvements to backtest realism.
 
-1. Transaction cost model  — subtracts slippage + commission from every trade
-2. Walk-forward validation — two-window IS/OOS evaluation
-3. Correlation filter      — built but NOT active in backtest (approved). Available for Stage 3+.
-4. Slippage model          — realistic fill prices based on volatility
-5. Regime confidence score — probability-based regime classification
+1. Transaction cost model   -  subtracts slippage + commission from every trade
+2. Walk-forward validation  -  two-window IS/OOS evaluation
+3. Correlation filter       -  built but NOT active in backtest (approved). Available for Stage 3+.
+4. Slippage model           -  realistic fill prices based on volatility
+5. Regime confidence score  -  probability-based regime classification
 
 These are applied on top of the base backtest engine results.
 """
@@ -20,16 +20,16 @@ import pandas as pd
 logger = logging.getLogger(__name__)
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 # 1. TRANSACTION COST MODEL
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 
 # Realistic slippage + commission estimates per instrument type
 TRANSACTION_COSTS = {
-    "large_cap":   0.001,   # 0.10% — AAPL, MSFT, NVDA etc (tight spreads)
-    "mid_cap":     0.0015,  # 0.15% — smaller S&P 500 members
-    "etf":         0.0008,  # 0.08% — ETFs have very tight spreads
-    "default":     0.001,   # 0.10% — fallback
+    "large_cap":   0.001,   # 0.10%  -  AAPL, MSFT, NVDA etc (tight spreads)
+    "mid_cap":     0.0015,  # 0.15%  -  smaller S&P 500 members
+    "etf":         0.0008,  # 0.08%  -  ETFs have very tight spreads
+    "default":     0.001,   # 0.10%  -  fallback
 }
 
 # Tickers classified as ETFs for cost purposes
@@ -101,29 +101,29 @@ def apply_transaction_costs(
     return df
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 # 2. WALK-FORWARD VALIDATION
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 
 def run_walk_forward(df_trades: pd.DataFrame) -> dict:
     """
     4-fold walk-forward validation per DEC-505 (Pass 53 owner-approved 2026-05-05).
 
     Per DEC-505 + DEC-590 + L149 (spec-without-build correction):
-      - 1y warmup: 2021-05-05 → 2022-05-05 (training data accumulation only; not OOS-tested)
-      - Fold 1: train 2021-05-05 → 2022-05-05; OOS 2022-05-05 → 2023-05-05
-      - Fold 2: train 2021-05-05 → 2023-05-05; OOS 2023-05-05 → 2024-05-05
-      - Fold 3: train 2021-05-05 → 2024-05-05; OOS 2024-05-05 → 2025-05-05
-      - Fold 4: train 2021-05-05 → 2025-05-05; OOS 2025-05-05 → 2026-05-05
+      - 1y warmup: 2021-05-05 -> 2022-05-05 (training data accumulation only; not OOS-tested)
+      - Fold 1: train 2021-05-05 -> 2022-05-05; OOS 2022-05-05 -> 2023-05-05
+      - Fold 2: train 2021-05-05 -> 2023-05-05; OOS 2023-05-05 -> 2024-05-05
+      - Fold 3: train 2021-05-05 -> 2024-05-05; OOS 2024-05-05 -> 2025-05-05
+      - Fold 4: train 2021-05-05 -> 2025-05-05; OOS 2025-05-05 -> 2026-05-05
 
     Expanding-window (training set grows each fold). Disjoint 1y OOS periods.
 
     Verdict mapping (4-fold):
-      ROBUST                = passes ≥3 of 4 OOS folds
+      ROBUST                = passes >=3 of 4 OOS folds
       WEAK                  = passes 1-2 of 4 OOS folds
       OVERFIT               = passes IS but 0 OOS folds
       FAILS_BOTH            = fails IS and OOS
-      INSUFFICIENT_OOS_DATA = ≥3 folds with <30 OOS trades
+      INSUFFICIENT_OOS_DATA = >=3 folds with <30 OOS trades
 
     History: legacy 2-window IS/OOS pre-DEC-505 replaced Pass 53 Day 9 evening
     2026-05-07 per WF-1 owner directive ("Approve all"; same-commit per DEC-594).
@@ -133,7 +133,7 @@ def run_walk_forward(df_trades: pd.DataFrame) -> dict:
     df_trades = df_trades.copy()
     df_trades["entry_date"] = pd.to_datetime(df_trades["entry_date"]).dt.date
 
-    # 4-fold walk-forward per DEC-505 (1y warmup + 4 OOS folds × 1y each)
+    # 4-fold walk-forward per DEC-505 (1y warmup + 4 OOS folds x 1y each)
     fold_starts = [
         date(2022, 5, 5),
         date(2023, 5, 5),
@@ -169,11 +169,11 @@ def run_walk_forward(df_trades: pd.DataFrame) -> dict:
         pf_l = float(abs(pnl[~wins].sum()))
         pf   = round(pf_w / pf_l, 3) if pf_l > 0 else 999
         is_min   = 100   # IS needs 100+ trades
-        oos_min  = 30    # OOS minimum is 30 — sufficient for validation
+        oos_min  = 30    # OOS minimum is 30  -  sufficient for validation
         passes = (wr >= pc["min_win_rate"] and
                   pf >= pc["min_profit_factor"] and
                   pnl.sum() > 0 and
-                  len(t) >= oos_min)  # OOS threshold — IS caller checks IS minimum separately
+                  len(t) >= oos_min)  # OOS threshold  -  IS caller checks IS minimum separately
         return {
             "trades":        len(t),
             "win_rate":      round(wr, 4),
@@ -227,7 +227,7 @@ def run_walk_forward(df_trades: pd.DataFrame) -> dict:
         n_folds = len(windows)
         if insufficient_count >= n_folds - 1:  # 3+ folds insufficient out of 4
             verdict = "INSUFFICIENT_OOS_DATA"
-        elif passes_count >= 3:  # ≥3 of 4 folds pass = ROBUST
+        elif passes_count >= 3:  # >=3 of 4 folds pass = ROBUST
             verdict = "ROBUST"
         elif passes_count >= 1:  # 1-2 folds pass = WEAK
             verdict = "WEAK"
@@ -257,12 +257,12 @@ def run_walk_forward(df_trades: pd.DataFrame) -> dict:
         "summary": {
             "total": total, "robust": robust, "overfit": overfit,
             "weak": weak, "insufficient_oos_data": insuff,
-            "fold_1": "train=2021-05 → 2022-05; OOS=2022-05 → 2023-05",
-            "fold_2": "train=2021-05 → 2023-05; OOS=2023-05 → 2024-05",
-            "fold_3": "train=2021-05 → 2024-05; OOS=2024-05 → 2025-05",
-            "fold_4": "train=2021-05 → 2025-05; OOS=2025-05 → 2026-05",
+            "fold_1": "train=2021-05 -> 2022-05; OOS=2022-05 -> 2023-05",
+            "fold_2": "train=2021-05 -> 2023-05; OOS=2023-05 -> 2024-05",
+            "fold_3": "train=2021-05 -> 2024-05; OOS=2024-05 -> 2025-05",
+            "fold_4": "train=2021-05 -> 2025-05; OOS=2025-05 -> 2026-05",
             "min_oos_trades": MIN_OOS_TRADES,
-            "spec": "DEC-505 4-fold expanding window (1y warmup + 4×1y OOS)",
+            "spec": "DEC-505 4-fold expanding window (1y warmup + 4x1y OOS)",
         },
     }
 
@@ -287,9 +287,9 @@ def walk_forward_to_df(wf_results: dict) -> pd.DataFrame:
     return pd.DataFrame(rows).sort_values("verdict")
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 # 3. CORRELATION FILTER
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 
 def correlation_filter(
     candidate_ticker: str,
@@ -307,7 +307,7 @@ def correlation_filter(
     Rules:
     1. No new position if correlation with any existing position > 0.70
     2. Maximum 3 open positions in the same sector at once
-    3. These prevent real drawdown being 2-3× what backtest shows
+    3. These prevent real drawdown being 2-3x what backtest shows
     """
     if corr_matrix.empty or not open_positions:
         return True, "no_existing_positions"
@@ -338,9 +338,9 @@ def correlation_filter(
     return True, "passed"
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 # 4. SLIPPAGE MODEL
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 
 def apply_slippage(
     entry_price: float,
@@ -353,8 +353,8 @@ def apply_slippage(
     Apply realistic slippage to entry price.
 
     Two slippage components:
-    1. Market impact — proportional to ATR (how volatile the stock is)
-    2. Bid-ask spread — fixed percentage based on instrument type
+    1. Market impact  -  proportional to ATR (how volatile the stock is)
+    2. Bid-ask spread  -  fixed percentage based on instrument type
 
     Returns (adjusted_entry_price, slippage_pct).
 
@@ -369,7 +369,7 @@ def apply_slippage(
     else:
         spread_pct = 0.0008   # 0.08% for normal large-caps
 
-    # Gap penalty — larger gap = harder to get a good fill
+    # Gap penalty  -  larger gap = harder to get a good fill
     gap_penalty = min(abs(gap_pct) * 0.1, 0.003)  # max 0.3% gap penalty
 
     total_slippage = spread_pct + gap_penalty
@@ -382,9 +382,9 @@ def apply_slippage(
     return round(adjusted, 4), round(total_slippage * 100, 4)
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 # 5. REGIME CONFIDENCE SCORE
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 
 def regime_confidence(
     vix_values:      pd.Series,     # recent VIX history
@@ -402,6 +402,14 @@ def regime_confidence(
     - VIX consistency: how stable VIX has been in its current range
     - Trend persistence: how many consecutive days SPY has been above/below 200 EMA
     - Signal agreement: do VIX and trend agree on the regime?
+
+    BUG-27 RESOLVED-IMPLEMENTED Pass 53 v8h+1 2026-05-10:
+    INTENTIONALLY-UNUSED in the Phase 1A backtest path. CLAUDE.md "Approved Rules"
+    explicitly state: "No regime confidence scaling - full size always for backtest."
+    The function is retained as DEFERRED-TO-STAGE-3+ infrastructure: live papertrade
+    + live trading will wire this in for position-mult scaling. Not dead code in the
+    architectural sense - it is forward-looking infrastructure with explicit
+    project-plan deferral.
     """
     if vix_values.empty or len(vix_values) < 5:
         return {"regime": "unknown", "confidence": 50, "position_mult": 0.75}
@@ -419,11 +427,11 @@ def regime_confidence(
     else:
         vix_regime = "neutral"
 
-    # VIX consistency — std dev of recent VIX relative to its mean
+    # VIX consistency  -  std dev of recent VIX relative to its mean
     vix_cv = float(recent_vix.std() / max(recent_vix.mean(), 1))
     vix_consistency = max(0, 100 - vix_cv * 200)  # 0-100
 
-    # Trend persistence — consecutive days in current trend
+    # Trend persistence  -  consecutive days in current trend
     trend_days = 0
     if not spy_vs_ema200.empty:
         current_above = float(spy_vs_ema200.iloc[-1]) > 0
@@ -458,7 +466,7 @@ def regime_confidence(
     elif confidence >= 25:
         position_mult = 0.50   # 50% size
     else:
-        position_mult = 0.25   # 25% size — regime very uncertain
+        position_mult = 0.25   # 25% size  -  regime very uncertain
 
     regime = vix_regime if vix_regime != "neutral" else trend_regime
 
@@ -472,17 +480,17 @@ def regime_confidence(
         "signal_agreement":   agreement,
         "current_vix":        round(current_vix, 2),
         "description": (
-            f"Regime {regime} with {confidence:.0f}% confidence — "
+            f"Regime {regime} with {confidence:.0f}% confidence  -  "
             f"VIX stable ({vix_consistency:.0f}%), "
-            f"trend persistent {trend_days}d — "
+            f"trend persistent {trend_days}d  -  "
             f"use {position_mult*100:.0f}% of normal position size"
         ),
     }
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 # BONFERRONI CORRECTION FOR MULTIPLE TESTING
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 
 def bonferroni_adjusted_threshold(
     n_strategies: int,
@@ -492,10 +500,10 @@ def bonferroni_adjusted_threshold(
     """
     Compute Bonferroni-corrected significance thresholds.
 
-    With N strategies tested (N = baseline 60 in Layer 1 — see CANONICAL_FACTS.md F-002 for
+    With N strategies tested (N = baseline 60 in Layer 1  -  see CANONICAL_FACTS.md F-002 for
     layered roster expansion to ~108-133 classes), the probability of at least one false
     positive at p=0.05 is 1-(0.95)^N. We need stricter thresholds. The `n_strategies`
-    parameter is parameterized — caller passes len(ALL_STRATEGIES).
+    parameter is parameterized  -  caller passes len(ALL_STRATEGIES).
 
     Returns adjusted thresholds for win rate and minimum trades required.
     """
@@ -542,9 +550,9 @@ def bonferroni_adjusted_threshold(
     }
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 # SURVIVORSHIP BIAS HAIRCUT
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 
 def apply_survivorship_haircut(
     df_trades: pd.DataFrame,
@@ -552,7 +560,7 @@ def apply_survivorship_haircut(
 ) -> tuple[pd.DataFrame, float]:
     """
     Apply hold-adjusted survivorship bias haircut per trade.
-    Proportional to hold time — shorter holds have less survivorship exposure.
+    Proportional to hold time  -  shorter holds have less survivorship exposure.
 
     Hold-adjusted annual rates:
       < 7 days:   0.5% / year

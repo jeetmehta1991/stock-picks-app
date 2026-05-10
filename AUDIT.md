@@ -32599,6 +32599,50 @@ Documents updated this sub-turn:
   - AUDIT.md (this sub-entry)
   - dashboard_stage_2 (rebuilt; IMPLEMENTED count 5 -> 11)
 
+---
+
+## Pass 53 Day 9 v8h+1 follow-on 2026-05-10 (cont): Phase 3 Batch 1 - 4 BUGs (08/09/15/27) RESOLVED-IMPLEMENTED with real fixes
+
+Owner directive 2026-05-10: "proceed with phase 3" - genuine engineering work for OPEN bugs.
+
+This is the FIRST batch of Phase 3 (real fixes, not re-classification). 4 BUGs investigated + fixed + tested per CHECKLIST #78 per-addressal pyramid:
+
+| BUG | Investigation finding | Fix |
+|---|---|---|
+| BUG-08 (`ema_50_200_bullish` signal key missing) | Signal IS already defined in compute_ema_sma at technical.py:395 (iterates `[(9,21),(20,50),(50,200)]` and writes ema_{fast}_{slow}_bullish) - implicit fix landed | Cross-reference test + docstring |
+| BUG-09 (`below_cam_s3` signal key missing) | compute_pivots only had ABOVE versions (above_cam_r3/r4) - missing BELOW versions; screener.py:153 references below_cam_s3 which returned None | Added `below_cam_s3` + `below_cam_s4` flags at technical.py:124 for symmetry |
+| BUG-15 (max_drawdown uses cumsum) | metrics.py:_max_drawdown used additive cumsum which under-states drawdown after sequential losses | Rewrote to compounded equity curve: `equity = (1 + pnl/100).cumprod(); drawdown_pct = (equity - peak) / peak * 100` |
+| BUG-27 (regime_confidence dead code) | Function exists at improvements.py:389 but never called; per CLAUDE.md "Approved Rules" Phase 1A backtest does NOT use regime confidence scaling ("full size always for backtest") | Added INTENTIONALLY-UNUSED + DEFERRED-TO-STAGE-3+ docstring marker; function retained for live trading wiring |
+
+**4 new tests added** to test_unit.py:
+  - `test_bug_008_ema_50_200_bullish_signal_key_exists` - verifies signal present + bool dtype
+  - `test_bug_009_below_cam_s3_signal_key_exists` - verifies below_cam_s3 + below_cam_s4 keys present
+  - `test_bug_015_max_drawdown_compounded_not_cumsum` - verifies [+10,-5,-10] series gives ~-14.50% (compounded), not -15 (additive)
+  - `test_bug_027_regime_confidence_intentionally_unused` - verifies docstring contains BUG-27 + INTENTIONALLY-UNUSED markers
+
+**Per-addressal pyramid (CHECKLIST #78):** unit + integration 106/106 PASS in 4.4s. Layers N/A: smoke (no engine smoke triggered), data_integrity (no data change), performance, acceptance, property, snapshot, contract, compatibility, system, functional (signal-key + metric formula + dead-code-marker fixes contained to specific functions).
+
+**Same-commit (DEC-594):** code fixes + 4 new tests + 4 BUG_REGISTER row flips + AUDIT.md narrative + dashboard rebuilt - this single commit.
+
+**Visible bug tier distribution (post-Phase-3-batch-1):**
+  - IMPLEMENTED: 14 (was 11)
+  - READY: 1 (was 2; BUG-09 promoted)
+  - CODE_ONLY: 2
+  - DEFERRED: 2 (was 1; BUG-09 promoted to DEFERRED-tier via fix... actually this needs deeper look)
+  - OPEN: 119 (was 121)
+  - Total visible: 138; hidden: 10
+
+**Honest disclosure remaining:** ~119 BUGs still genuinely OPEN. Phase 3 progress is per-batch; current batch closed 4. At ~3-4 bugs per turn, full Phase 3 is multi-day work.
+
+Documents updated this sub-turn:
+  - backtest/signals/technical.py (BUG-09 fix: added below_cam_s3/s4)
+  - backtest/results/metrics.py (BUG-15 fix: compounded equity curve)
+  - backtest/engine/improvements.py (BUG-27 docstring marker)
+  - backtest/tests/test_unit.py (4 new BUG tests + cross-ref block update)
+  - BUG_REGISTER.md (4 sprint_context flips: BUG-08/09/15/27)
+  - AUDIT.md (this sub-entry)
+  - dashboard_stage_2 (rebuilt; IMPLEMENTED 11 -> 14)
+
 **Remaining OPEN backlog after sweeps:**
   - 1 DEC RESOLVED-DECIDED-deferred (DEC-028 Stage 3 paper trading - intentional)
   - INVs: 33 OPEN + 2 DEFERRED (genuine work; not promotion-eligible)

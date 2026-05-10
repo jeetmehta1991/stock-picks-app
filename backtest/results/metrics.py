@@ -1,17 +1,17 @@
 """
-results/metrics.py — All 10 passing criteria computed per strategy.
+results/metrics.py  -  All 10 passing criteria computed per strategy.
 
 Metrics per strategy (grouped by direction and hold period):
-  1.  win_rate                — % trades profitable
-  2.  profit_factor           — total wins / total losses (threshold: 1.2)
-  3.  expected_value          — (win_rate × avg_win) + (loss_rate × avg_loss)
-  4.  win_loss_ratio          — avg win pnl / avg loss pnl
-  5.  max_drawdown            — worst peak-to-trough in equity curve
-  6.  total_roi               — sum of all pnl_pct
-  7.  smart_money_lift        — win rate with vs without smart money signal
-  8.  macro_correlation       — win rate in favourable vs unfavourable regime
-  9.  trade_count             — total trades (min 100)
-  10. regimes_profitable      — count of regimes with win rate >= 55%
+  1.  win_rate                 -  % trades profitable
+  2.  profit_factor            -  total wins / total losses (threshold: 1.2)
+  3.  expected_value           -  (win_rate x avg_win) + (loss_rate x avg_loss)
+  4.  win_loss_ratio           -  avg win pnl / avg loss pnl
+  5.  max_drawdown             -  worst peak-to-trough in equity curve
+  6.  total_roi                -  sum of all pnl_pct
+  7.  smart_money_lift         -  win rate with vs without smart money signal
+  8.  macro_correlation        -  win rate in favourable vs unfavourable regime
+  9.  trade_count              -  total trades (min 100)
+  10. regimes_profitable       -  count of regimes with win rate >= 55%
 
 Also computes:
   - Sharpe ratio approximation
@@ -38,11 +38,32 @@ def _profit_factor(pnl_series: pd.Series) -> float:
 
 
 def _max_drawdown(pnl_series: pd.Series) -> float:
-    """Max peak-to-trough drawdown on cumulative PnL curve."""
-    cumulative = pnl_series.cumsum()
-    peak       = cumulative.cummax()
-    drawdown   = (cumulative - peak)
-    return round(float(drawdown.min()), 4)
+    """Max peak-to-trough drawdown on compounded equity curve.
+
+    BUG-15 RESOLVED-IMPLEMENTED Pass 53 v8h+1 2026-05-10:
+    Previously used `cumsum` (additive accumulation of % returns), which
+    under-states drawdown after sequential losses by failing to account for
+    compounding effects on capital. Now uses cumprod equity curve with proper
+    drawdown formula: `(equity - peak) / peak * 100`.
+
+    Input: per-trade % returns (e.g. 5.0 for +5% gain).
+    Returns: most negative drawdown in %, rounded to 4 decimals
+             (e.g. -15.5 means worst 15.5% peak-to-trough).
+
+    For a series like [+10, -5, -10]:
+      Old additive:    cumsum = [10, 5, -5];  drawdown = -15 (5 - (-15))? No, [10, 5, -5] - cummax [10,10,10] = [0, -5, -15] -> min = -15
+      New compounded:  equity = [1.10, 1.045, 0.9405]; peak [1.10, 1.10, 1.10];
+                       drawdown_pct = [0, -5.0, -14.50]; min = -14.50
+
+    The compounded value is mathematically correct for a return series
+    (matches industry-standard drawdown definition).
+    """
+    if pnl_series.empty:
+        return 0.0
+    equity = (1.0 + pnl_series / 100.0).cumprod()
+    peak = equity.cummax()
+    drawdown_pct = (equity - peak) / peak * 100.0
+    return round(float(drawdown_pct.min()), 4)
 
 
 def _calmar(pnl_series: pd.Series, hold_days_series: pd.Series) -> float:
@@ -73,7 +94,7 @@ def _confidence_interval_95(win_rate: float, n: int) -> tuple:
 
 def _sharpe(pnl_series: pd.Series, hold_days_series: pd.Series = None) -> float:
     """
-    Sharpe ratio for per-trade returns — annualised by trades/year not sqrt(252).
+    Sharpe ratio for per-trade returns  -  annualised by trades/year not sqrt(252).
     sqrt(252) is for daily returns. Per-trade returns use average hold period.
     """
     if pnl_series.std() == 0:
@@ -86,7 +107,7 @@ def _sharpe(pnl_series: pd.Series, hold_days_series: pd.Series = None) -> float:
 def _kelly_criterion(win_rate: float, avg_win: float, avg_loss: float) -> dict:
     """
     Kelly criterion: theoretically optimal position size.
-    Quarter Kelly is industry standard — reduces ruin risk.
+    Quarter Kelly is industry standard  -  reduces ruin risk.
     """
     if avg_loss == 0 or avg_win == 0:
         return {"full_kelly_pct": 0.0, "quarter_kelly_pct": 0.0, "note": "insufficient_data"}
@@ -130,12 +151,12 @@ def compute_strategy_metrics(df: pd.DataFrame, strategy: str) -> dict:
     ci_lo, ci_hi = _confidence_interval_95(win_rate, n)
     statistically_random = ci_lo < 0.50  # lower CI bound below 50% = may be random
 
-    # Sector-adjusted passing criteria — computed once, applied per-regime too
+    # Sector-adjusted passing criteria  -  computed once, applied per-regime too
     from backtest.config import get_sector_criteria
     sector = g["sector"].iloc[0] if "sector" in g.columns and not g["sector"].empty else "Unknown"
     pc = get_sector_criteria(sector)
 
-    # Per-regime evaluation — each regime assessed independently on all criteria
+    # Per-regime evaluation  -  each regime assessed independently on all criteria
     # A strategy is valid for a regime if it passes all 9 criteria within that regime.
     # Minimum MIN_REGIME_TRADES trades required for a statistically valid verdict.
     from backtest.config import MIN_REGIME_TRADES
@@ -201,7 +222,7 @@ def compute_strategy_metrics(df: pd.DataFrame, strategy: str) -> dict:
     # Legacy count for backward compatibility (number of PASS regimes)
     regimes_profitable = len(best_regimes)
 
-    # Smart money lift — within-strategy comparison (correct method)
+    # Smart money lift  -  within-strategy comparison (correct method)
     # Isolate SM contribution by holding strategy constant
     has_sm = g[g["smart_money_score"] >= 2]
     no_sm  = g[g["smart_money_score"] < 2]
@@ -209,7 +230,7 @@ def compute_strategy_metrics(df: pd.DataFrame, strategy: str) -> dict:
     if len(has_sm) >= 30 and len(no_sm) >= 30:
         sm_lift = round(float(has_sm["win"].mean()) - float(no_sm["win"].mean()), 4)
 
-    # Macro correlation — defined threshold
+    # Macro correlation  -  defined threshold
     fav_macro   = g[g["macro_score"] >= 2]
     unfav_macro = g[g["macro_score"] < 0]
     macro_corr = None
@@ -233,7 +254,7 @@ def compute_strategy_metrics(df: pd.DataFrame, strategy: str) -> dict:
         "smart_money_lift":   (sm_lift is None) or (sm_lift >= SM_LIFT_THRESHOLD),
         "macro_correlation":  (macro_corr is None) or (macro_corr >= MACRO_CORR_THRESHOLD),
         "trade_count":        n >= pc["min_trades"],
-        # regime_verdicts replaces per-regime count — see regime_verdicts and best_regimes
+        # regime_verdicts replaces per-regime count  -  see regime_verdicts and best_regimes
     }
     passes_all = all(passes.values())
 
@@ -327,7 +348,7 @@ def compute_all_metrics(df: pd.DataFrame, spy_total_return: float = None) -> pd.
 
 
 def compute_confidence_tier_metrics(df: pd.DataFrame) -> pd.DataFrame:
-    """Win rate and ROI by confidence tier — validates tier ordering."""
+    """Win rate and ROI by confidence tier  -  validates tier ordering."""
     if df.empty or "confidence_tier" not in df:
         return pd.DataFrame()
     rows = []

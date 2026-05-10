@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-10T21:51:23.720649+00:00",
+  "generated_at": "2026-05-10T22:00:14.947238+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -2453,7 +2453,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 571,
+        "n_doc_refs": 572,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -21053,7 +21053,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 444,
+        "n_doc_refs": 445,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -21411,7 +21411,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 49,
+        "n_doc_refs": 56,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -21449,7 +21449,7 @@
         "wired": true,
         "tested": true,
         "pushed": false,
-        "n_doc_refs": 33,
+        "n_doc_refs": 36,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -21487,7 +21487,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 44,
+        "n_doc_refs": 47,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -21525,7 +21525,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 76,
+        "n_doc_refs": 79,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -21633,15 +21633,15 @@
       "id": "BUG-08",
       "title": "`ema_50_200_bullish` signal key does not exist",
       "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
+      "sprint_context": "RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 2026-05-10 (signal defined in compute_ema_sma at technical.py:395; implicit fix via existing signal infrastructure; test_bug_008 added)",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
-        "tested": false,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 41,
         "pyramid": {
-          "unit": false,
+          "unit": true,
           "smoke": false,
           "integration": false,
           "system": false,
@@ -21657,29 +21657,29 @@
         }
       },
       "short_id": "BUG-008",
-      "sprint": "(see linked DEC sprint)",
+      "sprint": "RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 2026-05-10 (signal defined in compute_ema_sma at technical.py:395; implicit fix via existing signal infrastructure; test_bug_008 added)",
       "dependencies": "DEC-458",
       "description": "**File:** `backtest/signals/screener.py` lines 120\u2013121 (`strat_pivot_r2_continuation`) and 515\u2013516 (`strat_morning_star`)",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Resolved with code + regression test"
       }
     },
     {
       "id": "BUG-09",
       "title": "`below_cam_s3` signal key does not exist",
       "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
+      "sprint_context": "RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 2026-05-10 (below_cam_s3 + below_cam_s4 added to compute_pivots at technical.py:124 for symmetry with above_cam_r3/r4; test_bug_009 added)",
       "status_grep": {
         "coded": true,
-        "wired": false,
-        "tested": false,
+        "wired": true,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 81,
         "pyramid": {
-          "unit": false,
+          "unit": true,
           "smoke": false,
           "integration": false,
           "system": false,
@@ -21695,14 +21695,14 @@
         }
       },
       "short_id": "BUG-009",
-      "sprint": "(see linked DEC sprint)",
+      "sprint": "RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 2026-05-10 (below_cam_s3 + below_cam_s4 added to compute_pivots at technical.py:124 for symmetry with above_cam_r3/r4; test_bug_009 added)",
       "dependencies": "DEC-458",
       "description": "**File:** `backtest/signals/screener.py` line 148 (`strat_camarilla_r3_breakout` short condition)",
       "promotion_path": {
-        "tier": "CODE_ONLY",
-        "label": "NEEDS-TEST",
-        "color": "#f59e0b",
-        "reason": "Status inherited from linked DEC; coded but missing test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Resolved with code + regression test"
       }
     },
     {
@@ -21753,7 +21753,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 146,
+        "n_doc_refs": 150,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -21861,15 +21861,15 @@
       "id": "BUG-15",
       "title": "`max_drawdown` uses `cumsum()` instead of compounded equity curve",
       "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
+      "sprint_context": "RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 2026-05-10 (_max_drawdown rewritten to use compounded equity curve cumprod instead of additive cumsum; metrics.py:40; test_bug_015 verifies +10/-5/-10 series gives -14.50% not -15)",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 59,
         "pyramid": {
-          "unit": false,
+          "unit": true,
           "smoke": false,
           "integration": false,
           "system": false,
@@ -21885,14 +21885,14 @@
         }
       },
       "short_id": "BUG-015",
-      "sprint": "(see linked DEC sprint)",
+      "sprint": "RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 2026-05-10 (_max_drawdown rewritten to use compounded equity curve cumprod instead of additive cumsum; metrics.py:40; test_bug_015 verifies +10/-5/-10 series gives -14.50% not -15)",
       "dependencies": "DEC-458",
       "description": "**File:** `backtest/results/metrics.py` lines 41\u201344",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Resolved with code + regression test"
       }
     },
     {
@@ -22057,7 +22057,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 19,
+        "n_doc_refs": 22,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -22165,13 +22165,13 @@
       "id": "BUG-27",
       "title": "CRITICAL \u2014 `regime_confidence()` function built but never called \u2014 dead code",
       "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
+      "sprint_context": "RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 2026-05-10 (regime_confidence docstring marks it INTENTIONALLY-UNUSED + DEFERRED-TO-STAGE-3+; per CLAUDE.md Approved Rules Phase 1A backtest does not use regime confidence scaling; test_bug_027 verifies docstring marker)",
       "status_grep": {
         "coded": true,
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 163,
+        "n_doc_refs": 166,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -22189,14 +22189,14 @@
         }
       },
       "short_id": "BUG-027",
-      "sprint": "(see linked DEC sprint)",
+      "sprint": "RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 2026-05-10 (regime_confidence docstring marks it INTENTIONALLY-UNUSED + DEFERRED-TO-STAGE-3+; per CLAUDE.md Approved Rules Phase 1A backtest does not use regime confidence scaling; test_bug_027 verifies docstring marker)",
       "dependencies": "DEC-458",
       "description": "**File:** `backtest/engine/improvements.py` lines 365\u2013450 and `backtest/engine/backtest.py`",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
-        "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "tier": "DEFERRED",
+        "label": "DEFERRED",
+        "color": "#3b82f6",
+        "reason": "Bug deferred per sprint_context: RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 2026-05-10 (regime_confidence docstring marks it INTENTIO"
       }
     },
     {
@@ -25287,7 +25287,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 54,
+        "n_doc_refs": 55,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -26085,7 +26085,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 42,
+        "n_doc_refs": 45,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -31262,52 +31262,58 @@
   ],
   "recent_commits": [
     {
+      "sha": "fc9390b7",
+      "subject": "Pass 53 v8h+1: Phase 2 BUG cross-references + id-form normalization (6 BUGs READY -> IMPLEMENTED)",
+      "author": "jeetmehta1991",
+      "rel_time": "6 minutes ago"
+    },
+    {
       "sha": "97c69b3d",
       "subject": "Pass 53 v8h+1: Phase 1 BUG categorization (10 SUPERSEDED/DEFERRED) + dashboard hide-moot-bugs filter",
       "author": "jeetmehta1991",
-      "rel_time": "8 minutes ago"
+      "rel_time": "16 minutes ago"
     },
     {
       "sha": "99d137c1",
       "subject": "Pass 53 v8h+1: BUG-270/271/272/273 pyramid overrides + Promotion dropdown filters",
       "author": "jeetmehta1991",
-      "rel_time": "19 minutes ago"
+      "rel_time": "28 minutes ago"
     },
     {
       "sha": "a7c66530",
       "subject": "Pass 53 v8h+1: DEC-610 SPEC_ONLY -> DEFERRED_TO_* re-classification (14 forward-looking DECs)",
       "author": "jeetmehta1991",
-      "rel_time": "26 minutes ago"
+      "rel_time": "35 minutes ago"
     },
     {
       "sha": "4cd84d66",
       "subject": "Pass 53 v8h+1: BUG-270 wired-flag fix (cross-reference docstring) + process self-finding",
       "author": "jeetmehta1991",
-      "rel_time": "33 minutes ago"
+      "rel_time": "42 minutes ago"
     },
     {
       "sha": "d28c8723",
       "subject": "Pass 53 v8h+1: Tier C/D edge-case sweep - DEC-057 promoted; DEC-028 no-promote (forward-looking)",
       "author": "jeetmehta1991",
-      "rel_time": "57 minutes ago"
+      "rel_time": "66 minutes ago"
     },
     {
       "sha": "10fa8617",
       "subject": "Pass 53 v8h+1: INV-041 RESOLVED - path-restricted commits in 4 prefetch scripts + 5-test regression gate",
       "author": "jeetmehta1991",
-      "rel_time": "59 minutes ago"
+      "rel_time": "68 minutes ago"
     },
     {
       "sha": "bcb6ea3f",
       "subject": "Pass 53 v8h+1: parse_inv_entries parser fix - recognize all RESOLVED-* / DEFERRED-* status variants",
       "author": "jeetmehta1991",
-      "rel_time": "64 minutes ago"
+      "rel_time": "73 minutes ago"
     },
     {
       "sha": "26340a6b",
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 20:43: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "67 minutes ago"
+      "rel_time": "76 minutes ago"
     },
     {
       "sha": "bffd8658",
@@ -31361,13 +31367,13 @@
       "sha": "07c15d16",
       "subject": "Pass 53 v8h+1: H18 data refresh - 54 CFTC parquets updated (legacy/disagg/tff datasets)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "1af57700",
       "subject": "Pass 53 v8h+1: H18 CFTC 5 missing datasets verify (DONE-WITH-DATASET-SCOPE-CAP) - Sprint 0A H-tier complete",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "25485a1b",
@@ -31397,7 +31403,7 @@
       "sha": "1e020b2a",
       "subject": "Pass 53 v8h+1: promotion-path column wired into Stage 2 dashboard (CHECKLIST #81/#82)",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "f7b3e987",
@@ -31433,18 +31439,12 @@
       "sha": "f0d03fcd",
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 15:26: dashboard_sprint0a rebuild artifacts (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
-    },
-    {
-      "sha": "041229b1",
-      "subject": "Pass 53 v8h+1: INV-046 RESOLVED-DOCUMENTED + DEC-607 realism floor 100% -> 300% + rapidity gate",
-      "author": "jeetmehta1991",
       "rel_time": "7 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 13,
-    "modified": 13,
+    "count": 8,
+    "modified": 8,
     "added": 0,
     "untracked": 0,
     "deleted": 0,
@@ -31455,19 +31455,15 @@
       },
       {
         "status": "M",
-        "path": "backtest/agents/pipeline.py"
+        "path": "backtest/engine/improvements.py"
       },
       {
         "status": "M",
-        "path": "backtest/engine/backtest.py"
+        "path": "backtest/results/metrics.py"
       },
       {
         "status": "M",
-        "path": "backtest/engine/exit_manager.py"
-      },
-      {
-        "status": "M",
-        "path": "backtest/signals/screener.py"
+        "path": "backtest/signals/technical.py"
       },
       {
         "status": "M",
@@ -31484,22 +31480,6 @@
       {
         "status": "M",
         "path": "dashboard_sprint0a/last_run.txt"
-      },
-      {
-        "status": "M",
-        "path": "dashboard_stage_2/data.js"
-      },
-      {
-        "status": "M",
-        "path": "dashboard_stage_2/data.json"
-      },
-      {
-        "status": "M",
-        "path": "dashboard_stage_2/last_run.txt"
-      },
-      {
-        "status": "M",
-        "path": "scripts/build_dashboard_stage_2.py"
       }
     ]
   },
@@ -31681,7 +31661,7 @@
     }
   ],
   "test_inventory": {
-    "total": 751,
+    "total": 755,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -31757,7 +31737,7 @@
       "test_stocktwits_smoke": 4,
       "test_supplementary_demo": 4,
       "test_supplementary_smoke": 6,
-      "test_unit": 95,
+      "test_unit": 99,
       "test_walk_forward_4fold": 6
     }
   },

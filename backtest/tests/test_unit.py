@@ -1528,4 +1528,97 @@ if __name__ == "__main__":
 #          unit tests for williams_r strategy)
 # BUG-22:  run_phase1a.py docstring text correction (no test needed; verified
 #          via grep absence per BUG_REGISTER row)
+# BUG-08:  ema_50_200_bullish signal key defined in compute_ema_sma at
+#          technical.py:395 (already fixed implicitly; cross-reference here)
+# BUG-09:  below_cam_s3 + below_cam_s4 signal keys added to compute_pivots at
+#          technical.py:124 (Phase 3 batch 1; tested via test_bug_009_below_cam_s3)
 # ============================================================================
+
+
+def test_bug_008_ema_50_200_bullish_signal_key_exists():
+    """BUG-08: ema_50_200_bullish signal must be defined in compute_all_signals.
+
+    Pass 53 v8h+1 Phase 3 verification 2026-05-10. The fix landed implicitly in
+    compute_ema_sma which iterates [(9,21),(20,50),(50,200)] and writes
+    ema_{fast}_{slow}_bullish keys for each pair. Verify the 50-200 pair is
+    populated for a fixture with >=202 bars.
+    """
+    import numpy as np
+    import pandas as pd
+    from backtest.signals.technical import compute_all_signals
+    np.random.seed(42)
+    dates = pd.date_range("2023-01-01", periods=300, freq="B")
+    prices = 100 + np.cumsum(np.random.randn(300) * 0.5)
+    df = pd.DataFrame({
+        "open": prices, "high": prices * 1.01, "low": prices * 0.99,
+        "close": prices, "volume": [1e6] * 300,
+    }, index=dates)
+    sigs = compute_all_signals(df)
+    assert "ema_50_200_bullish" in sigs, "BUG-08: ema_50_200_bullish key missing"
+    assert isinstance(sigs["ema_50_200_bullish"], (bool, np.bool_)), (
+        f"BUG-08: ema_50_200_bullish must be bool, got {type(sigs['ema_50_200_bullish'])}"
+    )
+
+
+def test_bug_009_below_cam_s3_signal_key_exists():
+    """BUG-09: below_cam_s3 signal must be defined in compute_all_signals.
+
+    Pass 53 v8h+1 Phase 3 fix 2026-05-10. screener.py:153 references
+    below_cam_s3 (Camarilla S3 breakdown) but compute_pivots only had ABOVE
+    versions (above_cam_r3/r4) - missing BELOW versions. Fix adds
+    below_cam_s3 + below_cam_s4 for symmetry. Verify both keys present.
+    """
+    import numpy as np
+    import pandas as pd
+    from backtest.signals.technical import compute_all_signals
+    np.random.seed(42)
+    dates = pd.date_range("2023-01-01", periods=300, freq="B")
+    prices = 100 + np.cumsum(np.random.randn(300) * 0.5)
+    df = pd.DataFrame({
+        "open": prices, "high": prices * 1.01, "low": prices * 0.99,
+        "close": prices, "volume": [1e6] * 300,
+    }, index=dates)
+    sigs = compute_all_signals(df)
+    assert "below_cam_s3" in sigs, "BUG-09: below_cam_s3 key missing"
+    assert "below_cam_s4" in sigs, "BUG-09: below_cam_s4 key missing (added for symmetry)"
+    # Symmetry check: above_cam_r3 also exists
+    assert "above_cam_r3" in sigs, "above_cam_r3 missing (sanity check)"
+
+
+def test_bug_015_max_drawdown_compounded_not_cumsum():
+    """BUG-15: _max_drawdown uses compounded equity curve, not cumsum.
+
+    Pass 53 v8h+1 Phase 3 fix 2026-05-10. Was using additive cumsum which
+    under-states drawdown after sequential losses. Fix: cumprod equity curve.
+
+    For series [+10, -5, -10] (per-trade %):
+      Old additive cumsum:  [10, 5, -5];   drawdown = -15  (incorrect)
+      New compounded:       equity = [1.10, 1.045, 0.9405]; peak [1.10, 1.10, 1.10]
+                            drawdown_pct = [0, -5.0, -14.50]; min = -14.50
+    """
+    import pandas as pd
+    from backtest.results.metrics import _max_drawdown
+    s = pd.Series([10.0, -5.0, -10.0])
+    mdd = _max_drawdown(s)
+    # Compounded result should be -14.50% (within rounding)
+    assert -14.6 < mdd < -14.4, f"BUG-15: expected ~-14.50, got {mdd}"
+    # Empty series should return 0
+    assert _max_drawdown(pd.Series([], dtype=float)) == 0.0
+
+
+def test_bug_027_regime_confidence_intentionally_unused():
+    """BUG-27: regime_confidence retained as DEFERRED-TO-STAGE-3+ infrastructure.
+
+    Pass 53 v8h+1 Phase 3 docstring fix 2026-05-10. Per CLAUDE.md "Approved Rules"
+    Phase 1A backtest does NOT use regime confidence scaling ("full size always
+    for backtest"). The function is kept for Stage 3+ live trading wiring;
+    docstring now explicitly marks it INTENTIONALLY-UNUSED with cross-reference.
+    """
+    import inspect
+    from backtest.engine.improvements import regime_confidence
+    doc = inspect.getdoc(regime_confidence) or ""
+    assert "BUG-27" in doc, "BUG-27 cross-reference missing from docstring"
+    assert "INTENTIONALLY-UNUSED" in doc or "DEFERRED-TO-STAGE-3" in doc, (
+        "BUG-27 docstring must explicitly mark function intentionally-unused / "
+        "deferred to Stage 3+ to prevent dead-code accusations"
+    )

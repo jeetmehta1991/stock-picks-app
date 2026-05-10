@@ -1,5 +1,5 @@
 """
-signals/technical.py — Complete technical indicator computation.
+signals/technical.py  -  Complete technical indicator computation.
 
 Computes ALL indicators from the project plan:
   Pivots:     Standard (P/R1-R3/S1-S3), Camarilla (R1-R4/S1-S4),
@@ -8,7 +8,7 @@ Computes ALL indicators from the project plan:
   Momentum:   RSI (9/14/21), Stochastic, StochRSI, Williams %R, ROC,
               MACD (12/26/9 and 8/21/5), PPO, Awesome Oscillator,
               Ultimate Oscillator
-  Trend:      EMA/SMA crossovers (9/21, 20/50, 50/200), ADX (+DI/−DI),
+  Trend:      EMA/SMA crossovers (9/21, 20/50, 50/200), ADX (+DI/-DI),
               Parabolic SAR, Ichimoku (all 5 components), Supertrend,
               Hull MA, DEMA, TEMA
   Volatility: Bollinger Bands (3 param sets), Keltner Channels,
@@ -19,8 +19,8 @@ Computes ALL indicators from the project plan:
               Hammer, Shooting Star, Morning Star, Evening Star, Doji,
               Three White Soldiers, Three Black Crows
 
-Entry: compute_all_signals(df) → flat dict of ~220 signal fields
-All computations are pure — no I/O. df must be pre-sliced to as_of date.
+Entry: compute_all_signals(df) -> flat dict of ~220 signal fields
+All computations are pure  -  no I/O. df must be pre-sliced to as_of date.
 """
 
 import logging
@@ -35,13 +35,13 @@ try:
     import pandas_ta as ta
     _HAS_TA = True
 except ImportError:
-    logger.warning("pandas-ta not installed — using manual implementations")
+    logger.warning("pandas-ta not installed  -  using manual implementations")
     _HAS_TA = False
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 # HELPERS
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 
 def _safe_float(val, default=0.0):
     try:
@@ -57,9 +57,9 @@ def _atr_series(df: pd.DataFrame, period: int = 14) -> pd.Series:
     return tr.ewm(alpha=1 / period, adjust=False).mean()
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# PIVOT POINTS — Standard, Camarilla, Woodie's, CPR, Prev Day
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
+# PIVOT POINTS  -  Standard, Camarilla, Woodie's, CPR, Prev Day
+# -----------------------------------------------------------------------------
 
 def compute_pivots(df: pd.DataFrame) -> dict:
     if len(df) < 2:
@@ -70,24 +70,24 @@ def compute_pivots(df: pd.DataFrame) -> dict:
     rng   = H - L
     near  = lambda lvl: abs(today - lvl) / max(abs(lvl), 0.01) < 0.003
 
-    # ── Standard ──
+    # -- Standard --
     P  = (H + L + C) / 3
     R1 = 2*P - L;  R2 = P + rng;  R3 = H + 2*(P - L)
     S1 = 2*P - H;  S2 = P - rng;  S3 = L - 2*(H - P)
 
-    # ── CPR ──
+    # -- CPR --
     cpr_top    = (H + L) / 2
     cpr_bottom = P
     cpr_width  = abs(cpr_top - cpr_bottom)
     cpr_narrow = (cpr_width < rng * 0.15) if rng > 0 else False
 
-    # ── Camarilla ──
+    # -- Camarilla --
     cr4 = C + rng*1.1/2;  cr3 = C + rng*1.1/4
     cr2 = C + rng*1.1/6;  cr1 = C + rng*1.1/12
     cs1 = C - rng*1.1/12; cs2 = C - rng*1.1/6
     cs3 = C - rng*1.1/4;  cs4 = C - rng*1.1/2
 
-    # ── Woodie's ──
+    # -- Woodie's --
     wp  = (H + L + 2*O) / 4
     wr1 = 2*wp - L;  wr2 = wp + rng
     ws1 = 2*wp - H;  ws2 = wp - rng
@@ -117,10 +117,13 @@ def compute_pivots(df: pd.DataFrame) -> dict:
         # CPR flags
         "above_cpr": today > cpr_top, "inside_cpr": cpr_bottom <= today <= cpr_top,
         "below_cpr": today < cpr_bottom,
-        # Camarilla flags
+        # Camarilla flags (BUG-09 RESOLVED-IMPLEMENTED Pass 53 v8h+1 2026-05-10:
+        # below_cam_s3 + below_cam_s4 added for symmetry with above_cam_r3/r4;
+        # screener.py:153 references below_cam_s3 which previously returned None)
         "near_cam_s3": near(cs3), "near_cam_s4": near(cs4),
         "near_cam_r3": near(cr3), "above_cam_r3": today > cr3,
         "above_cam_r4": today > cr4,
+        "below_cam_s3": today < cs3, "below_cam_s4": today < cs4,
         # Woodie's flags
         "above_wood_p": today > wp, "near_wood_s1": near(ws1), "near_wood_r1": near(wr1),
         # Previous day flags
@@ -171,9 +174,9 @@ def compute_vwap(df: pd.DataFrame) -> dict:
     }
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 # MOMENTUM
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 
 def compute_rsi(df: pd.DataFrame) -> dict:
     result = {}
@@ -374,9 +377,9 @@ def compute_ultimate_oscillator(df: pd.DataFrame) -> dict:
     }
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 # TREND
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 
 def compute_ema_sma(df: pd.DataFrame) -> dict:
     result = {}
@@ -512,7 +515,7 @@ def compute_parabolic_sar(df: pd.DataFrame) -> dict:
     }
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 # NOTE ON VWAP APPROXIMATION
 # True VWAP is an intraday metric that resets every day. On daily bars we
 # approximate it as (High + Low + Close) / 3. This differs from real intraday
@@ -520,7 +523,7 @@ def compute_parabolic_sar(df: pd.DataFrame) -> dict:
 # (prev_day_high_break, prev_day_low_bounce, squeeze_breakout, volume_spike_breakout,
 # bb_squeeze_volume, inside_bar_breakout, cpr_narrow_momentum) use this
 # approximation. In live trading, real intraday VWAP should be used.
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 
 def compute_ichimoku(df: pd.DataFrame) -> dict:
     if len(df) < 52:
@@ -596,9 +599,9 @@ def compute_hull_ma(df: pd.DataFrame, period: int = 20) -> dict:
     }
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 # VOLATILITY / BANDS
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 
 def compute_bollinger(df: pd.DataFrame) -> dict:
     result = {}
@@ -702,9 +705,9 @@ def compute_squeeze(df: pd.DataFrame) -> dict:
     }
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 # VOLUME
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 
 def compute_volume(df: pd.DataFrame) -> dict:
     if len(df) < 21:
@@ -781,9 +784,9 @@ def compute_volume(df: pd.DataFrame) -> dict:
     return result
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 # CANDLE PATTERNS
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 
 def compute_candles(df: pd.DataFrame) -> dict:
     if len(df) < 5:
@@ -800,7 +803,7 @@ def compute_candles(df: pd.DataFrame) -> dict:
     lwk    = min(c[-1],o[-1])-l[-1]
     bull   = c[-1] > o[-1]
 
-    # ── Single-bar patterns ──
+    # -- Single-bar patterns --
     result["inside_bar"]    = (h[-1]<h[-2]) and (l[-1]>l[-2])
     result["outside_bar"]   = (h[-1]>h[-2]) and (l[-1]<l[-2])
     result["doji"]          = (body < 0.05*rng) if rng>0 else False
@@ -814,13 +817,13 @@ def compute_candles(df: pd.DataFrame) -> dict:
         result["hammer"] = result["shooting_star"] = result["pin_bar"] = False
         result["marubozu_bull"] = result["marubozu_bear"] = False
 
-    # ── Two-bar patterns ──
+    # -- Two-bar patterns --
     result["bullish_engulfing"] = (
         c[-2]<o[-2] and c[-1]>o[-1] and c[-1]>o[-2] and o[-1]<c[-2])
     result["bearish_engulfing"] = (
         c[-2]>o[-2] and c[-1]<o[-1] and c[-1]<o[-2] and o[-1]>c[-2])
 
-    # ── Three-bar patterns ──
+    # -- Three-bar patterns --
     if n >= 3:
         mid_body = abs(c[-2]-o[-2])
         mid_rng  = h[-2]-l[-2]
@@ -835,7 +838,7 @@ def compute_candles(df: pd.DataFrame) -> dict:
             c[-1]<o[-1] and
             c[-1] < (o[-3]+c[-3])/2)
 
-    # ── Five-bar patterns ──
+    # -- Five-bar patterns --
     if n >= 5:
         result["three_white_soldiers"] = (
             all(c[-i]>o[-i] for i in range(1,4)) and
@@ -851,9 +854,9 @@ def compute_candles(df: pd.DataFrame) -> dict:
     return result
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 # MASTER AGGREGATOR
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 
 def compute_all_signals(df: pd.DataFrame) -> dict:
     """
