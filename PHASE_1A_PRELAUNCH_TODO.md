@@ -92,6 +92,14 @@ Owner: *"all data in prefetch needs to be standardized and normalized."*
 
 **Strict blocker count: 1 OPEN (INV-046).** All other T0 items either resolved or surfaced for owner.
 
+### Finnhub financials_reported EXCLUDED COMPLETELY (DEC-606, owner-approved 2026-05-10)
+
+- Total exclusion: not Phase 1A only. Excluded from Phase 1A + Phase 1B+ + Phase 1C+ + Stage 3 + Stage 4.
+- Superseded by SEC EDGAR XBRL companyfacts (1662 tickers, free, structured, deeper history) + Polygon financials (1937 tickers, already paid via Polygon Stocks Starter).
+- Cache `data_prefetch/finnhub/financials_reported/` (891 files) is orphan / read-only; zero runtime references in engine/agent/signal code (verified 2026-05-10 grep).
+- Reconsider triggers: NONE (permanent supersedence; superior alternatives already in cache).
+- See CAV-076 for full caveat.
+
 ### Finnhub social_sentiment EXCLUDED from Phase 1A (DEC-605, owner-approved 2026-05-09)
 
 - Source PREMIUM-LOCKED at current Finnhub free tier; subscription cost-benefit analysis says skip.

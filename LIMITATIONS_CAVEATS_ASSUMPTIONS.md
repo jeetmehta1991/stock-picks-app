@@ -675,3 +675,22 @@ Cells with n<30 trades fall back to marginal-best (next-broader cell). Live deci
 **Runtime guard:** zero engine/agent/signal code references `finnhub.social_sentiment` (verified 2026-05-09); script `prefetch_finnhub_social_sentiment.py` is BUILT but is NOT invoked by Phase 1A pipeline. Cache directory `data_prefetch/finnhub/social_sentiment/` is empty.
 **Reconsider triggers:** (a) post-Phase-1A Sharpe < 0.7 OOS gate AND post-mortem identifies cross-platform retail sentiment as the gap; (b) Phase 1B News Analyst starves for retail features specifically; (c) Finnhub adds compelling new endpoints at the same tier.
 **Forward-link:** DEC-605 (this exclusion); DEC-599 (StockTwits + Apewisdom + Polygon news cover retail layer); CHECKLIST #13/#22/#23/#29 (paid API approval gate). The script flips ON instantly the day Finnhub Premium is added.
+
+### CAV-075 — Sub-100% coverage on SEC EDGAR + Polygon reference is empirically delisting/acquisition (immutable at source)
+
+**Source:** Pass 53 v8h+1 owner-asked verification 2026-05-10
+**Status:** ACTIVE — coverage-ceiling caveat (informational; not a remediable gap)
+**Caveat:** The 87-89% coverage on `data_prefetch/sec_edgar/*` (11 forms) and 87% on `data_prefetch/polygon/reference_extended/` is NOT a fetch-side bug. Cross-checked the 246 SEC-missing tickers against SEC's authoritative `company_tickers.json`: **0 of 246 are in SEC's active CIK map.** All are delisted, acquired, renamed, or foreign without SEC filer status (e.g. ABMD acquired by JNJ, ANSS by Synopsys, ADS renamed BFH, ALXN by AstraZeneca, AGN by AbbVie, AJRD by L3Harris, AIMC by Regal Rexnord). Polygon reference shows the same overlap — these tickers don't exist in either system because they no longer exist as separately-traded entities.
+**Operational impact:** None to address. Phase 1A backtest correctly skips these tickers — they were never tradable in Phase 1A's window OR they were tradable but their data is in our universe under their renamed/successor symbol. Calls to `fetch_ohlcv` / `_load_aaii` / etc. for these tickers should return empty / not-available, which is the correct behavior.
+**Resolution:** ACCEPT — this is the realistic ceiling for SEC-filer + Polygon-tracked subset of our 1937-ticker universe.
+**Forward-link:** Coverage matrix tab in Sprint 0A dashboard (commentary column references "delisted/foreign/ADR/renamed" for these endpoints); CHECKLIST #76 column-(c) confirms the gap is upstream not downstream.
+
+### CAV-076 — Finnhub financials_reported EXCLUDED COMPLETELY from all downstream phases (superseded by SEC EDGAR XBRL + Polygon financials)
+
+**Source:** Pass 53 v8h+1 owner-approved 2026-05-10 (DEC-606)
+**Status:** ACTIVE — total exclusion (Phase 1A + Phase 1B + Phase 1C+ + Stage 3 + Stage 4)
+**Caveat:** Finnhub `/stock/financials-reported` data is EXCLUDED from ALL downstream phases — not just Phase 1A. Source coverage is 46% at our free tier (891 of 1937 tickers; remainder requires Finnhub Premium ~$10-30/mo). Authoritative substitutes: (a) `data_prefetch/sec_xbrl/` from SEC EDGAR XBRL companyfacts (1662 tickers, structured, deeper history, free, already cached); (b) `data_prefetch/polygon/financials/` from Polygon `/vX/reference/financials` (1937 tickers, JSON-encoded line items, already paid via Polygon Stocks Starter, already cached). Both substitutes provide deeper history + better PIT semantics + zero incremental cost.
+**Operational impact:** Phase 1A pipeline does NOT call any Finnhub-financials reader (verified 2026-05-10 grep — zero engine/agent/signal references). Cache directory `data_prefetch/finnhub/financials_reported/` exists with 891 files but is read-only / orphan. Future agent prompts (Phase 1B+) must consume SEC XBRL or Polygon financials, never Finnhub financials.
+**Runtime guard:** zero engine/agent/signal code references `finnhub.financials_reported` (verified 2026-05-10); script `prefetch_finnhub_full.py` is BUILT but is NOT invoked by Phase 1A pipeline.
+**Reconsider triggers:** none; this is permanent. SEC XBRL + Polygon financials are structurally superior data sources.
+**Forward-link:** DEC-606 (this exclusion); CAV-075 (delisting confirms 246-ticker SEC-unfileable ceiling); test_contract_finnhub_earnings_shape (Finnhub `earnings` endpoint, NOT `financials_reported`, remains valid).

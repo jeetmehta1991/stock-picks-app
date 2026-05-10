@@ -43,6 +43,8 @@ formally logged in AUDIT_INDEX.md:**
 
 **Phase 1A May 15 launch readiness: 1 OPEN blocker (INV-046).** Pyramid 982 pass / 1 fail (the INV-046 finding itself) / 14 skipped / 5 xfailed.
 
+**Phase 1A + downstream scope clarification 2026-05-10:** DEC-606 EXCLUDES Finnhub financials_reported COMPLETELY from all phases (Phase 1A + 1B + 1C+ + Stage 3 + Stage 4). Superseded by SEC EDGAR XBRL + Polygon financials. CAV-076 logged. CAV-075 confirms 246-ticker SEC-unfileable ceiling is delisting/acquisition (empirical 0/246 in SEC active map).
+
 **Phase 1A scope clarification 2026-05-09:** DEC-605 EXCLUDES Finnhub social_sentiment data from Phase 1A baseline (premium-locked; budget reserved). CAV-074 logged. Apewisdom + StockTwits + Polygon news insights_json cover the retail-attention signal at free tier.
 
 ---

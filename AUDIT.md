@@ -31799,7 +31799,26 @@ DEC-503 (test pyramid 9 → 13 amended this commit), CHECKLIST #67/#69/#74/#75/#
 
 **Day 9 v8h+1 — 5 of 8 T0 blockers RESOLVED or PATCHED. INV-046 the only remaining Phase 1A May 15 launch dependency at HIGH severity. AAII richer parquet integrated. 13-layer pyramid live. Stage 2 + Sprint 0A dashboards rebuilt. CHECKLIST #78 (per-addressal pyramid) + #79 (all-docs sweep) codified.**
 
-### v8h+1 follow-on 2026-05-09: Phase 1A scope clarification - Finnhub social_sentiment EXCLUDED
+### v8h+1 follow-on 2026-05-10: Finnhub financials_reported EXCLUDED COMPLETELY + delisting empirically confirmed
+
+Owner directives 2026-05-10:
+- "Approve all" (CAV-075 SEC+Polygon delisting confirmed; DEC-606 Finnhub financials_reported supersedence; etfholdings refresh BG)
+- "Note that finnhub financials will be used excluded completely from all downstream impact" — strengthens DEC-606 from "supersede" to "permanent total exclusion across Phase 1A + 1B + 1C + Stage 3 + Stage 4."
+
+DEC-606 RESOLVED-DECIDED + CAV-076 logged (total exclusion). Finnhub `/stock/financials-reported` superseded permanently by SEC EDGAR XBRL companyfacts (1662 tickers, free, structured, deeper history, already cached) + Polygon `/vX/reference/financials` (1937 tickers, already paid via Polygon Stocks Starter, already cached). Cache `data_prefetch/finnhub/financials_reported/` (891 orphan files) read-only; zero runtime references.
+
+CAV-075 logged separately: empirical confirmation that the 87-89% coverage ceiling on SEC EDGAR (11 forms) and Polygon reference is NOT a fetch-side bug — cross-checked 246 SEC-missing tickers against SEC's authoritative `company_tickers.json`: **0 of 246 are in SEC's active CIK map.** All delisted/acquired/renamed/foreign without filer status (ABMD/ANSS/ADS/ALXN/AGN/AJRD/AIMC etc.). The gap is immutable at source; "minor coverage gap = delisting" claim from prior turns is now empirically validated.
+
+Documents updated this turn:
+  - AUDIT_INDEX.md (DEC-606)
+  - LIMITATIONS_CAVEATS_ASSUMPTIONS.md (CAV-075 delisting + CAV-076 exclusion)
+  - PHASE_1A_PRELAUNCH_TODO.md (DEC-606 exclusion note)
+  - ENGINEERING_REGISTER.md (downstream scope clarification)
+  - AUDIT_BACKLOG.md (v8h+1 close addendum)
+  - API_ENDPOINT_INVENTORY.md (/stock/financials-reported row marked EXCLUDED)
+  - dashboard_sprint0a metadata (criticality "EXCLUDED (permanent supersedence)")
+  - AUDIT.md (this entry)
+  - Both dashboards rebuilt
 
 Owner directive 2026-05-09: "Exclude finnhub social sentiment data from phase 1A run. Note in all documents."
 

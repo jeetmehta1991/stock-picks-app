@@ -244,7 +244,7 @@
 | `/calendar/ipo` | ✅ | date, exchange, name, numberOfShares, price, status, symbol, totalSharesValue | partial | check |
 | `/calendar/economic` | ✅ | actual, country, estimate, event, impact, prev, time, unit | partial | check |
 | `/company-news` | ✅ | category, datetime, headline, id, image, related, source, summary, url | YES (in flight; 243 records/AAPL smoke) | in flight |
-| `/stock/financials-reported` | ✅ | accessNumber, cik, endDate, filedDate, form, quarter, report, startDate, year, symbol | YES (in flight; 16 records/AAPL smoke) | in flight |
+| `/stock/financials-reported` | ✅ | accessNumber, cik, endDate, filedDate, form, quarter, report, startDate, year, symbol | YES (891/1937 cached) | **EXCLUDED COMPLETELY per DEC-606 (2026-05-10); superseded by SEC EDGAR XBRL + Polygon financials; CAV-076 logged. Cache orphan / read-only.** |
 | `/stock/metric` | ✅ | metric, metricType, series (annual/quarterly TTM ratios) | YES (in flight) | in flight |
 | `/stock/price-target` | 🔴 403 | premium-locked | — | skip on free tier |
 | `/stock/social-sentiment` | 🔴 403 | premium-locked; **EXCLUDED from Phase 1A per DEC-605 (2026-05-09)**; Phase 1B+ eligible if Premium subscribed; CAV-074 logged | — | EXCLUDED Phase 1A; deferred Phase 1B+ |

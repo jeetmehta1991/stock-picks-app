@@ -503,7 +503,7 @@ ENDPOINT_USE_CASES = {
     "finnhub.recommendation": {"use_case": "Analyst recommendation distribution (buy/hold/sell counts over time)", "stage": "Phase 1B agent overlay", "criticality": "P1"},
     "finnhub.earnings": {"use_case": "EPS surprise time series (PEAD signal)", "stage": "Phase 1B PEAD strategies", "criticality": "P1"},
     "finnhub.company_news": {"use_case": "Per-ticker company news (cross-source confirm vs Polygon news)", "stage": "Phase 1B sentiment overlay", "criticality": "P2"},
-    "finnhub.financials_reported": {"use_case": "Reported financial statements (cross-source vs SEC XBRL)", "stage": "Phase 1B fundamentals overlay", "criticality": "P2"},
+    "finnhub.financials_reported": {"use_case": "Reported financial statements", "stage": "EXCLUDED COMPLETELY per DEC-606 (owner 2026-05-10). Superseded by SEC EDGAR XBRL companyfacts (1662 tickers, free) + Polygon financials (1937 tickers, paid tier already covered). Free Finnhub coverage capped at 46% (891/1937); Premium ~$10-30/mo not worth it given strictly superior alternatives. See CAV-076.", "criticality": "EXCLUDED (permanent supersedence)"},
     "finnhub.metric": {"use_case": "Per-ticker financial ratios (PE/PB/ROE/etc.)", "stage": "Phase 1B fundamental ratios", "criticality": "P1"},
     "finnhub.calendar_earnings": {"use_case": "Forward earnings calendar (days_to_earnings cube dim)", "stage": "Phase 1A days-to-earnings", "criticality": "P0"},
     "finnhub.calendar_ipo": {"use_case": "Forward IPO calendar (T2 universe maintenance)", "stage": "Phase 1A T2 universe", "criticality": "P1"},

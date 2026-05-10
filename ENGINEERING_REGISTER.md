@@ -1064,5 +1064,7 @@ Sprint scope additions arising from T0 blocker triage + 13-layer pyramid expansi
 
 **Critical path impact: Phase 1A May 15 launch UNCHANGED — INV-046 is the only remaining blocker to investigate.**
 
+**Phase 1A + downstream scope clarification (DEC-606, owner 2026-05-10):** Finnhub `/stock/financials-reported` data is EXCLUDED from ALL phases (Phase 1A baseline + Phase 1B+ agents + Phase 1C+ overlays + Stage 3 papertrade + Stage 4 live). Superseded by SEC EDGAR XBRL companyfacts + Polygon financials (both already cached, structurally superior, free / already-paid). Cache directory orphan; zero runtime references. See CAV-076. CAV-075 documents the empirical confirmation that SEC + Polygon sub-100% coverage is delisting/acquisition (immutable at source).
+
 **Phase 1A scope clarification (DEC-605, owner 2026-05-09):** Finnhub social_sentiment data is EXCLUDED from Phase 1A signal universe. Source is premium-locked; budget reserved for Phase 1B Haiku run instead. Apewisdom + StockTwits + Polygon news insights_json cover the retail-attention signal at free tier. See CAV-074 for full caveat. Script `prefetch_finnhub_social_sentiment.py` BUILT and ready to activate at Phase 1B+ if Finnhub Premium is later added.
 
