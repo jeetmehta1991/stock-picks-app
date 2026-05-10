@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-10T10:43:45.740713+00:00",
+  "generated_at": "2026-05-10T12:43:34.418876+00:00",
   "universe_size": 1937,
   "tier_counts": {
     "T1ETF": 27,
@@ -9271,9 +9271,9 @@
         17
       ],
       "status": "PARTIAL",
-      "use_case": "Reported financial statements (cross-source vs SEC XBRL)",
-      "stage_phase": "Phase 1B fundamentals overlay",
-      "criticality": "P2",
+      "use_case": "Reported financial statements",
+      "stage_phase": "EXCLUDED COMPLETELY per DEC-606 (owner 2026-05-10). Superseded by SEC EDGAR XBRL companyfacts (1662 tickers, free) + Polygon financials (1937 tickers, paid tier already covered). Free Finnhub coverage capped at 46% (891/1937); Premium ~$10-30/mo not worth it given strictly superior alternatives. See CAV-076.",
+      "criticality": "EXCLUDED (permanent supersedence)",
       "field_statuses": [
         {
           "field": "acceptedDate",
@@ -130212,10 +130212,10 @@
       "endpoint_path": "`/stock/financials-reported`",
       "tier_status": "ACCESSIBLE",
       "cached_status": "CACHED",
-      "cached_count": 16,
+      "cached_count": 891,
       "final_bucket": "CACHED",
       "sample_fields": "accessNumber, cik, endDate, filedDate, form, quarter, report, startDate, year, symbol",
-      "action": "in flight"
+      "action": "**EXCLUDED COMPLETELY per DEC-606 (2026-05-10); superseded by SEC EDGAR XBRL + Polygon financials; CAV-076 logged. Cache orphan / read-only.**"
     },
     {
       "api_label": "Finnhub free tier",
