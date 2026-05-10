@@ -80,17 +80,17 @@ The following table maps every bug in AUDIT.md to the decision(s) that reference
 | BUG-39 | MEDIUM  -  `regime_confidence()` compares VIX-based regime with SPY-trend regime i | DEC-458 | (see linked DEC sprint) |
 | BUG-40 | MEDIUM  -  Short stop distance same as long (10%)  -  asymmetric risk not accounted  | DEC-458 | SUPERSEDED-BY-symmetric-stop-config Pass 53 v8h+1 Phase 3 Batch 5 2026-05-10 (TRAILING_STOP[initial_pct] applied symmetrically to longs and shorts per CLAUDE.md Approved Rules; project chose symmetric stop sizing by design; asymmetric per-direction stops would require separate Phase 1B+ DEC) |
 | BUG-41 | MEDIUM  -  `min_market_cap_m = 100` too low; admits stocks with poor institutional | DEC-458 | (see linked DEC sprint) |
-| BUG-42 | LOW  -  `LILLY` appears as ticker in `run_full.sh` but should be `LLY` | DEC-458 | (see linked DEC sprint) |
+| BUG-42 | LOW  -  `LILLY` appears as ticker in `run_full.sh` but should be `LLY` | DEC-458 | SUPERSEDED-BY-BUG-14 Pass 53 v8h+1 Phase 3 Batch 6 2026-05-10 (run_full.sh no longer exists per BUG-14; LILLY/LLY ticker discrepancy is moot) |
 | BUG-43 | LOW  -  Missing Calmar ratio minimum in passing criteria | DEC-458 | (see linked DEC sprint) |
 | BUG-44 | LOW  -  Test suite has no test for `close_trade()` or `_process_day()` | DEC-458 | (see linked DEC sprint) |
 | BUG-45 | MEDIUM  -  FX currency risk not modelled | DEC-458 | (see linked DEC sprint) |
 | BUG-46 | MEDIUM  -  `fetch_info_bulk` info cache uses current market_cap, not historical | DEC-260, DEC-442, DEC-458 | SUPERSEDED-BY-DEC-497 (yfinance fetch_info_bulk removed from runtime per NO-LIVE-API HARD CUT) |
-| BUG-47 | MEDIUM  -  VXX in universe creates self-referencing regime paradox | DEC-458 | (see linked DEC sprint) |
+| BUG-47 | MEDIUM  -  VXX in universe creates self-referencing regime paradox | DEC-458 | SUPERSEDED-BY-DEC-302 Pass 53 v8h+1 Phase 3 Batch 6 2026-05-10 (VXX no longer used as VIX proxy in regime classification per DEC-302; FRED:VIXCLS is canonical; the self-referencing-paradox issue cannot trigger) |
 | BUG-48 | MEDIUM  -  Sector `Volatility` and `Emerging Markets` not in sector criteria profi | DEC-458 | (see linked DEC sprint) |
-| BUG-49 | LOW  -  FX risk not mentioned in EXPLANATION.md or PROJECT_PLAN.md | DEC-458 | (see linked DEC sprint) |
-| BUG-50 | LOW  -  `position_staleness_pct=1%` in live rules has no backtest equivalent | DEC-458 | (see linked DEC sprint) |
+| BUG-49 | LOW  -  FX risk not mentioned in EXPLANATION.md or PROJECT_PLAN.md | DEC-458 | SUPERSEDED-BY-CAV-029 Pass 53 v8h+1 Phase 3 Batch 6 2026-05-10 (FX risk is documented in LIMITATIONS_CAVEATS_ASSUMPTIONS.md as a known limitation for USD-quoted backtest; CAD->USD conversion via Norberts Gambit per DEC-255 for Stage 4 live capital deployment) |
+| BUG-50 | LOW  -  `position_staleness_pct=1%` in live rules has no backtest equivalent | DEC-458 | DEFERRED-TO-STAGE-3 Pass 53 v8h+1 Phase 3 Batch 6 2026-05-10 (position_staleness_pct=1% is live trading rule per CLAUDE.md Stage 4 scope; not applicable to backtest mode; CHECKLIST forward-looking) |
 | BUG-51 | HIGH  -  All 5 agents receive wrong or zero price context due to BUG-10 compoundin | DEC-458 | (see linked DEC sprint) |
-| BUG-52 | HIGH  -  Risk Agent's VIX floor behavior now fully explained by BUG-26 | DEC-458 | (see linked DEC sprint) |
+| BUG-52 | HIGH  -  Risk Agent's VIX floor behavior now fully explained by BUG-26 | DEC-458 | SUPERSEDED-BY-BUG-26-cascade Pass 53 v8h+1 Phase 3 Batch 6 2026-05-10 (Risk Agent VIX floor issue is cascade of BUG-26 which is itself SUPERSEDED-BY-DEC-302; FRED:VIXCLS canonical source eliminates the VIX-scale mismatch that triggered the agent behavior) |
 | BUG-53 | HIGH  -  Finnhub news cache: all 509 files are empty  -  Sentiment Agent has no news | DEC-256, DEC-441, DEC-453, DEC-458 | (see linked DEC sprint) |
 | BUG-54 | MEDIUM  -  Hull Moving Average uses simple rolling mean instead of WMA  -  signal ti | DEC-458 | (see linked DEC sprint) |
 | BUG-55 | MEDIUM  -  PSAR flip detection uses approximation that may fire on wrong day | DEC-458 | (see linked DEC sprint) |

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-10T22:16:22.794295+00:00",
+  "generated_at": "2026-05-10T22:18:08.470390+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -973,7 +973,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 158,
+        "n_doc_refs": 159,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -1293,7 +1293,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 136,
+        "n_doc_refs": 139,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -10333,7 +10333,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 5,
+        "n_doc_refs": 6,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -12213,7 +12213,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 15,
+        "n_doc_refs": 18,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -22246,8 +22246,8 @@
         "coded": true,
         "wired": true,
         "tested": true,
-        "pushed": false,
-        "n_doc_refs": 5,
+        "pushed": true,
+        "n_doc_refs": 7,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -22390,44 +22390,6 @@
       }
     },
     {
-      "id": "BUG-42",
-      "title": "LOW  -  `LILLY` appears as ticker in `run_full.sh` but should be `LLY`",
-      "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": false,
-        "n_doc_refs": 6,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "BUG-042",
-      "sprint": "(see linked DEC sprint)",
-      "dependencies": "DEC-458",
-      "description": "**File:** `run_full.sh` batch 3 ticker list",
-      "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
-      }
-    },
-    {
       "id": "BUG-43",
       "title": "LOW  -  Missing Calmar ratio minimum in passing criteria",
       "linked_decisions": "DEC-458",
@@ -22542,44 +22504,6 @@
       }
     },
     {
-      "id": "BUG-47",
-      "title": "MEDIUM  -  VXX in universe creates self-referencing regime paradox",
-      "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": false,
-        "n_doc_refs": 5,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "BUG-047",
-      "sprint": "(see linked DEC sprint)",
-      "dependencies": "DEC-458",
-      "description": "**File:** `backtest/config.py` ETFS list and CRISIS_LONG_EXCLUSIONS",
-      "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
-      }
-    },
-    {
       "id": "BUG-48",
       "title": "MEDIUM  -  Sector `Volatility` and `Emerging Markets` not in sector criteria profi",
       "linked_decisions": "DEC-458",
@@ -22618,48 +22542,10 @@
       }
     },
     {
-      "id": "BUG-49",
-      "title": "LOW  -  FX risk not mentioned in EXPLANATION.md or PROJECT_PLAN.md",
-      "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": false,
-        "n_doc_refs": 4,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "BUG-049",
-      "sprint": "(see linked DEC sprint)",
-      "dependencies": "DEC-458",
-      "description": "**Files:** `EXPLANATION.md`, `PROJECT_PLAN.md`",
-      "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
-      }
-    },
-    {
       "id": "BUG-50",
       "title": "LOW  -  `position_staleness_pct=1%` in live rules has no backtest equivalent",
       "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
+      "sprint_context": "DEFERRED-TO-STAGE-3 Pass 53 v8h+1 Phase 3 Batch 6 2026-05-10 (position_staleness_pct=1% is live trading rule per CLAUDE.md Stage 4 scope; not applicable to backtest mode; CHECKLIST forward-looking)",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -22683,14 +22569,14 @@
         }
       },
       "short_id": "BUG-050",
-      "sprint": "(see linked DEC sprint)",
+      "sprint": "DEFERRED-TO-STAGE-3 Pass 53 v8h+1 Phase 3 Batch 6 2026-05-10 (position_staleness_pct=1% is live trading rule per CLAUDE.md Stage 4 scope; not applicable to backtest mode; CHECKLIST forward-looking)",
       "dependencies": "DEC-458",
       "description": "**File:** `backtest/config.py` LIVE_TRADING_RULES",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "DEFERRED",
+        "label": "DEFERRED",
+        "color": "#3b82f6",
+        "reason": "Bug deferred per sprint_context: DEFERRED-TO-STAGE-3 Pass 53 v8h+1 Phase 3 Batch 6 2026-05-10 (position_staleness_pct=1% is live trad"
       }
     },
     {
@@ -22724,44 +22610,6 @@
       "sprint": "(see linked DEC sprint)",
       "dependencies": "BUG-10; DEC-458",
       "description": "**File:** `backtest/agents/pipeline.py` lines 161\u2013166 (Technical Agent) and lines 664\u2013670 (pipeline orchestrator)",
-      "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
-      }
-    },
-    {
-      "id": "BUG-52",
-      "title": "HIGH  -  Risk Agent's VIX floor behavior now fully explained by BUG-26",
-      "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": false,
-        "n_doc_refs": 6,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "BUG-052",
-      "sprint": "(see linked DEC sprint)",
-      "dependencies": "BUG-26; DEC-458",
-      "description": "**File:** `backtest/agents/pipeline.py` lines 395\u2013430 (Risk Agent prompt)",
       "promotion_path": {
         "tier": "OPEN",
         "label": "OPEN",
@@ -26267,7 +26115,7 @@
     }
   ],
   "bugs_total_count": 148,
-  "bugs_hidden_count": 19,
+  "bugs_hidden_count": 23,
   "investigations": [
     {
       "id": "INV-001",
@@ -28087,7 +27935,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 16,
+        "n_doc_refs": 17,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -28897,7 +28745,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 1,
+        "n_doc_refs": 2,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -30920,76 +30768,82 @@
   ],
   "recent_commits": [
     {
+      "sha": "f16ef86d",
+      "subject": "Pass 53 v8h+1: Phase 3 Batch 5 - BUG-37 IMPLEMENTED (haircut doc) + BUG-34/40 SUPERSEDED-BY-design",
+      "author": "jeetmehta1991",
+      "rel_time": "69 seconds ago"
+    },
+    {
       "sha": "a4258bc1",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 4 - BUG-21 IMPLEMENTED + BUG-24/31/32/33 SUPERSEDED-BY-policy-decisions",
       "author": "jeetmehta1991",
-      "rel_time": "2 minutes ago"
+      "rel_time": "3 minutes ago"
     },
     {
       "sha": "1f87aa53",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 3 - BUG-17/25 OBSOLETE + BUG-18/28/30 IMPLEMENTED (Wilder RSI fix)",
       "author": "jeetmehta1991",
-      "rel_time": "5 minutes ago"
+      "rel_time": "7 minutes ago"
     },
     {
       "sha": "694a11fa",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 2 - BUG-01/06/10/12 IMPLEMENTED + BUG-14 OBSOLETE",
       "author": "jeetmehta1991",
-      "rel_time": "9 minutes ago"
+      "rel_time": "11 minutes ago"
     },
     {
       "sha": "3bb2f559",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 1 - BUG-08/09/15/27 RESOLVED-IMPLEMENTED with real fixes",
       "author": "jeetmehta1991",
-      "rel_time": "15 minutes ago"
+      "rel_time": "17 minutes ago"
     },
     {
       "sha": "fc9390b7",
       "subject": "Pass 53 v8h+1: Phase 2 BUG cross-references + id-form normalization (6 BUGs READY -> IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "22 minutes ago"
+      "rel_time": "24 minutes ago"
     },
     {
       "sha": "97c69b3d",
       "subject": "Pass 53 v8h+1: Phase 1 BUG categorization (10 SUPERSEDED/DEFERRED) + dashboard hide-moot-bugs filter",
       "author": "jeetmehta1991",
-      "rel_time": "32 minutes ago"
+      "rel_time": "34 minutes ago"
     },
     {
       "sha": "99d137c1",
       "subject": "Pass 53 v8h+1: BUG-270/271/272/273 pyramid overrides + Promotion dropdown filters",
       "author": "jeetmehta1991",
-      "rel_time": "44 minutes ago"
+      "rel_time": "46 minutes ago"
     },
     {
       "sha": "a7c66530",
       "subject": "Pass 53 v8h+1: DEC-610 SPEC_ONLY -> DEFERRED_TO_* re-classification (14 forward-looking DECs)",
       "author": "jeetmehta1991",
-      "rel_time": "51 minutes ago"
+      "rel_time": "53 minutes ago"
     },
     {
       "sha": "4cd84d66",
       "subject": "Pass 53 v8h+1: BUG-270 wired-flag fix (cross-reference docstring) + process self-finding",
       "author": "jeetmehta1991",
-      "rel_time": "58 minutes ago"
+      "rel_time": "60 minutes ago"
     },
     {
       "sha": "d28c8723",
       "subject": "Pass 53 v8h+1: Tier C/D edge-case sweep - DEC-057 promoted; DEC-028 no-promote (forward-looking)",
       "author": "jeetmehta1991",
-      "rel_time": "82 minutes ago"
+      "rel_time": "84 minutes ago"
     },
     {
       "sha": "10fa8617",
       "subject": "Pass 53 v8h+1: INV-041 RESOLVED - path-restricted commits in 4 prefetch scripts + 5-test regression gate",
       "author": "jeetmehta1991",
-      "rel_time": "84 minutes ago"
+      "rel_time": "86 minutes ago"
     },
     {
       "sha": "bcb6ea3f",
       "subject": "Pass 53 v8h+1: parse_inv_entries parser fix - recognize all RESOLVED-* / DEFERRED-* status variants",
       "author": "jeetmehta1991",
-      "rel_time": "89 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "26340a6b",
@@ -31092,17 +30946,11 @@
       "subject": "Pass 53 v8h+1: untracked artifacts cleanup (gitignore + INV-027 backup archived)",
       "author": "jeetmehta1991",
       "rel_time": "5 hours ago"
-    },
-    {
-      "sha": "4bf07436",
-      "subject": "Pass 53 v8h+1: H1.a OHLCV Master Dedup prefetch script + DEC-609 (Option B)",
-      "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 6,
-    "modified": 6,
+    "count": 4,
+    "modified": 4,
     "added": 0,
     "untracked": 0,
     "deleted": 0,
@@ -31110,14 +30958,6 @@
       {
         "status": "M",
         "path": "BUG_REGISTER.md"
-      },
-      {
-        "status": "M",
-        "path": "backtest/engine/improvements.py"
-      },
-      {
-        "status": "M",
-        "path": "backtest/tests/test_unit.py"
       },
       {
         "status": "M",

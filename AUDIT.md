@@ -32789,6 +32789,32 @@ Documents updated:
   - AUDIT.md (this sub-entry)
   - dashboard_stage_2 (rebuilt; IMPLEMENTED 22 -> 23)
 
+---
+
+## Pass 53 Day 9 v8h+1 follow-on 2026-05-10 (cont): Phase 3 Batch 6 - 5 BUGs (42/47/49/50/52) cross-references
+
+5 easy retroactive cross-references via SUPERSEDED/DEFERRED:
+
+| BUG | Status | Why |
+|---|---|---|
+| BUG-42 (LILLY vs LLY in run_full.sh) | SUPERSEDED-BY-BUG-14 | run_full.sh no longer exists |
+| BUG-47 (VXX self-referencing regime paradox) | SUPERSEDED-BY-DEC-302 | VXX no longer used as VIX proxy |
+| BUG-49 (FX risk not in docs) | SUPERSEDED-BY-CAV-029 | FX risk documented in LIMITATIONS_CAVEATS_ASSUMPTIONS.md + Norberts Gambit per DEC-255 for Stage 4 |
+| BUG-50 (position_staleness_pct=1% live rule no backtest equiv) | DEFERRED-TO-STAGE-3 | live trading rule; not applicable to backtest mode |
+| BUG-52 (Risk Agent VIX floor) | SUPERSEDED-BY-BUG-26-cascade | cascade of BUG-26 which is SUPERSEDED-BY-DEC-302 |
+
+Per-addressal pyramid 115/115 PASS in 4.0s.
+
+**Visible bug tier distribution (post-Phase-3-batch-6):**
+  - IMPLEMENTED: 23; DEFERRED: 3 (+1 BUG-50); CODE_ONLY: 1
+  - OPEN: 98 (was 103; -5 total: -4 hidden + -1 DEFERRED)
+  - Total visible: 125; hidden: 23 (+4 SUPERSEDED from BUG-42/47/49/52)
+
+Documents updated:
+  - BUG_REGISTER.md (5 flips: BUG-42/47/49/50/52)
+  - AUDIT.md (this sub-entry)
+  - dashboard_stage_2 (rebuilt)
+
 **Remaining OPEN backlog after sweeps:**
   - 1 DEC RESOLVED-DECIDED-deferred (DEC-028 Stage 3 paper trading - intentional)
   - INVs: 33 OPEN + 2 DEFERRED (genuine work; not promotion-eligible)
