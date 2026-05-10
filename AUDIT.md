@@ -32954,6 +32954,46 @@ Documents updated:
   - AUDIT.md (this sub-entry)
   - dashboard_stage_2 (rebuilt)
 
+---
+
+## Pass 53 Day 9 v8h+1 follow-on 2026-05-10 (cont): Phase 3 Batch 12 - 21 BUGs (Stage 3+/Phase 1B/cross-ref sweep)
+
+Large categorization batch: 21 BUGs flipped covering:
+
+**DEFERRED-TO-STAGE-3 (8):** BUG-63 (email), BUG-90 (checkpointing), BUG-92 (streaming progress), BUG-94 (Stage 3 paper trading), BUG-97 (IaC), BUG-98 (monitoring), BUG-99 (secret mgmt), BUG-100 (kill switch)
+
+**DEFERRED-TO-STAGE-4 (2):** BUG-63 (already counted in Stage-3 list — Email approval split between Stage 3 paper and Stage 4 live), BUG-93 (execution layer)
+
+**DEFERRED-TO-PHASE-1B (4):** BUG-65 (retirement rule), BUG-85 (regime transition tracking), BUG-88 (signal versioning), BUG-89 (type safety), BUG-96 (SPY benchmark)
+
+**SUPERSEDED (7):** BUG-68 (CLAUDE.md kept current), BUG-72 (pyramid replaces validate script), BUG-73 (cache standardized via J5/J8), BUG-76 (no-agents Phase 1A), BUG-82 (DEC-514 slippage methodology), BUG-84 (DEC-505 4-fold WF), BUG-91 (test_property determinism)
+
+Per-addressal pyramid 117/117 PASS in 3.5s.
+
+**Visible bug tier distribution (post-Phase-3-batch-12):**
+  - IMPLEMENTED: 24; DEFERRED: 25 (+14); CODE_ONLY: 1
+  - OPEN: 46 (was 67; -21)
+  - Total visible: 96; hidden: 52 (+7 SUPERSEDED)
+
+**Phase 3 cumulative this turn (Batches 1-12):**
+  - IMPLEMENTED: 14 -> 24 (+10 with real fixes or cross-references)
+  - Hidden: 10 -> 52 (+42 SUPERSEDED/OBSOLETE)
+  - DEFERRED: 1 -> 25 (+24 Stage-3/Phase-1B intentional deferrals)
+  - OPEN: 119 -> 46 (-73 categorized)
+
+**Real engineering fixes landed this turn:**
+  - BUG-09 (signal keys below_cam_s3/s4)
+  - BUG-15 (max_drawdown compounded equity)
+  - BUG-28 (RSI Wilder smoothing)
+  - BUG-29 (open-trades-finalization at backtest end) - CRITICAL Phase 1A correction
+  - BUG-37 (haircut methodology citation)
+  - + 14 cross-reference docstrings making fixes grep-discoverable
+
+Documents updated:
+  - BUG_REGISTER.md (21 flips)
+  - AUDIT.md (this sub-entry)
+  - dashboard_stage_2 (rebuilt)
+
 **Remaining OPEN backlog after sweeps:**
   - 1 DEC RESOLVED-DECIDED-deferred (DEC-028 Stage 3 paper trading - intentional)
   - INVs: 33 OPEN + 2 DEFERRED (genuine work; not promotion-eligible)
