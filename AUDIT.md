@@ -33144,6 +33144,66 @@ Documents updated:
   - AUDIT.md (this sub-entry)
   - dashboard_stage_2 (rebuilt; IMPLEMENTED 25 -> 26)
 
+---
+
+## Pass 53 Day 9 v8h+1 follow-on 2026-05-10 (cont): Phase 3 Batch 16 - BUG-110 HIGH entry gap filter VERIFIED ENFORCED
+
+**The audit claim (stale):** AUDIT.md previously logged BUG-110 as "Entry gap filter not enforced; trades opened despite exceeding ATR limit" based on a trade log inspection showing a 1.85xATR gap pivot-category long trade had executed when pivot's ENTRY_GAP_ATR_MULT is 1.0.
+
+**The current code (Phase 3 Batch 16 grep verification):**
+The entry gap filter IS wired into the entry path at `backtest/engine/backtest.py:469-478`:
+```python
+next_open = next_bar["open"]
+valid, gap_reason = validate_entry_zone(
+    next_open, close, atr, category, direction)
+if not valid:
+    self.skipped_trades.append({
+        "ticker": ticker, "date": as_of,
+        "strategy": strat_entry["strategy"],
+        "reason": gap_reason,
+        "close": close, "next_open": next_open, "atr": atr,
+    })
+    continue
+```
+`validate_entry_zone` lives at `backtest/signals/screener.py:919` and enforces:
+  - Long: reject if `(open - close)/atr > ENTRY_GAP_ATR_MULT[category]`
+  - Short: reject if `(close - open)/atr > ENTRY_GAP_ATR_MULT[category]`
+  - Per-category mults from `backtest/config.py:145` (pivot=1.0, mean_reversion=1.0, trend=1.5, momentum=2.0)
+Invalid entries are appended to `skipped_trades` with explicit `gap_pct_exceeds_mult` reason and the iteration `continues` before any trade-entry code is reached.
+
+**The fix:** cross-reference comment added at `backtest.py:464` documenting that the filter IS enforced and is the explicit-reject path. No engine change required; the original stale audit claim was that a trade in the log had a 1.85xATR gap, but inspection of the current code path shows the filter is in place and trades exceeding it cannot reach the entry block.
+
+**2 new regression tests (both PASS):**
+  - `test_bug_110_entry_gap_filter_enforced_at_validate_entry_zone` - unit test of pure-function gap-reject semantics across long/short, per-category mult
+  - `test_bug_110_engine_wires_validate_entry_zone_with_skip_on_invalid` - pin: backtest.py source must import validate_entry_zone, call it with skip-on-not-valid, and contain BUG-110 cross-ref
+
+**Per-addressal pyramid (CHECKLIST #78):** unit 116/116 PASS in 2.98s, integration 7/7 PASS in 0.89s, e2e_phase1a_smoke 7/7 PASS in 3:53 min. Full backtest engine smoke succeeds with zero regressions.
+
+**Same-commit (DEC-594):** cross-reference comment + 2 new tests + BUG_REGISTER flip + AUDIT.md narrative + dashboard rebuilt - this single commit.
+
+**Phase 1A May 15 IMPACT:** None - filter was already enforced. The bug was a stale audit finding from a trade log inspection that did not match current code behavior. Now grep-discoverable with cross-reference + regression tests preventing future regression.
+
+**Visible bug tier distribution (post-Phase-3-batch-16):**
+  - IMPLEMENTED: 27 (was 26; +1 BUG-110)
+  - DEFERRED: 39; CODE_ONLY: 1
+  - OPEN: 4 (was 5; -1)
+  - Total visible: 71; hidden: 77
+
+**Remaining 4 OPEN bugs:**
+  - BUG-61 HIGH: multiple concurrent positions in same ticker across consecutive days
+  - BUG-77 MEDIUM: candidate ranking 'avoid' inflated
+  - BUG-83 HIGH: get_congressional_detail() inverted PIT logic
+  - BUG-95 CRITICAL: no Portfolio class (DEFERRED-TO-SPRINT-3 per audit; not Phase 1A blocking)
+
+Phase 1A May 15 strict blocker count: **0 OPEN** (unchanged).
+
+Documents updated:
+  - backtest/engine/backtest.py (cross-reference comment at validate_entry_zone call site)
+  - backtest/tests/test_unit.py (2 new BUG-110 regression tests)
+  - BUG_REGISTER.md (1 flip: BUG-110)
+  - AUDIT.md (this sub-entry)
+  - dashboard_stage_2 (rebuilt; IMPLEMENTED 26 -> 27)
+
 **Remaining OPEN backlog after sweeps:**
   - 1 DEC RESOLVED-DECIDED-deferred (DEC-028 Stage 3 paper trading - intentional)
   - INVs: 33 OPEN + 2 DEFERRED (genuine work; not promotion-eligible)

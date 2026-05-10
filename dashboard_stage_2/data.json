@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-10T23:21:37.643778+00:00",
+  "generated_at": "2026-05-10T23:30:36.565648+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -2453,7 +2453,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 586,
+        "n_doc_refs": 587,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -21053,7 +21053,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 450,
+        "n_doc_refs": 451,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -21753,7 +21753,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 152,
+        "n_doc_refs": 153,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -22361,7 +22361,7 @@
         "wired": false,
         "tested": false,
         "pushed": false,
-        "n_doc_refs": 7,
+        "n_doc_refs": 8,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -22665,7 +22665,7 @@
         "wired": false,
         "tested": false,
         "pushed": false,
-        "n_doc_refs": 6,
+        "n_doc_refs": 7,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -22740,8 +22740,8 @@
         "coded": true,
         "wired": true,
         "tested": true,
-        "pushed": false,
-        "n_doc_refs": 11,
+        "pushed": true,
+        "n_doc_refs": 17,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -22779,7 +22779,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 13,
+        "n_doc_refs": 14,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -23083,7 +23083,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 67,
+        "n_doc_refs": 68,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -23343,15 +23343,15 @@
       "id": "BUG-110",
       "title": "HIGH  -  Entry gap filter not enforced; trades opened despite exceeding ATR limit",
       "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
+      "sprint_context": "RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 16 2026-05-10 (validate_entry_zone IS wired into backtest.py:469 with explicit skip-on-not-valid + per-category ENTRY_GAP_ATR_MULT enforcement; cross-reference comment added at backtest.py:464; 2 regression tests test_bug_110_entry_gap_filter_enforced_at_validate_entry_zone + test_bug_110_engine_wires_validate_entry_zone_with_skip_on_invalid added to test_unit.py; both PASS; original claim was stale audit finding)",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
         "pushed": true,
-        "n_doc_refs": 17,
+        "n_doc_refs": 18,
         "pyramid": {
-          "unit": false,
+          "unit": true,
           "smoke": false,
           "integration": false,
           "system": false,
@@ -23367,14 +23367,14 @@
         }
       },
       "short_id": "BUG-110",
-      "sprint": "(see linked DEC sprint)",
+      "sprint": "RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 16 2026-05-10 (validate_entry_zone IS wired into backtest.py:469 with explicit skip-on-not-valid + per-category ENTRY_GAP_ATR_MULT enforcement; cross-reference comment added at backtest.py:464; 2 regression tests test_bug_110_entry_gap_filter_enforced_at_validate_entry_zone + test_bug_110_engine_wires_validate_entry_zone_with_skip_on_invalid added to test_unit.py; both PASS; original claim was stale audit finding)",
       "dependencies": "DEC-458",
       "description": "**File:** `backtest/engine/backtest.py` around line 340 (entry execution)",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Resolved with code + regression test"
       }
     },
     {
@@ -28716,100 +28716,106 @@
   ],
   "recent_commits": [
     {
+      "sha": "a571c1c6",
+      "subject": "Pass 53 v8h+1: BUG-80 HIGH exit slippage applied symmetrically (apply_exit_slippage helper + 2 wire-up sites)",
+      "author": "jeetmehta1991",
+      "rel_time": "8 minutes ago"
+    },
+    {
       "sha": "b852347d",
       "subject": "Pass 53 v8h+1: BUG-78 CRITICAL trailing stop lookahead bias FIXED",
       "author": "jeetmehta1991",
-      "rel_time": "7 minutes ago"
+      "rel_time": "16 minutes ago"
     },
     {
       "sha": "5b710e0b",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 13 - 39 BUG mega-sweep (pre-Pass-53 audit findings); OPEN: 46 -> 7",
       "author": "jeetmehta1991",
-      "rel_time": "22 minutes ago"
+      "rel_time": "31 minutes ago"
     },
     {
       "sha": "9e52a585",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 12 - 21 BUGs DEFERRED/SUPERSEDED (Stage 3/Phase 1B sweep)",
       "author": "jeetmehta1991",
-      "rel_time": "26 minutes ago"
+      "rel_time": "35 minutes ago"
     },
     {
       "sha": "d2c22ebf",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 11 - 12 BUGs (62/66/67/69/70/71/74/75/79/81/86/87) SUPERSEDED/DEFERRED",
       "author": "jeetmehta1991",
-      "rel_time": "28 minutes ago"
+      "rel_time": "37 minutes ago"
     },
     {
       "sha": "3f4b7b2e",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 10 - 6 BUGs (51/54/55/56/57/60) SUPERSEDED/DEFERRED",
       "author": "jeetmehta1991",
-      "rel_time": "30 minutes ago"
+      "rel_time": "39 minutes ago"
     },
     {
       "sha": "a1ba19bb",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 9 - 6 SUPERSEDED (BUG-35/36/38/39/41/53)",
       "author": "jeetmehta1991",
-      "rel_time": "32 minutes ago"
+      "rel_time": "41 minutes ago"
     },
     {
       "sha": "fd86b03f",
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 22:45: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "35 minutes ago"
+      "rel_time": "44 minutes ago"
     },
     {
       "sha": "08117f87",
       "subject": "Pass 53 v8h+1: BUG-29 RESOLVED-IMPLEMENTED - end-of-backtest open-trade finalization",
       "author": "jeetmehta1991",
-      "rel_time": "37 minutes ago"
+      "rel_time": "45 minutes ago"
     },
     {
       "sha": "0daa206c",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 7 - 6 BUGs (43/44/45/48/58/59) SUPERSEDED/DEFERRED/OBSOLETE",
       "author": "jeetmehta1991",
-      "rel_time": "61 minutes ago"
+      "rel_time": "70 minutes ago"
     },
     {
       "sha": "2de4536b",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 6 - 5 BUGs (42/47/49/50/52) SUPERSEDED/DEFERRED cross-references",
       "author": "jeetmehta1991",
-      "rel_time": "63 minutes ago"
+      "rel_time": "72 minutes ago"
     },
     {
       "sha": "f16ef86d",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 5 - BUG-37 IMPLEMENTED (haircut doc) + BUG-34/40 SUPERSEDED-BY-design",
       "author": "jeetmehta1991",
-      "rel_time": "65 minutes ago"
+      "rel_time": "74 minutes ago"
     },
     {
       "sha": "a4258bc1",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 4 - BUG-21 IMPLEMENTED + BUG-24/31/32/33 SUPERSEDED-BY-policy-decisions",
       "author": "jeetmehta1991",
-      "rel_time": "67 minutes ago"
+      "rel_time": "76 minutes ago"
     },
     {
       "sha": "1f87aa53",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 3 - BUG-17/25 OBSOLETE + BUG-18/28/30 IMPLEMENTED (Wilder RSI fix)",
       "author": "jeetmehta1991",
-      "rel_time": "71 minutes ago"
+      "rel_time": "80 minutes ago"
     },
     {
       "sha": "694a11fa",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 2 - BUG-01/06/10/12 IMPLEMENTED + BUG-14 OBSOLETE",
       "author": "jeetmehta1991",
-      "rel_time": "74 minutes ago"
+      "rel_time": "83 minutes ago"
     },
     {
       "sha": "3bb2f559",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 1 - BUG-08/09/15/27 RESOLVED-IMPLEMENTED with real fixes",
       "author": "jeetmehta1991",
-      "rel_time": "80 minutes ago"
+      "rel_time": "89 minutes ago"
     },
     {
       "sha": "fc9390b7",
       "subject": "Pass 53 v8h+1: Phase 2 BUG cross-references + id-form normalization (6 BUGs READY -> IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "88 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "97c69b3d",
@@ -28839,7 +28845,7 @@
       "sha": "d28c8723",
       "subject": "Pass 53 v8h+1: Tier C/D edge-case sweep - DEC-057 promoted; DEC-028 no-promote (forward-looking)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "10fa8617",
@@ -28888,17 +28894,11 @@
       "subject": "Pass 53 v8h+1: Tier B promotion sweep #2 (5 PIT-correctness DECs - DEC-295/301/302/304/305)",
       "author": "jeetmehta1991",
       "rel_time": "4 hours ago"
-    },
-    {
-      "sha": "501cdbff",
-      "subject": "Pass 53 v8h+1: Tier B engine-correctness promotion sweep #1 (6 DECs RESOLVED-DECIDED -> RESOLVED-IMPLEMENTED)",
-      "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 7,
-    "modified": 7,
+    "count": 6,
+    "modified": 6,
     "added": 0,
     "untracked": 0,
     "deleted": 0,
@@ -28909,11 +28909,7 @@
       },
       {
         "status": "M",
-        "path": "backtest/engine/exit_manager.py"
-      },
-      {
-        "status": "M",
-        "path": "backtest/engine/improvements.py"
+        "path": "backtest/engine/backtest.py"
       },
       {
         "status": "M",
@@ -29111,7 +29107,7 @@
     }
   ],
   "test_inventory": {
-    "total": 770,
+    "total": 772,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -29187,7 +29183,7 @@
       "test_stocktwits_smoke": 4,
       "test_supplementary_demo": 4,
       "test_supplementary_smoke": 6,
-      "test_unit": 114,
+      "test_unit": 116,
       "test_walk_forward_4fold": 6
     }
   },

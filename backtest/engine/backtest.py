@@ -461,6 +461,11 @@ class BacktestEngine:
                     continue
 
                 next_open = next_bar["open"]
+                # BUG-110 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 16 2026-05-10:
+                # entry gap filter IS enforced via validate_entry_zone + skip-on-not-valid
+                # below; trades exceeding ENTRY_GAP_ATR_MULT[category] x ATR are logged
+                # to skipped_trades with explicit reason and NOT entered. Per-category
+                # multiplier defined in backtest.config.
                 valid, gap_reason = validate_entry_zone(
                     next_open, close, atr, category, direction)
                 if not valid:

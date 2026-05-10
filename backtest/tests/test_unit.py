@@ -1975,3 +1975,65 @@ def test_bug_030_vix_crisis_tightens_stops():
     assert "VIX crisis" in mod_doc and "tighten" in mod_doc, (
         "exit_manager module docstring must describe VIX crisis tighten behavior"
     )
+
+
+def test_bug_110_entry_gap_filter_enforced_at_validate_entry_zone():
+    """BUG-110: validate_entry_zone enforces ENTRY_GAP_ATR_MULT per category.
+
+    Pass 53 v8h+1 Phase 3 Batch 16 RESOLVED-IMPLEMENTED 2026-05-10.
+
+    Original claim: trades opened despite exceeding the ATR limit. Verified
+    against current code: validate_entry_zone rejects long entries whose gap
+    above signal_close exceeds mult x ATR and short entries whose gap below
+    signal_close exceeds mult x ATR.
+    """
+    from backtest.signals.screener import validate_entry_zone
+    from backtest.config import ENTRY_GAP_ATR_MULT
+
+    # Pivot category has the strictest gap tolerance
+    pivot_mult = ENTRY_GAP_ATR_MULT.get("pivot", 1.0)
+    signal_close = 100.0
+    atr = 2.0
+
+    # Long: open gap = 3.0 ATR above signal_close -> must reject (3.0 > 1.0)
+    valid_long_bad, reason_long_bad = validate_entry_zone(
+        signal_close + 3.0 * atr, signal_close, atr, "pivot", "long")
+    assert valid_long_bad is False, (
+        f"Long gap of 3.0xATR for pivot (mult={pivot_mult}) must reject")
+    assert "exceeds" in reason_long_bad
+
+    # Long: open gap = 0.5 ATR above signal_close -> must accept
+    valid_long_ok, _ = validate_entry_zone(
+        signal_close + 0.5 * atr, signal_close, atr, "pivot", "long")
+    assert valid_long_ok is True, "Long gap of 0.5xATR for pivot must accept"
+
+    # Short: open gap = 3.0 ATR below signal_close -> must reject
+    valid_short_bad, reason_short_bad = validate_entry_zone(
+        signal_close - 3.0 * atr, signal_close, atr, "pivot", "short")
+    assert valid_short_bad is False, (
+        "Short gap of 3.0xATR for pivot must reject")
+    assert "exceeds" in reason_short_bad
+
+
+def test_bug_110_engine_wires_validate_entry_zone_with_skip_on_invalid():
+    """BUG-110 wired: backtest._process_day must call validate_entry_zone and
+    skip-on-invalid before entering trades.
+
+    Pass 53 v8h+1 Phase 3 Batch 16 RESOLVED-IMPLEMENTED 2026-05-10.
+    Grep-discoverable assertion that the entry-gap filter is wired into the
+    backtest entry path with the BUG-110 cross-reference text.
+    """
+    import inspect
+    from backtest.engine import backtest as bt_module
+    src = inspect.getsource(bt_module)
+
+    assert "BUG-110" in src, "BUG-110 cross-reference must exist in backtest.py"
+    assert "validate_entry_zone" in src, (
+        "backtest.py must call validate_entry_zone")
+    # Skip-on-not-valid pattern
+    assert "if not valid:" in src and "skipped_trades" in src, (
+        "Engine must skip entries when validate_entry_zone returns invalid")
+    # Import line present
+    assert "from backtest.signals.screener import" in src and \
+        "validate_entry_zone" in src, (
+        "validate_entry_zone must be imported from screener")
