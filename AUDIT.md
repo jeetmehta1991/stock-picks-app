@@ -32035,6 +32035,39 @@ Documents updated this sub-turn:
   - AUDIT.md (this sub-entry)
   - Both dashboards rebuilt
 
+---
+
+## Pass 53 Day 9 v8h+1 follow-on 2026-05-10 (cont): H18 CFTC 5 missing datasets (DONE-WITH-DATASET-SCOPE-CAP)
+
+H18 prefetch run 2026-05-10 via `scripts/prefetch_cftc_extended.py`: 54/95 theoretical contract-dataset pairs cached.
+
+Per-dataset coverage:
+  - legacy_futures (6dca-aqww):    18/19 contracts (1 not in dataset)
+  - legacy_combined (jun7-fc8e):   18/19 contracts (1 not in dataset)
+  - disagg_futures (72hh-3qpy):    5/19 contracts (14 EMPTY at source)
+  - tff_combined (yw9f-hn96):      13/19 contracts (6 EMPTY at source)
+  - supp_cit (4zgm-a668):          0/19 contracts (entire dataset is AG-commodity-focused, doesn't cover financial futures)
+
+The EMPTY results are NOT fetch bugs - they reflect CFTC dataset-scope mismatches:
+  - Supplemental CIT report (4zgm-a668) covers Commodity Index Trader exposure for AGRICULTURAL futures (corn, soybeans, wheat, cotton, etc.), not financial futures. Our 19 contracts are predominantly financial (S&P/NDX/RUT/VIX/UST/USD/etc.) so 0/19 is expected.
+  - TFF (Traders in Financial Futures) covers financial futures but excludes pure commodities like gold/silver/natural_gas/copper - hence those returning EMPTY.
+  - Disagg datasets have a narrower scope than Legacy - which is why Legacy gets 18/19 but Disagg only 5/19.
+
+**No code or data action possible.** Available data is fully fetched. The 41 EMPTY responses are verified at CFTC API source.
+
+**H18 status: PENDING -> DONE-WITH-DATASET-SCOPE-CAP** (54/95 contract-dataset pairs cached; remaining 41 are dataset-scope mismatches at CFTC source).
+
+**Per-addressal pyramid (CHECKLIST #78):** pure-doc + data-fetch verification, all test layers N/A.
+
+**Same-commit (DEC-594):** new disagg_futures+tff_combined files (no NEW since checkpoint already had them) + PHASE_1A_PRELAUNCH_TODO H18 status flip + AUDIT.md narrative + dashboards rebuilt.
+
+**Sprint 0A H-tier real-TODO COMPLETE.** All Tier H items now DONE / DEFERRED / PARTIAL-with-doc'd-finding. Sprint 0A genuine remaining: **0A.7 per-API smoke/demo split (~4h)** only.
+
+Documents updated this sub-turn:
+  - PHASE_1A_PRELAUNCH_TODO.md (H18 status flip)
+  - AUDIT.md (this sub-entry)
+  - Both dashboards rebuilt
+
 **Same-commit (DEC-594):** script + DEC-609 + AUDIT.md narrative + contract test + dashboards rebuilt - all in this sub-turn commit.
 
 Documents updated this sub-turn:

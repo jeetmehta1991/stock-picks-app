@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-10T18:04:45.975920+00:00",
+  "generated_at": "2026-05-10T18:15:54.268726+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -21013,7 +21013,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 431,
+        "n_doc_refs": 432,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -31504,7 +31504,7 @@
       "action": "CFTC 5 missing datasets",
       "source": "Legacy futures-only (6dca-aqww), Legacy combined (jun7-fc8e), Disagg futures-only (72hh-3qpy), TFF combined (yw9f-hn96), Supp CIT (4zgm-a668)",
       "effort": "(varies per dataset; ~50-87 columns each)",
-      "status": "19 contracts \u00d7 5 datasets"
+      "status": "19 contracts x 5 datasets"
     },
     {
       "id": "H19",
@@ -31600,46 +31600,52 @@
   ],
   "recent_commits": [
     {
+      "sha": "25485a1b",
+      "subject": "Pass 53 v8h+1: H4 Polygon reference extended verify (DONE-WITH-DELISTING-CAP per CAV-075 sister pattern)",
+      "author": "jeetmehta1991",
+      "rel_time": "4 minutes ago"
+    },
+    {
       "sha": "fc5c43f4",
       "subject": "Pass 53 v8h+1: H16 + H22 verify (DONE / PARTIAL-DONE-WITH-FINDING + INV-048)",
       "author": "jeetmehta1991",
-      "rel_time": "5 minutes ago"
+      "rel_time": "16 minutes ago"
     },
     {
       "sha": "fe623f3e",
       "subject": "Pass 53 v8h+1: H6 indicator completeness verify + macd top-up (1911 -> 1937)",
       "author": "jeetmehta1991",
-      "rel_time": "15 minutes ago"
+      "rel_time": "26 minutes ago"
     },
     {
       "sha": "b76fc3d1",
       "subject": "Pass 53 v8h+1: H1.b OHLCV Master Dedup data commit (1924 parquets, 105.6 MB) + CAV-079",
       "author": "jeetmehta1991",
-      "rel_time": "26 minutes ago"
+      "rel_time": "37 minutes ago"
     },
     {
       "sha": "1e020b2a",
       "subject": "Pass 53 v8h+1: promotion-path column wired into Stage 2 dashboard (CHECKLIST #81/#82)",
       "author": "jeetmehta1991",
-      "rel_time": "35 minutes ago"
+      "rel_time": "46 minutes ago"
     },
     {
       "sha": "f7b3e987",
       "subject": "Pass 53 v8h+1: untracked artifacts cleanup (gitignore + INV-027 backup archived)",
       "author": "jeetmehta1991",
-      "rel_time": "51 minutes ago"
+      "rel_time": "62 minutes ago"
     },
     {
       "sha": "4bf07436",
       "subject": "Pass 53 v8h+1: H1.a OHLCV Master Dedup prefetch script + DEC-609 (Option B)",
       "author": "jeetmehta1991",
-      "rel_time": "52 minutes ago"
+      "rel_time": "64 minutes ago"
     },
     {
       "sha": "aee93c01",
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 16:43: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "74 minutes ago"
+      "rel_time": "85 minutes ago"
     },
     {
       "sha": "d57a07ee",
@@ -31651,7 +31657,7 @@
       "sha": "bdba8f67",
       "subject": "Pass 53 v8h+1: H-tier doc reconciliation + H20=A (DEC-599 honored)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "f0d03fcd",
@@ -31675,7 +31681,7 @@
       "sha": "ecc846c2",
       "subject": "Pass 53 v8h+1: INV-047 + CAV-077 - Quiver etfholdings refresh DEAD-END (static snapshot only)",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "2244b1e5",
@@ -31772,17 +31778,11 @@
       "subject": "Pass 53 auto-drift-sweep 2026-05-09 07:53: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
       "rel_time": "25 hours ago"
-    },
-    {
-      "sha": "5814a4cc",
-      "subject": "Pass 53 auto-drift-sweep 2026-05-09 05:53: dashboards refreshed (no numerical drift)",
-      "author": "jeetmehta1991",
-      "rel_time": "27 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 2,
-    "modified": 2,
+    "count": 56,
+    "modified": 56,
     "added": 0,
     "untracked": 0,
     "deleted": 0,
@@ -31794,6 +31794,222 @@
       {
         "status": "M",
         "path": "PHASE_1A_PRELAUNCH_TODO.md"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/disagg_futures/cot_copper.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/disagg_futures/cot_gold.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/disagg_futures/cot_natural_gas.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/disagg_futures/cot_silver.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/disagg_futures/cot_wti_crude.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/legacy_combined/cot_copper.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/legacy_combined/cot_dxy_dollar_idx.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/legacy_combined/cot_emini_nasdaq100.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/legacy_combined/cot_emini_russell2k.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/legacy_combined/cot_emini_sp500.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/legacy_combined/cot_eur_usd.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/legacy_combined/cot_fed_funds_30d.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/legacy_combined/cot_gold.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/legacy_combined/cot_jpy_usd.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/legacy_combined/cot_natural_gas.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/legacy_combined/cot_silver.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/legacy_combined/cot_treasury_10y.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/legacy_combined/cot_treasury_2y.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/legacy_combined/cot_treasury_5y.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/legacy_combined/cot_ultra_treasury.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/legacy_combined/cot_ust_bond.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/legacy_combined/cot_vix_futures.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/legacy_combined/cot_wti_crude.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/legacy_futures/cot_copper.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/legacy_futures/cot_dxy_dollar_idx.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/legacy_futures/cot_emini_nasdaq100.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/legacy_futures/cot_emini_russell2k.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/legacy_futures/cot_emini_sp500.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/legacy_futures/cot_eur_usd.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/legacy_futures/cot_fed_funds_30d.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/legacy_futures/cot_gold.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/legacy_futures/cot_jpy_usd.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/legacy_futures/cot_natural_gas.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/legacy_futures/cot_silver.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/legacy_futures/cot_treasury_10y.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/legacy_futures/cot_treasury_2y.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/legacy_futures/cot_treasury_5y.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/legacy_futures/cot_ultra_treasury.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/legacy_futures/cot_ust_bond.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/legacy_futures/cot_vix_futures.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/legacy_futures/cot_wti_crude.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/tff_combined/cot_dxy_dollar_idx.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/tff_combined/cot_emini_nasdaq100.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/tff_combined/cot_emini_russell2k.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/tff_combined/cot_emini_sp500.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/tff_combined/cot_eur_usd.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/tff_combined/cot_fed_funds_30d.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/tff_combined/cot_jpy_usd.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/tff_combined/cot_treasury_10y.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/tff_combined/cot_treasury_2y.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/tff_combined/cot_treasury_5y.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/tff_combined/cot_ultra_treasury.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/tff_combined/cot_ust_bond.parquet"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/cftc/tff_combined/cot_vix_futures.parquet"
       }
     ]
   },
