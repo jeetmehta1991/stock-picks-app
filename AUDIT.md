@@ -32068,6 +32068,50 @@ Documents updated this sub-turn:
   - AUDIT.md (this sub-entry)
   - Both dashboards rebuilt
 
+---
+
+## Pass 53 Day 9 v8h+1 follow-on 2026-05-10 (cont): 0A.7 per-API smoke/demo split (StockTwits + Apewisdom additions)
+
+0A.7 scope: each API in Sprint 0A's prefetch matrix should have separate smoke + demo test files per CHECKLIST #68 smoke->demo->full protocol.
+
+**Empirical 0A.7 audit 2026-05-10:** existing per-API splits already in place for the original 8 APIs:
+  - AAII (test_aaii_smoke + test_aaii_demo)
+  - CFTC COT (test_cftc_cot_*)
+  - CNN F&G (test_cnn_fg_*)
+  - FRED + ALFRED (test_fred_alfred_*)
+  - Polygon Stocks (test_polygon_stocks_*)
+  - Quiver Trader (test_quiver_trader_*)
+  - SEC EDGAR (test_sec_edgar_*)
+  - Supplementary (test_supplementary_*)
+
+Existing 16 split files: 147 tests passing + 2 skipped. The original "0A.7 ~4h" estimate was for the full 8-API split which had already been done in prior turns.
+
+**Residual gap surfaced 2026-05-10:** 2 newer-added APIs lacked the per-API split:
+  - StockTwits (added per DEC-599, BG `b27jw7urk` complete 1937/1937 underlyings)
+  - Apewisdom (added per H19 verify; 8 subreddits cached)
+
+Filled this turn with 4 new test files:
+  - `test_stocktwits_smoke.py` (8 tests; cache + universe + 5 smoke ticker schema + has-messages)
+  - `test_stocktwits_demo.py` (4 tests; full universe coverage + 20-ticker random schema sample + sentiment categorical validation + datetime parseability)
+  - `test_apewisdom_smoke.py` (12 tests; cache dir + global.parquet + 4 core subreddits x [present + schema])
+  - `test_apewisdom_demo.py` (4 tests; subreddit count + WSB top-tickers realistic + global breadth + core-4 coverage)
+
+32 new tests, 32/32 PASS. Combined with prior 147+2 = 179+2 total per-API split tests across 10 APIs.
+
+**Per-addressal pyramid (CHECKLIST #78):** smoke + demo + unit + integration + regression layers - 139/139 PASS in 3s. Layers N/A: system, functional, data_integrity (covered by per-API tests themselves), performance, acceptance, property, snapshot, contract, compatibility (no schema/version change at boundary).
+
+**Same-commit (DEC-594):** 4 new test files + AUDIT.md narrative - this single commit. No PHASE_1A_PRELAUNCH_TODO row exists for 0A.7 explicitly; closed via narrative.
+
+**Sprint 0A status: COMPLETE** (0A.7 last genuine TODO closed). Real-TODO H-tier already complete. Phase 1A May 15 strict blocker count: 0 OPEN. INV-048 H22 date-typing migration is the only optional follow-up.
+
+Documents updated this sub-turn:
+  - backtest/tests/test_stocktwits_smoke.py (NEW; 8 tests)
+  - backtest/tests/test_stocktwits_demo.py (NEW; 4 tests)
+  - backtest/tests/test_apewisdom_smoke.py (NEW; 12 tests)
+  - backtest/tests/test_apewisdom_demo.py (NEW; 4 tests)
+  - AUDIT.md (this sub-entry)
+  - Both dashboards rebuilt
+
 **Same-commit (DEC-594):** script + DEC-609 + AUDIT.md narrative + contract test + dashboards rebuilt - all in this sub-turn commit.
 
 Documents updated this sub-turn:
