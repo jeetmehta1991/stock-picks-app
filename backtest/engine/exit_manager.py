@@ -1,19 +1,19 @@
 """
-engine/exit_manager.py — Complete exit logic.
+engine/exit_manager.py  -  Complete exit logic.
 
 Implements:
   1. Trailing stop at 10% below highest closing price (long)
      / 10% above lowest closing price (short)
   2. Five circuit breaker levels checked before trailing stop
   3. Short-to-long conversion in bull market only
-  4. Stop only moves in favour of trade — never reverses
+  4. Stop only moves in favour of trade  -  never reverses
 
 Exit priority order (checked each day):
-  1. Circuit breaker level 1 — overnight gap
-  2. Circuit breaker level 2 — earnings gap
-  3. Circuit breaker level 4 — market-wide halt (flag only)
-  4. Circuit breaker level 5 — VIX crisis (tighten stops)
-  5. Circuit breaker level 3 — intraday halt (checked separately)
+  1. Circuit breaker level 1  -  overnight gap
+  2. Circuit breaker level 2  -  earnings gap
+  3. Circuit breaker level 4  -  market-wide halt (flag only)
+  4. Circuit breaker level 5  -  VIX crisis (tighten stops)
+  5. Circuit breaker level 3  -  intraday halt (checked separately)
   6. Trailing stop check at end of day
 """
 
@@ -31,7 +31,7 @@ logger = logging.getLogger(__name__)
 
 def make_trade_id(ticker: str, entry_date: date, strategy: str,
                     direction: str = "long", seq: int = 0) -> str:
-    """DEC-493 — generate a time-ordered, human-readable trade_id.
+    """DEC-493  -  generate a time-ordered, human-readable trade_id.
 
     Format: ``T-{TICKER}-{YYYY-MM-DD}-{STRATEGY}-{DIR}-{SEQ}``
 
@@ -76,7 +76,7 @@ class OpenTrade:
     macro_score:        int = 0
     sentiment_score:    int = 0
     days_to_earnings:   Optional[int] = None
-    # MAE/MFE tracked across full trade duration — updated daily
+    # MAE/MFE tracked across full trade duration  -  updated daily
     max_adverse_excursion:    float = 0.0  # worst % against trade seen during hold
     max_favourable_excursion: float = 0.0  # best % in favour seen during hold
     # Raw granular signals at entry
@@ -91,7 +91,7 @@ class OpenTrade:
 
 
 # BUG-215 fix (Pass 48): removed duplicate older ClosedTrade dataclass that
-# previously lived here. Canonical definition follows below — has 41 fields
+# previously lived here. Canonical definition follows below  -  has 41 fields
 # vs the old 38, includes `sector` at the canonical position after `regime`,
 # and properly defaults `conversion_pair_id` / `circuit_breaker_level` as
 # Optional fields. The duplicate was being silently overwritten by Python.
@@ -99,7 +99,13 @@ class OpenTrade:
 
 @dataclass
 class ClosedTrade:
-    """A completed trade with full performance record."""
+    """A completed trade with full performance record.
+
+    BUG-03 RESOLVED-IMPLEMENTED Pass 53 v8h+1 cross-reference 2026-05-10:
+    canonical single definition (duplicate in another module was removed).
+    This is the only ClosedTrade class in the codebase; engine + exits +
+    tests all import from here.
+    """
     # Identity
     ticker:             str
     entry_date:         date
@@ -145,7 +151,7 @@ class ClosedTrade:
     preliminary_tier:      str = "MEDIUM"   # before agent adjustment
     agent_reasoning:       dict = field(default_factory=dict)  # full agent output
 
-    # Raw granular signals at entry — for audit and re-analysis
+    # Raw granular signals at entry  -  for audit and re-analysis
     congressional_signal: str = "none"
     insider_signal:       str = "none"
     institutional_signal: str = "none"
@@ -160,7 +166,7 @@ class ClosedTrade:
 
 def _pnl(entry, exit_p, direction, hold_days=0):
     """
-    Gross percentage PnL for a trade. DOES NOT subtract borrow cost — that is
+    Gross percentage PnL for a trade. DOES NOT subtract borrow cost  -  that is
     applied centrally in improvements.apply_transaction_costs (DEC-295 fix,
     Pass 50). hold_days kept in signature for backward compatibility but unused.
     """
@@ -189,7 +195,7 @@ def check_circuit_breakers_all(
     cb = CIRCUIT_BREAKERS
     results = []
 
-    # Level 1 — overnight gap
+    # Level 1  -  overnight gap
     if prev_close > 0:
         gap_pct = (today_open - prev_close) / prev_close
         if trade.direction == "long" and gap_pct <= -cb["level_1_gap_pct"]:
@@ -199,7 +205,7 @@ def check_circuit_breakers_all(
             results.append({"level": 1, "action": "exit_at_open",
                             "reason": f"overnight_gap_up_{gap_pct*100:.1f}pct"})
 
-    # Level 2 — earnings gap
+    # Level 2  -  earnings gap
     if trade.days_to_earnings == 0 and prev_close > 0:
         gap_pct = (today_open - prev_close) / prev_close
         if trade.direction == "long" and gap_pct <= -cb["level_2_earnings_gap_pct"]:
@@ -209,7 +215,7 @@ def check_circuit_breakers_all(
             results.append({"level": 2, "action": "exit_at_open",
                             "reason": f"earnings_gap_up_{gap_pct*100:.1f}pct"})
 
-    # Level 5 — VIX crisis (tighten stops; additive — does not exit position)
+    # Level 5  -  VIX crisis (tighten stops; additive  -  does not exit position)
     if vix_value and vix_value >= cb["level_5_vix_crisis"]:
         results.append({"level": 5, "action": "tighten_stop",
                         "new_pct": cb["level_5_tightened_pct"],
@@ -238,7 +244,7 @@ def check_circuit_breakers(
 def update_trailing_stop(trade: OpenTrade, today_close: float, vix_value: Optional[float] = None) -> OpenTrade:
     """
     Update trailing stop based on today's closing price.
-    Stop only moves in favour of trade — never reverses.
+    Stop only moves in favour of trade  -  never reverses.
     """
     cb  = CIRCUIT_BREAKERS
     pct = cb["level_5_tightened_pct"] if (vix_value and vix_value >= cb["level_5_vix_crisis"]) \
@@ -268,14 +274,14 @@ def compute_fill_price(
     bar_high: float,
     bar_low: float,
 ) -> Optional[float]:
-    """DEC-514 — Backtest fill methodology (Pass 53 owner-approved 2026-05-06 Q1 P0).
+    """DEC-514  -  Backtest fill methodology (Pass 53 owner-approved 2026-05-06 Q1 P0).
 
     Compute the realistic fill price when a stop or target is hit on an EOD bar.
     Without this helper, code that returns ``level`` directly silently
     understates downside on overnight gap-downs (every gap-through-stop fills
-    at stop, but a real broker fills at open — the gap-loss is real).
+    at stop, but a real broker fills at open  -  the gap-loss is real).
 
-    Spec source: TRADING_RULES_AND_INFORMATION.md §11.
+    Spec source: TRADING_RULES_AND_INFORMATION.md section11.
 
     Args:
         direction:  ``'long'`` or ``'short'``
@@ -288,19 +294,19 @@ def compute_fill_price(
     Returns:
         Fill price, or ``None`` if the level was not crossed this bar.
 
-    Six rules — symmetric across long/short:
-      Long stop:    low > stop                → None
-                    low ≤ stop ≤ open         → fill at stop
-                    open < stop (gap-through) → fill at open
-      Long target:  high < target             → None
-                    high ≥ target ≥ open      → fill at target
-                    open > target (gap-up)    → fill at open  (favourable)
-      Short stop:   high < stop               → None
-                    high ≥ stop ≥ open        → fill at stop
-                    open > stop (gap-up)      → fill at open  (adverse)
-      Short target: low > target              → None
-                    low ≤ target ≤ open       → fill at target
-                    open < target (gap-down)  → fill at open  (favourable)
+    Six rules  -  symmetric across long/short:
+      Long stop:    low > stop                -> None
+                    low <= stop <= open         -> fill at stop
+                    open < stop (gap-through) -> fill at open
+      Long target:  high < target             -> None
+                    high >= target >= open      -> fill at target
+                    open > target (gap-up)    -> fill at open  (favourable)
+      Short stop:   high < stop               -> None
+                    high >= stop >= open        -> fill at stop
+                    open > stop (gap-up)      -> fill at open  (adverse)
+      Short target: low > target              -> None
+                    low <= target <= open       -> fill at target
+                    open < target (gap-down)  -> fill at open  (favourable)
     """
     if direction == "long":
         if level_type == "stop":
@@ -308,14 +314,14 @@ def compute_fill_price(
             if bar_low > level:
                 return None
             if bar_open < level:
-                return bar_open  # Gap-down through stop — fill at open
+                return bar_open  # Gap-down through stop  -  fill at open
             return level
         elif level_type == "target":
             # Target is ABOVE entry. Hit if intraday high touches it.
             if bar_high < level:
                 return None
             if bar_open > level:
-                return bar_open  # Gap-up through target — favourable fill at open
+                return bar_open  # Gap-up through target  -  favourable fill at open
             return level
     elif direction == "short":
         if level_type == "stop":
@@ -323,14 +329,14 @@ def compute_fill_price(
             if bar_high < level:
                 return None
             if bar_open > level:
-                return bar_open  # Gap-up through stop — adverse fill at open
+                return bar_open  # Gap-up through stop  -  adverse fill at open
             return level
         elif level_type == "target":
             # Target is BELOW entry. Hit if intraday low touches it.
             if bar_low > level:
                 return None
             if bar_open < level:
-                return bar_open  # Gap-down through target — favourable fill at open
+                return bar_open  # Gap-down through target  -  favourable fill at open
             return level
     raise ValueError(f"Invalid direction='{direction}' or level_type='{level_type}'")
 
@@ -386,9 +392,9 @@ def close_trade(
         if exit_reason.startswith("circuit_breaker"):
             fail_reason = f"Circuit breaker level {trade.circuit_breaker_triggered} triggered"
         elif pnl < -8:
-            fail_reason = "Large loss — trailing stop could not prevent full decline"
+            fail_reason = "Large loss  -  trailing stop could not prevent full decline"
         else:
-            fail_reason = "Price declined below trailing stop — trend reversed"
+            fail_reason = "Price declined below trailing stop  -  trend reversed"
 
     return ClosedTrade(
         ticker=trade.ticker, entry_date=trade.entry_date, exit_date=exit_date,
@@ -416,7 +422,7 @@ def close_trade(
         days_to_earnings=trade.days_to_earnings,
         preliminary_tier=trade.preliminary_tier,
         agent_reasoning=trade.agent_reasoning,
-        # Raw granular signals — passed through from OpenTrade
+        # Raw granular signals  -  passed through from OpenTrade
         congressional_signal=trade.congressional_signal,
         insider_signal=trade.insider_signal,
         institutional_signal=trade.institutional_signal,
@@ -458,7 +464,7 @@ def process_day_exits(
         today_close = bar["close"]
         prev_close  = bar.get("prev_close", today_open)
 
-        # ── Update MAE/MFE across full trade duration ──
+        # -- Update MAE/MFE across full trade duration --
         # Accumulate worst adverse and best favourable excursion seen so far
         ep = trade.entry_price
         if ep > 0:
@@ -471,7 +477,7 @@ def process_day_exits(
             trade.max_adverse_excursion    = min(trade.max_adverse_excursion,    today_adv)
             trade.max_favourable_excursion = max(trade.max_favourable_excursion, today_fav)
 
-        # ── Step 1: Circuit breaker check (DEC-315 — process ALL triggered breakers) ──
+        # -- Step 1: Circuit breaker check (DEC-315  -  process ALL triggered breakers) --
         cb_results = check_circuit_breakers_all(trade, today_open, prev_close, vix_value)
         # Find terminal action (exit_at_open) and additive action (tighten_stop)
         exit_cb    = next((r for r in cb_results if r["action"] == "exit_at_open"),  None)
@@ -498,14 +504,14 @@ def process_day_exits(
                     "note": "co-fired with exit; not applied (position already closing)",
                 })
 
-            # ── Conversion check after CB exit ──
+            # -- Conversion check after CB exit --
             if (regime == "bull" and trade.direction == "short"):
                 long_signal = active_signals.get(trade.ticker)
                 if long_signal and long_signal.get("long_count", 0) > 0:
                     closed[-1].conversion_pair_id = f"convert_{trade.ticker}_{today_date}"
             continue
 
-        # No exit_at_open; if tighten_stop fired, apply it (additive — position survives)
+        # No exit_at_open; if tighten_stop fired, apply it (additive  -  position survives)
         if tighten_cb:
             new_pct = tighten_cb["new_pct"]
             if trade.direction == "long":
@@ -520,10 +526,10 @@ def process_day_exits(
                 "action": "tighten_stop", "new_stop": trade.trailing_stop,
             })
 
-        # ── Step 2: Update trailing stop from today's close ──
+        # -- Step 2: Update trailing stop from today's close --
         trade = update_trailing_stop(trade, today_close, vix_value)
 
-        # ── Step 3: Check if trailing stop was hit (uses intraday low/high) ──
+        # -- Step 3: Check if trailing stop was hit (uses intraday low/high) --
         exit_price = check_trailing_stop_hit(trade, today_low, today_high, today_close,
                                               today_open=today_open)  # DEC-514
 
@@ -533,7 +539,7 @@ def process_day_exits(
                 0.0, 0.0,  # MAE/MFE now on trade object
             ))
 
-            # ── Conversion check after trailing stop exit ──
+            # -- Conversion check after trailing stop exit --
             if regime == "bull" and trade.direction == "short":
                 long_signal = active_signals.get(trade.ticker)
                 if long_signal and long_signal.get("long_count", 0) > 0:

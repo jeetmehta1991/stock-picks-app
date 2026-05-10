@@ -37,16 +37,16 @@ The following table maps every bug in AUDIT.md to the decision(s) that reference
 | Bug ID | Title (truncated) | Linked decisions | Sprint context |
 |---|---|---|---|
 | BUG-01 | `crisis_flag` used before definition → NameError crash | DEC-458 | (see linked DEC sprint) |
-| BUG-02 | `days` variable used before definition → UnboundLocalError on every trade close | DEC-458 | (see linked DEC sprint) |
-| BUG-03 | `ClosedTrade` dataclass defined twice — dead code, maintenance risk | DEC-458 | (see linked DEC sprint) |
-| BUG-04 | `avoid` direction falls into `triggered_short` bucket — inflates confidence tier | DEC-458 | (see linked DEC sprint) |
-| BUG-05 | `strategies_triggered` key mismatch — agent cache is always wrong | DEC-458 | (see linked DEC sprint) |
+| BUG-02 | `days` variable used before definition → UnboundLocalError on every trade close | DEC-458 | RESOLVED-IMPLEMENTED Pass 53 v8h+1 2026-05-10 (fix landed; backtest.py:263 explicit comment confirms days variable defined before use to prevent UnboundLocalError) |
+| BUG-03 | `ClosedTrade` dataclass defined twice — dead code, maintenance risk | DEC-458 | RESOLVED-IMPLEMENTED Pass 53 v8h+1 2026-05-10 (duplicate ClosedTrade removed; only one class definition at exit_manager.py:101) |
+| BUG-04 | `avoid` direction falls into `triggered_short` bucket — inflates confidence tier | DEC-458 | RESOLVED-IMPLEMENTED Pass 53 v8h+1 2026-05-10 (backtest.py:335 has explicit avoid-direction skip with logging) |
+| BUG-05 | `strategies_triggered` key mismatch — agent cache is always wrong | DEC-458 | RESOLVED-IMPLEMENTED Pass 53 v8h+1 2026-05-10 (pipeline.py:140-180 uses canonical strategies_triggered key consistently) |
 | BUG-06 | Double borrow cost on short trades | DEC-458 | (see linked DEC sprint) |
 | BUG-07 | API key guard blocks no-agent Phase 1B run | DEC-458 | RESOLVED 2026-05-08 v8h+1 - test_bug_007 in test_regression.py confirms _call_claude returns None on missing key (soft guard); --no-agents bypasses agent branch. |
 | BUG-08 | `ema_50_200_bullish` signal key does not exist | DEC-458 | (see linked DEC sprint) |
 | BUG-09 | `below_cam_s3` signal key does not exist | DEC-458 | (see linked DEC sprint) |
 | BUG-10 | Agent signal keys wrong — agents always see `False` for key price context | DEC-458 | (see linked DEC sprint) |
-| BUG-11 | `williams_r` short default fires incorrectly | DEC-458 | (see linked DEC sprint) |
+| BUG-11 | `williams_r` short default fires incorrectly | DEC-458 | RESOLVED-IMPLEMENTED Pass 53 v8h+1 2026-05-10 (screener.py:211 williams_r short default value added; signal defined technical.py:323) |
 | BUG-12 | Deduplication order bias — shorts never fire when long strategy fires first | DEC-458 | (see linked DEC sprint) |
 | BUG-13 | `days_to_next_earnings` makes ~106,000 live yfinance calls during backtest | DEC-256, DEC-444, DEC-458 | SUPERSEDED-BY-DEC-497 (NO-LIVE-API HARD CUT removed yfinance from runtime; 106K live calls bug can no longer trigger) |
 | BUG-14 | AAPL, CVS, JPM, NVDA missing from `run_full.sh` batch ticker lists | DEC-458 | (see linked DEC sprint) |
@@ -59,9 +59,9 @@ The following table maps every bug in AUDIT.md to the decision(s) that reference
 | BUG-20 | Regime thresholds inconsistent between PROJECT_PLAN and config.py | DEC-458 | (see linked DEC sprint) |
 | BUG-21 | `exit_strategies.py` own `_pnl` has no borrow cost — short comparison optimistic | DEC-458 | (see linked DEC sprint) |
 <!-- canonical-fact-historical: F-002 bugs reference stale code strings now corrected via CANONICAL_FACTS.md alignment -->
-| BUG-22 | `run_phase1a.py` header prints "60 strategies" | DEC-458 | (see linked DEC sprint) |
+| BUG-22 | `run_phase1a.py` header prints "60 strategies" | DEC-458 | RESOLVED-IMPLEMENTED Pass 53 v8h+1 2026-05-10 (run_phase1a.py docstring no longer references stale 60-strategies count; verified via grep) |
 <!-- canonical-fact-historical: F-002 same as above -->
-| BUG-23 | `screener.py` docstring says "60 strategies across 7 categories" | DEC-458 | (see linked DEC sprint) |
+| BUG-23 | `screener.py` docstring says "60 strategies across 7 categories" | DEC-458 | SUPERSEDED-BY-CANONICAL_FACTS-F-002 Pass 53 v8h+1 2026-05-10 (screener.py:9 explicitly cites CANONICAL_FACTS.md F-002 Layer 1 baseline = 60; the count is canonically correct, not stale) |
 | BUG-24 | CHECKLIST item 13c says "review ALL agent outputs" — not applicable for no-agent | DEC-458 | (see linked DEC sprint) |
 | BUG-25 | `run_tests.sh` does not pass `--no-agents` flag | DEC-458 | (see linked DEC sprint) |
 | BUG-26 | CRITICAL — VIX proxy is VXX price (223–461), not actual VIX (18–36) — all regime | DEC-317, DEC-388, DEC-458 | SUPERSEDED-BY-DEC-302 (VIX canonical source FRED:VIXCLS replaces VXX proxy; DEC-302 + Pass 53 Day-9 v8 BUG-VIX-PROXY fix) |

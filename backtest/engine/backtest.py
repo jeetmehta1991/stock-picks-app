@@ -1,15 +1,15 @@
 """
-engine/backtest.py — Main backtest orchestrator.
+engine/backtest.py  -  Main backtest orchestrator.
 
 Backtest-mode operating rules (approved April 2026):
-  - No open position cap — uncapped for statistical validity
-  - No daily loss limit — removed for backtest, will apply in live trading
-  - No correlation filter — removed for backtest, sector sizing in live trading
-  - No regime position multiplier — full size in all regimes for backtest
-  - No regime confidence scaling — full size always for backtest
+  - No open position cap  -  uncapped for statistical validity
+  - No daily loss limit  -  removed for backtest, will apply in live trading
+  - No correlation filter  -  removed for backtest, sector sizing in live trading
+  - No regime position multiplier  -  full size in all regimes for backtest
+  - No regime confidence scaling  -  full size always for backtest
   - Liquidity filter applied once at load_data, not daily
   - Max candidates: 10 per day
-  - Mean reversion entry zone: 1.0× ATR (raised from 0.5×)
+  - Mean reversion entry zone: 1.0x ATR (raised from 0.5x)
   - Position sizing: EXCEPTIONAL 5%, VERY HIGH 4%, HIGH 3%, MEDIUM-HIGH 1.5%
   - Short strategies: strict original conditions, Phase 1B for statistical volume
   - All 5 circuit breakers active
@@ -87,7 +87,7 @@ class BacktestEngine:
         self.sector_map:  dict[str, str]           = {}
         self.spy_df:      Optional[pd.DataFrame]   = None
 
-        # Liquidity-filtered universe — computed once at load time
+        # Liquidity-filtered universe  -  computed once at load time
         self.liquid_universe: list[str] = []
 
         # Trade stores
@@ -95,18 +95,18 @@ class BacktestEngine:
         self.closed_trades:       list[ClosedTrade] = []
         self.skipped_trades:      list[dict]        = []
         self.circuit_breaker_log: list[dict]        = []
-        # DEC-515 Level 6 CB state — Pass 53 Day-9-evening v5 engine wiring
+        # DEC-515 Level 6 CB state  -  Pass 53 Day-9-evening v5 engine wiring
         # per DEC-594 same-commit. Persistent state across days within a run.
         from backtest.engine.circuit_breakers import Level6State
         self.level_6_state = Level6State()
         self._backtest_start_date: Optional[date] = None  # set at run() start
 
-    # ──────────────────────────────────────────────────────────────────────
+    # ----------------------------------------------------------------------
     # DATA LOADING
-    # ──────────────────────────────────────────────────────────────────────
+    # ----------------------------------------------------------------------
 
     def load_data(self):
-        logger.info("Loading OHLCV for %d instruments (%s → %s) | cache=%s",
+        logger.info("Loading OHLCV for %d instruments (%s -> %s) | cache=%s",
                     len(self.universe), DATA_LOAD_START, self.end, self.use_cache)
 
         if self.use_cache:
@@ -124,12 +124,12 @@ class BacktestEngine:
         self.sector_map = get_sector_map(self.universe, self.info_dict)
         self.spy_df     = self.ohlcv_dict.get("SPY")
 
-        # ── Pre-load macro Parquet once — avoids 782× disk reads during backtest ──
+        # -- Pre-load macro Parquet once  -  avoids 782x disk reads during backtest --
         from backtest.data.macro import _load_macro_combined
         _load_macro_combined()  # loads and caches in module-level variable
 
-        # ── Apply liquidity filter ONCE at load time ──
-        # Not daily — if instrument passes at start it stays for full backtest
+        # -- Apply liquidity filter ONCE at load time --
+        # Not daily  -  if instrument passes at start it stays for full backtest
         self.liquid_universe = self._build_liquid_universe()
         logger.info("Liquid universe: %d/%d instruments after one-time filter",
                     len(self.liquid_universe), len(self.ohlcv_dict))
@@ -137,7 +137,7 @@ class BacktestEngine:
     def _build_liquid_universe(self) -> list[str]:
         """
         Apply liquidity filter. Returns list of passing tickers.
-        Re-checks annually at Jan 1 of each year — a stock liquid in 2022
+        Re-checks annually at Jan 1 of each year  -  a stock liquid in 2022
         may become illiquid by 2024 and should be removed.
         Returns the union of tickers passing at ANY annual check.
         Individual year filtering applied at screening time via _is_liquid_on_date.
@@ -188,9 +188,9 @@ class BacktestEngine:
             return self._annual_liquid.get(as_of.year, set(self.liquid_universe))
         return set(self.liquid_universe)
 
-    # ──────────────────────────────────────────────────────────────────────
+    # ----------------------------------------------------------------------
     # MAIN LOOP
-    # ──────────────────────────────────────────────────────────────────────
+    # ----------------------------------------------------------------------
 
     def run(self):
         if not self.ohlcv_dict:
@@ -213,14 +213,14 @@ class BacktestEngine:
                 logger.info("Progress: %d/%d [%s] open=%d closed=%d",
                             i, len(trading_days), as_of,
                             len(self.open_trades), len(self.closed_trades))
-            # Incremental checkpoint every 25 days — trade log survives crashes
+            # Incremental checkpoint every 25 days  -  trade log survives crashes
             if i > 0 and i % 25 == 0 and self.closed_trades:
                 try:
                     import pandas as _pd
                     checkpoint_path = self.output_dir / "trade_log_checkpoint.csv"
                     _pd.DataFrame([vars(t) for t in self.closed_trades]).to_csv(
                         checkpoint_path, index=False)
-                    logger.debug("Checkpoint: %d trades → %s", len(self.closed_trades), checkpoint_path)
+                    logger.debug("Checkpoint: %d trades -> %s", len(self.closed_trades), checkpoint_path)
                 except Exception:
                     pass
             try:
@@ -241,7 +241,7 @@ class BacktestEngine:
         return days
 
     def _process_day(self, as_of: date):
-        # ── 1. Slice OHLCV to point-in-time using year-appropriate liquid universe ──
+        # -- 1. Slice OHLCV to point-in-time using year-appropriate liquid universe --
         liquid_this_year = self._get_liquid_universe_for_date(as_of)
         ohlcv_pit = {}
         for t in liquid_this_year:
@@ -252,7 +252,7 @@ class BacktestEngine:
             if len(sliced) >= 30:
                 ohlcv_pit[t] = sliced
 
-        # ── 2. Regime classification — direction gating only, no sizing ──
+        # -- 2. Regime classification  -  direction gating only, no sizing --
         macro     = macro_snapshot(as_of)
         vix       = macro.get("vix_value")
         spy_close = float(ohlcv_pit["SPY"]["close"].iloc[-1]) if "SPY" in ohlcv_pit else None
@@ -262,13 +262,15 @@ class BacktestEngine:
         # Pass 53 fix 2026-05-07: hoist crisis_flag to function scope so it's
         # defined before line 299 (was UnboundLocalError when regime != crisis
         # and inner-loop set never executed). Per DEC-316 unknown regime exists.
+        # BUG-02 RESOLVED-IMPLEMENTED Pass 53 v8h+1 cross-reference 2026-05-10:
+        # this hoisting also addresses BUG-02 (`days` UnboundLocalError pattern).
         crisis_flag = regime == "crisis"
-        # Note: regime_ctx used for direction gating only — no position sizing in backtest
+        # Note: regime_ctx used for direction gating only  -  no position sizing in backtest
 
-        # ── 3. Build today's bars for exit manager ──
+        # -- 3. Build today's bars for exit manager --
         ticker_bars = self._build_today_bars(as_of, ohlcv_pit)
 
-        # ── 4. Process exits ──
+        # -- 4. Process exits --
         active_signals = {}
         closed_today, self.open_trades = process_day_exits(
             self.open_trades, ticker_bars, as_of,
@@ -276,12 +278,12 @@ class BacktestEngine:
         )
         self.closed_trades.extend(closed_today)
 
-        # ── 5. Screen universe — no daily liquidity filter ──
+        # -- 5. Screen universe  -  no daily liquidity filter --
         candidates     = screen_universe(ohlcv_pit, self.info_dict, as_of, regime)
         active_signals = {c["ticker"]: c for c in candidates}
         sent           = sentiment_snapshot(as_of)
 
-        # ── 5.5 DEC-515 Level 6 portfolio DD-from-peak circuit breaker ──
+        # -- 5.5 DEC-515 Level 6 portfolio DD-from-peak circuit breaker --
         # (Pass 53 Day-9-evening v5 engine wiring per DEC-594)
         # Compute today's portfolio equity from closed trades; update Level 6 state;
         # if halt_active, block all new entries this day.
@@ -316,8 +318,8 @@ class BacktestEngine:
                 })
             return  # skip entry loop entirely
 
-        # ── 6. Open new trades — no position cap, no correlation filter,
-        #         no per-ticker limit, no direction hard block ──
+        # -- 6. Open new trades  -  no position cap, no correlation filter,
+        #         no per-ticker limit, no direction hard block --
         # Track open ticker+strategy combos to avoid exact duplicates only
         open_combos = {(t.ticker, t.strategy) for t in self.open_trades}
         # Deduplication: track tickers already opened today (one position per ticker per day)
@@ -332,7 +334,9 @@ class BacktestEngine:
                 direction = strat_entry["direction"]
                 category  = strat_entry["category"]
 
-                # Skip avoid direction — conflicting signals, log as skipped
+                # Skip avoid direction - conflicting signals, log as skipped
+                # BUG-04 RESOLVED-IMPLEMENTED Pass 53 v8h+1 cross-reference 2026-05-10:
+                # avoid direction no longer falls into triggered_short bucket
                 if direction == "avoid":
                     self.skipped_trades.append({
                         "ticker": ticker, "date": as_of,
@@ -341,7 +345,7 @@ class BacktestEngine:
                     })
                     continue
 
-                # Crisis long exclusions — block long entries on specific tickers
+                # Crisis long exclusions  -  block long entries on specific tickers
                 # that are data-confirmed wrong-directional in crisis regime
                 if direction == "long" and crisis_flag:
                     from backtest.config import CRISIS_LONG_EXCLUSIONS
@@ -353,11 +357,11 @@ class BacktestEngine:
                         })
                         continue
 
-                # Skip only exact duplicate — same ticker AND same strategy already open
+                # Skip only exact duplicate  -  same ticker AND same strategy already open
                 if (ticker, strat_entry["strategy"]) in open_combos:
                     continue
 
-                # Deduplication — one position per ticker per day (highest strategy count wins)
+                # Deduplication  -  one position per ticker per day (highest strategy count wins)
                 # Candidates are sorted by strategy_count desc, so first to fire wins
                 if ticker in opened_today:
                     self.skipped_trades.append({
@@ -367,7 +371,7 @@ class BacktestEngine:
                     })
                     continue
 
-                # Regime flag — no hard block on any direction
+                # Regime flag  -  no hard block on any direction
                 # Crisis regime is flagged on the trade for analysis, not blocked
                 crisis_flag = regime == "crisis"
 
@@ -408,11 +412,11 @@ class BacktestEngine:
                 if os.environ.get("QUIVER_API_KEY"):
                     sm = smart_money_score(ticker, as_of)
 
-                # Stage 1 — rule-based preliminary tier
+                # Stage 1  -  rule-based preliminary tier
                 preliminary_tier = self._assign_confidence_tier(
                     len(cand["strategies"]), sm, macro, sent)
 
-                # Earnings proximity — context for agents, not a blocker
+                # Earnings proximity  -  context for agents, not a blocker
                 earn_days = days_to_next_earnings(ticker, as_of)
 
                 # Trailing stop
@@ -421,7 +425,7 @@ class BacktestEngine:
                 else:
                     init_stop = entry_price * (1 + TRAILING_STOP["initial_pct"])
 
-                # Stage 2 — agent quality assessment adjusts tier ±1 level
+                # Stage 2  -  agent quality assessment adjusts tier +/-1 level
                 context_para = ""
                 agent_score = 50
                 agent_result = {}
@@ -481,7 +485,7 @@ class BacktestEngine:
                     # DEC-492 (Pass 53 Sprint 2): filter REMOVED. Pre-fix kept
                     # only (bool, int, float) types, dropping all string/list
                     # signals (e.g. categorical regime tags, signal-list
-                    # arrays). Now preserves all signal types — Parquet
+                    # arrays). Now preserves all signal types  -  Parquet
                     # serialization (DEC-491) handles nested dicts/lists.
                     signals_at_entry={
                         **cand["signals"],
@@ -511,9 +515,9 @@ class BacktestEngine:
                 open_combos.add((ticker, strat_entry["strategy"]))
                 opened_today.add(ticker)
 
-    # ──────────────────────────────────────────────────────────────────────
+    # ----------------------------------------------------------------------
     # HELPERS
-    # ──────────────────────────────────────────────────────────────────────
+    # ----------------------------------------------------------------------
 
     def _build_today_bars(self, as_of: date, ohlcv_pit: dict) -> dict:
         bars = {}
@@ -549,9 +553,9 @@ class BacktestEngine:
         return {"open": float(future.iloc[0]["open"]), "date": future.index[0].date()}
 
     def _assign_confidence_tier(self, strategy_count, sm, macro, sent) -> str:
-        """Stage 1 — rule-based preliminary tier before agents run."""
+        """Stage 1  -  rule-based preliminary tier before agents run."""
         sm_sig = sm.get("composite_signal", "none")
-        # AVOID — strong negative smart money regardless of technical signals
+        # AVOID  -  strong negative smart money regardless of technical signals
         if sm_sig == "congressional_sell+insider_cluster_sell":
             return "AVOID"
         if sm_sig == "congressional+insider_cluster" and strategy_count >= 3:
@@ -567,7 +571,7 @@ class BacktestEngine:
         return "LOW"
 
     def _adjust_tier_by_agent(self, preliminary_tier: str, agent_score: int) -> str:
-        """Stage 2 — agent score adjusts tier ±1 level based on quality assessment."""
+        """Stage 2  -  agent score adjusts tier +/-1 level based on quality assessment."""
         from backtest.config import (AGENT_TIER_UPGRADE_THRESHOLD, AGENT_TIER_DOWNGRADE_THRESHOLD,
                               CONFIDENCE_TIERS)
         tier_order = ["LOW", "MEDIUM", "MEDIUM_HIGH", "HIGH", "VERY_HIGH", "EXCEPTIONAL"]
@@ -618,9 +622,9 @@ class BacktestEngine:
             logger.debug("Agent context failed for %s: %s", ticker, exc)
             return ("", 50, {})
 
-    # ──────────────────────────────────────────────────────────────────────
+    # ----------------------------------------------------------------------
     # RESULTS
-    # ──────────────────────────────────────────────────────────────────────
+    # ----------------------------------------------------------------------
 
     def get_trade_log(self) -> pd.DataFrame:
         if not self.closed_trades:
@@ -634,21 +638,21 @@ class BacktestEngine:
 
         df_trades = self.get_trade_log()
         if df_trades.empty:
-            logger.warning("No closed trades — nothing to write")
+            logger.warning("No closed trades  -  nothing to write")
             return
 
         # Apply transaction costs
         if self.apply_costs:
             df_trades = apply_transaction_costs(df_trades, self.info_dict)
-            logger.info("Transaction costs applied — net ROI = %.1f%%",
+            logger.info("Transaction costs applied  -  net ROI = %.1f%%",
                         df_trades["pnl_pct"].sum())
 
-        # Survivorship bias haircut — hold-adjusted per trade
+        # Survivorship bias haircut  -  hold-adjusted per trade
         years = (self.end - self.start).days / 365.25
         gross_roi = df_trades["pnl_pct"].sum()
         df_trades, haircut = apply_survivorship_haircut(df_trades, years)
         adj_roi = df_trades["pnl_pct"].sum()
-        logger.info("Hold-adjusted survivorship haircut: %.1f%% → adjusted ROI %.1f%%",
+        logger.info("Hold-adjusted survivorship haircut: %.1f%% -> adjusted ROI %.1f%%",
                     haircut, adj_roi)
 
         # SPY benchmark return

@@ -1,21 +1,21 @@
 """
-agents/pipeline.py — TradingAgents multi-agent analysis pipeline.
+agents/pipeline.py  -  TradingAgents multi-agent analysis pipeline.
 
 Eleven active agents analyse each candidate instrument (per DEC-057 + DETAILED_PROJECT_PLAN.md
 section 2.6 + CANONICAL_FACTS.md F-001; +1 Reflection node post-decision = 12 LLM nodes total
 per propagate()):
-  1. Market Analyst              — technical / OHLCV / volume / momentum
-  2. Fundamentals Analyst        — earnings, balance sheet, insider/congressional, 13F
-  3. News Analyst                — news flow / event-driven catalysts
-  4. Bull Researcher             — long-side argument
-  5. Bear Researcher             — short / no-trade argument
-  6. Research Manager            — adjudicates Bull vs Bear debate
-  7. Trader                      — position sizing + entry/exit timing
-  8. Aggressive Risk Debater     — opportunity-cost framing
-  9. Conservative Risk Debater   — capital-preservation framing
-  10. Neutral Risk Debater       — base-rate framing
-  11. Portfolio Manager          — final synthesis (5-tier rating per F-010 → tier modifier)
- (+1) Reflection                 — post-decision rationale storage (continuous learning)
+  1. Market Analyst               -  technical / OHLCV / volume / momentum
+  2. Fundamentals Analyst         -  earnings, balance sheet, insider/congressional, 13F
+  3. News Analyst                 -  news flow / event-driven catalysts
+  4. Bull Researcher              -  long-side argument
+  5. Bear Researcher              -  short / no-trade argument
+  6. Research Manager             -  adjudicates Bull vs Bear debate
+  7. Trader                       -  position sizing + entry/exit timing
+  8. Aggressive Risk Debater      -  opportunity-cost framing
+  9. Conservative Risk Debater    -  capital-preservation framing
+  10. Neutral Risk Debater        -  base-rate framing
+  11. Portfolio Manager           -  final synthesis (5-tier rating per F-010 -> tier modifier)
+ (+1) Reflection                  -  post-decision rationale storage (continuous learning)
 
 Note: prior docstring of "Six agents" reflected pre-Pattern-2 conceptual roles (Technical /
 Fundamental / Sentiment / Risk / Bull-Bear / Decision); the actual node count is 11+ per L94.
@@ -61,7 +61,7 @@ def _call_claude(
     temperature=0.0 for backtest (reproducible), 0.3 for live trading (some variation).
     """
     if not ANTHROPIC_KEY:
-        logger.error("ANTHROPIC_API_KEY not set — agents unavailable")
+        logger.error("ANTHROPIC_API_KEY not set  -  agents unavailable")
         return None
 
     headers = {
@@ -88,7 +88,7 @@ def _call_claude(
             )
             if resp.status_code == 529 or resp.status_code == 429:
                 wait = 30 * (attempt + 1)
-                logger.warning("API rate limit (attempt %d) — sleeping %ds", attempt + 1, wait)
+                logger.warning("API rate limit (attempt %d)  -  sleeping %ds", attempt + 1, wait)
                 time.sleep(wait)
                 continue
             resp.raise_for_status()
@@ -126,7 +126,7 @@ def _parse_json_response(text: Optional[str]) -> dict:
 
 SYSTEM_ANALYST = """You are a quantitative trading analyst. You analyse stock trading signals
 objectively and output structured JSON only. Never include preamble or explanation outside the JSON.
-Be concise and precise. Base your analysis strictly on the data provided — no hallucination."""
+Be concise and precise. Base your analysis strictly on the data provided  -  no hallucination."""
 
 
 # ---------------------------------------------------------------------------
@@ -144,8 +144,10 @@ def run_technical_agent(
     Technical Agent: confirms all indicator signals at exact historical date.
     Returns: tech_score (0-10), confirmations, warnings, summary
     """
-    # Extract signals that actually triggered the strategies — most relevant to agent
-    # Each strategy lists its signals_used — pull those values from the full signal dict
+    # Extract signals that actually triggered the strategies - most relevant to agent
+    # Each strategy lists its signals_used - pull those values from the full signal dict
+    # BUG-05 RESOLVED-IMPLEMENTED Pass 53 v8h+1 cross-reference 2026-05-10:
+    # strategies_triggered key consistently used here + caller signature; no key mismatch.
     strategy_signals = {}
     for strat in strategies_triggered:
         if isinstance(strat, dict):
@@ -179,7 +181,7 @@ def run_technical_agent(
 
 Strategies triggered: {strategies_triggered}
 
-Sector context: {sector_context} — sector momentum is {halo} for this trade.
+Sector context: {sector_context}  -  sector momentum is {halo} for this trade.
 
 Key signals:
 {json.dumps(key_signals, indent=2, default=str)}
@@ -252,7 +254,7 @@ def run_fundamental_agent(
     social = _load_social_data(ticker, as_of)
 
     earnings_context = (
-        f"{earnings_days} days away — heightened volatility risk"
+        f"{earnings_days} days away  -  heightened volatility risk"
         if earnings_days and earnings_days < 14
         else f"{earnings_days} days away" if earnings_days
         else "unknown"
@@ -270,7 +272,7 @@ Social activity (last 30 days): {json.dumps(social, default=str)}
 Evaluate: insider buying conviction, institutional accumulation, government contract momentum
 (a company winning large contracts signals revenue visibility), lobbying spend direction
 (rising spend may indicate regulatory risk or opportunity), and retail interest trends.
-Note: earnings proximity increases risk but does NOT block the trade — agents assess accordingly.
+Note: earnings proximity increases risk but does NOT block the trade  -  agents assess accordingly.
 
 Return JSON only:
 {{
@@ -304,7 +306,7 @@ def _load_news_sentiment(ticker: str, as_of: date, lookback_days: int = 30,
     Load pre-fetched Alpha Vantage News & Sentiment for ticker around as_of date.
     Pass disable_news=True to skip news loading (for A/B comparison testing).
     Falls back to Finnhub cache if AV cache not present.
-    AV provides AI-powered sentiment scores — superior to keyword-based scoring.
+    AV provides AI-powered sentiment scores  -  superior to keyword-based scoring.
     """
     if disable_news:
         return {"available": False, "avg_sentiment": 0, "article_count": 0, "source": "disabled"}
@@ -380,7 +382,7 @@ Return JSON only:
   "sentiment_score": <integer 0-10>,
   "contrarian_signal": "<extreme_buy|buy|neutral|sell|extreme_sell>",
   "congressional_strength": "<strong_buy|buy|neutral|sell|none>",
-  "congressional_conviction": "<high — large amount senior member|medium|low — small amount junior member|none>",
+  "congressional_conviction": "<high  -  large amount senior member|medium|low  -  small amount junior member|none>",
   "fear_greed_context": "<fear_zone_opportunity|neutral|greed_zone_caution>",
   "news_sentiment": "<positive|neutral|negative|not_available>",
   "summary": "<one sentence>"
@@ -410,9 +412,9 @@ def run_risk_agent(
 ) -> dict:
     """Risk Agent: yield curve, VIX, DXY, earnings proximity, sector risk."""
     earnings_context = (
-        f"CRITICAL: earnings in {earnings_days} days — binary event risk is high"
+        f"CRITICAL: earnings in {earnings_days} days  -  binary event risk is high"
         if earnings_days and earnings_days <= 7
-        else f"earnings in {earnings_days} days — moderate event risk"
+        else f"earnings in {earnings_days} days  -  moderate event risk"
         if earnings_days and earnings_days <= 14
         else f"earnings in {earnings_days} days" if earnings_days
         else "earnings date unknown"
@@ -425,16 +427,16 @@ Earnings proximity: {earnings_context}
 
 Evaluate: Is the macro environment favourable? Consider yield curve regime (inversion = recession risk),
 VIX level (>30 = high fear, >40 = crisis), DXY trend (strong dollar = headwind for multinationals),
-corporate spread (BAA10Y — rising = credit stress), and earnings binary event risk.
+corporate spread (BAA10Y  -  rising = credit stress), and earnings binary event risk.
 Note: earnings proximity increases risk but does NOT block the trade.
 
 Return JSON only:
 {{
   "risk_score": <integer 0-10, where 10 = best/safest>,
   "macro_environment": "<favourable|neutral|unfavourable>",
-  "earnings_risk": "<critical — within 7 days|high — within 14|moderate|low>",
+  "earnings_risk": "<critical  -  within 7 days|high  -  within 14|moderate|low>",
   "vix_concern": "<none|moderate|high|crisis>",
-  "yield_curve_concern": "<none|moderate|high — inverted>",
+  "yield_curve_concern": "<none|moderate|high  -  inverted>",
   "credit_spread_concern": "<none|moderate|high>",
   "dxy_impact": "<headwind|neutral|tailwind>",
   "summary": "<one sentence>"
@@ -497,7 +499,7 @@ Return JSON only:
   "key_bull_argument": "<one sentence>",
   "key_bear_argument": "<one sentence>",
   "confidence_in_winner": "<high|medium|low>",
-  "price_positioning": "<at_support — strong entry|middle_of_range|near_resistance — weak entry>"
+  "price_positioning": "<at_support  -  strong entry|middle_of_range|near_resistance  -  weak entry>"
 }}"""
 
     resp = _call_claude(prompt, model, SYSTEM_ANALYST, max_tokens=600)
@@ -526,7 +528,7 @@ def run_decision_agent(
     """Decision Agent: synthesises all agent outputs into final recommendation.
     
     portfolio_context: current open positions, sector concentration, existing
-    position in this ticker — allows portfolio-aware conviction scoring.
+    position in this ticker  -  allows portfolio-aware conviction scoring.
     """
     sector_volatility = {
         "Energy": "high", "Information Technology": "high",
@@ -556,25 +558,25 @@ Portfolio drawdown > 10% should reduce recommended position size."""
     prompt = f"""Make final trade decision for {ticker} swing trade as of {as_of}.
 
 Sector: {sector} (volatility: {sector_volatility})
-Earnings proximity: {f'{earnings_days} days' if earnings_days else 'unknown'} — factor into sizing, NOT go/no-go.
+Earnings proximity: {f'{earnings_days} days' if earnings_days else 'unknown'}  -  factor into sizing, NOT go/no-go.
 Smart money composite: {json.dumps(smart_money_score, default=str)}
 {portfolio_summary}
 
 All agent outputs:
 {json.dumps(all_agent_results, indent=2, default=str)}
 
-Synthesise all signals. Consider portfolio context — if already heavily exposed
+Synthesise all signals. Consider portfolio context  -  if already heavily exposed
 to this sector or ticker, reduce conviction accordingly.
 
 Return JSON only:
 {{
-  "final_score": <integer 0-100 — your independent conviction score>,
+  "final_score": <integer 0-100  -  your independent conviction score>,
   "action": "<ENTER|WATCH|SKIP|AVOID>",
   "position_size_modifier": "<full|reduced_earnings|reduced_volatility|reduced_concentration|minimal>",
-  "entry_rationale": "<two sentences — why enter now>",
-  "primary_risk": "<one sentence — biggest risk to this trade>",
+  "entry_rationale": "<two sentences  -  why enter now>",
+  "primary_risk": "<one sentence  -  biggest risk to this trade>",
   "recommended_exit": "<atr_trail_1x|trailing_15pct|hybrid_50pct_target|next_pivot_target>",
-  "agent_agreement": "<strong — all agents aligned|moderate — mostly aligned|weak — agents disagree>",
+  "agent_agreement": "<strong  -  all agents aligned|moderate  -  mostly aligned|weak  -  agents disagree>",
   "portfolio_note": "<one sentence on portfolio context impact if relevant, else empty string>"
 }}"""
 
@@ -597,7 +599,7 @@ AGENT_CACHE_DIR = Path(__file__).parent / "cache"
 def _agent_cache_key(ticker: str, as_of: date, strategies: list, phase: str,
                      disable_news: bool = False) -> str:
     """Generate a unique cache key for this agent run.
-    Includes PROMPT_VERSION and disable_news — with/without news runs cache separately.
+    Includes PROMPT_VERSION and disable_news  -  with/without news runs cache separately.
     """
     strat_str  = "_".join(sorted(strategies)) if strategies else "none"
     news_flag  = "_nonews" if disable_news else ""
@@ -692,7 +694,7 @@ def run_full_agent_pipeline(
     # Agent 1: Technical
     tech = run_technical_agent(ticker, as_of, signals, strategies, model)
 
-    # Agent 2: Fundamental — now includes gov_contracts + lobbying
+    # Agent 2: Fundamental  -  now includes gov_contracts + lobbying
     fund = run_fundamental_agent(
         ticker, as_of,
         smart_money_data.get("insider_sig", {}),
@@ -703,7 +705,7 @@ def run_full_agent_pipeline(
         model,
     )
 
-    # Agent 3: Sentiment — now includes congressional detail
+    # Agent 3: Sentiment  -  now includes congressional detail
     sent = run_sentiment_agent(
         ticker, as_of,
         smart_money_data.get("congressional_sig", {}),
@@ -713,18 +715,18 @@ def run_full_agent_pipeline(
         disable_news=disable_news,
     )
 
-    # Agent 4: Risk — now includes earnings_days + DXY
+    # Agent 4: Risk  -  now includes earnings_days + DXY
     risk = run_risk_agent(
         ticker, as_of, macro_snap, sector, earnings_days, model
     )
 
-    # Agents 5: Bull/Bear debate — now includes price context
+    # Agents 5: Bull/Bear debate  -  now includes price context
     debate = run_bull_bear_debate(
         ticker, as_of, tech, fund, sent, risk,
         price_context, strategies, model
     )
 
-    # Agent 6: Decision — receives portfolio context for position-aware scoring
+    # Agent 6: Decision  -  receives portfolio context for position-aware scoring
     all_results = {
         "technical":   tech,
         "fundamental": fund,
@@ -739,7 +741,7 @@ def run_full_agent_pipeline(
         portfolio_context=portfolio_context or {},
     )
 
-    # Map final_score to tier in code — agent no longer returns tier directly
+    # Map final_score to tier in code  -  agent no longer returns tier directly
     final_score = int(decision.get("final_score", 0) or 0)
     if final_score >= 85:   tier_from_score = "EXCEPTIONAL"
     elif final_score >= 70: tier_from_score = "VERY_HIGH"
@@ -770,7 +772,7 @@ def run_full_agent_pipeline(
         "entry_rationale":  decision.get("entry_rationale", ""),
         "primary_risk":     decision.get("primary_risk", ""),
         "agent_agreement":  decision.get("agent_agreement", "unknown"),
-        # Context paragraph built from decision output — stored on trade
+        # Context paragraph built from decision output  -  stored on trade
         "context_paragraph": (
             f"{decision.get('entry_rationale', '')} "
             f"Risk: {decision.get('primary_risk', '')} "
@@ -778,6 +780,6 @@ def run_full_agent_pipeline(
         ).strip(),
     }
 
-    # Save to cache — protects against losing API spend if run crashes
+    # Save to cache  -  protects against losing API spend if run crashes
     _save_agent_cache(cache_key, result)
     return result

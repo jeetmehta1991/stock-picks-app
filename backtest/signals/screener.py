@@ -1,10 +1,17 @@
 """
-signals/screener.py — All Layer 1 baseline 60 strategy classes (per CANONICAL_FACTS.md F-002 Layer 1) with entry zone logic and regime filter.
+signals/screener.py - All Layer 1 baseline 60 strategy classes (per CANONICAL_FACTS.md F-002 Layer 1) with entry zone logic and regime filter.
 
 Note: This file implements the Layer 1 baseline. Layer 2 (Phase 0.D ICT/Earnings/Calendar),
 Layer 2D (form-derived ICT), Layer 3 (Pass 52 RESOLVED chart-pattern + categories), and
 Layer 4 (PENDING strategy-additive) are scheduled per AUDIT_INDEX DEC-045/259/355-362/367-371.
 Full layered roster: ~108-133 classes per CANONICAL_FACTS.md F-002.
+
+BUG-23 SUPERSEDED-BY-CANONICAL_FACTS-F-002 Pass 53 v8h+1 cross-reference 2026-05-10:
+the "60 baseline classes" count is canonically correct per F-002 Layer 1; the bug
+observation was incomplete (didn't account for layered architecture).
+BUG-22 RESOLVED-IMPLEMENTED Pass 53 v8h+1 cross-reference 2026-05-10:
+run_phase1a.py header docstring no longer references stale "60 strategies"
+text (verified via grep absence 2026-05-10).
 
 60 baseline classes across 7 categories:
   Pivot-based      (10): S1-S3 bounces, R1-R2 breakouts, CPR bias,
@@ -45,12 +52,12 @@ from backtest.signals.technical import compute_all_signals, count_bullish_signal
 logger = logging.getLogger(__name__)
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 # STRATEGY HELPER
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 
 def _strat(fires, direction, category, signals_used, context_bullets):
-    """Single-direction strategy — fires True/False with fixed direction."""
+    """Single-direction strategy  -  fires True/False with fixed direction."""
     return {
         "fires":           bool(fires),
         "direction":       direction,
@@ -62,7 +69,7 @@ def _strat(fires, direction, category, signals_used, context_bullets):
 
 def _strat3(fires_long, fires_short, category, signals_used_long, signals_used_short,
             bullets_long, bullets_short):
-    """Three-state strategy — evaluates long, short, or avoid independently.
+    """Three-state strategy  -  evaluates long, short, or avoid independently.
     Returns the dominant direction; if both fire, returns avoid (conflicting signals).
     """
     if fires_long and not fires_short:
@@ -74,22 +81,22 @@ def _strat3(fires_long, fires_short, category, signals_used_long, signals_used_s
     if fires_long and fires_short:
         return {"fires": True,  "direction": "avoid", "category": category,
                 "signals_used": signals_used_long + signals_used_short,
-                "context_bullets": ["Conflicting long and short signals — avoid"]}
+                "context_bullets": ["Conflicting long and short signals  -  avoid"]}
     return {"fires": False, "direction": None, "category": category,
             "signals_used": [], "context_bullets": []}
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 # CATEGORY 1: PIVOT-BASED (10 strategies)
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 
 def strat_pivot_s1_bounce(s):
     fl = (s.get("near_s1") and (s.get("hammer") or s.get("pin_bar")) and s.get("obv_bullish"))
     fs = (s.get("near_r1") and (s.get("shooting_star") or s.get("bearish_engulfing")) and not s.get("obv_bullish"))
     return _strat3(fl, fs, "pivot",
         ["near_s1","hammer/pin_bar","obv_bullish"], ["near_r1","shooting_star","obv_falling"],
-        ["Price at S1 pivot support","Hammer or pin bar confirming buyers","OBV rising — accumulation"],
-        ["Price at R1 pivot resistance","Shooting star or bearish engulfing rejecting highs","OBV falling — distribution"])
+        ["Price at S1 pivot support","Hammer or pin bar confirming buyers","OBV rising  -  accumulation"],
+        ["Price at R1 pivot resistance","Shooting star or bearish engulfing rejecting highs","OBV falling  -  distribution"])
 
 
 def strat_pivot_s2_bounce(s):
@@ -107,9 +114,9 @@ def strat_pivot_s3_capitulation(s):
              s.get("vol_spike_2x"))
     return _strat(fires, "long", "pivot",
         ["near_s3","rsi_14<30","vol_spike_2x"],
-        ["Price at S3 — extreme capitulation level",
+        ["Price at S3  -  extreme capitulation level",
          f"RSI-14 extremely oversold at {s.get('rsi_14',0):.1f}",
-         "Volume spike confirms panic selling — reversal likely"])
+         "Volume spike confirms panic selling  -  reversal likely"])
 
 
 def strat_pivot_r1_breakout(s):
@@ -126,8 +133,8 @@ def strat_pivot_r2_continuation(s):
     fs = (s.get("below_s2") and s.get("adx_trending") and not s.get("ema_50_200_bullish"))
     return _strat3(fl, fs, "pivot",
         ["above_r2","adx_trending","ema_50_200_bullish"], ["below_s2","adx_trending","ema_50_200_bearish"],
-        ["Price above R2 — strong trend continuation","ADX confirms trend","Above 50/200 EMA"],
-        ["Price below S2 — strong downtrend continuation","ADX confirms trend","Below 50/200 EMA"])
+        ["Price above R2  -  strong trend continuation","ADX confirms trend","Above 50/200 EMA"],
+        ["Price below S2  -  strong downtrend continuation","ADX confirms trend","Below 50/200 EMA"])
 
 
 def strat_cpr_narrow_bullish(s):
@@ -135,8 +142,8 @@ def strat_cpr_narrow_bullish(s):
     fs = (s.get("cpr_narrow") and s.get("below_cpr") and s.get("rsi_14", 50) < 50)
     return _strat3(fl, fs, "pivot",
         ["cpr_narrow","above_cpr","rsi_14>50"], ["cpr_narrow","below_cpr","rsi_14<50"],
-        ["Narrow CPR — directional day likely","Above CPR — bullish daily bias","RSI above 50"],
-        ["Narrow CPR — directional day likely","Below CPR — bearish daily bias","RSI below 50"])
+        ["Narrow CPR  -  directional day likely","Above CPR  -  bullish daily bias","RSI above 50"],
+        ["Narrow CPR  -  directional day likely","Below CPR  -  bearish daily bias","RSI below 50"])
 
 
 def strat_camarilla_s3_bounce(s):
@@ -144,8 +151,8 @@ def strat_camarilla_s3_bounce(s):
     fs = (s.get("near_cam_r3") and s.get("rsi_14", 50) > 65 and not s.get("obv_bullish"))
     return _strat3(fl, fs, "pivot",
         ["near_cam_s3","rsi_14<35","obv_bullish"], ["near_cam_r3","rsi_14>65","obv_falling"],
-        ["Price at Camarilla S3 — primary support","RSI oversold","OBV confirming accumulation"],
-        ["Price at Camarilla R3 — primary resistance","RSI overbought","OBV confirming distribution"])
+        ["Price at Camarilla S3  -  primary support","RSI oversold","OBV confirming accumulation"],
+        ["Price at Camarilla R3  -  primary resistance","RSI overbought","OBV confirming distribution"])
 
 
 def strat_camarilla_r3_breakout(s):
@@ -153,8 +160,8 @@ def strat_camarilla_r3_breakout(s):
     fs = (s.get("below_cam_s3") and s.get("vol_spike_2x"))
     return _strat3(fl, fs, "pivot",
         ["above_cam_r3","vol_spike_2x"], ["below_cam_s3","vol_spike_2x"],
-        ["Price broke above Camarilla R3 — breakout mode","Volume 2× confirms institutional buying"],
-        ["Price broke below Camarilla S3 — breakdown mode","Volume 2× confirms institutional selling"])
+        ["Price broke above Camarilla R3  -  breakout mode","Volume 2x confirms institutional buying"],
+        ["Price broke below Camarilla S3  -  breakdown mode","Volume 2x confirms institutional selling"])
 
 
 def strat_prev_day_high_break(s):
@@ -162,8 +169,8 @@ def strat_prev_day_high_break(s):
     fs = (s.get("below_prev_low") and s.get("vol_spike_15x") and not s.get("above_vwap"))
     return _strat3(fl, fs, "pivot",
         ["above_prev_high","vol_spike_1.5x","above_vwap"], ["below_prev_low","vol_spike_1.5x","below_vwap"],
-        ["Price broke above previous day's high","Volume confirms participation","Above VWAP — buyers in control"],
-        ["Price broke below previous day's low","Volume confirms participation","Below VWAP — sellers in control"])
+        ["Price broke above previous day's high","Volume confirms participation","Above VWAP  -  buyers in control"],
+        ["Price broke below previous day's low","Volume confirms participation","Below VWAP  -  sellers in control"])
 
 
 def strat_prev_day_low_bounce(s):
@@ -171,21 +178,21 @@ def strat_prev_day_low_bounce(s):
     fs = (s.get("near_prev_high") and s.get("shooting_star") and not s.get("cmf_positive"))
     return _strat3(fl, fs, "pivot",
         ["near_prev_low","hammer","cmf_positive"], ["near_prev_high","shooting_star","cmf_negative"],
-        ["Price holding at previous day's low","Hammer — buyers defended the level","CMF positive"],
-        ["Price stalling at previous day's high","Shooting star — sellers rejected the level","CMF negative"])
+        ["Price holding at previous day's low","Hammer  -  buyers defended the level","CMF positive"],
+        ["Price stalling at previous day's high","Shooting star  -  sellers rejected the level","CMF negative"])
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 # CATEGORY 2: MOMENTUM (9 strategies)
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 
 def strat_macd_crossover(s):
     fl = s.get("macd_12_26_9_crossover_up")
     fs = s.get("macd_12_26_9_crossover_dn")
     return _strat3(fl, fs, "momentum",
         ["macd_12_26_9_crossover_up"], ["macd_12_26_9_crossover_dn"],
-        ["MACD 12/26/9 crossed above zero — momentum turning positive"],
-        ["MACD 12/26/9 crossed below zero — momentum turning negative"])
+        ["MACD 12/26/9 crossed above zero  -  momentum turning positive"],
+        ["MACD 12/26/9 crossed below zero  -  momentum turning negative"])
 
 
 def strat_macd_fast_crossover(s):
@@ -193,8 +200,8 @@ def strat_macd_fast_crossover(s):
     fs = s.get("macd_8_21_5_crossover_dn")
     return _strat3(fl, fs, "momentum",
         ["macd_8_21_5_crossover_up"], ["macd_8_21_5_crossover_dn"],
-        ["Fast MACD 8/21/5 crossed above zero — early momentum shift bullish"],
-        ["Fast MACD 8/21/5 crossed below zero — early momentum shift bearish"])
+        ["Fast MACD 8/21/5 crossed above zero  -  early momentum shift bullish"],
+        ["Fast MACD 8/21/5 crossed below zero  -  early momentum shift bearish"])
 
 
 def strat_hull_rsi(s):
@@ -202,17 +209,21 @@ def strat_hull_rsi(s):
     fs = (not s.get("hull_bullish") and not s.get("price_above_hull") and s.get("rsi_9", 50) < 50)
     return _strat3(fl, fs, "momentum",
         ["hull_bullish","price_above_hull","rsi_9>50"], ["hull_bearish","price_below_hull","rsi_9<50"],
-        ["Hull MA rising — fast trend bullish","Price above Hull","RSI-9 above midpoint"],
-        ["Hull MA falling — fast trend bearish","Price below Hull","RSI-9 below midpoint"])
+        ["Hull MA rising  -  fast trend bullish","Price above Hull","RSI-9 above midpoint"],
+        ["Hull MA falling  -  fast trend bearish","Price below Hull","RSI-9 below midpoint"])
 
 
 def strat_williams_r_oversold(s):
+    # BUG-11 RESOLVED-IMPLEMENTED Pass 53 v8h+1 cross-reference 2026-05-10:
+    # short branch uses explicit default value (s.get("williams_r", 0) > -20)
+    # to prevent firing incorrectly when key absent. Signal defined at
+    # technical.py:323 as canonical "williams_r_oversold": v < -80.
     fl = (s.get("williams_r_oversold") and s.get("price_above_ema_200") and s.get("cmf_positive"))
     fs = (s.get("williams_r", 0) > -20 and not s.get("price_above_ema_200") and not s.get("cmf_positive"))
     return _strat3(fl, fs, "momentum",
         ["williams_r_oversold","above_ema_200","cmf_positive"], ["williams_r_overbought","below_ema_200","cmf_negative"],
-        [f"Williams %R oversold — below -80","Above 200 EMA — uptrend context","CMF positive"],
-        [f"Williams %R overbought — above -20","Below 200 EMA — downtrend context","CMF negative"])
+        [f"Williams %R oversold  -  below -80","Above 200 EMA  -  uptrend context","CMF positive"],
+        [f"Williams %R overbought  -  above -20","Below 200 EMA  -  downtrend context","CMF negative"])
 
 
 def strat_roc_burst(s):
@@ -220,8 +231,8 @@ def strat_roc_burst(s):
     fs = (s.get("roc_turning_dn") and s.get("vol_spike_15x"))
     return _strat3(fl, fs, "momentum",
         ["roc_turning_up","vol_spike_1.5x"], ["roc_turning_dn","vol_spike_1.5x"],
-        ["ROC-12 flipped positive — early momentum shift up","Volume confirms"],
-        ["ROC-12 flipped negative — early momentum shift down","Volume confirms"])
+        ["ROC-12 flipped positive  -  early momentum shift up","Volume confirms"],
+        ["ROC-12 flipped negative  -  early momentum shift down","Volume confirms"])
 
 
 def strat_awesome_oscillator(s):
@@ -229,8 +240,8 @@ def strat_awesome_oscillator(s):
     fs = (s.get("ao_cross_dn") and not s.get("price_above_ema_20"))
     return _strat3(fl, fs, "momentum",
         ["ao_cross_up","price_above_ema_20"], ["ao_cross_dn","price_below_ema_20"],
-        ["Awesome Oscillator crossed above zero — momentum positive","Above EMA-20"],
-        ["Awesome Oscillator crossed below zero — momentum negative","Below EMA-20"])
+        ["Awesome Oscillator crossed above zero  -  momentum positive","Above EMA-20"],
+        ["Awesome Oscillator crossed below zero  -  momentum negative","Below EMA-20"])
 
 
 def strat_stochrsi_oversold(s):
@@ -238,8 +249,8 @@ def strat_stochrsi_oversold(s):
     fs = (s.get("stochrsi_overbought") and s.get("stochrsi_cross_dn") and s.get("rsi_14", 50) > 45)
     return _strat3(fl, fs, "momentum",
         ["stochrsi_oversold","stochrsi_cross_up","rsi_14<55"], ["stochrsi_overbought","stochrsi_cross_dn","rsi_14>45"],
-        ["StochRSI oversold — below 20","K crossed above D — momentum turning up","RSI not overbought"],
-        ["StochRSI overbought — above 80","K crossed below D — momentum turning down","RSI not oversold"])
+        ["StochRSI oversold  -  below 20","K crossed above D  -  momentum turning up","RSI not overbought"],
+        ["StochRSI overbought  -  above 80","K crossed below D  -  momentum turning down","RSI not oversold"])
 
 
 def strat_ppo_crossover(s):
@@ -247,8 +258,8 @@ def strat_ppo_crossover(s):
     fs = (s.get("ppo_crossover_dn") and s.get("adx_trending"))
     return _strat3(fl, fs, "momentum",
         ["ppo_crossover_up","adx_trending"], ["ppo_crossover_dn","adx_trending"],
-        ["PPO crossed above signal — momentum bullish","ADX confirms trend"],
-        ["PPO crossed below signal — momentum bearish","ADX confirms trend"])
+        ["PPO crossed above signal  -  momentum bullish","ADX confirms trend"],
+        ["PPO crossed below signal  -  momentum bearish","ADX confirms trend"])
 
 
 def strat_ultimate_oscillator(s):
@@ -256,21 +267,21 @@ def strat_ultimate_oscillator(s):
     fs = (s.get("uo", 50) > 70 and not s.get("price_above_sma_200"))
     return _strat3(fl, fs, "momentum",
         ["uo_oversold","price_above_sma_200"], ["uo_overbought","price_below_sma_200"],
-        [f"Ultimate Oscillator below 30 — oversold","Above 200 SMA — uptrend context"],
-        [f"Ultimate Oscillator above 70 — overbought","Below 200 SMA — downtrend context"])
+        [f"Ultimate Oscillator below 30  -  oversold","Above 200 SMA  -  uptrend context"],
+        [f"Ultimate Oscillator above 70  -  overbought","Below 200 SMA  -  downtrend context"])
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 # CATEGORY 3: TREND FOLLOWING (9 strategies)
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 
 def strat_golden_cross_50_200(s):
     fl = s.get("ema_50_200_golden_cross")
     fs = s.get("ema_50_200_death_cross")
     return _strat3(fl, fs, "trend",
         ["ema_50_200_golden_cross"], ["ema_50_200_death_cross"],
-        ["EMA-50 crossed above EMA-200 — golden cross — structural shift bullish"],
-        ["EMA-50 crossed below EMA-200 — death cross — structural shift bearish"])
+        ["EMA-50 crossed above EMA-200  -  golden cross  -  structural shift bullish"],
+        ["EMA-50 crossed below EMA-200  -  death cross  -  structural shift bearish"])
 
 
 def strat_golden_cross_9_21(s):
@@ -278,8 +289,8 @@ def strat_golden_cross_9_21(s):
     fs = (s.get("ema_9_21_death_cross") and not s.get("price_above_sma_50"))
     return _strat3(fl, fs, "trend",
         ["ema_9_21_golden_cross","price_above_sma_50"], ["ema_9_21_death_cross","price_below_sma_50"],
-        ["EMA-9 crossed above EMA-21 — early trend bullish","Above 50 SMA confirms"],
-        ["EMA-9 crossed below EMA-21 — early trend bearish","Below 50 SMA confirms"])
+        ["EMA-9 crossed above EMA-21  -  early trend bullish","Above 50 SMA confirms"],
+        ["EMA-9 crossed below EMA-21  -  early trend bearish","Below 50 SMA confirms"])
 
 
 def strat_golden_cross_20_50(s):
@@ -287,8 +298,8 @@ def strat_golden_cross_20_50(s):
     fs = (s.get("ema_20_50_death_cross") and not s.get("price_above_ema_200"))
     return _strat3(fl, fs, "trend",
         ["ema_20_50_golden_cross","price_above_ema_200"], ["ema_20_50_death_cross","price_below_ema_200"],
-        ["EMA-20 crossed above EMA-50 — medium-term trend bullish","Above 200 EMA confirms"],
-        ["EMA-20 crossed below EMA-50 — medium-term trend bearish","Below 200 EMA confirms"])
+        ["EMA-20 crossed above EMA-50  -  medium-term trend bullish","Above 200 EMA confirms"],
+        ["EMA-20 crossed below EMA-50  -  medium-term trend bearish","Below 200 EMA confirms"])
 
 
 def strat_parabolic_sar_flip(s):
@@ -296,8 +307,8 @@ def strat_parabolic_sar_flip(s):
     fs = (s.get("psar_flip_dn") and s.get("adx_trending"))
     return _strat3(fl, fs, "trend",
         ["psar_flip_up","adx_trending"], ["psar_flip_dn","adx_trending"],
-        ["Parabolic SAR flipped below price — trend reversal up","ADX confirms trend strength"],
-        ["Parabolic SAR flipped above price — trend reversal down","ADX confirms trend strength"])
+        ["Parabolic SAR flipped below price  -  trend reversal up","ADX confirms trend strength"],
+        ["Parabolic SAR flipped above price  -  trend reversal down","ADX confirms trend strength"])
 
 
 def strat_tema_dema(s):
@@ -305,8 +316,8 @@ def strat_tema_dema(s):
     fs = (s.get("tema_cross_dn") and not s.get("price_above_tema"))
     return _strat3(fl, fs, "trend",
         ["tema_cross_up","price_above_tema"], ["tema_cross_dn","price_below_tema"],
-        ["TEMA crossed above DEMA — fast MA system bullish","Price above TEMA"],
-        ["TEMA crossed below DEMA — fast MA system bearish","Price below TEMA"])
+        ["TEMA crossed above DEMA  -  fast MA system bullish","Price above TEMA"],
+        ["TEMA crossed below DEMA  -  fast MA system bearish","Price below TEMA"])
 
 
 def strat_ichimoku_tk_cross(s):
@@ -314,8 +325,8 @@ def strat_ichimoku_tk_cross(s):
     fs = (s.get("ichi_tk_cross_dn") and s.get("ichi_below_cloud"))
     return _strat3(fl, fs, "trend",
         ["ichi_tk_cross_up","not_below_cloud"], ["ichi_tk_cross_dn","ichi_below_cloud"],
-        ["Ichimoku Tenkan crossed above Kijun — TK cross bullish","Not below cloud"],
-        ["Ichimoku Tenkan crossed below Kijun — TK cross bearish","Below cloud confirms downtrend"])
+        ["Ichimoku Tenkan crossed above Kijun  -  TK cross bullish","Not below cloud"],
+        ["Ichimoku Tenkan crossed below Kijun  -  TK cross bearish","Below cloud confirms downtrend"])
 
 
 def strat_ichimoku_cloud_breakout(s):
@@ -323,8 +334,8 @@ def strat_ichimoku_cloud_breakout(s):
     fs = (s.get("ichi_below_cloud") and s.get("ichi_tk_bearish") and s.get("adx_trending"))
     return _strat3(fl, fs, "trend",
         ["ichi_above_cloud","ichi_tk_bullish","adx_trending"], ["ichi_below_cloud","ichi_tk_bearish","adx_trending"],
-        ["Price above Ichimoku Cloud — full bullish structure","Tenkan above Kijun","ADX confirms"],
-        ["Price below Ichimoku Cloud — full bearish structure","Tenkan below Kijun","ADX confirms"])
+        ["Price above Ichimoku Cloud  -  full bullish structure","Tenkan above Kijun","ADX confirms"],
+        ["Price below Ichimoku Cloud  -  full bearish structure","Tenkan below Kijun","ADX confirms"])
 
 
 def strat_adx_initiation(s):
@@ -332,8 +343,8 @@ def strat_adx_initiation(s):
     fs = (s.get("adx_cross_up") and not s.get("adx_di_bull"))
     return _strat3(fl, fs, "trend",
         ["adx_cross_up","adx_di_bull"], ["adx_cross_up","adx_di_bear"],
-        ["ADX crossed above 25 — trend initiating","DI+ above DI- — bullish direction"],
-        ["ADX crossed above 25 — trend initiating","DI- above DI+ — bearish direction"])
+        ["ADX crossed above 25  -  trend initiating","DI+ above DI-  -  bullish direction"],
+        ["ADX crossed above 25  -  trend initiating","DI- above DI+  -  bearish direction"])
 
 
 def strat_supertrend_macd(s):
@@ -341,29 +352,29 @@ def strat_supertrend_macd(s):
     fs = (not s.get("supertrend_bullish") and not s.get("macd_12_26_9_bullish") and s.get("adx", 0) > 20)
     return _strat3(fl, fs, "trend",
         ["supertrend_bullish","macd_bullish","adx>20"], ["supertrend_bearish","macd_bearish","adx>20"],
-        ["Supertrend bullish","MACD positive","ADX strong — trend confirmed"],
-        ["Supertrend bearish","MACD negative","ADX strong — downtrend confirmed"])
+        ["Supertrend bullish","MACD positive","ADX strong  -  trend confirmed"],
+        ["Supertrend bearish","MACD negative","ADX strong  -  downtrend confirmed"])
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# CATEGORY 4: MEAN REVERSION (11 strategies — including 2 shorts)
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
+# CATEGORY 4: MEAN REVERSION (11 strategies  -  including 2 shorts)
+# -----------------------------------------------------------------------------
 
 def strat_rsi_oversold(s):
     fl = (s.get("rsi_14", 50) < 35 and s.get("price_above_sma_50"))
     fs = (s.get("rsi_14", 50) > 65 and not s.get("price_above_sma_50"))
     return _strat3(fl, fs, "mean_reversion",
         ["rsi_14<35","price_above_sma_50"], ["rsi_14>65","price_below_sma_50"],
-        [f"RSI-14 oversold — below 35","Above 50 SMA — buying dip in uptrend"],
-        [f"RSI-14 overbought — above 65","Below 50 SMA — selling rally in downtrend"])
+        [f"RSI-14 oversold  -  below 35","Above 50 SMA  -  buying dip in uptrend"],
+        [f"RSI-14 overbought  -  above 65","Below 50 SMA  -  selling rally in downtrend"])
 
 
 def strat_rsi9_extreme(s):
-    # No natural short inverse — stays long-only (extreme oversold in uptrend)
+    # No natural short inverse  -  stays long-only (extreme oversold in uptrend)
     fires = (s.get("rsi_9_extreme_os") and s.get("price_above_ema_200") and s.get("rsi_9_rising"))
     return _strat(fires, "long", "mean_reversion",
         ["rsi_9<20","price_above_ema_200","rsi_9_rising"],
-        [f"RSI-9 extreme oversold below 20","Above 200 EMA — uptrend context","RSI-9 rising — recovering"])
+        [f"RSI-9 extreme oversold below 20","Above 200 EMA  -  uptrend context","RSI-9 rising  -  recovering"])
 
 
 def strat_rsi21_slow(s):
@@ -371,8 +382,8 @@ def strat_rsi21_slow(s):
     fs = (s.get("rsi_21", 50) > 65 and not s.get("price_above_sma_50"))
     return _strat3(fl, fs, "mean_reversion",
         ["rsi_21<35","price_above_sma_50"], ["rsi_21>65","price_below_sma_50"],
-        [f"Slow RSI-21 oversold below 35","Above 50 SMA — uptrend context"],
-        [f"Slow RSI-21 overbought above 65","Below 50 SMA — downtrend context"])
+        [f"Slow RSI-21 oversold below 35","Above 50 SMA  -  uptrend context"],
+        [f"Slow RSI-21 overbought above 65","Below 50 SMA  -  downtrend context"])
 
 
 def strat_rsi_overbought_short(s):
@@ -381,8 +392,8 @@ def strat_rsi_overbought_short(s):
              (s.get("bearish_engulfing") or s.get("rsi_14_rising") == False))
     return _strat(fires, "short", "mean_reversion",
         ["rsi_14>68","below_sma_50","bearish_signal"],
-        [f"RSI-14 overbought at {s.get('rsi_14',0):.1f} — above 68",
-         "Below 50 SMA — selling rally in downtrend",
+        [f"RSI-14 overbought at {s.get('rsi_14',0):.1f}  -  above 68",
+         "Below 50 SMA  -  selling rally in downtrend",
          "Bearish momentum confirms sellers taking control"])
 
 
@@ -391,8 +402,8 @@ def strat_mfi_oversold(s):
     fs = (s.get("mfi_overbought") and (s.get("near_r1") or s.get("near_r2")) and not s.get("obv_bullish"))
     return _strat3(fl, fs, "mean_reversion",
         ["mfi_oversold","at_support","obv_bullish"], ["mfi_overbought","at_resistance","obv_falling"],
-        ["MFI oversold — volume-weighted RSI below 20","At pivot support","OBV rising"],
-        ["MFI overbought — volume-weighted RSI above 80","At pivot resistance","OBV falling"])
+        ["MFI oversold  -  volume-weighted RSI below 20","At pivot support","OBV rising"],
+        ["MFI overbought  -  volume-weighted RSI above 80","At pivot resistance","OBV falling"])
 
 
 def strat_cmf_flip(s):
@@ -400,8 +411,8 @@ def strat_cmf_flip(s):
     fs = (s.get("cmf_cross_dn") and s.get("rsi_14", 50) > 50)
     return _strat3(fl, fs, "mean_reversion",
         ["cmf_cross_up","rsi_14<50"], ["cmf_cross_dn","rsi_14>50"],
-        ["CMF crossed above zero — money flow turned positive","RSI below 50"],
-        ["CMF crossed below zero — money flow turned negative","RSI above 50"])
+        ["CMF crossed above zero  -  money flow turned positive","RSI below 50"],
+        ["CMF crossed below zero  -  money flow turned negative","RSI above 50"])
 
 
 def strat_bollinger_lower(s):
@@ -409,8 +420,8 @@ def strat_bollinger_lower(s):
     fs = (s.get("bb_20_20_touch_upper") and s.get("rsi_14", 50) > 60 and s.get("adx", 30) < 30)
     return _strat3(fl, fs, "mean_reversion",
         ["bb_20_20_touch_lower","rsi_14<40","adx<30"], ["bb_20_20_touch_upper","rsi_14>60","adx<30"],
-        ["Price at lower Bollinger Band — statistically extreme low","RSI oversold","No strong trend"],
-        ["Price at upper Bollinger Band — statistically extreme high","RSI overbought","No strong trend"])
+        ["Price at lower Bollinger Band  -  statistically extreme low","RSI oversold","No strong trend"],
+        ["Price at upper Bollinger Band  -  statistically extreme high","RSI overbought","No strong trend"])
 
 
 def strat_bollinger_tight(s):
@@ -418,8 +429,8 @@ def strat_bollinger_tight(s):
     fs = ((s.get("bb_20_15_touch_upper") or s.get("bb_20_20_touch_upper")) and s.get("rsi_14", 50) > 55)
     return _strat3(fl, fs, "mean_reversion",
         ["bb_touch_lower_tight","rsi_14<45"], ["bb_touch_upper_tight","rsi_14>55"],
-        ["Price at tight lower Bollinger Band — extreme low","RSI oversold"],
-        ["Price at tight upper Bollinger Band — extreme high","RSI overbought"])
+        ["Price at tight lower Bollinger Band  -  extreme low","RSI oversold"],
+        ["Price at tight upper Bollinger Band  -  extreme high","RSI overbought"])
 
 
 def strat_bollinger_upper_short(s):
@@ -428,9 +439,9 @@ def strat_bollinger_upper_short(s):
              s.get("shooting_star"))
     return _strat(fires, "short", "mean_reversion",
         ["bb_20_20_touch_upper","rsi_14>70","shooting_star"],
-        [f"Price at upper Bollinger Band (20,2) — overbought extreme",
-         f"RSI-14 at {s.get('rsi_14',0):.1f} — overbought above 70",
-         "Shooting star candle — sellers rejecting the high"])
+        [f"Price at upper Bollinger Band (20,2)  -  overbought extreme",
+         f"RSI-14 at {s.get('rsi_14',0):.1f}  -  overbought above 70",
+         "Shooting star candle  -  sellers rejecting the high"])
 
 
 def strat_keltner_lower(s):
@@ -447,20 +458,20 @@ def strat_stoch_oversold(s):
     fs = (s.get("stoch_overbought") and s.get("stoch_bearish_cross") and not s.get("price_above_ema_20"))
     return _strat3(fl, fs, "mean_reversion",
         ["stoch_oversold","stoch_bullish_cross","price_above_ema_20"], ["stoch_overbought","stoch_bearish_cross","price_below_ema_20"],
-        ["Stochastic oversold below 20","K crossed above D — turning bullish","Above EMA-20"],
-        ["Stochastic overbought above 80","K crossed below D — turning bearish","Below EMA-20"])
+        ["Stochastic oversold below 20","K crossed above D  -  turning bullish","Above EMA-20"],
+        ["Stochastic overbought above 80","K crossed below D  -  turning bearish","Below EMA-20"])
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 # CATEGORY 5: BREAKOUT (6 strategies)
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 
 def strat_squeeze_breakout(s):
     fires = s.get("squeeze_fire_up")
     return _strat(fires, "long", "breakout",
         ["squeeze_fire_up"],
-        ["Bollinger Bands were inside Keltner Channels — coiling",
-         "Squeeze released with positive momentum — energy unleashing",
+        ["Bollinger Bands were inside Keltner Channels  -  coiling",
+         "Squeeze released with positive momentum  -  energy unleashing",
          "One of the highest probability breakout signals"])
 
 
@@ -469,8 +480,8 @@ def strat_volume_spike_breakout(s):
     fs = (s.get("dc20_breakout_dn") and s.get("vol_spike_2x") and not s.get("above_vwap"))
     return _strat3(fl, fs, "breakout",
         ["dc20_breakout_up","vol_spike_2x","above_vwap"], ["dc20_breakout_dn","vol_spike_2x","below_vwap"],
-        ["Price broke above 20-day Donchian high","Volume 2× confirms","Above VWAP"],
-        ["Price broke below 20-day Donchian low","Volume 2× confirms","Below VWAP"])
+        ["Price broke above 20-day Donchian high","Volume 2x confirms","Above VWAP"],
+        ["Price broke below 20-day Donchian low","Volume 2x confirms","Below VWAP"])
 
 
 def strat_52w_high_breakout(s):
@@ -479,8 +490,8 @@ def strat_52w_high_breakout(s):
     return _strat(fires, "long", "breakout",
         ["break_52w_high","vol_spike_2x"],
         [f"Price broke 52-week high at ${s.get('year_high',0):.2f}",
-         "Most studied momentum signal — new highs attract buyers",
-         "Volume 2× confirms institutional conviction"])
+         "Most studied momentum signal  -  new highs attract buyers",
+         "Volume 2x confirms institutional conviction"])
 
 
 def strat_inside_bar_breakout(s):
@@ -489,9 +500,9 @@ def strat_inside_bar_breakout(s):
              s.get("above_vwap"))
     return _strat(fires, "long", "breakout",
         ["inside_bar","adx_trending","above_vwap"],
-        ["Inside bar formed — consolidation within prior bar's range",
+        ["Inside bar formed  -  consolidation within prior bar's range",
          "Classic pre-breakout compression setup",
-         "ADX trending and above VWAP — breakout direction likely up"])
+         "ADX trending and above VWAP  -  breakout direction likely up"])
 
 
 def strat_force_index_breakout(s):
@@ -499,8 +510,8 @@ def strat_force_index_breakout(s):
     fs = (s.get("force_index_cross_dn") and not s.get("price_above_ema_20"))
     return _strat3(fl, fs, "breakout",
         ["force_index_cross_up","price_above_ema_20"], ["force_index_cross_dn","price_below_ema_20"],
-        ["Force Index crossed above zero — price×volume momentum positive","Above EMA-20"],
-        ["Force Index crossed below zero — price×volume momentum negative","Below EMA-20"])
+        ["Force Index crossed above zero  -  pricexvolume momentum positive","Above EMA-20"],
+        ["Force Index crossed below zero  -  pricexvolume momentum negative","Below EMA-20"])
 
 
 def strat_donchian_10_breakout(s):
@@ -508,21 +519,21 @@ def strat_donchian_10_breakout(s):
     fs = (s.get("dc10_breakout_dn") and s.get("vol_spike_15x") and not s.get("macd_12_26_9_bullish"))
     return _strat3(fl, fs, "breakout",
         ["dc10_breakout_up","vol_spike_1.5x","macd_bullish"], ["dc10_breakout_dn","vol_spike_1.5x","macd_bearish"],
-        ["Price broke 10-day Donchian high","Volume 1.5× confirms","MACD positive"],
-        ["Price broke 10-day Donchian low","Volume 1.5× confirms","MACD negative"])
+        ["Price broke 10-day Donchian high","Volume 1.5x confirms","MACD positive"],
+        ["Price broke 10-day Donchian low","Volume 1.5x confirms","MACD negative"])
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# CATEGORY 6: CANDLE PATTERNS (6 strategies — 2 shorts)
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
+# CATEGORY 6: CANDLE PATTERNS (6 strategies  -  2 shorts)
+# -----------------------------------------------------------------------------
 
 def strat_morning_star(s):
     fl = (s.get("morning_star") and s.get("rsi_14", 50) < 45 and s.get("ema_50_200_bullish"))
     fs = (s.get("evening_star") and s.get("rsi_14", 50) > 55 and not s.get("ema_50_200_bullish"))
     return _strat3(fl, fs, "candle",
         ["morning_star","rsi_14<45","ema_50_200_bullish"], ["evening_star","rsi_14>55","ema_50_200_bearish"],
-        ["Three-bar morning star — bullish reversal","RSI not overbought","Above 50/200 EMA"],
-        ["Three-bar evening star — bearish reversal","RSI not oversold","Below 50/200 EMA"])
+        ["Three-bar morning star  -  bullish reversal","RSI not overbought","Above 50/200 EMA"],
+        ["Three-bar evening star  -  bearish reversal","RSI not oversold","Below 50/200 EMA"])
 
 
 def strat_bullish_engulfing_support(s):
@@ -530,8 +541,8 @@ def strat_bullish_engulfing_support(s):
     fs = (s.get("bearish_engulfing") and (s.get("near_r1") or s.get("near_r2") or s.get("at_key_fib")) and not s.get("obv_bullish"))
     return _strat3(fl, fs, "candle",
         ["bullish_engulfing","at_support","obv_bullish"], ["bearish_engulfing","at_resistance","obv_falling"],
-        ["Bullish engulfing at support — two systems confirming","OBV rising"],
-        ["Bearish engulfing at resistance — two systems confirming","OBV falling"])
+        ["Bullish engulfing at support  -  two systems confirming","OBV rising"],
+        ["Bearish engulfing at resistance  -  two systems confirming","OBV falling"])
 
 
 def strat_doji_at_support(s):
@@ -540,8 +551,8 @@ def strat_doji_at_support(s):
              s.get("vol_spike_15x"))
     return _strat(fires, "long", "candle",
         ["doji","at_support","vol_spike_1.5x"],
-        ["Doji candle at support — indecision after downmove",
-         "Buyers and sellers equally matched — reversal often follows",
+        ["Doji candle at support  -  indecision after downmove",
+         "Buyers and sellers equally matched  -  reversal often follows",
          "Volume spike confirms the level is being contested"])
 
 
@@ -551,8 +562,8 @@ def strat_three_white_soldiers(s):
     return _strat(fires, "long", "candle",
         ["three_white_soldiers","rsi_14<60"],
         ["Three consecutive bullish candles each closing near their high",
-         "Strong reversal signal — sustained buying pressure over 3 days",
-         "RSI below 60 — room to run, not entering overbought"])
+         "Strong reversal signal  -  sustained buying pressure over 3 days",
+         "RSI below 60  -  room to run, not entering overbought"])
 
 
 def strat_shooting_star_short(s):
@@ -562,9 +573,9 @@ def strat_shooting_star_short(s):
              s.get("rsi_14", 50) > 65)
     return _strat(fires, "short", "candle",
         ["shooting_star","at_resistance","rsi_14>65"],
-        ["Shooting star at resistance level — bearish reversal",
+        ["Shooting star at resistance level  -  bearish reversal",
          "Long upper wick shows sellers rejecting higher prices",
-         f"RSI-14 at {s.get('rsi_14',0):.1f} — overbought at resistance"])
+         f"RSI-14 at {s.get('rsi_14',0):.1f}  -  overbought at resistance"])
 
 
 def strat_evening_star_short(s):
@@ -573,22 +584,22 @@ def strat_evening_star_short(s):
              not s.get("price_above_sma_50"))
     return _strat(fires, "short", "candle",
         ["evening_star","rsi_14>55","below_sma_50"],
-        ["Three-bar evening star — bearish reversal pattern",
+        ["Three-bar evening star  -  bearish reversal pattern",
          "Mirror of morning star: buyers exhausted, sellers take control",
          "Below 50 SMA confirms downtrend context for the short"])
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# CATEGORY 7: CONFLUENCE (9 strategies — highest conviction)
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
+# CATEGORY 7: CONFLUENCE (9 strategies  -  highest conviction)
+# -----------------------------------------------------------------------------
 
 def strat_rsi_volume_200ema(s):
     fl = (s.get("rsi_14", 50) < 35 and s.get("vol_spike_2x") and s.get("price_above_ema_200"))
     fs = (s.get("rsi_14", 50) > 65 and s.get("vol_spike_2x") and not s.get("price_above_ema_200"))
     return _strat3(fl, fs, "confluence",
         ["rsi_14<35","vol_spike_2x","above_ema_200"], ["rsi_14>65","vol_spike_2x","below_ema_200"],
-        ["RSI oversold + volume spike + above 200 EMA — triple confluence bullish"],
-        ["RSI overbought + volume spike + below 200 EMA — triple confluence bearish"])
+        ["RSI oversold + volume spike + above 200 EMA  -  triple confluence bullish"],
+        ["RSI overbought + volume spike + below 200 EMA  -  triple confluence bearish"])
 
 
 def strat_macd_ichimoku(s):
@@ -596,8 +607,8 @@ def strat_macd_ichimoku(s):
     fs = (s.get("macd_12_26_9_crossover_dn") and s.get("ichi_below_cloud"))
     return _strat3(fl, fs, "confluence",
         ["macd_crossover_up","ichi_above_cloud"], ["macd_crossover_dn","ichi_below_cloud"],
-        ["MACD crossover up + above cloud — two systems bullish simultaneously"],
-        ["MACD crossover down + below cloud — two systems bearish simultaneously"])
+        ["MACD crossover up + above cloud  -  two systems bullish simultaneously"],
+        ["MACD crossover down + below cloud  -  two systems bearish simultaneously"])
 
 
 def strat_bb_squeeze_volume(s):
@@ -605,8 +616,8 @@ def strat_bb_squeeze_volume(s):
     fs = (s.get("squeeze_fire_dn") and s.get("vol_spike_2x") and not s.get("above_vwap"))
     return _strat3(fl, fs, "confluence",
         ["squeeze_fire_up","vol_spike_2x","above_vwap"], ["squeeze_fire_dn","vol_spike_2x","below_vwap"],
-        ["BB squeeze releasing upward with 2× volume","Above VWAP — buyers in control"],
-        ["BB squeeze releasing downward with 2× volume","Below VWAP — sellers in control"])
+        ["BB squeeze releasing upward with 2x volume","Above VWAP  -  buyers in control"],
+        ["BB squeeze releasing downward with 2x volume","Below VWAP  -  sellers in control"])
 
 
 def strat_pivot_fib_confluence(s):
@@ -614,8 +625,8 @@ def strat_pivot_fib_confluence(s):
     fs = ((s.get("near_r1") or s.get("near_r2")) and s.get("at_key_fib") and s.get("bearish_engulfing"))
     return _strat3(fl, fs, "confluence",
         ["at_pivot_support","at_key_fib","bullish_candle"], ["at_pivot_resistance","at_key_fib","bearish_engulfing"],
-        ["Pivot support + Fibonacci + bullish candle — two systems at same level bullish"],
-        ["Pivot resistance + Fibonacci + bearish engulfing — two systems at same level bearish"])
+        ["Pivot support + Fibonacci + bullish candle  -  two systems at same level bullish"],
+        ["Pivot resistance + Fibonacci + bearish engulfing  -  two systems at same level bearish"])
 
 
 def strat_golden_cross_volume(s):
@@ -623,8 +634,8 @@ def strat_golden_cross_volume(s):
     fs = (s.get("ema_50_200_death_cross") and s.get("vol_spike_2x"))
     return _strat3(fl, fs, "confluence",
         ["ema_50_200_golden_cross","vol_spike_2x"], ["ema_50_200_death_cross","vol_spike_2x"],
-        ["Golden cross with 2× volume — institutional confirmation of bullish shift"],
-        ["Death cross with 2× volume — institutional confirmation of bearish shift"])
+        ["Golden cross with 2x volume  -  institutional confirmation of bullish shift"],
+        ["Death cross with 2x volume  -  institutional confirmation of bearish shift"])
 
 
 def strat_cpr_narrow_momentum(s):
@@ -632,8 +643,8 @@ def strat_cpr_narrow_momentum(s):
     fs = (s.get("cpr_narrow") and s.get("below_cpr") and s.get("rsi_14", 50) < 50 and not s.get("macd_12_26_9_bullish"))
     return _strat3(fl, fs, "confluence",
         ["cpr_narrow","above_cpr","rsi_14>50","macd_bullish"], ["cpr_narrow","below_cpr","rsi_14<50","macd_bearish"],
-        ["Narrow CPR + above CPR + RSI>50 + MACD bullish — four signals confirming bullish day"],
-        ["Narrow CPR + below CPR + RSI<50 + MACD bearish — four signals confirming bearish day"])
+        ["Narrow CPR + above CPR + RSI>50 + MACD bullish  -  four signals confirming bullish day"],
+        ["Narrow CPR + below CPR + RSI<50 + MACD bearish  -  four signals confirming bearish day"])
 
 
 def strat_camarilla_rsi_obv(s):
@@ -641,8 +652,8 @@ def strat_camarilla_rsi_obv(s):
     fs = (s.get("near_cam_r3") and s.get("rsi_14", 50) > 65 and not s.get("obv_bullish") and not s.get("cmf_positive"))
     return _strat3(fl, fs, "confluence",
         ["near_cam_s3","rsi_14<35","obv_bullish","cmf_positive"], ["near_cam_r3","rsi_14>65","obv_falling","cmf_negative"],
-        ["Camarilla S3 + RSI oversold + OBV rising + CMF positive — highest conviction long"],
-        ["Camarilla R3 + RSI overbought + OBV falling + CMF negative — highest conviction short"])
+        ["Camarilla S3 + RSI oversold + OBV rising + CMF positive  -  highest conviction long"],
+        ["Camarilla R3 + RSI overbought + OBV falling + CMF negative  -  highest conviction short"])
 
 
 def strat_supertrend_ichimoku_adx(s):
@@ -650,8 +661,8 @@ def strat_supertrend_ichimoku_adx(s):
     fs = (not s.get("supertrend_bullish") and s.get("ichi_below_cloud") and s.get("adx_strong"))
     return _strat3(fl, fs, "confluence",
         ["supertrend_bullish","ichi_above_cloud","adx_strong"], ["supertrend_bearish","ichi_below_cloud","adx_strong"],
-        ["Supertrend + Ichimoku cloud + ADX — three trend systems bullish"],
-        ["Supertrend + Ichimoku cloud + ADX — three trend systems bearish"])
+        ["Supertrend + Ichimoku cloud + ADX  -  three trend systems bullish"],
+        ["Supertrend + Ichimoku cloud + ADX  -  three trend systems bearish"])
 
 
 def strat_williams_stoch_dual(s):
@@ -659,13 +670,13 @@ def strat_williams_stoch_dual(s):
     fs = (s.get("williams_r", 0) > -20 and s.get("stoch_overbought") and (s.get("near_r1") or s.get("near_r2") or s.get("near_cam_r3")))
     return _strat3(fl, fs, "confluence",
         ["williams_r_oversold","stoch_oversold","at_pivot_support"], ["williams_r_overbought","stoch_overbought","at_pivot_resistance"],
-        ["Williams %R + Stochastic both oversold at pivot support — high conviction long"],
-        ["Williams %R + Stochastic both overbought at pivot resistance — high conviction short"])
+        ["Williams %R + Stochastic both oversold at pivot support  -  high conviction long"],
+        ["Williams %R + Stochastic both overbought at pivot resistance  -  high conviction short"])
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# CATEGORY 8: DEDICATED SHORT STRATEGIES (12 new — sell the rip)
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
+# CATEGORY 8: DEDICATED SHORT STRATEGIES (12 new  -  sell the rip)
+# -----------------------------------------------------------------------------
 
 # --- Trend-following shorts (4) ---
 
@@ -673,9 +684,9 @@ def strat_death_cross_50_200_volume(s):
     fires = (s.get("ema_50_200_death_cross") and s.get("vol_spike_2x"))
     return _strat(fires, "short", "trend",
         ["ema_50_200_death_cross", "vol_spike_2x"],
-        ["EMA-50 crossed below EMA-200 — death cross",
-         "Volume 2× confirms institutional selling on the cross",
-         "Structural shift to bearish — strong follow-through expected"])
+        ["EMA-50 crossed below EMA-200  -  death cross",
+         "Volume 2x confirms institutional selling on the cross",
+         "Structural shift to bearish  -  strong follow-through expected"])
 
 
 def strat_supertrend_macd_short(s):
@@ -684,9 +695,9 @@ def strat_supertrend_macd_short(s):
              s.get("adx", 0) > 20)
     return _strat(fires, "short", "trend",
         ["supertrend_bearish", "macd_bearish", "adx>20"],
-        ["Supertrend indicator bearish — trend confirmed downward",
-         "MACD histogram negative — momentum aligned bearish",
-         "ADX above 20 — trend has real strength, not a sideways drift"])
+        ["Supertrend indicator bearish  -  trend confirmed downward",
+         "MACD histogram negative  -  momentum aligned bearish",
+         "ADX above 20  -  trend has real strength, not a sideways drift"])
 
 
 def strat_ichimoku_cloud_breakdown(s):
@@ -695,18 +706,18 @@ def strat_ichimoku_cloud_breakdown(s):
              s.get("adx_trending"))
     return _strat(fires, "short", "trend",
         ["ichi_below_cloud", "ichi_tk_cross_dn", "adx_trending"],
-        ["Price broke below Ichimoku Cloud — full bearish structure",
-         "Tenkan crossed below Kijun — short-term momentum confirming",
-         "ADX trending — downtrend has strength"])
+        ["Price broke below Ichimoku Cloud  -  full bearish structure",
+         "Tenkan crossed below Kijun  -  short-term momentum confirming",
+         "ADX trending  -  downtrend has strength"])
 
 
 def strat_parabolic_sar_flip_short(s):
     fires = (s.get("psar_flip_dn") and s.get("adx_trending"))
     return _strat(fires, "short", "trend",
         ["psar_flip_dn", "adx_trending"],
-        ["Parabolic SAR flipped above price — trend reversed downward",
-         "Clean unambiguous signal — SAR is now resistance",
-         "ADX trending — reversal has follow-through potential"])
+        ["Parabolic SAR flipped above price  -  trend reversed downward",
+         "Clean unambiguous signal  -  SAR is now resistance",
+         "ADX trending  -  reversal has follow-through potential"])
 
 
 # --- Momentum shorts (3) ---
@@ -716,8 +727,8 @@ def strat_macd_crossover_short(s):
     return _strat(fires, "short", "momentum",
         ["macd_12_26_9_crossover_dn"],
         ["MACD 12/26/9 histogram crossed below zero",
-         "Momentum turned negative — trend shift to downside",
-         "High-probability momentum entry — catching the shift early"])
+         "Momentum turned negative  -  trend shift to downside",
+         "High-probability momentum entry  -  catching the shift early"])
 
 
 def strat_hull_rsi_short(s):
@@ -726,9 +737,9 @@ def strat_hull_rsi_short(s):
              s.get("rsi_9", 50) < 50)
     return _strat(fires, "short", "momentum",
         ["hull_bearish", "price_below_hull", "rsi_9<50"],
-        ["Hull MA falling — fast trend confirmed bearish",
-         "Price below Hull MA — momentum aligned downward",
-         "RSI-9 below 50 — below midpoint, no upside momentum"])
+        ["Hull MA falling  -  fast trend confirmed bearish",
+         "Price below Hull MA  -  momentum aligned downward",
+         "RSI-9 below 50  -  below midpoint, no upside momentum"])
 
 
 def strat_stochrsi_overbought_short(s):
@@ -737,12 +748,12 @@ def strat_stochrsi_overbought_short(s):
              s.get("rsi_14", 50) > 45)
     return _strat(fires, "short", "momentum",
         ["stochrsi_overbought", "stochrsi_cross_dn", "rsi_14>45"],
-        ["StochRSI above 80 — momentum exhausted at overbought",
-         "K crossed below D — momentum turning down",
-         "RSI-14 not oversold — room to fall"])
+        ["StochRSI above 80  -  momentum exhausted at overbought",
+         "K crossed below D  -  momentum turning down",
+         "RSI-14 not oversold  -  room to fall"])
 
 
-# --- Breakdown shorts (3 — no long equivalent) ---
+# --- Breakdown shorts (3  -  no long equivalent) ---
 
 def strat_donchian_breakdown_short(s):
     fires = (s.get("dc10_breakout_dn") and
@@ -750,17 +761,17 @@ def strat_donchian_breakdown_short(s):
              not s.get("macd_12_26_9_bullish"))
     return _strat(fires, "short", "breakout",
         ["dc10_breakout_dn", "vol_spike_1.5x", "macd_bearish"],
-        ["Price broke 10-day Donchian low — downside breakout",
-         "Volume 1.5× confirms institutional selling pressure",
-         "MACD negative — momentum confirms the breakdown"])
+        ["Price broke 10-day Donchian low  -  downside breakout",
+         "Volume 1.5x confirms institutional selling pressure",
+         "MACD negative  -  momentum confirms the breakdown"])
 
 
 def strat_52w_low_breakdown(s):
     fires = (s.get("break_52w_low") and s.get("vol_spike_2x"))
     return _strat(fires, "short", "breakout",
         ["break_52w_low", "vol_spike_2x"],
-        [f"Price broke 52-week low — serious capitulation signal",
-         "Volume 2× confirms institutional distribution",
+        [f"Price broke 52-week low  -  serious capitulation signal",
+         "Volume 2x confirms institutional distribution",
          "Stocks at new 52-week lows tend to continue lower"])
 
 
@@ -770,9 +781,9 @@ def strat_prev_day_low_breakdown(s):
              not s.get("above_vwap"))
     return _strat(fires, "short", "breakout",
         ["below_prev_low", "vol_spike_1.5x", "below_vwap"],
-        ["Price broke below previous day's low — failed to hold support",
+        ["Price broke below previous day's low  -  failed to hold support",
          "Volume confirms sellers in control",
-         "Below VWAP — intraday sellers dominating"])
+         "Below VWAP  -  intraday sellers dominating"])
 
 
 # --- Confluence shorts (2) ---
@@ -784,9 +795,9 @@ def strat_camarilla_rsi_obv_short(s):
              not s.get("cmf_positive"))
     return _strat(fires, "short", "confluence",
         ["near_cam_r3", "rsi_14>65", "obv_falling", "cmf_negative"],
-        ["Camarilla R3 — strongest institutional resistance",
+        ["Camarilla R3  -  strongest institutional resistance",
          "RSI-14 overbought above 65",
-         "OBV falling and CMF negative — four systems confirming short"])
+         "OBV falling and CMF negative  -  four systems confirming short"])
 
 
 def strat_cpr_narrow_momentum_short(s):
@@ -796,18 +807,18 @@ def strat_cpr_narrow_momentum_short(s):
              not s.get("macd_12_26_9_bullish"))
     return _strat(fires, "short", "confluence",
         ["cpr_narrow", "below_cpr", "rsi_14<50", "macd_bearish"],
-        ["Narrow CPR — directional day expected",
-         "Price below CPR — bearish professional bias",
-         "RSI<50 and MACD bearish — four signals confirming bearish day"])
+        ["Narrow CPR  -  directional day expected",
+         "Price below CPR  -  bearish professional bias",
+         "RSI<50 and MACD bearish  -  four signals confirming bearish day"])
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# STRATEGY REGISTRY — Layer 1 baseline 60 + currently-implemented dedicated shorts
+# -----------------------------------------------------------------------------
+# STRATEGY REGISTRY  -  Layer 1 baseline 60 + currently-implemented dedicated shorts
 # (full layered roster ~108-133 classes per CANONICAL_FACTS.md F-002; layered
 #  roster: Layer 1 baseline 60 + Layer 2 Phase 0.D ICT/Earnings/Calendar + Layer 2D
 #  form-derived ICT + Layer 3 Pass 52 RESOLVED chart-pattern/categories + Layer 4
 #  PENDING strategy-additive). Run `len(ALL_STRATEGIES)` for current count.
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 
 ALL_STRATEGIES = {
     # Pivot (10)
@@ -877,33 +888,33 @@ ALL_STRATEGIES = {
     "camarilla_rsi_obv":        strat_camarilla_rsi_obv,
     "supertrend_ichimoku_adx":  strat_supertrend_ichimoku_adx,
     "williams_stoch_dual":      strat_williams_stoch_dual,
-    # Dedicated shorts — Trend (4)
+    # Dedicated shorts  -  Trend (4)
     "death_cross_50_200_volume":    strat_death_cross_50_200_volume,
     "supertrend_macd_short":        strat_supertrend_macd_short,
     "ichimoku_cloud_breakdown":     strat_ichimoku_cloud_breakdown,
     "parabolic_sar_flip_short":     strat_parabolic_sar_flip_short,
-    # Dedicated shorts — Momentum (3)
+    # Dedicated shorts  -  Momentum (3)
     "macd_crossover_short":         strat_macd_crossover_short,
     "hull_rsi_short":               strat_hull_rsi_short,
     "stochrsi_overbought_short":    strat_stochrsi_overbought_short,
-    # Dedicated shorts — Breakdown (3)
+    # Dedicated shorts  -  Breakdown (3)
     "donchian_breakdown_short":     strat_donchian_breakdown_short,
     "52w_low_breakdown":            strat_52w_low_breakdown,
     "prev_day_low_breakdown":       strat_prev_day_low_breakdown,
-    # Dedicated shorts — Confluence (2)
+    # Dedicated shorts  -  Confluence (2)
     "camarilla_rsi_obv_short":      strat_camarilla_rsi_obv_short,
     "cpr_narrow_momentum_short":    strat_cpr_narrow_momentum_short,
 }
 
 STRATEGY_CATEGORIES = {
-    name: fn({}).__class__  # placeholder — category stored in each fn
+    name: fn({}).__class__  # placeholder  -  category stored in each fn
     for name, fn in ALL_STRATEGIES.items()
 }
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 # ENTRY ZONE VALIDATOR
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 
 def validate_entry_zone(
     open_price: float,
@@ -932,9 +943,9 @@ def validate_entry_zone(
         return True, f"entry_valid_gap_{gap_pct:.1f}pct"
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 # SCREENING PIPELINE
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 
 def screen_instrument(
     ticker: str,
@@ -967,7 +978,7 @@ def screen_instrument(
             if not result["fires"]:
                 continue
             direction = result["direction"]
-            # Regime context — no hard direction blocks (buy-the-dip philosophy)
+            # Regime context  -  no hard direction blocks (buy-the-dip philosophy)
             # Crisis regime: long trades flagged, position size reduced in engine
             # Bull regime: short trades allowed but at reduced size
             entry = {
