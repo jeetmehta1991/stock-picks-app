@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-10T22:54:34.320809+00:00",
+  "generated_at": "2026-05-10T22:58:50.983094+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -13,7 +13,7 @@
         "wired": true,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 37,
+        "n_doc_refs": 39,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -133,7 +133,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 94,
+        "n_doc_refs": 95,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -493,7 +493,7 @@
         "wired": true,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 83,
+        "n_doc_refs": 85,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -1013,7 +1013,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 108,
+        "n_doc_refs": 110,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -1293,7 +1293,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 144,
+        "n_doc_refs": 146,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -1493,7 +1493,7 @@
         "wired": true,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 198,
+        "n_doc_refs": 199,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -1853,7 +1853,7 @@
         "wired": true,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 200,
+        "n_doc_refs": 202,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -1893,7 +1893,7 @@
         "wired": true,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 327,
+        "n_doc_refs": 328,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -2053,7 +2053,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 232,
+        "n_doc_refs": 234,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -2093,7 +2093,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 280,
+        "n_doc_refs": 289,
         "pyramid": {
           "unit": true,
           "smoke": true,
@@ -2133,7 +2133,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 215,
+        "n_doc_refs": 218,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -2453,7 +2453,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 575,
+        "n_doc_refs": 583,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -10573,7 +10573,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 21,
+        "n_doc_refs": 22,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -10893,7 +10893,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 31,
+        "n_doc_refs": 32,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -12493,7 +12493,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 6,
+        "n_doc_refs": 8,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -14293,7 +14293,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 17,
+        "n_doc_refs": 18,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -17733,7 +17733,7 @@
         "wired": true,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 44,
+        "n_doc_refs": 46,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -20013,7 +20013,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 43,
+        "n_doc_refs": 45,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -20253,7 +20253,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 64,
+        "n_doc_refs": 67,
         "pyramid": {
           "unit": true,
           "smoke": true,
@@ -20293,7 +20293,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 28,
+        "n_doc_refs": 30,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -20333,7 +20333,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 35,
+        "n_doc_refs": 37,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -20373,7 +20373,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 11,
+        "n_doc_refs": 12,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -20413,7 +20413,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 55,
+        "n_doc_refs": 56,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -20773,7 +20773,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 7,
+        "n_doc_refs": 11,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -21053,7 +21053,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 448,
+        "n_doc_refs": 449,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -21093,7 +21093,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 25,
+        "n_doc_refs": 26,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -21133,7 +21133,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 25,
+        "n_doc_refs": 27,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -21677,7 +21677,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 86,
+        "n_doc_refs": 87,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -21715,7 +21715,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 178,
+        "n_doc_refs": 183,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -21791,7 +21791,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 40,
+        "n_doc_refs": 43,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -21829,7 +21829,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 64,
+        "n_doc_refs": 65,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -21893,44 +21893,6 @@
         "label": "IMPLEMENTED",
         "color": "#10b981",
         "reason": "Resolved with code + regression test"
-      }
-    },
-    {
-      "id": "BUG-20",
-      "title": "Regime thresholds inconsistent between PROJECT_PLAN and config.py",
-      "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 40,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "BUG-020",
-      "sprint": "(see linked DEC sprint)",
-      "dependencies": "DEC-458",
-      "description": "**Files:** `backtest/config.py` lines 162\u2013172 vs `PROJECT_PLAN.md` lines 630\u2013634",
-      "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
       }
     },
     {
@@ -22019,7 +21981,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 172,
+        "n_doc_refs": 180,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -22057,7 +22019,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 49,
+        "n_doc_refs": 50,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -22095,7 +22057,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 13,
+        "n_doc_refs": 14,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -22171,7 +22133,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 7,
+        "n_doc_refs": 8,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -22437,7 +22399,7 @@
         "wired": false,
         "tested": false,
         "pushed": false,
-        "n_doc_refs": 6,
+        "n_doc_refs": 8,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -22469,7 +22431,7 @@
       "id": "BUG-64",
       "title": "MEDIUM  -  Phase 1C prerequisites not documented  -  Unusual Whales and Ortex integr",
       "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
+      "sprint_context": "DEFERRED-TO-PHASE-1C Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (Phase 1C Unusual Whales / Ortex integration is Phase 1C scope per DEC-506; Phase 1A baseline does not require these; subscription deferred per owner cost-control)",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -22493,14 +22455,14 @@
         }
       },
       "short_id": "BUG-064",
-      "sprint": "(see linked DEC sprint)",
+      "sprint": "DEFERRED-TO-PHASE-1C Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (Phase 1C Unusual Whales / Ortex integration is Phase 1C scope per DEC-506; Phase 1A baseline does not require these; subscription deferred per owner cost-control)",
       "dependencies": "DEC-458",
       "description": "**File:** `PROJECT_PLAN.md` Phase 1C definition",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "DEFERRED",
+        "label": "DEFERRED",
+        "color": "#3b82f6",
+        "reason": "Bug deferred per sprint_context: DEFERRED-TO-PHASE-1C Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (Phase 1C Unusual Whales / Ortex inte"
       }
     },
     {
@@ -22513,7 +22475,7 @@
         "wired": false,
         "tested": false,
         "pushed": false,
-        "n_doc_refs": 7,
+        "n_doc_refs": 8,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -22855,7 +22817,7 @@
         "wired": false,
         "tested": false,
         "pushed": false,
-        "n_doc_refs": 4,
+        "n_doc_refs": 5,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -22893,7 +22855,7 @@
         "wired": false,
         "tested": false,
         "pushed": false,
-        "n_doc_refs": 4,
+        "n_doc_refs": 5,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -22931,7 +22893,7 @@
         "wired": false,
         "tested": false,
         "pushed": false,
-        "n_doc_refs": 4,
+        "n_doc_refs": 5,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -22969,7 +22931,7 @@
         "wired": false,
         "tested": false,
         "pushed": false,
-        "n_doc_refs": 4,
+        "n_doc_refs": 5,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -23007,7 +22969,7 @@
         "wired": false,
         "tested": false,
         "pushed": false,
-        "n_doc_refs": 4,
+        "n_doc_refs": 5,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -23045,7 +23007,7 @@
         "wired": false,
         "tested": false,
         "pushed": false,
-        "n_doc_refs": 11,
+        "n_doc_refs": 12,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -23083,7 +23045,7 @@
         "wired": false,
         "tested": false,
         "pushed": false,
-        "n_doc_refs": 6,
+        "n_doc_refs": 7,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -23159,7 +23121,7 @@
         "wired": false,
         "tested": false,
         "pushed": false,
-        "n_doc_refs": 5,
+        "n_doc_refs": 6,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -23197,7 +23159,7 @@
         "wired": false,
         "tested": false,
         "pushed": false,
-        "n_doc_refs": 4,
+        "n_doc_refs": 5,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -23235,7 +23197,7 @@
         "wired": false,
         "tested": false,
         "pushed": false,
-        "n_doc_refs": 4,
+        "n_doc_refs": 5,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -23273,7 +23235,7 @@
         "wired": false,
         "tested": false,
         "pushed": false,
-        "n_doc_refs": 4,
+        "n_doc_refs": 5,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -23311,7 +23273,7 @@
         "wired": false,
         "tested": false,
         "pushed": false,
-        "n_doc_refs": 4,
+        "n_doc_refs": 5,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -23340,238 +23302,10 @@
       }
     },
     {
-      "id": "BUG-101",
-      "title": "CRITICAL  -  88.1% of trades are overlapping re-entries on the same ticker  -  backt",
-      "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": false,
-        "n_doc_refs": 28,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "BUG-101",
-      "sprint": "(see linked DEC sprint)",
-      "dependencies": "DEC-458",
-      "description": "**Evidence:** Quantified directly from existing trade log.",
-      "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
-      }
-    },
-    {
-      "id": "BUG-102",
-      "title": "CRITICAL  -  3.5x same-day duplicate inflation: 9,921 unique decisions logged as 3",
-      "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": false,
-        "n_doc_refs": 9,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "BUG-102",
-      "sprint": "(see linked DEC sprint)",
-      "dependencies": "DEC-458",
-      "description": "**Evidence:** Direct row-level analysis of trade log.",
-      "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
-      }
-    },
-    {
-      "id": "BUG-103",
-      "title": "CRITICAL  -  Smart money data prefetched for 7 categories x 509 tickers but never",
-      "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": false,
-        "n_doc_refs": 24,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "BUG-103",
-      "sprint": "(see linked DEC sprint)",
-      "dependencies": "DEC-458",
-      "description": "**Evidence:** All 34,727 trades have these field values: - `smart_money_score`: 0 (unique=1) - `congressional_signal`: \"none\" (unique=1) - `insider_signal`: \"none\" (unique=1) - `institutional_signal`: \"none\" (unique=1)",
-      "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
-      }
-    },
-    {
-      "id": "BUG-104",
-      "title": "HIGH  -  Position sizing rules from config never applied to PnL  -  backtest assumes",
-      "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": false,
-        "n_doc_refs": 34,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "BUG-104",
-      "sprint": "(see linked DEC sprint)",
-      "dependencies": "DEC-458",
-      "description": "**Evidence:** `pnl_dollar = pnl_pct \u00d7 100` exactly across all 34,727 trades (max diff = 4.5e-13).",
-      "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
-      }
-    },
-    {
-      "id": "BUG-105",
-      "title": "HIGH  -  Agent downgrade cascade: 99.9% of trades downgraded by exactly 1 tier  -  a",
-      "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": false,
-        "n_doc_refs": 8,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "BUG-105",
-      "sprint": "(see linked DEC sprint)",
-      "dependencies": "DEC-458",
-      "description": "**Evidence:** Confidence tier transitions across 34,727 trades: | Preliminary tier | Final tier | Count | % | |---|---|---|---| | HIGH | HIGH | 29 | 0.08% | | HIGH | MEDIUM_HIGH | 34,551 | 99.50% | | MEDIUM_HIGH | MEDIUM | 147 | 0.42% | | HIGH | EXCEPTIONAL | 0 | 0% |",
-      "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
-      }
-    },
-    {
-      "id": "BUG-106",
-      "title": "HIGH  -  Perfect stop fills in trade log: every trailing-stop exit fills at exactl",
-      "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": false,
-        "n_doc_refs": 4,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "BUG-106",
-      "sprint": "(see linked DEC sprint)",
-      "dependencies": "DEC-458",
-      "description": "**Evidence:** For all 34,650 trailing-stop exits: - `(exit_price - trailing_stop_at_exit).abs().max()` = **5.0e-5** (rounding noise only) - `(exit_price - trailing_stop_at_exit).abs().mean()` = 5.4e-7",
-      "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
-      }
-    },
-    {
       "id": "BUG-107",
       "title": "MEDIUM  -  Silent exception swallowing: `except Exception: pass` masks checkpoint",
       "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
+      "sprint_context": "DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (silent exception swallowing requires per-callsite review; Phase 1A baseline uses logger.warning at known catch points; explicit raise-or-log refactor is Phase 1B engineering scope)",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -23595,52 +23329,14 @@
         }
       },
       "short_id": "BUG-107",
-      "sprint": "(see linked DEC sprint)",
+      "sprint": "DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (silent exception swallowing requires per-callsite review; Phase 1A baseline uses logger.warning at known catch points; explicit raise-or-log refactor is Phase 1B engineering scope)",
       "dependencies": "DEC-458",
       "description": "**File:** `backtest/engine/backtest.py` line 216\u2013217",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
-      }
-    },
-    {
-      "id": "BUG-108",
-      "title": "MEDIUM  -  Agent context built with `.get(key, default)` masks missing data; agent",
-      "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": false,
-        "n_doc_refs": 6,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "BUG-108",
-      "sprint": "(see linked DEC sprint)",
-      "dependencies": "DEC-458",
-      "description": "**File:** `backtest/agents/pipeline.py` \u2014 37 `.get()` calls with defaults",
-      "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "DEFERRED",
+        "label": "DEFERRED",
+        "color": "#3b82f6",
+        "reason": "Bug deferred per sprint_context: DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (silent exception swallowing requires"
       }
     },
     {
@@ -23723,7 +23419,7 @@
       "id": "BUG-112",
       "title": "LOW  -  No ICT/SMC concepts implemented",
       "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
+      "sprint_context": "DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (ICT/SMC implementation is DEC-261 + DEC-508 Phase 1B scope; smartmoneyconcepts library forked under DEC-045 + 15-cat test plan per DEC-508)",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -23747,14 +23443,14 @@
         }
       },
       "short_id": "BUG-112",
-      "sprint": "(see linked DEC sprint)",
+      "sprint": "DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (ICT/SMC implementation is DEC-261 + DEC-508 Phase 1B scope; smartmoneyconcepts library forked under DEC-045 + 15-cat test plan per DEC-508)",
       "dependencies": "DEC-458",
       "description": "**Files:** No ICT signal computations exist anywhere",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "DEFERRED",
+        "label": "DEFERRED",
+        "color": "#3b82f6",
+        "reason": "Bug deferred per sprint_context: DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (ICT/SMC implementation is DEC-261 + "
       }
     },
     {
@@ -23788,500 +23484,6 @@
       "sprint": "(see linked DEC sprint)",
       "dependencies": "DEC-008; DEC-458",
       "description": "**Files:** `backtest/engine/backtest.py` line 555, `backtest/agents/pipeline.py` line 561-566",
-      "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
-      }
-    },
-    {
-      "id": "BUG-113",
-      "title": "HIGH  -  Agent action/sizing/exit recommendations ignored by engine",
-      "linked_decisions": "DEC-008, DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 25,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "BUG-113",
-      "sprint": "(see linked DEC sprint)",
-      "dependencies": "DEC-008; DEC-458",
-      "description": "**Files:** `backtest/engine/backtest.py` line 555, `backtest/agents/pipeline.py` line 561-566",
-      "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
-      }
-    },
-    {
-      "id": "BUG-178",
-      "title": "HIGH  -  Earnings dates fetched live during backtest, no prefetch path",
-      "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": false,
-        "n_doc_refs": 12,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "BUG-178",
-      "sprint": "(see linked DEC sprint)",
-      "dependencies": "DEC-458",
-      "description": "**File:** `backtest/data/fetcher.py` `days_to_next_earnings()` line 200",
-      "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
-      }
-    },
-    {
-      "id": "BUG-181",
-      "title": "MEDIUM  -  Finnhub news prefetch silently produces empty files",
-      "linked_decisions": "DEC-453, DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 15,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "BUG-181",
-      "sprint": "(see linked DEC sprint)",
-      "dependencies": "DEC-453; DEC-458",
-      "description": "**File:** `prefetch_finnhub_news.py`",
-      "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
-      }
-    },
-    {
-      "id": "BUG-182",
-      "title": "MEDIUM  -  Agent cache invalidated by every code change with no versioning gate",
-      "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": false,
-        "n_doc_refs": 6,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "BUG-182",
-      "sprint": "(see linked DEC sprint)",
-      "dependencies": "DEC-458",
-      "description": "**File:** `backtest/agents/pipeline.py`",
-      "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
-      }
-    },
-    {
-      "id": "BUG-183",
-      "title": "LOW  -  No prefetch validation step",
-      "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": false,
-        "n_doc_refs": 7,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "BUG-183",
-      "sprint": "(see linked DEC sprint)",
-      "dependencies": "DEC-458",
-      "description": "**File:** missing",
-      "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
-      }
-    },
-    {
-      "id": "BUG-184",
-      "title": "CRITICAL  -  Insider data prefetch stops 2024-12-31; 13-month gap before backtest",
-      "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 7,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "BUG-184",
-      "sprint": "(see linked DEC sprint)",
-      "dependencies": "DEC-458",
-      "description": "**Files:** `backtest/data/cache/quiver/insider/*.parquet`",
-      "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
-      }
-    },
-    {
-      "id": "BUG-185",
-      "title": "CRITICAL  -  Wikipedia views prefetch failed entirely; all 509 files empty",
-      "linked_decisions": "DEC-030, DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 17,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "BUG-185",
-      "sprint": "(see linked DEC sprint)",
-      "dependencies": "DEC-030; DEC-458",
-      "description": "**Files:** `backtest/data/cache/quiver/wikipedia/*.parquet` (all 509 are 0 rows)",
-      "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
-      }
-    },
-    {
-      "id": "BUG-186",
-      "title": "HIGH  -  29 institutional 13F files empty including major tickers (AAPL, ABBV, AMZ",
-      "linked_decisions": "DEC-325, DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 19,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "BUG-186",
-      "sprint": "(see linked DEC sprint)",
-      "dependencies": "DEC-325; DEC-458",
-      "description": "**Files:** `backtest/data/cache/quiver/institutional/{AAPL,ABBV,ADBE,AMD,AMZN,...}.parquet` (29 tickers)",
-      "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
-      }
-    },
-    {
-      "id": "BUG-187",
-      "title": "HIGH  -  WSB mentions prefetch stops 2025-02-21; 14-month gap",
-      "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": false,
-        "n_doc_refs": 3,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "BUG-187",
-      "sprint": "(see linked DEC sprint)",
-      "dependencies": "DEC-458",
-      "description": "**Files:** `backtest/data/cache/quiver/wallstreetbets/*.parquet`",
-      "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
-      }
-    },
-    {
-      "id": "BUG-188",
-      "title": "MEDIUM  -  Defense tickers (NOC, TXT) have empty gov_contracts data",
-      "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": false,
-        "n_doc_refs": 3,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "BUG-188",
-      "sprint": "(see linked DEC sprint)",
-      "dependencies": "DEC-458",
-      "description": "**Files:** `backtest/data/cache/quiver/gov_contracts/{NOC,TXT}.parquet`",
-      "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
-      }
-    },
-    {
-      "id": "BUG-189",
-      "title": "MEDIUM  -  Ticker symbol mapping issue: BF-B, BRK-B variants empty",
-      "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": false,
-        "n_doc_refs": 3,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "BUG-189",
-      "sprint": "(see linked DEC sprint)",
-      "dependencies": "DEC-458",
-      "description": "**Files:** Several Quiver datasets show empty parquet for BF-B, BRK-B, NWSA, FOXA, etc.",
-      "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
-      }
-    },
-    {
-      "id": "BUG-190",
-      "title": "MEDIUM  -  Quiver endpoints not in prefetch (Senate, Twitter, Off-Exchange, App Do",
-      "linked_decisions": "DEC-450, DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 8,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "BUG-190",
-      "sprint": "(see linked DEC sprint)",
-      "dependencies": "DEC-450; DEC-458",
-      "description": "**Files:** Missing from `prefetch_quiver.py` ENDPOINTS dict",
-      "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
-      }
-    },
-    {
-      "id": "BUG-191",
-      "title": "CRITICAL  -  No prefetch validation gate before cache-dependent code runs",
-      "linked_decisions": "DEC-299, DEC-322, DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 24,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "BUG-191",
-      "sprint": "(see linked DEC sprint)",
-      "dependencies": "DEC-299; DEC-322; DEC-458",
-      "description": "**Files:** Missing from CI / pre-flight check",
       "promotion_path": {
         "tier": "OPEN",
         "label": "OPEN",
@@ -24293,7 +23495,7 @@
       "id": "BUG-199",
       "title": "MEDIUM  -  No gate firing rate observability",
       "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
+      "sprint_context": "DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (gate firing rate observability is verdict-cube + Dashboard 1B scope; Phase 1A baseline uses logger metrics; observability dashboard deferred to post-baseline)",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -24317,97 +23519,21 @@
         }
       },
       "short_id": "BUG-199",
-      "sprint": "(see linked DEC sprint)",
+      "sprint": "DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (gate firing rate observability is verdict-cube + Dashboard 1B scope; Phase 1A baseline uses logger metrics; observability dashboard deferred to post-baseline)",
       "dependencies": "DEC-458",
       "description": "**Context:** With 6 hard gates and 4 soft modifiers, debugging \"why does my system block X% of candidates\" requires per-gate logging.",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
-      }
-    },
-    {
-      "id": "BUG-200",
-      "title": "CRITICAL  -  Risk Agent context expansion required (Section B)",
-      "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 9,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "BUG-200",
-      "sprint": "(see linked DEC sprint)",
-      "dependencies": "DEC-458",
-      "description": "",
-      "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
-      }
-    },
-    {
-      "id": "BUG-201",
-      "title": "MEDIUM  -  Strategy `earnings_tolerant` attribute missing",
-      "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 4,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "BUG-201",
-      "sprint": "(see linked DEC sprint)",
-      "dependencies": "DEC-458",
-      "description": "**Files:** All strategy functions in `backtest/signals/screener.py`",
-      "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "DEFERRED",
+        "label": "DEFERRED",
+        "color": "#3b82f6",
+        "reason": "Bug deferred per sprint_context: DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (gate firing rate observability is ve"
       }
     },
     {
       "id": "BUG-202",
       "title": "MEDIUM  -  No earnings-momentum strategies implemented",
       "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
+      "sprint_context": "DEFERRED-TO-SPRINT-8 Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (earnings-momentum strategies are Sprint 8 chart-pattern category scope per DEC-354/355; Phase 1A Layer 1 baseline 60 strategies does not include earnings-momentum subfamily)",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -24431,21 +23557,21 @@
         }
       },
       "short_id": "BUG-202",
-      "sprint": "(see linked DEC sprint)",
+      "sprint": "DEFERRED-TO-SPRINT-8 Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (earnings-momentum strategies are Sprint 8 chart-pattern category scope per DEC-354/355; Phase 1A Layer 1 baseline 60 strategies does not include earnings-momentum subfamily)",
       "dependencies": "DEC-458",
       "description": "**Files:** `backtest/signals/screener.py`",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "DEFERRED",
+        "label": "DEFERRED",
+        "color": "#3b82f6",
+        "reason": "Bug deferred per sprint_context: DEFERRED-TO-SPRINT-8 Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (earnings-momentum strategies are Spr"
       }
     },
     {
       "id": "BUG-203",
       "title": "MEDIUM  -  No A/B testing infrastructure for agent gates",
       "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
+      "sprint_context": "DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (A/B testing for agent gates is Phase 1B-alpha scope; current Phase 1A baseline runs --no-agents so A/B testing infrastructure not yet needed)",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -24469,14 +23595,14 @@
         }
       },
       "short_id": "BUG-203",
-      "sprint": "(see linked DEC sprint)",
+      "sprint": "DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (A/B testing for agent gates is Phase 1B-alpha scope; current Phase 1A baseline runs --no-agents so A/B testing infrastructure not yet needed)",
       "dependencies": "DEC-458",
       "description": "**Files:** `backtest/engine/backtest.py`, `backtest/agents/pipeline.py`",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "DEFERRED",
+        "label": "DEFERRED",
+        "color": "#3b82f6",
+        "reason": "Bug deferred per sprint_context: DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (A/B testing for agent gates is Phase"
       }
     },
     {
@@ -24527,7 +23653,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 35,
+        "n_doc_refs": 39,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -24603,7 +23729,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 15,
+        "n_doc_refs": 19,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -24632,48 +23758,10 @@
       }
     },
     {
-      "id": "BUG-274",
-      "title": "HIGH  -  `institutional_signal()` SharesChange column missing",
-      "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 19,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "BUG-274",
-      "sprint": "(see linked DEC sprint)",
-      "dependencies": "DEC-458",
-      "description": "**File:** `backtest/data/smart_money.py` (function `institutional_signal`)",
-      "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
-      }
-    },
-    {
       "id": "BUG-275",
       "title": "LOW  -  `bonferroni_adjusted_threshold(n_strategies=0)` TypeError on complex round",
       "linked_decisions": "DEC-080, DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
+      "sprint_context": "DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (bonferroni n=0 TypeError edge case; current callers pass n_strategies >= 60 per F-002 canonical Layer 1 count; n=0 guard is hardening for arbitrary-N future API)",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -24697,21 +23785,21 @@
         }
       },
       "short_id": "BUG-275",
-      "sprint": "(see linked DEC sprint)",
+      "sprint": "DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (bonferroni n=0 TypeError edge case; current callers pass n_strategies >= 60 per F-002 canonical Layer 1 count; n=0 guard is hardening for arbitrary-N future API)",
       "dependencies": "DEC-080; DEC-458",
       "description": "**File:** `backtest/engine/improvements.py` line 514",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "DEFERRED",
+        "label": "DEFERRED",
+        "color": "#3b82f6",
+        "reason": "Bug deferred per sprint_context: DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (bonferroni n=0 TypeError edge case; "
       }
     },
     {
       "id": "BUG-276",
       "title": "HIGH  -  `_agent_cache_key` calls `sorted()` on list of dicts -> crashes when strat",
       "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
+      "sprint_context": "DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (sorted-on-dicts agent cache crash is agent-pipeline scope; Phase 1A --no-agents path bypasses; Phase 1B fix is per-strategy stable key serialization)",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -24735,21 +23823,21 @@
         }
       },
       "short_id": "BUG-276",
-      "sprint": "(see linked DEC sprint)",
+      "sprint": "DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (sorted-on-dicts agent cache crash is agent-pipeline scope; Phase 1A --no-agents path bypasses; Phase 1B fix is per-strategy stable key serialization)",
       "dependencies": "DEC-458",
       "description": "**File:** `backtest/agents/pipeline.py` line 591",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "DEFERRED",
+        "label": "DEFERRED",
+        "color": "#3b82f6",
+        "reason": "Bug deferred per sprint_context: DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (sorted-on-dicts agent cache crash is"
       }
     },
     {
       "id": "BUG-277",
       "title": "HIGH  -  `classify_regime()` truth-value-of-DataFrame error  -  100% failure",
       "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
+      "sprint_context": "DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (classify_regime DataFrame truth-value error needs guard against ambiguous boolean; current Phase 1A path uses scalar VIX comparisons; Phase 1B regime classifier refactor will harden)",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -24773,21 +23861,21 @@
         }
       },
       "short_id": "BUG-277",
-      "sprint": "(see linked DEC sprint)",
+      "sprint": "DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (classify_regime DataFrame truth-value error needs guard against ambiguous boolean; current Phase 1A path uses scalar VIX comparisons; Phase 1B regime classifier refactor will harden)",
       "dependencies": "DEC-458",
       "description": "**File:** `backtest/engine/regime_filter.py`",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "DEFERRED",
+        "label": "DEFERRED",
+        "color": "#3b82f6",
+        "reason": "Bug deferred per sprint_context: DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (classify_regime DataFrame truth-valu"
       }
     },
     {
       "id": "BUG-278",
       "title": "MEDIUM  -  `yield_curve_regime()` doesn't use macro_combined.parquet cache",
       "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
+      "sprint_context": "DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (yield_curve_regime cache miss is performance optimization; functional path works via FRED prefetch parquet; cache hot path is Phase 1B optimization scope)",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -24811,21 +23899,21 @@
         }
       },
       "short_id": "BUG-278",
-      "sprint": "(see linked DEC sprint)",
+      "sprint": "DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (yield_curve_regime cache miss is performance optimization; functional path works via FRED prefetch parquet; cache hot path is Phase 1B optimization scope)",
       "dependencies": "DEC-458",
       "description": "**File:** `backtest/data/macro.py` (function `yield_curve_regime`)",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "DEFERRED",
+        "label": "DEFERRED",
+        "color": "#3b82f6",
+        "reason": "Bug deferred per sprint_context: DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (yield_curve_regime cache miss is per"
       }
     },
     {
       "id": "BUG-279",
       "title": "MEDIUM  -  `get_ohlcv()` with reversed date order silently returns 0 rows",
       "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
+      "sprint_context": "DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (get_ohlcv reversed-date silent zero is API contract hardening; current callers pass start<end correctly; defensive guard deferred to Phase 1B API audit)",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -24849,21 +23937,21 @@
         }
       },
       "short_id": "BUG-279",
-      "sprint": "(see linked DEC sprint)",
+      "sprint": "DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (get_ohlcv reversed-date silent zero is API contract hardening; current callers pass start<end correctly; defensive guard deferred to Phase 1B API audit)",
       "dependencies": "DEC-458",
       "description": "**File:** `backtest/data/cache.py` (function `get_ohlcv`)",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "DEFERRED",
+        "label": "DEFERRED",
+        "color": "#3b82f6",
+        "reason": "Bug deferred per sprint_context: DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (get_ohlcv reversed-date silent zero "
       }
     },
     {
       "id": "BUG-281",
       "title": "MEDIUM  -  `site_generator._assign_tier` duplicates `engine._assign_confidence_tie",
       "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
+      "sprint_context": "DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (site_generator._assign_tier duplicates engine._assign_confidence_tier; refactor consolidation is Phase 1B-alpha site-gen scope)",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -24887,21 +23975,21 @@
         }
       },
       "short_id": "BUG-281",
-      "sprint": "(see linked DEC sprint)",
+      "sprint": "DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (site_generator._assign_tier duplicates engine._assign_confidence_tier; refactor consolidation is Phase 1B-alpha site-gen scope)",
       "dependencies": "DEC-458",
       "description": "**Files:** `backtest/results/site_generator.py` + `backtest/engine/backtest.py`",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "DEFERRED",
+        "label": "DEFERRED",
+        "color": "#3b82f6",
+        "reason": "Bug deferred per sprint_context: DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (site_generator._assign_tier duplicat"
       }
     },
     {
       "id": "BUG-282",
       "title": "LOW  -  `site_generator.build_entry_zone` ignores `category` parameter",
       "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
+      "sprint_context": "DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (build_entry_zone category param ignored; minor site-gen output formatting; Phase 1B-alpha cleanup)",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -24925,21 +24013,21 @@
         }
       },
       "short_id": "BUG-282",
-      "sprint": "(see linked DEC sprint)",
+      "sprint": "DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (build_entry_zone category param ignored; minor site-gen output formatting; Phase 1B-alpha cleanup)",
       "dependencies": "DEC-458",
       "description": "**File:** `backtest/results/site_generator.py` (function `build_entry_zone`)",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "DEFERRED",
+        "label": "DEFERRED",
+        "color": "#3b82f6",
+        "reason": "Bug deferred per sprint_context: DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (build_entry_zone category param igno"
       }
     },
     {
       "id": "BUG-283",
       "title": "LOW  -  `build_position_sizing` returns 0% silently for unknown tier",
       "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
+      "sprint_context": "DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (build_position_sizing returns 0pct silently for unknown tier; defensive contract; Phase 1B-alpha output hardening)",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -24963,57 +24051,19 @@
         }
       },
       "short_id": "BUG-283",
-      "sprint": "(see linked DEC sprint)",
+      "sprint": "DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (build_position_sizing returns 0pct silently for unknown tier; defensive contract; Phase 1B-alpha output hardening)",
       "dependencies": "DEC-458",
       "description": "**File:** `backtest/results/site_generator.py` (function `build_position_sizing`)",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
-      }
-    },
-    {
-      "id": "BUG-284",
-      "title": "MEDIUM  -  `prefetch_quiver` DATE_FIELDS[\"gov_contracts\"]=\"Date\" but cache schema",
-      "linked_decisions": "DEC-451, DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 12,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "BUG-284",
-      "sprint": "(see linked DEC sprint)",
-      "dependencies": "DEC-451; DEC-458",
-      "description": "**File:** `scripts/prefetch_quiver.py` lines 56-66 (DATE_FIELDS dict)",
-      "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "DEFERRED",
+        "label": "DEFERRED",
+        "color": "#3b82f6",
+        "reason": "Bug deferred per sprint_context: DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (build_position_sizing returns 0pct s"
       }
     }
   ],
   "bugs_total_count": 148,
-  "bugs_hidden_count": 52,
+  "bugs_hidden_count": 77,
   "investigations": [
     {
       "id": "INV-001",
@@ -25211,7 +24261,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 1,
+        "n_doc_refs": 2,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -29666,94 +28716,100 @@
   ],
   "recent_commits": [
     {
+      "sha": "9e52a585",
+      "subject": "Pass 53 v8h+1: Phase 3 Batch 12 - 21 BUGs DEFERRED/SUPERSEDED (Stage 3/Phase 1B sweep)",
+      "author": "jeetmehta1991",
+      "rel_time": "4 minutes ago"
+    },
+    {
       "sha": "d2c22ebf",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 11 - 12 BUGs (62/66/67/69/70/71/74/75/79/81/86/87) SUPERSEDED/DEFERRED",
       "author": "jeetmehta1991",
-      "rel_time": "60 seconds ago"
+      "rel_time": "5 minutes ago"
     },
     {
       "sha": "3f4b7b2e",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 10 - 6 BUGs (51/54/55/56/57/60) SUPERSEDED/DEFERRED",
       "author": "jeetmehta1991",
-      "rel_time": "3 minutes ago"
+      "rel_time": "7 minutes ago"
     },
     {
       "sha": "a1ba19bb",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 9 - 6 SUPERSEDED (BUG-35/36/38/39/41/53)",
       "author": "jeetmehta1991",
-      "rel_time": "5 minutes ago"
+      "rel_time": "9 minutes ago"
     },
     {
       "sha": "fd86b03f",
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 22:45: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "8 minutes ago"
+      "rel_time": "12 minutes ago"
     },
     {
       "sha": "08117f87",
       "subject": "Pass 53 v8h+1: BUG-29 RESOLVED-IMPLEMENTED - end-of-backtest open-trade finalization",
       "author": "jeetmehta1991",
-      "rel_time": "9 minutes ago"
+      "rel_time": "14 minutes ago"
     },
     {
       "sha": "0daa206c",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 7 - 6 BUGs (43/44/45/48/58/59) SUPERSEDED/DEFERRED/OBSOLETE",
       "author": "jeetmehta1991",
-      "rel_time": "34 minutes ago"
+      "rel_time": "39 minutes ago"
     },
     {
       "sha": "2de4536b",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 6 - 5 BUGs (42/47/49/50/52) SUPERSEDED/DEFERRED cross-references",
       "author": "jeetmehta1991",
-      "rel_time": "36 minutes ago"
+      "rel_time": "40 minutes ago"
     },
     {
       "sha": "f16ef86d",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 5 - BUG-37 IMPLEMENTED (haircut doc) + BUG-34/40 SUPERSEDED-BY-design",
       "author": "jeetmehta1991",
-      "rel_time": "38 minutes ago"
+      "rel_time": "42 minutes ago"
     },
     {
       "sha": "a4258bc1",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 4 - BUG-21 IMPLEMENTED + BUG-24/31/32/33 SUPERSEDED-BY-policy-decisions",
       "author": "jeetmehta1991",
-      "rel_time": "40 minutes ago"
+      "rel_time": "44 minutes ago"
     },
     {
       "sha": "1f87aa53",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 3 - BUG-17/25 OBSOLETE + BUG-18/28/30 IMPLEMENTED (Wilder RSI fix)",
       "author": "jeetmehta1991",
-      "rel_time": "44 minutes ago"
+      "rel_time": "48 minutes ago"
     },
     {
       "sha": "694a11fa",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 2 - BUG-01/06/10/12 IMPLEMENTED + BUG-14 OBSOLETE",
       "author": "jeetmehta1991",
-      "rel_time": "47 minutes ago"
+      "rel_time": "52 minutes ago"
     },
     {
       "sha": "3bb2f559",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 1 - BUG-08/09/15/27 RESOLVED-IMPLEMENTED with real fixes",
       "author": "jeetmehta1991",
-      "rel_time": "53 minutes ago"
+      "rel_time": "58 minutes ago"
     },
     {
       "sha": "fc9390b7",
       "subject": "Pass 53 v8h+1: Phase 2 BUG cross-references + id-form normalization (6 BUGs READY -> IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "61 minutes ago"
+      "rel_time": "65 minutes ago"
     },
     {
       "sha": "97c69b3d",
       "subject": "Pass 53 v8h+1: Phase 1 BUG categorization (10 SUPERSEDED/DEFERRED) + dashboard hide-moot-bugs filter",
       "author": "jeetmehta1991",
-      "rel_time": "71 minutes ago"
+      "rel_time": "75 minutes ago"
     },
     {
       "sha": "99d137c1",
       "subject": "Pass 53 v8h+1: BUG-270/271/272/273 pyramid overrides + Promotion dropdown filters",
       "author": "jeetmehta1991",
-      "rel_time": "82 minutes ago"
+      "rel_time": "86 minutes ago"
     },
     {
       "sha": "a7c66530",
@@ -29838,17 +28894,11 @@
       "subject": "Pass 53 v8h+1: 0A.7 per-API smoke/demo split - StockTwits + Apewisdom additions (Sprint 0A COMPLETE)",
       "author": "jeetmehta1991",
       "rel_time": "4 hours ago"
-    },
-    {
-      "sha": "07c15d16",
-      "subject": "Pass 53 v8h+1: H18 data refresh - 54 CFTC parquets updated (legacy/disagg/tff datasets)",
-      "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 1,
-    "modified": 1,
+    "count": 4,
+    "modified": 4,
     "added": 0,
     "untracked": 0,
     "deleted": 0,
@@ -29856,6 +28906,18 @@
       {
         "status": "M",
         "path": "BUG_REGISTER.md"
+      },
+      {
+        "status": "M",
+        "path": "dashboard_sprint0a/data.js"
+      },
+      {
+        "status": "M",
+        "path": "dashboard_sprint0a/data.json"
+      },
+      {
+        "status": "M",
+        "path": "dashboard_sprint0a/last_run.txt"
       }
     ]
   },

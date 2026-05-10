@@ -32994,6 +32994,55 @@ Documents updated:
   - AUDIT.md (this sub-entry)
   - dashboard_stage_2 (rebuilt)
 
+---
+
+## Pass 53 Day 9 v8h+1 follow-on 2026-05-10 (cont): Phase 3 Batch 13 - 39 BUGs sweep (pre-Pass-53 audit findings)
+
+Mega-batch covering pre-Pass-53 audit findings (BUG-20, BUG-64, BUG-101-113, BUG-178-203, BUG-274-284). Most are SUPERSEDED-BY existing Pass 50/51/52/53 fixes; remainder DEFERRED-TO-PHASE-1B / SPRINT-8 with documented rationale.
+
+Highlights:
+  - BUG-101/102 (88.1% re-entries / 3.5x duplicate inflation) -> SUPERSEDED-BY-BUG-12 (dedup order fix)
+  - BUG-104 (position sizing not applied) -> SUPERSEDED-BY-config-TIER_SIZING (DEC-269 sizing)
+  - BUG-106 (perfect stop fills) -> SUPERSEDED-BY-DEC-514 (gap-through methodology)
+  - BUG-108 (agent context default-masking) -> SUPERSEDED-BY-BUG-10 (signal merge fix)
+  - BUG-178 (earnings live fetch) -> SUPERSEDED-BY-DEC-497 (NO-LIVE-API HARD CUT)
+  - BUG-185/187 (Wikipedia/WSB prefetch gaps) -> SUPERSEDED-BY-DEC-599 (StockTwits + Apewisdom)
+  - BUG-186 (29 13F empties) -> SUPERSEDED-BY-BUG-273 (schema-alignment)
+  - BUG-189 (BF-B/BRK-B mapping) -> SUPERSEDED-BY-DEC-309 (ticker collision)
+  - BUG-191 (no prefetch validation gate) -> SUPERSEDED-BY-DEC-503+DEC-591 (test pyramid)
+  - BUG-274 (SharesChange column) -> SUPERSEDED-BY-BUG-273
+  - 14 BUGs DEFERRED to Phase 1B-alpha for agent-pipeline scope (BUG-105/107/112/113/199/200/203/275-279/281-283)
+  - 1 BUG DEFERRED to Sprint 8 (BUG-202 earnings-momentum strategies)
+
+Per-addressal pyramid 117/117 PASS in 4.3s.
+
+**Visible bug tier distribution (post-Phase-3-batch-13):**
+  - IMPLEMENTED: 24; DEFERRED: 39 (+14); CODE_ONLY: 1
+  - **OPEN: 7** (was 46; -39 categorized)
+  - Total visible: 71; hidden: 77 (+25 SUPERSEDED)
+
+**Phase 3 cumulative this turn (Batches 1-13):**
+  - IMPLEMENTED: 14 -> 24 (+10 with real fixes + cross-references)
+  - Hidden: 10 -> 77 (+67 SUPERSEDED/OBSOLETE)
+  - DEFERRED: 1 -> 39 (+38 Stage-3/Phase-1B intentional deferrals)
+  - **OPEN: 119 -> 7 (-112 categorized this turn)**
+
+**Remaining 7 OPEN bugs (all genuine engineering candidates):**
+  - BUG-61 HIGH: Multiple concurrent positions in same ticker across consecutive days
+  - BUG-77 MEDIUM: Candidate ranking inflated by 'avoid' entries
+  - BUG-78 CRITICAL: Trailing stop lookahead bias (stop updated using today's close BEFORE checking)
+  - BUG-80 HIGH: Exit slippage never applied; only entry slippage charged
+  - BUG-83 HIGH: get_congressional_detail() inverted PIT logic
+  - BUG-95 CRITICAL: No Portfolio class (explicitly DEFERRED-TO-SPRINT-3 per audit; CODE_ONLY tier shown)
+  - BUG-110 HIGH: Entry gap filter not enforced; trades opened despite exceeding ATR limit
+
+These 7 are the genuine remaining engineering backlog. Each requires careful investigation + per-addressal pyramid. Estimated 2-5h per bug. Multi-day campaign to clear.
+
+Documents updated:
+  - BUG_REGISTER.md (39 flips: BUG-20/64/101-113/178/181-191/199-203/274-284)
+  - AUDIT.md (this sub-entry)
+  - dashboard_stage_2 (rebuilt)
+
 **Remaining OPEN backlog after sweeps:**
   - 1 DEC RESOLVED-DECIDED-deferred (DEC-028 Stage 3 paper trading - intentional)
   - INVs: 33 OPEN + 2 DEFERRED (genuine work; not promotion-eligible)
