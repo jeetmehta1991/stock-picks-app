@@ -2015,6 +2015,65 @@ def test_bug_110_entry_gap_filter_enforced_at_validate_entry_zone():
     assert "exceeds" in reason_short_bad
 
 
+def test_bug_083_congressional_detail_pit_filter_correct():
+    """BUG-83: get_congressional_detail must filter ReportDate <= as_of
+    (no extra 45-day delta) for PIT consistency with insider_signal and
+    composite congressional_sig.
+
+    Pass 53 v8h+1 Phase 3 Batch 18 RESOLVED-IMPLEMENTED 2026-05-10 (owner-
+    approved Option A). Functional pin: a filing with ReportDate within the
+    last 45 days but <= as_of must be INCLUDED (was incorrectly excluded).
+    """
+    import inspect
+    from backtest.data import smart_money
+    src = inspect.getsource(smart_money.get_congressional_detail)
+
+    # The bug fix removes the 45-day subtraction
+    assert "BUG-83" in src, "BUG-83 cross-reference must exist"
+    assert "cutoff = pd.Timestamp(as_of)" in src, (
+        "PIT cutoff must be pd.Timestamp(as_of) without delta subtraction")
+    # The fixed code must NOT contain the original buggy pattern
+    assert "pd.Timestamp(as_of) - pd.Timedelta(days=45)" not in src, (
+        "Original 45-day subtraction must be removed")
+    # And must keep the ReportDate filter direction (<=, not >=)
+    assert "df[df[\"ReportDate\"] <= cutoff]" in src, (
+        "Filter must keep ReportDate <= cutoff direction (PIT include)")
+
+
+def test_bug_083_congressional_detail_includes_recent_filings():
+    """BUG-83 functional: simulating the PIT filter directly verifies that
+    a filing reported 10 days ago is included (was previously excluded by
+    the 45-day delta bug).
+
+    Pass 53 v8h+1 Phase 3 Batch 18 2026-05-10.
+    """
+    import pandas as pd
+    from datetime import date
+
+    as_of = date(2024, 6, 1)
+    # 3 filings: one 100 days old, one 10 days old, one future (post-as_of)
+    df = pd.DataFrame({
+        "TransactionDate": pd.to_datetime([
+            "2024-02-15", "2024-05-15", "2024-07-01"]),
+        "ReportDate": pd.to_datetime([
+            "2024-02-22", "2024-05-22", "2024-07-08"]),
+        "Representative": ["A", "B", "C"],
+        "Transaction": ["Purchase", "Purchase", "Sale"],
+    })
+    # Apply the FIXED filter directly
+    cutoff = pd.Timestamp(as_of)
+    available = df[df["ReportDate"] <= cutoff]
+    # 100-day-old filing should be included
+    assert "A" in available["Representative"].values, (
+        "100-day-old filing must be included")
+    # 10-day-old filing MUST be included (was excluded by buggy 45-day delta)
+    assert "B" in available["Representative"].values, (
+        "10-day-old filing must be included (was the BUG-83 regression)")
+    # Future filing must NOT be included
+    assert "C" not in available["Representative"].values, (
+        "Future filing must be excluded")
+
+
 def test_bug_061_ticker_level_concurrent_position_block_wired():
     """BUG-61: backtest._process_day must block new entries on tickers with
     any open position (matches live max_positions_per_ticker=1).

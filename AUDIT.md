@@ -33262,6 +33262,57 @@ Documents updated:
   - AUDIT.md (this sub-entry)
   - dashboard_stage_2 (rebuilt; IMPLEMENTED 27 -> 28)
 
+---
+
+## Pass 53 Day 9 v8h+1 follow-on 2026-05-10 (cont): Phase 3 Batch 18 - BUG-83 HIGH inverted PIT filter on get_congressional_detail FIXED (owner-approved Option A)
+
+**The bug:** `smart_money.get_congressional_detail` subtracted 45 days from the as_of cutoff before filtering ReportDate:
+```python
+cutoff = pd.Timestamp(as_of) - pd.Timedelta(days=45)
+available = df[df["ReportDate"] <= cutoff]
+```
+This excluded the most recent (most actionable) 45 days of filings. Sentiment Agent received `congressional_sig` (composite - uses correct filter, includes recent filings) AND `congressional_detail` (inverted filter, excludes recent filings) - the same data source, two views, contradictory.
+
+**The fix (owner-approved Option A 2026-05-10):**
+Removed the 45-day delta. Quiver's `ReportDate` already encodes the upstream disclosure delay (`ReportDate >= TransactionDate` by the disclosure window). PIT semantics for "what was publicly known by as_of" are simply `ReportDate <= as_of`:
+```python
+# BUG-83 fix: PIT semantics = ReportDate <= as_of (upstream disclosure
+# delay is already encoded in ReportDate). No additional 45-day delta.
+cutoff = pd.Timestamp(as_of)
+available = df[df["ReportDate"] <= cutoff].copy()
+```
+Restores consistency with `insider_signal` (same `<= as_of` pattern) and the composite `congressional_sig` (same source, same view).
+
+**2 new regression tests (both PASS):**
+  - `test_bug_083_congressional_detail_pit_filter_correct` - source grep pin: cutoff must be `pd.Timestamp(as_of)`, original buggy `- pd.Timedelta(days=45)` pattern must NOT exist, `ReportDate <= cutoff` filter direction preserved
+  - `test_bug_083_congressional_detail_includes_recent_filings` - functional pin: simulates filter on 3 filings (100-day-old, 10-day-old, future); 10-day-old MUST be included (was the original BUG-83 regression); future MUST be excluded
+
+**Per-addressal pyramid (CHECKLIST #78):** unit 120/120 + integration 7/7 + e2e_phase1a_smoke 7/7 = 134/134 PASS in ~2:37 min.
+
+**Same-commit (DEC-594):** smart_money.py change + 2 new tests + register flip + AUDIT.md + dashboard rebuilt - this single commit.
+
+**Phase 1A May 15 IMPACT - MEDIUM:**
+Sentiment Agent now sees consistent congressional data (composite + detail aligned). Phase 1A baseline runs with `--no-agents` so the immediate Phase 1A signal impact is minimal, BUT Phase 1B agent overlay (DEC-057 11-agent pipeline) will receive corrected congressional_detail. Earlier-resolved BUG-83 prevents Phase 1B from inheriting a known inconsistency.
+
+**Visible bug tier distribution (post-Phase-3-batch-18):**
+  - IMPLEMENTED: 29 (was 28; +1 BUG-83)
+  - DEFERRED: 39; CODE_ONLY: 1
+  - OPEN: 2 (was 3; -1)
+  - Total visible: 71; hidden: 77
+
+**Remaining 2 OPEN bugs:**
+  - BUG-77 MEDIUM: candidate ranking 'avoid' inflated
+  - BUG-95 CRITICAL: no Portfolio class (DEFERRED-TO-SPRINT-3 per audit; not Phase 1A blocking)
+
+Phase 1A May 15 strict blocker count: **0 OPEN** (unchanged).
+
+Documents updated:
+  - backtest/data/smart_money.py (PIT filter fix + BUG-83 docstring cross-ref + inline comment)
+  - backtest/tests/test_unit.py (2 new BUG-83 regression tests)
+  - BUG_REGISTER.md (1 flip: BUG-83)
+  - AUDIT.md (this sub-entry)
+  - dashboard_stage_2 (rebuilt; IMPLEMENTED 28 -> 29)
+
 **Remaining OPEN backlog after sweeps:**
   - 1 DEC RESOLVED-DECIDED-deferred (DEC-028 Stage 3 paper trading - intentional)
   - INVs: 33 OPEN + 2 DEFERRED (genuine work; not promotion-eligible)

@@ -969,7 +969,15 @@ def get_congressional_detail(ticker: str, as_of: date, top_n: int = 3) -> list:
     """
     Return top N most recent congressional trades with full detail.
     Used by Sentiment Agent for richer context vs composite signal only.
-    Point-in-time enforced: only trades disclosed before as_of with 45-day lag.
+    Point-in-time enforced: include filings publicly available by as_of.
+
+    BUG-83 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 18 2026-05-10
+    (owner-approved Option A): removed erroneous 45-day delta subtraction.
+    Quiver's `ReportDate` already reflects the upstream disclosure delay
+    (ReportDate >= TransactionDate by the lag); subtracting another 45 days
+    excluded the most recent (most actionable) filings from the agent's
+    detail view, contradicting the composite signal in the same module.
+    Restores consistency with `insider_signal` and composite congressional_sig.
 
     Returns list of dicts with: representative, transaction, amount_range,
     transaction_date, party, house
@@ -981,7 +989,9 @@ def get_congressional_detail(ticker: str, as_of: date, top_n: int = 3) -> list:
         df["TransactionDate"] = pd.to_datetime(df["TransactionDate"], errors="coerce")
         df["ReportDate"] = pd.to_datetime(df.get("ReportDate", df["TransactionDate"]),
                                            errors="coerce")
-        cutoff = pd.Timestamp(as_of) - pd.Timedelta(days=45)
+        # BUG-83 fix: PIT semantics = ReportDate <= as_of (upstream disclosure
+        # delay is already encoded in ReportDate). No additional 45-day delta.
+        cutoff = pd.Timestamp(as_of)
         available = df[df["ReportDate"] <= cutoff].copy()
         if available.empty:
             return []
