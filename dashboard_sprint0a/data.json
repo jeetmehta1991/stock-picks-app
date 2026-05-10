@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-10T17:31:15.809691+00:00",
+  "generated_at": "2026-05-10T17:42:26.808763+00:00",
   "universe_size": 1937,
   "tier_counts": {
     "T1ETF": 27,
@@ -2749,11 +2749,11 @@
       "endpoint": "macd",
       "path": "data_prefetch/polygon/indicators/macd",
       "kind": "per_ticker",
-      "files_count": 1911,
-      "coverage_pct": 98.66,
+      "files_count": 1937,
+      "coverage_pct": 100.0,
       "expected_max_universe": 1686,
       "available_coverage_pct": 100.0,
-      "coverage_note": "broader-than-universe: 1911 files vs 1686 expected (113%)",
+      "coverage_note": "broader-than-universe: 1937 files vs 1686 expected (115%)",
       "unique_columns": [
         "date",
         "histogram",
@@ -2764,13 +2764,13 @@
       "avg_field_count": 3.98,
       "min_field_count": 0,
       "max_field_count": 4,
-      "non_empty_files": 1902,
+      "non_empty_files": 1927,
       "sample_row_counts": [
         25,
         51,
+        55,
         60,
         62,
-        73,
         "...",
         1231,
         1231,
@@ -36747,7 +36747,7 @@
     "CPS": {
       "tier": "T3",
       "sector": "Consumer Discretionary",
-      "endpoints_with_data": 53,
+      "endpoints_with_data": 54,
       "endpoints_total": 60,
       "endpoint_row_counts": {
         "polygon.ohlcv": 1255,
@@ -36767,6 +36767,7 @@
         "polygon_indicators.ema_20": 1236,
         "polygon_indicators.ema_50": 1206,
         "polygon_indicators.rsi_14": 1242,
+        "polygon_indicators.macd": 1230,
         "quiver.congressional": 0,
         "quiver.senatetrading": 0,
         "quiver.housetrading": 0,
@@ -37635,7 +37636,7 @@
     "CRML": {
       "tier": "T3",
       "sector": "Materials",
-      "endpoints_with_data": 54,
+      "endpoints_with_data": 55,
       "endpoints_total": 60,
       "endpoint_row_counts": {
         "polygon.ohlcv": 548,
@@ -37655,6 +37656,7 @@
         "polygon_indicators.ema_20": 531,
         "polygon_indicators.ema_50": 501,
         "polygon_indicators.rsi_14": 537,
+        "polygon_indicators.macd": 526,
         "quiver.congressional": 0,
         "quiver.senatetrading": 0,
         "quiver.housetrading": 0,
@@ -39663,7 +39665,7 @@
     "CVX": {
       "tier": "T1a",
       "sector": "Energy",
-      "endpoints_with_data": 55,
+      "endpoints_with_data": 56,
       "endpoints_total": 60,
       "endpoint_row_counts": {
         "polygon.ohlcv": 1255,
@@ -39685,6 +39687,7 @@
         "polygon_indicators.ema_20": 1236,
         "polygon_indicators.ema_50": 1206,
         "polygon_indicators.rsi_14": 1242,
+        "polygon_indicators.macd": 1230,
         "quiver.congressional": 327,
         "quiver.senatetrading": 47,
         "quiver.housetrading": 120,
@@ -40580,7 +40583,7 @@
     "DASH": {
       "tier": "T1c",
       "sector": "Consumer Discretionary",
-      "endpoints_with_data": 56,
+      "endpoints_with_data": 57,
       "endpoints_total": 60,
       "endpoint_row_counts": {
         "polygon.ohlcv": 1255,
@@ -40601,6 +40604,7 @@
         "polygon_indicators.ema_20": 1236,
         "polygon_indicators.ema_50": 1206,
         "polygon_indicators.rsi_14": 1242,
+        "polygon_indicators.macd": 1230,
         "quiver.congressional": 60,
         "quiver.senatetrading": 0,
         "quiver.housetrading": 38,
@@ -46138,7 +46142,7 @@
     "ELEV": {
       "tier": "T3",
       "sector": "Unknown",
-      "endpoints_with_data": 40,
+      "endpoints_with_data": 41,
       "endpoints_total": 60,
       "endpoint_row_counts": {
         "polygon.ohlcv": 1022,
@@ -46156,6 +46160,7 @@
         "polygon_indicators.ema_20": 1003,
         "polygon_indicators.ema_50": 973,
         "polygon_indicators.rsi_14": 1009,
+        "polygon_indicators.macd": 997,
         "quiver.congressional": 0,
         "quiver.senatetrading": 0,
         "quiver.housetrading": 0,
@@ -48952,7 +48957,7 @@
     "EVRG": {
       "tier": "T1a",
       "sector": "Utilities",
-      "endpoints_with_data": 53,
+      "endpoints_with_data": 54,
       "endpoints_total": 60,
       "endpoint_row_counts": {
         "polygon.ohlcv": 1255,
@@ -48972,6 +48977,7 @@
         "polygon_indicators.ema_20": 1236,
         "polygon_indicators.ema_50": 1206,
         "polygon_indicators.rsi_14": 1242,
+        "polygon_indicators.macd": 1230,
         "quiver.congressional": 11,
         "quiver.senatetrading": 0,
         "quiver.housetrading": 5,
@@ -50350,7 +50356,7 @@
     "FBRX": {
       "tier": "T3",
       "sector": "Health Care",
-      "endpoints_with_data": 55,
+      "endpoints_with_data": 56,
       "endpoints_total": 60,
       "endpoint_row_counts": {
         "polygon.ohlcv": 1255,
@@ -50372,6 +50378,7 @@
         "polygon_indicators.ema_20": 1236,
         "polygon_indicators.ema_50": 1206,
         "polygon_indicators.rsi_14": 1242,
+        "polygon_indicators.macd": 1230,
         "quiver.congressional": 0,
         "quiver.senatetrading": 0,
         "quiver.housetrading": 0,
@@ -57143,7 +57150,7 @@
     "GPC": {
       "tier": "T1a",
       "sector": "Consumer Discretionary",
-      "endpoints_with_data": 54,
+      "endpoints_with_data": 55,
       "endpoints_total": 60,
       "endpoint_row_counts": {
         "polygon.ohlcv": 1255,
@@ -57164,6 +57171,7 @@
         "polygon_indicators.ema_20": 1236,
         "polygon_indicators.ema_50": 1206,
         "polygon_indicators.rsi_14": 1242,
+        "polygon_indicators.macd": 1230,
         "quiver.congressional": 56,
         "quiver.senatetrading": 0,
         "quiver.housetrading": 8,
@@ -58078,7 +58086,7 @@
     "GSIT": {
       "tier": "T3",
       "sector": "Information Technology",
-      "endpoints_with_data": 54,
+      "endpoints_with_data": 55,
       "endpoints_total": 60,
       "endpoint_row_counts": {
         "polygon.ohlcv": 1255,
@@ -58098,6 +58106,7 @@
         "polygon_indicators.ema_20": 1236,
         "polygon_indicators.ema_50": 1206,
         "polygon_indicators.rsi_14": 1242,
+        "polygon_indicators.macd": 1230,
         "quiver.congressional": 0,
         "quiver.senatetrading": 0,
         "quiver.housetrading": 0,
@@ -75661,7 +75670,7 @@
     "MAZE": {
       "tier": "T3",
       "sector": "Health Care",
-      "endpoints_with_data": 54,
+      "endpoints_with_data": 55,
       "endpoints_total": 60,
       "endpoint_row_counts": {
         "polygon.ohlcv": 316,
@@ -75682,6 +75691,7 @@
         "polygon_indicators.ema_20": 299,
         "polygon_indicators.ema_50": 269,
         "polygon_indicators.rsi_14": 305,
+        "polygon_indicators.macd": 294,
         "quiver.congressional": 0,
         "quiver.senatetrading": 0,
         "quiver.housetrading": 0,
@@ -79662,7 +79672,7 @@
     "MRSH": {
       "tier": "T1a",
       "sector": "Financials",
-      "endpoints_with_data": 54,
+      "endpoints_with_data": 55,
       "endpoints_total": 60,
       "endpoint_row_counts": {
         "polygon.ohlcv": 77,
@@ -79681,6 +79691,7 @@
         "polygon_indicators.ema_20": 60,
         "polygon_indicators.ema_50": 30,
         "polygon_indicators.rsi_14": 66,
+        "polygon_indicators.macd": 55,
         "quiver.congressional": 6,
         "quiver.senatetrading": 0,
         "quiver.housetrading": 0,
@@ -91140,7 +91151,7 @@
     "PDFS": {
       "tier": "T3",
       "sector": "Information Technology",
-      "endpoints_with_data": 54,
+      "endpoints_with_data": 55,
       "endpoints_total": 60,
       "endpoint_row_counts": {
         "polygon.ohlcv": 1255,
@@ -91160,6 +91171,7 @@
         "polygon_indicators.ema_20": 1236,
         "polygon_indicators.ema_50": 1206,
         "polygon_indicators.rsi_14": 1242,
+        "polygon_indicators.macd": 1230,
         "quiver.congressional": 0,
         "quiver.senatetrading": 0,
         "quiver.housetrading": 0,
@@ -95817,7 +95829,7 @@
     "PTEN": {
       "tier": "T3",
       "sector": "Energy",
-      "endpoints_with_data": 56,
+      "endpoints_with_data": 57,
       "endpoints_total": 60,
       "endpoint_row_counts": {
         "polygon.ohlcv": 1255,
@@ -95839,6 +95851,7 @@
         "polygon_indicators.ema_20": 1236,
         "polygon_indicators.ema_50": 1206,
         "polygon_indicators.rsi_14": 1242,
+        "polygon_indicators.macd": 1230,
         "quiver.congressional": 14,
         "quiver.senatetrading": 0,
         "quiver.housetrading": 15,
@@ -101136,7 +101149,7 @@
     "RUM": {
       "tier": "T3",
       "sector": "Information Technology",
-      "endpoints_with_data": 53,
+      "endpoints_with_data": 54,
       "endpoints_total": 60,
       "endpoint_row_counts": {
         "polygon.ohlcv": 910,
@@ -101156,6 +101169,7 @@
         "polygon_indicators.ema_20": 893,
         "polygon_indicators.ema_50": 863,
         "polygon_indicators.rsi_14": 899,
+        "polygon_indicators.macd": 888,
         "quiver.congressional": 1,
         "quiver.senatetrading": 1,
         "quiver.housetrading": 0,
@@ -103429,7 +103443,7 @@
     "SFM": {
       "tier": "T2",
       "sector": "Consumer Discretionary",
-      "endpoints_with_data": 53,
+      "endpoints_with_data": 54,
       "endpoints_total": 60,
       "endpoint_row_counts": {
         "polygon.ohlcv": 1255,
@@ -103450,6 +103464,7 @@
         "polygon_indicators.ema_20": 1236,
         "polygon_indicators.ema_50": 1206,
         "polygon_indicators.rsi_14": 1242,
+        "polygon_indicators.macd": 1230,
         "quiver.congressional": 10,
         "quiver.senatetrading": 4,
         "quiver.housetrading": 6,
@@ -105897,7 +105912,7 @@
     "SMWB": {
       "tier": "T3",
       "sector": "Information Technology",
-      "endpoints_with_data": 54,
+      "endpoints_with_data": 55,
       "endpoints_total": 60,
       "endpoint_row_counts": {
         "polygon.ohlcv": 1251,
@@ -105918,6 +105933,7 @@
         "polygon_indicators.ema_20": 1234,
         "polygon_indicators.ema_50": 1204,
         "polygon_indicators.rsi_14": 1240,
+        "polygon_indicators.macd": 1229,
         "quiver.congressional": 0,
         "quiver.senatetrading": 0,
         "quiver.housetrading": 0,
@@ -106825,7 +106841,7 @@
     "SOFI": {
       "tier": "T2",
       "sector": "Financials",
-      "endpoints_with_data": 53,
+      "endpoints_with_data": 54,
       "endpoints_total": 60,
       "endpoint_row_counts": {
         "polygon.ohlcv": 1238,
@@ -106845,6 +106861,7 @@
         "polygon_indicators.ema_20": 1221,
         "polygon_indicators.ema_50": 1191,
         "polygon_indicators.rsi_14": 1227,
+        "polygon_indicators.macd": 1216,
         "quiver.congressional": 4,
         "quiver.senatetrading": 2,
         "quiver.housetrading": 2,
@@ -107309,7 +107326,7 @@
     "SPGI": {
       "tier": "T1a",
       "sector": "Financials",
-      "endpoints_with_data": 54,
+      "endpoints_with_data": 55,
       "endpoints_total": 60,
       "endpoint_row_counts": {
         "polygon.ohlcv": 1255,
@@ -107331,6 +107348,7 @@
         "polygon_indicators.ema_20": 1236,
         "polygon_indicators.ema_50": 1206,
         "polygon_indicators.rsi_14": 1242,
+        "polygon_indicators.macd": 1230,
         "quiver.congressional": 140,
         "quiver.senatetrading": 6,
         "quiver.housetrading": 53,
@@ -109415,7 +109433,7 @@
     "STRL": {
       "tier": "T3",
       "sector": "Consumer Discretionary",
-      "endpoints_with_data": 53,
+      "endpoints_with_data": 54,
       "endpoints_total": 60,
       "endpoint_row_counts": {
         "polygon.ohlcv": 1255,
@@ -109435,6 +109453,7 @@
         "polygon_indicators.ema_20": 1236,
         "polygon_indicators.ema_50": 1206,
         "polygon_indicators.rsi_14": 1242,
+        "polygon_indicators.macd": 1230,
         "quiver.congressional": 6,
         "quiver.senatetrading": 0,
         "quiver.housetrading": 6,
@@ -109476,7 +109495,7 @@
     "STRT": {
       "tier": "T3",
       "sector": "Consumer Discretionary",
-      "endpoints_with_data": 52,
+      "endpoints_with_data": 53,
       "endpoints_total": 60,
       "endpoint_row_counts": {
         "polygon.ohlcv": 1252,
@@ -109497,6 +109516,7 @@
         "polygon_indicators.ema_20": 1233,
         "polygon_indicators.ema_50": 1203,
         "polygon_indicators.rsi_14": 1239,
+        "polygon_indicators.macd": 1227,
         "quiver.congressional": 0,
         "quiver.senatetrading": 0,
         "quiver.housetrading": 0,
@@ -111811,7 +111831,7 @@
     "TDY": {
       "tier": "T1a",
       "sector": "Information Technology",
-      "endpoints_with_data": 52,
+      "endpoints_with_data": 53,
       "endpoints_total": 60,
       "endpoint_row_counts": {
         "polygon.ohlcv": 1255,
@@ -111831,6 +111851,7 @@
         "polygon_indicators.ema_20": 1236,
         "polygon_indicators.ema_50": 1206,
         "polygon_indicators.rsi_14": 1242,
+        "polygon_indicators.macd": 1230,
         "quiver.congressional": 36,
         "quiver.senatetrading": 1,
         "quiver.housetrading": 16,
@@ -112845,7 +112866,7 @@
     "TGLS": {
       "tier": "T3",
       "sector": "Materials",
-      "endpoints_with_data": 53,
+      "endpoints_with_data": 54,
       "endpoints_total": 60,
       "endpoint_row_counts": {
         "polygon.ohlcv": 1255,
@@ -112865,6 +112886,7 @@
         "polygon_indicators.ema_20": 1236,
         "polygon_indicators.ema_50": 1206,
         "polygon_indicators.rsi_14": 1242,
+        "polygon_indicators.macd": 1230,
         "quiver.congressional": 0,
         "quiver.senatetrading": 0,
         "quiver.housetrading": 0,
@@ -113802,7 +113824,7 @@
     "TLN": {
       "tier": "T2",
       "sector": "Utilities",
-      "endpoints_with_data": 53,
+      "endpoints_with_data": 54,
       "endpoints_total": 60,
       "endpoint_row_counts": {
         "polygon.ohlcv": 457,
@@ -113822,6 +113844,7 @@
         "polygon_indicators.ema_20": 440,
         "polygon_indicators.ema_50": 410,
         "polygon_indicators.rsi_14": 446,
+        "polygon_indicators.macd": 435,
         "quiver.congressional": 0,
         "quiver.senatetrading": 0,
         "quiver.housetrading": 0,
@@ -118000,7 +118023,7 @@
     "UHS": {
       "tier": "T1a",
       "sector": "Health Care",
-      "endpoints_with_data": 54,
+      "endpoints_with_data": 55,
       "endpoints_total": 60,
       "endpoint_row_counts": {
         "polygon.ohlcv": 1255,
@@ -118022,6 +118045,7 @@
         "polygon_indicators.ema_20": 1236,
         "polygon_indicators.ema_50": 1206,
         "polygon_indicators.rsi_14": 1242,
+        "polygon_indicators.macd": 1230,
         "quiver.congressional": 33,
         "quiver.senatetrading": 0,
         "quiver.housetrading": 4,
@@ -119879,7 +119903,7 @@
     "VAR": {
       "tier": "T1a",
       "sector": "Health Care",
-      "endpoints_with_data": 37,
+      "endpoints_with_data": 38,
       "endpoints_total": 60,
       "endpoint_row_counts": {
         "polygon.financials": 60,
@@ -119895,6 +119919,7 @@
         "polygon_indicators.ema_20": 0,
         "polygon_indicators.ema_50": 0,
         "polygon_indicators.rsi_14": 0,
+        "polygon_indicators.macd": 0,
         "quiver.congressional": 17,
         "quiver.senatetrading": 0,
         "quiver.housetrading": 5,
@@ -120161,7 +120186,7 @@
     "VERA": {
       "tier": "T3",
       "sector": "Health Care",
-      "endpoints_with_data": 55,
+      "endpoints_with_data": 56,
       "endpoints_total": 60,
       "endpoint_row_counts": {
         "polygon.ohlcv": 1249,
@@ -120182,6 +120207,7 @@
         "polygon_indicators.ema_20": 1232,
         "polygon_indicators.ema_50": 1202,
         "polygon_indicators.rsi_14": 1238,
+        "polygon_indicators.macd": 1227,
         "quiver.congressional": 0,
         "quiver.senatetrading": 0,
         "quiver.housetrading": 0,
@@ -128631,7 +128657,7 @@
     "polygon_indicators": {
       "endpoints": 6,
       "ok_endpoints": 6,
-      "total_files": 11596
+      "total_files": 11622
     },
     "quiver": {
       "endpoints": 17,
@@ -136579,16 +136605,16 @@
       "endpoint": "macd",
       "field": "value",
       "kind": "per_ticker",
-      "coverage_pct": 98.7,
-      "commentary": "Minor gap; tickers without this field likely delisted/foreign or non-applicable",
+      "coverage_pct": 100.0,
+      "commentary": "",
       "n_observed": 50,
       "n_universe": 1937,
       "n_sampled": 50,
-      "n_files_total": 1911,
+      "n_files_total": 1937,
       "is_summary": false,
       "cached": true,
-      "files_count": 1911,
-      "endpoint_coverage_pct": 98.66,
+      "files_count": 1937,
+      "endpoint_coverage_pct": 100.0,
       "coded": false,
       "wired": false,
       "tested": false
@@ -136598,16 +136624,16 @@
       "endpoint": "macd",
       "field": "signal",
       "kind": "per_ticker",
-      "coverage_pct": 98.7,
-      "commentary": "Minor gap; tickers without this field likely delisted/foreign or non-applicable",
+      "coverage_pct": 100.0,
+      "commentary": "",
       "n_observed": 50,
       "n_universe": 1937,
       "n_sampled": 50,
-      "n_files_total": 1911,
+      "n_files_total": 1937,
       "is_summary": false,
       "cached": true,
-      "files_count": 1911,
-      "endpoint_coverage_pct": 98.66,
+      "files_count": 1937,
+      "endpoint_coverage_pct": 100.0,
       "coded": false,
       "wired": false,
       "tested": false
@@ -136617,16 +136643,16 @@
       "endpoint": "macd",
       "field": "histogram",
       "kind": "per_ticker",
-      "coverage_pct": 98.7,
-      "commentary": "Minor gap; tickers without this field likely delisted/foreign or non-applicable",
+      "coverage_pct": 100.0,
+      "commentary": "",
       "n_observed": 50,
       "n_universe": 1937,
       "n_sampled": 50,
-      "n_files_total": 1911,
+      "n_files_total": 1937,
       "is_summary": false,
       "cached": true,
-      "files_count": 1911,
-      "endpoint_coverage_pct": 98.66,
+      "files_count": 1937,
+      "endpoint_coverage_pct": 100.0,
       "coded": false,
       "wired": false,
       "tested": false
@@ -136636,16 +136662,16 @@
       "endpoint": "macd",
       "field": "date",
       "kind": "per_ticker",
-      "coverage_pct": 98.7,
-      "commentary": "Minor gap; tickers without this field likely delisted/foreign or non-applicable",
+      "coverage_pct": 100.0,
+      "commentary": "",
       "n_observed": 50,
       "n_universe": 1937,
       "n_sampled": 50,
-      "n_files_total": 1911,
+      "n_files_total": 1937,
       "is_summary": false,
       "cached": true,
-      "files_count": 1911,
-      "endpoint_coverage_pct": 98.66,
+      "files_count": 1937,
+      "endpoint_coverage_pct": 100.0,
       "coded": false,
       "wired": false,
       "tested": false
@@ -136655,14 +136681,14 @@
       "endpoint": "macd",
       "field": "(endpoint summary)",
       "kind": "per_ticker",
-      "coverage_pct": 98.7,
+      "coverage_pct": 100.0,
       "commentary": "Avg per-field coverage; 4 fields tracked",
       "n_observed": 50,
       "n_universe": 1937,
       "is_summary": true,
       "cached": true,
-      "files_count": 1911,
-      "endpoint_coverage_pct": 98.66,
+      "files_count": 1937,
+      "endpoint_coverage_pct": 100.0,
       "coded": false,
       "wired": false,
       "tested": false

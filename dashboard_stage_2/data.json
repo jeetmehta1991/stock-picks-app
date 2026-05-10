@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-10T17:31:12.102067+00:00",
+  "generated_at": "2026-05-10T17:42:22.849139+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -21013,7 +21013,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 428,
+        "n_doc_refs": 429,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -30829,7 +30829,7 @@
         "coded": false,
         "wired": false,
         "tested": false,
-        "pushed": false,
+        "pushed": true,
         "n_doc_refs": 1,
         "pyramid": {
           "unit": false,
@@ -31563,28 +31563,34 @@
   ],
   "recent_commits": [
     {
+      "sha": "b76fc3d1",
+      "subject": "Pass 53 v8h+1: H1.b OHLCV Master Dedup data commit (1924 parquets, 105.6 MB) + CAV-079",
+      "author": "jeetmehta1991",
+      "rel_time": "3 minutes ago"
+    },
+    {
       "sha": "1e020b2a",
       "subject": "Pass 53 v8h+1: promotion-path column wired into Stage 2 dashboard (CHECKLIST #81/#82)",
       "author": "jeetmehta1991",
-      "rel_time": "2 minutes ago"
+      "rel_time": "13 minutes ago"
     },
     {
       "sha": "f7b3e987",
       "subject": "Pass 53 v8h+1: untracked artifacts cleanup (gitignore + INV-027 backup archived)",
       "author": "jeetmehta1991",
-      "rel_time": "17 minutes ago"
+      "rel_time": "28 minutes ago"
     },
     {
       "sha": "4bf07436",
       "subject": "Pass 53 v8h+1: H1.a OHLCV Master Dedup prefetch script + DEC-609 (Option B)",
       "author": "jeetmehta1991",
-      "rel_time": "19 minutes ago"
+      "rel_time": "30 minutes ago"
     },
     {
       "sha": "aee93c01",
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 16:43: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "41 minutes ago"
+      "rel_time": "52 minutes ago"
     },
     {
       "sha": "d57a07ee",
@@ -31614,7 +31620,7 @@
       "sha": "d6e6296d",
       "subject": "Pass 53 v8h+1: Coverage Matrix kind-aware metrics + commentary updated + CHECKLIST #80",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "ecc846c2",
@@ -31632,7 +31638,7 @@
       "sha": "27944fa2",
       "subject": "Pass 53 v8h+1: DEC-606 Finnhub financials_reported EXCLUDED COMPLETELY + CAV-075 (delisting confirmed) + CAV-076",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "c3322875",
@@ -31674,7 +31680,7 @@
       "sha": "1cc943ac",
       "subject": "Pass 53 auto-drift-sweep 2026-05-09 11:53: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "18 hours ago"
+      "rel_time": "19 hours ago"
     },
     {
       "sha": "8d4fa5d3",
@@ -31722,7 +31728,7 @@
       "sha": "5814a4cc",
       "subject": "Pass 53 auto-drift-sweep 2026-05-09 05:53: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "26 hours ago"
+      "rel_time": "27 hours ago"
     },
     {
       "sha": "9673eccc",
@@ -31735,19 +31741,13 @@
       "subject": "StockTwits final (1923 fetched)",
       "author": "jeetmehta1991",
       "rel_time": "32 hours ago"
-    },
-    {
-      "sha": "658f40ad",
-      "subject": "StockTwits batch 38",
-      "author": "jeetmehta1991",
-      "rel_time": "32 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 3,
-    "modified": 2,
+    "count": 29,
+    "modified": 3,
     "added": 0,
-    "untracked": 1,
+    "untracked": 26,
     "deleted": 0,
     "files": [
       {
@@ -31756,11 +31756,115 @@
       },
       {
         "status": "M",
-        "path": "LIMITATIONS_CAVEATS_ASSUMPTIONS.md"
+        "path": "PHASE_1A_PRELAUNCH_TODO.md"
+      },
+      {
+        "status": "M",
+        "path": "data_prefetch/polygon/indicators/_checkpoint.json"
       },
       {
         "status": "??",
-        "path": "data_prefetch/polygon/ohlcv_daily/"
+        "path": "data_prefetch/polygon/indicators/macd/CPS.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/polygon/indicators/macd/CRML.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/polygon/indicators/macd/CVX.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/polygon/indicators/macd/DASH.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/polygon/indicators/macd/ELEV.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/polygon/indicators/macd/EVRG.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/polygon/indicators/macd/FBRX.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/polygon/indicators/macd/GPC.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/polygon/indicators/macd/GSIT.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/polygon/indicators/macd/MAZE.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/polygon/indicators/macd/MRSH.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/polygon/indicators/macd/PDFS.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/polygon/indicators/macd/PTEN.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/polygon/indicators/macd/RUM.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/polygon/indicators/macd/SFM.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/polygon/indicators/macd/SMWB.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/polygon/indicators/macd/SOFI.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/polygon/indicators/macd/SPGI.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/polygon/indicators/macd/STRL.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/polygon/indicators/macd/STRT.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/polygon/indicators/macd/TDY.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/polygon/indicators/macd/TGLS.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/polygon/indicators/macd/TLN.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/polygon/indicators/macd/UHS.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/polygon/indicators/macd/VAR.parquet"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/polygon/indicators/macd/VERA.parquet"
       }
     ]
   },

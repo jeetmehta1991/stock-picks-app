@@ -31955,6 +31955,37 @@ H1 scope finding (verified 2026-05-10 empirical): the existing legacy `backtest/
 
 **H1.b (BG completed 2026-05-10 17:20 UTC, separate sub-addressal commit):** 1924/1932 successful, 8 failures (AGN/CXO/ETFC/NBL/RTN/TIF/VAR/WCG - all M&A casualties pre-Polygon-5y-window). Wall time 19 min. Cache size 105.6 MB (1929 total files including 5 smoke). Random 10-file sample data integrity check 2026-05-10: all 10 sampled files pass schema (9 cols, vwap complete, transactions complete, row counts 624-1255 reflecting listing-date variance). CAV-079 logged for the 8 delisted-ticker failures (M&A successor symbols already cached under new symbols - no signal lost; PIT loader correctly returns empty for delisted dates).
 
+---
+
+## Pass 53 Day 9 v8h+1 follow-on 2026-05-10 (cont): H6 indicator completeness verify + macd top-up
+
+Owner directive 2026-05-10: "auto proceed unless my clarification required" - executing approved H-tier completeness verifies.
+
+**H6 verify finding:** empirical scan of `data_prefetch/polygon/indicators/` revealed:
+  - ema_20: 1937/1937
+  - ema_50: 1937/1937
+  - rsi_14: 1937/1937
+  - sma_50: 1937/1937
+  - sma_200: 1937/1937
+  - **macd: 1911/1937** (26 missing - real coverage gap)
+
+Missing macd tickers: CPS / CRML / CVX / DASH / ELEV / EVRG / FBRX / GPC / GSIT / MAZE / MRSH / PDFS / PTEN / RUM / SFM / SMWB / SOFI / SPGI / STRL / STRT / TDY / TGLS / TLN / UHS / VAR / VERA. NOT all delisted (CVX/SOFI/SPGI/TDY/UHS are very active) - presumed transient errors during original macd prefetch.
+
+**Top-up executed inline 2026-05-10:** ran `scripts/prefetch_polygon_indicators.py --tickers <26-list> --no-git`; checkpoint mechanism correctly skipped already-done indicators per ticker; macd 26/26 fetched successfully. Final status: all 6 indicators at 1937/1937. CVX macd verified post-fetch: 4 cols `[value, signal, histogram, date]`, 1230 rows (matches 5y trading days for active large-cap).
+
+**Per-addressal pyramid (CHECKLIST #78):** existing test_unit + test_integration coverage applies (no new code; data top-up only). 107/107 PASS. Layers N/A: contract (no schema change), property/snapshot/compatibility (no scope match), performance (small batch), acceptance (no new criterion).
+
+**Same-commit (DEC-594):** macd parquets + PHASE_1A_PRELAUNCH_TODO H6 status flip + AUDIT.md narrative + dashboards rebuilt.
+
+**H6 status: PARTIAL-DONE -> DONE (1937/1937 across all 6 indicators).**
+
+Documents updated this sub-turn:
+  - data_prefetch/polygon/indicators/macd/<26-tickers>.parquet (top-up)
+  - data_prefetch/polygon/indicators/_checkpoint.json (gitignored per CHECKLIST untracked-cleanup; not committed)
+  - PHASE_1A_PRELAUNCH_TODO.md (H6 PARTIAL-DONE -> DONE)
+  - AUDIT.md (this sub-entry)
+  - Both dashboards rebuilt
+
 **Same-commit (DEC-594):** script + DEC-609 + AUDIT.md narrative + contract test + dashboards rebuilt - all in this sub-turn commit.
 
 Documents updated this sub-turn:
