@@ -31896,3 +31896,42 @@ Documents updated this sub-turn:
   - PHASE_1A_PRELAUNCH_TODO.md (H6/H10/H16/H19/H20/H21/H22 status flips with DEC cross-references; header reconciliation note)
   - AUDIT.md (this sub-entry)
 
+---
+
+## Pass 53 Day 9 v8h+1 follow-on 2026-05-10 (cont): Sprint 0A.8 NO-LIVE-API HARD CUT implementation (DEC-608)
+
+Owner directive 2026-05-10: "auto proceed unless my clarification required" - executing approved turn sequencing.
+
+DEC-497 (NO-LIVE-API HARD CUT, owner-approved 2026-05-05) was the parent directive; Sprint 0A.8 is its implementation in the remaining runtime hot-path modules. Prior commits already removed yfinance from runtime (DEC-497 D4) and migrated VIX/DXY to OHLCV cache (DEC-302) + ALFRED vintage prefetch (DEC-301 + L146 fix). This turn closes the last three live-API touchpoints:
+
+**`backtest/data/macro.py::_fred_series`** - removed live FRED API block (formerly L126-149 with `requests.get(ALFRED_BASE)`) and CSV-fallback block (formerly L154-174 with `requests.get(fredgraph.csv)`). Replaced with per-series FRED prefetch parquet read at `data_prefetch/fred/observations/{series_id}.parquet` and clear "run scripts/prefetch_fred.py" / "run scripts/prefetch_alfred_mirror.py" remediation log on cache miss. Module now has zero live-HTTP touchpoints; combined-cache + ALFRED prefetch + FRED prefetch = three offline cache paths cover all signals.
+
+**`backtest/data/smart_money.py::_quiver_get`** - REMOVED dead function (was a live-API helper with no callers in current code; `_get_quiver_data` already used cache-only path). Removed `import requests`, `QUIVER_KEY`, `QUIVER_BASE`, `_DELAY` constants. `_get_quiver_data` retained with cache-only behavior + clearer remediation log.
+
+**`backtest/data/sentiment.py`** - removed unused `import requests` (was leftover; sentiment data lives entirely in prefetched parquet caches).
+
+**Regression test** `backtest/tests/test_no_live_api_hard_cut.py` (5 tests) added as gate:
+- `test_no_live_http_in_backtest_runtime` walks all .py under `backtest/data/`, `backtest/signals/`, `backtest/engine/`, `backtest/results/` and asserts no `import requests/httpx/urllib.request` or `requests.get/post/Session(` / `httpx.get/Client(` / `urllib.request.urlopen(` call sites. Comment-stripped. Allowlist mechanism in place for owner-approved exceptions.
+- `test_macro_module_no_requests_import` - module-specific pin
+- `test_smart_money_module_no_requests_import` - module-specific pin
+- `test_sentiment_module_no_requests_import` - module-specific pin
+- `test_quiver_get_dead_function_removed` - pins the removal of `_quiver_get`
+
+**Per-addressal pyramid (CHECKLIST #78):** unit + integration + smoke + regression + L146-wave + data-integrity + DEC-513-extended-signals layers - 240/240 PASS in 14s. Layers N/A: performance, acceptance, property, snapshot, contract, compatibility (no perf/acceptance/property/snapshot/contract/version concern).
+
+**Same-commit rule (DEC-594):** code change + new test file + DEC-608 register entry + AUDIT.md narrative + PHASE_1A_PRELAUNCH_TODO 0A.8 status flip + dashboards rebuilt - all in single commit.
+
+**Sprint 0A blocker count:** 0A.8 RESOLVED-IMPLEMENTED. Remaining Sprint 0A pending: 0A.7 (per-API smoke/demo split, ~4h, real-TODO). Sprint 0A real-TODO H-tier remaining: H1, H4, H18 + completeness-verifies for H6/H16/H22.
+
+**Phase 1A May 15 impact:** runtime backtest now provably offline-only against `data_prefetch/`. The HARD CUT regression test prevents future contributors from silently re-introducing live-fallback paths.
+
+Documents updated this sub-turn:
+  - backtest/data/macro.py (gut live FRED API + CSV fallback; cache-only paths + clear remediation logs)
+  - backtest/data/smart_money.py (remove dead `_quiver_get`; remove requests import + Quiver constants)
+  - backtest/data/sentiment.py (remove unused requests import)
+  - backtest/tests/test_no_live_api_hard_cut.py (NEW; 5-test regression gate)
+  - AUDIT_INDEX.md (DEC-608 RESOLVED-IMPLEMENTED; total 531 -> 532)
+  - PHASE_1A_PRELAUNCH_TODO.md (0A.8 status flip)
+  - AUDIT.md (this sub-entry)
+  - Both dashboards rebuilt
+

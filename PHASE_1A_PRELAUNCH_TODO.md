@@ -3,7 +3,7 @@
 ## 2026-05-08 (Day-9 v8h+1) — Tier H/I execution status
 
 **Phase 1A start:** 2026-05-15 (DEC-590; **5 calendar days remaining as of 2026-05-10**)
-**Updated by:** Day-9 v8h+1 morning Tier H execution per owner directive 2026-05-07 evening + 2026-05-08 morning ("100% coverage with no missing dimensions/fields after the pre-fetch"). **Pass 53 v8h+1 reconciliation 2026-05-10:** H10/H19/H21 flipped to DONE per DEC-600/empirical/DEC-601; H20 flipped to DEFERRED-Phase-1C per DEC-599 (owner H20=A 2026-05-10); H6/H16/H22 marked PARTIAL-DONE pending completeness verify; real-TODO remaining: **H1, H4, H18**. Phase 1A May 15 strict blocker count = **0 OPEN** (INV-046 RESOLVED-DOCUMENTED via DEC-607).
+**Updated by:** Day-9 v8h+1 morning Tier H execution per owner directive 2026-05-07 evening + 2026-05-08 morning ("100% coverage with no missing dimensions/fields after the pre-fetch"). **Pass 53 v8h+1 reconciliation 2026-05-10:** H10/H19/H21 flipped to DONE per DEC-600/empirical/DEC-601; H20 flipped to DEFERRED-Phase-1C per DEC-599 (owner H20=A 2026-05-10); H6/H16/H22 marked PARTIAL-DONE pending completeness verify; real-TODO remaining: **H1, H4, H18**. Phase 1A May 15 strict blocker count = **0 OPEN** (INV-046 RESOLVED-DOCUMENTED via DEC-607). **Sprint 0A.8 NO-LIVE-API HARD CUT RESOLVED-IMPLEMENTED 2026-05-10 via DEC-608** (`backtest/data/macro.py` + `smart_money.py` + `sentiment.py` refactored; live FRED/Quiver/HTTP touchpoints removed; regression test `test_no_live_api_hard_cut.py` 5/5 PASS gates against re-introduction). Sprint 0A genuine remaining: 0A.7 per-API smoke/demo split (~4h).
 
 ### Current background jobs (active 2026-05-08 morning)
 

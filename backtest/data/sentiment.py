@@ -1,29 +1,30 @@
 """
-data/sentiment.py — Sentiment signal data fetchers.
+data/sentiment.py  -  Sentiment signal data fetchers.
 
 Sources (all free, no API key required):
   - AAII Investor Sentiment Survey: weekly bullish/bearish readings
   - CNN Fear & Greed Index: daily composite 0-100
-  - COT (Commitment of Traders): CFTC weekly — commercial vs speculative positioning
+  - COT (Commitment of Traders): CFTC weekly  -  commercial vs speculative positioning
 
 All functions enforce point-in-time data (as_of parameter).
 
-AAII data: loaded from backtest/data/aaii_sentiment.csv — full weekly history 2020-2024.
+AAII data: loaded from backtest/data/aaii_sentiment.csv  -  full weekly history 2020-2024.
   Downloaded from aaii.com/sentimentsurvey/sent_results and committed to repo.
   Update annually by downloading fresh XLS from AAII and running the parser.
 
-CNN Fear & Greed: loaded from backtest/data/cnn_fear_greed.csv — daily history 2020-2024.
+CNN Fear & Greed: loaded from backtest/data/cnn_fear_greed.csv  -  daily history 2020-2024.
   Downloaded from CNN unofficial API and committed to repo.
 """
 
 import logging
-import requests
 import io
 from datetime import date, timedelta
 from pathlib import Path
 from typing import Optional
 
 import pandas as pd
+# requests import REMOVED Pass 53 Sprint 0A.8 NO-LIVE-API (Pass 53 v8h+1 2026-05-10):
+# was unused in sentiment.py - sentiment data sources read from prefetched parquets only.
 
 logger = logging.getLogger(__name__)
 
@@ -31,11 +32,11 @@ DATA_DIR = Path(__file__).parent
 
 # ---------------------------------------------------------------------------
 # AAII SENTIMENT SURVEY
-# Weekly reading — published every Thursday.
+# Weekly reading  -  published every Thursday.
 # Extreme bearishness (>50% bears) = contrarian buy signal.
 # Extreme bullishness (>50% bulls) = contrarian sell warning.
 #
-# Loaded from aaii_sentiment.csv — full 2020-2026 weekly history (325 readings).
+# Loaded from aaii_sentiment.csv  -  full 2020-2026 weekly history (325 readings).
 # ---------------------------------------------------------------------------
 
 _AAII_DF: Optional[pd.DataFrame] = None
@@ -70,7 +71,7 @@ def _load_aaii() -> pd.DataFrame:
         df = pd.read_csv(csv_path, parse_dates=["date"])
         logger.info("AAII: loaded %d weekly readings from legacy CSV", len(df))
     if df is None:
-        logger.warning("AAII not found at parquet OR CSV — using empty dataset")
+        logger.warning("AAII not found at parquet OR CSV  -  using empty dataset")
         _AAII_DF = pd.DataFrame(columns=["survey_date","bullish_pct",
                                           "bearish_pct","neutral_pct"])
         return _AAII_DF
@@ -118,13 +119,13 @@ def get_aaii_sentiment(as_of: date) -> dict:
 # ---------------------------------------------------------------------------
 # CNN FEAR & GREED INDEX
 # 0 = Extreme Fear (buy), 100 = Extreme Greed (sell warning)
-# Source: CNN Markets — live scraping for Stage 3+; sampled data for backtest.
+# Source: CNN Markets  -  live scraping for Stage 3+; sampled data for backtest.
 # ---------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------
 # CNN FEAR & GREED INDEX
 # 0 = Extreme Fear (buy), 100 = Extreme Greed (sell warning)
-# Loaded from cnn_fear_greed.csv — 1,630 daily readings 2020-2026.
+# Loaded from cnn_fear_greed.csv  -  1,630 daily readings 2020-2026.
 # Built from CNN archives and interpolated between key readings.
 # For Stage 3+ live trading: scrape CNN directly.
 # ---------------------------------------------------------------------------
@@ -179,9 +180,9 @@ def _load_cnn() -> pd.DataFrame:
     elif df_parquet is not None:
         _CNN_DF = df_parquet.sort_values("reading_date").reset_index(drop=True)
         logger.info("CNN F&G: loaded %d daily readings from Sprint 0A parquet "
-                    "(legacy CSV missing — limited history)", len(_CNN_DF))
+                    "(legacy CSV missing  -  limited history)", len(_CNN_DF))
     else:
-        logger.warning("CNN F&G not found at parquet OR CSV — using empty dataset")
+        logger.warning("CNN F&G not found at parquet OR CSV  -  using empty dataset")
         _CNN_DF = pd.DataFrame(columns=["reading_date","score","label"])
     return _CNN_DF
 
@@ -219,8 +220,8 @@ def get_fear_and_greed(as_of: date) -> dict:
 
 
 # ---------------------------------------------------------------------------
-# COT — COMMITMENT OF TRADERS
-# CFTC.gov — weekly, released every Friday for prior Tuesday positioning.
+# COT  -  COMMITMENT OF TRADERS
+# CFTC.gov  -  weekly, released every Friday for prior Tuesday positioning.
 # Commercial hedgers = smart money. Speculators (large non-commercials) often
 # wrong at extremes. Extreme commercial long + speculator short = buy signal.
 #
@@ -436,7 +437,7 @@ def sentiment_snapshot(as_of: date, ticker: Optional[str] = None) -> dict:
     Adds CNN F&G 7 sub-components, CFTC COT (real data), and ticker-specific
     Apewisdom + Wikipedia signals.
 
-    `ticker` parameter optional — when provided, ticker-specific signals
+    `ticker` parameter optional  -  when provided, ticker-specific signals
     (Apewisdom mentions, Wikipedia pageviews) are included; when None, only
     market-wide sentiment signals are returned.
 
@@ -478,9 +479,9 @@ def sentiment_snapshot(as_of: date, ticker: Optional[str] = None) -> dict:
         # Apewisdom rank (lower = more mentions)
         ape_sig = apewisdom.get("signal", "no_data")
         if ape_sig == "tracked" and apewisdom.get("rank", 999) <= 50:
-            # Top-50 meme stock — signal mixed (could be retail buy or pump-and-dump)
+            # Top-50 meme stock  -  signal mixed (could be retail buy or pump-and-dump)
             score += 0  # neutral; presence is information, direction is not
-        # Wikipedia pageviews spike — high attention often precedes movement
+        # Wikipedia pageviews spike  -  high attention often precedes movement
         wiki_sig = wikipedia.get("signal", "no_data")
         if wiki_sig == "spike_high_attention":
             score += 0  # neutral; signal value depends on direction context
@@ -496,9 +497,9 @@ def sentiment_snapshot(as_of: date, ticker: Optional[str] = None) -> dict:
     }
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Pass 53 Day-9 v8c Wave D — L146 G8 pytrends search-attention accessor
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
+# Pass 53 Day-9 v8c Wave D  -  L146 G8 pytrends search-attention accessor
+# -----------------------------------------------------------------------------
 PREFETCH_PYTRENDS_DIR = _REPO_ROOT_SENT / "data_prefetch" / "pytrends"
 
 
@@ -553,9 +554,9 @@ def get_search_attention(ticker: str, as_of: date,
         return default
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Pass 53 Day-9 v8h Tier C3 — CFTC additional contracts
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
+# Pass 53 Day-9 v8h Tier C3  -  CFTC additional contracts
+# -----------------------------------------------------------------------------
 # Existing single-contract `get_cot_emini_sp500()` extended with generic
 # loader covering 19 contracts (TFF + DCOT). Filenames follow
 # data_prefetch/cftc/cot_<slug>.parquet pattern.

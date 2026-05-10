@@ -1,35 +1,39 @@
 """
-data/macro.py — Macro and economic filter data.
+data/macro.py - Macro and economic filter data.
 
-Sources:
-  - FRED API: yield curve (T10Y2Y), fed funds rate (FEDFUNDS)
-  - yfinance: VIX (^VIX), DXY (DX-Y.NYB)
+Sources (Pass 53 Sprint 0A.8 NO-LIVE-API HARD CUT 2026-05-10 - DEC-497):
+  - FRED prefetch: data_prefetch/fred/observations/<series>.parquet
+    (populated by scripts/prefetch_fred.py)
+  - ALFRED prefetch: data_prefetch/alfred/<series>.parquet (vintage-aware)
+    (populated by scripts/prefetch_alfred_mirror.py)
+  - VIX/DXY from OHLCV cache (Polygon-prefetched)
   - Hardcoded FOMC/CPI/NFP dates (free, from public calendars)
 
 All functions enforce point-in-time data (as_of parameter).
-FRED_API_KEY env var required for FRED. Falls back to CSV download if absent.
+
+NO LIVE API CALLS in Stage 2 backtest (DEC-497 HARD CUT). If a series
+parquet is missing, _fred_series returns an empty Series and logs a
+clear "run scripts/prefetch_fred.py" / "run scripts/prefetch_alfred_mirror.py"
+guidance message. Live API calls live exclusively in scripts/prefetch_*.py.
 """
 
-import os
 import logging
-import io
 from datetime import date, timedelta
 from pathlib import Path
 from typing import Optional
 
-import requests
 import pandas as pd
 # yfinance removed from runtime per DEC-497 D4 (Pass 53 Batch 13 sub-task 6 2026-05-06).
 # VIX + DXY now read exclusively from cache/ohlcv/ (Polygon-prefetched).
+# requests removed from runtime per DEC-497 + Sprint 0A.8 NO-LIVE-API HARD CUT
+# (Pass 53 v8h+1 2026-05-10). Live FRED/ALFRED API calls now live exclusively
+# in scripts/prefetch_fred.py + scripts/prefetch_alfred_mirror.py.
 
 logger = logging.getLogger(__name__)
 
-FRED_KEY  = os.environ.get("FRED_API_KEY", "")
-FRED_BASE = "https://api.stlouisfed.org/fred/series/observations"
-# DEC-301 fix (Pass 50): ALFRED archival endpoint for vintage (PIT-correct) data.
-# Without this, FRED returns latest revised values, leaking future revisions into past dates.
-ALFRED_BASE = "https://api.stlouisfed.org/fred/series/observations"
 MACRO_CACHE = Path(__file__).parent / "cache" / "macro"
+FRED_OBS_DIR = Path(__file__).parent.parent.parent / "data_prefetch" / "fred" / "observations"
+ALFRED_DIR = Path(__file__).parent.parent.parent / "data_prefetch" / "alfred"
 
 SERIES_MAP = {
     "T10Y2Y":   "yield_curve",
@@ -45,7 +49,7 @@ _MACRO_COMBINED: Optional[pd.DataFrame] = None
 
 
 def _load_macro_combined() -> Optional[pd.DataFrame]:
-    """Load pre-fetched combined macro Parquet — fastest path."""
+    """Load pre-fetched combined macro Parquet  -  fastest path."""
     global _MACRO_COMBINED
     if _MACRO_COMBINED is not None:
         return _MACRO_COMBINED
@@ -71,7 +75,7 @@ def _fred_series(series_id: str, start: date, end: date,
     Without as_of: returns latest revised values (legacy behavior, only
     safe for forward-looking analysis or non-revised series).
     """
-    # Try pre-fetched Parquet cache first (which uses latest revisions —
+    # Try pre-fetched Parquet cache first (which uses latest revisions  - 
     # correct for FORWARD analysis but NOT PIT-correct for backtest).
     # Cache is bypassed when as_of provided to ensure vintage path.
     name = SERIES_MAP.get(series_id)
@@ -100,7 +104,7 @@ def _fred_series(series_id: str, start: date, end: date,
                     df["date"] = pd.to_datetime(df["date"])
                     df["realtime_start"] = pd.to_datetime(df["realtime_start"])
                     df["realtime_end"] = pd.to_datetime(df["realtime_end"])
-                    # Vintage filter: pick observations whose realtime_start ≤ as_of ≤ realtime_end
+                    # Vintage filter: pick observations whose realtime_start <= as_of <= realtime_end
                     as_of_ts = pd.Timestamp(as_of)
                     vint = df[(df["realtime_start"] <= as_of_ts)
                                & (df["realtime_end"] >= as_of_ts)]
@@ -120,58 +124,51 @@ def _fred_series(series_id: str, start: date, end: date,
                                      "(%d obs)", series_id, as_of, len(s))
                         return s
             except Exception as exc:
-                logger.debug("ALFRED parquet read failed for %s: %s — "
+                logger.debug("ALFRED parquet read failed for %s: %s  -  "
                              "falling through to live API", series_id, exc)
 
-    if FRED_KEY:
+    # Pass 53 Sprint 0A.8 NO-LIVE-API HARD CUT (DEC-497, owner-approved 2026-05-05;
+    # implemented Pass 53 v8h+1 2026-05-10). Live FRED/ALFRED API blocks REMOVED;
+    # live calls live exclusively in scripts/prefetch_fred.py +
+    # scripts/prefetch_alfred_mirror.py.
+    #
+    # If we get here, both the combined-cache and the ALFRED-prefetch paths missed.
+    # Try the per-series FRED prefetch parquet at data_prefetch/fred/observations/.
+    fred_path = FRED_OBS_DIR / f"{series_id}.parquet"
+    if fred_path.exists():
         try:
-            params = {
-                "series_id": series_id,
-                "observation_start": start.isoformat(),
-                "observation_end": end.isoformat(),
-                "api_key": FRED_KEY,
-                "file_type": "json",
-            }
-            # DEC-301: when as_of provided, use ALFRED vintage parameters
-            if as_of is not None:
-                params["realtime_end"] = as_of.isoformat()
-                # realtime_start defaults to series start; realtime_end caps the
-                # vintage so we get values KNOWN on as_of.
-                logger.debug("FRED %s: fetching vintage values as of %s", series_id, as_of)
-            resp = requests.get(ALFRED_BASE, params=params, timeout=20)
-            resp.raise_for_status()
-            obs = resp.json().get("observations", [])
-            s = pd.Series(
-                {o["date"]: float(o["value"]) for o in obs if o["value"] != "."},
-                name=series_id,
-            )
-            s.index = pd.to_datetime(s.index)
-            return s
+            df = pd.read_parquet(fred_path)
+            if {"date", "value"}.issubset(df.columns):
+                df["date"] = pd.to_datetime(df["date"])
+                mask = (df["date"] >= pd.Timestamp(start)) & (df["date"] <= pd.Timestamp(end))
+                sliced = df[mask]
+                if not sliced.empty:
+                    s = pd.Series(
+                        sliced["value"].astype(float).values,
+                        index=pd.DatetimeIndex(sliced["date"]),
+                        name=series_id,
+                    )
+                    logger.debug("FRED prefetch cache hit: %s (%d obs)", series_id, len(s))
+                    return s
         except Exception as exc:
-            logger.warning("FRED API error for %s: %s — trying CSV fallback", series_id, exc)
+            logger.warning("FRED prefetch parquet read failed for %s: %s", series_id, exc)
 
-    # CSV fallback — reads column names dynamically, does not assume 'DATE'
-    try:
-        url = f"https://fred.stlouisfed.org/graph/fredgraph.csv?id={series_id}"
-        resp = requests.get(url, timeout=20)
-        resp.raise_for_status()
-        raw = pd.read_csv(io.StringIO(resp.text))
-        if len(raw.columns) < 2:
-            logger.error("FRED CSV for %s has unexpected format", series_id)
-            return pd.Series(dtype=float)
-        date_col  = raw.columns[0]
-        value_col = raw.columns[1]
-        raw[date_col] = pd.to_datetime(raw[date_col], errors="coerce")
-        raw = raw.dropna(subset=[date_col])
-        raw = raw[raw[date_col] >= pd.Timestamp(start)]
-        raw = raw[raw[date_col] <= pd.Timestamp(end)]
-        raw = raw[raw[value_col].astype(str) != "."]
-        s = pd.to_numeric(raw[value_col], errors="coerce").dropna()
-        s.index = pd.to_datetime(raw[date_col].values[:len(s)])
-        return s
-    except Exception as exc:
-        logger.error("FRED CSV fallback failed for %s: %s", series_id, exc)
-        return pd.Series(dtype=float)
+    # All cache paths missed - return empty Series + clear remediation log.
+    if as_of is not None:
+        logger.warning(
+            "macro: ALFRED vintage cache miss for %s as_of=%s. "
+            "Run scripts/prefetch_alfred_mirror.py to populate "
+            "data_prefetch/alfred/%s.parquet. Returning empty Series.",
+            series_id, as_of, series_id,
+        )
+    else:
+        logger.warning(
+            "macro: FRED cache miss for %s. "
+            "Run scripts/prefetch_fred.py to populate "
+            "data_prefetch/fred/observations/%s.parquet. Returning empty Series.",
+            series_id, series_id,
+        )
+    return pd.Series(dtype=float)
 
 
 def get_yield_curve(start: date, end: date, as_of: Optional[date] = None) -> pd.DataFrame:
@@ -196,12 +193,12 @@ def yield_curve_regime(as_of: date, lookback_days: int = 30) -> str:
     return "normal"
 
 
-# VIX and DXY pre-loaded at module level from OHLCV cache — avoids live calls during backtest
+# VIX and DXY pre-loaded at module level from OHLCV cache  -  avoids live calls during backtest
 _VIX_CACHE: Optional[pd.DataFrame] = None
 _DXY_CACHE: Optional[pd.DataFrame] = None
 # DEC-302 fix (Pass 50): track which symbol is being used so downstream can warn
 # Pass 53 Day-9 v8 BUG-VIX-PROXY: 'FRED:VIXCLS' is the new canonical priority
-_VIX_SOURCE: Optional[str] = None  # 'FRED:VIXCLS' (canonical) | '^VIX' | 'VXX' (proxy — degraded)
+_VIX_SOURCE: Optional[str] = None  # 'FRED:VIXCLS' (canonical) | '^VIX' | 'VXX' (proxy  -  degraded)
 _DXY_SOURCE: Optional[str] = None  # 'DX-Y.NYB' (canonical) or 'UUP' (proxy)
 
 
@@ -239,7 +236,7 @@ def _load_vix_from_ohlcv_cache() -> Optional[pd.DataFrame]:
     Load VIX from pre-fetched OHLCV Parquet cache. No live calls.
 
     DEC-302 fix (Pass 50): prefers actual ^VIX (volatility index, the canonical
-    source) over VXX (futures-tracking ETF with severe contango decay — diverges
+    source) over VXX (futures-tracking ETF with severe contango decay  -  diverges
     from VIX after ~1 day). VXX is kept as fallback so existing caches still
     work, but emits a WARNING when used so users know regime classification
     quality is degraded. Run scripts/prefetch_macro.py in Codespaces to
@@ -260,7 +257,7 @@ def _load_vix_from_ohlcv_cache() -> Optional[pd.DataFrame]:
             _VIX_SOURCE = symbol
             if is_proxy:
                 logger.warning(
-                    "VIX loader using PROXY %s — material tracking error vs ^VIX "
+                    "VIX loader using PROXY %s  -  material tracking error vs ^VIX "
                     "(VXX has contango decay, diverges from VIX after ~1 day). "
                     "Run scripts/prefetch_macro.py in Codespaces to populate ^VIX. "
                     "Regime classification may be degraded.",
@@ -294,7 +291,7 @@ def _load_dxy_from_ohlcv_cache() -> Optional[pd.DataFrame]:
             _DXY_SOURCE = symbol
             if is_proxy:
                 logger.warning(
-                    "DXY loader using PROXY %s — different basket weighting than DX-Y.NYB. "
+                    "DXY loader using PROXY %s  -  different basket weighting than DX-Y.NYB. "
                     "Run scripts/prefetch_macro.py in Codespaces to populate DX-Y.NYB. "
                     "DXY trend classification may be degraded.",
                     symbol,
@@ -320,18 +317,18 @@ def get_dxy_data_source() -> Optional[str]:
 def get_vix(start: date, end: date, as_of: Optional[date] = None) -> pd.DataFrame:
     """Return VIX data.
 
-    Source priority (Pass 53 Day-9 v8 BUG-VIX-PROXY fix — Options A+B+C+D):
-      1. FRED VIXCLS (canonical, point-in-time, no proxy distortion) — Option C
-      2. ^VIX OHLCV cache (canonical via Codespaces yfinance prefetch) — Option A
-      3. VXX OHLCV cache (proxy — Option B band-aid: classifier ignores level,
+    Source priority (Pass 53 Day-9 v8 BUG-VIX-PROXY fix  -  Options A+B+C+D):
+      1. FRED VIXCLS (canonical, point-in-time, no proxy distortion)  -  Option C
+      2. ^VIX OHLCV cache (canonical via Codespaces yfinance prefetch)  -  Option A
+      3. VXX OHLCV cache (proxy  -  Option B band-aid: classifier ignores level,
          uses 30-day return-volatility instead because VXX *price* is on a
          different numeric scale than VIX *index points*)
-      4. Empty DataFrame + LOUD warning — Option D fail-loud
+      4. Empty DataFrame + LOUD warning  -  Option D fail-loud
     """
     global _VIX_SOURCE
     effective_end = min(end, as_of) if as_of else end
 
-    # 1. FRED VIXCLS — canonical
+    # 1. FRED VIXCLS  -  canonical
     fred = _load_vix_from_fred()
     if fred is not None and not fred.empty:
         _VIX_SOURCE = "FRED:VIXCLS"
@@ -348,13 +345,13 @@ def get_vix(start: date, end: date, as_of: Optional[date] = None) -> pd.DataFram
         if not sliced.empty and _VIX_SOURCE == "^VIX":
             return sliced
         if not sliced.empty and _VIX_SOURCE == "VXX":
-            # Don't return raw VXX — caller must handle scale per Option B.
+            # Don't return raw VXX  -  caller must handle scale per Option B.
             # Annotate so vix_regime() can take the proxy path.
             sliced = sliced.copy()
             sliced.attrs["scale"] = "VXX_PRICE_NOT_VIX_POINTS"
             return sliced
 
-    # 4. Fail-loud — Option D
+    # 4. Fail-loud  -  Option D
     logger.warning(
         "BUG-VIX-PROXY guard: no canonical VIX source available "
         "(checked FRED:VIXCLS, ^VIX OHLCV cache). VXX proxy disabled because "
@@ -373,7 +370,7 @@ def vix_regime(as_of: date, lookback_days: int = 5) -> str:
     # Pass 53 Day-9 v8 BUG-VIX-PROXY Option B safeguard:
     # If the only available source is VXX (proxy), DO NOT use the dollar price
     # against VIX-index thresholds. Estimate vol-regime from VXX 30-day realized
-    # vol of returns instead — different numeric scale, but ordinally aligned
+    # vol of returns instead  -  different numeric scale, but ordinally aligned
     # with crisis/calm. Mark as 'unknown' if not enough history.
     if df.attrs.get("scale") == "VXX_PRICE_NOT_VIX_POINTS":
         if len(df) < 30:
@@ -383,7 +380,7 @@ def vix_regime(as_of: date, lookback_days: int = 5) -> str:
             return "unknown"
         annualized_vol_pct = float(rets.std() * (252 ** 0.5) * 100)
         # Empirical mapping: VXX 30-day annualized return-vol of ~80% ~= VIX 25
-        # (proxy — band-aid only; replace by FRED VIXCLS as soon as available).
+        # (proxy  -  band-aid only; replace by FRED VIXCLS as soon as available).
         if annualized_vol_pct < 50:
             return "low"
         if annualized_vol_pct < 90:
@@ -400,7 +397,7 @@ def vix_regime(as_of: date, lookback_days: int = 5) -> str:
 
 
 def get_dxy(start: date, end: date, as_of: Optional[date] = None) -> pd.DataFrame:
-    """Return DXY data — reads from OHLCV cache first (UUP proxy), falls back to yfinance."""
+    """Return DXY data  -  reads from OHLCV cache first (UUP proxy), falls back to yfinance."""
     effective_end = min(end, as_of) if as_of else end
 
     cached = _load_dxy_from_ohlcv_cache()
@@ -409,8 +406,8 @@ def get_dxy(start: date, end: date, as_of: Optional[date] = None) -> pd.DataFram
         return cached[mask]
 
     # Pass 53 Batch 13 sub-task 6 (DEC-497 D4 yfinance HARD CUT 2026-05-06):
-    # No live API fallback. Cache miss → empty DataFrame.
-    logger.debug("DXY cache miss; DEC-497 HARD CUT — no live yfinance fallback")
+    # No live API fallback. Cache miss -> empty DataFrame.
+    logger.debug("DXY cache miss; DEC-497 HARD CUT  -  no live yfinance fallback")
     return pd.DataFrame()
 
 
@@ -449,7 +446,7 @@ def _load_economic_calendar() -> dict:
         logger.error(
             "ECONOMIC CALENDAR FILE MISSING [DEC-304]: %s not found. "
             "is_near_high_impact_event will return no-events for all dates. "
-            "Repository may be corrupt — restore from git or commit calendar JSON.",
+            "Repository may be corrupt  -  restore from git or commit calendar JSON.",
             ECONOMIC_CALENDAR_FILE,
         )
         return {"CPI_DATES": [], "NFP_DATES": [], "FOMC_DATES": [],
@@ -481,7 +478,7 @@ _CALENDAR_STALENESS_WARNED = False
 
 def _check_calendar_coverage(as_of: date) -> None:
     """
-    Warn if as_of is at or past the last hardcoded high-impact event date —
+    Warn if as_of is at or past the last hardcoded high-impact event date  - 
     means we have NO event filtering for forward dates and would silently
     treat all upcoming days as 'no events near'.
 
@@ -611,7 +608,7 @@ def recession_probability_signal(as_of: date) -> dict:
 
 
 def jobless_claims_signal(as_of: date) -> dict:
-    """Initial jobless claims (ICSA) — high-frequency labor leading indicator.
+    """Initial jobless claims (ICSA)  -  high-frequency labor leading indicator.
 
     Weekly published. Recession trigger commonly cited as sustained >300K.
     """
@@ -629,7 +626,7 @@ def jobless_claims_signal(as_of: date) -> dict:
 
 
 def fed_balance_sheet_signal(as_of: date, lookback_days: int = 90) -> dict:
-    """Fed balance sheet trajectory (WALCL) — QE vs QT direction.
+    """Fed balance sheet trajectory (WALCL)  -  QE vs QT direction.
 
     Compares current value to ~90 days ago; growing = QE (bullish liquidity);
     shrinking = QT (bearish liquidity).

@@ -1,13 +1,13 @@
 """
-data/smart_money.py — Smart money + analyst consensus data.
+data/smart_money.py  -  Smart money + analyst consensus data.
 
 Sources (Pass 53 DEC-497 NO-LIVE-API + DEC-503 second test pyramid application
 2026-05-05; D4 owner-approved yfinance total cut runtime):
   - Quiver Quantitative paid (Trader tier per DEC-450):
-      * congressional — historical/congresstrading/{ticker} (per-ticker, works in tier)
-      * insider — live/insidertrading bulk feed (BUG-272 fix; historical/insidertrading 404s)
-      * 13F — live/sec13f bulk feed (BUG-273 fix; historical/institutionalholdings 404s)
-      * lobbying / govcontracts — per-ticker (works)
+      * congressional  -  historical/congresstrading/{ticker} (per-ticker, works in tier)
+      * insider  -  live/insidertrading bulk feed (BUG-272 fix; historical/insidertrading 404s)
+      * 13F  -  live/sec13f bulk feed (BUG-273 fix; historical/institutionalholdings 404s)
+      * lobbying / govcontracts  -  per-ticker (works)
   - Polygon Stocks Starter (DEC-441/444):
       * EPS estimates / financials -> data_prefetch/polygon/financials/<TICKER>.parquet
         (Sprint 0A Batch 4 populates; pre-Batch-4 returns "not_available")
@@ -18,15 +18,15 @@ Sources (Pass 53 DEC-497 NO-LIVE-API + DEC-503 second test pyramid application
     to data_prefetch/polygon/news/.
 
 All functions enforce point-in-time data (as_of parameter).
-QUIVER_API_KEY env var: live smoke tests only; runtime backtest reads from
-cache/quiver/ + data_prefetch/ exclusively (NO LIVE API — DEC-497 HARD CUT).
+NO LIVE API CALLS in Stage 2 backtest (DEC-497 HARD CUT, owner-approved 2026-05-05;
+fully implemented Sprint 0A.8 Pass 53 v8h+1 2026-05-10). Runtime backtest reads from
+data_prefetch/quiver/ exclusively. Live Quiver API calls live exclusively in
+scripts/prefetch_quiver*.py.
 yfinance: REMOVED runtime per DEC-497 + D4 owner-approved 2026-05-05.
+requests: REMOVED runtime per DEC-497 + Sprint 0A.8 (Pass 53 v8h+1 2026-05-10).
 """
 
-import os
-import time
 import logging
-import requests
 from datetime import date, timedelta
 from pathlib import Path
 from typing import Optional
@@ -35,11 +35,7 @@ import pandas as pd
 
 logger = logging.getLogger(__name__)
 
-QUIVER_KEY  = os.environ.get("QUIVER_API_KEY", "")
-QUIVER_BASE = "https://api.quiverquant.com/beta"
-_DELAY      = 1.5
-
-# Pre-fetch cache directory — populated by scripts/prefetch_quiver.py
+# Pre-fetch cache directory - populated by scripts/prefetch_quiver*.py.
 # Pass 53 H5 fix 2026-05-06: migrated from backtest/data/cache/quiver/ to
 # data_prefetch/quiver/ per Sprint 0A.8 + DEC-497 NO-LIVE-API HARD CUT.
 PREFETCH_DIR = Path(__file__).parent.parent.parent / "data_prefetch" / "quiver"
@@ -75,7 +71,7 @@ def _load_quiver_bulk(dataset: str) -> pd.DataFrame:
     Migration from per-ticker live API calls to bulk-feed cache reads.
 
     Quiver Trader-tier exposes these as paginated bulk feeds without per-ticker
-    endpoints — Sprint 0A.5 prefetch (Batch 10) populates the bulk parquet;
+    endpoints  -  Sprint 0A.5 prefetch (Batch 10) populates the bulk parquet;
     runtime reads filter the bulk DataFrame by `Ticker` column.
 
     Returns empty DataFrame if file missing (graceful degradation pre-prefetch).
@@ -117,55 +113,44 @@ def _reset_bulk_cache_for_tests():
     _BULK_CACHE.clear()
 
 
-def _quiver_get(endpoint: str) -> Optional[list]:
-    if not QUIVER_KEY:
-        return None
-    try:
-        resp = requests.get(
-            f"{QUIVER_BASE}/{endpoint}",
-            headers={"Authorization": f"Token {QUIVER_KEY}"},
-            timeout=20,
-        )
-        if resp.status_code == 429:
-            time.sleep(60)
-            return None
-        resp.raise_for_status()
-        return resp.json()
-    except Exception as exc:
-        logger.debug("Quiver %s: %s", endpoint, exc)
-        return None
-
-
 def _get_quiver_data(dataset: str, endpoint_path: str, ticker: str) -> Optional[list]:
     """
-    Load Quiver data — tries pre-fetch cache first, falls back to live API.
-    Pre-fetch cache is populated by scripts/prefetch_quiver.py.
+    Load Quiver data from prefetch cache only (NO LIVE API per DEC-497 HARD CUT).
+
+    Pass 53 Sprint 0A.8 NO-LIVE-API enforcement (Pass 53 v8h+1 2026-05-10):
+    Cache miss returns empty list. Run scripts/prefetch_quiver*.py to populate
+    data_prefetch/quiver/{dataset}/{ticker}.parquet before backtest.
+
+    The endpoint_path arg is retained for caller-API compatibility but is no
+    longer used at runtime - it identifies which prefetch script populates
+    the cache.
     """
     cached = _load_prefetch(dataset, ticker)
     if cached is not None:
         logger.debug("Prefetch cache hit: %s/%s (%d rows)", dataset, ticker, len(cached))
         return cached.to_dict("records") if not cached.empty else []
-    # Cache miss — return empty (do NOT fallback to live API during backtest)
-    # Live API fallback would exhaust rate limits and violate point-in-time.
-    # Run scripts/prefetch_quiver.py to populate cache before Phase 1B.
-    logger.debug("Prefetch cache miss: %s/%s — returning empty (pre-fetch required)", dataset, ticker)
+    # Cache miss - return empty (NO live API per DEC-497 HARD CUT).
+    logger.debug(
+        "Prefetch cache miss: %s/%s - returning empty (run prefetch_quiver*.py)",
+        dataset, ticker,
+    )
     return []
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 # ANALYST CONSENSUS
 # BUG-271 Pass 53 (DEC-503 second test pyramid application):
-#   REMOVED Quiver `historical/analystestimates` branch — endpoint NOT in Trader
+#   REMOVED Quiver `historical/analystestimates` branch  -  endpoint NOT in Trader
 #   tier per Pass 53 dashboard inventory + smoke test 2026-05-05 (404).
 #   REMOVED yfinance branches per DEC-497 NO-LIVE-API HARD CUT (D4 owner approval
 #   2026-05-05).
 #   Function now reads from data_prefetch/polygon/financials/{ticker}.parquet
 #   (populated by Sprint 0A Batch 4). Pre-Batch-4: returns "not_available"
 #   gracefully. Polygon Stocks Starter financials endpoint covers EPS estimates
-#   only — analyst consensus + recommendation count + price target fields will
+#   only  -  analyst consensus + recommendation count + price target fields will
 #   remain "not_available" until/unless an analyst-consensus subscription is
 #   added in Phase 1B/1C (FMP per DEC-461 candidate).
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 
 # data_prefetch root for NO-LIVE-API reads (DEC-497)
 _REPO_ROOT = Path(__file__).parent.parent.parent
@@ -203,7 +188,7 @@ def get_analyst_data(ticker: str, as_of: date) -> dict:
     safe_ticker = ticker.replace("-", "_").replace(".", "_")
     path = PREFETCH_POLYGON_FINANCIALS_DIR / f"{safe_ticker}.parquet"
     if not path.exists():
-        # Pre-Batch-4 graceful state — no Polygon financials prefetch yet.
+        # Pre-Batch-4 graceful state  -  no Polygon financials prefetch yet.
         # signal="not_available" surfaces as no-input to agents (Fundamental Agent
         # treats as missing data, doesn't fall back to stale yfinance per DEC-497).
         return result
@@ -220,9 +205,9 @@ def get_analyst_data(ticker: str, as_of: date) -> dict:
             df = df[df["filing_date"] <= as_of]
         if df.empty:
             return result
-        # Per-filing fundamentals available — defer field-level extraction to
+        # Per-filing fundamentals available  -  defer field-level extraction to
         # Batch 13 NO-LIVE-API refactor when full schema is locked. For Batch 1
-        # signal value: presence of any post-PIT row → "available_unparsed",
+        # signal value: presence of any post-PIT row -> "available_unparsed",
         # consumed by Fundamental Agent as raw context (no derived signal).
         result["signal"] = "available_unparsed"
         return result
@@ -246,20 +231,20 @@ def analyst_bullets(analyst: dict, current_price: Optional[float] = None) -> lis
 
     if n > 0:
         bullets.append(
-            f"Analyst consensus: {cons} — {b_cnt} Buy / {h_cnt} Hold / {s_cnt} Sell "
+            f"Analyst consensus: {cons}  -  {b_cnt} Buy / {h_cnt} Hold / {s_cnt} Sell "
             f"({n} analysts covering)"
         )
 
     tgt = analyst.get("target_mean")
     upside = analyst.get("target_upside_pct")
     if tgt:
-        upside_str = f" — {upside:+.1f}% from current" if upside is not None else ""
+        upside_str = f"  -  {upside:+.1f}% from current" if upside is not None else ""
         bullets.append(f"Average price target: ${tgt:.2f}{upside_str}")
 
     tgt_h = analyst.get("target_high")
     tgt_l = analyst.get("target_low")
     if tgt_h and tgt_l:
-        bullets.append(f"Target range: ${tgt_l:.2f} – ${tgt_h:.2f}")
+        bullets.append(f"Target range: ${tgt_l:.2f} - ${tgt_h:.2f}")
 
     eps_q = analyst.get("eps_estimate_next_q")
     if eps_q is not None:
@@ -271,12 +256,12 @@ def analyst_bullets(analyst: dict, current_price: Optional[float] = None) -> lis
     if ups > 0 or downs > 0:
         if rev == "up":
             bullets.append(
-                f"{ups} upgrade{'s' if ups != 1 else ''} in last 30 days — "
+                f"{ups} upgrade{'s' if ups != 1 else ''} in last 30 days  -  "
                 f"positive estimate momentum"
             )
         elif rev == "down":
             bullets.append(
-                f"⚠️  {downs} downgrade{'s' if downs != 1 else ''} in last 30 days — "
+                f"WARNING:  {downs} downgrade{'s' if downs != 1 else ''} in last 30 days  -  "
                 f"negative estimate momentum"
             )
         else:
@@ -288,9 +273,9 @@ def analyst_bullets(analyst: dict, current_price: Optional[float] = None) -> lis
     return bullets
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 # CONGRESSIONAL TRADES
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 
 def congressional_signal(ticker: str, as_of: date, lookback_days: int = 45) -> dict:
     data = _get_quiver_data("congressional", f"historical/congresstrading/{ticker}", ticker)
@@ -310,7 +295,7 @@ def congressional_signal(ticker: str, as_of: date, lookback_days: int = 45) -> d
         df["disclosure_date"] = pd.to_datetime(
             df.get("ReportDate", df.get("Date", df.get("date", "")))
         ).dt.date
-        # Transaction date — fall back to disclosure_date if not present (some
+        # Transaction date  -  fall back to disclosure_date if not present (some
         # Quiver records have only one). Schema field tested: "TransactionDate".
         if "TransactionDate" in df.columns:
             df["transaction_date"] = pd.to_datetime(df["TransactionDate"]).dt.date
@@ -352,15 +337,15 @@ def congressional_signal(ticker: str, as_of: date, lookback_days: int = 45) -> d
         return {"signal": "none", "buy_count": 0, "sell_count": 0}
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 # INSIDER TRADES
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 
 def insider_signal(ticker: str, as_of: date, lookback_days: int = 30) -> dict:
     """Insider trading signal from Quiver `live/insiders` bulk feed.
 
     BUG-272 Pass 53 fix RESOLVED-IMPLEMENTED 2026-05-06 (Batch 13 schema alignment):
-    Path: `cache/quiver/insiders/global.parquet` (NOT `insidertrading/` — actual
+    Path: `cache/quiver/insiders/global.parquet` (NOT `insidertrading/`  -  actual
     Quiver Trader-tier endpoint is `live/insiders` per Pass 53 v2 smoke probe).
 
     Schema (per Quiver live/insiders):
@@ -387,7 +372,7 @@ def insider_signal(ticker: str, as_of: date, lookback_days: int = 30) -> dict:
         df = df.copy()
         # Pass 53 Day-9 v8f DEC-512 fix (BUG-INSIDER-PIT): use fileDate (SEC
         # filing date) for PIT cutoff, NOT Date (transaction date). Pre-fix
-        # used Date which gave ~6-day lookahead — public didn't know about
+        # used Date which gave ~6-day lookahead  -  public didn't know about
         # the transaction until the SEC Form 4 was filed. Fall back to Date
         # only when fileDate is absent (defensive; should not happen with
         # current Quiver schema).
@@ -403,8 +388,8 @@ def insider_signal(ticker: str, as_of: date, lookback_days: int = 30) -> dict:
         window_start = as_of - timedelta(days=lookback_days)
         recent = df[df["filing_date"] >= window_start].copy()
         # Filter to meaningful transactions:
-        # buys: TransactionCode in ('P', 'L') — open-market purchase (real money)
-        # sells: TransactionCode == 'S' — open-market sale
+        # buys: TransactionCode in ('P', 'L')  -  open-market purchase (real money)
+        # sells: TransactionCode == 'S'  -  open-market sale
         buy_codes = ("P", "L")
         sell_codes = ("S",)
         buys = recent[recent["TransactionCode"].isin(buy_codes)]
@@ -437,15 +422,15 @@ def insider_signal(ticker: str, as_of: date, lookback_days: int = 30) -> dict:
         return {"signal": "none", "buy_count": 0, "sell_count": 0}
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 # INSTITUTIONAL (13F)
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 
 def institutional_signal(ticker: str, as_of: date) -> dict:
     """13F institutional holdings signal from Quiver `live/sec13fchanges` bulk feed.
 
     BUG-273 Pass 53 fix RESOLVED-IMPLEMENTED 2026-05-06 (Batch 13 schema alignment):
-    Migrated to `live/sec13fchanges` (NOT `sec13f`) — sec13fchanges provides
+    Migrated to `live/sec13fchanges` (NOT `sec13f`)  -  sec13fchanges provides
     quarterly delta directly (Change_Share, Change_Pct), eliminating need to join
     consecutive quarters. Path: `cache/quiver/sec13fchanges/global.parquet`.
 
@@ -503,9 +488,9 @@ def institutional_signal(ticker: str, as_of: date) -> dict:
         return {"signal": "none"}
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 # COMPOSITE SMART MONEY SCORE
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 
 def smart_money_score(
     ticker: str, as_of: date,
@@ -569,7 +554,7 @@ def smart_money_score(
     }
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 # NEWS SENTIMENT
 # Pass 53 Batch 13 sub-task 2 (DEC-507 + L146 wiring matrix Row 2 closure):
 # PRIMARY source = Polygon news (DEC-440) read from data_prefetch/polygon/news/
@@ -579,7 +564,7 @@ def smart_money_score(
 # LEGACY fallback: Alpha Vantage + Finnhub paths retained for backwards
 # compatibility (BUG-217 Pass 48). Will be removed Sprint 0A.8 NO-LIVE-API
 # refactor + Batch 14 test cleanup.
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 
 # data_prefetch path (Pass 53 Batch 3 + Batch 13 Row 2 closure)
 PREFETCH_POLYGON_NEWS_DIR = _REPO_ROOT / "data_prefetch" / "polygon" / "news"
@@ -589,8 +574,8 @@ AV_NEWS_DIR = Path(__file__).parent / "cache" / "av_news"
 FH_NEWS_DIR = Path(__file__).parent / "cache" / "finnhub_news"
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# SEC EDGAR FILINGS — Pass 53 Day-9 v8c G7 closure (L146 wiring)
+# -----------------------------------------------------------------------------
+# SEC EDGAR FILINGS  -  Pass 53 Day-9 v8c G7 closure (L146 wiring)
 #
 # Sprint 0A Batch 11 prefetched 6056 filings across 4 form types:
 #   - Form 4    : insider transactions (per-ticker, ~1336 rows AAPL)
@@ -603,12 +588,12 @@ FH_NEWS_DIR = Path(__file__).parent / "cache" / "finnhub_news"
 #
 # Public accessors below; strategy-side wiring deferred to Phase 1B+ per
 # CLAUDE.md (Layer-2 catalyst signal candidate).
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 
 PREFETCH_SEC_EDGAR_DIR = _REPO_ROOT / "data_prefetch" / "sec_edgar"
 
-# EDGAR form-type → subdirectory mapping. Form names with spaces become
-# underscored on disk (e.g., "8-K" → "8_K", "SC 13D" → "SC_13D").
+# EDGAR form-type -> subdirectory mapping. Form names with spaces become
+# underscored on disk (e.g., "8-K" -> "8_K", "SC 13D" -> "SC_13D").
 # Pass 53 Day-9 v8h Tier B1-B4 expansion: 10-K, 10-Q, DEF 14A, S-1, S-1/A,
 # SC 13D/A, SC 13G/A added.
 SEC_EDGAR_FORM_DIRS = {
@@ -667,10 +652,10 @@ def get_sec_filings(
 
     Returns:
       dict with keys:
-        'count'       — number of filings in window
-        'most_recent' — datetime of most recent filing in window (or None)
-        'days_since'  — days since most recent filing (or None)
-        'filings'     — list of {filing_date, accession_number} dicts (≤25)
+        'count'        -  number of filings in window
+        'most_recent'  -  datetime of most recent filing in window (or None)
+        'days_since'   -  days since most recent filing (or None)
+        'filings'      -  list of {filing_date, accession_number} dicts (<=25)
     """
     df = _load_sec_filings(ticker, form)
     if df is None or df.empty:
@@ -705,10 +690,10 @@ def sec_catalyst_signal(ticker: str, as_of: date) -> dict:
     Combines 4 form types into a single dict suitable for strategy/agent input.
     Heuristic scoring (Phase 1A baseline; weights revisitable Phase 1B):
 
-      - 8-K filed ≤ 5 trading days       → +1 score (recent material event)
-      - SC 13D filed ≤ 30 days           → +2 score (activist accumulation)
-      - SC 13G filed ≤ 30 days           → +1 score (passive accumulation)
-      - Form 4 cluster ≥ 3 in 30 days    → +/- depending on transaction code
+      - 8-K filed <= 5 trading days       -> +1 score (recent material event)
+      - SC 13D filed <= 30 days           -> +2 score (activist accumulation)
+      - SC 13G filed <= 30 days           -> +1 score (passive accumulation)
+      - Form 4 cluster >= 3 in 30 days    -> +/- depending on transaction code
 
     Returns dict with per-form `count` + `days_since` + composite `score`.
     """
@@ -778,7 +763,7 @@ def get_news_sentiment(ticker: str, as_of: date, lookback_days: int = 7) -> dict
 
     Returns dict:
         sentiment_score: float (-1 to 1), positive = bullish news
-        article_count: int — number of articles in window
+        article_count: int  -  number of articles in window
         signal: bullish | bearish | neutral
         source: polygon | alphavantage | finnhub | none
     """
@@ -819,7 +804,7 @@ def get_news_sentiment(ticker: str, as_of: date, lookback_days: int = 7) -> dict
                             "signal": signal,
                             "source": "polygon",
                         }
-                    # Articles in window but none had insights — still better than nothing
+                    # Articles in window but none had insights  -  still better than nothing
                     return {
                         "sentiment_score": 0.0,
                         "article_count": article_count,
@@ -889,9 +874,9 @@ def get_gov_contracts(ticker: str, as_of: date, lookback_days: int = 365) -> dic
     Point-in-time enforced via Date column.
 
     Returns dict:
-        total_amount: float — total contract value in window
+        total_amount: float  -  total contract value in window
         contract_count: int
-        recent_win: bool — contract won in last 90 days
+        recent_win: bool  -  contract won in last 90 days
         trend: growing | stable | declining
         signal: bullish | neutral | no_data
     """
@@ -935,9 +920,9 @@ def get_lobbying(ticker: str, as_of: date, lookback_days: int = 365) -> dict:
     Reads from pre-fetched Quiver lobbying cache.
 
     Returns dict:
-        total_spend: float — total lobbying spend in window
+        total_spend: float  -  total lobbying spend in window
         filing_count: int
-        issues: list — lobbying issue areas
+        issues: list  -  lobbying issue areas
         signal: high_spend | moderate | low | no_data
     """
     result = {"total_spend": 0.0, "filing_count": 0,
@@ -1012,9 +997,9 @@ def get_congressional_detail(ticker: str, as_of: date, top_n: int = 3) -> list:
         return []
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Pass 53 Day-9 v8c Wave C — L146 G12+G13+G14+G15 Quiver new-signal accessors
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
+# Pass 53 Day-9 v8c Wave C  -  L146 G12+G13+G14+G15 Quiver new-signal accessors
+# -----------------------------------------------------------------------------
 # Wires 4 previously-unconsumed Quiver datasets into thin accessor functions.
 # Strategy-side wiring (smart_money composite, agent inputs) deferred to
 # Phase 1B+ per CLAUDE.md (Layer-2 candidate signals).
@@ -1024,20 +1009,20 @@ def get_congressional_detail(ticker: str, as_of: date, top_n: int = 3) -> list:
 
 
 def get_etf_holdings(ticker: str) -> dict:
-    """G12 — Which ETFs hold this ticker, and at what weight?
+    """G12  -  Which ETFs hold this ticker, and at what weight?
 
     Source: data_prefetch/quiver/etfholdings/<TICKER>.parquet
     Schema: 'ETF Symbol' / 'Holding Name' / 'Holding Symbol' / '% of ETF' /
             'Value ($)'
 
     Returns dict with:
-      etf_count        — number of ETFs holding this ticker
-      top_etf_weight   — max % of any single ETF
-      total_etf_value  — sum of $ value across all ETF holdings
-      top10            — list of {etf_symbol, weight_pct, value_usd} top 10
+      etf_count         -  number of ETFs holding this ticker
+      top_etf_weight    -  max % of any single ETF
+      total_etf_value   -  sum of $ value across all ETF holdings
+      top10             -  list of {etf_symbol, weight_pct, value_usd} top 10
 
     .. WARNING:: NO PIT DIMENSION
-       Source data has no date column — this is a CURRENT snapshot of ETF
+       Source data has no date column  -  this is a CURRENT snapshot of ETF
        inclusions, not a historical record. Using this in a backtest at
        as_of=2020 silently leaks future ETF inclusion changes. Phase 1A
        must NOT use this accessor for time-bounded decisions until source
@@ -1072,7 +1057,7 @@ def get_etf_holdings(ticker: str) -> dict:
 
 def get_offexchange_volume(ticker: str, as_of: date,
                             lookback_days: int = 5) -> dict:
-    """G13 — Dark-pool / off-exchange volume signal (PIT).
+    """G13  -  Dark-pool / off-exchange volume signal (PIT).
 
     Source: data_prefetch/quiver/offexchange/<TICKER>.parquet
     Schema: Ticker / Date / OTC_Short / OTC_Total / DPI
@@ -1115,7 +1100,7 @@ def get_offexchange_volume(ticker: str, as_of: date,
 
 
 def get_top_shareholders(ticker: str, top_n: int = 10) -> dict:
-    """G14 — Institutional ownership concentration signal.
+    """G14  -  Institutional ownership concentration signal.
 
     Source: data_prefetch/quiver/topshareholders/<TICKER>.parquet
     Schema: 1 row with 'ownership' (array of dicts) + 'ownership_options' arrays.
@@ -1170,7 +1155,7 @@ def get_top_shareholders(ticker: str, top_n: int = 10) -> dict:
 
 def get_wsb_attention(ticker: str, as_of: date,
                        lookback_days: int = 7) -> dict:
-    """G15 — Reddit r/wallstreetbets mention/sentiment signal (PIT).
+    """G15  -  Reddit r/wallstreetbets mention/sentiment signal (PIT).
 
     Source: data_prefetch/quiver/wallstreetbets/<TICKER>.parquet
     Schema: Date / Ticker / Mentions / Rank / Sentiment
@@ -1208,22 +1193,22 @@ def get_wsb_attention(ticker: str, as_of: date,
         return default
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Pass 53 Day-9 v8c Wave D — L146 G10/G11/G16/G17 closures
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
+# Pass 53 Day-9 v8c Wave D  -  L146 G10/G11/G16/G17 closures
+# -----------------------------------------------------------------------------
 # G10: insider per-ticker fast-path accessor (bulk remains canonical)
 # G11: institutional per-ticker prefetch is INCOMPLETE (AAPL empty, ~18% empty);
 #      bulk sec13fchanges is canonical. Document; do not delete data.
 # G16: Quiver wikipedia mirror is empty (separate data_prefetch/wikipedia/ used).
 #      Document; do not delete.
-# G17: 4 micro-datasets — wire 3 with real data (patentmomentum / corporatedonors /
+# G17: 4 micro-datasets  -  wire 3 with real data (patentmomentum / corporatedonors /
 #      sec13f); skip quivernews (general headlines, not per-ticker; Polygon news
 #      is the canonical news source already wired).
 
 
 def get_insider_transactions_pertkr(ticker: str, as_of: date,
                                      lookback_days: int = 90) -> dict:
-    """G10 — Insider transactions for `ticker` from per-ticker prefetch (PIT).
+    """G10  -  Insider transactions for `ticker` from per-ticker prefetch (PIT).
 
     Source: data_prefetch/quiver/insider/<TICKER>.parquet (per-ticker fast path)
     Falls back to bulk insiders/global.parquet via _load_quiver_bulk if per-tkr
@@ -1281,7 +1266,7 @@ def get_insider_transactions_pertkr(ticker: str, as_of: date,
 
 
 def get_institutional_holdings_pertkr(ticker: str) -> dict:
-    """G11 — Institutional per-ticker prefetch (DOCUMENTED AS INCOMPLETE).
+    """G11  -  Institutional per-ticker prefetch (DOCUMENTED AS INCOMPLETE).
 
     Source: data_prefetch/quiver/institutional/<TICKER>.parquet
     Status: ~18% of per-ticker files empty (incl. AAPL). Bulk path
@@ -1310,14 +1295,14 @@ def get_institutional_holdings_pertkr(ticker: str) -> dict:
 
 # G16: data_prefetch/quiver/wikipedia/ is empty for all 100 sampled tickers.
 # The separate `data_prefetch/wikipedia/` (already consumed by sentiment.py
-# via get_wikipedia_pageviews) is canonical. No accessor added — the empty
+# via get_wikipedia_pageviews) is canonical. No accessor added  -  the empty
 # Quiver mirror should be re-prefetched or removed (owner decision; data
 # preservation rule keeps it for now).
 
 
 def get_patent_momentum(ticker: str, as_of: date,
                         lookback_days: int = 90) -> dict:
-    """G17a — Quiver patent-momentum signal (PIT).
+    """G17a  -  Quiver patent-momentum signal (PIT).
 
     Source: data_prefetch/quiver/patentmomentum/global.parquet
     Schema: ticker / date / momentum (numeric)
@@ -1350,7 +1335,7 @@ def get_patent_momentum(ticker: str, as_of: date,
 
 def get_corporate_donations(ticker: str,
                               as_of: Optional[date] = None) -> dict:
-    """G17b — Corporate PAC political donations summary (PIT, optional cutoff).
+    """G17b  -  Corporate PAC political donations summary (PIT, optional cutoff).
 
     Source: data_prefetch/quiver/corporatedonors/global.parquet
     Schema: BioGuideID / CandidateName / CompanyCMTENM / TransactionDate /
@@ -1358,7 +1343,7 @@ def get_corporate_donations(ticker: str,
 
     Pass 53 Day-9 v8g PIT-fix: now accepts optional ``as_of`` parameter.
     When provided, donations with TransactionDate > as_of are excluded
-    (closes silent lookahead — donations made AFTER as_of weren't public yet).
+    (closes silent lookahead  -  donations made AFTER as_of weren't public yet).
 
     Returns total donation $ + recipient count for the company's PAC.
     """
@@ -1394,7 +1379,7 @@ def get_corporate_donations(ticker: str,
 
 
 def get_sec13f_holdings(ticker: str, as_of: date) -> dict:
-    """G17d — Full SEC 13F institutional holdings for `ticker` (PIT).
+    """G17d  -  Full SEC 13F institutional holdings for `ticker` (PIT).
 
     Source: data_prefetch/quiver/sec13f/global.parquet (500K rows bulk).
     Schema: Date / ReportPeriod / Name / Ticker / Fund / Class / ...
