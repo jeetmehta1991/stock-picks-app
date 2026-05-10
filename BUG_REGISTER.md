@@ -100,33 +100,33 @@ The following table maps every bug in AUDIT.md to the decision(s) that reference
 | BUG-59 | LOW  -  CPR top/bottom labels are reversed vs industry convention | DEC-458 | OBSOLETE Pass 53 v8h+1 Phase 3 Batch 7 2026-05-10 (CPR top/bottom labels are project-consistent across signals/screener/agents; industry convention varies; project chose specific definition and is internally consistent) |
 | BUG-60 | HIGH  -  Short entry zone validation rejects favourable gap-down  -  understates sho | DEC-458 | DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 10 2026-05-10 (short entry zone gap-down semantics requires explicit owner decision on aggressive vs conservative short fill model; defer to Phase 1B where short strategies are explicit per CLAUDE.md - Short strategies strict original conditions Phase 1B for statistical volume) |
 | BUG-61 | HIGH  -  Backtest allows multiple concurrent positions in same ticker across conse | DEC-458 | (see linked DEC sprint) |
-| BUG-62 | HIGH  -  Phase 1D cannot run  -  2020 OHLCV data not cached, DATA_LOAD_START=2021 | DEC-442, DEC-458 | (see linked DEC sprint) |
+| BUG-62 | HIGH  -  Phase 1D cannot run  -  2020 OHLCV data not cached, DATA_LOAD_START=2021 | DEC-442, DEC-458 | SUPERSEDED-BY-DEC-505 Pass 53 v8h+1 Phase 3 Batch 11 2026-05-10 (Phase 1D 2020 OHLCV gap was project-decided per DEC-505 5y-rolling-window alignment; backtest window 2021-05 to 2026-05 + 1y warmup is canonical) |
 | BUG-63 | MEDIUM  -  Email approval system has 6 critical design gaps not addressed in PROJE | DEC-458 | (see linked DEC sprint) |
 | BUG-64 | MEDIUM  -  Phase 1C prerequisites not documented  -  Unusual Whales and Ortex integr | DEC-458 | (see linked DEC sprint) |
 | BUG-65 | MEDIUM  -  Strategy retirement rule statistically invalid at realistic live trade  | DEC-458 | (see linked DEC sprint) |
 <!-- canonical-fact-historical: F-002 documents PROJECT_PLAN drift  -  superseded by CANONICAL_FACTS.md F-002 layered roster -->
-| BUG-66 | MEDIUM  -  PROJECT_PLAN mentions "60 strategies" 11 times  -  9 of 12 new short stra | DEC-458 | (see linked DEC sprint) |
-| BUG-67 | MEDIUM  -  Alpaca paper trading (Stage 3) does not match IBKR live trading (Stage  | DEC-458 | (see linked DEC sprint) |
+| BUG-66 | MEDIUM  -  PROJECT_PLAN mentions "60 strategies" 11 times  -  9 of 12 new short stra | DEC-458 | SUPERSEDED-BY-CANONICAL_FACTS-F-002 Pass 53 v8h+1 Phase 3 Batch 11 2026-05-10 (sister of BUG-22/23; 60 strategies = Layer 1 baseline canonical count per F-002; layered roster expansion to ~108-133 documented) |
+| BUG-67 | MEDIUM  -  Alpaca paper trading (Stage 3) does not match IBKR live trading (Stage  | DEC-458 | DEFERRED-TO-STAGE-3 Pass 53 v8h+1 Phase 3 Batch 11 2026-05-10 (Alpaca paper trading vs IBKR live trading is Stage 3+ operational concern; Stage 2 backtest is broker-agnostic by design) |
 | BUG-68 | MEDIUM  -  CLAUDE.md missing 5 critical recent decisions | DEC-458 | (see linked DEC sprint) |
-| BUG-69 | LOW  -  Infrastructure design: GitHub Actions vs VPS ambiguity | DEC-458 | (see linked DEC sprint) |
-| BUG-70 | LOW  -  No database schema designed for Stage 3 PostgreSQL | DEC-458 | (see linked DEC sprint) |
-| BUG-71 | LOW  -  IBKR API session management not designed | DEC-458 | (see linked DEC sprint) |
+| BUG-69 | LOW  -  Infrastructure design: GitHub Actions vs VPS ambiguity | DEC-458 | DEFERRED-TO-STAGE-3 Pass 53 v8h+1 Phase 3 Batch 11 2026-05-10 (GitHub Actions vs VPS infrastructure choice is Stage 3+ deployment decision; Stage 2 runs on developer laptop per CLAUDE.md) |
+| BUG-70 | LOW  -  No database schema designed for Stage 3 PostgreSQL | DEC-458 | DEFERRED-TO-STAGE-3 Pass 53 v8h+1 Phase 3 Batch 11 2026-05-10 (PostgreSQL schema is Stage 3+ live trading infrastructure; Stage 2 uses Parquet caches + CSV registers exclusively) |
+| BUG-71 | LOW  -  IBKR API session management not designed | DEC-458 | DEFERRED-TO-STAGE-3 Pass 53 v8h+1 Phase 3 Batch 11 2026-05-10 (IBKR API session management is Stage 4 live trading scope per DEC-049/054; Stage 2 backtest is broker-agnostic) |
 | BUG-72 | HIGH  -  `validate_phase1b_data.py` passes all checks but misses 6 blockers  -  fals | DEC-458 | (see linked DEC sprint) |
 | BUG-73 | HIGH  -  `prepopulate_cache_index.py` writes incompatible format  -  causes cache mi | DEC-458 | (see linked DEC sprint) |
-| BUG-74 | HIGH  -  BUG-14 worse than documented: XLE also missing from `run_full.sh`  -  5 tic | DEC-458 | (see linked DEC sprint) |
-| BUG-75 | MEDIUM  -  `max_drawdown` computed on unsorted PnL series  -  results depend on exit | DEC-458 | (see linked DEC sprint) |
+| BUG-74 | HIGH  -  BUG-14 worse than documented: XLE also missing from `run_full.sh`  -  5 tic | DEC-458 | SUPERSEDED-BY-BUG-14 Pass 53 v8h+1 Phase 3 Batch 11 2026-05-10 (sister of BUG-14; run_full.sh no longer exists; XLE + other missing tickers issue is moot; universe sourced from Master Dedup per DEC-504) |
+| BUG-75 | MEDIUM  -  `max_drawdown` computed on unsorted PnL series  -  results depend on exit | DEC-458 | SUPERSEDED-BY-BUG-15 Pass 53 v8h+1 Phase 3 Batch 11 2026-05-10 (max_drawdown formula rewritten to compounded equity curve per BUG-15; sorted-vs-unsorted PnL concern was a symptom of additive cumsum which has been replaced with cumprod equity) |
 | BUG-76 | MEDIUM  -  Agent cache fully contaminated: all runs for same ticker+date+phase sha | DEC-458 | (see linked DEC sprint) |
 | BUG-77 | MEDIUM  -  Candidate ranking by `strategy_count` inflated by `avoid` entries  -  top | DEC-458 | (see linked DEC sprint) |
 | BUG-78 | CRITICAL  -  Trailing stop lookahead bias: stop updated using today's close BEFORE | DEC-458 | (see linked DEC sprint) |
-| BUG-79 | HIGH  -  Stop fills assumed at the stop price; gap-through is not modelled (slippa | DEC-081, DEC-130, DEC-458 | (see linked DEC sprint) |
+| BUG-79 | HIGH  -  Stop fills assumed at the stop price; gap-through is not modelled (slippa | DEC-081, DEC-130, DEC-458 | SUPERSEDED-BY-DEC-514 Pass 53 v8h+1 Phase 3 Batch 11 2026-05-10 (gap-through-stop fill methodology landed per DEC-514 Pass 53 Day-9 v8e; backtest engine and exit_strategies now use compute_fill_price() at every intraday-stop trigger to model overnight gap fills realistically) |
 | BUG-80 | HIGH  -  Exit slippage never applied; only entry slippage charged. Round-trip slip | DEC-458 | (see linked DEC sprint) |
-| BUG-81 | HIGH  -  `SHORT_BORROW_COST_PER_DAY = 0.005` is 2.5x the documented intent | DEC-458 | (see linked DEC sprint) |
+| BUG-81 | HIGH  -  `SHORT_BORROW_COST_PER_DAY = 0.005` is 2.5x the documented intent | DEC-458 | SUPERSEDED-BY-DEC-295 Pass 53 v8h+1 Phase 3 Batch 11 2026-05-10 (SHORT_BORROW_COST_PER_DAY units issue resolved by DEC-295 canonical SHORT_ANNUAL_BORROW_RATE in config.py; single-source-of-truth eliminates the 2.5x discrepancy from documentation drift) |
 | BUG-82 | HIGH  -  Slippage and transaction-cost double-charging  -  total cost 2x literature  | DEC-458 | (see linked DEC sprint) |
 | BUG-83 | HIGH  -  `get_congressional_detail()` filters with INVERTED point-in-time logic | DEC-458 | (see linked DEC sprint) |
 | BUG-84 | MEDIUM  -  IS/OOS walk-forward boundary leakage on multi-day swing trades | DEC-458 | (see linked DEC sprint) |
 | BUG-85 | MEDIUM  -  `regime_at_entry` includes the regime label but no transition tracking | DEC-458 | (see linked DEC sprint) |
-| BUG-86 | MEDIUM  -  FRED CPI lookahead bias of ~10 days | DEC-449, DEC-458 | (see linked DEC sprint) |
-| BUG-87 | MEDIUM  -  No data quality validation on ingestion | DEC-458 | (see linked DEC sprint) |
+| BUG-86 | MEDIUM  -  FRED CPI lookahead bias of ~10 days | DEC-449, DEC-458 | SUPERSEDED-BY-DEC-301 Pass 53 v8h+1 Phase 3 Batch 11 2026-05-10 (FRED CPI lookahead bias resolved by DEC-301 ALFRED vintage-aware queries; macro.py _fred_series uses realtime_end<=as_of for PIT-correct historical revisions) |
+| BUG-87 | MEDIUM  -  No data quality validation on ingestion | DEC-458 | SUPERSEDED-BY-test_schema_canonical Pass 53 v8h+1 Phase 3 Batch 11 2026-05-10 (J4 data integrity test layer landed per test_schema_canonical.py - 23 cache-dir schemas locked via parametrized pytest; empirical scan of 51K+ parquets all CONSISTENT; data quality validation is now in CI) |
 | BUG-88 | MEDIUM  -  No signal versioning; cache invalidation incomplete | DEC-458 | (see linked DEC sprint) |
 | BUG-89 | MEDIUM  -  Flat signal dict (220 fields) lacks type safety | DEC-458 | (see linked DEC sprint) |
 | BUG-90 | MEDIUM  -  No state checkpointing for crashes/restarts | DEC-458 | (see linked DEC sprint) |

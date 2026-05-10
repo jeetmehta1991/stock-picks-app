@@ -32933,6 +32933,27 @@ Documents updated:
   - AUDIT.md (this sub-entry)
   - dashboard_stage_2 (rebuilt)
 
+---
+
+## Pass 53 Day 9 v8h+1 follow-on 2026-05-10 (cont): Phase 3 Batch 11 - 12 BUGs
+
+| BUG | Status |
+|---|---|
+| BUG-62, 66, 74, 75, 79, 81, 86, 87 | SUPERSEDED-BY-{DEC-505/CANONICAL_FACTS/BUG-14/BUG-15/DEC-514/DEC-295/DEC-301/test_schema_canonical} |
+| BUG-67, 69, 70, 71 | DEFERRED-TO-STAGE-3 (infrastructure / paper trading / DB schema / IBKR session) |
+
+Per-addressal pyramid 117/117 PASS.
+
+**Visible bug tier distribution (post-Phase-3-batch-11):**
+  - IMPLEMENTED: 24; DEFERRED: 11 (+4); CODE_ONLY: 1
+  - OPEN: 67 (was 79; -12)
+  - Total visible: 103; hidden: 45 (+8 SUPERSEDED)
+
+Documents updated:
+  - BUG_REGISTER.md (12 flips: BUG-62/66/67/69/70/71/74/75/79/81/86/87)
+  - AUDIT.md (this sub-entry)
+  - dashboard_stage_2 (rebuilt)
+
 **Remaining OPEN backlog after sweeps:**
   - 1 DEC RESOLVED-DECIDED-deferred (DEC-028 Stage 3 paper trading - intentional)
   - INVs: 33 OPEN + 2 DEFERRED (genuine work; not promotion-eligible)
