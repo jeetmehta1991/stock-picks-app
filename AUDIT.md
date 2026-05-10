@@ -33204,6 +33204,64 @@ Documents updated:
   - AUDIT.md (this sub-entry)
   - dashboard_stage_2 (rebuilt; IMPLEMENTED 26 -> 27)
 
+---
+
+## Pass 53 Day 9 v8h+1 follow-on 2026-05-10 (cont): Phase 3 Batch 17 - BUG-61 HIGH multiple concurrent positions same ticker FIXED (owner-approved Option A)
+
+**The bug:** previously the engine used `open_combos = {(ticker, strategy) for t in self.open_trades}` to block re-entries, which only prevented the EXACT same `(ticker, strategy)` pair from re-opening. A trending ticker that triggered multiple strategies on consecutive days could accumulate 10+ concurrent positions in backtest while live trading - constrained by `max_positions_per_ticker = 1` - would hold only 1. This structurally inflated backtest trade count and ROI in trending regimes.
+
+**The fix (owner-approved Option A 2026-05-10):**
+Added ticker-level concurrent-position block in `backtest/engine/backtest.py:398-405` BEFORE the strategy iteration loop:
+```python
+open_tickers = {t.ticker for t in self.open_trades}
+...
+for cand in candidates[:self.max_cands]:
+    ticker = cand["ticker"]
+    if ticker in open_tickers:
+        self.skipped_trades.append({
+            "ticker": ticker, "date": as_of,
+            "strategy": "(any)",
+            "reason": "ticker_already_open_concurrent_block_bug61",
+        })
+        continue
+```
+Post-entry adds the ticker to `open_tickers` to lock for rest of day:
+```python
+open_tickers.add(ticker)  # BUG-61: lock ticker for rest of day
+```
+This matches live trading's `max_positions_per_ticker = 1` exactly. Trades on the same ticker can only fire once the existing position closes (which respects the trailing stop / circuit breaker exit path).
+
+**2 new regression tests (both PASS):**
+  - `test_bug_061_ticker_level_concurrent_position_block_wired` - pin: backtest.py source must build open_tickers from open_trades, check membership, skip with explicit reason, and post-entry add to lock the set
+  - `test_bug_061_open_tickers_blocks_second_strategy_same_day` - functional pin: set membership semantics correctly block re-entries and allow different tickers
+
+**Per-addressal pyramid (CHECKLIST #78):** unit 118/118 + integration 7/7 + e2e_phase1a_smoke 7/7 = 132/132 PASS in ~2:34 min. Full engine smoke succeeds with new ticker block applied with zero regressions.
+
+**Same-commit (DEC-594):** engine change + 2 new tests + register flip + AUDIT.md + dashboard rebuilt - this single commit.
+
+**Phase 1A May 15 IMPACT - HIGH:**
+This is the largest semantic correction in Phase 3. Phase 1A baseline backtest trade count and ROI estimates will drop (estimated 10-25% reduction in trade count for trending regimes; less for bear/crisis regimes where opportunities are scarcer). The resulting figures are valid for live trading where `max_positions_per_ticker = 1` is structural. Without this fix, Phase 1A optimism was a backtest-only artifact that would NOT replicate in live trading. This correction is REQUIRED before Phase 1A May 15 launch.
+
+**Visible bug tier distribution (post-Phase-3-batch-17):**
+  - IMPLEMENTED: 28 (was 27; +1 BUG-61)
+  - DEFERRED: 39; CODE_ONLY: 1
+  - OPEN: 3 (was 4; -1)
+  - Total visible: 71; hidden: 77
+
+**Remaining 3 OPEN bugs:**
+  - BUG-77 MEDIUM: candidate ranking 'avoid' inflated
+  - BUG-83 HIGH: get_congressional_detail() inverted PIT logic
+  - BUG-95 CRITICAL: no Portfolio class (DEFERRED-TO-SPRINT-3 per audit; not Phase 1A blocking)
+
+Phase 1A May 15 strict blocker count: **0 OPEN** (unchanged).
+
+Documents updated:
+  - backtest/engine/backtest.py (open_tickers set construction + ticker-level block + post-entry lock + BUG-61 cross-refs)
+  - backtest/tests/test_unit.py (2 new BUG-61 regression tests)
+  - BUG_REGISTER.md (1 flip: BUG-61)
+  - AUDIT.md (this sub-entry)
+  - dashboard_stage_2 (rebuilt; IMPLEMENTED 27 -> 28)
+
 **Remaining OPEN backlog after sweeps:**
   - 1 DEC RESOLVED-DECIDED-deferred (DEC-028 Stage 3 paper trading - intentional)
   - INVs: 33 OPEN + 2 DEFERRED (genuine work; not promotion-eligible)

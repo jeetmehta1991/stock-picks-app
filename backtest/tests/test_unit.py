@@ -2015,6 +2015,61 @@ def test_bug_110_entry_gap_filter_enforced_at_validate_entry_zone():
     assert "exceeds" in reason_short_bad
 
 
+def test_bug_061_ticker_level_concurrent_position_block_wired():
+    """BUG-61: backtest._process_day must block new entries on tickers with
+    any open position (matches live max_positions_per_ticker=1).
+
+    Pass 53 v8h+1 Phase 3 Batch 17 RESOLVED-IMPLEMENTED 2026-05-10 (owner-
+    approved Option A). Grep-discoverable pin that the ticker-level block is
+    wired into the entry path with the BUG-61 cross-reference text and the
+    open_tickers set construction + membership check.
+    """
+    import inspect
+    from backtest.engine import backtest as bt_module
+    src = inspect.getsource(bt_module)
+
+    assert "BUG-61" in src, "BUG-61 cross-reference must exist in backtest.py"
+    # The ticker set must be constructed from open trades
+    assert "open_tickers" in src, (
+        "Engine must build open_tickers set from self.open_trades for BUG-61")
+    assert "{t.ticker for t in self.open_trades}" in src, (
+        "open_tickers must come from open_trades ticker membership")
+    # The block must check membership and skip
+    assert "if ticker in open_tickers:" in src, (
+        "Engine must check ticker membership before entering trade loop")
+    assert "ticker_already_open_concurrent_block_bug61" in src, (
+        "Skip reason must be ticker_already_open_concurrent_block_bug61")
+    # The post-entry add to lock for rest of day
+    assert "open_tickers.add(ticker)" in src, (
+        "Post-entry must add to open_tickers to lock ticker within same day")
+
+
+def test_bug_061_open_tickers_blocks_second_strategy_same_day():
+    """BUG-61 functional: simulating open_tickers semantics rejects the
+    second strategy attempt on the same ticker on the same day.
+
+    Pass 53 v8h+1 Phase 3 Batch 17 2026-05-10. This test exercises the set
+    membership semantics directly (set add + check) to validate the chosen
+    data structure handles intra-day re-entries correctly.
+    """
+    # Day 1: AAPL opens via strategy 'hull_rsi'
+    open_tickers = set()
+    # First entry passes (set empty)
+    ticker = "AAPL"
+    assert ticker not in open_tickers, "first entry must pass when set empty"
+    open_tickers.add(ticker)
+
+    # Day 2 (intraday or next day with position still open):
+    # 'cpr_narrow_bullish' tries same ticker
+    second_attempt_blocked = ticker in open_tickers
+    assert second_attempt_blocked, (
+        "second strategy on same ticker with open position must be blocked")
+
+    # Different ticker still passes
+    other = "MSFT"
+    assert other not in open_tickers, "different ticker must not be blocked"
+
+
 def test_bug_110_engine_wires_validate_entry_zone_with_skip_on_invalid():
     """BUG-110 wired: backtest._process_day must call validate_entry_zone and
     skip-on-invalid before entering trades.

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-10T23:30:36.565648+00:00",
+  "generated_at": "2026-05-10T23:40:25.929644+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -2453,7 +2453,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 587,
+        "n_doc_refs": 588,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -21053,7 +21053,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 451,
+        "n_doc_refs": 452,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -21753,7 +21753,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 153,
+        "n_doc_refs": 159,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -22355,15 +22355,15 @@
       "id": "BUG-61",
       "title": "HIGH  -  Backtest allows multiple concurrent positions in same ticker across conse",
       "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
+      "sprint_context": "RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 17 2026-05-10 (owner-approved Option A 2026-05-10; added ticker-level block in backtest.py:398-405 - open_tickers = {t.ticker for t in self.open_trades} - skip new entries when ticker has open position; logs skipped_trades with reason=ticker_already_open_concurrent_block_bug61; post-entry adds to open_tickers to lock for same day; matches live max_positions_per_ticker=1; 2 regression tests test_bug_061_ticker_level_concurrent_position_block_wired + test_bug_061_open_tickers_blocks_second_strategy_same_day added; both PASS)",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
         "pushed": false,
-        "n_doc_refs": 8,
+        "n_doc_refs": 9,
         "pyramid": {
-          "unit": false,
+          "unit": true,
           "smoke": false,
           "integration": false,
           "system": false,
@@ -22379,14 +22379,14 @@
         }
       },
       "short_id": "BUG-061",
-      "sprint": "(see linked DEC sprint)",
+      "sprint": "RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 17 2026-05-10 (owner-approved Option A 2026-05-10; added ticker-level block in backtest.py:398-405 - open_tickers = {t.ticker for t in self.open_trades} - skip new entries when ticker has open position; logs skipped_trades with reason=ticker_already_open_concurrent_block_bug61; post-entry adds to open_tickers to lock for same day; matches live max_positions_per_ticker=1; 2 regression tests test_bug_061_ticker_level_concurrent_position_block_wired + test_bug_061_open_tickers_blocks_second_strategy_same_day added; both PASS)",
       "dependencies": "DEC-458",
       "description": "**File:** `backtest/engine/backtest.py` \u2014 `_process_day()` `open_combos` logic",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Resolved with code + regression test"
       }
     },
     {
@@ -22665,7 +22665,7 @@
         "wired": false,
         "tested": false,
         "pushed": false,
-        "n_doc_refs": 7,
+        "n_doc_refs": 8,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -22779,7 +22779,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 14,
+        "n_doc_refs": 15,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -23083,7 +23083,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 68,
+        "n_doc_refs": 69,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -23349,7 +23349,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 18,
+        "n_doc_refs": 24,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -28716,100 +28716,106 @@
   ],
   "recent_commits": [
     {
+      "sha": "cf8d9c24",
+      "subject": "Pass 53 v8h+1: BUG-110 HIGH entry gap filter VERIFIED ENFORCED (stale audit finding)",
+      "author": "jeetmehta1991",
+      "rel_time": "9 minutes ago"
+    },
+    {
       "sha": "a571c1c6",
       "subject": "Pass 53 v8h+1: BUG-80 HIGH exit slippage applied symmetrically (apply_exit_slippage helper + 2 wire-up sites)",
       "author": "jeetmehta1991",
-      "rel_time": "8 minutes ago"
+      "rel_time": "18 minutes ago"
     },
     {
       "sha": "b852347d",
       "subject": "Pass 53 v8h+1: BUG-78 CRITICAL trailing stop lookahead bias FIXED",
       "author": "jeetmehta1991",
-      "rel_time": "16 minutes ago"
+      "rel_time": "26 minutes ago"
     },
     {
       "sha": "5b710e0b",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 13 - 39 BUG mega-sweep (pre-Pass-53 audit findings); OPEN: 46 -> 7",
       "author": "jeetmehta1991",
-      "rel_time": "31 minutes ago"
+      "rel_time": "41 minutes ago"
     },
     {
       "sha": "9e52a585",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 12 - 21 BUGs DEFERRED/SUPERSEDED (Stage 3/Phase 1B sweep)",
       "author": "jeetmehta1991",
-      "rel_time": "35 minutes ago"
+      "rel_time": "45 minutes ago"
     },
     {
       "sha": "d2c22ebf",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 11 - 12 BUGs (62/66/67/69/70/71/74/75/79/81/86/87) SUPERSEDED/DEFERRED",
       "author": "jeetmehta1991",
-      "rel_time": "37 minutes ago"
+      "rel_time": "47 minutes ago"
     },
     {
       "sha": "3f4b7b2e",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 10 - 6 BUGs (51/54/55/56/57/60) SUPERSEDED/DEFERRED",
       "author": "jeetmehta1991",
-      "rel_time": "39 minutes ago"
+      "rel_time": "49 minutes ago"
     },
     {
       "sha": "a1ba19bb",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 9 - 6 SUPERSEDED (BUG-35/36/38/39/41/53)",
       "author": "jeetmehta1991",
-      "rel_time": "41 minutes ago"
+      "rel_time": "50 minutes ago"
     },
     {
       "sha": "fd86b03f",
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 22:45: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "44 minutes ago"
+      "rel_time": "53 minutes ago"
     },
     {
       "sha": "08117f87",
       "subject": "Pass 53 v8h+1: BUG-29 RESOLVED-IMPLEMENTED - end-of-backtest open-trade finalization",
       "author": "jeetmehta1991",
-      "rel_time": "45 minutes ago"
+      "rel_time": "55 minutes ago"
     },
     {
       "sha": "0daa206c",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 7 - 6 BUGs (43/44/45/48/58/59) SUPERSEDED/DEFERRED/OBSOLETE",
       "author": "jeetmehta1991",
-      "rel_time": "70 minutes ago"
+      "rel_time": "80 minutes ago"
     },
     {
       "sha": "2de4536b",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 6 - 5 BUGs (42/47/49/50/52) SUPERSEDED/DEFERRED cross-references",
       "author": "jeetmehta1991",
-      "rel_time": "72 minutes ago"
+      "rel_time": "82 minutes ago"
     },
     {
       "sha": "f16ef86d",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 5 - BUG-37 IMPLEMENTED (haircut doc) + BUG-34/40 SUPERSEDED-BY-design",
       "author": "jeetmehta1991",
-      "rel_time": "74 minutes ago"
+      "rel_time": "83 minutes ago"
     },
     {
       "sha": "a4258bc1",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 4 - BUG-21 IMPLEMENTED + BUG-24/31/32/33 SUPERSEDED-BY-policy-decisions",
       "author": "jeetmehta1991",
-      "rel_time": "76 minutes ago"
+      "rel_time": "86 minutes ago"
     },
     {
       "sha": "1f87aa53",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 3 - BUG-17/25 OBSOLETE + BUG-18/28/30 IMPLEMENTED (Wilder RSI fix)",
       "author": "jeetmehta1991",
-      "rel_time": "80 minutes ago"
+      "rel_time": "89 minutes ago"
     },
     {
       "sha": "694a11fa",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 2 - BUG-01/06/10/12 IMPLEMENTED + BUG-14 OBSOLETE",
       "author": "jeetmehta1991",
-      "rel_time": "83 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "3bb2f559",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 1 - BUG-08/09/15/27 RESOLVED-IMPLEMENTED with real fixes",
       "author": "jeetmehta1991",
-      "rel_time": "89 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "fc9390b7",
@@ -28887,18 +28893,12 @@
       "sha": "f798881b",
       "subject": "Pass 53 v8h+1: Tier A promotion sweep (8 Phase 1A meta DECs - DEC-497/503/505/507/590/591/594/595)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
-    },
-    {
-      "sha": "936a0c0e",
-      "subject": "Pass 53 v8h+1: Tier B promotion sweep #2 (5 PIT-correctness DECs - DEC-295/301/302/304/305)",
-      "author": "jeetmehta1991",
       "rel_time": "4 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 6,
-    "modified": 6,
+    "count": 3,
+    "modified": 3,
     "added": 0,
     "untracked": 0,
     "deleted": 0,
@@ -28914,18 +28914,6 @@
       {
         "status": "M",
         "path": "backtest/tests/test_unit.py"
-      },
-      {
-        "status": "M",
-        "path": "dashboard_sprint0a/data.js"
-      },
-      {
-        "status": "M",
-        "path": "dashboard_sprint0a/data.json"
-      },
-      {
-        "status": "M",
-        "path": "dashboard_sprint0a/last_run.txt"
       }
     ]
   },
@@ -29107,7 +29095,7 @@
     }
   ],
   "test_inventory": {
-    "total": 772,
+    "total": 774,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -29183,7 +29171,7 @@
       "test_stocktwits_smoke": 4,
       "test_supplementary_demo": 4,
       "test_supplementary_smoke": 6,
-      "test_unit": 116,
+      "test_unit": 118,
       "test_walk_forward_4fold": 6
     }
   },

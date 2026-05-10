@@ -389,9 +389,17 @@ class BacktestEngine:
             return  # skip entry loop entirely
 
         # -- 6. Open new trades  -  no position cap, no correlation filter,
-        #         no per-ticker limit, no direction hard block --
+        #         direction hard block removed; ticker-level concurrent block ON --
         # Track open ticker+strategy combos to avoid exact duplicates only
         open_combos = {(t.ticker, t.strategy) for t in self.open_trades}
+        # BUG-61 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 17 2026-05-10
+        # (owner-approved Option A): match live max_positions_per_ticker=1 by
+        # blocking any new entry on a ticker that already has an open position.
+        # Previously, different strategies on consecutive days each opened a
+        # position on the same trending ticker, accumulating 10+ concurrent
+        # positions in backtest where live would hold only 1. Inflated backtest
+        # ROI in trending regimes; removed by this ticker-set membership check.
+        open_tickers = {t.ticker for t in self.open_trades}
         # Deduplication: track tickers already opened today (one position per ticker per day)
         opened_today: set[str] = set()
 
@@ -399,6 +407,16 @@ class BacktestEngine:
             ticker = cand["ticker"]
             atr    = cand.get("atr", 0.0) or cand["last_close"] * 0.01
             close  = cand["last_close"]
+
+            # BUG-61: ticker-level concurrent-position block (owner-approved Option A)
+            # Skip the entire strategy loop if any prior open position exists on this ticker
+            if ticker in open_tickers:
+                self.skipped_trades.append({
+                    "ticker": ticker, "date": as_of,
+                    "strategy": "(any)",
+                    "reason": "ticker_already_open_concurrent_block_bug61",
+                })
+                continue
 
             for strat_entry in cand.get("strategies", []):
                 direction = strat_entry["direction"]
@@ -594,6 +612,7 @@ class BacktestEngine:
                 self.open_trades.append(trade)
                 open_combos.add((ticker, strat_entry["strategy"]))
                 opened_today.add(ticker)
+                open_tickers.add(ticker)  # BUG-61: lock ticker for rest of day
 
     # ----------------------------------------------------------------------
     # HELPERS
