@@ -32112,6 +32112,42 @@ Documents updated this sub-turn:
   - AUDIT.md (this sub-entry)
   - Both dashboards rebuilt
 
+---
+
+## Pass 53 Day 9 v8h+1 follow-on 2026-05-10 (cont): Tier B engine-correctness DEC promotion sweep (Pass 51 Tier-2)
+
+Owner directive 2026-05-10: "Tier A B C D address. Promotion process per DEC approved."
+
+**Scope:** Pass 51 Tier-2 engine-correctness DECs that have artifact landed in commit `8dea1b3e5` but AUDIT_INDEX.md status was still RESOLVED-DECIDED (the dashboard's promotion-path column flagged them as READY-TO-PROMOTE).
+
+**Verification per DEC (CHECKLIST #82 promotion-path):**
+
+| DEC | Title | test_refs | code_refs | landing commit | Status flip |
+|---|---|---|---|---|---|
+| DEC-309 | Cache ticker collision (BRK-B vs BRK.B) | 2 | 2 | 8dea1b3e5 | RESOLVED-DECIDED -> RESOLVED-IMPLEMENTED |
+| DEC-311 | Trailing-stop ATR uses entry-time ATR (refresh daily) | 2 | 2 | 8dea1b3e5 | RESOLVED-DECIDED -> RESOLVED-IMPLEMENTED |
+| DEC-312 | exit_hybrid_50pct max_days=252 vs other exits | 2 | 1 | 8dea1b3e5 | RESOLVED-DECIDED -> RESOLVED-IMPLEMENTED |
+| DEC-315 | Circuit breakers checked one-at-a-time (Level 1+5 priority) | 2 | 4 | 8dea1b3e5 | RESOLVED-DECIDED -> RESOLVED-IMPLEMENTED |
+| DEC-316 | Regime classifier 'neutral' default on missing VIX | 4 | 3 | d5afab052 | RESOLVED-DECIDED -> RESOLVED-IMPLEMENTED |
+| DEC-324 | Congressional weight by disclosure_date not transaction_date | 2 | 1 | 8dea1b3e5 | RESOLVED-DECIDED -> RESOLVED-IMPLEMENTED |
+
+All 6 verified via `grep -rl DEC-NNN backtest/tests/` and `backtest/{data,engine,signals,results}/` returning >0 file count + commit message containing the DEC ID.
+
+**Per-addressal pyramid (CHECKLIST #78):** unit + integration layers - 102/102 PASS in 4s. Layers N/A: smoke (no engine code touched THIS commit; just status flip), data_integrity (no data change), performance (no perf concern), acceptance (no new criterion), property/snapshot/contract/compatibility (no scope match), system/functional (status-only).
+
+**Same-commit (DEC-594 retroactive interpretation):** the same-commit rule for new RESOLVED-DECIDED claims doesn't apply to RETROACTIVE promotion of historical RESOLVED-DECIDED DECs whose artifact already landed in a prior commit. The artifact verification (grep) IS the same-commit equivalent for retroactive promotion.
+
+**RESOLVED-IMPLEMENTED count flips: 5 -> 11** (was 5 from DEC-504/607/608/609 + DEC-505 prior; +6 this commit).
+
+**Sprint 0A H-tier real-TODO:** N/A (already complete).
+**Phase 1A May 15 blocker count:** 0 OPEN (unchanged).
+**Tier B remaining READY DECs:** ~31 still eligible across other engine-correctness lineages (DEC-301/302/304/305 PIT-correctness; DEC-067 9 exit methods; DEC-295 SHORT_BORROW units; etc.).
+
+Documents updated this sub-turn:
+  - AUDIT_INDEX.md (6 status flips: DEC-309/311/312/315/316/324)
+  - AUDIT.md (this sub-entry)
+  - Both dashboards rebuilt
+
 **Same-commit (DEC-594):** script + DEC-609 + AUDIT.md narrative + contract test + dashboards rebuilt - all in this sub-turn commit.
 
 Documents updated this sub-turn:

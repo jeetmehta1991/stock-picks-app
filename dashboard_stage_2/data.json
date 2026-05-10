@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-10T18:43:30.556595+00:00",
+  "generated_at": "2026-05-10T19:19:14.177527+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -2773,7 +2773,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 41,
+        "n_doc_refs": 42,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -11933,7 +11933,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 5,
+        "n_doc_refs": 6,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -12173,7 +12173,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 14,
+        "n_doc_refs": 15,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -12484,7 +12484,7 @@
     {
       "id": "DECISION-309",
       "title": "Cache ticker collision: BRK-B and (hypothetical) BRK.B both map to BRK_B.parquet \u2014 silent",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X53 \u2014 High-Impact Engine Bugs",
       "pass_intro": "Pass 48",
       "pass_resolved": "51",
@@ -12493,7 +12493,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 4,
+        "n_doc_refs": 6,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -12515,10 +12515,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-PROMOTE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Wired in active path + tested; eligible for RESOLVED-IMPLEMENTED"
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -12564,7 +12564,7 @@
     {
       "id": "DECISION-311",
       "title": "Trailing-stop ATR exits use ENTRY-time ATR throughout hold period \u2014 should refresh daily;",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X53 \u2014 High-Impact Engine Bugs",
       "pass_intro": "Pass 48",
       "pass_resolved": "51",
@@ -12573,7 +12573,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 3,
+        "n_doc_refs": 4,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -12595,16 +12595,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-PROMOTE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Wired in active path + tested; eligible for RESOLVED-IMPLEMENTED"
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-312",
       "title": "exit_hybrid_50pct has max_days=252 but 11 other exits don't \u2014 comparison metrics not apple",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X53 \u2014 High-Impact Engine Bugs",
       "pass_intro": "Pass 48",
       "pass_resolved": "51",
@@ -12613,7 +12613,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 3,
+        "n_doc_refs": 4,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -12635,10 +12635,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-PROMOTE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Wired in active path + tested; eligible for RESOLVED-IMPLEMENTED"
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -12724,7 +12724,7 @@
     {
       "id": "DECISION-315",
       "title": "Circuit breakers checked one-at-a-time \u2014 if Level 1 + Level 5 both fire same day, Level 5",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X53 \u2014 High-Impact Engine Bugs",
       "pass_intro": "Pass 48",
       "pass_resolved": "51",
@@ -12733,7 +12733,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 2,
+        "n_doc_refs": 3,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -12755,16 +12755,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-PROMOTE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Wired in active path + tested; eligible for RESOLVED-IMPLEMENTED"
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-316",
       "title": "Regime classifier returns 'neutral' default on missing VIX \u2014 should refuse to trade with n",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X53 \u2014 High-Impact Engine Bugs",
       "pass_intro": "Pass 48",
       "pass_resolved": "51",
@@ -12773,7 +12773,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 10,
+        "n_doc_refs": 11,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -12795,10 +12795,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-PROMOTE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Wired in active path + tested; eligible for RESOLVED-IMPLEMENTED"
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -13084,7 +13084,7 @@
     {
       "id": "DECISION-324",
       "title": "Congressional weight by disclosure_date not transaction_date \u2014 smart-money signal weighted",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X53 \u2014 High-Impact Engine Bugs",
       "pass_intro": "Pass 48",
       "pass_resolved": "51",
@@ -13093,7 +13093,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 4,
+        "n_doc_refs": 5,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -13115,10 +13115,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-PROMOTE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Wired in active path + tested; eligible for RESOLVED-IMPLEMENTED"
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -20413,7 +20413,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 43,
+        "n_doc_refs": 44,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -21013,7 +21013,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 433,
+        "n_doc_refs": 434,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -21293,7 +21293,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 19,
+        "n_doc_refs": 20,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -31600,58 +31600,64 @@
   ],
   "recent_commits": [
     {
+      "sha": "77f57b21",
+      "subject": "Pass 53 auto-drift-sweep 2026-05-10 18:43: dashboards refreshed (no numerical drift)",
+      "author": "jeetmehta1991",
+      "rel_time": "3 minutes ago"
+    },
+    {
       "sha": "4f9e558c",
       "subject": "Pass 53 v8h+1: 0A.7 per-API smoke/demo split - StockTwits + Apewisdom additions (Sprint 0A COMPLETE)",
       "author": "jeetmehta1991",
-      "rel_time": "6 minutes ago"
+      "rel_time": "42 minutes ago"
     },
     {
       "sha": "07c15d16",
       "subject": "Pass 53 v8h+1: H18 data refresh - 54 CFTC parquets updated (legacy/disagg/tff datasets)",
       "author": "jeetmehta1991",
-      "rel_time": "20 minutes ago"
+      "rel_time": "56 minutes ago"
     },
     {
       "sha": "1af57700",
       "subject": "Pass 53 v8h+1: H18 CFTC 5 missing datasets verify (DONE-WITH-DATASET-SCOPE-CAP) - Sprint 0A H-tier complete",
       "author": "jeetmehta1991",
-      "rel_time": "20 minutes ago"
+      "rel_time": "56 minutes ago"
     },
     {
       "sha": "25485a1b",
       "subject": "Pass 53 v8h+1: H4 Polygon reference extended verify (DONE-WITH-DELISTING-CAP per CAV-075 sister pattern)",
       "author": "jeetmehta1991",
-      "rel_time": "32 minutes ago"
+      "rel_time": "68 minutes ago"
     },
     {
       "sha": "fc5c43f4",
       "subject": "Pass 53 v8h+1: H16 + H22 verify (DONE / PARTIAL-DONE-WITH-FINDING + INV-048)",
       "author": "jeetmehta1991",
-      "rel_time": "44 minutes ago"
+      "rel_time": "79 minutes ago"
     },
     {
       "sha": "fe623f3e",
       "subject": "Pass 53 v8h+1: H6 indicator completeness verify + macd top-up (1911 -> 1937)",
       "author": "jeetmehta1991",
-      "rel_time": "53 minutes ago"
+      "rel_time": "89 minutes ago"
     },
     {
       "sha": "b76fc3d1",
       "subject": "Pass 53 v8h+1: H1.b OHLCV Master Dedup data commit (1924 parquets, 105.6 MB) + CAV-079",
       "author": "jeetmehta1991",
-      "rel_time": "64 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "1e020b2a",
       "subject": "Pass 53 v8h+1: promotion-path column wired into Stage 2 dashboard (CHECKLIST #81/#82)",
       "author": "jeetmehta1991",
-      "rel_time": "74 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "f7b3e987",
       "subject": "Pass 53 v8h+1: untracked artifacts cleanup (gitignore + INV-027 backup archived)",
       "author": "jeetmehta1991",
-      "rel_time": "89 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "4bf07436",
@@ -31675,19 +31681,19 @@
       "sha": "bdba8f67",
       "subject": "Pass 53 v8h+1: H-tier doc reconciliation + H20=A (DEC-599 honored)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "f0d03fcd",
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 15:26: dashboard_sprint0a rebuild artifacts (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "041229b1",
       "subject": "Pass 53 v8h+1: INV-046 RESOLVED-DOCUMENTED + DEC-607 realism floor 100% -> 300% + rapidity gate",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "d6e6296d",
@@ -31699,7 +31705,7 @@
       "sha": "ecc846c2",
       "subject": "Pass 53 v8h+1: INV-047 + CAV-077 - Quiver etfholdings refresh DEAD-END (static snapshot only)",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "2244b1e5",
@@ -31765,28 +31771,43 @@
       "sha": "826d5454",
       "subject": "Pass 53 v8h+1: DEC-605 - Finnhub social_sentiment EXCLUDED from Phase 1A baseline",
       "author": "jeetmehta1991",
-      "rel_time": "20 hours ago"
+      "rel_time": "21 hours ago"
     },
     {
       "sha": "5bb5b70f",
       "subject": "Pass 53 v8h+1: AAII Asset Allocation Survey + Finnhub social_sentiment use case in dashboard",
       "author": "jeetmehta1991",
       "rel_time": "22 hours ago"
-    },
-    {
-      "sha": "06d85a9a",
-      "subject": "Pass 53 v8h+1: INV-027 backfill data sweep - 1924 polygon news files with insights_json",
-      "author": "jeetmehta1991",
-      "rel_time": "22 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 0,
-    "modified": 0,
+    "count": 5,
+    "modified": 5,
     "added": 0,
     "untracked": 0,
     "deleted": 0,
-    "files": []
+    "files": [
+      {
+        "status": "M",
+        "path": "AUDIT.md"
+      },
+      {
+        "status": "M",
+        "path": "AUDIT_INDEX.md"
+      },
+      {
+        "status": "M",
+        "path": "dashboard_sprint0a/data.js"
+      },
+      {
+        "status": "M",
+        "path": "dashboard_sprint0a/data.json"
+      },
+      {
+        "status": "M",
+        "path": "dashboard_sprint0a/last_run.txt"
+      }
+    ]
   },
   "unpushed_commits": [],
   "active_bgs": [],
@@ -32585,7 +32606,7 @@
     }
   ],
   "decision_status_counts": {
-    "RESOLVED-DECIDED": 328,
+    "RESOLVED-DECIDED": 322,
     "PARTIAL": 5,
     "SUPERSEDED_BY_DEC-422": 6,
     "SUPERSEDED": 10,
@@ -32614,6 +32635,7 @@
     "SUPERSEDED_BY_DEC-330": 1,
     "trade_pnl": 1,
     "OBSOLETE": 3,
+    "RESOLVED-IMPLEMENTED": 12,
     "SUPERSEDED_BY_DEC-313": 1,
     "RESOLVED-DECIDED-DEFERRED": 1,
     "BLOCKED_ON_DEC-298": 2,
@@ -32622,7 +32644,6 @@
     "BLOCKED_ON_DEC-450": 1,
     "FAIL_RR": 1,
     "BLOCKED_ON_DEC-388_AND_DEC-409": 1,
-    "RESOLVED-IMPLEMENTED": 6,
     "RESOLVED-IMPLEMENTED-T1a-T1c": 1,
     "PROPOSED": 13,
     "splits": 1
