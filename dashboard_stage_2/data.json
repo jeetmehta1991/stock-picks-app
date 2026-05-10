@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-10T21:24:03.069094+00:00",
+  "generated_at": "2026-05-10T21:30:55.685876+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -1212,7 +1212,7 @@
         "coded": false,
         "wired": false,
         "tested": false,
-        "pushed": false,
+        "pushed": true,
         "n_doc_refs": 0,
         "pyramid": {
           "unit": false,
@@ -2693,7 +2693,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 10,
+        "n_doc_refs": 11,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -4093,7 +4093,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 23,
+        "n_doc_refs": 24,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -4693,7 +4693,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 7,
+        "n_doc_refs": 8,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -6692,8 +6692,8 @@
         "coded": false,
         "wired": false,
         "tested": false,
-        "pushed": false,
-        "n_doc_refs": 1,
+        "pushed": true,
+        "n_doc_refs": 2,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -7812,7 +7812,7 @@
         "coded": false,
         "wired": false,
         "tested": false,
-        "pushed": false,
+        "pushed": true,
         "n_doc_refs": 4,
         "pyramid": {
           "unit": false,
@@ -8052,7 +8052,7 @@
         "coded": false,
         "wired": false,
         "tested": false,
-        "pushed": false,
+        "pushed": true,
         "n_doc_refs": 5,
         "pyramid": {
           "unit": false,
@@ -17013,7 +17013,7 @@
         "wired": true,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 143,
+        "n_doc_refs": 145,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -17173,7 +17173,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 31,
+        "n_doc_refs": 32,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -20452,8 +20452,8 @@
         "coded": false,
         "wired": false,
         "tested": false,
-        "pushed": false,
-        "n_doc_refs": 1,
+        "pushed": true,
+        "n_doc_refs": 5,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -21053,7 +21053,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 439,
+        "n_doc_refs": 440,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -26430,18 +26430,18 @@
         "n_doc_refs": 39,
         "pyramid": {
           "unit": true,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
+          "smoke": "N/A",
+          "integration": "N/A",
+          "system": "N/A",
+          "functional": "N/A",
+          "regression": "N/A",
+          "data_integrity": "N/A",
+          "performance": "N/A",
+          "acceptance": "N/A",
+          "property": "N/A",
+          "snapshot": "N/A",
+          "contract": "N/A",
+          "compatibility": "N/A"
         }
       },
       "short_id": "BUG-270",
@@ -26468,18 +26468,18 @@
         "n_doc_refs": 33,
         "pyramid": {
           "unit": true,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
+          "smoke": "N/A",
+          "integration": "N/A",
+          "system": "N/A",
+          "functional": "N/A",
+          "regression": "N/A",
+          "data_integrity": "N/A",
+          "performance": "N/A",
+          "acceptance": "N/A",
+          "property": "N/A",
+          "snapshot": "N/A",
+          "contract": "N/A",
+          "compatibility": "N/A"
         }
       },
       "short_id": "BUG-271",
@@ -26506,18 +26506,18 @@
         "n_doc_refs": 12,
         "pyramid": {
           "unit": true,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
+          "smoke": "N/A",
+          "integration": "N/A",
+          "system": "N/A",
+          "functional": "N/A",
+          "regression": "N/A",
+          "data_integrity": "N/A",
+          "performance": "N/A",
+          "acceptance": "N/A",
+          "property": "N/A",
+          "snapshot": "N/A",
+          "contract": "N/A",
+          "compatibility": "N/A"
         }
       },
       "short_id": "BUG-272",
@@ -26544,18 +26544,18 @@
         "n_doc_refs": 15,
         "pyramid": {
           "unit": true,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
+          "smoke": "N/A",
+          "integration": "N/A",
+          "system": "N/A",
+          "functional": "N/A",
+          "regression": "N/A",
+          "data_integrity": "N/A",
+          "performance": "N/A",
+          "acceptance": "N/A",
+          "property": "N/A",
+          "snapshot": "N/A",
+          "contract": "N/A",
+          "compatibility": "N/A"
         }
       },
       "short_id": "BUG-273",
@@ -31640,58 +31640,64 @@
   ],
   "recent_commits": [
     {
+      "sha": "a7c66530",
+      "subject": "Pass 53 v8h+1: DEC-610 SPEC_ONLY -> DEFERRED_TO_* re-classification (14 forward-looking DECs)",
+      "author": "jeetmehta1991",
+      "rel_time": "6 minutes ago"
+    },
+    {
       "sha": "4cd84d66",
       "subject": "Pass 53 v8h+1: BUG-270 wired-flag fix (cross-reference docstring) + process self-finding",
       "author": "jeetmehta1991",
-      "rel_time": "6 minutes ago"
+      "rel_time": "13 minutes ago"
     },
     {
       "sha": "d28c8723",
       "subject": "Pass 53 v8h+1: Tier C/D edge-case sweep - DEC-057 promoted; DEC-028 no-promote (forward-looking)",
       "author": "jeetmehta1991",
-      "rel_time": "30 minutes ago"
+      "rel_time": "37 minutes ago"
     },
     {
       "sha": "10fa8617",
       "subject": "Pass 53 v8h+1: INV-041 RESOLVED - path-restricted commits in 4 prefetch scripts + 5-test regression gate",
       "author": "jeetmehta1991",
-      "rel_time": "32 minutes ago"
+      "rel_time": "39 minutes ago"
     },
     {
       "sha": "bcb6ea3f",
       "subject": "Pass 53 v8h+1: parse_inv_entries parser fix - recognize all RESOLVED-* / DEFERRED-* status variants",
       "author": "jeetmehta1991",
-      "rel_time": "37 minutes ago"
+      "rel_time": "44 minutes ago"
     },
     {
       "sha": "26340a6b",
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 20:43: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "39 minutes ago"
+      "rel_time": "46 minutes ago"
     },
     {
       "sha": "bffd8658",
       "subject": "Pass 53 v8h+1: INV promotion sweep - INV-045 RESOLVED + 4 NOOPs (CHECKLIST #81)",
       "author": "jeetmehta1991",
-      "rel_time": "65 minutes ago"
+      "rel_time": "72 minutes ago"
     },
     {
       "sha": "cab09977",
       "subject": "Pass 53 v8h+1: BUG promotion sweep (CHECKLIST #81 first application; 4 HIGH-severity smart_money bugs)",
       "author": "jeetmehta1991",
-      "rel_time": "67 minutes ago"
+      "rel_time": "73 minutes ago"
     },
     {
       "sha": "4addd669",
       "subject": "Pass 53 v8h+1: Tier B promotion sweep #3+#4 combined (17 DECs RESOLVED-DECIDED -> RESOLVED-IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "69 minutes ago"
+      "rel_time": "76 minutes ago"
     },
     {
       "sha": "f798881b",
       "subject": "Pass 53 v8h+1: Tier A promotion sweep (8 Phase 1A meta DECs - DEC-497/503/505/507/590/591/594/595)",
       "author": "jeetmehta1991",
-      "rel_time": "78 minutes ago"
+      "rel_time": "85 minutes ago"
     },
     {
       "sha": "936a0c0e",
@@ -31739,7 +31745,7 @@
       "sha": "fc5c43f4",
       "subject": "Pass 53 v8h+1: H16 + H22 verify (DONE / PARTIAL-DONE-WITH-FINDING + INV-048)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "fe623f3e",
@@ -31781,7 +31787,7 @@
       "sha": "d57a07ee",
       "subject": "Pass 53 v8h+1: Sprint 0A.8 NO-LIVE-API HARD CUT implementation (DEC-608)",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "bdba8f67",
@@ -31812,25 +31818,15 @@
       "subject": "Pass 53 v8h+1: INV-047 + CAV-077 - Quiver etfholdings refresh DEAD-END (static snapshot only)",
       "author": "jeetmehta1991",
       "rel_time": "8 hours ago"
-    },
-    {
-      "sha": "2244b1e5",
-      "subject": "Pass 53 auto-drift-sweep 2026-05-10 10:13: dashboards refreshed (no numerical drift)",
-      "author": "jeetmehta1991",
-      "rel_time": "8 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 4,
-    "modified": 4,
+    "count": 5,
+    "modified": 5,
     "added": 0,
     "untracked": 0,
     "deleted": 0,
     "files": [
-      {
-        "status": "M",
-        "path": "AUDIT_INDEX.md"
-      },
       {
         "status": "M",
         "path": "dashboard_sprint0a/data.js"
@@ -31842,6 +31838,14 @@
       {
         "status": "M",
         "path": "dashboard_sprint0a/last_run.txt"
+      },
+      {
+        "status": "M",
+        "path": "dashboard_stage_2/index.html"
+      },
+      {
+        "status": "M",
+        "path": "scripts/build_dashboard_stage_2.py"
       }
     ]
   },

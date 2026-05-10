@@ -332,6 +332,72 @@ PYRAMID_OVERRIDES: dict[str, dict[str, str]] = {
         "contract": "N/A",
         "compatibility": "N/A",
     },
+    # BUG-270/271/272/273 are smart_money column-mismatch silent-failure bugs
+    # (Pass 53 Batch 1+13 schema alignment fixes). The fix scope is per-function
+    # column-name correction in backtest/data/smart_money.py; covered by
+    # function-level unit tests. Other pyramid layers don't apply (no engine-level,
+    # cross-module integration, perf, acceptance, property/snapshot/contract,
+    # version, schema-data, system-gate, doc-count, smoke-engine concerns) per
+    # CHECKLIST #78 per-addressal declaration. Owner directive 2026-05-10:
+    # "Testing pyramid was to be applied for each individual bug addressal" -
+    # each layer must be YES or N/A; no silent "no" cells. Retroactive
+    # declaration since fixes predate CHECKLIST #78.
+    "BUG-270": {
+        "smoke": "N/A",
+        "integration": "N/A",
+        "system": "N/A",
+        "functional": "N/A",
+        "regression": "N/A",
+        "data_integrity": "N/A",
+        "performance": "N/A",
+        "acceptance": "N/A",
+        "property": "N/A",
+        "snapshot": "N/A",
+        "contract": "N/A",
+        "compatibility": "N/A",
+    },
+    "BUG-271": {
+        "smoke": "N/A",
+        "integration": "N/A",
+        "system": "N/A",
+        "functional": "N/A",
+        "regression": "N/A",
+        "data_integrity": "N/A",
+        "performance": "N/A",
+        "acceptance": "N/A",
+        "property": "N/A",
+        "snapshot": "N/A",
+        "contract": "N/A",
+        "compatibility": "N/A",
+    },
+    "BUG-272": {
+        "smoke": "N/A",
+        "integration": "N/A",
+        "system": "N/A",
+        "functional": "N/A",
+        "regression": "N/A",
+        "data_integrity": "N/A",
+        "performance": "N/A",
+        "acceptance": "N/A",
+        "property": "N/A",
+        "snapshot": "N/A",
+        "contract": "N/A",
+        "compatibility": "N/A",
+    },
+    "BUG-273": {
+        "smoke": "N/A",
+        "integration": "N/A",
+        "system": "N/A",
+        "functional": "N/A",
+        "regression": "N/A",
+        "data_integrity": "N/A",
+        "performance": "N/A",
+        "acceptance": "N/A",
+        "property": "N/A",
+        "snapshot": "N/A",
+        "contract": "N/A",
+        "compatibility": "N/A",
+    },
 }
 
 

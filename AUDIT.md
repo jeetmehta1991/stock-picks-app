@@ -32457,6 +32457,51 @@ Documents updated this sub-turn:
   - AUDIT.md (this sub-entry)
   - dashboard_stage_2 (rebuilt; SPEC_ONLY 340 -> 325, DEFERRED 49 -> 64)
 
+---
+
+## Pass 53 Day 9 v8h+1 follow-on 2026-05-10 (cont): BUG-270/271/272/273 pyramid overrides + Promotion dropdown filters
+
+Owner direction 2026-05-10: "BUG-271 why is it yes for only the unit test when the whole testing pyramid should say yes or n/a. Testing pyramid was to be applied for each individual bug addressal. Add dropdown filter on promotion column as well."
+
+**(A) PYRAMID_OVERRIDES for BUG-270/271/272/273:**
+
+Each bug had only `unit=True` with 12 layers showing silent `no` (false negatives). Per CHECKLIST #78 the per-addressal pyramid mandate requires each layer to be YES or N/A explicitly. Added explicit N/A overrides for the 12 layers that don't apply to per-function column-mismatch fixes:
+  - smoke (engine-level e2e; column-fix is internal)
+  - integration (cross-module flow; fix is single-module)
+  - system (Phase 1A entry gate)
+  - functional (doc count consistency)
+  - regression (no separate regression test; unit covers)
+  - data_integrity (schema validation of cache; column-fix is in code)
+  - performance (no perf concern)
+  - acceptance (no Phase 1A criterion)
+  - property (no Hypothesis property scope)
+  - snapshot (no golden output)
+  - contract (no API contract change)
+  - compatibility (no version concern)
+
+Each shows now: `unit=True`, 12 others=`N/A`. No false-negative `no` cells. Owner expectation met: YES or N/A for every layer.
+
+This is a RETROACTIVE declaration since fixes (Pass 53 Batch 1+13 2026-05-05/06) predate CHECKLIST #78 (added 2026-05-08). Future bug fixes must apply per-addressal pyramid declaration AT THE TIME of fix landing per DEC-594 same-commit.
+
+**(B) Promotion dropdown filters:**
+
+Added `<select>` dropdown filters on Promotion column for Decisions, Bugs, INVs tables in dashboard_stage_2/index.html:
+  - Decision filter: 11 tier options (IMPLEMENTED / READY / NEEDS-TEST / NEEDS-CODE / SPEC-ONLY / DEFERRED / BLOCKED / SUPERSEDED / OBSOLETE / OPEN / UNKNOWN)
+  - Bug filter: 8 tier options (IMPLEMENTED / READY-TO-CLOSE / NEEDS-TEST / NEEDS-CODE / OPEN / DEFERRED / SUPERSEDED / UNKNOWN)
+  - INV filter: 7 tier options (IMPLEMENTED / READY-RESOLVED-DOCUMENTED / NEEDS-TEST / NEEDS-CODE / OPEN-SURFACED / DEFERRED / UNKNOWN)
+
+`promotionCell()` updated to add `data-tier="<tier>"` HTML attribute; DataTable column().search() uses regex-escaped match against the data-tier value for exact filtering. JS handlers wire each dropdown to its table column index.
+
+**Per-addressal pyramid (CHECKLIST #78):** unit + integration + doc_count_consistency 113/113 PASS in 4.4s. Layers N/A: smoke, data_integrity, performance, acceptance, property, snapshot, contract, compatibility, system, functional (dashboard tooling fix; no engine code touched).
+
+**Same-commit (DEC-594):** PYRAMID_OVERRIDES code + HTML dropdown additions + JS handlers + dashboard rebuilt + AUDIT.md narrative - this single commit.
+
+Documents updated this sub-turn:
+  - scripts/build_dashboard_stage_2.py (4 new BUG-270/271/272/273 PYRAMID_OVERRIDES entries; 12 N/A layers each)
+  - dashboard_stage_2/index.html (3 new <select> dropdowns + 3 JS handlers + promotionCell data-tier attribute)
+  - AUDIT.md (this sub-entry)
+  - dashboard_stage_2/data.* (rebuilt; BUG-271 pyramid 1-yes-12-no -> 1-yes-12-NA)
+
 **Remaining OPEN backlog after sweeps:**
   - 1 DEC RESOLVED-DECIDED-deferred (DEC-028 Stage 3 paper trading - intentional)
   - INVs: 33 OPEN + 2 DEFERRED (genuine work; not promotion-eligible)

@@ -107,10 +107,26 @@ per CHECKLIST #77 - never reads from memory.
       <select id="dec-status-filter">
         <option value="">All statuses</option>
         <option value="RESOLVED-DECIDED">RESOLVED-DECIDED</option>
+        <option value="RESOLVED-IMPLEMENTED">RESOLVED-IMPLEMENTED</option>
+        <option value="PARTIAL-SPEC-ONLY">PARTIAL-SPEC-ONLY</option>
         <option value="PENDING">PENDING</option>
         <option value="PARTIAL">PARTIAL</option>
         <option value="SUPERSEDED">SUPERSEDED</option>
         <option value="DEFERRED">DEFERRED</option>
+      </select>
+      <select id="dec-promotion-filter">
+        <option value="">All promotion tiers</option>
+        <option value="IMPLEMENTED">IMPLEMENTED (already RESOLVED-IMPLEMENTED)</option>
+        <option value="READY">READY-TO-PROMOTE</option>
+        <option value="CODE_ONLY">NEEDS-TEST (coded but no test)</option>
+        <option value="TEST_ONLY">NEEDS-CODE (tested but no code)</option>
+        <option value="SPEC_ONLY">SPEC-ONLY (genuine implementation backlog)</option>
+        <option value="DEFERRED">DEFERRED (Stage 3+ / Phase 1B+ / Sprint 7+)</option>
+        <option value="BLOCKED">BLOCKED (waiting on dependency)</option>
+        <option value="SUPERSEDED">SUPERSEDED</option>
+        <option value="OBSOLETE">OBSOLETE</option>
+        <option value="OPEN">OPEN / PROPOSED</option>
+        <option value="UNKNOWN">UNKNOWN</option>
       </select>
     </div>
     <p style="font-size:12px;color:#6b7588">
@@ -153,6 +169,17 @@ per CHECKLIST #77 - never reads from memory.
     <p>From <code>BUG_REGISTER.md</code>. Total: <span id="bug-total">--</span>. Each bug links to one+ resolving decisions.</p>
     <div class="filter-bar">
       <input id="bug-filter" placeholder="Filter ID / title / linked decisions..." size="50">
+      <select id="bug-promotion-filter">
+        <option value="">All promotion tiers</option>
+        <option value="IMPLEMENTED">IMPLEMENTED</option>
+        <option value="READY">READY-TO-CLOSE</option>
+        <option value="CODE_ONLY">NEEDS-TEST</option>
+        <option value="TEST_ONLY">NEEDS-CODE</option>
+        <option value="OPEN">OPEN</option>
+        <option value="DEFERRED">DEFERRED</option>
+        <option value="SUPERSEDED">SUPERSEDED</option>
+        <option value="UNKNOWN">UNKNOWN</option>
+      </select>
     </div>
     <table id="tbl-bugs" class="display compact" style="width:100%">
       <thead><tr><th>Bug ID</th><th>Title</th><th>Description</th>
@@ -177,6 +204,16 @@ per CHECKLIST #77 - never reads from memory.
         <option value="OPEN">OPEN</option>
         <option value="RESOLVED">RESOLVED</option>
         <option value="DEFERRED">DEFERRED</option>
+      </select>
+      <select id="inv-promotion-filter">
+        <option value="">All promotion tiers</option>
+        <option value="IMPLEMENTED">IMPLEMENTED</option>
+        <option value="READY">READY / RESOLVED-DOCUMENTED</option>
+        <option value="CODE_ONLY">NEEDS-TEST</option>
+        <option value="TEST_ONLY">NEEDS-CODE</option>
+        <option value="OPEN">OPEN / SURFACED</option>
+        <option value="DEFERRED">DEFERRED</option>
+        <option value="UNKNOWN">UNKNOWN</option>
       </select>
     </div>
     <table id="tbl-invs" class="display compact" style="width:100%">
@@ -462,10 +499,13 @@ function descCell(s) {
 }
 
 function promotionCell(p) {
-  if (!p) return '<span style="color:#cbd5e1">&mdash;</span>';
+  if (!p) return '<span data-tier="NONE" style="color:#cbd5e1">&mdash;</span>';
   const reason = (p.reason || '').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   const label = (p.label || '?').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  return `<span title="${reason}" style="background:${p.color};color:white;padding:2px 6px;border-radius:3px;font-size:10px;font-weight:600">${label}</span>`;
+  // data-tier attribute enables exact-match dropdown filtering via DataTables
+  // column().search() (regex-escaped string match against the HTML).
+  const tier = (p.tier || 'UNKNOWN').replace(/"/g, '&quot;');
+  return `<span data-tier="${tier}" data-label="${label}" title="${reason}" style="background:${p.color};color:white;padding:2px 6px;border-radius:3px;font-size:10px;font-weight:600">${label}</span>`;
 }
 
 const decRows = D.decisions.map(d => {
@@ -491,6 +531,11 @@ const decTable = $('#tbl-decisions').DataTable({
 });
 $('#dec-filter').on('keyup', function () { decTable.search(this.value).draw(); });
 $('#dec-status-filter').on('change', function () { decTable.column(2).search(this.value).draw(); });
+$('#dec-promotion-filter').on('change', function () {
+  // Decisions Promotion column index = 4 (after ID/Title/Description/DocStatus)
+  const v = this.value;
+  decTable.column(4).search(v ? `data-tier="${v}"` : '', false, false).draw();
+});
 
 // Bugs table
 document.getElementById('bug-total').textContent = D.bugs.length;
@@ -514,6 +559,11 @@ const bugTable = $('#tbl-bugs').DataTable({
   data: bugRows, pageLength: 50, order: [[0, 'asc']],
 });
 $('#bug-filter').on('keyup', function () { bugTable.search(this.value).draw(); });
+$('#bug-promotion-filter').on('change', function () {
+  // Bugs Promotion column index = 3 (after ID/Title/Description)
+  const v = this.value;
+  bugTable.column(3).search(v ? `data-tier="${v}"` : '', false, false).draw();
+});
 
 // INVs table
 const invRows = D.investigations.map(i => {
@@ -531,6 +581,11 @@ const invTable = $('#tbl-invs').DataTable({
 });
 $('#inv-filter').on('keyup', function () { invTable.search(this.value).draw(); });
 $('#inv-status-filter').on('change', function () { invTable.column(2).search(this.value).draw(); });
+$('#inv-promotion-filter').on('change', function () {
+  // INVs Promotion column index = 4 (after ID/Title/Description/DocStatus)
+  const v = this.value;
+  invTable.column(4).search(v ? `data-tier="${v}"` : '', false, false).draw();
+});
 
 // Caveats table
 const caveats = D.caveats || [];
