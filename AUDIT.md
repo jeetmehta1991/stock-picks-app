@@ -32883,6 +32883,31 @@ Documents updated:
   - AUDIT.md (this sub-entry)
   - dashboard_stage_2 (rebuilt; IMPLEMENTED 23 -> 24)
 
+---
+
+## Pass 53 Day 9 v8h+1 follow-on 2026-05-10 (cont): Phase 3 Batch 9 - 6 SUPERSEDED cross-references
+
+| BUG | Status | Why |
+|---|---|---|
+| BUG-35 (Decision Agent default fallback action) | SUPERSEDED-BY-no-agents-Phase-1A | Agent path disabled in Phase 1A baseline via --no-agents |
+| BUG-36 (Regime-aware strategy weighting) | SUPERSEDED-BY-CLAUDE.md-no-regime-weighting | "No regime position multiplier - full size in all regimes for backtest" |
+| BUG-38 (No min Sharpe in Bonferroni) | SUPERSEDED-BY-Passing-Criteria-design | Sister of BUG-33; Sharpe not in 9 canonical gates by design |
+| BUG-39 (regime_confidence VIX vs SPY-trend) | SUPERSEDED-BY-BUG-27 | regime_confidence is INTENTIONALLY-UNUSED; internal logic is moot |
+| BUG-41 (min_market_cap_m=100 too low) | SUPERSEDED-BY-config-design | Owner-decided liquidity floor; intentional for signal-to-noise ratio |
+| BUG-53 (Finnhub news cache empty) | SUPERSEDED-BY-DEC-440 | Polygon news canonical sentiment source (1927 ticker files); Finnhub architecture migrated |
+
+Per-addressal pyramid 117/117 PASS in 3.6s.
+
+**Visible bug tier distribution (post-Phase-3-batch-9):**
+  - IMPLEMENTED: 24; DEFERRED: 4; CODE_ONLY: 1
+  - OPEN: 85 (was 91; -6)
+  - Total visible: 114; hidden: 34 (+6 SUPERSEDED)
+
+Documents updated:
+  - BUG_REGISTER.md (6 flips: BUG-35/36/38/39/41/53)
+  - AUDIT.md (this sub-entry)
+  - dashboard_stage_2 (rebuilt)
+
 **Remaining OPEN backlog after sweeps:**
   - 1 DEC RESOLVED-DECIDED-deferred (DEC-028 Stage 3 paper trading - intentional)
   - INVs: 33 OPEN + 2 DEFERRED (genuine work; not promotion-eligible)
