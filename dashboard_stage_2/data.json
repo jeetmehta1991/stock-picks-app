@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-10T02:43:39.729206+00:00",
+  "generated_at": "2026-05-10T04:43:36.233475+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -26878,184 +26878,184 @@
   ],
   "recent_commits": [
     {
+      "sha": "6d41cc66",
+      "subject": "Pass 53 auto-drift-sweep 2026-05-09 15:53: dashboards refreshed (no numerical drift)",
+      "author": "jeetmehta1991",
+      "rel_time": "2 hours ago"
+    },
+    {
       "sha": "0ce9ec2b",
       "subject": "Pass 53 auto-drift-sweep 2026-05-09 13:53: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "1cc943ac",
       "subject": "Pass 53 auto-drift-sweep 2026-05-09 11:53: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "8d4fa5d3",
       "subject": "Pass 53 v8h+1: Sprint 0A Coverage Matrix tab - per-(api, endpoint, field) coverage + commentary + status badges",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "826d5454",
       "subject": "Pass 53 v8h+1: DEC-605 - Finnhub social_sentiment EXCLUDED from Phase 1A baseline",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "5bb5b70f",
       "subject": "Pass 53 v8h+1: AAII Asset Allocation Survey + Finnhub social_sentiment use case in dashboard",
       "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
+      "rel_time": "8 hours ago"
     },
     {
       "sha": "06d85a9a",
       "subject": "Pass 53 v8h+1: INV-027 backfill data sweep - 1924 polygon news files with insights_json",
       "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
+      "rel_time": "8 hours ago"
     },
     {
       "sha": "324362ec",
       "subject": "Pass 53 auto-drift-sweep 2026-05-09 09:53: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "8 hours ago"
+      "rel_time": "10 hours ago"
     },
     {
       "sha": "387fac95",
       "subject": "Pass 53 v8h+1: 8 new DECs (597-604) + register sweeps + per-turn discipline fix",
       "author": "jeetmehta1991",
-      "rel_time": "9 hours ago"
+      "rel_time": "11 hours ago"
     },
     {
       "sha": "76436fa7",
       "subject": "Pass 53 auto-drift-sweep 2026-05-09 07:53: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "10 hours ago"
+      "rel_time": "12 hours ago"
     },
     {
       "sha": "5814a4cc",
       "subject": "Pass 53 auto-drift-sweep 2026-05-09 05:53: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "12 hours ago"
+      "rel_time": "14 hours ago"
     },
     {
       "sha": "9673eccc",
       "subject": "Pass 53 v8h+1: StockTwits BG complete - 1937 underlyings cached + canonical lock + contract test",
       "author": "jeetmehta1991",
-      "rel_time": "12 hours ago"
+      "rel_time": "14 hours ago"
     },
     {
       "sha": "ad5f0f78",
       "subject": "StockTwits final (1923 fetched)",
       "author": "jeetmehta1991",
-      "rel_time": "17 hours ago"
+      "rel_time": "19 hours ago"
     },
     {
       "sha": "658f40ad",
       "subject": "StockTwits batch 38",
       "author": "jeetmehta1991",
-      "rel_time": "17 hours ago"
+      "rel_time": "19 hours ago"
     },
     {
       "sha": "dcc49c62",
       "subject": "StockTwits batch 37",
       "author": "jeetmehta1991",
-      "rel_time": "18 hours ago"
+      "rel_time": "20 hours ago"
     },
     {
       "sha": "1a594038",
       "subject": "StockTwits batch 36",
       "author": "jeetmehta1991",
-      "rel_time": "18 hours ago"
+      "rel_time": "20 hours ago"
     },
     {
       "sha": "65a03894",
       "subject": "StockTwits batch 35",
       "author": "jeetmehta1991",
-      "rel_time": "18 hours ago"
+      "rel_time": "20 hours ago"
     },
     {
       "sha": "fd5a7cd9",
       "subject": "StockTwits batch 34",
       "author": "jeetmehta1991",
-      "rel_time": "19 hours ago"
+      "rel_time": "21 hours ago"
     },
     {
       "sha": "a5bf31b2",
       "subject": "StockTwits batch 33",
       "author": "jeetmehta1991",
-      "rel_time": "19 hours ago"
+      "rel_time": "21 hours ago"
     },
     {
       "sha": "ca936547",
       "subject": "StockTwits batch 32",
       "author": "jeetmehta1991",
-      "rel_time": "19 hours ago"
+      "rel_time": "21 hours ago"
     },
     {
       "sha": "da89952c",
       "subject": "StockTwits batch 31",
       "author": "jeetmehta1991",
-      "rel_time": "19 hours ago"
+      "rel_time": "21 hours ago"
     },
     {
       "sha": "f8bdd491",
       "subject": "StockTwits batch 30",
       "author": "jeetmehta1991",
-      "rel_time": "20 hours ago"
+      "rel_time": "22 hours ago"
     },
     {
       "sha": "1311d82a",
       "subject": "StockTwits batch 29",
       "author": "jeetmehta1991",
-      "rel_time": "20 hours ago"
+      "rel_time": "22 hours ago"
     },
     {
       "sha": "bc0373e7",
       "subject": "Pass 53 v8h+1: pyramid 4-state cells (YES/no/N/A/LATER) + git body grep + BUG-007 annotation",
       "author": "jeetmehta1991",
-      "rel_time": "20 hours ago"
+      "rel_time": "22 hours ago"
     },
     {
       "sha": "ccd6dbbf",
       "subject": "StockTwits batch 28",
       "author": "jeetmehta1991",
-      "rel_time": "20 hours ago"
+      "rel_time": "22 hours ago"
     },
     {
       "sha": "220c21e3",
       "subject": "StockTwits batch 27",
       "author": "jeetmehta1991",
-      "rel_time": "20 hours ago"
+      "rel_time": "22 hours ago"
     },
     {
       "sha": "5d86e1c0",
       "subject": "Pass 53 v8h+1: Description column added to Decisions / Bugs / INVs / Caveats tables",
       "author": "jeetmehta1991",
-      "rel_time": "20 hours ago"
+      "rel_time": "22 hours ago"
     },
     {
       "sha": "b66c12b6",
       "subject": "StockTwits batch 26",
       "author": "jeetmehta1991",
-      "rel_time": "21 hours ago"
+      "rel_time": "23 hours ago"
     },
     {
       "sha": "01752658",
       "subject": "Pass 53 v8h+1: Reference page - add 13-layer test pyramid + dashboard column meanings",
       "author": "jeetmehta1991",
-      "rel_time": "21 hours ago"
+      "rel_time": "23 hours ago"
     },
     {
       "sha": "586d7e0e",
       "subject": "StockTwits batch 25",
       "author": "jeetmehta1991",
-      "rel_time": "21 hours ago"
-    },
-    {
-      "sha": "b51b14b0",
-      "subject": "StockTwits batch 24",
-      "author": "jeetmehta1991",
-      "rel_time": "21 hours ago"
+      "rel_time": "23 hours ago"
     }
   ],
   "uncommitted": {
