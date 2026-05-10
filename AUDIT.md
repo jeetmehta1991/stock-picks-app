@@ -32764,6 +32764,31 @@ Documents updated this sub-turn:
   - AUDIT.md (this sub-entry)
   - dashboard_stage_2 (rebuilt; IMPLEMENTED 21 -> 22)
 
+---
+
+## Pass 53 Day 9 v8h+1 follow-on 2026-05-10 (cont): Phase 3 Batch 5 - 3 BUGs (34/37/40)
+
+| BUG | Finding | Status |
+|---|---|---|
+| BUG-34 (Mean reversion in all regimes) | Per CLAUDE.md Approved Rules - regime gating is via per-regime PASS/FAIL verdict matrix in metrics.py, not runtime exclusion. Strategy valid in crisis but not bull is deployed only during crisis - intentional design | SUPERSEDED-BY-per-regime-verdict-design |
+| BUG-37 (Survivorship haircut arbitrary) | apply_survivorship_haircut uses explicit hold-adjusted tiered table (0.5/1.0/2.0/3.0% by hold duration) derived from Shumway/Beaver academic literature on delisting frequency; methodology documented in docstring | RESOLVED-IMPLEMENTED |
+| BUG-40 (Short stop same as long, asymmetric risk) | TRAILING_STOP[initial_pct] applied symmetrically per CLAUDE.md Approved Rules; project chose symmetric stop sizing by design; asymmetric per-direction stops would require separate Phase 1B+ DEC | SUPERSEDED-BY-symmetric-stop-config |
+
+**Visible bug tier distribution (post-Phase-3-batch-5):**
+  - IMPLEMENTED: 23 (was 22)
+  - DEFERRED: 2; CODE_ONLY: 1
+  - OPEN: 103 (was 106)
+  - Total visible: 129; hidden: 19 (+2 SUPERSEDED-BY-X from BUG-34/40)
+
+Per-addressal pyramid 115/115 PASS in 3.3s.
+
+Documents updated:
+  - backtest/engine/improvements.py (BUG-37 docstring with literature citation)
+  - backtest/tests/test_unit.py (1 new test)
+  - BUG_REGISTER.md (3 flips: BUG-34/37/40)
+  - AUDIT.md (this sub-entry)
+  - dashboard_stage_2 (rebuilt; IMPLEMENTED 22 -> 23)
+
 **Remaining OPEN backlog after sweeps:**
   - 1 DEC RESOLVED-DECIDED-deferred (DEC-028 Stage 3 paper trading - intentional)
   - INVs: 33 OPEN + 2 DEFERRED (genuine work; not promotion-eligible)

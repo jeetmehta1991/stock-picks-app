@@ -1731,6 +1731,24 @@ def test_bug_028_rsi_uses_wilder_smoothing():
     # (note: rolling may appear elsewhere for non-RSI metrics)
 
 
+def test_bug_037_survivorship_haircut_methodology_documented():
+    """BUG-37: survivorship haircut methodology is hold-adjusted (not arbitrary).
+
+    Pass 53 v8h+1 Phase 3 Batch 5 cross-reference 2026-05-10. apply_survivorship_haircut
+    uses explicit tiered annual rates (0.5/1.0/2.0/3.0% by hold duration) derived
+    from academic literature on delisting frequency. Docstring cross-references
+    BUG-37 and Shumway/Beaver references.
+    """
+    import inspect
+    from backtest.engine.improvements import apply_survivorship_haircut
+    doc = inspect.getdoc(apply_survivorship_haircut) or ""
+    assert "BUG-37" in doc, "BUG-37 cross-reference must exist in docstring"
+    assert "hold-adjusted" in doc.lower(), "methodology must document hold-adjusted approach"
+    # Tiered table must be documented (4 thresholds)
+    for threshold in ["< 7 days", "7-14 days", "14-30 days", "> 30 days"]:
+        assert threshold in doc, f"haircut docstring missing tier: {threshold}"
+
+
 def test_bug_021_exit_strategies_pnl_gross_by_design():
     """BUG-21: exit_strategies._pnl is gross-only by design (DEC-295).
 

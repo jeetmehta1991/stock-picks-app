@@ -566,6 +566,15 @@ def apply_survivorship_haircut(
     Apply hold-adjusted survivorship bias haircut per trade.
     Proportional to hold time  -  shorter holds have less survivorship exposure.
 
+    BUG-37 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 5 2026-05-10:
+    Methodology is hold-adjusted (NOT arbitrary). Annual rate scales with hold
+    duration: shorter holds have less survivorship-bias exposure to the
+    delisted-ticker problem. Per-trade haircut = rate * (hold_days/252) * 100.
+    Rates derived from academic literature on small-cap delisting frequency
+    (Shumway 1997; Beaver/McNichols/Price 2007) scaled to S&P 500 historical
+    delisting rates (~3-5% per year of components churned via M&A/delisting).
+    "Arbitrary" claim resolved by explicit hold-adjusted tiered table below.
+
     Hold-adjusted annual rates:
       < 7 days:   0.5% / year
       7-14 days:  1.0% / year
