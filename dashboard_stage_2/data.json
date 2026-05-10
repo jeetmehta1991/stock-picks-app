@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-10T20:08:51.625131+00:00",
+  "generated_at": "2026-05-10T20:17:11.950336+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -26381,13 +26381,13 @@
       "id": "BUG-270",
       "title": "HIGH \u2014 `insider_signal()` column-name mismatch (100% silent failure)",
       "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
+      "sprint_context": "RESOLVED-IMPLEMENTED Pass 53 v8h+1 2026-05-10 (code+test verified)",
       "status_grep": {
         "coded": true,
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 21,
+        "n_doc_refs": 23,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -26405,27 +26405,27 @@
         }
       },
       "short_id": "BUG-270",
-      "sprint": "(see linked DEC sprint)",
+      "sprint": "RESOLVED-IMPLEMENTED Pass 53 v8h+1 2026-05-10 (code+test verified)",
       "dependencies": "DEC-458",
       "description": "**File:** `backtest/data/smart_money.py` lines 145-180 (function `insider_signal`) **Evidence:** - n=500 random Phase 1B agent cache JSONs: `insider_conviction = \"none\"` in 500/500 (100.0%) - Reproduced in sandbox: `insider_signal(\"AAPL\", date(2024, 6, 1))` returns `{\"signal\": \"n",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "Resolved with code + regression test"
       }
     },
     {
       "id": "BUG-271",
       "title": "HIGH \u2014 `get_gov_contracts()` no Date column lookup (99.4% silent failure)",
       "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
+      "sprint_context": "RESOLVED-IMPLEMENTED Pass 53 Batch 1 2026-05-05",
       "status_grep": {
         "coded": true,
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 32,
+        "n_doc_refs": 33,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -26443,27 +26443,27 @@
         }
       },
       "short_id": "BUG-271",
-      "sprint": "(see linked DEC sprint)",
+      "sprint": "RESOLVED-IMPLEMENTED Pass 53 Batch 1 2026-05-05",
       "dependencies": "DEC-458",
       "description": "**File:** `backtest/data/smart_money.py` (function `get_gov_contracts`, ~line 250) **Evidence:** - n=500 sample: `gov_contract_signal = \"no_data\"` in 497/500 (99.4%) - Reproduced in sandbox: AAPL has 66 rows of gov_contracts data with columns `Ticker, Amount, Qtr, Year` \u2014 no Date",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "Resolved with code + regression test"
       }
     },
     {
       "id": "BUG-272",
       "title": "HIGH \u2014 `get_lobbying()` Amount string concat (98.8% silent failure)",
       "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
+      "sprint_context": "RESOLVED-IMPLEMENTED Pass 53 Batch 13 2026-05-06",
       "status_grep": {
         "coded": true,
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 9,
+        "n_doc_refs": 10,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -26481,27 +26481,27 @@
         }
       },
       "short_id": "BUG-272",
-      "sprint": "(see linked DEC sprint)",
+      "sprint": "RESOLVED-IMPLEMENTED Pass 53 Batch 13 2026-05-06",
       "dependencies": "DEC-458",
       "description": "**File:** `backtest/data/smart_money.py` (function `get_lobbying`, ~line 290) **Evidence:** - n=500 sample: `lobbying_signal = \"no_data\"` in 494/500 (98.8%) - Reproduced in sandbox: `get_lobbying(\"AAPL\", date(2024, 6, 1))` returns `{\"total_spend\": 0.0, \"signal\": \"no_data\"}` despi",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "Resolved with code + regression test"
       }
     },
     {
       "id": "BUG-273",
       "title": "HIGH \u2014 `congressional_signal()` Chamber/House column mismatch",
       "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
+      "sprint_context": "RESOLVED-IMPLEMENTED Pass 53 Batch 13 2026-05-06",
       "status_grep": {
         "coded": true,
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 14,
+        "n_doc_refs": 15,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -26519,14 +26519,14 @@
         }
       },
       "short_id": "BUG-273",
-      "sprint": "(see linked DEC sprint)",
+      "sprint": "RESOLVED-IMPLEMENTED Pass 53 Batch 13 2026-05-06",
       "dependencies": "DEC-458",
       "description": "**File:** `backtest/data/smart_money.py` line ~360 (function `congressional_signal`)",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "Resolved with code + regression test"
       }
     },
     {
@@ -31600,28 +31600,34 @@
   ],
   "recent_commits": [
     {
+      "sha": "4addd669",
+      "subject": "Pass 53 v8h+1: Tier B promotion sweep #3+#4 combined (17 DECs RESOLVED-DECIDED -> RESOLVED-IMPLEMENTED)",
+      "author": "jeetmehta1991",
+      "rel_time": "2 minutes ago"
+    },
+    {
       "sha": "f798881b",
       "subject": "Pass 53 v8h+1: Tier A promotion sweep (8 Phase 1A meta DECs - DEC-497/503/505/507/590/591/594/595)",
       "author": "jeetmehta1991",
-      "rel_time": "3 minutes ago"
+      "rel_time": "12 minutes ago"
     },
     {
       "sha": "936a0c0e",
       "subject": "Pass 53 v8h+1: Tier B promotion sweep #2 (5 PIT-correctness DECs - DEC-295/301/302/304/305)",
       "author": "jeetmehta1991",
-      "rel_time": "26 minutes ago"
+      "rel_time": "34 minutes ago"
     },
     {
       "sha": "501cdbff",
       "subject": "Pass 53 v8h+1: Tier B engine-correctness promotion sweep #1 (6 DECs RESOLVED-DECIDED -> RESOLVED-IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "38 minutes ago"
+      "rel_time": "46 minutes ago"
     },
     {
       "sha": "77f57b21",
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 18:43: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "53 minutes ago"
+      "rel_time": "61 minutes ago"
     },
     {
       "sha": "4f9e558c",
@@ -31699,7 +31705,7 @@
       "sha": "bdba8f67",
       "subject": "Pass 53 v8h+1: H-tier doc reconciliation + H20=A (DEC-599 honored)",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "f0d03fcd",
@@ -31723,7 +31729,7 @@
       "sha": "ecc846c2",
       "subject": "Pass 53 v8h+1: INV-047 + CAV-077 - Quiver etfholdings refresh DEAD-END (static snapshot only)",
       "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
+      "rel_time": "7 hours ago"
     },
     {
       "sha": "2244b1e5",
@@ -31772,17 +31778,11 @@
       "subject": "Pass 53 auto-drift-sweep 2026-05-09 13:53: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
       "rel_time": "19 hours ago"
-    },
-    {
-      "sha": "1cc943ac",
-      "subject": "Pass 53 auto-drift-sweep 2026-05-09 11:53: dashboards refreshed (no numerical drift)",
-      "author": "jeetmehta1991",
-      "rel_time": "21 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 5,
-    "modified": 5,
+    "count": 2,
+    "modified": 2,
     "added": 0,
     "untracked": 0,
     "deleted": 0,
@@ -31793,19 +31793,7 @@
       },
       {
         "status": "M",
-        "path": "AUDIT_INDEX.md"
-      },
-      {
-        "status": "M",
-        "path": "dashboard_stage_2/data.js"
-      },
-      {
-        "status": "M",
-        "path": "dashboard_stage_2/data.json"
-      },
-      {
-        "status": "M",
-        "path": "dashboard_stage_2/last_run.txt"
+        "path": "BUG_REGISTER.md"
       }
     ]
   },

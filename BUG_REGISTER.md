@@ -173,10 +173,10 @@ The following table maps every bug in AUDIT.md to the decision(s) that reference
 | BUG-201 | MEDIUM — Strategy `earnings_tolerant` attribute missing | DEC-458 | (see linked DEC sprint) |
 | BUG-202 | MEDIUM — No earnings-momentum strategies implemented | DEC-458 | (see linked DEC sprint) |
 | BUG-203 | MEDIUM — No A/B testing infrastructure for agent gates | DEC-458 | (see linked DEC sprint) |
-| BUG-270 | HIGH — `insider_signal()` column-name mismatch (100% silent failure) | DEC-458 | (see linked DEC sprint) |
-| BUG-271 | HIGH — `get_gov_contracts()` no Date column lookup (99.4% silent failure) | DEC-458 | (see linked DEC sprint) |
-| BUG-272 | HIGH — `get_lobbying()` Amount string concat (98.8% silent failure) | DEC-458 | (see linked DEC sprint) |
-| BUG-273 | HIGH — `congressional_signal()` Chamber/House column mismatch | DEC-458 | (see linked DEC sprint) |
+| BUG-270 | HIGH — `insider_signal()` column-name mismatch (100% silent failure) | DEC-458 | RESOLVED-IMPLEMENTED Pass 53 v8h+1 2026-05-10 (code+test verified) |
+| BUG-271 | HIGH — `get_gov_contracts()` no Date column lookup (99.4% silent failure) | DEC-458 | RESOLVED-IMPLEMENTED Pass 53 Batch 1 2026-05-05 |
+| BUG-272 | HIGH — `get_lobbying()` Amount string concat (98.8% silent failure) | DEC-458 | RESOLVED-IMPLEMENTED Pass 53 Batch 13 2026-05-06 |
+| BUG-273 | HIGH — `congressional_signal()` Chamber/House column mismatch | DEC-458 | RESOLVED-IMPLEMENTED Pass 53 Batch 13 2026-05-06 |
 | BUG-274 | HIGH — `institutional_signal()` SharesChange column missing | DEC-458 | (see linked DEC sprint) |
 | BUG-275 | LOW — `bonferroni_adjusted_threshold(n_strategies=0)` TypeError on complex round | DEC-080, DEC-458 | (see linked DEC sprint) |
 | BUG-276 | HIGH — `_agent_cache_key` calls `sorted()` on list of dicts → crashes when strat | DEC-458 | (see linked DEC sprint) |

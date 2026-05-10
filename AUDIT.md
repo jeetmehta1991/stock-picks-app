@@ -32253,6 +32253,30 @@ Documents updated this sub-turn:
   - AUDIT.md (this sub-entry)
   - Both dashboards rebuilt
 
+---
+
+## Pass 53 Day 9 v8h+1 follow-on 2026-05-10 (cont): BUG promotion sweep (CHECKLIST #81 application)
+
+**Scope:** 4 BUGs flagged READY-TO-CLOSE by promotion-path column - all CRITICAL HIGH-severity smart_money silent failures fixed in Pass 53 Batch 1+13 + recent v8h+1 work but BUG_REGISTER table sprint_context still showed "(see linked DEC sprint)".
+
+| BUG | Title | t/c refs | Resolution |
+|---|---|---|---|
+| BUG-270 | insider_signal column-name mismatch (100% silent failure) | 1/0 | RESOLVED-IMPLEMENTED Pass 53 v8h+1 2026-05-10 |
+| BUG-271 | get_gov_contracts no Date column lookup (99.4% silent failure) | 1/1 | RESOLVED-IMPLEMENTED Pass 53 Batch 1 2026-05-05 |
+| BUG-272 | get_lobbying Amount string concat (98.8% silent failure) | 1/1 | RESOLVED-IMPLEMENTED Pass 53 Batch 13 2026-05-06 |
+| BUG-273 | congressional_signal Chamber/House column mismatch | 1/1 | RESOLVED-IMPLEMENTED Pass 53 Batch 13 2026-05-06 |
+
+BUG_REGISTER.md table updated: sprint_context cell flipped from "(see linked DEC sprint)" to "RESOLVED-IMPLEMENTED Pass 53 [batch] [date]" for all 4. Detail sections at L266+/L274/L300/L325 already had RESOLVED-IMPLEMENTED status; this commit just flips the table summary cell that the dashboard parser reads.
+
+**Per-addressal pyramid (CHECKLIST #78):** unit + integration - 102/102 PASS (no code change this commit; status-only flip at table-row level).
+
+CHECKLIST #81 first application: BUG promotion process inherits DEC promotion mechanics; same artifact-grep verification + same-commit doc sweep.
+
+Documents updated this sub-turn:
+  - BUG_REGISTER.md (4 sprint_context cell flips; BUG-270/271/272/273)
+  - AUDIT.md (this sub-entry)
+  - Dashboard refresh next cron sweep
+
 **Same-commit (DEC-594):** script + DEC-609 + AUDIT.md narrative + contract test + dashboards rebuilt - all in this sub-turn commit.
 
 Documents updated this sub-turn:
