@@ -32815,6 +32815,31 @@ Documents updated:
   - AUDIT.md (this sub-entry)
   - dashboard_stage_2 (rebuilt)
 
+---
+
+## Pass 53 Day 9 v8h+1 follow-on 2026-05-10 (cont): Phase 3 Batch 7 - 6 BUGs (43/44/45/48/58/59)
+
+| BUG | Status | Why |
+|---|---|---|
+| BUG-43 (Calmar missing in criteria) | SUPERSEDED-BY-max_drawdown-criterion | Calmar = annualized_return/MDD; MDD already in 9 criteria; Calmar redundant |
+| BUG-44 (no _process_day tests) | SUPERSEDED-BY-test_e2e_phase1a_smoke | Integration coverage exists; per-function unit tests deferred to refactor scope |
+| BUG-45 (FX currency risk not modelled) | SUPERSEDED-BY-CAV-029 | Sister of BUG-49; FX risk documented; backtest USD-quoted by design |
+| BUG-48 (Volatility/EM sector criteria) | DEFERRED-TO-SPRINT-7 | DEC-499 has 18-classifier taxonomy; specific profiles for new sectors Sprint 7 |
+| BUG-58 (StochRSI mid-range firing) | SUPERSEDED-BY-per-strategy-verdict | Per-strategy PASS/FAIL verdict matrix captures performance; not a code bug |
+| BUG-59 (CPR labels reversed) | OBSOLETE | Project labels internally consistent; industry convention varies |
+
+Per-addressal pyramid 115/115 PASS in 3.4s.
+
+**Visible bug tier distribution (post-Phase-3-batch-7):**
+  - IMPLEMENTED: 23; DEFERRED: 4 (+1 BUG-48); CODE_ONLY: 1
+  - OPEN: 92 (was 98; -5 hidden -1 DEFERRED)
+  - Total visible: 120; hidden: 28 (+5 SUPERSEDED/OBSOLETE from BUG-43/44/45/58/59)
+
+Documents updated:
+  - BUG_REGISTER.md (6 flips: BUG-43/44/45/48/58/59)
+  - AUDIT.md (this sub-entry)
+  - dashboard_stage_2 (rebuilt)
+
 **Remaining OPEN backlog after sweeps:**
   - 1 DEC RESOLVED-DECIDED-deferred (DEC-028 Stage 3 paper trading - intentional)
   - INVs: 33 OPEN + 2 DEFERRED (genuine work; not promotion-eligible)

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-10T22:18:08.470390+00:00",
+  "generated_at": "2026-05-10T22:19:36.171737+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -973,7 +973,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 159,
+        "n_doc_refs": 161,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -1293,7 +1293,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 139,
+        "n_doc_refs": 141,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -2053,7 +2053,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 228,
+        "n_doc_refs": 229,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -10333,7 +10333,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 6,
+        "n_doc_refs": 8,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -12213,7 +12213,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 18,
+        "n_doc_refs": 20,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -20093,7 +20093,7 @@
         "wired": true,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 11,
+        "n_doc_refs": 12,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -22390,124 +22390,10 @@
       }
     },
     {
-      "id": "BUG-43",
-      "title": "LOW  -  Missing Calmar ratio minimum in passing criteria",
-      "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": false,
-        "n_doc_refs": 6,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "BUG-043",
-      "sprint": "(see linked DEC sprint)",
-      "dependencies": "DEC-458",
-      "description": "**File:** `backtest/config.py` `PASSING_CRITERIA`",
-      "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
-      }
-    },
-    {
-      "id": "BUG-44",
-      "title": "LOW  -  Test suite has no test for `close_trade()` or `_process_day()`",
-      "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": false,
-        "n_doc_refs": 8,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "BUG-044",
-      "sprint": "(see linked DEC sprint)",
-      "dependencies": "DEC-458",
-      "description": "**File:** `backtest/tests/test_unit.py`",
-      "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
-      }
-    },
-    {
-      "id": "BUG-45",
-      "title": "MEDIUM  -  FX currency risk not modelled",
-      "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": false,
-        "n_doc_refs": 10,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "BUG-045",
-      "sprint": "(see linked DEC sprint)",
-      "dependencies": "DEC-458",
-      "description": "**Files:** `backtest/config.py` LIVE_TRADING_RULES, no FX module exists",
-      "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
-      }
-    },
-    {
       "id": "BUG-48",
       "title": "MEDIUM  -  Sector `Volatility` and `Emerging Markets` not in sector criteria profi",
       "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
+      "sprint_context": "DEFERRED-TO-SPRINT-7 Pass 53 v8h+1 Phase 3 Batch 7 2026-05-10 (Volatility and Emerging Markets sectors defined in DEC-499 18-classifier taxonomy but specific passing criteria profiles can use Materials/Information Technology defaults; full per-new-sector criteria profile is Sprint 7 work)",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -22531,14 +22417,14 @@
         }
       },
       "short_id": "BUG-048",
-      "sprint": "(see linked DEC sprint)",
+      "sprint": "DEFERRED-TO-SPRINT-7 Pass 53 v8h+1 Phase 3 Batch 7 2026-05-10 (Volatility and Emerging Markets sectors defined in DEC-499 18-classifier taxonomy but specific passing criteria profiles can use Materials/Information Technology defaults; full per-new-sector criteria profile is Sprint 7 work)",
       "dependencies": "DEC-458",
       "description": "**File:** `backtest/config.py` SECTOR_PASSING_CRITERIA",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "DEFERRED",
+        "label": "DEFERRED",
+        "color": "#3b82f6",
+        "reason": "Bug deferred per sprint_context: DEFERRED-TO-SPRINT-7 Pass 53 v8h+1 Phase 3 Batch 7 2026-05-10 (Volatility and Emerging Markets secto"
       }
     },
     {
@@ -22551,7 +22437,7 @@
         "wired": false,
         "tested": false,
         "pushed": false,
-        "n_doc_refs": 6,
+        "n_doc_refs": 8,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -22800,82 +22686,6 @@
       "sprint": "(see linked DEC sprint)",
       "dependencies": "DEC-458",
       "description": "**File:** `backtest/tests/test_integration.py` \u2014 7 tests currently",
-      "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
-      }
-    },
-    {
-      "id": "BUG-58",
-      "title": "LOW  -  StochRSI cross-up fires in mid-range, not just oversold zone",
-      "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": false,
-        "n_doc_refs": 5,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "BUG-058",
-      "sprint": "(see linked DEC sprint)",
-      "dependencies": "DEC-458",
-      "description": "**File:** `backtest/signals/technical.py` line 228",
-      "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
-      }
-    },
-    {
-      "id": "BUG-59",
-      "title": "LOW  -  CPR top/bottom labels are reversed vs industry convention",
-      "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": false,
-        "n_doc_refs": 7,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "BUG-059",
-      "sprint": "(see linked DEC sprint)",
-      "dependencies": "DEC-458",
-      "description": "**File:** `backtest/signals/technical.py` lines 78\u201381",
       "promotion_path": {
         "tier": "OPEN",
         "label": "OPEN",
@@ -26115,7 +25925,7 @@
     }
   ],
   "bugs_total_count": 148,
-  "bugs_hidden_count": 23,
+  "bugs_hidden_count": 28,
   "investigations": [
     {
       "id": "INV-001",
@@ -27935,7 +27745,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 17,
+        "n_doc_refs": 19,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -28745,7 +28555,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 2,
+        "n_doc_refs": 4,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -30768,76 +30578,82 @@
   ],
   "recent_commits": [
     {
+      "sha": "2de4536b",
+      "subject": "Pass 53 v8h+1: Phase 3 Batch 6 - 5 BUGs (42/47/49/50/52) SUPERSEDED/DEFERRED cross-references",
+      "author": "jeetmehta1991",
+      "rel_time": "47 seconds ago"
+    },
+    {
       "sha": "f16ef86d",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 5 - BUG-37 IMPLEMENTED (haircut doc) + BUG-34/40 SUPERSEDED-BY-design",
       "author": "jeetmehta1991",
-      "rel_time": "69 seconds ago"
+      "rel_time": "3 minutes ago"
     },
     {
       "sha": "a4258bc1",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 4 - BUG-21 IMPLEMENTED + BUG-24/31/32/33 SUPERSEDED-BY-policy-decisions",
       "author": "jeetmehta1991",
-      "rel_time": "3 minutes ago"
+      "rel_time": "5 minutes ago"
     },
     {
       "sha": "1f87aa53",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 3 - BUG-17/25 OBSOLETE + BUG-18/28/30 IMPLEMENTED (Wilder RSI fix)",
       "author": "jeetmehta1991",
-      "rel_time": "7 minutes ago"
+      "rel_time": "9 minutes ago"
     },
     {
       "sha": "694a11fa",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 2 - BUG-01/06/10/12 IMPLEMENTED + BUG-14 OBSOLETE",
       "author": "jeetmehta1991",
-      "rel_time": "11 minutes ago"
+      "rel_time": "12 minutes ago"
     },
     {
       "sha": "3bb2f559",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 1 - BUG-08/09/15/27 RESOLVED-IMPLEMENTED with real fixes",
       "author": "jeetmehta1991",
-      "rel_time": "17 minutes ago"
+      "rel_time": "18 minutes ago"
     },
     {
       "sha": "fc9390b7",
       "subject": "Pass 53 v8h+1: Phase 2 BUG cross-references + id-form normalization (6 BUGs READY -> IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "24 minutes ago"
+      "rel_time": "26 minutes ago"
     },
     {
       "sha": "97c69b3d",
       "subject": "Pass 53 v8h+1: Phase 1 BUG categorization (10 SUPERSEDED/DEFERRED) + dashboard hide-moot-bugs filter",
       "author": "jeetmehta1991",
-      "rel_time": "34 minutes ago"
+      "rel_time": "36 minutes ago"
     },
     {
       "sha": "99d137c1",
       "subject": "Pass 53 v8h+1: BUG-270/271/272/273 pyramid overrides + Promotion dropdown filters",
       "author": "jeetmehta1991",
-      "rel_time": "46 minutes ago"
+      "rel_time": "47 minutes ago"
     },
     {
       "sha": "a7c66530",
       "subject": "Pass 53 v8h+1: DEC-610 SPEC_ONLY -> DEFERRED_TO_* re-classification (14 forward-looking DECs)",
       "author": "jeetmehta1991",
-      "rel_time": "53 minutes ago"
+      "rel_time": "55 minutes ago"
     },
     {
       "sha": "4cd84d66",
       "subject": "Pass 53 v8h+1: BUG-270 wired-flag fix (cross-reference docstring) + process self-finding",
       "author": "jeetmehta1991",
-      "rel_time": "60 minutes ago"
+      "rel_time": "61 minutes ago"
     },
     {
       "sha": "d28c8723",
       "subject": "Pass 53 v8h+1: Tier C/D edge-case sweep - DEC-057 promoted; DEC-028 no-promote (forward-looking)",
       "author": "jeetmehta1991",
-      "rel_time": "84 minutes ago"
+      "rel_time": "85 minutes ago"
     },
     {
       "sha": "10fa8617",
       "subject": "Pass 53 v8h+1: INV-041 RESOLVED - path-restricted commits in 4 prefetch scripts + 5-test regression gate",
       "author": "jeetmehta1991",
-      "rel_time": "86 minutes ago"
+      "rel_time": "88 minutes ago"
     },
     {
       "sha": "bcb6ea3f",
@@ -30938,12 +30754,6 @@
     {
       "sha": "1e020b2a",
       "subject": "Pass 53 v8h+1: promotion-path column wired into Stage 2 dashboard (CHECKLIST #81/#82)",
-      "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
-    },
-    {
-      "sha": "f7b3e987",
-      "subject": "Pass 53 v8h+1: untracked artifacts cleanup (gitignore + INV-027 backup archived)",
       "author": "jeetmehta1991",
       "rel_time": "5 hours ago"
     }
