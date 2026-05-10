@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-10T21:30:55.685876+00:00",
+  "generated_at": "2026-05-10T21:42:56.090110+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -12213,7 +12213,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 11,
+        "n_doc_refs": 14,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -14333,7 +14333,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 46,
+        "n_doc_refs": 45,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -20013,7 +20013,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 37,
+        "n_doc_refs": 42,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -20253,7 +20253,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 56,
+        "n_doc_refs": 58,
         "pyramid": {
           "unit": true,
           "smoke": true,
@@ -20493,7 +20493,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 6,
+        "n_doc_refs": 7,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -21053,7 +21053,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 440,
+        "n_doc_refs": 442,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -21820,44 +21820,6 @@
       }
     },
     {
-      "id": "BUG-13",
-      "title": "`days_to_next_earnings` makes ~106,000 live yfinance calls during backtest",
-      "linked_decisions": "DEC-256, DEC-444, DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 3,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "BUG-013",
-      "sprint": "(see linked DEC sprint)",
-      "dependencies": "DEC-256; DEC-444; DEC-458",
-      "description": "**File:** `backtest/data/fetcher.py` lines 224\u2013240 **Called from:** `backtest/engine/backtest.py` inside the trade opening loop",
-      "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
-      }
-    },
-    {
       "id": "BUG-14",
       "title": "AAPL, CVS, JPM, NVDA missing from `run_full.sh` batch ticker lists",
       "linked_decisions": "DEC-458",
@@ -21934,44 +21896,6 @@
       }
     },
     {
-      "id": "BUG-16",
-      "title": "`PASSING_CRITERIA min_trades = 100` contradicts all documentation",
-      "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": false,
-        "n_doc_refs": 2,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "BUG-016",
-      "sprint": "(see linked DEC sprint)",
-      "dependencies": "DEC-458",
-      "description": "**File:** `backtest/config.py` line 215 vs `PROJECT_PLAN.md` line 175, `EXPLANATION.md` line 337",
-      "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
-      }
-    },
-    {
       "id": "BUG-17",
       "title": "`run_commit.sh` full mode hangs on interactive `input()` in merge script",
       "linked_decisions": "DEC-458",
@@ -22040,44 +21964,6 @@
       "sprint": "(see linked DEC sprint)",
       "dependencies": "DEC-080; DEC-400; DEC-458",
       "description": "**File:** `backtest/engine/backtest.py` line 621",
-      "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
-      }
-    },
-    {
-      "id": "BUG-19",
-      "title": "OHLCV cache incomplete \u2014 402 of 495 tickers only cover to 2024-12-31",
-      "linked_decisions": "DEC-260, DEC-442, DEC-448, DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": false,
-        "n_doc_refs": 2,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "BUG-019",
-      "sprint": "(see linked DEC sprint)",
-      "dependencies": "DEC-260; DEC-442; DEC-448; DEC-458",
-      "description": "**Files:** `backtest/data/cache/ohlcv/` (Parquet files), `backtest/data/cache/index.json`",
       "promotion_path": {
         "tier": "OPEN",
         "label": "OPEN",
@@ -22306,44 +22192,6 @@
       "sprint": "(see linked DEC sprint)",
       "dependencies": "DEC-458",
       "description": "**File:** `run_tests.sh` \u2014 all 5 batch commands",
-      "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
-      }
-    },
-    {
-      "id": "BUG-26",
-      "title": "CRITICAL \u2014 VIX proxy is VXX price (223\u2013461), not actual VIX (18\u201336) \u2014 all regime",
-      "linked_decisions": "DEC-317, DEC-388, DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 10,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "BUG-026",
-      "sprint": "(see linked DEC sprint)",
-      "dependencies": "DEC-317; DEC-388; DEC-458",
-      "description": "**File:** `backtest/data/macro.py` lines 138\u2013154 and `backtest/engine/regime_filter.py`",
       "promotion_path": {
         "tier": "OPEN",
         "label": "OPEN",
@@ -23066,44 +22914,6 @@
       "sprint": "(see linked DEC sprint)",
       "dependencies": "DEC-458",
       "description": "**Files:** `backtest/config.py` LIVE_TRADING_RULES, no FX module exists",
-      "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
-      }
-    },
-    {
-      "id": "BUG-46",
-      "title": "MEDIUM \u2014 `fetch_info_bulk` info cache uses current market_cap, not historical",
-      "linked_decisions": "DEC-260, DEC-442, DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": false,
-        "n_doc_refs": 2,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "BUG-046",
-      "sprint": "(see linked DEC sprint)",
-      "dependencies": "DEC-260; DEC-442; DEC-458",
-      "description": "**File:** `backtest/data/universe.py` lines 185\u2013230 and `data/cache/info_cache.json`",
       "promotion_path": {
         "tier": "OPEN",
         "label": "OPEN",
@@ -25468,44 +25278,6 @@
       }
     },
     {
-      "id": "BUG-109",
-      "title": "HIGH \u2014 yfinance auto_adjust causes data drift; backtest results not reproducible",
-      "linked_decisions": "DEC-442, DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 24,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "BUG-109",
-      "sprint": "(see linked DEC sprint)",
-      "dependencies": "DEC-442; DEC-458",
-      "description": "**File:** wherever `yf.download()` is called in the codebase (typically prefetch scripts and engine fallback)",
-      "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
-      }
-    },
-    {
       "id": "BUG-110",
       "title": "HIGH \u2014 Entry gap filter not enforced; trades opened despite exceeding ATR limit",
       "linked_decisions": "DEC-458",
@@ -25547,7 +25319,7 @@
       "id": "BUG-111",
       "title": "**CRITICAL** \u2014 No break-and-retest variants of breakout strategies (severity: MEDIUM\u2192HIGH\u2192CRITICAL across Pass 52)",
       "linked_decisions": "DEC-354 (parent umbrella reopened) + DEC-355/356/357 (3 retest-variant strategies) + DEC-358/359/360/361/362 (5 chart pattern strategies; retest-cross-cutting)",
-      "sprint_context": "Sprint 8 (DEC-355-362) + open scope: 25 existing breakout strategies in screener.py potentially need retest variants \u2014 verification needed",
+      "sprint_context": "DEFERRED-TO-SPRINT-8 (chart-pattern + retest variants \u2014 explicit Sprint 8 scope per Pass 53 backlog)",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -25571,14 +25343,14 @@
         }
       },
       "short_id": "BUG-111",
-      "sprint": "Sprint 8 (DEC-355-362) + open scope: 25 existing breakout strategies in screener.py potentially need retest variants \u2014 verification needed",
+      "sprint": "DEFERRED-TO-SPRINT-8 (chart-pattern + retest variants \u2014 explicit Sprint 8 scope per Pass 53 backlog)",
       "dependencies": "DEC-354; DEC-355; DEC-358",
       "description": "**Files:** `backtest/signals/screener.py` (13 breakout strategies, none with retest)",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "No artifacts yet; needs code + test"
+        "tier": "DEFERRED",
+        "label": "DEFERRED",
+        "color": "#3b82f6",
+        "reason": "Bug deferred per sprint_context: DEFERRED-TO-SPRINT-8 (chart-pattern + retest variants \u2014 explicit Sprint 8 scope per Pass 53 backlog)"
       }
     },
     {
@@ -25726,82 +25498,6 @@
       "sprint": "(see linked DEC sprint)",
       "dependencies": "DEC-458",
       "description": "**File:** `backtest/data/fetcher.py` `days_to_next_earnings()` line 200",
-      "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
-      }
-    },
-    {
-      "id": "BUG-179",
-      "title": "HIGH \u2014 yfinance .info fetched live during backtest universe load",
-      "linked_decisions": "DEC-443, DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 15,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "BUG-179",
-      "sprint": "(see linked DEC sprint)",
-      "dependencies": "DEC-443; DEC-458",
-      "description": "**File:** `backtest/data/fetcher.py` `fetch_info_bulk()` line 170",
-      "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
-      }
-    },
-    {
-      "id": "BUG-180",
-      "title": "HIGH \u2014 VIX not explicitly prefetched; VXX used as proxy is cause of BUG-26",
-      "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": false,
-        "n_doc_refs": 6,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "BUG-180",
-      "sprint": "(see linked DEC sprint)",
-      "dependencies": "BUG-26; DEC-458",
-      "description": "**File:** `backtest/data/macro.py` and prefetch_macro.py",
       "promotion_path": {
         "tier": "OPEN",
         "label": "OPEN",
@@ -26427,7 +26123,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 39,
+        "n_doc_refs": 42,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -26465,7 +26161,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 33,
+        "n_doc_refs": 35,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -26798,44 +26494,6 @@
       }
     },
     {
-      "id": "BUG-280",
-      "title": "LOW \u2014 `days_to_next_earnings()` returns None on yfinance failure",
-      "linked_decisions": "DEC-444, DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 7,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "BUG-280",
-      "sprint": "(see linked DEC sprint)",
-      "dependencies": "DEC-444; DEC-458",
-      "description": "**File:** `backtest/data/fetcher.py` (function `days_to_next_earnings`)",
-      "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
-      }
-    },
-    {
       "id": "BUG-281",
       "title": "MEDIUM \u2014 `site_generator._assign_tier` duplicates `engine._assign_confidence_tie",
       "linked_decisions": "DEC-458",
@@ -26988,6 +26646,8 @@
       }
     }
   ],
+  "bugs_total_count": 148,
+  "bugs_hidden_count": 9,
   "investigations": [
     {
       "id": "INV-001",
@@ -31640,64 +31300,70 @@
   ],
   "recent_commits": [
     {
+      "sha": "99d137c1",
+      "subject": "Pass 53 v8h+1: BUG-270/271/272/273 pyramid overrides + Promotion dropdown filters",
+      "author": "jeetmehta1991",
+      "rel_time": "11 minutes ago"
+    },
+    {
       "sha": "a7c66530",
       "subject": "Pass 53 v8h+1: DEC-610 SPEC_ONLY -> DEFERRED_TO_* re-classification (14 forward-looking DECs)",
       "author": "jeetmehta1991",
-      "rel_time": "6 minutes ago"
+      "rel_time": "18 minutes ago"
     },
     {
       "sha": "4cd84d66",
       "subject": "Pass 53 v8h+1: BUG-270 wired-flag fix (cross-reference docstring) + process self-finding",
       "author": "jeetmehta1991",
-      "rel_time": "13 minutes ago"
+      "rel_time": "25 minutes ago"
     },
     {
       "sha": "d28c8723",
       "subject": "Pass 53 v8h+1: Tier C/D edge-case sweep - DEC-057 promoted; DEC-028 no-promote (forward-looking)",
       "author": "jeetmehta1991",
-      "rel_time": "37 minutes ago"
+      "rel_time": "49 minutes ago"
     },
     {
       "sha": "10fa8617",
       "subject": "Pass 53 v8h+1: INV-041 RESOLVED - path-restricted commits in 4 prefetch scripts + 5-test regression gate",
       "author": "jeetmehta1991",
-      "rel_time": "39 minutes ago"
+      "rel_time": "51 minutes ago"
     },
     {
       "sha": "bcb6ea3f",
       "subject": "Pass 53 v8h+1: parse_inv_entries parser fix - recognize all RESOLVED-* / DEFERRED-* status variants",
       "author": "jeetmehta1991",
-      "rel_time": "44 minutes ago"
+      "rel_time": "56 minutes ago"
     },
     {
       "sha": "26340a6b",
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 20:43: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "46 minutes ago"
+      "rel_time": "58 minutes ago"
     },
     {
       "sha": "bffd8658",
       "subject": "Pass 53 v8h+1: INV promotion sweep - INV-045 RESOLVED + 4 NOOPs (CHECKLIST #81)",
       "author": "jeetmehta1991",
-      "rel_time": "72 minutes ago"
+      "rel_time": "84 minutes ago"
     },
     {
       "sha": "cab09977",
       "subject": "Pass 53 v8h+1: BUG promotion sweep (CHECKLIST #81 first application; 4 HIGH-severity smart_money bugs)",
       "author": "jeetmehta1991",
-      "rel_time": "73 minutes ago"
+      "rel_time": "85 minutes ago"
     },
     {
       "sha": "4addd669",
       "subject": "Pass 53 v8h+1: Tier B promotion sweep #3+#4 combined (17 DECs RESOLVED-DECIDED -> RESOLVED-IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "76 minutes ago"
+      "rel_time": "88 minutes ago"
     },
     {
       "sha": "f798881b",
       "subject": "Pass 53 v8h+1: Tier A promotion sweep (8 Phase 1A meta DECs - DEC-497/503/505/507/590/591/594/595)",
       "author": "jeetmehta1991",
-      "rel_time": "85 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "936a0c0e",
@@ -31739,7 +31405,7 @@
       "sha": "25485a1b",
       "subject": "Pass 53 v8h+1: H4 Polygon reference extended verify (DONE-WITH-DELISTING-CAP per CAV-075 sister pattern)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "fc5c43f4",
@@ -31775,7 +31441,7 @@
       "sha": "4bf07436",
       "subject": "Pass 53 v8h+1: H1.a OHLCV Master Dedup prefetch script + DEC-609 (Option B)",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "aee93c01",
@@ -31811,22 +31477,20 @@
       "sha": "d6e6296d",
       "subject": "Pass 53 v8h+1: Coverage Matrix kind-aware metrics + commentary updated + CHECKLIST #80",
       "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
-    },
-    {
-      "sha": "ecc846c2",
-      "subject": "Pass 53 v8h+1: INV-047 + CAV-077 - Quiver etfholdings refresh DEAD-END (static snapshot only)",
-      "author": "jeetmehta1991",
       "rel_time": "8 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 5,
-    "modified": 5,
+    "count": 9,
+    "modified": 9,
     "added": 0,
     "untracked": 0,
     "deleted": 0,
     "files": [
+      {
+        "status": "M",
+        "path": "BUG_REGISTER.md"
+      },
       {
         "status": "M",
         "path": "dashboard_sprint0a/data.js"
@@ -31841,7 +31505,19 @@
       },
       {
         "status": "M",
+        "path": "dashboard_stage_2/data.js"
+      },
+      {
+        "status": "M",
+        "path": "dashboard_stage_2/data.json"
+      },
+      {
+        "status": "M",
         "path": "dashboard_stage_2/index.html"
+      },
+      {
+        "status": "M",
+        "path": "dashboard_stage_2/last_run.txt"
       },
       {
         "status": "M",

@@ -32502,6 +32502,47 @@ Documents updated this sub-turn:
   - AUDIT.md (this sub-entry)
   - dashboard_stage_2/data.* (rebuilt; BUG-271 pyramid 1-yes-12-no -> 1-yes-12-NA)
 
+---
+
+## Pass 53 Day 9 v8h+1 follow-on 2026-05-10 (cont): Phase 1 BUG categorization + dashboard SUPERSEDED/OBSOLETE filter
+
+Owner directive 2026-05-10: "simply remove superseded by X and Obsolete bugs from the dashboard but retain them in the audit index document and other audit docs. If they are moot, lets not clutter the dashboard. Then proceed with phase 1 and 2"
+
+**Phase 1 keyword-scan re-classification (10 BUGs flipped):**
+
+Conservative title/description keyword scan against 141 OPEN bugs. Categories:
+
+| New status | Count | BUG IDs | Why moot |
+|---|---|---|---|
+| SUPERSEDED-BY-DEC-497 | 5 | 13, 46, 109, 179, 280 | NO-LIVE-API HARD CUT removed yfinance from runtime; the bugs (live calls, fetch_info, .info, auto_adjust, days_to_next_earnings) can no longer trigger |
+| SUPERSEDED-BY-DEC-302 | 2 | 26, 180 | VIX canonical source FRED:VIXCLS replaces VXX proxy; the VXX-as-VIX path retired |
+| SUPERSEDED-BY-DEC-609 | 1 | 19 | H1 OHLCV Master Dedup re-fetch covers 1937 tickers 2021-05 to 2026-05; the 2024-12-31 cache cap eliminated |
+| SUPERSEDED-BY-DEC-503 | 1 | 16 | PASSING_CRITERIA min_trades=100 documented + tested via DEC-503 13-layer pyramid; canonical per CANONICAL_FACTS F-007 |
+| DEFERRED-TO-SPRINT-8 | 1 | 111 | Chart-pattern + retest variants - explicit Sprint 8 scope per Pass 53 backlog |
+
+**131 OPEN bugs remain unmatched** by keyword scan. Mostly individual code bugs (NameError, dead code, formula corrections) that need manual cross-reference review (Phase 2) or genuine engineering work (Phase 3).
+
+**Dashboard filter (Phase 1 implementation):**
+  - `compute_promotion_path()` for bugs: SUPERSEDED-BY-X / OBSOLETE detection in sprint_context comes BEFORE RESOLVED detection (avoids "SUPERSEDED-BY-DEC-X" matching RESOLVED's substring; DEC-594 retroactive interpretation)
+  - Direct returns from bug branch for SUPERSEDED/OBSOLETE/DEFERRED tiers (top-level early-return ran before bug branch, so re-set)
+  - `data.json` output filter: `bugs_visible` = bugs with tier NOT IN {SUPERSEDED, OBSOLETE}; original `bugs` field replaced with filtered list; new `bugs_total_count` + `bugs_hidden_count` exposed
+  - HTML: bug-total display now shows "Visible: 139 / total 148 (9 SUPERSEDED/OBSOLETE bugs hidden per owner directive)"
+
+Bugs hidden from dashboard: 9 (the 9 SUPERSEDED bugs flipped this batch). 1 DEFERRED bug (BUG-111) remains visible since DEFERRED is still actionable (just deferred to Sprint 8).
+
+**Per-addressal pyramid (CHECKLIST #78):** unit + integration + doc_count_consistency 113/113 PASS in 3.4s. Layers N/A: smoke (no engine code), data_integrity (no data change), performance, acceptance, property, snapshot, contract, compatibility, system, functional (status-flip + UI-filter).
+
+**Same-commit (DEC-594):** 10 BUG_REGISTER row flips + parser SUPERSEDED detection + dashboard filter logic + HTML hidden-count display + AUDIT.md narrative + dashboard rebuilt - this single commit.
+
+**Bug stats:** 148 total, 139 visible (was 148), 9 hidden as SUPERSEDED. Visible OPEN count: 141 -> 131 (-10 categorized).
+
+Documents updated this sub-turn:
+  - BUG_REGISTER.md (10 sprint_context cell flips: BUG-13/16/19/26/46/109/111/179/180/280)
+  - scripts/build_dashboard_stage_2.py (parser SUPERSEDED/OBSOLETE/DEFERRED bug-branch detection + bugs_visible filter + bugs_hidden_count)
+  - dashboard_stage_2/index.html (visible/total/hidden display in bug count line)
+  - AUDIT.md (this sub-entry)
+  - dashboard_stage_2 (rebuilt; bugs visible 148 -> 139)
+
 **Remaining OPEN backlog after sweeps:**
   - 1 DEC RESOLVED-DECIDED-deferred (DEC-028 Stage 3 paper trading - intentional)
   - INVs: 33 OPEN + 2 DEFERRED (genuine work; not promotion-eligible)

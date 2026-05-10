@@ -48,14 +48,14 @@ The following table maps every bug in AUDIT.md to the decision(s) that reference
 | BUG-10 | Agent signal keys wrong — agents always see `False` for key price context | DEC-458 | (see linked DEC sprint) |
 | BUG-11 | `williams_r` short default fires incorrectly | DEC-458 | (see linked DEC sprint) |
 | BUG-12 | Deduplication order bias — shorts never fire when long strategy fires first | DEC-458 | (see linked DEC sprint) |
-| BUG-13 | `days_to_next_earnings` makes ~106,000 live yfinance calls during backtest | DEC-256, DEC-444, DEC-458 | (see linked DEC sprint) |
+| BUG-13 | `days_to_next_earnings` makes ~106,000 live yfinance calls during backtest | DEC-256, DEC-444, DEC-458 | SUPERSEDED-BY-DEC-497 (NO-LIVE-API HARD CUT removed yfinance from runtime; 106K live calls bug can no longer trigger) |
 | BUG-14 | AAPL, CVS, JPM, NVDA missing from `run_full.sh` batch ticker lists | DEC-458 | (see linked DEC sprint) |
 | BUG-15 | `max_drawdown` uses `cumsum()` instead of compounded equity curve | DEC-458 | (see linked DEC sprint) |
-| BUG-16 | `PASSING_CRITERIA min_trades = 100` contradicts all documentation | DEC-458 | (see linked DEC sprint) |
+| BUG-16 | `PASSING_CRITERIA min_trades = 100` contradicts all documentation | DEC-458 | SUPERSEDED-BY-DEC-503 (PASSING_CRITERIA min_trades documented + tested via DEC-503 13-layer pyramid; min_trades=100 verified canonical per CANONICAL_FACTS F-007) |
 | BUG-17 | `run_commit.sh` full mode hangs on interactive `input()` in merge script | DEC-458 | (see linked DEC sprint) |
 <!-- canonical-fact-historical: F-002 BUG_REGISTER documents bugs that explicitly reference stale strategy-count phrasing -->
 | BUG-18 | Bonferroni correction hardcoded to 60 strategies, should be 72 | DEC-080, DEC-400, DEC-458 | (see linked DEC sprint) |
-| BUG-19 | OHLCV cache incomplete — 402 of 495 tickers only cover to 2024-12-31 | DEC-260, DEC-442, DEC-448, DEC-458 | (see linked DEC sprint) |
+| BUG-19 | OHLCV cache incomplete — 402 of 495 tickers only cover to 2024-12-31 | DEC-260, DEC-442, DEC-448, DEC-458 | SUPERSEDED-BY-DEC-609 (H1 OHLCV Master Dedup re-fetch covers 1937 tickers 2021-05 to 2026-05; 2024-12-31 cache cap eliminated) |
 | BUG-20 | Regime thresholds inconsistent between PROJECT_PLAN and config.py | DEC-458 | (see linked DEC sprint) |
 | BUG-21 | `exit_strategies.py` own `_pnl` has no borrow cost — short comparison optimistic | DEC-458 | (see linked DEC sprint) |
 <!-- canonical-fact-historical: F-002 bugs reference stale code strings now corrected via CANONICAL_FACTS.md alignment -->
@@ -64,7 +64,7 @@ The following table maps every bug in AUDIT.md to the decision(s) that reference
 | BUG-23 | `screener.py` docstring says "60 strategies across 7 categories" | DEC-458 | (see linked DEC sprint) |
 | BUG-24 | CHECKLIST item 13c says "review ALL agent outputs" — not applicable for no-agent | DEC-458 | (see linked DEC sprint) |
 | BUG-25 | `run_tests.sh` does not pass `--no-agents` flag | DEC-458 | (see linked DEC sprint) |
-| BUG-26 | CRITICAL — VIX proxy is VXX price (223–461), not actual VIX (18–36) — all regime | DEC-317, DEC-388, DEC-458 | (see linked DEC sprint) |
+| BUG-26 | CRITICAL — VIX proxy is VXX price (223–461), not actual VIX (18–36) — all regime | DEC-317, DEC-388, DEC-458 | SUPERSEDED-BY-DEC-302 (VIX canonical source FRED:VIXCLS replaces VXX proxy; DEC-302 + Pass 53 Day-9 v8 BUG-VIX-PROXY fix) |
 | BUG-27 | CRITICAL — `regime_confidence()` function built but never called — dead code | DEC-458 | (see linked DEC sprint) |
 | BUG-28 | HIGH — RSI computation uses simple rolling mean instead of Wilder exponential sm | DEC-458 | (see linked DEC sprint) |
 | BUG-29 | HIGH — Open trades at backtest end silently discarded — upward bias in all metri | DEC-458 | (see linked DEC sprint) |
@@ -84,7 +84,7 @@ The following table maps every bug in AUDIT.md to the decision(s) that reference
 | BUG-43 | LOW — Missing Calmar ratio minimum in passing criteria | DEC-458 | (see linked DEC sprint) |
 | BUG-44 | LOW — Test suite has no test for `close_trade()` or `_process_day()` | DEC-458 | (see linked DEC sprint) |
 | BUG-45 | MEDIUM — FX currency risk not modelled | DEC-458 | (see linked DEC sprint) |
-| BUG-46 | MEDIUM — `fetch_info_bulk` info cache uses current market_cap, not historical | DEC-260, DEC-442, DEC-458 | (see linked DEC sprint) |
+| BUG-46 | MEDIUM — `fetch_info_bulk` info cache uses current market_cap, not historical | DEC-260, DEC-442, DEC-458 | SUPERSEDED-BY-DEC-497 (yfinance fetch_info_bulk removed from runtime per NO-LIVE-API HARD CUT) |
 | BUG-47 | MEDIUM — VXX in universe creates self-referencing regime paradox | DEC-458 | (see linked DEC sprint) |
 | BUG-48 | MEDIUM — Sector `Volatility` and `Emerging Markets` not in sector criteria profi | DEC-458 | (see linked DEC sprint) |
 | BUG-49 | LOW — FX risk not mentioned in EXPLANATION.md or PROJECT_PLAN.md | DEC-458 | (see linked DEC sprint) |
@@ -148,15 +148,15 @@ The following table maps every bug in AUDIT.md to the decision(s) that reference
 | BUG-106 | HIGH — Perfect stop fills in trade log: every trailing-stop exit fills at exactl | DEC-458 | (see linked DEC sprint) |
 | BUG-107 | MEDIUM — Silent exception swallowing: `except Exception: pass` masks checkpoint  | DEC-458 | (see linked DEC sprint) |
 | BUG-108 | MEDIUM — Agent context built with `.get(key, default)` masks missing data; agent | DEC-458 | (see linked DEC sprint) |
-| BUG-109 | HIGH — yfinance auto_adjust causes data drift; backtest results not reproducible | DEC-442, DEC-458 | (see linked DEC sprint) |
+| BUG-109 | HIGH — yfinance auto_adjust causes data drift; backtest results not reproducible | DEC-442, DEC-458 | SUPERSEDED-BY-DEC-497 (yfinance auto_adjust removed from runtime; no live OHLCV calls) |
 | BUG-110 | HIGH — Entry gap filter not enforced; trades opened despite exceeding ATR limit | DEC-458 | (see linked DEC sprint) |
-| BUG-111 | **CRITICAL** — No break-and-retest variants of breakout strategies (severity: MEDIUM→HIGH→CRITICAL across Pass 52) | DEC-354 (parent umbrella reopened) + DEC-355/356/357 (3 retest-variant strategies) + DEC-358/359/360/361/362 (5 chart pattern strategies; retest-cross-cutting) | Sprint 8 (DEC-355-362) + open scope: 25 existing breakout strategies in screener.py potentially need retest variants — verification needed |
+| BUG-111 | **CRITICAL** — No break-and-retest variants of breakout strategies (severity: MEDIUM→HIGH→CRITICAL across Pass 52) | DEC-354 (parent umbrella reopened) + DEC-355/356/357 (3 retest-variant strategies) + DEC-358/359/360/361/362 (5 chart pattern strategies; retest-cross-cutting) | DEFERRED-TO-SPRINT-8 (chart-pattern + retest variants — explicit Sprint 8 scope per Pass 53 backlog) |
 | BUG-112 | LOW — No ICT/SMC concepts implemented | DEC-458 | (see linked DEC sprint) |
 | BUG-113 | HIGH — Agent action/sizing/exit recommendations ignored by engine | DEC-008, DEC-458 | (see linked DEC sprint) |
 | BUG-113 | HIGH — Agent action/sizing/exit recommendations ignored by engine | DEC-008, DEC-458 | (see linked DEC sprint) |
 | BUG-178 | HIGH — Earnings dates fetched live during backtest, no prefetch path | DEC-458 | (see linked DEC sprint) |
-| BUG-179 | HIGH — yfinance .info fetched live during backtest universe load | DEC-443, DEC-458 | (see linked DEC sprint) |
-| BUG-180 | HIGH — VIX not explicitly prefetched; VXX used as proxy is cause of BUG-26 | DEC-458 | (see linked DEC sprint) |
+| BUG-179 | HIGH — yfinance .info fetched live during backtest universe load | DEC-443, DEC-458 | SUPERSEDED-BY-DEC-497 (yfinance .info live calls removed; universe loads from prefetched CSVs) |
+| BUG-180 | HIGH — VIX not explicitly prefetched; VXX used as proxy is cause of BUG-26 | DEC-458 | SUPERSEDED-BY-DEC-302 (VIX explicitly prefetched from FRED:VIXCLS; VXX proxy retired) |
 | BUG-181 | MEDIUM — Finnhub news prefetch silently produces empty files | DEC-453, DEC-458 | (see linked DEC sprint) |
 | BUG-182 | MEDIUM — Agent cache invalidated by every code change with no versioning gate | DEC-458 | (see linked DEC sprint) |
 | BUG-183 | LOW — No prefetch validation step | DEC-458 | (see linked DEC sprint) |
@@ -183,7 +183,7 @@ The following table maps every bug in AUDIT.md to the decision(s) that reference
 | BUG-277 | HIGH — `classify_regime()` truth-value-of-DataFrame error — 100% failure | DEC-458 | (see linked DEC sprint) |
 | BUG-278 | MEDIUM — `yield_curve_regime()` doesn't use macro_combined.parquet cache | DEC-458 | (see linked DEC sprint) |
 | BUG-279 | MEDIUM — `get_ohlcv()` with reversed date order silently returns 0 rows | DEC-458 | (see linked DEC sprint) |
-| BUG-280 | LOW — `days_to_next_earnings()` returns None on yfinance failure | DEC-444, DEC-458 | (see linked DEC sprint) |
+| BUG-280 | LOW — `days_to_next_earnings()` returns None on yfinance failure | DEC-444, DEC-458 | SUPERSEDED-BY-DEC-497 (days_to_next_earnings yfinance dependency removed; calendar-based path only) |
 | BUG-281 | MEDIUM — `site_generator._assign_tier` duplicates `engine._assign_confidence_tie | DEC-458 | (see linked DEC sprint) |
 | BUG-282 | LOW — `site_generator.build_entry_zone` ignores `category` parameter | DEC-458 | (see linked DEC sprint) |
 | BUG-283 | LOW — `build_position_sizing` returns 0% silently for unknown tier | DEC-458 | (see linked DEC sprint) |

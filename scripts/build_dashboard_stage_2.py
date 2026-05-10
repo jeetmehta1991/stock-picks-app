@@ -582,15 +582,30 @@ def compute_promotion_path(item: dict, kind: str) -> dict:
     if kind == "bug":
         # BUG_REGISTER table embeds status in sprint_context cell rather than a standalone status column.
         # Scan sprint_context + linked_decisions for status keywords if status is empty.
+        # Order matters: SUPERSEDED/OBSOLETE/DEFERRED detected BEFORE RESOLVED to avoid
+        # "SUPERSEDED-BY-DEC-X" matching RESOLVED's substring (DEC-594 retroactive interpretation).
         if not status:
             ctx = (item.get("sprint_context") or "") + " " + (item.get("linked_decisions") or "")
             ctx_upper = ctx.upper()
-            if "RESOLVED" in ctx_upper or "FIXED" in ctx_upper:
-                status = "RESOLVED"
+            if "SUPERSEDED" in ctx_upper:
+                # Direct return - early SUPERSEDED tier check at function top runs before
+                # bug branch, so we must return the tier dict here directly.
+                return {"tier": "SUPERSEDED", "label": "SUPERSEDED", "color": "#94a3b8",
+                        "reason": f"Bug superseded per sprint_context: {ctx[:100]}"}
+            elif "OBSOLETE" in ctx_upper:
+                return {"tier": "OBSOLETE", "label": "OBSOLETE", "color": "#94a3b8",
+                        "reason": "Bug marked obsolete; no action required"}
             elif "DEFERRED" in ctx_upper or "WONTFIX" in ctx_upper:
                 status = "DEFERRED"
+            elif "RESOLVED" in ctx_upper or "FIXED" in ctx_upper:
+                status = "RESOLVED"
             elif "OPEN" in ctx_upper or "CRITICAL" in ctx_upper:
                 status = "OPEN"
+        # Status now set; handle DEFERRED tier explicitly here (bug branch doesn't fall
+        # through to top-level DEFERRED check since we're already past it).
+        if status == "DEFERRED":
+            return {"tier": "DEFERRED", "label": "DEFERRED", "color": "#3b82f6",
+                    "reason": f"Bug deferred per sprint_context: {item.get('sprint_context','')[:100]}"}
         if status in ("RESOLVED", "FIXED", "CLOSED"):
             if coded and tested:
                 return {"tier": "IMPLEMENTED", "label": "IMPLEMENTED", "color": "#10b981",
@@ -1267,10 +1282,20 @@ def main() -> int:
         c["description"] = c.get("impact", "") or ""
     # L-NNN don't need status grep (they're principles, not code)
 
+    # Owner directive 2026-05-10: hide SUPERSEDED + OBSOLETE bugs from dashboard
+    # display (they remain in BUG_REGISTER.md / AUDIT_INDEX.md as canonical record).
+    # "If they are moot, lets not clutter the dashboard." Filter at build time.
+    bugs_full = bugs
+    bugs_visible = [b for b in bugs
+                    if b.get("promotion_path", {}).get("tier") not in ("SUPERSEDED", "OBSOLETE")]
+    bugs_hidden_count = len(bugs_full) - len(bugs_visible)
+
     snapshot = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "decisions": decisions,
-        "bugs": bugs,
+        "bugs": bugs_visible,
+        "bugs_total_count": len(bugs_full),
+        "bugs_hidden_count": bugs_hidden_count,
         "investigations": invs,
         "caveats": cavs,
         "learnings": lessons,

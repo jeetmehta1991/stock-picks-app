@@ -166,7 +166,7 @@ per CHECKLIST #77 - never reads from memory.
 
   <section id="bugs" class="panel">
     <h2>Bugs (BUG)</h2>
-    <p>From <code>BUG_REGISTER.md</code>. Total: <span id="bug-total">--</span>. Each bug links to one+ resolving decisions.</p>
+    <p>From <code>BUG_REGISTER.md</code>. Visible: <span id="bug-total">--</span> / total <span id="bug-total-all">--</span> (<span id="bug-hidden">--</span> SUPERSEDED/OBSOLETE bugs hidden per owner directive 2026-05-10 — they remain in BUG_REGISTER.md / AUDIT_INDEX.md as canonical record). Each bug links to one+ resolving decisions.</p>
     <div class="filter-bar">
       <input id="bug-filter" placeholder="Filter ID / title / linked decisions..." size="50">
       <select id="bug-promotion-filter">
@@ -539,6 +539,8 @@ $('#dec-promotion-filter').on('change', function () {
 
 // Bugs table
 document.getElementById('bug-total').textContent = D.bugs.length;
+document.getElementById('bug-total-all').textContent = D.bugs_total_count !== undefined ? D.bugs_total_count : D.bugs.length;
+document.getElementById('bug-hidden').textContent = D.bugs_hidden_count !== undefined ? D.bugs_hidden_count : 0;
 const bugRows = D.bugs.map(b => {
   const sg = b.status_grep || {};
   return [
