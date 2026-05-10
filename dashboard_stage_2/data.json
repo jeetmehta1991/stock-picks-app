@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-10T19:54:17.002146+00:00",
+  "generated_at": "2026-05-10T20:08:51.625131+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -1093,7 +1093,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 1,
+        "n_doc_refs": 2,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -1684,7 +1684,7 @@
     {
       "id": "DECISION-040",
       "title": "PointInTimeLoader structural framework",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Phase 0 / Architecture",
       "pass_intro": "Pass 22",
       "pass_resolved": "22",
@@ -1693,7 +1693,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 11,
+        "n_doc_refs": 12,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -1715,10 +1715,10 @@
       "dependencies": "-",
       "description": "**Status:** RESOLVED **Decision:** Option A \u2014 adopt full PIT framework **User comment:** \"DECISION-040 - option A\" **Action:** Phase 0.A scope expanded by ~3.5 weeks for PIT loader implementation. Forward-bias bugs (BUG-192-198) addressed structurally.",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-PROMOTE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Wired in active path + tested; eligible for RESOLVED-IMPLEMENTED"
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -2373,7 +2373,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 11,
+        "n_doc_refs": 12,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -2764,7 +2764,7 @@
     {
       "id": "DECISION-067",
       "title": "Add 9 missing exit methods \u2014 Pass 52 owner-approved revised scope. 9 new methods: chandelier (DEC-353 compliant ATR mult \u2265 2.5), psar, supertrend, volatility_re",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X6 \u2014 Exits + Circuit Breakers",
       "pass_intro": "Pass 39",
       "pass_resolved": "-",
@@ -2773,7 +2773,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 43,
+        "n_doc_refs": 44,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -2795,10 +2795,10 @@
       "dependencies": "DEC-353",
       "description": "| Sub-decision | Phase | Effort | Dependencies | |---|---|---|---| | DEC-432 | Phase A: 3 new indicators (chandelier, PSAR, supertrend) | ~2-3 days | None | | DEC-433 | Phase B: 6 simple new exit methods (chandelier, psar, supertrend, vol_climax, rsi_extreme, partial_scaleout, ke",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-PROMOTE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Wired in active path + tested; eligible for RESOLVED-IMPLEMENTED"
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -2813,7 +2813,7 @@
         "wired": true,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 17,
+        "n_doc_refs": 18,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -3373,7 +3373,7 @@
         "wired": true,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 46,
+        "n_doc_refs": 47,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -3453,7 +3453,7 @@
         "wired": true,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 9,
+        "n_doc_refs": 10,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -4613,7 +4613,7 @@
         "wired": true,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 8,
+        "n_doc_refs": 9,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -6284,7 +6284,7 @@
     {
       "id": "DECISION-153",
       "title": "Regime-stratified train/test splits Pass 52 turn 119 PARTIAL-SPEC-ONLY (was RESOLVED-DECIDED; Pass 53 evening 2026-05-06 demoted via DEC-594 retroactive audit \u2014",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X20 \u2014 IS/OOS extensions",
       "pass_intro": "Pass 40",
       "pass_resolved": "-",
@@ -6293,7 +6293,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 10,
+        "n_doc_refs": 11,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -6315,10 +6315,10 @@
       "dependencies": "DEC-594",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-PROMOTE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Wired in active path + tested; eligible for RESOLVED-IMPLEMENTED"
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -9964,7 +9964,7 @@
     {
       "id": "DECISION-246",
       "title": "Quant finance correctness audit (Sharpe annualization, DD computation, vol periodicity) Pass 52 turn 119 RESOLVED-DECIDED Final: Quant finance correctness audit",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X38 \u2014 Knowledge Gaps",
       "pass_intro": "Pass 45",
       "pass_resolved": "-",
@@ -9973,7 +9973,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 12,
+        "n_doc_refs": 13,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -9995,16 +9995,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-PROMOTE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Wired in active path + tested; eligible for RESOLVED-IMPLEMENTED"
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-247",
       "title": "Stats/ML implementation review (HMM, deflated Sharpe, Kelly \u2014 validate against known resul Pass 52 turn 119 RESOLVED-DECIDED Final: Stats/ML implementation revi",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X38 \u2014 Knowledge Gaps",
       "pass_intro": "Pass 45",
       "pass_resolved": "-",
@@ -10013,7 +10013,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 8,
+        "n_doc_refs": 9,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -10035,10 +10035,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-PROMOTE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Wired in active path + tested; eligible for RESOLVED-IMPLEMENTED"
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -10124,7 +10124,7 @@
     {
       "id": "DECISION-250",
       "title": "Edge decay assumption (discount backtest Sharpe by expected crowding %) Pass 52 turn 117 owner-approved RESOLVED-DECIDED Batch C with REVISIT_AFTER_BACKTEST: Ed",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X39 \u2014 Strategy Decay + Code Quality",
       "pass_intro": "Pass 45",
       "pass_resolved": "-",
@@ -10133,7 +10133,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 3,
+        "n_doc_refs": 4,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -10155,10 +10155,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-PROMOTE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Wired in active path + tested; eligible for RESOLVED-IMPLEMENTED"
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -10564,7 +10564,7 @@
     {
       "id": "DECISION-261",
       "title": "ICT/SMC PIT rules \u2014 Pass 52 owner-approved with N+1 lag rule. Pattern completion lag: ICT/SMC patterns complete on bar N (e.g., 3-bar FVG forms at N-2/N-1/N); a",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X41 \u2014 Phase 0.A Data Prefetch Gaps",
       "pass_intro": "Pass 47",
       "pass_resolved": "-",
@@ -10573,7 +10573,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 20,
+        "n_doc_refs": 21,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -10595,10 +10595,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-PROMOTE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Code + test refs found; eligible for RESOLVED-IMPLEMENTED"
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -16164,7 +16164,7 @@
     {
       "id": "DECISION-401",
       "title": "DEC-080 Phase B \u2014 Add Holm-Bonferroni step-down option (less conservative than Bonferroni for correlated strategies). Add min-Sharpe filter (Sharpe \u2265 0.5) joint",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X4 \u2014 Statistical Methodology",
       "pass_intro": "Pass 52",
       "pass_resolved": "-",
@@ -16173,7 +16173,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 7,
+        "n_doc_refs": 8,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -16195,10 +16195,10 @@
       "dependencies": "DEC-080",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-PROMOTE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Wired in active path + tested; eligible for RESOLVED-IMPLEMENTED"
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -16324,7 +16324,7 @@
     {
       "id": "DECISION-405",
       "title": "DEC-082 implementation (Option A scope) \u2014 New `backtest/results/stress_tests.py`. Test 2022 full year (Sharpe \u2265 0, DD \u2264 20%, Win Rate \u2265 40%) + crisis sub-period",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X4 \u2014 Statistical Methodology",
       "pass_intro": "Pass 52",
       "pass_resolved": "-",
@@ -16333,7 +16333,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 14,
+        "n_doc_refs": 15,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -16355,10 +16355,10 @@
       "dependencies": "DEC-082",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-PROMOTE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Wired in active path + tested; eligible for RESOLVED-IMPLEMENTED"
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -16724,7 +16724,7 @@
     {
       "id": "DECISION-415",
       "title": "DEC-111 Phase B \u2014 Rolling 1-year Sharpe deviation test. Compute Sharpe over 252-day rolling windows; flag strategies where any window deviates >2\u03c3 from full-per",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X4 \u2014 Statistical Methodology",
       "pass_intro": "Pass 52",
       "pass_resolved": "-",
@@ -16733,7 +16733,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 7,
+        "n_doc_refs": 8,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -16755,10 +16755,10 @@
       "dependencies": "DEC-111",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-PROMOTE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Wired in active path + tested; eligible for RESOLVED-IMPLEMENTED"
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -17044,7 +17044,7 @@
     {
       "id": "DECISION-423",
       "title": "DEC-068 expansion (per Pass 52 DEC-422) \u2014 Bootstrap CI + pairwise significance now operates at PER-CELL level (not per-strategy). For each cell in dimensional c",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X4 \u2014 Statistical Methodology",
       "pass_intro": "Pass 52",
       "pass_resolved": "-",
@@ -17053,7 +17053,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 14,
+        "n_doc_refs": 15,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -17075,10 +17075,10 @@
       "dependencies": "DEC-068; DEC-422",
       "description": "DEC-068 originally scoped per-strategy bootstrap CI. Expanded under DEC-422 framework: bootstrap operates at **per-cell level** within dimensional cube. Pairwise (strategy, exit) comparisons within cell. Bonferroni-correct across all cell pairs. Cells with n<30 fall back to margi",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-PROMOTE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Wired in active path + tested; eligible for RESOLVED-IMPLEMENTED"
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -18604,7 +18604,7 @@
     {
       "id": "DECISION-462",
       "title": "OurTechnicalToolkit specification (extends TechnicalToolkit) Pass 52 turn 130 owner-approved RESOLVED-DECIDED. Implement custom toolkit per TRADINGAGENTS_DATA_A",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Sprint 7 / Pattern 2 toolkits",
       "pass_intro": "Pass 52",
       "pass_resolved": "52",
@@ -18613,7 +18613,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 49,
+        "n_doc_refs": 50,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -18635,10 +18635,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-PROMOTE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Code + test refs found; eligible for RESOLVED-IMPLEMENTED"
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -19204,7 +19204,7 @@
     {
       "id": "DECISION-484",
       "title": "Free FMP alternative \u2014 SEC EDGAR direct parsing for financials (Sprint 4); Phase 1A skips 2 strategies needing full financials. Pass 53 turn (this) owner-approv",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Sprint 4 / DEC-410 audit",
       "pass_intro": "Pass 53",
       "pass_resolved": "53",
@@ -19213,7 +19213,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 15,
+        "n_doc_refs": 16,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -19235,10 +19235,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-PROMOTE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Code + test refs found; eligible for RESOLVED-IMPLEMENTED"
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -20124,7 +20124,7 @@
     {
       "id": "DECISION-500",
       "title": "Polygon ticker events integration as agent context (price-move trigger). Pass 53 owner directive 2026-05-05 RESOLVED-DECIDED. ARTIFACT: Polygon `/vX/reference/t",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Sprint 0A.9 / Phase 0.A",
       "pass_intro": "Pass 53",
       "pass_resolved": "53",
@@ -20133,7 +20133,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 7,
+        "n_doc_refs": 8,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -20155,10 +20155,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-PROMOTE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Code + test refs found; eligible for RESOLVED-IMPLEMENTED"
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -20284,7 +20284,7 @@
     {
       "id": "DECISION-508",
       "title": "Smartmoneyconcepts fork extensive testing protocol (15-category plan + 3-phase A/B/C gate). Pass 53 owner-approved Q1+Q2+Q3 2026-05-05 RESOLVED-DECIDED. RULE: A",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Cross-cutting / process",
       "pass_intro": "Pass 53",
       "pass_resolved": "53",
@@ -20293,7 +20293,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 27,
+        "n_doc_refs": 28,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -20315,10 +20315,10 @@
       "dependencies": "-",
       "description": "**15 test categories across 4 tiers:**",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-PROMOTE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Code + test refs found; eligible for RESOLVED-IMPLEMENTED"
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -20724,7 +20724,7 @@
     {
       "id": "DECISION-599",
       "title": "StockTwits adoption as Phase 1B+ retail-attention source; replaces pytrends. Pass 53 v8h+1 owner-approved 2026-05-08 RESOLVED-DECIDED. DECISION: pytrends DEFERR",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Phase 1B / signal / Pass 53 v8h+1",
       "pass_intro": "Pass 53",
       "pass_resolved": "53",
@@ -20733,7 +20733,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 6,
+        "n_doc_refs": 7,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -20755,10 +20755,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-PROMOTE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Code + test refs found; eligible for RESOLVED-IMPLEMENTED"
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -21124,7 +21124,7 @@
     {
       "id": "DECISION-592",
       "title": "Apewisdom cumulative daily prefetcher (free social sentiment forward-only). Pass 53 owner-approved 2026-05-06 evening Q-followup b RESOLVED-DECIDED. ARCHITECTUR",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Sprint 0A.7 / Pass 53",
       "pass_intro": "Pass 53",
       "pass_resolved": "53",
@@ -21133,7 +21133,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 7,
+        "n_doc_refs": 8,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -21155,10 +21155,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-PROMOTE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Code + test refs found; eligible for RESOLVED-IMPLEMENTED"
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -31600,28 +31600,34 @@
   ],
   "recent_commits": [
     {
+      "sha": "f798881b",
+      "subject": "Pass 53 v8h+1: Tier A promotion sweep (8 Phase 1A meta DECs - DEC-497/503/505/507/590/591/594/595)",
+      "author": "jeetmehta1991",
+      "rel_time": "3 minutes ago"
+    },
+    {
       "sha": "936a0c0e",
       "subject": "Pass 53 v8h+1: Tier B promotion sweep #2 (5 PIT-correctness DECs - DEC-295/301/302/304/305)",
       "author": "jeetmehta1991",
-      "rel_time": "11 minutes ago"
+      "rel_time": "26 minutes ago"
     },
     {
       "sha": "501cdbff",
       "subject": "Pass 53 v8h+1: Tier B engine-correctness promotion sweep #1 (6 DECs RESOLVED-DECIDED -> RESOLVED-IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "24 minutes ago"
+      "rel_time": "38 minutes ago"
     },
     {
       "sha": "77f57b21",
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 18:43: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "38 minutes ago"
+      "rel_time": "53 minutes ago"
     },
     {
       "sha": "4f9e558c",
       "subject": "Pass 53 v8h+1: 0A.7 per-API smoke/demo split - StockTwits + Apewisdom additions (Sprint 0A COMPLETE)",
       "author": "jeetmehta1991",
-      "rel_time": "77 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "07c15d16",
@@ -31657,13 +31663,13 @@
       "sha": "b76fc3d1",
       "subject": "Pass 53 v8h+1: H1.b OHLCV Master Dedup data commit (1924 parquets, 105.6 MB) + CAV-079",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "1e020b2a",
       "subject": "Pass 53 v8h+1: promotion-path column wired into Stage 2 dashboard (CHECKLIST #81/#82)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "f7b3e987",
@@ -31699,7 +31705,7 @@
       "sha": "f0d03fcd",
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 15:26: dashboard_sprint0a rebuild artifacts (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "041229b1",
@@ -31772,12 +31778,6 @@
       "subject": "Pass 53 auto-drift-sweep 2026-05-09 11:53: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
       "rel_time": "21 hours ago"
-    },
-    {
-      "sha": "8d4fa5d3",
-      "subject": "Pass 53 v8h+1: Sprint 0A Coverage Matrix tab - per-(api, endpoint, field) coverage + commentary + status badges",
-      "author": "jeetmehta1991",
-      "rel_time": "21 hours ago"
     }
   ],
   "uncommitted": {
@@ -31797,15 +31797,15 @@
       },
       {
         "status": "M",
-        "path": "dashboard_sprint0a/data.js"
+        "path": "dashboard_stage_2/data.js"
       },
       {
         "status": "M",
-        "path": "dashboard_sprint0a/data.json"
+        "path": "dashboard_stage_2/data.json"
       },
       {
         "status": "M",
-        "path": "dashboard_sprint0a/last_run.txt"
+        "path": "dashboard_stage_2/last_run.txt"
       }
     ]
   },
@@ -32548,7 +32548,7 @@
       "kind": "DEC",
       "id": "DEC-067",
       "title": "Add 9 missing exit methods \u2014 Pass 52 owner-approved revised scope. 9 new methods: chandelier (DEC-353 compliant ATR mult \u2265 2.5), psar, super",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "tier": 1,
       "reason": "Dependency root (3 downstream items reference)",
       "back_refs": 3,
@@ -32606,7 +32606,7 @@
     }
   ],
   "decision_status_counts": {
-    "RESOLVED-DECIDED": 309,
+    "RESOLVED-DECIDED": 292,
     "PARTIAL": 5,
     "SUPERSEDED_BY_DEC-422": 6,
     "SUPERSEDED": 10,
@@ -32619,6 +32619,7 @@
     "DEFERRED_TO_STAGE_3": 29,
     "DEFERRED": 2,
     "DEFERRED_TO_STAGE_4": 18,
+    "RESOLVED-IMPLEMENTED": 42,
     "SUPERSEDED_BY_DEC-459": 1,
     "BLOCKED_ON_BUG-095": 3,
     "correlation": 1,
@@ -32635,7 +32636,6 @@
     "SUPERSEDED_BY_DEC-330": 1,
     "trade_pnl": 1,
     "OBSOLETE": 3,
-    "RESOLVED-IMPLEMENTED": 25,
     "SUPERSEDED_BY_DEC-313": 1,
     "RESOLVED-DECIDED-DEFERRED": 1,
     "BLOCKED_ON_DEC-298": 2,

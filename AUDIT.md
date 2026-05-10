@@ -32209,6 +32209,50 @@ Documents updated this sub-turn:
   - AUDIT.md (this sub-entry)
   - Both dashboards rebuilt
 
+---
+
+## Pass 53 Day 9 v8h+1 follow-on 2026-05-10 (cont): Tier B promotion sweep #3+#4 combined (17 DECs)
+
+**Scope:** 17 mixed-lineage DECs - engine architecture + ICT/SMC + adoption + statistical methodology. All verified with code+test artifacts.
+
+Engine + ICT + adoption (10):
+
+| DEC | Title | t/c refs | landing commit |
+|---|---|---|---|
+| DEC-040 | PointInTimeLoader structural framework | 1/3 | 2660e53a2 |
+| DEC-067 | 9 missing exit methods | 2/1 | 501cdbff6 |
+| DEC-153 | Regime-stratified train/test splits | 2/4 | f6287514b |
+| DEC-261 | ICT/SMC PIT N+1 lag rule | 2/1 | a9b1cb64a |
+| DEC-462 | OurTechnicalToolkit specification | 2/0 | bc98e3f2a |
+| DEC-484 | SEC EDGAR direct parsing (free FMP alt) | 2/4 | b6d6d78ca |
+| DEC-500 | Polygon ticker events agent context | 2/0 | 05c7ec01f |
+| DEC-508 | Smartmoneyconcepts fork 15-cat protocol | 11/0 | 9b0bddf7f |
+| DEC-592 | Apewisdom cumulative daily prefetcher | 2/2 | 57f9cb023 |
+| DEC-599 | StockTwits adoption (replaces pytrends) | 4/2 | bdba8f674 |
+
+Statistical methodology + quant audit (7):
+
+| DEC | Title | t/c refs | landing commit |
+|---|---|---|---|
+| DEC-246 | Quant finance correctness audit (Sharpe/DD/CAGR) | 2/4 | 935de359d |
+| DEC-247 | Stats/ML implementation review (HMM/DSR/Kelly) | 1/4 | 2e3d90795 |
+| DEC-250 | Edge decay assumption (discount Sharpe) | 1/4 | 33f834947 |
+| DEC-401 | DEC-080 Phase B Holm-Bonferroni | 2/5 | 2e3d90795 |
+| DEC-405 | DEC-082 implementation (deflated_sharpe.py) | 1/4 | 33f834947 |
+| DEC-415 | DEC-111 Phase B rolling 1y Sharpe deviation | 1/5 | 33f834947 |
+| DEC-423 | DEC-068 Bootstrap CI + paired permutation | 2/4 | 8d36017b9 |
+
+**Per-addressal pyramid:** unit + integration - 102/102 PASS for #3 verification; same for #4. Combined runs implicit.
+
+**RESOLVED-IMPLEMENTED count: 24 -> 41** (+17 this commit).
+
+**Tier B remaining READY:** ~9 across edge cases (DEC-028 Stage 3 paper trading - intentionally deferred to Stage 3; DEC-057 Disable Social Analyst - process decision; etc.). These are deferred or already-resolved-in-spec items where promotion is judgment-call rather than mechanical.
+
+Documents updated this sub-turn:
+  - AUDIT_INDEX.md (17 status flips combined batches #3+#4)
+  - AUDIT.md (this sub-entry)
+  - Both dashboards rebuilt
+
 **Same-commit (DEC-594):** script + DEC-609 + AUDIT.md narrative + contract test + dashboards rebuilt - all in this sub-turn commit.
 
 Documents updated this sub-turn:
