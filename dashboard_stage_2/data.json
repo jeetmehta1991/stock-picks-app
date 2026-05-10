@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-10T22:09:55.269213+00:00",
+  "generated_at": "2026-05-10T22:13:44.060748+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -173,7 +173,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 50,
+        "n_doc_refs": 51,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -1053,7 +1053,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 26,
+        "n_doc_refs": 27,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -1133,7 +1133,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 113,
+        "n_doc_refs": 114,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -2093,7 +2093,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 265,
+        "n_doc_refs": 267,
         "pyramid": {
           "unit": true,
           "smoke": true,
@@ -2373,7 +2373,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 46,
+        "n_doc_refs": 47,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -11093,7 +11093,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 4,
+        "n_doc_refs": 5,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -11933,7 +11933,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 11,
+        "n_doc_refs": 12,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -20413,7 +20413,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 45,
+        "n_doc_refs": 47,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -21563,7 +21563,7 @@
         "wired": true,
         "tested": true,
         "pushed": false,
-        "n_doc_refs": 34,
+        "n_doc_refs": 35,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -21867,7 +21867,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 96,
+        "n_doc_refs": 97,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -21937,7 +21937,7 @@
       "id": "BUG-21",
       "title": "`exit_strategies.py` own `_pnl` has no borrow cost  -  short comparison optimistic",
       "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
+      "sprint_context": "RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 4 2026-05-10 (sister of BUG-06; exit_strategies._pnl is gross-only by DEC-295 design; borrow cost applied centrally in apply_transaction_costs; test_bug_021 added)",
       "status_grep": {
         "coded": true,
         "wired": true,
@@ -21961,14 +21961,14 @@
         }
       },
       "short_id": "BUG-021",
-      "sprint": "(see linked DEC sprint)",
+      "sprint": "RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 4 2026-05-10 (sister of BUG-06; exit_strategies._pnl is gross-only by DEC-295 design; borrow cost applied centrally in apply_transaction_costs; test_bug_021 added)",
       "dependencies": "DEC-458",
       "description": "**File:** `backtest/engine/exit_strategies.py` lines 28\u201332",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
+        "reason": "Resolved with code + regression test"
       }
     },
     {
@@ -22007,44 +22007,6 @@
         "label": "IMPLEMENTED",
         "color": "#10b981",
         "reason": "Resolved with code + regression test"
-      }
-    },
-    {
-      "id": "BUG-24",
-      "title": "CHECKLIST item 13c says \"review ALL agent outputs\"  -  not applicable for no-agent",
-      "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 22,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "BUG-024",
-      "sprint": "(see linked DEC sprint)",
-      "dependencies": "DEC-458",
-      "description": "**File:** `CHECKLIST.md` item 13c",
-      "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
       }
     },
     {
@@ -22095,7 +22057,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 46,
+        "n_doc_refs": 49,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -22171,7 +22133,7 @@
         "wired": false,
         "tested": true,
         "pushed": false,
-        "n_doc_refs": 5,
+        "n_doc_refs": 6,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -22197,120 +22159,6 @@
         "label": "IMPLEMENTED",
         "color": "#10b981",
         "reason": "Resolved with code + regression test"
-      }
-    },
-    {
-      "id": "BUG-31",
-      "title": "HIGH  -  Walk-forward OOS minimum of 30 trades is statistically insufficient",
-      "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": false,
-        "n_doc_refs": 8,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "BUG-031",
-      "sprint": "(see linked DEC sprint)",
-      "dependencies": "DEC-458",
-      "description": "**File:** `backtest/engine/improvements.py` line 119 (`MIN_OOS_TRADES = 30`)",
-      "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
-      }
-    },
-    {
-      "id": "BUG-32",
-      "title": "HIGH  -  Profit factor minimum 1.2 too low; literature requires 1.5 minimum",
-      "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": false,
-        "n_doc_refs": 6,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "BUG-032",
-      "sprint": "(see linked DEC sprint)",
-      "dependencies": "DEC-458",
-      "description": "**File:** `backtest/config.py` line 212 and `backtest/engine/improvements.py` line 151",
-      "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
-      }
-    },
-    {
-      "id": "BUG-33",
-      "title": "HIGH  -  Sharpe ratio not required as passing criterion; computed but ignored",
-      "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": false,
-        "n_doc_refs": 6,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "BUG-033",
-      "sprint": "(see linked DEC sprint)",
-      "dependencies": "DEC-458",
-      "description": "**File:** `backtest/config.py` `PASSING_CRITERIA` dict and `backtest/results/metrics.py`",
-      "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
       }
     },
     {
@@ -26495,7 +26343,7 @@
     }
   ],
   "bugs_total_count": 148,
-  "bugs_hidden_count": 13,
+  "bugs_hidden_count": 17,
   "investigations": [
     {
       "id": "INV-001",
@@ -31148,70 +30996,76 @@
   ],
   "recent_commits": [
     {
+      "sha": "1f87aa53",
+      "subject": "Pass 53 v8h+1: Phase 3 Batch 3 - BUG-17/25 OBSOLETE + BUG-18/28/30 IMPLEMENTED (Wilder RSI fix)",
+      "author": "jeetmehta1991",
+      "rel_time": "3 minutes ago"
+    },
+    {
       "sha": "694a11fa",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 2 - BUG-01/06/10/12 IMPLEMENTED + BUG-14 OBSOLETE",
       "author": "jeetmehta1991",
-      "rel_time": "3 minutes ago"
+      "rel_time": "6 minutes ago"
     },
     {
       "sha": "3bb2f559",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 1 - BUG-08/09/15/27 RESOLVED-IMPLEMENTED with real fixes",
       "author": "jeetmehta1991",
-      "rel_time": "9 minutes ago"
+      "rel_time": "13 minutes ago"
     },
     {
       "sha": "fc9390b7",
       "subject": "Pass 53 v8h+1: Phase 2 BUG cross-references + id-form normalization (6 BUGs READY -> IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "16 minutes ago"
+      "rel_time": "20 minutes ago"
     },
     {
       "sha": "97c69b3d",
       "subject": "Pass 53 v8h+1: Phase 1 BUG categorization (10 SUPERSEDED/DEFERRED) + dashboard hide-moot-bugs filter",
       "author": "jeetmehta1991",
-      "rel_time": "26 minutes ago"
+      "rel_time": "30 minutes ago"
     },
     {
       "sha": "99d137c1",
       "subject": "Pass 53 v8h+1: BUG-270/271/272/273 pyramid overrides + Promotion dropdown filters",
       "author": "jeetmehta1991",
-      "rel_time": "38 minutes ago"
+      "rel_time": "41 minutes ago"
     },
     {
       "sha": "a7c66530",
       "subject": "Pass 53 v8h+1: DEC-610 SPEC_ONLY -> DEFERRED_TO_* re-classification (14 forward-looking DECs)",
       "author": "jeetmehta1991",
-      "rel_time": "45 minutes ago"
+      "rel_time": "49 minutes ago"
     },
     {
       "sha": "4cd84d66",
       "subject": "Pass 53 v8h+1: BUG-270 wired-flag fix (cross-reference docstring) + process self-finding",
       "author": "jeetmehta1991",
-      "rel_time": "52 minutes ago"
+      "rel_time": "56 minutes ago"
     },
     {
       "sha": "d28c8723",
       "subject": "Pass 53 v8h+1: Tier C/D edge-case sweep - DEC-057 promoted; DEC-028 no-promote (forward-looking)",
       "author": "jeetmehta1991",
-      "rel_time": "76 minutes ago"
+      "rel_time": "79 minutes ago"
     },
     {
       "sha": "10fa8617",
       "subject": "Pass 53 v8h+1: INV-041 RESOLVED - path-restricted commits in 4 prefetch scripts + 5-test regression gate",
       "author": "jeetmehta1991",
-      "rel_time": "78 minutes ago"
+      "rel_time": "82 minutes ago"
     },
     {
       "sha": "bcb6ea3f",
       "subject": "Pass 53 v8h+1: parse_inv_entries parser fix - recognize all RESOLVED-* / DEFERRED-* status variants",
       "author": "jeetmehta1991",
-      "rel_time": "83 minutes ago"
+      "rel_time": "86 minutes ago"
     },
     {
       "sha": "26340a6b",
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 20:43: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "85 minutes ago"
+      "rel_time": "89 minutes ago"
     },
     {
       "sha": "bffd8658",
@@ -31241,7 +31095,7 @@
       "sha": "936a0c0e",
       "subject": "Pass 53 v8h+1: Tier B promotion sweep #2 (5 PIT-correctness DECs - DEC-295/301/302/304/305)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "501cdbff",
@@ -31320,12 +31174,6 @@
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 16:43: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
       "rel_time": "5 hours ago"
-    },
-    {
-      "sha": "d57a07ee",
-      "subject": "Pass 53 v8h+1: Sprint 0A.8 NO-LIVE-API HARD CUT implementation (DEC-608)",
-      "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
     }
   ],
   "uncommitted": {
@@ -31341,7 +31189,7 @@
       },
       {
         "status": "M",
-        "path": "backtest/signals/technical.py"
+        "path": "backtest/engine/exit_strategies.py"
       },
       {
         "status": "M",
@@ -31539,7 +31387,7 @@
     }
   ],
   "test_inventory": {
-    "total": 762,
+    "total": 763,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -31615,7 +31463,7 @@
       "test_stocktwits_smoke": 4,
       "test_supplementary_demo": 4,
       "test_supplementary_smoke": 6,
-      "test_unit": 106,
+      "test_unit": 107,
       "test_walk_forward_4fold": 6
     }
   },

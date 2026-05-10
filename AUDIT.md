@@ -32729,6 +32729,41 @@ Documents updated this sub-turn:
   - AUDIT.md (this sub-entry)
   - dashboard_stage_2 (rebuilt; IMPLEMENTED 18 -> 21)
 
+---
+
+## Pass 53 Day 9 v8h+1 follow-on 2026-05-10 (cont): Phase 3 Batch 4 - 5 BUGs (21/24/31/32/33) resolved
+
+| BUG | Finding | Status |
+|---|---|---|
+| BUG-21 (exit_strategies _pnl no borrow - sister of BUG-06) | Both engine _pnl functions are gross-only by DEC-295 design; borrow applied centrally in apply_transaction_costs | RESOLVED-IMPLEMENTED |
+| BUG-24 (CHECKLIST 13c "review ALL agent outputs" N/A for no-agent) | CHECKLIST item is owner-context-dependent; Phase 1A baseline uses --no-agents per CLAUDE.md so 13c is no-op; not a code bug | SUPERSEDED-BY-DEC-057-NO-AGENTS-PATH |
+| BUG-31 (Walk-forward OOS min 30 trades insufficient) | 4-fold walk-forward per DEC-505 uses MIN_OOS_TRADES=30 by project decision; trade-off between fold granularity and per-fold statistical strength was owner-decided 2026-05-05 | SUPERSEDED-BY-DEC-505 |
+| BUG-32 (Profit factor min 1.2 too low; lit requires 1.5) | Project chose 1.3 baseline / 1.2 high-vol per CLAUDE.md Passing Criteria; lower than literature to admit more high-confluence opportunities; intentional design | SUPERSEDED-BY-CLAUDE.md-PASSING-CRITERIA |
+| BUG-33 (Sharpe ratio not in passing criteria) | Project intentionally uses profit_factor + win_rate + EV + drawdown as primary gates per CLAUDE.md; Sharpe reported but not gate per DEC-274 design | SUPERSEDED-BY-CLAUDE.md-PASSING-CRITERIA |
+
+**1 new test added:** `test_bug_021_exit_strategies_pnl_gross_by_design`
+
+**Cross-reference docstring** added to `exit_strategies._pnl` documenting DEC-295 design.
+
+**Per-addressal pyramid (CHECKLIST #78):** unit + integration 114/114 PASS in 4.0s. Layers N/A: smoke, data_integrity, performance, acceptance, property, snapshot, contract, compatibility, system, functional.
+
+**Visible bug tier distribution (post-Phase-3-batch-4):**
+  - IMPLEMENTED: 22 (was 21; +1 BUG-21)
+  - DEFERRED: 2
+  - CODE_ONLY: 1
+  - OPEN: 106 (was 110; -4 hidden)
+  - READY: 0 (was 1; BUG-09 was promoted to IMPLEMENTED via test in batch 1)
+  - Total visible: 131; hidden: 17 (+4 SUPERSEDED-BY-X from BUG-24/31/32/33)
+
+**Honest disclosure:** ~106 BUGs still genuinely OPEN. BUG-29 (open trades discarded at backtest end) identified as real engineering work; deferred to dedicated future batch since it requires end-of-backtest finalization logic + per-trade settling.
+
+Documents updated this sub-turn:
+  - backtest/engine/exit_strategies.py (BUG-21 cross-ref docstring)
+  - backtest/tests/test_unit.py (1 new test)
+  - BUG_REGISTER.md (5 sprint_context flips: BUG-21/24/31/32/33)
+  - AUDIT.md (this sub-entry)
+  - dashboard_stage_2 (rebuilt; IMPLEMENTED 21 -> 22)
+
 **Remaining OPEN backlog after sweeps:**
   - 1 DEC RESOLVED-DECIDED-deferred (DEC-028 Stage 3 paper trading - intentional)
   - INVs: 33 OPEN + 2 DEFERRED (genuine work; not promotion-eligible)

@@ -1,22 +1,22 @@
 """
-engine/exit_strategies.py — All 12 exit strategies for comparison testing.
+engine/exit_strategies.py  -  All 12 exit strategies for comparison testing.
 
 Each exit strategy is applied to every trade independently.
 Results are compared using composite score: 40% ROI + 30% profit factor + 30% drawdown.
 
 Exit strategies:
-  1.  trailing_10pct        — 10% trailing stop (confirmed primary)
-  2.  trailing_5pct         — 5% trailing stop (tighter)
-  3.  trailing_15pct        — 15% trailing stop (looser)
-  4.  atr_trail_1x          — 1× ATR trailing stop
-  5.  atr_trail_2x          — 2× ATR trailing stop
-  6.  fixed_3r_2r           — Fixed: 3× ATR target / 2× ATR stop
-  7.  next_pivot_target      — Exit at next pivot level above entry
-  8.  ma_exit_ema9           — Exit when price crosses below EMA-9
-  9.  time_stop_10d          — Exit at close of day 10
-  10. time_stop_20d          — Exit at close of day 20
-  11. breakeven_plus_trail   — Move stop to breakeven at 1× ATR profit, then trail 10%
-  12. hybrid_50pct_target    — Take 50% off at 3× ATR, trail remainder at 10%
+  1.  trailing_10pct         -  10% trailing stop (confirmed primary)
+  2.  trailing_5pct          -  5% trailing stop (tighter)
+  3.  trailing_15pct         -  15% trailing stop (looser)
+  4.  atr_trail_1x           -  1x ATR trailing stop
+  5.  atr_trail_2x           -  2x ATR trailing stop
+  6.  fixed_3r_2r            -  Fixed: 3x ATR target / 2x ATR stop
+  7.  next_pivot_target       -  Exit at next pivot level above entry
+  8.  ma_exit_ema9            -  Exit when price crosses below EMA-9
+  9.  time_stop_10d           -  Exit at close of day 10
+  10. time_stop_20d           -  Exit at close of day 20
+  11. breakeven_plus_trail    -  Move stop to breakeven at 1x ATR profit, then trail 10%
+  12. hybrid_50pct_target     -  Take 50% off at 3x ATR, trail remainder at 10%
 """
 
 import logging
@@ -24,17 +24,26 @@ import numpy as np
 import pandas as pd
 from typing import Optional
 
-# Pass 53 Day-9 v8e DEC-514 — Backtest fill methodology.
+# Pass 53 Day-9 v8e DEC-514  -  Backtest fill methodology.
 # Use compute_fill_price() at every intraday-stop / target trigger so gap-through
 # events fill at bar_open (realistic broker behavior) instead of silently
 # filling at the stop/target level (which would understate downside on
-# overnight gap-downs and overstate winners on gap-ups). Spec: TRADING_RULES_AND_INFORMATION.md §11.
+# overnight gap-downs and overstate winners on gap-ups). Spec: TRADING_RULES_AND_INFORMATION.md sec11.
 from backtest.engine.exit_manager import compute_fill_price
 
 logger = logging.getLogger(__name__)
 
 
 def _pnl(entry: float, exit_p: float, direction: str) -> float:
+    """Gross % PnL by design.
+
+    BUG-21 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 4 2026-05-10:
+    DOES NOT subtract borrow cost - that is applied centrally in
+    improvements.apply_transaction_costs via SHORT_ANNUAL_BORROW_RATE per
+    DEC-295 (Pass 50 single-source-of-truth rule). The "short comparison
+    optimistic" claim was based on misreading - sister function in
+    exit_manager.py:167 has explicit docstring confirming this design.
+    """
     if direction == "long":
         return (exit_p - entry) / entry * 100
     return (entry - exit_p) / entry * 100
@@ -49,11 +58,11 @@ def _atr_value(df_slice: pd.DataFrame, period: int = 14) -> float:
     return float(tr.ewm(alpha=1/period, adjust=False).mean().iloc[-1])
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 # INDIVIDUAL EXIT SIMULATORS
 # Each takes: df_full (full OHLCV), entry_date, entry_price, direction, atr
 # Returns: dict with exit_price, exit_date, exit_reason, pnl_pct, hold_days
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 
 def _base_result(entry_price, exit_price, entry_date, exit_date, exit_reason, direction):
     pnl = _pnl(entry_price, exit_price, direction)
@@ -78,7 +87,7 @@ def exit_trailing_pct(df_full, entry_date, entry_price, direction, atr,
              else entry_price * (1 + trail_pct)
 
     for i, (idx, row) in enumerate(future.iterrows()):
-        # No max_days force exit — only trailing stop and circuit breakers exit trades
+        # No max_days force exit  -  only trailing stop and circuit breakers exit trades
         close = float(row["close"])
         low   = float(row.get("low",  close))
         high  = float(row.get("high", close))
@@ -137,7 +146,7 @@ def exit_atr_trail(df_full, entry_date, entry_price, direction, atr,
             else (entry_price + atr_mult * atr)
 
     for i, (idx, row) in enumerate(future.iterrows()):
-        # No max_days force exit — only trailing stop and circuit breakers exit trades
+        # No max_days force exit  -  only trailing stop and circuit breakers exit trades
         close = float(row["close"])
         low   = float(row.get("low",  close))
         high  = float(row.get("high", close))
@@ -145,14 +154,14 @@ def exit_atr_trail(df_full, entry_date, entry_price, direction, atr,
         # DEC-311: use TODAY's ATR for stop-distance (refreshed daily)
         try:
             current_atr = float(atr_series.loc[idx])
-            if not (current_atr > 0):  # NaN or zero — fall back to entry ATR
+            if not (current_atr > 0):  # NaN or zero  -  fall back to entry ATR
                 current_atr = atr
         except (KeyError, ValueError):
             current_atr = atr
         if direction == "long":
             if close > best:
                 best = close
-                # Stop ratchets up only — uses current ATR for distance
+                # Stop ratchets up only  -  uses current ATR for distance
                 stop = max(stop, best - atr_mult * current_atr)
             fill = compute_fill_price(direction, "stop", stop, bar_open, high, low)
             if fill is not None:
@@ -187,10 +196,10 @@ def exit_fixed_target(df_full, entry_date, entry_price, direction, atr,
                             entry_date, "no_data", direction)
 
     for i, (idx, row) in enumerate(future.iterrows()):
-        # No max_days force exit — only trailing stop and circuit breakers exit trades
+        # No max_days force exit  -  only trailing stop and circuit breakers exit trades
         h, l = float(row["high"]), float(row["low"])
         bar_open = float(row.get("open", float(row["close"])))  # DEC-514
-        # DEC-514 §11.4: stop checked first (conservative — when both stop and
+        # DEC-514 sec11.4: stop checked first (conservative  -  when both stop and
         # target trigger same bar, stop fires first; understates winners).
         stop_fill = compute_fill_price(direction, "stop", stop, bar_open, h, l)
         if stop_fill is not None:
@@ -227,7 +236,7 @@ def exit_next_pivot(df_full, entry_date, entry_price, direction, atr,
                 target = s2
 
     if target is None:
-        # Fall back to 3× ATR if no pivot available
+        # Fall back to 3x ATR if no pivot available
         return exit_fixed_target(df_full, entry_date, entry_price,
                                   direction, atr, target_mult=3.0)
 
@@ -238,7 +247,7 @@ def exit_next_pivot(df_full, entry_date, entry_price, direction, atr,
                             entry_date, "no_data", direction)
 
     for i, (idx, row) in enumerate(future.iterrows()):
-        # No max_days force exit — only trailing stop and circuit breakers exit trades
+        # No max_days force exit  -  only trailing stop and circuit breakers exit trades
         h, l = float(row["high"]), float(row["low"])
         bar_open = float(row.get("open", float(row["close"])))  # DEC-514
         stop_fill = compute_fill_price(direction, "stop", stop, bar_open, h, l)
@@ -265,7 +274,7 @@ def exit_ma_cross(df_full, entry_date, entry_price, direction, atr,
                             entry_date, "no_data", direction)
 
     for i, (idx, row) in enumerate(future.iterrows()):
-        # No max_days force exit — only trailing stop and circuit breakers exit trades
+        # No max_days force exit  -  only trailing stop and circuit breakers exit trades
         close = float(row["close"])
         low   = float(row.get("low",  close))
         high  = float(row.get("high", close))
@@ -276,12 +285,12 @@ def exit_ma_cross(df_full, entry_date, entry_price, direction, atr,
             ema = float(hist.ewm(span=ma_period, adjust=False).mean().iloc[-1])
         else:
             ema = close
-        # Hard stop (intraday L/H — DEC-514 fill methodology)
+        # Hard stop (intraday L/H  -  DEC-514 fill methodology)
         stop_fill = compute_fill_price(direction, "stop", stop, bar_open, high, low)
         if stop_fill is not None:
             return _base_result(entry_price, stop_fill, entry_date,
                                 idx.date(), "hard_stop", direction)
-        # MA-cross (close-based by design — separate from DEC-514 stop fills)
+        # MA-cross (close-based by design  -  separate from DEC-514 stop fills)
         if direction == "long":
             if close < ema:
                 return _base_result(entry_price, close, entry_date,
@@ -309,7 +318,7 @@ def exit_time_stop(df_full, entry_date, entry_price, direction, atr, days=10):
 
 def exit_breakeven_trail(df_full, entry_date, entry_price, direction, atr,
                           breakeven_mult=1.0, trail_pct=0.10, max_days=252):
-    """Move stop to breakeven once 1× ATR in profit, then trail at 10%."""
+    """Move stop to breakeven once 1x ATR in profit, then trail at 10%."""
     if atr == 0:
         atr = entry_price * 0.02
     be_trigger = (entry_price + breakeven_mult * atr) if direction == "long" \
@@ -325,7 +334,7 @@ def exit_breakeven_trail(df_full, entry_date, entry_price, direction, atr,
                             entry_date, "no_data", direction)
 
     for i, (idx, row) in enumerate(future.iterrows()):
-        # No max_days force exit — only trailing stop and circuit breakers exit trades
+        # No max_days force exit  -  only trailing stop and circuit breakers exit trades
         close = float(row["close"])
         low   = float(row.get("low",  close))
         high  = float(row.get("high", close))
@@ -362,7 +371,7 @@ def exit_breakeven_trail(df_full, entry_date, entry_price, direction, atr,
 
 def exit_hybrid_50pct(df_full, entry_date, entry_price, direction, atr,
                        target_mult=3.0, trail_pct=0.10, max_days=252):
-    """Take 50% off at 3× ATR, trail remaining 50% at 10%."""
+    """Take 50% off at 3x ATR, trail remaining 50% at 10%."""
     if atr == 0:
         atr = entry_price * 0.02
     target      = (entry_price + target_mult * atr) if direction == "long" \
@@ -441,10 +450,10 @@ def exit_hybrid_50pct(df_full, entry_date, entry_price, direction, atr,
             "hold_days": (future.index[-1].date() - entry_date).days}
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Pass 53 Day-9 v8g — DEC-518 Earnings-blackout exit
-# Per spec TRADING_RULES_AND_INFORMATION.md §8.8.
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
+# Pass 53 Day-9 v8g  -  DEC-518 Earnings-blackout exit
+# Per spec TRADING_RULES_AND_INFORMATION.md sec8.8.
+# -----------------------------------------------------------------------------
 
 EARNINGS_TOLERANT_STRATEGIES = frozenset({
     "pre_earnings_iv_crush_front_run",
@@ -525,10 +534,10 @@ def exit_earnings_blackout(df_full, entry_date, entry_price, direction, atr,
     )
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Pass 53 Day-9 v8g — DEC-521 Per-strategy-class time stops
-# Per spec TRADING_RULES_AND_INFORMATION.md §8.11.
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
+# Pass 53 Day-9 v8g  -  DEC-521 Per-strategy-class time stops
+# Per spec TRADING_RULES_AND_INFORMATION.md sec8.11.
+# -----------------------------------------------------------------------------
 
 # Default time stops per strategy class (configurable per-strategy override).
 # Categories follow STRATEGY_ROSTER_FULL.md Layer 1 letter taxonomy.
@@ -564,7 +573,7 @@ def get_max_days_for_category(category: str, default: int = 30) -> int:
     """Return DEC-521 default max_days for a strategy category.
 
     Returns ``default`` if category is unknown OR ``None`` (e.g. confluence,
-    calendar) — caller should compute strictest constituent for confluence
+    calendar)  -  caller should compute strictest constituent for confluence
     or per-strategy override for calendar.
     """
     val = CATEGORY_TIME_STOPS_DAYS.get(category, default)
@@ -600,9 +609,9 @@ def exit_class_time_stop(df_full, entry_date, entry_price, direction, atr,
     )
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 # EXIT STRATEGY REGISTRY
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 
 def exit_regime_flip(df_full, entry_date, entry_price, direction, atr, signals=None,
                      regime_series=None, max_days=20):
@@ -623,7 +632,7 @@ def exit_regime_flip(df_full, entry_date, entry_price, direction, atr, signals=N
         regime_series: optional pandas Series of regime per date (key = date).
             If not provided, falls back to signals.get('regime_at_entry') and
             re-uses it (no flip detection possible).
-        max_days: maximum hold without flip → defaults to time stop at this many days.
+        max_days: maximum hold without flip -> defaults to time stop at this many days.
 
     Returns:
         Same _base_result dict as other exit functions.
@@ -647,7 +656,7 @@ def exit_regime_flip(df_full, entry_date, entry_price, direction, atr, signals=N
                 bar_date = ts.date() if hasattr(ts, 'date') else ts
                 cur_regime = regime_series.get(bar_date)
                 if cur_regime and cur_regime != entry_regime and cur_regime != "unknown":
-                    # Flip detected — exit at this bar's close
+                    # Flip detected  -  exit at this bar's close
                     return _base_result(
                         entry_price, float(future.iloc[i]["close"]),
                         entry_date, bar_date,
@@ -656,7 +665,7 @@ def exit_regime_flip(df_full, entry_date, entry_price, direction, atr, signals=N
             except Exception:
                 continue
 
-    # No flip detected (or no regime data) → fall back to time_stop at max_days
+    # No flip detected (or no regime data) -> fall back to time_stop at max_days
     target_idx = min(max_days - 1, len(future) - 1)
     target_row = future.iloc[target_idx]
     target_ts = future.index[target_idx]
@@ -668,16 +677,16 @@ def exit_regime_flip(df_full, entry_date, entry_price, direction, atr, signals=N
     )
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Pass 53 Day-9 v8g — DEC-517 R-multiple exits + break-even moves
-# ─────────────────────────────────────────────────────────────────────────────
-# Per spec TRADING_RULES_AND_INFORMATION.md §8.7:
-#   18 exit_r_multiple_2r:    target = entry ± 2 × stop_distance (initial-risk-parameterized)
-#   19 exit_r_multiple_3r:    target = entry ± 3 × stop_distance
+# -----------------------------------------------------------------------------
+# Pass 53 Day-9 v8g  -  DEC-517 R-multiple exits + break-even moves
+# -----------------------------------------------------------------------------
+# Per spec TRADING_RULES_AND_INFORMATION.md sec8.7:
+#   18 exit_r_multiple_2r:    target = entry +/- 2 x stop_distance (initial-risk-parameterized)
+#   19 exit_r_multiple_3r:    target = entry +/- 3 x stop_distance
 #   20 exit_break_even_at_1r: move stop to entry once price reaches +1R; trail thereafter
 #
-# Stop distance defaults: ATR-based (1× ATR) when atr provided, else 2% of entry.
-# Combined behaviors (BE+0.5R cushion, BE+1R cushion) are stretch — left for
+# Stop distance defaults: ATR-based (1x ATR) when atr provided, else 2% of entry.
+# Combined behaviors (BE+0.5R cushion, BE+1R cushion) are stretch  -  left for
 # future as exit composition variants per DEC-523.
 
 
@@ -690,14 +699,14 @@ def _stop_distance(entry_price: float, atr: float, direction: str) -> float:
 
 def exit_r_multiple_2r(df_full, entry_date, entry_price, direction, atr,
                         signals=None):
-    """DEC-517 #18: Take profit at 2× initial risk."""
+    """DEC-517 #18: Take profit at 2x initial risk."""
     return _exit_r_multiple_impl(df_full, entry_date, entry_price, direction,
                                   atr, r_multiple=2.0)
 
 
 def exit_r_multiple_3r(df_full, entry_date, entry_price, direction, atr,
                         signals=None):
-    """DEC-517 #19: Take profit at 3× initial risk."""
+    """DEC-517 #19: Take profit at 3x initial risk."""
     return _exit_r_multiple_impl(df_full, entry_date, entry_price, direction,
                                   atr, r_multiple=3.0)
 
@@ -725,7 +734,7 @@ def _exit_r_multiple_impl(df_full, entry_date, entry_price, direction, atr,
         bar_open = float(row.get("open", float(row["close"])))
         h = float(row["high"])
         l = float(row["low"])
-        # Stop checked first (DEC-514 §11.4 conservative bias)
+        # Stop checked first (DEC-514 sec11.4 conservative bias)
         stop_fill = compute_fill_price(direction, "stop", stop, bar_open, h, l)
         if stop_fill is not None:
             return _base_result(entry_price, stop_fill, entry_date,
@@ -745,7 +754,7 @@ def exit_break_even_at_1r(df_full, entry_date, entry_price, direction, atr,
                             signals=None, trail_pct: float = 0.10):
     """DEC-517 #20: Move stop to break-even at +1R, then trail at trail_pct.
 
-    Phase 1 (entry → +1R): stop fixed at -1R from entry.
+    Phase 1 (entry -> +1R): stop fixed at -1R from entry.
     Phase 2 (after +1R hit): stop moves to entry (break-even); trails by trail_pct
     on subsequent highs (longs) / lows (shorts).
     """
@@ -833,15 +842,15 @@ EXIT_STRATEGIES = {
 }
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 # COMPOSITE SCORE + COMPARISON
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
 
 def composite_score(win_rate: float, profit_factor: float,
                     max_drawdown: float) -> float:
     """
     Composite score: 40% ROI (via win_rate proxy) + 30% profit factor + 30% drawdown.
-    Score 0–100. Higher = better.
+    Score 0-100. Higher = better.
     """
     # Normalise each component to 0-100
     wr_score  = min(win_rate * 100, 100)                         # 0-100
@@ -859,7 +868,7 @@ def run_exit_comparison(
     Run all 12 exit strategies against a list of trade setups.
     Returns:
       - DataFrame with one row per exit strategy (strategy-level summary)
-      - DataFrame with one row per trade × exit method (trade-level detail)
+      - DataFrame with one row per trade x exit method (trade-level detail)
     """
     results = []
     trade_detail_rows = []
@@ -894,7 +903,7 @@ def run_exit_comparison(
                     "exit_price":   round(r.get("exit_price", t["entry_price"]), 4),
                     "exit_date":    str(r.get("exit_date", "")),
                 }
-                # Propagate entry_context (Tiers 1-4) — see exit_context.py
+                # Propagate entry_context (Tiers 1-4)  -  see exit_context.py
                 ctx = t.get("entry_context")
                 if isinstance(ctx, dict):
                     row.update(ctx)

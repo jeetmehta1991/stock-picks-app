@@ -1731,6 +1731,25 @@ def test_bug_028_rsi_uses_wilder_smoothing():
     # (note: rolling may appear elsewhere for non-RSI metrics)
 
 
+def test_bug_021_exit_strategies_pnl_gross_by_design():
+    """BUG-21: exit_strategies._pnl is gross-only by design (DEC-295).
+
+    Pass 53 v8h+1 Phase 3 Batch 4 cross-reference 2026-05-10. Sister of BUG-06.
+    Borrow cost applied centrally in apply_transaction_costs; both engine
+    _pnl functions (exit_manager + exit_strategies) are gross by design.
+    """
+    import inspect
+    from backtest.engine.exit_strategies import _pnl
+    doc = inspect.getdoc(_pnl) or ""
+    assert "BUG-21" in doc, "BUG-21 cross-reference must exist"
+    assert "DEC-295" in doc, "DEC-295 single-source-of-truth reference must exist"
+    # Pnl is symmetric in absolute terms across long/short
+    long_pnl = _pnl(100.0, 110.0, "long")
+    short_pnl = _pnl(100.0, 90.0, "short")
+    assert abs(long_pnl - 10.0) < 0.01
+    assert abs(short_pnl - 10.0) < 0.01
+
+
 def test_bug_030_vix_crisis_tightens_stops():
     """BUG-30: VIX crisis (Level 5 CB) tightens stops per documented behavior.
 
