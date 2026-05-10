@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-10T20:19:13.928157+00:00",
+  "generated_at": "2026-05-10T20:43:27.456652+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -31600,40 +31600,46 @@
   ],
   "recent_commits": [
     {
+      "sha": "bffd8658",
+      "subject": "Pass 53 v8h+1: INV promotion sweep - INV-045 RESOLVED + 4 NOOPs (CHECKLIST #81)",
+      "author": "jeetmehta1991",
+      "rel_time": "24 minutes ago"
+    },
+    {
       "sha": "cab09977",
       "subject": "Pass 53 v8h+1: BUG promotion sweep (CHECKLIST #81 first application; 4 HIGH-severity smart_money bugs)",
       "author": "jeetmehta1991",
-      "rel_time": "2 minutes ago"
+      "rel_time": "26 minutes ago"
     },
     {
       "sha": "4addd669",
       "subject": "Pass 53 v8h+1: Tier B promotion sweep #3+#4 combined (17 DECs RESOLVED-DECIDED -> RESOLVED-IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "4 minutes ago"
+      "rel_time": "28 minutes ago"
     },
     {
       "sha": "f798881b",
       "subject": "Pass 53 v8h+1: Tier A promotion sweep (8 Phase 1A meta DECs - DEC-497/503/505/507/590/591/594/595)",
       "author": "jeetmehta1991",
-      "rel_time": "14 minutes ago"
+      "rel_time": "38 minutes ago"
     },
     {
       "sha": "936a0c0e",
       "subject": "Pass 53 v8h+1: Tier B promotion sweep #2 (5 PIT-correctness DECs - DEC-295/301/302/304/305)",
       "author": "jeetmehta1991",
-      "rel_time": "36 minutes ago"
+      "rel_time": "61 minutes ago"
     },
     {
       "sha": "501cdbff",
       "subject": "Pass 53 v8h+1: Tier B engine-correctness promotion sweep #1 (6 DECs RESOLVED-DECIDED -> RESOLVED-IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "48 minutes ago"
+      "rel_time": "73 minutes ago"
     },
     {
       "sha": "77f57b21",
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 18:43: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "63 minutes ago"
+      "rel_time": "88 minutes ago"
     },
     {
       "sha": "4f9e558c",
@@ -31657,19 +31663,19 @@
       "sha": "25485a1b",
       "subject": "Pass 53 v8h+1: H4 Polygon reference extended verify (DONE-WITH-DELISTING-CAP per CAV-075 sister pattern)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "fc5c43f4",
       "subject": "Pass 53 v8h+1: H16 + H22 verify (DONE / PARTIAL-DONE-WITH-FINDING + INV-048)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "fe623f3e",
       "subject": "Pass 53 v8h+1: H6 indicator completeness verify + macd top-up (1911 -> 1937)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "b76fc3d1",
@@ -31693,19 +31699,19 @@
       "sha": "4bf07436",
       "subject": "Pass 53 v8h+1: H1.a OHLCV Master Dedup prefetch script + DEC-609 (Option B)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "aee93c01",
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 16:43: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "d57a07ee",
       "subject": "Pass 53 v8h+1: Sprint 0A.8 NO-LIVE-API HARD CUT implementation (DEC-608)",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "bdba8f67",
@@ -31729,7 +31735,7 @@
       "sha": "d6e6296d",
       "subject": "Pass 53 v8h+1: Coverage Matrix kind-aware metrics + commentary updated + CHECKLIST #80",
       "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
+      "rel_time": "7 hours ago"
     },
     {
       "sha": "ecc846c2",
@@ -31741,59 +31747,57 @@
       "sha": "2244b1e5",
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 10:13: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
+      "rel_time": "8 hours ago"
     },
     {
       "sha": "27944fa2",
       "subject": "Pass 53 v8h+1: DEC-606 Finnhub financials_reported EXCLUDED COMPLETELY + CAV-075 (delisting confirmed) + CAV-076",
       "author": "jeetmehta1991",
-      "rel_time": "8 hours ago"
+      "rel_time": "9 hours ago"
     },
     {
       "sha": "c3322875",
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 08:13: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "9 hours ago"
+      "rel_time": "10 hours ago"
     },
     {
       "sha": "ef42fd1b",
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 06:13: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "11 hours ago"
+      "rel_time": "12 hours ago"
     },
     {
       "sha": "06c4c1d4",
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 04:13: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "13 hours ago"
+      "rel_time": "14 hours ago"
     },
     {
       "sha": "ae51b3bd",
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 02:13: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "15 hours ago"
-    },
-    {
-      "sha": "6d41cc66",
-      "subject": "Pass 53 auto-drift-sweep 2026-05-09 15:53: dashboards refreshed (no numerical drift)",
-      "author": "jeetmehta1991",
-      "rel_time": "17 hours ago"
+      "rel_time": "16 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 2,
-    "modified": 2,
+    "count": 3,
+    "modified": 3,
     "added": 0,
     "untracked": 0,
     "deleted": 0,
     "files": [
       {
         "status": "M",
-        "path": "AUDIT.md"
+        "path": "dashboard_sprint0a/data.js"
       },
       {
         "status": "M",
-        "path": "OPEN_INVESTIGATIONS.md"
+        "path": "dashboard_sprint0a/data.json"
+      },
+      {
+        "status": "M",
+        "path": "dashboard_sprint0a/last_run.txt"
       }
     ]
   },
