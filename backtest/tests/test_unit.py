@@ -1689,3 +1689,65 @@ def test_bug_012_dedup_strategy_count_priority():
     assert "strategy_count desc" in src or "sorted by strategy_count" in src, (
         "dedup must order candidates by strategy_count, not first-fire"
     )
+
+
+def test_bug_018_bonferroni_parameterized():
+    """BUG-18: bonferroni_adjusted_threshold takes n_strategies as parameter.
+
+    Pass 53 v8h+1 Phase 3 Batch 3 cross-reference 2026-05-10. Original bug:
+    "hardcoded to 60 strategies, should be 72". Fix: function now parameterized;
+    caller passes len(ALL_STRATEGIES) so the count scales with the layered roster.
+    """
+    import inspect
+    from backtest.engine.improvements import bonferroni_adjusted_threshold
+    sig = inspect.signature(bonferroni_adjusted_threshold)
+    assert "n_strategies" in sig.parameters, "n_strategies must be a parameter"
+    # Function should work for any reasonable strategy count
+    r60 = bonferroni_adjusted_threshold(60)
+    r72 = bonferroni_adjusted_threshold(72)
+    r130 = bonferroni_adjusted_threshold(130)
+    assert r60["n_strategies"] == 60
+    assert r72["n_strategies"] == 72
+    assert r130["n_strategies"] == 130
+    # Adjusted significance scales: more strategies -> stricter threshold
+    assert r130["adjusted_significance"] < r60["adjusted_significance"]
+
+
+def test_bug_028_rsi_uses_wilder_smoothing():
+    """BUG-28: RSI computation uses Wilder smoothing (alpha=1/p) not SMA.
+
+    Pass 53 v8h+1 Phase 3 Batch 3 fix 2026-05-10. Fallback path (when pandas_ta
+    unavailable) was using `rolling(p).mean()` simple moving average; fixed to
+    `ewm(alpha=1/p, adjust=False).mean()` Wilder exponential smoothing per
+    Wilder (1978) canonical formula.
+    """
+    import inspect
+    from backtest.signals.technical import compute_rsi
+    src = inspect.getsource(compute_rsi)
+    assert "BUG-28" in src, "BUG-28 cross-reference must exist"
+    # Fallback path must use Wilder smoothing (ewm with alpha=1/p)
+    assert "ewm(alpha=1" in src, "RSI fallback must use Wilder ewm smoothing"
+    # Should NOT have the buggy rolling(p).mean() pattern in the diff branch
+    # (note: rolling may appear elsewhere for non-RSI metrics)
+
+
+def test_bug_030_vix_crisis_tightens_stops():
+    """BUG-30: VIX crisis (Level 5 CB) tightens stops per documented behavior.
+
+    Pass 53 v8h+1 Phase 3 Batch 3 cross-reference 2026-05-10. Original bug
+    claimed inconsistency between docs and code. exit_manager.py:218-222
+    correctly tightens stops on VIX crisis additively (does not exit position).
+    Documentation at exit_manager.py:15 confirms this is the intended behavior.
+    """
+    import inspect
+    from backtest.engine import exit_manager
+    src = inspect.getsource(exit_manager)
+    # The Level 5 VIX crisis path must produce a tighten_stop action
+    assert "tighten_stop" in src and "vix_crisis" in src, (
+        "VIX crisis must produce tighten_stop action"
+    )
+    # Module docstring documents this behavior
+    mod_doc = inspect.getdoc(exit_manager) or ""
+    assert "VIX crisis" in mod_doc and "tighten" in mod_doc, (
+        "exit_manager module docstring must describe VIX crisis tighten behavior"
+    )

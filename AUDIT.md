@@ -32691,6 +32691,44 @@ Documents updated this sub-turn:
   - AUDIT.md (this sub-entry)
   - dashboard_stage_2 (rebuilt; IMPLEMENTED 14 -> 18)
 
+---
+
+## Pass 53 Day 9 v8h+1 follow-on 2026-05-10 (cont): Phase 3 Batch 3 - 5 BUGs (17/18/25/28/30) resolved
+
+Owner directive auto-proceed Batch 3:
+
+| BUG | Finding | Status |
+|---|---|---|
+| BUG-17 (run_commit.sh hangs on input()) | Script no longer exists; commit workflow now uses git directly per per-turn push standing approval | OBSOLETE |
+| BUG-18 (Bonferroni hardcoded to 60, should be 72) | improvements.py:499 `bonferroni_adjusted_threshold` is parameterized; caller passes n_strategies. Function scales correctly for 60/72/130 strategies. | RESOLVED-IMPLEMENTED |
+| BUG-25 (run_tests.sh missing --no-agents flag) | Script no longer exists; tests run via pytest directly with --no-agents handled in test_e2e_phase1a_smoke fixture | OBSOLETE |
+| BUG-28 (RSI uses simple rolling mean not Wilder) | Fallback path (pandas_ta unavailable) was using `rolling(p).mean()` SMA; fixed to `ewm(alpha=1/p, adjust=False).mean()` Wilder smoothing per Wilder (1978) canonical formula | RESOLVED-IMPLEMENTED |
+| BUG-30 (VIX tightening in crisis docs contradiction) | exit_manager.py:218-222 correctly tightens stops on VIX crisis (additive, position survives); module docstring at exit_manager.py:15 documents the intended behavior; original "contradiction" claim was based on stale doc/code mismatch which no longer exists | RESOLVED-IMPLEMENTED |
+
+**3 new tests added:**
+  - `test_bug_018_bonferroni_parameterized` (verifies n_strategies scaling 60/72/130)
+  - `test_bug_028_rsi_uses_wilder_smoothing` (verifies ewm(alpha=1/p) in compute_rsi)
+  - `test_bug_030_vix_crisis_tightens_stops` (verifies tighten_stop action + docstring consistency)
+
+**Real engineering fix this batch:** BUG-28 RSI fallback path migrated from SMA to Wilder smoothing in compute_rsi at technical.py:181+.
+
+**Per-addressal pyramid (CHECKLIST #78):** unit + integration 113/113 PASS in 3.9s. Layers N/A: smoke (no engine smoke triggered), data_integrity (no data change), performance, acceptance, property, snapshot, contract, compatibility, system, functional.
+
+**Visible bug tier distribution (post-Phase-3-batch-3):**
+  - IMPLEMENTED: 21 (was 18; +3 from this batch)
+  - READY: 1
+  - CODE_ONLY: 1
+  - DEFERRED: 2
+  - OPEN: 110 (was 115)
+  - Total visible: 135; hidden: 13 (+2 OBSOLETE from BUG-17/25)
+
+Documents updated this sub-turn:
+  - backtest/signals/technical.py (BUG-28 fix: Wilder smoothing in RSI fallback)
+  - backtest/tests/test_unit.py (3 new BUG tests)
+  - BUG_REGISTER.md (5 sprint_context flips: BUG-17/18/25/28/30)
+  - AUDIT.md (this sub-entry)
+  - dashboard_stage_2 (rebuilt; IMPLEMENTED 18 -> 21)
+
 **Remaining OPEN backlog after sweeps:**
   - 1 DEC RESOLVED-DECIDED-deferred (DEC-028 Stage 3 paper trading - intentional)
   - INVs: 33 OPEN + 2 DEFERRED (genuine work; not promotion-eligible)

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-10T22:06:35.196036+00:00",
+  "generated_at": "2026-05-10T22:09:55.269213+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -1133,7 +1133,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 112,
+        "n_doc_refs": 113,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -2093,7 +2093,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 264,
+        "n_doc_refs": 265,
         "pyramid": {
           "unit": true,
           "smoke": true,
@@ -11933,7 +11933,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 10,
+        "n_doc_refs": 11,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -21333,7 +21333,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 21,
+        "n_doc_refs": 22,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -21373,7 +21373,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 60,
+        "n_doc_refs": 64,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -21411,7 +21411,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 57,
+        "n_doc_refs": 58,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -21563,7 +21563,7 @@
         "wired": true,
         "tested": true,
         "pushed": false,
-        "n_doc_refs": 31,
+        "n_doc_refs": 34,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -21715,7 +21715,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 168,
+        "n_doc_refs": 171,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -21791,7 +21791,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 37,
+        "n_doc_refs": 40,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -21858,56 +21858,18 @@
       }
     },
     {
-      "id": "BUG-17",
-      "title": "`run_commit.sh` full mode hangs on interactive `input()` in merge script",
-      "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 89,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "BUG-017",
-      "sprint": "(see linked DEC sprint)",
-      "dependencies": "DEC-458",
-      "description": "**Files:** `run_commit.sh` line 57, `scripts/merge_batch_outputs.py` line 117",
-      "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
-      }
-    },
-    {
       "id": "BUG-18",
       "title": "Bonferroni correction hardcoded to 60 strategies, should be 72",
       "linked_decisions": "DEC-080, DEC-400, DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
+      "sprint_context": "RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 3 2026-05-10 (bonferroni_adjusted_threshold at improvements.py:499 takes n_strategies as parameter; caller passes len(ALL_STRATEGIES) so scales with layered roster; test_bug_018 verifies scaling)",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
-        "tested": false,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 96,
         "pyramid": {
-          "unit": false,
+          "unit": true,
           "smoke": false,
           "integration": false,
           "system": false,
@@ -21923,14 +21885,14 @@
         }
       },
       "short_id": "BUG-018",
-      "sprint": "(see linked DEC sprint)",
+      "sprint": "RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 3 2026-05-10 (bonferroni_adjusted_threshold at improvements.py:499 takes n_strategies as parameter; caller passes len(ALL_STRATEGIES) so scales with layered roster; test_bug_018 verifies scaling)",
       "dependencies": "DEC-080; DEC-400; DEC-458",
       "description": "**File:** `backtest/engine/backtest.py` line 621",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Resolved with code + regression test"
       }
     },
     {
@@ -22086,44 +22048,6 @@
       }
     },
     {
-      "id": "BUG-25",
-      "title": "`run_tests.sh` does not pass `--no-agents` flag",
-      "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": false,
-        "n_doc_refs": 23,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "BUG-025",
-      "sprint": "(see linked DEC sprint)",
-      "dependencies": "DEC-458",
-      "description": "**File:** `run_tests.sh` \u2014 all 5 batch commands",
-      "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
-      }
-    },
-    {
       "id": "BUG-27",
       "title": "CRITICAL  -  `regime_confidence()` function built but never called  -  dead code",
       "linked_decisions": "DEC-458",
@@ -22165,15 +22089,15 @@
       "id": "BUG-28",
       "title": "HIGH  -  RSI computation uses simple rolling mean instead of Wilder exponential sm",
       "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
+      "sprint_context": "RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 3 2026-05-10 (compute_rsi fallback path now uses Wilder ewm(alpha=1/p) instead of rolling(p).mean(); pandas_ta path already Wilder; test_bug_028 verifies)",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 46,
         "pyramid": {
-          "unit": false,
+          "unit": true,
           "smoke": false,
           "integration": false,
           "system": false,
@@ -22189,14 +22113,14 @@
         }
       },
       "short_id": "BUG-028",
-      "sprint": "(see linked DEC sprint)",
+      "sprint": "RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 3 2026-05-10 (compute_rsi fallback path now uses Wilder ewm(alpha=1/p) instead of rolling(p).mean(); pandas_ta path already Wilder; test_bug_028 verifies)",
       "dependencies": "DEC-458",
       "description": "**File:** `backtest/signals/technical.py` lines 183\u2013200",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Resolved with code + regression test"
       }
     },
     {
@@ -22241,15 +22165,15 @@
       "id": "BUG-30",
       "title": "HIGH  -  VIX tightening in crisis contradicts own documentation",
       "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
+      "sprint_context": "RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 3 2026-05-10 (exit_manager.py:218-222 VIX crisis correctly tightens stops additively; module docstring documents behavior; original inconsistency claim resolved; test_bug_030 verifies)",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
-        "tested": false,
+        "tested": true,
         "pushed": false,
         "n_doc_refs": 5,
         "pyramid": {
-          "unit": false,
+          "unit": true,
           "smoke": false,
           "integration": false,
           "system": false,
@@ -22265,14 +22189,14 @@
         }
       },
       "short_id": "BUG-030",
-      "sprint": "(see linked DEC sprint)",
+      "sprint": "RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 3 2026-05-10 (exit_manager.py:218-222 VIX crisis correctly tightens stops additively; module docstring documents behavior; original inconsistency claim resolved; test_bug_030 verifies)",
       "dependencies": "DEC-458",
       "description": "**Files:** `backtest/engine/regime_filter.py` line 73 vs `backtest/engine/exit_manager.py` lines 228\u2013231",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Resolved with code + regression test"
       }
     },
     {
@@ -26571,7 +26495,7 @@
     }
   ],
   "bugs_total_count": 148,
-  "bugs_hidden_count": 11,
+  "bugs_hidden_count": 13,
   "investigations": [
     {
       "id": "INV-001",
@@ -31224,64 +31148,70 @@
   ],
   "recent_commits": [
     {
+      "sha": "694a11fa",
+      "subject": "Pass 53 v8h+1: Phase 3 Batch 2 - BUG-01/06/10/12 IMPLEMENTED + BUG-14 OBSOLETE",
+      "author": "jeetmehta1991",
+      "rel_time": "3 minutes ago"
+    },
+    {
       "sha": "3bb2f559",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 1 - BUG-08/09/15/27 RESOLVED-IMPLEMENTED with real fixes",
       "author": "jeetmehta1991",
-      "rel_time": "5 minutes ago"
+      "rel_time": "9 minutes ago"
     },
     {
       "sha": "fc9390b7",
       "subject": "Pass 53 v8h+1: Phase 2 BUG cross-references + id-form normalization (6 BUGs READY -> IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "13 minutes ago"
+      "rel_time": "16 minutes ago"
     },
     {
       "sha": "97c69b3d",
       "subject": "Pass 53 v8h+1: Phase 1 BUG categorization (10 SUPERSEDED/DEFERRED) + dashboard hide-moot-bugs filter",
       "author": "jeetmehta1991",
-      "rel_time": "23 minutes ago"
+      "rel_time": "26 minutes ago"
     },
     {
       "sha": "99d137c1",
       "subject": "Pass 53 v8h+1: BUG-270/271/272/273 pyramid overrides + Promotion dropdown filters",
       "author": "jeetmehta1991",
-      "rel_time": "34 minutes ago"
+      "rel_time": "38 minutes ago"
     },
     {
       "sha": "a7c66530",
       "subject": "Pass 53 v8h+1: DEC-610 SPEC_ONLY -> DEFERRED_TO_* re-classification (14 forward-looking DECs)",
       "author": "jeetmehta1991",
-      "rel_time": "42 minutes ago"
+      "rel_time": "45 minutes ago"
     },
     {
       "sha": "4cd84d66",
       "subject": "Pass 53 v8h+1: BUG-270 wired-flag fix (cross-reference docstring) + process self-finding",
       "author": "jeetmehta1991",
-      "rel_time": "48 minutes ago"
+      "rel_time": "52 minutes ago"
     },
     {
       "sha": "d28c8723",
       "subject": "Pass 53 v8h+1: Tier C/D edge-case sweep - DEC-057 promoted; DEC-028 no-promote (forward-looking)",
       "author": "jeetmehta1991",
-      "rel_time": "72 minutes ago"
+      "rel_time": "76 minutes ago"
     },
     {
       "sha": "10fa8617",
       "subject": "Pass 53 v8h+1: INV-041 RESOLVED - path-restricted commits in 4 prefetch scripts + 5-test regression gate",
       "author": "jeetmehta1991",
-      "rel_time": "75 minutes ago"
+      "rel_time": "78 minutes ago"
     },
     {
       "sha": "bcb6ea3f",
       "subject": "Pass 53 v8h+1: parse_inv_entries parser fix - recognize all RESOLVED-* / DEFERRED-* status variants",
       "author": "jeetmehta1991",
-      "rel_time": "79 minutes ago"
+      "rel_time": "83 minutes ago"
     },
     {
       "sha": "26340a6b",
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 20:43: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "82 minutes ago"
+      "rel_time": "85 minutes ago"
     },
     {
       "sha": "bffd8658",
@@ -31329,7 +31259,7 @@
       "sha": "4f9e558c",
       "subject": "Pass 53 v8h+1: 0A.7 per-API smoke/demo split - StockTwits + Apewisdom additions (Sprint 0A COMPLETE)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "07c15d16",
@@ -31365,7 +31295,7 @@
       "sha": "b76fc3d1",
       "subject": "Pass 53 v8h+1: H1.b OHLCV Master Dedup data commit (1924 parquets, 105.6 MB) + CAV-079",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "1e020b2a",
@@ -31396,17 +31326,11 @@
       "subject": "Pass 53 v8h+1: Sprint 0A.8 NO-LIVE-API HARD CUT implementation (DEC-608)",
       "author": "jeetmehta1991",
       "rel_time": "6 hours ago"
-    },
-    {
-      "sha": "bdba8f67",
-      "subject": "Pass 53 v8h+1: H-tier doc reconciliation + H20=A (DEC-599 honored)",
-      "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 8,
-    "modified": 8,
+    "count": 6,
+    "modified": 6,
     "added": 0,
     "untracked": 0,
     "deleted": 0,
@@ -31417,15 +31341,7 @@
       },
       {
         "status": "M",
-        "path": "backtest/agents/pipeline.py"
-      },
-      {
-        "status": "M",
-        "path": "backtest/engine/backtest.py"
-      },
-      {
-        "status": "M",
-        "path": "backtest/engine/improvements.py"
+        "path": "backtest/signals/technical.py"
       },
       {
         "status": "M",
@@ -31623,7 +31539,7 @@
     }
   ],
   "test_inventory": {
-    "total": 759,
+    "total": 762,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -31699,7 +31615,7 @@
       "test_stocktwits_smoke": 4,
       "test_supplementary_demo": 4,
       "test_supplementary_smoke": 6,
-      "test_unit": 103,
+      "test_unit": 106,
       "test_walk_forward_4fold": 6
     }
   },

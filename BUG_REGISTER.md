@@ -52,9 +52,9 @@ The following table maps every bug in AUDIT.md to the decision(s) that reference
 | BUG-14 | AAPL, CVS, JPM, NVDA missing from `run_full.sh` batch ticker lists | DEC-458 | OBSOLETE Pass 53 v8h+1 Phase 3 Batch 2 2026-05-10 (run_full.sh no longer exists; universe now sourced from Master Dedup CSV per DEC-504; bug is moot) |
 | BUG-15 | `max_drawdown` uses `cumsum()` instead of compounded equity curve | DEC-458 | RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 2026-05-10 (_max_drawdown rewritten to use compounded equity curve cumprod instead of additive cumsum; metrics.py:40; test_bug_015 verifies +10/-5/-10 series gives -14.50% not -15) |
 | BUG-16 | `PASSING_CRITERIA min_trades = 100` contradicts all documentation | DEC-458 | SUPERSEDED-BY-DEC-503 (PASSING_CRITERIA min_trades documented + tested via DEC-503 13-layer pyramid; min_trades=100 verified canonical per CANONICAL_FACTS F-007) |
-| BUG-17 | `run_commit.sh` full mode hangs on interactive `input()` in merge script | DEC-458 | (see linked DEC sprint) |
+| BUG-17 | `run_commit.sh` full mode hangs on interactive `input()` in merge script | DEC-458 | OBSOLETE Pass 53 v8h+1 Phase 3 Batch 3 2026-05-10 (run_commit.sh no longer exists; commit workflow now uses git directly per per-turn push standing approval; bug is moot) |
 <!-- canonical-fact-historical: F-002 BUG_REGISTER documents bugs that explicitly reference stale strategy-count phrasing -->
-| BUG-18 | Bonferroni correction hardcoded to 60 strategies, should be 72 | DEC-080, DEC-400, DEC-458 | (see linked DEC sprint) |
+| BUG-18 | Bonferroni correction hardcoded to 60 strategies, should be 72 | DEC-080, DEC-400, DEC-458 | RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 3 2026-05-10 (bonferroni_adjusted_threshold at improvements.py:499 takes n_strategies as parameter; caller passes len(ALL_STRATEGIES) so scales with layered roster; test_bug_018 verifies scaling) |
 | BUG-19 | OHLCV cache incomplete  -  402 of 495 tickers only cover to 2024-12-31 | DEC-260, DEC-442, DEC-448, DEC-458 | SUPERSEDED-BY-DEC-609 (H1 OHLCV Master Dedup re-fetch covers 1937 tickers 2021-05 to 2026-05; 2024-12-31 cache cap eliminated) |
 | BUG-20 | Regime thresholds inconsistent between PROJECT_PLAN and config.py | DEC-458 | (see linked DEC sprint) |
 | BUG-21 | `exit_strategies.py` own `_pnl` has no borrow cost  -  short comparison optimistic | DEC-458 | (see linked DEC sprint) |
@@ -63,12 +63,12 @@ The following table maps every bug in AUDIT.md to the decision(s) that reference
 <!-- canonical-fact-historical: F-002 same as above -->
 | BUG-23 | `screener.py` docstring says "60 strategies across 7 categories" | DEC-458 | SUPERSEDED-BY-CANONICAL_FACTS-F-002 Pass 53 v8h+1 2026-05-10 (screener.py:9 explicitly cites CANONICAL_FACTS.md F-002 Layer 1 baseline = 60; the count is canonically correct, not stale) |
 | BUG-24 | CHECKLIST item 13c says "review ALL agent outputs"  -  not applicable for no-agent | DEC-458 | (see linked DEC sprint) |
-| BUG-25 | `run_tests.sh` does not pass `--no-agents` flag | DEC-458 | (see linked DEC sprint) |
+| BUG-25 | `run_tests.sh` does not pass `--no-agents` flag | DEC-458 | OBSOLETE Pass 53 v8h+1 Phase 3 Batch 3 2026-05-10 (run_tests.sh no longer exists; tests run directly via pytest with --no-agents handled in test_e2e_phase1a_smoke fixture; bug is moot) |
 | BUG-26 | CRITICAL  -  VIX proxy is VXX price (223-461), not actual VIX (18-36)  -  all regime | DEC-317, DEC-388, DEC-458 | SUPERSEDED-BY-DEC-302 (VIX canonical source FRED:VIXCLS replaces VXX proxy; DEC-302 + Pass 53 Day-9 v8 BUG-VIX-PROXY fix) |
 | BUG-27 | CRITICAL  -  `regime_confidence()` function built but never called  -  dead code | DEC-458 | RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 2026-05-10 (regime_confidence docstring marks it INTENTIONALLY-UNUSED + DEFERRED-TO-STAGE-3+; per CLAUDE.md Approved Rules Phase 1A backtest does not use regime confidence scaling; test_bug_027 verifies docstring marker) |
-| BUG-28 | HIGH  -  RSI computation uses simple rolling mean instead of Wilder exponential sm | DEC-458 | (see linked DEC sprint) |
+| BUG-28 | HIGH  -  RSI computation uses simple rolling mean instead of Wilder exponential sm | DEC-458 | RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 3 2026-05-10 (compute_rsi fallback path now uses Wilder ewm(alpha=1/p) instead of rolling(p).mean(); pandas_ta path already Wilder; test_bug_028 verifies) |
 | BUG-29 | HIGH  -  Open trades at backtest end silently discarded  -  upward bias in all metri | DEC-458 | (see linked DEC sprint) |
-| BUG-30 | HIGH  -  VIX tightening in crisis contradicts own documentation | DEC-458 | (see linked DEC sprint) |
+| BUG-30 | HIGH  -  VIX tightening in crisis contradicts own documentation | DEC-458 | RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 3 2026-05-10 (exit_manager.py:218-222 VIX crisis correctly tightens stops additively; module docstring documents behavior; original inconsistency claim resolved; test_bug_030 verifies) |
 | BUG-31 | HIGH  -  Walk-forward OOS minimum of 30 trades is statistically insufficient | DEC-458 | (see linked DEC sprint) |
 | BUG-32 | HIGH  -  Profit factor minimum 1.2 too low; literature requires 1.5 minimum | DEC-458 | (see linked DEC sprint) |
 | BUG-33 | HIGH  -  Sharpe ratio not required as passing criterion; computed but ignored | DEC-458 | (see linked DEC sprint) |

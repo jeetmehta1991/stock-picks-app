@@ -179,6 +179,15 @@ def compute_vwap(df: pd.DataFrame) -> dict:
 # -----------------------------------------------------------------------------
 
 def compute_rsi(df: pd.DataFrame) -> dict:
+    """RSI computation using Wilder exponential smoothing.
+
+    BUG-28 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 3 2026-05-10:
+    Fallback path (when pandas_ta unavailable) previously used `rolling(p).mean()`
+    which is Simple Moving Average, NOT Wilder's EMA smoothing. Industry-standard
+    RSI per Wilder (1978) uses `ewm(alpha=1/p, adjust=False)` which gives equal
+    weight to all historical periods via exponential decay. Fix applies Wilder
+    smoothing in the fallback path; pandas_ta path already uses Wilder internally.
+    """
     result = {}
     for p in [9, 14, 21]:
         if len(df) < p + 2:
@@ -187,8 +196,10 @@ def compute_rsi(df: pd.DataFrame) -> dict:
             s = ta.rsi(df["close"], length=p)
         else:
             d = df["close"].diff()
-            g = d.clip(lower=0).rolling(p).mean()
-            ls = (-d.clip(upper=0)).rolling(p).mean()
+            # BUG-28 fix: Wilder smoothing (alpha=1/p) instead of simple rolling mean.
+            # Wilder RSI: weight = 1/p for newest, with exponential decay backward.
+            g = d.clip(lower=0).ewm(alpha=1 / p, adjust=False).mean()
+            ls = (-d.clip(upper=0)).ewm(alpha=1 / p, adjust=False).mean()
             s = 100 - 100 / (1 + g / ls.replace(0, np.nan))
         if s is None or s.empty:
             continue
