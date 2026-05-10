@@ -136,7 +136,9 @@ per CHECKLIST #77 - never reads from memory.
       <strong title="Compatibility matrix">Cm</strong>. <strong>YES</strong>=test layer covers ID; <strong>no</strong>=layer applies but no coverage (gap); <strong>N/A</strong>=layer doesn't apply to this ID type; <strong>LATER</strong>=applicable but deferred (hover for reason).
     </p>
     <table id="tbl-decisions" class="display compact" style="width:100%">
-      <thead><tr><th>ID</th><th>Title</th><th>Description</th><th>Doc Status</th><th>Coded</th><th>Wired</th><th>Tested</th><th>Pushed</th>
+      <thead><tr><th>ID</th><th>Title</th><th>Description</th><th>Doc Status</th>
+        <th title="Promotion-path tier per CHECKLIST #82: IMPLEMENTED / READY-TO-PROMOTE / NEEDS-TEST / NEEDS-CODE / SPEC-ONLY / DEFERRED / BLOCKED / SUPERSEDED / OBSOLETE / OPEN. Hover for reason.">Promotion</th>
+        <th>Coded</th><th>Wired</th><th>Tested</th><th>Pushed</th>
         <th title="Unit">U</th><th title="Smoke">Sm</th><th title="Integration">I</th><th title="System">Sy</th>
         <th title="Functional">F</th><th title="Regression">R</th><th title="Data integrity">D</th>
         <th title="Performance">P</th><th title="Acceptance">A</th>
@@ -153,7 +155,9 @@ per CHECKLIST #77 - never reads from memory.
       <input id="bug-filter" placeholder="Filter ID / title / linked decisions..." size="50">
     </div>
     <table id="tbl-bugs" class="display compact" style="width:100%">
-      <thead><tr><th>Bug ID</th><th>Title</th><th>Description</th><th>Coded</th><th>Wired</th><th>Tested</th><th>Pushed</th>
+      <thead><tr><th>Bug ID</th><th>Title</th><th>Description</th>
+        <th title="Promotion-path tier (CHECKLIST #82)">Promotion</th>
+        <th>Coded</th><th>Wired</th><th>Tested</th><th>Pushed</th>
         <th title="Unit">U</th><th title="Smoke">Sm</th><th title="Integration">I</th><th title="System">Sy</th>
         <th title="Functional">F</th><th title="Regression">R</th><th title="Data integrity">D</th>
         <th title="Performance">P</th><th title="Acceptance">A</th>
@@ -176,7 +180,9 @@ per CHECKLIST #77 - never reads from memory.
       </select>
     </div>
     <table id="tbl-invs" class="display compact" style="width:100%">
-      <thead><tr><th>INV ID</th><th>Title</th><th>Description</th><th>Doc Status</th><th>Coded</th><th>Wired</th><th>Tested</th><th>Pushed</th>
+      <thead><tr><th>INV ID</th><th>Title</th><th>Description</th><th>Doc Status</th>
+        <th title="Promotion-path tier (CHECKLIST #82)">Promotion</th>
+        <th>Coded</th><th>Wired</th><th>Tested</th><th>Pushed</th>
         <th title="Unit">U</th><th title="Smoke">Sm</th><th title="Integration">I</th><th title="System">Sy</th>
         <th title="Functional">F</th><th title="Regression">R</th><th title="Data integrity">D</th>
         <th title="Performance">P</th><th title="Acceptance">A</th>
@@ -455,6 +461,13 @@ function descCell(s) {
   return `<span title="${fullSafe}" style="font-size:12px;color:#475569">${safe}</span>`;
 }
 
+function promotionCell(p) {
+  if (!p) return '<span style="color:#cbd5e1">&mdash;</span>';
+  const reason = (p.reason || '').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  const label = (p.label || '?').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return `<span title="${reason}" style="background:${p.color};color:white;padding:2px 6px;border-radius:3px;font-size:10px;font-weight:600">${label}</span>`;
+}
+
 const decRows = D.decisions.map(d => {
   const sg = d.status_grep || {};
   return [
@@ -462,6 +475,7 @@ const decRows = D.decisions.map(d => {
     d.title,
     descCell(d.description),
     badge(d.status),
+    promotionCell(d.promotion_path),
     statusCheck(sg.coded),
     statusCheck(sg.wired),
     statusCheck(sg.tested),
@@ -486,6 +500,7 @@ const bugRows = D.bugs.map(b => {
     `<code>${b.short_id || b.id}</code>`,
     b.title,
     descCell(b.description),
+    promotionCell(b.promotion_path),
     statusCheck(sg.coded),
     statusCheck(sg.wired),
     statusCheck(sg.tested),
@@ -505,6 +520,7 @@ const invRows = D.investigations.map(i => {
   const sg = i.status_grep || {};
   return [
     `<code>${i.id}</code>`, i.title, descCell(i.description), badge(i.status),
+    promotionCell(i.promotion_path),
     statusCheck(sg.coded), statusCheck(sg.wired), statusCheck(sg.tested), statusCheck(sg.pushed),
     ...pyramidCells(sg),
     `<span style="font-size:11px">${i.dependencies || '-'}</span>`,

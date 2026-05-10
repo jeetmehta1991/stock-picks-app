@@ -1157,3 +1157,39 @@ State compliance visibly: "Checklist: ✅ [each item]"
     **First application:** Sprint 0A dashboard Coverage Matrix tab adds `Completeness` column showing kind-appropriate signals (row-count + latest-obs-date for single feeds; series-count + non-empty% + latest-obs-date for global feeds). Per-row completeness fields land in `data.json` for all 1076 coverage-matrix rows.
 
     **Joint:** CHECKLIST #76 (audits must include functional verification not just inventory — #80 is the kind-aware specialization), CHECKLIST #77 (canonical-source rule — both flag silent gaps that look like "no data" but are methodology bugs); INV-047 sister pattern (Quiver etfholdings refresh dead-end was the LAST gap a single-metric audit could surface — kind-aware audit is what catches the next one).
+
+81. **HARD RULE — Per-addressal pyramid + same-commit rule applies to BUGs and INVs identically to DECs** (Pass 53 v8h+1 owner directive 2026-05-10).
+
+    Owner directive 2026-05-10: "Promotion process per DEC approved. Apply for also bugs and INV as applicable. Changes will also need to be reflected across all docs as per per turn sweep process."
+
+    **Why:** DEC-594 same-commit rule was originally written in DEC-language (RESOLVED-DECIDED -> RESOLVED-IMPLEMENTED) but the underlying principle — code change + test + register entry + doc sweep all in the same commit — applies identically when:
+      - resolving a BUG (BUG fix code + regression test + BUG_REGISTER status flip + AUDIT.md narrative)
+      - closing an INV (INV diagnostic finding + remediation code/test + OPEN_INVESTIGATIONS status flip + AUDIT.md narrative)
+
+    **Apply when:** any addressal that flips an item's status — DEC RESOLVED-IMPLEMENTED, BUG RESOLVED, INV RESOLVED/RESOLVED-DOCUMENTED. The pre-flight checklist must explicitly note the same-commit deliverable list before code is written. End-of-turn check: if any RESOLVED-* status flip lacks a matching code+test artifact pair landing in the same commit, the response is non-compliant.
+
+    **First application:** Pass 53 v8h+1 INV-046 diagnostic (commit `041229b12`) and 0A.8 DEC-608 (commit `d57a07ee6`) both followed this pattern - owner ratified retroactively in this directive.
+
+    **Joint:** DEC-594 (same-commit rule, original DEC-language formulation), CHECKLIST #78 (per-addressal pyramid - this rule extends scope to BUG/INV).
+
+82. **HARD RULE — Stage 2 dashboard surfaces a per-item promotion-path column** (Pass 53 v8h+1 owner directive 2026-05-10).
+
+    For every DEC, BUG, INV row in the Stage 2 dashboard, a single-cell `Promotion` column displays the promotion-path tier inferred from `(status, status_grep.coded, status_grep.wired, status_grep.tested)`:
+
+    | Tier | Display | Trigger | Recommended action |
+    |---|---|---|---|
+    | IMPLEMENTED | green | status RESOLVED-IMPLEMENTED, or BUG-RESOLVED with code+test refs | none (already done) |
+    | READY | green | RESOLVED-DECIDED + (wired or coded) + tested | promote: flip status to RESOLVED-IMPLEMENTED in same commit |
+    | CODE_ONLY / NEEDS-TEST | amber | coded but not tested | add regression test in same commit |
+    | TEST_ONLY / NEEDS-CODE | amber | tested but not coded | rare; verify the test isn't a stub-only |
+    | SPEC_ONLY | red | PARTIAL-SPEC-ONLY, or RESOLVED-DECIDED with no artifacts | author code + test |
+    | DEFERRED | blue | status DEFERRED_TO_* | none until trigger; informational |
+    | BLOCKED | blue | status BLOCKED_ON_* | watch dependency |
+    | SUPERSEDED / OBSOLETE | grey | superseded or obsolete | none |
+    | OPEN / SURFACED | red/amber | BUG OPEN, INV OPEN/SURFACED | see action per kind |
+
+    **Why:** the registry totals (530+ DECs / 148 BUGs / 47 INVs) became un-actionable as "PENDING" counts grew because there was no quick triage signal showing which items were one commit away from RESOLVED-IMPLEMENTED vs which were genuine spec-only backlog. Promotion-path tier collapses (status x grep) into a single triage label suitable for prioritization sweeps.
+
+    **Apply when:** rebuilding the Stage 2 dashboard. The `compute_promotion_path()` function in `scripts/build_dashboard_stage_2.py` is the canonical implementation. Tooltip on each cell shows the per-item reason (e.g. "Wired in active path + tested; eligible for RESOLVED-IMPLEMENTED").
+
+    **Joint:** CHECKLIST #81 (BUG/INV inherit DEC promotion process), DEC-594 (same-commit rule that this column tracks), DEC-503/DEC-597 (pyramid layers feed the artifact-grep signal).

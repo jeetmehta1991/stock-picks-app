@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-10T17:04:33.146930+00:00",
+  "generated_at": "2026-05-10T17:21:30.319989+00:00",
   "universe_size": 1937,
   "tier_counts": {
     "T1ETF": 27,
@@ -9547,7 +9547,7 @@
           "field": "status",
           "coded": true,
           "wired": false,
-          "n_refs": 72
+          "n_refs": 73
         },
         {
           "field": "symbol",

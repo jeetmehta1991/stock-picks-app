@@ -425,6 +425,150 @@ def id_status(id_str: str, corpora: dict) -> dict:
     }
 
 
+def compute_promotion_path(item: dict, kind: str) -> dict:
+    """Return promotion-path summary per CHECKLIST #82 (DEC-594 same-commit rule).
+
+    Single-cell summary of "where does this item sit on the path from spec to
+    implementation?" Surfaces the artifact-grep verdict + recommended next action.
+
+    Tiers (priority order - first match wins):
+      IMPLEMENTED  - status is RESOLVED-IMPLEMENTED (or BUG-RESOLVED with code+test)
+      READY        - RESOLVED-DECIDED + wired (in active path) + tested - eligible to promote
+      CODE_ONLY    - RESOLVED-DECIDED + coded but no tests - needs test in same commit
+      TEST_ONLY    - RESOLVED-DECIDED + tested but not wired (rare; usually means
+                     test stub without backing code)
+      SPEC_ONLY    - PARTIAL-SPEC-ONLY or RESOLVED-DECIDED with no code/test refs
+      DEFERRED     - status starts with DEFERRED (no action expected)
+      BLOCKED      - status starts with BLOCKED_ON (waiting on dep)
+      SUPERSEDED   - status starts with SUPERSEDED (replaced; no action)
+      OBSOLETE     - status OBSOLETE (no action)
+      OPEN         - BUG/INV open status without code refs
+      UNKNOWN      - couldn't classify (e.g. exotic status string)
+
+    Returns dict with `tier`, `label` (display string), `color` (hex), `reason`
+    (one-line explanation suitable for tooltip).
+    """
+    status = (item.get("status") or "").upper()
+    sg = item.get("status_grep") or {}
+    coded = bool(sg.get("coded"))
+    wired = bool(sg.get("wired"))
+    tested = bool(sg.get("tested"))
+
+    # Status-driven short-circuits (apply regardless of kind)
+    if status.startswith("SUPERSEDED"):
+        return {"tier": "SUPERSEDED", "label": "SUPERSEDED", "color": "#94a3b8",
+                "reason": "Replaced by another item; no action required"}
+    if status == "OBSOLETE":
+        return {"tier": "OBSOLETE", "label": "OBSOLETE", "color": "#94a3b8",
+                "reason": "Marked obsolete; no action required"}
+    if status.startswith("DEFERRED"):
+        return {"tier": "DEFERRED", "label": "DEFERRED", "color": "#3b82f6",
+                "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"}
+    if status.startswith("BLOCKED_ON") or status.startswith("BLOCKED"):
+        return {"tier": "BLOCKED", "label": "BLOCKED", "color": "#3b82f6",
+                "reason": f"Waiting on dependency ({status})"}
+
+    if kind == "decision":
+        if status == "RESOLVED-IMPLEMENTED" or "RESOLVED-IMPLEMENTED" in status:
+            return {"tier": "IMPLEMENTED", "label": "IMPLEMENTED", "color": "#10b981",
+                    "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"}
+        if status == "PARTIAL-SPEC-ONLY":
+            return {"tier": "SPEC_ONLY", "label": "SPEC-ONLY", "color": "#ef4444",
+                    "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"}
+        if status == "RESOLVED-DECIDED":
+            if wired and tested:
+                return {"tier": "READY", "label": "READY-TO-PROMOTE", "color": "#10b981",
+                        "reason": "Wired in active path + tested; eligible for RESOLVED-IMPLEMENTED"}
+            if coded and tested:
+                return {"tier": "READY", "label": "READY-TO-PROMOTE", "color": "#10b981",
+                        "reason": "Code + test refs found; eligible for RESOLVED-IMPLEMENTED"}
+            if coded and not tested:
+                return {"tier": "CODE_ONLY", "label": "NEEDS-TEST", "color": "#f59e0b",
+                        "reason": "Coded but no test reference; add test per DEC-594 same-commit"}
+            if tested and not coded:
+                return {"tier": "TEST_ONLY", "label": "NEEDS-CODE", "color": "#f59e0b",
+                        "reason": "Tested but no code reference (likely stub-only test)"}
+            return {"tier": "SPEC_ONLY", "label": "SPEC-ONLY", "color": "#ef4444",
+                    "reason": "RESOLVED-DECIDED but no code or test refs found"}
+        if status == "PARTIAL":
+            return {"tier": "CODE_ONLY", "label": "PARTIAL", "color": "#f59e0b",
+                    "reason": "Marked PARTIAL; verify scope vs current artifacts"}
+        if status in ("PROPOSED", "NEEDS_CLARIFICATION"):
+            return {"tier": "OPEN", "label": "PROPOSED", "color": "#6b7280",
+                    "reason": "Awaiting owner approval"}
+        return {"tier": "UNKNOWN", "label": "UNKNOWN", "color": "#9ca3af",
+                "reason": f"Unclassified status: {status}"}
+
+    if kind == "bug":
+        # BUG_REGISTER table embeds status in sprint_context cell rather than a standalone status column.
+        # Scan sprint_context + linked_decisions for status keywords if status is empty.
+        if not status:
+            ctx = (item.get("sprint_context") or "") + " " + (item.get("linked_decisions") or "")
+            ctx_upper = ctx.upper()
+            if "RESOLVED" in ctx_upper or "FIXED" in ctx_upper:
+                status = "RESOLVED"
+            elif "DEFERRED" in ctx_upper or "WONTFIX" in ctx_upper:
+                status = "DEFERRED"
+            elif "OPEN" in ctx_upper or "CRITICAL" in ctx_upper:
+                status = "OPEN"
+        if status in ("RESOLVED", "FIXED", "CLOSED"):
+            if coded and tested:
+                return {"tier": "IMPLEMENTED", "label": "IMPLEMENTED", "color": "#10b981",
+                        "reason": "Resolved with code + regression test"}
+            if coded:
+                return {"tier": "CODE_ONLY", "label": "NEEDS-TEST", "color": "#f59e0b",
+                        "reason": "Resolved + code refs but missing regression test"}
+            return {"tier": "READY", "label": "RESOLVED", "color": "#10b981",
+                    "reason": "Marked resolved (verify artifact)"}
+        if status in ("OPEN", "CRITICAL", "HIGH", "MEDIUM", "LOW"):
+            if coded and tested:
+                return {"tier": "READY", "label": "READY-TO-CLOSE", "color": "#10b981",
+                        "reason": "Has code+test artifacts; flip to RESOLVED"}
+            if coded:
+                return {"tier": "CODE_ONLY", "label": "NEEDS-TEST", "color": "#f59e0b",
+                        "reason": "Code touches identified; add regression test"}
+            return {"tier": "OPEN", "label": "OPEN", "color": "#ef4444",
+                    "reason": "No artifacts yet; needs code + test"}
+        # Status indeterminate: fall back to status_grep heuristics.
+        # Most BUG_REGISTER rows have sprint_context="(see linked DEC sprint)" so status
+        # is inherited from linked DEC; here we infer from artifact presence alone.
+        if coded and tested:
+            return {"tier": "READY", "label": "READY-TO-CLOSE", "color": "#10b981",
+                    "reason": "Status inherited from linked DEC; has code+test - eligible to close"}
+        if coded:
+            return {"tier": "CODE_ONLY", "label": "NEEDS-TEST", "color": "#f59e0b",
+                    "reason": "Status inherited from linked DEC; coded but missing test"}
+        if tested:
+            return {"tier": "TEST_ONLY", "label": "NEEDS-CODE", "color": "#f59e0b",
+                    "reason": "Status inherited from linked DEC; tested but no code refs"}
+        return {"tier": "OPEN", "label": "OPEN", "color": "#ef4444",
+                "reason": "Status inherited from linked DEC; no artifacts yet"}
+
+    if kind == "investigation":
+        if status.startswith("RESOLVED"):
+            if coded or tested:
+                return {"tier": "IMPLEMENTED", "label": "IMPLEMENTED", "color": "#10b981",
+                        "reason": "Resolved with code/test artifact"}
+            return {"tier": "READY", "label": "RESOLVED-DOCUMENTED", "color": "#10b981",
+                    "reason": "Resolved as documented (no code change required)"}
+        if status == "OPEN":
+            if coded and tested:
+                return {"tier": "READY", "label": "READY-TO-CLOSE", "color": "#10b981",
+                        "reason": "Has code+test; eligible for RESOLVED"}
+            if coded:
+                return {"tier": "CODE_ONLY", "label": "NEEDS-TEST", "color": "#f59e0b",
+                        "reason": "Code touches; needs test"}
+            return {"tier": "OPEN", "label": "OPEN", "color": "#ef4444",
+                    "reason": "Investigation open; needs diagnosis + fix"}
+        if "SURFACED" in status:
+            return {"tier": "OPEN", "label": "SURFACED", "color": "#f59e0b",
+                    "reason": "Surfaced; awaiting owner direction"}
+        return {"tier": "UNKNOWN", "label": status or "?", "color": "#9ca3af",
+                "reason": f"INV status: {status}"}
+
+    return {"tier": "UNKNOWN", "label": "?", "color": "#9ca3af", "reason": "Unknown kind"}
+
+
 def extract_dependencies(text: str) -> list[str]:
     """Extract DEC/BUG/INV/CAV/F references from a string.
 
@@ -1014,6 +1158,7 @@ def main() -> int:
         d["sprint"] = "; ".join(sprint_map.get(short_id, [])) or "-"
         d["dependencies"] = "; ".join(extract_dependencies(d["title"] + " " + d["status"])) or "-"
         d["description"] = audit_descs.get(short_id, "") or audit_descs.get(full_id, "") or ""
+        d["promotion_path"] = compute_promotion_path(d, "decision")
     for b in bugs:
         full_id = b["id"]
         m = re.match(r"BUG-(\d+)$", full_id)
@@ -1027,12 +1172,14 @@ def main() -> int:
         b["sprint"] = b.get("sprint_context", "-") or "-"
         b["dependencies"] = "; ".join(extract_dependencies(b.get("linked_decisions", "") + " " + b.get("title", ""))) or "-"
         b["description"] = audit_descs.get(short, "") or ""
+        b["promotion_path"] = compute_promotion_path(b, "bug")
     for i in invs:
         i["status_grep"] = id_status(i["id"], corpora)
         i["dependencies"] = "; ".join(extract_dependencies(i.get("title", "") + " " + i.get("summary", ""))) or "-"
         # INVs already carry a 'summary' field extracted from **Observation:**.
         # Promote it to a description alias for HTML rendering consistency.
         i["description"] = i.get("summary", "") or ""
+        i["promotion_path"] = compute_promotion_path(i, "investigation")
     for c in cavs:
         c["status_grep"] = id_status(c["id"], corpora)
         c["dependencies"] = "; ".join(extract_dependencies(c.get("title", "") + " " + c.get("impact", ""))) or "-"
