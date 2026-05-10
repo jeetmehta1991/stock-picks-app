@@ -1731,6 +1731,81 @@ def test_bug_028_rsi_uses_wilder_smoothing():
     # (note: rolling may appear elsewhere for non-RSI metrics)
 
 
+def test_bug_029_open_trades_finalized_at_backtest_end():
+    """BUG-29: open trades at end-of-backtest are mark-to-market closed, not discarded.
+
+    Pass 53 v8h+1 Phase 3 Batch 8 fix 2026-05-10. Without this fix, open trades
+    are silently dropped from closed_trades, biasing results upward (winners
+    inflate metrics; losers disappear). Fix adds _finalize_open_trades() that
+    runs after the day-loop in run().
+    """
+    import inspect
+    from backtest.engine.backtest import BacktestEngine
+    # The class must expose the finalization helper
+    assert hasattr(BacktestEngine, "_finalize_open_trades"), (
+        "BacktestEngine must have _finalize_open_trades method for BUG-29 fix"
+    )
+    method = BacktestEngine._finalize_open_trades
+    doc = inspect.getdoc(method) or ""
+    assert "BUG-29" in doc, "BUG-29 cross-reference must exist in docstring"
+    assert "end_of_backtest" in doc, "Fix must use exit_reason=end_of_backtest"
+    # run() must call _finalize_open_trades before logging "Backtest complete"
+    run_src = inspect.getsource(BacktestEngine.run)
+    assert "_finalize_open_trades" in run_src, (
+        "run() must invoke _finalize_open_trades() before completing"
+    )
+
+
+def test_bug_029_finalize_executes_against_synthetic_trade():
+    """BUG-29 unit test: _finalize_open_trades closes a synthetic open trade.
+
+    Builds a minimal BacktestEngine with one OpenTrade and verifies that
+    _finalize_open_trades() converts it to a ClosedTrade with exit_reason
+    'end_of_backtest', preserving the entry data.
+    """
+    from datetime import date
+    import pandas as pd
+    from backtest.engine.backtest import BacktestEngine
+    from backtest.engine.exit_manager import OpenTrade
+
+    eng = BacktestEngine.__new__(BacktestEngine)
+    eng.open_trades = []
+    eng.closed_trades = []
+    eng.end = date(2024, 6, 30)
+    # Minimal OHLCV: 5 bars ending at end date
+    idx = pd.DatetimeIndex([
+        pd.Timestamp("2024-06-24"), pd.Timestamp("2024-06-25"),
+        pd.Timestamp("2024-06-26"), pd.Timestamp("2024-06-27"),
+        pd.Timestamp("2024-06-28"),
+    ])
+    df = pd.DataFrame({
+        "open":  [100.0, 101.0, 102.0, 103.0, 104.0],
+        "high":  [101.0, 102.0, 103.0, 104.0, 105.0],
+        "low":   [99.0,  100.0, 101.0, 102.0, 103.0],
+        "close": [100.5, 101.5, 102.5, 103.5, 104.5],
+        "volume":[1e6, 1e6, 1e6, 1e6, 1e6],
+    }, index=idx)
+    eng.ohlcv_dict = {"TEST": df}
+
+    open_trade = OpenTrade(
+        ticker="TEST", entry_date=date(2024, 6, 1), entry_price=100.0,
+        direction="long", strategy="dummy_strat", category="momentum",
+        sector="Industrials", initial_stop=90.0, trailing_stop=98.0,
+        highest_close=104.5, regime_at_entry="bull",
+    )
+    eng.open_trades.append(open_trade)
+
+    n = eng._finalize_open_trades()
+    assert n == 1, f"Expected 1 finalized trade, got {n}"
+    assert len(eng.closed_trades) == 1, "Closed trade must be appended"
+    assert len(eng.open_trades) == 0, "Open trade must be removed after finalization"
+    closed = eng.closed_trades[0]
+    assert closed.exit_reason == "end_of_backtest"
+    # Long entry 100 -> exit 104.5 (last close on 2024-06-28) = +4.5%
+    assert 4.0 < closed.pnl_pct < 5.0, f"Expected ~+4.5% pnl, got {closed.pnl_pct}"
+    assert closed.win is True
+
+
 def test_bug_037_survivorship_haircut_methodology_documented():
     """BUG-37: survivorship haircut methodology is hold-adjusted (not arbitrary).
 

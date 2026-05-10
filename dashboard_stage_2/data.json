@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-10T22:19:36.171737+00:00",
+  "generated_at": "2026-05-10T22:44:19.361985+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -2053,7 +2053,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 229,
+        "n_doc_refs": 230,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -20093,7 +20093,7 @@
         "wired": true,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 12,
+        "n_doc_refs": 13,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -22089,15 +22089,15 @@
       "id": "BUG-29",
       "title": "HIGH  -  Open trades at backtest end silently discarded  -  upward bias in all metri",
       "linked_decisions": "DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
+      "sprint_context": "RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 8 2026-05-10 (BacktestEngine._finalize_open_trades() force-closes remaining open trades at last available close with exit_reason=end_of_backtest; eliminates upward bias from winning open trades inflating metrics and downward dropout from losing open trades disappearing; 2 new unit tests verify behavior; 124/124 pyramid PASS incl full e2e smoke)",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
         "pushed": false,
         "n_doc_refs": 7,
         "pyramid": {
-          "unit": false,
+          "unit": true,
           "smoke": false,
           "integration": false,
           "system": false,
@@ -22113,14 +22113,14 @@
         }
       },
       "short_id": "BUG-029",
-      "sprint": "(see linked DEC sprint)",
+      "sprint": "RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 8 2026-05-10 (BacktestEngine._finalize_open_trades() force-closes remaining open trades at last available close with exit_reason=end_of_backtest; eliminates upward bias from winning open trades inflating metrics and downward dropout from losing open trades disappearing; 2 new unit tests verify behavior; 124/124 pyramid PASS incl full e2e smoke)",
       "dependencies": "DEC-458",
       "description": "**File:** `backtest/engine/backtest.py` \u2014 `run()` method and `save_all_outputs()`",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "Status inherited from linked DEC; no artifacts yet"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Resolved with code + regression test"
       }
     },
     {
@@ -22399,7 +22399,7 @@
         "wired": false,
         "tested": false,
         "pushed": false,
-        "n_doc_refs": 4,
+        "n_doc_refs": 6,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -27745,7 +27745,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 19,
+        "n_doc_refs": 20,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -28555,7 +28555,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 4,
+        "n_doc_refs": 5,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -30578,82 +30578,88 @@
   ],
   "recent_commits": [
     {
+      "sha": "0daa206c",
+      "subject": "Pass 53 v8h+1: Phase 3 Batch 7 - 6 BUGs (43/44/45/48/58/59) SUPERSEDED/DEFERRED/OBSOLETE",
+      "author": "jeetmehta1991",
+      "rel_time": "24 minutes ago"
+    },
+    {
       "sha": "2de4536b",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 6 - 5 BUGs (42/47/49/50/52) SUPERSEDED/DEFERRED cross-references",
       "author": "jeetmehta1991",
-      "rel_time": "47 seconds ago"
+      "rel_time": "26 minutes ago"
     },
     {
       "sha": "f16ef86d",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 5 - BUG-37 IMPLEMENTED (haircut doc) + BUG-34/40 SUPERSEDED-BY-design",
       "author": "jeetmehta1991",
-      "rel_time": "3 minutes ago"
+      "rel_time": "27 minutes ago"
     },
     {
       "sha": "a4258bc1",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 4 - BUG-21 IMPLEMENTED + BUG-24/31/32/33 SUPERSEDED-BY-policy-decisions",
       "author": "jeetmehta1991",
-      "rel_time": "5 minutes ago"
+      "rel_time": "30 minutes ago"
     },
     {
       "sha": "1f87aa53",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 3 - BUG-17/25 OBSOLETE + BUG-18/28/30 IMPLEMENTED (Wilder RSI fix)",
       "author": "jeetmehta1991",
-      "rel_time": "9 minutes ago"
+      "rel_time": "33 minutes ago"
     },
     {
       "sha": "694a11fa",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 2 - BUG-01/06/10/12 IMPLEMENTED + BUG-14 OBSOLETE",
       "author": "jeetmehta1991",
-      "rel_time": "12 minutes ago"
+      "rel_time": "37 minutes ago"
     },
     {
       "sha": "3bb2f559",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 1 - BUG-08/09/15/27 RESOLVED-IMPLEMENTED with real fixes",
       "author": "jeetmehta1991",
-      "rel_time": "18 minutes ago"
+      "rel_time": "43 minutes ago"
     },
     {
       "sha": "fc9390b7",
       "subject": "Pass 53 v8h+1: Phase 2 BUG cross-references + id-form normalization (6 BUGs READY -> IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "26 minutes ago"
+      "rel_time": "50 minutes ago"
     },
     {
       "sha": "97c69b3d",
       "subject": "Pass 53 v8h+1: Phase 1 BUG categorization (10 SUPERSEDED/DEFERRED) + dashboard hide-moot-bugs filter",
       "author": "jeetmehta1991",
-      "rel_time": "36 minutes ago"
+      "rel_time": "60 minutes ago"
     },
     {
       "sha": "99d137c1",
       "subject": "Pass 53 v8h+1: BUG-270/271/272/273 pyramid overrides + Promotion dropdown filters",
       "author": "jeetmehta1991",
-      "rel_time": "47 minutes ago"
+      "rel_time": "72 minutes ago"
     },
     {
       "sha": "a7c66530",
       "subject": "Pass 53 v8h+1: DEC-610 SPEC_ONLY -> DEFERRED_TO_* re-classification (14 forward-looking DECs)",
       "author": "jeetmehta1991",
-      "rel_time": "55 minutes ago"
+      "rel_time": "79 minutes ago"
     },
     {
       "sha": "4cd84d66",
       "subject": "Pass 53 v8h+1: BUG-270 wired-flag fix (cross-reference docstring) + process self-finding",
       "author": "jeetmehta1991",
-      "rel_time": "61 minutes ago"
+      "rel_time": "86 minutes ago"
     },
     {
       "sha": "d28c8723",
       "subject": "Pass 53 v8h+1: Tier C/D edge-case sweep - DEC-057 promoted; DEC-028 no-promote (forward-looking)",
       "author": "jeetmehta1991",
-      "rel_time": "85 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "10fa8617",
       "subject": "Pass 53 v8h+1: INV-041 RESOLVED - path-restricted commits in 4 prefetch scripts + 5-test regression gate",
       "author": "jeetmehta1991",
-      "rel_time": "88 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "bcb6ea3f",
@@ -30689,7 +30695,7 @@
       "sha": "f798881b",
       "subject": "Pass 53 v8h+1: Tier A promotion sweep (8 Phase 1A meta DECs - DEC-497/503/505/507/590/591/594/595)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "936a0c0e",
@@ -30731,36 +30737,30 @@
       "sha": "25485a1b",
       "subject": "Pass 53 v8h+1: H4 Polygon reference extended verify (DONE-WITH-DELISTING-CAP per CAV-075 sister pattern)",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "fc5c43f4",
       "subject": "Pass 53 v8h+1: H16 + H22 verify (DONE / PARTIAL-DONE-WITH-FINDING + INV-048)",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "fe623f3e",
       "subject": "Pass 53 v8h+1: H6 indicator completeness verify + macd top-up (1911 -> 1937)",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "b76fc3d1",
       "subject": "Pass 53 v8h+1: H1.b OHLCV Master Dedup data commit (1924 parquets, 105.6 MB) + CAV-079",
       "author": "jeetmehta1991",
       "rel_time": "5 hours ago"
-    },
-    {
-      "sha": "1e020b2a",
-      "subject": "Pass 53 v8h+1: promotion-path column wired into Stage 2 dashboard (CHECKLIST #81/#82)",
-      "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 4,
-    "modified": 4,
+    "count": 6,
+    "modified": 6,
     "added": 0,
     "untracked": 0,
     "deleted": 0,
@@ -30768,6 +30768,14 @@
       {
         "status": "M",
         "path": "BUG_REGISTER.md"
+      },
+      {
+        "status": "M",
+        "path": "backtest/engine/backtest.py"
+      },
+      {
+        "status": "M",
+        "path": "backtest/tests/test_unit.py"
       },
       {
         "status": "M",
@@ -30961,7 +30969,7 @@
     }
   ],
   "test_inventory": {
-    "total": 764,
+    "total": 766,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -31037,7 +31045,7 @@
       "test_stocktwits_smoke": 4,
       "test_supplementary_demo": 4,
       "test_supplementary_smoke": 6,
-      "test_unit": 108,
+      "test_unit": 110,
       "test_walk_forward_4fold": 6
     }
   },

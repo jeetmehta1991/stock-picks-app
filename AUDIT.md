@@ -32840,6 +32840,49 @@ Documents updated:
   - AUDIT.md (this sub-entry)
   - dashboard_stage_2 (rebuilt)
 
+---
+
+## Pass 53 Day 9 v8h+1 follow-on 2026-05-10 (cont): Phase 3 Batch 8 - BUG-29 (real engine fix)
+
+Owner directive 2026-05-10: "Address bug 29"
+
+**The bug:** at end of `BacktestEngine.run()`, remaining `self.open_trades` were silently discarded - never appended to `self.closed_trades`, never included in `get_trade_log()`. This biased final metrics upward in two ways:
+1. Winning open trades (still trending favorably) - their unrealized loss potential vanished from records
+2. Losing open trades - silently disappeared so reported drawdown / win-rate didn't account for them
+
+**The fix (BacktestEngine._finalize_open_trades):** new method called after the day-loop, before "Backtest complete" log. For each remaining open_trade:
+  - Looks up the last available close from `self.ohlcv_dict[ticker]` <= self.end
+  - Calls `exit_manager.close_trade()` (canonical OpenTrade -> ClosedTrade converter)
+  - exit_reason = `"end_of_backtest"`
+  - fail_reason = "Backtest period ended before exit signal fired" (when applicable via close_trade auto-logic)
+  - MAE/MFE preserved from OpenTrade running state
+  - Appends to self.closed_trades; removes from self.open_trades
+
+Trades for which no price data is available (delisting at end of window) remain in open_trades with a warning log.
+
+**2 new unit tests:**
+  - `test_bug_029_open_trades_finalized_at_backtest_end` - asserts _finalize_open_trades exists, is invoked by run(), and docstring contains "BUG-29" + "end_of_backtest"
+  - `test_bug_029_finalize_executes_against_synthetic_trade` - synthetic engine with 1 long trade ($100 entry, $104.5 last close); verifies finalization produces ClosedTrade with exit_reason=end_of_backtest, pnl_pct ~+4.5%, win=True
+
+**Per-addressal pyramid (CHECKLIST #78):** unit + integration + e2e_phase1a_smoke (the FULL backtest engine!) - 124/124 PASS in 4.1 min. Smoke test exercises the entire run() flow including the new _finalize_open_trades(); zero regressions, schema preserved, sanity gates pass. Layers N/A: data_integrity (no data change), performance (no perf concern - finalization is O(n_open_trades)), acceptance, property, snapshot, contract, compatibility, system (n/a beyond e2e), functional.
+
+**Same-commit (DEC-594):** _finalize_open_trades() method + run() invocation + 2 new tests + BUG_REGISTER flip + AUDIT.md narrative + dashboard rebuilt - this single commit.
+
+**Phase 1A impact:** trade_log + backtest_results.csv now include open-trade outcomes from the backtest tail period. This is a meaningful correction for Phase 1A May 15 launch - results will be more conservative/realistic. Any prior baseline numbers may shift slightly post-finalization; this is by design and is the corrected behavior.
+
+**Visible bug tier distribution (post-Phase-3-batch-8):**
+  - IMPLEMENTED: 24 (was 23)
+  - DEFERRED: 4; CODE_ONLY: 1
+  - OPEN: 91 (was 92; -1 from BUG-29)
+  - Total visible: 120; hidden: 28
+
+Documents updated:
+  - backtest/engine/backtest.py (_finalize_open_trades method + run() invocation + BUG-29 cross-ref)
+  - backtest/tests/test_unit.py (2 new BUG-29 unit tests)
+  - BUG_REGISTER.md (1 flip: BUG-29)
+  - AUDIT.md (this sub-entry)
+  - dashboard_stage_2 (rebuilt; IMPLEMENTED 23 -> 24)
+
 **Remaining OPEN backlog after sweeps:**
   - 1 DEC RESOLVED-DECIDED-deferred (DEC-028 Stage 3 paper trading - intentional)
   - INVs: 33 OPEN + 2 DEFERRED (genuine work; not promotion-eligible)

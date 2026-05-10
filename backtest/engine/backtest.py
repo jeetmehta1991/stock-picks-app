@@ -228,9 +228,76 @@ class BacktestEngine:
             except Exception as exc:
                 logger.error("Day %s failed: %s", as_of, exc, exc_info=True)
 
-        logger.info("Backtest complete. Open=%d Closed=%d Skipped=%d",
+        # BUG-29 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 8 2026-05-10:
+        # Force-close any remaining open trades at last available close price so
+        # they're included in final metrics. Without this, open winners inflated
+        # results (silently capped by trailing stop not yet triggered) and open
+        # losers disappeared entirely. Both biases removed by end-of-backtest
+        # finalization at mark-to-market exit.
+        n_finalized = self._finalize_open_trades()
+
+        logger.info("Backtest complete. Open=%d Closed=%d Skipped=%d (finalized %d at end-of-backtest)",
                     len(self.open_trades), len(self.closed_trades),
-                    len(self.skipped_trades))
+                    len(self.skipped_trades), n_finalized)
+
+    def _finalize_open_trades(self) -> int:
+        """Force-close remaining open trades at the last available close price.
+
+        BUG-29 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 8 2026-05-10:
+        Previously open trades at backtest end were silently discarded. This
+        biased results upward because winning open trades (still trending) didn't
+        register against their unrealized loss potential, while losing open trades
+        also vanished. Fix: mark-to-market each remaining open trade at the last
+        available close price on or before self.end, with exit_reason set to
+        'end_of_backtest'. Per-trade MAE/MFE preserved from OpenTrade running state.
+
+        Returns: count of trades finalized.
+        """
+        if not self.open_trades:
+            return 0
+        from backtest.engine.exit_manager import close_trade as _close_trade
+
+        n_finalized = 0
+        remaining: list = []  # for trades we cannot finalize (no price data)
+        for trade in self.open_trades:
+            df = self.ohlcv_dict.get(trade.ticker)
+            if df is None or df.empty:
+                # No price data available - cannot mark-to-market; leave as open
+                remaining.append(trade)
+                continue
+            try:
+                # Use the last close <= self.end (avoids future-dated bars)
+                eligible = df[df.index.date <= self.end]
+                if eligible.empty:
+                    remaining.append(trade)
+                    continue
+                exit_price = float(eligible["close"].iloc[-1])
+                exit_date = eligible.index[-1].date() if hasattr(eligible.index[-1], "date") else self.end
+                closed = _close_trade(
+                    trade=trade,
+                    exit_price=exit_price,
+                    exit_date=exit_date,
+                    exit_reason="end_of_backtest",
+                    max_adverse=trade.max_adverse_excursion,
+                    max_favourable=trade.max_favourable_excursion,
+                    fail_reason="Backtest period ended before exit signal fired",
+                )
+                self.closed_trades.append(closed)
+                n_finalized += 1
+            except Exception as exc:
+                logger.warning(
+                    "Could not finalize open trade %s (%s entry %s): %s",
+                    trade.ticker, trade.strategy, trade.entry_date, exc,
+                )
+                remaining.append(trade)
+
+        self.open_trades = remaining
+        if n_finalized:
+            logger.info(
+                "End-of-backtest finalization: closed %d open trades at last-available close (exit_reason=end_of_backtest)",
+                n_finalized,
+            )
+        return n_finalized
 
     def _trading_days(self) -> list[date]:
         days, d = [], self.start
