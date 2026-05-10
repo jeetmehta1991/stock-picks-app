@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-10T20:51:20.564960+00:00",
+  "generated_at": "2026-05-10T20:54:17.135253+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -1093,7 +1093,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 2,
+        "n_doc_refs": 5,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -2364,7 +2364,7 @@
     {
       "id": "DECISION-057",
       "title": "Disable Social Analyst",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Phase 0 / Architecture",
       "pass_intro": "Pass 31",
       "pass_resolved": "33",
@@ -2373,7 +2373,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 12,
+        "n_doc_refs": 17,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -2395,10 +2395,10 @@
       "dependencies": "-",
       "description": "**Status:** PROPOSED **Recommendation:** `selected_analysts=[\"market\", \"news\", \"fundamentals\"]` \u2014 drop \"social\". Saves ~12% cost. Social media via yfinance is noisy for daily-bar swing trading.",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-PROMOTE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Code + test refs found; eligible for RESOLVED-IMPLEMENTED"
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -21013,7 +21013,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 436,
+        "n_doc_refs": 437,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -26387,7 +26387,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 23,
+        "n_doc_refs": 24,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -28440,7 +28440,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 12,
+        "n_doc_refs": 13,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -28588,7 +28588,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 6,
+        "n_doc_refs": 7,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -31600,52 +31600,58 @@
   ],
   "recent_commits": [
     {
+      "sha": "10fa8617",
+      "subject": "Pass 53 v8h+1: INV-041 RESOLVED - path-restricted commits in 4 prefetch scripts + 5-test regression gate",
+      "author": "jeetmehta1991",
+      "rel_time": "2 minutes ago"
+    },
+    {
       "sha": "bcb6ea3f",
       "subject": "Pass 53 v8h+1: parse_inv_entries parser fix - recognize all RESOLVED-* / DEFERRED-* status variants",
       "author": "jeetmehta1991",
-      "rel_time": "4 minutes ago"
+      "rel_time": "7 minutes ago"
     },
     {
       "sha": "26340a6b",
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 20:43: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "7 minutes ago"
+      "rel_time": "10 minutes ago"
     },
     {
       "sha": "bffd8658",
       "subject": "Pass 53 v8h+1: INV promotion sweep - INV-045 RESOLVED + 4 NOOPs (CHECKLIST #81)",
       "author": "jeetmehta1991",
-      "rel_time": "32 minutes ago"
+      "rel_time": "35 minutes ago"
     },
     {
       "sha": "cab09977",
       "subject": "Pass 53 v8h+1: BUG promotion sweep (CHECKLIST #81 first application; 4 HIGH-severity smart_money bugs)",
       "author": "jeetmehta1991",
-      "rel_time": "34 minutes ago"
+      "rel_time": "37 minutes ago"
     },
     {
       "sha": "4addd669",
       "subject": "Pass 53 v8h+1: Tier B promotion sweep #3+#4 combined (17 DECs RESOLVED-DECIDED -> RESOLVED-IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "36 minutes ago"
+      "rel_time": "39 minutes ago"
     },
     {
       "sha": "f798881b",
       "subject": "Pass 53 v8h+1: Tier A promotion sweep (8 Phase 1A meta DECs - DEC-497/503/505/507/590/591/594/595)",
       "author": "jeetmehta1991",
-      "rel_time": "46 minutes ago"
+      "rel_time": "49 minutes ago"
     },
     {
       "sha": "936a0c0e",
       "subject": "Pass 53 v8h+1: Tier B promotion sweep #2 (5 PIT-correctness DECs - DEC-295/301/302/304/305)",
       "author": "jeetmehta1991",
-      "rel_time": "68 minutes ago"
+      "rel_time": "71 minutes ago"
     },
     {
       "sha": "501cdbff",
       "subject": "Pass 53 v8h+1: Tier B engine-correctness promotion sweep #1 (6 DECs RESOLVED-DECIDED -> RESOLVED-IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "81 minutes ago"
+      "rel_time": "84 minutes ago"
     },
     {
       "sha": "77f57b21",
@@ -31663,13 +31669,13 @@
       "sha": "07c15d16",
       "subject": "Pass 53 v8h+1: H18 data refresh - 54 CFTC parquets updated (legacy/disagg/tff datasets)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "1af57700",
       "subject": "Pass 53 v8h+1: H18 CFTC 5 missing datasets verify (DONE-WITH-DATASET-SCOPE-CAP) - Sprint 0A H-tier complete",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "25485a1b",
@@ -31772,19 +31778,13 @@
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 08:13: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
       "rel_time": "10 hours ago"
-    },
-    {
-      "sha": "ef42fd1b",
-      "subject": "Pass 53 auto-drift-sweep 2026-05-10 06:13: dashboards refreshed (no numerical drift)",
-      "author": "jeetmehta1991",
-      "rel_time": "12 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 7,
-    "modified": 6,
+    "count": 2,
+    "modified": 2,
     "added": 0,
-    "untracked": 1,
+    "untracked": 0,
     "deleted": 0,
     "files": [
       {
@@ -31793,27 +31793,7 @@
       },
       {
         "status": "M",
-        "path": "OPEN_INVESTIGATIONS.md"
-      },
-      {
-        "status": "M",
-        "path": "scripts/prefetch_alphavantage_news.py"
-      },
-      {
-        "status": "M",
-        "path": "scripts/prefetch_polygon_benzinga.py"
-      },
-      {
-        "status": "M",
-        "path": "scripts/prefetch_quiver.py"
-      },
-      {
-        "status": "M",
-        "path": "scripts/prefetch_sec_xbrl.py"
-      },
-      {
-        "status": "??",
-        "path": "backtest/tests/test_inv041_path_restricted_commits.py"
+        "path": "AUDIT_INDEX.md"
       }
     ]
   },
@@ -32615,7 +32595,7 @@
     }
   ],
   "decision_status_counts": {
-    "RESOLVED-DECIDED": 292,
+    "RESOLVED-DECIDED": 291,
     "PARTIAL": 5,
     "SUPERSEDED_BY_DEC-422": 6,
     "SUPERSEDED": 10,
@@ -32628,7 +32608,7 @@
     "DEFERRED_TO_STAGE_3": 29,
     "DEFERRED": 2,
     "DEFERRED_TO_STAGE_4": 18,
-    "RESOLVED-IMPLEMENTED": 42,
+    "RESOLVED-IMPLEMENTED": 43,
     "SUPERSEDED_BY_DEC-459": 1,
     "BLOCKED_ON_BUG-095": 3,
     "correlation": 1,

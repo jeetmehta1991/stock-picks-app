@@ -77,7 +77,7 @@
 | **DECISION-054** | IBKR for both paper and live | RESOLVED-DECIDED | Phase 0 / Architecture | Pass 29 | 33 |
 | **DECISION-055** | Cost-optimized TradingAgents config | RESOLVED-DECIDED | Phase 0 / Architecture | Pass 31 | 33 |
 | **DECISION-056** | Skip TradingAgents CLI | RESOLVED-DECIDED | Phase 0 / Architecture | Pass 31 | 33 |
-| **DECISION-057** | Disable Social Analyst | RESOLVED-DECIDED | Phase 0 / Architecture | Pass 31 | 33 |
+| **DECISION-057** | Disable Social Analyst | RESOLVED-IMPLEMENTED | Phase 0 / Architecture | Pass 31 | 33 |
 | **DECISION-058** | GPT-5.4-mini for backtest, Anthropic for live (REVISED) | RESOLVED-DECIDED | Phase 0 / Architecture | Pass 32 | 33 |
 | **DECISION-059** | $300 hard cap on Stage 2 backtest | RESOLVED-DECIDED | Phase 0 / Architecture | Pass 32 | 33 |
 | **DECISION-060** | Smoke test gating before Stage 2 scale **Pass 53 evening 2026-05-06 DEC-594 audit: PARTIAL-SPEC-ONLY (was RESOLVED-DECIDED; demoted via DEC-594 retroactive audit — code-grep found no test reference in `backtest/tests/`; cannot advance to RESOLVED-DECIDED until executable artifact lands per DEC-594 same-commit rule).** | PARTIAL-SPEC-ONLY | Phase 0 / Architecture | Pass 35 | 36 |

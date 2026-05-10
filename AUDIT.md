@@ -32357,6 +32357,46 @@ Documents updated this sub-turn:
   - AUDIT.md (this sub-entry)
   - Both dashboards rebuilt
 
+---
+
+## Pass 53 Day 9 v8h+1 follow-on 2026-05-10 (cont): Tier C/D edge-case promotion sweep (final)
+
+**Scope:** 2 remaining READY DECs after Tier A/B sweeps closed.
+
+| DEC | Title | Decision |
+|---|---|---|
+| DEC-028 | Stage 3 paper trading duration (3 months) | **NO-PROMOTE** - forward-looking; Stage 3 hasn't started. The decision is final but its "implementation" is the act of paper-trading itself which can't happen until Stage 3 begins. Remains RESOLVED-DECIDED until Stage 3 activation. |
+| DEC-057 | Disable Social Analyst | **PROMOTE** - referenced in `backtest/agents/pipeline.py` docstrings as the foundational decision behind the 11-active-agent design (per DEC-057 + CANONICAL_FACTS.md F-001). Code grep confirms 2 file refs in agent pipeline. |
+
+**DEC-057 status flip:** RESOLVED-DECIDED -> RESOLVED-IMPLEMENTED. The "Disable Social Analyst" decision is incorporated in `pipeline.py`'s 11-agent architecture (3 analysts + 3 research + Trader + 3 risk debaters + Portfolio Manager + Reflection - explicitly excluding the originally-planned Social Analyst node).
+
+**Per-addressal pyramid (CHECKLIST #78):** unit + integration 102/102 PASS in 3.8s.
+
+**RESOLVED-IMPLEMENTED count: 41 -> 42.**
+
+**Tier C/D status: COMPLETE** (1 promote + 1 NO-PROMOTE with documented reason).
+
+**All 4 promotion-tiers swept:**
+  - Tier A (Phase 1A meta): 8/8 promoted
+  - Tier B (engine + PIT + methodology): 28/28 promoted (#1=6, #2=5, #3+#4=17)
+  - Tier C/D (edge cases): 1 promoted (DEC-057), 1 no-promote (DEC-028 forward-looking)
+  - BUG promotion: 4/4 (BUG-270/271/272/273)
+  - INV promotion: 2 promoted (INV-045, INV-041) + 4 NOOPs
+
+**Final RESOLVED-IMPLEMENTED count this turn: 5 -> 42 (+37 across all sweeps).**
+
+**Remaining OPEN backlog after sweeps:**
+  - 1 DEC RESOLVED-DECIDED-deferred (DEC-028 Stage 3 paper trading - intentional)
+  - INVs: 33 OPEN + 2 DEFERRED (genuine work; not promotion-eligible)
+  - 340 PARTIAL-SPEC-ONLY DECs (per DEC-594 audit; need code+test before any further promotion)
+
+Phase 1A May 15 strict blocker count: **0 OPEN** (unchanged).
+
+Documents updated this sub-turn:
+  - AUDIT_INDEX.md (1 status flip: DEC-057)
+  - AUDIT.md (this sub-entry)
+  - Both dashboards rebuilt
+
 **Same-commit (DEC-594):** script + DEC-609 + AUDIT.md narrative + contract test + dashboards rebuilt - all in this sub-turn commit.
 
 Documents updated this sub-turn:
