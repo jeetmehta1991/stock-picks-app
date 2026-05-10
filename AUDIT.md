@@ -31935,3 +31935,32 @@ Documents updated this sub-turn:
   - AUDIT.md (this sub-entry)
   - Both dashboards rebuilt
 
+---
+
+## Pass 53 Day 9 v8h+1 follow-on 2026-05-10 (cont): H1 OHLCV Master Dedup prefetch (DEC-609 H1.a)
+
+Owner directive 2026-05-10: "H1 option B" - expand polygon ohlcv_daily from 503 (S&P 500) to 1937 (Master Dedup) at canonical Sprint 0A path with vwap+transactions.
+
+H1 scope finding (verified 2026-05-10 empirical): the existing legacy `backtest/data/cache/polygon/ohlcv_daily/` already had vwap+n for 503 S&P 500 tickers (1255 rows each). Legacy `backtest/data/cache/ohlcv/` had 2124 tickers but only 6-col schema (no vwap/transactions). Canonical Sprint 0A path `data_prefetch/polygon/ohlcv_daily/` was empty. Owner chose Option B: expand to 1937 at canonical path; leave legacy paths untouched to avoid breaking existing consumers.
+
+**H1.a (this sub-turn):** new script `scripts/prefetch_polygon_ohlcv_master.py` + smoke validation + contract test + DEC-609 entry. Script reads `Backtesting universe/Master Universe_Deduplicated_All Tiers_May 2026.csv` (1937 tickers, comment-skipped header), Polygon `/v2/aggs/ticker/{t}/range/1/day/...` paginated fetch, dot-format conversion for dual-class tickers (BRK-B->BRK.B), checkpoint every 50 tickers. Smoke 5 tickers (AAPL/MSFT/NVDA/GOOGL/TSLA) -> 1255 rows each, 9-col schema [ticker, date, open, high, low, close, volume, vwap, transactions], vwap float64 / transactions int64, no nulls, all-positive.
+
+**Contract test** `backtest/tests/test_polygon_ohlcv_master_schema.py` (17 tests):
+- 5 schema-locked smoke tickers x [columns / dtypes / vwap+transactions presence] = 15 parametrized tests
+- 1 row-count-realistic test (1200-1300 rows tolerance)
+- 1 canonical-path-exists test
+- pandas 2.x PyArrow string dtype handled (ticker accepted as object/str/string)
+
+**Per-addressal pyramid (CHECKLIST #78):** 191/191 PASS in 8s across contract + regression + unit + integration + smoke + schema-canonical layers. Layers N/A: data_integrity (re-runs on H1.b post-BG), performance, acceptance, property, snapshot, compatibility.
+
+**H1.b (deferred):** full BG kicked off 2026-05-10 17:01 UTC (PID 69842, ETA ~16-17 min at observed 1.9 t/s rate). Per-ticker .parquet files (1937 - 5 smoke = 1932 to fetch) commit as separate H1.b addressal when BG completes; data_integrity pyramid layer runs then. Per CHECKLIST #67.b doc-commits-decoupled-from-pending-BG rule.
+
+**Same-commit (DEC-594):** script + DEC-609 + AUDIT.md narrative + contract test + dashboards rebuilt - all in this sub-turn commit.
+
+Documents updated this sub-turn:
+  - scripts/prefetch_polygon_ohlcv_master.py (NEW; 1937-ticker Master Dedup prefetch with vwap+transactions at canonical Sprint 0A path)
+  - backtest/tests/test_polygon_ohlcv_master_schema.py (NEW; 17 contract tests)
+  - AUDIT_INDEX.md (DEC-609 RESOLVED-IMPLEMENTED; total 532 -> 533)
+  - AUDIT.md (this sub-entry)
+  - Both dashboards rebuilt
+

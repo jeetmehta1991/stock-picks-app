@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-10T16:43:26.969418+00:00",
+  "generated_at": "2026-05-10T17:04:33.146930+00:00",
   "universe_size": 1937,
   "tier_counts": {
     "T1ETF": 27,
@@ -54,37 +54,37 @@
           "field": "close",
           "coded": true,
           "wired": true,
-          "n_refs": 370
+          "n_refs": 374
         },
         {
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 363
+          "n_refs": 368
         },
         {
           "field": "high",
           "coded": true,
           "wired": true,
-          "n_refs": 172
+          "n_refs": 176
         },
         {
           "field": "low",
           "coded": true,
           "wired": true,
-          "n_refs": 178
+          "n_refs": 182
         },
         {
           "field": "open",
           "coded": true,
           "wired": true,
-          "n_refs": 116
+          "n_refs": 120
         },
         {
           "field": "volume",
           "coded": true,
           "wired": true,
-          "n_refs": 70
+          "n_refs": 74
         }
       ]
     },
@@ -171,7 +171,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 363
+          "n_refs": 368
         },
         {
           "field": "description",
@@ -249,7 +249,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 198
+          "n_refs": 206
         },
         {
           "field": "tickers",
@@ -375,7 +375,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 198
+          "n_refs": 206
         }
       ]
     },
@@ -440,7 +440,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 198
+          "n_refs": 206
         }
       ]
     },
@@ -576,7 +576,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 198
+          "n_refs": 206
         },
         {
           "field": "type",
@@ -774,7 +774,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 198
+          "n_refs": 206
         },
         {
           "field": "total_employees",
@@ -899,7 +899,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 198
+          "n_refs": 206
         }
       ]
     },
@@ -971,7 +971,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 198
+          "n_refs": 206
         }
       ]
     },
@@ -1076,7 +1076,7 @@
           "field": "last_updated",
           "coded": true,
           "wired": false,
-          "n_refs": 9
+          "n_refs": 10
         },
         {
           "field": "listing_date",
@@ -1136,7 +1136,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 198
+          "n_refs": 206
         },
         {
           "field": "total_offer_size",
@@ -1177,31 +1177,31 @@
           "field": "close",
           "coded": true,
           "wired": true,
-          "n_refs": 370
+          "n_refs": 374
         },
         {
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 363
+          "n_refs": 368
         },
         {
           "field": "high",
           "coded": true,
           "wired": true,
-          "n_refs": 172
+          "n_refs": 176
         },
         {
           "field": "low",
           "coded": true,
           "wired": true,
-          "n_refs": 178
+          "n_refs": 182
         },
         {
           "field": "open",
           "coded": true,
           "wired": true,
-          "n_refs": 116
+          "n_refs": 120
         }
       ]
     },
@@ -1233,49 +1233,49 @@
           "field": "close",
           "coded": true,
           "wired": true,
-          "n_refs": 370
+          "n_refs": 374
         },
         {
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 363
+          "n_refs": 368
         },
         {
           "field": "high",
           "coded": true,
           "wired": true,
-          "n_refs": 172
+          "n_refs": 176
         },
         {
           "field": "low",
           "coded": true,
           "wired": true,
-          "n_refs": 178
+          "n_refs": 182
         },
         {
           "field": "open",
           "coded": true,
           "wired": true,
-          "n_refs": 116
+          "n_refs": 120
         },
         {
           "field": "transactions",
           "coded": true,
           "wired": false,
-          "n_refs": 9
+          "n_refs": 17
         },
         {
           "field": "volume",
           "coded": true,
           "wired": true,
-          "n_refs": 70
+          "n_refs": 74
         },
         {
           "field": "vwap",
           "coded": true,
           "wired": true,
-          "n_refs": 11
+          "n_refs": 19
         }
       ]
     },
@@ -1307,49 +1307,49 @@
           "field": "close",
           "coded": true,
           "wired": true,
-          "n_refs": 370
+          "n_refs": 374
         },
         {
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 363
+          "n_refs": 368
         },
         {
           "field": "high",
           "coded": true,
           "wired": true,
-          "n_refs": 172
+          "n_refs": 176
         },
         {
           "field": "low",
           "coded": true,
           "wired": true,
-          "n_refs": 178
+          "n_refs": 182
         },
         {
           "field": "open",
           "coded": true,
           "wired": true,
-          "n_refs": 116
+          "n_refs": 120
         },
         {
           "field": "transactions",
           "coded": true,
           "wired": false,
-          "n_refs": 9
+          "n_refs": 17
         },
         {
           "field": "volume",
           "coded": true,
           "wired": true,
-          "n_refs": 70
+          "n_refs": 74
         },
         {
           "field": "vwap",
           "coded": true,
           "wired": true,
-          "n_refs": 11
+          "n_refs": 19
         }
       ]
     },
@@ -1456,7 +1456,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 198
+          "n_refs": 206
         },
         {
           "field": "underlying_ticker",
@@ -1493,7 +1493,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 363
+          "n_refs": 368
         },
         {
           "field": "cpi",
@@ -1561,7 +1561,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 363
+          "n_refs": 368
         },
         {
           "field": "model_1_year",
@@ -1635,7 +1635,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 363
+          "n_refs": 368
         },
         {
           "field": "yield_1_year",
@@ -1756,7 +1756,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 363
+          "n_refs": 368
         },
         {
           "field": "firm",
@@ -1774,7 +1774,7 @@
           "field": "last_updated",
           "coded": true,
           "wired": false,
-          "n_refs": 9
+          "n_refs": 10
         },
         {
           "field": "price_target",
@@ -1798,7 +1798,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 198
+          "n_refs": 206
         }
       ]
     },
@@ -1919,7 +1919,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 363
+          "n_refs": 368
         },
         {
           "field": "firm",
@@ -1937,7 +1937,7 @@
           "field": "last_updated",
           "coded": true,
           "wired": false,
-          "n_refs": 9
+          "n_refs": 10
         },
         {
           "field": "notes",
@@ -1997,7 +1997,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 198
+          "n_refs": 206
         },
         {
           "field": "time",
@@ -2100,7 +2100,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 363
+          "n_refs": 368
         },
         {
           "field": "date_status",
@@ -2160,7 +2160,7 @@
           "field": "last_updated",
           "coded": true,
           "wired": false,
-          "n_refs": 9
+          "n_refs": 10
         },
         {
           "field": "notes",
@@ -2202,7 +2202,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 198
+          "n_refs": 206
         },
         {
           "field": "time",
@@ -2294,7 +2294,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 363
+          "n_refs": 368
         },
         {
           "field": "eps_method",
@@ -2336,7 +2336,7 @@
           "field": "last_updated",
           "coded": true,
           "wired": false,
-          "n_refs": 9
+          "n_refs": 10
         },
         {
           "field": "max_eps_guidance",
@@ -2414,7 +2414,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 198
+          "n_refs": 206
         },
         {
           "field": "time",
@@ -2479,7 +2479,7 @@
           "field": "last_updated",
           "coded": true,
           "wired": false,
-          "n_refs": 9
+          "n_refs": 10
         },
         {
           "field": "name",
@@ -2530,7 +2530,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 363
+          "n_refs": 368
         },
         {
           "field": "value",
@@ -2581,7 +2581,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 363
+          "n_refs": 368
         },
         {
           "field": "value",
@@ -2632,7 +2632,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 363
+          "n_refs": 368
         },
         {
           "field": "value",
@@ -2683,7 +2683,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 363
+          "n_refs": 368
         },
         {
           "field": "value",
@@ -2734,7 +2734,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 363
+          "n_refs": 368
         },
         {
           "field": "value",
@@ -2787,7 +2787,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 363
+          "n_refs": 368
         },
         {
           "field": "histogram",
@@ -3936,13 +3936,13 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 198
+          "n_refs": 206
         },
         {
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 363
+          "n_refs": 368
         },
         {
           "field": "momentum",
@@ -4384,7 +4384,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 198
+          "n_refs": 206
         }
       ]
     },
@@ -4463,7 +4463,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 198
+          "n_refs": 206
         }
       ]
     },
@@ -4542,7 +4542,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 198
+          "n_refs": 206
         }
       ]
     },
@@ -4621,7 +4621,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 198
+          "n_refs": 206
         }
       ]
     },
@@ -4700,7 +4700,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 198
+          "n_refs": 206
         }
       ]
     },
@@ -4779,7 +4779,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 198
+          "n_refs": 206
         }
       ]
     },
@@ -4858,7 +4858,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 198
+          "n_refs": 206
         }
       ]
     },
@@ -4937,7 +4937,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 198
+          "n_refs": 206
         }
       ]
     },
@@ -5016,7 +5016,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 198
+          "n_refs": 206
         }
       ]
     },
@@ -5095,7 +5095,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 198
+          "n_refs": 206
         }
       ]
     },
@@ -5174,7 +5174,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 198
+          "n_refs": 206
         }
       ]
     },
@@ -5320,7 +5320,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 363
+          "n_refs": 368
         },
         {
           "field": "value",
@@ -5355,7 +5355,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 363
+          "n_refs": 368
         },
         {
           "field": "realtime_end",
@@ -5416,7 +5416,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 363
+          "n_refs": 368
         },
         {
           "field": "bullish",
@@ -5523,7 +5523,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 363
+          "n_refs": 368
         },
         {
           "field": "stock_funds_pct",
@@ -5629,7 +5629,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 363
+          "n_refs": 368
         }
       ]
     },
@@ -8258,7 +8258,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 198
+          "n_refs": 206
         },
         {
           "field": "name",
@@ -8362,7 +8362,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 198
+          "n_refs": 206
         },
         {
           "field": "upvotes",
@@ -8419,7 +8419,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 363
+          "n_refs": 368
         },
         {
           "field": "views",
@@ -8471,7 +8471,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 363
+          "n_refs": 368
         },
         {
           "field": "query_label",
@@ -8489,7 +8489,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 198
+          "n_refs": 206
         }
       ]
     },
@@ -8704,7 +8704,7 @@
           "field": "ticker",
           "coded": true,
           "wired": true,
-          "n_refs": 198
+          "n_refs": 206
         },
         {
           "field": "weburl",
@@ -9437,7 +9437,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 363
+          "n_refs": 368
         },
         {
           "field": "epsActual",
@@ -9517,7 +9517,7 @@
           "field": "date",
           "coded": true,
           "wired": true,
-          "n_refs": 363
+          "n_refs": 368
         },
         {
           "field": "exchange",

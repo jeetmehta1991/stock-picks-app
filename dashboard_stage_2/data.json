@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-10T16:43:23.299460+00:00",
+  "generated_at": "2026-05-10T17:04:29.549830+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -15109,7 +15109,7 @@
         "wired": true,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 65,
+        "n_doc_refs": 66,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -16265,7 +16265,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 17,
+        "n_doc_refs": 19,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -17013,7 +17013,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 34,
+        "n_doc_refs": 35,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -17373,6 +17373,40 @@
       "short_id": "DEC-505",
       "sprint": "-",
       "dependencies": "DEC-109",
+      "description": ""
+    },
+    {
+      "id": "DECISION-609",
+      "title": "H1 OHLCV Master Dedup prefetch with vwap+transactions at canonical Sprint 0A path (Option B). Pass 53 v8h+1 owner-approved 2026-05-10 (H1=B) RESOLVED-IMPLEMENTE",
+      "status": "RESOLVED-IMPLEMENTED",
+      "theme": "Sprint 0A / data architecture / Pass 53 v8h+1",
+      "pass_intro": "Pass 53",
+      "pass_resolved": "53",
+      "status_grep": {
+        "coded": true,
+        "wired": false,
+        "tested": true,
+        "pushed": false,
+        "n_doc_refs": 6,
+        "pyramid": {
+          "unit": false,
+          "smoke": false,
+          "integration": false,
+          "system": false,
+          "functional": false,
+          "regression": false,
+          "data_integrity": false,
+          "performance": false,
+          "acceptance": false,
+          "property": false,
+          "snapshot": false,
+          "contract": false,
+          "compatibility": false
+        }
+      },
+      "short_id": "DEC-609",
+      "sprint": "-",
+      "dependencies": "-",
       "description": ""
     },
     {
@@ -17829,7 +17863,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 426,
+        "n_doc_refs": 428,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -18067,7 +18101,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 18,
+        "n_doc_refs": 19,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -27131,28 +27165,34 @@
   ],
   "recent_commits": [
     {
+      "sha": "aee93c01",
+      "subject": "Pass 53 auto-drift-sweep 2026-05-10 16:43: dashboards refreshed (no numerical drift)",
+      "author": "jeetmehta1991",
+      "rel_time": "14 minutes ago"
+    },
+    {
       "sha": "d57a07ee",
       "subject": "Pass 53 v8h+1: Sprint 0A.8 NO-LIVE-API HARD CUT implementation (DEC-608)",
       "author": "jeetmehta1991",
-      "rel_time": "44 minutes ago"
+      "rel_time": "65 minutes ago"
     },
     {
       "sha": "bdba8f67",
       "subject": "Pass 53 v8h+1: H-tier doc reconciliation + H20=A (DEC-599 honored)",
       "author": "jeetmehta1991",
-      "rel_time": "64 minutes ago"
+      "rel_time": "85 minutes ago"
     },
     {
       "sha": "f0d03fcd",
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 15:26: dashboard_sprint0a rebuild artifacts (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "77 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "041229b1",
       "subject": "Pass 53 v8h+1: INV-046 RESOLVED-DOCUMENTED + DEC-607 realism floor 100% -> 300% + rapidity gate",
       "author": "jeetmehta1991",
-      "rel_time": "83 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "d6e6296d",
@@ -27230,7 +27270,7 @@
       "sha": "826d5454",
       "subject": "Pass 53 v8h+1: DEC-605 - Finnhub social_sentiment EXCLUDED from Phase 1A baseline",
       "author": "jeetmehta1991",
-      "rel_time": "18 hours ago"
+      "rel_time": "19 hours ago"
     },
     {
       "sha": "5bb5b70f",
@@ -27254,7 +27294,7 @@
       "sha": "387fac95",
       "subject": "Pass 53 v8h+1: 8 new DECs (597-604) + register sweeps + per-turn discipline fix",
       "author": "jeetmehta1991",
-      "rel_time": "23 hours ago"
+      "rel_time": "24 hours ago"
     },
     {
       "sha": "76436fa7",
@@ -27278,13 +27318,13 @@
       "sha": "ad5f0f78",
       "subject": "StockTwits final (1923 fetched)",
       "author": "jeetmehta1991",
-      "rel_time": "31 hours ago"
+      "rel_time": "32 hours ago"
     },
     {
       "sha": "658f40ad",
       "subject": "StockTwits batch 38",
       "author": "jeetmehta1991",
-      "rel_time": "31 hours ago"
+      "rel_time": "32 hours ago"
     },
     {
       "sha": "dcc49c62",
@@ -27302,22 +27342,28 @@
       "sha": "65a03894",
       "subject": "StockTwits batch 35",
       "author": "jeetmehta1991",
-      "rel_time": "32 hours ago"
-    },
-    {
-      "sha": "fd5a7cd9",
-      "subject": "StockTwits batch 34",
-      "author": "jeetmehta1991",
       "rel_time": "33 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 2,
-    "modified": 0,
+    "count": 8,
+    "modified": 2,
     "added": 0,
-    "untracked": 2,
+    "untracked": 6,
     "deleted": 0,
     "files": [
+      {
+        "status": "M",
+        "path": "AUDIT.md"
+      },
+      {
+        "status": "M",
+        "path": "AUDIT_INDEX.md"
+      },
+      {
+        "status": "??",
+        "path": "backtest/tests/test_polygon_ohlcv_master_schema.py"
+      },
       {
         "status": "??",
         "path": "data_prefetch/finnhub/social_sentiment/"
@@ -27325,6 +27371,18 @@
       {
         "status": "??",
         "path": "data_prefetch/polygon/_checkpoint_news_pre_inv027_backup.json"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/polygon/_checkpoint_ohlcv_master.json"
+      },
+      {
+        "status": "??",
+        "path": "data_prefetch/polygon/ohlcv_daily/"
+      },
+      {
+        "status": "??",
+        "path": "scripts/prefetch_polygon_ohlcv_master.py"
       }
     ]
   },
@@ -27506,7 +27564,7 @@
     }
   ],
   "test_inventory": {
-    "total": 723,
+    "total": 728,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -27555,6 +27613,7 @@
       "test_performance_load": 4,
       "test_phase1a_runner_no_unicode": 2,
       "test_pit_audit_v8g": 14,
+      "test_polygon_ohlcv_master_schema": 5,
       "test_polygon_stocks_demo": 4,
       "test_polygon_stocks_smoke": 8,
       "test_prefetch_scripts_no_unicode": 2,
@@ -27638,7 +27697,7 @@
     ]
   },
   "structural_drift": {
-    "cached_dir_count": 89,
+    "cached_dir_count": 90,
     "scanned_dir_count": 81,
     "uncovered": [
       "data_prefetch/aaii",
@@ -27651,6 +27710,7 @@
       "data_prefetch/polygon/economy",
       "data_prefetch/polygon/futures",
       "data_prefetch/polygon/market_status",
+      "data_prefetch/polygon/ohlcv_daily",
       "data_prefetch/polygon/reference_meta",
       "data_prefetch/polygon/snapshot",
       "data_prefetch/polygon/splits",
@@ -27662,7 +27722,7 @@
       "data_prefetch/quiver/sec13fchanges",
       "data_prefetch/quiver/twitter"
     ],
-    "uncovered_count": 20
+    "uncovered_count": 21
   },
   "reference_tables": {
     "badges": [
@@ -28156,7 +28216,7 @@
     "BLOCKED_ON_DEC-450": 1,
     "FAIL_RR": 1,
     "BLOCKED_ON_DEC-388_AND_DEC-409": 1,
-    "RESOLVED-IMPLEMENTED": 5,
+    "RESOLVED-IMPLEMENTED": 6,
     "RESOLVED-IMPLEMENTED-T1a-T1c": 1,
     "PROPOSED": 13,
     "splits": 1
