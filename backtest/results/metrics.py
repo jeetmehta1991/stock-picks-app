@@ -604,6 +604,45 @@ def _kelly_criterion(win_rate: float, avg_win: float, avg_loss: float) -> dict:
     }
 
 
+def _aep_pct_metric(df_trades: pd.DataFrame) -> dict:
+    """DEC-435 / DEC-075 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 49
+    2026-05-11 (owner-approved Path C). Adverse Exit Pct (AEP): per-trade
+    exit-distance-from-peak. Lower = exit near peak (better); higher = more
+    giveback. Formula per DEC-435: `(mfe - exit_pnl) / mfe` for winning trades
+    only (pnl > 0; mfe >= pnl > 0 so AEP is bounded [0, 1)). Losing trades
+    skipped (would yield AEP > 1, distorting mean). POOR_EXIT_TIMING flag
+    raised when mean_aep_pct > 0.5 (mean exit gives back >50% of peak).
+
+    Inputs:
+      df_trades: DataFrame with pnl_pct + max_favourable_excursion columns
+
+    Returns dict with avg_aep_pct (mean across winners), n_aep_eligible
+    (count of winners with mfe > 0), poor_exit_timing (bool), aep_note.
+    """
+    if df_trades.empty or "max_favourable_excursion" not in df_trades.columns:
+        return {
+            "avg_aep_pct": None, "n_aep_eligible": 0,
+            "poor_exit_timing": False, "aep_note": "no_mfe_column",
+        }
+    mfe = pd.to_numeric(df_trades["max_favourable_excursion"], errors="coerce")
+    pnl = pd.to_numeric(df_trades["pnl_pct"], errors="coerce")
+    eligible = (pnl > 0) & (mfe > 0) & mfe.notna() & pnl.notna()
+    n_eligible = int(eligible.sum())
+    if n_eligible == 0:
+        return {
+            "avg_aep_pct": None, "n_aep_eligible": 0,
+            "poor_exit_timing": False, "aep_note": "no_winning_trades_with_mfe",
+        }
+    aep = (mfe[eligible] - pnl[eligible]) / mfe[eligible]
+    mean_aep = round(float(aep.mean()), 4)
+    return {
+        "avg_aep_pct":      mean_aep,
+        "n_aep_eligible":   n_eligible,
+        "poor_exit_timing": bool(mean_aep > 0.5),
+        "aep_note":         "ok",
+    }
+
+
 def compute_strategy_metrics(df: pd.DataFrame, strategy: str) -> dict:
     """Compute all metrics for a single strategy across all trades."""
     g = df[df["strategy"] == strategy]
@@ -655,6 +694,9 @@ def compute_strategy_metrics(df: pd.DataFrame, strategy: str) -> dict:
         skew_val, kurt_val = 0.0, 3.0
     psr_dict = _deflated_sharpe(sharpe, n, skew_val, kurt_val)
     cost_sensitivity = _cost_sensitivity_sharpe(pnl, hold_s)
+    # DEC-435 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 49 2026-05-11.
+    # Adverse Exit Pct (mean giveback from MFE) for exit-quality assessment.
+    aep_dict = _aep_pct_metric(g)
 
     # DEC-083 + DEC-406 tiered min-trades enforcement. Map strategy category
     # to tiered threshold; passes_all uses the tiered threshold instead of
@@ -844,6 +886,11 @@ def compute_strategy_metrics(df: pd.DataFrame, strategy: str) -> dict:
         "sharpe_at_5bps":        cost_sensitivity.get("sharpe_at_5bps"),
         "sharpe_at_10bps":       cost_sensitivity.get("sharpe_at_10bps"),
         "sharpe_at_20bps":       cost_sensitivity.get("sharpe_at_20bps"),
+        # DEC-435 / DEC-075 Adverse Exit Pct (exit-quality telemetry + flag)
+        "avg_aep_pct":           aep_dict.get("avg_aep_pct"),
+        "n_aep_eligible":        aep_dict.get("n_aep_eligible"),
+        "poor_exit_timing":      aep_dict.get("poor_exit_timing"),
+        "aep_note":              aep_dict.get("aep_note"),
         "calmar_ratio":          calmar,
         "kelly":                 _kelly_criterion(win_rate, avg_win, abs(avg_loss)),
         "avg_hold_days":         round(float(g["hold_days"].mean()), 1) if "hold_days" in g else 0,

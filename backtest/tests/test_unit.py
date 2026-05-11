@@ -2984,6 +2984,115 @@ def test_dec_414_dec_416_wired_into_compute_strategy_metrics():
         assert k in m, f"missing {k}"
 
 
+def test_dec_435_aep_pct_metric_winners_only():
+    """DEC-435: AEP = (mfe - pnl)/mfe for winning trades only (pnl > 0).
+    Exit at peak -> AEP 0. Half giveback -> AEP 0.5. Mean across 3 winners.
+    """
+    import pandas as pd
+    from backtest.results.metrics import _aep_pct_metric
+
+    df = pd.DataFrame([
+        {"pnl_pct": 5.0, "max_favourable_excursion": 5.0},   # AEP 0.00
+        {"pnl_pct": 2.5, "max_favourable_excursion": 5.0},   # AEP 0.50
+        {"pnl_pct": 1.0, "max_favourable_excursion": 4.0},   # AEP 0.75
+    ])
+    out = _aep_pct_metric(df)
+    assert out["n_aep_eligible"] == 3
+    assert out["aep_note"] == "ok"
+    assert abs(out["avg_aep_pct"] - round((0.0 + 0.5 + 0.75) / 3, 4)) < 1e-6
+    assert out["poor_exit_timing"] is False  # mean 0.417 <= 0.5
+
+
+def test_dec_435_aep_pct_excludes_losing_trades():
+    """DEC-435: losing trades (pnl <= 0) excluded per spec, regardless of mfe.
+    Only winners with mfe > 0 contribute to mean.
+    """
+    import pandas as pd
+    from backtest.results.metrics import _aep_pct_metric
+
+    df = pd.DataFrame([
+        {"pnl_pct": -2.0, "max_favourable_excursion": 3.0},  # loser -> excluded
+        {"pnl_pct":  0.0, "max_favourable_excursion": 2.0},  # break-even -> excluded
+        {"pnl_pct": -1.0, "max_favourable_excursion": -0.5}, # loser -> excluded
+        {"pnl_pct":  3.0, "max_favourable_excursion": 6.0},  # winner: AEP 0.5
+    ])
+    out = _aep_pct_metric(df)
+    assert out["n_aep_eligible"] == 1
+    assert abs(out["avg_aep_pct"] - 0.5) < 1e-6
+
+
+def test_dec_435_aep_pct_poor_exit_timing_flag():
+    """DEC-435 / DEC-075: POOR_EXIT_TIMING flag fires when mean AEP > 0.5."""
+    import pandas as pd
+    from backtest.results.metrics import _aep_pct_metric
+
+    df_poor = pd.DataFrame([
+        {"pnl_pct": 1.0, "max_favourable_excursion": 5.0},  # AEP 0.80
+        {"pnl_pct": 2.0, "max_favourable_excursion": 5.0},  # AEP 0.60
+    ])
+    out_poor = _aep_pct_metric(df_poor)
+    assert out_poor["poor_exit_timing"] is True
+    assert out_poor["avg_aep_pct"] == 0.7
+
+    df_good = pd.DataFrame([
+        {"pnl_pct": 4.0, "max_favourable_excursion": 5.0},  # AEP 0.20
+        {"pnl_pct": 5.0, "max_favourable_excursion": 5.0},  # AEP 0.00
+    ])
+    out_good = _aep_pct_metric(df_good)
+    assert out_good["poor_exit_timing"] is False
+    assert out_good["avg_aep_pct"] == 0.1
+
+
+def test_dec_435_aep_pct_empty_or_missing_column():
+    """DEC-435: empty df or missing mfe column -> None + no_mfe_column note."""
+    import pandas as pd
+    from backtest.results.metrics import _aep_pct_metric
+
+    out_empty = _aep_pct_metric(pd.DataFrame())
+    assert out_empty["avg_aep_pct"] is None
+    assert out_empty["aep_note"] == "no_mfe_column"
+    assert out_empty["poor_exit_timing"] is False
+
+    df_no_mfe = pd.DataFrame([{"pnl_pct": 1.0}])
+    out_no_mfe = _aep_pct_metric(df_no_mfe)
+    assert out_no_mfe["avg_aep_pct"] is None
+    assert out_no_mfe["aep_note"] == "no_mfe_column"
+
+
+def test_dec_435_aep_pct_wired_into_compute_strategy_metrics():
+    """DEC-435: avg_aep_pct + n_aep_eligible + poor_exit_timing + aep_note
+    surface in compute_strategy_metrics output.
+    """
+    import pandas as pd
+    from datetime import date, timedelta
+    from backtest.results.metrics import compute_strategy_metrics
+
+    n = 30
+    rows = []
+    for i in range(n):
+        is_winner = i % 3 != 0
+        rows.append({
+            "strategy": "test_strat", "ticker": f"T{i % 10}",
+            "win": is_winner,
+            "pnl_pct": 1.5 if is_winner else -1.0,
+            "max_favourable_excursion": 3.0 if is_winner else 0.5,
+            "hold_days": 10,
+            "entry_date": date(2024, 1, 1) + timedelta(days=i),
+            "exit_date": date(2024, 1, 1) + timedelta(days=i + 10),
+            "regime": "bull_neutral", "category": "momentum",
+            "sector": "Information Technology", "direction": "long",
+            "smart_money_score": 0, "macro_score": 0,
+        })
+    df = pd.DataFrame(rows)
+    m = compute_strategy_metrics(df, "test_strat")
+    for k in ("avg_aep_pct", "n_aep_eligible", "poor_exit_timing", "aep_note"):
+        assert k in m, f"missing {k}"
+    assert m["aep_note"] == "ok"
+    # 20 winners (i % 3 != 0), each with pnl=1.5 mfe=3.0 -> AEP 0.5 each
+    assert m["n_aep_eligible"] == 20
+    assert abs(m["avg_aep_pct"] - 0.5) < 1e-6
+
+
 def test_dec_241_time_in_market_metric_basic():
     """DEC-241 (Phase 3 Batch 40): time-in-market metric computes % days
     with at least 1 position open, % days long, % days short, % days cash.
