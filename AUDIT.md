@@ -34131,6 +34131,43 @@ Documents updated:
   - AUDIT.md (this entry)
   - dashboard_stage_2 (rebuilt; IMPLEMENTED 114 -> 120, SPEC_ONLY 247 -> 238)
 
+---
+
+## Pass 53 Day 9 v8h+1 follow-on 2026-05-11 (cont): Phase 3 Batch 33 - X51 CRITICAL Runtime Bugs audit (Step 8) - 100% yield
+
+**Owner directive 2026-05-10 (Path B Step 8 approved):** Per-decision audit of 4 X51 CRITICAL Runtime Bugs SPEC_ONLY decisions.
+
+**Note on Step 7 (X6 Exits + CB):** Audit conducted but yielded 0 flips - all 5 X6 SPEC_ONLY (DEC-075, DEC-078A, DEC-432, DEC-433, DEC-435) are genuinely unimplemented engine work (AEP, stop-out cluster, chandelier exit, 6 new exit methods). Not committed since no state change.
+
+**Step 8 (X51 CRITICAL Runtime Bugs) audit - 4 of 4 RESOLVED-IMPLEMENTED (100% yield):**
+- DEC-293: close_trade `days` NameError fixed via BUG-02 family Phase 3 Batch 3 (days computed before pnl in exit_manager.py)
+- DEC-294: duplicate ClosedTrade dataclass removed via BUG-03/BUG-215 (canonical single definition confirmed)
+- DEC-296: test_e2e engine fixture defined (engine fixture + pytest.fixture decorators present in test_e2e.py)
+- DEC-297: close_trade unit test coverage exists in test_unit.py (multiple close_trade references including BUG-29 finalize test)
+
+**Dashboard state shift:**
+
+| Tier | Pre-Batch-33 | Post-Batch-33 |
+|---|---|---|
+| IMPLEMENTED | 120 | **124** (+4) |
+| SPEC_ONLY | 238 | **234** (-4) |
+| Hidden | 51 | 51 |
+| Visible | 483 | 483 |
+| Non-DEFERRED no-cells | 0 | **0** (preserved) |
+
+**Per-addressal pyramid (CHECKLIST #78):** unit 144/144 + integration 13/13 = 157/157 PASS in 3.90s.
+
+**Phase 1A May 15 IMPACT:** None directly. All 4 X51 critical bugs were already fixed via Phase 3 engine work; this batch updates AUDIT_INDEX status to reflect that state.
+
+**Cumulative Path B progress (Batches 28-33):**
+- SPEC_ONLY: 321 -> 234 (-27%)
+- IMPLEMENTED: 47 -> 124 (+164%)
+
+Documents updated:
+  - AUDIT_INDEX.md (4 status flips: all RESOLVED-IMPLEMENTED)
+  - AUDIT.md (this entry)
+  - dashboard_stage_2 (rebuilt; IMPLEMENTED 120 -> 124, SPEC_ONLY 238 -> 234)
+
 **Remaining OPEN backlog after sweeps:**
   - 1 DEC RESOLVED-DECIDED-deferred (DEC-028 Stage 3 paper trading - intentional)
   - INVs: 33 OPEN + 2 DEFERRED (genuine work; not promotion-eligible)
