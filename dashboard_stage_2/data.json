@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-11T02:42:52.143404+00:00",
+  "generated_at": "2026-05-11T02:56:32.777035+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -13,7 +13,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 0,
+        "n_doc_refs": 1,
         "pyramid": {
           "unit": false,
           "smoke": "N/A",
@@ -212,8 +212,8 @@
         "coded": true,
         "wired": false,
         "tested": false,
-        "pushed": false,
-        "n_doc_refs": 0,
+        "pushed": true,
+        "n_doc_refs": 10,
         "pyramid": {
           "unit": false,
           "smoke": "N/A",
@@ -723,8 +723,8 @@
     },
     {
       "id": "DECISION-028",
-      "title": "Stage 3 paper trading duration \u2014 Stage 3 paper trading duration: 3 months",
-      "status": "RESOLVED-DECIDED",
+      "title": "Stage 3 paper trading duration \u2014 Stage 3 paper trading duration: 3 months Pass 53 v8h+1 Phase 3 Batch 25 2026-05-10 RESOLVED-IMPLEMENTED (owner-approved Path 2)",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Live Trading Operational (Group E)",
       "pass_intro": "Pass 19",
       "pass_resolved": "43",
@@ -735,10 +735,10 @@
         "pushed": true,
         "n_doc_refs": 6,
         "pyramid": {
-          "unit": false,
+          "unit": "N/A",
           "smoke": "N/A",
           "integration": "N/A",
-          "system": "N/A",
+          "system": true,
           "functional": "N/A",
           "regression": "N/A",
           "data_integrity": "N/A",
@@ -755,10 +755,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-PROMOTE",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Code + test refs found; eligible for RESOLVED-IMPLEMENTED"
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -1855,11 +1855,11 @@
         "pushed": true,
         "n_doc_refs": 20,
         "pyramid": {
-          "unit": false,
+          "unit": "N/A",
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
-          "functional": "N/A",
+          "functional": true,
           "regression": "N/A",
           "data_integrity": "N/A",
           "performance": "N/A",
@@ -1973,7 +1973,7 @@
         "wired": false,
         "tested": false,
         "pushed": false,
-        "n_doc_refs": 1,
+        "n_doc_refs": 2,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -2012,8 +2012,8 @@
         "coded": true,
         "wired": false,
         "tested": false,
-        "pushed": false,
-        "n_doc_refs": 0,
+        "pushed": true,
+        "n_doc_refs": 4,
         "pyramid": {
           "unit": false,
           "smoke": "N/A",
@@ -2053,7 +2053,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 2,
+        "n_doc_refs": 4,
         "pyramid": {
           "unit": false,
           "smoke": "N/A",
@@ -2215,11 +2215,11 @@
         "pushed": true,
         "n_doc_refs": 44,
         "pyramid": {
-          "unit": false,
+          "unit": "N/A",
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
-          "functional": "N/A",
+          "functional": true,
           "regression": "N/A",
           "data_integrity": "N/A",
           "performance": "N/A",
@@ -3493,7 +3493,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 28,
+        "n_doc_refs": 29,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -5535,7 +5535,7 @@
         "pushed": true,
         "n_doc_refs": 11,
         "pyramid": {
-          "unit": false,
+          "unit": "N/A",
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -5546,7 +5546,7 @@
           "acceptance": "N/A",
           "property": "N/A",
           "snapshot": "N/A",
-          "contract": "N/A",
+          "contract": true,
           "compatibility": "N/A"
         }
       },
@@ -8975,7 +8975,7 @@
         "pushed": true,
         "n_doc_refs": 13,
         "pyramid": {
-          "unit": false,
+          "unit": "N/A",
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -8986,7 +8986,7 @@
           "acceptance": "N/A",
           "property": "N/A",
           "snapshot": "N/A",
-          "contract": "N/A",
+          "contract": true,
           "compatibility": "N/A"
         }
       },
@@ -9015,7 +9015,7 @@
         "pushed": true,
         "n_doc_refs": 9,
         "pyramid": {
-          "unit": false,
+          "unit": "N/A",
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -9026,7 +9026,7 @@
           "acceptance": "N/A",
           "property": "N/A",
           "snapshot": "N/A",
-          "contract": "N/A",
+          "contract": true,
           "compatibility": "N/A"
         }
       },
@@ -9135,7 +9135,7 @@
         "pushed": true,
         "n_doc_refs": 4,
         "pyramid": {
-          "unit": false,
+          "unit": "N/A",
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -9146,7 +9146,7 @@
           "acceptance": "N/A",
           "property": "N/A",
           "snapshot": "N/A",
-          "contract": "N/A",
+          "contract": true,
           "compatibility": "N/A"
         }
       },
@@ -9575,12 +9575,12 @@
         "pushed": true,
         "n_doc_refs": 22,
         "pyramid": {
-          "unit": false,
+          "unit": "N/A",
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
           "functional": "N/A",
-          "regression": "N/A",
+          "regression": true,
           "data_integrity": "N/A",
           "performance": "N/A",
           "acceptance": "N/A",
@@ -11096,11 +11096,11 @@
         "n_doc_refs": 19,
         "pyramid": {
           "unit": true,
-          "smoke": "N/A",
+          "smoke": true,
           "integration": "N/A",
           "system": "N/A",
           "functional": "N/A",
-          "regression": "N/A",
+          "regression": true,
           "data_integrity": "N/A",
           "performance": "N/A",
           "acceptance": "N/A",
@@ -11171,11 +11171,11 @@
       "status_grep": {
         "coded": true,
         "wired": true,
-        "tested": false,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 49,
         "pyramid": {
-          "unit": false,
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -11195,10 +11195,10 @@
       "dependencies": "DEC-477",
       "description": "**Owner verdict:** APPROVE **Resolution:** Phased delivery: 1. Build sp500_membership_history.csv from Wikipedia free source (~2 days) 2. Modify get_sp500_constituents(as_of) to filter by added_date/removed_date 3. Re-run all backtests; expect material change to crisis-period num",
       "promotion_path": {
-        "tier": "CODE_ONLY",
-        "label": "NEEDS-TEST",
-        "color": "#f59e0b",
-        "reason": "Coded but no test reference; add test per DEC-594 same-commit"
+        "tier": "READY",
+        "label": "READY-TO-PROMOTE",
+        "color": "#10b981",
+        "reason": "Wired in active path + tested; eligible for RESOLVED-IMPLEMENTED"
       }
     },
     {
@@ -11699,8 +11699,8 @@
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
-          "functional": "N/A",
-          "regression": "N/A",
+          "functional": true,
+          "regression": true,
           "data_integrity": "N/A",
           "performance": "N/A",
           "acceptance": "N/A",
@@ -14935,7 +14935,7 @@
         "pushed": true,
         "n_doc_refs": 8,
         "pyramid": {
-          "unit": false,
+          "unit": "N/A",
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -14946,7 +14946,7 @@
           "acceptance": "N/A",
           "property": "N/A",
           "snapshot": "N/A",
-          "contract": "N/A",
+          "contract": true,
           "compatibility": "N/A"
         }
       },
@@ -15095,7 +15095,7 @@
         "pushed": true,
         "n_doc_refs": 15,
         "pyramid": {
-          "unit": false,
+          "unit": "N/A",
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -15106,7 +15106,7 @@
           "acceptance": "N/A",
           "property": "N/A",
           "snapshot": "N/A",
-          "contract": "N/A",
+          "contract": true,
           "compatibility": "N/A"
         }
       },
@@ -15495,7 +15495,7 @@
         "pushed": true,
         "n_doc_refs": 8,
         "pyramid": {
-          "unit": false,
+          "unit": "N/A",
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -15506,7 +15506,7 @@
           "acceptance": "N/A",
           "property": "N/A",
           "snapshot": "N/A",
-          "contract": "N/A",
+          "contract": true,
           "compatibility": "N/A"
         }
       },
@@ -15815,7 +15815,7 @@
         "pushed": true,
         "n_doc_refs": 15,
         "pyramid": {
-          "unit": false,
+          "unit": "N/A",
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -15826,7 +15826,7 @@
           "acceptance": "N/A",
           "property": "N/A",
           "snapshot": "N/A",
-          "contract": "N/A",
+          "contract": true,
           "compatibility": "N/A"
         }
       },
@@ -17295,9 +17295,9 @@
         "pushed": true,
         "n_doc_refs": 50,
         "pyramid": {
-          "unit": false,
+          "unit": "N/A",
           "smoke": "N/A",
-          "integration": "N/A",
+          "integration": true,
           "system": "N/A",
           "functional": "N/A",
           "regression": "N/A",
@@ -17851,11 +17851,11 @@
       "status_grep": {
         "coded": true,
         "wired": true,
-        "tested": false,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 60,
         "pyramid": {
-          "unit": false,
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -17895,8 +17895,8 @@
         "pushed": true,
         "n_doc_refs": 16,
         "pyramid": {
-          "unit": false,
-          "smoke": "N/A",
+          "unit": "N/A",
+          "smoke": true,
           "integration": "N/A",
           "system": "N/A",
           "functional": "N/A",
@@ -18463,10 +18463,10 @@
           "regression": "N/A",
           "data_integrity": "N/A",
           "performance": "N/A",
-          "acceptance": "N/A",
+          "acceptance": true,
           "property": "N/A",
           "snapshot": "N/A",
-          "contract": "N/A",
+          "contract": true,
           "compatibility": "N/A"
         }
       },
@@ -18503,10 +18503,10 @@
           "regression": "N/A",
           "data_integrity": "N/A",
           "performance": "N/A",
-          "acceptance": "N/A",
+          "acceptance": true,
           "property": "N/A",
           "snapshot": "N/A",
-          "contract": "N/A",
+          "contract": true,
           "compatibility": "N/A"
         }
       },
@@ -18543,10 +18543,10 @@
           "regression": "N/A",
           "data_integrity": "N/A",
           "performance": "N/A",
-          "acceptance": "N/A",
+          "acceptance": true,
           "property": "N/A",
           "snapshot": "N/A",
-          "contract": "N/A",
+          "contract": true,
           "compatibility": "N/A"
         }
       },
@@ -18695,13 +18695,13 @@
         "pushed": true,
         "n_doc_refs": 46,
         "pyramid": {
-          "unit": false,
-          "smoke": "N/A",
-          "integration": "N/A",
-          "system": "N/A",
+          "unit": "N/A",
+          "smoke": true,
+          "integration": true,
+          "system": true,
           "functional": "N/A",
           "regression": "N/A",
-          "data_integrity": "N/A",
+          "data_integrity": true,
           "performance": "N/A",
           "acceptance": "N/A",
           "property": "N/A",
@@ -18771,11 +18771,11 @@
       "status_grep": {
         "coded": true,
         "wired": true,
-        "tested": false,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 13,
         "pyramid": {
-          "unit": false,
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -18815,8 +18815,8 @@
         "pushed": true,
         "n_doc_refs": 8,
         "pyramid": {
-          "unit": false,
-          "smoke": "N/A",
+          "unit": "N/A",
+          "smoke": true,
           "integration": "N/A",
           "system": "N/A",
           "functional": "N/A",
@@ -18896,7 +18896,7 @@
         "n_doc_refs": 13,
         "pyramid": {
           "unit": false,
-          "smoke": "N/A",
+          "smoke": true,
           "integration": "N/A",
           "system": "N/A",
           "functional": "N/A",
@@ -18938,10 +18938,10 @@
           "unit": true,
           "smoke": true,
           "integration": "N/A",
-          "system": "N/A",
-          "functional": "N/A",
+          "system": true,
+          "functional": true,
           "regression": true,
-          "data_integrity": "N/A",
+          "data_integrity": true,
           "performance": true,
           "acceptance": true,
           "property": true,
@@ -18975,12 +18975,12 @@
         "pushed": true,
         "n_doc_refs": 30,
         "pyramid": {
-          "unit": false,
+          "unit": true,
           "smoke": "N/A",
-          "integration": "N/A",
-          "system": "N/A",
+          "integration": true,
+          "system": true,
           "functional": "N/A",
-          "regression": "N/A",
+          "regression": true,
           "data_integrity": "N/A",
           "performance": "N/A",
           "acceptance": "N/A",
@@ -19017,8 +19017,8 @@
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
-          "integration": "N/A",
-          "system": "N/A",
+          "integration": true,
+          "system": true,
           "functional": "N/A",
           "regression": true,
           "data_integrity": "N/A",
@@ -19098,14 +19098,14 @@
           "unit": true,
           "smoke": true,
           "integration": true,
-          "system": "N/A",
-          "functional": "N/A",
+          "system": true,
+          "functional": true,
           "regression": "N/A",
           "data_integrity": "N/A",
           "performance": "N/A",
           "acceptance": "N/A",
           "property": "N/A",
-          "snapshot": "N/A",
+          "snapshot": true,
           "contract": true,
           "compatibility": "N/A"
         }
@@ -19175,13 +19175,13 @@
         "pushed": true,
         "n_doc_refs": 8,
         "pyramid": {
-          "unit": false,
+          "unit": "N/A",
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
           "functional": "N/A",
           "regression": "N/A",
-          "data_integrity": "N/A",
+          "data_integrity": true,
           "performance": "N/A",
           "acceptance": "N/A",
           "property": "N/A",
@@ -19455,8 +19455,8 @@
         "pushed": true,
         "n_doc_refs": 12,
         "pyramid": {
-          "unit": false,
-          "smoke": "N/A",
+          "unit": "N/A",
+          "smoke": true,
           "integration": "N/A",
           "system": "N/A",
           "functional": "N/A",
@@ -19733,20 +19733,20 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 458,
+        "n_doc_refs": 459,
         "pyramid": {
-          "unit": false,
+          "unit": "N/A",
           "smoke": "N/A",
-          "integration": "N/A",
-          "system": "N/A",
+          "integration": true,
+          "system": true,
           "functional": "N/A",
           "regression": "N/A",
-          "data_integrity": "N/A",
+          "data_integrity": true,
           "performance": "N/A",
-          "acceptance": "N/A",
+          "acceptance": true,
           "property": "N/A",
-          "snapshot": "N/A",
-          "contract": "N/A",
+          "snapshot": true,
+          "contract": true,
           "compatibility": "N/A"
         }
       },
@@ -19775,10 +19775,10 @@
         "pushed": true,
         "n_doc_refs": 26,
         "pyramid": {
-          "unit": false,
+          "unit": "N/A",
           "smoke": true,
           "integration": "N/A",
-          "system": "N/A",
+          "system": true,
           "functional": "N/A",
           "regression": "N/A",
           "data_integrity": "N/A",
@@ -19815,13 +19815,13 @@
         "pushed": true,
         "n_doc_refs": 28,
         "pyramid": {
-          "unit": false,
+          "unit": "N/A",
           "smoke": "N/A",
           "integration": "N/A",
-          "system": "N/A",
+          "system": true,
           "functional": "N/A",
           "regression": "N/A",
-          "data_integrity": "N/A",
+          "data_integrity": true,
           "performance": "N/A",
           "acceptance": "N/A",
           "property": "N/A",
@@ -19855,13 +19855,13 @@
         "pushed": true,
         "n_doc_refs": 8,
         "pyramid": {
-          "unit": false,
+          "unit": "N/A",
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
           "functional": "N/A",
           "regression": "N/A",
-          "data_integrity": "N/A",
+          "data_integrity": true,
           "performance": "N/A",
           "acceptance": "N/A",
           "property": "N/A",
@@ -19975,10 +19975,10 @@
         "pushed": true,
         "n_doc_refs": 32,
         "pyramid": {
-          "unit": false,
+          "unit": "N/A",
           "smoke": "N/A",
           "integration": "N/A",
-          "system": "N/A",
+          "system": true,
           "functional": "N/A",
           "regression": "N/A",
           "data_integrity": "N/A",
@@ -20021,7 +20021,7 @@
           "system": "N/A",
           "functional": "N/A",
           "regression": "N/A",
-          "data_integrity": "N/A",
+          "data_integrity": true,
           "performance": "N/A",
           "acceptance": true,
           "property": "N/A",
@@ -20055,7 +20055,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 41,
+        "n_doc_refs": 42,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -21917,7 +21917,7 @@
         "wired": false,
         "tested": false,
         "pushed": false,
-        "n_doc_refs": 5,
+        "n_doc_refs": 6,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -23169,11 +23169,11 @@
         "pyramid": {
           "unit": false,
           "smoke": "N/A",
-          "integration": "N/A",
+          "integration": true,
           "system": "N/A",
           "functional": "N/A",
           "regression": "N/A",
-          "data_integrity": "N/A",
+          "data_integrity": true,
           "performance": "N/A",
           "acceptance": "N/A",
           "property": "N/A",
@@ -24240,7 +24240,7 @@
         "pushed": true,
         "n_doc_refs": 13,
         "pyramid": {
-          "unit": false,
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -27398,52 +27398,58 @@
   ],
   "recent_commits": [
     {
+      "sha": "8354df3d",
+      "subject": "Pass 53 v8h+1: Phase 3 Batch 24 - id_status substring-match bug FIXED (CRITICAL)",
+      "author": "jeetmehta1991",
+      "rel_time": "12 minutes ago"
+    },
+    {
       "sha": "b845fd62",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 23 - Pyramid N/A defaults scaled to ALL ID kinds (owner directive)",
       "author": "jeetmehta1991",
-      "rel_time": "9 minutes ago"
+      "rel_time": "23 minutes ago"
     },
     {
       "sha": "fa2c140c",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 22 - Decisions dashboard cleanup (owner directive)",
       "author": "jeetmehta1991",
-      "rel_time": "18 minutes ago"
+      "rel_time": "31 minutes ago"
     },
     {
       "sha": "432b146b",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 21 - BUG-006 dashboard protocol-violation fix (owner-flagged)",
       "author": "jeetmehta1991",
-      "rel_time": "28 minutes ago"
+      "rel_time": "42 minutes ago"
     },
     {
       "sha": "6a3b572e",
       "subject": "Pass 53 v8h+1: BUG-95 CRITICAL Portfolio class RESOLVED-IMPLEMENTED (Sub-batch 5/5 - FINAL)",
       "author": "jeetmehta1991",
-      "rel_time": "40 minutes ago"
+      "rel_time": "54 minutes ago"
     },
     {
       "sha": "2b56e6e9",
       "subject": "Pass 53 v8h+1: BUG-95 LIVE_TRADING_RULES enforcement via can_open gate (Sub-batch 4/5)",
       "author": "jeetmehta1991",
-      "rel_time": "59 minutes ago"
+      "rel_time": "73 minutes ago"
     },
     {
       "sha": "2fe9c3d4",
       "subject": "Pass 53 v8h+1: BUG-95 Portfolio metrics from equity_curve (Sub-batch 3/5)",
       "author": "jeetmehta1991",
-      "rel_time": "64 minutes ago"
+      "rel_time": "77 minutes ago"
     },
     {
       "sha": "ead36b0b",
       "subject": "Pass 53 v8h+1: BUG-95 Portfolio engine integration (Sub-batch 2/5 - shadow state)",
       "author": "jeetmehta1991",
-      "rel_time": "69 minutes ago"
+      "rel_time": "82 minutes ago"
     },
     {
       "sha": "93e4036a",
       "subject": "Pass 53 v8h+1: BUG-95 CRITICAL Portfolio class skeleton (Sub-batch 1/5 - owner-approved Option A)",
       "author": "jeetmehta1991",
-      "rel_time": "76 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "b04abeb7",
@@ -27479,13 +27485,13 @@
       "sha": "a571c1c6",
       "subject": "Pass 53 v8h+1: BUG-80 HIGH exit slippage applied symmetrically (apply_exit_slippage helper + 2 wire-up sites)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "b852347d",
       "subject": "Pass 53 v8h+1: BUG-78 CRITICAL trailing stop lookahead bias FIXED",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "5b710e0b",
@@ -27533,25 +27539,25 @@
       "sha": "0daa206c",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 7 - 6 BUGs (43/44/45/48/58/59) SUPERSEDED/DEFERRED/OBSOLETE",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "2de4536b",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 6 - 5 BUGs (42/47/49/50/52) SUPERSEDED/DEFERRED cross-references",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "f16ef86d",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 5 - BUG-37 IMPLEMENTED (haircut doc) + BUG-34/40 SUPERSEDED-BY-design",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "a4258bc1",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 4 - BUG-21 IMPLEMENTED + BUG-24/31/32/33 SUPERSEDED-BY-policy-decisions",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "1f87aa53",
@@ -27570,21 +27576,35 @@
       "subject": "Pass 53 v8h+1: Phase 3 Batch 1 - BUG-08/09/15/27 RESOLVED-IMPLEMENTED with real fixes",
       "author": "jeetmehta1991",
       "rel_time": "5 hours ago"
-    },
-    {
-      "sha": "fc9390b7",
-      "subject": "Pass 53 v8h+1: Phase 2 BUG cross-references + id-form normalization (6 BUGs READY -> IMPLEMENTED)",
-      "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 1,
-    "modified": 1,
+    "count": 6,
+    "modified": 6,
     "added": 0,
     "untracked": 0,
     "deleted": 0,
     "files": [
+      {
+        "status": "M",
+        "path": "AUDIT_INDEX.md"
+      },
+      {
+        "status": "M",
+        "path": "backtest/tests/test_unit.py"
+      },
+      {
+        "status": "M",
+        "path": "dashboard_stage_2/data.js"
+      },
+      {
+        "status": "M",
+        "path": "dashboard_stage_2/data.json"
+      },
+      {
+        "status": "M",
+        "path": "dashboard_stage_2/last_run.txt"
+      },
       {
         "status": "M",
         "path": "scripts/build_dashboard_stage_2.py"
@@ -27769,7 +27789,7 @@
     }
   ],
   "test_inventory": {
-    "total": 804,
+    "total": 806,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -27845,7 +27865,7 @@
       "test_stocktwits_smoke": 4,
       "test_supplementary_demo": 4,
       "test_supplementary_smoke": 6,
-      "test_unit": 142,
+      "test_unit": 144,
       "test_walk_forward_4fold": 6
     }
   },
@@ -27867,41 +27887,102 @@
   "pyramid_layer_files": {
     "unit": [
       "test_unit.py",
-      "test_prefetch_utils.py"
+      "test_prefetch_utils.py",
+      "test_smartmoneyconcepts_unit.py",
+      "test_inv041_path_restricted_commits.py",
+      "test_prefetch_scripts_no_unicode.py",
+      "test_phase1a_runner_no_unicode.py"
     ],
     "smoke": [
       "test_smoke.py",
-      "test_e2e_phase1a_smoke.py"
+      "test_e2e_phase1a_smoke.py",
+      "test_e2e.py",
+      "test_aaii_smoke.py",
+      "test_apewisdom_smoke.py",
+      "test_cftc_cot_smoke.py",
+      "test_cnn_fg_smoke.py",
+      "test_fred_alfred_smoke.py",
+      "test_polygon_stocks_smoke.py",
+      "test_quiver_trader_smoke.py",
+      "test_sec_edgar_smoke.py",
+      "test_stocktwits_smoke.py",
+      "test_supplementary_smoke.py",
+      "test_aaii_demo.py",
+      "test_apewisdom_demo.py",
+      "test_cftc_cot_demo.py",
+      "test_cnn_fg_demo.py",
+      "test_fred_alfred_demo.py",
+      "test_polygon_stocks_demo.py",
+      "test_quiver_trader_demo.py",
+      "test_sec_edgar_demo.py",
+      "test_stocktwits_demo.py",
+      "test_supplementary_demo.py"
     ],
     "integration": [
-      "test_integration.py"
+      "test_integration.py",
+      "test_smartmoneyconcepts_integration.py",
+      "test_smartmoneyconcepts_empirical.py",
+      "test_l146_wiring_matrix.py",
+      "test_l146_wave_a_g2_g3_g9.py",
+      "test_l146_wave_b_g7_sec_edgar.py",
+      "test_l146_wave_c_g12_g15.py",
+      "test_l146_wave_d_g6_g8_g10_g11_g16_g17.py",
+      "test_n1_n2_artifacts.py",
+      "test_n5_n6_wiring.py",
+      "test_exit_conditional_analyzer.py",
+      "test_exit_context.py",
+      "test_dec509_correlation_cluster.py",
+      "test_dec513_extended_signals.py",
+      "test_dec514_fill_methodology.py",
+      "test_dec517_r_multiple_exits.py",
+      "test_dec518_dec521_exits.py"
     ],
     "system": [
-      "test_gate_pre_phase_1a_entry.py"
+      "test_gate_pre_phase_1a_entry.py",
+      "test_gates.py",
+      "test_no_live_api_hard_cut.py",
+      "test_preflight.py"
     ],
     "functional": [
-      "test_doc_count_consistency.py"
+      "test_doc_count_consistency.py",
+      "test_acceptance_functional.py",
+      "test_canonical_facts_alignment.py"
     ],
     "regression": [
-      "test_regression.py"
+      "test_regression.py",
+      "test_bug_vix_proxy_regression.py",
+      "test_pit_audit_v8g.py",
+      "test_dec512_pit_audit.py",
+      "test_smartmoneyconcepts_pit.py"
     ],
     "data_integrity": [
-      "test_schema_canonical.py"
+      "test_schema_canonical.py",
+      "test_data_integrity.py",
+      "test_data_integrity_v8h_additions.py",
+      "test_cache_schema_b.py",
+      "test_polygon_ohlcv_master_schema.py",
+      "test_engine_bad_data_stress.py"
     ],
     "performance": [
-      "test_performance.py"
+      "test_performance.py",
+      "test_performance_load.py"
     ],
     "acceptance": [
-      "test_acceptance.py"
+      "test_acceptance.py",
+      "test_sprint2_acceptance.py"
     ],
     "property": [
       "test_property.py"
     ],
     "snapshot": [
-      "test_snapshot.py"
+      "test_snapshot.py",
+      "test_walk_forward_4fold.py"
     ],
     "contract": [
-      "test_contract.py"
+      "test_contract.py",
+      "test_partial_spec_artifacts.py",
+      "test_partial_spec_artifacts_v2.py",
+      "test_dec491_492_493_sprint2.py"
     ],
     "compatibility": [
       "test_compatibility.py"
@@ -28390,13 +28471,13 @@
     }
   ],
   "decision_status_counts": {
-    "RESOLVED-DECIDED": 276,
+    "RESOLVED-DECIDED": 275,
     "PARTIAL": 5,
     "PARTIAL-SPEC-ONLY": 78,
     "DEFERRED_TO_STAGE_3": 36,
+    "RESOLVED-IMPLEMENTED": 45,
     "DEFERRED_TO_STAGE_4": 21,
     "DEFERRED": 2,
-    "RESOLVED-IMPLEMENTED": 44,
     "BLOCKED_ON_BUG-095": 3,
     "correlation": 1,
     "SPLIT": 1,

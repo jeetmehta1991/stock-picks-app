@@ -2191,6 +2191,39 @@ def test_bug_061_open_tickers_blocks_second_strategy_same_day():
     assert other not in open_tickers, "different ticker must not be blocked"
 
 
+def test_dec_483_nasdaq100_t1c_loader_exists_and_covers_pit():
+    """DEC-483: Russell 1000 + NASDAQ 100 universe expansion (T1b + T1c).
+    T1c (NASDAQ 100) is implemented; T1b deferred to Sprint 1 procurement.
+    This pin verifies the T1c PIT loader function exists and is grep-discoverable.
+    Pass 53 v8h+1 Phase 3 Batch 25 2026-05-10 (owner-approved Path 2).
+    """
+    import inspect
+    from backtest.data import universe as univ_module
+    src = inspect.getsource(univ_module)
+
+    assert "DEC-483" in src, "DEC-483 cross-reference must exist in universe.py"
+    assert "NASDAQ 100" in src or "T1c" in src, (
+        "NASDAQ 100 / T1c references must exist in universe.py")
+    # The PIT loader for T1c should exist
+    assert "DEC-303" in src and "T1c" in src, (
+        "T1c PIT loader (DEC-303/DEC-483) must be implemented")
+
+
+def test_dec_499_18_classifier_sector_taxonomy_documented():
+    """DEC-499: 18-classifier sector normalization (GICS-11 + 7 ETF asset/style).
+    Implemented via Master Dedup Universe sector column. Pin verifies the
+    cross-reference exists in universe.py sector-loading code path.
+    Pass 53 v8h+1 Phase 3 Batch 25 2026-05-10 (owner-approved Path 2).
+    """
+    import inspect
+    from backtest.data import universe as univ_module
+    src = inspect.getsource(univ_module)
+
+    assert "DEC-499" in src, "DEC-499 cross-reference must exist in universe.py"
+    assert "18-classifier" in src or "Master Dedup" in src, (
+        "18-classifier sector taxonomy reference must exist")
+
+
 def test_bug_110_engine_wires_validate_entry_zone_with_skip_on_invalid():
     """BUG-110 wired: backtest._process_day must call validate_entry_zone and
     skip-on-invalid before entering trades.

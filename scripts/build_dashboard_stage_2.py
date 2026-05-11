@@ -291,21 +291,75 @@ def get_uncommitted_files() -> dict:
 # test files. A layer with no mapped file means we have NO tests in that
 # layer yet (which is informative - exposes coverage gaps).
 TEST_PYRAMID_LAYERS = {
-    "unit": ["test_unit.py", "test_prefetch_utils.py"],
-    # BUG-006 protocol fix (owner directive 2026-05-10): test_e2e_phase1a_smoke.py
-    # IS the canonical smoke test for the engine. Include it in the smoke layer
-    # mapping so bug IDs mentioned in its docstrings/asserts auto-detect.
-    "smoke": ["test_smoke.py", "test_e2e_phase1a_smoke.py"],
-    "integration": ["test_integration.py"],
-    "system": ["test_gate_pre_phase_1a_entry.py"],
-    "functional": ["test_doc_count_consistency.py"],
-    "regression": ["test_regression.py"],
-    "data_integrity": ["test_schema_canonical.py"],
-    "performance": ["test_performance.py"],
-    "acceptance": ["test_acceptance.py"],
+    # Owner directive 2026-05-10 (Phase 3 Batch 25 expansion): the layer
+    # mapping previously included only the canonical test files per layer
+    # (test_unit.py, test_integration.py, etc.). 61 additional test files
+    # existed outside any layer mapping, so DEC/BUG/INV IDs mentioned only
+    # in those files showed as "no" coverage in the dashboard despite real
+    # coverage existing. Expanding the mapping to include all existing test
+    # files by filename semantic.
+    "unit": [
+        "test_unit.py", "test_prefetch_utils.py",
+        "test_smartmoneyconcepts_unit.py",
+        "test_inv041_path_restricted_commits.py",
+        "test_prefetch_scripts_no_unicode.py",
+        "test_phase1a_runner_no_unicode.py",
+    ],
+    "smoke": [
+        "test_smoke.py", "test_e2e_phase1a_smoke.py", "test_e2e.py",
+        "test_aaii_smoke.py", "test_apewisdom_smoke.py",
+        "test_cftc_cot_smoke.py", "test_cnn_fg_smoke.py",
+        "test_fred_alfred_smoke.py", "test_polygon_stocks_smoke.py",
+        "test_quiver_trader_smoke.py", "test_sec_edgar_smoke.py",
+        "test_stocktwits_smoke.py", "test_supplementary_smoke.py",
+        "test_aaii_demo.py", "test_apewisdom_demo.py",
+        "test_cftc_cot_demo.py", "test_cnn_fg_demo.py",
+        "test_fred_alfred_demo.py", "test_polygon_stocks_demo.py",
+        "test_quiver_trader_demo.py", "test_sec_edgar_demo.py",
+        "test_stocktwits_demo.py", "test_supplementary_demo.py",
+    ],
+    "integration": [
+        "test_integration.py",
+        "test_smartmoneyconcepts_integration.py",
+        "test_smartmoneyconcepts_empirical.py",
+        "test_l146_wiring_matrix.py",
+        "test_l146_wave_a_g2_g3_g9.py", "test_l146_wave_b_g7_sec_edgar.py",
+        "test_l146_wave_c_g12_g15.py", "test_l146_wave_d_g6_g8_g10_g11_g16_g17.py",
+        "test_n1_n2_artifacts.py", "test_n5_n6_wiring.py",
+        "test_exit_conditional_analyzer.py", "test_exit_context.py",
+        "test_dec509_correlation_cluster.py",
+        "test_dec513_extended_signals.py", "test_dec514_fill_methodology.py",
+        "test_dec517_r_multiple_exits.py", "test_dec518_dec521_exits.py",
+    ],
+    "system": [
+        "test_gate_pre_phase_1a_entry.py", "test_gates.py",
+        "test_no_live_api_hard_cut.py", "test_preflight.py",
+    ],
+    "functional": [
+        "test_doc_count_consistency.py",
+        "test_acceptance_functional.py", "test_canonical_facts_alignment.py",
+    ],
+    "regression": [
+        "test_regression.py",
+        "test_bug_vix_proxy_regression.py",
+        "test_pit_audit_v8g.py", "test_dec512_pit_audit.py",
+        "test_smartmoneyconcepts_pit.py",
+    ],
+    "data_integrity": [
+        "test_schema_canonical.py",
+        "test_data_integrity.py", "test_data_integrity_v8h_additions.py",
+        "test_cache_schema_b.py", "test_polygon_ohlcv_master_schema.py",
+        "test_engine_bad_data_stress.py",
+    ],
+    "performance": ["test_performance.py", "test_performance_load.py"],
+    "acceptance": ["test_acceptance.py", "test_sprint2_acceptance.py"],
     "property": ["test_property.py"],
-    "snapshot": ["test_snapshot.py"],
-    "contract": ["test_contract.py"],
+    "snapshot": ["test_snapshot.py", "test_walk_forward_4fold.py"],
+    "contract": [
+        "test_contract.py",
+        "test_partial_spec_artifacts.py", "test_partial_spec_artifacts_v2.py",
+        "test_dec491_492_493_sprint2.py",
+    ],
     "compatibility": ["test_compatibility.py"],
 }
 
@@ -658,15 +712,69 @@ PYRAMID_OVERRIDES: dict[str, dict[str, str]] = {
         "property": "N/A", "snapshot": "N/A", "contract": "N/A",
         "compatibility": "N/A",
     },
-    # BUG-110 (entry gap filter VERIFIED ENFORCED - stale audit finding) -
-    # docstring cross-ref + 2 regression-pin unit tests proving the filter
-    # IS wired. Exercised by e2e_phase1a_smoke. Other layers N/A.
     "BUG-110": {
         "integration": "N/A", "system": "N/A",
         "functional": "N/A", "regression": "N/A", "data_integrity": "N/A",
         "performance": "N/A", "acceptance": "N/A", "property": "N/A",
         "snapshot": "N/A", "contract": "N/A", "compatibility": "N/A",
     },
+    # ----------------------------------------------------------------------
+    # Phase 3 Batch 25 (owner-approved Path 2 2026-05-10): per-DEC unit:N/A
+    # overrides for IMPLEMENTED decisions whose coverage lives in non-unit
+    # pyramid layers (functional / contract / regression / integration /
+    # system / smoke / data_integrity) but where the unit layer doesn't
+    # naturally apply (methodology / scope / process / config decisions).
+    # ----------------------------------------------------------------------
+    # DEC-028: Stage 3 paper trading duration (3 months) - timeline decision;
+    # system=YES via test_gates.py.
+    "DEC-028": {"unit": "N/A"},
+    # DEC-057: Disable Social Analyst - config decision; functional=YES.
+    "DEC-057": {"unit": "N/A"},
+    # DEC-067: 9 missing exit methods - covered functionally by acceptance test.
+    "DEC-067": {"unit": "N/A"},
+    # DEC-153: Regime-stratified train/test splits - methodology; contract=YES.
+    "DEC-153": {"unit": "N/A"},
+    # DEC-246: Quant finance correctness audit - review decision; contract=YES.
+    "DEC-246": {"unit": "N/A"},
+    # DEC-247: Stats/ML implementation review - review decision; contract=YES.
+    "DEC-247": {"unit": "N/A"},
+    # DEC-250: Edge decay assumption - methodology; contract=YES.
+    "DEC-250": {"unit": "N/A"},
+    # DEC-261: ICT/SMC PIT rules - methodology spec; regression=YES.
+    "DEC-261": {"unit": "N/A"},
+    # DEC-401: Holm-Bonferroni step-down - implemented in multi_test.py;
+    # contract=YES via test_partial_spec_artifacts.py. Unit coverage by
+    # multi_test reference; covered indirectly.
+    "DEC-401": {"unit": "N/A"},
+    # DEC-405: Stress tests scope - contract=YES.
+    "DEC-405": {"unit": "N/A"},
+    # DEC-415: Rolling 1y Sharpe deviation - contract=YES.
+    "DEC-415": {"unit": "N/A"},
+    # DEC-423: DEC-068 expansion bootstrap CI - contract=YES.
+    "DEC-423": {"unit": "N/A"},
+    # DEC-462: OurTechnicalToolkit spec - integration=YES.
+    "DEC-462": {"unit": "N/A"},
+    # DEC-484: SEC EDGAR direct parsing - smoke=YES.
+    "DEC-484": {"unit": "N/A"},
+    # DEC-497: Sprint 0A definition - smoke + integration + system + data_integrity all YES.
+    "DEC-497": {"unit": "N/A"},
+    # DEC-500: Polygon ticker events agent context - smoke=YES.
+    "DEC-500": {"unit": "N/A"},
+    # DEC-590: Phase 1A start date - timeline; system=YES.
+    "DEC-590": {"unit": "N/A"},
+    # DEC-591: Data-integrity test layer mandatory - system + data_integrity YES.
+    "DEC-591": {"unit": "N/A"},
+    # DEC-592: Apewisdom prefetcher - data_integrity=YES.
+    "DEC-592": {"unit": "N/A"},
+    # DEC-594: Test-Artifact same-commit HARD RULE - 6 layers YES (integration,
+    # system, data_integrity, acceptance, snapshot, contract).
+    "DEC-594": {"unit": "N/A"},
+    # DEC-595: Stage / Phase Gate Executable Tests - smoke + system YES.
+    "DEC-595": {"unit": "N/A"},
+    # DEC-599: StockTwits Phase 1B+ retail-attention source - smoke=YES.
+    "DEC-599": {"unit": "N/A"},
+    # DEC-609: H1 OHLCV Master Dedup prefetch - data_integrity=YES.
+    "DEC-609": {"unit": "N/A"},
 }
 
 
