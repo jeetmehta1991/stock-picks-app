@@ -2414,6 +2414,127 @@ def test_bug_095_add_benchmark_point():
     assert p.benchmark_curve[0] == (date(2024, 1, 1), 470.0)
 
 
+def test_bug_095_metrics_returns_empty_safe_on_no_curve():
+    """compute_portfolio_metrics_from_curves returns the zero/default dict
+    when equity_curve is empty or has fewer than 2 points (engine guard).
+    """
+    from backtest.results.metrics import compute_portfolio_metrics_from_curves
+    out = compute_portfolio_metrics_from_curves([], [], 100_000.0)
+    assert out["n_equity_points"] == 0
+    assert out["portfolio_sharpe"] is None
+    assert out["portfolio_total_return_pct"] == 0.0
+    assert out["portfolio_max_drawdown_pct"] == 0.0
+
+
+def test_bug_095_metrics_total_return_basic():
+    """portfolio_total_return_pct = (final/starting - 1) * 100."""
+    from datetime import date
+    from backtest.results.metrics import compute_portfolio_metrics_from_curves
+    # Equity goes 100k -> 110k over 5 days
+    curve = [
+        (date(2024, 1, 1), 100_000.0),
+        (date(2024, 1, 2), 102_000.0),
+        (date(2024, 1, 3), 104_000.0),
+        (date(2024, 1, 4), 108_000.0),
+        (date(2024, 1, 5), 110_000.0),
+    ]
+    out = compute_portfolio_metrics_from_curves(curve, [], 100_000.0)
+    assert out["n_equity_points"] == 5
+    # 110000/100000 - 1 = 10%
+    assert abs(out["portfolio_total_return_pct"] - 10.0) < 0.01
+    assert out["portfolio_max_drawdown_pct"] == 0.0  # monotonic up
+
+
+def test_bug_095_metrics_max_drawdown_basic():
+    """Max drawdown = worst peak-to-trough on equity_curve."""
+    from datetime import date
+    from backtest.results.metrics import compute_portfolio_metrics_from_curves
+    # Up to 120k peak, then down to 90k = 25% drawdown
+    curve = [
+        (date(2024, 1, 1), 100_000.0),
+        (date(2024, 1, 2), 120_000.0),  # peak
+        (date(2024, 1, 3), 100_000.0),
+        (date(2024, 1, 4), 90_000.0),   # trough
+    ]
+    out = compute_portfolio_metrics_from_curves(curve, [], 100_000.0)
+    # (90 - 120) / 120 * 100 = -25.0
+    assert abs(out["portfolio_max_drawdown_pct"] - (-25.0)) < 0.01
+
+
+def test_bug_095_metrics_sharpe_positive_for_steady_gain():
+    """Sharpe should be a positive finite number when daily returns are
+    positive and have non-zero variance.
+    """
+    from datetime import date, timedelta
+    from backtest.results.metrics import compute_portfolio_metrics_from_curves
+    # 60 days with mostly small gains (1% / day average, varied)
+    curve = []
+    val = 100_000.0
+    daily_returns = [0.01, 0.005, 0.012, -0.003, 0.008] * 12   # 60 days
+    d = date(2024, 1, 1)
+    for r in daily_returns:
+        curve.append((d, val))
+        val *= (1.0 + r)
+        d += timedelta(days=1)
+    curve.append((d, val))   # final point
+    out = compute_portfolio_metrics_from_curves(curve, [], 100_000.0)
+    assert out["portfolio_sharpe"] is not None
+    assert out["portfolio_sharpe"] > 0, (
+        f"steady positive returns must give positive Sharpe, got {out['portfolio_sharpe']}")
+
+
+def test_bug_095_metrics_beta_alpha_with_benchmark():
+    """When portfolio == benchmark (perfectly correlated, same returns), beta
+    should be ~1.0 and alpha ~0; tracking_error ~0; IR ~0.
+    """
+    from datetime import date, timedelta
+    from backtest.results.metrics import compute_portfolio_metrics_from_curves
+    curve = []
+    bench = []
+    val_p = 100_000.0
+    val_b = 470.0
+    daily_returns = [0.005, 0.003, -0.002, 0.007, 0.001] * 12   # 60 days
+    d = date(2024, 1, 1)
+    for r in daily_returns:
+        curve.append((d, val_p))
+        bench.append((d, val_b))
+        val_p *= (1.0 + r)
+        val_b *= (1.0 + r)
+        d += timedelta(days=1)
+    out = compute_portfolio_metrics_from_curves(curve, bench, 100_000.0)
+    assert out["beta_to_benchmark"] is not None
+    assert abs(out["beta_to_benchmark"] - 1.0) < 0.01, (
+        f"beta should be ~1 when port==bench, got {out['beta_to_benchmark']}")
+    # Alpha should be near zero
+    assert abs(out["alpha_annualized_pct"]) < 0.5, (
+        f"alpha should be near zero, got {out['alpha_annualized_pct']}")
+    # Tracking error should be near zero
+    assert out["tracking_error_pct"] < 0.5, (
+        f"tracking error should be near zero, got {out['tracking_error_pct']}")
+
+
+def test_bug_095_metrics_handles_zero_variance_benchmark():
+    """Benchmark with all-equal values (zero variance) must not crash; beta
+    should be None / NaN-safe.
+    """
+    from datetime import date, timedelta
+    from backtest.results.metrics import compute_portfolio_metrics_from_curves
+    curve = [
+        (date(2024, 1, 1), 100_000.0),
+        (date(2024, 1, 2), 101_000.0),
+        (date(2024, 1, 3), 102_000.0),
+    ]
+    # Flat benchmark - zero variance
+    bench = [
+        (date(2024, 1, 1), 470.0),
+        (date(2024, 1, 2), 470.0),
+        (date(2024, 1, 3), 470.0),
+    ]
+    out = compute_portfolio_metrics_from_curves(curve, bench, 100_000.0)
+    # No crash; beta should be None due to zero benchmark variance
+    assert out["beta_to_benchmark"] is None
+
+
 def test_bug_095_mark_to_market_carries_forward_missing_prices():
     """If a ticker price is missing from prices dict, position retains last
     known mark (Position.last_mark) rather than crashing or zeroing out.

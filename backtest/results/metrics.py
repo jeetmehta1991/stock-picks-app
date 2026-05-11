@@ -422,3 +422,135 @@ def compute_portfolio_summary(
         "avg_position_size_pct": round(float(df["position_size_pct"].mean()) * 100, 2),
         "note": "Portfolio return applies tier-based position sizing to all trades",
     }
+
+
+# ============================================================================
+# BUG-95 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 20 Sub-batch 3/5
+# 2026-05-10 (owner-approved Option A): true portfolio metrics computed from
+# the Portfolio.equity_curve + Portfolio.benchmark_curve (NOT from per-trade
+# pnl_pct summation). This is the canonical portfolio-level Sharpe / alpha
+# / beta / IR / tracking-error implementation.
+#
+# Inputs (typically from engine.portfolio):
+#   equity_curve:    list[(date, equity_dollar)]   -- self.portfolio.equity_curve
+#   benchmark_curve: list[(date, benchmark_close)] -- self.portfolio.benchmark_curve
+#   starting_capital: float (CAD) -- self.portfolio.starting_capital
+#
+# Output dict keys:
+#   portfolio_total_return_pct   -- final/starting - 1 (%)
+#   portfolio_sharpe             -- annualized Sharpe of daily portfolio returns
+#                                   (assumes 252 trading days, risk-free = 0;
+#                                    matches industry baseline)
+#   portfolio_max_drawdown_pct   -- worst peak-to-trough on equity_curve
+#   benchmark_total_return_pct   -- SPY total return over same window
+#   alpha_annualized_pct         -- portfolio_ann_return - beta * benchmark_ann_return
+#   beta_to_benchmark            -- cov(port, bench) / var(bench)
+#   tracking_error_pct           -- std(port_daily - bench_daily) * sqrt(252) * 100
+#   information_ratio            -- excess_return / tracking_error
+# ============================================================================
+
+def _daily_returns_from_curve(curve: list) -> "pd.Series":
+    """Convert [(date, value), ...] list to a Series of daily simple returns."""
+    if not curve or len(curve) < 2:
+        return pd.Series(dtype=float)
+    dates = [pt[0] for pt in curve]
+    values = [float(pt[1]) for pt in curve]
+    s = pd.Series(values, index=pd.DatetimeIndex(dates))
+    # Drop duplicates if any (engine may double-mark a day on partial data)
+    s = s[~s.index.duplicated(keep="last")]
+    rets = s.pct_change().dropna()
+    return rets
+
+
+def compute_portfolio_metrics_from_curves(
+    equity_curve: list,
+    benchmark_curve: list,
+    starting_capital: float,
+) -> dict:
+    """Compute portfolio-level Sharpe / drawdown / alpha / beta / IR / tracking
+    error from the equity curve produced by Portfolio.mark_to_market.
+
+    Returns a dict suitable for inclusion in backtest_report.html and the
+    site_picks JSON. All percent values are in %, NOT decimal. NaN/inf-safe.
+    """
+    out: dict = {
+        "starting_capital":             round(float(starting_capital), 2),
+        "n_equity_points":              len(equity_curve) if equity_curve else 0,
+        "portfolio_total_return_pct":   0.0,
+        "portfolio_sharpe":             None,
+        "portfolio_max_drawdown_pct":   0.0,
+        "benchmark_total_return_pct":   None,
+        "alpha_annualized_pct":         None,
+        "beta_to_benchmark":            None,
+        "tracking_error_pct":           None,
+        "information_ratio":            None,
+        "note": "BUG-95: portfolio metrics from Portfolio.equity_curve",
+    }
+    if not equity_curve or len(equity_curve) < 2:
+        return out
+
+    port_rets = _daily_returns_from_curve(equity_curve)
+    if port_rets.empty:
+        return out
+
+    # Total return: (final / starting) - 1
+    final_equity = float(equity_curve[-1][1])
+    if starting_capital > 0:
+        total_ret = (final_equity / starting_capital - 1.0) * 100.0
+        out["portfolio_total_return_pct"] = round(total_ret, 4)
+
+    # Portfolio max drawdown (peak-to-trough on equity_curve)
+    eq_values = pd.Series([float(p[1]) for p in equity_curve])
+    peak = eq_values.cummax()
+    dd_series = (eq_values - peak) / peak * 100.0
+    out["portfolio_max_drawdown_pct"] = round(float(dd_series.min()), 4)
+
+    # Annualized Sharpe (252 trading days; rf=0)
+    if port_rets.std(ddof=1) > 0:
+        sharpe = (port_rets.mean() / port_rets.std(ddof=1)) * (252 ** 0.5)
+        if not (np.isnan(sharpe) or np.isinf(sharpe)):
+            out["portfolio_sharpe"] = round(float(sharpe), 4)
+
+    # Benchmark metrics
+    if benchmark_curve and len(benchmark_curve) >= 2:
+        bench_rets = _daily_returns_from_curve(benchmark_curve)
+        if not bench_rets.empty:
+            # Benchmark total return
+            bench_first = float(benchmark_curve[0][1])
+            bench_last = float(benchmark_curve[-1][1])
+            if bench_first > 0:
+                bench_total = (bench_last / bench_first - 1.0) * 100.0
+                out["benchmark_total_return_pct"] = round(bench_total, 4)
+
+            # Align port and bench daily returns on common dates
+            aligned = pd.concat([port_rets, bench_rets], axis=1,
+                                join="inner").dropna()
+            aligned.columns = ["port", "bench"]
+            if len(aligned) >= 2 and aligned["bench"].var(ddof=1) > 0:
+                # Beta = cov(port, bench) / var(bench)
+                beta = (aligned["port"].cov(aligned["bench"]) /
+                        aligned["bench"].var(ddof=1))
+                if not (np.isnan(beta) or np.isinf(beta)):
+                    out["beta_to_benchmark"] = round(float(beta), 4)
+
+                # Alpha (annualized): port_ann - beta * bench_ann
+                port_ann = aligned["port"].mean() * 252
+                bench_ann = aligned["bench"].mean() * 252
+                if out["beta_to_benchmark"] is not None:
+                    alpha = (port_ann - beta * bench_ann) * 100.0
+                    if not (np.isnan(alpha) or np.isinf(alpha)):
+                        out["alpha_annualized_pct"] = round(float(alpha), 4)
+
+                # Tracking error (annualized std of return diff, %)
+                excess = aligned["port"] - aligned["bench"]
+                te = excess.std(ddof=1) * (252 ** 0.5) * 100.0
+                if not (np.isnan(te) or np.isinf(te)):
+                    out["tracking_error_pct"] = round(float(te), 4)
+
+                # Information ratio (excess return / tracking error)
+                excess_ann = excess.mean() * 252 * 100.0
+                if te > 0 and not (np.isnan(excess_ann) or np.isinf(excess_ann)):
+                    ir = excess_ann / te
+                    out["information_ratio"] = round(float(ir), 4)
+
+    return out
