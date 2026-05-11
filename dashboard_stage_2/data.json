@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-11T23:26:53.147341+00:00",
+  "generated_at": "2026-05-11T23:51:08.284462+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -643,19 +643,19 @@
     },
     {
       "id": "DECISION-021",
-      "title": "Tier system simplification Pass 52 turn 95 owner-approved RESOLVED-DECIDED: Tier system simplification \u2014 reduce from 4 categories (5/4/3/1.5%) to 3 (HIGH/MEDIUM",
-      "status": "RESOLVED-DECIDED",
+      "title": "Tier system simplification \u2014 `TIER_3_POSITION_SIZE_PCT` (HIGH 5%, MEDIUM 3%, LOW 1.5%) + `TIER_5_TO_TIER_3` mapping in `backtest/config.py`. Original `TIER_POSI",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Strategy / Regime Adaptation (Group D)",
-      "pass_intro": "Pass 19",
-      "pass_resolved": "-",
+      "pass_intro": "Pass 53",
+      "pass_resolved": "Pass 53",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
-        "tested": false,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 19,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -675,10 +675,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -2773,7 +2773,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 11,
+        "n_doc_refs": 10,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -3129,13 +3129,13 @@
       "pass_intro": "Pass 39",
       "pass_resolved": "-",
       "status_grep": {
-        "coded": false,
-        "wired": false,
+        "coded": true,
+        "wired": true,
         "tested": false,
         "pushed": true,
         "n_doc_refs": 11,
         "pyramid": {
-          "unit": "N/A",
+          "unit": false,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -3173,7 +3173,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 18,
+        "n_doc_refs": 17,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -4163,19 +4163,19 @@
     },
     {
       "id": "DECISION-128",
-      "title": "Dispersion-conditional circuit breaker Pass 52 turn 119 RESOLVED-DECIDED Final: Dispersion-conditional circuit breaker \u2014 trigger if cross-sectional dispersion >",
-      "status": "RESOLVED-DECIDED",
+      "title": "Dispersion-conditional CB \u2014 `dispersion_circuit_breaker(daily_returns_df, window=20, sigma_threshold=3.0)` in `backtest/engine/regime_filter.py` returns dict wi",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X13 \u2014 Circuit breakers extension",
-      "pass_intro": "Pass 40",
-      "pass_resolved": "-",
+      "pass_intro": "Pass 53",
+      "pass_resolved": "Pass 53",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 1,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -4195,10 +4195,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -4289,13 +4289,13 @@
       "pass_intro": "Pass 40",
       "pass_resolved": "-",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
         "pushed": true,
-        "n_doc_refs": 29,
+        "n_doc_refs": 28,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -4315,10 +4315,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "READY",
+        "label": "READY-TO-PROMOTE",
+        "color": "#10b981",
+        "reason": "Wired in active path + tested; eligible for RESOLVED-IMPLEMENTED"
       }
     },
     {
@@ -4883,19 +4883,19 @@
     },
     {
       "id": "DECISION-148",
-      "title": "Stock-specific adaptive momentum lookback (vol-adjusted) Pass 52 turn 119 RESOLVED-DECIDED Batch D: Stock-specific adaptive momentum lookback (vol-adjusted). Pe",
-      "status": "RESOLVED-DECIDED",
+      "title": "Stock-specific vol-adjusted momentum lookback \u2014 `vol_adjusted_momentum_lookback(realized_vol_annualized, base=21, low_vol=60, high_vol=10, low_thresh=0.15, high",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X18 \u2014 Universe management",
-      "pass_intro": "Pass 40",
-      "pass_resolved": "-",
+      "pass_intro": "Pass 53",
+      "pass_resolved": "Pass 53",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 1,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -4915,10 +4915,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -5123,19 +5123,19 @@
     },
     {
       "id": "DECISION-155",
-      "title": "vs-SPY comparison in all backtest reports Pass 52 turn 119 RESOLVED-DECIDED Final: vs-SPY comparison in all backtest reports \u2014 alpha vs SPY benchmark + Informat",
-      "status": "RESOLVED-DECIDED",
+      "title": "vs-SPY comparison metrics \u2014 `compute_vs_spy_metrics(strategy_returns, spy_returns)` in `backtest/results/metrics.py` returns dict with alpha_annualized (daily *",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X21 \u2014 Benchmarking",
-      "pass_intro": "Pass 40",
-      "pass_resolved": "-",
+      "pass_intro": "Pass 53",
+      "pass_resolved": "Pass 53",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
+        "pushed": true,
         "n_doc_refs": 2,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -5155,10 +5155,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -6003,19 +6003,19 @@
     },
     {
       "id": "DECISION-178",
-      "title": "Signal lookup performance benchmark + caching strategy Pass 52 turn 119 RESOLVED-DECIDED Batch F: Signal lookup performance benchmark. pytest-benchmark on hot p",
-      "status": "RESOLVED-DECIDED",
+      "title": "Signal lookup perf benchmark \u2014 `benchmark_function(fn, n_iters=100, *args, kwargs)` in `backtest/engine/improvements.py` returns dict with median_ms, p95_ms, to",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X29 \u2014 Reproducibility",
-      "pass_intro": "Pass 41",
-      "pass_resolved": "-",
+      "pass_intro": "Pass 53",
+      "pass_resolved": "Pass 53",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 2,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -6035,10 +6035,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -6209,13 +6209,13 @@
       "pass_intro": "Pass 41",
       "pass_resolved": "-",
       "status_grep": {
-        "coded": false,
-        "wired": false,
+        "coded": true,
+        "wired": true,
         "tested": false,
         "pushed": true,
         "n_doc_refs": 2,
         "pyramid": {
-          "unit": "N/A",
+          "unit": false,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -6235,10 +6235,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "CODE_ONLY",
+        "label": "NEEDS-TEST",
+        "color": "#f59e0b",
+        "reason": "Coded but no test reference; add test per DEC-594 same-commit"
       }
     },
     {
@@ -7053,7 +7053,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 52,
+        "n_doc_refs": 53,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -7163,19 +7163,19 @@
     },
     {
       "id": "DECISION-208",
-      "title": "Multi-metric A/B comparison (Sharpe + Sortino + DD + win rate + PF + CVaR + cost)",
-      "status": "RESOLVED-DECIDED",
+      "title": "Multi-metric A/B comparison \u2014 `compute_multi_metric_ab_comparison(df_arm_a, df_arm_b, label_a, label_b)` in `backtest/results/metrics.py` returns dict with per-",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X32 \u2014 Agent A/B Testing",
-      "pass_intro": "Pass 45",
-      "pass_resolved": "52",
+      "pass_intro": "Pass 53",
+      "pass_resolved": "Pass 53",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 5,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -7195,10 +7195,10 @@
       "dependencies": "-",
       "description": "**Resolution:** Score every arm on 8 metrics (Sharpe, Sortino, max drawdown, win rate, profit factor, CVaR-95, hit rate by regime, cost-per-trade). Pass/fail decision uses an explicit tiebreaker rule rather than the original \"majority of metrics\" formulation.",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -7243,19 +7243,19 @@
     },
     {
       "id": "DECISION-210",
-      "title": "Net Sharpe contribution accounting (gross lift minus annualized agent cost) Pass 52 turn 72 owner-approved RESOLVED-DECIDED: Net Sharpe contribution accounting ",
-      "status": "RESOLVED-DECIDED",
+      "title": "Net Sharpe contribution accounting \u2014 `compute_net_sharpe_contribution(gross_sharpe_lift, annual_agent_cost_usd, portfolio_size_usd=100_000, portfolio_vol_decima",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X32 \u2014 Agent A/B Testing",
-      "pass_intro": "Pass 45",
-      "pass_resolved": "-",
+      "pass_intro": "Pass 53",
+      "pass_resolved": "Pass 53",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 12,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -7275,27 +7275,27 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-211",
-      "title": "Per-agent ablation studies (drop each agent one at a time) Pass 52 turn 72 owner-approved RESOLVED-DECIDED with Option A NARROW SCOPE + cost mitigations: Per-ag",
-      "status": "RESOLVED-DECIDED",
+      "title": "Per-agent ablation contributions \u2014 `compute_per_agent_ablation_contributions(arm_metrics)` in `backtest/results/metrics.py` returns dict mapping agent_name -> m",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X32 \u2014 Agent A/B Testing",
-      "pass_intro": "Pass 45",
-      "pass_resolved": "-",
+      "pass_intro": "Pass 53",
+      "pass_resolved": "Pass 53",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 22,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -7315,10 +7315,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -7413,7 +7413,7 @@
         "wired": true,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 10,
+        "n_doc_refs": 9,
         "pyramid": {
           "unit": false,
           "smoke": "N/A",
@@ -7729,13 +7729,13 @@
       "pass_intro": "RESOLVED-DECIDED",
       "pass_resolved": "Batch X34 \u2014 Test + Cache Infrastructure",
       "status_grep": {
-        "coded": false,
-        "wired": false,
+        "coded": true,
+        "wired": true,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 9,
+        "n_doc_refs": 8,
         "pyramid": {
-          "unit": "N/A",
+          "unit": false,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -7763,19 +7763,19 @@
     },
     {
       "id": "DECISION-227",
-      "title": "Cache size monitoring + alerting (cache_size_gb metric, 80% disk alert) Pass 52 turn 65 owner-approved RESOLVED-DECIDED: Cache size monitoring. `cache_size_gb` ",
-      "status": "RESOLVED-DECIDED",
+      "title": "Cache size monitoring \u2014 `get_cache_size_gb(cache_root)` (recursive os.walk sum of file sizes / GB) + `cache_size_alert_level(size_gb, disk_total_gb, threshold_p",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X34 \u2014 Test + Cache Infrastructure",
-      "pass_intro": "Pass 45",
-      "pass_resolved": "-",
+      "pass_intro": "Pass 53",
+      "pass_resolved": "Pass 53",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 7,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -7795,10 +7795,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -7963,19 +7963,19 @@
     },
     {
       "id": "DECISION-232",
-      "title": "Determinism test (run identical backtest twice, diff outputs) Pass 52 turn 85 owner-approved RESOLVED-DECIDED: Determinism test (run identical backtest twice, d",
-      "status": "RESOLVED-DECIDED",
+      "title": "Determinism diff helper \u2014 `diff_trade_logs(df_a, df_b)` in `backtest/results/metrics.py` compares two trade-log DataFrames cell-by-cell (NaN==NaN treated as equ",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X35 \u2014 Reliability + Determinism",
-      "pass_intro": "Pass 45",
-      "pass_resolved": "-",
+      "pass_intro": "Pass 53",
+      "pass_resolved": "Pass 53",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
         "pushed": true,
-        "n_doc_refs": 7,
+        "n_doc_refs": 6,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -7995,10 +7995,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -14929,13 +14929,13 @@
       "pass_intro": "Pass 52",
       "pass_resolved": "-",
       "status_grep": {
-        "coded": false,
-        "wired": false,
+        "coded": true,
+        "wired": true,
         "tested": false,
         "pushed": true,
         "n_doc_refs": 7,
         "pyramid": {
-          "unit": "N/A",
+          "unit": false,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -18933,7 +18933,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 456,
+        "n_doc_refs": 451,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -26598,34 +26598,46 @@
   ],
   "recent_commits": [
     {
+      "sha": "520e94e6",
+      "subject": "Pass 53 v8h+1: Phase 3 Batch 58 - Path C 10-DEC bundle (owner directive: resolve 10 DECs this turn)",
+      "author": "jeetmehta1991",
+      "rel_time": "3 minutes ago"
+    },
+    {
+      "sha": "77ad8f19",
+      "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 57 (5-DEC bundle)",
+      "author": "jeetmehta1991",
+      "rel_time": "24 minutes ago"
+    },
+    {
       "sha": "89dac3b4",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 57 - Path C 5-DEC bundle (factor breaker / coverage gate / memory / 13F PIT / CNN F&G bands)",
       "author": "jeetmehta1991",
-      "rel_time": "3 minutes ago"
+      "rel_time": "27 minutes ago"
     },
     {
       "sha": "1bfcd76f",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 56 (5-DEC bundle)",
       "author": "jeetmehta1991",
-      "rel_time": "12 minutes ago"
+      "rel_time": "36 minutes ago"
     },
     {
       "sha": "0bfa2be6",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 56 - Path C 5-DEC bundle (breakdowns/agent verdicts/data-quality/policy/site freshness)",
       "author": "jeetmehta1991",
-      "rel_time": "15 minutes ago"
+      "rel_time": "39 minutes ago"
     },
     {
       "sha": "25c94093",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 55 (5-DEC regime+risk bundle)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "ad012991",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 55 - Path C 5-DEC bundle (regime expansion + risk helpers)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "25015554",
@@ -26667,19 +26679,19 @@
       "sha": "6d1cce3e",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 51 - DEC-088 portfolio vol target 15% telemetry (RESOLVED-IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "8c33f844",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 50 - DEC-149 regime transition probability matrix (RESOLVED-IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "21472ca0",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 49 - DEC-435 AEP per-trade metric (RESOLVED-IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "e0f9261a",
@@ -26703,7 +26715,7 @@
       "sha": "60f58d4f",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 45 - Path C market-wide CB NYSE Rule 80B (DEC-314)",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "595bfe3f",
@@ -26715,7 +26727,7 @@
       "sha": "67a40670",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 43 - Engine hysteresis wiring + DEC-321/392 liquidity fail-closed",
       "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
+      "rel_time": "8 hours ago"
     },
     {
       "sha": "5d0fc0db",
@@ -26727,7 +26739,7 @@
       "sha": "3f45e521",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 41 - Path B Step B (statsmodels + ADF + Chow tests)",
       "author": "jeetmehta1991",
-      "rel_time": "8 hours ago"
+      "rel_time": "9 hours ago"
     },
     {
       "sha": "57fc539f",
@@ -26739,7 +26751,7 @@
       "sha": "1d143592",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 39 - Path C statistical methodology continuation (Sharpe daily + tiered min trades + audit threshold)",
       "author": "jeetmehta1991",
-      "rel_time": "9 hours ago"
+      "rel_time": "10 hours ago"
     },
     {
       "sha": "8c8b0aca",
@@ -26751,29 +26763,17 @@
       "sha": "c32b58ba",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 37 - Path B Step 17 auto-proceed (10 flips)",
       "author": "jeetmehta1991",
-      "rel_time": "18 hours ago"
+      "rel_time": "19 hours ago"
     },
     {
       "sha": "9a798135",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 36 - Path B Step 16 auto-proceed small themes (15 flips)",
       "author": "jeetmehta1991",
-      "rel_time": "18 hours ago"
+      "rel_time": "19 hours ago"
     },
     {
       "sha": "c3e4f4dd",
       "subject": "Pass 53 v8h+1: Phase 3 Batches 34+35 - Path B Steps 9-15 auto-proceed (13 flips)",
-      "author": "jeetmehta1991",
-      "rel_time": "18 hours ago"
-    },
-    {
-      "sha": "34f32f71",
-      "subject": "Pass 53 v8h+1: Phase 3 Batch 33 - X51 CRITICAL Runtime Bugs audit (Path B Step 8) - 100% yield",
-      "author": "jeetmehta1991",
-      "rel_time": "19 hours ago"
-    },
-    {
-      "sha": "e2449d23",
-      "subject": "Pass 53 v8h+1: Phase 3 Batch 32 - X1 Data + Universe audit (Path B Step 6)",
       "author": "jeetmehta1991",
       "rel_time": "19 hours ago"
     }
@@ -26964,7 +26964,7 @@
     }
   ],
   "test_inventory": {
-    "total": 945,
+    "total": 965,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -27040,7 +27040,7 @@
       "test_stocktwits_smoke": 4,
       "test_supplementary_demo": 4,
       "test_supplementary_smoke": 6,
-      "test_unit": 280,
+      "test_unit": 300,
       "test_walk_forward_4fold": 6
     }
   },
@@ -27646,8 +27646,8 @@
     }
   ],
   "decision_status_counts": {
-    "RESOLVED-DECIDED": 113,
-    "RESOLVED-IMPLEMENTED": 232,
+    "RESOLVED-DECIDED": 103,
+    "RESOLVED-IMPLEMENTED": 242,
     "PARTIAL": 5,
     "PARTIAL-SPEC-ONLY": 38,
     "DEFERRED_TO_STAGE_3": 36,
