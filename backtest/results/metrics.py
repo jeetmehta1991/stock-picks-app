@@ -104,6 +104,121 @@ def _sharpe(pnl_series: pd.Series, hold_days_series: pd.Series = None) -> float:
     return round(float(pnl_series.mean() / pnl_series.std() * np.sqrt(trades_per_year)), 3)
 
 
+def _sortino_ratio(pnl_series: pd.Series, hold_days_series: pd.Series = None) -> float:
+    """Sortino ratio: like Sharpe but uses downside deviation only.
+
+    DEC-403 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 38 2026-05-11
+    (owner-approved Path C: Statistical Methodology implementation).
+
+    Annualised by trades/year (same convention as _sharpe).
+    Formula: Sortino = mean(returns) / downside_std * sqrt(trades_per_year)
+    where downside_std = std of returns < 0 (negative returns only).
+
+    Returns: round to 3 decimals. 0.0 if no downside (all wins) or no trades.
+    Inf returns capped at 999 for serialization safety.
+    """
+    if pnl_series.empty:
+        return 0.0
+    downside = pnl_series[pnl_series < 0]
+    if downside.empty:
+        return 999.0  # capped inf - no losses means infinite Sortino
+    downside_std = float(downside.std(ddof=1)) if len(downside) > 1 else float(abs(downside.iloc[0]))
+    if downside_std == 0:
+        return 999.0
+    avg_hold = float(hold_days_series.mean()) if hold_days_series is not None and len(hold_days_series) > 0 else 10
+    trades_per_year = max(1, 252 / avg_hold)
+    ratio = float(pnl_series.mean() / downside_std * np.sqrt(trades_per_year))
+    if np.isnan(ratio) or np.isinf(ratio):
+        return 0.0
+    return round(min(ratio, 999.0), 3)
+
+
+def _deflated_sharpe(sharpe: float, n_trades: int, skew: float, kurtosis: float) -> dict:
+    """Deflated Sharpe ratio + Probabilistic Sharpe Ratio (PSR).
+
+    DEC-110 + DEC-413 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 38
+    2026-05-11 (owner-approved Path C). Bailey & Lopez de Prado (2014).
+
+    PSR(SR*) = Pr(SR > SR*) given finite sample size, non-normal distribution.
+    Formula: PSR = Phi((SR - SR*) * sqrt(n-1) / sqrt(1 - skew*SR + (kurtosis-1)/4 * SR^2))
+
+    Inputs:
+      sharpe: realised per-trade Sharpe ratio (annualised)
+      n_trades: trade count (sample size)
+      skew: skewness of trade pnl distribution
+      kurtosis: excess kurtosis of trade pnl distribution
+
+    SR_star (the benchmark Sharpe we test against) = 0 (testing "is Sharpe > 0?").
+
+    Returns dict with psr (probability), deflated_sharpe (SR after adjustment),
+    and note flagging low-confidence cases.
+    """
+    if n_trades < 30 or sharpe == 0:
+        return {"psr": None, "deflated_sharpe": None, "note": "insufficient_sample"}
+    # Skew and kurtosis NaN-safe defaults
+    if pd.isna(skew) or pd.isna(kurtosis):
+        skew = 0.0
+        kurtosis = 3.0  # normal kurtosis baseline
+    excess_kurt = kurtosis - 3.0 if kurtosis >= 3.0 else 0.0
+    try:
+        from scipy.stats import norm
+        denominator_sq = 1.0 - skew * sharpe + (excess_kurt / 4.0) * sharpe**2
+        if denominator_sq <= 0:
+            return {"psr": None, "deflated_sharpe": None, "note": "denominator_invalid"}
+        denom = (denominator_sq / (n_trades - 1)) ** 0.5
+        z = sharpe / denom if denom > 0 else 0
+        psr = float(norm.cdf(z))
+        deflated = sharpe * (1.0 - (excess_kurt / 4.0) * sharpe**2) ** 0.5
+        if np.isnan(deflated) or np.isinf(deflated):
+            deflated = None
+        return {
+            "psr": round(psr, 4),
+            "deflated_sharpe": round(deflated, 4) if deflated is not None else None,
+            "note": "ok" if psr >= 0.95 else ("low_confidence" if psr < 0.80 else "moderate"),
+        }
+    except ImportError:
+        # scipy not available - compute psr via numpy normal CDF approximation
+        # Erfc-based normal CDF: 0.5 * (1 + erf(x / sqrt(2)))
+        from math import erf, sqrt
+        denominator_sq = 1.0 - skew * sharpe + (excess_kurt / 4.0) * sharpe**2
+        if denominator_sq <= 0:
+            return {"psr": None, "deflated_sharpe": None, "note": "denominator_invalid"}
+        denom = (denominator_sq / (n_trades - 1)) ** 0.5
+        z = sharpe / denom if denom > 0 else 0
+        psr = 0.5 * (1.0 + erf(z / sqrt(2.0)))
+        deflated = sharpe * (1.0 - (excess_kurt / 4.0) * sharpe**2) ** 0.5 if denominator_sq > 0 else None
+        return {
+            "psr": round(psr, 4),
+            "deflated_sharpe": round(deflated, 4) if deflated is not None else None,
+            "note": "ok" if psr >= 0.95 else ("low_confidence" if psr < 0.80 else "moderate"),
+        }
+
+
+def _cost_sensitivity_sharpe(pnl_series: pd.Series, hold_days_series: pd.Series = None,
+                              cost_levels_bps: list = None) -> dict:
+    """Compute Sharpe at multiple transaction cost levels.
+
+    DEC-404 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 38 2026-05-11
+    (owner-approved Path C: DEC-081 Phase C transaction cost sensitivity).
+
+    Defaults to 4 cost levels: 0, 5, 10, 20 bps per round-trip trade.
+    For each level, deduct cost_bps/100 (in pct) from each trade's pnl and
+    recompute Sharpe. Helps owner see how performance degrades with realistic
+    transaction costs (per Anthropic Q3 owner directive for honest reporting).
+
+    Returns dict with keys sharpe_at_0bps, sharpe_at_5bps, sharpe_at_10bps,
+    sharpe_at_20bps.
+    """
+    if cost_levels_bps is None:
+        cost_levels_bps = [0, 5, 10, 20]
+    out = {}
+    for bps in cost_levels_bps:
+        cost_pct = bps / 100.0   # 5 bps = 0.05% per trade
+        adjusted = pnl_series - cost_pct
+        out[f"sharpe_at_{bps}bps"] = _sharpe(adjusted, hold_days_series)
+    return out
+
+
 def _kelly_criterion(win_rate: float, avg_win: float, avg_loss: float) -> dict:
     """
     Kelly criterion: theoretically optimal position size.
@@ -148,6 +263,18 @@ def compute_strategy_metrics(df: pd.DataFrame, strategy: str) -> dict:
     hold_s = g["hold_days"] if "hold_days" in g.columns else pd.Series([10]*len(g))
     sharpe = _sharpe(pnl, hold_s)
     calmar = _calmar(pnl, hold_s)
+    # DEC-403 + DEC-110/413 + DEC-404 RESOLVED-IMPLEMENTED Pass 53 v8h+1
+    # Phase 3 Batch 38 2026-05-11 (owner-approved Path C statistical
+    # methodology). Sortino (downside-deviation-only), Deflated Sharpe (PSR
+    # per Bailey 2014), and cost-sensitivity Sharpe at 0/5/10/20 bps.
+    sortino = _sortino_ratio(pnl, hold_s)
+    try:
+        skew_val = float(pnl.skew()) if len(pnl) >= 3 else 0.0
+        kurt_val = float(pnl.kurt()) if len(pnl) >= 4 else 3.0
+    except Exception:
+        skew_val, kurt_val = 0.0, 3.0
+    psr_dict = _deflated_sharpe(sharpe, n, skew_val, kurt_val)
+    cost_sensitivity = _cost_sensitivity_sharpe(pnl, hold_s)
     ci_lo, ci_hi = _confidence_interval_95(win_rate, n)
     statistically_random = ci_lo < 0.50  # lower CI bound below 50% = may be random
 
@@ -285,6 +412,14 @@ def compute_strategy_metrics(df: pd.DataFrame, strategy: str) -> dict:
         "max_drawdown_pct":      round(mdd, 4),
         "total_roi_pct":         round(roi, 4),
         "sharpe_ratio":          sharpe,
+        "sortino_ratio":         sortino,
+        "deflated_sharpe":       psr_dict.get("deflated_sharpe"),
+        "psr":                   psr_dict.get("psr"),
+        "psr_note":              psr_dict.get("note"),
+        "sharpe_at_0bps":        cost_sensitivity.get("sharpe_at_0bps"),
+        "sharpe_at_5bps":        cost_sensitivity.get("sharpe_at_5bps"),
+        "sharpe_at_10bps":       cost_sensitivity.get("sharpe_at_10bps"),
+        "sharpe_at_20bps":       cost_sensitivity.get("sharpe_at_20bps"),
         "calmar_ratio":          calmar,
         "kelly":                 _kelly_criterion(win_rate, avg_win, abs(avg_loss)),
         "avg_hold_days":         round(float(g["hold_days"].mean()), 1) if "hold_days" in g else 0,

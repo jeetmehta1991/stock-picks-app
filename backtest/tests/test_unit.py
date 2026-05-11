@@ -2586,3 +2586,133 @@ def test_bug_095_mark_to_market_carries_forward_missing_prices():
     assert aapl.last_mark == 110.0
     # Equity unchanged from day 1: 97k + 30*110 = 100,300
     assert p.equity_curve[-1][1] == 100_300.0
+
+
+# ============================================================================
+# DEC-403 / DEC-110 / DEC-413 / DEC-404 statistical methodology tests
+# Phase 3 Batch 38 owner-approved Path C 2026-05-11
+# ============================================================================
+
+def test_dec_403_sortino_ratio_positive_for_mostly_winning_series():
+    """DEC-403: Sortino ratio handles downside-only deviation correctly.
+
+    Positive returns with one small loss -> finite positive Sortino.
+    All-positive returns -> capped 999 (no downside).
+    """
+    import pandas as pd
+    from backtest.results.metrics import _sortino_ratio
+
+    # Mostly winning series with one loss
+    pnl = pd.Series([2.0, 3.0, 1.5, -1.0, 2.5, 1.0, -0.5, 2.0, 1.5, 1.0])
+    hold = pd.Series([10] * 10)
+    s = _sortino_ratio(pnl, hold)
+    assert isinstance(s, float)
+    assert 0 < s < 999, f"Sortino should be finite positive, got {s}"
+
+    # All-positive returns (no downside) -> capped 999
+    pnl_all_pos = pd.Series([1.0, 2.0, 3.0, 4.0])
+    s2 = _sortino_ratio(pnl_all_pos, pd.Series([10] * 4))
+    assert s2 == 999.0
+
+
+def test_dec_403_sortino_zero_on_empty_series():
+    """DEC-403: empty pnl series returns 0.0 (sentinel)."""
+    import pandas as pd
+    from backtest.results.metrics import _sortino_ratio
+    assert _sortino_ratio(pd.Series([], dtype=float)) == 0.0
+
+
+def test_dec_110_dec_413_deflated_sharpe_psr_basic():
+    """DEC-110 + DEC-413: Deflated Sharpe / PSR computation.
+
+    For n_trades >= 30, returns psr in [0, 1] + deflated_sharpe.
+    For n_trades < 30, returns insufficient_sample.
+    """
+    from backtest.results.metrics import _deflated_sharpe
+
+    # Sufficient sample, positive Sharpe -> PSR > 0.5
+    result = _deflated_sharpe(sharpe=1.5, n_trades=200, skew=0.0, kurtosis=3.0)
+    assert result["psr"] is not None
+    assert 0.5 < result["psr"] <= 1.0
+    assert result["deflated_sharpe"] is not None
+    assert result["note"] in ("ok", "moderate", "low_confidence")
+
+    # Insufficient sample
+    result_small = _deflated_sharpe(sharpe=1.5, n_trades=15, skew=0.0, kurtosis=3.0)
+    assert result_small["psr"] is None
+    assert result_small["note"] == "insufficient_sample"
+
+
+def test_dec_110_dec_413_psr_skew_penalty():
+    """DEC-110/DEC-413: negative skew (left-tail risk) penalizes PSR.
+
+    Strategy with same Sharpe but negative skew should have lower PSR.
+    Using moderate Sharpe + smaller sample to avoid PSR saturation at 1.0.
+    """
+    from backtest.results.metrics import _deflated_sharpe
+
+    # Moderate sharpe (0.5) + n=50 keeps PSR in interior of [0, 1]
+    no_skew = _deflated_sharpe(sharpe=0.5, n_trades=50, skew=0.0, kurtosis=3.0)
+    neg_skew = _deflated_sharpe(sharpe=0.5, n_trades=50, skew=-1.5, kurtosis=3.0)
+    assert no_skew["psr"] > neg_skew["psr"], (
+        f"Negative skew should reduce PSR; no_skew={no_skew['psr']} vs neg_skew={neg_skew['psr']}")
+
+
+def test_dec_404_cost_sensitivity_sharpe_at_4_levels():
+    """DEC-404: cost sensitivity at 0/5/10/20 bps.
+
+    Sharpe should decrease monotonically as cost increases.
+    """
+    import pandas as pd
+    from backtest.results.metrics import _cost_sensitivity_sharpe
+
+    pnl = pd.Series([1.0, 1.5, -0.5, 2.0, 0.8, -0.3, 1.2, 0.9])
+    hold = pd.Series([10] * 8)
+    out = _cost_sensitivity_sharpe(pnl, hold)
+
+    keys = ['sharpe_at_0bps', 'sharpe_at_5bps', 'sharpe_at_10bps', 'sharpe_at_20bps']
+    for k in keys:
+        assert k in out, f"missing {k}"
+        assert isinstance(out[k], float)
+
+    # Monotone decrease (higher cost => lower or equal Sharpe)
+    assert out['sharpe_at_0bps'] >= out['sharpe_at_5bps'] >= out['sharpe_at_10bps'] >= out['sharpe_at_20bps'], (
+        f"Sharpe should decrease with cost: {out}")
+
+
+def test_dec_403_dec_110_dec_413_dec_404_wired_into_compute_strategy_metrics():
+    """DEC-403/DEC-110/DEC-413/DEC-404: new metrics surface in compute_strategy_metrics output.
+
+    Cross-reference pin: verifies the 4 decisions' implementations are accessible
+    through the public metrics API.
+    """
+    import pandas as pd
+    from datetime import date, timedelta
+    from backtest.results.metrics import compute_strategy_metrics
+
+    n = 50
+    rows = []
+    for i in range(n):
+        rows.append({
+            "strategy": "test_strat",
+            "ticker": f"T{i % 10}",
+            "win": i % 3 != 0,
+            "pnl_pct": 1.5 if i % 3 != 0 else -1.0,
+            "hold_days": 10,
+            "entry_date": date(2024, 1, 1) + timedelta(days=i),
+            "exit_date": date(2024, 1, 1) + timedelta(days=i + 10),
+            "regime": "bull_neutral",
+            "category": "test",
+            "sector": "Information Technology",
+            "direction": "long",
+            "smart_money_score": 0,
+            "macro_score": 0,
+        })
+    df = pd.DataFrame(rows)
+    m = compute_strategy_metrics(df, "test_strat")
+
+    # All 4 decisions surface in output
+    assert "sortino_ratio" in m, "DEC-403 sortino_ratio missing from output"
+    assert "deflated_sharpe" in m, "DEC-110/DEC-413 deflated_sharpe missing from output"
+    assert "psr" in m, "DEC-110/DEC-413 psr missing from output"
+    assert "sharpe_at_0bps" in m and "sharpe_at_20bps" in m, "DEC-404 cost sensitivity missing from output"
