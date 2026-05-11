@@ -29,6 +29,7 @@ import pandas as pd
 from backtest.config import (
     BACKTEST_START, BACKTEST_END, UNIVERSE, OUTPUT_DIR,
     TRAILING_STOP, AI_MODELS, DATA_LOAD_START, LIQUIDITY,
+    STARTING_CAPITAL, TIER_POSITION_SIZE_PCT,
 )
 from backtest.data.cache import get_ohlcv_bulk as cached_ohlcv_bulk
 from backtest.data.universe import fetch_info_bulk, get_sector_map
@@ -100,6 +101,17 @@ class BacktestEngine:
         from backtest.engine.circuit_breakers import Level6State
         self.level_6_state = Level6State()
         self._backtest_start_date: Optional[date] = None  # set at run() start
+
+        # BUG-95 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 20
+        # Sub-batch 2/5 (engine integration) - owner-approved Option A:
+        # instantiate the portfolio-level state tracker. Engine wires the
+        # following lifecycle: mark_to_market each day before entries,
+        # add_position after a trade is appended to open_trades, remove_position
+        # after a trade is closed (process_day_exits + _finalize_open_trades).
+        # The can_open() gate is NOT enforced in sub-batch 2 (shadow state
+        # only); sub-batch 4 turns LIVE_TRADING_RULES gates on.
+        from backtest.engine.portfolio import Portfolio
+        self.portfolio = Portfolio(starting_capital=STARTING_CAPITAL)
 
     # ----------------------------------------------------------------------
     # DATA LOADING
@@ -283,6 +295,16 @@ class BacktestEngine:
                     fail_reason="Backtest period ended before exit signal fired",
                 )
                 self.closed_trades.append(closed)
+                # BUG-95 sub-batch 2: mirror end-of-backtest finalization into
+                # Portfolio state so equity_curve reflects realized PnL at run end.
+                # hasattr guard tolerates test paths that bypass __init__.
+                if hasattr(self, "portfolio") and trade.ticker in self.portfolio.positions:
+                    try:
+                        self.portfolio.remove_position(trade.ticker, exit_price)
+                    except (KeyError, ValueError) as exc:
+                        logger.debug(
+                            "Portfolio remove_position(%s) during finalize failed: %s",
+                            trade.ticker, exc)
                 n_finalized += 1
             except Exception as exc:
                 logger.warning(
@@ -347,6 +369,32 @@ class BacktestEngine:
             vix, regime, active_signals, self.circuit_breaker_log,
         )
         self.closed_trades.extend(closed_today)
+
+        # BUG-95 sub-batch 2: remove closed positions from portfolio state
+        # (mirror trade exits into Portfolio.cash credit + position removal).
+        # hasattr guard tolerates test paths that build BacktestEngine via
+        # __new__ without running __init__ (e.g. test_bug_029 finalize test).
+        if hasattr(self, "portfolio"):
+            for ct in closed_today:
+                if ct.ticker in self.portfolio.positions:
+                    try:
+                        self.portfolio.remove_position(ct.ticker, ct.exit_price)
+                    except (KeyError, ValueError) as exc:
+                        logger.debug("Portfolio remove_position(%s) failed: %s",
+                                     ct.ticker, exc)
+
+            # BUG-95 sub-batch 2: mark portfolio to today's close prices and append
+            # to equity_curve. ticker_bars holds today's close for every ticker with
+            # data today. Missing prices: Portfolio.mark_to_market carries forward
+            # last_mark per position; no crash on sparse data.
+            today_prices = {
+                t: float(bar["close"]) for t, bar in ticker_bars.items()
+                if isinstance(bar, dict) and "close" in bar
+            }
+            self.portfolio.mark_to_market(today_prices, as_of)
+            # Benchmark curve: SPY close
+            if "SPY" in today_prices:
+                self.portfolio.add_benchmark_point(as_of, today_prices["SPY"])
 
         # -- 5. Screen universe  -  no daily liquidity filter --
         candidates     = screen_universe(ohlcv_pit, self.info_dict, as_of, regime)
@@ -613,6 +661,25 @@ class BacktestEngine:
                 open_combos.add((ticker, strat_entry["strategy"]))
                 opened_today.add(ticker)
                 open_tickers.add(ticker)  # BUG-61: lock ticker for rest of day
+
+                # BUG-95 sub-batch 2: mirror entry into Portfolio state.
+                # size_pct from confidence tier; AVOID/LOW already filtered
+                # above. Failures are non-fatal in sub-batch 2 (shadow state):
+                # we log and continue so existing engine semantics are
+                # unchanged. Sub-batch 4 turns can_open enforcement on.
+                # hasattr guard tolerates test paths that bypass __init__.
+                if hasattr(self, "portfolio"):
+                    size_pct = TIER_POSITION_SIZE_PCT.get(tier, 0.0)
+                    if size_pct > 0:
+                        try:
+                            self.portfolio.add_position(
+                                ticker=ticker, sector=sector, direction=direction,
+                                entry_price=entry_price, size_pct=size_pct,
+                                entry_date=as_of,
+                            )
+                        except (ValueError, KeyError) as exc:
+                            logger.debug("Portfolio add_position(%s) failed: %s",
+                                         ticker, exc)
 
     # ----------------------------------------------------------------------
     # HELPERS

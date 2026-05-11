@@ -1,5 +1,5 @@
 """
-Integration tests — catch key wiring and data coherency bugs.
+Integration tests  -  catch key wiring and data coherency bugs.
 Run before every Phase 1B run: python -m pytest backtest/tests/ -v
 
 These tests specifically target bugs found in audits:
@@ -35,7 +35,7 @@ def test_smart_money_score_keys():
     for k in engine_keys:
         assert k in result, f"Engine key missing: {k}"
 
-    print("✅ smart_money_score keys correct")
+    print("[ok] smart_money_score keys correct")
 
 
 def test_trailing_stop_uses_low_not_close():
@@ -50,15 +50,15 @@ def test_trailing_stop_uses_low_not_close():
         regime_at_entry="bull",
     )
 
-    # Low dips below stop, close above stop — should EXIT
+    # Low dips below stop, close above stop  -  should EXIT
     result = check_trailing_stop_hit(trade, today_low=94.0, today_high=101.0, today_close=97.0)
     assert result == 95.0, f"Expected exit at 95.0, got {result}"
 
-    # Low above stop — should NOT exit
+    # Low above stop  -  should NOT exit
     result2 = check_trailing_stop_hit(trade, today_low=96.0, today_high=101.0, today_close=99.0)
     assert result2 is None, f"Expected None, got {result2}"
 
-    print("✅ Trailing stop uses intraday low correctly")
+    print("[ok] Trailing stop uses intraday low correctly")
 
 
 def test_avoid_tier_returned():
@@ -75,7 +75,7 @@ def test_avoid_tier_returned():
     tier2 = engine._assign_confidence_tier(3, sm_except, {}, {})
     assert tier2 == "EXCEPTIONAL", f"Expected EXCEPTIONAL, got {tier2}"
 
-    print("✅ Confidence tier AVOID returned correctly")
+    print("[ok] Confidence tier AVOID returned correctly")
 
 
 def test_sector_map_loads_from_csv():
@@ -87,7 +87,7 @@ def test_sector_map_loads_from_csv():
     assert sm["KO"] == "Consumer Staples"
     assert sm["SPY"] == "Broad Market"
     assert sm["UNKNOWN_TICKER"] == "Unknown"
-    print("✅ Sector map loads from CSV")
+    print("[ok] Sector map loads from CSV")
 
 
 def test_walk_forward_two_windows():
@@ -101,7 +101,7 @@ def test_walk_forward_two_windows():
     import numpy as np
     from backtest.engine.improvements import run_walk_forward
 
-    # Create synthetic trade log spanning 2021-05 → 2026-05 per DEC-505 window
+    # Create synthetic trade log spanning 2021-05 -> 2026-05 per DEC-505 window
     n = 500
     dates = pd.date_range("2021-05-05", periods=n, freq="5B")
     df = pd.DataFrame({
@@ -124,7 +124,7 @@ def test_walk_forward_two_windows():
     assert "verdict" in strat
     assert strat["verdict"] in ["ROBUST", "WEAK", "OVERFIT",
                                  "FAILS_BOTH", "INSUFFICIENT_OOS_DATA"]
-    print("✅ Walk-forward computes 4 folds per DEC-505")
+    print("[ok] Walk-forward computes 4 folds per DEC-505")
 
 
 def test_confidence_intervals():
@@ -137,7 +137,7 @@ def test_confidence_intervals():
     # Low trade count should give wide CI
     lo2, hi2 = _confidence_interval_95(0.55, 30)
     assert hi2 - lo2 > hi - lo, "Low count should give wider CI"
-    print("✅ Confidence intervals computed correctly")
+    print("[ok] Confidence intervals computed correctly")
 
 
 def test_sector_adjusted_criteria():
@@ -147,7 +147,70 @@ def test_sector_adjusted_criteria():
     staples = get_sector_criteria("Consumer Staples")
     assert energy["min_win_rate"] < staples["min_win_rate"]
     assert energy["max_drawdown"] > staples["max_drawdown"]
-    print("✅ Sector-adjusted criteria differ correctly")
+    print("[ok] Sector-adjusted criteria differ correctly")
+
+
+def test_bug_095_engine_instantiates_portfolio():
+    """BUG-95 sub-batch 2: BacktestEngine must instantiate self.portfolio."""
+    from backtest.engine.backtest import BacktestEngine
+    from backtest.engine.portfolio import Portfolio
+    from backtest.config import STARTING_CAPITAL
+    eng = BacktestEngine(universe=["SPY"], run_agents=False, walk_forward=False)
+    assert hasattr(eng, "portfolio")
+    assert isinstance(eng.portfolio, Portfolio)
+    assert eng.portfolio.starting_capital == STARTING_CAPITAL
+    assert eng.portfolio.cash == STARTING_CAPITAL
+
+
+def test_bug_095_engine_imports_portfolio_module():
+    """BUG-95 sub-batch 2 source pin: backtest.py must import Portfolio +
+    STARTING_CAPITAL + TIER_POSITION_SIZE_PCT and call mark_to_market /
+    add_position / remove_position in the daily lifecycle.
+    """
+    import inspect
+    from backtest.engine import backtest as bt_module
+    src = inspect.getsource(bt_module)
+
+    assert "BUG-95" in src, "BUG-95 cross-reference must exist in backtest.py"
+    assert "from backtest.engine.portfolio import Portfolio" in src, (
+        "backtest.py must import Portfolio class")
+    assert "STARTING_CAPITAL" in src, (
+        "backtest.py must reference STARTING_CAPITAL config constant")
+    assert "TIER_POSITION_SIZE_PCT" in src, (
+        "backtest.py must reference TIER_POSITION_SIZE_PCT config constant")
+    assert "self.portfolio = Portfolio(starting_capital=" in src, (
+        "Engine must instantiate self.portfolio in __init__")
+    assert "self.portfolio.mark_to_market(" in src, (
+        "Engine must call mark_to_market each day")
+    assert "self.portfolio.add_position(" in src, (
+        "Engine must call add_position when a trade enters")
+    assert "self.portfolio.remove_position(" in src, (
+        "Engine must call remove_position when a trade exits")
+
+
+def test_bug_095_engine_portfolio_lifecycle_minimal():
+    """BUG-95 sub-batch 2 lifecycle pin: simulating add+remove on the engine's
+    portfolio mirrors what _process_day does.
+    """
+    from datetime import date
+    from backtest.engine.backtest import BacktestEngine
+    eng = BacktestEngine(universe=["SPY"], run_agents=False, walk_forward=False)
+    p = eng.portfolio
+    initial_cash = p.cash
+
+    p.add_position("AAPL", "IT", "long", entry_price=100.0,
+                   size_pct=0.03, entry_date=date(2024, 1, 1))
+    assert p.num_open == 1
+    assert p.cash < initial_cash
+
+    p.mark_to_market({"AAPL": 110.0}, date(2024, 1, 2))
+    assert len(p.equity_curve) == 1
+    assert p.equity_curve[0][1] > initial_cash
+
+    realised = p.remove_position("AAPL", exit_price=110.0)
+    assert realised > 0
+    assert p.num_open == 0
+    assert p.cash > initial_cash
 
 
 if __name__ == "__main__":
@@ -159,6 +222,9 @@ if __name__ == "__main__":
         test_walk_forward_two_windows,
         test_confidence_intervals,
         test_sector_adjusted_criteria,
+        test_bug_095_engine_instantiates_portfolio,
+        test_bug_095_engine_imports_portfolio_module,
+        test_bug_095_engine_portfolio_lifecycle_minimal,
     ]
     passed = 0
     for t in tests:
@@ -166,5 +232,5 @@ if __name__ == "__main__":
             t()
             passed += 1
         except Exception as e:
-            print(f"❌ {t.__name__}: {e}")
+            print(f"[FAIL] {t.__name__}: {e}")
     print(f"\n{passed}/{len(tests)} tests passed")

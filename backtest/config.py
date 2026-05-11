@@ -314,6 +314,20 @@ LIVE_TRADING_RULES = {
 # Backtest(starting_capital=N) call site.
 STARTING_CAPITAL = 100_000.0   # CAD; portfolio simulation base
 
+# BUG-95 sub-batch 2: tier -> position-size percent. Mirrors the tier_sizes
+# default in results.metrics.portfolio_return_metrics. Engine uses this to
+# compute size_pct passed to Portfolio.add_position and Portfolio.can_open.
+# AVOID tier maps to 0 (no position; gated upstream); LOW maps to 0 to skip.
+TIER_POSITION_SIZE_PCT = {
+    "EXCEPTIONAL": 0.05,
+    "VERY_HIGH":   0.04,
+    "HIGH":        0.03,
+    "MEDIUM_HIGH": 0.015,
+    "MEDIUM":      0.0075,
+    "LOW":         0.0,
+    "AVOID":       0.0,
+}
+
 # -----------------------------------------------------------------------------
 # TWO-STAGE CONFIDENCE TIERING
 # Stage 1: Rule-based preliminary tier (before agents run)
