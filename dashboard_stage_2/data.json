@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-11T03:49:21.893275+00:00",
+  "generated_at": "2026-05-11T03:55:10.191814+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -53,7 +53,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 2,
+        "n_doc_refs": 3,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -93,7 +93,7 @@
         "wired": false,
         "tested": false,
         "pushed": false,
-        "n_doc_refs": 0,
+        "n_doc_refs": 1,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -133,7 +133,7 @@
         "wired": false,
         "tested": false,
         "pushed": false,
-        "n_doc_refs": 0,
+        "n_doc_refs": 1,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -173,7 +173,7 @@
         "wired": false,
         "tested": false,
         "pushed": false,
-        "n_doc_refs": 0,
+        "n_doc_refs": 1,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -253,7 +253,7 @@
         "wired": false,
         "tested": false,
         "pushed": false,
-        "n_doc_refs": 0,
+        "n_doc_refs": 1,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -1213,7 +1213,7 @@
         "wired": false,
         "tested": false,
         "pushed": false,
-        "n_doc_refs": 1,
+        "n_doc_refs": 2,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -1293,7 +1293,7 @@
         "wired": false,
         "tested": false,
         "pushed": false,
-        "n_doc_refs": 0,
+        "n_doc_refs": 1,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -1413,7 +1413,7 @@
         "wired": false,
         "tested": false,
         "pushed": false,
-        "n_doc_refs": 0,
+        "n_doc_refs": 1,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -1453,7 +1453,7 @@
         "wired": false,
         "tested": false,
         "pushed": false,
-        "n_doc_refs": 0,
+        "n_doc_refs": 1,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -1533,7 +1533,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 3,
+        "n_doc_refs": 4,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -1573,7 +1573,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 5,
+        "n_doc_refs": 6,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -1613,7 +1613,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 13,
+        "n_doc_refs": 14,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -1653,7 +1653,7 @@
         "wired": false,
         "tested": false,
         "pushed": false,
-        "n_doc_refs": 2,
+        "n_doc_refs": 3,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -1693,7 +1693,7 @@
         "wired": false,
         "tested": false,
         "pushed": false,
-        "n_doc_refs": 0,
+        "n_doc_refs": 1,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -1733,7 +1733,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 6,
+        "n_doc_refs": 7,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -1773,7 +1773,7 @@
         "wired": false,
         "tested": false,
         "pushed": false,
-        "n_doc_refs": 1,
+        "n_doc_refs": 2,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -1813,7 +1813,7 @@
         "wired": false,
         "tested": false,
         "pushed": false,
-        "n_doc_refs": 0,
+        "n_doc_refs": 1,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -1893,7 +1893,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 6,
+        "n_doc_refs": 7,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -1933,7 +1933,7 @@
         "wired": false,
         "tested": false,
         "pushed": false,
-        "n_doc_refs": 1,
+        "n_doc_refs": 2,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -1973,7 +1973,7 @@
         "wired": false,
         "tested": false,
         "pushed": false,
-        "n_doc_refs": 2,
+        "n_doc_refs": 3,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -5493,7 +5493,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 14,
+        "n_doc_refs": 15,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -5533,7 +5533,7 @@
         "wired": false,
         "tested": false,
         "pushed": false,
-        "n_doc_refs": 2,
+        "n_doc_refs": 3,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -5573,7 +5573,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 2,
+        "n_doc_refs": 3,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -5613,7 +5613,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 1,
+        "n_doc_refs": 2,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -6453,7 +6453,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 9,
+        "n_doc_refs": 10,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -6493,7 +6493,7 @@
         "wired": false,
         "tested": false,
         "pushed": false,
-        "n_doc_refs": 3,
+        "n_doc_refs": 4,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -6533,7 +6533,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 28,
+        "n_doc_refs": 29,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -6573,7 +6573,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 2,
+        "n_doc_refs": 3,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -6613,7 +6613,7 @@
         "wired": false,
         "tested": false,
         "pushed": false,
-        "n_doc_refs": 4,
+        "n_doc_refs": 5,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -6693,7 +6693,7 @@
         "wired": false,
         "tested": false,
         "pushed": false,
-        "n_doc_refs": 2,
+        "n_doc_refs": 3,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -6813,7 +6813,7 @@
         "wired": false,
         "tested": false,
         "pushed": false,
-        "n_doc_refs": 3,
+        "n_doc_refs": 4,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -6853,7 +6853,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 4,
+        "n_doc_refs": 5,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -6933,7 +6933,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 39,
+        "n_doc_refs": 40,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -6973,7 +6973,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 25,
+        "n_doc_refs": 26,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -7013,7 +7013,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 11,
+        "n_doc_refs": 12,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -7133,7 +7133,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 5,
+        "n_doc_refs": 6,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -10533,7 +10533,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 17,
+        "n_doc_refs": 22,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -11124,7 +11124,7 @@
     {
       "id": "DECISION-310",
       "title": "Cache writes zero-volume days dropped silently (df[volume>0]) \u2014 halted/suspended stocks invisible in backtest. Pass 52 owner-approved. Remove `df = df[df[\"volum",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X53 \u2014 High-Impact Engine Bugs",
       "pass_intro": "Pass 48",
       "pass_resolved": "-",
@@ -11133,7 +11133,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 4,
+        "n_doc_refs": 5,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -11155,10 +11155,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -11244,7 +11244,7 @@
     {
       "id": "DECISION-313",
       "title": "update_trailing_stop ignores intraday HIGH \u2014 stop only updates at close above prior best. Pass 52 owner-approved. Change signature to (trade, today_high, today_",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X53 \u2014 High-Impact Engine Bugs",
       "pass_intro": "Pass 48",
       "pass_resolved": "-",
@@ -11253,7 +11253,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 8,
+        "n_doc_refs": 9,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -11275,10 +11275,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -11444,7 +11444,7 @@
     {
       "id": "DECISION-318",
       "title": "AAII pub-lag treatment missing \u2014 survey data marked available on survey-Wed, actually published Thu+. Pass 52 owner-approved. Shift `as_of` lookup by 1 trading ",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X53 \u2014 High-Impact Engine Bugs",
       "pass_intro": "Pass 48",
       "pass_resolved": "-",
@@ -11453,7 +11453,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 9,
+        "n_doc_refs": 10,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -11475,10 +11475,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -11602,46 +11602,6 @@
       }
     },
     {
-      "id": "DECISION-322",
-      "title": "Market cap from yfinance.info CURRENT not historical \u2014 backtesting 2020 trades uses 2026 mkt cap. Pass 52 owner-approved. Compute `market_cap_pit(ticker, as_of)",
-      "status": "RESOLVED-DECIDED",
-      "theme": "Batch X53 \u2014 High-Impact Engine Bugs",
-      "pass_intro": "Pass 48",
-      "pass_resolved": "-",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 8,
-        "pyramid": {
-          "unit": "N/A",
-          "smoke": "N/A",
-          "integration": "N/A",
-          "system": "N/A",
-          "functional": "N/A",
-          "regression": "N/A",
-          "data_integrity": "N/A",
-          "performance": "N/A",
-          "acceptance": "N/A",
-          "property": "N/A",
-          "snapshot": "N/A",
-          "contract": "N/A",
-          "compatibility": "N/A"
-        }
-      },
-      "short_id": "DEC-322",
-      "sprint": "Sprint 4 additions (DEC-410 Au",
-      "dependencies": "-",
-      "description": "",
-      "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
-      }
-    },
-    {
       "id": "DECISION-323",
       "title": "Sector reclassifications retro-applied \u2014 Meta moved from Comms to Tech; 2020 backtests use current sector. Pass 52 owner-approved phased. Phase 1 (free): static",
       "status": "RESOLVED-DECIDED",
@@ -11759,86 +11719,6 @@
         "label": "NEEDS-TEST",
         "color": "#f59e0b",
         "reason": "Coded but no test reference; add test per DEC-594 same-commit"
-      }
-    },
-    {
-      "id": "DECISION-326",
-      "title": "Walk-forward windows hardcoded calendar dates \u2014 no rolling logic per DEC-109; stale after June 2026. Pass 52 owner-approved. Replace hardcoded dates with rollin",
-      "status": "RESOLVED-DECIDED",
-      "theme": "Batch X53 \u2014 High-Impact Engine Bugs",
-      "pass_intro": "Pass 48",
-      "pass_resolved": "-",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 7,
-        "pyramid": {
-          "unit": "N/A",
-          "smoke": "N/A",
-          "integration": "N/A",
-          "system": "N/A",
-          "functional": "N/A",
-          "regression": "N/A",
-          "data_integrity": "N/A",
-          "performance": "N/A",
-          "acceptance": "N/A",
-          "property": "N/A",
-          "snapshot": "N/A",
-          "contract": "N/A",
-          "compatibility": "N/A"
-        }
-      },
-      "short_id": "DEC-326",
-      "sprint": "Sprint 7 additions",
-      "dependencies": "DEC-109",
-      "description": "",
-      "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
-      }
-    },
-    {
-      "id": "DECISION-327",
-      "title": "Short-borrow cost duplicated across improvements.py + exit_manager.py with different units \u2014 pick single source. Pass 52 owner-approved. Investigate live backte",
-      "status": "PARTIAL-SPEC-ONLY",
-      "theme": "Batch X53 \u2014 High-Impact Engine Bugs",
-      "pass_intro": "Pass 48",
-      "pass_resolved": "-",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 6,
-        "pyramid": {
-          "unit": "N/A",
-          "smoke": "N/A",
-          "integration": "N/A",
-          "system": "N/A",
-          "functional": "N/A",
-          "regression": "N/A",
-          "data_integrity": "N/A",
-          "performance": "N/A",
-          "acceptance": "N/A",
-          "property": "N/A",
-          "snapshot": "N/A",
-          "contract": "N/A",
-          "compatibility": "N/A"
-        }
-      },
-      "short_id": "DEC-327",
-      "sprint": "Sprint 2 additions (Engine Bug",
-      "dependencies": "-",
-      "description": "",
-      "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
       }
     },
     {
@@ -13844,7 +13724,7 @@
     {
       "id": "DECISION-383",
       "title": "DEC-310 implementation \u2014 Remove `df = df[df[\"volume\"] > 0]` from cache.py write path; add derived `is_halted = (volume == 0) & (close == previous_close)` column",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X53 \u2014 High-Impact Engine Bugs",
       "pass_intro": "Pass 52",
       "pass_resolved": "-",
@@ -13875,16 +13755,16 @@
       "dependencies": "DEC-310",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-384",
       "title": "DEC-313 + DEC-337 joint implementation \u2014 Change `update_trailing_stop(trade, today_high, today_low, today_close, vix)` signature; long: use today_high for highe",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X53 \u2014 High-Impact Engine Bugs",
       "pass_intro": "Pass 52",
       "pass_resolved": "-",
@@ -13915,10 +13795,10 @@
       "dependencies": "DEC-313; DEC-337",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -14084,7 +13964,7 @@
     {
       "id": "DECISION-389",
       "title": "DEC-318 implementation \u2014 AAII pub-lag fix. In `sentiment.py` AAII consumption: when reading for `as_of=D`, look up survey from prior week ending Friday before D",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X53 \u2014 High-Impact Engine Bugs",
       "pass_intro": "Pass 52",
       "pass_resolved": "-",
@@ -14115,10 +13995,10 @@
       "dependencies": "DEC-318",
       "description": "- In `sentiment.py` AAII consumption: when reading for `as_of=D`, look up survey from prior week ending Friday before D-2 (so survey-Wed \u2192 published-Thu \u2192 readable D+) - Update `aaii_sentiment.csv` schema: add `pub_date` column = `survey_date + 1 trading day`",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -14402,49 +14282,9 @@
       }
     },
     {
-      "id": "DECISION-397",
-      "title": "DEC-326 implementation \u2014 Replace hardcoded calendar dates with rolling: `train_window_years=4` (configurable), `oos_window_years=1` (configurable), computed fro",
-      "status": "RESOLVED-DECIDED",
-      "theme": "Batch X53 \u2014 High-Impact Engine Bugs",
-      "pass_intro": "Pass 52",
-      "pass_resolved": "-",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 3,
-        "pyramid": {
-          "unit": "N/A",
-          "smoke": "N/A",
-          "integration": "N/A",
-          "system": "N/A",
-          "functional": "N/A",
-          "regression": "N/A",
-          "data_integrity": "N/A",
-          "performance": "N/A",
-          "acceptance": "N/A",
-          "property": "N/A",
-          "snapshot": "N/A",
-          "contract": "N/A",
-          "compatibility": "N/A"
-        }
-      },
-      "short_id": "DEC-397",
-      "sprint": "Sprint 2 \u2014 Engine Bug Fixes Ti",
-      "dependencies": "DEC-326",
-      "description": "- Replace hardcoded calendar dates with rolling logic: - `train_window_years = 4` (configurable in config.py) - `oos_window_years = 1` (configurable) - `train_start = today - train_window_years - oos_window_years` - `train_end = today - oos_window_years - 1 day`",
-      "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
-      }
-    },
-    {
       "id": "DECISION-398",
       "title": "DEC-327 Phase A \u2014 Investigate live backtest path: trace whether `improvements.calculate_round_trip_pnl` is production or `exit_manager` is. Quantify whether bor",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X53 \u2014 High-Impact Engine Bugs",
       "pass_intro": "Pass 52",
       "pass_resolved": "-",
@@ -14475,16 +14315,16 @@
       "dependencies": "DEC-327",
       "description": "- Trace actual backtest call path: - `improvements.py:80-84`: `borrow_cost = SHORT_ANNUAL_BORROW_RATE * (hold_days / 252); round_trip += borrow_cost` \u2014 charges - `exit_manager.py:140-146`: comment says *\"Gross percentage PnL... DOES NOT subtract borrow cost \u2014 that is handled else",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-399",
       "title": "DEC-327 Phase B \u2014 Consolidate to shared `backtest.engine.costs.calculate_borrow_cost(trade, hold_days)` consumed by both paths. Remove duplication. Unit test: b",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X53 \u2014 High-Impact Engine Bugs",
       "pass_intro": "Pass 52",
       "pass_resolved": "-",
@@ -14515,10 +14355,10 @@
       "dependencies": "DEC-327",
       "description": "- Move borrow cost calculation to shared utility `backtest.engine.costs.calculate_borrow_cost(trade, hold_days)` - Both `improvements.py` and `exit_manager.py` consume the shared utility - Remove duplication - Unit test: assert borrow cost charged exactly once per short trade",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -14933,7 +14773,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 87,
+        "n_doc_refs": 88,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -16173,7 +16013,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 18,
+        "n_doc_refs": 19,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -16213,7 +16053,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 24,
+        "n_doc_refs": 28,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -16253,7 +16093,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 5,
+        "n_doc_refs": 6,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -16293,7 +16133,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 12,
+        "n_doc_refs": 13,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -16333,7 +16173,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 9,
+        "n_doc_refs": 10,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -16373,7 +16213,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 13,
+        "n_doc_refs": 14,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -16413,7 +16253,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 10,
+        "n_doc_refs": 11,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -16453,7 +16293,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 4,
+        "n_doc_refs": 5,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -16533,7 +16373,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 5,
+        "n_doc_refs": 6,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -16613,7 +16453,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 8,
+        "n_doc_refs": 9,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -16653,7 +16493,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 8,
+        "n_doc_refs": 9,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -16813,7 +16653,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 43,
+        "n_doc_refs": 44,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -18693,7 +18533,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 67,
+        "n_doc_refs": 73,
         "pyramid": {
           "unit": true,
           "smoke": true,
@@ -18973,7 +18813,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 4,
+        "n_doc_refs": 5,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -19013,7 +18853,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 0,
+        "n_doc_refs": 1,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -19173,7 +19013,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 2,
+        "n_doc_refs": 3,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -19213,7 +19053,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 0,
+        "n_doc_refs": 1,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -19253,7 +19093,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 0,
+        "n_doc_refs": 1,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -19333,7 +19173,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 464,
+        "n_doc_refs": 465,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -19643,7 +19483,7 @@
     }
   ],
   "decisions_total_count": 534,
-  "decisions_hidden_count": 43,
+  "decisions_hidden_count": 47,
   "bugs": [
     {
       "id": "BUG-01",
@@ -19845,7 +19685,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 21,
+        "n_doc_refs": 26,
         "pyramid": {
           "unit": true,
           "smoke": true,
@@ -20187,7 +20027,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 11,
+        "n_doc_refs": 16,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -20339,7 +20179,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 18,
+        "n_doc_refs": 19,
         "pyramid": {
           "unit": true,
           "smoke": true,
@@ -20985,7 +20825,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 35,
+        "n_doc_refs": 38,
         "pyramid": {
           "unit": true,
           "smoke": true,
@@ -21023,7 +20863,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 18,
+        "n_doc_refs": 19,
         "pyramid": {
           "unit": true,
           "smoke": true,
@@ -21365,7 +21205,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 92,
+        "n_doc_refs": 93,
         "pyramid": {
           "unit": true,
           "smoke": true,
@@ -21631,7 +21471,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 25,
+        "n_doc_refs": 26,
         "pyramid": {
           "unit": true,
           "smoke": true,
@@ -26998,46 +26838,52 @@
   ],
   "recent_commits": [
     {
+      "sha": "9e933201",
+      "subject": "Pass 53 v8h+1: Phase 3 Batch 29 - 54 SPEC_ONLY bulk-flipped RESOLVED-IMPLEMENTED-AS-DECIDED",
+      "author": "jeetmehta1991",
+      "rel_time": "5 minutes ago"
+    },
+    {
       "sha": "a3894856",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 28 - SPEC_ONLY initiative kickoff (Path B Steps 1+2)",
       "author": "jeetmehta1991",
-      "rel_time": "12 minutes ago"
+      "rel_time": "18 minutes ago"
     },
     {
       "sha": "4910c590",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 27 - 12 DEC status flips (all 4 owner-approved items)",
       "author": "jeetmehta1991",
-      "rel_time": "33 minutes ago"
+      "rel_time": "39 minutes ago"
     },
     {
       "sha": "23275737",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 26 - Decisions ALL non-DEFERRED CLEAN (0 no-cells)",
       "author": "jeetmehta1991",
-      "rel_time": "41 minutes ago"
+      "rel_time": "47 minutes ago"
     },
     {
       "sha": "99f04c48",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 25 - Path 2 implementation (owner-approved)",
       "author": "jeetmehta1991",
-      "rel_time": "51 minutes ago"
+      "rel_time": "57 minutes ago"
     },
     {
       "sha": "8354df3d",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 24 - id_status substring-match bug FIXED (CRITICAL)",
       "author": "jeetmehta1991",
-      "rel_time": "65 minutes ago"
+      "rel_time": "70 minutes ago"
     },
     {
       "sha": "b845fd62",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 23 - Pyramid N/A defaults scaled to ALL ID kinds (owner directive)",
       "author": "jeetmehta1991",
-      "rel_time": "76 minutes ago"
+      "rel_time": "81 minutes ago"
     },
     {
       "sha": "fa2c140c",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 22 - Decisions dashboard cleanup (owner directive)",
       "author": "jeetmehta1991",
-      "rel_time": "84 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "432b146b",
@@ -27109,7 +26955,7 @@
       "sha": "a571c1c6",
       "subject": "Pass 53 v8h+1: BUG-80 HIGH exit slippage applied symmetrically (apply_exit_slippage helper + 2 wire-up sites)",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "b852347d",
@@ -27163,17 +27009,11 @@
       "sha": "0daa206c",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 7 - 6 BUGs (43/44/45/48/58/59) SUPERSEDED/DEFERRED/OBSOLETE",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "2de4536b",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 6 - 5 BUGs (42/47/49/50/52) SUPERSEDED/DEFERRED cross-references",
-      "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
-    },
-    {
-      "sha": "f16ef86d",
-      "subject": "Pass 53 v8h+1: Phase 3 Batch 5 - BUG-37 IMPLEMENTED (haircut doc) + BUG-34/40 SUPERSEDED-BY-design",
       "author": "jeetmehta1991",
       "rel_time": "6 hours ago"
     }
@@ -27961,6 +27801,16 @@
     },
     {
       "kind": "DEC",
+      "id": "DEC-443",
+      "title": "Replace yfinance .info with Polygon reference endpoints \u2014 Pass 52 owner-approved (DEC-410 Batch 1, Hypothesis H-yfinance-2). Replace `Ticker",
+      "status": "RESOLVED-IMPLEMENTED",
+      "tier": 1,
+      "reason": "Dependency root (4 downstream items reference)",
+      "back_refs": 4,
+      "sprint": "Sprint 4 additions (DEC-410 Au; Sprint 4 \u2014 DEC-410 Audit Findi; Sprint 9 \u2014 Phase 1B-\u03b1 Run (Wee"
+    },
+    {
+      "kind": "DEC",
       "id": "DEC-444",
       "title": "Deprecate `days_to_next_earnings()` via yfinance live calls \u2014 Pass 52 owner-approved (DEC-410 Batch 1, Hypothesis H-yfinance-3). Route all `",
       "status": "RESOLVED-IMPLEMENTED",
@@ -27978,6 +27828,16 @@
       "reason": "Dependency root (4 downstream items reference)",
       "back_refs": 4,
       "sprint": "Sprint 4 \u2014 DEC-410 Audit Findi"
+    },
+    {
+      "kind": "DEC",
+      "id": "DEC-505",
+      "title": "Backtest window alignment to Polygon Stocks Starter 5y cache (supersedes DEC-109 6-fold walk-forward). Pass 53 owner-approved Q1+Q2+Q3 2026-",
+      "status": "RESOLVED-IMPLEMENTED",
+      "tier": 1,
+      "reason": "Dependency root (4 downstream items reference)",
+      "back_refs": 4,
+      "sprint": "-"
     },
     {
       "kind": "DEC",
@@ -28028,33 +27888,13 @@
       "reason": "Dependency root (3 downstream items reference)",
       "back_refs": 3,
       "sprint": "Sprint 5 additions (Universe M"
-    },
-    {
-      "kind": "DEC",
-      "id": "DEC-105",
-      "title": "Spinoff detector \u2014 Pass 52 turn 33 RESOLVED via supersession. Pass 52 phased implementation: DEC-378 (Phase 1 \u2014 NASDAQ symbol-directory week",
-      "status": "RESOLVED-DECIDED",
-      "tier": 1,
-      "reason": "Dependency root (3 downstream items reference)",
-      "back_refs": 3,
-      "sprint": "Sprint 5 additions (Universe M"
-    },
-    {
-      "kind": "DEC",
-      "id": "DEC-111",
-      "title": "Stationarity / structural break tests \u2014 Pass 52 owner-approved scoped to feasibility. 3 test types: (1) ADF on equity curve (~1000 daily obs",
-      "status": "PARTIAL-SPEC-ONLY",
-      "tier": 1,
-      "reason": "Dependency root (3 downstream items reference)",
-      "back_refs": 3,
-      "sprint": "Sprint 7 additions; Sprint 7 additions (Statistica; Sprint 7-8 additions (Phase 1B"
     }
   ],
   "decision_status_counts": {
-    "RESOLVED-DECIDED": 222,
-    "RESOLVED-IMPLEMENTED": 103,
+    "RESOLVED-DECIDED": 213,
+    "RESOLVED-IMPLEMENTED": 111,
     "PARTIAL": 5,
-    "PARTIAL-SPEC-ONLY": 68,
+    "PARTIAL-SPEC-ONLY": 65,
     "DEFERRED_TO_STAGE_3": 36,
     "DEFERRED_TO_STAGE_4": 21,
     "DEFERRED": 2,

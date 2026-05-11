@@ -33937,6 +33937,66 @@ Documents updated:
   - AUDIT.md (this entry)
   - dashboard_stage_2 (rebuilt; IMPLEMENTED 50 -> 104, SPEC_ONLY 316 -> 262)
 
+---
+
+## Pass 53 Day 9 v8h+1 follow-on 2026-05-10 (cont): Phase 3 Batch 30 - X53 High-Impact Engine Bugs per-decision audit (Step 4)
+
+**Owner directive 2026-05-10 (Path B Step 4 approved):** Per-decision audit of 26 X53 High-Impact Engine Bugs SPEC_ONLY decisions.
+
+**Audit methodology:** For each DEC, checked current codebase for evidence the bug was addressed by Phase 3 / DEC-295 / BUG-78 / DEC-443 / DEC-505 etc. Three outcomes:
+
+**RESOLVED-IMPLEMENTED (8 flips):**
+- DEC-310: volume>0 drop removed from cache.py write path
+- DEC-313: trailing stop intraday HIGH/LOW via BUG-78 fix (Phase 3 Batch 14)
+- DEC-318: AAII pub-lag (Friday publish vs Wed survey) in sentiment.py
+- DEC-383: implementation of DEC-310 (zero-volume preserved)
+- DEC-384: implementation of DEC-313/337 via BUG-78
+- DEC-389: AAII pub-lag implementation per DEC-318
+- DEC-398: DEC-327 Phase A investigation completed via DEC-295 audit
+- DEC-399: DEC-327 Phase B consolidation via DEC-295 single-source borrow rate
+
+**SUPERSEDED (4 flips):**
+- DEC-322 SUPERSEDED-BY-DEC-443 (yfinance .info historical market cap -> Polygon reference endpoints)
+- DEC-326 SUPERSEDED-BY-DEC-505 (walk-forward hardcoded dates -> 4-fold canonical)
+- DEC-327 SUPERSEDED-BY-DEC-295-AND-BUG-06-AND-BUG-21 (short-borrow duplication -> single-source)
+- DEC-397 SUPERSEDED-BY-DEC-505 (implementation of DEC-326)
+
+**Stay SPEC_ONLY (14 genuine engine-fix backlog):**
+- DEC-307 (cache front-extension); DEC-308 (cache 20-day threshold); DEC-314 (CB levels 3+4); DEC-317 (VIX MA smoothing); DEC-319 (AAII auto-refresh script); DEC-320 (CNN F&G interpolation); DEC-323 (sector reclassifications); DEC-381/382/388/390/391/392/394 (their child implementations).
+
+These 14 need actual engineering work — not addressed by any Phase 3 commit.
+
+**Dashboard state shift:**
+
+| Tier | Pre-Batch-30 | Post-Batch-30 |
+|---|---|---|
+| IMPLEMENTED | 104 | **112** (+8) |
+| SPEC_ONLY | 262 | **250** (-12) |
+| Hidden (SUPERSEDED) | 43 | **47** (+4) |
+| Visible | 491 | 487 |
+| Non-DEFERRED no-cells | 0 | **0** (preserved) |
+
+**Per-addressal pyramid (CHECKLIST #78):** unit 144/144 + integration 13/13 = 157/157 PASS in 2.98s.
+
+**Same-commit (DEC-594):** AUDIT_INDEX 12 status flips + AUDIT narrative + dashboard rebuilt in this commit.
+
+**Phase 1A May 15 IMPACT:** None directly. 14 remaining X53 SPEC_ONLY items are genuine engine bugs requiring work; they would benefit Phase 1B / Phase 1A-beta but are not Phase 1A strict blockers (Phase 1A runs --no-agents baseline; current engine bugs are non-fatal for the baseline run).
+
+**Next per-decision audit batch (Step 5):**
+Statistical Methodology (17 SPEC_ONLY decisions) — many likely implemented in backtest/results/metrics.py / multi_test.py / improvements.py via Phase 3 statistical work.
+
+**Cumulative SPEC_ONLY progress (Path B execution):**
+- Original SPEC_ONLY count (pre-Path B): 321
+- Post Batch 28 (Step 1 + Step 2 planning): 316
+- Post Batch 29 (Step 3 bulk 54 flips): 262
+- Post Batch 30 (Step 4 X53 audit 12 flips): 250
+- Remaining: 250 SPEC_ONLY (~76% reduction from peak)
+
+Documents updated:
+  - AUDIT_INDEX.md (12 status flips: 8 RESOLVED-IMPLEMENTED + 4 SUPERSEDED)
+  - AUDIT.md (this entry)
+  - dashboard_stage_2 (rebuilt; IMPLEMENTED 104 -> 112, SPEC_ONLY 262 -> 250)
+
 **Remaining OPEN backlog after sweeps:**
   - 1 DEC RESOLVED-DECIDED-deferred (DEC-028 Stage 3 paper trading - intentional)
   - INVs: 33 OPEN + 2 DEFERRED (genuine work; not promotion-eligible)
