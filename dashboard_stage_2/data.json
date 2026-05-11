@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-11T14:16:58.178172+00:00",
+  "generated_at": "2026-05-11T14:32:34.113321+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -2733,7 +2733,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 9,
+        "n_doc_refs": 10,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -8324,18 +8324,18 @@
     {
       "id": "DECISION-241",
       "title": "Time-in-market metric (% in any position, % long, % short, % cash) Pass 52 turn 58 owner-approved RESOLVED-DECIDED: Time-in-market metric (% in any position, % ",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X36 \u2014 Data Quality + Trading Mechanics",
       "pass_intro": "Pass 45",
       "pass_resolved": "-",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 3,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -8355,10 +8355,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -14484,18 +14484,18 @@
     {
       "id": "DECISION-408",
       "title": "DEC-085 Phase B \u2014 Compute macro correlation tags per strategy. New `compute_macro_correlations(strategy_pnl)` in metrics.py. Returns dict of correlations + tags",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X4 \u2014 Statistical Methodology",
       "pass_intro": "Pass 52",
       "pass_resolved": "-",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 5,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -14515,27 +14515,27 @@
       "dependencies": "DEC-085",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-409",
       "title": "DEC-085 Phase C \u2014 Event-window tags. Existing FOMC/CPI/NFP calendars + add earnings season start/end (computed), Russell rebalance dates (Jun + Sep), S&P rebala",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X4 \u2014 Statistical Methodology",
       "pass_intro": "Pass 52",
       "pass_resolved": "-",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 11,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -14555,10 +14555,10 @@
       "dependencies": "DEC-085",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -26598,10 +26598,16 @@
   ],
   "recent_commits": [
     {
+      "sha": "1d143592",
+      "subject": "Pass 53 v8h+1: Phase 3 Batch 39 - Path C statistical methodology continuation (Sharpe daily + tiered min trades + audit threshold)",
+      "author": "jeetmehta1991",
+      "rel_time": "15 minutes ago"
+    },
+    {
       "sha": "8c8b0aca",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 38 - Path C statistical methodology implementation (Sortino + Deflated Sharpe + Cost Sensitivity)",
       "author": "jeetmehta1991",
-      "rel_time": "22 minutes ago"
+      "rel_time": "38 minutes ago"
     },
     {
       "sha": "c32b58ba",
@@ -26619,7 +26625,7 @@
       "sha": "c3e4f4dd",
       "subject": "Pass 53 v8h+1: Phase 3 Batches 34+35 - Path B Steps 9-15 auto-proceed (13 flips)",
       "author": "jeetmehta1991",
-      "rel_time": "9 hours ago"
+      "rel_time": "10 hours ago"
     },
     {
       "sha": "34f32f71",
@@ -26637,19 +26643,19 @@
       "sha": "dafff2c1",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 31 - X4 Statistical Methodology audit (Path B Step 5)",
       "author": "jeetmehta1991",
-      "rel_time": "10 hours ago"
+      "rel_time": "11 hours ago"
     },
     {
       "sha": "4a129d79",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 30 - X53 Engine Bugs per-decision audit (Path B Step 4)",
       "author": "jeetmehta1991",
-      "rel_time": "10 hours ago"
+      "rel_time": "11 hours ago"
     },
     {
       "sha": "9e933201",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 29 - 54 SPEC_ONLY bulk-flipped RESOLVED-IMPLEMENTED-AS-DECIDED",
       "author": "jeetmehta1991",
-      "rel_time": "10 hours ago"
+      "rel_time": "11 hours ago"
     },
     {
       "sha": "a3894856",
@@ -26673,7 +26679,7 @@
       "sha": "99f04c48",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 25 - Path 2 implementation (owner-approved)",
       "author": "jeetmehta1991",
-      "rel_time": "11 hours ago"
+      "rel_time": "12 hours ago"
     },
     {
       "sha": "8354df3d",
@@ -26703,7 +26709,7 @@
       "sha": "6a3b572e",
       "subject": "Pass 53 v8h+1: BUG-95 CRITICAL Portfolio class RESOLVED-IMPLEMENTED (Sub-batch 5/5 - FINAL)",
       "author": "jeetmehta1991",
-      "rel_time": "12 hours ago"
+      "rel_time": "13 hours ago"
     },
     {
       "sha": "2b56e6e9",
@@ -26733,7 +26739,7 @@
       "sha": "b04abeb7",
       "subject": "Pass 53 auto-drift-sweep 2026-05-11 00:53: dashboard re-derive (no content drift)",
       "author": "jeetmehta1991",
-      "rel_time": "13 hours ago"
+      "rel_time": "14 hours ago"
     },
     {
       "sha": "5e68ae6c",
@@ -26770,17 +26776,11 @@
       "subject": "Pass 53 v8h+1: BUG-78 CRITICAL trailing stop lookahead bias FIXED",
       "author": "jeetmehta1991",
       "rel_time": "15 hours ago"
-    },
-    {
-      "sha": "5b710e0b",
-      "subject": "Pass 53 v8h+1: Phase 3 Batch 13 - 39 BUG mega-sweep (pre-Pass-53 audit findings); OPEN: 46 -> 7",
-      "author": "jeetmehta1991",
-      "rel_time": "15 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 4,
-    "modified": 4,
+    "count": 3,
+    "modified": 3,
     "added": 0,
     "untracked": 0,
     "deleted": 0,
@@ -26788,10 +26788,6 @@
       {
         "status": "M",
         "path": "AUDIT_INDEX.md"
-      },
-      {
-        "status": "M",
-        "path": "backtest/config.py"
       },
       {
         "status": "M",
@@ -26981,7 +26977,7 @@
     }
   ],
   "test_inventory": {
-    "total": 817,
+    "total": 824,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -27057,7 +27053,7 @@
       "test_stocktwits_smoke": 4,
       "test_supplementary_demo": 4,
       "test_supplementary_smoke": 6,
-      "test_unit": 155,
+      "test_unit": 162,
       "test_walk_forward_4fold": 6
     }
   },
@@ -27663,8 +27659,8 @@
     }
   ],
   "decision_status_counts": {
-    "RESOLVED-DECIDED": 166,
-    "RESOLVED-IMPLEMENTED": 168,
+    "RESOLVED-DECIDED": 163,
+    "RESOLVED-IMPLEMENTED": 171,
     "PARTIAL": 5,
     "PARTIAL-SPEC-ONLY": 49,
     "DEFERRED_TO_STAGE_3": 36,

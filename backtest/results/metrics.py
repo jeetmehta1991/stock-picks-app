@@ -104,6 +104,194 @@ def _sharpe(pnl_series: pd.Series, hold_days_series: pd.Series = None) -> float:
     return round(float(pnl_series.mean() / pnl_series.std() * np.sqrt(trades_per_year)), 3)
 
 
+def _time_in_market_metrics(df_trades: pd.DataFrame,
+                            start_date=None, end_date=None) -> dict:
+    """DEC-241 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 40 2026-05-11
+    (owner-approved Path C). Time-in-market metric: % of trading days with
+    at least 1 position open / % long / % short / % cash.
+
+    Inputs:
+      df_trades: DataFrame with entry_date, exit_date, direction columns
+      start_date: optional override (default: min entry_date in df)
+      end_date: optional override (default: max exit_date in df)
+
+    Returns dict with time_in_market_pct, pct_days_long, pct_days_short,
+    pct_days_cash. All percent values 0-100.
+    """
+    if df_trades.empty:
+        return {
+            "time_in_market_pct": 0.0,
+            "pct_days_long":      0.0,
+            "pct_days_short":     0.0,
+            "pct_days_cash":      100.0,
+            "total_trading_days": 0,
+        }
+    df = df_trades.copy()
+    df["entry_date"] = pd.to_datetime(df["entry_date"])
+    df["exit_date"] = pd.to_datetime(df["exit_date"])
+    if start_date is None:
+        start_date = df["entry_date"].min()
+    if end_date is None:
+        end_date = df["exit_date"].max()
+    all_days = pd.date_range(start_date, end_date, freq="B")  # business days
+    if len(all_days) == 0:
+        return {
+            "time_in_market_pct": 0.0, "pct_days_long": 0.0,
+            "pct_days_short": 0.0, "pct_days_cash": 100.0,
+            "total_trading_days": 0,
+        }
+
+    open_days = set()
+    long_days = set()
+    short_days = set()
+    for _, t in df.iterrows():
+        days = pd.date_range(t["entry_date"], t["exit_date"], freq="B")
+        days_dt = set(d.normalize() for d in days)
+        open_days |= days_dt
+        if t.get("direction") == "long":
+            long_days |= days_dt
+        elif t.get("direction") == "short":
+            short_days |= days_dt
+    all_days_normalized = set(d.normalize() for d in all_days)
+    in_market = len(open_days & all_days_normalized)
+    in_long = len(long_days & all_days_normalized)
+    in_short = len(short_days & all_days_normalized)
+    total = len(all_days_normalized)
+    return {
+        "time_in_market_pct": round(in_market / total * 100, 2) if total > 0 else 0.0,
+        "pct_days_long":      round(in_long / total * 100, 2) if total > 0 else 0.0,
+        "pct_days_short":     round(in_short / total * 100, 2) if total > 0 else 0.0,
+        "pct_days_cash":      round((total - in_market) / total * 100, 2) if total > 0 else 100.0,
+        "total_trading_days": total,
+    }
+
+
+def _event_window_breakdown(df_trades: pd.DataFrame, window_days: int = 3) -> dict:
+    """DEC-409 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 40 2026-05-11
+    (owner-approved Path C). Event-window breakdown: % trades entered near
+    FOMC / CPI / NFP. Uses backtest.data.macro.is_near_high_impact_event.
+
+    Inputs:
+      df_trades: DataFrame with entry_date column
+      window_days: event proximity window (default 3 days on each side)
+
+    Returns dict with pct_trades_near_event + per-event-type breakdown.
+    Caller-side wins/losses split via _event_conditional_win_rate (DEC-408).
+    """
+    if df_trades.empty:
+        return {
+            "pct_trades_near_event": 0.0,
+            "pct_trades_near_fomc":  0.0,
+            "pct_trades_near_cpi":   0.0,
+            "pct_trades_near_nfp":   0.0,
+            "n_trades_near_event":   0,
+        }
+    try:
+        from backtest.data.macro import is_near_high_impact_event
+    except ImportError:
+        return {
+            "pct_trades_near_event": None,
+            "pct_trades_near_fomc":  None,
+            "pct_trades_near_cpi":   None,
+            "pct_trades_near_nfp":   None,
+            "n_trades_near_event":   None,
+        }
+    n = len(df_trades)
+    near_event = 0
+    near_fomc = 0
+    near_cpi = 0
+    near_nfp = 0
+    for _, trade in df_trades.iterrows():
+        try:
+            ed = pd.to_datetime(trade["entry_date"]).date()
+            event = is_near_high_impact_event(ed, window_days=window_days)
+            if event.get("blocked"):
+                near_event += 1
+                et = event.get("nearest_event_type")
+                if et == "FOMC":
+                    near_fomc += 1
+                elif et == "CPI":
+                    near_cpi += 1
+                elif et == "NFP":
+                    near_nfp += 1
+        except Exception:
+            continue
+    return {
+        "pct_trades_near_event": round(near_event / n * 100, 2),
+        "pct_trades_near_fomc":  round(near_fomc / n * 100, 2),
+        "pct_trades_near_cpi":   round(near_cpi / n * 100, 2),
+        "pct_trades_near_nfp":   round(near_nfp / n * 100, 2),
+        "n_trades_near_event":   near_event,
+    }
+
+
+def _event_conditional_win_rate(df_trades: pd.DataFrame, window_days: int = 3) -> dict:
+    """DEC-408 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 40 2026-05-11
+    (owner-approved Path C). Comprehensive macro correlation: per-strategy
+    win rates on event-adjacent vs non-event-adjacent days.
+
+    For each trade, classify by event proximity (FOMC/CPI/NFP within
+    window_days). Compute win rate for each bucket. Returns delta which
+    surfaces edge presence/absence near events.
+
+    Returns dict with win_rate_near_event, win_rate_far_from_event,
+    win_rate_delta (near - far). Positive delta = strategy outperforms
+    near events; negative = strategy underperforms near events.
+    """
+    if df_trades.empty or len(df_trades) < 6:
+        return {
+            "win_rate_near_event":     None,
+            "win_rate_far_from_event": None,
+            "win_rate_event_delta":    None,
+            "n_trades_near_event":     0,
+            "n_trades_far_from_event": 0,
+            "note": "insufficient_sample",
+        }
+    try:
+        from backtest.data.macro import is_near_high_impact_event
+    except ImportError:
+        return {
+            "win_rate_near_event":     None,
+            "win_rate_far_from_event": None,
+            "win_rate_event_delta":    None,
+            "n_trades_near_event":     0,
+            "n_trades_far_from_event": 0,
+            "note": "macro_module_unavailable",
+        }
+    near_wins, near_total, far_wins, far_total = 0, 0, 0, 0
+    for _, trade in df_trades.iterrows():
+        try:
+            ed = pd.to_datetime(trade["entry_date"]).date()
+            event = is_near_high_impact_event(ed, window_days=window_days)
+            won = bool(trade.get("win", False))
+            if event.get("blocked"):
+                near_total += 1
+                if won:
+                    near_wins += 1
+            else:
+                far_total += 1
+                if won:
+                    far_wins += 1
+        except Exception:
+            continue
+    wr_near = (near_wins / near_total) if near_total > 0 else None
+    wr_far = (far_wins / far_total) if far_total > 0 else None
+    delta = None
+    if wr_near is not None and wr_far is not None:
+        delta = wr_near - wr_far
+    note = "ok"
+    if near_total < 5 or far_total < 5:
+        note = "small_subgroup"
+    return {
+        "win_rate_near_event":     round(wr_near, 4) if wr_near is not None else None,
+        "win_rate_far_from_event": round(wr_far, 4) if wr_far is not None else None,
+        "win_rate_event_delta":    round(delta, 4) if delta is not None else None,
+        "n_trades_near_event":     near_total,
+        "n_trades_far_from_event": far_total,
+        "note": note,
+    }
+
+
 def _sharpe_daily(pnl_series: pd.Series, entry_date_series: pd.Series,
                   exit_date_series: pd.Series) -> float:
     """Daily-returns-based Sharpe ratio (DEC-081 Phase A canonicalization).
@@ -330,6 +518,10 @@ def compute_strategy_metrics(df: pd.DataFrame, strategy: str) -> dict:
         sharpe_daily = _sharpe_daily(pnl, g["entry_date"], g["exit_date"])
     else:
         sharpe_daily = None
+    # DEC-409 event-window breakdown (% trades near FOMC/CPI/NFP)
+    event_bd = _event_window_breakdown(g)
+    # DEC-408 event-conditional win rates (delta near vs far from event)
+    event_wr = _event_conditional_win_rate(g)
     try:
         skew_val = float(pnl.skew()) if len(pnl) >= 3 else 0.0
         kurt_val = float(pnl.kurt()) if len(pnl) >= 4 else 3.0
@@ -502,6 +694,16 @@ def compute_strategy_metrics(df: pd.DataFrame, strategy: str) -> dict:
         "psr_note":              psr_dict.get("note"),
         "tiered_min_trades":     tiered_min,
         "meets_tiered_min":      n >= tiered_min,
+        # DEC-409 event-window breakdown
+        "pct_trades_near_event": event_bd.get("pct_trades_near_event"),
+        "pct_trades_near_fomc":  event_bd.get("pct_trades_near_fomc"),
+        "pct_trades_near_cpi":   event_bd.get("pct_trades_near_cpi"),
+        "pct_trades_near_nfp":   event_bd.get("pct_trades_near_nfp"),
+        # DEC-408 event-conditional win rates
+        "win_rate_near_event":     event_wr.get("win_rate_near_event"),
+        "win_rate_far_from_event": event_wr.get("win_rate_far_from_event"),
+        "win_rate_event_delta":    event_wr.get("win_rate_event_delta"),
+        "event_wr_note":           event_wr.get("note"),
         "sharpe_at_0bps":        cost_sensitivity.get("sharpe_at_0bps"),
         "sharpe_at_5bps":        cost_sensitivity.get("sharpe_at_5bps"),
         "sharpe_at_10bps":       cost_sensitivity.get("sharpe_at_10bps"),

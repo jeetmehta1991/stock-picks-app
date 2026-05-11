@@ -2680,6 +2680,140 @@ def test_dec_404_cost_sensitivity_sharpe_at_4_levels():
         f"Sharpe should decrease with cost: {out}")
 
 
+def test_dec_241_time_in_market_metric_basic():
+    """DEC-241 (Phase 3 Batch 40): time-in-market metric computes % days
+    with at least 1 position open, % days long, % days short, % days cash.
+    """
+    import pandas as pd
+    from datetime import date
+    from backtest.results.metrics import _time_in_market_metrics
+
+    # 3 trades over Jan 1-31 (~22 business days)
+    df = pd.DataFrame([
+        {"entry_date": date(2024, 1, 2),  "exit_date": date(2024, 1, 8),  "direction": "long"},
+        {"entry_date": date(2024, 1, 10), "exit_date": date(2024, 1, 15), "direction": "long"},
+        {"entry_date": date(2024, 1, 20), "exit_date": date(2024, 1, 25), "direction": "short"},
+    ])
+    out = _time_in_market_metrics(df)
+    assert "time_in_market_pct" in out
+    assert "pct_days_long" in out
+    assert "pct_days_short" in out
+    assert "pct_days_cash" in out
+    # Both forms positive
+    assert 0 <= out["time_in_market_pct"] <= 100
+    assert out["pct_days_long"] > 0
+    assert out["pct_days_short"] > 0
+    # Cash + market = 100 (roughly; allow small rounding error)
+    assert abs(out["pct_days_cash"] + out["time_in_market_pct"] - 100.0) < 0.5
+
+
+def test_dec_241_time_in_market_empty_df():
+    """DEC-241: empty df returns 100% cash."""
+    import pandas as pd
+    from backtest.results.metrics import _time_in_market_metrics
+    out = _time_in_market_metrics(pd.DataFrame())
+    assert out["time_in_market_pct"] == 0.0
+    assert out["pct_days_cash"] == 100.0
+
+
+def test_dec_409_event_window_breakdown_returns_zeros_on_empty():
+    """DEC-409: empty df returns all-zero event breakdown."""
+    import pandas as pd
+    from backtest.results.metrics import _event_window_breakdown
+    out = _event_window_breakdown(pd.DataFrame())
+    assert out["pct_trades_near_event"] == 0.0
+    assert out["pct_trades_near_fomc"] == 0.0
+    assert out["pct_trades_near_cpi"] == 0.0
+    assert out["pct_trades_near_nfp"] == 0.0
+
+
+def test_dec_409_event_window_breakdown_structure():
+    """DEC-409: shape of output dict + range invariants for non-empty df."""
+    import pandas as pd
+    from datetime import date, timedelta
+    from backtest.results.metrics import _event_window_breakdown
+    rows = []
+    for i in range(20):
+        rows.append({"entry_date": date(2024, 1, 1) + timedelta(days=i*5)})
+    df = pd.DataFrame(rows)
+    out = _event_window_breakdown(df)
+    # All values should be 0-100 percent
+    for k in ("pct_trades_near_event", "pct_trades_near_fomc",
+              "pct_trades_near_cpi", "pct_trades_near_nfp"):
+        assert out[k] is None or 0 <= out[k] <= 100, f"{k} out of range: {out[k]}"
+
+
+def test_dec_408_event_conditional_win_rate_returns_None_on_small_sample():
+    """DEC-408: insufficient sample (<6 trades) returns None per-bucket."""
+    import pandas as pd
+    from datetime import date
+    from backtest.results.metrics import _event_conditional_win_rate
+    df = pd.DataFrame([
+        {"entry_date": date(2024, 1, 2),  "win": True},
+        {"entry_date": date(2024, 1, 5),  "win": False},
+    ])
+    out = _event_conditional_win_rate(df)
+    assert out["note"] == "insufficient_sample"
+    assert out["win_rate_near_event"] is None
+    assert out["win_rate_far_from_event"] is None
+
+
+def test_dec_408_event_conditional_win_rate_structure():
+    """DEC-408: 20-trade df returns properly-structured event-conditional output."""
+    import pandas as pd
+    from datetime import date, timedelta
+    from backtest.results.metrics import _event_conditional_win_rate
+    rows = []
+    for i in range(20):
+        rows.append({
+            "entry_date": date(2024, 1, 1) + timedelta(days=i*5),
+            "win": i % 2 == 0,
+        })
+    df = pd.DataFrame(rows)
+    out = _event_conditional_win_rate(df)
+    # Structure check
+    for k in ("win_rate_near_event", "win_rate_far_from_event",
+              "win_rate_event_delta", "n_trades_near_event",
+              "n_trades_far_from_event", "note"):
+        assert k in out
+    # Totals should sum to <= 20
+    assert (out["n_trades_near_event"] or 0) + (out["n_trades_far_from_event"] or 0) <= 20
+
+
+def test_dec_241_dec_408_dec_409_wired_into_compute_strategy_metrics():
+    """DEC-408 + DEC-409: new event-window metrics surface in compute_strategy_metrics output."""
+    import pandas as pd
+    from datetime import date, timedelta
+    from backtest.results.metrics import compute_strategy_metrics
+
+    n = 50
+    rows = []
+    for i in range(n):
+        rows.append({
+            "strategy": "test_strat", "ticker": f"T{i % 10}",
+            "win": i % 3 != 0,
+            "pnl_pct": 1.5 if i % 3 != 0 else -1.0,
+            "hold_days": 10,
+            "entry_date": date(2024, 1, 1) + timedelta(days=i),
+            "exit_date": date(2024, 1, 1) + timedelta(days=i + 10),
+            "regime": "bull_neutral", "category": "momentum",
+            "sector": "Information Technology", "direction": "long",
+            "smart_money_score": 0, "macro_score": 0,
+        })
+    df = pd.DataFrame(rows)
+    m = compute_strategy_metrics(df, "test_strat")
+    # DEC-409
+    assert "pct_trades_near_event" in m
+    assert "pct_trades_near_fomc" in m
+    assert "pct_trades_near_cpi" in m
+    assert "pct_trades_near_nfp" in m
+    # DEC-408
+    assert "win_rate_near_event" in m
+    assert "win_rate_far_from_event" in m
+    assert "win_rate_event_delta" in m
+    assert "event_wr_note" in m
+
+
 def test_dec_084_audit_threshold_lowered_to_65pct():
     """DEC-084 (Phase 3 Batch 39): audit_win_rate_above lowered from 0.75 to 0.65."""
     from backtest.config import PASSING_CRITERIA
