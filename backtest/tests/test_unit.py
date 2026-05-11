@@ -2589,6 +2589,76 @@ def test_bug_095_mark_to_market_carries_forward_missing_prices():
 
 
 # ============================================================================
+# DEC-087 Vol-targeted per-position sizing tests (Phase 3 Batch 52 Path C)
+# ============================================================================
+
+def test_dec_087_vol_targeted_size_high_vol_smaller_than_low_vol():
+    """DEC-087 spec test signal: XOM-during-oil-shock (high vol) gets
+    smaller position than KO-consumer-staple (low vol) at same edge level.
+    """
+    from backtest.engine.portfolio import vol_targeted_size
+
+    base = 0.03  # HIGH tier 3%
+    xom_size = vol_targeted_size(base, position_vol_annualized=0.40)
+    ko_size  = vol_targeted_size(base, position_vol_annualized=0.15)
+    assert xom_size < ko_size
+    # target 0.20 / 0.40 = 0.5 multiplier -> 0.03 * 0.5 = 0.015
+    assert abs(xom_size - 0.015) < 1e-9
+    # target 0.20 / 0.15 = 1.333 multiplier -> 0.03 * 1.333 = 0.04
+    assert abs(ko_size - 0.04) < 1e-9
+
+
+def test_dec_087_vol_targeted_size_reproducible_with_vol_input():
+    """DEC-087 spec test signal: vol-targeted size reproducible with vol
+    input (deterministic function of base + vol).
+    """
+    from backtest.engine.portfolio import vol_targeted_size
+
+    s1 = vol_targeted_size(0.03, position_vol_annualized=0.25)
+    s2 = vol_targeted_size(0.03, position_vol_annualized=0.25)
+    assert s1 == s2
+    # target 0.20 / 0.25 = 0.8 multiplier -> 0.03 * 0.8 = 0.024
+    assert abs(s1 - 0.024) < 1e-9
+
+
+def test_dec_087_vol_targeted_size_bounded_low_at_min_multiplier():
+    """DEC-087: extremely high position vol clamped at MIN multiplier 0.25."""
+    from backtest.engine.portfolio import vol_targeted_size
+
+    # target 0.20 / 2.0 = 0.10 raw multiplier; clamp at 0.25
+    s = vol_targeted_size(0.03, position_vol_annualized=2.0)
+    assert abs(s - 0.03 * 0.25) < 1e-9
+
+
+def test_dec_087_vol_targeted_size_bounded_high_at_max_multiplier():
+    """DEC-087: extremely low position vol clamped at MAX multiplier 2.0."""
+    from backtest.engine.portfolio import vol_targeted_size
+
+    # target 0.20 / 0.05 = 4.0 raw multiplier; clamp at 2.0
+    s = vol_targeted_size(0.03, position_vol_annualized=0.05)
+    assert abs(s - 0.03 * 2.0) < 1e-9
+
+
+def test_dec_087_vol_targeted_size_fail_soft_on_missing_vol():
+    """DEC-087: position_vol = None or 0 -> return base (no adjustment)."""
+    from backtest.engine.portfolio import vol_targeted_size
+
+    assert vol_targeted_size(0.03, position_vol_annualized=None) == 0.03
+    assert vol_targeted_size(0.03, position_vol_annualized=0.0) == 0.03
+    assert vol_targeted_size(0.03, position_vol_annualized=-0.5) == 0.03
+
+
+def test_dec_087_vol_targeted_size_custom_target_vol():
+    """DEC-087: custom target_vol_annualized parameter overrides default."""
+    from backtest.engine.portfolio import vol_targeted_size
+
+    # custom target 0.10 / position 0.20 = 0.5 multiplier
+    s = vol_targeted_size(0.03, position_vol_annualized=0.20,
+                          target_vol_annualized=0.10)
+    assert abs(s - 0.015) < 1e-9
+
+
+# ============================================================================
 # DEC-088 Portfolio vol target 15% tests (Phase 3 Batch 51 Path C)
 # ============================================================================
 

@@ -64,6 +64,51 @@ class Position:
             return self.shares * (self.entry_price - price)
 
 
+def vol_targeted_size(
+    base_size_pct: float,
+    position_vol_annualized: Optional[float],
+    target_vol_annualized: Optional[float] = None,
+) -> float:
+    """DEC-087 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 52 2026-05-11
+    (owner-approved Path C). Vol-targeted per-position sizing: scale base
+    tier size by `target_vol / position_vol` so higher-vol positions get
+    proportionally smaller allocations (equal risk contribution per name).
+
+    Closes DEC-023 (SUPERSEDED_BY_DEC-087). Joint with DEC-088 portfolio-
+    level vol target which applies on top of per-position scaling.
+
+    Inputs:
+      base_size_pct: tier-derived position size (TIER_POSITION_SIZE_PCT)
+      position_vol_annualized: per-ticker annualized realized vol (e.g.,
+        from backtest.signals.dec513_extended_signals.compute_realized_vol)
+      target_vol_annualized: per-position target (default
+        VOL_TARGETED_TARGET_PER_POSITION_ANNUALIZED = 0.20)
+
+    Returns float adjusted size_pct. Fail-soft to base_size_pct when
+    position_vol is None / non-positive (no vol input -> no adjustment).
+    Multiplier bounded by [VOL_TARGETED_SIZE_MIN_MULTIPLIER,
+    VOL_TARGETED_SIZE_MAX_MULTIPLIER] to avoid extreme adjustments.
+    """
+    from backtest.config import (
+        VOL_TARGETED_TARGET_PER_POSITION_ANNUALIZED,
+        VOL_TARGETED_SIZE_MIN_MULTIPLIER,
+        VOL_TARGETED_SIZE_MAX_MULTIPLIER,
+    )
+    if position_vol_annualized is None or position_vol_annualized <= 0:
+        return base_size_pct
+    tgt = (target_vol_annualized
+           if target_vol_annualized is not None
+           else VOL_TARGETED_TARGET_PER_POSITION_ANNUALIZED)
+    if tgt <= 0:
+        return base_size_pct
+    ratio = tgt / position_vol_annualized
+    bounded = max(
+        VOL_TARGETED_SIZE_MIN_MULTIPLIER,
+        min(VOL_TARGETED_SIZE_MAX_MULTIPLIER, ratio),
+    )
+    return base_size_pct * bounded
+
+
 class Portfolio:
     """
     Portfolio-level state. Instantiated once per Backtest run.

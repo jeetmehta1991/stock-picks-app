@@ -357,6 +357,18 @@ PORTFOLIO_VOL_LOOKBACK_DAYS = 21
 PORTFOLIO_VOL_SCALE_MIN = 0.5
 PORTFOLIO_VOL_SCALE_MAX = 1.5
 
+# DEC-087 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 52 2026-05-11
+# (owner-approved Path C). Vol-targeted per-position sizing closes DEC-023
+# (SUPERSEDED_BY_DEC-087). Higher-vol positions get smaller allocations to
+# equalize risk contribution: `size = base_size * (target_vol / position_vol)`,
+# bounded by MIN/MAX multipliers to avoid extreme adjustments. Per-position
+# target 20% annualized is a midpoint; portfolio-level constraint (DEC-088)
+# applies on top. Multiplier bounds [0.25, 2.0] match the wider per-position
+# vol distribution vs portfolio-level (DEC-088 [0.5, 1.5]).
+VOL_TARGETED_TARGET_PER_POSITION_ANNUALIZED = 0.20
+VOL_TARGETED_SIZE_MIN_MULTIPLIER = 0.25
+VOL_TARGETED_SIZE_MAX_MULTIPLIER = 2.0
+
 # -----------------------------------------------------------------------------
 # TWO-STAGE CONFIDENCE TIERING
 # Stage 1: Rule-based preliminary tier (before agents run)
