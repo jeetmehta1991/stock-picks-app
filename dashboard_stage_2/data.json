@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-11T18:40:27.587555+00:00",
+  "generated_at": "2026-05-11T20:27:54.512665+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -2329,13 +2329,13 @@
       "pass_intro": "Pass 39",
       "pass_resolved": "-",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
         "pushed": true,
-        "n_doc_refs": 10,
+        "n_doc_refs": 11,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -2355,10 +2355,10 @@
       "dependencies": "-",
       "description": "Pre-flight surfaced AEP is computable from existing MFE (already tracked in OpenTrade dataclass): - `aep_pct = (mfe - exit_pnl) / mfe` for winning trades only - None for losing trades (no peak to retrace from) - Per-strategy `mean_aep_pct` aggregate",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "READY",
+        "label": "READY-TO-PROMOTE",
+        "color": "#10b981",
+        "reason": "Wired in active path + tested; eligible for RESOLVED-IMPLEMENTED"
       }
     },
     {
@@ -2803,19 +2803,19 @@
     },
     {
       "id": "DECISION-087",
-      "title": "Vol-targeted sizing per-position (closes 023) Pass 52 turn 67 owner-approved RESOLVED-DECIDED: Vol-targeted sizing per-position. `size = target_vol / position_v",
-      "status": "RESOLVED-DECIDED",
+      "title": "Vol-targeted sizing per-position (closes DEC-023) \u2014 `vol_targeted_size(base_size_pct, position_vol_annualized, target_vol_annualized=None)` module-level functio",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X5 \u2014 Risk Management Extension",
-      "pass_intro": "Pass 39",
-      "pass_resolved": "-",
+      "pass_intro": "Pass 53",
+      "pass_resolved": "Pass 53",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
         "pushed": true,
-        "n_doc_refs": 12,
+        "n_doc_refs": 11,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -2832,30 +2832,30 @@
       },
       "short_id": "DEC-087",
       "sprint": "Sprint 5 additions (Position S; Sprint 7 additions (Statistica",
-      "dependencies": "-",
+      "dependencies": "DEC-023",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-088",
-      "title": "Portfolio vol target 15% Pass 52 turn 67 owner-approved RESOLVED-DECIDED with REVISIT_AFTER_BACKTEST tag: Portfolio vol target 15% annualized. Gross sizing scal",
-      "status": "RESOLVED-DECIDED",
+      "title": "Portfolio vol target 15% annualized \u2014 `PORTFOLIO_VOL_TARGET_ANNUALIZED=0.15` constant + `PORTFOLIO_VOL_LOOKBACK_DAYS=21` + `PORTFOLIO_VOL_SCALE_MIN=0.5`/`MAX=1.",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X5 \u2014 Risk Management Extension",
-      "pass_intro": "Pass 39",
-      "pass_resolved": "-",
+      "pass_intro": "Pass 53",
+      "pass_resolved": "Pass 53",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 7,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -2875,10 +2875,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -3409,13 +3409,13 @@
       "pass_intro": "Pass 39",
       "pass_resolved": "-",
       "status_grep": {
-        "coded": false,
-        "wired": false,
+        "coded": true,
+        "wired": true,
         "tested": false,
         "pushed": true,
         "n_doc_refs": 8,
         "pyramid": {
-          "unit": "N/A",
+          "unit": false,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -3449,13 +3449,13 @@
       "pass_intro": "Pass 39",
       "pass_resolved": "-",
       "status_grep": {
-        "coded": false,
-        "wired": false,
+        "coded": true,
+        "wired": true,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 9,
+        "n_doc_refs": 8,
         "pyramid": {
-          "unit": "N/A",
+          "unit": false,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -3475,10 +3475,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "CODE_ONLY",
+        "label": "NEEDS-TEST",
+        "color": "#f59e0b",
+        "reason": "Coded but no test reference; add test per DEC-594 same-commit"
       }
     },
     {
@@ -4923,19 +4923,19 @@
     },
     {
       "id": "DECISION-149",
-      "title": "Regime transition probability matrix Pass 52 turn 119 RESOLVED-DECIDED Batch D: Regime transition probability matrix \u2014 bull\u2192neutral, bull\u2192bear, etc. transition ",
-      "status": "RESOLVED-DECIDED",
+      "title": "Regime transition probability matrix \u2014 `compute_regime_transition_matrix` in `backtest/engine/regime_filter.py` returns empirical Markov-1 transition matrix (4x",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X19 \u2014 Regime extensions",
-      "pass_intro": "Pass 40",
-      "pass_resolved": "-",
+      "pass_intro": "Pass 53",
+      "pass_resolved": "Pass 53",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 1,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -4955,10 +4955,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -11173,7 +11173,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 11,
+        "n_doc_refs": 12,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -15483,19 +15483,19 @@
     },
     {
       "id": "DECISION-435",
-      "title": "DEC-075 implementation \u2014 Add `aep_pct` per-trade in metrics.py: `(mfe - exit_pnl) / mfe` for winning trades only; None for losing trades. Per-strategy aggregate",
-      "status": "RESOLVED-DECIDED",
+      "title": "DEC-075 implementation \u2014 `_aep_pct_metric` helper in `backtest/results/metrics.py` computes `(mfe - exit_pnl) / mfe` for winning trades only (pnl > 0; mfe >= pn",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X6 \u2014 Exits + Circuit Breakers",
-      "pass_intro": "Pass 52",
-      "pass_resolved": "-",
+      "pass_intro": "Pass 53",
+      "pass_resolved": "Pass 53",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 9,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -15515,10 +15515,10 @@
       "dependencies": "DEC-075",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -18933,7 +18933,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 468,
+        "n_doc_refs": 466,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -26598,198 +26598,193 @@
   ],
   "recent_commits": [
     {
+      "sha": "bf2b26ab",
+      "subject": "Pass 53 v8h+1: Phase 3 Batch 52 - DEC-087 vol-targeted per-position sizing helper (RESOLVED-IMPLEMENTED)",
+      "author": "jeetmehta1991",
+      "rel_time": "4 minutes ago"
+    },
+    {
+      "sha": "6d1cce3e",
+      "subject": "Pass 53 v8h+1: Phase 3 Batch 51 - DEC-088 portfolio vol target 15% telemetry (RESOLVED-IMPLEMENTED)",
+      "author": "jeetmehta1991",
+      "rel_time": "21 minutes ago"
+    },
+    {
+      "sha": "8c33f844",
+      "subject": "Pass 53 v8h+1: Phase 3 Batch 50 - DEC-149 regime transition probability matrix (RESOLVED-IMPLEMENTED)",
+      "author": "jeetmehta1991",
+      "rel_time": "80 minutes ago"
+    },
+    {
+      "sha": "21472ca0",
+      "subject": "Pass 53 v8h+1: Phase 3 Batch 49 - DEC-435 AEP per-trade metric (RESOLVED-IMPLEMENTED)",
+      "author": "jeetmehta1991",
+      "rel_time": "89 minutes ago"
+    },
+    {
+      "sha": "e0f9261a",
+      "subject": "Pass 53 v8h+1: Phase 3 Batch 48 - Path C final pickups (3 RESOLVED-IMPLEMENTED)",
+      "author": "jeetmehta1991",
+      "rel_time": "2 hours ago"
+    },
+    {
       "sha": "79f7e781",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 47 - Path C audit/process bulk-flip (16 RESOLVED-IMPLEMENTED-AS-DECIDED)",
       "author": "jeetmehta1991",
-      "rel_time": "4 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "bf3fd167",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 46 - Path C remaining X53 (DEC-319/320/323/390/391/394)",
       "author": "jeetmehta1991",
-      "rel_time": "9 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "60f58d4f",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 45 - Path C market-wide CB NYSE Rule 80B (DEC-314)",
       "author": "jeetmehta1991",
-      "rel_time": "35 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "595bfe3f",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 44 - Path C cache front-extension + 20-day threshold (DEC-307/308/381/382)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "67a40670",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 43 - Engine hysteresis wiring + DEC-321/392 liquidity fail-closed",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "5d0fc0db",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 42 - Path C VIX MA smoothing + hysteresis (DEC-317/388)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "3f45e521",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 41 - Path B Step B (statsmodels + ADF + Chow tests)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "57fc539f",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 40 - Path C continuation (time-in-market + event-window macro correlation)",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "1d143592",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 39 - Path C statistical methodology continuation (Sharpe daily + tiered min trades + audit threshold)",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "8c8b0aca",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 38 - Path C statistical methodology implementation (Sortino + Deflated Sharpe + Cost Sensitivity)",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "7 hours ago"
     },
     {
       "sha": "c32b58ba",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 37 - Path B Step 17 auto-proceed (10 flips)",
       "author": "jeetmehta1991",
-      "rel_time": "13 hours ago"
+      "rel_time": "15 hours ago"
     },
     {
       "sha": "9a798135",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 36 - Path B Step 16 auto-proceed small themes (15 flips)",
       "author": "jeetmehta1991",
-      "rel_time": "14 hours ago"
+      "rel_time": "15 hours ago"
     },
     {
       "sha": "c3e4f4dd",
       "subject": "Pass 53 v8h+1: Phase 3 Batches 34+35 - Path B Steps 9-15 auto-proceed (13 flips)",
       "author": "jeetmehta1991",
-      "rel_time": "14 hours ago"
+      "rel_time": "15 hours ago"
     },
     {
       "sha": "34f32f71",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 33 - X51 CRITICAL Runtime Bugs audit (Path B Step 8) - 100% yield",
       "author": "jeetmehta1991",
-      "rel_time": "14 hours ago"
+      "rel_time": "16 hours ago"
     },
     {
       "sha": "e2449d23",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 32 - X1 Data + Universe audit (Path B Step 6)",
       "author": "jeetmehta1991",
-      "rel_time": "14 hours ago"
+      "rel_time": "16 hours ago"
     },
     {
       "sha": "dafff2c1",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 31 - X4 Statistical Methodology audit (Path B Step 5)",
       "author": "jeetmehta1991",
-      "rel_time": "15 hours ago"
+      "rel_time": "16 hours ago"
     },
     {
       "sha": "4a129d79",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 30 - X53 Engine Bugs per-decision audit (Path B Step 4)",
       "author": "jeetmehta1991",
-      "rel_time": "15 hours ago"
+      "rel_time": "17 hours ago"
     },
     {
       "sha": "9e933201",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 29 - 54 SPEC_ONLY bulk-flipped RESOLVED-IMPLEMENTED-AS-DECIDED",
       "author": "jeetmehta1991",
-      "rel_time": "15 hours ago"
+      "rel_time": "17 hours ago"
     },
     {
       "sha": "a3894856",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 28 - SPEC_ONLY initiative kickoff (Path B Steps 1+2)",
       "author": "jeetmehta1991",
-      "rel_time": "15 hours ago"
+      "rel_time": "17 hours ago"
     },
     {
       "sha": "4910c590",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 27 - 12 DEC status flips (all 4 owner-approved items)",
       "author": "jeetmehta1991",
-      "rel_time": "15 hours ago"
+      "rel_time": "17 hours ago"
     },
     {
       "sha": "23275737",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 26 - Decisions ALL non-DEFERRED CLEAN (0 no-cells)",
       "author": "jeetmehta1991",
-      "rel_time": "16 hours ago"
+      "rel_time": "17 hours ago"
     },
     {
       "sha": "99f04c48",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 25 - Path 2 implementation (owner-approved)",
       "author": "jeetmehta1991",
-      "rel_time": "16 hours ago"
+      "rel_time": "18 hours ago"
     },
     {
       "sha": "8354df3d",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 24 - id_status substring-match bug FIXED (CRITICAL)",
       "author": "jeetmehta1991",
-      "rel_time": "16 hours ago"
+      "rel_time": "18 hours ago"
     },
     {
       "sha": "b845fd62",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 23 - Pyramid N/A defaults scaled to ALL ID kinds (owner directive)",
       "author": "jeetmehta1991",
-      "rel_time": "16 hours ago"
+      "rel_time": "18 hours ago"
     },
     {
       "sha": "fa2c140c",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 22 - Decisions dashboard cleanup (owner directive)",
       "author": "jeetmehta1991",
-      "rel_time": "16 hours ago"
-    },
-    {
-      "sha": "432b146b",
-      "subject": "Pass 53 v8h+1: Phase 3 Batch 21 - BUG-006 dashboard protocol-violation fix (owner-flagged)",
-      "author": "jeetmehta1991",
-      "rel_time": "16 hours ago"
-    },
-    {
-      "sha": "6a3b572e",
-      "subject": "Pass 53 v8h+1: BUG-95 CRITICAL Portfolio class RESOLVED-IMPLEMENTED (Sub-batch 5/5 - FINAL)",
-      "author": "jeetmehta1991",
-      "rel_time": "17 hours ago"
-    },
-    {
-      "sha": "2b56e6e9",
-      "subject": "Pass 53 v8h+1: BUG-95 LIVE_TRADING_RULES enforcement via can_open gate (Sub-batch 4/5)",
-      "author": "jeetmehta1991",
-      "rel_time": "17 hours ago"
-    },
-    {
-      "sha": "2fe9c3d4",
-      "subject": "Pass 53 v8h+1: BUG-95 Portfolio metrics from equity_curve (Sub-batch 3/5)",
-      "author": "jeetmehta1991",
-      "rel_time": "17 hours ago"
-    },
-    {
-      "sha": "ead36b0b",
-      "subject": "Pass 53 v8h+1: BUG-95 Portfolio engine integration (Sub-batch 2/5 - shadow state)",
-      "author": "jeetmehta1991",
-      "rel_time": "17 hours ago"
+      "rel_time": "18 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 1,
-    "modified": 1,
+    "count": 0,
+    "modified": 0,
     "added": 0,
     "untracked": 0,
     "deleted": 0,
-    "files": [
-      {
-        "status": "M",
-        "path": "AUDIT_INDEX.md"
-      }
-    ]
+    "files": []
   },
   "unpushed_commits": [],
   "active_bgs": [],
@@ -26969,7 +26964,7 @@
     }
   ],
   "test_inventory": {
-    "total": 847,
+    "total": 869,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -27045,7 +27040,7 @@
       "test_stocktwits_smoke": 4,
       "test_supplementary_demo": 4,
       "test_supplementary_smoke": 6,
-      "test_unit": 182,
+      "test_unit": 204,
       "test_walk_forward_4fold": 6
     }
   },
@@ -27651,8 +27646,8 @@
     }
   ],
   "decision_status_counts": {
-    "RESOLVED-DECIDED": 138,
-    "RESOLVED-IMPLEMENTED": 207,
+    "RESOLVED-DECIDED": 134,
+    "RESOLVED-IMPLEMENTED": 211,
     "PARTIAL": 5,
     "PARTIAL-SPEC-ONLY": 38,
     "DEFERRED_TO_STAGE_3": 36,
