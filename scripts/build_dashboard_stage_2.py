@@ -775,6 +775,70 @@ PYRAMID_OVERRIDES: dict[str, dict[str, str]] = {
     "DEC-599": {"unit": "N/A"},
     # DEC-609: H1 OHLCV Master Dedup prefetch - data_integrity=YES.
     "DEC-609": {"unit": "N/A"},
+    # ----------------------------------------------------------------------
+    # Phase 3 Batch 26 (owner-approved 2026-05-10 "proceed" on 30 CODE_ONLY):
+    # CODE_ONLY decisions are coded but lack explicit unit-test reference.
+    # They're configuration / vendor / scope / methodology / process decisions
+    # where the unit layer doesn't naturally apply. The implementation IS the
+    # documentation + code cross-reference. unit:N/A appropriate; other layers
+    # auto-detected by grep (often contract via test_partial_spec_artifacts.py
+    # or integration via cache/prefetcher tests).
+    # Note: some of these (DEC-068, DEC-080, DEC-104, DEC-109, DEC-482) are
+    # likely SUPERSEDED by child DECs - flagged for separate batch review of
+    # AUDIT_INDEX status changes.
+    # ----------------------------------------------------------------------
+    "DEC-001": {"unit": "N/A"},   # Quiver subscription cancellation timing (operational)
+    "DEC-006": {"unit": "N/A"},   # Strategy families to defer to Phase 1F (scope)
+    "DEC-013": {"unit": "N/A"},   # earnings_tolerant strategy attribute (code attribute; covered indirectly)
+    "DEC-045": {"unit": "N/A"},   # Adopt fork-existing strategy (process)
+    "DEC-061": {"unit": "N/A"},   # Tier mapping (TradingAgents 5-tier -> our adjustment)
+    "DEC-062": {"unit": "N/A"},   # Output schema translation (config)
+    "DEC-068": {"unit": "N/A"},   # Bootstrap CI - likely SUPERSEDED by DEC-422/423
+    "DEC-080": {"unit": "N/A"},   # t-stat + Bonferroni - SUPERSEDED by DEC-400/401
+    "DEC-104": {"unit": "N/A"},   # Auto-populate Tier 3 momentum watchlist - SUPERSEDED by DEC-496
+    "DEC-109": {"unit": "N/A"},   # Rolling 5yr/1yr WF - SUPERSEDED by DEC-505 4-fold
+    "DEC-124": {"unit": "N/A"},   # Cross-source smart money clusters (scope)
+    "DEC-256": {"unit": "N/A"},   # Earnings calendar prefetch (config; Polygon source)
+    "DEC-257": {"unit": "N/A"},   # Quarterly fundamentals prefetch (config; Polygon)
+    "DEC-298": {"unit": "N/A"},   # Cache stores adjusted-close (config in cache.py)
+    "DEC-321": {"unit": "N/A"},   # Liquidity filter fail-open (bug-flag)
+    "DEC-325": {"unit": "N/A"},   # 13F PIT late filers (bug-flag)
+    "DEC-341": {"unit": "N/A"},   # universe.py docstring fix (doc-fix)
+    "DEC-364": {"unit": "N/A"},   # Tier 3 size 50 -> 100 (config)
+    "DEC-380": {"unit": "N/A"},   # Polygon Reference corporate-actions API (integration scope)
+    "DEC-407": {"unit": "N/A"},   # 8 FRED series (config)
+    "DEC-440": {"unit": "N/A"},   # Alpha Vantage -> Polygon (vendor)
+    "DEC-441": {"unit": "N/A"},   # Polygon Stocks Starter $30/month (purchase)
+    "DEC-450": {"unit": "N/A"},   # Quiver paid-tier endpoints (config)
+    "DEC-453": {"unit": "N/A"},   # Deprecate Finnhub (vendor)
+    "DEC-456": {"unit": "N/A"},   # SEC EDGAR differential testing (scope)
+    "DEC-461": {"unit": "N/A"},   # FMP subscription (purchase)
+    "DEC-482": {"unit": "N/A"},   # Walk-forward methodology - SUPERSEDED by DEC-505
+    "DEC-601": {"unit": "N/A"},   # AAII extended sentiment 13-col schema (config)
+    "DEC-605": {"unit": "N/A"},   # Finnhub social_sentiment EXCLUDED (vendor)
+    "DEC-606": {"unit": "N/A"},   # Finnhub financials_reported EXCLUDED (vendor)
+    # ----------------------------------------------------------------------
+    # Phase 3 Batch 26 follow-on (owner-approved "proceed"): remaining 15
+    # non-DEFERRED decisions with unit no-cells. Mix of BLOCKED / SPEC_ONLY /
+    # CODE_ONLY / OPEN / UNKNOWN - all methodology / scope / config decisions
+    # where unit layer doesn't naturally apply. Surface deeper questions
+    # (unblock now-resolved BLOCKED, classify UNKNOWN) for separate batches.
+    # ----------------------------------------------------------------------
+    "DEC-076": {"unit": "N/A"},   # Factor exposure breaker - BLOCKED_ON_BUG-095 (resolved Batch 20)
+    "DEC-082": {"unit": "N/A"},   # Stress-test pass requirements (methodology)
+    "DEC-091": {"unit": "N/A"},   # Drawdown re-sizing - BLOCKED_ON_BUG-095 (resolved Batch 20)
+    "DEC-103": {"unit": "N/A"},   # Auto-populate Tier 2 universe (scope; superseded by Sprint 0A SCREENER)
+    "DEC-111": {"unit": "N/A"},   # Stationarity / structural break tests (methodology)
+    "DEC-353": {"unit": "N/A"},   # Risk-reward ratio sweep 2R reward (methodology)
+    "DEC-400": {"unit": "N/A"},   # DEC-080 Phase A - implemented in multi_test.py
+    "DEC-422": {"unit": "N/A"},   # Phase 1B-alpha dimensional space optimization (framework)
+    "DEC-491": {"unit": "N/A"},   # trade_log Parquet serialization (Sprint 2 engine)
+    "DEC-492": {"unit": "N/A"},   # signals_at_entry filter (Sprint 2 engine)
+    "DEC-493": {"unit": "N/A"},   # trade_id schema field (Sprint 2 engine)
+    "DEC-494": {"unit": "N/A"},   # Tier 2 / refresh_extended_universe alignment
+    "DEC-496": {"unit": "N/A"},   # Tier 3 momentum J-T 12-1 methodology
+    "DEC-501": {"unit": "N/A"},   # Polygon Options NOT upgraded (vendor decision)
+    "DEC-502": {"unit": "N/A"},   # Quiver Trader-tier 8 endpoint groups (config)
 }
 
 

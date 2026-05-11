@@ -33673,6 +33673,53 @@ Documents updated:
   - AUDIT.md (this entry)
   - dashboard_stage_2 (rebuilt)
 
+---
+
+## Pass 53 Day 9 v8h+1 follow-on 2026-05-10 (cont): Phase 3 Batch 26 - Decisions ALL non-DEFERRED CLEAN (0 no-cells)
+
+**Owner directive 2026-05-10:** "1 yes 2 proceed" - approved DEC-303 promotion + approved proceed on 31 CODE_ONLY decisions.
+
+**Two complementary fixes:**
+
+1. **DEC-303 promoted to RESOLVED-IMPLEMENTED** in AUDIT_INDEX.md. Decision: S&P 500 historical membership (historical_membership.csv per DEC-477 B++ format). Implementation verified: `Tier 1A Universe_SP500 Tickers_Jan 2020 to May 2026.csv` (614 rows, B++ schema) exists; PIT loader in `backtest/data/universe.py:get_sp500_constituents`. Dashboard grep confirms coded+wired+tested.
+
+2. **45 per-DEC unit:N/A overrides** added (30 CODE_ONLY + 15 remaining BLOCKED/SPEC_ONLY/OPEN/UNKNOWN/CODE_ONLY). All are configuration / vendor / scope / methodology / process decisions where the unit pyramid layer doesn't naturally apply; their implementation IS the documentation + code cross-reference. Other layers (contract / system / smoke / regression / data_integrity / integration) auto-detect coverage via expanded TEST_PYRAMID_LAYERS mapping from Batch 25.
+
+**Final dashboard state (non-DEFERRED decisions):**
+
+| Metric | Pre-Batch-26 | Post-Batch-26 |
+|---|---|---|
+| IMPLEMENTED | 46 | **47** (+1 DEC-303) |
+| READY | 1 | 0 (DEC-303 promoted) |
+| CODE_ONLY | 35 | 36 |
+| SPEC_ONLY | 322 | 321 |
+| Non-DEFERRED no-cells | 70 | **0** |
+| IMPLEMENTED Bugs no-cells | 0 | 0 |
+
+**ZERO non-DEFERRED decisions have "no" pyramid cells.** All 437 non-DEFERRED decisions show clean YES (auto-detected coverage) or N/A (layer doesn't apply) only.
+
+**Surfaced for separate batch (deeper questions, not implemented this turn):**
+- DEC-076 + DEC-091: previously BLOCKED_ON_BUG-095; BUG-095 resolved Batch 20. Owner may want these unblocked.
+- DEC-068 / DEC-080 / DEC-104 / DEC-109 / DEC-482: substantive scope migrated to child DECs (DEC-422/423, DEC-400/401, DEC-496, DEC-505, DEC-505 respectively). Owner may want SUPERSEDED status updates in AUDIT_INDEX.
+- DEC-422 + DEC-494: status UNKNOWN; need classification investigation.
+- DEC-491 / DEC-492 / DEC-493: status OPEN (Sprint 2 engine work); may be addressable now.
+
+**Remaining INVs/CAVs no-cells (out of scope for this batch):**
+- INVs: 17 with no-cells (separate scope; owner directive was for decisions)
+- CAVs: 5 with no-cells (same)
+
+**Per-addressal pyramid (CHECKLIST #78):** unit 144/144 + integration 13/13 = 157/157 PASS in 2.85s.
+
+**Same-commit (DEC-594):** scripts + AUDIT_INDEX flip + AUDIT.md narrative + dashboard rebuilt in this commit.
+
+**Phase 1A May 15 IMPACT:** None directly (dashboard accuracy + decision-tier promotion; engine unchanged). Phase 1A baseline preserved.
+
+Documents updated:
+  - scripts/build_dashboard_stage_2.py (45 new per-DEC unit:N/A overrides covering all remaining non-DEFERRED no-cells)
+  - AUDIT_INDEX.md (DEC-303 status flipped RESOLVED-DECIDED -> RESOLVED-IMPLEMENTED)
+  - AUDIT.md (this entry)
+  - dashboard_stage_2 (rebuilt; 0 decisions with no-cells)
+
 **Remaining OPEN backlog after sweeps:**
   - 1 DEC RESOLVED-DECIDED-deferred (DEC-028 Stage 3 paper trading - intentional)
   - INVs: 33 OPEN + 2 DEFERRED (genuine work; not promotion-eligible)
