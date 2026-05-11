@@ -33560,6 +33560,58 @@ Documents updated:
   - AUDIT.md (this entry)
   - dashboard_stage_2 (rebuilt; 89+21+6 honest gaps remain across DECs/INVs/CAVs respectively, all in unit column for coded items)
 
+---
+
+## Pass 53 Day 9 v8h+1 follow-on 2026-05-10 (cont): Phase 3 Batch 24 - id_status substring-match bug FIXED (CRITICAL correctness)
+
+**The bug:** `id_status()` used Python's `in` operator for ID grep (`c in text`), which performs SUBSTRING match. For id_candidates like "DEC-06" (2-digit form of DEC-006), the substring would match inside "DEC-061", "DEC-062", ..., "DEC-069", "DEC-060" - any 3-digit DEC with the same first two digits. This produced FALSE POSITIVE coded/wired/tested/pushed flags for low-numbered IDs (DEC-001 through DEC-099, BUG-001 through BUG-099, etc.).
+
+**Discovery context:** Owner directive to "approve Phase A" (promote 8 READY decisions to RESOLVED-IMPLEMENTED). Before flipping status, I verified each decision's claimed test coverage. The dashboard said all 8 had `tested=True`, but a word-boundary-safe regex search across `backtest/tests/*.py` found ZERO matches for any of the 8 decisions. The `tested=True` flag was a false positive from the substring bug.
+
+**The fix:** Replaced `c in text` with regex `(?<![A-Za-z0-9]){escape(c)}(?!\d)`:
+  - `(?<![A-Za-z0-9])` left-side boundary: no alphanumeric before (prevents matches inside another token like XDEC-06)
+  - `(?!\d)` right-side boundary: no digit after (so DEC-06 doesn't match DEC-061)
+  - Letters/dash/colon/whitespace on right are allowed (matches DEC-006:, DEC-006., DEC-006 word, DEC-006a)
+
+Also fixed `n_doc_refs` to use the same word-boundary regex (was also substring-counting).
+
+**Impact on dashboard data (before -> after grep fix):**
+
+| Tier | Before fix | After fix | Notes |
+|---|---|---|---|
+| SPEC_ONLY | 308 | 322 | +14 (false-positive coded=True downgraded to coded=False) |
+| READY | 13 | 1 | -12 (most were false-positive coded+wired+tested) |
+| CODE_ONLY | 38 | 36 | -2 (false-positive promotions to higher tier) |
+| IMPLEMENTED | 45 | 45 | unchanged (status read literally from AUDIT_INDEX) |
+| DEFERRED, OPEN, BLOCKED, UNKNOWN | unchanged | unchanged | not affected by grep accuracy |
+
+| Kind | non-DEFERRED no-cells before | after | reduction |
+|---|---|---|---|
+| Decisions | 89 | 71 | -20% (false-positive coverage gone) |
+
+The 89 -> 71 reduction is HONEST refinement: the 18 decisions that previously appeared to have unit-test coverage actually didn't; the dashboard now correctly shows them with the gap.
+
+**Phase A invalidation:** the previously-listed 8 READY decisions (DEC-006/015/041/046/049/051/052/059) are NOT actually implemented. They were false-positive READY due to grep substring bug matching DEC-006 inside DEC-061, DEC-062, etc. Post-fix:
+  - 1 of 8 became actual READY (will verify before any promotion)
+  - 7 of 8 dropped to SPEC_ONLY (genuinely no code/test)
+
+Owner approval for Phase A was based on the false-positive data; re-surface with corrected state.
+
+**Per-addressal pyramid (CHECKLIST #78):** unit 142/142 + integration 13/13 = 155/155 PASS in 2.89s. Dashboard scripts change; no engine touched.
+
+**Same-commit (DEC-594):** scripts + AUDIT + dashboard rebuilt in this commit.
+
+**Phase 1A May 15 IMPACT:** None directly (dashboard accuracy fix; engine unchanged). INDIRECT impact: the dashboard now accurately reflects the implementation state. Several decisions that appeared "implemented" by grep were not; this affects planning accuracy.
+
+**Lessons (LEARNINGS.md candidate):**
+- Substring match for ID lookups is unsafe when IDs share prefixes (DEC-06 vs DEC-061). Word-boundary regex required.
+- Dashboard accuracy assertions need their own test coverage (e.g., a test_dashboard_grep_accuracy.py that exercises known IDs).
+
+Documents updated:
+  - scripts/build_dashboard_stage_2.py (id_status regex fix + n_doc_refs fix)
+  - AUDIT.md (this entry)
+  - dashboard_stage_2 (rebuilt; corrected state)
+
 **Remaining OPEN backlog after sweeps:**
   - 1 DEC RESOLVED-DECIDED-deferred (DEC-028 Stage 3 paper trading - intentional)
   - INVs: 33 OPEN + 2 DEFERRED (genuine work; not promotion-eligible)

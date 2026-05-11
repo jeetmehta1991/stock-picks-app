@@ -775,8 +775,22 @@ def id_status(id_str: str, corpora: dict) -> dict:
         if cand_overrides:
             overrides = cand_overrides
             break
+    # Owner directive 2026-05-10 (Phase 3 Batch 24): the previous `c in text`
+    # substring match was unsafe - "DEC-06" was a substring of "DEC-061" /
+    # "DEC-062" / ..., producing false-positive tested=True / coded=True
+    # flags for low-numbered IDs. The fix uses regex with:
+    #   (?<![A-Za-z0-9])  no alphanumeric on left (start-of-id boundary)
+    #   {escape}          the candidate literally
+    #   (?!\d)            no digit on right (so DEC-06 doesn't match DEC-061)
+    # Letters/dash on right ARE allowed so DEC-422 matches "DEC-422a" parent
+    # references and DEC-006: / DEC-006. / DEC-006 (whitespace) all match.
+    _patterns = [
+        _re.compile(r"(?<![A-Za-z0-9])" + _re.escape(c) + r"(?!\d)")
+        for c in id_candidates
+    ]
+
     def _any_in(text: str) -> bool:
-        return any(c in text for c in id_candidates)
+        return any(p.search(text) is not None for p in _patterns)
     # Compute coded/wired/tested first so pyramid logic can reference them.
     coded = _any_in(corpora["backtest_all"]) or _any_in(corpora["scripts"])
     wired = _any_in(corpora["prod"])
@@ -785,9 +799,9 @@ def id_status(id_str: str, corpora: dict) -> dict:
 
     pyramid: dict = {}
     for layer in TEST_PYRAMID_LAYERS:
-        # Detected coverage from grep (any form)
+        # Detected coverage from grep (regex, word-boundary-safe)
         layer_text = pyramid_layers.get(layer, "")
-        detected = any(c in layer_text for c in id_candidates)
+        detected = any(p.search(layer_text) is not None for p in _patterns)
         if detected:
             # Priority 1: coverage detected via grep - YES wins always
             pyramid[layer] = True
@@ -815,7 +829,8 @@ def id_status(id_str: str, corpora: dict) -> dict:
         "wired": wired,
         "tested": tested,
         "pushed": pushed,
-        "n_doc_refs": sum(corpora["docs"].count(c) for c in id_candidates),
+        # n_doc_refs uses the same word-boundary-safe regex (Batch 24 fix).
+        "n_doc_refs": sum(len(p.findall(corpora["docs"])) for p in _patterns),
         "pyramid": pyramid,
     }
 

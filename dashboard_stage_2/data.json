@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-11T02:32:20.280669+00:00",
+  "generated_at": "2026-05-11T02:42:52.143404+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -10,10 +10,10 @@
       "pass_resolved": "19",
       "status_grep": {
         "coded": true,
-        "wired": true,
+        "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 39,
+        "n_doc_refs": 0,
         "pyramid": {
           "unit": false,
           "smoke": "N/A",
@@ -49,13 +49,13 @@
       "pass_intro": "Pass 19",
       "pass_resolved": "19",
       "status_grep": {
-        "coded": true,
+        "coded": false,
         "wired": false,
-        "tested": true,
+        "tested": false,
         "pushed": true,
-        "n_doc_refs": 82,
+        "n_doc_refs": 2,
         "pyramid": {
-          "unit": false,
+          "unit": "N/A",
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -75,10 +75,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-PROMOTE",
-        "color": "#10b981",
-        "reason": "Code + test refs found; eligible for RESOLVED-IMPLEMENTED"
+        "tier": "SPEC_ONLY",
+        "label": "SPEC-ONLY",
+        "color": "#ef4444",
+        "reason": "RESOLVED-DECIDED but no code or test refs found"
       }
     },
     {
@@ -92,8 +92,8 @@
         "coded": false,
         "wired": false,
         "tested": false,
-        "pushed": true,
-        "n_doc_refs": 21,
+        "pushed": false,
+        "n_doc_refs": 0,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -129,13 +129,13 @@
       "pass_intro": "Pass 19",
       "pass_resolved": "19",
       "status_grep": {
-        "coded": true,
-        "wired": true,
-        "tested": true,
-        "pushed": true,
-        "n_doc_refs": 95,
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 0,
         "pyramid": {
-          "unit": true,
+          "unit": "N/A",
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -155,10 +155,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-PROMOTE",
-        "color": "#10b981",
-        "reason": "Wired in active path + tested; eligible for RESOLVED-IMPLEMENTED"
+        "tier": "SPEC_ONLY",
+        "label": "SPEC-ONLY",
+        "color": "#ef4444",
+        "reason": "RESOLVED-DECIDED but no code or test refs found"
       }
     },
     {
@@ -169,13 +169,13 @@
       "pass_intro": "Pass 19",
       "pass_resolved": "19",
       "status_grep": {
-        "coded": true,
+        "coded": false,
         "wired": false,
-        "tested": true,
-        "pushed": true,
-        "n_doc_refs": 54,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 0,
         "pyramid": {
-          "unit": false,
+          "unit": "N/A",
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -195,10 +195,10 @@
       "dependencies": "-",
       "description": "**Status:** RESOLVED (re-confirmed) **Decision:** ~130 strategies, fundamentals via OpenBB+Polygon as agent context **User Finding 1 follow-up:** \"need to ensure all the right context is passed to fundamental agent\" **Action:** Section A above provides complete Fundamental Agent ",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-PROMOTE",
-        "color": "#10b981",
-        "reason": "Code + test refs found; eligible for RESOLVED-IMPLEMENTED"
+        "tier": "SPEC_ONLY",
+        "label": "SPEC-ONLY",
+        "color": "#ef4444",
+        "reason": "RESOLVED-DECIDED but no code or test refs found"
       }
     },
     {
@@ -210,10 +210,10 @@
       "pass_resolved": "19",
       "status_grep": {
         "coded": true,
-        "wired": true,
-        "tested": true,
-        "pushed": true,
-        "n_doc_refs": 110,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 0,
         "pyramid": {
           "unit": false,
           "smoke": "N/A",
@@ -235,10 +235,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-PROMOTE",
-        "color": "#10b981",
-        "reason": "Wired in active path + tested; eligible for RESOLVED-IMPLEMENTED"
+        "tier": "CODE_ONLY",
+        "label": "NEEDS-TEST",
+        "color": "#f59e0b",
+        "reason": "Coded but no test reference; add test per DEC-594 same-commit"
       }
     },
     {
@@ -249,13 +249,13 @@
       "pass_intro": "Pass 19",
       "pass_resolved": "19",
       "status_grep": {
-        "coded": true,
-        "wired": true,
+        "coded": false,
+        "wired": false,
         "tested": false,
-        "pushed": true,
-        "n_doc_refs": 112,
+        "pushed": false,
+        "n_doc_refs": 0,
         "pyramid": {
-          "unit": false,
+          "unit": "N/A",
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -275,10 +275,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "CODE_ONLY",
-        "label": "NEEDS-TEST",
-        "color": "#f59e0b",
-        "reason": "Coded but no test reference; add test per DEC-594 same-commit"
+        "tier": "SPEC_ONLY",
+        "label": "SPEC-ONLY",
+        "color": "#ef4444",
+        "reason": "RESOLVED-DECIDED but no code or test refs found"
       }
     },
     {
@@ -289,13 +289,13 @@
       "pass_intro": "Pass 19",
       "pass_resolved": "24",
       "status_grep": {
-        "coded": true,
-        "wired": true,
+        "coded": false,
+        "wired": false,
         "tested": false,
-        "pushed": true,
-        "n_doc_refs": 139,
+        "pushed": false,
+        "n_doc_refs": 2,
         "pyramid": {
-          "unit": false,
+          "unit": "N/A",
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -329,13 +329,13 @@
       "pass_intro": "Pass 19",
       "pass_resolved": "24",
       "status_grep": {
-        "coded": true,
-        "wired": true,
+        "coded": false,
+        "wired": false,
         "tested": false,
-        "pushed": true,
-        "n_doc_refs": 146,
+        "pushed": false,
+        "n_doc_refs": 0,
         "pyramid": {
-          "unit": false,
+          "unit": "N/A",
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -369,13 +369,13 @@
       "pass_intro": "Pass 19",
       "pass_resolved": "24",
       "status_grep": {
-        "coded": true,
-        "wired": true,
+        "coded": false,
+        "wired": false,
         "tested": false,
-        "pushed": true,
-        "n_doc_refs": 207,
+        "pushed": false,
+        "n_doc_refs": 0,
         "pyramid": {
-          "unit": false,
+          "unit": "N/A",
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -409,13 +409,13 @@
       "pass_intro": "Pass 19",
       "pass_resolved": "24",
       "status_grep": {
-        "coded": true,
-        "wired": true,
+        "coded": false,
+        "wired": false,
         "tested": false,
-        "pushed": true,
-        "n_doc_refs": 85,
+        "pushed": false,
+        "n_doc_refs": 0,
         "pyramid": {
-          "unit": false,
+          "unit": "N/A",
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -449,13 +449,13 @@
       "pass_intro": "Pass 19",
       "pass_resolved": "24",
       "status_grep": {
-        "coded": true,
-        "wired": true,
+        "coded": false,
+        "wired": false,
         "tested": false,
-        "pushed": true,
-        "n_doc_refs": 46,
+        "pushed": false,
+        "n_doc_refs": 0,
         "pyramid": {
-          "unit": false,
+          "unit": "N/A",
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -493,7 +493,7 @@
         "wired": true,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 85,
+        "n_doc_refs": 8,
         "pyramid": {
           "unit": false,
           "smoke": "N/A",
@@ -529,13 +529,13 @@
       "pass_intro": "Pass 19",
       "pass_resolved": "-",
       "status_grep": {
-        "coded": true,
-        "wired": true,
-        "tested": true,
+        "coded": false,
+        "wired": false,
+        "tested": false,
         "pushed": true,
-        "n_doc_refs": 53,
+        "n_doc_refs": 8,
         "pyramid": {
-          "unit": false,
+          "unit": "N/A",
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -555,10 +555,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-PROMOTE",
-        "color": "#10b981",
-        "reason": "Wired in active path + tested; eligible for RESOLVED-IMPLEMENTED"
+        "tier": "SPEC_ONLY",
+        "label": "SPEC-ONLY",
+        "color": "#ef4444",
+        "reason": "RESOLVED-DECIDED but no code or test refs found"
       }
     },
     {
@@ -573,7 +573,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 55,
+        "n_doc_refs": 9,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -613,7 +613,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 77,
+        "n_doc_refs": 2,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -653,7 +653,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 111,
+        "n_doc_refs": 19,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -693,7 +693,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 28,
+        "n_doc_refs": 1,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -733,7 +733,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 45,
+        "n_doc_refs": 6,
         "pyramid": {
           "unit": false,
           "smoke": "N/A",
@@ -769,13 +769,13 @@
       "pass_intro": "Pass 19",
       "pass_resolved": "43",
       "status_grep": {
-        "coded": true,
-        "wired": true,
-        "tested": true,
+        "coded": false,
+        "wired": false,
+        "tested": false,
         "pushed": true,
-        "n_doc_refs": 119,
+        "n_doc_refs": 22,
         "pyramid": {
-          "unit": true,
+          "unit": "N/A",
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -929,13 +929,13 @@
       "pass_intro": "Pass 19",
       "pass_resolved": "43",
       "status_grep": {
-        "coded": true,
-        "wired": true,
-        "tested": true,
+        "coded": false,
+        "wired": false,
+        "tested": false,
         "pushed": true,
-        "n_doc_refs": 72,
+        "n_doc_refs": 2,
         "pyramid": {
-          "unit": true,
+          "unit": "N/A",
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -973,7 +973,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 61,
+        "n_doc_refs": 3,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -1009,13 +1009,13 @@
       "pass_intro": "Pass 19",
       "pass_resolved": "-",
       "status_grep": {
-        "coded": true,
-        "wired": true,
+        "coded": false,
+        "wired": false,
         "tested": false,
-        "pushed": true,
-        "n_doc_refs": 141,
+        "pushed": false,
+        "n_doc_refs": 2,
         "pyramid": {
-          "unit": false,
+          "unit": "N/A",
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -1049,13 +1049,13 @@
       "pass_intro": "Pass 19",
       "pass_resolved": "-",
       "status_grep": {
-        "coded": true,
-        "wired": true,
+        "coded": false,
+        "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 199,
+        "n_doc_refs": 10,
         "pyramid": {
-          "unit": false,
+          "unit": "N/A",
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -1089,13 +1089,13 @@
       "pass_intro": "Pass 19",
       "pass_resolved": "43",
       "status_grep": {
-        "coded": true,
-        "wired": true,
+        "coded": false,
+        "wired": false,
         "tested": false,
-        "pushed": true,
-        "n_doc_refs": 157,
+        "pushed": false,
+        "n_doc_refs": 1,
         "pyramid": {
-          "unit": false,
+          "unit": "N/A",
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -1115,10 +1115,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "CODE_ONLY",
-        "label": "NEEDS-TEST",
-        "color": "#f59e0b",
-        "reason": "Coded but no test reference; add test per DEC-594 same-commit"
+        "tier": "SPEC_ONLY",
+        "label": "SPEC-ONLY",
+        "color": "#ef4444",
+        "reason": "RESOLVED-DECIDED but no code or test refs found"
       }
     },
     {
@@ -1132,8 +1132,8 @@
         "coded": false,
         "wired": false,
         "tested": false,
-        "pushed": true,
-        "n_doc_refs": 130,
+        "pushed": false,
+        "n_doc_refs": 1,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -1169,13 +1169,13 @@
       "pass_intro": "Pass 20",
       "pass_resolved": "-",
       "status_grep": {
-        "coded": true,
+        "coded": false,
         "wired": false,
         "tested": false,
-        "pushed": true,
-        "n_doc_refs": 91,
+        "pushed": false,
+        "n_doc_refs": 0,
         "pyramid": {
-          "unit": false,
+          "unit": "N/A",
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -1195,10 +1195,10 @@
       "dependencies": "-",
       "description": "**Context:** Pass 20 recommends executing in 8 phases (A-H) with explicit iteration budgets.",
       "promotion_path": {
-        "tier": "CODE_ONLY",
-        "label": "NEEDS-TEST",
-        "color": "#f59e0b",
-        "reason": "Coded but no test reference; add test per DEC-594 same-commit"
+        "tier": "SPEC_ONLY",
+        "label": "SPEC-ONLY",
+        "color": "#ef4444",
+        "reason": "RESOLVED-DECIDED but no code or test refs found"
       }
     },
     {
@@ -1212,8 +1212,8 @@
         "coded": false,
         "wired": false,
         "tested": false,
-        "pushed": true,
-        "n_doc_refs": 80,
+        "pushed": false,
+        "n_doc_refs": 1,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -1253,7 +1253,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 89,
+        "n_doc_refs": 12,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -1289,13 +1289,13 @@
       "pass_intro": "Pass 23",
       "pass_resolved": "23",
       "status_grep": {
-        "coded": true,
-        "wired": true,
-        "tested": true,
-        "pushed": true,
-        "n_doc_refs": 191,
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 0,
         "pyramid": {
-          "unit": false,
+          "unit": "N/A",
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -1315,10 +1315,10 @@
       "dependencies": "-",
       "description": "**Status:** PROPOSED **Recommendation:** Option B (conservative compression)",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-PROMOTE",
-        "color": "#10b981",
-        "reason": "Wired in active path + tested; eligible for RESOLVED-IMPLEMENTED"
+        "tier": "SPEC_ONLY",
+        "label": "SPEC-ONLY",
+        "color": "#ef4444",
+        "reason": "RESOLVED-DECIDED but no code or test refs found"
       }
     },
     {
@@ -1332,8 +1332,8 @@
         "coded": false,
         "wired": false,
         "tested": false,
-        "pushed": true,
-        "n_doc_refs": 119,
+        "pushed": false,
+        "n_doc_refs": 0,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -1373,7 +1373,7 @@
         "wired": true,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 328,
+        "n_doc_refs": 31,
         "pyramid": {
           "unit": false,
           "smoke": "N/A",
@@ -1409,13 +1409,13 @@
       "pass_intro": "Pass 27",
       "pass_resolved": "27",
       "status_grep": {
-        "coded": true,
-        "wired": true,
-        "tested": true,
-        "pushed": true,
-        "n_doc_refs": 148,
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 0,
         "pyramid": {
-          "unit": false,
+          "unit": "N/A",
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -1435,10 +1435,10 @@
       "dependencies": "-",
       "description": "**Status:** PROPOSED **Reason:** Daily OHLCV cannot produce real CVD. \"Approximation\" would mislead agents.",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-PROMOTE",
-        "color": "#10b981",
-        "reason": "Wired in active path + tested; eligible for RESOLVED-IMPLEMENTED"
+        "tier": "SPEC_ONLY",
+        "label": "SPEC-ONLY",
+        "color": "#ef4444",
+        "reason": "RESOLVED-DECIDED but no code or test refs found"
       }
     },
     {
@@ -1449,13 +1449,13 @@
       "pass_intro": "Pass 28",
       "pass_resolved": "33",
       "status_grep": {
-        "coded": true,
-        "wired": true,
-        "tested": true,
-        "pushed": true,
-        "n_doc_refs": 134,
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 0,
         "pyramid": {
-          "unit": true,
+          "unit": "N/A",
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -1475,10 +1475,10 @@
       "dependencies": "-",
       "description": "**Status:** Approved by user (verifying free) **Cost confirmed:** $0 (Apache 2.0) **Cheaper alternative:** Build basic Sharpe/drawdown ourselves (~3-5 days work). Not recommended given $0 license cost.",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-PROMOTE",
-        "color": "#10b981",
-        "reason": "Wired in active path + tested; eligible for RESOLVED-IMPLEMENTED"
+        "tier": "SPEC_ONLY",
+        "label": "SPEC-ONLY",
+        "color": "#ef4444",
+        "reason": "RESOLVED-DECIDED but no code or test refs found"
       }
     },
     {
@@ -1489,13 +1489,13 @@
       "pass_intro": "Pass 28",
       "pass_resolved": "33",
       "status_grep": {
-        "coded": true,
-        "wired": true,
-        "tested": true,
+        "coded": false,
+        "wired": false,
+        "tested": false,
         "pushed": true,
-        "n_doc_refs": 187,
+        "n_doc_refs": 1,
         "pyramid": {
-          "unit": false,
+          "unit": "N/A",
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -1529,13 +1529,13 @@
       "pass_intro": "Pass 28",
       "pass_resolved": "33",
       "status_grep": {
-        "coded": true,
-        "wired": true,
-        "tested": true,
+        "coded": false,
+        "wired": false,
+        "tested": false,
         "pushed": true,
-        "n_doc_refs": 235,
+        "n_doc_refs": 3,
         "pyramid": {
-          "unit": false,
+          "unit": "N/A",
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -1555,10 +1555,10 @@
       "dependencies": "-",
       "description": "**Status:** Approved by user (verifying free) **Cost confirmed:** $0 library. Broker fees unavoidable regardless of library. **Cheaper alternative for Stage 3 paper:** Alpaca paper trading API (free, simpler). But requires building 2 integrations. Recommend single IBKR integratio",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-PROMOTE",
-        "color": "#10b981",
-        "reason": "Wired in active path + tested; eligible for RESOLVED-IMPLEMENTED"
+        "tier": "SPEC_ONLY",
+        "label": "SPEC-ONLY",
+        "color": "#ef4444",
+        "reason": "RESOLVED-DECIDED but no code or test refs found"
       }
     },
     {
@@ -1569,25 +1569,25 @@
       "pass_intro": "Pass 28",
       "pass_resolved": "29",
       "status_grep": {
-        "coded": true,
-        "wired": true,
-        "tested": true,
+        "coded": false,
+        "wired": false,
+        "tested": false,
         "pushed": true,
-        "n_doc_refs": 290,
+        "n_doc_refs": 5,
         "pyramid": {
-          "unit": true,
-          "smoke": true,
-          "integration": true,
+          "unit": "N/A",
+          "smoke": "N/A",
+          "integration": "N/A",
           "system": "N/A",
           "functional": "N/A",
-          "regression": true,
+          "regression": "N/A",
           "data_integrity": "N/A",
-          "performance": true,
-          "acceptance": true,
-          "property": true,
-          "snapshot": true,
-          "contract": true,
-          "compatibility": true
+          "performance": "N/A",
+          "acceptance": "N/A",
+          "property": "N/A",
+          "snapshot": "N/A",
+          "contract": "N/A",
+          "compatibility": "N/A"
         }
       },
       "short_id": "DEC-050",
@@ -1609,14 +1609,14 @@
       "pass_intro": "Pass 28",
       "pass_resolved": "33",
       "status_grep": {
-        "coded": true,
-        "wired": true,
-        "tested": true,
+        "coded": false,
+        "wired": false,
+        "tested": false,
         "pushed": true,
-        "n_doc_refs": 219,
+        "n_doc_refs": 13,
         "pyramid": {
-          "unit": false,
-          "smoke": true,
+          "unit": "N/A",
+          "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
           "functional": "N/A",
@@ -1635,10 +1635,10 @@
       "dependencies": "-",
       "description": "**Status:** PROPOSED (revised from Pass 28) **Cost:** $0 (Apache 2.0) **Approach:** Pattern 2 \u2014 use their orchestration with our specific agent classes **Net effect:** +1 week Phase 0.C time, -3-4 weeks custom orchestration time = net 2-3 weeks saved",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-PROMOTE",
-        "color": "#10b981",
-        "reason": "Wired in active path + tested; eligible for RESOLVED-IMPLEMENTED"
+        "tier": "SPEC_ONLY",
+        "label": "SPEC-ONLY",
+        "color": "#ef4444",
+        "reason": "RESOLVED-DECIDED but no code or test refs found"
       }
     },
     {
@@ -1649,13 +1649,13 @@
       "pass_intro": "Pass 28",
       "pass_resolved": "28",
       "status_grep": {
-        "coded": true,
-        "wired": true,
-        "tested": true,
-        "pushed": true,
-        "n_doc_refs": 24,
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 2,
         "pyramid": {
-          "unit": false,
+          "unit": "N/A",
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -1675,10 +1675,10 @@
       "dependencies": "-",
       "description": "**Status:** PROPOSED **Recommendation:** Approve. Free, accurate, regularly updated. Saves manual maintenance.",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-PROMOTE",
-        "color": "#10b981",
-        "reason": "Wired in active path + tested; eligible for RESOLVED-IMPLEMENTED"
+        "tier": "SPEC_ONLY",
+        "label": "SPEC-ONLY",
+        "color": "#ef4444",
+        "reason": "RESOLVED-DECIDED but no code or test refs found"
       }
     },
     {
@@ -1692,8 +1692,8 @@
         "coded": false,
         "wired": false,
         "tested": false,
-        "pushed": true,
-        "n_doc_refs": 24,
+        "pushed": false,
+        "n_doc_refs": 0,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -1729,13 +1729,13 @@
       "pass_intro": "Pass 29",
       "pass_resolved": "33",
       "status_grep": {
-        "coded": true,
-        "wired": true,
+        "coded": false,
+        "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 40,
+        "n_doc_refs": 6,
         "pyramid": {
-          "unit": false,
+          "unit": "N/A",
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -1755,10 +1755,10 @@
       "dependencies": "-",
       "description": "**Context:** IBKR vs Alpaca for paper trading specifically **Status:** PROPOSED",
       "promotion_path": {
-        "tier": "CODE_ONLY",
-        "label": "NEEDS-TEST",
-        "color": "#f59e0b",
-        "reason": "Coded but no test reference; add test per DEC-594 same-commit"
+        "tier": "SPEC_ONLY",
+        "label": "SPEC-ONLY",
+        "color": "#ef4444",
+        "reason": "RESOLVED-DECIDED but no code or test refs found"
       }
     },
     {
@@ -1772,8 +1772,8 @@
         "coded": false,
         "wired": false,
         "tested": false,
-        "pushed": true,
-        "n_doc_refs": 20,
+        "pushed": false,
+        "n_doc_refs": 1,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -1812,8 +1812,8 @@
         "coded": false,
         "wired": false,
         "tested": false,
-        "pushed": true,
-        "n_doc_refs": 19,
+        "pushed": false,
+        "n_doc_refs": 0,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -1850,13 +1850,13 @@
       "pass_resolved": "33",
       "status_grep": {
         "coded": true,
-        "wired": true,
+        "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 49,
+        "n_doc_refs": 20,
         "pyramid": {
           "unit": false,
-          "smoke": true,
+          "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
           "functional": "N/A",
@@ -1889,13 +1889,13 @@
       "pass_intro": "Pass 32",
       "pass_resolved": "33",
       "status_grep": {
-        "coded": true,
-        "wired": true,
+        "coded": false,
+        "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 76,
+        "n_doc_refs": 6,
         "pyramid": {
-          "unit": false,
+          "unit": "N/A",
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -1915,10 +1915,10 @@
       "dependencies": "-",
       "description": "**Status:** PROPOSED **Recommendation:** Approve.",
       "promotion_path": {
-        "tier": "CODE_ONLY",
-        "label": "NEEDS-TEST",
-        "color": "#f59e0b",
-        "reason": "Coded but no test reference; add test per DEC-594 same-commit"
+        "tier": "SPEC_ONLY",
+        "label": "SPEC-ONLY",
+        "color": "#ef4444",
+        "reason": "RESOLVED-DECIDED but no code or test refs found"
       }
     },
     {
@@ -1929,14 +1929,14 @@
       "pass_intro": "Pass 32",
       "pass_resolved": "33",
       "status_grep": {
-        "coded": true,
-        "wired": true,
-        "tested": true,
-        "pushed": true,
-        "n_doc_refs": 593,
+        "coded": false,
+        "wired": false,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 1,
         "pyramid": {
-          "unit": false,
-          "smoke": true,
+          "unit": "N/A",
+          "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
           "functional": "N/A",
@@ -1955,10 +1955,10 @@
       "dependencies": "-",
       "description": "**Status:** PROPOSED **Recommendation:** Approve $300 hard cap on Phase 1B-\u03b1 agent backtest.",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-PROMOTE",
-        "color": "#10b981",
-        "reason": "Wired in active path + tested; eligible for RESOLVED-IMPLEMENTED"
+        "tier": "SPEC_ONLY",
+        "label": "SPEC-ONLY",
+        "color": "#ef4444",
+        "reason": "RESOLVED-DECIDED but no code or test refs found"
       }
     },
     {
@@ -1969,13 +1969,13 @@
       "pass_intro": "Pass 35",
       "pass_resolved": "36",
       "status_grep": {
-        "coded": true,
+        "coded": false,
         "wired": false,
-        "tested": true,
-        "pushed": true,
-        "n_doc_refs": 45,
+        "tested": false,
+        "pushed": false,
+        "n_doc_refs": 1,
         "pyramid": {
-          "unit": false,
+          "unit": "N/A",
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -2009,13 +2009,13 @@
       "pass_intro": "Pass 38",
       "pass_resolved": "38",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
         "tested": false,
-        "pushed": true,
-        "n_doc_refs": 5,
+        "pushed": false,
+        "n_doc_refs": 0,
         "pyramid": {
-          "unit": "N/A",
+          "unit": false,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -2035,10 +2035,10 @@
       "dependencies": "-",
       "description": "Per owner approval (\"Approve all\"): tier system mapping = **Option 1**.",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "CODE_ONLY",
+        "label": "NEEDS-TEST",
+        "color": "#f59e0b",
+        "reason": "Coded but no test reference; add test per DEC-594 same-commit"
       }
     },
     {
@@ -2049,13 +2049,13 @@
       "pass_intro": "Pass 38",
       "pass_resolved": "-",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
         "tested": false,
         "pushed": true,
         "n_doc_refs": 2,
         "pyramid": {
-          "unit": "N/A",
+          "unit": false,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -2075,10 +2075,10 @@
       "dependencies": "-",
       "description": "**Status:** PROPOSED.",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "CODE_ONLY",
+        "label": "NEEDS-TEST",
+        "color": "#f59e0b",
+        "reason": "Coded but no test reference; add test per DEC-594 same-commit"
       }
     },
     {
@@ -19733,7 +19733,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 457,
+        "n_doc_refs": 458,
         "pyramid": {
           "unit": false,
           "smoke": "N/A",
@@ -20055,7 +20055,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 71,
+        "n_doc_refs": 41,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -20093,10 +20093,10 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 68,
+        "n_doc_refs": 31,
         "pyramid": {
           "unit": true,
-          "smoke": true,
+          "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
           "functional": "N/A",
@@ -20131,7 +20131,7 @@
         "wired": true,
         "tested": true,
         "pushed": false,
-        "n_doc_refs": 40,
+        "n_doc_refs": 15,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -20169,7 +20169,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 52,
+        "n_doc_refs": 30,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -20207,7 +20207,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 81,
+        "n_doc_refs": 44,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -20245,7 +20245,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 42,
+        "n_doc_refs": 21,
         "pyramid": {
           "unit": true,
           "smoke": true,
@@ -20283,10 +20283,10 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 66,
+        "n_doc_refs": 22,
         "pyramid": {
           "unit": "N/A",
-          "smoke": true,
+          "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
           "functional": "N/A",
@@ -20321,10 +20321,10 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 46,
+        "n_doc_refs": 22,
         "pyramid": {
           "unit": true,
-          "smoke": true,
+          "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
           "functional": "N/A",
@@ -20358,11 +20358,11 @@
         "coded": true,
         "wired": true,
         "tested": true,
-        "pushed": true,
-        "n_doc_refs": 96,
+        "pushed": false,
+        "n_doc_refs": 18,
         "pyramid": {
           "unit": true,
-          "smoke": true,
+          "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
           "functional": "N/A",
@@ -20396,8 +20396,8 @@
         "coded": true,
         "wired": false,
         "tested": true,
-        "pushed": true,
-        "n_doc_refs": 191,
+        "pushed": false,
+        "n_doc_refs": 38,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -20434,11 +20434,11 @@
         "coded": true,
         "wired": true,
         "tested": true,
-        "pushed": true,
-        "n_doc_refs": 162,
+        "pushed": false,
+        "n_doc_refs": 12,
         "pyramid": {
           "unit": true,
-          "smoke": true,
+          "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
           "functional": "N/A",
@@ -20472,8 +20472,8 @@
         "coded": true,
         "wired": true,
         "tested": true,
-        "pushed": true,
-        "n_doc_refs": 45,
+        "pushed": false,
+        "n_doc_refs": 14,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -20510,8 +20510,8 @@
         "coded": true,
         "wired": true,
         "tested": true,
-        "pushed": true,
-        "n_doc_refs": 66,
+        "pushed": false,
+        "n_doc_refs": 16,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -20549,7 +20549,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 101,
+        "n_doc_refs": 12,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -20587,7 +20587,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 52,
+        "n_doc_refs": 11,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -20625,7 +20625,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 25,
+        "n_doc_refs": 14,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -20663,7 +20663,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 184,
+        "n_doc_refs": 14,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -20700,8 +20700,8 @@
         "coded": true,
         "wired": true,
         "tested": true,
-        "pushed": true,
-        "n_doc_refs": 51,
+        "pushed": false,
+        "n_doc_refs": 13,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -22754,13 +22754,13 @@
       "severity": "UNKNOWN",
       "summary": "5-tkr \u00d7 4y (2020-2024) smoke produced 77 closed trades,",
       "status_grep": {
-        "coded": true,
-        "wired": true,
-        "tested": true,
+        "coded": false,
+        "wired": false,
+        "tested": false,
         "pushed": true,
-        "n_doc_refs": 23,
+        "n_doc_refs": 7,
         "pyramid": {
-          "unit": false,
+          "unit": "N/A",
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -22778,10 +22778,10 @@
       "dependencies": "-",
       "description": "5-tkr \u00d7 4y (2020-2024) smoke produced 77 closed trades,",
       "promotion_path": {
-        "tier": "IMPLEMENTED",
-        "label": "IMPLEMENTED",
+        "tier": "READY",
+        "label": "RESOLVED-DOCUMENTED",
         "color": "#10b981",
-        "reason": "Resolved with code/test artifact"
+        "reason": "Resolved as documented (no code change required)"
       }
     },
     {
@@ -22791,13 +22791,13 @@
       "severity": "UNKNOWN",
       "summary": "`data_prefetch/polygon/legacy_archive_pass53/dividends/` and `splits/` each contain only",
       "status_grep": {
-        "coded": true,
+        "coded": false,
         "wired": false,
-        "tested": true,
+        "tested": false,
         "pushed": true,
-        "n_doc_refs": 10,
+        "n_doc_refs": 1,
         "pyramid": {
-          "unit": false,
+          "unit": "N/A",
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -22808,17 +22808,17 @@
           "acceptance": "N/A",
           "property": "N/A",
           "snapshot": "N/A",
-          "contract": true,
+          "contract": "N/A",
           "compatibility": "N/A"
         }
       },
       "dependencies": "-",
       "description": "`data_prefetch/polygon/legacy_archive_pass53/dividends/` and `splits/` each contain only",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
-        "color": "#10b981",
-        "reason": "Has code+test; eligible for RESOLVED"
+        "tier": "OPEN",
+        "label": "OPEN",
+        "color": "#ef4444",
+        "reason": "Investigation open; needs diagnosis + fix"
       }
     },
     {
@@ -22828,13 +22828,13 @@
       "severity": "UNKNOWN",
       "summary": "`data_prefetch/quiver/{congressional, gov_contracts, insider, institutional, lobbying, wallstreetbets, wikipedia}/` each have",
       "status_grep": {
-        "coded": true,
+        "coded": false,
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 9,
+        "n_doc_refs": 1,
         "pyramid": {
-          "unit": false,
+          "unit": "N/A",
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -22852,10 +22852,10 @@
       "dependencies": "-",
       "description": "`data_prefetch/quiver/{congressional, gov_contracts, insider, institutional, lobbying, wallstreetbets, wikipedia}/` each have",
       "promotion_path": {
-        "tier": "CODE_ONLY",
-        "label": "NEEDS-TEST",
-        "color": "#f59e0b",
-        "reason": "Code touches; needs test"
+        "tier": "OPEN",
+        "label": "OPEN",
+        "color": "#ef4444",
+        "reason": "Investigation open; needs diagnosis + fix"
       }
     },
     {
@@ -22865,18 +22865,18 @@
       "severity": "UNKNOWN",
       "summary": "Only 599 ticker reference files in `legacy_archive_pass53/reference/`. Used by `fetcher.fetch_info()` for sector/cap/IPO/exchange. After the G4 path fix (Day-9 v8b), ~30% of universe gets real data; ~",
       "status_grep": {
-        "coded": true,
+        "coded": false,
         "wired": false,
-        "tested": true,
+        "tested": false,
         "pushed": true,
-        "n_doc_refs": 52,
+        "n_doc_refs": 1,
         "pyramid": {
-          "unit": false,
-          "smoke": true,
+          "unit": "N/A",
+          "smoke": "N/A",
           "integration": "N/A",
-          "system": true,
+          "system": "N/A",
           "functional": "N/A",
-          "regression": true,
+          "regression": "N/A",
           "data_integrity": "N/A",
           "performance": "N/A",
           "acceptance": "N/A",
@@ -22889,10 +22889,10 @@
       "dependencies": "-",
       "description": "Only 599 ticker reference files in `legacy_archive_pass53/reference/`. Used by `fetcher.fetch_info()` for sector/cap/IPO/exchange. After the G4 path fix (Day-9 v8b), ~30% of universe gets real data; ~",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY-TO-CLOSE",
-        "color": "#10b981",
-        "reason": "Has code+test; eligible for RESOLVED"
+        "tier": "OPEN",
+        "label": "OPEN",
+        "color": "#ef4444",
+        "reason": "Investigation open; needs diagnosis + fix"
       }
     },
     {
@@ -24535,7 +24535,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 7,
+        "n_doc_refs": 2,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -24565,7 +24565,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 20,
+        "n_doc_refs": 1,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -24595,7 +24595,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 14,
+        "n_doc_refs": 1,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -24625,7 +24625,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 39,
+        "n_doc_refs": 2,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -24654,8 +24654,8 @@
         "coded": false,
         "wired": false,
         "tested": false,
-        "pushed": true,
-        "n_doc_refs": 28,
+        "pushed": false,
+        "n_doc_refs": 1,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -24684,8 +24684,8 @@
         "coded": false,
         "wired": false,
         "tested": false,
-        "pushed": true,
-        "n_doc_refs": 41,
+        "pushed": false,
+        "n_doc_refs": 0,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -24711,13 +24711,13 @@
       "status": "ACTIVE",
       "impact": "Per-regime verdicts at the 75-trade fallback have wider confidence intervals than industry-standard. Should be re-calibrated with empirical signal-frequency measurement at Phase 0.D entry.",
       "status_grep": {
-        "coded": true,
+        "coded": false,
         "wired": false,
         "tested": false,
-        "pushed": true,
-        "n_doc_refs": 33,
+        "pushed": false,
+        "n_doc_refs": 0,
         "pyramid": {
-          "unit": false,
+          "unit": "N/A",
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -27398,46 +27398,52 @@
   ],
   "recent_commits": [
     {
+      "sha": "b845fd62",
+      "subject": "Pass 53 v8h+1: Phase 3 Batch 23 - Pyramid N/A defaults scaled to ALL ID kinds (owner directive)",
+      "author": "jeetmehta1991",
+      "rel_time": "9 minutes ago"
+    },
+    {
       "sha": "fa2c140c",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 22 - Decisions dashboard cleanup (owner directive)",
       "author": "jeetmehta1991",
-      "rel_time": "7 minutes ago"
+      "rel_time": "18 minutes ago"
     },
     {
       "sha": "432b146b",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 21 - BUG-006 dashboard protocol-violation fix (owner-flagged)",
       "author": "jeetmehta1991",
-      "rel_time": "17 minutes ago"
+      "rel_time": "28 minutes ago"
     },
     {
       "sha": "6a3b572e",
       "subject": "Pass 53 v8h+1: BUG-95 CRITICAL Portfolio class RESOLVED-IMPLEMENTED (Sub-batch 5/5 - FINAL)",
       "author": "jeetmehta1991",
-      "rel_time": "30 minutes ago"
+      "rel_time": "40 minutes ago"
     },
     {
       "sha": "2b56e6e9",
       "subject": "Pass 53 v8h+1: BUG-95 LIVE_TRADING_RULES enforcement via can_open gate (Sub-batch 4/5)",
       "author": "jeetmehta1991",
-      "rel_time": "48 minutes ago"
+      "rel_time": "59 minutes ago"
     },
     {
       "sha": "2fe9c3d4",
       "subject": "Pass 53 v8h+1: BUG-95 Portfolio metrics from equity_curve (Sub-batch 3/5)",
       "author": "jeetmehta1991",
-      "rel_time": "53 minutes ago"
+      "rel_time": "64 minutes ago"
     },
     {
       "sha": "ead36b0b",
       "subject": "Pass 53 v8h+1: BUG-95 Portfolio engine integration (Sub-batch 2/5 - shadow state)",
       "author": "jeetmehta1991",
-      "rel_time": "58 minutes ago"
+      "rel_time": "69 minutes ago"
     },
     {
       "sha": "93e4036a",
       "subject": "Pass 53 v8h+1: BUG-95 CRITICAL Portfolio class skeleton (Sub-batch 1/5 - owner-approved Option A)",
       "author": "jeetmehta1991",
-      "rel_time": "66 minutes ago"
+      "rel_time": "76 minutes ago"
     },
     {
       "sha": "b04abeb7",
@@ -27449,7 +27455,7 @@
       "sha": "5e68ae6c",
       "subject": "Pass 53 v8h+1: BUG-77 MEDIUM candidate ranking inflated by avoid entries FIXED (owner-approved Option A)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "98ec8f35",
@@ -27551,13 +27557,13 @@
       "sha": "1f87aa53",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 3 - BUG-17/25 OBSOLETE + BUG-18/28/30 IMPLEMENTED (Wilder RSI fix)",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "694a11fa",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 2 - BUG-01/06/10/12 IMPLEMENTED + BUG-14 OBSOLETE",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "3bb2f559",
@@ -27570,33 +27576,15 @@
       "subject": "Pass 53 v8h+1: Phase 2 BUG cross-references + id-form normalization (6 BUGs READY -> IMPLEMENTED)",
       "author": "jeetmehta1991",
       "rel_time": "5 hours ago"
-    },
-    {
-      "sha": "97c69b3d",
-      "subject": "Pass 53 v8h+1: Phase 1 BUG categorization (10 SUPERSEDED/DEFERRED) + dashboard hide-moot-bugs filter",
-      "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 4,
-    "modified": 4,
+    "count": 1,
+    "modified": 1,
     "added": 0,
     "untracked": 0,
     "deleted": 0,
     "files": [
-      {
-        "status": "M",
-        "path": "dashboard_stage_2/data.js"
-      },
-      {
-        "status": "M",
-        "path": "dashboard_stage_2/data.json"
-      },
-      {
-        "status": "M",
-        "path": "dashboard_stage_2/last_run.txt"
-      },
       {
         "status": "M",
         "path": "scripts/build_dashboard_stage_2.py"
