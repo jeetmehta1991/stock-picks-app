@@ -2680,6 +2680,89 @@ def test_dec_404_cost_sensitivity_sharpe_at_4_levels():
         f"Sharpe should decrease with cost: {out}")
 
 
+def test_dec_084_audit_threshold_lowered_to_65pct():
+    """DEC-084 (Phase 3 Batch 39): audit_win_rate_above lowered from 0.75 to 0.65."""
+    from backtest.config import PASSING_CRITERIA
+    assert PASSING_CRITERIA["audit_win_rate_above"] == 0.65, (
+        f"audit_win_rate_above should be 0.65 per DEC-084, got "
+        f"{PASSING_CRITERIA['audit_win_rate_above']}")
+
+
+def test_dec_083_dec_406_tiered_min_trades_in_config():
+    """DEC-083 + DEC-406 (Phase 3 Batch 39): TIERED_MIN_TRADES dict in config
+    with category-specific thresholds (daily/intraday/pivot/swing/earnings_event/
+    calendar/default).
+    """
+    from backtest.config import TIERED_MIN_TRADES
+    assert isinstance(TIERED_MIN_TRADES, dict)
+    for key in ("daily", "intraday", "pivot", "swing", "earnings_event", "calendar", "default"):
+        assert key in TIERED_MIN_TRADES, f"missing tier: {key}"
+    # Earnings-event sparser than daily
+    assert TIERED_MIN_TRADES["earnings_event"] < TIERED_MIN_TRADES["daily"], (
+        "earnings_event min_trades should be lower than daily (events ~4x/year)")
+
+
+def test_dec_402_sharpe_daily_basic():
+    """DEC-402 (Sharpe canonicalization Phase A): sharpe_daily computes
+    distinct from per-trade sharpe via daily-distributed pnl + sqrt(252) annualization.
+    """
+    import pandas as pd
+    from datetime import date, timedelta
+    from backtest.results.metrics import _sharpe_daily
+
+    n = 30
+    pnl = pd.Series([1.0, -0.5, 1.2, 0.8, -0.3] * 6)
+    entry = pd.Series([date(2024, 1, 1) + timedelta(days=i*3) for i in range(n)])
+    exit_ = pd.Series([date(2024, 1, 1) + timedelta(days=i*3 + 5) for i in range(n)])
+    sd = _sharpe_daily(pnl, entry, exit_)
+    assert isinstance(sd, float)
+    assert -10 < sd < 999, f"daily Sharpe should be a finite reasonable value, got {sd}"
+
+
+def test_dec_402_sharpe_daily_zero_on_empty():
+    """DEC-402: empty pnl returns 0.0."""
+    import pandas as pd
+    from backtest.results.metrics import _sharpe_daily
+    empty = pd.Series([], dtype=float)
+    assert _sharpe_daily(empty, empty, empty) == 0.0
+
+
+def test_dec_083_dec_402_wired_into_compute_strategy_metrics():
+    """DEC-083 + DEC-402: tiered_min_trades + sharpe_daily fields appear in output."""
+    import pandas as pd
+    from datetime import date, timedelta
+    from backtest.results.metrics import compute_strategy_metrics
+
+    n = 50
+    rows = []
+    for i in range(n):
+        rows.append({
+            "strategy": "test_strat",
+            "ticker": f"T{i % 10}",
+            "win": i % 3 != 0,
+            "pnl_pct": 1.5 if i % 3 != 0 else -1.0,
+            "hold_days": 10,
+            "entry_date": date(2024, 1, 1) + timedelta(days=i),
+            "exit_date": date(2024, 1, 1) + timedelta(days=i + 10),
+            "regime": "bull_neutral",
+            "category": "momentum",  # maps to "daily" tier
+            "sector": "Information Technology",
+            "direction": "long",
+            "smart_money_score": 0,
+            "macro_score": 0,
+        })
+    df = pd.DataFrame(rows)
+    m = compute_strategy_metrics(df, "test_strat")
+    assert "sharpe_daily" in m, "DEC-402 sharpe_daily missing from output"
+    assert "tiered_min_trades" in m, "DEC-083 tiered_min_trades missing from output"
+    assert "meets_tiered_min" in m, "DEC-083 meets_tiered_min missing from output"
+    # 'momentum' category -> 'daily' tier -> 300 min_trades
+    assert m["tiered_min_trades"] == 300, (
+        f"momentum should map to daily tier (300), got {m['tiered_min_trades']}")
+    # 50 < 300 -> meets_tiered_min False
+    assert m["meets_tiered_min"] is False
+
+
 def test_dec_403_dec_110_dec_413_dec_404_wired_into_compute_strategy_metrics():
     """DEC-403/DEC-110/DEC-413/DEC-404: new metrics surface in compute_strategy_metrics output.
 

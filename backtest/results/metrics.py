@@ -104,6 +104,61 @@ def _sharpe(pnl_series: pd.Series, hold_days_series: pd.Series = None) -> float:
     return round(float(pnl_series.mean() / pnl_series.std() * np.sqrt(trades_per_year)), 3)
 
 
+def _sharpe_daily(pnl_series: pd.Series, entry_date_series: pd.Series,
+                  exit_date_series: pd.Series) -> float:
+    """Daily-returns-based Sharpe ratio (DEC-081 Phase A canonicalization).
+
+    DEC-402 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 39 2026-05-11
+    (owner-approved Path C). Distinct from _sharpe (per-trade form).
+
+    Methodology: distribute each trade's pnl evenly across its hold-day
+    range, sum per-day pnl across overlapping trades, compute daily-return
+    series, then annualize Sharpe via sqrt(252).
+
+    Note: this is a simplified daily-Sharpe approximation; full daily-mark-to-
+    market Sharpe would require per-day price data (handled by Portfolio
+    class equity_curve in BUG-95 + the compute_portfolio_metrics_from_curves
+    output - this helper is a strategy-level proxy).
+
+    Inputs:
+      pnl_series: per-trade pnl_pct
+      entry_date_series: per-trade entry_date
+      exit_date_series: per-trade exit_date
+
+    Returns: round to 3 decimals. 0.0 on insufficient data.
+    """
+    if pnl_series.empty or len(pnl_series) < 2:
+        return 0.0
+    try:
+        # Build daily aggregation
+        entry_dates = pd.to_datetime(entry_date_series)
+        exit_dates = pd.to_datetime(exit_date_series)
+        if entry_dates.isna().any() or exit_dates.isna().any():
+            return 0.0
+        # For each trade, distribute pnl evenly across hold days
+        daily_pnl = {}
+        for i in range(len(pnl_series)):
+            ed = entry_dates.iloc[i]
+            xd = exit_dates.iloc[i]
+            p = float(pnl_series.iloc[i])
+            n_days = max(1, (xd - ed).days + 1)
+            per_day = p / n_days
+            for offset in range(n_days):
+                d = ed + pd.Timedelta(days=offset)
+                daily_pnl[d] = daily_pnl.get(d, 0.0) + per_day
+        if len(daily_pnl) < 2:
+            return 0.0
+        daily_returns = pd.Series(list(daily_pnl.values()))
+        if daily_returns.std(ddof=1) == 0:
+            return 0.0
+        sharpe = float(daily_returns.mean() / daily_returns.std(ddof=1) * np.sqrt(252))
+        if np.isnan(sharpe) or np.isinf(sharpe):
+            return 0.0
+        return round(min(sharpe, 999.0), 3)
+    except Exception:
+        return 0.0
+
+
 def _sortino_ratio(pnl_series: pd.Series, hold_days_series: pd.Series = None) -> float:
     """Sortino ratio: like Sharpe but uses downside deviation only.
 
@@ -268,6 +323,13 @@ def compute_strategy_metrics(df: pd.DataFrame, strategy: str) -> dict:
     # methodology). Sortino (downside-deviation-only), Deflated Sharpe (PSR
     # per Bailey 2014), and cost-sensitivity Sharpe at 0/5/10/20 bps.
     sortino = _sortino_ratio(pnl, hold_s)
+    # DEC-081 Phase A / DEC-402 Sharpe canonicalization: daily-Sharpe alongside
+    # per-trade Sharpe. Sharpe (above) uses per-trade form; sharpe_daily uses
+    # daily-distributed pnl annualized via sqrt(252).
+    if "entry_date" in g.columns and "exit_date" in g.columns:
+        sharpe_daily = _sharpe_daily(pnl, g["entry_date"], g["exit_date"])
+    else:
+        sharpe_daily = None
     try:
         skew_val = float(pnl.skew()) if len(pnl) >= 3 else 0.0
         kurt_val = float(pnl.kurt()) if len(pnl) >= 4 else 3.0
@@ -275,6 +337,27 @@ def compute_strategy_metrics(df: pd.DataFrame, strategy: str) -> dict:
         skew_val, kurt_val = 0.0, 3.0
     psr_dict = _deflated_sharpe(sharpe, n, skew_val, kurt_val)
     cost_sensitivity = _cost_sensitivity_sharpe(pnl, hold_s)
+
+    # DEC-083 + DEC-406 tiered min-trades enforcement. Map strategy category
+    # to tiered threshold; passes_all uses the tiered threshold instead of
+    # generic pc["min_trades"].
+    from backtest.config import TIERED_MIN_TRADES
+    category = g["category"].iloc[0] if "category" in g.columns and not g["category"].empty else ""
+    cat_lower = category.lower()
+    if "intraday" in cat_lower:
+        tiered_min = TIERED_MIN_TRADES["intraday"]
+    elif "pivot" in cat_lower:
+        tiered_min = TIERED_MIN_TRADES["pivot"]
+    elif "swing" in cat_lower:
+        tiered_min = TIERED_MIN_TRADES["swing"]
+    elif "earnings" in cat_lower or "event" in cat_lower:
+        tiered_min = TIERED_MIN_TRADES["earnings_event"]
+    elif "calendar" in cat_lower or "seasonal" in cat_lower:
+        tiered_min = TIERED_MIN_TRADES["calendar"]
+    elif cat_lower in ("trend", "momentum", "mean_reversion", "breakout", "confluence", "candle", "daily"):
+        tiered_min = TIERED_MIN_TRADES["daily"]
+    else:
+        tiered_min = TIERED_MIN_TRADES["default"]
     ci_lo, ci_hi = _confidence_interval_95(win_rate, n)
     statistically_random = ci_lo < 0.50  # lower CI bound below 50% = may be random
 
@@ -412,10 +495,13 @@ def compute_strategy_metrics(df: pd.DataFrame, strategy: str) -> dict:
         "max_drawdown_pct":      round(mdd, 4),
         "total_roi_pct":         round(roi, 4),
         "sharpe_ratio":          sharpe,
+        "sharpe_daily":          sharpe_daily,
         "sortino_ratio":         sortino,
         "deflated_sharpe":       psr_dict.get("deflated_sharpe"),
         "psr":                   psr_dict.get("psr"),
         "psr_note":              psr_dict.get("note"),
+        "tiered_min_trades":     tiered_min,
+        "meets_tiered_min":      n >= tiered_min,
         "sharpe_at_0bps":        cost_sensitivity.get("sharpe_at_0bps"),
         "sharpe_at_5bps":        cost_sensitivity.get("sharpe_at_5bps"),
         "sharpe_at_10bps":       cost_sensitivity.get("sharpe_at_10bps"),

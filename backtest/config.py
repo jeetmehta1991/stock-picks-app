@@ -240,8 +240,26 @@ PASSING_CRITERIA = {
     "macro_correlation":       True,   # must show higher win rate in favourable regime
     "min_trades":              100,    # minimum 100 trades for statistical validity
     # Audit flag: anything above these thresholds gets look-ahead bias audit
-    "audit_win_rate_above":    0.75,
+    # DEC-084 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 39 2026-05-11
+    # (owner-approved Path C): lowered audit_win_rate_above 0.75 -> 0.65 per
+    # DEC-084 spec (more aggressive flagging of suspicious win rates).
+    "audit_win_rate_above":    0.65,
     "audit_profit_factor_above": 1.5,
+}
+
+# DEC-083 + DEC-406 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 39
+# 2026-05-11 (owner-approved Path C): tiered min-trades enforcement per
+# strategy frequency. Daily-freq strategies need 300+ trades for stat
+# validity; earnings-event strategies trade ~4x/year so 60+ is sufficient;
+# pivot/intraday-style strategies sit between at 150.
+TIERED_MIN_TRADES = {
+    "daily":          300,   # daily-freq strategies (RSI/MA/momentum/etc.)
+    "intraday":       300,   # intraday signals (high freq)
+    "pivot":          150,   # daily-pivot strategies
+    "swing":          150,   # swing-trade timing
+    "earnings_event": 60,    # earnings-event strategies (~4x/year)
+    "calendar":       60,    # calendar/seasonal (event-driven)
+    "default":        100,   # fallback for uncategorized strategies
 }
 
 # Sector-adjusted passing criteria  -  some sectors are inherently more volatile
