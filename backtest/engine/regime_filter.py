@@ -150,6 +150,55 @@ def get_vix_smoothed(vix_series: pd.Series, as_of: date, window: int = 5) -> Opt
 REGIME_STATES = ("bull", "neutral", "bear", "crisis")
 
 
+def dispersion_circuit_breaker(
+    daily_returns_df,
+    window: int = 20,
+    sigma_threshold: float = 3.0,
+) -> dict:
+    """DEC-128 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 58 2026-05-11
+    (owner-approved Path C 10-DEC bundle). Dispersion-conditional circuit
+    breaker per Pass 52 turn 119 spec: trigger when cross-sectional
+    dispersion exceeds sigma_threshold standard deviations vs the rolling
+    historical mean dispersion.
+
+    Inputs:
+      daily_returns_df: DataFrame indexed by date, columns = tickers,
+        values = daily returns (decimal, e.g. 0.01 = 1%)
+      window: rolling window for historical dispersion mean+std (default 20)
+      sigma_threshold: trigger threshold in std-devs (default 3.0)
+
+    Cross-sectional dispersion per day = std-across-tickers of that day's
+    returns. Then compute z-score vs rolling window of prior dispersions:
+      z = (today_dispersion - mean_rolling) / std_rolling
+    Trigger when z > sigma_threshold.
+
+    Returns dict with triggered (bool), z_score (float), today_dispersion,
+    note. Insufficient history returns triggered=False + note.
+    Joint DEC-314/315 circuit breakers.
+    """
+    import pandas as pd
+    if daily_returns_df is None or len(daily_returns_df) < window + 1:
+        return {"triggered": False, "z_score": None,
+                "today_dispersion": None, "note": "insufficient_history"}
+    daily_disp = daily_returns_df.std(axis=1)
+    if len(daily_disp) < window + 1:
+        return {"triggered": False, "z_score": None,
+                "today_dispersion": None, "note": "insufficient_history"}
+    rolling_mean = daily_disp.iloc[-(window + 1):-1].mean()
+    rolling_std = daily_disp.iloc[-(window + 1):-1].std()
+    today_disp = float(daily_disp.iloc[-1])
+    if rolling_std == 0 or pd.isna(rolling_std):
+        return {"triggered": False, "z_score": 0.0,
+                "today_dispersion": today_disp, "note": "zero_rolling_std"}
+    z = (today_disp - rolling_mean) / rolling_std
+    return {
+        "triggered":         bool(z > sigma_threshold),
+        "z_score":           round(float(z), 4),
+        "today_dispersion":  round(today_disp, 6),
+        "note":              "TRIGGERED" if z > sigma_threshold else "ok",
+    }
+
+
 def multi_input_regime_score(
     vix: Optional[float],
     spy_above_200ema: Optional[bool],

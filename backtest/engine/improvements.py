@@ -496,6 +496,88 @@ def time_of_day_slippage_multiplier(entry_time) -> float:
 
 STAGE_3_TEST_COVERAGE_THRESHOLD = 0.90  # DEC-098 owner override 90%
 MEMORY_CAP_MB_DEFAULT = 4096            # DEC-179 default cap 4GB
+CACHE_SIZE_ALERT_THRESHOLD_PCT = 0.80   # DEC-227 alert at 80% disk usage
+
+
+def benchmark_function(fn, n_iters: int = 100, *args, **kwargs) -> dict:
+    """DEC-178 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 58 2026-05-11
+    (owner-approved Path C 10-DEC bundle). Signal-lookup performance
+    benchmark per Pass 52 turn 119 spec. Joint DEC-183 LRU cache.
+
+    Calls `fn(*args, **kwargs)` n_iters times; returns latency stats.
+    Stdlib-only (no pytest-benchmark dependency) so CI baseline tracking
+    can ingest the dict.
+
+    Returns dict with median_ms, p95_ms, total_s, n_iters, note.
+    """
+    import time
+    if n_iters <= 0 or fn is None:
+        return {"median_ms": None, "p95_ms": None, "total_s": None,
+                "n_iters": 0, "note": "no_iters"}
+    timings = []
+    t_start = time.perf_counter()
+    for _ in range(n_iters):
+        t0 = time.perf_counter()
+        try:
+            fn(*args, **kwargs)
+        except Exception:
+            pass  # benchmark continues; caller checks for exceptions separately
+        timings.append((time.perf_counter() - t0) * 1000.0)  # ms
+    total_s = time.perf_counter() - t_start
+    timings.sort()
+    median = timings[len(timings) // 2]
+    p95_idx = max(0, int(0.95 * len(timings)) - 1)
+    p95 = timings[p95_idx]
+    return {
+        "median_ms": round(median, 4),
+        "p95_ms":    round(p95, 4),
+        "total_s":   round(total_s, 4),
+        "n_iters":   n_iters,
+        "note":      "ok",
+    }
+
+
+def get_cache_size_gb(cache_root) -> float:
+    """DEC-227 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 58 2026-05-11
+    (owner-approved Path C 10-DEC bundle). Cache size monitoring per
+    Pass 52 turn 65 spec. Walks cache_root recursively summing file sizes.
+
+    Returns float GB. Missing path returns 0.0.
+    """
+    import os
+    from pathlib import Path
+    p = Path(cache_root) if cache_root else None
+    if p is None or not p.exists():
+        return 0.0
+    total_bytes = 0
+    for root, _, files in os.walk(str(p)):
+        for f in files:
+            try:
+                total_bytes += os.path.getsize(os.path.join(root, f))
+            except OSError:
+                continue
+    return float(total_bytes / (1024.0 ** 3))
+
+
+def cache_size_alert_level(
+    cache_size_gb: float,
+    disk_total_gb: float,
+    threshold_pct: float = CACHE_SIZE_ALERT_THRESHOLD_PCT,
+) -> dict:
+    """DEC-227: returns dict with size_gb, pct_of_disk, alert (bool), note.
+    Caller wires into DEC-225 eviction policy + DEC-095 monitoring infra
+    (Stage 4 deferred). Engine consumption deferred; current scope is helper.
+    """
+    if disk_total_gb <= 0:
+        return {"size_gb": round(cache_size_gb, 4), "pct_of_disk": None,
+                "alert": False, "note": "invalid_disk_total"}
+    pct = cache_size_gb / disk_total_gb
+    return {
+        "size_gb":     round(float(cache_size_gb), 4),
+        "pct_of_disk": round(float(pct), 4),
+        "alert":       bool(pct >= threshold_pct),
+        "note":        "CACHE_SIZE_ALERT" if pct >= threshold_pct else "ok",
+    }
 
 
 def check_test_coverage_threshold(

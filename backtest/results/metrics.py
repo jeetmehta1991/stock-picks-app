@@ -740,6 +740,261 @@ def compute_per_regime_agent_verdict(
     return out
 
 
+def vol_adjusted_momentum_lookback(
+    realized_vol_annualized: float,
+    base_lookback: int = 21,
+    low_vol_lookback: int = 60,
+    high_vol_lookback: int = 10,
+    low_vol_threshold: float = 0.15,
+    high_vol_threshold: float = 0.40,
+) -> int:
+    """DEC-148 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 58 2026-05-11
+    (owner-approved Path C 10-DEC bundle). Stock-specific adaptive
+    momentum lookback per Pass 52 turn 119 spec: per-ticker lookback
+    scales INVERSELY with realized vol (high-vol stocks shorter lookback
+    ~10d; low-vol stocks longer ~60d).
+
+    Inputs:
+      realized_vol_annualized: per-ticker annualized vol (0.20 = 20%)
+      base_lookback: midpoint (default 21 trading days)
+      low_vol_lookback / high_vol_lookback: extremes
+      low_vol_threshold / high_vol_threshold: vol boundaries
+
+    Returns int days. Linear interpolation between thresholds.
+    """
+    if realized_vol_annualized is None:
+        return base_lookback
+    v = float(realized_vol_annualized)
+    if v <= low_vol_threshold:
+        return low_vol_lookback
+    if v >= high_vol_threshold:
+        return high_vol_lookback
+    frac = (v - low_vol_threshold) / (high_vol_threshold - low_vol_threshold)
+    days = low_vol_lookback - frac * (low_vol_lookback - high_vol_lookback)
+    return int(round(days))
+
+
+def compute_vs_spy_metrics(strategy_returns, spy_returns) -> dict:
+    """DEC-155 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 58 2026-05-11
+    (owner-approved Path C 10-DEC bundle). vs-SPY benchmark comparison
+    per Pass 52 turn 119 spec: alpha + beta + information_ratio +
+    tracking_error.
+
+    Inputs:
+      strategy_returns: pd.Series of strategy daily returns (decimal)
+      spy_returns: pd.Series of SPY daily returns (decimal), same index
+
+    Returns dict with alpha_annualized, beta, information_ratio,
+    tracking_error_annualized, n_obs, note. Alpha annualized via *252;
+    tracking error via std(excess) * sqrt(252).
+    """
+    import pandas as pd
+    import numpy as np
+    if strategy_returns is None or spy_returns is None:
+        return {"alpha_annualized": None, "beta": None,
+                "information_ratio": None, "tracking_error_annualized": None,
+                "n_obs": 0, "note": "missing_input"}
+    s = pd.Series(strategy_returns).dropna()
+    b = pd.Series(spy_returns).dropna()
+    common = s.index.intersection(b.index) if hasattr(s, "index") else None
+    if common is not None and len(common) > 0:
+        s = s.loc[common]
+        b = b.loc[common]
+    n = min(len(s), len(b))
+    if n < 30:
+        return {"alpha_annualized": None, "beta": None,
+                "information_ratio": None, "tracking_error_annualized": None,
+                "n_obs": n, "note": "insufficient_obs"}
+    excess = s.values - b.values
+    var_b = float(np.var(b.values, ddof=1))
+    if var_b <= 0:
+        beta = 0.0
+    else:
+        cov = float(np.cov(s.values, b.values, ddof=1)[0, 1])
+        beta = cov / var_b
+    alpha_daily = float(s.mean()) - beta * float(b.mean())
+    alpha_ann = alpha_daily * 252.0
+    te_daily = float(np.std(excess, ddof=1))
+    te_ann = te_daily * (252.0 ** 0.5)
+    ir = (float(np.mean(excess)) / te_daily) * (252.0 ** 0.5) if te_daily > 0 else 0.0
+    return {
+        "alpha_annualized":          round(alpha_ann, 4),
+        "beta":                      round(beta, 4),
+        "information_ratio":         round(ir, 4),
+        "tracking_error_annualized": round(te_ann, 4),
+        "n_obs":                     n,
+        "note":                      "ok",
+    }
+
+
+def compute_multi_metric_ab_comparison(
+    df_arm_a, df_arm_b, label_a: str = "rules", label_b: str = "agent",
+) -> dict:
+    """DEC-208 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 58 2026-05-11
+    (owner-approved Path C 10-DEC bundle). Multi-metric A/B comparison
+    per Pass 45 spec: Sharpe + Sortino + DD + win_rate + PF + CVaR + cost.
+
+    Inputs:
+      df_arm_a, df_arm_b: trade-log DataFrames with pnl_pct + win + hold_days
+      label_a, label_b: arm labels for output dict keys
+
+    Returns dict with per-arm metrics + delta dict (b - a).
+    """
+    import pandas as pd
+    def _arm_metrics(df):
+        if df is None or len(df) == 0:
+            return {"sharpe": None, "sortino": None, "max_dd": None,
+                    "win_rate": None, "profit_factor": None, "cvar_5pct": None,
+                    "n_trades": 0}
+        pnl = df["pnl_pct"] if "pnl_pct" in df.columns else pd.Series([])
+        hold = df["hold_days"] if "hold_days" in df.columns else pd.Series([10] * len(df))
+        wins = df[df["win"] == True] if "win" in df.columns else df[pnl > 0]
+        n = len(df)
+        sharpe = _sharpe(pnl, hold)
+        sortino = _sortino_ratio(pnl, hold)
+        mdd = _max_drawdown(pnl)
+        wr = len(wins) / n if n > 0 else 0
+        pf = _profit_factor(pnl)
+        # CVaR at 5% (mean of worst 5% pnl)
+        if n >= 20:
+            cutoff = pnl.quantile(0.05)
+            cvar = float(pnl[pnl <= cutoff].mean())
+        else:
+            cvar = None
+        return {
+            "sharpe":        sharpe,
+            "sortino":       sortino,
+            "max_dd":        mdd,
+            "win_rate":      round(wr, 4),
+            "profit_factor": round(pf, 4) if pf != float("inf") else None,
+            "cvar_5pct":     round(cvar, 4) if cvar is not None else None,
+            "n_trades":      n,
+        }
+    a = _arm_metrics(df_arm_a)
+    b = _arm_metrics(df_arm_b)
+    delta = {}
+    for k in ("sharpe", "sortino", "win_rate", "max_dd"):
+        if a.get(k) is not None and b.get(k) is not None:
+            delta[k] = round(b[k] - a[k], 4)
+        else:
+            delta[k] = None
+    return {label_a: a, label_b: b, "delta": delta}
+
+
+def compute_net_sharpe_contribution(
+    gross_sharpe_lift: float,
+    annual_agent_cost_usd: float,
+    portfolio_size_usd: float = 100_000.0,
+    portfolio_vol_decimal: float = 0.12,
+) -> dict:
+    """DEC-210 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 58 2026-05-11
+    (owner-approved Path C 10-DEC bundle). Net Sharpe contribution
+    accounting per Pass 52 turn 72 spec:
+      Net Sharpe = Gross Sharpe Lift - Annualized Agent Cost-Sharpe
+      cost_sharpe = (annual_cost_usd) / (portfolio_size * portfolio_vol)
+
+    Joint DEC-131 (Agent value-add Sharpe >= 0.2 over rules-only) and
+    DEC-420. Spec test signal: $1000/mo on $100K portfolio with 12% vol
+    -> cost-Sharpe = (12000) / (100000 * 0.12) = 1.0; agent must clear
+    1.2 gross Sharpe lift to meet DEC-131 0.2 net threshold.
+
+    Returns dict with cost_sharpe, net_sharpe, meets_dec_131_threshold (bool).
+    """
+    if portfolio_size_usd <= 0 or portfolio_vol_decimal <= 0:
+        return {"cost_sharpe": None, "net_sharpe": None,
+                "meets_dec_131_threshold": False,
+                "note": "invalid_portfolio_inputs"}
+    cost_sharpe = annual_agent_cost_usd / (portfolio_size_usd * portfolio_vol_decimal)
+    net = gross_sharpe_lift - cost_sharpe
+    # Use 1e-9 tolerance to make the threshold inclusive against float noise
+    # (e.g., spec test signal: gross 1.2, cost 1.0 -> net 0.2 should meet).
+    return {
+        "cost_sharpe":             round(float(cost_sharpe), 4),
+        "net_sharpe":              round(float(net), 4),
+        "meets_dec_131_threshold": bool(net >= 0.2 - 1e-9),
+        "note":                    "ok",
+    }
+
+
+def compute_per_agent_ablation_contributions(arm_metrics: dict) -> dict:
+    """DEC-211 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 58 2026-05-11
+    (owner-approved Path C 10-DEC bundle). Per-agent ablation per Pass 52
+    turn 72 Option-A narrow scope: 7-arm ablation produces marginal
+    Sharpe contribution per agent.
+
+    Marginal contribution per agent = sharpe(full-agents) - sharpe(no-AGENT)
+    Positive = agent adds value; negative = agent hurts.
+
+    Inputs:
+      arm_metrics: dict mapping arm_name -> {sharpe: float, ...}
+        Must include 'full' as a key for the all-agents arm.
+        Arms named 'no_Bull', 'no_Bear', etc. for ablated arms.
+
+    Returns dict {agent_name: marginal_sharpe_contribution}.
+    """
+    if "full" not in arm_metrics:
+        return {"_error": "missing_full_arm"}
+    full_sharpe = arm_metrics["full"].get("sharpe")
+    if full_sharpe is None:
+        return {"_error": "full_arm_sharpe_missing"}
+    out = {}
+    for arm_name, metrics in arm_metrics.items():
+        if not arm_name.startswith("no_"):
+            continue
+        agent_name = arm_name[3:]  # strip 'no_' prefix
+        no_agent_sharpe = metrics.get("sharpe")
+        if no_agent_sharpe is None:
+            out[agent_name] = None
+        else:
+            out[agent_name] = round(full_sharpe - no_agent_sharpe, 4)
+    return out
+
+
+def diff_trade_logs(df_a, df_b) -> dict:
+    """DEC-232 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 58 2026-05-11
+    (owner-approved Path C 10-DEC bundle). Determinism test helper per
+    Pass 52 turn 85 spec: 2 identical runs should produce byte-identical
+    trade ledgers; this helper compares two DataFrames.
+
+    Returns dict with byte_identical (bool), shape_match (bool),
+    row_diff_count, first_diff_index (int or None), note.
+
+    Caller-side: feed in two runs of identical config + data; assert
+    byte_identical to catch silent non-determinism (dict iteration order,
+    threading races).
+    """
+    import pandas as pd
+    if df_a is None or df_b is None:
+        return {"byte_identical": False, "shape_match": False,
+                "row_diff_count": None, "first_diff_index": None,
+                "note": "missing_input"}
+    if df_a.shape != df_b.shape:
+        return {"byte_identical": False, "shape_match": False,
+                "row_diff_count": abs(len(df_a) - len(df_b)),
+                "first_diff_index": 0, "note": "shape_mismatch"}
+    common_cols = sorted(set(df_a.columns) & set(df_b.columns))
+    if not common_cols:
+        return {"byte_identical": False, "shape_match": True,
+                "row_diff_count": len(df_a), "first_diff_index": 0,
+                "note": "no_common_columns"}
+    a = df_a[common_cols].reset_index(drop=True)
+    b = df_b[common_cols].reset_index(drop=True)
+    diffs = (a != b)
+    # Treat NaN==NaN as equal
+    nan_match = a.isna() & b.isna()
+    diffs = diffs & ~nan_match
+    row_any_diff = diffs.any(axis=1)
+    diff_count = int(row_any_diff.sum())
+    first_idx = int(row_any_diff.idxmax()) if diff_count > 0 else None
+    return {
+        "byte_identical":     diff_count == 0,
+        "shape_match":        True,
+        "row_diff_count":     diff_count,
+        "first_diff_index":   first_idx,
+        "note":               "ok" if diff_count == 0 else "DIFF_DETECTED",
+    }
+
+
 def compute_freshness_banner(
     last_updated_iso,
     now=None,

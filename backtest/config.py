@@ -369,6 +369,29 @@ VOL_TARGETED_TARGET_PER_POSITION_ANNUALIZED = 0.20
 VOL_TARGETED_SIZE_MIN_MULTIPLIER = 0.25
 VOL_TARGETED_SIZE_MAX_MULTIPLIER = 2.0
 
+# DEC-021 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 58 2026-05-11
+# (owner-approved Path C 10-DEC bundle). 3-tier simplification per Pass 52
+# turn 95: 5-tier system collapsed to HIGH (5%) / MEDIUM (3%) / LOW (1.5%)
+# for owner-facing reporting + per-strategy verdict tagging. Original
+# 5-tier TIER_POSITION_SIZE_PCT preserved for backward-compat (engine
+# still consumes it); TIER_3_POSITION_SIZE_PCT is the simplified mapping
+# for new reporting/dashboard surfaces. 4-tier 4% mapping -> MEDIUM.
+TIER_3_POSITION_SIZE_PCT = {
+    "HIGH":   0.05,
+    "MEDIUM": 0.03,
+    "LOW":    0.015,
+}
+
+TIER_5_TO_TIER_3 = {
+    "EXCEPTIONAL": "HIGH",
+    "VERY_HIGH":   "HIGH",
+    "HIGH":        "MEDIUM",
+    "MEDIUM_HIGH": "MEDIUM",
+    "MEDIUM":      "LOW",
+    "LOW":         "LOW",
+    "AVOID":       "LOW",
+}
+
 # -----------------------------------------------------------------------------
 # TWO-STAGE CONFIDENCE TIERING
 # Stage 1: Rule-based preliminary tier (before agents run)

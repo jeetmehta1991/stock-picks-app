@@ -3398,6 +3398,227 @@ def test_dec_333_cnn_fg_band_invalid_inputs():
 
 
 # ============================================================================
+# Phase 3 Batch 58 Path C 10-DEC bundle (owner directive 10 DECs this turn):
+# DEC-021 (3-tier system) + DEC-128 (dispersion CB) + DEC-148 (vol-adj momentum)
+# + DEC-155 (vs-SPY metrics) + DEC-178 (perf benchmark) + DEC-208 (multi-metric AB)
+# + DEC-210 (net Sharpe) + DEC-211 (ablation) + DEC-227 (cache size)
+# + DEC-232 (determinism diff)
+# ============================================================================
+
+def test_dec_021_3_tier_config_constants():
+    """DEC-021: 3-tier sizing 5%/3%/1.5% + 5-to-3 mapping."""
+    from backtest.config import TIER_3_POSITION_SIZE_PCT, TIER_5_TO_TIER_3
+    assert TIER_3_POSITION_SIZE_PCT["HIGH"] == 0.05
+    assert TIER_3_POSITION_SIZE_PCT["MEDIUM"] == 0.03
+    assert TIER_3_POSITION_SIZE_PCT["LOW"] == 0.015
+    assert TIER_5_TO_TIER_3["EXCEPTIONAL"] == "HIGH"
+    assert TIER_5_TO_TIER_3["MEDIUM_HIGH"] == "MEDIUM"
+    assert TIER_5_TO_TIER_3["MEDIUM"] == "LOW"
+
+
+def test_dec_128_dispersion_cb_triggers_on_outlier_day():
+    """DEC-128: spike day with cross-sectional std >> rolling -> triggered."""
+    import pandas as pd
+    import numpy as np
+    from backtest.engine.regime_filter import dispersion_circuit_breaker
+    np.random.seed(0)
+    base = np.random.normal(0, 0.01, size=(30, 10))
+    spike = np.random.normal(0, 0.10, size=(1, 10))  # 10x normal vol
+    df = pd.DataFrame(np.vstack([base, spike]))
+    out = dispersion_circuit_breaker(df, window=20, sigma_threshold=3.0)
+    assert out["triggered"] is True
+
+
+def test_dec_128_dispersion_cb_no_trigger_on_normal_day():
+    """DEC-128: steady cross-sectional vol -> no trigger."""
+    import pandas as pd
+    import numpy as np
+    from backtest.engine.regime_filter import dispersion_circuit_breaker
+    np.random.seed(1)
+    df = pd.DataFrame(np.random.normal(0, 0.01, size=(30, 10)))
+    out = dispersion_circuit_breaker(df, window=20, sigma_threshold=3.0)
+    assert out["triggered"] is False
+
+
+def test_dec_148_vol_adjusted_lookback_inverse_to_vol():
+    """DEC-148: high vol -> short lookback; low vol -> long lookback."""
+    from backtest.results.metrics import vol_adjusted_momentum_lookback
+    assert vol_adjusted_momentum_lookback(0.10) == 60  # low vol -> long
+    assert vol_adjusted_momentum_lookback(0.50) == 10  # high vol -> short
+    mid = vol_adjusted_momentum_lookback(0.25)
+    assert 10 < mid < 60  # interpolated
+
+
+def test_dec_148_vol_adjusted_lookback_handles_none():
+    """DEC-148: None vol -> base_lookback."""
+    from backtest.results.metrics import vol_adjusted_momentum_lookback
+    assert vol_adjusted_momentum_lookback(None) == 21
+
+
+def test_dec_155_vs_spy_metrics_positive_alpha():
+    """DEC-155: strategy outperforming SPY -> positive alpha."""
+    import pandas as pd
+    import numpy as np
+    from backtest.results.metrics import compute_vs_spy_metrics
+    np.random.seed(42)
+    spy = pd.Series(np.random.normal(0.0005, 0.01, 100))
+    strat = spy + 0.001  # constant +10bps daily lift
+    out = compute_vs_spy_metrics(strat, spy)
+    assert out["alpha_annualized"] > 0
+    assert out["information_ratio"] > 0
+    assert out["n_obs"] == 100
+
+
+def test_dec_155_vs_spy_metrics_insufficient_obs():
+    """DEC-155: <30 obs -> insufficient_obs note."""
+    import pandas as pd
+    from backtest.results.metrics import compute_vs_spy_metrics
+    out = compute_vs_spy_metrics(pd.Series([0.01] * 10), pd.Series([0.005] * 10))
+    assert out["note"] == "insufficient_obs"
+
+
+def test_dec_178_benchmark_function_returns_latency_stats():
+    """DEC-178: benchmark returns median/p95/total."""
+    from backtest.engine.improvements import benchmark_function
+    out = benchmark_function(lambda: sum(range(100)), n_iters=50)
+    assert out["median_ms"] is not None
+    assert out["p95_ms"] is not None
+    assert out["n_iters"] == 50
+    assert out["median_ms"] >= 0
+
+
+def test_dec_178_benchmark_function_zero_iters():
+    """DEC-178: n_iters=0 -> no_iters note."""
+    from backtest.engine.improvements import benchmark_function
+    out = benchmark_function(lambda: None, n_iters=0)
+    assert out["note"] == "no_iters"
+
+
+def test_dec_208_multi_metric_ab_comparison_shapes():
+    """DEC-208: returns per-arm metrics + delta dict."""
+    import pandas as pd
+    from backtest.results.metrics import compute_multi_metric_ab_comparison
+    df_a = pd.DataFrame([
+        {"pnl_pct": 1.0, "win": True, "hold_days": 10},
+        {"pnl_pct": -0.5, "win": False, "hold_days": 5},
+    ] * 25)
+    df_b = pd.DataFrame([
+        {"pnl_pct": 1.5, "win": True, "hold_days": 10},
+        {"pnl_pct": -0.3, "win": False, "hold_days": 5},
+    ] * 25)
+    out = compute_multi_metric_ab_comparison(df_a, df_b)
+    assert "rules" in out and "agent" in out and "delta" in out
+    assert out["rules"]["n_trades"] == 50
+    assert out["agent"]["n_trades"] == 50
+    # Agent has stronger wins -> positive sharpe delta
+    assert out["delta"]["sharpe"] is not None
+
+
+def test_dec_210_net_sharpe_contribution_spec_test_signal():
+    """DEC-210 spec: $1000/mo on $100K * 12% vol -> cost-Sharpe = 1.0;
+    gross 1.2 -> net 0.2 -> meets DEC-131 threshold.
+    """
+    from backtest.results.metrics import compute_net_sharpe_contribution
+    out = compute_net_sharpe_contribution(
+        gross_sharpe_lift=1.2,
+        annual_agent_cost_usd=12_000,
+        portfolio_size_usd=100_000,
+        portfolio_vol_decimal=0.12,
+    )
+    assert abs(out["cost_sharpe"] - 1.0) < 1e-6
+    assert abs(out["net_sharpe"] - 0.2) < 1e-6
+    assert out["meets_dec_131_threshold"] is True
+
+
+def test_dec_210_net_sharpe_below_threshold():
+    """DEC-210: gross 1.0 -> net 0.0 -> fails DEC-131 0.2 threshold."""
+    from backtest.results.metrics import compute_net_sharpe_contribution
+    out = compute_net_sharpe_contribution(1.0, 12_000, 100_000, 0.12)
+    assert out["meets_dec_131_threshold"] is False
+
+
+def test_dec_211_ablation_contributions_marginal_sharpe():
+    """DEC-211: marginal_contrib = sharpe(full) - sharpe(no_AGENT)."""
+    from backtest.results.metrics import compute_per_agent_ablation_contributions
+    arms = {
+        "full":     {"sharpe": 1.5},
+        "no_Bull":  {"sharpe": 1.2},  # Bull contributes 0.3
+        "no_Bear":  {"sharpe": 1.4},  # Bear contributes 0.1
+        "no_Risk":  {"sharpe": 1.6},  # Risk hurts -0.1
+    }
+    out = compute_per_agent_ablation_contributions(arms)
+    assert abs(out["Bull"] - 0.3) < 1e-6
+    assert abs(out["Bear"] - 0.1) < 1e-6
+    assert abs(out["Risk"] - (-0.1)) < 1e-6
+
+
+def test_dec_211_ablation_missing_full_returns_error():
+    """DEC-211: missing 'full' arm -> _error key."""
+    from backtest.results.metrics import compute_per_agent_ablation_contributions
+    out = compute_per_agent_ablation_contributions({"no_Bull": {"sharpe": 1.2}})
+    assert "_error" in out
+
+
+def test_dec_227_get_cache_size_gb_real_path(tmp_path):
+    """DEC-227: synthetic cache directory size sums correctly."""
+    from backtest.engine.improvements import get_cache_size_gb
+    (tmp_path / "a.bin").write_bytes(b"x" * 1024)  # 1 KB
+    (tmp_path / "b.bin").write_bytes(b"x" * 2048)  # 2 KB
+    size = get_cache_size_gb(str(tmp_path))
+    assert size > 0
+    assert size < 0.001  # 3KB ~= 0.0000028 GB
+
+
+def test_dec_227_cache_size_alert_below_threshold():
+    """DEC-227: 50% of disk used -> no alert."""
+    from backtest.engine.improvements import cache_size_alert_level
+    out = cache_size_alert_level(50.0, 100.0, threshold_pct=0.80)
+    assert out["alert"] is False
+    assert out["note"] == "ok"
+
+
+def test_dec_227_cache_size_alert_above_threshold():
+    """DEC-227: 90% of disk used -> CACHE_SIZE_ALERT."""
+    from backtest.engine.improvements import cache_size_alert_level
+    out = cache_size_alert_level(90.0, 100.0, threshold_pct=0.80)
+    assert out["alert"] is True
+    assert out["note"] == "CACHE_SIZE_ALERT"
+
+
+def test_dec_232_diff_trade_logs_identical():
+    """DEC-232: identical DataFrames -> byte_identical=True."""
+    import pandas as pd
+    from backtest.results.metrics import diff_trade_logs
+    df = pd.DataFrame([{"a": 1, "b": 2.0, "c": "x"} for _ in range(10)])
+    out = diff_trade_logs(df, df.copy())
+    assert out["byte_identical"] is True
+    assert out["row_diff_count"] == 0
+
+
+def test_dec_232_diff_trade_logs_detects_diff():
+    """DEC-232: differing row -> byte_identical=False + first_diff_index pinpoints."""
+    import pandas as pd
+    from backtest.results.metrics import diff_trade_logs
+    df_a = pd.DataFrame([{"a": i, "b": 0.0} for i in range(10)])
+    df_b = df_a.copy()
+    df_b.loc[3, "b"] = 999.0
+    out = diff_trade_logs(df_a, df_b)
+    assert out["byte_identical"] is False
+    assert out["first_diff_index"] == 3
+
+
+def test_dec_232_diff_trade_logs_shape_mismatch():
+    """DEC-232: shape mismatch -> shape_match=False + note."""
+    import pandas as pd
+    from backtest.results.metrics import diff_trade_logs
+    df_a = pd.DataFrame([{"a": 1}, {"a": 2}])
+    df_b = pd.DataFrame([{"a": 1}])
+    out = diff_trade_logs(df_a, df_b)
+    assert out["byte_identical"] is False
+    assert out["shape_match"] is False
+
+
+# ============================================================================
 # DEC-432 Chandelier exit indicator tests (Phase 3 Batch 53 Path C)
 # Parabolic SAR + Supertrend already implemented; only chandelier added.
 # ============================================================================
