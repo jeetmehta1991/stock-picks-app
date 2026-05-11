@@ -951,4 +951,7 @@ class BacktestEngine:
             },
             bonferroni=bonferroni,
             output_dir=self.output_dir,
+            # BUG-95 sub-batch 5: pass Portfolio so writer can emit
+            # equity_curve.parquet + portfolio_metrics.json
+            portfolio=getattr(self, "portfolio", None),
         )

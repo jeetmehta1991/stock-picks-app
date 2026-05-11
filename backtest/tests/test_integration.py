@@ -188,6 +188,77 @@ def test_bug_095_engine_imports_portfolio_module():
         "Engine must call remove_position when a trade exits")
 
 
+def test_bug_095_writer_accepts_portfolio_signature_kwarg():
+    """BUG-95 sub-batch 5: write_all_outputs has a `portfolio` keyword param
+    with default None. Source-pin check (does not exercise full writer).
+    """
+    import inspect
+    from backtest.results.writer import write_all_outputs
+    sig = inspect.signature(write_all_outputs)
+    assert "portfolio" in sig.parameters, (
+        "write_all_outputs must accept portfolio kwarg")
+    assert sig.parameters["portfolio"].default is None, (
+        "portfolio kwarg must default to None for backward compatibility")
+
+
+def test_bug_095_writer_emits_portfolio_outputs_when_portfolio_supplied(tmp_path):
+    """BUG-95 sub-batch 5: when portfolio is supplied with equity_curve, the
+    writer emits equity_curve.parquet + benchmark_curve.parquet +
+    portfolio_metrics.json. Uses non-empty trade frames to avoid pre-existing
+    writer assumptions about non-empty trade data.
+    """
+    import pandas as pd
+    from datetime import date, timedelta
+    from backtest.engine.portfolio import Portfolio
+    from backtest.results.writer import write_all_outputs
+
+    p = Portfolio(starting_capital=100_000.0)
+    d = date(2024, 1, 1)
+    val = 100_000.0
+    bench = 470.0
+    for i in range(10):
+        p.equity_curve.append((d + timedelta(days=i), val))
+        p.benchmark_curve.append((d + timedelta(days=i), bench))
+        val *= 1.005
+        bench *= 1.002
+
+    # Minimal trade log that satisfies pre-existing writer column references
+    df_trades = pd.DataFrame([{
+        "ticker": "AAPL", "strategy": "test", "direction": "long",
+        "category": "momentum", "sector": "Information Technology",
+        "entry_date": date(2024, 1, 2), "exit_date": date(2024, 1, 5),
+        "entry_price": 100.0, "exit_price": 105.0,
+        "pnl_pct": 5.0, "pnl_dollar": 50.0, "win": True, "hold_days": 3,
+        "confidence_tier": "MEDIUM", "regime": "bull",
+        "exit_reason": "trailing_stop", "max_adverse_excursion": -2.0,
+        "max_favourable_excursion": 5.0,
+    }])
+    df_metrics = pd.DataFrame([{
+        "strategy": "test", "trades": 1, "win_rate": 100.0,
+        "profit_factor": 5.0, "passes_all": False,
+    }])
+    write_all_outputs(
+        df_trades=df_trades, metrics=df_metrics,
+        skipped=[], cb_log=[],
+        exit_compare=pd.DataFrame(),
+        output_dir=tmp_path,
+        portfolio=p,
+    )
+
+    assert (tmp_path / "equity_curve.parquet").exists(), (
+        "writer must emit equity_curve.parquet when portfolio supplied")
+    assert (tmp_path / "benchmark_curve.parquet").exists(), (
+        "writer must emit benchmark_curve.parquet when portfolio supplied")
+    assert (tmp_path / "portfolio_metrics.json").exists(), (
+        "writer must emit portfolio_metrics.json when portfolio supplied")
+
+    import json
+    metrics_out = json.loads((tmp_path / "portfolio_metrics.json").read_text())
+    assert metrics_out["n_equity_points"] == 10
+    assert metrics_out["starting_capital"] == 100_000.0
+    assert metrics_out["portfolio_total_return_pct"] > 0
+
+
 def test_bug_095_engine_can_open_gate_wired():
     """BUG-95 sub-batch 4: backtest.py must call self.portfolio.can_open()
     inside _process_day with max_positions from LIVE_TRADING_RULES and skip

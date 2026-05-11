@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-11T00:43:34.072224+00:00",
+  "generated_at": "2026-05-11T01:51:10.827973+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -249,11 +249,11 @@
       "pass_intro": "Pass 19",
       "pass_resolved": "19",
       "status_grep": {
-        "coded": false,
-        "wired": false,
+        "coded": true,
+        "wired": true,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 106,
+        "n_doc_refs": 112,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -275,10 +275,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "CODE_ONLY",
+        "label": "NEEDS-TEST",
+        "color": "#f59e0b",
+        "reason": "Coded but no test reference; add test per DEC-594 same-commit"
       }
     },
     {
@@ -329,11 +329,11 @@
       "pass_intro": "Pass 19",
       "pass_resolved": "24",
       "status_grep": {
-        "coded": false,
-        "wired": false,
+        "coded": true,
+        "wired": true,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 143,
+        "n_doc_refs": 146,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -853,7 +853,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 75,
+        "n_doc_refs": 78,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -893,7 +893,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 50,
+        "n_doc_refs": 53,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -2453,7 +2453,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 591,
+        "n_doc_refs": 592,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -2893,7 +2893,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 34,
+        "n_doc_refs": 37,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -3129,11 +3129,11 @@
       "pass_intro": "Pass 39",
       "pass_resolved": "-",
       "status_grep": {
-        "coded": false,
-        "wired": false,
+        "coded": true,
+        "wired": true,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 8,
+        "n_doc_refs": 11,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -3809,11 +3809,11 @@
       "pass_intro": "Pass 39",
       "pass_resolved": "-",
       "status_grep": {
-        "coded": false,
-        "wired": false,
+        "coded": true,
+        "wired": true,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 9,
+        "n_doc_refs": 12,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -9013,7 +9013,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 16,
+        "n_doc_refs": 19,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -9373,7 +9373,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 6,
+        "n_doc_refs": 9,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -21053,7 +21053,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 455,
+        "n_doc_refs": 456,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -21677,7 +21677,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 87,
+        "n_doc_refs": 92,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -22361,7 +22361,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 15,
+        "n_doc_refs": 16,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -23077,17 +23077,17 @@
       "id": "BUG-95",
       "title": "CRITICAL  -  No portfolio-level state; every trade evaluated independently",
       "linked_decisions": "DEC-070, DEC-076, DEC-091, DEC-222, DEC-231, DEC-458",
-      "sprint_context": "(see linked DEC sprint)",
+      "sprint_context": "RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 20 2026-05-10 (owner-approved Option A 2026-05-10; 5-sub-batch implementation: 1/Portfolio class skeleton in backtest/engine/portfolio.py with cash/positions/equity_curve/benchmark_curve + 14 unit tests; 2/engine integration in backtest.py - mark_to_market each day + add_position on entry + remove_position on exit + _finalize_open_trades wiring + 3 integration tests; 3/compute_portfolio_metrics_from_curves in results/metrics.py - Sharpe + alpha + beta + IR + tracking error from equity_curve + 6 unit tests; 4/can_open gate enforcement in entry path - max_open_positions=10 + drawdown_suspend=30%% + insufficient_cash + ticker uniqueness from LIVE_TRADING_RULES + 1 integration test; 5/results writer emits equity_curve.parquet + benchmark_curve.parquet + portfolio_metrics.json + 2 integration tests; total 23 new tests; commits 93e4036ae + ead36b0b6 + 2fe9c3d4d + 2b56e6e9a + this; per-addressal pyramid 162/162 PASS across all 5 sub-batches; UNBLOCKS DEC-070 portfolio exit logic + DEC-076 factor exposure breaker + DEC-091 + DEC-222 + DEC-231)",
       "status_grep": {
         "coded": true,
-        "wired": false,
-        "tested": false,
+        "wired": true,
+        "tested": true,
         "pushed": true,
-        "n_doc_refs": 72,
+        "n_doc_refs": 81,
         "pyramid": {
-          "unit": false,
+          "unit": true,
           "smoke": false,
-          "integration": false,
+          "integration": true,
           "system": false,
           "functional": false,
           "regression": false,
@@ -23101,14 +23101,14 @@
         }
       },
       "short_id": "BUG-095",
-      "sprint": "(see linked DEC sprint)",
+      "sprint": "RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 20 2026-05-10 (owner-approved Option A 2026-05-10; 5-sub-batch implementation: 1/Portfolio class skeleton in backtest/engine/portfolio.py with cash/positions/equity_curve/benchmark_curve + 14 unit tests; 2/engine integration in backtest.py - mark_to_market each day + add_position on entry + remove_position on exit + _finalize_open_trades wiring + 3 integration tests; 3/compute_portfolio_metrics_from_curves in results/metrics.py - Sharpe + alpha + beta + IR + tracking error from equity_curve + 6 unit tests; 4/can_open gate enforcement in entry path - max_open_positions=10 + drawdown_suspend=30%% + insufficient_cash + ticker uniqueness from LIVE_TRADING_RULES + 1 integration test; 5/results writer emits equity_curve.parquet + benchmark_curve.parquet + portfolio_metrics.json + 2 integration tests; total 23 new tests; commits 93e4036ae + ead36b0b6 + 2fe9c3d4d + 2b56e6e9a + this; per-addressal pyramid 162/162 PASS across all 5 sub-batches; UNBLOCKS DEC-070 portfolio exit logic + DEC-076 factor exposure breaker + DEC-091 + DEC-222 + DEC-231)",
       "dependencies": "DEC-070; DEC-076; DEC-091; DEC-222; DEC-231; DEC-458",
       "description": "**File:** `backtest/engine/backtest.py`",
       "promotion_path": {
-        "tier": "CODE_ONLY",
-        "label": "NEEDS-TEST",
-        "color": "#f59e0b",
-        "reason": "Status inherited from linked DEC; coded but missing test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Resolved with code + regression test"
       }
     },
     {
@@ -28716,193 +28716,214 @@
   ],
   "recent_commits": [
     {
+      "sha": "2b56e6e9",
+      "subject": "Pass 53 v8h+1: BUG-95 LIVE_TRADING_RULES enforcement via can_open gate (Sub-batch 4/5)",
+      "author": "jeetmehta1991",
+      "rel_time": "7 minutes ago"
+    },
+    {
+      "sha": "2fe9c3d4",
+      "subject": "Pass 53 v8h+1: BUG-95 Portfolio metrics from equity_curve (Sub-batch 3/5)",
+      "author": "jeetmehta1991",
+      "rel_time": "12 minutes ago"
+    },
+    {
+      "sha": "ead36b0b",
+      "subject": "Pass 53 v8h+1: BUG-95 Portfolio engine integration (Sub-batch 2/5 - shadow state)",
+      "author": "jeetmehta1991",
+      "rel_time": "17 minutes ago"
+    },
+    {
+      "sha": "93e4036a",
+      "subject": "Pass 53 v8h+1: BUG-95 CRITICAL Portfolio class skeleton (Sub-batch 1/5 - owner-approved Option A)",
+      "author": "jeetmehta1991",
+      "rel_time": "25 minutes ago"
+    },
+    {
+      "sha": "b04abeb7",
+      "subject": "Pass 53 auto-drift-sweep 2026-05-11 00:53: dashboard re-derive (no content drift)",
+      "author": "jeetmehta1991",
+      "rel_time": "57 minutes ago"
+    },
+    {
       "sha": "5e68ae6c",
       "subject": "Pass 53 v8h+1: BUG-77 MEDIUM candidate ranking inflated by avoid entries FIXED (owner-approved Option A)",
       "author": "jeetmehta1991",
-      "rel_time": "37 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "98ec8f35",
       "subject": "Pass 53 v8h+1: BUG-83 HIGH inverted PIT filter on get_congressional_detail FIXED (owner-approved Option A)",
       "author": "jeetmehta1991",
-      "rel_time": "56 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "99a888a3",
       "subject": "Pass 53 v8h+1: BUG-61 HIGH multiple concurrent positions same ticker FIXED (owner-approved Option A)",
       "author": "jeetmehta1991",
-      "rel_time": "62 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "cf8d9c24",
       "subject": "Pass 53 v8h+1: BUG-110 HIGH entry gap filter VERIFIED ENFORCED (stale audit finding)",
       "author": "jeetmehta1991",
-      "rel_time": "72 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "a571c1c6",
       "subject": "Pass 53 v8h+1: BUG-80 HIGH exit slippage applied symmetrically (apply_exit_slippage helper + 2 wire-up sites)",
       "author": "jeetmehta1991",
-      "rel_time": "81 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "b852347d",
       "subject": "Pass 53 v8h+1: BUG-78 CRITICAL trailing stop lookahead bias FIXED",
       "author": "jeetmehta1991",
-      "rel_time": "89 minutes ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "5b710e0b",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 13 - 39 BUG mega-sweep (pre-Pass-53 audit findings); OPEN: 46 -> 7",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "9e52a585",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 12 - 21 BUGs DEFERRED/SUPERSEDED (Stage 3/Phase 1B sweep)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "d2c22ebf",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 11 - 12 BUGs (62/66/67/69/70/71/74/75/79/81/86/87) SUPERSEDED/DEFERRED",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "3f4b7b2e",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 10 - 6 BUGs (51/54/55/56/57/60) SUPERSEDED/DEFERRED",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "a1ba19bb",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 9 - 6 SUPERSEDED (BUG-35/36/38/39/41/53)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "fd86b03f",
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 22:45: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "08117f87",
       "subject": "Pass 53 v8h+1: BUG-29 RESOLVED-IMPLEMENTED - end-of-backtest open-trade finalization",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "0daa206c",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 7 - 6 BUGs (43/44/45/48/58/59) SUPERSEDED/DEFERRED/OBSOLETE",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "2de4536b",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 6 - 5 BUGs (42/47/49/50/52) SUPERSEDED/DEFERRED cross-references",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "f16ef86d",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 5 - BUG-37 IMPLEMENTED (haircut doc) + BUG-34/40 SUPERSEDED-BY-design",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "a4258bc1",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 4 - BUG-21 IMPLEMENTED + BUG-24/31/32/33 SUPERSEDED-BY-policy-decisions",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "1f87aa53",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 3 - BUG-17/25 OBSOLETE + BUG-18/28/30 IMPLEMENTED (Wilder RSI fix)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "694a11fa",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 2 - BUG-01/06/10/12 IMPLEMENTED + BUG-14 OBSOLETE",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "3bb2f559",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 1 - BUG-08/09/15/27 RESOLVED-IMPLEMENTED with real fixes",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "fc9390b7",
       "subject": "Pass 53 v8h+1: Phase 2 BUG cross-references + id-form normalization (6 BUGs READY -> IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "97c69b3d",
       "subject": "Pass 53 v8h+1: Phase 1 BUG categorization (10 SUPERSEDED/DEFERRED) + dashboard hide-moot-bugs filter",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "99d137c1",
       "subject": "Pass 53 v8h+1: BUG-270/271/272/273 pyramid overrides + Promotion dropdown filters",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "a7c66530",
       "subject": "Pass 53 v8h+1: DEC-610 SPEC_ONLY -> DEFERRED_TO_* re-classification (14 forward-looking DECs)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "4cd84d66",
       "subject": "Pass 53 v8h+1: BUG-270 wired-flag fix (cross-reference docstring) + process self-finding",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
-    },
-    {
-      "sha": "d28c8723",
-      "subject": "Pass 53 v8h+1: Tier C/D edge-case sweep - DEC-057 promoted; DEC-028 no-promote (forward-looking)",
-      "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
-    },
-    {
-      "sha": "10fa8617",
-      "subject": "Pass 53 v8h+1: INV-041 RESOLVED - path-restricted commits in 4 prefetch scripts + 5-test regression gate",
-      "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
-    },
-    {
-      "sha": "bcb6ea3f",
-      "subject": "Pass 53 v8h+1: parse_inv_entries parser fix - recognize all RESOLVED-* / DEFERRED-* status variants",
-      "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
-    },
-    {
-      "sha": "26340a6b",
-      "subject": "Pass 53 auto-drift-sweep 2026-05-10 20:43: dashboards refreshed (no numerical drift)",
-      "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
-    },
-    {
-      "sha": "bffd8658",
-      "subject": "Pass 53 v8h+1: INV promotion sweep - INV-045 RESOLVED + 4 NOOPs (CHECKLIST #81)",
-      "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 0,
-    "modified": 0,
+    "count": 5,
+    "modified": 5,
     "added": 0,
     "untracked": 0,
     "deleted": 0,
-    "files": []
+    "files": [
+      {
+        "status": "M",
+        "path": "AUDIT.md"
+      },
+      {
+        "status": "M",
+        "path": "BUG_REGISTER.md"
+      },
+      {
+        "status": "M",
+        "path": "backtest/engine/backtest.py"
+      },
+      {
+        "status": "M",
+        "path": "backtest/results/writer.py"
+      },
+      {
+        "status": "M",
+        "path": "backtest/tests/test_integration.py"
+      }
+    ]
   },
   "unpushed_commits": [],
   "active_bgs": [],
@@ -29082,7 +29103,7 @@
     }
   ],
   "test_inventory": {
-    "total": 778,
+    "total": 804,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -29118,7 +29139,7 @@
       "test_fred_alfred_smoke": 5,
       "test_gate_pre_phase_1a_entry": 8,
       "test_gates": 6,
-      "test_integration": 7,
+      "test_integration": 13,
       "test_inv041_path_restricted_commits": 5,
       "test_l146_wave_a_g2_g3_g9": 6,
       "test_l146_wave_b_g7_sec_edgar": 6,
@@ -29158,7 +29179,7 @@
       "test_stocktwits_smoke": 4,
       "test_supplementary_demo": 4,
       "test_supplementary_smoke": 6,
-      "test_unit": 122,
+      "test_unit": 142,
       "test_walk_forward_4fold": 6
     }
   },

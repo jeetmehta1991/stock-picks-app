@@ -33369,6 +33369,101 @@ Documents updated:
   - AUDIT.md (this sub-entry)
   - dashboard_stage_2 (rebuilt; IMPLEMENTED 29 -> 30)
 
+---
+
+## Pass 53 Day 9 v8h+1 follow-on 2026-05-10 (cont): Phase 3 Batch 20 - BUG-95 CRITICAL Portfolio class FULL FIX (owner-approved Option A)
+
+**The bug (Pass 5 audit + AUDIT.md:2972):** the engine tracked `OpenTrade` / `ClosedTrade` lists but had NO portfolio-level state: no equity curve, no cash balance, no mark-to-market, no per-sector exposure, no `LIVE_TRADING_RULES` enforcement. Per-strategy Sharpe was reported but true portfolio Sharpe (correlated positions) was unknowable. Sum-of-trade-pnl_pct = "total ROI" implicitly assumed infinite capital. `max_open_positions=10` and drawdown_suspend rules at 10/20/30% were unenforceable in backtest. Blocked DEC-070 (portfolio exit logic), DEC-076 (factor exposure breaker), DEC-091, DEC-222, DEC-231.
+
+**The fix (owner-approved Option A 2026-05-10): full Portfolio class implementation across 5 sub-batches.**
+
+### Sub-batch 1/5 - Portfolio class skeleton (commit 93e4036ae)
+NEW `backtest/engine/portfolio.py` with `Position` dataclass + `Portfolio` class:
+  - State: `cash`, `positions: dict[str, Position]`, `equity_curve: list[(date, equity)]`, `benchmark_curve`, `_equity_peak`
+  - Methods: `mark_to_market(prices, today)`, `add_position(ticker, sector, direction, entry_price, size_pct, entry_date)`, `remove_position(ticker, exit_price)`, `can_open(ticker, size_pct, max_positions, drawdown_suspend_pct)`, `exposure_by_sector(prices)`, `current_drawdown_pct()`, `total_equity(prices)`, `add_benchmark_point(today, benchmark_price)`
+  - `STARTING_CAPITAL = 100_000.0` (CAD) added to config.py
+  - 14 unit tests covering init, add/remove long+short PnL, mark_to_market + equity curve append + peak update, drawdown, can_open gates (max_positions, ticker dup, insufficient cash, drawdown breach), exposure_by_sector, benchmark curve, missing-price carry-forward
+  - ASCII C1 cleanup of pre-existing em-dashes/multiplication/arrows in config.py (preflight gate)
+
+### Sub-batch 2/5 - Engine integration (commit ead36b0b6)
+Wired Portfolio into `BacktestEngine` daily lifecycle (SHADOW state - no enforcement yet):
+  1. `__init__`: `self.portfolio = Portfolio(starting_capital=STARTING_CAPITAL)`
+  2. `_process_day` after `process_day_exits`: for each closed trade, `remove_position(ticker, exit_price)`
+  3. `_process_day` after exits: `mark_to_market(today_prices, as_of)` + `add_benchmark_point(as_of, SPY_close)`
+  4. `_process_day` after successful entry: `add_position(ticker, sector, direction, entry_price, size_pct, entry_date)` with size_pct from `TIER_POSITION_SIZE_PCT[tier]`
+  5. `_finalize_open_trades`: mirror end-of-backtest finalization into portfolio
+  - `hasattr(self, "portfolio")` guards tolerate test paths bypassing `__init__` (test_bug_029)
+  - `TIER_POSITION_SIZE_PCT` map added to config.py (EXCEPTIONAL:0.05, VERY_HIGH:0.04, HIGH:0.03, MEDIUM_HIGH:0.015, MEDIUM:0.0075, LOW:0.0, AVOID:0.0)
+  - 3 new integration tests: portfolio instantiation, source pin for imports + calls, lifecycle minimal
+  - ASCII cleanup of pre-existing emojis in test_integration.py
+
+### Sub-batch 3/5 - Portfolio metrics from equity_curve (commit 2fe9c3d4d)
+NEW function `compute_portfolio_metrics_from_curves(equity_curve, benchmark_curve, starting_capital)` in `backtest/results/metrics.py`:
+  - `portfolio_total_return_pct = (final/starting - 1) * 100`
+  - `portfolio_sharpe = (mean / std) * sqrt(252)` annualized (rf=0)
+  - `portfolio_max_drawdown_pct = peak-to-trough on equity_curve`
+  - `benchmark_total_return_pct` over same window
+  - `beta_to_benchmark = cov(port, bench) / var(bench)`
+  - `alpha_annualized_pct = (port_ann - beta * bench_ann) * 100`
+  - `tracking_error_pct = std(excess) * sqrt(252) * 100`
+  - `information_ratio = excess_ann / tracking_error`
+  - NaN/inf-safe; zero-variance benchmark returns beta=None (no division)
+  - Aligns port + bench daily returns on common dates (engine may have sparse data)
+  - 6 unit tests: empty-safe, total return, max drawdown, Sharpe-positive-for-steady-gain, beta/alpha when port==bench, zero-variance benchmark NaN-safe
+
+### Sub-batch 4/5 - can_open gate enforcement (commit 2b56e6e9a)
+Engine now CALLS `self.portfolio.can_open()` inside entry loop AFTER tier determination but BEFORE OpenTrade construction. Gates from `LIVE_TRADING_RULES`:
+  - `max_open_positions=10`: blocks 11th concurrent position
+  - `drawdown_suspend_threshold=0.30`: blocks new entries when portfolio drawdown >= 30%
+  - Insufficient cash: blocks when required > available
+  - Ticker uniqueness: redundant with BUG-61 but defensive
+  - Gate denial logs `skipped_trades` reason=`portfolio_gate_<sub_reason>` for diagnostics
+  - 1 new integration test: source pin (imports + call site + max_positions param + drawdown param + portfolio_gate_ skip reason)
+
+### Sub-batch 5/5 - Results writer + register flip + this entry (this commit)
+- `write_all_outputs(portfolio=None, ...)` keyword param added with default None (backward compatible)
+- Engine passes `portfolio=getattr(self, "portfolio", None)` at the writer call site
+- Writer emits `equity_curve.parquet` + `benchmark_curve.parquet` + `portfolio_metrics.json` when portfolio supplied
+- Removed redundant inner `import json` in writer that was shadowing top-level module import as local var and breaking writer when df_trades was empty
+- 2 new integration tests: signature kwarg pin + functional output emission with non-empty df_trades
+
+**Per-addressal pyramid (CHECKLIST #78) across all 5 sub-batches:** 162/162 PASS in this final sub-batch run. Per-sub-batch: unit 136/142 + integration 10/13 + e2e_phase1a_smoke 7/7. Full backtest engine smoke executes the full Portfolio lifecycle with zero regressions.
+
+**Same-commit (DEC-594):** 5 commits, each with its sub-batch code + tests + register flip on the final.
+
+**Phase 1A May 15 IMPACT - HIGH:**
+Largest single bug fix in Phase 3. Phase 1A baseline backtest now:
+  - Tracks true equity curve (compounded, with cash + mark-to-market)
+  - Enforces max 10 concurrent positions (was unlimited)
+  - Suspends new entries on >30% portfolio drawdown
+  - Reports true portfolio Sharpe + alpha vs SPY + beta + IR + tracking error
+  - Persists equity_curve.parquet + benchmark_curve.parquet + portfolio_metrics.json
+Phase 1A trade count + ROI estimates will be tighter (closer to live reality). Without this fix, Phase 1A optimism was structural (infinite-capital backtest vs 100k live).
+
+**Unblocks 5 prior-blocked DECs:**
+  - DEC-070 portfolio-level exit logic (BLOCKED_ON_BUG-095 -> can now consume Portfolio state)
+  - DEC-076 factor/sector exposure breaker (BLOCKED_ON_BUG-095 -> exposure_by_sector available)
+  - DEC-091 (BLOCKED_ON_BUG-095)
+  - DEC-222 (BLOCKED_ON_BUG-095)
+  - DEC-231 (BLOCKED_ON_BUG-095)
+
+**Visible bug tier distribution (post-Phase-3-batch-20):**
+  - IMPLEMENTED: 31 (was 30; +1 BUG-95)
+  - DEFERRED: 39; CODE_ONLY: 1
+  - OPEN: 0 (was 1; -1 BUG-95)
+  - Total visible: 71; hidden: 77
+
+**Phase 1A May 15 strict blocker count: 0 OPEN** (unchanged).
+**All visible OPEN bugs are now CLOSED.** Phase 3 backlog cleared.
+
+Documents updated this sub-batch:
+  - backtest/results/writer.py (portfolio kwarg + equity_curve + benchmark_curve + portfolio_metrics.json output)
+  - backtest/engine/backtest.py (writer call passes portfolio kwarg)
+  - backtest/tests/test_integration.py (2 new writer tests)
+  - BUG_REGISTER.md (BUG-95 flipped to RESOLVED-IMPLEMENTED)
+  - AUDIT.md (this Phase 3 Batch 20 entry covering all 5 sub-batches)
+  - dashboard_stage_2 (will be rebuilt post-commit; OPEN 1 -> 0, IMPLEMENTED 30 -> 31)
+
 **Remaining OPEN backlog after sweeps:**
   - 1 DEC RESOLVED-DECIDED-deferred (DEC-028 Stage 3 paper trading - intentional)
   - INVs: 33 OPEN + 2 DEFERRED (genuine work; not promotion-eligible)

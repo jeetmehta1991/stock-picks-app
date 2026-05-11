@@ -1,5 +1,5 @@
 """
-results/writer.py — Write all 15 output files including walk-forward and improvements data.
+results/writer.py  -  Write all 15 output files including walk-forward and improvements data.
 """
 
 import json
@@ -25,13 +25,14 @@ def write_all_outputs(
     survivorship_info:  dict          = None,
     bonferroni:         dict          = None,
     output_dir:         Path          = Path("output"),
+    portfolio:          "object"      = None,   # BUG-95 sub-batch 5
 ):
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    # ── Trade log ── DEC-491 (Pass 53 Sprint 2): hybrid Parquet + CSV.
+    # -- Trade log -- DEC-491 (Pass 53 Sprint 2): hybrid Parquet + CSV.
     # Parquet is the canonical format (preserves nested dict/list types in
-    # signals_at_entry, agent_reasoning, context_bullets — DEC-492 coupling).
+    # signals_at_entry, agent_reasoning, context_bullets  -  DEC-492 coupling).
     # CSV preserved for human inspection / diffing; complex columns get
     # JSON-stringified, lossy on read but readable for owner inspection.
     if not df_trades.empty:
@@ -47,10 +48,13 @@ def write_all_outputs(
         df_csv = df_trades.copy()
         for col in df_csv.columns:
             if df_csv[col].dtype == "object":
-                # Check if any non-null cell is dict/list — stringify only those columns
+                # Check if any non-null cell is dict/list - stringify only those columns
+                # (BUG-95 sub-batch 5: removed redundant inner `import json`; it
+                # was shadowing the module-top-level json import as a local var
+                # and breaking my new portfolio_metrics.json write below when
+                # df_trades was empty and this branch was skipped.)
                 sample = df_csv[col].dropna().head(5)
                 if any(isinstance(v, (dict, list)) for v in sample):
-                    import json
                     df_csv[col] = df_csv[col].apply(
                         lambda v: json.dumps(v, default=str) if isinstance(v, (dict, list)) else v
                     )
@@ -60,7 +64,7 @@ def write_all_outputs(
         df_trades.to_csv(output_dir / "trade_log.csv", index=False)
         logger.info("Wrote trade_log.csv (0 trades)")
 
-    # ── Backtest results ──
+    # -- Backtest results --
     if not metrics.empty:
         csv_m = metrics.drop(columns=["regime_details","passes"], errors="ignore")
         csv_m.to_csv(output_dir / "backtest_results.csv", index=False)
@@ -85,7 +89,7 @@ def write_all_outputs(
             wf_map = walk_forward.set_index("strategy")["verdict"].to_dict()
             winners["walk_forward_verdict"] = winners["strategy"].map(wf_map)
 
-        # Strategy-regime matrix — the primary output for the new per-regime approach
+        # Strategy-regime matrix  -  the primary output for the new per-regime approach
         try:
             if "regime_verdicts" in metrics.columns:
                 from backtest.config import MARKET_REGIMES
@@ -121,7 +125,7 @@ def write_all_outputs(
             }, f, indent=2, default=str)
         logger.info("Wrote winning_strategies.json (%d winners)", len(winners))
 
-    # ── Regime performance ──
+    # -- Regime performance --
     if "regime" in df_trades and "strategy" in df_trades:
         rows = []
         for strat, grp in df_trades.groupby("strategy"):
@@ -138,14 +142,14 @@ def write_all_outputs(
         pd.DataFrame(rows).to_csv(output_dir / "regime_performance.csv", index=False)
         logger.info("Wrote regime_performance.csv")
 
-    # ── Exit comparison ──
+    # -- Exit comparison --
     if not exit_compare.empty:
         exit_compare.to_csv(output_dir / "exit_strategy_comparison.csv", index=False)
         best = exit_compare[exit_compare.get("recommended", False) == True].copy()
 
     if trade_exit_detail is not None and not trade_exit_detail.empty:
         trade_exit_detail.to_csv(output_dir / "trade_exit_detail.csv", index=False)
-        logger.info("Wrote trade_exit_detail.csv — %d rows (%d trades × exits; %d cols incl Tier 1-4 context)",
+        logger.info("Wrote trade_exit_detail.csv  -  %d rows (%d trades x exits; %d cols incl Tier 1-4 context)",
                     len(trade_exit_detail),
                     trade_exit_detail["ticker"].count() if "ticker" in trade_exit_detail.columns else 0,
                     len(trade_exit_detail.columns))
@@ -154,10 +158,10 @@ def write_all_outputs(
 
         # Pass 53 Day-9-evening v2 owner reframe: per-EXIT conditional analysis
         # (not per-dim universal best). Output 3 deliverables:
-        #   1. exit_method_multi_dim_cube.csv — long-form cube of exit_method ×
-        #      (regime × sector × cap × vol × hold-band) with metrics per cell.
-        #   2. exit_sweet_spots.csv — per-exit top-20 conditions where IT dominates.
-        #   3. exit_pairwise_dominance.csv — for each (exit_A, exit_B, condition),
+        #   1. exit_method_multi_dim_cube.csv  -  long-form cube of exit_method x
+        #      (regime x sector x cap x vol x hold-band) with metrics per cell.
+        #   2. exit_sweet_spots.csv  -  per-exit top-20 conditions where IT dominates.
+        #   3. exit_pairwise_dominance.csv  -  for each (exit_A, exit_B, condition),
         #      does A beat B?
         # Plus per-dim marginal aggregates (kept; useful as 1D slice view).
         from backtest.engine.exit_context import CONTEXT_COLUMN_NAMES
@@ -185,36 +189,36 @@ def write_all_outputs(
             except Exception as exc:
                 logger.debug("exit_by_%s aggregate failed: %s", dim, exc)
 
-        # Multi-dim conditional cube (exit_method × condition-combo)
+        # Multi-dim conditional cube (exit_method x condition-combo)
         try:
             available_dims = [d for d in DEFAULT_CONDITION_DIMS
                               if d in trade_exit_detail.columns]
             cube = compute_multi_dim_cube(trade_exit_detail, dims=available_dims)
             if not cube.empty:
                 cube.to_csv(output_dir / "exit_method_multi_dim_cube.csv", index=False)
-                logger.info("Wrote exit_method_multi_dim_cube.csv — %d cells × %d dims",
+                logger.info("Wrote exit_method_multi_dim_cube.csv  -  %d cells x %d dims",
                             len(cube), len(available_dims))
 
                 # Per-exit sweet spots (top-20 per exit by edge over runner-up)
                 spots = find_sweet_spots(cube, dims=available_dims)
                 if not spots.empty:
                     spots.to_csv(output_dir / "exit_sweet_spots.csv", index=False)
-                    logger.info("Wrote exit_sweet_spots.csv — %d rows (top-20 per exit_method)",
+                    logger.info("Wrote exit_sweet_spots.csv  -  %d rows (top-20 per exit_method)",
                                 len(spots))
 
                 # Pairwise dominance (exit_A beats exit_B?)
                 dom = compute_pairwise_dominance(cube, dims=available_dims)
                 if not dom.empty:
                     dom.to_csv(output_dir / "exit_pairwise_dominance.csv", index=False)
-                    logger.info("Wrote exit_pairwise_dominance.csv — %d (exit_A, exit_B, condition) rows",
+                    logger.info("Wrote exit_pairwise_dominance.csv  -  %d (exit_A, exit_B, condition) rows",
                                 len(dom))
         except Exception as exc:
             logger.warning("Multi-dim conditional analysis failed: %s", exc)
 
-        # DEC-578 7-gate Phase 1B-α verdict cube (Pass 53 Day-9-evening v5
+        # DEC-578 7-gate Phase 1B-alpha verdict cube (Pass 53 Day-9-evening v5
         # engine wiring per DEC-594). Apply per-cell 7-gate to actual trade
-        # log (not counterfactual) — produces verdict_cube.csv mapping
-        # (strategy × regime × sector × cap × vol) → PASS / FAIL_<gate> /
+        # log (not counterfactual)  -  produces verdict_cube.csv mapping
+        # (strategy x regime x sector x cap x vol) -> PASS / FAIL_<gate> /
         # INSUFFICIENT_SAMPLE.
         try:
             from backtest.results.seven_gate_verdict import compute_verdict_cube
@@ -231,7 +235,7 @@ def write_all_outputs(
                         verdict_cube_df.to_csv(output_dir / "verdict_cube.csv", index=False)
                         n_pass = (verdict_cube_df["verdict"] == "PASS").sum()
                         logger.info(
-                            "Wrote verdict_cube.csv — %d cells | PASS=%d (DEC-578 7-gate)",
+                            "Wrote verdict_cube.csv  -  %d cells | PASS=%d (DEC-578 7-gate)",
                             len(verdict_cube_df), n_pass,
                         )
         except Exception as exc:
@@ -241,7 +245,7 @@ def write_all_outputs(
                     "multi-dim cube + sweet-spots + pairwise dominance",
                     len(CONTEXT_COLUMN_NAMES))
 
-    # ── Walk-forward validation ──
+    # -- Walk-forward validation --
     # Portfolio-level summary with tier-based position sizing
     try:
         from backtest.results.metrics import compute_portfolio_summary
@@ -254,7 +258,51 @@ def write_all_outputs(
     except Exception as e:
         logger.debug("Portfolio summary failed: %s", e)
 
-    # Sector concentration analysis — how often were we concentrated in one sector?
+    # BUG-95 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 20 Sub-batch 5/5
+    # 2026-05-10 (owner-approved Option A): write equity_curve.parquet +
+    # portfolio_metrics.json from the canonical Portfolio.equity_curve. These
+    # are the TRUE portfolio-level metrics (compounded equity Sharpe + alpha/
+    # beta vs SPY) NOT the per-trade pnl_pct approximations.
+    if portfolio is not None:
+        try:
+            from backtest.results.metrics import (
+                compute_portfolio_metrics_from_curves,
+            )
+            # Persist equity_curve as Parquet for downstream analysis
+            if portfolio.equity_curve:
+                eq_df = pd.DataFrame(portfolio.equity_curve,
+                                     columns=["date", "equity"])
+                eq_df.to_parquet(output_dir / "equity_curve.parquet",
+                                 index=False)
+                logger.info("Wrote equity_curve.parquet (%d days)", len(eq_df))
+            if portfolio.benchmark_curve:
+                bench_df = pd.DataFrame(portfolio.benchmark_curve,
+                                        columns=["date", "benchmark_close"])
+                bench_df.to_parquet(output_dir / "benchmark_curve.parquet",
+                                    index=False)
+                logger.info("Wrote benchmark_curve.parquet (%d days)",
+                            len(bench_df))
+            # Compute and write portfolio metrics
+            port_metrics = compute_portfolio_metrics_from_curves(
+                portfolio.equity_curve,
+                portfolio.benchmark_curve,
+                portfolio.starting_capital,
+            )
+            (output_dir / "portfolio_metrics.json").write_text(
+                json.dumps(port_metrics, indent=2, default=str))
+            logger.info(
+                "BUG-95 portfolio_metrics: return=%s%% sharpe=%s max_dd=%s%% "
+                "alpha=%s%% beta=%s",
+                port_metrics.get("portfolio_total_return_pct"),
+                port_metrics.get("portfolio_sharpe"),
+                port_metrics.get("portfolio_max_drawdown_pct"),
+                port_metrics.get("alpha_annualized_pct"),
+                port_metrics.get("beta_to_benchmark"),
+            )
+        except Exception as e:
+            logger.warning("BUG-95 portfolio metrics write failed: %s", e)
+
+    # Sector concentration analysis  -  how often were we concentrated in one sector?
     if "sector" in df_trades.columns and "entry_date" in df_trades.columns:
         try:
             df_trades["entry_date"] = pd.to_datetime(df_trades["entry_date"])
@@ -272,10 +320,10 @@ def write_all_outputs(
         walk_forward.to_csv(output_dir / "walk_forward_validation.csv", index=False)
         robust  = (walk_forward["verdict"] == "ROBUST").sum()
         overfit = (walk_forward["verdict"] == "OVERFIT").sum()
-        logger.info("Wrote walk_forward_validation.csv — ROBUST=%d OVERFIT=%d",
+        logger.info("Wrote walk_forward_validation.csv  -  ROBUST=%d OVERFIT=%d",
                     robust, overfit)
 
-    # ── IS/OOS granular trade splits ──
+    # -- IS/OOS granular trade splits --
     # In-sample: 2022-01-01 to 2024-12-31 | Out-of-sample: 2025-01-01 to 2026-03-31
     if "entry_date" in df_trades.columns:
         df_trades["entry_date"] = pd.to_datetime(df_trades["entry_date"])
@@ -286,7 +334,7 @@ def write_all_outputs(
         logger.info("Wrote IS trade log: %d trades | OOS trade log: %d trades",
                     len(is_trades), len(oos_trades))
 
-    # ── Improvements summary ──
+    # -- Improvements summary --
     improvements = {
         "generated_at":        datetime.utcnow().isoformat(),
         "transaction_costs": {
@@ -306,7 +354,7 @@ def write_all_outputs(
     with open(output_dir / "improvements_summary.json", "w") as f:
         json.dump(improvements, f, indent=2, default=str)
 
-    # ── Smart money ──
+    # -- Smart money --
     if "smart_money_score" in df_trades:
         rows = []
         for tier in range(0, 11, 2):
@@ -318,7 +366,7 @@ def write_all_outputs(
                          "avg_pnl":  round(g["pnl_pct"].mean(), 4)})
         pd.DataFrame(rows).to_csv(output_dir / "smart_money_combined.csv", index=False)
 
-    # ── Confidence tier performance ──
+    # -- Confidence tier performance --
     if "confidence_tier" in df_trades:
         from backtest.results.metrics import compute_confidence_tier_metrics
         tier_metrics = compute_confidence_tier_metrics(df_trades)
@@ -335,19 +383,19 @@ def write_all_outputs(
             tier_compare["downgraded"] = tier_compare.apply(
                 lambda r: r["confidence_tier"] < r["preliminary_tier"], axis=1)
             tier_compare.to_csv(output_dir / "tier_adjustment_analysis.csv", index=False)
-            logger.info("Wrote tier_adjustment_analysis.csv — agent upgrade/downgrade rates")
+            logger.info("Wrote tier_adjustment_analysis.csv  -  agent upgrade/downgrade rates")
 
-    # ── Placeholder CSVs ──
+    # -- Placeholder CSVs --
     for fname in ["congressional_correlation.csv", "insider_correlation.csv"]:
         p = output_dir / fname
         if not p.exists():
             pd.DataFrame(columns=["signal","trades","win_rate","avg_pnl"]).to_csv(p, index=False)
 
-    # ── Skipped + circuit breakers ──
+    # -- Skipped + circuit breakers --
     pd.DataFrame(skipped).to_csv(output_dir / "skipped_trades.csv", index=False)
     pd.DataFrame(cb_log).to_csv(output_dir / "circuit_breaker_log.csv", index=False)
 
-    # ── HTML report ──
+    # -- HTML report --
     _write_html(df_trades, metrics, exit_compare, walk_forward,
                 survivorship_info, bonferroni, output_dir)
 
@@ -368,7 +416,7 @@ def _write_html(df, metrics, exit_compare, walk_forward,
     def wr_cell(wr):
         pct = round(wr*100, 1)
         c   = "#3fb950" if wr >= 0.55 else "#e3b341" if wr >= 0.45 else "#f85149"
-        return f'<td style="color:{c};font-weight:500">{pct}%{"  ✓" if wr>=0.55 else ""}</td>'
+        return f'<td style="color:{c};font-weight:500">{pct}%{"  [ok]" if wr>=0.55 else ""}</td>'
 
     strat_rows = ""
     if not metrics.empty:
@@ -380,7 +428,7 @@ def _write_html(df, metrics, exit_compare, walk_forward,
         for _, r in metrics.head(40).iterrows():
             pc     = "#3fb950" if r.get("total_roi_pct",0)>0 else "#f85149"
             mc     = "#f85149" if r.get("max_drawdown_pct",0)<-10 else "#e3b341"
-            wfv    = wf_map.get(r["strategy"],"—")
+            wfv    = wf_map.get(r["strategy"]," - ")
             wf_col = "#3fb950" if wfv=="ROBUST" else "#f85149" if wfv=="OVERFIT" else "#e3b341"
             strat_rows += f"""<tr>
               <td style="color:#58a6ff;font-weight:600">{r['strategy']}</td>
@@ -391,9 +439,9 @@ def _write_html(df, metrics, exit_compare, walk_forward,
               <td>{r.get('profit_factor',0):.2f}</td>
               <td style="color:{pc}">{r.get('total_roi_pct',0):.1f}%</td>
               <td style="color:{mc}">{r.get('max_drawdown_pct',0):.1f}%</td>
-              <td style="font-size:11px">{", ".join(r.get('best_regimes',[]) or []) or "—"}</td>
+              <td style="font-size:11px">{", ".join(r.get('best_regimes',[]) or []) or " - "}</td>
               <td style="color:{wf_col};font-weight:500">{wfv}</td>
-              <td>{'✅' if r.get('passes_all') else ''}{'⚠️' if r.get('audit_flags') else ''}</td>
+              <td>{'[ok]' if r.get('passes_all') else ''}{'[WARN]' if r.get('audit_flags') else ''}</td>
             </tr>"""
 
     # Walk-forward summary table
@@ -416,7 +464,7 @@ def _write_html(df, metrics, exit_compare, walk_forward,
 
     html = f"""<!DOCTYPE html><html lang="en"><head>
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Backtest Report — {ts}</title>
+<title>Backtest Report  -  {ts}</title>
 <style>
 *{{box-sizing:border-box;margin:0;padding:0}}
 body{{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d9;padding:2rem 1rem}}
@@ -441,7 +489,7 @@ tr:hover td{{background:#1c2128}}
 footer{{text-align:center;margin-top:3rem;font-size:.75rem;color:#484f58;
         padding-top:1rem;border-top:1px solid #21262d}}
 </style></head><body>
-<h1>Backtest Report — Stage 2</h1>
+<h1>Backtest Report  -  Stage 2</h1>
 <p style="color:#8b949e;font-size:.85rem">Generated {ts} &nbsp;|&nbsp; {n_s} strategy classes (Layer 1 baseline; full layered roster per CANONICAL_FACTS.md F-002) &nbsp;|&nbsp; 17 exit methods (per F-004) &nbsp;|&nbsp; 5 improvements applied</p>
 
 <div class="stats">
@@ -459,42 +507,42 @@ footer{{text-align:center;margin-top:3rem;font-size:.75rem;color:#484f58;
 <div class="improvements">
   <div class="imp-card"><div class="title">Transaction costs</div>
     <div class="val">-{cost_roi:.2f}% total</div>
-    <div class="sub">0.08% ETF · 0.10% large-cap · 0.15% mid-cap round-trip</div></div>
+    <div class="sub">0.08% ETF . 0.10% large-cap . 0.15% mid-cap round-trip</div></div>
   <div class="imp-card"><div class="title">Survivorship bias haircut</div>
     <div class="val">-{sb.get('haircut_pct',0):.1f}% applied</div>
-    <div class="sub">2% annual over {sb.get('years',3):.1f} years — gross {sb.get('gross_roi',0):.1f}% → adjusted {sb.get('adjusted_roi',0):.1f}%</div></div>
+    <div class="sub">2% annual over {sb.get('years',3):.1f} years  -  gross {sb.get('gross_roi',0):.1f}% -> adjusted {sb.get('adjusted_roi',0):.1f}%</div></div>
   <div class="imp-card"><div class="title">Walk-forward validation</div>
-    <div class="val">In-sample 2022-23 · OOS 2024</div>
-    <div class="sub">ROBUST = passes both · OVERFIT = fails out-of-sample</div></div>
+    <div class="val">In-sample 2022-23 . OOS 2024</div>
+    <div class="sub">ROBUST = passes both . OVERFIT = fails out-of-sample</div></div>
   <div class="imp-card"><div class="title">Correlation filter</div>
     <div class="val">Max 0.70 correlation</div>
-    <div class="sub">Max 3 positions per sector · prevents concentrated drawdowns</div></div>
+    <div class="sub">Max 3 positions per sector . prevents concentrated drawdowns</div></div>
   <div class="imp-card"><div class="title">Slippage model</div>
     <div class="val">Applied at entry</div>
-    <div class="sub">Spread + gap penalty · 0.03% ETF · 0.08% large-cap · 0.15% high-vol</div></div>
+    <div class="sub">Spread + gap penalty . 0.03% ETF . 0.08% large-cap . 0.15% high-vol</div></div>
   <div class="imp-card"><div class="title">Bonferroni correction</div>
     <div class="val">{bon.get('min_trades_required',200)}+ trades required</div>
-    <div class="sub">{n_s} strategy classes tested (Layer 1 baseline) · adjusted p={bon.get('adjusted_significance',0):.5f}</div></div>
+    <div class="sub">{n_s} strategy classes tested (Layer 1 baseline) . adjusted p={bon.get('adjusted_significance',0):.5f}</div></div>
 </div>
 
 <h2>Strategy performance (net of transaction costs)</h2>
-<div class="note"><strong>Pass criteria:</strong> 55%+ win rate · profit factor &gt;1.2 · {bon.get('min_trades_required',100)}+ trades · 2+ regimes · positive net ROI · max drawdown &lt;20%
-&nbsp;·&nbsp; ⚠️ = flagged for look-ahead bias audit</div>
+<div class="note"><strong>Pass criteria:</strong> 55%+ win rate . profit factor &gt;1.2 . {bon.get('min_trades_required',100)}+ trades . 2+ regimes . positive net ROI . max drawdown &lt;20%
+&nbsp;.&nbsp; [WARN] = flagged for look-ahead bias audit</div>
 <table><thead><tr><th>Strategy</th><th>Category</th><th>L/S</th><th>Trades</th>
 <th>Win rate</th><th>Profit factor</th><th>Net ROI</th><th>Max DD</th><th>Regimes</th><th>Walk-forward</th><th>Pass</th>
 </tr></thead><tbody>{strat_rows or '<tr><td colspan="11" style="text-align:center;color:#484f58;padding:2rem">No data yet</td></tr>'}</tbody></table>
 
-<h2>Walk-forward validation — in-sample (2022-23) vs out-of-sample (2024)</h2>
-<div class="note"><strong>ROBUST</strong> = strategy passes both periods — real edge &nbsp;·&nbsp;
-<strong>OVERFIT</strong> = passes in-sample, fails 2024 — curve-fitted to training data, do not trade &nbsp;·&nbsp;
+<h2>Walk-forward validation  -  in-sample (2022-23) vs out-of-sample (2024)</h2>
+<div class="note"><strong>ROBUST</strong> = strategy passes both periods  -  real edge &nbsp;.&nbsp;
+<strong>OVERFIT</strong> = passes in-sample, fails 2024  -  curve-fitted to training data, do not trade &nbsp;.&nbsp;
 Win rate degradation &gt;5% is a red flag</div>
 <table><thead><tr><th>Strategy</th><th>Verdict</th><th>IS trades</th><th>IS win rate</th>
 <th>OOS trades</th><th>OOS win rate</th><th>WR degradation</th></tr></thead><tbody>
 {wf_rows or '<tr><td colspan="7" style="text-align:center;color:#484f58;padding:2rem">Run full Phase 1A to see walk-forward results</td></tr>'}
 </tbody></table>
 
-<footer><p>Stock Picks &amp; Automated Trading System — Stage 2 &nbsp;·&nbsp; All improvements applied</p>
-<p>Point-in-time data · No look-ahead bias · {n_s} strategy classes (Layer 1 baseline; full roster CANONICAL_FACTS.md F-002) · 17 exits (F-004) · 4 regime types + 7 historical windows (F-006) · 5 improvements</p></footer>
+<footer><p>Stock Picks &amp; Automated Trading System  -  Stage 2 &nbsp;.&nbsp; All improvements applied</p>
+<p>Point-in-time data . No look-ahead bias . {n_s} strategy classes (Layer 1 baseline; full roster CANONICAL_FACTS.md F-002) . 17 exits (F-004) . 4 regime types + 7 historical windows (F-006) . 5 improvements</p></footer>
 </body></html>"""
 
     with open(output_dir / "backtest_report.html", "w", encoding="utf-8") as f:
