@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-11T18:30:15.028991+00:00",
+  "generated_at": "2026-05-11T18:36:12.523861+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -5163,8 +5163,8 @@
     },
     {
       "id": "DECISION-156",
-      "title": "Commit message references explicit CHECKLIST items followed \u2014 Commit messages reference CH",
-      "status": "RESOLVED-DECIDED",
+      "title": "Commit message references explicit CHECKLIST items followed \u2014 Commit messages reference CH Pass 53 v8h+1 Phase 3 Batch 47 2026-05-11 (owner-approved Path C auto",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X22 \u2014 Process discipline",
       "pass_intro": "Pass 40",
       "pass_resolved": "43",
@@ -5195,10 +5195,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -5563,8 +5563,8 @@
     },
     {
       "id": "DECISION-167",
-      "title": "Retrospective cadence (every N audit passes) \u2014 Retrospective cadence: every 10 audit passe",
-      "status": "RESOLVED-DECIDED",
+      "title": "Retrospective cadence (every N audit passes) \u2014 Retrospective cadence: every 10 audit passe Pass 53 v8h+1 Phase 3 Batch 47 2026-05-11 (owner-approved Path C auto",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X25 \u2014 Process workflow",
       "pass_intro": "Pass 41",
       "pass_resolved": "43",
@@ -5595,10 +5595,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -7524,7 +7524,7 @@
     {
       "id": "DECISION-217",
       "title": "Audit and remove dead code (engine.py vs engine/backtest.py duplication etc.) Pass 52 turn 95 owner-approved RESOLVED-DECIDED: Audit and remove dead code. Joint",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X33 \u2014 Architecture Hygiene",
       "pass_intro": "Pass 45",
       "pass_resolved": "-",
@@ -7555,16 +7555,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-218",
       "title": "Documentation audit \u2014 role of EXPLANATION/PROGRESS/UNIVERSAL_LEARNINGS, README content Pass 52 turn 95 owner-approved RESOLVED-DECIDED: Documentation audit fram",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X33 \u2014 Architecture Hygiene",
       "pass_intro": "Pass 45",
       "pass_resolved": "-",
@@ -7595,16 +7595,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-219",
       "title": "GitHub Actions audit \u2014 security, schedule, failure alerting, idempotency Pass 52 turn 95 owner-approved RESOLVED-DECIDED: GitHub Actions audit. Inventory of 6 w",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X33 \u2014 Architecture Hygiene",
       "pass_intro": "Pass 45",
       "pass_resolved": "-",
@@ -7635,16 +7635,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-220",
       "title": "Audit sync_from_claude.yml \u2014 disable if it bypasses owner approval Pass 52 turn 95 owner-approved RESOLVED-DECIDED with INSPECTION COMPLETE turn 95: sync_from_c",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X33 \u2014 Architecture Hygiene",
       "pass_intro": "Pass 45",
       "pass_resolved": "-",
@@ -7675,10 +7675,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -7804,7 +7804,7 @@
     {
       "id": "DECISION-228",
       "title": "Fetcher reliability audit (retry/rate-limit/idempotency per API) Pass 52 turn 85 owner-approved RESOLVED-DECIDED: Fetcher reliability audit (retry/rate-limit/id",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X35 \u2014 Reliability + Determinism",
       "pass_intro": "Pass 45",
       "pass_resolved": "-",
@@ -7835,16 +7835,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-229",
       "title": "Config management upgrade (pydantic + env overrides + change log) Pass 52 turn 85 owner-approved RESOLVED-DECIDED with HARD-REVERSIBILITY sandbox-prototype: Con",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X35 \u2014 Reliability + Determinism",
       "pass_intro": "Pass 45",
       "pass_resolved": "-",
@@ -7875,16 +7875,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-230",
       "title": "Logging audit + standard (structured JSON, rotation, level standardization) Pass 52 turn 85 owner-approved RESOLVED-DECIDED with python-json-logger library: Log",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X35 \u2014 Reliability + Determinism",
       "pass_intro": "Pass 45",
       "pass_resolved": "-",
@@ -7915,16 +7915,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-231",
       "title": "Audit all except Exception patterns; ensure WARNING+ logging with context Pass 52 turn 85 owner-approved RESOLVED-DECIDED: Audit all bare except Exception patte",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X35 \u2014 Reliability + Determinism",
       "pass_intro": "Pass 45",
       "pass_resolved": "-",
@@ -7955,10 +7955,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -8404,7 +8404,7 @@
     {
       "id": "DECISION-243",
       "title": "Owner Approval Queue file (pending decisions waiting on owner reply, by age) Pass 52 turn 119 RESOLVED-DECIDED Final: Owner Approval Queue file \u2014 track pending ",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X37 \u2014 Process / Owner Experience",
       "pass_intro": "Pass 45",
       "pass_resolved": "-",
@@ -8435,16 +8435,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-244",
       "title": "SESSION_START.md \u2014 Claude reads first in any new session for fast onboarding Pass 52 turn 119 RESOLVED-DECIDED Final: SESSION_START.md \u2014 Claude reads first in a",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X37 \u2014 Process / Owner Experience",
       "pass_intro": "Pass 45",
       "pass_resolved": "-",
@@ -8475,16 +8475,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-245",
-      "title": "Owner experience retrospective (periodic check-in on workflow productivity)",
-      "status": "RESOLVED-DECIDED",
+      "title": "Owner experience retrospective (periodic check-in on workflow productivity) Pass 53 v8h+1 Phase 3 Batch 47 2026-05-11 (owner-approved Path C auto-continue audit",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X37 \u2014 Process / Owner Experience",
       "pass_intro": "Pass 45",
       "pass_resolved": "52",
@@ -8515,10 +8515,10 @@
       "dependencies": "-",
       "description": "**Resolution:** Informal \u2014 flag friction when it surfaces. No formal cadence.",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -8604,7 +8604,7 @@
     {
       "id": "DECISION-248",
       "title": "Owner pre-commitment doc (rules owner commits to before losses) Pass 53 evening 2026-05-06 DEC-594 audit: PARTIAL-SPEC-ONLY (was RESOLVED-DECIDED; demoted via D",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X38 \u2014 Knowledge Gaps",
       "pass_intro": "Pass 45",
       "pass_resolved": "52",
@@ -8635,10 +8635,10 @@
       "dependencies": "DEC-594",
       "description": "**Resolution:** Build now. Lightweight 1-page document, ~5 owner-committed rules, lives in repo. To be drafted before paper trading begins.",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -9613,7 +9613,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 6,
+        "n_doc_refs": 7,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -10284,7 +10284,7 @@
     {
       "id": "DECISION-292",
       "title": "Decision\u2192CHECKLIST migration audit (quarterly, RESOLVED decisions to process rules) Pass 52 turn 119 RESOLVED-DECIDED Final: Decision\u2192CHECKLIST migration audit ",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X50 \u2014 Process Improvements",
       "pass_intro": "Pass 47",
       "pass_resolved": "-",
@@ -10315,10 +10315,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -17924,7 +17924,7 @@
     {
       "id": "DECISION-498",
       "title": "Per-turn document synchronization mandatory rule (CHECKLIST #67 codified). Pass 53 owner directive 2026-05-05 RESOLVED-DECIDED. RULE: at end of EVERY turn that ",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Process / cross-Sprint procedural rule",
       "pass_intro": "Pass 53",
       "pass_resolved": "53",
@@ -17955,10 +17955,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -19331,7 +19331,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 17,
+        "n_doc_refs": 18,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -26598,10 +26598,16 @@
   ],
   "recent_commits": [
     {
+      "sha": "bf3fd167",
+      "subject": "Pass 53 v8h+1: Phase 3 Batch 46 - Path C remaining X53 (DEC-319/320/323/390/391/394)",
+      "author": "jeetmehta1991",
+      "rel_time": "5 minutes ago"
+    },
+    {
       "sha": "60f58d4f",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 45 - Path C market-wide CB NYSE Rule 80B (DEC-314)",
       "author": "jeetmehta1991",
-      "rel_time": "25 minutes ago"
+      "rel_time": "31 minutes ago"
     },
     {
       "sha": "595bfe3f",
@@ -26655,7 +26661,7 @@
       "sha": "9a798135",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 36 - Path B Step 16 auto-proceed small themes (15 flips)",
       "author": "jeetmehta1991",
-      "rel_time": "13 hours ago"
+      "rel_time": "14 hours ago"
     },
     {
       "sha": "c3e4f4dd",
@@ -26679,7 +26685,7 @@
       "sha": "dafff2c1",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 31 - X4 Statistical Methodology audit (Path B Step 5)",
       "author": "jeetmehta1991",
-      "rel_time": "14 hours ago"
+      "rel_time": "15 hours ago"
     },
     {
       "sha": "4a129d79",
@@ -26745,7 +26751,7 @@
       "sha": "6a3b572e",
       "subject": "Pass 53 v8h+1: BUG-95 CRITICAL Portfolio class RESOLVED-IMPLEMENTED (Sub-batch 5/5 - FINAL)",
       "author": "jeetmehta1991",
-      "rel_time": "16 hours ago"
+      "rel_time": "17 hours ago"
     },
     {
       "sha": "2b56e6e9",
@@ -26770,44 +26776,18 @@
       "subject": "Pass 53 v8h+1: BUG-95 CRITICAL Portfolio class skeleton (Sub-batch 1/5 - owner-approved Option A)",
       "author": "jeetmehta1991",
       "rel_time": "17 hours ago"
-    },
-    {
-      "sha": "b04abeb7",
-      "subject": "Pass 53 auto-drift-sweep 2026-05-11 00:53: dashboard re-derive (no content drift)",
-      "author": "jeetmehta1991",
-      "rel_time": "18 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 6,
-    "modified": 4,
+    "count": 1,
+    "modified": 1,
     "added": 0,
-    "untracked": 2,
+    "untracked": 0,
     "deleted": 0,
     "files": [
       {
         "status": "M",
         "path": "AUDIT_INDEX.md"
-      },
-      {
-        "status": "M",
-        "path": "backtest/data/sentiment.py"
-      },
-      {
-        "status": "M",
-        "path": "backtest/data/universe.py"
-      },
-      {
-        "status": "M",
-        "path": "backtest/tests/test_unit.py"
-      },
-      {
-        "status": "??",
-        "path": "\"Backtesting universe/sector_history.csv\""
-      },
-      {
-        "status": "??",
-        "path": "scripts/refresh_aaii_sentiment.py"
       }
     ]
   },
@@ -27671,10 +27651,10 @@
     }
   ],
   "decision_status_counts": {
-    "RESOLVED-DECIDED": 151,
-    "RESOLVED-IMPLEMENTED": 189,
+    "RESOLVED-DECIDED": 140,
+    "RESOLVED-IMPLEMENTED": 205,
     "PARTIAL": 5,
-    "PARTIAL-SPEC-ONLY": 43,
+    "PARTIAL-SPEC-ONLY": 38,
     "DEFERRED_TO_STAGE_3": 36,
     "DEFERRED_TO_STAGE_4": 21,
     "DEFERRED": 2,
