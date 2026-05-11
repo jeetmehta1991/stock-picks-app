@@ -104,6 +104,127 @@ def _sharpe(pnl_series: pd.Series, hold_days_series: pd.Series = None) -> float:
     return round(float(pnl_series.mean() / pnl_series.std() * np.sqrt(trades_per_year)), 3)
 
 
+def _adf_test(equity_curve: pd.Series, alpha: float = 0.05) -> dict:
+    """DEC-414 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 41 2026-05-11
+    (owner-approved Path B Step B - statsmodels dependency).
+
+    Augmented Dickey-Fuller stationarity test on a per-strategy equity curve.
+    H0: series has unit root (non-stationary). H1: series is stationary.
+    Reject H0 (p < alpha) -> stationary -> strategy edge is consistent.
+    Fail to reject H0 -> non-stationary -> edge erosion / drift over time.
+
+    Inputs:
+      equity_curve: pd.Series of cumulative pnl (compounded equity)
+      alpha: significance level (default 0.05)
+
+    Returns dict with adf_statistic, p_value, is_stationary (bool), critical
+    values, note (insufficient_sample if n<20, ok if test ran).
+    """
+    if equity_curve.empty or len(equity_curve) < 20:
+        return {
+            "adf_statistic": None, "adf_p_value": None,
+            "is_stationary": None, "note": "insufficient_sample",
+        }
+    try:
+        from statsmodels.tsa.stattools import adfuller
+        # autolag=AIC to choose lag order; series dropped NaN
+        series = equity_curve.dropna()
+        if len(series) < 20:
+            return {
+                "adf_statistic": None, "adf_p_value": None,
+                "is_stationary": None, "note": "insufficient_sample",
+            }
+        result = adfuller(series, autolag="AIC")
+        adf_stat = float(result[0])
+        p_value = float(result[1])
+        is_stat = p_value < alpha
+        return {
+            "adf_statistic": round(adf_stat, 4),
+            "adf_p_value":   round(p_value, 4),
+            "is_stationary": is_stat,
+            "note": "ok" if is_stat else "non_stationary_edge_may_erode",
+        }
+    except Exception as exc:
+        return {
+            "adf_statistic": None, "adf_p_value": None,
+            "is_stationary": None, "note": f"adf_failed_{type(exc).__name__}",
+        }
+
+
+def _chow_test(equity_curve: pd.Series, split_idx: int = None, alpha: float = 0.05) -> dict:
+    """DEC-416 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 41 2026-05-11
+    (owner-approved Path B Step B).
+
+    Chow split-sample structural break test on equity curve. Linear models
+    fit before and after split_idx; F-test rejects "same slope/intercept".
+    Reject -> structural break (regime-change in strategy behavior).
+
+    Inputs:
+      equity_curve: pd.Series of equity values
+      split_idx: index to split sample (default = len/2)
+      alpha: significance level (default 0.05)
+
+    Returns dict with chow_f, chow_p, has_structural_break (bool), note.
+    Requires n>=20 with at least 5 obs on each side of split.
+    """
+    if equity_curve.empty or len(equity_curve) < 20:
+        return {
+            "chow_f_statistic": None, "chow_p_value": None,
+            "has_structural_break": None, "note": "insufficient_sample",
+        }
+    if split_idx is None:
+        split_idx = len(equity_curve) // 2
+    if split_idx < 5 or (len(equity_curve) - split_idx) < 5:
+        return {
+            "chow_f_statistic": None, "chow_p_value": None,
+            "has_structural_break": None, "note": "insufficient_split_subsets",
+        }
+    try:
+        import statsmodels.api as sm
+        from scipy.stats import f as f_dist
+        series = equity_curve.dropna().reset_index(drop=True)
+        if len(series) < 20:
+            return {
+                "chow_f_statistic": None, "chow_p_value": None,
+                "has_structural_break": None, "note": "insufficient_sample",
+            }
+        n = len(series)
+        x_all = sm.add_constant(np.arange(n).astype(float))
+        x1 = sm.add_constant(np.arange(split_idx).astype(float))
+        x2 = sm.add_constant(np.arange(n - split_idx).astype(float))
+        y_all = series.values
+        y1 = series.values[:split_idx]
+        y2 = series.values[split_idx:]
+        # Pooled vs separate residual sum of squares
+        rss_all = float(sm.OLS(y_all, x_all).fit().ssr)
+        rss1 = float(sm.OLS(y1, x1).fit().ssr)
+        rss2 = float(sm.OLS(y2, x2).fit().ssr)
+        k = 2  # parameters: intercept + slope
+        # Chow F-statistic: ((RSS_pooled - (RSS1 + RSS2)) / k) / ((RSS1 + RSS2) / (n - 2*k))
+        rss_split = rss1 + rss2
+        denom_df = n - 2 * k
+        if denom_df <= 0 or rss_split <= 0:
+            return {
+                "chow_f_statistic": None, "chow_p_value": None,
+                "has_structural_break": None, "note": "denom_invalid",
+            }
+        f_stat = ((rss_all - rss_split) / k) / (rss_split / denom_df)
+        # p-value from F-distribution with (k, n-2k) df
+        p_value = 1.0 - float(f_dist.cdf(f_stat, k, denom_df))
+        has_break = (p_value < alpha) and (f_stat > 0)
+        return {
+            "chow_f_statistic": round(f_stat, 4),
+            "chow_p_value":     round(p_value, 4),
+            "has_structural_break": has_break,
+            "note": "structural_break_detected" if has_break else "no_structural_break",
+        }
+    except Exception as exc:
+        return {
+            "chow_f_statistic": None, "chow_p_value": None,
+            "has_structural_break": None, "note": f"chow_failed_{type(exc).__name__}",
+        }
+
+
 def _time_in_market_metrics(df_trades: pd.DataFrame,
                             start_date=None, end_date=None) -> dict:
     """DEC-241 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 40 2026-05-11
@@ -522,6 +643,11 @@ def compute_strategy_metrics(df: pd.DataFrame, strategy: str) -> dict:
     event_bd = _event_window_breakdown(g)
     # DEC-408 event-conditional win rates (delta near vs far from event)
     event_wr = _event_conditional_win_rate(g)
+    # DEC-414 ADF stationarity test + DEC-416 Chow structural break test
+    # on the per-strategy compounded equity curve (DEC-111 children).
+    equity_curve = (1.0 + pnl / 100.0).cumprod()
+    adf_result = _adf_test(equity_curve)
+    chow_result = _chow_test(equity_curve)
     try:
         skew_val = float(pnl.skew()) if len(pnl) >= 3 else 0.0
         kurt_val = float(pnl.kurt()) if len(pnl) >= 4 else 3.0
@@ -704,6 +830,16 @@ def compute_strategy_metrics(df: pd.DataFrame, strategy: str) -> dict:
         "win_rate_far_from_event": event_wr.get("win_rate_far_from_event"),
         "win_rate_event_delta":    event_wr.get("win_rate_event_delta"),
         "event_wr_note":           event_wr.get("note"),
+        # DEC-414 ADF stationarity
+        "adf_statistic":         adf_result.get("adf_statistic"),
+        "adf_p_value":           adf_result.get("adf_p_value"),
+        "is_stationary":         adf_result.get("is_stationary"),
+        "adf_note":              adf_result.get("note"),
+        # DEC-416 Chow structural break
+        "chow_f_statistic":      chow_result.get("chow_f_statistic"),
+        "chow_p_value":          chow_result.get("chow_p_value"),
+        "has_structural_break":  chow_result.get("has_structural_break"),
+        "chow_note":             chow_result.get("note"),
         "sharpe_at_0bps":        cost_sensitivity.get("sharpe_at_0bps"),
         "sharpe_at_5bps":        cost_sensitivity.get("sharpe_at_5bps"),
         "sharpe_at_10bps":       cost_sensitivity.get("sharpe_at_10bps"),

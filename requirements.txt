@@ -19,3 +19,9 @@ requests>=2.28.0
 # Anthropic agents (Phase 1B+)
 anthropic>=0.20.0
 filelock>=1.4.0
+
+# Statistical methodology (DEC-111/414/416 Pass 53 Phase 3 Batch 41 owner-approved
+# 2026-05-11). statsmodels powers ADF stationarity test (DEC-414) and Chow
+# split-sample structural break test (DEC-416) on per-strategy equity curves.
+# Standard econometrics library; scipy and numpy already present.
+statsmodels>=0.14.0

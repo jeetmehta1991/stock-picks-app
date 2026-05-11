@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-11T14:32:34.113321+00:00",
+  "generated_at": "2026-05-11T15:17:12.910732+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -3524,7 +3524,7 @@
     {
       "id": "DECISION-111",
       "title": "Stationarity / structural break tests \u2014 Pass 52 owner-approved scoped to feasibility. 3 test types: (1) ADF on equity curve (~1000 daily obs, sufficient power);",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X4 \u2014 Statistical Methodology",
       "pass_intro": "Pass 39",
       "pass_resolved": "DEC-414,DEC-415,DEC-416",
@@ -3555,10 +3555,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -14684,18 +14684,18 @@
     {
       "id": "DECISION-414",
       "title": "DEC-111 Phase A \u2014 Add `statsmodels>=0.14.0` to requirements.txt. Implement ADF test on strategy equity curve (~1000 daily PnL observations). Output per strategy",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X4 \u2014 Statistical Methodology",
       "pass_intro": "Pass 52",
       "pass_resolved": "-",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
         "pushed": true,
-        "n_doc_refs": 7,
+        "n_doc_refs": 8,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -14715,10 +14715,10 @@
       "dependencies": "DEC-111",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -14764,18 +14764,18 @@
     {
       "id": "DECISION-416",
       "title": "DEC-111 Phase C \u2014 Chow split-sample structural break test. Only computed when n_trades \u2265 600 (300 per half). Split at midpoint; test if mean returns differ sign",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X4 \u2014 Statistical Methodology",
       "pass_intro": "Pass 52",
       "pass_resolved": "-",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
         "pushed": true,
-        "n_doc_refs": 4,
+        "n_doc_refs": 5,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -14795,10 +14795,10 @@
       "dependencies": "DEC-111",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -26598,28 +26598,34 @@
   ],
   "recent_commits": [
     {
+      "sha": "57fc539f",
+      "subject": "Pass 53 v8h+1: Phase 3 Batch 40 - Path C continuation (time-in-market + event-window macro correlation)",
+      "author": "jeetmehta1991",
+      "rel_time": "44 minutes ago"
+    },
+    {
       "sha": "1d143592",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 39 - Path C statistical methodology continuation (Sharpe daily + tiered min trades + audit threshold)",
       "author": "jeetmehta1991",
-      "rel_time": "15 minutes ago"
+      "rel_time": "60 minutes ago"
     },
     {
       "sha": "8c8b0aca",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 38 - Path C statistical methodology implementation (Sortino + Deflated Sharpe + Cost Sensitivity)",
       "author": "jeetmehta1991",
-      "rel_time": "38 minutes ago"
+      "rel_time": "83 minutes ago"
     },
     {
       "sha": "c32b58ba",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 37 - Path B Step 17 auto-proceed (10 flips)",
       "author": "jeetmehta1991",
-      "rel_time": "9 hours ago"
+      "rel_time": "10 hours ago"
     },
     {
       "sha": "9a798135",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 36 - Path B Step 16 auto-proceed small themes (15 flips)",
       "author": "jeetmehta1991",
-      "rel_time": "9 hours ago"
+      "rel_time": "10 hours ago"
     },
     {
       "sha": "c3e4f4dd",
@@ -26631,13 +26637,13 @@
       "sha": "34f32f71",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 33 - X51 CRITICAL Runtime Bugs audit (Path B Step 8) - 100% yield",
       "author": "jeetmehta1991",
-      "rel_time": "10 hours ago"
+      "rel_time": "11 hours ago"
     },
     {
       "sha": "e2449d23",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 32 - X1 Data + Universe audit (Path B Step 6)",
       "author": "jeetmehta1991",
-      "rel_time": "10 hours ago"
+      "rel_time": "11 hours ago"
     },
     {
       "sha": "dafff2c1",
@@ -26661,19 +26667,19 @@
       "sha": "a3894856",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 28 - SPEC_ONLY initiative kickoff (Path B Steps 1+2)",
       "author": "jeetmehta1991",
-      "rel_time": "11 hours ago"
+      "rel_time": "12 hours ago"
     },
     {
       "sha": "4910c590",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 27 - 12 DEC status flips (all 4 owner-approved items)",
       "author": "jeetmehta1991",
-      "rel_time": "11 hours ago"
+      "rel_time": "12 hours ago"
     },
     {
       "sha": "23275737",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 26 - Decisions ALL non-DEFERRED CLEAN (0 no-cells)",
       "author": "jeetmehta1991",
-      "rel_time": "11 hours ago"
+      "rel_time": "12 hours ago"
     },
     {
       "sha": "99f04c48",
@@ -26685,25 +26691,25 @@
       "sha": "8354df3d",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 24 - id_status substring-match bug FIXED (CRITICAL)",
       "author": "jeetmehta1991",
-      "rel_time": "12 hours ago"
+      "rel_time": "13 hours ago"
     },
     {
       "sha": "b845fd62",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 23 - Pyramid N/A defaults scaled to ALL ID kinds (owner directive)",
       "author": "jeetmehta1991",
-      "rel_time": "12 hours ago"
+      "rel_time": "13 hours ago"
     },
     {
       "sha": "fa2c140c",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 22 - Decisions dashboard cleanup (owner directive)",
       "author": "jeetmehta1991",
-      "rel_time": "12 hours ago"
+      "rel_time": "13 hours ago"
     },
     {
       "sha": "432b146b",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 21 - BUG-006 dashboard protocol-violation fix (owner-flagged)",
       "author": "jeetmehta1991",
-      "rel_time": "12 hours ago"
+      "rel_time": "13 hours ago"
     },
     {
       "sha": "6a3b572e",
@@ -26715,25 +26721,25 @@
       "sha": "2b56e6e9",
       "subject": "Pass 53 v8h+1: BUG-95 LIVE_TRADING_RULES enforcement via can_open gate (Sub-batch 4/5)",
       "author": "jeetmehta1991",
-      "rel_time": "13 hours ago"
+      "rel_time": "14 hours ago"
     },
     {
       "sha": "2fe9c3d4",
       "subject": "Pass 53 v8h+1: BUG-95 Portfolio metrics from equity_curve (Sub-batch 3/5)",
       "author": "jeetmehta1991",
-      "rel_time": "13 hours ago"
+      "rel_time": "14 hours ago"
     },
     {
       "sha": "ead36b0b",
       "subject": "Pass 53 v8h+1: BUG-95 Portfolio engine integration (Sub-batch 2/5 - shadow state)",
       "author": "jeetmehta1991",
-      "rel_time": "13 hours ago"
+      "rel_time": "14 hours ago"
     },
     {
       "sha": "93e4036a",
       "subject": "Pass 53 v8h+1: BUG-95 CRITICAL Portfolio class skeleton (Sub-batch 1/5 - owner-approved Option A)",
       "author": "jeetmehta1991",
-      "rel_time": "13 hours ago"
+      "rel_time": "14 hours ago"
     },
     {
       "sha": "b04abeb7",
@@ -26745,42 +26751,36 @@
       "sha": "5e68ae6c",
       "subject": "Pass 53 v8h+1: BUG-77 MEDIUM candidate ranking inflated by avoid entries FIXED (owner-approved Option A)",
       "author": "jeetmehta1991",
-      "rel_time": "14 hours ago"
+      "rel_time": "15 hours ago"
     },
     {
       "sha": "98ec8f35",
       "subject": "Pass 53 v8h+1: BUG-83 HIGH inverted PIT filter on get_congressional_detail FIXED (owner-approved Option A)",
       "author": "jeetmehta1991",
-      "rel_time": "15 hours ago"
+      "rel_time": "16 hours ago"
     },
     {
       "sha": "99a888a3",
       "subject": "Pass 53 v8h+1: BUG-61 HIGH multiple concurrent positions same ticker FIXED (owner-approved Option A)",
       "author": "jeetmehta1991",
-      "rel_time": "15 hours ago"
+      "rel_time": "16 hours ago"
     },
     {
       "sha": "cf8d9c24",
       "subject": "Pass 53 v8h+1: BUG-110 HIGH entry gap filter VERIFIED ENFORCED (stale audit finding)",
       "author": "jeetmehta1991",
-      "rel_time": "15 hours ago"
+      "rel_time": "16 hours ago"
     },
     {
       "sha": "a571c1c6",
       "subject": "Pass 53 v8h+1: BUG-80 HIGH exit slippage applied symmetrically (apply_exit_slippage helper + 2 wire-up sites)",
       "author": "jeetmehta1991",
-      "rel_time": "15 hours ago"
-    },
-    {
-      "sha": "b852347d",
-      "subject": "Pass 53 v8h+1: BUG-78 CRITICAL trailing stop lookahead bias FIXED",
-      "author": "jeetmehta1991",
-      "rel_time": "15 hours ago"
+      "rel_time": "16 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 3,
-    "modified": 3,
+    "count": 4,
+    "modified": 4,
     "added": 0,
     "untracked": 0,
     "deleted": 0,
@@ -26796,6 +26796,10 @@
       {
         "status": "M",
         "path": "backtest/tests/test_unit.py"
+      },
+      {
+        "status": "M",
+        "path": "requirements.txt"
       }
     ]
   },
@@ -26977,7 +26981,7 @@
     }
   ],
   "test_inventory": {
-    "total": 824,
+    "total": 831,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -27053,7 +27057,7 @@
       "test_stocktwits_smoke": 4,
       "test_supplementary_demo": 4,
       "test_supplementary_smoke": 6,
-      "test_unit": 162,
+      "test_unit": 169,
       "test_walk_forward_4fold": 6
     }
   },
@@ -27660,9 +27664,9 @@
   ],
   "decision_status_counts": {
     "RESOLVED-DECIDED": 163,
-    "RESOLVED-IMPLEMENTED": 171,
+    "RESOLVED-IMPLEMENTED": 174,
     "PARTIAL": 5,
-    "PARTIAL-SPEC-ONLY": 49,
+    "PARTIAL-SPEC-ONLY": 46,
     "DEFERRED_TO_STAGE_3": 36,
     "DEFERRED_TO_STAGE_4": 21,
     "DEFERRED": 2,
