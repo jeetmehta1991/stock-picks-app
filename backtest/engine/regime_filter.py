@@ -150,6 +150,168 @@ def get_vix_smoothed(vix_series: pd.Series, as_of: date, window: int = 5) -> Opt
 REGIME_STATES = ("bull", "neutral", "bear", "crisis")
 
 
+def multi_input_regime_score(
+    vix: Optional[float],
+    spy_above_200ema: Optional[bool],
+    yield_curve_spread: Optional[float] = None,
+    hy_spread_bps: Optional[float] = None,
+    icsa_yoy_pct: Optional[float] = None,
+    breadth_pct_above_50ema: Optional[float] = None,
+    sector_dispersion: Optional[float] = None,
+    aaii_bull_bear_spread: Optional[float] = None,
+    cnn_fg: Optional[float] = None,
+) -> dict:
+    """DEC-106 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 55 2026-05-11
+    (owner-approved Path C 5-DEC bundle). Multi-input regime scorecard
+    expanding original 2-input (VIX, SPY trend) classifier to 8+ inputs
+    per Pass 52 turn 61 owner spec. Each provided input contributes a
+    bullish/bearish vote in [-1, +1]; missing inputs are skipped (not
+    treated as neutral) so the score reflects only present evidence.
+
+    Vote calibrations (each clipped to [-1, +1]):
+      VIX:        +1 if <20, -1 if >30, linear scale in between
+      SPY trend:  +1 if above 200ema, -1 if below
+      yc_spread:  +1 if >1.0 (steep), -1 if <-0.5 (inverted)
+      hy_spread:  +1 if <300 bps (tight), -1 if >700 bps (wide)
+      icsa_yoy:   +1 if <0% (claims falling), -1 if >20% (rising)
+      breadth:    +1 if >70%, -1 if <30%
+      dispersion: -1 if high dispersion (>median*1.5), +1 if low
+      aaii bb:    +1 if <-20 (bearish crowd, contrarian bull), -1 if >+20
+      cnn_fg:     +1 if 30-70 (neutral), -1 if <20 or >80 (extremes)
+
+    Returns dict with regime_score (normalized 0-100, 50=neutral),
+    inputs_used (count), regime_label ('bull'/'neutral'/'bear'/'crisis').
+    """
+    votes = []
+    if vix is not None:
+        if vix < 20:    votes.append(1.0)
+        elif vix > 30:  votes.append(-1.0)
+        else:           votes.append(round((25.0 - vix) / 5.0, 3))
+    if spy_above_200ema is not None:
+        votes.append(1.0 if spy_above_200ema else -1.0)
+    if yield_curve_spread is not None:
+        if yield_curve_spread > 1.0:   votes.append(1.0)
+        elif yield_curve_spread < -0.5: votes.append(-1.0)
+        else:                          votes.append(round(yield_curve_spread / 1.0, 3))
+    if hy_spread_bps is not None:
+        if hy_spread_bps < 300:    votes.append(1.0)
+        elif hy_spread_bps > 700:  votes.append(-1.0)
+        else:                      votes.append(round((500.0 - hy_spread_bps) / 200.0, 3))
+    if icsa_yoy_pct is not None:
+        if icsa_yoy_pct < 0:       votes.append(1.0)
+        elif icsa_yoy_pct > 20:    votes.append(-1.0)
+        else:                      votes.append(round((10.0 - icsa_yoy_pct) / 10.0, 3))
+    if breadth_pct_above_50ema is not None:
+        if breadth_pct_above_50ema > 70:  votes.append(1.0)
+        elif breadth_pct_above_50ema < 30: votes.append(-1.0)
+        else:                             votes.append(round((breadth_pct_above_50ema - 50) / 20.0, 3))
+    if sector_dispersion is not None:
+        votes.append(-1.0 if sector_dispersion > 1.5 else 1.0 if sector_dispersion < 0.7 else 0.0)
+    if aaii_bull_bear_spread is not None:
+        if aaii_bull_bear_spread < -20:   votes.append(1.0)
+        elif aaii_bull_bear_spread > 20:  votes.append(-1.0)
+        else:                             votes.append(round(-aaii_bull_bear_spread / 20.0, 3))
+    if cnn_fg is not None:
+        if 30 <= cnn_fg <= 70:     votes.append(1.0)
+        elif cnn_fg < 20 or cnn_fg > 80: votes.append(-1.0)
+        else:                      votes.append(0.0)
+    if not votes:
+        return {"regime_score": None, "inputs_used": 0, "regime_label": "unknown"}
+    raw_mean = sum(votes) / len(votes)
+    score = round(50.0 + raw_mean * 50.0, 2)  # map [-1, +1] -> [0, 100]
+    if score >= 65:    label = "bull"
+    elif score >= 40:  label = "neutral"
+    elif score >= 25:  label = "bear"
+    else:              label = "crisis"
+    return {"regime_score": score, "inputs_used": len(votes), "regime_label": label}
+
+
+def multi_asset_regime_score(
+    equity_vix: Optional[float],
+    credit_hy_spread_bps: Optional[float] = None,
+    commodity_pct_change_20d: Optional[float] = None,
+    currency_dxy_pct_change_20d: Optional[float] = None,
+) -> dict:
+    """DEC-150 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 55 2026-05-11
+    (owner-approved Path C 5-DEC bundle). Multi-asset regime detection
+    composite per Pass 52 turn 119 owner spec. Combines 4 asset class
+    signals into single regime score [0, 100] (50=neutral).
+
+    Each asset class contributes equal weight. Missing inputs skipped.
+    Joint with DEC-106 multi-input regime; DEC-150 specifically expands
+    to non-equity asset classes (credit/commodity/FX) that often lead
+    equity moves.
+
+    Returns dict with regime_score, inputs_used, regime_label.
+    """
+    votes = []
+    if equity_vix is not None:
+        if equity_vix < 20:    votes.append(1.0)
+        elif equity_vix > 30:  votes.append(-1.0)
+        else:                  votes.append(round((25.0 - equity_vix) / 5.0, 3))
+    if credit_hy_spread_bps is not None:
+        if credit_hy_spread_bps < 300:    votes.append(1.0)
+        elif credit_hy_spread_bps > 700:  votes.append(-1.0)
+        else: votes.append(round((500.0 - credit_hy_spread_bps) / 200.0, 3))
+    if commodity_pct_change_20d is not None:
+        if commodity_pct_change_20d > 3:    votes.append(1.0)
+        elif commodity_pct_change_20d < -3: votes.append(-1.0)
+        else: votes.append(round(commodity_pct_change_20d / 3.0, 3))
+    if currency_dxy_pct_change_20d is not None:
+        # Strong USD typically bearish for risk assets (inverse)
+        if currency_dxy_pct_change_20d > 3:    votes.append(-1.0)
+        elif currency_dxy_pct_change_20d < -3: votes.append(1.0)
+        else: votes.append(round(-currency_dxy_pct_change_20d / 3.0, 3))
+    if not votes:
+        return {"regime_score": None, "inputs_used": 0, "regime_label": "unknown"}
+    raw_mean = sum(votes) / len(votes)
+    score = round(50.0 + raw_mean * 50.0, 2)
+    if score >= 65:    label = "bull"
+    elif score >= 40:  label = "neutral"
+    elif score >= 25:  label = "bear"
+    else:              label = "crisis"
+    return {"regime_score": score, "inputs_used": len(votes), "regime_label": label}
+
+
+def sector_regime(
+    sector_etf_price: Optional[float],
+    sector_etf_ema200: Optional[float],
+    sector_vol_annualized: Optional[float],
+    crisis_vol_threshold: float = 0.40,
+    bear_vol_threshold: float = 0.30,
+    bull_vol_threshold: float = 0.20,
+) -> str:
+    """DEC-151 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 55 2026-05-11
+    (owner-approved Path C 5-DEC bundle). Sector-level analog of
+    `classify_regime`: per-sector regime independent of market-level.
+
+    Mirrors VIX+SPY classifier semantics applied to sector ETF: replaces
+    SPY with sector ETF price-vs-200EMA, replaces VIX with sector
+    annualized realized vol. Thresholds caller-tunable (defaults match
+    market-level VIX 20/30/40).
+
+    Joint with DEC-323/394 PIT sector taxonomy (Batch 46) for upstream
+    sector membership; this function classifies the sector's regime.
+
+    Test signal example: 2022 sector regime output XLK=bear, XLE=bull,
+    XLF=neutral (per DEC-151 spec). Caller supplies actual sector ETF
+    price/EMA/vol; this returns the label.
+
+    Returns 'bull' | 'neutral' | 'bear' | 'crisis' | 'unknown'.
+    """
+    if (sector_vol_annualized is None or sector_etf_price is None
+            or sector_etf_ema200 is None):
+        return "unknown"
+    above_ema = sector_etf_price > sector_etf_ema200
+    if sector_vol_annualized >= crisis_vol_threshold:
+        return "crisis"
+    if sector_vol_annualized >= bear_vol_threshold and not above_ema:
+        return "bear"
+    if sector_vol_annualized < bull_vol_threshold and above_ema:
+        return "bull"
+    return "neutral"
+
+
 def ema_smooth_regime_probability(
     new_score: float,
     prev_smoothed: Optional[float] = None,

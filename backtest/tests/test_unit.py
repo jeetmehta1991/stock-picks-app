@@ -2796,6 +2796,209 @@ def test_dec_108_ema_custom_alpha():
 
 
 # ============================================================================
+# Phase 3 Batch 55 Path C 5-DEC bundle (owner directive >= 5 DECs/batch):
+# DEC-106 (multi-input regime scorecard 8+) + DEC-150 (multi-asset regime)
+# + DEC-151 (sector regime) + DEC-249 (strategy decay) + DEC-135 (per-ticker
+# max-loss cap rolling 30d)
+# ============================================================================
+
+# --- DEC-106 multi-input regime scorecard ---------------------------------
+
+def test_dec_106_multi_input_regime_score_all_bullish():
+    """DEC-106: all bullish inputs -> high regime_score + bull label."""
+    from backtest.engine.regime_filter import multi_input_regime_score
+    out = multi_input_regime_score(
+        vix=15, spy_above_200ema=True,
+        yield_curve_spread=1.5, hy_spread_bps=200, icsa_yoy_pct=-5,
+        breadth_pct_above_50ema=80, sector_dispersion=0.5,
+        aaii_bull_bear_spread=-30, cnn_fg=50,
+    )
+    assert out["inputs_used"] == 9
+    assert out["regime_score"] >= 90
+    assert out["regime_label"] == "bull"
+
+
+def test_dec_106_multi_input_regime_score_all_bearish():
+    """DEC-106: all bearish inputs -> low regime_score + crisis/bear label."""
+    from backtest.engine.regime_filter import multi_input_regime_score
+    out = multi_input_regime_score(
+        vix=35, spy_above_200ema=False,
+        yield_curve_spread=-1.0, hy_spread_bps=800, icsa_yoy_pct=30,
+        breadth_pct_above_50ema=20, sector_dispersion=2.0,
+        aaii_bull_bear_spread=40, cnn_fg=10,
+    )
+    assert out["regime_score"] <= 10
+    assert out["regime_label"] in ("crisis", "bear")
+
+
+def test_dec_106_multi_input_regime_score_skips_missing_inputs():
+    """DEC-106: missing inputs skipped, not treated as neutral."""
+    from backtest.engine.regime_filter import multi_input_regime_score
+    out = multi_input_regime_score(vix=15, spy_above_200ema=True)
+    assert out["inputs_used"] == 2
+    assert out["regime_label"] == "bull"
+
+    out_empty = multi_input_regime_score(vix=None, spy_above_200ema=None)
+    assert out_empty["inputs_used"] == 0
+    assert out_empty["regime_label"] == "unknown"
+
+
+# --- DEC-150 multi-asset regime score -------------------------------------
+
+def test_dec_150_multi_asset_regime_score_bullish_composite():
+    """DEC-150: low vix + tight credit + commodities up + USD weak -> bull."""
+    from backtest.engine.regime_filter import multi_asset_regime_score
+    out = multi_asset_regime_score(
+        equity_vix=15, credit_hy_spread_bps=250,
+        commodity_pct_change_20d=5, currency_dxy_pct_change_20d=-5,
+    )
+    assert out["inputs_used"] == 4
+    assert out["regime_label"] == "bull"
+
+
+def test_dec_150_multi_asset_regime_score_bearish_composite():
+    """DEC-150: high vix + wide credit + commodities crash + USD spike -> crisis."""
+    from backtest.engine.regime_filter import multi_asset_regime_score
+    out = multi_asset_regime_score(
+        equity_vix=40, credit_hy_spread_bps=900,
+        commodity_pct_change_20d=-8, currency_dxy_pct_change_20d=6,
+    )
+    assert out["regime_label"] in ("crisis", "bear")
+
+
+def test_dec_150_multi_asset_regime_score_no_inputs():
+    """DEC-150: all None inputs -> unknown label."""
+    from backtest.engine.regime_filter import multi_asset_regime_score
+    out = multi_asset_regime_score(equity_vix=None)
+    assert out["regime_label"] == "unknown"
+    assert out["inputs_used"] == 0
+
+
+# --- DEC-151 sector-level regime ------------------------------------------
+
+def test_dec_151_sector_regime_bull():
+    """DEC-151: low vol + price > 200EMA -> bull (e.g., XLE 2022)."""
+    from backtest.engine.regime_filter import sector_regime
+    assert sector_regime(100, 90, 0.15) == "bull"
+
+
+def test_dec_151_sector_regime_bear():
+    """DEC-151: elevated vol + below 200EMA -> bear (e.g., XLK 2022)."""
+    from backtest.engine.regime_filter import sector_regime
+    assert sector_regime(90, 100, 0.32) == "bear"
+
+
+def test_dec_151_sector_regime_crisis():
+    """DEC-151: crisis-level vol regardless of trend -> crisis."""
+    from backtest.engine.regime_filter import sector_regime
+    assert sector_regime(100, 90, 0.50) == "crisis"
+    assert sector_regime(90, 100, 0.45) == "crisis"
+
+
+def test_dec_151_sector_regime_neutral():
+    """DEC-151: mid vol + neutral trend -> neutral (e.g., XLF 2022)."""
+    from backtest.engine.regime_filter import sector_regime
+    assert sector_regime(100, 100, 0.25) == "neutral"
+
+
+def test_dec_151_sector_regime_unknown_on_missing_inputs():
+    """DEC-151: missing inputs -> unknown (fail-closed per DEC-316)."""
+    from backtest.engine.regime_filter import sector_regime
+    assert sector_regime(None, 100, 0.25) == "unknown"
+    assert sector_regime(100, None, 0.25) == "unknown"
+    assert sector_regime(100, 100, None) == "unknown"
+
+
+# --- DEC-249 strategy decay metric ---------------------------------------
+
+def test_dec_249_strategy_decay_flag_fires_at_50pct_drop():
+    """DEC-249 spec test signal: Sharpe 1.2 baseline decaying to 0.5 ->
+    drop > 50% -> STRATEGY_DECAY_WARNING.
+    """
+    from backtest.results.metrics import detect_strategy_decay
+    out = detect_strategy_decay(sharpe_baseline=1.2, sharpe_recent=0.5)
+    assert out["is_decayed"] is True
+    assert out["note"] == "STRATEGY_DECAY_WARNING"
+
+
+def test_dec_249_strategy_decay_no_flag_on_modest_drop():
+    """DEC-249: Sharpe drops 30% -> no flag."""
+    from backtest.results.metrics import detect_strategy_decay
+    out = detect_strategy_decay(sharpe_baseline=1.2, sharpe_recent=0.9)
+    assert out["is_decayed"] is False
+    assert out["note"] == "ok"
+
+
+def test_dec_249_strategy_decay_recovery_clears_flag():
+    """DEC-249 spec test signal: recovery from 0.5 to 1.0+ clears flag."""
+    from backtest.results.metrics import detect_strategy_decay
+    out = detect_strategy_decay(sharpe_baseline=1.2, sharpe_recent=1.1)
+    assert out["is_decayed"] is False
+    assert out["drop_pct"] < 0.5
+
+
+def test_dec_249_strategy_decay_handles_zero_or_negative_baseline():
+    """DEC-249: zero or negative baseline -> note 'no_baseline_to_compare'."""
+    from backtest.results.metrics import detect_strategy_decay
+    out_zero = detect_strategy_decay(sharpe_baseline=0.0, sharpe_recent=0.5)
+    assert out_zero["note"] == "no_baseline_to_compare"
+    out_neg = detect_strategy_decay(sharpe_baseline=-0.5, sharpe_recent=0.5)
+    assert out_neg["note"] == "no_baseline_to_compare"
+
+
+# --- DEC-135 per-ticker rolling 30-day max-loss cap -----------------------
+
+def test_dec_135_per_ticker_max_loss_breach_halts_ticker():
+    """DEC-135 spec test signal: ticker accumulates -11% over rolling
+    25-day window -> halted.
+    """
+    import pandas as pd
+    from datetime import date
+    from backtest.engine.improvements import per_ticker_30day_max_loss_check
+
+    df = pd.DataFrame([
+        {"ticker": "BADTICK", "exit_date": date(2024, 1, 5),  "pnl_pct": -4.0},
+        {"ticker": "BADTICK", "exit_date": date(2024, 1, 15), "pnl_pct": -7.0},
+        {"ticker": "GOODTICK", "exit_date": date(2024, 1, 10), "pnl_pct": 3.0},
+    ])
+    out = per_ticker_30day_max_loss_check(df, today=date(2024, 1, 30),
+                                          cap_pct=-10.0, cooldown_days=30)
+    assert out["BADTICK"] is True   # -11% cumulative
+    assert out["GOODTICK"] is False
+
+
+def test_dec_135_per_ticker_max_loss_window_drops_old_trades():
+    """DEC-135: trades older than cooldown_days are excluded from cum sum."""
+    import pandas as pd
+    from datetime import date
+    from backtest.engine.improvements import per_ticker_30day_max_loss_check
+
+    df = pd.DataFrame([
+        # Out-of-window loss (older than 30 days from today)
+        {"ticker": "T1", "exit_date": date(2023, 12, 1), "pnl_pct": -20.0},
+        # In-window trade
+        {"ticker": "T1", "exit_date": date(2024, 1, 25), "pnl_pct": -3.0},
+    ])
+    out = per_ticker_30day_max_loss_check(df, today=date(2024, 1, 30),
+                                          cap_pct=-10.0, cooldown_days=30)
+    assert out["T1"] is False  # only -3% in window, not breached
+
+
+def test_dec_135_per_ticker_max_loss_empty_or_missing_cols():
+    """DEC-135: empty df or missing columns -> empty dict (fail-soft)."""
+    import pandas as pd
+    from datetime import date
+    from backtest.engine.improvements import per_ticker_30day_max_loss_check
+
+    out_empty = per_ticker_30day_max_loss_check(pd.DataFrame(), today=date(2024, 1, 30))
+    assert out_empty == {}
+    out_missing = per_ticker_30day_max_loss_check(
+        pd.DataFrame([{"ticker": "X"}]), today=date(2024, 1, 30),
+    )
+    assert out_missing == {}
+
+
+# ============================================================================
 # DEC-432 Chandelier exit indicator tests (Phase 3 Batch 53 Path C)
 # Parabolic SAR + Supertrend already implemented; only chandelier added.
 # ============================================================================

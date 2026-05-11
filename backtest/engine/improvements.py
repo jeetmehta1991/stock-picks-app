@@ -494,6 +494,54 @@ def time_of_day_slippage_multiplier(entry_time) -> float:
     return 1.0
 
 
+def per_ticker_30day_max_loss_check(
+    trade_log_df,
+    today,
+    cap_pct: float = -10.0,
+    cooldown_days: int = 30,
+) -> dict:
+    """DEC-135 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 55 2026-05-11
+    (owner-approved Path C 5-DEC bundle). Per-ticker cumulative max-loss
+    cap per Pass 52 turn 115 owner spec: if any ticker's rolling 30-day
+    cumulative pnl_pct <= cap_pct, halt that ticker for cooldown_days.
+
+    Inputs:
+      trade_log_df: DataFrame with columns ticker, exit_date, pnl_pct
+      today: date for the rolling window endpoint
+      cap_pct: cumulative loss threshold (default -10.0 = -10%)
+      cooldown_days: window after breach to keep halted (default 30)
+
+    Returns dict {ticker: True/False} for tickers seen in window. Tickers
+    not in the DataFrame absent from the output (caller-side decides
+    default).
+
+    REVISIT_AFTER_BACKTEST tag (per DEC-135 spec) retained for empirical
+    tuning of cap_pct. Engine consumption (gate at can_open) deferred to
+    follow-on decision; current scope is helper.
+    """
+    import pandas as pd
+    if trade_log_df is None or len(trade_log_df) == 0:
+        return {}
+    if not isinstance(trade_log_df, pd.DataFrame):
+        return {}
+    required = {"ticker", "exit_date", "pnl_pct"}
+    if not required.issubset(set(trade_log_df.columns)):
+        return {}
+    df = trade_log_df.copy()
+    df["exit_date"] = pd.to_datetime(df["exit_date"]).dt.date
+    today_dt = today if hasattr(today, "year") else pd.to_datetime(today).date()
+    window_start = today_dt - timedelta(days=cooldown_days)
+    in_window = df[(df["exit_date"] >= window_start)
+                   & (df["exit_date"] <= today_dt)]
+    if in_window.empty:
+        return {}
+    by_ticker = in_window.groupby("ticker")["pnl_pct"].sum()
+    out = {}
+    for ticker, cum_pct in by_ticker.items():
+        out[ticker] = bool(cum_pct <= cap_pct)
+    return out
+
+
 # -----------------------------------------------------------------------------
 # 5. REGIME CONFIDENCE SCORE
 # -----------------------------------------------------------------------------

@@ -604,6 +604,43 @@ def _kelly_criterion(win_rate: float, avg_win: float, avg_loss: float) -> dict:
     }
 
 
+def detect_strategy_decay(
+    sharpe_baseline: float,
+    sharpe_recent: float,
+    drop_threshold: float = 0.5,
+) -> dict:
+    """DEC-249 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 55 2026-05-11
+    (owner-approved Path C 5-DEC bundle). Strategy decay metric per Pass 52
+    turn 117 owner spec: flag STRATEGY_DECAY_WARNING when rolling 6-month
+    Sharpe drops > drop_threshold fraction from baseline (default 50%).
+
+    Inputs:
+      sharpe_baseline: full-period or pre-decay-window Sharpe
+      sharpe_recent: rolling 6mo (or whatever recent window) Sharpe
+      drop_threshold: fractional drop to flag (default 0.5 = 50%)
+
+    Returns dict with is_decayed (bool), drop_pct (float -- can exceed 1.0
+    when sharpe flips sign), note (str). Handles edge cases: baseline <= 0
+    -> note 'no_baseline_to_compare'; recent improves on baseline ->
+    is_decayed=False with negative drop_pct.
+
+    Joint with DEC-214 (quarterly re-validation) — decay flag triggers
+    full A/B re-validation when consumed downstream.
+    """
+    if sharpe_baseline is None or sharpe_recent is None:
+        return {"is_decayed": False, "drop_pct": None, "note": "missing_input"}
+    if sharpe_baseline <= 0:
+        return {"is_decayed": False, "drop_pct": None,
+                "note": "no_baseline_to_compare"}
+    drop_pct = (sharpe_baseline - sharpe_recent) / sharpe_baseline
+    is_decayed = drop_pct > drop_threshold
+    return {
+        "is_decayed": bool(is_decayed),
+        "drop_pct":   round(float(drop_pct), 4),
+        "note":       "STRATEGY_DECAY_WARNING" if is_decayed else "ok",
+    }
+
+
 def decompose_trade_pnl(
     actual_pnl_dollar: float,
     timing_delta_dollar: float = 0.0,
