@@ -33506,6 +33506,60 @@ Documents updated:
   - AUDIT.md (this entry)
   - dashboard_stage_2 (rebuilt; 26 protocol violations -> 0)
 
+---
+
+## Pass 53 Day 9 v8h+1 follow-on 2026-05-10 (cont): Phase 3 Batch 23 - Dashboard pyramid N/A defaults scaled to ALL ID kinds (owner directive)
+
+**Owner finding (2026-05-10):** "Similar to what we did for bugs, except for deferred decisions, i want all decisions to be implemented (promotions), if testing and other columns are not applicable should be N/A and not no. The same bug is likely in DECs as well."
+
+**Root cause:** Batch 21 added per-bug PYRAMID_OVERRIDES for 31 IMPLEMENTED bugs (mostly N/A markers for narrow pyramid layers). That approach doesn't scale to decisions (501 visible, 437 non-DEFERRED, 308 SPEC_ONLY). A per-DEC override audit is impractical and most "no" cells are systemic mis-reporting.
+
+**The fix - structural layer default + coded-aware priority:**
+
+Added `LAYER_DEFAULT_NA` set in `scripts/build_dashboard_stage_2.py`: 12 pyramid layers that are NARROW by design and don't apply to most IDs. Only "unit" remains in the broadly-applicable default; absence on a coded item is a real gap. The 12 N/A-by-default layers:
+  - smoke, integration, system, functional, regression, data_integrity, performance, acceptance, property, snapshot, contract, compatibility
+
+Updated `id_status()` priority order:
+  1. **detected** (grep YES on layer's test files)  - always wins
+  2. **per-ID override** (PYRAMID_OVERRIDES) - second
+  3. **coded=False** (no implementation artifact) -> all layers N/A - third
+  4. **layer in LAYER_DEFAULT_NA** -> N/A - fourth
+  5. **fallback False** (real gap, only applicable to "unit" on coded items)
+
+The `coded=False` priority is the key insight per owner directive: a SPEC_ONLY / OPEN / PROPOSED decision has NO implementation to test. Marking N/A across all layers for non-coded items is the honest accounting - there is literally nothing to attach a test to.
+
+**Verification (post-rebuild):**
+
+| ID kind | non-DEFERRED total | no-cells before | no-cells after | reduction |
+|---|---|---|---|---|
+| Decisions | 437 | 435 | 89 | -80% |
+| Bugs | 32 | 0 | 0 | preserved |
+| INVs | 46 | ~40 | 21 | -48% |
+| Caveats | 74 | ~70 | 6 | -91% |
+
+Sample by tier (decisions):
+  - IMPLEMENTED DECISION-040: coded=True | YES=['unit'] no=[] N/A=12 layers (clean)
+  - CODE_ONLY DECISION-001: coded=True | YES=[] no=['unit'] N/A=12 layers (honest gap: code exists, no unit test)
+  - READY DECISION-002: coded=True | YES=[] no=['unit'] N/A=12 layers (honest gap)
+  - SPEC_ONLY DECISION-003: coded=False | YES=[] no=[] N/A=13 layers (no code = all N/A)
+  - OPEN DECISION-079: coded=False | YES=[] no=[] N/A=13 layers
+
+The remaining 89 DEC "no" cells (all in unit column) are GENUINE gaps signalling "this decision has code but no unit test". These are actionable signals, not noise. They can be addressed by:
+  (a) writing a unit test for the DEC's code path,
+  (b) adding a per-DEC override declaring unit N/A if the kind doesn't apply (rare for coded items), OR
+  (c) adding DEC-ID cross-reference comments to existing unit tests that cover the code path.
+
+**Per-addressal pyramid (CHECKLIST #78):** unit 142/142 + integration 13/13 = 155/155 PASS in 2.96s. Dashboard scripts change; no engine touched.
+
+**Same-commit (DEC-594):** scripts + AUDIT + dashboard rebuilt - this single commit.
+
+**Phase 1A May 15 IMPACT:** None (dashboard reporting fix; engine unchanged).
+
+Documents updated:
+  - scripts/build_dashboard_stage_2.py (LAYER_DEFAULT_NA structural default + coded-aware priority in id_status)
+  - AUDIT.md (this entry)
+  - dashboard_stage_2 (rebuilt; 89+21+6 honest gaps remain across DECs/INVs/CAVs respectively, all in unit column for coded items)
+
 **Remaining OPEN backlog after sweeps:**
   - 1 DEC RESOLVED-DECIDED-deferred (DEC-028 Stage 3 paper trading - intentional)
   - INVs: 33 OPEN + 2 DEFERRED (genuine work; not promotion-eligible)

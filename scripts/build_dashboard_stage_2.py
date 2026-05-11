@@ -310,6 +310,47 @@ TEST_PYRAMID_LAYERS = {
 }
 
 
+# Owner directive 2026-05-10 (Phase 3 Batch 23, after Batch 21 BUG-006 fix
+# was scaled by Batch 22): "i want all decisions to be implemented
+# (promotions), if testing and other columns are not applicable should be
+# N/A and not no. The same bug is likely in DECs as well."
+#
+# Structural fix: most of our pyramid layers are intrinsically narrow (test
+# files exist but each covers a specific intent: data integrity, performance,
+# acceptance, property/snapshot/contract/compatibility/functional/system/
+# regression). These do NOT apply to most decisions / bugs / INVs by default.
+#
+# Priority order in id_status():
+#   1. detected (grep YES on test file content)  -- ALWAYS WINS
+#   2. per-ID override in PYRAMID_OVERRIDES      -- second priority
+#   3. LAYER_DEFAULT_NA fallback                 -- N/A instead of False
+#   4. False (genuine gap)                       -- final fallback
+#
+# Layers NOT in this set (only "unit") are applicable by default to most
+# code-affecting items - their absence is a real coverage gap worth surfacing.
+# All other layers are narrow by design and default to N/A unless the grep
+# auto-detects coverage (which always wins, priority 1). Owner directive
+# 2026-05-10 (Phase 3 Batch 23 update): "if testing and other columns are
+# not applicable should be N/A and not no" - applies to ALL non-unit layers
+# for decisions and INVs which are mostly methodological/scope items.
+# smoke + integration are narrow for decisions: only engine/wiring decisions
+# need them, not methodology/threshold/scope decisions.
+LAYER_DEFAULT_NA: set[str] = {
+    "smoke",          # only engine/data-affecting decisions
+    "integration",    # only cross-module wiring decisions
+    "system",         # only Phase-gate decisions
+    "functional",     # only doc-count / cross-doc consistency
+    "regression",     # only explicit regression tests (8 tests today)
+    "data_integrity", # only schema/cache canonical decisions
+    "performance",    # only perf-sensitive decisions
+    "acceptance",     # only acceptance-driven decisions
+    "property",       # only invariant decisions (Hypothesis)
+    "snapshot",       # only golden-data decisions
+    "contract",       # only API-shape decisions
+    "compatibility",  # only version-matrix decisions
+}
+
+
 # Per-ID per-layer applicability overrides (Pass 53 v8h+1 owner directive
 # 2026-05-09: a bool boolean for every layer is misleading - some IDs have
 # layers that simply don't apply. Annotate "N/A" or "LATER" here so the
@@ -734,27 +775,46 @@ def id_status(id_str: str, corpora: dict) -> dict:
         if cand_overrides:
             overrides = cand_overrides
             break
+    def _any_in(text: str) -> bool:
+        return any(c in text for c in id_candidates)
+    # Compute coded/wired/tested first so pyramid logic can reference them.
+    coded = _any_in(corpora["backtest_all"]) or _any_in(corpora["scripts"])
+    wired = _any_in(corpora["prod"])
+    tested = _any_in(corpora["tests"])
+    pushed = _any_in(corpora["git_log"])
+
     pyramid: dict = {}
     for layer in TEST_PYRAMID_LAYERS:
         # Detected coverage from grep (any form)
         layer_text = pyramid_layers.get(layer, "")
         detected = any(c in layer_text for c in id_candidates)
         if detected:
-            # Coverage exists - YES wins regardless of override
+            # Priority 1: coverage detected via grep - YES wins always
             pyramid[layer] = True
         elif layer in overrides:
-            # Apply manual override (N/A or LATER:reason)
+            # Priority 2: per-ID manual override (N/A or LATER:reason)
             pyramid[layer] = overrides[layer]
+        elif not coded:
+            # Priority 3a: no code exists yet (SPEC_ONLY / OPEN / PROPOSED).
+            # Nothing to test means no layer is applicable. Owner directive
+            # 2026-05-10 (Phase 3 Batch 23): "if testing and other columns
+            # are not applicable should be N/A and not no." A decision that
+            # is purely specification - no implementation artifact - has
+            # nothing to attach a test to.
+            pyramid[layer] = "N/A"
+        elif layer in LAYER_DEFAULT_NA:
+            # Priority 3b: structural default - layer is narrow by design
+            # and does not apply to most IDs even when coded.
+            pyramid[layer] = "N/A"
         else:
-            # Default: no coverage (treated as gap)
+            # Priority 4: real coverage gap (unit / smoke / integration on
+            # coded items). Code exists; absence here is a genuine gap.
             pyramid[layer] = False
-    def _any_in(text: str) -> bool:
-        return any(c in text for c in id_candidates)
     return {
-        "coded": _any_in(corpora["backtest_all"]) or _any_in(corpora["scripts"]),
-        "wired": _any_in(corpora["prod"]),
-        "tested": _any_in(corpora["tests"]),
-        "pushed": _any_in(corpora["git_log"]),
+        "coded": coded,
+        "wired": wired,
+        "tested": tested,
+        "pushed": pushed,
         "n_doc_refs": sum(corpora["docs"].count(c) for c in id_candidates),
         "pyramid": pyramid,
     }
