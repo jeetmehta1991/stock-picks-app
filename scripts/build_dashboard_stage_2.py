@@ -1545,9 +1545,19 @@ def main() -> int:
                     if b.get("promotion_path", {}).get("tier") not in ("SUPERSEDED", "OBSOLETE")]
     bugs_hidden_count = len(bugs_full) - len(bugs_visible)
 
+    # Owner directive 2026-05-10 (Phase 3 Batch 22): same filter for Decisions.
+    # SUPERSEDED + OBSOLETE decisions remain in AUDIT_INDEX.md as canonical
+    # record but are removed from the dashboard to reduce cognitive load.
+    decisions_full = decisions
+    decisions_visible = [d for d in decisions
+                         if d.get("promotion_path", {}).get("tier") not in ("SUPERSEDED", "OBSOLETE")]
+    decisions_hidden_count = len(decisions_full) - len(decisions_visible)
+
     snapshot = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
-        "decisions": decisions,
+        "decisions": decisions_visible,
+        "decisions_total_count": len(decisions_full),
+        "decisions_hidden_count": decisions_hidden_count,
         "bugs": bugs_visible,
         "bugs_total_count": len(bugs_full),
         "bugs_hidden_count": bugs_hidden_count,

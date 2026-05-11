@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-11T02:13:09.613462+00:00",
+  "generated_at": "2026-05-11T02:24:17.851356+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -522,46 +522,6 @@
       }
     },
     {
-      "id": "DECISION-014",
-      "title": "Phase 1B passing criteria adjustments Pass 52 turn 119 SUPERSEDED_BY_DEC-422 Final: Phase 1B passing criteria \u2014 superseded by DEC-422 dimensional cube + DEC-426",
-      "status": "SUPERSEDED_BY_DEC-422",
-      "theme": "Phase 1B Methodology",
-      "pass_intro": "Pass 19",
-      "pass_resolved": "-",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 51,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "DEC-014",
-      "sprint": "Sprint 6.5 \u2014 Phase 1A Rules-On",
-      "dependencies": "DEC-422; DEC-426",
-      "description": "",
-      "promotion_path": {
-        "tier": "SUPERSEDED",
-        "label": "SUPERSEDED",
-        "color": "#94a3b8",
-        "reason": "Replaced by another item; no action required"
-      }
-    },
-    {
       "id": "DECISION-015",
       "title": "Strategy correlation analysis methodology Pass 52 turn 67 owner-approved RESOLVED-DECIDED standalone: Strategy correlation analysis methodology \u2014 90-day rolling",
       "status": "RESOLVED-DECIDED",
@@ -599,86 +559,6 @@
         "label": "READY-TO-PROMOTE",
         "color": "#10b981",
         "reason": "Wired in active path + tested; eligible for RESOLVED-IMPLEMENTED"
-      }
-    },
-    {
-      "id": "DECISION-016",
-      "title": "Threshold calibration scope (BUG-130) Pass 52 turn 119 SUPERSEDED_BY_DEC-422 Final: Threshold calibration (BUG-130) \u2014 DEC-422 cube + DEC-426 5-gate replace ad-h",
-      "status": "SUPERSEDED_BY_DEC-422",
-      "theme": "Phase 1B Methodology",
-      "pass_intro": "Pass 19",
-      "pass_resolved": "-",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 32,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "DEC-016",
-      "sprint": "-",
-      "dependencies": "BUG-130; DEC-422; DEC-426",
-      "description": "",
-      "promotion_path": {
-        "tier": "SUPERSEDED",
-        "label": "SUPERSEDED",
-        "color": "#94a3b8",
-        "reason": "Replaced by another item; no action required"
-      }
-    },
-    {
-      "id": "DECISION-017",
-      "title": "Earnings proximity hard filter (BUG-131) \u2014 superseded by 013-revised",
-      "status": "SUPERSEDED",
-      "theme": "SUPERSEDED",
-      "pass_intro": "Pass 19",
-      "pass_resolved": "38",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 23,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "DEC-017",
-      "sprint": "-",
-      "dependencies": "BUG-131",
-      "description": "",
-      "promotion_path": {
-        "tier": "SUPERSEDED",
-        "label": "SUPERSEDED",
-        "color": "#94a3b8",
-        "reason": "Replaced by another item; no action required"
       }
     },
     {
@@ -762,46 +642,6 @@
       }
     },
     {
-      "id": "DECISION-020",
-      "title": "News API selection (depends on 002 eval results) Pass 52 turn 119 SUPERSEDED_BY_DEC-441 Final: News API selection \u2014 DEC-441 (Polygon Stocks Starter $30/mo subsc",
-      "status": "SUPERSEDED_BY_DEC-441",
-      "theme": "Process / Infrastructure (Group F)",
-      "pass_intro": "Pass 19",
-      "pass_resolved": "-",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 133,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "DEC-020",
-      "sprint": "-",
-      "dependencies": "DEC-441",
-      "description": "",
-      "promotion_path": {
-        "tier": "SUPERSEDED",
-        "label": "SUPERSEDED",
-        "color": "#94a3b8",
-        "reason": "Replaced by another item; no action required"
-      }
-    },
-    {
       "id": "DECISION-021",
       "title": "Tier system simplification Pass 52 turn 95 owner-approved RESOLVED-DECIDED: Tier system simplification \u2014 reduce from 4 categories (5/4/3/1.5%) to 3 (HIGH/MEDIUM",
       "status": "RESOLVED-DECIDED",
@@ -839,206 +679,6 @@
         "label": "SPEC-ONLY",
         "color": "#ef4444",
         "reason": "RESOLVED-DECIDED but no code or test refs found"
-      }
-    },
-    {
-      "id": "DECISION-022",
-      "title": "Drawdown-aware position sizing (BUG-170) Pass 52 turn 67 owner-approved SUPERSEDED_BY_DEC-091: DEC-091 (Pass 52 turn 67 owner-approved drawdown re-sizing with 1",
-      "status": "SUPERSEDED_BY_DEC-091",
-      "theme": "Risk Management (Group C)",
-      "pass_intro": "Pass 19",
-      "pass_resolved": "-",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 78,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "DEC-022",
-      "sprint": "-",
-      "dependencies": "BUG-170; DEC-091",
-      "description": "",
-      "promotion_path": {
-        "tier": "SUPERSEDED",
-        "label": "SUPERSEDED",
-        "color": "#94a3b8",
-        "reason": "Replaced by another item; no action required"
-      }
-    },
-    {
-      "id": "DECISION-023",
-      "title": "Vol-targeted position sizing (BUG-168) Pass 52 turn 67 owner-approved SUPERSEDED_BY_DEC-087: DEC-087 explicitly says \"closes 023\" in scope text. Joint resolutio",
-      "status": "SUPERSEDED_BY_DEC-087",
-      "theme": "Risk Management (Group C)",
-      "pass_intro": "Pass 19",
-      "pass_resolved": "-",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 53,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "DEC-023",
-      "sprint": "Sprint 5 additions (Position S",
-      "dependencies": "BUG-168; DEC-087",
-      "description": "",
-      "promotion_path": {
-        "tier": "SUPERSEDED",
-        "label": "SUPERSEDED",
-        "color": "#94a3b8",
-        "reason": "Replaced by another item; no action required"
-      }
-    },
-    {
-      "id": "DECISION-024",
-      "title": "Correlation-adjusted concentration limits (BUG-169) Pass 52 turn 67 owner-approved SUPERSEDED_BY_DEC-089: DEC-089 (Pass 52 turn 67 owner-approved max correlatio",
-      "status": "SUPERSEDED_BY_DEC-089",
-      "theme": "Risk Management (Group C)",
-      "pass_intro": "Pass 19",
-      "pass_resolved": "-",
-      "status_grep": {
-        "coded": true,
-        "wired": true,
-        "tested": true,
-        "pushed": true,
-        "n_doc_refs": 59,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "DEC-024",
-      "sprint": "-",
-      "dependencies": "BUG-169; DEC-089",
-      "description": "",
-      "promotion_path": {
-        "tier": "SUPERSEDED",
-        "label": "SUPERSEDED",
-        "color": "#94a3b8",
-        "reason": "Replaced by another item; no action required"
-      }
-    },
-    {
-      "id": "DECISION-025",
-      "title": "Regime-conditional strategy weighting (BUG-175) Pass 52 turn 95 owner-approved SUPERSEDED_BY_DEC-422: Regime-conditional strategy weighting (BUG-175). DEC-422 (",
-      "status": "SUPERSEDED_BY_DEC-422",
-      "theme": "Strategy / Regime Adaptation (Group D)",
-      "pass_intro": "Pass 19",
-      "pass_resolved": "-",
-      "status_grep": {
-        "coded": true,
-        "wired": true,
-        "tested": true,
-        "pushed": true,
-        "n_doc_refs": 161,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "DEC-025",
-      "sprint": "-",
-      "dependencies": "BUG-175; DEC-422",
-      "description": "",
-      "promotion_path": {
-        "tier": "SUPERSEDED",
-        "label": "SUPERSEDED",
-        "color": "#94a3b8",
-        "reason": "Replaced by another item; no action required"
-      }
-    },
-    {
-      "id": "DECISION-026",
-      "title": "Walk-forward parameter re-optimization (BUG-172) Pass 52 turn 95 owner-approved SUPERSEDED_BY_DEC-109: Walk-forward parameter re-optimization (BUG-172). DEC-109",
-      "status": "SUPERSEDED_BY_DEC-109",
-      "theme": "Strategy / Regime Adaptation (Group D)",
-      "pass_intro": "Pass 19",
-      "pass_resolved": "-",
-      "status_grep": {
-        "coded": true,
-        "wired": false,
-        "tested": true,
-        "pushed": true,
-        "n_doc_refs": 111,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "DEC-026",
-      "sprint": "Sprint 7 additions",
-      "dependencies": "BUG-172; DEC-109",
-      "description": "",
-      "promotion_path": {
-        "tier": "SUPERSEDED",
-        "label": "SUPERSEDED",
-        "color": "#94a3b8",
-        "reason": "Replaced by another item; no action required"
       }
     },
     {
@@ -1282,46 +922,6 @@
       }
     },
     {
-      "id": "DECISION-030",
-      "title": "Wikipedia data alternative (BUG-185) \u2014 superseded by 052+L88",
-      "status": "SUPERSEDED",
-      "theme": "SUPERSEDED",
-      "pass_intro": "Pass 19",
-      "pass_resolved": "38",
-      "status_grep": {
-        "coded": true,
-        "wired": true,
-        "tested": true,
-        "pushed": true,
-        "n_doc_refs": 147,
-        "pyramid": {
-          "unit": true,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "DEC-030",
-      "sprint": "-",
-      "dependencies": "BUG-185",
-      "description": "",
-      "promotion_path": {
-        "tier": "SUPERSEDED",
-        "label": "SUPERSEDED",
-        "color": "#94a3b8",
-        "reason": "Replaced by another item; no action required"
-      }
-    },
-    {
       "id": "DECISION-031",
       "title": "Codespace/Cloud workflow vs local \u2014 Codespace through Phase 0, migrate to cloud before Sta Pass 53 evening 2026-05-06 DEC-594 audit: PARTIAL-SPEC-ONLY (was RESO",
       "status": "PARTIAL-SPEC-ONLY",
@@ -1359,46 +959,6 @@
         "label": "SPEC-ONLY",
         "color": "#ef4444",
         "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
-      }
-    },
-    {
-      "id": "DECISION-032",
-      "title": "IBKR vs Alpaca for paper trading \u2014 superseded by 054",
-      "status": "SUPERSEDED",
-      "theme": "SUPERSEDED",
-      "pass_intro": "Pass 19",
-      "pass_resolved": "38",
-      "status_grep": {
-        "coded": true,
-        "wired": true,
-        "tested": true,
-        "pushed": true,
-        "n_doc_refs": 75,
-        "pyramid": {
-          "unit": true,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "DEC-032",
-      "sprint": "-",
-      "dependencies": "-",
-      "description": "",
-      "promotion_path": {
-        "tier": "SUPERSEDED",
-        "label": "SUPERSEDED",
-        "color": "#94a3b8",
-        "reason": "Replaced by another item; no action required"
       }
     },
     {
@@ -1762,46 +1322,6 @@
       }
     },
     {
-      "id": "DECISION-042",
-      "title": "AgentGateConfig spec \u2014 Phase A (Option A WEIGHTED CONTINUOUS-SCORE) Pass 52 turn 129 owner-approved SUPERSEDED_BY_DEC-459 (Option C Hybrid Architecture): Origin",
-      "status": "SUPERSEDED_BY_DEC-459",
-      "theme": "Phase 0 / Architecture",
-      "pass_intro": "Pass 25",
-      "pass_resolved": "25",
-      "status_grep": {
-        "coded": true,
-        "wired": true,
-        "tested": true,
-        "pushed": true,
-        "n_doc_refs": 273,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "DEC-042",
-      "sprint": "Sprint 7 (+1 \u2014 final ENG addit; Sprint 7 (REVISED \u2014 DEC-042 re; Sprint 7 effort revised; Sprint effort revisions",
-      "dependencies": "-",
-      "description": "",
-      "promotion_path": {
-        "tier": "SUPERSEDED",
-        "label": "SUPERSEDED",
-        "color": "#94a3b8",
-        "reason": "Replaced by another item; no action required"
-      }
-    },
-    {
       "id": "DECISION-043",
       "title": "Retune framework Pass 52 turn 119 RESOLVED-DECIDED Final: Retune framework \u2014 strategy parameter retune triggered by DEC-249 strategy decay flag + DEC-214 quarte",
       "status": "PARTIAL-SPEC-ONLY",
@@ -1839,46 +1359,6 @@
         "label": "SPEC-ONLY",
         "color": "#ef4444",
         "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
-      }
-    },
-    {
-      "id": "DECISION-044",
-      "title": "Phase 0.D scope \u2014 superseded by 045",
-      "status": "SUPERSEDED",
-      "theme": "SUPERSEDED",
-      "pass_intro": "Pass 26",
-      "pass_resolved": "38",
-      "status_grep": {
-        "coded": true,
-        "wired": true,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 202,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "DEC-044",
-      "sprint": "-",
-      "dependencies": "-",
-      "description": "",
-      "promotion_path": {
-        "tier": "SUPERSEDED",
-        "label": "SUPERSEDED",
-        "color": "#94a3b8",
-        "reason": "Replaced by another item; no action required"
       }
     },
     {
@@ -2453,7 +1933,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 592,
+        "n_doc_refs": 593,
         "pyramid": {
           "unit": false,
           "smoke": true,
@@ -2722,46 +2202,6 @@
       }
     },
     {
-      "id": "DECISION-066",
-      "title": "Granularity standard for all backtest outputs Pass 52 turn 119 SUPERSEDED_BY_DEC-422 Final: Granularity standard for all backtest outputs \u2014 DEC-422 cube provide",
-      "status": "SUPERSEDED_BY_DEC-422",
-      "theme": "Batch X8 \u2014 Granularity + Breakdowns",
-      "pass_intro": "Pass 39",
-      "pass_resolved": "-",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 8,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "DEC-066",
-      "sprint": "-",
-      "dependencies": "DEC-422",
-      "description": "",
-      "promotion_path": {
-        "tier": "SUPERSEDED",
-        "label": "SUPERSEDED",
-        "color": "#94a3b8",
-        "reason": "Replaced by another item; no action required"
-      }
-    },
-    {
       "id": "DECISION-067",
       "title": "Add 9 missing exit methods \u2014 Pass 52 owner-approved revised scope. 9 new methods: chandelier (DEC-353 compliant ATR mult \u2265 2.5), psar, supertrend, volatility_re",
       "status": "RESOLVED-IMPLEMENTED",
@@ -2839,46 +2279,6 @@
         "label": "NEEDS-TEST",
         "color": "#f59e0b",
         "reason": "Coded but no test reference; add test per DEC-594 same-commit"
-      }
-    },
-    {
-      "id": "DECISION-069",
-      "title": "Per-regime exit selection \u2014 SUPERSEDED_BY_DEC-422 (Pass 52). Original narrow scope (per-strategy \u00d7 per-regime exit selection) subsumed by DEC-422 full dimension",
-      "status": "SUPERSEDED",
-      "theme": "Batch X6 \u2014 Exits + Circuit Breakers",
-      "pass_intro": "Pass 39",
-      "pass_resolved": "DEC-422",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 15,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "DEC-069",
-      "sprint": "-",
-      "dependencies": "DEC-422",
-      "description": "",
-      "promotion_path": {
-        "tier": "SUPERSEDED",
-        "label": "SUPERSEDED",
-        "color": "#94a3b8",
-        "reason": "Replaced by another item; no action required"
       }
     },
     {
@@ -3159,46 +2559,6 @@
         "label": "BLOCKED",
         "color": "#3b82f6",
         "reason": "Waiting on dependency (BLOCKED_ON_BUG-095)"
-      }
-    },
-    {
-      "id": "DECISION-077",
-      "title": "Portfolio drawdown breaker \u2014 Pass 52 owner-approved SUPERSEDED_BY_DEC-070. Substantive scope (>30% portfolio drawdown trigger, flatten all positions) is already",
-      "status": "SUPERSEDED",
-      "theme": "Batch X6 \u2014 Exits + Circuit Breakers",
-      "pass_intro": "Pass 39",
-      "pass_resolved": "DEC-070",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 4,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "DEC-077",
-      "sprint": "-",
-      "dependencies": "-",
-      "description": "",
-      "promotion_path": {
-        "tier": "SUPERSEDED",
-        "label": "SUPERSEDED",
-        "color": "#94a3b8",
-        "reason": "Replaced by another item; no action required"
       }
     },
     {
@@ -4762,46 +4122,6 @@
       }
     },
     {
-      "id": "DECISION-115",
-      "title": "Tail hedging consideration \u2014 Tail hedging skipped at small AUM, revisit at $100K+",
-      "status": "SUPERSEDED",
-      "theme": "Batch X5 \u2014 Risk Management Extension",
-      "pass_intro": "Pass 39",
-      "pass_resolved": "43",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": false,
-        "n_doc_refs": 1,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "DEC-115",
-      "sprint": "-",
-      "dependencies": "-",
-      "description": "",
-      "promotion_path": {
-        "tier": "SUPERSEDED",
-        "label": "SUPERSEDED",
-        "color": "#94a3b8",
-        "reason": "Replaced by another item; no action required"
-      }
-    },
-    {
       "id": "DECISION-116",
       "title": "Cash management protocol (idle cash to SGOV/T-bills) \u2014 Cash management: manual idle-to-SGO",
       "status": "RESOLVED-DECIDED",
@@ -5642,46 +4962,6 @@
       }
     },
     {
-      "id": "DECISION-137",
-      "title": "Backtest output schema versioning + migration path Pass 52 turn 113 owner-approved SUPERSEDED_BY_DEC-283: Backtest output schema versioning + migration path sup",
-      "status": "SUPERSEDED_BY_DEC-283",
-      "theme": "Batch X16 \u2014 Architecture extension",
-      "pass_intro": "Pass 40",
-      "pass_resolved": "-",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 3,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "DEC-137",
-      "sprint": "-",
-      "dependencies": "-",
-      "description": "",
-      "promotion_path": {
-        "tier": "SUPERSEDED",
-        "label": "SUPERSEDED",
-        "color": "#94a3b8",
-        "reason": "Replaced by another item; no action required"
-      }
-    },
-    {
       "id": "DECISION-138",
       "title": "Cold-start CI test (fresh container in <30 min) Pass 52 turn 113 owner-approved RESOLVED-DECIDED with Sprint 6 placement: Cold-start CI test (fresh container in",
       "status": "PARTIAL-SPEC-ONLY",
@@ -5759,46 +5039,6 @@
         "label": "DEFERRED",
         "color": "#3b82f6",
         "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
-      }
-    },
-    {
-      "id": "DECISION-140",
-      "title": "Structured JSON logging standard Pass 52 turn 113 owner-approved SUPERSEDED_BY_DEC-230: Structured JSON logging standard superseded by DEC-230 (Logging audit + ",
-      "status": "SUPERSEDED_BY_DEC-230",
-      "theme": "Batch X16 \u2014 Architecture extension",
-      "pass_intro": "Pass 40",
-      "pass_resolved": "-",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 4,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "DEC-140",
-      "sprint": "-",
-      "dependencies": "DEC-230",
-      "description": "",
-      "promotion_path": {
-        "tier": "SUPERSEDED",
-        "label": "SUPERSEDED",
-        "color": "#94a3b8",
-        "reason": "Replaced by another item; no action required"
       }
     },
     {
@@ -6322,46 +5562,6 @@
       }
     },
     {
-      "id": "DECISION-154",
-      "title": "Market structure change tracker (quarterly) \u2014 Informal note in audit when market changes n",
-      "status": "SUPERSEDED",
-      "theme": "Batch X21 \u2014 Benchmarking",
-      "pass_intro": "Pass 40",
-      "pass_resolved": "43",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": false,
-        "n_doc_refs": 0,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "DEC-154",
-      "sprint": "-",
-      "dependencies": "-",
-      "description": "",
-      "promotion_path": {
-        "tier": "SUPERSEDED",
-        "label": "SUPERSEDED",
-        "color": "#94a3b8",
-        "reason": "Replaced by another item; no action required"
-      }
-    },
-    {
       "id": "DECISION-155",
       "title": "vs-SPY comparison in all backtest reports Pass 52 turn 119 RESOLVED-DECIDED Final: vs-SPY comparison in all backtest reports \u2014 alpha vs SPY benchmark + Informat",
       "status": "RESOLVED-DECIDED",
@@ -6759,46 +5959,6 @@
         "label": "SPEC-ONLY",
         "color": "#ef4444",
         "reason": "RESOLVED-DECIDED but no code or test refs found"
-      }
-    },
-    {
-      "id": "DECISION-165",
-      "title": "Solo PR review checklist before merge to main \u2014 Skip \u2014 solo dev project, CHECKLIST already",
-      "status": "SUPERSEDED",
-      "theme": "Batch X25 \u2014 Process workflow",
-      "pass_intro": "Pass 41",
-      "pass_resolved": "43",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": false,
-        "n_doc_refs": 0,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "DEC-165",
-      "sprint": "-",
-      "dependencies": "-",
-      "description": "",
-      "promotion_path": {
-        "tier": "SUPERSEDED",
-        "label": "SUPERSEDED",
-        "color": "#94a3b8",
-        "reason": "Replaced by another item; no action required"
       }
     },
     {
@@ -8962,46 +8122,6 @@
       }
     },
     {
-      "id": "DECISION-221",
-      "title": "Test coverage measurement (pytest --cov) + CI gate Pass 52 turn 65 owner-approved SUPERSEDED_BY_DEC-098: DEC-098 (Pass 52 turn 58 owner-approved 90% test covera",
-      "status": "SUPERSEDED_BY_DEC-098",
-      "theme": "Batch X34 \u2014 Test + Cache Infrastructure",
-      "pass_intro": "Pass 45",
-      "pass_resolved": "-",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 2,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "DEC-221",
-      "sprint": "-",
-      "dependencies": "DEC-098",
-      "description": "",
-      "promotion_path": {
-        "tier": "SUPERSEDED",
-        "label": "SUPERSEDED",
-        "color": "#94a3b8",
-        "reason": "Replaced by another item; no action required"
-      }
-    },
-    {
       "id": "DECISION-222",
       "title": "Test naming and structure audit; regression tests for top-20 critical bugs Pass 52 turn 65 owner-approved RESOLVED-DECIDED: Test naming and structure audit + re",
       "status": "RESOLVED-DECIDED",
@@ -9042,86 +8162,6 @@
       }
     },
     {
-      "id": "DECISION-223",
-      "title": "CI gate \u2014 PR cannot merge to main without all tests passing Pass 52 turn 65 owner-approved SUPERSEDED_BY_DEC-436: DEC-436 (Pass 52 Phase 0.E catch-mechanism CI/",
-      "status": "SUPERSEDED_BY_DEC-436",
-      "theme": "Batch X34 \u2014 Test + Cache Infrastructure",
-      "pass_intro": "Pass 45",
-      "pass_resolved": "-",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 2,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "DEC-223",
-      "sprint": "-",
-      "dependencies": "DEC-436",
-      "description": "",
-      "promotion_path": {
-        "tier": "SUPERSEDED",
-        "label": "SUPERSEDED",
-        "color": "#94a3b8",
-        "reason": "Replaced by another item; no action required"
-      }
-    },
-    {
-      "id": "DECISION-224",
-      "title": "Cache concurrency audit (filelock under concurrent access) Pass 52 turn 65 owner-approved SUPERSEDED_BY_DEC-328: DEC-328 (Pass 48 \u2192 RESOLVED-DECIDED Pass 52 X54",
-      "status": "SUPERSEDED_BY_DEC-328",
-      "theme": "Batch X34 \u2014 Test + Cache Infrastructure",
-      "pass_intro": "Pass 45",
-      "pass_resolved": "-",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 3,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "DEC-224",
-      "sprint": "-",
-      "dependencies": "DEC-328",
-      "description": "",
-      "promotion_path": {
-        "tier": "SUPERSEDED",
-        "label": "SUPERSEDED",
-        "color": "#94a3b8",
-        "reason": "Replaced by another item; no action required"
-      }
-    },
-    {
       "id": "DECISION-225",
       "title": "Cache eviction policy (preserve prefetched, evict only computed) Pass 52 turn 65 owner-approved RESOLVED-DECIDED: Cache eviction policy. Tag each cache entry wi",
       "status": "computed",
@@ -9159,46 +8199,6 @@
         "label": "UNKNOWN",
         "color": "#9ca3af",
         "reason": "Unclassified status: COMPUTED"
-      }
-    },
-    {
-      "id": "DECISION-226",
-      "title": "Cache schema versioning (every parquet has schema_version metadata) Pass 52 turn 65 owner-approved SUPERSEDED_BY_DEC-330: DEC-330 (Pass 48 \u2192 RESOLVED-DECIDED Pa",
-      "status": "SUPERSEDED_BY_DEC-330",
-      "theme": "Batch X34 \u2014 Test + Cache Infrastructure",
-      "pass_intro": "Pass 45",
-      "pass_resolved": "-",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 2,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "DEC-226",
-      "sprint": "-",
-      "dependencies": "DEC-330",
-      "description": "",
-      "promotion_path": {
-        "tier": "SUPERSEDED",
-        "label": "SUPERSEDED",
-        "color": "#94a3b8",
-        "reason": "Replaced by another item; no action required"
       }
     },
     {
@@ -10682,46 +9682,6 @@
       }
     },
     {
-      "id": "DECISION-264",
-      "title": "Walk-forward window count \u2014 given current data, ensure adequate OOS testing Pass 52 turn 91 owner-approved SUPERSEDED_BY_DEC-109: Walk-forward window count supe",
-      "status": "SUPERSEDED_BY_DEC-109",
-      "theme": "Batch X42 \u2014 Phase 1B-\u03b1 Stress",
-      "pass_intro": "Pass 47",
-      "pass_resolved": "-",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 5,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "DEC-264",
-      "sprint": "-",
-      "dependencies": "-",
-      "description": "",
-      "promotion_path": {
-        "tier": "SUPERSEDED",
-        "label": "SUPERSEDED",
-        "color": "#94a3b8",
-        "reason": "Replaced by another item; no action required"
-      }
-    },
-    {
       "id": "DECISION-265",
       "title": "Smoke test power analysis \u2014 minimum candidates for ENTER/SKIP statistical distinguishabili Pass 52 turn 91 owner-approved RESOLVED-DECIDED (absorbed by upstream",
       "status": "RESOLVED-DECIDED",
@@ -11639,46 +10599,6 @@
         "label": "SPEC-ONLY",
         "color": "#ef4444",
         "reason": "RESOLVED-DECIDED but no code or test refs found"
-      }
-    },
-    {
-      "id": "DECISION-288",
-      "title": "Legal review of public site \u2014 registration check, disclaimer, liability terms BEFORE publi",
-      "status": "OBSOLETE",
-      "theme": "Batch X49 \u2014 Thin Areas Surfaced",
-      "pass_intro": "Pass 47",
-      "pass_resolved": "52",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 2,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "DEC-288",
-      "sprint": "-",
-      "dependencies": "-",
-      "description": "**Resolution:** OBSOLETE. The concern (third-party reliance / Canadian securities-registration risk) does not apply when the site's audience is owner-only. Site is technically public but functionally for personal consumption only.",
-      "promotion_path": {
-        "tier": "OBSOLETE",
-        "label": "OBSOLETE",
-        "color": "#94a3b8",
-        "reason": "Marked obsolete; no action required"
       }
     },
     {
@@ -13602,46 +12522,6 @@
       }
     },
     {
-      "id": "DECISION-337",
-      "title": "update_trailing_stop ignores intraday extremes for stop placement; fix to track highs and",
-      "status": "SUPERSEDED_BY_DEC-313",
-      "theme": "Batch X54 \u2014 Medium-Severity Improvements",
-      "pass_intro": "Pass 48",
-      "pass_resolved": "-",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 6,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "DEC-337",
-      "sprint": "Sprint 2 additions (Engine Bug",
-      "dependencies": "-",
-      "description": "",
-      "promotion_path": {
-        "tier": "SUPERSEDED",
-        "label": "SUPERSEDED",
-        "color": "#94a3b8",
-        "reason": "Replaced by another item; no action required"
-      }
-    },
-    {
       "id": "DECISION-338",
       "title": "Conversion logic (short\u2192long in bull regime) creates label only; no actual long opened \u2014 d Pass 52 turn 50 owner sub-choice: (A) Implement actual position open ",
       "status": "PARTIAL-SPEC-ONLY",
@@ -13802,46 +12682,6 @@
       }
     },
     {
-      "id": "DECISION-342",
-      "title": "Test pass-rate mis-reported \u2014 only 38 of 46 tests run cleanly (7 e2e errors); update repor",
-      "status": "OBSOLETE",
-      "theme": "Batch X55 \u2014 Documentation Sync",
-      "pass_intro": "Pass 48",
-      "pass_resolved": "52",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 1,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "DEC-342",
-      "sprint": "-",
-      "dependencies": "-",
-      "description": "**Resolution:** OBSOLETE. The concern (only 38/46 tests passing) was based on stale pre-Pass-51b laptop state. Pass 51b empirically verified the real test count is 63/63 after `git pull --rebase` synced laptop main with origin (which was 5 commits ahead). Documented in this AUDIT",
-      "promotion_path": {
-        "tier": "OBSOLETE",
-        "label": "OBSOLETE",
-        "color": "#94a3b8",
-        "reason": "Marked obsolete; no action required"
-      }
-    },
-    {
       "id": "DECISION-343",
       "title": "Pandas-ta deprecation warning on pandas 4.0 \u2014 plan replacement (TA-Lib alternative) Pass 52 turn 51 owner-approved joint-with-DEC-445 framing: wait until DEC-44",
       "status": "PARTIAL-SPEC-ONLY",
@@ -13959,46 +12799,6 @@
         "label": "SPEC-ONLY",
         "color": "#ef4444",
         "reason": "RESOLVED-DECIDED but no code or test refs found"
-      }
-    },
-    {
-      "id": "DECISION-346",
-      "title": "Multidimensional categorical verdict matrix \u2014 supersedes single-dimension regime verdict Pass 52 turn 89 owner-approved SUPERSEDED_BY_DEC-422: Multidimensional ",
-      "status": "SUPERSEDED_BY_DEC-422",
-      "theme": "Batch X52 \u2014 Round 1 Methodology Gaps",
-      "pass_intro": "Pass 52",
-      "pass_resolved": "-",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 23,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "DEC-346",
-      "sprint": "-",
-      "dependencies": "-",
-      "description": "**Background \u2014 what's already documented in the project:** - **CLAUDE.md lines 121, 134, 142, 189:** per-regime strategy library philosophy. \"PASS in \u22651 regime (not universal pass required). A strategy valid in crisis but not bull is deployed only during crisis \u2014 this is intentio",
-      "promotion_path": {
-        "tier": "SUPERSEDED",
-        "label": "SUPERSEDED",
-        "color": "#94a3b8",
-        "reason": "Replaced by another item; no action required"
       }
     },
     {
@@ -14159,46 +12959,6 @@
         "label": "SPEC-ONLY",
         "color": "#ef4444",
         "reason": "RESOLVED-DECIDED but no code or test refs found"
-      }
-    },
-    {
-      "id": "DECISION-351",
-      "title": "Anchored VWAP for institutional cost-basis context \u2014 SUPERSEDED Pass 52 by existing BUG-147 (no Anchored VWAP strategies, MEDIUM) + BUG-151 (Anchored VWAP not c",
-      "status": "SUPERSEDED",
-      "theme": "Batch X55 \u2014 Strategy Coverage Gaps (Pass 52)",
-      "pass_intro": "Pass 52",
-      "pass_resolved": "52",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 8,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "DEC-351",
-      "sprint": "-",
-      "dependencies": "BUG-147; BUG-151",
-      "description": "",
-      "promotion_path": {
-        "tier": "SUPERSEDED",
-        "label": "SUPERSEDED",
-        "color": "#94a3b8",
-        "reason": "Replaced by another item; no action required"
       }
     },
     {
@@ -17082,46 +15842,6 @@
       }
     },
     {
-      "id": "DECISION-424",
-      "title": "DEC-069 SUPERSEDED by DEC-422 (Pass 52). Per-regime exit selection was narrow scope; superseded by full dimensional space optimization in DEC-422 where regime i",
-      "status": "SUPERSEDED_BY_DEC-422",
-      "theme": "Batch X6 \u2014 Exits + Circuit Breakers",
-      "pass_intro": "Pass 52",
-      "pass_resolved": "-",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 4,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "DEC-424",
-      "sprint": "-",
-      "dependencies": "DEC-069; DEC-422",
-      "description": "DEC-069's narrow scope (per-strategy \u00d7 per-regime exit selection) is subsumed by DEC-422 where regime is one of ~17 dimensions. DEC-069 outputs become marginal-analysis subset of broader framework. Status: SUPERSEDED.",
-      "promotion_path": {
-        "tier": "SUPERSEDED",
-        "label": "SUPERSEDED",
-        "color": "#94a3b8",
-        "reason": "Replaced by another item; no action required"
-      }
-    },
-    {
       "id": "DECISION-425",
       "title": "DEC-422 Phase 1: Dimensional slicing infrastructure. Build per-cell aggregation engine in `backtest/results/dim_cube.py`. Inputs: ClosedTrade rows + dimension-e",
       "status": "RESOLVED-DECIDED",
@@ -18199,46 +16919,6 @@
         "label": "SPEC-ONLY",
         "color": "#ef4444",
         "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
-      }
-    },
-    {
-      "id": "DECISION-452",
-      "title": "Quiver premium upgrade decision \u2014 OBSOLETE per Pass 52 turn 28 owner correction. Owner already on Quiver paid tier (~$50-100/mo); upgrade decision moot. Status:",
-      "status": "OBSOLETE",
-      "theme": "Batch X56 \u2014 API Endpoint Utilization Audit (Pass 52)",
-      "pass_intro": "Pass 52",
-      "pass_resolved": "-",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 4,
-        "pyramid": {
-          "unit": false,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
-        }
-      },
-      "short_id": "DEC-452",
-      "sprint": "-",
-      "dependencies": "-",
-      "description": "",
-      "promotion_path": {
-        "tier": "OBSOLETE",
-        "label": "OBSOLETE",
-        "color": "#94a3b8",
-        "reason": "Marked obsolete; no action required"
       }
     },
     {
@@ -21053,7 +19733,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 456,
+        "n_doc_refs": 457,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -21362,6 +20042,8 @@
       }
     }
   ],
+  "decisions_total_count": 534,
+  "decisions_hidden_count": 33,
   "bugs": [
     {
       "id": "BUG-01",
@@ -21373,7 +20055,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 64,
+        "n_doc_refs": 71,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -21411,7 +20093,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 58,
+        "n_doc_refs": 68,
         "pyramid": {
           "unit": true,
           "smoke": true,
@@ -21449,7 +20131,7 @@
         "wired": true,
         "tested": true,
         "pushed": false,
-        "n_doc_refs": 36,
+        "n_doc_refs": 40,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -21487,7 +20169,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 50,
+        "n_doc_refs": 52,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -21525,7 +20207,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 79,
+        "n_doc_refs": 81,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -21562,8 +20244,8 @@
         "coded": true,
         "wired": true,
         "tested": true,
-        "pushed": false,
-        "n_doc_refs": 36,
+        "pushed": true,
+        "n_doc_refs": 42,
         "pyramid": {
           "unit": true,
           "smoke": true,
@@ -21601,7 +20283,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 64,
+        "n_doc_refs": 66,
         "pyramid": {
           "unit": "N/A",
           "smoke": true,
@@ -21639,7 +20321,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 43,
+        "n_doc_refs": 46,
         "pyramid": {
           "unit": true,
           "smoke": true,
@@ -21677,7 +20359,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 92,
+        "n_doc_refs": 96,
         "pyramid": {
           "unit": true,
           "smoke": true,
@@ -21715,7 +20397,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 190,
+        "n_doc_refs": 191,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -21753,7 +20435,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 159,
+        "n_doc_refs": 162,
         "pyramid": {
           "unit": true,
           "smoke": true,
@@ -21791,7 +20473,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 44,
+        "n_doc_refs": 45,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -21829,7 +20511,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 65,
+        "n_doc_refs": 66,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -21867,7 +20549,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 100,
+        "n_doc_refs": 101,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -21905,7 +20587,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 51,
+        "n_doc_refs": 52,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -21943,7 +20625,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 23,
+        "n_doc_refs": 25,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -22019,7 +20701,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 50,
+        "n_doc_refs": 51,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -22057,7 +20739,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 14,
+        "n_doc_refs": 17,
         "pyramid": {
           "unit": true,
           "smoke": true,
@@ -22095,7 +20777,7 @@
         "wired": false,
         "tested": true,
         "pushed": false,
-        "n_doc_refs": 6,
+        "n_doc_refs": 7,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -22133,7 +20815,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 8,
+        "n_doc_refs": 9,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -22361,7 +21043,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 16,
+        "n_doc_refs": 17,
         "pyramid": {
           "unit": true,
           "smoke": true,
@@ -22665,7 +21347,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 17,
+        "n_doc_refs": 18,
         "pyramid": {
           "unit": true,
           "smoke": true,
@@ -22703,7 +21385,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 34,
+        "n_doc_refs": 35,
         "pyramid": {
           "unit": true,
           "smoke": true,
@@ -22741,7 +21423,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 17,
+        "n_doc_refs": 18,
         "pyramid": {
           "unit": true,
           "smoke": true,
@@ -22779,7 +21461,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 24,
+        "n_doc_refs": 25,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -23083,7 +21765,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 81,
+        "n_doc_refs": 84,
         "pyramid": {
           "unit": true,
           "smoke": true,
@@ -23349,7 +22031,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 24,
+        "n_doc_refs": 25,
         "pyramid": {
           "unit": true,
           "smoke": true,
@@ -28716,40 +27398,46 @@
   ],
   "recent_commits": [
     {
+      "sha": "432b146b",
+      "subject": "Pass 53 v8h+1: Phase 3 Batch 21 - BUG-006 dashboard protocol-violation fix (owner-flagged)",
+      "author": "jeetmehta1991",
+      "rel_time": "9 minutes ago"
+    },
+    {
       "sha": "6a3b572e",
       "subject": "Pass 53 v8h+1: BUG-95 CRITICAL Portfolio class RESOLVED-IMPLEMENTED (Sub-batch 5/5 - FINAL)",
       "author": "jeetmehta1991",
-      "rel_time": "10 minutes ago"
+      "rel_time": "22 minutes ago"
     },
     {
       "sha": "2b56e6e9",
       "subject": "Pass 53 v8h+1: BUG-95 LIVE_TRADING_RULES enforcement via can_open gate (Sub-batch 4/5)",
       "author": "jeetmehta1991",
-      "rel_time": "29 minutes ago"
+      "rel_time": "40 minutes ago"
     },
     {
       "sha": "2fe9c3d4",
       "subject": "Pass 53 v8h+1: BUG-95 Portfolio metrics from equity_curve (Sub-batch 3/5)",
       "author": "jeetmehta1991",
-      "rel_time": "34 minutes ago"
+      "rel_time": "45 minutes ago"
     },
     {
       "sha": "ead36b0b",
       "subject": "Pass 53 v8h+1: BUG-95 Portfolio engine integration (Sub-batch 2/5 - shadow state)",
       "author": "jeetmehta1991",
-      "rel_time": "39 minutes ago"
+      "rel_time": "50 minutes ago"
     },
     {
       "sha": "93e4036a",
       "subject": "Pass 53 v8h+1: BUG-95 CRITICAL Portfolio class skeleton (Sub-batch 1/5 - owner-approved Option A)",
       "author": "jeetmehta1991",
-      "rel_time": "47 minutes ago"
+      "rel_time": "58 minutes ago"
     },
     {
       "sha": "b04abeb7",
       "subject": "Pass 53 auto-drift-sweep 2026-05-11 00:53: dashboard re-derive (no content drift)",
       "author": "jeetmehta1991",
-      "rel_time": "79 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "5e68ae6c",
@@ -28761,7 +27449,7 @@
       "sha": "98ec8f35",
       "subject": "Pass 53 v8h+1: BUG-83 HIGH inverted PIT filter on get_congressional_detail FIXED (owner-approved Option A)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "99a888a3",
@@ -28803,31 +27491,31 @@
       "sha": "d2c22ebf",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 11 - 12 BUGs (62/66/67/69/70/71/74/75/79/81/86/87) SUPERSEDED/DEFERRED",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "3f4b7b2e",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 10 - 6 BUGs (51/54/55/56/57/60) SUPERSEDED/DEFERRED",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "a1ba19bb",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 9 - 6 SUPERSEDED (BUG-35/36/38/39/41/53)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "fd86b03f",
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 22:45: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "08117f87",
       "subject": "Pass 53 v8h+1: BUG-29 RESOLVED-IMPLEMENTED - end-of-backtest open-trade finalization",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "0daa206c",
@@ -28875,49 +27563,31 @@
       "sha": "fc9390b7",
       "subject": "Pass 53 v8h+1: Phase 2 BUG cross-references + id-form normalization (6 BUGs READY -> IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "97c69b3d",
       "subject": "Pass 53 v8h+1: Phase 1 BUG categorization (10 SUPERSEDED/DEFERRED) + dashboard hide-moot-bugs filter",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "99d137c1",
       "subject": "Pass 53 v8h+1: BUG-270/271/272/273 pyramid overrides + Promotion dropdown filters",
       "author": "jeetmehta1991",
       "rel_time": "5 hours ago"
-    },
-    {
-      "sha": "a7c66530",
-      "subject": "Pass 53 v8h+1: DEC-610 SPEC_ONLY -> DEFERRED_TO_* re-classification (14 forward-looking DECs)",
-      "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 5,
-    "modified": 5,
+    "count": 2,
+    "modified": 2,
     "added": 0,
     "untracked": 0,
     "deleted": 0,
     "files": [
       {
         "status": "M",
-        "path": "backtest/tests/test_e2e_phase1a_smoke.py"
-      },
-      {
-        "status": "M",
-        "path": "dashboard_stage_2/data.js"
-      },
-      {
-        "status": "M",
-        "path": "dashboard_stage_2/data.json"
-      },
-      {
-        "status": "M",
-        "path": "dashboard_stage_2/last_run.txt"
+        "path": "dashboard_stage_2/index.html"
       },
       {
         "status": "M",
@@ -29726,35 +28396,19 @@
   "decision_status_counts": {
     "RESOLVED-DECIDED": 276,
     "PARTIAL": 5,
-    "SUPERSEDED_BY_DEC-422": 6,
-    "SUPERSEDED": 10,
     "PARTIAL-SPEC-ONLY": 78,
-    "SUPERSEDED_BY_DEC-441": 1,
-    "SUPERSEDED_BY_DEC-091": 1,
-    "SUPERSEDED_BY_DEC-087": 1,
-    "SUPERSEDED_BY_DEC-089": 1,
-    "SUPERSEDED_BY_DEC-109": 2,
     "DEFERRED_TO_STAGE_3": 36,
     "DEFERRED_TO_STAGE_4": 21,
     "DEFERRED": 2,
     "RESOLVED-IMPLEMENTED": 44,
-    "SUPERSEDED_BY_DEC-459": 1,
     "BLOCKED_ON_BUG-095": 3,
     "correlation": 1,
     "SPLIT": 1,
     "NEEDS_CLARIFICATION": 1,
     "REJECTED": 2,
     "live_sharpe_6mo": 1,
-    "SUPERSEDED_BY_DEC-283": 1,
-    "SUPERSEDED_BY_DEC-230": 1,
-    "SUPERSEDED_BY_DEC-098": 1,
-    "SUPERSEDED_BY_DEC-436": 1,
-    "SUPERSEDED_BY_DEC-328": 1,
     "computed": 1,
-    "SUPERSEDED_BY_DEC-330": 1,
     "trade_pnl": 1,
-    "OBSOLETE": 3,
-    "SUPERSEDED_BY_DEC-313": 1,
     "DEFERRED_TO_SPRINT_8": 2,
     "RESOLVED-DECIDED-DEFERRED": 1,
     "DEFERRED_TO_PHASE_1C": 1,

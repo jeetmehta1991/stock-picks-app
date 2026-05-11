@@ -101,30 +101,45 @@ per CHECKLIST #77 - never reads from memory.
 
   <section id="decisions" class="panel">
     <h2>Decisions (DEC)</h2>
-    <p>From <code>AUDIT_INDEX.md</code>. Total: <span id="dec-total">--</span>.</p>
+    <p>From <code>AUDIT_INDEX.md</code>. Visible: <span id="dec-total">--</span> / total <span id="dec-total-all">--</span> (<span id="dec-hidden">--</span> SUPERSEDED/OBSOLETE decisions hidden per owner directive 2026-05-10 - they remain in AUDIT_INDEX.md as canonical record).</p>
+
+    <details style="margin:8px 0 12px 0;padding:8px 12px;background:#f8fafc;border-left:3px solid #6366f1;border-radius:3px;font-size:12px">
+      <summary style="cursor:pointer;font-weight:600;color:#1e293b">Promotion-tier legend (what each category means)</summary>
+      <div style="margin-top:8px;line-height:1.6">
+        <div><span style="background:#10b981;color:white;padding:1px 6px;border-radius:3px;font-size:10px;font-weight:600">IMPLEMENTED</span> Decision is fully resolved AND implemented in code + tested. Final state; no further action.</div>
+        <div><span style="background:#10b981;color:white;padding:1px 6px;border-radius:3px;font-size:10px;font-weight:600">READY</span> Decision is RESOLVED-DECIDED + wired in active path + has tests. Eligible to promote to RESOLVED-IMPLEMENTED.</div>
+        <div><span style="background:#f59e0b;color:white;padding:1px 6px;border-radius:3px;font-size:10px;font-weight:600">CODE_ONLY</span> NEEDS-TEST - coded but no regression test. Must add test in same commit (DEC-594 same-commit rule).</div>
+        <div><span style="background:#f59e0b;color:white;padding:1px 6px;border-radius:3px;font-size:10px;font-weight:600">TEST_ONLY</span> NEEDS-CODE - tested but no backing code (rare; usually test stub). Must add implementation.</div>
+        <div><span style="background:#ef4444;color:white;padding:1px 6px;border-radius:3px;font-size:10px;font-weight:600">SPEC_ONLY</span> Decision recorded but no code or test artifact yet. Genuine implementation backlog.</div>
+        <div><span style="background:#3b82f6;color:white;padding:1px 6px;border-radius:3px;font-size:10px;font-weight:600">DEFERRED</span> Explicitly deferred to Stage 3+, Phase 1B+, Sprint 7+ (or similar). No action expected until that phase.</div>
+        <div><span style="background:#a855f7;color:white;padding:1px 6px;border-radius:3px;font-size:10px;font-weight:600">BLOCKED</span> Waiting on a specific dependency (BUG/DEC/INV). Cannot proceed until that dependency resolves.</div>
+        <div><span style="background:#6b7280;color:white;padding:1px 6px;border-radius:3px;font-size:10px;font-weight:600">OPEN</span> Status is OPEN / PROPOSED / NEEDS_CLARIFICATION. Awaits owner direction or further investigation.</div>
+        <div><span style="background:#94a3b8;color:white;padding:1px 6px;border-radius:3px;font-size:10px;font-weight:600">SUPERSEDED</span> Replaced by another decision; no action. <em>Hidden from this view</em>.</div>
+        <div><span style="background:#94a3b8;color:white;padding:1px 6px;border-radius:3px;font-size:10px;font-weight:600">OBSOLETE</span> Marked obsolete; no action. <em>Hidden from this view</em>.</div>
+        <div><span style="background:#cbd5e1;color:#475569;padding:1px 6px;border-radius:3px;font-size:10px;font-weight:600">UNKNOWN</span> Could not classify (exotic status string). Likely a parsing edge case to fix.</div>
+      </div>
+    </details>
+
     <div class="filter-bar">
       <input id="dec-filter" placeholder="Filter ID / title / theme..." size="40">
       <select id="dec-status-filter">
-        <option value="">All statuses</option>
+        <option value="">All Doc Statuses</option>
         <option value="RESOLVED-DECIDED">RESOLVED-DECIDED</option>
         <option value="RESOLVED-IMPLEMENTED">RESOLVED-IMPLEMENTED</option>
         <option value="PARTIAL-SPEC-ONLY">PARTIAL-SPEC-ONLY</option>
         <option value="PENDING">PENDING</option>
         <option value="PARTIAL">PARTIAL</option>
-        <option value="SUPERSEDED">SUPERSEDED</option>
         <option value="DEFERRED">DEFERRED</option>
       </select>
       <select id="dec-promotion-filter">
         <option value="">All promotion tiers</option>
-        <option value="IMPLEMENTED">IMPLEMENTED (already RESOLVED-IMPLEMENTED)</option>
+        <option value="IMPLEMENTED">IMPLEMENTED</option>
         <option value="READY">READY-TO-PROMOTE</option>
         <option value="CODE_ONLY">NEEDS-TEST (coded but no test)</option>
         <option value="TEST_ONLY">NEEDS-CODE (tested but no code)</option>
-        <option value="SPEC_ONLY">SPEC-ONLY (genuine implementation backlog)</option>
+        <option value="SPEC_ONLY">SPEC-ONLY (implementation backlog)</option>
         <option value="DEFERRED">DEFERRED (Stage 3+ / Phase 1B+ / Sprint 7+)</option>
         <option value="BLOCKED">BLOCKED (waiting on dependency)</option>
-        <option value="SUPERSEDED">SUPERSEDED</option>
-        <option value="OBSOLETE">OBSOLETE</option>
         <option value="OPEN">OPEN / PROPOSED</option>
         <option value="UNKNOWN">UNKNOWN</option>
       </select>
@@ -153,7 +168,8 @@ per CHECKLIST #77 - never reads from memory.
     </p>
     <table id="tbl-decisions" class="display compact" style="width:100%">
       <thead><tr><th>ID</th><th>Title</th><th>Description</th><th>Doc Status</th>
-        <th title="Promotion-path tier per CHECKLIST #82: IMPLEMENTED / READY-TO-PROMOTE / NEEDS-TEST / NEEDS-CODE / SPEC-ONLY / DEFERRED / BLOCKED / SUPERSEDED / OBSOLETE / OPEN. Hover for reason.">Promotion</th>
+        <th title="Promotion-path tier badge per CHECKLIST #82 (color-coded). Hover for reason.">Promotion</th>
+        <th title="Plain-text tier name (sortable / filterable as text). Same value as Promotion column's badge label.">Tier</th>
         <th>Coded</th><th>Wired</th><th>Tested</th><th>Pushed</th>
         <th title="Unit">U</th><th title="Smoke">Sm</th><th title="Integration">I</th><th title="System">Sy</th>
         <th title="Functional">F</th><th title="Regression">R</th><th title="Data integrity">D</th>
@@ -508,14 +524,22 @@ function promotionCell(p) {
   return `<span data-tier="${tier}" data-label="${label}" title="${reason}" style="background:${p.color};color:white;padding:2px 6px;border-radius:3px;font-size:10px;font-weight:600">${label}</span>`;
 }
 
+// Decisions table: visible / total / hidden counts (SUPERSEDED + OBSOLETE
+// hidden per owner directive 2026-05-10; remain in AUDIT_INDEX.md)
+document.getElementById('dec-total').textContent = D.decisions.length;
+document.getElementById('dec-total-all').textContent = D.decisions_total_count !== undefined ? D.decisions_total_count : D.decisions.length;
+document.getElementById('dec-hidden').textContent = D.decisions_hidden_count !== undefined ? D.decisions_hidden_count : 0;
 const decRows = D.decisions.map(d => {
   const sg = d.status_grep || {};
+  const tier = (d.promotion_path && d.promotion_path.tier) || 'UNKNOWN';
   return [
     `<code>${d.short_id || d.id}</code>`,
     d.title,
     descCell(d.description),
     badge(d.status),
     promotionCell(d.promotion_path),
+    // Tier column: plain text for sort/filter, matches Promotion badge label
+    `<span data-tier="${tier}" style="font-size:11px;font-weight:600">${tier}</span>`,
     statusCheck(sg.coded),
     statusCheck(sg.wired),
     statusCheck(sg.tested),
@@ -530,7 +554,10 @@ const decTable = $('#tbl-decisions').DataTable({
   data: decRows, pageLength: 50, order: [[0, 'asc']],
 });
 $('#dec-filter').on('keyup', function () { decTable.search(this.value).draw(); });
-$('#dec-status-filter').on('change', function () { decTable.column(2).search(this.value).draw(); });
+// FIX 2026-05-10: dec-status-filter searches Doc Status column (index 3,
+// after ID/Title/Description). Was previously column 2 (Description) which
+// caused the dropdown to be effectively non-functional.
+$('#dec-status-filter').on('change', function () { decTable.column(3).search(this.value).draw(); });
 $('#dec-promotion-filter').on('change', function () {
   // Decisions Promotion column index = 4 (after ID/Title/Description/DocStatus)
   const v = this.value;
@@ -582,7 +609,9 @@ const invTable = $('#tbl-invs').DataTable({
   data: invRows, pageLength: 50, order: [[0, 'asc']],
 });
 $('#inv-filter').on('keyup', function () { invTable.search(this.value).draw(); });
-$('#inv-status-filter').on('change', function () { invTable.column(2).search(this.value).draw(); });
+// FIX 2026-05-10: inv-status-filter searches Doc Status column (index 3,
+// after ID/Title/Description). Was previously column 2 (Description).
+$('#inv-status-filter').on('change', function () { invTable.column(3).search(this.value).draw(); });
 $('#inv-promotion-filter').on('change', function () {
   // INVs Promotion column index = 4 (after ID/Title/Description/DocStatus)
   const v = this.value;
@@ -605,7 +634,9 @@ const cavTable = $('#tbl-caveats').DataTable({
   data: cavRows, pageLength: 50, order: [[0, 'asc']],
 });
 $('#cav-filter').on('keyup', function () { cavTable.search(this.value).draw(); });
-$('#cav-status-filter').on('change', function () { cavTable.column(2).search(this.value).draw(); });
+// FIX 2026-05-10: cav-status-filter searches Status column (index 3, after
+// ID/Title/Description). Was previously column 2 (Description).
+$('#cav-status-filter').on('change', function () { cavTable.column(3).search(this.value).draw(); });
 
 // Learnings table
 const lessons = D.learnings || [];
