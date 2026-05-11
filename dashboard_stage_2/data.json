@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-11T00:05:17.778697+00:00",
+  "generated_at": "2026-05-11T00:43:34.072224+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -2453,7 +2453,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 590,
+        "n_doc_refs": 591,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -21053,7 +21053,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 454,
+        "n_doc_refs": 455,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -21487,7 +21487,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 48,
+        "n_doc_refs": 50,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -22664,8 +22664,8 @@
         "coded": true,
         "wired": true,
         "tested": true,
-        "pushed": false,
-        "n_doc_refs": 10,
+        "pushed": true,
+        "n_doc_refs": 17,
         "pyramid": {
           "unit": true,
           "smoke": false,
@@ -23083,7 +23083,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 71,
+        "n_doc_refs": 72,
         "pyramid": {
           "unit": false,
           "smoke": false,
@@ -28716,76 +28716,82 @@
   ],
   "recent_commits": [
     {
+      "sha": "5e68ae6c",
+      "subject": "Pass 53 v8h+1: BUG-77 MEDIUM candidate ranking inflated by avoid entries FIXED (owner-approved Option A)",
+      "author": "jeetmehta1991",
+      "rel_time": "37 minutes ago"
+    },
+    {
       "sha": "98ec8f35",
       "subject": "Pass 53 v8h+1: BUG-83 HIGH inverted PIT filter on get_congressional_detail FIXED (owner-approved Option A)",
       "author": "jeetmehta1991",
-      "rel_time": "18 minutes ago"
+      "rel_time": "56 minutes ago"
     },
     {
       "sha": "99a888a3",
       "subject": "Pass 53 v8h+1: BUG-61 HIGH multiple concurrent positions same ticker FIXED (owner-approved Option A)",
       "author": "jeetmehta1991",
-      "rel_time": "24 minutes ago"
+      "rel_time": "62 minutes ago"
     },
     {
       "sha": "cf8d9c24",
       "subject": "Pass 53 v8h+1: BUG-110 HIGH entry gap filter VERIFIED ENFORCED (stale audit finding)",
       "author": "jeetmehta1991",
-      "rel_time": "33 minutes ago"
+      "rel_time": "72 minutes ago"
     },
     {
       "sha": "a571c1c6",
       "subject": "Pass 53 v8h+1: BUG-80 HIGH exit slippage applied symmetrically (apply_exit_slippage helper + 2 wire-up sites)",
       "author": "jeetmehta1991",
-      "rel_time": "43 minutes ago"
+      "rel_time": "81 minutes ago"
     },
     {
       "sha": "b852347d",
       "subject": "Pass 53 v8h+1: BUG-78 CRITICAL trailing stop lookahead bias FIXED",
       "author": "jeetmehta1991",
-      "rel_time": "51 minutes ago"
+      "rel_time": "89 minutes ago"
     },
     {
       "sha": "5b710e0b",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 13 - 39 BUG mega-sweep (pre-Pass-53 audit findings); OPEN: 46 -> 7",
       "author": "jeetmehta1991",
-      "rel_time": "66 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "9e52a585",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 12 - 21 BUGs DEFERRED/SUPERSEDED (Stage 3/Phase 1B sweep)",
       "author": "jeetmehta1991",
-      "rel_time": "70 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "d2c22ebf",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 11 - 12 BUGs (62/66/67/69/70/71/74/75/79/81/86/87) SUPERSEDED/DEFERRED",
       "author": "jeetmehta1991",
-      "rel_time": "72 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "3f4b7b2e",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 10 - 6 BUGs (51/54/55/56/57/60) SUPERSEDED/DEFERRED",
       "author": "jeetmehta1991",
-      "rel_time": "74 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "a1ba19bb",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 9 - 6 SUPERSEDED (BUG-35/36/38/39/41/53)",
       "author": "jeetmehta1991",
-      "rel_time": "75 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "fd86b03f",
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 22:45: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "78 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "08117f87",
       "subject": "Pass 53 v8h+1: BUG-29 RESOLVED-IMPLEMENTED - end-of-backtest open-trade finalization",
       "author": "jeetmehta1991",
-      "rel_time": "80 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "0daa206c",
@@ -28815,31 +28821,31 @@
       "sha": "1f87aa53",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 3 - BUG-17/25 OBSOLETE + BUG-18/28/30 IMPLEMENTED (Wilder RSI fix)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "694a11fa",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 2 - BUG-01/06/10/12 IMPLEMENTED + BUG-14 OBSOLETE",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "3bb2f559",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 1 - BUG-08/09/15/27 RESOLVED-IMPLEMENTED with real fixes",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "fc9390b7",
       "subject": "Pass 53 v8h+1: Phase 2 BUG cross-references + id-form normalization (6 BUGs READY -> IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "97c69b3d",
       "subject": "Pass 53 v8h+1: Phase 1 BUG categorization (10 SUPERSEDED/DEFERRED) + dashboard hide-moot-bugs filter",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "99d137c1",
@@ -28863,59 +28869,40 @@
       "sha": "d28c8723",
       "subject": "Pass 53 v8h+1: Tier C/D edge-case sweep - DEC-057 promoted; DEC-028 no-promote (forward-looking)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "10fa8617",
       "subject": "Pass 53 v8h+1: INV-041 RESOLVED - path-restricted commits in 4 prefetch scripts + 5-test regression gate",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "bcb6ea3f",
       "subject": "Pass 53 v8h+1: parse_inv_entries parser fix - recognize all RESOLVED-* / DEFERRED-* status variants",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "26340a6b",
       "subject": "Pass 53 auto-drift-sweep 2026-05-10 20:43: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "bffd8658",
       "subject": "Pass 53 v8h+1: INV promotion sweep - INV-045 RESOLVED + 4 NOOPs (CHECKLIST #81)",
       "author": "jeetmehta1991",
       "rel_time": "4 hours ago"
-    },
-    {
-      "sha": "cab09977",
-      "subject": "Pass 53 v8h+1: BUG promotion sweep (CHECKLIST #81 first application; 4 HIGH-severity smart_money bugs)",
-      "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 3,
-    "modified": 3,
+    "count": 0,
+    "modified": 0,
     "added": 0,
     "untracked": 0,
     "deleted": 0,
-    "files": [
-      {
-        "status": "M",
-        "path": "BUG_REGISTER.md"
-      },
-      {
-        "status": "M",
-        "path": "backtest/signals/screener.py"
-      },
-      {
-        "status": "M",
-        "path": "backtest/tests/test_unit.py"
-      }
-    ]
+    "files": []
   },
   "unpushed_commits": [],
   "active_bgs": [],
