@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-11T20:38:03.633666+00:00",
+  "generated_at": "2026-05-11T20:51:30.588801+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -2133,7 +2133,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 37,
+        "n_doc_refs": 36,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -2963,19 +2963,19 @@
     },
     {
       "id": "DECISION-091",
-      "title": "Drawdown re-sizing Pass 52 turn 67 owner-approved BLOCKED_ON_BUG-095 (post-Portfolio class via Phase 0.B): Drawdown re-sizing methodology \u2014 at 10% portfolio DD:",
-      "status": "RESOLVED-DECIDED",
+      "title": "Drawdown re-sizing \u2014 `Portfolio.drawdown_size_multiplier()` method in `backtest/engine/portfolio.py` returns tiered multiplier in `{1.0, 0.75, 0.5, 0.0}` based ",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X5 \u2014 Risk Management Extension",
-      "pass_intro": "Pass 39",
-      "pass_resolved": "-",
+      "pass_intro": "Pass 53",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": true,
         "wired": true,
-        "tested": false,
+        "tested": true,
         "pushed": true,
-        "n_doc_refs": 16,
+        "n_doc_refs": 15,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -2995,27 +2995,27 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "CODE_ONLY",
-        "label": "NEEDS-TEST",
-        "color": "#f59e0b",
-        "reason": "Coded but no test reference; add test per DEC-594 same-commit"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-092",
-      "title": "Slippage model = f(size%ADV, vol) Pass 52 turn 67 owner-approved RESOLVED-DECIDED as parent of DEC-122/DEC-280: Slippage model = f(size%ADV, vol). Base model: `",
-      "status": "RESOLVED-DECIDED",
+      "title": "Slippage model = f(size%ADV, vol) \u2014 `compute_slippage_bps_advanced(size_pct_adv, realized_vol_annualized, alpha=0.5, beta=4.5, gamma=0.025)` in `backtest/engine",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X5 \u2014 Risk Management Extension",
-      "pass_intro": "Pass 39",
-      "pass_resolved": "-",
+      "pass_intro": "Pass 53",
+      "pass_resolved": "Pass 53",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
         "pushed": true,
-        "n_doc_refs": 28,
+        "n_doc_refs": 25,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -3032,13 +3032,13 @@
       },
       "short_id": "DEC-092",
       "sprint": "Sprint 4 additions (DEC-410 Au; Sprint 7 Pattern 2 toolkit add; Sprint 7 additions (Statistica",
-      "dependencies": "DEC-122; DEC-280",
+      "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -3443,19 +3443,19 @@
     },
     {
       "id": "DECISION-108",
-      "title": "Regime persistence model (HMM or smoothing) Pass 52 turn 61 owner-approved RESOLVED-DECIDED with EXPONENTIAL SMOOTHING (not HMM): Regime persistence model. Expo",
-      "status": "RESOLVED-DECIDED",
+      "title": "Regime persistence via exponential smoothing (HMM rejected) \u2014 `ema_smooth_regime_probability(new_score, prev_smoothed=None, alpha=0.1)` in `backtest/engine/regi",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X7 \u2014 Smart Money + Regimes",
-      "pass_intro": "Pass 39",
-      "pass_resolved": "-",
+      "pass_intro": "Pass 53",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": true,
         "wired": true,
-        "tested": false,
+        "tested": true,
         "pushed": true,
-        "n_doc_refs": 8,
+        "n_doc_refs": 7,
         "pyramid": {
-          "unit": false,
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -3475,10 +3475,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "CODE_ONLY",
-        "label": "NEEDS-TEST",
-        "color": "#f59e0b",
-        "reason": "Coded but no test reference; add test per DEC-594 same-commit"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -3933,7 +3933,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 9,
+        "n_doc_refs": 7,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -4933,7 +4933,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 1,
+        "n_doc_refs": 2,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -7253,7 +7253,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 13,
+        "n_doc_refs": 12,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -9803,19 +9803,19 @@
     },
     {
       "id": "DECISION-279",
-      "title": "P&L decomposition \u2014 separate (signal/timing/exit/sizing/agent) contributions Pass 52 turn 81 owner-approved RESOLVED-DECIDED with HARD-REVERSIBILITY sandbox-pro",
-      "status": "RESOLVED-DECIDED",
+      "title": "P&L 5-component decomposition (sandbox prototype) \u2014 `decompose_trade_pnl(actual_pnl_dollar, timing_delta, exit_delta, sizing_delta, agent_delta)` in `backtest/r",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X48 \u2014 Professional Benchmark Gaps",
-      "pass_intro": "Pass 47",
-      "pass_resolved": "-",
+      "pass_intro": "Pass 53",
+      "pass_resolved": "Pass 53",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
         "pushed": true,
-        "n_doc_refs": 3,
+        "n_doc_refs": 4,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -9835,27 +9835,27 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-280",
-      "title": "Time-of-day slippage adjustment \u2014 first/last 30 min higher slippage Pass 52 turn 81 owner-approved RESOLVED-DECIDED (bookkeeping flip per status drift; parent r",
-      "status": "RESOLVED-DECIDED",
+      "title": "Time-of-day slippage multiplier \u2014 `time_of_day_slippage_multiplier(entry_time)` in `backtest/engine/improvements.py` returns 1.5x for `[09:30, 10:00)` (first 30",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X48 \u2014 Professional Benchmark Gaps",
-      "pass_intro": "Pass 47",
-      "pass_resolved": "-",
+      "pass_intro": "Pass 53",
+      "pass_resolved": "Pass 53",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
         "pushed": true,
-        "n_doc_refs": 14,
+        "n_doc_refs": 10,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -9875,10 +9875,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -15929,13 +15929,13 @@
       "pass_intro": "Pass 52",
       "pass_resolved": "-",
       "status_grep": {
-        "coded": false,
-        "wired": false,
+        "coded": true,
+        "wired": true,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 10,
+        "n_doc_refs": 9,
         "pyramid": {
-          "unit": "N/A",
+          "unit": false,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -18933,7 +18933,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 466,
+        "n_doc_refs": 462,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -20965,7 +20965,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 94,
+        "n_doc_refs": 90,
         "pyramid": {
           "unit": true,
           "smoke": true,
@@ -26598,28 +26598,40 @@
   ],
   "recent_commits": [
     {
+      "sha": "fa250d14",
+      "subject": "Pass 53 v8h+1: Phase 3 Batch 54 - Path C 5-DEC bundle (owner directive >= 5 DECs/batch)",
+      "author": "jeetmehta1991",
+      "rel_time": "3 minutes ago"
+    },
+    {
+      "sha": "d7aff6ed",
+      "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 53 (DEC-432)",
+      "author": "jeetmehta1991",
+      "rel_time": "13 minutes ago"
+    },
+    {
       "sha": "29b9c6eb",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 53 - DEC-432 chandelier exit indicator (RESOLVED-IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "3 minutes ago"
+      "rel_time": "16 minutes ago"
     },
     {
       "sha": "6128d4c6",
       "subject": "Pass 53 v8h+1: regenerate Stage 2 dashboard for Batches 49-52",
       "author": "jeetmehta1991",
-      "rel_time": "10 minutes ago"
+      "rel_time": "23 minutes ago"
     },
     {
       "sha": "bf2b26ab",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 52 - DEC-087 vol-targeted per-position sizing helper (RESOLVED-IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "14 minutes ago"
+      "rel_time": "27 minutes ago"
     },
     {
       "sha": "6d1cce3e",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 51 - DEC-088 portfolio vol target 15% telemetry (RESOLVED-IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "31 minutes ago"
+      "rel_time": "44 minutes ago"
     },
     {
       "sha": "8c33f844",
@@ -26667,7 +26679,7 @@
       "sha": "67a40670",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 43 - Engine hysteresis wiring + DEC-321/392 liquidity fail-closed",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "5d0fc0db",
@@ -26679,7 +26691,7 @@
       "sha": "3f45e521",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 41 - Path B Step B (statsmodels + ADF + Chow tests)",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "57fc539f",
@@ -26691,7 +26703,7 @@
       "sha": "1d143592",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 39 - Path C statistical methodology continuation (Sharpe daily + tiered min trades + audit threshold)",
       "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
+      "rel_time": "7 hours ago"
     },
     {
       "sha": "8c8b0aca",
@@ -26703,7 +26715,7 @@
       "sha": "c32b58ba",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 37 - Path B Step 17 auto-proceed (10 flips)",
       "author": "jeetmehta1991",
-      "rel_time": "15 hours ago"
+      "rel_time": "16 hours ago"
     },
     {
       "sha": "9a798135",
@@ -26727,7 +26739,7 @@
       "sha": "e2449d23",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 32 - X1 Data + Universe audit (Path B Step 6)",
       "author": "jeetmehta1991",
-      "rel_time": "16 hours ago"
+      "rel_time": "17 hours ago"
     },
     {
       "sha": "dafff2c1",
@@ -26757,23 +26769,11 @@
       "sha": "4910c590",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 27 - 12 DEC status flips (all 4 owner-approved items)",
       "author": "jeetmehta1991",
-      "rel_time": "17 hours ago"
+      "rel_time": "18 hours ago"
     },
     {
       "sha": "23275737",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 26 - Decisions ALL non-DEFERRED CLEAN (0 no-cells)",
-      "author": "jeetmehta1991",
-      "rel_time": "18 hours ago"
-    },
-    {
-      "sha": "99f04c48",
-      "subject": "Pass 53 v8h+1: Phase 3 Batch 25 - Path 2 implementation (owner-approved)",
-      "author": "jeetmehta1991",
-      "rel_time": "18 hours ago"
-    },
-    {
-      "sha": "8354df3d",
-      "subject": "Pass 53 v8h+1: Phase 3 Batch 24 - id_status substring-match bug FIXED (CRITICAL)",
       "author": "jeetmehta1991",
       "rel_time": "18 hours ago"
     }
@@ -26964,7 +26964,7 @@
     }
   ],
   "test_inventory": {
-    "total": 873,
+    "total": 893,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -27040,7 +27040,7 @@
       "test_stocktwits_smoke": 4,
       "test_supplementary_demo": 4,
       "test_supplementary_smoke": 6,
-      "test_unit": 208,
+      "test_unit": 228,
       "test_walk_forward_4fold": 6
     }
   },
@@ -27617,8 +27617,8 @@
     {
       "kind": "DEC",
       "id": "DEC-091",
-      "title": "Drawdown re-sizing Pass 52 turn 67 owner-approved BLOCKED_ON_BUG-095 (post-Portfolio class via Phase 0.B): Drawdown re-sizing methodology \u2014 ",
-      "status": "RESOLVED-DECIDED",
+      "title": "Drawdown re-sizing \u2014 `Portfolio.drawdown_size_multiplier()` method in `backtest/engine/portfolio.py` returns tiered multiplier in `{1.0, 0.7",
+      "status": "RESOLVED-IMPLEMENTED",
       "tier": 1,
       "reason": "Dependency root (3 downstream items reference)",
       "back_refs": 3,
@@ -27646,8 +27646,8 @@
     }
   ],
   "decision_status_counts": {
-    "RESOLVED-DECIDED": 133,
-    "RESOLVED-IMPLEMENTED": 212,
+    "RESOLVED-DECIDED": 128,
+    "RESOLVED-IMPLEMENTED": 217,
     "PARTIAL": 5,
     "PARTIAL-SPEC-ONLY": 38,
     "DEFERRED_TO_STAGE_3": 36,
