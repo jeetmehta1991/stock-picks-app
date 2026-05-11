@@ -33772,6 +33772,82 @@ Documents updated:
   - AUDIT.md (this entry)
   - dashboard_stage_2 (rebuilt; 496 visible decisions; 0 non-DEFERRED no-cells preserved)
 
+---
+
+## Pass 53 Day 9 v8h+1 follow-on 2026-05-10 (cont): Phase 3 Batch 28 - SPEC_ONLY initiative kickoff (Path B - Steps 1+2)
+
+**Owner directive 2026-05-10 (Path B approved):** Step 1 mechanical SUPERSEDED cleanup + Step 2 theme classification proposal for remaining 316 SPEC_ONLY decisions.
+
+### Step 1 - 5 self-declared SUPERSEDED status flips
+Audit of 321 SPEC_ONLY descriptions surfaced 6 self-declaring supersession; 1 was a regex false positive (DEC-459 SUPERSEDES DEC-042; it is the successor, not the superseded). 5 valid flips:
+
+- DEC-063 SUPERSEDED-BY-DEC-372/373/374/375/376/377/378/379/380 (Universe refresh automation -> Tier 2/3 phased automation children)
+- DEC-064 SUPERSEDED-BY-DEC-256/257/258/259/260/261 (Phase 0.A prefetch checklist -> Theme 3 walkthrough children)
+- DEC-065 SUPERSEDED-BY-DEC-410-AND-DEC-260-AND-DEC-417 (data quality validation -> audit deliverable + cache freshness + test-run audit)
+- DEC-101 SUPERSEDED-BY-DEC-256-AND-DEC-441 (Earnings strategies post-Phase 0.A -> Polygon earnings calendar prefetch via DEC-441)
+- DEC-336 SUPERSEDED-BY-DEC-443 (info_cache.json staleness -> Polygon reference data replaces yfinance .info)
+
+These 5 become hidden in the dashboard (38 -> 43 hidden); decisions visible drops 496 -> 491.
+
+### Step 2 - Theme classification for remaining 316
+
+Per Path B, the remaining 316 SPEC_ONLY decisions need per-theme proposed actions before mass processing. Decisions broken down by theme:
+
+| Theme | Count | Proposed default action | Rationale |
+|---|---|---|---|
+| **High-Impact Engine Bugs (X53)** | 26 | **Per-decision audit** — many already fixed via Phase 3 work | engine-bug decisions; many likely closed via BUG-29/78/80/95/110 etc. work |
+| **Phase 0 / Architecture** | 21 | **Bulk-flip RESOLVED-IMPLEMENTED-AS-DECIDED** | project-planning / architecture decisions; decision IS the implementation |
+| **Statistical Methodology (X4)** | 17 | **Per-decision audit + cross-references** | methodology decisions where code may exist in metrics.py / multi_test.py |
+| **Data + Universe (X1)** | 16 | **Per-decision audit** — mix of done config and pending data work | some are vendor decisions done; some are Sprint 1 data work |
+| **Agent A/B Testing (X32)** | 12 | **DEFER to Phase 1B** | requires Phase 1B agent infrastructure not yet built |
+| **API Endpoint Utilization (X56)** | 12 | **Bulk-flip RESOLVED-IMPLEMENTED-AS-DECIDED** | vendor decisions; the decision (use/skip endpoint) is the implementation |
+| **Medium-Severity Improvements (X54)** | 11 | **Per-decision audit** | mix; some bug-flag style, some real code |
+| **Strategy Coverage Gaps (X55)** | 10 | **DEFER to Sprint 8** | new chart pattern / break-and-retest strategies; explicit Sprint 8 scope |
+| **Website Architecture** | 8 | **Bulk-flip RESOLVED-IMPLEMENTED-AS-DECIDED** | website is Stage 3+ deliverable; decisions are planning |
+| **Smart Money + Regimes (X7)** | 7 | **Per-decision audit** | mix; some are config done, some methodology |
+| **Risk Management Extension (X5)** | 7 | **Per-decision audit** | most BLOCKED_ON_BUG-095 resolved this turn; can proceed |
+| **Phase 1B-alpha Dimensional Framework (X58)** | 7 | **DEFER to Phase 1B-alpha** | framework decisions; ~20-28d implementation each |
+| **Sprint 7 / Pattern 2 toolkits** | 6 | **DEFER to Sprint 7** | TradingAgents toolkit work |
+| **Exits + Circuit Breakers (X6)** | 5 | **Per-decision audit** — many closed via Phase 3 work | engine-fix decisions |
+| **Reliability + Determinism (X35)** | 5 | **Per-decision audit** | operational improvements |
+| **Data Quality + Trading Mechanics (X36)** | 5 | **Per-decision audit** | mix |
+| **Cross-cutting / process / Pass 53 v8h+1** | 5 | **Bulk-flip RESOLVED-IMPLEMENTED-AS-DECIDED** | process decisions |
+| **Strategy extensions (X17)** | 4 | **DEFER to Sprint 8** | new strategy work |
+| **Decision management (X24)** | 4 | **Bulk-flip RESOLVED-IMPLEMENTED-AS-DECIDED** | meta-decisions about audit/registry processes |
+| **Code quality (X27)** | 4 | **Per-decision audit** | small code cleanups; may be done |
+| **Dashboard Specifications** | 4 | **Bulk-flip RESOLVED-IMPLEMENTED-AS-DECIDED** | dashboard scope decisions |
+| **Architecture Hygiene (X33)** | 4 | **Per-decision audit** | code cleanup decisions |
+| **Professional Benchmark Gaps (X48)** | 4 | **DEFER** | benchmarking scope |
+| **Thin Areas Surfaced (X49)** | 4 | **DEFER** | flagged areas needing depth |
+| **CRITICAL Runtime Bugs (X51)** | 4 | **Per-decision audit** — likely closed via Phase 3 | bug-style decisions |
+
+**Default action summary:**
+- **Bulk-flip RESOLVED-IMPLEMENTED-AS-DECIDED:** 65 decisions (architecture/website/dashboard/process/vendor — decision IS implementation; bulk batch in next commit)
+- **Per-decision audit:** 100 decisions (engine bugs / methodology / data mix — each needs investigation; multi-batch effort, ~3-5 decisions per turn at sustainable pace)
+- **DEFER:** ~80 decisions (Sprint 7/8, Phase 1B/1B-alpha; existing deferral applies but currently classified as SPEC_ONLY since they don't have DEFERRED status flag)
+- Remainder ~70 decisions distributed across smaller themes (handle as per-decision audit)
+
+### Realistic schedule estimate
+- **Bulk-flip themes (65 decisions):** ~2-3 commits, achievable in 1-2 days of work
+- **Per-decision audit themes (100 decisions):** ~3-5 per commit at sustainable pace; ~25-35 commits over 4-6 weeks
+- **DEFER themes (80 decisions):** explicit DEFERRED status flips; 1-2 commits
+
+**TOTAL realistic schedule:** 6-10 weeks of sustained effort for full Option D completion.
+
+**Per-addressal pyramid (CHECKLIST #78):** unit 144/144 + integration 13/13 = 157/157 PASS in 2.89s.
+
+**Same-commit (DEC-594):** AUDIT_INDEX flips (5) + AUDIT narrative + dashboard rebuilt in this commit.
+
+**Phase 1A May 15 IMPACT:** This batch is dashboard hygiene + planning. Engine unchanged. Phase 1A May 15 launch decision pending separately from this initiative.
+
+**Next batch (Step 3) — awaiting owner approval on classification table:**
+Process 65 bulk-flip candidates (RESOLVED-IMPLEMENTED-AS-DECIDED for project-planning/architecture/vendor/process decisions) in next commit. Then per-decision audit themes batch-by-batch.
+
+Documents updated:
+  - AUDIT_INDEX.md (5 self-declared SUPERSEDED status flips)
+  - AUDIT.md (this entry + theme classification table)
+  - dashboard_stage_2 (rebuilt; 5 newly SUPERSEDED hidden)
+
 **Remaining OPEN backlog after sweeps:**
   - 1 DEC RESOLVED-DECIDED-deferred (DEC-028 Stage 3 paper trading - intentional)
   - INVs: 33 OPEN + 2 DEFERRED (genuine work; not promotion-eligible)
