@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-11T05:04:11.156275+00:00",
+  "generated_at": "2026-05-11T05:17:46.108349+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -1092,7 +1092,7 @@
         "coded": false,
         "wired": false,
         "tested": false,
-        "pushed": false,
+        "pushed": true,
         "n_doc_refs": 1,
         "pyramid": {
           "unit": "N/A",
@@ -1332,7 +1332,7 @@
         "coded": false,
         "wired": false,
         "tested": false,
-        "pushed": false,
+        "pushed": true,
         "n_doc_refs": 0,
         "pyramid": {
           "unit": "N/A",
@@ -3164,7 +3164,7 @@
     {
       "id": "DECISION-096",
       "title": "Backtest reproducibility (code + data + config hash) Pass 52 turn 58 owner-approved RESOLVED-DECIDED: backtest reproducibility manifest (code SHA + data version",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X3 \u2014 Architecture",
       "pass_intro": "Pass 39",
       "pass_resolved": "-",
@@ -3195,10 +3195,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -3604,7 +3604,7 @@
     {
       "id": "DECISION-113",
       "title": "Trade journal + research log + failure log Pass 52 turn 58 owner-approved RESOLVED-DECIDED with PHASED SCOPE: Stage 2 portion = research log (every Phase 1B-\u03b1 r",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X3 \u2014 Architecture",
       "pass_intro": "Pass 39",
       "pass_resolved": "-",
@@ -3635,10 +3635,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -3732,7 +3732,7 @@
         "coded": false,
         "wired": false,
         "tested": false,
-        "pushed": false,
+        "pushed": true,
         "n_doc_refs": 1,
         "pyramid": {
           "unit": "N/A",
@@ -3804,7 +3804,7 @@
     {
       "id": "DECISION-119",
       "title": "Per-trade explainability dict (primary_signal, dominant_multiplier, agent_tier_delta) Pass 52 turn 119 RESOLVED-DECIDED Final: Per-trade explainability dict (pr",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X10 \u2014 Trade explainability",
       "pass_intro": "Pass 40",
       "pass_resolved": "-",
@@ -3835,10 +3835,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -3884,7 +3884,7 @@
     {
       "id": "DECISION-121",
       "title": "Exit comparison report includes side-by-side exit dates/prices Pass 52 turn 119 RESOLVED-DECIDED Final: Exit comparison report includes side-by-side exit dates/",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X11 \u2014 Exit comparison",
       "pass_intro": "Pass 40",
       "pass_resolved": "-",
@@ -3915,16 +3915,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-122",
       "title": "Per-exit-method slippage modeling Pass 52 turn 119 RESOLVED-DECIDED Final: Per-exit-method slippage modeling. Joint DEC-092 base slippage + DEC-280 time-of-day.",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X11 \u2014 Exit comparison",
       "pass_intro": "Pass 40",
       "pass_resolved": "-",
@@ -3955,10 +3955,10 @@
       "dependencies": "DEC-092; DEC-280",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -4092,7 +4092,7 @@
         "coded": false,
         "wired": false,
         "tested": false,
-        "pushed": false,
+        "pushed": true,
         "n_doc_refs": 1,
         "pyramid": {
           "unit": "N/A",
@@ -4804,7 +4804,7 @@
     {
       "id": "DECISION-146",
       "title": "Corporate actions handler (split/dividend/spinoff/rename) Pass 52 turn 119 RESOLVED-DECIDED Batch D: Corporate actions handler (split/dividend/spinoff/rename). ",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X18 \u2014 Universe management",
       "pass_intro": "Pass 40",
       "pass_resolved": "-",
@@ -4835,16 +4835,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-147",
       "title": "Delisting registry + survivorship bias correction Pass 52 turn 119 RESOLVED-DECIDED Batch D: Delisting registry + survivorship bias correction. Track delisted t",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X18 \u2014 Universe management",
       "pass_intro": "Pass 40",
       "pass_resolved": "-",
@@ -4875,10 +4875,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -5972,7 +5972,7 @@
         "coded": false,
         "wired": false,
         "tested": false,
-        "pushed": false,
+        "pushed": true,
         "n_doc_refs": 5,
         "pyramid": {
           "unit": "N/A",
@@ -6012,7 +6012,7 @@
         "coded": false,
         "wired": false,
         "tested": false,
-        "pushed": false,
+        "pushed": true,
         "n_doc_refs": 2,
         "pyramid": {
           "unit": "N/A",
@@ -6052,7 +6052,7 @@
         "coded": false,
         "wired": false,
         "tested": false,
-        "pushed": false,
+        "pushed": true,
         "n_doc_refs": 0,
         "pyramid": {
           "unit": "N/A",
@@ -6652,7 +6652,7 @@
         "coded": false,
         "wired": false,
         "tested": false,
-        "pushed": false,
+        "pushed": true,
         "n_doc_refs": 2,
         "pyramid": {
           "unit": "N/A",
@@ -8764,7 +8764,7 @@
     {
       "id": "DECISION-252",
       "title": "Explicit commission model in backtest using real IBKR pricing tables (Tiered + Fixed, with Pass 52 turn 91 owner-approved RESOLVED-DECIDED with HARD-REVERSIBILI",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X40 \u2014 Cost Modeling Accuracy",
       "pass_intro": "Pass 46",
       "pass_resolved": "-",
@@ -8795,10 +8795,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -10772,7 +10772,7 @@
         "coded": false,
         "wired": false,
         "tested": false,
-        "pushed": false,
+        "pushed": true,
         "n_doc_refs": 0,
         "pyramid": {
           "unit": "N/A",
@@ -12004,7 +12004,7 @@
     {
       "id": "DECISION-343",
       "title": "Pandas-ta deprecation warning on pandas 4.0 \u2014 plan replacement (TA-Lib alternative) Pass 52 turn 51 owner-approved joint-with-DEC-445 framing: wait until DEC-44",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X55 \u2014 Documentation Sync",
       "pass_intro": "Pass 48",
       "pass_resolved": "-",
@@ -12035,16 +12035,16 @@
       "dependencies": "DEC-44; DEC-445",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-344",
       "title": "Slippage threshold ATR/price > 3% likely too high \u2014 most S&P large caps never trigger Pass 52 turn 51 owner-approved RESOLVED-DECIDED with REVISIT_AFTER_BACKTES",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X55 \u2014 Documentation Sync",
       "pass_intro": "Pass 48",
       "pass_resolved": "-",
@@ -12075,10 +12075,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -13413,7 +13413,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 25,
+        "n_doc_refs": 26,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -16933,7 +16933,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 57,
+        "n_doc_refs": 58,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -17653,7 +17653,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 45,
+        "n_doc_refs": 46,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -17693,7 +17693,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 10,
+        "n_doc_refs": 11,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -20623,7 +20623,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 19,
+        "n_doc_refs": 20,
         "pyramid": {
           "unit": true,
           "smoke": true,
@@ -26598,46 +26598,52 @@
   ],
   "recent_commits": [
     {
+      "sha": "9a798135",
+      "subject": "Pass 53 v8h+1: Phase 3 Batch 36 - Path B Step 16 auto-proceed small themes (15 flips)",
+      "author": "jeetmehta1991",
+      "rel_time": "13 minutes ago"
+    },
+    {
       "sha": "c3e4f4dd",
       "subject": "Pass 53 v8h+1: Phase 3 Batches 34+35 - Path B Steps 9-15 auto-proceed (13 flips)",
       "author": "jeetmehta1991",
-      "rel_time": "4 minutes ago"
+      "rel_time": "18 minutes ago"
     },
     {
       "sha": "34f32f71",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 33 - X51 CRITICAL Runtime Bugs audit (Path B Step 8) - 100% yield",
       "author": "jeetmehta1991",
-      "rel_time": "23 minutes ago"
+      "rel_time": "37 minutes ago"
     },
     {
       "sha": "e2449d23",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 32 - X1 Data + Universe audit (Path B Step 6)",
       "author": "jeetmehta1991",
-      "rel_time": "53 minutes ago"
+      "rel_time": "66 minutes ago"
     },
     {
       "sha": "dafff2c1",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 31 - X4 Statistical Methodology audit (Path B Step 5)",
       "author": "jeetmehta1991",
-      "rel_time": "62 minutes ago"
+      "rel_time": "75 minutes ago"
     },
     {
       "sha": "4a129d79",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 30 - X53 Engine Bugs per-decision audit (Path B Step 4)",
       "author": "jeetmehta1991",
-      "rel_time": "68 minutes ago"
+      "rel_time": "82 minutes ago"
     },
     {
       "sha": "9e933201",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 29 - 54 SPEC_ONLY bulk-flipped RESOLVED-IMPLEMENTED-AS-DECIDED",
       "author": "jeetmehta1991",
-      "rel_time": "74 minutes ago"
+      "rel_time": "87 minutes ago"
     },
     {
       "sha": "a3894856",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 28 - SPEC_ONLY initiative kickoff (Path B Steps 1+2)",
       "author": "jeetmehta1991",
-      "rel_time": "87 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "4910c590",
@@ -26661,7 +26667,7 @@
       "sha": "8354df3d",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 24 - id_status substring-match bug FIXED (CRITICAL)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "b845fd62",
@@ -26691,13 +26697,13 @@
       "sha": "2b56e6e9",
       "subject": "Pass 53 v8h+1: BUG-95 LIVE_TRADING_RULES enforcement via can_open gate (Sub-batch 4/5)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "2fe9c3d4",
       "subject": "Pass 53 v8h+1: BUG-95 Portfolio metrics from equity_curve (Sub-batch 3/5)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "ead36b0b",
@@ -26727,13 +26733,13 @@
       "sha": "98ec8f35",
       "subject": "Pass 53 v8h+1: BUG-83 HIGH inverted PIT filter on get_congressional_detail FIXED (owner-approved Option A)",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "99a888a3",
       "subject": "Pass 53 v8h+1: BUG-61 HIGH multiple concurrent positions same ticker FIXED (owner-approved Option A)",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "cf8d9c24",
@@ -26768,12 +26774,6 @@
     {
       "sha": "d2c22ebf",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 11 - 12 BUGs (62/66/67/69/70/71/74/75/79/81/86/87) SUPERSEDED/DEFERRED",
-      "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
-    },
-    {
-      "sha": "3f4b7b2e",
-      "subject": "Pass 53 v8h+1: Phase 3 Batch 10 - 6 BUGs (51/54/55/56/57/60) SUPERSEDED/DEFERRED",
       "author": "jeetmehta1991",
       "rel_time": "6 hours ago"
     }
@@ -27651,10 +27651,10 @@
     }
   ],
   "decision_status_counts": {
-    "RESOLVED-DECIDED": 182,
-    "RESOLVED-IMPLEMENTED": 149,
+    "RESOLVED-DECIDED": 175,
+    "RESOLVED-IMPLEMENTED": 159,
     "PARTIAL": 5,
-    "PARTIAL-SPEC-ONLY": 52,
+    "PARTIAL-SPEC-ONLY": 49,
     "DEFERRED_TO_STAGE_3": 36,
     "DEFERRED_TO_STAGE_4": 21,
     "DEFERRED": 2,
