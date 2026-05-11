@@ -346,6 +346,17 @@ TIER_POSITION_SIZE_PCT = {
     "AVOID":       0.0,
 }
 
+# DEC-088 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 51 2026-05-11
+# (owner-approved Path C). Portfolio annualized vol target = 15% midpoint
+# for medium-high risk profile. Used by Portfolio.vol_target_scale_factor to
+# recommend gross-sizing scale (engine consumption deferred to follow-on
+# decision; current scope is telemetry + helper, not auto-scaling).
+# Joint with DEC-087 (per-position vol-targeted contribution).
+PORTFOLIO_VOL_TARGET_ANNUALIZED = 0.15
+PORTFOLIO_VOL_LOOKBACK_DAYS = 21
+PORTFOLIO_VOL_SCALE_MIN = 0.5
+PORTFOLIO_VOL_SCALE_MAX = 1.5
+
 # -----------------------------------------------------------------------------
 # TWO-STAGE CONFIDENCE TIERING
 # Stage 1: Rule-based preliminary tier (before agents run)

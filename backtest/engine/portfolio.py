@@ -180,6 +180,65 @@ class Portfolio:
         if benchmark_price > 0:
             self.benchmark_curve.append((today, float(benchmark_price)))
 
+    def realized_portfolio_vol_annualized(
+        self, window_days: Optional[int] = None,
+    ) -> Optional[float]:
+        """DEC-088 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 51 2026-05-11
+        (owner-approved Path C). Realized portfolio vol annualized via
+        sqrt(252) on daily equity returns over the lookback window.
+
+        Returns None if fewer than `window_days + 1` equity points exist
+        (insufficient data; caller-side decides fallback). Returns 0.0 only
+        when equity is genuinely flat across the window.
+        """
+        from backtest.config import PORTFOLIO_VOL_LOOKBACK_DAYS
+        win = window_days if window_days is not None else PORTFOLIO_VOL_LOOKBACK_DAYS
+        if len(self.equity_curve) < win + 1:
+            return None
+        recent = self.equity_curve[-(win + 1):]
+        equities = [e for _, e in recent]
+        if any(eq <= 0 for eq in equities):
+            return None
+        rets = []
+        for i in range(1, len(equities)):
+            rets.append((equities[i] - equities[i - 1]) / equities[i - 1])
+        if len(rets) < 2:
+            return None
+        n = len(rets)
+        mean = sum(rets) / n
+        var = sum((r - mean) ** 2 for r in rets) / (n - 1)  # sample variance
+        daily_std = var ** 0.5
+        return float(daily_std * (252 ** 0.5))
+
+    def vol_target_scale_factor(
+        self,
+        target: Optional[float] = None,
+        window_days: Optional[int] = None,
+    ) -> float:
+        """DEC-088: recommend gross-sizing scale factor to maintain target
+        annualized portfolio vol. scale = target / max(realized, target * 0.5)
+        bounded by PORTFOLIO_VOL_SCALE_MIN..MAX.
+
+        Returns 1.0 (no scaling) when realized vol unavailable (insufficient
+        history) or when realized is within +/- 10% of target. Engine
+        consumption deferred to follow-on decision; current scope is helper
+        + telemetry, not auto-scaling.
+        """
+        from backtest.config import (
+            PORTFOLIO_VOL_TARGET_ANNUALIZED,
+            PORTFOLIO_VOL_SCALE_MIN,
+            PORTFOLIO_VOL_SCALE_MAX,
+        )
+        tgt = target if target is not None else PORTFOLIO_VOL_TARGET_ANNUALIZED
+        realized = self.realized_portfolio_vol_annualized(window_days)
+        if realized is None or tgt <= 0:
+            return 1.0
+        # Floor at half-target to avoid divide-by-near-zero blowup when
+        # equity has been near-flat (cash-heavy early days).
+        denom = max(realized, tgt * 0.5)
+        scale = tgt / denom
+        return max(PORTFOLIO_VOL_SCALE_MIN, min(PORTFOLIO_VOL_SCALE_MAX, scale))
+
     def can_open(self, ticker: str, size_pct: float,
                  max_positions: int = 10,
                  prices: Optional[dict[str, float]] = None,

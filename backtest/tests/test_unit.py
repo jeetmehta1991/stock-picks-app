@@ -2589,6 +2589,101 @@ def test_bug_095_mark_to_market_carries_forward_missing_prices():
 
 
 # ============================================================================
+# DEC-088 Portfolio vol target 15% tests (Phase 3 Batch 51 Path C)
+# ============================================================================
+
+def test_dec_088_realized_portfolio_vol_insufficient_history_returns_none():
+    """DEC-088: fewer than window+1 equity points -> None (insufficient data)."""
+    from datetime import date, timedelta
+    from backtest.engine.portfolio import Portfolio
+    p = Portfolio(starting_capital=100_000.0)
+    # Mark for only 10 days; default lookback 21 -> need 22 points
+    for i in range(10):
+        p.mark_to_market({}, date(2024, 1, 1) + timedelta(days=i))
+    assert p.realized_portfolio_vol_annualized() is None
+
+
+def test_dec_088_realized_portfolio_vol_flat_equity_is_zero():
+    """DEC-088: flat equity (no positions, no marks) -> realized vol 0.0
+    (genuinely no variation, not missing data).
+    """
+    from datetime import date, timedelta
+    from backtest.engine.portfolio import Portfolio
+    p = Portfolio(starting_capital=100_000.0)
+    for i in range(25):
+        p.mark_to_market({}, date(2024, 1, 1) + timedelta(days=i))
+    v = p.realized_portfolio_vol_annualized()
+    assert v is not None
+    assert v == 0.0
+
+
+def test_dec_088_realized_portfolio_vol_nonzero_with_marks():
+    """DEC-088: synthetic equity curve with daily returns produces non-zero
+    annualized vol roughly matching expectation.
+
+    Manually inject equity points to simulate ~1% daily moves alternating
+    sign; expected annualized vol ~ 0.01 * sqrt(252) ~= 0.159.
+    """
+    from datetime import date, timedelta
+    from backtest.engine.portfolio import Portfolio
+    p = Portfolio(starting_capital=100_000.0)
+    # Inject 25 points manually onto equity_curve
+    base = 100_000.0
+    p.equity_curve.clear()
+    for i in range(25):
+        sign = 1 if i % 2 == 0 else -1
+        eq = base * (1 + 0.01 * sign)
+        p.equity_curve.append((date(2024, 1, 1) + timedelta(days=i), eq))
+    v = p.realized_portfolio_vol_annualized(window_days=21)
+    assert v is not None
+    # Alternating eq = 100k*(1 +/- 0.01) yields daily return magnitudes
+    # ~2% (e.g. (99k-101k)/101k = -1.98%, (101k-99k)/99k = +2.02%).
+    # Annualized ~ 0.02 * sqrt(252) ~= 0.317. Tolerance band:
+    assert 0.20 < v < 0.40, f"expected ~0.32, got {v}"
+
+
+def test_dec_088_vol_target_scale_factor_no_history_returns_one():
+    """DEC-088: insufficient history -> scale 1.0 (no scaling applied)."""
+    from backtest.engine.portfolio import Portfolio
+    p = Portfolio(starting_capital=100_000.0)
+    assert p.vol_target_scale_factor() == 1.0
+
+
+def test_dec_088_vol_target_scale_factor_reduces_when_vol_high():
+    """DEC-088: realized > target -> scale < 1 to reduce gross exposure.
+    Realized ~0.30, target 0.15 -> scale = 0.15/0.30 = 0.5 (bounded at MIN).
+    """
+    from datetime import date, timedelta
+    from backtest.engine.portfolio import Portfolio
+    p = Portfolio(starting_capital=100_000.0)
+    base = 100_000.0
+    p.equity_curve.clear()
+    # ~2% daily moves alternating -> ~0.02 * sqrt(252) ~= 0.317 annualized vol
+    for i in range(25):
+        sign = 1 if i % 2 == 0 else -1
+        eq = base * (1 + 0.02 * sign)
+        p.equity_curve.append((date(2024, 1, 1) + timedelta(days=i), eq))
+    scale = p.vol_target_scale_factor(target=0.15, window_days=21)
+    assert scale < 1.0
+    assert scale >= 0.5  # bounded by PORTFOLIO_VOL_SCALE_MIN
+
+
+def test_dec_088_vol_target_scale_factor_bounded_at_max_when_vol_low():
+    """DEC-088: realized < target * 0.5 -> scale = target / (target * 0.5) =
+    2.0, then bounded at PORTFOLIO_VOL_SCALE_MAX (default 1.5).
+    """
+    from datetime import date, timedelta
+    from backtest.engine.portfolio import Portfolio
+    p = Portfolio(starting_capital=100_000.0)
+    p.equity_curve.clear()
+    for i in range(25):
+        # Flat equity -> realized vol 0.0 -> denom = max(0, 0.075) = 0.075
+        p.equity_curve.append((date(2024, 1, 1) + timedelta(days=i), 100_000.0))
+    scale = p.vol_target_scale_factor(target=0.15, window_days=21)
+    assert scale == 1.5  # bounded at PORTFOLIO_VOL_SCALE_MAX
+
+
+# ============================================================================
 # DEC-403 / DEC-110 / DEC-413 / DEC-404 statistical methodology tests
 # Phase 3 Batch 38 owner-approved Path C 2026-05-11
 # ============================================================================
