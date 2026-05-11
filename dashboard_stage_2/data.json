@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-11T23:14:59.359375+00:00",
+  "generated_at": "2026-05-11T23:26:53.147341+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -2133,7 +2133,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 36,
+        "n_doc_refs": 34,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -2363,19 +2363,19 @@
     },
     {
       "id": "DECISION-076",
-      "title": "Factor exposure breaker \u2014 Pass 52 turn 30 SCOPE CORRECTION per owner directive (\"Phase 1C decisions in Stage 1 are not to be deferred; deferrals only for Stage ",
-      "status": "RESOLVED-DECIDED",
+      "title": "Factor exposure breaker \u2014 `Portfolio.factor_concentration_breach(sector_threshold_pct=30.0, prices=None)` method in `backtest/engine/portfolio.py` returns dict ",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X6 \u2014 Exits + Circuit Breakers",
-      "pass_intro": "Pass 39",
-      "pass_resolved": "-",
+      "pass_intro": "Pass 53",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": true,
         "wired": true,
-        "tested": false,
+        "tested": true,
         "pushed": true,
-        "n_doc_refs": 15,
+        "n_doc_refs": 14,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -2395,10 +2395,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "CODE_ONLY",
-        "label": "NEEDS-TEST",
-        "color": "#f59e0b",
-        "reason": "Coded but no test reference; add test per DEC-594 same-commit"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -3243,19 +3243,19 @@
     },
     {
       "id": "DECISION-098",
-      "title": "Test coverage 70% before Stage 3 Pass 52 turn 58 owner-approved RESOLVED-DECIDED at 90% target (overriding original audit + Claude's 70% rec). Achieve 90% test ",
-      "status": "RESOLVED-DECIDED",
+      "title": "Test coverage 90% gate (owner override 90 not 70) \u2014 `STAGE_3_TEST_COVERAGE_THRESHOLD = 0.90` constant + `check_test_coverage_threshold(coverage_xml_path, thresh",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X3 \u2014 Architecture",
-      "pass_intro": "Pass 39",
-      "pass_resolved": "-",
+      "pass_intro": "Pass 53",
+      "pass_resolved": "Pass 53",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 24,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -3275,10 +3275,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -6043,19 +6043,19 @@
     },
     {
       "id": "DECISION-179",
-      "title": "Memory profiling per backtest run + memory cap enforcement Pass 52 turn 119 RESOLVED-DECIDED Batch F: Memory profiling per backtest + memory cap. memory_profile",
-      "status": "RESOLVED-DECIDED",
+      "title": "Memory profiling + cap enforcement \u2014 `get_process_memory_mb()` + `check_memory_cap(cap_mb=4096)` helpers + `MEMORY_CAP_MB_DEFAULT=4096` constant in `backtest/en",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X29 \u2014 Reproducibility",
-      "pass_intro": "Pass 41",
-      "pass_resolved": "-",
+      "pass_intro": "Pass 53",
+      "pass_resolved": "Pass 53",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 0,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -6075,10 +6075,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -11483,19 +11483,19 @@
     },
     {
       "id": "DECISION-325",
-      "title": "Institutional 13F PIT assumes universal on-time filing \u2014 late filers (some big funds) invisible. Pass 52 owner-approved. Capture actual `filing_date` from SEC; ",
-      "status": "RESOLVED-DECIDED",
+      "title": "Institutional 13F PIT via actual filing_date \u2014 `get_institutional_positions(ticker, as_of)` new function in `backtest/data/smart_money.py` filters 13F records b",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X53 \u2014 High-Impact Engine Bugs",
-      "pass_intro": "Pass 48",
-      "pass_resolved": "-",
+      "pass_intro": "Pass 53",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": true,
         "wired": true,
-        "tested": false,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 6,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -11515,10 +11515,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "CODE_ONLY",
-        "label": "NEEDS-TEST",
-        "color": "#f59e0b",
-        "reason": "Coded but no test reference; add test per DEC-594 same-commit"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -11723,19 +11723,19 @@
     },
     {
       "id": "DECISION-333",
-      "title": "Sentiment thresholds (AAII 55/45, CNN F&G 20/35/65/80) don't match CNN's published bands",
-      "status": "RESOLVED-DECIDED",
+      "title": "CNN F&G canonical band recalibration \u2014 `CNN_FG_BANDS` tuple (0-25 extreme_fear, 26-45 fear, 46-55 neutral, 56-75 greed, 76-100 extreme_greed) matches CNN's PUBL",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X54 \u2014 Medium-Severity Improvements",
-      "pass_intro": "Pass 48",
-      "pass_resolved": "-",
+      "pass_intro": "Pass 53",
+      "pass_resolved": "Pass 53",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 2,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -11755,10 +11755,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -14049,13 +14049,13 @@
       "pass_intro": "Pass 52",
       "pass_resolved": "-",
       "status_grep": {
-        "coded": false,
-        "wired": false,
+        "coded": true,
+        "wired": true,
         "tested": false,
         "pushed": true,
         "n_doc_refs": 9,
         "pyramid": {
-          "unit": "N/A",
+          "unit": false,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -14813,7 +14813,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 44,
+        "n_doc_refs": 43,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -20965,7 +20965,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 90,
+        "n_doc_refs": 86,
         "pyramid": {
           "unit": true,
           "smoke": true,
@@ -24931,13 +24931,13 @@
       "status": "ACTIVE",
       "impact": "Smart-money strategies fire later, with some positions invisible. Compared to current implementation (which assumes Day 45 for all filers), new behavior is correctly conservative \u2014 eliminates lookahea",
       "status_grep": {
-        "coded": false,
-        "wired": false,
+        "coded": true,
+        "wired": true,
         "tested": false,
         "pushed": true,
         "n_doc_refs": 3,
         "pyramid": {
-          "unit": "N/A",
+          "unit": false,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -26598,10 +26598,22 @@
   ],
   "recent_commits": [
     {
+      "sha": "89dac3b4",
+      "subject": "Pass 53 v8h+1: Phase 3 Batch 57 - Path C 5-DEC bundle (factor breaker / coverage gate / memory / 13F PIT / CNN F&G bands)",
+      "author": "jeetmehta1991",
+      "rel_time": "3 minutes ago"
+    },
+    {
+      "sha": "1bfcd76f",
+      "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 56 (5-DEC bundle)",
+      "author": "jeetmehta1991",
+      "rel_time": "12 minutes ago"
+    },
+    {
       "sha": "0bfa2be6",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 56 - Path C 5-DEC bundle (breakdowns/agent verdicts/data-quality/policy/site freshness)",
       "author": "jeetmehta1991",
-      "rel_time": "3 minutes ago"
+      "rel_time": "15 minutes ago"
     },
     {
       "sha": "25c94093",
@@ -26619,13 +26631,13 @@
       "sha": "25015554",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 54 (5-DEC bundle)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "fa250d14",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 54 - Path C 5-DEC bundle (owner directive >= 5 DECs/batch)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "d7aff6ed",
@@ -26733,7 +26745,7 @@
       "sha": "8c8b0aca",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 38 - Path C statistical methodology implementation (Sortino + Deflated Sharpe + Cost Sensitivity)",
       "author": "jeetmehta1991",
-      "rel_time": "9 hours ago"
+      "rel_time": "10 hours ago"
     },
     {
       "sha": "c32b58ba",
@@ -26762,18 +26774,6 @@
     {
       "sha": "e2449d23",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 32 - X1 Data + Universe audit (Path B Step 6)",
-      "author": "jeetmehta1991",
-      "rel_time": "19 hours ago"
-    },
-    {
-      "sha": "dafff2c1",
-      "subject": "Pass 53 v8h+1: Phase 3 Batch 31 - X4 Statistical Methodology audit (Path B Step 5)",
-      "author": "jeetmehta1991",
-      "rel_time": "19 hours ago"
-    },
-    {
-      "sha": "4a129d79",
-      "subject": "Pass 53 v8h+1: Phase 3 Batch 30 - X53 Engine Bugs per-decision audit (Path B Step 4)",
       "author": "jeetmehta1991",
       "rel_time": "19 hours ago"
     }
@@ -26964,7 +26964,7 @@
     }
   ],
   "test_inventory": {
-    "total": 928,
+    "total": 945,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -27040,7 +27040,7 @@
       "test_stocktwits_smoke": 4,
       "test_supplementary_demo": 4,
       "test_supplementary_smoke": 6,
-      "test_unit": 263,
+      "test_unit": 280,
       "test_walk_forward_4fold": 6
     }
   },
@@ -27646,8 +27646,8 @@
     }
   ],
   "decision_status_counts": {
-    "RESOLVED-DECIDED": 118,
-    "RESOLVED-IMPLEMENTED": 227,
+    "RESOLVED-DECIDED": 113,
+    "RESOLVED-IMPLEMENTED": 232,
     "PARTIAL": 5,
     "PARTIAL-SPEC-ONLY": 38,
     "DEFERRED_TO_STAGE_3": 36,
