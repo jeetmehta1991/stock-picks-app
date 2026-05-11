@@ -482,6 +482,44 @@ class BacktestEngine:
                 })
             return  # skip entry loop entirely
 
+        # DEC-314 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 45 2026-05-11
+        # (owner-approved Path C). Market-wide circuit breaker Levels 3/4/5
+        # (NYSE Rule 80B intraday thresholds -7%/-13%/-20%). Daily-data proxy:
+        # SPY intraday low vs open = (low - open) / open. When low dropped
+        # >= 7%/13%/20% from open, market-wide CB triggered that day. Block
+        # all new entries; existing positions continue under exit logic.
+        # Level 3 (intraday halt + 15% from entry, config.level_3_halt_loss_pct)
+        # requires real-time intraday data; deferred to Stage 3 paper trading.
+        if "SPY" in ohlcv_pit:
+            spy_today_df = ohlcv_pit["SPY"][ohlcv_pit["SPY"].index.date == as_of]
+            if not spy_today_df.empty:
+                spy_today = spy_today_df.iloc[-1]
+                spy_open = float(spy_today.get("open", 0))
+                spy_low = float(spy_today.get("low", 0))
+                if spy_open > 0:
+                    intraday_low_pct = (spy_low - spy_open) / spy_open
+                    market_cb_level = None
+                    if intraday_low_pct <= -0.20:
+                        market_cb_level = 5
+                    elif intraday_low_pct <= -0.13:
+                        market_cb_level = 4
+                    elif intraday_low_pct <= -0.07:
+                        market_cb_level = 3
+                    if market_cb_level is not None:
+                        self.circuit_breaker_log.append({
+                            "date": as_of, "level": market_cb_level,
+                            "event": f"market_wide_cb_nyse_rule_80b_level_{market_cb_level - 2}",
+                            "spy_intraday_low_pct": round(intraday_low_pct, 4),
+                            "spy_open": spy_open, "spy_low": spy_low,
+                        })
+                        for cand in candidates[:self.max_cands]:
+                            self.skipped_trades.append({
+                                "ticker": cand["ticker"], "date": as_of,
+                                "strategy": cand.get("strategies", [{}])[0].get("strategy", "unknown"),
+                                "reason": f"market_wide_cb_level_{market_cb_level}_spy_low_{intraday_low_pct:.3f}",
+                            })
+                        return  # skip entry loop entirely
+
         # -- 6. Open new trades  -  no position cap, no correlation filter,
         #         direction hard block removed; ticker-level concurrent block ON --
         # Track open ticker+strategy combos to avoid exact duplicates only

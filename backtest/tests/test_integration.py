@@ -259,6 +259,26 @@ def test_bug_095_writer_emits_portfolio_outputs_when_portfolio_supplied(tmp_path
     assert metrics_out["portfolio_total_return_pct"] > 0
 
 
+def test_dec_314_market_wide_cb_wired_in_engine():
+    """DEC-314 (Phase 3 Batch 45): SPY intraday-low vs open market-wide
+    circuit breaker wired into _process_day at NYSE Rule 80B thresholds
+    -7% (L3), -13% (L4), -20% (L5).
+    """
+    import inspect
+    from backtest.engine import backtest as bt_module
+    src = inspect.getsource(bt_module)
+    assert "DEC-314" in src, "DEC-314 cross-reference missing in backtest.py"
+    assert "market_wide_cb" in src, "market_wide_cb logic not wired"
+    assert "rule_80b" in src.lower() or "rule 80b" in src.lower(), (
+        "NYSE Rule 80B reference missing from market-wide CB block")
+    # Three threshold levels present
+    assert "-0.07" in src and "-0.13" in src and "-0.20" in src, (
+        "Missing one or more NYSE Rule 80B threshold levels (-7/-13/-20%)")
+    # Skip entry pattern present
+    assert "market_wide_cb_level" in src, (
+        "Market-wide CB skip-entry reason string missing")
+
+
 def test_dec_317_dec_388_engine_wires_hysteresis_state():
     """DEC-317 + DEC-388 (Phase 3 Batch 43): BacktestEngine instantiates
     _prev_regime + _vix_series state attributes for hysteresis-aware regime
