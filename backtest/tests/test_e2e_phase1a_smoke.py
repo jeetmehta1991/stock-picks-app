@@ -10,6 +10,23 @@ Distinct from `test_e2e.py`:
                  per-exit conditional analyzer)
 
 Target runtime: <2 min on developer laptop. Skipped if cache unavailable.
+
+BUG-006 protocol-fix coverage attribution (owner directive 2026-05-10):
+this smoke run is the canonical end-to-end exerciser of the engine code
+paths fixed by the following bugs. Each bug listed has its addressal
+pyramid (CHECKLIST #78) including a passing run of this smoke file. The
+PYRAMID_OVERRIDES dict in scripts/build_dashboard_stage_2.py declares
+non-applicable layers as N/A; this docstring is the source-of-truth for
+the smoke layer coverage claim picked up by the grep mechanism.
+
+Smoke layer covers (engine code paths exercised):
+  BUG-029 - end-of-backtest open-trade finalization
+  BUG-061 - ticker-level concurrent-position block
+  BUG-077 - third-bucket avoid categorization
+  BUG-078 - trailing stop lookahead bias fix
+  BUG-080 - exit slippage symmetric to entry
+  BUG-095 - Portfolio class engine lifecycle
+  BUG-110 - entry gap filter validate_entry_zone enforcement
 """
 
 from __future__ import annotations

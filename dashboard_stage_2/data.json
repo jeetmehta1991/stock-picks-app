@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-11T01:51:10.827973+00:00",
+  "generated_at": "2026-05-11T02:13:09.613462+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -2136,7 +2136,7 @@
         "n_doc_refs": 219,
         "pyramid": {
           "unit": false,
-          "smoke": false,
+          "smoke": true,
           "integration": false,
           "system": false,
           "functional": false,
@@ -2376,7 +2376,7 @@
         "n_doc_refs": 49,
         "pyramid": {
           "unit": false,
-          "smoke": false,
+          "smoke": true,
           "integration": false,
           "system": false,
           "functional": false,
@@ -2456,7 +2456,7 @@
         "n_doc_refs": 592,
         "pyramid": {
           "unit": false,
-          "smoke": false,
+          "smoke": true,
           "integration": false,
           "system": false,
           "functional": false,
@@ -20416,7 +20416,7 @@
         "n_doc_refs": 56,
         "pyramid": {
           "unit": true,
-          "smoke": false,
+          "smoke": true,
           "integration": true,
           "system": false,
           "functional": false,
@@ -21096,7 +21096,7 @@
         "n_doc_refs": 26,
         "pyramid": {
           "unit": false,
-          "smoke": false,
+          "smoke": true,
           "integration": false,
           "system": false,
           "functional": false,
@@ -21376,18 +21376,18 @@
         "n_doc_refs": 64,
         "pyramid": {
           "unit": true,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
+          "smoke": "N/A",
+          "integration": "N/A",
+          "system": "N/A",
+          "functional": "N/A",
+          "regression": "N/A",
+          "data_integrity": "N/A",
+          "performance": "N/A",
+          "acceptance": "N/A",
+          "property": "N/A",
+          "snapshot": "N/A",
+          "contract": "N/A",
+          "compatibility": "N/A"
         }
       },
       "short_id": "BUG-001",
@@ -21414,18 +21414,18 @@
         "n_doc_refs": 58,
         "pyramid": {
           "unit": true,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
+          "smoke": true,
+          "integration": "N/A",
+          "system": "N/A",
+          "functional": "N/A",
+          "regression": "N/A",
+          "data_integrity": "N/A",
+          "performance": "N/A",
+          "acceptance": "N/A",
+          "property": "N/A",
+          "snapshot": "N/A",
+          "contract": "N/A",
+          "compatibility": "N/A"
         }
       },
       "short_id": "BUG-002",
@@ -21452,18 +21452,18 @@
         "n_doc_refs": 36,
         "pyramid": {
           "unit": true,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
+          "smoke": "N/A",
+          "integration": "N/A",
+          "system": "N/A",
+          "functional": "N/A",
+          "regression": "N/A",
+          "data_integrity": "N/A",
+          "performance": "N/A",
+          "acceptance": "N/A",
+          "property": "N/A",
+          "snapshot": "N/A",
+          "contract": "N/A",
+          "compatibility": "N/A"
         }
       },
       "short_id": "BUG-003",
@@ -21490,18 +21490,18 @@
         "n_doc_refs": 50,
         "pyramid": {
           "unit": true,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
+          "smoke": "N/A",
+          "integration": "N/A",
+          "system": "N/A",
+          "functional": "N/A",
+          "regression": "N/A",
+          "data_integrity": "N/A",
+          "performance": "N/A",
+          "acceptance": "N/A",
+          "property": "N/A",
+          "snapshot": "N/A",
+          "contract": "N/A",
+          "compatibility": "N/A"
         }
       },
       "short_id": "BUG-004",
@@ -21528,18 +21528,18 @@
         "n_doc_refs": 79,
         "pyramid": {
           "unit": true,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
+          "smoke": "N/A",
+          "integration": "N/A",
+          "system": "N/A",
+          "functional": "N/A",
+          "regression": "N/A",
+          "data_integrity": "N/A",
+          "performance": "N/A",
+          "acceptance": "N/A",
+          "property": "N/A",
+          "snapshot": "N/A",
+          "contract": "N/A",
+          "compatibility": "N/A"
         }
       },
       "short_id": "BUG-005",
@@ -21566,18 +21566,18 @@
         "n_doc_refs": 36,
         "pyramid": {
           "unit": true,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
+          "smoke": true,
+          "integration": "N/A",
+          "system": "N/A",
+          "functional": "N/A",
+          "regression": "N/A",
+          "data_integrity": "N/A",
+          "performance": "N/A",
+          "acceptance": "N/A",
+          "property": "N/A",
+          "snapshot": "N/A",
+          "contract": "N/A",
+          "compatibility": "N/A"
         }
       },
       "short_id": "BUG-006",
@@ -21604,7 +21604,7 @@
         "n_doc_refs": 64,
         "pyramid": {
           "unit": "N/A",
-          "smoke": "N/A",
+          "smoke": true,
           "integration": "N/A",
           "system": "N/A",
           "functional": "N/A",
@@ -21642,18 +21642,18 @@
         "n_doc_refs": 43,
         "pyramid": {
           "unit": true,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
+          "smoke": true,
+          "integration": "N/A",
+          "system": "N/A",
+          "functional": "N/A",
+          "regression": "N/A",
+          "data_integrity": "N/A",
+          "performance": "N/A",
+          "acceptance": "N/A",
+          "property": "N/A",
+          "snapshot": "N/A",
+          "contract": "N/A",
+          "compatibility": "N/A"
         }
       },
       "short_id": "BUG-008",
@@ -21680,18 +21680,18 @@
         "n_doc_refs": 92,
         "pyramid": {
           "unit": true,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
+          "smoke": true,
+          "integration": "N/A",
+          "system": "N/A",
+          "functional": "N/A",
+          "regression": "N/A",
+          "data_integrity": "N/A",
+          "performance": "N/A",
+          "acceptance": "N/A",
+          "property": "N/A",
+          "snapshot": "N/A",
+          "contract": "N/A",
+          "compatibility": "N/A"
         }
       },
       "short_id": "BUG-009",
@@ -21718,18 +21718,18 @@
         "n_doc_refs": 190,
         "pyramid": {
           "unit": true,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
+          "smoke": "N/A",
+          "integration": "N/A",
+          "system": "N/A",
+          "functional": "N/A",
+          "regression": "N/A",
+          "data_integrity": "N/A",
+          "performance": "N/A",
+          "acceptance": "N/A",
+          "property": "N/A",
+          "snapshot": "N/A",
+          "contract": "N/A",
+          "compatibility": "N/A"
         }
       },
       "short_id": "BUG-010",
@@ -21756,18 +21756,18 @@
         "n_doc_refs": 159,
         "pyramid": {
           "unit": true,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
+          "smoke": true,
+          "integration": "N/A",
+          "system": "N/A",
+          "functional": "N/A",
+          "regression": "N/A",
+          "data_integrity": "N/A",
+          "performance": "N/A",
+          "acceptance": "N/A",
+          "property": "N/A",
+          "snapshot": "N/A",
+          "contract": "N/A",
+          "compatibility": "N/A"
         }
       },
       "short_id": "BUG-011",
@@ -21794,18 +21794,18 @@
         "n_doc_refs": 44,
         "pyramid": {
           "unit": true,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
+          "smoke": "N/A",
+          "integration": "N/A",
+          "system": "N/A",
+          "functional": "N/A",
+          "regression": "N/A",
+          "data_integrity": "N/A",
+          "performance": "N/A",
+          "acceptance": "N/A",
+          "property": "N/A",
+          "snapshot": "N/A",
+          "contract": "N/A",
+          "compatibility": "N/A"
         }
       },
       "short_id": "BUG-012",
@@ -21832,18 +21832,18 @@
         "n_doc_refs": 65,
         "pyramid": {
           "unit": true,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
+          "smoke": "N/A",
+          "integration": "N/A",
+          "system": "N/A",
+          "functional": "N/A",
+          "regression": "N/A",
+          "data_integrity": "N/A",
+          "performance": "N/A",
+          "acceptance": "N/A",
+          "property": "N/A",
+          "snapshot": "N/A",
+          "contract": "N/A",
+          "compatibility": "N/A"
         }
       },
       "short_id": "BUG-015",
@@ -21870,18 +21870,18 @@
         "n_doc_refs": 100,
         "pyramid": {
           "unit": true,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
+          "smoke": "N/A",
+          "integration": "N/A",
+          "system": "N/A",
+          "functional": "N/A",
+          "regression": "N/A",
+          "data_integrity": "N/A",
+          "performance": "N/A",
+          "acceptance": "N/A",
+          "property": "N/A",
+          "snapshot": "N/A",
+          "contract": "N/A",
+          "compatibility": "N/A"
         }
       },
       "short_id": "BUG-018",
@@ -21908,18 +21908,18 @@
         "n_doc_refs": 51,
         "pyramid": {
           "unit": true,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
+          "smoke": "N/A",
+          "integration": "N/A",
+          "system": "N/A",
+          "functional": "N/A",
+          "regression": "N/A",
+          "data_integrity": "N/A",
+          "performance": "N/A",
+          "acceptance": "N/A",
+          "property": "N/A",
+          "snapshot": "N/A",
+          "contract": "N/A",
+          "compatibility": "N/A"
         }
       },
       "short_id": "BUG-021",
@@ -21946,18 +21946,18 @@
         "n_doc_refs": 23,
         "pyramid": {
           "unit": true,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
+          "smoke": "N/A",
+          "integration": "N/A",
+          "system": "N/A",
+          "functional": "N/A",
+          "regression": "N/A",
+          "data_integrity": "N/A",
+          "performance": "N/A",
+          "acceptance": "N/A",
+          "property": "N/A",
+          "snapshot": "N/A",
+          "contract": "N/A",
+          "compatibility": "N/A"
         }
       },
       "short_id": "BUG-022",
@@ -22022,18 +22022,18 @@
         "n_doc_refs": 50,
         "pyramid": {
           "unit": true,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
+          "smoke": "N/A",
+          "integration": "N/A",
+          "system": "N/A",
+          "functional": "N/A",
+          "regression": "N/A",
+          "data_integrity": "N/A",
+          "performance": "N/A",
+          "acceptance": "N/A",
+          "property": "N/A",
+          "snapshot": "N/A",
+          "contract": "N/A",
+          "compatibility": "N/A"
         }
       },
       "short_id": "BUG-028",
@@ -22060,18 +22060,18 @@
         "n_doc_refs": 14,
         "pyramid": {
           "unit": true,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
+          "smoke": true,
+          "integration": "N/A",
+          "system": "N/A",
+          "functional": "N/A",
+          "regression": "N/A",
+          "data_integrity": "N/A",
+          "performance": "N/A",
+          "acceptance": "N/A",
+          "property": "N/A",
+          "snapshot": "N/A",
+          "contract": "N/A",
+          "compatibility": "N/A"
         }
       },
       "short_id": "BUG-029",
@@ -22098,18 +22098,18 @@
         "n_doc_refs": 6,
         "pyramid": {
           "unit": true,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
+          "smoke": "N/A",
+          "integration": "N/A",
+          "system": "N/A",
+          "functional": "N/A",
+          "regression": "N/A",
+          "data_integrity": "N/A",
+          "performance": "N/A",
+          "acceptance": "N/A",
+          "property": "N/A",
+          "snapshot": "N/A",
+          "contract": "N/A",
+          "compatibility": "N/A"
         }
       },
       "short_id": "BUG-030",
@@ -22136,18 +22136,18 @@
         "n_doc_refs": 8,
         "pyramid": {
           "unit": true,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
+          "smoke": "N/A",
+          "integration": "N/A",
+          "system": "N/A",
+          "functional": "N/A",
+          "regression": "N/A",
+          "data_integrity": "N/A",
+          "performance": "N/A",
+          "acceptance": "N/A",
+          "property": "N/A",
+          "snapshot": "N/A",
+          "contract": "N/A",
+          "compatibility": "N/A"
         }
       },
       "short_id": "BUG-037",
@@ -22364,18 +22364,18 @@
         "n_doc_refs": 16,
         "pyramid": {
           "unit": true,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
+          "smoke": true,
+          "integration": "N/A",
+          "system": "N/A",
+          "functional": "N/A",
+          "regression": "N/A",
+          "data_integrity": "N/A",
+          "performance": "N/A",
+          "acceptance": "N/A",
+          "property": "N/A",
+          "snapshot": "N/A",
+          "contract": "N/A",
+          "compatibility": "N/A"
         }
       },
       "short_id": "BUG-061",
@@ -22668,18 +22668,18 @@
         "n_doc_refs": 17,
         "pyramid": {
           "unit": true,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
+          "smoke": true,
+          "integration": "N/A",
+          "system": "N/A",
+          "functional": "N/A",
+          "regression": "N/A",
+          "data_integrity": "N/A",
+          "performance": "N/A",
+          "acceptance": "N/A",
+          "property": "N/A",
+          "snapshot": "N/A",
+          "contract": "N/A",
+          "compatibility": "N/A"
         }
       },
       "short_id": "BUG-077",
@@ -22706,18 +22706,18 @@
         "n_doc_refs": 34,
         "pyramid": {
           "unit": true,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
+          "smoke": true,
+          "integration": "N/A",
+          "system": "N/A",
+          "functional": "N/A",
+          "regression": "N/A",
+          "data_integrity": "N/A",
+          "performance": "N/A",
+          "acceptance": "N/A",
+          "property": "N/A",
+          "snapshot": "N/A",
+          "contract": "N/A",
+          "compatibility": "N/A"
         }
       },
       "short_id": "BUG-078",
@@ -22744,18 +22744,18 @@
         "n_doc_refs": 17,
         "pyramid": {
           "unit": true,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
+          "smoke": true,
+          "integration": "N/A",
+          "system": "N/A",
+          "functional": "N/A",
+          "regression": "N/A",
+          "data_integrity": "N/A",
+          "performance": "N/A",
+          "acceptance": "N/A",
+          "property": "N/A",
+          "snapshot": "N/A",
+          "contract": "N/A",
+          "compatibility": "N/A"
         }
       },
       "short_id": "BUG-080",
@@ -22782,18 +22782,18 @@
         "n_doc_refs": 24,
         "pyramid": {
           "unit": true,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
+          "smoke": "N/A",
+          "integration": "N/A",
+          "system": "N/A",
+          "functional": "N/A",
+          "regression": "N/A",
+          "data_integrity": "N/A",
+          "performance": "N/A",
+          "acceptance": "N/A",
+          "property": "N/A",
+          "snapshot": "N/A",
+          "contract": "N/A",
+          "compatibility": "N/A"
         }
       },
       "short_id": "BUG-083",
@@ -23086,18 +23086,18 @@
         "n_doc_refs": 81,
         "pyramid": {
           "unit": true,
-          "smoke": false,
+          "smoke": true,
           "integration": true,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
+          "system": "N/A",
+          "functional": "N/A",
+          "regression": "N/A",
+          "data_integrity": "N/A",
+          "performance": "N/A",
+          "acceptance": "N/A",
+          "property": "N/A",
+          "snapshot": "N/A",
+          "contract": "N/A",
+          "compatibility": "N/A"
         }
       },
       "short_id": "BUG-095",
@@ -23352,18 +23352,18 @@
         "n_doc_refs": 24,
         "pyramid": {
           "unit": true,
-          "smoke": false,
-          "integration": false,
-          "system": false,
-          "functional": false,
-          "regression": false,
-          "data_integrity": false,
-          "performance": false,
-          "acceptance": false,
-          "property": false,
-          "snapshot": false,
-          "contract": false,
-          "compatibility": false
+          "smoke": true,
+          "integration": "N/A",
+          "system": "N/A",
+          "functional": "N/A",
+          "regression": "N/A",
+          "data_integrity": "N/A",
+          "performance": "N/A",
+          "acceptance": "N/A",
+          "property": "N/A",
+          "snapshot": "N/A",
+          "contract": "N/A",
+          "compatibility": "N/A"
         }
       },
       "short_id": "BUG-110",
@@ -24190,7 +24190,7 @@
         "n_doc_refs": 52,
         "pyramid": {
           "unit": false,
-          "smoke": false,
+          "smoke": true,
           "integration": false,
           "system": true,
           "functional": false,
@@ -25744,7 +25744,7 @@
         "n_doc_refs": 19,
         "pyramid": {
           "unit": false,
-          "smoke": false,
+          "smoke": true,
           "integration": false,
           "system": true,
           "functional": false,
@@ -28716,34 +28716,40 @@
   ],
   "recent_commits": [
     {
+      "sha": "6a3b572e",
+      "subject": "Pass 53 v8h+1: BUG-95 CRITICAL Portfolio class RESOLVED-IMPLEMENTED (Sub-batch 5/5 - FINAL)",
+      "author": "jeetmehta1991",
+      "rel_time": "10 minutes ago"
+    },
+    {
       "sha": "2b56e6e9",
       "subject": "Pass 53 v8h+1: BUG-95 LIVE_TRADING_RULES enforcement via can_open gate (Sub-batch 4/5)",
       "author": "jeetmehta1991",
-      "rel_time": "7 minutes ago"
+      "rel_time": "29 minutes ago"
     },
     {
       "sha": "2fe9c3d4",
       "subject": "Pass 53 v8h+1: BUG-95 Portfolio metrics from equity_curve (Sub-batch 3/5)",
       "author": "jeetmehta1991",
-      "rel_time": "12 minutes ago"
+      "rel_time": "34 minutes ago"
     },
     {
       "sha": "ead36b0b",
       "subject": "Pass 53 v8h+1: BUG-95 Portfolio engine integration (Sub-batch 2/5 - shadow state)",
       "author": "jeetmehta1991",
-      "rel_time": "17 minutes ago"
+      "rel_time": "39 minutes ago"
     },
     {
       "sha": "93e4036a",
       "subject": "Pass 53 v8h+1: BUG-95 CRITICAL Portfolio class skeleton (Sub-batch 1/5 - owner-approved Option A)",
       "author": "jeetmehta1991",
-      "rel_time": "25 minutes ago"
+      "rel_time": "47 minutes ago"
     },
     {
       "sha": "b04abeb7",
       "subject": "Pass 53 auto-drift-sweep 2026-05-11 00:53: dashboard re-derive (no content drift)",
       "author": "jeetmehta1991",
-      "rel_time": "57 minutes ago"
+      "rel_time": "79 minutes ago"
     },
     {
       "sha": "5e68ae6c",
@@ -28761,19 +28767,19 @@
       "sha": "99a888a3",
       "subject": "Pass 53 v8h+1: BUG-61 HIGH multiple concurrent positions same ticker FIXED (owner-approved Option A)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "cf8d9c24",
       "subject": "Pass 53 v8h+1: BUG-110 HIGH entry gap filter VERIFIED ENFORCED (stale audit finding)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "a571c1c6",
       "subject": "Pass 53 v8h+1: BUG-80 HIGH exit slippage applied symmetrically (apply_exit_slippage helper + 2 wire-up sites)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "b852347d",
@@ -28881,17 +28887,11 @@
       "sha": "99d137c1",
       "subject": "Pass 53 v8h+1: BUG-270/271/272/273 pyramid overrides + Promotion dropdown filters",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "a7c66530",
       "subject": "Pass 53 v8h+1: DEC-610 SPEC_ONLY -> DEFERRED_TO_* re-classification (14 forward-looking DECs)",
-      "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
-    },
-    {
-      "sha": "4cd84d66",
-      "subject": "Pass 53 v8h+1: BUG-270 wired-flag fix (cross-reference docstring) + process self-finding",
       "author": "jeetmehta1991",
       "rel_time": "5 hours ago"
     }
@@ -28905,23 +28905,23 @@
     "files": [
       {
         "status": "M",
-        "path": "AUDIT.md"
+        "path": "backtest/tests/test_e2e_phase1a_smoke.py"
       },
       {
         "status": "M",
-        "path": "BUG_REGISTER.md"
+        "path": "dashboard_stage_2/data.js"
       },
       {
         "status": "M",
-        "path": "backtest/engine/backtest.py"
+        "path": "dashboard_stage_2/data.json"
       },
       {
         "status": "M",
-        "path": "backtest/results/writer.py"
+        "path": "dashboard_stage_2/last_run.txt"
       },
       {
         "status": "M",
-        "path": "backtest/tests/test_integration.py"
+        "path": "scripts/build_dashboard_stage_2.py"
       }
     ]
   },
@@ -29204,7 +29204,8 @@
       "test_prefetch_utils.py"
     ],
     "smoke": [
-      "test_smoke.py"
+      "test_smoke.py",
+      "test_e2e_phase1a_smoke.py"
     ],
     "integration": [
       "test_integration.py"
