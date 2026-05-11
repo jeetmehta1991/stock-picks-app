@@ -29,7 +29,7 @@ import pandas as pd
 from backtest.config import (
     BACKTEST_START, BACKTEST_END, UNIVERSE, OUTPUT_DIR,
     TRAILING_STOP, AI_MODELS, DATA_LOAD_START, LIQUIDITY,
-    STARTING_CAPITAL, TIER_POSITION_SIZE_PCT,
+    STARTING_CAPITAL, TIER_POSITION_SIZE_PCT, LIVE_TRADING_RULES,
 )
 from backtest.data.cache import get_ohlcv_bulk as cached_ohlcv_bulk
 from backtest.data.universe import fetch_info_bulk, get_sector_map
@@ -591,6 +591,38 @@ class BacktestEngine:
                     })
                     continue
 
+                # BUG-95 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 20
+                # Sub-batch 4/5 (owner-approved Option A): enforce LIVE_TRADING_RULES
+                # via Portfolio.can_open. This is the source-side enforcement that
+                # makes backtest behave like live trading:
+                #   - max_open_positions (default 10): blocks new entries once 10
+                #     concurrent positions are held
+                #   - drawdown suspend (default >30%): blocks new entries when
+                #     portfolio is in deep drawdown (LIVE_TRADING_RULES
+                #     drawdown_suspend_threshold)
+                #   - insufficient cash: blocks when required notional exceeds
+                #     available cash (live broker would reject)
+                #   - ticker uniqueness: redundant with BUG-61 outer block but
+                #     defends against future refactors that change BUG-61
+                # hasattr guard tolerates test paths bypassing __init__.
+                if hasattr(self, "portfolio"):
+                    size_pct = TIER_POSITION_SIZE_PCT.get(tier, 0.0)
+                    if size_pct > 0:
+                        ok, reason = self.portfolio.can_open(
+                            ticker=ticker, size_pct=size_pct,
+                            max_positions=LIVE_TRADING_RULES["max_open_positions"],
+                            drawdown_suspend_pct=(
+                                LIVE_TRADING_RULES["drawdown_suspend_threshold"] * 100.0
+                            ),
+                        )
+                        if not ok:
+                            self.skipped_trades.append({
+                                "ticker": ticker, "date": as_of,
+                                "strategy": strat_entry["strategy"],
+                                "reason": f"portfolio_gate_{reason}",
+                            })
+                            continue
+
                 # Get sector ETF return for halo effect context
                 sector = self.sector_map.get(ticker, "Unknown")
                 sector_etf_map = {
@@ -662,12 +694,11 @@ class BacktestEngine:
                 opened_today.add(ticker)
                 open_tickers.add(ticker)  # BUG-61: lock ticker for rest of day
 
-                # BUG-95 sub-batch 2: mirror entry into Portfolio state.
-                # size_pct from confidence tier; AVOID/LOW already filtered
-                # above. Failures are non-fatal in sub-batch 2 (shadow state):
-                # we log and continue so existing engine semantics are
-                # unchanged. Sub-batch 4 turns can_open enforcement on.
-                # hasattr guard tolerates test paths that bypass __init__.
+                # BUG-95 sub-batch 2 + 4: mirror entry into Portfolio state.
+                # Sub-batch 4 has already gated this with can_open above; reaching
+                # here means the gates passed. size_pct was computed up-front for
+                # the can_open call; recompute here defensively in case the gate
+                # was skipped by hasattr branch.
                 if hasattr(self, "portfolio"):
                     size_pct = TIER_POSITION_SIZE_PCT.get(tier, 0.0)
                     if size_pct > 0:

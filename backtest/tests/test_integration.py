@@ -188,6 +188,27 @@ def test_bug_095_engine_imports_portfolio_module():
         "Engine must call remove_position when a trade exits")
 
 
+def test_bug_095_engine_can_open_gate_wired():
+    """BUG-95 sub-batch 4: backtest.py must call self.portfolio.can_open()
+    inside _process_day with max_positions from LIVE_TRADING_RULES and skip
+    entry on gate denial.
+    """
+    import inspect
+    from backtest.engine import backtest as bt_module
+    src = inspect.getsource(bt_module)
+
+    assert "self.portfolio.can_open(" in src, (
+        "Engine must call self.portfolio.can_open() inside _process_day")
+    assert "LIVE_TRADING_RULES" in src, (
+        "Engine must import LIVE_TRADING_RULES for can_open gate")
+    assert "max_positions=LIVE_TRADING_RULES" in src, (
+        "Engine must pass max_open_positions from LIVE_TRADING_RULES")
+    assert "drawdown_suspend_threshold" in src, (
+        "Engine must pass drawdown_suspend_threshold to can_open")
+    assert "portfolio_gate_" in src, (
+        "Gate denial must record skipped_trades reason prefixed portfolio_gate_")
+
+
 def test_bug_095_engine_portfolio_lifecycle_minimal():
     """BUG-95 sub-batch 2 lifecycle pin: simulating add+remove on the engine's
     portfolio mirrors what _process_day does.
