@@ -971,6 +971,15 @@ def screen_instrument(
 
     triggered_long  = []
     triggered_short = []
+    # BUG-77 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 19 2026-05-10
+    # (owner-approved Option A): third bucket for avoid direction. Previously
+    # the else branch merged avoid into triggered_short, inflating
+    # strategy_count and distorting candidate ranking - a ticker with
+    # mixed/conflicting signals could rank above one with strong directional
+    # conviction. Source-side counterpart to BUG-04 (consumer-side filter
+    # at backtest.py:410). avoid signals are kept in the candidate dict for
+    # downstream diagnostics but excluded from all_triggered / strategy_count.
+    triggered_avoid = []
 
     for name, fn in ALL_STRATEGIES.items():
         try:
@@ -990,12 +999,14 @@ def screen_instrument(
             }
             if direction == "long":
                 triggered_long.append(entry)
-            else:
+            elif direction == "short":
                 triggered_short.append(entry)
+            else:  # avoid - BUG-77: do NOT inflate triggered_short
+                triggered_avoid.append(entry)
         except Exception as exc:
             logger.debug("Strategy %s error for %s: %s", name, ticker, exc)
 
-    all_triggered = triggered_long + triggered_short
+    all_triggered = triggered_long + triggered_short  # BUG-77: no avoid here
     tech_count    = count_bullish_signals(signals)
     atr           = signals.get("atr", 0.0)
     close         = float(df["close"].iloc[-1])
@@ -1008,9 +1019,11 @@ def screen_instrument(
         "strategies":        all_triggered,
         "long_strategies":   triggered_long,
         "short_strategies":  triggered_short,
+        "avoid_strategies":  triggered_avoid,  # BUG-77: kept for diagnostics
         "strategy_count":    len(all_triggered),
         "long_count":        len(triggered_long),
         "short_count":       len(triggered_short),
+        "avoid_count":       len(triggered_avoid),
         "tech_signal_count": tech_count,
         "signals":           signals,
         "last_close":        round(close, 4),

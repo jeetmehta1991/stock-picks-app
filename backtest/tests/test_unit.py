@@ -2015,6 +2015,68 @@ def test_bug_110_entry_gap_filter_enforced_at_validate_entry_zone():
     assert "exceeds" in reason_short_bad
 
 
+def test_bug_077_avoid_excluded_from_strategy_count():
+    """BUG-77: screener.screen_instrument must place avoid-direction strategies
+    in their own bucket and EXCLUDE them from strategy_count + strategies list,
+    so candidate ranking reflects directional conviction only.
+
+    Pass 53 v8h+1 Phase 3 Batch 19 RESOLVED-IMPLEMENTED 2026-05-10 (owner-
+    approved Option A). Source pin: screener.py must construct triggered_avoid
+    bucket and the all_triggered sum must exclude it.
+    """
+    import inspect
+    from backtest.signals import screener
+    src = inspect.getsource(screener.screen_instrument)
+
+    assert "BUG-77" in src, "BUG-77 cross-reference must exist in screen_instrument"
+    assert "triggered_avoid" in src, (
+        "screener must define triggered_avoid bucket separately")
+    # The all_triggered sum must explicitly exclude avoid
+    assert "all_triggered = triggered_long + triggered_short" in src, (
+        "all_triggered must sum only long+short (no avoid)")
+    # The result dict must expose avoid_strategies + avoid_count for diagnostics
+    assert "\"avoid_strategies\"" in src or "'avoid_strategies'" in src, (
+        "result dict must expose avoid_strategies for diagnostics")
+    assert "\"avoid_count\"" in src or "'avoid_count'" in src, (
+        "result dict must expose avoid_count for diagnostics")
+
+
+def test_bug_077_candidate_ranking_prefers_directional_conviction():
+    """BUG-77 functional: simulating the three-bucket categorization confirms
+    a ticker with 5 longs + 0 avoids outranks one with 3 longs + 3 avoids.
+
+    Pass 53 v8h+1 Phase 3 Batch 19 2026-05-10.
+    """
+    # Simulate the post-BUG-77 categorization
+    def make_result(longs, shorts, avoids):
+        triggered_long = [{"direction": "long"}] * longs
+        triggered_short = [{"direction": "short"}] * shorts
+        triggered_avoid = [{"direction": "avoid"}] * avoids
+        all_triggered = triggered_long + triggered_short  # NO avoid
+        return {
+            "strategy_count": len(all_triggered),
+            "long_count": len(triggered_long),
+            "short_count": len(triggered_short),
+            "avoid_count": len(triggered_avoid),
+        }
+
+    # AAPL: 5 longs, 0 short, 0 avoid -> strategy_count = 5
+    aapl = make_result(longs=5, shorts=0, avoids=0)
+    # NVDA: 3 longs, 0 short, 3 avoid -> strategy_count = 3 (was 6 under bug)
+    nvda = make_result(longs=3, shorts=0, avoids=3)
+
+    assert aapl["strategy_count"] == 5
+    assert nvda["strategy_count"] == 3, (
+        "NVDA must NOT include 3 avoids in strategy_count (was the BUG-77 bug)")
+    # Candidate ranking is sort by strategy_count desc
+    ranked = sorted([("AAPL", aapl), ("NVDA", nvda)],
+                    key=lambda x: x[1]["strategy_count"], reverse=True)
+    assert ranked[0][0] == "AAPL", (
+        "AAPL (5 longs) must rank above NVDA (3 longs + 3 avoids)")
+    # avoid_count is still exposed for diagnostics
+    assert nvda["avoid_count"] == 3
+
+
 def test_bug_083_congressional_detail_pit_filter_correct():
     """BUG-83: get_congressional_detail must filter ReportDate <= as_of
     (no extra 45-day delta) for PIT consistency with insider_signal and

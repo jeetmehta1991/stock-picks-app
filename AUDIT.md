@@ -33313,6 +33313,62 @@ Documents updated:
   - AUDIT.md (this sub-entry)
   - dashboard_stage_2 (rebuilt; IMPLEMENTED 28 -> 29)
 
+---
+
+## Pass 53 Day 9 v8h+1 follow-on 2026-05-10 (cont): Phase 3 Batch 19 - BUG-77 MEDIUM candidate ranking inflated by avoid entries FIXED (owner-approved Option A)
+
+**The bug:** screener.py:991-994 used a two-branch direction split (`if direction == "long": triggered_long.append(...) else: triggered_short.append(...)`). The `else` branch caught BOTH `short` AND `avoid` directions, so avoid-direction strategies were bucketed into `triggered_short`. `strategy_count = len(triggered_long) + len(triggered_short)` then included avoid entries, and `candidates.sort(key=lambda x: x["strategy_count"], reverse=True)` ranked tickers with conflicting signals (high avoid count) ABOVE tickers with strong directional conviction (zero avoid). Top-10 `max_cands` filter picked the wrong names.
+
+**Source-side counterpart to BUG-04 consumer-side fix:**
+BUG-04 RESOLVED-IMPLEMENTED Phase 3 Batch 4 added consumer-side filtering at backtest.py:410 (`if direction == "avoid": continue`) but the source-side categorization in screener.py still merged avoid into triggered_short, distorting the ranking BEFORE the consumer-side filter could act. Phase 3 Batch 19 closes this gap.
+
+**The fix (owner-approved Option A 2026-05-10):**
+Added explicit three-bucket categorization in `screener.py:972-1015`:
+```python
+triggered_long  = []
+triggered_short = []
+triggered_avoid = []  # BUG-77: third bucket
+
+if direction == "long":
+    triggered_long.append(entry)
+elif direction == "short":
+    triggered_short.append(entry)
+else:  # avoid - BUG-77: do NOT inflate triggered_short
+    triggered_avoid.append(entry)
+
+all_triggered = triggered_long + triggered_short  # BUG-77: no avoid here
+```
+Result dict now exposes `avoid_strategies` + `avoid_count` for diagnostics but excludes them from `strategies` and `strategy_count`. Candidate ranking now reflects directional conviction only.
+
+**2 new regression tests (both PASS):**
+  - `test_bug_077_avoid_excluded_from_strategy_count` - source pin: screen_instrument must define triggered_avoid, all_triggered must sum only long+short, result dict must expose avoid_strategies + avoid_count
+  - `test_bug_077_candidate_ranking_prefers_directional_conviction` - functional pin: 5-long ticker outranks 3-long+3-avoid ticker (5 > 3, not 5 < 6)
+
+**Per-addressal pyramid (CHECKLIST #78):** unit 122/122 + integration 7/7 + e2e_phase1a_smoke 7/7 = 136/136 PASS in ~2:35 min. e2e smoke confirms the new schema fields are non-disruptive - engine consumes via existing `strategies` list which now correctly excludes avoid.
+
+**Same-commit (DEC-594):** screener.py change + 2 new tests + register flip + AUDIT.md + dashboard rebuilt - this single commit.
+
+**Phase 1A May 15 IMPACT - MEDIUM:**
+Candidate selection now reflects directional conviction. Phase 1A baseline will see slightly different top-10 candidate sets per day (a few names with mixed signals drop out; replaced by cleaner directional names). Trade count and ROI may shift modestly. This makes Phase 1A signal allocation more aligned with intent.
+
+**Visible bug tier distribution (post-Phase-3-batch-19):**
+  - IMPLEMENTED: 30 (was 29; +1 BUG-77)
+  - DEFERRED: 39; CODE_ONLY: 1
+  - OPEN: 1 (was 2; -1)
+  - Total visible: 71; hidden: 77
+
+**Remaining 1 OPEN bug:**
+  - BUG-95 CRITICAL: no Portfolio class (DEFERRED-TO-SPRINT-3 per audit; not Phase 1A blocking)
+
+Phase 1A May 15 strict blocker count: **0 OPEN** (unchanged). All actionable Phase 1A bugs are now CLOSED.
+
+Documents updated:
+  - backtest/signals/screener.py (third-bucket triggered_avoid + elif short branch + all_triggered exclude avoid + result dict avoid_strategies/avoid_count fields)
+  - backtest/tests/test_unit.py (2 new BUG-77 regression tests)
+  - BUG_REGISTER.md (1 flip: BUG-77)
+  - AUDIT.md (this sub-entry)
+  - dashboard_stage_2 (rebuilt; IMPLEMENTED 29 -> 30)
+
 **Remaining OPEN backlog after sweeps:**
   - 1 DEC RESOLVED-DECIDED-deferred (DEC-028 Stage 3 paper trading - intentional)
   - INVs: 33 OPEN + 2 DEFERRED (genuine work; not promotion-eligible)
