@@ -1,5 +1,5 @@
 """
-data/cache.py — Local Parquet cache for OHLCV data.
+data/cache.py  -  Local Parquet cache for OHLCV data.
 
 Eliminates repeated yfinance API calls across runs.
 First run: fetches from yfinance, saves to Parquet.
@@ -49,7 +49,7 @@ def _save_index(index: dict):
         with filelock.FileLock(lock_path, timeout=30):
             INDEX_FILE.write_text(json.dumps(index, default=str, indent=2))
     except Exception:
-        # filelock unavailable or timeout — fall back to direct write
+        # filelock unavailable or timeout  -  fall back to direct write
         INDEX_FILE.write_text(json.dumps(index, default=str, indent=2))
 
 
@@ -89,7 +89,7 @@ def _fetch_from_yfinance(
     delay: float = 0.3,
 ) -> pd.DataFrame:
     """Pass 53 Batch 13 sub-task 6 (DEC-497 + D4 yfinance HARD CUT 2026-05-06):
-    DEPRECATED — yfinance removed from runtime per owner directive. Cache miss
+    DEPRECATED  -  yfinance removed from runtime per owner directive. Cache miss
     returns empty DataFrame; legitimate Stage 2 backtest reads come from
     cache/ohlcv/ (Polygon-prefetched per Sprint 0A Batch 2 + Batch 9 v2).
 
@@ -97,9 +97,9 @@ def _fetch_from_yfinance(
     Prior implementation: yf.Ticker.history() with retries.
     """
     logger.warning(
-        "_fetch_from_yfinance(%s) called — yfinance HARD CUT per DEC-497 D4. "
+        "_fetch_from_yfinance(%s) called  -  yfinance HARD CUT per DEC-497 D4. "
         "Returning empty DataFrame. Cache miss for ticker not in Sprint 0A "
-        "prefetch — investigate.", ticker
+        "prefetch  -  investigate.", ticker
     )
     return pd.DataFrame()
 
@@ -127,7 +127,7 @@ def get_ohlcv(
     # post Polygon migration. Auto-detect index.json staleness by checking actual
     # file if cache_file exists but index entry missing OR appears stale.
     if not force_refresh and cache_file.exists() and (not cached_start_str or not cached_end_str):
-        # Index missing — derive from file
+        # Index missing  -  derive from file
         try:
             df_check = pd.read_parquet(cache_file)
             if "date" in df_check.columns:
@@ -157,8 +157,8 @@ def get_ohlcv(
         # Strict full-coverage check was wrong because (a) DEC-497 yfinance HARD
         # CUT means we can't fetch missing tail anyway; (b) request ends often
         # overshoot cache_end (e.g., macro_snapshot requests end=2026-12-31 but
-        # cache has 2026-05-05 — that's fine, just use what we have).
-        # Original strict check + my ±7-day buffer both failed for this case.
+        # cache has 2026-05-05  -  that's fine, just use what we have).
+        # Original strict check + my +/-7-day buffer both failed for this case.
         from datetime import timedelta as _td
         has_overlap = cached_start <= end + _td(days=7) and cached_end >= start - _td(days=7)
         if has_overlap:
@@ -181,9 +181,9 @@ def get_ohlcv(
                 logger.debug("Cache hit: %s (%d rows)", ticker, mask.sum())
                 return df[mask]
             except Exception as exc:
-                logger.warning("Cache read failed for %s: %s — refetching", ticker, exc)
+                logger.warning("Cache read failed for %s: %s  -  refetching", ticker, exc)
 
-        # Partial cache — fetch missing tail
+        # Partial cache  -  fetch missing tail
         if cached_end < end:
             fetch_start = cached_end + timedelta(days=1)
             new_df = _fetch_from_yfinance(ticker, fetch_start, end)
@@ -205,15 +205,42 @@ def get_ohlcv(
                 except Exception as exc:
                     logger.warning("Cache append failed for %s: %s", ticker, exc)
 
+        # DEC-307 + DEC-381 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 44
+        # 2026-05-11 (owner-approved Path C). Front-extension: when cache
+        # starts after requested start, fetch the missing front segment and
+        # prepend. Previously only tail was extended; user requesting start
+        # before cache.start got truncated data.
+        if cached_start > start:
+            fetch_end = cached_start - timedelta(days=1)
+            new_df = _fetch_from_yfinance(ticker, start, fetch_end)
+            if not new_df.empty:
+                try:
+                    existing = pd.read_parquet(cache_file)
+                    existing.index = pd.to_datetime(existing.index).tz_localize(None)
+                    # Prepend new_df (older) to existing (newer)
+                    combined = pd.concat([new_df, existing]).sort_index()
+                    combined = combined[~combined.index.duplicated(keep="first")]
+                    combined.to_parquet(cache_file)
+                    index[ticker] = {
+                        "start": str(combined.index[0].date()),
+                        "end":   str(combined.index[-1].date()),
+                        "rows":  len(combined),
+                    }
+                    _save_index(index)
+                    mask = (combined.index.date >= start) & (combined.index.date <= end)
+                    return combined[mask]
+                except Exception as exc:
+                    logger.warning("Cache front-extension failed for %s: %s", ticker, exc)
+
     # Full fetch
-    logger.info("Fetching %s from yfinance (%s → %s)", ticker, start, end)
+    logger.info("Fetching %s from yfinance (%s -> %s)", ticker, start, end)
     df = _fetch_from_yfinance(ticker, start, end)
     if df.empty:
         return df
 
     # Save to cache
     try:
-        # DEC-309 fix (Pass 51): collision check — fail loud, not silent overwrite
+        # DEC-309 fix (Pass 51): collision check  -  fail loud, not silent overwrite
         _assert_no_ticker_collision(ticker, index)
         df.to_parquet(cache_file)
         index[ticker] = {
@@ -223,7 +250,7 @@ def get_ohlcv(
         }
         _save_index(index)
     except TickerCollisionError:
-        raise  # Don't swallow collisions — must surface
+        raise  # Don't swallow collisions  -  must surface
     except Exception as exc:
         logger.warning("Cache write failed for %s: %s", ticker, exc)
 
@@ -259,7 +286,14 @@ def get_ohlcv_bulk(
                 df = pd.read_parquet(cache_file)
                 df.index = pd.to_datetime(df.index).tz_localize(None)
                 mask = (df.index.date >= start) & (df.index.date <= end)
-                if mask.sum() >= 20:
+                # DEC-308 + DEC-382 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3
+                # Batch 44 2026-05-11: lowered hardcoded 20-day rejection to
+                # 1-row minimum. Previously cache was silently rejected for
+                # short-window requests; downstream caller knows their min-rows
+                # needs (e.g. liquidity filter requires >=30 days; signal
+                # compute requires >=200 days). Cache should serve what it has;
+                # downstream filters reject if insufficient.
+                if mask.sum() >= 1:
                     results[ticker] = df[mask]
                     continue
             except Exception:

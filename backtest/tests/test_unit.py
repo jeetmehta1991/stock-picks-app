@@ -2680,6 +2680,36 @@ def test_dec_404_cost_sensitivity_sharpe_at_4_levels():
         f"Sharpe should decrease with cost: {out}")
 
 
+def test_dec_307_dec_381_cache_front_extension_implemented():
+    """DEC-307 + DEC-381 (Phase 3 Batch 44): cache.py get_ohlcv must
+    contain front-extension branch (cached_start > start -> fetch missing front).
+    """
+    import inspect
+    from backtest.data import cache as cache_module
+    src = inspect.getsource(cache_module.get_ohlcv)
+    assert "DEC-307" in src, "DEC-307 cross-reference missing in cache.get_ohlcv"
+    assert "cached_start > start" in src, (
+        "Front-extension branch not implemented: missing cached_start > start check")
+    assert "concat([new_df, existing])" in src, (
+        "Front-extension must prepend new_df (older) to existing (newer)")
+
+
+def test_dec_308_dec_382_cache_20day_threshold_lowered():
+    """DEC-308 + DEC-382 (Phase 3 Batch 44): hardcoded mask.sum() >= 20
+    threshold lowered to >= 1 (cache serves what it has; downstream filters
+    reject insufficient).
+    """
+    import inspect
+    from backtest.data import cache as cache_module
+    src = inspect.getsource(cache_module.get_ohlcv_bulk)
+    assert "DEC-308" in src, "DEC-308 cross-reference missing in cache.get_ohlcv_bulk"
+    assert "mask.sum() >= 1" in src, (
+        "20-day threshold not lowered to 1 (DEC-308 fix)")
+    # Original hardcoded 20-row reject must be gone
+    assert "mask.sum() >= 20" not in src, (
+        "Original 20-day threshold still present; DEC-308 not applied")
+
+
 def test_dec_321_dec_392_liquidity_fail_closed_on_missing_market_cap():
     """DEC-321 + DEC-392 (Phase 3 Batch 43): liquidity filter fails closed
     when market_cap is missing/zero (for non-ETF tiers with min_market_cap_m > 0).
