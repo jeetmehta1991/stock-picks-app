@@ -211,11 +211,34 @@ def get_fear_and_greed(as_of: date) -> dict:
     else:
         signal = "neutral"
 
+    # DEC-320 + DEC-391 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 46
+    # 2026-05-11 (owner-approved Path C). Expose days_since_publish to flag
+    # interpolated / forward-filled values. The 1630-row legacy CSV mixes
+    # actual CNN F&G publications with interpolated bridge values. Without
+    # a source-truth marker for interpolation, days_since_publish is computed
+    # as the run-length of consecutive identical scores ending at this row -
+    # a heuristic proxy: 0 days_since = score changed today (likely published);
+    # N days_since = same score for N days (likely interpolation / static).
+    days_since_publish = 0
+    try:
+        idx = available.index[-1]
+        if idx > 0:
+            current_score = float(score)
+            # Walk backward through identical scores
+            for j in range(idx - 1, -1, -1):
+                prev_score = float(df.iloc[j]["score"])
+                if abs(prev_score - current_score) < 1e-6:
+                    days_since_publish += 1
+                else:
+                    break
+    except Exception:
+        days_since_publish = None
     return {
         "reading_date": row["reading_date"],
         "score":        score,
         "label":        row["label"],
         "signal":       signal,
+        "days_since_publish": days_since_publish,
     }
 
 

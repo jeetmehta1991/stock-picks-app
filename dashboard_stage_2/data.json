@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-11T18:05:15.085825+00:00",
+  "generated_at": "2026-05-11T18:30:15.028991+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -11249,13 +11249,13 @@
       "pass_intro": "Pass 48",
       "pass_resolved": "-",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
         "tested": false,
         "pushed": true,
         "n_doc_refs": 12,
         "pyramid": {
-          "unit": "N/A",
+          "unit": false,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -11284,18 +11284,18 @@
     {
       "id": "DECISION-319",
       "title": "AAII auto-refresh missing \u2014 committed CSV will go stale, no refresh script in /scripts. Pass 52 owner-approved. New script `scripts/refresh_aaii_sentiment.py` s",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X53 \u2014 High-Impact Engine Bugs",
       "pass_intro": "Pass 48",
       "pass_resolved": "-",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
-        "tested": false,
+        "tested": true,
         "pushed": true,
-        "n_doc_refs": 6,
+        "n_doc_refs": 8,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -11315,27 +11315,27 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-320",
       "title": "CNN F&G CSV interpolated between key readings \u2014 fabricated values used as PIT signal. Pass 52 owner-approved. Replace interpolation with last-published-only + (",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X53 \u2014 High-Impact Engine Bugs",
       "pass_intro": "Pass 48",
       "pass_resolved": "-",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
         "pushed": true,
-        "n_doc_refs": 6,
+        "n_doc_refs": 8,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -11355,10 +11355,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -11404,18 +11404,18 @@
     {
       "id": "DECISION-323",
       "title": "Sector reclassifications retro-applied \u2014 Meta moved from Comms to Tech; 2020 backtests use current sector. Pass 52 owner-approved phased. Phase 1 (free): static",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X53 \u2014 High-Impact Engine Bugs",
       "pass_intro": "Pass 48",
       "pass_resolved": "-",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
         "pushed": true,
-        "n_doc_refs": 8,
+        "n_doc_refs": 10,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -11435,10 +11435,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -13804,18 +13804,18 @@
     {
       "id": "DECISION-390",
       "title": "DEC-319 implementation \u2014 `scripts/refresh_aaii_sentiment.py` (HTML scrape aaii.com/sentimentsurvey/sent_results) + `.github/workflows/refresh_aaii.yml` schedule",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X53 \u2014 High-Impact Engine Bugs",
       "pass_intro": "Pass 52",
       "pass_resolved": "-",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
-        "tested": false,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 5,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -13835,27 +13835,27 @@
       "dependencies": "DEC-319",
       "description": "- New script `scripts/refresh_aaii_sentiment.py` \u2014 source: `aaii.com/sentimentsurvey/sent_results` - New workflow `.github/workflows/refresh_aaii.yml` \u2014 schedule Friday 14:00 UTC (cron `0 14 * * 5`, 9-10am ET, after Thursday publication) - Auto-PR weekly delta with new `pub_date`",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-391",
       "title": "DEC-320 implementation \u2014 Replace CNN F&G interpolation with last-published. Expose `(value, last_published_date, age_days)` tuple. Strategies filter `age_days \u2264",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X53 \u2014 High-Impact Engine Bugs",
       "pass_intro": "Pass 52",
       "pass_resolved": "-",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 5,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -13875,10 +13875,10 @@
       "dependencies": "DEC-320",
       "description": "- In `sentiment.py` F&G consumption: expose underlying as `last_published_value`, `last_published_date`, `age_days` tuple - Strategies that need F&G filter `age_days \u2264 3` to avoid stale reads - New script `scripts/refresh_cnn_fear_greed.py` \u2014 source: `production.dataviz.cnn.io/in",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -13964,18 +13964,18 @@
     {
       "id": "DECISION-394",
       "title": "DEC-323 Phase 1 \u2014 Static `sector_history.csv` with major known reclassifications. Schema: ticker, effective_date, old_sector, new_sector, reason. Coverage: 2018",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X53 \u2014 High-Impact Engine Bugs",
       "pass_intro": "Pass 52",
       "pass_resolved": "-",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 5,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -13995,10 +13995,10 @@
       "dependencies": "DEC-323",
       "description": "- New `backtest/data/sector_history.csv` - Schema: `ticker, effective_date, old_sector, new_sector, reason` - Coverage: - **Sep 2018 GICS Communication Services creation** \u2014 FB, GOOG (Class A+C), NFLX, DIS, T, VZ, CMCSA, EA, ATVI, TWTR moved from Tech/Discretionary/Telecom \u2192 Comm",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -17893,7 +17893,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 48,
+        "n_doc_refs": 49,
         "pyramid": {
           "unit": "N/A",
           "smoke": true,
@@ -26598,10 +26598,16 @@
   ],
   "recent_commits": [
     {
+      "sha": "60f58d4f",
+      "subject": "Pass 53 v8h+1: Phase 3 Batch 45 - Path C market-wide CB NYSE Rule 80B (DEC-314)",
+      "author": "jeetmehta1991",
+      "rel_time": "25 minutes ago"
+    },
+    {
       "sha": "595bfe3f",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 44 - Path C cache front-extension + 20-day threshold (DEC-307/308/381/382)",
       "author": "jeetmehta1991",
-      "rel_time": "88 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "67a40670",
@@ -26613,7 +26619,7 @@
       "sha": "5d0fc0db",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 42 - Path C VIX MA smoothing + hysteresis (DEC-317/388)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "3f45e521",
@@ -26637,7 +26643,7 @@
       "sha": "8c8b0aca",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 38 - Path C statistical methodology implementation (Sortino + Deflated Sharpe + Cost Sensitivity)",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "c32b58ba",
@@ -26655,13 +26661,13 @@
       "sha": "c3e4f4dd",
       "subject": "Pass 53 v8h+1: Phase 3 Batches 34+35 - Path B Steps 9-15 auto-proceed (13 flips)",
       "author": "jeetmehta1991",
-      "rel_time": "13 hours ago"
+      "rel_time": "14 hours ago"
     },
     {
       "sha": "34f32f71",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 33 - X51 CRITICAL Runtime Bugs audit (Path B Step 8) - 100% yield",
       "author": "jeetmehta1991",
-      "rel_time": "13 hours ago"
+      "rel_time": "14 hours ago"
     },
     {
       "sha": "e2449d23",
@@ -26679,19 +26685,19 @@
       "sha": "4a129d79",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 30 - X53 Engine Bugs per-decision audit (Path B Step 4)",
       "author": "jeetmehta1991",
-      "rel_time": "14 hours ago"
+      "rel_time": "15 hours ago"
     },
     {
       "sha": "9e933201",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 29 - 54 SPEC_ONLY bulk-flipped RESOLVED-IMPLEMENTED-AS-DECIDED",
       "author": "jeetmehta1991",
-      "rel_time": "14 hours ago"
+      "rel_time": "15 hours ago"
     },
     {
       "sha": "a3894856",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 28 - SPEC_ONLY initiative kickoff (Path B Steps 1+2)",
       "author": "jeetmehta1991",
-      "rel_time": "14 hours ago"
+      "rel_time": "15 hours ago"
     },
     {
       "sha": "4910c590",
@@ -26709,13 +26715,13 @@
       "sha": "99f04c48",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 25 - Path 2 implementation (owner-approved)",
       "author": "jeetmehta1991",
-      "rel_time": "15 hours ago"
+      "rel_time": "16 hours ago"
     },
     {
       "sha": "8354df3d",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 24 - id_status substring-match bug FIXED (CRITICAL)",
       "author": "jeetmehta1991",
-      "rel_time": "15 hours ago"
+      "rel_time": "16 hours ago"
     },
     {
       "sha": "b845fd62",
@@ -26745,13 +26751,13 @@
       "sha": "2b56e6e9",
       "subject": "Pass 53 v8h+1: BUG-95 LIVE_TRADING_RULES enforcement via can_open gate (Sub-batch 4/5)",
       "author": "jeetmehta1991",
-      "rel_time": "16 hours ago"
+      "rel_time": "17 hours ago"
     },
     {
       "sha": "2fe9c3d4",
       "subject": "Pass 53 v8h+1: BUG-95 Portfolio metrics from equity_curve (Sub-batch 3/5)",
       "author": "jeetmehta1991",
-      "rel_time": "16 hours ago"
+      "rel_time": "17 hours ago"
     },
     {
       "sha": "ead36b0b",
@@ -26769,20 +26775,14 @@
       "sha": "b04abeb7",
       "subject": "Pass 53 auto-drift-sweep 2026-05-11 00:53: dashboard re-derive (no content drift)",
       "author": "jeetmehta1991",
-      "rel_time": "17 hours ago"
-    },
-    {
-      "sha": "5e68ae6c",
-      "subject": "Pass 53 v8h+1: BUG-77 MEDIUM candidate ranking inflated by avoid entries FIXED (owner-approved Option A)",
-      "author": "jeetmehta1991",
       "rel_time": "18 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 3,
-    "modified": 3,
+    "count": 6,
+    "modified": 4,
     "added": 0,
-    "untracked": 0,
+    "untracked": 2,
     "deleted": 0,
     "files": [
       {
@@ -26791,11 +26791,23 @@
       },
       {
         "status": "M",
-        "path": "backtest/engine/backtest.py"
+        "path": "backtest/data/sentiment.py"
       },
       {
         "status": "M",
-        "path": "backtest/tests/test_integration.py"
+        "path": "backtest/data/universe.py"
+      },
+      {
+        "status": "M",
+        "path": "backtest/tests/test_unit.py"
+      },
+      {
+        "status": "??",
+        "path": "\"Backtesting universe/sector_history.csv\""
+      },
+      {
+        "status": "??",
+        "path": "scripts/refresh_aaii_sentiment.py"
       }
     ]
   },
@@ -26977,7 +26989,7 @@
     }
   ],
   "test_inventory": {
-    "total": 842,
+    "total": 847,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -27053,7 +27065,7 @@
       "test_stocktwits_smoke": 4,
       "test_supplementary_demo": 4,
       "test_supplementary_smoke": 6,
-      "test_unit": 177,
+      "test_unit": 182,
       "test_walk_forward_4fold": 6
     }
   },
@@ -27659,10 +27671,10 @@
     }
   ],
   "decision_status_counts": {
-    "RESOLVED-DECIDED": 156,
-    "RESOLVED-IMPLEMENTED": 183,
+    "RESOLVED-DECIDED": 151,
+    "RESOLVED-IMPLEMENTED": 189,
     "PARTIAL": 5,
-    "PARTIAL-SPEC-ONLY": 44,
+    "PARTIAL-SPEC-ONLY": 43,
     "DEFERRED_TO_STAGE_3": 36,
     "DEFERRED_TO_STAGE_4": 21,
     "DEFERRED": 2,

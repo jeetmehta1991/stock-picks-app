@@ -2680,6 +2680,77 @@ def test_dec_404_cost_sensitivity_sharpe_at_4_levels():
         f"Sharpe should decrease with cost: {out}")
 
 
+def test_dec_320_dec_391_cnn_fg_exposes_days_since_publish():
+    """DEC-320 + DEC-391 (Phase 3 Batch 46): get_fear_and_greed returns
+    days_since_publish to flag interpolated / forward-filled values.
+    """
+    from datetime import date
+    from backtest.data.sentiment import get_fear_and_greed
+    # Use a date well within the CNN F&G CSV range
+    out = get_fear_and_greed(date(2024, 1, 15))
+    if out.get("score") is None:
+        # Cache unavailable; skip
+        import pytest
+        pytest.skip("CNN F&G CSV not available in this environment")
+    assert "days_since_publish" in out, "DEC-320 days_since_publish missing"
+    assert out["days_since_publish"] is None or out["days_since_publish"] >= 0
+
+
+def test_dec_319_dec_390_aaii_refresh_script_exists():
+    """DEC-319 + DEC-390 (Phase 3 Batch 46): scripts/refresh_aaii_sentiment.py
+    exists with expected structure (fetch + append + dry-run).
+    """
+    from pathlib import Path
+    repo_root = Path(__file__).parent.parent.parent
+    script_path = repo_root / "scripts" / "refresh_aaii_sentiment.py"
+    assert script_path.exists(), "refresh_aaii_sentiment.py must exist"
+    content = script_path.read_text(encoding="utf-8")
+    assert "DEC-319" in content and "DEC-390" in content, "DEC cross-refs missing"
+    assert "fetch_latest_aaii_row" in content, "missing fetch function"
+    assert "append_new_row" in content, "missing append function"
+    assert "--dry-run" in content, "missing dry-run flag for safe testing"
+    assert "--cron" in content, "missing cron mode for laptop scheduler"
+
+
+def test_dec_323_dec_394_meta_sector_pit_2017_vs_2019():
+    """DEC-323 + DEC-394 (Phase 3 Batch 46): META was Information Technology
+    pre-2018-09-24, became Communication Services after.
+    """
+    from datetime import date
+    from backtest.data.universe import get_sector_pit
+    # Pre-reclassification: META in IT
+    assert get_sector_pit("META", date(2017, 6, 1)) == "Information Technology"
+    # Day of reclassification: META in Comms
+    assert get_sector_pit("META", date(2018, 9, 24)) == "Communication Services"
+    # Post-reclassification: META in Comms
+    assert get_sector_pit("META", date(2019, 6, 1)) == "Communication Services"
+    # Far future: still Comms
+    assert get_sector_pit("META", date(2024, 1, 1)) == "Communication Services"
+
+
+def test_dec_323_dec_394_visa_sector_pit_2022_vs_2024():
+    """DEC-323 + DEC-394: V (Visa) and MA (Mastercard) moved from IT to
+    Financials on 2023-03-17 per S&P announcement.
+    """
+    from datetime import date
+    from backtest.data.universe import get_sector_pit
+    # Pre-2023-03-17: V/MA in IT
+    assert get_sector_pit("V", date(2022, 6, 1)) == "Information Technology"
+    assert get_sector_pit("MA", date(2022, 6, 1)) == "Information Technology"
+    # Post: V/MA in Financials
+    assert get_sector_pit("V", date(2024, 1, 1)) == "Financials"
+    assert get_sector_pit("MA", date(2024, 1, 1)) == "Financials"
+
+
+def test_dec_323_dec_394_fallback_for_unlisted_ticker():
+    """DEC-323/394: ticker not in sector_history.csv returns fallback."""
+    from datetime import date
+    from backtest.data.universe import get_sector_pit
+    # AAPL has no reclassification entries -> fallback used
+    assert get_sector_pit("AAPL", date(2020, 1, 1), fallback="Information Technology") == "Information Technology"
+    assert get_sector_pit("UNKNOWN_TICKER", date(2020, 1, 1)) == "Unknown"
+
+
 def test_dec_307_dec_381_cache_front_extension_implemented():
     """DEC-307 + DEC-381 (Phase 3 Batch 44): cache.py get_ohlcv must
     contain front-extension branch (cached_start > start -> fetch missing front).

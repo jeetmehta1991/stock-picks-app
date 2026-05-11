@@ -465,6 +465,74 @@ def get_sector_map(tickers: list[str], info_dict: dict[str, dict] = None) -> dic
     return result
 
 
+# DEC-323 + DEC-394 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 46
+# 2026-05-11 (owner-approved Path C). PIT-correct sector lookup using
+# Backtesting universe/sector_history.csv (major GICS reclassifications).
+# Falls back to current-snapshot sector for tickers without historical
+# reclassification entries.
+#
+# Major events covered (see CSV for full list):
+# - 2018-09-24: META/GOOGL/GOOG (IT -> Comms), NFLX/DIS/CMCSA (CD -> Comms),
+#   T/VZ (Telecom -> Comms, renamed Communication Services sector)
+# - 2023-03-17: V/MA (IT -> Financials)
+_SECTOR_HISTORY_CACHE: Optional[pd.DataFrame] = None
+
+
+def _load_sector_history() -> pd.DataFrame:
+    """Load sector_history.csv at module level. Cached after first call."""
+    global _SECTOR_HISTORY_CACHE
+    if _SECTOR_HISTORY_CACHE is not None:
+        return _SECTOR_HISTORY_CACHE
+    csv_path = UNIVERSE_DIR / "sector_history.csv"
+    if not csv_path.exists():
+        _SECTOR_HISTORY_CACHE = pd.DataFrame(columns=["Symbol", "Sector", "added_date", "removed_date"])
+        return _SECTOR_HISTORY_CACHE
+    try:
+        df = pd.read_csv(csv_path, comment='#')
+        # Ensure dates are pandas datetime (NaN for blank)
+        df["added_date"] = pd.to_datetime(df["added_date"], errors="coerce")
+        df["removed_date"] = pd.to_datetime(df["removed_date"], errors="coerce")
+        _SECTOR_HISTORY_CACHE = df
+    except Exception as exc:
+        logger.warning("sector_history.csv read failed: %s", exc)
+        _SECTOR_HISTORY_CACHE = pd.DataFrame(columns=["Symbol", "Sector", "added_date", "removed_date"])
+    return _SECTOR_HISTORY_CACHE
+
+
+def get_sector_pit(ticker: str, as_of: date, fallback: Optional[str] = None) -> str:
+    """PIT-correct sector for `ticker` at `as_of` per DEC-323.
+
+    Lookup priority:
+      1. sector_history.csv entry where added_date <= as_of < (removed_date OR inf)
+      2. Fallback to current-snapshot sector (caller-supplied or get_sector_map)
+      3. "Unknown" if no source available
+
+    Inputs:
+      ticker: stock symbol
+      as_of: date to resolve sector for
+      fallback: optional current-snapshot sector (typically from get_sector_map);
+                used when ticker has no historical entries
+
+    Returns sector string.
+    """
+    df = _load_sector_history()
+    if df.empty:
+        return fallback or "Unknown"
+    rows = df[df["Symbol"] == ticker]
+    if rows.empty:
+        return fallback or "Unknown"
+    as_of_ts = pd.Timestamp(as_of)
+    # PIT filter: added_date <= as_of AND (removed_date IS NULL OR removed_date > as_of)
+    left_ok = rows["added_date"].isna() | (rows["added_date"] <= as_of_ts)
+    right_ok = rows["removed_date"].isna() | (rows["removed_date"] > as_of_ts)
+    active = rows[left_ok & right_ok]
+    if active.empty:
+        return fallback or "Unknown"
+    # Most-recent-active wins (highest added_date among active rows)
+    sorted_active = active.sort_values("added_date", na_position="first")
+    return str(sorted_active.iloc[-1]["Sector"])
+
+
 def get_correlation_matrix(
     ohlcv_dict: dict[str, pd.DataFrame],
     as_of: date,
