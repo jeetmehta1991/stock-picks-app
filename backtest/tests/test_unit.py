@@ -2213,3 +2213,222 @@ def test_bug_110_engine_wires_validate_entry_zone_with_skip_on_invalid():
     assert "from backtest.signals.screener import" in src and \
         "validate_entry_zone" in src, (
         "validate_entry_zone must be imported from screener")
+
+
+# ============================================================================
+# BUG-95 Phase 3 Batch 20: Portfolio class unit tests (Sub-batch 1)
+# ============================================================================
+
+def test_bug_095_portfolio_init_basic():
+    """Portfolio initializes with starting capital fully in cash."""
+    from backtest.engine.portfolio import Portfolio
+    p = Portfolio(starting_capital=100_000.0)
+    assert p.cash == 100_000.0
+    assert p.starting_capital == 100_000.0
+    assert p.num_open == 0
+    assert p.total_equity() == 100_000.0
+    assert p.equity_curve == []
+    assert p.benchmark_curve == []
+    assert p.current_drawdown_pct() == 0.0
+    assert p.exposure_by_sector() == {}
+
+
+def test_bug_095_portfolio_init_rejects_non_positive():
+    """Portfolio rejects zero or negative starting capital."""
+    from backtest.engine.portfolio import Portfolio
+    import pytest
+    with pytest.raises(ValueError):
+        Portfolio(starting_capital=0)
+    with pytest.raises(ValueError):
+        Portfolio(starting_capital=-100)
+
+
+def test_bug_095_add_position_deducts_cash_long():
+    """add_position deducts the dollar allocation from cash."""
+    from datetime import date
+    from backtest.engine.portfolio import Portfolio
+    p = Portfolio(starting_capital=100_000.0)
+    pos = p.add_position("AAPL", "Information Technology", "long",
+                         entry_price=100.0, size_pct=0.03,
+                         entry_date=date(2024, 1, 1))
+    assert p.cash == 97_000.0  # 100k - 3% = 97k
+    assert p.num_open == 1
+    assert pos.shares == 30.0  # 3000 / 100
+    assert pos.entry_price == 100.0
+    assert pos.direction == "long"
+    assert pos.sector == "Information Technology"
+
+
+def test_bug_095_remove_position_credits_with_pnl_long():
+    """remove_position credits cash with original alloc + realised PnL."""
+    from datetime import date
+    from backtest.engine.portfolio import Portfolio
+    p = Portfolio(starting_capital=100_000.0)
+    p.add_position("AAPL", "IT", "long", entry_price=100.0,
+                   size_pct=0.03, entry_date=date(2024, 1, 1))
+    # Sell at 110: 30 shares * (110-100) = 300 PnL
+    realised = p.remove_position("AAPL", exit_price=110.0)
+    assert realised == 300.0
+    # Cash: 97000 + 3000 (notional) + 300 (PnL) = 100,300
+    assert p.cash == 100_300.0
+    assert p.num_open == 0
+
+
+def test_bug_095_remove_position_credits_with_pnl_short():
+    """remove_position handles short PnL sign correctly."""
+    from datetime import date
+    from backtest.engine.portfolio import Portfolio
+    p = Portfolio(starting_capital=100_000.0)
+    p.add_position("TSLA", "Auto", "short", entry_price=100.0,
+                   size_pct=0.03, entry_date=date(2024, 1, 1))
+    # Cover at 90 (short profits as price drops): 30 * (100-90) = 300 PnL
+    realised = p.remove_position("TSLA", exit_price=90.0)
+    assert realised == 300.0
+    # Cash returned with profit
+    assert p.cash == 100_300.0
+
+
+def test_bug_095_mark_to_market_appends_equity_curve():
+    """mark_to_market appends a (date, equity) point and updates peak."""
+    from datetime import date
+    from backtest.engine.portfolio import Portfolio
+    p = Portfolio(starting_capital=100_000.0)
+    p.add_position("AAPL", "IT", "long", entry_price=100.0,
+                   size_pct=0.03, entry_date=date(2024, 1, 1))
+    # Mark to 110 on day 2
+    eq = p.mark_to_market({"AAPL": 110.0}, date(2024, 1, 2))
+    # cash 97k + 30 shares * 110 = 100,300
+    assert eq == 100_300.0
+    assert len(p.equity_curve) == 1
+    assert p.equity_curve[0] == (date(2024, 1, 2), 100_300.0)
+
+
+def test_bug_095_current_drawdown_pct_basic():
+    """current_drawdown_pct = (peak - current) / peak * 100."""
+    from datetime import date, timedelta
+    from backtest.engine.portfolio import Portfolio
+    p = Portfolio(starting_capital=100_000.0)
+    p.add_position("AAPL", "IT", "long", entry_price=100.0,
+                   size_pct=0.03, entry_date=date(2024, 1, 1))
+    # Day 2: price 120, equity = 97k + 30*120 = 100,600 (peak)
+    p.mark_to_market({"AAPL": 120.0}, date(2024, 1, 2))
+    # Day 3: price 80, equity = 97k + 30*80 = 99,400
+    p.mark_to_market({"AAPL": 80.0}, date(2024, 1, 3))
+    dd = p.current_drawdown_pct()
+    # (100600 - 99400) / 100600 * 100 ~= 1.193
+    assert 1.0 < dd < 1.5, f"expected ~1.19% drawdown, got {dd}"
+
+
+def test_bug_095_can_open_blocks_max_positions():
+    """can_open returns False when max_positions reached."""
+    from datetime import date
+    from backtest.engine.portfolio import Portfolio
+    p = Portfolio(starting_capital=1_000_000.0)
+    # Open 10 positions
+    for i in range(10):
+        p.add_position(f"TKR{i}", "IT", "long", entry_price=100.0,
+                       size_pct=0.03, entry_date=date(2024, 1, 1))
+    ok, reason = p.can_open("TKR99", size_pct=0.03, max_positions=10)
+    assert ok is False
+    assert "max_open_positions_10" in reason
+
+
+def test_bug_095_can_open_blocks_ticker_already_open():
+    """can_open returns False when ticker already in portfolio (BUG-61
+    portfolio-level companion).
+    """
+    from datetime import date
+    from backtest.engine.portfolio import Portfolio
+    p = Portfolio(starting_capital=100_000.0)
+    p.add_position("AAPL", "IT", "long", entry_price=100.0,
+                   size_pct=0.03, entry_date=date(2024, 1, 1))
+    ok, reason = p.can_open("AAPL", size_pct=0.03, max_positions=10)
+    assert ok is False
+    assert "ticker_already_in_portfolio" in reason
+
+
+def test_bug_095_can_open_blocks_insufficient_cash():
+    """can_open returns False when required dollar > cash."""
+    from datetime import date
+    from backtest.engine.portfolio import Portfolio
+    p = Portfolio(starting_capital=10_000.0)
+    # Open one 50% position
+    p.add_position("AAPL", "IT", "long", entry_price=100.0,
+                   size_pct=0.50, entry_date=date(2024, 1, 1))
+    # Try to open another 60% - require 6000 but cash is 5000
+    ok, reason = p.can_open("MSFT", size_pct=0.60, max_positions=10)
+    assert ok is False
+    assert "insufficient_cash" in reason
+
+
+def test_bug_095_can_open_blocks_drawdown_suspend_breach():
+    """can_open blocks new entries when drawdown >= drawdown_suspend_pct."""
+    from datetime import date
+    from backtest.engine.portfolio import Portfolio
+    p = Portfolio(starting_capital=100_000.0)
+    p.add_position("AAPL", "IT", "long", entry_price=100.0,
+                   size_pct=0.50, entry_date=date(2024, 1, 1))
+    # Day 1 mark at entry - establishes peak
+    p.mark_to_market({"AAPL": 100.0}, date(2024, 1, 1))
+    # Day 2 huge crash - 50% position drops 70% -> equity drops 35%
+    p.mark_to_market({"AAPL": 30.0}, date(2024, 1, 2))
+    dd = p.current_drawdown_pct()
+    assert dd >= 30.0, f"expected drawdown >= 30%, got {dd}"
+    ok, reason = p.can_open("MSFT", size_pct=0.03, max_positions=10,
+                            drawdown_suspend_pct=30.0)
+    assert ok is False
+    assert "drawdown_suspend_breach" in reason
+
+
+def test_bug_095_exposure_by_sector_basic():
+    """exposure_by_sector returns dict {sector: pct_of_total_equity}."""
+    from datetime import date
+    from backtest.engine.portfolio import Portfolio
+    p = Portfolio(starting_capital=100_000.0)
+    p.add_position("AAPL", "IT", "long", entry_price=100.0,
+                   size_pct=0.10, entry_date=date(2024, 1, 1))
+    p.add_position("MSFT", "IT", "long", entry_price=200.0,
+                   size_pct=0.10, entry_date=date(2024, 1, 1))
+    p.add_position("XOM", "Energy", "long", entry_price=50.0,
+                   size_pct=0.05, entry_date=date(2024, 1, 1))
+    exposure = p.exposure_by_sector()
+    # 2 IT positions worth 10% + 10% = 20%; Energy 5%
+    assert "IT" in exposure and "Energy" in exposure
+    # Total exposed = 25%; cash 75%; total_equity ~= 100k (initial)
+    assert 0.18 < exposure["IT"] < 0.22, (
+        f"IT should be ~20% of equity, got {exposure['IT']:.3f}")
+    assert 0.04 < exposure["Energy"] < 0.06, (
+        f"Energy should be ~5% of equity, got {exposure['Energy']:.3f}")
+
+
+def test_bug_095_add_benchmark_point():
+    """add_benchmark_point appends to benchmark_curve; rejects non-positive."""
+    from datetime import date
+    from backtest.engine.portfolio import Portfolio
+    p = Portfolio(starting_capital=100_000.0)
+    p.add_benchmark_point(date(2024, 1, 1), 470.0)
+    p.add_benchmark_point(date(2024, 1, 2), 472.5)
+    p.add_benchmark_point(date(2024, 1, 3), 0.0)  # should not append
+    p.add_benchmark_point(date(2024, 1, 4), -10.0)  # should not append
+    assert len(p.benchmark_curve) == 2
+    assert p.benchmark_curve[0] == (date(2024, 1, 1), 470.0)
+
+
+def test_bug_095_mark_to_market_carries_forward_missing_prices():
+    """If a ticker price is missing from prices dict, position retains last
+    known mark (Position.last_mark) rather than crashing or zeroing out.
+    """
+    from datetime import date
+    from backtest.engine.portfolio import Portfolio
+    p = Portfolio(starting_capital=100_000.0)
+    p.add_position("AAPL", "IT", "long", entry_price=100.0,
+                   size_pct=0.03, entry_date=date(2024, 1, 1))
+    # Day 1 mark at 110
+    p.mark_to_market({"AAPL": 110.0}, date(2024, 1, 1))
+    aapl = p.positions["AAPL"]
+    assert aapl.last_mark == 110.0
+    # Day 2 mark with missing AAPL - last_mark preserved
+    p.mark_to_market({}, date(2024, 1, 2))
+    assert aapl.last_mark == 110.0
+    # Equity unchanged from day 1: 97k + 30*110 = 100,300
+    assert p.equity_curve[-1][1] == 100_300.0
