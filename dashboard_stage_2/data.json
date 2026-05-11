@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-11T18:36:12.523861+00:00",
+  "generated_at": "2026-05-11T18:40:27.587555+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -4124,7 +4124,7 @@
     {
       "id": "DECISION-127",
       "title": "Define recovery rules from each circuit breaker level (cooldown, hysteresis) Pass 52 turn 119 RESOLVED-DECIDED Final: Define recovery rules from each circuit br",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X13 \u2014 Circuit breakers extension",
       "pass_intro": "Pass 40",
       "pass_resolved": "-",
@@ -4155,10 +4155,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -5572,7 +5572,7 @@
         "coded": false,
         "wired": false,
         "tested": false,
-        "pushed": false,
+        "pushed": true,
         "n_doc_refs": 1,
         "pyramid": {
           "unit": "N/A",
@@ -8452,7 +8452,7 @@
         "coded": false,
         "wired": false,
         "tested": false,
-        "pushed": false,
+        "pushed": true,
         "n_doc_refs": 0,
         "pyramid": {
           "unit": "N/A",
@@ -9164,7 +9164,7 @@
     {
       "id": "DECISION-262",
       "title": "10-candidate-cap rationale \u2014 keep, raise, or make conditional Pass 52 turn 91 owner-approved RESOLVED-DECIDED with conditional cap 10/15/20: Daily candidate cap",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X42 \u2014 Phase 1B-\u03b1 Stress",
       "pass_intro": "Pass 47",
       "pass_resolved": "-",
@@ -9195,10 +9195,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -11213,7 +11213,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 12,
+        "n_doc_refs": 13,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -26598,16 +26598,22 @@
   ],
   "recent_commits": [
     {
+      "sha": "79f7e781",
+      "subject": "Pass 53 v8h+1: Phase 3 Batch 47 - Path C audit/process bulk-flip (16 RESOLVED-IMPLEMENTED-AS-DECIDED)",
+      "author": "jeetmehta1991",
+      "rel_time": "4 minutes ago"
+    },
+    {
       "sha": "bf3fd167",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 46 - Path C remaining X53 (DEC-319/320/323/390/391/394)",
       "author": "jeetmehta1991",
-      "rel_time": "5 minutes ago"
+      "rel_time": "9 minutes ago"
     },
     {
       "sha": "60f58d4f",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 45 - Path C market-wide CB NYSE Rule 80B (DEC-314)",
       "author": "jeetmehta1991",
-      "rel_time": "31 minutes ago"
+      "rel_time": "35 minutes ago"
     },
     {
       "sha": "595bfe3f",
@@ -26715,7 +26721,7 @@
       "sha": "23275737",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 26 - Decisions ALL non-DEFERRED CLEAN (0 no-cells)",
       "author": "jeetmehta1991",
-      "rel_time": "15 hours ago"
+      "rel_time": "16 hours ago"
     },
     {
       "sha": "99f04c48",
@@ -26768,12 +26774,6 @@
     {
       "sha": "ead36b0b",
       "subject": "Pass 53 v8h+1: BUG-95 Portfolio engine integration (Sub-batch 2/5 - shadow state)",
-      "author": "jeetmehta1991",
-      "rel_time": "17 hours ago"
-    },
-    {
-      "sha": "93e4036a",
-      "subject": "Pass 53 v8h+1: BUG-95 CRITICAL Portfolio class skeleton (Sub-batch 1/5 - owner-approved Option A)",
       "author": "jeetmehta1991",
       "rel_time": "17 hours ago"
     }
@@ -27651,8 +27651,8 @@
     }
   ],
   "decision_status_counts": {
-    "RESOLVED-DECIDED": 140,
-    "RESOLVED-IMPLEMENTED": 205,
+    "RESOLVED-DECIDED": 138,
+    "RESOLVED-IMPLEMENTED": 207,
     "PARTIAL": 5,
     "PARTIAL-SPEC-ONLY": 38,
     "DEFERRED_TO_STAGE_3": 36,
