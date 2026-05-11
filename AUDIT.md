@@ -33720,6 +33720,58 @@ Documents updated:
   - AUDIT.md (this entry)
   - dashboard_stage_2 (rebuilt; 0 decisions with no-cells)
 
+---
+
+## Pass 53 Day 9 v8h+1 follow-on 2026-05-10 (cont): Phase 3 Batch 27 - 12 DEC status flips (all 4 owner-approved items)
+
+**Owner directive 2026-05-10:** "1 yes 2 yes 3 yes 4 yes" - approved all 4 surfaced items.
+
+**Item 1 (UNBLOCKED) - DEC-076 + DEC-091:** BUG-095 RESOLVED-IMPLEMENTED in Batch 20 (Portfolio class with exposure_by_sector + current_drawdown_pct + can_open drawdown_suspend_pct gate). Status flipped BLOCKED_ON_BUG-095 -> RESOLVED-DECIDED for both. Implementation deliverable for each remains (DEC-076 sector-breach exit; DEC-091 tiered 10/20% re-sizing — only 30% suspend gate currently active).
+
+**Item 2 (SUPERSEDED) - 5 decisions:**
+- **DEC-068** -> SUPERSEDED-BY-DEC-422-AND-DEC-423 (Bootstrap CI; per-cell expansion lives in DEC-423)
+- **DEC-080** -> SUPERSEDED-BY-DEC-400-AND-DEC-401 (t-stat + Bonferroni; substantive scope migrated)
+- **DEC-104** -> SUPERSEDED-BY-DEC-364-DEC-375-DEC-376-DEC-377-DEC-496 (Tier 3 momentum; DEC-496 J-T 12-1 canonical successor)
+- **DEC-109** -> SUPERSEDED-BY-DEC-482-AND-DEC-505 (rolling 5y/1y; replaced by expanding-window + 4-fold)
+- **DEC-482** -> SUPERSEDED-BY-DEC-505 (walk-forward methodology; DEC-505 canonical)
+
+All 5 dropped from dashboard view (hidden +5, 33 -> 38 hidden). Decisions count visible 501 -> 496.
+
+**Item 3 (CLASSIFY UNKNOWN):**
+- **DEC-422** PENDING -> PARTIAL-SPEC-ONLY. Meta-decision (Phase 1B-α dimensional cube framework) with sub-decisions DEC-425-431; ~20-28 days implementation remains. Status reflects "spec complete, implementation pending" honestly.
+- **DEC-494** already has correct status RESOLVED-DECIDED in AUDIT_INDEX text + unit:N/A override from Batch 26; dashboard reads correctly post-rebuild.
+
+**Item 4 (FLIP TO IMPLEMENTED) - 3 Sprint 2 engine decisions:**
+- **DEC-491** RESOLVED-IMPLEMENTED: trade_log.parquet writer in backtest/results/writer.py (hybrid Parquet primary + CSV legacy); contract layer coverage via test_dec491_492_493_sprint2.py.
+- **DEC-492** RESOLVED-IMPLEMENTED: signals_at_entry filter removed from backtest.py with DEC-492 cross-ref; all signal types preserved via Parquet serialization.
+- **DEC-493** RESOLVED-IMPLEMENTED: trade_id field added to OpenTrade + ClosedTrade dataclasses (exit_manager.py) with make_trade_id helper using human-readable format (a); engine assigns trade_id at entry (backtest.py:567-569).
+
+**Final dashboard state (non-DEFERRED decisions):**
+
+| Tier | Pre-Batch-27 | Post-Batch-27 |
+|---|---|---|
+| IMPLEMENTED | 47 | **50** (+3) |
+| READY | 0 | 0 |
+| CODE_ONLY | 36 | 33 |
+| SPEC_ONLY | 321 | 321 |
+| OPEN | 14 | 11 (-3 promoted) |
+| BLOCKED | 9 | 7 (-2 unblocked) |
+| UNKNOWN | 10 | 10 |
+| Hidden | 33 | 38 (+5 SUPERSEDED) |
+| Visible total | 501 | 496 |
+| **Non-DEFERRED no-cells** | **0** | **0** (preserved) |
+
+**Per-addressal pyramid (CHECKLIST #78):** unit 144/144 + integration 13/13 = 157/157 PASS in 2.89s.
+
+**Same-commit (DEC-594):** 12 AUDIT_INDEX status flips + AUDIT.md narrative + dashboard rebuilt in this commit.
+
+**Phase 1A May 15 IMPACT:** None (status flips reflect existing implementation state more accurately; engine unchanged).
+
+Documents updated:
+  - AUDIT_INDEX.md (12 status flips: 2 unblocked + 5 superseded + 1 classified + 3 promoted + minor cross-refs)
+  - AUDIT.md (this entry)
+  - dashboard_stage_2 (rebuilt; 496 visible decisions; 0 non-DEFERRED no-cells preserved)
+
 **Remaining OPEN backlog after sweeps:**
   - 1 DEC RESOLVED-DECIDED-deferred (DEC-028 Stage 3 paper trading - intentional)
   - INVs: 33 OPEN + 2 DEFERRED (genuine work; not promotion-eligible)
