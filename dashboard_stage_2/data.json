@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-11T04:01:42.691201+00:00",
+  "generated_at": "2026-05-11T04:10:33.807975+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -2573,7 +2573,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 20,
+        "n_doc_refs": 22,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -2613,7 +2613,7 @@
         "wired": true,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 10,
+        "n_doc_refs": 11,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -2653,7 +2653,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 7,
+        "n_doc_refs": 9,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -2693,7 +2693,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 8,
+        "n_doc_refs": 9,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -2733,7 +2733,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 8,
+        "n_doc_refs": 9,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -3282,46 +3282,6 @@
       }
     },
     {
-      "id": "DECISION-099",
-      "title": "11 missing strategy categories (Pairs, Calendar, Cross-Asset, Index Rebalance, etc.) \u2014 Pass 52 turn 33 RESOLVED via supersession. Pass 52 split into 5 sub-decis",
-      "status": "RESOLVED-DECIDED",
-      "theme": "Batch X1 \u2014 Data + Universe",
-      "pass_intro": "Pass 39",
-      "pass_resolved": "DEC-367,DEC-368,DEC-369,DEC-370,DEC-371",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 29,
-        "pyramid": {
-          "unit": "N/A",
-          "smoke": "N/A",
-          "integration": "N/A",
-          "system": "N/A",
-          "functional": "N/A",
-          "regression": "N/A",
-          "data_integrity": "N/A",
-          "performance": "N/A",
-          "acceptance": "N/A",
-          "property": "N/A",
-          "snapshot": "N/A",
-          "contract": "N/A",
-          "compatibility": "N/A"
-        }
-      },
-      "short_id": "DEC-099",
-      "sprint": "Sprint 8 additions (Strategy C",
-      "dependencies": "-",
-      "description": "",
-      "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
-      }
-    },
-    {
       "id": "DECISION-100",
       "title": "17+ categorical breakdown variables Pass 52 turn 119 RESOLVED-DECIDED Final: 17+ categorical breakdown variables \u2014 joint DEC-422 cube 17+ dimensions; DEC-100 sp",
       "status": "RESOLVED-DECIDED",
@@ -3394,86 +3354,6 @@
       "sprint": "-",
       "dependencies": "DEC-369",
       "description": "",
-      "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
-      }
-    },
-    {
-      "id": "DECISION-103",
-      "title": "Auto-populate Tier 2 universe (spinoffs, IPOs, $5B+) \u2014 Pass 52 turn 33 RESOLVED via supersession. Pass 52 phased implementation: DEC-372 (Phase A \u2014 GH Actions m",
-      "status": "PARTIAL-SPEC-ONLY",
-      "theme": "Batch X1 \u2014 Data + Universe",
-      "pass_intro": "Pass 39",
-      "pass_resolved": "DEC-372,DEC-373,DEC-374",
-      "status_grep": {
-        "coded": true,
-        "wired": true,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 55,
-        "pyramid": {
-          "unit": "N/A",
-          "smoke": "N/A",
-          "integration": "N/A",
-          "system": "N/A",
-          "functional": "N/A",
-          "regression": "N/A",
-          "data_integrity": "N/A",
-          "performance": "N/A",
-          "acceptance": "N/A",
-          "property": "N/A",
-          "snapshot": "N/A",
-          "contract": "N/A",
-          "compatibility": "N/A"
-        }
-      },
-      "short_id": "DEC-103",
-      "sprint": "Sprint 0A \u2014 Phase 0.A Multi-AP; Sprint 5 additions (Universe M",
-      "dependencies": "DEC-372",
-      "description": "**DEC-372 \u2014 Phase A: Monthly GitHub Actions automation** - Workflow: `.github/workflows/refresh_extended_universe.yml` - Schedule: 1st of each month (cron `0 6 1 * *`) - Action: `python scripts/refresh_extended_universe.py --write`, then auto-PR with diff",
-      "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
-      }
-    },
-    {
-      "id": "DECISION-105",
-      "title": "Spinoff detector \u2014 Pass 52 turn 33 RESOLVED via supersession. Pass 52 phased implementation: DEC-378 (Phase 1 \u2014 NASDAQ symbol-directory weekly diff, free), DEC-",
-      "status": "RESOLVED-DECIDED",
-      "theme": "Batch X1 \u2014 Data + Universe",
-      "pass_intro": "Pass 39",
-      "pass_resolved": "DEC-378,DEC-379,DEC-380",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 9,
-        "pyramid": {
-          "unit": "N/A",
-          "smoke": "N/A",
-          "integration": "N/A",
-          "system": "N/A",
-          "functional": "N/A",
-          "regression": "N/A",
-          "data_integrity": "N/A",
-          "performance": "N/A",
-          "acceptance": "N/A",
-          "property": "N/A",
-          "snapshot": "N/A",
-          "contract": "N/A",
-          "compatibility": "N/A"
-        }
-      },
-      "short_id": "DEC-105",
-      "sprint": "Sprint 5 additions (Universe M",
-      "dependencies": "DEC-378",
-      "description": "**DEC-378 \u2014 Phase 1: NASDAQ symbol-directory weekly diff (free)** - Source: `ftp.nasdaqtrader.com/SymbolDirectory/nasdaqtraded.txt` - Schedule: weekly (cron `0 6 * * 1` Mondays) - Logic: diff against last week's snapshot, flag new tickers, validate market cap >$5B via yfinance",
       "promotion_path": {
         "tier": "SPEC_ONLY",
         "label": "SPEC-ONLY",
@@ -3613,7 +3493,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 39,
+        "n_doc_refs": 41,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -3653,7 +3533,7 @@
         "wired": true,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 9,
+        "n_doc_refs": 10,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -12973,7 +12853,7 @@
         "wired": true,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 16,
+        "n_doc_refs": 17,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -13044,7 +12924,7 @@
     {
       "id": "DECISION-366",
       "title": "Liquidity floor for universe inclusion (tier-specific) \u2014 Pass 52 turn 35 owner-approved with TIER-SPECIFIC FRAMEWORK per owner directive: \"Different liquidity f",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X1 \u2014 Data + Universe",
       "pass_intro": "Pass 52",
       "pass_resolved": "DEC-321,DEC-365,DEC-392,DEC-457",
@@ -13053,7 +12933,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 24,
+        "n_doc_refs": 26,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -13075,10 +12955,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -13093,7 +12973,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 18,
+        "n_doc_refs": 21,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -13133,7 +13013,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 32,
+        "n_doc_refs": 35,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -13173,7 +13053,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 17,
+        "n_doc_refs": 20,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -13213,7 +13093,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 34,
+        "n_doc_refs": 37,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -13244,7 +13124,7 @@
     {
       "id": "DECISION-371",
       "title": "DEC-099-E \u2014 Within-category gaps catalog \u2014 Pass 52 turn 33 owner-approved PENDING. Catalog of gaps within existing strategy categories already in roster: Russel",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X1 \u2014 Data + Universe",
       "pass_intro": "Pass 52",
       "pass_resolved": "-",
@@ -13253,7 +13133,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 11,
+        "n_doc_refs": 14,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -13275,10 +13155,10 @@
       "dependencies": "DEC-099",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -13324,7 +13204,7 @@
     {
       "id": "DECISION-373",
       "title": "DEC-103 Phase B \u2014 Update script with `--validate` mode that flags missing-data tickers (yfinance returning empty info) for manual review rather than silent drop",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X1 \u2014 Data + Universe",
       "pass_intro": "Pass 52",
       "pass_resolved": "-",
@@ -13355,16 +13235,16 @@
       "dependencies": "DEC-103",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-374",
       "title": "DEC-103 Phase C \u2014 Tier 2 historical-membership backfill for 2010-2024 spinoffs/IPOs. Manual research per spinoff event (Edgar 10-12B filings, news archives) sin",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X1 \u2014 Data + Universe",
       "pass_intro": "Pass 52",
       "pass_resolved": "-",
@@ -13395,16 +13275,16 @@
       "dependencies": "DEC-103",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-375",
       "title": "DEC-104 Phase A \u2014 Code changes per DEC-364: MAX_TICKERS 50\u2192100 in `build_momentum_watchlist.py`; update `build_phase1b_universe()` to include Tier 3 alongside T",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X1 \u2014 Data + Universe",
       "pass_intro": "Pass 52",
       "pass_resolved": "-",
@@ -13435,10 +13315,10 @@
       "dependencies": "DEC-104; DEC-364",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -13533,7 +13413,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 20,
+        "n_doc_refs": 23,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -13573,7 +13453,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 7,
+        "n_doc_refs": 10,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -13613,7 +13493,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 21,
+        "n_doc_refs": 24,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -14453,7 +14333,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 5,
+        "n_doc_refs": 6,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -14493,7 +14373,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 2,
+        "n_doc_refs": 3,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -14533,7 +14413,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 2,
+        "n_doc_refs": 3,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -14573,7 +14453,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 17,
+        "n_doc_refs": 18,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -14613,7 +14493,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 6,
+        "n_doc_refs": 7,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -14693,7 +14573,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 4,
+        "n_doc_refs": 5,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -14733,7 +14613,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 10,
+        "n_doc_refs": 11,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -14853,7 +14733,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 10,
+        "n_doc_refs": 11,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -14893,7 +14773,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 6,
+        "n_doc_refs": 7,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -14973,7 +14853,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 3,
+        "n_doc_refs": 4,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -16524,7 +16404,7 @@
     {
       "id": "DECISION-457",
       "title": "DEC-366 implementation \u2014 tier-specific liquidity filter \u2014 Pass 52 turn 35 owner-approved. Update `backtest/data/universe.py::apply_liquidity_filter` to accept `",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X1 \u2014 Data + Universe",
       "pass_intro": "Pass 52",
       "pass_resolved": "DEC-321,DEC-366,DEC-392",
@@ -16555,10 +16435,10 @@
       "dependencies": "DEC-366",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -18053,7 +17933,7 @@
         "wired": true,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 45,
+        "n_doc_refs": 48,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -18493,7 +18373,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 80,
+        "n_doc_refs": 82,
         "pyramid": {
           "unit": true,
           "smoke": true,
@@ -19133,7 +19013,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 466,
+        "n_doc_refs": 467,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -19413,7 +19293,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 23,
+        "n_doc_refs": 24,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -19443,7 +19323,7 @@
     }
   ],
   "decisions_total_count": 534,
-  "decisions_hidden_count": 48,
+  "decisions_hidden_count": 51,
   "bugs": [
     {
       "id": "BUG-01",
@@ -26798,52 +26678,58 @@
   ],
   "recent_commits": [
     {
+      "sha": "dafff2c1",
+      "subject": "Pass 53 v8h+1: Phase 3 Batch 31 - X4 Statistical Methodology audit (Path B Step 5)",
+      "author": "jeetmehta1991",
+      "rel_time": "8 minutes ago"
+    },
+    {
       "sha": "4a129d79",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 30 - X53 Engine Bugs per-decision audit (Path B Step 4)",
       "author": "jeetmehta1991",
-      "rel_time": "6 minutes ago"
+      "rel_time": "14 minutes ago"
     },
     {
       "sha": "9e933201",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 29 - 54 SPEC_ONLY bulk-flipped RESOLVED-IMPLEMENTED-AS-DECIDED",
       "author": "jeetmehta1991",
-      "rel_time": "11 minutes ago"
+      "rel_time": "20 minutes ago"
     },
     {
       "sha": "a3894856",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 28 - SPEC_ONLY initiative kickoff (Path B Steps 1+2)",
       "author": "jeetmehta1991",
-      "rel_time": "24 minutes ago"
+      "rel_time": "33 minutes ago"
     },
     {
       "sha": "4910c590",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 27 - 12 DEC status flips (all 4 owner-approved items)",
       "author": "jeetmehta1991",
-      "rel_time": "46 minutes ago"
+      "rel_time": "54 minutes ago"
     },
     {
       "sha": "23275737",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 26 - Decisions ALL non-DEFERRED CLEAN (0 no-cells)",
       "author": "jeetmehta1991",
-      "rel_time": "54 minutes ago"
+      "rel_time": "62 minutes ago"
     },
     {
       "sha": "99f04c48",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 25 - Path 2 implementation (owner-approved)",
       "author": "jeetmehta1991",
-      "rel_time": "64 minutes ago"
+      "rel_time": "73 minutes ago"
     },
     {
       "sha": "8354df3d",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 24 - id_status substring-match bug FIXED (CRITICAL)",
       "author": "jeetmehta1991",
-      "rel_time": "77 minutes ago"
+      "rel_time": "86 minutes ago"
     },
     {
       "sha": "b845fd62",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 23 - Pyramid N/A defaults scaled to ALL ID kinds (owner directive)",
       "author": "jeetmehta1991",
-      "rel_time": "88 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "fa2c140c",
@@ -26873,13 +26759,13 @@
       "sha": "2fe9c3d4",
       "subject": "Pass 53 v8h+1: BUG-95 Portfolio metrics from equity_curve (Sub-batch 3/5)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "ead36b0b",
       "subject": "Pass 53 v8h+1: BUG-95 Portfolio engine integration (Sub-batch 2/5 - shadow state)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "93e4036a",
@@ -26970,12 +26856,6 @@
       "subject": "Pass 53 v8h+1: BUG-29 RESOLVED-IMPLEMENTED - end-of-backtest open-trade finalization",
       "author": "jeetmehta1991",
       "rel_time": "5 hours ago"
-    },
-    {
-      "sha": "0daa206c",
-      "subject": "Pass 53 v8h+1: Phase 3 Batch 7 - 6 BUGs (43/44/45/48/58/59) SUPERSEDED/DEFERRED/OBSOLETE",
-      "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
     }
   ],
   "uncommitted": {
@@ -27693,7 +27573,7 @@
       "kind": "DEC",
       "id": "DEC-099",
       "title": "11 missing strategy categories (Pairs, Calendar, Cross-Asset, Index Rebalance, etc.) \u2014 Pass 52 turn 33 RESOLVED via supersession. Pass 52 sp",
-      "status": "RESOLVED-DECIDED",
+      "status": "SUPERSEDED-BY-DEC-367-DEC-368-DEC-369-DEC-370-DEC-371",
       "tier": 1,
       "reason": "Dependency root (6 downstream items reference)",
       "back_refs": 6,
@@ -27833,7 +27713,7 @@
       "kind": "DEC",
       "id": "DEC-103",
       "title": "Auto-populate Tier 2 universe (spinoffs, IPOs, $5B+) \u2014 Pass 52 turn 33 RESOLVED via supersession. Pass 52 phased implementation: DEC-372 (Ph",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "SUPERSEDED-BY-DEC-494",
       "tier": 1,
       "reason": "Dependency root (3 downstream items reference)",
       "back_refs": 3,
@@ -27851,10 +27731,10 @@
     }
   ],
   "decision_status_counts": {
-    "RESOLVED-DECIDED": 211,
-    "RESOLVED-IMPLEMENTED": 113,
+    "RESOLVED-DECIDED": 204,
+    "RESOLVED-IMPLEMENTED": 119,
     "PARTIAL": 5,
-    "PARTIAL-SPEC-ONLY": 64,
+    "PARTIAL-SPEC-ONLY": 62,
     "DEFERRED_TO_STAGE_3": 36,
     "DEFERRED_TO_STAGE_4": 21,
     "DEFERRED": 2,

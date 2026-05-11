@@ -34068,6 +34068,69 @@ Documents updated:
   - AUDIT.md (this entry)
   - dashboard_stage_2 (rebuilt; IMPLEMENTED 112 -> 114, SPEC_ONLY 250 -> 247)
 
+---
+
+## Pass 53 Day 9 v8h+1 follow-on 2026-05-11 (cont): Phase 3 Batch 32 - X1 Data + Universe per-decision audit (Step 6)
+
+**Owner directive 2026-05-10 (Path B Step 6 approved):** Per-decision audit of 16 X1 Data + Universe SPEC_ONLY decisions.
+
+**Audit results (9 flips of 16, 56% yield):**
+
+**RESOLVED-IMPLEMENTED (6):**
+- DEC-366: tier-specific liquidity filter in universe.py via get_tier_params per DEC-504
+- DEC-371: DEC-099-E within-category gaps catalog (catalog IS implementation)
+- DEC-373: --validate flag in scripts/refresh_extended_universe.py
+- DEC-374: Tier 2 historical CSV exists (Sprint 0A); 297 SCREENER + 50 PIT backfill per BUG-274
+- DEC-375: MAX_TICKERS 50->100 in scripts/build_momentum_watchlist.py per DEC-364
+- DEC-457: DEC-366 implementation (sister; same code path)
+
+**SUPERSEDED (3):**
+- DEC-099 SUPERSEDED-BY-DEC-367-DEC-368-DEC-369-DEC-370-DEC-371 (11 missing strategy categories umbrella; substance migrated to children)
+- DEC-103 SUPERSEDED-BY-DEC-494 (Sprint 0A SCREENER-FIRST architecture per CLAUDE.md)
+- DEC-105 SUPERSEDED-BY-DEC-378-DEC-379-DEC-380 (Spinoff detector umbrella; children own the substance)
+
+**Stay SPEC_ONLY (7 - genuine data+universe backlog):**
+- DEC-363 (commodity ETF expansion - LIT/COPX/URA/PICK not in code)
+- DEC-368 (Calendar/Seasonal strategies - no code)
+- DEC-369 (Cross-Asset strategies - PARTIAL-SPEC-ONLY per DEC-594)
+- DEC-370 (Index Rebalance strategies - no code)
+- DEC-372 (Tier 2 GH Actions monthly refresh workflow - no .github/workflows/ file)
+- DEC-376 (momentum watchlist GH Actions workflow - no file)
+- DEC-378 (NASDAQ symbol-directory weekly diff - no implementation)
+
+**Dashboard state shift:**
+
+| Tier | Pre-Batch-32 | Post-Batch-32 |
+|---|---|---|
+| IMPLEMENTED | 114 | **120** (+6) |
+| SPEC_ONLY | 247 | **238** (-9) |
+| Hidden (SUPERSEDED) | 48 | **51** (+3) |
+| Visible | 486 | 483 |
+| Non-DEFERRED no-cells | 0 | **0** (preserved) |
+
+**Per-addressal pyramid (CHECKLIST #78):** unit 144/144 + integration 13/13 = 157/157 PASS in 2.82s.
+
+**Phase 1A May 15 IMPACT:** None directly. 7 remaining X1 items mostly Sprint-5 GH-Actions automation + Phase 1C/1D strategy expansion; not Phase 1A baseline blockers.
+
+**Cumulative Path B progress (Batches 28-32):**
+- SPEC_ONLY: 321 -> 238 (-26%)
+- IMPLEMENTED: 47 -> 120 (+155%)
+- Hidden (SUPERSEDED): 33 -> 51 (+18 cleanup)
+
+**Next theme options (Step 7):**
+- Medium-Severity Improvements (11 SPEC_ONLY)
+- Smart Money + Regimes (7)
+- Risk Management Extension (7) — BUG-095 just unblocked DEC-076/DEC-091 in Batch 27
+- Exits + Circuit Breakers (5) — many likely closed via Phase 3 work
+- Smaller themes (~80 spread across 20+ themes with 1-5 decisions each)
+
+Recommend Exits + CB (5) since high overlap with Phase 3 BUG-78/80/95/110 work — high yield expected.
+
+Documents updated:
+  - AUDIT_INDEX.md (9 status flips: 6 IMPL + 3 SUPERSEDED)
+  - AUDIT.md (this entry)
+  - dashboard_stage_2 (rebuilt; IMPLEMENTED 114 -> 120, SPEC_ONLY 247 -> 238)
+
 **Remaining OPEN backlog after sweeps:**
   - 1 DEC RESOLVED-DECIDED-deferred (DEC-028 Stage 3 paper trading - intentional)
   - INVs: 33 OPEN + 2 DEFERRED (genuine work; not promotion-eligible)
