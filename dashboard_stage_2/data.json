@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-11T20:27:54.512665+00:00",
+  "generated_at": "2026-05-11T20:38:03.633666+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -15363,19 +15363,19 @@
     },
     {
       "id": "DECISION-432",
-      "title": "DEC-067 Phase A \u2014 Implement 3 new indicators in `backtest/signals/technical.py`: chandelier exit (highest_high - ATR\u00d7N), parabolic SAR (acceleration factor algo",
-      "status": "RESOLVED-DECIDED",
+      "title": "DEC-067 Phase A \u2014 3 indicators in `backtest/signals/technical.py`. Parabolic SAR (`compute_parabolic_sar`, line 477) and Supertrend (`compute_supertrend`, line ",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X6 \u2014 Exits + Circuit Breakers",
-      "pass_intro": "Pass 52",
-      "pass_resolved": "-",
+      "pass_intro": "Pass 53",
+      "pass_resolved": "Pass 53",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 11,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -15395,10 +15395,10 @@
       "dependencies": "DEC-067",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -21497,7 +21497,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 45,
+        "n_doc_refs": 46,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -26598,28 +26598,40 @@
   ],
   "recent_commits": [
     {
+      "sha": "29b9c6eb",
+      "subject": "Pass 53 v8h+1: Phase 3 Batch 53 - DEC-432 chandelier exit indicator (RESOLVED-IMPLEMENTED)",
+      "author": "jeetmehta1991",
+      "rel_time": "3 minutes ago"
+    },
+    {
+      "sha": "6128d4c6",
+      "subject": "Pass 53 v8h+1: regenerate Stage 2 dashboard for Batches 49-52",
+      "author": "jeetmehta1991",
+      "rel_time": "10 minutes ago"
+    },
+    {
       "sha": "bf2b26ab",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 52 - DEC-087 vol-targeted per-position sizing helper (RESOLVED-IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "4 minutes ago"
+      "rel_time": "14 minutes ago"
     },
     {
       "sha": "6d1cce3e",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 51 - DEC-088 portfolio vol target 15% telemetry (RESOLVED-IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "21 minutes ago"
+      "rel_time": "31 minutes ago"
     },
     {
       "sha": "8c33f844",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 50 - DEC-149 regime transition probability matrix (RESOLVED-IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "80 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "21472ca0",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 49 - DEC-435 AEP per-trade metric (RESOLVED-IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "89 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "e0f9261a",
@@ -26643,7 +26655,7 @@
       "sha": "60f58d4f",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 45 - Path C market-wide CB NYSE Rule 80B (DEC-314)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "595bfe3f",
@@ -26697,13 +26709,13 @@
       "sha": "9a798135",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 36 - Path B Step 16 auto-proceed small themes (15 flips)",
       "author": "jeetmehta1991",
-      "rel_time": "15 hours ago"
+      "rel_time": "16 hours ago"
     },
     {
       "sha": "c3e4f4dd",
       "subject": "Pass 53 v8h+1: Phase 3 Batches 34+35 - Path B Steps 9-15 auto-proceed (13 flips)",
       "author": "jeetmehta1991",
-      "rel_time": "15 hours ago"
+      "rel_time": "16 hours ago"
     },
     {
       "sha": "34f32f71",
@@ -26721,7 +26733,7 @@
       "sha": "dafff2c1",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 31 - X4 Statistical Methodology audit (Path B Step 5)",
       "author": "jeetmehta1991",
-      "rel_time": "16 hours ago"
+      "rel_time": "17 hours ago"
     },
     {
       "sha": "4a129d79",
@@ -26751,7 +26763,7 @@
       "sha": "23275737",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 26 - Decisions ALL non-DEFERRED CLEAN (0 no-cells)",
       "author": "jeetmehta1991",
-      "rel_time": "17 hours ago"
+      "rel_time": "18 hours ago"
     },
     {
       "sha": "99f04c48",
@@ -26762,18 +26774,6 @@
     {
       "sha": "8354df3d",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 24 - id_status substring-match bug FIXED (CRITICAL)",
-      "author": "jeetmehta1991",
-      "rel_time": "18 hours ago"
-    },
-    {
-      "sha": "b845fd62",
-      "subject": "Pass 53 v8h+1: Phase 3 Batch 23 - Pyramid N/A defaults scaled to ALL ID kinds (owner directive)",
-      "author": "jeetmehta1991",
-      "rel_time": "18 hours ago"
-    },
-    {
-      "sha": "fa2c140c",
-      "subject": "Pass 53 v8h+1: Phase 3 Batch 22 - Decisions dashboard cleanup (owner directive)",
       "author": "jeetmehta1991",
       "rel_time": "18 hours ago"
     }
@@ -26964,7 +26964,7 @@
     }
   ],
   "test_inventory": {
-    "total": 869,
+    "total": 873,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -27040,7 +27040,7 @@
       "test_stocktwits_smoke": 4,
       "test_supplementary_demo": 4,
       "test_supplementary_smoke": 6,
-      "test_unit": 204,
+      "test_unit": 208,
       "test_walk_forward_4fold": 6
     }
   },
@@ -27646,8 +27646,8 @@
     }
   ],
   "decision_status_counts": {
-    "RESOLVED-DECIDED": 134,
-    "RESOLVED-IMPLEMENTED": 211,
+    "RESOLVED-DECIDED": 133,
+    "RESOLVED-IMPLEMENTED": 212,
     "PARTIAL": 5,
     "PARTIAL-SPEC-ONLY": 38,
     "DEFERRED_TO_STAGE_3": 36,
