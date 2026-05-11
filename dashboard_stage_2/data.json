@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-11T04:58:58.319091+00:00",
+  "generated_at": "2026-05-11T05:04:11.156275+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -924,7 +924,7 @@
     {
       "id": "DECISION-031",
       "title": "Codespace/Cloud workflow vs local \u2014 Codespace through Phase 0, migrate to cloud before Sta Pass 53 evening 2026-05-06 DEC-594 audit: PARTIAL-SPEC-ONLY (was RESO",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Process / Infrastructure (Group F)",
       "pass_intro": "Pass 19",
       "pass_resolved": "43",
@@ -955,10 +955,10 @@
       "dependencies": "DEC-594",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -1083,8 +1083,8 @@
     },
     {
       "id": "DECISION-036",
-      "title": "Audit document maintenance going forward \u2014 Audit doc maintenance: trigger-only, not period",
-      "status": "RESOLVED-DECIDED",
+      "title": "Audit document maintenance going forward \u2014 Audit doc maintenance: trigger-only, not period Pass 53 v8h+1 Phase 3 Batch 36 2026-05-11 (owner-approved Path B Step",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Process / Infrastructure (Group F)",
       "pass_intro": "Pass 19",
       "pass_resolved": "43",
@@ -1115,10 +1115,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -1324,7 +1324,7 @@
     {
       "id": "DECISION-043",
       "title": "Retune framework Pass 52 turn 119 RESOLVED-DECIDED Final: Retune framework \u2014 strategy parameter retune triggered by DEC-249 strategy decay flag + DEC-214 quarte",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Process / Infrastructure (Group F)",
       "pass_intro": "Pass 25",
       "pass_resolved": "-",
@@ -1355,10 +1355,10 @@
       "dependencies": "DEC-214; DEC-249",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -2173,7 +2173,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 4,
+        "n_doc_refs": 5,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -2213,7 +2213,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 11,
+        "n_doc_refs": 12,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -2253,7 +2253,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 4,
+        "n_doc_refs": 5,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -2333,7 +2333,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 9,
+        "n_doc_refs": 10,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -2413,7 +2413,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 21,
+        "n_doc_refs": 22,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -2453,7 +2453,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 9,
+        "n_doc_refs": 10,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -2773,7 +2773,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 10,
+        "n_doc_refs": 11,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -2813,7 +2813,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 11,
+        "n_doc_refs": 12,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -2853,7 +2853,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 6,
+        "n_doc_refs": 7,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -2893,7 +2893,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 10,
+        "n_doc_refs": 11,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -3013,7 +3013,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 27,
+        "n_doc_refs": 28,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -3373,7 +3373,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 18,
+        "n_doc_refs": 19,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -3693,7 +3693,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 1,
+        "n_doc_refs": 2,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -3764,7 +3764,7 @@
     {
       "id": "DECISION-118",
       "title": "Prefetch full cross-asset macro (VIX direct, DXY, GLD, oil, sector ETFs, TLT, HYG, SHY) Pass 52 turn 119 RESOLVED-DECIDED Final: Prefetch full cross-asset macro",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X9 \u2014 Data integrity",
       "pass_intro": "Pass 40",
       "pass_resolved": "-",
@@ -3773,7 +3773,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 17,
+        "n_doc_refs": 19,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -3795,10 +3795,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -5693,7 +5693,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 4,
+        "n_doc_refs": 5,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -5773,7 +5773,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 1,
+        "n_doc_refs": 2,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -6603,8 +6603,8 @@
     },
     {
       "id": "DECISION-194",
-      "title": "Push alert events: stops, circuit breakers, halts, daily P&L breach (-2%/-5%), backtest-pa",
-      "status": "RESOLVED-DECIDED",
+      "title": "Push alert events: stops, circuit breakers, halts, daily P&L breach (-2%/-5%), backtest-pa Pass 53 v8h+1 Phase 3 Batch 36 2026-05-11 (owner-approved Path B Step",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Notifications",
       "pass_intro": "Pass 43",
       "pass_resolved": "43",
@@ -6635,16 +6635,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-195",
-      "title": "Telegram bot for push alerts (vs SMS \u2014 free, richer formatting)",
-      "status": "RESOLVED-DECIDED",
+      "title": "Telegram bot for push alerts (vs SMS \u2014 free, richer formatting) Pass 53 v8h+1 Phase 3 Batch 36 2026-05-11 (owner-approved Path B Step 16 auto-proceed small them",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Notifications",
       "pass_intro": "Pass 43",
       "pass_resolved": "43",
@@ -6675,10 +6675,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -7533,7 +7533,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 11,
+        "n_doc_refs": 12,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -7573,7 +7573,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 3,
+        "n_doc_refs": 4,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -7613,7 +7613,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 5,
+        "n_doc_refs": 6,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -7653,7 +7653,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 18,
+        "n_doc_refs": 19,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -7684,7 +7684,7 @@
     {
       "id": "DECISION-222",
       "title": "Test naming and structure audit; regression tests for top-20 critical bugs Pass 52 turn 65 owner-approved RESOLVED-DECIDED: Test naming and structure audit + re",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X34 \u2014 Test + Cache Infrastructure",
       "pass_intro": "Pass 45",
       "pass_resolved": "-",
@@ -7715,10 +7715,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -7813,7 +7813,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 6,
+        "n_doc_refs": 7,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -7853,7 +7853,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 4,
+        "n_doc_refs": 5,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -7893,7 +7893,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 11,
+        "n_doc_refs": 12,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -7973,7 +7973,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 6,
+        "n_doc_refs": 7,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -8013,7 +8013,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 6,
+        "n_doc_refs": 7,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -8053,7 +8053,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 4,
+        "n_doc_refs": 5,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -8093,7 +8093,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 3,
+        "n_doc_refs": 4,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -8213,7 +8213,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 2,
+        "n_doc_refs": 3,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -8333,7 +8333,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 2,
+        "n_doc_refs": 3,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -8933,7 +8933,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 48,
+        "n_doc_refs": 51,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -9733,7 +9733,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 3,
+        "n_doc_refs": 4,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -9773,7 +9773,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 7,
+        "n_doc_refs": 8,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -9813,7 +9813,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 2,
+        "n_doc_refs": 3,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -9853,7 +9853,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 13,
+        "n_doc_refs": 14,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -9973,7 +9973,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 10,
+        "n_doc_refs": 11,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -10013,7 +10013,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 2,
+        "n_doc_refs": 3,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -10133,7 +10133,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 3,
+        "n_doc_refs": 4,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -10213,7 +10213,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 7,
+        "n_doc_refs": 8,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -10562,86 +10562,6 @@
       }
     },
     {
-      "id": "DECISION-299",
-      "title": "yfinance fetch_info CURRENT sector \u2014 RESOLVED Pass 52 owner approve all: snapshot current results to dated CSV (Step 1, immediate), defer Polygon Reference subs",
-      "status": "PARTIAL-SPEC-ONLY",
-      "theme": "Batch X52 \u2014 CRITICAL PIT Correctness",
-      "pass_intro": "Pass 48",
-      "pass_resolved": "52",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 8,
-        "pyramid": {
-          "unit": "N/A",
-          "smoke": "N/A",
-          "integration": "N/A",
-          "system": "N/A",
-          "functional": "N/A",
-          "regression": "N/A",
-          "data_integrity": "N/A",
-          "performance": "N/A",
-          "acceptance": "N/A",
-          "property": "N/A",
-          "snapshot": "N/A",
-          "contract": "N/A",
-          "compatibility": "N/A"
-        }
-      },
-      "short_id": "DEC-299",
-      "sprint": "Sprint 4 additions (DEC-410 Au",
-      "dependencies": "-",
-      "description": "**Owner verdict:** APPROVE **Resolution:** Three-step sequence: 1. Snapshot current fetch_info results to dated CSV (Step 1, immediate, ~1 day) 2. Defer Polygon Reference subscription per BUG-191 sequencing rule 3. Migrate to Polygon Reference once paid + consumer built",
-      "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
-      }
-    },
-    {
-      "id": "DECISION-300",
-      "title": "yfinance earnings_dates / analyst data CURRENT \u2014 RESOLVED Pass 52 owner approve all: tiered approach. Step 1: enforce earnings_tolerant flag at all call sites (",
-      "status": "RESOLVED-DECIDED",
-      "theme": "Batch X52 \u2014 CRITICAL PIT Correctness",
-      "pass_intro": "Pass 48",
-      "pass_resolved": "52",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 7,
-        "pyramid": {
-          "unit": "N/A",
-          "smoke": "N/A",
-          "integration": "N/A",
-          "system": "N/A",
-          "functional": "N/A",
-          "regression": "N/A",
-          "data_integrity": "N/A",
-          "performance": "N/A",
-          "acceptance": "N/A",
-          "property": "N/A",
-          "snapshot": "N/A",
-          "contract": "N/A",
-          "compatibility": "N/A"
-        }
-      },
-      "short_id": "DEC-300",
-      "sprint": "Sprint 1 additions (Phase 0.A ",
-      "dependencies": "-",
-      "description": "**Owner verdict:** APPROVE **Resolution:** Tiered approach: 1. Enforce earnings_tolerant flag at all call sites (~80% exposure reduction) 2. PIT earnings calendar via Polygon News (Phase 1C scope) 3. REMOVE analyst data from PIT-claiming functions until paid PIT analyst-estimate ",
-      "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
-      }
-    },
-    {
       "id": "DECISION-301",
       "title": "FRED data revisions completely unhandled \u2014 switch to ALFRED (archival FRED) for vintage da",
       "status": "RESOLVED-IMPLEMENTED",
@@ -10843,8 +10763,8 @@
     },
     {
       "id": "DECISION-306",
-      "title": "get_news_sentiment path mismatch \u2014 code reads /prefetch/news/ but data lives in /cache/fin",
-      "status": "RESOLVED-DECIDED",
+      "title": "get_news_sentiment path mismatch \u2014 code reads /prefetch/news/ but data lives in /cache/fin Pass 53 v8h+1 Phase 3 Batch 36 2026-05-11 (owner-approved Path B Step",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X52 \u2014 CRITICAL PIT Correctness",
       "pass_intro": "Pass 48",
       "pass_resolved": "49",
@@ -10875,10 +10795,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -11613,7 +11533,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 7,
+        "n_doc_refs": 8,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -11653,7 +11573,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 4,
+        "n_doc_refs": 5,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -11693,7 +11613,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 15,
+        "n_doc_refs": 16,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -11732,8 +11652,8 @@
         "coded": false,
         "wired": false,
         "tested": false,
-        "pushed": false,
-        "n_doc_refs": 0,
+        "pushed": true,
+        "n_doc_refs": 1,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -11773,7 +11693,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 26,
+        "n_doc_refs": 27,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -11813,7 +11733,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 1,
+        "n_doc_refs": 2,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -11853,7 +11773,7 @@
         "wired": false,
         "tested": false,
         "pushed": false,
-        "n_doc_refs": 0,
+        "n_doc_refs": 1,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -11893,7 +11813,7 @@
         "wired": false,
         "tested": false,
         "pushed": false,
-        "n_doc_refs": 2,
+        "n_doc_refs": 3,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -11933,7 +11853,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 6,
+        "n_doc_refs": 7,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -11972,8 +11892,8 @@
         "coded": false,
         "wired": false,
         "tested": false,
-        "pushed": false,
-        "n_doc_refs": 0,
+        "pushed": true,
+        "n_doc_refs": 1,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -12013,7 +11933,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 2,
+        "n_doc_refs": 3,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -12493,7 +12413,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 45,
+        "n_doc_refs": 46,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -15173,7 +15093,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 7,
+        "n_doc_refs": 8,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -15453,7 +15373,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 10,
+        "n_doc_refs": 11,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -15493,7 +15413,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 4,
+        "n_doc_refs": 5,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -15573,7 +15493,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 8,
+        "n_doc_refs": 9,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -15773,7 +15693,7 @@
         "wired": true,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 46,
+        "n_doc_refs": 47,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -15813,7 +15733,7 @@
         "wired": true,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 70,
+        "n_doc_refs": 71,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -15893,7 +15813,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 30,
+        "n_doc_refs": 33,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -16453,7 +16373,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 159,
+        "n_doc_refs": 160,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -16884,7 +16804,7 @@
     {
       "id": "DECISION-486",
       "title": "Phase 1A restoration as distinct sub-phase Pass 53 owner-approved RESOLVED-DECIDED. Restore Phase 1A (rules-based + smart money baseline; NO agent overlay) as d",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Pass 53 / Phase 1A restoration",
       "pass_intro": "Pass 53",
       "pass_resolved": "53",
@@ -16915,16 +16835,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-487",
       "title": "Phase 1A-\u03b1 restoration as distinct sub-phase Pass 53 owner-approved RESOLVED-DECIDED. Phase 1A-\u03b1 \u2014 rules-only dimensional cube + dashboards + verdict; cube meth",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Pass 53 / Phase 1A restoration",
       "pass_intro": "Pass 53",
       "pass_resolved": "53",
@@ -16955,16 +16875,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-488",
       "title": "Phase 1A-\u03b2 restoration as distinct sub-phase Pass 53 owner-approved RESOLVED-DECIDED. Phase 1A-\u03b2 \u2014 production-scale validation run on full universe (~1015 ticke",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Pass 53 / Phase 1A restoration",
       "pass_intro": "Pass 53",
       "pass_resolved": "53",
@@ -16995,10 +16915,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -17733,7 +17653,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 43,
+        "n_doc_refs": 45,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -18964,7 +18884,7 @@
     {
       "id": "DECISION-596",
       "title": "Standing Approvals for routine bash + Per-Turn Push. Pass 53 owner directive 2026-05-06 late evening RESOLVED-DECIDED. Owner verbatim: \"i approve all bash runs.",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Cross-cutting / process / Pass 53 closure",
       "pass_intro": "Pass 53",
       "pass_resolved": "53",
@@ -18995,10 +18915,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -19204,7 +19124,7 @@
     {
       "id": "DECISION-589",
       "title": "Audit-iteration ceiling \u2014 Pass 53 review-cycle CLOSED. Pass 53 owner-approved 2026-05-06 Q2=A RESOLVED-DECIDED. RULE: Pass 53 review-cycle CLOSED after 7 extern",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Cross-cutting / process / Pass 53 closure",
       "pass_intro": "Pass 53",
       "pass_resolved": "53",
@@ -19235,10 +19155,10 @@
       "dependencies": "-",
       "description": "**Decision** (per Q2 = A): Pass 53 review-cycle CLOSED. No additional audit cycles permitted before Phase 1A implementation begins (DEC-590 = 2026-05-15).",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -19323,7 +19243,7 @@
     }
   ],
   "decisions_total_count": 534,
-  "decisions_hidden_count": 51,
+  "decisions_hidden_count": 53,
   "bugs": [
     {
       "id": "BUG-01",
@@ -26678,40 +26598,46 @@
   ],
   "recent_commits": [
     {
+      "sha": "c3e4f4dd",
+      "subject": "Pass 53 v8h+1: Phase 3 Batches 34+35 - Path B Steps 9-15 auto-proceed (13 flips)",
+      "author": "jeetmehta1991",
+      "rel_time": "4 minutes ago"
+    },
+    {
       "sha": "34f32f71",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 33 - X51 CRITICAL Runtime Bugs audit (Path B Step 8) - 100% yield",
       "author": "jeetmehta1991",
-      "rel_time": "18 minutes ago"
+      "rel_time": "23 minutes ago"
     },
     {
       "sha": "e2449d23",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 32 - X1 Data + Universe audit (Path B Step 6)",
       "author": "jeetmehta1991",
-      "rel_time": "48 minutes ago"
+      "rel_time": "53 minutes ago"
     },
     {
       "sha": "dafff2c1",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 31 - X4 Statistical Methodology audit (Path B Step 5)",
       "author": "jeetmehta1991",
-      "rel_time": "56 minutes ago"
+      "rel_time": "62 minutes ago"
     },
     {
       "sha": "4a129d79",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 30 - X53 Engine Bugs per-decision audit (Path B Step 4)",
       "author": "jeetmehta1991",
-      "rel_time": "63 minutes ago"
+      "rel_time": "68 minutes ago"
     },
     {
       "sha": "9e933201",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 29 - 54 SPEC_ONLY bulk-flipped RESOLVED-IMPLEMENTED-AS-DECIDED",
       "author": "jeetmehta1991",
-      "rel_time": "69 minutes ago"
+      "rel_time": "74 minutes ago"
     },
     {
       "sha": "a3894856",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 28 - SPEC_ONLY initiative kickoff (Path B Steps 1+2)",
       "author": "jeetmehta1991",
-      "rel_time": "82 minutes ago"
+      "rel_time": "87 minutes ago"
     },
     {
       "sha": "4910c590",
@@ -26741,7 +26667,7 @@
       "sha": "b845fd62",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 23 - Pyramid N/A defaults scaled to ALL ID kinds (owner directive)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "fa2c140c",
@@ -26777,7 +26703,7 @@
       "sha": "ead36b0b",
       "subject": "Pass 53 v8h+1: BUG-95 Portfolio engine integration (Sub-batch 2/5 - shadow state)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "93e4036a",
@@ -26813,7 +26739,7 @@
       "sha": "cf8d9c24",
       "subject": "Pass 53 v8h+1: BUG-110 HIGH entry gap filter VERIFIED ENFORCED (stale audit finding)",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "a571c1c6",
@@ -26848,12 +26774,6 @@
     {
       "sha": "3f4b7b2e",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 10 - 6 BUGs (51/54/55/56/57/60) SUPERSEDED/DEFERRED",
-      "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
-    },
-    {
-      "sha": "a1ba19bb",
-      "subject": "Pass 53 v8h+1: Phase 3 Batch 9 - 6 SUPERSEDED (BUG-35/36/38/39/41/53)",
       "author": "jeetmehta1991",
       "rel_time": "6 hours ago"
     }
@@ -27571,6 +27491,16 @@
     },
     {
       "kind": "DEC",
+      "id": "DEC-256",
+      "title": "Earnings calendar prefetch \u2014 Pass 52 owner-approved with Polygon source. Source: Polygon `/vX/reference/tickers/{ticker}/events` + `/v3/refe",
+      "status": "RESOLVED-DECIDED",
+      "tier": 1,
+      "reason": "Dependency root (7 downstream items reference)",
+      "back_refs": 7,
+      "sprint": "Sprint 1 \u2014 RETIRED Pass 53 (re; Sprint 4 additions (DEC-410 Au; Sprint 7 additions (Statistica"
+    },
+    {
+      "kind": "DEC",
       "id": "DEC-099",
       "title": "11 missing strategy categories (Pairs, Calendar, Cross-Asset, Index Rebalance, etc.) \u2014 Pass 52 turn 33 RESOLVED via supersession. Pass 52 sp",
       "status": "SUPERSEDED-BY-DEC-367-DEC-368-DEC-369-DEC-370-DEC-371",
@@ -27578,16 +27508,6 @@
       "reason": "Dependency root (6 downstream items reference)",
       "back_refs": 6,
       "sprint": "Sprint 8 additions (Strategy C"
-    },
-    {
-      "kind": "DEC",
-      "id": "DEC-256",
-      "title": "Earnings calendar prefetch \u2014 Pass 52 owner-approved with Polygon source. Source: Polygon `/vX/reference/tickers/{ticker}/events` + `/v3/refe",
-      "status": "RESOLVED-DECIDED",
-      "tier": 1,
-      "reason": "Dependency root (6 downstream items reference)",
-      "back_refs": 6,
-      "sprint": "Sprint 1 \u2014 RETIRED Pass 53 (re; Sprint 4 additions (DEC-410 Au; Sprint 7 additions (Statistica"
     },
     {
       "kind": "DEC",
@@ -27621,6 +27541,16 @@
     },
     {
       "kind": "DEC",
+      "id": "DEC-443",
+      "title": "Replace yfinance .info with Polygon reference endpoints \u2014 Pass 52 owner-approved (DEC-410 Batch 1, Hypothesis H-yfinance-2). Replace `Ticker",
+      "status": "RESOLVED-IMPLEMENTED",
+      "tier": 1,
+      "reason": "Dependency root (5 downstream items reference)",
+      "back_refs": 5,
+      "sprint": "Sprint 4 additions (DEC-410 Au; Sprint 4 \u2014 DEC-410 Audit Findi; Sprint 9 \u2014 Phase 1B-\u03b1 Run (Wee"
+    },
+    {
+      "kind": "DEC",
       "id": "DEC-505",
       "title": "Backtest window alignment to Polygon Stocks Starter 5y cache (supersedes DEC-109 6-fold walk-forward). Pass 53 owner-approved Q1+Q2+Q3 2026-",
       "status": "RESOLVED-IMPLEMENTED",
@@ -27648,16 +27578,6 @@
       "reason": "Dependency root (4 downstream items reference)",
       "back_refs": 4,
       "sprint": "Sprint 1 \u2014 RETIRED Pass 53 (re; Sprint 6 additions (Phase 0.E "
-    },
-    {
-      "kind": "DEC",
-      "id": "DEC-443",
-      "title": "Replace yfinance .info with Polygon reference endpoints \u2014 Pass 52 owner-approved (DEC-410 Batch 1, Hypothesis H-yfinance-2). Replace `Ticker",
-      "status": "RESOLVED-IMPLEMENTED",
-      "tier": 1,
-      "reason": "Dependency root (4 downstream items reference)",
-      "back_refs": 4,
-      "sprint": "Sprint 4 additions (DEC-410 Au; Sprint 4 \u2014 DEC-410 Audit Findi; Sprint 9 \u2014 Phase 1B-\u03b1 Run (Wee"
     },
     {
       "kind": "DEC",
@@ -27731,10 +27651,10 @@
     }
   ],
   "decision_status_counts": {
-    "RESOLVED-DECIDED": 191,
-    "RESOLVED-IMPLEMENTED": 136,
+    "RESOLVED-DECIDED": 182,
+    "RESOLVED-IMPLEMENTED": 149,
     "PARTIAL": 5,
-    "PARTIAL-SPEC-ONLY": 58,
+    "PARTIAL-SPEC-ONLY": 52,
     "DEFERRED_TO_STAGE_3": 36,
     "DEFERRED_TO_STAGE_4": 21,
     "DEFERRED": 2,
