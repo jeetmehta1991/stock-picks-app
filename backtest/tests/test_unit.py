@@ -2870,6 +2870,78 @@ def test_dec_317_hysteresis_keeps_bull_until_vix_rises_above_buffer():
     assert classify_regime_with_hysteresis(26.0, True, prev_regime="bull") == "neutral"
 
 
+def test_dec_149_transition_matrix_basic_counts():
+    """DEC-149: empirical transition probabilities from a known regime sequence.
+    Sequence 'bull, bull, neutral, neutral, bear' -> bull row: 1 bull->bull + 1
+    bull->neutral; neutral row: 1 neutral->neutral + 1 neutral->bear.
+    """
+    from backtest.engine.regime_filter import compute_regime_transition_matrix
+
+    m = compute_regime_transition_matrix(
+        ["bull", "bull", "neutral", "neutral", "bear"]
+    )
+    assert abs(m.loc["bull", "bull"] - 0.5) < 1e-9
+    assert abs(m.loc["bull", "neutral"] - 0.5) < 1e-9
+    assert abs(m.loc["neutral", "neutral"] - 0.5) < 1e-9
+    assert abs(m.loc["neutral", "bear"] - 0.5) < 1e-9
+    # bear row never observed an outgoing transition -> NaN row
+    import pandas as pd
+    assert pd.isna(m.loc["bear", "bull"])
+    assert pd.isna(m.loc["crisis", "bull"])
+
+
+def test_dec_149_transition_matrix_rows_sum_to_one():
+    """DEC-149: non-degenerate rows sum to 1.0; degenerate (no outgoing) rows
+    are NaN.
+    """
+    from backtest.engine.regime_filter import compute_regime_transition_matrix, REGIME_STATES
+
+    seq = ["bull", "neutral", "bear", "crisis", "bull", "neutral", "neutral", "bull"]
+    m = compute_regime_transition_matrix(seq)
+    for state in REGIME_STATES:
+        row = m.loc[state]
+        if row.notna().any():
+            assert abs(row.sum() - 1.0) < 1e-9, f"{state} row {row.values} sum != 1.0"
+
+
+def test_dec_149_transition_matrix_drops_unknown():
+    """DEC-149 + DEC-316: 'unknown' labels are dropped before counting
+    (unknown is a missing-data signal, not a regime).
+    """
+    from backtest.engine.regime_filter import compute_regime_transition_matrix
+
+    # 'unknown' between bull and neutral should NOT contribute to any row
+    m_with_unknown = compute_regime_transition_matrix(
+        ["bull", "unknown", "neutral", "neutral"]
+    )
+    # Effective sequence after drop: ['bull','neutral','neutral']
+    # bull -> neutral (1), neutral -> neutral (1)
+    assert abs(m_with_unknown.loc["bull", "neutral"] - 1.0) < 1e-9
+    assert abs(m_with_unknown.loc["neutral", "neutral"] - 1.0) < 1e-9
+
+
+def test_dec_149_transition_matrix_empty_or_singleton():
+    """DEC-149: empty or single-element sequence returns all-NaN matrix."""
+    import pandas as pd
+    from backtest.engine.regime_filter import compute_regime_transition_matrix, REGIME_STATES
+
+    m_empty = compute_regime_transition_matrix([])
+    assert m_empty.shape == (len(REGIME_STATES), len(REGIME_STATES))
+    assert m_empty.isna().all().all()
+
+    m_single = compute_regime_transition_matrix(["bull"])
+    assert m_single.isna().all().all()
+
+
+def test_dec_149_transition_matrix_pure_state_persists():
+    """DEC-149: sequence of all one state -> that row is 1.0 on self-loop."""
+    from backtest.engine.regime_filter import compute_regime_transition_matrix
+
+    m = compute_regime_transition_matrix(["bull"] * 10)
+    assert abs(m.loc["bull", "bull"] - 1.0) < 1e-9
+    assert abs(m.loc["bull", "neutral"] - 0.0) < 1e-9
+
+
 def test_dec_414_adf_test_stationary_series():
     """DEC-414 (Phase 3 Batch 41): ADF test detects stationarity in
     mean-reverting series.

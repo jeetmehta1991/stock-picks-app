@@ -147,6 +147,57 @@ def get_vix_smoothed(vix_series: pd.Series, as_of: date, window: int = 5) -> Opt
         return None
 
 
+REGIME_STATES = ("bull", "neutral", "bear", "crisis")
+
+
+def compute_regime_transition_matrix(
+    regime_sequence,
+    states=REGIME_STATES,
+) -> pd.DataFrame:
+    """DEC-149 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 50 2026-05-11
+    (owner-approved Path C). Empirical Markov-1 transition probability matrix
+    estimated from a historical sequence of regime labels.
+
+    Each row sums to 1.0 across non-degenerate origin states (states with at
+    least one observed outgoing transition); origin states never observed in
+    the sequence have a row of NaN to signal "no data" (avoids forcing a flat
+    uniform prior).
+
+    'unknown' regime labels are dropped before transition counting per spec
+    (DEC-316 fail-closed: 'unknown' is a missing-data signal, not a regime).
+
+    Inputs:
+      regime_sequence: iterable of regime labels (e.g. ['bull','bull','neutral',
+        'bear','bear','bull'])
+      states: tuple of valid regime names (default: bull/neutral/bear/crisis)
+
+    Returns DataFrame indexed by from_regime, columns to_regime, values P(next |
+    current). matrix.loc['bull', 'neutral'] = P(next=neutral | current=bull).
+
+    Cross-references:
+      DEC-107 (regime probability) + DEC-108 (EMA smoothing): forward-expectation
+      use case at Sprint 7 agent prompt integration.
+    """
+    import numpy as np
+    matrix = pd.DataFrame(
+        np.nan, index=list(states), columns=list(states), dtype=float,
+    )
+    # Filter to known states only
+    cleaned = [r for r in regime_sequence if r in states]
+    if len(cleaned) < 2:
+        return matrix
+    counts = pd.DataFrame(
+        0.0, index=list(states), columns=list(states), dtype=float,
+    )
+    for i in range(len(cleaned) - 1):
+        counts.loc[cleaned[i], cleaned[i + 1]] += 1.0
+    row_totals = counts.sum(axis=1)
+    for s in states:
+        if row_totals.loc[s] > 0:
+            matrix.loc[s] = counts.loc[s] / row_totals.loc[s]
+    return matrix
+
+
 def classify_regime_with_hysteresis(
     vix_value: Optional[float],
     spy_above_200ema: Optional[bool],
