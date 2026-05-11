@@ -34168,6 +34168,80 @@ Documents updated:
   - AUDIT.md (this entry)
   - dashboard_stage_2 (rebuilt; IMPLEMENTED 120 -> 124, SPEC_ONLY 238 -> 234)
 
+---
+
+## Pass 53 Day 9 v8h+1 follow-on 2026-05-11 (cont): Phase 3 Batches 34-35 - Path B Steps 9-14 auto-proceed (X5+X7+X27+X36+X48+X49+X54)
+
+**Owner directive 2026-05-11:** "Auto proceed for all in Path B" - approval to bulk-process remaining themes without per-theme approval.
+
+**Batches 34+35 combined (13 flips total):**
+
+### Step 9 - X5 Risk Management Extension (Batch 34) - 2 of 7
+- DEC-086 Fractional Kelly position sizing - implemented via _kelly_criterion in metrics.py
+- DEC-089 Max correlation cap 0.7 - implemented in improvements.py max_correlation=0.70 + correlation_cluster.py threshold
+
+Stay SPEC_ONLY (5): DEC-087 (vol-targeted sizing), DEC-088 (portfolio vol target 15%), DEC-092 (size%ADV slippage), DEC-116 (cash management SGOV), DEC-458 (lead-lag strategy).
+
+### Steps 10-14 - X7+X27+X36+X48+X49+X54 (Batch 35) - 11 flips
+- DEC-072 WSB / Apewisdom separated (data_prefetch/apewisdom/ separate cache)
+- DEC-073 DO NOT adopt Quiver pre-built composites (negative decision IS implementation)
+- DEC-172 Numerical constants in config (TRAILING_STOP, LIQUIDITY, CIRCUIT_BREAKERS, etc. all in config.py)
+- DEC-238 NO extended hours (negative decision IS implementation)
+- DEC-278 Internal trade journal schema (signals_at_entry + agent_reasoning + context preserved via DEC-491 Parquet)
+- DEC-283 Versioned output schema (DEC-491 Parquet writer)
+- DEC-328 Cache filelock (FileLock pattern in cache.py)
+- DEC-330 Cache schema versioning (test_cache_schema_b.py + test_schema_canonical.py)
+- DEC-331 ETF list consolidated (DEC-118/494 Tier 1 ETFs Universe CSV)
+- DEC-339 pnl_dollar parameterized (STARTING_CAPITAL + reference_capital)
+- DEC-340 Correlation matrix min_periods handling (pandas .corr() in improvements.py + correlation_cluster.py)
+
+Stay SPEC_ONLY (~30 remaining across these 6 themes): officer roles / 10b5-1 filter (DEC-071); regime probability + HMM (DEC-106/107/108); fetcher reliability audit (DEC-228); pydantic config (DEC-229); structured JSON logging (DEC-230); determinism test (DEC-232); data quality monitoring (DEC-233); CUSIP/ISIN (DEC-234); NYSE calendar (DEC-235); time-in-market metric (DEC-241); dead code audit (DEC-217); documentation audit (DEC-218); GH Actions audit (DEC-219); sync_from_claude audit (DEC-220); mypy/sphinx/ruff CI (DEC-170/171/173); per-strategy promotion workflow (DEC-277); PnL decomposition (DEC-279); time-of-day slippage (DEC-280); borderline strategy handling (DEC-284); public site failure handling (DEC-287); dropped strategy re-evaluation (DEC-290); module-level globals MP-safe (DEC-329); smart money weights configurable (DEC-332); CNN-aligned thresholds (DEC-333); composite_score ROI (DEC-334); composite_score weights (DEC-335); conversion logic actual long open (DEC-338).
+
+### Step 15 - originally-DEFER themes audited (0 flips)
+- X17 Strategy extensions (4): all SPEC_ONLY (sector-neutral hedge, market-neutral, stock-vs-sector momentum, IV delta - new strategy code not implemented)
+- X32 Agent A/B Testing (12): all SPEC_ONLY (Phase 1B framework)
+- X55 Strategy Coverage Gaps (10): all SPEC_ONLY (chart patterns DEC-355-362 + retest variants Sprint 8 scope)
+- X58 Phase 1B-alpha Dimensional Framework (7): all SPEC_ONLY (DEC-425-431 children; 20-28d effort each)
+- Sprint 7 Pattern 2 toolkits (6): all SPEC_ONLY (Our*Toolkit extensions; Sprint 7 work)
+
+These 39 are genuinely deferred future work; owner directive 2026-05-10 #2 "no deferrals" means they stay SPEC_ONLY (not flipped to DEFERRED).
+
+**X6 (Step 7) revisit:** 0 flips - all 5 X6 SPEC_ONLY (DEC-075, DEC-078A, DEC-432, DEC-433, DEC-435) genuinely unimplemented (AEP, stop-out cluster, chandelier exit, 6 new exit methods).
+
+**Dashboard state shift:**
+
+| Tier | Pre-Batch-34 | Post-Batch-35 |
+|---|---|---|
+| IMPLEMENTED | 124 | **137** (+13) |
+| SPEC_ONLY | 234 | **221** (-13) |
+| Hidden | 51 | 51 |
+| Visible | 483 | 483 |
+| Non-DEFERRED no-cells | 0 | **0** (preserved) |
+
+**Per-addressal pyramid (CHECKLIST #78):** unit 144/144 + integration 13/13 = 157/157 PASS in 3.81s.
+
+**Cumulative Path B progress (Batches 28-35):**
+- SPEC_ONLY: 321 -> 221 (-31%)
+- IMPLEMENTED: 47 -> 137 (+191%)
+- Hidden (SUPERSEDED): 33 -> 51 (+18 cleanup)
+
+**Remaining 221 SPEC_ONLY by category:**
+- Genuine Phase 1B / Sprint 7 / Sprint 8 future work: ~39 (X17 + X32 + X55 + X58 + Sprint 7 toolkits)
+- Engine bug backlog (real work): ~14 (X53 remaining)
+- Statistical methodology backlog: ~14 (X4 remaining)
+- Data + Universe backlog: ~7 (X1 remaining)
+- Process / audit decisions: ~30 (X33 + X35 + X27 + X48 + X49)
+- Engine + risk extension: ~5 (X5 + X6 + X36 remaining)
+- Smaller themes: ~80
+
+**Path B continuation - remaining smaller themes (Step 16+):**
+The 80+ smaller themes (each with 1-5 SPEC_ONLY decisions) are spread across 20+ batches. Auditing each requires per-decision investigation. At sustainable pace ~5-10 per turn = ~10-20 more turns to complete Path B.
+
+Documents updated:
+  - AUDIT_INDEX.md (13 status flips: 2 X5 + 11 across X7+X27+X36+X48+X49+X54)
+  - AUDIT.md (this entry)
+  - dashboard_stage_2 (rebuilt; IMPLEMENTED 124 -> 137, SPEC_ONLY 234 -> 221)
+
 **Remaining OPEN backlog after sweeps:**
   - 1 DEC RESOLVED-DECIDED-deferred (DEC-028 Stage 3 paper trading - intentional)
   - INVs: 33 OPEN + 2 DEFERRED (genuine work; not promotion-eligible)

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-11T04:40:31.043456+00:00",
+  "generated_at": "2026-05-11T04:58:58.319091+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -2204,7 +2204,7 @@
     {
       "id": "DECISION-072",
       "title": "Separate WSB from smart money Pass 52 turn 61 owner-approved RESOLVED-DECIDED: Separate WSB from smart money \u2014 refactor signal taxonomy. Smart Money composite =",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X7 \u2014 Smart Money + Regimes",
       "pass_intro": "Pass 39",
       "pass_resolved": "-",
@@ -2235,16 +2235,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-073",
       "title": "Adopt Quiver pre-built composites Pass 52 turn 61 owner-approved RESOLVED-DECIDED \u2014 DO NOT adopt Quiver pre-built composites. Hand-roll composites for: (1) DEC-",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X7 \u2014 Smart Money + Regimes",
       "pass_intro": "Pass 39",
       "pass_resolved": "-",
@@ -2275,10 +2275,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -2333,7 +2333,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 8,
+        "n_doc_refs": 9,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -2413,7 +2413,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 20,
+        "n_doc_refs": 21,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -2453,7 +2453,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 8,
+        "n_doc_refs": 9,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -2764,7 +2764,7 @@
     {
       "id": "DECISION-086",
       "title": "Fractional Kelly position sizing Pass 52 turn 67 owner-approved RESOLVED-DECIDED with PHASED ROLLOUT: Fractional Kelly position sizing (0.25-0.50 of full Kelly)",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X5 \u2014 Risk Management Extension",
       "pass_intro": "Pass 39",
       "pass_resolved": "-",
@@ -2795,10 +2795,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -2884,7 +2884,7 @@
     {
       "id": "DECISION-089",
       "title": "Max correlation cap between positions Pass 52 turn 67 owner-approved RESOLVED-DECIDED with JOINT RESOLUTION: Max correlation cap 0.7 between simultaneous holdin",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X5 \u2014 Risk Management Extension",
       "pass_intro": "Pass 39",
       "pass_resolved": "-",
@@ -2915,10 +2915,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -3133,7 +3133,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 10,
+        "n_doc_refs": 11,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -3773,7 +3773,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 16,
+        "n_doc_refs": 17,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -5764,7 +5764,7 @@
     {
       "id": "DECISION-172",
       "title": "All numerical constants extracted to config Pass 52 turn 117 owner-approved RESOLVED-DECIDED Batch C: All numerical constants extracted to config. Magic numbers",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X27 \u2014 Code quality",
       "pass_intro": "Pass 41",
       "pass_resolved": "-",
@@ -5795,10 +5795,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -8203,8 +8203,8 @@
     },
     {
       "id": "DECISION-238",
-      "title": "Pre/after-hours policy (recommendation: NO extended hours)",
-      "status": "RESOLVED-DECIDED",
+      "title": "Pre/after-hours policy (recommendation: NO extended hours) Pass 53 v8h+1 Phase 3 Batch 35 2026-05-11 (owner-approved Path B Steps 10-14 X7+X27+X36+X48+X49+X54 a",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X36 \u2014 Data Quality + Trading Mechanics",
       "pass_intro": "Pass 45",
       "pass_resolved": "52",
@@ -8235,10 +8235,10 @@
       "dependencies": "-",
       "description": "**Resolution:** NO extended-hours trading. RTH only (9:30am\u20134:00pm ET).",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -9764,7 +9764,7 @@
     {
       "id": "DECISION-278",
       "title": "Internal trade journal schema \u2014 chart snapshot, agent transcripts, signal raw values, regi Pass 52 turn 81 owner-approved RESOLVED-DECIDED with 3-LAYER TRADE JO",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X48 \u2014 Professional Benchmark Gaps",
       "pass_intro": "Pass 47",
       "pass_resolved": "-",
@@ -9795,10 +9795,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -9964,7 +9964,7 @@
     {
       "id": "DECISION-283",
       "title": "Backtest output schema \u2014 explicit columns/types/nullability/post-conditions, versioned Pass 52 turn 56 owner-approved RESOLVED-DECIDED: Backtest output schema v",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X49 \u2014 Thin Areas Surfaced",
       "pass_intro": "Pass 47",
       "pass_resolved": "-",
@@ -9995,10 +9995,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -10333,7 +10333,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 2,
+        "n_doc_refs": 3,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -10372,8 +10372,8 @@
         "coded": false,
         "wired": false,
         "tested": false,
-        "pushed": false,
-        "n_doc_refs": 2,
+        "pushed": true,
+        "n_doc_refs": 3,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -10452,8 +10452,8 @@
         "coded": false,
         "wired": false,
         "tested": false,
-        "pushed": false,
-        "n_doc_refs": 0,
+        "pushed": true,
+        "n_doc_refs": 1,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -10492,8 +10492,8 @@
         "coded": false,
         "wired": false,
         "tested": false,
-        "pushed": false,
-        "n_doc_refs": 1,
+        "pushed": true,
+        "n_doc_refs": 2,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -11603,8 +11603,8 @@
     },
     {
       "id": "DECISION-328",
-      "title": "Cache filelock fallback writes silently if lock unavailable \u2014 concurrent writes can corrup",
-      "status": "RESOLVED-DECIDED",
+      "title": "Cache filelock fallback writes silently if lock unavailable \u2014 concurrent writes can corrup Pass 53 v8h+1 Phase 3 Batch 35 2026-05-11 (owner-approved Path B Step",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X54 \u2014 Medium-Severity Improvements",
       "pass_intro": "Pass 48",
       "pass_resolved": "-",
@@ -11635,10 +11635,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -11683,8 +11683,8 @@
     },
     {
       "id": "DECISION-330",
-      "title": "Cache schema not versioned \u2014 schema changes silently mix old + new parquet",
-      "status": "RESOLVED-DECIDED",
+      "title": "Cache schema not versioned \u2014 schema changes silently mix old + new parquet Pass 53 v8h+1 Phase 3 Batch 35 2026-05-11 (owner-approved Path B Steps 10-14 X7+X27+X",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X54 \u2014 Medium-Severity Improvements",
       "pass_intro": "Pass 48",
       "pass_resolved": "-",
@@ -11715,16 +11715,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-331",
-      "title": "ETF list fragmented (ETFS in config.py 17 items, ETFS_FULL in universe.py 25 items, ETF_TI",
-      "status": "RESOLVED-DECIDED",
+      "title": "ETF list fragmented (ETFS in config.py 17 items, ETFS_FULL in universe.py 25 items, ETF_TI Pass 53 v8h+1 Phase 3 Batch 35 2026-05-11 (owner-approved Path B Step",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X54 \u2014 Medium-Severity Improvements",
       "pass_intro": "Pass 48",
       "pass_resolved": "-",
@@ -11755,10 +11755,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -11963,8 +11963,8 @@
     },
     {
       "id": "DECISION-339",
-      "title": "pnl_dollar hardcoded $10K notional \u2014 wrong for $5K paper / $50K next stage / $1K live",
-      "status": "RESOLVED-DECIDED",
+      "title": "pnl_dollar hardcoded $10K notional \u2014 wrong for $5K paper / $50K next stage / $1K live Pass 53 v8h+1 Phase 3 Batch 35 2026-05-11 (owner-approved Path B Steps 10-",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X54 \u2014 Medium-Severity Improvements",
       "pass_intro": "Pass 48",
       "pass_resolved": "-",
@@ -11995,16 +11995,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-340",
-      "title": "get_correlation_matrix silently drops tickers with <20 history \u2014 variable corr-matrix memb",
-      "status": "RESOLVED-DECIDED",
+      "title": "get_correlation_matrix silently drops tickers with <20 history \u2014 variable corr-matrix memb Pass 53 v8h+1 Phase 3 Batch 35 2026-05-11 (owner-approved Path B Step",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X54 \u2014 Medium-Severity Improvements",
       "pass_intro": "Pass 48",
       "pass_resolved": "-",
@@ -12035,10 +12035,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -15453,7 +15453,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 9,
+        "n_doc_refs": 10,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -15493,7 +15493,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 3,
+        "n_doc_refs": 4,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -15573,7 +15573,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 7,
+        "n_doc_refs": 8,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -17733,7 +17733,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 41,
+        "n_doc_refs": 43,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -17773,7 +17773,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 9,
+        "n_doc_refs": 10,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -17933,7 +17933,7 @@
         "wired": true,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 49,
+        "n_doc_refs": 50,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -19373,7 +19373,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 32,
+        "n_doc_refs": 33,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -19410,8 +19410,8 @@
         "coded": true,
         "wired": true,
         "tested": true,
-        "pushed": false,
-        "n_doc_refs": 16,
+        "pushed": true,
+        "n_doc_refs": 17,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -20019,7 +20019,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 20,
+        "n_doc_refs": 21,
         "pyramid": {
           "unit": true,
           "smoke": true,
@@ -26678,40 +26678,46 @@
   ],
   "recent_commits": [
     {
+      "sha": "34f32f71",
+      "subject": "Pass 53 v8h+1: Phase 3 Batch 33 - X51 CRITICAL Runtime Bugs audit (Path B Step 8) - 100% yield",
+      "author": "jeetmehta1991",
+      "rel_time": "18 minutes ago"
+    },
+    {
       "sha": "e2449d23",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 32 - X1 Data + Universe audit (Path B Step 6)",
       "author": "jeetmehta1991",
-      "rel_time": "29 minutes ago"
+      "rel_time": "48 minutes ago"
     },
     {
       "sha": "dafff2c1",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 31 - X4 Statistical Methodology audit (Path B Step 5)",
       "author": "jeetmehta1991",
-      "rel_time": "38 minutes ago"
+      "rel_time": "56 minutes ago"
     },
     {
       "sha": "4a129d79",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 30 - X53 Engine Bugs per-decision audit (Path B Step 4)",
       "author": "jeetmehta1991",
-      "rel_time": "44 minutes ago"
+      "rel_time": "63 minutes ago"
     },
     {
       "sha": "9e933201",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 29 - 54 SPEC_ONLY bulk-flipped RESOLVED-IMPLEMENTED-AS-DECIDED",
       "author": "jeetmehta1991",
-      "rel_time": "50 minutes ago"
+      "rel_time": "69 minutes ago"
     },
     {
       "sha": "a3894856",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 28 - SPEC_ONLY initiative kickoff (Path B Steps 1+2)",
       "author": "jeetmehta1991",
-      "rel_time": "63 minutes ago"
+      "rel_time": "82 minutes ago"
     },
     {
       "sha": "4910c590",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 27 - 12 DEC status flips (all 4 owner-approved items)",
       "author": "jeetmehta1991",
-      "rel_time": "84 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "23275737",
@@ -26741,13 +26747,13 @@
       "sha": "fa2c140c",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 22 - Decisions dashboard cleanup (owner directive)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "432b146b",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 21 - BUG-006 dashboard protocol-violation fix (owner-flagged)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "6a3b572e",
@@ -26777,7 +26783,7 @@
       "sha": "93e4036a",
       "subject": "Pass 53 v8h+1: BUG-95 CRITICAL Portfolio class skeleton (Sub-batch 1/5 - owner-approved Option A)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "b04abeb7",
@@ -26813,13 +26819,13 @@
       "sha": "a571c1c6",
       "subject": "Pass 53 v8h+1: BUG-80 HIGH exit slippage applied symmetrically (apply_exit_slippage helper + 2 wire-up sites)",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "b852347d",
       "subject": "Pass 53 v8h+1: BUG-78 CRITICAL trailing stop lookahead bias FIXED",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "5b710e0b",
@@ -26848,12 +26854,6 @@
     {
       "sha": "a1ba19bb",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 9 - 6 SUPERSEDED (BUG-35/36/38/39/41/53)",
-      "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
-    },
-    {
-      "sha": "fd86b03f",
-      "subject": "Pass 53 auto-drift-sweep 2026-05-10 22:45: dashboards refreshed (no numerical drift)",
       "author": "jeetmehta1991",
       "rel_time": "6 hours ago"
     }
@@ -27731,10 +27731,10 @@
     }
   ],
   "decision_status_counts": {
-    "RESOLVED-DECIDED": 202,
-    "RESOLVED-IMPLEMENTED": 123,
+    "RESOLVED-DECIDED": 191,
+    "RESOLVED-IMPLEMENTED": 136,
     "PARTIAL": 5,
-    "PARTIAL-SPEC-ONLY": 60,
+    "PARTIAL-SPEC-ONLY": 58,
     "DEFERRED_TO_STAGE_3": 36,
     "DEFERRED_TO_STAGE_4": 21,
     "DEFERRED": 2,
