@@ -2680,6 +2680,80 @@ def test_dec_404_cost_sensitivity_sharpe_at_4_levels():
         f"Sharpe should decrease with cost: {out}")
 
 
+def test_dec_388_get_vix_smoothed_basic():
+    """DEC-388: get_vix_smoothed returns 5-day SMA at as_of."""
+    import pandas as pd
+    from datetime import date
+    from backtest.engine.regime_filter import get_vix_smoothed
+
+    dates = pd.date_range("2024-01-01", periods=20, freq="D")
+    # VIX series: 15, 16, 17, 18, 19, 20, ... up to 35
+    vix = pd.Series(range(15, 35), index=dates)
+    smoothed = get_vix_smoothed(vix, date(2024, 1, 10), window=5)
+    # Last 5 values up to Jan 10 are days 6-10 = values 20, 21, 22, 23, 24
+    # Mean = 22.0
+    assert smoothed == 22.0
+
+
+def test_dec_388_get_vix_smoothed_insufficient_data():
+    """DEC-388: insufficient data returns None."""
+    import pandas as pd
+    from datetime import date
+    from backtest.engine.regime_filter import get_vix_smoothed
+    short_series = pd.Series([15.0, 16.0], index=pd.date_range("2024-01-01", periods=2))
+    assert get_vix_smoothed(short_series, date(2024, 1, 2), window=5) is None
+
+
+def test_dec_317_classify_regime_with_hysteresis_no_prev_regime():
+    """DEC-317: with no prev_regime, behaves like classify_regime."""
+    from backtest.engine.regime_filter import (
+        classify_regime, classify_regime_with_hysteresis,
+    )
+    # Same as classify_regime baseline
+    assert classify_regime_with_hysteresis(45.0, False) == "crisis"
+    assert classify_regime_with_hysteresis(35.0, False) == "bear"
+    assert classify_regime_with_hysteresis(15.0, True) == "bull"
+    assert classify_regime_with_hysteresis(25.0, None) == "neutral"
+    assert classify_regime_with_hysteresis(None, True) == "unknown"
+
+
+def test_dec_317_hysteresis_keeps_crisis_until_drop_below_buffer():
+    """DEC-317: once in crisis (VIX>=40), regime sticks until VIX falls below 35
+    (40 - 5 hysteresis buffer).
+    """
+    from backtest.engine.regime_filter import classify_regime_with_hysteresis
+
+    # VIX = 38 with prev_regime=crisis -> STILL crisis (>= 40 - 5 = 35)
+    assert classify_regime_with_hysteresis(38.0, False, prev_regime="crisis") == "crisis"
+
+    # VIX = 36 with prev_regime=crisis -> STILL crisis
+    assert classify_regime_with_hysteresis(36.0, False, prev_regime="crisis") == "crisis"
+
+    # VIX = 34 with prev_regime=crisis -> exits crisis (below 35 buffer)
+    # Falls through to bear thresholds: 34 >= 30 and spy below 200 -> bear
+    assert classify_regime_with_hysteresis(34.0, False, prev_regime="crisis") == "bear"
+
+    # VIX = 34 with prev_regime=neutral -> bear (no hysteresis applied)
+    assert classify_regime_with_hysteresis(34.0, False, prev_regime="neutral") == "bear"
+
+
+def test_dec_317_hysteresis_keeps_bull_until_vix_rises_above_buffer():
+    """DEC-317: once in bull (VIX<20), stays bull until VIX rises above 25
+    (20 + 5 buffer).
+    """
+    from backtest.engine.regime_filter import classify_regime_with_hysteresis
+
+    # VIX = 22 with prev_regime=bull, spy above 200 -> STILL bull
+    assert classify_regime_with_hysteresis(22.0, True, prev_regime="bull") == "bull"
+
+    # VIX = 24 with prev_regime=bull -> STILL bull (below 25 buffer)
+    assert classify_regime_with_hysteresis(24.0, True, prev_regime="bull") == "bull"
+
+    # VIX = 26 with prev_regime=bull -> exits bull to neutral
+    # (26 > 20 + 5 = 25; falls through; 26 < 30 so neither bear nor crisis)
+    assert classify_regime_with_hysteresis(26.0, True, prev_regime="bull") == "neutral"
+
+
 def test_dec_414_adf_test_stationary_series():
     """DEC-414 (Phase 3 Batch 41): ADF test detects stationarity in
     mean-reverting series.

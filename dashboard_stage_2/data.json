@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-11T15:17:12.910732+00:00",
+  "generated_at": "2026-05-11T15:35:33.466885+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -11204,18 +11204,18 @@
     {
       "id": "DECISION-317",
       "title": "VIX hard thresholds (40/30/20) flip regime on single print \u2014 needs MA smoothing. Pass 52 owner-approved. Replace single-print thresholds with 5-day SMA + hyster",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X53 \u2014 High-Impact Engine Bugs",
       "pass_intro": "Pass 48",
       "pass_resolved": "-",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
         "pushed": true,
-        "n_doc_refs": 11,
+        "n_doc_refs": 12,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -11235,10 +11235,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -13724,18 +13724,18 @@
     {
       "id": "DECISION-388",
       "title": "DEC-317 implementation \u2014 VIX 5-day SMA + hysteresis. `vix_sma_5 = VIX.rolling(5).mean()` for regime input. Crisis enter \u226540, exit <35 (5-pt band). high_vol ente",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X53 \u2014 High-Impact Engine Bugs",
       "pass_intro": "Pass 52",
       "pass_resolved": "-",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 17,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -13755,10 +13755,10 @@
       "dependencies": "DEC-317",
       "description": "- Code change: `regime_filter.py:38-40` + `improvements.py:394` to use `vix_sma_5 = VIX.rolling(5).mean()` for regime decision input - Hysteresis bands: crisis enter \u226540 / exit <35 (5-pt band); high_vol enter \u226530 / exit <27 (3-pt band) - Joint with regime cluster: BUG-026 (VIX pr",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -26598,22 +26598,28 @@
   ],
   "recent_commits": [
     {
+      "sha": "3f45e521",
+      "subject": "Pass 53 v8h+1: Phase 3 Batch 41 - Path B Step B (statsmodels + ADF + Chow tests)",
+      "author": "jeetmehta1991",
+      "rel_time": "18 minutes ago"
+    },
+    {
       "sha": "57fc539f",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 40 - Path C continuation (time-in-market + event-window macro correlation)",
       "author": "jeetmehta1991",
-      "rel_time": "44 minutes ago"
+      "rel_time": "63 minutes ago"
     },
     {
       "sha": "1d143592",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 39 - Path C statistical methodology continuation (Sharpe daily + tiered min trades + audit threshold)",
       "author": "jeetmehta1991",
-      "rel_time": "60 minutes ago"
+      "rel_time": "78 minutes ago"
     },
     {
       "sha": "8c8b0aca",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 38 - Path C statistical methodology implementation (Sortino + Deflated Sharpe + Cost Sensitivity)",
       "author": "jeetmehta1991",
-      "rel_time": "83 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "c32b58ba",
@@ -26625,13 +26631,13 @@
       "sha": "9a798135",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 36 - Path B Step 16 auto-proceed small themes (15 flips)",
       "author": "jeetmehta1991",
-      "rel_time": "10 hours ago"
+      "rel_time": "11 hours ago"
     },
     {
       "sha": "c3e4f4dd",
       "subject": "Pass 53 v8h+1: Phase 3 Batches 34+35 - Path B Steps 9-15 auto-proceed (13 flips)",
       "author": "jeetmehta1991",
-      "rel_time": "10 hours ago"
+      "rel_time": "11 hours ago"
     },
     {
       "sha": "34f32f71",
@@ -26649,19 +26655,19 @@
       "sha": "dafff2c1",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 31 - X4 Statistical Methodology audit (Path B Step 5)",
       "author": "jeetmehta1991",
-      "rel_time": "11 hours ago"
+      "rel_time": "12 hours ago"
     },
     {
       "sha": "4a129d79",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 30 - X53 Engine Bugs per-decision audit (Path B Step 4)",
       "author": "jeetmehta1991",
-      "rel_time": "11 hours ago"
+      "rel_time": "12 hours ago"
     },
     {
       "sha": "9e933201",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 29 - 54 SPEC_ONLY bulk-flipped RESOLVED-IMPLEMENTED-AS-DECIDED",
       "author": "jeetmehta1991",
-      "rel_time": "11 hours ago"
+      "rel_time": "12 hours ago"
     },
     {
       "sha": "a3894856",
@@ -26685,7 +26691,7 @@
       "sha": "99f04c48",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 25 - Path 2 implementation (owner-approved)",
       "author": "jeetmehta1991",
-      "rel_time": "12 hours ago"
+      "rel_time": "13 hours ago"
     },
     {
       "sha": "8354df3d",
@@ -26715,7 +26721,7 @@
       "sha": "6a3b572e",
       "subject": "Pass 53 v8h+1: BUG-95 CRITICAL Portfolio class RESOLVED-IMPLEMENTED (Sub-batch 5/5 - FINAL)",
       "author": "jeetmehta1991",
-      "rel_time": "13 hours ago"
+      "rel_time": "14 hours ago"
     },
     {
       "sha": "2b56e6e9",
@@ -26745,7 +26751,7 @@
       "sha": "b04abeb7",
       "subject": "Pass 53 auto-drift-sweep 2026-05-11 00:53: dashboard re-derive (no content drift)",
       "author": "jeetmehta1991",
-      "rel_time": "14 hours ago"
+      "rel_time": "15 hours ago"
     },
     {
       "sha": "5e68ae6c",
@@ -26770,17 +26776,11 @@
       "subject": "Pass 53 v8h+1: BUG-110 HIGH entry gap filter VERIFIED ENFORCED (stale audit finding)",
       "author": "jeetmehta1991",
       "rel_time": "16 hours ago"
-    },
-    {
-      "sha": "a571c1c6",
-      "subject": "Pass 53 v8h+1: BUG-80 HIGH exit slippage applied symmetrically (apply_exit_slippage helper + 2 wire-up sites)",
-      "author": "jeetmehta1991",
-      "rel_time": "16 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 4,
-    "modified": 4,
+    "count": 3,
+    "modified": 3,
     "added": 0,
     "untracked": 0,
     "deleted": 0,
@@ -26791,15 +26791,11 @@
       },
       {
         "status": "M",
-        "path": "backtest/results/metrics.py"
+        "path": "backtest/engine/regime_filter.py"
       },
       {
         "status": "M",
         "path": "backtest/tests/test_unit.py"
-      },
-      {
-        "status": "M",
-        "path": "requirements.txt"
       }
     ]
   },
@@ -26981,7 +26977,7 @@
     }
   ],
   "test_inventory": {
-    "total": 831,
+    "total": 836,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -27057,7 +27053,7 @@
       "test_stocktwits_smoke": 4,
       "test_supplementary_demo": 4,
       "test_supplementary_smoke": 6,
-      "test_unit": 169,
+      "test_unit": 174,
       "test_walk_forward_4fold": 6
     }
   },
@@ -27663,8 +27659,8 @@
     }
   ],
   "decision_status_counts": {
-    "RESOLVED-DECIDED": 163,
-    "RESOLVED-IMPLEMENTED": 174,
+    "RESOLVED-DECIDED": 161,
+    "RESOLVED-IMPLEMENTED": 176,
     "PARTIAL": 5,
     "PARTIAL-SPEC-ONLY": 46,
     "DEFERRED_TO_STAGE_3": 36,
