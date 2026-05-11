@@ -604,6 +604,203 @@ def _kelly_criterion(win_rate: float, avg_win: float, avg_loss: float) -> dict:
     }
 
 
+CANONICAL_BREAKDOWN_VARIABLES = (
+    "regime", "sector", "market_cap_band", "vol_band", "momentum_band",
+    "liquidity_band", "confidence_tier", "category", "direction",
+    "exit_method", "tier", "smart_money_score_band", "macro_score_band",
+    "sentiment_band", "earnings_window", "gap_band", "weekday",
+)
+
+
+def compute_per_bucket_metrics(df_trades, breakdown_var: str) -> dict:
+    """DEC-100 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 56 2026-05-11
+    (owner-approved Path C 5-DEC bundle). 17+ categorical breakdown
+    variables per Pass 52 turn 119 spec; the breakdown list is the
+    canonical input dimension set for DEC-422 cube aggregation.
+
+    For a given breakdown_var (must be a column in df_trades), groups
+    trades and returns dict {bucket_value: stats_dict}. stats_dict has
+    n / win_rate / avg_pnl_pct / total_roi_pct / profit_factor.
+
+    Returns empty dict on empty df, unknown column, or breakdown_var
+    not in CANONICAL_BREAKDOWN_VARIABLES (defensive against typos).
+    """
+    import pandas as pd
+    if df_trades is None or len(df_trades) == 0:
+        return {}
+    if breakdown_var not in CANONICAL_BREAKDOWN_VARIABLES:
+        return {}
+    if breakdown_var not in df_trades.columns:
+        return {}
+    out = {}
+    for bucket, g in df_trades.groupby(breakdown_var):
+        n = len(g)
+        if n == 0:
+            continue
+        wins = g[g["win"] == True] if "win" in g.columns else g[g["pnl_pct"] > 0]
+        win_rate = len(wins) / n
+        avg_pnl = float(g["pnl_pct"].mean())
+        total_roi = float(g["pnl_pct"].sum())
+        pf = _profit_factor(g["pnl_pct"])
+        out[str(bucket)] = {
+            "n":              n,
+            "win_rate":       round(win_rate, 4),
+            "avg_pnl_pct":    round(avg_pnl, 4),
+            "total_roi_pct":  round(total_roi, 4),
+            "profit_factor":  round(pf, 4) if pf != float("inf") else None,
+        }
+    return out
+
+
+def evaluates_pass(value: float, threshold: float, kind: str = "pass_ge") -> bool:
+    """DEC-284 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 56 2026-05-11
+    (owner-approved Path C 5-DEC bundle). Canonical pass/fail comparison
+    operator per Pass 52 turn 56 spec: STRICT-LESS-THAN for fail
+    thresholds, STRICT-GREATER-THAN-OR-EQUAL for pass thresholds.
+    Equality goes pass-side.
+
+    Examples:
+      Sharpe >= 0.5 -> evaluates_pass(value, 0.5, 'pass_ge')
+      Sharpe < 0.5  -> evaluates_pass(value, 0.5, 'fail_lt')  # invert if used as fail
+      trades >= 300 -> evaluates_pass(value, 300, 'pass_ge')
+
+    Inputs:
+      value: observed value
+      threshold: the threshold
+      kind: 'pass_ge' (default, returns value >= threshold)
+            or 'pass_le' for max-bound criteria (e.g., max_drawdown <= 20)
+
+    Returns bool. None inputs evaluate False (fail-closed).
+    """
+    if value is None or threshold is None:
+        return False
+    if kind == "pass_ge":
+        return float(value) >= float(threshold)
+    if kind == "pass_le":
+        return float(value) <= float(threshold)
+    return False
+
+
+def compute_per_regime_agent_verdict(
+    df_rules_only,
+    df_agent_overlay,
+    regimes=("bull", "neutral", "bear", "crisis"),
+    min_trades_per_regime: int = 30,
+) -> dict:
+    """DEC-209 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 56 2026-05-11
+    (owner-approved Path C 5-DEC bundle). Per-regime agent A/B verdict:
+    agents pass/fail SEPARATELY in each regime (Pass 45 spec).
+
+    For each regime, compares win_rate (rules-only) vs win_rate
+    (agent-overlay) on trades labeled with that regime. Verdict per
+    regime:
+      'AGENT_ADDS'    if agent_wr - rules_wr >= 0.03 (3pp lift)
+      'AGENT_HURTS'   if rules_wr - agent_wr >= 0.03
+      'NEUTRAL'       otherwise
+      'INSUFFICIENT_DATA' if either subset has < min_trades_per_regime
+
+    Returns dict {regime: {verdict, rules_wr, agent_wr, delta_pp,
+    n_rules, n_agent}}.
+    """
+    import pandas as pd
+    out = {}
+    if (df_rules_only is None or df_agent_overlay is None
+            or len(df_rules_only) == 0 or len(df_agent_overlay) == 0):
+        return {r: {"verdict": "INSUFFICIENT_DATA"} for r in regimes}
+    for r in regimes:
+        rules_r = df_rules_only[df_rules_only.get("regime", pd.Series([], dtype=str)).str.contains(r, na=False)]
+        agent_r = df_agent_overlay[df_agent_overlay.get("regime", pd.Series([], dtype=str)).str.contains(r, na=False)]
+        n_rules = len(rules_r)
+        n_agent = len(agent_r)
+        if n_rules < min_trades_per_regime or n_agent < min_trades_per_regime:
+            out[r] = {
+                "verdict":  "INSUFFICIENT_DATA",
+                "n_rules":  n_rules,
+                "n_agent":  n_agent,
+            }
+            continue
+        rules_wr = float(rules_r["win"].mean()) if "win" in rules_r.columns else None
+        agent_wr = float(agent_r["win"].mean()) if "win" in agent_r.columns else None
+        if rules_wr is None or agent_wr is None:
+            out[r] = {"verdict": "INSUFFICIENT_DATA",
+                      "n_rules": n_rules, "n_agent": n_agent}
+            continue
+        delta = agent_wr - rules_wr
+        if delta >= 0.03:    verdict = "AGENT_ADDS"
+        elif delta <= -0.03: verdict = "AGENT_HURTS"
+        else:                verdict = "NEUTRAL"
+        out[r] = {
+            "verdict":   verdict,
+            "rules_wr":  round(rules_wr, 4),
+            "agent_wr":  round(agent_wr, 4),
+            "delta_pp":  round(delta * 100, 2),
+            "n_rules":   n_rules,
+            "n_agent":   n_agent,
+        }
+    return out
+
+
+def compute_freshness_banner(
+    last_updated_iso,
+    now=None,
+    warn_threshold_hours: float = 24.0,
+) -> dict:
+    """DEC-287 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 56 2026-05-11
+    (owner-approved Path C 5-DEC bundle). Public site freshness signal
+    per Pass 52 turn 56 spec.
+
+    Inputs:
+      last_updated_iso: ISO-8601 string ('2026-05-11T08:30:00') or None
+        (None -> ERROR state: data missing entirely, never silent stale)
+      now: optional datetime override for testing (default: datetime.now)
+      warn_threshold_hours: hours threshold to flip from OK to WARN
+
+    Returns dict with state ('OK' / 'WARN' / 'ERROR'),
+    last_updated_display (str), age_hours (float or None),
+    banner_message (str for HTML rendering).
+
+    Module placement note: helper lives in metrics.py instead of
+    site_generator.py because site_generator.py contains pre-existing
+    non-ASCII chars (em-dashes, warning emoji, multiplication) in
+    display strings that would trip the ASCII C1 preflight rule. Helper
+    is computation-only; HTML rendering integration is downstream work.
+    """
+    from datetime import datetime
+    if last_updated_iso is None:
+        return {
+            "state":                 "ERROR",
+            "last_updated_display":  "unavailable",
+            "age_hours":             None,
+            "banner_message":        "Data fetch failed; please retry shortly.",
+        }
+    try:
+        last_dt = datetime.fromisoformat(str(last_updated_iso).replace("Z", "+00:00"))
+    except (ValueError, AttributeError):
+        return {
+            "state":                 "ERROR",
+            "last_updated_display":  "unavailable",
+            "age_hours":             None,
+            "banner_message":        "Data timestamp invalid; please retry shortly.",
+        }
+    now_dt = now if now is not None else datetime.now(tz=last_dt.tzinfo)
+    age_seconds = (now_dt - last_dt).total_seconds()
+    age_hours = age_seconds / 3600.0
+    display = last_dt.strftime("%Y-%m-%d %H:%M ET")
+    if age_hours > warn_threshold_hours:
+        return {
+            "state":                 "WARN",
+            "last_updated_display":  display,
+            "age_hours":             round(age_hours, 2),
+            "banner_message":        f"Data is {age_hours:.0f}h old; awaiting next refresh.",
+        }
+    return {
+        "state":                 "OK",
+        "last_updated_display":  display,
+        "age_hours":             round(age_hours, 2),
+        "banner_message":        f"Last updated: {display}",
+    }
+
+
 def detect_strategy_decay(
     sharpe_baseline: float,
     sharpe_recent: float,

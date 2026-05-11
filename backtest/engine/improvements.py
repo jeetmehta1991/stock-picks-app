@@ -494,6 +494,61 @@ def time_of_day_slippage_multiplier(entry_time) -> float:
     return 1.0
 
 
+def check_ohlcv_data_quality(
+    df,
+    gap_pct_threshold: float = 0.50,
+    max_consecutive_nan_days: int = 3,
+) -> dict:
+    """DEC-233 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 56 2026-05-11
+    (owner-approved Path C 5-DEC bundle). Per-ticker OHLCV data-quality
+    scan per Pass 52 turn 58 spec. Joint with DEC-260 (cache freshness
+    assertion) — DEC-260 catches stale caches, DEC-233 catches in-cache
+    anomalies.
+
+    Checks:
+      - has_nan_close: any NaN in close column
+      - n_nan_days: total count of NaN close days
+      - max_consecutive_nan_run: longest run of NaN closes
+      - has_extreme_gap: any single-day close-to-close move > gap_pct_threshold
+      - extreme_gap_count: count of such days
+
+    Returns dict with check flags + counts + DataQualityWarning bool
+    (True when any check breaches).
+
+    Thresholds tunable per DEC-233 REVISIT_AFTER_BACKTEST tag.
+    """
+    import pandas as pd
+    import numpy as np
+    if df is None or len(df) == 0 or "close" not in getattr(df, "columns", []):
+        return {
+            "DataQualityWarning": True,
+            "note":               "empty_or_missing_close_column",
+        }
+    close = pd.to_numeric(df["close"], errors="coerce")
+    n_nan = int(close.isna().sum())
+    # Compute longest consecutive-NaN run
+    if n_nan == 0:
+        max_run = 0
+    else:
+        groups = (close.notna() != close.notna().shift()).cumsum()
+        nan_runs = close.isna().groupby(groups).sum()
+        max_run = int(nan_runs.max()) if len(nan_runs) > 0 else 0
+    # Extreme gap detection on non-NaN close-to-close
+    pct = close.pct_change().abs()
+    extreme = pct > gap_pct_threshold
+    n_extreme = int(extreme.sum())
+    warning = (n_nan > 0 and max_run >= max_consecutive_nan_days) or (n_extreme > 0)
+    return {
+        "DataQualityWarning":    bool(warning),
+        "has_nan_close":         n_nan > 0,
+        "n_nan_days":            n_nan,
+        "max_consecutive_nan_run": max_run,
+        "has_extreme_gap":       n_extreme > 0,
+        "extreme_gap_count":     n_extreme,
+        "note":                  "ok" if not warning else "review_required",
+    }
+
+
 def per_ticker_30day_max_loss_check(
     trade_log_df,
     today,

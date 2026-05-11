@@ -2999,6 +2999,194 @@ def test_dec_135_per_ticker_max_loss_empty_or_missing_cols():
 
 
 # ============================================================================
+# Phase 3 Batch 56 Path C 5-DEC bundle (owner directive >= 5 DECs/batch):
+# DEC-100 (17+ categorical breakdown vars) + DEC-209 (per-regime agent verdicts)
+# + DEC-233 (OHLCV data quality scan) + DEC-284 (borderline pass/fail policy)
+# + DEC-287 (public site freshness signal)
+# ============================================================================
+
+# --- DEC-100 categorical breakdown variables ------------------------------
+
+def test_dec_100_canonical_breakdown_variables_includes_required():
+    """DEC-100: canonical list contains the required dimensions per spec."""
+    from backtest.results.metrics import CANONICAL_BREAKDOWN_VARIABLES
+    assert len(CANONICAL_BREAKDOWN_VARIABLES) >= 17
+    for required in ("regime", "sector", "market_cap_band", "vol_band",
+                     "momentum_band", "liquidity_band"):
+        assert required in CANONICAL_BREAKDOWN_VARIABLES
+
+
+def test_dec_100_per_bucket_metrics_groups_correctly():
+    """DEC-100: per-bucket metrics returns per-sector aggregation."""
+    import pandas as pd
+    from backtest.results.metrics import compute_per_bucket_metrics
+    df = pd.DataFrame([
+        {"sector": "Tech", "win": True,  "pnl_pct": 2.0},
+        {"sector": "Tech", "win": True,  "pnl_pct": 3.0},
+        {"sector": "Tech", "win": False, "pnl_pct": -1.0},
+        {"sector": "Energy", "win": True, "pnl_pct": 5.0},
+        {"sector": "Energy", "win": False, "pnl_pct": -2.0},
+    ])
+    out = compute_per_bucket_metrics(df, "sector")
+    assert "Tech" in out and "Energy" in out
+    assert out["Tech"]["n"] == 3
+    assert abs(out["Tech"]["win_rate"] - round(2/3, 4)) < 1e-6
+    assert out["Energy"]["n"] == 2
+    assert abs(out["Energy"]["win_rate"] - 0.5) < 1e-6
+
+
+def test_dec_100_per_bucket_metrics_rejects_unknown_var():
+    """DEC-100: unknown breakdown_var -> empty dict (defensive)."""
+    import pandas as pd
+    from backtest.results.metrics import compute_per_bucket_metrics
+    df = pd.DataFrame([{"sector": "Tech", "win": True, "pnl_pct": 1.0}])
+    assert compute_per_bucket_metrics(df, "not_in_canonical_list") == {}
+
+
+# --- DEC-209 per-regime agent A/B verdicts --------------------------------
+
+def test_dec_209_agent_adds_when_lift_above_3pp():
+    """DEC-209: agent overlay improves win_rate >= 3pp -> AGENT_ADDS."""
+    import pandas as pd
+    from backtest.results.metrics import compute_per_regime_agent_verdict
+    rules = pd.DataFrame([
+        {"regime": "bull", "win": i % 2 == 0} for i in range(100)
+    ])  # rules wr 50%
+    agent = pd.DataFrame([
+        {"regime": "bull", "win": i < 60} for i in range(100)
+    ])  # agent wr 60%
+    out = compute_per_regime_agent_verdict(rules, agent, regimes=("bull",))
+    assert out["bull"]["verdict"] == "AGENT_ADDS"
+    assert out["bull"]["delta_pp"] >= 3.0
+
+
+def test_dec_209_agent_hurts_when_loss_above_3pp():
+    """DEC-209: agent overlay drops win_rate >= 3pp -> AGENT_HURTS."""
+    import pandas as pd
+    from backtest.results.metrics import compute_per_regime_agent_verdict
+    rules = pd.DataFrame([{"regime": "bear", "win": i < 60} for i in range(100)])
+    agent = pd.DataFrame([{"regime": "bear", "win": i < 40} for i in range(100)])
+    out = compute_per_regime_agent_verdict(rules, agent, regimes=("bear",))
+    assert out["bear"]["verdict"] == "AGENT_HURTS"
+
+
+def test_dec_209_insufficient_data_below_min_trades():
+    """DEC-209: subset below min_trades_per_regime -> INSUFFICIENT_DATA."""
+    import pandas as pd
+    from backtest.results.metrics import compute_per_regime_agent_verdict
+    rules = pd.DataFrame([{"regime": "neutral", "win": True} for _ in range(10)])
+    agent = pd.DataFrame([{"regime": "neutral", "win": True} for _ in range(10)])
+    out = compute_per_regime_agent_verdict(rules, agent, regimes=("neutral",),
+                                           min_trades_per_regime=30)
+    assert out["neutral"]["verdict"] == "INSUFFICIENT_DATA"
+
+
+# --- DEC-233 OHLCV data quality scan --------------------------------------
+
+def test_dec_233_data_quality_clean_series_no_warning():
+    """DEC-233: clean OHLCV with no NaN and no extreme gaps -> no warning."""
+    import pandas as pd
+    from backtest.engine.improvements import check_ohlcv_data_quality
+    df = pd.DataFrame({"close": [100 + 0.5 * i for i in range(30)]})
+    out = check_ohlcv_data_quality(df)
+    assert out["DataQualityWarning"] is False
+    assert out["has_nan_close"] is False
+    assert out["has_extreme_gap"] is False
+
+
+def test_dec_233_data_quality_extreme_gap_triggers_warning():
+    """DEC-233 spec test signal: 50%+ single-day price gap -> anomaly flag."""
+    import pandas as pd
+    from backtest.engine.improvements import check_ohlcv_data_quality
+    df = pd.DataFrame({"close": [100, 101, 102, 200, 199]})  # 96% jump
+    out = check_ohlcv_data_quality(df, gap_pct_threshold=0.50)
+    assert out["has_extreme_gap"] is True
+    assert out["DataQualityWarning"] is True
+
+
+def test_dec_233_data_quality_consecutive_nan_triggers_warning():
+    """DEC-233: max_consecutive_nan_days breached -> warning."""
+    import pandas as pd
+    import numpy as np
+    from backtest.engine.improvements import check_ohlcv_data_quality
+    df = pd.DataFrame({"close": [100, 101, np.nan, np.nan, np.nan, np.nan, 102]})
+    out = check_ohlcv_data_quality(df, max_consecutive_nan_days=3)
+    assert out["has_nan_close"] is True
+    assert out["max_consecutive_nan_run"] >= 3
+    assert out["DataQualityWarning"] is True
+
+
+def test_dec_233_data_quality_empty_df_returns_warning():
+    """DEC-233: empty df -> warning (no data to validate is itself a problem)."""
+    import pandas as pd
+    from backtest.engine.improvements import check_ohlcv_data_quality
+    out = check_ohlcv_data_quality(pd.DataFrame())
+    assert out["DataQualityWarning"] is True
+
+
+# --- DEC-284 borderline pass/fail policy ----------------------------------
+
+def test_dec_284_strict_ge_passes_at_threshold():
+    """DEC-284 spec: Sharpe >= 0.5 passes; equality goes pass-side."""
+    from backtest.results.metrics import evaluates_pass
+    assert evaluates_pass(0.50, 0.50, "pass_ge") is True
+    assert evaluates_pass(0.51, 0.50, "pass_ge") is True
+    assert evaluates_pass(0.49, 0.50, "pass_ge") is False
+
+
+def test_dec_284_strict_le_passes_at_threshold():
+    """DEC-284: max-drawdown <= 20 passes; equality goes pass-side."""
+    from backtest.results.metrics import evaluates_pass
+    assert evaluates_pass(20.0, 20.0, "pass_le") is True
+    assert evaluates_pass(19.9, 20.0, "pass_le") is True
+    assert evaluates_pass(20.1, 20.0, "pass_le") is False
+
+
+def test_dec_284_fails_closed_on_none():
+    """DEC-284: None inputs fail-closed (never spuriously pass)."""
+    from backtest.results.metrics import evaluates_pass
+    assert evaluates_pass(None, 0.5, "pass_ge") is False
+    assert evaluates_pass(1.0, None, "pass_ge") is False
+
+
+# --- DEC-287 public site freshness signal --------------------------------
+
+def test_dec_287_freshness_state_ok_when_recent():
+    """DEC-287: age <= 24h -> OK state."""
+    from datetime import datetime, timedelta
+    from backtest.results.metrics import compute_freshness_banner
+    last = (datetime(2026, 5, 11, 8, 30) - timedelta(hours=2)).isoformat()
+    out = compute_freshness_banner(last, now=datetime(2026, 5, 11, 8, 30))
+    assert out["state"] == "OK"
+    assert out["age_hours"] is not None
+
+
+def test_dec_287_freshness_state_warn_when_stale():
+    """DEC-287 spec test signal: >24h stale -> WARN banner."""
+    from datetime import datetime, timedelta
+    from backtest.results.metrics import compute_freshness_banner
+    last = (datetime(2026, 5, 11, 8, 30) - timedelta(hours=48)).isoformat()
+    out = compute_freshness_banner(last, now=datetime(2026, 5, 11, 8, 30))
+    assert out["state"] == "WARN"
+    assert "h old" in out["banner_message"]
+
+
+def test_dec_287_freshness_state_error_when_missing():
+    """DEC-287 spec test signal: fetch failure -> ERROR state (not silent stale)."""
+    from backtest.results.metrics import compute_freshness_banner
+    out = compute_freshness_banner(None)
+    assert out["state"] == "ERROR"
+    assert "retry" in out["banner_message"].lower()
+
+
+def test_dec_287_freshness_state_error_on_invalid_iso():
+    """DEC-287: invalid timestamp -> ERROR (not silent stale)."""
+    from backtest.results.metrics import compute_freshness_banner
+    out = compute_freshness_banner("not-an-iso-date")
+    assert out["state"] == "ERROR"
+
+
+# ============================================================================
 # DEC-432 Chandelier exit indicator tests (Phase 3 Batch 53 Path C)
 # Parabolic SAR + Supertrend already implemented; only chandelier added.
 # ============================================================================
