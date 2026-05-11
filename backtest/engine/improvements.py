@@ -494,6 +494,98 @@ def time_of_day_slippage_multiplier(entry_time) -> float:
     return 1.0
 
 
+STAGE_3_TEST_COVERAGE_THRESHOLD = 0.90  # DEC-098 owner override 90%
+MEMORY_CAP_MB_DEFAULT = 4096            # DEC-179 default cap 4GB
+
+
+def check_test_coverage_threshold(
+    coverage_xml_path,
+    threshold: float = STAGE_3_TEST_COVERAGE_THRESHOLD,
+) -> dict:
+    """DEC-098 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 57 2026-05-11
+    (owner-approved Path C 5-DEC bundle). Test coverage gate per Pass 52
+    turn 58 owner-overridden spec (90% target, raised from original 70%).
+    Stage-3 paper-trading gate: `pytest --cov=backtest --cov-fail-under=90`
+    must pass in CI.
+
+    Parses pytest-cov coverage.xml and returns pass/fail vs threshold.
+
+    Inputs:
+      coverage_xml_path: path to coverage.xml emitted by pytest-cov
+      threshold: required fraction (default 0.90)
+
+    Returns dict with:
+      coverage_pct: float 0-1
+      threshold:    float 0-1
+      passes:       bool
+      note:         status string
+
+    Missing file or unparseable XML returns coverage_pct=None and
+    note='coverage_unavailable'. Caller decides whether to treat
+    'coverage_unavailable' as gate-fail (fail-closed for CI) or skip
+    (when running pre-coverage-instrumentation).
+    """
+    import os
+    from pathlib import Path
+    try:
+        import xml.etree.ElementTree as ET
+    except ImportError:
+        return {"coverage_pct": None, "threshold": threshold,
+                "passes": False, "note": "xml_lib_unavailable"}
+    p = Path(coverage_xml_path) if coverage_xml_path else None
+    if p is None or not p.exists():
+        return {"coverage_pct": None, "threshold": threshold,
+                "passes": False, "note": "coverage_unavailable"}
+    try:
+        tree = ET.parse(str(p))
+        root = tree.getroot()
+        line_rate = float(root.attrib.get("line-rate", "0") or 0)
+    except (ET.ParseError, ValueError):
+        return {"coverage_pct": None, "threshold": threshold,
+                "passes": False, "note": "coverage_unavailable"}
+    return {
+        "coverage_pct": round(line_rate, 4),
+        "threshold":    threshold,
+        "passes":       bool(line_rate >= threshold),
+        "note":         "ok" if line_rate >= threshold else "below_threshold",
+    }
+
+
+def get_process_memory_mb() -> float:
+    """DEC-179 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 57 2026-05-11
+    (owner-approved Path C 5-DEC bundle). Returns current process RSS
+    in MB. Uses psutil when available; falls back to resource module
+    (Unix) or returns -1.0 (Windows without psutil) for graceful
+    degradation.
+    """
+    try:
+        import psutil
+        return float(psutil.Process().memory_info().rss / (1024.0 * 1024.0))
+    except ImportError:
+        pass
+    try:
+        import resource
+        # Unix: ru_maxrss in KB on Linux, bytes on macOS
+        ru_maxrss = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+        return float(ru_maxrss / 1024.0)  # assume Linux KB convention
+    except (ImportError, AttributeError):
+        return -1.0
+
+
+def check_memory_cap(cap_mb: float = MEMORY_CAP_MB_DEFAULT) -> dict:
+    """DEC-179: returns dict with current_mb, cap_mb, breached bool.
+    Caller decides whether to abort run (raise) or just log warning.
+    Engine consumption deferred; current scope is helper.
+    """
+    current = get_process_memory_mb()
+    return {
+        "current_mb": round(current, 2) if current >= 0 else None,
+        "cap_mb":     float(cap_mb),
+        "breached":   bool(current > cap_mb) if current >= 0 else False,
+        "note":       "ok" if current <= cap_mb else "MEMORY_CAP_BREACHED",
+    }
+
+
 def check_ohlcv_data_quality(
     df,
     gap_pct_threshold: float = 0.50,

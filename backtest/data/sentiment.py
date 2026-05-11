@@ -130,6 +130,44 @@ def get_aaii_sentiment(as_of: date) -> dict:
 # For Stage 3+ live trading: scrape CNN directly.
 # ---------------------------------------------------------------------------
 
+# DEC-333 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 57 2026-05-11
+# (owner-approved Path C 5-DEC bundle). CNN's PUBLISHED bands per
+# cnn.com/markets/fear-and-greed (Pass 52 turn audit; CAV-noted):
+#   Extreme Fear:  0-25
+#   Fear:         26-45
+#   Neutral:      46-55
+#   Greed:        56-75
+#   Extreme Greed: 76-100
+# Prior internal thresholds (20/35/65/80) did NOT match CNN's published
+# bands; downstream consumers reading "Extreme Fear" expected CNN's
+# definition. New CNN_FG_BANDS constant captures canonical breakpoints;
+# cnn_fg_band(value) helper maps a numeric reading to its band label.
+CNN_FG_BANDS = (
+    (0,   25,  "extreme_fear"),
+    (26,  45,  "fear"),
+    (46,  55,  "neutral"),
+    (56,  75,  "greed"),
+    (76,  100, "extreme_greed"),
+)
+
+
+def cnn_fg_band(value: Optional[float]) -> str:
+    """DEC-333: map a CNN F&G numeric reading to its canonical band label.
+    Returns 'unknown' on None or out-of-range input.
+    """
+    if value is None:
+        return "unknown"
+    try:
+        v = float(value)
+    except (TypeError, ValueError):
+        return "unknown"
+    if v < 0 or v > 100:
+        return "unknown"
+    for lo, hi, label in CNN_FG_BANDS:
+        if lo <= v <= hi:
+            return label
+    return "unknown"
+
 _CNN_DF: Optional[pd.DataFrame] = None
 
 

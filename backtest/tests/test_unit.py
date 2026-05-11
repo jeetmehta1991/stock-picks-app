@@ -3187,6 +3187,217 @@ def test_dec_287_freshness_state_error_on_invalid_iso():
 
 
 # ============================================================================
+# Phase 3 Batch 57 Path C 5-DEC bundle (owner directive >= 5 DECs/batch):
+# DEC-076 (factor exposure breaker) + DEC-098 (90% coverage gate helper)
+# + DEC-179 (memory profiling) + DEC-325 (institutional 13F filing_date PIT)
+# + DEC-333 (CNN F&G canonical bands)
+# ============================================================================
+
+# --- DEC-076 factor exposure breaker --------------------------------------
+
+def test_dec_076_factor_concentration_no_breach_when_diversified():
+    """DEC-076: diversified portfolio (each sector < 30%) -> no breach."""
+    from datetime import date
+    from backtest.engine.portfolio import Portfolio
+    p = Portfolio(starting_capital=100_000.0)
+    p.add_position("AAPL", "Tech", "long", entry_price=100.0,
+                   size_pct=0.10, entry_date=date(2024, 1, 1))
+    p.add_position("JPM", "Financials", "long", entry_price=100.0,
+                   size_pct=0.10, entry_date=date(2024, 1, 1))
+    p.add_position("XOM", "Energy", "long", entry_price=100.0,
+                   size_pct=0.10, entry_date=date(2024, 1, 1))
+    out = p.factor_concentration_breach(sector_threshold_pct=30.0)
+    assert out["any_breach"] is False
+    assert out["sector_breaches"] == []
+
+
+def test_dec_076_factor_concentration_breach_when_concentrated():
+    """DEC-076: concentrated portfolio (>30% in one sector) -> breach flag."""
+    from datetime import date
+    from backtest.engine.portfolio import Portfolio
+    p = Portfolio(starting_capital=100_000.0)
+    p.add_position("AAPL", "Tech", "long", entry_price=100.0,
+                   size_pct=0.20, entry_date=date(2024, 1, 1))
+    p.add_position("MSFT", "Tech", "long", entry_price=100.0,
+                   size_pct=0.20, entry_date=date(2024, 1, 1))
+    out = p.factor_concentration_breach(sector_threshold_pct=30.0)
+    assert out["any_breach"] is True
+    assert "Tech" in out["sector_breaches"]
+
+
+def test_dec_076_factor_concentration_empty_portfolio():
+    """DEC-076: empty portfolio -> no breaches."""
+    from backtest.engine.portfolio import Portfolio
+    p = Portfolio(starting_capital=100_000.0)
+    out = p.factor_concentration_breach()
+    assert out["any_breach"] is False
+    assert out["max_sector"] is None
+
+
+# --- DEC-098 test coverage gate helper ------------------------------------
+
+def test_dec_098_coverage_threshold_constant_is_90pct():
+    """DEC-098: owner-overridden threshold is 90% (not 70%)."""
+    from backtest.engine.improvements import STAGE_3_TEST_COVERAGE_THRESHOLD
+    assert STAGE_3_TEST_COVERAGE_THRESHOLD == 0.90
+
+
+def test_dec_098_coverage_missing_xml_returns_unavailable():
+    """DEC-098: missing coverage.xml -> coverage_unavailable + fail."""
+    from backtest.engine.improvements import check_test_coverage_threshold
+    out = check_test_coverage_threshold("/nonexistent/coverage.xml")
+    assert out["coverage_pct"] is None
+    assert out["passes"] is False
+    assert out["note"] == "coverage_unavailable"
+
+
+def test_dec_098_coverage_parses_xml_passes_above_threshold(tmp_path):
+    """DEC-098: synthetic coverage.xml at 0.95 line-rate -> passes."""
+    from backtest.engine.improvements import check_test_coverage_threshold
+    xml = tmp_path / "coverage.xml"
+    xml.write_text('<?xml version="1.0"?>\n<coverage line-rate="0.95"></coverage>')
+    out = check_test_coverage_threshold(str(xml), threshold=0.90)
+    assert out["passes"] is True
+    assert out["coverage_pct"] == 0.95
+
+
+def test_dec_098_coverage_parses_xml_fails_below_threshold(tmp_path):
+    """DEC-098: synthetic coverage.xml at 0.65 -> fails 90% threshold."""
+    from backtest.engine.improvements import check_test_coverage_threshold
+    xml = tmp_path / "coverage.xml"
+    xml.write_text('<?xml version="1.0"?>\n<coverage line-rate="0.65"></coverage>')
+    out = check_test_coverage_threshold(str(xml), threshold=0.90)
+    assert out["passes"] is False
+    assert out["note"] == "below_threshold"
+
+
+# --- DEC-179 memory profiling helper --------------------------------------
+
+def test_dec_179_get_process_memory_returns_positive_or_neg_one():
+    """DEC-179: returns positive MB when psutil/resource available;
+    -1.0 on Windows-without-psutil fallback (graceful).
+    """
+    from backtest.engine.improvements import get_process_memory_mb
+    mb = get_process_memory_mb()
+    assert mb > 0 or mb == -1.0
+
+
+def test_dec_179_check_memory_cap_not_breached_with_high_cap():
+    """DEC-179: cap >> current -> breached=False."""
+    from backtest.engine.improvements import check_memory_cap
+    out = check_memory_cap(cap_mb=1_000_000)
+    assert out["breached"] is False
+    assert out["cap_mb"] == 1_000_000.0
+
+
+def test_dec_179_check_memory_cap_breached_with_low_cap():
+    """DEC-179: cap = 1 MB -> almost certainly breached for python process."""
+    from backtest.engine.improvements import check_memory_cap, get_process_memory_mb
+    if get_process_memory_mb() < 0:
+        return  # skip on platforms where memory profiling unavailable
+    out = check_memory_cap(cap_mb=1.0)
+    assert out["breached"] is True
+    assert out["note"] == "MEMORY_CAP_BREACHED"
+
+
+# --- DEC-325 institutional 13F filing_date PIT ---------------------------
+
+def test_dec_325_get_institutional_positions_prefers_filing_date():
+    """DEC-325: filing_date present -> filter by filing_date <= as_of
+    NOT by ReportPeriod + 45 (which silently drops late filers).
+    """
+    import pandas as pd
+    from datetime import date
+    from unittest.mock import patch
+    df = pd.DataFrame([
+        {"Ticker": "AAPL", "Fund": "BigFundA",
+         "ReportPeriod": "2024-03-31", "filing_date": "2024-08-01",
+         "Change_Share": 1000, "Change_Pct": 0.5},
+        {"Ticker": "AAPL", "Fund": "BigFundB",
+         "ReportPeriod": "2024-03-31", "filing_date": "2024-05-10",
+         "Change_Share": 500, "Change_Pct": 0.2},
+    ])
+    with patch("backtest.data.smart_money._load_quiver_bulk", return_value=df), \
+         patch("backtest.data.smart_money._filter_bulk_by_ticker", return_value=df):
+        from backtest.data.smart_money import get_institutional_positions
+        out = get_institutional_positions("AAPL", as_of=date(2024, 6, 1))
+        funds = set(out["Fund"].tolist())
+        assert "BigFundB" in funds
+        assert "BigFundA" not in funds
+
+
+def test_dec_325_get_institutional_positions_visible_after_filing():
+    """DEC-325: late filer becomes visible once filing_date <= as_of."""
+    import pandas as pd
+    from datetime import date
+    from unittest.mock import patch
+    df = pd.DataFrame([
+        {"Ticker": "AAPL", "Fund": "LateFund",
+         "ReportPeriod": "2024-03-31", "filing_date": "2024-08-01",
+         "Change_Share": 1000, "Change_Pct": 0.5},
+    ])
+    with patch("backtest.data.smart_money._load_quiver_bulk", return_value=df), \
+         patch("backtest.data.smart_money._filter_bulk_by_ticker", return_value=df):
+        from backtest.data.smart_money import get_institutional_positions
+        out = get_institutional_positions("AAPL", as_of=date(2024, 8, 15))
+        assert "LateFund" in set(out["Fund"].tolist())
+
+
+def test_dec_325_get_institutional_positions_fallback_to_report_period():
+    """DEC-325: no filing_date column -> falls back to ReportPeriod+45 estimate."""
+    import pandas as pd
+    from datetime import date
+    from unittest.mock import patch
+    df = pd.DataFrame([
+        {"Ticker": "AAPL", "Fund": "F",
+         "ReportPeriod": "2024-03-31", "Change_Share": 1000, "Change_Pct": 0.5},
+    ])
+    with patch("backtest.data.smart_money._load_quiver_bulk", return_value=df), \
+         patch("backtest.data.smart_money._filter_bulk_by_ticker", return_value=df):
+        from backtest.data.smart_money import get_institutional_positions
+        out = get_institutional_positions("AAPL", as_of=date(2024, 6, 1))
+        assert len(out) == 1
+
+
+# --- DEC-333 CNN F&G canonical bands -------------------------------------
+
+def test_dec_333_cnn_fg_band_extreme_fear():
+    """DEC-333: CNN published Extreme Fear band 0-25."""
+    from backtest.data.sentiment import cnn_fg_band
+    assert cnn_fg_band(0) == "extreme_fear"
+    assert cnn_fg_band(15) == "extreme_fear"
+    assert cnn_fg_band(25) == "extreme_fear"
+    assert cnn_fg_band(26) == "fear"
+
+
+def test_dec_333_cnn_fg_band_neutral():
+    """DEC-333: CNN published Neutral band 46-55."""
+    from backtest.data.sentiment import cnn_fg_band
+    assert cnn_fg_band(46) == "neutral"
+    assert cnn_fg_band(50) == "neutral"
+    assert cnn_fg_band(55) == "neutral"
+    assert cnn_fg_band(45) == "fear"
+    assert cnn_fg_band(56) == "greed"
+
+
+def test_dec_333_cnn_fg_band_extreme_greed():
+    """DEC-333: CNN published Extreme Greed band 76-100."""
+    from backtest.data.sentiment import cnn_fg_band
+    assert cnn_fg_band(76) == "extreme_greed"
+    assert cnn_fg_band(100) == "extreme_greed"
+    assert cnn_fg_band(75) == "greed"
+
+
+def test_dec_333_cnn_fg_band_invalid_inputs():
+    """DEC-333: None / out-of-range / non-numeric -> 'unknown'."""
+    from backtest.data.sentiment import cnn_fg_band
+    assert cnn_fg_band(None) == "unknown"
+    assert cnn_fg_band(-5) == "unknown"
+    assert cnn_fg_band(150) == "unknown"
+    assert cnn_fg_band("garbage") == "unknown"
+
+
+# ============================================================================
 # DEC-432 Chandelier exit indicator tests (Phase 3 Batch 53 Path C)
 # Parabolic SAR + Supertrend already implemented; only chandelier added.
 # ============================================================================

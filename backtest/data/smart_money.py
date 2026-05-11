@@ -434,6 +434,56 @@ def insider_signal(ticker: str, as_of: date, lookback_days: int = 30) -> dict:
 # INSTITUTIONAL (13F)
 # -----------------------------------------------------------------------------
 
+def get_institutional_positions(ticker: str, as_of: date):
+    """DEC-325 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 57 2026-05-11
+    (owner-approved Path C 5-DEC bundle). PIT-correct institutional 13F
+    lookup per Pass 52 spec: filter by actual `filing_date` from SEC
+    when available (NOT the universal-on-time assumption of
+    `quarter_end + 45 <= D` used in institutional_signal for legacy
+    compat).
+
+    Late filers (some big funds file 60-90 days after quarter end)
+    become VISIBLE under filing_date filter — the universal-on-time
+    assumption silently dropped them per DEC-325 / CAV-046.
+
+    Falls back to ReportPeriod + 45 estimate when no filing_date column
+    exists in the source data (sec13fchanges currently has only
+    ReportPeriod; sec13f raw has fileDate). Caller-side decides whether
+    fallback is acceptable.
+
+    Inputs:
+      ticker: ticker symbol
+      as_of: PIT date
+
+    Returns DataFrame (possibly empty) of institutional positions
+    visible at as_of. Each row preserves the source columns
+    (Fund, Change_Share, Change_Pct, Held, etc.).
+
+    Joint with BUG-241 (late-filer visibility) + BUG-186 (PIT
+    correctness) + DEC-396 sub-decision.
+    """
+    bulk = _load_quiver_bulk("sec13fchanges")
+    df = _filter_bulk_by_ticker(bulk, ticker)
+    if df is None or df.empty:
+        return df
+    df = df.copy()
+    # Prefer actual filing_date when present
+    if "filing_date" in df.columns:
+        df["filing_date"] = pd.to_datetime(df["filing_date"], errors="coerce").dt.date
+        return df[df["filing_date"].notna() & (df["filing_date"] <= as_of)]
+    if "fileDate" in df.columns:
+        df["filing_date"] = pd.to_datetime(df["fileDate"], errors="coerce").dt.date
+        return df[df["filing_date"].notna() & (df["filing_date"] <= as_of)]
+    # Fallback: ReportPeriod + 45 days (legacy assumption; caller warned)
+    if "ReportPeriod" in df.columns:
+        df["report_period"] = pd.to_datetime(df["ReportPeriod"], errors="coerce").dt.date
+        df["available_after"] = df["report_period"].apply(
+            lambda d: d + timedelta(days=45) if d else None)
+        return df[df["available_after"].notna()
+                  & (df["available_after"] <= as_of)]
+    return df.iloc[0:0]  # no date column -> empty
+
+
 def institutional_signal(ticker: str, as_of: date) -> dict:
     """13F institutional holdings signal from Quiver `live/sec13fchanges` bulk feed.
 

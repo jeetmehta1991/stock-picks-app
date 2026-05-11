@@ -225,6 +225,44 @@ class Portfolio:
         if benchmark_price > 0:
             self.benchmark_curve.append((today, float(benchmark_price)))
 
+    def factor_concentration_breach(
+        self,
+        sector_threshold_pct: float = 30.0,
+        prices=None,
+    ) -> dict:
+        """DEC-076 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 57 2026-05-11
+        (owner-approved Path C 5-DEC bundle). Factor exposure breaker per
+        Pass 52 turn 30 scope correction: when aggregate exposure to a
+        single factor exceeds threshold, flag breach so caller can halt
+        new entries in that factor.
+
+        Inputs:
+          sector_threshold_pct: max % of total equity in one sector (default 30)
+          prices: optional ticker -> price dict for mark-to-market
+
+        Returns dict with:
+          sector_breaches: list of sector names exceeding threshold
+          max_sector: (name, pct) of largest single-sector exposure
+          any_breach: bool
+
+        Engine consumption (gate new entries by factor when breach detected)
+        deferred to follow-on decision; current scope is detection helper.
+        Beta / momentum / size factor extensions deferred -- DEC-076 scope
+        is sector to start; other factors require richer position metadata.
+        """
+        exposure = self.exposure_by_sector(prices)
+        if not exposure:
+            return {"sector_breaches": [], "max_sector": None,
+                    "any_breach": False}
+        threshold_decimal = sector_threshold_pct / 100.0
+        breaches = [s for s, pct in exposure.items() if pct > threshold_decimal]
+        max_sector = max(exposure.items(), key=lambda x: x[1])
+        return {
+            "sector_breaches": sorted(breaches),
+            "max_sector":      (max_sector[0], round(max_sector[1] * 100, 2)),
+            "any_breach":      len(breaches) > 0,
+        }
+
     def drawdown_size_multiplier(self) -> float:
         """DEC-091 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 54 2026-05-11
         (owner-approved Path C; closes DEC-022 SUPERSEDED_BY_DEC-091).
