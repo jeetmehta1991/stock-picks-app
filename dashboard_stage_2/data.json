@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-11T03:36:29.409193+00:00",
+  "generated_at": "2026-05-11T03:49:21.893275+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -43,8 +43,8 @@
     },
     {
       "id": "DECISION-002",
-      "title": "Polygon News evaluation",
-      "status": "RESOLVED-DECIDED",
+      "title": "Polygon News evaluation Pass 53 v8h+1 Phase 3 Batch 29 2026-05-10 RESOLVED-IMPLEMENTED-AS-DECIDED (owner-approved Path B Step 3 bulk flip): planning/architectur",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Phase 0 / Architecture",
       "pass_intro": "Pass 19",
       "pass_resolved": "19",
@@ -75,16 +75,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-003",
-      "title": "Phase 0 inclusion in PROJECT_PLAN",
-      "status": "RESOLVED-DECIDED",
+      "title": "Phase 0 inclusion in PROJECT_PLAN Pass 53 v8h+1 Phase 3 Batch 29 2026-05-10 RESOLVED-IMPLEMENTED-AS-DECIDED (owner-approved Path B Step 3 bulk flip): planning/a",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Phase 0 / Architecture",
       "pass_intro": "Pass 19",
       "pass_resolved": "19",
@@ -115,16 +115,16 @@
       "dependencies": "-",
       "description": "**Status:** RESOLVED **Decision:** Approved **User comment:** \"Approved. but need realistic compression options\" **Compression options provided in Section B above.**",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-004",
-      "title": "Phase 0.A scope",
-      "status": "RESOLVED-DECIDED",
+      "title": "Phase 0.A scope Pass 53 v8h+1 Phase 3 Batch 29 2026-05-10 RESOLVED-IMPLEMENTED-AS-DECIDED (owner-approved Path B Step 3 bulk flip): planning/architecture/vendor",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Phase 0 / Architecture",
       "pass_intro": "Pass 19",
       "pass_resolved": "19",
@@ -155,16 +155,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-005",
-      "title": "Strategy count target \u2014 130 strategies + OpenBB+Polygon fundamentals",
-      "status": "RESOLVED-DECIDED",
+      "title": "Strategy count target \u2014 130 strategies + OpenBB+Polygon fundamentals Pass 53 v8h+1 Phase 3 Batch 29 2026-05-10 RESOLVED-IMPLEMENTED-AS-DECIDED (owner-approved P",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Phase 0 / Architecture",
       "pass_intro": "Pass 19",
       "pass_resolved": "19",
@@ -195,10 +195,10 @@
       "dependencies": "-",
       "description": "**Status:** RESOLVED (re-confirmed) **Decision:** ~130 strategies, fundamentals via OpenBB+Polygon as agent context **User Finding 1 follow-up:** \"need to ensure all the right context is passed to fundamental agent\" **Action:** Section A above provides complete Fundamental Agent ",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -243,8 +243,8 @@
     },
     {
       "id": "DECISION-007",
-      "title": "Phase 0 timeline (7-12 months path to live)",
-      "status": "RESOLVED-DECIDED",
+      "title": "Phase 0 timeline (7-12 months path to live) Pass 53 v8h+1 Phase 3 Batch 29 2026-05-10 RESOLVED-IMPLEMENTED-AS-DECIDED (owner-approved Path B Step 3 bulk flip): ",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Phase 0 / Architecture",
       "pass_intro": "Pass 19",
       "pass_resolved": "19",
@@ -275,10 +275,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -1203,8 +1203,8 @@
     },
     {
       "id": "DECISION-039",
-      "title": "Phase 0 parallelization (deferred)",
-      "status": "RESOLVED-DECIDED",
+      "title": "Phase 0 parallelization (deferred) Pass 53 v8h+1 Phase 3 Batch 29 2026-05-10 RESOLVED-IMPLEMENTED-AS-DECIDED (owner-approved Path B Step 3 bulk flip): planning/",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Phase 0 / Architecture",
       "pass_intro": "Pass 22",
       "pass_resolved": "22",
@@ -1235,10 +1235,10 @@
       "dependencies": "-",
       "description": "**Status:** DEFERRED **Decision:** Defer to actual execution time **User comment:** \"lets decide later when going sequentially\" **Action:** Phase 0 plan documented with sequential timeline. Parallelization opportunities preserved as options when execution begins.",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -1283,8 +1283,8 @@
     },
     {
       "id": "DECISION-041",
-      "title": "No Phase 0 compression",
-      "status": "RESOLVED-DECIDED",
+      "title": "No Phase 0 compression Pass 53 v8h+1 Phase 3 Batch 29 2026-05-10 RESOLVED-IMPLEMENTED-AS-DECIDED (owner-approved Path B Step 3 bulk flip): planning/architecture",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Phase 0 / Architecture",
       "pass_intro": "Pass 23",
       "pass_resolved": "23",
@@ -1315,10 +1315,10 @@
       "dependencies": "-",
       "description": "**Status:** PROPOSED **Recommendation:** Option B (conservative compression)",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -1403,8 +1403,8 @@
     },
     {
       "id": "DECISION-046",
-      "title": "Drop CVD from Phase 0",
-      "status": "RESOLVED-DECIDED",
+      "title": "Drop CVD from Phase 0 Pass 53 v8h+1 Phase 3 Batch 29 2026-05-10 RESOLVED-IMPLEMENTED-AS-DECIDED (owner-approved Path B Step 3 bulk flip): planning/architecture/",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Phase 0 / Architecture",
       "pass_intro": "Pass 27",
       "pass_resolved": "27",
@@ -1435,16 +1435,16 @@
       "dependencies": "-",
       "description": "**Status:** PROPOSED **Reason:** Daily OHLCV cannot produce real CVD. \"Approximation\" would mislead agents.",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-047",
-      "title": "QuantStats for performance analytics",
-      "status": "RESOLVED-DECIDED",
+      "title": "QuantStats for performance analytics Pass 53 v8h+1 Phase 3 Batch 29 2026-05-10 RESOLVED-IMPLEMENTED-AS-DECIDED (owner-approved Path B Step 3 bulk flip): plannin",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Phase 0 / Architecture",
       "pass_intro": "Pass 28",
       "pass_resolved": "33",
@@ -1475,10 +1475,10 @@
       "dependencies": "-",
       "description": "**Status:** Approved by user (verifying free) **Cost confirmed:** $0 (Apache 2.0) **Cheaper alternative:** Build basic Sharpe/drawdown ourselves (~3-5 days work). Not recommended given $0 license cost.",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -1523,8 +1523,8 @@
     },
     {
       "id": "DECISION-049",
-      "title": "ib_async for IBKR integration",
-      "status": "RESOLVED-DECIDED",
+      "title": "ib_async for IBKR integration Pass 53 v8h+1 Phase 3 Batch 29 2026-05-10 RESOLVED-IMPLEMENTED-AS-DECIDED (owner-approved Path B Step 3 bulk flip): planning/archi",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Phase 0 / Architecture",
       "pass_intro": "Pass 28",
       "pass_resolved": "33",
@@ -1555,16 +1555,16 @@
       "dependencies": "-",
       "description": "**Status:** Approved by user (verifying free) **Cost confirmed:** $0 library. Broker fees unavoidable regardless of library. **Cheaper alternative for Stage 3 paper:** Alpaca paper trading API (free, simpler). But requires building 2 integrations. Recommend single IBKR integratio",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-050",
       "title": "freezegun for PIT regression tests Pass 53 evening 2026-05-06 DEC-594 audit: PARTIAL-SPEC-ONLY (was RESOLVED-DECIDED; demoted via DEC-594 retroactive audit \u2014 co",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Phase 0 / Architecture",
       "pass_intro": "Pass 28",
       "pass_resolved": "29",
@@ -1595,16 +1595,16 @@
       "dependencies": "DEC-594",
       "description": "**Status:** PROPOSED **Recommendation:** Approve. Standard choice for datetime mocking.",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-051",
-      "title": "Staged TradingAgents adoption (REVISED-3)",
-      "status": "RESOLVED-DECIDED",
+      "title": "Staged TradingAgents adoption (REVISED-3) Pass 53 v8h+1 Phase 3 Batch 29 2026-05-10 RESOLVED-IMPLEMENTED-AS-DECIDED (owner-approved Path B Step 3 bulk flip): pl",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Phase 0 / Architecture",
       "pass_intro": "Pass 28",
       "pass_resolved": "33",
@@ -1635,16 +1635,16 @@
       "dependencies": "-",
       "description": "**Status:** PROPOSED (revised from Pass 28) **Cost:** $0 (Apache 2.0) **Approach:** Pattern 2 \u2014 use their orchestration with our specific agent classes **Net effect:** +1 week Phase 0.C time, -3-4 weeks custom orchestration time = net 2-3 weeks saved",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-052",
-      "title": "Fork S&P 500 historical dataset (CC0)",
-      "status": "RESOLVED-DECIDED",
+      "title": "Fork S&P 500 historical dataset (CC0) Pass 53 v8h+1 Phase 3 Batch 29 2026-05-10 RESOLVED-IMPLEMENTED-AS-DECIDED (owner-approved Path B Step 3 bulk flip): planni",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Phase 0 / Architecture",
       "pass_intro": "Pass 28",
       "pass_resolved": "28",
@@ -1675,16 +1675,16 @@
       "dependencies": "-",
       "description": "**Status:** PROPOSED **Recommendation:** Approve. Free, accurate, regularly updated. Saves manual maintenance.",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-053",
-      "title": "Defer Streamlit timing",
-      "status": "RESOLVED-DECIDED",
+      "title": "Defer Streamlit timing Pass 53 v8h+1 Phase 3 Batch 29 2026-05-10 RESOLVED-IMPLEMENTED-AS-DECIDED (owner-approved Path B Step 3 bulk flip): planning/architecture",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Phase 0 / Architecture",
       "pass_intro": "Pass 29",
       "pass_resolved": "33",
@@ -1715,16 +1715,16 @@
       "dependencies": "-",
       "description": "**Context:** Streamlit useful for Stage 3+ but not strictly needed; QuantStats HTML reports are an alternative **Status:** PROPOSED",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-054",
-      "title": "IBKR for both paper and live",
-      "status": "RESOLVED-DECIDED",
+      "title": "IBKR for both paper and live Pass 53 v8h+1 Phase 3 Batch 29 2026-05-10 RESOLVED-IMPLEMENTED-AS-DECIDED (owner-approved Path B Step 3 bulk flip): planning/archit",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Phase 0 / Architecture",
       "pass_intro": "Pass 29",
       "pass_resolved": "33",
@@ -1755,16 +1755,16 @@
       "dependencies": "-",
       "description": "**Context:** IBKR vs Alpaca for paper trading specifically **Status:** PROPOSED",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-055",
-      "title": "Cost-optimized TradingAgents config",
-      "status": "RESOLVED-DECIDED",
+      "title": "Cost-optimized TradingAgents config Pass 53 v8h+1 Phase 3 Batch 29 2026-05-10 RESOLVED-IMPLEMENTED-AS-DECIDED (owner-approved Path B Step 3 bulk flip): planning",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Phase 0 / Architecture",
       "pass_intro": "Pass 31",
       "pass_resolved": "33",
@@ -1795,16 +1795,16 @@
       "dependencies": "-",
       "description": "**Status:** PROPOSED **Recommendation:** Adopt Scenario D config (Haiku quick + Sonnet deep + 3 analysts + batch API)",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-056",
-      "title": "Skip TradingAgents CLI",
-      "status": "RESOLVED-DECIDED",
+      "title": "Skip TradingAgents CLI Pass 53 v8h+1 Phase 3 Batch 29 2026-05-10 RESOLVED-IMPLEMENTED-AS-DECIDED (owner-approved Path B Step 3 bulk flip): planning/architecture",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Phase 0 / Architecture",
       "pass_intro": "Pass 31",
       "pass_resolved": "33",
@@ -1835,10 +1835,10 @@
       "dependencies": "-",
       "description": "**Status:** PROPOSED **Recommendation:** Use only programmatic `TradingAgentsGraph` API. Their CLI not needed.",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -1883,8 +1883,8 @@
     },
     {
       "id": "DECISION-058",
-      "title": "GPT-5.4-mini for backtest, Anthropic for live (REVISED)",
-      "status": "RESOLVED-DECIDED",
+      "title": "GPT-5.4-mini for backtest, Anthropic for live (REVISED) Pass 53 v8h+1 Phase 3 Batch 29 2026-05-10 RESOLVED-IMPLEMENTED-AS-DECIDED (owner-approved Path B Step 3 ",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Phase 0 / Architecture",
       "pass_intro": "Pass 32",
       "pass_resolved": "33",
@@ -1915,16 +1915,16 @@
       "dependencies": "-",
       "description": "**Status:** PROPOSED **Recommendation:** Approve.",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-059",
-      "title": "$300 hard cap on Stage 2 backtest",
-      "status": "RESOLVED-DECIDED",
+      "title": "$300 hard cap on Stage 2 backtest Pass 53 v8h+1 Phase 3 Batch 29 2026-05-10 RESOLVED-IMPLEMENTED-AS-DECIDED (owner-approved Path B Step 3 bulk flip): planning/a",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Phase 0 / Architecture",
       "pass_intro": "Pass 32",
       "pass_resolved": "33",
@@ -1955,16 +1955,16 @@
       "dependencies": "-",
       "description": "**Status:** PROPOSED **Recommendation:** Approve $300 hard cap on Phase 1B-\u03b1 agent backtest.",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-060",
       "title": "Smoke test gating before Stage 2 scale Pass 53 evening 2026-05-06 DEC-594 audit: PARTIAL-SPEC-ONLY (was RESOLVED-DECIDED; demoted via DEC-594 retroactive audit ",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Phase 0 / Architecture",
       "pass_intro": "Pass 35",
       "pass_resolved": "36",
@@ -1995,10 +1995,10 @@
       "dependencies": "DEC-594",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -5484,7 +5484,7 @@
     {
       "id": "DECISION-161",
       "title": "Decision dependency graph (DAG) Pass 52 turn 119 RESOLVED-DECIDED Final: Decision dependency graph (DAG) \u2014 joint with audit infrastructure already operational (",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X24 \u2014 Decision management",
       "pass_intro": "Pass 41",
       "pass_resolved": "-",
@@ -5515,16 +5515,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-162",
-      "title": "Per-decision time-to-approve estimate + owner-approval-budget tracking",
-      "status": "RESOLVED-DECIDED",
+      "title": "Per-decision time-to-approve estimate + owner-approval-budget tracking Pass 53 v8h+1 Phase 3 Batch 29 2026-05-10 RESOLVED-IMPLEMENTED-AS-DECIDED (owner-approved",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X24 \u2014 Decision management",
       "pass_intro": "Pass 41",
       "pass_resolved": "42",
@@ -5555,16 +5555,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-163",
       "title": "Implementation cost estimate per pending decision Pass 52 turn 119 RESOLVED-DECIDED Final: Implementation cost estimate per pending decision \u2014 joint Phase 2 ret",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X24 \u2014 Decision management",
       "pass_intro": "Pass 41",
       "pass_resolved": "-",
@@ -5595,16 +5595,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-164",
-      "title": "Pairwise tradeoff matrix between decision batches (impact vs cost)",
-      "status": "RESOLVED-DECIDED",
+      "title": "Pairwise tradeoff matrix between decision batches (impact vs cost) Pass 53 v8h+1 Phase 3 Batch 29 2026-05-10 RESOLVED-IMPLEMENTED-AS-DECIDED (owner-approved Pat",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X24 \u2014 Decision management",
       "pass_intro": "Pass 41",
       "pass_resolved": "42",
@@ -5635,10 +5635,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -6443,8 +6443,8 @@
     },
     {
       "id": "DECISION-187",
-      "title": "Two-property web architecture: public recommendations site + private analytics dashboard",
-      "status": "RESOLVED-DECIDED",
+      "title": "Two-property web architecture: public recommendations site + private analytics dashboard Pass 53 v8h+1 Phase 3 Batch 29 2026-05-10 RESOLVED-IMPLEMENTED-AS-DECID",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Website Architecture",
       "pass_intro": "Pass 43",
       "pass_resolved": "43",
@@ -6475,16 +6475,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-188",
-      "title": "Public site card-based layout with track record header (Sections A/B: Today + Yesterday)",
-      "status": "RESOLVED-DECIDED",
+      "title": "Public site card-based layout with track record header (Sections A/B: Today + Yesterday) Pass 53 v8h+1 Phase 3 Batch 29 2026-05-10 RESOLVED-IMPLEMENTED-AS-DECID",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Website Architecture",
       "pass_intro": "Pass 43",
       "pass_resolved": "43",
@@ -6515,16 +6515,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-189",
-      "title": "Trade rationale 10-point depth standard (trigger/strategy/setup/smart-money/macro/agent/ri",
-      "status": "RESOLVED-DECIDED",
+      "title": "Trade rationale 10-point depth standard (trigger/strategy/setup/smart-money/macro/agent/ri Pass 53 v8h+1 Phase 3 Batch 29 2026-05-10 RESOLVED-IMPLEMENTED-AS-DEC",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Website Architecture",
       "pass_intro": "Pass 43",
       "pass_resolved": "43",
@@ -6555,16 +6555,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-190",
-      "title": "Mobile-first design priority for both sites",
-      "status": "RESOLVED-DECIDED",
+      "title": "Mobile-first design priority for both sites Pass 53 v8h+1 Phase 3 Batch 29 2026-05-10 RESOLVED-IMPLEMENTED-AS-DECIDED (owner-approved Path B Step 3 bulk flip): ",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Website Architecture",
       "pass_intro": "Pass 43",
       "pass_resolved": "43",
@@ -6595,16 +6595,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-191",
-      "title": "Publish timing: pre-market 7-8am ET (tomorrow trades) + post-close 4pm ET (results)",
-      "status": "RESOLVED-DECIDED",
+      "title": "Publish timing: pre-market 7-8am ET (tomorrow trades) + post-close 4pm ET (results) Pass 53 v8h+1 Phase 3 Batch 29 2026-05-10 RESOLVED-IMPLEMENTED-AS-DECIDED (o",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Website Architecture",
       "pass_intro": "Pass 43",
       "pass_resolved": "43",
@@ -6635,10 +6635,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -6683,8 +6683,8 @@
     },
     {
       "id": "DECISION-193",
-      "title": "Open positions displayed on results page with mark-to-market unrealized P&L",
-      "status": "RESOLVED-DECIDED",
+      "title": "Open positions displayed on results page with mark-to-market unrealized P&L Pass 53 v8h+1 Phase 3 Batch 29 2026-05-10 RESOLVED-IMPLEMENTED-AS-DECIDED (owner-app",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Website Architecture",
       "pass_intro": "Pass 43",
       "pass_resolved": "43",
@@ -6715,10 +6715,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -6804,7 +6804,7 @@
     {
       "id": "DECISION-196",
       "title": "No authentication on paper-trading analytics dashboard; revisit before live trading Pass 53 evening 2026-05-06 DEC-594 audit: PARTIAL-SPEC-ONLY (was RESOLVED-DE",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Website Architecture",
       "pass_intro": "Pass 43",
       "pass_resolved": "43",
@@ -6835,16 +6835,16 @@
       "dependencies": "DEC-594",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-197",
-      "title": "Hosting: Vercel for both web properties (free tier, mobile-optimized); backend on Codespac",
-      "status": "RESOLVED-DECIDED",
+      "title": "Hosting: Vercel for both web properties (free tier, mobile-optimized); backend on Codespac Pass 53 v8h+1 Phase 3 Batch 29 2026-05-10 RESOLVED-IMPLEMENTED-AS-DEC",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Website Architecture",
       "pass_intro": "Pass 43",
       "pass_resolved": "43",
@@ -6875,10 +6875,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -6924,7 +6924,7 @@
     {
       "id": "DECISION-199",
       "title": "Dashboard 1 detailed spec (Phase 1B-\u03b1 backtest analysis) Pass 52 turn 79 owner-approved RESOLVED-DECIDED with 5-section spec: Dashboard 1 (Phase 1B-\u03b1 backtest a",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Dashboard Specifications",
       "pass_intro": "Pass 44",
       "pass_resolved": "-",
@@ -6955,16 +6955,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-200",
       "title": "Dashboard 2 detailed spec (Phase 0.D ICT/SMC signal audit) Pass 52 turn 79 owner-approved RESOLVED-DECIDED with 5-section spec: Dashboard 2 (Phase 0.D ICT/SMC s",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Dashboard Specifications",
       "pass_intro": "Pass 44",
       "pass_resolved": "-",
@@ -6995,16 +6995,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-201",
       "title": "Dashboard 3 detailed spec (Stage 2 agent overlay analysis) Pass 52 turn 79 owner-approved RESOLVED-DECIDED with 6-section spec: Dashboard 3 (Stage 2 agent overl",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Dashboard Specifications",
       "pass_intro": "Pass 44",
       "pass_resolved": "-",
@@ -7035,10 +7035,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -7124,7 +7124,7 @@
     {
       "id": "DECISION-204",
       "title": "Dashboard 6 detailed spec (cross-phase comparison waterfall). Pass 53 owner-approved Q3 RESOLVED-DECIDED 2026-05-05 (PROMOTED FROM DEFERRED_TO_STAGE_3 per owner",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Dashboard Specifications",
       "pass_intro": "Pass 53 (PROMOTED FROM DEFERRED_TO_STAGE_3 Pass 44)",
       "pass_resolved": "-",
@@ -7155,10 +7155,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -14924,7 +14924,7 @@
     {
       "id": "DECISION-410",
       "title": "API endpoint utilization audit \u2014 Pass 52 owner-approved CRITICAL TODO with comprehensive 6-dimension use-case mapping schema (Pass 52 turn 16 expanded per L136/",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X56 \u2014 API Endpoint Utilization Audit (Pass 52)",
       "pass_intro": "Pass 52",
       "pass_resolved": "DEC-442,DEC-443,DEC-444,DEC-445,DEC-446,DEC-447,DEC-448,DEC-449,DEC-450,DEC-451,DEC-452,DEC-453,DEC-454,DEC-455,DEC-456",
@@ -14955,10 +14955,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -16164,7 +16164,7 @@
     {
       "id": "DECISION-442",
       "title": "Demote yfinance to fallback OHLCV after Polygon prefetch validation \u2014 Pass 52 owner-approved (DEC-410 Batch 1, Hypothesis H-yfinance-1). Sequence: (a) implement",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X56 \u2014 API Endpoint Utilization Audit (Pass 52)",
       "pass_intro": "Pass 52",
       "pass_resolved": "-",
@@ -16195,16 +16195,16 @@
       "dependencies": "DEC-410",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-443",
       "title": "Replace yfinance .info with Polygon reference endpoints \u2014 Pass 52 owner-approved (DEC-410 Batch 1, Hypothesis H-yfinance-2). Replace `Ticker.info` calls (sector",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X56 \u2014 API Endpoint Utilization Audit (Pass 52)",
       "pass_intro": "Pass 52",
       "pass_resolved": "-",
@@ -16235,16 +16235,16 @@
       "dependencies": "DEC-410",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-444",
       "title": "Deprecate `days_to_next_earnings()` via yfinance live calls \u2014 Pass 52 owner-approved (DEC-410 Batch 1, Hypothesis H-yfinance-3). Route all `days_to_next_earning",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X56 \u2014 API Endpoint Utilization Audit (Pass 52)",
       "pass_intro": "Pass 52",
       "pass_resolved": "-",
@@ -16275,16 +16275,16 @@
       "dependencies": "DEC-410",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-445",
       "title": "Polygon precomputed indicators integration as DEC-439 layer 5 differential reference \u2014 Pass 52 owner-approved (DEC-410 Batch 1, Hypothesis H-polygon-3). Use Pol",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X56 \u2014 API Endpoint Utilization Audit (Pass 52)",
       "pass_intro": "Pass 52",
       "pass_resolved": "-",
@@ -16315,16 +16315,16 @@
       "dependencies": "DEC-410; DEC-439",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-446",
       "title": "Polygon intraday quotes selective fetch for slippage calibration \u2014 Pass 52 owner-approved (DEC-410 Batch 1, Hypothesis H-polygon-4). Fetch Polygon `/v3/quotes/{",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X56 \u2014 API Endpoint Utilization Audit (Pass 52)",
       "pass_intro": "Pass 52",
       "pass_resolved": "-",
@@ -16355,16 +16355,16 @@
       "dependencies": "DEC-410",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-447",
       "title": "Polygon reference tickers PIT consumption pattern \u2014 Pass 52 owner-approved (DEC-410 Batch 1). Implement query pattern for Polygon `/v3/reference/tickers/{ticker",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X56 \u2014 API Endpoint Utilization Audit (Pass 52)",
       "pass_intro": "Pass 52",
       "pass_resolved": "-",
@@ -16395,16 +16395,16 @@
       "dependencies": "DEC-410",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-448",
       "title": "Expand FRED SERIES_MAP \u2014 Pass 52 owner-approved (DEC-410 Batch 1, Hypotheses H-fred-1, H-fred-2). Add to `backtest/data/macro.py` SERIES_MAP: `VIXCLS` (CBOE VIX",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X56 \u2014 API Endpoint Utilization Audit (Pass 52)",
       "pass_intro": "Pass 52",
       "pass_resolved": "-",
@@ -16435,16 +16435,16 @@
       "dependencies": "DEC-410",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-449",
       "title": "Validate DEC-301 ALFRED PIT mitigation produces materially different values \u2014 Pass 52 owner-approved (DEC-410 Batch 1, Hypothesis H-fred-3). Test on sample: que",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X56 \u2014 API Endpoint Utilization Audit (Pass 52)",
       "pass_intro": "Pass 52",
       "pass_resolved": "-",
@@ -16475,10 +16475,10 @@
       "dependencies": "DEC-301; DEC-410",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -16524,7 +16524,7 @@
     {
       "id": "DECISION-451",
       "title": "Fix BUG-284 gov_contracts date filter \u2014 Pass 52 owner-approved (DEC-410 Batch 2). Quiver `/historical/govcontracts/` returns Date field but cache schema saves o",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X56 \u2014 API Endpoint Utilization Audit (Pass 52)",
       "pass_intro": "Pass 52",
       "pass_resolved": "-",
@@ -16555,10 +16555,10 @@
       "dependencies": "BUG-284; DEC-410",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -16604,7 +16604,7 @@
     {
       "id": "DECISION-454",
       "title": "Remove OpenBB from project scope \u2014 Pass 52 owner-approved (DEC-410 Batch 3, Hypothesis H-openbb-1). Update PROJECT_PLAN section 10 to remove OpenBB row. Resolve",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X56 \u2014 API Endpoint Utilization Audit (Pass 52)",
       "pass_intro": "Pass 52",
       "pass_resolved": "-",
@@ -16635,16 +16635,16 @@
       "dependencies": "DEC-410",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-455",
       "title": "Alpha Vantage deprecation timeline \u2014 Pass 52 owner-approved (DEC-410 Batch 3, Hypothesis H-av-1). Sequence: (a) preserve existing AV cache parquet artifacts for",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X56 \u2014 API Endpoint Utilization Audit (Pass 52)",
       "pass_intro": "Pass 52",
       "pass_resolved": "-",
@@ -16675,10 +16675,10 @@
       "dependencies": "DEC-410",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -16804,7 +16804,7 @@
     {
       "id": "DECISION-459",
       "title": "AgentGateConfig spec \u2014 Option C Hybrid Architecture Pass 52 turn 129 owner-approved RESOLVED-DECIDED (SUPERSEDES DEC-042): OPTION C HYBRID ARCHITECTURE \u2014 Tradin",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Phase 0 / Architecture",
       "pass_intro": "Pass 52",
       "pass_resolved": "52",
@@ -16835,10 +16835,10 @@
       "dependencies": "DEC-042",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -18964,7 +18964,7 @@
     {
       "id": "DECISION-597",
       "title": "Test pyramid amended from 9 layers (DEC-503) to 13 layers. Pass 53 v8h+1 owner-approved 2026-05-08 RESOLVED-DECIDED. AMENDMENT: DEC-503 specified 9 layers (unit",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Cross-cutting / process / Pass 53 v8h+1",
       "pass_intro": "Pass 53",
       "pass_resolved": "53",
@@ -18995,16 +18995,16 @@
       "dependencies": "DEC-503",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-598",
       "title": "Pyramid cell 4-state semantics + per-ID override mechanism. Pass 53 v8h+1 owner-approved 2026-05-09 RESOLVED-DECIDED. CHANGE: pyramid cells extended from boolea",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Cross-cutting / process / Pass 53 v8h+1",
       "pass_intro": "Pass 53",
       "pass_resolved": "53",
@@ -19035,10 +19035,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -19164,7 +19164,7 @@
     {
       "id": "DECISION-602",
       "title": "Per-addressal pyramid mandate (CHECKLIST #78 codification). Pass 53 v8h+1 owner directive 2026-05-08 RESOLVED-DECIDED. RULE: testing pyramid runs PER ADDRESSAL ",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Cross-cutting / process / Pass 53 v8h+1",
       "pass_intro": "Pass 53",
       "pass_resolved": "53",
@@ -19195,16 +19195,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-603",
       "title": "End-of-turn doc sweep covers all forward-looking docs (CHECKLIST #79 codification). Pass 53 v8h+1 owner directive 2026-05-08 RESOLVED-DECIDED. RULE: enumerated ",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Cross-cutting / process / Pass 53 v8h+1",
       "pass_intro": "Pass 53",
       "pass_resolved": "53",
@@ -19235,16 +19235,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-604",
       "title": "2-hour drift-alignment cron + structural drift detector. Pass 53 v8h+1 owner directive 2026-05-08 RESOLVED-DECIDED. CRON: every 2h (minute :13) auto-runs `sync_",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Cross-cutting / process / Pass 53 v8h+1",
       "pass_intro": "Pass 53",
       "pass_resolved": "53",
@@ -19275,10 +19275,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -26998,46 +26998,52 @@
   ],
   "recent_commits": [
     {
+      "sha": "a3894856",
+      "subject": "Pass 53 v8h+1: Phase 3 Batch 28 - SPEC_ONLY initiative kickoff (Path B Steps 1+2)",
+      "author": "jeetmehta1991",
+      "rel_time": "12 minutes ago"
+    },
+    {
       "sha": "4910c590",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 27 - 12 DEC status flips (all 4 owner-approved items)",
       "author": "jeetmehta1991",
-      "rel_time": "20 minutes ago"
+      "rel_time": "33 minutes ago"
     },
     {
       "sha": "23275737",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 26 - Decisions ALL non-DEFERRED CLEAN (0 no-cells)",
       "author": "jeetmehta1991",
-      "rel_time": "28 minutes ago"
+      "rel_time": "41 minutes ago"
     },
     {
       "sha": "99f04c48",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 25 - Path 2 implementation (owner-approved)",
       "author": "jeetmehta1991",
-      "rel_time": "38 minutes ago"
+      "rel_time": "51 minutes ago"
     },
     {
       "sha": "8354df3d",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 24 - id_status substring-match bug FIXED (CRITICAL)",
       "author": "jeetmehta1991",
-      "rel_time": "52 minutes ago"
+      "rel_time": "65 minutes ago"
     },
     {
       "sha": "b845fd62",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 23 - Pyramid N/A defaults scaled to ALL ID kinds (owner directive)",
       "author": "jeetmehta1991",
-      "rel_time": "63 minutes ago"
+      "rel_time": "76 minutes ago"
     },
     {
       "sha": "fa2c140c",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 22 - Decisions dashboard cleanup (owner directive)",
       "author": "jeetmehta1991",
-      "rel_time": "71 minutes ago"
+      "rel_time": "84 minutes ago"
     },
     {
       "sha": "432b146b",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 21 - BUG-006 dashboard protocol-violation fix (owner-flagged)",
       "author": "jeetmehta1991",
-      "rel_time": "82 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "6a3b572e",
@@ -27109,7 +27115,7 @@
       "sha": "b852347d",
       "subject": "Pass 53 v8h+1: BUG-78 CRITICAL trailing stop lookahead bias FIXED",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "5b710e0b",
@@ -27163,32 +27169,22 @@
       "sha": "2de4536b",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 6 - 5 BUGs (42/47/49/50/52) SUPERSEDED/DEFERRED cross-references",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "f16ef86d",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 5 - BUG-37 IMPLEMENTED (haircut doc) + BUG-34/40 SUPERSEDED-BY-design",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
-    },
-    {
-      "sha": "a4258bc1",
-      "subject": "Pass 53 v8h+1: Phase 3 Batch 4 - BUG-21 IMPLEMENTED + BUG-24/31/32/33 SUPERSEDED-BY-policy-decisions",
-      "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "6 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 2,
-    "modified": 2,
+    "count": 1,
+    "modified": 1,
     "added": 0,
     "untracked": 0,
     "deleted": 0,
     "files": [
-      {
-        "status": "M",
-        "path": "AUDIT.md"
-      },
       {
         "status": "M",
         "path": "AUDIT_INDEX.md"
@@ -27857,7 +27853,7 @@
       "kind": "DEC",
       "id": "DEC-410",
       "title": "API endpoint utilization audit \u2014 Pass 52 owner-approved CRITICAL TODO with comprehensive 6-dimension use-case mapping schema (Pass 52 turn 1",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "tier": 1,
       "reason": "Dependency root (14 downstream items reference)",
       "back_refs": 14,
@@ -27887,7 +27883,7 @@
       "kind": "DEC",
       "id": "DEC-442",
       "title": "Demote yfinance to fallback OHLCV after Polygon prefetch validation \u2014 Pass 52 owner-approved (DEC-410 Batch 1, Hypothesis H-yfinance-1). Seq",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "tier": 1,
       "reason": "Dependency root (8 downstream items reference)",
       "back_refs": 8,
@@ -27967,7 +27963,7 @@
       "kind": "DEC",
       "id": "DEC-444",
       "title": "Deprecate `days_to_next_earnings()` via yfinance live calls \u2014 Pass 52 owner-approved (DEC-410 Batch 1, Hypothesis H-yfinance-3). Route all `",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "tier": 1,
       "reason": "Dependency root (4 downstream items reference)",
       "back_refs": 4,
@@ -28055,11 +28051,11 @@
     }
   ],
   "decision_status_counts": {
-    "RESOLVED-DECIDED": 267,
+    "RESOLVED-DECIDED": 222,
+    "RESOLVED-IMPLEMENTED": 103,
     "PARTIAL": 5,
-    "PARTIAL-SPEC-ONLY": 77,
+    "PARTIAL-SPEC-ONLY": 68,
     "DEFERRED_TO_STAGE_3": 36,
-    "RESOLVED-IMPLEMENTED": 49,
     "DEFERRED_TO_STAGE_4": 21,
     "DEFERRED": 2,
     "BLOCKED_ON_BUG-095": 1,

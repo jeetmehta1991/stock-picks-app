@@ -33848,6 +33848,95 @@ Documents updated:
   - AUDIT.md (this entry + theme classification table)
   - dashboard_stage_2 (rebuilt; 5 newly SUPERSEDED hidden)
 
+---
+
+## Pass 53 Day 9 v8h+1 follow-on 2026-05-10 (cont): Phase 3 Batch 29 - 54 SPEC_ONLY decisions bulk-flipped RESOLVED-IMPLEMENTED-AS-DECIDED
+
+**Owner directive 2026-05-10 (Path B Step 3 - owner answer "1. approve / 2. no deferrals"):**
+1. APPROVED bulk RESOLVED-IMPLEMENTED-AS-DECIDED for the 54 candidates across 6 themes (planning/architecture/vendor/process decisions where the decision IS the implementation).
+2. NO bulk DEFERRED flips - the ~80 originally-classified-as-DEFER candidates instead move to the per-decision audit pool. Per-decision audit pool expands to ~250.
+
+**54 status flips (Step 3 batch):**
+
+Phase 0 / Architecture (21):
+  DEC-002, DEC-003, DEC-004, DEC-005, DEC-007, DEC-039, DEC-041, DEC-046, DEC-047,
+  DEC-049, DEC-050, DEC-051, DEC-052, DEC-053, DEC-054, DEC-055, DEC-056, DEC-058,
+  DEC-059, DEC-060, DEC-459
+
+Decision management (4):
+  DEC-161, DEC-162, DEC-163, DEC-164
+
+Website Architecture (8):
+  DEC-187, DEC-188, DEC-189, DEC-190, DEC-191, DEC-193, DEC-196, DEC-197
+
+Dashboard Specifications (4):
+  DEC-199, DEC-200, DEC-201, DEC-204
+
+API Endpoint Utilization Audit (12):
+  DEC-410, DEC-442, DEC-443, DEC-444, DEC-445, DEC-446, DEC-447, DEC-448, DEC-449,
+  DEC-451, DEC-454, DEC-455
+
+Cross-cutting / process / Pass 53 v8h+1 (5):
+  DEC-597, DEC-598, DEC-602, DEC-603, DEC-604
+
+Each flipped from SPEC_ONLY (RESOLVED-DECIDED status) to RESOLVED-IMPLEMENTED in AUDIT_INDEX.md with annotation: "Phase 3 Batch 29 2026-05-10 RESOLVED-IMPLEMENTED-AS-DECIDED (owner-approved Path B Step 3 bulk flip): planning/architecture/vendor/process decision; implementation = the decision itself documented + applied via subsequent phases (no code path required for this kind of decision)."
+
+**Dashboard state shift:**
+
+| Tier | Pre-Batch-29 | Post-Batch-29 | Change |
+|---|---|---|---|
+| IMPLEMENTED | 50 | **104** | +54 |
+| SPEC_ONLY | 316 | 262 | -54 |
+| DEFERRED | 64 | 64 | unchanged |
+| CODE_ONLY | 33 | 33 | unchanged |
+| OPEN | 11 | 11 | unchanged |
+| UNKNOWN | 10 | 10 | unchanged |
+| BLOCKED | 7 | 7 | unchanged |
+| Visible total | 491 | 491 | unchanged |
+| **Non-DEFERRED no-cells** | **0** | **0** | preserved |
+
+**Per-addressal pyramid (CHECKLIST #78):** unit 144/144 + integration 13/13 = 157/157 PASS in 2.85s.
+
+**Same-commit (DEC-594):** 54 AUDIT_INDEX status flips + AUDIT narrative + dashboard rebuilt in this commit.
+
+**Phase 1A May 15 IMPACT:** None (status reflects decisions already in effect; engine unchanged).
+
+**Remaining for per-decision audit (revised scope ~262):**
+With owner's directive #2 ("no deferrals"), all SPEC_ONLY items get per-decision audit attention rather than bulk DEFER. The remaining 262 SPEC_ONLY includes:
+
+- Originally-classified per-decision audit themes: ~100 decisions
+  - High-Impact Engine Bugs (26)
+  - Statistical Methodology (17)
+  - Data + Universe (16)
+  - Medium-Severity Improvements (11)
+  - Smart Money + Regimes (7)
+  - Risk Management Extension (7)
+  - Exits + Circuit Breakers (5)
+  - Reliability + Determinism (5)
+  - Data Quality + Trading Mechanics (5)
+  - Code Quality (4)
+  - Architecture Hygiene (4)
+  - CRITICAL Runtime Bugs (4)
+- Originally-classified DEFER themes (~80; now per-decision audit per owner directive #2):
+  - Agent A/B Testing (12) -> per-decision audit
+  - Strategy Coverage Gaps (10) -> per-decision audit
+  - Phase 1B-alpha Dimensional Framework (7) -> per-decision audit
+  - Sprint 7 Pattern 2 toolkits (6) -> per-decision audit
+  - Strategy extensions (4) -> per-decision audit
+  - Professional Benchmark Gaps (4) -> per-decision audit
+  - Thin Areas Surfaced (4) -> per-decision audit
+- Other smaller themes (~80)
+
+**Schedule estimate (Path B execution):** ~3-5 per-decision audit items per turn at sustainable pace + occasional bulk-flip-eligible items as found = ~50-90 turns of focused work, spanning 8-12 weeks.
+
+**Next batch (Step 4) - per-decision audit, starting with High-Impact Engine Bugs (26 decisions):**
+Many of these are likely already addressed via Phase 3 engine work (BUG-29 finalize, BUG-78 trailing stop lookahead, BUG-80 exit slippage, BUG-95 Portfolio class, BUG-110 entry gap, etc.). Audit each against current code; promote those that are closed; identify genuine remaining backlog.
+
+Documents updated:
+  - AUDIT_INDEX.md (54 status flips: SPEC_ONLY -> RESOLVED-IMPLEMENTED-AS-DECIDED)
+  - AUDIT.md (this entry)
+  - dashboard_stage_2 (rebuilt; IMPLEMENTED 50 -> 104, SPEC_ONLY 316 -> 262)
+
 **Remaining OPEN backlog after sweeps:**
   - 1 DEC RESOLVED-DECIDED-deferred (DEC-028 Stage 3 paper trading - intentional)
   - INVs: 33 OPEN + 2 DEFERRED (genuine work; not promotion-eligible)
