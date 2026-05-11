@@ -225,6 +225,30 @@ class Portfolio:
         if benchmark_price > 0:
             self.benchmark_curve.append((today, float(benchmark_price)))
 
+    def drawdown_size_multiplier(self) -> float:
+        """DEC-091 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 54 2026-05-11
+        (owner-approved Path C; closes DEC-022 SUPERSEDED_BY_DEC-091).
+
+        Tiered drawdown re-sizing per Pass 52 turn 67 owner spec:
+          DD < 10%:  multiplier 1.0 (no reduction)
+          DD >= 10%: multiplier 0.75
+          DD >= 20%: multiplier 0.5
+          DD >= 30%: multiplier 0.0 (halt new entries; matches the existing
+                     can_open drawdown_suspend_pct gate)
+
+        Returns float in {0.0, 0.5, 0.75, 1.0}. Engine integration (call this
+        before can_open to scale size_pct) deferred to follow-on decision to
+        preserve current backtest behavior; current scope is helper.
+        """
+        dd = self.current_drawdown_pct()
+        if dd >= 30.0:
+            return 0.0
+        if dd >= 20.0:
+            return 0.5
+        if dd >= 10.0:
+            return 0.75
+        return 1.0
+
     def realized_portfolio_vol_annualized(
         self, window_days: Optional[int] = None,
     ) -> Optional[float]:

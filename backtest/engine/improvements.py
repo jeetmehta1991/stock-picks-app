@@ -425,6 +425,75 @@ def apply_exit_slippage(
     return round(adjusted, 4), round(spread_pct * 100, 4)
 
 
+# DEC-092 / DEC-280 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 54
+# 2026-05-11 (owner-approved Path C bundle, joint).
+# DEC-092: base slippage as f(size%ADV, vol) = alpha + beta*size_pct + gamma*vol_pct.
+# DEC-280: time-of-day multiplier (first/last 30min of NYSE session = 1.5x).
+# Final formula: final_bps = base_bps * exit_multiplier * time_multiplier.
+# Coefficients calibrated against DEC-092 spec test signals:
+#   (size 0.5% ADV, vol 20%): expected ~3 bps -> computed 3.25 bps
+#   (size 5%   ADV, vol 50%): expected ~25 bps -> computed 24.25 bps
+# Engine consumption deferred to follow-on decision once DEC-446 Polygon
+# intraday quote calibration data lands; current scope is helper.
+
+DEFAULT_SLIPPAGE_ALPHA = 0.5    # base bid-ask in bps
+DEFAULT_SLIPPAGE_BETA  = 4.5    # per 1% of ADV
+DEFAULT_SLIPPAGE_GAMMA = 0.025  # per 1% of annualized vol
+
+
+def compute_slippage_bps_advanced(
+    size_pct_adv: float,
+    realized_vol_annualized: float,
+    alpha: float = DEFAULT_SLIPPAGE_ALPHA,
+    beta: float = DEFAULT_SLIPPAGE_BETA,
+    gamma: float = DEFAULT_SLIPPAGE_GAMMA,
+) -> float:
+    """DEC-092: base slippage in bps as f(size%ADV, vol).
+
+    Inputs:
+      size_pct_adv: trade size as fraction of ADV (0.005 = 0.5% ADV)
+      realized_vol_annualized: annualized realized vol (0.20 = 20% vol)
+
+    Returns bps (basis points) >= 0. Coefficients applied to PERCENT units:
+      bps = alpha + beta * (size_pct_adv * 100) + gamma * (vol * 100)
+    """
+    size_pct_input = max(0.0, size_pct_adv) * 100.0
+    vol_pct_input  = max(0.0, realized_vol_annualized) * 100.0
+    bps = alpha + beta * size_pct_input + gamma * vol_pct_input
+    return max(0.0, bps)
+
+
+def time_of_day_slippage_multiplier(entry_time) -> float:
+    """DEC-280: first/last 30 min of NYSE regular session get 1.5x multiplier
+    (open auction + closing auction effects). Otherwise 1.0x.
+
+    NYSE regular session: 09:30 - 16:00 ET. First 30min = [09:30, 10:00);
+    last 30min = [15:30, 16:00).
+
+    Inputs:
+      entry_time: datetime.time, datetime.datetime, or None. None -> 1.0
+        (caller-side lacks intraday context, e.g., daily-bar backtest).
+
+    Returns 1.0 or 1.5.
+    """
+    from datetime import time as _time, datetime as _datetime
+    if entry_time is None:
+        return 1.0
+    if isinstance(entry_time, _datetime):
+        et = entry_time.time()
+    else:
+        et = entry_time
+    open_start          = _time(9, 30)
+    open_first_30_end   = _time(10, 0)
+    close_last_30_start = _time(15, 30)
+    close_end           = _time(16, 0)
+    if open_start <= et < open_first_30_end:
+        return 1.5
+    if close_last_30_start <= et < close_end:
+        return 1.5
+    return 1.0
+
+
 # -----------------------------------------------------------------------------
 # 5. REGIME CONFIDENCE SCORE
 # -----------------------------------------------------------------------------

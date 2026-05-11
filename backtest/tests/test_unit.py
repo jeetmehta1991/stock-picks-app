@@ -2589,6 +2589,213 @@ def test_bug_095_mark_to_market_carries_forward_missing_prices():
 
 
 # ============================================================================
+# Phase 3 Batch 54 Path C 5-DEC bundle (owner directive >= 5 DECs per batch):
+# DEC-091 (drawdown re-sizing) + DEC-092 (slippage f(size%ADV, vol))
+# + DEC-279 (P&L decomposition) + DEC-280 (time-of-day slippage mult)
+# + DEC-108 (regime EMA smoothing)
+# ============================================================================
+
+# --- DEC-091 drawdown re-sizing -------------------------------------------
+
+def _portfolio_with_dd(starting=100_000.0, current_equity=None):
+    """Helper: build a Portfolio with a specific drawdown by spoofing equity_curve."""
+    from datetime import date
+    from backtest.engine.portfolio import Portfolio
+    p = Portfolio(starting_capital=starting)
+    p.equity_curve.append((date(2024, 1, 1), starting))
+    p._equity_peak = starting
+    if current_equity is not None:
+        p.equity_curve.append((date(2024, 1, 2), current_equity))
+    return p
+
+
+def test_dec_091_drawdown_multiplier_full_size_below_10pct():
+    """DEC-091: DD < 10% -> multiplier 1.0."""
+    p = _portfolio_with_dd(100_000.0, 95_000.0)  # 5% DD
+    assert p.drawdown_size_multiplier() == 1.0
+
+
+def test_dec_091_drawdown_multiplier_075_at_10pct():
+    """DEC-091 spec test signal: 12% DD -> size * 0.75."""
+    p = _portfolio_with_dd(100_000.0, 88_000.0)  # 12% DD
+    assert p.drawdown_size_multiplier() == 0.75
+
+
+def test_dec_091_drawdown_multiplier_050_at_20pct():
+    """DEC-091 spec test signal: 22% DD -> size * 0.5."""
+    p = _portfolio_with_dd(100_000.0, 78_000.0)  # 22% DD
+    assert p.drawdown_size_multiplier() == 0.5
+
+
+def test_dec_091_drawdown_multiplier_halt_at_30pct():
+    """DEC-091 spec test signal: 32% DD -> entry rejected (multiplier 0.0)."""
+    p = _portfolio_with_dd(100_000.0, 68_000.0)  # 32% DD
+    assert p.drawdown_size_multiplier() == 0.0
+
+
+# --- DEC-092 base slippage f(size%ADV, vol) -------------------------------
+
+def test_dec_092_base_slippage_small_size_low_vol():
+    """DEC-092 spec test signal: 0.5% ADV, vol=20% -> ~3 bps."""
+    from backtest.engine.improvements import compute_slippage_bps_advanced
+    bps = compute_slippage_bps_advanced(
+        size_pct_adv=0.005, realized_vol_annualized=0.20,
+    )
+    assert 2.5 < bps < 4.0, f"expected ~3 bps, got {bps}"
+
+
+def test_dec_092_base_slippage_large_size_high_vol():
+    """DEC-092 spec test signal: 5% ADV, vol=50% -> ~25 bps."""
+    from backtest.engine.improvements import compute_slippage_bps_advanced
+    bps = compute_slippage_bps_advanced(
+        size_pct_adv=0.05, realized_vol_annualized=0.50,
+    )
+    assert 20.0 < bps < 30.0, f"expected ~25 bps, got {bps}"
+
+
+def test_dec_092_base_slippage_monotonic_in_size_and_vol():
+    """DEC-092: bps increases with size (vol fixed) and with vol (size fixed)."""
+    from backtest.engine.improvements import compute_slippage_bps_advanced
+    s_low  = compute_slippage_bps_advanced(0.005, 0.20)
+    s_mid  = compute_slippage_bps_advanced(0.02,  0.20)
+    s_high = compute_slippage_bps_advanced(0.05,  0.20)
+    assert s_low < s_mid < s_high
+    v_low  = compute_slippage_bps_advanced(0.01, 0.10)
+    v_mid  = compute_slippage_bps_advanced(0.01, 0.30)
+    v_high = compute_slippage_bps_advanced(0.01, 0.60)
+    assert v_low < v_mid < v_high
+
+
+def test_dec_092_base_slippage_non_negative():
+    """DEC-092: clamps inputs at 0 (defensive against pathological inputs)."""
+    from backtest.engine.improvements import compute_slippage_bps_advanced
+    assert compute_slippage_bps_advanced(-0.01, -0.05) >= 0.0
+
+
+# --- DEC-280 time-of-day slippage multiplier -----------------------------
+
+def test_dec_280_time_of_day_first_30min():
+    """DEC-280 spec test signal: 09:35 ET (first 30min) -> multiplier > 1.0."""
+    from datetime import time
+    from backtest.engine.improvements import time_of_day_slippage_multiplier
+    assert time_of_day_slippage_multiplier(time(9, 35)) == 1.5
+    # Exact-30-min boundary 10:00 is OUT (consistent with [09:30, 10:00))
+    assert time_of_day_slippage_multiplier(time(10, 0)) == 1.0
+
+
+def test_dec_280_time_of_day_midday_baseline():
+    """DEC-280 spec test signal: 11:00 ET -> multiplier 1.0."""
+    from datetime import time
+    from backtest.engine.improvements import time_of_day_slippage_multiplier
+    assert time_of_day_slippage_multiplier(time(11, 0)) == 1.0
+    assert time_of_day_slippage_multiplier(time(14, 0)) == 1.0
+
+
+def test_dec_280_time_of_day_last_30min():
+    """DEC-280 spec test signal: 15:55 ET (last 30min) -> multiplier > 1.0."""
+    from datetime import time
+    from backtest.engine.improvements import time_of_day_slippage_multiplier
+    assert time_of_day_slippage_multiplier(time(15, 55)) == 1.5
+    # 15:30 boundary is IN (consistent with [15:30, 16:00))
+    assert time_of_day_slippage_multiplier(time(15, 30)) == 1.5
+
+
+def test_dec_280_time_of_day_none_returns_one():
+    """DEC-280: None entry_time (daily-bar backtest, no intraday context)
+    returns 1.0 - caller-side fail-soft.
+    """
+    from backtest.engine.improvements import time_of_day_slippage_multiplier
+    assert time_of_day_slippage_multiplier(None) == 1.0
+
+
+def test_dec_280_time_of_day_accepts_datetime():
+    """DEC-280: accepts datetime in addition to time."""
+    from datetime import datetime
+    from backtest.engine.improvements import time_of_day_slippage_multiplier
+    assert time_of_day_slippage_multiplier(datetime(2024, 1, 5, 9, 45)) == 1.5
+    assert time_of_day_slippage_multiplier(datetime(2024, 1, 5, 12, 0)) == 1.0
+
+
+# --- DEC-279 P&L decomposition --------------------------------------------
+
+def test_dec_279_decompose_components_sum_to_actual():
+    """DEC-279 spec test signal: synthetic trade with known timing/exit/sizing
+    deltas -> 5 components sum equals actual P&L.
+    """
+    from backtest.results.metrics import decompose_trade_pnl
+    out = decompose_trade_pnl(
+        actual_pnl_dollar=1000.0,
+        timing_delta_dollar=-100.0,
+        exit_delta_dollar=-50.0,
+        sizing_delta_dollar=-200.0,
+        agent_delta_dollar=75.0,
+    )
+    components_sum = (out["signal_contribution"] + out["timing_contribution"]
+                      + out["exit_contribution"] + out["sizing_contribution"]
+                      + out["agent_contribution"])
+    assert abs(components_sum - 1000.0) < 1e-6
+    # Signal residual: 1000 - (-100 -50 -200 +75) = 1000 - (-275) = 1275
+    assert abs(out["signal_contribution"] - 1275.0) < 1e-6
+
+
+def test_dec_279_decompose_all_zero_deltas_signal_equals_actual():
+    """DEC-279: with no derived deltas, signal == actual_pnl."""
+    from backtest.results.metrics import decompose_trade_pnl
+    out = decompose_trade_pnl(actual_pnl_dollar=500.0)
+    assert out["signal_contribution"] == 500.0
+    assert out["timing_contribution"] == 0.0
+    assert out["actual_total_check"] == 500.0
+
+
+def test_dec_279_decompose_losing_trade_negative_signal():
+    """DEC-279: trade loss with positive timing/exit deltas -> negative signal."""
+    from backtest.results.metrics import decompose_trade_pnl
+    out = decompose_trade_pnl(
+        actual_pnl_dollar=-200.0,
+        timing_delta_dollar=50.0,
+        exit_delta_dollar=30.0,
+    )
+    # signal = -200 - (50 + 30) = -280
+    assert out["signal_contribution"] == -280.0
+
+
+# --- DEC-108 regime EMA smoothing -----------------------------------------
+
+def test_dec_108_ema_first_call_returns_new_score():
+    """DEC-108: first call (prev=None) seeds with new_score unchanged."""
+    from backtest.engine.regime_filter import ema_smooth_regime_probability
+    assert ema_smooth_regime_probability(0.75, prev_smoothed=None) == 0.75
+
+
+def test_dec_108_ema_subsequent_call_weights_prev_heavily():
+    """DEC-108 spec: EMA = 0.9*prev + 0.1*new (default alpha=0.1)."""
+    from backtest.engine.regime_filter import ema_smooth_regime_probability
+    # prev 1.0, new 0.0 -> 0.9*1.0 + 0.1*0.0 = 0.9
+    assert abs(ema_smooth_regime_probability(0.0, prev_smoothed=1.0) - 0.9) < 1e-9
+    # prev 0.5, new 1.0 -> 0.9*0.5 + 0.1*1.0 = 0.55
+    assert abs(ema_smooth_regime_probability(1.0, prev_smoothed=0.5) - 0.55) < 1e-9
+
+
+def test_dec_108_ema_doesnt_flicker_on_single_day_spike():
+    """DEC-108 spec test signal: single-day spike in raw score does not flip
+    smoothed value far from prev.
+    """
+    from backtest.engine.regime_filter import ema_smooth_regime_probability
+    smoothed = 0.2
+    spike_smoothed = ema_smooth_regime_probability(1.0, prev_smoothed=smoothed)
+    # 0.9*0.2 + 0.1*1.0 = 0.28 - much closer to prev 0.2 than spike 1.0
+    assert 0.2 < spike_smoothed < 0.4
+
+
+def test_dec_108_ema_custom_alpha():
+    """DEC-108: caller can override alpha (e.g., alpha=0.5 -> equal weight)."""
+    from backtest.engine.regime_filter import ema_smooth_regime_probability
+    # alpha 0.5: 0.5*prev + 0.5*new
+    assert abs(ema_smooth_regime_probability(1.0, prev_smoothed=0.0, alpha=0.5)
+               - 0.5) < 1e-9
+
+
+# ============================================================================
 # DEC-432 Chandelier exit indicator tests (Phase 3 Batch 53 Path C)
 # Parabolic SAR + Supertrend already implemented; only chandelier added.
 # ============================================================================

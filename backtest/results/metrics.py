@@ -604,6 +604,50 @@ def _kelly_criterion(win_rate: float, avg_win: float, avg_loss: float) -> dict:
     }
 
 
+def decompose_trade_pnl(
+    actual_pnl_dollar: float,
+    timing_delta_dollar: float = 0.0,
+    exit_delta_dollar: float = 0.0,
+    sizing_delta_dollar: float = 0.0,
+    agent_delta_dollar: float = 0.0,
+) -> dict:
+    """DEC-279 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 54 2026-05-11
+    (owner-approved Path C bundle; sandbox-prototype scope per spec).
+
+    5-component decomposition of a single trade's realized P&L:
+      (1) signal     - residual P&L if no overlays applied
+      (2) timing     - delta vs idealized entry (actual entry late/early)
+      (3) exit       - delta vs idealized exit (over-/under-stayed)
+      (4) sizing     - delta vs equal-weight baseline sizing
+      (5) agent      - delta from agent overlay vs rules-only baseline
+
+    The function takes the 4 derived-delta inputs and SOLVES for signal as:
+      signal = actual_pnl - (timing + exit + sizing + agent)
+    so the 5 components sum to actual_pnl by construction (test-signal
+    invariant per DEC-279 spec).
+
+    Inputs are signed dollar deltas. Positive = additive to P&L; negative =
+    drag. Idealized baselines (signal-driven entry, perfect exit, equal-
+    weight sizing, rules-only baseline) are caller-supplied as deltas;
+    sandbox prototype intentionally avoids prescribing the idealization
+    methodology pending Phase 1B-alpha validation.
+
+    Returns dict with 5 contributions + actual_total_check (round-trip
+    sum validator).
+    """
+    derived = (timing_delta_dollar + exit_delta_dollar
+               + sizing_delta_dollar + agent_delta_dollar)
+    signal = actual_pnl_dollar - derived
+    return {
+        "signal_contribution":  round(signal, 4),
+        "timing_contribution":  round(timing_delta_dollar, 4),
+        "exit_contribution":    round(exit_delta_dollar, 4),
+        "sizing_contribution":  round(sizing_delta_dollar, 4),
+        "agent_contribution":   round(agent_delta_dollar, 4),
+        "actual_total_check":   round(signal + derived, 4),
+    }
+
+
 def _aep_pct_metric(df_trades: pd.DataFrame) -> dict:
     """DEC-435 / DEC-075 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 49
     2026-05-11 (owner-approved Path C). Adverse Exit Pct (AEP): per-trade

@@ -150,6 +150,37 @@ def get_vix_smoothed(vix_series: pd.Series, as_of: date, window: int = 5) -> Opt
 REGIME_STATES = ("bull", "neutral", "bear", "crisis")
 
 
+def ema_smooth_regime_probability(
+    new_score: float,
+    prev_smoothed: Optional[float] = None,
+    alpha: float = 0.1,
+) -> float:
+    """DEC-108 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 54 2026-05-11
+    (owner-approved Path C bundle). Exponential smoothing of a regime
+    probability or score (HMM rejected per Pass 52 turn 61 owner-approved
+    spec; exponential smoothing chosen for simplicity-vs-benefit).
+
+    Formula: smoothed = (1 - alpha) * prev_smoothed + alpha * new_score
+    matches the spec: EMA = 0.9 * previous + 0.1 * new_observation (default
+    alpha=0.1 weights new observation at 10%).
+
+    First call (prev_smoothed=None) returns new_score unchanged to seed the
+    EMA. Generalizes to any continuous regime input (DEC-388 VIX SMA already
+    handles raw-VIX smoothing; this helper applies to derived regime scores
+    like probability vectors or stratified inputs).
+
+    Inputs:
+      new_score: today's raw regime score (any continuous value)
+      prev_smoothed: yesterday's EMA-smoothed value (None on first call)
+      alpha: weight on new_score (default 0.1)
+
+    Returns float smoothed score.
+    """
+    if prev_smoothed is None:
+        return float(new_score)
+    return float((1.0 - alpha) * prev_smoothed + alpha * new_score)
+
+
 def compute_regime_transition_matrix(
     regime_sequence,
     states=REGIME_STATES,
