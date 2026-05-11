@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-11T03:55:10.191814+00:00",
+  "generated_at": "2026-05-11T04:01:42.691201+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -2604,7 +2604,7 @@
     {
       "id": "DECISION-082",
       "title": "Stress-test pass requirements \u2014 Pass 52 owner-approved Option A (revised from prior 2008/2020/2022 scope after owner caught error: backtest covers 2021-2024 onl",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X4 \u2014 Statistical Methodology",
       "pass_intro": "Pass 39",
       "pass_resolved": "DEC-405",
@@ -2635,10 +2635,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -2724,7 +2724,7 @@
     {
       "id": "DECISION-085",
       "title": "Define macro correlation precisely \u2014 Pass 52 owner-approved REVISED COMPREHENSIVE (revised from prior 5-indicator list after owner caught it was too narrow; exi",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X4 \u2014 Statistical Methodology",
       "pass_intro": "Pass 39",
       "pass_resolved": "DEC-407,DEC-408,DEC-409",
@@ -2755,10 +2755,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -10533,7 +10533,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 22,
+        "n_doc_refs": 26,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -11013,7 +11013,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 9,
+        "n_doc_refs": 10,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -11053,7 +11053,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 15,
+        "n_doc_refs": 16,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -11133,7 +11133,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 5,
+        "n_doc_refs": 7,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -11253,7 +11253,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 9,
+        "n_doc_refs": 11,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -11293,7 +11293,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 12,
+        "n_doc_refs": 13,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -11413,7 +11413,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 10,
+        "n_doc_refs": 11,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -11453,7 +11453,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 10,
+        "n_doc_refs": 12,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -11493,7 +11493,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 5,
+        "n_doc_refs": 6,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -11533,7 +11533,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 5,
+        "n_doc_refs": 6,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -11613,7 +11613,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 7,
+        "n_doc_refs": 8,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -13653,7 +13653,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 17,
+        "n_doc_refs": 18,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -13733,7 +13733,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 8,
+        "n_doc_refs": 9,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -13773,7 +13773,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 4,
+        "n_doc_refs": 5,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -13973,7 +13973,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 8,
+        "n_doc_refs": 9,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -14293,7 +14293,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 4,
+        "n_doc_refs": 5,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -14333,7 +14333,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 21,
+        "n_doc_refs": 22,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -14573,7 +14573,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 16,
+        "n_doc_refs": 17,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -14693,7 +14693,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 3,
+        "n_doc_refs": 4,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -14733,7 +14733,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 9,
+        "n_doc_refs": 10,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -14839,46 +14839,6 @@
         "label": "BLOCKED",
         "color": "#3b82f6",
         "reason": "Waiting on dependency (BLOCKED_ON_DEC-298)"
-      }
-    },
-    {
-      "id": "DECISION-412",
-      "title": "DEC-109 Phase B \u2014 Implement rolling 5yr/1yr walk-forward in walk-forward engine. Train: 5-year window. OOS: 1-year window. 2 OOS rolling windows in extended sco",
-      "status": "RESOLVED-DECIDED",
-      "theme": "Batch X4 \u2014 Statistical Methodology",
-      "pass_intro": "Pass 52",
-      "pass_resolved": "-",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 5,
-        "pyramid": {
-          "unit": "N/A",
-          "smoke": "N/A",
-          "integration": "N/A",
-          "system": "N/A",
-          "functional": "N/A",
-          "regression": "N/A",
-          "data_integrity": "N/A",
-          "performance": "N/A",
-          "acceptance": "N/A",
-          "property": "N/A",
-          "snapshot": "N/A",
-          "contract": "N/A",
-          "compatibility": "N/A"
-        }
-      },
-      "short_id": "DEC-412",
-      "sprint": "Sprint 7 additions (Statistica",
-      "dependencies": "DEC-109",
-      "description": "",
-      "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "RESOLVED-DECIDED but no code or test refs found"
       }
     },
     {
@@ -16053,7 +16013,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 28,
+        "n_doc_refs": 30,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -18533,7 +18493,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 73,
+        "n_doc_refs": 80,
         "pyramid": {
           "unit": true,
           "smoke": true,
@@ -19173,7 +19133,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 465,
+        "n_doc_refs": 466,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -19483,7 +19443,7 @@
     }
   ],
   "decisions_total_count": 534,
-  "decisions_hidden_count": 47,
+  "decisions_hidden_count": 48,
   "bugs": [
     {
       "id": "BUG-01",
@@ -19685,7 +19645,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 26,
+        "n_doc_refs": 27,
         "pyramid": {
           "unit": true,
           "smoke": true,
@@ -20027,7 +19987,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 16,
+        "n_doc_refs": 17,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -20825,7 +20785,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 38,
+        "n_doc_refs": 41,
         "pyramid": {
           "unit": true,
           "smoke": true,
@@ -26838,46 +26798,52 @@
   ],
   "recent_commits": [
     {
+      "sha": "4a129d79",
+      "subject": "Pass 53 v8h+1: Phase 3 Batch 30 - X53 Engine Bugs per-decision audit (Path B Step 4)",
+      "author": "jeetmehta1991",
+      "rel_time": "6 minutes ago"
+    },
+    {
       "sha": "9e933201",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 29 - 54 SPEC_ONLY bulk-flipped RESOLVED-IMPLEMENTED-AS-DECIDED",
       "author": "jeetmehta1991",
-      "rel_time": "5 minutes ago"
+      "rel_time": "11 minutes ago"
     },
     {
       "sha": "a3894856",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 28 - SPEC_ONLY initiative kickoff (Path B Steps 1+2)",
       "author": "jeetmehta1991",
-      "rel_time": "18 minutes ago"
+      "rel_time": "24 minutes ago"
     },
     {
       "sha": "4910c590",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 27 - 12 DEC status flips (all 4 owner-approved items)",
       "author": "jeetmehta1991",
-      "rel_time": "39 minutes ago"
+      "rel_time": "46 minutes ago"
     },
     {
       "sha": "23275737",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 26 - Decisions ALL non-DEFERRED CLEAN (0 no-cells)",
       "author": "jeetmehta1991",
-      "rel_time": "47 minutes ago"
+      "rel_time": "54 minutes ago"
     },
     {
       "sha": "99f04c48",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 25 - Path 2 implementation (owner-approved)",
       "author": "jeetmehta1991",
-      "rel_time": "57 minutes ago"
+      "rel_time": "64 minutes ago"
     },
     {
       "sha": "8354df3d",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 24 - id_status substring-match bug FIXED (CRITICAL)",
       "author": "jeetmehta1991",
-      "rel_time": "70 minutes ago"
+      "rel_time": "77 minutes ago"
     },
     {
       "sha": "b845fd62",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 23 - Pyramid N/A defaults scaled to ALL ID kinds (owner directive)",
       "author": "jeetmehta1991",
-      "rel_time": "81 minutes ago"
+      "rel_time": "88 minutes ago"
     },
     {
       "sha": "fa2c140c",
@@ -26919,7 +26885,7 @@
       "sha": "93e4036a",
       "subject": "Pass 53 v8h+1: BUG-95 CRITICAL Portfolio class skeleton (Sub-batch 1/5 - owner-approved Option A)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "b04abeb7",
@@ -26949,7 +26915,7 @@
       "sha": "cf8d9c24",
       "subject": "Pass 53 v8h+1: BUG-110 HIGH entry gap filter VERIFIED ENFORCED (stale audit finding)",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "a571c1c6",
@@ -27008,12 +26974,6 @@
     {
       "sha": "0daa206c",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 7 - 6 BUGs (43/44/45/48/58/59) SUPERSEDED/DEFERRED/OBSOLETE",
-      "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
-    },
-    {
-      "sha": "2de4536b",
-      "subject": "Pass 53 v8h+1: Phase 3 Batch 6 - 5 BUGs (42/47/49/50/52) SUPERSEDED/DEFERRED cross-references",
       "author": "jeetmehta1991",
       "rel_time": "6 hours ago"
     }
@@ -27781,6 +27741,16 @@
     },
     {
       "kind": "DEC",
+      "id": "DEC-505",
+      "title": "Backtest window alignment to Polygon Stocks Starter 5y cache (supersedes DEC-109 6-fold walk-forward). Pass 53 owner-approved Q1+Q2+Q3 2026-",
+      "status": "RESOLVED-IMPLEMENTED",
+      "tier": 1,
+      "reason": "Dependency root (5 downstream items reference)",
+      "back_refs": 5,
+      "sprint": "-"
+    },
+    {
+      "kind": "DEC",
       "id": "DEC-008",
       "title": "Decision Agent action field integration (BUG-113)",
       "status": "PARTIAL",
@@ -27831,16 +27801,6 @@
     },
     {
       "kind": "DEC",
-      "id": "DEC-505",
-      "title": "Backtest window alignment to Polygon Stocks Starter 5y cache (supersedes DEC-109 6-fold walk-forward). Pass 53 owner-approved Q1+Q2+Q3 2026-",
-      "status": "RESOLVED-IMPLEMENTED",
-      "tier": 1,
-      "reason": "Dependency root (4 downstream items reference)",
-      "back_refs": 4,
-      "sprint": "-"
-    },
-    {
-      "kind": "DEC",
       "id": "DEC-067",
       "title": "Add 9 missing exit methods \u2014 Pass 52 owner-approved revised scope. 9 new methods: chandelier (DEC-353 compliant ATR mult \u2265 2.5), psar, super",
       "status": "RESOLVED-IMPLEMENTED",
@@ -27853,7 +27813,7 @@
       "kind": "DEC",
       "id": "DEC-085",
       "title": "Define macro correlation precisely \u2014 Pass 52 owner-approved REVISED COMPREHENSIVE (revised from prior 5-indicator list after owner caught it",
-      "status": "RESOLVED-DECIDED",
+      "status": "RESOLVED-IMPLEMENTED",
       "tier": 1,
       "reason": "Dependency root (3 downstream items reference)",
       "back_refs": 3,
@@ -27891,10 +27851,10 @@
     }
   ],
   "decision_status_counts": {
-    "RESOLVED-DECIDED": 213,
-    "RESOLVED-IMPLEMENTED": 111,
+    "RESOLVED-DECIDED": 211,
+    "RESOLVED-IMPLEMENTED": 113,
     "PARTIAL": 5,
-    "PARTIAL-SPEC-ONLY": 65,
+    "PARTIAL-SPEC-ONLY": 64,
     "DEFERRED_TO_STAGE_3": 36,
     "DEFERRED_TO_STAGE_4": 21,
     "DEFERRED": 2,

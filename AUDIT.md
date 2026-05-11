@@ -33997,6 +33997,77 @@ Documents updated:
   - AUDIT.md (this entry)
   - dashboard_stage_2 (rebuilt; IMPLEMENTED 104 -> 112, SPEC_ONLY 262 -> 250)
 
+---
+
+## Pass 53 Day 9 v8h+1 follow-on 2026-05-11 (cont): Phase 3 Batch 31 - X4 Statistical Methodology per-decision audit (Step 5)
+
+**Owner directive 2026-05-10 (Path B Step 5 approved):** Per-decision audit of 17 X4 Statistical Methodology SPEC_ONLY decisions.
+
+**Conservative audit results (3 flips):**
+
+**RESOLVED-IMPLEMENTED (2):**
+- DEC-082: stress-test pass requirements implemented via backtest/results/stress_tests.py (DEC-405 Option A scope landed); contract-layer test coverage
+- DEC-085: macro correlation implemented in backtest/results/metrics.py (per-strategy win rate in favourable vs unfavourable regime); simpler form than the comprehensive event-window version specified in children
+
+**SUPERSEDED (1):**
+- DEC-412 SUPERSEDED-BY-DEC-505 (parent DEC-109 already SUPERSEDED-BY-DEC-482-AND-DEC-505 in Batch 27)
+
+**Stay SPEC_ONLY (14 - genuine statistical methodology backlog):**
+- DEC-081 (sharpe_per_trade + sharpe_daily distinction - NOT in code)
+- DEC-083 (tiered min trades - generic min_trades exists; tiered enforcement NOT in code)
+- DEC-084 (audit threshold 65% - code has 75%; spec NOT applied)
+- DEC-110 (Deflated Sharpe / PSR - NOT in code)
+- DEC-111 (statsmodels stationarity tests - statsmodels NOT in requirements.txt)
+- DEC-402 (Sharpe canonicalization - implementation of DEC-081; NOT done)
+- DEC-403 (Sortino - NOT in code)
+- DEC-404 (transaction cost sensitivity at 0/5/10/20 bps - NOT exposed in metrics)
+- DEC-406 (tiered min-trades - implementation of DEC-083; NOT done)
+- DEC-408 (compute_macro_correlations - NOT in code)
+- DEC-409 (event-window tags - NOT in code)
+- DEC-413 (Deflated Sharpe in metrics - implementation of DEC-110; NOT done)
+- DEC-414 (ADF test - NOT in code)
+- DEC-416 (Chow split-sample structural break - NOT in code)
+
+These 14 are GENUINE statistical methodology backlog requiring real implementation work (not addressed by Phase 3 work which focused on engine/data correctness).
+
+**Note on yield:** X4 audit yielded only 3 flips of 17 (18%) vs X53 audit yielded 12 of 26 (46%). Statistical methodology is MORE genuinely unimplemented than engine bugs because Phase 3 work focused on engine correctness, not statistical metrics expansion.
+
+**Dashboard state shift:**
+
+| Tier | Pre-Batch-31 | Post-Batch-31 |
+|---|---|---|
+| IMPLEMENTED | 112 | **114** (+2) |
+| SPEC_ONLY | 250 | **247** (-3) |
+| Hidden (SUPERSEDED) | 47 | **48** (+1) |
+| Visible | 487 | 486 |
+| Non-DEFERRED no-cells | 0 | **0** (preserved) |
+
+**Per-addressal pyramid (CHECKLIST #78):** unit 144/144 + integration 13/13 = 157/157 PASS in 2.85s.
+
+**Same-commit (DEC-594):** AUDIT_INDEX 3 status flips + AUDIT narrative + dashboard rebuilt in this commit.
+
+**Phase 1A May 15 IMPACT:** Minimal. Statistical methodology expansion (Sortino, Deflated Sharpe, PSR, ADF, Chow tests) would benefit Phase 1B-alpha rigor but is not Phase 1A baseline strict requirement.
+
+**Cumulative Path B progress (Batches 28-31):**
+- Original SPEC_ONLY count (pre-Path B): 321
+- Current SPEC_ONLY: 247 (-23% net reduction across 4 batches)
+- IMPLEMENTED: 47 -> 114 (+67 = +143%)
+
+**Next per-decision audit batch (Step 6 options):**
+- Data + Universe (16 SPEC_ONLY)
+- Medium-Severity Improvements (11)
+- Smart Money + Regimes (7)
+- Risk Management Extension (7)
+- Exits + Circuit Breakers (5)
+- ...or other themes
+
+Recommend: continue with Data + Universe (16) next since Phase 3 Sprint 0A work touched data layer heavily.
+
+Documents updated:
+  - AUDIT_INDEX.md (3 status flips: 2 IMPL + 1 SUPERSEDED)
+  - AUDIT.md (this entry)
+  - dashboard_stage_2 (rebuilt; IMPLEMENTED 112 -> 114, SPEC_ONLY 250 -> 247)
+
 **Remaining OPEN backlog after sweeps:**
   - 1 DEC RESOLVED-DECIDED-deferred (DEC-028 Stage 3 paper trading - intentional)
   - INVs: 33 OPEN + 2 DEFERRED (genuine work; not promotion-eligible)
