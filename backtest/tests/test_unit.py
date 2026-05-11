@@ -2589,6 +2589,79 @@ def test_bug_095_mark_to_market_carries_forward_missing_prices():
 
 
 # ============================================================================
+# DEC-432 Chandelier exit indicator tests (Phase 3 Batch 53 Path C)
+# Parabolic SAR + Supertrend already implemented; only chandelier added.
+# ============================================================================
+
+def _make_trending_ohlcv_dec432(n: int, base: float = 100.0, drift: float = 0.5):
+    """DEC-432 helper: build a trending OHLCV DataFrame with `n` daily bars.
+    Distinct name from earlier _make_ohlcv (BUG-270 hybrid trail tests) which
+    takes (dates, highs, lows, closes) positional args.
+    """
+    import pandas as pd
+    rows = []
+    for i in range(n):
+        c = base + drift * i
+        rows.append({
+            "open":  c - 0.3,
+            "high":  c + 0.6,
+            "low":   c - 0.7,
+            "close": c,
+            "volume": 1_000_000,
+        })
+    return pd.DataFrame(rows)
+
+
+def test_dec_432_chandelier_exit_basic_formula():
+    """DEC-432: chandelier_long = highest_high(22) - ATR(22)*3.0."""
+    from backtest.signals.technical import compute_chandelier_exit, _atr_series
+
+    df = _make_trending_ohlcv_dec432(30)
+    out = compute_chandelier_exit(df, period=22, mult=3.0)
+    assert "chandelier_long_value" in out
+    assert "chandelier_short_value" in out
+    # chandelier_long < highest_high and > lowest_low
+    hh = df["high"].rolling(22).max().iloc[-1]
+    ll = df["low"].rolling(22).min().iloc[-1]
+    atr = _atr_series(df, 22).iloc[-1]
+    expected_long = hh - 3.0 * atr
+    assert abs(out["chandelier_long_value"] - round(float(expected_long), 4)) < 1e-3
+    expected_short = ll + 3.0 * atr
+    assert abs(out["chandelier_short_value"] - round(float(expected_short), 4)) < 1e-3
+
+
+def test_dec_432_chandelier_long_bullish_in_uptrend():
+    """DEC-432: in a clean uptrend, close > chandelier_long -> bullish=True."""
+    from backtest.signals.technical import compute_chandelier_exit
+
+    df = _make_trending_ohlcv_dec432(40, drift=0.5)
+    out = compute_chandelier_exit(df)
+    assert out["chandelier_long_bullish"] is True
+    assert out["chandelier_long_flip_dn"] is False
+
+
+def test_dec_432_chandelier_insufficient_history_returns_empty():
+    """DEC-432: fewer than period+1 bars -> empty dict (silent skip)."""
+    from backtest.signals.technical import compute_chandelier_exit
+
+    df = _make_trending_ohlcv_dec432(10)  # less than period=22
+    out = compute_chandelier_exit(df, period=22)
+    assert out == {}
+
+
+def test_dec_432_chandelier_wired_into_compute_all_signals():
+    """DEC-432: chandelier fields surface in compute_all_signals output."""
+    from backtest.signals.technical import compute_all_signals
+
+    df = _make_trending_ohlcv_dec432(60)
+    sig = compute_all_signals(df)
+    for k in ("chandelier_long_value", "chandelier_short_value",
+              "chandelier_long_bullish", "chandelier_short_bearish",
+              "chandelier_long_flip_dn", "chandelier_short_flip_up"):
+        assert k in sig, f"missing {k}"
+
+
+# ============================================================================
 # DEC-087 Vol-targeted per-position sizing tests (Phase 3 Batch 52 Path C)
 # ============================================================================
 

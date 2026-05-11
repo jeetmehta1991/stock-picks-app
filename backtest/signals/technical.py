@@ -592,6 +592,48 @@ def compute_supertrend(df: pd.DataFrame, period: int = 7, mult: float = 3.0) -> 
     }
 
 
+def compute_chandelier_exit(
+    df: pd.DataFrame,
+    period: int = 22,
+    mult: float = 3.0,
+) -> dict:
+    """DEC-432 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 53 2026-05-11
+    (owner-approved Path C). Chandelier exit (Charles LeBeau): trailing stop
+    anchored to highest-high (long) or lowest-low (short) over `period` bars
+    less an ATR-multiple buffer.
+
+    chandelier_long  = highest_high(period) - ATR(period) * mult
+    chandelier_short = lowest_low(period)   + ATR(period) * mult
+
+    A long position should exit when close < chandelier_long; a short
+    position when close > chandelier_short. flip_dn / flip_up signal the
+    bar on which that cross occurred.
+
+    Defaults match Charles LeBeau's original spec (22, 3.0). Returns empty
+    dict on insufficient history (< period + 1 bars).
+    """
+    if len(df) < period + 1:
+        return {}
+    atr = _atr_series(df, period)
+    highest = df["high"].rolling(period).max()
+    lowest = df["low"].rolling(period).min()
+    chand_long  = highest - mult * atr
+    chand_short = lowest  + mult * atr
+    close = df["close"]
+    long_bullish_now  = bool(float(close.iloc[-1]) > float(chand_long.iloc[-1]))
+    long_bullish_prev = bool(float(close.iloc[-2]) > float(chand_long.iloc[-2]))
+    short_bearish_now  = bool(float(close.iloc[-1]) < float(chand_short.iloc[-1]))
+    short_bearish_prev = bool(float(close.iloc[-2]) < float(chand_short.iloc[-2]))
+    return {
+        "chandelier_long_value":  round(float(chand_long.iloc[-1]), 4),
+        "chandelier_short_value": round(float(chand_short.iloc[-1]), 4),
+        "chandelier_long_bullish":  long_bullish_now,
+        "chandelier_short_bearish": short_bearish_now,
+        "chandelier_long_flip_dn":  long_bullish_prev and not long_bullish_now,
+        "chandelier_short_flip_up": short_bearish_prev and not short_bearish_now,
+    }
+
+
 def compute_hull_ma(df: pd.DataFrame, period: int = 20) -> dict:
     if len(df) < period * 2 + 2:
         return {}
@@ -895,6 +937,7 @@ def compute_all_signals(df: pd.DataFrame) -> dict:
     signals.update(compute_parabolic_sar(df))
     signals.update(compute_ichimoku(df))
     signals.update(compute_supertrend(df))
+    signals.update(compute_chandelier_exit(df))
     signals.update(compute_hull_ma(df))
     signals.update(compute_bollinger(df))
     signals.update(compute_keltner(df))
