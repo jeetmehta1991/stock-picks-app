@@ -259,6 +259,31 @@ def test_bug_095_writer_emits_portfolio_outputs_when_portfolio_supplied(tmp_path
     assert metrics_out["portfolio_total_return_pct"] > 0
 
 
+def test_dec_317_dec_388_engine_wires_hysteresis_state():
+    """DEC-317 + DEC-388 (Phase 3 Batch 43): BacktestEngine instantiates
+    _prev_regime + _vix_series state attributes for hysteresis-aware regime
+    classification.
+    """
+    from backtest.engine.backtest import BacktestEngine
+    eng = BacktestEngine(universe=["SPY"], run_agents=False, walk_forward=False)
+    assert hasattr(eng, "_prev_regime")
+    assert eng._prev_regime is None  # None at start
+    assert hasattr(eng, "_vix_series")  # populated by load_data; None at construction
+
+
+def test_dec_317_dec_388_engine_imports_get_vix_smoothed():
+    """Source pin: backtest.py imports get_vix_smoothed + calls regime_filter
+    with hysteresis flags.
+    """
+    import inspect
+    from backtest.engine import backtest as bt_module
+    src = inspect.getsource(bt_module)
+    assert "get_vix_smoothed" in src, "Engine must import get_vix_smoothed"
+    assert "use_hysteresis" in src, "Engine must pass use_hysteresis flag"
+    assert "self._prev_regime" in src, "Engine must track prev_regime state"
+    assert "self._vix_series" in src, "Engine must pre-load VIX series"
+
+
 def test_bug_095_engine_can_open_gate_wired():
     """BUG-95 sub-batch 4: backtest.py must call self.portfolio.can_open()
     inside _process_day with max_positions from LIVE_TRADING_RULES and skip

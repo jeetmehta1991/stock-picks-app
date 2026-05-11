@@ -1,17 +1,17 @@
 """
-data/universe.py — Instrument manager.
+data/universe.py  -  Instrument manager.
 
 Handles:
   - Loading S&P 500 constituent list from committed static CSV (Current Snapshot_SP500 Tickers_May 2026.csv)
     The CSV is refreshed quarterly via slickcharts.com (or S&P press releases).
-    See LEARNINGS L88: Wikipedia is unreliable as a runtime data source — the
+    See LEARNINGS L88: Wikipedia is unreliable as a runtime data source  -  the
     static CSV pattern is the correct approach.
-  - Applying liquidity filters to reduce ~500 → ~380-420 tradeable names
+  - Applying liquidity filters to reduce ~500 -> ~380-420 tradeable names
   - Appending new instruments to existing universe without re-fetching
   - Sector breakdown for correlation analysis
 
 Universe tiers:
-  Phase 1A: SP50 + 17 ETFs = 67 instruments (hardcoded — pipeline validation)
+  Phase 1A: SP50 + 17 ETFs = 67 instruments (hardcoded  -  pipeline validation)
   Phase 1B: Filtered S&P 500 + all ETFs = ~400 instruments (CSV-backed)
   Phase 1C: Passing strategies only, full universe
 
@@ -33,7 +33,7 @@ from backtest.config import SP50, ETFS, LIQUIDITY
 logger = logging.getLogger(__name__)
 
 # Universe CSVs moved to top-level "Backtesting universe/" folder (Pass 53 owner directive)
-# for repo-wide visibility. Path resolves from backtest/data/universe.py → repo root.
+# for repo-wide visibility. Path resolves from backtest/data/universe.py -> repo root.
 UNIVERSE_DIR = Path(__file__).parent.parent.parent / "Backtesting universe"
 
 # Full ETF list for Phase 1B+
@@ -48,9 +48,9 @@ def get_etfs_full() -> list[str]:
     """
     Load Tier 1 ETF list from `backtest/data/Tier 1 ETFs Universe_Sector and Broad-Market ETFs_May 2026.csv`.
 
-    Per DEC-494 (Pass 53 owner-approved Sprint 1) — ETFs are now declared in
+    Per DEC-494 (Pass 53 owner-approved Sprint 1)  -  ETFs are now declared in
     a CSV file alongside T1a/T1b/T1c membership files for consistency.
-    No leveraged ETFs included — volatility decay invalidates backtest results.
+    No leveraged ETFs included  -  volatility decay invalidates backtest results.
 
     Returns list of ticker symbols. Falls back to empty list on read failure
     (callers should treat empty as a catastrophic config error).
@@ -66,7 +66,7 @@ def get_etfs_full() -> list[str]:
         return []
 
 
-# Computed at module import time — preserves legacy `from universe import ETFS_FULL`
+# Computed at module import time  -  preserves legacy `from universe import ETFS_FULL`
 # callers. CSV-backed; update Tier 1 ETFs Universe_Sector and Broad-Market ETFs_May 2026.csv to change the list.
 ETFS_FULL = get_etfs_full()
 
@@ -75,7 +75,7 @@ def get_sp500_constituents(max_tickers: int | None = None) -> list[str]:
     """
     Load S&P 500 constituent list from the committed CSV file.
 
-    Uses Backtesting universe/Current Snapshot_SP500 Tickers_May 2026.csv — a maintained static file
+    Uses Backtesting universe/Current Snapshot_SP500 Tickers_May 2026.csv  -  a maintained static file
     (Pass 53 folder move). Synced to Wikipedia Table 0 ground truth (503).
     No network calls, no rate limiting, works in all environments.
     Update Current Snapshot_SP500 Tickers_May 2026.csv manually when index membership changes
@@ -88,7 +88,7 @@ def get_sp500_constituents(max_tickers: int | None = None) -> list[str]:
     csv_path = UNIVERSE_DIR / "Current Snapshot_SP500 Tickers_May 2026.csv"
     try:
         df = pd.read_csv(csv_path, comment='#')
-        # Remove duplicates by Symbol (defensive — file should already be unique by symbol)
+        # Remove duplicates by Symbol (defensive  -  file should already be unique by symbol)
         tickers = df["Symbol"].drop_duplicates().tolist()
         logger.info("Loaded %d S&P 500 constituents from Current Snapshot_SP500 Tickers_May 2026.csv", len(tickers))
         return tickers[:max_tickers] if max_tickers else tickers
@@ -97,14 +97,14 @@ def get_sp500_constituents(max_tickers: int | None = None) -> list[str]:
         return []
 
 
-# ── Pass 53 PIT loader (DEC-040 / DEC-477) ────────────────────────────────────
+# -- Pass 53 PIT loader (DEC-040 / DEC-477) ------------------------------------
 # B++ schema universe CSVs use `added_date` / `removed_date` columns; PIT filter
 # resolves the active member set at any `as_of` date without survivorship bias.
 #
 # PIT FILTER: (added_date IS NULL OR added_date <= as_of)
 #         AND (removed_date IS NULL OR removed_date > as_of)
 #
-# Multi-period rows (ticker re-entry — e.g., NDX WDC/CSGP/TTWO/SPLK) are
+# Multi-period rows (ticker re-entry  -  e.g., NDX WDC/CSGP/TTWO/SPLK) are
 # handled via standard pandas OR semantics: each row is filtered independently;
 # union of passing rows is the active set at `as_of`.
 
@@ -114,14 +114,14 @@ def _filter_pit(df: pd.DataFrame, as_of: date) -> pd.DataFrame:
     Returns rows active at `as_of`.
     """
     if "added_date" not in df.columns or "removed_date" not in df.columns:
-        # File predates B++ migration — treat all rows as active (current snapshot semantics)
+        # File predates B++ migration  -  treat all rows as active (current snapshot semantics)
         return df
 
     as_of_ts = pd.Timestamp(as_of)
     added = pd.to_datetime(df["added_date"], errors="coerce")
     removed = pd.to_datetime(df["removed_date"], errors="coerce")
-    # NULL added_date → "in index prior to mapping window" → always passes left side
-    # NULL removed_date → "currently active" → always passes right side
+    # NULL added_date -> "in index prior to mapping window" -> always passes left side
+    # NULL removed_date -> "currently active" -> always passes right side
     left_ok = added.isna() | (added <= as_of_ts)
     right_ok = removed.isna() | (removed > as_of_ts)
     return df[left_ok & right_ok]
@@ -146,7 +146,7 @@ def get_sp500_constituents_pit(as_of: date) -> list[str]:
         if legacy.exists():
             csv_path = legacy
         else:
-            logger.warning("T1a historical CSV missing — falling back to Current Snapshot_SP500 Tickers_May 2026.csv current snapshot")
+            logger.warning("T1a historical CSV missing  -  falling back to Current Snapshot_SP500 Tickers_May 2026.csv current snapshot")
             return get_sp500_constituents()
     try:
         df = pd.read_csv(csv_path, comment='#')
@@ -210,11 +210,11 @@ def union_universe(as_of: date, include_etfs: bool = True) -> list[str]:
     Union of all 5 universe buckets at `as_of` (DEC-040 cross-tier loader).
 
     Returns deduplicated ticker list combining:
-      T1a (S&P 500 — historical_membership.csv PIT)
-      T1c (NASDAQ 100 non-S&P — Tier 1C Universe_NASDAQ-100 Tickers_Jan 2020 to May 2026.csv PIT)
-      T2  (spinoffs + recent IPOs — Tier 2 Universe_Spinoffs and Recent IPOs_Feb 2010 to May 2026.csv PIT)
-      T3  (momentum top 100 non-T1 — Tier 3 Universe_Momentum Top-100_Jun 2022 to May 2026.csv PIT)
-      ETFs (Tier 1 ETFs — Tier 1 ETFs Universe_Sector and Broad-Market ETFs_May 2026.csv, always-active)
+      T1a (S&P 500  -  historical_membership.csv PIT)
+      T1c (NASDAQ 100 non-S&P  -  Tier 1C Universe_NASDAQ-100 Tickers_Jan 2020 to May 2026.csv PIT)
+      T2  (spinoffs + recent IPOs  -  Tier 2 Universe_Spinoffs and Recent IPOs_Feb 2010 to May 2026.csv PIT)
+      T3  (momentum top 100 non-T1  -  Tier 3 Universe_Momentum Top-100_Jun 2022 to May 2026.csv PIT)
+      ETFs (Tier 1 ETFs  -  Tier 1 ETFs Universe_Sector and Broad-Market ETFs_May 2026.csv, always-active)
 
     T1b (Russell 1000 non-S&P) deferred to Sprint 1 procurement (LSEG paywall).
     """
@@ -228,7 +228,7 @@ def union_universe(as_of: date, include_etfs: bool = True) -> list[str]:
 
 
 # =============================================================================
-# DEC-504 Pass 53 owner directive 2026-05-05 — Multi-tier precedence resolver
+# DEC-504 Pass 53 owner directive 2026-05-05  -  Multi-tier precedence resolver
 # =============================================================================
 # When a ticker is in multiple tiers PIT-active for the same date, T3 wins over
 # T1 per owner directive: "If a ticker is in multiple tiers, rules of T3 should
@@ -242,14 +242,14 @@ def union_universe(as_of: date, include_etfs: bool = True) -> list[str]:
 # T3 strategy roster, T3 position sizing).
 #
 # Scope of "rules apply" per Pass 53 owner Q1=Approve all:
-#   (a) Liquidity floor — T3=$5M ADV, T2=$5M, T1c=$10M, T1a=$10M, T1ETF=N/A
-#   (b) History minimum — T3=60d, T2=20d (with LIMITED_HISTORY flag), T1c=250d, T1a=250d
-#   (c) Position sizing — tier-specific tier→size map (Master Dedup uses this)
-#   (d) Strategy roster — tier-eligible strategies (e.g., spinoff strategies T2-only,
+#   (a) Liquidity floor  -  T3=$5M ADV, T2=$5M, T1c=$10M, T1a=$10M, T1ETF=N/A
+#   (b) History minimum  -  T3=60d, T2=20d (with LIMITED_HISTORY flag), T1c=250d, T1a=250d
+#   (c) Position sizing  -  tier-specific tier->size map (Master Dedup uses this)
+#   (d) Strategy roster  -  tier-eligible strategies (e.g., spinoff strategies T2-only,
 #       momentum strategies T3+T1)
-#   (e) Refresh cadence — T3 monthly, T2 monthly, T1 quarterly (ops-level, not runtime)
+#   (e) Refresh cadence  -  T3 monthly, T2 monthly, T1 quarterly (ops-level, not runtime)
 
-# Tier precedence order — index 0 = highest precedence
+# Tier precedence order  -  index 0 = highest precedence
 _TIER_PRECEDENCE = ["T3", "T2", "T1c", "T1a", "T1ETF"]
 
 # Tier-specific parameter dicts (DEC-504 owner-approved scope a-d)
@@ -320,12 +320,12 @@ def resolve_tier_precedence(ticker: str, as_of: date) -> Optional[str]:
       added_date=2024-05-01. For as_of=2024-06-01:
         - T1a-active: True
         - T3-active: True (removed 2024-06-03)
-        - resolve_tier_precedence('VST', 2024-06-01) → 'T3' (T3 wins)
+        - resolve_tier_precedence('VST', 2024-06-01) -> 'T3' (T3 wins)
 
       For as_of=2024-07-01:
         - T1a-active: True
         - T3-active: False (removed 2024-06-03)
-        - resolve_tier_precedence('VST', 2024-07-01) → 'T1a'
+        - resolve_tier_precedence('VST', 2024-07-01) -> 'T1a'
     """
     for tier in _TIER_PRECEDENCE:
         if _ticker_in_tier(ticker, tier, as_of):
@@ -387,18 +387,30 @@ def apply_liquidity_filter(
             failing[ticker] = f"price_${last_close:.2f}_below_${min_price}"
             continue
 
-        # Volume filter — 20-day average
+        # Volume filter  -  20-day average
         avg_vol = float(sliced["volume"].tail(20).mean())
         if avg_vol < min_avg_volume:
             failing[ticker] = f"avg_vol_{int(avg_vol):,}_below_{int(min_avg_volume):,}"
             continue
 
-        # Market cap — skip check if data unavailable (rate limit graceful fallback)
+        # DEC-321 + DEC-392 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 43
+        # 2026-05-11 (owner-approved Path C). Liquidity filter FAIL-CLOSED on
+        # missing market_cap data. Previously skipped check silently when
+        # data unavailable (rate-limit graceful fallback) which let illiquid
+        # micro-caps slip through. Now: missing/zero market_cap fails the
+        # filter EXCEPT for ETFs (min_market_cap_m == 0, intentional bypass).
         info = info_dict.get(ticker, {})
-        mkt_cap_m = (info.get("market_cap") or 0) / 1_000_000
-        if mkt_cap_m > 0 and mkt_cap_m < min_market_cap_m:
-            failing[ticker] = f"mkt_cap_${mkt_cap_m:.0f}M_below_${min_market_cap_m:.0f}M"
-            continue
+        mkt_cap_raw = info.get("market_cap") or 0
+        mkt_cap_m = mkt_cap_raw / 1_000_000
+        if min_market_cap_m > 0:
+            # Fail-closed: missing or zero market cap rejects the ticker
+            if mkt_cap_m <= 0:
+                failing[ticker] = f"mkt_cap_missing_fail_closed_dec321"
+                continue
+            if mkt_cap_m < min_market_cap_m:
+                failing[ticker] = f"mkt_cap_${mkt_cap_m:.0f}M_below_${min_market_cap_m:.0f}M"
+                continue
+        # ETFs: min_market_cap_m == 0 -> skip check entirely (intentional)
 
         passing.append(ticker)
 
@@ -480,7 +492,7 @@ def get_correlation_matrix(
 
 def get_extended_universe() -> list[str]:
     """
-    Load Tier 2 extended universe — spinoffs, large non-S&P stocks.
+    Load Tier 2 extended universe  -  spinoffs, large non-S&P stocks.
     Refreshed monthly via scripts/refresh_extended_universe.py (Stage 3+ only).
     Empty CSV = Tier 2 not yet populated (Phase 1B/1C/1D use Tier 1 only).
     """
@@ -499,7 +511,7 @@ def get_extended_universe() -> list[str]:
 
 def get_momentum_watchlist() -> list[str]:
     """
-    Load Tier 3 momentum watchlist — top non-S&P momentum names.
+    Load Tier 3 momentum watchlist  -  top non-S&P momentum names.
     Refreshed monthly via scripts/build_momentum_watchlist.py (Stage 3+ only).
     For backtesting: fixed at run start (static, no look-ahead).
     For live: recomputed monthly, updated at month-end.
@@ -524,10 +536,10 @@ def get_full_live_universe() -> list[str]:
     For backtesting (Phase 1B/1C/1D): use build_phase1b_universe() instead.
     
     Universe tiers:
-      Tier 1 — S&P 500 (~500 tickers, quarterly refresh)
-      Tier 2 — Extended: spinoffs, large non-S&P (~50-100 tickers, monthly refresh)
-      Tier 3 — Momentum watchlist: top non-S&P momentum (~50 tickers, monthly refresh)
-      ETFs   — Sector, bond, commodity, volatility ETFs (~25 tickers, static)
+      Tier 1  -  S&P 500 (~500 tickers, quarterly refresh)
+      Tier 2  -  Extended: spinoffs, large non-S&P (~50-100 tickers, monthly refresh)
+      Tier 3  -  Momentum watchlist: top non-S&P momentum (~50 tickers, monthly refresh)
+      ETFs    -  Sector, bond, commodity, volatility ETFs (~25 tickers, static)
     """
     tier1  = get_sp500_constituents(500)
     tier2  = get_extended_universe()

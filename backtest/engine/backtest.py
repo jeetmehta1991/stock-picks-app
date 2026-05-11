@@ -36,7 +36,9 @@ from backtest.data.universe import fetch_info_bulk, get_sector_map
 from backtest.data.macro import macro_snapshot
 from backtest.data.sentiment import sentiment_snapshot
 from backtest.data.smart_money import smart_money_score
-from backtest.engine.regime_filter import get_regime_context, get_spy_ema200
+from backtest.engine.regime_filter import (
+    get_regime_context, get_spy_ema200, get_vix_smoothed,
+)
 from backtest.engine.exit_manager import (
     OpenTrade, ClosedTrade, process_day_exits,
 )
@@ -113,6 +115,13 @@ class BacktestEngine:
         from backtest.engine.portfolio import Portfolio
         self.portfolio = Portfolio(starting_capital=STARTING_CAPITAL)
 
+        # DEC-317 + DEC-388 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 43
+        # engine wiring 2026-05-11: track prev_regime across days for
+        # classify_regime_with_hysteresis. None at start; updated in _process_day.
+        self._prev_regime: Optional[str] = None
+        # Pre-loaded VIX series for smoothing (populated by load_data)
+        self._vix_series: Optional[pd.Series] = None
+
     # ----------------------------------------------------------------------
     # DATA LOADING
     # ----------------------------------------------------------------------
@@ -145,6 +154,25 @@ class BacktestEngine:
         self.liquid_universe = self._build_liquid_universe()
         logger.info("Liquid universe: %d/%d instruments after one-time filter",
                     len(self.liquid_universe), len(self.ohlcv_dict))
+
+        # DEC-317 + DEC-388 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 43:
+        # Pre-load VIX series for hysteresis-aware regime classification. The
+        # series feeds get_vix_smoothed in _process_day so 5-day SMA can be
+        # computed at each as_of. Source priority per backtest.data.macro.get_vix
+        # (FRED VIXCLS canonical; ^VIX fallback; VXX proxy degraded).
+        try:
+            from backtest.data.macro import get_vix
+            vix_df = get_vix(DATA_LOAD_START, self.end)
+            if vix_df is not None and not vix_df.empty:
+                # Use close column as VIX value series; ensure datetime index
+                if "close" in vix_df.columns:
+                    self._vix_series = vix_df["close"]
+                elif "vix" in vix_df.columns:
+                    self._vix_series = vix_df["vix"]
+                logger.info("VIX series loaded for hysteresis: %d rows",
+                            len(self._vix_series) if self._vix_series is not None else 0)
+        except Exception as exc:
+            logger.warning("VIX series load for hysteresis failed: %s", exc)
 
     def _build_liquid_universe(self) -> list[str]:
         """
@@ -342,12 +370,30 @@ class BacktestEngine:
                 ohlcv_pit[t] = sliced
 
         # -- 2. Regime classification  -  direction gating only, no sizing --
+        # DEC-317 + DEC-388 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 43
+        # engine wiring 2026-05-11: hysteresis active. Pass smoothed VIX (5d
+        # SMA) + prev_regime so regime doesn't flip on single noisy prints.
+        # When VIX series unavailable (first 5 days or missing cache), falls
+        # back to raw VIX with no hysteresis (legacy behavior).
         macro     = macro_snapshot(as_of)
         vix       = macro.get("vix_value")
         spy_close = float(ohlcv_pit["SPY"]["close"].iloc[-1]) if "SPY" in ohlcv_pit else None
         spy_ema   = get_spy_ema200(self.spy_df, as_of) if self.spy_df is not None else None
-        regime_ctx = get_regime_context(vix, spy_close, spy_ema)
+        # Compute smoothed VIX from pre-loaded series if available
+        vix_smoothed = None
+        if self._vix_series is not None:
+            vix_smoothed = get_vix_smoothed(self._vix_series, as_of, window=5)
+        # Use hysteresis only when we have prev_regime + smoothed VIX
+        use_hysteresis = (self._prev_regime is not None) and (vix_smoothed is not None)
+        regime_ctx = get_regime_context(
+            vix, spy_close, spy_ema,
+            prev_regime=self._prev_regime,
+            vix_smoothed=vix_smoothed,
+            use_hysteresis=use_hysteresis,
+        )
         regime     = regime_ctx["regime"]
+        # Persist for next iteration
+        self._prev_regime = regime
         # Pass 53 fix 2026-05-07: hoist crisis_flag to function scope so it's
         # defined before line 299 (was UnboundLocalError when regime != crisis
         # and inner-loop set never executed). Per DEC-316 unknown regime exists.

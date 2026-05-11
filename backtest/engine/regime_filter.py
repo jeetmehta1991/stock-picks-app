@@ -48,16 +48,30 @@ def get_regime_context(
     vix_value: Optional[float],
     spy_close: Optional[float],
     spy_ema200: Optional[float],
+    prev_regime: Optional[str] = None,
+    vix_smoothed: Optional[float] = None,
+    use_hysteresis: bool = False,
 ) -> dict:
     """
     Full regime context dict including position size multipliers.
     Used by engine and site card generator.
+
+    DEC-317 + DEC-388 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 43
+    engine wiring (2026-05-11): optional prev_regime + vix_smoothed + use_hysteresis
+    flags enable VIX MA smoothing + hysteresis when caller tracks day-over-day
+    state. Defaults preserve original behavior (raw VIX, no hysteresis) so
+    legacy call sites remain unchanged.
     """
     from backtest.config import REGIME_FILTER, POSITION_SIZE_MULT
 
     spy_above = (spy_close > spy_ema200
                  if spy_close and spy_ema200 else None)
-    regime    = classify_regime(vix_value, spy_above)
+    # Use smoothed VIX if provided; else raw
+    vix_for_classify = vix_smoothed if vix_smoothed is not None else vix_value
+    if use_hysteresis:
+        regime = classify_regime_with_hysteresis(vix_for_classify, spy_above, prev_regime)
+    else:
+        regime = classify_regime(vix_for_classify, spy_above)
     # DEC-316 fix (Pass 51): when regime is 'unknown', use unknown config (block).
     # Previously fell through to 'neutral' which silently allowed trading on
     # missing data. Now 'unknown' has long='none' / short='none' -> blocks entries.

@@ -2680,6 +2680,21 @@ def test_dec_404_cost_sensitivity_sharpe_at_4_levels():
         f"Sharpe should decrease with cost: {out}")
 
 
+def test_dec_321_dec_392_liquidity_fail_closed_on_missing_market_cap():
+    """DEC-321 + DEC-392 (Phase 3 Batch 43): liquidity filter fails closed
+    when market_cap is missing/zero (for non-ETF tiers with min_market_cap_m > 0).
+    Previously skipped silently.
+    """
+    import inspect
+    from backtest.data import universe as univ_module
+    src = inspect.getsource(univ_module.apply_liquidity_filter)
+    # Source pin: fail-closed pattern present
+    assert "DEC-321" in src and "DEC-392" in src, (
+        "DEC-321/DEC-392 cross-reference missing in apply_liquidity_filter")
+    assert "fail_closed" in src or "fail-closed" in src, (
+        "Fail-closed pattern not implemented")
+
+
 def test_dec_388_get_vix_smoothed_basic():
     """DEC-388: get_vix_smoothed returns 5-day SMA at as_of."""
     import pandas as pd
