@@ -430,6 +430,18 @@ def test_dec_088_engine_scales_down_when_realized_vol_high():
     assert scale >= 0.5  # bounded
 
 
+def test_dec_106_engine_wires_multi_input_regime_score():
+    """DEC-106 Batch 80: multi-input regime score (Phase A telemetry) wired
+    in _process_day; uses available macro + sent fields (VIX + SPY trend +
+    AAII spread + CNN F&G); missing inputs skipped per helper.
+    """
+    from pathlib import Path
+    src = Path("backtest/engine/backtest.py").read_text(encoding="utf-8")
+    assert "DEC-106 RESOLVED-IMPLEMENTED Batch 80" in src
+    assert "multi_input_regime_score" in src
+    assert "multi_input_regime" in src
+
+
 def test_dec_149_engine_wires_regime_transition_matrix_at_finalize():
     """DEC-149 Batch 79: regime history accumulated in _process_day +
     transition matrix computed in finalize.

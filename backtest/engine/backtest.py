@@ -446,6 +446,34 @@ class BacktestEngine:
         # history for end-of-run transition-matrix computation. Cheap O(1)
         # per day; matrix computed once at finalize().
         self._regime_history.append(regime)
+        # DEC-106 RESOLVED-IMPLEMENTED Batch 80 2026-05-12 owner-mandated
+        # wiring: multi-input regime scorecard (Phase A telemetry). Uses
+        # whatever inputs are currently available (VIX + SPY trend + AAII
+        # + CNN F&G); missing inputs (yield curve, HY spread, ICSA, breadth,
+        # sector dispersion) skipped per helper semantics. Surfaced via
+        # regime_ctx['multi_input_regime'] for downstream consumption.
+        # Joint DEC-150 (multi-asset; needs cross-asset plumbing) + DEC-151
+        # (sector regime; needs sector ETF plumbing).
+        try:
+            from backtest.engine.regime_filter import multi_input_regime_score
+            spy_above = (spy_close is not None and spy_ema is not None
+                         and spy_close > spy_ema)
+            aaii_bull = sent.get("aaii", {}).get("bullish_pct", None)
+            aaii_bear = sent.get("aaii", {}).get("bearish_pct", None)
+            aaii_spread = (
+                (aaii_bull - aaii_bear)
+                if (aaii_bull is not None and aaii_bear is not None) else None
+            )
+            cnn_fg = sent.get("fear_greed", {}).get("score", None)
+            mi_result = multi_input_regime_score(
+                vix=vix,
+                spy_above_200ema=spy_above,
+                aaii_bull_bear_spread=aaii_spread,
+                cnn_fg=cnn_fg,
+            )
+            regime_ctx["multi_input_regime"] = mi_result
+        except Exception as _exc:
+            logger.debug("DEC-106 multi-input regime score skipped: %s", _exc)
         # Pass 53 fix 2026-05-07: hoist crisis_flag to function scope so it's
         # defined before line 299 (was UnboundLocalError when regime != crisis
         # and inner-loop set never executed). Per DEC-316 unknown regime exists.
