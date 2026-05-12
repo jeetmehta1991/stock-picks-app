@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-12T18:58:42.637352+00:00",
+  "generated_at": "2026-05-12T19:03:01.185473+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -11213,7 +11213,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 11,
+        "n_doc_refs": 12,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -13733,7 +13733,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 16,
+        "n_doc_refs": 18,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -26598,28 +26598,34 @@
   ],
   "recent_commits": [
     {
+      "sha": "3ff63c2b",
+      "subject": "Batch 88: BUG-26 false-positive correction \u00e2\u20ac\u201d DEC-302 VIX/DXY canonical loader",
+      "author": "jeetmehta1991",
+      "rel_time": "4 minutes ago"
+    },
+    {
       "sha": "a2d57ece",
       "subject": "Batch 87: BUG-29 false-positive correction \u00e2\u20ac\u201d open-trades finalize confirmed wired",
       "author": "jeetmehta1991",
-      "rel_time": "3 minutes ago"
+      "rel_time": "8 minutes ago"
     },
     {
       "sha": "2e66a71b",
       "subject": "Batch 86: DEC-021 GENUINELY WIRED \u00e2\u20ac\u201d tier-3 consolidation in writer",
       "author": "jeetmehta1991",
-      "rel_time": "76 minutes ago"
+      "rel_time": "81 minutes ago"
     },
     {
       "sha": "23556d0a",
       "subject": "Batch 85: DEC-314 false-positive correction \u00e2\u20ac\u201d market-wide CB confirmed wired",
       "author": "jeetmehta1991",
-      "rel_time": "85 minutes ago"
+      "rel_time": "89 minutes ago"
     },
     {
       "sha": "0fdaf906",
       "subject": "Batch 84: DEC-183 GENUINELY WIRED \u00e2\u20ac\u201d lru_cached on classify_regime",
       "author": "jeetmehta1991",
-      "rel_time": "89 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "da3f0ba0",
@@ -26768,12 +26774,6 @@
     {
       "sha": "6c586908",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 63 (23-DEC close-out)",
-      "author": "jeetmehta1991",
-      "rel_time": "17 hours ago"
-    },
-    {
-      "sha": "d6be69a6",
-      "subject": "Pass 53 v8h+1: Phase 3 Batch 63 - Path C 23-DEC close-out (ALL RESOLVED-DECIDED resolved)",
       "author": "jeetmehta1991",
       "rel_time": "17 hours ago"
     }
@@ -26973,7 +26973,7 @@
     }
   ],
   "test_inventory": {
-    "total": 1165,
+    "total": 1167,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -27009,7 +27009,7 @@
       "test_fred_alfred_smoke": 5,
       "test_gate_pre_phase_1a_entry": 8,
       "test_gates": 6,
-      "test_integration": 52,
+      "test_integration": 54,
       "test_inv041_path_restricted_commits": 5,
       "test_l146_wave_a_g2_g3_g9": 6,
       "test_l146_wave_b_g7_sec_edgar": 6,

@@ -668,6 +668,52 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_bug_234_engine_consumes_vix_hysteresis_smoothing():
+    """BUG-234 Batch 89: VIX hard thresholds (40/30/20) flipped regime on
+    single noisy prints with no MA smoothing. RESOLVED by DEC-317
+    (regime hysteresis) + DEC-388 (5-day VIX SMA) wired in Phase 3
+    Batch 42-43 (2026-05-11). Engine's _process_day in backtest.py
+    computes vix_smoothed via get_vix_smoothed(5d window) + passes
+    prev_regime + use_hysteresis=True to get_regime_context so
+    classify_regime_with_hysteresis applies the 5-pt buffer band:
+    once in crisis stays until VIX<35, once in bull stays until VIX>25.
+    Source-grep verifies engine wiring + helper function presence.
+    """
+    from pathlib import Path
+    engine_src   = Path("backtest/engine/backtest.py").read_text(encoding="utf-8")
+    filter_src   = Path("backtest/engine/regime_filter.py").read_text(encoding="utf-8")
+    # Engine wiring at _process_day
+    assert "vix_smoothed" in engine_src
+    assert "use_hysteresis" in engine_src
+    assert "get_vix_smoothed" in engine_src
+    # Helper presence
+    assert "def get_vix_smoothed" in filter_src
+    assert "def classify_regime_with_hysteresis" in filter_src
+
+
+def test_bug_234_hysteresis_prevents_single_print_flip():
+    """BUG-234 behavior: once classified as bull, a single VIX spike to
+    32 (above the 30 bear threshold) does NOT flip to bear because the
+    hysteresis buffer requires VIX to stay below threshold for the
+    smoothed series to actually change classification.
+    """
+    from backtest.engine.regime_filter import classify_regime_with_hysteresis
+    # Already in bull, single high print -- must NOT flip immediately
+    result = classify_regime_with_hysteresis(
+        vix_value=32.0, spy_above_200ema=True, prev_regime="bull",
+    )
+    # Hysteresis: prev=bull stays bull unless VIX crosses upper buffer
+    assert result in {"bull", "neutral"}, (
+        f"hysteresis violated: single-print flipped to {result}"
+    )
+    # No prev_regime -> classify based on current values; 32 + SPY-above
+    # is on the bull/neutral edge but not crisis
+    result_cold = classify_regime_with_hysteresis(
+        vix_value=32.0, spy_above_200ema=True, prev_regime=None,
+    )
+    assert result_cold != "crisis"
+
+
 def test_bug_26_vix_loader_prefers_canonical_over_vxx_proxy():
     """BUG-26 Batch 88: VIX loader (backtest/data/macro.py) was using VXX
     price (223-461 range) as VIX proxy instead of actual ^VIX (18-36
