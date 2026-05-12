@@ -1284,6 +1284,42 @@ class BacktestEngine:
         # Metrics
         metrics = compute_all_metrics(df_trades, spy_total_return=spy_benchmark)
 
+        # DEC-155 RESOLVED-IMPLEMENTED Batch 81 2026-05-12 owner-mandated
+        # wiring: per-strategy vs-SPY alpha/beta/IR/tracking-error. Builds
+        # strategy daily-return series from trade pnl_pct binned by exit_date,
+        # SPY daily returns from same window; calls compute_vs_spy_metrics
+        # for each strategy and adds 4 new columns to metrics output. Joint
+        # DEC-208 multi-metric A/B (telemetry consumer).
+        try:
+            from backtest.results.metrics import compute_vs_spy_metrics
+            if "SPY" in self.cache_index and not df_trades.empty:
+                import pandas as _pd
+                _spy = self.cache_index["SPY"][
+                    self.cache_index["SPY"].index.date >= self.start
+                ]
+                _spy_daily = _spy["close"].pct_change().dropna()
+                _vs_spy_cols = {
+                    "alpha_annualized": [], "beta": [],
+                    "information_ratio": [], "tracking_error_annualized": [],
+                }
+                for _strat in metrics["strategy"].tolist():
+                    _strat_trades = df_trades[df_trades["strategy"] == _strat]
+                    if _strat_trades.empty:
+                        for k in _vs_spy_cols:
+                            _vs_spy_cols[k].append(None)
+                        continue
+                    _strat_daily = _strat_trades.groupby("exit_date")["pnl_pct"].sum() / 100.0
+                    _strat_daily.index = _pd.to_datetime(_strat_daily.index)
+                    _vs = compute_vs_spy_metrics(_strat_daily, _spy_daily)
+                    for k in _vs_spy_cols:
+                        _vs_spy_cols[k].append(_vs.get(k))
+                for k, v in _vs_spy_cols.items():
+                    metrics[k] = v
+                logger.info("DEC-155 vs-SPY metrics added for %d strategies",
+                            len(metrics))
+        except Exception as _exc:
+            logger.debug("DEC-155 vs-SPY metrics skipped: %s", _exc)
+
         # Walk-forward validation
         wf_df = pd.DataFrame()
         if self.walk_forward and len(df_trades) >= 20:

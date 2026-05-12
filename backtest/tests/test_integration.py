@@ -430,6 +430,17 @@ def test_dec_088_engine_scales_down_when_realized_vol_high():
     assert scale >= 0.5  # bounded
 
 
+def test_dec_155_engine_wires_vs_spy_metrics():
+    """DEC-155 Batch 81: per-strategy vs-SPY alpha/beta/IR/TE added to
+    metrics output after compute_all_metrics.
+    """
+    from pathlib import Path
+    src = Path("backtest/engine/backtest.py").read_text(encoding="utf-8")
+    assert "DEC-155 RESOLVED-IMPLEMENTED Batch 81" in src
+    assert "compute_vs_spy_metrics" in src
+    assert "information_ratio" in src
+
+
 def test_dec_106_engine_wires_multi_input_regime_score():
     """DEC-106 Batch 80: multi-input regime score (Phase A telemetry) wired
     in _process_day; uses available macro + sent fields (VIX + SPY trend +
