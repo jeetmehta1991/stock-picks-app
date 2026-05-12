@@ -740,6 +740,113 @@ def compute_per_regime_agent_verdict(
     return out
 
 
+def event_calendar_suppression_check(
+    as_of_date,
+    ticker_earnings_date=None,
+    fomc_dates=None,
+    cpi_release_dates=None,
+    nfp_release_dates=None,
+    pre_days: int = None,
+    post_days: int = None,
+) -> dict:
+    """DEC-348 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 61 2026-05-11
+    (owner-approved Path C 20-DEC bundle). Event-calendar suppression per
+    Pass 52 turn 89 spec: suppress strategy entries on date of FOMC /
+    earnings / CPI within DEC-349 asymmetric window (pre=1, post=3).
+
+    Joint DEC-256 (earnings calendar) + DEC-407/448 (FRED FOMC/CPI dates)
+    + DEC-349 (asymmetric window).
+
+    Inputs:
+      as_of_date: entry candidate date
+      ticker_earnings_date: optional earnings date for the ticker
+      fomc_dates / cpi_release_dates / nfp_release_dates: lists of events
+      pre_days / post_days: override DEC-349 defaults
+
+    Returns dict with suppressed (bool), reasons (list of event-type tags),
+    note.
+    """
+    from datetime import datetime, date
+    from backtest.config import EVENT_WINDOW_PRE_DAYS, EVENT_WINDOW_POST_DAYS
+    if as_of_date is None:
+        return {"suppressed": False, "reasons": [], "note": "no_as_of"}
+    if isinstance(as_of_date, str):
+        as_of_date = datetime.fromisoformat(as_of_date).date()
+    pre = pre_days if pre_days is not None else EVENT_WINDOW_PRE_DAYS
+    post = post_days if post_days is not None else EVENT_WINDOW_POST_DAYS
+
+    def _within_window(event_d):
+        if event_d is None:
+            return False
+        if isinstance(event_d, str):
+            try:
+                event_d = datetime.fromisoformat(event_d).date()
+            except ValueError:
+                return False
+        days_to_event = (event_d - as_of_date).days
+        return -post <= days_to_event <= pre
+
+    reasons = []
+    if ticker_earnings_date is not None and _within_window(ticker_earnings_date):
+        reasons.append("EVENT_SUPPRESSION_EARNINGS")
+    for fomc_d in (fomc_dates or []):
+        if _within_window(fomc_d):
+            reasons.append("EVENT_SUPPRESSION_FOMC")
+            break
+    for cpi_d in (cpi_release_dates or []):
+        if _within_window(cpi_d):
+            reasons.append("EVENT_SUPPRESSION_CPI")
+            break
+    for nfp_d in (nfp_release_dates or []):
+        if _within_window(nfp_d):
+            reasons.append("EVENT_SUPPRESSION_NFP")
+            break
+    return {
+        "suppressed": len(reasons) > 0,
+        "reasons":    reasons,
+        "note":       "REJECT_REASON_EVENT_SUPPRESSION" if reasons else "ok",
+    }
+
+
+def bonferroni_dynamic_n(
+    p_values,
+    n_strategies_tested=None,
+) -> dict:
+    """DEC-400 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 61 2026-05-11
+    (owner-approved Path C 20-DEC bundle). DEC-080 Phase A: replace
+    hardcoded Bonferroni N=60 with dynamic `len(STRATEGIES_TESTED)` count.
+
+    Inputs:
+      p_values: list of raw p-values (one per strategy)
+      n_strategies_tested: override count (default: len(p_values))
+
+    Returns dict with adjusted_p_values (list), n_tested, alpha_bonferroni
+    at conventional 0.05 (= 0.05 / n_tested), per_strategy_pass (bool list
+    where adjusted_p < 0.05).
+
+    REVISIT_AFTER_BACKTEST tag per Pass 52 turn 37; tune post-Phase-1B-alpha.
+    """
+    if not p_values:
+        return {"adjusted_p_values": [], "n_tested": 0,
+                "alpha_bonferroni": None, "per_strategy_pass": [],
+                "note": "no_p_values"}
+    n = n_strategies_tested if n_strategies_tested is not None else len(p_values)
+    if n <= 0:
+        return {"adjusted_p_values": [], "n_tested": 0,
+                "alpha_bonferroni": None, "per_strategy_pass": [],
+                "note": "invalid_n"}
+    adjusted = [min(float(p) * n, 1.0) for p in p_values]
+    alpha = 0.05 / n
+    passes = [float(p) < alpha for p in p_values]
+    return {
+        "adjusted_p_values": [round(a, 6) for a in adjusted],
+        "n_tested":          n,
+        "alpha_bonferroni":  round(float(alpha), 8),
+        "per_strategy_pass": passes,
+        "note":              "ok",
+    }
+
+
 def is_earnings_tolerant_strategy(strategy_attributes: dict) -> bool:
     """DEC-013 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 60 2026-05-11
     (owner-approved Path C 20-DEC bundle). Helper that resolves a strategy's

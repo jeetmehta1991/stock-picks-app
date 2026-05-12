@@ -4113,6 +4113,190 @@ def test_dec_606_finnhub_financials_excluded_constant():
 
 
 # ============================================================================
+# Phase 3 Batch 61 Path C 20-DEC bundle (owner directive: 20 DECs this turn)
+# DEC-001/006/033/045/125/169/170/171/173/274/341/347/348/350/363/400
+#   /440/453/479/489
+# ============================================================================
+
+def test_dec_001_quiver_subscription_cancel_stage():
+    """DEC-001: Quiver cancellation timing constant present."""
+    from backtest.config import QUIVER_SUBSCRIPTION_CANCEL_STAGE
+    assert "Stage 3" in QUIVER_SUBSCRIPTION_CANCEL_STAGE
+
+
+def test_dec_006_phase_1f_deferred_families():
+    """DEC-006: Phase 1F deferred strategy families list."""
+    from backtest.config import PHASE_1F_DEFERRED_STRATEGY_FAMILIES
+    assert "advanced_options_arbitrage" in PHASE_1F_DEFERRED_STRATEGY_FAMILIES
+    assert "high_frequency_intraday" in PHASE_1F_DEFERRED_STRATEGY_FAMILIES
+
+
+def test_dec_033_email_notifications_replaced_approval():
+    """DEC-033: email notifications mode (NOT approval gateway)."""
+    from backtest.config import (EMAIL_OPERATIONAL_MODE,
+                                   EMAIL_DAILY_SUMMARY_ENABLED,
+                                   EMAIL_APPROVAL_GATEWAY_DISABLED)
+    assert EMAIL_OPERATIONAL_MODE == "notifications_only"
+    assert EMAIL_DAILY_SUMMARY_ENABLED is True
+    assert EMAIL_APPROVAL_GATEWAY_DISABLED is True
+
+
+def test_dec_045_fork_first_principle_note():
+    """DEC-045: fork-first principle documented as constant."""
+    from backtest.config import FORK_FIRST_PRINCIPLE_NOTE
+    assert "fork" in FORK_FIRST_PRINCIPLE_NOTE.lower()
+    assert "UNIQUE" in FORK_FIRST_PRINCIPLE_NOTE
+
+
+def test_dec_125_form_144_prefetch_deferred():
+    """DEC-125: Form 144 prefetch deferred (Sprint 4 activation)."""
+    from backtest.config import (FORM_144_PREFETCH_ENABLED,
+                                   FORM_144_SOURCE_PRIORITY)
+    assert FORM_144_PREFETCH_ENABLED is False
+    assert "quiver_paid" in FORM_144_SOURCE_PRIORITY
+    assert "sec_edgar" in FORM_144_SOURCE_PRIORITY
+
+
+def test_dec_169_owner_skills_audit_areas():
+    """DEC-169: skills audit area list codified."""
+    from backtest.config import OWNER_SKILLS_AUDIT_AREAS
+    assert "statistical_methodology" in OWNER_SKILLS_AUDIT_AREAS
+    assert "SRE_operations" in OWNER_SKILLS_AUDIT_AREAS
+
+
+def test_dec_170_dec_171_dec_173_pyproject_toml_present():
+    """DEC-170/171/173: pyproject.toml with ruff/black/isort/mypy/pydocstyle."""
+    from pathlib import Path
+    p = Path("pyproject.toml")
+    assert p.exists()
+    content = p.read_text(encoding="utf-8")
+    assert "[tool.ruff]" in content
+    assert "[tool.black]" in content
+    assert "[tool.isort]" in content
+    assert "[tool.mypy]" in content
+    assert "[tool.pydocstyle]" in content
+    assert "google" in content.lower()  # DEC-171 Google-style
+
+
+def test_dec_274_sync_conflict_policy_no_ff():
+    """DEC-274: sync_from_claude conflict policy = no_ff (not strategy_theirs)."""
+    from backtest.config import SYNC_FROM_CLAUDE_CONFLICT_POLICY
+    assert SYNC_FROM_CLAUDE_CONFLICT_POLICY == "no_ff"
+
+
+def test_dec_341_universe_docstring_correct():
+    """DEC-341: universe.py docstring describes static CSV (not Wikipedia fetch)."""
+    from backtest.data import universe
+    doc = universe.__doc__ or ""
+    assert "static CSV" in doc or "Current Snapshot" in doc
+    # L88 reference present (Wikipedia banned for runtime)
+    assert "L88" in doc or "static CSV pattern" in doc
+
+
+def test_dec_347_lagging_indicator_absorbed_constants():
+    """DEC-347: cross-reference constant documents absorption chain."""
+    from backtest.config import DEC_347_ABSORBED_BY
+    assert "DEC-071" in DEC_347_ABSORBED_BY
+    assert "DEC-106" in DEC_347_ABSORBED_BY
+
+
+def test_dec_348_event_suppression_earnings_within_window():
+    """DEC-348 spec: entry 1 day before FOMC suppressed; 2 days before allowed."""
+    from datetime import date
+    from backtest.results.metrics import event_calendar_suppression_check
+    fomc_day = date(2024, 6, 12)
+    # 1 day before -- WITHIN window (pre=1)
+    out_pre = event_calendar_suppression_check(
+        as_of_date=date(2024, 6, 11), fomc_dates=[fomc_day],
+    )
+    assert out_pre["suppressed"] is True
+    assert "EVENT_SUPPRESSION_FOMC" in out_pre["reasons"]
+
+
+def test_dec_348_event_suppression_outside_window():
+    """DEC-348: 2 days before FOMC -- OUTSIDE asymmetric window (pre=1)."""
+    from datetime import date
+    from backtest.results.metrics import event_calendar_suppression_check
+    out = event_calendar_suppression_check(
+        as_of_date=date(2024, 6, 10),
+        fomc_dates=[date(2024, 6, 12)],
+    )
+    assert out["suppressed"] is False
+
+
+def test_dec_348_event_suppression_earnings():
+    """DEC-348: ticker earnings day suppression."""
+    from datetime import date
+    from backtest.results.metrics import event_calendar_suppression_check
+    out = event_calendar_suppression_check(
+        as_of_date=date(2024, 8, 1),
+        ticker_earnings_date=date(2024, 8, 1),  # same day
+    )
+    assert out["suppressed"] is True
+    assert "EVENT_SUPPRESSION_EARNINGS" in out["reasons"]
+
+
+def test_dec_350_non_ict_timeframes():
+    """DEC-350: cube timeframe dim = {daily, weekly} for non-ICT only."""
+    from backtest.config import NON_ICT_TIMEFRAME_DIMENSIONS
+    assert NON_ICT_TIMEFRAME_DIMENSIONS == ("daily", "weekly")
+    assert "intraday" not in NON_ICT_TIMEFRAME_DIMENSIONS
+
+
+def test_dec_363_commodity_etf_expansion_narrow_scope():
+    """DEC-363: lithium + base metals only (LIT/DBB/COPX)."""
+    from backtest.config import COMMODITY_ETF_EXPANSION_APPROVED
+    assert set(COMMODITY_ETF_EXPANSION_APPROVED) == {"LIT", "DBB", "COPX"}
+    assert "USO" not in COMMODITY_ETF_EXPANSION_APPROVED
+
+
+def test_dec_400_bonferroni_dynamic_n_basic():
+    """DEC-400: replace hardcoded N=60 with len(p_values) by default."""
+    from backtest.results.metrics import bonferroni_dynamic_n
+    out = bonferroni_dynamic_n([0.001, 0.05, 0.5])
+    assert out["n_tested"] == 3
+    # alpha = 0.05/3 = 0.01667
+    assert abs(out["alpha_bonferroni"] - 0.05/3) < 1e-7
+    # 0.001 < 0.01667 -> passes; 0.05 > 0.01667 -> fails
+    assert out["per_strategy_pass"] == [True, False, False]
+
+
+def test_dec_400_bonferroni_override_n():
+    """DEC-400: caller-supplied n_strategies_tested overrides len(p_values)."""
+    from backtest.results.metrics import bonferroni_dynamic_n
+    out = bonferroni_dynamic_n([0.001], n_strategies_tested=60)
+    assert out["n_tested"] == 60
+    assert abs(out["alpha_bonferroni"] - 0.05/60) < 1e-7
+
+
+def test_dec_440_alpha_vantage_deprecated_flag():
+    """DEC-440: Alpha Vantage deprecated; Polygon canonical."""
+    from backtest.config import ALPHA_VANTAGE_DEPRECATED, CANONICAL_NEWS_SOURCE
+    assert ALPHA_VANTAGE_DEPRECATED is True
+    assert CANONICAL_NEWS_SOURCE == "polygon"
+
+
+def test_dec_453_finnhub_deprecated_flag():
+    """DEC-453: Finnhub deprecated; Polygon+Quiver+FRED+yfinance cover."""
+    from backtest.config import FINNHUB_DEPRECATED
+    assert FINNHUB_DEPRECATED is True
+
+
+def test_dec_479_polygon_cost_correction_29():
+    """DEC-479: $30 -> $29 cost correction."""
+    from backtest.config import POLYGON_STOCKS_STARTER_MONTHLY_USD
+    assert POLYGON_STOCKS_STARTER_MONTHLY_USD == 29
+
+
+def test_dec_489_adversarial_audit_archive_required():
+    """DEC-489: audit must compare against archive paths."""
+    from backtest.config import (ADVERSARIAL_AUDIT_REQUIRES_ARCHIVE_COMPARISON,
+                                   ADVERSARIAL_AUDIT_ARCHIVE_PATHS)
+    assert ADVERSARIAL_AUDIT_REQUIRES_ARCHIVE_COMPARISON is True
+    assert "archive/" in ADVERSARIAL_AUDIT_ARCHIVE_PATHS
+
+
+# ============================================================================
 # DEC-432 Chandelier exit indicator tests (Phase 3 Batch 53 Path C)
 # Parabolic SAR + Supertrend already implemented; only chandelier added.
 # ============================================================================

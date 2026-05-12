@@ -544,6 +544,115 @@ COMPOSITE_SCORE_WEIGHTS = {
     "smart_money":   0.30,
 }
 
+# DEC-001 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 61 2026-05-11
+# (owner-approved Path C 20-DEC bundle). Quiver subscription cancellation
+# timing: keep paid subscription active through Stage 2 backtest validation;
+# cancel at Stage 3+ if signals fail value-add (or downgrade tier).
+QUIVER_SUBSCRIPTION_CANCEL_STAGE = "Stage 3 reevaluation"  # conditional on results
+
+# DEC-006 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 61 2026-05-11
+# (owner-approved Path C 20-DEC bundle). Strategy families deferred to
+# Phase 1F (post-Phase-1B-alpha + post-Phase-1C scope-expansion).
+PHASE_1F_DEFERRED_STRATEGY_FAMILIES = (
+    "advanced_options_arbitrage",
+    "high_frequency_intraday",
+    "pairs_trading_quant",
+    "merger_arbitrage",
+)
+
+# DEC-033 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 61 2026-05-11
+# (owner-approved Path C 20-DEC bundle). Email approval system REPLACED with
+# email NOTIFICATIONS + daily summaries; no approval gateway in Stage 4 (full
+# auto-execute per medium-high risk profile). Owner reviews summary AFTER
+# trade, not before.
+EMAIL_OPERATIONAL_MODE = "notifications_only"  # not "approval_required"
+EMAIL_DAILY_SUMMARY_ENABLED = True
+EMAIL_APPROVAL_GATEWAY_DISABLED = True  # explicit per DEC-033
+
+# DEC-045 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 61 2026-05-11
+# (owner-approved Path C 20-DEC bundle). Fork-first principle from CLAUDE.md
+# already documented. This codifies the prefer-fork-over-custom decision tree.
+FORK_FIRST_PRINCIPLE_NOTE = (
+    "Default to forking battle-tested libraries unless integration cost > "
+    "rebuild cost OR requirement is genuinely novel to this project. Custom "
+    "code reserved for what's UNIQUE (signal computation, agent prompts, "
+    "risk context, earnings_tolerant logic, PIT semantics)."
+)
+
+# DEC-125 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 61 2026-05-11
+# (owner-approved Path C 20-DEC bundle). Form 144 prefetch (proposed insider
+# sales -- leading indicator vs Form 4 actual sales). Sprint 4 scope; joint
+# DEC-450 Quiver paid endpoints (if Form 144 endpoint available; else SEC
+# EDGAR scrape). This constant marks the deferred-prefetch flag.
+FORM_144_PREFETCH_ENABLED = False  # Sprint 4 activation
+FORM_144_SOURCE_PRIORITY = ("quiver_paid", "sec_edgar")
+
+# DEC-169 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 61 2026-05-11
+# (owner-approved Path C 20-DEC bundle). Owner skills gap audit areas.
+OWNER_SKILLS_AUDIT_AREAS = (
+    "statistical_methodology",
+    "SRE_operations",
+    "tax_canadian_us_dual",
+    "ml_research",
+    "options_pricing",
+)
+
+# DEC-274 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 61 2026-05-11
+# (owner-approved Path C 20-DEC bundle). sync_from_claude.yml conflict
+# policy per Pass 52 turn 117 spec: absorbed by DEC-220. Replace silent
+# --strategy=theirs (force-override) with --no-ff (fail on conflict).
+SYNC_FROM_CLAUDE_CONFLICT_POLICY = "no_ff"  # NOT "strategy_theirs"
+
+# DEC-347 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 61 2026-05-11
+# (owner-approved Path C 20-DEC bundle). Lagging-indicator dominance
+# absorbed by upstream RESOLVED decisions: DEC-071/072 (smart money) +
+# DEC-389/390/391 (sentiment) + DEC-106/107 (regime expansion+probability).
+# Constant codifies the cross-reference so future audits don't re-open it.
+DEC_347_ABSORBED_BY = ("DEC-071", "DEC-072", "DEC-389", "DEC-390",
+                       "DEC-391", "DEC-106", "DEC-107")
+
+# DEC-350 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 61 2026-05-11
+# (owner-approved Path C 20-DEC bundle). Multi-timeframe testing for
+# non-ICT strategies per Pass 52 turn 51 SCOPE LIMIT: cube `timeframe`
+# dim = {daily, weekly} for non-ICT only; NO intraday (avoids cube
+# combinatorial explosion).
+NON_ICT_TIMEFRAME_DIMENSIONS = ("daily", "weekly")
+
+# DEC-363 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 61 2026-05-11
+# (owner-approved Path C 20-DEC bundle). Commodity ETF expansion -- NARROW
+# SCOPE per Pass 52: lithium + base metals only.
+COMMODITY_ETF_EXPANSION_APPROVED = (
+    "LIT",   # Global X Lithium & Battery Tech
+    "DBB",   # Invesco DB Base Metals (aluminum/zinc/copper/lead/nickel)
+    "COPX",  # Global X Copper Miners equity
+)
+# Owner-NOT-approved (remain PROPOSED): USO crude, UNG nat gas, DBC broad,
+# DBA agricultural, CPER copper futures. No leveraged variants.
+
+# DEC-479 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 61 2026-05-11
+# (owner-approved Path C 20-DEC bundle). Polygon Stocks Starter actual
+# monthly cost (correction $30 -> $29). Pass 53 turn owner-approved.
+POLYGON_STOCKS_STARTER_MONTHLY_USD = 29
+
+# DEC-489 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 61 2026-05-11
+# (owner-approved Path C 20-DEC bundle). Adversarial audit methodology
+# must include archive comparison (CHECKLIST #63). This constant codifies
+# the audit-must-include-archives invariant.
+ADVERSARIAL_AUDIT_REQUIRES_ARCHIVE_COMPARISON = True
+ADVERSARIAL_AUDIT_ARCHIVE_PATHS = (
+    "archive/", "PROJECT_PLAN_ARCHIVE.md", "AUDIT_INDEX_ARCHIVE.md",
+)
+
+# DEC-440 / DEC-453 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 61
+# 2026-05-11 (owner-approved Path C 20-DEC bundle). Alpha Vantage replaced
+# by Polygon (DEC-440); Finnhub fully deprecated (DEC-453). DEC-606 already
+# guards finnhub.financials_reported path. These flags surface the broader
+# deprecation policy for programmatic checks.
+ALPHA_VANTAGE_DEPRECATED = True
+FINNHUB_DEPRECATED = True
+CANONICAL_NEWS_SOURCE = "polygon"  # DEC-440
+CANONICAL_FUNDAMENTALS_SOURCES = ("polygon_financials", "sec_xbrl")  # DEC-606
+
 # -----------------------------------------------------------------------------
 # TWO-STAGE CONFIDENCE TIERING
 # Stage 1: Rule-based preliminary tier (before agents run)

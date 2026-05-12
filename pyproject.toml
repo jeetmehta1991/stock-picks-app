@@ -1,0 +1,85 @@
+# DEC-170 / DEC-171 / DEC-173 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3
+# Batch 61 2026-05-11 (owner-approved Path C 20-DEC bundle).
+#
+# DEC-170: Type hints + mypy strict in CI.
+# DEC-171: Docstring standard (Google) + sphinx auto-generation; pydocstyle.
+# DEC-173: ruff + black + isort + mypy as CI gates (pre-commit + PR).
+#
+# This pyproject.toml is the canonical home for dev-tooling config.
+# CI workflow wiring (.github/workflows/ci.yml updates) deferred to
+# Sprint 6 + DEC-436 CI/CD pipeline phase; this config + requirements-dev
+# package list is the artifact landed here.
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+extend-exclude = [
+    "vendored/",
+    "archive/",
+    "backtest/data/cache/",
+    "data_prefetch/",
+]
+
+[tool.ruff.lint]
+# Pragmatic ruleset; tighten module-by-module per DEC-170 gradual rollout.
+select = ["E", "F", "W", "I", "B"]
+ignore = [
+    "E501",  # line-too-long (relaxed; black handles formatting)
+    "E731",  # lambda assignment (used heavily in this codebase)
+]
+
+[tool.black]
+line-length = 100
+target-version = ["py310", "py311", "py312"]
+exclude = '''
+/(
+    \.git
+  | \.venv
+  | vendored
+  | archive
+  | backtest/data/cache
+  | data_prefetch
+)/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 100
+known_first_party = ["backtest", "scripts"]
+skip = ["vendored", "archive", "backtest/data/cache", "data_prefetch"]
+
+[tool.mypy]
+# DEC-170 gradual rollout: strict for new modules only; existing modules
+# migrate per priority schedule. New modules opt in via [[tool.mypy.overrides]]
+# block targeting their dotted-path.
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
+exclude = [
+    "vendored/",
+    "archive/",
+    "backtest/data/cache/",
+    "data_prefetch/",
+]
+
+[[tool.mypy.overrides]]
+module = [
+    "backtest.results.metrics",
+    "backtest.engine.improvements",
+    "backtest.engine.regime_filter",
+    "backtest.engine.portfolio",
+]
+# New helper modules (Pass 53 Batch 49+ additions) opt into stricter checking
+# once existing-code typing debt is paid down.
+strict_optional = true
+
+[tool.pydocstyle]
+# DEC-171: Google-style docstrings.
+convention = "google"
+match-dir = "^(?!vendored|archive|data_prefetch).*"
+add-ignore = [
+    "D100",  # missing module docstring (many internal modules)
+    "D104",  # missing __init__ docstring
+    "D107",  # missing __init__ docstring
+]
