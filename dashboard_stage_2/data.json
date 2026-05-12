@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-12T18:55:03.938155+00:00",
+  "generated_at": "2026-05-12T18:58:42.637352+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -10613,11 +10613,11 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 20,
+        "n_doc_refs": 21,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
-          "integration": "N/A",
+          "integration": true,
           "system": "N/A",
           "functional": "N/A",
           "regression": "N/A",
@@ -26598,22 +26598,28 @@
   ],
   "recent_commits": [
     {
+      "sha": "a2d57ece",
+      "subject": "Batch 87: BUG-29 false-positive correction \u00e2\u20ac\u201d open-trades finalize confirmed wired",
+      "author": "jeetmehta1991",
+      "rel_time": "3 minutes ago"
+    },
+    {
       "sha": "2e66a71b",
       "subject": "Batch 86: DEC-021 GENUINELY WIRED \u00e2\u20ac\u201d tier-3 consolidation in writer",
       "author": "jeetmehta1991",
-      "rel_time": "73 minutes ago"
+      "rel_time": "76 minutes ago"
     },
     {
       "sha": "23556d0a",
       "subject": "Batch 85: DEC-314 false-positive correction \u00e2\u20ac\u201d market-wide CB confirmed wired",
       "author": "jeetmehta1991",
-      "rel_time": "81 minutes ago"
+      "rel_time": "85 minutes ago"
     },
     {
       "sha": "0fdaf906",
       "subject": "Batch 84: DEC-183 GENUINELY WIRED \u00e2\u20ac\u201d lru_cached on classify_regime",
       "author": "jeetmehta1991",
-      "rel_time": "86 minutes ago"
+      "rel_time": "89 minutes ago"
     },
     {
       "sha": "da3f0ba0",
@@ -26661,7 +26667,7 @@
       "sha": "3de0418d",
       "subject": "Batch 76: DEC-348 GENUINELY WIRED (event-calendar suppression at entry; earnings + macro FOMC/CPI/NFP in DEC-349 asymmetric window [-3,+1]; 13-tier 654/6/0)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "b4b9e093",
@@ -26715,7 +26721,7 @@
       "sha": "4b0e38cd",
       "subject": "Batch 69 Phase 1: revert 47 self-confessed-deferred DECs to PARTIAL-IMPL-HELPER-ONLY",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "e6674772",
@@ -26745,7 +26751,7 @@
       "sha": "ab4f5173",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 66 - 10 more PARTIAL-SPEC-ONLY-was DECs real impl",
       "author": "jeetmehta1991",
-      "rel_time": "15 hours ago"
+      "rel_time": "16 hours ago"
     },
     {
       "sha": "4b28bed8",
@@ -26768,12 +26774,6 @@
     {
       "sha": "d6be69a6",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 63 - Path C 23-DEC close-out (ALL RESOLVED-DECIDED resolved)",
-      "author": "jeetmehta1991",
-      "rel_time": "17 hours ago"
-    },
-    {
-      "sha": "b61a2f8f",
-      "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 62 (20-DEC bundle)",
       "author": "jeetmehta1991",
       "rel_time": "17 hours ago"
     }
@@ -26973,7 +26973,7 @@
     }
   ],
   "test_inventory": {
-    "total": 1163,
+    "total": 1165,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -27009,7 +27009,7 @@
       "test_fred_alfred_smoke": 5,
       "test_gate_pre_phase_1a_entry": 8,
       "test_gates": 6,
-      "test_integration": 50,
+      "test_integration": 52,
       "test_inv041_path_restricted_commits": 5,
       "test_l146_wave_a_g2_g3_g9": 6,
       "test_l146_wave_b_g7_sec_edgar": 6,

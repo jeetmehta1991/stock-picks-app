@@ -668,6 +668,41 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_bug_26_vix_loader_prefers_canonical_over_vxx_proxy():
+    """BUG-26 Batch 88: VIX loader (backtest/data/macro.py) was using VXX
+    price (223-461 range) as VIX proxy instead of actual ^VIX (18-36
+    range), making all regime classifications wrong. Same root cause
+    captured later as BUG-221 (RESOLVED Pass 48). DEC-302 (Pass 50) fixed
+    the loader to prefer canonical ^VIX with VXX as last-resort fallback
+    that emits a WARNING. BUG-26 was left OPEN as a duplicate finding.
+    Batch 88 false-positive correction: source-grep verifies the DEC-302
+    canonical-first ordering + the explicit WARNING on proxy fallback.
+    """
+    from pathlib import Path
+    src = Path("backtest/data/macro.py").read_text(encoding="utf-8")
+    assert "DEC-302 fix (Pass 50)" in src
+    # Canonical first, proxy last (line ordering matters)
+    canonical_idx = src.find('("^VIX", False)')
+    proxy_idx     = src.find('("VXX", True)')
+    assert canonical_idx > 0 and proxy_idx > 0
+    assert canonical_idx < proxy_idx, "^VIX must precede VXX in the candidates list"
+    # WARNING emitted when proxy is used
+    assert "VIX loader using PROXY" in src
+
+
+def test_bug_26_dxy_loader_prefers_canonical_over_uup_proxy():
+    """BUG-26 sister: same DEC-302 fix prefers DX-Y.NYB over UUP for DXY.
+    Behavioral verification of the canonical-first ordering.
+    """
+    from pathlib import Path
+    src = Path("backtest/data/macro.py").read_text(encoding="utf-8")
+    canonical_idx = src.find('("DX-Y.NYB", False)')
+    proxy_idx     = src.find('("UUP", True)')
+    assert canonical_idx > 0 and proxy_idx > 0
+    assert canonical_idx < proxy_idx, "DX-Y.NYB must precede UUP in the candidates list"
+    assert "DXY loader using PROXY" in src
+
+
 def test_bug_29_engine_wires_finalize_open_trades_at_end_of_backtest():
     """BUG-29 Batch 87: open trades at backtest end were silently
     discarded, biasing all metrics upward. Engine's run() now calls

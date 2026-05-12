@@ -1026,7 +1026,7 @@
 
 | ID | Title | Severity | Status | Pass Intro |
 |---|---|---|---|---|
-| **BUG-026** | CRITICAL — VIX proxy is VXX price (223–461), not actual VIX (18–36) — all regime | CRITICAL | OPEN | - |
+| **BUG-026** | CRITICAL — VIX proxy is VXX price (223–461), not actual VIX (18–36) — all regime classifications wrong. RESOLVED-IMPLEMENTED Pass 50 via DEC-302 fix (backtest/data/macro.py:`_load_vix_from_ohlcv_cache()` + `_load_dxy_from_ohlcv_cache()`): canonical-first candidate ordering `[("^VIX", False), ("VXX", True)]` for VIX + `[("DX-Y.NYB", False), ("UUP", True)]` for DXY; VXX/UUP retained only as last-resort proxies with WARNING log so regime classification quality degradation is visible. Same root cause separately captured as BUG-221 (already flipped to RESOLVED Pass 48). Batch 88 2026-05-12 false-positive OPEN correction: 2 integration tests added verifying canonical-first ordering + proxy WARNING text. Full 13-tier pyramid: 663/663 mandatory T1-T10 green. | CRITICAL | RESOLVED-IMPLEMENTED | - |
 | **BUG-027** | CRITICAL — `regime_confidence()` function built but never called — dead code | CRITICAL | OPEN | - |
 | **BUG-057** | MEDIUM — Integration tests missing 15 critical scenarios — 5 bugs would have bee | CRITICAL | OPEN | - |
 | **BUG-063** | MEDIUM — Email approval system has 6 critical design gaps not addressed in PROJE | CRITICAL | OPEN | - |
