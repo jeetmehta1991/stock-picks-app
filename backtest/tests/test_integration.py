@@ -668,6 +668,35 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_dec_183_engine_wires_lru_cached_to_classify_regime():
+    """DEC-183 Batch 84: classify_regime in regime_filter.py is wrapped
+    in the lru_cached decorator from improvements.py. Source-grep verifies
+    the engine consumption (regime_filter is imported + called per-day
+    by _process_day -> get_regime_context -> classify_regime).
+    """
+    from pathlib import Path
+    src = Path("backtest/engine/regime_filter.py").read_text(encoding="utf-8")
+    assert "DEC-183 RESOLVED-IMPLEMENTED Batch 84" in src
+    assert "lru_cached" in src
+    assert "@_lru_cached_dec183" in src
+
+
+def test_dec_183_classify_regime_lru_cache_hit():
+    """DEC-183 behavior: repeat calls with identical inputs are served from
+    the lru cache (cache_info hits > 0 after a known-repeat pattern).
+    """
+    from backtest.engine.regime_filter import classify_regime
+    classify_regime.cache_clear()
+    r1 = classify_regime(15.0, True)
+    r2 = classify_regime(15.0, True)
+    r3 = classify_regime(45.0, False)
+    info = classify_regime.cache_info()
+    assert r1 == r2 == "bull"
+    assert r3 == "crisis"
+    assert info.hits >= 1   # 2nd identical call must be a cache hit
+    assert info.misses >= 2  # the two unique inputs are misses
+
+
 def test_dec_179_engine_wires_memory_profiling_in_run():
     """DEC-179 Batch 83: engine.run() consumes check_memory_cap helper at
     start / every 50 days / finalize. Source-grep verifies wiring.

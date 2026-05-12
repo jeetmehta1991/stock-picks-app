@@ -17,6 +17,20 @@ import pandas as pd
 logger = logging.getLogger(__name__)
 
 
+# DEC-183 RESOLVED-IMPLEMENTED Batch 84 2026-05-12 owner-mandated wiring:
+# `classify_regime` is a pure-functional signal helper with hashable scalar
+# inputs (Optional[float], Optional[bool]); wrapping it in the
+# `lru_cached` decorator from improvements.py closes the helper-only gap so
+# the engine's regime-classification path (called once per day via
+# get_regime_context + many times across walk-forward folds re-evaluating
+# overlapping dates) reuses cached results instead of re-running the
+# threshold ladder on every call. Pure function, immutable str output,
+# small input cardinality (VIX rounds to a finite set of float prints,
+# spy_above is bool/None) -> high hit rate across folds + repeat dates.
+from backtest.engine.improvements import lru_cached as _lru_cached_dec183
+
+
+@_lru_cached_dec183(maxsize=256)
 def classify_regime(
     vix_value: Optional[float],
     spy_above_200ema: Optional[bool],
@@ -31,6 +45,9 @@ def classify_regime(
     failure caused the system to trade as if conditions were normal. Now
     'unknown' is a fail-closed signal  -  REGIME_FILTER['unknown'] blocks new
     entries; existing positions continue under their original stop logic.
+
+    DEC-183 Batch 84: now wrapped in lru_cached (maxsize=256) so repeated
+    calls (walk-forward folds, replay backtests) reuse cached results.
     """
     if vix_value is None:
         return "unknown"
