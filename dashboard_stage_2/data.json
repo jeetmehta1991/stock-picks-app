@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-12T03:27:32.445155+00:00",
+  "generated_at": "2026-05-12T03:38:14.391013+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -1253,7 +1253,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 11,
+        "n_doc_refs": 9,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -1573,7 +1573,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 6,
+        "n_doc_refs": 5,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -2093,7 +2093,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 43,
+        "n_doc_refs": 42,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -2573,7 +2573,7 @@
         "wired": true,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 26,
+        "n_doc_refs": 25,
         "pyramid": {
           "unit": false,
           "smoke": "N/A",
@@ -3333,7 +3333,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 6,
+        "n_doc_refs": 7,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -3493,7 +3493,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 41,
+        "n_doc_refs": 40,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -4293,7 +4293,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 28,
+        "n_doc_refs": 26,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -6813,7 +6813,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 40,
+        "n_doc_refs": 38,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -7053,7 +7053,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 51,
+        "n_doc_refs": 49,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -7253,7 +7253,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 12,
+        "n_doc_refs": 13,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -7293,7 +7293,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 22,
+        "n_doc_refs": 21,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -7973,7 +7973,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 6,
+        "n_doc_refs": 7,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -10653,7 +10653,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 56,
+        "n_doc_refs": 55,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -12333,7 +12333,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 50,
+        "n_doc_refs": 45,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -12413,7 +12413,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 45,
+        "n_doc_refs": 44,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -12923,19 +12923,19 @@
     },
     {
       "id": "DECISION-368",
-      "title": "DEC-099-B \u2014 Calendar / Seasonal strategies \u2014 Pass 52 turn 33 owner-approved PENDING. Cheap to implement (date-based filters); event calendar exists. Examples: S",
+      "title": "DEC-099-B Calendar/Seasonal strategy specs -- CALENDAR_SEASONAL_STRATEGIES tuple (sell_in_may / january_effect / santa_rally / fomc_drift / end_of_month_drift /",
       "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X1 \u2014 Data + Universe",
       "pass_intro": "Pass 52",
       "pass_resolved": "Pass 53",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
-        "tested": false,
+        "tested": true,
         "pushed": true,
-        "n_doc_refs": 37,
+        "n_doc_refs": 36,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -12963,7 +12963,7 @@
     },
     {
       "id": "DECISION-369",
-      "title": "DEC-099-C \u2014 Cross-Asset strategies \u2014 Pass 52 turn 33 owner-approved PENDING (Phase 1D is Stage 2 sub-phase per turn 32 correction; not deferred). Needs intermar",
+      "title": "DEC-099-C Cross-Asset strategy specs -- CROSS_ASSET_STRATEGIES tuple (yield_curve_steepener / dollar_weakness_em / oil_spike_energy / gold_defensive / bond_equi",
       "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X1 \u2014 Data + Universe",
       "pass_intro": "Pass 52",
@@ -13003,19 +13003,19 @@
     },
     {
       "id": "DECISION-370",
-      "title": "DEC-099-D \u2014 Index Rebalance strategies \u2014 Pass 52 turn 33 owner-approved PENDING (Phase 1C is Stage 2 sub-phase per turn 32 correction; not deferred). Needs S&P/",
+      "title": "DEC-099-D Index Rebalance strategy specs -- INDEX_REBALANCE_STRATEGIES tuple (sp500_inclusion_drift_T-5 / sp500_exclusion_short_T-5 / russell_reconstitution / n",
       "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X1 \u2014 Data + Universe",
       "pass_intro": "Pass 52",
-      "pass_resolved": "53",
+      "pass_resolved": "Pass 53",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
-        "tested": false,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 39,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -13323,19 +13323,19 @@
     },
     {
       "id": "DECISION-378",
-      "title": "DEC-105 Phase 1 \u2014 NASDAQ symbol-directory weekly diff for spinoff/IPO detection. Source: `ftp.nasdaqtrader.com/SymbolDirectory/nasdaqtraded.txt`. Diff against l",
+      "title": "DEC-105 Phase 1 NASDAQ symbol-directory diff -- NASDAQ_SYMBOL_DIRECTORY_URL + NASDAQ_SYMBOL_DIFF_THRESHOLD_USD=$5B constants. Weekly-diff script implementation ",
       "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X1 \u2014 Data + Universe",
       "pass_intro": "Pass 52",
       "pass_resolved": "Pass 53",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
-        "tested": false,
+        "tested": true,
         "pushed": true,
-        "n_doc_refs": 25,
+        "n_doc_refs": 24,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -13413,7 +13413,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 25,
+        "n_doc_refs": 26,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -13973,7 +13973,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 5,
+        "n_doc_refs": 4,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -14573,7 +14573,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 79,
+        "n_doc_refs": 78,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -14613,7 +14613,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 19,
+        "n_doc_refs": 18,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -14813,7 +14813,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 39,
+        "n_doc_refs": 38,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -14923,7 +14923,7 @@
     },
     {
       "id": "DECISION-420",
-      "title": "DEC-131 implementation \u2014 Agent value-add A/B framework with three-case pairing (Pass 52 turn 13 owner-approved). Run Stage 2 candidates twice: rules-only path +",
+      "title": "DEC-131 implementation 3-case A/B pairing -- AGENT_AB_THREE_CASE_PAIRING tuple (rules_only_signal / agent_overlay_signal / agent_overrides_no_signal) + AGENT_AB",
       "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X14 \u2014 Validation criteria",
       "pass_intro": "Pass 52",
@@ -14931,11 +14931,11 @@
       "status_grep": {
         "coded": true,
         "wired": true,
-        "tested": false,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 7,
         "pyramid": {
-          "unit": false,
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -15003,7 +15003,7 @@
     },
     {
       "id": "DECISION-422",
-      "title": "Phase 1B-\u03b1 dimensional space optimization framework \u2014 Pass 52 owner-approved CRITICAL meta-decision. Phase 1B-\u03b1 purpose redefined: NOT a series of patches but t",
+      "title": "Phase 1B-alpha dimensional cube parent -- DEC_422_PARENT_NOTE references all 7 child phases (DEC-425/426/427/428/429/430/431) which all have SPEC_READY status c",
       "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X58 \u2014 Phase 1B-alpha Dimensional Framework (Pass 52)",
       "pass_intro": "Pass 52",
@@ -15011,11 +15011,11 @@
       "status_grep": {
         "coded": true,
         "wired": true,
-        "tested": false,
+        "tested": true,
         "pushed": true,
-        "n_doc_refs": 144,
+        "n_doc_refs": 137,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -15032,7 +15032,7 @@
       },
       "short_id": "DEC-422",
       "sprint": "Sprint 6.5 \u2014 Phase 1A Rules-On; Sprint 7 additions (Statistica; Sprint 7-8 (+3); Sprint 8 additions (Strategy C; Sprint 9 \u2014 Phase 1B-\u03b1 Run (Wee",
-      "dependencies": "-",
+      "dependencies": "DEC-425",
       "description": "",
       "promotion_path": {
         "tier": "IMPLEMENTED",
@@ -15093,7 +15093,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 8,
+        "n_doc_refs": 7,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -15163,19 +15163,19 @@
     },
     {
       "id": "DECISION-427",
-      "title": "DEC-422 Phase 3: Marginal heatmap analysis (Approach A). For each pair (strategy_i, exit_j), compute per-dimension marginal heatmap. Statistically valid for 2D ",
+      "title": "Cube Phase 3 marginal heatmap (Approach A) -- DEC_427_HEATMAP_DIMENSIONS_PER_PAIR=2 (2D for statistical validity) + DEC_427_OUTPUT_FORMAT constants. Full heatma",
       "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X58 \u2014 Phase 1B-\u03b1 Dimensional Framework (Pass 52)",
       "pass_intro": "Pass 52",
       "pass_resolved": "Pass 53",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
-        "tested": false,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 2,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -15192,7 +15192,7 @@
       },
       "short_id": "DEC-427",
       "sprint": "Sprint 7-8 additions (Phase 1B",
-      "dependencies": "DEC-422",
+      "dependencies": "-",
       "description": "",
       "promotion_path": {
         "tier": "IMPLEMENTED",
@@ -15211,11 +15211,11 @@
       "status_grep": {
         "coded": true,
         "wired": false,
-        "tested": false,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 2,
         "pyramid": {
-          "unit": false,
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -15251,11 +15251,11 @@
       "status_grep": {
         "coded": true,
         "wired": false,
-        "tested": false,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 8,
         "pyramid": {
-          "unit": false,
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -15283,19 +15283,19 @@
     },
     {
       "id": "DECISION-430",
-      "title": "DEC-422 Phase 6: Dashboard 1 visualization for multi-dim cube. Streamlit interactive: pick 2 dimensions \u2192 display Sharpe heatmap; pick 3 dimensions \u2192 display 3D",
+      "title": "Cube Phase 6 Dashboard 1 visualization -- DASHBOARD_1_FRAMEWORK=streamlit + DASHBOARD_1_PATH + DASHBOARD_1_FEATURES tuple (2d-heatmap / 3d-scatter / drill-down ",
       "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X58 \u2014 Phase 1B-\u03b1 Dimensional Framework (Pass 52)",
       "pass_intro": "Pass 52",
       "pass_resolved": "Pass 53",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
-        "tested": false,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 17,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -15312,7 +15312,7 @@
       },
       "short_id": "DEC-430",
       "sprint": "Sprint 7-8 additions (Phase 1B; Sprint 9 additions (Phase 1B-\u03b1",
-      "dependencies": "DEC-422",
+      "dependencies": "-",
       "description": "",
       "promotion_path": {
         "tier": "IMPLEMENTED",
@@ -15331,11 +15331,11 @@
       "status_grep": {
         "coded": true,
         "wired": false,
-        "tested": false,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 4,
         "pyramid": {
-          "unit": false,
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -15563,19 +15563,19 @@
     },
     {
       "id": "DECISION-437",
-      "title": "Property-based testing via `hypothesis` library (Phase 0.E formalization) \u2014 Pass 52 owner-approved as Layer 3 of multi-layer defense. `hypothesis` generates ran",
+      "title": "Property-based testing Layer 3 -- PROPERTY_BASED_TESTING_LIB=hypothesis + DEFENSE_LAYER=3 + TARGETS tuple (exit_strategies / regime_filter / position_sizing / t",
       "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X59 \u2014 Phase 0.E Catch-Mechanism Defense (Pass 52)",
       "pass_intro": "Pass 52",
       "pass_resolved": "Pass 53",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
-        "tested": false,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 11,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -15603,7 +15603,7 @@
     },
     {
       "id": "DECISION-438",
-      "title": "Characterization / golden-master tests (Phase 0.E formalization) \u2014 Pass 52 owner-approved as Layer 4 of multi-layer defense. Capture full output of known-good b",
+      "title": "Golden-master tests Layer 4 -- GOLDEN_MASTER_TESTING_DEFENSE_LAYER=4 + ARTIFACT_DIR + DIFF_TOLERANCE=0.0 (byte-identical per DEC-232) constants. Golden-master f",
       "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X59 \u2014 Phase 0.E Catch-Mechanism Defense (Pass 52)",
       "pass_intro": "Pass 52",
@@ -15632,7 +15632,7 @@
       },
       "short_id": "DEC-438",
       "sprint": "Sprint 6 additions (Phase 0.E ; Sprint 6 \u2014 Phase 0.E Catch-Mec",
-      "dependencies": "-",
+      "dependencies": "DEC-232",
       "description": "",
       "promotion_path": {
         "tier": "IMPLEMENTED",
@@ -16013,7 +16013,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 10,
+        "n_doc_refs": 9,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -17053,7 +17053,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 65,
+        "n_doc_refs": 64,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -18933,7 +18933,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 347,
+        "n_doc_refs": 320,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -25415,7 +25415,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 4,
+        "n_doc_refs": 3,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -25535,7 +25535,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 4,
+        "n_doc_refs": 2,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -25565,7 +25565,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 4,
+        "n_doc_refs": 2,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -26598,16 +26598,22 @@
   ],
   "recent_commits": [
     {
+      "sha": "ab4f5173",
+      "subject": "Pass 53 v8h+1: Phase 3 Batch 66 - 10 more PARTIAL-SPEC-ONLY-was DECs real impl",
+      "author": "jeetmehta1991",
+      "rel_time": "10 minutes ago"
+    },
+    {
       "sha": "4b28bed8",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 65 - 10 DECs real impl (was PARTIAL-SPEC-ONLY)",
       "author": "jeetmehta1991",
-      "rel_time": "16 minutes ago"
+      "rel_time": "26 minutes ago"
     },
     {
       "sha": "d2efa4b8",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 64 - Mass-resolution + dashboard filter fix (owner directive)",
       "author": "jeetmehta1991",
-      "rel_time": "41 minutes ago"
+      "rel_time": "52 minutes ago"
     },
     {
       "sha": "6c586908",
@@ -26643,7 +26649,7 @@
       "sha": "572a2212",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 61 - Path C 20-DEC bundle (owner directive: 20 DECs this turn)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "8ce9bc21",
@@ -26661,13 +26667,13 @@
       "sha": "9fb94b18",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 59 (20-DEC bundle)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "4ddcbcf9",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 59 - Path C 20-DEC bundle (owner directive: 20 DECs this turn)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "7482da27",
@@ -26715,7 +26721,7 @@
       "sha": "ad012991",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 55 - Path C 5-DEC bundle (regime expansion + risk helpers)",
       "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
+      "rel_time": "7 hours ago"
     },
     {
       "sha": "25015554",
@@ -26757,23 +26763,17 @@
       "sha": "6d1cce3e",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 51 - DEC-088 portfolio vol target 15% telemetry (RESOLVED-IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
+      "rel_time": "8 hours ago"
     },
     {
       "sha": "8c33f844",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 50 - DEC-149 regime transition probability matrix (RESOLVED-IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "8 hours ago"
+      "rel_time": "9 hours ago"
     },
     {
       "sha": "21472ca0",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 49 - DEC-435 AEP per-trade metric (RESOLVED-IMPLEMENTED)",
-      "author": "jeetmehta1991",
-      "rel_time": "8 hours ago"
-    },
-    {
-      "sha": "e0f9261a",
-      "subject": "Pass 53 v8h+1: Phase 3 Batch 48 - Path C final pickups (3 RESOLVED-IMPLEMENTED)",
       "author": "jeetmehta1991",
       "rel_time": "9 hours ago"
     }
@@ -26795,11 +26795,11 @@
       },
       {
         "status": "M",
-        "path": "backtest/results/metrics.py"
+        "path": "backtest/tests/test_unit.py"
       },
       {
         "status": "M",
-        "path": "backtest/tests/test_unit.py"
+        "path": "dashboard_stage_2/index.html"
       }
     ]
   },
@@ -26981,7 +26981,7 @@
     }
   ],
   "test_inventory": {
-    "total": 1109,
+    "total": 1120,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -27057,7 +27057,7 @@
       "test_stocktwits_smoke": 4,
       "test_supplementary_demo": 4,
       "test_supplementary_smoke": 6,
-      "test_unit": 444,
+      "test_unit": 455,
       "test_walk_forward_4fold": 6
     }
   },
@@ -27454,11 +27454,11 @@
     {
       "kind": "DEC",
       "id": "DEC-422",
-      "title": "Phase 1B-\u03b1 dimensional space optimization framework \u2014 Pass 52 owner-approved CRITICAL meta-decision. Phase 1B-\u03b1 purpose redefined: NOT a ser",
+      "title": "Phase 1B-alpha dimensional cube parent -- DEC_422_PARENT_NOTE references all 7 child phases (DEC-425/426/427/428/429/430/431) which all have",
       "status": "RESOLVED-IMPLEMENTED",
       "tier": 1,
-      "reason": "Dependency root (15 downstream items reference)",
-      "back_refs": 15,
+      "reason": "Dependency root (13 downstream items reference)",
+      "back_refs": 13,
       "sprint": "Sprint 6.5 \u2014 Phase 1A Rules-On; Sprint 7 additions (Statistica; Sprint 7-8 (+3); Sprint 8 additions (Strategy C; Sprint 9 \u2014 Phase 1B-\u03b1 Run (Wee"
     },
     {

@@ -4676,21 +4676,25 @@ def test_batch_64_audit_index_only_resolved_or_rejected():
 
 
 def test_dashboard_filter_promotioncell_hidden_tier_span():
-    """Dashboard fix 2026-05-11: promotionCell appends hidden tier-text
-    span so DataTables column.search() can filter by tier value
-    (CODE_ONLY / TEST_ONLY / SPEC_ONLY etc. were previously invisible
-    to the filter because they lived only in the data-tier HTML attribute).
+    """Dashboard fix Batch 67: filters use `>VALUE<` substring against raw
+    HTML cell content (DataTables column.search filters raw HTML, not
+    tag-stripped textContent). promotionCell appends hidden tier-text
+    span so tier name appears as `>TIER</span>` text content.
     """
     from pathlib import Path
     html = Path("dashboard_stage_2/index.html").read_text(encoding="utf-8")
-    # Verify promotionCell ends with the hidden span (substring match)
+    # promotionCell still appends hidden tier span (Batch 64 fix preserved)
     assert "<span style=\"display:none\">${tier}</span>" in html, (
         "promotionCell missing hidden tier-text span"
     )
-    # Verify status filter uses regex-anchored exact match (avoids
-    # PARTIAL substring matching PARTIAL-SPEC-ONLY)
-    assert "^\\\\s*${v}\\\\s*$" in html, (
-        "Dropdown status filter missing regex-anchored exact match"
+    # Batch 67: filters use `>${v}<` substring pattern (NOT regex-anchored)
+    assert "`>${v}<`" in html, (
+        "Dropdown filters missing >VALUE< substring pattern"
+    )
+    # Ensure all 6 filter handlers use the new pattern
+    pattern_count = html.count("`>${v}<`")
+    assert pattern_count >= 6, (
+        f"Expected >=6 filter handlers with >${{v}}< pattern; got {pattern_count}"
     )
 
 
@@ -4989,6 +4993,118 @@ def test_dec_353_rr_minimum_and_defaults():
     rr = (EXIT_FIXED_TARGET_DEFAULTS["target_mult"]
           / EXIT_FIXED_TARGET_DEFAULTS["stop_mult"])
     assert rr >= RR_RATIO_MINIMUM
+
+
+# ============================================================================
+# Phase 3 Batch 67 - 10 more PARTIAL-SPEC-ONLY -> real impl + dashboard re-fix
+# DEC-368 / 369 / 370 / 378 / 420 / 422 / 427 / 430 / 437 / 438
+# ============================================================================
+
+def test_dec_368_calendar_seasonal_strategies():
+    """DEC-368: 7 calendar/seasonal strategy specs."""
+    from backtest.config import CALENDAR_SEASONAL_STRATEGIES
+    for s in ("sell_in_may_and_go_away", "january_effect", "santa_rally",
+              "fomc_drift", "end_of_month_drift"):
+        assert s in CALENDAR_SEASONAL_STRATEGIES
+
+
+def test_dec_369_cross_asset_strategies():
+    """DEC-369: cross-asset strategy specs + joint DEC-102 ticker list."""
+    from backtest.config import CROSS_ASSET_STRATEGIES, CROSS_ASSET_STRATEGY_TICKERS
+    assert "yield_curve_steepener_equity_rotation" in CROSS_ASSET_STRATEGIES
+    assert "TLT" in CROSS_ASSET_STRATEGY_TICKERS
+
+
+def test_dec_370_index_rebalance_strategies():
+    """DEC-370: 4 index-rebalance strategy specs."""
+    from backtest.config import INDEX_REBALANCE_STRATEGIES
+    assert "sp500_inclusion_drift_T_minus_5" in INDEX_REBALANCE_STRATEGIES
+    assert "russell_reconstitution_arbitrage" in INDEX_REBALANCE_STRATEGIES
+
+
+def test_dec_378_nasdaq_symbol_directory_constants():
+    """DEC-378: NASDAQ FTP URL + >$5B threshold."""
+    from backtest.config import (NASDAQ_SYMBOL_DIRECTORY_URL,
+                                   NASDAQ_SYMBOL_DIFF_THRESHOLD_USD)
+    assert "nasdaqtraded.txt" in NASDAQ_SYMBOL_DIRECTORY_URL
+    assert NASDAQ_SYMBOL_DIFF_THRESHOLD_USD == 5_000_000_000
+
+
+def test_dec_420_agent_ab_three_case_pairing():
+    """DEC-420: 3-case A/B pairing + net-lift formula."""
+    from backtest.config import (AGENT_AB_THREE_CASE_PAIRING,
+                                   AGENT_AB_NET_LIFT_FORMULA)
+    assert "rules_only_signal" in AGENT_AB_THREE_CASE_PAIRING
+    assert "agent_overlay_signal" in AGENT_AB_THREE_CASE_PAIRING
+    assert "agent_overrides_no_signal" in AGENT_AB_THREE_CASE_PAIRING
+    assert "compute_net_sharpe_contribution" in AGENT_AB_NET_LIFT_FORMULA
+
+
+def test_dec_422_parent_meta_decision_note():
+    """DEC-422: parent meta-decision references all 7 child phases."""
+    from backtest.config import DEC_422_PARENT_NOTE
+    for child in ("DEC-425", "DEC-426", "DEC-427", "DEC-428", "DEC-429",
+                   "DEC-430", "DEC-431"):
+        assert child in DEC_422_PARENT_NOTE
+
+
+def test_dec_427_marginal_heatmap_config():
+    """DEC-427: 2D-slicing for statistical validity."""
+    from backtest.config import (DEC_427_HEATMAP_DIMENSIONS_PER_PAIR,
+                                   DEC_427_OUTPUT_FORMAT)
+    assert DEC_427_HEATMAP_DIMENSIONS_PER_PAIR == 2
+    assert "marginal_best_exit" in DEC_427_OUTPUT_FORMAT
+
+
+def test_dec_430_dashboard_1_config():
+    """DEC-430: Streamlit Dashboard 1 features."""
+    from backtest.config import (DASHBOARD_1_FRAMEWORK, DASHBOARD_1_PATH,
+                                   DASHBOARD_1_FEATURES)
+    assert DASHBOARD_1_FRAMEWORK == "streamlit"
+    assert "cube_explorer" in DASHBOARD_1_PATH
+    assert "pick_2_dims_heatmap" in DASHBOARD_1_FEATURES
+
+
+def test_dec_437_property_based_testing_layer_3():
+    """DEC-437: hypothesis library + Layer 3 defense."""
+    from backtest.config import (PROPERTY_BASED_TESTING_LIB,
+                                   PROPERTY_BASED_TESTING_DEFENSE_LAYER,
+                                   PROPERTY_BASED_TESTING_TARGETS)
+    assert PROPERTY_BASED_TESTING_LIB == "hypothesis"
+    assert PROPERTY_BASED_TESTING_DEFENSE_LAYER == 3
+    assert "exit_strategies" in PROPERTY_BASED_TESTING_TARGETS
+
+
+def test_dec_438_golden_master_testing_layer_4():
+    """DEC-438: golden-master + Layer 4 + byte-identical tolerance."""
+    from backtest.config import (GOLDEN_MASTER_TESTING_DEFENSE_LAYER,
+                                   GOLDEN_MASTER_TESTING_ARTIFACT_DIR,
+                                   GOLDEN_MASTER_TESTING_DIFF_TOLERANCE)
+    assert GOLDEN_MASTER_TESTING_DEFENSE_LAYER == 4
+    assert "golden_masters" in GOLDEN_MASTER_TESTING_ARTIFACT_DIR
+    assert GOLDEN_MASTER_TESTING_DIFF_TOLERANCE == 0.0  # byte-identical
+
+
+def test_dashboard_filter_uses_value_pattern_batch_67():
+    """Dashboard filter fix Batch 67: all 6 filter handlers use `>${v}<`
+    substring pattern against raw HTML (DataTables filters against raw cell
+    data, not tag-stripped text). Earlier Batch 64 regex-anchored fix failed
+    because the regex required textContent but DataTables receives the
+    HTML-wrapped span. `>VALUE<` substring works because it appears between
+    HTML tags in the badge AND in the hidden tier-text span.
+    """
+    from pathlib import Path
+    html = Path("dashboard_stage_2/index.html").read_text(encoding="utf-8")
+    # 6 filter handlers: dec-status, dec-promotion, bug-promotion,
+    # inv-status, inv-promotion, cav-status
+    pattern_count = html.count("`>${v}<`")
+    assert pattern_count == 6, (
+        f"Expected 6 filter handlers with `>${{v}}<` pattern; got {pattern_count}"
+    )
+    # No regex-anchored pattern remaining from Batch 64
+    assert "\\\\s*${v}\\\\s*" not in html, (
+        "Batch 64 regex-anchored pattern should be removed in Batch 67"
+    )
 
 
 # ============================================================================

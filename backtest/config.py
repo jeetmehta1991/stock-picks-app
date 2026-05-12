@@ -1121,6 +1121,103 @@ EXIT_FIXED_TARGET_DEFAULTS = {
     "rr_ratio":    2.0,  # 4.0/2.0 = 2:1 (meets DEC-353 minimum)
 }
 
+# DEC-368 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 67 2026-05-11
+# (owner-approved Path C PARTIAL-SPEC-ONLY closure batch 3).
+# DEC-099-B Calendar / Seasonal strategy spec list.
+CALENDAR_SEASONAL_STRATEGIES = (
+    "sell_in_may_and_go_away",
+    "january_effect",
+    "santa_rally",
+    "fomc_drift",
+    "end_of_month_drift",
+    "turn_of_year",
+    "halloween_effect",
+)
+
+# DEC-369 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 67 2026-05-11.
+# DEC-099-C Cross-Asset strategy spec list (joint DEC-102 + CROSS_ASSET_STRATEGY_TICKERS).
+CROSS_ASSET_STRATEGIES = (
+    "yield_curve_steepener_equity_rotation",   # bonds -> equities
+    "dollar_weakness_emerging_markets",         # DXY -> EEM
+    "oil_spike_energy_overweight",              # USO -> XLE
+    "gold_rally_defensive_rotation",            # GLD -> utilities
+    "bond_equity_correlation_break",            # TLT-SPY divergence
+)
+
+# DEC-370 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 67 2026-05-11.
+# DEC-099-D Index Rebalance strategy spec list (joint DEC-303 + DEC-370 day-grain).
+INDEX_REBALANCE_STRATEGIES = (
+    "sp500_inclusion_drift_T_minus_5",          # buy on S&P add announcement
+    "sp500_exclusion_short_T_minus_5",          # short on S&P drop announcement
+    "russell_reconstitution_arbitrage",          # June R1000/R2000 reconstitution
+    "nasdaq100_annual_review_arbitrage",         # December NDX rebalance
+)
+
+# DEC-378 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 67 2026-05-11.
+# DEC-105 Phase 1 NASDAQ symbol-directory weekly diff for spinoff/IPO detection.
+NASDAQ_SYMBOL_DIRECTORY_URL = (
+    "ftp://ftp.nasdaqtrader.com/SymbolDirectory/nasdaqtraded.txt"
+)
+NASDAQ_SYMBOL_DIFF_THRESHOLD_USD = 5_000_000_000  # >$5B market cap for inclusion
+
+# DEC-420 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 67 2026-05-11.
+# DEC-131 implementation: agent value-add A/B three-case pairing config.
+AGENT_AB_THREE_CASE_PAIRING = (
+    "rules_only_signal",          # baseline: signal fires, rules-only entry
+    "agent_overlay_signal",       # signal fires, agent overlay applied
+    "agent_overrides_no_signal",  # no rules-signal, agent self-initiates
+)
+AGENT_AB_NET_LIFT_FORMULA = (
+    "net_sharpe_lift = agent_arm_sharpe - rules_arm_sharpe "
+    "- compute_net_sharpe_contribution.cost_sharpe"
+)
+
+# DEC-422 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 67 2026-05-11.
+# Cube parent decision -- meta-decision umbrella for cube phases.
+# Phase status constants already codified in Batch 63 DEC_422_CUBE_PHASE_STATUS.
+DEC_422_PARENT_NOTE = (
+    "Phase 1B-alpha dimensional space optimization framework. Comprehensive "
+    "discovery system to identify best (strategy, exit, sizing, regime) "
+    "tuples per cube cell. Children: DEC-425 (Phase 1) + DEC-426 (Phase 2) + "
+    "DEC-427 (Phase 3 marginal heatmap) + DEC-428 (Phase 4 3D combined) + "
+    "DEC-429 (Phase 5 lookup table) + DEC-430 (Phase 6 dashboard viz) + "
+    "DEC-431 (Phase 7 validation). All phases SPEC_READY; full impl deferred "
+    "to Sprint 8+ cube build-out."
+)
+
+# DEC-427 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 67 2026-05-11.
+# Cube Phase 3 marginal heatmap analysis (Approach A) config.
+DEC_427_HEATMAP_DIMENSIONS_PER_PAIR = 2  # 2D slicing for statistical validity
+DEC_427_OUTPUT_FORMAT = "marginal_best_exit_per_strategy_per_dimension"
+
+# DEC-430 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 67 2026-05-11.
+# Cube Phase 6 Dashboard 1 visualization config.
+DASHBOARD_1_FRAMEWORK = "streamlit"
+DASHBOARD_1_PATH = "dashboard_1_cube_explorer/"
+DASHBOARD_1_FEATURES = (
+    "pick_2_dims_heatmap",
+    "pick_3_dims_3d_scatter",
+    "per_cell_drill_down",
+    "filter_strategy_subset",
+)
+
+# DEC-437 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 67 2026-05-11.
+# Property-based testing via hypothesis library (Layer 3 catch defense).
+PROPERTY_BASED_TESTING_LIB = "hypothesis"
+PROPERTY_BASED_TESTING_DEFENSE_LAYER = 3
+PROPERTY_BASED_TESTING_TARGETS = (
+    "exit_strategies",       # all exits respect R:R minimum DEC-353
+    "regime_filter",         # classify_regime never returns None
+    "position_sizing",       # never produces negative or >100% allocation
+    "trade_log_writer",      # never drops trades silently
+)
+
+# DEC-438 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 67 2026-05-11.
+# Characterization / golden-master tests (Layer 4 catch defense).
+GOLDEN_MASTER_TESTING_DEFENSE_LAYER = 4
+GOLDEN_MASTER_TESTING_ARTIFACT_DIR = "backtest/tests/golden_masters"
+GOLDEN_MASTER_TESTING_DIFF_TOLERANCE = 0.0  # byte-identical per DEC-232
+
 # -----------------------------------------------------------------------------
 # TWO-STAGE CONFIDENCE TIERING
 # Stage 1: Rule-based preliminary tier (before agents run)
