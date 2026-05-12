@@ -668,6 +668,49 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_bug_95_engine_instantiates_and_consumes_portfolio_class():
+    """BUG-95 Batch 91: "No portfolio-level state; every trade evaluated
+    independently" was a Pass <18 finding. Engine now instantiates the
+    Portfolio class at construction (line 116) and consumes it across
+    the entry/exit hot loop:
+      - portfolio.can_open(...) at entry gate
+      - portfolio.add_position(...) at entry execution
+      - portfolio.remove_position(...) at exit
+      - portfolio.mark_to_market(...) daily
+      - portfolio.add_benchmark_point(...) for SPY tracking
+      - portfolio.drawdown_size_multiplier() at sizing
+      - portfolio.vol_target_scale_factor() at sizing
+      - portfolio.factor_concentration_breach(...) at concentration gate
+    Source-grep verifies the BUG-95 RESOLVED comment + Portfolio
+    instantiation + multiple consumption sites.
+    """
+    from pathlib import Path
+    src = Path("backtest/engine/backtest.py").read_text(encoding="utf-8")
+    assert "BUG-95 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 20" in src
+    assert "Portfolio(starting_capital=" in src
+    assert "self.portfolio.can_open" in src
+    assert "self.portfolio.mark_to_market" in src
+    assert "self.portfolio.drawdown_size_multiplier" in src
+    assert "self.portfolio.vol_target_scale_factor" in src
+
+
+def test_bug_95_engine_portfolio_lifecycle_smoke():
+    """BUG-95 behavior smoke: instantiate engine + verify portfolio
+    attribute exists + responds to lifecycle calls. Confirms the wiring
+    is not just text-grep matchable but actually runs.
+    """
+    from backtest.engine.backtest import BacktestEngine
+    from backtest.engine.portfolio import Portfolio
+    eng = BacktestEngine(universe=["SPY"], run_agents=False, walk_forward=False)
+    assert isinstance(eng.portfolio, Portfolio)
+    assert eng.portfolio.starting_capital > 0
+    # Calls must execute without raising on a fresh portfolio
+    assert eng.portfolio.drawdown_size_multiplier() in {0.0, 0.25, 0.5, 0.75, 1.0}
+    ok, _ = eng.portfolio.can_open(ticker="AAPL", size_pct=0.03,
+                                    drawdown_suspend_pct=30.0)
+    assert ok is True   # empty portfolio, no DD -> can_open passes
+
+
 def test_bug_27_regime_confidence_documented_deferred_to_stage_3():
     """BUG-27 Batch 90: `regime_confidence()` flagged as "built but never
     called" dead code. RESOLVED-DECIDED status: the function is

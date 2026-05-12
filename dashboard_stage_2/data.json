@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-12T19:07:51.312258+00:00",
+  "generated_at": "2026-05-12T19:11:25.526498+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -2373,7 +2373,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 14,
+        "n_doc_refs": 15,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -2853,7 +2853,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 5,
+        "n_doc_refs": 6,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -2973,7 +2973,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 17,
+        "n_doc_refs": 18,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -20965,7 +20965,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 81,
+        "n_doc_refs": 82,
         "pyramid": {
           "unit": true,
           "smoke": true,
@@ -26598,28 +26598,34 @@
   ],
   "recent_commits": [
     {
+      "sha": "bf2581ce",
+      "subject": "Batch 90: BUG-27 regime_confidence intentional Phase-1A deferral confirmed",
+      "author": "jeetmehta1991",
+      "rel_time": "4 minutes ago"
+    },
+    {
       "sha": "a7ce0b2a",
       "subject": "Batch 89: BUG-234 false-positive correction \u00e2\u20ac\u201d VIX hysteresis confirmed wired",
       "author": "jeetmehta1991",
-      "rel_time": "4 minutes ago"
+      "rel_time": "8 minutes ago"
     },
     {
       "sha": "3ff63c2b",
       "subject": "Batch 88: BUG-26 false-positive correction \u00e2\u20ac\u201d DEC-302 VIX/DXY canonical loader",
       "author": "jeetmehta1991",
-      "rel_time": "9 minutes ago"
+      "rel_time": "12 minutes ago"
     },
     {
       "sha": "a2d57ece",
       "subject": "Batch 87: BUG-29 false-positive correction \u00e2\u20ac\u201d open-trades finalize confirmed wired",
       "author": "jeetmehta1991",
-      "rel_time": "12 minutes ago"
+      "rel_time": "16 minutes ago"
     },
     {
       "sha": "2e66a71b",
       "subject": "Batch 86: DEC-021 GENUINELY WIRED \u00e2\u20ac\u201d tier-3 consolidation in writer",
       "author": "jeetmehta1991",
-      "rel_time": "86 minutes ago"
+      "rel_time": "89 minutes ago"
     },
     {
       "sha": "23556d0a",
@@ -26757,7 +26763,7 @@
       "sha": "f32626ad",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 67 - dashboard filter re-fix + 10 more PARTIAL-SPEC-ONLY-was DECs",
       "author": "jeetmehta1991",
-      "rel_time": "15 hours ago"
+      "rel_time": "16 hours ago"
     },
     {
       "sha": "ab4f5173",
@@ -26768,12 +26774,6 @@
     {
       "sha": "4b28bed8",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 65 - 10 DECs real impl (was PARTIAL-SPEC-ONLY)",
-      "author": "jeetmehta1991",
-      "rel_time": "16 hours ago"
-    },
-    {
-      "sha": "d2efa4b8",
-      "subject": "Pass 53 v8h+1: Phase 3 Batch 64 - Mass-resolution + dashboard filter fix (owner directive)",
       "author": "jeetmehta1991",
       "rel_time": "16 hours ago"
     }
@@ -26973,7 +26973,7 @@
     }
   ],
   "test_inventory": {
-    "total": 1169,
+    "total": 1171,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -27009,7 +27009,7 @@
       "test_fred_alfred_smoke": 5,
       "test_gate_pre_phase_1a_entry": 8,
       "test_gates": 6,
-      "test_integration": 56,
+      "test_integration": 58,
       "test_inv041_path_restricted_commits": 5,
       "test_l146_wave_a_g2_g3_g9": 6,
       "test_l146_wave_b_g7_sec_edgar": 6,
