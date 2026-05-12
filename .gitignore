@@ -48,3 +48,4 @@ output_smoke_v*/
 # Pass 53 v8h+1 (2026-05-10) - prefetch checkpoint state files (resume artifacts, not data)
 data_prefetch/**/_checkpoint*.json
 data_prefetch/**/*.checkpoint
+.phase3_temp/
