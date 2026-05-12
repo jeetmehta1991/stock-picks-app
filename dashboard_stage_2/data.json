@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-12T19:42:56.441348+00:00",
+  "generated_at": "2026-05-12T19:47:36.923078+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -26598,70 +26598,76 @@
   ],
   "recent_commits": [
     {
+      "sha": "a5b4910c",
+      "subject": "Batch 98: BUG-238 fail-open -> fail-closed on missing market_cap",
+      "author": "jeetmehta1991",
+      "rel_time": "5 minutes ago"
+    },
+    {
       "sha": "fb1218da",
       "subject": "Batch 97: BUG-110 false-positive correction - entry gap filter wired",
       "author": "jeetmehta1991",
-      "rel_time": "7 minutes ago"
+      "rel_time": "12 minutes ago"
     },
     {
       "sha": "00f4d4c5",
       "subject": "Batch 96: BUG-103 false-positive correction - smart_money_score wired in tier assignment",
       "author": "jeetmehta1991",
-      "rel_time": "12 minutes ago"
+      "rel_time": "16 minutes ago"
     },
     {
       "sha": "529ee39a",
       "subject": "Batch 95: BUG-102 false-positive correction - same-day dedup wired",
       "author": "jeetmehta1991",
-      "rel_time": "16 minutes ago"
+      "rel_time": "20 minutes ago"
     },
     {
       "sha": "b606b380",
       "subject": "Batch 94: BUG-78 false-positive correction - trailing stop lookahead fix wired",
       "author": "jeetmehta1991",
-      "rel_time": "19 minutes ago"
+      "rel_time": "24 minutes ago"
     },
     {
       "sha": "ce28a712",
       "subject": "Batch 93: BUG-104 false-positive correction - compute_portfolio_summary wires tier sizing",
       "author": "jeetmehta1991",
-      "rel_time": "23 minutes ago"
+      "rel_time": "28 minutes ago"
     },
     {
       "sha": "5fca3ab1",
       "subject": "Batch 92: BUG-101 false-positive correction - ticker uniqueness wired",
       "author": "jeetmehta1991",
-      "rel_time": "28 minutes ago"
+      "rel_time": "32 minutes ago"
     },
     {
       "sha": "703bdf62",
       "subject": "Batch 91: BUG-95 false-positive correction - Portfolio class wired Batch 20",
       "author": "jeetmehta1991",
-      "rel_time": "31 minutes ago"
+      "rel_time": "36 minutes ago"
     },
     {
       "sha": "bf2581ce",
       "subject": "Batch 90: BUG-27 regime_confidence intentional Phase-1A deferral confirmed",
       "author": "jeetmehta1991",
-      "rel_time": "35 minutes ago"
+      "rel_time": "40 minutes ago"
     },
     {
       "sha": "a7ce0b2a",
       "subject": "Batch 89: BUG-234 false-positive correction \u00e2\u20ac\u201d VIX hysteresis confirmed wired",
       "author": "jeetmehta1991",
-      "rel_time": "39 minutes ago"
+      "rel_time": "44 minutes ago"
     },
     {
       "sha": "3ff63c2b",
       "subject": "Batch 88: BUG-26 false-positive correction \u00e2\u20ac\u201d DEC-302 VIX/DXY canonical loader",
       "author": "jeetmehta1991",
-      "rel_time": "44 minutes ago"
+      "rel_time": "49 minutes ago"
     },
     {
       "sha": "a2d57ece",
       "subject": "Batch 87: BUG-29 false-positive correction \u00e2\u20ac\u201d open-trades finalize confirmed wired",
       "author": "jeetmehta1991",
-      "rel_time": "48 minutes ago"
+      "rel_time": "52 minutes ago"
     },
     {
       "sha": "2e66a71b",
@@ -26691,7 +26697,7 @@
       "sha": "d0806a2c",
       "subject": "Batch 82: DEC-235 GENUINELY WIRED \u00e2\u20ac\u201d NYSE calendar in _trading_days",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "391e7029",
@@ -26733,7 +26739,7 @@
       "sha": "b4b9e093",
       "subject": "Batch 75: DEC-135 GENUINELY WIRED (per-ticker 30d max-loss cap gate at entry; inline closed_trades scan; 13-tier pyramid 652/6/0; PARTIAL-IMPL -> RESOLVED-IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "fb0072ca",
@@ -26770,17 +26776,11 @@
       "subject": "Batch 69 Phase 3: classifier too noisy for bulk autopilot revert; pivot",
       "author": "jeetmehta1991",
       "rel_time": "6 hours ago"
-    },
-    {
-      "sha": "e13382ec",
-      "subject": "Batch 69 Phase 2: 4 more HELPER_ONLY DECs reverted (manual verification)",
-      "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 3,
-    "modified": 3,
+    "count": 4,
+    "modified": 4,
     "added": 0,
     "untracked": 0,
     "deleted": 0,
@@ -26791,7 +26791,11 @@
       },
       {
         "status": "M",
-        "path": "backtest/engine/backtest.py"
+        "path": "backtest/config.py"
+      },
+      {
+        "status": "M",
+        "path": "backtest/data/sentiment.py"
       },
       {
         "status": "M",
@@ -26977,7 +26981,7 @@
     }
   ],
   "test_inventory": {
-    "total": 1185,
+    "total": 1187,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -27013,7 +27017,7 @@
       "test_fred_alfred_smoke": 5,
       "test_gate_pre_phase_1a_entry": 8,
       "test_gates": 6,
-      "test_integration": 72,
+      "test_integration": 74,
       "test_inv041_path_restricted_commits": 5,
       "test_l146_wave_a_g2_g3_g9": 6,
       "test_l146_wave_b_g7_sec_edgar": 6,

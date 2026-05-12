@@ -515,6 +515,15 @@ DROPPED_STRATEGY_REEVAL_DAYS = 90
 EVENT_WINDOW_PRE_DAYS  = 1
 EVENT_WINDOW_POST_DAYS = 3
 
+# BUG-235 RESOLVED-IMPLEMENTED Batch 99 2026-05-12: AAII Investor Sentiment
+# Survey closes Wednesday close, AAII publishes results Thursday morning.
+# A Wed-dated survey is NOT tradeable on Wed itself -- it's tradeable from
+# Thu open onward. This config codifies the publication lag in days; the
+# `get_aaii_sentiment(as_of)` loader applies the lag by filtering on
+# `survey_date <= as_of - AAII_PUB_LAG_DAYS`. Default 1 day matches the
+# Wed-survey -> Thu-publication cadence.
+AAII_PUB_LAG_DAYS = 1
+
 # DEC-364 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 60 2026-05-11
 # (owner-approved Path C 20-DEC bundle). Tier 3 momentum watchlist size
 # per Pass 52 owner directive "Tier 3 - expand to 100".

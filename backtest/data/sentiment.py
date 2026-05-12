@@ -83,11 +83,21 @@ def _load_aaii() -> pd.DataFrame:
 
 def get_aaii_sentiment(as_of: date) -> dict:
     """
-    Return most recent AAII sentiment reading on or before `as_of`.
+    Return most recent AAII sentiment reading tradeable on or before
+    `as_of`. AAII closes the survey Wed close and publishes Thu morning,
+    so a Wed-dated survey is NOT tradeable on Wed itself (BUG-235 fix).
+
+    BUG-235 RESOLVED-IMPLEMENTED Batch 99 2026-05-12: applies
+    `AAII_PUB_LAG_DAYS` from config (default 1 day) by filtering on
+    `survey_date <= as_of - lag` so the Wed close-of-survey reading
+    becomes available only from Thu onward.
+
     Returns dict: survey_date, bullish_pct, bearish_pct, neutral_pct, signal
     """
     df = _load_aaii()
-    available = df[df["survey_date"] <= pd.Timestamp(as_of)]
+    from backtest.config import AAII_PUB_LAG_DAYS
+    tradeable_cutoff = pd.Timestamp(as_of) - pd.Timedelta(days=AAII_PUB_LAG_DAYS)
+    available = df[df["survey_date"] <= tradeable_cutoff]
     if available.empty:
         return {"signal": "unknown", "bullish_pct": None, "bearish_pct": None}
 

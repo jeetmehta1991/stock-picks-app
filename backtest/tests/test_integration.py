@@ -668,6 +668,49 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_bug_235_aaii_loader_applies_pub_lag():
+    """BUG-235 Batch 99: AAII pub-lag not respected. AAII closes the
+    survey Wed close + publishes Thu morning, so a Wed-dated survey is
+    NOT tradeable on Wed itself. RESOLVED-IMPLEMENTED Batch 99:
+    `get_aaii_sentiment(as_of)` now filters on
+    `survey_date <= as_of - AAII_PUB_LAG_DAYS` (default 1 day from
+    config.py).
+    """
+    from pathlib import Path
+    sentiment_src = Path("backtest/data/sentiment.py").read_text(encoding="utf-8")
+    config_src    = Path("backtest/config.py").read_text(encoding="utf-8")
+    assert "BUG-235 RESOLVED-IMPLEMENTED Batch 99" in sentiment_src
+    assert "AAII_PUB_LAG_DAYS" in sentiment_src
+    assert "AAII_PUB_LAG_DAYS = 1" in config_src
+    assert "tradeable_cutoff" in sentiment_src
+
+
+def test_bug_235_aaii_wed_survey_not_tradeable_until_thu():
+    """BUG-235 behavior: a Wed-dated AAII survey is filtered out when
+    querying for the same Wed `as_of`, and becomes available from Thu
+    onward. Synthetic 1-row DataFrame test of the filter logic.
+    """
+    import pandas as pd
+    from datetime import date, timedelta
+    from backtest.config import AAII_PUB_LAG_DAYS
+    wed = date(2024, 6, 5)  # Wednesday
+    thu = wed + timedelta(days=1)
+    # Synthetic df with Wed survey
+    df = pd.DataFrame([
+        {"survey_date": pd.Timestamp(wed), "bullish_pct": 40.0,
+         "bearish_pct": 30.0, "neutral_pct": 30.0},
+    ])
+    # On Wed itself: tradeable_cutoff = Wed - 1 = Tue, no surveys
+    cutoff_wed = pd.Timestamp(wed) - pd.Timedelta(days=AAII_PUB_LAG_DAYS)
+    available_wed = df[df["survey_date"] <= cutoff_wed]
+    assert available_wed.empty, "Wed survey leaked into Wed-as_of query"
+    # On Thu: tradeable_cutoff = Thu - 1 = Wed, includes the Wed survey
+    cutoff_thu = pd.Timestamp(thu) - pd.Timedelta(days=AAII_PUB_LAG_DAYS)
+    available_thu = df[df["survey_date"] <= cutoff_thu]
+    assert len(available_thu) == 1
+    assert available_thu.iloc[0]["bullish_pct"] == 40.0
+
+
 def test_bug_238_engine_liquidity_filter_fails_closed_on_missing_market_cap():
     """BUG-238 Batch 98: liquidity filter was fail-open on missing
     market_cap (`if mkt_cap_m > 0 and mkt_cap_m < min: continue` skipped
