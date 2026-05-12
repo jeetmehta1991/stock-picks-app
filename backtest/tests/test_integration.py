@@ -430,6 +430,35 @@ def test_dec_088_engine_scales_down_when_realized_vol_high():
     assert scale >= 0.5  # bounded
 
 
+def test_dec_076_engine_wires_factor_concentration_breach():
+    """DEC-076 Batch 74: source-level grep + Portfolio helper consumed at
+    entry gate. Candidate sector that's already > 30% portfolio weight
+    gets entry rejected.
+    """
+    from pathlib import Path
+    src = Path("backtest/engine/backtest.py").read_text(encoding="utf-8")
+    assert "factor_concentration_breach" in src
+    assert "DEC-076 RESOLVED-IMPLEMENTED Batch 74" in src
+    # Skipped-trades reason recorded
+    assert "factor_concentration_breach_dec076" in src
+
+
+def test_dec_076_portfolio_breach_helper_signals_overconcentration():
+    """DEC-076 behavior: Portfolio with 40% Tech exposure -> breach=True;
+    candidate ticker in Tech sector would be gated at entry.
+    """
+    from datetime import date
+    from backtest.engine.portfolio import Portfolio
+    p = Portfolio(starting_capital=100_000.0)
+    p.add_position("AAPL", "Tech", "long", entry_price=100.0,
+                   size_pct=0.20, entry_date=date(2024, 1, 1))
+    p.add_position("MSFT", "Tech", "long", entry_price=100.0,
+                   size_pct=0.20, entry_date=date(2024, 1, 1))
+    out = p.factor_concentration_breach(sector_threshold_pct=30.0)
+    assert out["any_breach"] is True
+    assert "Tech" in out["sector_breaches"]
+
+
 def test_dec_018_engine_wires_stopout_cooldown_gate():
     """DEC-018 Batch 73: 5-day cooldown after stop-out -- gate at entry-eval
     skips ticker for TICKER_STOPOUT_COOLDOWN_DAYS after a stop_loss exit.

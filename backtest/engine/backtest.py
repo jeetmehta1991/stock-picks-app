@@ -586,6 +586,30 @@ class BacktestEngine:
                 })
                 continue
 
+            # DEC-076 RESOLVED-IMPLEMENTED Batch 74 2026-05-12 owner-mandated
+            # wiring: factor concentration breaker. If candidate's sector is
+            # currently >30% of total portfolio equity, gate the entry.
+            # Joint DEC-070 portfolio-level exit logic. Uses
+            # Portfolio.factor_concentration_breach() which reads
+            # exposure_by_sector and flags any sector above threshold.
+            if hasattr(self, "portfolio") and self.portfolio.positions:
+                _conc = self.portfolio.factor_concentration_breach(
+                    sector_threshold_pct=30.0,
+                )
+                if _conc.get("any_breach"):
+                    # Candidate's own sector contributes to the breach -- skip
+                    cand_sector = self.sector_map.get(ticker, "Unknown")
+                    if cand_sector in _conc.get("sector_breaches", []):
+                        self.skipped_trades.append({
+                            "ticker": ticker, "date": as_of,
+                            "strategy": "(any)",
+                            "reason": (
+                                f"factor_concentration_breach_dec076_"
+                                f"{cand_sector}_{_conc['max_sector'][1]:.0f}pct"
+                            ),
+                        })
+                        continue
+
             for strat_entry in cand.get("strategies", []):
                 direction = strat_entry["direction"]
                 category  = strat_entry["category"]
