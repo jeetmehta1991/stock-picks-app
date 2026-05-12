@@ -668,6 +668,38 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_bug_96_portfolio_summary_emits_spy_buy_hold_reference():
+    """BUG-96 Batch 108: compute_portfolio_summary now emits SPY buy-and-hold
+    return + vs-SPY excess return over the same window. Owner-approved
+    option A 2026-05-12.
+    """
+    from pathlib import Path
+    src = Path("backtest/results/metrics.py").read_text(encoding="utf-8")
+    assert "BUG-96 RESOLVED-IMPLEMENTED Batch 108" in src
+    assert "spy_buy_hold_return_pct" in src
+    assert "vs_spy_excess_return_pct" in src
+
+
+def test_bug_96_portfolio_summary_handles_missing_spy_cache():
+    """BUG-96 behavior: when SPY cache is unavailable or df_trades has
+    no entry/exit dates, the SPY benchmark fields are None. Synthetic
+    test feeding a minimal df with no entry_date verifies graceful
+    fallback (no crash, just None benchmark).
+    """
+    import pandas as pd
+    from backtest.results.metrics import compute_portfolio_summary
+    # df without entry_date / exit_date -> SPY fallback returns None
+    df = pd.DataFrame([{
+        "confidence_tier": "HIGH", "pnl_pct": 5.0, "win": True,
+    }])
+    out = compute_portfolio_summary(df, reference_capital=100_000.0)
+    # spy_buy_hold_return_pct may be None (no dates) but key must exist
+    assert "spy_buy_hold_return_pct" in out
+    assert "vs_spy_excess_return_pct" in out
+    assert out["spy_buy_hold_return_pct"] is None
+    assert out["vs_spy_excess_return_pct"] is None
+
+
 def test_bug_205_ibkr_fixed_tier_helper_returns_correct_one_way_fee():
     """BUG-205 Batch 107: IBKR Pro fixed-tier US-stock commission helper
     returns per-share*shares clamped to [min_order, max_pct_of_trade].

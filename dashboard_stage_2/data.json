@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-12T23:36:18.022835+00:00",
+  "generated_at": "2026-05-12T23:40:55.756771+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -5133,7 +5133,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 2,
+        "n_doc_refs": 3,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -17893,7 +17893,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 48,
+        "n_doc_refs": 49,
         "pyramid": {
           "unit": "N/A",
           "smoke": true,
@@ -20965,7 +20965,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 82,
+        "n_doc_refs": 83,
         "pyramid": {
           "unit": true,
           "smoke": true,
@@ -20999,15 +20999,15 @@
       "linked_decisions": "DEC-458",
       "sprint_context": "DEFERRED-TO-PHASE-1B Pass 53 v8h+1 Phase 3 Batch 12 2026-05-10 (SPY buy-and-hold benchmark comparison is Phase 1B-alpha reporting scope; metrics.py compute_all_metrics has spy_benchmark hook in save_all_outputs for future wiring)",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
         "pushed": false,
-        "n_doc_refs": 6,
+        "n_doc_refs": 8,
         "pyramid": {
-          "unit": "N/A",
+          "unit": false,
           "smoke": "N/A",
-          "integration": "N/A",
+          "integration": true,
           "system": "N/A",
           "functional": "N/A",
           "regression": "N/A",
@@ -26598,6 +26598,12 @@
   ],
   "recent_commits": [
     {
+      "sha": "20391302",
+      "subject": "Batch 107: BUG-205 IBKR fixed-tier cost cap wired into apply_transaction_costs",
+      "author": "jeetmehta1991",
+      "rel_time": "4 minutes ago"
+    },
+    {
       "sha": "38c5a7e8",
       "subject": "Batch 106: BUG-32 SKIP triage - profit factor 1.3->1.5 threshold owner decision",
       "author": "jeetmehta1991",
@@ -26697,7 +26703,7 @@
       "sha": "bf2581ce",
       "subject": "Batch 90: BUG-27 regime_confidence intentional Phase-1A deferral confirmed",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "a7ce0b2a",
@@ -26770,12 +26776,6 @@
       "subject": "Batch 78: DEC-108 GENUINELY WIRED (EMA-smoothed regime probability; alpha=0.1 across days; regime_ctx[regime_score_smoothed] surfaced; 13-tier 657/6/0)",
       "author": "jeetmehta1991",
       "rel_time": "7 hours ago"
-    },
-    {
-      "sha": "cc653272",
-      "subject": "Batch 77: DEC-128 GENUINELY WIRED (dispersion CB cross-sectional 3-sigma halt; in _process_day after DEC-314; 13-tier 655/6/0)",
-      "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
     }
   ],
   "uncommitted": {
@@ -26791,7 +26791,7 @@
       },
       {
         "status": "M",
-        "path": "backtest/engine/improvements.py"
+        "path": "backtest/results/metrics.py"
       },
       {
         "status": "M",
@@ -26977,7 +26977,7 @@
     }
   ],
   "test_inventory": {
-    "total": 1194,
+    "total": 1196,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -27013,7 +27013,7 @@
       "test_fred_alfred_smoke": 5,
       "test_gate_pre_phase_1a_entry": 8,
       "test_gates": 6,
-      "test_integration": 81,
+      "test_integration": 83,
       "test_inv041_path_restricted_commits": 5,
       "test_l146_wave_a_g2_g3_g9": 6,
       "test_l146_wave_b_g7_sec_edgar": 6,

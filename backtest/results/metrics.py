@@ -2531,12 +2531,43 @@ def compute_portfolio_summary(
     else:
         max_heat = 0
 
+    # BUG-96 RESOLVED-IMPLEMENTED Batch 108 2026-05-12 (owner-approved
+    # option A 2026-05-12): SPY buy-and-hold reference over the same
+    # window. Lets owner-facing reports show "strategy +X% / SPY B&H
+    # +Y%" side-by-side. Reads SPY OHLCV from the cache (no live calls
+    # per DEC-497 NO-LIVE-API HARD CUT). Falls back to None when SPY
+    # cache unavailable / df_trades has no entry/exit dates.
+    spy_bh_return_pct = None
+    spy_bh_window = None
+    try:
+        if "entry_date" in df.columns and "exit_date" in df.columns:
+            from backtest.data.cache import get_ohlcv_bulk as _cached_bulk
+            window_start = df["entry_date"].min().date()
+            window_end   = df["exit_date"].max().date()
+            spy_data = _cached_bulk(["SPY"], start=window_start, end=window_end)
+            spy_df_ = spy_data.get("SPY") if spy_data else None
+            if spy_df_ is not None and not spy_df_.empty and "close" in spy_df_.columns:
+                spy_open  = float(spy_df_["close"].iloc[0])
+                spy_close = float(spy_df_["close"].iloc[-1])
+                if spy_open > 0:
+                    spy_bh_return_pct = round((spy_close - spy_open) / spy_open * 100.0, 2)
+                    spy_bh_window = f"{window_start}..{window_end}"
+    except Exception as _exc:
+        # SPY cache miss / data layer error -> leave benchmark None
+        logger.debug("BUG-96 SPY buy-and-hold reference skipped: %s", _exc)
+
     return {
         "reference_capital_cad": reference_capital,
         "total_pnl_dollar":      round(total_pnl, 2),
         "portfolio_return_pct":  round(portfolio_return_pct, 2),
         "max_portfolio_heat_pct": round(max_heat, 1),
         "avg_position_size_pct": round(float(df["position_size_pct"].mean()) * 100, 2),
+        "spy_buy_hold_return_pct": spy_bh_return_pct,    # BUG-96
+        "spy_buy_hold_window":     spy_bh_window,        # BUG-96
+        "vs_spy_excess_return_pct": (
+            round(portfolio_return_pct - spy_bh_return_pct, 2)
+            if spy_bh_return_pct is not None else None
+        ),
         "note": "Portfolio return applies tier-based position sizing to all trades",
     }
 
