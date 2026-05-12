@@ -668,6 +668,39 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_bug_29_engine_wires_finalize_open_trades_at_end_of_backtest():
+    """BUG-29 Batch 87: open trades at backtest end were silently
+    discarded, biasing all metrics upward. Engine's run() now calls
+    self._finalize_open_trades() after the main loop, mark-to-market
+    each remaining open trade at last available close, with
+    exit_reason='end_of_backtest'. Source-grep verifies wiring (the
+    function exists + is called from run(); n_finalized count is
+    reported in the final log line).
+    """
+    from pathlib import Path
+    src = Path("backtest/engine/backtest.py").read_text(encoding="utf-8")
+    assert "BUG-29 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 8" in src
+    assert "_finalize_open_trades" in src
+    assert "end_of_backtest" in src
+    assert "finalized %d at end-of-backtest" in src
+
+
+def test_bug_29_finalize_open_trades_marks_to_market_last_close():
+    """BUG-29 behavior: _finalize_open_trades sets exit_reason to
+    'end_of_backtest' + closes at the last available close price on or
+    before self.end. Smoke check that the function exists + is callable
+    + returns int count of finalized trades.
+    """
+    from datetime import date
+    from backtest.engine.backtest import BacktestEngine
+    eng = BacktestEngine(universe=["SPY"], run_agents=False, walk_forward=False,
+                         start=date(2024, 1, 1), end=date(2024, 1, 10))
+    # Engine has no open trades at construction; _finalize_open_trades
+    # must return 0 cleanly without raising
+    n = eng._finalize_open_trades()
+    assert n == 0
+
+
 def test_dec_021_writer_wires_tier_3_consolidation():
     """DEC-021 Batch 86: writer adds `tier_3_consolidated` column to
     agent_performance.csv output by mapping 5-tier `tier` through

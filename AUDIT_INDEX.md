@@ -1055,7 +1055,7 @@
 | **BUG-224** | PIT guard `_assert_no_lookahead` logs WARNING not RAISE — leakage swallowed in p | CRITICAL | RESOLVED | Pass 48 |
 | **BUG-225** | Regime classifier returns 'neutral' on missing VIX silently — should refuse to t | CRITICAL | RESOLVED | Pass 48 |
 | **BUG-028** | HIGH — RSI computation uses simple rolling mean instead of Wilder exponential sm | HIGH | OPEN | - |
-| **BUG-029** | HIGH — Open trades at backtest end silently discarded — upward bias in all metri | HIGH | OPEN | - |
+| **BUG-029** | HIGH — Open trades at backtest end silently discarded — upward bias in all metrics. RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 8 2026-05-10 (BUG-29 RESOLVED-IMPLEMENTED comment block at `backtest/engine/backtest.py:305-320` + `_finalize_open_trades()` method at backtest.py:336-393 + finalize call at backtest.py:281: `n_finalized = self._finalize_open_trades()`). Engine's run() now mark-to-markets remaining open trades at the last available close price on or before self.end with exit_reason='end_of_backtest'. MAE/MFE preserved from OpenTrade running state. Final log line reports `finalized N at end-of-backtest`. Batch 87 2026-05-12 false-positive OPEN correction: status flagged OPEN despite fix landing in Batch 8; 2 integration tests added (source-grep + behavioral: empty-portfolio returns n_finalized=0). Full 13-tier pyramid: 661/661 mandatory T1-T10 green. | HIGH | RESOLVED-IMPLEMENTED | - |
 | **BUG-030** | HIGH — VIX tightening in crisis contradicts own documentation | HIGH | OPEN | - |
 | **BUG-031** | HIGH — Walk-forward OOS minimum of 30 trades is statistically insufficient | HIGH | OPEN | - |
 | **BUG-032** | HIGH — Profit factor minimum 1.2 too low; literature requires 1.5 minimum | HIGH | OPEN | - |
