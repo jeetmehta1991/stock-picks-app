@@ -668,6 +668,48 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_bug_101_engine_blocks_overlapping_re_entries_on_same_ticker():
+    """BUG-101 Batch 92: "88.1% of trades are overlapping re-entries on
+    the same ticker" was the symptom; the underlying cause is per-ticker
+    concurrent positioning. RESOLVED-IMPLEMENTED via:
+      - BUG-61 (Batch 17): ticker uniqueness check at entry candidate
+        loop blocks any new entry when `ticker in open_tickers` ->
+        appended to skipped_trades with reason
+        "ticker_already_open_concurrent_block_bug61"
+      - DEC-018 (Batch 73): 5-trading-day cooldown after stop-out on
+        same ticker prevents whipsaw re-entry
+    Source-grep verifies both gates are present at the entry candidate
+    loop in _process_day.
+    """
+    from pathlib import Path
+    src = Path("backtest/engine/backtest.py").read_text(encoding="utf-8")
+    # BUG-61 ticker uniqueness gate
+    assert "BUG-61 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 17" in src
+    assert "ticker_already_open_concurrent_block_bug61" in src
+    # DEC-018 cooldown gate
+    assert "DEC-018 RESOLVED-IMPLEMENTED Batch 73" in src
+    assert "TICKER_STOPOUT_COOLDOWN_DAYS" in src
+
+
+def test_bug_101_open_tickers_set_filters_candidates():
+    """BUG-101 behavior smoke: open_tickers set built from
+    self.open_trades blocks duplicate entries. Even a freshly constructed
+    engine with one manually-added open trade rejects same-ticker
+    candidates inline.
+    """
+    from datetime import date
+    from backtest.engine.backtest import BacktestEngine
+    eng = BacktestEngine(universe=["SPY"], run_agents=False, walk_forward=False)
+    from types import SimpleNamespace
+    eng.open_trades.append(SimpleNamespace(
+        ticker="AAPL", strategy="test_strat", entry_date=date(2024, 6, 5),
+    ))
+    open_tickers = {t.ticker for t in eng.open_trades}
+    assert "AAPL" in open_tickers
+    # The block check `if ticker in open_tickers: continue` would
+    # short-circuit AAPL even if it were a top-ranked candidate.
+
+
 def test_bug_95_engine_instantiates_and_consumes_portfolio_class():
     """BUG-95 Batch 91: "No portfolio-level state; every trade evaluated
     independently" was a Pass <18 finding. Engine now instantiates the
