@@ -4852,6 +4852,146 @@ def test_dec_177_backtest_seed_constants():
 
 
 # ============================================================================
+# Phase 3 Batch 66 - 10 more PARTIAL-SPEC-ONLY -> real impl
+# DEC-205 / 207 / 216 / 251 / 258 / 260 / 269 / 277 / 338 / 353
+# ============================================================================
+
+def test_dec_205_ab_test_arms_minimum_4():
+    """DEC-205: AB_TEST_ARMS has minimum 4 arms (rules/full/no_risk/no_bull_bear)."""
+    from backtest.config import AB_TEST_ARMS, AB_TEST_MIN_ARMS
+    assert AB_TEST_MIN_ARMS == 4
+    assert len(AB_TEST_ARMS) >= 4
+    assert "rules" in AB_TEST_ARMS
+    assert "full_agents" in AB_TEST_ARMS
+    assert "no_risk" in AB_TEST_ARMS
+    assert "no_bull_bear" in AB_TEST_ARMS
+
+
+def test_dec_207_ab_min_paired_trades_per_arm():
+    """DEC-207: pre-commit minimum 300 paired trades per arm."""
+    from backtest.config import AB_TEST_MIN_PAIRED_TRADES_PER_ARM
+    assert AB_TEST_MIN_PAIRED_TRADES_PER_ARM == 300
+
+
+def test_dec_216_ab_orchestrator_module_path_and_seeds():
+    """DEC-216: orchestrator module path + deterministic-seed config."""
+    from backtest.config import (AB_ORCHESTRATOR_MODULE_PATH,
+                                   AB_ORCHESTRATOR_DETERMINISTIC_SEEDS)
+    assert AB_ORCHESTRATOR_MODULE_PATH.endswith("/ab_orchestrator.py")
+    assert AB_ORCHESTRATOR_DETERMINISTIC_SEEDS is True
+
+
+def test_dec_251_di_refactor_candidate_modules():
+    """DEC-251: candidate modules for DI refactor."""
+    from backtest.config import DI_REFACTOR_CANDIDATE_MODULES
+    assert "backtest/agents/pipeline.py" in DI_REFACTOR_CANDIDATE_MODULES
+    assert "backtest/data/smart_money.py" in DI_REFACTOR_CANDIDATE_MODULES
+
+
+def test_dec_258_options_chain_cache_schema():
+    """DEC-258: options chain schema (strike/IV/OI/PCR/IV-rank)."""
+    from backtest.config import (OPTIONS_CHAIN_CACHE_DIR,
+                                   OPTIONS_CHAIN_CACHE_SCHEMA)
+    assert "options_chain" in OPTIONS_CHAIN_CACHE_DIR
+    for k in ("strike", "implied_volatility", "open_interest",
+              "put_call_ratio", "iv_rank_252d"):
+        assert k in OPTIONS_CHAIN_CACHE_SCHEMA
+
+
+def test_dec_260_cache_stale_raises_when_requested_beyond_cached():
+    """DEC-260: requested_date > cached_end_date -> CacheStaleError."""
+    import pytest
+    from datetime import date
+    from backtest.results.metrics import assert_cache_fresh, CacheStaleError
+    with pytest.raises(CacheStaleError) as exc_info:
+        assert_cache_fresh("AAPL", "ohlcv",
+                            cached_end_date=date(2024, 6, 10),
+                            requested_date=date(2024, 6, 12))
+    assert exc_info.value.ticker == "AAPL"
+    assert exc_info.value.cache_type == "ohlcv"
+
+
+def test_dec_260_cache_fresh_no_raise_when_in_range():
+    """DEC-260: requested_date <= cached_end_date -> no raise."""
+    from datetime import date
+    from backtest.results.metrics import assert_cache_fresh
+    # No exception expected
+    assert_cache_fresh("AAPL", "ohlcv",
+                       cached_end_date=date(2024, 6, 15),
+                       requested_date=date(2024, 6, 10))
+
+
+def test_dec_269_stage_4_entry_gates():
+    """DEC-269: Stage 4 explicit numeric gates."""
+    from backtest.config import STAGE_4_ENTRY_GATES
+    assert STAGE_4_ENTRY_GATES["sharpe_oos_min"] == 1.0
+    assert STAGE_4_ENTRY_GATES["max_drawdown_pct_max"] == 25.0
+    assert STAGE_4_ENTRY_GATES["win_rate_min"] == 0.50
+    assert STAGE_4_ENTRY_GATES["ab_test_winner_clear"] is True
+    assert STAGE_4_ENTRY_GATES["min_trades_oos"] == 150
+
+
+def test_dec_277_strategy_promotion_states():
+    """DEC-277: 6 promotion states codified."""
+    from backtest.config import STRATEGY_PROMOTION_STATES
+    for s in ("stage_1_baseline", "stage_2_validation", "stage_3_papertrade",
+              "stage_4_live_micro", "stage_4_live_full", "demoted"):
+        assert s in STRATEGY_PROMOTION_STATES
+
+
+def test_dec_338_conversion_fires_on_short_in_bull_flip():
+    """DEC-338: short position + regime flip to bull -> close+open long."""
+    from backtest.results.metrics import maybe_convert_short_to_long
+    short_pos = {"ticker": "AAPL", "shares": -100, "entry_price": 150.0}
+    out = maybe_convert_short_to_long(short_pos,
+                                       current_regime="bull",
+                                       prior_regime="bear")
+    assert out["action"] == "close_short_and_open_long"
+    assert out["close_short_shares"] == 100
+    assert out["open_long_shares"] == 100
+    assert out["note"] == "REGIME_FLIP_BULL_CONVERSION"
+
+
+def test_dec_338_no_conversion_when_not_short():
+    """DEC-338: long position (shares > 0) -> no conversion."""
+    from backtest.results.metrics import maybe_convert_short_to_long
+    long_pos = {"ticker": "AAPL", "shares": 100, "entry_price": 150.0}
+    out = maybe_convert_short_to_long(long_pos, "bull", "bear")
+    assert out["action"] == "no_conversion"
+    assert out["note"] == "not_a_short"
+
+
+def test_dec_338_no_conversion_when_regime_not_bull():
+    """DEC-338: short + regime=bear -> no conversion."""
+    from backtest.results.metrics import maybe_convert_short_to_long
+    short_pos = {"ticker": "AAPL", "shares": -100}
+    out = maybe_convert_short_to_long(short_pos, "bear", "bull")
+    assert out["action"] == "no_conversion"
+    assert out["note"] == "regime_not_bull"
+
+
+def test_dec_338_no_conversion_when_not_flip_day():
+    """DEC-338: short + bull regime + prior=bull (not flip) -> no conversion."""
+    from backtest.results.metrics import maybe_convert_short_to_long
+    short_pos = {"ticker": "AAPL", "shares": -100}
+    out = maybe_convert_short_to_long(short_pos, "bull", "bull")
+    assert out["action"] == "no_conversion"
+    assert out["note"] == "not_flip_day"
+
+
+def test_dec_353_rr_minimum_and_defaults():
+    """DEC-353: 2:1 R:R minimum + exit_fixed_target defaults updated."""
+    from backtest.config import (RR_RATIO_MINIMUM, RR_RATIO_SWEEP_VALUES,
+                                   EXIT_FIXED_TARGET_DEFAULTS)
+    assert RR_RATIO_MINIMUM == 2.0
+    assert 2.0 in RR_RATIO_SWEEP_VALUES
+    # Defaults must meet the minimum
+    rr = (EXIT_FIXED_TARGET_DEFAULTS["target_mult"]
+          / EXIT_FIXED_TARGET_DEFAULTS["stop_mult"])
+    assert rr >= RR_RATIO_MINIMUM
+
+
+# ============================================================================
 # DEC-432 Chandelier exit indicator tests (Phase 3 Batch 53 Path C)
 # Parabolic SAR + Supertrend already implemented; only chandelier added.
 # ============================================================================

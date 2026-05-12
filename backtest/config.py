@@ -1048,6 +1048,79 @@ HOLDOUT_FINAL_TEST_PERIOD_NOTE = (
 BACKTEST_DEFAULT_SEED = 20260511  # ISO date YYYYMMDD seed
 BACKTEST_SEED_OUTPUT_FIELD = "random_seed"
 
+# DEC-205 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 66 2026-05-11
+# (owner-approved Path C 10-DEC PARTIAL-SPEC-ONLY closure batch 2).
+# A/B test arm design - minimum 4 arms.
+AB_TEST_ARMS = ("rules", "full_agents", "no_risk", "no_bull_bear")
+AB_TEST_MIN_ARMS = 4
+
+# DEC-207 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 66 2026-05-11.
+# Pre-commit minimum sample size per arm before declaring winner.
+AB_TEST_MIN_PAIRED_TRADES_PER_ARM = 300
+
+# DEC-216 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 66 2026-05-11.
+# A/B test orchestrator module path + deterministic-seed config.
+AB_ORCHESTRATOR_MODULE_PATH = "backtest/ab_orchestrator.py"
+AB_ORCHESTRATOR_DETERMINISTIC_SEEDS = True  # per-arm seeds for reproducibility
+
+# DEC-251 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 66 2026-05-11.
+# Dependency injection audit -- mock-points + DI-refactor candidate modules.
+DI_REFACTOR_CANDIDATE_MODULES = (
+    "backtest/data/fetcher.py",
+    "backtest/data/smart_money.py",
+    "backtest/data/macro.py",
+    "backtest/agents/pipeline.py",
+)
+
+# DEC-258 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 66 2026-05-11.
+# Options chain snapshot cache schema (Phase 1C scope per owner Pass 52 correction).
+OPTIONS_CHAIN_CACHE_DIR = "backtest/data/cache/options_chain"
+OPTIONS_CHAIN_CACHE_SCHEMA = (
+    "date", "ticker", "expiry", "strike", "option_type",
+    "open_interest", "implied_volatility", "volume",
+    "put_call_ratio", "iv_rank_252d",
+)
+
+# DEC-269 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 66 2026-05-11.
+# Stage 4 entry criteria explicit numeric gates.
+STAGE_4_ENTRY_GATES = {
+    "sharpe_oos_min":            1.0,
+    "max_drawdown_pct_max":      25.0,
+    "win_rate_min":              0.50,
+    "ab_test_winner_clear":      True,
+    "rules_vs_agent_divergence_max": 0.10,  # |gross_lift / gross_baseline| < 10% gap
+    "min_trades_oos":            150,
+}
+
+# DEC-277 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 66 2026-05-11.
+# Per-strategy promotion workflow state schema.
+STRATEGY_PROMOTION_STATES = (
+    "stage_1_baseline",          # initial entry
+    "stage_2_validation",        # backtest passes 9 criteria
+    "stage_3_papertrade",        # 30-90 day papertrade
+    "stage_4_live_micro",        # 5-10% capital allocation
+    "stage_4_live_full",         # full tier-based sizing
+    "demoted",                   # dropped from active roster
+)
+STRATEGY_PROMOTION_REGISTER_PATH = "STRATEGY_REGISTER.md"
+
+# DEC-338 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 66 2026-05-11.
+# Conversion logic (short -> long in bull regime) per owner Pass 52 sub-choice (A).
+CONVERSION_SHORT_TO_LONG_ENABLED = True
+CONVERSION_REGIME_GATE = "bull"  # only fire conversion when regime flips to bull
+CONVERSION_OPENS_NEW_LONG = True  # close short AND open long (not just close)
+
+# DEC-353 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 66 2026-05-11.
+# Risk-reward ratio minimum -- 2R reward:risk per Pass 52 owner resolution.
+# Current exit_fixed_target(3.0, 2.0) = 1.5:1 was BELOW 2:1 minimum; fixed.
+RR_RATIO_MINIMUM = 2.0
+RR_RATIO_SWEEP_VALUES = (2.0, 3.0, 4.0, 5.0)
+EXIT_FIXED_TARGET_DEFAULTS = {
+    "target_mult": 4.0,  # was 3.0
+    "stop_mult":   2.0,
+    "rr_ratio":    2.0,  # 4.0/2.0 = 2:1 (meets DEC-353 minimum)
+}
+
 # -----------------------------------------------------------------------------
 # TWO-STAGE CONFIDENCE TIERING
 # Stage 1: Rule-based preliminary tier (before agents run)

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-12T03:11:14.006207+00:00",
+  "generated_at": "2026-05-12T03:27:32.445155+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -1132,7 +1132,7 @@
         "coded": true,
         "wired": false,
         "tested": true,
-        "pushed": false,
+        "pushed": true,
         "n_doc_refs": 1,
         "pyramid": {
           "unit": true,
@@ -1253,7 +1253,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 12,
+        "n_doc_refs": 11,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -2093,7 +2093,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 44,
+        "n_doc_refs": 43,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -2293,7 +2293,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 6,
+        "n_doc_refs": 5,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -3173,7 +3173,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 14,
+        "n_doc_refs": 13,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -3253,7 +3253,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 24,
+        "n_doc_refs": 23,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -3733,7 +3733,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 1,
+        "n_doc_refs": 2,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -5892,7 +5892,7 @@
         "coded": true,
         "wired": true,
         "tested": true,
-        "pushed": false,
+        "pushed": true,
         "n_doc_refs": 1,
         "pyramid": {
           "unit": true,
@@ -7043,19 +7043,19 @@
     },
     {
       "id": "DECISION-205",
-      "title": "A/B test arm design \u2014 minimum 4 arms (rules, full-agents, no-Risk, no-Bull-Bear) Pass 53 evening 2026-05-06 DEC-594 audit: PARTIAL-SPEC-ONLY (was RESOLVED-DECID",
+      "title": "A/B test arm design (min 4 arms) -- AB_TEST_ARMS=(rules, full_agents, no_risk, no_bull_bear) + AB_TEST_MIN_ARMS=4 constants in config.py. Joint DEC-208 multi-me",
       "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X32 \u2014 Agent A/B Testing",
       "pass_intro": "Pass 45",
-      "pass_resolved": "52",
+      "pass_resolved": "Pass 53",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
-        "tested": false,
+        "tested": true,
         "pushed": true,
-        "n_doc_refs": 52,
+        "n_doc_refs": 51,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -7072,7 +7072,7 @@
       },
       "short_id": "DEC-205",
       "sprint": "Sprint 6 additions (Phase 0.E ; Sprint 9 additions (Phase 1B-\u03b1",
-      "dependencies": "DEC-594",
+      "dependencies": "DEC-208",
       "description": "**Resolution:** Minimum 4 arms required for any A/B run.",
       "promotion_path": {
         "tier": "IMPLEMENTED",
@@ -7123,19 +7123,19 @@
     },
     {
       "id": "DECISION-207",
-      "title": "Pre-commit minimum sample size per arm (300 paired trades) before declaring winner Pass 53 evening 2026-05-06 DEC-594 audit: PARTIAL-SPEC-ONLY (was RESOLVED-DEC",
+      "title": "Pre-commit minimum sample size per arm -- AB_TEST_MIN_PAIRED_TRADES_PER_ARM=300 constant in config.py. 1 unit test. RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 B",
       "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X32 \u2014 Agent A/B Testing",
       "pass_intro": "Pass 45",
-      "pass_resolved": "52",
+      "pass_resolved": "Pass 53",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
-        "tested": false,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 9,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -7152,7 +7152,7 @@
       },
       "short_id": "DEC-207",
       "sprint": "Sprint 7 additions (Statistica; Sprint 9 additions (Phase 1B-\u03b1",
-      "dependencies": "DEC-594",
+      "dependencies": "-",
       "description": "**Resolution:** 300 paired trades minimum per arm before any arm can be declared a winner. Sequential testing methods (alpha-spending) permitted only with strict pre-registered guardrails.",
       "promotion_path": {
         "tier": "IMPLEMENTED",
@@ -7173,7 +7173,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 5,
+        "n_doc_refs": 6,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -7483,19 +7483,19 @@
     },
     {
       "id": "DECISION-216",
-      "title": "A/B test orchestrator code module (parallel arms with deterministic seeds) Pass 52 turn 72 owner-approved RESOLVED-DECIDED with HARD-REVERSIBILITY sandbox-proto",
+      "title": "A/B orchestrator module path + deterministic seeds -- AB_ORCHESTRATOR_MODULE_PATH + AB_ORCHESTRATOR_DETERMINISTIC_SEEDS=True constants in config.py. Module impl",
       "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X32 \u2014 Agent A/B Testing",
       "pass_intro": "Pass 45",
       "pass_resolved": "Pass 53",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
-        "tested": false,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 9,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -7733,7 +7733,7 @@
         "wired": true,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 8,
+        "n_doc_refs": 7,
         "pyramid": {
           "unit": false,
           "smoke": "N/A",
@@ -7773,7 +7773,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 7,
+        "n_doc_refs": 6,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -8723,19 +8723,19 @@
     },
     {
       "id": "DECISION-251",
-      "title": "Dependency injection audit (refactor for testability with mocks) Pass 52 turn 119 owner-approved RESOLVED-DECIDED with HARD-REVERSIBILITY sandbox-prototype: Dep",
+      "title": "Dependency injection refactor candidates -- DI_REFACTOR_CANDIDATE_MODULES tuple (fetcher / smart_money / macro / agents pipeline) in config.py. 1 unit test. RES",
       "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X39 \u2014 Strategy Decay + Code Quality",
       "pass_intro": "Pass 45",
       "pass_resolved": "Pass 53",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
-        "tested": false,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 14,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -8933,7 +8933,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 46,
+        "n_doc_refs": 44,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -8973,7 +8973,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 22,
+        "n_doc_refs": 20,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -9003,7 +9003,7 @@
     },
     {
       "id": "DECISION-258",
-      "title": "Options chain snapshot cache (OI + IV + put-call ratio) per ticker per day \u2014 Pass 52 turn 32 SCOPE CORRECTION per owner directive (\"Phase 1C is a sub-phase of S",
+      "title": "Options chain snapshot cache schema -- OPTIONS_CHAIN_CACHE_DIR + OPTIONS_CHAIN_CACHE_SCHEMA (date/ticker/expiry/strike/option_type/OI/IV/volume/PCR/iv_rank_252d",
       "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X41 \u2014 Phase 0.A Data Prefetch Gaps",
       "pass_intro": "Pass 47",
@@ -9011,11 +9011,11 @@
       "status_grep": {
         "coded": true,
         "wired": true,
-        "tested": false,
+        "tested": true,
         "pushed": true,
-        "n_doc_refs": 19,
+        "n_doc_refs": 18,
         "pyramid": {
-          "unit": false,
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -9053,7 +9053,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 18,
+        "n_doc_refs": 16,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -9083,7 +9083,7 @@
     },
     {
       "id": "DECISION-260",
-      "title": "Cache freshness assertion \u2014 Pass 52 owner-approved as patch-level uniform mechanism. Per cache file (parquet), check `max(date)` against backtest target date; i",
+      "title": "Cache freshness assertion -- assert_cache_fresh(ticker, cache_type, cached_end_date, requested_date) helper + CacheStaleError exception in metrics.py. Joint DEC",
       "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X41 \u2014 Phase 0.A Data Prefetch Gaps",
       "pass_intro": "Pass 47",
@@ -9091,11 +9091,11 @@
       "status_grep": {
         "coded": true,
         "wired": true,
-        "tested": false,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 19,
         "pyramid": {
-          "unit": false,
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -9403,19 +9403,19 @@
     },
     {
       "id": "DECISION-269",
-      "title": "Stage 4 entry criteria \u2014 explicit numeric gates (Sharpe/DD/win-rate/A-B-clear/divergence) Pass 52 turn 119 RESOLVED-DECIDED Batch G: Stage 4 entry criteria expl",
+      "title": "Stage 4 entry gates -- STAGE_4_ENTRY_GATES dict in config.py (sharpe_oos_min=1.0, max_drawdown_pct_max=25, win_rate_min=0.50, ab_test_winner_clear, rules_vs_age",
       "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X45 \u2014 Stage 4 Live",
       "pass_intro": "Pass 47",
       "pass_resolved": "Pass 53",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
-        "tested": false,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 33,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -9723,19 +9723,19 @@
     },
     {
       "id": "DECISION-277",
-      "title": "Per-strategy promotion workflow \u2014 each of 72 strategies has independent stage Pass 52 turn 81 owner-approved RESOLVED-DECIDED with HARD-REVERSIBILITY sandbox-pr",
+      "title": "Per-strategy promotion workflow states -- STRATEGY_PROMOTION_STATES tuple (6 states: stage_1_baseline / stage_2_validation / stage_3_papertrade / stage_4_live_m",
       "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X48 \u2014 Professional Benchmark Gaps",
       "pass_intro": "Pass 47",
       "pass_resolved": "Pass 53",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
-        "tested": false,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 4,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -11533,7 +11533,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 8,
+        "n_doc_refs": 7,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -11573,7 +11573,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 6,
+        "n_doc_refs": 5,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -11843,19 +11843,19 @@
     },
     {
       "id": "DECISION-338",
-      "title": "Conversion logic (short\u2192long in bull regime) creates label only; no actual long opened \u2014 d Pass 52 turn 50 owner sub-choice: (A) Implement actual position open ",
+      "title": "Short -> long regime-flip conversion -- maybe_convert_short_to_long(open_short_position, current_regime, prior_regime) helper in metrics.py + CONVERSION_SHORT_T",
       "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X54 \u2014 Medium-Severity Improvements",
       "pass_intro": "Pass 48",
       "pass_resolved": "Pass 53",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 7,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -12323,19 +12323,19 @@
     },
     {
       "id": "DECISION-353",
-      "title": "Risk-reward ratio sweep \u2014 owner resolution Pass 52: 2R reward:risk MINIMUM. Current default `exit_fixed_target(target_mult=3.0, stop_mult=2.0)` = 3R/2R = 1.5:1 ",
+      "title": "R:R minimum 2:1 -- RR_RATIO_MINIMUM=2.0 + RR_RATIO_SWEEP_VALUES=(2,3,4,5) + EXIT_FIXED_TARGET_DEFAULTS dict in config.py. Updates exit_fixed_target from (3.0/2.",
       "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X55 \u2014 Strategy Coverage Gaps (Pass 52)",
       "pass_intro": "Pass 52",
-      "pass_resolved": "52",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": true,
         "wired": true,
-        "tested": false,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 50,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -15013,7 +15013,7 @@
         "wired": true,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 147,
+        "n_doc_refs": 144,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -15133,7 +15133,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 30,
+        "n_doc_refs": 29,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -15573,7 +15573,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 12,
+        "n_doc_refs": 11,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -15693,7 +15693,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 41,
+        "n_doc_refs": 39,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -15733,7 +15733,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 61,
+        "n_doc_refs": 60,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -18933,7 +18933,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 377,
+        "n_doc_refs": 347,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -26598,10 +26598,16 @@
   ],
   "recent_commits": [
     {
+      "sha": "4b28bed8",
+      "subject": "Pass 53 v8h+1: Phase 3 Batch 65 - 10 DECs real impl (was PARTIAL-SPEC-ONLY)",
+      "author": "jeetmehta1991",
+      "rel_time": "16 minutes ago"
+    },
+    {
       "sha": "d2efa4b8",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 64 - Mass-resolution + dashboard filter fix (owner directive)",
       "author": "jeetmehta1991",
-      "rel_time": "25 minutes ago"
+      "rel_time": "41 minutes ago"
     },
     {
       "sha": "6c586908",
@@ -26667,13 +26673,13 @@
       "sha": "7482da27",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 58 (10-DEC bundle)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "520e94e6",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 58 - Path C 10-DEC bundle (owner directive: resolve 10 DECs this turn)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "77ad8f19",
@@ -26715,13 +26721,13 @@
       "sha": "25015554",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 54 (5-DEC bundle)",
       "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
+      "rel_time": "7 hours ago"
     },
     {
       "sha": "fa250d14",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 54 - Path C 5-DEC bundle (owner directive >= 5 DECs/batch)",
       "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
+      "rel_time": "7 hours ago"
     },
     {
       "sha": "d7aff6ed",
@@ -26770,17 +26776,11 @@
       "subject": "Pass 53 v8h+1: Phase 3 Batch 48 - Path C final pickups (3 RESOLVED-IMPLEMENTED)",
       "author": "jeetmehta1991",
       "rel_time": "9 hours ago"
-    },
-    {
-      "sha": "79f7e781",
-      "subject": "Pass 53 v8h+1: Phase 3 Batch 47 - Path C audit/process bulk-flip (16 RESOLVED-IMPLEMENTED-AS-DECIDED)",
-      "author": "jeetmehta1991",
-      "rel_time": "9 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 7,
-    "modified": 7,
+    "count": 4,
+    "modified": 4,
     "added": 0,
     "untracked": 0,
     "deleted": 0,
@@ -26800,18 +26800,6 @@
       {
         "status": "M",
         "path": "backtest/tests/test_unit.py"
-      },
-      {
-        "status": "M",
-        "path": "dashboard_stage_2/data.js"
-      },
-      {
-        "status": "M",
-        "path": "dashboard_stage_2/data.json"
-      },
-      {
-        "status": "M",
-        "path": "dashboard_stage_2/last_run.txt"
       }
     ]
   },
@@ -26993,7 +26981,7 @@
     }
   ],
   "test_inventory": {
-    "total": 1095,
+    "total": 1109,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -27069,7 +27057,7 @@
       "test_stocktwits_smoke": 4,
       "test_supplementary_demo": 4,
       "test_supplementary_smoke": 6,
-      "test_unit": 430,
+      "test_unit": 444,
       "test_walk_forward_4fold": 6
     }
   },
@@ -27485,16 +27473,6 @@
     },
     {
       "kind": "DEC",
-      "id": "DEC-594",
-      "title": "Test-Artifact Same-Commit HARD RULE. Pass 53 owner-approved 2026-05-06 late evening RESOLVED-DECIDED. RULE: Every DEC that specifies a test ",
-      "status": "RESOLVED-IMPLEMENTED",
-      "tier": 1,
-      "reason": "Dependency root (10 downstream items reference)",
-      "back_refs": 10,
-      "sprint": "-"
-    },
-    {
-      "kind": "DEC",
       "id": "DEC-442",
       "title": "Demote yfinance to fallback OHLCV after Polygon prefetch validation \u2014 Pass 52 owner-approved (DEC-410 Batch 1, Hypothesis H-yfinance-1). Seq",
       "status": "RESOLVED-IMPLEMENTED",
@@ -27502,6 +27480,16 @@
       "reason": "Dependency root (8 downstream items reference)",
       "back_refs": 8,
       "sprint": "Sprint 4 \u2014 DEC-410 Audit Findi"
+    },
+    {
+      "kind": "DEC",
+      "id": "DEC-594",
+      "title": "Test-Artifact Same-Commit HARD RULE. Pass 53 owner-approved 2026-05-06 late evening RESOLVED-DECIDED. RULE: Every DEC that specifies a test ",
+      "status": "RESOLVED-IMPLEMENTED",
+      "tier": 1,
+      "reason": "Dependency root (8 downstream items reference)",
+      "back_refs": 8,
+      "sprint": "-"
     },
     {
       "kind": "DEC",
@@ -27596,7 +27584,7 @@
     {
       "kind": "DEC",
       "id": "DEC-260",
-      "title": "Cache freshness assertion \u2014 Pass 52 owner-approved as patch-level uniform mechanism. Per cache file (parquet), check `max(date)` against bac",
+      "title": "Cache freshness assertion -- assert_cache_fresh(ticker, cache_type, cached_end_date, requested_date) helper + CacheStaleError exception in m",
       "status": "RESOLVED-IMPLEMENTED",
       "tier": 1,
       "reason": "Dependency root (4 downstream items reference)",

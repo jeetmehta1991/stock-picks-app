@@ -740,6 +740,87 @@ def compute_per_regime_agent_verdict(
     return out
 
 
+class CacheStaleError(Exception):
+    """DEC-260 raised when cache file's max(date) < requested as_of."""
+
+    def __init__(self, ticker, cache_type, cached_end, requested_date):
+        self.ticker = ticker
+        self.cache_type = cache_type
+        self.cached_end = cached_end
+        self.requested_date = requested_date
+        super().__init__(
+            f"CacheStaleError: ticker={ticker} cache_type={cache_type} "
+            f"cached_end={cached_end} requested_date={requested_date}"
+        )
+
+
+def assert_cache_fresh(
+    ticker: str,
+    cache_type: str,
+    cached_end_date,
+    requested_date,
+) -> None:
+    """DEC-260 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 66 2026-05-11
+    (owner-approved Path C PARTIAL-SPEC-ONLY closure). Cache freshness
+    assertion per Pass 52 spec: if requested_date > cached_end_date,
+    raise CacheStaleError to force prefetch refresh.
+
+    Inputs:
+      ticker: ticker symbol
+      cache_type: 'ohlcv' / 'earnings' / 'fundamentals' / etc
+      cached_end_date: last date present in cache (date or pd.Timestamp)
+      requested_date: target as_of date
+
+    Raises CacheStaleError if requested > cached_end. No-op otherwise.
+    Joint DEC-117 checksum + DEC-330 schema versioning.
+    """
+    if cached_end_date is None or requested_date is None:
+        return  # caller-side fail-soft
+    if requested_date > cached_end_date:
+        raise CacheStaleError(ticker, cache_type, cached_end_date, requested_date)
+
+
+def maybe_convert_short_to_long(
+    open_short_position: dict,
+    current_regime: str,
+    prior_regime: str = None,
+) -> dict:
+    """DEC-338 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 66 2026-05-11
+    (owner-approved Path C PARTIAL-SPEC-ONLY closure). Conversion logic
+    short -> long when regime flips to bull per Pass 52 turn 50 owner
+    sub-choice (A): actually OPEN new long position, not just close short.
+
+    Inputs:
+      open_short_position: dict with at least {ticker, shares, entry_price}
+      current_regime: today's regime label
+      prior_regime: yesterday's regime (None on first day)
+
+    Returns dict with:
+      action: 'no_conversion' / 'close_short_and_open_long'
+      ticker, close_short_shares, open_long_shares, note
+    """
+    from backtest.config import (CONVERSION_SHORT_TO_LONG_ENABLED,
+                                   CONVERSION_REGIME_GATE,
+                                   CONVERSION_OPENS_NEW_LONG)
+    if not CONVERSION_SHORT_TO_LONG_ENABLED:
+        return {"action": "no_conversion", "note": "feature_disabled"}
+    if not open_short_position or open_short_position.get("shares", 0) >= 0:
+        return {"action": "no_conversion", "note": "not_a_short"}
+    if current_regime != CONVERSION_REGIME_GATE:
+        return {"action": "no_conversion", "note": "regime_not_bull"}
+    # Only fire on FLIP (regime changed today to bull, was something else)
+    if prior_regime is not None and prior_regime == CONVERSION_REGIME_GATE:
+        return {"action": "no_conversion", "note": "not_flip_day"}
+    abs_shares = abs(open_short_position.get("shares", 0))
+    return {
+        "action":              "close_short_and_open_long",
+        "ticker":              open_short_position.get("ticker"),
+        "close_short_shares":  abs_shares,
+        "open_long_shares":    abs_shares if CONVERSION_OPENS_NEW_LONG else 0,
+        "note":                "REGIME_FLIP_BULL_CONVERSION",
+    }
+
+
 def is_ticker_in_stopout_cooldown(
     ticker: str,
     trade_log_df,
