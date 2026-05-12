@@ -4660,8 +4660,15 @@ def test_batch_64_mass_resolution_constants():
 
 
 def test_batch_64_audit_index_only_resolved_or_rejected():
-    """Batch 64 invariant: after mass-resolution, AUDIT_INDEX dashboard
-    data has only RESOLVED-IMPLEMENTED + REJECTED status values.
+    """Batch 64 invariant (UPDATED Batch 69 phase 2 2026-05-12 per owner
+    directive to revert false-positive flips): AUDIT_INDEX statuses must be
+    one of {RESOLVED-IMPLEMENTED, REJECTED, PARTIAL-IMPL-HELPER-ONLY}.
+
+    PARTIAL-IMPL-HELPER-ONLY was added as a legitimate status to represent
+    DECs where a helper exists in prod-code modules but the engine call path
+    does not consume it. Owner directive: revert false-positive RESOLVED-
+    IMPLEMENTED flips to this status pending real engine wiring + full
+    13-tier pyramid per CHECKLIST #78 per-addressal.
     """
     import json
     from pathlib import Path
@@ -4670,9 +4677,13 @@ def test_batch_64_audit_index_only_resolved_or_rejected():
         return  # dashboard not regenerated yet (e.g., pre-build CI)
     data = json.loads(data_path.read_text(encoding="utf-8"))
     statuses = {x.get("status") for x in data.get("decisions", [])}
-    allowed = {"RESOLVED-IMPLEMENTED", "REJECTED"}
+    allowed = {
+        "RESOLVED-IMPLEMENTED",
+        "REJECTED",
+        "PARTIAL-IMPL-HELPER-ONLY",  # Batch 69 revert target status
+    }
     leaked = statuses - allowed
-    assert not leaked, f"Batch 64 invariant breached: unexpected statuses {leaked}"
+    assert not leaked, f"Audit invariant breached: unexpected statuses {leaked}"
 
 
 def test_dashboard_filter_promotioncell_hidden_tier_span():

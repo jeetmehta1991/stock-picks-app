@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-12T13:27:02.851629+00:00",
+  "generated_at": "2026-05-12T13:42:32.646347+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -5124,7 +5124,7 @@
     {
       "id": "DECISION-155",
       "title": "vs-SPY comparison metrics \u2014 `compute_vs_spy_metrics(strategy_returns, spy_returns)` in `backtest/results/metrics.py` returns dict with alpha_annualized (daily *",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X21 \u2014 Benchmarking",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -5155,10 +5155,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "IMPLEMENTED",
-        "label": "IMPLEMENTED",
-        "color": "#10b981",
-        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
+        "tier": "UNKNOWN",
+        "label": "UNKNOWN",
+        "color": "#9ca3af",
+        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
       }
     },
     {
@@ -6044,7 +6044,7 @@
     {
       "id": "DECISION-179",
       "title": "Memory profiling + cap enforcement \u2014 `get_process_memory_mb()` + `check_memory_cap(cap_mb=4096)` helpers + `MEMORY_CAP_MB_DEFAULT=4096` constant in `backtest/en",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X29 \u2014 Reproducibility",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -6075,10 +6075,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "IMPLEMENTED",
-        "label": "IMPLEMENTED",
-        "color": "#10b981",
-        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
+        "tier": "UNKNOWN",
+        "label": "UNKNOWN",
+        "color": "#9ca3af",
+        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
       }
     },
     {
@@ -7284,7 +7284,7 @@
     {
       "id": "DECISION-211",
       "title": "Per-agent ablation contributions \u2014 `compute_per_agent_ablation_contributions(arm_metrics)` in `backtest/results/metrics.py` returns dict mapping agent_name -> m",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X32 \u2014 Agent A/B Testing",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -7315,10 +7315,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "IMPLEMENTED",
-        "label": "IMPLEMENTED",
-        "color": "#10b981",
-        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
+        "tier": "UNKNOWN",
+        "label": "UNKNOWN",
+        "color": "#9ca3af",
+        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
       }
     },
     {
@@ -9804,7 +9804,7 @@
     {
       "id": "DECISION-279",
       "title": "P&L 5-component decomposition (sandbox prototype) \u2014 `decompose_trade_pnl(actual_pnl_dollar, timing_delta, exit_delta, sizing_delta, agent_delta)` in `backtest/r",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X48 \u2014 Professional Benchmark Gaps",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -9835,10 +9835,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "IMPLEMENTED",
-        "label": "IMPLEMENTED",
-        "color": "#10b981",
-        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
+        "tier": "UNKNOWN",
+        "label": "UNKNOWN",
+        "color": "#9ca3af",
+        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
       }
     },
     {
@@ -26598,10 +26598,16 @@
   ],
   "recent_commits": [
     {
+      "sha": "4b0e38cd",
+      "subject": "Batch 69 Phase 1: revert 47 self-confessed-deferred DECs to PARTIAL-IMPL-HELPER-ONLY",
+      "author": "jeetmehta1991",
+      "rel_time": "15 minutes ago"
+    },
+    {
       "sha": "e6674772",
       "subject": "Batch 69 part 1: wiring catalog (owner-mandated audit)",
       "author": "jeetmehta1991",
-      "rel_time": "32 minutes ago"
+      "rel_time": "48 minutes ago"
     },
     {
       "sha": "eba44e81",
@@ -26613,7 +26619,7 @@
       "sha": "4c512642",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 68 - FINAL 9 PARTIAL-SPEC-ONLY-was DECs",
       "author": "jeetmehta1991",
-      "rel_time": "9 hours ago"
+      "rel_time": "10 hours ago"
     },
     {
       "sha": "f32626ad",
@@ -26631,7 +26637,7 @@
       "sha": "4b28bed8",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 65 - 10 DECs real impl (was PARTIAL-SPEC-ONLY)",
       "author": "jeetmehta1991",
-      "rel_time": "10 hours ago"
+      "rel_time": "11 hours ago"
     },
     {
       "sha": "d2efa4b8",
@@ -26667,13 +26673,13 @@
       "sha": "279e1b34",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 61 (20-DEC bundle)",
       "author": "jeetmehta1991",
-      "rel_time": "12 hours ago"
+      "rel_time": "13 hours ago"
     },
     {
       "sha": "572a2212",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 61 - Path C 20-DEC bundle (owner directive: 20 DECs this turn)",
       "author": "jeetmehta1991",
-      "rel_time": "12 hours ago"
+      "rel_time": "13 hours ago"
     },
     {
       "sha": "8ce9bc21",
@@ -26691,13 +26697,13 @@
       "sha": "9fb94b18",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 59 (20-DEC bundle)",
       "author": "jeetmehta1991",
-      "rel_time": "13 hours ago"
+      "rel_time": "14 hours ago"
     },
     {
       "sha": "4ddcbcf9",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 59 - Path C 20-DEC bundle (owner directive: 20 DECs this turn)",
       "author": "jeetmehta1991",
-      "rel_time": "13 hours ago"
+      "rel_time": "14 hours ago"
     },
     {
       "sha": "7482da27",
@@ -26733,19 +26739,19 @@
       "sha": "0bfa2be6",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 56 - Path C 5-DEC bundle (breakdowns/agent verdicts/data-quality/policy/site freshness)",
       "author": "jeetmehta1991",
-      "rel_time": "14 hours ago"
+      "rel_time": "15 hours ago"
     },
     {
       "sha": "25c94093",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 55 (5-DEC regime+risk bundle)",
       "author": "jeetmehta1991",
-      "rel_time": "16 hours ago"
+      "rel_time": "17 hours ago"
     },
     {
       "sha": "ad012991",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 55 - Path C 5-DEC bundle (regime expansion + risk helpers)",
       "author": "jeetmehta1991",
-      "rel_time": "16 hours ago"
+      "rel_time": "17 hours ago"
     },
     {
       "sha": "25015554",
@@ -26770,19 +26776,13 @@
       "subject": "Pass 53 v8h+1: Phase 3 Batch 53 - DEC-432 chandelier exit indicator (RESOLVED-IMPLEMENTED)",
       "author": "jeetmehta1991",
       "rel_time": "17 hours ago"
-    },
-    {
-      "sha": "6128d4c6",
-      "subject": "Pass 53 v8h+1: regenerate Stage 2 dashboard for Batches 49-52",
-      "author": "jeetmehta1991",
-      "rel_time": "17 hours ago"
     }
   ],
   "uncommitted": {
     "count": 3,
-    "modified": 2,
+    "modified": 3,
     "added": 0,
-    "untracked": 1,
+    "untracked": 0,
     "deleted": 0,
     "files": [
       {
@@ -26791,10 +26791,10 @@
       },
       {
         "status": "M",
-        "path": "dashboard_stage_2/index.html"
+        "path": "backtest/tests/test_unit.py"
       },
       {
-        "status": "??",
+        "status": "M",
         "path": "scripts/revert_batch_69_phase_1.py"
       }
     ]
@@ -27659,8 +27659,8 @@
     }
   ],
   "decision_status_counts": {
-    "RESOLVED-IMPLEMENTED": 432,
-    "PARTIAL-IMPL-HELPER-ONLY": 47,
+    "RESOLVED-IMPLEMENTED": 428,
+    "PARTIAL-IMPL-HELPER-ONLY": 51,
     "REJECTED": 2
   },
   "inv_status_counts": {
