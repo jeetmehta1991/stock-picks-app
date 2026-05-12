@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-12T20:29:35.981570+00:00",
+  "generated_at": "2026-05-12T20:32:58.295978+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -2853,7 +2853,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 6,
+        "n_doc_refs": 7,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -2973,7 +2973,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 18,
+        "n_doc_refs": 19,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -26598,88 +26598,94 @@
   ],
   "recent_commits": [
     {
+      "sha": "c5f46565",
+      "subject": "Batch 103: BUG-239 SKIP triage - sister to BUG-218 PIT sector blocker",
+      "author": "jeetmehta1991",
+      "rel_time": "3 minutes ago"
+    },
+    {
       "sha": "ac902567",
       "subject": "Batch 102: BUG-237 - tag CNN F&G interpolation staleness on every entry",
       "author": "jeetmehta1991",
-      "rel_time": "3 minutes ago"
+      "rel_time": "7 minutes ago"
     },
     {
       "sha": "3ea5ca81",
       "subject": "Batch 101: BUG-236 AAII auto-refresh workflow added",
       "author": "jeetmehta1991",
-      "rel_time": "8 minutes ago"
+      "rel_time": "11 minutes ago"
     },
     {
       "sha": "e7adc4ec",
       "subject": "Batch 100: docs sweep - annotate skipped BUGs with triage context",
       "author": "jeetmehta1991",
-      "rel_time": "16 minutes ago"
+      "rel_time": "19 minutes ago"
     },
     {
       "sha": "e9f6ada4",
       "subject": "Batch 99: BUG-235 AAII pub-lag applied to get_aaii_sentiment loader",
       "author": "jeetmehta1991",
-      "rel_time": "42 minutes ago"
+      "rel_time": "45 minutes ago"
     },
     {
       "sha": "a5b4910c",
       "subject": "Batch 98: BUG-238 fail-open -> fail-closed on missing market_cap",
       "author": "jeetmehta1991",
-      "rel_time": "47 minutes ago"
+      "rel_time": "50 minutes ago"
     },
     {
       "sha": "fb1218da",
       "subject": "Batch 97: BUG-110 false-positive correction - entry gap filter wired",
       "author": "jeetmehta1991",
-      "rel_time": "54 minutes ago"
+      "rel_time": "57 minutes ago"
     },
     {
       "sha": "00f4d4c5",
       "subject": "Batch 96: BUG-103 false-positive correction - smart_money_score wired in tier assignment",
       "author": "jeetmehta1991",
-      "rel_time": "58 minutes ago"
+      "rel_time": "62 minutes ago"
     },
     {
       "sha": "529ee39a",
       "subject": "Batch 95: BUG-102 false-positive correction - same-day dedup wired",
       "author": "jeetmehta1991",
-      "rel_time": "62 minutes ago"
+      "rel_time": "66 minutes ago"
     },
     {
       "sha": "b606b380",
       "subject": "Batch 94: BUG-78 false-positive correction - trailing stop lookahead fix wired",
       "author": "jeetmehta1991",
-      "rel_time": "66 minutes ago"
+      "rel_time": "69 minutes ago"
     },
     {
       "sha": "ce28a712",
       "subject": "Batch 93: BUG-104 false-positive correction - compute_portfolio_summary wires tier sizing",
       "author": "jeetmehta1991",
-      "rel_time": "70 minutes ago"
+      "rel_time": "73 minutes ago"
     },
     {
       "sha": "5fca3ab1",
       "subject": "Batch 92: BUG-101 false-positive correction - ticker uniqueness wired",
       "author": "jeetmehta1991",
-      "rel_time": "74 minutes ago"
+      "rel_time": "78 minutes ago"
     },
     {
       "sha": "703bdf62",
       "subject": "Batch 91: BUG-95 false-positive correction - Portfolio class wired Batch 20",
       "author": "jeetmehta1991",
-      "rel_time": "78 minutes ago"
+      "rel_time": "81 minutes ago"
     },
     {
       "sha": "bf2581ce",
       "subject": "Batch 90: BUG-27 regime_confidence intentional Phase-1A deferral confirmed",
       "author": "jeetmehta1991",
-      "rel_time": "82 minutes ago"
+      "rel_time": "85 minutes ago"
     },
     {
       "sha": "a7ce0b2a",
       "subject": "Batch 89: BUG-234 false-positive correction \u00e2\u20ac\u201d VIX hysteresis confirmed wired",
       "author": "jeetmehta1991",
-      "rel_time": "86 minutes ago"
+      "rel_time": "89 minutes ago"
     },
     {
       "sha": "3ff63c2b",
@@ -26770,12 +26776,6 @@
       "subject": "Batch 74: DEC-076 GENUINELY WIRED (factor concentration breach gate)",
       "author": "jeetmehta1991",
       "rel_time": "5 hours ago"
-    },
-    {
-      "sha": "c79c630b",
-      "subject": "Batch 73: DEC-018 GENUINELY WIRED (stop-out cooldown)",
-      "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
     }
   ],
   "uncommitted": {
