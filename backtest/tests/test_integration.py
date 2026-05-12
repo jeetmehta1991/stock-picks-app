@@ -383,6 +383,53 @@ def test_dec_091_engine_scales_size_by_dd_band_behavior():
     assert base * p.drawdown_size_multiplier() == 0.0225
 
 
+def test_dec_088_engine_wires_vol_target_scale_factor():
+    """DEC-088 Batch 71 2026-05-12 owner-mandated wiring: verify
+    backtest.py calls Portfolio.vol_target_scale_factor() on BOTH entry
+    sites (can_open gate + add_position), stacked after DEC-091 multiplier.
+    """
+    from pathlib import Path
+    src = Path("backtest/engine/backtest.py").read_text(encoding="utf-8")
+    count = src.count("vol_target_scale_factor()")
+    assert count >= 2, (
+        f"Engine must call vol_target_scale_factor at gate AND add_position; "
+        f"found {count} calls"
+    )
+    assert "DEC-088 RESOLVED-IMPLEMENTED Batch 71" in src
+
+
+def test_dec_088_engine_no_op_with_insufficient_history():
+    """DEC-088: fresh Portfolio (no equity history) -> vol_target_scale_factor
+    returns 1.0 (no-op). Size_pct unchanged. Critical: backtest must work
+    correctly in the first ~21 days before realized vol is computable.
+    """
+    from backtest.engine.backtest import BacktestEngine
+    eng = BacktestEngine(universe=["SPY"], run_agents=False, walk_forward=False)
+    p = eng.portfolio
+    # Fresh portfolio: no equity_curve entries
+    assert p.vol_target_scale_factor() == 1.0
+
+
+def test_dec_088_engine_scales_down_when_realized_vol_high():
+    """DEC-088: synthetic equity curve with ~2% daily moves -> ~32% ann vol
+    -> vol_target_scale_factor returns 0.15/max(0.317, 0.075) = ~0.47,
+    bounded at 0.5 floor. Size scales down to ~half.
+    """
+    from datetime import date, timedelta
+    from backtest.engine.backtest import BacktestEngine
+    eng = BacktestEngine(universe=["SPY"], run_agents=False, walk_forward=False)
+    p = eng.portfolio
+    p.equity_curve.clear()
+    base = 100_000.0
+    for i in range(25):
+        sign = 1 if i % 2 == 0 else -1
+        eq = base * (1 + 0.02 * sign)
+        p.equity_curve.append((date(2024, 1, 1) + timedelta(days=i), eq))
+    scale = p.vol_target_scale_factor(target=0.15, window_days=21)
+    assert scale < 1.0
+    assert scale >= 0.5  # bounded
+
+
 def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     """DEC-091: 32% DD -> multiplier 0.0 -> scaled size_pct=0 -> entry
     skipped by the 'if size_pct > 0' branch (defense-in-depth alongside

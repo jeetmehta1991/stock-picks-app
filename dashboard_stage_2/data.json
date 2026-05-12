@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-12T14:19:32.525880+00:00",
+  "generated_at": "2026-05-12T14:35:17.858353+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -2813,7 +2813,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 11,
+        "n_doc_refs": 10,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -2843,8 +2843,8 @@
     },
     {
       "id": "DECISION-088",
-      "title": "Portfolio vol target 15% annualized \u2014 `PORTFOLIO_VOL_TARGET_ANNUALIZED=0.15` constant + `PORTFOLIO_VOL_LOOKBACK_DAYS=21` + `PORTFOLIO_VOL_SCALE_MIN=0.5`/`MAX=1.",
-      "status": "PARTIAL-IMPL-HELPER-ONLY",
+      "title": "Portfolio vol target 15% GENUINELY WIRED -- `Portfolio.vol_target_scale_factor(target=0.15, window_days=21)` in `backtest/engine/portfolio.py` returns `target /",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X5 \u2014 Risk Management Extension",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -2857,7 +2857,7 @@
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
-          "integration": "N/A",
+          "integration": true,
           "system": "N/A",
           "functional": "N/A",
           "regression": "N/A",
@@ -2875,10 +2875,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "UNKNOWN",
-        "label": "UNKNOWN",
-        "color": "#9ca3af",
-        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -2973,7 +2973,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 15,
+        "n_doc_refs": 16,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -26598,28 +26598,34 @@
   ],
   "recent_commits": [
     {
+      "sha": "433c0adf",
+      "subject": "Batch 70: DEC-091 GENUINELY WIRED (first per-DEC engine-wiring batch)",
+      "author": "jeetmehta1991",
+      "rel_time": "15 minutes ago"
+    },
+    {
       "sha": "318bdb20",
       "subject": "Batch 69 Phase 3: classifier too noisy for bulk autopilot revert; pivot",
       "author": "jeetmehta1991",
-      "rel_time": "15 minutes ago"
+      "rel_time": "31 minutes ago"
     },
     {
       "sha": "e13382ec",
       "subject": "Batch 69 Phase 2: 4 more HELPER_ONLY DECs reverted (manual verification)",
       "author": "jeetmehta1991",
-      "rel_time": "37 minutes ago"
+      "rel_time": "52 minutes ago"
     },
     {
       "sha": "4b0e38cd",
       "subject": "Batch 69 Phase 1: revert 47 self-confessed-deferred DECs to PARTIAL-IMPL-HELPER-ONLY",
       "author": "jeetmehta1991",
-      "rel_time": "52 minutes ago"
+      "rel_time": "68 minutes ago"
     },
     {
       "sha": "e6674772",
       "subject": "Batch 69 part 1: wiring catalog (owner-mandated audit)",
       "author": "jeetmehta1991",
-      "rel_time": "85 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "eba44e81",
@@ -26709,19 +26715,19 @@
       "sha": "9fb94b18",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 59 (20-DEC bundle)",
       "author": "jeetmehta1991",
-      "rel_time": "14 hours ago"
+      "rel_time": "15 hours ago"
     },
     {
       "sha": "4ddcbcf9",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 59 - Path C 20-DEC bundle (owner directive: 20 DECs this turn)",
       "author": "jeetmehta1991",
-      "rel_time": "14 hours ago"
+      "rel_time": "15 hours ago"
     },
     {
       "sha": "7482da27",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 58 (10-DEC bundle)",
       "author": "jeetmehta1991",
-      "rel_time": "14 hours ago"
+      "rel_time": "15 hours ago"
     },
     {
       "sha": "520e94e6",
@@ -26768,12 +26774,6 @@
     {
       "sha": "25015554",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 54 (5-DEC bundle)",
-      "author": "jeetmehta1991",
-      "rel_time": "17 hours ago"
-    },
-    {
-      "sha": "fa250d14",
-      "subject": "Pass 53 v8h+1: Phase 3 Batch 54 - Path C 5-DEC bundle (owner directive >= 5 DECs/batch)",
       "author": "jeetmehta1991",
       "rel_time": "18 hours ago"
     }
@@ -26977,7 +26977,7 @@
     }
   ],
   "test_inventory": {
-    "total": 1132,
+    "total": 1135,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -27013,7 +27013,7 @@
       "test_fred_alfred_smoke": 5,
       "test_gate_pre_phase_1a_entry": 8,
       "test_gates": 6,
-      "test_integration": 19,
+      "test_integration": 22,
       "test_inv041_path_restricted_commits": 5,
       "test_l146_wave_a_g2_g3_g9": 6,
       "test_l146_wave_b_g7_sec_edgar": 6,
@@ -27659,8 +27659,8 @@
     }
   ],
   "decision_status_counts": {
-    "RESOLVED-IMPLEMENTED": 429,
-    "PARTIAL-IMPL-HELPER-ONLY": 50,
+    "RESOLVED-IMPLEMENTED": 430,
+    "PARTIAL-IMPL-HELPER-ONLY": 49,
     "REJECTED": 2
   },
   "inv_status_counts": {

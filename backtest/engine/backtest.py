@@ -700,11 +700,26 @@ class BacktestEngine:
                     # AND can_open (defense in depth).
                     dd_mult = self.portfolio.drawdown_size_multiplier()
                     size_pct = size_pct * dd_mult
+                    # DEC-088 RESOLVED-IMPLEMENTED Batch 71 2026-05-12: stack the
+                    # portfolio annualized-vol-target scaler on top of DD-band.
+                    # Returns 1.0 (no-op) when realized vol unavailable
+                    # (insufficient history; first ~21 days), so harmless in
+                    # early backtest. Bounded [0.5, 1.5] to prevent extreme
+                    # adjustments. Joint with DEC-091 (DD-band) -- both scale
+                    # the same size_pct multiplicatively before can_open.
+                    vol_scale = self.portfolio.vol_target_scale_factor()
+                    size_pct = size_pct * vol_scale
                     if dd_mult < 1.0 and size_pct > 0:
                         self.skipped_trades.append({
                             "ticker": ticker, "date": as_of,
                             "strategy": strat_entry["strategy"],
                             "reason": f"dd_band_scaled_{dd_mult}x",
+                        })
+                    if vol_scale != 1.0 and size_pct > 0:
+                        self.skipped_trades.append({
+                            "ticker": ticker, "date": as_of,
+                            "strategy": strat_entry["strategy"],
+                            "reason": f"vol_target_scaled_{round(vol_scale, 3)}x",
                         })
                         # NOTE: this entry is informational; entry still proceeds
                         # at the scaled size. The skipped_trades log captures it
@@ -809,6 +824,9 @@ class BacktestEngine:
                     # gate would approve a SCALED size but we would open a
                     # FULL-SIZE position -- size inconsistency.
                     size_pct = size_pct * self.portfolio.drawdown_size_multiplier()
+                    # DEC-088 wiring (mirror of upstream): also apply vol-target
+                    # scale factor so opened size matches gate-approved size.
+                    size_pct = size_pct * self.portfolio.vol_target_scale_factor()
                     if size_pct > 0:
                         try:
                             self.portfolio.add_position(
