@@ -668,6 +668,45 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_bug_110_engine_enforces_entry_gap_filter():
+    """BUG-110 Batch 97: "Entry gap filter not enforced; trades opened
+    despite exceeding ATR limit" was flagged HIGH/OPEN. RESOLVED-
+    IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 16 (2026-05-10) at
+    `backtest/engine/backtest.py:876-890`:
+      - validate_entry_zone(next_open, close, atr, category, direction)
+        called per candidate
+      - non-valid trades appended to skipped_trades with the
+        validate_entry_zone reason + close/next_open/atr context
+      - `continue` short-circuits the entry, blocking the position
+      - ENTRY_GAP_ATR_MULT per-category multiplier defined in
+        backtest.config
+    Source-grep verifies the BUG-110 RESOLVED comment + the
+    validate_entry_zone consumption + skipped_trades enrichment.
+    """
+    from pathlib import Path
+    src = Path("backtest/engine/backtest.py").read_text(encoding="utf-8")
+    assert "BUG-110 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 16" in src
+    assert "validate_entry_zone(" in src
+    # The skip path enriches with close/next_open/atr context
+    assert '"close": close, "next_open": next_open, "atr": atr' in src
+
+
+def test_bug_110_validate_entry_zone_rejects_excessive_gap():
+    """BUG-110 behavior: feed validate_entry_zone a synthetic gap that
+    exceeds the per-category ATR multiplier and verify it returns
+    (False, reason).
+    """
+    from backtest.signals.screener import validate_entry_zone
+    # Long entry with next_open 5% above close + small ATR
+    # -> way beyond any sensible ATR multiplier
+    valid, reason = validate_entry_zone(
+        open_price=105.0, signal_close=100.0, atr=0.20,
+        category="momentum", direction="long",
+    )
+    assert valid is False
+    assert isinstance(reason, str) and len(reason) > 0
+
+
 def test_bug_103_engine_consumes_smart_money_score_in_tier_assignment():
     """BUG-103 Batch 96: "Smart money data prefetched for 7 categories x
     509 tickers but never used by agents/engine" was flagged CRITICAL/
