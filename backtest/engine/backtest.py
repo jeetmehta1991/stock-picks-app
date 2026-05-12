@@ -119,6 +119,8 @@ class BacktestEngine:
         # engine wiring 2026-05-11: track prev_regime across days for
         # classify_regime_with_hysteresis. None at start; updated in _process_day.
         self._prev_regime: Optional[str] = None
+        # DEC-108 Batch 78 2026-05-12: EMA-smoothed regime probability state
+        self._regime_smoothed: Optional[float] = None
         # Pre-loaded VIX series for smoothing (populated by load_data)
         self._vix_series: Optional[pd.Series] = None
 
@@ -394,6 +396,31 @@ class BacktestEngine:
         regime     = regime_ctx["regime"]
         # Persist for next iteration
         self._prev_regime = regime
+
+        # DEC-108 RESOLVED-IMPLEMENTED Batch 78 2026-05-12 owner-mandated
+        # wiring: EMA-smoothed regime probability (Phase A). Converts the
+        # hard regime label to a numeric score (bull=80, neutral=50, bear=30,
+        # crisis=10, unknown=50) and applies EMA (alpha=0.1: smoothed =
+        # 0.9*prev + 0.1*new). State persisted on self for next-day call.
+        # Surfaced via regime_ctx as `regime_score_smoothed`. Joint DEC-388
+        # VIX-SMA hysteresis (already wired Batch 42-43) -- this DEC adds
+        # the regime-score smoothing layer for downstream agent / signal
+        # consumption (Phase B strategies migrate to probability-gating
+        # later; currently this is telemetry).
+        from backtest.engine.regime_filter import (
+            ema_smooth_regime_probability as _ema_regime,
+        )
+        _regime_score_map = {
+            "bull": 80.0, "neutral": 50.0, "bear": 30.0,
+            "crisis": 10.0, "unknown": 50.0,
+        }
+        _raw_score = _regime_score_map.get(regime, 50.0)
+        _smoothed = _ema_regime(
+            _raw_score, prev_smoothed=getattr(self, "_regime_smoothed", None),
+            alpha=0.1,
+        )
+        self._regime_smoothed = _smoothed
+        regime_ctx["regime_score_smoothed"] = round(_smoothed, 2)
         # Pass 53 fix 2026-05-07: hoist crisis_flag to function scope so it's
         # defined before line 299 (was UnboundLocalError when regime != crisis
         # and inner-loop set never executed). Per DEC-316 unknown regime exists.

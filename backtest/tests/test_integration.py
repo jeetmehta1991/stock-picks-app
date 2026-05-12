@@ -430,6 +430,31 @@ def test_dec_088_engine_scales_down_when_realized_vol_high():
     assert scale >= 0.5  # bounded
 
 
+def test_dec_108_engine_wires_ema_smoothed_regime_probability():
+    """DEC-108 Batch 78: EMA-smoothed regime probability threaded across
+    days via self._regime_smoothed. surfaces as regime_ctx['regime_score_
+    smoothed'] for downstream consumption.
+    """
+    from pathlib import Path
+    src = Path("backtest/engine/backtest.py").read_text(encoding="utf-8")
+    assert "DEC-108 RESOLVED-IMPLEMENTED Batch 78" in src
+    assert "self._regime_smoothed" in src
+    assert "ema_smooth_regime_probability" in src
+    assert "regime_score_smoothed" in src
+
+
+def test_dec_108_helper_ema_first_then_subsequent():
+    """DEC-108 helper math: first call returns new_score; subsequent calls
+    weighted 0.9*prev + 0.1*new.
+    """
+    from backtest.engine.regime_filter import ema_smooth_regime_probability
+    s1 = ema_smooth_regime_probability(80.0, prev_smoothed=None, alpha=0.1)
+    assert s1 == 80.0
+    s2 = ema_smooth_regime_probability(10.0, prev_smoothed=s1, alpha=0.1)
+    # 0.9*80 + 0.1*10 = 73.0
+    assert abs(s2 - 73.0) < 1e-9
+
+
 def test_dec_128_engine_wires_dispersion_cb():
     """DEC-128 Batch 77: source-level grep + cross-sectional dispersion CB
     wired in _process_day after DEC-314 market-wide CB block.
