@@ -586,6 +586,34 @@ class BacktestEngine:
                 })
                 continue
 
+            # DEC-135 RESOLVED-IMPLEMENTED Batch 75 2026-05-12: per-ticker
+            # 30-day cumulative max-loss cap. If sum of pnl_pct on this ticker
+            # over the trailing 30 days <= -10%, halt entries for cooldown.
+            _cap_pct = -10.0
+            _window_days = 30
+            _cum_pnl = 0.0
+            for ct in self.closed_trades:
+                if ct.ticker != ticker:
+                    continue
+                ct_exit = getattr(ct, "exit_date", None)
+                if ct_exit is None:
+                    continue
+                try:
+                    days_ago = (as_of - ct_exit).days
+                except TypeError:
+                    continue
+                if 0 <= days_ago <= _window_days:
+                    _cum_pnl += float(getattr(ct, "pnl_pct", 0.0) or 0.0)
+            if _cum_pnl <= _cap_pct:
+                self.skipped_trades.append({
+                    "ticker": ticker, "date": as_of,
+                    "strategy": "(any)",
+                    "reason": (
+                        f"max_loss_cap_breach_dec135_{round(_cum_pnl, 2)}pct"
+                    ),
+                })
+                continue
+
             # DEC-076 RESOLVED-IMPLEMENTED Batch 74 2026-05-12 owner-mandated
             # wiring: factor concentration breaker. If candidate's sector is
             # currently >30% of total portfolio equity, gate the entry.

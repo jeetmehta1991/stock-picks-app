@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-12T15:07:15.961778+00:00",
+  "generated_at": "2026-05-12T15:16:45.239180+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -4443,9 +4443,9 @@
     },
     {
       "id": "DECISION-135",
-      "title": "Per-ticker cumulative max-loss cap (rolling 30-day) \u2014 `per_ticker_30day_max_loss_check(trade_log_df, today, cap_pct=-10.0, cooldown_days=30)` in `backtest/engin",
-      "status": "PARTIAL-IMPL-HELPER-ONLY",
-      "theme": "Batch X15 \u2014 Risk management deeper",
+      "title": "Per-ticker rolling 30-day max-loss cap GENUINELY WIRED -- helper in improvements.py + Batch 75 2026-05-12 engine wiring: inline gate at entry-candidate eval sca",
+      "status": "RESOLVED-IMPLEMENTED",
+      "theme": "Batch X15 - Risk management deeper",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
       "status_grep": {
@@ -4457,7 +4457,7 @@
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
-          "integration": "N/A",
+          "integration": true,
           "system": "N/A",
           "functional": "N/A",
           "regression": "N/A",
@@ -4475,10 +4475,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "UNKNOWN",
-        "label": "UNKNOWN",
-        "color": "#9ca3af",
-        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -26598,40 +26598,46 @@
   ],
   "recent_commits": [
     {
+      "sha": "fb0072ca",
+      "subject": "Batch 74: DEC-076 GENUINELY WIRED (factor concentration breach gate)",
+      "author": "jeetmehta1991",
+      "rel_time": "9 minutes ago"
+    },
+    {
       "sha": "c79c630b",
       "subject": "Batch 73: DEC-018 GENUINELY WIRED (stop-out cooldown)",
       "author": "jeetmehta1991",
-      "rel_time": "10 minutes ago"
+      "rel_time": "19 minutes ago"
     },
     {
       "sha": "3636dd1e",
       "subject": "Batch 72: DEC-087 GENUINELY WIRED (vol-targeted per-position sizing)",
       "author": "jeetmehta1991",
-      "rel_time": "21 minutes ago"
+      "rel_time": "30 minutes ago"
     },
     {
       "sha": "d0f4509c",
       "subject": "Batch 71: DEC-088 GENUINELY WIRED (portfolio vol target 15%)",
       "author": "jeetmehta1991",
-      "rel_time": "32 minutes ago"
+      "rel_time": "41 minutes ago"
     },
     {
       "sha": "433c0adf",
       "subject": "Batch 70: DEC-091 GENUINELY WIRED (first per-DEC engine-wiring batch)",
       "author": "jeetmehta1991",
-      "rel_time": "47 minutes ago"
+      "rel_time": "57 minutes ago"
     },
     {
       "sha": "318bdb20",
       "subject": "Batch 69 Phase 3: classifier too noisy for bulk autopilot revert; pivot",
       "author": "jeetmehta1991",
-      "rel_time": "63 minutes ago"
+      "rel_time": "73 minutes ago"
     },
     {
       "sha": "e13382ec",
       "subject": "Batch 69 Phase 2: 4 more HELPER_ONLY DECs reverted (manual verification)",
       "author": "jeetmehta1991",
-      "rel_time": "84 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "4b0e38cd",
@@ -26649,7 +26655,7 @@
       "sha": "eba44e81",
       "subject": "fix(ci): install statsmodels + scipy in test pyramid workflow",
       "author": "jeetmehta1991",
-      "rel_time": "10 hours ago"
+      "rel_time": "11 hours ago"
     },
     {
       "sha": "4c512642",
@@ -26661,7 +26667,7 @@
       "sha": "f32626ad",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 67 - dashboard filter re-fix + 10 more PARTIAL-SPEC-ONLY-was DECs",
       "author": "jeetmehta1991",
-      "rel_time": "11 hours ago"
+      "rel_time": "12 hours ago"
     },
     {
       "sha": "ab4f5173",
@@ -26679,13 +26685,13 @@
       "sha": "d2efa4b8",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 64 - Mass-resolution + dashboard filter fix (owner directive)",
       "author": "jeetmehta1991",
-      "rel_time": "12 hours ago"
+      "rel_time": "13 hours ago"
     },
     {
       "sha": "6c586908",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 63 (23-DEC close-out)",
       "author": "jeetmehta1991",
-      "rel_time": "13 hours ago"
+      "rel_time": "14 hours ago"
     },
     {
       "sha": "d6be69a6",
@@ -26721,7 +26727,7 @@
       "sha": "8ce9bc21",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 60 (20-DEC bundle)",
       "author": "jeetmehta1991",
-      "rel_time": "14 hours ago"
+      "rel_time": "15 hours ago"
     },
     {
       "sha": "215f6fbc",
@@ -26768,12 +26774,6 @@
     {
       "sha": "1bfcd76f",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 56 (5-DEC bundle)",
-      "author": "jeetmehta1991",
-      "rel_time": "16 hours ago"
-    },
-    {
-      "sha": "0bfa2be6",
-      "subject": "Pass 53 v8h+1: Phase 3 Batch 56 - Path C 5-DEC bundle (breakdowns/agent verdicts/data-quality/policy/site freshness)",
       "author": "jeetmehta1991",
       "rel_time": "16 hours ago"
     }
@@ -26977,7 +26977,7 @@
     }
   ],
   "test_inventory": {
-    "total": 1141,
+    "total": 1143,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -27013,7 +27013,7 @@
       "test_fred_alfred_smoke": 5,
       "test_gate_pre_phase_1a_entry": 8,
       "test_gates": 6,
-      "test_integration": 28,
+      "test_integration": 30,
       "test_inv041_path_restricted_commits": 5,
       "test_l146_wave_a_g2_g3_g9": 6,
       "test_l146_wave_b_g7_sec_edgar": 6,
@@ -27659,8 +27659,8 @@
     }
   ],
   "decision_status_counts": {
-    "RESOLVED-IMPLEMENTED": 432,
-    "PARTIAL-IMPL-HELPER-ONLY": 47,
+    "RESOLVED-IMPLEMENTED": 433,
+    "PARTIAL-IMPL-HELPER-ONLY": 46,
     "REJECTED": 2
   },
   "inv_status_counts": {

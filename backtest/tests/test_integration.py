@@ -430,6 +430,34 @@ def test_dec_088_engine_scales_down_when_realized_vol_high():
     assert scale >= 0.5  # bounded
 
 
+def test_dec_135_engine_wires_max_loss_cap_gate():
+    """DEC-135 Batch 75: per-ticker rolling 30-day max-loss cap (-10%)
+    gate at entry-candidate eval.
+    """
+    from pathlib import Path
+    src = Path("backtest/engine/backtest.py").read_text(encoding="utf-8")
+    assert "DEC-135 RESOLVED-IMPLEMENTED Batch 75" in src
+    assert "max_loss_cap_breach_dec135" in src
+    assert "_cap_pct = -10.0" in src
+    assert "_window_days = 30" in src
+
+
+def test_dec_135_helper_cumulative_loss_threshold():
+    """DEC-135 helper math: 2 losing trades sum to <= -10% in window -> halt."""
+    import pandas as pd
+    from datetime import date
+    from backtest.engine.improvements import per_ticker_30day_max_loss_check
+    df = pd.DataFrame([
+        {"ticker": "BAD", "exit_date": date(2024, 6, 5), "pnl_pct": -4.0},
+        {"ticker": "BAD", "exit_date": date(2024, 6, 15), "pnl_pct": -7.0},
+        {"ticker": "OK", "exit_date": date(2024, 6, 10), "pnl_pct": 2.0},
+    ])
+    out = per_ticker_30day_max_loss_check(df, today=date(2024, 6, 30),
+                                          cap_pct=-10.0, cooldown_days=30)
+    assert out["BAD"] is True
+    assert out["OK"] is False
+
+
 def test_dec_076_engine_wires_factor_concentration_breach():
     """DEC-076 Batch 74: source-level grep + Portfolio helper consumed at
     entry gate. Candidate sector that's already > 30% portfolio weight
