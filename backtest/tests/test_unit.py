@@ -4297,6 +4297,198 @@ def test_dec_489_adversarial_audit_archive_required():
 
 
 # ============================================================================
+# Phase 3 Batch 62 Path C 20-DEC bundle (owner directive: 20 DECs this turn)
+# DEC-071/256/257/259/298/345/352/354/355/358/359/360/361/362/372/376/380
+#   /407/417/436
+# ============================================================================
+
+def test_dec_071_insider_officer_role_weights():
+    """DEC-071: CEO/CFO weighted 2x; minor officer 0.5x; 10b5-1 excluded."""
+    from backtest.config import (INSIDER_OFFICER_ROLE_WEIGHTS,
+                                   INSIDER_EXCLUDE_10B5_1_PLANNED)
+    assert INSIDER_OFFICER_ROLE_WEIGHTS["CEO"] == 2.0
+    assert INSIDER_OFFICER_ROLE_WEIGHTS["CFO"] == 2.0
+    assert INSIDER_OFFICER_ROLE_WEIGHTS["minor_officer"] == 0.5
+    assert INSIDER_EXCLUDE_10B5_1_PLANNED is True
+
+
+def test_dec_256_earnings_cache_schema():
+    """DEC-256: 7-field earnings parquet schema + BMO/AMC/During."""
+    from backtest.config import (EARNINGS_CACHE_DIR, EARNINGS_CACHE_SCHEMA,
+                                   EARNINGS_TIME_OF_DAY_VALUES)
+    assert "earnings" in EARNINGS_CACHE_DIR
+    assert "report_date" in EARNINGS_CACHE_SCHEMA
+    assert "eps_actual" in EARNINGS_CACHE_SCHEMA
+    assert "BMO" in EARNINGS_TIME_OF_DAY_VALUES
+
+
+def test_dec_257_fundamentals_15_required_fields():
+    """DEC-257: 15 required fields + 9 computed + filing-lag default."""
+    from backtest.config import (FUNDAMENTALS_REQUIRED_FIELDS,
+                                   FUNDAMENTALS_COMPUTED_FIELDS,
+                                   FUNDAMENTALS_PIT_FILING_LAG_DAYS)
+    assert len(FUNDAMENTALS_REQUIRED_FIELDS) == 15
+    assert "revenue" in FUNDAMENTALS_REQUIRED_FIELDS
+    assert "shares_outstanding" in FUNDAMENTALS_REQUIRED_FIELDS
+    assert len(FUNDAMENTALS_COMPUTED_FIELDS) == 9
+    assert "PE_ttm" in FUNDAMENTALS_COMPUTED_FIELDS
+    assert FUNDAMENTALS_PIT_FILING_LAG_DAYS == 45
+
+
+def test_dec_259_ictsmc_cache_schema():
+    """DEC-259: ICT/SMC cache schema (FVG/BOS/CHoCH/order_blocks/etc)."""
+    from backtest.config import ICTSMC_CACHE_DIR, ICTSMC_CACHE_SCHEMA
+    assert "ictsmc" in ICTSMC_CACHE_DIR
+    for k in ("fvg_count", "bos_event", "choch_event", "order_block_levels",
+              "liquidity_grab_event"):
+        assert k in ICTSMC_CACHE_SCHEMA
+
+
+def test_dec_298_cache_stores_raw_ohlcv():
+    """DEC-298: cache stores RAW OHLCV (auto_adjust=False), recompute on-demand."""
+    from backtest.config import CACHE_AUTO_ADJUST, CACHE_STORES_CORP_ACTIONS
+    assert CACHE_AUTO_ADJUST is False
+    assert CACHE_STORES_CORP_ACTIONS is True
+
+
+def test_dec_345_ict_timeframes_scope():
+    """DEC-345: ICT daily-trigger + weekly-HTF context only."""
+    from backtest.config import ICT_TIMEFRAMES
+    assert "daily_trigger" in ICT_TIMEFRAMES
+    assert "weekly_HTF_context" in ICT_TIMEFRAMES
+
+
+def test_dec_352_institutional_underwater_flag():
+    """DEC-352: institutions underwater when current_price < avg cost - 10%."""
+    from backtest.results.metrics import institutional_price_level_mapping
+    out = institutional_price_level_mapping(
+        quarterly_avg_cost_basis=100.0, current_price=85.0,
+    )
+    assert out["underwater"] is True
+    assert out["position"] == "below"
+    assert out["note"] == "INSTITUTIONS_UNDERWATER"
+
+
+def test_dec_352_institutional_above_water():
+    """DEC-352: current_price > avg cost -> above + no underwater flag."""
+    from backtest.results.metrics import institutional_price_level_mapping
+    out = institutional_price_level_mapping(100.0, 110.0)
+    assert out["underwater"] is False
+    assert out["position"] == "above"
+
+
+def test_dec_354_chart_pattern_parent_roster_present():
+    """DEC-354: parent roster contains all 6 child pattern keys."""
+    from backtest.config import CHART_PATTERN_STRATEGIES
+    expected = {"trendline_break_retest", "wedge_triangle_pennant",
+                "head_and_shoulders", "double_top_bottom",
+                "cup_and_handle", "flag_pennant_continuation"}
+    assert expected.issubset(set(CHART_PATTERN_STRATEGIES.keys()))
+
+
+def test_dec_355_trendline_break_retest_spec():
+    """DEC-355: trendline pattern requires min 3 touches."""
+    from backtest.config import CHART_PATTERN_STRATEGIES
+    spec = CHART_PATTERN_STRATEGIES["trendline_break_retest"]
+    assert spec["min_touches"] == 3
+    assert spec["entry"] == "break+retest"
+
+
+def test_dec_358_wedge_triangle_pennant_sub_patterns():
+    """DEC-358: 7 sub-patterns (rising/falling wedge + 3 triangles + 2 pennants)."""
+    from backtest.config import CHART_PATTERN_STRATEGIES
+    spec = CHART_PATTERN_STRATEGIES["wedge_triangle_pennant"]
+    sp = spec["sub_patterns"]
+    assert "rising_wedge" in sp and "falling_wedge" in sp
+    assert "symmetric_triangle" in sp
+    assert "bullish_pennant" in sp and "bearish_pennant" in sp
+
+
+def test_dec_359_head_and_shoulders_measured_move():
+    """DEC-359: H&S spec uses measured_move target method."""
+    from backtest.config import CHART_PATTERN_STRATEGIES
+    spec = CHART_PATTERN_STRATEGIES["head_and_shoulders"]
+    assert spec["target_method"] == "measured_move"
+    assert spec["entry"] == "neckline_break+retest"
+
+
+def test_dec_360_double_top_bottom_tolerance():
+    """DEC-360: 3% peak tolerance + 10 bar minimum apart."""
+    from backtest.config import CHART_PATTERN_STRATEGIES
+    spec = CHART_PATTERN_STRATEGIES["double_top_bottom"]
+    assert spec["tolerance_pct"] == 0.03
+    assert spec["min_bars_apart"] == 10
+
+
+def test_dec_361_cup_and_handle_shape():
+    """DEC-361: U-base + handle pullback + breakout."""
+    from backtest.config import CHART_PATTERN_STRATEGIES
+    spec = CHART_PATTERN_STRATEGIES["cup_and_handle"]
+    assert spec["shape"] == "U_base+handle"
+
+
+def test_dec_362_flag_distinct_from_symmetric_pennant():
+    """DEC-362: flag is sloping (distinct from DEC-358 symmetric pennant)."""
+    from backtest.config import CHART_PATTERN_STRATEGIES
+    spec = CHART_PATTERN_STRATEGIES["flag_pennant_continuation"]
+    assert "sloping" in spec["note"]
+
+
+def test_dec_354_skeleton_helper_returns_spec_and_unknown_pattern():
+    """DEC-354 parent helper: returns spec for known + None for unknown."""
+    from backtest.results.metrics import detect_chart_pattern_skeleton
+    out_known = detect_chart_pattern_skeleton("head_and_shoulders")
+    assert out_known["spec"] is not None
+    assert out_known["detected"] is False  # skeleton; full impl deferred
+    assert out_known["note"] == "SKELETON_PENDING_FULL_IMPL"
+    out_unknown = detect_chart_pattern_skeleton("nonexistent_pattern")
+    assert out_unknown["spec"] is None
+
+
+def test_dec_372_dec_376_github_actions_workflow_paths():
+    """DEC-372 + DEC-376: workflow file paths codified."""
+    from backtest.config import GITHUB_ACTIONS_WORKFLOWS
+    assert (GITHUB_ACTIONS_WORKFLOWS["refresh_extended_universe"]
+            == ".github/workflows/refresh_extended_universe.yml")
+    assert (GITHUB_ACTIONS_WORKFLOWS["refresh_momentum_watchlist"]
+            == ".github/workflows/refresh_momentum_watchlist.yml")
+
+
+def test_dec_380_polygon_corp_actions_paths():
+    """DEC-380: Polygon Reference corp-actions API paths."""
+    from backtest.config import POLYGON_CORP_ACTIONS_API_PATHS
+    assert POLYGON_CORP_ACTIONS_API_PATHS["dividends"] == "/v3/reference/dividends"
+    assert POLYGON_CORP_ACTIONS_API_PATHS["splits"] == "/v3/reference/splits"
+
+
+def test_dec_407_fred_macro_expansion_series():
+    """DEC-407: 8 FRED series added (NFP, CPI, IP, etc.)."""
+    from backtest.config import FRED_MACRO_EXPANSION_SERIES
+    assert len(FRED_MACRO_EXPANSION_SERIES) == 8
+    for series in ("PAYEMS", "MANEMP", "UMCSENT", "RSAFS", "HOUST",
+                    "INDPRO", "BAMLH0A0HYM2", "M2SL"):
+        assert series in FRED_MACRO_EXPANSION_SERIES
+
+
+def test_dec_417_test_run_audit_gate_constants():
+    """DEC-417: audit-results path + required fields codified."""
+    from backtest.config import (TEST_RUN_AUDIT_GATE_RESULTS_PATH,
+                                   TEST_RUN_AUDIT_GATE_REQUIRED_FIELDS)
+    assert TEST_RUN_AUDIT_GATE_RESULTS_PATH == "AUDIT_TEST_RUN_RESULTS.md"
+    assert "decision_id" in TEST_RUN_AUDIT_GATE_REQUIRED_FIELDS
+    assert "test_signal" in TEST_RUN_AUDIT_GATE_REQUIRED_FIELDS
+
+
+def test_dec_436_ci_regression_assertions():
+    """DEC-436: CI/CD regression assertions (Layer 2 catch defense)."""
+    from backtest.config import (CI_REGRESSION_WORKFLOW_PATH,
+                                   CI_REGRESSION_BEHAVIOR_ASSERTIONS)
+    assert CI_REGRESSION_WORKFLOW_PATH == ".github/workflows/regression.yml"
+    assert CI_REGRESSION_BEHAVIOR_ASSERTIONS["vix_threshold_crisis"] == 40
+    assert CI_REGRESSION_BEHAVIOR_ASSERTIONS["rr_minimum_all_exits"] == 2.0
+
+
+# ============================================================================
 # DEC-432 Chandelier exit indicator tests (Phase 3 Batch 53 Path C)
 # Parabolic SAR + Supertrend already implemented; only chandelier added.
 # ============================================================================

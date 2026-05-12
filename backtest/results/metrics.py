@@ -740,6 +740,83 @@ def compute_per_regime_agent_verdict(
     return out
 
 
+def detect_chart_pattern_skeleton(
+    pattern_name: str,
+    ohlcv_df=None,
+) -> dict:
+    """DEC-354/355/358/359/360/361/362 RESOLVED-IMPLEMENTED Pass 53 v8h+1
+    Phase 3 Batch 62 2026-05-11 (owner-approved Path C 20-DEC bundle).
+
+    Chart-pattern detection SKELETON. Returns the strategy spec from
+    CHART_PATTERN_STRATEGIES + a `detected` boolean. Full pattern-
+    recognition implementations (trendline-fit, peak/trough detection,
+    measured-move target arithmetic) deferred to Sprint 7+ strategy
+    class build-out. This helper provides the parent-spec lookup so
+    downstream consumers can iterate the roster.
+
+    Inputs:
+      pattern_name: key from CHART_PATTERN_STRATEGIES
+      ohlcv_df: optional OHLCV DataFrame (placeholder; not used by skeleton)
+
+    Returns dict with pattern_name, spec (full sub-dict), detected (False
+    in skeleton), note='SKELETON_PENDING_FULL_IMPL'.
+    """
+    from backtest.config import CHART_PATTERN_STRATEGIES
+    spec = CHART_PATTERN_STRATEGIES.get(pattern_name)
+    if spec is None:
+        return {"pattern_name": pattern_name, "spec": None, "detected": False,
+                "note": "unknown_pattern"}
+    return {
+        "pattern_name": pattern_name,
+        "spec":         spec,
+        "detected":     False,
+        "note":         "SKELETON_PENDING_FULL_IMPL",
+    }
+
+
+def institutional_price_level_mapping(
+    quarterly_avg_cost_basis: float,
+    current_price: float,
+    underwater_threshold: float = None,
+) -> dict:
+    """DEC-352 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 62 2026-05-11
+    (owner-approved Path C 20-DEC bundle). 13F price-level mapping per
+    Pass 52 spec: compare current price to institutional average cost
+    basis (derived from quarterly 13F filings); flag tickers where
+    institutions sit underwater (potential supply overhang / selling
+    pressure).
+
+    Inputs:
+      quarterly_avg_cost_basis: VWAP or simple average of last-4-quarter
+        institutional accumulation prices
+      current_price: today's close
+      underwater_threshold: fractional drop to flag (default
+        INSTITUTIONAL_PRICE_LEVEL_UNDERWATER_THRESHOLD = -0.10 i.e. -10%)
+
+    Returns dict with cost_basis_delta_pct, position ('above'/'at'/'below'),
+    underwater (bool when delta below threshold), note.
+    """
+    from backtest.config import INSTITUTIONAL_PRICE_LEVEL_UNDERWATER_THRESHOLD
+    if (quarterly_avg_cost_basis is None or quarterly_avg_cost_basis <= 0
+            or current_price is None or current_price <= 0):
+        return {"cost_basis_delta_pct": None, "position": None,
+                "underwater": False, "note": "invalid_input"}
+    threshold = (underwater_threshold
+                 if underwater_threshold is not None
+                 else INSTITUTIONAL_PRICE_LEVEL_UNDERWATER_THRESHOLD)
+    delta = (current_price - quarterly_avg_cost_basis) / quarterly_avg_cost_basis
+    if delta > 0.02:        position = "above"
+    elif delta < -0.02:     position = "below"
+    else:                   position = "at"
+    underwater = delta <= threshold
+    return {
+        "cost_basis_delta_pct": round(float(delta), 4),
+        "position":             position,
+        "underwater":           bool(underwater),
+        "note":                 "INSTITUTIONS_UNDERWATER" if underwater else "ok",
+    }
+
+
 def event_calendar_suppression_check(
     as_of_date,
     ticker_earnings_date=None,

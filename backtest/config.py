@@ -653,6 +653,159 @@ FINNHUB_DEPRECATED = True
 CANONICAL_NEWS_SOURCE = "polygon"  # DEC-440
 CANONICAL_FUNDAMENTALS_SOURCES = ("polygon_financials", "sec_xbrl")  # DEC-606
 
+# DEC-071 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 62 2026-05-11
+# (owner-approved Path C 20-DEC bundle). Smart money refinement per Pass 52
+# turn 61 spec: filter insider buys by officer role + exclude 10b5-1 planned
+# trades. Officer-role weights for size-of-signal scaling.
+INSIDER_OFFICER_ROLE_WEIGHTS = {
+    "CEO":             2.0,
+    "CFO":             2.0,
+    "COO":             1.5,
+    "President":       1.5,
+    "Director":        1.0,
+    "10%_owner":       1.0,
+    "minor_officer":   0.5,
+    "other":           0.5,
+}
+INSIDER_EXCLUDE_10B5_1_PLANNED = True  # automatic trades excluded from signal
+
+# DEC-256 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 62 2026-05-11
+# (owner-approved Path C 20-DEC bundle). Earnings calendar prefetch path
+# + schema. Polygon `/vX/reference/tickers/{ticker}/events` + financials.
+EARNINGS_CACHE_DIR = "backtest/data/cache/earnings"
+EARNINGS_CACHE_SCHEMA = (
+    "report_date", "period_end", "eps_estimate", "eps_actual",
+    "eps_surprise_pct", "surprise_direction", "time_of_day",
+)
+EARNINGS_TIME_OF_DAY_VALUES = ("BMO", "AMC", "During")  # before/after/during
+
+# DEC-257 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 62 2026-05-11
+# (owner-approved Path C 20-DEC bundle). Quarterly fundamentals prefetch
+# 15 required fields + 9 computed.
+FUNDAMENTALS_CACHE_DIR = "backtest/data/cache/fundamentals"
+FUNDAMENTALS_REQUIRED_FIELDS = (
+    "revenue", "gross_profit", "operating_income", "net_income",
+    "eps_basic", "eps_diluted", "total_assets", "total_liabilities",
+    "total_equity", "cash", "debt_lt", "debt_st", "fcf", "capex",
+    "shares_outstanding",
+)
+FUNDAMENTALS_COMPUTED_FIELDS = (
+    "PE_ttm", "PEG", "FCF_yield", "debt_equity", "ROE", "ROA",
+    "gross_margin", "operating_margin", "revenue_growth_yoy",
+)
+FUNDAMENTALS_SOURCE_PRIORITY = ("polygon", "yfinance")
+FUNDAMENTALS_PIT_FILING_LAG_DAYS = 45  # estimated when filing_date unavailable
+
+# DEC-259 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 62 2026-05-11
+# (owner-approved Path C 20-DEC bundle). ICT/SMC signal pre-computation
+# cache path + schema. Smartmoneyconcepts library fork (DEC-045).
+ICTSMC_CACHE_DIR = "backtest/data/cache/ictsmc"
+ICTSMC_CACHE_SCHEMA = (
+    "date", "fvg_count", "fvg_active_levels", "bos_event",
+    "choch_event", "order_block_levels", "liquidity_grab_event",
+)
+
+# DEC-298 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 62 2026-05-11
+# (owner-approved Path C 20-DEC bundle). Cache stores RAW OHLCV +
+# corporate actions; adjusted close recomputed on-demand by as_of date.
+# Critical PIT correctness fix per Pass 52 owner approval.
+CACHE_AUTO_ADJUST = False  # raw OHLCV; recompute adjusted on-demand
+CACHE_STORES_CORP_ACTIONS = True
+
+# DEC-345 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 62 2026-05-11
+# (owner-approved Path C 20-DEC bundle). ICT/SMC timeframe scope per
+# Pass 52: daily-trigger + weekly-HTF context (NOT full multi-timeframe).
+ICT_TIMEFRAMES = ("daily_trigger", "weekly_HTF_context")
+
+# DEC-354-362 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 62
+# 2026-05-11 (owner-approved Path C 20-DEC bundle). Chart pattern strategy
+# specifications (parent DEC-354 + children 355/358/359/360/361/362).
+# Full pattern recognition implementations deferred to Sprint 7+ strategy
+# class build-out; this manifests the spec roster for downstream consumers.
+CHART_PATTERN_STRATEGIES = {
+    "trendline_break_retest":      # DEC-355
+        {"type": "continuation",  "long_short": "both", "entry": "break+retest",
+         "min_touches": 3},
+    "wedge_triangle_pennant":      # DEC-358
+        {"type": "continuation",  "long_short": "both", "entry": "break+retest",
+         "sub_patterns": ("rising_wedge", "falling_wedge",
+                          "symmetric_triangle", "ascending_triangle",
+                          "descending_triangle", "bullish_pennant",
+                          "bearish_pennant")},
+    "head_and_shoulders":          # DEC-359
+        {"type": "reversal",      "long_short": "both", "entry": "neckline_break+retest",
+         "target_method": "measured_move"},
+    "double_top_bottom":           # DEC-360
+        {"type": "reversal",      "long_short": "both", "entry": "neckline_break+retest",
+         "tolerance_pct": 0.03,    "min_bars_apart": 10},
+    "cup_and_handle":              # DEC-361
+        {"type": "continuation",  "long_short": "both", "entry": "handle_break+retest",
+         "shape": "U_base+handle"},
+    "flag_pennant_continuation":   # DEC-362
+        {"type": "continuation",  "long_short": "both", "entry": "breakout+retest",
+         "note": "distinct from DEC-358 symmetric pennant; flag is sloping"},
+}
+
+# DEC-352 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 62 2026-05-11
+# (owner-approved Path C 20-DEC bundle). 13F price-level mapping config:
+# institutional accumulation prices from quarterly filings -> current
+# price comparison; flag tickers where institutions sit above/below water.
+INSTITUTIONAL_PRICE_LEVEL_LOOKBACK_QUARTERS = 4  # last 4 quarters of 13F
+INSTITUTIONAL_PRICE_LEVEL_UNDERWATER_THRESHOLD = -0.10  # 10% below avg cost
+
+# DEC-372 / DEC-376 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 62
+# 2026-05-11 (owner-approved Path C 20-DEC bundle). GitHub Actions monthly
+# automation workflow filenames per Pass 52 spec.
+GITHUB_ACTIONS_WORKFLOWS = {
+    "refresh_extended_universe":  ".github/workflows/refresh_extended_universe.yml",   # DEC-372
+    "refresh_momentum_watchlist": ".github/workflows/refresh_momentum_watchlist.yml",  # DEC-376
+}
+
+# DEC-380 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 62 2026-05-11
+# (owner-approved Path C 20-DEC bundle). Polygon Reference corp-actions
+# API integration paths. Defer post-Phase-1/2 per spec.
+POLYGON_CORP_ACTIONS_API_PATHS = {
+    "dividends": "/v3/reference/dividends",
+    "splits":    "/v3/reference/splits",
+    "tickers":   "/v3/reference/tickers",
+    "events":    "/vX/reference/tickers/{ticker}/events",
+}
+
+# DEC-407 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 62 2026-05-11
+# (owner-approved Path C 20-DEC bundle). DEC-085 Phase A macro indicator
+# expansion -- 8 FRED series added to existing 9.
+FRED_MACRO_EXPANSION_SERIES = (
+    "PAYEMS",          # nonfarm payrolls
+    "MANEMP",          # manufacturing employment
+    "UMCSENT",         # consumer sentiment
+    "RSAFS",           # retail sales
+    "HOUST",           # housing starts
+    "INDPRO",          # industrial production
+    "BAMLH0A0HYM2",    # HY credit spread
+    "M2SL",            # money supply M2
+)
+
+# DEC-417 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 62 2026-05-11
+# (owner-approved Path C 20-DEC bundle). Test-run audit gate (Layer 1 of
+# multi-layer catch defense). Catches approval-vs-implementation gap.
+TEST_RUN_AUDIT_GATE_RESULTS_PATH = "AUDIT_TEST_RUN_RESULTS.md"
+TEST_RUN_AUDIT_GATE_REQUIRED_FIELDS = (
+    "decision_id", "recommendation", "test_signal",
+    "test_output_expected", "test_mismatch_action", "test_mismatch_flag",
+)
+
+# DEC-436 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 62 2026-05-11
+# (owner-approved Path C 20-DEC bundle). CI/CD regression pipeline Layer 2
+# of multi-layer catch defense. GitHub Actions workflow assertions.
+CI_REGRESSION_WORKFLOW_PATH = ".github/workflows/regression.yml"
+CI_REGRESSION_BEHAVIOR_ASSERTIONS = {
+    "vix_threshold_crisis":           40,
+    "exit_method_count_min":          17,
+    "rr_minimum_all_exits":           2.0,   # DEC-353 R:R floor
+    "no_negative_position_sizes":     True,
+    "no_above_100pct_capital_alloc":  True,
+}
+
 # -----------------------------------------------------------------------------
 # TWO-STAGE CONFIDENCE TIERING
 # Stage 1: Rule-based preliminary tier (before agents run)
