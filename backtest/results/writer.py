@@ -370,6 +370,22 @@ def write_all_outputs(
     if "confidence_tier" in df_trades:
         from backtest.results.metrics import compute_confidence_tier_metrics
         tier_metrics = compute_confidence_tier_metrics(df_trades)
+        # DEC-021 RESOLVED-IMPLEMENTED Batch 86 2026-05-12 owner-mandated
+        # wiring: surface 3-tier simplified consolidation alongside the
+        # existing 5-tier confidence_tier in the reporting layer. Owner-
+        # facing reports prefer HIGH/MEDIUM/LOW; per-strategy verdict
+        # tagging downstream consumes this column. Engine still consumes
+        # the 5-tier TIER_POSITION_SIZE_PCT for position sizing (DEC-021
+        # explicitly says STACK semantics, not REPLACE) so per-tier
+        # behaviour is unchanged.
+        try:
+            from backtest.config import TIER_5_TO_TIER_3
+            if "tier" in tier_metrics.columns and not tier_metrics.empty:
+                tier_metrics["tier_3_consolidated"] = (
+                    tier_metrics["tier"].map(TIER_5_TO_TIER_3)
+                )
+        except Exception as _exc:
+            logger.debug("DEC-021 tier-3 consolidation skipped: %s", _exc)
         tier_metrics.to_csv(output_dir / "agent_performance.csv", index=False)
 
         # Preliminary vs agent-adjusted tier comparison

@@ -668,6 +668,37 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_dec_021_writer_wires_tier_3_consolidation():
+    """DEC-021 Batch 86: writer adds `tier_3_consolidated` column to
+    agent_performance.csv output by mapping 5-tier `tier` through
+    TIER_5_TO_TIER_3. STACK semantics: 5-tier still consumed by engine
+    for position sizing; 3-tier is for owner-facing reporting only.
+    """
+    from pathlib import Path
+    src = Path("backtest/results/writer.py").read_text(encoding="utf-8")
+    assert "DEC-021 RESOLVED-IMPLEMENTED Batch 86" in src
+    assert "TIER_5_TO_TIER_3" in src
+    assert "tier_3_consolidated" in src
+
+
+def test_dec_021_tier_consolidation_maps_correctly():
+    """DEC-021 behavior: a synthetic tier_metrics DataFrame mapped through
+    TIER_5_TO_TIER_3 produces the expected HIGH/MEDIUM/LOW labels per the
+    config spec (EXCEPTIONAL+VERY_HIGH->HIGH; HIGH+MEDIUM_HIGH->MEDIUM;
+    MEDIUM+LOW+AVOID->LOW).
+    """
+    import pandas as pd
+    from backtest.config import TIER_5_TO_TIER_3
+    tier_metrics = pd.DataFrame({
+        "tier": ["EXCEPTIONAL", "VERY_HIGH", "HIGH", "MEDIUM_HIGH",
+                 "MEDIUM", "LOW", "AVOID"],
+    })
+    tier_metrics["tier_3_consolidated"] = tier_metrics["tier"].map(TIER_5_TO_TIER_3)
+    assert tier_metrics["tier_3_consolidated"].tolist() == [
+        "HIGH", "HIGH", "MEDIUM", "MEDIUM", "LOW", "LOW", "LOW",
+    ]
+
+
 def test_dec_314_engine_wires_market_wide_cb_nyse_rule_80b():
     """DEC-314 Batch 85: market-wide circuit breaker NYSE Rule 80B Levels
     3/4/5 (intraday -7%/-13%/-20% from open) wired in _process_day. Daily
