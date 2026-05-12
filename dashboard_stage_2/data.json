@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-12T23:49:13.604983+00:00",
+  "generated_at": "2026-05-12T23:52:42.460803+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -26598,22 +26598,28 @@
   ],
   "recent_commits": [
     {
+      "sha": "afcaad93",
+      "subject": "Batch 110: BUG-33 tiered Sharpe passing criterion in PASSING_CRITERIA",
+      "author": "jeetmehta1991",
+      "rel_time": "3 minutes ago"
+    },
+    {
       "sha": "858ac20d",
       "subject": "Batch 109: BUG-34 per-strategy regime_blocklist config + engine gate",
       "author": "jeetmehta1991",
-      "rel_time": "4 minutes ago"
+      "rel_time": "8 minutes ago"
     },
     {
       "sha": "158663d0",
       "subject": "Batch 108: BUG-96 SPY buy-and-hold benchmark in compute_portfolio_summary",
       "author": "jeetmehta1991",
-      "rel_time": "8 minutes ago"
+      "rel_time": "12 minutes ago"
     },
     {
       "sha": "20391302",
       "subject": "Batch 107: BUG-205 IBKR fixed-tier cost cap wired into apply_transaction_costs",
       "author": "jeetmehta1991",
-      "rel_time": "12 minutes ago"
+      "rel_time": "16 minutes ago"
     },
     {
       "sha": "38c5a7e8",
@@ -26649,7 +26655,7 @@
       "sha": "3ea5ca81",
       "subject": "Batch 101: BUG-236 AAII auto-refresh workflow added",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "e7adc4ec",
@@ -26697,7 +26703,7 @@
       "sha": "ce28a712",
       "subject": "Batch 93: BUG-104 false-positive correction - compute_portfolio_summary wires tier sizing",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "5fca3ab1",
@@ -26757,7 +26763,7 @@
       "sha": "da3f0ba0",
       "subject": "Batch 83: DEC-179 GENUINELY WIRED \u00e2\u20ac\u201d memory profiling in engine.run()",
       "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
+      "rel_time": "7 hours ago"
     },
     {
       "sha": "d0806a2c",
@@ -26768,12 +26774,6 @@
     {
       "sha": "391e7029",
       "subject": "Batch 81: DEC-155 GENUINELY WIRED (per-strategy vs-SPY alpha/beta/IR/TE added to metrics output; 13-tier 660/6/0)",
-      "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
-    },
-    {
-      "sha": "a5838ae1",
-      "subject": "Batch 80: DEC-106 GENUINELY WIRED (multi-input regime score Phase A; VIX+SPY+AAII+CNN F&G surfaced in regime_ctx; 13-tier 659/6/0)",
       "author": "jeetmehta1991",
       "rel_time": "7 hours ago"
     }
@@ -26977,7 +26977,7 @@
     }
   ],
   "test_inventory": {
-    "total": 1200,
+    "total": 1202,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -27013,7 +27013,7 @@
       "test_fred_alfred_smoke": 5,
       "test_gate_pre_phase_1a_entry": 8,
       "test_gates": 6,
-      "test_integration": 87,
+      "test_integration": 89,
       "test_inv041_path_restricted_commits": 5,
       "test_l146_wave_a_g2_g3_g9": 6,
       "test_l146_wave_b_g7_sec_edgar": 6,

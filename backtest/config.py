@@ -247,6 +247,15 @@ PASSING_CRITERIA = {
     # achievable, not punitive.
     "min_sharpe_overall":      1.0,    # BUG-33: overall PASS requires Sharpe >= 1.0
     "min_sharpe_per_regime":   0.7,    # BUG-33: per-regime PASS requires Sharpe >= 0.7
+    # BUG-32 RESOLVED-IMPLEMENTED Batch 111 2026-05-12 (owner-approved
+    # option C 2026-05-12): tiered profit-factor. `min_profit_factor`
+    # above stays the per-regime PASS threshold (1.2 baseline, 1.3 for
+    # high-vol sectors per SECTOR_PASSING_CRITERIA). Overall PASS
+    # tightens to 1.5 literature canonical so strategies must demonstrate
+    # consistent compounding edge across regimes, not just one good
+    # regime. Per-regime threshold MUST be <= overall (smaller samples =
+    # lower bar; same invariant as BUG-33 Sharpe).
+    "min_profit_factor_overall": 1.5,   # BUG-32: overall PASS PF >= 1.5
     # Audit flag: anything above these thresholds gets look-ahead bias audit
     # DEC-084 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 39 2026-05-11
     # (owner-approved Path C): lowered audit_win_rate_above 0.75 -> 0.65 per

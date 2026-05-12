@@ -668,6 +668,25 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_bug_32_passing_criteria_emits_tiered_profit_factor_overall():
+    """BUG-32 Batch 111: tiered profit-factor threshold. Owner-approved
+    option C 2026-05-12: 1.2 per-regime (kept; high-vol 1.3) / 1.5 overall.
+    """
+    from backtest.config import PASSING_CRITERIA
+    assert "min_profit_factor_overall" in PASSING_CRITERIA
+    assert PASSING_CRITERIA["min_profit_factor_overall"] == 1.5
+    # Per-regime (unchanged) MUST be <= overall (smaller samples = lower bar)
+    assert PASSING_CRITERIA["min_profit_factor"] <= PASSING_CRITERIA["min_profit_factor_overall"]
+
+
+def test_bug_32_config_documents_bug_origin():
+    """BUG-32 sister: config block carries the BUG-32 RESOLVED comment."""
+    from pathlib import Path
+    src = Path("backtest/config.py").read_text(encoding="utf-8")
+    assert "BUG-32 RESOLVED-IMPLEMENTED Batch 111" in src
+    assert "min_profit_factor_overall" in src
+
+
 def test_bug_33_passing_criteria_emits_tiered_sharpe_thresholds():
     """BUG-33 Batch 110: tiered Sharpe ratio passing criterion. Owner-
     approved option C 2026-05-12: 0.7 per-regime / 1.0 overall.
