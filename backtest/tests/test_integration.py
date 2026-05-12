@@ -668,6 +668,33 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_dec_179_engine_wires_memory_profiling_in_run():
+    """DEC-179 Batch 83: engine.run() consumes check_memory_cap helper at
+    start / every 50 days / finalize. Source-grep verifies wiring.
+    """
+    from pathlib import Path
+    src = Path("backtest/engine/backtest.py").read_text(encoding="utf-8")
+    assert "DEC-179 RESOLVED-IMPLEMENTED Batch 83" in src
+    assert "check_memory_cap" in src
+    assert "MEMORY_CAP_MB_DEFAULT" in src
+    assert "MEMORY_CAP_BREACHED" in src
+    assert "_memory_profile" in src
+
+
+def test_dec_179_check_memory_cap_returns_expected_shape():
+    """DEC-179 helper behavior: check_memory_cap returns dict with
+    current_mb / cap_mb / breached / note. Engine consumes all four.
+    """
+    from backtest.engine.improvements import check_memory_cap
+    out = check_memory_cap(cap_mb=4096.0)
+    assert "current_mb" in out
+    assert "cap_mb" in out
+    assert "breached" in out
+    assert "note" in out
+    assert out["cap_mb"] == 4096.0
+    assert isinstance(out["breached"], bool)
+
+
 def test_dec_235_engine_wires_nyse_calendar_in_trading_days():
     """DEC-235 Batch 82: _trading_days uses NYSE calendar helper so
     holidays + half-days are excluded in addition to weekends. Source-

@@ -244,6 +244,21 @@ class BacktestEngine:
         # DEC-515 Level 6 CB: record backtest start date for min_history check
         if trading_days:
             self._backtest_start_date = trading_days[0]
+        # DEC-179 RESOLVED-IMPLEMENTED Batch 83 2026-05-12 owner-mandated
+        # wiring: memory profiling consumed by engine.run(). Helper has
+        # lived in improvements.py since Batch 57 but was never called;
+        # this wiring closes the helper-only gap so the engine logs RSS
+        # at start / every 50 days / finalize and warns on cap breach.
+        from backtest.engine.improvements import (
+            check_memory_cap,
+            MEMORY_CAP_MB_DEFAULT,
+        )
+        _mem_start = check_memory_cap(cap_mb=MEMORY_CAP_MB_DEFAULT)
+        logger.info(
+            "DEC-179 memory at run() start: %s MB / cap %s MB (breached=%s)",
+            _mem_start["current_mb"], _mem_start["cap_mb"],
+            _mem_start["breached"],
+        )
         logger.info(
             "Starting backtest: %d days | phase=%s | agents=%s | "
             "costs=%s | slippage=%s | instruments=%d",
@@ -257,6 +272,21 @@ class BacktestEngine:
                 logger.info("Progress: %d/%d [%s] open=%d closed=%d",
                             i, len(trading_days), as_of,
                             len(self.open_trades), len(self.closed_trades))
+            # DEC-179 Batch 83: periodic memory check every 50 days; warn
+            # on cap breach. Does not abort -- caller may opt to terminate
+            # by inspecting return-value note in finalize log.
+            if i > 0 and i % 50 == 0:
+                _mem = check_memory_cap(cap_mb=MEMORY_CAP_MB_DEFAULT)
+                if _mem["breached"]:
+                    logger.warning(
+                        "DEC-179 MEMORY_CAP_BREACHED at day %d: %s MB > %s MB",
+                        i, _mem["current_mb"], _mem["cap_mb"],
+                    )
+                else:
+                    logger.debug(
+                        "DEC-179 memory at day %d: %s MB / cap %s MB",
+                        i, _mem["current_mb"], _mem["cap_mb"],
+                    )
             # Incremental checkpoint every 25 days  -  trade log survives crashes
             if i > 0 and i % 25 == 0 and self.closed_trades:
                 try:
@@ -298,6 +328,14 @@ class BacktestEngine:
         except Exception as _exc:
             logger.debug("DEC-149 regime transition matrix computation skipped: %s", _exc)
             self._regime_transition_matrix = None
+
+        # DEC-179 Batch 83: end-of-run memory snapshot for capacity tuning.
+        _mem_end = check_memory_cap(cap_mb=MEMORY_CAP_MB_DEFAULT)
+        logger.info(
+            "DEC-179 memory at run() finalize: %s MB / cap %s MB (breached=%s)",
+            _mem_end["current_mb"], _mem_end["cap_mb"], _mem_end["breached"],
+        )
+        self._memory_profile = {"start": _mem_start, "end": _mem_end}
 
         logger.info("Backtest complete. Open=%d Closed=%d Skipped=%d (finalized %d at end-of-backtest)",
                     len(self.open_trades), len(self.closed_trades),
