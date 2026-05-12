@@ -1122,6 +1122,18 @@ class BacktestEngine:
                         "sector_etf": sector_etf,
                         "sector_etf_return_pct": sector_etf_return,
                         "sector": sector,
+                        # BUG-237 RESOLVED-IMPLEMENTED Batch 102 2026-05-12:
+                        # tag CNN F&G interpolation staleness on each trade
+                        # via days_since_publish from get_fear_and_greed
+                        # (DEC-320/391 heuristic: run-length of identical
+                        # scores indicates interpolated bridge values vs
+                        # actual publication days). Downstream metrics +
+                        # agents can downweight trades entered against
+                        # heavily-interpolated F&G readings. 0 = fresh
+                        # publication; high N = staler interpolation.
+                        "cnn_fg_days_since_publish": int(
+                            sent.get("fear_greed", {}).get("days_since_publish", 0) or 0
+                        ),
                     },
                     context_bullets=strat_entry["context_bullets"],
                     context_paragraph=context_para,

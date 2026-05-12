@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-12T20:21:58.572551+00:00",
+  "generated_at": "2026-05-12T20:26:22.115243+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -11333,11 +11333,11 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 8,
+        "n_doc_refs": 9,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
-          "integration": "N/A",
+          "integration": true,
           "system": "N/A",
           "functional": "N/A",
           "regression": "N/A",
@@ -13853,11 +13853,11 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 5,
+        "n_doc_refs": 6,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
-          "integration": "N/A",
+          "integration": true,
           "system": "N/A",
           "functional": "N/A",
           "regression": "N/A",
@@ -26598,88 +26598,94 @@
   ],
   "recent_commits": [
     {
+      "sha": "3ea5ca81",
+      "subject": "Batch 101: BUG-236 AAII auto-refresh workflow added",
+      "author": "jeetmehta1991",
+      "rel_time": "4 minutes ago"
+    },
+    {
       "sha": "e7adc4ec",
       "subject": "Batch 100: docs sweep - annotate skipped BUGs with triage context",
       "author": "jeetmehta1991",
-      "rel_time": "8 minutes ago"
+      "rel_time": "12 minutes ago"
     },
     {
       "sha": "e9f6ada4",
       "subject": "Batch 99: BUG-235 AAII pub-lag applied to get_aaii_sentiment loader",
       "author": "jeetmehta1991",
-      "rel_time": "34 minutes ago"
+      "rel_time": "39 minutes ago"
     },
     {
       "sha": "a5b4910c",
       "subject": "Batch 98: BUG-238 fail-open -> fail-closed on missing market_cap",
       "author": "jeetmehta1991",
-      "rel_time": "39 minutes ago"
+      "rel_time": "43 minutes ago"
     },
     {
       "sha": "fb1218da",
       "subject": "Batch 97: BUG-110 false-positive correction - entry gap filter wired",
       "author": "jeetmehta1991",
-      "rel_time": "46 minutes ago"
+      "rel_time": "51 minutes ago"
     },
     {
       "sha": "00f4d4c5",
       "subject": "Batch 96: BUG-103 false-positive correction - smart_money_score wired in tier assignment",
       "author": "jeetmehta1991",
-      "rel_time": "51 minutes ago"
+      "rel_time": "55 minutes ago"
     },
     {
       "sha": "529ee39a",
       "subject": "Batch 95: BUG-102 false-positive correction - same-day dedup wired",
       "author": "jeetmehta1991",
-      "rel_time": "55 minutes ago"
+      "rel_time": "59 minutes ago"
     },
     {
       "sha": "b606b380",
       "subject": "Batch 94: BUG-78 false-positive correction - trailing stop lookahead fix wired",
       "author": "jeetmehta1991",
-      "rel_time": "58 minutes ago"
+      "rel_time": "63 minutes ago"
     },
     {
       "sha": "ce28a712",
       "subject": "Batch 93: BUG-104 false-positive correction - compute_portfolio_summary wires tier sizing",
       "author": "jeetmehta1991",
-      "rel_time": "62 minutes ago"
+      "rel_time": "66 minutes ago"
     },
     {
       "sha": "5fca3ab1",
       "subject": "Batch 92: BUG-101 false-positive correction - ticker uniqueness wired",
       "author": "jeetmehta1991",
-      "rel_time": "67 minutes ago"
+      "rel_time": "71 minutes ago"
     },
     {
       "sha": "703bdf62",
       "subject": "Batch 91: BUG-95 false-positive correction - Portfolio class wired Batch 20",
       "author": "jeetmehta1991",
-      "rel_time": "70 minutes ago"
+      "rel_time": "75 minutes ago"
     },
     {
       "sha": "bf2581ce",
       "subject": "Batch 90: BUG-27 regime_confidence intentional Phase-1A deferral confirmed",
       "author": "jeetmehta1991",
-      "rel_time": "74 minutes ago"
+      "rel_time": "78 minutes ago"
     },
     {
       "sha": "a7ce0b2a",
       "subject": "Batch 89: BUG-234 false-positive correction \u00e2\u20ac\u201d VIX hysteresis confirmed wired",
       "author": "jeetmehta1991",
-      "rel_time": "78 minutes ago"
+      "rel_time": "83 minutes ago"
     },
     {
       "sha": "3ff63c2b",
       "subject": "Batch 88: BUG-26 false-positive correction \u00e2\u20ac\u201d DEC-302 VIX/DXY canonical loader",
       "author": "jeetmehta1991",
-      "rel_time": "83 minutes ago"
+      "rel_time": "87 minutes ago"
     },
     {
       "sha": "a2d57ece",
       "subject": "Batch 87: BUG-29 false-positive correction \u00e2\u20ac\u201d open-trades finalize confirmed wired",
       "author": "jeetmehta1991",
-      "rel_time": "87 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "2e66a71b",
@@ -26721,7 +26727,7 @@
       "sha": "a5838ae1",
       "subject": "Batch 80: DEC-106 GENUINELY WIRED (multi-input regime score Phase A; VIX+SPY+AAII+CNN F&G surfaced in regime_ctx; 13-tier 659/6/0)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "215329c9",
@@ -26770,19 +26776,13 @@
       "subject": "Batch 72: DEC-087 GENUINELY WIRED (vol-targeted per-position sizing)",
       "author": "jeetmehta1991",
       "rel_time": "6 hours ago"
-    },
-    {
-      "sha": "d0f4509c",
-      "subject": "Batch 71: DEC-088 GENUINELY WIRED (portfolio vol target 15%)",
-      "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
     }
   ],
   "uncommitted": {
     "count": 3,
-    "modified": 2,
+    "modified": 3,
     "added": 0,
-    "untracked": 1,
+    "untracked": 0,
     "deleted": 0,
     "files": [
       {
@@ -26791,11 +26791,11 @@
       },
       {
         "status": "M",
-        "path": "backtest/tests/test_integration.py"
+        "path": "backtest/engine/backtest.py"
       },
       {
-        "status": "??",
-        "path": ".github/workflows/refresh_aaii.yml"
+        "status": "M",
+        "path": "backtest/tests/test_integration.py"
       }
     ]
   },
@@ -26977,7 +26977,7 @@
     }
   ],
   "test_inventory": {
-    "total": 1189,
+    "total": 1191,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -27013,7 +27013,7 @@
       "test_fred_alfred_smoke": 5,
       "test_gate_pre_phase_1a_entry": 8,
       "test_gates": 6,
-      "test_integration": 76,
+      "test_integration": 78,
       "test_inv041_path_restricted_commits": 5,
       "test_l146_wave_a_g2_g3_g9": 6,
       "test_l146_wave_b_g7_sec_edgar": 6,

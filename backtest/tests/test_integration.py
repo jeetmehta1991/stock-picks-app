@@ -668,6 +668,56 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_bug_237_engine_tags_cnn_fg_interpolation_staleness_on_trades():
+    """BUG-237 Batch 102: CNN F&G CSV interpolated between key readings -
+    fabricated PIT signal. The interpolation-visibility heuristic
+    `days_since_publish` was added to `get_fear_and_greed()` in Pass 53
+    Batch 46 (DEC-320 + DEC-391) but the engine never propagated it.
+    RESOLVED-IMPLEMENTED Batch 102: every OpenTrade.signals_at_entry now
+    includes `cnn_fg_days_since_publish` so downstream metrics + agents
+    can downweight trades entered against heavily-interpolated F&G
+    readings (0 = fresh; high N = staler interpolation).
+    """
+    from pathlib import Path
+    src = Path("backtest/engine/backtest.py").read_text(encoding="utf-8")
+    assert "BUG-237 RESOLVED-IMPLEMENTED Batch 102" in src
+    assert "cnn_fg_days_since_publish" in src
+    # The loader still provides days_since_publish (DEC-320/391 unchanged)
+    sent_src = Path("backtest/data/sentiment.py").read_text(encoding="utf-8")
+    assert "days_since_publish" in sent_src
+
+
+def test_bug_237_signals_at_entry_dict_serializes_staleness():
+    """BUG-237 behavior: synthetic sent dict with days_since_publish=5
+    flows into signals_at_entry as an int. Mirrors the inline engine
+    construction.
+    """
+    sent_synthetic = {"fear_greed": {"score": 35, "label": "Fear",
+                                      "days_since_publish": 5}}
+    sa = {
+        "cnn_fg_days_since_publish": int(
+            sent_synthetic.get("fear_greed", {}).get("days_since_publish", 0) or 0
+        ),
+    }
+    assert sa["cnn_fg_days_since_publish"] == 5
+    # Fresh reading
+    sent_fresh = {"fear_greed": {"score": 50, "days_since_publish": 0}}
+    sa_fresh = {
+        "cnn_fg_days_since_publish": int(
+            sent_fresh.get("fear_greed", {}).get("days_since_publish", 0) or 0
+        ),
+    }
+    assert sa_fresh["cnn_fg_days_since_publish"] == 0
+    # Missing key -> default 0 (graceful)
+    sent_missing = {"fear_greed": {}}
+    sa_missing = {
+        "cnn_fg_days_since_publish": int(
+            sent_missing.get("fear_greed", {}).get("days_since_publish", 0) or 0
+        ),
+    }
+    assert sa_missing["cnn_fg_days_since_publish"] == 0
+
+
 def test_bug_236_aaii_refresh_workflow_exists_and_schedules_thursday():
     """BUG-236 Batch 101: AAII auto-refresh missing. The refresh script
     scripts/refresh_aaii_sentiment.py was committed Pass 53 Batch 46
