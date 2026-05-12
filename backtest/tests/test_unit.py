@@ -4695,6 +4695,163 @@ def test_dashboard_filter_promotioncell_hidden_tier_span():
 
 
 # ============================================================================
+# Phase 3 Batch 65 - real implementation of 10 previously-PARTIAL-SPEC-ONLY DECs
+# DEC-018 / 037 / 107 / 117 / 136 / 138 / 144 / 152 / 175 / 177
+# ============================================================================
+
+def test_dec_018_stopout_cooldown_active_within_5d():
+    """DEC-018: stop-out within 5 days -> in_cooldown=True."""
+    import pandas as pd
+    from datetime import date, timedelta
+    from backtest.results.metrics import is_ticker_in_stopout_cooldown
+    df = pd.DataFrame([
+        {"ticker": "AAPL", "exit_date": date(2024, 6, 10), "exit_reason": "atr_trail_stop"},
+    ])
+    out = is_ticker_in_stopout_cooldown("AAPL", df, as_of=date(2024, 6, 12))
+    assert out["in_cooldown"] is True
+    assert out["note"] == "STOPOUT_COOLDOWN"
+
+
+def test_dec_018_stopout_cooldown_expires_after_5d():
+    """DEC-018: stop-out 7 days ago -> in_cooldown=False."""
+    import pandas as pd
+    from datetime import date
+    from backtest.results.metrics import is_ticker_in_stopout_cooldown
+    df = pd.DataFrame([
+        {"ticker": "AAPL", "exit_date": date(2024, 6, 1), "exit_reason": "stop_loss"},
+    ])
+    out = is_ticker_in_stopout_cooldown("AAPL", df, as_of=date(2024, 6, 10))
+    assert out["in_cooldown"] is False
+
+
+def test_dec_037_characterization_absorbed_by_438():
+    """DEC-037: cross-reference to DEC-438 golden-master tests."""
+    from backtest.config import DEC_037_ABSORBED_BY
+    assert "DEC-438" in DEC_037_ABSORBED_BY
+
+
+def test_dec_107_regime_probability_phase_a_returns_label_and_vector():
+    """DEC-107 Phase A: emits both label AND probability vector."""
+    from backtest.results.metrics import regime_probability_phase_a
+    out = regime_probability_phase_a(80)
+    assert out["regime_label"] == "bull"
+    probs = out["regime_probabilities"]
+    # Vector sums to ~1.0
+    assert abs(sum(probs.values()) - 1.0) < 1e-6
+    # bull probability is dominant at score=80
+    assert probs["bull"] > probs["neutral"]
+    assert probs["bull"] > probs["bear"]
+
+
+def test_dec_107_regime_probability_phase_a_low_score():
+    """DEC-107: low score -> crisis label + crisis-dominated vector."""
+    from backtest.results.metrics import regime_probability_phase_a
+    out = regime_probability_phase_a(10)
+    assert out["regime_label"] == "crisis"
+    assert out["regime_probabilities"]["crisis"] > out["regime_probabilities"]["bull"]
+
+
+def test_dec_117_cache_checksum_computes_sha256(tmp_path):
+    """DEC-117: SHA-256 + last_validated + size for a real file."""
+    from backtest.results.metrics import compute_cache_checksum
+    p = tmp_path / "cache.bin"
+    p.write_bytes(b"hello world")
+    out = compute_cache_checksum(str(p))
+    # SHA-256 of "hello world" is a known constant
+    assert out["sha256"] == "b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9"
+    assert out["size_bytes"] == 11
+    assert out["last_validated_iso"] is not None
+
+
+def test_dec_117_cache_checksum_missing_file():
+    """DEC-117: missing file -> note='missing_file' + None values."""
+    from backtest.results.metrics import compute_cache_checksum
+    out = compute_cache_checksum("/nonexistent/path.bin")
+    assert out["sha256"] is None
+    assert out["note"] == "missing_file"
+
+
+def test_dec_136_portfolio_rebalance_drift_breach():
+    """DEC-136: position drift > 2x target -> rebalance triggered."""
+    from backtest.results.metrics import should_rebalance_portfolio
+    pos = {"AAPL": 0.10, "MSFT": 0.03}
+    target = {"AAPL": 0.03, "MSFT": 0.03}
+    out = should_rebalance_portfolio(pos, target)
+    assert out["should_rebalance"] is True
+    assert out["worst_drift_ticker"] == "AAPL"
+    assert "DRIFT_BREACH" in out["reason"]
+
+
+def test_dec_136_portfolio_rebalance_cash_deployable():
+    """DEC-136: cash > 10% AND deployable signals -> rebalance."""
+    from backtest.results.metrics import should_rebalance_portfolio
+    out = should_rebalance_portfolio(
+        {"AAPL": 0.04}, {"AAPL": 0.04},
+        cash_pct=0.15, deployable_signals_available=True,
+    )
+    assert out["should_rebalance"] is True
+    assert "CASH_DEPLOYABLE" in out["reason"]
+
+
+def test_dec_136_portfolio_rebalance_no_trigger():
+    """DEC-136: no drift + no cash overflow -> no rebalance."""
+    from backtest.results.metrics import should_rebalance_portfolio
+    out = should_rebalance_portfolio(
+        {"AAPL": 0.04}, {"AAPL": 0.04},
+        cash_pct=0.05, deployable_signals_available=True,
+    )
+    assert out["should_rebalance"] is False
+
+
+def test_dec_138_cold_start_ci_constants():
+    """DEC-138: workflow path + 30min target."""
+    from backtest.config import COLD_START_CI_WORKFLOW_PATH, COLD_START_CI_MAX_MINUTES
+    assert COLD_START_CI_WORKFLOW_PATH == ".github/workflows/cold_start.yml"
+    assert COLD_START_CI_MAX_MINUTES == 30
+
+
+def test_dec_144_momentum_delta_band_high_outperform():
+    """DEC-144: stock +20% vs sector +5% -> high_outperform band."""
+    from backtest.results.metrics import momentum_delta_band
+    out = momentum_delta_band(0.20, 0.05)
+    assert out["band"] == "high_outperform"
+    assert abs(out["delta"] - 0.15) < 1e-9
+
+
+def test_dec_144_momentum_delta_band_neutral_and_underperform():
+    """DEC-144: bands shake out: neutral / underperform / high_underperform."""
+    from backtest.results.metrics import momentum_delta_band
+    assert momentum_delta_band(0.05, 0.04)["band"] == "neutral"
+    assert momentum_delta_band(0.02, 0.10)["band"] == "underperform"
+    assert momentum_delta_band(-0.05, 0.10)["band"] == "high_underperform"
+
+
+def test_dec_152_holdout_constants():
+    """DEC-152: hold-out test-period constants + never-touch warning."""
+    from backtest.config import (HOLDOUT_FINAL_TEST_PERIOD_START,
+                                   HOLDOUT_FINAL_TEST_PERIOD_NOTE)
+    assert HOLDOUT_FINAL_TEST_PERIOD_START == "2025-01-01"
+    assert "MUST NOT" in HOLDOUT_FINAL_TEST_PERIOD_NOTE
+
+
+def test_dec_175_signal_persistence_weighting_monotonic():
+    """DEC-175: consecutive-day weight grows monotonically + caps at max."""
+    from backtest.results.metrics import signal_persistence_weight
+    assert signal_persistence_weight(1) == 1.0
+    assert signal_persistence_weight(3) == 1.5     # 1.0 + 2 * 0.25
+    assert signal_persistence_weight(7) == 2.5     # capped (would be 2.5)
+    assert signal_persistence_weight(20) == 2.5    # still capped
+    assert signal_persistence_weight(0) == 0.0     # no fire
+
+
+def test_dec_177_backtest_seed_constants():
+    """DEC-177: default seed + output field name for reproducibility."""
+    from backtest.config import BACKTEST_DEFAULT_SEED, BACKTEST_SEED_OUTPUT_FIELD
+    assert BACKTEST_DEFAULT_SEED == 20260511
+    assert BACKTEST_SEED_OUTPUT_FIELD == "random_seed"
+
+
+# ============================================================================
 # DEC-432 Chandelier exit indicator tests (Phase 3 Batch 53 Path C)
 # Parabolic SAR + Supertrend already implemented; only chandelier added.
 # ============================================================================

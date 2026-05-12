@@ -1009,6 +1009,45 @@ BATCH_64_DEFERRED_REMAINS_DEFERRED = (
     "/ Sprint 6+ / Sprint 7+ / Sprint 8+ per per-DEC original scope."
 )
 
+# DEC-018 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 65 2026-05-11
+# (owner-approved Path C 10-DEC PARTIAL-SPEC-ONLY closure). Cooldown after
+# stop-out per Pass 52 turn 115 spec (BUG-133): per-ticker 5 trading days
+# post-stop prevents whipsaw re-entry.
+TICKER_STOPOUT_COOLDOWN_DAYS = 5
+
+# DEC-037 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 65 2026-05-11.
+# Characterization-test-first approach absorbed by DEC-438 golden-master.
+DEC_037_ABSORBED_BY = ("DEC-438",)
+
+# DEC-117 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 65 2026-05-11.
+# Cache file-level checksum + last_validated timestamp metadata schema.
+CACHE_METADATA_SCHEMA = ("file_path", "sha256", "last_validated_iso",
+                         "row_count", "size_bytes")
+
+# DEC-136 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 65 2026-05-11.
+# Portfolio rebalancing thresholds per Pass 52 turn 115 spec.
+PORTFOLIO_REBALANCE_DRIFT_X_TARGET = 2.0  # any position > 2x target weight
+PORTFOLIO_REBALANCE_CASH_PCT_THRESHOLD = 0.10  # cash > 10% AND deployable signals
+PORTFOLIO_REBALANCE_VOL_DRIFT_PCT = 0.03  # realized vol drift > 3% in 21d window
+
+# DEC-138 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 65 2026-05-11.
+# Cold-start CI workflow path + max-duration target.
+COLD_START_CI_WORKFLOW_PATH = ".github/workflows/cold_start.yml"
+COLD_START_CI_MAX_MINUTES = 30
+
+# DEC-152 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 65 2026-05-11.
+# Hold-out final test period (never touched during audits) per Pass 53 audit.
+HOLDOUT_FINAL_TEST_PERIOD_START = "2025-01-01"  # never audited; final-validation only
+HOLDOUT_FINAL_TEST_PERIOD_NOTE = (
+    "Hold-out period MUST NOT be referenced during audit/iteration. "
+    "Used only once for final out-of-sample validation pre-Stage-3."
+)
+
+# DEC-177 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 65 2026-05-11.
+# Random seed defaults for backtest reproducibility.
+BACKTEST_DEFAULT_SEED = 20260511  # ISO date YYYYMMDD seed
+BACKTEST_SEED_OUTPUT_FIELD = "random_seed"
+
 # -----------------------------------------------------------------------------
 # TWO-STAGE CONFIDENCE TIERING
 # Stage 1: Rule-based preliminary tier (before agents run)

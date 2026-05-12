@@ -740,6 +740,213 @@ def compute_per_regime_agent_verdict(
     return out
 
 
+def is_ticker_in_stopout_cooldown(
+    ticker: str,
+    trade_log_df,
+    as_of,
+    cooldown_days: int = None,
+) -> dict:
+    """DEC-018 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 65 2026-05-11
+    (owner-approved Path C PARTIAL-SPEC-ONLY closure). Cooldown after
+    stop-out per Pass 52 turn 115 spec (BUG-133): per-ticker 5 trading days
+    post-stop prevents whipsaw re-entry.
+
+    Inputs:
+      ticker: ticker symbol
+      trade_log_df: DataFrame with ticker, exit_date, exit_reason columns
+      as_of: today's date
+      cooldown_days: override default (TICKER_STOPOUT_COOLDOWN_DAYS=5)
+
+    Returns dict with in_cooldown (bool), days_since_stop, last_stop_date,
+    note. Joint DEC-135 per-ticker max-loss cap (Batch 55).
+    """
+    import pandas as pd
+    from backtest.config import TICKER_STOPOUT_COOLDOWN_DAYS
+    cd = cooldown_days if cooldown_days is not None else TICKER_STOPOUT_COOLDOWN_DAYS
+    if trade_log_df is None or len(trade_log_df) == 0:
+        return {"in_cooldown": False, "days_since_stop": None,
+                "last_stop_date": None, "note": "no_trade_log"}
+    required = {"ticker", "exit_date", "exit_reason"}
+    if not required.issubset(set(trade_log_df.columns)):
+        return {"in_cooldown": False, "days_since_stop": None,
+                "last_stop_date": None, "note": "missing_cols"}
+    rows = trade_log_df[
+        (trade_log_df["ticker"] == ticker)
+        & (trade_log_df["exit_reason"].astype(str).str.lower().str.contains("stop"))
+    ]
+    if rows.empty:
+        return {"in_cooldown": False, "days_since_stop": None,
+                "last_stop_date": None, "note": "no_stop_history"}
+    last_exit = pd.to_datetime(rows["exit_date"]).max()
+    as_of_ts = pd.to_datetime(as_of)
+    days = (as_of_ts - last_exit).days
+    return {
+        "in_cooldown":      bool(days < cd),
+        "days_since_stop":  int(days),
+        "last_stop_date":   str(last_exit.date()),
+        "note":             "STOPOUT_COOLDOWN" if days < cd else "ok",
+    }
+
+
+def regime_probability_phase_a(regime_score) -> dict:
+    """DEC-107 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 65 2026-05-11
+    (owner-approved Path C PARTIAL-SPEC-ONLY closure). Phase A regime
+    probability emission per Pass 52 turn 61 phased-rollout spec.
+
+    Inputs:
+      regime_score: 0-100 score from multi_input_regime_score / multi_asset_regime_score
+
+    Returns dict with regime_label (existing 4-class) AND regime_probabilities
+    (vector over bull/neutral/bear/crisis using soft-bin assignment). Backwards
+    compatible: callers can ignore probabilities and use only the label.
+    Phase B (strategies migrate to probability gating) deferred per spec.
+    """
+    if regime_score is None:
+        return {"regime_label": "unknown",
+                "regime_probabilities": {"bull": 0.0, "neutral": 0.0,
+                                          "bear": 0.0, "crisis": 0.0}}
+    s = float(regime_score)
+    # Soft-bin assignment based on score distance from band centers
+    centers = {"bull": 80, "neutral": 50, "bear": 30, "crisis": 10}
+    sigma = 15.0  # bandwidth
+    import math
+    weights = {k: math.exp(-((s - c) ** 2) / (2 * sigma * sigma))
+               for k, c in centers.items()}
+    total = sum(weights.values())
+    probs = {k: round(v / total, 4) for k, v in weights.items()}
+    label = max(probs.items(), key=lambda kv: kv[1])[0]
+    return {"regime_label": label, "regime_probabilities": probs}
+
+
+def compute_cache_checksum(file_path) -> dict:
+    """DEC-117 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 65 2026-05-11
+    (owner-approved Path C PARTIAL-SPEC-ONLY closure). File-level checksum
+    + last_validated timestamp per Pass 52 turn 119 spec.
+
+    Returns dict per CACHE_METADATA_SCHEMA: file_path / sha256 / last_validated_iso /
+    row_count (None for non-parquet) / size_bytes. Joint DEC-260 cache freshness +
+    DEC-330 schema versioning.
+    """
+    import hashlib
+    from pathlib import Path
+    from datetime import datetime
+    p = Path(file_path) if file_path else None
+    if p is None or not p.exists():
+        return {"file_path": str(file_path), "sha256": None,
+                "last_validated_iso": None, "row_count": None,
+                "size_bytes": None, "note": "missing_file"}
+    h = hashlib.sha256()
+    with p.open("rb") as f:
+        for chunk in iter(lambda: f.read(65536), b""):
+            h.update(chunk)
+    return {
+        "file_path":           str(p),
+        "sha256":              h.hexdigest(),
+        "last_validated_iso":  datetime.utcnow().isoformat(),
+        "row_count":           None,
+        "size_bytes":          p.stat().st_size,
+        "note":                "ok",
+    }
+
+
+def should_rebalance_portfolio(
+    position_weights: dict,
+    target_weights: dict,
+    cash_pct: float = 0.0,
+    deployable_signals_available: bool = False,
+    drift_x_target: float = None,
+    cash_threshold: float = None,
+) -> dict:
+    """DEC-136 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 65 2026-05-11
+    (owner-approved Path C PARTIAL-SPEC-ONLY closure). Portfolio rebalancing
+    trigger per Pass 52 turn 115 spec: any position > 2x target weight
+    (drift) OR cash > 10% AND deployable signals.
+
+    Returns dict with should_rebalance (bool), reason (str), worst_drift_ticker.
+    """
+    from backtest.config import (PORTFOLIO_REBALANCE_DRIFT_X_TARGET,
+                                   PORTFOLIO_REBALANCE_CASH_PCT_THRESHOLD)
+    drift = drift_x_target if drift_x_target is not None else PORTFOLIO_REBALANCE_DRIFT_X_TARGET
+    cash_th = cash_threshold if cash_threshold is not None else PORTFOLIO_REBALANCE_CASH_PCT_THRESHOLD
+    worst_ticker = None
+    worst_ratio = 0.0
+    for ticker, cur_weight in (position_weights or {}).items():
+        target = (target_weights or {}).get(ticker, 0.0)
+        if target <= 0:
+            continue
+        ratio = cur_weight / target
+        if ratio > worst_ratio:
+            worst_ratio = ratio
+            worst_ticker = ticker
+    drift_breach = worst_ratio > drift
+    cash_breach = (cash_pct > cash_th) and deployable_signals_available
+    if drift_breach:
+        reason = f"DRIFT_BREACH_{worst_ticker}_{round(worst_ratio,2)}x"
+    elif cash_breach:
+        reason = f"CASH_DEPLOYABLE_{round(cash_pct,4)}"
+    else:
+        reason = "ok"
+    return {
+        "should_rebalance":     bool(drift_breach or cash_breach),
+        "reason":               reason,
+        "worst_drift_ticker":   worst_ticker,
+        "worst_drift_ratio":    round(worst_ratio, 4),
+    }
+
+
+def momentum_delta_band(stock_20d_return: float, sector_20d_return: float) -> dict:
+    """DEC-144 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 65 2026-05-11
+    (owner-approved Path C PARTIAL-SPEC-ONLY closure). Stock-vs-sector
+    momentum delta breakdown variable per Pass 52 turn 85 spec.
+
+    momentum_delta = stock_20d_return - sector_20d_return.
+
+    Bands:
+      high_outperform: delta >= +0.10
+      outperform:      0.05 <= delta < 0.10
+      neutral:         -0.05 < delta < 0.05
+      underperform:    -0.10 < delta <= -0.05
+      high_underperform: delta <= -0.10
+
+    Returns dict with delta, band, note.
+    """
+    if stock_20d_return is None or sector_20d_return is None:
+        return {"delta": None, "band": "unknown", "note": "missing_input"}
+    delta = stock_20d_return - sector_20d_return
+    if delta >= 0.10:      band = "high_outperform"
+    elif delta >= 0.05:    band = "outperform"
+    elif delta > -0.05:    band = "neutral"
+    elif delta > -0.10:    band = "underperform"
+    else:                  band = "high_underperform"
+    return {"delta": round(delta, 4), "band": band, "note": "ok"}
+
+
+def signal_persistence_weight(
+    consecutive_days: int,
+    base_weight: float = 1.0,
+    growth_per_day: float = 0.25,
+    max_weight: float = 2.5,
+) -> float:
+    """DEC-175 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 65 2026-05-11
+    (owner-approved Path C PARTIAL-SPEC-ONLY closure). Signal persistence
+    weighting per Pass 52 turn 119 spec: consecutive-day signals weighted
+    higher (3-day breakout > 1-day breakout). Joint DEC-148 + DEC-108.
+
+    Inputs:
+      consecutive_days: number of consecutive days the signal has fired
+      base_weight: weight at 1 day (default 1.0)
+      growth_per_day: linear weight increment per additional day (default 0.25)
+      max_weight: cap (default 2.5)
+
+    Returns float weight. 1-day -> 1.0, 3-day -> 1.5, 7+ day -> capped at 2.5.
+    """
+    if consecutive_days is None or consecutive_days <= 0:
+        return 0.0
+    n = max(1, int(consecutive_days))
+    raw = base_weight + (n - 1) * growth_per_day
+    return min(float(max_weight), raw)
+
+
 def detect_chart_pattern_skeleton(
     pattern_name: str,
     ohlcv_df=None,

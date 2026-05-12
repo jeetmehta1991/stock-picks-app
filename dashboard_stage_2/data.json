@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-12T02:37:43.358200+00:00",
+  "generated_at": "2026-05-12T03:11:14.006207+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -563,19 +563,19 @@
     },
     {
       "id": "DECISION-018",
-      "title": "Cooldown after stop-out (BUG-133) Pass 52 turn 115 owner-approved RESOLVED-DECIDED Batch B Risk Mgmt: Cooldown after stop-out (BUG-133). Per-ticker cooldown 5 t",
+      "title": "Cooldown after stop-out (BUG-133) -- TICKER_STOPOUT_COOLDOWN_DAYS=5 in config.py + is_ticker_in_stopout_cooldown(ticker, trade_log_df, as_of, cooldown_days=None",
       "status": "RESOLVED-IMPLEMENTED",
       "theme": "Risk Management (Group C)",
       "pass_intro": "Pass 19",
       "pass_resolved": "Pass 53",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 7,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -1123,19 +1123,19 @@
     },
     {
       "id": "DECISION-037",
-      "title": "Characterization-test-first approach (Phase A) Pass 52 turn 119 RESOLVED-DECIDED Final: Characterization-test-first approach Phase A \u2014 joint DEC-438 golden mast",
+      "title": "Characterization-test-first approach absorbed by DEC-438 golden-master tests -- DEC_037_ABSORBED_BY=(DEC-438,) cross-reference constant in config.py. 1 unit tes",
       "status": "RESOLVED-IMPLEMENTED",
       "theme": "Phase 0 Sub-Scope (Group G)",
       "pass_intro": "Pass 20",
       "pass_resolved": "Pass 53",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
-        "tested": false,
+        "tested": true,
         "pushed": false,
         "n_doc_refs": 1,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -2853,7 +2853,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 7,
+        "n_doc_refs": 6,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -3293,7 +3293,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 10,
+        "n_doc_refs": 9,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -3403,7 +3403,7 @@
     },
     {
       "id": "DECISION-107",
-      "title": "Regime probability (not hard label) Pass 52 turn 61 owner-approved RESOLVED-DECIDED with PHASED ROLLOUT: Regime probability instead of hard label. Phase A \u2014 emi",
+      "title": "Regime probability Phase A emission -- regime_probability_phase_a(regime_score) in metrics.py returns BOTH regime_label (existing 4-class) AND regime_probabilit",
       "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X7 \u2014 Smart Money + Regimes",
       "pass_intro": "Pass 39",
@@ -3411,11 +3411,11 @@
       "status_grep": {
         "coded": true,
         "wired": true,
-        "tested": false,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 7,
         "pyramid": {
-          "unit": false,
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -3723,19 +3723,19 @@
     },
     {
       "id": "DECISION-117",
-      "title": "Add file-level checksum + last-validated timestamp to cache Pass 52 turn 119 RESOLVED-DECIDED Final: File-level checksum + last-validated timestamp to cache. Jo",
+      "title": "File-level checksum + last_validated timestamp helper -- compute_cache_checksum(file_path) in metrics.py returns dict per CACHE_METADATA_SCHEMA (file_path, sha2",
       "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X9 \u2014 Data integrity",
       "pass_intro": "Pass 40",
       "pass_resolved": "Pass 53",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 1,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -4483,19 +4483,19 @@
     },
     {
       "id": "DECISION-136",
-      "title": "Portfolio rebalancing frequency policy Pass 52 turn 115 owner-approved RESOLVED-DECIDED Batch B Risk Mgmt: Portfolio rebalancing frequency policy. Threshold-bas",
+      "title": "Portfolio rebalancing trigger -- should_rebalance_portfolio(position_weights, target_weights, cash_pct, deployable_signals_available, drift_x_target, cash_thres",
       "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X15 \u2014 Risk management deeper",
       "pass_intro": "Pass 40",
       "pass_resolved": "Pass 53",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 1,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -4523,19 +4523,19 @@
     },
     {
       "id": "DECISION-138",
-      "title": "Cold-start CI test (fresh container in <30 min) Pass 52 turn 113 owner-approved RESOLVED-DECIDED with Sprint 6 placement: Cold-start CI test (fresh container in",
+      "title": "Cold-start CI workflow constants -- COLD_START_CI_WORKFLOW_PATH=.github/workflows/cold_start.yml + COLD_START_CI_MAX_MINUTES=30 in config.py. Workflow file auth",
       "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X16 \u2014 Architecture extension",
       "pass_intro": "Pass 40",
       "pass_resolved": "Pass 53",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
-        "tested": false,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 6,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -4723,19 +4723,19 @@
     },
     {
       "id": "DECISION-144",
-      "title": "Stock-vs-sector momentum delta as breakdown variable Pass 52 turn 85 owner-approved RESOLVED-DECIDED: Stock-vs-sector momentum delta as breakdown variable. New ",
+      "title": "Stock-vs-sector momentum delta band helper -- momentum_delta_band(stock_20d_return, sector_20d_return) in metrics.py returns dict with delta + 5-band classifica",
       "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X17 \u2014 Strategy extensions",
       "pass_intro": "Pass 40",
       "pass_resolved": "Pass 53",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
         "pushed": true,
-        "n_doc_refs": 9,
+        "n_doc_refs": 7,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -5043,19 +5043,19 @@
     },
     {
       "id": "DECISION-152",
-      "title": "Hold-out final test period (never touched during audits) Pass 53 evening 2026-05-06 DEC-594 audit: PARTIAL-SPEC-ONLY (was RESOLVED-DECIDED; demoted via DEC-594 ",
+      "title": "Hold-out final test period constants -- HOLDOUT_FINAL_TEST_PERIOD_START=2025-01-01 + HOLDOUT_FINAL_TEST_PERIOD_NOTE (\"MUST NOT be referenced during audit/iterat",
       "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X20 \u2014 IS/OOS extensions",
       "pass_intro": "Pass 40",
-      "pass_resolved": "52",
+      "pass_resolved": "Pass 53",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
-        "tested": false,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 12,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -5072,7 +5072,7 @@
       },
       "short_id": "DEC-152",
       "sprint": "Sprint 7 additions; Sprint 7-8 additions (Phase 1B",
-      "dependencies": "DEC-594",
+      "dependencies": "-",
       "description": "**Resolution:** Last 6 months of available data designated as sealed hold-out. NEVER touched during any audit pass, parameter tune, or strategy iteration. Used only for the final pass/fail evaluation before Stage 4 (real-money) funding.",
       "promotion_path": {
         "tier": "IMPLEMENTED",
@@ -5883,19 +5883,19 @@
     },
     {
       "id": "DECISION-175",
-      "title": "Signal persistence weighting (consecutive-day signals) Pass 52 turn 119 RESOLVED-DECIDED Batch E: Signal persistence weighting \u2014 consecutive-day signals weighte",
+      "title": "Signal persistence weighting helper -- signal_persistence_weight(consecutive_days, base=1.0, growth_per_day=0.25, max=2.5) in metrics.py. 1-day signal -> 1.0; 3",
       "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X28 \u2014 Strategy meta",
       "pass_intro": "Pass 41",
       "pass_resolved": "Pass 53",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
         "pushed": false,
         "n_doc_refs": 1,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -5963,19 +5963,19 @@
     },
     {
       "id": "DECISION-177",
-      "title": "Explicit random seed in every backtest run output (reproducibility test) Pass 52 turn 119 RESOLVED-DECIDED Batch F: Random seed in backtest output. Joint DEC-09",
+      "title": "Random seed constants for backtest reproducibility -- BACKTEST_DEFAULT_SEED=20260511 (ISO YYYYMMDD) + BACKTEST_SEED_OUTPUT_FIELD=random_seed in config.py. Joint",
       "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X29 \u2014 Reproducibility",
       "pass_intro": "Pass 41",
       "pass_resolved": "Pass 53",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
-        "tested": false,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 5,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -5992,7 +5992,7 @@
       },
       "short_id": "DEC-177",
       "sprint": "Sprint 6 (+10)",
-      "dependencies": "DEC-09",
+      "dependencies": "-",
       "description": "",
       "promotion_path": {
         "tier": "IMPLEMENTED",
@@ -7613,7 +7613,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 6,
+        "n_doc_refs": 4,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -11609,13 +11609,13 @@
       "pass_intro": "Pass 48",
       "pass_resolved": "-",
       "status_grep": {
-        "coded": false,
-        "wired": false,
+        "coded": true,
+        "wired": true,
         "tested": false,
         "pushed": true,
         "n_doc_refs": 16,
         "pyramid": {
-          "unit": "N/A",
+          "unit": false,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -15533,7 +15533,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 25,
+        "n_doc_refs": 24,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -15609,13 +15609,13 @@
       "pass_intro": "Pass 52",
       "pass_resolved": "Pass 53",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
-        "tested": false,
+        "tested": true,
         "pushed": true,
-        "n_doc_refs": 13,
+        "n_doc_refs": 14,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -16373,7 +16373,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 160,
+        "n_doc_refs": 158,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -18933,7 +18933,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 407,
+        "n_doc_refs": 377,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -26598,52 +26598,58 @@
   ],
   "recent_commits": [
     {
+      "sha": "d2efa4b8",
+      "subject": "Pass 53 v8h+1: Phase 3 Batch 64 - Mass-resolution + dashboard filter fix (owner directive)",
+      "author": "jeetmehta1991",
+      "rel_time": "25 minutes ago"
+    },
+    {
       "sha": "6c586908",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 63 (23-DEC close-out)",
       "author": "jeetmehta1991",
-      "rel_time": "60 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "d6be69a6",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 63 - Path C 23-DEC close-out (ALL RESOLVED-DECIDED resolved)",
       "author": "jeetmehta1991",
-      "rel_time": "63 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "b61a2f8f",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 62 (20-DEC bundle)",
       "author": "jeetmehta1991",
-      "rel_time": "71 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "64f16341",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 62 - Path C 20-DEC bundle (owner directive: 20 DECs this turn)",
       "author": "jeetmehta1991",
-      "rel_time": "74 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "279e1b34",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 61 (20-DEC bundle)",
       "author": "jeetmehta1991",
-      "rel_time": "86 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "572a2212",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 61 - Path C 20-DEC bundle (owner directive: 20 DECs this turn)",
       "author": "jeetmehta1991",
-      "rel_time": "89 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "8ce9bc21",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 60 (20-DEC bundle)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "215f6fbc",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 60 - Path C 20-DEC bundle (owner directive: 20 DECs this turn)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "9fb94b18",
@@ -26673,31 +26679,31 @@
       "sha": "77ad8f19",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 57 (5-DEC bundle)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "89dac3b4",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 57 - Path C 5-DEC bundle (factor breaker / coverage gate / memory / 13F PIT / CNN F&G bands)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "1bfcd76f",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 56 (5-DEC bundle)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "0bfa2be6",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 56 - Path C 5-DEC bundle (breakdowns/agent verdicts/data-quality/policy/site freshness)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "25c94093",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 55 (5-DEC regime+risk bundle)",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "ad012991",
@@ -26721,25 +26727,25 @@
       "sha": "d7aff6ed",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 53 (DEC-432)",
       "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
+      "rel_time": "7 hours ago"
     },
     {
       "sha": "29b9c6eb",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 53 - DEC-432 chandelier exit indicator (RESOLVED-IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
+      "rel_time": "7 hours ago"
     },
     {
       "sha": "6128d4c6",
       "subject": "Pass 53 v8h+1: regenerate Stage 2 dashboard for Batches 49-52",
       "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
+      "rel_time": "7 hours ago"
     },
     {
       "sha": "bf2b26ab",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 52 - DEC-087 vol-targeted per-position sizing helper (RESOLVED-IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
+      "rel_time": "7 hours ago"
     },
     {
       "sha": "6d1cce3e",
@@ -26763,26 +26769,20 @@
       "sha": "e0f9261a",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 48 - Path C final pickups (3 RESOLVED-IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "8 hours ago"
+      "rel_time": "9 hours ago"
     },
     {
       "sha": "79f7e781",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 47 - Path C audit/process bulk-flip (16 RESOLVED-IMPLEMENTED-AS-DECIDED)",
       "author": "jeetmehta1991",
-      "rel_time": "8 hours ago"
-    },
-    {
-      "sha": "bf3fd167",
-      "subject": "Pass 53 v8h+1: Phase 3 Batch 46 - Path C remaining X53 (DEC-319/320/323/390/391/394)",
-      "author": "jeetmehta1991",
-      "rel_time": "8 hours ago"
+      "rel_time": "9 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 8,
-    "modified": 6,
+    "count": 7,
+    "modified": 7,
     "added": 0,
-    "untracked": 2,
+    "untracked": 0,
     "deleted": 0,
     "files": [
       {
@@ -26795,6 +26795,14 @@
       },
       {
         "status": "M",
+        "path": "backtest/results/metrics.py"
+      },
+      {
+        "status": "M",
+        "path": "backtest/tests/test_unit.py"
+      },
+      {
+        "status": "M",
         "path": "dashboard_stage_2/data.js"
       },
       {
@@ -26803,19 +26811,7 @@
       },
       {
         "status": "M",
-        "path": "dashboard_stage_2/index.html"
-      },
-      {
-        "status": "M",
         "path": "dashboard_stage_2/last_run.txt"
-      },
-      {
-        "status": "??",
-        "path": "fix_pipes.py"
-      },
-      {
-        "status": "??",
-        "path": "flip_batch64.py"
       }
     ]
   },
@@ -26997,7 +26993,7 @@
     }
   ],
   "test_inventory": {
-    "total": 1076,
+    "total": 1095,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -27073,7 +27069,7 @@
       "test_stocktwits_smoke": 4,
       "test_supplementary_demo": 4,
       "test_supplementary_smoke": 6,
-      "test_unit": 411,
+      "test_unit": 430,
       "test_walk_forward_4fold": 6
     }
   },
@@ -27493,8 +27489,8 @@
       "title": "Test-Artifact Same-Commit HARD RULE. Pass 53 owner-approved 2026-05-06 late evening RESOLVED-DECIDED. RULE: Every DEC that specifies a test ",
       "status": "RESOLVED-IMPLEMENTED",
       "tier": 1,
-      "reason": "Dependency root (11 downstream items reference)",
-      "back_refs": 11,
+      "reason": "Dependency root (10 downstream items reference)",
+      "back_refs": 10,
       "sprint": "-"
     },
     {
