@@ -668,6 +668,44 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_dec_235_engine_wires_nyse_calendar_in_trading_days():
+    """DEC-235 Batch 82: _trading_days uses NYSE calendar helper so
+    holidays + half-days are excluded in addition to weekends. Source-
+    level grep verifies engine consumes the improvements helpers.
+    """
+    from pathlib import Path
+    src = Path("backtest/engine/backtest.py").read_text(encoding="utf-8")
+    assert "DEC-235 RESOLVED-IMPLEMENTED Batch 82" in src
+    assert "is_nyse_trading_day" in src
+    assert "get_nyse_calendar_helper" in src
+
+
+def test_dec_235_engine_skips_holiday_weekday():
+    """DEC-235 behavior: when the engine's start..end window spans a
+    NYSE holiday that falls on a weekday (e.g. 2024-01-01 New Year's
+    Day on a Monday, 2024-07-04 Independence Day on a Thursday), the
+    holiday must NOT appear in _trading_days(). Falls back to Mon-Fri
+    when pandas_market_calendars unavailable -- in that case the test
+    is informational (cannot assert holiday exclusion).
+    """
+    from datetime import date
+    from backtest.engine.backtest import BacktestEngine
+    from backtest.engine.improvements import get_nyse_calendar_helper
+    eng = BacktestEngine(
+        universe=["SPY"], run_agents=False, walk_forward=False,
+        start=date(2024, 1, 1), end=date(2024, 7, 10),
+    )
+    days = eng._trading_days()
+    # Weekend exclusion is unconditional
+    for d in days:
+        assert d.weekday() < 5, f"weekend day leaked: {d}"
+    # Only assert holiday exclusion when pmc is actually available --
+    # otherwise the fallback is the Mon-Fri filter only.
+    if get_nyse_calendar_helper() is not None:
+        assert date(2024, 1, 1) not in days   # New Year's Day (Mon)
+        assert date(2024, 7, 4) not in days   # Independence Day (Thu)
+
+
 if __name__ == "__main__":
     tests = [
         test_smart_money_score_keys,

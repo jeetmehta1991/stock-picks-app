@@ -373,9 +373,15 @@ class BacktestEngine:
         return n_finalized
 
     def _trading_days(self) -> list[date]:
+        # DEC-235 RESOLVED-IMPLEMENTED Batch 82 2026-05-12 owner-mandated
+        # wiring: use NYSE calendar helper to skip holidays + half-days
+        # in addition to weekends. Falls back to Mon-Fri filter when
+        # pandas_market_calendars unavailable.
+        from backtest.engine.improvements import is_nyse_trading_day, get_nyse_calendar_helper
+        cal = get_nyse_calendar_helper()
         days, d = [], self.start
         while d <= self.end:
-            if d.weekday() < 5:
+            if is_nyse_trading_day(d, calendar=cal):
                 days.append(d)
             d += timedelta(days=1)
         return days
