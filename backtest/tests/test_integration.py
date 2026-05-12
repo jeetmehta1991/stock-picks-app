@@ -668,6 +668,57 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_bug_78_trailing_stop_lookahead_fix_order_of_operations():
+    """BUG-78 Batch 94: trailing-stop lookahead bias - previously the
+    trailing_stop was updated FROM today's close BEFORE checking
+    whether the intraday low broke through it, which let a stop placed
+    using close-time information "save" a position whose intraday low
+    had already breached the pre-update stop. RESOLVED-IMPLEMENTED in
+    Phase 3 Batch 14 (2026-05-10):
+      1. FIRST: check_trailing_stop_hit(trade, today_low, today_high,
+         today_close, ...) -- uses YESTERDAY's trailing_stop vs today's
+         intraday range
+      2. AFTER the check: update_trailing_stop(trade, today_close)
+         only if the trade survived the intraday check
+    Source-grep verifies the BUG-78 fix comment + the post-check ordering.
+    """
+    from pathlib import Path
+    src = Path("backtest/engine/exit_manager.py").read_text(encoding="utf-8")
+    assert "BUG-78 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 14" in src
+    # Order of operations: check_trailing_stop_hit must precede
+    # update_trailing_stop in the daily exit-eval flow
+    check_idx  = src.find("check_trailing_stop_hit(trade, today_low, today_high")
+    update_idx = src.rfind("update_trailing_stop(trade, today_close")
+    assert check_idx > 0 and update_idx > 0
+    assert check_idx < update_idx, (
+        "check_trailing_stop_hit MUST precede update_trailing_stop in the "
+        "daily exit-eval flow (BUG-78 lookahead-bias fix)"
+    )
+
+
+def test_bug_78_check_trailing_stop_uses_intraday_low_not_close():
+    """BUG-78 behavior: check_trailing_stop_hit consumes today_low
+    (intraday) NOT today_close, so a stop is triggered when the
+    intraday low pierces the stop level even if the close recovers.
+    Synthetic case: stop at 95.0, today high 99, low 94.5, close 96.0
+    -> stop must trigger because low pierced 95.0.
+    """
+    from datetime import date
+    from backtest.engine.exit_manager import (
+        OpenTrade, check_trailing_stop_hit,
+    )
+    trade = OpenTrade(
+        ticker="TEST", entry_date=date(2024, 1, 1), entry_price=100.0,
+        direction="long", strategy="bug78_smoke", category="momentum",
+        sector="Tech", initial_stop=90.0, trailing_stop=95.0,
+        highest_close=98.0, regime_at_entry="neutral",
+    )
+    # Intraday low pierces 95.0 even though close (96) recovered
+    exit_price = check_trailing_stop_hit(trade, today_low=94.5,
+                                          today_high=99.0, today_close=96.0)
+    assert exit_price == 95.0   # stop triggered at the stop level
+
+
 def test_bug_104_writer_consumes_tier_sized_portfolio_summary():
     """BUG-104 Batch 93: position sizing rules from config never applied
     to backtest PnL aggregation. RESOLVED-IMPLEMENTED via

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-12T19:19:52.355815+00:00",
+  "generated_at": "2026-05-12T19:23:30.731954+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -20585,11 +20585,11 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 42,
+        "n_doc_refs": 43,
         "pyramid": {
           "unit": true,
           "smoke": true,
-          "integration": "N/A",
+          "integration": true,
           "system": "N/A",
           "functional": "N/A",
           "regression": "N/A",
@@ -26598,40 +26598,46 @@
   ],
   "recent_commits": [
     {
+      "sha": "ce28a712",
+      "subject": "Batch 93: BUG-104 false-positive correction - compute_portfolio_summary wires tier sizing",
+      "author": "jeetmehta1991",
+      "rel_time": "4 minutes ago"
+    },
+    {
       "sha": "5fca3ab1",
       "subject": "Batch 92: BUG-101 false-positive correction - ticker uniqueness wired",
       "author": "jeetmehta1991",
-      "rel_time": "5 minutes ago"
+      "rel_time": "8 minutes ago"
     },
     {
       "sha": "703bdf62",
       "subject": "Batch 91: BUG-95 false-positive correction - Portfolio class wired Batch 20",
       "author": "jeetmehta1991",
-      "rel_time": "8 minutes ago"
+      "rel_time": "12 minutes ago"
     },
     {
       "sha": "bf2581ce",
       "subject": "Batch 90: BUG-27 regime_confidence intentional Phase-1A deferral confirmed",
       "author": "jeetmehta1991",
-      "rel_time": "12 minutes ago"
+      "rel_time": "16 minutes ago"
     },
     {
       "sha": "a7ce0b2a",
       "subject": "Batch 89: BUG-234 false-positive correction \u00e2\u20ac\u201d VIX hysteresis confirmed wired",
       "author": "jeetmehta1991",
-      "rel_time": "16 minutes ago"
+      "rel_time": "20 minutes ago"
     },
     {
       "sha": "3ff63c2b",
       "subject": "Batch 88: BUG-26 false-positive correction \u00e2\u20ac\u201d DEC-302 VIX/DXY canonical loader",
       "author": "jeetmehta1991",
-      "rel_time": "21 minutes ago"
+      "rel_time": "25 minutes ago"
     },
     {
       "sha": "a2d57ece",
       "subject": "Batch 87: BUG-29 false-positive correction \u00e2\u20ac\u201d open-trades finalize confirmed wired",
       "author": "jeetmehta1991",
-      "rel_time": "24 minutes ago"
+      "rel_time": "28 minutes ago"
     },
     {
       "sha": "2e66a71b",
@@ -26673,7 +26679,7 @@
       "sha": "a5838ae1",
       "subject": "Batch 80: DEC-106 GENUINELY WIRED (multi-input regime score Phase A; VIX+SPY+AAII+CNN F&G surfaced in regime_ctx; 13-tier 659/6/0)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "215329c9",
@@ -26770,12 +26776,6 @@
       "subject": "Pass 53 v8h+1: Phase 3 Batch 68 - FINAL 9 PARTIAL-SPEC-ONLY-was DECs",
       "author": "jeetmehta1991",
       "rel_time": "15 hours ago"
-    },
-    {
-      "sha": "f32626ad",
-      "subject": "Pass 53 v8h+1: Phase 3 Batch 67 - dashboard filter re-fix + 10 more PARTIAL-SPEC-ONLY-was DECs",
-      "author": "jeetmehta1991",
-      "rel_time": "16 hours ago"
     }
   ],
   "uncommitted": {
@@ -26973,7 +26973,7 @@
     }
   ],
   "test_inventory": {
-    "total": 1175,
+    "total": 1177,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -27009,7 +27009,7 @@
       "test_fred_alfred_smoke": 5,
       "test_gate_pre_phase_1a_entry": 8,
       "test_gates": 6,
-      "test_integration": 62,
+      "test_integration": 64,
       "test_inv041_path_restricted_commits": 5,
       "test_l146_wave_a_g2_g3_g9": 6,
       "test_l146_wave_b_g7_sec_edgar": 6,
