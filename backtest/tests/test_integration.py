@@ -668,6 +668,31 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_bug_33_passing_criteria_emits_tiered_sharpe_thresholds():
+    """BUG-33 Batch 110: tiered Sharpe ratio passing criterion. Owner-
+    approved option C 2026-05-12: 0.7 per-regime / 1.0 overall.
+    """
+    from backtest.config import PASSING_CRITERIA
+    assert "min_sharpe_overall" in PASSING_CRITERIA
+    assert "min_sharpe_per_regime" in PASSING_CRITERIA
+    assert PASSING_CRITERIA["min_sharpe_overall"] == 1.0
+    assert PASSING_CRITERIA["min_sharpe_per_regime"] == 0.7
+    # Per-regime threshold MUST be <= overall (smaller samples = lower bar)
+    assert PASSING_CRITERIA["min_sharpe_per_regime"] <= PASSING_CRITERIA["min_sharpe_overall"]
+
+
+def test_bug_33_config_documents_bug_origin():
+    """BUG-33 sister: source-grep verifies the config block carries the
+    BUG-33 RESOLVED-IMPLEMENTED comment with owner-approval reference.
+    """
+    from pathlib import Path
+    src = Path("backtest/config.py").read_text(encoding="utf-8")
+    assert "BUG-33 RESOLVED-IMPLEMENTED Batch 110" in src
+    assert "owner-approved" in src
+    assert "min_sharpe_overall" in src
+    assert "min_sharpe_per_regime" in src
+
+
 def test_bug_34_engine_consumes_strategy_regime_blocklist():
     """BUG-34 Batch 109: per-strategy regime-blocklist gate at the engine
     entry candidate loop. Owner-approved option C 2026-05-12: granular

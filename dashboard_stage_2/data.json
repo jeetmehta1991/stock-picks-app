@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-12T23:45:04.952483+00:00",
+  "generated_at": "2026-05-12T23:49:13.604983+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -26598,16 +26598,22 @@
   ],
   "recent_commits": [
     {
+      "sha": "858ac20d",
+      "subject": "Batch 109: BUG-34 per-strategy regime_blocklist config + engine gate",
+      "author": "jeetmehta1991",
+      "rel_time": "4 minutes ago"
+    },
+    {
       "sha": "158663d0",
       "subject": "Batch 108: BUG-96 SPY buy-and-hold benchmark in compute_portfolio_summary",
       "author": "jeetmehta1991",
-      "rel_time": "4 minutes ago"
+      "rel_time": "8 minutes ago"
     },
     {
       "sha": "20391302",
       "subject": "Batch 107: BUG-205 IBKR fixed-tier cost cap wired into apply_transaction_costs",
       "author": "jeetmehta1991",
-      "rel_time": "8 minutes ago"
+      "rel_time": "12 minutes ago"
     },
     {
       "sha": "38c5a7e8",
@@ -26770,17 +26776,11 @@
       "subject": "Batch 80: DEC-106 GENUINELY WIRED (multi-input regime score Phase A; VIX+SPY+AAII+CNN F&G surfaced in regime_ctx; 13-tier 659/6/0)",
       "author": "jeetmehta1991",
       "rel_time": "7 hours ago"
-    },
-    {
-      "sha": "215329c9",
-      "subject": "Batch 79: DEC-149 GENUINELY WIRED (regime transition matrix computed at finalize from accumulated history; 13-tier 658/6/0)",
-      "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 4,
-    "modified": 4,
+    "count": 3,
+    "modified": 3,
     "added": 0,
     "untracked": 0,
     "deleted": 0,
@@ -26792,10 +26792,6 @@
       {
         "status": "M",
         "path": "backtest/config.py"
-      },
-      {
-        "status": "M",
-        "path": "backtest/engine/backtest.py"
       },
       {
         "status": "M",
@@ -26981,7 +26977,7 @@
     }
   ],
   "test_inventory": {
-    "total": 1198,
+    "total": 1200,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -27017,7 +27013,7 @@
       "test_fred_alfred_smoke": 5,
       "test_gate_pre_phase_1a_entry": 8,
       "test_gates": 6,
-      "test_integration": 85,
+      "test_integration": 87,
       "test_inv041_path_restricted_commits": 5,
       "test_l146_wave_a_g2_g3_g9": 6,
       "test_l146_wave_b_g7_sec_edgar": 6,
