@@ -36,6 +36,14 @@ jobs:
           pip install pandas-ta --quiet || pip install ta --quiet || true
           # Optional libs that some tests skip on if missing
           pip install freezegun --quiet || true
+          # DEC-414/416 statistical methodology (Pass 53 Batch 41) + DEC-210
+          # PSR / scipy.stats - required by Batch 49-68 helpers in metrics.py.
+          # Previously omitted in CI -> caused test_dec_414/test_dec_416 +
+          # any helper using statsmodels/scipy to fail with ImportError.
+          pip install "statsmodels>=0.14.0" --quiet
+          pip install scipy --quiet
+          # DEC-235 NYSE calendar (optional; falls back to Mon-Fri if missing)
+          pip install pandas-market-calendars --quiet || true
 
       - name: Tier 1 — Unit tests
         run: |
