@@ -668,6 +668,52 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_bug_104_writer_consumes_tier_sized_portfolio_summary():
+    """BUG-104 Batch 93: position sizing rules from config never applied
+    to backtest PnL aggregation. RESOLVED-IMPLEMENTED via
+    `compute_portfolio_summary(df_trades, reference_capital, tier_sizes)`
+    in `backtest/results/metrics.py:2487+`, called from `writer.py:251`
+    in the standard output pipeline. The summary:
+      - maps each trade's confidence_tier to position_size_pct using
+        the tier_sizes dict (EXCEPTIONAL:0.05 / VERY_HIGH:0.04 /
+        HIGH:0.03 / MEDIUM_HIGH:0.015 / MEDIUM:0.0075 / LOW:0.0)
+      - computes position_dollar = position_size_pct * reference_capital
+      - derives pnl_dollar_sized = pnl_pct/100 * position_dollar
+      - aggregates total_pnl + portfolio_return_pct + max_portfolio_heat
+    Per-trade `pnl_dollar` column from close_trade remains $10K-normalized
+    (a per-trade quantity, NOT portfolio P&L) by design; portfolio-level
+    P&L is the compute_portfolio_summary aggregation.
+    """
+    from pathlib import Path
+    metrics_src = Path("backtest/results/metrics.py").read_text(encoding="utf-8")
+    writer_src  = Path("backtest/results/writer.py").read_text(encoding="utf-8")
+    assert "def compute_portfolio_summary" in metrics_src
+    assert "compute_portfolio_summary" in writer_src
+    assert 'tier_sizes.get(t' in metrics_src
+    assert 'position_size_pct' in metrics_src
+    assert 'pnl_dollar_sized' in metrics_src
+
+
+def test_bug_104_portfolio_summary_applies_tier_sizing():
+    """BUG-104 behavior: feed compute_portfolio_summary a synthetic
+    trade log with 2 tiers + verify it produces a sized total_pnl that
+    correctly reflects per-tier allocation rather than equal weights.
+    """
+    import pandas as pd
+    from datetime import date
+    from backtest.results.metrics import compute_portfolio_summary
+    df = pd.DataFrame([
+        {"confidence_tier": "EXCEPTIONAL", "pnl_pct": 10.0, "win": True,
+         "entry_date": date(2024, 1, 5), "exit_date": date(2024, 1, 15)},
+        {"confidence_tier": "LOW",         "pnl_pct": 10.0, "win": True,
+         "entry_date": date(2024, 1, 5), "exit_date": date(2024, 1, 15)},
+    ])
+    out = compute_portfolio_summary(df, reference_capital=100_000.0)
+    # EXCEPTIONAL gets 5% allocation; LOW gets 0% per the default tier_sizes
+    # 10% pnl * 5% of $100k = $500; 10% pnl * 0% = $0
+    assert out["total_pnl_dollar"] == 500.00
+
+
 def test_bug_101_engine_blocks_overlapping_re_entries_on_same_ticker():
     """BUG-101 Batch 92: "88.1% of trades are overlapping re-entries on
     the same ticker" was the symptom; the underlying cause is per-ticker
