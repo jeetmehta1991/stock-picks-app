@@ -835,6 +835,22 @@ class BacktestEngine:
                     })
                     continue
 
+                # BUG-34 RESOLVED-IMPLEMENTED Batch 109 2026-05-12 (owner-
+                # approved option C): per-strategy regime blocklist. When
+                # STRATEGY_REGIME_BLOCKLIST has an entry for this strategy
+                # and the current regime is on its blocklist, skip the entry.
+                # Empty default dict = no behavior change; owner populates
+                # after Phase 1B-alpha per-regime verdict empirical tuning.
+                from backtest.config import STRATEGY_REGIME_BLOCKLIST
+                _blocklist = STRATEGY_REGIME_BLOCKLIST.get(strat_entry["strategy"], [])
+                if regime in _blocklist:
+                    self.skipped_trades.append({
+                        "ticker": ticker, "date": as_of,
+                        "strategy": strat_entry["strategy"],
+                        "reason": f"regime_blocklist_{regime}_bug34",
+                    })
+                    continue
+
                 # Crisis long exclusions  -  block long entries on specific tickers
                 # that are data-confirmed wrong-directional in crisis regime
                 if direction == "long" and crisis_flag:

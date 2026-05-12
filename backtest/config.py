@@ -515,6 +515,21 @@ DROPPED_STRATEGY_REEVAL_DAYS = 90
 EVENT_WINDOW_PRE_DAYS  = 1
 EVENT_WINDOW_POST_DAYS = 3
 
+# BUG-34 RESOLVED-IMPLEMENTED Batch 109 2026-05-12 (owner-approved option C
+# 2026-05-12): per-strategy regime-blocklist config. Maps strategy name
+# (canonical) to a list of regimes in which the strategy MUST NOT enter
+# new positions. Default empty per Phase 1A "all-regime baseline" - owner
+# populates empirically after Phase 1B-alpha per-regime verdicts identify
+# which strategies are net-loss in which regimes (typically mean-reversion
+# in strong-trend bull). Engine consumption: _process_day strategy-entry
+# loop reads this dict + current regime + skips with reason
+# `regime_blocklist_<regime>` when matched.
+STRATEGY_REGIME_BLOCKLIST: dict[str, list[str]] = {
+    # Example (commented; populate after Phase 1B-alpha empirical tuning):
+    # "strat_rsi_oversold":      ["bull"],   # MR fails in strong trend
+    # "strat_rsi_overbought_short": ["bear"],
+}
+
 # BUG-235 RESOLVED-IMPLEMENTED Batch 99 2026-05-12: AAII Investor Sentiment
 # Survey closes Wednesday close, AAII publishes results Thursday morning.
 # A Wed-dated survey is NOT tradeable on Wed itself -- it's tradeable from

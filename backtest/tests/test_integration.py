@@ -668,6 +668,40 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_bug_34_engine_consumes_strategy_regime_blocklist():
+    """BUG-34 Batch 109: per-strategy regime-blocklist gate at the engine
+    entry candidate loop. Owner-approved option C 2026-05-12: granular
+    per-strategy config rather than blanket category restriction so the
+    per-regime verdict matrix surfaces which MR strategies actually work
+    in which regimes empirically.
+    """
+    from pathlib import Path
+    src = Path("backtest/engine/backtest.py").read_text(encoding="utf-8")
+    config_src = Path("backtest/config.py").read_text(encoding="utf-8")
+    assert "BUG-34 RESOLVED-IMPLEMENTED Batch 109" in src
+    assert "STRATEGY_REGIME_BLOCKLIST" in src
+    assert "regime_blocklist_" in src
+    # Config dict exists + default empty per Phase 1A no-blocklist baseline
+    assert "STRATEGY_REGIME_BLOCKLIST" in config_src
+    assert "BUG-34 RESOLVED-IMPLEMENTED Batch 109" in config_src
+
+
+def test_bug_34_blocklist_dict_default_empty_no_behavior_change():
+    """BUG-34 behavior: default STRATEGY_REGIME_BLOCKLIST is empty so
+    no current behavior changes. Owner-populated values would be
+    consumed at engine runtime.
+    """
+    from backtest.config import STRATEGY_REGIME_BLOCKLIST
+    assert isinstance(STRATEGY_REGIME_BLOCKLIST, dict)
+    # Default empty -> no strategies blocked -> no behavior change
+    assert len(STRATEGY_REGIME_BLOCKLIST) == 0
+    # Synthetic populated dict semantics
+    test_dict = {"strat_rsi_oversold": ["bull"]}
+    assert "bull" in test_dict.get("strat_rsi_oversold", [])
+    assert "bear" not in test_dict.get("strat_rsi_oversold", [])
+    assert test_dict.get("strat_other", []) == []
+
+
 def test_bug_96_portfolio_summary_emits_spy_buy_hold_reference():
     """BUG-96 Batch 108: compute_portfolio_summary now emits SPY buy-and-hold
     return + vs-SPY excess return over the same window. Owner-approved

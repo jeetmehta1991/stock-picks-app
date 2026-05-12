@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-12T23:40:55.756771+00:00",
+  "generated_at": "2026-05-12T23:45:04.952483+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -21002,7 +21002,7 @@
         "coded": true,
         "wired": true,
         "tested": true,
-        "pushed": false,
+        "pushed": true,
         "n_doc_refs": 8,
         "pyramid": {
           "unit": false,
@@ -26598,10 +26598,16 @@
   ],
   "recent_commits": [
     {
+      "sha": "158663d0",
+      "subject": "Batch 108: BUG-96 SPY buy-and-hold benchmark in compute_portfolio_summary",
+      "author": "jeetmehta1991",
+      "rel_time": "4 minutes ago"
+    },
+    {
       "sha": "20391302",
       "subject": "Batch 107: BUG-205 IBKR fixed-tier cost cap wired into apply_transaction_costs",
       "author": "jeetmehta1991",
-      "rel_time": "4 minutes ago"
+      "rel_time": "8 minutes ago"
     },
     {
       "sha": "38c5a7e8",
@@ -26643,7 +26649,7 @@
       "sha": "e7adc4ec",
       "subject": "Batch 100: docs sweep - annotate skipped BUGs with triage context",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "e9f6ada4",
@@ -26691,13 +26697,13 @@
       "sha": "5fca3ab1",
       "subject": "Batch 92: BUG-101 false-positive correction - ticker uniqueness wired",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "703bdf62",
       "subject": "Batch 91: BUG-95 false-positive correction - Portfolio class wired Batch 20",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "bf2581ce",
@@ -26751,7 +26757,7 @@
       "sha": "d0806a2c",
       "subject": "Batch 82: DEC-235 GENUINELY WIRED \u00e2\u20ac\u201d NYSE calendar in _trading_days",
       "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
+      "rel_time": "7 hours ago"
     },
     {
       "sha": "391e7029",
@@ -26770,17 +26776,11 @@
       "subject": "Batch 79: DEC-149 GENUINELY WIRED (regime transition matrix computed at finalize from accumulated history; 13-tier 658/6/0)",
       "author": "jeetmehta1991",
       "rel_time": "7 hours ago"
-    },
-    {
-      "sha": "81ed3a2a",
-      "subject": "Batch 78: DEC-108 GENUINELY WIRED (EMA-smoothed regime probability; alpha=0.1 across days; regime_ctx[regime_score_smoothed] surfaced; 13-tier 657/6/0)",
-      "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 3,
-    "modified": 3,
+    "count": 4,
+    "modified": 4,
     "added": 0,
     "untracked": 0,
     "deleted": 0,
@@ -26791,7 +26791,11 @@
       },
       {
         "status": "M",
-        "path": "backtest/results/metrics.py"
+        "path": "backtest/config.py"
+      },
+      {
+        "status": "M",
+        "path": "backtest/engine/backtest.py"
       },
       {
         "status": "M",
@@ -26977,7 +26981,7 @@
     }
   ],
   "test_inventory": {
-    "total": 1196,
+    "total": 1198,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -27013,7 +27017,7 @@
       "test_fred_alfred_smoke": 5,
       "test_gate_pre_phase_1a_entry": 8,
       "test_gates": 6,
-      "test_integration": 83,
+      "test_integration": 85,
       "test_inv041_path_restricted_commits": 5,
       "test_l146_wave_a_g2_g3_g9": 6,
       "test_l146_wave_b_g7_sec_edgar": 6,
