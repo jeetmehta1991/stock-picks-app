@@ -430,6 +430,18 @@ def test_dec_088_engine_scales_down_when_realized_vol_high():
     assert scale >= 0.5  # bounded
 
 
+def test_dec_128_engine_wires_dispersion_cb():
+    """DEC-128 Batch 77: source-level grep + cross-sectional dispersion CB
+    wired in _process_day after DEC-314 market-wide CB block.
+    """
+    from pathlib import Path
+    src = Path("backtest/engine/backtest.py").read_text(encoding="utf-8")
+    assert "DEC-128 RESOLVED-IMPLEMENTED Batch 77" in src
+    assert "dispersion_circuit_breaker" in src
+    assert "dispersion_cb_triggered_dec128" in src
+    assert "dispersion_cb_dec128" in src
+
+
 def test_dec_348_engine_wires_event_suppression_gate():
     """DEC-348 Batch 76: event-calendar suppression at entry. Skip if
     earnings within DEC-349 asymmetric window (pre=1, post=3) or macro

@@ -520,6 +520,56 @@ class BacktestEngine:
                             })
                         return  # skip entry loop entirely
 
+        # DEC-128 RESOLVED-IMPLEMENTED Batch 77 2026-05-12 owner-mandated
+        # wiring: dispersion-conditional CB. Trigger if cross-sectional
+        # dispersion of today's universe returns exceeds 3 sigma vs rolling
+        # 20-day baseline. Halt new entries when extreme cross-sectional
+        # vol indicates a regime/correlation breakdown. Joint DEC-314 / 315.
+        try:
+            import pandas as _pd
+            _ret_rows = []
+            for _tkr, _df in ohlcv_pit.items():
+                if _df is None or _df.empty:
+                    continue
+                _slice = _df[_df.index.date <= as_of].tail(22)
+                if len(_slice) < 22:
+                    continue
+                _ret = _slice["close"].pct_change().dropna()
+                if len(_ret) < 21:
+                    continue
+                _ret_rows.append(_ret.reset_index(drop=True))
+            if len(_ret_rows) >= 5:
+                _ret_df = _pd.concat(_ret_rows, axis=1).dropna(how="any")
+                if len(_ret_df) >= 21:
+                    from backtest.engine.regime_filter import (
+                        dispersion_circuit_breaker as _disp_cb,
+                    )
+                    _cb_result = _disp_cb(
+                        _ret_df, window=20, sigma_threshold=3.0,
+                    )
+                    if _cb_result.get("triggered"):
+                        self.circuit_breaker_log.append({
+                            "date": as_of,
+                            "event": "dispersion_cb_triggered_dec128",
+                            "z_score": _cb_result["z_score"],
+                            "today_dispersion": _cb_result["today_dispersion"],
+                        })
+                        for cand in candidates[:self.max_cands]:
+                            self.skipped_trades.append({
+                                "ticker": cand["ticker"], "date": as_of,
+                                "strategy": cand.get("strategies", [{}])[0].get(
+                                    "strategy", "unknown",
+                                ),
+                                "reason": (
+                                    f"dispersion_cb_dec128_z_"
+                                    f"{_cb_result['z_score']:.2f}"
+                                ),
+                            })
+                        return
+        except Exception as _exc:
+            # Dispersion CB is informational; never fail the run on this path
+            logger.debug("Dispersion CB skipped: %s", _exc)
+
         # -- 6. Open new trades  -  no position cap, no correlation filter,
         #         direction hard block removed; ticker-level concurrent block ON --
         # Track open ticker+strategy combos to avoid exact duplicates only
