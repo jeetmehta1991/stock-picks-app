@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-12T19:27:09.945330+00:00",
+  "generated_at": "2026-05-12T19:31:15.126557+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -26598,52 +26598,58 @@
   ],
   "recent_commits": [
     {
+      "sha": "529ee39a",
+      "subject": "Batch 95: BUG-102 false-positive correction - same-day dedup wired",
+      "author": "jeetmehta1991",
+      "rel_time": "4 minutes ago"
+    },
+    {
       "sha": "b606b380",
       "subject": "Batch 94: BUG-78 false-positive correction - trailing stop lookahead fix wired",
       "author": "jeetmehta1991",
-      "rel_time": "4 minutes ago"
+      "rel_time": "8 minutes ago"
     },
     {
       "sha": "ce28a712",
       "subject": "Batch 93: BUG-104 false-positive correction - compute_portfolio_summary wires tier sizing",
       "author": "jeetmehta1991",
-      "rel_time": "7 minutes ago"
+      "rel_time": "11 minutes ago"
     },
     {
       "sha": "5fca3ab1",
       "subject": "Batch 92: BUG-101 false-positive correction - ticker uniqueness wired",
       "author": "jeetmehta1991",
-      "rel_time": "12 minutes ago"
+      "rel_time": "16 minutes ago"
     },
     {
       "sha": "703bdf62",
       "subject": "Batch 91: BUG-95 false-positive correction - Portfolio class wired Batch 20",
       "author": "jeetmehta1991",
-      "rel_time": "16 minutes ago"
+      "rel_time": "20 minutes ago"
     },
     {
       "sha": "bf2581ce",
       "subject": "Batch 90: BUG-27 regime_confidence intentional Phase-1A deferral confirmed",
       "author": "jeetmehta1991",
-      "rel_time": "19 minutes ago"
+      "rel_time": "23 minutes ago"
     },
     {
       "sha": "a7ce0b2a",
       "subject": "Batch 89: BUG-234 false-positive correction \u00e2\u20ac\u201d VIX hysteresis confirmed wired",
       "author": "jeetmehta1991",
-      "rel_time": "23 minutes ago"
+      "rel_time": "28 minutes ago"
     },
     {
       "sha": "3ff63c2b",
       "subject": "Batch 88: BUG-26 false-positive correction \u00e2\u20ac\u201d DEC-302 VIX/DXY canonical loader",
       "author": "jeetmehta1991",
-      "rel_time": "28 minutes ago"
+      "rel_time": "32 minutes ago"
     },
     {
       "sha": "a2d57ece",
       "subject": "Batch 87: BUG-29 false-positive correction \u00e2\u20ac\u201d open-trades finalize confirmed wired",
       "author": "jeetmehta1991",
-      "rel_time": "32 minutes ago"
+      "rel_time": "36 minutes ago"
     },
     {
       "sha": "2e66a71b",
@@ -26727,7 +26733,7 @@
       "sha": "c79c630b",
       "subject": "Batch 73: DEC-018 GENUINELY WIRED (stop-out cooldown)",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "3636dd1e",
@@ -26770,12 +26776,6 @@
       "subject": "Batch 69 part 1: wiring catalog (owner-mandated audit)",
       "author": "jeetmehta1991",
       "rel_time": "7 hours ago"
-    },
-    {
-      "sha": "eba44e81",
-      "subject": "fix(ci): install statsmodels + scipy in test pyramid workflow",
-      "author": "jeetmehta1991",
-      "rel_time": "15 hours ago"
     }
   ],
   "uncommitted": {
@@ -26973,7 +26973,7 @@
     }
   ],
   "test_inventory": {
-    "total": 1179,
+    "total": 1181,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -27009,7 +27009,7 @@
       "test_fred_alfred_smoke": 5,
       "test_gate_pre_phase_1a_entry": 8,
       "test_gates": 6,
-      "test_integration": 66,
+      "test_integration": 68,
       "test_inv041_path_restricted_commits": 5,
       "test_l146_wave_a_g2_g3_g9": 6,
       "test_l146_wave_b_g7_sec_edgar": 6,

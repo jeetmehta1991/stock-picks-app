@@ -668,6 +668,56 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_bug_103_engine_consumes_smart_money_score_in_tier_assignment():
+    """BUG-103 Batch 96: "Smart money data prefetched for 7 categories x
+    509 tickers but never used by agents/engine" was flagged CRITICAL/
+    OPEN. The smart_money_score helper is now consumed in the engine
+    hot path:
+      - backtest/engine/backtest.py:38 imports smart_money_score
+      - backtest.py:905 calls sm = smart_money_score(ticker, as_of) per
+        candidate (when QUIVER_API_KEY env present; falls back to zero
+        dict otherwise so the rest of the pipeline still runs)
+      - backtest.py:908 sm is passed to _assign_confidence_tier()
+      - _assign_confidence_tier consumes sm.composite_signal +
+        sm.score for tier mapping (AVOID / EXCEPTIONAL / VERY_HIGH /
+        MEDIUM gates)
+      - sm.score is persisted into OpenTrade.smart_money_score (line 1123)
+      - sm dict is forwarded to the agent context at line 1266
+    Source-grep verifies the import + call site + tier-assignment
+    consumption.
+    """
+    from pathlib import Path
+    src = Path("backtest/engine/backtest.py").read_text(encoding="utf-8")
+    # Import + call site
+    assert "from backtest.data.smart_money import smart_money_score" in src
+    assert "smart_money_score(ticker, as_of)" in src
+    # Tier-assignment consumption
+    assert 'sm.get("composite_signal"' in src
+    assert 'sm.get("score"' in src
+    # Persistence on OpenTrade
+    assert "smart_money_score=sm.get" in src
+
+
+def test_bug_103_assign_confidence_tier_upgrades_on_strong_smart_money():
+    """BUG-103 behavior: feed _assign_confidence_tier a strong-signal
+    sm dict + verify the tier upgrades vs. the same input without
+    smart money. Spec: congressional+insider_cluster with 3+ strategies
+    -> EXCEPTIONAL; strategy_count alone with 3 -> HIGH (one tier lower).
+    """
+    from backtest.engine.backtest import BacktestEngine
+    eng = BacktestEngine(universe=["SPY"], run_agents=False, walk_forward=False)
+    # With strong sm signal + 3 strategies
+    sm_strong = {"composite_signal": "congressional+insider_cluster", "score": 5}
+    tier_strong = eng._assign_confidence_tier(3, sm_strong, {}, {})
+    assert tier_strong == "EXCEPTIONAL"
+    # With no sm signal but same 3 strategies -> HIGH (one tier below)
+    sm_none = {"composite_signal": "none", "score": 0}
+    tier_baseline = eng._assign_confidence_tier(3, sm_none, {}, {})
+    assert tier_baseline == "HIGH"
+    # Smart money DID influence the upgrade
+    assert tier_strong != tier_baseline
+
+
 def test_bug_102_engine_dedup_same_day_one_position_per_ticker():
     """BUG-102 Batch 95: "3.5x same-day duplicate inflation: 9,921 unique
     decisions logged as 35k+" - same-day duplicate firings of the same
