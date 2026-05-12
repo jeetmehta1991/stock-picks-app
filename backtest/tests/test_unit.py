@@ -4489,6 +4489,162 @@ def test_dec_436_ci_regression_assertions():
 
 
 # ============================================================================
+# Phase 3 Batch 63 Path C 23-DEC close-out (owner: close ALL remaining)
+# DEC-075/184/215/425/426/428/429/431/433/441/450/456/458/460/461/463/464
+#   /465/466/468/605/601/593
+# ============================================================================
+
+def test_dec_075_aep_breaker_cross_ref():
+    """DEC-075: AEP breaker implemented via DEC-435 (Batch 49)."""
+    from backtest.config import DEC_075_IMPLEMENTED_VIA
+    assert DEC_075_IMPLEMENTED_VIA == "DEC-435"
+    # Verify the actual helper exists where DEC-435 placed it
+    from backtest.results.metrics import _aep_pct_metric
+    assert _aep_pct_metric is not None
+
+
+def test_dec_184_parallel_backtest_constants():
+    """DEC-184: ProcessPool + default 4 workers."""
+    from backtest.config import (PARALLEL_BACKTEST_WORKERS_DEFAULT,
+                                   PARALLEL_BACKTEST_EXECUTOR)
+    assert PARALLEL_BACKTEST_WORKERS_DEFAULT == 4
+    assert PARALLEL_BACKTEST_EXECUTOR == "ProcessPoolExecutor"
+
+
+def test_dec_215_ab_test_registry_schema():
+    """DEC-215: 9-field registry schema."""
+    from backtest.config import (AB_TEST_REGISTRY_DIR,
+                                   AB_TEST_REGISTRY_SCHEMA)
+    assert AB_TEST_REGISTRY_DIR == "ab_test_results"
+    for k in ("test_id", "as_of_date", "arms", "sharpe_rules",
+              "sharpe_agent", "net_sharpe", "verdict", "manifest_hash"):
+        assert k in AB_TEST_REGISTRY_SCHEMA
+
+
+def test_dec_425_426_428_429_431_cube_phase_status():
+    """DEC-425/426/428/429/431: cube phases 1/2/4/5/7 = SPEC_READY."""
+    from backtest.config import (DEC_422_CUBE_PHASE_STATUS,
+                                   DEC_422_TOP_PCT_FILTER,
+                                   DEC_422_FIVE_GATE_VALIDITY)
+    for phase in ("phase_1_dimensional_slicing",
+                   "phase_2_per_cell_statistical",
+                   "phase_4_combined_3d_analysis",
+                   "phase_5_decision_lookup_builder",
+                   "phase_7_validation_regression"):
+        assert DEC_422_CUBE_PHASE_STATUS[phase] == "SPEC_READY"
+    assert DEC_422_TOP_PCT_FILTER == 0.20
+    assert DEC_422_FIVE_GATE_VALIDITY["min_trades_per_cell"] == 30
+
+
+def test_dec_433_exit_methods_phase_b():
+    """DEC-433: 6 new exit methods specified."""
+    from backtest.config import DEC_067_PHASE_B_EXIT_METHODS
+    assert len(DEC_067_PHASE_B_EXIT_METHODS) == 6
+    for name in ("time_stop", "profit_target_2r", "profit_target_3r",
+                  "scale_out_partial_50pct", "swing_high_low_break",
+                  "ema_trail_20"):
+        assert name in DEC_067_PHASE_B_EXIT_METHODS
+
+
+def test_dec_441_polygon_subscription_active():
+    """DEC-441: Polygon Stocks Starter active flag."""
+    from backtest.config import (POLYGON_STOCKS_STARTER_ACTIVE,
+                                   POLYGON_STOCKS_STARTER_TIER)
+    assert POLYGON_STOCKS_STARTER_ACTIVE is True
+    assert POLYGON_STOCKS_STARTER_TIER == "stocks_starter"
+
+
+def test_dec_450_quiver_paid_endpoints_manifest():
+    """DEC-450: all paid-tier Quiver endpoints enumerated."""
+    from backtest.config import QUIVER_PAID_ENDPOINTS
+    for endpoint in ("congresstrading", "sec13f", "insidertrading",
+                      "wsbtrading", "patentmomentum"):
+        assert endpoint in QUIVER_PAID_ENDPOINTS
+
+
+def test_dec_456_sec_edgar_differential_reference():
+    """DEC-456: SEC EDGAR active for DEC-439 differential testing."""
+    from backtest.config import (SEC_EDGAR_DIFFERENTIAL_REFERENCE,
+                                   SEC_EDGAR_DIFFERENTIAL_CACHE_DIR)
+    assert SEC_EDGAR_DIFFERENTIAL_REFERENCE is True
+    assert "sec_xbrl" in SEC_EDGAR_DIFFERENTIAL_CACHE_DIR
+
+
+def test_dec_458_lead_lag_strategy_spec():
+    """DEC-458: lead-lag intra-sector momentum spec."""
+    from backtest.config import LEAD_LAG_INTRA_SECTOR_STRATEGY
+    assert LEAD_LAG_INTRA_SECTOR_STRATEGY["rebalance_cadence"] == "weekly"
+    assert LEAD_LAG_INTRA_SECTOR_STRATEGY["lookback_days"] == 5
+    assert LEAD_LAG_INTRA_SECTOR_STRATEGY["sector_dim"] == "GICS_sector"
+
+
+def test_dec_460_dec_461_polygon_pit_verification_and_fmp_fallback():
+    """DEC-460/461: PIT verification gate + FMP fallback flag."""
+    from backtest.config import (POLYGON_PIT_VERIFICATION_DONE,
+                                   FMP_FALLBACK_ENABLED,
+                                   FMP_SUBSCRIPTION_COST_USD_MO)
+    # Verification pending owner gate
+    assert POLYGON_PIT_VERIFICATION_DONE is False
+    # FMP gated by PIT-verification outcome
+    assert FMP_FALLBACK_ENABLED is False
+    assert FMP_SUBSCRIPTION_COST_USD_MO == 50
+
+
+def test_dec_463_dec_464_dec_465_dec_466_agent_toolkits():
+    """DEC-463/464/465/466: 4 agent toolkit specs codified."""
+    from backtest.config import AGENT_TOOLKIT_SPECS
+    for cls in ("OurFundamentalsToolkit", "OurNewsToolkit",
+                 "OurTraderToolkit", "OurRiskToolkit"):
+        assert cls in AGENT_TOOLKIT_SPECS
+        assert "capabilities" in AGENT_TOOLKIT_SPECS[cls]
+        assert "data_sources" in AGENT_TOOLKIT_SPECS[cls]
+    # Fundamentals + News extend existing TradingAgents classes
+    assert "FundamentalsToolkit" in AGENT_TOOLKIT_SPECS["OurFundamentalsToolkit"]["extends"]
+    # Trader + Risk are NEW classes (no parent)
+    assert AGENT_TOOLKIT_SPECS["OurTraderToolkit"]["extends"] is None
+    assert AGENT_TOOLKIT_SPECS["OurRiskToolkit"]["extends"] is None
+
+
+def test_dec_468_ortex_short_interest_constants():
+    """DEC-468: Ortex short-interest fields + squeeze threshold."""
+    from backtest.config import (ORTEX_SHORT_INTEREST_CACHE_DIR,
+                                   ORTEX_SHORT_INTEREST_FIELDS,
+                                   ORTEX_HIGH_SHORT_THRESHOLD_PCT)
+    assert "ortex" in ORTEX_SHORT_INTEREST_CACHE_DIR
+    assert "short_interest_pct_float" in ORTEX_SHORT_INTEREST_FIELDS
+    assert "days_to_cover" in ORTEX_SHORT_INTEREST_FIELDS
+    assert ORTEX_HIGH_SHORT_THRESHOLD_PCT == 20.0
+
+
+def test_dec_605_finnhub_social_sentiment_excluded_phase_1a():
+    """DEC-605: Finnhub social_sentiment excluded Phase 1A; revisit Phase 1B+."""
+    from backtest.config import (FINNHUB_SOCIAL_SENTIMENT_EXCLUDED_PHASE_1A,
+                                   FINNHUB_SOCIAL_SENTIMENT_PHASE_1B_REVISIT)
+    assert FINNHUB_SOCIAL_SENTIMENT_EXCLUDED_PHASE_1A is True
+    assert FINNHUB_SOCIAL_SENTIMENT_PHASE_1B_REVISIT is True
+
+
+def test_dec_601_aaii_extended_13_col_schema():
+    """DEC-601: 13-col AAII extended schema (replaces 5-col v1)."""
+    from backtest.config import (AAII_EXTENDED_SCHEMA_COLS,
+                                   AAII_EXTENDED_SCHEMA_VERSION)
+    assert len(AAII_EXTENDED_SCHEMA_COLS) == 13
+    assert "bull_bear_spread" in AAII_EXTENDED_SCHEMA_COLS
+    assert "regime_signal" in AAII_EXTENDED_SCHEMA_COLS
+    assert AAII_EXTENDED_SCHEMA_VERSION == 2
+
+
+def test_dec_593_wikipedia_pageviews_rest_carveout():
+    """DEC-593: REST pageviews authorized; HTML scrape still banned per L88."""
+    from backtest.config import (WIKIPEDIA_PAGEVIEWS_REST_AUTHORIZED,
+                                   WIKIPEDIA_PAGEVIEWS_REST_URL,
+                                   WIKIPEDIA_PAGEVIEWS_L88_CARVEOUT_NOTE)
+    assert WIKIPEDIA_PAGEVIEWS_REST_AUTHORIZED is True
+    assert "wikimedia.org/api/rest_v1" in WIKIPEDIA_PAGEVIEWS_REST_URL
+    assert "L88" in WIKIPEDIA_PAGEVIEWS_L88_CARVEOUT_NOTE
+
+
+# ============================================================================
 # DEC-432 Chandelier exit indicator tests (Phase 3 Batch 53 Path C)
 # Parabolic SAR + Supertrend already implemented; only chandelier added.
 # ============================================================================

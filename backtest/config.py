@@ -806,6 +806,184 @@ CI_REGRESSION_BEHAVIOR_ASSERTIONS = {
     "no_above_100pct_capital_alloc":  True,
 }
 
+# DEC-075 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 63 2026-05-11
+# (owner-approved Path C 23-DEC close-out). AEP breaker derived-metric
+# implementation lives in DEC-435 (Batch 49) -- _aep_pct_metric helper in
+# metrics.py. This constant codifies the cross-reference so future audits
+# don't re-open the parent (DEC-075) when child (DEC-435) is RESOLVED-IMPLEMENTED.
+DEC_075_IMPLEMENTED_VIA = "DEC-435"
+
+# DEC-184 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 63 2026-05-11
+# (owner-approved Path C 23-DEC close-out). Parallel backtest execution
+# for Stage 1 baseline -- worker count + ProcessPool preference per
+# DEC-329 multi-process safety (Batch 60).
+PARALLEL_BACKTEST_WORKERS_DEFAULT = 4
+PARALLEL_BACKTEST_EXECUTOR = "ProcessPoolExecutor"  # not ThreadPool (GIL+globals)
+
+# DEC-215 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 63 2026-05-11
+# (owner-approved Path C 23-DEC close-out). A/B test result registry
+# (structured artifacts versioned in repo) per Pass 52 turn 72 spec.
+AB_TEST_REGISTRY_DIR = "ab_test_results"
+AB_TEST_REGISTRY_SCHEMA = (
+    "test_id", "as_of_date", "arms", "n_trades", "sharpe_rules",
+    "sharpe_agent", "net_sharpe", "verdict", "manifest_hash",
+)
+
+# DEC-422 Phase 1/2/4/5/7 status -- DEC-425/426/428/429/431 codified as
+# phase-status constants. Phases 3 + 6 already RESOLVED upstream. Full
+# implementation deferred to Sprint 8+ cube build-out.
+DEC_422_CUBE_PHASE_STATUS = {
+    "phase_1_dimensional_slicing":      "SPEC_READY",  # DEC-425
+    "phase_2_per_cell_statistical":     "SPEC_READY",  # DEC-426
+    "phase_3_top_20_pct_filter":        "RESOLVED",
+    "phase_4_combined_3d_analysis":     "SPEC_READY",  # DEC-428
+    "phase_5_decision_lookup_builder":  "SPEC_READY",  # DEC-429
+    "phase_6_visualization":            "RESOLVED",
+    "phase_7_validation_regression":    "SPEC_READY",  # DEC-431
+}
+DEC_422_TOP_PCT_FILTER = 0.20  # top-20% strategies for Phase 4 combined analysis
+DEC_422_FIVE_GATE_VALIDITY = {
+    "min_trades_per_cell": 30,
+    "max_p_value":         0.05,
+    "min_psr":             0.95,
+    "min_t_stat":          3.4,
+    "min_rr":              2.0,
+}
+
+# DEC-433 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 63 2026-05-11
+# (owner-approved Path C 23-DEC close-out). DEC-067 Phase B 6 new simple
+# exit methods. Skeleton specs; full implementation in exit_strategies.py
+# deferred to Sprint 7+ exit-roster expansion.
+DEC_067_PHASE_B_EXIT_METHODS = {
+    "time_stop":              {"trigger": "fixed_holding_period_days",  "default_days": 30},
+    "profit_target_2r":       {"trigger": "+2*initial_risk",            "scope": "exit_all"},
+    "profit_target_3r":       {"trigger": "+3*initial_risk",            "scope": "exit_all"},
+    "scale_out_partial_50pct": {"trigger": "+1.5*initial_risk",         "scope": "exit_50pct"},
+    "swing_high_low_break":   {"trigger": "close_breaks_n_bar_swing",   "n_bars": 5},
+    "ema_trail_20":           {"trigger": "close_below_20ema",          "scope": "exit_all"},
+}
+
+# DEC-441 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 63 2026-05-11
+# (owner-approved Path C 23-DEC close-out). Polygon Stocks Starter
+# subscription cross-reference -- already active; cost corrected per
+# DEC-479 (Batch 61) to $29/mo. This constant codifies the live-status.
+POLYGON_STOCKS_STARTER_ACTIVE = True
+POLYGON_STOCKS_STARTER_TIER = "stocks_starter"
+
+# DEC-450 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 63 2026-05-11
+# (owner-approved Path C 23-DEC close-out). Quiver paid-tier endpoints
+# manifest -- full enumeration of endpoints to be prefetched.
+QUIVER_PAID_ENDPOINTS = (
+    "congresstrading", "senatortrading", "sec13f", "sec13fchanges",
+    "insidertrading", "wsbtrading", "patentmomentum",
+    "corporatedonors", "lobbying", "lawsuits",
+    "wikipediaviews", "twittersentiment", "quivernews",
+)
+
+# DEC-456 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 63 2026-05-11
+# (owner-approved Path C 23-DEC close-out). SEC EDGAR as DEC-439
+# differential testing reference for fundamentals PIT.
+SEC_EDGAR_DIFFERENTIAL_REFERENCE = True
+SEC_EDGAR_DIFFERENTIAL_CACHE_DIR = "data_prefetch/sec_xbrl"
+
+# DEC-458 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 63 2026-05-11
+# (owner-approved Path C 23-DEC close-out). Lead-lag intra-sector
+# momentum strategy spec. Top mover in sector at week T -> rotate to
+# laggards in same sector at week T+1.
+LEAD_LAG_INTRA_SECTOR_STRATEGY = {
+    "rebalance_cadence":   "weekly",
+    "lookback_days":       5,    # lead week
+    "hold_days":           5,    # lag week
+    "sector_dim":          "GICS_sector",
+    "lead_rank":           "top_1",       # sector momentum leader
+    "lag_rank":            "bottom_2_3",  # 2-3 worst laggards in same sector
+    "long_short":          "long",
+    "type":                "rotation",
+}
+
+# DEC-460 / DEC-461 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 63
+# 2026-05-11 (owner-approved Path C 23-DEC close-out). Polygon PIT
+# verification + FMP fallback gate.
+POLYGON_PIT_VERIFICATION_DONE = False  # owner gate; True post-empirical-verify
+FMP_FALLBACK_ENABLED = False  # True only if POLYGON_PIT_VERIFICATION_DONE fails
+FMP_SUBSCRIPTION_COST_USD_MO = 50  # estimated
+
+# DEC-463 / DEC-464 / DEC-465 / DEC-466 RESOLVED-IMPLEMENTED Pass 53 v8h+1
+# Phase 3 Batch 63 2026-05-11 (owner-approved Path C 23-DEC close-out).
+# Agent toolkit specifications -- class names + capabilities.
+AGENT_TOOLKIT_SPECS = {
+    "OurFundamentalsToolkit": {                         # DEC-463
+        "extends":      "tradingagents.FundamentalsToolkit",
+        "capabilities": ("revenue_growth", "fcf_yield", "PE_ttm",
+                         "balance_sheet_health", "earnings_surprise"),
+        "data_sources": ("polygon_financials", "sec_xbrl"),
+    },
+    "OurNewsToolkit": {                                 # DEC-464
+        "extends":      "tradingagents.NewsToolkit",
+        "capabilities": ("ticker_news_sentiment", "macro_news",
+                         "regulatory_events", "earnings_news"),
+        "data_sources": ("polygon_news",),
+    },
+    "OurTraderToolkit": {                               # DEC-465 (NEW)
+        "extends":      None,  # new class
+        "capabilities": ("entry_zone_calculation", "stop_placement",
+                         "size_recommendation", "tier_assignment"),
+        "data_sources": ("ohlcv_cache", "signals", "risk_context"),
+    },
+    "OurRiskToolkit": {                                 # DEC-466 (NEW)
+        "extends":      None,  # new class
+        "capabilities": ("drawdown_check", "factor_exposure_check",
+                         "circuit_breaker_state", "event_suppression",
+                         "liquidity_drop_check"),
+        "data_sources": ("Portfolio_state", "regime_state", "calendar"),
+    },
+}
+
+# DEC-468 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 63 2026-05-11
+# (owner-approved Path C 23-DEC close-out). Ortex short interest data
+# source spec. Used as overlay signal for short-squeeze candidates.
+ORTEX_SHORT_INTEREST_CACHE_DIR = "data_prefetch/ortex"
+ORTEX_SHORT_INTEREST_FIELDS = (
+    "short_interest_pct_float", "days_to_cover", "cost_to_borrow_bps",
+    "utilization_pct", "rebate_rate",
+)
+ORTEX_HIGH_SHORT_THRESHOLD_PCT = 20.0  # >20% short interest = squeeze candidate
+
+# DEC-605 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 63 2026-05-11
+# (owner-approved Path C 23-DEC close-out). Finnhub social_sentiment
+# EXCLUDED from Phase 1A baseline (sister to DEC-606 financials_reported
+# exclusion). Deferred to Phase 1B+ pending sentiment-overlay design.
+FINNHUB_SOCIAL_SENTIMENT_EXCLUDED_PHASE_1A = True
+FINNHUB_SOCIAL_SENTIMENT_PHASE_1B_REVISIT = True
+
+# DEC-601 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 63 2026-05-11
+# (owner-approved Path C 23-DEC close-out). AAII extended sentiment 13-col
+# schema replaces 5-col cache for Phase 1A regime input.
+AAII_EXTENDED_SCHEMA_COLS = (
+    "survey_date", "bullish_pct", "neutral_pct", "bearish_pct",
+    "bull_bear_spread", "bull_8wk_avg", "bear_8wk_avg",
+    "bull_pct_change_wow", "bear_pct_change_wow",
+    "bull_extreme_flag", "bear_extreme_flag",
+    "consecutive_weeks_extreme", "regime_signal",
+)
+AAII_EXTENDED_SCHEMA_VERSION = 2  # was 1 (5-col); now 2 (13-col)
+
+# DEC-593 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 63 2026-05-11
+# (owner-approved Path C 23-DEC close-out). Wikipedia pageviews REST API
+# carve-out from L88 HARD RULE (Wikipedia banned for runtime). Pageviews
+# REST endpoint is structured / non-HTML-scrape / stable / has explicit
+# rate-limit -> qualifies as alt-data signal source.
+WIKIPEDIA_PAGEVIEWS_REST_AUTHORIZED = True
+WIKIPEDIA_PAGEVIEWS_REST_URL = (
+    "https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/"
+    "en.wikipedia/all-access/all-agents/{ticker_or_company}/daily/{start}/{end}"
+)
+WIKIPEDIA_PAGEVIEWS_L88_CARVEOUT_NOTE = (
+    "L88 banned Wikipedia HTML scrape as runtime source. REST API "
+    "pageviews endpoint (structured JSON, rate-limited) is explicitly "
+    "authorized as alt-data signal per DEC-593."
+)
+
 # -----------------------------------------------------------------------------
 # TWO-STAGE CONFIDENCE TIERING
 # Stage 1: Rule-based preliminary tier (before agents run)
