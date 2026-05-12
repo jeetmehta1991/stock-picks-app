@@ -439,6 +439,111 @@ CASH_MANAGEMENT_NOTE = (
 # family in dashboards + DEC-422 cube dim.
 STRATEGY_TRIGGER_TYPES = ("catalyst", "technical", "stat_arb")
 
+# DEC-213 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 60 2026-05-11
+# (owner-approved Path C 20-DEC bundle). Both-rationales storage schema:
+# every trade stores BOTH rules-only rationale AND agent rationale, even
+# if only one arm executed. Enables zero-cost retroactive A/B comparison.
+# Joint DEC-189 10-point rationale depth standard.
+TRADE_RATIONALE_FIELDS = (
+    "rules_rationale", "agent_rationale",
+    "rules_action", "agent_action",
+    "rationale_version", "rationale_timestamp",
+)
+
+# DEC-214 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 60 2026-05-11
+# (owner-approved Path C 20-DEC bundle). Quarterly re-validation cadence for
+# agent A/B test (model drift / cost drift). 90 days matches DEC-290 dropped-
+# strategy re-eval cadence for consistent project rhythm.
+AGENT_AB_REVALIDATION_DAYS = 90
+AGENT_AB_DECAY_NET_SHARPE_FLOOR = 0.20  # below this triggers ALERT_AGENT_DECAY
+
+# DEC-234 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 60 2026-05-11
+# (owner-approved Path C 20-DEC bundle). Ticker lifecycle event handler
+# schema. Joint DEC-380 Polygon corp-actions integration (provides rename
+# /merger data). Schema fields tracked per ticker history row.
+TICKER_LIFECYCLE_FIELDS = (
+    "ticker", "cusip", "isin", "event_type", "event_date",
+    "predecessor_ticker", "successor_ticker", "note",
+)
+TICKER_LIFECYCLE_EVENT_TYPES = (
+    "rename", "merger", "spinoff", "delisting", "share_class_change",
+)
+
+# DEC-253 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 60 2026-05-11
+# (owner-approved Path C 20-DEC bundle). Interlisted security routing rule
+# per Pass 52 turn 91 spec: TSX-CAD if interlisted AND trade size <= $50K
+# AND TSX volume >= 100K shares/day; US-NYSE otherwise.
+INTERLISTED_ROUTING_TRADE_SIZE_THRESHOLD_USD = 50_000
+INTERLISTED_ROUTING_TSX_MIN_ADV_SHARES = 100_000
+INTERLISTED_PREFERRED_CANADIAN_BANKS = ("TD", "RY", "BNS", "ENB", "CNQ", "SU")
+
+# DEC-254 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 60 2026-05-11
+# (owner-approved Path C 20-DEC bundle). ETF substitution table for
+# index-strategy CAD-funded execution per Pass 52 turn 91 spec.
+# Default unhedged per medium-high risk profile (DEC-090 owner-accepts).
+ETF_TSX_SUBSTITUTION = {
+    "SPY": "XUU.TO",   # iShares Core S&P 500 (CAD-unhedged)
+    "QQQ": "XQQ.TO",   # iShares NASDAQ-100 (CAD-unhedged)
+    "IWM": "XSU.TO",   # iShares Russell 2000 (CAD-unhedged)
+    "VTI": "VUN.TO",   # Vanguard US Total Market (CAD-unhedged)
+}
+
+# DEC-263 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 60 2026-05-11
+# (owner-approved Path C 20-DEC bundle). Burst-day stress test scope per
+# Pass 52 turn 91 spec: top-20 high-vol days from 2018-present sample
+# (2018 Volmageddon, 2020 COVID, 2022 Fed pivots, 2008 GFC if extended).
+BURST_DAY_STRESS_TOP_N = 20
+BURST_DAY_STRESS_START_YEAR = 2018
+
+# DEC-265 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 60 2026-05-11
+# (owner-approved Path C 20-DEC bundle; absorbed by DEC-426 5-gate validity).
+# Smoke test minimum sample = n >= 30 per cell (matches DEC-426).
+SMOKE_TEST_MIN_TRADES_PER_CELL = 30
+SMOKE_TEST_INSUFFICIENT_SAMPLE_LABEL = "INSUFFICIENT_SAMPLE"
+
+# DEC-290 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 60 2026-05-11
+# (owner-approved Path C 20-DEC bundle). Dropped strategy re-evaluation
+# cadence per Pass 52 turn 56 spec: QUARTERLY (3 months) per strategy
+# decay risk DEC-249/250. Originally 6 months (recommended), tightened to 3.
+DROPPED_STRATEGY_REEVAL_DAYS = 90
+
+# DEC-349 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 60 2026-05-11
+# (owner-approved Path C 20-DEC bundle). Asymmetric event window
+# (replaces symmetric window_days=2) per Pass 52 turn 89 spec:
+# pre_days=1, post_days=3 (pre-event drift ~1d; post-event vol persists 2-3d).
+# REVISIT_AFTER_BACKTEST tag for Phase 1B-alpha empirical tuning.
+EVENT_WINDOW_PRE_DAYS  = 1
+EVENT_WINDOW_POST_DAYS = 3
+
+# DEC-364 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 60 2026-05-11
+# (owner-approved Path C 20-DEC bundle). Tier 3 momentum watchlist size
+# per Pass 52 owner directive "Tier 3 - expand to 100".
+TIER_3_MAX_TICKERS = 100
+
+# DEC-332 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 60 2026-05-11
+# (owner-approved Path C 20-DEC bundle). Smart money composite scoring
+# weights moved from hardcoded magic to config with canonical Pass 53 B1
+# values. Tunable post-Phase-1B-alpha per DEC-072.
+SMART_MONEY_CONGRESSIONAL_WEIGHTS = {
+    "strong_buy": +4, "buy": +2, "sell": -3,
+}
+SMART_MONEY_INSIDER_WEIGHTS = {
+    "strong_buy": +4, "buy": +2, "weak_buy": +1, "cluster_sell": -3,
+}
+SMART_MONEY_INSTITUTIONAL_WEIGHTS = {
+    "strong_buy": +2, "buy": +1, "negative": -1,
+}
+SMART_MONEY_VETO_SCORE = -5  # cong=sell AND ins=cluster_sell -> -5 override
+
+# DEC-335 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 60 2026-05-11
+# (owner-approved Path C 20-DEC bundle). composite_score weights moved
+# from hardcoded 40/30/30 to configurable. Default preserves legacy weighting.
+COMPOSITE_SCORE_WEIGHTS = {
+    "win_rate":      0.40,
+    "profit_factor": 0.30,
+    "smart_money":   0.30,
+}
+
 # -----------------------------------------------------------------------------
 # TWO-STAGE CONFIDENCE TIERING
 # Stage 1: Rule-based preliminary tier (before agents run)

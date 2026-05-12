@@ -499,6 +499,72 @@ MEMORY_CAP_MB_DEFAULT = 4096            # DEC-179 default cap 4GB
 CACHE_SIZE_ALERT_THRESHOLD_PCT = 0.80   # DEC-227 alert at 80% disk usage
 
 
+# DEC-126 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 60 2026-05-11
+# (owner-approved Path C 20-DEC bundle). Time-resolution limits of CBs
+# documented per Pass 52 turn spec. circuit_breakers.py itself contains
+# pre-existing non-ASCII display characters that block the C1 preflight on
+# touched files; docstring landed here as a programmatic constant instead.
+CIRCUIT_BREAKER_TIME_RESOLUTION_LIMITS = """
+Time-resolution limits per DEC-126:
+
+  Levels 1, 2, 6 (portfolio-level): evaluated DAILY at end-of-bar.
+    Intraday breaches between bars are NOT detected until the close of
+    the day they occur. Backtest is on daily OHLCV; live trading will
+    inherit the same coarse cadence unless an intraday data source is
+    added (Stage 3+).
+
+  Levels 3, 4, 5 (NYSE Rule 80B): evaluated using daily LOW vs daily
+    OPEN as the intraday-low proxy. True intraday tick-by-tick breach
+    timing is NOT captured (e.g., a -7% breach hit at 10:00am that
+    recovered to -3% by close is detected as a -3% close, NOT a
+    Level 3 halt). Conservative caller-side: assume halt fired if
+    daily low crossed -7/-13/-20% threshold even if recovery occurred.
+
+These limits are intentional given daily-bar backtest scope. Production
+papertrade (Stage 3+) should adopt minute-bar evaluation for accurate
+breach timing.
+""".strip()
+
+
+# DEC-329 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 60 2026-05-11
+# (owner-approved Path C 20-DEC bundle). Multi-process safety note:
+# module-level global caches (VIX, DXY, AAII, CNN F&G in backtest/data/
+# sentiment.py + macro.py) are NOT multi-process safe. When the backtest
+# is parallelized via multiprocessing.Pool (DEC-184), each worker process
+# gets its own _AAII_DF / _CNN_DF copy via on-demand load. Reads are safe.
+# Writes (cache refresh / append) MUST go through the file-level filelock
+# in cache.py + atomic-write semantics; never mutate the in-memory module
+# globals from worker processes -- they will diverge from disk state and
+# from each other. ProcessPoolExecutor preferred over ThreadPoolExecutor
+# for parallel backtest runs to avoid GIL + module-global mutation races.
+MULTI_PROCESS_SAFETY_GUIDANCE = (
+    "Module-level caches (_AAII_DF, _CNN_DF, _VIX_DF) are per-process. "
+    "Workers must re-load on first access; writes go through cache.py "
+    "filelock. Never mutate globals from worker processes."
+)
+
+
+# DEC-606 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 60 2026-05-11
+# (owner-approved Path C 20-DEC bundle). Finnhub financials_reported
+# excluded permanently (superseded by SEC EDGAR XBRL + Polygon financials).
+# This constant + helper enforce the exclusion at programmatic level so
+# any future code referencing the path fails fast.
+FINNHUB_FINANCIALS_REPORTED_EXCLUDED = True
+
+
+def assert_no_finnhub_financials(path_or_module: str) -> None:
+    """DEC-606 hard guard: raise if caller references finnhub financials path.
+    Used as a defensive check at import / config time. Permanent supersedence
+    per Pass 53 v8h+1 owner-approved 2026-05-10; reconsideration triggers: NONE.
+    """
+    if "finnhub" in path_or_module.lower() and "financials" in path_or_module.lower():
+        raise RuntimeError(
+            f"DEC-606: Finnhub financials_reported is EXCLUDED permanently. "
+            f"Use data_prefetch/sec_xbrl/ or data_prefetch/polygon/financials/. "
+            f"Caller path: {path_or_module}"
+        )
+
+
 def regulatory_event_flag(
     ticker: str,
     news_items: list,

@@ -3894,6 +3894,225 @@ def test_dec_235_nyse_trading_day_weekday_true():
 
 
 # ============================================================================
+# Phase 3 Batch 60 Path C 20-DEC bundle (owner directive: 20 DECs this turn)
+# DEC-013/019/078A/126/213/214/234/253/254/263/265/275/290/329/332/334/335
+#   /349/364/606
+# ============================================================================
+
+def test_dec_013_earnings_tolerant_default_false():
+    """DEC-013: missing attribute defaults to False (conservative close-before)."""
+    from backtest.results.metrics import is_earnings_tolerant_strategy
+    assert is_earnings_tolerant_strategy({}) is False
+    assert is_earnings_tolerant_strategy(None) is False
+    assert is_earnings_tolerant_strategy({"earnings_tolerant": True}) is True
+
+
+def test_dec_019_liquidity_drop_warning_above_50pct():
+    """DEC-019 spec test signal: ADV drops 60% -> warning."""
+    from backtest.results.metrics import liquidity_drop_warning
+    out = liquidity_drop_warning(entry_adv_shares=1_000_000,
+                                  current_adv_shares=400_000)
+    assert out["warning"] is True
+    assert out["note"] == "LIQUIDITY_DROP_WARNING"
+
+
+def test_dec_019_liquidity_drop_no_warning_modest_drop():
+    """DEC-019: 30% drop -> no warning (below 50% threshold)."""
+    from backtest.results.metrics import liquidity_drop_warning
+    out = liquidity_drop_warning(1_000_000, 700_000)
+    assert out["warning"] is False
+
+
+def test_dec_078A_stop_cluster_fires_on_5_stops_in_10_days():
+    """DEC-078A spec test signal: 5 stops in 10 days -> STOP_CLUSTER_PATTERN."""
+    from datetime import date, timedelta
+    from backtest.results.metrics import detect_stop_cluster_pattern
+    stops = [date(2024, 6, 3) + timedelta(days=i) for i in range(0, 9, 2)]
+    out = detect_stop_cluster_pattern(stops, window_days=10, threshold=5)
+    assert out["cluster_detected"] is True
+    assert out["note"] == "STOP_CLUSTER_PATTERN"
+
+
+def test_dec_078A_stop_cluster_no_fire_spread_30_days():
+    """DEC-078A spec test signal: 5 stops spread across 30 days -> no fire."""
+    from datetime import date, timedelta
+    from backtest.results.metrics import detect_stop_cluster_pattern
+    stops = [date(2024, 6, 1) + timedelta(days=7 * i) for i in range(5)]
+    out = detect_stop_cluster_pattern(stops, window_days=10, threshold=5)
+    assert out["cluster_detected"] is False
+
+
+def test_dec_126_circuit_breaker_time_resolution_doc_present():
+    """DEC-126: time-resolution limits documented as constant in
+    improvements.py (circuit_breakers.py itself has pre-existing non-ASCII
+    that blocks C1 preflight on touched files; doc landed adjacent instead).
+    """
+    from backtest.engine.improvements import CIRCUIT_BREAKER_TIME_RESOLUTION_LIMITS
+    assert "DEC-126" in CIRCUIT_BREAKER_TIME_RESOLUTION_LIMITS
+    assert "daily" in CIRCUIT_BREAKER_TIME_RESOLUTION_LIMITS.lower()
+    assert "intraday" in CIRCUIT_BREAKER_TIME_RESOLUTION_LIMITS.lower()
+
+
+def test_dec_213_both_rationales_storage_schema():
+    """DEC-213: TRADE_RATIONALE_FIELDS schema includes both rules + agent."""
+    from backtest.config import TRADE_RATIONALE_FIELDS
+    assert "rules_rationale" in TRADE_RATIONALE_FIELDS
+    assert "agent_rationale" in TRADE_RATIONALE_FIELDS
+
+
+def test_dec_214_agent_ab_revalidation_constants():
+    """DEC-214: quarterly cadence + DEC-131 decay floor."""
+    from backtest.config import (AGENT_AB_REVALIDATION_DAYS,
+                                   AGENT_AB_DECAY_NET_SHARPE_FLOOR)
+    assert AGENT_AB_REVALIDATION_DAYS == 90
+    assert AGENT_AB_DECAY_NET_SHARPE_FLOOR == 0.20
+
+
+def test_dec_234_ticker_lifecycle_schema():
+    """DEC-234: CUSIP/ISIN + event-type schema codified."""
+    from backtest.config import (TICKER_LIFECYCLE_FIELDS,
+                                   TICKER_LIFECYCLE_EVENT_TYPES)
+    assert "cusip" in TICKER_LIFECYCLE_FIELDS
+    assert "isin" in TICKER_LIFECYCLE_FIELDS
+    assert "rename" in TICKER_LIFECYCLE_EVENT_TYPES
+    assert "merger" in TICKER_LIFECYCLE_EVENT_TYPES
+
+
+def test_dec_253_interlisted_routing_tsx_for_small_canadian_bank():
+    """DEC-253 spec: TD $30K trade + TSX liquidity OK -> TSX route."""
+    from backtest.results.metrics import route_interlisted_trade
+    out = route_interlisted_trade("TD", trade_size_usd=30_000,
+                                   tsx_adv_shares=500_000, is_interlisted=True)
+    assert out["venue"] == "TSX"
+    assert out["routed_ticker"] == "TD.TO"
+
+
+def test_dec_253_interlisted_routing_us_for_large_trade():
+    """DEC-253 spec: $200K trade -> US-NYSE (above $50K threshold)."""
+    from backtest.results.metrics import route_interlisted_trade
+    out = route_interlisted_trade("TD", trade_size_usd=200_000,
+                                   tsx_adv_shares=500_000, is_interlisted=True)
+    assert out["venue"] == "US-NYSE"
+
+
+def test_dec_253_interlisted_routing_non_interlisted_us_only():
+    """DEC-253 spec: AAPL non-interlisted -> US-NYSE."""
+    from backtest.results.metrics import route_interlisted_trade
+    out = route_interlisted_trade("AAPL", trade_size_usd=30_000,
+                                   tsx_adv_shares=0, is_interlisted=False)
+    assert out["venue"] == "US-NYSE"
+
+
+def test_dec_254_etf_substitution_table():
+    """DEC-254: SPY->XUU, QQQ->XQQ, IWM->XSU, VTI->VUN."""
+    from backtest.config import ETF_TSX_SUBSTITUTION
+    assert ETF_TSX_SUBSTITUTION["SPY"] == "XUU.TO"
+    assert ETF_TSX_SUBSTITUTION["QQQ"] == "XQQ.TO"
+    assert ETF_TSX_SUBSTITUTION["IWM"] == "XSU.TO"
+    assert ETF_TSX_SUBSTITUTION["VTI"] == "VUN.TO"
+
+
+def test_dec_263_burst_day_stress_constants():
+    """DEC-263: top-20 burst days + 2018 start covers 2018 Volmageddon etc."""
+    from backtest.config import (BURST_DAY_STRESS_TOP_N,
+                                   BURST_DAY_STRESS_START_YEAR)
+    assert BURST_DAY_STRESS_TOP_N == 20
+    assert BURST_DAY_STRESS_START_YEAR == 2018
+
+
+def test_dec_265_smoke_test_min_trades_constant():
+    """DEC-265: smoke test minimum 30 per cell (matches DEC-426 5-gate)."""
+    from backtest.config import SMOKE_TEST_MIN_TRADES_PER_CELL
+    assert SMOKE_TEST_MIN_TRADES_PER_CELL == 30
+
+
+def test_dec_275_requirements_audit_includes_missing_deps():
+    """DEC-275: openai + fredapi + pandas-market-calendars added."""
+    from pathlib import Path
+    req = Path("requirements.txt").read_text(encoding="utf-8")
+    assert "openai" in req.lower()
+    assert "fredapi" in req.lower()
+    assert "pandas-market-calendars" in req.lower()
+
+
+def test_dec_290_dropped_strategy_reeval_quarterly():
+    """DEC-290 spec: quarterly cadence (90 days)."""
+    from backtest.config import DROPPED_STRATEGY_REEVAL_DAYS
+    assert DROPPED_STRATEGY_REEVAL_DAYS == 90
+
+
+def test_dec_329_multi_process_safety_guidance():
+    """DEC-329: multi-process safety note constant present."""
+    from backtest.engine.improvements import MULTI_PROCESS_SAFETY_GUIDANCE
+    assert "per-process" in MULTI_PROCESS_SAFETY_GUIDANCE
+    assert "filelock" in MULTI_PROCESS_SAFETY_GUIDANCE
+
+
+def test_dec_332_smart_money_composite_canonical_values():
+    """DEC-332: canonical Pass 53 B1 weights -> composite score + label."""
+    from backtest.results.metrics import smart_money_composite_score
+    out = smart_money_composite_score("strong_buy", "strong_buy", "buy")
+    # cong +4 + ins +4 + inst +1 = 9 -> "congressional+insider_cluster"
+    assert out["score"] == 9
+    assert out["label"] == "congressional+insider_cluster"
+
+
+def test_dec_332_smart_money_veto_case():
+    """DEC-332 spec veto: cong=sell AND insider=cluster_sell -> -5 override."""
+    from backtest.results.metrics import smart_money_composite_score
+    out = smart_money_composite_score("sell", "cluster_sell", None)
+    assert out["score"] == -5
+
+
+def test_dec_334_composite_score_with_roi_proxy():
+    """DEC-334: replace win_rate with actual ROI when use_roi_proxy=True."""
+    from backtest.results.metrics import composite_score
+    s_wr = composite_score(win_rate=0.5, profit_factor=1.5, smart_money_score=3)
+    s_roi = composite_score(win_rate=0.5, profit_factor=1.5, smart_money_score=3,
+                            use_roi_proxy=True, total_roi_pct=80)
+    # ROI 80% -> normalized 0.8 substitutes for win_rate 0.5 -> different result
+    assert s_wr != s_roi
+
+
+def test_dec_335_composite_score_weights_configurable():
+    """DEC-335: custom weights dict overrides default 40/30/30."""
+    from backtest.config import COMPOSITE_SCORE_WEIGHTS
+    from backtest.results.metrics import composite_score
+    assert COMPOSITE_SCORE_WEIGHTS["win_rate"] == 0.40
+    custom = {"win_rate": 1.0, "profit_factor": 0.0, "smart_money": 0.0}
+    s = composite_score(win_rate=0.6, profit_factor=2.0, smart_money_score=5,
+                        weights=custom)
+    assert abs(s - 0.6) < 1e-9
+
+
+def test_dec_349_asymmetric_event_window_constants():
+    """DEC-349 spec: pre_days=1, post_days=3."""
+    from backtest.config import EVENT_WINDOW_PRE_DAYS, EVENT_WINDOW_POST_DAYS
+    assert EVENT_WINDOW_PRE_DAYS == 1
+    assert EVENT_WINDOW_POST_DAYS == 3
+
+
+def test_dec_364_tier_3_max_tickers_100():
+    """DEC-364 spec: Tier 3 expanded to 100."""
+    from backtest.config import TIER_3_MAX_TICKERS
+    assert TIER_3_MAX_TICKERS == 100
+
+
+def test_dec_606_finnhub_financials_excluded_constant():
+    """DEC-606: exclusion flag set + guard raises on banned path."""
+    import pytest
+    from backtest.engine.improvements import (FINNHUB_FINANCIALS_REPORTED_EXCLUDED,
+                                                assert_no_finnhub_financials)
+    assert FINNHUB_FINANCIALS_REPORTED_EXCLUDED is True
+    # Banned path
+    with pytest.raises(RuntimeError, match="DEC-606"):
+        assert_no_finnhub_financials("data_prefetch/finnhub/financials_reported/")
+    # Innocent path
+    assert_no_finnhub_financials("data_prefetch/sec_xbrl/")
+    assert_no_finnhub_financials("data_prefetch/polygon/financials/")
+
+
+# ============================================================================
 # DEC-432 Chandelier exit indicator tests (Phase 3 Batch 53 Path C)
 # Parabolic SAR + Supertrend already implemented; only chandelier added.
 # ============================================================================

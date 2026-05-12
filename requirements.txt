@@ -25,3 +25,16 @@ filelock>=1.4.0
 # split-sample structural break test (DEC-416) on per-strategy equity curves.
 # Standard econometrics library; scipy and numpy already present.
 statsmodels>=0.14.0
+
+# DEC-275 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 60 2026-05-11
+# (owner-approved Path C 20-DEC bundle). requirements.txt audit per Pass 52
+# turn 117 spec: add openai (TradingAgents LLM client per DEC-051) and
+# fredapi (FRED expansion per DEC-407/448). tradingagents library is a
+# vendored fork (see vendored/tradingagents/) not pip-installable; install
+# via `pip install -e vendored/tradingagents/` at session setup.
+openai>=1.10.0
+fredapi>=0.5.1
+
+# DEC-235 Pass 53 v8h+1 Phase 3 Batch 59 - NYSE calendar handling per
+# Pass 52 turn 58 spec. Stdlib fallback (Mon-Fri only) when not installed.
+pandas-market-calendars>=4.3.0

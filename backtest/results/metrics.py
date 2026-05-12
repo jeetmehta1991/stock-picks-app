@@ -740,6 +740,191 @@ def compute_per_regime_agent_verdict(
     return out
 
 
+def is_earnings_tolerant_strategy(strategy_attributes: dict) -> bool:
+    """DEC-013 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 60 2026-05-11
+    (owner-approved Path C 20-DEC bundle). Helper that resolves a strategy's
+    `earnings_tolerant` flag from its attribute dict. REVISED Pass 24
+    semantics: True means the strategy can hold through earnings; False
+    means strategy must close before earnings within DEC-348 window.
+
+    Default: False (conservative; close before earnings unless explicitly
+    flagged tolerant).
+
+    Inputs: dict of strategy attributes (from STRATEGY_REGISTER or class
+    attribute).
+    Returns bool.
+    """
+    if not strategy_attributes:
+        return False
+    return bool(strategy_attributes.get("earnings_tolerant", False))
+
+
+def liquidity_drop_warning(
+    entry_adv_shares: float,
+    current_adv_shares: float,
+    drop_threshold_pct: float = 50.0,
+) -> dict:
+    """DEC-019 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 60 2026-05-11
+    (owner-approved Path C 20-DEC bundle). Liquidity-drop re-validation per
+    Pass 52 turn 115 spec (BUG-135 closure): liquidity applied at entry;
+    re-validate at exit only if ADV drops > 50% from entry-day ADV. Joint
+    DEC-321 fail-closed + DEC-366 tier-specific floors.
+
+    Returns dict with warning (bool), drop_pct, note.
+    """
+    if entry_adv_shares is None or entry_adv_shares <= 0:
+        return {"warning": False, "drop_pct": None, "note": "no_entry_adv"}
+    if current_adv_shares is None:
+        return {"warning": False, "drop_pct": None, "note": "no_current_adv"}
+    drop_pct = (entry_adv_shares - current_adv_shares) / entry_adv_shares * 100.0
+    warning = bool(drop_pct > drop_threshold_pct)
+    return {
+        "warning":  warning,
+        "drop_pct": round(float(drop_pct), 2),
+        "note":     "LIQUIDITY_DROP_WARNING" if warning else "ok",
+    }
+
+
+def detect_stop_cluster_pattern(
+    stop_dates,
+    window_days: int = 10,
+    threshold: int = 5,
+) -> dict:
+    """DEC-078A RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 60 2026-05-11
+    (owner-approved Path C 20-DEC bundle). Stop-out cluster diagnostic per
+    Pass 52 spec: rolling-window stop density. If >= threshold stop_loss
+    exit_reasons within window_days, flag STOP_CLUSTER_PATTERN
+    (informational only; no action taken).
+
+    Inputs:
+      stop_dates: iterable of stop-out exit dates (date or pd.Timestamp)
+      window_days: rolling window (default 10 trading days)
+      threshold: minimum stops within window to fire (default 5)
+
+    Returns dict with cluster_detected (bool), max_density, note.
+    """
+    import pandas as pd
+    if not stop_dates or len(stop_dates) < threshold:
+        return {"cluster_detected": False, "max_density": 0,
+                "note": "insufficient_stops"}
+    dates = sorted(pd.to_datetime(list(stop_dates)).tolist())
+    max_density = 0
+    for i in range(len(dates)):
+        window_end = dates[i] + pd.Timedelta(days=window_days)
+        density = sum(1 for d in dates[i:] if d <= window_end)
+        if density > max_density:
+            max_density = density
+    return {
+        "cluster_detected": max_density >= threshold,
+        "max_density":      int(max_density),
+        "note":             "STOP_CLUSTER_PATTERN" if max_density >= threshold else "ok",
+    }
+
+
+def route_interlisted_trade(
+    ticker: str,
+    trade_size_usd: float,
+    tsx_adv_shares: float,
+    is_interlisted: bool,
+) -> dict:
+    """DEC-253 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 60 2026-05-11
+    (owner-approved Path C 20-DEC bundle). Interlisted security routing per
+    Pass 52 turn 91 spec: TSX-CAD if interlisted AND trade_size <= $50K AND
+    TSX ADV >= 100K; otherwise US-NYSE.
+
+    Returns dict with venue ('TSX' / 'US-NYSE'), routed_ticker, reason.
+    """
+    from backtest.config import (INTERLISTED_ROUTING_TRADE_SIZE_THRESHOLD_USD,
+                                  INTERLISTED_ROUTING_TSX_MIN_ADV_SHARES)
+    if not is_interlisted:
+        return {"venue": "US-NYSE", "routed_ticker": ticker,
+                "reason": "not_interlisted"}
+    if trade_size_usd > INTERLISTED_ROUTING_TRADE_SIZE_THRESHOLD_USD:
+        return {"venue": "US-NYSE", "routed_ticker": ticker,
+                "reason": "trade_size_above_threshold"}
+    if tsx_adv_shares < INTERLISTED_ROUTING_TSX_MIN_ADV_SHARES:
+        return {"venue": "US-NYSE", "routed_ticker": ticker,
+                "reason": "tsx_liquidity_below_floor"}
+    return {
+        "venue":          "TSX",
+        "routed_ticker":  f"{ticker}.TO",
+        "reason":         "interlisted_size_and_liquidity_ok",
+    }
+
+
+def composite_score(
+    win_rate: float,
+    profit_factor: float,
+    smart_money_score: float,
+    weights: dict = None,
+    use_roi_proxy: bool = False,
+    total_roi_pct: float = None,
+) -> float:
+    """DEC-334 + DEC-335 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 60
+    2026-05-11 (owner-approved Path C 20-DEC bundle). Configurable composite
+    score replacing prior hardcoded 40/30/30 weighting (DEC-335) and adding
+    optional ROI substitution for win_rate proxy (DEC-334).
+
+    Inputs:
+      win_rate: 0-1
+      profit_factor: typically 0.5-3.0
+      smart_money_score: configurable scale (e.g. -5..+6)
+      weights: dict overriding COMPOSITE_SCORE_WEIGHTS defaults
+      use_roi_proxy: when True, substitute total_roi_pct (normalized) for
+        win_rate per DEC-334 spec (replace win_rate as ROI proxy with actual ROI)
+      total_roi_pct: required when use_roi_proxy=True
+    """
+    from backtest.config import COMPOSITE_SCORE_WEIGHTS
+    w = weights if weights is not None else COMPOSITE_SCORE_WEIGHTS
+    if use_roi_proxy:
+        if total_roi_pct is None:
+            roi_component = 0.0
+        else:
+            roi_component = float(total_roi_pct) / 100.0  # normalize to 0-1 scale
+        return (w.get("win_rate", 0.40) * roi_component
+                + w.get("profit_factor", 0.30) * float(profit_factor)
+                + w.get("smart_money", 0.30) * float(smart_money_score))
+    return (w.get("win_rate", 0.40) * float(win_rate)
+            + w.get("profit_factor", 0.30) * float(profit_factor)
+            + w.get("smart_money", 0.30) * float(smart_money_score))
+
+
+def smart_money_composite_score(
+    congressional_signal: str = None,
+    insider_signal: str = None,
+    institutional_signal: str = None,
+    weights: dict = None,
+) -> dict:
+    """DEC-332 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 60 2026-05-11
+    (owner-approved Path C 20-DEC bundle). Smart money composite scoring
+    using canonical Pass 53 B1 weights from config (moved from hardcoded
+    magic in `backtest/data/smart_money.py:470-529`).
+
+    Veto case: cong=sell AND insider=cluster_sell -> score = -5 override.
+    Score labels by threshold (>=6/>=4/>=2/>=1/0/<0/<=-4).
+    """
+    from backtest.config import (SMART_MONEY_CONGRESSIONAL_WEIGHTS,
+                                  SMART_MONEY_INSIDER_WEIGHTS,
+                                  SMART_MONEY_INSTITUTIONAL_WEIGHTS,
+                                  SMART_MONEY_VETO_SCORE)
+    if (congressional_signal == "sell"
+            and insider_signal == "cluster_sell"):
+        return {"score": SMART_MONEY_VETO_SCORE,
+                "label": "congressional_sell+insider_cluster_sell"}
+    score = 0
+    score += SMART_MONEY_CONGRESSIONAL_WEIGHTS.get(congressional_signal, 0)
+    score += SMART_MONEY_INSIDER_WEIGHTS.get(insider_signal, 0)
+    score += SMART_MONEY_INSTITUTIONAL_WEIGHTS.get(institutional_signal, 0)
+    if score >= 6:    label = "congressional+insider_cluster"
+    elif score >= 4:  label = "congressional_or_insider"
+    elif score >= 2:  label = "any_buy"
+    elif score >= 1:  label = "weak_buy"
+    elif score == 0:  label = "none"
+    elif score >= -3: label = "negative"
+    else:             label = "congressional_sell+insider_cluster_sell"
+    return {"score": int(score), "label": label}
+
+
 def compute_strategy_correlation_matrix(
     daily_returns_by_strategy,
     window: int = 90,
