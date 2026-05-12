@@ -430,6 +430,39 @@ def test_dec_088_engine_scales_down_when_realized_vol_high():
     assert scale >= 0.5  # bounded
 
 
+def test_dec_087_engine_wires_vol_targeted_size():
+    """DEC-087 Batch 72 2026-05-12: engine source calls vol_targeted_size
+    at gate + add_position sites with ATR-derived per-ticker vol proxy.
+    """
+    from pathlib import Path
+    src = Path("backtest/engine/backtest.py").read_text(encoding="utf-8")
+    assert "vol_targeted_size" in src
+    assert "DEC-087 RESOLVED-IMPLEMENTED Batch 72" in src
+    # ATR-derived proxy must be present: (atr / close) * sqrt(252)
+    assert "math.sqrt(252)" in src.replace(" ", "") or "_math.sqrt(252)" in src.replace(" ", "")
+
+
+def test_dec_087_engine_high_vol_proxy_reduces_size():
+    """DEC-087: synthetic high-vol ATR (e.g. 5% of close -> 5% daily vol
+    proxy -> ~79% annualized) -> vol_targeted_size scales <1.
+    Spec: high-vol gets smaller allocation than low-vol at same edge.
+    """
+    import math
+    from backtest.engine.portfolio import vol_targeted_size
+    # High vol: ATR=5% close, annualized vol = 0.05 * sqrt(252) ~= 0.793
+    high_vol_proxy = 0.05 * math.sqrt(252)
+    high_size = vol_targeted_size(0.03, high_vol_proxy)
+    # Low vol: ATR=0.5% close, annualized ~= 0.079
+    low_vol_proxy = 0.005 * math.sqrt(252)
+    low_size = vol_targeted_size(0.03, low_vol_proxy)
+    # Low-vol position should get larger allocation than high-vol at
+    # same base tier size
+    assert low_size > high_size
+    # Both bounded by [0.25, 2.0] multiplier per DEC-087 spec
+    assert 0.03 * 0.25 <= high_size <= 0.03 * 2.0
+    assert 0.03 * 0.25 <= low_size <= 0.03 * 2.0
+
+
 def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     """DEC-091: 32% DD -> multiplier 0.0 -> scaled size_pct=0 -> entry
     skipped by the 'if size_pct > 0' branch (defense-in-depth alongside

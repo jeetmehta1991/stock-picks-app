@@ -709,6 +709,26 @@ class BacktestEngine:
                     # the same size_pct multiplicatively before can_open.
                     vol_scale = self.portfolio.vol_target_scale_factor()
                     size_pct = size_pct * vol_scale
+                    # DEC-087 RESOLVED-IMPLEMENTED Batch 72 2026-05-12: per-
+                    # position vol-targeted sizing. Uses ATR-derived per-ticker
+                    # annualized vol proxy: daily_vol_proxy = ATR/entry_price,
+                    # annualized via sqrt(252). High-vol positions (e.g. XOM
+                    # during oil shock vol ~40%) get smaller allocations than
+                    # low-vol positions (e.g. KO ~15%) at the same edge level.
+                    # Bounded multiplier [0.25, 2.0] per DEC-087 spec.
+                    # Stacks after DD-band (DEC-091) and portfolio-vol (DEC-088)
+                    # so per-position is the innermost adjustment.
+                    from backtest.engine.portfolio import vol_targeted_size as _vts
+                    import math as _math
+                    _ticker_vol_proxy = None
+                    if close and close > 0 and atr > 0:
+                        _ticker_vol_proxy = (atr / close) * _math.sqrt(252)
+                    size_pct_pre_per_pos = size_pct
+                    size_pct = _vts(size_pct, _ticker_vol_proxy)
+                    per_pos_mult = (
+                        (size_pct / size_pct_pre_per_pos)
+                        if size_pct_pre_per_pos > 0 else 1.0
+                    )
                     if dd_mult < 1.0 and size_pct > 0:
                         self.skipped_trades.append({
                             "ticker": ticker, "date": as_of,
@@ -724,6 +744,12 @@ class BacktestEngine:
                         # NOTE: this entry is informational; entry still proceeds
                         # at the scaled size. The skipped_trades log captures it
                         # for post-run analysis of DD-band activation.
+                    if per_pos_mult != 1.0 and size_pct > 0:
+                        self.skipped_trades.append({
+                            "ticker": ticker, "date": as_of,
+                            "strategy": strat_entry["strategy"],
+                            "reason": f"per_pos_vol_scaled_{round(per_pos_mult, 3)}x",
+                        })
                     if size_pct > 0:
                         ok, reason = self.portfolio.can_open(
                             ticker=ticker, size_pct=size_pct,
@@ -827,6 +853,13 @@ class BacktestEngine:
                     # DEC-088 wiring (mirror of upstream): also apply vol-target
                     # scale factor so opened size matches gate-approved size.
                     size_pct = size_pct * self.portfolio.vol_target_scale_factor()
+                    # DEC-087 wiring (mirror of upstream): per-position vol-
+                    # targeted scaling with same ATR-derived proxy.
+                    from backtest.engine.portfolio import vol_targeted_size as _vts2
+                    import math as _math2
+                    if close and close > 0 and atr > 0:
+                        _proxy = (atr / close) * _math2.sqrt(252)
+                        size_pct = _vts2(size_pct, _proxy)
                     if size_pct > 0:
                         try:
                             self.portfolio.add_position(
