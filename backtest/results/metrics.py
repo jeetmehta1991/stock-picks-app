@@ -740,6 +740,327 @@ def compute_per_regime_agent_verdict(
     return out
 
 
+def compute_strategy_correlation_matrix(
+    daily_returns_by_strategy,
+    window: int = 90,
+):
+    """DEC-015 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 59 2026-05-11
+    (owner-approved Path C 20-DEC bundle). 90-day rolling Pearson correlation
+    matrix per Pass 52 turn 67 spec. Consumed by DEC-089 (max correlation
+    cap 0.7 between simultaneous holdings) for portfolio diversification.
+
+    Inputs:
+      daily_returns_by_strategy: DataFrame indexed by date, columns = strategies
+      window: rolling window days (default 90)
+
+    Returns DataFrame correlation matrix using the last `window` rows. Returns
+    empty DataFrame on insufficient data.
+    """
+    import pandas as pd
+    if daily_returns_by_strategy is None or len(daily_returns_by_strategy) < window:
+        return pd.DataFrame()
+    recent = daily_returns_by_strategy.iloc[-window:]
+    return recent.corr(method="pearson")
+
+
+def top_n_losing_trades_per_strategy(
+    df_trades, n: int = 10,
+):
+    """DEC-120 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 59 2026-05-11
+    (owner-approved Path C 20-DEC bundle). Top-N losing trades per strategy
+    for loss attribution report per Pass 52 turn 119 spec. Joint DEC-119
+    explainability + DEC-201 Dashboard 3.
+
+    Returns dict {strategy_name: list of dicts with ticker, pnl_pct,
+    entry_date, exit_date, regime}.
+    """
+    import pandas as pd
+    if df_trades is None or len(df_trades) == 0 or "strategy" not in df_trades.columns:
+        return {}
+    out = {}
+    for strat, g in df_trades.groupby("strategy"):
+        losers = g[g["pnl_pct"] < 0].sort_values("pnl_pct").head(n)
+        out[str(strat)] = losers[
+            [c for c in ("ticker", "pnl_pct", "entry_date", "exit_date", "regime")
+             if c in losers.columns]
+        ].to_dict(orient="records")
+    return out
+
+
+def exponential_decay_weights(
+    days_ago_list, half_life_days: int = 90,
+) -> list:
+    """DEC-123 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 59 2026-05-11
+    (owner-approved Path C 20-DEC bundle). Exponential decay smart-money
+    signal weights per Pass 52 turn 119 spec: half-life 90 days default
+    REVISIT_AFTER_BACKTEST.
+
+    weight = 0.5 ** (days_ago / half_life)
+
+    Inputs: list of days-ago integers (e.g. [0, 30, 90, 180]).
+    Returns list of weights normalized to sum=1.0 (so weight 0.0 on all
+    means returned as zeros, not NaN).
+    """
+    if not days_ago_list:
+        return []
+    raw = [0.5 ** (d / half_life_days) for d in days_ago_list]
+    total = sum(raw)
+    if total <= 0:
+        return [0.0] * len(raw)
+    return [w / total for w in raw]
+
+
+def cross_source_smart_money_cluster(
+    insider_signal: str = None,
+    congressional_signal: str = None,
+    institutional_signal: str = None,
+) -> dict:
+    """DEC-124 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 59 2026-05-11
+    (owner-approved Path C 20-DEC bundle). Cross-source confluence per
+    Pass 52 turn 119 spec: 3+ sources align same direction = high-confidence.
+
+    Inputs: 3 signal strings ('buy' / 'strong_buy' / 'sell' / 'none' / etc).
+    Returns dict with sources_aligned (count), direction, confluence_score
+    (0/1/2/3), cluster_label.
+    """
+    bull_sources = sum(1 for s in (insider_signal, congressional_signal,
+                                   institutional_signal)
+                       if s in ("buy", "strong_buy"))
+    bear_sources = sum(1 for s in (insider_signal, congressional_signal,
+                                   institutional_signal)
+                       if s in ("sell", "strong_sell"))
+    if bull_sources >= bear_sources:
+        direction = "bull"
+        n_aligned = bull_sources
+    else:
+        direction = "bear"
+        n_aligned = bear_sources
+    if n_aligned >= 3:    label = "HIGH_CONFLUENCE"
+    elif n_aligned == 2:  label = "PARTIAL_CONFLUENCE"
+    elif n_aligned == 1:  label = "ISOLATED_SIGNAL"
+    else:                 label = "NO_SIGNAL"
+    return {
+        "sources_aligned":  n_aligned,
+        "direction":        direction if n_aligned > 0 else "none",
+        "confluence_score": n_aligned,
+        "cluster_label":    label,
+    }
+
+
+def agent_value_add_two_gate_check(
+    agent_sharpe: float,
+    rules_sharpe: float,
+    absolute_threshold: float = 0.2,
+    relative_threshold: float = 0.15,
+) -> dict:
+    """DEC-131 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 59 2026-05-11
+    (owner-approved Path C 20-DEC bundle). Two-gate logic per Pass 52 turn 13
+    refinement: primary `agent - rules >= 0.2`; secondary
+    `(agent - rules) / max(rules, 0.1) >= 0.15`; PASS if EITHER clears.
+    Catches both low-baseline trap and high-baseline trap per CAV-060.
+
+    Returns dict with passes (bool), absolute_diff, relative_diff,
+    gate_reason ('absolute' / 'relative' / 'none').
+    """
+    if agent_sharpe is None or rules_sharpe is None:
+        return {"passes": False, "absolute_diff": None, "relative_diff": None,
+                "gate_reason": "missing_input"}
+    abs_diff = agent_sharpe - rules_sharpe
+    rel_diff = abs_diff / max(rules_sharpe, 0.1)
+    abs_pass = abs_diff >= absolute_threshold - 1e-9
+    rel_pass = rel_diff >= relative_threshold - 1e-9
+    if abs_pass and rel_pass:    reason = "both"
+    elif abs_pass:               reason = "absolute"
+    elif rel_pass:               reason = "relative"
+    else:                        reason = "none"
+    return {
+        "passes":        bool(abs_pass or rel_pass),
+        "absolute_diff": round(abs_diff, 4),
+        "relative_diff": round(rel_diff, 4),
+        "gate_reason":   reason,
+    }
+
+
+def compute_fx_exposure_pct(
+    usd_portfolio_value_cad: float,
+    total_portfolio_value_cad: float,
+) -> dict:
+    """DEC-134 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 59 2026-05-11
+    (owner-approved Path C 20-DEC bundle). USD/CAD exposure tracking per
+    Pass 52 turn 115 spec (FX hedge impl deferred to Stage 4).
+
+    Returns dict with fx_exposure_pct, total_cad, usd_in_cad, note.
+    Tracking only; hedge construction deferred to DEC-255 Norbert Gambit.
+    """
+    if total_portfolio_value_cad is None or total_portfolio_value_cad <= 0:
+        return {"fx_exposure_pct": None, "total_cad": None, "usd_in_cad": None,
+                "note": "invalid_portfolio_total"}
+    pct = (usd_portfolio_value_cad or 0.0) / total_portfolio_value_cad * 100.0
+    return {
+        "fx_exposure_pct": round(float(pct), 2),
+        "total_cad":       round(float(total_portfolio_value_cad), 2),
+        "usd_in_cad":      round(float(usd_portfolio_value_cad or 0.0), 2),
+        "note":            "ok",
+    }
+
+
+def build_sector_neutral_hedge(
+    long_ticker: str,
+    long_dollar_value: float,
+    long_sector_etf: str,
+    hedge_ratio: float = 1.0,
+) -> dict:
+    """DEC-141 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 59 2026-05-11
+    (owner-approved Path C 20-DEC bundle). Sector-neutral hedge plan: long
+    position + short sector ETF per Pass 52 turn 85 spec (implementation-
+    deferred; this helper provides plan-shape for downstream consumers).
+
+    Returns dict with hedge_ticker, hedge_direction='short', hedge_dollar.
+    Caller decides whether to execute. Owner risk philosophy notes
+    sector-neutral is OPPOSITE direction from medium-high risk profile;
+    use only when strategy explicitly opts in.
+    """
+    if long_dollar_value <= 0 or not long_sector_etf:
+        return {"hedge_ticker": None, "hedge_direction": None,
+                "hedge_dollar": 0.0, "note": "invalid_input"}
+    return {
+        "long_ticker":     long_ticker,
+        "hedge_ticker":    long_sector_etf,
+        "hedge_direction": "short",
+        "hedge_dollar":    round(long_dollar_value * hedge_ratio, 2),
+        "note":            "plan_only_execution_deferred",
+    }
+
+
+def build_market_neutral_hedge(
+    long_ticker: str,
+    long_dollar_value: float,
+    beta: float,
+    spy_ticker: str = "SPY",
+) -> dict:
+    """DEC-142 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 59 2026-05-11
+    (owner-approved Path C 20-DEC bundle). Market-neutral construction:
+    long stock + short SPY at beta-weight per Pass 52 turn 85 spec
+    (implementation-deferred; this helper provides plan-shape).
+
+    Returns dict with spy_short_dollar = long_dollar * beta.
+    """
+    if long_dollar_value <= 0 or beta is None:
+        return {"hedge_ticker": None, "hedge_direction": None,
+                "hedge_dollar": 0.0, "note": "invalid_input"}
+    return {
+        "long_ticker":     long_ticker,
+        "hedge_ticker":    spy_ticker,
+        "hedge_direction": "short",
+        "hedge_dollar":    round(long_dollar_value * float(beta), 2),
+        "beta_used":       round(float(beta), 4),
+        "note":            "plan_only_execution_deferred",
+    }
+
+
+def iv_pre_earnings_anomaly(
+    current_iv: float,
+    historical_iv_pre_earnings,
+    sigma_threshold: float = 2.0,
+) -> dict:
+    """DEC-145 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 59 2026-05-11
+    (owner-approved Path C 20-DEC bundle). IV delta vs historical pre-earnings
+    pattern per Pass 52 turn 85 spec (depends on DEC-258 options chain cache;
+    this helper accepts caller-supplied historical IV list).
+
+    Inputs:
+      current_iv: today's pre-earnings IV
+      historical_iv_pre_earnings: list of past 8 (or N) pre-earnings IVs
+      sigma_threshold: stdev multiplier to flag anomaly (default 2.0)
+
+    Returns dict with z_score, anomaly (bool), direction.
+    """
+    import statistics
+    if (current_iv is None or historical_iv_pre_earnings is None
+            or len(historical_iv_pre_earnings) < 3):
+        return {"z_score": None, "anomaly": False, "direction": None,
+                "note": "insufficient_history"}
+    mean = statistics.mean(historical_iv_pre_earnings)
+    std = statistics.stdev(historical_iv_pre_earnings)
+    if std <= 0:
+        return {"z_score": 0.0, "anomaly": False, "direction": None,
+                "note": "zero_std"}
+    z = (current_iv - mean) / std
+    direction = "elevated" if z > 0 else "depressed"
+    return {
+        "z_score":   round(float(z), 4),
+        "anomaly":   bool(abs(z) >= sigma_threshold),
+        "direction": direction,
+        "note":      "ok",
+    }
+
+
+def evaluate_paired_ab_arms(trade_id, per_arm_outcomes: dict) -> dict:
+    """DEC-206 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 59 2026-05-11
+    (owner-approved Path C 20-DEC bundle). Paired A/B design per Pass 45
+    spec: every trade evaluated by every arm in parallel (same data, same
+    signal, different overlay).
+
+    Inputs:
+      trade_id: identifier for the trade
+      per_arm_outcomes: dict {arm_name: pnl_pct}
+
+    Returns dict with trade_id, n_arms, best_arm, worst_arm, spread.
+    """
+    if not per_arm_outcomes:
+        return {"trade_id": trade_id, "n_arms": 0, "best_arm": None,
+                "worst_arm": None, "spread": None}
+    items = list(per_arm_outcomes.items())
+    best = max(items, key=lambda kv: kv[1] if kv[1] is not None else float("-inf"))
+    worst = min(items, key=lambda kv: kv[1] if kv[1] is not None else float("inf"))
+    spread = (best[1] - worst[1]) if (best[1] is not None and worst[1] is not None) else None
+    return {
+        "trade_id":  trade_id,
+        "n_arms":    len(per_arm_outcomes),
+        "best_arm":  best[0],
+        "worst_arm": worst[0],
+        "spread":    round(float(spread), 4) if spread is not None else None,
+    }
+
+
+def tag_agent_disagreement(
+    bull_signal: str = None,
+    bear_signal: str = None,
+    risk_signal: str = None,
+) -> dict:
+    """DEC-212 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 59 2026-05-11
+    (owner-approved Path C 20-DEC bundle). Agent-disagreement decomposition
+    per Pass 52 turn 72 spec. Tags trades where Bull vs Bear disagree, or
+    Risk overrides consensus.
+
+    Inputs: 3 signal strings ('BUY' / 'HOLD' / 'SELL' / 'APPROVE' / 'VETO').
+
+    Returns dict with disagreement_type ('bull_bear_disagree' /
+    'risk_override' / 'consensus' / 'partial'), tags (list).
+    """
+    tags = []
+    bb_disagree = (bull_signal == "BUY" and bear_signal == "HOLD") or \
+                  (bull_signal == "HOLD" and bear_signal == "BUY")
+    risk_override = risk_signal in ("VETO", "OVERRIDE")
+    if bb_disagree:
+        tags.append("AGENT_DISAGREEMENT_BULL_BEAR")
+    if risk_override:
+        tags.append("AGENT_DISAGREEMENT_RISK_OVERRIDE")
+    if bb_disagree and risk_override:
+        d_type = "partial"
+    elif bb_disagree:
+        d_type = "bull_bear_disagree"
+    elif risk_override:
+        d_type = "risk_override"
+    else:
+        d_type = "consensus"
+    return {
+        "disagreement_type": d_type,
+        "tags":              tags,
+        "n_tags":            len(tags),
+    }
+
+
 def vol_adjusted_momentum_lookback(
     realized_vol_annualized: float,
     base_lookback: int = 21,

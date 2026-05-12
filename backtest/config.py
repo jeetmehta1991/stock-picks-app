@@ -392,6 +392,53 @@ TIER_5_TO_TIER_3 = {
     "AVOID":       "LOW",
 }
 
+# DEC-038 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 59 2026-05-11
+# (owner-approved Path C 20-DEC bundle). Layered execution iteration budgets
+# per Pass 52 turn 119 process methodology. Already operational across
+# Pass 52 walkthroughs; constants codified here for future-proof reference.
+LAYERED_EXECUTION_BUDGETS = {
+    "phase_audit_pass":      6,    # max audit re-pass iterations before halt
+    "decision_review_round": 3,    # per-decision review rounds
+    "implementation_step":   10,   # max sub-steps per implementation iteration
+    "test_pyramid_layer":    13,   # max distinct pyramid layers per addressal
+}
+
+# DEC-061 / DEC-062 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 59
+# 2026-05-11 (owner-approved Path C 20-DEC bundle). TradingAgents 5-tier
+# output -> position_size_modifier per Pass 52 turn 119 spec.
+# Map agent tier 1-5 to size multiplier 0.5x/0.75x/1.0x/1.25x/1.5x.
+AGENT_TIER_TO_SIZE_MODIFIER = {
+    1: 0.50,
+    2: 0.75,
+    3: 1.00,
+    4: 1.25,
+    5: 1.50,
+}
+
+# DEC-102 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 59 2026-05-11
+# (owner-approved Path C 20-DEC bundle). Market-level / correlation-factor
+# strategy slots per Pass 52 spec - absorbed by DEC-369 (3-5 cross-asset
+# strategies via TLT/GLD/UUP/USO intermarket). Codified list for filtering
+# strategy roster + dashboard breakdown by category.
+CROSS_ASSET_STRATEGY_TICKERS = ("TLT", "GLD", "UUP", "USO")
+
+# DEC-116 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 59 2026-05-11
+# (owner-approved Path C 20-DEC bundle). Cash management protocol: idle cash
+# defaults to SGOV (short-term T-bills, ~5% yield, MV-stable). Manual
+# rebalance trigger when idle cash > threshold.
+CASH_MANAGEMENT_TICKER = "SGOV"
+CASH_MANAGEMENT_TRIGGER_PCT = 0.15  # >15% idle cash triggers SGOV rebalance hint
+CASH_MANAGEMENT_NOTE = (
+    "Idle cash above CASH_MANAGEMENT_TRIGGER_PCT routes to SGOV (T-bills) "
+    "for yield; manual rebalance during Stage 2."
+)
+
+# DEC-174 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 59 2026-05-11
+# (owner-approved Path C 20-DEC bundle). Strategy classification by trigger
+# type per Pass 52 turn 119 spec. Enables filtering/aggregation by trigger
+# family in dashboards + DEC-422 cube dim.
+STRATEGY_TRIGGER_TYPES = ("catalyst", "technical", "stat_arb")
+
 # -----------------------------------------------------------------------------
 # TWO-STAGE CONFIDENCE TIERING
 # Stage 1: Rule-based preliminary tier (before agents run)

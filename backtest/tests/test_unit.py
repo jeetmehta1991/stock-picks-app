@@ -3619,6 +3619,281 @@ def test_dec_232_diff_trade_logs_shape_mismatch():
 
 
 # ============================================================================
+# Phase 3 Batch 59 Path C 20-DEC bundle (owner directive: 20 DECs this turn)
+# DEC-015 / 038 / 061 / 062 / 102 / 116 / 120 / 123 / 124 / 131 / 134 / 141
+# / 142 / 145 / 159 / 174 / 183 / 206 / 212 / 235
+# ============================================================================
+
+def test_dec_015_correlation_matrix_basic():
+    """DEC-015: 90-day rolling Pearson correlation matrix."""
+    import pandas as pd
+    import numpy as np
+    from backtest.results.metrics import compute_strategy_correlation_matrix
+    np.random.seed(0)
+    df = pd.DataFrame({"sA": np.random.normal(0, 0.01, 120),
+                       "sB": np.random.normal(0, 0.01, 120)})
+    out = compute_strategy_correlation_matrix(df, window=90)
+    assert out.shape == (2, 2)
+    assert abs(out.loc["sA", "sA"] - 1.0) < 1e-9
+
+
+def test_dec_015_correlation_matrix_insufficient_history():
+    """DEC-015: <window rows -> empty DataFrame."""
+    import pandas as pd
+    from backtest.results.metrics import compute_strategy_correlation_matrix
+    df = pd.DataFrame({"sA": [0.01] * 30, "sB": [0.02] * 30})
+    out = compute_strategy_correlation_matrix(df, window=90)
+    assert out.empty
+
+
+def test_dec_038_iteration_budgets_constants():
+    """DEC-038: layered execution budget constants exist with non-zero values."""
+    from backtest.config import LAYERED_EXECUTION_BUDGETS
+    for k in ("phase_audit_pass", "decision_review_round",
+              "implementation_step", "test_pyramid_layer"):
+        assert k in LAYERED_EXECUTION_BUDGETS
+        assert LAYERED_EXECUTION_BUDGETS[k] > 0
+
+
+def test_dec_061_dec_062_agent_tier_size_modifier():
+    """DEC-061/062: TradingAgents 5-tier -> size modifier mapping."""
+    from backtest.config import AGENT_TIER_TO_SIZE_MODIFIER
+    assert AGENT_TIER_TO_SIZE_MODIFIER[1] == 0.50
+    assert AGENT_TIER_TO_SIZE_MODIFIER[3] == 1.00
+    assert AGENT_TIER_TO_SIZE_MODIFIER[5] == 1.50
+
+
+def test_dec_102_cross_asset_strategy_tickers():
+    """DEC-102: cross-asset strategy tickers per DEC-369 absorption."""
+    from backtest.config import CROSS_ASSET_STRATEGY_TICKERS
+    assert "TLT" in CROSS_ASSET_STRATEGY_TICKERS
+    assert "GLD" in CROSS_ASSET_STRATEGY_TICKERS
+    assert "UUP" in CROSS_ASSET_STRATEGY_TICKERS
+    assert "USO" in CROSS_ASSET_STRATEGY_TICKERS
+
+
+def test_dec_116_cash_management_constants():
+    """DEC-116: SGOV idle cash routing + trigger threshold."""
+    from backtest.config import (CASH_MANAGEMENT_TICKER,
+                                   CASH_MANAGEMENT_TRIGGER_PCT)
+    assert CASH_MANAGEMENT_TICKER == "SGOV"
+    assert 0 < CASH_MANAGEMENT_TRIGGER_PCT < 1
+
+
+def test_dec_120_top_n_losing_trades_per_strategy():
+    """DEC-120: returns top-N losers per strategy sorted ascending pnl."""
+    import pandas as pd
+    from backtest.results.metrics import top_n_losing_trades_per_strategy
+    df = pd.DataFrame([
+        {"strategy": "A", "ticker": "X", "pnl_pct": -5.0,
+         "entry_date": "2024-01-01", "exit_date": "2024-01-05", "regime": "bull"},
+        {"strategy": "A", "ticker": "Y", "pnl_pct": -10.0,
+         "entry_date": "2024-01-01", "exit_date": "2024-01-05", "regime": "bull"},
+        {"strategy": "A", "ticker": "Z", "pnl_pct": 3.0,
+         "entry_date": "2024-01-01", "exit_date": "2024-01-05", "regime": "bull"},
+    ])
+    out = top_n_losing_trades_per_strategy(df, n=10)
+    assert "A" in out
+    # Sorted ascending pnl -> -10 first then -5; +3 excluded (not a loser)
+    assert out["A"][0]["pnl_pct"] == -10.0
+    assert len(out["A"]) == 2
+
+
+def test_dec_123_exponential_decay_weights_recent_higher():
+    """DEC-123: recent disclosures (days_ago=0) weighted higher than 90d old."""
+    from backtest.results.metrics import exponential_decay_weights
+    weights = exponential_decay_weights([0, 90, 180], half_life_days=90)
+    assert weights[0] > weights[1] > weights[2]
+    assert abs(sum(weights) - 1.0) < 1e-9
+
+
+def test_dec_123_exponential_decay_weights_empty():
+    """DEC-123: empty input -> empty list."""
+    from backtest.results.metrics import exponential_decay_weights
+    assert exponential_decay_weights([]) == []
+
+
+def test_dec_124_cross_source_smart_money_high_confluence():
+    """DEC-124: 3 buy sources -> HIGH_CONFLUENCE."""
+    from backtest.results.metrics import cross_source_smart_money_cluster
+    out = cross_source_smart_money_cluster("buy", "strong_buy", "buy")
+    assert out["cluster_label"] == "HIGH_CONFLUENCE"
+    assert out["sources_aligned"] == 3
+
+
+def test_dec_124_cross_source_smart_money_no_signal():
+    """DEC-124: no buy/sell signals -> NO_SIGNAL."""
+    from backtest.results.metrics import cross_source_smart_money_cluster
+    out = cross_source_smart_money_cluster("none", "hold", None)
+    assert out["cluster_label"] == "NO_SIGNAL"
+
+
+def test_dec_131_two_gate_passes_on_absolute():
+    """DEC-131 spec signal: baseline 1.5 / agent 1.7 -> abs gate passes."""
+    from backtest.results.metrics import agent_value_add_two_gate_check
+    out = agent_value_add_two_gate_check(agent_sharpe=1.7, rules_sharpe=1.5)
+    assert out["passes"] is True
+    assert out["gate_reason"] in ("absolute", "both")
+
+
+def test_dec_131_two_gate_passes_on_relative_low_baseline():
+    """DEC-131 spec signal: baseline 0.3 / agent 0.5 -> both gates clear."""
+    from backtest.results.metrics import agent_value_add_two_gate_check
+    out = agent_value_add_two_gate_check(agent_sharpe=0.5, rules_sharpe=0.3)
+    assert out["passes"] is True
+
+
+def test_dec_131_two_gate_fails_on_small_lift():
+    """DEC-131 spec signal: baseline 1.5 / agent 1.55 -> both fail."""
+    from backtest.results.metrics import agent_value_add_two_gate_check
+    out = agent_value_add_two_gate_check(agent_sharpe=1.55, rules_sharpe=1.5)
+    assert out["passes"] is False
+    assert out["gate_reason"] == "none"
+
+
+def test_dec_134_fx_exposure_basic():
+    """DEC-134: USD 30K of 100K total CAD -> 30% exposure."""
+    from backtest.results.metrics import compute_fx_exposure_pct
+    out = compute_fx_exposure_pct(30_000, 100_000)
+    assert abs(out["fx_exposure_pct"] - 30.0) < 1e-6
+
+
+def test_dec_134_fx_exposure_invalid_total():
+    """DEC-134: zero/negative total -> invalid_portfolio_total."""
+    from backtest.results.metrics import compute_fx_exposure_pct
+    out = compute_fx_exposure_pct(30_000, 0)
+    assert out["note"] == "invalid_portfolio_total"
+
+
+def test_dec_141_sector_neutral_hedge_plan():
+    """DEC-141: long position + short sector ETF plan."""
+    from backtest.results.metrics import build_sector_neutral_hedge
+    out = build_sector_neutral_hedge("AAPL", 10_000, "XLK")
+    assert out["hedge_ticker"] == "XLK"
+    assert out["hedge_direction"] == "short"
+    assert out["hedge_dollar"] == 10_000.0
+
+
+def test_dec_142_market_neutral_hedge_at_beta():
+    """DEC-142: SPY short sized at beta-weight."""
+    from backtest.results.metrics import build_market_neutral_hedge
+    out = build_market_neutral_hedge("AAPL", 10_000, beta=1.2)
+    assert out["hedge_ticker"] == "SPY"
+    assert abs(out["hedge_dollar"] - 12_000.0) < 1e-6
+
+
+def test_dec_145_iv_anomaly_elevated():
+    """DEC-145: current IV 2.5 std above historical mean -> anomaly elevated."""
+    from backtest.results.metrics import iv_pre_earnings_anomaly
+    out = iv_pre_earnings_anomaly(
+        current_iv=0.80,
+        historical_iv_pre_earnings=[0.30, 0.32, 0.31, 0.33, 0.29],
+    )
+    assert out["anomaly"] is True
+    assert out["direction"] == "elevated"
+
+
+def test_dec_145_iv_anomaly_no_history():
+    """DEC-145: insufficient history -> note + no anomaly."""
+    from backtest.results.metrics import iv_pre_earnings_anomaly
+    out = iv_pre_earnings_anomaly(current_iv=0.5,
+                                   historical_iv_pre_earnings=[0.3])
+    assert out["note"] == "insufficient_history"
+
+
+def test_dec_159_regulatory_event_flagged_on_sec_investigation():
+    """DEC-159: SEC investigation news within window -> flagged."""
+    from datetime import date, timedelta
+    from backtest.engine.improvements import regulatory_event_flag
+    today = date(2024, 6, 15)
+    news = [{"date": today - timedelta(days=2),
+             "title": "Company X under SEC investigation",
+             "source": "Reuters"}]
+    out = regulatory_event_flag("X", news, event_window_days=5, as_of=today)
+    assert out["flagged"] is True
+
+
+def test_dec_159_regulatory_event_not_flagged_outside_window():
+    """DEC-159: SEC news older than window -> not flagged."""
+    from datetime import date, timedelta
+    from backtest.engine.improvements import regulatory_event_flag
+    today = date(2024, 6, 15)
+    news = [{"date": today - timedelta(days=30),
+             "title": "Past SEC enforcement action",
+             "source": "WSJ"}]
+    out = regulatory_event_flag("X", news, event_window_days=5, as_of=today)
+    assert out["flagged"] is False
+
+
+def test_dec_174_strategy_trigger_types_constants():
+    """DEC-174: catalyst/technical/stat_arb trigger types codified."""
+    from backtest.config import STRATEGY_TRIGGER_TYPES
+    assert "catalyst" in STRATEGY_TRIGGER_TYPES
+    assert "technical" in STRATEGY_TRIGGER_TYPES
+    assert "stat_arb" in STRATEGY_TRIGGER_TYPES
+
+
+def test_dec_183_lru_cached_wraps_function():
+    """DEC-183: decorator memoizes a function."""
+    from backtest.engine.improvements import lru_cached
+    call_count = [0]
+
+    @lru_cached(maxsize=32)
+    def fn(x):
+        call_count[0] += 1
+        return x * 2
+
+    fn(5); fn(5); fn(5)
+    assert call_count[0] == 1
+    fn(7)
+    assert call_count[0] == 2
+
+
+def test_dec_206_paired_ab_arms_best_worst():
+    """DEC-206: paired A/B picks best + worst arm per trade."""
+    from backtest.results.metrics import evaluate_paired_ab_arms
+    out = evaluate_paired_ab_arms(
+        "T-001", {"rules": 1.0, "agent_a": 2.5, "agent_b": -0.5},
+    )
+    assert out["best_arm"] == "agent_a"
+    assert out["worst_arm"] == "agent_b"
+    assert out["spread"] == 3.0
+
+
+def test_dec_212_agent_disagreement_bull_bear():
+    """DEC-212 spec signal: Bull=BUY, Bear=HOLD, Risk=APPROVE -> bull_bear_disagree."""
+    from backtest.results.metrics import tag_agent_disagreement
+    out = tag_agent_disagreement(bull_signal="BUY", bear_signal="HOLD",
+                                  risk_signal="APPROVE")
+    assert out["disagreement_type"] == "bull_bear_disagree"
+    assert "AGENT_DISAGREEMENT_BULL_BEAR" in out["tags"]
+
+
+def test_dec_212_agent_disagreement_consensus():
+    """DEC-212: all agree -> consensus, no tags."""
+    from backtest.results.metrics import tag_agent_disagreement
+    out = tag_agent_disagreement("BUY", "BUY", "APPROVE")
+    assert out["disagreement_type"] == "consensus"
+    assert out["n_tags"] == 0
+
+
+def test_dec_235_nyse_trading_day_weekend_false():
+    """DEC-235: weekday helper or library returns False for Saturday."""
+    from datetime import date
+    from backtest.engine.improvements import is_nyse_trading_day
+    # 2024-06-15 = Saturday
+    assert is_nyse_trading_day(date(2024, 6, 15)) is False
+
+
+def test_dec_235_nyse_trading_day_weekday_true():
+    """DEC-235: regular weekday returns True."""
+    from datetime import date
+    from backtest.engine.improvements import is_nyse_trading_day
+    # 2024-06-17 = Monday (non-holiday)
+    assert is_nyse_trading_day(date(2024, 6, 17)) is True
+
+
+# ============================================================================
 # DEC-432 Chandelier exit indicator tests (Phase 3 Batch 53 Path C)
 # Parabolic SAR + Supertrend already implemented; only chandelier added.
 # ============================================================================

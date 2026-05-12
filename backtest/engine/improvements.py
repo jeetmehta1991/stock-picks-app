@@ -499,6 +499,108 @@ MEMORY_CAP_MB_DEFAULT = 4096            # DEC-179 default cap 4GB
 CACHE_SIZE_ALERT_THRESHOLD_PCT = 0.80   # DEC-227 alert at 80% disk usage
 
 
+def regulatory_event_flag(
+    ticker: str,
+    news_items: list,
+    event_window_days: int = 5,
+    as_of=None,
+) -> dict:
+    """DEC-159 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 59 2026-05-11
+    (owner-approved Path C 20-DEC bundle). Regulatory event handler per
+    Pass 52 turn 119 spec: SEC/DOJ investigation or sanction announcements
+    suppress strategy entries for the event window.
+
+    Inputs:
+      ticker: ticker symbol
+      news_items: list of dicts with {date, title, source}
+      event_window_days: trailing window where flag stays active
+      as_of: date for windowing (default today)
+
+    Detects keywords: 'sec investigation', 'doj', 'sanction', 'enforcement
+    action', 'wells notice'. Returns dict with flagged (bool),
+    triggering_items (list of titles), oldest_within_window_days.
+
+    Joint DEC-256 (event calendar) + DEC-348 (event suppression window).
+    Engine wiring (consume flag at can_open) deferred.
+    """
+    from datetime import datetime
+    if not news_items or not ticker:
+        return {"flagged": False, "triggering_items": [],
+                "oldest_within_window_days": None}
+    keywords = ("sec investigation", "doj ", "doj's", "sanction",
+                "enforcement action", "wells notice", "subpoena")
+    now = as_of if as_of is not None else date.today()
+    triggers = []
+    for item in news_items:
+        title = (item.get("title") or "").lower()
+        item_date = item.get("date")
+        if isinstance(item_date, str):
+            try:
+                item_date = datetime.fromisoformat(item_date).date()
+            except ValueError:
+                continue
+        if item_date is None:
+            continue
+        days_ago = (now - item_date).days if hasattr(now, "year") else 0
+        if 0 <= days_ago <= event_window_days:
+            if any(kw in title for kw in keywords):
+                triggers.append(item.get("title"))
+    return {
+        "flagged":                    len(triggers) > 0,
+        "triggering_items":           triggers,
+        "oldest_within_window_days":  event_window_days if triggers else None,
+    }
+
+
+def lru_cached(maxsize: int = 256):
+    """DEC-183 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 59 2026-05-11
+    (owner-approved Path C 20-DEC bundle). Memoization layer for signal
+    computation per Pass 52 turn 119 spec. Thin wrapper over
+    `functools.lru_cache` returning a decorator with default size 256
+    (tuned post-DEC-178 benchmarking).
+
+    Usage:
+        @lru_cached(maxsize=512)
+        def expensive_signal(ticker, as_of): ...
+    """
+    from functools import lru_cache
+    return lru_cache(maxsize=maxsize)
+
+
+def get_nyse_calendar_helper():
+    """DEC-235 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 59 2026-05-11
+    (owner-approved Path C 20-DEC bundle). NYSE/NASDAQ calendar wrapper per
+    Pass 52 turn 58 spec using `pandas_market_calendars` library when
+    available; falls back to None when not installed (caller-side decides
+    fallback to pandas business-day calendar).
+
+    Returns the pandas_market_calendars exchange object (mcal.get_calendar)
+    for NYSE or None on import failure.
+    """
+    try:
+        import pandas_market_calendars as mcal
+        return mcal.get_calendar("NYSE")
+    except ImportError:
+        return None
+
+
+def is_nyse_trading_day(d, calendar=None) -> bool:
+    """DEC-235: returns True if `d` is a regular NYSE trading day. Uses the
+    pandas_market_calendars library when available, else falls back to a
+    pandas BusinessDay check (which lacks half-day / holiday awareness).
+    """
+    import pandas as pd
+    cal = calendar if calendar is not None else get_nyse_calendar_helper()
+    d_ts = pd.Timestamp(d)
+    if cal is not None:
+        try:
+            schedule = cal.schedule(start_date=d_ts, end_date=d_ts)
+            return len(schedule) > 0
+        except Exception:
+            pass
+    return bool(d_ts.dayofweek < 5)  # Mon-Fri fallback
+
+
 def benchmark_function(fn, n_iters: int = 100, *args, **kwargs) -> dict:
     """DEC-178 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 58 2026-05-11
     (owner-approved Path C 10-DEC bundle). Signal-lookup performance
