@@ -668,6 +668,37 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_bug_236_aaii_refresh_workflow_exists_and_schedules_thursday():
+    """BUG-236 Batch 101: AAII auto-refresh missing. The refresh script
+    scripts/refresh_aaii_sentiment.py was committed Pass 53 Batch 46
+    (DEC-319/DEC-390) but no GH Actions workflow scheduled it, so the
+    committed CSV went stale. RESOLVED-IMPLEMENTED Batch 101: added
+    .github/workflows/refresh_aaii.yml with a Thursday 22:00 UTC cron
+    that runs the script + commits the new row.
+    """
+    from pathlib import Path
+    workflow = Path(".github/workflows/refresh_aaii.yml")
+    assert workflow.exists(), "BUG-236 fix missing: refresh_aaii.yml not created"
+    content = workflow.read_text(encoding="utf-8")
+    # BUG comment is present
+    assert "BUG-236 RESOLVED-IMPLEMENTED Batch 101" in content
+    # Thursday cron (day-of-week=4 in cron syntax)
+    assert "0 22 * * 4" in content
+    # Runs the canonical refresh script
+    assert "scripts/refresh_aaii_sentiment.py" in content
+
+
+def test_bug_236_refresh_script_callable_with_dry_run():
+    """BUG-236 sister: the refresh script itself accepts --dry-run +
+    --cron flags as the workflow expects. Source-grep verifies the
+    argparse contract the workflow depends on.
+    """
+    from pathlib import Path
+    src = Path("scripts/refresh_aaii_sentiment.py").read_text(encoding="utf-8")
+    assert "--dry-run" in src
+    assert "--cron" in src
+
+
 def test_bug_235_aaii_loader_applies_pub_lag():
     """BUG-235 Batch 99: AAII pub-lag not respected. AAII closes the
     survey Wed close + publishes Thu morning, so a Wed-dated survey is

@@ -1,0 +1,48 @@
+name: Refresh AAII Sentiment (weekly Thu)
+
+# BUG-236 RESOLVED-IMPLEMENTED Batch 101 2026-05-12: AAII auto-refresh
+# missing - the manual refresh script scripts/refresh_aaii_sentiment.py
+# was committed in Pass 53 Batch 46 (DEC-319 + DEC-390) but never wired
+# to a scheduled workflow, so backtest/data/aaii_sentiment.csv went
+# stale until manually refreshed. This workflow runs the script every
+# Thursday at 22:00 UTC (after AAII Thu-afternoon publication window).
+#
+# Joint with BUG-235 (Wed-survey-not-tradeable-until-Thu pub-lag fix,
+# Batch 99): both reinforce the AAII PIT semantics - the refresh runs
+# AFTER Thu publication, and the loader gates by AAII_PUB_LAG_DAYS=1 so
+# Wed-dated surveys only become tradeable Thu+.
+
+on:
+  schedule:
+    - cron: '0 22 * * 4'  # every Thursday 22:00 UTC (after AAII publish)
+  workflow_dispatch:
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install deps
+        run: |
+          pip install --upgrade pip
+          pip install pandas requests pyarrow openpyxl xlrd
+
+      - name: Run AAII weekly refresh
+        run: python scripts/refresh_aaii_sentiment.py --cron
+
+      - name: Commit + push if new row appended
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add backtest/data/aaii_sentiment.csv data_prefetch/aaii/ 2>/dev/null || true
+          if ! git diff --staged --quiet; then
+            git commit -m "chore: AAII weekly sentiment refresh $(date +%F) (BUG-236)"
+            git push
+          fi
