@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-12T03:38:14.391013+00:00",
+  "generated_at": "2026-05-12T04:09:25.928862+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -1573,7 +1573,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 5,
+        "n_doc_refs": 3,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -2573,7 +2573,7 @@
         "wired": true,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 25,
+        "n_doc_refs": 23,
         "pyramid": {
           "unit": false,
           "smoke": "N/A",
@@ -3013,7 +3013,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 22,
+        "n_doc_refs": 21,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -3373,7 +3373,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 15,
+        "n_doc_refs": 14,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -4013,7 +4013,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 7,
+        "n_doc_refs": 6,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -5013,7 +5013,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 1,
+        "n_doc_refs": 0,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -6413,7 +6413,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 24,
+        "n_doc_refs": 23,
         "pyramid": {
           "unit": false,
           "smoke": "N/A",
@@ -11373,7 +11373,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 21,
+        "n_doc_refs": 19,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -12173,7 +12173,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 29,
+        "n_doc_refs": 28,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -12333,7 +12333,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 45,
+        "n_doc_refs": 43,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -12773,7 +12773,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 18,
+        "n_doc_refs": 16,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -13213,7 +13213,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 17,
+        "n_doc_refs": 16,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -13413,7 +13413,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 26,
+        "n_doc_refs": 25,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -15643,7 +15643,7 @@
     },
     {
       "id": "DECISION-439",
-      "title": "Differential testing (Phase 0.E formalization) \u2014 Pass 52 owner-approved as Layer 5 of multi-layer defense. Run same logic through two independent implementation",
+      "title": "Differential testing Layer 5 -- DIFFERENTIAL_TESTING_DEFENSE_LAYER=5 + TARGETS tuple (fundamentals_polygon_vs_sec_xbrl / ohlcv_yfinance_vs_polygon / regime_clas",
       "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X59 \u2014 Phase 0.E Catch-Mechanism Defense (Pass 52)",
       "pass_intro": "Pass 52",
@@ -15733,7 +15733,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 60,
+        "n_doc_refs": 58,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -16093,7 +16093,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 32,
+        "n_doc_refs": 31,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -16293,7 +16293,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 16,
+        "n_doc_refs": 17,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -16453,7 +16453,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 11,
+        "n_doc_refs": 10,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -16493,7 +16493,7 @@
         "wired": true,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 12,
+        "n_doc_refs": 10,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -16533,7 +16533,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 51,
+        "n_doc_refs": 50,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -16613,7 +16613,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 7,
+        "n_doc_refs": 5,
         "pyramid": {
           "unit": false,
           "smoke": "N/A",
@@ -16723,19 +16723,19 @@
     },
     {
       "id": "DECISION-467",
-      "title": "OurAgentState schema extension + LangGraph state injection points Pass 52 turn 130 owner-approved RESOLVED-DECIDED. Implement OurAgentState (extends TradingAgen",
+      "title": "OurAgentState schema -- OUR_AGENT_STATE_NEW_FIELDS tuple (7 fields: rules_only_rationale / agent_overlay_rationale / risk_context_dict / regime_state_dict / tie",
       "status": "RESOLVED-IMPLEMENTED",
       "theme": "Sprint 7 / Pattern 2 toolkits",
       "pass_intro": "Pass 52",
-      "pass_resolved": "52",
+      "pass_resolved": "Pass 53",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
-        "tested": false,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 7,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -16773,7 +16773,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 10,
+        "n_doc_refs": 7,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -16813,7 +16813,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 26,
+        "n_doc_refs": 25,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -16963,19 +16963,19 @@
     },
     {
       "id": "DECISION-478",
-      "title": "Polygon tier \u2014 Stocks Starter $29/mo selected. Pass 53 turn (this) owner-approved RESOLVED-DECIDED (\"I will take the starter pack only\"). Implications: (a) 5-ye",
+      "title": "Polygon Stocks Starter tier $29 -- POLYGON_TIER_SELECTED=stocks_starter + POLYGON_TIER_HISTORY_YEARS=5 (May 2021 -> May 2026) constants. Joint DEC-441 active + ",
       "status": "RESOLVED-IMPLEMENTED",
       "theme": "Sprint 0 / Pre-Sprint-1 owner action",
       "pass_intro": "Pass 53",
-      "pass_resolved": "53",
+      "pass_resolved": "Pass 53",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
-        "tested": false,
+        "tested": true,
         "pushed": true,
-        "n_doc_refs": 13,
+        "n_doc_refs": 12,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -16992,7 +16992,7 @@
       },
       "short_id": "DEC-478",
       "sprint": "Sprint 1 \u2014 RETIRED Pass 53 (re",
-      "dependencies": "-",
+      "dependencies": "DEC-441",
       "description": "",
       "promotion_path": {
         "tier": "IMPLEMENTED",
@@ -17093,9 +17093,9 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 17,
+        "n_doc_refs": 11,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": true,
           "integration": "N/A",
           "system": "N/A",
@@ -17123,19 +17123,19 @@
     },
     {
       "id": "DECISION-485",
-      "title": "Earnings transcripts dropped from Stage 2 scope. Pass 53 turn (this) owner-approved RESOLVED-DECIDED (per Q5 \"Skip 2 strategies\"). Earnings call transcripts not",
+      "title": "Earnings transcripts dropped Stage 2 -- EARNINGS_TRANSCRIPTS_STAGE_2_ENABLED=False + EARNINGS_TRANSCRIPTS_DROP_REASON (FMP 250 calls/day insufficient at 1937-ti",
       "status": "RESOLVED-IMPLEMENTED",
       "theme": "Sprint 7 / Stage 2 scope",
       "pass_intro": "Pass 53",
-      "pass_resolved": "53",
+      "pass_resolved": "Pass 53",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
-        "tested": false,
+        "tested": true,
         "pushed": true,
-        "n_doc_refs": 11,
+        "n_doc_refs": 7,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -17163,19 +17163,19 @@
     },
     {
       "id": "DECISION-490",
-      "title": "Phase 1A skipped strategies enumerated. Pass 53 turn (this) RESOLVED-DECIDED. Per DEC-484 (financials deferred to Sprint 4 SEC EDGAR) + DEC-485 (transcripts dro",
+      "title": "Phase 1A skipped strategies -- PHASE_1A_SKIPPED_STRATEGIES tuple (fundamentals_quality_screen blocked DEC-484 / earnings_call_sentiment blocked DEC-485) + PHASE",
       "status": "RESOLVED-IMPLEMENTED",
       "theme": "Phase 1A / Sprint 6.5",
       "pass_intro": "Pass 53",
-      "pass_resolved": "53",
+      "pass_resolved": "Pass 53",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
-        "tested": false,
+        "tested": true,
         "pushed": true,
-        "n_doc_refs": 13,
+        "n_doc_refs": 11,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -17763,19 +17763,19 @@
     },
     {
       "id": "DECISION-496",
-      "title": "Tier 3 momentum watchlist methodology \u2014 Jegadeesh-Titman 12-1 month price momentum (academic standard) computed via SCREENER-FIRST two-step flow against the bro",
+      "title": "Tier 3 momentum methodology J-T 12-1 -- TIER_3_MOMENTUM_METHODOLOGY + LOOKBACK_DAYS=252 + SKIP_DAYS=21 + RISK_ADJUSTMENT=False + TIE_BREAKERS=(vol_ascending, ad",
       "status": "RESOLVED-IMPLEMENTED",
       "theme": "Sprint 1 (screener + historical populate, ~35-50d revised) + Sprint 5 (ongoing automation)",
       "pass_intro": "Pass 53",
-      "pass_resolved": "53",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": true,
         "wired": true,
-        "tested": false,
+        "tested": true,
         "pushed": true,
-        "n_doc_refs": 48,
+        "n_doc_refs": 46,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -17893,7 +17893,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 49,
+        "n_doc_refs": 47,
         "pyramid": {
           "unit": "N/A",
           "smoke": true,
@@ -18043,19 +18043,19 @@
     },
     {
       "id": "DECISION-501",
-      "title": "Polygon Options NOT upgraded; OHLC/OI/IV/chain data deferred to Stage 3 / Phase 1C. Pass 53 owner directive 2026-05-05 (Q1=C: defer options entirely) RESOLVED-D",
+      "title": "Polygon Options original deferral (SUPERSEDED by DEC-506) -- DEC_501_ORIGINAL_DEFERRAL + DEC_501_SUPERSEDED_BY=DEC-506 constants preserve historical context. 1 ",
       "status": "RESOLVED-IMPLEMENTED",
       "theme": "Sprint 0A scope-out (deferred Stage 3 / Phase 1C)",
       "pass_intro": "Pass 53",
-      "pass_resolved": "53",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": true,
         "wired": false,
-        "tested": false,
+        "tested": true,
         "pushed": true,
-        "n_doc_refs": 14,
+        "n_doc_refs": 12,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -18072,7 +18072,7 @@
       },
       "short_id": "DEC-501",
       "sprint": "-",
-      "dependencies": "-",
+      "dependencies": "DEC-506",
       "description": "",
       "promotion_path": {
         "tier": "IMPLEMENTED",
@@ -18083,11 +18083,11 @@
     },
     {
       "id": "DECISION-502",
-      "title": "Quiver Trader-tier agent-input expansion (8 endpoint groups + Apewisdom + pytrends supplement). Pass 53 owner-approved Q1+Q2+Q3 2026-05-05 RESOLVED-DECIDED. ART",
+      "title": "Quiver Trader-tier endpoint expansion -- QUIVER_TRADER_TIER_ENDPOINT_GROUPS tuple (8 groups: congresstrading / senatortrading / sec13f / insidertrading / wsbtra",
       "status": "RESOLVED-IMPLEMENTED",
       "theme": "Sprint 0A.5 + 0A.7",
       "pass_intro": "Pass 53",
-      "pass_resolved": "53",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": true,
         "wired": false,
@@ -18095,7 +18095,7 @@
         "pushed": true,
         "n_doc_refs": 12,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": true,
           "integration": "N/A",
           "system": "N/A",
@@ -18133,7 +18133,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 68,
+        "n_doc_refs": 65,
         "pyramid": {
           "unit": true,
           "smoke": true,
@@ -18213,7 +18213,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 37,
+        "n_doc_refs": 36,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -18243,19 +18243,19 @@
     },
     {
       "id": "DECISION-506",
-      "title": "Polygon Options + Ortex confirmed Stage 2 in-scope (corrects DEC-501 deferral + DEC-468 Sprint-7 timing). Pass 53 owner-approved 2026-05-05 RESOLVED-DECIDED. Ow",
+      "title": "Polygon Options + Ortex Stage 2 in-scope (SUPERSEDES DEC-501; corrects DEC-468 Sprint-7 timing) -- POLYGON_OPTIONS_STAGE_2_IN_SCOPE=True + ORTEX_SHORT_INTEREST_",
       "status": "RESOLVED-IMPLEMENTED",
       "theme": "Sprint 0A (subscription point-of-need)",
       "pass_intro": "Pass 53",
-      "pass_resolved": "53",
+      "pass_resolved": "Pass 53",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
-        "tested": false,
+        "tested": true,
         "pushed": true,
-        "n_doc_refs": 12,
+        "n_doc_refs": 14,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -18933,7 +18933,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 320,
+        "n_doc_refs": 293,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -20965,7 +20965,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 82,
+        "n_doc_refs": 81,
         "pyramid": {
           "unit": true,
           "smoke": true,
@@ -21535,7 +21535,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 39,
+        "n_doc_refs": 36,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -25595,7 +25595,7 @@
         "wired": false,
         "tested": false,
         "pushed": true,
-        "n_doc_refs": 5,
+        "n_doc_refs": 3,
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
@@ -26598,52 +26598,58 @@
   ],
   "recent_commits": [
     {
+      "sha": "f32626ad",
+      "subject": "Pass 53 v8h+1: Phase 3 Batch 67 - dashboard filter re-fix + 10 more PARTIAL-SPEC-ONLY-was DECs",
+      "author": "jeetmehta1991",
+      "rel_time": "31 minutes ago"
+    },
+    {
       "sha": "ab4f5173",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 66 - 10 more PARTIAL-SPEC-ONLY-was DECs real impl",
       "author": "jeetmehta1991",
-      "rel_time": "10 minutes ago"
+      "rel_time": "41 minutes ago"
     },
     {
       "sha": "4b28bed8",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 65 - 10 DECs real impl (was PARTIAL-SPEC-ONLY)",
       "author": "jeetmehta1991",
-      "rel_time": "26 minutes ago"
+      "rel_time": "58 minutes ago"
     },
     {
       "sha": "d2efa4b8",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 64 - Mass-resolution + dashboard filter fix (owner directive)",
       "author": "jeetmehta1991",
-      "rel_time": "52 minutes ago"
+      "rel_time": "83 minutes ago"
     },
     {
       "sha": "6c586908",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 63 (23-DEC close-out)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "d6be69a6",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 63 - Path C 23-DEC close-out (ALL RESOLVED-DECIDED resolved)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "b61a2f8f",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 62 (20-DEC bundle)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "64f16341",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 62 - Path C 20-DEC bundle (owner directive: 20 DECs this turn)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "279e1b34",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 61 (20-DEC bundle)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "572a2212",
@@ -26655,13 +26661,13 @@
       "sha": "8ce9bc21",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 60 (20-DEC bundle)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "215f6fbc",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 60 - Path C 20-DEC bundle (owner directive: 20 DECs this turn)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "9fb94b18",
@@ -26691,31 +26697,31 @@
       "sha": "77ad8f19",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 57 (5-DEC bundle)",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "89dac3b4",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 57 - Path C 5-DEC bundle (factor breaker / coverage gate / memory / 13F PIT / CNN F&G bands)",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "1bfcd76f",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 56 (5-DEC bundle)",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "0bfa2be6",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 56 - Path C 5-DEC bundle (breakdowns/agent verdicts/data-quality/policy/site freshness)",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "25c94093",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 55 (5-DEC regime+risk bundle)",
       "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
+      "rel_time": "7 hours ago"
     },
     {
       "sha": "ad012991",
@@ -26739,25 +26745,25 @@
       "sha": "d7aff6ed",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 53 (DEC-432)",
       "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
+      "rel_time": "8 hours ago"
     },
     {
       "sha": "29b9c6eb",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 53 - DEC-432 chandelier exit indicator (RESOLVED-IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
+      "rel_time": "8 hours ago"
     },
     {
       "sha": "6128d4c6",
       "subject": "Pass 53 v8h+1: regenerate Stage 2 dashboard for Batches 49-52",
       "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
+      "rel_time": "8 hours ago"
     },
     {
       "sha": "bf2b26ab",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 52 - DEC-087 vol-targeted per-position sizing helper (RESOLVED-IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
+      "rel_time": "8 hours ago"
     },
     {
       "sha": "6d1cce3e",
@@ -26770,17 +26776,11 @@
       "subject": "Pass 53 v8h+1: Phase 3 Batch 50 - DEC-149 regime transition probability matrix (RESOLVED-IMPLEMENTED)",
       "author": "jeetmehta1991",
       "rel_time": "9 hours ago"
-    },
-    {
-      "sha": "21472ca0",
-      "subject": "Pass 53 v8h+1: Phase 3 Batch 49 - DEC-435 AEP per-trade metric (RESOLVED-IMPLEMENTED)",
-      "author": "jeetmehta1991",
-      "rel_time": "9 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 4,
-    "modified": 4,
+    "count": 3,
+    "modified": 3,
     "added": 0,
     "untracked": 0,
     "deleted": 0,
@@ -26796,10 +26796,6 @@
       {
         "status": "M",
         "path": "backtest/tests/test_unit.py"
-      },
-      {
-        "status": "M",
-        "path": "dashboard_stage_2/index.html"
       }
     ]
   },
@@ -26981,7 +26977,7 @@
     }
   ],
   "test_inventory": {
-    "total": 1120,
+    "total": 1129,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -27057,7 +27053,7 @@
       "test_stocktwits_smoke": 4,
       "test_supplementary_demo": 4,
       "test_supplementary_smoke": 6,
-      "test_unit": 455,
+      "test_unit": 464,
       "test_walk_forward_4fold": 6
     }
   },
@@ -27412,6 +27408,16 @@
   },
   "next_up": [
     {
+      "kind": "DEC",
+      "id": "DEC-490",
+      "title": "Phase 1A skipped strategies -- PHASE_1A_SKIPPED_STRATEGIES tuple (fundamentals_quality_screen blocked DEC-484 / earnings_call_sentiment bloc",
+      "status": "RESOLVED-IMPLEMENTED",
+      "tier": 0,
+      "reason": "Phase 1A blocker per title",
+      "back_refs": 0,
+      "sprint": "-"
+    },
+    {
       "kind": "INV",
       "id": "INV-015",
       "title": "\u2014 Alpha Vantage news cached only 25 files (alphabetical mid-letter range) (Pass 53 Day-9 v8h evening)",
@@ -27513,6 +27519,16 @@
     },
     {
       "kind": "DEC",
+      "id": "DEC-441",
+      "title": "Polygon Stocks Starter active -- POLYGON_STOCKS_STARTER_ACTIVE=True + POLYGON_STOCKS_STARTER_TIER constants in config.py codify subscription",
+      "status": "RESOLVED-IMPLEMENTED",
+      "tier": 1,
+      "reason": "Dependency root (6 downstream items reference)",
+      "back_refs": 6,
+      "sprint": "Sprint 1 \u2014 RETIRED Pass 53 (re; Sprint 4 additions (DEC-410 Au; Sprint 4 \u2014 DEC-410 Audit Findi"
+    },
+    {
+      "kind": "DEC",
       "id": "DEC-081",
       "title": "Sharpe + Sortino + transaction cost sensitivity \u2014 Pass 52 owner-approved. Compute both `sharpe_per_trade` (current) AND `sharpe_daily = sqrt",
       "status": "RESOLVED-IMPLEMENTED",
@@ -27540,16 +27556,6 @@
       "reason": "Dependency root (5 downstream items reference)",
       "back_refs": 5,
       "sprint": "Sprint 1 \u2014 RETIRED Pass 53 (re; Sprint 7 additions; Sprint 7 additions (Statistica; Sprint 7-8 additions (Phase 1B"
-    },
-    {
-      "kind": "DEC",
-      "id": "DEC-441",
-      "title": "Polygon Stocks Starter active -- POLYGON_STOCKS_STARTER_ACTIVE=True + POLYGON_STOCKS_STARTER_TIER constants in config.py codify subscription",
-      "status": "RESOLVED-IMPLEMENTED",
-      "tier": 1,
-      "reason": "Dependency root (5 downstream items reference)",
-      "back_refs": 5,
-      "sprint": "Sprint 1 \u2014 RETIRED Pass 53 (re; Sprint 4 additions (DEC-410 Au; Sprint 4 \u2014 DEC-410 Audit Findi"
     },
     {
       "kind": "DEC",
@@ -27650,16 +27656,6 @@
       "reason": "Dependency root (3 downstream items reference)",
       "back_refs": 3,
       "sprint": "-"
-    },
-    {
-      "kind": "DEC",
-      "id": "DEC-314",
-      "title": "Circuit breakers levels 3 and 4 (intraday halt, market halt) documented but NOT implemented. Pass 52 owner-approved with phased path. Level ",
-      "status": "RESOLVED-IMPLEMENTED",
-      "tier": 1,
-      "reason": "Dependency root (3 downstream items reference)",
-      "back_refs": 3,
-      "sprint": "Sprint 2 additions (Engine Bug"
     }
   ],
   "decision_status_counts": {

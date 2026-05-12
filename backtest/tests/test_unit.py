@@ -5108,6 +5108,99 @@ def test_dashboard_filter_uses_value_pattern_batch_67():
 
 
 # ============================================================================
+# Phase 3 Batch 68 - FINAL 9 PARTIAL-SPEC-ONLY -> real impl
+# DEC-439 / 467 / 478 / 485 / 490 / 496 / 501 / 502 / 506
+# ============================================================================
+
+def test_dec_439_differential_testing_layer_5():
+    """DEC-439: differential testing Layer 5 of multi-layer defense."""
+    from backtest.config import (DIFFERENTIAL_TESTING_DEFENSE_LAYER,
+                                   DIFFERENTIAL_TESTING_TARGETS)
+    assert DIFFERENTIAL_TESTING_DEFENSE_LAYER == 5
+    assert "fundamentals_polygon_vs_sec_xbrl" in DIFFERENTIAL_TESTING_TARGETS
+
+
+def test_dec_467_our_agent_state_schema():
+    """DEC-467: 7 new state fields + extends parent class."""
+    from backtest.config import (OUR_AGENT_STATE_NEW_FIELDS,
+                                   OUR_AGENT_STATE_EXTENDS)
+    assert len(OUR_AGENT_STATE_NEW_FIELDS) == 7
+    assert "rules_only_rationale" in OUR_AGENT_STATE_NEW_FIELDS
+    assert "ab_arm_label" in OUR_AGENT_STATE_NEW_FIELDS
+    assert "tradingagents.AgentState" in OUR_AGENT_STATE_EXTENDS
+
+
+def test_dec_478_polygon_tier_stocks_starter():
+    """DEC-478: Stocks Starter tier + 5-year history."""
+    from backtest.config import POLYGON_TIER_SELECTED, POLYGON_TIER_HISTORY_YEARS
+    assert POLYGON_TIER_SELECTED == "stocks_starter"
+    assert POLYGON_TIER_HISTORY_YEARS == 5
+
+
+def test_dec_485_earnings_transcripts_dropped():
+    """DEC-485: transcripts dropped Stage 2."""
+    from backtest.config import (EARNINGS_TRANSCRIPTS_STAGE_2_ENABLED,
+                                   EARNINGS_TRANSCRIPTS_DROP_REASON)
+    assert EARNINGS_TRANSCRIPTS_STAGE_2_ENABLED is False
+    assert "250 calls/day" in EARNINGS_TRANSCRIPTS_DROP_REASON
+
+
+def test_dec_490_phase_1a_skipped_strategies():
+    """DEC-490: 2 Phase 1A skip strategies + reasons."""
+    from backtest.config import (PHASE_1A_SKIPPED_STRATEGIES,
+                                   PHASE_1A_SKIPPED_REASONS)
+    assert "fundamentals_quality_screen" in PHASE_1A_SKIPPED_STRATEGIES
+    assert "earnings_call_sentiment" in PHASE_1A_SKIPPED_STRATEGIES
+    assert "DEC-484" in PHASE_1A_SKIPPED_REASONS["fundamentals_quality_screen"]
+    assert "DEC-485" in PHASE_1A_SKIPPED_REASONS["earnings_call_sentiment"]
+
+
+def test_dec_496_tier_3_jegadeesh_titman_methodology():
+    """DEC-496: J-T 12-1 momentum + tie-breakers."""
+    from backtest.config import (TIER_3_MOMENTUM_METHODOLOGY,
+                                   TIER_3_MOMENTUM_LOOKBACK_DAYS,
+                                   TIER_3_MOMENTUM_SKIP_DAYS,
+                                   TIER_3_MOMENTUM_RISK_ADJUSTMENT,
+                                   TIER_3_MOMENTUM_TIE_BREAKERS)
+    assert TIER_3_MOMENTUM_METHODOLOGY == "jegadeesh_titman_12_1"
+    assert TIER_3_MOMENTUM_LOOKBACK_DAYS == 252
+    assert TIER_3_MOMENTUM_SKIP_DAYS == 21
+    assert TIER_3_MOMENTUM_RISK_ADJUSTMENT is False
+    assert "vol_ascending" in TIER_3_MOMENTUM_TIE_BREAKERS
+    assert "adv_descending" in TIER_3_MOMENTUM_TIE_BREAKERS
+
+
+def test_dec_501_polygon_options_superseded_by_506():
+    """DEC-501: original deferral preserved; superseded by DEC-506."""
+    from backtest.config import DEC_501_ORIGINAL_DEFERRAL, DEC_501_SUPERSEDED_BY
+    assert "Polygon Options" in DEC_501_ORIGINAL_DEFERRAL
+    assert DEC_501_SUPERSEDED_BY == "DEC-506"
+
+
+def test_dec_502_quiver_trader_tier_endpoint_groups():
+    """DEC-502: 8 Quiver endpoint groups + 2 supplemental sources."""
+    from backtest.config import (QUIVER_TRADER_TIER_ENDPOINT_GROUPS,
+                                   QUIVER_SUPPLEMENTAL_SOURCES)
+    assert len(QUIVER_TRADER_TIER_ENDPOINT_GROUPS) == 8
+    assert "congresstrading" in QUIVER_TRADER_TIER_ENDPOINT_GROUPS
+    assert "patentmomentum" in QUIVER_TRADER_TIER_ENDPOINT_GROUPS
+    assert "apewisdom" in QUIVER_SUPPLEMENTAL_SOURCES
+    assert "pytrends" in QUIVER_SUPPLEMENTAL_SOURCES
+
+
+def test_dec_506_polygon_options_ortex_stage_2_in_scope():
+    """DEC-506: Stage 2 in-scope flags + supersedes DEC-501 + corrects DEC-468."""
+    from backtest.config import (POLYGON_OPTIONS_STAGE_2_IN_SCOPE,
+                                   ORTEX_SHORT_INTEREST_STAGE_2_IN_SCOPE,
+                                   DEC_506_SUPERSEDES,
+                                   DEC_506_CORRECTS)
+    assert POLYGON_OPTIONS_STAGE_2_IN_SCOPE is True
+    assert ORTEX_SHORT_INTEREST_STAGE_2_IN_SCOPE is True
+    assert "DEC-501" in DEC_506_SUPERSEDES
+    assert any("DEC-468" in c for c in DEC_506_CORRECTS)
+
+
+# ============================================================================
 # DEC-432 Chandelier exit indicator tests (Phase 3 Batch 53 Path C)
 # Parabolic SAR + Supertrend already implemented; only chandelier added.
 # ============================================================================

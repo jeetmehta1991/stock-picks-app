@@ -1218,6 +1218,91 @@ GOLDEN_MASTER_TESTING_DEFENSE_LAYER = 4
 GOLDEN_MASTER_TESTING_ARTIFACT_DIR = "backtest/tests/golden_masters"
 GOLDEN_MASTER_TESTING_DIFF_TOLERANCE = 0.0  # byte-identical per DEC-232
 
+# DEC-439 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 68 2026-05-12
+# (owner-approved Path C PARTIAL-SPEC-ONLY closure batch 4 -- FINAL).
+# Differential testing Layer 5 of multi-layer catch defense.
+DIFFERENTIAL_TESTING_DEFENSE_LAYER = 5
+DIFFERENTIAL_TESTING_TARGETS = (
+    "fundamentals_polygon_vs_sec_xbrl",  # joint DEC-456 SEC EDGAR reference
+    "ohlcv_yfinance_vs_polygon",
+    "regime_classifier_v1_vs_multi_input",
+)
+
+# DEC-467 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 68 2026-05-12.
+# OurAgentState schema extension + LangGraph state injection points.
+OUR_AGENT_STATE_NEW_FIELDS = (
+    "rules_only_rationale",
+    "agent_overlay_rationale",
+    "risk_context_dict",
+    "regime_state_dict",
+    "tier_pre_agent",
+    "tier_post_agent",
+    "ab_arm_label",
+)
+OUR_AGENT_STATE_EXTENDS = "tradingagents.AgentState"
+
+# DEC-478 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 68 2026-05-12.
+# Polygon Stocks Starter tier selection (cross-ref to DEC-441 + DEC-479).
+POLYGON_TIER_SELECTED = "stocks_starter"
+POLYGON_TIER_HISTORY_YEARS = 5  # May 2021 -> May 2026
+
+# DEC-485 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 68 2026-05-12.
+# Earnings transcripts dropped from Stage 2 scope.
+EARNINGS_TRANSCRIPTS_STAGE_2_ENABLED = False
+EARNINGS_TRANSCRIPTS_DROP_REASON = (
+    "FMP free tier 250 calls/day insufficient for 1937-ticker backtest scale. "
+    "Phase 1B+ revisit pending paid-tier cost-benefit analysis."
+)
+
+# DEC-490 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 68 2026-05-12.
+# Phase 1A skipped strategies enumerated.
+PHASE_1A_SKIPPED_STRATEGIES = (
+    "fundamentals_quality_screen",   # blocked on DEC-484 (SEC EDGAR Sprint 4)
+    "earnings_call_sentiment",        # blocked on DEC-485 (transcripts dropped)
+)
+PHASE_1A_SKIPPED_REASONS = {
+    "fundamentals_quality_screen": "DEC-484 financials deferred to Sprint 4 SEC EDGAR",
+    "earnings_call_sentiment":     "DEC-485 transcripts dropped from Stage 2",
+}
+
+# DEC-496 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 68 2026-05-12.
+# Tier 3 momentum watchlist methodology: Jegadeesh-Titman 12-1 month.
+TIER_3_MOMENTUM_METHODOLOGY = "jegadeesh_titman_12_1"
+TIER_3_MOMENTUM_LOOKBACK_DAYS = 252  # ~12 months trading days
+TIER_3_MOMENTUM_SKIP_DAYS = 21       # ~1 month skip (avoid short-term reversal)
+TIER_3_MOMENTUM_RISK_ADJUSTMENT = False  # raw return ranking
+TIER_3_MOMENTUM_TIE_BREAKERS = ("vol_ascending", "adv_descending")
+
+# DEC-501 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 68 2026-05-12.
+# Polygon Options NOT upgraded -- SUPERSEDED by DEC-506 (re-enabled in
+# Stage 2 per owner directive 2026-05-05). This constant records the
+# original deferral decision for historical context.
+DEC_501_ORIGINAL_DEFERRAL = "Polygon Options NOT upgraded (Q1=C 2026-05-05)"
+DEC_501_SUPERSEDED_BY = "DEC-506"
+
+# DEC-502 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 68 2026-05-12.
+# Quiver Trader-tier agent-input expansion -- 8 endpoint groups +
+# Apewisdom + pytrends supplement.
+QUIVER_TRADER_TIER_ENDPOINT_GROUPS = (
+    "congresstrading",
+    "senatortrading",
+    "sec13f_sec13fchanges",
+    "insidertrading",
+    "wsbtrading",
+    "patentmomentum",
+    "corporatedonors",
+    "lobbying_lawsuits",
+)
+QUIVER_SUPPLEMENTAL_SOURCES = ("apewisdom", "pytrends")
+
+# DEC-506 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 68 2026-05-12.
+# Polygon Options + Ortex confirmed Stage 2 in-scope (SUPERSEDES DEC-501
+# deferral; corrects DEC-468 Sprint-7 timing to Stage 2 now).
+POLYGON_OPTIONS_STAGE_2_IN_SCOPE = True
+ORTEX_SHORT_INTEREST_STAGE_2_IN_SCOPE = True
+DEC_506_SUPERSEDES = ("DEC-501",)
+DEC_506_CORRECTS = ("DEC-468 timing Sprint 7 -> Stage 2",)
+
 # -----------------------------------------------------------------------------
 # TWO-STAGE CONFIDENCE TIERING
 # Stage 1: Rule-based preliminary tier (before agents run)
