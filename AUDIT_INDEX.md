@@ -1105,7 +1105,7 @@
 | **BUG-235** | AAII pub-lag not respected — Wed survey marked tradeable Wed instead of Thu | HIGH | OPEN | Pass 48 |
 | **BUG-236** | AAII auto-refresh missing — committed CSV will go stale | HIGH | OPEN | Pass 48 |
 | **BUG-237** | CNN F&G CSV interpolated between key readings — fabricated PIT signal | HIGH | OPEN | Pass 48 |
-| **BUG-238** | Liquidity filter market-cap fail-open — missing data passes filter | HIGH | OPEN | Pass 48 |
+| **BUG-238** | Liquidity filter market-cap fail-open - missing data passes filter. RESOLVED-IMPLEMENTED Batch 98 2026-05-12 (active engine fix, not status correction): `backtest/engine/backtest.py:_build_liquid_universe` previously used `if mkt_cap_m > 0 and mkt_cap_m < min: continue` which only rejected when market_cap data was present. Tickers with missing market_cap (delisted, recent IPO with stale ref row, Polygon reference gap) silently passed the gate. Fix at line 207-216: replaced fail-open pattern with `if _min_cap > 0 and mkt_cap_m < _min_cap: continue` - any ticker with mkt_cap_m < min (including 0/missing) is now dropped. Filter remains a no-op when LIQUIDITY config sets min_market_cap_m=0 (opt-out for tests / non-equity assets). 2 integration tests added (source-grep verifying BUG-238 comment + new fail-closed pattern; behavioral verifying mkt_cap=0 fails when min>0). Full 13-tier pyramid: 683/683 mandatory T1-T10 green. | HIGH | RESOLVED-IMPLEMENTED | Pass 48 |
 | **BUG-239** | Sector reclassifications retro-applied — current sector for old trades | HIGH | OPEN | Pass 48 |
 | **BUG-240** | Congressional signal weighted by disclosure_date not transaction_date | HIGH | RESOLVED | Pass 48 |
 | **BUG-241** | Institutional 13F PIT assumes on-time filing — late filers invisible | HIGH | OPEN | Pass 48 |

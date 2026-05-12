@@ -204,8 +204,16 @@ class BacktestEngine:
                 avg_vol = float(sliced["volume"].tail(20).mean())
                 if avg_vol < LIQUIDITY["min_avg_volume"]:
                     continue
+                # BUG-238 RESOLVED-IMPLEMENTED Batch 98 2026-05-12: fail-closed
+                # on missing market_cap. Previously the filter only rejected
+                # when `mkt_cap_m > 0 and < min`, so any ticker without
+                # market_cap data (e.g. delisted, recent IPO with stale ref
+                # row, or Polygon reference gap) silently passed the gate.
+                # Now: missing data (mkt_cap_m == 0) fails the filter unless
+                # LIQUIDITY config explicitly sets min_market_cap_m=0.
                 mkt_cap_m = (self.info_dict.get(ticker, {}).get("market_cap", 0) or 0) / 1_000_000
-                if mkt_cap_m > 0 and mkt_cap_m < LIQUIDITY["min_market_cap_m"]:
+                _min_cap = LIQUIDITY["min_market_cap_m"]
+                if _min_cap > 0 and mkt_cap_m < _min_cap:
                     continue
                 passing.add(ticker)
 
