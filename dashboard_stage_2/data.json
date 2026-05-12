@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-12T04:09:25.928862+00:00",
+  "generated_at": "2026-05-12T13:27:02.851629+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -604,7 +604,7 @@
     {
       "id": "DECISION-019",
       "title": "Liquidity filter re-validation timing (BUG-135 closure) \u2014 `liquidity_drop_warning(entry_adv_shares, current_adv_shares, drop_threshold_pct=50.0)` helper in `bac",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Risk Management (Group C)",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -635,16 +635,16 @@
       "dependencies": "BUG-135",
       "description": "",
       "promotion_path": {
-        "tier": "IMPLEMENTED",
-        "label": "IMPLEMENTED",
-        "color": "#10b981",
-        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
+        "tier": "UNKNOWN",
+        "label": "UNKNOWN",
+        "color": "#9ca3af",
+        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
       }
     },
     {
       "id": "DECISION-021",
       "title": "Tier system simplification \u2014 `TIER_3_POSITION_SIZE_PCT` (HIGH 5%, MEDIUM 3%, LOW 1.5%) + `TIER_5_TO_TIER_3` mapping in `backtest/config.py`. Original `TIER_POSI",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Strategy / Regime Adaptation (Group D)",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -675,10 +675,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "IMPLEMENTED",
-        "label": "IMPLEMENTED",
-        "color": "#10b981",
-        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
+        "tier": "UNKNOWN",
+        "label": "UNKNOWN",
+        "color": "#9ca3af",
+        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
       }
     },
     {
@@ -2044,7 +2044,7 @@
     {
       "id": "DECISION-062",
       "title": "Output schema translation 5-tier -> position_size_modifier \u2014 `AGENT_TIER_TO_SIZE_MODIFIER` dict in `backtest/config.py` (jointly with DEC-061): 1->0.5x / 2->0.7",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "TradingAgents Architecture",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -2075,10 +2075,10 @@
       "dependencies": "DEC-061",
       "description": "**Status:** PROPOSED.",
       "promotion_path": {
-        "tier": "IMPLEMENTED",
-        "label": "IMPLEMENTED",
-        "color": "#10b981",
-        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
+        "tier": "UNKNOWN",
+        "label": "UNKNOWN",
+        "color": "#9ca3af",
+        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
       }
     },
     {
@@ -2364,7 +2364,7 @@
     {
       "id": "DECISION-076",
       "title": "Factor exposure breaker \u2014 `Portfolio.factor_concentration_breach(sector_threshold_pct=30.0, prices=None)` method in `backtest/engine/portfolio.py` returns dict ",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X6 \u2014 Exits + Circuit Breakers",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -2395,10 +2395,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "IMPLEMENTED",
-        "label": "IMPLEMENTED",
-        "color": "#10b981",
-        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
+        "tier": "UNKNOWN",
+        "label": "UNKNOWN",
+        "color": "#9ca3af",
+        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
       }
     },
     {
@@ -2804,7 +2804,7 @@
     {
       "id": "DECISION-087",
       "title": "Vol-targeted sizing per-position (closes DEC-023) \u2014 `vol_targeted_size(base_size_pct, position_vol_annualized, target_vol_annualized=None)` module-level functio",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X5 \u2014 Risk Management Extension",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -2835,16 +2835,16 @@
       "dependencies": "DEC-023",
       "description": "",
       "promotion_path": {
-        "tier": "IMPLEMENTED",
-        "label": "IMPLEMENTED",
-        "color": "#10b981",
-        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
+        "tier": "UNKNOWN",
+        "label": "UNKNOWN",
+        "color": "#9ca3af",
+        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
       }
     },
     {
       "id": "DECISION-088",
       "title": "Portfolio vol target 15% annualized \u2014 `PORTFOLIO_VOL_TARGET_ANNUALIZED=0.15` constant + `PORTFOLIO_VOL_LOOKBACK_DAYS=21` + `PORTFOLIO_VOL_SCALE_MIN=0.5`/`MAX=1.",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X5 \u2014 Risk Management Extension",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -2875,10 +2875,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "IMPLEMENTED",
-        "label": "IMPLEMENTED",
-        "color": "#10b981",
-        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
+        "tier": "UNKNOWN",
+        "label": "UNKNOWN",
+        "color": "#9ca3af",
+        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
       }
     },
     {
@@ -2964,7 +2964,7 @@
     {
       "id": "DECISION-091",
       "title": "Drawdown re-sizing \u2014 `Portfolio.drawdown_size_multiplier()` method in `backtest/engine/portfolio.py` returns tiered multiplier in `{1.0, 0.75, 0.5, 0.0}` based ",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X5 \u2014 Risk Management Extension",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -2995,16 +2995,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "IMPLEMENTED",
-        "label": "IMPLEMENTED",
-        "color": "#10b981",
-        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
+        "tier": "UNKNOWN",
+        "label": "UNKNOWN",
+        "color": "#9ca3af",
+        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
       }
     },
     {
       "id": "DECISION-092",
       "title": "Slippage model = f(size%ADV, vol) \u2014 `compute_slippage_bps_advanced(size_pct_adv, realized_vol_annualized, alpha=0.5, beta=4.5, gamma=0.025)` in `backtest/engine",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X5 \u2014 Risk Management Extension",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -3035,10 +3035,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "IMPLEMENTED",
-        "label": "IMPLEMENTED",
-        "color": "#10b981",
-        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
+        "tier": "UNKNOWN",
+        "label": "UNKNOWN",
+        "color": "#9ca3af",
+        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
       }
     },
     {
@@ -3364,7 +3364,7 @@
     {
       "id": "DECISION-106",
       "title": "Regime inputs 2 \u2192 8+ \u2014 `multi_input_regime_score(vix, spy_above_200ema, yield_curve_spread, hy_spread_bps, icsa_yoy_pct, breadth_pct_above_50ema, sector_dispers",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X7 \u2014 Smart Money + Regimes",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -3395,10 +3395,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "IMPLEMENTED",
-        "label": "IMPLEMENTED",
-        "color": "#10b981",
-        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
+        "tier": "UNKNOWN",
+        "label": "UNKNOWN",
+        "color": "#9ca3af",
+        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
       }
     },
     {
@@ -3444,7 +3444,7 @@
     {
       "id": "DECISION-108",
       "title": "Regime persistence via exponential smoothing (HMM rejected) \u2014 `ema_smooth_regime_probability(new_score, prev_smoothed=None, alpha=0.1)` in `backtest/engine/regi",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X7 \u2014 Smart Money + Regimes",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -3475,10 +3475,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "IMPLEMENTED",
-        "label": "IMPLEMENTED",
-        "color": "#10b981",
-        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
+        "tier": "UNKNOWN",
+        "label": "UNKNOWN",
+        "color": "#9ca3af",
+        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
       }
     },
     {
@@ -4164,7 +4164,7 @@
     {
       "id": "DECISION-128",
       "title": "Dispersion-conditional CB \u2014 `dispersion_circuit_breaker(daily_returns_df, window=20, sigma_threshold=3.0)` in `backtest/engine/regime_filter.py` returns dict wi",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X13 \u2014 Circuit breakers extension",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -4195,10 +4195,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "IMPLEMENTED",
-        "label": "IMPLEMENTED",
-        "color": "#10b981",
-        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
+        "tier": "UNKNOWN",
+        "label": "UNKNOWN",
+        "color": "#9ca3af",
+        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
       }
     },
     {
@@ -4404,7 +4404,7 @@
     {
       "id": "DECISION-134",
       "title": "USD/CAD FX exposure tracking \u2014 `compute_fx_exposure_pct(usd_portfolio_value_cad, total_portfolio_value_cad)` in `backtest/results/metrics.py` returns dict with ",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X15 \u2014 Risk management deeper",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -4435,16 +4435,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "IMPLEMENTED",
-        "label": "IMPLEMENTED",
-        "color": "#10b981",
-        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
+        "tier": "UNKNOWN",
+        "label": "UNKNOWN",
+        "color": "#9ca3af",
+        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
       }
     },
     {
       "id": "DECISION-135",
       "title": "Per-ticker cumulative max-loss cap (rolling 30-day) \u2014 `per_ticker_30day_max_loss_check(trade_log_df, today, cap_pct=-10.0, cooldown_days=30)` in `backtest/engin",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X15 \u2014 Risk management deeper",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -4475,10 +4475,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "IMPLEMENTED",
-        "label": "IMPLEMENTED",
-        "color": "#10b981",
-        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
+        "tier": "UNKNOWN",
+        "label": "UNKNOWN",
+        "color": "#9ca3af",
+        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
       }
     },
     {
@@ -4524,7 +4524,7 @@
     {
       "id": "DECISION-138",
       "title": "Cold-start CI workflow constants -- COLD_START_CI_WORKFLOW_PATH=.github/workflows/cold_start.yml + COLD_START_CI_MAX_MINUTES=30 in config.py. Workflow file auth",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X16 \u2014 Architecture extension",
       "pass_intro": "Pass 40",
       "pass_resolved": "Pass 53",
@@ -4555,10 +4555,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "IMPLEMENTED",
-        "label": "IMPLEMENTED",
-        "color": "#10b981",
-        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
+        "tier": "UNKNOWN",
+        "label": "UNKNOWN",
+        "color": "#9ca3af",
+        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
       }
     },
     {
@@ -4924,7 +4924,7 @@
     {
       "id": "DECISION-149",
       "title": "Regime transition probability matrix \u2014 `compute_regime_transition_matrix` in `backtest/engine/regime_filter.py` returns empirical Markov-1 transition matrix (4x",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X19 \u2014 Regime extensions",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -4955,16 +4955,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "IMPLEMENTED",
-        "label": "IMPLEMENTED",
-        "color": "#10b981",
-        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
+        "tier": "UNKNOWN",
+        "label": "UNKNOWN",
+        "color": "#9ca3af",
+        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
       }
     },
     {
       "id": "DECISION-150",
       "title": "Multi-asset regime detection \u2014 `multi_asset_regime_score(equity_vix, credit_hy_spread_bps, commodity_pct_change_20d, currency_dxy_pct_change_20d)` in `backtest/",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X19 \u2014 Regime extensions",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -4995,16 +4995,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "IMPLEMENTED",
-        "label": "IMPLEMENTED",
-        "color": "#10b981",
-        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
+        "tier": "UNKNOWN",
+        "label": "UNKNOWN",
+        "color": "#9ca3af",
+        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
       }
     },
     {
       "id": "DECISION-151",
       "title": "Sector-level regime classification \u2014 `sector_regime(sector_etf_price, sector_etf_ema200, sector_vol_annualized, crisis_vol_threshold=0.40, bear_vol_threshold=0.",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X19 \u2014 Regime extensions",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -5035,10 +5035,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "IMPLEMENTED",
-        "label": "IMPLEMENTED",
-        "color": "#10b981",
-        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
+        "tier": "UNKNOWN",
+        "label": "UNKNOWN",
+        "color": "#9ca3af",
+        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
       }
     },
     {
@@ -5284,7 +5284,7 @@
     {
       "id": "DECISION-159",
       "title": "Regulatory event handler \u2014 `regulatory_event_flag(ticker, news_items, event_window_days=5, as_of=None)` in `backtest/engine/improvements.py` scans news items fo",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X23 \u2014 Edge case handling",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -5315,10 +5315,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "IMPLEMENTED",
-        "label": "IMPLEMENTED",
-        "color": "#10b981",
-        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
+        "tier": "UNKNOWN",
+        "label": "UNKNOWN",
+        "color": "#9ca3af",
+        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
       }
     },
     {
@@ -6204,7 +6204,7 @@
     {
       "id": "DECISION-183",
       "title": "LRU memoization decorator \u2014 `lru_cached(maxsize=256)` in `backtest/engine/improvements.py` is a thin wrapper over `functools.lru_cache` returning a decorator. J",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X31 \u2014 Performance optimization",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -6235,10 +6235,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "IMPLEMENTED",
-        "label": "IMPLEMENTED",
-        "color": "#10b981",
-        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
+        "tier": "UNKNOWN",
+        "label": "UNKNOWN",
+        "color": "#9ca3af",
+        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
       }
     },
     {
@@ -7204,7 +7204,7 @@
     {
       "id": "DECISION-209",
       "title": "Per-regime A/B verdicts \u2014 `compute_per_regime_agent_verdict(df_rules_only, df_agent_overlay, regimes=('bull','neutral','bear','crisis'), min_trades_per_regime=3",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X32 \u2014 Agent A/B Testing",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -7235,10 +7235,10 @@
       "dependencies": "-",
       "description": "**Resolution:** Score per regime (bull / neutral / bear / crisis per DEC-103 four-regime classifier). Each agent arm passes/fails separately in each regime. Optionally deploy agents only in regimes where they pass.",
       "promotion_path": {
-        "tier": "IMPLEMENTED",
-        "label": "IMPLEMENTED",
-        "color": "#10b981",
-        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
+        "tier": "UNKNOWN",
+        "label": "UNKNOWN",
+        "color": "#9ca3af",
+        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
       }
     },
     {
@@ -7484,7 +7484,7 @@
     {
       "id": "DECISION-216",
       "title": "A/B orchestrator module path + deterministic seeds -- AB_ORCHESTRATOR_MODULE_PATH + AB_ORCHESTRATOR_DETERMINISTIC_SEEDS=True constants in config.py. Module impl",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X32 \u2014 Agent A/B Testing",
       "pass_intro": "Pass 45",
       "pass_resolved": "Pass 53",
@@ -7515,10 +7515,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "IMPLEMENTED",
-        "label": "IMPLEMENTED",
-        "color": "#10b981",
-        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
+        "tier": "UNKNOWN",
+        "label": "UNKNOWN",
+        "color": "#9ca3af",
+        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
       }
     },
     {
@@ -7884,7 +7884,7 @@
     {
       "id": "DECISION-230",
       "title": "Logging audit + standard (structured JSON, rotation, level standardization) Pass 52 turn 85 owner-approved RESOLVED-DECIDED with python-json-logger library: Log",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X35 \u2014 Reliability + Determinism",
       "pass_intro": "Pass 45",
       "pass_resolved": "-",
@@ -7915,16 +7915,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "IMPLEMENTED",
-        "label": "IMPLEMENTED",
-        "color": "#10b981",
-        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
+        "tier": "UNKNOWN",
+        "label": "UNKNOWN",
+        "color": "#9ca3af",
+        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
       }
     },
     {
       "id": "DECISION-231",
       "title": "Audit all except Exception patterns; ensure WARNING+ logging with context Pass 52 turn 85 owner-approved RESOLVED-DECIDED: Audit all bare except Exception patte",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X35 \u2014 Reliability + Determinism",
       "pass_intro": "Pass 45",
       "pass_resolved": "-",
@@ -7955,10 +7955,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "IMPLEMENTED",
-        "label": "IMPLEMENTED",
-        "color": "#10b981",
-        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
+        "tier": "UNKNOWN",
+        "label": "UNKNOWN",
+        "color": "#9ca3af",
+        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
       }
     },
     {
@@ -8044,7 +8044,7 @@
     {
       "id": "DECISION-234",
       "title": "Ticker lifecycle schema \u2014 `TICKER_LIFECYCLE_FIELDS` + `TICKER_LIFECYCLE_EVENT_TYPES` tuples in `backtest/config.py` codify (ticker, cusip, isin, event_type, eve",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X36 \u2014 Data Quality + Trading Mechanics",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -8075,16 +8075,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "IMPLEMENTED",
-        "label": "IMPLEMENTED",
-        "color": "#10b981",
-        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
+        "tier": "UNKNOWN",
+        "label": "UNKNOWN",
+        "color": "#9ca3af",
+        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
       }
     },
     {
       "id": "DECISION-235",
       "title": "NYSE calendar handling \u2014 `get_nyse_calendar_helper()` + `is_nyse_trading_day(d, calendar=None)` in `backtest/engine/improvements.py`. Uses `pandas_market_calend",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X36 \u2014 Data Quality + Trading Mechanics",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -8115,10 +8115,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "IMPLEMENTED",
-        "label": "IMPLEMENTED",
-        "color": "#10b981",
-        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
+        "tier": "UNKNOWN",
+        "label": "UNKNOWN",
+        "color": "#9ca3af",
+        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
       }
     },
     {
@@ -9844,7 +9844,7 @@
     {
       "id": "DECISION-280",
       "title": "Time-of-day slippage multiplier \u2014 `time_of_day_slippage_multiplier(entry_time)` in `backtest/engine/improvements.py` returns 1.5x for `[09:30, 10:00)` (first 30",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X48 \u2014 Professional Benchmark Gaps",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -9875,10 +9875,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "IMPLEMENTED",
-        "label": "IMPLEMENTED",
-        "color": "#10b981",
-        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
+        "tier": "UNKNOWN",
+        "label": "UNKNOWN",
+        "color": "#9ca3af",
+        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
       }
     },
     {
@@ -11084,7 +11084,7 @@
     {
       "id": "DECISION-314",
       "title": "Circuit breakers levels 3 and 4 (intraday halt, market halt) documented but NOT implemented. Pass 52 owner-approved with phased path. Level 4 (market-wide >7%/>",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X53 \u2014 High-Impact Engine Bugs",
       "pass_intro": "Pass 48",
       "pass_resolved": "-",
@@ -11115,10 +11115,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "IMPLEMENTED",
-        "label": "IMPLEMENTED",
-        "color": "#10b981",
-        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
+        "tier": "UNKNOWN",
+        "label": "UNKNOWN",
+        "color": "#9ca3af",
+        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
       }
     },
     {
@@ -12364,7 +12364,7 @@
     {
       "id": "DECISION-354",
       "title": "Chart-pattern strategies parent roster -- CHART_PATTERN_STRATEGIES dict (6 child patterns) + detect_chart_pattern_skeleton helper. Full pattern recognition defe",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X55 - Strategy Coverage Gaps (Pass 52)",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -12395,10 +12395,10 @@
       "dependencies": "-",
       "description": "Reverted from SUPERSEDED to PENDING. Scope: parent/umbrella for DEC-355 through DEC-362. The merge into DEC-099 was incorrect; DEC-099 stays scoped to category-level missing strategies (Pairs, Calendar, Cross-Asset, Index Rebalance), and DEC-354 stays scoped to within-category ch",
       "promotion_path": {
-        "tier": "IMPLEMENTED",
-        "label": "IMPLEMENTED",
-        "color": "#10b981",
-        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
+        "tier": "UNKNOWN",
+        "label": "UNKNOWN",
+        "color": "#9ca3af",
+        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
       }
     },
     {
@@ -12804,7 +12804,7 @@
     {
       "id": "DECISION-365",
       "title": "Universe expansion beyond S&P 500 \u2014 Pass 52 turn 35 owner-approved Russell 1000 minus S&P 500 \u2248 500 mid-cap names. Pass 53 owner-revised 2026-05-05: T1b DEFERRE",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Stage 3+ (Stage 2 scope removed Pass 53)",
       "pass_intro": "Pass 52",
       "pass_resolved": "DEC-366,DEC-367,DEC-369,DEC-370,DEC-483",
@@ -12835,10 +12835,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "IMPLEMENTED",
-        "label": "IMPLEMENTED",
-        "color": "#10b981",
-        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
+        "tier": "UNKNOWN",
+        "label": "UNKNOWN",
+        "color": "#9ca3af",
+        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
       }
     },
     {
@@ -13324,7 +13324,7 @@
     {
       "id": "DECISION-378",
       "title": "DEC-105 Phase 1 NASDAQ symbol-directory diff -- NASDAQ_SYMBOL_DIRECTORY_URL + NASDAQ_SYMBOL_DIFF_THRESHOLD_USD=$5B constants. Weekly-diff script implementation ",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X1 \u2014 Data + Universe",
       "pass_intro": "Pass 52",
       "pass_resolved": "Pass 53",
@@ -13355,10 +13355,10 @@
       "dependencies": "DEC-105",
       "description": "",
       "promotion_path": {
-        "tier": "IMPLEMENTED",
-        "label": "IMPLEMENTED",
-        "color": "#10b981",
-        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
+        "tier": "UNKNOWN",
+        "label": "UNKNOWN",
+        "color": "#9ca3af",
+        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
       }
     },
     {
@@ -14804,7 +14804,7 @@
     {
       "id": "DECISION-417",
       "title": "Test-run audit gate Layer 1 -- TEST_RUN_AUDIT_GATE_RESULTS_PATH + TEST_RUN_AUDIT_GATE_REQUIRED_FIELDS tuple constants in config.py. Layer 1 of multi-layer catch",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X57 - Test-Run Audit Gate (Pass 52)",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -14835,10 +14835,10 @@
       "dependencies": "-",
       "description": "**Owner directive:** \"you should apply this retroactively as well for all decisions already in the index file\"",
       "promotion_path": {
-        "tier": "IMPLEMENTED",
-        "label": "IMPLEMENTED",
-        "color": "#10b981",
-        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
+        "tier": "UNKNOWN",
+        "label": "UNKNOWN",
+        "color": "#9ca3af",
+        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
       }
     },
     {
@@ -15084,7 +15084,7 @@
     {
       "id": "DECISION-425",
       "title": "DEC-422 Phase 1 dimensional slicing -- DEC_422_CUBE_PHASE_STATUS[phase_1_dimensional_slicing]=SPEC_READY in config.py. Per-cell aggregation engine implementatio",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X61 - Dimensional Cube",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -15115,16 +15115,16 @@
       "dependencies": "DEC-422",
       "description": "",
       "promotion_path": {
-        "tier": "IMPLEMENTED",
-        "label": "IMPLEMENTED",
-        "color": "#10b981",
-        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
+        "tier": "UNKNOWN",
+        "label": "UNKNOWN",
+        "color": "#9ca3af",
+        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
       }
     },
     {
       "id": "DECISION-426",
       "title": "DEC-422 Phase 2 per-cell statistical engine -- DEC_422_CUBE_PHASE_STATUS[phase_2_per_cell_statistical]=SPEC_READY + DEC_422_FIVE_GATE_VALIDITY dict (n>=30, p<0.",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X61 - Dimensional Cube",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -15155,16 +15155,16 @@
       "dependencies": "DEC-422",
       "description": "DEC-426 (Phase 2 per-cell statistical engine) implementation updated to: - Compute full metrics suite per corrected schema - Apply 5-gate validity filter (was 4-gate; now includes R:R \u2265 2.0) - Tag pair_verdict with 5 states (was 4 confidence levels)",
       "promotion_path": {
-        "tier": "IMPLEMENTED",
-        "label": "IMPLEMENTED",
-        "color": "#10b981",
-        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
+        "tier": "UNKNOWN",
+        "label": "UNKNOWN",
+        "color": "#9ca3af",
+        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
       }
     },
     {
       "id": "DECISION-427",
       "title": "Cube Phase 3 marginal heatmap (Approach A) -- DEC_427_HEATMAP_DIMENSIONS_PER_PAIR=2 (2D for statistical validity) + DEC_427_OUTPUT_FORMAT constants. Full heatma",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X58 \u2014 Phase 1B-\u03b1 Dimensional Framework (Pass 52)",
       "pass_intro": "Pass 52",
       "pass_resolved": "Pass 53",
@@ -15195,16 +15195,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "IMPLEMENTED",
-        "label": "IMPLEMENTED",
-        "color": "#10b981",
-        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
+        "tier": "UNKNOWN",
+        "label": "UNKNOWN",
+        "color": "#9ca3af",
+        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
       }
     },
     {
       "id": "DECISION-428",
       "title": "DEC-422 Phase 4 combined 3D analysis -- DEC_422_CUBE_PHASE_STATUS[phase_4_combined_3d_analysis]=SPEC_READY + DEC_422_TOP_PCT_FILTER=0.20 (top-20% strategies) co",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X61 - Dimensional Cube",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -15235,16 +15235,16 @@
       "dependencies": "DEC-422",
       "description": "",
       "promotion_path": {
-        "tier": "IMPLEMENTED",
-        "label": "IMPLEMENTED",
-        "color": "#10b981",
-        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
+        "tier": "UNKNOWN",
+        "label": "UNKNOWN",
+        "color": "#9ca3af",
+        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
       }
     },
     {
       "id": "DECISION-429",
       "title": "DEC-422 Phase 5 live decision lookup -- DEC_422_CUBE_PHASE_STATUS[phase_5_decision_lookup_builder]=SPEC_READY constant. Lookup table generator deferred to Sprin",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X61 - Dimensional Cube",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -15275,16 +15275,16 @@
       "dependencies": "DEC-422",
       "description": "",
       "promotion_path": {
-        "tier": "IMPLEMENTED",
-        "label": "IMPLEMENTED",
-        "color": "#10b981",
-        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
+        "tier": "UNKNOWN",
+        "label": "UNKNOWN",
+        "color": "#9ca3af",
+        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
       }
     },
     {
       "id": "DECISION-430",
       "title": "Cube Phase 6 Dashboard 1 visualization -- DASHBOARD_1_FRAMEWORK=streamlit + DASHBOARD_1_PATH + DASHBOARD_1_FEATURES tuple (2d-heatmap / 3d-scatter / drill-down ",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X58 \u2014 Phase 1B-\u03b1 Dimensional Framework (Pass 52)",
       "pass_intro": "Pass 52",
       "pass_resolved": "Pass 53",
@@ -15315,10 +15315,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "IMPLEMENTED",
-        "label": "IMPLEMENTED",
-        "color": "#10b981",
-        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
+        "tier": "UNKNOWN",
+        "label": "UNKNOWN",
+        "color": "#9ca3af",
+        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
       }
     },
     {
@@ -15404,7 +15404,7 @@
     {
       "id": "DECISION-433",
       "title": "DEC-067 Phase B 6 new exit methods -- DEC_067_PHASE_B_EXIT_METHODS dict in config.py (time_stop, profit_target_2r, profit_target_3r, scale_out_partial_50pct, sw",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X6 - Exits + Circuit Breakers",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -15435,10 +15435,10 @@
       "dependencies": "DEC-067",
       "description": "",
       "promotion_path": {
-        "tier": "IMPLEMENTED",
-        "label": "IMPLEMENTED",
-        "color": "#10b981",
-        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
+        "tier": "UNKNOWN",
+        "label": "UNKNOWN",
+        "color": "#9ca3af",
+        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
       }
     },
     {
@@ -15524,7 +15524,7 @@
     {
       "id": "DECISION-436",
       "title": "CI/CD regression pipeline Layer 2 -- CI_REGRESSION_WORKFLOW_PATH + CI_REGRESSION_BEHAVIOR_ASSERTIONS dict (vix_threshold_crisis=40, exit_method_count_min=17, rr",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X59 - Phase 0.E Catch-Mechanism Defense (Pass 52)",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -15555,10 +15555,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "IMPLEMENTED",
-        "label": "IMPLEMENTED",
-        "color": "#10b981",
-        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
+        "tier": "UNKNOWN",
+        "label": "UNKNOWN",
+        "color": "#9ca3af",
+        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
       }
     },
     {
@@ -16284,7 +16284,7 @@
     {
       "id": "DECISION-456",
       "title": "SEC EDGAR as DEC-439 differential testing reference -- SEC_EDGAR_DIFFERENTIAL_REFERENCE=True + SEC_EDGAR_DIFFERENTIAL_CACHE_DIR=data_prefetch/sec_xbrl constants",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X56 - API Endpoint Utilization Audit",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -16315,10 +16315,10 @@
       "dependencies": "DEC-439",
       "description": "",
       "promotion_path": {
-        "tier": "IMPLEMENTED",
-        "label": "IMPLEMENTED",
-        "color": "#10b981",
-        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
+        "tier": "UNKNOWN",
+        "label": "UNKNOWN",
+        "color": "#9ca3af",
+        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
       }
     },
     {
@@ -16364,7 +16364,7 @@
     {
       "id": "DECISION-458",
       "title": "Lead-lag intra-sector momentum spec -- LEAD_LAG_INTRA_SECTOR_STRATEGY dict in config.py (rebalance=weekly, lookback=5d, hold=5d, GICS_sector dim, top_1 lead + b",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X62 - Strategy Innovation",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -16395,16 +16395,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "IMPLEMENTED",
-        "label": "IMPLEMENTED",
-        "color": "#10b981",
-        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
+        "tier": "UNKNOWN",
+        "label": "UNKNOWN",
+        "color": "#9ca3af",
+        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
       }
     },
     {
       "id": "DECISION-459",
       "title": "AgentGateConfig spec \u2014 Option C Hybrid Architecture Pass 52 turn 129 owner-approved RESOLVED-DECIDED (SUPERSEDES DEC-042): OPTION C HYBRID ARCHITECTURE \u2014 Tradin",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Phase 0 / Architecture",
       "pass_intro": "Pass 52",
       "pass_resolved": "52",
@@ -16435,10 +16435,10 @@
       "dependencies": "DEC-042",
       "description": "",
       "promotion_path": {
-        "tier": "IMPLEMENTED",
-        "label": "IMPLEMENTED",
-        "color": "#10b981",
-        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
+        "tier": "UNKNOWN",
+        "label": "UNKNOWN",
+        "color": "#9ca3af",
+        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
       }
     },
     {
@@ -16564,7 +16564,7 @@
     {
       "id": "DECISION-463",
       "title": "OurFundamentalsToolkit spec -- AGENT_TOOLKIT_SPECS[OurFundamentalsToolkit] sub-dict (extends tradingagents.FundamentalsToolkit; 5 capabilities: revenue_growth/f",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X63 - Agent Toolkits",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -16595,10 +16595,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "IMPLEMENTED",
-        "label": "IMPLEMENTED",
-        "color": "#10b981",
-        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
+        "tier": "UNKNOWN",
+        "label": "UNKNOWN",
+        "color": "#9ca3af",
+        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
       }
     },
     {
@@ -16724,7 +16724,7 @@
     {
       "id": "DECISION-467",
       "title": "OurAgentState schema -- OUR_AGENT_STATE_NEW_FIELDS tuple (7 fields: rules_only_rationale / agent_overlay_rationale / risk_context_dict / regime_state_dict / tie",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Sprint 7 / Pattern 2 toolkits",
       "pass_intro": "Pass 52",
       "pass_resolved": "Pass 53",
@@ -16755,10 +16755,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "IMPLEMENTED",
-        "label": "IMPLEMENTED",
-        "color": "#10b981",
-        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
+        "tier": "UNKNOWN",
+        "label": "UNKNOWN",
+        "color": "#9ca3af",
+        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
       }
     },
     {
@@ -17044,7 +17044,7 @@
     {
       "id": "DECISION-483",
       "title": "Universe expansion: Russell 1000 + NASDAQ 100 added to Sprint 1 Tier 1 with sub-tier tracking. Pass 53 turn (this) owner-approved RESOLVED-DECIDED (Q2 = sub-tie",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Sprint 1 / Phase 0.A \u2014 T1a + T1c IMPLEMENTED Pass 53; T1b DEFERRED Stage 3",
       "pass_intro": "Pass 53",
       "pass_resolved": "53",
@@ -17075,10 +17075,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "IMPLEMENTED",
-        "label": "IMPLEMENTED",
-        "color": "#10b981",
-        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
+        "tier": "UNKNOWN",
+        "label": "UNKNOWN",
+        "color": "#9ca3af",
+        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
       }
     },
     {
@@ -17404,7 +17404,7 @@
     {
       "id": "DECISION-473",
       "title": "A/B arm reduction from 5 to 3 (rules-only / full-with-veto / no-Risk); ablation deferred to Sprint 9 NARROW. Pass 52 turn 133 PROPOSED via CRITICAL_GAPS_RESOLUT",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Sprint 7 / A/B Methodology",
       "pass_intro": "Pass 52",
       "pass_resolved": "53",
@@ -17435,10 +17435,10 @@
       "dependencies": "-",
       "description": "**Context:** Original DEC-205-216 spec 5 arms (rules / full-with-veto / no-Risk / no-Bull-Bear-align / per-agent ablation). Cost projection: 5 arms \u00d7 $300/run = $1,500. Phase 1A separation reduces this further since rules-only arm doesn't need agents.",
       "promotion_path": {
-        "tier": "IMPLEMENTED",
-        "label": "IMPLEMENTED",
-        "color": "#10b981",
-        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
+        "tier": "UNKNOWN",
+        "label": "UNKNOWN",
+        "color": "#9ca3af",
+        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
       }
     },
     {
@@ -17804,7 +17804,7 @@
     {
       "id": "DECISION-495",
       "title": "Stage 3+ archived watchlist for tickers that fall out of all five universe buckets (T1a/T1b/T1c/T2/T3). Pass 53 owner-approved RESOLVED-DECIDED \u2014 spec approved ",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Stage 3+ / Sprint 5 (papertrading scope; implementation when Stage 3 starts)",
       "pass_intro": "Pass 53",
       "pass_resolved": "53",
@@ -17835,10 +17835,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "IMPLEMENTED",
-        "label": "IMPLEMENTED",
-        "color": "#10b981",
-        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
+        "tier": "UNKNOWN",
+        "label": "UNKNOWN",
+        "color": "#9ca3af",
+        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
       }
     },
     {
@@ -26598,191 +26598,191 @@
   ],
   "recent_commits": [
     {
+      "sha": "e6674772",
+      "subject": "Batch 69 part 1: wiring catalog (owner-mandated audit)",
+      "author": "jeetmehta1991",
+      "rel_time": "32 minutes ago"
+    },
+    {
+      "sha": "eba44e81",
+      "subject": "fix(ci): install statsmodels + scipy in test pyramid workflow",
+      "author": "jeetmehta1991",
+      "rel_time": "9 hours ago"
+    },
+    {
+      "sha": "4c512642",
+      "subject": "Pass 53 v8h+1: Phase 3 Batch 68 - FINAL 9 PARTIAL-SPEC-ONLY-was DECs",
+      "author": "jeetmehta1991",
+      "rel_time": "9 hours ago"
+    },
+    {
       "sha": "f32626ad",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 67 - dashboard filter re-fix + 10 more PARTIAL-SPEC-ONLY-was DECs",
       "author": "jeetmehta1991",
-      "rel_time": "31 minutes ago"
+      "rel_time": "10 hours ago"
     },
     {
       "sha": "ab4f5173",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 66 - 10 more PARTIAL-SPEC-ONLY-was DECs real impl",
       "author": "jeetmehta1991",
-      "rel_time": "41 minutes ago"
+      "rel_time": "10 hours ago"
     },
     {
       "sha": "4b28bed8",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 65 - 10 DECs real impl (was PARTIAL-SPEC-ONLY)",
       "author": "jeetmehta1991",
-      "rel_time": "58 minutes ago"
+      "rel_time": "10 hours ago"
     },
     {
       "sha": "d2efa4b8",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 64 - Mass-resolution + dashboard filter fix (owner directive)",
       "author": "jeetmehta1991",
-      "rel_time": "83 minutes ago"
+      "rel_time": "11 hours ago"
     },
     {
       "sha": "6c586908",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 63 (23-DEC close-out)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "12 hours ago"
     },
     {
       "sha": "d6be69a6",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 63 - Path C 23-DEC close-out (ALL RESOLVED-DECIDED resolved)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "12 hours ago"
     },
     {
       "sha": "b61a2f8f",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 62 (20-DEC bundle)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "12 hours ago"
     },
     {
       "sha": "64f16341",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 62 - Path C 20-DEC bundle (owner directive: 20 DECs this turn)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "12 hours ago"
     },
     {
       "sha": "279e1b34",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 61 (20-DEC bundle)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "12 hours ago"
     },
     {
       "sha": "572a2212",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 61 - Path C 20-DEC bundle (owner directive: 20 DECs this turn)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "12 hours ago"
     },
     {
       "sha": "8ce9bc21",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 60 (20-DEC bundle)",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "13 hours ago"
     },
     {
       "sha": "215f6fbc",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 60 - Path C 20-DEC bundle (owner directive: 20 DECs this turn)",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "13 hours ago"
     },
     {
       "sha": "9fb94b18",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 59 (20-DEC bundle)",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "13 hours ago"
     },
     {
       "sha": "4ddcbcf9",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 59 - Path C 20-DEC bundle (owner directive: 20 DECs this turn)",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "13 hours ago"
     },
     {
       "sha": "7482da27",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 58 (10-DEC bundle)",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "14 hours ago"
     },
     {
       "sha": "520e94e6",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 58 - Path C 10-DEC bundle (owner directive: resolve 10 DECs this turn)",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "14 hours ago"
     },
     {
       "sha": "77ad8f19",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 57 (5-DEC bundle)",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "14 hours ago"
     },
     {
       "sha": "89dac3b4",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 57 - Path C 5-DEC bundle (factor breaker / coverage gate / memory / 13F PIT / CNN F&G bands)",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "14 hours ago"
     },
     {
       "sha": "1bfcd76f",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 56 (5-DEC bundle)",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "14 hours ago"
     },
     {
       "sha": "0bfa2be6",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 56 - Path C 5-DEC bundle (breakdowns/agent verdicts/data-quality/policy/site freshness)",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "14 hours ago"
     },
     {
       "sha": "25c94093",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 55 (5-DEC regime+risk bundle)",
       "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
+      "rel_time": "16 hours ago"
     },
     {
       "sha": "ad012991",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 55 - Path C 5-DEC bundle (regime expansion + risk helpers)",
       "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
+      "rel_time": "16 hours ago"
     },
     {
       "sha": "25015554",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 54 (5-DEC bundle)",
       "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
+      "rel_time": "17 hours ago"
     },
     {
       "sha": "fa250d14",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 54 - Path C 5-DEC bundle (owner directive >= 5 DECs/batch)",
       "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
+      "rel_time": "17 hours ago"
     },
     {
       "sha": "d7aff6ed",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 53 (DEC-432)",
       "author": "jeetmehta1991",
-      "rel_time": "8 hours ago"
+      "rel_time": "17 hours ago"
     },
     {
       "sha": "29b9c6eb",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 53 - DEC-432 chandelier exit indicator (RESOLVED-IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "8 hours ago"
+      "rel_time": "17 hours ago"
     },
     {
       "sha": "6128d4c6",
       "subject": "Pass 53 v8h+1: regenerate Stage 2 dashboard for Batches 49-52",
       "author": "jeetmehta1991",
-      "rel_time": "8 hours ago"
-    },
-    {
-      "sha": "bf2b26ab",
-      "subject": "Pass 53 v8h+1: Phase 3 Batch 52 - DEC-087 vol-targeted per-position sizing helper (RESOLVED-IMPLEMENTED)",
-      "author": "jeetmehta1991",
-      "rel_time": "8 hours ago"
-    },
-    {
-      "sha": "6d1cce3e",
-      "subject": "Pass 53 v8h+1: Phase 3 Batch 51 - DEC-088 portfolio vol target 15% telemetry (RESOLVED-IMPLEMENTED)",
-      "author": "jeetmehta1991",
-      "rel_time": "8 hours ago"
-    },
-    {
-      "sha": "8c33f844",
-      "subject": "Pass 53 v8h+1: Phase 3 Batch 50 - DEC-149 regime transition probability matrix (RESOLVED-IMPLEMENTED)",
-      "author": "jeetmehta1991",
-      "rel_time": "9 hours ago"
+      "rel_time": "17 hours ago"
     }
   ],
   "uncommitted": {
     "count": 3,
-    "modified": 3,
+    "modified": 2,
     "added": 0,
-    "untracked": 0,
+    "untracked": 1,
     "deleted": 0,
     "files": [
       {
@@ -26791,11 +26791,11 @@
       },
       {
         "status": "M",
-        "path": "backtest/config.py"
+        "path": "dashboard_stage_2/index.html"
       },
       {
-        "status": "M",
-        "path": "backtest/tests/test_unit.py"
+        "status": "??",
+        "path": "scripts/revert_batch_69_phase_1.py"
       }
     ]
   },
@@ -27451,7 +27451,7 @@
       "kind": "DEC",
       "id": "DEC-458",
       "title": "Lead-lag intra-sector momentum spec -- LEAD_LAG_INTRA_SECTOR_STRATEGY dict in config.py (rebalance=weekly, lookback=5d, hold=5d, GICS_sector",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "tier": 1,
       "reason": "Dependency root (294 downstream items reference)",
       "back_refs": 294,
@@ -27631,7 +27631,7 @@
       "kind": "DEC",
       "id": "DEC-091",
       "title": "Drawdown re-sizing \u2014 `Portfolio.drawdown_size_multiplier()` method in `backtest/engine/portfolio.py` returns tiered multiplier in `{1.0, 0.7",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "tier": 1,
       "reason": "Dependency root (3 downstream items reference)",
       "back_refs": 3,
@@ -27659,7 +27659,8 @@
     }
   ],
   "decision_status_counts": {
-    "RESOLVED-IMPLEMENTED": 479,
+    "RESOLVED-IMPLEMENTED": 432,
+    "PARTIAL-IMPL-HELPER-ONLY": 47,
     "REJECTED": 2
   },
   "inv_status_counts": {
