@@ -668,6 +668,46 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_bug_27_regime_confidence_documented_deferred_to_stage_3():
+    """BUG-27 Batch 90: `regime_confidence()` flagged as "built but never
+    called" dead code. RESOLVED-DECIDED status: the function is
+    intentionally unused in Phase 1A per CLAUDE.md Approved Rules
+    ("No regime confidence scaling - full size always for backtest")
+    and is retained as DEFERRED-TO-STAGE-3+ infrastructure for live
+    papertrade / live trading where position-mult scaling activates.
+    Source-grep verifies the explicit BUG-27 RESOLVED comment + the
+    project-plan deferral rationale is documented inline in the helper.
+    """
+    from pathlib import Path
+    src = Path("backtest/engine/improvements.py").read_text(encoding="utf-8")
+    assert "def regime_confidence" in src
+    assert "BUG-27 RESOLVED-IMPLEMENTED" in src
+    assert "INTENTIONALLY-UNUSED" in src
+    assert "DEFERRED-TO-STAGE-3" in src
+
+
+def test_bug_27_helper_returns_expected_dict_shape():
+    """BUG-27 sister: even though unused in Phase 1A, the helper must
+    return a well-formed {regime, confidence, position_mult} dict so
+    Stage 3+ callers can rely on a stable contract. Smoke check.
+    """
+    import pandas as pd
+    from backtest.engine.improvements import regime_confidence
+    REQUIRED_KEYS = {"regime", "confidence", "position_mult"}
+    # Empty series -> returns unknown sentinel
+    out_empty = regime_confidence(pd.Series([], dtype=float),
+                                  pd.Series([], dtype=float))
+    assert REQUIRED_KEYS.issubset(out_empty.keys())
+    assert out_empty["regime"] == "unknown"
+    # Populated series -> non-empty dict with same shape + extras
+    vix = pd.Series([18.0] * 25)
+    trend = pd.Series([0.05] * 25)  # SPY 5% above 200EMA persistently
+    out = regime_confidence(vix, trend)
+    assert REQUIRED_KEYS.issubset(out.keys())
+    assert 0 <= out["confidence"] <= 100
+    assert 0.25 <= out["position_mult"] <= 1.0
+
+
 def test_bug_234_engine_consumes_vix_hysteresis_smoothing():
     """BUG-234 Batch 89: VIX hard thresholds (40/30/20) flipped regime on
     single noisy prints with no MA smoothing. RESOLVED by DEC-317
