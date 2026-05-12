@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-12T23:52:42.460803+00:00",
+  "generated_at": "2026-05-12T23:56:16.622873+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -15013,7 +15013,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 138,
+        "n_doc_refs": 137,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -26598,28 +26598,34 @@
   ],
   "recent_commits": [
     {
+      "sha": "4f86341c",
+      "subject": "Batch 111: BUG-32 tiered profit-factor passing criterion (1.2 per-regime, 1.5 overall)",
+      "author": "jeetmehta1991",
+      "rel_time": "4 minutes ago"
+    },
+    {
       "sha": "afcaad93",
       "subject": "Batch 110: BUG-33 tiered Sharpe passing criterion in PASSING_CRITERIA",
       "author": "jeetmehta1991",
-      "rel_time": "3 minutes ago"
+      "rel_time": "7 minutes ago"
     },
     {
       "sha": "858ac20d",
       "subject": "Batch 109: BUG-34 per-strategy regime_blocklist config + engine gate",
       "author": "jeetmehta1991",
-      "rel_time": "8 minutes ago"
+      "rel_time": "11 minutes ago"
     },
     {
       "sha": "158663d0",
       "subject": "Batch 108: BUG-96 SPY buy-and-hold benchmark in compute_portfolio_summary",
       "author": "jeetmehta1991",
-      "rel_time": "12 minutes ago"
+      "rel_time": "15 minutes ago"
     },
     {
       "sha": "20391302",
       "subject": "Batch 107: BUG-205 IBKR fixed-tier cost cap wired into apply_transaction_costs",
       "author": "jeetmehta1991",
-      "rel_time": "16 minutes ago"
+      "rel_time": "19 minutes ago"
     },
     {
       "sha": "38c5a7e8",
@@ -26649,7 +26655,7 @@
       "sha": "ac902567",
       "subject": "Batch 102: BUG-237 - tag CNN F&G interpolation staleness on every entry",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "3ea5ca81",
@@ -26697,7 +26703,7 @@
       "sha": "b606b380",
       "subject": "Batch 94: BUG-78 false-positive correction - trailing stop lookahead fix wired",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "ce28a712",
@@ -26768,12 +26774,6 @@
     {
       "sha": "d0806a2c",
       "subject": "Batch 82: DEC-235 GENUINELY WIRED \u00e2\u20ac\u201d NYSE calendar in _trading_days",
-      "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
-    },
-    {
-      "sha": "391e7029",
-      "subject": "Batch 81: DEC-155 GENUINELY WIRED (per-strategy vs-SPY alpha/beta/IR/TE added to metrics output; 13-tier 660/6/0)",
       "author": "jeetmehta1991",
       "rel_time": "7 hours ago"
     }
@@ -26977,7 +26977,7 @@
     }
   ],
   "test_inventory": {
-    "total": 1202,
+    "total": 1204,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -27013,7 +27013,7 @@
       "test_fred_alfred_smoke": 5,
       "test_gate_pre_phase_1a_entry": 8,
       "test_gates": 6,
-      "test_integration": 89,
+      "test_integration": 91,
       "test_inv041_path_restricted_commits": 5,
       "test_l146_wave_a_g2_g3_g9": 6,
       "test_l146_wave_b_g7_sec_edgar": 6,

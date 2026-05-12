@@ -668,6 +668,27 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_bug_31_passing_criteria_emits_tiered_min_trades():
+    """BUG-31 Batch 112: tiered min-trades. Owner-approved option D
+    2026-05-12: 30 per-regime / 100 overall (matches existing CLAUDE.md
+    Passing Criterion #9; now codified explicitly in config).
+    """
+    from backtest.config import PASSING_CRITERIA
+    assert "min_trades_per_regime" in PASSING_CRITERIA
+    assert PASSING_CRITERIA["min_trades_per_regime"] == 30
+    assert PASSING_CRITERIA["min_trades"] == 100   # overall (unchanged)
+    # Invariant: per-regime <= overall (smaller samples = lower bar)
+    assert PASSING_CRITERIA["min_trades_per_regime"] <= PASSING_CRITERIA["min_trades"]
+
+
+def test_bug_31_config_documents_bug_origin():
+    """BUG-31 sister: config block carries the BUG-31 RESOLVED comment."""
+    from pathlib import Path
+    src = Path("backtest/config.py").read_text(encoding="utf-8")
+    assert "BUG-31 RESOLVED-IMPLEMENTED Batch 112" in src
+    assert "min_trades_per_regime" in src
+
+
 def test_bug_32_passing_criteria_emits_tiered_profit_factor_overall():
     """BUG-32 Batch 111: tiered profit-factor threshold. Owner-approved
     option C 2026-05-12: 1.2 per-regime (kept; high-vol 1.3) / 1.5 overall.

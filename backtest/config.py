@@ -256,6 +256,19 @@ PASSING_CRITERIA = {
     # regime. Per-regime threshold MUST be <= overall (smaller samples =
     # lower bar; same invariant as BUG-33 Sharpe).
     "min_profit_factor_overall": 1.5,   # BUG-32: overall PASS PF >= 1.5
+    # BUG-31 RESOLVED-IMPLEMENTED Batch 112 2026-05-12 (owner-approved
+    # option D 2026-05-12): tiered min-trades. `min_trades = 100` above
+    # is the overall PASS threshold (already the CLAUDE.md Passing
+    # Criterion #9 value). `min_trades_per_regime = 30` matches the
+    # default already used in `compute_per_regime_agent_verdict` and
+    # `DEC_422_FIVE_GATE_VALIDITY[min_trades_per_cell]`. Codifying it
+    # explicitly in PASSING_CRITERIA gives callers a single canonical
+    # source rather than the 30-magic-number scattered across modules.
+    # Statistical power note: 30 per-cell is weak by Bailey-Lopez-de-
+    # Prado / Harvey-Liu standards (100+ canonical); owner-acknowledged
+    # tradeoff to allow niche-regime strategies through Phase 1A
+    # graduation; revisit Phase 1B-alpha when cumulative trades higher.
+    "min_trades_per_regime":   30,     # BUG-31: matches CLAUDE.md criterion #9
     # Audit flag: anything above these thresholds gets look-ahead bias audit
     # DEC-084 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 39 2026-05-11
     # (owner-approved Path C): lowered audit_win_rate_above 0.75 -> 0.65 per
