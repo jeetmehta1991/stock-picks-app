@@ -350,6 +350,57 @@ def test_bug_095_engine_portfolio_lifecycle_minimal():
     assert p.cash > initial_cash
 
 
+def test_dec_091_engine_wires_drawdown_size_multiplier():
+    """DEC-091 Batch 70 2026-05-12 owner-mandated engine wiring: verify
+    backtest.py source actually calls Portfolio.drawdown_size_multiplier()
+    on BOTH entry sites (can_open gate + add_position).
+    """
+    from pathlib import Path
+    src = Path("backtest/engine/backtest.py").read_text(encoding="utf-8")
+    count = src.count("drawdown_size_multiplier()")
+    assert count >= 2, (
+        f"Engine must call drawdown_size_multiplier at gate AND add_position; "
+        f"found {count} calls"
+    )
+    assert "DEC-091 RESOLVED-IMPLEMENTED Batch 70" in src
+
+
+def test_dec_091_engine_scales_size_by_dd_band_behavior():
+    """DEC-091 wiring behavior: 12% DD -> drawdown_size_multiplier returns
+    0.75 -> engine applies it to TIER_POSITION_SIZE_PCT yielding the
+    band-reduced size.
+    """
+    from datetime import date
+    from backtest.engine.backtest import BacktestEngine
+    from backtest.config import TIER_POSITION_SIZE_PCT
+    eng = BacktestEngine(universe=["SPY"], run_agents=False, walk_forward=False)
+    p = eng.portfolio
+    p.equity_curve.append((date(2024, 1, 1), 100_000.0))
+    p._equity_peak = 100_000.0
+    p.equity_curve.append((date(2024, 1, 2), 88_000.0))   # 12% DD
+    assert p.drawdown_size_multiplier() == 0.75
+    base = TIER_POSITION_SIZE_PCT["HIGH"]
+    assert base * p.drawdown_size_multiplier() == 0.0225
+
+
+def test_dec_091_dd_30pct_hard_halt_via_multiplier():
+    """DEC-091: 32% DD -> multiplier 0.0 -> scaled size_pct=0 -> entry
+    skipped by the 'if size_pct > 0' branch (defense-in-depth alongside
+    can_open's drawdown_suspend_pct gate).
+    """
+    from datetime import date
+    from backtest.engine.backtest import BacktestEngine
+    from backtest.config import TIER_POSITION_SIZE_PCT
+    eng = BacktestEngine(universe=["SPY"], run_agents=False, walk_forward=False)
+    p = eng.portfolio
+    p.equity_curve.append((date(2024, 1, 1), 100_000.0))
+    p._equity_peak = 100_000.0
+    p.equity_curve.append((date(2024, 1, 2), 68_000.0))   # 32% DD
+    assert p.drawdown_size_multiplier() == 0.0
+    base = TIER_POSITION_SIZE_PCT["HIGH"]
+    assert base * p.drawdown_size_multiplier() == 0.0
+
+
 if __name__ == "__main__":
     tests = [
         test_smart_money_score_keys,

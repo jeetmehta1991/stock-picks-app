@@ -691,6 +691,24 @@ class BacktestEngine:
                 # hasattr guard tolerates test paths bypassing __init__.
                 if hasattr(self, "portfolio"):
                     size_pct = TIER_POSITION_SIZE_PCT.get(tier, 0.0)
+                    # DEC-091 RESOLVED-IMPLEMENTED Batch 70 2026-05-12 owner-
+                    # mandated wiring: scale size_pct by tiered drawdown-band
+                    # multiplier {1.0 / 0.75 / 0.5 / 0.0} at 0/10/20/30% DD.
+                    # Adds 10% and 20% size-reduction bands that the existing
+                    # can_open(drawdown_suspend_pct=30%) gate does NOT enforce.
+                    # 30%+ DD remains a hard halt via both this multiplier (-> 0)
+                    # AND can_open (defense in depth).
+                    dd_mult = self.portfolio.drawdown_size_multiplier()
+                    size_pct = size_pct * dd_mult
+                    if dd_mult < 1.0 and size_pct > 0:
+                        self.skipped_trades.append({
+                            "ticker": ticker, "date": as_of,
+                            "strategy": strat_entry["strategy"],
+                            "reason": f"dd_band_scaled_{dd_mult}x",
+                        })
+                        # NOTE: this entry is informational; entry still proceeds
+                        # at the scaled size. The skipped_trades log captures it
+                        # for post-run analysis of DD-band activation.
                     if size_pct > 0:
                         ok, reason = self.portfolio.can_open(
                             ticker=ticker, size_pct=size_pct,
@@ -785,6 +803,12 @@ class BacktestEngine:
                 # was skipped by hasattr branch.
                 if hasattr(self, "portfolio"):
                     size_pct = TIER_POSITION_SIZE_PCT.get(tier, 0.0)
+                    # DEC-091 wiring (mirror of the can_open call site upstream):
+                    # apply DD-band multiplier so add_position uses the same
+                    # scaled size that can_open approved. Without this, the
+                    # gate would approve a SCALED size but we would open a
+                    # FULL-SIZE position -- size inconsistency.
+                    size_pct = size_pct * self.portfolio.drawdown_size_multiplier()
                     if size_pct > 0:
                         try:
                             self.portfolio.add_position(
