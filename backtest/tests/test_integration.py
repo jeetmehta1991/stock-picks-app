@@ -668,6 +668,107 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_bug_205_ibkr_fixed_tier_helper_returns_correct_one_way_fee():
+    """BUG-205 Batch 107: IBKR Pro fixed-tier US-stock commission helper
+    returns per-share*shares clamped to [min_order, max_pct_of_trade].
+    Synthetic test of the helper math.
+    """
+    from backtest.engine.improvements import (
+        ibkr_fixed_tier_cost, IBKR_FIXED_TIER,
+    )
+    # Small notional ($200 trade, 2 shares @ $100): per-share=$0.01,
+    # min=$1.00 wins, cap=$2.00 > min so min applies
+    fee_small = ibkr_fixed_tier_cost(shares=2.0, trade_dollar=200.0)
+    assert fee_small == 1.00, f"min-order should bind at small notional, got {fee_small}"
+    # Large notional ($100k trade, 1000 shares @ $100): per-share=$5,
+    # min=$1 < per-share, cap=$1000 > per-share, so per-share wins
+    fee_large = ibkr_fixed_tier_cost(shares=1000.0, trade_dollar=100_000.0)
+    assert fee_large == 5.00, f"per-share should bind at large notional, got {fee_large}"
+    # Cap notional ($10 trade, 1 share @ $10): per-share=$0.005,
+    # cap=$0.10, min=$1 -> min wins (max of capped and min) actually
+    # the cap MIN(cap, per-share) limits per-share down, then MAX(min, ...)
+    # raises floor. So result = max($1, min($0.10, $0.005)) = max($1, $0.005)
+    # = $1. min still binds at tiny notional.
+    fee_tiny = ibkr_fixed_tier_cost(shares=1.0, trade_dollar=10.0)
+    assert fee_tiny == 1.00
+    # Edge cases
+    assert ibkr_fixed_tier_cost(shares=0.0, trade_dollar=100.0) == 0.0
+    assert ibkr_fixed_tier_cost(shares=1.0, trade_dollar=0.0) == 0.0
+    # Constants exposed
+    assert IBKR_FIXED_TIER["per_share_usd"] == 0.005
+    assert IBKR_FIXED_TIER["min_order_usd"] == 1.00
+    assert IBKR_FIXED_TIER["max_pct_of_trade"] == 0.01
+
+
+def test_bug_205_effective_round_trip_picks_max_of_pct_and_ibkr():
+    """BUG-205: effective_round_trip_cost_pct combines spread-percent +
+    IBKR fixed-tier, picking the max so neither is silently understated.
+    """
+    from backtest.engine.improvements import effective_round_trip_cost_pct
+    # Small trade ($750, LOW tier on $100k portfolio): IBKR min $1
+    # dominates over 0.10% x $750 = $0.75 base
+    rt_small = effective_round_trip_cost_pct(
+        ticker="AAPL", market_cap_m=3_000_000.0,
+        entry_price=75.0, trade_dollar=750.0,
+    )
+    # IBKR one-way = $1, round-trip = $2, as pct of $750 = 0.00267
+    # Base percentage = 0.10% * 2 = 0.002 = 0.20%
+    # Max = 0.00267 (IBKR wins at small notional)
+    assert rt_small > 0.002, "IBKR floor should beat base pct at small notional"
+    # Large trade ($5000, EXCEPTIONAL tier): percentage dominates
+    rt_large = effective_round_trip_cost_pct(
+        ticker="AAPL", market_cap_m=3_000_000.0,
+        entry_price=100.0, trade_dollar=5000.0,
+    )
+    # IBKR one-way: 50 shares * $0.005 = $0.25, min $1 -> $1
+    #   round-trip $2 / $5000 = 0.0004
+    # Base pct: 0.10% * 2 = 0.002
+    # Max = 0.002 (base pct wins at this scale)
+    assert rt_large == 0.002
+    # Fallback path: missing entry_price -> pure percentage
+    rt_fallback = effective_round_trip_cost_pct(
+        ticker="AAPL", market_cap_m=3_000_000.0,
+        entry_price=0.0, trade_dollar=750.0,
+    )
+    assert rt_fallback == 0.002
+
+
+def test_bug_205_apply_transaction_costs_uses_ibkr_when_tier_present():
+    """BUG-205: apply_transaction_costs uses the IBKR effective model
+    when the trade row carries both `confidence_tier` and `entry_price`;
+    falls back to legacy percentage when either is missing.
+    """
+    import pandas as pd
+    from backtest.engine.improvements import apply_transaction_costs
+    # MEDIUM tier on $100k portfolio = $750 trade (0.75% per config);
+    # small notional where IBKR min $1 binds. NOTE: "LOW" tier maps to
+    # 0.0 in TIER_POSITION_SIZE_PCT (skip-tier), so use MEDIUM for the
+    # smallest sized tier in the live mapping.
+    df_full = pd.DataFrame([{
+        "ticker": "AAPL", "direction": "long", "hold_days": 10,
+        "pnl_pct": 5.0, "win": True,
+        "entry_price": 75.0, "confidence_tier": "MEDIUM",
+    }])
+    out_full = apply_transaction_costs(df_full,
+                                       {"AAPL": {"market_cap": 3_000_000_000_000}})
+    cost_full = out_full["cost_pct"].iloc[0]
+    # Legacy-fixture path (no entry_price/tier)
+    df_legacy = pd.DataFrame([{
+        "ticker": "AAPL", "direction": "long", "hold_days": 10,
+        "pnl_pct": 5.0, "win": True,
+    }])
+    out_legacy = apply_transaction_costs(df_legacy,
+                                         {"AAPL": {"market_cap": 3_000_000_000_000}})
+    cost_legacy = out_legacy["cost_pct"].iloc[0]
+    # IBKR-aware should be strictly higher than legacy at MEDIUM tier
+    # ($750 trade): IBKR min $1 -> 0.133% one-way -> 0.267% round-trip
+    # vs legacy 0.20% round-trip
+    assert cost_full > cost_legacy, (
+        f"IBKR-aware cost ({cost_full:.4f}%) should exceed legacy "
+        f"({cost_legacy:.4f}%) at MEDIUM tier"
+    )
+
+
 def test_bug_237_engine_tags_cnn_fg_interpolation_staleness_on_trades():
     """BUG-237 Batch 102: CNN F&G CSV interpolated between key readings -
     fabricated PIT signal. The interpolation-visibility heuristic

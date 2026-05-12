@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-12T20:39:15.869533+00:00",
+  "generated_at": "2026-05-12T23:36:18.022835+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -26598,189 +26598,189 @@
   ],
   "recent_commits": [
     {
+      "sha": "38c5a7e8",
+      "subject": "Batch 106: BUG-32 SKIP triage - profit factor 1.3->1.5 threshold owner decision",
+      "author": "jeetmehta1991",
+      "rel_time": "3 hours ago"
+    },
+    {
       "sha": "2ead2e59",
       "subject": "Batch 105: BUG-31 SKIP triage - walk-forward 30-trade threshold owner decision",
       "author": "jeetmehta1991",
-      "rel_time": "3 minutes ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "a1525fef",
       "subject": "Batch 104: BUG-30 SKIP triage - VIX-crisis tighten code-vs-spec contradiction",
       "author": "jeetmehta1991",
-      "rel_time": "6 minutes ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "c5f46565",
       "subject": "Batch 103: BUG-239 SKIP triage - sister to BUG-218 PIT sector blocker",
       "author": "jeetmehta1991",
-      "rel_time": "10 minutes ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "ac902567",
       "subject": "Batch 102: BUG-237 - tag CNN F&G interpolation staleness on every entry",
       "author": "jeetmehta1991",
-      "rel_time": "13 minutes ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "3ea5ca81",
       "subject": "Batch 101: BUG-236 AAII auto-refresh workflow added",
       "author": "jeetmehta1991",
-      "rel_time": "17 minutes ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "e7adc4ec",
       "subject": "Batch 100: docs sweep - annotate skipped BUGs with triage context",
       "author": "jeetmehta1991",
-      "rel_time": "25 minutes ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "e9f6ada4",
       "subject": "Batch 99: BUG-235 AAII pub-lag applied to get_aaii_sentiment loader",
       "author": "jeetmehta1991",
-      "rel_time": "52 minutes ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "a5b4910c",
       "subject": "Batch 98: BUG-238 fail-open -> fail-closed on missing market_cap",
       "author": "jeetmehta1991",
-      "rel_time": "56 minutes ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "fb1218da",
       "subject": "Batch 97: BUG-110 false-positive correction - entry gap filter wired",
       "author": "jeetmehta1991",
-      "rel_time": "64 minutes ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "00f4d4c5",
       "subject": "Batch 96: BUG-103 false-positive correction - smart_money_score wired in tier assignment",
       "author": "jeetmehta1991",
-      "rel_time": "68 minutes ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "529ee39a",
       "subject": "Batch 95: BUG-102 false-positive correction - same-day dedup wired",
       "author": "jeetmehta1991",
-      "rel_time": "72 minutes ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "b606b380",
       "subject": "Batch 94: BUG-78 false-positive correction - trailing stop lookahead fix wired",
       "author": "jeetmehta1991",
-      "rel_time": "76 minutes ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "ce28a712",
       "subject": "Batch 93: BUG-104 false-positive correction - compute_portfolio_summary wires tier sizing",
       "author": "jeetmehta1991",
-      "rel_time": "79 minutes ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "5fca3ab1",
       "subject": "Batch 92: BUG-101 false-positive correction - ticker uniqueness wired",
       "author": "jeetmehta1991",
-      "rel_time": "84 minutes ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "703bdf62",
       "subject": "Batch 91: BUG-95 false-positive correction - Portfolio class wired Batch 20",
       "author": "jeetmehta1991",
-      "rel_time": "88 minutes ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "bf2581ce",
       "subject": "Batch 90: BUG-27 regime_confidence intentional Phase-1A deferral confirmed",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "a7ce0b2a",
       "subject": "Batch 89: BUG-234 false-positive correction \u00e2\u20ac\u201d VIX hysteresis confirmed wired",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "3ff63c2b",
       "subject": "Batch 88: BUG-26 false-positive correction \u00e2\u20ac\u201d DEC-302 VIX/DXY canonical loader",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "a2d57ece",
       "subject": "Batch 87: BUG-29 false-positive correction \u00e2\u20ac\u201d open-trades finalize confirmed wired",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "2e66a71b",
       "subject": "Batch 86: DEC-021 GENUINELY WIRED \u00e2\u20ac\u201d tier-3 consolidation in writer",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "23556d0a",
       "subject": "Batch 85: DEC-314 false-positive correction \u00e2\u20ac\u201d market-wide CB confirmed wired",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "0fdaf906",
       "subject": "Batch 84: DEC-183 GENUINELY WIRED \u00e2\u20ac\u201d lru_cached on classify_regime",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "da3f0ba0",
       "subject": "Batch 83: DEC-179 GENUINELY WIRED \u00e2\u20ac\u201d memory profiling in engine.run()",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "d0806a2c",
       "subject": "Batch 82: DEC-235 GENUINELY WIRED \u00e2\u20ac\u201d NYSE calendar in _trading_days",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "391e7029",
       "subject": "Batch 81: DEC-155 GENUINELY WIRED (per-strategy vs-SPY alpha/beta/IR/TE added to metrics output; 13-tier 660/6/0)",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "7 hours ago"
     },
     {
       "sha": "a5838ae1",
       "subject": "Batch 80: DEC-106 GENUINELY WIRED (multi-input regime score Phase A; VIX+SPY+AAII+CNN F&G surfaced in regime_ctx; 13-tier 659/6/0)",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "7 hours ago"
     },
     {
       "sha": "215329c9",
       "subject": "Batch 79: DEC-149 GENUINELY WIRED (regime transition matrix computed at finalize from accumulated history; 13-tier 658/6/0)",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "7 hours ago"
     },
     {
       "sha": "81ed3a2a",
       "subject": "Batch 78: DEC-108 GENUINELY WIRED (EMA-smoothed regime probability; alpha=0.1 across days; regime_ctx[regime_score_smoothed] surfaced; 13-tier 657/6/0)",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "7 hours ago"
     },
     {
       "sha": "cc653272",
       "subject": "Batch 77: DEC-128 GENUINELY WIRED (dispersion CB cross-sectional 3-sigma halt; in _process_day after DEC-314; 13-tier 655/6/0)",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
-    },
-    {
-      "sha": "3de0418d",
-      "subject": "Batch 76: DEC-348 GENUINELY WIRED (event-calendar suppression at entry; earnings + macro FOMC/CPI/NFP in DEC-349 asymmetric window [-3,+1]; 13-tier 654/6/0)",
-      "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "7 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 1,
-    "modified": 1,
+    "count": 3,
+    "modified": 3,
     "added": 0,
     "untracked": 0,
     "deleted": 0,
@@ -26788,6 +26788,14 @@
       {
         "status": "M",
         "path": "AUDIT_INDEX.md"
+      },
+      {
+        "status": "M",
+        "path": "backtest/engine/improvements.py"
+      },
+      {
+        "status": "M",
+        "path": "backtest/tests/test_integration.py"
       }
     ]
   },
@@ -26969,7 +26977,7 @@
     }
   ],
   "test_inventory": {
-    "total": 1191,
+    "total": 1194,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -27005,7 +27013,7 @@
       "test_fred_alfred_smoke": 5,
       "test_gate_pre_phase_1a_entry": 8,
       "test_gates": 6,
-      "test_integration": 78,
+      "test_integration": 81,
       "test_inv041_path_restricted_commits": 5,
       "test_l146_wave_a_g2_g3_g9": 6,
       "test_l146_wave_b_g7_sec_edgar": 6,

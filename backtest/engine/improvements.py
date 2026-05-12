@@ -51,6 +51,58 @@ def get_transaction_cost(ticker: str, market_cap_m: float = 0) -> float:
     return TRANSACTION_COSTS["default"]
 
 
+# BUG-205 RESOLVED-IMPLEMENTED Batch 107 2026-05-12 (owner-approved option A
+# 2026-05-12): IBKR Pro fixed-tier US-stock commission model. Percentage-
+# only TRANSACTION_COSTS underestimates the per-trade fee at small notional
+# because IBKR enforces a $1.00 minimum per order (and rebate up to 1% of
+# trade value cap). At a $750 trade with ~10 shares, per-share fee is $0.05
+# but min wins -> $1 = 0.133% vs the 0.10% percentage model assumes. Over a
+# 100-trade backtest at LOW/MEDIUM tier sizes the understatement compounds
+# to ~6% ROI overstatement.
+IBKR_FIXED_TIER = {
+    "per_share_usd":     0.005,   # $0.005/share
+    "min_order_usd":     1.00,    # $1.00 min per order
+    "max_pct_of_trade":  0.01,    # 1.0% max of trade value
+}
+
+
+def ibkr_fixed_tier_cost(shares: float, trade_dollar: float) -> float:
+    """BUG-205: returns one-way IBKR Pro fixed-tier US commission in
+    dollars given trade shares + dollar value. min(max_pct_of_trade,
+    max(min_order, per_share*shares)).
+    """
+    if shares <= 0 or trade_dollar <= 0:
+        return 0.0
+    per_share = shares * IBKR_FIXED_TIER["per_share_usd"]
+    capped_at_max = min(IBKR_FIXED_TIER["max_pct_of_trade"] * trade_dollar,
+                        per_share)
+    return max(IBKR_FIXED_TIER["min_order_usd"], capped_at_max)
+
+
+def effective_round_trip_cost_pct(
+    ticker:        str,
+    market_cap_m:  float,
+    entry_price:   float = 0.0,
+    trade_dollar:  float = 0.0,
+) -> float:
+    """BUG-205: returns round-trip cost as decimal fraction of
+    trade_dollar combining (a) existing TRANSACTION_COSTS spread-percent
+    model (commissions implicit) and (b) IBKR Pro fixed-tier per-share
+    + min/cap. Picks the max of the two so neither cost driver is
+    silently understated. Falls back to pure percentage (legacy
+    behavior) when entry_price or trade_dollar unavailable.
+    """
+    base_one_way_pct = get_transaction_cost(ticker, market_cap_m)
+    base_one_way_dollar = base_one_way_pct * trade_dollar
+    if entry_price <= 0 or trade_dollar <= 0:
+        # Legacy path: percentage only, round-trip = 2 * one-way
+        return base_one_way_pct * 2
+    shares = trade_dollar / entry_price
+    ibkr_one_way_dollar = ibkr_fixed_tier_cost(shares, trade_dollar)
+    effective_one_way_dollar = max(base_one_way_dollar, ibkr_one_way_dollar)
+    return (effective_one_way_dollar * 2) / trade_dollar
+
+
 def apply_transaction_costs(
     df_trades: pd.DataFrame,
     info_dict:  dict[str, dict],
@@ -73,13 +125,32 @@ def apply_transaction_costs(
     # centrally via SHORT_ANNUAL_BORROW_RATE * hold_days / 252.
     from backtest.config import SHORT_ANNUAL_BORROW_RATE
 
+    # BUG-205 RESOLVED-IMPLEMENTED Batch 107 2026-05-12: when the trade
+    # row carries entry_price + confidence_tier the IBKR fixed-tier cap
+    # model (per-share + $1 min + 1% cap) is applied via
+    # effective_round_trip_cost_pct(). Rows missing those fields fall
+    # back to the legacy percentage-only model so existing test
+    # fixtures (which don't carry tier/entry_price) continue to pass.
+    from backtest.config import (STARTING_CAPITAL, TIER_POSITION_SIZE_PCT)
+
     costs = []
     for _, row in df.iterrows():
         ticker = row.get("ticker", "")
         mkt_cap_m = (info_dict.get(ticker, {}).get("market_cap", 0) or 0) / 1_000_000
-        cost = get_transaction_cost(ticker, mkt_cap_m)
-        # Round trip = entry cost + exit cost
-        round_trip = cost * 2
+
+        entry_price = float(row.get("entry_price", 0) or 0)
+        conf_tier   = row.get("confidence_tier", None)
+        tier_pct    = TIER_POSITION_SIZE_PCT.get(conf_tier, 0.0) if conf_tier else 0.0
+        trade_dollar = (tier_pct * STARTING_CAPITAL) if tier_pct > 0 else 0.0
+
+        if entry_price > 0 and trade_dollar > 0:
+            # BUG-205 path: IBKR cap-aware effective round-trip cost
+            round_trip = effective_round_trip_cost_pct(
+                ticker, mkt_cap_m, entry_price, trade_dollar,
+            )
+        else:
+            cost = get_transaction_cost(ticker, mkt_cap_m)
+            round_trip = cost * 2
 
         # Short trade: add securities lending (borrow) cost
         if row.get("direction") == "short":
