@@ -515,13 +515,15 @@ function descCell(s) {
 }
 
 function promotionCell(p) {
-  if (!p) return '<span data-tier="NONE" style="color:#cbd5e1">&mdash;</span>';
+  if (!p) return '<span data-tier="NONE" style="color:#cbd5e1">&mdash;</span><span style="display:none">NONE</span>';
   const reason = (p.reason || '').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   const label = (p.label || '?').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  // data-tier attribute enables exact-match dropdown filtering via DataTables
-  // column().search() (regex-escaped string match against the HTML).
   const tier = (p.tier || 'UNKNOWN').replace(/"/g, '&quot;');
-  return `<span data-tier="${tier}" data-label="${label}" title="${reason}" style="background:${p.color};color:white;padding:2px 6px;border-radius:3px;font-size:10px;font-weight:600">${label}</span>`;
+  // FIX 2026-05-11: append hidden tier-text span so DataTables column.search()
+  // (which filters by tag-stripped textContent) matches dropdown values like
+  // 'CODE_ONLY' / 'TEST_ONLY' / 'SPEC_ONLY' that previously appeared only as
+  // the data-tier HTML attribute (invisible to DataTables filter).
+  return `<span data-tier="${tier}" data-label="${label}" title="${reason}" style="background:${p.color};color:white;padding:2px 6px;border-radius:3px;font-size:10px;font-weight:600">${label}</span><span style="display:none">${tier}</span>`;
 }
 
 // Decisions table: visible / total / hidden counts (SUPERSEDED + OBSOLETE
@@ -557,11 +559,19 @@ $('#dec-filter').on('keyup', function () { decTable.search(this.value).draw(); }
 // FIX 2026-05-10: dec-status-filter searches Doc Status column (index 3,
 // after ID/Title/Description). Was previously column 2 (Description) which
 // caused the dropdown to be effectively non-functional.
-$('#dec-status-filter').on('change', function () { decTable.column(3).search(this.value).draw(); });
-$('#dec-promotion-filter').on('change', function () {
-  // Decisions Promotion column index = 4 (after ID/Title/Description/DocStatus)
+$('#dec-status-filter').on('change', function () {
+  // FIX 2026-05-11: Doc Status column (3) contains badge HTML; search the
+  // tag-stripped textContent for exact-status substring. Regex-anchored to
+  // avoid PARTIAL matching PARTIAL-SPEC-ONLY etc.
   const v = this.value;
-  decTable.column(4).search(v ? `data-tier="${v}"` : '', false, false).draw();
+  decTable.column(3).search(v ? `^\\s*${v}\\s*$` : '', true, false).draw();
+});
+$('#dec-promotion-filter').on('change', function () {
+  // FIX 2026-05-11: promotionCell now appends hidden tier-text span so
+  // DataTables substring search picks up tier name (CODE_ONLY / TEST_ONLY /
+  // SPEC_ONLY etc) that previously lived only in data-tier HTML attribute.
+  const v = this.value;
+  decTable.column(4).search(v || '', false, false).draw();
 });
 
 // Bugs table
@@ -589,9 +599,10 @@ const bugTable = $('#tbl-bugs').DataTable({
 });
 $('#bug-filter').on('keyup', function () { bugTable.search(this.value).draw(); });
 $('#bug-promotion-filter').on('change', function () {
-  // Bugs Promotion column index = 3 (after ID/Title/Description)
+  // FIX 2026-05-11: see promotionCell hidden-span fix. Substring search
+  // on rendered text now picks up tier name.
   const v = this.value;
-  bugTable.column(3).search(v ? `data-tier="${v}"` : '', false, false).draw();
+  bugTable.column(3).search(v || '', false, false).draw();
 });
 
 // INVs table
@@ -609,13 +620,16 @@ const invTable = $('#tbl-invs').DataTable({
   data: invRows, pageLength: 50, order: [[0, 'asc']],
 });
 $('#inv-filter').on('keyup', function () { invTable.search(this.value).draw(); });
-// FIX 2026-05-10: inv-status-filter searches Doc Status column (index 3,
-// after ID/Title/Description). Was previously column 2 (Description).
-$('#inv-status-filter').on('change', function () { invTable.column(3).search(this.value).draw(); });
-$('#inv-promotion-filter').on('change', function () {
-  // INVs Promotion column index = 4 (after ID/Title/Description/DocStatus)
+// FIX 2026-05-11: status filter uses regex-anchored exact match (avoids
+// PARTIAL substring matching PARTIAL-SPEC-ONLY); promotion filter substring
+// works after promotionCell hidden-tier-span fix.
+$('#inv-status-filter').on('change', function () {
   const v = this.value;
-  invTable.column(4).search(v ? `data-tier="${v}"` : '', false, false).draw();
+  invTable.column(3).search(v ? `^\\s*${v}\\s*$` : '', true, false).draw();
+});
+$('#inv-promotion-filter').on('change', function () {
+  const v = this.value;
+  invTable.column(4).search(v || '', false, false).draw();
 });
 
 // Caveats table
@@ -634,9 +648,11 @@ const cavTable = $('#tbl-caveats').DataTable({
   data: cavRows, pageLength: 50, order: [[0, 'asc']],
 });
 $('#cav-filter').on('keyup', function () { cavTable.search(this.value).draw(); });
-// FIX 2026-05-10: cav-status-filter searches Status column (index 3, after
-// ID/Title/Description). Was previously column 2 (Description).
-$('#cav-status-filter').on('change', function () { cavTable.column(3).search(this.value).draw(); });
+// FIX 2026-05-11: regex-anchored exact-status match.
+$('#cav-status-filter').on('change', function () {
+  const v = this.value;
+  cavTable.column(3).search(v ? `^\\s*${v}\\s*$` : '', true, false).draw();
+});
 
 // Learnings table
 const lessons = D.learnings || [];

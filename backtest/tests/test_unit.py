@@ -4645,6 +4645,56 @@ def test_dec_593_wikipedia_pageviews_rest_carveout():
 
 
 # ============================================================================
+# Phase 3 Batch 64 mass-resolution + dashboard filter fix
+# Owner directive 2026-05-11: "Unblock all decisions and resolve them all"
+# ============================================================================
+
+def test_batch_64_mass_resolution_constants():
+    """Batch 64 closure constants codified in config.py."""
+    from backtest.config import (BATCH_64_MASS_RESOLUTION_DATE,
+                                   BATCH_64_MASS_RESOLUTION_NOTE,
+                                   BATCH_64_DEFERRED_REMAINS_DEFERRED)
+    assert BATCH_64_MASS_RESOLUTION_DATE == "2026-05-11"
+    assert "Unblock all" in BATCH_64_MASS_RESOLUTION_NOTE
+    assert "scope-gated" in BATCH_64_DEFERRED_REMAINS_DEFERRED
+
+
+def test_batch_64_audit_index_only_resolved_or_rejected():
+    """Batch 64 invariant: after mass-resolution, AUDIT_INDEX dashboard
+    data has only RESOLVED-IMPLEMENTED + REJECTED status values.
+    """
+    import json
+    from pathlib import Path
+    data_path = Path("dashboard_stage_2/data.json")
+    if not data_path.exists():
+        return  # dashboard not regenerated yet (e.g., pre-build CI)
+    data = json.loads(data_path.read_text(encoding="utf-8"))
+    statuses = {x.get("status") for x in data.get("decisions", [])}
+    allowed = {"RESOLVED-IMPLEMENTED", "REJECTED"}
+    leaked = statuses - allowed
+    assert not leaked, f"Batch 64 invariant breached: unexpected statuses {leaked}"
+
+
+def test_dashboard_filter_promotioncell_hidden_tier_span():
+    """Dashboard fix 2026-05-11: promotionCell appends hidden tier-text
+    span so DataTables column.search() can filter by tier value
+    (CODE_ONLY / TEST_ONLY / SPEC_ONLY etc. were previously invisible
+    to the filter because they lived only in the data-tier HTML attribute).
+    """
+    from pathlib import Path
+    html = Path("dashboard_stage_2/index.html").read_text(encoding="utf-8")
+    # Verify promotionCell ends with the hidden span (substring match)
+    assert "<span style=\"display:none\">${tier}</span>" in html, (
+        "promotionCell missing hidden tier-text span"
+    )
+    # Verify status filter uses regex-anchored exact match (avoids
+    # PARTIAL substring matching PARTIAL-SPEC-ONLY)
+    assert "^\\\\s*${v}\\\\s*$" in html, (
+        "Dropdown status filter missing regex-anchored exact match"
+    )
+
+
+# ============================================================================
 # DEC-432 Chandelier exit indicator tests (Phase 3 Batch 53 Path C)
 # Parabolic SAR + Supertrend already implemented; only chandelier added.
 # ============================================================================

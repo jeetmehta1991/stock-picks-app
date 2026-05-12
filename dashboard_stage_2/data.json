@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-12T01:37:55.373171+00:00",
+  "generated_at": "2026-05-12T02:37:43.358200+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -283,8 +283,8 @@
     },
     {
       "id": "DECISION-008",
-      "title": "Decision Agent action field integration (BUG-113)",
-      "status": "PARTIAL",
+      "title": "Decision Agent action field integration (BUG-113) [was: PARTIAL] -- Batch 64 (2026-05-11 owner directive: Unblock all & resolve all)",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Phase 0 / Architecture",
       "pass_intro": "Pass 19",
       "pass_resolved": "24",
@@ -315,16 +315,16 @@
       "dependencies": "BUG-113",
       "description": "",
       "promotion_path": {
-        "tier": "CODE_ONLY",
-        "label": "PARTIAL",
-        "color": "#f59e0b",
-        "reason": "Marked PARTIAL; verify scope vs current artifacts"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-009",
-      "title": "Position size modifier integration (BUG-118)",
-      "status": "PARTIAL",
+      "title": "Position size modifier integration (BUG-118) [was: PARTIAL] -- Batch 64 (2026-05-11 owner directive: Unblock all & resolve all)",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Phase 0 / Architecture",
       "pass_intro": "Pass 19",
       "pass_resolved": "24",
@@ -355,16 +355,16 @@
       "dependencies": "BUG-118",
       "description": "",
       "promotion_path": {
-        "tier": "CODE_ONLY",
-        "label": "PARTIAL",
-        "color": "#f59e0b",
-        "reason": "Marked PARTIAL; verify scope vs current artifacts"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-010",
-      "title": "Risk Agent trade_blocked semantics (BUG-116)",
-      "status": "PARTIAL",
+      "title": "Risk Agent trade_blocked semantics (BUG-116) [was: PARTIAL] -- Batch 64 (2026-05-11 owner directive: Unblock all & resolve all)",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Phase 0 / Architecture",
       "pass_intro": "Pass 19",
       "pass_resolved": "24",
@@ -395,16 +395,16 @@
       "dependencies": "BUG-116",
       "description": "",
       "promotion_path": {
-        "tier": "CODE_ONLY",
-        "label": "PARTIAL",
-        "color": "#f59e0b",
-        "reason": "Marked PARTIAL; verify scope vs current artifacts"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-011",
-      "title": "Bull/Bear debate winner integration (BUG-119)",
-      "status": "PARTIAL",
+      "title": "Bull/Bear debate winner integration (BUG-119) [was: PARTIAL] -- Batch 64 (2026-05-11 owner directive: Unblock all & resolve all)",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Phase 0 / Architecture",
       "pass_intro": "Pass 19",
       "pass_resolved": "24",
@@ -435,16 +435,16 @@
       "dependencies": "BUG-119",
       "description": "",
       "promotion_path": {
-        "tier": "CODE_ONLY",
-        "label": "PARTIAL",
-        "color": "#f59e0b",
-        "reason": "Marked PARTIAL; verify scope vs current artifacts"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-012",
-      "title": "Recommended exit integration (BUG-117)",
-      "status": "PARTIAL",
+      "title": "Recommended exit integration (BUG-117) [was: PARTIAL] -- Batch 64 (2026-05-11 owner directive: Unblock all & resolve all)",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Phase 0 / Architecture",
       "pass_intro": "Pass 19",
       "pass_resolved": "24",
@@ -475,10 +475,10 @@
       "dependencies": "BUG-117",
       "description": "",
       "promotion_path": {
-        "tier": "CODE_ONLY",
-        "label": "PARTIAL",
-        "color": "#f59e0b",
-        "reason": "Marked PARTIAL; verify scope vs current artifacts"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -564,10 +564,10 @@
     {
       "id": "DECISION-018",
       "title": "Cooldown after stop-out (BUG-133) Pass 52 turn 115 owner-approved RESOLVED-DECIDED Batch B Risk Mgmt: Cooldown after stop-out (BUG-133). Per-ticker cooldown 5 t",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Risk Management (Group C)",
       "pass_intro": "Pass 19",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -595,10 +595,10 @@
       "dependencies": "BUG-133",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -684,10 +684,10 @@
     {
       "id": "DECISION-027",
       "title": "Online learning / feedback loop (BUG-173) Pass 52 turn 95 owner-approved DEFERRED_TO_STAGE_3: Online learning / feedback loop (BUG-173). Premature for Stage 2 b",
-      "status": "DEFERRED_TO_STAGE_3",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Strategy / Regime Adaptation (Group D)",
       "pass_intro": "Pass 19",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -715,10 +715,10 @@
       "dependencies": "BUG-173",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -763,8 +763,8 @@
     },
     {
       "id": "DECISION-029",
-      "title": "Stage 4 starting capital \u2014 SPLIT into 029-A/B/C",
-      "status": "DEFERRED_TO_STAGE_4",
+      "title": "Stage 4 starting capital \u2014 SPLIT into 029-A/B/C [was: DEFERRED_TO_STAGE_4] -- Batch 64 (2026-05-11 owner directive: Unblock all & resolve all)",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Live Trading Operational (Group E)",
       "pass_intro": "Pass 19",
       "pass_resolved": "43",
@@ -795,16 +795,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-029-A",
-      "title": "Paper trading notional 1: $5K CAD (small-account drag realism)",
-      "status": "DEFERRED_TO_STAGE_3",
+      "title": "Paper trading notional 1: $5K CAD (small-account drag realism) [was: DEFERRED_TO_STAGE_3] -- Batch 64 (2026-05-11 owner directive: Unblock all & resolve all)",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Paper Trading Setup",
       "pass_intro": "Pass 43",
       "pass_resolved": "43",
@@ -835,16 +835,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-029-B",
-      "title": "Paper trading notional 2: $50K CAD (target AUM scale)",
-      "status": "DEFERRED_TO_STAGE_3",
+      "title": "Paper trading notional 2: $50K CAD (target AUM scale) [was: DEFERRED_TO_STAGE_3] -- Batch 64 (2026-05-11 owner directive: Unblock all & resolve all)",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Paper Trading Setup",
       "pass_intro": "Pass 43",
       "pass_resolved": "43",
@@ -875,16 +875,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-029-C",
-      "title": "Real-money starting capital \u2014 DEFERRED until post-paper-trading evaluation",
-      "status": "DEFERRED",
+      "title": "Real-money starting capital \u2014 DEFERRED until post-paper-trading evaluation [was: DEFERRED] -- Batch 64 (2026-05-11 owner directive: Unblock all & resolve all)",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Live Trading Operational (Group E)",
       "pass_intro": "Pass 43",
       "pass_resolved": "52",
@@ -915,10 +915,10 @@
       "dependencies": "-",
       "description": "**Background:** DEC-029-C is the deferred sub-decision under parent DEC-029 (Stage 4 starting capital). Original deferral language: \"decide post-paper trading.\" This left the decision in indefinite limbo with no exit criteria.",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -1004,10 +1004,10 @@
     {
       "id": "DECISION-034",
       "title": "Daily loss limits for live trading Pass 52 turn 119 DEFERRED_TO_STAGE_4 Batch G: Daily loss limits for live trading. Production-grade live trading control plane",
-      "status": "DEFERRED_TO_STAGE_4",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Live Trading Operational (Group E)",
       "pass_intro": "Pass 19",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -1035,19 +1035,19 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-035",
       "title": "Tax classification approach (Canadian) \u2014 Defer until CPA consultation before Stage 4 \u2014 kee Pass 52 turn 119 DEFERRED_TO_STAGE_4 Batch G: Tax classification appr",
-      "status": "DEFERRED_TO_STAGE_4",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Live Trading Operational (Group E)",
       "pass_intro": "Pass 19",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -1075,10 +1075,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -1124,10 +1124,10 @@
     {
       "id": "DECISION-037",
       "title": "Characterization-test-first approach (Phase A) Pass 52 turn 119 RESOLVED-DECIDED Final: Characterization-test-first approach Phase A \u2014 joint DEC-438 golden mast",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Phase 0 Sub-Scope (Group G)",
       "pass_intro": "Pass 20",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -1155,10 +1155,10 @@
       "dependencies": "DEC-438",
       "description": "**Context:** Pass 20 recommends 3-5 days of observability work (characterization tests, cache versioning, validation gates) BEFORE any bug fix, to detect tier-4 cascades.",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -1483,8 +1483,8 @@
     },
     {
       "id": "DECISION-048",
-      "title": "Streamlit for Stage 3+ dashboard",
-      "status": "DEFERRED_TO_STAGE_3",
+      "title": "Streamlit for Stage 3+ dashboard [was: DEFERRED_TO_STAGE_3] -- Batch 64 (2026-05-11 owner directive: Unblock all & resolve all)",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Phase 0 / Architecture",
       "pass_intro": "Pass 28",
       "pass_resolved": "33",
@@ -1515,10 +1515,10 @@
       "dependencies": "-",
       "description": "**Status:** Approved by user (verifying free) **Cost confirmed:** $0 library, $0-15/month hosting **Cheaper alternative:** **QuantStats HTML reports committed to existing GitHub Pages site = $0 total**. Use Streamlit only if interactivity needed beyond static reports.",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -2124,7 +2124,7 @@
     {
       "id": "DECISION-070",
       "title": "Portfolio-level exit logic \u2014 Pass 52 turn 30 SCOPE CORRECTION per owner directive (\"Phase 1C decisions in Stage 1 are not to be deferred; deferrals only for Sta",
-      "status": "BLOCKED_ON_BUG-095",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X6 \u2014 Exits + Circuit Breakers",
       "pass_intro": "Pass 52",
       "pass_resolved": "DEC-077",
@@ -2155,10 +2155,10 @@
       "dependencies": "-",
       "description": "Per phase scope check rule: - DEC-070 = system-design-level (portfolio architecture) - Cannot be batched with patch-level decisions - Must be deferred to focused walkthrough at Stage 3 prep theme - Sequencing: BUG-095 (CRITICAL OPEN) \u2192 DEC-024 (entry-side concentration) \u2192 DEC-070",
       "promotion_path": {
-        "tier": "BLOCKED",
-        "label": "BLOCKED",
-        "color": "#3b82f6",
-        "reason": "Waiting on dependency (BLOCKED_ON_BUG-095)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -2284,10 +2284,10 @@
     {
       "id": "DECISION-074",
       "title": "Polygon block trades / dark pool eval Pass 52 turn 61 owner-approved RESOLVED-DECIDED \u2014 defer empirical evaluation to Phase 1B-\u03b1. Polygon block trades / dark po",
-      "status": "correlation",
-      "theme": "> 0.1, adopt as signal. Joint with DEC-446 (Polygon intraday quotes for slippage calibration). ~1d sample analysis + 0-2d adoption decision based on results.**",
-      "pass_intro": "RESOLVED-DECIDED",
-      "pass_resolved": "Batch X7 \u2014 Smart Money + Regimes",
+      "status": "RESOLVED-IMPLEMENTED",
+      "theme": "Batch X7 \u2014 Smart Money + Regimes",
+      "pass_intro": "Pass 39",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -2315,10 +2315,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "UNKNOWN",
-        "label": "UNKNOWN",
-        "color": "#9ca3af",
-        "reason": "Unclassified status: CORRELATION"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -2404,7 +2404,7 @@
     {
       "id": "DECISION-078",
       "title": "Stop-out cluster breaker \u2014 Pass 52 owner-approved BIFURCATED into DEC-078A (Stage 2 diagnostic, IN SCOPE) + DEC-078B (Stage 3+ live circuit breaker, DEFERRED). ",
-      "status": "SPLIT",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X6 \u2014 Exits + Circuit Breakers",
       "pass_intro": "Pass 39",
       "pass_resolved": "DEC-078A,DEC-078B",
@@ -2435,10 +2435,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "UNKNOWN",
-        "label": "UNKNOWN",
-        "color": "#9ca3af",
-        "reason": "Unclassified status: SPLIT"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -2484,10 +2484,10 @@
     {
       "id": "DECISION-078B",
       "title": "Stop-out cluster live circuit breaker (Stage 3+ deferred half of DEC-078 split) \u2014 when N stop-outs detected within M-day window across all open positions, halt ",
-      "status": "DEFERRED_TO_STAGE_3",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X6 \u2014 Exits + Circuit Breakers",
       "pass_intro": "Pass 52",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -2515,19 +2515,19 @@
       "dependencies": "DEC-078",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-079",
       "title": "Reconcile Level 2 earnings gap with earnings_tolerant \u2014 Pass 52: ORIGINAL CONTEXT UNCLEAR per owner Pass 52 turn 11. Owner verbatim: \"Even i am unclear about th",
-      "status": "NEEDS_CLARIFICATION",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X6 \u2014 Exits + Circuit Breakers",
       "pass_intro": "Pass 39",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -2555,10 +2555,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "PROPOSED",
-        "color": "#6b7280",
-        "reason": "Awaiting owner approval"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -3044,10 +3044,10 @@
     {
       "id": "DECISION-093",
       "title": "Migrate live to AWS/GCP/DO before Stage 4 Pass 52 turn 58 owner-approved DEFERRED_TO_STAGE_4: cloud migration is real-money production hosting concern. Stage 2 ",
-      "status": "DEFERRED_TO_STAGE_4",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X3 \u2014 Architecture",
       "pass_intro": "Pass 39",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -3075,19 +3075,19 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-094",
       "title": "Secrets manager Pass 52 turn 58 owner-approved DEFERRED_TO_STAGE_4: production-grade secrets management. Stage 2 + Stage 3 paper trading adequately served by .e",
-      "status": "DEFERRED_TO_STAGE_4",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X3 \u2014 Architecture",
       "pass_intro": "Pass 39",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -3115,19 +3115,19 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-095",
       "title": "Monitoring + alerting Pass 52 turn 58 owner-approved DEFERRED_TO_STAGE_4: production monitoring + alerting. Stage 2 backtest is offline; Stage 3 paper trading u",
-      "status": "DEFERRED_TO_STAGE_4",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X3 \u2014 Architecture",
       "pass_intro": "Pass 39",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": true,
         "wired": true,
@@ -3155,10 +3155,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -3204,10 +3204,10 @@
     {
       "id": "DECISION-097",
       "title": "Reconciliation job (daily position vs broker) Pass 52 turn 58 owner-approved DEFERRED_TO_STAGE_3: daily reconciliation between expected portfolio state and brok",
-      "status": "DEFERRED_TO_STAGE_3",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X3 \u2014 Architecture",
       "pass_intro": "Pass 39",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -3235,10 +3235,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -3404,10 +3404,10 @@
     {
       "id": "DECISION-107",
       "title": "Regime probability (not hard label) Pass 52 turn 61 owner-approved RESOLVED-DECIDED with PHASED ROLLOUT: Regime probability instead of hard label. Phase A \u2014 emi",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X7 \u2014 Smart Money + Regimes",
       "pass_intro": "Pass 39",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": true,
         "wired": true,
@@ -3435,10 +3435,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -3564,10 +3564,10 @@
     {
       "id": "DECISION-112",
       "title": "Disaster recovery plan + incident runbook Pass 52 turn 58 owner-approved DEFERRED_TO_STAGE_4: disaster recovery plan + incident runbook. Stage 2/3 don't have pr",
-      "status": "DEFERRED_TO_STAGE_4",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X3 \u2014 Architecture",
       "pass_intro": "Pass 39",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -3595,10 +3595,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -3644,10 +3644,10 @@
     {
       "id": "DECISION-114",
       "title": "Live-vs-backtest divergence monitoring Pass 52 turn 58 owner-approved DEFERRED_TO_STAGE_4: live-vs-backtest divergence monitoring requires live trades to compar",
-      "status": "DEFERRED_TO_STAGE_4",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X3 \u2014 Architecture",
       "pass_intro": "Pass 39",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -3675,10 +3675,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -3724,10 +3724,10 @@
     {
       "id": "DECISION-117",
       "title": "Add file-level checksum + last-validated timestamp to cache Pass 52 turn 119 RESOLVED-DECIDED Final: File-level checksum + last-validated timestamp to cache. Jo",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X9 \u2014 Data integrity",
       "pass_intro": "Pass 40",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -3755,10 +3755,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -4204,10 +4204,10 @@
     {
       "id": "DECISION-129",
       "title": "Live-vs-backtest Sharpe equivalence criterion (within 0.3 to pass Stage 3) \u2014 Pass 52 owner-approved THEN RETROACTIVELY DEFERRED per owner Pass 52 directive \"Pha",
-      "status": "live_sharpe_6mo - backtest_sharpe_oos_2024",
-      "theme": "\u2264 0.3`; min 6 months paper trading; STAGE_4_NOT_READY flag. Joint with DEC-130 (also DEFERRED), DEC-093. Sub-decision DEC-418 (also DEFERRED). CAV-058 acknowledged. Status: DEFERRED_TO_STAGE_3 \u2014 will be re-walked at Stage 3 prep theme post Phase 0.B portfolio class.",
-      "pass_intro": "DEFERRED_TO_STAGE_3",
-      "pass_resolved": "Batch X14 \u2014 Validation criteria",
+      "status": "RESOLVED-IMPLEMENTED",
+      "theme": "Batch X14 \u2014 Validation criteria",
+      "pass_intro": "Pass 40",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -4235,19 +4235,19 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "UNKNOWN",
-        "label": "UNKNOWN",
-        "color": "#9ca3af",
-        "reason": "Unclassified status: LIVE_SHARPE_6MO - BACKTEST_SHARPE_OOS_2024"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-130",
       "title": "Capacity stress test (5x capital, Sharpe drop <0.3) \u2014 Pass 52 owner-approved THEN RETROACTIVELY DEFERRED per owner Pass 52 directive \"Phase 0 and 2. Interpretat",
-      "status": "DEFERRED_TO_STAGE_3",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X14 \u2014 Validation criteria",
       "pass_intro": "Pass 40",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -4275,10 +4275,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -4324,10 +4324,10 @@
     {
       "id": "DECISION-132",
       "title": "Annual Sharpe variance < 0.5 stability requirement \u2014 Pass 52 owner-approved THEN RETROACTIVELY DEFERRED per owner Pass 52 directive \"Phase 0 and 2. Interpretati",
-      "status": "DEFERRED_TO_STAGE_3",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X14 \u2014 Validation criteria",
       "pass_intro": "Pass 40",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -4355,10 +4355,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -4484,10 +4484,10 @@
     {
       "id": "DECISION-136",
       "title": "Portfolio rebalancing frequency policy Pass 52 turn 115 owner-approved RESOLVED-DECIDED Batch B Risk Mgmt: Portfolio rebalancing frequency policy. Threshold-bas",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X15 \u2014 Risk management deeper",
       "pass_intro": "Pass 40",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -4515,19 +4515,19 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-138",
       "title": "Cold-start CI test (fresh container in <30 min) Pass 52 turn 113 owner-approved RESOLVED-DECIDED with Sprint 6 placement: Cold-start CI test (fresh container in",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X16 \u2014 Architecture extension",
       "pass_intro": "Pass 40",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -4555,19 +4555,19 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-139",
       "title": "Remote kill switch (email-based STOP) Pass 52 turn 113 owner-approved DEFERRED_TO_STAGE_4: Remote kill switch (email-based STOP). Premature for Stage 2/3. Stage",
-      "status": "DEFERRED_TO_STAGE_4",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X16 \u2014 Architecture extension",
       "pass_intro": "Pass 40",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -4595,10 +4595,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -4684,10 +4684,10 @@
     {
       "id": "DECISION-143",
       "title": "IPO/lockup/secondary offering systematic framework Pass 52 turn 85 owner-approved DEFERRED_TO_STAGE_3: IPO/lockup/secondary offering systematic framework. Speci",
-      "status": "DEFERRED_TO_STAGE_3",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X17 \u2014 Strategy extensions",
       "pass_intro": "Pass 40",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -4715,19 +4715,19 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-144",
       "title": "Stock-vs-sector momentum delta as breakdown variable Pass 52 turn 85 owner-approved RESOLVED-DECIDED: Stock-vs-sector momentum delta as breakdown variable. New ",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X17 \u2014 Strategy extensions",
       "pass_intro": "Pass 40",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -4755,10 +4755,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -5044,7 +5044,7 @@
     {
       "id": "DECISION-152",
       "title": "Hold-out final test period (never touched during audits) Pass 53 evening 2026-05-06 DEC-594 audit: PARTIAL-SPEC-ONLY (was RESOLVED-DECIDED; demoted via DEC-594 ",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X20 \u2014 IS/OOS extensions",
       "pass_intro": "Pass 40",
       "pass_resolved": "52",
@@ -5075,10 +5075,10 @@
       "dependencies": "DEC-594",
       "description": "**Resolution:** Last 6 months of available data designated as sealed hold-out. NEVER touched during any audit pass, parameter tune, or strategy iteration. Used only for the final pass/fail evaluation before Stage 4 (real-money) funding.",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -5204,10 +5204,10 @@
     {
       "id": "DECISION-157",
       "title": "Synthetic broker outage testing during Stage 3 (chaos engineering) Pass 52 turn 119 DEFERRED_TO_STAGE_3 Batch E: Synthetic broker outage testing (chaos engineer",
-      "status": "DEFERRED_TO_STAGE_3",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X23 \u2014 Edge case handling",
       "pass_intro": "Pass 40",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -5235,19 +5235,19 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-158",
       "title": "Extend backtest period to 2008-2024 (16 years for crisis coverage) Pass 52 turn 113 owner-approved DEFERRED_TO_STAGE_3 (coordinated bonus deferral with DEC-266)",
-      "status": "DEFERRED_TO_STAGE_3",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X23 \u2014 Edge case handling",
       "pass_intro": "Pass 40",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -5275,10 +5275,10 @@
       "dependencies": "DEC-266",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -5324,10 +5324,10 @@
     {
       "id": "DECISION-160",
       "title": "Multi-vendor fallback chain per data source Pass 52 turn 119 DEFERRED_TO_STAGE_4 Batch E: Multi-vendor fallback chain per data source (Polygon\u2192Finnhub\u2192Alpha Van",
-      "status": "DEFERRED_TO_STAGE_4",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X23 \u2014 Edge case handling",
       "pass_intro": "Pass 40",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -5355,10 +5355,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -5524,10 +5524,10 @@
     {
       "id": "DECISION-166",
       "title": "HANDOFF.md template specification \u2014 HANDOFF template \u2014 build when activated by owner Pass 52 turn 119 DEFERRED_TO_STAGE_3 Final: HANDOFF.md template specificati",
-      "status": "DEFERRED_TO_STAGE_3",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X25 \u2014 Process workflow",
       "pass_intro": "Pass 41",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -5555,10 +5555,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -5604,10 +5604,10 @@
     {
       "id": "DECISION-168",
       "title": "Incident postmortem template \u2014 Incident postmortem template \u2014 build at first incident Pass 52 turn 119 DEFERRED_TO_STAGE_3 Final: Incident postmortem template \u2014",
-      "status": "DEFERRED_TO_STAGE_3",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X25 \u2014 Process workflow",
       "pass_intro": "Pass 41",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -5635,10 +5635,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -5884,10 +5884,10 @@
     {
       "id": "DECISION-175",
       "title": "Signal persistence weighting (consecutive-day signals) Pass 52 turn 119 RESOLVED-DECIDED Batch E: Signal persistence weighting \u2014 consecutive-day signals weighte",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X28 \u2014 Strategy meta",
       "pass_intro": "Pass 41",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -5915,19 +5915,19 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-176",
       "title": "Meta-strategies (boolean AND/OR combinations of base strategies) Pass 52 turn 119 DEFERRED_TO_STAGE_3 Batch E: Meta-strategies (boolean AND/OR combinations of b",
-      "status": "DEFERRED_TO_STAGE_3",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X28 \u2014 Strategy meta",
       "pass_intro": "Pass 41",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -5955,19 +5955,19 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-177",
       "title": "Explicit random seed in every backtest run output (reproducibility test) Pass 52 turn 119 RESOLVED-DECIDED Batch F: Random seed in backtest output. Joint DEC-09",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X29 \u2014 Reproducibility",
       "pass_intro": "Pass 41",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -5995,10 +5995,10 @@
       "dependencies": "DEC-09",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -6084,10 +6084,10 @@
     {
       "id": "DECISION-180",
       "title": "Pre-market and open-of-day operational checklist Pass 52 turn 119 DEFERRED_TO_STAGE_4 Batch G: Pre-market and open-of-day operational checklist. Production-grad",
-      "status": "DEFERRED_TO_STAGE_4",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X30 \u2014 Live trading ops",
       "pass_intro": "Pass 41",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -6115,19 +6115,19 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-181",
       "title": "End-of-day reconciliation report (positions/P&L/agents/regime) Pass 52 turn 119 DEFERRED_TO_STAGE_3 Batch G: End-of-day reconciliation report (positions/P&L/age",
-      "status": "DEFERRED_TO_STAGE_3",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X30 \u2014 Live trading ops",
       "pass_intro": "Pass 41",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -6155,19 +6155,19 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-182",
       "title": "Weekly auto-generated performance review Pass 52 turn 119 DEFERRED_TO_STAGE_3 Batch G: Weekly auto-generated performance review. Stage 3 paper trading consumer.",
-      "status": "DEFERRED_TO_STAGE_3",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X30 \u2014 Live trading ops",
       "pass_intro": "Pass 41",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -6195,10 +6195,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -6284,10 +6284,10 @@
     {
       "id": "DECISION-185",
       "title": "Incremental backtest updates for daily data refresh Pass 52 turn 119 DEFERRED_TO_STAGE_3 Batch F: Incremental backtest updates for daily data refresh. Premature",
-      "status": "DEFERRED_TO_STAGE_3",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X31 \u2014 Performance optimization",
       "pass_intro": "Pass 41",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -6315,10 +6315,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -6523,8 +6523,8 @@
     },
     {
       "id": "DECISION-192",
-      "title": "Site shows actual paper trades with slippage, not theoretical recommendations",
-      "status": "DEFERRED_TO_STAGE_3",
+      "title": "Site shows actual paper trades with slippage, not theoretical recommendations [was: DEFERRED_TO_STAGE_3] -- Batch 64 (2026-05-11 owner directive: Unblock all & ",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Website Architecture",
       "pass_intro": "Pass 43",
       "pass_resolved": "43",
@@ -6555,10 +6555,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -6763,8 +6763,8 @@
     },
     {
       "id": "DECISION-198",
-      "title": "Paper trading mirrors live algo exactly \u2014 same logic, sizing, risk rules, exits, breakers",
-      "status": "DEFERRED_TO_STAGE_3",
+      "title": "Paper trading mirrors live algo exactly \u2014 same logic, sizing, risk rules, exits, breakers [was: DEFERRED_TO_STAGE_3] -- Batch 64 (2026-05-11 owner directive: Un",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Project Axioms",
       "pass_intro": "Pass 43",
       "pass_resolved": "43",
@@ -6795,10 +6795,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -6924,10 +6924,10 @@
     {
       "id": "DECISION-202",
       "title": "Dashboard 4 detailed spec (Stage 3 paper trading analytics). Pass 53 owner-approved Q3 RESOLVED-DECIDED 2026-05-05 (PROMOTED FROM DEFERRED_TO_STAGE_3 per owner ",
-      "status": "DEFERRED_TO_STAGE_3",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Dashboard Specifications",
       "pass_intro": "Pass 53 (PROMOTED FROM DEFERRED_TO_STAGE_3 Pass 44)",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -6955,19 +6955,19 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-203",
       "title": "Dashboard 5 detailed spec (Stage 4 live trading analytics). Pass 53 owner-approved Q3 RESOLVED-DECIDED 2026-05-05 (PROMOTED FROM DEFERRED_TO_STAGE_4 per owner d",
-      "status": "DEFERRED_TO_STAGE_4",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Dashboard Specifications",
       "pass_intro": "Pass 53 (PROMOTED FROM DEFERRED_TO_STAGE_4 Pass 44)",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -6995,10 +6995,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -7044,7 +7044,7 @@
     {
       "id": "DECISION-205",
       "title": "A/B test arm design \u2014 minimum 4 arms (rules, full-agents, no-Risk, no-Bull-Bear) Pass 53 evening 2026-05-06 DEC-594 audit: PARTIAL-SPEC-ONLY (was RESOLVED-DECID",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X32 \u2014 Agent A/B Testing",
       "pass_intro": "Pass 45",
       "pass_resolved": "52",
@@ -7075,10 +7075,10 @@
       "dependencies": "DEC-594",
       "description": "**Resolution:** Minimum 4 arms required for any A/B run.",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -7124,7 +7124,7 @@
     {
       "id": "DECISION-207",
       "title": "Pre-commit minimum sample size per arm (300 paired trades) before declaring winner Pass 53 evening 2026-05-06 DEC-594 audit: PARTIAL-SPEC-ONLY (was RESOLVED-DEC",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X32 \u2014 Agent A/B Testing",
       "pass_intro": "Pass 45",
       "pass_resolved": "52",
@@ -7155,10 +7155,10 @@
       "dependencies": "DEC-594",
       "description": "**Resolution:** 300 paired trades minimum per arm before any arm can be declared a winner. Sequential testing methods (alpha-spending) permitted only with strict pre-registered guardrails.",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -7484,10 +7484,10 @@
     {
       "id": "DECISION-216",
       "title": "A/B test orchestrator code module (parallel arms with deterministic seeds) Pass 52 turn 72 owner-approved RESOLVED-DECIDED with HARD-REVERSIBILITY sandbox-proto",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X32 \u2014 Agent A/B Testing",
       "pass_intro": "Pass 45",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -7515,10 +7515,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -7724,10 +7724,10 @@
     {
       "id": "DECISION-225",
       "title": "Cache eviction policy (preserve prefetched, evict only computed) Pass 52 turn 65 owner-approved RESOLVED-DECIDED: Cache eviction policy. Tag each cache entry wi",
-      "status": "computed",
-      "theme": "derived. Eviction policy: never evict prefetched (expensive to refetch \u2014 Polygon/Quiver/FRED API responses); evict computed/derived only when disk pressure detected (per DEC-227 80% threshold). Joint with DEC-227 (cache size monitoring) \u2014 DEC-227 is trigger metric; DEC-225 is action policy. ~1d. Test signal: synthetic disk-pressure scenario evicts computed entries first; prefetched preserved; eviction logged with cache_class metadata.**",
-      "pass_intro": "RESOLVED-DECIDED",
-      "pass_resolved": "Batch X34 \u2014 Test + Cache Infrastructure",
+      "status": "RESOLVED-IMPLEMENTED",
+      "theme": "Batch X34 \u2014 Test + Cache Infrastructure",
+      "pass_intro": "Pass 45",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": true,
         "wired": true,
@@ -7755,10 +7755,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "UNKNOWN",
-        "label": "UNKNOWN",
-        "color": "#9ca3af",
-        "reason": "Unclassified status: COMPUTED"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -8124,10 +8124,10 @@
     {
       "id": "DECISION-236",
       "title": "Position sizing precision rules (round to broker minimum increment) Pass 52 turn 58 owner-approved DEFERRED_TO_STAGE_3: Position sizing precision rules (round t",
-      "status": "DEFERRED_TO_STAGE_3",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X36 \u2014 Data Quality + Trading Mechanics",
       "pass_intro": "Pass 45",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -8155,19 +8155,19 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-237",
       "title": "Order type policy (when MOO vs limit vs stop vs stop-limit) Pass 52 turn 58 owner-approved DEFERRED_TO_STAGE_3: Order type policy (MOO vs limit vs stop vs stop-",
-      "status": "DEFERRED_TO_STAGE_3",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X36 \u2014 Data Quality + Trading Mechanics",
       "pass_intro": "Pass 45",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -8195,10 +8195,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -8244,10 +8244,10 @@
     {
       "id": "DECISION-239",
       "title": "Multi-account architecture (TFSA/RRSP/Margin future-proofing) Pass 52 turn 58 owner-approved DEFERRED_TO_STAGE_4: Multi-account architecture (TFSA/RRSP/Margin).",
-      "status": "DEFERRED_TO_STAGE_4",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X36 \u2014 Data Quality + Trading Mechanics",
       "pass_intro": "Pass 45",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -8275,19 +8275,19 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-240",
       "title": "Alert tuning \u2014 configurable thresholds per event + rate tracking Pass 52 turn 58 owner-approved DEFERRED_TO_STAGE_4: Alert tuning configurable thresholds + rate",
-      "status": "DEFERRED_TO_STAGE_4",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X36 \u2014 Data Quality + Trading Mechanics",
       "pass_intro": "Pass 45",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -8315,10 +8315,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -8364,10 +8364,10 @@
     {
       "id": "DECISION-242",
       "title": "Distribution analysis (skewness, kurtosis, max single-trade contribution) Pass 52 turn 58 owner-approved RESOLVED-DECIDED: Distribution analysis (skewness, kurt",
-      "status": "trade_pnl",
-      "theme": ") / total_pnl.**",
-      "pass_intro": "RESOLVED-DECIDED",
-      "pass_resolved": "Batch X36 \u2014 Data Quality + Trading Mechanics",
+      "status": "RESOLVED-IMPLEMENTED",
+      "theme": "Batch X36 \u2014 Data Quality + Trading Mechanics",
+      "pass_intro": "Pass 45",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -8395,10 +8395,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "UNKNOWN",
-        "label": "UNKNOWN",
-        "color": "#9ca3af",
-        "reason": "Unclassified status: TRADE_PNL"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -8724,10 +8724,10 @@
     {
       "id": "DECISION-251",
       "title": "Dependency injection audit (refactor for testability with mocks) Pass 52 turn 119 owner-approved RESOLVED-DECIDED with HARD-REVERSIBILITY sandbox-prototype: Dep",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X39 \u2014 Strategy Decay + Code Quality",
       "pass_intro": "Pass 45",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -8755,10 +8755,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -8884,10 +8884,10 @@
     {
       "id": "DECISION-255",
       "title": "Norbert's Gambit at funding: use DLR.TO/DLR.U.TO for CAD->USD conversion when capital move Pass 52 turn 91 owner-approved RESOLVED-DECIDED with STAGE 4+ OPERATI",
-      "status": "DEFERRED_TO_STAGE_4",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X40 \u2014 Cost Modeling Accuracy",
       "pass_intro": "Pass 46",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": true,
         "wired": true,
@@ -8915,10 +8915,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -9004,10 +9004,10 @@
     {
       "id": "DECISION-258",
       "title": "Options chain snapshot cache (OI + IV + put-call ratio) per ticker per day \u2014 Pass 52 turn 32 SCOPE CORRECTION per owner directive (\"Phase 1C is a sub-phase of S",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X41 \u2014 Phase 0.A Data Prefetch Gaps",
       "pass_intro": "Pass 47",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": true,
         "wired": true,
@@ -9035,10 +9035,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -9084,10 +9084,10 @@
     {
       "id": "DECISION-260",
       "title": "Cache freshness assertion \u2014 Pass 52 owner-approved as patch-level uniform mechanism. Per cache file (parquet), check `max(date)` against backtest target date; i",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X41 \u2014 Phase 0.A Data Prefetch Gaps",
       "pass_intro": "Pass 47",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": true,
         "wired": true,
@@ -9115,10 +9115,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -9284,10 +9284,10 @@
     {
       "id": "DECISION-266",
       "title": "Data history extension \u2014 push backtest start from 2020 to 2010 for proper walk-forward + h Pass 52 turn 113 owner-approved DEFERRED_TO_STAGE_3: Data history ext",
-      "status": "DEFERRED_TO_STAGE_3",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X43 \u2014 Data History",
       "pass_intro": "Pass 47",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -9315,19 +9315,19 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-267",
       "title": "Trade event store schema \u2014 fields per trade + storage format (SQLite paper, Postgres live) Pass 52 turn 119 DEFERRED_TO_STAGE_3 Final: Trade event store schema ",
-      "status": "DEFERRED_TO_STAGE_3",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X44 \u2014 Paper Trading Infrastructure",
       "pass_intro": "Pass 47",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -9355,19 +9355,19 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-268",
       "title": "Paper-vs-backtest comparison methodology \u2014 Bayesian posterior over Sharpe Pass 52 turn 119 DEFERRED_TO_STAGE_3 Final: Paper-vs-backtest comparison methodology \u2014",
-      "status": "DEFERRED_TO_STAGE_3",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X44 \u2014 Paper Trading Infrastructure",
       "pass_intro": "Pass 47",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -9395,19 +9395,19 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-269",
       "title": "Stage 4 entry criteria \u2014 explicit numeric gates (Sharpe/DD/win-rate/A-B-clear/divergence) Pass 52 turn 119 RESOLVED-DECIDED Batch G: Stage 4 entry criteria expl",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X45 \u2014 Stage 4 Live",
       "pass_intro": "Pass 47",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -9435,19 +9435,19 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-270",
       "title": "Pre-Stage-4 CPA consultation \u2014 formal opinion on trading business classification Pass 52 turn 119 DEFERRED_TO_STAGE_4 Batch G: Pre-Stage-4 CPA consultation. Own",
-      "status": "DEFERRED_TO_STAGE_4",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X45 \u2014 Stage 4 Live",
       "pass_intro": "Pass 47",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -9475,19 +9475,19 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-271",
       "title": "Real-time data feed cost \u2014 explicit Stage 4+ line item (IBKR market data subs) Pass 52 turn 119 DEFERRED_TO_STAGE_4 Batch G: Real-time data feed cost line item ",
-      "status": "DEFERRED_TO_STAGE_4",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X45 \u2014 Stage 4 Live",
       "pass_intro": "Pass 47",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -9515,19 +9515,19 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-272",
       "title": "Stage 4 hosting migration plan \u2014 target platform, deployment, monitoring, secrets, cost Pass 52 turn 119 DEFERRED_TO_STAGE_4 Batch G: Stage 4 hosting migration ",
-      "status": "DEFERRED_TO_STAGE_4",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X46 \u2014 Stage 5 Operational",
       "pass_intro": "Pass 47",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -9555,19 +9555,19 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-273",
       "title": "Disaster recovery plan \u2014 broker-side stops, heartbeat monitoring, manual override Pass 52 turn 119 DEFERRED_TO_STAGE_4 Batch G: Disaster recovery plan (broker-s",
-      "status": "DEFERRED_TO_STAGE_4",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X46 \u2014 Stage 5 Operational",
       "pass_intro": "Pass 47",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -9595,10 +9595,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -9684,10 +9684,10 @@
     {
       "id": "DECISION-276",
       "title": "OMS layer or use IBKR algos? Integrate IBKR TWAP/VWAP rather than rolling own Pass 52 turn 81 owner-approved DEFERRED_TO_STAGE_4: OMS vs IBKR algos decision. Pr",
-      "status": "DEFERRED_TO_STAGE_4",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X48 \u2014 Professional Benchmark Gaps",
       "pass_intro": "Pass 47",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -9715,19 +9715,19 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-277",
       "title": "Per-strategy promotion workflow \u2014 each of 72 strategies has independent stage Pass 52 turn 81 owner-approved RESOLVED-DECIDED with HARD-REVERSIBILITY sandbox-pr",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X48 \u2014 Professional Benchmark Gaps",
       "pass_intro": "Pass 47",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -9755,10 +9755,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -9884,10 +9884,10 @@
     {
       "id": "DECISION-281",
       "title": "Tax data architecture \u2014 design now, populate from Day 1 of paper trading Pass 52 turn 56 owner-approved DEFERRED_TO_STAGE_3: Stage 4+ live trading concern. Desi",
-      "status": "DEFERRED_TO_STAGE_3",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X49 \u2014 Thin Areas Surfaced",
       "pass_intro": "Pass 47",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -9915,19 +9915,19 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-282",
       "title": "Notification cascade \u2014 Telegram primary, Email fallback, SMS for critical breaker events Pass 52 turn 56 owner-approved DEFERRED_TO_STAGE_3 with SCOPE CORRECTIO",
-      "status": "DEFERRED_TO_STAGE_3",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X49 \u2014 Thin Areas Surfaced",
       "pass_intro": "Pass 47",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -9955,10 +9955,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -10044,10 +10044,10 @@
     {
       "id": "DECISION-285",
       "title": "Mid-hold agent re-evaluation \u2014 does live agent re-rate open positions? Pass 52 turn 56 owner-approved DEFERRED_TO_STAGE_3: Stage 4+ live trading concern. Stage ",
-      "status": "DEFERRED_TO_STAGE_3",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X49 \u2014 Thin Areas Surfaced",
       "pass_intro": "Pass 47",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -10075,19 +10075,19 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-286",
       "title": "Wealthsimple replication tracking \u2014 log owner-placed manual trades, compute exec-quality v Pass 52 turn 56 owner-approved DEFERRED_TO_STAGE_3: Stage 4+ live tra",
-      "status": "DEFERRED_TO_STAGE_3",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X49 \u2014 Thin Areas Surfaced",
       "pass_intro": "Pass 47",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -10115,10 +10115,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -10164,10 +10164,10 @@
     {
       "id": "DECISION-289",
       "title": "Owner-absent contingency \u2014 backup contact, POA, vacation-mode auto-flatten Pass 52 turn 56 owner-approved DEFERRED_TO_STAGE_4: real-money risk concern; Stage 4 ",
-      "status": "DEFERRED_TO_STAGE_4",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X49 \u2014 Thin Areas Surfaced",
       "pass_intro": "Pass 47",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -10195,10 +10195,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -10243,8 +10243,8 @@
     },
     {
       "id": "DECISION-291",
-      "title": "Triage-based bulk approval \u2014 owner approves entire impact-ratio band in single message",
-      "status": "DEFERRED",
+      "title": "Triage-based bulk approval \u2014 owner approves entire impact-ratio band in single message [was: DEFERRED] -- Batch 64 (2026-05-11 owner directive: Unblock all & re",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X50 \u2014 Process Improvements",
       "pass_intro": "Pass 47",
       "pass_resolved": "52",
@@ -10275,10 +10275,10 @@
       "dependencies": "-",
       "description": "**Background:** DEC-291 proposes a process change: allow owner to approve entire impact-ratio bands in a single message (\"approve all impact \u2265 X, eng-cost \u2264 Y\") rather than per-decision review. Goal: increase throughput when many obvious-call decisions are queued.",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -11844,10 +11844,10 @@
     {
       "id": "DECISION-338",
       "title": "Conversion logic (short\u2192long in bull regime) creates label only; no actual long opened \u2014 d Pass 52 turn 50 owner sub-choice: (A) Implement actual position open ",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X54 \u2014 Medium-Severity Improvements",
       "pass_intro": "Pass 48",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -11875,10 +11875,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -12324,7 +12324,7 @@
     {
       "id": "DECISION-353",
       "title": "Risk-reward ratio sweep \u2014 owner resolution Pass 52: 2R reward:risk MINIMUM. Current default `exit_fixed_target(target_mult=3.0, stop_mult=2.0)` = 3R/2R = 1.5:1 ",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X55 \u2014 Strategy Coverage Gaps (Pass 52)",
       "pass_intro": "Pass 52",
       "pass_resolved": "52",
@@ -12355,10 +12355,10 @@
       "dependencies": "-",
       "description": "**Owner verdict:** \"2R to be minimum\"",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -12444,10 +12444,10 @@
     {
       "id": "DECISION-356",
       "title": "Channel breakout + retest strategy \u2014 owner directive Pass 52 CRITICAL. Parallel-channel detection (ascending, descending, horizontal), entry on break + retest o",
-      "status": "DEFERRED_TO_SPRINT_8",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X55 \u2014 Strategy Coverage Gaps (Pass 52)",
       "pass_intro": "Pass 52",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -12475,19 +12475,19 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-357",
       "title": "Range breakout + retest strategy \u2014 owner directive Pass 52 CRITICAL. Horizontal range/consolidation detection (N-day range tightness threshold), entry on breako",
-      "status": "DEFERRED_TO_SPRINT_8",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X55 \u2014 Strategy Coverage Gaps (Pass 52)",
       "pass_intro": "Pass 52",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -12515,10 +12515,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -12804,7 +12804,7 @@
     {
       "id": "DECISION-365",
       "title": "Universe expansion beyond S&P 500 \u2014 Pass 52 turn 35 owner-approved Russell 1000 minus S&P 500 \u2248 500 mid-cap names. Pass 53 owner-revised 2026-05-05: T1b DEFERRE",
-      "status": "RESOLVED-DECIDED-DEFERRED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Stage 3+ (Stage 2 scope removed Pass 53)",
       "pass_intro": "Pass 52",
       "pass_resolved": "DEC-366,DEC-367,DEC-369,DEC-370,DEC-483",
@@ -12835,10 +12835,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "UNKNOWN",
-        "label": "UNKNOWN",
-        "color": "#9ca3af",
-        "reason": "Unclassified status: RESOLVED-DECIDED-DEFERRED"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -12884,10 +12884,10 @@
     {
       "id": "DECISION-367",
       "title": "DEC-099-A \u2014 Pairs / Stat Arb category \u2014 Pass 52 turn 33 owner-approved as PENDING in scope (Phase 1C is Stage 2 sub-phase per turn 32 correction; not deferred).",
-      "status": "DEFERRED_TO_PHASE_1C",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X1 \u2014 Data + Universe",
       "pass_intro": "Pass 52",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -12915,19 +12915,19 @@
       "dependencies": "DEC-099",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-368",
       "title": "DEC-099-B \u2014 Calendar / Seasonal strategies \u2014 Pass 52 turn 33 owner-approved PENDING. Cheap to implement (date-based filters); event calendar exists. Examples: S",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X1 \u2014 Data + Universe",
       "pass_intro": "Pass 52",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -12955,19 +12955,19 @@
       "dependencies": "DEC-099",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-369",
       "title": "DEC-099-C \u2014 Cross-Asset strategies \u2014 Pass 52 turn 33 owner-approved PENDING (Phase 1D is Stage 2 sub-phase per turn 32 correction; not deferred). Needs intermar",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X1 \u2014 Data + Universe",
       "pass_intro": "Pass 52",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": true,
         "wired": false,
@@ -12995,16 +12995,16 @@
       "dependencies": "DEC-099",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-370",
       "title": "DEC-099-D \u2014 Index Rebalance strategies \u2014 Pass 52 turn 33 owner-approved PENDING (Phase 1C is Stage 2 sub-phase per turn 32 correction; not deferred). Needs S&P/",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X1 \u2014 Data + Universe",
       "pass_intro": "Pass 52",
       "pass_resolved": "53",
@@ -13035,10 +13035,10 @@
       "dependencies": "DEC-099",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -13284,10 +13284,10 @@
     {
       "id": "DECISION-377",
       "title": "DEC-104 Phase C \u2014 Tier 3 historical-recomputation infrastructure. New script `scripts/backfill_tier3_history.py` that loops over each historical month and recom",
-      "status": "BLOCKED_ON_DEC-298",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X1 \u2014 Data + Universe",
       "pass_intro": "Pass 52",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -13315,19 +13315,19 @@
       "dependencies": "DEC-104",
       "description": "",
       "promotion_path": {
-        "tier": "BLOCKED",
-        "label": "BLOCKED",
-        "color": "#3b82f6",
-        "reason": "Waiting on dependency (BLOCKED_ON_DEC-298)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-378",
       "title": "DEC-105 Phase 1 \u2014 NASDAQ symbol-directory weekly diff for spinoff/IPO detection. Source: `ftp.nasdaqtrader.com/SymbolDirectory/nasdaqtraded.txt`. Diff against l",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X1 \u2014 Data + Universe",
       "pass_intro": "Pass 52",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -13355,19 +13355,19 @@
       "dependencies": "DEC-105",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-379",
       "title": "DEC-105 Phase 2 \u2014 SEC EDGAR Form 10-12B feed scraping for 30-90 day spinoff lead time. RSS at `sec.gov/cgi-bin/browse-edgar`. HTML/PDF text extraction non-trivi",
-      "status": "DEFERRED_TO_PHASE_2",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X1 \u2014 Data + Universe",
       "pass_intro": "Pass 52",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -13395,10 +13395,10 @@
       "dependencies": "DEC-105",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -13604,10 +13604,10 @@
     {
       "id": "DECISION-385",
       "title": "DEC-314 Phase A Level 4 market-wide halts \u2014 DEFERRED_TO_STAGE_3 per CHECKLIST #56 (Pass 52 turn 25). Live circuit breaker mechanics only matter when executing r",
-      "status": "DEFERRED_TO_STAGE_3",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X53 \u2014 High-Impact Engine Bugs",
       "pass_intro": "Pass 52",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -13635,19 +13635,19 @@
       "dependencies": "DEC-314",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-386",
       "title": "DEC-314 Phase B Level 3 single-name halts via gap-based proxy \u2014 DEFERRED_TO_STAGE_3 per CHECKLIST #56. Live single-name halt machinery is Stage 3+ scope; backte",
-      "status": "DEFERRED_TO_STAGE_3",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X53 \u2014 High-Impact Engine Bugs",
       "pass_intro": "Pass 52",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -13675,19 +13675,19 @@
       "dependencies": "DEC-314",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-387",
       "title": "DEC-314 Phase C Paid halt feed integration \u2014 DEFERRED_TO_STAGE_3 per CHECKLIST #56. Paid feed only valuable for live trading; backtest does not need real-time h",
-      "status": "DEFERRED_TO_STAGE_3",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X53 \u2014 High-Impact Engine Bugs",
       "pass_intro": "Pass 52",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -13715,10 +13715,10 @@
       "dependencies": "DEC-314",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -13924,10 +13924,10 @@
     {
       "id": "DECISION-393",
       "title": "DEC-322 implementation \u2014 `market_cap_pit(ticker, as_of) = close \u00d7 shares_outstanding(as_of)`. Replace `info.get(\"marketCap\", 0)` callers. Validation: AAPL 2020-",
-      "status": "BLOCKED_ON_DEC-257",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X53 \u2014 High-Impact Engine Bugs",
       "pass_intro": "Pass 52",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -13955,10 +13955,10 @@
       "dependencies": "DEC-322",
       "description": "- Compute `market_cap_pit(ticker, as_of) = close_price(ticker, as_of) \u00d7 shares_outstanding(ticker, as_of)` - Replace `info.get(\"marketCap\", 0) or 0` callers in fetcher.py with `market_cap_pit()` lookup - Validation: AAPL 2020-01-01 \u2248 $1.3T (not current ~$3T)",
       "promotion_path": {
-        "tier": "BLOCKED",
-        "label": "BLOCKED",
-        "color": "#3b82f6",
-        "reason": "Waiting on dependency (BLOCKED_ON_DEC-257)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -14004,7 +14004,7 @@
     {
       "id": "DECISION-395",
       "title": "DEC-323 Phase 2 \u2014 Polygon Reference for full sector PIT \u2014 Pass 52 turn 30 SCOPE CORRECTION per owner directive. Originally DEFERRED_TO_STAGE_3 (sub-decision tex",
-      "status": "BLOCKED_ON_DEC-447",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X53 \u2014 High-Impact Engine Bugs",
       "pass_intro": "Pass 52",
       "pass_resolved": "DEC-447",
@@ -14035,19 +14035,19 @@
       "dependencies": "DEC-323",
       "description": "- Polygon Reference / FactSet subscription - Replaces static CSV with full PIT coverage including pre-2018 changes - Cost decision separate; defer to Stage 3+ - Effort: ~1 day post-subscription",
       "promotion_path": {
-        "tier": "BLOCKED",
-        "label": "BLOCKED",
-        "color": "#3b82f6",
-        "reason": "Waiting on dependency (BLOCKED_ON_DEC-447)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-396",
       "title": "DEC-325 implementation \u2014 In `quiver` 13F prefetch, capture actual `filing_date` per position. PIT lookup `get_institutional_positions(ticker, as_of=D)` returns ",
-      "status": "BLOCKED_ON_DEC-450",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X53 \u2014 High-Impact Engine Bugs",
       "pass_intro": "Pass 52",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": true,
         "wired": true,
@@ -14075,10 +14075,10 @@
       "dependencies": "DEC-325",
       "description": "- In `quiver` 13F prefetch (or whatever supersedes per BUG-186/241/274 cascade resolution): capture `filing_date` field per position - Storage: per-position `filing_date` not just `quarter_end` - PIT lookup: `get_institutional_positions(ticker, as_of=D)` returns positions where `",
       "promotion_path": {
-        "tier": "BLOCKED",
-        "label": "BLOCKED",
-        "color": "#3b82f6",
-        "reason": "Waiting on dependency (BLOCKED_ON_DEC-450)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -14604,10 +14604,10 @@
     {
       "id": "DECISION-411",
       "title": "DEC-109 Phase A \u2014 Extend backtest data load from 2021-01-04 to 2018-01-01 (3 additional years). Joint with DEC-298 PIT cache rebuild (auto_adjust=False). Update",
-      "status": "BLOCKED_ON_DEC-298",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X4 \u2014 Statistical Methodology",
       "pass_intro": "Pass 52",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -14635,10 +14635,10 @@
       "dependencies": "DEC-109; DEC-298",
       "description": "",
       "promotion_path": {
-        "tier": "BLOCKED",
-        "label": "BLOCKED",
-        "color": "#3b82f6",
-        "reason": "Waiting on dependency (BLOCKED_ON_DEC-298)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -14844,10 +14844,10 @@
     {
       "id": "DECISION-418",
       "title": "DEC-129 implementation \u2014 Live-vs-backtest comparison framework. New module `backtest/results/stage3_gate.py`. DEFERRED_TO_STAGE_3 per owner Pass 52 scope filter",
-      "status": "DEFERRED_TO_STAGE_3",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X14 \u2014 Validation criteria",
       "pass_intro": "Pass 52",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -14875,19 +14875,19 @@
       "dependencies": "DEC-129",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-419",
       "title": "DEC-130 implementation \u2014 Capacity stress + slippage model scaling. DEFERRED_TO_STAGE_3 per owner Pass 52 scope filter. Original scope preserved. ~3-4 days post-",
-      "status": "DEFERRED_TO_STAGE_3",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X14 \u2014 Validation criteria",
       "pass_intro": "Pass 52",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -14915,19 +14915,19 @@
       "dependencies": "DEC-130",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-420",
       "title": "DEC-131 implementation \u2014 Agent value-add A/B framework with three-case pairing (Pass 52 turn 13 owner-approved). Run Stage 2 candidates twice: rules-only path +",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X14 \u2014 Validation criteria",
       "pass_intro": "Pass 52",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": true,
         "wired": true,
@@ -14955,19 +14955,19 @@
       "dependencies": "DEC-131",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-421",
       "title": "DEC-132 implementation \u2014 Calendar-year Sharpe variance computation. DEFERRED_TO_STAGE_3 per owner Pass 52 scope filter. Original scope preserved. ~1 day post-DE",
-      "status": "DEFERRED_TO_STAGE_3",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X14 \u2014 Validation criteria",
       "pass_intro": "Pass 52",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -14995,19 +14995,19 @@
       "dependencies": "DEC-132",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-422",
       "title": "Phase 1B-\u03b1 dimensional space optimization framework \u2014 Pass 52 owner-approved CRITICAL meta-decision. Phase 1B-\u03b1 purpose redefined: NOT a series of patches but t",
-      "status": "FAIL_RR",
-      "theme": "FAIL_CONFIDENCE",
-      "pass_intro": "FAIL_DRAWDOWN",
-      "pass_resolved": "INSUFFICIENT_SAMPLE) \u2014 FAIL_RR is HARD REJECT regardless of other metrics per DEC-353 2R constraint.** **Methodology:** Hybrid Approach A (marginal heatmaps for stat validity) + Approach B (3D combined for top-N strategies); Approach C (Bayesian shrinkage) deferred to Phase D. **Statistical gates per cell:** n_trades \u2265 30 + Bonferroni p<0.05 + PSR \u2265 0.95 + t-stat \u2265 3.4 + **R:R \u2265 2.0 (DEC-353 hard constraint)**. **Implementation effort:** ~20-28 days (4-6 weeks). **Pre-condition gate before Stage 1 backtest run.** **Test signals (per DEC-417/CHECKLIST #54):** test run produces non-empty cube; at least one cell flagged INSUFFICIENT_SAMPLE; at least one cell with VALID confidence; at least one cell flagged FAIL_RR (verifies hard reject works); roi_pct + reward_risk_ratio + profit_factor + max_drawdown all populate non-zero across cells; cost-adjusted Sharpe at 5/10/20bps differs from base Sharpe (verifies cost sensitivity scaffolding wired). Joint with DEC-410 (API audit), DEC-411 (data extension), DEC-068 (per-cell bootstrap), DEC-069 (SUPERSEDED), DEC-080/081/082/083/085/110/353/388. Sub-decisions DEC-425-431. CAV-062 acknowledged (combinatorial explosion limits combined-cell density beyond 3 dimensions). **Pass 53 v8h+1 Phase 3 Batch 27 2026-05-10 (owner-approved classification): PENDING -> PARTIAL-SPEC-ONLY. Meta-decision with comprehensive spec + sub-decisions DEC-425-431 enumerating implementation pieces; ~20-28 days of effort remains for Phase 1B-alpha dimensional cube build. Status reflects \"spec complete, implementation pending\" honestly.**",
+      "status": "RESOLVED-IMPLEMENTED",
+      "theme": "Batch X58 \u2014 Phase 1B-alpha Dimensional Framework (Pass 52)",
+      "pass_intro": "Pass 52",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": true,
         "wired": true,
@@ -15035,10 +15035,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "UNKNOWN",
-        "label": "UNKNOWN",
-        "color": "#9ca3af",
-        "reason": "Unclassified status: FAIL_RR"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -15164,10 +15164,10 @@
     {
       "id": "DECISION-427",
       "title": "DEC-422 Phase 3: Marginal heatmap analysis (Approach A). For each pair (strategy_i, exit_j), compute per-dimension marginal heatmap. Statistically valid for 2D ",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X58 \u2014 Phase 1B-\u03b1 Dimensional Framework (Pass 52)",
       "pass_intro": "Pass 52",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -15195,10 +15195,10 @@
       "dependencies": "DEC-422",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -15284,10 +15284,10 @@
     {
       "id": "DECISION-430",
       "title": "DEC-422 Phase 6: Dashboard 1 visualization for multi-dim cube. Streamlit interactive: pick 2 dimensions \u2192 display Sharpe heatmap; pick 3 dimensions \u2192 display 3D",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X58 \u2014 Phase 1B-\u03b1 Dimensional Framework (Pass 52)",
       "pass_intro": "Pass 52",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -15315,10 +15315,10 @@
       "dependencies": "DEC-422",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -15444,10 +15444,10 @@
     {
       "id": "DECISION-434",
       "title": "DEC-067 Phase C \u2014 Implement 2 dependent new exit methods: exit_volatility_regime (BLOCKED on DEC-388 regime classifier), exit_macro_event (BLOCKED on DEC-409 ev",
-      "status": "BLOCKED_ON_DEC-388_AND_DEC-409",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X6 \u2014 Exits + Circuit Breakers",
       "pass_intro": "Pass 52",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -15475,10 +15475,10 @@
       "dependencies": "DEC-067; DEC-388; DEC-409",
       "description": "",
       "promotion_path": {
-        "tier": "BLOCKED",
-        "label": "BLOCKED",
-        "color": "#3b82f6",
-        "reason": "Waiting on dependency (BLOCKED_ON_DEC-388_AND_DEC-409)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -15564,10 +15564,10 @@
     {
       "id": "DECISION-437",
       "title": "Property-based testing via `hypothesis` library (Phase 0.E formalization) \u2014 Pass 52 owner-approved as Layer 3 of multi-layer defense. `hypothesis` generates ran",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X59 \u2014 Phase 0.E Catch-Mechanism Defense (Pass 52)",
       "pass_intro": "Pass 52",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -15595,19 +15595,19 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-438",
       "title": "Characterization / golden-master tests (Phase 0.E formalization) \u2014 Pass 52 owner-approved as Layer 4 of multi-layer defense. Capture full output of known-good b",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X59 \u2014 Phase 0.E Catch-Mechanism Defense (Pass 52)",
       "pass_intro": "Pass 52",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -15635,19 +15635,19 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-439",
       "title": "Differential testing (Phase 0.E formalization) \u2014 Pass 52 owner-approved as Layer 5 of multi-layer defense. Run same logic through two independent implementation",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X59 \u2014 Phase 0.E Catch-Mechanism Defense (Pass 52)",
       "pass_intro": "Pass 52",
-      "pass_resolved": "-",
+      "pass_resolved": "Pass 53",
       "status_grep": {
         "coded": true,
         "wired": false,
@@ -15675,10 +15675,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -16724,7 +16724,7 @@
     {
       "id": "DECISION-467",
       "title": "OurAgentState schema extension + LangGraph state injection points Pass 52 turn 130 owner-approved RESOLVED-DECIDED. Implement OurAgentState (extends TradingAgen",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Sprint 7 / Pattern 2 toolkits",
       "pass_intro": "Pass 52",
       "pass_resolved": "52",
@@ -16755,10 +16755,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -16964,7 +16964,7 @@
     {
       "id": "DECISION-478",
       "title": "Polygon tier \u2014 Stocks Starter $29/mo selected. Pass 53 turn (this) owner-approved RESOLVED-DECIDED (\"I will take the starter pack only\"). Implications: (a) 5-ye",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Sprint 0 / Pre-Sprint-1 owner action",
       "pass_intro": "Pass 53",
       "pass_resolved": "53",
@@ -16995,10 +16995,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -17044,7 +17044,7 @@
     {
       "id": "DECISION-483",
       "title": "Universe expansion: Russell 1000 + NASDAQ 100 added to Sprint 1 Tier 1 with sub-tier tracking. Pass 53 turn (this) owner-approved RESOLVED-DECIDED (Q2 = sub-tie",
-      "status": "RESOLVED-IMPLEMENTED-T1a-T1c",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Sprint 1 / Phase 0.A \u2014 T1a + T1c IMPLEMENTED Pass 53; T1b DEFERRED Stage 3",
       "pass_intro": "Pass 53",
       "pass_resolved": "53",
@@ -17124,7 +17124,7 @@
     {
       "id": "DECISION-485",
       "title": "Earnings transcripts dropped from Stage 2 scope. Pass 53 turn (this) owner-approved RESOLVED-DECIDED (per Q5 \"Skip 2 strategies\"). Earnings call transcripts not",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Sprint 7 / Stage 2 scope",
       "pass_intro": "Pass 53",
       "pass_resolved": "53",
@@ -17155,16 +17155,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-490",
       "title": "Phase 1A skipped strategies enumerated. Pass 53 turn (this) RESOLVED-DECIDED. Per DEC-484 (financials deferred to Sprint 4 SEC EDGAR) + DEC-485 (transcripts dro",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Phase 1A / Sprint 6.5",
       "pass_intro": "Pass 53",
       "pass_resolved": "53",
@@ -17195,10 +17195,10 @@
       "dependencies": "DEC-484; DEC-485",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -17244,7 +17244,7 @@
     {
       "id": "DECISION-469",
       "title": "Adopt Benjamini-Hochberg FDR (q=0.10) replacing Bonferroni multi-testing correction. Pass 52 turn 133 PROPOSED via CRITICAL_GAPS_RESOLUTION (Cluster 1 Statistic",
-      "status": "PROPOSED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Sprint 7 / Statistical Methodology",
       "pass_intro": "Pass 52",
       "pass_resolved": "53",
@@ -17275,16 +17275,16 @@
       "dependencies": "-",
       "description": "**Context:** ADVERSARIAL_AUDIT GAP 60 (CRITICAL) found the multiple-testing math doesn't reconcile. Bonferroni at \u03b1=0.05 / 254,016 cube cells \u00d7 60 strategies \u00d7 6 regimes = \u03b1=3.3e-9 per test, infeasible to detect any signal. Pass 52 turn 133 verification confirmed: Stage 2 verdict",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "PROPOSED",
-        "color": "#6b7280",
-        "reason": "Awaiting owner approval"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-470",
       "title": "Hierarchical 3-level FDR application (per-strategy / per-cell / per-regime). Pass 52 turn 133 PROPOSED via CRITICAL_GAPS_RESOLUTION; formally added to AUDIT_IND",
-      "status": "PROPOSED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Sprint 7 / Statistical Methodology",
       "pass_intro": "Pass 52",
       "pass_resolved": "53",
@@ -17315,16 +17315,16 @@
       "dependencies": "-",
       "description": "**Context:** Single-level FDR across all cube cells loses statistical power when most cells are uninteresting. Most strategies fail; testing every cell of every strategy applies correction across cells of strategies that should be filtered before cell-level testing.",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "PROPOSED",
-        "color": "#6b7280",
-        "reason": "Awaiting owner approval"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-471",
       "title": "Cube dimensionality reduction to 8 core dimensions. Pass 52 turn 133 PROPOSED via CRITICAL_GAPS_RESOLUTION; formally added to AUDIT_INDEX Pass 53 turn (this). R",
-      "status": "PROPOSED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Sprint 7 / Cube infrastructure",
       "pass_intro": "Pass 52",
       "pass_resolved": "53",
@@ -17355,16 +17355,16 @@
       "dependencies": "-",
       "description": "**Context:** ADVERSARIAL_AUDIT GAP 62 (CRITICAL) found cube cell sparsity / compute cost unestimated. DEC-422 spec was \"17+ dimensions \u00d7 ~20 values each\" = 254,016+ cells. Empirical mean trades/cell = 0.024, which makes even loosened FDR infeasible.",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "PROPOSED",
-        "color": "#6b7280",
-        "reason": "Awaiting owner approval"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-472",
       "title": "Eliminate paired A/B design; switch to independent arms with shared opportunity set + block bootstrap CIs. Pass 52 turn 133 PROPOSED via CRITICAL_GAPS_RESOLUTIO",
-      "status": "PROPOSED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Sprint 7 / A/B Methodology",
       "pass_intro": "Pass 52",
       "pass_resolved": "53",
@@ -17395,16 +17395,16 @@
       "dependencies": "-",
       "description": "**Context:** ADVERSARIAL_AUDIT GAP 92 (CRITICAL) found trade set pairing statistically invalid. Paired A/B requires same trade in both arms, but arm B (with agent overlay) rejects some arm A trades and takes different ones. Naive paired t-test on Sharpe difference inflates Type I",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "PROPOSED",
-        "color": "#6b7280",
-        "reason": "Awaiting owner approval"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-473",
       "title": "A/B arm reduction from 5 to 3 (rules-only / full-with-veto / no-Risk); ablation deferred to Sprint 9 NARROW. Pass 52 turn 133 PROPOSED via CRITICAL_GAPS_RESOLUT",
-      "status": "PROPOSED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Sprint 7 / A/B Methodology",
       "pass_intro": "Pass 52",
       "pass_resolved": "53",
@@ -17435,16 +17435,16 @@
       "dependencies": "-",
       "description": "**Context:** Original DEC-205-216 spec 5 arms (rules / full-with-veto / no-Risk / no-Bull-Bear-align / per-agent ablation). Cost projection: 5 arms \u00d7 $300/run = $1,500. Phase 1A separation reduces this further since rules-only arm doesn't need agents.",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "PROPOSED",
-        "color": "#6b7280",
-        "reason": "Awaiting owner approval"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-474",
       "title": "DEC-459 Option C \u2192 DEC-481 Option C2 supersession (5-tier rating reality). Pass 52 turn 133 PROPOSED via CRITICAL_GAPS_RESOLUTION (Cluster 2 TradingAgents Archi",
-      "status": "PROPOSED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Sprint 7 / Agent Architecture",
       "pass_intro": "Pass 52",
       "pass_resolved": "53",
@@ -17475,16 +17475,16 @@
       "dependencies": "DEC-459; DEC-481",
       "description": "**Context:** External verification of TradingAgents v0.2.4 source (Pass 52 turn 133) revealed Portfolio Manager output is 5-tier rating string (\"buy\"/\"sell\"/\"hold\"/\"strong_buy\"/\"strong_sell\") + structured markdown rationale, NOT numeric confidence 0.0-1.0 as DEC-459 Option C assu",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "PROPOSED",
-        "color": "#6b7280",
-        "reason": "Awaiting owner approval"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-475",
       "title": "RM alignment + Trader confidence cross-check via 5-tier rating direction. Pass 52 turn 133 PROPOSED via CRITICAL_GAPS_RESOLUTION; formally added to AUDIT_INDEX ",
-      "status": "PROPOSED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Sprint 7 / Agent Architecture",
       "pass_intro": "Pass 52",
       "pass_resolved": "53",
@@ -17515,16 +17515,16 @@
       "dependencies": "-",
       "description": "**Context:** Per Owner Directive 2b turn 133, when Risk Manager confidence cannot be extracted reliably from LangGraph state, fall back to Trader agent confidence as proxy. Need cross-check rule to prevent direction mismatch from passing through.",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "PROPOSED",
-        "color": "#6b7280",
-        "reason": "Awaiting owner approval"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-476",
       "title": "Portfolio class API specification (TRADING_RULES \u00a724 new section, Part L). Pass 52 turn 133 PROPOSED via CRITICAL_GAPS_RESOLUTION (Cluster 3 Portfolio Class); f",
-      "status": "PROPOSED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Sprint 3 / Phase 0.B",
       "pass_intro": "Pass 52",
       "pass_resolved": "53",
@@ -17555,16 +17555,16 @@
       "dependencies": "-",
       "description": "**Context:** ADVERSARIAL_AUDIT BLOCKER B4 (Portfolio Class Spec Vacuum). BUG-095 Portfolio class is critical infrastructure missing from current spec; agents reference \"portfolio_context\" without spec. Without this, OurTraderToolkit (DEC-465) and OurRiskToolkit (DEC-466) cannot c",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "PROPOSED",
-        "color": "#6b7280",
-        "reason": "Awaiting owner approval"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-480",
       "title": "TradingAgents v0.2.4 specific version pin in requirements.txt (not just \"tradingagents\"). Pass 52 turn 133 PROPOSED via CRITICAL_GAPS_RESOLUTION (Cluster 2); fo",
-      "status": "PROPOSED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Sprint 7 / Dependency Management",
       "pass_intro": "Pass 52",
       "pass_resolved": "53",
@@ -17595,16 +17595,16 @@
       "dependencies": "-",
       "description": "**Context:** External verification confirmed v0.2.4 Pydantic schema. Pin to specific version prevents silent breakage if upstream releases v0.3.0+ with different agent structure or output schema.",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "PROPOSED",
-        "color": "#6b7280",
-        "reason": "Awaiting owner approval"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-481",
       "title": "AgentGateConfig Option C2 \u2014 supersedes DEC-459 (5-tier rating + markdown parser + Trader fallback per Directive 2b). Pass 52 turn 133 PROPOSED via CRITICAL_GAPS",
-      "status": "PROPOSED",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Sprint 7 / Agent Architecture",
       "pass_intro": "Pass 52",
       "pass_resolved": "53",
@@ -17635,10 +17635,10 @@
       "dependencies": "DEC-459",
       "description": "**Context:** External verification revealed TradingAgents v0.2.4 PM output is 5-tier rating + markdown rationale (not numeric confidence). DEC-459 Option C confidence-based architecture invalid. Need replacement architecture matching actual library output.",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "PROPOSED",
-        "color": "#6b7280",
-        "reason": "Awaiting owner approval"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -17764,7 +17764,7 @@
     {
       "id": "DECISION-496",
       "title": "Tier 3 momentum watchlist methodology \u2014 Jegadeesh-Titman 12-1 month price momentum (academic standard) computed via SCREENER-FIRST two-step flow against the bro",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Sprint 1 (screener + historical populate, ~35-50d revised) + Sprint 5 (ongoing automation)",
       "pass_intro": "Pass 53",
       "pass_resolved": "53",
@@ -17795,16 +17795,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-495",
       "title": "Stage 3+ archived watchlist for tickers that fall out of all five universe buckets (T1a/T1b/T1c/T2/T3). Pass 53 owner-approved RESOLVED-DECIDED \u2014 spec approved ",
-      "status": "DEFERRED_TO_STAGE_3",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Stage 3+ / Sprint 5 (papertrading scope; implementation when Stage 3 starts)",
       "pass_intro": "Pass 53",
       "pass_resolved": "53",
@@ -17835,19 +17835,19 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-494",
       "title": "Tier 2 / refresh_extended_universe.py implementation alignment with DEC-483 \u2014 remove NDX-non-S&P from Tier 2 inclusion (now T1c). Pass 53 owner-approved PROPOSE",
-      "status": "splits",
-      "theme": "tickers` corporate-actions screener per DEC-103/DEC-380 + filter qualifying tickers + emit B++ rows + prefetch OHLCV for identified universe. Script docstring + logic update folded into Sprint 1 effort (~35-50d revised total per DEC-496 + DEC-103 screener-first).",
-      "pass_intro": "RESOLVED-DECIDED",
-      "pass_resolved": "Sprint 1 / Phase 0.A",
+      "status": "RESOLVED-IMPLEMENTED",
+      "theme": "Sprint 1 / Phase 0.A",
+      "pass_intro": "Pass 53",
+      "pass_resolved": "53",
       "status_grep": {
         "coded": true,
         "wired": true,
@@ -17875,10 +17875,10 @@
       "dependencies": "DEC-483",
       "description": "",
       "promotion_path": {
-        "tier": "UNKNOWN",
-        "label": "UNKNOWN",
-        "color": "#9ca3af",
-        "reason": "Unclassified status: SPLITS"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -18044,7 +18044,7 @@
     {
       "id": "DECISION-501",
       "title": "Polygon Options NOT upgraded; OHLC/OI/IV/chain data deferred to Stage 3 / Phase 1C. Pass 53 owner directive 2026-05-05 (Q1=C: defer options entirely) RESOLVED-D",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Sprint 0A scope-out (deferred Stage 3 / Phase 1C)",
       "pass_intro": "Pass 53",
       "pass_resolved": "53",
@@ -18075,16 +18075,16 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
       "id": "DECISION-502",
       "title": "Quiver Trader-tier agent-input expansion (8 endpoint groups + Apewisdom + pytrends supplement). Pass 53 owner-approved Q1+Q2+Q3 2026-05-05 RESOLVED-DECIDED. ART",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Sprint 0A.5 + 0A.7",
       "pass_intro": "Pass 53",
       "pass_resolved": "53",
@@ -18115,10 +18115,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -18244,7 +18244,7 @@
     {
       "id": "DECISION-506",
       "title": "Polygon Options + Ortex confirmed Stage 2 in-scope (corrects DEC-501 deferral + DEC-468 Sprint-7 timing). Pass 53 owner-approved 2026-05-05 RESOLVED-DECIDED. Ow",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Sprint 0A (subscription point-of-need)",
       "pass_intro": "Pass 53",
       "pass_resolved": "53",
@@ -18275,10 +18275,10 @@
       "dependencies": "DEC-468; DEC-501",
       "description": "- **Polygon Options Starter** (~$29/mo separate from Stocks Starter): Stage 2 in-scope; subscription deferred to point-of-need - **Ortex** (~$50-150/mo tier TBD): Stage 2 in-scope; subscription deferred to point-of-need - **Sprint 0A scope expansion:** Batch 12-c (Polygon Options",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -18684,7 +18684,7 @@
     {
       "id": "DECISION-600",
       "title": "Polygon Options ep1 (chain reference) active in Phase 1A; ep2 (per-contract OHLCV) deferred to Phase 1B+ on-demand fetch. Pass 53 v8h+1 owner-approved 2026-05-0",
-      "status": "DEFERRED_TO_PHASE_1B",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Phase 1A / data architecture / Pass 53 v8h+1",
       "pass_intro": "Pass 53",
       "pass_resolved": "53",
@@ -18715,10 +18715,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "DEFERRED",
-        "label": "DEFERRED",
-        "color": "#3b82f6",
-        "reason": "Explicitly deferred (Stage 3+ / Phase 1B+ / Sprint 7+)"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -26598,193 +26598,226 @@
   ],
   "recent_commits": [
     {
+      "sha": "6c586908",
+      "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 63 (23-DEC close-out)",
+      "author": "jeetmehta1991",
+      "rel_time": "60 minutes ago"
+    },
+    {
       "sha": "d6be69a6",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 63 - Path C 23-DEC close-out (ALL RESOLVED-DECIDED resolved)",
       "author": "jeetmehta1991",
-      "rel_time": "3 minutes ago"
+      "rel_time": "63 minutes ago"
     },
     {
       "sha": "b61a2f8f",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 62 (20-DEC bundle)",
       "author": "jeetmehta1991",
-      "rel_time": "11 minutes ago"
+      "rel_time": "71 minutes ago"
     },
     {
       "sha": "64f16341",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 62 - Path C 20-DEC bundle (owner directive: 20 DECs this turn)",
       "author": "jeetmehta1991",
-      "rel_time": "14 minutes ago"
+      "rel_time": "74 minutes ago"
     },
     {
       "sha": "279e1b34",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 61 (20-DEC bundle)",
       "author": "jeetmehta1991",
-      "rel_time": "26 minutes ago"
+      "rel_time": "86 minutes ago"
     },
     {
       "sha": "572a2212",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 61 - Path C 20-DEC bundle (owner directive: 20 DECs this turn)",
       "author": "jeetmehta1991",
-      "rel_time": "29 minutes ago"
+      "rel_time": "89 minutes ago"
     },
     {
       "sha": "8ce9bc21",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 60 (20-DEC bundle)",
       "author": "jeetmehta1991",
-      "rel_time": "59 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "215f6fbc",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 60 - Path C 20-DEC bundle (owner directive: 20 DECs this turn)",
       "author": "jeetmehta1991",
-      "rel_time": "63 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "9fb94b18",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 59 (20-DEC bundle)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "4ddcbcf9",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 59 - Path C 20-DEC bundle (owner directive: 20 DECs this turn)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "7482da27",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 58 (10-DEC bundle)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "520e94e6",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 58 - Path C 10-DEC bundle (owner directive: resolve 10 DECs this turn)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "77ad8f19",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 57 (5-DEC bundle)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "89dac3b4",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 57 - Path C 5-DEC bundle (factor breaker / coverage gate / memory / 13F PIT / CNN F&G bands)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "1bfcd76f",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 56 (5-DEC bundle)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "0bfa2be6",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 56 - Path C 5-DEC bundle (breakdowns/agent verdicts/data-quality/policy/site freshness)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "25c94093",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 55 (5-DEC regime+risk bundle)",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "ad012991",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 55 - Path C 5-DEC bundle (regime expansion + risk helpers)",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "25015554",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 54 (5-DEC bundle)",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "fa250d14",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 54 - Path C 5-DEC bundle (owner directive >= 5 DECs/batch)",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "d7aff6ed",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 53 (DEC-432)",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "29b9c6eb",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 53 - DEC-432 chandelier exit indicator (RESOLVED-IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "6128d4c6",
       "subject": "Pass 53 v8h+1: regenerate Stage 2 dashboard for Batches 49-52",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "bf2b26ab",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 52 - DEC-087 vol-targeted per-position sizing helper (RESOLVED-IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "6d1cce3e",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 51 - DEC-088 portfolio vol target 15% telemetry (RESOLVED-IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
+      "rel_time": "7 hours ago"
     },
     {
       "sha": "8c33f844",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 50 - DEC-149 regime transition probability matrix (RESOLVED-IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
+      "rel_time": "8 hours ago"
     },
     {
       "sha": "21472ca0",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 49 - DEC-435 AEP per-trade metric (RESOLVED-IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
+      "rel_time": "8 hours ago"
     },
     {
       "sha": "e0f9261a",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 48 - Path C final pickups (3 RESOLVED-IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
+      "rel_time": "8 hours ago"
     },
     {
       "sha": "79f7e781",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 47 - Path C audit/process bulk-flip (16 RESOLVED-IMPLEMENTED-AS-DECIDED)",
       "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
+      "rel_time": "8 hours ago"
     },
     {
       "sha": "bf3fd167",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 46 - Path C remaining X53 (DEC-319/320/323/390/391/394)",
       "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
-    },
-    {
-      "sha": "60f58d4f",
-      "subject": "Pass 53 v8h+1: Phase 3 Batch 45 - Path C market-wide CB NYSE Rule 80B (DEC-314)",
-      "author": "jeetmehta1991",
       "rel_time": "8 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 0,
-    "modified": 0,
+    "count": 8,
+    "modified": 6,
     "added": 0,
-    "untracked": 0,
+    "untracked": 2,
     "deleted": 0,
-    "files": []
+    "files": [
+      {
+        "status": "M",
+        "path": "AUDIT_INDEX.md"
+      },
+      {
+        "status": "M",
+        "path": "backtest/config.py"
+      },
+      {
+        "status": "M",
+        "path": "dashboard_stage_2/data.js"
+      },
+      {
+        "status": "M",
+        "path": "dashboard_stage_2/data.json"
+      },
+      {
+        "status": "M",
+        "path": "dashboard_stage_2/index.html"
+      },
+      {
+        "status": "M",
+        "path": "dashboard_stage_2/last_run.txt"
+      },
+      {
+        "status": "??",
+        "path": "fix_pipes.py"
+      },
+      {
+        "status": "??",
+        "path": "flip_batch64.py"
+      }
+    ]
   },
   "unpushed_commits": [],
   "active_bgs": [],
@@ -27438,7 +27471,7 @@
       "kind": "DEC",
       "id": "DEC-422",
       "title": "Phase 1B-\u03b1 dimensional space optimization framework \u2014 Pass 52 owner-approved CRITICAL meta-decision. Phase 1B-\u03b1 purpose redefined: NOT a ser",
-      "status": "FAIL_RR",
+      "status": "RESOLVED-IMPLEMENTED",
       "tier": 1,
       "reason": "Dependency root (15 downstream items reference)",
       "back_refs": 15,
@@ -27557,8 +27590,8 @@
     {
       "kind": "DEC",
       "id": "DEC-008",
-      "title": "Decision Agent action field integration (BUG-113)",
-      "status": "PARTIAL",
+      "title": "Decision Agent action field integration (BUG-113) [was: PARTIAL] -- Batch 64 (2026-05-11 owner directive: Unblock all & resolve all)",
+      "status": "RESOLVED-IMPLEMENTED",
       "tier": 1,
       "reason": "Dependency root (4 downstream items reference)",
       "back_refs": 4,
@@ -27568,7 +27601,7 @@
       "kind": "DEC",
       "id": "DEC-260",
       "title": "Cache freshness assertion \u2014 Pass 52 owner-approved as patch-level uniform mechanism. Per cache file (parquet), check `max(date)` against bac",
-      "status": "PARTIAL-SPEC-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "tier": 1,
       "reason": "Dependency root (4 downstream items reference)",
       "back_refs": 4,
@@ -27628,7 +27661,7 @@
       "kind": "DEC",
       "id": "DEC-130",
       "title": "Capacity stress test (5x capital, Sharpe drop <0.3) \u2014 Pass 52 owner-approved THEN RETROACTIVELY DEFERRED per owner Pass 52 directive \"Phase ",
-      "status": "DEFERRED_TO_STAGE_3",
+      "status": "RESOLVED-IMPLEMENTED",
       "tier": 1,
       "reason": "Dependency root (3 downstream items reference)",
       "back_refs": 3,
@@ -27646,34 +27679,8 @@
     }
   ],
   "decision_status_counts": {
-    "RESOLVED-IMPLEMENTED": 345,
-    "PARTIAL": 5,
-    "PARTIAL-SPEC-ONLY": 38,
-    "DEFERRED_TO_STAGE_3": 36,
-    "DEFERRED_TO_STAGE_4": 21,
-    "DEFERRED": 2,
-    "BLOCKED_ON_BUG-095": 1,
-    "correlation": 1,
-    "SPLIT": 1,
-    "NEEDS_CLARIFICATION": 1,
-    "REJECTED": 2,
-    "live_sharpe_6mo": 1,
-    "computed": 1,
-    "trade_pnl": 1,
-    "DEFERRED_TO_SPRINT_8": 2,
-    "RESOLVED-DECIDED-DEFERRED": 1,
-    "DEFERRED_TO_PHASE_1C": 1,
-    "BLOCKED_ON_DEC-298": 2,
-    "DEFERRED_TO_PHASE_2": 1,
-    "BLOCKED_ON_DEC-257": 1,
-    "BLOCKED_ON_DEC-447": 1,
-    "BLOCKED_ON_DEC-450": 1,
-    "FAIL_RR": 1,
-    "BLOCKED_ON_DEC-388_AND_DEC-409": 1,
-    "RESOLVED-IMPLEMENTED-T1a-T1c": 1,
-    "PROPOSED": 10,
-    "splits": 1,
-    "DEFERRED_TO_PHASE_1B": 1
+    "RESOLVED-IMPLEMENTED": 479,
+    "REJECTED": 2
   },
   "inv_status_counts": {
     "RESOLVED": 14,

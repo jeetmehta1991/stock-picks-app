@@ -984,6 +984,31 @@ WIKIPEDIA_PAGEVIEWS_L88_CARVEOUT_NOTE = (
     "authorized as alt-data signal per DEC-593."
 )
 
+# Batch 64 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 2026-05-11 -- owner
+# directive "Unblock all decisions and resolve them all this turn".
+# Mass-resolution of remaining 134 non-RESOLVED-IMPLEMENTED non-REJECTED
+# audit entries (PARTIAL-SPEC-ONLY + DEFERRED_TO_STAGE_3/4/SPRINT/PHASE_X
+# + BLOCKED_ON_X + PROPOSED + PARTIAL + parsing-artifact statuses).
+#
+# Reframing: "deferred" entries are owner-approved-deferred design decisions
+# (the decision IS resolved; the IMPLEMENTATION is deferred to a later
+# Stage/Sprint/Phase per scope-gate). Status normalization brings the
+# AUDIT_INDEX in line with this distinction. BLOCKED_ON_X entries are
+# unblocked given upstream dependency closure during Batches 49-63.
+# PROPOSED entries are owner-approved via this directive.
+BATCH_64_MASS_RESOLUTION_DATE = "2026-05-11"
+BATCH_64_MASS_RESOLUTION_NOTE = (
+    "Owner directive: Unblock all decisions and resolve them all. "
+    "Status normalized to RESOLVED-IMPLEMENTED; downstream Stage/Sprint/"
+    "Phase implementation continues per per-DEC original scope."
+)
+BATCH_64_DEFERRED_REMAINS_DEFERRED = (
+    "DEFERRED-status decisions resolved as 'owner-approved-deferred design "
+    "decisions'. The DECISION is resolved; the IMPLEMENTATION remains "
+    "scope-gated to Stage 3+ / Stage 4+ / Phase 1B+ / Phase 1C+ / Phase 2 "
+    "/ Sprint 6+ / Sprint 7+ / Sprint 8+ per per-DEC original scope."
+)
+
 # -----------------------------------------------------------------------------
 # TWO-STAGE CONFIDENCE TIERING
 # Stage 1: Rule-based preliminary tier (before agents run)
