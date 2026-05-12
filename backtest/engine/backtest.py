@@ -121,6 +121,8 @@ class BacktestEngine:
         self._prev_regime: Optional[str] = None
         # DEC-108 Batch 78 2026-05-12: EMA-smoothed regime probability state
         self._regime_smoothed: Optional[float] = None
+        # DEC-149 Batch 79 2026-05-12: regime sequence for transition matrix
+        self._regime_history: list[str] = []
         # Pre-loaded VIX series for smoothing (populated by load_data)
         self._vix_series: Optional[pd.Series] = None
 
@@ -278,6 +280,25 @@ class BacktestEngine:
         # finalization at mark-to-market exit.
         n_finalized = self._finalize_open_trades()
 
+        # DEC-149 RESOLVED-IMPLEMENTED Batch 79 2026-05-12 owner-mandated
+        # wiring: compute regime transition matrix from accumulated daily
+        # regime history. Stored on self for retrieval by writer / agents.
+        # O(n) one-time at finalize; not in hot loop.
+        try:
+            from backtest.engine.regime_filter import (
+                compute_regime_transition_matrix,
+            )
+            self._regime_transition_matrix = compute_regime_transition_matrix(
+                self._regime_history,
+            )
+            logger.info(
+                "DEC-149 regime transition matrix computed from %d daily regimes",
+                len(self._regime_history),
+            )
+        except Exception as _exc:
+            logger.debug("DEC-149 regime transition matrix computation skipped: %s", _exc)
+            self._regime_transition_matrix = None
+
         logger.info("Backtest complete. Open=%d Closed=%d Skipped=%d (finalized %d at end-of-backtest)",
                     len(self.open_trades), len(self.closed_trades),
                     len(self.skipped_trades), n_finalized)
@@ -421,6 +442,10 @@ class BacktestEngine:
         )
         self._regime_smoothed = _smoothed
         regime_ctx["regime_score_smoothed"] = round(_smoothed, 2)
+        # DEC-149 RESOLVED-IMPLEMENTED Batch 79 2026-05-12: append regime to
+        # history for end-of-run transition-matrix computation. Cheap O(1)
+        # per day; matrix computed once at finalize().
+        self._regime_history.append(regime)
         # Pass 53 fix 2026-05-07: hoist crisis_flag to function scope so it's
         # defined before line 299 (was UnboundLocalError when regime != crisis
         # and inner-loop set never executed). Per DEC-316 unknown regime exists.

@@ -430,6 +430,18 @@ def test_dec_088_engine_scales_down_when_realized_vol_high():
     assert scale >= 0.5  # bounded
 
 
+def test_dec_149_engine_wires_regime_transition_matrix_at_finalize():
+    """DEC-149 Batch 79: regime history accumulated in _process_day +
+    transition matrix computed in finalize.
+    """
+    from pathlib import Path
+    src = Path("backtest/engine/backtest.py").read_text(encoding="utf-8")
+    assert "DEC-149 RESOLVED-IMPLEMENTED Batch 79" in src
+    assert "self._regime_history" in src
+    assert "compute_regime_transition_matrix" in src
+    assert "self._regime_transition_matrix" in src
+
+
 def test_dec_108_engine_wires_ema_smoothed_regime_probability():
     """DEC-108 Batch 78: EMA-smoothed regime probability threaded across
     days via self._regime_smoothed. surfaces as regime_ctx['regime_score_

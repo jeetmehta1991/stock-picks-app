@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-12T16:23:25.639312+00:00",
+  "generated_at": "2026-05-12T16:43:16.524454+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -3413,7 +3413,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 7,
+        "n_doc_refs": 6,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -4923,9 +4923,9 @@
     },
     {
       "id": "DECISION-149",
-      "title": "Regime transition probability matrix \u2014 `compute_regime_transition_matrix` in `backtest/engine/regime_filter.py` returns empirical Markov-1 transition matrix (4x",
-      "status": "PARTIAL-IMPL-HELPER-ONLY",
-      "theme": "Batch X19 \u2014 Regime extensions",
+      "title": "Regime transition probability matrix GENUINELY WIRED -- compute_regime_transition_matrix in regime_filter.py + Batch 79 2026-05-12 engine wiring: self._regime_h",
+      "status": "RESOLVED-IMPLEMENTED",
+      "theme": "Batch X19 - Regime extensions",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
       "status_grep": {
@@ -4937,7 +4937,7 @@
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
-          "integration": "N/A",
+          "integration": true,
           "system": "N/A",
           "functional": "N/A",
           "regression": "N/A",
@@ -4955,10 +4955,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "UNKNOWN",
-        "label": "UNKNOWN",
-        "color": "#9ca3af",
-        "reason": "Unclassified status: PARTIAL-IMPL-HELPER-ONLY"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"
       }
     },
     {
@@ -11173,7 +11173,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 13,
+        "n_doc_refs": 12,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -26598,34 +26598,40 @@
   ],
   "recent_commits": [
     {
+      "sha": "81ed3a2a",
+      "subject": "Batch 78: DEC-108 GENUINELY WIRED (EMA-smoothed regime probability; alpha=0.1 across days; regime_ctx[regime_score_smoothed] surfaced; 13-tier 657/6/0)",
+      "author": "jeetmehta1991",
+      "rel_time": "20 minutes ago"
+    },
+    {
       "sha": "cc653272",
       "subject": "Batch 77: DEC-128 GENUINELY WIRED (dispersion CB cross-sectional 3-sigma halt; in _process_day after DEC-314; 13-tier 655/6/0)",
       "author": "jeetmehta1991",
-      "rel_time": "10 minutes ago"
+      "rel_time": "30 minutes ago"
     },
     {
       "sha": "3de0418d",
       "subject": "Batch 76: DEC-348 GENUINELY WIRED (event-calendar suppression at entry; earnings + macro FOMC/CPI/NFP in DEC-349 asymmetric window [-3,+1]; 13-tier 654/6/0)",
       "author": "jeetmehta1991",
-      "rel_time": "56 minutes ago"
+      "rel_time": "76 minutes ago"
     },
     {
       "sha": "b4b9e093",
       "subject": "Batch 75: DEC-135 GENUINELY WIRED (per-ticker 30d max-loss cap gate at entry; inline closed_trades scan; 13-tier pyramid 652/6/0; PARTIAL-IMPL -> RESOLVED-IMPLEMENTED)",
       "author": "jeetmehta1991",
-      "rel_time": "67 minutes ago"
+      "rel_time": "86 minutes ago"
     },
     {
       "sha": "fb0072ca",
       "subject": "Batch 74: DEC-076 GENUINELY WIRED (factor concentration breach gate)",
       "author": "jeetmehta1991",
-      "rel_time": "76 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "c79c630b",
       "subject": "Batch 73: DEC-018 GENUINELY WIRED (stop-out cooldown)",
       "author": "jeetmehta1991",
-      "rel_time": "86 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "3636dd1e",
@@ -26649,7 +26655,7 @@
       "sha": "318bdb20",
       "subject": "Batch 69 Phase 3: classifier too noisy for bulk autopilot revert; pivot",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "e13382ec",
@@ -26667,7 +26673,7 @@
       "sha": "e6674772",
       "subject": "Batch 69 part 1: wiring catalog (owner-mandated audit)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "eba44e81",
@@ -26679,7 +26685,7 @@
       "sha": "4c512642",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 68 - FINAL 9 PARTIAL-SPEC-ONLY-was DECs",
       "author": "jeetmehta1991",
-      "rel_time": "12 hours ago"
+      "rel_time": "13 hours ago"
     },
     {
       "sha": "f32626ad",
@@ -26697,7 +26703,7 @@
       "sha": "4b28bed8",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 65 - 10 DECs real impl (was PARTIAL-SPEC-ONLY)",
       "author": "jeetmehta1991",
-      "rel_time": "13 hours ago"
+      "rel_time": "14 hours ago"
     },
     {
       "sha": "d2efa4b8",
@@ -26733,13 +26739,13 @@
       "sha": "279e1b34",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 61 (20-DEC bundle)",
       "author": "jeetmehta1991",
-      "rel_time": "15 hours ago"
+      "rel_time": "16 hours ago"
     },
     {
       "sha": "572a2212",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 61 - Path C 20-DEC bundle (owner directive: 20 DECs this turn)",
       "author": "jeetmehta1991",
-      "rel_time": "15 hours ago"
+      "rel_time": "16 hours ago"
     },
     {
       "sha": "8ce9bc21",
@@ -26757,23 +26763,17 @@
       "sha": "9fb94b18",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 59 (20-DEC bundle)",
       "author": "jeetmehta1991",
-      "rel_time": "16 hours ago"
+      "rel_time": "17 hours ago"
     },
     {
       "sha": "4ddcbcf9",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 59 - Path C 20-DEC bundle (owner directive: 20 DECs this turn)",
       "author": "jeetmehta1991",
-      "rel_time": "16 hours ago"
+      "rel_time": "17 hours ago"
     },
     {
       "sha": "7482da27",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 58 (10-DEC bundle)",
-      "author": "jeetmehta1991",
-      "rel_time": "17 hours ago"
-    },
-    {
-      "sha": "520e94e6",
-      "subject": "Pass 53 v8h+1: Phase 3 Batch 58 - Path C 10-DEC bundle (owner directive: resolve 10 DECs this turn)",
       "author": "jeetmehta1991",
       "rel_time": "17 hours ago"
     }
@@ -26977,7 +26977,7 @@
     }
   ],
   "test_inventory": {
-    "total": 1148,
+    "total": 1149,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -27013,7 +27013,7 @@
       "test_fred_alfred_smoke": 5,
       "test_gate_pre_phase_1a_entry": 8,
       "test_gates": 6,
-      "test_integration": 35,
+      "test_integration": 36,
       "test_inv041_path_restricted_commits": 5,
       "test_l146_wave_a_g2_g3_g9": 6,
       "test_l146_wave_b_g7_sec_edgar": 6,
@@ -27659,8 +27659,8 @@
     }
   ],
   "decision_status_counts": {
-    "RESOLVED-IMPLEMENTED": 435,
-    "PARTIAL-IMPL-HELPER-ONLY": 44,
+    "RESOLVED-IMPLEMENTED": 436,
+    "PARTIAL-IMPL-HELPER-ONLY": 43,
     "REJECTED": 2
   },
   "inv_status_counts": {
