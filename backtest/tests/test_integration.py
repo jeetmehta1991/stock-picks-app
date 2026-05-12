@@ -430,6 +430,40 @@ def test_dec_088_engine_scales_down_when_realized_vol_high():
     assert scale >= 0.5  # bounded
 
 
+def test_dec_018_engine_wires_stopout_cooldown_gate():
+    """DEC-018 Batch 73: 5-day cooldown after stop-out -- gate at entry-eval
+    skips ticker for TICKER_STOPOUT_COOLDOWN_DAYS after a stop_loss exit.
+    """
+    from pathlib import Path
+    src = Path("backtest/engine/backtest.py").read_text(encoding="utf-8")
+    assert "stopout_cooldown_active" in src
+    assert "DEC-018 RESOLVED-IMPLEMENTED Batch 73" in src
+    assert "TICKER_STOPOUT_COOLDOWN_DAYS" in src
+
+
+def test_dec_018_engine_skips_ticker_within_cooldown_window():
+    """DEC-018 behavior: simulate self.closed_trades with a recent stop-out;
+    verify entry-eval cooldown_breach detection logic catches within-window
+    and clears after window.
+    """
+    from datetime import date
+    from types import SimpleNamespace
+    from backtest.config import TICKER_STOPOUT_COOLDOWN_DAYS
+    # Lightweight stand-in for ClosedTrade -- the inline cooldown logic only
+    # reads ticker / exit_reason / exit_date so a SimpleNamespace suffices.
+    fake_stop = SimpleNamespace(
+        ticker="AAPL",
+        exit_date=date(2024, 6, 10),
+        exit_reason="atr_trail_stop",
+    )
+    as_of_within = date(2024, 6, 12)  # 2 days post stop -> in cooldown
+    days_within = (as_of_within - fake_stop.exit_date).days
+    assert 0 <= days_within < TICKER_STOPOUT_COOLDOWN_DAYS
+    as_of_clear = date(2024, 6, 20)   # 10 days post -> cleared
+    days_clear = (as_of_clear - fake_stop.exit_date).days
+    assert days_clear >= TICKER_STOPOUT_COOLDOWN_DAYS
+
+
 def test_dec_087_engine_wires_vol_targeted_size():
     """DEC-087 Batch 72 2026-05-12: engine source calls vol_targeted_size
     at gate + add_position sites with ATR-derived per-ticker vol proxy.

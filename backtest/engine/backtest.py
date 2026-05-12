@@ -550,6 +550,42 @@ class BacktestEngine:
                 })
                 continue
 
+            # DEC-018 RESOLVED-IMPLEMENTED Batch 73 2026-05-12 owner-mandated
+            # wiring: 5-trading-day cooldown after a stop-out on this ticker.
+            # Prevents whipsaw re-entry into a name that just hit our stop.
+            # Joint DEC-135 per-ticker max-loss cap (separate gate, same theme).
+            # Inline check (avoids per-call DataFrame build): scan
+            # self.closed_trades for stop_loss exits on this ticker within
+            # TICKER_STOPOUT_COOLDOWN_DAYS.
+            from backtest.config import TICKER_STOPOUT_COOLDOWN_DAYS
+            cooldown_breach = False
+            for ct in self.closed_trades:
+                if ct.ticker != ticker:
+                    continue
+                reason = str(getattr(ct, "exit_reason", "")).lower()
+                if "stop" not in reason:
+                    continue
+                ct_exit = getattr(ct, "exit_date", None)
+                if ct_exit is None:
+                    continue
+                # Robust date subtraction (handles both date and datetime)
+                try:
+                    days_since = (as_of - ct_exit).days
+                except TypeError:
+                    continue
+                if 0 <= days_since < TICKER_STOPOUT_COOLDOWN_DAYS:
+                    cooldown_breach = True
+                    break
+            if cooldown_breach:
+                self.skipped_trades.append({
+                    "ticker": ticker, "date": as_of,
+                    "strategy": "(any)",
+                    "reason": (
+                        f"stopout_cooldown_active_{TICKER_STOPOUT_COOLDOWN_DAYS}d_dec018"
+                    ),
+                })
+                continue
+
             for strat_entry in cand.get("strategies", []):
                 direction = strat_entry["direction"]
                 category  = strat_entry["category"]

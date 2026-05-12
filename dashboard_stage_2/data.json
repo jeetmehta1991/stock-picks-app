@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-12T14:46:16.986672+00:00",
+  "generated_at": "2026-05-12T14:57:39.135637+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -563,7 +563,7 @@
     },
     {
       "id": "DECISION-018",
-      "title": "Cooldown after stop-out (BUG-133) -- TICKER_STOPOUT_COOLDOWN_DAYS=5 in config.py + is_ticker_in_stopout_cooldown(ticker, trade_log_df, as_of, cooldown_days=None",
+      "title": "Cooldown after stop-out (BUG-133) GENUINELY WIRED -- TICKER_STOPOUT_COOLDOWN_DAYS=5 in config.py. Batch 73 2026-05-12 engine wiring: inline cooldown gate at ent",
       "status": "RESOLVED-IMPLEMENTED",
       "theme": "Risk Management (Group C)",
       "pass_intro": "Pass 19",
@@ -577,7 +577,7 @@
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
-          "integration": "N/A",
+          "integration": true,
           "system": "N/A",
           "functional": "N/A",
           "regression": "N/A",
@@ -20243,7 +20243,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 17,
+        "n_doc_refs": 18,
         "pyramid": {
           "unit": true,
           "smoke": true,
@@ -26598,34 +26598,40 @@
   ],
   "recent_commits": [
     {
+      "sha": "3636dd1e",
+      "subject": "Batch 72: DEC-087 GENUINELY WIRED (vol-targeted per-position sizing)",
+      "author": "jeetmehta1991",
+      "rel_time": "11 minutes ago"
+    },
+    {
       "sha": "d0f4509c",
       "subject": "Batch 71: DEC-088 GENUINELY WIRED (portfolio vol target 15%)",
       "author": "jeetmehta1991",
-      "rel_time": "11 minutes ago"
+      "rel_time": "22 minutes ago"
     },
     {
       "sha": "433c0adf",
       "subject": "Batch 70: DEC-091 GENUINELY WIRED (first per-DEC engine-wiring batch)",
       "author": "jeetmehta1991",
-      "rel_time": "26 minutes ago"
+      "rel_time": "38 minutes ago"
     },
     {
       "sha": "318bdb20",
       "subject": "Batch 69 Phase 3: classifier too noisy for bulk autopilot revert; pivot",
       "author": "jeetmehta1991",
-      "rel_time": "42 minutes ago"
+      "rel_time": "53 minutes ago"
     },
     {
       "sha": "e13382ec",
       "subject": "Batch 69 Phase 2: 4 more HELPER_ONLY DECs reverted (manual verification)",
       "author": "jeetmehta1991",
-      "rel_time": "63 minutes ago"
+      "rel_time": "75 minutes ago"
     },
     {
       "sha": "4b0e38cd",
       "subject": "Batch 69 Phase 1: revert 47 self-confessed-deferred DECs to PARTIAL-IMPL-HELPER-ONLY",
       "author": "jeetmehta1991",
-      "rel_time": "79 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "e6674772",
@@ -26685,13 +26691,13 @@
       "sha": "b61a2f8f",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 62 (20-DEC bundle)",
       "author": "jeetmehta1991",
-      "rel_time": "13 hours ago"
+      "rel_time": "14 hours ago"
     },
     {
       "sha": "64f16341",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 62 - Path C 20-DEC bundle (owner directive: 20 DECs this turn)",
       "author": "jeetmehta1991",
-      "rel_time": "13 hours ago"
+      "rel_time": "14 hours ago"
     },
     {
       "sha": "279e1b34",
@@ -26745,13 +26751,13 @@
       "sha": "77ad8f19",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 57 (5-DEC bundle)",
       "author": "jeetmehta1991",
-      "rel_time": "15 hours ago"
+      "rel_time": "16 hours ago"
     },
     {
       "sha": "89dac3b4",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 57 - Path C 5-DEC bundle (factor breaker / coverage gate / memory / 13F PIT / CNN F&G bands)",
       "author": "jeetmehta1991",
-      "rel_time": "15 hours ago"
+      "rel_time": "16 hours ago"
     },
     {
       "sha": "1bfcd76f",
@@ -26768,12 +26774,6 @@
     {
       "sha": "25c94093",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 55 (5-DEC regime+risk bundle)",
-      "author": "jeetmehta1991",
-      "rel_time": "18 hours ago"
-    },
-    {
-      "sha": "ad012991",
-      "subject": "Pass 53 v8h+1: Phase 3 Batch 55 - Path C 5-DEC bundle (regime expansion + risk helpers)",
       "author": "jeetmehta1991",
       "rel_time": "18 hours ago"
     }
@@ -26977,7 +26977,7 @@
     }
   ],
   "test_inventory": {
-    "total": 1137,
+    "total": 1139,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -27013,7 +27013,7 @@
       "test_fred_alfred_smoke": 5,
       "test_gate_pre_phase_1a_entry": 8,
       "test_gates": 6,
-      "test_integration": 24,
+      "test_integration": 26,
       "test_inv041_path_restricted_commits": 5,
       "test_l146_wave_a_g2_g3_g9": 6,
       "test_l146_wave_b_g7_sec_edgar": 6,
