@@ -668,6 +668,48 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_bug_102_engine_dedup_same_day_one_position_per_ticker():
+    """BUG-102 Batch 95: "3.5x same-day duplicate inflation: 9,921 unique
+    decisions logged as 35k+" - same-day duplicate firings of the same
+    ticker by multiple strategies inflated the trade log. RESOLVED via
+    the `opened_today` set tracked in `_process_day` candidate loop:
+      - opened_today = set() initialized at the start of each day
+        (backtest.py:710)
+      - guard `if ticker in opened_today: continue` skip with reason
+        "dedup_one_position_per_ticker_per_day" (backtest.py:853-859)
+      - opened_today.add(ticker) at successful entry (backtest.py:1138)
+    Combined with the outer BUG-61 ticker-uniqueness gate (Batch 17,
+    blocks ticker that has ANY prior open across days), this creates a
+    two-layer defense: BUG-61 = cross-day uniqueness; BUG-102 = within-
+    day uniqueness even when multiple strategies fire simultaneously.
+    """
+    from pathlib import Path
+    src = Path("backtest/engine/backtest.py").read_text(encoding="utf-8")
+    assert "opened_today: set[str] = set()" in src
+    assert "if ticker in opened_today:" in src
+    assert "dedup_one_position_per_ticker_per_day" in src
+    assert "opened_today.add(ticker)" in src
+
+
+def test_bug_102_opened_today_set_semantics_per_day():
+    """BUG-102 behavior: opened_today is a fresh set each trading day
+    (built inside _process_day, not persisted across days). Cross-day
+    ticker re-entry is gated separately by BUG-61's open_tickers
+    membership.
+    """
+    from pathlib import Path
+    src = Path("backtest/engine/backtest.py").read_text(encoding="utf-8")
+    # opened_today must be initialized INSIDE _process_day, not at class
+    # level (which would leak across days)
+    init_idx = src.find("opened_today: set[str] = set()")
+    process_day_idx = src.find("def _process_day")
+    assert process_day_idx > 0 and init_idx > 0
+    assert init_idx > process_day_idx, (
+        "opened_today must be initialized inside _process_day so it "
+        "resets per trading day"
+    )
+
+
 def test_bug_78_trailing_stop_lookahead_fix_order_of_operations():
     """BUG-78 Batch 94: trailing-stop lookahead bias - previously the
     trailing_stop was updated FROM today's close BEFORE checking
