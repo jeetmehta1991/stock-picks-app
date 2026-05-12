@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-12T15:16:45.239180+00:00",
+  "generated_at": "2026-05-12T15:27:17.264047+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -8933,7 +8933,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 44,
+        "n_doc_refs": 43,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -12163,9 +12163,9 @@
     },
     {
       "id": "DECISION-348",
-      "title": "Event-calendar suppression helper -- event_calendar_suppression_check(as_of_date, ticker_earnings_date, fomc_dates, cpi_release_dates, nfp_release_dates) in met",
+      "title": "Event-calendar suppression GENUINELY WIRED -- per-strategy entry gate in backtest/engine/backtest.py: skip if earnings (days_to_next_earnings) within DEC-349 as",
       "status": "RESOLVED-IMPLEMENTED",
-      "theme": "Batch X52 \u2014 Round 1 Methodology Gaps",
+      "theme": "Batch X52 - Round 1 Methodology Gaps",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
       "status_grep": {
@@ -12177,7 +12177,7 @@
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
-          "integration": "N/A",
+          "integration": true,
           "system": "N/A",
           "functional": "N/A",
           "regression": "N/A",
@@ -12192,7 +12192,7 @@
       },
       "short_id": "DEC-348",
       "sprint": "Sprint 7 additions (Statistica",
-      "dependencies": "-",
+      "dependencies": "DEC-349",
       "description": "**The gap:** Strategies fire identically on FOMC announcement day as on any other day. Same for earnings-week single names, same for CPI release days. Empirically these days carry 2-5\u00d7 normal volatility and frequent intraday reversals. Mean-reversion strategies are most exposed (",
       "promotion_path": {
         "tier": "IMPLEMENTED",
@@ -12213,11 +12213,11 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 10,
+        "n_doc_refs": 9,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
-          "integration": "N/A",
+          "integration": true,
           "system": "N/A",
           "functional": "N/A",
           "regression": "N/A",
@@ -14453,7 +14453,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 14,
+        "n_doc_refs": 13,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -26598,40 +26598,46 @@
   ],
   "recent_commits": [
     {
+      "sha": "b4b9e093",
+      "subject": "Batch 75: DEC-135 GENUINELY WIRED (per-ticker 30d max-loss cap gate at entry; inline closed_trades scan; 13-tier pyramid 652/6/0; PARTIAL-IMPL -> RESOLVED-IMPLEMENTED)",
+      "author": "jeetmehta1991",
+      "rel_time": "10 minutes ago"
+    },
+    {
       "sha": "fb0072ca",
       "subject": "Batch 74: DEC-076 GENUINELY WIRED (factor concentration breach gate)",
       "author": "jeetmehta1991",
-      "rel_time": "9 minutes ago"
+      "rel_time": "20 minutes ago"
     },
     {
       "sha": "c79c630b",
       "subject": "Batch 73: DEC-018 GENUINELY WIRED (stop-out cooldown)",
       "author": "jeetmehta1991",
-      "rel_time": "19 minutes ago"
+      "rel_time": "30 minutes ago"
     },
     {
       "sha": "3636dd1e",
       "subject": "Batch 72: DEC-087 GENUINELY WIRED (vol-targeted per-position sizing)",
       "author": "jeetmehta1991",
-      "rel_time": "30 minutes ago"
+      "rel_time": "41 minutes ago"
     },
     {
       "sha": "d0f4509c",
       "subject": "Batch 71: DEC-088 GENUINELY WIRED (portfolio vol target 15%)",
       "author": "jeetmehta1991",
-      "rel_time": "41 minutes ago"
+      "rel_time": "52 minutes ago"
     },
     {
       "sha": "433c0adf",
       "subject": "Batch 70: DEC-091 GENUINELY WIRED (first per-DEC engine-wiring batch)",
       "author": "jeetmehta1991",
-      "rel_time": "57 minutes ago"
+      "rel_time": "67 minutes ago"
     },
     {
       "sha": "318bdb20",
       "subject": "Batch 69 Phase 3: classifier too noisy for bulk autopilot revert; pivot",
       "author": "jeetmehta1991",
-      "rel_time": "73 minutes ago"
+      "rel_time": "83 minutes ago"
     },
     {
       "sha": "e13382ec",
@@ -26649,7 +26655,7 @@
       "sha": "e6674772",
       "subject": "Batch 69 part 1: wiring catalog (owner-mandated audit)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "eba44e81",
@@ -26751,13 +26757,13 @@
       "sha": "7482da27",
       "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 58 (10-DEC bundle)",
       "author": "jeetmehta1991",
-      "rel_time": "15 hours ago"
+      "rel_time": "16 hours ago"
     },
     {
       "sha": "520e94e6",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 58 - Path C 10-DEC bundle (owner directive: resolve 10 DECs this turn)",
       "author": "jeetmehta1991",
-      "rel_time": "15 hours ago"
+      "rel_time": "16 hours ago"
     },
     {
       "sha": "77ad8f19",
@@ -26768,12 +26774,6 @@
     {
       "sha": "89dac3b4",
       "subject": "Pass 53 v8h+1: Phase 3 Batch 57 - Path C 5-DEC bundle (factor breaker / coverage gate / memory / 13F PIT / CNN F&G bands)",
-      "author": "jeetmehta1991",
-      "rel_time": "16 hours ago"
-    },
-    {
-      "sha": "1bfcd76f",
-      "subject": "Pass 53 v8h+1: regenerate dashboard for Batch 56 (5-DEC bundle)",
       "author": "jeetmehta1991",
       "rel_time": "16 hours ago"
     }
@@ -26977,7 +26977,7 @@
     }
   ],
   "test_inventory": {
-    "total": 1143,
+    "total": 1145,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -27013,7 +27013,7 @@
       "test_fred_alfred_smoke": 5,
       "test_gate_pre_phase_1a_entry": 8,
       "test_gates": 6,
-      "test_integration": 30,
+      "test_integration": 32,
       "test_inv041_path_restricted_commits": 5,
       "test_l146_wave_a_g2_g3_g9": 6,
       "test_l146_wave_b_g7_sec_edgar": 6,

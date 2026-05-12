@@ -737,6 +737,45 @@ class BacktestEngine:
                 # Earnings proximity  -  context for agents, not a blocker
                 earn_days = days_to_next_earnings(ticker, as_of)
 
+                # DEC-348 RESOLVED-IMPLEMENTED Batch 76 2026-05-12 owner-
+                # mandated wiring: event-calendar suppression. Skip entry
+                # if as_of is within DEC-349 asymmetric window (pre=1, post=3)
+                # of FOMC / CPI / NFP / per-ticker earnings. Joint DEC-256
+                # (earnings calendar) + DEC-407/448 (FRED FOMC/CPI dates) +
+                # DEC-349 (asymmetric window). Conservative gate -- earnings_
+                # tolerant strategies (DEC-013 attribute) bypass via per-
+                # strategy override (deferred to attribute-honoring batch).
+                from backtest.config import (EVENT_WINDOW_PRE_DAYS,
+                                              EVENT_WINDOW_POST_DAYS)
+                _event_suppressed = False
+                _suppression_reason = None
+                if earn_days is not None:
+                    # earn_days is positive when earnings ahead, negative after
+                    # Suppress if -post_days <= earn_days <= pre_days (-3..+1)
+                    if -EVENT_WINDOW_POST_DAYS <= earn_days <= EVENT_WINDOW_PRE_DAYS:
+                        _event_suppressed = True
+                        _suppression_reason = (
+                            f"EVENT_SUPPRESSION_EARNINGS_d{earn_days}_dec348"
+                        )
+                # Macro events (FOMC/CPI/NFP) -- macro['near_high_impact_event']
+                # already populated upstream
+                if not _event_suppressed and macro.get("near_high_impact_event"):
+                    days_to_event = macro.get("event_days_away")
+                    if days_to_event is not None and \
+                            -EVENT_WINDOW_POST_DAYS <= days_to_event <= EVENT_WINDOW_PRE_DAYS:
+                        ev_type = macro.get("event_type", "macro")
+                        _event_suppressed = True
+                        _suppression_reason = (
+                            f"EVENT_SUPPRESSION_{ev_type.upper()}_d{days_to_event}_dec348"
+                        )
+                if _event_suppressed:
+                    self.skipped_trades.append({
+                        "ticker": ticker, "date": as_of,
+                        "strategy": strat_entry["strategy"],
+                        "reason": _suppression_reason,
+                    })
+                    continue
+
                 # Trailing stop
                 if direction == "long":
                     init_stop = entry_price * (1 - TRAILING_STOP["initial_pct"])

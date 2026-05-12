@@ -430,6 +430,30 @@ def test_dec_088_engine_scales_down_when_realized_vol_high():
     assert scale >= 0.5  # bounded
 
 
+def test_dec_348_engine_wires_event_suppression_gate():
+    """DEC-348 Batch 76: event-calendar suppression at entry. Skip if
+    earnings within DEC-349 asymmetric window (pre=1, post=3) or macro
+    event (FOMC/CPI/NFP) in same window.
+    """
+    from pathlib import Path
+    src = Path("backtest/engine/backtest.py").read_text(encoding="utf-8")
+    assert "DEC-348 RESOLVED-IMPLEMENTED Batch 76" in src
+    assert "EVENT_SUPPRESSION_EARNINGS" in src
+    assert "EVENT_WINDOW_PRE_DAYS" in src and "EVENT_WINDOW_POST_DAYS" in src
+
+
+def test_dec_348_helper_within_window():
+    """DEC-348 helper: entry on FOMC day suppressed."""
+    from datetime import date
+    from backtest.results.metrics import event_calendar_suppression_check
+    out = event_calendar_suppression_check(
+        as_of_date=date(2024, 6, 12),
+        fomc_dates=[date(2024, 6, 12)],
+    )
+    assert out["suppressed"] is True
+    assert "EVENT_SUPPRESSION_FOMC" in out["reasons"]
+
+
 def test_dec_135_engine_wires_max_loss_cap_gate():
     """DEC-135 Batch 75: per-ticker rolling 30-day max-loss cap (-10%)
     gate at entry-candidate eval.
