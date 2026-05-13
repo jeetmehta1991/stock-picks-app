@@ -2483,6 +2483,27 @@ def test_bug_133_stopout_cooldown_implemented_not_deferred():
     assert "TICKER_STOPOUT_COOLDOWN_DAYS" in cfg, "cooldown constant missing from config"
 
 
+def test_bug_139_198_strategy_signal_portfolio_stubs_resolved_decided():
+    """BUG-139 through BUG-177 + BUG-192-198 batch close - 46 INLINE-ONLY stubs.
+    Strategy families (BUG-140-149): Quality/Vol/Event/ICT/VPVR deferred to
+    Layer 2-3/Phase 1C per CANONICAL_FACTS.md F-002.
+    Signal gaps (BUG-151-158): VP/CVD/RS/IV deferred Phase 1B/1C.
+    ICT/SMC signals (BUG-161-166): deferred to Layer 2 Phase 0D.
+    Portfolio/ML (BUG-169-176): DEC-091 drawdown-band + DEC-076 sector-concentration
+    wired; smooth mixture/risk-parity/ML deferred Phase 1B-alpha/Stage 3+.
+    Inline fragments (BUG-139,150-151,159-160,167-168,177,192-197): markers only.
+    BUG-198: DEC-504 structural PIT resolver exists; monolithic loader deferred.
+    Batch 147 2026-05-13.
+    """
+    import pathlib
+    audit = pathlib.Path("AUDIT_INDEX.md").read_text(encoding="utf-8")
+    for bug_num in ["BUG-140", "BUG-145", "BUG-161", "BUG-169", "BUG-175", "BUG-198"]:
+        section_start = audit.find(f"**{bug_num}**")
+        assert section_start != -1, f"{bug_num} not found in AUDIT_INDEX"
+        row = audit[section_start:section_start + 250]
+        assert "RESOLVED-DECIDED" in row, f"{bug_num} not marked RESOLVED-DECIDED"
+
+
 def test_bug_114_138_phase1b_deferred_inline_stubs_resolved_decided():
     """BUG-114 through BUG-138 batch close - 25 INLINE-ONLY stubs deferred to Phase 1B.
     Phase 1A is rules-only (no agents per CLAUDE.md). Agent integration gaps

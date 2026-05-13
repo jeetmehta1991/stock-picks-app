@@ -1265,52 +1265,52 @@
 | **BUG-136** | MEDIUM -- No bid-ask spread filter; backtest assumes zero spread. Batch 146 2026-05-13: RESOLVED-DECIDED -- IBKR fixed-tier cost model (BUG-205 Batch 107) accounts for spread via min-order cost floor ($1/order). Explicit bid-ask spread data (NBBO) not prefetched for Phase 1A per Sprint 0A scope; NBBO Polygon endpoint deferred to Sprint 0A extension. | INLINE-ONLY | RESOLVED-DECIDED | - |
 | **BUG-137** | LOW -- Agent context lacks historical analogues -- no "last 5 times this strategy fired" signal. Batch 146 2026-05-13: RESOLVED-DECIDED Phase 1B deferral -- Phase 1A is rules-only; no agents active. | INLINE-ONLY | RESOLVED-DECIDED | - |
 | **BUG-138** | LOW -- Agent context lacks news headlines as text -- sentiment is number only. Batch 146 2026-05-13: RESOLVED-DECIDED Phase 1B deferral -- Polygon news sentiment in prefetch (1.05M articles per Sprint 0A); text pass-through to agents deferred per DEC-440/441. Phase 1A uses numeric CNN F&G + AAII scores. | INLINE-ONLY | RESOLVED-DECIDED | - |
-| **BUG-139** | to BUG-150) | INLINE-ONLY | OPEN | - |
-| **BUG-140** | MEDIUM** — No Quality strategy family (ROE, accruals, low debt) | INLINE-ONLY | OPEN | - |
-| **BUG-141** | HIGH** — No Volatility-based strategies (vol-targeting, vol carry) | INLINE-ONLY | OPEN | - |
-| **BUG-142** | HIGH** — No Event-driven strategies (PEAD, M&A arb, index inclusion) | INLINE-ONLY | OPEN | - |
-| **BUG-143** | MEDIUM** — No Macro/Cross-asset strategies | INLINE-ONLY | OPEN | - |
-| **BUG-144** | HIGH** — Smart-money signals are binary gates, not continuous strategy inputs | INLINE-ONLY | OPEN | - |
-| **BUG-145** | HIGH** — No ICT/SMC strategy family (8 core concepts, 16 derived strategies) | INLINE-ONLY | OPEN | - |
-| **BUG-146** | HIGH** — No Volume Profile / VPVR strategies | INLINE-ONLY | OPEN | - |
-| **BUG-147** | MEDIUM** — No Anchored VWAP strategies | INLINE-ONLY | OPEN | - |
-| **BUG-148** | MEDIUM** — No Sentiment/Narrative rule strategies (only agent-mediated) | INLINE-ONLY | OPEN | - |
-| **BUG-149** | MEDIUM** — No Calendar/Seasonal strategies (FOMC, January, sell-in-May) | INLINE-ONLY | OPEN | - |
-| **BUG-150** | ) | INLINE-ONLY | OPEN | - |
-| **BUG-151** | to BUG-159) | INLINE-ONLY | OPEN | - |
-| **BUG-152** | HIGH** — Volume Profile (POC, VAH, VAL, HVN, LVN) not computed | INLINE-ONLY | OPEN | - |
-| **BUG-153** | MEDIUM** — Cumulative Volume Delta (CVD) not computed | INLINE-ONLY | OPEN | - |
-| **BUG-154** | HIGH** — Relative Strength vs sector and SPY not computed (planned for 1C, recom | INLINE-ONLY | OPEN | - |
-| **BUG-155** | MEDIUM** — Per-ticker volatility regime not computed | INLINE-ONLY | OPEN | - |
-| **BUG-156** | HIGH** — Post-Earnings Announcement Drift (PEAD) tracking absent | INLINE-ONLY | OPEN | - |
-| **BUG-157** | MEDIUM** — News headlines not passed to agents as text (only sentiment number) | INLINE-ONLY | OPEN | - |
-| **BUG-158** | LOW** — Implied volatility / Volatility Risk Premium signals absent (Phase 1C+) | INLINE-ONLY | OPEN | - |
-| **BUG-159** | ) | INLINE-ONLY | OPEN | - |
-| **BUG-160** | to BUG-167) | INLINE-ONLY | OPEN | - |
-| **BUG-161** | HIGH** — Fair Value Gap (FVG) detection absent | INLINE-ONLY | OPEN | - |
-| **BUG-162** | HIGH** — Liquidity Sweep / Stop Hunt detection absent | INLINE-ONLY | OPEN | - |
-| **BUG-163** | MEDIUM** — Displacement filter absent (used as quality filter for OB/FVG) | INLINE-ONLY | OPEN | - |
-| **BUG-164** | MEDIUM** — Breaker Block detection absent | INLINE-ONLY | OPEN | - |
-| **BUG-165** | MEDIUM** — Premium/Discount zones not computed | INLINE-ONLY | OPEN | - |
-| **BUG-166** | MEDIUM** — Optimal Trade Entry (OTE) Fibonacci zone not computed | INLINE-ONLY | OPEN | - |
-| **BUG-167** | ) | INLINE-ONLY | OPEN | - |
-| **BUG-168** | to BUG-177) | INLINE-ONLY | OPEN | - |
-| **BUG-169** | HIGH** — No correlation-adjusted concentration limits | INLINE-ONLY | OPEN | - |
-| **BUG-170** | MEDIUM** — No drawdown-aware position sizing | INLINE-ONLY | OPEN | - |
-| **BUG-171** | MEDIUM** — No risk parity allocation across strategies | INLINE-ONLY | OPEN | - |
-| **BUG-172** | MEDIUM** — No walk-forward parameter optimization (all params static) | INLINE-ONLY | OPEN | - |
-| **BUG-173** | MEDIUM** — No online learning / feedback loop from live performance | INLINE-ONLY | OPEN | - |
-| **BUG-174** | LOW** — No execution algorithm sophistication (acceptable at $10K scale) | INLINE-ONLY | OPEN | - |
-| **BUG-175** | HIGH** — No regime-conditional strategy weighting (smooth mixture) | INLINE-ONLY | OPEN | - |
-| **BUG-176** | MEDIUM** — No ML enhancement layer (acceptable; agents are intended substitute) | INLINE-ONLY | OPEN | - |
-| **BUG-177** | ) | INLINE-ONLY | OPEN | - |
-| **BUG-192** | ) | INLINE-ONLY | OPEN | - |
-| **BUG-193** | NEW) | INLINE-ONLY | OPEN | - |
-| **BUG-194** | NEW) | INLINE-ONLY | OPEN | - |
-| **BUG-195** | NEW) | INLINE-ONLY | OPEN | - |
-| **BUG-196** | NEW) | INLINE-ONLY | OPEN | - |
-| **BUG-197** | NEW) | INLINE-ONLY | OPEN | - |
-| **BUG-198** | (NEW) · CRITICAL — No structural PIT data loader; each data source uses ad-hoc P | INLINE-ONLY | OPEN | - |
+| **BUG-139** | to BUG-150) inline fragment. Batch 147 2026-05-13: RESOLVED-DECIDED deferred to Phase 1C+ strategy family expansion. | INLINE-ONLY | RESOLVED-DECIDED | - |
+| **BUG-140** | MEDIUM -- No Quality strategy family (ROE, accruals, low debt). Batch 147 2026-05-13: RESOLVED-DECIDED deferred to Layer 3/Phase 1C per CANONICAL_FACTS.md F-002 layered strategy roster (~108-133 classes; Layer 1 baseline 60 complete). | INLINE-ONLY | RESOLVED-DECIDED | - |
+| **BUG-141** | HIGH -- No Volatility-based strategies (vol-targeting, vol carry). Batch 147 2026-05-13: RESOLVED-DECIDED deferred to Layer 3/Phase 1C. Layer 1 includes ATR-based volatility exits; vol-strategy family is Phase 1C scope. | INLINE-ONLY | RESOLVED-DECIDED | - |
+| **BUG-142** | HIGH -- No Event-driven strategies (PEAD, M&A arb, index inclusion). Batch 147 2026-05-13: RESOLVED-DECIDED deferred to Layer 2D/Phase 1C. PEAD is tracked via days_to_next_earnings signal (BUG-13 fix); PEAD-explicit strategy deferred. | INLINE-ONLY | RESOLVED-DECIDED | - |
+| **BUG-143** | MEDIUM -- No Macro/Cross-asset strategies. Batch 147 2026-05-13: RESOLVED-DECIDED deferred to Phase 1C. FRED yield curve + VIX + DXY macro signals are in Phase 1A signals_at_entry; macro-conditional strategy layer is Phase 1C scope. | INLINE-ONLY | RESOLVED-DECIDED | - |
+| **BUG-144** | HIGH -- Smart-money signals are binary gates, not continuous strategy inputs. Batch 147 2026-05-13: RESOLVED-DECIDED -- sm.score is a continuous [0-100] field already flowing into _assign_confidence_tier (BUG-103); continuous signal integration into strategy scoring is Phase 1B-alpha deliverable via DEC-422 cube. | INLINE-ONLY | RESOLVED-DECIDED | - |
+| **BUG-145** | HIGH -- No ICT/SMC strategy family (8 core concepts, 16 derived strategies). Batch 147 2026-05-13: RESOLVED-DECIDED deferred to Layer 2 Phase 0.D per CLAUDE.md ("Layer 2 Phase 0.D ICT/Earnings/Calendar + Layer 2D form-derived ICT" in layered roster). DEC-355 through DEC-362 chart pattern + ICT strategies are PENDING Sprint 0A.5+. | INLINE-ONLY | RESOLVED-DECIDED | - |
+| **BUG-146** | HIGH -- No Volume Profile / VPVR strategies. Batch 147 2026-05-13: RESOLVED-DECIDED deferred to Layer 3/Phase 1C per CANONICAL_FACTS.md F-002. Requires intraday tick data for POC/VAH/VAL computation; NBBO Polygon deferred Sprint 0A extension. | INLINE-ONLY | RESOLVED-DECIDED | - |
+| **BUG-147** | MEDIUM -- No Anchored VWAP strategies. Batch 147 2026-05-13: RESOLVED-DECIDED deferred to Layer 3/Phase 1C. Standard VWAP in Phase 1A signals (technical.py); anchored VWAP requires intraday data (out of scope Phase 1A). | INLINE-ONLY | RESOLVED-DECIDED | - |
+| **BUG-148** | MEDIUM -- No Sentiment/Narrative rule strategies (only agent-mediated). Batch 147 2026-05-13: RESOLVED-DECIDED -- AAII bull/bear + CNN F&G numeric scores in Phase 1A signals_at_entry; narrative/text strategies are Phase 1B+ scope when Polygon news text flows to agents (DEC-440/441). | INLINE-ONLY | RESOLVED-DECIDED | - |
+| **BUG-149** | MEDIUM -- No Calendar/Seasonal strategies (FOMC, January, sell-in-May). Batch 147 2026-05-13: RESOLVED-DECIDED deferred to Layer 2D/Phase 0D per CLAUDE.md calendar strategy scope. FOMC/CPI dates in config.py signals_at_entry; seasonal strategy activation is Phase 0D deliverable. | INLINE-ONLY | RESOLVED-DECIDED | - |
+| **BUG-150** | ) inline fragment. Batch 147 2026-05-13: RESOLVED-DECIDED inline marker. | INLINE-ONLY | RESOLVED-DECIDED | - |
+| **BUG-151** | to BUG-159) inline fragment. Batch 147 2026-05-13: RESOLVED-DECIDED deferred to Phase 1B/1C signal computation. | INLINE-ONLY | RESOLVED-DECIDED | - |
+| **BUG-152** | HIGH -- Volume Profile (POC, VAH, VAL, HVN, LVN) not computed. Batch 147 2026-05-13: RESOLVED-DECIDED deferred to Phase 1B/1C -- requires intraday volume data for reliable POC computation; NBBO/intraday from Polygon deferred to Sprint 0A extension. | INLINE-ONLY | RESOLVED-DECIDED | - |
+| **BUG-153** | MEDIUM -- Cumulative Volume Delta (CVD) not computed. Batch 147 2026-05-13: RESOLVED-DECIDED deferred to Phase 1B/1C -- CVD requires bid/ask trade direction tick data; out of scope Phase 1A daily OHLCV. | INLINE-ONLY | RESOLVED-DECIDED | - |
+| **BUG-154** | HIGH -- Relative Strength vs sector and SPY not computed (planned for 1C). Batch 147 2026-05-13: RESOLVED-DECIDED -- stub explicitly noted "planned for 1C"; deferred as documented. SPY OHLCV in cache; sector ETF returns available when Phase 1C signals layer adds RS computation. | INLINE-ONLY | RESOLVED-DECIDED | - |
+| **BUG-155** | MEDIUM -- Per-ticker volatility regime not computed. Batch 147 2026-05-13: RESOLVED-DECIDED -- market-wide regime uses VIX + SPY 20-day realised vol (classify_regime); per-ticker vol regime deferred to Phase 1B-alpha where per-ticker vol signals can be DEC-422 cube tested. | INLINE-ONLY | RESOLVED-DECIDED | - |
+| **BUG-156** | HIGH -- Post-Earnings Announcement Drift (PEAD) tracking absent. Batch 147 2026-05-13: RESOLVED-DECIDED deferred to Layer 2D/Phase 1C. Earnings dates in signals_at_entry (days_to_next_earnings); PEAD-explicit strategy tracking deferred. | INLINE-ONLY | RESOLVED-DECIDED | - |
+| **BUG-157** | MEDIUM -- News headlines not passed to agents as text (only sentiment number). Batch 147 2026-05-13: RESOLVED-DECIDED -- CNN F&G numeric + AAII survey scores in Phase 1A; Polygon 1.05M articles prefetched; text pass-through to agents deferred per DEC-440/441 Phase 1B wiring. | INLINE-ONLY | RESOLVED-DECIDED | - |
+| **BUG-158** | LOW -- Implied volatility / Volatility Risk Premium signals absent (Phase 1C+). Batch 147 2026-05-13: RESOLVED-DECIDED deferred to Phase 1C+ as explicitly noted in stub. | INLINE-ONLY | RESOLVED-DECIDED | - |
+| **BUG-159** | ) inline fragment. Batch 147 2026-05-13: RESOLVED-DECIDED inline marker. | INLINE-ONLY | RESOLVED-DECIDED | - |
+| **BUG-160** | to BUG-167) inline fragment. Batch 147 2026-05-13: RESOLVED-DECIDED -- ICT/SMC signal stubs deferred to Layer 2 Phase 0D. | INLINE-ONLY | RESOLVED-DECIDED | - |
+| **BUG-161** | HIGH -- Fair Value Gap (FVG) detection absent. Batch 147 2026-05-13: RESOLVED-DECIDED deferred to Layer 2 Phase 0D per CLAUDE.md ("Layer 2D form-derived ICT"). DEC-355-362 chart pattern + ICT strategy family roadmap. | INLINE-ONLY | RESOLVED-DECIDED | - |
+| **BUG-162** | HIGH -- Liquidity Sweep / Stop Hunt detection absent. Batch 147 2026-05-13: RESOLVED-DECIDED deferred to Layer 2 Phase 0D ICT/SMC strategy family. | INLINE-ONLY | RESOLVED-DECIDED | - |
+| **BUG-163** | MEDIUM -- Displacement filter absent (quality filter for OB/FVG). Batch 147 2026-05-13: RESOLVED-DECIDED deferred to Layer 2 Phase 0D ICT/SMC strategy family. | INLINE-ONLY | RESOLVED-DECIDED | - |
+| **BUG-164** | MEDIUM -- Breaker Block detection absent. Batch 147 2026-05-13: RESOLVED-DECIDED deferred to Layer 2 Phase 0D ICT/SMC strategy family. | INLINE-ONLY | RESOLVED-DECIDED | - |
+| **BUG-165** | MEDIUM -- Premium/Discount zones not computed. Batch 147 2026-05-13: RESOLVED-DECIDED deferred to Layer 2 Phase 0D ICT/SMC strategy family. | INLINE-ONLY | RESOLVED-DECIDED | - |
+| **BUG-166** | MEDIUM -- Optimal Trade Entry (OTE) Fibonacci zone not computed. Batch 147 2026-05-13: RESOLVED-DECIDED deferred to Layer 2 Phase 0D ICT/SMC strategy family. | INLINE-ONLY | RESOLVED-DECIDED | - |
+| **BUG-167** | ) inline fragment. Batch 147 2026-05-13: RESOLVED-DECIDED inline marker. | INLINE-ONLY | RESOLVED-DECIDED | - |
+| **BUG-168** | to BUG-177) inline fragment. Batch 147 2026-05-13: RESOLVED-DECIDED -- portfolio risk / ML stubs deferred to Phase 1B/1C/Stage 3+. | INLINE-ONLY | RESOLVED-DECIDED | - |
+| **BUG-169** | HIGH -- No correlation-adjusted concentration limits. Batch 147 2026-05-13: RESOLVED-DECIDED -- DEC-076 `factor_concentration_breach` handles sector concentration (wired Batch 74). Cross-ticker CORRELATION limit (distinct from sector concentration) deferred to Phase 1B. | INLINE-ONLY | RESOLVED-DECIDED | - |
+| **BUG-170** | MEDIUM -- No drawdown-aware position sizing. Batch 147 2026-05-13: RESOLVED-DECIDED -- DEC-091 drawdown-band sizing wired in Batch 70 (`portfolio.drawdown_size_multiplier()` at engine line 1002); full risk-parity drawdown scaling deferred to Phase 1B-alpha. | INLINE-ONLY | RESOLVED-DECIDED | - |
+| **BUG-171** | MEDIUM -- No risk parity allocation across strategies. Batch 147 2026-05-13: RESOLVED-DECIDED deferred to Stage 3+. Phase 1A uses tiered fixed sizing (5/4/3/1.5/0.75%) which is simpler and more interpretable for Phase 1A validation. | INLINE-ONLY | RESOLVED-DECIDED | - |
+| **BUG-172** | MEDIUM -- No walk-forward parameter optimization (all params static). Batch 147 2026-05-13: RESOLVED-DECIDED -- DEC-422 cube (Phase 1A-alpha output) generates per-cell verdicts from which Phase 1B-alpha can derive optimal parameter ranges. Active optimization is Phase 1B-alpha deliverable. | INLINE-ONLY | RESOLVED-DECIDED | - |
+| **BUG-173** | MEDIUM -- No online learning / feedback loop from live performance. Batch 147 2026-05-13: RESOLVED-DECIDED deferred to Stage 3+/Phase 1C+. Phase 1A is static historical validation; online learning requires live trade results (Stage 3+). | INLINE-ONLY | RESOLVED-DECIDED | - |
+| **BUG-174** | LOW -- No execution algorithm sophistication (acceptable at $10K scale). Batch 147 2026-05-13: RESOLVED-DECIDED -- stub explicitly noted "acceptable at $10K scale"; market-order execution + IBKR fixed-tier cost model (BUG-205 Batch 107) is appropriate for current scale. | INLINE-ONLY | RESOLVED-DECIDED | - |
+| **BUG-175** | HIGH -- No regime-conditional strategy weighting (smooth mixture). Batch 147 2026-05-13: RESOLVED-DECIDED -- STRATEGY_REGIME_BLOCKLIST (BUG-34 Batch 109) is the Phase 1A mechanism; smooth mixture weights are Phase 1B-alpha DEC-422 cube output. | INLINE-ONLY | RESOLVED-DECIDED | - |
+| **BUG-176** | MEDIUM -- No ML enhancement layer (acceptable; agents are intended substitute). Batch 147 2026-05-13: RESOLVED-DECIDED -- stub explicitly noted "acceptable; agents are intended substitute". Phase 1B LLM agents (TradingAgents pattern) are the ML layer. | INLINE-ONLY | RESOLVED-DECIDED | - |
+| **BUG-177** | ) inline fragment. Batch 147 2026-05-13: RESOLVED-DECIDED inline marker. | INLINE-ONLY | RESOLVED-DECIDED | - |
+| **BUG-192** | ) inline fragment. Batch 147 2026-05-13: RESOLVED-DECIDED inline marker. | INLINE-ONLY | RESOLVED-DECIDED | - |
+| **BUG-193** | NEW) inline fragment. Batch 147 2026-05-13: RESOLVED-DECIDED inline marker. | INLINE-ONLY | RESOLVED-DECIDED | - |
+| **BUG-194** | NEW) inline fragment. Batch 147 2026-05-13: RESOLVED-DECIDED inline marker. | INLINE-ONLY | RESOLVED-DECIDED | - |
+| **BUG-195** | NEW) inline fragment. Batch 147 2026-05-13: RESOLVED-DECIDED inline marker. | INLINE-ONLY | RESOLVED-DECIDED | - |
+| **BUG-196** | NEW) inline fragment. Batch 147 2026-05-13: RESOLVED-DECIDED inline marker. | INLINE-ONLY | RESOLVED-DECIDED | - |
+| **BUG-197** | NEW) inline fragment. Batch 147 2026-05-13: RESOLVED-DECIDED inline marker. | INLINE-ONLY | RESOLVED-DECIDED | - |
+| **BUG-198** | (NEW) CRITICAL -- No structural PIT data loader; each data source uses ad-hoc PIT filters. Batch 147 2026-05-13: RESOLVED-DECIDED -- DEC-504 `resolve_tier_precedence(ticker, as_of)` + `get_tier_params(ticker, as_of)` provide the structural multi-tier PIT precedence resolver (backtest/data/universe.py). Per-source ad-hoc PIT filters (congressional 45-day lag BUG-83, AAII pub-lag BUG-235, cache index start/end/rows BUG-73) are accepted as source-specific; a single monolithic PIT loader is Sprint 0A.10+ scope. | INLINE-ONLY | RESOLVED-DECIDED | - |
 
 ---
 *Regenerated April 2026 after Pass 51.*
