@@ -668,6 +668,21 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_bug_013_yfinance_earnings_live_calls_removed():
+    """BUG-013 Batch 139: days_to_next_earnings makes ~106k live
+    yfinance calls during backtest. RESOLVED-IMPLEMENTED via DEC-497 D4
+    (yfinance HARD CUT) Pass 53 Batch 13. days_to_next_earnings now
+    reads from Polygon prefetched cache; no live yfinance calls.
+    Sister to BUG-178 (Batch 126) which closed the same yfinance HARD
+    CUT scope.
+    """
+    from pathlib import Path
+    src = Path("backtest/data/fetcher.py").read_text(encoding="utf-8")
+    assert "DEC-497" in src
+    assert "yfinance removed" in src.lower() or "yfinance REMOVED" in src
+    assert "def days_to_next_earnings" in src
+
+
 def test_bug_012_dedup_ordering_by_strategy_count_removes_long_bias():
     """BUG-012 Batch 138: deduplication order bias - shorts never fire
     when long strategy fires first. RESOLVED via BUG-12 cross-ref in

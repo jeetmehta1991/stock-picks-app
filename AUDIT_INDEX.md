@@ -1227,7 +1227,7 @@
 | **BUG-010** | Agent signal keys wrong — agents always see `False` for key price context | UNKNOWN | OPEN | - |
 | **BUG-011** | `williams_r` short default fires incorrectly | UNKNOWN | OPEN | - |
 | **BUG-012** | Deduplication order bias - shorts never fire when long strategy fires first. RESOLVED-IMPLEMENTED via BUG-12 cross-ref in `backtest/engine/backtest.py:933` - dedup ordering by `strategy_count` desc (not arbitrary long-before-short) means shorts CAN win when they have higher signal confluence. Batch 138 2026-05-13 false-positive OPEN correction. Pyramid: 735/735 mandatory T1-T10 green. | UNKNOWN | RESOLVED-IMPLEMENTED | - |
-| **BUG-013** | `days_to_next_earnings` makes ~106,000 live yfinance calls during backtest | UNKNOWN | OPEN | - |
+| **BUG-013** | `days_to_next_earnings` makes ~106,000 live yfinance calls during backtest. RESOLVED-IMPLEMENTED via DEC-497 D4 (yfinance HARD CUT) Pass 53 Batch 13. `days_to_next_earnings` now reads from Polygon prefetched cache; no live yfinance calls. Sister to BUG-178 (Batch 126) which closed the same yfinance HARD CUT scope. Batch 139 2026-05-13 false-positive OPEN correction. Pyramid: 736/736 mandatory T1-T10 green. | UNKNOWN | RESOLVED-IMPLEMENTED | - |
 | **BUG-014** | AAPL, CVS, JPM, NVDA missing from `run_full.sh` batch ticker lists | UNKNOWN | OPEN | - |
 | **BUG-015** | `max_drawdown` uses `cumsum()` instead of compounded equity curve | UNKNOWN | OPEN | - |
 | **BUG-016** | `PASSING_CRITERIA min_trades = 100` contradicts all documentation | UNKNOWN | OPEN | - |
