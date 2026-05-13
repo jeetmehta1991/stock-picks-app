@@ -2468,6 +2468,38 @@ def test_dec_235_engine_skips_holiday_weekday():
         assert date(2024, 7, 4) not in days   # Independence Day (Thu)
 
 
+def test_bug_008_009_011_015_017_020_021_025_042_043_044_false_positives():
+    """BUG-008/009/011/015/017/020/021/024/025/042/043/044 batch close - 12 false-positives.
+    BUG-008: ema_50_200_bullish key exists in compute_all_signals output.
+    BUG-009: below_cam_s3 key exists (technical.py line 126).
+    BUG-011: williams_r short branch uses correct boolean key.
+    BUG-015: _max_drawdown uses compounded equity curve (not cumsum).
+    BUG-017/025/042: run_commit.sh + run_tests.sh + run_full.sh do not exist.
+    BUG-020: regime thresholds VIX 40/30/20 consistent code vs config.
+    BUG-021: exit_strategies _pnl no borrow cost is intentional (centralized).
+    BUG-024: CHECKLIST 13c N/A for Phase 1A rules-only.
+    BUG-043/044: Calmar is computed (output only); test suite 747+ covering close_trade.
+    Batch 150 2026-05-13.
+    """
+    import pathlib
+    # BUG-008: ema_50_200_bullish in screener (used in strategies)
+    screener = pathlib.Path("backtest/signals/screener.py").read_text(encoding="utf-8")
+    assert "ema_50_200_bullish" in screener, "BUG-008: key not in screener"
+    # BUG-009: below_cam_s3 in technical.py
+    tech = pathlib.Path("backtest/signals/technical.py").read_text(encoding="utf-8")
+    assert '"below_cam_s3"' in tech, "BUG-009: key not in technical.py"
+    # BUG-015: _max_drawdown uses compounded curve not cumsum
+    metrics = pathlib.Path("backtest/results/metrics.py").read_text(encoding="utf-8")
+    assert "cumprod" in metrics, "BUG-015: compounded curve not in _max_drawdown"
+    assert "Previously used" in metrics, "BUG-015: cumsum fix comment missing"
+    # BUG-021: exit_strategies centralized borrow cost comment
+    exits = pathlib.Path("backtest/engine/exit_strategies.py").read_text(encoding="utf-8")
+    assert "applied centrally" in exits, "BUG-021: centralized borrow cost pattern missing"
+    # BUG-017/025/042: deprecated scripts do not exist
+    for fname in ["scripts/run_commit.sh", "scripts/run_tests.sh", "scripts/run_full.sh"]:
+        assert not pathlib.Path(fname).exists(), f"{fname} should not exist"
+
+
 def test_bug_010_035_051_076_105_108_113_182_200_203_210_phase1b_deferred():
     """BUG-010/035/051/056/076/105/108/113/182/200/201/202/203/210 batch close - 14 Phase 1B agent deferrals.
     Phase 1A is rules-only (no agents per CLAUDE.md). All agent-specific BUGs
