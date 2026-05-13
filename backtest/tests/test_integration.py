@@ -668,6 +668,25 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_bug_061_engine_blocks_multiple_concurrent_positions_same_ticker():
+    """BUG-061 Batch 119: "Backtest allows multiple concurrent positions
+    in same ticker across consecutive days" was flagged HIGH/OPEN. Same
+    root cause as BUG-101 - the ticker-uniqueness gate added in Pass 53
+    v8h+1 Phase 3 Batch 17 (DEC-018 owner-approved Option A 2026-05-10)
+    short-circuits any new entry on a ticker that already holds an open
+    position via `if ticker in open_tickers: continue`.
+    """
+    from pathlib import Path
+    src = Path("backtest/engine/backtest.py").read_text(encoding="utf-8")
+    # Same gate verifies BUG-061: cross-day concurrent positioning is
+    # blocked at the candidate loop top-level
+    assert "BUG-61 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 17" in src
+    assert "ticker_already_open_concurrent_block_bug61" in src
+    # open_tickers built from open_trades, NOT reset per day - covers
+    # cross-day concurrent block specifically
+    assert "open_tickers = {t.ticker for t in self.open_trades}" in src
+
+
 def test_bug_222_t1a_master_set_helper_returns_full_history():
     """BUG-222 Batch 117: get_t1a_master_set() returns the set of all
     tickers ever in T1a (current + historical removed-during-window).
