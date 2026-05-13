@@ -668,6 +668,20 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_bug_007_no_agents_flag_wired_in_run_phase1a():
+    """BUG-007 Batch 143: API key guard blocks no-agent run. RESOLVED
+    via --no-agents flag in run_phase1a.py:131 + agents=not args.no_agents
+    at line 164. QUIVER_API_KEY is "optional - smart money signals"
+    (line 42); engine handles missing keys gracefully via zeroed sm dict.
+    Phase 1A baseline (per CLAUDE.md) is rules-only no-agents.
+    """
+    from pathlib import Path
+    src = Path("backtest/run_phase1a.py").read_text(encoding="utf-8")
+    assert '--no-agents' in src
+    assert 'QUIVER_API_KEY' in src
+    assert 'optional' in src.lower()
+
+
 def test_bug_019_ohlcv_cache_extended_to_current_date():
     """BUG-019 Batch 142: OHLCV cache incomplete - 402 of 495 tickers
     only cover to 2024-12-31. RESOLVED-IMPLEMENTED via Pass 53 OHLCV

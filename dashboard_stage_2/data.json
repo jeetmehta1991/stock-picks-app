@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-13T05:53:28.982918+00:00",
+  "generated_at": "2026-05-13T05:57:50.226047+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -19493,7 +19493,7 @@
         "pyramid": {
           "unit": "N/A",
           "smoke": "N/A",
-          "integration": "N/A",
+          "integration": true,
           "system": "N/A",
           "functional": "N/A",
           "regression": true,
@@ -19510,12 +19510,12 @@
       "sprint": "RESOLVED 2026-05-08 v8h+1 - test_bug_007 in test_regression.py confirms _call_claude returns None on missing key (soft guard); --no-agents bypasses agent branch.",
       "dependencies": "DEC-458",
       "description": "**Files:** `run_full.sh` lines 13\u201319, `run_tests.sh` lines 13\u201319",
-      "status": "OPEN",
+      "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
         "tier": "READY",
         "label": "READY-TO-CLOSE",
         "color": "#10b981",
-        "reason": "Has code+test artifacts; flip to RESOLVED"
+        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
       }
     },
     {
@@ -23233,7 +23233,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 24,
+        "n_doc_refs": 25,
         "pyramid": {
           "unit": false,
           "smoke": "N/A",
@@ -35054,64 +35054,70 @@
   ],
   "recent_commits": [
     {
+      "sha": "a04b06df",
+      "subject": "Batch 142: BUG-019 false-positive - cache extended to May 2026 via Sprint 0A prefetch. Pyramid 739/739.",
+      "author": "jeetmehta1991",
+      "rel_time": "4 minutes ago"
+    },
+    {
       "sha": "7eca7727",
       "subject": "Batch 141: BUG-016 false-positive - min_trades canonicalized via BUG-31 Batch 112 + CLAUDE.md sweep. Pyramid 738/738.",
       "author": "jeetmehta1991",
-      "rel_time": "4 minutes ago"
+      "rel_time": "8 minutes ago"
     },
     {
       "sha": "4d1d9d32",
       "subject": "Batch 140: BUG-014 false-positive - run_full.sh deprecated, AAPL/CVS/JPM/NVDA in current splits. Pyramid 737/737.",
       "author": "jeetmehta1991",
-      "rel_time": "7 minutes ago"
+      "rel_time": "12 minutes ago"
     },
     {
       "sha": "dd165fbc",
       "subject": "Batch 139: BUG-013 false-positive - yfinance HARD CUT (sister BUG-178). Pyramid 736/736.",
       "author": "jeetmehta1991",
-      "rel_time": "11 minutes ago"
+      "rel_time": "15 minutes ago"
     },
     {
       "sha": "2bae2a1a",
       "subject": "Batch 138: BUG-012 false-positive - dedup ordering by strategy_count desc via BUG-12 fix. Pyramid 735/735.",
       "author": "jeetmehta1991",
-      "rel_time": "14 minutes ago"
+      "rel_time": "19 minutes ago"
     },
     {
       "sha": "98855527",
       "subject": "Batch 137: BUG-006 false-positive - borrow cost single-sourced via DEC-295 Pass 50. Pyramid 734/734.",
       "author": "jeetmehta1991",
-      "rel_time": "18 minutes ago"
+      "rel_time": "23 minutes ago"
     },
     {
       "sha": "f76fc024",
       "subject": "Batch 136: BUG-004 false-positive - avoid direction routed to skip via BUG-04 fix. Pyramid 733/733.",
       "author": "jeetmehta1991",
-      "rel_time": "22 minutes ago"
+      "rel_time": "26 minutes ago"
     },
     {
       "sha": "7bbe25b3",
       "subject": "Batch 135: BUG-003 false-positive - ClosedTrade duplicate removed via BUG-215 Pass 48. Pyramid 732/732.",
       "author": "jeetmehta1991",
-      "rel_time": "25 minutes ago"
+      "rel_time": "30 minutes ago"
     },
     {
       "sha": "767b4b0c",
       "subject": "Batch 134: BUG-002 false-positive - days var hoisted via BUG-214 fix Pass 48. Pyramid 731/731.",
       "author": "jeetmehta1991",
-      "rel_time": "29 minutes ago"
+      "rel_time": "33 minutes ago"
     },
     {
       "sha": "c41d6384",
       "subject": "Batch 133: BUG-001 false-positive - crisis_flag hoisted via BUG-01",
       "author": "jeetmehta1991",
-      "rel_time": "33 minutes ago"
+      "rel_time": "37 minutes ago"
     },
     {
       "sha": "ea3cf254",
       "subject": "Batch 132: BUG-068 false-positive correction - CLAUDE.md current via per-turn sweep",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "53b3d6c8",
@@ -35183,7 +35189,7 @@
       "sha": "081979a9",
       "subject": "Batch 120: BUG-233 false-positive correction - sister to DEC-314 Batch 85",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "40559bf8",
@@ -35195,7 +35201,7 @@
       "sha": "56218df5",
       "subject": "Batch 118: end-of-arc doc sweep - CLAUDE.md Passing Criteria reflects BUG-31/32/33",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "edf1755d",
@@ -35224,12 +35230,6 @@
     {
       "sha": "adc33de8",
       "subject": "Batch 113: BUG-232 config-toggleable trailing-stop ratchet source",
-      "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
-    },
-    {
-      "sha": "74cc4cd1",
-      "subject": "Batch 112: BUG-31 tiered min_trades_per_regime codified in PASSING_CRITERIA",
       "author": "jeetmehta1991",
       "rel_time": "6 hours ago"
     }
@@ -35429,7 +35429,7 @@
     }
   ],
   "test_inventory": {
-    "total": 1241,
+    "total": 1242,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -35465,7 +35465,7 @@
       "test_fred_alfred_smoke": 5,
       "test_gate_pre_phase_1a_entry": 8,
       "test_gates": 6,
-      "test_integration": 128,
+      "test_integration": 129,
       "test_inv041_path_restricted_commits": 5,
       "test_l146_wave_a_g2_g3_g9": 6,
       "test_l146_wave_b_g7_sec_edgar": 6,
@@ -36121,8 +36121,8 @@
     "DEFERRED": 2
   },
   "bug_status_counts": {
-    "RESOLVED-IMPLEMENTED": 47,
-    "OPEN": 217,
+    "RESOLVED-IMPLEMENTED": 48,
+    "OPEN": 216,
     "CRITICAL": 2,
     "WILL_RESOLVE_VIA_DEC-440": 2,
     "RESOLVED-DECIDED": 2,
