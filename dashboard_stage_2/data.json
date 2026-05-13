@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-13T01:43:26.111042+00:00",
+  "generated_at": "2026-05-13T01:48:45.408980+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -17893,7 +17893,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 49,
+        "n_doc_refs": 53,
         "pyramid": {
           "unit": "N/A",
           "smoke": true,
@@ -26598,58 +26598,64 @@
   ],
   "recent_commits": [
     {
+      "sha": "42b0114e",
+      "subject": "Batch 125: BUG-083 false-positive correction - congressional PIT fix wired Batch 18",
+      "author": "jeetmehta1991",
+      "rel_time": "5 minutes ago"
+    },
+    {
       "sha": "a25d0240",
       "subject": "Batch 124: BUG-080 false-positive correction - apply_exit_slippage wired Batch 15",
       "author": "jeetmehta1991",
-      "rel_time": "4 minutes ago"
+      "rel_time": "9 minutes ago"
     },
     {
       "sha": "4ba89486",
       "subject": "Batch 123: BUG-180 false-positive correction - sister to BUG-26 cluster",
       "author": "jeetmehta1991",
-      "rel_time": "8 minutes ago"
+      "rel_time": "13 minutes ago"
     },
     {
       "sha": "6d29bac1",
       "subject": "Batch 122: BUG-052 false-positive correction (downstream of BUG-26 fix)",
       "author": "jeetmehta1991",
-      "rel_time": "11 minutes ago"
+      "rel_time": "17 minutes ago"
     },
     {
       "sha": "1f457aad",
       "subject": "Batch 121: BUG-244 false-positive correction - MAE/MFE updated before CB check",
       "author": "jeetmehta1991",
-      "rel_time": "15 minutes ago"
+      "rel_time": "20 minutes ago"
     },
     {
       "sha": "081979a9",
       "subject": "Batch 120: BUG-233 false-positive correction - sister to DEC-314 Batch 85",
       "author": "jeetmehta1991",
-      "rel_time": "19 minutes ago"
+      "rel_time": "24 minutes ago"
     },
     {
       "sha": "40559bf8",
       "subject": "Batch 119: BUG-061 false-positive correction - sister to BUG-101",
       "author": "jeetmehta1991",
-      "rel_time": "22 minutes ago"
+      "rel_time": "28 minutes ago"
     },
     {
       "sha": "56218df5",
       "subject": "Batch 118: end-of-arc doc sweep - CLAUDE.md Passing Criteria reflects BUG-31/32/33",
       "author": "jeetmehta1991",
-      "rel_time": "79 minutes ago"
+      "rel_time": "84 minutes ago"
     },
     {
       "sha": "edf1755d",
       "subject": "Batch 117: BUG-222 tier-specific PIT S&P 500 universe filter (option B)",
       "author": "jeetmehta1991",
-      "rel_time": "82 minutes ago"
+      "rel_time": "88 minutes ago"
     },
     {
       "sha": "c15d0cfa",
       "subject": "Batch 116: BUG-218 + BUG-239 PIT sector wired at 3 engine sites",
       "author": "jeetmehta1991",
-      "rel_time": "89 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "b1b7b9e0",
@@ -26745,7 +26751,7 @@
       "sha": "e7adc4ec",
       "subject": "Batch 100: docs sweep - annotate skipped BUGs with triage context",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "e9f6ada4",
@@ -26768,12 +26774,6 @@
     {
       "sha": "00f4d4c5",
       "subject": "Batch 96: BUG-103 false-positive correction - smart_money_score wired in tier assignment",
-      "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
-    },
-    {
-      "sha": "529ee39a",
-      "subject": "Batch 95: BUG-102 false-positive correction - same-day dedup wired",
       "author": "jeetmehta1991",
       "rel_time": "6 hours ago"
     }
@@ -26973,7 +26973,7 @@
     }
   ],
   "test_inventory": {
-    "total": 1222,
+    "total": 1223,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -27009,7 +27009,7 @@
       "test_fred_alfred_smoke": 5,
       "test_gate_pre_phase_1a_entry": 8,
       "test_gates": 6,
-      "test_integration": 109,
+      "test_integration": 110,
       "test_inv041_path_restricted_commits": 5,
       "test_l146_wave_a_g2_g3_g9": 6,
       "test_l146_wave_b_g7_sec_edgar": 6,

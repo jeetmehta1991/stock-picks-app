@@ -668,6 +668,29 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_bug_178_179_yfinance_removed_from_runtime_per_dec_497():
+    """BUG-178 + BUG-179 Batch 126: "Earnings dates fetched live during
+    backtest, no prefetch path" + "yfinance .info fetched live during
+    backtest universe load" - sister bugs both RESOLVED-IMPLEMENTED via
+    DEC-497 D4 (yfinance HARD CUT) in Pass 53 Batch 13 sub-task 6
+    (2026-05-06). yfinance is no longer imported at runtime; all data
+    reads come from prefetched caches (Polygon reference + OHLCV).
+    `days_to_next_earnings` reads from prefetched cache; `fetch_info`
+    reads from Polygon reference Parquet.
+    """
+    from pathlib import Path
+    src = Path("backtest/data/fetcher.py").read_text(encoding="utf-8")
+    # yfinance HARD CUT comment + Polygon prefetch path
+    assert "DEC-497 D4 yfinance HARD CUT" in src or "DEC-497 NO-LIVE-API HARD CUT" in src
+    assert "yfinance removed" in src.lower() or "yfinance REMOVED" in src
+    # earnings + info fetchers documented as DEC-497 D4 cut
+    assert "days_to_next_earnings" in src
+    assert "def fetch_info" in src
+    # No live yfinance import at module level
+    assert "import yfinance" not in src
+    assert "import yfinance as yf" not in src
+
+
 def test_bug_083_congressional_detail_pit_filter_uses_report_date():
     """BUG-083 Batch 125: get_congressional_detail() filtered with
     INVERTED point-in-time logic (subtracted an extra 45 days from
