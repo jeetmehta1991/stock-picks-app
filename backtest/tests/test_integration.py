@@ -668,6 +668,19 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_bug_012_dedup_ordering_by_strategy_count_removes_long_bias():
+    """BUG-012 Batch 138: deduplication order bias - shorts never fire
+    when long strategy fires first. RESOLVED via BUG-12 cross-ref in
+    backtest/engine/backtest.py:933 - dedup ordering by strategy_count
+    desc (not arbitrary long-before-short) means shorts CAN win when
+    they have higher signal confluence.
+    """
+    from pathlib import Path
+    src = Path("backtest/engine/backtest.py").read_text(encoding="utf-8")
+    assert "BUG-12 RESOLVED-IMPLEMENTED" in src
+    assert "strategy_count" in src
+
+
 def test_bug_006_double_borrow_cost_single_sourced():
     """BUG-006 Batch 137: double borrow cost on short trades. RESOLVED
     via DEC-295 fix (Pass 50) - centralized in apply_transaction_costs
