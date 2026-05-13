@@ -668,6 +668,24 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_bug_219_dec_298_spec_constants_present_for_future_wiring():
+    """BUG-219 Batch 115: RESOLVED-DECIDED via owner-approved option B
+    2026-05-12 - accept current adjusted-close caching for Phase 1A;
+    revisit Stage 3+ when paper-trading exposes real PIT mismatches.
+    DEC-298 spec constants are present at backtest/config.py:708-713
+    so the eventual implementation is spec-ready when revisited.
+    """
+    from backtest.config import CACHE_AUTO_ADJUST, CACHE_STORES_CORP_ACTIONS
+    # Spec ready: constants exist + carry the canonical values
+    assert CACHE_AUTO_ADJUST is False
+    assert CACHE_STORES_CORP_ACTIONS is True
+    # AUDIT_INDEX documents the decided deferral
+    from pathlib import Path
+    audit_src = Path("AUDIT_INDEX.md").read_text(encoding="utf-8")
+    assert "BUG-219" in audit_src
+    assert "RESOLVED-DECIDED Batch 115" in audit_src
+
+
 def test_bug_30_level_5_tighten_in_crisis_default_true():
     """BUG-30 Batch 114: config-toggleable Level-5 VIX-crisis tighten.
     Owner-approved option C 2026-05-12: default True preserves current

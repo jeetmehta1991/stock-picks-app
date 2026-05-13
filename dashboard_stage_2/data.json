@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-13T00:05:54.262211+00:00",
+  "generated_at": "2026-05-13T00:09:17.034920+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -10537,7 +10537,7 @@
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
-          "integration": "N/A",
+          "integration": true,
           "system": "N/A",
           "functional": "N/A",
           "regression": "N/A",
@@ -19863,7 +19863,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 15,
+        "n_doc_refs": 16,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -26598,52 +26598,58 @@
   ],
   "recent_commits": [
     {
+      "sha": "40f224d1",
+      "subject": "Batch 114: BUG-30 config-toggleable Level-5 VIX-crisis tighten",
+      "author": "jeetmehta1991",
+      "rel_time": "3 minutes ago"
+    },
+    {
       "sha": "adc33de8",
       "subject": "Batch 113: BUG-232 config-toggleable trailing-stop ratchet source",
       "author": "jeetmehta1991",
-      "rel_time": "4 minutes ago"
+      "rel_time": "8 minutes ago"
     },
     {
       "sha": "74cc4cd1",
       "subject": "Batch 112: BUG-31 tiered min_trades_per_regime codified in PASSING_CRITERIA",
       "author": "jeetmehta1991",
-      "rel_time": "10 minutes ago"
+      "rel_time": "13 minutes ago"
     },
     {
       "sha": "4f86341c",
       "subject": "Batch 111: BUG-32 tiered profit-factor passing criterion (1.2 per-regime, 1.5 overall)",
       "author": "jeetmehta1991",
-      "rel_time": "13 minutes ago"
+      "rel_time": "17 minutes ago"
     },
     {
       "sha": "afcaad93",
       "subject": "Batch 110: BUG-33 tiered Sharpe passing criterion in PASSING_CRITERIA",
       "author": "jeetmehta1991",
-      "rel_time": "17 minutes ago"
+      "rel_time": "20 minutes ago"
     },
     {
       "sha": "858ac20d",
       "subject": "Batch 109: BUG-34 per-strategy regime_blocklist config + engine gate",
       "author": "jeetmehta1991",
-      "rel_time": "21 minutes ago"
+      "rel_time": "24 minutes ago"
     },
     {
       "sha": "158663d0",
       "subject": "Batch 108: BUG-96 SPY buy-and-hold benchmark in compute_portfolio_summary",
       "author": "jeetmehta1991",
-      "rel_time": "25 minutes ago"
+      "rel_time": "28 minutes ago"
     },
     {
       "sha": "20391302",
       "subject": "Batch 107: BUG-205 IBKR fixed-tier cost cap wired into apply_transaction_costs",
       "author": "jeetmehta1991",
-      "rel_time": "29 minutes ago"
+      "rel_time": "32 minutes ago"
     },
     {
       "sha": "38c5a7e8",
       "subject": "Batch 106: BUG-32 SKIP triage - profit factor 1.3->1.5 threshold owner decision",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "2ead2e59",
@@ -26770,17 +26776,11 @@
       "subject": "Batch 85: DEC-314 false-positive correction \u00e2\u20ac\u201d market-wide CB confirmed wired",
       "author": "jeetmehta1991",
       "rel_time": "7 hours ago"
-    },
-    {
-      "sha": "0fdaf906",
-      "subject": "Batch 84: DEC-183 GENUINELY WIRED \u00e2\u20ac\u201d lru_cached on classify_regime",
-      "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 4,
-    "modified": 4,
+    "count": 2,
+    "modified": 2,
     "added": 0,
     "untracked": 0,
     "deleted": 0,
@@ -26788,14 +26788,6 @@
       {
         "status": "M",
         "path": "AUDIT_INDEX.md"
-      },
-      {
-        "status": "M",
-        "path": "backtest/config.py"
-      },
-      {
-        "status": "M",
-        "path": "backtest/engine/exit_manager.py"
       },
       {
         "status": "M",
@@ -26981,7 +26973,7 @@
     }
   ],
   "test_inventory": {
-    "total": 1209,
+    "total": 1210,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -27017,7 +27009,7 @@
       "test_fred_alfred_smoke": 5,
       "test_gate_pre_phase_1a_entry": 8,
       "test_gates": 6,
-      "test_integration": 96,
+      "test_integration": 97,
       "test_inv041_path_restricted_commits": 5,
       "test_l146_wave_a_g2_g3_g9": 6,
       "test_l146_wave_b_g7_sec_edgar": 6,
