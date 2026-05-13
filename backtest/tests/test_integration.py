@@ -668,6 +668,25 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_bug_180_dedicated_vix_dxy_prefetch_script_exists():
+    """BUG-180 Batch 123: "VIX not explicitly prefetched; VXX used as
+    proxy is cause of BUG-26" - sister to BUG-26 cluster. RESOLVED via
+    DEC-302 (Pass 50) which authored `scripts/prefetch_vix_dxy.py` to
+    populate the OHLCV cache with real ^VIX + DX-Y.NYB. Once the
+    Codespace-run prefetch completes, macro.py's canonical-first loader
+    finds the real index data and the WARNING fallback to VXX/UUP no
+    longer fires.
+    """
+    from pathlib import Path
+    script = Path("scripts/prefetch_vix_dxy.py")
+    assert script.exists(), "BUG-180 fix script must exist"
+    content = script.read_text(encoding="utf-8")
+    # Script must reference DEC-302 origin + handle both ^VIX and DX-Y.NYB
+    assert "DEC-302" in content
+    assert "^VIX" in content
+    assert "DX-Y.NYB" in content
+
+
 def test_bug_052_risk_agent_vix_floor_resolved_via_bug_26_fix():
     """BUG-052 Batch 122: "Risk Agent's VIX floor behavior now fully
     explained by BUG-26" - Risk Agent saw weird VIX floor because the
