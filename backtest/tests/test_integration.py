@@ -2972,6 +2972,73 @@ def test_bug_082_226_227_229_245_258_263_batch158():
     assert callable(apply_slippage), "apply_slippage must be callable (distinct from TRANSACTION_COSTS)"
 
 
+def test_bug_055_060_batch161_code_fixes():
+    """Batch 161: BUG-055 PSAR flip fix + BUG-060 short entry zone gap-down fix.
+
+    BUG-055: psar_flip_up/dn must use prev_bullish tracking, not pclose > psar approximation.
+    BUG-060: validate_entry_zone must allow favorable gap-downs for short entries.
+    """
+    import pathlib
+
+    tech_src = pathlib.Path("backtest/signals/technical.py").read_text(encoding="utf-8")
+    screener_src = pathlib.Path("backtest/signals/screener.py").read_text(encoding="utf-8")
+
+    # BUG-055: prev_bullish tracking present, old approximation removed
+    assert "prev_bullish" in tech_src, "BUG-055: prev_bullish must be tracked in technical.py"
+    assert "BUG-055" in tech_src, "BUG-055 fix comment must be present in technical.py"
+    assert "psar_flip_up: bullish and not prev_bullish" in tech_src or \
+           '"psar_flip_up": bullish and not prev_bullish' in tech_src, (
+        "BUG-055: psar_flip_up must use prev_bullish, not pclose > psar_long approximation"
+    )
+
+    # BUG-055 behavioral: manual PSAR computes flip on correct bar (not one bar early/late)
+    from backtest.signals.technical import compute_parabolic_sar
+    import pandas as pd
+    import numpy as np
+    # 20-bar series with known direction changes
+    rng = np.random.default_rng(12)
+    n = 40
+    prices = 100 + np.cumsum(rng.normal(0, 0.5, n))
+    df = pd.DataFrame({
+        "high": prices + 0.5,
+        "low": prices - 0.5,
+        "close": prices,
+    })
+    result = compute_parabolic_sar(df)
+    # Flip signals must be bool, not accidentally True on every bar
+    assert isinstance(result.get("psar_flip_up"), (bool, np.bool_)), (
+        "BUG-055: psar_flip_up must be bool"
+    )
+    # Both cannot be True simultaneously (flip_up and flip_dn are mutually exclusive)
+    assert not (result.get("psar_flip_up") and result.get("psar_flip_dn")), (
+        "BUG-055: psar_flip_up and psar_flip_dn cannot both be True on same bar"
+    )
+
+    # BUG-060: short entry zone fix
+    assert "BUG-060" in screener_src, "BUG-060 fix comment must be present in screener.py"
+    assert "short_adverse_gap_up" in screener_src, (
+        "BUG-060: short adverse gap-up rejection reason must reference 'short_adverse_gap_up'"
+    )
+
+    # BUG-060 behavioral: gap-down for short must pass (favorable entry)
+    from backtest.signals.screener import validate_entry_zone
+    # Short entry: signal_close=100, open=95 (5% gap down) -- FAVORABLE, must pass
+    valid, reason = validate_entry_zone(95.0, 100.0, atr=2.0, category="momentum", direction="short")
+    assert valid, f"BUG-060: gap-down on short entry must be VALID (favorable), got reason: {reason}"
+
+    # Short entry: signal_close=100, open=110 (10% gap up, 5x ATR) -- ADVERSE, must reject
+    valid2, reason2 = validate_entry_zone(110.0, 100.0, atr=2.0, category="momentum", direction="short")
+    assert not valid2, f"BUG-060: adverse gap-up on short must be REJECTED, got: {reason2}"
+
+    # Long entry: gap-down still allowed (favorable)
+    valid3, reason3 = validate_entry_zone(95.0, 100.0, atr=2.0, category="momentum", direction="long")
+    assert valid3, f"BUG-060: gap-down on long entry must be VALID (favorable), got: {reason3}"
+
+    # Long entry: excessive gap-up still rejected
+    valid4, reason4 = validate_entry_zone(110.0, 100.0, atr=2.0, category="momentum", direction="long")
+    assert not valid4, f"BUG-060: excessive gap-up on long must be REJECTED, got: {reason4}"
+
+
 def test_bug_054_075_batch160_code_fixes():
     """Batch 160: BUG-054 HMA WMA fix + BUG-075 max_drawdown sort fix.
 

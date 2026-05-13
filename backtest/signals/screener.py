@@ -923,23 +923,33 @@ def validate_entry_zone(
     category: str,
     direction: str,
 ) -> tuple[bool, str]:
-    """
-    Check if the next-day open is within the acceptable entry zone.
+    """Check if the next-day open is within the acceptable entry zone.
+
     Returns (valid: bool, reason: str).
+
+    BUG-060 fix 2026-05-13: for short entries, only ADVERSE gap-ups are rejected.
+    A gap-down on a short is FAVORABLE (lower entry = more downside room) and must
+    NOT be filtered out. Previous code incorrectly applied gap_down > mult*ATR as a
+    short-entry rejection, understating short strategy performance. Correct logic:
+    - Long  entry: reject excessive gap-UP   (adverse: entered above signal level)
+    - Short entry: reject excessive gap-UP   (adverse: stock moved against the short)
+    - Long  entry: gap-down is acceptable    (favorable: better long entry price)
+    - Short entry: gap-down is acceptable    (favorable: lower short entry price)
     """
     from backtest.config import ENTRY_GAP_ATR_MULT
-    mult      = ENTRY_GAP_ATR_MULT.get(category, 1.5)
-    gap_atr   = (open_price - signal_close) / atr if atr > 0 else 0
-    gap_pct   = (open_price - signal_close) / signal_close * 100 if signal_close > 0 else 0
+    mult    = ENTRY_GAP_ATR_MULT.get(category, 1.5)
+    gap_atr = (open_price - signal_close) / atr if atr > 0 else 0
+    gap_pct = (open_price - signal_close) / signal_close * 100 if signal_close > 0 else 0
 
     if direction == "long":
+        # Reject excessive gap-UP for longs (opened too far above signal close)
         if gap_atr > mult:
             return False, f"gap_up_{gap_pct:.1f}pct_exceeds_{mult}x_atr_limit"
         return True, f"entry_valid_gap_{gap_pct:.1f}pct"
     else:  # short
-        gap_atr_short = (signal_close - open_price) / atr if atr > 0 else 0
-        if gap_atr_short > mult:
-            return False, f"gap_down_{abs(gap_pct):.1f}pct_exceeds_{mult}x_atr_limit"
+        # BUG-060: reject only adverse gap-UPs for shorts; gap-downs are favorable
+        if gap_atr > mult:
+            return False, f"short_adverse_gap_up_{gap_pct:.1f}pct_exceeds_{mult}x_atr_limit"
         return True, f"entry_valid_gap_{gap_pct:.1f}pct"
 
 

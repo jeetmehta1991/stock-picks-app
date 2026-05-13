@@ -475,6 +475,14 @@ def compute_adx(df: pd.DataFrame, period: int = 14) -> dict:
 
 
 def compute_parabolic_sar(df: pd.DataFrame) -> dict:
+    """Parabolic SAR with correct flip detection.
+
+    BUG-055 fix 2026-05-13: previous flip detection used `pclose > psar_long` as a proxy
+    for the prior bar's bullish state, which is incorrect (psar_long is the CURRENT SAR
+    value, not the prior bar's SAR). Fix: track prev_bullish explicitly in both paths.
+    - pandas_ta path: flip_up = current bar has PSARl not-NaN AND prev bar had PSARl NaN.
+    - manual path: track prev_bullish at start of each loop iteration.
+    """
     if len(df) < 10:
         return {}
     if _HAS_TA:
@@ -482,47 +490,54 @@ def compute_parabolic_sar(df: pd.DataFrame) -> dict:
         if s is None or s.empty:
             return {}
         cols = s.columns.tolist()
-        # psar returns long and short columns
+        # psar returns PSARl (long/bullish SAR) and PSARs (short/bearish SAR).
+        # PSARl is NaN when in short mode; PSARs is NaN when in long mode.
         long_col  = [c for c in cols if "l" in c.lower()]
         short_col = [c for c in cols if "s" in c.lower()]
         if long_col:
-            psar_long  = _safe_float(s[long_col[0]].iloc[-1], 0)
-            psar_short = _safe_float(s[short_col[0]].iloc[-1] if short_col else 0, 0)
+            psar_long_cur  = s[long_col[0]].iloc[-1]
+            psar_long_prev = s[long_col[0]].iloc[-2] if len(s) > 1 else psar_long_cur
+            psar_long  = _safe_float(psar_long_cur, 0)
             close      = _safe_float(df["close"].iloc[-1])
-            bullish    = close > psar_long if psar_long > 0 else False
+            bullish      = (not (psar_long_cur is None) and not pd.isna(psar_long_cur)
+                            and float(psar_long_cur) > 0)
+            prev_bullish = (not (psar_long_prev is None) and not pd.isna(psar_long_prev)
+                            and float(psar_long_prev) > 0)
         else:
             bullish = True
+            prev_bullish = True
             psar_long = 0
     else:
-        # Manual Parabolic SAR
+        # Manual Parabolic SAR -- track prev_bullish at start of each bar
         af_start, af_step, af_max = 0.02, 0.02, 0.20
-        h,l = df["high"].values, df["low"].values
-        n   = len(h)
+        h, l = df["high"].values, df["low"].values
+        n = len(h)
         sar, af, ep = l[0], af_start, h[0]
         bullish = True
+        prev_bullish = True
         for i in range(1, n):
+            prev_bullish = bullish  # record state BEFORE update
             if bullish:
-                sar = sar + af*(ep - sar)
-                sar = min(sar, l[i-1], l[max(0,i-2)])
+                sar = sar + af * (ep - sar)
+                sar = min(sar, l[i - 1], l[max(0, i - 2)])
                 if l[i] < sar:
                     bullish = False; sar = ep; ep = l[i]; af = af_start
                 else:
-                    if h[i] > ep: ep = h[i]; af = min(af+af_step, af_max)
+                    if h[i] > ep: ep = h[i]; af = min(af + af_step, af_max)
             else:
-                sar = sar + af*(ep - sar)
-                sar = max(sar, h[i-1], h[max(0,i-2)])
+                sar = sar + af * (ep - sar)
+                sar = max(sar, h[i - 1], h[max(0, i - 2)])
                 if h[i] > sar:
                     bullish = True; sar = ep; ep = h[i]; af = af_start
                 else:
-                    if l[i] < ep: ep = l[i]; af = min(af+af_step, af_max)
+                    if l[i] < ep: ep = l[i]; af = min(af + af_step, af_max)
         psar_long = sar
     close = _safe_float(df["close"].iloc[-1])
-    pclose = _safe_float(df["close"].iloc[-2] if len(df)>1 else close)
     return {
         "psar_bullish": bullish,
         "psar_value":   round(psar_long, 4),
-        "psar_flip_up": bullish and not (pclose > psar_long),
-        "psar_flip_dn": not bullish and (pclose > psar_long),
+        "psar_flip_up": bullish and not prev_bullish,   # BUG-055: true flip, not approximation
+        "psar_flip_dn": not bullish and prev_bullish,   # BUG-055: true flip, not approximation
     }
 
 

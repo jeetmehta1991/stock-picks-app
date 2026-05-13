@@ -1999,11 +1999,14 @@ def test_bug_110_entry_gap_filter_enforced_at_validate_entry_zone():
     """BUG-110: validate_entry_zone enforces ENTRY_GAP_ATR_MULT per category.
 
     Pass 53 v8h+1 Phase 3 Batch 16 RESOLVED-IMPLEMENTED 2026-05-10.
+    BUG-060 Batch 161 2026-05-13: short entry zone updated -- gap-downs for shorts
+    are now ALLOWED (favorable). Only adverse gap-UPs are rejected for shorts.
 
-    Original claim: trades opened despite exceeding the ATR limit. Verified
-    against current code: validate_entry_zone rejects long entries whose gap
-    above signal_close exceeds mult x ATR and short entries whose gap below
-    signal_close exceeds mult x ATR.
+    Correct behavior:
+    - Long:  reject excessive gap-UP   (adverse: opened above signal level)
+    - Short: reject excessive gap-UP   (adverse: stock moved against short entry)
+    - Long:  allow gap-DOWN            (favorable: better long entry price)
+    - Short: allow gap-DOWN            (favorable: lower short entry = more downside room)
     """
     from backtest.signals.screener import validate_entry_zone
     from backtest.config import ENTRY_GAP_ATR_MULT
@@ -2025,12 +2028,20 @@ def test_bug_110_entry_gap_filter_enforced_at_validate_entry_zone():
         signal_close + 0.5 * atr, signal_close, atr, "pivot", "long")
     assert valid_long_ok is True, "Long gap of 0.5xATR for pivot must accept"
 
-    # Short: open gap = 3.0 ATR below signal_close -> must reject
-    valid_short_bad, reason_short_bad = validate_entry_zone(
+    # Short: open gap = 3.0 ATR BELOW signal_close -> must ACCEPT (BUG-060 fix: gap-down is favorable)
+    valid_short_gap_down, _ = validate_entry_zone(
         signal_close - 3.0 * atr, signal_close, atr, "pivot", "short")
-    assert valid_short_bad is False, (
-        "Short gap of 3.0xATR for pivot must reject")
-    assert "exceeds" in reason_short_bad
+    assert valid_short_gap_down is True, (
+        "Short gap-down of 3.0xATR must ACCEPT (BUG-060 fix: gap-down is favorable for short entries)"
+    )
+
+    # Short: open gap = 3.0 ATR ABOVE signal_close -> must REJECT (adverse gap-up for short)
+    valid_short_gap_up, reason_short_gap_up = validate_entry_zone(
+        signal_close + 3.0 * atr, signal_close, atr, "pivot", "short")
+    assert valid_short_gap_up is False, (
+        "Short adverse gap-up of 3.0xATR must REJECT (opened above signal = adverse for short)"
+    )
+    assert "exceeds" in reason_short_gap_up
 
 
 def test_bug_077_avoid_excluded_from_strategy_count():
