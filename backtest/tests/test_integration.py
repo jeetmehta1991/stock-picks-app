@@ -668,6 +668,19 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_bug_014_missing_tickers_now_in_batch_splits():
+    """BUG-014 Batch 140: AAPL/CVS/JPM/NVDA missing from run_full.sh
+    batch ticker lists. Sister to BUG-074 (Batch 128): run_full.sh
+    deprecated entirely; canonical batch-splits in
+    scripts/generate_batch_splits.py + scripts/batch_splits.json.
+    """
+    from pathlib import Path
+    assert not Path("scripts/run_full.sh").exists()
+    bs = Path("scripts/batch_splits.json").read_text(encoding="utf-8")
+    for t in ("AAPL", "CVS", "JPM", "NVDA"):
+        assert f'"{t}"' in bs, f"{t} should be in current batch_splits.json"
+
+
 def test_bug_013_yfinance_earnings_live_calls_removed():
     """BUG-013 Batch 139: days_to_next_earnings makes ~106k live
     yfinance calls during backtest. RESOLVED-IMPLEMENTED via DEC-497 D4

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-13T05:42:26.055993+00:00",
+  "generated_at": "2026-05-13T05:46:07.396691+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -19783,12 +19783,12 @@
       "sprint": "OBSOLETE Pass 53 v8h+1 Phase 3 Batch 2 2026-05-10 (run_full.sh no longer exists; universe now sourced from Master Dedup CSV per DEC-504; bug is moot)",
       "dependencies": "DEC-458",
       "description": "**File:** `run_full.sh` \u2014 all 5 batch `--tickers` lists",
-      "status": "OPEN",
+      "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
         "tier": "READY",
         "label": "READY-TO-CLOSE",
         "color": "#10b981",
-        "reason": "Has code+test artifacts; flip to RESOLVED"
+        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
       }
     },
     {
@@ -22102,7 +22102,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 6,
+        "n_doc_refs": 7,
         "pyramid": {
           "unit": false,
           "smoke": "N/A",
@@ -35054,40 +35054,46 @@
   ],
   "recent_commits": [
     {
+      "sha": "dd165fbc",
+      "subject": "Batch 139: BUG-013 false-positive - yfinance HARD CUT (sister BUG-178). Pyramid 736/736.",
+      "author": "jeetmehta1991",
+      "rel_time": "4 minutes ago"
+    },
+    {
       "sha": "2bae2a1a",
       "subject": "Batch 138: BUG-012 false-positive - dedup ordering by strategy_count desc via BUG-12 fix. Pyramid 735/735.",
       "author": "jeetmehta1991",
-      "rel_time": "3 minutes ago"
+      "rel_time": "7 minutes ago"
     },
     {
       "sha": "98855527",
       "subject": "Batch 137: BUG-006 false-positive - borrow cost single-sourced via DEC-295 Pass 50. Pyramid 734/734.",
       "author": "jeetmehta1991",
-      "rel_time": "7 minutes ago"
+      "rel_time": "11 minutes ago"
     },
     {
       "sha": "f76fc024",
       "subject": "Batch 136: BUG-004 false-positive - avoid direction routed to skip via BUG-04 fix. Pyramid 733/733.",
       "author": "jeetmehta1991",
-      "rel_time": "11 minutes ago"
+      "rel_time": "14 minutes ago"
     },
     {
       "sha": "7bbe25b3",
       "subject": "Batch 135: BUG-003 false-positive - ClosedTrade duplicate removed via BUG-215 Pass 48. Pyramid 732/732.",
       "author": "jeetmehta1991",
-      "rel_time": "14 minutes ago"
+      "rel_time": "18 minutes ago"
     },
     {
       "sha": "767b4b0c",
       "subject": "Batch 134: BUG-002 false-positive - days var hoisted via BUG-214 fix Pass 48. Pyramid 731/731.",
       "author": "jeetmehta1991",
-      "rel_time": "18 minutes ago"
+      "rel_time": "22 minutes ago"
     },
     {
       "sha": "c41d6384",
       "subject": "Batch 133: BUG-001 false-positive - crisis_flag hoisted via BUG-01",
       "author": "jeetmehta1991",
-      "rel_time": "22 minutes ago"
+      "rel_time": "26 minutes ago"
     },
     {
       "sha": "ea3cf254",
@@ -35105,7 +35111,7 @@
       "sha": "6a22df98",
       "subject": "Batch 130: BUG-072 RESOLVED-DECIDED - validate_phase1b_data deferred",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "52c307ac",
@@ -35189,7 +35195,7 @@
       "sha": "c15d0cfa",
       "subject": "Batch 116: BUG-218 + BUG-239 PIT sector wired at 3 engine sites",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "b1b7b9e0",
@@ -35224,12 +35230,6 @@
     {
       "sha": "afcaad93",
       "subject": "Batch 110: BUG-33 tiered Sharpe passing criterion in PASSING_CRITERIA",
-      "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
-    },
-    {
-      "sha": "858ac20d",
-      "subject": "Batch 109: BUG-34 per-strategy regime_blocklist config + engine gate",
       "author": "jeetmehta1991",
       "rel_time": "6 hours ago"
     }
@@ -35429,7 +35429,7 @@
     }
   ],
   "test_inventory": {
-    "total": 1238,
+    "total": 1239,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -35465,7 +35465,7 @@
       "test_fred_alfred_smoke": 5,
       "test_gate_pre_phase_1a_entry": 8,
       "test_gates": 6,
-      "test_integration": 125,
+      "test_integration": 126,
       "test_inv041_path_restricted_commits": 5,
       "test_l146_wave_a_g2_g3_g9": 6,
       "test_l146_wave_b_g7_sec_edgar": 6,
@@ -36121,8 +36121,8 @@
     "DEFERRED": 2
   },
   "bug_status_counts": {
-    "RESOLVED-IMPLEMENTED": 44,
-    "OPEN": 220,
+    "RESOLVED-IMPLEMENTED": 45,
+    "OPEN": 219,
     "CRITICAL": 2,
     "WILL_RESOLVE_VIA_DEC-440": 2,
     "RESOLVED-DECIDED": 2,
