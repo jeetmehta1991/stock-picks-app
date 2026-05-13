@@ -668,6 +668,27 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_bug_052_risk_agent_vix_floor_resolved_via_bug_26_fix():
+    """BUG-052 Batch 122: "Risk Agent's VIX floor behavior now fully
+    explained by BUG-26" - Risk Agent saw weird VIX floor because the
+    underlying VIX cache was VXX-price (223+) not actual VIX (18-36).
+    BUG-26 / DEC-302 (canonical ^VIX preferred over VXX proxy) fixed
+    the root cause in Pass 50 (closed in Batch 88). Risk Agent itself
+    is Phase 1B+ (not active in Phase 1A rules-only baseline per
+    CLAUDE.md), so the symptom doesn't manifest in current backtest
+    but the underlying data fix is in place for when agents activate.
+    """
+    from pathlib import Path
+    macro_src = Path("backtest/data/macro.py").read_text(encoding="utf-8")
+    # BUG-26 / DEC-302 canonical loader (closed in Batch 88)
+    assert "DEC-302 fix (Pass 50)" in macro_src
+    assert "VIX loader using PROXY" in macro_src
+    canonical_idx = macro_src.find('("^VIX", False)')
+    proxy_idx     = macro_src.find('("VXX", True)')
+    assert canonical_idx > 0 and proxy_idx > 0
+    assert canonical_idx < proxy_idx, "^VIX must precede VXX (BUG-26 fix preserved)"
+
+
 def test_bug_244_mae_mfe_updated_before_circuit_breaker_check():
     """BUG-244 Batch 121: "close_trade circuit breaker exits skip MAE/MFE
     update on day of exit (passes 0.0)" was flagged HIGH/OPEN/Pass-48.
