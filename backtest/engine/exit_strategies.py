@@ -10,7 +10,7 @@ Exit strategies:
   3.  trailing_15pct         -  15% trailing stop (looser)
   4.  atr_trail_1x           -  1x ATR trailing stop
   5.  atr_trail_2x           -  2x ATR trailing stop
-  6.  fixed_3r_2r            -  Fixed: 3x ATR target / 2x ATR stop
+  6.  fixed_4r_2r            -  Fixed: 4x ATR target / 2x ATR stop (2:1 R:R per DEC-353)
   7.  next_pivot_target       -  Exit at next pivot level above entry
   8.  ma_exit_ema9            -  Exit when price crosses below EMA-9
   9.  time_stop_10d           -  Exit at close of day 10
@@ -813,7 +813,9 @@ EXIT_STRATEGIES = {
     "trailing_15pct":       lambda df, ed, ep, d, a, s: exit_trailing_pct(df, ed, ep, d, a, 0.15),
     "atr_trail_1x":         lambda df, ed, ep, d, a, s: exit_atr_trail(df, ed, ep, d, a, 1.0),
     "atr_trail_2x":         lambda df, ed, ep, d, a, s: exit_atr_trail(df, ed, ep, d, a, 2.0),
-    "fixed_3r_2r":          lambda df, ed, ep, d, a, s: exit_fixed_target(df, ed, ep, d, a, 3.0, 2.0),
+    # BUG-285 fix 2026-05-13: fixed_3r_2r had 3R/2R = 1.5:1 R:R, BELOW DEC-353 2:1 minimum.
+    # Renamed to fixed_4r_2r (4R target / 2R stop = 2.0:1 R:R, meets DEC-353). Per DEC-067.
+    "fixed_4r_2r":          lambda df, ed, ep, d, a, s: exit_fixed_target(df, ed, ep, d, a, 4.0, 2.0),
     "next_pivot_target":    lambda df, ed, ep, d, a, s: exit_next_pivot(df, ed, ep, d, a, s),
     "ma_exit_ema9":         lambda df, ed, ep, d, a, s: exit_ma_cross(df, ed, ep, d, a, 9),
     "time_stop_10d":        lambda df, ed, ep, d, a, s: exit_time_stop(df, ed, ep, d, a, 10),

@@ -60,7 +60,11 @@ DATE_FIELDS = {
     "congressional": "TransactionDate",
     "insider":       "Date",
     "institutional": "Date",
-    "gov_contracts": "Date",
+    # BUG-284 fix 2026-05-13: Quiver gov_contracts schema is Qtr(int)+Year(int),
+    # NOT a Date column. Setting None skips date filter (save all quarters) since
+    # data is sparse per-ticker. Runtime smart_money.py:get_gov_contracts() handles
+    # Qtr+Year reconstruction correctly after BUG-271 fix.
+    "gov_contracts": None,
     "lobbying":      "Date",
     "wikipedia":     "Date",
     "wallstreetbets":"Date",

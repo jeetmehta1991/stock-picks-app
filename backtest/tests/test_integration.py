@@ -2877,6 +2877,60 @@ def test_bug_270_271_272_273_274_smart_money_silent_failures_fixed():
         "BUG-272: get_lobbying total_spend not float"
 
 
+def test_bug_275_276_277_278_279_284_285_quick_fixes():
+    """Batch 157 2026-05-13: quick-fix cluster.
+    BUG-275: bonferroni n=0 TypeError -- RESOLVED-IMPLEMENTED
+    BUG-276: _agent_cache_key sorted(dicts) crash -- RESOLVED-IMPLEMENTED
+    BUG-277: classify_regime DataFrame truth value -- FALSE-POSITIVE
+    BUG-278: yield_curve_regime live FRED -- FALSE-POSITIVE
+    BUG-279: get_ohlcv reversed dates -- RESOLVED-IMPLEMENTED
+    BUG-284: prefetch_quiver DATE_FIELDS gov_contracts -- RESOLVED-IMPLEMENTED
+    BUG-285: fixed_3r_2r -> fixed_4r_2r -- RESOLVED-IMPLEMENTED
+    """
+    import pathlib
+    audit = pathlib.Path("AUDIT_INDEX.md").read_text(encoding="utf-8")
+    for bug_num in ["BUG-275", "BUG-276", "BUG-277", "BUG-278", "BUG-279", "BUG-284", "BUG-285"]:
+        section_start = audit.find(f"**{bug_num}**")
+        assert section_start != -1, f"{bug_num} not found in AUDIT_INDEX"
+        row = audit[section_start:section_start + 400]
+        assert ("RESOLVED-IMPLEMENTED" in row or "RESOLVED-DECIDED" in row), \
+            f"{bug_num} not resolved in AUDIT_INDEX"
+
+    # BUG-275: bonferroni n=0 guard
+    from backtest.engine.improvements import bonferroni_adjusted_threshold
+    result = bonferroni_adjusted_threshold(0)
+    assert isinstance(result, dict)
+    assert result["n_strategies"] == 0
+    assert result["min_trades_required"] == 0
+    result_valid = bonferroni_adjusted_threshold(60)
+    assert result_valid["min_trades_required"] > 0
+
+    # BUG-276: _agent_cache_key handles list of dicts
+    from backtest.agents.pipeline import _agent_cache_key
+    from datetime import date
+    strats_as_dicts = [
+        {"strategy_class": "rsi_oversold_bounce", "signals_used": ["rsi_14"]},
+        {"strategy_class": "ema_crossover_bull", "signals_used": ["ema_50"]},
+    ]
+    key = _agent_cache_key("AAPL", date(2024, 6, 15), strats_as_dicts, "phase_1a")
+    assert isinstance(key, str) and len(key) == 32, "cache key must be 32-char MD5"
+
+    # BUG-279: get_ohlcv reversed dates returns empty
+    from backtest.data.cache import get_ohlcv
+    from datetime import date as dt
+    result_empty = get_ohlcv("AAPL", dt(2024, 6, 15), dt(2024, 6, 1))
+    assert result_empty.empty, "Reversed dates must return empty DataFrame"
+
+    # BUG-285: fixed_4r_2r exists, fixed_3r_2r removed
+    from backtest.engine.exit_strategies import EXIT_STRATEGIES
+    assert "fixed_4r_2r" in EXIT_STRATEGIES, "fixed_4r_2r must be in EXIT_STRATEGIES"
+    assert "fixed_3r_2r" not in EXIT_STRATEGIES, "fixed_3r_2r must be removed (DEC-353 violation)"
+
+    # BUG-284: DATE_FIELDS gov_contracts is None
+    src = pathlib.Path("scripts/prefetch_quiver.py").read_text(encoding="utf-8")
+    assert '"gov_contracts": None' in src, "DATE_FIELDS gov_contracts must be None after BUG-284 fix"
+
+
 if __name__ == "__main__":
     tests = [
         test_smart_money_score_keys,

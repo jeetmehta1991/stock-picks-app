@@ -1135,6 +1135,18 @@ def bonferroni_adjusted_threshold(
 
     Returns adjusted thresholds for win rate and minimum trades required.
     """
+    # BUG-275 fix 2026-05-13: n_strategies=0 caused ZeroDivisionError.
+    if n_strategies <= 0:
+        return {
+            "n_strategies": n_strategies,
+            "base_significance": base_significance,
+            "adjusted_significance": base_significance,
+            "min_win_rate": min_win_rate,
+            "min_trades_required": 0,
+            "false_positive_prob_uncorrected": 0.0,
+            "false_positive_prob_corrected": base_significance,
+            "recommendation": "No strategies tested; no correction applied.",
+        }
     adjusted_p = base_significance / n_strategies
 
     # For a binomial test, minimum trades needed to achieve adjusted significance

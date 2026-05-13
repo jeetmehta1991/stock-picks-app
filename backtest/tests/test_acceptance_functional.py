@@ -1,4 +1,4 @@
-"""Acceptance / functional tests — Pass 53 Day-9 G5.
+"""Acceptance / functional tests -- Pass 53 Day-9 G5.
 
 Closes the acceptance/functional dimension of the test pyramid (DEC-503 9-type).
 Where G1-G4 cover system-as-pytest / bad-data / performance / CI, G5 verifies
@@ -8,9 +8,9 @@ that the system meets functional requirements end-to-end:
   - All 13 exit methods (12 baseline + regime_flip) callable + return valid output
   - Regime classifier covers 4 named regimes + unknown fail-closed
   - Strategy roster has expected baseline count (60 Layer-1 per CANONICAL_FACTS)
-  - Round-trip: synthetic OHLCV → signals → screen → exit produces valid trade
+  - Round-trip: synthetic OHLCV -> signals -> screen -> exit produces valid trade
 
-Runtime: <10s. Synthetic data only — no cache dependency.
+Runtime: <10s. Synthetic data only -- no cache dependency.
 """
 
 from __future__ import annotations
@@ -32,7 +32,7 @@ def _quiet_logs():
 
 @pytest.fixture(scope="module")
 def synthetic_ohlcv():
-    """80 business days of clean synthetic OHLCV — no NaN, monotonic trend."""
+    """80 business days of clean synthetic OHLCV -- no NaN, monotonic trend."""
     rng = np.random.default_rng(42)
     idx = pd.date_range("2023-01-02", periods=80, freq="B")
     drift = np.linspace(0, 5, 80)
@@ -51,7 +51,7 @@ def synthetic_ohlcv():
 
 
 # ===========================================================================
-# G5.1 — 9 passing criteria are all defined in config
+# G5.1 -- 9 passing criteria are all defined in config
 # ===========================================================================
 def test_g5_passing_criteria_complete():
     """PASSING_CRITERIA must define all 9 metrics + audit thresholds."""
@@ -82,12 +82,12 @@ def test_g5_sector_passing_criteria_buckets():
 
 
 # ===========================================================================
-# G5.2 — All 13 exit methods callable + return valid output
+# G5.2 -- All 13 exit methods callable + return valid output
 # ===========================================================================
 EXPECTED_EXITS = {
     "trailing_10pct", "trailing_5pct", "trailing_15pct",
     "atr_trail_1x", "atr_trail_2x",
-    "fixed_3r_2r", "next_pivot_target", "ma_exit_ema9",
+    "fixed_4r_2r", "next_pivot_target", "ma_exit_ema9",  # BUG-285: was fixed_3r_2r (1.5:1 R:R violation)
     "time_stop_10d", "time_stop_20d",
     "breakeven_plus_trail", "hybrid_50pct_target",
     "regime_flip",  # DEC-516
@@ -113,7 +113,7 @@ def test_g5_each_exit_method_callable(method_name, synthetic_ohlcv):
     direction = "long"
     atr = 1.5
 
-    # signals dict — empty stub; regime_flip will fall back to time_stop_max_days
+    # signals dict -- empty stub; regime_flip will fall back to time_stop_max_days
     signals = {}
 
     try:
@@ -121,7 +121,7 @@ def test_g5_each_exit_method_callable(method_name, synthetic_ohlcv):
     except Exception as exc:
         pytest.fail(f"{method_name} raised {type(exc).__name__}: {exc}")
 
-    # Result contract: tuple of (exit_date, exit_price, exit_reason) — or similar
+    # Result contract: tuple of (exit_date, exit_price, exit_reason) -- or similar
     # exit_manager parses it. Just assert it's not None / not empty.
     assert result is not None, f"{method_name} returned None"
     if isinstance(result, tuple):
@@ -129,7 +129,7 @@ def test_g5_each_exit_method_callable(method_name, synthetic_ohlcv):
 
 
 # ===========================================================================
-# G5.3 — Regime classifier covers all 4 named regimes + unknown
+# G5.3 -- Regime classifier covers all 4 named regimes + unknown
 # ===========================================================================
 @pytest.mark.parametrize("vix,spy_above,expected", [
     (15.0, True,  "bull"),
@@ -137,7 +137,7 @@ def test_g5_each_exit_method_callable(method_name, synthetic_ohlcv):
     (25.0, True,  "neutral"),
     (25.0, False, "neutral"),
     (35.0, False, "bear"),
-    (35.0, True,  "neutral"),  # 30+ but SPY above: not bear → neutral
+    (35.0, True,  "neutral"),  # 30+ but SPY above: not bear -> neutral
     (42.0, False, "crisis"),
     (42.0, True,  "crisis"),   # crisis dominates regardless of SPY
     (None, True,  "unknown"),  # DEC-316 fail-closed
@@ -152,7 +152,7 @@ def test_g5_regime_classifier_covers_all_outcomes(vix, spy_above, expected):
 
 
 # ===========================================================================
-# G5.4 — Strategy roster baseline count (CANONICAL_FACTS F-002 Layer 1 = 60)
+# G5.4 -- Strategy roster baseline count (CANONICAL_FACTS F-002 Layer 1 = 60)
 # ===========================================================================
 def test_g5_strategy_roster_baseline_count():
     """ALL_STRATEGIES must have 60 Layer-1 baseline strategies per CANONICAL_FACTS F-002."""
@@ -168,10 +168,10 @@ def test_g5_strategy_roster_baseline_count():
 
 
 # ===========================================================================
-# G5.5 — Technical signals contract (≥200 fields per Category 1)
+# G5.5 -- Technical signals contract (>=200 fields per Category 1)
 # ===========================================================================
 def test_g5_technical_signals_field_count(synthetic_ohlcv):
-    """compute_all_signals must produce ≥200 fields per CANONICAL_FACTS F-003."""
+    """compute_all_signals must produce >=200 fields per CANONICAL_FACTS F-003."""
     from backtest.signals.technical import compute_all_signals
 
     sigs = compute_all_signals(synthetic_ohlcv)
@@ -187,16 +187,16 @@ def test_g5_technical_signals_field_count(synthetic_ohlcv):
         pytest.fail(f"compute_all_signals returned unexpected type: {type(sigs)}")
 
     assert n_fields >= 200, (
-        f"Technical signals expected ≥200 fields (Category 1 per CANONICAL_FACTS F-003); "
+        f"Technical signals expected >=200 fields (Category 1 per CANONICAL_FACTS F-003); "
         f"got {n_fields}"
     )
 
 
 # ===========================================================================
-# G5.6 — Round-trip synthetic data flow
+# G5.6 -- Round-trip synthetic data flow
 # ===========================================================================
 def test_g5_round_trip_signals_to_exit(synthetic_ohlcv):
-    """Synthetic OHLCV → signals computed → exit method runs end-to-end."""
+    """Synthetic OHLCV -> signals computed -> exit method runs end-to-end."""
     from backtest.signals.technical import compute_all_signals
     from backtest.engine.exit_strategies import exit_atr_trail
 
@@ -218,14 +218,14 @@ def test_g5_round_trip_signals_to_exit(synthetic_ohlcv):
         else:
             exit_d = exit_date_or_idx
         if isinstance(exit_d, date):
-            assert exit_d >= entry_date, "Exit before entry — round-trip broken"
+            assert exit_d >= entry_date, "Exit before entry -- round-trip broken"
 
 
 # ===========================================================================
-# G5.7 — Trailing stop never moves down (DEC-067 invariant)
+# G5.7 -- Trailing stop never moves down (DEC-067 invariant)
 # ===========================================================================
 def test_g5_trailing_stop_invariant():
-    """Trailing stop on long must never decrease — DEC-067 ratchet invariant."""
+    """Trailing stop on long must never decrease -- DEC-067 ratchet invariant."""
     from backtest.engine.exit_manager import OpenTrade, update_trailing_stop
 
     t = OpenTrade(
@@ -238,13 +238,13 @@ def test_g5_trailing_stop_invariant():
     high_water_stop = t.trailing_stop
     t = update_trailing_stop(t, 105.0)  # price retraces
     assert t.trailing_stop >= high_water_stop, (
-        f"Trailing stop moved DOWN: {high_water_stop} → {t.trailing_stop} "
-        f"on retrace from 110 to 105 — DEC-067 invariant violated"
+        f"Trailing stop moved DOWN: {high_water_stop} -> {t.trailing_stop} "
+        f"on retrace from 110 to 105 -- DEC-067 invariant violated"
     )
 
 
 # ===========================================================================
-# G5.8 — DEC-505 4-fold walk-forward references intact
+# G5.8 -- DEC-505 4-fold walk-forward references intact
 # ===========================================================================
 def test_g5_walk_forward_4fold_module_present():
     """DEC-505 4-fold walk-forward implementation must be importable."""
@@ -256,7 +256,7 @@ def test_g5_walk_forward_4fold_module_present():
 
 
 # ===========================================================================
-# G5.9 — DEC-578 7-gate verdict primitives importable
+# G5.9 -- DEC-578 7-gate verdict primitives importable
 # ===========================================================================
 def test_g5_seven_gate_verdict_primitives():
     """DEC-578 7-gate verdict composer primitives must all be callable."""
@@ -266,7 +266,7 @@ def test_g5_seven_gate_verdict_primitives():
 
 
 # ===========================================================================
-# G5.10 — Phase-1A circuit breakers wired (Levels 1-6)
+# G5.10 -- Phase-1A circuit breakers wired (Levels 1-6)
 # ===========================================================================
 def test_g5_circuit_breakers_levels_1_to_6():
     """All 6 circuit breaker levels must be reachable via priority evaluator."""

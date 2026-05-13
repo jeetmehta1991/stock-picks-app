@@ -606,7 +606,12 @@ def _agent_cache_key(ticker: str, as_of: date, strategies: list, phase: str,
     """Generate a unique cache key for this agent run.
     Includes PROMPT_VERSION and disable_news  -  with/without news runs cache separately.
     """
-    strat_str  = "_".join(sorted(strategies)) if strategies else "none"
+    # BUG-276 fix 2026-05-13: strategies is a list of dicts when strategies_triggered
+    # contains full strategy objects; sorted() on dicts raises TypeError. Extract
+    # strategy_class name (str) before sorting for stable cache key.
+    def _sk(s):
+        return s.get("strategy_class", "") if isinstance(s, dict) else str(s)
+    strat_str  = "_".join(sorted(_sk(s) for s in strategies)) if strategies else "none"
     news_flag  = "_nonews" if disable_news else ""
     raw = f"{ticker}_{as_of}_{strat_str}_{phase}_{PROMPT_VERSION}{news_flag}"
     return hashlib.md5(raw.encode()).hexdigest()

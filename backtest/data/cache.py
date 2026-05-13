@@ -117,6 +117,10 @@ def get_ohlcv(
     On subsequent calls: loads from Parquet in milliseconds.
     If cache exists but doesn't cover full range: fetches only missing dates.
     """
+    # BUG-279 fix 2026-05-13: reversed date order silently returned 0 rows.
+    if start > end:
+        logger.warning("get_ohlcv: start %s > end %s for %s -- returning empty", start, end, ticker)
+        return pd.DataFrame()
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
     index = _load_index()
     cache_file = _cache_path(ticker)
