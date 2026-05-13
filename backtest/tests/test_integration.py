@@ -2468,6 +2468,32 @@ def test_dec_235_engine_skips_holiday_weekday():
         assert date(2024, 7, 4) not in days   # Independence Day (Thu)
 
 
+def test_bug_010_035_051_076_105_108_113_182_200_203_210_phase1b_deferred():
+    """BUG-010/035/051/056/076/105/108/113/182/200/201/202/203/210 batch close - 14 Phase 1B agent deferrals.
+    Phase 1A is rules-only (no agents per CLAUDE.md). All agent-specific BUGs
+    (signal keys, Decision Agent fallback, downgrade cascade, cache contamination,
+    recommendations ignored, context masking, Risk Agent context, A/B testing,
+    pipeline silent downgrade) are Phase 1B activation prerequisites.
+    BUG-201 (earnings_tolerant): unreferenced in Phase 1A engine (grep confirmed).
+    BUG-202 (earnings-momentum strategies): Layer 2D/Phase 1C.
+    BUG-056 (Phase 1C score range): Phase 1C.
+    Batch 149 2026-05-13.
+    """
+    import pathlib
+    audit = pathlib.Path("AUDIT_INDEX.md").read_text(encoding="utf-8")
+    for bug_num in ["BUG-010", "BUG-035", "BUG-051", "BUG-076", "BUG-105",
+                    "BUG-113", "BUG-200", "BUG-203", "BUG-210"]:
+        section_start = audit.find(f"**{bug_num}**")
+        assert section_start != -1, f"{bug_num} not found"
+        row = audit[section_start:section_start + 300]
+        assert "RESOLVED-DECIDED" in row, f"{bug_num} not RESOLVED-DECIDED"
+    # earnings_tolerant unreferenced in Phase 1A
+    engine_src = pathlib.Path("backtest/engine/backtest.py").read_text(encoding="utf-8")
+    screener_src = pathlib.Path("backtest/signals/screener.py").read_text(encoding="utf-8")
+    assert "earnings_tolerant" not in engine_src, "earnings_tolerant unexpectedly in engine"
+    assert "earnings_tolerant" not in screener_src, "earnings_tolerant unexpectedly in screener"
+
+
 def test_bug_057_063_069_071_093_094_097_100_212_infra_deferred():
     """BUG-057/063/069-071/093/094/097-100/212 batch close - 12 infra/Stage 3+ deferrals.
     BUG-057: test suite now 745+ tests (was missing 15); Phase 1B agent tests deferred.
