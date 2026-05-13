@@ -184,6 +184,18 @@ CIRCUIT_BREAKERS = {
     "level_4_market_halt_pct": 0.07,  # S&P 500 market-wide circuit breaker -> flag all, no new trades
     "level_5_vix_crisis":      40,    # VIX > 40 -> tighten stops to 5%, no new longs
     "level_5_tightened_pct":   0.05,  # tightened trailing stop when VIX > 40
+    # BUG-30 RESOLVED-IMPLEMENTED Batch 114 2026-05-12 (owner-approved
+    # option C 2026-05-12): config-toggleable Level-5 tighten. Resolves
+    # the code-vs-spec contradiction (regime_filter.py:113 documents
+    # crisis as "Do NOT tighten stops (causes whipsawing)" but
+    # exit_manager.py Level-5 path DOES tighten when vix >=
+    # level_5_vix_crisis). Default True preserves current behavior
+    # (Level-5 tightening active) - flash-crash protection rail stays
+    # ON. Setting to False removes the tightening so DEC-091 DD-band
+    # sizing + DEC-088 vol-target are the only crisis-mode exposure
+    # reductions; lets Phase 1B-alpha empirically test whether the
+    # whipsaw cost outweighs the protection benefit.
+    "level_5_tighten_in_crisis": True,
 }
 
 # -----------------------------------------------------------------------------

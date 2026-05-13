@@ -216,7 +216,12 @@ def check_circuit_breakers_all(
                             "reason": f"earnings_gap_up_{gap_pct*100:.1f}pct"})
 
     # Level 5  -  VIX crisis (tighten stops; additive  -  does not exit position)
-    if vix_value and vix_value >= cb["level_5_vix_crisis"]:
+    # BUG-30 RESOLVED-IMPLEMENTED Batch 114 2026-05-12: gated on
+    # cb["level_5_tighten_in_crisis"] (default True; set False to skip).
+    if (
+        vix_value and vix_value >= cb["level_5_vix_crisis"]
+        and cb.get("level_5_tighten_in_crisis", True)
+    ):
         results.append({"level": 5, "action": "tighten_stop",
                         "new_pct": cb["level_5_tightened_pct"],
                         "reason": f"vix_crisis_{vix_value:.1f}"})
@@ -264,8 +269,18 @@ def update_trailing_stop(
     Falls back to "close" if today_high/today_low not supplied by caller.
     """
     cb  = CIRCUIT_BREAKERS
-    pct = cb["level_5_tightened_pct"] if (vix_value and vix_value >= cb["level_5_vix_crisis"]) \
-          else TRAILING_STOP["trail_pct"]
+    # BUG-30 RESOLVED-IMPLEMENTED Batch 114 2026-05-12: Level-5 VIX-crisis
+    # tighten is now config-toggleable. When level_5_tighten_in_crisis is
+    # True (default), VIX>=crisis ratchets to the tightened pct as before.
+    # When False, the trail uses standard trail_pct even during crisis -
+    # DEC-091 DD-band sizing + DEC-088 vol-target stay the only crisis-
+    # mode exposure reductions.
+    _l5_enabled = cb.get("level_5_tighten_in_crisis", True)
+    in_crisis = bool(vix_value and vix_value >= cb["level_5_vix_crisis"])
+    if _l5_enabled and in_crisis:
+        pct = cb["level_5_tightened_pct"]
+    else:
+        pct = TRAILING_STOP["trail_pct"]
     ratchet_from = TRAILING_STOP.get("ratchet_from", "close")
 
     if trade.direction == "long":

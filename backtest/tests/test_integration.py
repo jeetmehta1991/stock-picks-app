@@ -668,6 +668,53 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_bug_30_level_5_tighten_in_crisis_default_true():
+    """BUG-30 Batch 114: config-toggleable Level-5 VIX-crisis tighten.
+    Owner-approved option C 2026-05-12: default True preserves current
+    flash-crash protection rail; set False to remove tightening so
+    DEC-091/088 are the only crisis-mode exposure reductions.
+    """
+    from backtest.config import CIRCUIT_BREAKERS
+    assert "level_5_tighten_in_crisis" in CIRCUIT_BREAKERS
+    assert CIRCUIT_BREAKERS["level_5_tighten_in_crisis"] is True
+
+
+def test_bug_30_check_circuit_breakers_gate_on_config():
+    """BUG-30 behavior: check_circuit_breakers_all skips Level-5 entry
+    when level_5_tighten_in_crisis = False even if VIX is in crisis.
+    """
+    import unittest.mock as mock
+    from datetime import date
+    from backtest.engine.exit_manager import (
+        OpenTrade, check_circuit_breakers_all,
+    )
+    trade = OpenTrade(
+        ticker="TEST", entry_date=date(2024, 1, 1), entry_price=100.0,
+        direction="long", strategy="bug30_smoke", category="momentum",
+        sector="Tech", initial_stop=90.0, trailing_stop=95.0,
+        highest_close=98.0, regime_at_entry="neutral",
+    )
+    # Crisis VIX = 50 (above 40 threshold)
+    # Default ON: Level-5 tighten_stop entry must be in results
+    with mock.patch.dict("backtest.config.CIRCUIT_BREAKERS",
+                          {"level_5_tighten_in_crisis": True}):
+        from backtest.engine import exit_manager as _em
+        out_on = _em.check_circuit_breakers_all(
+            trade, today_open=100.0, prev_close=100.0, vix_value=50.0,
+        )
+    assert any(r["level"] == 5 for r in out_on), "Level-5 must fire when toggle ON"
+    # Toggled OFF: Level-5 entry must NOT appear
+    with mock.patch.dict("backtest.config.CIRCUIT_BREAKERS",
+                          {"level_5_tighten_in_crisis": False}):
+        from backtest.engine import exit_manager as _em
+        out_off = _em.check_circuit_breakers_all(
+            trade, today_open=100.0, prev_close=100.0, vix_value=50.0,
+        )
+    assert not any(r["level"] == 5 for r in out_off), (
+        "Level-5 must be suppressed when toggle OFF"
+    )
+
+
 def test_bug_232_trailing_stop_default_close_unchanged():
     """BUG-232 Batch 113: trailing-stop ratchet source is config-toggleable.
     Owner-approved option C 2026-05-12: default "close" preserves
