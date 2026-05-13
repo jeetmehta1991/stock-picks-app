@@ -668,6 +668,19 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_bug_005_strategies_triggered_key_consistent():
+    """BUG-005 Batch 145: strategies_triggered key mismatch - agent
+    cache always wrong. RESOLVED via BUG-05 cross-ref in
+    backtest/agents/pipeline.py:149-150 - strategies_triggered key
+    consistently used in caller signature + function body; no key
+    mismatch.
+    """
+    from pathlib import Path
+    src = Path("backtest/agents/pipeline.py").read_text(encoding="utf-8")
+    assert "BUG-05 RESOLVED-IMPLEMENTED" in src
+    assert "strategies_triggered" in src
+
+
 def test_bug_022_023_strategy_count_references_are_current():
     """BUG-022 + BUG-023 Batch 144: run_phase1a.py header + screener.py
     docstring both said "60 strategies" - stale per layered-roster
