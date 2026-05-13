@@ -2650,6 +2650,67 @@ def test_bug_114_138_phase1b_deferred_inline_stubs_resolved_decided():
         assert "RESOLVED-DECIDED" in row, f"{bug_num} not marked RESOLVED-DECIDED"
 
 
+def test_bug_036_038_046_048_066_067_086_087_088_089_107_184_185_186_187_188_189_190_199_204_206_207_208_209_211_213_resolved_decided():
+    """Batch 153 2026-05-13: 26 BUGs closed as RESOLVED-DECIDED (false-positives + phase-scope deferrals).
+
+    BUG-036: STRATEGY_REGIME_BLOCKLIST is Phase 1A regime-gating mechanism; smooth weighting = Phase 1B DEC-422.
+    BUG-038: min_sharpe gates exist via BUG-33 (min_sharpe_overall=1.0, min_sharpe_per_regime=0.7).
+    BUG-046: Phase 1A uses cached market_cap as proxy; historical PIT market_cap = Phase 1B DEC-257.
+    BUG-048: DEC-499 18-classifier includes Volatility/EM; per-sector criteria = Phase 1B DEC-422 cube.
+    BUG-066: PROJECT_PLAN now has 1 "60 strategies" ref in correct Layer-1 context; CANONICAL_FACTS F-002 authoritative.
+    BUG-067: DEC-032 SUPERSEDED by DEC-054; IBKR for both paper + live.
+    BUG-086: FRED CPI release lag (~10 days) is inherent data release behavior; NO-LIVE-API + ALFRED vintage PIT-correct.
+    BUG-087: validate_phase1b_data.py provides ingestion gate; per-endpoint checks deferred Phase 1B.
+    BUG-088: Signal versioning is Phase 1B tech debt; Phase 1A cache pre-built once.
+    BUG-089: TypedDict migration is code quality tech debt; .get() fallbacks preserve correctness.
+    BUG-107: Silent exception swallowing = tech debt; BUG-209 sister; Phase 1B hardening.
+    BUG-184: Sprint 0A fills Quiver gaps; Phase 1A accepts pre-2025 data gap; zero-score fallback.
+    BUG-185: Wikipedia views intentionally dropped via L88 + DEC-030 SUPERSEDED by DEC-052.
+    BUG-186: 13F empty files = Quiver coverage gap; institutional_signal() zero-score fallback.
+    BUG-187: WSB/Apewisdom gap; DEC-072 separated Apewisdom into data_prefetch/apewisdom/.
+    BUG-188: NOC/TXT gov_contracts = Quiver coverage gap; get_gov_contracts() zero-score fallback.
+    BUG-189: BF-B/BRK-B hyphen vs period-format; Sprint 0A uses Polygon period convention.
+    BUG-190: Senate/Twitter/Off-Exchange/App Downloads = outside Sprint 0A DEC-450 scope.
+    BUG-199: Gate firing rate observability = monitoring enhancement; skipped_trades log captures reasons.
+    BUG-204: engine.py dead code = tech debt cleanup sprint.
+    BUG-206: Cache stale-data = NO-LIVE-API HARD CUT accepted limitation; Sprint 0A extends coverage.
+    BUG-207: Type hint coverage = code quality tech debt; deferred to post-Phase-1A sprint.
+    BUG-208: Docstring coverage = code quality tech debt; CLAUDE.md one-line comment standard.
+    BUG-209: 81 except blocks = tech debt; Phase 1B hardening sprint.
+    BUG-211: Cache concurrency addressed by prepopulate_cache_index.py + filelock in cache.py.
+    BUG-213: FALSE-POSITIVE — requirements.txt already has openai>=1.10.0 + fredapi>=0.5.1; tradingagents is vendored.
+    """
+    import pathlib
+    audit = pathlib.Path("AUDIT_INDEX.md").read_text(encoding="utf-8")
+    decided_bugs = [
+        "BUG-036", "BUG-038", "BUG-046", "BUG-048", "BUG-066", "BUG-067",
+        "BUG-086", "BUG-087", "BUG-088", "BUG-089", "BUG-107",
+        "BUG-184", "BUG-185", "BUG-186", "BUG-187", "BUG-188", "BUG-189", "BUG-190",
+        "BUG-199", "BUG-204", "BUG-206", "BUG-207", "BUG-208", "BUG-209", "BUG-211", "BUG-213",
+    ]
+    for bug_num in decided_bugs:
+        section_start = audit.find(f"**{bug_num}**")
+        assert section_start != -1, f"{bug_num} not found in AUDIT_INDEX"
+        row = audit[section_start:section_start + 400]
+        assert "RESOLVED-DECIDED" in row, f"{bug_num} not marked RESOLVED-DECIDED"
+
+    # BUG-038: min_sharpe gates exist in PASSING_CRITERIA
+    from backtest.config import PASSING_CRITERIA
+    assert "min_sharpe_overall" in PASSING_CRITERIA, "min_sharpe_overall missing from PASSING_CRITERIA"
+    assert "min_sharpe_per_regime" in PASSING_CRITERIA, "min_sharpe_per_regime missing from PASSING_CRITERIA"
+    assert PASSING_CRITERIA["min_sharpe_overall"] == 1.0, "min_sharpe_overall should be 1.0"
+    assert PASSING_CRITERIA["min_sharpe_per_regime"] == 0.7, "min_sharpe_per_regime should be 0.7"
+
+    # BUG-036: STRATEGY_REGIME_BLOCKLIST exists in config
+    from backtest.config import STRATEGY_REGIME_BLOCKLIST
+    assert isinstance(STRATEGY_REGIME_BLOCKLIST, dict), "STRATEGY_REGIME_BLOCKLIST should be a dict"
+
+    # BUG-213: requirements.txt already has openai + fredapi
+    req_txt = pathlib.Path("requirements.txt").read_text(encoding="utf-8")
+    assert "openai" in req_txt, "openai missing from requirements.txt"
+    assert "fredapi" in req_txt, "fredapi missing from requirements.txt"
+
+
 if __name__ == "__main__":
     tests = [
         test_smart_money_score_keys,
