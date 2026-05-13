@@ -2468,6 +2468,40 @@ def test_dec_235_engine_skips_holiday_weekday():
         assert date(2024, 7, 4) not in days   # Independence Day (Thu)
 
 
+def test_bug_133_stopout_cooldown_implemented_not_deferred():
+    """BUG-133 false-positive - cross-day cooldown after stop-out is IMPLEMENTED.
+    DEC-018 RESOLVED-IMPLEMENTED Batch 73: TICKER_STOPOUT_COOLDOWN_DAYS=5 in
+    config.py + engine gate scans closed_trades for recent stop-loss exits.
+    Batch 146 2026-05-13.
+    """
+    import pathlib, re
+    src = pathlib.Path("backtest/engine/backtest.py").read_text(encoding="utf-8")
+    assert "TICKER_STOPOUT_COOLDOWN_DAYS" in src, "cooldown constant not in engine"
+    assert "stopout_cooldown_active_" in src, "cooldown skip reason missing"
+    assert "dec018" in src, "cooldown DEC-018 reference missing from engine"
+    cfg = pathlib.Path("backtest/config.py").read_text(encoding="utf-8")
+    assert "TICKER_STOPOUT_COOLDOWN_DAYS" in cfg, "cooldown constant missing from config"
+
+
+def test_bug_114_138_phase1b_deferred_inline_stubs_resolved_decided():
+    """BUG-114 through BUG-138 batch close - 25 INLINE-ONLY stubs deferred to Phase 1B.
+    Phase 1A is rules-only (no agents per CLAUDE.md). Agent integration gaps
+    (BUG-116-127), strategy parameter gaps (BUG-128-132, BUG-134-138) are
+    Phase 1B deliverables. BUG-133 is FALSE-POSITIVE (DEC-018 implemented Batch 73).
+    Batch 146 2026-05-13.
+    """
+    import pathlib
+    audit = pathlib.Path("AUDIT_INDEX.md").read_text(encoding="utf-8")
+    # BUG-133 false-positive should be RESOLVED-IMPLEMENTED
+    assert "BUG-133" in audit and "RESOLVED-IMPLEMENTED" in audit
+    # BUG-116 through BUG-127 (agent gaps) should be RESOLVED-DECIDED
+    for bug_num in ["BUG-116", "BUG-119", "BUG-124", "BUG-128", "BUG-130", "BUG-136"]:
+        section_start = audit.find(f"**{bug_num}**")
+        assert section_start != -1, f"{bug_num} not found in AUDIT_INDEX"
+        row = audit[section_start:section_start + 300]
+        assert "RESOLVED-DECIDED" in row, f"{bug_num} not marked RESOLVED-DECIDED"
+
+
 if __name__ == "__main__":
     tests = [
         test_smart_money_score_keys,
