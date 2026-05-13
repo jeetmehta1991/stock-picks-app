@@ -942,6 +942,79 @@ def compute_candles(df: pd.DataFrame) -> dict:
 
 
 # -----------------------------------------------------------------------------
+# BREAK-AND-RETEST  (BUG-111)
+# -----------------------------------------------------------------------------
+
+def compute_break_retest_signals(df: pd.DataFrame) -> dict:
+    """Multi-bar break-and-retest pattern signals.
+
+    BUG-111 fix 2026-05-13: detects when price broke above/below a significant
+    level 2-8 bars ago, then pulled back to retest that level, and is holding above/below.
+    Retest confirms the broken level has flipped from resistance->support (long) or
+    support->resistance (short).
+
+    resistance_break_retest (long): DC20 high broken 2-8 bars ago; subsequent bar
+      touched within 1.5 ATR of the broken level; current close >= broken level.
+    support_break_retest (short): DC20 low broken 2-8 bars ago; subsequent bar
+      touched within 1.5 ATR of the broken level from below; current close <= broken level.
+    """
+    if len(df) < 30:
+        return {"resistance_break_retest": False, "support_break_retest": False}
+
+    close = df["close"].values
+    high  = df["high"].values
+    low   = df["low"].values
+    n     = len(close)
+
+    # 14-bar ATR
+    tr_vals = [max(high[i] - low[i],
+                   abs(high[i] - close[i - 1]),
+                   abs(low[i]  - close[i - 1])) for i in range(1, n)]
+    atr = float(np.mean(tr_vals[-14:])) if len(tr_vals) >= 14 else float(np.mean(tr_vals))
+    if atr <= 0:
+        atr = close[-1] * 0.01
+    tolerance = 1.5 * atr
+
+    # Resistance break-and-retest (long signal)
+    resistance_brt = False
+    for lag in range(2, 9):
+        if n <= lag + 2:
+            break
+        idx = n - 1 - lag          # index of the potential breakout bar
+        pre_start = max(0, idx - 20)
+        if pre_start >= idx:
+            continue
+        level = float(np.max(close[pre_start:idx]))
+        if close[idx] > level:     # breakout: bar at idx closed above prior DC20
+            # Any subsequent bar retested (low touched within tolerance of level)
+            if any(l <= level + tolerance for l in low[idx + 1:]):
+                if close[-1] >= level:  # current bar still above the broken level
+                    resistance_brt = True
+                    break
+
+    # Support breakdown-and-retest (short signal)
+    support_brt = False
+    for lag in range(2, 9):
+        if n <= lag + 2:
+            break
+        idx = n - 1 - lag
+        pre_start = max(0, idx - 20)
+        if pre_start >= idx:
+            continue
+        level = float(np.min(close[pre_start:idx]))
+        if close[idx] < level:     # breakdown: bar at idx closed below prior DC20
+            if any(h >= level - tolerance for h in high[idx + 1:]):
+                if close[-1] <= level:  # current bar still below the broken level
+                    support_brt = True
+                    break
+
+    return {
+        "resistance_break_retest": resistance_brt,
+        "support_break_retest":    support_brt,
+    }
+
+
+# -----------------------------------------------------------------------------
 # MASTER AGGREGATOR
 # -----------------------------------------------------------------------------
 
@@ -980,6 +1053,7 @@ def compute_all_signals(df: pd.DataFrame) -> dict:
     signals.update(compute_squeeze(df))
     signals.update(compute_volume(df))
     signals.update(compute_candles(df))
+    signals.update(compute_break_retest_signals(df))  # BUG-111
     return {k: v for k, v in signals.items() if v is not None}
 
 

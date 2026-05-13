@@ -813,6 +813,67 @@ def strat_cpr_narrow_momentum_short(s):
 
 
 # -----------------------------------------------------------------------------
+# BREAK-AND-RETEST STRATEGIES  -  BUG-111 Layer 3 additions
+# DEC-355 through DEC-362 chart pattern spec (config.py CHART_PATTERN_STRATEGIES)
+# mandates break+retest entry trigger. These 5 strategies implement that requirement
+# for the core breakout categories (Breakout + Pivot + Confluence).
+# -----------------------------------------------------------------------------
+
+def strat_dc20_break_retest(s):
+    """BUG-111: DC20 break-and-retest -- breakout above 20-day channel confirmed by retest hold."""
+    fl = (s.get("resistance_break_retest") and s.get("vol_spike_15x") and s.get("adx_trending"))
+    fs = (s.get("support_break_retest") and s.get("vol_spike_15x") and s.get("adx_trending"))
+    return _strat3(fl, fs, "breakout",
+        ["resistance_break_retest", "vol_spike_15x", "adx_trending"],
+        ["support_break_retest", "vol_spike_15x", "adx_trending"],
+        "DC20 break-and-retest: channel high broken, retested as support, ADX trending",
+        "DC20 breakdown-and-retest: channel low broken, retested as resistance, ADX trending")
+
+
+def strat_r1_break_retest(s):
+    """BUG-111: Pivot R1 break-and-retest -- R1 broken then retested as support."""
+    fl = (s.get("resistance_break_retest") and s.get("above_r1") and s.get("macd_12_26_9_bullish"))
+    fs = (s.get("support_break_retest") and s.get("below_s1") and not s.get("macd_12_26_9_bullish"))
+    return _strat3(fl, fs, "pivot",
+        ["resistance_break_retest", "above_r1", "macd_12_26_9_bullish"],
+        ["support_break_retest", "below_s1", "macd_12_26_9_bearish"],
+        "R1 break-and-retest: pivot resistance now acting as support with MACD momentum",
+        "S1 breakdown-and-retest: pivot support now acting as resistance with MACD bearish")
+
+
+def strat_52wh_break_retest(s):
+    """BUG-111: 52-week high break-and-retest -- historical resistance becomes support."""
+    fl = (s.get("resistance_break_retest") and s.get("near_52w_high") and s.get("price_above_ema_200"))
+    return _strat(fl, "long", "breakout",
+        ["resistance_break_retest", "near_52w_high", "price_above_ema_200"],
+        "52-week high break-and-retest: strongest historical resistance confirmed as support above 200 EMA")
+
+
+def strat_break_retest_volume(s):
+    """BUG-111: Break-and-retest confirmed by volume expansion on the bounce bar."""
+    fl = (s.get("resistance_break_retest") and s.get("vol_spike_2x") and s.get("obv_rising"))
+    fs = (s.get("support_break_retest") and s.get("vol_spike_2x") and not s.get("obv_rising"))
+    return _strat3(fl, fs, "breakout",
+        ["resistance_break_retest", "vol_spike_2x", "obv_rising"],
+        ["support_break_retest", "vol_spike_2x", "obv_falling"],
+        "Break-and-retest + 2x volume: institutional accumulation on the bounce",
+        "Breakdown-and-retest + 2x volume: institutional distribution on the rejection")
+
+
+def strat_break_retest_confluence(s):
+    """BUG-111: Break-and-retest with multi-indicator confluence confirmation."""
+    fl = (s.get("resistance_break_retest") and s.get("macd_12_26_9_bullish")
+          and s.get("price_above_ema_20") and s.get("price_above_ema_50"))
+    fs = (s.get("support_break_retest") and not s.get("macd_12_26_9_bullish")
+          and not s.get("price_above_ema_20") and not s.get("price_above_ema_50"))
+    return _strat3(fl, fs, "confluence",
+        ["resistance_break_retest", "macd_12_26_9_bullish", "price_above_ema_20", "price_above_ema_50"],
+        ["support_break_retest", "macd_bearish", "below_ema_20", "below_ema_50"],
+        "Break-and-retest confluence: MACD + dual EMA confirms breakout continuation",
+        "Breakdown-and-retest confluence: MACD + dual EMA confirms breakdown continuation")
+
+
+# -----------------------------------------------------------------------------
 # STRATEGY REGISTRY  -  Layer 1 baseline 60 + currently-implemented dedicated shorts
 # (full layered roster ~108-133 classes per CANONICAL_FACTS.md F-002; layered
 #  roster: Layer 1 baseline 60 + Layer 2 Phase 0.D ICT/Earnings/Calendar + Layer 2D
@@ -904,6 +965,12 @@ ALL_STRATEGIES = {
     # Dedicated shorts  -  Confluence (2)
     "camarilla_rsi_obv_short":      strat_camarilla_rsi_obv_short,
     "cpr_narrow_momentum_short":    strat_cpr_narrow_momentum_short,
+    # Break-and-Retest (5)  -  BUG-111 / DEC-355 through DEC-362 chart pattern spec
+    "dc20_break_retest":            strat_dc20_break_retest,
+    "r1_break_retest":              strat_r1_break_retest,
+    "52wh_break_retest":            strat_52wh_break_retest,
+    "break_retest_volume":          strat_break_retest_volume,
+    "break_retest_confluence":      strat_break_retest_confluence,
 }
 
 STRATEGY_CATEGORIES = {

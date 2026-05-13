@@ -2972,6 +2972,85 @@ def test_bug_082_226_227_229_245_258_263_batch158():
     assert callable(apply_slippage), "apply_slippage must be callable (distinct from TRANSACTION_COSTS)"
 
 
+def test_bug_111_batch162_break_and_retest_strategies():
+    """Batch 162: BUG-111 CRITICAL -- break-and-retest strategy variants implemented.
+
+    BUG-111: No break-and-retest variants of breakout strategies (CRITICAL/mandatory retest).
+    Fix: compute_break_retest_signals() added to technical.py + 5 new strategy classes.
+    """
+    import pathlib
+    import pandas as pd
+    import numpy as np
+
+    # BUG-111: compute_break_retest_signals must exist and be in compute_all_signals
+    tech_src = pathlib.Path("backtest/signals/technical.py").read_text(encoding="utf-8")
+    assert "compute_break_retest_signals" in tech_src, (
+        "BUG-111: compute_break_retest_signals must be defined in technical.py"
+    )
+    assert "BUG-111" in tech_src, "BUG-111 fix comment must be in technical.py"
+    assert "resistance_break_retest" in tech_src, (
+        "BUG-111: resistance_break_retest signal key must be emitted"
+    )
+    assert "support_break_retest" in tech_src, (
+        "BUG-111: support_break_retest signal key must be emitted"
+    )
+
+    # BUG-111: 5 new strategies registered in ALL_STRATEGIES
+    screener_src = pathlib.Path("backtest/signals/screener.py").read_text(encoding="utf-8")
+    expected_strategies = [
+        "dc20_break_retest", "r1_break_retest", "52wh_break_retest",
+        "break_retest_volume", "break_retest_confluence",
+    ]
+    for strat in expected_strategies:
+        assert f'"{strat}"' in screener_src, (
+            f"BUG-111: {strat} must be registered in ALL_STRATEGIES"
+        )
+
+    # BUG-111: ALL_STRATEGIES count must grow by 5 (from pre-111 count)
+    from backtest.signals.screener import ALL_STRATEGIES
+    assert len(ALL_STRATEGIES) >= 65, (
+        f"BUG-111: ALL_STRATEGIES must have >= 65 strategies after 5 break-and-retest added; "
+        f"got {len(ALL_STRATEGIES)}"
+    )
+
+    # BUG-111 behavioral: compute_break_retest_signals callable and returns expected keys
+    from backtest.signals.technical import compute_break_retest_signals
+    rng = np.random.default_rng(42)
+    n = 50
+    close = 100 + np.cumsum(rng.normal(0, 0.5, n))
+    df_test = pd.DataFrame({
+        "open":   close - 0.2,
+        "high":   close + 0.5,
+        "low":    close - 0.5,
+        "close":  close,
+        "volume": np.ones(n) * 1_000_000,
+    })
+    result = compute_break_retest_signals(df_test)
+    assert "resistance_break_retest" in result, (
+        "BUG-111: resistance_break_retest key must be in compute_break_retest_signals output"
+    )
+    assert "support_break_retest" in result, (
+        "BUG-111: support_break_retest key must be in compute_break_retest_signals output"
+    )
+    assert isinstance(result["resistance_break_retest"], bool), (
+        "BUG-111: resistance_break_retest must be bool"
+    )
+    # Both cannot be True simultaneously (long and short signals are mutually exclusive)
+    assert not (result["resistance_break_retest"] and result["support_break_retest"]), (
+        "BUG-111: resistance_break_retest and support_break_retest cannot both be True"
+    )
+
+    # BUG-111: compute_all_signals includes break-and-retest keys
+    from backtest.signals.technical import compute_all_signals
+    all_sigs = compute_all_signals(df_test)
+    assert "resistance_break_retest" in all_sigs, (
+        "BUG-111: compute_all_signals must include resistance_break_retest from break-and-retest"
+    )
+    assert "support_break_retest" in all_sigs, (
+        "BUG-111: compute_all_signals must include support_break_retest from break-and-retest"
+    )
+
+
 def test_bug_055_060_batch161_code_fixes():
     """Batch 161: BUG-055 PSAR flip fix + BUG-060 short entry zone gap-down fix.
 
