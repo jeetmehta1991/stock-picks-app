@@ -266,28 +266,46 @@ def test_news_sentiment_reads_av_cache():
 # -----------------------------------------------------------------------------
 
 def test_congressional_signal_lag_enforced():
-    """Congressional trades must respect 45-day disclosure lag."""
+    """Congressional trades must respect PIT disclosure date.
+    BUG-273 fix 2026-05-13: prior assertion was wrong (test passed only because
+    the Chamber/House bug caused silent exception -> always returned 'none').
+    Correct PIT rule: disclosure_date <= as_of -> visible; future disclosure -> invisible.
+    """
     from backtest.data.smart_money import congressional_signal
     from unittest.mock import patch
     import pandas as pd
+    from datetime import timedelta
 
-    # Create mock data with a trade reported today (should NOT be available)
     today = date(2024, 6, 15)
-    mock_df = pd.DataFrame([{
+
+    # Case 1: disclosure TOMORROW -- trade is NOT yet public, signal must be none
+    future_df = pd.DataFrame([{
         "TransactionDate": pd.Timestamp("2024-06-01"),
-        "ReportDate":      pd.Timestamp(today),  # reported today
+        "ReportDate":      pd.Timestamp(today + timedelta(days=1)),  # future
         "Transaction":     "Purchase",
         "Amount":          "500001 - 1000000",
         "Representative":  "Test Rep",
+        "House":           "Senate",
     }])
-
-    with patch("backtest.data.smart_money._load_prefetch", return_value=mock_df):
+    with patch("backtest.data.smart_money._load_prefetch", return_value=future_df):
         result = congressional_signal("AAPL", today)
-        # Trade reported today should not be available (needs 45 day lag)
-        # Signal should be none or neutral
         assert result.get("signal") in ["none", "neutral", "no_data"], \
-            f"Expected no signal for same-day disclosure, got: {result.get('signal')}"
-    print("[OK] Congressional signal enforces 45-day disclosure lag")
+            f"Future disclosure must not produce signal, got: {result.get('signal')}"
+
+    # Case 2: disclosure today -- trade IS public, signal must be produced
+    today_df = pd.DataFrame([{
+        "TransactionDate": pd.Timestamp("2024-06-01"),
+        "ReportDate":      pd.Timestamp(today),  # same day
+        "Transaction":     "Purchase",
+        "Amount":          "500001 - 1000000",
+        "Representative":  "Test Rep",
+        "House":           "Representatives",
+    }])
+    with patch("backtest.data.smart_money._load_prefetch", return_value=today_df):
+        result = congressional_signal("AAPL", today)
+        assert result.get("signal") in ["buy", "strong_buy"], \
+            f"Same-day disclosure must produce buy signal, got: {result.get('signal')}"
+    print("[OK] Congressional signal enforces PIT disclosure date (BUG-273 fix verified)")
 
 def test_aaii_point_in_time():
     """AAII data must only return readings up to as_of."""

@@ -2816,6 +2816,67 @@ def test_bug_040_084_246_250_251_254_255_256_257_259_260_262_280_281_282_283_res
     assert pathlib.Path("backtest/results/site_generator.py").exists()
 
 
+def test_bug_270_271_272_273_274_smart_money_silent_failures_fixed():
+    """Batch 156 2026-05-13: smart_money.py silent-failure cluster.
+    BUG-270: insider_signal column mismatch FALSE-POSITIVE (already fixed via BUG-272 migration)
+    BUG-271: get_gov_contracts Qtr+Year schema — RESOLVED-IMPLEMENTED
+    BUG-272: get_lobbying Amount str dtype — RESOLVED-IMPLEMENTED
+    BUG-273: congressional_signal Chamber→House — RESOLVED-IMPLEMENTED
+    BUG-274: institutional_signal SharesChange FALSE-POSITIVE (already correct)
+    """
+    import pathlib
+    from datetime import date
+
+    audit = pathlib.Path("AUDIT_INDEX.md").read_text(encoding="utf-8")
+    for bug_num in ["BUG-270", "BUG-271", "BUG-272", "BUG-273", "BUG-274"]:
+        section_start = audit.find(f"**{bug_num}**")
+        assert section_start != -1, f"{bug_num} not found in AUDIT_INDEX"
+        row = audit[section_start:section_start + 500]
+        assert "RESOLVED-IMPLEMENTED" in row, f"{bug_num} not RESOLVED-IMPLEMENTED in AUDIT_INDEX"
+
+    sm_src = pathlib.Path("backtest/data/smart_money.py").read_text(encoding="utf-8")
+
+    # BUG-273: House column used (not Chamber)
+    assert 'house_col = "House" if "House" in buys.columns' in sm_src, \
+        "BUG-273: House column fix not present"
+
+    # BUG-271: Qtr+Year reconstruction
+    assert "_QTR_MONTH" in sm_src, "BUG-271: Qtr+Year fix not present"
+    assert "_qtr_date" in sm_src, "BUG-271: qtr_date column not present"
+
+    # BUG-272: pd.to_numeric for lobbying Amount
+    assert "pd.to_numeric(window[amount_col], errors" in sm_src, \
+        "BUG-272: pd.to_numeric fix not present in get_lobbying"
+
+    # Verify congressional_signal returns meaningful signal for real data
+    from backtest.data.smart_money import congressional_signal
+    result = congressional_signal("AAPL", date(2025, 1, 15))
+    assert isinstance(result, dict)
+    assert "signal" in result
+    assert "buy_count" in result
+    assert "sell_count" in result
+    # With real cached data, should NOT always be "none" (House column fix works)
+    # We test that it runs without exception (previously always crashed silently)
+
+    # Verify get_gov_contracts returns signal for a ticker known to have contracts
+    from backtest.data.smart_money import get_gov_contracts
+    gc_result = get_gov_contracts("AAPL", date(2025, 1, 15))
+    assert isinstance(gc_result, dict)
+    assert "total_amount" in gc_result
+    assert "signal" in gc_result
+    # Previously always returned no_data; now should return bullish/neutral
+    assert gc_result["signal"] != "no_data", \
+        "BUG-271: get_gov_contracts still returning no_data after Qtr+Year fix"
+
+    # Verify get_lobbying runs without float conversion error
+    from backtest.data.smart_money import get_lobbying
+    lob_result = get_lobbying("AAPL", date(2025, 1, 15))
+    assert isinstance(lob_result, dict)
+    assert "total_spend" in lob_result
+    assert isinstance(lob_result["total_spend"], float), \
+        "BUG-272: get_lobbying total_spend not float"
+
+
 if __name__ == "__main__":
     tests = [
         test_smart_money_score_keys,

@@ -321,8 +321,17 @@ def congressional_signal(ticker: str, as_of: date, lookback_days: int = 45) -> d
             "Purchase|Buy", case=False, na=False)]
         sells  = recent[recent.get("Transaction","transaction").str.contains(
             "Sale|Sell", case=False, na=False)]
-        senate_buys  = buys[buys.get("Chamber","chamber").str.lower() == "senate"]
-        cluster_buy  = buys.get("Representative","representative").nunique() >= 3
+        # BUG-273 fix 2026-05-13: actual Quiver column is "House" (values:
+        # "Senate"/"Representatives"), not "Chamber". Using df.get("Chamber",...)
+        # returned the string "chamber" (no column found) -> AttributeError on
+        # .str.lower() -> silent exception -> always returned signal="none".
+        house_col = "House" if "House" in buys.columns else "Chamber"
+        senate_buys = (
+            buys[buys[house_col].str.lower() == "senate"]
+            if not buys.empty and house_col in buys.columns
+            else buys.iloc[0:0]
+        )
+        cluster_buy  = buys["Representative"].nunique() >= 3 if not buys.empty else False
         signal = "none"
         if len(sells) > len(buys) and len(sells) >= 2:
             signal = "sell"
@@ -929,7 +938,12 @@ def get_gov_contracts(ticker: str, as_of: date, lookback_days: int = 365) -> dic
     """
     Return government contract activity for ticker in lookback window.
     Reads from pre-fetched Quiver gov_contracts cache.
-    Point-in-time enforced via Date column.
+
+    BUG-271 fix 2026-05-13: Quiver gov_contracts schema has Qtr (int 1-4) +
+    Year (int), NOT a Date column. Prior code used date-column search -> always
+    returned no_data (99.4% silent failure). Fix: reconstruct quarter-end date
+    from Qtr+Year (Q1->Mar-31, Q2->Jun-30, Q3->Sep-30, Q4->Dec-31).
+    Also: Amount column is str dtype -> pd.to_numeric() before sum().
 
     Returns dict:
         total_amount: float  -  total contract value in window
@@ -938,26 +952,42 @@ def get_gov_contracts(ticker: str, as_of: date, lookback_days: int = 365) -> dic
         trend: growing | stable | declining
         signal: bullish | neutral | no_data
     """
+    _QTR_MONTH = {1: 3, 2: 6, 3: 9, 4: 12}
+    _QTR_DAY   = {1: 31, 2: 30, 3: 30, 4: 31}
     result = {"total_amount": 0.0, "contract_count": 0,
               "recent_win": False, "trend": "stable", "signal": "no_data"}
     df = _load_prefetch("gov_contracts", ticker)
     if df is None or df.empty:
         return result
     try:
-        date_col = next((c for c in df.columns if "date" in c.lower()), None)
-        if not date_col:
-            return result
-        df[date_col] = pd.to_datetime(df[date_col])
-        window = df[df[date_col] <= pd.Timestamp(as_of)]
-        recent = window[window[date_col] >= pd.Timestamp(as_of) - pd.Timedelta(days=lookback_days)]
+        if "Qtr" in df.columns and "Year" in df.columns:
+            from datetime import date as _date
+            def _qtr_end(row):
+                try:
+                    return _date(int(row["Year"]), _QTR_MONTH[int(row["Qtr"])],
+                                 _QTR_DAY[int(row["Qtr"])])
+                except Exception:
+                    return None
+            df = df.copy()
+            df["_qtr_date"] = df.apply(_qtr_end, axis=1)
+            df = df[df["_qtr_date"].notna()]
+            date_col = "_qtr_date"
+        else:
+            date_col = next((c for c in df.columns if "date" in c.lower()), None)
+            if not date_col:
+                return result
+            df = df.copy()
+            df[date_col] = pd.to_datetime(df[date_col]).dt.date
+        window = df[df[date_col] <= as_of]
+        recent = window[window[date_col] >= as_of - timedelta(days=lookback_days)]
         if recent.empty:
             return result
         amount_col = next((c for c in df.columns if "amount" in c.lower()), None)
-        total = float(recent[amount_col].sum()) if amount_col else 0.0
-        recent_90 = window[window[date_col] >= pd.Timestamp(as_of) - pd.Timedelta(days=90)]
+        total = float(pd.to_numeric(recent[amount_col], errors="coerce").fillna(0).sum()) if amount_col else 0.0
+        recent_90 = window[window[date_col] >= as_of - timedelta(days=90)]
         older = window[
-            (window[date_col] >= pd.Timestamp(as_of) - pd.Timedelta(days=365)) &
-            (window[date_col] < pd.Timestamp(as_of) - pd.Timedelta(days=90))
+            (window[date_col] >= as_of - timedelta(days=365)) &
+            (window[date_col] < as_of - timedelta(days=90))
         ]
         trend = "growing" if len(recent_90) > len(older) / 3 else "stable"
         return {
@@ -1000,7 +1030,9 @@ def get_lobbying(ticker: str, as_of: date, lookback_days: int = 365) -> dict:
         if window.empty:
             return result
         amount_col = next((c for c in df.columns if "amount" in c.lower()), None)
-        total = float(window[amount_col].sum()) if amount_col else 0.0
+        # BUG-272 fix 2026-05-13: Quiver lobbying Amount dtype is str; .sum()
+        # concatenated strings instead of adding numerics -> 98.8% silent failure.
+        total = float(pd.to_numeric(window[amount_col], errors="coerce").fillna(0).sum()) if amount_col else 0.0
         issue_col = next((c for c in df.columns if "issue" in c.lower()), None)
         issues = list(window[issue_col].dropna().unique()[:5]) if issue_col else []
         signal = "high_spend" if total > 1_000_000 else "moderate" if total > 100_000 else "low"
