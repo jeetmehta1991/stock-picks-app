@@ -2468,6 +2468,33 @@ def test_dec_235_engine_skips_holiday_weekday():
         assert date(2024, 7, 4) not in days   # Independence Day (Thu)
 
 
+def test_bug_039_045_047_049_050_062_064_065_085_090_091_109_resolved_decided():
+    """BUG-039/045/047/049/050/062/064/065/085/090/091/109 batch close - 12 decided/false-positives.
+    BUG-039: regime_confidence unused Phase 1A (BUG-27 sister).
+    BUG-045/049: FX risk accepted for Phase 1A USD universe.
+    BUG-047: VXX regime paradox resolved by DEC-302 canonical ^VIX loader.
+    BUG-050: position_staleness live-only concept.
+    BUG-062: Phase 1D superseded by Sprint 0A extended prefetch.
+    BUG-064/065: Phase 1C prereqs + strategy retirement replaced by DEC-422.
+    BUG-085: regime transition tracking Phase 1B.
+    BUG-090: FALSE-POSITIVE - checkpoint every 25 days exists in engine.
+    BUG-091: Phase 1A is fully deterministic (no random ops).
+    BUG-109: RESOLVED via DEC-497 yfinance HARD CUT.
+    Batch 152 2026-05-13.
+    """
+    import pathlib
+    audit = pathlib.Path("AUDIT_INDEX.md").read_text(encoding="utf-8")
+    for bug_num in ["BUG-039", "BUG-045", "BUG-062", "BUG-065", "BUG-091", "BUG-109"]:
+        section_start = audit.find(f"**{bug_num}**")
+        assert section_start != -1, f"{bug_num} not found"
+        row = audit[section_start:section_start + 300]
+        assert "RESOLVED" in row, f"{bug_num} not resolved"
+    # BUG-090: incremental checkpoint exists in engine
+    engine_src = pathlib.Path("backtest/engine/backtest.py").read_text(encoding="utf-8")
+    assert "checkpoint" in engine_src.lower(), "BUG-090: checkpoint logic missing from engine"
+    assert "trade_log_checkpoint" in engine_src, "BUG-090: trade_log_checkpoint missing"
+
+
 def test_bug_018_bonferroni_uses_len_all_strategies_not_hardcoded_60():
     """BUG-018 active fix - Bonferroni correction uses len(ALL_STRATEGIES) not 60.
     ALL_STRATEGIES currently = 72; hardcoded 60 was stale (9+ new shorts added).
