@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-13T03:12:02.834357+00:00",
+  "generated_at": "2026-05-13T03:16:04.718554+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -22020,15 +22020,15 @@
       "linked_decisions": "DEC-458",
       "sprint_context": "SUPERSEDED-BY-DEC-503 Pass 53 v8h+1 Phase 3 Batch 12 2026-05-10 (13-layer test pyramid per DEC-503 replaces ad-hoc validate_phase1b_data.py false-positive risk; pyramid catches the silent gaps the old validate script missed)",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
-        "tested": false,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 17,
         "pyramid": {
-          "unit": "N/A",
+          "unit": false,
           "smoke": "N/A",
-          "integration": "N/A",
+          "integration": true,
           "system": "N/A",
           "functional": "N/A",
           "regression": "N/A",
@@ -22045,12 +22045,12 @@
       "sprint": "SUPERSEDED-BY-DEC-503 Pass 53 v8h+1 Phase 3 Batch 12 2026-05-10 (13-layer test pyramid per DEC-503 replaces ad-hoc validate_phase1b_data.py false-positive risk; pyramid catches the silent gaps the old validate script missed)",
       "dependencies": "DEC-458",
       "description": "**File:** `scripts/validate_phase1b_data.py`",
-      "status": "OPEN",
+      "status": "RESOLVED-DECIDED",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "No artifacts yet; needs code + test"
+        "tier": "READY",
+        "label": "READY-TO-CLOSE",
+        "color": "#10b981",
+        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
       }
     },
     {
@@ -22062,7 +22062,7 @@
         "coded": true,
         "wired": false,
         "tested": true,
-        "pushed": false,
+        "pushed": true,
         "n_doc_refs": 8,
         "pyramid": {
           "unit": false,
@@ -35054,28 +35054,34 @@
   ],
   "recent_commits": [
     {
+      "sha": "52c307ac",
+      "subject": "Batch 129: BUG-073 active fix - prepopulate_cache_index canonical format",
+      "author": "jeetmehta1991",
+      "rel_time": "4 minutes ago"
+    },
+    {
       "sha": "72288c6c",
       "subject": "Batch 128: BUG-074 false-positive correction - run_full.sh deprecated, XLE in current splits",
       "author": "jeetmehta1991",
-      "rel_time": "6 minutes ago"
+      "rel_time": "10 minutes ago"
     },
     {
       "sha": "680f40ea",
       "subject": "Batch 127: dashboard parser - BUG status overlay from AUDIT_INDEX.md",
       "author": "jeetmehta1991",
-      "rel_time": "10 minutes ago"
+      "rel_time": "14 minutes ago"
     },
     {
       "sha": "5d9fdcdc",
       "subject": "Batch 126: BUG-178 + BUG-179 false-positive corrections - yfinance HARD CUT closed both",
       "author": "jeetmehta1991",
-      "rel_time": "83 minutes ago"
+      "rel_time": "87 minutes ago"
     },
     {
       "sha": "42b0114e",
       "subject": "Batch 125: BUG-083 false-positive correction - congressional PIT fix wired Batch 18",
       "author": "jeetmehta1991",
-      "rel_time": "89 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "a25d0240",
@@ -35171,7 +35177,7 @@
       "sha": "858ac20d",
       "subject": "Batch 109: BUG-34 per-strategy regime_blocklist config + engine gate",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "158663d0",
@@ -35226,17 +35232,11 @@
       "subject": "Batch 100: docs sweep - annotate skipped BUGs with triage context",
       "author": "jeetmehta1991",
       "rel_time": "7 hours ago"
-    },
-    {
-      "sha": "e9f6ada4",
-      "subject": "Batch 99: BUG-235 AAII pub-lag applied to get_aaii_sentiment loader",
-      "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 3,
-    "modified": 3,
+    "count": 2,
+    "modified": 2,
     "added": 0,
     "untracked": 0,
     "deleted": 0,
@@ -35248,10 +35248,6 @@
       {
         "status": "M",
         "path": "backtest/tests/test_integration.py"
-      },
-      {
-        "status": "M",
-        "path": "scripts/prepopulate_cache_index.py"
       }
     ]
   },
@@ -35433,7 +35429,7 @@
     }
   ],
   "test_inventory": {
-    "total": 1228,
+    "total": 1229,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -35469,7 +35465,7 @@
       "test_fred_alfred_smoke": 5,
       "test_gate_pre_phase_1a_entry": 8,
       "test_gates": 6,
-      "test_integration": 115,
+      "test_integration": 116,
       "test_inv041_path_restricted_commits": 5,
       "test_l146_wave_a_g2_g3_g9": 6,
       "test_l146_wave_b_g7_sec_edgar": 6,
@@ -36125,10 +36121,11 @@
     "DEFERRED": 2
   },
   "bug_status_counts": {
-    "OPEN": 230,
+    "OPEN": 229,
     "RESOLVED-IMPLEMENTED": 36,
     "CRITICAL": 2,
     "WILL_RESOLVE_VIA_DEC-440": 2,
+    "RESOLVED-DECIDED": 1,
     "RESOLVED": 16
   },
   "tier_status_counts": {

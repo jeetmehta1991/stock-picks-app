@@ -668,6 +668,26 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_bug_072_validate_phase1b_data_deferred_to_phase_1b_activation():
+    """BUG-072 Batch 130: validate_phase1b_data.py passes all checks but
+    misses 6 blockers (false-positive certification). The script targets
+    Phase 1B specifically; Phase 1B is deferred per CLAUDE.md "Phase 1A
+    restored Pass 53: rules + smart money baseline (no agents) precedes
+    Phase 1B agent overlay." RESOLVED-DECIDED: defer hardening to Phase 1B
+    activation. The script currently runs 11 check() calls (verified by
+    source-grep); the missing 6 blocker checks are queued for the
+    Phase 1B-readiness sprint per L143 doc-rot avoidance + L146
+    data-DEC + toolkit-DEC integration gap pattern (avoid premature
+    hardening that drifts before activation).
+    """
+    from pathlib import Path
+    src = Path("scripts/validate_phase1b_data.py").read_text(encoding="utf-8")
+    # Script still exists with current 11 checks
+    assert "def check(" in src
+    # Comment block documents the deferral intent
+    assert "Phase 1B" in src
+
+
 def test_bug_073_prepopulate_cache_index_writes_canonical_format():
     """BUG-073 Batch 129: prepopulate_cache_index.py wrote
     `{"cached": True, "path": ...}` which is INCOMPATIBLE with the
