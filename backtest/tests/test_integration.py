@@ -2468,6 +2468,25 @@ def test_dec_235_engine_skips_holiday_weekday():
         assert date(2024, 7, 4) not in days   # Independence Day (Thu)
 
 
+def test_bug_018_bonferroni_uses_len_all_strategies_not_hardcoded_60():
+    """BUG-018 active fix - Bonferroni correction uses len(ALL_STRATEGIES) not 60.
+    ALL_STRATEGIES currently = 72; hardcoded 60 was stale (9+ new shorts added).
+    Fix: backtest.py imports ALL_STRATEGIES and passes len() to bonferroni_adjusted_threshold.
+    Batch 151 2026-05-13.
+    """
+    import pathlib
+    src = pathlib.Path("backtest/engine/backtest.py").read_text(encoding="utf-8")
+    assert "BUG-018 FIX" in src, "BUG-018 fix comment missing"
+    assert "len(ALL_STRATEGIES)" in src, "Bonferroni still hardcoded to 60"
+    assert "bonferroni_adjusted_threshold(60)" not in src, "Old hardcoded 60 still present"
+    # Verify ALL_STRATEGIES is imported in backtest.py
+    assert "from backtest.signals.screener import" in src
+    assert "ALL_STRATEGIES" in src
+    # Verify current count is > 60
+    from backtest.signals.screener import ALL_STRATEGIES
+    assert len(ALL_STRATEGIES) > 60, f"Expected >60 strategies, got {len(ALL_STRATEGIES)}"
+
+
 def test_bug_008_009_011_015_017_020_021_025_042_043_044_false_positives():
     """BUG-008/009/011/015/017/020/021/024/025/042/043/044 batch close - 12 false-positives.
     BUG-008: ema_50_200_bullish key exists in compute_all_signals output.

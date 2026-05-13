@@ -47,7 +47,7 @@ from backtest.engine.improvements import (
     apply_slippage, apply_survivorship_haircut,
     bonferroni_adjusted_threshold,
 )
-from backtest.signals.screener import screen_universe, validate_entry_zone
+from backtest.signals.screener import screen_universe, validate_entry_zone, ALL_STRATEGIES
 from backtest.data.fetcher import days_to_next_earnings
 
 logger = logging.getLogger(__name__)
@@ -1474,7 +1474,8 @@ class BacktestEngine:
             wf_df      = walk_forward_to_df(wf_results)
 
         # Bonferroni info
-        bonferroni = bonferroni_adjusted_threshold(60)
+        # BUG-018 FIX: use len(ALL_STRATEGIES) instead of hardcoded 60; current is 72
+        bonferroni = bonferroni_adjusted_threshold(len(ALL_STRATEGIES))
         logger.info("Bonferroni: %s", bonferroni["recommendation"])
 
         # Exit comparison (DEC-422 cube + DEC-067 17-method counterfactual)
