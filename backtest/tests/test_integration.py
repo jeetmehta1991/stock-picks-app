@@ -668,6 +668,24 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_bug_083_congressional_detail_pit_filter_uses_report_date():
+    """BUG-083 Batch 125: get_congressional_detail() filtered with
+    INVERTED point-in-time logic (subtracted an extra 45 days from
+    ReportDate). RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 18
+    (2026-05-10, owner-approved Option A): the 45-day delta was
+    removed; Quiver's ReportDate already encodes the upstream
+    disclosure delay (ReportDate >= TransactionDate by the lag), so
+    PIT semantics are simply ReportDate <= as_of.
+    """
+    from pathlib import Path
+    src = Path("backtest/data/smart_money.py").read_text(encoding="utf-8")
+    assert "BUG-83 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 18" in src
+    # Fix removed the 45-day delta - filter is now simple ReportDate <= as_of
+    assert 'available = df[df["ReportDate"] <= cutoff]' in src
+    # The phrase "No additional 45-day delta" anchors the fix intent
+    assert "No additional 45-day delta" in src
+
+
 def test_bug_080_exit_slippage_applied_at_cb_and_trailing_exits():
     """BUG-080 Batch 124: "Exit slippage never applied; only entry
     slippage charged" was flagged HIGH/OPEN. RESOLVED-IMPLEMENTED Pass
