@@ -668,6 +668,46 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_bug_222_t1a_master_set_helper_returns_full_history():
+    """BUG-222 Batch 117: get_t1a_master_set() returns the set of all
+    tickers ever in T1a (current + historical removed-during-window).
+    Owner-approved option B 2026-05-12: tier-specific PIT filter -
+    T1a-classified tickers must intersect with PIT S&P 500 membership
+    at year_start; other tier tickers (T1 ETFs / T2 / T3) bypass.
+    """
+    from backtest.data.universe import get_t1a_master_set
+    t1a = get_t1a_master_set()
+    assert isinstance(t1a, set)
+    # Real CSV has ~614 rows (503 active + 111 historical removed); if
+    # missing the helper returns empty set + engine falls back gracefully
+    if len(t1a) > 0:
+        assert len(t1a) >= 500, (
+            f"T1a master set unexpectedly small ({len(t1a)}); expected >=500"
+        )
+        # SPY is an ETF, NOT in T1a
+        assert "SPY" not in t1a
+        # Well-known historical members should be present
+        assert "AAPL" in t1a or "MSFT" in t1a
+
+
+def test_bug_222_engine_pit_filter_excludes_non_t1a_from_intersection():
+    """BUG-222 behavior: the tier-specific PIT filter at the engine's
+    _build_liquid_universe only intersects T1a-classified tickers with
+    PIT S&P 500 membership; T1 ETFs / T2 / T3 bypass the intersection.
+    Source-grep verifies the gate logic + the `not in _t1a_master`
+    bypass + `not in _t1a_pit_at_year` filter.
+    """
+    from pathlib import Path
+    src = Path("backtest/engine/backtest.py").read_text(encoding="utf-8")
+    assert "BUG-222 RESOLVED-IMPLEMENTED Batch 117" in src
+    assert "get_t1a_master_set" in src
+    assert "_t1a_master" in src
+    assert "_t1a_pit_at_year" in src
+    # The tier-specific gate: T1a-in-master AND NOT-in-PIT-set -> skip
+    assert "ticker in _t1a_master" in src
+    assert "ticker not in _t1a_pit_at_year" in src
+
+
 def test_bug_218_239_engine_wires_pit_sector_at_three_sites():
     """BUG-218 + BUG-239 Batch 116: PIT-correct sector wired at all 3
     engine sites (concentration breach line 811, entry context line

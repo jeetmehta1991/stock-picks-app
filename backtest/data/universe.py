@@ -127,6 +127,36 @@ def _filter_pit(df: pd.DataFrame, as_of: date) -> pd.DataFrame:
     return df[left_ok & right_ok]
 
 
+def get_t1a_master_set() -> set:
+    """BUG-222 RESOLVED-IMPLEMENTED Batch 117 2026-05-12 (owner-approved
+    option B 2026-05-12): return the set of ALL tickers that have ever
+    been in the T1a S&P 500 universe (current snapshot + historical
+    members removed-during-window). Engine's `_build_liquid_universe`
+    intersection logic uses this set to decide which tickers to
+    PIT-filter against `get_sp500_constituents_pit(year_start)`. Tickers
+    NOT in this set (T1 ETFs, T2 spinoffs/IPOs, T3 momentum names)
+    bypass the PIT intersection and use OHLCV liquidity only.
+
+    Returns empty set on CSV read failure so the engine falls back to
+    no-PIT-filtering (current pre-Batch-117 behavior).
+    """
+    csv_path = UNIVERSE_DIR / "Tier 1A Universe_SP500 Tickers_Jan 2020 to May 2026.csv"
+    if not csv_path.exists():
+        legacy = UNIVERSE_DIR / "historical_membership.csv"
+        if legacy.exists():
+            csv_path = legacy
+        else:
+            logger.warning("BUG-222: T1a master CSV missing - returning empty set "
+                           "(engine will skip PIT intersection)")
+            return set()
+    try:
+        df = pd.read_csv(csv_path, comment='#')
+        return set(df["Symbol"].drop_duplicates().tolist())
+    except Exception as exc:
+        logger.error("BUG-222: could not read T1a master CSV: %s", exc)
+        return set()
+
+
 def get_sp500_constituents_pit(as_of: date) -> list[str]:
     """
     PIT-correct S&P 500 constituents at `as_of` date (DEC-040 / DEC-477).

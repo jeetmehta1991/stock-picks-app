@@ -217,9 +217,31 @@ class BacktestEngine:
                     continue
                 passing.add(ticker)
 
+        # BUG-222 RESOLVED-IMPLEMENTED Batch 117 2026-05-12 (owner-
+        # approved option B 2026-05-12): tier-specific PIT S&P 500
+        # filter. Load T1a master set (all tickers ever in T1a) + PIT
+        # membership per year_start. Tickers in T1a master must
+        # intersect with PIT membership at year_start to pass the
+        # annual liquid set; tickers NOT in T1a master (T1 ETFs, T2
+        # spinoffs, T3 momentum) bypass the PIT intersection and use
+        # OHLCV liquidity only. Empty T1a master (CSV read failure)
+        # disables the intersection entirely so the engine falls back
+        # to pre-Batch-117 no-PIT behavior.
+        from backtest.data.universe import (
+            get_t1a_master_set,
+            get_sp500_constituents_pit,
+        )
+        _t1a_master = get_t1a_master_set()
+
         # Build per-year liquid set for daily screening
         self._annual_liquid: dict[int, set] = {}
         for ref_date in check_dates:
+            # BUG-222: per-year T1a PIT membership (only if T1a master is
+            # populated; otherwise empty set + skip PIT intersection below)
+            if _t1a_master:
+                _t1a_pit_at_year = set(get_sp500_constituents_pit(ref_date))
+            else:
+                _t1a_pit_at_year = set()
             year_set = set()
             for ticker, df in self.ohlcv_dict.items():
                 sliced = df[df.index.date <= ref_date]
@@ -228,6 +250,12 @@ class BacktestEngine:
                 if float(sliced["close"].iloc[-1]) < LIQUIDITY["min_price"]:
                     continue
                 if float(sliced["volume"].tail(20).mean()) < LIQUIDITY["min_avg_volume"]:
+                    continue
+                # BUG-222 tier-specific PIT filter: T1a-classified tickers
+                # must be in the PIT S&P 500 set at year_start; other tier
+                # tickers bypass.
+                if (_t1a_master and ticker in _t1a_master
+                        and ticker not in _t1a_pit_at_year):
                     continue
                 year_set.add(ticker)
             self._annual_liquid[ref_date.year] = year_set
