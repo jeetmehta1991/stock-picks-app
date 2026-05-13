@@ -161,6 +161,17 @@ TRAILING_STOP = {
     "reset_on":          "close", # trailing stop resets on closing price only
     "primary_exit":      "atr_trail_1x",  # Phase 1A results: atr_trail_1x wins 20/29 strategies
     # Stop only moves in favour of trade  -  never reverses
+    # BUG-232 RESOLVED-IMPLEMENTED Batch 113 2026-05-12 (owner-approved
+    # option C 2026-05-12): config-toggleable trailing ratchet source.
+    # "close" (default, conservative) = update_trailing_stop uses
+    # today_close to advance the stop only when close > highest_close
+    # (longs); less whipsaw, gives up some intraday gains. Set to
+    # "intraday_extreme" to ratchet from today_high (longs) / today_low
+    # (shorts) so favourable intraday excursions advance the stop
+    # aggressively - locks gains faster but causes more whipsaw stops.
+    # Default preserved as "close" pending Phase 1B-alpha empirical
+    # A/B vs intraday_extreme to settle the design-choice tradeoff.
+    "ratchet_from":      "close",
 }
 
 # -----------------------------------------------------------------------------

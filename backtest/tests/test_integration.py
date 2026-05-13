@@ -668,6 +668,76 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_bug_232_trailing_stop_default_close_unchanged():
+    """BUG-232 Batch 113: trailing-stop ratchet source is config-toggleable.
+    Owner-approved option C 2026-05-12: default "close" preserves
+    existing conservative behavior; "intraday_extreme" available for
+    Phase 1B-alpha A/B testing.
+    """
+    from backtest.config import TRAILING_STOP
+    assert TRAILING_STOP.get("ratchet_from") == "close"
+
+
+def test_bug_232_intraday_extreme_uses_today_high_for_longs():
+    """BUG-232 behavior: when ratchet_from=intraday_extreme, longs ratchet
+    from today_high rather than today_close. Synthetic trade with high=102
+    + close=100 + highest_close=101 advances the stop only under intraday_extreme.
+    """
+    import unittest.mock as mock
+    from datetime import date
+    from backtest.engine.exit_manager import OpenTrade, update_trailing_stop
+    # Build a long trade with prior highest_close 101, current trail at 91 (10% below 101)
+    base_trade = lambda: OpenTrade(
+        ticker="TEST", entry_date=date(2024, 1, 1), entry_price=100.0,
+        direction="long", strategy="bug232_smoke", category="momentum",
+        sector="Tech", initial_stop=90.0, trailing_stop=91.0,
+        highest_close=101.0, regime_at_entry="neutral",
+    )
+    # Close-mode (default): today_close=100 < highest 101 -> stop unchanged
+    with mock.patch.dict("backtest.config.TRAILING_STOP",
+                          {"ratchet_from": "close"}):
+        t = base_trade()
+        # Reimport to pick up the patched module-level constant
+        from backtest.engine import exit_manager as _em
+        _em.update_trailing_stop(t, today_close=100.0, vix_value=None,
+                                  today_high=102.0, today_low=99.0)
+        assert t.trailing_stop == 91.0  # no advance
+        assert t.highest_close == 101.0
+    # Intraday-extreme mode: today_high=102 > highest 101 -> stop advances
+    with mock.patch.dict("backtest.config.TRAILING_STOP",
+                          {"ratchet_from": "intraday_extreme"}):
+        t = base_trade()
+        from backtest.engine import exit_manager as _em
+        _em.update_trailing_stop(t, today_close=100.0, vix_value=None,
+                                  today_high=102.0, today_low=99.0)
+        # New stop = 102 * (1 - 0.10) = 91.8; max(91.0, 91.8) = 91.8
+        assert t.trailing_stop > 91.0
+        assert t.highest_close == 102.0
+
+
+def test_bug_232_falls_back_to_close_when_today_high_missing():
+    """BUG-232 behavior: when caller doesn't supply today_high/today_low,
+    the helper falls back to close-based ratchet even if config says
+    intraday_extreme (graceful degradation, no AttributeError).
+    """
+    import unittest.mock as mock
+    from datetime import date
+    from backtest.engine.exit_manager import OpenTrade
+    t = OpenTrade(
+        ticker="TEST", entry_date=date(2024, 1, 1), entry_price=100.0,
+        direction="long", strategy="bug232_smoke", category="momentum",
+        sector="Tech", initial_stop=90.0, trailing_stop=91.0,
+        highest_close=101.0, regime_at_entry="neutral",
+    )
+    with mock.patch.dict("backtest.config.TRAILING_STOP",
+                          {"ratchet_from": "intraday_extreme"}):
+        from backtest.engine import exit_manager as _em
+        _em.update_trailing_stop(t, today_close=100.0, vix_value=None,
+                                  today_high=None, today_low=None)
+    # today_close=100 < highest 101 -> stop unchanged (fell back to close)
+    assert t.trailing_stop == 91.0
+
+
 def test_bug_31_passing_criteria_emits_tiered_min_trades():
     """BUG-31 Batch 112: tiered min-trades. Owner-approved option D
     2026-05-12: 30 per-regime / 100 overall (matches existing CLAUDE.md

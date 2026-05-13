@@ -241,25 +241,52 @@ def check_circuit_breakers(
     return results[0] if results else None
 
 
-def update_trailing_stop(trade: OpenTrade, today_close: float, vix_value: Optional[float] = None) -> OpenTrade:
+def update_trailing_stop(
+    trade:        OpenTrade,
+    today_close:  float,
+    vix_value:    Optional[float] = None,
+    today_high:   Optional[float] = None,
+    today_low:    Optional[float] = None,
+) -> OpenTrade:
     """
-    Update trailing stop based on today's closing price.
+    Update trailing stop based on today's price.
     Stop only moves in favour of trade  -  never reverses.
+
+    BUG-232 RESOLVED-IMPLEMENTED Batch 113 2026-05-12 (owner-approved
+    option C 2026-05-12): trailing-ratchet source is config-toggleable
+    via TRAILING_STOP["ratchet_from"]:
+      "close" (default, conservative): advance the stop only when
+        today_close beats highest_close. Less whipsaw, gives up some
+        intraday gains.
+      "intraday_extreme": advance the stop from today_high (longs)
+        / today_low (shorts). Locks gains from favourable intraday
+        excursions faster but causes more whipsaw stops.
+    Falls back to "close" if today_high/today_low not supplied by caller.
     """
     cb  = CIRCUIT_BREAKERS
     pct = cb["level_5_tightened_pct"] if (vix_value and vix_value >= cb["level_5_vix_crisis"]) \
           else TRAILING_STOP["trail_pct"]
+    ratchet_from = TRAILING_STOP.get("ratchet_from", "close")
 
     if trade.direction == "long":
-        if today_close > trade.highest_close:
-            trade.highest_close   = today_close
-            new_stop              = today_close * (1 - pct)
+        # Pick the favourable reference price per config toggle
+        if ratchet_from == "intraday_extreme" and today_high is not None:
+            ref_price = today_high
+        else:
+            ref_price = today_close
+        if ref_price > trade.highest_close:
+            trade.highest_close   = ref_price
+            new_stop              = ref_price * (1 - pct)
             # Stop only moves up
             trade.trailing_stop   = max(trade.trailing_stop, new_stop)
     else:  # short
-        if today_close < trade.highest_close:
-            trade.highest_close   = today_close
-            new_stop              = today_close * (1 + pct)
+        if ratchet_from == "intraday_extreme" and today_low is not None:
+            ref_price = today_low
+        else:
+            ref_price = today_close
+        if ref_price < trade.highest_close:
+            trade.highest_close   = ref_price
+            new_stop              = ref_price * (1 + pct)
             # Stop only moves down
             trade.trailing_stop   = min(trade.trailing_stop, new_stop)
 
@@ -565,7 +592,10 @@ def process_day_exits(
         # -- Step 3: Update trailing stop from today's close (post-check, no lookahead) --
         # BUG-78 fix: this update runs AFTER the intraday check, so the new stop only
         # applies to tomorrow's intraday check, not today's.
-        trade = update_trailing_stop(trade, today_close, vix_value)
+        # BUG-232 fix: pass today_high/today_low so the ratchet can use
+        # intraday_extreme when TRAILING_STOP["ratchet_from"] = "intraday_extreme".
+        # Default config remains "close" - this is forward-compat plumbing.
+        trade = update_trailing_stop(trade, today_close, vix_value, today_high=today_high, today_low=today_low)
 
         still_open.append(trade)
 
