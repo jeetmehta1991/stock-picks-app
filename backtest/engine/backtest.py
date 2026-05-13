@@ -240,6 +240,36 @@ class BacktestEngine:
             return self._annual_liquid.get(as_of.year, set(self.liquid_universe))
         return set(self.liquid_universe)
 
+    def _get_sector_pit_for_ticker(self, ticker: str, as_of: date) -> str:
+        """BUG-218 + BUG-239 RESOLVED-IMPLEMENTED Batch 116 2026-05-12 (owner-
+        approved option A 2026-05-12): PIT-correct sector lookup at the
+        engine level. Wraps `backtest.data.universe.get_sector_pit` so
+        sector reclassifications in `Backtesting universe/sector_history.csv`
+        (e.g. META 2018 IT->Comms, V/MA 2023 IT->Financials, T/VZ 2018
+        Telecom->Comms, NFLX/DIS/CMCSA 2018 CD->Comms) apply correctly
+        to trades whose as_of predates the reclassification.
+
+        Falls back to the snapshot `self.sector_map` when the PIT helper
+        returns "Unknown" or raises (e.g. universe module not available
+        in unit-test fixture). This preserves existing behavior for
+        tickers not in sector_history.csv.
+
+        Used at 3 engine sites: concentration breach gate (line 811),
+        entry context for sector ETF lookup (line 1095), and
+        _run_agent_context (line 1288). Portfolio internal sector dict
+        keys are migrated implicitly: `add_position(ticker, sector, ...)`
+        is the only writer and now receives the PIT-correct sector at
+        entry time, so all downstream concentration accounting reads
+        the entry-time sector correctly.
+        """
+        fallback = self.sector_map.get(ticker, "Unknown")
+        try:
+            from backtest.data.universe import get_sector_pit
+            pit_sector = get_sector_pit(ticker, as_of, fallback=fallback)
+            return pit_sector if pit_sector else fallback
+        except Exception:
+            return fallback
+
     # ----------------------------------------------------------------------
     # MAIN LOOP
     # ----------------------------------------------------------------------
@@ -808,7 +838,10 @@ class BacktestEngine:
                 )
                 if _conc.get("any_breach"):
                     # Candidate's own sector contributes to the breach -- skip
-                    cand_sector = self.sector_map.get(ticker, "Unknown")
+                    # BUG-218/239 Batch 116: PIT-correct sector lookup so the
+                    # concentration gate uses the as_of sector for tickers in
+                    # sector_history.csv (e.g. META pre-2018 = "Information Technology").
+                    cand_sector = self._get_sector_pit_for_ticker(ticker, as_of)
                     if cand_sector in _conc.get("sector_breaches", []):
                         self.skipped_trades.append({
                             "ticker": ticker, "date": as_of,
@@ -1092,7 +1125,10 @@ class BacktestEngine:
                             continue
 
                 # Get sector ETF return for halo effect context
-                sector = self.sector_map.get(ticker, "Unknown")
+                # BUG-218/239 Batch 116: PIT-correct sector at entry time so
+                # the ETF halo context uses the as_of sector classification,
+                # not the current-snapshot sector.
+                sector = self._get_sector_pit_for_ticker(ticker, as_of)
                 sector_etf_map = {
                     "Information Technology": "XLK", "Financials": "XLF",
                     "Energy": "XLE", "Health Care": "XLV", "Industrials": "XLI",
@@ -1285,7 +1321,10 @@ class BacktestEngine:
         """Run agents and return (context_paragraph, agent_final_score, adjusted_tier, preliminary_tier)."""
         try:
             from backtest.agents.pipeline import run_full_agent_pipeline
-            sector = self.sector_map.get(ticker, "Unknown")
+            # BUG-218/239 Batch 116: PIT-correct sector for agent context so
+            # agent reasoning sees the as_of sector classification rather
+            # than the current-snapshot.
+            sector = self._get_sector_pit_for_ticker(ticker, as_of)
             # Build portfolio context for Decision Agent
             portfolio_context = {
                 "open_positions": len(self.open_trades),

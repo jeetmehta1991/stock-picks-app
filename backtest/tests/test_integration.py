@@ -668,6 +668,46 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_bug_218_239_engine_wires_pit_sector_at_three_sites():
+    """BUG-218 + BUG-239 Batch 116: PIT-correct sector wired at all 3
+    engine sites (concentration breach line 811, entry context line
+    1095, agent context line 1288) via a new helper
+    `BacktestEngine._get_sector_pit_for_ticker(ticker, as_of)` that
+    wraps `backtest.data.universe.get_sector_pit` with snapshot
+    sector_map fallback. Portfolio internal sector dict keys migrate
+    implicitly via add_position's entry-time sector.
+    """
+    from pathlib import Path
+    src = Path("backtest/engine/backtest.py").read_text(encoding="utf-8")
+    assert "BUG-218 + BUG-239 RESOLVED-IMPLEMENTED Batch 116" in src
+    assert "def _get_sector_pit_for_ticker" in src
+    # All 3 sites must call the new helper
+    helper_calls = src.count("_get_sector_pit_for_ticker(ticker, as_of)")
+    assert helper_calls >= 3, (
+        f"Expected helper called at >= 3 engine sites, got {helper_calls}"
+    )
+
+
+def test_bug_218_239_pit_helper_falls_back_to_snapshot_gracefully():
+    """BUG-218/239 behavior: when get_sector_pit returns Unknown (ticker
+    not in sector_history.csv), helper falls back to the snapshot
+    sector_map. Construct a fresh engine + verify the helper returns
+    the snapshot sector when as_of doesn't trigger a reclassification.
+    """
+    from datetime import date
+    from backtest.engine.backtest import BacktestEngine
+    eng = BacktestEngine(universe=["SPY"], run_agents=False, walk_forward=False)
+    # Populate a synthetic snapshot sector map so we have a known fallback
+    eng.sector_map = {"AAPL": "Information Technology"}
+    out = eng._get_sector_pit_for_ticker("AAPL", date(2024, 6, 1))
+    # AAPL has no sector_history reclassification entry -> falls back
+    # to the snapshot value "Information Technology"
+    assert out == "Information Technology"
+    # Unknown ticker -> snapshot fallback "Unknown"
+    out_missing = eng._get_sector_pit_for_ticker("UNKNOWN_XYZ", date(2024, 6, 1))
+    assert out_missing == "Unknown"
+
+
 def test_bug_219_dec_298_spec_constants_present_for_future_wiring():
     """BUG-219 Batch 115: RESOLVED-DECIDED via owner-approved option B
     2026-05-12 - accept current adjusted-close caching for Phase 1A;
