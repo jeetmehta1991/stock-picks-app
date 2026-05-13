@@ -1003,12 +1003,15 @@
 ---
 ## Bug Registry
 
-**Total: 269 unique bug IDs.**
+**Total: 269 unique bug IDs. BUG arc complete 2026-05-13 (Batches 146-162).**
 
 | Status | Count |
 |---|---|
-| RESOLVED | 15 |
-| OPEN | 254 |
+| RESOLVED-IMPLEMENTED | 179+ |
+| RESOLVED-DECIDED | 60+ |
+| RESOLVED (legacy) | 18 |
+| WILL_RESOLVE_VIA_DEC | 2 |
+| OPEN | 0 |
 
 
 ### Open Bugs by Severity
