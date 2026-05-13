@@ -169,6 +169,80 @@ def parse_decisions(audit_index: Path) -> list[dict]:
     return rows
 
 
+def parse_bug_status_from_audit_index(path: Path) -> dict[str, str]:
+    """Parse BUG status column from AUDIT_INDEX.md "All Bugs Table".
+
+    Pass 53 Batch 127 2026-05-12 owner directive: the BUG status flips
+    that the Path-2 BUG audit arc produces (Batches 87-126: ~33 BUGs
+    flipped from OPEN to RESOLVED-IMPLEMENTED / RESOLVED-DECIDED) live
+    in AUDIT_INDEX.md body text. parse_bug_register reads BUG_REGISTER.md
+    which is a static cross-reference table without per-row status, so
+    the dashboard counter shows {Bugs: 71 / UNKNOWN: 71} regardless of
+    how many BUGs flip. This overlay restores the visibility.
+
+    Returns dict mapping normalized BUG-NNN (3-digit zero-padded) -> the
+    status string read from the table's status column. Rows where the
+    status cell wraps or is truncated fall back to "" so the inferred
+    classification path takes over.
+    """
+    if not path.exists():
+        return {}
+    text = path.read_text(encoding="utf-8", errors="ignore")
+    out: dict[str, str] = {}
+    in_table = False
+    bug_id_pat = re.compile(r"^\| \*\*BUG-(\d+)\*\* \|")
+    # Sentinel for the literal-pipe escape `\|` used inside table cells.
+    # BUG-116..BUG-138 rows embed severity via `\| HIGH \|` syntax which
+    # confuses a naive split-on-pipe parser. We swap to a sentinel before
+    # splitting, then restore.
+    PIPE_ESC = "\x00PIPE\x00"
+    for line in text.split("\n"):
+        stripped = line.strip()
+        if not stripped:
+            continue
+        if stripped.startswith("### All Bugs Table"):
+            in_table = True
+            continue
+        if stripped.startswith("##") or stripped.startswith("### "):
+            # New section starts -> exit table
+            if "Bug" not in stripped:
+                in_table = False
+            continue
+        if not in_table:
+            continue
+        m = bug_id_pat.match(line)
+        if not m:
+            continue
+        # Row format: | **BUG-NNN** | title | severity | status | introduced |
+        # Status is the 4th data cell (cols[3] after split-and-strip).
+        # Handle `\|` literal-pipe escapes inside cells.
+        escaped = stripped.replace("\\|", PIPE_ESC)
+        cols = [c.strip().replace(PIPE_ESC, "|") for c in escaped.strip("|").split("|")]
+        if len(cols) < 4:
+            continue
+        bug_short = f"BUG-{int(m.group(1)):03d}"
+        # Status is the 4th column (after id / title / severity)
+        status_cell = cols[3]
+        # Strip any trailing markdown / wrap noise; keep canonical token
+        status = status_cell.split()[0] if status_cell else ""
+        # Heuristic guard: real status tokens look like RESOLVED-* /
+        # OPEN / DEFERRED / CRITICAL / HIGH / MEDIUM / LOW / WILL_RESOLVE_*
+        # / INLINE-ONLY. Anything else likely means we mis-split a row
+        # with non-standard formatting; drop it so the inferred-status
+        # path takes over instead of polluting the counter.
+        _VALID = {"OPEN", "RESOLVED-IMPLEMENTED", "RESOLVED-DECIDED",
+                  "RESOLVED", "DEFERRED", "CRITICAL", "HIGH", "MEDIUM",
+                  "LOW", "INLINE-ONLY"}
+        if status and not (status.startswith("RESOLVED")
+                            or status.startswith("WILL_RESOLVE")
+                            or status in _VALID):
+            status = ""
+        if status and bug_short not in out:
+            # First-occurrence wins (in case of duplicated table sections)
+            out[bug_short] = status
+    return out
+
+
 def parse_bug_register(path: Path) -> list[dict]:
     """Parse BUG_REGISTER.md bug -> decision cross-reference table.
 
@@ -1733,6 +1807,28 @@ def main() -> int:
 
     decisions = parse_decisions(REPO_ROOT / "AUDIT_INDEX.md")
     bugs = parse_bug_register(REPO_ROOT / "BUG_REGISTER.md")
+    # BUG-status overlay from AUDIT_INDEX.md (Pass 53 Batch 127): the Path-2
+    # BUG audit arc flips status in AUDIT_INDEX text (BUG_REGISTER is static
+    # cross-ref); overlay restores dashboard counter visibility.
+    bug_status_overlay = parse_bug_status_from_audit_index(REPO_ROOT / "AUDIT_INDEX.md")
+    # Batch 127 augmentation: BUG_REGISTER covers BUG-001..~204; AUDIT_INDEX
+    # carries newer Pass-47/48-era entries (BUG-205+, BUG-214+, BUG-242+).
+    # Add any AUDIT_INDEX-only BUGs to the bugs list as minimal records so
+    # the dashboard counter reflects the full catalog.
+    existing_ids = set()
+    for b in bugs:
+        m = re.match(r"BUG-(\d+)$", b["id"])
+        if m:
+            existing_ids.add(f"BUG-{int(m.group(1)):03d}")
+    for bid, status in bug_status_overlay.items():
+        if bid not in existing_ids:
+            bugs.append({
+                "id": bid,
+                "title": f"(AUDIT_INDEX-only) {bid}",
+                "linked_decisions": "",
+                "sprint_context": "",
+                "status": status,
+            })
     invs = parse_inv_entries(REPO_ROOT / "OPEN_INVESTIGATIONS.md")
     cavs = parse_caveats(REPO_ROOT / "LIMITATIONS_CAVEATS_ASSUMPTIONS.md")
     lessons = parse_learnings(REPO_ROOT / "LEARNINGS.md")
@@ -1769,6 +1865,14 @@ def main() -> int:
         b["sprint"] = b.get("sprint_context", "-") or "-"
         b["dependencies"] = "; ".join(extract_dependencies(b.get("linked_decisions", "") + " " + b.get("title", ""))) or "-"
         b["description"] = audit_descs.get(short, "") or ""
+        # Batch 127: overlay AUDIT_INDEX BUG status so flips in body text
+        # (RESOLVED-IMPLEMENTED / RESOLVED-DECIDED) reach the dashboard
+        # counter. parse_bug_register doesn't populate `status` so falling
+        # back to a "" preserves the inferred-status path for BUGs not in
+        # the AUDIT_INDEX table.
+        ai_status = bug_status_overlay.get(short, "")
+        if ai_status:
+            b["status"] = ai_status
         b["promotion_path"] = compute_promotion_path(b, "bug")
     for i in invs:
         i["status_grep"] = id_status(i["id"], corpora)
@@ -1839,6 +1943,16 @@ def main() -> int:
         inv_by_status[i["status"]] = inv_by_status.get(i["status"], 0) + 1
     snapshot["inv_status_counts"] = inv_by_status
 
+    # Batch 127: BUG status counter mirrors the decisions/INV pattern now
+    # that AUDIT_INDEX overlay populates b["status"].
+    bug_by_status: dict = {}
+    for b in snapshot["bugs"]:
+        s = b.get("status", "") or "UNKNOWN"
+        # Normalize to first-token so "RESOLVED-IMPLEMENTED Pass 53..." groups
+        s = s.split()[0]
+        bug_by_status[s] = bug_by_status.get(s, 0) + 1
+    snapshot["bug_status_counts"] = bug_by_status
+
     tier_by_status: dict = {}
     # Canonical status keywords (in priority order - first match wins).
     STATUS_KEYWORDS = [
@@ -1866,7 +1980,7 @@ def main() -> int:
 
     print(f"=== Stage 2 dashboard built ===")
     print(f"Decisions: {len(snapshot['decisions'])} | by status: {dec_by_status}")
-    print(f"Bugs: {len(snapshot['bugs'])}")
+    print(f"Bugs: {len(snapshot['bugs'])} | by status: {bug_by_status}")
     print(f"INVs: {len(snapshot['investigations'])} | by status: {inv_by_status}")
     print(f"Tier items: {len(snapshot['tier_items'])} | by status: {tier_by_status}")
     print(f"Recent commits: {len(snapshot['recent_commits'])}")
