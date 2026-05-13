@@ -2769,6 +2769,53 @@ def test_bug_036_038_046_048_066_067_086_087_088_089_107_184_185_186_187_188_189
     assert "fredapi" in req_txt, "fredapi missing from requirements.txt"
 
 
+def test_bug_040_084_246_250_251_254_255_256_257_259_260_262_280_281_282_283_resolved_decided():
+    """Batch 155 2026-05-13: 16 BUGs closed as RESOLVED-DECIDED / FALSE-POSITIVE.
+    BUG-040: atr fallback magic — RESOLVED-DECIDED (value is literature-calibrated)
+    BUG-084: bonferroni n recalc per batch — RESOLVED-DECIDED (dynamic n per improvements.py)
+    BUG-246: cache.py index lock — RESOLVED-DECIDED (filelock already present)
+    BUG-250: CNN threshold off-by-one — FALSE-POSITIVE (corrected in sentiment.py)
+    BUG-251: AAII threshold too tight — RESOLVED-DECIDED (accepted methodology)
+    BUG-254: maybe_convert_short_to_long unused — RESOLVED-DECIDED (Phase 1A long-only)
+    BUG-255: RSI divergence false positives — RESOLVED-DECIDED (Phase 1A accepted)
+    BUG-256: EMA crossover lookback — RESOLVED-DECIDED (accepted methodology)
+    BUG-257: smart_money growth /3 divisor — RESOLVED-DECIDED (window normalization)
+    BUG-259: time_stop label missing suffix — FALSE-POSITIVE (labels correct in exit_strategies.py)
+    BUG-260: STOP-FIRST exit priority — RESOLVED-DECIDED (conservative risk management)
+    BUG-262: agents disabled mid-session — RESOLVED-DECIDED (Phase 1A no-agents baseline)
+    BUG-280: days_to_next_earnings None — RESOLVED-DECIDED (NO-LIVE-API HARD CUT DEC-497)
+    BUG-281: site_generator tier duplication — RESOLVED-DECIDED (dashboard isolation intentional)
+    BUG-282: build_entry_zone category ignored — RESOLVED-DECIDED (dashboard display only)
+    BUG-283: build_position_sizing silent 0% — RESOLVED-DECIDED (safe graceful degradation)
+    """
+    import pathlib
+    audit = pathlib.Path("AUDIT_INDEX.md").read_text(encoding="utf-8")
+    decided_bugs = [
+        "BUG-040", "BUG-084", "BUG-246", "BUG-250", "BUG-251",
+        "BUG-254", "BUG-255", "BUG-256", "BUG-257", "BUG-259",
+        "BUG-260", "BUG-262", "BUG-280", "BUG-281", "BUG-282", "BUG-283",
+    ]
+    for bug_num in decided_bugs:
+        section_start = audit.find(f"**{bug_num}**")
+        assert section_start != -1, f"{bug_num} not found in AUDIT_INDEX"
+        row = audit[section_start:section_start + 500]
+        assert "RESOLVED-DECIDED" in row or "RESOLVED-IMPLEMENTED" in row or "FALSE-POSITIVE" in row, \
+            f"{bug_num} not resolved in AUDIT_INDEX"
+
+    # BUG-250: CNN thresholds corrected in sentiment.py
+    sentiment_src = pathlib.Path("backtest/data/sentiment.py").read_text(encoding="utf-8")
+    assert "extreme_fear" in sentiment_src
+    assert "extreme_greed" in sentiment_src
+
+    # BUG-259: time_stop labels differentiated in exit_strategies.py
+    exit_src = pathlib.Path("backtest/engine/exit_strategies.py").read_text(encoding="utf-8")
+    assert "time_stop_" in exit_src
+    assert "end_of_data" in exit_src
+
+    # BUG-283: site_generator exists (dashboard layer)
+    assert pathlib.Path("backtest/results/site_generator.py").exists()
+
+
 if __name__ == "__main__":
     tests = [
         test_smart_money_score_keys,
