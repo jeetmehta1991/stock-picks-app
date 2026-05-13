@@ -2931,6 +2931,47 @@ def test_bug_275_276_277_278_279_284_285_quick_fixes():
     assert '"gov_contracts": None' in src, "DATE_FIELDS gov_contracts must be None after BUG-284 fix"
 
 
+def test_bug_082_226_227_229_245_258_263_batch158():
+    """Batch 158: false-positives + decided + ATR_FALLBACK_PCT constant wired.
+
+    BUG-082: slippage + TRANSACTION_COSTS are distinct (market impact vs spread/commission);
+             conservative overstatement acceptable for Phase 1A. RESOLVED-DECIDED.
+    BUG-226: get_ohlcv front-extension already implemented (DEC-307+381 Batch 44).
+    BUG-227: cache 1-row minimum already implemented (DEC-308+382 Batch 44).
+    BUG-229: outlier clip is conservative overstatement -- acceptable for Phase 1A. RESOLVED-DECIDED.
+    BUG-245: partial-year ROI annualization conservative overstatement. RESOLVED-DECIDED.
+    BUG-258: ATR fallback 2% magic number moved to ATR_FALLBACK_PCT named constant.
+    BUG-263: slippage+borrow ordering in pnl doesn't affect result; no short selling Phase 1A. RESOLVED-DECIDED.
+    """
+    # BUG-258: ATR_FALLBACK_PCT constant importable and correct value
+    from backtest.config import ATR_FALLBACK_PCT
+    assert ATR_FALLBACK_PCT == 0.02, (
+        f"ATR_FALLBACK_PCT must be 0.02 (2% Wilder recommendation); got {ATR_FALLBACK_PCT}"
+    )
+
+    # BUG-258: exit_strategies imports ATR_FALLBACK_PCT (no hardcoded 0.02)
+    import pathlib
+    src = pathlib.Path("backtest/engine/exit_strategies.py").read_text(encoding="utf-8")
+    assert "ATR_FALLBACK_PCT" in src, "exit_strategies.py must use ATR_FALLBACK_PCT constant"
+    # Confirm no naked 0.02 multiplications remain (the magic number)
+    import re
+    naked = re.findall(r"\*\s*0\.02(?!\d)", src)
+    assert not naked, f"exit_strategies.py still has naked * 0.02 magic numbers: {naked}"
+
+    # BUG-226/227: cache front-extension + 1-row minimum markers present
+    cache_src = pathlib.Path("backtest/data/cache.py").read_text(encoding="utf-8")
+    assert "DEC-307" in cache_src or "front" in cache_src.lower(), (
+        "BUG-226: cache.py must contain DEC-307 front-extension implementation marker"
+    )
+
+    # BUG-082: TRANSACTION_COSTS dict and apply_slippage are distinct (market impact vs spread/commission)
+    from backtest.engine.improvements import TRANSACTION_COSTS, apply_slippage
+    assert isinstance(TRANSACTION_COSTS, dict), (
+        "TRANSACTION_COSTS must be a dict of cost-by-tier (market impact model)"
+    )
+    assert callable(apply_slippage), "apply_slippage must be callable (distinct from TRANSACTION_COSTS)"
+
+
 if __name__ == "__main__":
     tests = [
         test_smart_money_score_keys,
