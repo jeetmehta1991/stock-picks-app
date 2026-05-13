@@ -668,6 +668,29 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_bug_080_exit_slippage_applied_at_cb_and_trailing_exits():
+    """BUG-080 Batch 124: "Exit slippage never applied; only entry
+    slippage charged" was flagged HIGH/OPEN. RESOLVED-IMPLEMENTED Pass
+    53 v8h+1 Phase 3 Batch 15 (2026-05-10): `apply_exit_slippage`
+    helper added to `backtest/engine/improvements.py:460+` and called
+    at both exit sites in `process_day_exits`:
+      - line 533-534: circuit-breaker exit (cb_exit_price)
+      - line 593-594: trailing-stop exit (ts_exit_price)
+    Symmetric to entry slippage so round-trip cost is captured.
+    """
+    from pathlib import Path
+    imp_src = Path("backtest/engine/improvements.py").read_text(encoding="utf-8")
+    em_src  = Path("backtest/engine/exit_manager.py").read_text(encoding="utf-8")
+    # Helper exists with BUG-80 cross-reference
+    assert "def apply_exit_slippage" in imp_src
+    assert "BUG-80 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 15" in imp_src
+    # Two consumption sites in exit_manager
+    cb_call_idx = em_src.find("cb_exit_price, _ = apply_exit_slippage")
+    ts_call_idx = em_src.find("ts_exit_price, _ = apply_exit_slippage")
+    assert cb_call_idx > 0, "CB-exit slippage call missing"
+    assert ts_call_idx > 0, "Trailing-stop exit slippage call missing"
+
+
 def test_bug_180_dedicated_vix_dxy_prefetch_script_exists():
     """BUG-180 Batch 123: "VIX not explicitly prefetched; VXX used as
     proxy is cause of BUG-26" - sister to BUG-26 cluster. RESOLVED via

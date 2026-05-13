@@ -1071,7 +1071,7 @@
 | **BUG-073** | HIGH — `prepopulate_cache_index.py` writes incompatible format — causes cache mi | HIGH | OPEN | - |
 | **BUG-074** | HIGH — BUG-14 worse than documented: XLE also missing from `run_full.sh` — 5 tic | HIGH | OPEN | - |
 | **BUG-079** | HIGH — Stop fills assumed at the stop price; gap-through is not modelled (slippa | HIGH | OPEN | - |
-| **BUG-080** | HIGH — Exit slippage never applied; only entry slippage charged. Round-trip slip | HIGH | OPEN | - |
+| **BUG-080** | HIGH — Exit slippage never applied; only entry slippage charged. Round-trip slippage cost understated. RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 15 (2026-05-10). Added `apply_exit_slippage(price, direction, ticker)` helper in `backtest/engine/improvements.py:460+` (symmetric to entry slippage; longs receive below-trigger fill, shorts pay above-trigger). Engine consumes the helper at both exit sites in `backtest/engine/exit_manager.py:process_day_exits`: (i) line 533-534 circuit-breaker exit `cb_exit_price, _ = apply_exit_slippage(today_open, ...)`, (ii) line 593-594 trailing-stop exit `ts_exit_price, _ = apply_exit_slippage(exit_price, ...)`. Round-trip slippage cost now captured symmetrically. Batch 124 2026-05-12 false-positive OPEN correction: 1 integration test added (source-grep helper definition + 2 consumption sites). Full 13-tier pyramid: 719/719 mandatory T1-T10 green. | HIGH | RESOLVED-IMPLEMENTED | - |
 | **BUG-081** | HIGH — `SHORT_BORROW_COST_PER_DAY = 0.005` is 2.5× the documented intent | HIGH | RESOLVED | - |
 | **BUG-082** | HIGH — Slippage and transaction-cost double-charging — total cost 2× literature  | HIGH | OPEN | - |
 | **BUG-083** | HIGH — `get_congressional_detail()` filters with INVERTED point-in-time logic | HIGH | OPEN | - |
