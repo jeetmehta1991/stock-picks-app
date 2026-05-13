@@ -668,6 +668,26 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_bug_022_023_strategy_count_references_are_current():
+    """BUG-022 + BUG-023 Batch 144: run_phase1a.py header + screener.py
+    docstring both said "60 strategies" - stale per layered-roster
+    expansion. RESOLVED via current text referencing
+    "Layer 1 baseline; full layered roster ~108-133 per
+    CANONICAL_FACTS.md F-002" in run_phase1a.py:147 and screener.py:7+.
+    Sister bugs share single fix.
+    """
+    from pathlib import Path
+    runner_src = Path("backtest/run_phase1a.py").read_text(encoding="utf-8")
+    screener_src = Path("backtest/signals/screener.py").read_text(encoding="utf-8")
+    assert "Layer 1 baseline" in runner_src
+    assert "108-133" in runner_src
+    assert "108-133" in screener_src
+    # Stale text explicitly NOT present in either file's docstring/print
+    assert 'print(f"60 strategies"' not in runner_src
+    # screener.py header explicitly says "no longer references stale 60"
+    assert "no longer references stale" in screener_src
+
+
 def test_bug_007_no_agents_flag_wired_in_run_phase1a():
     """BUG-007 Batch 143: API key guard blocks no-agent run. RESOLVED
     via --no-agents flag in run_phase1a.py:131 + agents=not args.no_agents
