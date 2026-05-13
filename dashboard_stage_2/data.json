@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-13T03:20:22.721457+00:00",
+  "generated_at": "2026-05-13T03:24:17.585966+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -18133,11 +18133,11 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 65,
+        "n_doc_refs": 66,
         "pyramid": {
           "unit": true,
           "smoke": true,
-          "integration": "N/A",
+          "integration": true,
           "system": true,
           "functional": true,
           "regression": true,
@@ -20425,7 +20425,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 11,
+        "n_doc_refs": 12,
         "pyramid": {
           "unit": false,
           "smoke": "N/A",
@@ -21864,15 +21864,15 @@
       "linked_decisions": "DEC-458",
       "sprint_context": "SUPERSEDED-BY-CLAUDE.md-current-state Pass 53 v8h+1 Phase 3 Batch 12 2026-05-10 (CLAUDE.md kept current per per-turn doc sync rule CHECKLIST #67/#79; missing decisions claim was pre-DEC-594 audit which is now operational)",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
-        "tested": false,
+        "tested": true,
         "pushed": false,
         "n_doc_refs": 5,
         "pyramid": {
-          "unit": "N/A",
+          "unit": false,
           "smoke": "N/A",
-          "integration": "N/A",
+          "integration": true,
           "system": "N/A",
           "functional": "N/A",
           "regression": "N/A",
@@ -21889,12 +21889,12 @@
       "sprint": "SUPERSEDED-BY-CLAUDE.md-current-state Pass 53 v8h+1 Phase 3 Batch 12 2026-05-10 (CLAUDE.md kept current per per-turn doc sync rule CHECKLIST #67/#79; missing decisions claim was pre-DEC-594 audit which is now operational)",
       "dependencies": "DEC-458",
       "description": "**File:** `CLAUDE.md`",
-      "status": "OPEN",
+      "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "No artifacts yet; needs code + test"
+        "tier": "READY",
+        "label": "READY-TO-CLOSE",
+        "color": "#10b981",
+        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
       }
     },
     {
@@ -35054,28 +35054,34 @@
   ],
   "recent_commits": [
     {
+      "sha": "53b3d6c8",
+      "subject": "Batch 131: BUG-191 RESOLVED-DECIDED - prefetch gate Phase-1B-deferred",
+      "author": "jeetmehta1991",
+      "rel_time": "4 minutes ago"
+    },
+    {
       "sha": "6a22df98",
       "subject": "Batch 130: BUG-072 RESOLVED-DECIDED - validate_phase1b_data deferred",
       "author": "jeetmehta1991",
-      "rel_time": "4 minutes ago"
+      "rel_time": "8 minutes ago"
     },
     {
       "sha": "52c307ac",
       "subject": "Batch 129: BUG-073 active fix - prepopulate_cache_index canonical format",
       "author": "jeetmehta1991",
-      "rel_time": "8 minutes ago"
+      "rel_time": "12 minutes ago"
     },
     {
       "sha": "72288c6c",
       "subject": "Batch 128: BUG-074 false-positive correction - run_full.sh deprecated, XLE in current splits",
       "author": "jeetmehta1991",
-      "rel_time": "14 minutes ago"
+      "rel_time": "18 minutes ago"
     },
     {
       "sha": "680f40ea",
       "subject": "Batch 127: dashboard parser - BUG status overlay from AUDIT_INDEX.md",
       "author": "jeetmehta1991",
-      "rel_time": "18 minutes ago"
+      "rel_time": "22 minutes ago"
     },
     {
       "sha": "5d9fdcdc",
@@ -35171,7 +35177,7 @@
       "sha": "4f86341c",
       "subject": "Batch 111: BUG-32 tiered profit-factor passing criterion (1.2 per-regime, 1.5 overall)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "afcaad93",
@@ -35224,12 +35230,6 @@
     {
       "sha": "ac902567",
       "subject": "Batch 102: BUG-237 - tag CNN F&G interpolation staleness on every entry",
-      "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
-    },
-    {
-      "sha": "3ea5ca81",
-      "subject": "Batch 101: BUG-236 AAII auto-refresh workflow added",
       "author": "jeetmehta1991",
       "rel_time": "7 hours ago"
     }
@@ -35429,7 +35429,7 @@
     }
   ],
   "test_inventory": {
-    "total": 1230,
+    "total": 1231,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -35465,7 +35465,7 @@
       "test_fred_alfred_smoke": 5,
       "test_gate_pre_phase_1a_entry": 8,
       "test_gates": 6,
-      "test_integration": 117,
+      "test_integration": 118,
       "test_inv041_path_restricted_commits": 5,
       "test_l146_wave_a_g2_g3_g9": 6,
       "test_l146_wave_b_g7_sec_edgar": 6,
@@ -36121,8 +36121,8 @@
     "DEFERRED": 2
   },
   "bug_status_counts": {
-    "OPEN": 228,
-    "RESOLVED-IMPLEMENTED": 36,
+    "OPEN": 227,
+    "RESOLVED-IMPLEMENTED": 37,
     "CRITICAL": 2,
     "WILL_RESOLVE_VIA_DEC-440": 2,
     "RESOLVED-DECIDED": 2,

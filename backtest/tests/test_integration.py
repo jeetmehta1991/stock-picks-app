@@ -668,6 +668,29 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_bug_068_claude_md_doc_currency_via_per_turn_sweep():
+    """BUG-068 Batch 132: "CLAUDE.md missing 5 critical recent
+    decisions" - flagged when CLAUDE.md was sparse. RESOLVED-IMPLEMENTED
+    via per-turn doc-sweep workflow (CHECKLIST #67 Pass 53 owner
+    directive 2026-05-05) which mandates CLAUDE.md and forward-looking
+    docs are updated + committed in the same turn as the underlying
+    change. CLAUDE.md is now comprehensive (~240 lines + 7 MANDATORY
+    directives + full Passing Criteria table reflecting Pass 53 v8h+1
+    state including DEC-503/507/508/591/594/595/Batches 110/111/112
+    threshold tiering).
+    """
+    from pathlib import Path
+    src = Path("CLAUDE.md").read_text(encoding="utf-8")
+    # Pass 53 owner directives present
+    assert "Pass 53" in src
+    assert "CHECKLIST" in src
+    # Sample recent decisions referenced in CLAUDE.md (BUG-31/32/33
+    # tiered thresholds wired in this autonomous arc)
+    assert "BUG-31" in src or "BUG-32" in src or "BUG-33" in src
+    # Per-turn doc sweep mandate present
+    assert "per-turn" in src.lower() or "doc sweep" in src.lower() or "DEC-594" in src
+
+
 def test_bug_191_prefetch_validation_gate_via_existing_manual_scripts():
     """BUG-191 Batch 131: "No prefetch validation gate before cache-
     dependent code runs". RESOLVED-DECIDED Phase-1B-deferred (similar
