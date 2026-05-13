@@ -668,6 +668,20 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_bug_006_double_borrow_cost_single_sourced():
+    """BUG-006 Batch 137: double borrow cost on short trades. RESOLVED
+    via DEC-295 fix (Pass 50) - centralized in apply_transaction_costs
+    via SHORT_ANNUAL_BORROW_RATE (single source); exit_manager.py:_pnl
+    is now gross-only. Cross-ref BUG-06 RESOLVED in
+    backtest/engine/improvements.py:122.
+    """
+    from pathlib import Path
+    src = Path("backtest/engine/improvements.py").read_text(encoding="utf-8")
+    assert "BUG-06 RESOLVED-IMPLEMENTED" in src
+    assert "SHORT_ANNUAL_BORROW_RATE" in src
+    assert "DEC-295 fix" in src
+
+
 def test_bug_004_avoid_direction_routed_to_skip_not_short():
     """BUG-004 Batch 136: avoid direction falls into triggered_short
     bucket -> inflates confidence tier. RESOLVED via BUG-04 cross-ref
