@@ -668,6 +668,23 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_bug_016_min_trades_canonical_via_passing_criteria():
+    """BUG-016 Batch 141: PASSING_CRITERIA min_trades = 100 contradicts
+    all documentation. RESOLVED-IMPLEMENTED via BUG-31 (Batch 112) which
+    codified tiered min_trades: 30 per-regime / 100 overall in config
+    PASSING_CRITERIA + corresponding CLAUDE.md Passing Criteria table
+    update (Batch 118 doc sweep). Now config + CLAUDE.md + audit are
+    consistent.
+    """
+    from pathlib import Path
+    from backtest.config import PASSING_CRITERIA
+    assert PASSING_CRITERIA["min_trades"] == 100
+    assert PASSING_CRITERIA["min_trades_per_regime"] == 30
+    claude_src = Path("CLAUDE.md").read_text(encoding="utf-8")
+    assert "Min trades" in claude_src
+    assert "Pass 53" in claude_src
+
+
 def test_bug_014_missing_tickers_now_in_batch_splits():
     """BUG-014 Batch 140: AAPL/CVS/JPM/NVDA missing from run_full.sh
     batch ticker lists. Sister to BUG-074 (Batch 128): run_full.sh
