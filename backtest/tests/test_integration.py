@@ -668,6 +668,19 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_bug_003_closedtrade_dataclass_deduplicated():
+    """BUG-003 Batch 135: ClosedTrade dataclass defined twice (dead code,
+    maintenance risk). RESOLVED via BUG-215 fix (Pass 48) at
+    backtest/engine/exit_manager.py:93 - duplicate older ClosedTrade
+    dataclass removed; canonical 41-field definition retained.
+    """
+    from pathlib import Path
+    src = Path("backtest/engine/exit_manager.py").read_text(encoding="utf-8")
+    assert "BUG-215 fix (Pass 48)" in src
+    # Only one @dataclass class ClosedTrade definition
+    assert src.count("\nclass ClosedTrade:") == 1
+
+
 def test_bug_002_days_variable_defined_before_use_in_close_trade():
     """BUG-002 Batch 134: days variable used before definition ->
     UnboundLocalError on every trade close. RESOLVED via BUG-214 fix
