@@ -634,20 +634,39 @@ def compute_chandelier_exit(
     }
 
 
+def _wma(series: pd.Series, period: int) -> pd.Series:
+    """Weighted Moving Average -- linearly increasing weights (most recent = period weight).
+
+    BUG-054 fix 2026-05-13: HMA formula requires WMA(n/2) and WMA(n), not SMA.
+    Weights: [1, 2, 3, ..., period] normalised by period*(period+1)/2.
+    """
+    weights = np.arange(1, period + 1, dtype=float)
+    denom = weights.sum()
+    return series.rolling(period).apply(lambda x: float(np.dot(x, weights) / denom), raw=True)
+
+
 def compute_hull_ma(df: pd.DataFrame, period: int = 20) -> dict:
+    """Hull Moving Average using proper WMA components.
+
+    BUG-054 fix 2026-05-13: previous implementation used rolling().mean() (SMA) for
+    all three components. HMA formula is: WMA(sqrt(n), 2*WMA(n/2, price) - WMA(n, price)).
+    Using SMA instead of WMA understates the signal timing advantage of HMA vs EMA/SMA.
+    Fixed to use _wma() helper throughout.
+    """
     if len(df) < period * 2 + 2:
         return {}
-    half = int(period/2); sqr = int(np.sqrt(period))
-    wma1 = df["close"].rolling(half).mean()
-    wma2 = df["close"].rolling(period).mean()
-    hull = (2*wma1 - wma2).rolling(sqr).mean()
-    v,pv = _safe_float(hull.iloc[-1]),_safe_float(hull.iloc[-2])
+    half = int(period / 2)
+    sqr  = int(np.sqrt(period))
+    wma1 = _wma(df["close"], half)
+    wma2 = _wma(df["close"], period)
+    hull = _wma(2 * wma1 - wma2, sqr)
+    v, pv = _safe_float(hull.iloc[-1]), _safe_float(hull.iloc[-2])
     close = _safe_float(df["close"].iloc[-1])
     return {
-        "hull_ma":          round(v,4),
+        "hull_ma":          round(v, 4),
         "hull_bullish":     v > pv,
-        "hull_flip_up":     v > pv and _safe_float(hull.iloc[-3] if len(hull)>2 else v) >= pv,
-        "hull_flip_dn":     v < pv and _safe_float(hull.iloc[-3] if len(hull)>2 else v) <= pv,
+        "hull_flip_up":     v > pv and _safe_float(hull.iloc[-3] if len(hull) > 2 else v) >= pv,
+        "hull_flip_dn":     v < pv and _safe_float(hull.iloc[-3] if len(hull) > 2 else v) <= pv,
         "price_above_hull": close > v,
     }
 

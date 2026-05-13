@@ -1824,6 +1824,9 @@ def compute_multi_metric_ab_comparison(
             return {"sharpe": None, "sortino": None, "max_dd": None,
                     "win_rate": None, "profit_factor": None, "cvar_5pct": None,
                     "n_trades": 0}
+        # BUG-075 fix 2026-05-13: sort by exit_date so equity curve is chronological.
+        if "exit_date" in df.columns:
+            df = df.sort_values("exit_date")
         pnl = df["pnl_pct"] if "pnl_pct" in df.columns else pd.Series([])
         hold = df["hold_days"] if "hold_days" in df.columns else pd.Series([10] * len(df))
         wins = df[df["win"] == True] if "win" in df.columns else df[pnl > 0]
@@ -2159,6 +2162,10 @@ def compute_strategy_metrics(df: pd.DataFrame, strategy: str) -> dict:
     g = df[df["strategy"] == strategy]
     if g.empty:
         return {}
+    # BUG-075 fix 2026-05-13: sort by exit_date so equity curve and drawdown
+    # are computed on the chronological sequence of trades, not arbitrary row order.
+    if "exit_date" in g.columns:
+        g = g.sort_values("exit_date")
 
     pnl  = g["pnl_pct"]
     wins = g[g["win"] == True]
@@ -2254,6 +2261,9 @@ def compute_strategy_metrics(df: pd.DataFrame, strategy: str) -> dict:
             regime_verdicts[regime_name] = "INSUFFICIENT_DATA"
             continue
 
+        # BUG-075 fix 2026-05-13: sort by exit_date for chronological drawdown
+        if "exit_date" in r_grp.columns:
+            r_grp = r_grp.sort_values("exit_date")
         r_wins  = r_grp[r_grp["win"] == True]
         r_loss  = r_grp[r_grp["win"] == False]
         r_wr    = float(r_grp["win"].mean())

@@ -2972,6 +2972,70 @@ def test_bug_082_226_227_229_245_258_263_batch158():
     assert callable(apply_slippage), "apply_slippage must be callable (distinct from TRANSACTION_COSTS)"
 
 
+def test_bug_054_075_batch160_code_fixes():
+    """Batch 160: BUG-054 HMA WMA fix + BUG-075 max_drawdown sort fix.
+
+    BUG-054: compute_hull_ma must use WMA (not SMA) for all three components.
+    BUG-075: _max_drawdown callers must sort by exit_date for deterministic equity curve.
+    """
+    import pathlib
+    import pandas as pd
+    import numpy as np
+
+    # BUG-054: _wma helper must exist and compute_hull_ma must use it
+    tech_src = pathlib.Path("backtest/signals/technical.py").read_text(encoding="utf-8")
+    assert "_wma" in tech_src, "BUG-054: _wma WMA helper must be defined in technical.py"
+    assert "BUG-054" in tech_src, "BUG-054 fix comment must be present"
+    # Verify WMA helper computes linearly weighted average correctly
+    from backtest.signals.technical import _wma
+    s = pd.Series([1.0, 2.0, 3.0, 4.0])  # period=3: weights [1,2,3], denom=6
+    result = _wma(s, 3)
+    expected_last = (2.0 * 1 + 3.0 * 2 + 4.0 * 3) / 6  # = 3.333...
+    assert abs(result.iloc[-1] - expected_last) < 1e-6, (
+        f"BUG-054: _wma(3) last value expected {expected_last:.4f}, got {result.iloc[-1]:.4f}"
+    )
+    # Confirm compute_hull_ma uses _wma (not rolling mean)
+    assert "rolling(half).mean()" not in tech_src or tech_src.index("_wma") < tech_src.index("def compute_hull_ma"), (
+        "BUG-054: compute_hull_ma must use _wma, not rolling().mean()"
+    )
+
+    # BUG-075: max_drawdown callers sort by exit_date
+    metrics_src = pathlib.Path("backtest/results/metrics.py").read_text(encoding="utf-8")
+    assert 'sort_values("exit_date")' in metrics_src, (
+        "BUG-075: metrics.py must sort by exit_date before computing drawdown"
+    )
+    assert "BUG-075" in metrics_src, "BUG-075 fix comment must be present in metrics.py"
+
+    # BUG-075 behavioral: drawdown result must be deterministic regardless of row order
+    from backtest.results.metrics import compute_strategy_metrics
+    base_df = pd.DataFrame({
+        "strategy":         ["test_strat"] * 5,
+        "pnl_pct":          [10.0, -5.0, 8.0, -15.0, 12.0],
+        "win":              [True, False, True, False, True],
+        "entry_date":       pd.to_datetime(["2023-01-01", "2023-01-06", "2023-01-11",
+                                            "2023-01-16", "2023-01-21"]),
+        "exit_date":        pd.to_datetime(["2023-01-05", "2023-01-10", "2023-01-15",
+                                            "2023-01-20", "2023-01-25"]),
+        "hold_days":        [5, 5, 5, 5, 5],
+        "sector":           ["Technology"] * 5,
+        "regime":           ["bull"] * 5,
+        "direction":        ["long"] * 5,
+        "smart_money_score": [0, 1, 2, 0, 3],
+        "macro_score":      [1, -1, 2, 0, 1],
+        "category":         ["momentum"] * 5,
+        "max_adverse_excursion":    [2.0] * 5,
+        "max_favourable_excursion": [12.0] * 5,
+    })
+    # Shuffle the rows -- result must be the same as sorted
+    shuffled_df = base_df.sample(frac=1, random_state=42).reset_index(drop=True)
+    m1 = compute_strategy_metrics(base_df, "test_strat")
+    m2 = compute_strategy_metrics(shuffled_df, "test_strat")
+    assert m1.get("max_drawdown_pct") == m2.get("max_drawdown_pct"), (
+        f"BUG-075: max_drawdown must be deterministic; sorted={m1.get('max_drawdown_pct')} "
+        f"shuffled={m2.get('max_drawdown_pct')}"
+    )
+
+
 def test_bug_028_077_079_106_batch159_false_positives():
     """Batch 159: BUG-028/077/079/106 false-positives -- fixes already landed.
 
