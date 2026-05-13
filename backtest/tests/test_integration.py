@@ -2650,6 +2650,64 @@ def test_bug_114_138_phase1b_deferred_inline_stubs_resolved_decided():
         assert "RESOLVED-DECIDED" in row, f"{bug_num} not marked RESOLVED-DECIDED"
 
 
+def test_bug_037_041_058_059_092_112_183_241_243_247_248_249_252_253_261_265_266_267_268_269_resolved_decided():
+    """Batch 154 2026-05-13: 20 BUGs closed as RESOLVED-DECIDED (false-positives + phase-scope deferrals).
+
+    BUG-037: FALSE-POSITIVE — improvements.py docstring says RESOLVED-IMPLEMENTED Batch 5; hold-adjusted tiered rates.
+    BUG-041: min_market_cap_m=100 is approved threshold; changing requires owner approval.
+    BUG-058: StochRSI cross-up methodology; oversold zone filter is strategy-level choice; Phase 1B empirical eval.
+    BUG-059: CPR top/bottom internally consistent; convention mismatch is naming issue.
+    BUG-092: Streaming progress = observability enhancement; logger output + Sprint 9 dashboard.
+    BUG-112: ICT/SMC = Layer 2 Phase 0D; out of scope Phase 1A.
+    BUG-183: FALSE-POSITIVE — validate_phase1b_data.py provides prefetch validation gate.
+    BUG-241: DEC-396 filing_date PIT; late filers delayed impact; accepted methodology.
+    BUG-243: WALK_FORWARD_FOLDS covers 2022-2026; update at Sprint 5 when data extends.
+    BUG-247: Cache schema versioning = tech debt; Phase 1A pre-built once.
+    BUG-248: DEC-494 centralized to CSV; config.py ETFS is separate test subset.
+    BUG-249: Smart money point scores = methodology decision; owner approval required to change.
+    BUG-252: FALSE-POSITIVE — COMPOSITE_SCORE_WEIGHTS in config.py (not hardcoded 40/30/30).
+    BUG-253: NO-LIVE-API HARD CUT; info_cache built once; refresh = Sprint 5 quarterly task.
+    BUG-261: pandas-ta deprecation = tech debt; replacement deferred post-Phase-1A.
+    BUG-265: FALSE-POSITIVE — yfinance removed per DEC-497 D4; auto_adjust is moot.
+    BUG-266: delay_sec 0.3 dormant per NO-LIVE-API; cleanup in tech debt sprint.
+    BUG-267: e2e test slowness = accepted trade-off; smoke suite covers fast validation.
+    BUG-268: etf_sectors dict covers 27 current ETFs; CSV migration queued per CLAUDE.md.
+    BUG-269: Quiver _DELAY dormant per DEC-608 NO-LIVE-API; dead code cleanup.
+    """
+    import pathlib
+    audit = pathlib.Path("AUDIT_INDEX.md").read_text(encoding="utf-8")
+    decided_bugs = [
+        "BUG-037", "BUG-041", "BUG-058", "BUG-059", "BUG-092", "BUG-112", "BUG-183",
+        "BUG-241", "BUG-243", "BUG-247", "BUG-248", "BUG-249", "BUG-252", "BUG-253",
+        "BUG-261", "BUG-265", "BUG-266", "BUG-267", "BUG-268", "BUG-269",
+    ]
+    for bug_num in decided_bugs:
+        section_start = audit.find(f"**{bug_num}**")
+        assert section_start != -1, f"{bug_num} not found in AUDIT_INDEX"
+        row = audit[section_start:section_start + 400]
+        assert "RESOLVED-DECIDED" in row or "RESOLVED-IMPLEMENTED" in row, \
+            f"{bug_num} not marked RESOLVED-DECIDED or RESOLVED-IMPLEMENTED"
+
+    # BUG-037: survivorship haircut exists and has hold-adjusted tiered methodology
+    improvements_src = pathlib.Path("backtest/engine/improvements.py").read_text(encoding="utf-8")
+    assert "apply_survivorship_haircut" in improvements_src
+    assert "BUG-37 RESOLVED-IMPLEMENTED" in improvements_src, "BUG-37 resolution marker missing from improvements.py"
+
+    # BUG-252: COMPOSITE_SCORE_WEIGHTS is in config.py
+    from backtest.config import COMPOSITE_SCORE_WEIGHTS
+    assert "win_rate" in COMPOSITE_SCORE_WEIGHTS, "win_rate missing from COMPOSITE_SCORE_WEIGHTS"
+    assert "profit_factor" in COMPOSITE_SCORE_WEIGHTS, "profit_factor missing from COMPOSITE_SCORE_WEIGHTS"
+    assert "smart_money" in COMPOSITE_SCORE_WEIGHTS, "smart_money missing from COMPOSITE_SCORE_WEIGHTS"
+
+    # BUG-243: WALK_FORWARD_FOLDS exists and has entries
+    from backtest.config import WALK_FORWARD_FOLDS
+    assert len(WALK_FORWARD_FOLDS) >= 4, "WALK_FORWARD_FOLDS should have at least 4 folds"
+
+    # BUG-183: validate_phase1b_data.py exists
+    assert pathlib.Path("scripts/validate_phase1b_data.py").exists(), \
+        "validate_phase1b_data.py should exist as prefetch validation gate"
+
+
 def test_bug_036_038_046_048_066_067_086_087_088_089_107_184_185_186_187_188_189_190_199_204_206_207_208_209_211_213_resolved_decided():
     """Batch 153 2026-05-13: 26 BUGs closed as RESOLVED-DECIDED (false-positives + phase-scope deferrals).
 
