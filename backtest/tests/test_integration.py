@@ -2972,6 +2972,51 @@ def test_bug_082_226_227_229_245_258_263_batch158():
     assert callable(apply_slippage), "apply_slippage must be callable (distinct from TRANSACTION_COSTS)"
 
 
+def test_bug_028_077_079_106_batch159_false_positives():
+    """Batch 159: BUG-028/077/079/106 false-positives -- fixes already landed.
+
+    BUG-028: RSI uses Wilder EMA (not SMA) in fallback path since Batch 3 Phase 3.
+    BUG-077: avoid third-bucket added in screener.py since Batch 19 Phase 3.
+    BUG-079: gap-through-stop fill implemented via DEC-514 compute_fill_price.
+    BUG-106: perfect stop fills eliminated via DEC-514 check_trailing_stop_hit.
+    """
+    import pathlib
+
+    # BUG-028: RSI uses ewm(alpha=1/p) Wilder smoothing, not rolling mean
+    tech_src = pathlib.Path("backtest/signals/technical.py").read_text(encoding="utf-8")
+    assert "ewm(alpha=1 / p, adjust=False)" in tech_src, (
+        "BUG-028: RSI must use ewm(alpha=1/p) Wilder smoothing in fallback path"
+    )
+    assert "BUG-28" in tech_src, "BUG-028 fix comment must be present in technical.py"
+
+    # BUG-077: screener avoid-third-bucket must exclude from strategy_count
+    screener_src = pathlib.Path("backtest/signals/screener.py").read_text(encoding="utf-8")
+    assert "triggered_avoid" in screener_src, (
+        "BUG-077: triggered_avoid third bucket must exist in screener.py"
+    )
+    assert "BUG-77" in screener_src, "BUG-077 fix comment must be present in screener.py"
+
+    # BUG-079 + BUG-106: compute_fill_price implements gap-through-stop fill
+    em_src = pathlib.Path("backtest/engine/exit_manager.py").read_text(encoding="utf-8")
+    assert "compute_fill_price" in em_src, (
+        "BUG-079/106: compute_fill_price must exist in exit_manager.py (DEC-514)"
+    )
+    assert "DEC-514" in em_src, "DEC-514 fill methodology comment must be in exit_manager.py"
+    # Gap-through-stop: fill at open, not at stop
+    assert "Gap-down through stop" in em_src or "gap-through" in em_src.lower(), (
+        "BUG-079/106: gap-through fill-at-open rule must be documented in exit_manager.py"
+    )
+
+    # BUG-079/106 behavioral: check_trailing_stop_hit uses compute_fill_price
+    from backtest.engine.exit_manager import compute_fill_price, check_trailing_stop_hit
+    # Long stop at 95; bar opened at 90 (gapped through stop) -- must fill at 90 not 95
+    fill = compute_fill_price("long", "stop", level=95.0, bar_open=90.0, bar_high=92.0, bar_low=88.0)
+    assert fill == 90.0, f"BUG-079: gap-through-stop must fill at open 90, got {fill}"
+    # Long stop at 95; bar opened at 96 (normal intraday), low touched stop -- fill at stop
+    fill2 = compute_fill_price("long", "stop", level=95.0, bar_open=96.0, bar_high=97.0, bar_low=94.5)
+    assert fill2 == 95.0, f"BUG-106: normal stop hit must fill at stop 95, got {fill2}"
+
+
 if __name__ == "__main__":
     tests = [
         test_smart_money_score_keys,
