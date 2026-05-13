@@ -25,12 +25,30 @@ except Exception:
     existing_index = {}
 
 # Add all tickers that have cached Parquet files
+# BUG-73 RESOLVED-IMPLEMENTED Batch 129 2026-05-12: write canonical index
+# format {start, end, rows} that cache.py reads (`backtest/data/cache.py:246+`).
+# Prior format `{"cached": True, "path": ...}` was incompatible - cache.py
+# couldn't determine date coverage from the prepopulated entries and
+# treated them as misses, causing race conditions during parallel runs.
+# Read the Parquet's date index + row count to construct a valid entry.
+import pandas as pd
+
 added = 0
 for ticker in universe:
     cache_file = _cache_path(ticker)
     if cache_file.exists() and ticker not in existing_index:
-        existing_index[ticker] = {"cached": True, "path": str(cache_file)}
-        added += 1
+        try:
+            df = pd.read_parquet(cache_file)
+            if df is not None and not df.empty:
+                existing_index[ticker] = {
+                    "start": str(df.index[0].date()),
+                    "end":   str(df.index[-1].date()),
+                    "rows":  len(df),
+                }
+                added += 1
+        except Exception as _exc:
+            # Skip unreadable Parquets; cache.py will re-fetch on demand
+            pass
 
 INDEX_FILE.parent.mkdir(parents=True, exist_ok=True)
 INDEX_FILE.write_text(json.dumps(existing_index, default=str, indent=2))

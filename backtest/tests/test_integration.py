@@ -668,6 +668,41 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_bug_073_prepopulate_cache_index_writes_canonical_format():
+    """BUG-073 Batch 129: prepopulate_cache_index.py wrote
+    `{"cached": True, "path": ...}` which is INCOMPATIBLE with the
+    cache.py reader expecting `{"start", "end", "rows"}` per
+    backtest/data/cache.py:246+. Cache.py treated prepopulated entries
+    as misses, causing race conditions during parallel batch runs.
+    RESOLVED-IMPLEMENTED Batch 129: prepopulate script now reads each
+    Parquet's date index + row count to construct the canonical
+    {start, end, rows} format.
+    """
+    from pathlib import Path
+    src = Path("scripts/prepopulate_cache_index.py").read_text(encoding="utf-8")
+    assert "BUG-73 RESOLVED-IMPLEMENTED Batch 129" in src
+    # Canonical format keys present
+    assert '"start": str(df.index[0].date())' in src
+    assert '"end":   str(df.index[-1].date())' in src
+    assert '"rows":  len(df)' in src
+    # Old incompatible format no longer written (no executable assignment
+    # of {"cached": True} - the docstring comment mentions it historically
+    # but it's not in the executable code path)
+    assert 'existing_index[ticker] = {"cached": True' not in src
+
+
+def test_bug_073_format_compatibility_with_cache_module():
+    """BUG-073 behavior: canonical format keys match what cache.py
+    expects. Source-grep verifies cache.py canonical write uses the
+    same {start, end, rows} schema.
+    """
+    from pathlib import Path
+    cache_src = Path("backtest/data/cache.py").read_text(encoding="utf-8")
+    assert '"start": str(df.index[0].date())' in cache_src
+    assert '"end":   str(df.index[-1].date())' in cache_src
+    assert '"rows":  len(df)' in cache_src
+
+
 def test_bug_074_xle_included_in_current_batch_splits():
     """BUG-074 Batch 128: "BUG-14 worse than documented: XLE also missing
     from run_full.sh" - RESOLVED via: (1) `scripts/run_full.sh` legacy

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-13T03:06:19.243750+00:00",
+  "generated_at": "2026-05-13T03:12:02.834357+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -22059,15 +22059,15 @@
       "linked_decisions": "DEC-458",
       "sprint_context": "SUPERSEDED-BY-cache-rebuild Pass 53 v8h+1 Phase 3 Batch 12 2026-05-10 (cache format incompatibility was pre-Pass-51 issue; Sprint 0A rebuild standardized all cache formats per J5 SNAPPY compression + J8 _schema.json sidecars)",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
-        "tested": false,
+        "tested": true,
         "pushed": false,
-        "n_doc_refs": 7,
+        "n_doc_refs": 8,
         "pyramid": {
-          "unit": "N/A",
+          "unit": false,
           "smoke": "N/A",
-          "integration": "N/A",
+          "integration": true,
           "system": "N/A",
           "functional": "N/A",
           "regression": "N/A",
@@ -22084,12 +22084,12 @@
       "sprint": "SUPERSEDED-BY-cache-rebuild Pass 53 v8h+1 Phase 3 Batch 12 2026-05-10 (cache format incompatibility was pre-Pass-51 issue; Sprint 0A rebuild standardized all cache formats per J5 SNAPPY compression + J8 _schema.json sidecars)",
       "dependencies": "DEC-458",
       "description": "**File:** `scripts/prepopulate_cache_index.py` lines 26\u201330",
-      "status": "OPEN",
+      "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "No artifacts yet; needs code + test"
+        "tier": "READY",
+        "label": "READY-TO-CLOSE",
+        "color": "#10b981",
+        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
       }
     },
     {
@@ -22101,7 +22101,7 @@
         "coded": true,
         "wired": false,
         "tested": true,
-        "pushed": false,
+        "pushed": true,
         "n_doc_refs": 6,
         "pyramid": {
           "unit": false,
@@ -35054,28 +35054,34 @@
   ],
   "recent_commits": [
     {
+      "sha": "72288c6c",
+      "subject": "Batch 128: BUG-074 false-positive correction - run_full.sh deprecated, XLE in current splits",
+      "author": "jeetmehta1991",
+      "rel_time": "6 minutes ago"
+    },
+    {
       "sha": "680f40ea",
       "subject": "Batch 127: dashboard parser - BUG status overlay from AUDIT_INDEX.md",
       "author": "jeetmehta1991",
-      "rel_time": "4 minutes ago"
+      "rel_time": "10 minutes ago"
     },
     {
       "sha": "5d9fdcdc",
       "subject": "Batch 126: BUG-178 + BUG-179 false-positive corrections - yfinance HARD CUT closed both",
       "author": "jeetmehta1991",
-      "rel_time": "78 minutes ago"
+      "rel_time": "83 minutes ago"
     },
     {
       "sha": "42b0114e",
       "subject": "Batch 125: BUG-083 false-positive correction - congressional PIT fix wired Batch 18",
       "author": "jeetmehta1991",
-      "rel_time": "83 minutes ago"
+      "rel_time": "89 minutes ago"
     },
     {
       "sha": "a25d0240",
       "subject": "Batch 124: BUG-080 false-positive correction - apply_exit_slippage wired Batch 15",
       "author": "jeetmehta1991",
-      "rel_time": "87 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "4ba89486",
@@ -35171,19 +35177,19 @@
       "sha": "158663d0",
       "subject": "Batch 108: BUG-96 SPY buy-and-hold benchmark in compute_portfolio_summary",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "20391302",
       "subject": "Batch 107: BUG-205 IBKR fixed-tier cost cap wired into apply_transaction_costs",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "38c5a7e8",
       "subject": "Batch 106: BUG-32 SKIP triage - profit factor 1.3->1.5 threshold owner decision",
       "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
+      "rel_time": "7 hours ago"
     },
     {
       "sha": "2ead2e59",
@@ -35226,17 +35232,11 @@
       "subject": "Batch 99: BUG-235 AAII pub-lag applied to get_aaii_sentiment loader",
       "author": "jeetmehta1991",
       "rel_time": "7 hours ago"
-    },
-    {
-      "sha": "a5b4910c",
-      "subject": "Batch 98: BUG-238 fail-open -> fail-closed on missing market_cap",
-      "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 2,
-    "modified": 2,
+    "count": 3,
+    "modified": 3,
     "added": 0,
     "untracked": 0,
     "deleted": 0,
@@ -35248,6 +35248,10 @@
       {
         "status": "M",
         "path": "backtest/tests/test_integration.py"
+      },
+      {
+        "status": "M",
+        "path": "scripts/prepopulate_cache_index.py"
       }
     ]
   },
@@ -35429,7 +35433,7 @@
     }
   ],
   "test_inventory": {
-    "total": 1226,
+    "total": 1228,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -35465,7 +35469,7 @@
       "test_fred_alfred_smoke": 5,
       "test_gate_pre_phase_1a_entry": 8,
       "test_gates": 6,
-      "test_integration": 113,
+      "test_integration": 115,
       "test_inv041_path_restricted_commits": 5,
       "test_l146_wave_a_g2_g3_g9": 6,
       "test_l146_wave_b_g7_sec_edgar": 6,
@@ -36121,8 +36125,8 @@
     "DEFERRED": 2
   },
   "bug_status_counts": {
-    "OPEN": 231,
-    "RESOLVED-IMPLEMENTED": 35,
+    "OPEN": 230,
+    "RESOLVED-IMPLEMENTED": 36,
     "CRITICAL": 2,
     "WILL_RESOLVE_VIA_DEC-440": 2,
     "RESOLVED": 16
