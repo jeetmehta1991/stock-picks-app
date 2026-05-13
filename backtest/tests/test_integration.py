@@ -668,6 +668,25 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_bug_074_xle_included_in_current_batch_splits():
+    """BUG-074 Batch 128: "BUG-14 worse than documented: XLE also missing
+    from run_full.sh" - RESOLVED via: (1) `scripts/run_full.sh` legacy
+    script removed entirely (no longer in repo); (2) XLE explicitly
+    included in the canonical `scripts/generate_batch_splits.py` line
+    49 (Batch 5 = "XLE") and `scripts/batch_splits.json`.
+    """
+    from pathlib import Path
+    # Legacy script removed
+    assert not Path("scripts/run_full.sh").exists(), (
+        "run_full.sh should no longer exist; BUG-074 fix relies on its removal"
+    )
+    # XLE present in canonical batch-split sources
+    bs_py = Path("scripts/generate_batch_splits.py").read_text(encoding="utf-8")
+    assert '"XLE"' in bs_py
+    bs_json = Path("scripts/batch_splits.json").read_text(encoding="utf-8")
+    assert '"XLE"' in bs_json
+
+
 def test_dashboard_parses_bug_status_overlay_from_audit_index():
     """Batch 127: dashboard parser fix - reads BUG status from
     AUDIT_INDEX.md so flips in the BUG audit arc (Batches 87-126)

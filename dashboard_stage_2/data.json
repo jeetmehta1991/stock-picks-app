@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-13T03:01:38.250803+00:00",
+  "generated_at": "2026-05-13T03:06:19.243750+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -19758,15 +19758,15 @@
       "linked_decisions": "DEC-458",
       "sprint_context": "OBSOLETE Pass 53 v8h+1 Phase 3 Batch 2 2026-05-10 (run_full.sh no longer exists; universe now sourced from Master Dedup CSV per DEC-504; bug is moot)",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
-        "tested": false,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 21,
         "pyramid": {
-          "unit": "N/A",
+          "unit": false,
           "smoke": "N/A",
-          "integration": "N/A",
+          "integration": true,
           "system": "N/A",
           "functional": "N/A",
           "regression": "N/A",
@@ -19785,10 +19785,10 @@
       "description": "**File:** `run_full.sh` \u2014 all 5 batch `--tickers` lists",
       "status": "OPEN",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "No artifacts yet; needs code + test"
+        "tier": "READY",
+        "label": "READY-TO-CLOSE",
+        "color": "#10b981",
+        "reason": "Has code+test artifacts; flip to RESOLVED"
       }
     },
     {
@@ -22098,15 +22098,15 @@
       "linked_decisions": "DEC-458",
       "sprint_context": "SUPERSEDED-BY-BUG-14 Pass 53 v8h+1 Phase 3 Batch 11 2026-05-10 (sister of BUG-14; run_full.sh no longer exists; XLE + other missing tickers issue is moot; universe sourced from Master Dedup per DEC-504)",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
-        "tested": false,
+        "tested": true,
         "pushed": false,
-        "n_doc_refs": 5,
+        "n_doc_refs": 6,
         "pyramid": {
-          "unit": "N/A",
+          "unit": false,
           "smoke": "N/A",
-          "integration": "N/A",
+          "integration": true,
           "system": "N/A",
           "functional": "N/A",
           "regression": "N/A",
@@ -22123,12 +22123,12 @@
       "sprint": "SUPERSEDED-BY-BUG-14 Pass 53 v8h+1 Phase 3 Batch 11 2026-05-10 (sister of BUG-14; run_full.sh no longer exists; XLE + other missing tickers issue is moot; universe sourced from Master Dedup per DEC-504)",
       "dependencies": "BUG-14; DEC-458",
       "description": "**File:** `run_full.sh` \u2014 all 5 batch `--tickers` lists",
-      "status": "OPEN",
+      "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "No artifacts yet; needs code + test"
+        "tier": "READY",
+        "label": "READY-TO-CLOSE",
+        "color": "#10b981",
+        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
       }
     },
     {
@@ -26275,7 +26275,7 @@
         "coded": true,
         "wired": false,
         "tested": false,
-        "pushed": false,
+        "pushed": true,
         "n_doc_refs": 1,
         "pyramid": {
           "unit": false,
@@ -27718,7 +27718,7 @@
         "coded": true,
         "wired": false,
         "tested": false,
-        "pushed": false,
+        "pushed": true,
         "n_doc_refs": 8,
         "pyramid": {
           "unit": false,
@@ -35054,28 +35054,34 @@
   ],
   "recent_commits": [
     {
+      "sha": "680f40ea",
+      "subject": "Batch 127: dashboard parser - BUG status overlay from AUDIT_INDEX.md",
+      "author": "jeetmehta1991",
+      "rel_time": "4 minutes ago"
+    },
+    {
       "sha": "5d9fdcdc",
       "subject": "Batch 126: BUG-178 + BUG-179 false-positive corrections - yfinance HARD CUT closed both",
       "author": "jeetmehta1991",
-      "rel_time": "73 minutes ago"
+      "rel_time": "78 minutes ago"
     },
     {
       "sha": "42b0114e",
       "subject": "Batch 125: BUG-083 false-positive correction - congressional PIT fix wired Batch 18",
       "author": "jeetmehta1991",
-      "rel_time": "78 minutes ago"
+      "rel_time": "83 minutes ago"
     },
     {
       "sha": "a25d0240",
       "subject": "Batch 124: BUG-080 false-positive correction - apply_exit_slippage wired Batch 15",
       "author": "jeetmehta1991",
-      "rel_time": "82 minutes ago"
+      "rel_time": "87 minutes ago"
     },
     {
       "sha": "4ba89486",
       "subject": "Batch 123: BUG-180 false-positive correction - sister to BUG-26 cluster",
       "author": "jeetmehta1991",
-      "rel_time": "86 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "6d29bac1",
@@ -35183,13 +35189,13 @@
       "sha": "2ead2e59",
       "subject": "Batch 105: BUG-31 SKIP triage - walk-forward 30-trade threshold owner decision",
       "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
+      "rel_time": "7 hours ago"
     },
     {
       "sha": "a1525fef",
       "subject": "Batch 104: BUG-30 SKIP triage - VIX-crisis tighten code-vs-spec contradiction",
       "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
+      "rel_time": "7 hours ago"
     },
     {
       "sha": "c5f46565",
@@ -35226,40 +35232,22 @@
       "subject": "Batch 98: BUG-238 fail-open -> fail-closed on missing market_cap",
       "author": "jeetmehta1991",
       "rel_time": "7 hours ago"
-    },
-    {
-      "sha": "fb1218da",
-      "subject": "Batch 97: BUG-110 false-positive correction - entry gap filter wired",
-      "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 5,
-    "modified": 5,
+    "count": 2,
+    "modified": 2,
     "added": 0,
     "untracked": 0,
     "deleted": 0,
     "files": [
       {
         "status": "M",
+        "path": "AUDIT_INDEX.md"
+      },
+      {
+        "status": "M",
         "path": "backtest/tests/test_integration.py"
-      },
-      {
-        "status": "M",
-        "path": "dashboard_stage_2/data.js"
-      },
-      {
-        "status": "M",
-        "path": "dashboard_stage_2/data.json"
-      },
-      {
-        "status": "M",
-        "path": "dashboard_stage_2/last_run.txt"
-      },
-      {
-        "status": "M",
-        "path": "scripts/build_dashboard_stage_2.py"
       }
     ]
   },
@@ -35441,7 +35429,7 @@
     }
   ],
   "test_inventory": {
-    "total": 1225,
+    "total": 1226,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -35477,7 +35465,7 @@
       "test_fred_alfred_smoke": 5,
       "test_gate_pre_phase_1a_entry": 8,
       "test_gates": 6,
-      "test_integration": 112,
+      "test_integration": 113,
       "test_inv041_path_restricted_commits": 5,
       "test_l146_wave_a_g2_g3_g9": 6,
       "test_l146_wave_b_g7_sec_edgar": 6,
@@ -36133,8 +36121,8 @@
     "DEFERRED": 2
   },
   "bug_status_counts": {
-    "OPEN": 232,
-    "RESOLVED-IMPLEMENTED": 34,
+    "OPEN": 231,
+    "RESOLVED-IMPLEMENTED": 35,
     "CRITICAL": 2,
     "WILL_RESOLVE_VIA_DEC-440": 2,
     "RESOLVED": 16
