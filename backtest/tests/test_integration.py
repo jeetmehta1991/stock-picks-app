@@ -668,6 +668,23 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_bug_001_crisis_flag_hoisted_before_use():
+    """BUG-001 Batch 133: crisis_flag used before definition -> NameError
+    crash. RESOLVED-IMPLEMENTED via BUG-01 cross-reference in
+    backtest/engine/backtest.py:592 - crisis_flag hoisted to function
+    scope so it's defined before line 299 (was UnboundLocalError when
+    regime != crisis and inner-loop set never executed).
+    """
+    from pathlib import Path
+    src = Path("backtest/engine/backtest.py").read_text(encoding="utf-8")
+    assert "BUG-01 RESOLVED-IMPLEMENTED" in src
+    # The hoisted definition before line 600 (well before inner-loop sites)
+    hoist_idx = src.find("crisis_flag = regime == \"crisis\"")
+    bug01_idx = src.find("BUG-01 RESOLVED-IMPLEMENTED")
+    assert hoist_idx > 0 and bug01_idx > 0
+    assert bug01_idx < hoist_idx, "BUG-01 comment must precede the hoisted definition"
+
+
 def test_bug_068_claude_md_doc_currency_via_per_turn_sweep():
     """BUG-068 Batch 132: "CLAUDE.md missing 5 critical recent
     decisions" - flagged when CLAUDE.md was sparse. RESOLVED-IMPLEMENTED

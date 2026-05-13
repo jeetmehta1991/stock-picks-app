@@ -1216,7 +1216,7 @@
 | **BUG-283** | site_generator.build_position_sizing returns 0% silently for unknown tier — no error/warning on invalid input | LOW | OPEN | Pass 52 |
 | **BUG-284** | prefetch_quiver DATE_FIELDS gov_contracts="Date" but cache schema has Qtr+Year only — date filter silently skipped | MEDIUM | OPEN | Pass 52 |
 | **BUG-285** | `fixed_3r_2r` exit method in EXIT_STRATEGIES dict violates DEC-353 RESOLVED Pass 52 (2:1 R:R minimum) — actual ratio is 3R/2R = 1.5:1, BELOW minimum. Surfaced during DEC-067 pre-flight Pass 52 turn 7. Existing-code violation; any prior backtest results that included this exit method have been computed with a non-compliant exit. Fix per DEC-067 owner approval: modify to fixed_4r_2r (4R target / 2R stop = 2:1 R:R) OR remove from EXIT_STRATEGIES dict. | HIGH | OPEN | Pass 52 |
-| **BUG-001** | `crisis_flag` used before definition → NameError crash | UNKNOWN | OPEN | - |
+| **BUG-001** | `crisis_flag` used before definition -> NameError crash. RESOLVED-IMPLEMENTED via BUG-01 cross-reference in `backtest/engine/backtest.py:592-595` - crisis_flag hoisted to function scope so it's defined before line 299 (was UnboundLocalError when regime != crisis and inner-loop set never executed). Batch 133 2026-05-13 false-positive OPEN correction: 1 integration test added. Pyramid: 730/730 mandatory T1-T10 green. | UNKNOWN | RESOLVED-IMPLEMENTED | - |
 | **BUG-002** | `days` variable used before definition → UnboundLocalError on every trade close | UNKNOWN | OPEN | - |
 | **BUG-003** | `ClosedTrade` dataclass defined twice — dead code, maintenance risk | UNKNOWN | OPEN | - |
 | **BUG-004** | `avoid` direction falls into `triggered_short` bucket — inflates confidence tier | UNKNOWN | OPEN | - |

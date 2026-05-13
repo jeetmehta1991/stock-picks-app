@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-13T03:24:17.585966+00:00",
+  "generated_at": "2026-05-13T05:20:30.317920+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -19255,11 +19255,11 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 42,
+        "n_doc_refs": 43,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
-          "integration": "N/A",
+          "integration": true,
           "system": "N/A",
           "functional": "N/A",
           "regression": "N/A",
@@ -19276,12 +19276,12 @@
       "sprint": "RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 2 2026-05-10 (crisis_flag predefined at function scope in backtest.py:269 - same fix as BUG-02; cross-ref test_bug_001 added)",
       "dependencies": "DEC-458",
       "description": "**File:** `backtest/engine/backtest.py` lines 299 and 325 **Introduced by:** Commit `b430ab36` (our crisis exclusions change)",
-      "status": "OPEN",
+      "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
         "tier": "READY",
         "label": "READY-TO-CLOSE",
         "color": "#10b981",
-        "reason": "Has code+test artifacts; flip to RESOLVED"
+        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
       }
     },
     {
@@ -21867,7 +21867,7 @@
         "coded": true,
         "wired": false,
         "tested": true,
-        "pushed": false,
+        "pushed": true,
         "n_doc_refs": 5,
         "pyramid": {
           "unit": false,
@@ -35054,184 +35054,184 @@
   ],
   "recent_commits": [
     {
+      "sha": "ea3cf254",
+      "subject": "Batch 132: BUG-068 false-positive correction - CLAUDE.md current via per-turn sweep",
+      "author": "jeetmehta1991",
+      "rel_time": "2 hours ago"
+    },
+    {
       "sha": "53b3d6c8",
       "subject": "Batch 131: BUG-191 RESOLVED-DECIDED - prefetch gate Phase-1B-deferred",
       "author": "jeetmehta1991",
-      "rel_time": "4 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "6a22df98",
       "subject": "Batch 130: BUG-072 RESOLVED-DECIDED - validate_phase1b_data deferred",
       "author": "jeetmehta1991",
-      "rel_time": "8 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "52c307ac",
       "subject": "Batch 129: BUG-073 active fix - prepopulate_cache_index canonical format",
       "author": "jeetmehta1991",
-      "rel_time": "12 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "72288c6c",
       "subject": "Batch 128: BUG-074 false-positive correction - run_full.sh deprecated, XLE in current splits",
       "author": "jeetmehta1991",
-      "rel_time": "18 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "680f40ea",
       "subject": "Batch 127: dashboard parser - BUG status overlay from AUDIT_INDEX.md",
       "author": "jeetmehta1991",
-      "rel_time": "22 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "5d9fdcdc",
       "subject": "Batch 126: BUG-178 + BUG-179 false-positive corrections - yfinance HARD CUT closed both",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "42b0114e",
       "subject": "Batch 125: BUG-083 false-positive correction - congressional PIT fix wired Batch 18",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "a25d0240",
       "subject": "Batch 124: BUG-080 false-positive correction - apply_exit_slippage wired Batch 15",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "4ba89486",
       "subject": "Batch 123: BUG-180 false-positive correction - sister to BUG-26 cluster",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "6d29bac1",
       "subject": "Batch 122: BUG-052 false-positive correction (downstream of BUG-26 fix)",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "1f457aad",
       "subject": "Batch 121: BUG-244 false-positive correction - MAE/MFE updated before CB check",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "081979a9",
       "subject": "Batch 120: BUG-233 false-positive correction - sister to DEC-314 Batch 85",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "40559bf8",
       "subject": "Batch 119: BUG-061 false-positive correction - sister to BUG-101",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "56218df5",
       "subject": "Batch 118: end-of-arc doc sweep - CLAUDE.md Passing Criteria reflects BUG-31/32/33",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "edf1755d",
       "subject": "Batch 117: BUG-222 tier-specific PIT S&P 500 universe filter (option B)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "c15d0cfa",
       "subject": "Batch 116: BUG-218 + BUG-239 PIT sector wired at 3 engine sites",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "b1b7b9e0",
       "subject": "Batch 115: BUG-219 flipped to RESOLVED-DECIDED (Stage 3+ deferral)",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "40f224d1",
       "subject": "Batch 114: BUG-30 config-toggleable Level-5 VIX-crisis tighten",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "adc33de8",
       "subject": "Batch 113: BUG-232 config-toggleable trailing-stop ratchet source",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "74cc4cd1",
       "subject": "Batch 112: BUG-31 tiered min_trades_per_regime codified in PASSING_CRITERIA",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "4f86341c",
       "subject": "Batch 111: BUG-32 tiered profit-factor passing criterion (1.2 per-regime, 1.5 overall)",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "afcaad93",
       "subject": "Batch 110: BUG-33 tiered Sharpe passing criterion in PASSING_CRITERIA",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "858ac20d",
       "subject": "Batch 109: BUG-34 per-strategy regime_blocklist config + engine gate",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "158663d0",
       "subject": "Batch 108: BUG-96 SPY buy-and-hold benchmark in compute_portfolio_summary",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "20391302",
       "subject": "Batch 107: BUG-205 IBKR fixed-tier cost cap wired into apply_transaction_costs",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "38c5a7e8",
       "subject": "Batch 106: BUG-32 SKIP triage - profit factor 1.3->1.5 threshold owner decision",
       "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
+      "rel_time": "9 hours ago"
     },
     {
       "sha": "2ead2e59",
       "subject": "Batch 105: BUG-31 SKIP triage - walk-forward 30-trade threshold owner decision",
       "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
+      "rel_time": "9 hours ago"
     },
     {
       "sha": "a1525fef",
       "subject": "Batch 104: BUG-30 SKIP triage - VIX-crisis tighten code-vs-spec contradiction",
       "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
+      "rel_time": "9 hours ago"
     },
     {
       "sha": "c5f46565",
       "subject": "Batch 103: BUG-239 SKIP triage - sister to BUG-218 PIT sector blocker",
       "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
-    },
-    {
-      "sha": "ac902567",
-      "subject": "Batch 102: BUG-237 - tag CNN F&G interpolation staleness on every entry",
-      "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
+      "rel_time": "9 hours ago"
     }
   ],
   "uncommitted": {
@@ -35429,7 +35429,7 @@
     }
   ],
   "test_inventory": {
-    "total": 1231,
+    "total": 1232,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -35465,7 +35465,7 @@
       "test_fred_alfred_smoke": 5,
       "test_gate_pre_phase_1a_entry": 8,
       "test_gates": 6,
-      "test_integration": 118,
+      "test_integration": 119,
       "test_inv041_path_restricted_commits": 5,
       "test_l146_wave_a_g2_g3_g9": 6,
       "test_l146_wave_b_g7_sec_edgar": 6,
@@ -36121,8 +36121,8 @@
     "DEFERRED": 2
   },
   "bug_status_counts": {
-    "OPEN": 227,
-    "RESOLVED-IMPLEMENTED": 37,
+    "RESOLVED-IMPLEMENTED": 38,
+    "OPEN": 226,
     "CRITICAL": 2,
     "WILL_RESOLVE_VIA_DEC-440": 2,
     "RESOLVED-DECIDED": 2,
