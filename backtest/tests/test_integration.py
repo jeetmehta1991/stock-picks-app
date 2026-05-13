@@ -668,6 +668,20 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_bug_004_avoid_direction_routed_to_skip_not_short():
+    """BUG-004 Batch 136: avoid direction falls into triggered_short
+    bucket -> inflates confidence tier. RESOLVED via BUG-04 cross-ref
+    in backtest/engine/backtest.py:889 - avoid direction now appended
+    to skipped_trades with reason="avoid_conflicting_signals" instead
+    of falling through to short bucket.
+    """
+    from pathlib import Path
+    src = Path("backtest/engine/backtest.py").read_text(encoding="utf-8")
+    assert "BUG-04 RESOLVED-IMPLEMENTED" in src
+    assert 'direction == "avoid"' in src
+    assert '"avoid_conflicting_signals"' in src
+
+
 def test_bug_003_closedtrade_dataclass_deduplicated():
     """BUG-003 Batch 135: ClosedTrade dataclass defined twice (dead code,
     maintenance risk). RESOLVED via BUG-215 fix (Pass 48) at

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-13T05:27:59.923364+00:00",
+  "generated_at": "2026-05-13T05:31:41.681545+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -19372,11 +19372,11 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 30,
+        "n_doc_refs": 31,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
-          "integration": "N/A",
+          "integration": true,
           "system": "N/A",
           "functional": "N/A",
           "regression": "N/A",
@@ -19393,12 +19393,12 @@
       "sprint": "RESOLVED-IMPLEMENTED Pass 53 v8h+1 2026-05-10 (backtest.py:335 has explicit avoid-direction skip with logging)",
       "dependencies": "DEC-458",
       "description": "**File:** `backtest/signals/screener.py` lines 971\u2013974",
-      "status": "OPEN",
+      "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
         "tier": "READY",
         "label": "READY-TO-CLOSE",
         "color": "#10b981",
-        "reason": "Has code+test artifacts; flip to RESOLVED"
+        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
       }
     },
     {
@@ -35054,16 +35054,22 @@
   ],
   "recent_commits": [
     {
+      "sha": "7bbe25b3",
+      "subject": "Batch 135: BUG-003 false-positive - ClosedTrade duplicate removed via BUG-215 Pass 48. Pyramid 732/732.",
+      "author": "jeetmehta1991",
+      "rel_time": "4 minutes ago"
+    },
+    {
       "sha": "767b4b0c",
       "subject": "Batch 134: BUG-002 false-positive - days var hoisted via BUG-214 fix Pass 48. Pyramid 731/731.",
       "author": "jeetmehta1991",
-      "rel_time": "3 minutes ago"
+      "rel_time": "7 minutes ago"
     },
     {
       "sha": "c41d6384",
       "subject": "Batch 133: BUG-001 false-positive - crisis_flag hoisted via BUG-01",
       "author": "jeetmehta1991",
-      "rel_time": "7 minutes ago"
+      "rel_time": "11 minutes ago"
     },
     {
       "sha": "ea3cf254",
@@ -35183,7 +35189,7 @@
       "sha": "adc33de8",
       "subject": "Batch 113: BUG-232 config-toggleable trailing-stop ratchet source",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "74cc4cd1",
@@ -35224,12 +35230,6 @@
     {
       "sha": "38c5a7e8",
       "subject": "Batch 106: BUG-32 SKIP triage - profit factor 1.3->1.5 threshold owner decision",
-      "author": "jeetmehta1991",
-      "rel_time": "9 hours ago"
-    },
-    {
-      "sha": "2ead2e59",
-      "subject": "Batch 105: BUG-31 SKIP triage - walk-forward 30-trade threshold owner decision",
       "author": "jeetmehta1991",
       "rel_time": "9 hours ago"
     }
@@ -35429,7 +35429,7 @@
     }
   ],
   "test_inventory": {
-    "total": 1234,
+    "total": 1235,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -35465,7 +35465,7 @@
       "test_fred_alfred_smoke": 5,
       "test_gate_pre_phase_1a_entry": 8,
       "test_gates": 6,
-      "test_integration": 121,
+      "test_integration": 122,
       "test_inv041_path_restricted_commits": 5,
       "test_l146_wave_a_g2_g3_g9": 6,
       "test_l146_wave_b_g7_sec_edgar": 6,
@@ -36121,8 +36121,8 @@
     "DEFERRED": 2
   },
   "bug_status_counts": {
-    "RESOLVED-IMPLEMENTED": 40,
-    "OPEN": 224,
+    "RESOLVED-IMPLEMENTED": 41,
+    "OPEN": 223,
     "CRITICAL": 2,
     "WILL_RESOLVE_VIA_DEC-440": 2,
     "RESOLVED-DECIDED": 2,
