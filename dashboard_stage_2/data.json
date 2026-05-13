@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-13T05:49:36.219457+00:00",
+  "generated_at": "2026-05-13T05:53:28.982918+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -19839,7 +19839,7 @@
         "coded": true,
         "wired": false,
         "tested": true,
-        "pushed": false,
+        "pushed": true,
         "n_doc_refs": 8,
         "pyramid": {
           "unit": false,
@@ -19953,15 +19953,15 @@
       "linked_decisions": "DEC-260, DEC-442, DEC-448, DEC-458",
       "sprint_context": "SUPERSEDED-BY-DEC-609 (H1 OHLCV Master Dedup re-fetch covers 1937 tickers 2021-05 to 2026-05; 2024-12-31 cache cap eliminated)",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
-        "tested": false,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 16,
         "pyramid": {
-          "unit": "N/A",
+          "unit": false,
           "smoke": "N/A",
-          "integration": "N/A",
+          "integration": true,
           "system": "N/A",
           "functional": "N/A",
           "regression": "N/A",
@@ -19978,12 +19978,12 @@
       "sprint": "SUPERSEDED-BY-DEC-609 (H1 OHLCV Master Dedup re-fetch covers 1937 tickers 2021-05 to 2026-05; 2024-12-31 cache cap eliminated)",
       "dependencies": "DEC-260; DEC-442; DEC-448; DEC-458",
       "description": "**Files:** `backtest/data/cache/ohlcv/` (Parquet files), `backtest/data/cache/index.json`",
-      "status": "OPEN",
+      "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
-        "tier": "OPEN",
-        "label": "OPEN",
-        "color": "#ef4444",
-        "reason": "No artifacts yet; needs code + test"
+        "tier": "READY",
+        "label": "READY-TO-CLOSE",
+        "color": "#10b981",
+        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
       }
     },
     {
@@ -35054,52 +35054,58 @@
   ],
   "recent_commits": [
     {
+      "sha": "7eca7727",
+      "subject": "Batch 141: BUG-016 false-positive - min_trades canonicalized via BUG-31 Batch 112 + CLAUDE.md sweep. Pyramid 738/738.",
+      "author": "jeetmehta1991",
+      "rel_time": "4 minutes ago"
+    },
+    {
       "sha": "4d1d9d32",
       "subject": "Batch 140: BUG-014 false-positive - run_full.sh deprecated, AAPL/CVS/JPM/NVDA in current splits. Pyramid 737/737.",
       "author": "jeetmehta1991",
-      "rel_time": "3 minutes ago"
+      "rel_time": "7 minutes ago"
     },
     {
       "sha": "dd165fbc",
       "subject": "Batch 139: BUG-013 false-positive - yfinance HARD CUT (sister BUG-178). Pyramid 736/736.",
       "author": "jeetmehta1991",
-      "rel_time": "7 minutes ago"
+      "rel_time": "11 minutes ago"
     },
     {
       "sha": "2bae2a1a",
       "subject": "Batch 138: BUG-012 false-positive - dedup ordering by strategy_count desc via BUG-12 fix. Pyramid 735/735.",
       "author": "jeetmehta1991",
-      "rel_time": "11 minutes ago"
+      "rel_time": "14 minutes ago"
     },
     {
       "sha": "98855527",
       "subject": "Batch 137: BUG-006 false-positive - borrow cost single-sourced via DEC-295 Pass 50. Pyramid 734/734.",
       "author": "jeetmehta1991",
-      "rel_time": "14 minutes ago"
+      "rel_time": "18 minutes ago"
     },
     {
       "sha": "f76fc024",
       "subject": "Batch 136: BUG-004 false-positive - avoid direction routed to skip via BUG-04 fix. Pyramid 733/733.",
       "author": "jeetmehta1991",
-      "rel_time": "18 minutes ago"
+      "rel_time": "22 minutes ago"
     },
     {
       "sha": "7bbe25b3",
       "subject": "Batch 135: BUG-003 false-positive - ClosedTrade duplicate removed via BUG-215 Pass 48. Pyramid 732/732.",
       "author": "jeetmehta1991",
-      "rel_time": "22 minutes ago"
+      "rel_time": "25 minutes ago"
     },
     {
       "sha": "767b4b0c",
       "subject": "Batch 134: BUG-002 false-positive - days var hoisted via BUG-214 fix Pass 48. Pyramid 731/731.",
       "author": "jeetmehta1991",
-      "rel_time": "25 minutes ago"
+      "rel_time": "29 minutes ago"
     },
     {
       "sha": "c41d6384",
       "subject": "Batch 133: BUG-001 false-positive - crisis_flag hoisted via BUG-01",
       "author": "jeetmehta1991",
-      "rel_time": "29 minutes ago"
+      "rel_time": "33 minutes ago"
     },
     {
       "sha": "ea3cf254",
@@ -35111,7 +35117,7 @@
       "sha": "53b3d6c8",
       "subject": "Batch 131: BUG-191 RESOLVED-DECIDED - prefetch gate Phase-1B-deferred",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "6a22df98",
@@ -35183,7 +35189,7 @@
       "sha": "40559bf8",
       "subject": "Batch 119: BUG-061 false-positive correction - sister to BUG-101",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "56218df5",
@@ -35195,7 +35201,7 @@
       "sha": "edf1755d",
       "subject": "Batch 117: BUG-222 tier-specific PIT S&P 500 universe filter (option B)",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "c15d0cfa",
@@ -35224,12 +35230,6 @@
     {
       "sha": "74cc4cd1",
       "subject": "Batch 112: BUG-31 tiered min_trades_per_regime codified in PASSING_CRITERIA",
-      "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
-    },
-    {
-      "sha": "4f86341c",
-      "subject": "Batch 111: BUG-32 tiered profit-factor passing criterion (1.2 per-regime, 1.5 overall)",
       "author": "jeetmehta1991",
       "rel_time": "6 hours ago"
     }
@@ -35429,7 +35429,7 @@
     }
   ],
   "test_inventory": {
-    "total": 1240,
+    "total": 1241,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -35465,7 +35465,7 @@
       "test_fred_alfred_smoke": 5,
       "test_gate_pre_phase_1a_entry": 8,
       "test_gates": 6,
-      "test_integration": 127,
+      "test_integration": 128,
       "test_inv041_path_restricted_commits": 5,
       "test_l146_wave_a_g2_g3_g9": 6,
       "test_l146_wave_b_g7_sec_edgar": 6,
@@ -36121,8 +36121,8 @@
     "DEFERRED": 2
   },
   "bug_status_counts": {
-    "RESOLVED-IMPLEMENTED": 46,
-    "OPEN": 218,
+    "RESOLVED-IMPLEMENTED": 47,
+    "OPEN": 217,
     "CRITICAL": 2,
     "WILL_RESOLVE_VIA_DEC-440": 2,
     "RESOLVED-DECIDED": 2,

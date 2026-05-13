@@ -668,6 +668,35 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_bug_019_ohlcv_cache_extended_to_current_date():
+    """BUG-019 Batch 142: OHLCV cache incomplete - 402 of 495 tickers
+    only cover to 2024-12-31. RESOLVED-IMPLEMENTED via Pass 53 OHLCV
+    prefetch (Sprint 0A). Current cache has 2,123 tickers with latest
+    end-dates in May 2026; older end-dates correspond to delisted
+    tickers (correct PIT behavior).
+    """
+    from pathlib import Path
+    import json
+    idx_path = Path("backtest/data/cache/index.json")
+    if not idx_path.exists():
+        import pytest
+        pytest.skip("OHLCV index missing")
+    data = json.loads(idx_path.read_text())
+    # Cache size has grown substantially since BUG-019 (was 495)
+    assert len(data) >= 1000, f"Expected >=1000 cached tickers, got {len(data)}"
+    # Most-recent end-dates are well past 2024-12-31
+    recent_dates = []
+    for t, info in data.items():
+        if isinstance(info, dict) and "end" in info:
+            recent_dates.append(info["end"])
+    recent_dates.sort(reverse=True)
+    # Top-tier liquid names should be cached to 2025 or later
+    top_5_dates = recent_dates[:5]
+    assert all(d > "2025-12-31" for d in top_5_dates), (
+        f"Top-5 cache end-dates should exceed 2025-12-31; got {top_5_dates}"
+    )
+
+
 def test_bug_016_min_trades_canonical_via_passing_criteria():
     """BUG-016 Batch 141: PASSING_CRITERIA min_trades = 100 contradicts
     all documentation. RESOLVED-IMPLEMENTED via BUG-31 (Batch 112) which

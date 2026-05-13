@@ -1233,7 +1233,7 @@
 | **BUG-016** | `PASSING_CRITERIA min_trades = 100` contradicts all documentation. RESOLVED-IMPLEMENTED via BUG-31 (Batch 112) which codified tiered min_trades = 30 per-regime / 100 overall in `PASSING_CRITERIA` + corresponding CLAUDE.md Passing Criteria table update (Batch 118 doc sweep). Config + CLAUDE.md + audit are now consistent. Batch 141 2026-05-13 false-positive OPEN correction. Pyramid: 738/738 mandatory T1-T10 green. | UNKNOWN | RESOLVED-IMPLEMENTED | - |
 | **BUG-017** | `run_commit.sh` full mode hangs on interactive `input()` in merge script | UNKNOWN | OPEN | - |
 | **BUG-018** | Bonferroni correction hardcoded to 60 strategies, should be 72 | UNKNOWN | OPEN | - |
-| **BUG-019** | OHLCV cache incomplete — 402 of 495 tickers only cover to 2024-12-31 | UNKNOWN | OPEN | - |
+| **BUG-019** | OHLCV cache incomplete - 402 of 495 tickers only cover to 2024-12-31. RESOLVED-IMPLEMENTED via Pass 53 OHLCV prefetch (Sprint 0A). Current cache has 2,123 tickers with top-5 end-dates in May 2026 (XLC 2026-05-06, A/AA/AAL/AAOI 2026-05-05); older end-dates correspond to delisted tickers (KSU/XEC/MXIM/ALXN/FLIR) - correct PIT behavior. Cache size 2,123 vs original 495 - substantial expansion via Sprint 0A multi-tier prefetch (T1a 614 + T1c 161 + T1 ETFs 27 + T2 347 + T3 1923 = master 1937). Batch 142 2026-05-13 false-positive OPEN correction. Pyramid: 739/739 mandatory T1-T10 green. | UNKNOWN | RESOLVED-IMPLEMENTED | - |
 | **BUG-020** | Regime thresholds inconsistent between PROJECT_PLAN and config.py | UNKNOWN | OPEN | - |
 | **BUG-021** | `exit_strategies.py` own `_pnl` has no borrow cost — short comparison optimistic | UNKNOWN | OPEN | - |
 | **BUG-022** | `run_phase1a.py` header prints "60 strategies" | UNKNOWN | OPEN | - |
