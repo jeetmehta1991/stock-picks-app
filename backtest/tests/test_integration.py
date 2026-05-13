@@ -2468,6 +2468,29 @@ def test_dec_235_engine_skips_holiday_weekday():
         assert date(2024, 7, 4) not in days   # Independence Day (Thu)
 
 
+def test_bug_057_063_069_071_093_094_097_100_212_infra_deferred():
+    """BUG-057/063/069-071/093/094/097-100/212 batch close - 12 infra/Stage 3+ deferrals.
+    BUG-057: test suite now 745+ tests (was missing 15); Phase 1B agent tests deferred.
+    BUG-063: email approval Stage 4 scope.
+    BUG-069/070/071: GH Actions vs VPS resolved; DB schema + IBKR session Stage 3+.
+    BUG-093/094: execution layer + paper trading Stage 3+/Stage 4.
+    BUG-097/098: IaC + monitoring Stage 3+.
+    BUG-099/100: secret mgmt + kill switch Stage 3+.
+    BUG-212: sync_from_claude.yml dormant (direct-main-push workflow active).
+    Batch 148 2026-05-13.
+    """
+    import pathlib
+    audit = pathlib.Path("AUDIT_INDEX.md").read_text(encoding="utf-8")
+    for bug_num in ["BUG-057", "BUG-063", "BUG-069", "BUG-093", "BUG-097", "BUG-100"]:
+        section_start = audit.find(f"**{bug_num}**")
+        assert section_start != -1, f"{bug_num} not found"
+        row = audit[section_start:section_start + 300]
+        assert "RESOLVED-DECIDED" in row, f"{bug_num} not RESOLVED-DECIDED"
+    # sync_from_claude.yml dormant (direct-main push active)
+    wf = pathlib.Path(".github/workflows/sync_from_claude.yml").read_text(encoding="utf-8")
+    assert "theirs" in wf  # flag present; dormant per direct-main workflow
+
+
 def test_bug_133_stopout_cooldown_implemented_not_deferred():
     """BUG-133 false-positive - cross-day cooldown after stop-out is IMPLEMENTED.
     DEC-018 RESOLVED-IMPLEMENTED Batch 73: TICKER_STOPOUT_COOLDOWN_DAYS=5 in
