@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-13T00:20:54.627601+00:00",
+  "generated_at": "2026-05-13T00:24:31.903653+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -26598,64 +26598,70 @@
   ],
   "recent_commits": [
     {
+      "sha": "edf1755d",
+      "subject": "Batch 117: BUG-222 tier-specific PIT S&P 500 universe filter (option B)",
+      "author": "jeetmehta1991",
+      "rel_time": "4 minutes ago"
+    },
+    {
       "sha": "c15d0cfa",
       "subject": "Batch 116: BUG-218 + BUG-239 PIT sector wired at 3 engine sites",
       "author": "jeetmehta1991",
-      "rel_time": "7 minutes ago"
+      "rel_time": "10 minutes ago"
     },
     {
       "sha": "b1b7b9e0",
       "subject": "Batch 115: BUG-219 flipped to RESOLVED-DECIDED (Stage 3+ deferral)",
       "author": "jeetmehta1991",
-      "rel_time": "12 minutes ago"
+      "rel_time": "15 minutes ago"
     },
     {
       "sha": "40f224d1",
       "subject": "Batch 114: BUG-30 config-toggleable Level-5 VIX-crisis tighten",
       "author": "jeetmehta1991",
-      "rel_time": "15 minutes ago"
+      "rel_time": "19 minutes ago"
     },
     {
       "sha": "adc33de8",
       "subject": "Batch 113: BUG-232 config-toggleable trailing-stop ratchet source",
       "author": "jeetmehta1991",
-      "rel_time": "19 minutes ago"
+      "rel_time": "23 minutes ago"
     },
     {
       "sha": "74cc4cd1",
       "subject": "Batch 112: BUG-31 tiered min_trades_per_regime codified in PASSING_CRITERIA",
       "author": "jeetmehta1991",
-      "rel_time": "25 minutes ago"
+      "rel_time": "28 minutes ago"
     },
     {
       "sha": "4f86341c",
       "subject": "Batch 111: BUG-32 tiered profit-factor passing criterion (1.2 per-regime, 1.5 overall)",
       "author": "jeetmehta1991",
-      "rel_time": "28 minutes ago"
+      "rel_time": "32 minutes ago"
     },
     {
       "sha": "afcaad93",
       "subject": "Batch 110: BUG-33 tiered Sharpe passing criterion in PASSING_CRITERIA",
       "author": "jeetmehta1991",
-      "rel_time": "32 minutes ago"
+      "rel_time": "35 minutes ago"
     },
     {
       "sha": "858ac20d",
       "subject": "Batch 109: BUG-34 per-strategy regime_blocklist config + engine gate",
       "author": "jeetmehta1991",
-      "rel_time": "36 minutes ago"
+      "rel_time": "39 minutes ago"
     },
     {
       "sha": "158663d0",
       "subject": "Batch 108: BUG-96 SPY buy-and-hold benchmark in compute_portfolio_summary",
       "author": "jeetmehta1991",
-      "rel_time": "40 minutes ago"
+      "rel_time": "44 minutes ago"
     },
     {
       "sha": "20391302",
       "subject": "Batch 107: BUG-205 IBKR fixed-tier cost cap wired into apply_transaction_costs",
       "author": "jeetmehta1991",
-      "rel_time": "44 minutes ago"
+      "rel_time": "48 minutes ago"
     },
     {
       "sha": "38c5a7e8",
@@ -26770,36 +26776,18 @@
       "subject": "Batch 88: BUG-26 false-positive correction \u00e2\u20ac\u201d DEC-302 VIX/DXY canonical loader",
       "author": "jeetmehta1991",
       "rel_time": "5 hours ago"
-    },
-    {
-      "sha": "a2d57ece",
-      "subject": "Batch 87: BUG-29 false-positive correction \u00e2\u20ac\u201d open-trades finalize confirmed wired",
-      "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 4,
-    "modified": 4,
+    "count": 1,
+    "modified": 1,
     "added": 0,
     "untracked": 0,
     "deleted": 0,
     "files": [
       {
         "status": "M",
-        "path": "AUDIT_INDEX.md"
-      },
-      {
-        "status": "M",
-        "path": "backtest/data/universe.py"
-      },
-      {
-        "status": "M",
-        "path": "backtest/engine/backtest.py"
-      },
-      {
-        "status": "M",
-        "path": "backtest/tests/test_integration.py"
+        "path": "CLAUDE.md"
       }
     ]
   },

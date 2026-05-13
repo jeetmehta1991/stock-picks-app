@@ -100,22 +100,25 @@ LEARNINGS.md      # 89 lessons — L88: no Wikipedia, L89: universe staleness
 
 ---
 
-## Passing Criteria (9 overall + per-regime verdict)
+## Passing Criteria (11 tiered overall/per-regime + per-regime verdict)
 
-All 9 must pass overall for a strategy to advance. Additionally, each strategy gets a per-regime verdict (PASS/FAIL/INSUFFICIENT_DATA) for each of the 7 historical regimes. A strategy valid in crisis but not bull is deployed only during crisis — this is intentional.
+All overall thresholds must pass for a strategy to advance overall. Additionally, each strategy gets a per-regime verdict (PASS/FAIL/INSUFFICIENT_DATA) for each of the 7 historical regimes evaluated against the per-regime thresholds. A strategy valid in crisis but not bull is deployed only during crisis — this is intentional. Per-regime thresholds are lower than overall thresholds because per-regime trade samples are smaller (statistical-power tradeoff codified in Pass 53 owner decisions 2026-05-12 via BUG-31/32/33).
 
-| # | Criterion | Threshold |
-|---|---|---|
-| 1 | Win rate | ≥55% (high-vol sectors: ≥50%) |
-| 2 | Profit factor | >1.3 (high-vol: >1.2) |
-| 3 | Expected value | >0 |
-| 4 | Win/loss ratio | >1.0 |
-| 5 | Max drawdown | <20 pct-points (high-vol: <25) |
-| 6 | Total ROI | >0% |
-| 7 | Smart money lift | ≥3pp win rate improvement |
-| 8 | Macro correlation | ≥5pp win rate diff |
-| 9 | Min trades | ≥100 overall, ≥30 per regime |
-| 10 | Per-regime verdict | PASS in ≥1 regime (not universal pass required) |
+| # | Criterion | Per-regime threshold | Overall threshold | Source |
+|---|---|---|---|---|
+| 1 | Win rate | ≥55% (high-vol: ≥50%) | same | original |
+| 2 | Profit factor | >1.3 (high-vol: >1.2) | >1.5 (literature canonical) | BUG-32 Batch 111 |
+| 3 | Expected value | >0 | same | original |
+| 4 | Win/loss ratio | >1.0 | same | original |
+| 5 | Max drawdown | <20 pct-points (high-vol: <25) | same | original |
+| 6 | Total ROI | >0% | same | original |
+| 7 | Smart money lift | ≥3pp win rate improvement | same | original |
+| 8 | Macro correlation | ≥5pp win rate diff | same | original |
+| 9 | Min trades | ≥30 | ≥100 | BUG-31 Batch 112 (codified existing) |
+| 10 | Sharpe ratio | ≥0.7 | ≥1.0 | BUG-33 Batch 110 |
+| 11 | Per-regime verdict | PASS in ≥1 regime (not universal pass required) | -- | original |
+
+Config: `PASSING_CRITERIA` dict in `backtest/config.py` carries all keys (`min_*`, `min_*_overall`, `min_*_per_regime`). Caller-side verdict functions read these to gate overall vs per-regime PASS evaluation.
 
 ---
 
