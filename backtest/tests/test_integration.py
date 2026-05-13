@@ -668,6 +668,25 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_bug_233_circuit_breakers_levels_3_4_5_market_wide_wired():
+    """BUG-233 Batch 120: "Circuit breakers level 3+4 documented but not
+    implemented" - sister to DEC-314 already RESOLVED Batch 85. Market-
+    wide NYSE Rule 80B Levels 3/4/5 wired at backtest/engine/backtest.py
+    via SPY intraday-low-vs-open daily proxy at -7%/-13%/-20% thresholds
+    since Phase 3 Batch 45. Level-3 single-name halt requires real-time
+    tick data; deferred to Stage 3+ paper trading per Pass 52 phasing.
+    """
+    from pathlib import Path
+    src = Path("backtest/engine/backtest.py").read_text(encoding="utf-8")
+    # Same wiring as DEC-314 Batch 45
+    assert "DEC-314 RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 45" in src
+    assert "market_wide_cb_nyse_rule_80b" in src
+    # All three thresholds present
+    assert "-0.07" in src
+    assert "-0.13" in src
+    assert "-0.20" in src
+
+
 def test_bug_061_engine_blocks_multiple_concurrent_positions_same_ticker():
     """BUG-061 Batch 119: "Backtest allows multiple concurrent positions
     in same ticker across consecutive days" was flagged HIGH/OPEN. Same
