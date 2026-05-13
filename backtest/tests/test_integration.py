@@ -668,6 +668,48 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_bug_244_mae_mfe_updated_before_circuit_breaker_check():
+    """BUG-244 Batch 121: "close_trade circuit breaker exits skip MAE/MFE
+    update on day of exit (passes 0.0)" was flagged HIGH/OPEN/Pass-48.
+    But `process_day_exits` in `backtest/engine/exit_manager.py:509-520`
+    updates `trade.max_adverse_excursion` + `trade.max_favourable_excursion`
+    using today's high/low BEFORE the circuit-breaker check at line 523.
+    So when a CB exit fires at line 528+ and calls `close_trade`, the
+    trade's MAE/MFE already include today's bar. False-positive OPEN.
+    """
+    from pathlib import Path
+    src = Path("backtest/engine/exit_manager.py").read_text(encoding="utf-8")
+    # MAE/MFE update site
+    mae_update_idx = src.find("trade.max_adverse_excursion    = min(trade.max_adverse_excursion")
+    # Circuit breaker check site
+    cb_check_idx = src.find("cb_results = check_circuit_breakers_all(trade")
+    # close_trade call inside the if exit_cb branch
+    cb_close_idx = src.find('"circuit_breaker_{exit_cb')
+    assert mae_update_idx > 0, "MAE/MFE update site must exist"
+    assert cb_check_idx > 0, "CB check site must exist"
+    # Update must precede CB check (so close_trade on CB exit sees today's
+    # MAE/MFE already accumulated)
+    assert mae_update_idx < cb_check_idx, (
+        "MAE/MFE update must run BEFORE check_circuit_breakers_all so "
+        "CB-exit close_trade calls see today-inclusive values"
+    )
+
+
+def test_bug_244_close_trade_persists_mae_mfe_from_open_trade():
+    """BUG-244 behavior smoke: close_trade reads
+    trade.max_adverse_excursion and trade.max_favourable_excursion from
+    the OpenTrade and persists them on the resulting ClosedTrade. So
+    if the OpenTrade's MAE/MFE include today's bar at the time of CB
+    exit, ClosedTrade carries those values too.
+    """
+    from pathlib import Path
+    src = Path("backtest/engine/exit_manager.py").read_text(encoding="utf-8")
+    # close_trade reads trade.max_adverse_excursion (not a fresh
+    # computation that would zero it out)
+    assert "max_adverse_excursion=round(trade.max_adverse_excursion" in src
+    assert "max_favourable_excursion=round(trade.max_favourable_excursion" in src
+
+
 def test_bug_233_circuit_breakers_levels_3_4_5_market_wide_wired():
     """BUG-233 Batch 120: "Circuit breakers level 3+4 documented but not
     implemented" - sister to DEC-314 already RESOLVED Batch 85. Market-

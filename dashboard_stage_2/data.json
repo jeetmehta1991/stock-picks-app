@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-13T01:24:31.379205+00:00",
+  "generated_at": "2026-05-13T01:28:24.888125+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -26598,52 +26598,58 @@
   ],
   "recent_commits": [
     {
+      "sha": "081979a9",
+      "subject": "Batch 120: BUG-233 false-positive correction - sister to DEC-314 Batch 85",
+      "author": "jeetmehta1991",
+      "rel_time": "4 minutes ago"
+    },
+    {
       "sha": "40559bf8",
       "subject": "Batch 119: BUG-061 false-positive correction - sister to BUG-101",
       "author": "jeetmehta1991",
-      "rel_time": "3 minutes ago"
+      "rel_time": "7 minutes ago"
     },
     {
       "sha": "56218df5",
       "subject": "Batch 118: end-of-arc doc sweep - CLAUDE.md Passing Criteria reflects BUG-31/32/33",
       "author": "jeetmehta1991",
-      "rel_time": "60 minutes ago"
+      "rel_time": "64 minutes ago"
     },
     {
       "sha": "edf1755d",
       "subject": "Batch 117: BUG-222 tier-specific PIT S&P 500 universe filter (option B)",
       "author": "jeetmehta1991",
-      "rel_time": "64 minutes ago"
+      "rel_time": "67 minutes ago"
     },
     {
       "sha": "c15d0cfa",
       "subject": "Batch 116: BUG-218 + BUG-239 PIT sector wired at 3 engine sites",
       "author": "jeetmehta1991",
-      "rel_time": "70 minutes ago"
+      "rel_time": "74 minutes ago"
     },
     {
       "sha": "b1b7b9e0",
       "subject": "Batch 115: BUG-219 flipped to RESOLVED-DECIDED (Stage 3+ deferral)",
       "author": "jeetmehta1991",
-      "rel_time": "75 minutes ago"
+      "rel_time": "79 minutes ago"
     },
     {
       "sha": "40f224d1",
       "subject": "Batch 114: BUG-30 config-toggleable Level-5 VIX-crisis tighten",
       "author": "jeetmehta1991",
-      "rel_time": "79 minutes ago"
+      "rel_time": "82 minutes ago"
     },
     {
       "sha": "adc33de8",
       "subject": "Batch 113: BUG-232 config-toggleable trailing-stop ratchet source",
       "author": "jeetmehta1991",
-      "rel_time": "83 minutes ago"
+      "rel_time": "87 minutes ago"
     },
     {
       "sha": "74cc4cd1",
       "subject": "Batch 112: BUG-31 tiered min_trades_per_regime codified in PASSING_CRITERIA",
       "author": "jeetmehta1991",
-      "rel_time": "88 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "4f86341c",
@@ -26768,12 +26774,6 @@
     {
       "sha": "703bdf62",
       "subject": "Batch 91: BUG-95 false-positive correction - Portfolio class wired Batch 20",
-      "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
-    },
-    {
-      "sha": "bf2581ce",
-      "subject": "Batch 90: BUG-27 regime_confidence intentional Phase-1A deferral confirmed",
       "author": "jeetmehta1991",
       "rel_time": "6 hours ago"
     }
@@ -26973,7 +26973,7 @@
     }
   ],
   "test_inventory": {
-    "total": 1216,
+    "total": 1218,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -27009,7 +27009,7 @@
       "test_fred_alfred_smoke": 5,
       "test_gate_pre_phase_1a_entry": 8,
       "test_gates": 6,
-      "test_integration": 103,
+      "test_integration": 105,
       "test_inv041_path_restricted_commits": 5,
       "test_l146_wave_a_g2_g3_g9": 6,
       "test_l146_wave_b_g7_sec_edgar": 6,
