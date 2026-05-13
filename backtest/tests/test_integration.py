@@ -668,6 +668,25 @@ def test_dec_091_dd_30pct_hard_halt_via_multiplier():
     assert base * p.drawdown_size_multiplier() == 0.0
 
 
+def test_bug_002_days_variable_defined_before_use_in_close_trade():
+    """BUG-002 Batch 134: days variable used before definition ->
+    UnboundLocalError on every trade close. RESOLVED via BUG-214 fix
+    (Pass 48) at backtest/engine/exit_manager.py:427-428 - days
+    computed BEFORE _pnl() call. Also cross-referenced as BUG-02
+    RESOLVED in backtest/engine/backtest.py:590.
+    """
+    from pathlib import Path
+    em_src = Path("backtest/engine/exit_manager.py").read_text(encoding="utf-8")
+    bt_src = Path("backtest/engine/backtest.py").read_text(encoding="utf-8")
+    assert "BUG-214 fix (Pass 48)" in em_src
+    assert "BUG-02 RESOLVED-IMPLEMENTED" in bt_src
+    # days var computed before _pnl
+    days_idx = em_src.find("days  = (exit_date - trade.entry_date).days")
+    pnl_idx = em_src.find("pnl   = _pnl(trade.entry_price, exit_price")
+    assert days_idx > 0 and pnl_idx > 0
+    assert days_idx < pnl_idx
+
+
 def test_bug_001_crisis_flag_hoisted_before_use():
     """BUG-001 Batch 133: crisis_flag used before definition -> NameError
     crash. RESOLVED-IMPLEMENTED via BUG-01 cross-reference in

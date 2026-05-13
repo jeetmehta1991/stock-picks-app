@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-13T05:20:30.317920+00:00",
+  "generated_at": "2026-05-13T05:24:26.661162+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -19294,11 +19294,11 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 33,
+        "n_doc_refs": 34,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
-          "integration": "N/A",
+          "integration": true,
           "system": "N/A",
           "functional": "N/A",
           "regression": "N/A",
@@ -19315,12 +19315,12 @@
       "sprint": "RESOLVED-IMPLEMENTED Pass 53 v8h+1 2026-05-10 (fix landed; backtest.py:263 explicit comment confirms days variable defined before use to prevent UnboundLocalError)",
       "dependencies": "DEC-458",
       "description": "**File:** `backtest/engine/exit_manager.py` lines 295 and 297 **Introduced by:** Commit `b430ab36` (our borrow cost change)",
-      "status": "OPEN",
+      "status": "RESOLVED-IMPLEMENTED",
       "promotion_path": {
         "tier": "READY",
         "label": "READY-TO-CLOSE",
         "color": "#10b981",
-        "reason": "Has code+test artifacts; flip to RESOLVED"
+        "reason": "Status inherited from linked DEC; has code+test - eligible to close"
       }
     },
     {
@@ -25028,11 +25028,11 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 4,
+        "n_doc_refs": 5,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
-          "integration": "N/A",
+          "integration": true,
           "system": "N/A",
           "functional": "N/A",
           "regression": "N/A",
@@ -35054,6 +35054,12 @@
   ],
   "recent_commits": [
     {
+      "sha": "c41d6384",
+      "subject": "Batch 133: BUG-001 false-positive - crisis_flag hoisted via BUG-01",
+      "author": "jeetmehta1991",
+      "rel_time": "4 minutes ago"
+    },
+    {
       "sha": "ea3cf254",
       "subject": "Batch 132: BUG-068 false-positive correction - CLAUDE.md current via per-turn sweep",
       "author": "jeetmehta1991",
@@ -35183,7 +35189,7 @@
       "sha": "4f86341c",
       "subject": "Batch 111: BUG-32 tiered profit-factor passing criterion (1.2 per-regime, 1.5 overall)",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "afcaad93",
@@ -35224,12 +35230,6 @@
     {
       "sha": "a1525fef",
       "subject": "Batch 104: BUG-30 SKIP triage - VIX-crisis tighten code-vs-spec contradiction",
-      "author": "jeetmehta1991",
-      "rel_time": "9 hours ago"
-    },
-    {
-      "sha": "c5f46565",
-      "subject": "Batch 103: BUG-239 SKIP triage - sister to BUG-218 PIT sector blocker",
       "author": "jeetmehta1991",
       "rel_time": "9 hours ago"
     }
@@ -35429,7 +35429,7 @@
     }
   ],
   "test_inventory": {
-    "total": 1232,
+    "total": 1233,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -35465,7 +35465,7 @@
       "test_fred_alfred_smoke": 5,
       "test_gate_pre_phase_1a_entry": 8,
       "test_gates": 6,
-      "test_integration": 119,
+      "test_integration": 120,
       "test_inv041_path_restricted_commits": 5,
       "test_l146_wave_a_g2_g3_g9": 6,
       "test_l146_wave_b_g7_sec_edgar": 6,
@@ -36121,8 +36121,8 @@
     "DEFERRED": 2
   },
   "bug_status_counts": {
-    "RESOLVED-IMPLEMENTED": 38,
-    "OPEN": 226,
+    "RESOLVED-IMPLEMENTED": 39,
+    "OPEN": 225,
     "CRITICAL": 2,
     "WILL_RESOLVE_VIA_DEC-440": 2,
     "RESOLVED-DECIDED": 2,
