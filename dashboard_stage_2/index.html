@@ -188,17 +188,14 @@ per CHECKLIST #77 - never reads from memory.
     <div class="filter-bar">
       <input id="bug-filter" placeholder="Filter ID / title / linked decisions..." size="50">
       <select id="bug-promotion-filter">
-        <option value="">All promotion tiers</option>
-        <option value="IMPLEMENTED">IMPLEMENTED</option>
-        <option value="DECIDED">DECIDED (active decision)</option>
-        <option value="READY">READY-TO-CLOSE</option>
-        <option value="CODE_ONLY">NEEDS-TEST</option>
-        <option value="TEST_ONLY">NEEDS-CODE</option>
-        <option value="OPEN">OPEN</option>
-        <option value="DEFERRED">DEFERRED (Stage 3+)</option>
-        <option value="FALSE-POSITIVE">FALSE-POSITIVE</option>
-        <option value="SUPERSEDED">SUPERSEDED</option>
-        <option value="UNKNOWN">UNKNOWN</option>
+        <option value="">All tiers (279 visible)</option>
+        <option value="IMPLEMENTED">IMPLEMENTED (88) - code + test artifacts confirmed</option>
+        <option value="DECIDED">DECIDED (76) - active methodology decision, no code needed</option>
+        <option value="DEFERRED">DEFERRED (88) - Stage 3+ or future-phase deferral</option>
+        <option value="FALSE-POSITIVE">FALSE-POSITIVE (9) - predates decision that made it moot</option>
+        <option value="READY">READY (14) - resolved but artifact trail unclear</option>
+        <option value="BLOCKED">BLOCKED (2) - pending DEC-440 Polygon migration</option>
+        <option value="CODE_ONLY">NEEDS-TEST (2) - coded but missing regression test</option>
       </select>
     </div>
     <table id="tbl-bugs" class="display compact" style="width:100%">

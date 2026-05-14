@@ -1231,7 +1231,7 @@ def compute_promotion_path(item: dict, kind: str) -> dict:
             if coded and tested:
                 return {"tier": "IMPLEMENTED", "label": "IMPLEMENTED", "color": "#10b981",
                         "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"}
-            return {"tier": "READY", "label": "RESOLVED-IMPLEMENTED", "color": "#10b981",
+            return {"tier": "READY", "label": "READY", "color": "#10b981",
                     "reason": "RESOLVED-IMPLEMENTED per AUDIT_INDEX (grep refs may be in linked DEC)"}
         if "RESOLVED-DECIDED" in status:
             res = (item.get("resolution_text") or item.get("description") or item.get("title") or "").upper()
@@ -1256,11 +1256,11 @@ def compute_promotion_path(item: dict, kind: str) -> dict:
             if coded:
                 return {"tier": "CODE_ONLY", "label": "NEEDS-TEST", "color": "#f59e0b",
                         "reason": "Resolved + code refs but missing regression test"}
-            return {"tier": "READY", "label": "RESOLVED", "color": "#10b981",
+            return {"tier": "READY", "label": "READY", "color": "#10b981",
                     "reason": "Marked resolved (verify artifact)"}
         if status in ("OPEN", "CRITICAL", "HIGH", "MEDIUM", "LOW"):
             if coded and tested:
-                return {"tier": "READY", "label": "READY-TO-CLOSE", "color": "#10b981",
+                return {"tier": "READY", "label": "READY", "color": "#10b981",
                         "reason": "Has code+test artifacts; flip to RESOLVED"}
             if coded:
                 return {"tier": "CODE_ONLY", "label": "NEEDS-TEST", "color": "#f59e0b",

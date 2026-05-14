@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-14T02:37:31.228467+00:00",
+  "generated_at": "2026-05-14T02:54:08.388599+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -20240,7 +20240,7 @@
       "resolution_text": "`run_tests.sh` does not pass `--no-agents` flag. Batch 150 2026-05-13: FALSE-POSITIVE -- `scripts/run_tests.sh` does not exist in the repo (confirmed ls). Tests are run via `python -m pytest backtest/tests/` directly or via `test-pyramid.yml` GitHub Actions; no wrapper script needed. Legacy script reference.",
       "promotion_path": {
         "tier": "READY",
-        "label": "RESOLVED-IMPLEMENTED",
+        "label": "READY",
         "color": "#10b981",
         "reason": "RESOLVED-IMPLEMENTED per AUDIT_INDEX (grep refs may be in linked DEC)"
       }
@@ -20320,7 +20320,7 @@
       "resolution_text": "CRITICAL \u2014 `regime_confidence()` function built but never called - originally flagged as dead code. RESOLVED-DECIDED Batch 90 2026-05-12: the function is INTENTIONALLY UNUSED in Phase 1A per CLAUDE.md Approved Rules (\"Position sizing",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "READY",
         "color": "#10b981",
         "reason": "Has code+test artifacts; flip to RESOLVED"
       }
@@ -20920,7 +20920,7 @@
       "resolution_text": "LOW -- `LILLY` appears as ticker in `run_full.sh` but should be `LLY`. Batch 150 2026-05-13: FALSE-POSITIVE -- `scripts/run_full.sh` does not exist (confirmed; deprecated per BUG-074/BUG-014 Batch 128/140). Canonical workflow is `generate_batch_splits.py` + `batch_splits.json` which uses correct LLY symbol.",
       "promotion_path": {
         "tier": "READY",
-        "label": "RESOLVED-IMPLEMENTED",
+        "label": "READY",
         "color": "#10b981",
         "reason": "RESOLVED-IMPLEMENTED per AUDIT_INDEX (grep refs may be in linked DEC)"
       }
@@ -21000,7 +21000,7 @@
       "resolution_text": "LOW -- Test suite has no test for `close_trade()` or `_process_day()`. Batch 150 2026-05-13: FALSE-POSITIVE -- test suite now at 747+ tests; many tests exercise close_trade (exit_manager) and _process_day (engine loop) indirectly through behavioral integration tests (BUG-101/102/061/038/104 Batches 87-149). Direct close_trade unit test added in Batch 136 (BUG-02 fix test).",
       "promotion_path": {
         "tier": "READY",
-        "label": "RESOLVED-IMPLEMENTED",
+        "label": "READY",
         "color": "#10b981",
         "reason": "RESOLVED-IMPLEMENTED per AUDIT_INDEX (grep refs may be in linked DEC)"
       }
@@ -22400,7 +22400,7 @@
       "resolution_text": "HIGH \u2014 `SHORT_BORROW_COST_PER_DAY = 0.005` is 2.5\u00d7 the documented intent",
       "promotion_path": {
         "tier": "READY",
-        "label": "RESOLVED",
+        "label": "READY",
         "color": "#10b981",
         "reason": "Marked resolved (verify artifact)"
       }
@@ -25200,7 +25200,7 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "READY-TO-CLOSE",
+        "label": "READY",
         "color": "#10b981",
         "reason": "Has code+test artifacts; flip to RESOLVED"
       }
@@ -25240,7 +25240,7 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "RESOLVED",
+        "label": "READY",
         "color": "#10b981",
         "reason": "Marked resolved (verify artifact)"
       }
@@ -25360,7 +25360,7 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "RESOLVED",
+        "label": "READY",
         "color": "#10b981",
         "reason": "Marked resolved (verify artifact)"
       }
@@ -25400,7 +25400,7 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "RESOLVED",
+        "label": "READY",
         "color": "#10b981",
         "reason": "Marked resolved (verify artifact)"
       }
@@ -25440,7 +25440,7 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "RESOLVED",
+        "label": "READY",
         "color": "#10b981",
         "reason": "Marked resolved (verify artifact)"
       }
@@ -25720,7 +25720,7 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "RESOLVED",
+        "label": "READY",
         "color": "#10b981",
         "reason": "Marked resolved (verify artifact)"
       }
@@ -25800,7 +25800,7 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "RESOLVED",
+        "label": "READY",
         "color": "#10b981",
         "reason": "Marked resolved (verify artifact)"
       }
@@ -25840,7 +25840,7 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "RESOLVED",
+        "label": "READY",
         "color": "#10b981",
         "reason": "Marked resolved (verify artifact)"
       }
@@ -26200,7 +26200,7 @@
       "description": "",
       "promotion_path": {
         "tier": "READY",
-        "label": "RESOLVED",
+        "label": "READY",
         "color": "#10b981",
         "reason": "Marked resolved (verify artifact)"
       }
@@ -35060,28 +35060,34 @@
   ],
   "recent_commits": [
     {
+      "sha": "6756468f",
+      "subject": "DEC-458: implement lead_lag_sector_rotation + wire into screen_universe",
+      "author": "jeetmehta1991",
+      "rel_time": "16 minutes ago"
+    },
+    {
       "sha": "e6e90dbf",
       "subject": "Reclassify 7 PARTIAL-IMPL as DEFERRED; 1 genuine NEEDS-WIRING remains (DEC-458)",
       "author": "jeetmehta1991",
-      "rel_time": "9 minutes ago"
+      "rel_time": "26 minutes ago"
     },
     {
       "sha": "66367de1",
       "subject": "Fix decision promotion metric: surface 9 real Phase 1A gaps from 288 false noise",
       "author": "jeetmehta1991",
-      "rel_time": "25 minutes ago"
+      "rel_time": "42 minutes ago"
     },
     {
       "sha": "b03c30a8",
       "subject": "Split RESOLVED-DECIDED bugs into DECIDED/DEFERRED/SUPERSEDED/FALSE-POSITIVE tiers",
       "author": "jeetmehta1991",
-      "rel_time": "59 minutes ago"
+      "rel_time": "76 minutes ago"
     },
     {
       "sha": "795744bb",
       "subject": "Fix compute_promotion_path for RESOLVED-IMPLEMENTED/DECIDED bugs + rebuild dashboard",
       "author": "jeetmehta1991",
-      "rel_time": "83 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "badbaa0c",
@@ -35093,13 +35099,13 @@
       "sha": "c45f110b",
       "subject": "BUG arc complete: update AUDIT_INDEX summary table -- 0 OPEN BUGs remaining.",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "c62dd187",
       "subject": "Batch 162: BUG-111 CRITICAL -- break-and-retest strategy variants implemented. Pyramid 613/613.",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "8372ba6d",
@@ -35141,7 +35147,7 @@
       "sha": "2d1f60bd",
       "subject": "Batch 155: 16 BUGs RESOLVED-DECIDED - site_generator + phase-scope deferrals + false-positives. Pyramid 606/606.",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "f429c960",
@@ -35159,19 +35165,19 @@
       "sha": "2737066c",
       "subject": "Batch 152: BUG-039/045/047/049/050/062/064/065/085/090/091/109 batch close - 12 decided/false-positives. Pyramid 750/750.",
       "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
+      "rel_time": "7 hours ago"
     },
     {
       "sha": "ddbce342",
       "subject": "Batch 151: BUG-018 active fix - Bonferroni uses len(ALL_STRATEGIES) not hardcoded 60. Pyramid 749/749.",
       "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
+      "rel_time": "7 hours ago"
     },
     {
       "sha": "e68d4644",
       "subject": "Batch 150: BUG-008/009/011/015/017/020/021/024/025/042/043/044 batch close - 12 false-positives + decided. Pyramid 748/748.",
       "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
+      "rel_time": "7 hours ago"
     },
     {
       "sha": "1b3fa64e",
@@ -35232,17 +35238,11 @@
       "subject": "Batch 140: BUG-014 false-positive - run_full.sh deprecated, AAPL/CVS/JPM/NVDA in current splits. Pyramid 737/737.",
       "author": "jeetmehta1991",
       "rel_time": "21 hours ago"
-    },
-    {
-      "sha": "dd165fbc",
-      "subject": "Batch 139: BUG-013 false-positive - yfinance HARD CUT (sister BUG-178). Pyramid 736/736.",
-      "author": "jeetmehta1991",
-      "rel_time": "21 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 8,
-    "modified": 4,
+    "count": 11,
+    "modified": 7,
     "added": 0,
     "untracked": 4,
     "deleted": 0,
@@ -35253,15 +35253,27 @@
       },
       {
         "status": "M",
-        "path": "backtest/signals/screener.py"
+        "path": "dashboard_stage_2/data.js"
       },
       {
         "status": "M",
-        "path": "backtest/tests/test_unit.py"
+        "path": "dashboard_stage_2/data.json"
+      },
+      {
+        "status": "M",
+        "path": "dashboard_stage_2/index.html"
+      },
+      {
+        "status": "M",
+        "path": "dashboard_stage_2/last_run.txt"
       },
       {
         "status": "M",
         "path": "output_smoke_test/trade_log_checkpoint.csv"
+      },
+      {
+        "status": "M",
+        "path": "scripts/build_dashboard_stage_2.py"
       },
       {
         "status": "??",
