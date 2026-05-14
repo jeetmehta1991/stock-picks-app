@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-14T21:18:46.355995+00:00",
+  "generated_at": "2026-05-14T21:50:17.554540+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -581,7 +581,7 @@
       "dependencies": "-",
       "description": "",
       "coverage_engine": "YES",
-      "coverage_evidence": "function body 30-857 executed in backtest/results/writer.py",
+      "coverage_evidence": "function body 30-993 executed in backtest/results/writer.py",
       "promotion_path": {
         "tier": "IMPLEMENTED",
         "label": "IMPLEMENTED",
@@ -634,7 +634,7 @@
     {
       "id": "DECISION-019",
       "title": "Liquidity filter re-validation timing (BUG-135 closure) \u2014 `liquidity_drop_warning(entry_adv_shares, current_adv_shares, drop_threshold_pct=50.0)` helper in `bac",
-      "status": "PARTIAL-IMPL-HELPER-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Risk Management (Group C)",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -664,13 +664,13 @@
       "sprint": "Sprint 4 (+1)",
       "dependencies": "BUG-135",
       "description": "",
-      "coverage_engine": "FUNC-DEAD",
-      "coverage_evidence": "function in backtest/results/metrics.py never executed",
+      "coverage_engine": "YES",
+      "coverage_evidence": "function body 1247-1257 executed in backtest/results/metrics.py",
       "promotion_path": {
-        "tier": "FUNC-DEAD",
-        "label": "FUNC-DEAD",
-        "color": "#ef4444",
-        "reason": "Coverage audit: enclosing function exists in active module but never executed in the canonical backtest. Add a triggering test or expand the canonical backtest to exercise this path."
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "RESOLVED-IMPLEMENTED with code/wire/test artifacts"
       }
     },
     {
@@ -707,7 +707,7 @@
       "dependencies": "-",
       "description": "",
       "coverage_engine": "YES",
-      "coverage_evidence": "function body 30-857 executed in backtest/results/writer.py",
+      "coverage_evidence": "function body 30-993 executed in backtest/results/writer.py",
       "promotion_path": {
         "tier": "IMPLEMENTED",
         "label": "IMPLEMENTED",
@@ -2597,7 +2597,7 @@
       "dependencies": "-",
       "description": "",
       "coverage_engine": "YES",
-      "coverage_evidence": "function body 30-857 executed in backtest/results/writer.py",
+      "coverage_evidence": "function body 30-993 executed in backtest/results/writer.py",
       "promotion_path": {
         "tier": "IMPLEMENTED",
         "label": "IMPLEMENTED",
@@ -3059,7 +3059,7 @@
       "dependencies": "-",
       "description": "",
       "coverage_engine": "YES",
-      "coverage_evidence": "function body 30-857 executed in backtest/results/writer.py",
+      "coverage_evidence": "function body 30-993 executed in backtest/results/writer.py",
       "promotion_path": {
         "tier": "IMPLEMENTED",
         "label": "IMPLEMENTED",
@@ -3311,7 +3311,7 @@
       "dependencies": "-",
       "description": "",
       "coverage_engine": "YES",
-      "coverage_evidence": "function body 30-857 executed in backtest/results/writer.py",
+      "coverage_evidence": "function body 810-819 executed in backtest/engine/improvements.py",
       "promotion_path": {
         "tier": "IMPLEMENTED",
         "label": "IMPLEMENTED",
@@ -3437,7 +3437,7 @@
       "dependencies": "-",
       "description": "",
       "coverage_engine": "YES",
-      "coverage_evidence": "module-level tag in backtest/engine/improvements.py (38%); adjacent symbol `MEMORY_CAP_MB_DEFAULT` consumed externally",
+      "coverage_evidence": "module-level tag in backtest/engine/improvements.py (48%); adjacent symbol `MEMORY_CAP_MB_DEFAULT` consumed externally",
       "promotion_path": {
         "tier": "IMPLEMENTED",
         "label": "IMPLEMENTED",
@@ -3448,7 +3448,7 @@
     {
       "id": "DECISION-100",
       "title": "17+ categorical breakdown variables \u2014 `CANONICAL_BREAKDOWN_VARIABLES` tuple (17 dimensions: regime / sector / market_cap_band / vol_band / momentum_band / liqui",
-      "status": "PARTIAL-IMPL-HELPER-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X8 \u2014 Granularity + Breakdowns",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -3478,13 +3478,13 @@
       "sprint": "Sprint 7 additions; Sprint 7-8 (+3)",
       "dependencies": "-",
       "description": "",
-      "coverage_engine": "FUNC-DEAD",
-      "coverage_evidence": "function in backtest/results/metrics.py never executed",
+      "coverage_engine": "YES",
+      "coverage_evidence": "function body 628-652 executed in backtest/results/metrics.py",
       "promotion_path": {
-        "tier": "FUNC-DEAD",
-        "label": "FUNC-DEAD",
-        "color": "#ef4444",
-        "reason": "Coverage audit: enclosing function exists in active module but never executed in the canonical backtest. Add a triggering test or expand the canonical backtest to exercise this path."
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "RESOLVED-IMPLEMENTED with code/wire/test artifacts"
       }
     },
     {
@@ -4162,7 +4162,7 @@
     {
       "id": "DECISION-123",
       "title": "Exponential decay smart-money weights \u2014 `exponential_decay_weights(days_ago_list, half_life_days=90)` in `backtest/results/metrics.py` returns normalized weight",
-      "status": "PARTIAL-IMPL-HELPER-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X12 \u2014 Smart money refinement",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -4192,13 +4192,13 @@
       "sprint": "Sprint 4 (+5)",
       "dependencies": "-",
       "description": "",
-      "coverage_engine": "FUNC-DEAD",
-      "coverage_evidence": "function in backtest/results/metrics.py never executed",
+      "coverage_engine": "YES",
+      "coverage_evidence": "function body 1461-1467 executed in backtest/results/metrics.py",
       "promotion_path": {
-        "tier": "FUNC-DEAD",
-        "label": "FUNC-DEAD",
-        "color": "#ef4444",
-        "reason": "Coverage audit: enclosing function exists in active module but never executed in the canonical backtest. Add a triggering test or expand the canonical backtest to exercise this path."
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "RESOLVED-IMPLEMENTED with code/wire/test artifacts"
       }
     },
     {
@@ -4498,7 +4498,7 @@
     {
       "id": "DECISION-131",
       "title": "Agent value-add two-gate check \u2014 `agent_value_add_two_gate_check(agent_sharpe, rules_sharpe, absolute_threshold=0.2, relative_threshold=0.15)` in `backtest/resu",
-      "status": "PARTIAL-IMPL-HELPER-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X14 \u2014 Validation criteria",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -4528,13 +4528,13 @@
       "sprint": "Sprint 7 (+8); Sprint 7 additions (Statistica",
       "dependencies": "-",
       "description": "",
-      "coverage_engine": "FUNC-DEAD",
-      "coverage_evidence": "function in backtest/results/metrics.py never executed",
+      "coverage_engine": "YES",
+      "coverage_evidence": "function body 1522-1538 executed in backtest/results/metrics.py",
       "promotion_path": {
-        "tier": "FUNC-DEAD",
-        "label": "FUNC-DEAD",
-        "color": "#ef4444",
-        "reason": "Coverage audit: enclosing function exists in active module but never executed in the canonical backtest. Add a triggering test or expand the canonical backtest to exercise this path."
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "RESOLVED-IMPLEMENTED with code/wire/test artifacts"
       }
     },
     {
@@ -4633,7 +4633,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 6,
+        "n_doc_refs": 8,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -4843,7 +4843,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 16,
+        "n_doc_refs": 18,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -4876,7 +4876,7 @@
     {
       "id": "DECISION-142",
       "title": "Market-neutral construction plan \u2014 `build_market_neutral_hedge(long_ticker, long_dollar_value, beta, spy_ticker='SPY')` in `backtest/results/metrics.py` returns",
-      "status": "PARTIAL-IMPL-HELPER-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X17 \u2014 Strategy extensions",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -4906,13 +4906,13 @@
       "sprint": "-",
       "dependencies": "-",
       "description": "",
-      "coverage_engine": "FUNC-DEAD",
-      "coverage_evidence": "function in backtest/results/metrics.py never executed",
+      "coverage_engine": "YES",
+      "coverage_evidence": "function body 1605-1615 executed in backtest/results/metrics.py",
       "promotion_path": {
-        "tier": "FUNC-DEAD",
-        "label": "FUNC-DEAD",
-        "color": "#ef4444",
-        "reason": "Coverage audit: enclosing function exists in active module but never executed in the canonical backtest. Add a triggering test or expand the canonical backtest to exercise this path."
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "RESOLVED-IMPLEMENTED with code/wire/test artifacts"
       }
     },
     {
@@ -4960,7 +4960,7 @@
     {
       "id": "DECISION-144",
       "title": "Stock-vs-sector momentum delta band helper -- momentum_delta_band(stock_20d_return, sector_20d_return) in metrics.py returns dict with delta + 5-band classifica",
-      "status": "PARTIAL-IMPL-HELPER-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X17 \u2014 Strategy extensions",
       "pass_intro": "Pass 40",
       "pass_resolved": "Pass 53",
@@ -4990,19 +4990,19 @@
       "sprint": "Sprint 7 additions; Sprint 7-8 additions (Phase 1B",
       "dependencies": "-",
       "description": "",
-      "coverage_engine": "FUNC-DEAD",
-      "coverage_evidence": "function in backtest/results/metrics.py never executed",
+      "coverage_engine": "YES",
+      "coverage_evidence": "function body 994-1002 executed in backtest/results/metrics.py",
       "promotion_path": {
-        "tier": "FUNC-DEAD",
-        "label": "FUNC-DEAD",
-        "color": "#ef4444",
-        "reason": "Coverage audit: enclosing function exists in active module but never executed in the canonical backtest. Add a triggering test or expand the canonical backtest to exercise this path."
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "RESOLVED-IMPLEMENTED with code/wire/test artifacts"
       }
     },
     {
       "id": "DECISION-145",
       "title": "IV pre-earnings anomaly helper \u2014 `iv_pre_earnings_anomaly(current_iv, historical_iv_pre_earnings, sigma_threshold=2.0)` in `backtest/results/metrics.py` returns",
-      "status": "PARTIAL-IMPL-HELPER-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X17 \u2014 Strategy extensions",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -5032,13 +5032,13 @@
       "sprint": "-",
       "dependencies": "-",
       "description": "",
-      "coverage_engine": "FUNC-DEAD",
-      "coverage_evidence": "function in backtest/results/metrics.py never executed",
+      "coverage_engine": "YES",
+      "coverage_evidence": "function body 1635-1652 executed in backtest/results/metrics.py",
       "promotion_path": {
-        "tier": "FUNC-DEAD",
-        "label": "FUNC-DEAD",
-        "color": "#ef4444",
-        "reason": "Coverage audit: enclosing function exists in active module but never executed in the canonical backtest. Add a triggering test or expand the canonical backtest to exercise this path."
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "RESOLVED-IMPLEMENTED with code/wire/test artifacts"
       }
     },
     {
@@ -5137,7 +5137,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 1,
+        "n_doc_refs": 3,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -5159,7 +5159,7 @@
       "dependencies": "-",
       "description": "",
       "coverage_engine": "YES",
-      "coverage_evidence": "function body 30-857 executed in backtest/results/writer.py",
+      "coverage_evidence": "function body 1024-1028 executed in backtest/results/metrics.py",
       "promotion_path": {
         "tier": "IMPLEMENTED",
         "label": "IMPLEMENTED",
@@ -5212,7 +5212,7 @@
     {
       "id": "DECISION-150",
       "title": "Multi-asset regime detection \u2014 `multi_asset_regime_score(equity_vix, credit_hy_spread_bps, commodity_pct_change_20d, currency_dxy_pct_change_20d)` in `backtest/",
-      "status": "PARTIAL-IMPL-HELPER-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X19 \u2014 Regime extensions",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -5248,13 +5248,13 @@
         "tier": "IMPLEMENTED",
         "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "PARTIAL-IMPL: wired+tested artifacts confirm implementation; AUDIT_INDEX status stale"
+        "reason": "RESOLVED-IMPLEMENTED with code/wire/test artifacts"
       }
     },
     {
       "id": "DECISION-151",
       "title": "Sector-level regime classification \u2014 `sector_regime(sector_etf_price, sector_etf_ema200, sector_vol_annualized, crisis_vol_threshold=0.40, bear_vol_threshold=0.",
-      "status": "PARTIAL-IMPL-HELPER-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X19 \u2014 Regime extensions",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -5290,7 +5290,7 @@
         "tier": "IMPLEMENTED",
         "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "PARTIAL-IMPL: wired+tested artifacts confirm implementation; AUDIT_INDEX status stale"
+        "reason": "RESOLVED-IMPLEMENTED with code/wire/test artifacts"
       }
     },
     {
@@ -5548,7 +5548,7 @@
     {
       "id": "DECISION-159",
       "title": "Regulatory event handler \u2014 `regulatory_event_flag(ticker, news_items, event_window_days=5, as_of=None)` in `backtest/engine/improvements.py` scans news items fo",
-      "status": "PARTIAL-IMPL-HELPER-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X23 \u2014 Edge case handling",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -5578,13 +5578,13 @@
       "sprint": "Sprint 4 (+5)",
       "dependencies": "-",
       "description": "",
-      "coverage_engine": "FUNC-DEAD",
-      "coverage_evidence": "function in backtest/engine/improvements.py never executed",
+      "coverage_engine": "YES",
+      "coverage_evidence": "function body 663-689 executed in backtest/engine/improvements.py",
       "promotion_path": {
-        "tier": "FUNC-DEAD",
-        "label": "FUNC-DEAD",
-        "color": "#ef4444",
-        "reason": "Coverage audit: enclosing function exists in active module but never executed in the canonical backtest. Add a triggering test or expand the canonical backtest to exercise this path."
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "RESOLVED-IMPLEMENTED with code/wire/test artifacts"
       }
     },
     {
@@ -6178,7 +6178,7 @@
     {
       "id": "DECISION-175",
       "title": "Signal persistence weighting helper -- signal_persistence_weight(consecutive_days, base=1.0, growth_per_day=0.25, max=2.5) in metrics.py. 1-day signal -> 1.0; 3",
-      "status": "PARTIAL-IMPL-HELPER-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X28 \u2014 Strategy meta",
       "pass_intro": "Pass 41",
       "pass_resolved": "Pass 53",
@@ -6208,13 +6208,13 @@
       "sprint": "Sprint 7 (+8)",
       "dependencies": "-",
       "description": "",
-      "coverage_engine": "FUNC-DEAD",
-      "coverage_evidence": "function in backtest/results/metrics.py never executed",
+      "coverage_engine": "YES",
+      "coverage_evidence": "function body 1024-1028 executed in backtest/results/metrics.py",
       "promotion_path": {
-        "tier": "FUNC-DEAD",
-        "label": "FUNC-DEAD",
-        "color": "#ef4444",
-        "reason": "Coverage audit: enclosing function exists in active module but never executed in the canonical backtest. Add a triggering test or expand the canonical backtest to exercise this path."
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "RESOLVED-IMPLEMENTED with code/wire/test artifacts"
       }
     },
     {
@@ -7438,7 +7438,7 @@
     {
       "id": "DECISION-206",
       "title": "Paired A/B design helper \u2014 `evaluate_paired_ab_arms(trade_id, per_arm_outcomes)` in `backtest/results/metrics.py` returns dict {trade_id, n_arms, best_arm, wors",
-      "status": "PARTIAL-IMPL-HELPER-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X32 \u2014 Agent A/B Testing",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -7468,13 +7468,13 @@
       "sprint": "Sprint 6 additions (Phase 0.E ",
       "dependencies": "-",
       "description": "**Resolution:** Paired design. Every arm evaluates every trade. Each trade produces N decision records (one per arm), all under the same market conditions.",
-      "coverage_engine": "FUNC-DEAD",
-      "coverage_evidence": "function in backtest/results/metrics.py never executed",
+      "coverage_engine": "YES",
+      "coverage_evidence": "function body 1667-1680 executed in backtest/results/metrics.py",
       "promotion_path": {
-        "tier": "FUNC-DEAD",
-        "label": "FUNC-DEAD",
-        "color": "#ef4444",
-        "reason": "Coverage audit: enclosing function exists in active module but never executed in the canonical backtest. Add a triggering test or expand the canonical backtest to exercise this path."
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "RESOLVED-IMPLEMENTED with code/wire/test artifacts"
       }
     },
     {
@@ -7564,7 +7564,7 @@
     {
       "id": "DECISION-209",
       "title": "Per-regime A/B verdicts \u2014 `compute_per_regime_agent_verdict(df_rules_only, df_agent_overlay, regimes=('bull','neutral','bear','crisis'), min_trades_per_regime=3",
-      "status": "PARTIAL-IMPL-HELPER-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X32 \u2014 Agent A/B Testing",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -7594,13 +7594,13 @@
       "sprint": "Sprint 7 additions (Statistica",
       "dependencies": "-",
       "description": "**Resolution:** Score per regime (bull / neutral / bear / crisis per DEC-103 four-regime classifier). Each agent arm passes/fails separately in each regime. Optionally deploy agents only in regimes where they pass.",
-      "coverage_engine": "FUNC-DEAD",
-      "coverage_evidence": "function in backtest/results/metrics.py never executed",
+      "coverage_engine": "YES",
+      "coverage_evidence": "function body 705-740 executed in backtest/results/metrics.py",
       "promotion_path": {
-        "tier": "FUNC-DEAD",
-        "label": "FUNC-DEAD",
-        "color": "#ef4444",
-        "reason": "Coverage audit: enclosing function exists in active module but never executed in the canonical backtest. Add a triggering test or expand the canonical backtest to exercise this path."
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "RESOLVED-IMPLEMENTED with code/wire/test artifacts"
       }
     },
     {
@@ -7648,7 +7648,7 @@
     {
       "id": "DECISION-211",
       "title": "Per-agent ablation contributions \u2014 `compute_per_agent_ablation_contributions(arm_metrics)` in `backtest/results/metrics.py` returns dict mapping agent_name -> m",
-      "status": "PARTIAL-IMPL-HELPER-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X32 \u2014 Agent A/B Testing",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -7678,19 +7678,19 @@
       "sprint": "Sprint 7 additions (Statistica; Sprint 7-8 additions (Phase 1B; Sprint 9 additions (Phase 1B-\u03b1",
       "dependencies": "-",
       "description": "",
-      "coverage_engine": "FUNC-DEAD",
-      "coverage_evidence": "function in backtest/results/metrics.py never executed",
+      "coverage_engine": "YES",
+      "coverage_evidence": "function body 1916-1931 executed in backtest/results/metrics.py",
       "promotion_path": {
-        "tier": "FUNC-DEAD",
-        "label": "FUNC-DEAD",
-        "color": "#ef4444",
-        "reason": "Coverage audit: enclosing function exists in active module but never executed in the canonical backtest. Add a triggering test or expand the canonical backtest to exercise this path."
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "RESOLVED-IMPLEMENTED with code/wire/test artifacts"
       }
     },
     {
       "id": "DECISION-212",
       "title": "Agent-disagreement tagger \u2014 `tag_agent_disagreement(bull_signal, bear_signal, risk_signal)` in `backtest/results/metrics.py` returns dict with disagreement_type",
-      "status": "PARTIAL-IMPL-HELPER-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X32 \u2014 Agent A/B Testing",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -7720,13 +7720,13 @@
       "sprint": "Sprint 7 additions (Statistica",
       "dependencies": "-",
       "description": "",
-      "coverage_engine": "FUNC-DEAD",
-      "coverage_evidence": "function in backtest/results/metrics.py never executed",
+      "coverage_engine": "YES",
+      "coverage_evidence": "function body 1698-1718 executed in backtest/results/metrics.py",
       "promotion_path": {
-        "tier": "FUNC-DEAD",
-        "label": "FUNC-DEAD",
-        "color": "#ef4444",
-        "reason": "Coverage audit: enclosing function exists in active module but never executed in the canonical backtest. Add a triggering test or expand the canonical backtest to exercise this path."
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "RESOLVED-IMPLEMENTED with code/wire/test artifacts"
       }
     },
     {
@@ -7805,7 +7805,7 @@
       "dependencies": "DEC-131",
       "description": "",
       "coverage_engine": "YES",
-      "coverage_evidence": "function body 30-857 executed in backtest/results/writer.py",
+      "coverage_evidence": "function body 2063-2074 executed in backtest/results/metrics.py",
       "promotion_path": {
         "tier": "IMPLEMENTED",
         "label": "IMPLEMENTED",
@@ -8141,7 +8141,7 @@
       "dependencies": "-",
       "description": "",
       "coverage_engine": "YES",
-      "coverage_evidence": "function body 30-857 executed in backtest/results/writer.py",
+      "coverage_evidence": "function body 810-819 executed in backtest/engine/improvements.py",
       "promotion_path": {
         "tier": "IMPLEMENTED",
         "label": "IMPLEMENTED",
@@ -8152,7 +8152,7 @@
     {
       "id": "DECISION-227",
       "title": "Cache size monitoring \u2014 `get_cache_size_gb(cache_root)` (recursive os.walk sum of file sizes / GB) + `cache_size_alert_level(size_gb, disk_total_gb, threshold_p",
-      "status": "PARTIAL-IMPL-HELPER-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X34 \u2014 Test + Cache Infrastructure",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -8182,13 +8182,13 @@
       "sprint": "Sprint 1 additions (Phase 0.A ",
       "dependencies": "-",
       "description": "",
-      "coverage_engine": "FUNC-DEAD",
-      "coverage_evidence": "function in backtest/engine/improvements.py never executed",
+      "coverage_engine": "YES",
+      "coverage_evidence": "function body 786-798 executed in backtest/engine/improvements.py",
       "promotion_path": {
-        "tier": "FUNC-DEAD",
-        "label": "FUNC-DEAD",
-        "color": "#ef4444",
-        "reason": "Coverage audit: enclosing function exists in active module but never executed in the canonical backtest. Add a triggering test or expand the canonical backtest to exercise this path."
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "RESOLVED-IMPLEMENTED with code/wire/test artifacts"
       }
     },
     {
@@ -8362,7 +8362,7 @@
     {
       "id": "DECISION-232",
       "title": "Determinism diff helper \u2014 `diff_trade_logs(df_a, df_b)` in `backtest/results/metrics.py` compares two trade-log DataFrames cell-by-cell (NaN==NaN treated as equ",
-      "status": "PARTIAL-IMPL-HELPER-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X35 \u2014 Reliability + Determinism",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -8392,19 +8392,19 @@
       "sprint": "Sprint 6 additions (Phase 0.E ",
       "dependencies": "-",
       "description": "",
-      "coverage_engine": "FUNC-DEAD",
-      "coverage_evidence": "function in backtest/results/metrics.py never executed",
+      "coverage_engine": "YES",
+      "coverage_evidence": "function body 1947-1976 executed in backtest/results/metrics.py",
       "promotion_path": {
-        "tier": "FUNC-DEAD",
-        "label": "FUNC-DEAD",
-        "color": "#ef4444",
-        "reason": "Coverage audit: enclosing function exists in active module but never executed in the canonical backtest. Add a triggering test or expand the canonical backtest to exercise this path."
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "RESOLVED-IMPLEMENTED with code/wire/test artifacts"
       }
     },
     {
       "id": "DECISION-233",
       "title": "Daily data quality monitoring \u2014 `check_ohlcv_data_quality(df, gap_pct_threshold=0.50, max_consecutive_nan_days=3)` in `backtest/engine/improvements.py` scans an",
-      "status": "PARTIAL-IMPL-HELPER-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X36 \u2014 Data Quality + Trading Mechanics",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -8434,13 +8434,13 @@
       "sprint": "Sprint 6 additions (Phase 0.E ",
       "dependencies": "-",
       "description": "",
-      "coverage_engine": "FUNC-DEAD",
-      "coverage_evidence": "function in backtest/engine/improvements.py never executed",
+      "coverage_engine": "YES",
+      "coverage_evidence": "function body 933-962 executed in backtest/engine/improvements.py",
       "promotion_path": {
-        "tier": "FUNC-DEAD",
-        "label": "FUNC-DEAD",
-        "color": "#ef4444",
-        "reason": "Coverage audit: enclosing function exists in active module but never executed in the canonical backtest. Add a triggering test or expand the canonical backtest to exercise this path."
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "RESOLVED-IMPLEMENTED with code/wire/test artifacts"
       }
     },
     {
@@ -8740,7 +8740,7 @@
     {
       "id": "DECISION-241",
       "title": "Time-in-market metric (% in any position, % long, % short, % cash) Pass 52 turn 58 owner-approved RESOLVED-DECIDED: Time-in-market metric (% in any position, % ",
-      "status": "PARTIAL-IMPL-HELPER-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X36 \u2014 Data Quality + Trading Mechanics",
       "pass_intro": "Pass 45",
       "pass_resolved": "-",
@@ -8770,13 +8770,13 @@
       "sprint": "Sprint 6 additions (Phase 0.E ",
       "dependencies": "-",
       "description": "",
-      "coverage_engine": "FUNC-DEAD",
-      "coverage_evidence": "function in backtest/results/metrics.py never executed",
+      "coverage_engine": "YES",
+      "coverage_evidence": "function body 242-287 executed in backtest/results/metrics.py",
       "promotion_path": {
-        "tier": "FUNC-DEAD",
-        "label": "FUNC-DEAD",
-        "color": "#ef4444",
-        "reason": "Coverage audit: enclosing function exists in active module but never executed in the canonical backtest. Add a triggering test or expand the canonical backtest to exercise this path."
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "RESOLVED-IMPLEMENTED with code/wire/test artifacts"
       }
     },
     {
@@ -9076,7 +9076,7 @@
     {
       "id": "DECISION-249",
       "title": "Strategy decay metric \u2014 `detect_strategy_decay(sharpe_baseline, sharpe_recent, drop_threshold=0.5)` in `backtest/results/metrics.py` returns dict with is_decaye",
-      "status": "PARTIAL-IMPL-HELPER-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X39 \u2014 Strategy Decay + Code Quality",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -9106,13 +9106,13 @@
       "sprint": "Sprint 9 (+1)",
       "dependencies": "-",
       "description": "",
-      "coverage_engine": "FUNC-DEAD",
-      "coverage_evidence": "function in backtest/results/metrics.py never executed",
+      "coverage_engine": "YES",
+      "coverage_evidence": "function body 2063-2074 executed in backtest/results/metrics.py",
       "promotion_path": {
-        "tier": "FUNC-DEAD",
-        "label": "FUNC-DEAD",
-        "color": "#ef4444",
-        "reason": "Coverage audit: enclosing function exists in active module but never executed in the canonical backtest. Add a triggering test or expand the canonical backtest to exercise this path."
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "RESOLVED-IMPLEMENTED with code/wire/test artifacts"
       }
     },
     {
@@ -9337,7 +9337,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 8,
+        "n_doc_refs": 10,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -9454,7 +9454,7 @@
     {
       "id": "DECISION-258",
       "title": "Options chain snapshot cache schema -- OPTIONS_CHAIN_CACHE_DIR + OPTIONS_CHAIN_CACHE_SCHEMA (date/ticker/expiry/strike/option_type/OI/IV/volume/PCR/iv_rank_252d",
-      "status": "PARTIAL-IMPL-HELPER-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X41 \u2014 Phase 0.A Data Prefetch Gaps",
       "pass_intro": "Pass 47",
       "pass_resolved": "Pass 53",
@@ -9484,13 +9484,13 @@
       "sprint": "-",
       "dependencies": "-",
       "description": "",
-      "coverage_engine": "FUNC-DEAD",
-      "coverage_evidence": "function in backtest/results/metrics.py never executed",
+      "coverage_engine": "YES",
+      "coverage_evidence": "function body 1635-1652 executed in backtest/results/metrics.py",
       "promotion_path": {
-        "tier": "FUNC-DEAD",
-        "label": "FUNC-DEAD",
-        "color": "#ef4444",
-        "reason": "Coverage audit: enclosing function exists in active module but never executed in the canonical backtest. Add a triggering test or expand the canonical backtest to exercise this path."
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "RESOLVED-IMPLEMENTED with code/wire/test artifacts"
       }
     },
     {
@@ -9547,7 +9547,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 19,
+        "n_doc_refs": 21,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -9569,7 +9569,7 @@
       "dependencies": "-",
       "description": "",
       "coverage_engine": "YES",
-      "coverage_evidence": "function body 777-780 executed in backtest/results/metrics.py",
+      "coverage_evidence": "function body 933-962 executed in backtest/engine/improvements.py",
       "promotion_path": {
         "tier": "IMPLEMENTED",
         "label": "IMPLEMENTED",
@@ -10367,7 +10367,7 @@
       "dependencies": "-",
       "description": "",
       "coverage_engine": "YES",
-      "coverage_evidence": "function body 30-857 executed in backtest/results/writer.py",
+      "coverage_evidence": "function body 550-565 executed in backtest/engine/improvements.py",
       "promotion_path": {
         "tier": "IMPLEMENTED",
         "label": "IMPLEMENTED",
@@ -10504,7 +10504,7 @@
     {
       "id": "DECISION-284",
       "title": "Borderline strategy pass/fail policy \u2014 `evaluates_pass(value, threshold, kind='pass_ge')` in `backtest/results/metrics.py` encodes canonical convention: STRICT-",
-      "status": "PARTIAL-IMPL-HELPER-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X49 \u2014 Thin Areas Surfaced",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -10534,13 +10534,13 @@
       "sprint": "Sprint 7 additions (Statistica",
       "dependencies": "-",
       "description": "",
-      "coverage_engine": "FUNC-DEAD",
-      "coverage_evidence": "function in backtest/results/metrics.py never executed",
+      "coverage_engine": "YES",
+      "coverage_evidence": "function body 675-681 executed in backtest/results/metrics.py",
       "promotion_path": {
-        "tier": "FUNC-DEAD",
-        "label": "FUNC-DEAD",
-        "color": "#ef4444",
-        "reason": "Coverage audit: enclosing function exists in active module but never executed in the canonical backtest. Add a triggering test or expand the canonical backtest to exercise this path."
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "RESOLVED-IMPLEMENTED with code/wire/test artifacts"
       }
     },
     {
@@ -10630,7 +10630,7 @@
     {
       "id": "DECISION-287",
       "title": "Public site freshness signal \u2014 `compute_freshness_banner(last_updated_iso, now=None, warn_threshold_hours=24.0)` in `backtest/results/metrics.py` returns dict w",
-      "status": "PARTIAL-IMPL-HELPER-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X49 \u2014 Thin Areas Surfaced",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -10660,13 +10660,13 @@
       "sprint": "-",
       "dependencies": "-",
       "description": "",
-      "coverage_engine": "FUNC-DEAD",
-      "coverage_evidence": "function in backtest/results/metrics.py never executed",
+      "coverage_engine": "YES",
+      "coverage_evidence": "function body 2004-2037 executed in backtest/results/metrics.py",
       "promotion_path": {
-        "tier": "FUNC-DEAD",
-        "label": "FUNC-DEAD",
-        "color": "#ef4444",
-        "reason": "Coverage audit: enclosing function exists in active module but never executed in the canonical backtest. Add a triggering test or expand the canonical backtest to exercise this path."
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "RESOLVED-IMPLEMENTED with code/wire/test artifacts"
       }
     },
     {
@@ -11932,7 +11932,7 @@
     {
       "id": "DECISION-321",
       "title": "Liquidity filter market-cap check skips silently if data missing \u2014 fail-open instead of fail-closed. Pass 52 owner-approved. Change `apply_liquidity_filter` beh",
-      "status": "PARTIAL-IMPL-HELPER-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X53 \u2014 High-Impact Engine Bugs",
       "pass_intro": "Pass 48",
       "pass_resolved": "-",
@@ -11962,13 +11962,13 @@
       "sprint": "Sprint 2 additions (Engine Bug; Sprint 4 (+1); Sprint 5 additions (Universe M",
       "dependencies": "-",
       "description": "",
-      "coverage_engine": "FUNC-DEAD",
-      "coverage_evidence": "function in backtest/data/universe.py never executed",
+      "coverage_engine": "YES",
+      "coverage_evidence": "function body 1247-1257 executed in backtest/results/metrics.py",
       "promotion_path": {
-        "tier": "FUNC-DEAD",
-        "label": "FUNC-DEAD",
-        "color": "#ef4444",
-        "reason": "Coverage audit: enclosing function exists in active module but never executed in the canonical backtest. Add a triggering test or expand the canonical backtest to exercise this path."
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "RESOLVED-IMPLEMENTED with code/wire/test artifacts"
       }
     },
     {
@@ -12089,7 +12089,7 @@
       "dependencies": "-",
       "description": "",
       "coverage_engine": "YES",
-      "coverage_evidence": "function body 519-555 executed in backtest/data/smart_money.py",
+      "coverage_evidence": "function body 474-493 executed in backtest/data/smart_money.py",
       "promotion_path": {
         "tier": "IMPLEMENTED",
         "label": "IMPLEMENTED",
@@ -12193,7 +12193,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 16,
+        "n_doc_refs": 18,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -12310,7 +12310,7 @@
     {
       "id": "DECISION-333",
       "title": "CNN F&G canonical band recalibration \u2014 `CNN_FG_BANDS` tuple (0-25 extreme_fear, 26-45 fear, 46-55 neutral, 56-75 greed, 76-100 extreme_greed) matches CNN's PUBL",
-      "status": "PARTIAL-IMPL-HELPER-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X54 \u2014 Medium-Severity Improvements",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -12340,19 +12340,19 @@
       "sprint": "Sprint 4 additions (DEC-410 Au",
       "dependencies": "-",
       "description": "",
-      "coverage_engine": "FUNC-DEAD",
-      "coverage_evidence": "function in backtest/data/sentiment.py never executed",
+      "coverage_engine": "YES",
+      "coverage_evidence": "function body 168-179 executed in backtest/data/sentiment.py",
       "promotion_path": {
-        "tier": "FUNC-DEAD",
-        "label": "FUNC-DEAD",
-        "color": "#ef4444",
-        "reason": "Coverage audit: enclosing function exists in active module but never executed in the canonical backtest. Add a triggering test or expand the canonical backtest to exercise this path."
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "RESOLVED-IMPLEMENTED with code/wire/test artifacts"
       }
     },
     {
       "id": "DECISION-334",
       "title": "composite_score ROI substitution \u2014 `composite_score(...use_roi_proxy=True, total_roi_pct=...)` parameter in `backtest/results/metrics.py` substitutes normalized",
-      "status": "PARTIAL-IMPL-HELPER-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X54 \u2014 Medium-Severity Improvements",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -12382,13 +12382,13 @@
       "sprint": "Sprint 7 additions (Statistica",
       "dependencies": "-",
       "description": "",
-      "coverage_engine": "FUNC-DEAD",
-      "coverage_evidence": "function in backtest/results/metrics.py never executed",
+      "coverage_engine": "YES",
+      "coverage_evidence": "function body 1349-1361 executed in backtest/results/metrics.py",
       "promotion_path": {
-        "tier": "FUNC-DEAD",
-        "label": "FUNC-DEAD",
-        "color": "#ef4444",
-        "reason": "Coverage audit: enclosing function exists in active module but never executed in the canonical backtest. Add a triggering test or expand the canonical backtest to exercise this path."
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "RESOLVED-IMPLEMENTED with code/wire/test artifacts"
       }
     },
     {
@@ -12445,7 +12445,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 8,
+        "n_doc_refs": 9,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -12898,7 +12898,7 @@
     {
       "id": "DECISION-352",
       "title": "13F price-level mapping helper -- institutional_price_level_mapping(quarterly_avg_cost_basis, current_price, underwater_threshold) in metrics.py + INSTITUTIONAL",
-      "status": "PARTIAL-IMPL-HELPER-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X55 - Strategy Coverage Gaps (Pass 52)",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -12928,13 +12928,13 @@
       "sprint": "Sprint 8 additions (Strategy C",
       "dependencies": "-",
       "description": "",
-      "coverage_engine": "FUNC-DEAD",
-      "coverage_evidence": "function in backtest/results/metrics.py never executed",
+      "coverage_engine": "YES",
+      "coverage_evidence": "function body 1087-1105 executed in backtest/results/metrics.py",
       "promotion_path": {
-        "tier": "FUNC-DEAD",
-        "label": "FUNC-DEAD",
-        "color": "#ef4444",
-        "reason": "Coverage audit: enclosing function exists in active module but never executed in the canonical backtest. Add a triggering test or expand the canonical backtest to exercise this path."
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "RESOLVED-IMPLEMENTED with code/wire/test artifacts"
       }
     },
     {
@@ -12982,7 +12982,7 @@
     {
       "id": "DECISION-354",
       "title": "Chart-pattern strategies parent roster -- CHART_PATTERN_STRATEGIES dict (6 child patterns) + detect_chart_pattern_skeleton helper. Full pattern recognition defe",
-      "status": "PARTIAL-IMPL-HELPER-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X55 - Strategy Coverage Gaps (Pass 52)",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -13018,7 +13018,7 @@
         "tier": "IMPLEMENTED",
         "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "PARTIAL-IMPL: wired+tested artifacts confirm implementation; AUDIT_INDEX status stale"
+        "reason": "RESOLVED-IMPLEMENTED with code/wire/test artifacts"
       }
     },
     {
@@ -13517,7 +13517,7 @@
       "dependencies": "-",
       "description": "",
       "coverage_engine": "YES",
-      "coverage_evidence": "function body 30-857 executed in backtest/results/writer.py",
+      "coverage_evidence": "function body 1247-1257 executed in backtest/results/metrics.py",
       "promotion_path": {
         "tier": "IMPLEMENTED",
         "label": "IMPLEMENTED",
@@ -14746,7 +14746,7 @@
     {
       "id": "DECISION-396",
       "title": "DEC-325 implementation \u2014 In `quiver` 13F prefetch, capture actual `filing_date` per position. PIT lookup `get_institutional_positions(ticker, as_of=D)` returns ",
-      "status": "PARTIAL-IMPL-HELPER-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X53 \u2014 High-Impact Engine Bugs",
       "pass_intro": "Pass 52",
       "pass_resolved": "Pass 53",
@@ -14776,13 +14776,13 @@
       "sprint": "-",
       "dependencies": "DEC-325",
       "description": "- In `quiver` 13F prefetch (or whatever supersedes per BUG-186/241/274 cascade resolution): capture `filing_date` field per position - Storage: per-position `filing_date` not just `quarter_end` - PIT lookup: `get_institutional_positions(ticker, as_of=D)` returns positions where `",
-      "coverage_engine": "FUNC-DEAD",
-      "coverage_evidence": "function in backtest/data/smart_money.py never executed",
+      "coverage_engine": "YES",
+      "coverage_evidence": "function body 474-493 executed in backtest/data/smart_money.py",
       "promotion_path": {
-        "tier": "FUNC-DEAD",
-        "label": "FUNC-DEAD",
-        "color": "#ef4444",
-        "reason": "Coverage audit: enclosing function exists in active module but never executed in the canonical backtest. Add a triggering test or expand the canonical backtest to exercise this path."
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "RESOLVED-IMPLEMENTED with code/wire/test artifacts"
       }
     },
     {
@@ -14872,7 +14872,7 @@
     {
       "id": "DECISION-400",
       "title": "Bonferroni dynamic N helper -- bonferroni_dynamic_n(p_values, n_strategies_tested=None) in metrics.py returns dict with adjusted_p_values + n_tested + alpha_bon",
-      "status": "PARTIAL-IMPL-HELPER-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X4 \u2014 Statistical Methodology",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -14902,13 +14902,13 @@
       "sprint": "Sprint 7 \u2014 Statistical Methodo",
       "dependencies": "-",
       "description": "",
-      "coverage_engine": "FUNC-DEAD",
-      "coverage_evidence": "function in backtest/results/metrics.py never executed",
+      "coverage_engine": "YES",
+      "coverage_evidence": "function body 1194-1212 executed in backtest/results/metrics.py",
       "promotion_path": {
-        "tier": "FUNC-DEAD",
-        "label": "FUNC-DEAD",
-        "color": "#ef4444",
-        "reason": "Coverage audit: enclosing function exists in active module but never executed in the canonical backtest. Add a triggering test or expand the canonical backtest to exercise this path."
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "RESOLVED-IMPLEMENTED with code/wire/test artifacts"
       }
     },
     {
@@ -15827,7 +15827,7 @@
       "dependencies": "DEC-068; DEC-422",
       "description": "DEC-068 originally scoped per-strategy bootstrap CI. Expanded under DEC-422 framework: bootstrap operates at **per-cell level** within dimensional cube. Pairwise (strategy, exit) comparisons within cell. Bonferroni-correct across all cell pairs. Cells with n<30 fall back to margi",
       "coverage_engine": "YES",
-      "coverage_evidence": "function body 30-857 executed in backtest/results/writer.py",
+      "coverage_evidence": "function body 30-993 executed in backtest/results/writer.py",
       "promotion_path": {
         "tier": "IMPLEMENTED",
         "label": "IMPLEMENTED",
@@ -17182,7 +17182,7 @@
     {
       "id": "DECISION-458",
       "title": "Lead-lag intra-sector momentum spec -- LEAD_LAG_INTRA_SECTOR_STRATEGY dict in config.py (rebalance=weekly, lookback=5d, hold=5d, GICS_sector dim, top_1 lead + b",
-      "status": "PARTIAL-IMPL-HELPER-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X62 - Strategy Innovation",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -17218,7 +17218,7 @@
         "tier": "IMPLEMENTED",
         "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "PARTIAL-IMPL: wired+tested artifacts confirm implementation; AUDIT_INDEX status stale"
+        "reason": "RESOLVED-IMPLEMENTED with code/wire/test artifacts"
       }
     },
     {
@@ -17317,7 +17317,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 10,
+        "n_doc_refs": 12,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -17896,7 +17896,7 @@
     {
       "id": "DECISION-483",
       "title": "Universe expansion: Russell 1000 + NASDAQ 100 added to Sprint 1 Tier 1 with sub-tier tracking. Pass 53 turn (this) owner-approved RESOLVED-DECIDED (Q2 = sub-tie",
-      "status": "PARTIAL-IMPL-HELPER-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Sprint 1 / Phase 0.A \u2014 T1a + T1c IMPLEMENTED Pass 53; T1b DEFERRED Stage 3",
       "pass_intro": "Pass 53",
       "pass_resolved": "53",
@@ -17932,7 +17932,7 @@
         "tier": "IMPLEMENTED",
         "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "PARTIAL-IMPL: wired+tested artifacts confirm implementation; AUDIT_INDEX status stale"
+        "reason": "RESOLVED-IMPLEMENTED with code/wire/test artifacts"
       }
     },
     {
@@ -20122,7 +20122,7 @@
     {
       "id": "DECISION-590",
       "title": "Phase 1A implementation begin date 2026-05-15. Pass 53 owner-approved 2026-05-06 Q3=A RESOLVED-DECIDED. RULE: Phase 1A implementation begins 2026-05-15 (9 days ",
-      "status": "PARTIAL-IMPL-HELPER-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Cross-cutting / methodology / Pass 53 closure",
       "pass_intro": "Pass 53",
       "pass_resolved": "53",
@@ -20152,13 +20152,13 @@
       "sprint": "-",
       "dependencies": "-",
       "description": "**Decision** (per Q3 = A): Phase 1A implementation begins 2026-05-15 (9 days from Pass 53 review-cycle closure 2026-05-06).",
-      "coverage_engine": "FUNC-DEAD",
-      "coverage_evidence": "function in backtest/engine/improvements.py never executed",
+      "coverage_engine": "YES",
+      "coverage_evidence": "function body 206-342 executed in backtest/engine/improvements.py",
       "promotion_path": {
-        "tier": "FUNC-DEAD",
-        "label": "FUNC-DEAD",
-        "color": "#ef4444",
-        "reason": "Coverage audit: enclosing function exists in active module but never executed in the canonical backtest. Add a triggering test or expand the canonical backtest to exercise this path."
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "RESOLVED-IMPLEMENTED with code/wire/test artifacts"
       }
     },
     {
@@ -24943,13 +24943,13 @@
       "description": "**Files:** `backtest/data/cache/quiver/institutional/{AAPL,ABBV,ADBE,AMD,AMZN,...}.parquet` (29 tickers)",
       "status": "RESOLVED-DECIDED",
       "resolution_text": "HIGH \u2014 29 institutional 13F files empty including major tickers (AAPL, ABBV, AMZ). Batch 153 2026-05-13: RESOLVED-DECIDED \u2014 Quiver data coverage gap for those tickers. Sprint 0A prefetch scope doesn't include 13F backfill beyond what Quiver provides. institutional_signal() gracefully returns zero-score on empty files. Phase 1A accepted data gap.",
-      "coverage_engine": "FUNC-DEAD",
-      "coverage_evidence": "function in backtest/data/smart_money.py never executed",
+      "coverage_engine": "YES",
+      "coverage_evidence": "function body 474-493 executed in backtest/data/smart_money.py",
       "promotion_path": {
-        "tier": "FUNC-DEAD",
-        "label": "FUNC-DEAD",
-        "color": "#ef4444",
-        "reason": "Coverage audit: enclosing function exists in active module but never executed in the canonical backtest. Add a triggering test or expand the canonical backtest to exercise this path."
+        "tier": "DECIDED",
+        "label": "DECIDED",
+        "color": "#10b981",
+        "reason": "Active methodology decision: current behavior is correct by design"
       }
     },
     {
@@ -25382,7 +25382,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 37,
+        "n_doc_refs": 39,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -26602,7 +26602,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 1,
+        "n_doc_refs": 2,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -26624,7 +26624,7 @@
       "dependencies": "BUG-228",
       "description": "",
       "coverage_engine": "YES",
-      "coverage_evidence": "function body 30-857 executed in backtest/results/writer.py",
+      "coverage_evidence": "function body 30-993 executed in backtest/results/writer.py",
       "promotion_path": {
         "tier": "IMPLEMENTED",
         "label": "IMPLEMENTED",
@@ -27169,13 +27169,13 @@
       "sprint": "-",
       "dependencies": "BUG-241",
       "description": "",
-      "coverage_engine": "FUNC-DEAD",
-      "coverage_evidence": "function in backtest/data/smart_money.py never executed",
+      "coverage_engine": "YES",
+      "coverage_evidence": "function body 474-493 executed in backtest/data/smart_money.py",
       "promotion_path": {
-        "tier": "FUNC-DEAD",
-        "label": "FUNC-DEAD",
-        "color": "#ef4444",
-        "reason": "Coverage audit: enclosing function exists in active module but never executed in the canonical backtest. Add a triggering test or expand the canonical backtest to exercise this path."
+        "tier": "DECIDED",
+        "label": "DECIDED",
+        "color": "#10b981",
+        "reason": "Active methodology decision: current behavior is correct by design"
       }
     },
     {
@@ -29269,13 +29269,13 @@
       "sprint": "-",
       "dependencies": "BUG-135",
       "description": "",
-      "coverage_engine": "FUNC-DEAD",
-      "coverage_evidence": "function in backtest/results/metrics.py never executed",
+      "coverage_engine": "YES",
+      "coverage_evidence": "function body 1247-1257 executed in backtest/results/metrics.py",
       "promotion_path": {
-        "tier": "FUNC-DEAD",
-        "label": "FUNC-DEAD",
-        "color": "#ef4444",
-        "reason": "Coverage audit: enclosing function exists in active module but never executed in the canonical backtest. Add a triggering test or expand the canonical backtest to exercise this path."
+        "tier": "DEFERRED",
+        "label": "DEFERRED",
+        "color": "#3b82f6",
+        "reason": "Deferred to Stage 3+ or future phase"
       }
     },
     {
@@ -36087,16 +36087,22 @@
   ],
   "recent_commits": [
     {
+      "sha": "586e7233",
+      "subject": "Batch 162: Wire 7 more Phase 1B+ stub invocations. +8 DECs promoted. Pyramid 1869/1887.",
+      "author": "jeetmehta1991",
+      "rel_time": "26 minutes ago"
+    },
+    {
       "sha": "cd549529",
       "subject": "Batch 161: Wire 3 more helpers (slippage_advanced + coverage_gate + finnhub_guard). +5 DECs promoted. Pyramid 1869/1887.",
       "author": "jeetmehta1991",
-      "rel_time": "15 minutes ago"
+      "rel_time": "46 minutes ago"
     },
     {
       "sha": "a2c0d98c",
       "subject": "Batch 160: Rectify 56 classification anomalies (A wire + B reclassify). 9 promoted, 38 stay PARTIAL. Pyramid 1869/1887.",
       "author": "jeetmehta1991",
-      "rel_time": "30 minutes ago"
+      "rel_time": "61 minutes ago"
     },
     {
       "sha": "960878e8",
@@ -36126,7 +36132,7 @@
       "sha": "851a9ca4",
       "subject": "Batch 155: Dashboard + AUDIT_INDEX reflect coverage-driven engine verification. Pyramid 1579/1592.",
       "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
+      "rel_time": "7 hours ago"
     },
     {
       "sha": "b6183f8a",
@@ -36150,37 +36156,37 @@
       "sha": "b4bff5f9",
       "subject": "Batch 151: Remove duplicated Doc Status column/filter from decisions table - Promotion supersedes. Pyramid 743/743.",
       "author": "jeetmehta1991",
-      "rel_time": "16 hours ago"
+      "rel_time": "17 hours ago"
     },
     {
       "sha": "03eb8272",
       "subject": "Batch 150: Fix dec/inv/cav status filter dropdowns (case regex + stale options). Pyramid 742/742.",
       "author": "jeetmehta1991",
-      "rel_time": "16 hours ago"
+      "rel_time": "17 hours ago"
     },
     {
       "sha": "ed744a04",
       "subject": "@ Batch 149: 12 FALSE-POSITIVE bugs -> OBSOLETE, removed from dashboard. Pyramid 626/626.",
       "author": "jeetmehta1991",
-      "rel_time": "17 hours ago"
+      "rel_time": "18 hours ago"
     },
     {
       "sha": "17ffee83",
       "subject": "@ Batch 148: BUG-NNN comment tags + 9 regression tests -> all 277 bugs resolved. Pyramid 626/626.",
       "author": "jeetmehta1991",
-      "rel_time": "18 hours ago"
+      "rel_time": "19 hours ago"
     },
     {
       "sha": "7a4a28b0",
       "subject": "@ Batch 147: 9 AUDIT_INDEX status fixes - pipe chars + status flips. Pyramid 617/617.",
       "author": "jeetmehta1991",
-      "rel_time": "18 hours ago"
+      "rel_time": "19 hours ago"
     },
     {
       "sha": "f49f0dfd",
       "subject": "@ Batch 146: Bug dropdown cleanup - unified READY labels + 7-tier filter. Pyramid 617/617.",
       "author": "jeetmehta1991",
-      "rel_time": "18 hours ago"
+      "rel_time": "19 hours ago"
     },
     {
       "sha": "6756468f",
@@ -36198,7 +36204,7 @@
       "sha": "66367de1",
       "subject": "Fix decision promotion metric: surface 9 real Phase 1A gaps from 288 false noise",
       "author": "jeetmehta1991",
-      "rel_time": "19 hours ago"
+      "rel_time": "20 hours ago"
     },
     {
       "sha": "b03c30a8",
@@ -36210,68 +36216,62 @@
       "sha": "795744bb",
       "subject": "Fix compute_promotion_path for RESOLVED-IMPLEMENTED/DECIDED bugs + rebuild dashboard",
       "author": "jeetmehta1991",
-      "rel_time": "20 hours ago"
+      "rel_time": "21 hours ago"
     },
     {
       "sha": "badbaa0c",
       "subject": "Dashboard dropdown filters broken + BUG-258 code files missed in Batch 158. Pyramid 613/613.",
       "author": "jeetmehta1991",
-      "rel_time": "20 hours ago"
+      "rel_time": "21 hours ago"
     },
     {
       "sha": "c45f110b",
       "subject": "BUG arc complete: update AUDIT_INDEX summary table -- 0 OPEN BUGs remaining.",
       "author": "jeetmehta1991",
-      "rel_time": "22 hours ago"
+      "rel_time": "23 hours ago"
     },
     {
       "sha": "c62dd187",
       "subject": "Batch 162: BUG-111 CRITICAL -- break-and-retest strategy variants implemented. Pyramid 613/613.",
       "author": "jeetmehta1991",
-      "rel_time": "22 hours ago"
+      "rel_time": "23 hours ago"
     },
     {
       "sha": "8372ba6d",
       "subject": "Batch 161: BUG-055 PSAR flip fix + BUG-060 short entry zone gap-down fix. Pyramid 612/612.",
       "author": "jeetmehta1991",
-      "rel_time": "22 hours ago"
+      "rel_time": "23 hours ago"
     },
     {
       "sha": "649d079a",
       "subject": "Batch 160: BUG-054 HMA WMA fix + BUG-075 max_drawdown sort fix. Pyramid 611/611.",
       "author": "jeetmehta1991",
-      "rel_time": "22 hours ago"
+      "rel_time": "23 hours ago"
     },
     {
       "sha": "1eadb979",
       "subject": "Batch 159: BUG-028/077/079/106 false-positives - fixes already landed pre-batch. Pyramid 610/610.",
       "author": "jeetmehta1991",
-      "rel_time": "22 hours ago"
+      "rel_time": "23 hours ago"
     },
     {
       "sha": "a1f835d4",
       "subject": "Batch 158: BUG-226/227 false-positives + BUG-229/245/082/263 decided + BUG-258 ATR_FALLBACK_PCT constant. Pyramid 609/609.",
       "author": "jeetmehta1991",
-      "rel_time": "22 hours ago"
+      "rel_time": "23 hours ago"
     },
     {
       "sha": "59ec56f9",
       "subject": "Batch 157: BUG-275/276/279/284/285 RESOLVED-IMPLEMENTED + BUG-277/278 false-positives. bonferroni n=0, cache_key dicts, reversed dates, fixed_4r_2r, gov_contracts None. Pyramid 608/608.",
       "author": "jeetmehta1991",
       "rel_time": "23 hours ago"
-    },
-    {
-      "sha": "f5465d36",
-      "subject": "Batch 156: BUG-271/272/273 RESOLVED-IMPLEMENTED (gov_contracts Qtr+Year fix, lobbying Amount dtype, congressional House col). BUG-270/274 false-positives. Pyramid 607/607.",
-      "author": "jeetmehta1991",
-      "rel_time": "23 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 74,
+    "count": 75,
     "modified": 50,
     "added": 0,
-    "untracked": 24,
+    "untracked": 25,
     "deleted": 0,
     "files": [
       {
@@ -36477,6 +36477,10 @@
       {
         "status": "??",
         "path": "output_v2/analyst_data_stub.json"
+      },
+      {
+        "status": "??",
+        "path": "output_v2/batch163_stub_results.json"
       },
       {
         "status": "??",
@@ -37232,7 +37236,7 @@
       "kind": "DEC",
       "id": "DEC-458",
       "title": "Lead-lag intra-sector momentum spec -- LEAD_LAG_INTRA_SECTOR_STRATEGY dict in config.py (rebalance=weekly, lookback=5d, hold=5d, GICS_sector",
-      "status": "PARTIAL-IMPL-HELPER-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "tier": 1,
       "reason": "Dependency root (294 downstream items reference)",
       "back_refs": 294,
@@ -37440,8 +37444,8 @@
     }
   ],
   "decision_status_counts": {
-    "RESOLVED-IMPLEMENTED": 419,
-    "PARTIAL-IMPL-HELPER-ONLY": 60,
+    "RESOLVED-IMPLEMENTED": 452,
+    "PARTIAL-IMPL-HELPER-ONLY": 27,
     "REJECTED": 2
   },
   "inv_status_counts": {

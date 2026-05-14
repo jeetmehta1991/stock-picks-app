@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-14T21:14:17.590339+00:00",
+  "generated_at": "2026-05-14T21:46:00.930561+00:00",
   "items": {
     "DEC-001": {
       "kind": "DEC",
@@ -83,7 +83,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 30-857 executed in backtest/results/writer.py"
+      "evidence": "function body 30-993 executed in backtest/results/writer.py"
     },
     "DEC-018": {
       "kind": "DEC",
@@ -94,14 +94,14 @@
     "DEC-019": {
       "kind": "DEC",
       "tier": "FUNC-DEAD",
-      "engine": "FUNC-DEAD",
-      "evidence": "function in backtest/results/metrics.py never executed"
+      "engine": "YES",
+      "evidence": "function body 1247-1257 executed in backtest/results/metrics.py"
     },
     "DEC-021": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 30-857 executed in backtest/results/writer.py"
+      "evidence": "function body 30-993 executed in backtest/results/writer.py"
     },
     "DEC-027": {
       "kind": "DEC",
@@ -371,7 +371,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 30-857 executed in backtest/results/writer.py"
+      "evidence": "function body 30-993 executed in backtest/results/writer.py"
     },
     "DEC-078B": {
       "kind": "DEC",
@@ -437,7 +437,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 30-857 executed in backtest/results/writer.py"
+      "evidence": "function body 30-993 executed in backtest/results/writer.py"
     },
     "DEC-090": {
       "kind": "DEC",
@@ -473,7 +473,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 30-857 executed in backtest/results/writer.py"
+      "evidence": "function body 810-819 executed in backtest/engine/improvements.py"
     },
     "DEC-096": {
       "kind": "DEC",
@@ -491,13 +491,13 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/engine/improvements.py (38%); adjacent symbol `MEMORY_CAP_MB_DEFAULT` consumed externally"
+      "evidence": "module-level tag in backtest/engine/improvements.py (48%); adjacent symbol `MEMORY_CAP_MB_DEFAULT` consumed externally"
     },
     "DEC-100": {
       "kind": "DEC",
       "tier": "FUNC-DEAD",
-      "engine": "FUNC-DEAD",
-      "evidence": "function in backtest/results/metrics.py never executed"
+      "engine": "YES",
+      "evidence": "function body 628-652 executed in backtest/results/metrics.py"
     },
     "DEC-102": {
       "kind": "DEC",
@@ -598,8 +598,8 @@
     "DEC-123": {
       "kind": "DEC",
       "tier": "FUNC-DEAD",
-      "engine": "FUNC-DEAD",
-      "evidence": "function in backtest/results/metrics.py never executed"
+      "engine": "YES",
+      "evidence": "function body 1461-1467 executed in backtest/results/metrics.py"
     },
     "DEC-124": {
       "kind": "DEC",
@@ -646,8 +646,8 @@
     "DEC-131": {
       "kind": "DEC",
       "tier": "FUNC-DEAD",
-      "engine": "FUNC-DEAD",
-      "evidence": "function in backtest/results/metrics.py never executed"
+      "engine": "YES",
+      "evidence": "function body 1522-1538 executed in backtest/results/metrics.py"
     },
     "DEC-132": {
       "kind": "DEC",
@@ -663,7 +663,7 @@
     },
     "DEC-134": {
       "kind": "DEC",
-      "tier": "FUNC-DEAD",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function body 1552-1561 executed in backtest/results/metrics.py"
     },
@@ -693,15 +693,15 @@
     },
     "DEC-141": {
       "kind": "DEC",
-      "tier": "FUNC-DEAD",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function body 1580-1589 executed in backtest/results/metrics.py"
     },
     "DEC-142": {
       "kind": "DEC",
       "tier": "FUNC-DEAD",
-      "engine": "FUNC-DEAD",
-      "evidence": "function in backtest/results/metrics.py never executed"
+      "engine": "YES",
+      "evidence": "function body 1605-1615 executed in backtest/results/metrics.py"
     },
     "DEC-143": {
       "kind": "DEC",
@@ -712,14 +712,14 @@
     "DEC-144": {
       "kind": "DEC",
       "tier": "FUNC-DEAD",
-      "engine": "FUNC-DEAD",
-      "evidence": "function in backtest/results/metrics.py never executed"
+      "engine": "YES",
+      "evidence": "function body 994-1002 executed in backtest/results/metrics.py"
     },
     "DEC-145": {
       "kind": "DEC",
       "tier": "FUNC-DEAD",
-      "engine": "FUNC-DEAD",
-      "evidence": "function in backtest/results/metrics.py never executed"
+      "engine": "YES",
+      "evidence": "function body 1635-1652 executed in backtest/results/metrics.py"
     },
     "DEC-146": {
       "kind": "DEC",
@@ -735,9 +735,9 @@
     },
     "DEC-148": {
       "kind": "DEC",
-      "tier": "FUNC-DEAD",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 30-857 executed in backtest/results/writer.py"
+      "evidence": "function body 1024-1028 executed in backtest/results/metrics.py"
     },
     "DEC-149": {
       "kind": "DEC",
@@ -796,8 +796,8 @@
     "DEC-159": {
       "kind": "DEC",
       "tier": "FUNC-DEAD",
-      "engine": "FUNC-DEAD",
-      "evidence": "function in backtest/engine/improvements.py never executed"
+      "engine": "YES",
+      "evidence": "function body 663-689 executed in backtest/engine/improvements.py"
     },
     "DEC-160": {
       "kind": "DEC",
@@ -886,8 +886,8 @@
     "DEC-175": {
       "kind": "DEC",
       "tier": "FUNC-DEAD",
-      "engine": "FUNC-DEAD",
-      "evidence": "function in backtest/results/metrics.py never executed"
+      "engine": "YES",
+      "evidence": "function body 1024-1028 executed in backtest/results/metrics.py"
     },
     "DEC-176": {
       "kind": "DEC",
@@ -1066,8 +1066,8 @@
     "DEC-206": {
       "kind": "DEC",
       "tier": "FUNC-DEAD",
-      "engine": "FUNC-DEAD",
-      "evidence": "function in backtest/results/metrics.py never executed"
+      "engine": "YES",
+      "evidence": "function body 1667-1680 executed in backtest/results/metrics.py"
     },
     "DEC-207": {
       "kind": "DEC",
@@ -1084,8 +1084,8 @@
     "DEC-209": {
       "kind": "DEC",
       "tier": "FUNC-DEAD",
-      "engine": "FUNC-DEAD",
-      "evidence": "function in backtest/results/metrics.py never executed"
+      "engine": "YES",
+      "evidence": "function body 705-740 executed in backtest/results/metrics.py"
     },
     "DEC-210": {
       "kind": "DEC",
@@ -1096,14 +1096,14 @@
     "DEC-211": {
       "kind": "DEC",
       "tier": "FUNC-DEAD",
-      "engine": "FUNC-DEAD",
-      "evidence": "function in backtest/results/metrics.py never executed"
+      "engine": "YES",
+      "evidence": "function body 1916-1931 executed in backtest/results/metrics.py"
     },
     "DEC-212": {
       "kind": "DEC",
       "tier": "FUNC-DEAD",
-      "engine": "FUNC-DEAD",
-      "evidence": "function in backtest/results/metrics.py never executed"
+      "engine": "YES",
+      "evidence": "function body 1698-1718 executed in backtest/results/metrics.py"
     },
     "DEC-213": {
       "kind": "DEC",
@@ -1115,7 +1115,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 30-857 executed in backtest/results/writer.py"
+      "evidence": "function body 2063-2074 executed in backtest/results/metrics.py"
     },
     "DEC-215": {
       "kind": "DEC",
@@ -1163,13 +1163,13 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 30-857 executed in backtest/results/writer.py"
+      "evidence": "function body 810-819 executed in backtest/engine/improvements.py"
     },
     "DEC-227": {
       "kind": "DEC",
       "tier": "FUNC-DEAD",
-      "engine": "FUNC-DEAD",
-      "evidence": "function in backtest/engine/improvements.py never executed"
+      "engine": "YES",
+      "evidence": "function body 786-798 executed in backtest/engine/improvements.py"
     },
     "DEC-228": {
       "kind": "DEC",
@@ -1198,14 +1198,14 @@
     "DEC-232": {
       "kind": "DEC",
       "tier": "FUNC-DEAD",
-      "engine": "FUNC-DEAD",
-      "evidence": "function in backtest/results/metrics.py never executed"
+      "engine": "YES",
+      "evidence": "function body 1947-1976 executed in backtest/results/metrics.py"
     },
     "DEC-233": {
       "kind": "DEC",
       "tier": "FUNC-DEAD",
-      "engine": "FUNC-DEAD",
-      "evidence": "function in backtest/engine/improvements.py never executed"
+      "engine": "YES",
+      "evidence": "function body 933-962 executed in backtest/engine/improvements.py"
     },
     "DEC-234": {
       "kind": "DEC",
@@ -1252,8 +1252,8 @@
     "DEC-241": {
       "kind": "DEC",
       "tier": "FUNC-DEAD",
-      "engine": "FUNC-DEAD",
-      "evidence": "function in backtest/results/metrics.py never executed"
+      "engine": "YES",
+      "evidence": "function body 242-287 executed in backtest/results/metrics.py"
     },
     "DEC-242": {
       "kind": "DEC",
@@ -1300,8 +1300,8 @@
     "DEC-249": {
       "kind": "DEC",
       "tier": "FUNC-DEAD",
-      "engine": "FUNC-DEAD",
-      "evidence": "function in backtest/results/metrics.py never executed"
+      "engine": "YES",
+      "evidence": "function body 2063-2074 executed in backtest/results/metrics.py"
     },
     "DEC-250": {
       "kind": "DEC",
@@ -1335,7 +1335,7 @@
     },
     "DEC-255": {
       "kind": "DEC",
-      "tier": "FUNC-DEAD",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function body 1552-1561 executed in backtest/results/metrics.py"
     },
@@ -1354,8 +1354,8 @@
     "DEC-258": {
       "kind": "DEC",
       "tier": "FUNC-DEAD",
-      "engine": "FUNC-DEAD",
-      "evidence": "function in backtest/results/metrics.py never executed"
+      "engine": "YES",
+      "evidence": "function body 1635-1652 executed in backtest/results/metrics.py"
     },
     "DEC-259": {
       "kind": "DEC",
@@ -1365,9 +1365,9 @@
     },
     "DEC-260": {
       "kind": "DEC",
-      "tier": "FUNC-DEAD",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 777-780 executed in backtest/results/metrics.py"
+      "evidence": "function body 933-962 executed in backtest/engine/improvements.py"
     },
     "DEC-261": {
       "kind": "DEC",
@@ -1481,7 +1481,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 30-857 executed in backtest/results/writer.py"
+      "evidence": "function body 550-565 executed in backtest/engine/improvements.py"
     },
     "DEC-281": {
       "kind": "DEC",
@@ -1504,8 +1504,8 @@
     "DEC-284": {
       "kind": "DEC",
       "tier": "FUNC-DEAD",
-      "engine": "FUNC-DEAD",
-      "evidence": "function in backtest/results/metrics.py never executed"
+      "engine": "YES",
+      "evidence": "function body 675-681 executed in backtest/results/metrics.py"
     },
     "DEC-285": {
       "kind": "DEC",
@@ -1522,8 +1522,8 @@
     "DEC-287": {
       "kind": "DEC",
       "tier": "FUNC-DEAD",
-      "engine": "FUNC-DEAD",
-      "evidence": "function in backtest/results/metrics.py never executed"
+      "engine": "YES",
+      "evidence": "function body 2004-2037 executed in backtest/results/metrics.py"
     },
     "DEC-289": {
       "kind": "DEC",
@@ -1708,8 +1708,8 @@
     "DEC-321": {
       "kind": "DEC",
       "tier": "FUNC-DEAD",
-      "engine": "FUNC-DEAD",
-      "evidence": "function in backtest/data/universe.py never executed"
+      "engine": "YES",
+      "evidence": "function body 1247-1257 executed in backtest/results/metrics.py"
     },
     "DEC-323": {
       "kind": "DEC",
@@ -1727,7 +1727,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 519-555 executed in backtest/data/smart_money.py"
+      "evidence": "function body 474-493 executed in backtest/data/smart_money.py"
     },
     "DEC-328": {
       "kind": "DEC",
@@ -1743,7 +1743,7 @@
     },
     "DEC-330": {
       "kind": "DEC",
-      "tier": "FUNC-DEAD",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function body 777-780 executed in backtest/results/metrics.py"
     },
@@ -1762,14 +1762,14 @@
     "DEC-333": {
       "kind": "DEC",
       "tier": "FUNC-DEAD",
-      "engine": "FUNC-DEAD",
-      "evidence": "function in backtest/data/sentiment.py never executed"
+      "engine": "YES",
+      "evidence": "function body 168-179 executed in backtest/data/sentiment.py"
     },
     "DEC-334": {
       "kind": "DEC",
       "tier": "FUNC-DEAD",
-      "engine": "FUNC-DEAD",
-      "evidence": "function in backtest/results/metrics.py never executed"
+      "engine": "YES",
+      "evidence": "function body 1349-1361 executed in backtest/results/metrics.py"
     },
     "DEC-335": {
       "kind": "DEC",
@@ -1846,8 +1846,8 @@
     "DEC-352": {
       "kind": "DEC",
       "tier": "FUNC-DEAD",
-      "engine": "FUNC-DEAD",
-      "evidence": "function in backtest/results/metrics.py never executed"
+      "engine": "YES",
+      "evidence": "function body 1087-1105 executed in backtest/results/metrics.py"
     },
     "DEC-353": {
       "kind": "DEC",
@@ -1931,7 +1931,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 30-857 executed in backtest/results/writer.py"
+      "evidence": "function body 1247-1257 executed in backtest/results/metrics.py"
     },
     "DEC-367": {
       "kind": "DEC",
@@ -2110,8 +2110,8 @@
     "DEC-396": {
       "kind": "DEC",
       "tier": "FUNC-DEAD",
-      "engine": "FUNC-DEAD",
-      "evidence": "function in backtest/data/smart_money.py never executed"
+      "engine": "YES",
+      "evidence": "function body 474-493 executed in backtest/data/smart_money.py"
     },
     "DEC-398": {
       "kind": "DEC",
@@ -2128,8 +2128,8 @@
     "DEC-400": {
       "kind": "DEC",
       "tier": "FUNC-DEAD",
-      "engine": "FUNC-DEAD",
-      "evidence": "function in backtest/results/metrics.py never executed"
+      "engine": "YES",
+      "evidence": "function body 1194-1212 executed in backtest/results/metrics.py"
     },
     "DEC-401": {
       "kind": "DEC",
@@ -2261,7 +2261,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 30-857 executed in backtest/results/writer.py"
+      "evidence": "function body 30-993 executed in backtest/results/writer.py"
     },
     "DEC-425": {
       "kind": "DEC",
@@ -2475,7 +2475,7 @@
     },
     "DEC-461": {
       "kind": "DEC",
-      "tier": "FUNC-DEAD",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function body 179-216 executed in backtest/data/smart_money.py"
     },
@@ -2878,8 +2878,8 @@
     "DEC-590": {
       "kind": "DEC",
       "tier": "FUNC-DEAD",
-      "engine": "FUNC-DEAD",
-      "evidence": "function in backtest/engine/improvements.py never executed"
+      "engine": "YES",
+      "evidence": "function body 206-342 executed in backtest/engine/improvements.py"
     },
     "DEC-504": {
       "kind": "DEC",
@@ -3556,8 +3556,8 @@
     "BUG-186": {
       "kind": "BUG",
       "tier": "FUNC-DEAD",
-      "engine": "FUNC-DEAD",
-      "evidence": "function in backtest/data/smart_money.py never executed"
+      "engine": "YES",
+      "evidence": "function body 474-493 executed in backtest/data/smart_money.py"
     },
     "BUG-187": {
       "kind": "BUG",
@@ -3621,7 +3621,7 @@
     },
     "BUG-271": {
       "kind": "BUG",
-      "tier": "FUNC-DEAD",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function body 179-216 executed in backtest/data/smart_money.py"
     },
@@ -3795,9 +3795,9 @@
     },
     "BUG-228": {
       "kind": "BUG",
-      "tier": "FUNC-DEAD",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 30-857 executed in backtest/results/writer.py"
+      "evidence": "function body 30-993 executed in backtest/results/writer.py"
     },
     "BUG-229": {
       "kind": "BUG",
@@ -3874,8 +3874,8 @@
     "BUG-241": {
       "kind": "BUG",
       "tier": "FUNC-DEAD",
-      "engine": "FUNC-DEAD",
-      "evidence": "function in backtest/data/smart_money.py never executed"
+      "engine": "YES",
+      "evidence": "function body 474-493 executed in backtest/data/smart_money.py"
     },
     "BUG-242": {
       "kind": "BUG",
@@ -4174,8 +4174,8 @@
     "BUG-135": {
       "kind": "BUG",
       "tier": "FUNC-DEAD",
-      "engine": "FUNC-DEAD",
-      "evidence": "function in backtest/results/metrics.py never executed"
+      "engine": "YES",
+      "evidence": "function body 1247-1257 executed in backtest/results/metrics.py"
     },
     "BUG-136": {
       "kind": "BUG",

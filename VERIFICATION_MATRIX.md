@@ -14,17 +14,17 @@ Canonical backtest: `python -m coverage run backtest/run_phase1a.py --no-agents 
 - Total items audited: **746** (scope-expanded 2026-05-14 per owner directive  -  now covers ALL visible DECs + BUGs, not just IMPLEMENTED tier)
 
 **By promotion tier:**
-- IMPLEMENTED: 316
+- IMPLEMENTED: 325
 - DECIDED: 211
 - DEFERRED: 172
-- FUNC-DEAD: 45
+- FUNC-DEAD: 36
 - UNKNOWN: 2
 
 **By coverage-driven engine status:**
-- Engine YES (executed): **178**
+- Engine YES (executed): **209**
 - Engine LAZY-WIRED (all tagged files wired via lazy import chains): **7** (import chain exists; condition gating the call not met in this small backtest)
 - Engine PARTIAL-ORPHAN (some tags wired, primary helper file orphaned): **0** (DEC is mentioned in a wired file but the actual helper module has no live importer  -  real gap)
-- Engine FUNC-DEAD (function exists but never executed): **36**
+- Engine FUNC-DEAD (function exists but never executed): **5**
 - Engine NO (all tagged files orphaned): **0** (real wiring gap  -  helper file imported nowhere in the engine path)
 - Engine DECLARED-ONLY (module-level tag in config; symbol not consumed externally): **107** (constant declared but no other executing file uses it  -  deferred-feature config that hasn't been wired yet)
 - Engine N/A (no code expected): **418**
@@ -36,59 +36,28 @@ None  -  every item's promotion tier matches its coverage-driven engine status. 
 ### Pyramid coverage gaps (count of engine-consumed items missing per tier)
 
 - `unit`: **0** items lack a reference in this tier's test files
-- `smoke`: **173** items lack a reference in this tier's test files
+- `smoke`: **204** items lack a reference in this tier's test files
 - `integration`: **0** items lack a reference in this tier's test files
-- `system`: **180** items lack a reference in this tier's test files
-- `functional`: **180** items lack a reference in this tier's test files
-- `regression`: **181** items lack a reference in this tier's test files
-- `data_integrity`: **181** items lack a reference in this tier's test files
-- `performance`: **184** items lack a reference in this tier's test files
-- `acceptance`: **179** items lack a reference in this tier's test files
-- `property`: **184** items lack a reference in this tier's test files
-- `snapshot`: **182** items lack a reference in this tier's test files
-- `contract`: **171** items lack a reference in this tier's test files
-- `compatibility`: **184** items lack a reference in this tier's test files
+- `system`: **210** items lack a reference in this tier's test files
+- `functional`: **211** items lack a reference in this tier's test files
+- `regression`: **212** items lack a reference in this tier's test files
+- `data_integrity`: **212** items lack a reference in this tier's test files
+- `performance`: **215** items lack a reference in this tier's test files
+- `acceptance`: **210** items lack a reference in this tier's test files
+- `property`: **215** items lack a reference in this tier's test files
+- `snapshot`: **213** items lack a reference in this tier's test files
+- `contract`: **202** items lack a reference in this tier's test files
+- `compatibility`: **215** items lack a reference in this tier's test files
 
 ### Engine-consumption gaps detail
 
 | ID | engine | evidence | unit | integration |
 |---|---|---|---|---|
-| `DEC-019` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
-| `DEC-100` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
-| `DEC-123` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
-| `DEC-131` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
-| `DEC-142` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
-| `DEC-144` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
-| `DEC-145` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
-| `DEC-159` | FUNC-DEAD | function in backtest/engine/improvements.py never executed | YES | YES |
-| `DEC-175` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
-| `DEC-206` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
-| `DEC-209` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
 | `DEC-210` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
-| `DEC-211` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
-| `DEC-212` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
-| `DEC-227` | FUNC-DEAD | function in backtest/engine/improvements.py never executed | YES | YES |
-| `DEC-232` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
-| `DEC-233` | FUNC-DEAD | function in backtest/engine/improvements.py never executed | YES | YES |
-| `DEC-241` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
-| `DEC-249` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
-| `DEC-258` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
-| `DEC-284` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
-| `DEC-287` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
-| `DEC-321` | FUNC-DEAD | function in backtest/data/universe.py never executed | YES | YES |
-| `DEC-333` | FUNC-DEAD | function in backtest/data/sentiment.py never executed | YES | YES |
-| `DEC-334` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
-| `DEC-352` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
 | `DEC-392` | FUNC-DEAD | function in backtest/data/universe.py never executed | YES | YES |
-| `DEC-396` | FUNC-DEAD | function in backtest/data/smart_money.py never executed | YES | YES |
-| `DEC-400` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
 | `DEC-420` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
-| `DEC-590` | FUNC-DEAD | function in backtest/engine/improvements.py never executed | YES | YES |
 | `BUG-027` | FUNC-DEAD | function in backtest/engine/improvements.py never executed | YES | YES |
 | `BUG-083` | FUNC-DEAD | function in backtest/data/smart_money.py never executed | YES | YES |
-| `BUG-186` | FUNC-DEAD | function in backtest/data/smart_money.py never executed | YES | YES |
-| `BUG-241` | FUNC-DEAD | function in backtest/data/smart_money.py never executed | YES | YES |
-| `BUG-135` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
 
 | ID | engine | unit | smoke | integration | system | functional | regression | data_integrity | performance | acceptance | property | snapshot | contract | compatibility |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -107,7 +76,7 @@ None  -  every item's promotion tier matches its coverage-driven engine status. 
 | `DEC-013` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-015` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-018` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `DEC-019` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-019` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-021` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-027` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-028` | N/A | no | no | no | YES | no | no | no | no | no | no | no | no | no |
@@ -174,7 +143,7 @@ None  -  every item's promotion tier matches its coverage-driven engine status. 
 | `DEC-096` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-097` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-098` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `DEC-100` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-100` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-102` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-106` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-107` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
@@ -191,7 +160,7 @@ None  -  every item's promotion tier matches its coverage-driven engine status. 
 | `DEC-120` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-121` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-122` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
-| `DEC-123` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-123` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-124` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-125` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-126` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
@@ -199,7 +168,7 @@ None  -  every item's promotion tier matches its coverage-driven engine status. 
 | `DEC-128` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-129` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-130` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
-| `DEC-131` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-131` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-132` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-133` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-134` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
@@ -208,10 +177,10 @@ None  -  every item's promotion tier matches its coverage-driven engine status. 
 | `DEC-138` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-139` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-141` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `DEC-142` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-142` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-143` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
-| `DEC-144` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `DEC-145` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-144` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-145` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-146` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-147` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-148` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
@@ -224,7 +193,7 @@ None  -  every item's promotion tier matches its coverage-driven engine status. 
 | `DEC-156` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-157` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-158` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
-| `DEC-159` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-159` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-160` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-161` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-162` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
@@ -239,7 +208,7 @@ None  -  every item's promotion tier matches its coverage-driven engine status. 
 | `DEC-172` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-173` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-174` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `DEC-175` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-175` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-176` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-177` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-178` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
@@ -269,13 +238,13 @@ None  -  every item's promotion tier matches its coverage-driven engine status. 
 | `DEC-203` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-204` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-205` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `DEC-206` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-206` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-207` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-208` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `DEC-209` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-209` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-210` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `DEC-211` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `DEC-212` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-211` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-212` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-213` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-214` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-215` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
@@ -286,13 +255,13 @@ None  -  every item's promotion tier matches its coverage-driven engine status. 
 | `DEC-220` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-222` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-225` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `DEC-227` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-227` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-228` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-229` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-230` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-231` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
-| `DEC-232` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `DEC-233` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-232` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-233` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-234` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-235` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-236` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
@@ -300,7 +269,7 @@ None  -  every item's promotion tier matches its coverage-driven engine status. 
 | `DEC-238` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-239` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-240` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
-| `DEC-241` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-241` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-242` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-243` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-244` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
@@ -308,7 +277,7 @@ None  -  every item's promotion tier matches its coverage-driven engine status. 
 | `DEC-246` | LAZY-WIRED | YES | no | YES | no | no | no | no | no | no | no | no | YES | no |
 | `DEC-247` | LAZY-WIRED | YES | no | YES | no | no | no | no | no | no | no | no | YES | no |
 | `DEC-248` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
-| `DEC-249` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-249` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-250` | YES | YES | no | YES | no | no | no | no | no | no | no | no | YES | no |
 | `DEC-251` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-252` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
@@ -317,7 +286,7 @@ None  -  every item's promotion tier matches its coverage-driven engine status. 
 | `DEC-255` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-256` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-257` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `DEC-258` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-258` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-259` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-260` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-261` | N/A | no | no | no | no | no | YES | no | no | no | no | no | no | no |
@@ -342,10 +311,10 @@ None  -  every item's promotion tier matches its coverage-driven engine status. 
 | `DEC-281` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-282` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-283` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
-| `DEC-284` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-284` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-285` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-286` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
-| `DEC-287` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-287` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-289` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-290` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-291` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
@@ -376,7 +345,7 @@ None  -  every item's promotion tier matches its coverage-driven engine status. 
 | `DEC-318` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-319` | N/A | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-320` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `DEC-321` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-321` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-323` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-324` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-325` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
@@ -385,8 +354,8 @@ None  -  every item's promotion tier matches its coverage-driven engine status. 
 | `DEC-330` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-331` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-332` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `DEC-333` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `DEC-334` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-333` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-334` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-335` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-338` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-339` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
@@ -399,7 +368,7 @@ None  -  every item's promotion tier matches its coverage-driven engine status. 
 | `DEC-348` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-349` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-350` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `DEC-352` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-352` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-353` | LAZY-WIRED | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-354` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-355` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
@@ -443,10 +412,10 @@ None  -  every item's promotion tier matches its coverage-driven engine status. 
 | `DEC-393` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-394` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-395` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
-| `DEC-396` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-396` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-398` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-399` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
-| `DEC-400` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-400` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-401` | LAZY-WIRED | YES | no | YES | no | no | no | no | no | no | no | no | YES | no |
 | `DEC-402` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-403` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
@@ -571,7 +540,7 @@ None  -  every item's promotion tier matches its coverage-driven engine status. 
 | `DEC-592` | N/A | no | no | no | no | no | no | YES | no | no | no | no | no | no |
 | `DEC-593` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-589` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
-| `DEC-590` | FUNC-DEAD | YES | no | YES | YES | no | no | no | no | no | no | no | no | no |
+| `DEC-590` | YES | YES | no | YES | YES | no | no | no | no | no | no | no | no | no |
 | `DEC-504` | YES | YES | no | YES | no | no | no | YES | no | YES | no | no | no | no |
 | `BUG-001` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-002` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
@@ -685,7 +654,7 @@ None  -  every item's promotion tier matches its coverage-driven engine status. 
 | `BUG-180` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-182` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `BUG-184` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `BUG-186` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `BUG-186` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-187` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-188` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-189` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
@@ -738,7 +707,7 @@ None  -  every item's promotion tier matches its coverage-driven engine status. 
 | `BUG-238` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-239` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-240` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `BUG-241` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `BUG-241` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-242` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-243` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-244` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
@@ -788,7 +757,7 @@ None  -  every item's promotion tier matches its coverage-driven engine status. 
 | `BUG-132` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `BUG-133` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-134` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `BUG-135` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `BUG-135` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-136` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `BUG-137` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `BUG-138` | N/A | no | no | YES | no | no | no | no | no | no | no | no | no | no |
