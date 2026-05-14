@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-14T02:54:08.388599+00:00",
+  "generated_at": "2026-05-14T03:08:31.496354+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -15693,7 +15693,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 42,
+        "n_doc_refs": 40,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -15733,7 +15733,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 58,
+        "n_doc_refs": 56,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -18413,7 +18413,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 8,
+        "n_doc_refs": 9,
         "pyramid": {
           "unit": false,
           "smoke": "N/A",
@@ -19975,7 +19975,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 16,
+        "n_doc_refs": 17,
         "pyramid": {
           "unit": false,
           "smoke": "N/A",
@@ -20236,13 +20236,13 @@
       "sprint": "OBSOLETE Pass 53 v8h+1 Phase 3 Batch 3 2026-05-10 (run_tests.sh no longer exists; tests run directly via pytest with --no-agents handled in test_e2e_phase1a_smoke fixture; bug is moot)",
       "dependencies": "DEC-458",
       "description": "**File:** `run_tests.sh` \u2014 all 5 batch commands",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "RESOLVED-DECIDED",
       "resolution_text": "`run_tests.sh` does not pass `--no-agents` flag. Batch 150 2026-05-13: FALSE-POSITIVE -- `scripts/run_tests.sh` does not exist in the repo (confirmed ls). Tests are run via `python -m pytest backtest/tests/` directly or via `test-pyramid.yml` GitHub Actions; no wrapper script needed. Legacy script reference.",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY",
-        "color": "#10b981",
-        "reason": "RESOLVED-IMPLEMENTED per AUDIT_INDEX (grep refs may be in linked DEC)"
+        "tier": "FALSE-POSITIVE",
+        "label": "FALSE-POSITIVE",
+        "color": "#94a3b8",
+        "reason": "False-positive: bug predates a decision that made it moot"
       }
     },
     {
@@ -20316,13 +20316,13 @@
       "sprint": "RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 2026-05-10 (regime_confidence docstring marks it INTENTIONALLY-UNUSED + DEFERRED-TO-STAGE-3+; per CLAUDE.md Approved Rules Phase 1A backtest does not use regime confidence scaling; test_bug_027 verifies docstring marker)",
       "dependencies": "DEC-458",
       "description": "**File:** `backtest/engine/improvements.py` lines 365\u2013450 and `backtest/engine/backtest.py`",
-      "status": "CRITICAL",
-      "resolution_text": "CRITICAL \u2014 `regime_confidence()` function built but never called - originally flagged as dead code. RESOLVED-DECIDED Batch 90 2026-05-12: the function is INTENTIONALLY UNUSED in Phase 1A per CLAUDE.md Approved Rules (\"Position sizing",
+      "status": "RESOLVED-DECIDED",
+      "resolution_text": "CRITICAL \u2014 `regime_confidence()` function built but never called - originally flagged as dead code. RESOLVED-DECIDED Batch 90 2026-05-12: the function is INTENTIONALLY UNUSED in Phase 1A per CLAUDE.md Approved Rules (\"Position sizing - Tiered: 5/4/3/1.5/0.75% by confidence tier\" -- regime confidence scaling NOT applied; full size always for backtest validation). Helper is retained as DEFERRED-TO-STAGE-3+ infrastructure: live papertrade + live trading will wire this in for position-mult scaling. ",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY",
-        "color": "#10b981",
-        "reason": "Has code+test artifacts; flip to RESOLVED"
+        "tier": "DEFERRED",
+        "label": "DEFERRED",
+        "color": "#3b82f6",
+        "reason": "Deferred to Stage 3+ or future phase"
       }
     },
     {
@@ -20916,13 +20916,13 @@
       "sprint": "SUPERSEDED-BY-BUG-14 Pass 53 v8h+1 Phase 3 Batch 6 2026-05-10 (run_full.sh no longer exists per BUG-14; LILLY/LLY ticker discrepancy is moot)",
       "dependencies": "DEC-458",
       "description": "**File:** `run_full.sh` batch 3 ticker list",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "RESOLVED-DECIDED",
       "resolution_text": "LOW -- `LILLY` appears as ticker in `run_full.sh` but should be `LLY`. Batch 150 2026-05-13: FALSE-POSITIVE -- `scripts/run_full.sh` does not exist (confirmed; deprecated per BUG-074/BUG-014 Batch 128/140). Canonical workflow is `generate_batch_splits.py` + `batch_splits.json` which uses correct LLY symbol.",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY",
-        "color": "#10b981",
-        "reason": "RESOLVED-IMPLEMENTED per AUDIT_INDEX (grep refs may be in linked DEC)"
+        "tier": "FALSE-POSITIVE",
+        "label": "FALSE-POSITIVE",
+        "color": "#94a3b8",
+        "reason": "False-positive: bug predates a decision that made it moot"
       }
     },
     {
@@ -20996,13 +20996,13 @@
       "sprint": "SUPERSEDED-BY-test_e2e_phase1a_smoke Pass 53 v8h+1 Phase 3 Batch 7 2026-05-10 (test_e2e_phase1a_smoke + test_acceptance_functional exercise _process_day and full trade lifecycle end-to-end with 7 G1-tier gates; per-function unit tests deferred to refactor scope but coverage exists at integration level)",
       "dependencies": "DEC-458",
       "description": "**File:** `backtest/tests/test_unit.py`",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "RESOLVED-DECIDED",
       "resolution_text": "LOW -- Test suite has no test for `close_trade()` or `_process_day()`. Batch 150 2026-05-13: FALSE-POSITIVE -- test suite now at 747+ tests; many tests exercise close_trade (exit_manager) and _process_day (engine loop) indirectly through behavioral integration tests (BUG-101/102/061/038/104 Batches 87-149). Direct close_trade unit test added in Batch 136 (BUG-02 fix test).",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY",
-        "color": "#10b981",
-        "reason": "RESOLVED-IMPLEMENTED per AUDIT_INDEX (grep refs may be in linked DEC)"
+        "tier": "FALSE-POSITIVE",
+        "label": "FALSE-POSITIVE",
+        "color": "#94a3b8",
+        "reason": "False-positive: bug predates a decision that made it moot"
       }
     },
     {
@@ -21323,46 +21323,6 @@
         "label": "IMPLEMENTED",
         "color": "#10b981",
         "reason": "RESOLVED-IMPLEMENTED with code + test artifacts"
-      }
-    },
-    {
-      "id": "BUG-53",
-      "title": "HIGH  -  Finnhub news cache: all 509 files are empty  -  Sentiment Agent has no news",
-      "linked_decisions": "DEC-256, DEC-441, DEC-453, DEC-458",
-      "sprint_context": "SUPERSEDED-BY-DEC-440 Pass 53 v8h+1 Phase 3 Batch 9 2026-05-10 (Polygon news is canonical sentiment source per DEC-440; 1927 ticker files cached at data_prefetch/polygon/news/; legacy Finnhub news cache empty issue is moot - architecture migrated; Finnhub social_sentiment additionally EXCLUDED per DEC-605)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 22,
-        "pyramid": {
-          "unit": "N/A",
-          "smoke": "N/A",
-          "integration": "N/A",
-          "system": "N/A",
-          "functional": "N/A",
-          "regression": "N/A",
-          "data_integrity": "N/A",
-          "performance": "N/A",
-          "acceptance": "N/A",
-          "property": "N/A",
-          "snapshot": "N/A",
-          "contract": "N/A",
-          "compatibility": "N/A"
-        }
-      },
-      "short_id": "BUG-053",
-      "sprint": "SUPERSEDED-BY-DEC-440 Pass 53 v8h+1 Phase 3 Batch 9 2026-05-10 (Polygon news is canonical sentiment source per DEC-440; 1927 ticker files cached at data_prefetch/polygon/news/; legacy Finnhub news cache empty issue is moot - architecture migrated; Finnhub social_sentiment additionally EXCLUDED per DEC-605)",
-      "dependencies": "DEC-256; DEC-441; DEC-453; DEC-458",
-      "description": "**File:** `backtest/data/cache/finnhub_news/` \u2014 509 `.parquet` files, all 0 bytes",
-      "status": "WILL_RESOLVE_VIA_DEC-440",
-      "resolution_text": "HIGH \u2014 Finnhub news cache: all 509 files are empty \u2014 Sentiment Agent has no news. Pass 52: WILL_RESOLVE_VIA_DEC-440 (Polygon news supersedes Finnhub free tier as canonical news source per DEC-441 subscription purchase).",
-      "promotion_path": {
-        "tier": "BLOCKED",
-        "label": "BLOCKED",
-        "color": "#a855f7",
-        "reason": "Superseded by migration (WILL_RESOLVE_VIA_DEC-440)"
       }
     },
     {
@@ -23846,46 +23806,6 @@
       }
     },
     {
-      "id": "BUG-181",
-      "title": "MEDIUM  -  Finnhub news prefetch silently produces empty files",
-      "linked_decisions": "DEC-453, DEC-458",
-      "sprint_context": "SUPERSEDED-BY-DEC-440 Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (sister of BUG-53; Polygon news primary per DEC-440; Finnhub news cache architecture migrated)",
-      "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
-        "pushed": true,
-        "n_doc_refs": 15,
-        "pyramid": {
-          "unit": "N/A",
-          "smoke": "N/A",
-          "integration": "N/A",
-          "system": "N/A",
-          "functional": "N/A",
-          "regression": "N/A",
-          "data_integrity": "N/A",
-          "performance": "N/A",
-          "acceptance": "N/A",
-          "property": "N/A",
-          "snapshot": "N/A",
-          "contract": "N/A",
-          "compatibility": "N/A"
-        }
-      },
-      "short_id": "BUG-181",
-      "sprint": "SUPERSEDED-BY-DEC-440 Pass 53 v8h+1 Phase 3 Batch 13 2026-05-10 (sister of BUG-53; Polygon news primary per DEC-440; Finnhub news cache architecture migrated)",
-      "dependencies": "DEC-453; DEC-458",
-      "description": "**File:** `prefetch_finnhub_news.py`",
-      "status": "WILL_RESOLVE_VIA_DEC-440",
-      "resolution_text": "MEDIUM \u2014 Finnhub news prefetch silently produces empty files. Pass 52: WILL_RESOLVE_VIA_DEC-440 (Polygon news supersedes Finnhub free tier per DEC-441).",
-      "promotion_path": {
-        "tier": "BLOCKED",
-        "label": "BLOCKED",
-        "color": "#a855f7",
-        "reason": "Superseded by migration (WILL_RESOLVE_VIA_DEC-440)"
-      }
-    },
-    {
       "id": "BUG-182",
       "title": "MEDIUM  -  Agent cache invalidated by every code change with no versioning gate",
       "linked_decisions": "DEC-458",
@@ -25170,7 +25090,7 @@
       "title": "(AUDIT_INDEX-only) BUG-219",
       "linked_decisions": "",
       "sprint_context": "",
-      "status": "CRITICAL",
+      "status": "RESOLVED-DECIDED",
       "resolution_text": "Cache stores adjusted-close which silently shifts as new corp actions accrue. RESOLVED-DECIDED Batch 115 2026-05-12 (owner-approved option B 2026-05-12). DECIDED outcome: accept the current adjusted-close caching for Phase 1A validation; revisit at Stage 3+ when paper-trading exposes real PIT mismatches. Rationale: (i) DEC-298 codified the architectural fix at `backtest/config.py:708-713` (`CACHE_AUTO_ADJUST = False` + `CACHE_STORES_CORP_ACTIONS = True`) so the eventual implementation is spec-re",
       "status_grep": {
         "coded": true,
@@ -25199,10 +25119,10 @@
       "dependencies": "BUG-219",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY",
-        "color": "#10b981",
-        "reason": "Has code+test artifacts; flip to RESOLVED"
+        "tier": "DEFERRED",
+        "label": "DEFERRED",
+        "color": "#3b82f6",
+        "reason": "Deferred to Stage 3+ or future phase"
       }
     },
     {
@@ -25210,8 +25130,8 @@
       "title": "(AUDIT_INDEX-only) BUG-220",
       "linked_decisions": "",
       "sprint_context": "",
-      "status": "RESOLVED",
-      "resolution_text": "FRED data revisions unhandled \u2014 current API returns latest revised values not vi",
+      "status": "RESOLVED-DECIDED",
+      "resolution_text": "FRED data revisions unhandled \u2014 current API returns latest revised values not vintage. Batch 147 2026-05-13: RESOLVED-DECIDED \u2014 Sprint 0A uses ALFRED (point-in-time vintage data by design); FRED real-time revisions not applicable to pre-fetched static cache. Architectural decision: ALFRED endpoint returns as_of vintage, not latest revision.",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -25239,10 +25159,10 @@
       "dependencies": "BUG-220",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY",
+        "tier": "DECIDED",
+        "label": "DECIDED",
         "color": "#10b981",
-        "reason": "Marked resolved (verify artifact)"
+        "reason": "Active methodology decision: current behavior is correct by design"
       }
     },
     {
@@ -25330,8 +25250,8 @@
       "title": "(AUDIT_INDEX-only) BUG-223",
       "linked_decisions": "",
       "sprint_context": "",
-      "status": "RESOLVED",
-      "resolution_text": "CPI/NFP/FOMC dates hardcoded through March 2026 only \u2014 live trading after that h",
+      "status": "RESOLVED-DECIDED",
+      "resolution_text": "CPI/NFP/FOMC dates hardcoded through March 2026 only \u2014 live trading after that h. Batch 147 2026-05-13: RESOLVED-DECIDED \u2014 Stage 2 NO-LIVE-API HARD CUT (DEC-608) means no live calendar access at runtime; cache extended to May 2026 via BUG-019 fix; Stage 3+ live trading will use FRED/ALFRED calendar endpoint.",
       "status_grep": {
         "coded": false,
         "wired": false,
@@ -25359,10 +25279,10 @@
       "dependencies": "BUG-223",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY",
-        "color": "#10b981",
-        "reason": "Marked resolved (verify artifact)"
+        "tier": "DEFERRED",
+        "label": "DEFERRED",
+        "color": "#3b82f6",
+        "reason": "Deferred to Stage 3+ or future phase"
       }
     },
     {
@@ -30407,7 +30327,7 @@
     }
   ],
   "bugs_total_count": 286,
-  "bugs_hidden_count": 7,
+  "bugs_hidden_count": 9,
   "investigations": [
     {
       "id": "INV-001",
@@ -35060,28 +34980,34 @@
   ],
   "recent_commits": [
     {
+      "sha": "f49f0dfd",
+      "subject": "@ Batch 146: Bug dropdown cleanup - unified READY labels + 7-tier filter. Pyramid 617/617.",
+      "author": "jeetmehta1991",
+      "rel_time": "14 minutes ago"
+    },
+    {
       "sha": "6756468f",
       "subject": "DEC-458: implement lead_lag_sector_rotation + wire into screen_universe",
       "author": "jeetmehta1991",
-      "rel_time": "16 minutes ago"
+      "rel_time": "31 minutes ago"
     },
     {
       "sha": "e6e90dbf",
       "subject": "Reclassify 7 PARTIAL-IMPL as DEFERRED; 1 genuine NEEDS-WIRING remains (DEC-458)",
       "author": "jeetmehta1991",
-      "rel_time": "26 minutes ago"
+      "rel_time": "40 minutes ago"
     },
     {
       "sha": "66367de1",
       "subject": "Fix decision promotion metric: surface 9 real Phase 1A gaps from 288 false noise",
       "author": "jeetmehta1991",
-      "rel_time": "42 minutes ago"
+      "rel_time": "56 minutes ago"
     },
     {
       "sha": "b03c30a8",
       "subject": "Split RESOLVED-DECIDED bugs into DECIDED/DEFERRED/SUPERSEDED/FALSE-POSITIVE tiers",
       "author": "jeetmehta1991",
-      "rel_time": "76 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "795744bb",
@@ -35141,7 +35067,7 @@
       "sha": "f5465d36",
       "subject": "Batch 156: BUG-271/272/273 RESOLVED-IMPLEMENTED (gov_contracts Qtr+Year fix, lobbying Amount dtype, congressional House col). BUG-270/274 false-positives. Pyramid 607/607.",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "2d1f60bd",
@@ -35232,17 +35158,11 @@
       "subject": "Batch 141: BUG-016 false-positive - min_trades canonicalized via BUG-31 Batch 112 + CLAUDE.md sweep. Pyramid 738/738.",
       "author": "jeetmehta1991",
       "rel_time": "21 hours ago"
-    },
-    {
-      "sha": "4d1d9d32",
-      "subject": "Batch 140: BUG-014 false-positive - run_full.sh deprecated, AAPL/CVS/JPM/NVDA in current splits. Pyramid 737/737.",
-      "author": "jeetmehta1991",
-      "rel_time": "21 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 11,
-    "modified": 7,
+    "count": 8,
+    "modified": 4,
     "added": 0,
     "untracked": 4,
     "deleted": 0,
@@ -35253,15 +35173,7 @@
       },
       {
         "status": "M",
-        "path": "dashboard_stage_2/data.js"
-      },
-      {
-        "status": "M",
-        "path": "dashboard_stage_2/data.json"
-      },
-      {
-        "status": "M",
-        "path": "dashboard_stage_2/index.html"
+        "path": "AUDIT_INDEX.md"
       },
       {
         "status": "M",
@@ -35270,10 +35182,6 @@
       {
         "status": "M",
         "path": "output_smoke_test/trade_log_checkpoint.csv"
-      },
-      {
-        "status": "M",
-        "path": "scripts/build_dashboard_stage_2.py"
       },
       {
         "status": "??",
@@ -36163,11 +36071,9 @@
     "DEFERRED": 2
   },
   "bug_status_counts": {
-    "RESOLVED-IMPLEMENTED": 86,
-    "RESOLVED-DECIDED": 173,
-    "CRITICAL": 2,
-    "WILL_RESOLVE_VIA_DEC-440": 2,
-    "RESOLVED": 16
+    "RESOLVED-IMPLEMENTED": 83,
+    "RESOLVED-DECIDED": 180,
+    "RESOLVED": 14
   },
   "tier_status_counts": {
     "UNKNOWN": 20,
