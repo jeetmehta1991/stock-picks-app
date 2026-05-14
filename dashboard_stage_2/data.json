@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-14T02:10:15.698563+00:00",
+  "generated_at": "2026-05-14T02:27:06.941571+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -7915,10 +7915,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-IMPL but no code found; helper not yet written"
+        "tier": "DEFERRED",
+        "label": "DEFERRED",
+        "color": "#3b82f6",
+        "reason": "PARTIAL-IMPL helper exists but Phase 1B+/agent scope; engine wiring deferred"
       }
     },
     {
@@ -7955,10 +7955,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-IMPL but no code found; helper not yet written"
+        "tier": "DEFERRED",
+        "label": "DEFERRED",
+        "color": "#3b82f6",
+        "reason": "PARTIAL-IMPL helper exists but Phase 1B+/agent scope; engine wiring deferred"
       }
     },
     {
@@ -8075,10 +8075,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "CODE_ONLY",
-        "label": "NEEDS-WIRING",
-        "color": "#f59e0b",
-        "reason": "Phase 1A helper written but engine not calling it \u2014 wire into backtest.py/screener.py"
+        "tier": "DEFERRED",
+        "label": "DEFERRED",
+        "color": "#3b82f6",
+        "reason": "PARTIAL-IMPL helper exists but Phase 1B+/agent scope; engine wiring deferred"
       }
     },
     {
@@ -12835,10 +12835,10 @@
       "dependencies": "-",
       "description": "",
       "promotion_path": {
-        "tier": "SPEC_ONLY",
-        "label": "SPEC-ONLY",
-        "color": "#ef4444",
-        "reason": "PARTIAL-IMPL but no code found; helper not yet written"
+        "tier": "DEFERRED",
+        "label": "DEFERRED",
+        "color": "#3b82f6",
+        "reason": "PARTIAL-IMPL helper exists but Phase 1B+/agent scope; engine wiring deferred"
       }
     },
     {
@@ -13355,10 +13355,10 @@
       "dependencies": "DEC-105",
       "description": "",
       "promotion_path": {
-        "tier": "CODE_ONLY",
-        "label": "NEEDS-WIRING",
-        "color": "#f59e0b",
-        "reason": "Phase 1A helper written but engine not calling it \u2014 wire into backtest.py/screener.py"
+        "tier": "DEFERRED",
+        "label": "DEFERRED",
+        "color": "#3b82f6",
+        "reason": "PARTIAL-IMPL helper exists but Phase 1B+/agent scope; engine wiring deferred"
       }
     },
     {
@@ -14835,10 +14835,10 @@
       "dependencies": "-",
       "description": "**Owner directive:** \"you should apply this retroactively as well for all decisions already in the index file\"",
       "promotion_path": {
-        "tier": "CODE_ONLY",
-        "label": "NEEDS-WIRING",
-        "color": "#f59e0b",
-        "reason": "Phase 1A helper written but engine not calling it \u2014 wire into backtest.py/screener.py"
+        "tier": "DEFERRED",
+        "label": "DEFERRED",
+        "color": "#3b82f6",
+        "reason": "PARTIAL-IMPL helper exists but Phase 1B+/agent scope; engine wiring deferred"
       }
     },
     {
@@ -15115,10 +15115,10 @@
       "dependencies": "DEC-422",
       "description": "",
       "promotion_path": {
-        "tier": "CODE_ONLY",
-        "label": "NEEDS-WIRING",
-        "color": "#f59e0b",
-        "reason": "Phase 1A helper written but engine not calling it \u2014 wire into backtest.py/screener.py"
+        "tier": "DEFERRED",
+        "label": "DEFERRED",
+        "color": "#3b82f6",
+        "reason": "PARTIAL-IMPL helper exists but Phase 1B+/agent scope; engine wiring deferred"
       }
     },
     {
@@ -15155,10 +15155,10 @@
       "dependencies": "DEC-422",
       "description": "DEC-426 (Phase 2 per-cell statistical engine) implementation updated to: - Compute full metrics suite per corrected schema - Apply 5-gate validity filter (was 4-gate; now includes R:R \u2265 2.0) - Tag pair_verdict with 5 states (was 4 confidence levels)",
       "promotion_path": {
-        "tier": "CODE_ONLY",
-        "label": "NEEDS-WIRING",
-        "color": "#f59e0b",
-        "reason": "Phase 1A helper written but engine not calling it \u2014 wire into backtest.py/screener.py"
+        "tier": "DEFERRED",
+        "label": "DEFERRED",
+        "color": "#3b82f6",
+        "reason": "PARTIAL-IMPL helper exists but Phase 1B+/agent scope; engine wiring deferred"
       }
     },
     {
@@ -15235,10 +15235,10 @@
       "dependencies": "DEC-422",
       "description": "",
       "promotion_path": {
-        "tier": "CODE_ONLY",
-        "label": "NEEDS-WIRING",
-        "color": "#f59e0b",
-        "reason": "Phase 1A helper written but engine not calling it \u2014 wire into backtest.py/screener.py"
+        "tier": "DEFERRED",
+        "label": "DEFERRED",
+        "color": "#3b82f6",
+        "reason": "PARTIAL-IMPL helper exists but Phase 1B+/agent scope; engine wiring deferred"
       }
     },
     {
@@ -15275,10 +15275,10 @@
       "dependencies": "DEC-422",
       "description": "",
       "promotion_path": {
-        "tier": "CODE_ONLY",
-        "label": "NEEDS-WIRING",
-        "color": "#f59e0b",
-        "reason": "Phase 1A helper written but engine not calling it \u2014 wire into backtest.py/screener.py"
+        "tier": "DEFERRED",
+        "label": "DEFERRED",
+        "color": "#3b82f6",
+        "reason": "PARTIAL-IMPL helper exists but Phase 1B+/agent scope; engine wiring deferred"
       }
     },
     {
@@ -15435,10 +15435,10 @@
       "dependencies": "DEC-067",
       "description": "",
       "promotion_path": {
-        "tier": "CODE_ONLY",
-        "label": "NEEDS-WIRING",
-        "color": "#f59e0b",
-        "reason": "Phase 1A helper written but engine not calling it \u2014 wire into backtest.py/screener.py"
+        "tier": "DEFERRED",
+        "label": "DEFERRED",
+        "color": "#3b82f6",
+        "reason": "PARTIAL-IMPL helper exists but Phase 1B+/agent scope; engine wiring deferred"
       }
     },
     {
@@ -16398,7 +16398,7 @@
         "tier": "CODE_ONLY",
         "label": "NEEDS-WIRING",
         "color": "#f59e0b",
-        "reason": "Phase 1A helper written but engine not calling it \u2014 wire into backtest.py/screener.py"
+        "reason": "Phase 1A helper written but engine not calling it - wire into backtest.py/screener.py"
       }
     },
     {
@@ -35060,22 +35060,28 @@
   ],
   "recent_commits": [
     {
+      "sha": "66367de1",
+      "subject": "Fix decision promotion metric: surface 9 real Phase 1A gaps from 288 false noise",
+      "author": "jeetmehta1991",
+      "rel_time": "15 minutes ago"
+    },
+    {
       "sha": "b03c30a8",
       "subject": "Split RESOLVED-DECIDED bugs into DECIDED/DEFERRED/SUPERSEDED/FALSE-POSITIVE tiers",
       "author": "jeetmehta1991",
-      "rel_time": "32 minutes ago"
+      "rel_time": "49 minutes ago"
     },
     {
       "sha": "795744bb",
       "subject": "Fix compute_promotion_path for RESOLVED-IMPLEMENTED/DECIDED bugs + rebuild dashboard",
       "author": "jeetmehta1991",
-      "rel_time": "56 minutes ago"
+      "rel_time": "73 minutes ago"
     },
     {
       "sha": "badbaa0c",
       "subject": "Dashboard dropdown filters broken + BUG-258 code files missed in Batch 158. Pyramid 613/613.",
       "author": "jeetmehta1991",
-      "rel_time": "75 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "c45f110b",
@@ -35111,13 +35117,13 @@
       "sha": "a1f835d4",
       "subject": "Batch 158: BUG-226/227 false-positives + BUG-229/245/082/263 decided + BUG-258 ATR_FALLBACK_PCT constant. Pyramid 609/609.",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "59ec56f9",
       "subject": "Batch 157: BUG-275/276/279/284/285 RESOLVED-IMPLEMENTED + BUG-277/278 false-positives. bonferroni n=0, cache_key dicts, reversed dates, fixed_4r_2r, gov_contracts None. Pyramid 608/608.",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "f5465d36",
@@ -35135,13 +35141,13 @@
       "sha": "f429c960",
       "subject": "Batch 154: 20 BUGs RESOLVED-DECIDED - phase-scope deferrals + false-positives. Pyramid 605/605.",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "81c8938a",
       "subject": "Batch 153: 26 BUGs RESOLVED-DECIDED - phase-scope deferrals + false-positives. Pyramid 604/604.",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "2737066c",
@@ -35207,53 +35213,43 @@
       "sha": "a04b06df",
       "subject": "Batch 142: BUG-019 false-positive - cache extended to May 2026 via Sprint 0A prefetch. Pyramid 739/739.",
       "author": "jeetmehta1991",
-      "rel_time": "20 hours ago"
+      "rel_time": "21 hours ago"
     },
     {
       "sha": "7eca7727",
       "subject": "Batch 141: BUG-016 false-positive - min_trades canonicalized via BUG-31 Batch 112 + CLAUDE.md sweep. Pyramid 738/738.",
       "author": "jeetmehta1991",
-      "rel_time": "20 hours ago"
+      "rel_time": "21 hours ago"
     },
     {
       "sha": "4d1d9d32",
       "subject": "Batch 140: BUG-014 false-positive - run_full.sh deprecated, AAPL/CVS/JPM/NVDA in current splits. Pyramid 737/737.",
       "author": "jeetmehta1991",
-      "rel_time": "20 hours ago"
+      "rel_time": "21 hours ago"
     },
     {
       "sha": "dd165fbc",
       "subject": "Batch 139: BUG-013 false-positive - yfinance HARD CUT (sister BUG-178). Pyramid 736/736.",
       "author": "jeetmehta1991",
-      "rel_time": "20 hours ago"
+      "rel_time": "21 hours ago"
     },
     {
       "sha": "2bae2a1a",
       "subject": "Batch 138: BUG-012 false-positive - dedup ordering by strategy_count desc via BUG-12 fix. Pyramid 735/735.",
       "author": "jeetmehta1991",
       "rel_time": "21 hours ago"
-    },
-    {
-      "sha": "98855527",
-      "subject": "Batch 137: BUG-006 false-positive - borrow cost single-sourced via DEC-295 Pass 50. Pyramid 734/734.",
-      "author": "jeetmehta1991",
-      "rel_time": "21 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 6,
-    "modified": 4,
+    "count": 7,
+    "modified": 3,
     "added": 0,
-    "untracked": 2,
+    "untracked": 4,
     "deleted": 0,
     "files": [
       {
         "status": "M",
         "path": ".claude/scheduled_tasks.lock"
-      },
-      {
-        "status": "M",
-        "path": "dashboard_stage_2/index.html"
       },
       {
         "status": "M",
@@ -35270,6 +35266,14 @@
       {
         "status": "??",
         "path": "scripts/_audit_wiring2.py"
+      },
+      {
+        "status": "??",
+        "path": "scripts/_check_tiers.py"
+      },
+      {
+        "status": "??",
+        "path": "scripts/_review_9.py"
       }
     ]
   },

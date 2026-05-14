@@ -1150,12 +1150,22 @@ def compute_promotion_path(item: dict, kind: str) -> dict:
                 return {"tier": "IMPLEMENTED", "label": "IMPLEMENTED", "color": "#10b981",
                         "reason": "PARTIAL-IMPL: wired+tested artifacts confirm implementation; AUDIT_INDEX status stale"}
             title_up = (item.get("title") or "").upper()
+            sprint_up = (item.get("sprint") or "").upper()
             AGENT_MARKERS = ["PHASE 1B", "PHASE 1C", "AGENT", "LLM", "HAIKU", "SONNET",
                               "A/B ORCHESTRAT", "ABLATION", "CUBE PHASE", "TRADINGAGENT",
                               "AGENTSTATE", "AGENTGATE", "OUR_AGENT", "OUR_FUNDAMENTALS",
                               "DASHBOARD 1", "STREAMLIT", "STAGE 3", "STAGE 4",
-                              "CI/CD REGRESSION", "COLD-START CI"]
-            if any(m in title_up for m in AGENT_MARKERS):
+                              "CI/CD REGRESSION", "COLD-START CI",
+                              # DEC-425/426/428/429: DEC-422 cube phases (Phase 1B-alpha analytics)
+                              "DEC-422 PHASE", "FIVE_GATE_VALIDITY", "FIVE GATE",
+                              # DEC-378: NASDAQ symbol-directory automation (Sprint 5)
+                              "SYMBOL-DIRECTORY", "NASDAQ SYMBOL",
+                              # DEC-417: test-run audit gate (Sprint 6 catch-mechanism)
+                              "AUDIT GATE LAYER", "TEST-RUN AUDIT GATE",
+                              # DEC-234: ticker lifecycle schema (Sprint 4 data schema)
+                              "TICKER LIFECYCLE"]
+            SPRINT_DEFERRED = ["SPRINT 5", "SPRINT 6", "SPRINT 7", "SPRINT 8", "SPRINT 9"]
+            if any(m in title_up for m in AGENT_MARKERS) or any(s in sprint_up for s in SPRINT_DEFERRED):
                 return {"tier": "DEFERRED", "label": "DEFERRED", "color": "#3b82f6",
                         "reason": "PARTIAL-IMPL helper exists but Phase 1B+/agent scope; engine wiring deferred"}
             if coded:
