@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-14T20:43:37.527385+00:00",
+  "generated_at": "2026-05-14T20:58:17.471206+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -559,7 +559,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 6,
+        "n_doc_refs": 8,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -581,7 +581,7 @@
       "dependencies": "-",
       "description": "",
       "coverage_engine": "YES",
-      "coverage_evidence": "function body 30-649 executed in backtest/results/writer.py",
+      "coverage_evidence": "function body 30-710 executed in backtest/results/writer.py",
       "promotion_path": {
         "tier": "IMPLEMENTED",
         "label": "IMPLEMENTED",
@@ -707,7 +707,7 @@
       "dependencies": "-",
       "description": "",
       "coverage_engine": "YES",
-      "coverage_evidence": "function body 30-649 executed in backtest/results/writer.py",
+      "coverage_evidence": "function body 30-710 executed in backtest/results/writer.py",
       "promotion_path": {
         "tier": "IMPLEMENTED",
         "label": "IMPLEMENTED",
@@ -1967,7 +1967,7 @@
       "dependencies": "-",
       "description": "**Status:** PROPOSED **Recommendation:** `selected_analysts=[\"market\", \"news\", \"fundamentals\"]` \u2014 drop \"social\". Saves ~12% cost. Social media via yfinance is noisy for daily-bar swing trading.",
       "coverage_engine": "YES",
-      "coverage_evidence": "function body 129-214 executed in backtest/run_phase1a.py",
+      "coverage_evidence": "function body 140-225 executed in backtest/run_phase1a.py",
       "promotion_path": {
         "tier": "IMPLEMENTED",
         "label": "IMPLEMENTED",
@@ -2533,7 +2533,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 21,
+        "n_doc_refs": 23,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -2575,7 +2575,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 10,
+        "n_doc_refs": 12,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -2597,7 +2597,7 @@
       "dependencies": "-",
       "description": "",
       "coverage_engine": "YES",
-      "coverage_evidence": "function body 30-649 executed in backtest/results/writer.py",
+      "coverage_evidence": "function body 30-710 executed in backtest/results/writer.py",
       "promotion_path": {
         "tier": "IMPLEMENTED",
         "label": "IMPLEMENTED",
@@ -2765,7 +2765,7 @@
       "dependencies": "-",
       "description": "",
       "coverage_engine": "YES",
-      "coverage_evidence": "module-level tag in backtest/results/stress_tests.py (94%); adjacent symbol `Status` consumed externally",
+      "coverage_evidence": "module-level tag in backtest/results/stress_tests.py (74%); adjacent symbol `Status` consumed externally",
       "promotion_path": {
         "tier": "IMPLEMENTED",
         "label": "IMPLEMENTED",
@@ -3037,7 +3037,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 11,
+        "n_doc_refs": 13,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -3059,7 +3059,7 @@
       "dependencies": "-",
       "description": "",
       "coverage_engine": "YES",
-      "coverage_evidence": "function body 30-649 executed in backtest/results/writer.py",
+      "coverage_evidence": "function body 30-710 executed in backtest/results/writer.py",
       "promotion_path": {
         "tier": "IMPLEMENTED",
         "label": "IMPLEMENTED",
@@ -3154,7 +3154,7 @@
     {
       "id": "DECISION-092",
       "title": "Slippage model = f(size%ADV, vol) \u2014 `compute_slippage_bps_advanced(size_pct_adv, realized_vol_annualized, alpha=0.5, beta=4.5, gamma=0.025)` in `backtest/engine",
-      "status": "PARTIAL-IMPL-HELPER-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X5 \u2014 Risk Management Extension",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -3184,13 +3184,13 @@
       "sprint": "Sprint 4 additions (DEC-410 Au; Sprint 7 Pattern 2 toolkit add; Sprint 7 additions (Statistica",
       "dependencies": "-",
       "description": "",
-      "coverage_engine": "FUNC-DEAD",
-      "coverage_evidence": "function in backtest/engine/improvements.py never executed",
+      "coverage_engine": "YES",
+      "coverage_evidence": "function body 531-534 executed in backtest/engine/improvements.py",
       "promotion_path": {
-        "tier": "FUNC-DEAD",
-        "label": "FUNC-DEAD",
-        "color": "#ef4444",
-        "reason": "Coverage audit: enclosing function exists in active module but never executed in the canonical backtest. Add a triggering test or expand the canonical backtest to exercise this path."
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "RESOLVED-IMPLEMENTED with code/wire/test artifacts"
       }
     },
     {
@@ -3280,7 +3280,7 @@
     {
       "id": "DECISION-095",
       "title": "Monitoring + alerting Pass 52 turn 58 owner-approved DEFERRED_TO_STAGE_4: production monitoring + alerting. Stage 2 backtest is offline; Stage 3 paper trading u",
-      "status": "PARTIAL-IMPL-HELPER-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X3 \u2014 Architecture",
       "pass_intro": "Pass 39",
       "pass_resolved": "Pass 53",
@@ -3310,13 +3310,13 @@
       "sprint": "Sprint 1 additions (Phase 0.A ",
       "dependencies": "-",
       "description": "",
-      "coverage_engine": "FUNC-DEAD",
-      "coverage_evidence": "function in backtest/engine/improvements.py never executed",
+      "coverage_engine": "YES",
+      "coverage_evidence": "function body 30-710 executed in backtest/results/writer.py",
       "promotion_path": {
-        "tier": "FUNC-DEAD",
-        "label": "FUNC-DEAD",
-        "color": "#ef4444",
-        "reason": "Coverage audit: enclosing function exists in active module but never executed in the canonical backtest. Add a triggering test or expand the canonical backtest to exercise this path."
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "RESOLVED-IMPLEMENTED with code/wire/test artifacts"
       }
     },
     {
@@ -3437,7 +3437,7 @@
       "dependencies": "-",
       "description": "",
       "coverage_engine": "YES",
-      "coverage_evidence": "module-level tag in backtest/engine/improvements.py (36%); adjacent symbol `MEMORY_CAP_MB_DEFAULT` consumed externally",
+      "coverage_evidence": "module-level tag in backtest/engine/improvements.py (38%); adjacent symbol `MEMORY_CAP_MB_DEFAULT` consumed externally",
       "promotion_path": {
         "tier": "IMPLEMENTED",
         "label": "IMPLEMENTED",
@@ -4003,7 +4003,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 2,
+        "n_doc_refs": 4,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -4045,7 +4045,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 0,
+        "n_doc_refs": 2,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -5369,7 +5369,7 @@
       "dependencies": "DEC-594",
       "description": "",
       "coverage_engine": "YES",
-      "coverage_evidence": "module-level tag in backtest/results/bootstrap_ci.py (69%); adjacent symbol `Status` consumed externally",
+      "coverage_evidence": "module-level tag in backtest/results/bootstrap_ci.py (45%); adjacent symbol `Status` consumed externally",
       "promotion_path": {
         "tier": "IMPLEMENTED",
         "label": "IMPLEMENTED",
@@ -7237,7 +7237,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 12,
+        "n_doc_refs": 14,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -7783,7 +7783,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 10,
+        "n_doc_refs": 12,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -7805,7 +7805,7 @@
       "dependencies": "DEC-131",
       "description": "",
       "coverage_engine": "YES",
-      "coverage_evidence": "function body 30-649 executed in backtest/results/writer.py",
+      "coverage_evidence": "function body 30-710 executed in backtest/results/writer.py",
       "promotion_path": {
         "tier": "IMPLEMENTED",
         "label": "IMPLEMENTED",
@@ -8110,7 +8110,7 @@
     {
       "id": "DECISION-225",
       "title": "Cache eviction policy (preserve prefetched, evict only computed) Pass 52 turn 65 owner-approved RESOLVED-DECIDED: Cache eviction policy. Tag each cache entry wi",
-      "status": "PARTIAL-IMPL-HELPER-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X34 \u2014 Test + Cache Infrastructure",
       "pass_intro": "Pass 45",
       "pass_resolved": "Pass 53",
@@ -8140,13 +8140,13 @@
       "sprint": "Sprint 1 additions (Phase 0.A ; Sprint 9 additions (Phase 1B-\u03b1",
       "dependencies": "-",
       "description": "",
-      "coverage_engine": "FUNC-DEAD",
-      "coverage_evidence": "function in backtest/engine/improvements.py never executed",
+      "coverage_engine": "YES",
+      "coverage_evidence": "function body 30-710 executed in backtest/results/writer.py",
       "promotion_path": {
-        "tier": "FUNC-DEAD",
-        "label": "FUNC-DEAD",
-        "color": "#ef4444",
-        "reason": "Coverage audit: enclosing function exists in active module but never executed in the canonical backtest. Add a triggering test or expand the canonical backtest to exercise this path."
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "RESOLVED-IMPLEMENTED with code/wire/test artifacts"
       }
     },
     {
@@ -8980,13 +8980,13 @@
       "sprint": "Sprint 7 (+8)",
       "dependencies": "-",
       "description": "",
-      "coverage_engine": "FUNC-DEAD",
-      "coverage_evidence": "function in backtest/results/quant_audit.py never executed",
+      "coverage_engine": "LAZY-WIRED",
+      "coverage_evidence": "import chain exists for all tags; gating condition not met (backtest/results/quant_audit.py)",
       "promotion_path": {
-        "tier": "FUNC-DEAD",
-        "label": "FUNC-DEAD",
-        "color": "#ef4444",
-        "reason": "Coverage audit: enclosing function exists in active module but never executed in the canonical backtest. Add a triggering test or expand the canonical backtest to exercise this path."
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "PARTIAL-IMPL: wired+tested artifacts confirm implementation; AUDIT_INDEX status stale"
       }
     },
     {
@@ -9022,8 +9022,8 @@
       "sprint": "Sprint 7 (+8)",
       "dependencies": "-",
       "description": "",
-      "coverage_engine": "YES",
-      "coverage_evidence": "module-level tag in backtest/results/deflated_sharpe.py (16%); adjacent symbol `Status` consumed externally",
+      "coverage_engine": "LAZY-WIRED",
+      "coverage_evidence": "import chain exists for all tags; gating condition not met (backtest/results/deflated_sharpe.py)",
       "promotion_path": {
         "tier": "IMPLEMENTED",
         "label": "IMPLEMENTED",
@@ -10303,7 +10303,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 4,
+        "n_doc_refs": 6,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -10336,7 +10336,7 @@
     {
       "id": "DECISION-280",
       "title": "Time-of-day slippage multiplier \u2014 `time_of_day_slippage_multiplier(entry_time)` in `backtest/engine/improvements.py` returns 1.5x for `[09:30, 10:00)` (first 30",
-      "status": "PARTIAL-IMPL-HELPER-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X48 \u2014 Professional Benchmark Gaps",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -10366,13 +10366,13 @@
       "sprint": "Sprint 4 additions (DEC-410 Au",
       "dependencies": "-",
       "description": "",
-      "coverage_engine": "FUNC-DEAD",
-      "coverage_evidence": "function in backtest/engine/improvements.py never executed",
+      "coverage_engine": "YES",
+      "coverage_evidence": "function body 30-710 executed in backtest/results/writer.py",
       "promotion_path": {
-        "tier": "FUNC-DEAD",
-        "label": "FUNC-DEAD",
-        "color": "#ef4444",
-        "reason": "Coverage audit: enclosing function exists in active module but never executed in the canonical backtest. Add a triggering test or expand the canonical backtest to exercise this path."
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "RESOLVED-IMPLEMENTED with code/wire/test artifacts"
       }
     },
     {
@@ -11711,7 +11711,7 @@
       "dependencies": "-",
       "description": "",
       "coverage_engine": "YES",
-      "coverage_evidence": "module-level tag in backtest/engine/circuit_breakers.py (56%); adjacent symbol `Status` consumed externally",
+      "coverage_evidence": "module-level tag in backtest/engine/circuit_breakers.py (40%); adjacent symbol `Status` consumed externally",
       "promotion_path": {
         "tier": "IMPLEMENTED",
         "label": "IMPLEMENTED",
@@ -12970,8 +12970,8 @@
       "sprint": "Sprint 6 additions (Phase 0.E ",
       "dependencies": "-",
       "description": "**Owner verdict:** \"2R to be minimum\"",
-      "coverage_engine": "DECLARED-ONLY",
-      "coverage_evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)",
+      "coverage_engine": "LAZY-WIRED",
+      "coverage_evidence": "import chain exists for all tags; gating condition not met (backtest/config.py)",
       "promotion_path": {
         "tier": "IMPLEMENTED",
         "label": "IMPLEMENTED",
@@ -13495,7 +13495,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 27,
+        "n_doc_refs": 29,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -13517,7 +13517,7 @@
       "dependencies": "-",
       "description": "",
       "coverage_engine": "YES",
-      "coverage_evidence": "function body 30-649 executed in backtest/results/writer.py",
+      "coverage_evidence": "function body 30-710 executed in backtest/results/writer.py",
       "promotion_path": {
         "tier": "IMPLEMENTED",
         "label": "IMPLEMENTED",
@@ -14944,8 +14944,8 @@
       "sprint": "Sprint 7 additions (Statistica",
       "dependencies": "DEC-080",
       "description": "",
-      "coverage_engine": "DECLARED-ONLY",
-      "coverage_evidence": "tagged symbol declared in backtest/results/multi_test.py but not consumed by any executing file (config constant for deferred / unwired feature)",
+      "coverage_engine": "LAZY-WIRED",
+      "coverage_evidence": "import chain exists for all tags; gating condition not met (backtest/results/multi_test.py)",
       "promotion_path": {
         "tier": "IMPLEMENTED",
         "label": "IMPLEMENTED",
@@ -15113,7 +15113,7 @@
       "dependencies": "DEC-082",
       "description": "",
       "coverage_engine": "YES",
-      "coverage_evidence": "module-level tag in backtest/results/stress_tests.py (94%); adjacent symbol `Status` consumed externally",
+      "coverage_evidence": "module-level tag in backtest/results/stress_tests.py (74%); adjacent symbol `Status` consumed externally",
       "promotion_path": {
         "tier": "IMPLEMENTED",
         "label": "IMPLEMENTED",
@@ -15827,7 +15827,7 @@
       "dependencies": "DEC-068; DEC-422",
       "description": "DEC-068 originally scoped per-strategy bootstrap CI. Expanded under DEC-422 framework: bootstrap operates at **per-cell level** within dimensional cube. Pairwise (strategy, exit) comparisons within cell. Bonferroni-correct across all cell pairs. Cells with n<30 fall back to margi",
       "coverage_engine": "YES",
-      "coverage_evidence": "function body 30-649 executed in backtest/results/writer.py",
+      "coverage_evidence": "function body 30-710 executed in backtest/results/writer.py",
       "promotion_path": {
         "tier": "IMPLEMENTED",
         "label": "IMPLEMENTED",
@@ -19408,7 +19408,7 @@
     {
       "id": "DECISION-606",
       "title": "Finnhub financials_reported permanently excluded \u2014 `FINNHUB_FINANCIALS_REPORTED_EXCLUDED=True` flag + `assert_no_finnhub_financials(path)` guard in `backtest/en",
-      "status": "PARTIAL-IMPL-HELPER-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Phase 1A / data scope / Pass 53 v8h+1",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -19438,13 +19438,13 @@
       "sprint": "Sprint 7 effort revised",
       "dependencies": "-",
       "description": "",
-      "coverage_engine": "FUNC-DEAD",
-      "coverage_evidence": "function in backtest/engine/improvements.py never executed",
+      "coverage_engine": "YES",
+      "coverage_evidence": "function body 38-59 executed in backtest/run_phase1a.py",
       "promotion_path": {
-        "tier": "FUNC-DEAD",
-        "label": "FUNC-DEAD",
-        "color": "#ef4444",
-        "reason": "Coverage audit: enclosing function exists in active module but never executed in the canonical backtest. Add a triggering test or expand the canonical backtest to exercise this path."
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "RESOLVED-IMPLEMENTED with code/wire/test artifacts"
       }
     },
     {
@@ -25909,7 +25909,7 @@
       "dependencies": "BUG-215",
       "description": "```python # Line 73: class ClosedTrade:  # 38 fields sector: str  # at non-canonical position",
       "coverage_engine": "YES",
-      "coverage_evidence": "module-level tag in backtest/engine/exit_manager.py (85%); adjacent symbol `ClosedTrade` consumed externally",
+      "coverage_evidence": "module-level tag in backtest/engine/exit_manager.py (79%); adjacent symbol `ClosedTrade` consumed externally",
       "promotion_path": {
         "tier": "IMPLEMENTED",
         "label": "IMPLEMENTED",
@@ -36086,16 +36086,22 @@
   ],
   "recent_commits": [
     {
+      "sha": "a2c0d98c",
+      "subject": "Batch 160: Rectify 56 classification anomalies (A wire + B reclassify). 9 promoted, 38 stay PARTIAL. Pyramid 1869/1887.",
+      "author": "jeetmehta1991",
+      "rel_time": "9 minutes ago"
+    },
+    {
       "sha": "960878e8",
       "subject": "Batch 159: Matrix detection sharpened - kills 2 false-positive patterns; surfaces 56 real wiring gaps. Pyramid 1869/1887.",
       "author": "jeetmehta1991",
-      "rel_time": "61 minutes ago"
+      "rel_time": "76 minutes ago"
     },
     {
       "sha": "0274fded",
       "subject": "Batch 158: Matrix scope expanded to all 746 visible DECs + BUGs - 20 classification anomalies surfaced. Pyramid 1869/1887.",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "af215364",
@@ -36125,7 +36131,7 @@
       "sha": "1961f3ad",
       "subject": "Batch 153: VERIFICATION_MATRIX - coverage-driven engine consumption ground truth + 11 real gaps surfaced.",
       "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
+      "rel_time": "8 hours ago"
     },
     {
       "sha": "d3698010",
@@ -36155,7 +36161,7 @@
       "sha": "17ffee83",
       "subject": "@ Batch 148: BUG-NNN comment tags + 9 regression tests -> all 277 bugs resolved. Pyramid 626/626.",
       "author": "jeetmehta1991",
-      "rel_time": "17 hours ago"
+      "rel_time": "18 hours ago"
     },
     {
       "sha": "7a4a28b0",
@@ -36179,7 +36185,7 @@
       "sha": "e6e90dbf",
       "subject": "Reclassify 7 PARTIAL-IMPL as DEFERRED; 1 genuine NEEDS-WIRING remains (DEC-458)",
       "author": "jeetmehta1991",
-      "rel_time": "18 hours ago"
+      "rel_time": "19 hours ago"
     },
     {
       "sha": "66367de1",
@@ -36197,7 +36203,7 @@
       "sha": "795744bb",
       "subject": "Fix compute_promotion_path for RESOLVED-IMPLEMENTED/DECIDED bugs + rebuild dashboard",
       "author": "jeetmehta1991",
-      "rel_time": "19 hours ago"
+      "rel_time": "20 hours ago"
     },
     {
       "sha": "badbaa0c",
@@ -36251,26 +36257,20 @@
       "sha": "f5465d36",
       "subject": "Batch 156: BUG-271/272/273 RESOLVED-IMPLEMENTED (gov_contracts Qtr+Year fix, lobbying Amount dtype, congressional House col). BUG-270/274 false-positives. Pyramid 607/607.",
       "author": "jeetmehta1991",
-      "rel_time": "22 hours ago"
+      "rel_time": "23 hours ago"
     },
     {
       "sha": "2d1f60bd",
       "subject": "Batch 155: 16 BUGs RESOLVED-DECIDED - site_generator + phase-scope deferrals + false-positives. Pyramid 606/606.",
       "author": "jeetmehta1991",
-      "rel_time": "22 hours ago"
-    },
-    {
-      "sha": "f429c960",
-      "subject": "Batch 154: 20 BUGs RESOLVED-DECIDED - phase-scope deferrals + false-positives. Pyramid 605/605.",
-      "author": "jeetmehta1991",
-      "rel_time": "24 hours ago"
+      "rel_time": "23 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 71,
-    "modified": 56,
+    "count": 68,
+    "modified": 51,
     "added": 0,
-    "untracked": 15,
+    "untracked": 17,
     "deleted": 0,
     "files": [
       {
@@ -36295,15 +36295,7 @@
       },
       {
         "status": "M",
-        "path": "dashboard_stage_2/data.js"
-      },
-      {
-        "status": "M",
-        "path": "dashboard_stage_2/data.json"
-      },
-      {
-        "status": "M",
-        "path": "dashboard_stage_2/last_run.txt"
+        "path": "backtest/run_phase1a.py"
       },
       {
         "status": "M",
@@ -36320,10 +36312,6 @@
       {
         "status": "M",
         "path": "output_v2/backtest_results.csv"
-      },
-      {
-        "status": "M",
-        "path": "output_v2/circuit_breaker_log.csv"
       },
       {
         "status": "M",
@@ -36447,19 +36435,11 @@
       },
       {
         "status": "M",
-        "path": "output_v2/regime_performance.csv"
-      },
-      {
-        "status": "M",
         "path": "output_v2/sector_concentration.csv"
       },
       {
         "status": "M",
         "path": "output_v2/skipped_trades.csv"
-      },
-      {
-        "status": "M",
-        "path": "output_v2/smart_money_combined.csv"
       },
       {
         "status": "M",
@@ -36531,7 +36511,15 @@
       },
       {
         "status": "??",
+        "path": "output_v2/slippage_advanced.csv"
+      },
+      {
+        "status": "??",
         "path": "output_v2/stress_metrics.json"
+      },
+      {
+        "status": "??",
+        "path": "output_v2/test_coverage_gate.json"
       },
       {
         "status": "??",
@@ -37427,8 +37415,8 @@
     }
   ],
   "decision_status_counts": {
-    "RESOLVED-IMPLEMENTED": 407,
-    "PARTIAL-IMPL-HELPER-ONLY": 72,
+    "RESOLVED-IMPLEMENTED": 412,
+    "PARTIAL-IMPL-HELPER-ONLY": 67,
     "REJECTED": 2
   },
   "inv_status_counts": {

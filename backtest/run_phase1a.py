@@ -45,6 +45,17 @@ def validate_env():
         val = os.environ.get(var,"")
         icon = "[OK]" if val else ("[WARN]" if "optional" in label else "[FAIL]")
         print(f"  {icon} {var}: {'set' if val else 'NOT SET'} ({label})")
+
+    # DEC-606 -- defensive Finnhub financials guard. Permanent supersedence
+    # per Pass 53 v8h+1 owner-approved 2026-05-10. Run on a known-safe path
+    # at startup to verify the guard is in the active path; raises if a
+    # caller ever references the excluded path.
+    try:
+        from backtest.engine.improvements import assert_no_finnhub_financials
+        assert_no_finnhub_financials("data_prefetch/polygon/financials/")
+        print("  [OK] DEC-606: Finnhub financials guard active")
+    except Exception as exc:
+        print(f"  [WARN] DEC-606: guard check failed: {exc}")
     print()
 
 

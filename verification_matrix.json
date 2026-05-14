@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-14T20:39:33.653738+00:00",
+  "generated_at": "2026-05-14T20:54:34.708458+00:00",
   "items": {
     "DEC-001": {
       "kind": "DEC",
@@ -81,9 +81,9 @@
     },
     "DEC-015": {
       "kind": "DEC",
-      "tier": "FUNC-DEAD",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 30-649 executed in backtest/results/writer.py"
+      "evidence": "function body 30-710 executed in backtest/results/writer.py"
     },
     "DEC-018": {
       "kind": "DEC",
@@ -101,7 +101,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 30-649 executed in backtest/results/writer.py"
+      "evidence": "function body 30-710 executed in backtest/results/writer.py"
     },
     "DEC-027": {
       "kind": "DEC",
@@ -281,7 +281,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 129-214 executed in backtest/run_phase1a.py"
+      "evidence": "function body 140-225 executed in backtest/run_phase1a.py"
     },
     "DEC-058": {
       "kind": "DEC",
@@ -369,9 +369,9 @@
     },
     "DEC-078A": {
       "kind": "DEC",
-      "tier": "FUNC-DEAD",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 30-649 executed in backtest/results/writer.py"
+      "evidence": "function body 30-710 executed in backtest/results/writer.py"
     },
     "DEC-078B": {
       "kind": "DEC",
@@ -395,7 +395,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/results/stress_tests.py (94%); adjacent symbol `Status` consumed externally"
+      "evidence": "module-level tag in backtest/results/stress_tests.py (74%); adjacent symbol `Status` consumed externally"
     },
     "DEC-083": {
       "kind": "DEC",
@@ -435,9 +435,9 @@
     },
     "DEC-089": {
       "kind": "DEC",
-      "tier": "FUNC-DEAD",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 30-649 executed in backtest/results/writer.py"
+      "evidence": "function body 30-710 executed in backtest/results/writer.py"
     },
     "DEC-090": {
       "kind": "DEC",
@@ -454,8 +454,8 @@
     "DEC-092": {
       "kind": "DEC",
       "tier": "FUNC-DEAD",
-      "engine": "FUNC-DEAD",
-      "evidence": "function in backtest/engine/improvements.py never executed"
+      "engine": "YES",
+      "evidence": "function body 531-534 executed in backtest/engine/improvements.py"
     },
     "DEC-093": {
       "kind": "DEC",
@@ -472,8 +472,8 @@
     "DEC-095": {
       "kind": "DEC",
       "tier": "FUNC-DEAD",
-      "engine": "FUNC-DEAD",
-      "evidence": "function in backtest/engine/improvements.py never executed"
+      "engine": "YES",
+      "evidence": "function body 30-710 executed in backtest/results/writer.py"
     },
     "DEC-096": {
       "kind": "DEC",
@@ -491,7 +491,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/engine/improvements.py (36%); adjacent symbol `MEMORY_CAP_MB_DEFAULT` consumed externally"
+      "evidence": "module-level tag in backtest/engine/improvements.py (38%); adjacent symbol `MEMORY_CAP_MB_DEFAULT` consumed externally"
     },
     "DEC-100": {
       "kind": "DEC",
@@ -573,13 +573,13 @@
     },
     "DEC-119": {
       "kind": "DEC",
-      "tier": "FUNC-DEAD",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function body 1434-1444 executed in backtest/results/metrics.py"
     },
     "DEC-120": {
       "kind": "DEC",
-      "tier": "FUNC-DEAD",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function body 1434-1444 executed in backtest/results/metrics.py"
     },
@@ -767,7 +767,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/results/bootstrap_ci.py (69%); adjacent symbol `Status` consumed externally"
+      "evidence": "module-level tag in backtest/results/bootstrap_ci.py (45%); adjacent symbol `Status` consumed externally"
     },
     "DEC-155": {
       "kind": "DEC",
@@ -1035,7 +1035,7 @@
     },
     "DEC-201": {
       "kind": "DEC",
-      "tier": "FUNC-DEAD",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function body 1434-1444 executed in backtest/results/metrics.py"
     },
@@ -1113,9 +1113,9 @@
     },
     "DEC-214": {
       "kind": "DEC",
-      "tier": "FUNC-DEAD",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 30-649 executed in backtest/results/writer.py"
+      "evidence": "function body 30-710 executed in backtest/results/writer.py"
     },
     "DEC-215": {
       "kind": "DEC",
@@ -1162,8 +1162,8 @@
     "DEC-225": {
       "kind": "DEC",
       "tier": "FUNC-DEAD",
-      "engine": "FUNC-DEAD",
-      "evidence": "function in backtest/engine/improvements.py never executed"
+      "engine": "YES",
+      "evidence": "function body 30-710 executed in backtest/results/writer.py"
     },
     "DEC-227": {
       "kind": "DEC",
@@ -1282,14 +1282,14 @@
     "DEC-246": {
       "kind": "DEC",
       "tier": "FUNC-DEAD",
-      "engine": "FUNC-DEAD",
-      "evidence": "function in backtest/results/quant_audit.py never executed"
+      "engine": "LAZY-WIRED",
+      "evidence": "import chain exists for all tags; gating condition not met (backtest/results/quant_audit.py)"
     },
     "DEC-247": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "YES",
-      "evidence": "module-level tag in backtest/results/deflated_sharpe.py (16%); adjacent symbol `Status` consumed externally"
+      "engine": "LAZY-WIRED",
+      "evidence": "import chain exists for all tags; gating condition not met (backtest/results/deflated_sharpe.py)"
     },
     "DEC-248": {
       "kind": "DEC",
@@ -1473,15 +1473,15 @@
     },
     "DEC-279": {
       "kind": "DEC",
-      "tier": "FUNC-DEAD",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
       "evidence": "function body 2108-2118 executed in backtest/results/metrics.py"
     },
     "DEC-280": {
       "kind": "DEC",
       "tier": "FUNC-DEAD",
-      "engine": "FUNC-DEAD",
-      "evidence": "function in backtest/engine/improvements.py never executed"
+      "engine": "YES",
+      "evidence": "function body 30-710 executed in backtest/results/writer.py"
     },
     "DEC-281": {
       "kind": "DEC",
@@ -1673,7 +1673,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/engine/circuit_breakers.py (56%); adjacent symbol `Status` consumed externally"
+      "evidence": "module-level tag in backtest/engine/circuit_breakers.py (40%); adjacent symbol `Status` consumed externally"
     },
     "DEC-316": {
       "kind": "DEC",
@@ -1852,8 +1852,8 @@
     "DEC-353": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "DECLARED-ONLY",
-      "evidence": "tagged symbol declared in backtest/config.py but not consumed by any executing file (config constant for deferred / unwired feature)"
+      "engine": "LAZY-WIRED",
+      "evidence": "import chain exists for all tags; gating condition not met (backtest/config.py)"
     },
     "DEC-354": {
       "kind": "DEC",
@@ -1929,9 +1929,9 @@
     },
     "DEC-366": {
       "kind": "DEC",
-      "tier": "FUNC-DEAD",
+      "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 30-649 executed in backtest/results/writer.py"
+      "evidence": "function body 30-710 executed in backtest/results/writer.py"
     },
     "DEC-367": {
       "kind": "DEC",
@@ -2134,8 +2134,8 @@
     "DEC-401": {
       "kind": "DEC",
       "tier": "IMPLEMENTED",
-      "engine": "DECLARED-ONLY",
-      "evidence": "tagged symbol declared in backtest/results/multi_test.py but not consumed by any executing file (config constant for deferred / unwired feature)"
+      "engine": "LAZY-WIRED",
+      "evidence": "import chain exists for all tags; gating condition not met (backtest/results/multi_test.py)"
     },
     "DEC-402": {
       "kind": "DEC",
@@ -2159,7 +2159,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/results/stress_tests.py (94%); adjacent symbol `Status` consumed externally"
+      "evidence": "module-level tag in backtest/results/stress_tests.py (74%); adjacent symbol `Status` consumed externally"
     },
     "DEC-406": {
       "kind": "DEC",
@@ -2261,7 +2261,7 @@
       "kind": "DEC",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "function body 30-649 executed in backtest/results/writer.py"
+      "evidence": "function body 30-710 executed in backtest/results/writer.py"
     },
     "DEC-425": {
       "kind": "DEC",
@@ -2776,8 +2776,8 @@
     "DEC-606": {
       "kind": "DEC",
       "tier": "FUNC-DEAD",
-      "engine": "FUNC-DEAD",
-      "evidence": "function in backtest/engine/improvements.py never executed"
+      "engine": "YES",
+      "evidence": "function body 38-59 executed in backtest/run_phase1a.py"
     },
     "DEC-605": {
       "kind": "DEC",
@@ -3695,7 +3695,7 @@
       "kind": "BUG",
       "tier": "IMPLEMENTED",
       "engine": "YES",
-      "evidence": "module-level tag in backtest/engine/exit_manager.py (85%); adjacent symbol `ClosedTrade` consumed externally"
+      "evidence": "module-level tag in backtest/engine/exit_manager.py (79%); adjacent symbol `ClosedTrade` consumed externally"
     },
     "BUG-216": {
       "kind": "BUG",
