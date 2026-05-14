@@ -169,7 +169,7 @@ def parse_decisions(audit_index: Path) -> list[dict]:
     return rows
 
 
-def parse_bug_status_from_audit_index(path: Path) -> dict[str, str]:
+def parse_bug_status_from_audit_index(path: Path) -> dict[str, dict]:
     """Parse BUG status column from AUDIT_INDEX.md "All Bugs Table".
 
     Pass 53 Batch 127 2026-05-12 owner directive: the BUG status flips
@@ -239,7 +239,8 @@ def parse_bug_status_from_audit_index(path: Path) -> dict[str, str]:
             status = ""
         if status and bug_short not in out:
             # First-occurrence wins (in case of duplicated table sections)
-            out[bug_short] = status
+            resolution_text = cols[1][:500] if len(cols) > 1 else ""
+            out[bug_short] = {"status": status, "resolution_text": resolution_text}
     return out
 
 
@@ -1189,8 +1190,18 @@ def compute_promotion_path(item: dict, kind: str) -> dict:
             return {"tier": "READY", "label": "RESOLVED-IMPLEMENTED", "color": "#10b981",
                     "reason": "RESOLVED-IMPLEMENTED per AUDIT_INDEX (grep refs may be in linked DEC)"}
         if "RESOLVED-DECIDED" in status:
-            return {"tier": "READY", "label": "RESOLVED-DECIDED", "color": "#10b981",
-                    "reason": "RESOLVED-DECIDED (methodology/scope decision; no code change required)"}
+            res = (item.get("resolution_text") or item.get("description") or item.get("title") or "").upper()
+            if "SUPERSEDED" in res:
+                return {"tier": "SUPERSEDED", "label": "SUPERSEDED", "color": "#6b7280",
+                        "reason": "Superseded by a different DEC/BUG that absorbed its scope"}
+            if "FALSE-POSITIVE" in res or "FALSE POSITIVE" in res:
+                return {"tier": "FALSE-POSITIVE", "label": "FALSE-POSITIVE", "color": "#94a3b8",
+                        "reason": "False-positive: bug predates a decision that made it moot"}
+            if "STAGE 3" in res or "STAGE 4" in res or "DEFERRAL" in res or " DEFERRED" in res:
+                return {"tier": "DEFERRED", "label": "DEFERRED", "color": "#3b82f6",
+                        "reason": "Deferred to Stage 3+ or future phase"}
+            return {"tier": "DECIDED", "label": "DECIDED", "color": "#10b981",
+                    "reason": "Active methodology decision: current behavior is correct by design"}
         if "WILL_RESOLVE" in status:
             return {"tier": "BLOCKED", "label": "BLOCKED", "color": "#a855f7",
                     "reason": f"Superseded by migration ({status})"}
@@ -1832,14 +1843,16 @@ def main() -> int:
         m = re.match(r"BUG-(\d+)$", b["id"])
         if m:
             existing_ids.add(f"BUG-{int(m.group(1)):03d}")
-    for bid, status in bug_status_overlay.items():
+    for bid, overlay in bug_status_overlay.items():
         if bid not in existing_ids:
+            ov = overlay if isinstance(overlay, dict) else {"status": overlay, "resolution_text": ""}
             bugs.append({
                 "id": bid,
                 "title": f"(AUDIT_INDEX-only) {bid}",
                 "linked_decisions": "",
                 "sprint_context": "",
-                "status": status,
+                "status": ov.get("status", ""),
+                "resolution_text": ov.get("resolution_text", ""),
             })
     invs = parse_inv_entries(REPO_ROOT / "OPEN_INVESTIGATIONS.md")
     cavs = parse_caveats(REPO_ROOT / "LIMITATIONS_CAVEATS_ASSUMPTIONS.md")
@@ -1882,9 +1895,15 @@ def main() -> int:
         # counter. parse_bug_register doesn't populate `status` so falling
         # back to a "" preserves the inferred-status path for BUGs not in
         # the AUDIT_INDEX table.
-        ai_status = bug_status_overlay.get(short, "")
-        if ai_status:
-            b["status"] = ai_status
+        ai_overlay = bug_status_overlay.get(short, {})
+        if isinstance(ai_overlay, dict):
+            ai_status = ai_overlay.get("status", "")
+            if ai_status:
+                b["status"] = ai_status
+            if not b.get("resolution_text"):
+                b["resolution_text"] = ai_overlay.get("resolution_text", "")
+        elif ai_overlay:
+            b["status"] = ai_overlay
         b["promotion_path"] = compute_promotion_path(b, "bug")
     for i in invs:
         i["status_grep"] = id_status(i["id"], corpora)

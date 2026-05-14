@@ -1032,7 +1032,8 @@ def test_dashboard_bug_status_counter_reflects_audit_index_flips():
                           "BUG-104", "BUG-078", "BUG-103", "BUG-110",
                           "BUG-205", "BUG-096", "BUG-218", "BUG-222"]
     for bid in expected_resolved:
-        status = overlay.get(bid, "")
+        entry = overlay.get(bid, {})
+        status = entry.get("status", "") if isinstance(entry, dict) else entry
         assert status.startswith("RESOLVED"), (
             f"{bid} expected RESOLVED-* in dashboard overlay, got "
             f"{status!r}"

@@ -189,11 +189,13 @@ per CHECKLIST #77 - never reads from memory.
       <select id="bug-promotion-filter">
         <option value="">All promotion tiers</option>
         <option value="IMPLEMENTED">IMPLEMENTED</option>
+        <option value="DECIDED">DECIDED (active decision)</option>
         <option value="READY">READY-TO-CLOSE</option>
         <option value="CODE_ONLY">NEEDS-TEST</option>
         <option value="TEST_ONLY">NEEDS-CODE</option>
         <option value="OPEN">OPEN</option>
-        <option value="DEFERRED">DEFERRED</option>
+        <option value="DEFERRED">DEFERRED (Stage 3+)</option>
+        <option value="FALSE-POSITIVE">FALSE-POSITIVE</option>
         <option value="SUPERSEDED">SUPERSEDED</option>
         <option value="UNKNOWN">UNKNOWN</option>
       </select>
