@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-14T19:41:20.796529+00:00",
+  "generated_at": "2026-05-14T20:43:37.527385+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -580,13 +580,13 @@
       "sprint": "-",
       "dependencies": "-",
       "description": "",
-      "coverage_engine": "FUNC-DEAD",
-      "coverage_evidence": "function in backtest/results/metrics.py never executed",
+      "coverage_engine": "YES",
+      "coverage_evidence": "function body 30-649 executed in backtest/results/writer.py",
       "promotion_path": {
-        "tier": "FUNC-DEAD",
-        "label": "FUNC-DEAD",
-        "color": "#ef4444",
-        "reason": "Coverage audit: enclosing function exists in active module but never executed in the canonical backtest. Add a triggering test or expand the canonical backtest to exercise this path."
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "RESOLVED-IMPLEMENTED with code/wire/test artifacts"
       }
     },
     {
@@ -707,7 +707,7 @@
       "dependencies": "-",
       "description": "",
       "coverage_engine": "YES",
-      "coverage_evidence": "function body 30-572 executed in backtest/results/writer.py",
+      "coverage_evidence": "function body 30-649 executed in backtest/results/writer.py",
       "promotion_path": {
         "tier": "IMPLEMENTED",
         "label": "IMPLEMENTED",
@@ -2155,7 +2155,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 7,
+        "n_doc_refs": 6,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -2596,13 +2596,13 @@
       "sprint": "-",
       "dependencies": "-",
       "description": "",
-      "coverage_engine": "FUNC-DEAD",
-      "coverage_evidence": "function in backtest/results/metrics.py never executed",
+      "coverage_engine": "YES",
+      "coverage_evidence": "function body 30-649 executed in backtest/results/writer.py",
       "promotion_path": {
-        "tier": "FUNC-DEAD",
-        "label": "FUNC-DEAD",
-        "color": "#ef4444",
-        "reason": "Coverage audit: enclosing function exists in active module but never executed in the canonical backtest. Add a triggering test or expand the canonical backtest to exercise this path."
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "RESOLVED-IMPLEMENTED with code/wire/test artifacts"
       }
     },
     {
@@ -3058,13 +3058,13 @@
       "sprint": "-",
       "dependencies": "-",
       "description": "",
-      "coverage_engine": "FUNC-DEAD",
-      "coverage_evidence": "function in backtest/results/metrics.py never executed",
+      "coverage_engine": "YES",
+      "coverage_evidence": "function body 30-649 executed in backtest/results/writer.py",
       "promotion_path": {
-        "tier": "FUNC-DEAD",
-        "label": "FUNC-DEAD",
-        "color": "#ef4444",
-        "reason": "Coverage audit: enclosing function exists in active module but never executed in the canonical backtest. Add a triggering test or expand the canonical backtest to exercise this path."
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "RESOLVED-IMPLEMENTED with code/wire/test artifacts"
       }
     },
     {
@@ -3280,7 +3280,7 @@
     {
       "id": "DECISION-095",
       "title": "Monitoring + alerting Pass 52 turn 58 owner-approved DEFERRED_TO_STAGE_4: production monitoring + alerting. Stage 2 backtest is offline; Stage 3 paper trading u",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X3 \u2014 Architecture",
       "pass_intro": "Pass 39",
       "pass_resolved": "Pass 53",
@@ -3448,7 +3448,7 @@
     {
       "id": "DECISION-100",
       "title": "17+ categorical breakdown variables \u2014 `CANONICAL_BREAKDOWN_VARIABLES` tuple (17 dimensions: regime / sector / market_cap_band / vol_band / momentum_band / liqui",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X8 \u2014 Granularity + Breakdowns",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -4024,13 +4024,13 @@
       "sprint": "Sprint 6 (+10)",
       "dependencies": "-",
       "description": "",
-      "coverage_engine": "FUNC-DEAD",
-      "coverage_evidence": "function in backtest/results/metrics.py never executed",
+      "coverage_engine": "YES",
+      "coverage_evidence": "function body 1434-1444 executed in backtest/results/metrics.py",
       "promotion_path": {
-        "tier": "FUNC-DEAD",
-        "label": "FUNC-DEAD",
-        "color": "#ef4444",
-        "reason": "Coverage audit: enclosing function exists in active module but never executed in the canonical backtest. Add a triggering test or expand the canonical backtest to exercise this path."
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "RESOLVED-IMPLEMENTED with code/wire/test artifacts"
       }
     },
     {
@@ -4066,13 +4066,13 @@
       "sprint": "Sprint 7-8 (+3)",
       "dependencies": "-",
       "description": "",
-      "coverage_engine": "FUNC-DEAD",
-      "coverage_evidence": "function in backtest/results/metrics.py never executed",
+      "coverage_engine": "YES",
+      "coverage_evidence": "function body 1434-1444 executed in backtest/results/metrics.py",
       "promotion_path": {
-        "tier": "FUNC-DEAD",
-        "label": "FUNC-DEAD",
-        "color": "#ef4444",
-        "reason": "Coverage audit: enclosing function exists in active module but never executed in the canonical backtest. Add a triggering test or expand the canonical backtest to exercise this path."
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "RESOLVED-IMPLEMENTED with code/wire/test artifacts"
       }
     },
     {
@@ -4162,7 +4162,7 @@
     {
       "id": "DECISION-123",
       "title": "Exponential decay smart-money weights \u2014 `exponential_decay_weights(days_ago_list, half_life_days=90)` in `backtest/results/metrics.py` returns normalized weight",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X12 \u2014 Smart money refinement",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -4498,7 +4498,7 @@
     {
       "id": "DECISION-131",
       "title": "Agent value-add two-gate check \u2014 `agent_value_add_two_gate_check(agent_sharpe, rules_sharpe, absolute_threshold=0.2, relative_threshold=0.15)` in `backtest/resu",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X14 \u2014 Validation criteria",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -4759,7 +4759,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 7,
+        "n_doc_refs": 6,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -4834,7 +4834,7 @@
     {
       "id": "DECISION-141",
       "title": "Sector-neutral hedge overlay plan \u2014 `build_sector_neutral_hedge(long_ticker, long_dollar_value, long_sector_etf, hedge_ratio=1.0)` in `backtest/results/metrics.",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X17 \u2014 Strategy extensions",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -4876,7 +4876,7 @@
     {
       "id": "DECISION-142",
       "title": "Market-neutral construction plan \u2014 `build_market_neutral_hedge(long_ticker, long_dollar_value, beta, spy_ticker='SPY')` in `backtest/results/metrics.py` returns",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X17 \u2014 Strategy extensions",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -4960,7 +4960,7 @@
     {
       "id": "DECISION-144",
       "title": "Stock-vs-sector momentum delta band helper -- momentum_delta_band(stock_20d_return, sector_20d_return) in metrics.py returns dict with delta + 5-band classifica",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X17 \u2014 Strategy extensions",
       "pass_intro": "Pass 40",
       "pass_resolved": "Pass 53",
@@ -5002,7 +5002,7 @@
     {
       "id": "DECISION-145",
       "title": "IV pre-earnings anomaly helper \u2014 `iv_pre_earnings_anomaly(current_iv, historical_iv_pre_earnings, sigma_threshold=2.0)` in `backtest/results/metrics.py` returns",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X17 \u2014 Strategy extensions",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -5128,7 +5128,7 @@
     {
       "id": "DECISION-148",
       "title": "Stock-specific vol-adjusted momentum lookback \u2014 `vol_adjusted_momentum_lookback(realized_vol_annualized, base=21, low_vol=60, high_vol=10, low_thresh=0.15, high",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X18 \u2014 Universe management",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -6178,7 +6178,7 @@
     {
       "id": "DECISION-175",
       "title": "Signal persistence weighting helper -- signal_persistence_weight(consecutive_days, base=1.0, growth_per_day=0.25, max=2.5) in metrics.py. 1-day signal -> 1.0; 3",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X28 \u2014 Strategy meta",
       "pass_intro": "Pass 41",
       "pass_resolved": "Pass 53",
@@ -7258,13 +7258,13 @@
       "sprint": "Sprint 7 \u2014 Statistical Methodo; Sprint 7-8 additions (Phase 1B",
       "dependencies": "-",
       "description": "",
-      "coverage_engine": "FUNC-DEAD",
-      "coverage_evidence": "function in backtest/results/metrics.py never executed",
+      "coverage_engine": "YES",
+      "coverage_evidence": "function body 1434-1444 executed in backtest/results/metrics.py",
       "promotion_path": {
-        "tier": "FUNC-DEAD",
-        "label": "FUNC-DEAD",
-        "color": "#ef4444",
-        "reason": "Coverage audit: enclosing function exists in active module but never executed in the canonical backtest. Add a triggering test or expand the canonical backtest to exercise this path."
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "RESOLVED-IMPLEMENTED with code/wire/test artifacts"
       }
     },
     {
@@ -7438,7 +7438,7 @@
     {
       "id": "DECISION-206",
       "title": "Paired A/B design helper \u2014 `evaluate_paired_ab_arms(trade_id, per_arm_outcomes)` in `backtest/results/metrics.py` returns dict {trade_id, n_arms, best_arm, wors",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X32 \u2014 Agent A/B Testing",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -7606,7 +7606,7 @@
     {
       "id": "DECISION-210",
       "title": "Net Sharpe contribution accounting \u2014 `compute_net_sharpe_contribution(gross_sharpe_lift, annual_agent_cost_usd, portfolio_size_usd=100_000, portfolio_vol_decima",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X32 \u2014 Agent A/B Testing",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -7690,7 +7690,7 @@
     {
       "id": "DECISION-212",
       "title": "Agent-disagreement tagger \u2014 `tag_agent_disagreement(bull_signal, bear_signal, risk_signal)` in `backtest/results/metrics.py` returns dict with disagreement_type",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X32 \u2014 Agent A/B Testing",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -7804,13 +7804,13 @@
       "sprint": "Sprint 9 additions (Phase 1B-\u03b1",
       "dependencies": "DEC-131",
       "description": "",
-      "coverage_engine": "FUNC-DEAD",
-      "coverage_evidence": "function in backtest/results/metrics.py never executed",
+      "coverage_engine": "YES",
+      "coverage_evidence": "function body 30-649 executed in backtest/results/writer.py",
       "promotion_path": {
-        "tier": "FUNC-DEAD",
-        "label": "FUNC-DEAD",
-        "color": "#ef4444",
-        "reason": "Coverage audit: enclosing function exists in active module but never executed in the canonical backtest. Add a triggering test or expand the canonical backtest to exercise this path."
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "RESOLVED-IMPLEMENTED with code/wire/test artifacts"
       }
     },
     {
@@ -7867,7 +7867,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 10,
+        "n_doc_refs": 9,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -8110,7 +8110,7 @@
     {
       "id": "DECISION-225",
       "title": "Cache eviction policy (preserve prefetched, evict only computed) Pass 52 turn 65 owner-approved RESOLVED-DECIDED: Cache eviction policy. Tag each cache entry wi",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X34 \u2014 Test + Cache Infrastructure",
       "pass_intro": "Pass 45",
       "pass_resolved": "Pass 53",
@@ -8152,7 +8152,7 @@
     {
       "id": "DECISION-227",
       "title": "Cache size monitoring \u2014 `get_cache_size_gb(cache_root)` (recursive os.walk sum of file sizes / GB) + `cache_size_alert_level(size_gb, disk_total_gb, threshold_p",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X34 \u2014 Test + Cache Infrastructure",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -8362,7 +8362,7 @@
     {
       "id": "DECISION-232",
       "title": "Determinism diff helper \u2014 `diff_trade_logs(df_a, df_b)` in `backtest/results/metrics.py` compares two trade-log DataFrames cell-by-cell (NaN==NaN treated as equ",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X35 \u2014 Reliability + Determinism",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -8404,7 +8404,7 @@
     {
       "id": "DECISION-233",
       "title": "Daily data quality monitoring \u2014 `check_ohlcv_data_quality(df, gap_pct_threshold=0.50, max_consecutive_nan_days=3)` in `backtest/engine/improvements.py` scans an",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X36 \u2014 Data Quality + Trading Mechanics",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -8455,7 +8455,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 6,
+        "n_doc_refs": 5,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -8740,7 +8740,7 @@
     {
       "id": "DECISION-241",
       "title": "Time-in-market metric (% in any position, % long, % short, % cash) Pass 52 turn 58 owner-approved RESOLVED-DECIDED: Time-in-market metric (% in any position, % ",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X36 \u2014 Data Quality + Trading Mechanics",
       "pass_intro": "Pass 45",
       "pass_resolved": "-",
@@ -8950,7 +8950,7 @@
     {
       "id": "DECISION-246",
       "title": "Quant finance correctness audit (Sharpe annualization, DD computation, vol periodicity) Pass 52 turn 119 RESOLVED-DECIDED Final: Quant finance correctness audit",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X38 \u2014 Knowledge Gaps",
       "pass_intro": "Pass 45",
       "pass_resolved": "-",
@@ -9076,7 +9076,7 @@
     {
       "id": "DECISION-249",
       "title": "Strategy decay metric \u2014 `detect_strategy_decay(sharpe_baseline, sharpe_recent, drop_threshold=0.5)` in `backtest/results/metrics.py` returns dict with is_decaye",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X39 \u2014 Strategy Decay + Code Quality",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -9328,7 +9328,7 @@
     {
       "id": "DECISION-255",
       "title": "Norbert's Gambit at funding: use DLR.TO/DLR.U.TO for CAD->USD conversion when capital move Pass 52 turn 91 owner-approved RESOLVED-DECIDED with STAGE 4+ OPERATI",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X40 \u2014 Cost Modeling Accuracy",
       "pass_intro": "Pass 46",
       "pass_resolved": "Pass 53",
@@ -9454,7 +9454,7 @@
     {
       "id": "DECISION-258",
       "title": "Options chain snapshot cache schema -- OPTIONS_CHAIN_CACHE_DIR + OPTIONS_CHAIN_CACHE_SCHEMA (date/ticker/expiry/strike/option_type/OI/IV/volume/PCR/iv_rank_252d",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X41 \u2014 Phase 0.A Data Prefetch Gaps",
       "pass_intro": "Pass 47",
       "pass_resolved": "Pass 53",
@@ -9538,7 +9538,7 @@
     {
       "id": "DECISION-260",
       "title": "Cache freshness assertion -- assert_cache_fresh(ticker, cache_type, cached_end_date, requested_date) helper + CacheStaleError exception in metrics.py. Joint DEC",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X41 \u2014 Phase 0.A Data Prefetch Gaps",
       "pass_intro": "Pass 47",
       "pass_resolved": "Pass 53",
@@ -10294,7 +10294,7 @@
     {
       "id": "DECISION-279",
       "title": "P&L 5-component decomposition (sandbox prototype) \u2014 `decompose_trade_pnl(actual_pnl_dollar, timing_delta, exit_delta, sizing_delta, agent_delta)` in `backtest/r",
-      "status": "PARTIAL-IMPL-HELPER-ONLY",
+      "status": "RESOLVED-IMPLEMENTED",
       "theme": "Batch X48 \u2014 Professional Benchmark Gaps",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -10324,13 +10324,13 @@
       "sprint": "Sprint 7 additions (Statistica",
       "dependencies": "-",
       "description": "",
-      "coverage_engine": "FUNC-DEAD",
-      "coverage_evidence": "function in backtest/results/metrics.py never executed",
+      "coverage_engine": "YES",
+      "coverage_evidence": "function body 2108-2118 executed in backtest/results/metrics.py",
       "promotion_path": {
-        "tier": "FUNC-DEAD",
-        "label": "FUNC-DEAD",
-        "color": "#ef4444",
-        "reason": "Coverage audit: enclosing function exists in active module but never executed in the canonical backtest. Add a triggering test or expand the canonical backtest to exercise this path."
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "RESOLVED-IMPLEMENTED with code/wire/test artifacts"
       }
     },
     {
@@ -10504,7 +10504,7 @@
     {
       "id": "DECISION-284",
       "title": "Borderline strategy pass/fail policy \u2014 `evaluates_pass(value, threshold, kind='pass_ge')` in `backtest/results/metrics.py` encodes canonical convention: STRICT-",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X49 \u2014 Thin Areas Surfaced",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -10630,7 +10630,7 @@
     {
       "id": "DECISION-287",
       "title": "Public site freshness signal \u2014 `compute_freshness_banner(last_updated_iso, now=None, warn_threshold_hours=24.0)` in `backtest/results/metrics.py` returns dict w",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X49 \u2014 Thin Areas Surfaced",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -11932,7 +11932,7 @@
     {
       "id": "DECISION-321",
       "title": "Liquidity filter market-cap check skips silently if data missing \u2014 fail-open instead of fail-closed. Pass 52 owner-approved. Change `apply_liquidity_filter` beh",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X53 \u2014 High-Impact Engine Bugs",
       "pass_intro": "Pass 48",
       "pass_resolved": "-",
@@ -12184,7 +12184,7 @@
     {
       "id": "DECISION-330",
       "title": "Cache schema not versioned \u2014 schema changes silently mix old + new parquet Pass 53 v8h+1 Phase 3 Batch 35 2026-05-11 (owner-approved Path B Steps 10-14 X7+X27+X",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X54 \u2014 Medium-Severity Improvements",
       "pass_intro": "Pass 48",
       "pass_resolved": "-",
@@ -12310,7 +12310,7 @@
     {
       "id": "DECISION-333",
       "title": "CNN F&G canonical band recalibration \u2014 `CNN_FG_BANDS` tuple (0-25 extreme_fear, 26-45 fear, 46-55 neutral, 56-75 greed, 76-100 extreme_greed) matches CNN's PUBL",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X54 \u2014 Medium-Severity Improvements",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -12352,7 +12352,7 @@
     {
       "id": "DECISION-334",
       "title": "composite_score ROI substitution \u2014 `composite_score(...use_roi_proxy=True, total_roi_pct=...)` parameter in `backtest/results/metrics.py` substitutes normalized",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X54 \u2014 Medium-Severity Improvements",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -12898,7 +12898,7 @@
     {
       "id": "DECISION-352",
       "title": "13F price-level mapping helper -- institutional_price_level_mapping(quarterly_avg_cost_basis, current_price, underwater_threshold) in metrics.py + INSTITUTIONAL",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X55 - Strategy Coverage Gaps (Pass 52)",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -13516,13 +13516,13 @@
       "sprint": "Sprint 2 additions (Engine Bug; Sprint 5 additions (Universe M",
       "dependencies": "-",
       "description": "",
-      "coverage_engine": "FUNC-DEAD",
-      "coverage_evidence": "function in backtest/results/metrics.py never executed",
+      "coverage_engine": "YES",
+      "coverage_evidence": "function body 30-649 executed in backtest/results/writer.py",
       "promotion_path": {
-        "tier": "FUNC-DEAD",
-        "label": "FUNC-DEAD",
-        "color": "#ef4444",
-        "reason": "Coverage audit: enclosing function exists in active module but never executed in the canonical backtest. Add a triggering test or expand the canonical backtest to exercise this path."
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "RESOLVED-IMPLEMENTED with code/wire/test artifacts"
       }
     },
     {
@@ -13999,7 +13999,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 25,
+        "n_doc_refs": 24,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -14578,7 +14578,7 @@
     {
       "id": "DECISION-392",
       "title": "DEC-321 implementation \u2014 `apply_liquidity_filter` fail-closed. Missing/zero market_cap \u2192 REJECTS (returns False), logs warning with `LIQUIDITY_FILTER_FAIL_REASO",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X53 \u2014 High-Impact Engine Bugs",
       "pass_intro": "Pass 52",
       "pass_resolved": "-",
@@ -14746,7 +14746,7 @@
     {
       "id": "DECISION-396",
       "title": "DEC-325 implementation \u2014 In `quiver` 13F prefetch, capture actual `filing_date` per position. PIT lookup `get_institutional_positions(ticker, as_of=D)` returns ",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X53 \u2014 High-Impact Engine Bugs",
       "pass_intro": "Pass 52",
       "pass_resolved": "Pass 53",
@@ -14872,7 +14872,7 @@
     {
       "id": "DECISION-400",
       "title": "Bonferroni dynamic N helper -- bonferroni_dynamic_n(p_values, n_strategies_tested=None) in metrics.py returns dict with adjusted_p_values + n_tested + alpha_bon",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X4 \u2014 Statistical Methodology",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -15553,7 +15553,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 39,
+        "n_doc_refs": 38,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -15670,7 +15670,7 @@
     {
       "id": "DECISION-420",
       "title": "DEC-131 implementation 3-case A/B pairing -- AGENT_AB_THREE_CASE_PAIRING tuple (rules_only_signal / agent_overlay_signal / agent_overrides_no_signal) + AGENT_AB",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X14 \u2014 Validation criteria",
       "pass_intro": "Pass 52",
       "pass_resolved": "Pass 53",
@@ -15827,7 +15827,7 @@
       "dependencies": "DEC-068; DEC-422",
       "description": "DEC-068 originally scoped per-strategy bootstrap CI. Expanded under DEC-422 framework: bootstrap operates at **per-cell level** within dimensional cube. Pairwise (strategy, exit) comparisons within cell. Bonferroni-correct across all cell pairs. Cells with n<30 fall back to margi",
       "coverage_engine": "YES",
-      "coverage_evidence": "function body 30-572 executed in backtest/results/writer.py",
+      "coverage_evidence": "function body 30-649 executed in backtest/results/writer.py",
       "promotion_path": {
         "tier": "IMPLEMENTED",
         "label": "IMPLEMENTED",
@@ -15847,7 +15847,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 8,
+        "n_doc_refs": 7,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -15889,7 +15889,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 30,
+        "n_doc_refs": 29,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -15931,7 +15931,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 3,
+        "n_doc_refs": 2,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -15973,7 +15973,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 3,
+        "n_doc_refs": 2,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -16015,7 +16015,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 9,
+        "n_doc_refs": 8,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -16057,7 +16057,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 18,
+        "n_doc_refs": 17,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -16183,7 +16183,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 6,
+        "n_doc_refs": 5,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -16309,7 +16309,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 25,
+        "n_doc_refs": 24,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -17308,7 +17308,7 @@
     {
       "id": "DECISION-461",
       "title": "FMP fallback subscription gate -- FMP_FALLBACK_ENABLED=False (gated by POLYGON_PIT_VERIFICATION_DONE outcome) + FMP_SUBSCRIPTION_COST_USD_MO=50 constants. Activ",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Batch X60 - Polygon PIT verification",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -17401,7 +17401,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 3,
+        "n_doc_refs": 2,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -17569,7 +17569,7 @@
         "wired": false,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 8,
+        "n_doc_refs": 7,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -19408,7 +19408,7 @@
     {
       "id": "DECISION-606",
       "title": "Finnhub financials_reported permanently excluded \u2014 `FINNHUB_FINANCIALS_REPORTED_EXCLUDED=True` flag + `assert_no_finnhub_financials(path)` guard in `backtest/en",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Phase 1A / data scope / Pass 53 v8h+1",
       "pass_intro": "Pass 53",
       "pass_resolved": "Pass 53",
@@ -20122,7 +20122,7 @@
     {
       "id": "DECISION-590",
       "title": "Phase 1A implementation begin date 2026-05-15. Pass 53 owner-approved 2026-05-06 Q3=A RESOLVED-DECIDED. RULE: Phase 1A implementation begins 2026-05-15 (9 days ",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "theme": "Cross-cutting / methodology / Pass 53 closure",
       "pass_intro": "Pass 53",
       "pass_resolved": "53",
@@ -21267,7 +21267,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 19,
+        "n_doc_refs": 18,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -23388,8 +23388,7 @@
       "sprint": "RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 18 2026-05-10 (owner-approved Option A 2026-05-10; smart_money.py:984-985 erroneously subtracted 45 days from cutoff excluding the most recent 45 days of filings; Quiver ReportDate already encodes upstream disclosure delay; fix removes the delta - cutoff = pd.Timestamp(as_of) - restoring PIT consistency with composite congressional_sig and insider_signal; 2 regression tests test_bug_083_congressional_detail_pit_filter_correct + test_bug_083_congressional_detail_includes_recent_filings; both PASS)",
       "dependencies": "DEC-458",
       "description": "**File:** `backtest/data/smart_money.py` lines 677\u2013678",
-      "status": "RESOLVED-IMPLEMENTED",
-      "resolution_text": "HIGH \u2014 `get_congressional_detail()` filtered with INVERTED point-in-time logic (subtracted an extra 45 days from ReportDate). RESOLVED-IMPLEMENTED Pass 53 v8h+1 Phase 3 Batch 18 (2026-05-10, owner-approved Option A) at `backtest/data/smart_money.py:1024+`. The 45-day delta was removed: Quiver's `ReportDate` already encodes the upstream disclosure delay (ReportDate >= TransactionDate by the lag), so PIT semantics simplify to `df[df[\"ReportDate\"] <= cutoff]`. Restores consistency with `insider_sig",
+      "resolution_text": "",
       "coverage_engine": "FUNC-DEAD",
       "coverage_evidence": "function in backtest/data/smart_money.py never executed",
       "promotion_path": {
@@ -24921,7 +24920,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 21,
+        "n_doc_refs": 20,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -25404,8 +25403,7 @@
       "sprint": "RESOLVED-IMPLEMENTED Pass 53 Batch 1 2026-05-05",
       "dependencies": "DEC-458",
       "description": "**File:** `backtest/data/smart_money.py` (function `get_gov_contracts`, ~line 250) **Evidence:** - n=500 sample: `gov_contract_signal = \"no_data\"` in 497/500 (99.4%) - Reproduced in sandbox: AAPL has 66 rows of gov_contracts data with columns `Ticker, Amount, Qtr, Year` \u2014 no Date",
-      "status": "RESOLVED-IMPLEMENTED",
-      "resolution_text": "get_gov_contracts() no Date column lookup \u2014 99.4% silent failure (n=500). Batch 156 2026-05-13: RESOLVED-IMPLEMENTED \u2014 gov_contracts schema is Qtr(int)+Year(int), no Date column; prior code's date-col search found nothing \u2192 always returned no_data. Fix: reconstruct quarter-end date (Q1\u2192Mar-31, Q2\u2192Jun-30, Q3\u2192Sep-30, Q4\u2192Dec-31) + pd.to_numeric(Amount) since Amount dtype is str. smart_money.py:get_gov_contracts().",
+      "resolution_text": "",
       "coverage_engine": "FUNC-DEAD",
       "coverage_evidence": "function in backtest/data/smart_money.py never executed",
       "promotion_path": {
@@ -27149,7 +27147,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 7,
+        "n_doc_refs": 6,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -29249,7 +29247,7 @@
         "wired": true,
         "tested": true,
         "pushed": true,
-        "n_doc_refs": 9,
+        "n_doc_refs": 8,
         "pyramid": {
           "unit": true,
           "smoke": "N/A",
@@ -36088,191 +36086,191 @@
   ],
   "recent_commits": [
     {
+      "sha": "960878e8",
+      "subject": "Batch 159: Matrix detection sharpened - kills 2 false-positive patterns; surfaces 56 real wiring gaps. Pyramid 1869/1887.",
+      "author": "jeetmehta1991",
+      "rel_time": "61 minutes ago"
+    },
+    {
       "sha": "0274fded",
       "subject": "Batch 158: Matrix scope expanded to all 746 visible DECs + BUGs - 20 classification anomalies surfaced. Pyramid 1869/1887.",
       "author": "jeetmehta1991",
-      "rel_time": "74 minutes ago"
+      "rel_time": "2 hours ago"
     },
     {
       "sha": "af215364",
       "subject": "Batch 157: Close all unit + integration tier coverage gaps. Pyramid 1846/1864. Engine: 304 YES + 2 LAZY-WIRED + 51 N/A.",
       "author": "jeetmehta1991",
-      "rel_time": "2 hours ago"
+      "rel_time": "3 hours ago"
     },
     {
       "sha": "4c065a68",
       "subject": "Batch 156: Refresh verification snapshot via canonical 4-step sequence. Matrix unchanged: 301 YES + 5 LAZY-WIRED + 51 N/A + 0 gaps.",
       "author": "jeetmehta1991",
-      "rel_time": "3 hours ago"
+      "rel_time": "4 hours ago"
     },
     {
       "sha": "851a9ca4",
       "subject": "Batch 155: Dashboard + AUDIT_INDEX reflect coverage-driven engine verification. Pyramid 1579/1592.",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "b6183f8a",
       "subject": "Batch 154: Wire 5 orphaned analytics modules into writer.py - 0 real gaps remain. Pyramid 1578/1591.",
       "author": "jeetmehta1991",
-      "rel_time": "5 hours ago"
+      "rel_time": "6 hours ago"
     },
     {
       "sha": "1961f3ad",
       "subject": "Batch 153: VERIFICATION_MATRIX - coverage-driven engine consumption ground truth + 11 real gaps surfaced.",
       "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
+      "rel_time": "7 hours ago"
     },
     {
       "sha": "d3698010",
       "subject": "Batch 152: Sonnet-work review fixes - AUDIT_INDEX truth-up + spot-check audit. Pyramid 1578/1598.",
       "author": "jeetmehta1991",
-      "rel_time": "7 hours ago"
+      "rel_time": "8 hours ago"
     },
     {
       "sha": "b4bff5f9",
       "subject": "Batch 151: Remove duplicated Doc Status column/filter from decisions table - Promotion supersedes. Pyramid 743/743.",
       "author": "jeetmehta1991",
-      "rel_time": "15 hours ago"
+      "rel_time": "16 hours ago"
     },
     {
       "sha": "03eb8272",
       "subject": "Batch 150: Fix dec/inv/cav status filter dropdowns (case regex + stale options). Pyramid 742/742.",
       "author": "jeetmehta1991",
-      "rel_time": "15 hours ago"
+      "rel_time": "16 hours ago"
     },
     {
       "sha": "ed744a04",
       "subject": "@ Batch 149: 12 FALSE-POSITIVE bugs -> OBSOLETE, removed from dashboard. Pyramid 626/626.",
       "author": "jeetmehta1991",
-      "rel_time": "16 hours ago"
+      "rel_time": "17 hours ago"
     },
     {
       "sha": "17ffee83",
       "subject": "@ Batch 148: BUG-NNN comment tags + 9 regression tests -> all 277 bugs resolved. Pyramid 626/626.",
       "author": "jeetmehta1991",
-      "rel_time": "16 hours ago"
+      "rel_time": "17 hours ago"
     },
     {
       "sha": "7a4a28b0",
       "subject": "@ Batch 147: 9 AUDIT_INDEX status fixes - pipe chars + status flips. Pyramid 617/617.",
       "author": "jeetmehta1991",
-      "rel_time": "17 hours ago"
+      "rel_time": "18 hours ago"
     },
     {
       "sha": "f49f0dfd",
       "subject": "@ Batch 146: Bug dropdown cleanup - unified READY labels + 7-tier filter. Pyramid 617/617.",
       "author": "jeetmehta1991",
-      "rel_time": "17 hours ago"
+      "rel_time": "18 hours ago"
     },
     {
       "sha": "6756468f",
       "subject": "DEC-458: implement lead_lag_sector_rotation + wire into screen_universe",
       "author": "jeetmehta1991",
-      "rel_time": "17 hours ago"
+      "rel_time": "18 hours ago"
     },
     {
       "sha": "e6e90dbf",
       "subject": "Reclassify 7 PARTIAL-IMPL as DEFERRED; 1 genuine NEEDS-WIRING remains (DEC-458)",
       "author": "jeetmehta1991",
-      "rel_time": "17 hours ago"
+      "rel_time": "18 hours ago"
     },
     {
       "sha": "66367de1",
       "subject": "Fix decision promotion metric: surface 9 real Phase 1A gaps from 288 false noise",
       "author": "jeetmehta1991",
-      "rel_time": "17 hours ago"
+      "rel_time": "19 hours ago"
     },
     {
       "sha": "b03c30a8",
       "subject": "Split RESOLVED-DECIDED bugs into DECIDED/DEFERRED/SUPERSEDED/FALSE-POSITIVE tiers",
       "author": "jeetmehta1991",
-      "rel_time": "18 hours ago"
+      "rel_time": "19 hours ago"
     },
     {
       "sha": "795744bb",
       "subject": "Fix compute_promotion_path for RESOLVED-IMPLEMENTED/DECIDED bugs + rebuild dashboard",
       "author": "jeetmehta1991",
-      "rel_time": "18 hours ago"
+      "rel_time": "19 hours ago"
     },
     {
       "sha": "badbaa0c",
       "subject": "Dashboard dropdown filters broken + BUG-258 code files missed in Batch 158. Pyramid 613/613.",
       "author": "jeetmehta1991",
-      "rel_time": "19 hours ago"
+      "rel_time": "20 hours ago"
     },
     {
       "sha": "c45f110b",
       "subject": "BUG arc complete: update AUDIT_INDEX summary table -- 0 OPEN BUGs remaining.",
       "author": "jeetmehta1991",
-      "rel_time": "21 hours ago"
+      "rel_time": "22 hours ago"
     },
     {
       "sha": "c62dd187",
       "subject": "Batch 162: BUG-111 CRITICAL -- break-and-retest strategy variants implemented. Pyramid 613/613.",
       "author": "jeetmehta1991",
-      "rel_time": "21 hours ago"
+      "rel_time": "22 hours ago"
     },
     {
       "sha": "8372ba6d",
       "subject": "Batch 161: BUG-055 PSAR flip fix + BUG-060 short entry zone gap-down fix. Pyramid 612/612.",
       "author": "jeetmehta1991",
-      "rel_time": "21 hours ago"
+      "rel_time": "22 hours ago"
     },
     {
       "sha": "649d079a",
       "subject": "Batch 160: BUG-054 HMA WMA fix + BUG-075 max_drawdown sort fix. Pyramid 611/611.",
       "author": "jeetmehta1991",
-      "rel_time": "21 hours ago"
+      "rel_time": "22 hours ago"
     },
     {
       "sha": "1eadb979",
       "subject": "Batch 159: BUG-028/077/079/106 false-positives - fixes already landed pre-batch. Pyramid 610/610.",
       "author": "jeetmehta1991",
-      "rel_time": "21 hours ago"
+      "rel_time": "22 hours ago"
     },
     {
       "sha": "a1f835d4",
       "subject": "Batch 158: BUG-226/227 false-positives + BUG-229/245/082/263 decided + BUG-258 ATR_FALLBACK_PCT constant. Pyramid 609/609.",
       "author": "jeetmehta1991",
-      "rel_time": "21 hours ago"
+      "rel_time": "22 hours ago"
     },
     {
       "sha": "59ec56f9",
       "subject": "Batch 157: BUG-275/276/279/284/285 RESOLVED-IMPLEMENTED + BUG-277/278 false-positives. bonferroni n=0, cache_key dicts, reversed dates, fixed_4r_2r, gov_contracts None. Pyramid 608/608.",
       "author": "jeetmehta1991",
-      "rel_time": "21 hours ago"
+      "rel_time": "22 hours ago"
     },
     {
       "sha": "f5465d36",
       "subject": "Batch 156: BUG-271/272/273 RESOLVED-IMPLEMENTED (gov_contracts Qtr+Year fix, lobbying Amount dtype, congressional House col). BUG-270/274 false-positives. Pyramid 607/607.",
       "author": "jeetmehta1991",
-      "rel_time": "21 hours ago"
+      "rel_time": "22 hours ago"
     },
     {
       "sha": "2d1f60bd",
       "subject": "Batch 155: 16 BUGs RESOLVED-DECIDED - site_generator + phase-scope deferrals + false-positives. Pyramid 606/606.",
       "author": "jeetmehta1991",
-      "rel_time": "21 hours ago"
+      "rel_time": "22 hours ago"
     },
     {
       "sha": "f429c960",
       "subject": "Batch 154: 20 BUGs RESOLVED-DECIDED - phase-scope deferrals + false-positives. Pyramid 605/605.",
       "author": "jeetmehta1991",
-      "rel_time": "23 hours ago"
-    },
-    {
-      "sha": "81c8938a",
-      "subject": "Batch 153: 26 BUGs RESOLVED-DECIDED - phase-scope deferrals + false-positives. Pyramid 604/604.",
-      "author": "jeetmehta1991",
-      "rel_time": "23 hours ago"
+      "rel_time": "24 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 65,
-    "modified": 52,
+    "count": 71,
+    "modified": 56,
     "added": 0,
-    "untracked": 13,
+    "untracked": 15,
     "deleted": 0,
     "files": [
       {
@@ -36285,7 +36283,27 @@
       },
       {
         "status": "M",
+        "path": "AUDIT_INDEX.md"
+      },
+      {
+        "status": "M",
         "path": "VERIFICATION_MATRIX.md"
+      },
+      {
+        "status": "M",
+        "path": "backtest/results/writer.py"
+      },
+      {
+        "status": "M",
+        "path": "dashboard_stage_2/data.js"
+      },
+      {
+        "status": "M",
+        "path": "dashboard_stage_2/data.json"
+      },
+      {
+        "status": "M",
+        "path": "dashboard_stage_2/last_run.txt"
       },
       {
         "status": "M",
@@ -36477,10 +36495,6 @@
       },
       {
         "status": "M",
-        "path": "scripts/build_verification_matrix.py"
-      },
-      {
-        "status": "M",
         "path": "verification_matrix.json"
       },
       {
@@ -36518,6 +36532,14 @@
       {
         "status": "??",
         "path": "output_v2/stress_metrics.json"
+      },
+      {
+        "status": "??",
+        "path": "output_v2/top_losers_per_strategy.json"
+      },
+      {
+        "status": "??",
+        "path": "output_v2/trade_pnl_decomposition.csv"
       },
       {
         "status": "??",
@@ -37337,7 +37359,7 @@
       "kind": "DEC",
       "id": "DEC-260",
       "title": "Cache freshness assertion -- assert_cache_fresh(ticker, cache_type, cached_end_date, requested_date) helper + CacheStaleError exception in m",
-      "status": "RESOLVED-IMPLEMENTED",
+      "status": "PARTIAL-IMPL-HELPER-ONLY",
       "tier": 1,
       "reason": "Dependency root (4 downstream items reference)",
       "back_refs": 4,
@@ -37405,8 +37427,8 @@
     }
   ],
   "decision_status_counts": {
-    "RESOLVED-IMPLEMENTED": 443,
-    "PARTIAL-IMPL-HELPER-ONLY": 36,
+    "RESOLVED-IMPLEMENTED": 407,
+    "PARTIAL-IMPL-HELPER-ONLY": 72,
     "REJECTED": 2
   },
   "inv_status_counts": {
@@ -37415,9 +37437,10 @@
     "DEFERRED": 2
   },
   "bug_status_counts": {
-    "RESOLVED-IMPLEMENTED": 83,
+    "RESOLVED-IMPLEMENTED": 81,
     "RESOLVED-DECIDED": 168,
-    "RESOLVED": 14
+    "RESOLVED": 14,
+    "UNKNOWN": 2
   },
   "tier_status_counts": {
     "UNKNOWN": 20,

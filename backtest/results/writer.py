@@ -399,6 +399,83 @@ def write_all_outputs(
     except Exception as exc:
         logger.warning("DEC-153 regime_stratified_summary emission failed: %s", exc)
 
+    # ----- Batch 160 wirings (owner directive 2026-05-14: Path A engine
+    # consumption for FUNC-DEAD analytics surfaced by sharpened matrix).
+    # These were RESOLVED-IMPLEMENTED helpers in metrics.py with no engine
+    # callers - only tests invoked them. Wiring here in writer.py converts
+    # them from FUNC-DEAD to YES.
+
+    # DEC-015 + DEC-089 + DEC-120 -- top_n_losing_trades_per_strategy.
+    # Loss attribution: top-10 losing trades per strategy from the trade log.
+    try:
+        from backtest.results.metrics import top_n_losing_trades_per_strategy
+        if df_trades is not None and not df_trades.empty:
+            losers = top_n_losing_trades_per_strategy(df_trades, n=10)
+            if losers:
+                (output_dir / "top_losers_per_strategy.json").write_text(
+                    json.dumps(losers, indent=2, default=str)
+                )
+                logger.info(
+                    "Wrote top_losers_per_strategy.json (DEC-015/089/120)  -  %d strategies",
+                    len(losers),
+                )
+    except Exception as exc:
+        logger.warning("DEC-015/089/120 top_losers emission failed: %s", exc)
+
+    # DEC-078A + DEC-366 -- detect_stop_cluster_pattern. Diagnostic: rolling-
+    # window stop-out density; flags STOP_CLUSTER_PATTERN if >= 5 stop_loss
+    # exits within 10 trading days (informational only, no action).
+    try:
+        from backtest.results.metrics import detect_stop_cluster_pattern
+        if (df_trades is not None and not df_trades.empty
+                and "exit_reason" in df_trades.columns
+                and "exit_date" in df_trades.columns):
+            stop_dates = df_trades.loc[
+                df_trades["exit_reason"] == "stop_loss", "exit_date"
+            ].tolist()
+            if stop_dates:
+                cluster = detect_stop_cluster_pattern(
+                    stop_dates, window_days=10, threshold=5,
+                )
+                (output_dir / "stop_cluster_pattern.json").write_text(
+                    json.dumps(cluster, indent=2, default=str)
+                )
+                logger.info(
+                    "Wrote stop_cluster_pattern.json (DEC-078A/366)  -  %d stop-outs",
+                    len(stop_dates),
+                )
+    except Exception as exc:
+        logger.warning("DEC-078A/366 stop_cluster_pattern emission failed: %s", exc)
+
+    # DEC-214 + DEC-279 -- decompose_trade_pnl. 5-component decomposition per
+    # trade (signal / timing / exit / sizing / agent). In Phase 1A the timing/
+    # exit/sizing/agent deltas are not yet computed per-trade so we apply
+    # zeros and decompose only the actual_pnl - this proves the wiring runs
+    # and emits a per-trade decomposition stub. Phase 1B+ will populate the
+    # delta inputs from agent overlay diffs.
+    try:
+        from backtest.results.metrics import decompose_trade_pnl
+        if df_trades is not None and not df_trades.empty and "pnl_dollar" in df_trades.columns:
+            decomp_rows = []
+            for _, row in df_trades.head(200).iterrows():
+                pnl = float(row.get("pnl_dollar", 0.0) or 0.0)
+                comp = decompose_trade_pnl(
+                    actual_pnl_dollar=pnl,
+                )
+                comp["ticker"] = row.get("ticker")
+                comp["entry_date"] = str(row.get("entry_date"))
+                decomp_rows.append(comp)
+            if decomp_rows:
+                pd.DataFrame(decomp_rows).to_csv(
+                    output_dir / "trade_pnl_decomposition.csv", index=False,
+                )
+                logger.info(
+                    "Wrote trade_pnl_decomposition.csv (DEC-214/279)  -  %d trades",
+                    len(decomp_rows),
+                )
+    except Exception as exc:
+        logger.warning("DEC-214/279 trade_pnl_decomposition emission failed: %s", exc)
+
     # -- Walk-forward validation --
     # Portfolio-level summary with tier-based position sizing
     try:

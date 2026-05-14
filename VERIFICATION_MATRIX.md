@@ -14,110 +14,49 @@ Canonical backtest: `python -m coverage run backtest/run_phase1a.py --no-agents 
 - Total items audited: **746** (scope-expanded 2026-05-14 per owner directive  -  now covers ALL visible DECs + BUGs, not just IMPLEMENTED tier)
 
 **By promotion tier:**
-- IMPLEMENTED: 357
-- DECIDED: 213
-- DEFERRED: 174
+- IMPLEMENTED: 301
+- DECIDED: 211
+- DEFERRED: 172
+- FUNC-DEAD: 60
 - UNKNOWN: 2
 
 **By coverage-driven engine status:**
-- Engine YES (executed): **156**
+- Engine YES (executed): **165**
 - Engine LAZY-WIRED (all tagged files wired via lazy import chains): **3** (import chain exists; condition gating the call not met in this small backtest)
 - Engine PARTIAL-ORPHAN (some tags wired, primary helper file orphaned): **0** (DEC is mentioned in a wired file but the actual helper module has no live importer  -  real gap)
-- Engine FUNC-DEAD (function exists but never executed): **60**
+- Engine FUNC-DEAD (function exists but never executed): **51**
 - Engine NO (all tagged files orphaned): **0** (real wiring gap  -  helper file imported nowhere in the engine path)
 - Engine DECLARED-ONLY (module-level tag in config; symbol not consumed externally): **109** (constant declared but no other executing file uses it  -  deferred-feature config that hasn't been wired yet)
 - Engine N/A (no code expected): **418**
 
-### Classification anomalies (tier vs engine mismatch): **56**
+### Classification anomalies (tier vs engine mismatch): **0**
 
-| ID | Tier | Engine | Note |
-|---|---|---|---|
-| `DEC-015` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-019` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-078A` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-089` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-092` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-095` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-100` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-119` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-120` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-123` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-131` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-134` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-141` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-142` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-144` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-145` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-148` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-159` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-175` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-201` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-206` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-209` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-210` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-211` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-212` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-214` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-225` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-227` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-232` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-233` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-241` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-246` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-249` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-255` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-258` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-260` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-279` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-280` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-284` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-287` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-321` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-330` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-333` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-334` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-352` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-366` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-392` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-396` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-400` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-420` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-461` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-606` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `DEC-590` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `BUG-083` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `BUG-271` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
-| `BUG-228` | IMPLEMENTED | FUNC-DEAD | IMPLEMENTED but engine never reaches the tagged code - wiring gap |
+None  -  every item's promotion tier matches its coverage-driven engine status. Classifications are internally consistent.
 
 ### Pyramid coverage gaps (count of engine-consumed items missing per tier)
 
 - `unit`: **0** items lack a reference in this tier's test files
-- `smoke`: **147** items lack a reference in this tier's test files
+- `smoke`: **156** items lack a reference in this tier's test files
 - `integration`: **0** items lack a reference in this tier's test files
-- `system`: **154** items lack a reference in this tier's test files
-- `functional`: **154** items lack a reference in this tier's test files
-- `regression`: **155** items lack a reference in this tier's test files
-- `data_integrity`: **155** items lack a reference in this tier's test files
-- `performance`: **158** items lack a reference in this tier's test files
-- `acceptance`: **153** items lack a reference in this tier's test files
-- `property`: **158** items lack a reference in this tier's test files
-- `snapshot`: **156** items lack a reference in this tier's test files
-- `contract`: **147** items lack a reference in this tier's test files
-- `compatibility`: **158** items lack a reference in this tier's test files
+- `system`: **163** items lack a reference in this tier's test files
+- `functional`: **163** items lack a reference in this tier's test files
+- `regression`: **164** items lack a reference in this tier's test files
+- `data_integrity`: **164** items lack a reference in this tier's test files
+- `performance`: **167** items lack a reference in this tier's test files
+- `acceptance`: **162** items lack a reference in this tier's test files
+- `property`: **167** items lack a reference in this tier's test files
+- `snapshot`: **165** items lack a reference in this tier's test files
+- `contract`: **156** items lack a reference in this tier's test files
+- `compatibility`: **167** items lack a reference in this tier's test files
 
 ### Engine-consumption gaps detail
 
 | ID | engine | evidence | unit | integration |
 |---|---|---|---|---|
-| `DEC-015` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
 | `DEC-019` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
-| `DEC-078A` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
-| `DEC-089` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
 | `DEC-092` | FUNC-DEAD | function in backtest/engine/improvements.py never executed | YES | YES |
 | `DEC-095` | FUNC-DEAD | function in backtest/engine/improvements.py never executed | YES | YES |
 | `DEC-100` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
-| `DEC-119` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
-| `DEC-120` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
 | `DEC-123` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
 | `DEC-131` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
 | `DEC-134` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
@@ -128,13 +67,11 @@ Canonical backtest: `python -m coverage run backtest/run_phase1a.py --no-agents 
 | `DEC-148` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
 | `DEC-159` | FUNC-DEAD | function in backtest/engine/improvements.py never executed | YES | YES |
 | `DEC-175` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
-| `DEC-201` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
 | `DEC-206` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
 | `DEC-209` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
 | `DEC-210` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
 | `DEC-211` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
 | `DEC-212` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
-| `DEC-214` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
 | `DEC-225` | FUNC-DEAD | function in backtest/engine/improvements.py never executed | YES | YES |
 | `DEC-227` | FUNC-DEAD | function in backtest/engine/improvements.py never executed | YES | YES |
 | `DEC-232` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
@@ -145,7 +82,6 @@ Canonical backtest: `python -m coverage run backtest/run_phase1a.py --no-agents 
 | `DEC-255` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
 | `DEC-258` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
 | `DEC-260` | FUNC-DEAD | function in backtest/engine/improvements.py never executed | YES | YES |
-| `DEC-279` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
 | `DEC-280` | FUNC-DEAD | function in backtest/engine/improvements.py never executed | YES | YES |
 | `DEC-284` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
 | `DEC-287` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
@@ -154,7 +90,6 @@ Canonical backtest: `python -m coverage run backtest/run_phase1a.py --no-agents 
 | `DEC-333` | FUNC-DEAD | function in backtest/data/sentiment.py never executed | YES | YES |
 | `DEC-334` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
 | `DEC-352` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
-| `DEC-366` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
 | `DEC-392` | FUNC-DEAD | function in backtest/data/universe.py never executed | YES | YES |
 | `DEC-396` | FUNC-DEAD | function in backtest/data/smart_money.py never executed | YES | YES |
 | `DEC-400` | FUNC-DEAD | function in backtest/results/metrics.py never executed | YES | YES |
@@ -185,7 +120,7 @@ Canonical backtest: `python -m coverage run backtest/run_phase1a.py --no-agents 
 | `DEC-011` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-012` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-013` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `DEC-015` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-015` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-018` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-019` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-021` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
@@ -233,7 +168,7 @@ Canonical backtest: `python -m coverage run backtest/run_phase1a.py --no-agents 
 | `DEC-075` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-076` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-078` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
-| `DEC-078A` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-078A` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-078B` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-079` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-081` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
@@ -244,7 +179,7 @@ Canonical backtest: `python -m coverage run backtest/run_phase1a.py --no-agents 
 | `DEC-086` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-087` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-088` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `DEC-089` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-089` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-090` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-091` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-092` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
@@ -267,8 +202,8 @@ Canonical backtest: `python -m coverage run backtest/run_phase1a.py --no-agents 
 | `DEC-116` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-117` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-118` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
-| `DEC-119` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `DEC-120` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-119` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-120` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-121` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-122` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-123` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
@@ -344,7 +279,7 @@ Canonical backtest: `python -m coverage run backtest/run_phase1a.py --no-agents 
 | `DEC-198` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-199` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-200` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
-| `DEC-201` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-201` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-202` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-203` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-204` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
@@ -357,7 +292,7 @@ Canonical backtest: `python -m coverage run backtest/run_phase1a.py --no-agents 
 | `DEC-211` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-212` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-213` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
-| `DEC-214` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-214` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-215` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-216` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-217` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
@@ -417,7 +352,7 @@ Canonical backtest: `python -m coverage run backtest/run_phase1a.py --no-agents 
 | `DEC-276` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-277` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-278` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
-| `DEC-279` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-279` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-280` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-281` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-282` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
@@ -493,7 +428,7 @@ Canonical backtest: `python -m coverage run backtest/run_phase1a.py --no-agents 
 | `DEC-363` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-364` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-365` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
-| `DEC-366` | FUNC-DEAD | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
+| `DEC-366` | YES | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-367` | N/A | no | no | no | no | no | no | no | no | no | no | no | no | no |
 | `DEC-368` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
 | `DEC-369` | DECLARED-ONLY | YES | no | YES | no | no | no | no | no | no | no | no | no | no |
