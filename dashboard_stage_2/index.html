@@ -561,20 +561,18 @@ $('#dec-filter').on('keyup', function () { decTable.search(this.value).draw(); }
 // after ID/Title/Description). Was previously column 2 (Description) which
 // caused the dropdown to be effectively non-functional.
 $('#dec-status-filter').on('change', function () {
-  // FIX 2026-05-11 (Batch 67): DataTables column.search() filters against
-  // RAW HTML cell content (not tag-stripped textContent). Cell is
-  // `<span class="badge ...">STATUS</span>`. Searching `>STATUS<` ensures
-  // exact-token match: ">PARTIAL<" does NOT substring-match ">PARTIAL-SPEC-ONLY<"
-  // (because after ">PARTIAL" comes "-" not "<"). Plain substring, no regex.
+  // FIX 2026-05-13: DataTables column.search() operates on STRIPPED text
+  // (not raw HTML). Badge cell stripped text = exact status string.
+  // Use regex ^v$ for exact-token match so "PARTIAL" ≠ "PARTIAL-SPEC-ONLY".
   const v = this.value;
-  decTable.column(3).search(v ? `>${v}<` : '', false, false).draw();
+  decTable.column(3).search(v ? `^${v}$` : '', true, false).draw();
 });
 $('#dec-promotion-filter').on('change', function () {
-  // Same `>VALUE<` pattern. promotionCell renders badge label + hidden
-  // tier-text span; tier values (IMPLEMENTED / CODE_ONLY etc.) live as
-  // `>TIER</span>` in the hidden span making them filterable.
+  // FIX 2026-05-13: promotionCell renders badge label + hidden tier-text span.
+  // Stripped text = "LABEL TIER" (e.g. "NEEDS-TEST CODE_ONLY"). Plain substring
+  // search on v (the tier code) matches the hidden-span text correctly.
   const v = this.value;
-  decTable.column(4).search(v ? `>${v}<` : '', false, false).draw();
+  decTable.column(4).search(v, false, false).draw();
 });
 
 // Bugs table
@@ -602,9 +600,9 @@ const bugTable = $('#tbl-bugs').DataTable({
 });
 $('#bug-filter').on('keyup', function () { bugTable.search(this.value).draw(); });
 $('#bug-promotion-filter').on('change', function () {
-  // FIX Batch 67: `>VALUE<` substring against raw HTML.
+  // FIX 2026-05-13: plain substring on stripped text; tier code in hidden span.
   const v = this.value;
-  bugTable.column(3).search(v ? `>${v}<` : '', false, false).draw();
+  bugTable.column(3).search(v, false, false).draw();
 });
 
 // INVs table
@@ -622,14 +620,14 @@ const invTable = $('#tbl-invs').DataTable({
   data: invRows, pageLength: 50, order: [[0, 'asc']],
 });
 $('#inv-filter').on('keyup', function () { invTable.search(this.value).draw(); });
-// FIX Batch 67: `>VALUE<` substring pattern against raw HTML cell.
+// FIX 2026-05-13: DataTables searches stripped text; use ^v$ for exact badge match.
 $('#inv-status-filter').on('change', function () {
   const v = this.value;
-  invTable.column(3).search(v ? `>${v}<` : '', false, false).draw();
+  invTable.column(3).search(v ? `^${v}$` : '', true, false).draw();
 });
 $('#inv-promotion-filter').on('change', function () {
   const v = this.value;
-  invTable.column(4).search(v ? `>${v}<` : '', false, false).draw();
+  invTable.column(4).search(v, false, false).draw();
 });
 
 // Caveats table
@@ -648,10 +646,10 @@ const cavTable = $('#tbl-caveats').DataTable({
   data: cavRows, pageLength: 50, order: [[0, 'asc']],
 });
 $('#cav-filter').on('keyup', function () { cavTable.search(this.value).draw(); });
-// FIX Batch 67: `>VALUE<` substring pattern against raw HTML cell.
+// FIX 2026-05-13: use ^v$ regex for exact match against stripped badge text.
 $('#cav-status-filter').on('change', function () {
   const v = this.value;
-  cavTable.column(3).search(v ? `>${v}<` : '', false, false).draw();
+  cavTable.column(3).search(v ? `^${v}$` : '', true, false).draw();
 });
 
 // Learnings table

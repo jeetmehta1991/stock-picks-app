@@ -174,6 +174,11 @@ TRAILING_STOP = {
     "ratchet_from":      "close",
 }
 
+# BUG-258 fix 2026-05-13: ATR fallback when insufficient history (<14 bars).
+# 2% of entry price per Wilder recommendation for stocks with <14 bars available.
+# Named constant prevents silent magic-number use across exit_strategies.py.
+ATR_FALLBACK_PCT: float = 0.02
+
 # -----------------------------------------------------------------------------
 # CIRCUIT BREAKERS  -  checked before trailing stop, in priority order
 # -----------------------------------------------------------------------------

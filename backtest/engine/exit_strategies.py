@@ -30,6 +30,8 @@ from typing import Optional
 # filling at the stop/target level (which would understate downside on
 # overnight gap-downs and overstate winners on gap-ups). Spec: TRADING_RULES_AND_INFORMATION.md sec11.
 from backtest.engine.exit_manager import compute_fill_price
+# BUG-258 fix 2026-05-13: named constant replaces magic-number 0.02 across all ATR fallbacks.
+from backtest.config import ATR_FALLBACK_PCT
 
 logger = logging.getLogger(__name__)
 
@@ -52,7 +54,7 @@ def _pnl(entry: float, exit_p: float, direction: str) -> float:
 def _atr_value(df_slice: pd.DataFrame, period: int = 14) -> float:
     """Compute ATR from a DataFrame slice."""
     if len(df_slice) < period:
-        return df_slice["close"].iloc[-1] * 0.02
+        return df_slice["close"].iloc[-1] * ATR_FALLBACK_PCT
     h, l, c = df_slice["high"], df_slice["low"], df_slice["close"]
     tr = pd.concat([h-l, (h-c.shift()).abs(), (l-c.shift()).abs()], axis=1).max(axis=1)
     return float(tr.ewm(alpha=1/period, adjust=False).mean().iloc[-1])
@@ -184,7 +186,7 @@ def exit_atr_trail(df_full, entry_date, entry_price, direction, atr,
 def exit_fixed_target(df_full, entry_date, entry_price, direction, atr,
                        target_mult=3.0, stop_mult=2.0, max_days=252):
     if atr == 0:
-        atr = entry_price * 0.02
+        atr = entry_price * ATR_FALLBACK_PCT
     target = (entry_price + target_mult * atr) if direction == "long" \
              else (entry_price - target_mult * atr)
     stop   = (entry_price - stop_mult * atr)   if direction == "long" \
@@ -320,7 +322,7 @@ def exit_breakeven_trail(df_full, entry_date, entry_price, direction, atr,
                           breakeven_mult=1.0, trail_pct=0.10, max_days=252):
     """Move stop to breakeven once 1x ATR in profit, then trail at 10%."""
     if atr == 0:
-        atr = entry_price * 0.02
+        atr = entry_price * ATR_FALLBACK_PCT
     be_trigger = (entry_price + breakeven_mult * atr) if direction == "long" \
                  else (entry_price - breakeven_mult * atr)
     stop       = (entry_price - 2 * atr) if direction == "long" \
@@ -373,7 +375,7 @@ def exit_hybrid_50pct(df_full, entry_date, entry_price, direction, atr,
                        target_mult=3.0, trail_pct=0.10, max_days=252):
     """Take 50% off at 3x ATR, trail remaining 50% at 10%."""
     if atr == 0:
-        atr = entry_price * 0.02
+        atr = entry_price * ATR_FALLBACK_PCT
     target      = (entry_price + target_mult * atr) if direction == "long" \
                   else (entry_price - target_mult * atr)
     stop        = (entry_price * 0.90) if direction == "long" \
@@ -694,7 +696,7 @@ def _stop_distance(entry_price: float, atr: float, direction: str) -> float:
     """Compute initial stop distance per DEC-517 conventions."""
     if atr and atr > 0:
         return float(atr)
-    return entry_price * 0.02  # 2% fallback
+    return entry_price * ATR_FALLBACK_PCT
 
 
 def exit_r_multiple_2r(df_full, entry_date, entry_price, direction, atr,

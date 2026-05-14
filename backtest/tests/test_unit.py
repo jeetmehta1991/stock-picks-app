@@ -4716,25 +4716,26 @@ def test_batch_64_audit_index_only_resolved_or_rejected():
 
 
 def test_dashboard_filter_promotioncell_hidden_tier_span():
-    """Dashboard fix Batch 67: filters use `>VALUE<` substring against raw
-    HTML cell content (DataTables column.search filters raw HTML, not
-    tag-stripped textContent). promotionCell appends hidden tier-text
-    span so tier name appears as `>TIER</span>` text content.
+    """Dashboard filter fix 2026-05-13: DataTables column.search() operates on
+    stripped text (not raw HTML). promotionCell hidden tier span makes tier code
+    visible as text. Status columns use ^v$ regex for exact match; promotion
+    columns use plain substring v to find tier code in hidden span text.
     """
     from pathlib import Path
     html = Path("dashboard_stage_2/index.html").read_text(encoding="utf-8")
-    # promotionCell still appends hidden tier span (Batch 64 fix preserved)
+    # Hidden tier-text span must still be present (makes tier code visible to DT search)
     assert "<span style=\"display:none\">${tier}</span>" in html, (
         "promotionCell missing hidden tier-text span"
     )
-    # Batch 67: filters use `>${v}<` substring pattern (NOT regex-anchored)
-    assert "`>${v}<`" in html, (
-        "Dropdown filters missing >VALUE< substring pattern"
+    # Old broken pattern must be gone (it searched raw HTML, DT uses stripped text)
+    old_count = html.count("`>${v}<`")
+    assert old_count == 0, (
+        f"Old >v< raw-HTML pattern still present ({old_count} occurrences); should be 0"
     )
-    # Ensure all 6 filter handlers use the new pattern
-    pattern_count = html.count("`>${v}<`")
-    assert pattern_count >= 6, (
-        f"Expected >=6 filter handlers with >${{v}}< pattern; got {pattern_count}"
+    # New pattern: ^v$ regex for status columns (exact-token match on stripped text)
+    exact_count = html.count("`^${v}$`")
+    assert exact_count == 3, (
+        f"Expected 3 exact-match ^v$ patterns (dec-status, inv-status, cav-status); got {exact_count}"
     )
 
 
@@ -5126,25 +5127,29 @@ def test_dec_438_golden_master_testing_layer_4():
 
 
 def test_dashboard_filter_uses_value_pattern_batch_67():
-    """Dashboard filter fix Batch 67: all 6 filter handlers use `>${v}<`
-    substring pattern against raw HTML (DataTables filters against raw cell
-    data, not tag-stripped text). Earlier Batch 64 regex-anchored fix failed
-    because the regex required textContent but DataTables receives the
-    HTML-wrapped span. `>VALUE<` substring works because it appears between
-    HTML tags in the badge AND in the hidden tier-text span.
+    """Dashboard filter fix 2026-05-13: the old `>v<` raw-HTML pattern is
+    replaced. DataTables column.search() strips HTML before searching, so
+    `>VALUE<` never matched. Correct patterns:
+      - Status columns: ^v$ regex (exact-token on stripped badge text)
+      - Promotion columns: plain v substring (finds tier code in hidden span)
     """
     from pathlib import Path
     html = Path("dashboard_stage_2/index.html").read_text(encoding="utf-8")
-    # 6 filter handlers: dec-status, dec-promotion, bug-promotion,
-    # inv-status, inv-promotion, cav-status
-    pattern_count = html.count("`>${v}<`")
-    assert pattern_count == 6, (
-        f"Expected 6 filter handlers with `>${{v}}<` pattern; got {pattern_count}"
+    # Old broken pattern must be completely gone
+    old_count = html.count("`>${v}<`")
+    assert old_count == 0, (
+        f"Old >v< pattern still present ({old_count} occurrences); must be 0"
     )
-    # No regex-anchored pattern remaining from Batch 64
-    assert "\\\\s*${v}\\\\s*" not in html, (
-        "Batch 64 regex-anchored pattern should be removed in Batch 67"
+    # Status columns use regex exact-match (3: dec-status, inv-status, cav-status)
+    exact_count = html.count("`^${v}$`")
+    assert exact_count == 3, (
+        f"Expected 3 exact-match ^v$ handlers; got {exact_count}"
     )
+    # Promotion columns use plain substring (v, false, false) - 3 handlers
+    # Verify dec-promotion, bug-promotion, inv-promotion each use substring search
+    assert "decTable.column(4).search(v, false, false)" in html, "dec-promotion filter broken"
+    assert "bugTable.column(3).search(v, false, false)" in html, "bug-promotion filter broken"
+    assert "invTable.column(4).search(v, false, false)" in html, "inv-promotion filter broken"
 
 
 # ============================================================================
