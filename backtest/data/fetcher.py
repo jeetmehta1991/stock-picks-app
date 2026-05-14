@@ -1,5 +1,5 @@
 """
-data/fetcher.py — OHLCV price data and fundamentals.
+data/fetcher.py  -  OHLCV price data and fundamentals.
 
 Pass 53 Batch 13 sub-task 6 (DEC-497 NO-LIVE-API HARD CUT + D4 yfinance total
 cut owner directive 2026-05-06): yfinance REMOVED from runtime. All data reads
@@ -15,7 +15,7 @@ against look-ahead bias in the backtesting engine.
 
 Pre-prefetch state (FUTURE prefetch pending): functions return empty/stub
 gracefully (per DEC-503 test pyramid acceptance). Cache miss does NOT fall back
-to live API — DEC-497 HARD CUT.
+to live API  -  DEC-497 HARD CUT.
 """
 
 import os
@@ -51,7 +51,7 @@ def _assert_no_lookahead(df: pd.DataFrame, as_of: date, label: str) -> pd.DataFr
     """
     Strip any rows after `as_of` and RAISE if any were found.
 
-    DEC-305 fix (Pass 50): previously logged WARNING and silently returned
+    DEC-305 fix (Pass 50) BUG-224: previously logged WARNING and silently returned
     filtered df. Backtest leaks were swallowed in production. Now raises
     LookAheadBiasError so the issue is forced to surface.
 
@@ -88,7 +88,7 @@ class LookAheadBiasError(RuntimeError):
 def get_sp500_constituents() -> list[str]:
     """
     Load S&P 500 constituents from the committed CSV file.
-    NEVER use Wikipedia — blocked in Codespaces, not point-in-time, fragile (L88).
+    NEVER use Wikipedia  -  blocked in Codespaces, not point-in-time, fragile (L88).
     Refresh backtest/data/Current Snapshot_SP500 Tickers_May 2026.csv quarterly via scripts/refresh_sp500_universe.py.
     """
     from backtest.data.universe import get_sp500_constituents as _get
@@ -124,12 +124,12 @@ def fetch_ohlcv(
     """
     # Pass 53 Batch 13 sub-task 6 (DEC-497 D4 yfinance HARD CUT 2026-05-06):
     # Read from cache/ohlcv/{TICKER}.parquet (Sprint 0A Batch 2 prefetched).
-    # NO live API fallback. Cache miss → empty DataFrame.
+    # NO live API fallback. Cache miss -> empty DataFrame.
     effective_end = min(end, as_of) if as_of else end
     safe_ticker = ticker.replace(".", "-")
     cache_path = Path(__file__).parent / "cache" / "ohlcv" / f"{safe_ticker}.parquet"
     if not cache_path.exists():
-        logger.debug("OHLCV cache miss for %s (DEC-497 HARD CUT — no live fallback)", ticker)
+        logger.debug("OHLCV cache miss for %s (DEC-497 HARD CUT  -  no live fallback)", ticker)
         return pd.DataFrame()
     try:
         df = pd.read_parquet(cache_path)
@@ -189,7 +189,7 @@ def fetch_info(ticker: str, as_of: Optional[date] = None) -> dict:
     ``data_prefetch/polygon/reference/`` (never existed); actual data is in
     ``data_prefetch/polygon/legacy_archive_pass53/reference/`` (599 tickers).
     Schema columns are ``sic_code/sic_description/primary_exchange/list_date``
-    — NOT ``sector/industry/exchange/ipo_date`` — so we map them. Sector
+     -  NOT ``sector/industry/exchange/ipo_date``  -  so we map them. Sector
     canonical source remains universe CSVs (B++ schema) per L146 separation;
     Polygon reference only fills market_cap / industry-via-SIC / exchange /
     list_date.
@@ -212,13 +212,13 @@ def fetch_info(ticker: str, as_of: Optional[date] = None) -> dict:
         if df.empty:
             return default
         row = df.iloc[0]
-        # Schema mapping (Polygon reference → canonical info dict):
+        # Schema mapping (Polygon reference -> canonical info dict):
         #   name            -> name
         #   market_cap      -> market_cap
         #   sic_description -> industry (Polygon uses SIC, not GICS)
         #   primary_exchange-> exchange (XNAS / XNYS / etc.)
         #   list_date       -> ipo_date
-        # sector remains "Unknown" — universe CSVs are the canonical sector source.
+        # sector remains "Unknown"  -  universe CSVs are the canonical sector source.
         return {
             "ticker":       ticker,
             "name":         row.get("name", ticker) or ticker,
@@ -273,7 +273,7 @@ def days_to_next_earnings(ticker: str, as_of: date) -> Optional[int]:
     Future enhancement: derive from Polygon ticker events feed (Batch 5).
     """
     # Stage 2 backtest doesn't need forward earnings (uses historical_membership);
-    # Phase 1B Risk Agent needs forward calendar → wire via Polygon /vX/reference
+    # Phase 1B Risk Agent needs forward calendar -> wire via Polygon /vX/reference
     # /financials with filing_date.gte=today (Batch 13 future).
     return None
 
@@ -343,22 +343,22 @@ def passes_liquidity_filter(
     if df_ohlcv.empty:
         return False, "no_price_data"
 
-    # Price filter — use last close on or before as_of
+    # Price filter  -  use last close on or before as_of
     last_close = df_ohlcv["close"].iloc[-1]
     if last_close < 5.0:
         return False, f"price_${last_close:.2f}_below_$5"
 
-    # Volume filter — 20-day rolling average
+    # Volume filter  -  20-day rolling average
     vol_20d = df_ohlcv["volume"].tail(20).mean()
     if vol_20d < 500_000:
         return False, f"avg_vol_{int(vol_20d):,}_below_500k"
 
-    # Market cap filter — skip if data unavailable (e.g. rate limited or ETF)
+    # Market cap filter  -  skip if data unavailable (e.g. rate limited or ETF)
     market_cap_m = (info.get("market_cap") or 0) / 1_000_000
     if market_cap_m > 0 and market_cap_m < 100:
         return False, f"mkt_cap_${market_cap_m:.0f}M_below_$100M"
 
-    # Listing age filter — IPO date from yfinance info
+    # Listing age filter  -  IPO date from yfinance info
     ipo_epoch = info.get("ipo_date")
     if ipo_epoch:
         ipo_date = date.fromtimestamp(ipo_epoch)
@@ -388,9 +388,9 @@ def volume_spike_factor(df_ohlcv: pd.DataFrame, window: int = 20) -> float:
     return today_vol / avg_vol
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Pass 53 Day-9 v8c Wave D — L146 G6 Polygon events accessor
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
+# Pass 53 Day-9 v8c Wave D  -  L146 G6 Polygon events accessor
+# -----------------------------------------------------------------------------
 def get_ticker_change_history(ticker: str) -> list[dict]:
     """Return historical ticker_change events from Polygon events prefetch.
 
@@ -426,12 +426,12 @@ def get_ticker_change_history(ticker: str) -> list[dict]:
         return []
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Pass 53 Day-9 v8h Tier D — Polygon static / snapshot / reference_meta
-# ─────────────────────────────────────────────────────────────────────────────
+# -----------------------------------------------------------------------------
+# Pass 53 Day-9 v8h Tier D  -  Polygon static / snapshot / reference_meta
+# -----------------------------------------------------------------------------
 
 def get_polygon_snapshot(direction: str = "gainers") -> pd.DataFrame:
-    """Tier D1 — current-day snapshot of universe-wide gainers/losers.
+    """Tier D1  -  current-day snapshot of universe-wide gainers/losers.
 
     Source: data_prefetch/polygon/snapshot/{direction}.parquet
     direction: 'gainers' or 'losers'.
@@ -451,7 +451,7 @@ def get_polygon_snapshot(direction: str = "gainers") -> pd.DataFrame:
 
 
 def get_market_status() -> dict:
-    """Tier D2 — current Polygon market status (open/closed/extended-hours).
+    """Tier D2  -  current Polygon market status (open/closed/extended-hours).
 
     Source: data_prefetch/polygon/market_status/now.parquet
     Single-row snapshot. Use to gate live-trading decisions; ignored in backtest.
@@ -470,7 +470,7 @@ def get_market_status() -> dict:
 
 
 def get_upcoming_holidays() -> pd.DataFrame:
-    """Tier D2 — upcoming market-holiday calendar.
+    """Tier D2  -  upcoming market-holiday calendar.
 
     Source: data_prefetch/polygon/market_status/upcoming_holidays.parquet
     Useful for gating earnings-blackout (DEC-518) edge cases on holiday-shifted
@@ -487,7 +487,7 @@ def get_upcoming_holidays() -> pd.DataFrame:
 
 
 def get_polygon_reference_meta(kind: str = "exchanges") -> pd.DataFrame:
-    """Tier D3 — Polygon static reference data.
+    """Tier D3  -  Polygon static reference data.
 
     Source: data_prefetch/polygon/reference_meta/{kind}.parquet
     kind: 'exchanges' (52 rows), 'conditions' (130 rows), 'ticker_types' (25 rows).

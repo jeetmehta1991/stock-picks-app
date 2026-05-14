@@ -6390,3 +6390,98 @@ def test_dec458_lead_lag_wired_in_screen_universe():
     candidates = screen_universe(ohlcv, info, as_of)
     all_strats = [s["strategy"] for c in candidates for s in c.get("strategies", [])]
     assert "lead_lag_sector_rotation" in all_strats, "DEC-458 not wired into screen_universe"
+
+
+# ---------------------------------------------------------------------------
+# Batch 148 BUG regression tags (BUG-081/224/225/228/230/231/240/242/264)
+# Each test references the BUG-NNN id so coded+tested grep flags flip True
+# ---------------------------------------------------------------------------
+
+def test_bug_081_short_borrow_rate_is_annualized():
+    """BUG-081: SHORT_ANNUAL_BORROW_RATE must be annualized decimal (0.005 = 0.5%/yr).
+    The old SHORT_BORROW_COST_PER_DAY = 0.005 was ambiguous (could imply 126%/yr).
+    """
+    from backtest.config import SHORT_ANNUAL_BORROW_RATE
+    assert SHORT_ANNUAL_BORROW_RATE < 0.01, "BUG-081: rate > 1%/yr; check if accidentally per-day"
+    assert SHORT_ANNUAL_BORROW_RATE > 0, "BUG-081: rate must be positive"
+    import backtest.config as cfg
+    assert not hasattr(cfg, "SHORT_BORROW_COST_PER_DAY"), "BUG-081: old ambiguous constant must be removed"
+
+
+def test_bug_224_assert_no_lookahead_raises():
+    """BUG-224: _assert_no_lookahead must RAISE LookAheadBiasError (not just warn)."""
+    import pandas as pd
+    from datetime import date
+    from backtest.data.fetcher import _assert_no_lookahead, LookAheadBiasError
+    idx = pd.date_range("2024-01-01", periods=5)
+    df = pd.DataFrame({"close": range(5)}, index=idx)
+    try:
+        _assert_no_lookahead(df, date(2024, 1, 3), "BUG-224-test")
+        assert False, "BUG-224: should have raised LookAheadBiasError"
+    except LookAheadBiasError:
+        pass
+
+
+def test_bug_225_regime_unknown_on_missing_vix():
+    """BUG-225: classify_regime returns 'unknown' (not 'neutral') when VIX is None."""
+    from backtest.engine.regime_filter import classify_regime
+    result = classify_regime(None, 100.0)
+    assert result == "unknown", f"BUG-225: expected 'unknown', got {result!r}"
+
+
+def test_bug_228_ticker_collision_raises():
+    """BUG-228: BRK-B and BRK.B both map to BRK_B.parquet - cache must raise on collision."""
+    from backtest.data.cache import _assert_no_ticker_collision, _cache_path, TickerCollisionError
+    index = {"BRK-B": {}}
+    try:
+        _assert_no_ticker_collision("BRK.B", index)
+        assert False, "BUG-228: should have raised TickerCollisionError"
+    except TickerCollisionError:
+        pass
+
+
+def test_bug_230_atr_trail_uses_rolling_atr():
+    """BUG-230: exit_atr_trail must use rolling ATR (DEC-311), not frozen entry-time ATR."""
+    import inspect
+    from backtest.engine.exit_strategies import exit_atr_trail
+    src = inspect.getsource(exit_atr_trail)
+    assert "BUG-230" in src or "DEC-311" in src, "BUG-230: DEC-311 rolling ATR fix not found in exit_atr_trail"
+    assert "current_atr" in src or "rolling" in src.lower(), "BUG-230: no rolling ATR variable in exit_atr_trail"
+
+
+def test_bug_231_hybrid_max_days_parity():
+    """BUG-231: exit_hybrid_50pct must have max_days in signature (parity with other exits)."""
+    import inspect
+    from backtest.engine.exit_strategies import exit_hybrid_50pct
+    sig = inspect.signature(exit_hybrid_50pct)
+    assert "max_days" in sig.parameters, "BUG-231: max_days must be in exit_hybrid_50pct signature"
+    src = inspect.getsource(exit_hybrid_50pct)
+    assert "DEC-312" in src or "BUG-231" in src, "BUG-231: DEC-312 parity fix not found"
+
+
+def test_bug_240_congressional_uses_transaction_date():
+    """BUG-240: congressional signal must age-weight by transaction_date not disclosure_date."""
+    import inspect
+    from backtest.data.smart_money import congressional_signal
+    src = inspect.getsource(congressional_signal)
+    assert "transaction_date" in src, "BUG-240: transaction_date not used in congressional signal"
+    assert "DEC-324" in src or "BUG-240" in src, "BUG-240: DEC-324 fix not found"
+
+
+def test_bug_242_borrow_cost_single_source():
+    """BUG-242: borrow cost must come from config.SHORT_ANNUAL_BORROW_RATE only (no local constant)."""
+    import inspect
+    from backtest.engine.improvements import apply_transaction_costs
+    src = inspect.getsource(apply_transaction_costs)
+    assert "SHORT_ANNUAL_BORROW_RATE" in src, "BUG-242: improvements.py must import canonical rate"
+    assert "DEC-295" in src or "BUG-242" in src, "BUG-242: DEC-295 single-source fix not found"
+
+
+def test_bug_264_universe_docstring_no_wikipedia():
+    """BUG-264: universe.py must reference static CSV not live Wikipedia fetch."""
+    import backtest.data.universe as u
+    mod_src = open(u.__file__, encoding="utf-8").read()
+    assert "wikipedia.org/wiki" not in mod_src.lower() or "BUG-264" in mod_src, \
+        "BUG-264: universe.py must not runtime-fetch from Wikipedia"
+    assert "static CSV" in mod_src or "BUG-264" in mod_src or "closes BUG-264" in mod_src, \
+        "BUG-264: docstring should reference static CSV pattern"

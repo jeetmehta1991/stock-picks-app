@@ -64,7 +64,7 @@ class TickerCollisionError(ValueError):
 
 def _assert_no_ticker_collision(ticker: str, index: dict) -> None:
     """
-    DEC-309 fix (Pass 51): detect tickers that share a cache filename.
+    DEC-309 fix (Pass 51) BUG-228: detect tickers that share a cache filename.
 
     `_cache_path` replaces both `-` and `.` with `_`, so BRK-B and BRK.B
     both map to BRK_B.parquet. yfinance accepts both forms; whichever

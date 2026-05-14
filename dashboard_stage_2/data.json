@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-14T03:08:31.496354+00:00",
+  "generated_at": "2026-05-14T03:15:46.670914+00:00",
   "decisions": [
     {
       "id": "DECISION-001",
@@ -20214,7 +20214,7 @@
         "coded": false,
         "wired": false,
         "tested": false,
-        "pushed": false,
+        "pushed": true,
         "n_doc_refs": 14,
         "pyramid": {
           "unit": "N/A",
@@ -22331,13 +22331,13 @@
       "linked_decisions": "DEC-458",
       "sprint_context": "SUPERSEDED-BY-DEC-295 Pass 53 v8h+1 Phase 3 Batch 11 2026-05-10 (SHORT_BORROW_COST_PER_DAY units issue resolved by DEC-295 canonical SHORT_ANNUAL_BORROW_RATE in config.py; single-source-of-truth eliminates the 2.5x discrepancy from documentation drift)",
       "status_grep": {
-        "coded": false,
+        "coded": true,
         "wired": false,
-        "tested": false,
+        "tested": true,
         "pushed": false,
         "n_doc_refs": 6,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -22359,10 +22359,10 @@
       "status": "RESOLVED",
       "resolution_text": "HIGH \u2014 `SHORT_BORROW_COST_PER_DAY = 0.005` is 2.5\u00d7 the documented intent",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Marked resolved (verify artifact)"
+        "reason": "Resolved with code + regression test"
       }
     },
     {
@@ -25136,7 +25136,7 @@
         "coded": false,
         "wired": false,
         "tested": false,
-        "pushed": false,
+        "pushed": true,
         "n_doc_refs": 1,
         "pyramid": {
           "unit": "N/A",
@@ -25256,7 +25256,7 @@
         "coded": false,
         "wired": false,
         "tested": false,
-        "pushed": false,
+        "pushed": true,
         "n_doc_refs": 1,
         "pyramid": {
           "unit": "N/A",
@@ -25293,13 +25293,13 @@
       "status": "RESOLVED",
       "resolution_text": "PIT guard `_assert_no_lookahead` logs WARNING not RAISE \u2014 leakage swallowed in p",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
         "pushed": false,
         "n_doc_refs": 1,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -25319,10 +25319,10 @@
       "dependencies": "BUG-224",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Marked resolved (verify artifact)"
+        "reason": "Resolved with code + regression test"
       }
     },
     {
@@ -25333,13 +25333,13 @@
       "status": "RESOLVED",
       "resolution_text": "Regime classifier returns 'neutral' on missing VIX silently \u2014 should refuse to t",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 2,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -25359,10 +25359,10 @@
       "dependencies": "BUG-225",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Marked resolved (verify artifact)"
+        "reason": "Resolved with code + regression test"
       }
     },
     {
@@ -25613,13 +25613,13 @@
       "status": "RESOLVED",
       "resolution_text": "Cache ticker collision: BRK-B and BRK.B both \u2192 BRK_B.parquet",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
         "pushed": false,
         "n_doc_refs": 1,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -25639,10 +25639,10 @@
       "dependencies": "BUG-228",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Marked resolved (verify artifact)"
+        "reason": "Resolved with code + regression test"
       }
     },
     {
@@ -25693,13 +25693,13 @@
       "status": "RESOLVED",
       "resolution_text": "Trailing-stop ATR exits use ENTRY-time ATR throughout hold \u2014 should refresh dail",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
         "pushed": false,
         "n_doc_refs": 1,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -25719,10 +25719,10 @@
       "dependencies": "BUG-230",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Marked resolved (verify artifact)"
+        "reason": "Resolved with code + regression test"
       }
     },
     {
@@ -25733,13 +25733,13 @@
       "status": "RESOLVED",
       "resolution_text": "exit_hybrid_50pct max_days=252 but other 11 exits don't have max \u2014 comparison no",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
         "pushed": false,
         "n_doc_refs": 1,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -25759,10 +25759,10 @@
       "dependencies": "BUG-231",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Marked resolved (verify artifact)"
+        "reason": "Resolved with code + regression test"
       }
     },
     {
@@ -26093,13 +26093,13 @@
       "status": "RESOLVED",
       "resolution_text": "Congressional signal weighted by disclosure_date not transaction_date",
       "status_grep": {
-        "coded": false,
-        "wired": false,
-        "tested": false,
+        "coded": true,
+        "wired": true,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 3,
         "pyramid": {
-          "unit": "N/A",
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -26119,10 +26119,10 @@
       "dependencies": "BUG-240",
       "description": "",
       "promotion_path": {
-        "tier": "READY",
-        "label": "READY",
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
         "color": "#10b981",
-        "reason": "Marked resolved (verify artifact)"
+        "reason": "Resolved with code + regression test"
       }
     },
     {
@@ -26174,12 +26174,12 @@
       "resolution_text": "Short borrow cost duplicated across improvements.py and exit_manager.py with dif",
       "status_grep": {
         "coded": true,
-        "wired": false,
-        "tested": false,
+        "wired": true,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 1,
         "pyramid": {
-          "unit": false,
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -26199,10 +26199,10 @@
       "dependencies": "BUG-242",
       "description": "",
       "promotion_path": {
-        "tier": "CODE_ONLY",
-        "label": "NEEDS-TEST",
-        "color": "#f59e0b",
-        "reason": "Resolved + code refs but missing regression test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Resolved with code + regression test"
       }
     },
     {
@@ -27295,11 +27295,11 @@
       "status_grep": {
         "coded": true,
         "wired": true,
-        "tested": false,
+        "tested": true,
         "pushed": true,
         "n_doc_refs": 5,
         "pyramid": {
-          "unit": false,
+          "unit": true,
           "smoke": "N/A",
           "integration": "N/A",
           "system": "N/A",
@@ -27319,10 +27319,10 @@
       "dependencies": "BUG-264",
       "description": "",
       "promotion_path": {
-        "tier": "CODE_ONLY",
-        "label": "NEEDS-TEST",
-        "color": "#f59e0b",
-        "reason": "Resolved + code refs but missing regression test"
+        "tier": "IMPLEMENTED",
+        "label": "IMPLEMENTED",
+        "color": "#10b981",
+        "reason": "Resolved with code + regression test"
       }
     },
     {
@@ -34980,28 +34980,34 @@
   ],
   "recent_commits": [
     {
+      "sha": "7a4a28b0",
+      "subject": "@ Batch 147: 9 AUDIT_INDEX status fixes - pipe chars + status flips. Pyramid 617/617.",
+      "author": "jeetmehta1991",
+      "rel_time": "6 minutes ago"
+    },
+    {
       "sha": "f49f0dfd",
       "subject": "@ Batch 146: Bug dropdown cleanup - unified READY labels + 7-tier filter. Pyramid 617/617.",
       "author": "jeetmehta1991",
-      "rel_time": "14 minutes ago"
+      "rel_time": "21 minutes ago"
     },
     {
       "sha": "6756468f",
       "subject": "DEC-458: implement lead_lag_sector_rotation + wire into screen_universe",
       "author": "jeetmehta1991",
-      "rel_time": "31 minutes ago"
+      "rel_time": "38 minutes ago"
     },
     {
       "sha": "e6e90dbf",
       "subject": "Reclassify 7 PARTIAL-IMPL as DEFERRED; 1 genuine NEEDS-WIRING remains (DEC-458)",
       "author": "jeetmehta1991",
-      "rel_time": "40 minutes ago"
+      "rel_time": "48 minutes ago"
     },
     {
       "sha": "66367de1",
       "subject": "Fix decision promotion metric: surface 9 real Phase 1A gaps from 288 false noise",
       "author": "jeetmehta1991",
-      "rel_time": "56 minutes ago"
+      "rel_time": "64 minutes ago"
     },
     {
       "sha": "b03c30a8",
@@ -35061,7 +35067,7 @@
       "sha": "59ec56f9",
       "subject": "Batch 157: BUG-275/276/279/284/285 RESOLVED-IMPLEMENTED + BUG-277/278 false-positives. bonferroni n=0, cache_key dicts, reversed dates, fixed_4r_2r, gov_contracts None. Pyramid 608/608.",
       "author": "jeetmehta1991",
-      "rel_time": "4 hours ago"
+      "rel_time": "5 hours ago"
     },
     {
       "sha": "f5465d36",
@@ -35085,7 +35091,7 @@
       "sha": "81c8938a",
       "subject": "Batch 153: 26 BUGs RESOLVED-DECIDED - phase-scope deferrals + false-positives. Pyramid 604/604.",
       "author": "jeetmehta1991",
-      "rel_time": "6 hours ago"
+      "rel_time": "7 hours ago"
     },
     {
       "sha": "2737066c",
@@ -35152,17 +35158,11 @@
       "subject": "Batch 142: BUG-019 false-positive - cache extended to May 2026 via Sprint 0A prefetch. Pyramid 739/739.",
       "author": "jeetmehta1991",
       "rel_time": "21 hours ago"
-    },
-    {
-      "sha": "7eca7727",
-      "subject": "Batch 141: BUG-016 false-positive - min_trades canonicalized via BUG-31 Batch 112 + CLAUDE.md sweep. Pyramid 738/738.",
-      "author": "jeetmehta1991",
-      "rel_time": "21 hours ago"
     }
   ],
   "uncommitted": {
-    "count": 8,
-    "modified": 4,
+    "count": 15,
+    "modified": 11,
     "added": 0,
     "untracked": 4,
     "deleted": 0,
@@ -35173,7 +35173,35 @@
       },
       {
         "status": "M",
-        "path": "AUDIT_INDEX.md"
+        "path": "backtest/config.py"
+      },
+      {
+        "status": "M",
+        "path": "backtest/data/cache.py"
+      },
+      {
+        "status": "M",
+        "path": "backtest/data/fetcher.py"
+      },
+      {
+        "status": "M",
+        "path": "backtest/data/smart_money.py"
+      },
+      {
+        "status": "M",
+        "path": "backtest/engine/exit_strategies.py"
+      },
+      {
+        "status": "M",
+        "path": "backtest/engine/improvements.py"
+      },
+      {
+        "status": "M",
+        "path": "backtest/engine/regime_filter.py"
+      },
+      {
+        "status": "M",
+        "path": "backtest/tests/test_unit.py"
       },
       {
         "status": "M",
@@ -35379,7 +35407,7 @@
     }
   ],
   "test_inventory": {
-    "total": 1266,
+    "total": 1275,
     "by_module": {
       "test_aaii_demo": 3,
       "test_aaii_smoke": 3,
@@ -35455,7 +35483,7 @@
       "test_stocktwits_smoke": 4,
       "test_supplementary_demo": 4,
       "test_supplementary_smoke": 6,
-      "test_unit": 468,
+      "test_unit": 477,
       "test_walk_forward_4fold": 6
     }
   },

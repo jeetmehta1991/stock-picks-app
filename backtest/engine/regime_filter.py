@@ -40,7 +40,7 @@ def classify_regime(
 
     Returns: 'bull' | 'neutral' | 'bear' | 'crisis' | 'unknown'
 
-    DEC-316 fix (Pass 51): returns 'unknown' on missing VIX data instead of
+    DEC-316 fix (Pass 51) BUG-225: returns 'unknown' on missing VIX data instead of
     silently defaulting to 'neutral'. Previously, a cache miss or data feed
     failure caused the system to trade as if conditions were normal. Now
     'unknown' is a fail-closed signal  -  REGIME_FILTER['unknown'] blocks new

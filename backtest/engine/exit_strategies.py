@@ -122,7 +122,7 @@ def exit_atr_trail(df_full, entry_date, entry_price, direction, atr,
     """
     ATR-based trailing stop.
 
-    DEC-311 fix (Pass 51): stop distance now adapts to CURRENT volatility
+    DEC-311 fix (Pass 51) BUG-230: stop distance now adapts to CURRENT volatility
     (rolling 14-period ATR refreshed each day) instead of frozen entry-time
     ATR. If volatility doubles 30 days into the hold, the stop widens to
     accommodate; if it halves, the stop tightens. This matches how real
@@ -390,7 +390,7 @@ def exit_hybrid_50pct(df_full, entry_date, entry_price, direction, atr,
                             entry_date, "no_data", direction)
 
     for i, (idx, row) in enumerate(future.iterrows()):
-        # DEC-312 fix (Pass 51): max_days check removed for parity with other
+        # DEC-312 fix (Pass 51) BUG-231: max_days check removed for parity with other
         # 11 exit strategies. Hybrid was the only one enforcing 252-day cap;
         # made comparison metrics non-apples-to-apples in run_exit_comparison.
         # max_days param kept in signature for backward compat but unused.

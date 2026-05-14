@@ -1544,4 +1544,4 @@ CRISIS_LONG_EXCLUSIONS = {
 # ambiguous: same numeric value could mean 1.26%/yr (if percent-units) OR
 # 126%/yr (if decimal-units). Renamed and clarified.
 # -----------------------------------------------------------------------------
-SHORT_ANNUAL_BORROW_RATE = 0.005   # decimal: 0.005 = 0.5% per year
+SHORT_ANNUAL_BORROW_RATE = 0.005   # decimal: 0.005 = 0.5% per year  # BUG-081

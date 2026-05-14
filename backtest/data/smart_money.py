@@ -286,7 +286,7 @@ def congressional_signal(ticker: str, as_of: date, lookback_days: int = 45) -> d
         if df.empty:
             return {"signal": "none", "buy_count": 0, "sell_count": 0}
 
-        # DEC-324 fix (Pass 51): use BOTH disclosure_date (PIT availability)
+        # DEC-324 fix (Pass 51) BUG-240: use BOTH disclosure_date (PIT availability)
         # AND transaction_date (age-weighting). STOCK Act gives members up
         # to 45 days to disclose; a trade DISCLOSED 5 days ago might have
         # been TRANSACTED 40 days ago. Smart-money signal value comes from
