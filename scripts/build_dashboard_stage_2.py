@@ -1127,8 +1127,42 @@ def compute_promotion_path(item: dict, kind: str) -> dict:
 
     if kind == "decision":
         if status == "RESOLVED-IMPLEMENTED" or "RESOLVED-IMPLEMENTED" in status:
-            return {"tier": "IMPLEMENTED", "label": "IMPLEMENTED", "color": "#10b981",
-                    "reason": "Already RESOLVED-IMPLEMENTED per AUDIT_INDEX status"}
+            # If any code artifact exists (coded/wired/tested), trust the status.
+            if coded or wired or tested:
+                return {"tier": "IMPLEMENTED", "label": "IMPLEMENTED", "color": "#10b981",
+                        "reason": "RESOLVED-IMPLEMENTED with code/wire/test artifacts"}
+            # No artifacts: planning/scope/methodology decision - the decision IS the implementation.
+            # Check title for explicit future-phase markers to classify DEFERRED vs DECIDED.
+            title_up = (item.get("title") or "").upper()
+            FUTURE_MARKERS = ["PHASE 1B", "PHASE 1C", "PHASE 1D", "STAGE 3", "STAGE 4",
+                               "DEFERRED_TO_STAGE", "SPRINT 5 ", "SPRINT 7", "SPRINT 8",
+                               "SPRINT 9", "PAPER TRADING", "LIVE TRADING", "IBKR SESSION",
+                               "POSTGRESQL", "DATABASE SCHEMA"]
+            if any(m in title_up for m in FUTURE_MARKERS):
+                return {"tier": "DEFERRED", "label": "DEFERRED", "color": "#3b82f6",
+                        "reason": "RESOLVED-IMPLEMENTED as future-phase/Stage 3+ decision; no Phase 1A code expected"}
+            return {"tier": "DECIDED", "label": "DECIDED", "color": "#10b981",
+                    "reason": "RESOLVED-IMPLEMENTED planning/scope/methodology decision (no code artifact expected)"}
+        if status == "PARTIAL-IMPL-HELPER-ONLY":
+            # Helper function written; check if engine actually calls it.
+            if wired and tested:
+                # Artifacts say done - AUDIT_INDEX status is stale.
+                return {"tier": "IMPLEMENTED", "label": "IMPLEMENTED", "color": "#10b981",
+                        "reason": "PARTIAL-IMPL: wired+tested artifacts confirm implementation; AUDIT_INDEX status stale"}
+            title_up = (item.get("title") or "").upper()
+            AGENT_MARKERS = ["PHASE 1B", "PHASE 1C", "AGENT", "LLM", "HAIKU", "SONNET",
+                              "A/B ORCHESTRAT", "ABLATION", "CUBE PHASE", "TRADINGAGENT",
+                              "AGENTSTATE", "AGENTGATE", "OUR_AGENT", "OUR_FUNDAMENTALS",
+                              "DASHBOARD 1", "STREAMLIT", "STAGE 3", "STAGE 4",
+                              "CI/CD REGRESSION", "COLD-START CI"]
+            if any(m in title_up for m in AGENT_MARKERS):
+                return {"tier": "DEFERRED", "label": "DEFERRED", "color": "#3b82f6",
+                        "reason": "PARTIAL-IMPL helper exists but Phase 1B+/agent scope; engine wiring deferred"}
+            if coded:
+                return {"tier": "CODE_ONLY", "label": "NEEDS-WIRING", "color": "#f59e0b",
+                        "reason": "Phase 1A helper written but engine not calling it - wire into backtest.py/screener.py"}
+            return {"tier": "SPEC_ONLY", "label": "SPEC-ONLY", "color": "#ef4444",
+                    "reason": "PARTIAL-IMPL but no code found; helper not yet written"}
         if status == "PARTIAL-SPEC-ONLY":
             return {"tier": "SPEC_ONLY", "label": "SPEC-ONLY", "color": "#ef4444",
                     "reason": "PARTIAL-SPEC-ONLY per DEC-594 audit; needs code+test"}

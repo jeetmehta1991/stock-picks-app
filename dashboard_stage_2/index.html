@@ -134,12 +134,13 @@ per CHECKLIST #77 - never reads from memory.
       </select>
       <select id="dec-promotion-filter">
         <option value="">All promotion tiers</option>
-        <option value="IMPLEMENTED">IMPLEMENTED</option>
+        <option value="IMPLEMENTED">IMPLEMENTED (code+wire+test artifacts)</option>
+        <option value="DECIDED">DECIDED (planning/scope/methodology, no code needed)</option>
+        <option value="CODE_ONLY">NEEDS-WIRING (Phase 1A helper not called by engine)</option>
+        <option value="DEFERRED">DEFERRED (Phase 1B+ / Stage 3+ / future sprint)</option>
         <option value="READY">READY-TO-PROMOTE</option>
-        <option value="CODE_ONLY">NEEDS-TEST (coded but no test)</option>
         <option value="TEST_ONLY">NEEDS-CODE (tested but no code)</option>
-        <option value="SPEC_ONLY">SPEC-ONLY (implementation backlog)</option>
-        <option value="DEFERRED">DEFERRED (Stage 3+ / Phase 1B+ / Sprint 7+)</option>
+        <option value="SPEC_ONLY">SPEC-ONLY (not yet implemented)</option>
         <option value="BLOCKED">BLOCKED (waiting on dependency)</option>
         <option value="OPEN">OPEN / PROPOSED</option>
         <option value="UNKNOWN">UNKNOWN</option>
