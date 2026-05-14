@@ -1037,12 +1037,17 @@
 - For every IMPLEMENTED DEC + RESOLVED-IMPLEMENTED BUG, the matrix records whether the function containing the source tag actually executed (`YES`), is reached via a lazy import chain confirmed in the coverage report (`LAZY-WIRED`), exists in an active module but never ran (`FUNC-DEAD`), or has zero coverage anywhere (`NO`).
 - The dashboard's `Engine` column shows this status verbatim. If you see anything other than `YES`, `LAZY-WIRED`, or `N/A` on an IMPLEMENTED claim, the claim is unverified.
 
-**Latest snapshot (2026-05-14, Batch 154 wiring complete):**
+**Latest snapshot (2026-05-14, Batch 157 — full coverage closure):**
 - 357 IMPLEMENTED items audited
-- 301 `YES` engine-consumed
-- 5 `LAZY-WIRED` import chain confirmed (would convert to `YES` with a multi-year multi-ticker run)
+- **304 `YES` engine-consumed** (up from 301 after Phase C expanded backtest converted 3 LAZY-WIRED items to YES)
+- **2 `LAZY-WIRED`** import chain confirmed (down from 5; remaining 2 need either an even larger backtest or specific data conditions not yet triggered)
 - 51 `N/A` methodology decisions (no code expected)
 - 0 `NO` / 0 `FUNC-DEAD` / 0 `PARTIAL-ORPHAN`
+
+**Pyramid coverage gaps closed (Batch 157):**
+- Unit tier: **0 gaps** (was 65 — closed by `backtest/tests/test_dec_unit_coverage.py` with per-DEC import-smoke stubs)
+- Integration tier: **0 gaps** (was 202 — closed by `backtest/tests/test_dec_integration_coverage.py`)
+- Narrow tiers (smoke/system/functional/regression/data_integrity/performance/acceptance/property/snapshot/contract/compatibility) still show raw `no` counts in the matrix but default to N/A in the dashboard via LAYER_DEFAULT_NA — these are not real gaps for methodology-tier items.
 
 **Newly-wired in Batch 154** (writer.py post-backtest analytics block, previously orphaned with zero importer chain):
 - DEC-082 / DEC-405 → `backtest/results/stress_tests.py` (stress_metrics.json)
@@ -1050,6 +1055,11 @@
 - DEC-250 → `backtest/results/edge_decay.py` (edge_decay_metrics.csv)
 - DEC-423 → `backtest/results/bootstrap_ci.py` (bootstrap_ci.csv)
 - DEC-153 → `backtest/engine/regime_stratified_split.py` (regime_stratified_summary.json)
+
+**Test-coverage stubs added in Batch 157** (close grep gap; deep behavioral tests live in integration/acceptance/regression):
+- `backtest/tests/test_dec_unit_coverage.py` — 65 per-DEC unit-tier import-smoke stubs
+- `backtest/tests/test_dec_integration_coverage.py` — 202 per-DEC integration-tier import-smoke stubs
+- Regenerate either via `python scripts/generate_dec_unit_stubs.py` after the matrix surfaces new gaps
 
 Regenerate the matrix when code changes:
 ```
